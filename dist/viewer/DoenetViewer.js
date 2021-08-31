@@ -5,6 +5,7 @@ import sha256 from "../_snowpack/pkg/crypto-js/sha256.js";
 import CryptoJS from "../_snowpack/pkg/crypto-js.js";
 import me from "../_snowpack/pkg/math-expressions.js";
 import {nanoid} from "../_snowpack/pkg/nanoid.js";
+import {useToast, toastType} from "../_framework/Toast.js";
 export function serializedComponentsReplacer(key, value) {
   if (value !== value) {
     return {objectType: "special-numeric", stringValue: "NaN"};
@@ -38,7 +39,6 @@ class DoenetViewerChild extends Component {
     this.createCore = this.createCore.bind(this);
     this.loadState = this.loadState.bind(this);
     this.localStateChanged = this.localStateChanged.bind(this);
-    this.submitResponse = this.submitResponse.bind(this);
     this.recordSolutionView = this.recordSolutionView.bind(this);
     this.recordEvent = this.recordEvent.bind(this);
     this.rendererUpdateMethods = {};
@@ -72,7 +72,6 @@ class DoenetViewerChild extends Component {
         doenetML: this.doenetML,
         externalFunctions: {
           localStateChanged: this.localStateChanged,
-          submitResponse: this.submitResponse,
           recordSolutionView: this.recordSolutionView,
           recordEvent: this.recordEvent,
           contentIdsToDoenetMLs: this.contentIdsToDoenetMLs.bind(this)
@@ -89,7 +88,6 @@ class DoenetViewerChild extends Component {
         doenetML: this.doenetML,
         externalFunctions: {
           localStateChanged: this.localStateChanged,
-          submitResponse: this.submitResponse,
           recordSolutionView: this.recordSolutionView,
           recordEvent: this.recordEvent,
           contentIdsToDoenetMLs: this.contentIdsToDoenetMLs.bind(this)
@@ -155,7 +153,8 @@ class DoenetViewerChild extends Component {
     newStateVariableValues,
     contentId,
     sourceOfUpdate,
-    transient = false
+    transient = false,
+    itemsWithCreditAchieved
   }) {
     if (transient || !this.allowSavePageState && !this.allowLocalPageState) {
       return;
@@ -189,6 +188,38 @@ class DoenetViewerChild extends Component {
       return;
     }
     axios.post("/api/recordContentInteraction.php", data);
+    if (!this.allowSaveSubmissions) {
+      return;
+    }
+    for (let itemNumber in itemsWithCreditAchieved) {
+      let itemCreditAchieved = itemsWithCreditAchieved[itemNumber];
+      const payload2 = {
+        doenetId: this.props.doenetId,
+        contentId: this.contentId,
+        attemptNumber: this.attemptNumber,
+        credit: itemCreditAchieved,
+        itemNumber,
+        stateVariables: changeString
+      };
+      axios.post("/api/saveCreditForItem.php", payload2).then((resp) => {
+        console.log(">>>>resp", resp.data);
+        if (resp.data.viewedSolution) {
+          this.props.toast("No credit awarded since solution was viewed.", toastType.INFO);
+        }
+        if (resp.data.timerExpired) {
+          this.props.toast("No credit awarded since the time allowed has expired.", toastType.INFO);
+        }
+        if (resp.data.pastDueDate) {
+          this.props.toast("No credit awarded since the due date has passed.", toastType.INFO);
+        }
+        if (resp.data.exceededAttemptsAllowed) {
+          this.props.toast("No credit awarded since no more attempts are allowed.", toastType.INFO);
+        }
+        if (resp.data.databaseError) {
+          this.props.toast("Credit not saved due to database error.", toastType.ERROR);
+        }
+      });
+    }
   }
   loadState(callback) {
     if (!this.allowLoadPageState && !this.allowLocalPageState) {
@@ -253,34 +284,13 @@ class DoenetViewerChild extends Component {
       }
     }
   }
-  submitResponse({
-    itemNumber,
-    itemCreditAchieved,
-    callBack
-  }) {
-    if (this.allowSaveSubmissions && this.props.doenetId) {
-      const payload = {
-        doenetId: this.props.doenetId,
-        contentId: this.contentId,
-        attemptNumber: this.attemptNumber,
-        credit: itemCreditAchieved,
-        itemNumber
-      };
-      console.log(">>>>payload", payload);
-      axios.post("/api/saveCreditForItem.php", payload).then((resp) => {
-        console.log("resp>>>>", resp.data);
-      });
-    }
-    callBack("submitResponse callback parameter");
-  }
-  recordSolutionView({itemNumber, scoredComponent, callBack}) {
-    axios.post("/api/reportSolutionViewed.php", {
+  async recordSolutionView({itemNumber, scoredComponent}) {
+    const resp = await axios.post("/api/reportSolutionViewed.php", {
       doenetId: this.props.doenetId,
       itemNumber,
       attemptNumber: this.attemptNumber
-    }).then((resp) => {
-      callBack({allowView: true, message: "", scoredComponent});
     });
+    return {allowView: true, message: "", scoredComponent};
   }
   recordEvent(event) {
     if (!this.allowSaveEvents) {
@@ -411,7 +421,9 @@ class DoenetViewerChild extends Component {
       this.loadState(this.createCore);
       return null;
     }
-    return this.documentRenderer;
+    return /* @__PURE__ */ React.createElement("div", {
+      style: {maxWidth: "850px", paddingLeft: "20px", paddingRight: "20px", marginBottom: "200px"}
+    }, this.documentRenderer);
   }
 }
 class ErrorBoundary extends React.Component {
@@ -436,8 +448,10 @@ class ErrorBoundary extends React.Component {
   }
 }
 function DoenetViewer(props) {
+  const toast = useToast();
+  let newProps = {...props, toast};
   return /* @__PURE__ */ React.createElement(ErrorBoundary, null, /* @__PURE__ */ React.createElement(DoenetViewerChild, {
-    ...props
+    ...newProps
   }));
 }
 export default DoenetViewer;

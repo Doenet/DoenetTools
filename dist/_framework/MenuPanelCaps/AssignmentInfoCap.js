@@ -36,6 +36,10 @@ export default function AssignmentInfoCap() {
     }
   }
   let imageURL = `/media/drive_pictures/${image}`;
+  let attemptsAllowedDescription = attemptsAllowed;
+  if (!attemptsAllowed) {
+    attemptsAllowedDescription = "Unlimited";
+  }
   return /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", {
     style: {position: "relative", paddingBottom: "100px"}
   }, /* @__PURE__ */ React.createElement("img", {
@@ -43,5 +47,5 @@ export default function AssignmentInfoCap() {
     src: imageURL,
     alt: `${driveLabel} course`,
     width: "240px"
-  })), /* @__PURE__ */ React.createElement("div", null, driveLabel), /* @__PURE__ */ React.createElement("div", null, docInfo.label), /* @__PURE__ */ React.createElement("div", null, userAttemptNumber, "/", attemptsAllowed, " Attempts"));
+  })), /* @__PURE__ */ React.createElement("div", null, driveLabel), /* @__PURE__ */ React.createElement("div", null, docInfo.label), /* @__PURE__ */ React.createElement("div", null, userAttemptNumber, "/", attemptsAllowedDescription, " Attempts"));
 }

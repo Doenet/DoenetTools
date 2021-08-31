@@ -165,12 +165,19 @@ export default class Polygon extends DoenetRenderer {
         }
       }
 
-      renderer.actions.movePolygon(newPointcoords, true);
+      renderer.actions.movePolygon({
+        pointCoords: newPointcoords,
+        transient: true,
+        skippable: true,
+      });
     }
 
     function onUpBorder() {
       if (newPointcoords) {
-        renderer.actions.movePolygon(newPointcoords, false);
+
+        renderer.actions.movePolygon({
+          pointCoords: newPointcoords,
+        });
       }
     }
 
@@ -281,9 +288,9 @@ export default class Polygon extends DoenetRenderer {
 
   onDragHandler(i, transient) {
 
-    let newCoords = {};
-    newCoords[i] = [this.polygonJXG.vertices[i].X(), this.polygonJXG.vertices[i].Y()];
-    this.actions.movePolygon(newCoords, transient);
+    let pointCoords = {};
+    pointCoords[i] = [this.polygonJXG.vertices[i].X(), this.polygonJXG.vertices[i].Y()];
+    this.actions.movePolygon({ pointCoords, transient, skippable: transient });
 
   }
 

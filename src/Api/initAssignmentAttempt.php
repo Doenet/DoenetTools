@@ -46,6 +46,7 @@ if ($doenetId == ""){
 }
 //TODO: make sure we have the right weights
 
+
 if ($success){
 
 $sql = "SELECT doenetId
@@ -66,38 +67,65 @@ if ($result->num_rows < 1){
     $result = $conn->query($sql);
 }
 
-$sql = "SELECT began
+$sql = "SELECT contentId
     FROM user_assignment_attempt
     WHERE userId = '$userId'
     AND doenetId = '$doenetId'
-    AND contentId = '$contentId'
     AND attemptNumber = '$attemptNumber'
     ";
 $result = $conn->query($sql);
+$row = $result->fetch_assoc();
+$db_contentId = $row['contentId'];
 
-if ($result->num_rows < 1){
-    $sql = "INSERT INTO user_assignment_attempt
-    (doenetId,contentId,userId,attemptNumber,assignedVariant,generatedVariant,began)
-    VALUES
-    ('$doenetId','$contentId','$userId','$attemptNumber','$requestedVariant','$generatedVariant',NOW())
-    ";
+if ($db_contentId == 'NA'){
 
-    $result = $conn->query($sql);
+  $sql = "UPDATE user_assignment_attempt
+  SET contentId = '$contentId', 
+  assignedVariant = '$requestedVariant',
+  generatedVariant = '$generatedVariant',
+  began = NOW()
+  WHERE userId = '$userId'
+    AND doenetId = '$doenetId'
+    AND attemptNumber = '$attemptNumber'
+  ";
+$result = $conn->query($sql);
+
 }else{
+  $sql = "SELECT began
+  FROM user_assignment_attempt
+  WHERE userId = '$userId'
+  AND doenetId = '$doenetId'
+  AND contentId = '$contentId'
+  AND attemptNumber = '$attemptNumber'
+  ";
+  $result = $conn->query($sql);
+
+  if ($result->num_rows < 1){
+  $sql = "INSERT INTO user_assignment_attempt
+  (doenetId,contentId,userId,attemptNumber,assignedVariant,generatedVariant,began)
+  VALUES
+  ('$doenetId','$contentId','$userId','$attemptNumber','$requestedVariant','$generatedVariant',NOW())
+  ";
+
+  $result = $conn->query($sql);
+  }else{
   $row = $result->fetch_assoc();
   $began = $row['began'];
   if ($began == NULL){
-    $sql = "
-    UPDATE user_assignment_attempt
-    SET began=NOW()
-    WHERE userId = '$userId'
-    AND doenetId = '$doenetId'
-    AND contentId = '$contentId'
-    AND attemptNumber = '$attemptNumber'
-    ";
-    $result = $conn->query($sql);
+  $sql = "
+  UPDATE user_assignment_attempt
+  SET began=NOW()
+  WHERE userId = '$userId'
+  AND doenetId = '$doenetId'
+  AND contentId = '$contentId'
+  AND attemptNumber = '$attemptNumber'
+  ";
+  $result = $conn->query($sql);
   }
+  }
+
 }
+
 
 $sql = "SELECT userId
         FROM  user_assignment_attempt_item
@@ -106,6 +134,7 @@ $sql = "SELECT userId
         AND contentId = '$contentId'
         AND attemptNumber = '$attemptNumber'
 ";
+
 $result = $conn->query($sql);
 
 //Only insert if not stored

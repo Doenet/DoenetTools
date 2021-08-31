@@ -460,7 +460,7 @@ export function AssignmentSettings({role, doenetId}) {
 
       
 <div>
-  <label>Total Points Or Percent: 
+  <label>Total Points Or Percent
   <input
     required
     type="number"

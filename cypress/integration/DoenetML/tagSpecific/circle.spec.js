@@ -4822,7 +4822,7 @@ describe('Circle Tag Tests', function () {
       win.postMessage({
         doenetML: `
     <text>a</text>
-    <point hide name="fixedZero" fixed>(0,0)</point>
+    <number hide name="fixedZero" fixed>0</number>
     <graph>
     <triangle layer="1" name="t" vertices="(1,2) (3,5) (-5,2)" />
   
@@ -4883,9 +4883,9 @@ describe('Circle Tag Tests', function () {
       let components = Object.assign({}, win.state.components);
       t1x = -3, t1y = 1, t2x = 4, t2y = 0, t3x = -1, t3y = 7;
 
-      components['/t'].movePolygon([
+      components['/t'].movePolygon({pointCoords: [
         [t1x, t1y], [t2x, t2y], [t3x, t3y]
-      ])
+      ]})
 
       // calculate center and radius from circle itself
       circx = components['/c'].stateValues.numericalCenter[0];

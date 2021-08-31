@@ -5542,7 +5542,7 @@ describe('Answer Tag Tests', function () {
     let answers1 = { "1": 1, "-1": 1, "0.5": 1, "1.1": 0, "-2": 0, "x-x": 1, "x": 0 }
 
     for (let answerString in answers1) {
-      cy.get('#\\/_mathinput1 textarea').type("{end}{backspace}{backspace}{backspace}" + answerString, { delay: 0, force: true });
+      cy.get('#\\/_mathinput1 textarea').type("{end}{backspace}{backspace}{backspace}" + answerString, { delay: 5, force: true });
       cy.get('#\\/_mathinput1_submit').click();
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
@@ -5564,7 +5564,7 @@ describe('Answer Tag Tests', function () {
 
     let answers2 = { "1": 0, "-1": 0, "0.5": 1, "0.99": 1, "-2": 0, "x-x": 1, "x": 0 }
     for (let answerString in answers2) {
-      cy.get('#\\/_mathinput1 textarea').type("{end}{backspace}{backspace}{backspace}" + answerString, { delay: 0, force: true });
+      cy.get('#\\/_mathinput1 textarea').type("{end}{backspace}{backspace}{backspace}" + answerString, { delay: 5, force: true });
       cy.get('#\\/_mathinput1_submit').click();
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
@@ -5587,7 +5587,7 @@ describe('Answer Tag Tests', function () {
     let answers3 = { "1": 0, "-1": 1, "0.5": 1, "0.99": 1, "-2": 0, "x-x": 1, "x": 0 }
 
     for (let answerString in answers3) {
-      cy.get('#\\/_mathinput1 textarea').type("{end}{backspace}{backspace}{backspace}" + answerString, { delay: 0, force: true });
+      cy.get('#\\/_mathinput1 textarea').type("{end}{backspace}{backspace}{backspace}" + answerString, { delay: 5, force: true });
       cy.get('#\\/_mathinput1_submit').click();
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
@@ -5626,9 +5626,9 @@ describe('Answer Tag Tests', function () {
     [0, "y", "y", "a"]];
 
     for (let answer of answers1) {
-      cy.get('#\\/_mathinput1 textarea').type("{end}{backspace}{backspace}{backspace}" + answer[1], { delay: 0, force: true }).blur();
-      cy.get('#\\/_mathinput2 textarea').type("{end}{backspace}{backspace}{backspace}" + answer[2], { delay: 0, force: true }).blur();
-      cy.get('#\\/_mathinput3 textarea').type("{end}{backspace}{backspace}{backspace}" + answer[3], { delay: 0, force: true }).blur();
+      cy.get('#\\/_mathinput1 textarea').type("{end}{backspace}{backspace}{backspace}" + answer[1], { delay: 5, force: true }).blur();
+      cy.get('#\\/_mathinput2 textarea').type("{end}{backspace}{backspace}{backspace}" + answer[2], { delay: 5, force: true }).blur();
+      cy.get('#\\/_mathinput3 textarea').type("{end}{backspace}{backspace}{backspace}" + answer[3], { delay: 5, force: true }).blur();
       cy.get('#\\/_answer1_submit').click();
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);

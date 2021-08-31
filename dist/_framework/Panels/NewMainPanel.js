@@ -33,7 +33,7 @@ color: white;
 border: none;
 display: inline-block;
 `;
-export default function MainPanel({headerControls, headerControlsPositions, children, setMenusOpen, displayProfile}) {
+export default function MainPanel({headerControls, headerControlsPositions, children, setMenusOpen, openMenuButton, displayProfile}) {
   console.log(">>>===main panel");
   const mpOnClick = useRecoilCallback(({set, snapshot}) => async () => {
     const atomArray = await snapshot.getPromise(mainPanelClickAtom);
@@ -42,16 +42,18 @@ export default function MainPanel({headerControls, headerControlsPositions, chil
     }
   });
   const controls = [];
-  if (displayProfile) {
+  if (openMenuButton) {
     controls.push(/* @__PURE__ */ React.createElement(OpenButton, {
       key: "openbutton",
       onClick: () => setMenusOpen(true)
     }, /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
       icon: faChevronRight
     })));
-    controls.push(/* @__PURE__ */ React.createElement(Profile, {
-      key: "profile"
-    }));
+    if (displayProfile) {
+      controls.push(/* @__PURE__ */ React.createElement(Profile, {
+        key: "profile"
+      }));
+    }
   }
   if (headerControls) {
     for (const [i, control] of Object.entries(headerControls)) {

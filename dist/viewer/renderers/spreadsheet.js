@@ -20,7 +20,7 @@ export default class SpreadsheetRenderer extends DoenetRenderer {
       rowHeaders: this.doenetSvData.rowHeaders,
       width: sizeToCSS(this.doenetSvData.width),
       height: sizeToCSS(this.doenetSvData.height),
-      afterChange: this.actions.onChange.bind(this),
+      afterChange: (changes, source) => this.actions.onChange({changes, source}),
       formulas: {
         engine: HyperFormula
       },

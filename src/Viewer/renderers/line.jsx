@@ -179,7 +179,8 @@ export default class Line extends DoenetRenderer {
     this.actions.moveLine({
       point1coords: pointCoords[0],
       point2coords: pointCoords[1],
-      transient: true
+      transient: true,
+      skippable: true,
     });
   }
 

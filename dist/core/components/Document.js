@@ -279,7 +279,7 @@ export default class Document extends BaseComponent {
           for (let answerDescendant of dependencyValues[`descendantsOf${ind}`]) {
             itemNumberByAnswerName[answerDescendant.componentName] = itemNumber;
           }
-          if(componentInfoObjects.isInheritedComponentType({
+          if (componentInfoObjects.isInheritedComponentType({
             inheritedComponentType: component.componentType,
             baseComponentType: "answer"
           })) {
@@ -571,7 +571,7 @@ export default class Document extends BaseComponent {
     submitAllAnswers: this.submitAllAnswers.bind(this),
   }
 
-  submitAllAnswers() {
+  async submitAllAnswers() {
 
     this.coreFunctions.requestRecordEvent({
       verb: "submitted",
@@ -582,11 +582,12 @@ export default class Document extends BaseComponent {
       result: {
         creditAchieved: this.stateValues.creditAchievedIfSubmit
       }
+    });
 
-    })
+
     for (let answer of this.stateValues.answerDescendants) {
       if (!answer.stateValues.justSubmitted) {
-        this.coreFunctions.requestAction({
+        await this.coreFunctions.performAction({
           componentName: answer.componentName,
           actionName: "submitAnswer"
         })

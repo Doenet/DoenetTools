@@ -145,19 +145,22 @@ export default class LineSegment extends DoenetRenderer {
     if (i == 1) {
       this.actions.moveLineSegment({
         point1coords: [this.lineSegmentJXG.point1.X(), this.lineSegmentJXG.point1.Y()],
-        transient
+        transient,
+        skippable: transient
       });
     } else if (i == 2) {
       this.actions.moveLineSegment({
         point2coords: [this.lineSegmentJXG.point2.X(), this.lineSegmentJXG.point2.Y()],
-        transient
+        transient,
+        skippable: transient
       });
     } else {
       let pointCoords = this.calculatePointPositions(e);
       this.actions.moveLineSegment({
         point1coords: pointCoords[0],
         point2coords: pointCoords[1],
-        transient: true
+        transient: true,
+        skippable: true
       });
     }
   }

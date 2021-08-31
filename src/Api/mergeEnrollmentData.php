@@ -55,12 +55,28 @@ for($i = 0; $i < count($mergeEmail); $i++){
 	$email = "";
 	$section = "";
 	$new_userId = $userIds[$i];
+	
 
 	if (in_array("email",$mergeHeads,false)){ $email = $mergeEmail[$i]; }
 	if (in_array("id",$mergeHeads,false)){ $id = $mergeId[$i]; }
 	if (in_array("firstName",$mergeHeads,false)){ $firstName = $mergeFirstName[$i]; }
 	if (in_array("lastName",$mergeHeads,false)){ $lastName = $mergeLastName[$i]; }
 	if (in_array("section",$mergeHeads,false)){ $section = $mergeSection[$i]; }
+
+	$isEmailInUserTable = FALSE;
+	//Check if the email is already stored in user table
+	$sql = "
+	SELECT userId
+	FROM user
+	WHERE email = '$email'
+	";
+	$result = $conn->query($sql);
+	if ($result->num_rows > 0) {
+	$row = $result->fetch_assoc();
+	$new_userId = $row['userId'];
+	$isEmailInUserTable = TRUE;
+}
+
 
 	if (in_array($email,$db_emails,FALSE)){
 		//Already in the database so update with new information
@@ -126,16 +142,8 @@ for($i = 0; $i < count($mergeEmail); $i++){
 	}
 
 
-	//Check if user has an account
-	$sql = "
-	SELECT email
-	FROM user 
-	WHERE email = '$email'
-	";
-	$result = $conn->query($sql);
-
-		if ($result->num_rows < 1) {
-	//If they don't then make one
+		if (!$isEmailInUserTable) {
+	//If they don't have an account in user table then make one
 	// Random screen name
 	$screen_names = include 'screenNames.php';
 	$randomNumber = rand(0,(count($screen_names) - 1));

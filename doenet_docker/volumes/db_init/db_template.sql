@@ -7,7 +7,7 @@
 #
 # Host: 127.0.0.1 (MySQL 5.7.29)
 # Database: doenet_local
-# Generation Time: 2021-08-27 17:26:58 +0000
+# Generation Time: 2021-08-29 20:32:50 +0000
 # ************************************************************
 
 
@@ -166,6 +166,7 @@ CREATE TABLE `drive` (
   `isDeleted` tinyint(1) DEFAULT '0',
   `image` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `color` char(6) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `examPasscode` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 

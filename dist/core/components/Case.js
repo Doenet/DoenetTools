@@ -1,6 +1,6 @@
-import Group from './Group.js';
+import Template from './Template.js';
 
-export default class Case extends Group {
+export default class Case extends Template {
   static componentType = "case";
 
   static get stateVariablesShadowedForReference() {

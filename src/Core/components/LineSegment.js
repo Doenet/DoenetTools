@@ -482,17 +482,17 @@ export default class LineSegment extends GraphicalComponent {
 
     if (transient) {
 
-      this.coreFunctions.requestUpdate({
+      return this.coreFunctions.performUpdate({
         updateInstructions: [{
           componentName: this.componentName,
           updateType: "updateValue",
           stateVariable: "endpoints",
           value: newComponents
         }],
-        transient
+        transient: true,
       });
     } else {
-      this.coreFunctions.requestUpdate({
+      return this.coreFunctions.performUpdate({
         updateInstructions: [{
           componentName: this.componentName,
           updateType: "updateValue",
@@ -520,7 +520,7 @@ export default class LineSegment extends GraphicalComponent {
     // to send the final values with transient=false
     // so that the final position will be recorded
 
-    this.actions.moveLineSegment({
+    return this.actions.moveLineSegment({
       point1coords: this.stateValues.numericalEndpoints[0],
       point2coords: this.stateValues.numericalEndpoints[1],
       transient: false,

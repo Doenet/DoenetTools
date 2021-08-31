@@ -1981,7 +1981,7 @@ export default class Curve extends GraphicalComponent {
     }
 
     if (transient) {
-      this.coreFunctions.requestUpdate({
+      return this.coreFunctions.performUpdate({
         updateInstructions: [{
           updateType: "updateValue",
           componentName: this.componentName,
@@ -1992,7 +1992,7 @@ export default class Curve extends GraphicalComponent {
         transient
       });
     } else {
-      this.coreFunctions.requestUpdate({
+      return this.coreFunctions.performUpdate({
         updateInstructions: [{
           updateType: "updateValue",
           componentName: this.componentName,
@@ -2022,7 +2022,7 @@ export default class Curve extends GraphicalComponent {
     }
 
     if (transient) {
-      this.coreFunctions.requestUpdate({
+      this.coreFunctions.performUpdate({
         updateInstructions: [{
           updateType: "updateValue",
           componentName: this.componentName,
@@ -2033,7 +2033,7 @@ export default class Curve extends GraphicalComponent {
         transient
       });
     } else {
-      this.coreFunctions.requestUpdate({
+      this.coreFunctions.performUpdate({
         updateInstructions: [{
           updateType: "updateValue",
           componentName: this.componentName,
@@ -2056,7 +2056,7 @@ export default class Curve extends GraphicalComponent {
   }
 
   changeVectorControlDirection({ direction, throughPointInd }) {
-    this.coreFunctions.requestUpdate({
+    this.coreFunctions.performUpdate({
       updateInstructions: [{
         updateType: "updateValue",
         componentName: this.componentName,
@@ -2161,9 +2161,10 @@ function getNearestPointFunctionCurve({ dependencyValues, numerics }) {
 
 
     // if the point (x1,x2) isn't finite, we can't do anything more
-    if (!(Number.isFinite(x1) && Number.isFinite(x2))) {
+    // if (!(Number.isFinite(x1) && Number.isFinite(x2))) {
+    if (true) {
       if (Number.isFinite(x1AsFunction) && Number.isFinite(x2AsFunction)) {
-        result = {
+        let result = {
           x1: x1AsFunction,
           x2: x2AsFunction
         }
@@ -2171,7 +2172,7 @@ function getNearestPointFunctionCurve({ dependencyValues, numerics }) {
           result.x3 = 0;
         }
         return result;
-      } else {
+      } else if (!(Number.isFinite(x1) && Number.isFinite(x2))) {
         return {};
       }
 

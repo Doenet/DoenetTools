@@ -56,7 +56,7 @@ export default class Line extends GraphicalComponent {
   static returnSugarInstructions() {
     let sugarInstructions = super.returnSugarInstructions();
 
-    let stringAndMacrosToEquationAttribute = function({matchedChildren}) {
+    let stringAndMacrosToEquationAttribute = function ({ matchedChildren }) {
 
       // only apply if all children are strings or macros
       if (!matchedChildren.every(child =>
@@ -1439,17 +1439,17 @@ export default class Line extends GraphicalComponent {
     }
 
     if (transient) {
-      this.coreFunctions.requestUpdate({
+      return this.coreFunctions.performUpdate({
         updateInstructions: [{
           updateType: "updateValue",
           componentName: this.componentName,
           stateVariable: "points",
           value: desiredPoints
         }],
-        transient
+        transient: true,
       });
     } else {
-      this.coreFunctions.requestUpdate({
+      return this.coreFunctions.performUpdate({
         updateInstructions: [{
           updateType: "updateValue",
           componentName: this.componentName,
@@ -1477,7 +1477,7 @@ export default class Line extends GraphicalComponent {
     // to send the final values with transient=false
     // so that the final position will be recorded
 
-    this.actions.moveLine({
+    return this.actions.moveLine({
       point1coords: this.stateValues.numericalPoints[0],
       point2coords: this.stateValues.numericalPoints[1],
       transient: false,
