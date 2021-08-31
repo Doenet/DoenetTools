@@ -73,8 +73,10 @@ if($timeLimit > 0) {
 
   
   if ($result->num_rows < 1) {
-    $databaseError = 1;
-    $valid = 0;
+    $timeLimit = 1;
+    //TODO: handle Owners and Admins not being enrolled.
+    // $databaseError = 1;
+    // $valid = 0;
   } else {
     $row = $result->fetch_assoc();
     $timeLimit = ceil($timeLimit * $row["timeLimitMultiplier"]) ;
