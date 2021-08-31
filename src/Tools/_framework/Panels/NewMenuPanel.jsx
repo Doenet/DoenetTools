@@ -29,7 +29,7 @@ background: white;
 display: flex;
 justify-content: space-between;
 align-items: center;
-position: ${(props) => props.fix ? 'sticky' : 'static'};
+position: ${(props) => props.fix ? 'static' : 'sticky'};
 border-bottom: 2px solid #e2e2e2;
 margin-bottom: -2px;
 top: 0;
@@ -157,8 +157,8 @@ const LoadingFallback = styled.div`
   height: 100vh;
 `;
 
-export default function MenuPanel({ hide, menuPanelCap="", menusTitles=[], currentMenus=[], initOpen=[], setMenusOpen, menuPanelsOpen, displayProfile }) {
-console.log(">>>===MenuPanel")
+export default function MenuPanel({ hide, menuPanelCap="", menusTitles=[], currentMenus=[], initOpen=[], setMenusOpen, displayProfile }) {
+console.log(">>>===MenuPanel", hide)
 // console.log(">>>menuPanelCap",menuPanelCap)
 // console.log(">>>currentMenus",currentMenus)
 
@@ -243,7 +243,7 @@ console.log(">>>===MenuPanel")
 
   return (
     <MenuPanelsWrapper hide={hide}>
-     <MenuPanelsCap fix={menuPanelsOpen}>
+     <MenuPanelsCap fix={hide}>
         <span >
           <Logo/>
           {/* <img style={{height:"45px", width:"70px", objectFit: "scale-down"}} href="https://www.doenet.org/media/Doenet_Logo_cloud_only.png"/> */}
@@ -252,7 +252,7 @@ console.log(">>>===MenuPanel")
         <span >
           {displayProfile ? 
             <Profile 
-            margin={menuPanelsOpen}
+            margin={hide}
             />
           : null }
         </span>
