@@ -547,16 +547,16 @@ export default class Polyline extends GraphicalComponent {
   }
 
 
-  movePolyline(pointcoordsObject, transient, sourceInformation) {
+  movePolyline({ pointCoords, transient, sourceInformation }) {
 
     let vertexComponents = {};
-    for (let ind in pointcoordsObject) {
-      vertexComponents[ind + ",0"] = me.fromAst(pointcoordsObject[ind][0]);
-      vertexComponents[ind + ",1"] = me.fromAst(pointcoordsObject[ind][1]);
+    for (let ind in pointCoords) {
+      vertexComponents[ind + ",0"] = me.fromAst(pointCoords[ind][0]);
+      vertexComponents[ind + ",1"] = me.fromAst(pointCoords[ind][1]);
     }
 
     if (transient) {
-      this.coreFunctions.requestUpdate({
+      return this.coreFunctions.performUpdate({
         updateInstructions: [{
           updateType: "updateValue",
           componentName: this.componentName,
@@ -568,7 +568,7 @@ export default class Polyline extends GraphicalComponent {
       });
     } else {
 
-      this.coreFunctions.requestUpdate({
+      return this.coreFunctions.performUpdate({
         updateInstructions: [{
           updateType: "updateValue",
           componentName: this.componentName,
@@ -583,7 +583,7 @@ export default class Polyline extends GraphicalComponent {
             componentType: this.componentType,
           },
           result: {
-            pointCoordinates: pointcoordsObject
+            pointCoordinates: pointCoords
           }
         },
       });
@@ -596,10 +596,10 @@ export default class Polyline extends GraphicalComponent {
     // to send the final values with transient=false
     // so that the final position will be recorded
 
-    this.actions.movePolyline(
-      this.stateValues.numericalVertices,
-      false
-    );
+    return this.actions.movePolyline({
+      pointCoords: this.stateValues.numericalVertices,
+      transient: false
+    });
   }
 
 

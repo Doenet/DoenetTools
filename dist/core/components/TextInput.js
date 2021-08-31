@@ -13,16 +13,20 @@ export default class Textinput extends Input {
       )
     };
 
+
+    this.externalActions = {};
+
     //Complex because the stateValues isn't defined until later
-    Object.defineProperty(this.actions, 'submitAnswer', {
+    Object.defineProperty(this.externalActions, 'submitAnswer', {
+      enumerable: true,
       get: function () {
         if (this.stateValues.answerAncestor !== null) {
-          return () => this.coreFunctions.requestAction({
+          return {
             componentName: this.stateValues.answerAncestor.componentName,
             actionName: "submitAnswer"
-          })
+          }
         } else {
-          return () => null
+          return;
         }
       }.bind(this)
     });
@@ -222,7 +226,7 @@ export default class Textinput extends Input {
 
   updateImmediateValue({ text }) {
     if (!this.stateValues.disabled) {
-      this.coreFunctions.requestUpdate({
+      return this.coreFunctions.performUpdate({
         updateInstructions: [{
           updateType: "updateValue",
           componentName: this.componentName,
@@ -274,13 +278,12 @@ export default class Textinput extends Input {
         }
       }
 
-      this.coreFunctions.requestUpdate({
+      return this.coreFunctions.performUpdate({
         updateInstructions,
-        event,
-        callBack: () => this.coreFunctions.triggerChainedActions({
-          componentName: this.componentName,
-        })
-      })
+        event
+      }).then(() => this.coreFunctions.triggerChainedActions({
+        componentName: this.componentName,
+      }));
 
     }
   }

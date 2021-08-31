@@ -713,10 +713,7 @@ describe('UpdateValue Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       components['/P'].movePoint({ x: 1, y: 7 });
-      cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('3x')
-      });
-      // since second change is asynchronous, need to use other form so that cypress will wait
+      // since second change could be asynchronous, use other form so that cypress will wait
       cy.get('#\\/x').find('.mjx-mrow').should('have.text', '12x')
       cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('12x')
@@ -750,10 +747,7 @@ describe('UpdateValue Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       components['/P'].movePoint({ x: 4, y: 2 });
-      cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('36x')
-      });
-      // since second change is asynchronous, need to use other form so that cypress will wait
+      // since second change could be asynchronous, use other form so that cypress will wait
       // (keep other form of test to make it clear we aren't actually changing anything)
       cy.get('#\\/x').find('.mjx-mrow').should('have.text', '144x')
       cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -1079,6 +1073,7 @@ describe('UpdateValue Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       components['/P'].movePoint({ x: 1, y: 7 });
+      cy.wait(10);
       cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('3x')
       });
@@ -1123,6 +1118,7 @@ describe('UpdateValue Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       components['/P'].movePoint({ x: 4, y: 2 });
+      cy.wait(10);
       cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('9x')
       });

@@ -433,7 +433,7 @@ export default class AnimateFromSequence extends BaseComponent {
     return stateVariableDefinitions;
   }
 
-  startStopAnimation({ stateValues, previousValues }) {
+  async startStopAnimation({ stateValues, previousValues }) {
 
     let updateInstructions = [];
 
@@ -498,7 +498,7 @@ export default class AnimateFromSequence extends BaseComponent {
         )
         updateInstructions.push(...additionalInstructions);
 
-        this.coreFunctions.requestUpdate({
+        await this.coreFunctions.performUpdate({
           updateInstructions,
           event: {
             verb: "played",
@@ -513,6 +513,10 @@ export default class AnimateFromSequence extends BaseComponent {
             }
           }
         })
+        
+        await this.coreFunctions.triggerChainedActions({
+          componentName: this.componentName,
+        });
 
         this.animationID = this.coreFunctions.requestAnimationFrame(
           this.advanceAnimation, this.stateValues.animationInterval
@@ -521,7 +525,11 @@ export default class AnimateFromSequence extends BaseComponent {
     } else {
       if (previousValues.animationOn) {
         // cancel any animation in progress
-        this.coreFunctions.cancelAnimationFrame(this.animationID);
+        await this.coreFunctions.cancelAnimationFrame(this.animationID).then(
+          () => this.coreFunctions.triggerChainedActions({
+            componentName: this.componentName,
+          })
+        );
         this.coreFunctions.requestRecordEvent({
           verb: "paused",
           object: {
@@ -542,7 +550,7 @@ export default class AnimateFromSequence extends BaseComponent {
     if (this.stateValues.targets === null) {
       return this.stateValues.selectedIndex;
     }
-    
+
     let target = this.stateValues.targets[0];
 
     let stateVariable = Object.keys(target.stateValues)[0];
@@ -667,7 +675,7 @@ export default class AnimateFromSequence extends BaseComponent {
       })
     }
 
-    this.coreFunctions.requestUpdate({
+    this.coreFunctions.performUpdate({
       updateInstructions,
     });
 

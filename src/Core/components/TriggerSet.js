@@ -105,14 +105,17 @@ export default class triggerSet extends InlineComponent {
       },
       definition({ dependencyValues }) {
         let triggerWithFullTnames = [];
-        let n = Object.keys(dependencyValues).length;
+        let n = Object.keys(dependencyValues).length - 1;
 
         for (let i = 0; i < n; i++) {
           triggerWithFullTnames.push(dependencyValues[`triggerWithFullTname${i}`])
         }
 
         return { newValues: { triggerWithFullTnames } }
-      }
+      },
+      markStale() {
+        return { updateActionChaining: true }
+      },
     }
 
 
@@ -145,7 +148,7 @@ export default class triggerSet extends InlineComponent {
   }
 
 
-  triggerActions() {
+  async triggerActions() {
 
     for (let child of this.stateValues.updateValueAndActionsToTrigger) {
 
@@ -153,7 +156,7 @@ export default class triggerSet extends InlineComponent {
         inheritedComponentType: child.componentType,
         baseComponentType: "updateValue"
       })) {
-        this.coreFunctions.requestAction({
+        await this.coreFunctions.performAction({
           componentName: child.componentName,
           actionName: "updateValue",
         })
@@ -161,14 +164,14 @@ export default class triggerSet extends InlineComponent {
         inheritedComponentType: child.componentType,
         baseComponentType: "callAction"
       })) {
-        this.coreFunctions.requestAction({
+        await this.coreFunctions.performAction({
           componentName: child.componentName,
           actionName: "callAction",
         })
       }
     }
 
-    this.coreFunctions.triggerChainedActions({
+    return this.coreFunctions.triggerChainedActions({
       componentName: this.componentName,
     })
 
@@ -178,7 +181,7 @@ export default class triggerSet extends InlineComponent {
     // Note: explicitly test if previous value is false
     // so don't trigger on initialization when it is undefined
     if (stateValues.triggerWhen && previousValues.triggerWhen === false) {
-      this.triggerActions();
+      return this.triggerActions();
     }
   }
 

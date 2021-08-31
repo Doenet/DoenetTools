@@ -16,7 +16,7 @@ const MenuPanelsWrapper = styled.div`
   justify-content: flex-start;
   background: #e3e3e3;
   height: 100%;
-  overflow: hidden;
+  overflow-x: hidden;
   width: ${({hide}) => hide ? "0px" : "240px"};
 `;
 const MenuPanelsCap = styled.div`
@@ -147,7 +147,7 @@ const LoadingFallback = styled.div`
   width: 100vw;
   height: 100vh;
 `;
-export default function MenuPanel({hide, menuPanelCap = "", menusTitles = [], currentMenus = [], initOpen = [], setMenusOpen, menuPanelsOpen}) {
+export default function MenuPanel({hide, menuPanelCap = "", menusTitles = [], currentMenus = [], initOpen = [], setMenusOpen, menuPanelsOpen, displayProfile}) {
   console.log(">>>===MenuPanel");
   const currentSelectionMenu = useRecoilValue(selectedMenuPanelAtom);
   let menusArray = [];
@@ -172,7 +172,8 @@ export default function MenuPanel({hide, menuPanelCap = "", menusTitles = [], cu
     AutoSaves: lazy(() => import("../Menus/AutoSaves.js")),
     LoadEnrollment: lazy(() => import("../Menus/LoadEnrollment.js")),
     ManualEnrollment: lazy(() => import("../Menus/ManualEnrollment.js")),
-    AssignmentSettingsMenu: lazy(() => import("../Menus/AssignmentSettingsMenu.js"))
+    AssignmentSettingsMenu: lazy(() => import("../Menus/AssignmentSettingsMenu.js")),
+    TimerMenu: lazy(() => import("../Menus/TimerMenu.js"))
   }).current;
   let selectionPanel = null;
   if (currentSelectionMenu) {
@@ -211,9 +212,9 @@ export default function MenuPanel({hide, menuPanelCap = "", menusTitles = [], cu
     fix: menuPanelsOpen
   }, /* @__PURE__ */ React.createElement("span", null, /* @__PURE__ */ React.createElement(Logo, null)), /* @__PURE__ */ React.createElement("span", {
     style: {marginBottom: "1px"}
-  }, "Doenet"), /* @__PURE__ */ React.createElement("span", null, /* @__PURE__ */ React.createElement(Profile, {
+  }, "Doenet"), /* @__PURE__ */ React.createElement("span", null, displayProfile ? /* @__PURE__ */ React.createElement(Profile, {
     margin: menuPanelsOpen
-  })), /* @__PURE__ */ React.createElement("span", null, /* @__PURE__ */ React.createElement(CloseButton, {
+  }) : null), /* @__PURE__ */ React.createElement("span", null, /* @__PURE__ */ React.createElement(CloseButton, {
     onClick: () => setMenusOpen(false)
   }, /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
     icon: faChevronLeft

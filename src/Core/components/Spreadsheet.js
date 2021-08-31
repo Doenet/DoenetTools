@@ -881,7 +881,7 @@ export default class Spreadsheet extends BlockComponent {
   }
 
 
-  onChange(changes, source) {
+  onChange({ changes, source }) {
 
     if (source !== "loadData") {
       let cellChanges = {};
@@ -890,7 +890,7 @@ export default class Spreadsheet extends BlockComponent {
         cellChanges[[row, col]] = value === null ? "" : value;
       }
 
-      this.coreFunctions.requestUpdate({
+      return this.coreFunctions.performUpdate({
         updateInstructions: [{
           updateType: "updateValue",
           componentName: this.componentName,
@@ -915,9 +915,6 @@ export default class Spreadsheet extends BlockComponent {
     onChange: this.onChange.bind(
       new Proxy(this, this.readOnlyProxyHandler)
     ),
-    // finalizePointPosition: this.finalizePointPosition.bind(
-    //   new Proxy(this, this.readOnlyProxyHandler)
-    // )
   };
 
 

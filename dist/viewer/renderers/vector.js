@@ -203,7 +203,7 @@ export default class Vector extends DoenetRenderer {
         this.tailBeingDragged = true;
       }
     }
-    let instructions = {transient};
+    let instructions = {transient, skippable: transient};
     let performMove = false;
     if (this.headBeingDragged) {
       performMove = true;

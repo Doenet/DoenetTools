@@ -164,7 +164,7 @@ export default class Slider extends BaseComponent {
         // to determine items implicitly
 
         if (dependencyValues.type === "text") {
-          for(let child of dependencyValues.numberAndTextChildren) {
+          for (let child of dependencyValues.numberAndTextChildren) {
             if (componentInfoObjects.isInheritedComponentType({
               inheritedComponentType: child.componentType,
               baseComponentType: "text"
@@ -177,7 +177,7 @@ export default class Slider extends BaseComponent {
           }
         } else if (dependencyValues.numberAndTextChildren.length > 0) {
 
-          for(let child of dependencyValues.numberAndTextChildren) {
+          for (let child of dependencyValues.numberAndTextChildren) {
             if (componentInfoObjects.isInheritedComponentType({
               inheritedComponentType: child.componentType,
               baseComponentType: "number"
@@ -186,7 +186,7 @@ export default class Slider extends BaseComponent {
             } else {
               // text child
               let num = Number(child.stateValues.value)
-              if(Number.isFinite(num)) {
+              if (Number.isFinite(num)) {
                 items.push(num);
               }
             }
@@ -231,7 +231,7 @@ export default class Slider extends BaseComponent {
       definition({ dependencyValues }) {
         let nItems = dependencyValues.items.length;
 
-        if (nItems === 0 && dependencyValues.type ===  "number") {
+        if (nItems === 0 && dependencyValues.type === "number") {
           // Note: add 1E-10 before taking floor
           // to make sure round-off error doesn't reduce number of items
           nItems = Math.floor((dependencyValues.to - dependencyValues.from) / dependencyValues.step + 1E-10) + 1;
@@ -264,9 +264,9 @@ export default class Slider extends BaseComponent {
 
         let firstItem;
 
-        if(dependencyValues.items.length > 0) {
+        if (dependencyValues.items.length > 0) {
           firstItem = dependencyValues.items[0];
-        } else if(dependencyValues.type==="number") {
+        } else if (dependencyValues.type === "number") {
           firstItem = dependencyValues.from
         } else {
           firstItem = null;  // text with no children
@@ -306,7 +306,7 @@ export default class Slider extends BaseComponent {
 
         if (dependencyValues.items.length > 0) {
           lastItem = dependencyValues.items[dependencyValues.items.length - 1];
-        } else if(dependencyValues.type === "number") {
+        } else if (dependencyValues.type === "number") {
           lastItem = dependencyValues.from + (dependencyValues.nItems - 1) * dependencyValues.step;
         } else {
           lastItem = null;   // text with no children
@@ -610,7 +610,7 @@ export default class Slider extends BaseComponent {
   changeValue({ value, transient }) {
     if (!this.stateValues.disabled) {
       if (transient) {
-        this.coreFunctions.requestUpdate({
+        return this.coreFunctions.performUpdate({
           updateInstructions: [{
             updateType: "updateValue",
             componentName: this.componentName,
@@ -620,7 +620,7 @@ export default class Slider extends BaseComponent {
           transient
         });
       } else {
-        this.coreFunctions.requestUpdate({
+        return this.coreFunctions.performUpdate({
           updateInstructions: [{
             updateType: "updateValue",
             componentName: this.componentName,
@@ -722,13 +722,13 @@ function invertSliderValue({ desiredStateVariableValues, stateValues }) {
   // console.log(stateValues);
 
   let preliminaryValue = desiredStateVariableValues.value;
-  if(stateValues.type === "text") {
+  if (stateValues.type === "text") {
     preliminaryValue = preliminaryValue.toString();
   } else {
-    if(preliminaryValue instanceof me.class) {
+    if (preliminaryValue instanceof me.class) {
       preliminaryValue = preliminaryValue.evaluate_to_constant();
-      if(preliminaryValue === null) {
-        return {success: false}
+      if (preliminaryValue === null) {
+        return { success: false }
       }
     } else {
       preliminaryValue = Number(preliminaryValue);

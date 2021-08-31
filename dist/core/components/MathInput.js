@@ -18,16 +18,19 @@ export default class MathInput extends Input {
       )
     };
 
+    this.externalActions = {};
+
     //Complex because the stateValues isn't defined until later
-    Object.defineProperty(this.actions, 'submitAnswer', {
+    Object.defineProperty(this.externalActions, 'submitAnswer', {
+      enumerable: true,
       get: function () {
         if (this.stateValues.answerAncestor !== null) {
-          return () => this.coreFunctions.requestAction({
+          return {
             componentName: this.stateValues.answerAncestor.componentName,
             actionName: "submitAnswer"
-          })
+          }
         } else {
-          return () => null
+          return;
         }
       }.bind(this)
     });
@@ -338,7 +341,7 @@ export default class MathInput extends Input {
     if (!this.stateValues.disabled) {
       // we set transient to true so that each keystroke does not
       // add a row to the database
-      this.coreFunctions.requestUpdate({
+      return this.coreFunctions.performUpdate({
         updateInstructions: [{
           updateType: "updateValue",
           componentName: this.componentName,
@@ -351,7 +354,7 @@ export default class MathInput extends Input {
           value: rawRendererValue,
         }],
         transient: true
-      })
+      });
     }
   }
 
@@ -360,7 +363,7 @@ export default class MathInput extends Input {
       // we set transient to true so that each keystroke does not
       // add a row to the database
 
-      this.coreFunctions.requestUpdate({
+      return this.coreFunctions.performUpdate({
         updateInstructions: [{
           updateType: "updateValue",
           componentName: this.componentName,
@@ -368,7 +371,7 @@ export default class MathInput extends Input {
           value: rawRendererValue,
         }],
         transient
-      })
+      });
     }
   }
 
@@ -418,13 +421,13 @@ export default class MathInput extends Input {
         }
       }
 
-      this.coreFunctions.requestUpdate({
+      return this.coreFunctions.performUpdate({
         updateInstructions,
         event,
-        callBack: () => this.coreFunctions.triggerChainedActions({
-          componentName: this.componentName,
-        })
-      })
+      }).then(() => this.coreFunctions.triggerChainedActions({
+        componentName: this.componentName,
+      }));
+
 
     }
   }

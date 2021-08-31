@@ -520,7 +520,7 @@ export default class Ray extends GraphicalComponent {
 
     if (transient) {
 
-      this.coreFunctions.requestUpdate({
+      return this.coreFunctions.performUpdate({
         updateInstructions: [{
           componentName: this.componentName,
           updateType: "updateValue",
@@ -536,7 +536,7 @@ export default class Ray extends GraphicalComponent {
         transient
       });
     } else {
-      this.coreFunctions.requestUpdate({
+      return this.coreFunctions.performUpdate({
         updateInstructions: [{
           componentName: this.componentName,
           updateType: "updateValue",
@@ -570,7 +570,7 @@ export default class Ray extends GraphicalComponent {
     // to send the final values with transient=false
     // so that the final position will be recorded
 
-    this.actions.moveRay({
+    return this.actions.moveRay({
       point1coords: this.stateValues.numericalEndpoint,
       point2coords: this.stateValues.numericalThroughpoint,
       transient: false,

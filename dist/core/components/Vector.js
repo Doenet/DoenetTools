@@ -1897,12 +1897,12 @@ export default class Vector extends GraphicalComponent {
 
 
     if (transient) {
-      this.coreFunctions.requestUpdate({
+      return this.coreFunctions.performUpdate({
         updateInstructions,
         transient
       });
     } else {
-      this.coreFunctions.requestUpdate({
+      return this.coreFunctions.performUpdate({
         updateInstructions,
         event: {
           verb: "interacted",
@@ -1925,7 +1925,7 @@ export default class Vector extends GraphicalComponent {
     // to send the final values with transient=false
     // so that the final position will be recorded
 
-    this.actions.moveVector({
+    return this.actions.moveVector({
       tailcoords: this.stateValues.numericalEndpoints[0],
       headcoords: this.stateValues.numericalEndpoints[1],
     });

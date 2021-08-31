@@ -473,6 +473,7 @@ describe('TriggerSet Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       components['/P'].movePoint({ x: 1, y: 7 });
+      cy.wait(10);
       cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('3x')
       });
@@ -517,6 +518,7 @@ describe('TriggerSet Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       components['/P'].movePoint({ x: 4, y: 2 });
+      cy.wait(10);
       cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('9x')
       });
@@ -727,16 +729,18 @@ describe('TriggerSet Tag Tests', function () {
 
       cy.window().then((win) => {
         components['/P'].movePoint({ x: 1, y: 7 });
-        expect(g.activeChildren.length).eq(2);
-        cy.get('#\\/nums').invoke('text').then(text => {
-          let numbers2 = text.split(',').map(Number);
-          expect(numbers2).not.eqls(numbers);
-          numbers = numbers2;
-        })
-        cy.get('#\\/b').should('have.text', "true");
-        cy.get('#\\/hello').should('have.text', " hello");
-        cy.get('#\\/n').should('have.text', "2");
+        cy.wait(10).then(() => {
+          expect(g.activeChildren.length).eq(2);
+          cy.get('#\\/nums').invoke('text').then(text => {
+            let numbers2 = text.split(',').map(Number);
+            expect(numbers2).not.eqls(numbers);
+            numbers = numbers2;
+          })
+          cy.get('#\\/b').should('have.text', "true");
+          cy.get('#\\/hello').should('have.text', " hello");
+          cy.get('#\\/n').should('have.text', "2");
 
+        })
       })
 
       cy.window().then((win) => {
@@ -777,15 +781,17 @@ describe('TriggerSet Tag Tests', function () {
 
       cy.window().then((win) => {
         components['/P'].movePoint({ x: 4, y: 2 });
-        expect(g.activeChildren.length).eq(3);
-        cy.get('#\\/nums').invoke('text').then(text => {
-          let numbers2 = text.split(',').map(Number);
-          expect(numbers2).not.eqls(numbers);
-          numbers = numbers2;
+        cy.wait(10).then(() => {
+          expect(g.activeChildren.length).eq(3);
+          cy.get('#\\/nums').invoke('text').then(text => {
+            let numbers2 = text.split(',').map(Number);
+            expect(numbers2).not.eqls(numbers);
+            numbers = numbers2;
+          })
+          cy.get('#\\/b').should('have.text', "false");
+          cy.get('#\\/hello').should('have.text', " hello hello");
+          cy.get('#\\/n').should('have.text', "3");
         })
-        cy.get('#\\/b').should('have.text', "false");
-        cy.get('#\\/hello').should('have.text', " hello hello");
-        cy.get('#\\/n').should('have.text', "3");
       })
 
       cy.window().then((win) => {
@@ -867,12 +873,13 @@ describe('TriggerSet Tag Tests', function () {
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
         components['/P'].movePoint({ x: 1, y: 7 });
-        expect(g.activeChildren.length).eq(2);
-        cy.get('#\\/b').should('have.text', "true");
-        cy.get('#\\/hello').should('have.text', " hello");
-        cy.get('#\\/n').should('have.text', "2");
-        cy.get('#\\/m').should('have.text', "4");
-
+        cy.wait(10).then(() => {
+          expect(g.activeChildren.length).eq(2);
+          cy.get('#\\/b').should('have.text', "true");
+          cy.get('#\\/hello').should('have.text', " hello");
+          cy.get('#\\/n').should('have.text', "2");
+          cy.get('#\\/m').should('have.text', "4");
+        })
       })
 
       cy.window().then((win) => {
@@ -908,11 +915,13 @@ describe('TriggerSet Tag Tests', function () {
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
         components['/P'].movePoint({ x: 4, y: 2 });
-        expect(g.activeChildren.length).eq(3);
-        cy.get('#\\/b').should('have.text', "false");
-        cy.get('#\\/hello').should('have.text', " hello hello");
-        cy.get('#\\/n').should('have.text', "3");
-        cy.get('#\\/m').should('have.text', "3");
+        cy.wait(10).then(() => {
+          expect(g.activeChildren.length).eq(3);
+          cy.get('#\\/b').should('have.text', "false");
+          cy.get('#\\/hello').should('have.text', " hello hello");
+          cy.get('#\\/n').should('have.text', "3");
+          cy.get('#\\/m').should('have.text', "3");
+        })
       })
 
       cy.window().then((win) => {
