@@ -13,15 +13,28 @@ export default class Ref extends DoenetRenderer {
     if (this.children.length === 0) {
       linkContent = this.doenetSvData.linkText;
     }
+
+    let url = "";
+    let target = "_blank";
     if (this.doenetSvData.contentId) {
-      return <a target="_blank" id={this.componentName} name={this.componentName} href={`https://www.doenet.org/#/content/?contentId=${this.doenetSvData.contentId}`}>{linkContent}</a>
+      url = `https://www.doenet.org/#/content/?contentId=${this.doenetSvData.contentId}`;
     } else if (this.doenetSvData.doenetId) {
-      return <a target="_blank" id={this.componentName} name={this.componentName} href={`https://www.doenet.org/#/content/?doenetId=${this.doenetSvData.doenetId}`}>{linkContent}</a>
+      url = `https://www.doenet.org/#/content/?doenetId=${this.doenetSvData.doenetId}`;
     } else if (this.doenetSvData.uri) {
-      return <a target="_blank" id={this.componentName} name={this.componentName} href={this.doenetSvData.uri}>{linkContent}</a>
+      url = this.doenetSvData.uri;
     } else {
-      return <a id={this.componentName} name={this.componentName} href={"#" + this.doenetSvData.targetName}>{linkContent}</a>
+      url = "#" + this.doenetSvData.targetName;
+      target = null;
     }
 
+
+    if (this.doenetSvData.createButton) {
+      return <span id={this.componentName}><a name={this.componentName} />
+        <button id={this.componentName + "_button"} onClick={() => window.location.href=url} disabled={this.doenetSvData.disabled}>{this.doenetSvData.linkText}</button>
+      </span>;
+
+    } else {
+      return <a target={target} id={this.componentName} name={this.componentName} href={url}>{linkContent}</a>
+    }
   }
 }
