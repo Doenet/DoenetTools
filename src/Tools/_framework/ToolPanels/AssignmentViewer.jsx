@@ -207,11 +207,15 @@ export default function AssignmentViewer() {
         }
         async function setCollectionVariant() {
           //TODO: no more attemtps?
-          set(currentAttemptNumber, 1);
+          const { data } = await axios.get('/api/loadTakenVariants.php', {
+            params: { doenetId },
+          });
+          let numberOfCompletedAttempts = data.attemptNumbers.length - 1;
+          set(currentAttemptNumber, numberOfCompletedAttempts);
           let requestedVariant = { name: assignedVariant };
           setLoad({
             requestedVariant,
-            attemptNumber: 1,
+            attemptNumber: numberOfCompletedAttempts,
             showCorrectness,
             showFeedback,
             showHints,

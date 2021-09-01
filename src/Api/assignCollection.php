@@ -70,6 +70,7 @@ if ($allowed) {
             $sql = "SELECT userId
             FROM enrollment
             WHERE email = '$studentEmail'
+            AND driveId = '$driveId'
             ";
             $result = $conn->query($sql);
 
