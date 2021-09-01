@@ -3,16 +3,18 @@ import { useRecoilValue, useRecoilCallback } from 'recoil';
 // import Cookies from 'js-cookie'; // import Textinput from "../imports/Textinput";
 import axios from 'axios';
 import { useToast, toastType } from '../../../Tools/_framework/Toast';
-import { searchParamAtomFamily } from '../NewToolRoot';
+import { searchParamAtomFamily, pageToolViewAtom } from '../NewToolRoot';
 import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
 import ButtonGroup from '../../../_reactComponents/PanelHeaderComponents/ButtonGroup';
 
 
 export default function ChooseLearnerPanel(props) {
   const doenetId = useRecoilValue(searchParamAtomFamily('doenetId'));
+  const driveId = useRecoilValue(searchParamAtomFamily('driveId'));
   let [stage, setStage] = useState('request password');
   let [code,setCode] = useState('');
   let [learners,setLearners] = useState([]);
+  let [exams,setExams] = useState([]);
   let [choosenLearner,setChoosenLearner] = useState(null);
   const addToast = useToast();
 
@@ -29,6 +31,14 @@ export default function ChooseLearnerPanel(props) {
         )}&doenetId=${encodeURIComponent(doenetId)}&code=${encodeURIComponent(code)}`;
     
   })
+
+  const setDoenetId = useRecoilCallback(({set,snapshot})=> async (doenetId)=>{
+    set(pageToolViewAtom,(was)=>{
+      let newObj = {...was};
+      newObj.params = {doenetId}
+      return newObj
+    })
+  });
 
   console.log(`>>>>stage '${stage}'`)
 
@@ -83,11 +93,17 @@ export default function ChooseLearnerPanel(props) {
 
   if (stage === 'check code'){
     const checkCode = async (code)=>{
-      let { data } = await axios.get('/api/checkPasscode.php',{params:{code,doenetId}})
+      let { data } = await axios.get('/api/checkPasscode.php',{params:{code,doenetId,driveId}})
       console.log(">>>>data",data)
       if (data.success){
-        setStage('choose learner');
+        if (driveId === ''){
+          setStage('choose learner');
+        }else{
+          setStage('choose exam');
+        }
         setLearners(data.learners);
+        setExams(data.exams);
+        
       }else{
       addToast(data.message);
       setStage('problem with code');
@@ -96,6 +112,40 @@ export default function ChooseLearnerPanel(props) {
     }
     checkCode(code);
    
+  }
+
+  //https://localhost/#/exam?tool=chooseLearner&driveId=fjVHU0x9nhv3DMmS5ypqQ
+  if (stage === 'choose exam'){
+    console.log(">>>>exams",exams);
+
+    if (exams.length < 1){
+      return <h1>No Exams Available!</h1>
+    }
+    let examRows = [];
+    for (let exam of exams){
+      examRows.push(<tr>
+        <td style={{textAlign:"center"}}>{exam.label}</td>
+        {/* <td style={{textAlign:"center"}}>{exam.info}</td> */}
+        <td style={{textAlign:"center"}}><button onClick={()=>{
+          setDoenetId(exam.doenetId)
+          setStage('choose learner');
+        }}>Choose</button></td>
+        </tr>)
+    }
+    //Need search and filter
+    return <div>
+
+      <table>
+        <thead>
+          <th style={{width:"200px"}}>Exam</th>
+          {/* <th style={{width:"200px"}}>Info</th> */}
+          <th style={{width:"100px"}}>Choose</th>
+        </thead>
+        <tbody>
+          {examRows}
+        </tbody>
+      </table>
+    </div>;
   }
 
   if (stage === 'choose learner'){
