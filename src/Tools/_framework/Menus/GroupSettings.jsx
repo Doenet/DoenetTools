@@ -177,7 +177,7 @@ export default function GroupSettings() {
             width="menu"
             onClick={() => {
               assignCollection(doenetId, [
-                ['temp1@dev.com', 'temp2@dev.com', 'temp3@dev.com'],
+                ['temp0@dev.com', 'temp2@dev.com', 'temp3@dev.com'],
                 ['temp4@dev.com', 'temp5@dev.com', 'temp6@dev.com'],
                 ['temp7@dev.com', 'temp8@dev.com', 'temp9@dev.com'],
               ]);
