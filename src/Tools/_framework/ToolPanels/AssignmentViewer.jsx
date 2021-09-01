@@ -116,7 +116,7 @@ export default function AssignmentViewer(){
         break;
       }
     }
-
+    console.log(">>>>initializeValues contentId",contentId)
     if (!isAssigned){ 
       setStage('Problem');
       setMessage('Assignment is not assigned.')
@@ -209,6 +209,17 @@ export default function AssignmentViewer(){
     updateAttemptNumberAndRequestedVariant(recoilAttemptNumber);
     return null;
   }
+  console.log(">>>>DoenetViewer obj ",{
+      requestedVariant,
+      attemptNumber,
+      showCorrectness,
+      showFeedback,
+      showHints,
+      doenetML,
+      doenetId,
+      solutionDisplayMode,
+    })
+
   if (doenetId === ''){
     //Data Not loaded Yet
     //TODO:Why does this happen?
