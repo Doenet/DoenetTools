@@ -1,18 +1,32 @@
-import React, {useState, useEffect, useRef} from "../../_snowpack/pkg/react.js";
-import {useRecoilValue} from "../../_snowpack/pkg/recoil.js";
-import Cookies from "../../_snowpack/pkg/js-cookie.js";
+import React, {useState} from "../../_snowpack/pkg/react.js";
+import {useRecoilValue, useRecoilCallback} from "../../_snowpack/pkg/recoil.js";
 import axios from "../../_snowpack/pkg/axios.js";
 import {useToast, toastType} from "../Toast.js";
-import {searchParamAtomFamily} from "../NewToolRoot.js";
+import {searchParamAtomFamily, pageToolViewAtom} from "../NewToolRoot.js";
 import Button from "../../_reactComponents/PanelHeaderComponents/Button.js";
 import ButtonGroup from "../../_reactComponents/PanelHeaderComponents/ButtonGroup.js";
 export default function ChooseLearnerPanel(props) {
   const doenetId = useRecoilValue(searchParamAtomFamily("doenetId"));
+  const driveId = useRecoilValue(searchParamAtomFamily("driveId"));
   let [stage, setStage] = useState("request password");
   let [code, setCode] = useState("");
   let [learners, setLearners] = useState([]);
+  let [exams, setExams] = useState([]);
   let [choosenLearner, setChoosenLearner] = useState(null);
   const addToast = useToast();
+  const newAttempt = useRecoilCallback(({set, snapshot}) => async (doenetId2, code2, userId) => {
+    const {data} = await axios.get("/api/incrementAttemptNumber.php", {
+      params: {doenetId: doenetId2, code: code2, userId}
+    });
+    location.href = `/api/examjwt.php?userId=${encodeURIComponent(choosenLearner.userId)}&doenetId=${encodeURIComponent(doenetId2)}&code=${encodeURIComponent(code2)}`;
+  });
+  const setDoenetId = useRecoilCallback(({set, snapshot}) => async (doenetId2) => {
+    set(pageToolViewAtom, (was) => {
+      let newObj = {...was};
+      newObj.params = {doenetId: doenetId2};
+      return newObj;
+    });
+  });
   console.log(`>>>>stage '${stage}'`);
   if (stage === "request password" || stage === "problem with code") {
     return /* @__PURE__ */ React.createElement("div", {
@@ -54,17 +68,46 @@ export default function ChooseLearnerPanel(props) {
   }
   if (stage === "check code") {
     const checkCode = async (code2) => {
-      let {data} = await axios.get("/api/checkPasscode.php", {params: {code: code2, doenetId}});
+      let {data} = await axios.get("/api/checkPasscode.php", {params: {code: code2, doenetId, driveId}});
       console.log(">>>>data", data);
       if (data.success) {
-        setStage("choose learner");
+        if (driveId === "") {
+          setStage("choose learner");
+        } else {
+          setStage("choose exam");
+        }
         setLearners(data.learners);
+        setExams(data.exams);
       } else {
         addToast(data.message);
         setStage("problem with code");
       }
     };
     checkCode(code);
+  }
+  if (stage === "choose exam") {
+    console.log(">>>>exams", exams);
+    if (exams.length < 1) {
+      return /* @__PURE__ */ React.createElement("h1", null, "No Exams Available!");
+    }
+    let examRows = [];
+    for (let exam of exams) {
+      examRows.push(/* @__PURE__ */ React.createElement("tr", null, /* @__PURE__ */ React.createElement("td", {
+        style: {textAlign: "center"}
+      }, exam.label), /* @__PURE__ */ React.createElement("td", {
+        style: {textAlign: "center"}
+      }, /* @__PURE__ */ React.createElement("button", {
+        onClick: () => {
+          setDoenetId(exam.doenetId);
+          setStage("choose learner");
+        }
+      }, "Choose"))));
+    }
+    return /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("table", null, /* @__PURE__ */ React.createElement("thead", null, /* @__PURE__ */ React.createElement("th", {
+      style: {width: "200px"}
+    }, "Exam"), /* @__PURE__ */ React.createElement("th", {
+      style: {width: "100px"}
+    }, "Choose")), /* @__PURE__ */ React.createElement("tbody", null, examRows)));
   }
   if (stage === "choose learner") {
     console.log(">>>>learners", learners);
@@ -81,6 +124,8 @@ export default function ChooseLearnerPanel(props) {
         style: {textAlign: "center"}
       }, learner.studentId), /* @__PURE__ */ React.createElement("td", {
         style: {textAlign: "center"}
+      }, learner.exam_to_date[doenetId]), /* @__PURE__ */ React.createElement("td", {
+        style: {textAlign: "center"}
       }, /* @__PURE__ */ React.createElement("button", {
         onClick: () => {
           setChoosenLearner(learner);
@@ -95,6 +140,8 @@ export default function ChooseLearnerPanel(props) {
     }, "Last Name"), /* @__PURE__ */ React.createElement("th", {
       style: {width: "200px"}
     }, "Student ID"), /* @__PURE__ */ React.createElement("th", {
+      style: {width: "200px"}
+    }, "Last Exam"), /* @__PURE__ */ React.createElement("th", {
       style: {width: "100px"}
     }, "Choose")), /* @__PURE__ */ React.createElement("tbody", null, learnerRows)));
   }
@@ -110,7 +157,7 @@ export default function ChooseLearnerPanel(props) {
         alignItems: "center",
         margin: "20"
       }
-    }, /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("b", null, "Is this you?")), /* @__PURE__ */ React.createElement("div", null, "Name ", choosenLearner.firstName, " ", choosenLearner.lastName), /* @__PURE__ */ React.createElement("div", null, "ID ", choosenLearner.studentId)), /* @__PURE__ */ React.createElement(ButtonGroup, null, /* @__PURE__ */ React.createElement(Button, {
+    }, /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("b", null, "Is this you?")), /* @__PURE__ */ React.createElement("div", null, "Name: ", choosenLearner.firstName, " ", choosenLearner.lastName), /* @__PURE__ */ React.createElement("div", null, "ID: ", choosenLearner.studentId)), /* @__PURE__ */ React.createElement(ButtonGroup, null, /* @__PURE__ */ React.createElement(Button, {
       alert: true,
       value: "No",
       onClick: () => {
@@ -119,9 +166,9 @@ export default function ChooseLearnerPanel(props) {
         setChoosenLearner(null);
       }
     }), /* @__PURE__ */ React.createElement(Button, {
-      value: "Yes It's me",
+      value: "Yes It's me. Start Exam.",
       onClick: () => {
-        location.href = `/api/examjwt.php?userId=${encodeURIComponent(choosenLearner.userId)}&doenetId=${encodeURIComponent(doenetId)}&code=${encodeURIComponent(code)}`;
+        newAttempt(doenetId, code, choosenLearner.userId);
       }
     }))));
   }

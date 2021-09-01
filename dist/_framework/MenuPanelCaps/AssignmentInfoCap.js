@@ -3,13 +3,11 @@ import {useRecoilValue} from "../../_snowpack/pkg/recoil.js";
 import {folderDictionary, fetchDrivesQuery, loadAssignmentSelector} from "../../_reactComponents/Drive/NewDrive.js";
 import {searchParamAtomFamily} from "../NewToolRoot.js";
 import axios from "../../_snowpack/pkg/axios.js";
-import {variantsAndAttemptsByDoenetId} from "../ToolPanels/AssignmentViewer.js";
+import {currentAttemptNumber} from "../ToolPanels/AssignmentViewer.js";
 export default function AssignmentInfoCap() {
   let doenetId = useRecoilValue(searchParamAtomFamily("doenetId"));
-  const assignmentSettings = useRecoilValue(loadAssignmentSelector(doenetId));
-  const attemptsAllowed = assignmentSettings.numberOfAttemptsAllowed;
-  const userAttempts = useRecoilValue(variantsAndAttemptsByDoenetId(doenetId));
-  const userAttemptNumber = userAttempts.numberOfCompletedAttempts + 1;
+  const {numberOfAttemptsAllowed} = useRecoilValue(loadAssignmentSelector(doenetId));
+  const recoilAttemptNumber = useRecoilValue(currentAttemptNumber);
   let [driveId, setDriveId] = useState("");
   let [folderId, setFolderId] = useState("");
   useEffect(() => {
@@ -36,8 +34,8 @@ export default function AssignmentInfoCap() {
     }
   }
   let imageURL = `/media/drive_pictures/${image}`;
-  let attemptsAllowedDescription = attemptsAllowed;
-  if (!attemptsAllowed) {
+  let attemptsAllowedDescription = numberOfAttemptsAllowed;
+  if (!numberOfAttemptsAllowed) {
     attemptsAllowedDescription = "Unlimited";
   }
   return /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", {
@@ -47,5 +45,5 @@ export default function AssignmentInfoCap() {
     src: imageURL,
     alt: `${driveLabel} course`,
     width: "240px"
-  })), /* @__PURE__ */ React.createElement("div", null, driveLabel), /* @__PURE__ */ React.createElement("div", null, docInfo.label), /* @__PURE__ */ React.createElement("div", null, userAttemptNumber, "/", attemptsAllowedDescription, " Attempts"));
+  })), /* @__PURE__ */ React.createElement("div", null, driveLabel), /* @__PURE__ */ React.createElement("div", null, docInfo.label), /* @__PURE__ */ React.createElement("div", null, recoilAttemptNumber, "/", attemptsAllowedDescription, " Attempts"));
 }
