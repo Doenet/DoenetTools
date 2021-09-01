@@ -59,8 +59,8 @@ export default function AssignmentViewer() {
   // console.log(">>>===AssignmentViewer")
   const recoilDoenetId = useRecoilValue(searchParamAtomFamily('doenetId'));
 
-  let [stage,setStage] = useState('Initializing');
-  let [message,setMessage] = useState('');
+  let [stage, setStage] = useState('Initializing');
+  let [message, setMessage] = useState('');
   const recoilAttemptNumber = useRecoilValue(currentAttemptNumber);
   const [
     {
@@ -78,16 +78,17 @@ export default function AssignmentViewer() {
   let startedInitOfDoenetId = useRef(null);
   let storedAllPossibleVariants = useRef([]);
 
-  const initializeValues = useRecoilCallback(({snapshot,set})=> async (doenetId)=>{
+  const initializeValues = useRecoilCallback(
+    ({ snapshot, set }) =>
+      async (doenetId) => {
+        //Prevent duplicate inits
+        if (startedInitOfDoenetId.current === doenetId) {
+          return;
+        }
         const isCollection = await snapshot.getPromise(
           searchParamAtomFamily('isCollection'),
         );
-
-    //Prevent duplicate inits
-    if (startedInitOfDoenetId.current === doenetId){
-      return;
-    }
-    startedInitOfDoenetId.current = doenetId;
+        startedInitOfDoenetId.current = doenetId;
         const {
           showCorrectness,
           showFeedback,
@@ -270,13 +271,13 @@ export default function AssignmentViewer() {
   console.log(`>>>>stage -${stage}-`);
 
   //Wait for doenetId to be defined to start
-  if (recoilDoenetId === ''){
+  if (recoilDoenetId === '') {
     return null;
   }
 
   // console.log(`>>>>stage -${stage}-`)
-  
-  if (stage === 'Initializing'){
+
+  if (stage === 'Initializing') {
     initializeValues(recoilDoenetId);
     return null;
   } else if (stage === 'Problem') {
@@ -285,26 +286,28 @@ export default function AssignmentViewer() {
     updateAttemptNumberAndRequestedVariant(recoilAttemptNumber);
     return null;
   }
- 
-  return <DoenetViewer
-    key={`doenetviewer${doenetId}`}
-    doenetML={doenetML}
-    doenetId={doenetId}
-    flags={{
-      showCorrectness:showCorrectness,
-      readOnly: false,
-      solutionDisplayMode: solutionDisplayMode,
-      showFeedback:showFeedback,
-      showHints:showHints,
-      isAssignment: true,
-    }}
-    attemptNumber={attemptNumber}
-    allowLoadPageState={true} 
-    allowSavePageState={true}
-    allowLocalPageState={false} //Still working out localStorage kinks
-    allowSaveSubmissions={true}
-    allowSaveEvents={true}
-    requestedVariant={requestedVariant}
-    // generatedVariantCallback={variantCallback}
-    /> 
+
+  return (
+    <DoenetViewer
+      key={`doenetviewer${doenetId}`}
+      doenetML={doenetML}
+      doenetId={doenetId}
+      flags={{
+        showCorrectness: showCorrectness,
+        readOnly: false,
+        solutionDisplayMode: solutionDisplayMode,
+        showFeedback: showFeedback,
+        showHints: showHints,
+        isAssignment: true,
+      }}
+      attemptNumber={attemptNumber}
+      allowLoadPageState={true}
+      allowSavePageState={true}
+      allowLocalPageState={false} //Still working out localStorage kinks
+      allowSaveSubmissions={true}
+      allowSaveEvents={true}
+      requestedVariant={requestedVariant}
+      // generatedVariantCallback={variantCallback}
+    />
+  );
 }
