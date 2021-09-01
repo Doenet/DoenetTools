@@ -54,6 +54,8 @@ export const currentAttemptNumber = atom({
 
 export default function AssignmentViewer(){
   // console.log(">>>===AssignmentViewer")
+  const recoilDoenetId = useRecoilValue(searchParamAtomFamily('doenetId'));
+
   let [stage,setStage] = useState('Initializing');
   let [message,setMessage] = useState('');
   const recoilAttemptNumber = useRecoilValue(currentAttemptNumber);
@@ -70,9 +72,8 @@ export default function AssignmentViewer(){
   let startedInitOfDoenetId = useRef(null);
   let storedAllPossibleVariants = useRef([]);
 
+  const initializeValues = useRecoilCallback(({snapshot,set})=> async (doenetId)=>{
 
-  const initializeValues = useRecoilCallback(({snapshot,set})=> async ()=>{
-    let doenetId = await snapshot.getPromise(searchParamAtomFamily('doenetId'));
     //Prevent duplicate inits
     if (startedInitOfDoenetId.current === doenetId){
       return;
@@ -116,7 +117,7 @@ export default function AssignmentViewer(){
         break;
       }
     }
-    console.log(">>>>initializeValues contentId",contentId)
+
     if (!isAssigned){ 
       setStage('Problem');
       setMessage('Assignment is not assigned.')
@@ -166,9 +167,10 @@ export default function AssignmentViewer(){
         solutionDisplayMode,
       });
       setStage('Ready')
+
     }
 
-  },[stage]);
+  },[]);
 
   const updateAttemptNumberAndRequestedVariant = useRecoilCallback(({snapshot,set})=> async (newAttemptNumber)=>{
     let doenetId = await snapshot.getPromise(searchParamAtomFamily('doenetId'));
@@ -198,48 +200,21 @@ export default function AssignmentViewer(){
     })
   },[]);
 
-  console.log(`>>>>stage -${stage}-`)
+  //Wait for doenetId to be defined to start
+  if (recoilDoenetId === ''){
+    return null;
+  }
+
+  // console.log(`>>>>stage -${stage}-`)
   
   if (stage === 'Initializing'){
-    initializeValues();
+    initializeValues(recoilDoenetId);
     return null;
   }else if(stage === 'Problem'){
     return <h1>{message}</h1>
   }else if (recoilAttemptNumber > attemptNumber){
     updateAttemptNumberAndRequestedVariant(recoilAttemptNumber);
     return null;
-  }
-  console.log(">>>>DoenetViewer obj ",{
-      requestedVariant,
-      attemptNumber,
-      showCorrectness,
-      showFeedback,
-      showHints,
-      doenetML,
-      doenetId,
-      solutionDisplayMode,
-    })
-
-  if (doenetId === ''){
-    //Data Not loaded Yet
-    //TODO:Why does this happen?
-    console.log(">>>>Data Not loaded Yet")
-    // console.log(`>>>>stage -${stage}-`)
-    // console.log(">>>>startedInitOfDoenetId.current ",startedInitOfDoenetId.current)
-    // console.log(`>>>>recoilAttemptNumber -${recoilAttemptNumber}- `)
-    // console.log(">>>>DoenetViewer obj ",{
-    //   requestedVariant,
-    //   attemptNumber,
-    //   showCorrectness,
-    //   showFeedback,
-    //   showHints,
-    //   doenetML,
-    //   doenetId,
-    //   solutionDisplayMode,
-    // })
-    startedInitOfDoenetId.current = null;
-    setStage('Initializing')
-    return <p>bug</p>;
   }
  
   return <DoenetViewer
