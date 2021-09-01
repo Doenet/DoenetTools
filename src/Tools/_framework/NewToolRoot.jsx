@@ -397,6 +397,9 @@ let navigationObj = {
       currentMainPanel:"CollectionEditor",
       headerControls: ["NavigationBreadCrumb"],
       headerControlsPositions: ["Left"],
+      currentMenus:["AssignmentSettingsMenu", "GroupSettings"],
+      menusTitles:["Assignment Settings", "Group Settings"],
+      menusInitOpen:[false, false],
     },
     enrollment:{ //allStudentsInCourse
       pageName:"Enrollment",

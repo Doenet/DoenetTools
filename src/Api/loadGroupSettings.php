@@ -16,9 +16,10 @@ if (array_key_exists('doenetId', $_REQUEST)) {
     $doenetId = mysqli_real_escape_string($conn, $_REQUEST['doenetId']);
 
     //get driveId from doenetId TODO: should be a sql join query with userId
-    $sql = "SELECT driveId
-    FROM `drive_content`
-    WHERE doenetId = '$doenetId'
+    $sql = "
+        SELECT driveId
+        FROM drive_content
+        WHERE doenetId = '$doenetId'
     ";
     $result = $conn->query($sql);
     if ($result->num_rows > 0) {
@@ -28,10 +29,11 @@ if (array_key_exists('doenetId', $_REQUEST)) {
 
     if (array_key_exists('driveId', get_defined_vars())) {
         //check user has permission to edit drive
-        $sql = "SELECT canEditContent
-        FROM drive_user
-        WHERE userId = '$userId'
-        AND driveId = '$driveId'
+        $sql = "
+            SELECT canEditContent
+            FROM drive_user
+            WHERE userId = '$userId'
+            AND driveId = '$driveId'
         ";
         $result = $conn->query($sql);
         if ($result->num_rows > 0) {
@@ -50,36 +52,43 @@ if (array_key_exists('doenetId', $_REQUEST)) {
     }
 } else {
     http_response_code(400);
-    echo json_encode(['message' => 'Missing DoenetId']);
 }
 
 if ($allowed) {
     $sql = "
-        SELECT doenetId, entryId, entryDoenetId, entryContentId, entryVariant
-        FROM collection
+        SELECT minStudents, maxStudents, preferredStudents, preAssigned
+        FROM collection_groups
         WHERE doenetId = '$doenetId'
     ";
     $result = $conn->query($sql);
-
-    $entry_arr = [];
     if ($result->num_rows > 0) {
-        while ($row = $result->fetch_assoc()) {
-            array_push($entry_arr, [
-                'doenetId' => $row['doenetId'],
-                'entryId' => $row['entryId'],
-                'entryDoenetId' => $row['entryDoenetId'],
-                'entryContentId' => $row['entryContentId'],
-                'entryVariant' => $row['entryVariant'],
-            ]);
-        }
-
-        $response_arr = [
-            'success' => $success,
-            'message' => $message,
-            'entries' => $entry_arr,
-        ];
+        $row = $result->fetch_assoc();
         http_response_code(200);
-        echo json_encode($response_arr);
+        if ($row['preAssigned']) {
+            $preAssigned = true;
+        } else {
+            $preAssigned = false;
+        }
+        echo json_encode([
+            'min' => $row['minStudents'],
+            'max' => $row['maxStudents'],
+            'pref' => $row['preferredStudents'],
+            'preAssigned' => $preAssigned,
+        ]);
+    } else {
+        $sql = "
+            INSERT INTO collection_groups
+            (doenetId, minStudents, maxStudents, preferredStudents, preAssigned)
+            VALUES ('$doenetId', 1,1,1, 0)
+        ";
+        $result = $conn->query($sql);
+        http_response_code(201);
+        echo json_encode([
+            'min' => 1,
+            'max' => 1,
+            'pref' => 1,
+            'prepreAssignedf' => false,
+        ]);
     }
 }
 

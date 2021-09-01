@@ -128,15 +128,27 @@ export default function NavigationPanel() {
 
             break;
           case itemType.COLLECTION:
-            setPageToolView({
-              page: 'course',
-              tool: 'collection',
-              view: '',
-              params: {
-                doenetId: info.item.doenetId,
-                path: `${info.driveId}:${info.item.itemId}:${info.item.itemId}:Collection`,
-              },
-            });
+            if (view === 'student') {
+              setPageToolView({
+                page: 'course',
+                tool: 'assignment',
+                view: '',
+                params: {
+                  doenetId: info.item.doenetId,
+                  isCollection: true,
+                },
+              });
+            } else if (view === 'instructor') {
+              setPageToolView({
+                page: 'course',
+                tool: 'collection',
+                view: '',
+                params: {
+                  doenetId: info.item.doenetId,
+                  path: `${info.driveId}:${info.item.itemId}:${info.item.itemId}:Collection`,
+                },
+              });
+            }
             break;
           default:
             throw new Error(
@@ -168,6 +180,7 @@ export default function NavigationPanel() {
               }
               return false;
             } else {
+              console.log('whats up', item.itemType, 'i', item);
               return item.isReleased === '1';
             }
           case 'instructor':

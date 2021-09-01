@@ -17,7 +17,9 @@ export default function SelectedCollection() {
   const [item, setItem] = useState(selection[0]);
   const [label, setLabel] = useState(selection[0]?.label ?? '');
   const { deleteItem, renameItem } = useSockets('drive');
-
+  useEffect(() => {
+    setLabel(item.label);
+  }, [item.label]);
   useEffect(() => {
     if (!selection[0]) {
       setSelectedMenu('');
@@ -33,7 +35,7 @@ export default function SelectedCollection() {
     renameItem({
       driveIdFolderId: {
         driveId: item.driveId,
-        folderId: item.parentFolderId,
+        folderId: item.itemId,
       },
       itemId: item.itemId,
       itemType: item.itemType,
@@ -72,6 +74,7 @@ export default function SelectedCollection() {
       <ButtonGroup vertical>
         <Button
           value="Edit Collection"
+          width="menu"
           onClick={() => {
             setPageToolView({
               page: 'course',
@@ -85,6 +88,8 @@ export default function SelectedCollection() {
           }}
         />
         <Button
+          alert
+          width="menu"
           data-cy="deleteDoenetMLButton"
           value="Delete Collection"
           onClick={() => {
