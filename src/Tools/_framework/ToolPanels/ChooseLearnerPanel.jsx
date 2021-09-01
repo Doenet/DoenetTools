@@ -160,6 +160,7 @@ export default function ChooseLearnerPanel(props) {
         <td style={{textAlign:"center"}}>{learner.firstName}</td>
         <td style={{textAlign:"center"}}>{learner.lastName}</td>
         <td style={{textAlign:"center"}}>{learner.studentId}</td>
+        <td style={{textAlign:"center"}}>{learner.exam_to_date[doenetId]}</td>
         <td style={{textAlign:"center"}}><button onClick={()=>{
           setChoosenLearner(learner);
           setStage('student final check');
@@ -175,6 +176,7 @@ export default function ChooseLearnerPanel(props) {
           <th style={{width:"200px"}}>First Name</th>
           <th style={{width:"200px"}}>Last Name</th>
           <th style={{width:"200px"}}>Student ID</th>
+          <th style={{width:"200px"}}>Last Exam</th>
           <th style={{width:"100px"}}>Choose</th>
         </thead>
         <tbody>
