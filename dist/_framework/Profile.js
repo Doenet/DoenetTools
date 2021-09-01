@@ -18,7 +18,7 @@ justify-content: center;
 align-items: center;
 border-radius: 50%;
 border-style: none;
-margin-left: ${(props) => props.margin ? "75px" : "0px"};
+margin-left: ${(props) => props.margin == false ? "75px" : "0px"};
 margin-top: 4px
 `;
 export const profileToolViewStashAtom = atom({

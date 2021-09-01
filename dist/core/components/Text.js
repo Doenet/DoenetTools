@@ -12,8 +12,8 @@ export default class Text extends InlineComponent {
   static returnChildGroups() {
 
     return [{
-      group: "stringsAndTexts",
-      componentTypes: ["string", "text"]
+      group: "textLike",
+      componentTypes: ["string", "text", "_singleCharacterInline", "_inlineRenderInlineChildren"]
     }]
 
   }
@@ -28,16 +28,16 @@ export default class Text extends InlineComponent {
       componentType: this.componentType,
       // deferCalculation: false,
       returnDependencies: () => ({
-        stringTextChildren: {
+        textLikeChildren: {
           dependencyType: "child",
-          childGroups: ["stringsAndTexts"],
-          variableNames: ["value"],
+          childGroups: ["textLike"],
+          variableNames: ["text"],
         },
       }),
       defaultValue: "",
       set: x => x === null ? "" : String(x),
       definition: function ({ dependencyValues }) {
-        if (dependencyValues.stringTextChildren.length === 0) {
+        if (dependencyValues.textLikeChildren.length === 0) {
           return {
             useEssentialOrDefaultValue: {
               value: { variablesToCheck: "value" }
@@ -45,13 +45,13 @@ export default class Text extends InlineComponent {
           }
         }
         let value = "";
-        for (let comp of dependencyValues.stringTextChildren) {
-          value += comp.stateValues.value;
+        for (let comp of dependencyValues.textLikeChildren) {
+          value += comp.stateValues.text;
         }
         return { newValues: { value } };
       },
       inverseDefinition: function ({ desiredStateVariableValues, dependencyValues }) {
-        let numChildren = dependencyValues.stringTextChildren.length;
+        let numChildren = dependencyValues.textLikeChildren.length;
         if (numChildren > 1) {
           return { success: false };
         }
@@ -59,7 +59,7 @@ export default class Text extends InlineComponent {
           return {
             success: true,
             instructions: [{
-              setDependency: "stringTextChildren",
+              setDependency: "textLikeChildren",
               desiredValue: desiredStateVariableValues.value,
               childIndex: 0,
               variableIndex: 0,

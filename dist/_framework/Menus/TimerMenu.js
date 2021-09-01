@@ -2,12 +2,11 @@ import React, {useEffect, useState, useRef} from "../../_snowpack/pkg/react.js";
 import {useRecoilValue} from "../../_snowpack/pkg/recoil.js";
 import {searchParamAtomFamily} from "../NewToolRoot.js";
 import {loadAssignmentSelector} from "../../_reactComponents/Drive/NewDrive.js";
-import {variantsAndAttemptsByDoenetId} from "../ToolPanels/AssignmentViewer.js";
+import {currentAttemptNumber} from "../ToolPanels/AssignmentViewer.js";
 import axios from "../../_snowpack/pkg/axios.js";
 export default function TimerMenu() {
   const doenetId = useRecoilValue(searchParamAtomFamily("doenetId"));
-  const userAttempts = useRecoilValue(variantsAndAttemptsByDoenetId(doenetId));
-  const userAttemptNumber = userAttempts.numberOfCompletedAttempts + 1;
+  const userAttemptNumber = useRecoilValue(currentAttemptNumber);
   const {timeLimit} = useRecoilValue(loadAssignmentSelector(doenetId));
   let [timeDisplay, setTimeDisplay] = useState("Unlimited");
   const [endTime, setEndTime] = useState(null);

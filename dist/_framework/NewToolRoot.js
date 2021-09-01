@@ -221,8 +221,8 @@ let navigationObj = {
       currentMenus: ["TimerMenu"],
       menusTitles: ["Time Remaining"],
       menusInitOpen: [true],
-      headerControls: ["AssignmentNewAttempt"],
-      headerControlsPositions: ["Left"],
+      headerControls: [],
+      headerControlsPositions: [],
       displayProfile: false
     }
   },

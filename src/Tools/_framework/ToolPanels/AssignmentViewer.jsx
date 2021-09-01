@@ -57,8 +57,10 @@ function pushRandomVariantOfRemaining({ previous, from }) {
 
 export default function AssignmentViewer() {
   // console.log(">>>===AssignmentViewer")
-  let [stage, setStage] = useState('Initializing');
-  let [message, setMessage] = useState('');
+  const recoilDoenetId = useRecoilValue(searchParamAtomFamily('doenetId'));
+
+  let [stage,setStage] = useState('Initializing');
+  let [message,setMessage] = useState('');
   const recoilAttemptNumber = useRecoilValue(currentAttemptNumber);
   const [
     {
@@ -76,21 +78,16 @@ export default function AssignmentViewer() {
   let startedInitOfDoenetId = useRef(null);
   let storedAllPossibleVariants = useRef([]);
 
-  const initializeValues = useRecoilCallback(
-    ({ snapshot, set }) =>
-      async () => {
-        let doenetId = await snapshot.getPromise(
-          searchParamAtomFamily('doenetId'),
-        );
+  const initializeValues = useRecoilCallback(({snapshot,set})=> async (doenetId)=>{
         const isCollection = await snapshot.getPromise(
           searchParamAtomFamily('isCollection'),
         );
-        //Prevent duplicate inits
-        if (startedInitOfDoenetId.current === doenetId) {
-          return;
-        }
-        startedInitOfDoenetId.current = doenetId;
 
+    //Prevent duplicate inits
+    if (startedInitOfDoenetId.current === doenetId){
+      return;
+    }
+    startedInitOfDoenetId.current = doenetId;
         const {
           showCorrectness,
           showFeedback,
@@ -272,8 +269,15 @@ export default function AssignmentViewer() {
 
   console.log(`>>>>stage -${stage}-`);
 
-  if (stage === 'Initializing') {
-    initializeValues();
+  //Wait for doenetId to be defined to start
+  if (recoilDoenetId === ''){
+    return null;
+  }
+
+  // console.log(`>>>>stage -${stage}-`)
+  
+  if (stage === 'Initializing'){
+    initializeValues(recoilDoenetId);
     return null;
   } else if (stage === 'Problem') {
     return <h1>{message}</h1>;
@@ -281,60 +285,26 @@ export default function AssignmentViewer() {
     updateAttemptNumberAndRequestedVariant(recoilAttemptNumber);
     return null;
   }
-  console.log('>>>>DoenetViewer obj ', {
-    requestedVariant,
-    attemptNumber,
-    showCorrectness,
-    showFeedback,
-    showHints,
-    doenetML,
-    doenetId,
-    solutionDisplayMode,
-  });
-
-  if (doenetId === '') {
-    //Data Not loaded Yet
-    //TODO:Why does this happen?
-    console.log('>>>>Data Not loaded Yet');
-    // console.log(`>>>>stage -${stage}-`)
-    // console.log(">>>>startedInitOfDoenetId.current ",startedInitOfDoenetId.current)
-    // console.log(`>>>>recoilAttemptNumber -${recoilAttemptNumber}- `)
-    // console.log(">>>>DoenetViewer obj ",{
-    //   requestedVariant,
-    //   attemptNumber,
-    //   showCorrectness,
-    //   showFeedback,
-    //   showHints,
-    //   doenetML,
-    //   doenetId,
-    //   solutionDisplayMode,
-    // })
-    startedInitOfDoenetId.current = null;
-    setStage('Initializing');
-    return <p>bug</p>;
-  }
-
-  return (
-    <DoenetViewer
-      key={`doenetviewer${doenetId}`}
-      doenetML={doenetML}
-      doenetId={doenetId}
-      flags={{
-        showCorrectness: showCorrectness,
-        readOnly: false,
-        solutionDisplayMode: solutionDisplayMode,
-        showFeedback: showFeedback,
-        showHints: showHints,
-        isAssignment: true,
-      }}
-      attemptNumber={attemptNumber}
-      allowLoadPageState={true}
-      allowSavePageState={true}
-      allowLocalPageState={false} //Still working out localStorage kinks
-      allowSaveSubmissions={true}
-      allowSaveEvents={true}
-      requestedVariant={requestedVariant}
-      // generatedVariantCallback={variantCallback}
-    />
-  );
+ 
+  return <DoenetViewer
+    key={`doenetviewer${doenetId}`}
+    doenetML={doenetML}
+    doenetId={doenetId}
+    flags={{
+      showCorrectness:showCorrectness,
+      readOnly: false,
+      solutionDisplayMode: solutionDisplayMode,
+      showFeedback:showFeedback,
+      showHints:showHints,
+      isAssignment: true,
+    }}
+    attemptNumber={attemptNumber}
+    allowLoadPageState={true} 
+    allowSavePageState={true}
+    allowLocalPageState={false} //Still working out localStorage kinks
+    allowSaveSubmissions={true}
+    allowSaveEvents={true}
+    requestedVariant={requestedVariant}
+    // generatedVariantCallback={variantCallback}
+    /> 
 }
