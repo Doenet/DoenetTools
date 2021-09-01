@@ -3,14 +3,13 @@ import { useRecoilValue } from 'recoil';
 import { folderDictionary, fetchDrivesQuery, loadAssignmentSelector } from '../../../_reactComponents/Drive/NewDrive';
 import { searchParamAtomFamily } from '../NewToolRoot';
 import axios from 'axios';
-import { variantsAndAttemptsByDoenetId } from '../ToolPanels/AssignmentViewer';
+import { currentAttemptNumber } from '../ToolPanels/AssignmentViewer';
 
 export default function AssignmentInfoCap(){
   let doenetId = useRecoilValue(searchParamAtomFamily('doenetId'));
-  const assignmentSettings = useRecoilValue(loadAssignmentSelector(doenetId));
-  const attemptsAllowed = assignmentSettings.numberOfAttemptsAllowed;
-  const userAttempts = useRecoilValue(variantsAndAttemptsByDoenetId(doenetId));
-  const userAttemptNumber = userAttempts.numberOfCompletedAttempts + 1;
+  const { numberOfAttemptsAllowed } = useRecoilValue(loadAssignmentSelector(doenetId));
+  const recoilAttemptNumber = useRecoilValue(currentAttemptNumber);
+
   let [driveId,setDriveId] = useState("");
   let [folderId,setFolderId] = useState("");
 
@@ -39,8 +38,8 @@ export default function AssignmentInfoCap(){
  }
 
  let imageURL = `/media/drive_pictures/${image}`
- let attemptsAllowedDescription = attemptsAllowed;
- if (!attemptsAllowed){
+ let attemptsAllowedDescription = numberOfAttemptsAllowed;
+ if (!numberOfAttemptsAllowed){
   attemptsAllowedDescription = "Unlimited";
  }
 
@@ -50,6 +49,6 @@ export default function AssignmentInfoCap(){
     </div>
     <div>{driveLabel}</div>
     <div>{docInfo.label}</div>
-    <div>{userAttemptNumber}/{attemptsAllowedDescription} Attempts</div>
+    <div>{recoilAttemptNumber}/{attemptsAllowedDescription} Attempts</div>
   </div>
 }

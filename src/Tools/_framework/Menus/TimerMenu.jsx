@@ -2,13 +2,13 @@ import React, { useEffect, useState, useRef } from 'react';
 import { useRecoilValue } from 'recoil';
 import { searchParamAtomFamily } from '../NewToolRoot';
 import { loadAssignmentSelector } from '../../../_reactComponents/Drive/NewDrive';
-import { variantsAndAttemptsByDoenetId } from '../ToolPanels/AssignmentViewer';
+import { currentAttemptNumber } from '../ToolPanels/AssignmentViewer';
 import axios from 'axios';
 
 export default function TimerMenu(){
   const doenetId = useRecoilValue(searchParamAtomFamily('doenetId'));
-  const userAttempts = useRecoilValue(variantsAndAttemptsByDoenetId(doenetId));
-  const userAttemptNumber = userAttempts.numberOfCompletedAttempts + 1; //Zero indexed
+  const userAttemptNumber = useRecoilValue(currentAttemptNumber);
+
   const { timeLimit } = useRecoilValue(loadAssignmentSelector(doenetId));
   let [timeDisplay,setTimeDisplay] = useState("Unlimited")
   const [endTime,setEndTime] = useState(null);
