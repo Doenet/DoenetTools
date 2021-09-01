@@ -19,24 +19,12 @@ import {
  import { returnAllPossibleVariants } from '../../../Core/utils/returnAllPossibleVariants.js';
  import { loadAssignmentSelector } from '../../../_reactComponents/Drive/NewDrive';
 import axios from 'axios';
+import { update } from '@react-spring/web';
 
 
-
-// const assignmentDoenetMLContentIdAtom = atom({
-//   key:"assignmentDoenetMLContentIdAtom",
-//   default:{isAssigned:null,doenetML:null,contentId:null}
-// })
-
-
-//key is doenetId
-export const variantsAndAttemptsByDoenetId = atomFamily({
-  key:'variantsAndAttemptsByDoenetId',
-  default: {
-    assignedContentId:null,
-    usersVariantAttempts:[],
-    variantsFromDoenetMLDictionary:{},  //Stored whenever there is a new contentId contentId:[]
-    numberOfCompletedAttempts:0,
-  },
+export const currentAttemptNumber = atom({
+  key:"currentAttemptNumber",
+  default:null,
 })
 
   function randomInt(min, max) {
@@ -65,9 +53,10 @@ export const variantsAndAttemptsByDoenetId = atomFamily({
   }
 
 export default function AssignmentViewer(){
-  console.log(">>>===AssignmentViewer")
+  // console.log(">>>===AssignmentViewer")
   let [stage,setStage] = useState('Initializing');
   let [message,setMessage] = useState('');
+  const recoilAttemptNumber = useRecoilValue(currentAttemptNumber);
   const [{
     requestedVariant,
     attemptNumber,
@@ -79,9 +68,10 @@ export default function AssignmentViewer(){
     solutionDisplayMode,
   },setLoad] = useState({});
   let startedInitOfDoenetId = useRef(null);
+  let storedAllPossibleVariants = useRef([]);
 
-  console.log(">>>>attemptNumber",attemptNumber)
-  const initializeValues = useRecoilCallback(({snapshot})=> async ()=>{
+
+  const initializeValues = useRecoilCallback(({snapshot,set})=> async ()=>{
     let doenetId = await snapshot.getPromise(searchParamAtomFamily('doenetId'));
     //Prevent duplicate inits
     if (startedInitOfDoenetId.current === doenetId){
@@ -126,7 +116,7 @@ export default function AssignmentViewer(){
         break;
       }
     }
-
+    console.log(">>>>initializeValues contentId",contentId)
     if (!isAssigned){ 
       setStage('Problem');
       setMessage('Assignment is not assigned.')
@@ -142,19 +132,17 @@ export default function AssignmentViewer(){
     //Find allPossibleVariants
     returnAllPossibleVariants({doenetML,callback:setVariantsFromDoenetML})
     async function setVariantsFromDoenetML({allPossibleVariants}){
+      storedAllPossibleVariants.current = allPossibleVariants;
       //Find attemptNumber 
       const { data } = await axios.get('/api/loadTakenVariants.php', {
         params: { doenetId },
       })
       let usersVariantAttempts = [];
 
-      let missingDataFlag = false;
       for (let variant of data.variants){
         let obj = JSON.parse(variant, serializedComponentsReviver)
         if (obj){
           usersVariantAttempts.push(obj.name)
-        }else{
-          missingDataFlag = true;
         }
       }
       let numberOfCompletedAttempts = data.attemptNumbers.length - 1;
@@ -162,18 +150,10 @@ export default function AssignmentViewer(){
         numberOfCompletedAttempts = 0;
       }
       let attemptNumber = numberOfCompletedAttempts + 1;
+      set(currentAttemptNumber,attemptNumber)
       //Find requestedVariant
       usersVariantAttempts = pushRandomVariantOfRemaining({previous:[...usersVariantAttempts],from:allPossibleVariants});
-      let requestedVariant = {name:usersVariantAttempts[numberOfCompletedAttempts]};
-      // console.log(">>>>missingDataFlag",missingDataFlag)
-      // if (missingDataFlag){
-      //   const { data } = await axios.post('/api/saveMissingData.php', {
-      //       doenetId,
-      //       attemptNumber,
-      //       contentId
-      //   })
-      //   console.log(">>>>missingDataFlag data",data)
-      // }
+      let requestedVariant = {name:usersVariantAttempts[numberOfCompletedAttempts]}
 
       setLoad({
         requestedVariant,
@@ -190,14 +170,78 @@ export default function AssignmentViewer(){
 
   },[stage]);
 
+  const updateAttemptNumberAndRequestedVariant = useRecoilCallback(({snapshot,set})=> async (newAttemptNumber)=>{
+    let doenetId = await snapshot.getPromise(searchParamAtomFamily('doenetId'));
+
+    const { data } = await axios.get('/api/loadTakenVariants.php', {
+      params: { doenetId },
+    })
+    let usersVariantAttempts = [];
+
+    for (let variant of data.variants){
+      let obj = JSON.parse(variant, serializedComponentsReviver)
+      if (obj){
+        usersVariantAttempts.push(obj.name)
+      }
+    }
+
+    //Find requestedVariant
+    usersVariantAttempts = pushRandomVariantOfRemaining({previous:[...usersVariantAttempts],from:storedAllPossibleVariants.current});
+    
+    let newRequestedVariant = {name:usersVariantAttempts[newAttemptNumber - 1]}
+
+    setLoad((was)=>{
+      let newObj = {...was};
+      newObj.attemptNumber = newAttemptNumber;
+      newObj.requestedVariant = newRequestedVariant;
+      return newObj;
+    })
+  },[]);
+
   console.log(`>>>>stage -${stage}-`)
+  
   if (stage === 'Initializing'){
     initializeValues();
     return null;
   }else if(stage === 'Problem'){
     return <h1>{message}</h1>
+  }else if (recoilAttemptNumber > attemptNumber){
+    updateAttemptNumberAndRequestedVariant(recoilAttemptNumber);
+    return null;
   }
+  console.log(">>>>DoenetViewer obj ",{
+      requestedVariant,
+      attemptNumber,
+      showCorrectness,
+      showFeedback,
+      showHints,
+      doenetML,
+      doenetId,
+      solutionDisplayMode,
+    })
 
+  if (doenetId === ''){
+    //Data Not loaded Yet
+    //TODO:Why does this happen?
+    console.log(">>>>Data Not loaded Yet")
+    // console.log(`>>>>stage -${stage}-`)
+    // console.log(">>>>startedInitOfDoenetId.current ",startedInitOfDoenetId.current)
+    // console.log(`>>>>recoilAttemptNumber -${recoilAttemptNumber}- `)
+    // console.log(">>>>DoenetViewer obj ",{
+    //   requestedVariant,
+    //   attemptNumber,
+    //   showCorrectness,
+    //   showFeedback,
+    //   showHints,
+    //   doenetML,
+    //   doenetId,
+    //   solutionDisplayMode,
+    // })
+    startedInitOfDoenetId.current = null;
+    setStage('Initializing')
+    return <p>bug</p>;
+  }
+ 
   return <DoenetViewer
     key={`doenetviewer${doenetId}`}
     doenetML={doenetML}
