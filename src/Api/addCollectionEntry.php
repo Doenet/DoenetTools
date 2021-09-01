@@ -38,10 +38,9 @@ if ($success) {
 
     //get driveId from doenetId
     //TODO: should be a sql join query with userId
-    $sql = "
-        SELECT driveId
-        FROM `drive_content`
-        WHERE doenetId = '$doenetId'
+    $sql = "SELECT driveId
+    FROM `drive_content`
+    WHERE doenetId = '$doenetId'
     ";
     $result = $conn->query($sql);
     if ($result->num_rows > 0) {
@@ -51,16 +50,15 @@ if ($success) {
 
     if (array_key_exists('driveId', get_defined_vars())) {
         //check user has permission to edit drive
-        $sql = "
-            SELECT canChangeAllDriveSettings
-            FROM drive_user
-            WHERE userId = '$userId'
-            AND driveId = '$driveId'
+        $sql = "SELECT canEditContent
+        FROM drive_user
+        WHERE userId = '$userId'
+        AND driveId = '$driveId'
         ";
         $result = $conn->query($sql);
         if ($result->num_rows > 0) {
             $row = $result->fetch_assoc();
-            $canAdd = $row['canChangeAllDriveSettings'];
+            $canAdd = $row['canEditContent'];
             if (!$canAdd) {
                 http_response_code(403); //User if forbidden from operation
                 $success = false;
@@ -82,10 +80,9 @@ if ($success) {
 
     if ($success) {
         //retrive contentId from assignment table
-        $sql = "
-            SELECT contentId
-            FROM assignment
-            WHERE doenetId = '$doenetId'
+        $sql = "SELECT contentId
+        FROM assignment
+        WHERE doenetId = '$entryDoenetId'
         ";
         $result = $conn->query($sql);
         if ($result->num_rows > 0) {
@@ -94,10 +91,9 @@ if ($success) {
         } else {
             //todo this should error?
         }
-        $sql = "
-            INSERT INTO collection
-            (doenetId, entryId, entryDoenetId, entryContentId, entryVariant)
-            VALUES ('$doenetId', '$entryId', '$entryDoenetId', '$entryContentId', '$entryVariant')
+        $sql = "INSERT INTO collection
+        (doenetId, entryId, entryDoenetId, entryContentId, entryVariant)
+        VALUES ('$doenetId', '$entryId', '$entryDoenetId', '$entryContentId', '$entryVariant')
         ";
         $result = $conn->query($sql);
 

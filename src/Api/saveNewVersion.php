@@ -152,13 +152,6 @@ if ($isDraft == '1' and $isSetAsCurrent != '1'){
     AND doenetId='$doenetId'
     ";
     $result = $conn->query($sql);
-    
-    //update assignment to match new version
-    $sql = "UPDATE assignment
-    SET contentId='$newDraftContentId'
-    WHERE doenetId='$doenetId'
-    ";
-    $result = $conn->query($sql);
 
     //Save the old draft info as an autosave
     $sql = "INSERT INTO content 
