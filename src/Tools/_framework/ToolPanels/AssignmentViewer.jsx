@@ -106,6 +106,15 @@ export default function AssignmentViewer() {
             setStage('Problem');
             setMessage('Assignment only available in a proctored setting.');
             return;
+          }else{
+            //Possible check for SEB header
+            const { data } = await axios.get('/api/checkSEBheaders.php', {params:{doenetId}});
+            console.log(">>>>data",data)
+            if (data.legitAccessKey !== '1'){
+              setStage('Problem');
+              setMessage('Browser not configured properly to take an exam.');
+            return;
+            }
           }
         }
         //TODO: test if assignment should be shown here
