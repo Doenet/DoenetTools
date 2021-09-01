@@ -93,6 +93,24 @@ if ($success){
         array_push($learners,$learner);
     }
 
+    foreach ($learners AS &$learner){
+        $userId = $learner['userId'];
+        $sql = "
+        SELECT MAX(began) AS began,
+        doenetId
+        FROM user_assignment_attempt
+        WHERE userId = '$userId'
+        GROUP BY doenetId
+        ";
+
+        $result = $conn->query($sql);
+        $exam_to_date = array();
+        while($row = $result->fetch_assoc()){
+            $exam_to_date[$row['doenetId']] = $row['began'];
+        }
+        $learner['exam_to_date'] = $exam_to_date;
+    }
+
 }
 
 //Get Exam data
