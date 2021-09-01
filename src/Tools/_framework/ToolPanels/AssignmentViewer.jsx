@@ -123,7 +123,10 @@ export default function AssignmentViewer() {
             );
             contentId = data.contentId;
             isAssigned = data.isAssigned;
-            assignedVariant = data.assignedVariants;
+            assignedVariant = JSON.parse(
+              data.assignedVariant,
+              serializedComponentsReviver,
+            );
           } catch (error) {
             console.error(error);
           }
@@ -212,9 +215,8 @@ export default function AssignmentViewer() {
           });
           let numberOfCompletedAttempts = data.attemptNumbers.length - 1;
           set(currentAttemptNumber, numberOfCompletedAttempts);
-          let requestedVariant = { name: assignedVariant };
           setLoad({
-            requestedVariant,
+            requestedVariant: assignedVariant,
             attemptNumber: numberOfCompletedAttempts,
             showCorrectness,
             showFeedback,

@@ -21,6 +21,10 @@ import {
 import axios from 'axios';
 import { returnAllPossibleVariants } from '../../../Core/utils/returnAllPossibleVariants';
 import { itemType } from '../../../_reactComponents/Sockets';
+import {
+  serializedComponentsReplacer,
+  serializedComponentsReviver,
+} from '../../../Core/utils/serializedStateProcessing';
 
 export default function CollectionEditor() {
   const [driveId, , itemId] = useRecoilValue(
@@ -71,13 +75,14 @@ export default function CollectionEditor() {
     for (let key in assignedEntriesData) {
       const { doenetId, entryId, entryDoenetId, entryVariant } =
         assignedEntriesData[key];
+      console.log('v', entryVariant);
       entries.push(
         <Suspense key={entryId}>
           <CollectionEntry
             collectionDoenetId={doenetId}
             doenetId={entryDoenetId}
             entryId={entryId}
-            variant={entryVariant}
+            variant={JSON.parse(entryVariant, serializedComponentsReviver).name}
             assigned
           />
         </Suspense>,
@@ -246,7 +251,10 @@ function CollectionEntry({
               entryId,
               entryDoenetId: doenetId,
               //TODO: ref the selected option;
-              entryVariant: variants[0],
+              entryVariant: JSON.stringify(
+                variants[0],
+                serializedComponentsReplacer,
+              ),
             })
             .then(() => {
               setAssignedEntries((was) => [
@@ -255,7 +263,10 @@ function CollectionEntry({
                   doenetId: collectionDoenetId,
                   entryId,
                   entryDoenetId: doenetId,
-                  entryVariant: variants[0],
+                  entryVariant: JSON.stringify(
+                    variants[0],
+                    serializedComponentsReplacer,
+                  ),
                 },
               ]);
             })
@@ -280,13 +291,22 @@ function CollectionEntry({
           axios
             .post('/api/updateCollectionEntryVariant.php', {
               entryId,
-              entryVariant: newSelectedVariant,
+              entryVariant: JSON.stringify(
+                { name: newSelectedVariant },
+                serializedComponentsReplacer,
+              ),
             })
             .then(() => {
               setAssignedEntries((was) =>
                 was.map((entry) => {
                   if (entry.entryId === entryId) {
-                    return { ...entry, entryVariant: newSelectedVariant };
+                    return {
+                      ...entry,
+                      entryVariant: JSON.stringify(
+                        { name: newSelectedVariant },
+                        serializedComponentsReplacer,
+                      ),
+                    };
                   } else {
                     return entry;
                   }

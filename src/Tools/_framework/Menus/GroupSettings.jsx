@@ -4,7 +4,6 @@ import { useRecoilCallback, useRecoilValue } from 'recoil';
 import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
 import CollapseSection from '../../../_reactComponents/PanelHeaderComponents/CollapseSection';
 import { searchParamAtomFamily } from '../NewToolRoot';
-import { itemHistoryAtom } from '../ToolHandlers/CourseToolHandler';
 
 function groupReducer(state, action) {
   switch (action.type) {
@@ -34,6 +33,11 @@ function groupReducer(state, action) {
             : state.pref,
       };
     case 'preAssigned':
+      try {
+        axios.post('/api/updateGroupSettings.php', { ...state });
+      } catch (error) {
+        console.error(error);
+      }
       return { ...state, preAssigned: action.payload.preAssigned };
     case 'save':
       try {
