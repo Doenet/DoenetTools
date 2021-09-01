@@ -321,7 +321,7 @@ export function AssignmentSettings({role, doenetId}) {
     value: "m"
   }, "Maximum"), /* @__PURE__ */ React.createElement("option", {
     value: "l"
-  }, "Last Attempt")))), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("label", null, "Total Points Or Percent:", /* @__PURE__ */ React.createElement("input", {
+  }, "Last Attempt")))), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("label", null, "Total Points Or Percent", /* @__PURE__ */ React.createElement("input", {
     required: true,
     type: "number",
     name: "totalPointsOrPercent",
