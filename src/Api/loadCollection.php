@@ -16,10 +16,9 @@ if (array_key_exists('doenetId', $_REQUEST)) {
     $doenetId = mysqli_real_escape_string($conn, $_REQUEST['doenetId']);
 
     //get driveId from doenetId TODO: should be a sql join query with userId
-    $sql = "
-        SELECT driveId
-        FROM `drive_content`
-        WHERE doenetId = '$doenetId'
+    $sql = "SELECT driveId
+    FROM `drive_content`
+    WHERE doenetId = '$doenetId'
     ";
     $result = $conn->query($sql);
     if ($result->num_rows > 0) {
@@ -29,11 +28,10 @@ if (array_key_exists('doenetId', $_REQUEST)) {
 
     if (array_key_exists('driveId', get_defined_vars())) {
         //check user has permission to edit drive
-        $sql = "
-            SELECT canEditContent
-            FROM drive_user
-            WHERE userId = '$userId'
-            AND driveId = '$driveId'
+        $sql = "SELECT canEditContent
+        FROM drive_user
+        WHERE userId = '$userId'
+        AND driveId = '$driveId'
         ";
         $result = $conn->query($sql);
         if ($result->num_rows > 0) {
