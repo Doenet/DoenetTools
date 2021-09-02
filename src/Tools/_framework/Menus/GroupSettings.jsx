@@ -295,7 +295,7 @@ export default function GroupSettings() {
           width="menu"
           value="Assign Collection"
           onClick={() => {
-            assignCollection(doenetId, [['temp0@dev.com'], ['temp1@dev.com']]);
+            assignCollection(doenetId, groups);
           }}
         />
       </ButtonGroup>
