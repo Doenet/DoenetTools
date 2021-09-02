@@ -159,7 +159,6 @@ for($i = 0; $i < count($mergeEmail); $i++){
 		(userId,
 		screenName,
 		email, 
-		studentId, 
 		lastName,
 		firstName,
 		profilePicture,
@@ -167,7 +166,7 @@ for($i = 0; $i < count($mergeEmail); $i++){
 		roleStudent,
 		roleInstructor)
 		VALUES
-		('$new_userId','$screenName','$email','$id','$lastName','$firstName','$profilePicture','1','1','0')
+		('$new_userId','$screenName','$email','$lastName','$firstName','$profilePicture','1','1','0')
 		";
 		$result = $conn->query($sql);
 		}
