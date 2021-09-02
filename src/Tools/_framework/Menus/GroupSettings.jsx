@@ -15,14 +15,14 @@ function groupReducer(state, action) {
       return { ...action.payload };
     case 'min':
       return {
-        preAssigned: state.preAssigned,
+        ...state,
         min: action.payload.min > 1 ? action.payload.min : 1,
         max: state.max < action.payload.min ? action.payload.min : state.max,
         pref: state.pref < action.payload.min ? action.payload.min : state.pref,
       };
     case 'max':
       return {
-        preAssigned: state.preAssigned,
+        ...state,
         min: state.min,
         max: state.min <= action.payload.max ? action.payload.max : state.max,
         pref: state.pref < action.payload.max ? action.payload.max : state.pref,
@@ -39,7 +39,7 @@ function groupReducer(state, action) {
       try {
         axios.post('/api/updateGroupSettings.php', {
           ...state,
-          preAssigned: action.payload.preAssigned ? '1' : '0',
+          preAssigned: action.payload.preAssigned,
           doenetId: action.payload.doenetId,
         });
       } catch (error) {
@@ -50,7 +50,6 @@ function groupReducer(state, action) {
       try {
         axios.post('/api/updateGroupSettings.php', {
           ...state,
-          preAssigned: state.preAssigned ? '1' : '0',
           doenetId: action.payload.doenetId,
         });
       } catch (error) {
@@ -87,12 +86,16 @@ export default function GroupSettings() {
   const doenetId = useRecoilValue(searchParamAtomFamily('doenetId'));
   const addToast = useToast();
 
-  const [{ min, max, pref, preAssigned }, dispach] = useReducer(groupReducer, {
-    min: 0,
-    max: 0,
-    pref: 0,
-    preAssigned: false,
-  });
+  const [{ min, max, pref, preAssigned, isReleased }, dispach] = useReducer(
+    groupReducer,
+    {
+      min: 0,
+      max: 0,
+      pref: 0,
+      preAssigned: 0,
+      isReleased: 0,
+    },
+  );
   const assignCollection = useCallback(
     async (doenetId, grouping) => {
       try {
@@ -176,18 +179,18 @@ export default function GroupSettings() {
         Pre-Assigned Groups:
         <input
           type="checkbox"
-          checked={preAssigned ?? false}
-          value={preAssigned}
+          checked={preAssigned === '1'}
+          value={preAssigned === '1'}
           onChange={(e) => {
             dispach({
               type: 'preAssigned',
-              payload: { preAssigned: e.target.checked, doenetId },
+              payload: { preAssigned: e.target.checked ? '1' : '0', doenetId },
             });
           }}
         />
       </label>
       <br />
-      {preAssigned ? (
+      {preAssigned === '1' ? (
         <div>
           <div key="drop" {...getRootProps()}>
             <input {...getInputProps()} />
@@ -258,7 +261,7 @@ export default function GroupSettings() {
       )}
       <br />
       <ButtonGroup vertical>
-        {preAssigned ? null : (
+        {preAssigned === '1' ? null : (
           <Button
             width="menu"
             value="Save"
@@ -269,10 +272,11 @@ export default function GroupSettings() {
         )}
         <Button
           alert
+          disabled={isReleased}
           width="menu"
           value="Assign Collection"
           onClick={() => {
-            assignCollection(groups);
+            assignCollection(doenetId, [['temp0@dev.com'], ['temp1@dev.com']]);
           }}
         />
       </ButtonGroup>

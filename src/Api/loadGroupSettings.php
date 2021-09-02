@@ -53,6 +53,18 @@ if (array_key_exists('doenetId', $_REQUEST)) {
 }
 
 if ($allowed) {
+    $sql = "SELECT isReleased
+    FROM drive_content
+    WHERE doenetId = '$doenetId'
+    ";
+    $result = $conn->query($sql);
+
+    $isReleased = 0;
+    if ($result->num_rows > 0) {
+        $row = $result->fetch_assoc();
+        $isReleased = $row['isReleased'];
+    }
+
     $sql = "SELECT minStudents, maxStudents, preferredStudents, preAssigned
     FROM collection_groups
     WHERE doenetId = '$doenetId'
@@ -61,16 +73,12 @@ if ($allowed) {
     if ($result->num_rows > 0) {
         $row = $result->fetch_assoc();
         http_response_code(200);
-        if ($row['preAssigned']) {
-            $preAssigned = true;
-        } else {
-            $preAssigned = false;
-        }
         echo json_encode([
             'min' => $row['minStudents'],
             'max' => $row['maxStudents'],
             'pref' => $row['preferredStudents'],
-            'preAssigned' => $preAssigned,
+            'preAssigned' => $row['preAssigned'],
+            'isReleased' => $isReleased,
         ]);
     } else {
         $sql = "INSERT INTO collection_groups
@@ -83,7 +91,8 @@ if ($allowed) {
             'min' => 1,
             'max' => 1,
             'pref' => 1,
-            'prepreAssignedf' => false,
+            'preAssigned' => 0,
+            'isReleased' => $isReleased,
         ]);
     }
 }
