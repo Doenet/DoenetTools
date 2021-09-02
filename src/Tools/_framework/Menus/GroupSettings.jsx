@@ -1,7 +1,10 @@
 import axios from 'axios';
-import React, { useEffect, useReducer, useCallback } from 'react';
+import parse from 'csv-parse';
+import React, { useEffect, useReducer, useCallback, useState } from 'react';
+import { useDropzone } from 'react-dropzone';
 import { useRecoilValue } from 'recoil';
 import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
+import ButtonGroup from '../../../_reactComponents/PanelHeaderComponents/ButtonGroup';
 import CollapseSection from '../../../_reactComponents/PanelHeaderComponents/CollapseSection';
 import { searchParamAtomFamily } from '../NewToolRoot';
 import { toastType, useToast } from '../Toast';
@@ -80,16 +83,16 @@ function shuffle(array) {
 }
 
 export default function GroupSettings() {
+  const [groups, setGroups] = useState();
   const doenetId = useRecoilValue(searchParamAtomFamily('doenetId'));
+  const addToast = useToast();
+
   const [{ min, max, pref, preAssigned }, dispach] = useReducer(groupReducer, {
     min: 0,
     max: 0,
     pref: 0,
     preAssigned: false,
   });
-  const addToast = useToast();
-  //TODO: load all entries from the collection table, shuffle the grouping array, assign
-  //proportional sections of each entry, commit data to assignment table
   const assignCollection = useCallback(
     async (doenetId, grouping) => {
       try {
@@ -120,12 +123,35 @@ export default function GroupSettings() {
     },
     [addToast],
   );
+  //TODO: implement
+  const generateRandomGroups = useCallback(() => {
+    //Get enrollment and split into groups by grouping prefernce
+  }, []);
+
+  //TODO: accept the file and store locally for assigning
+  const onDrop = useCallback((file) => {
+    const reader = new FileReader();
+
+    reader.onabort = () => {};
+    reader.onerror = () => {};
+    reader.onload = () => {
+      parse(reader.result, { comment: '#' }, function (err, data) {
+        console.log(data);
+        // setHeaders(data[0]);
+        // data.shift(); //Remove head row of data
+        // setEntries(data);
+        // setProcess('Choose Columns');
+        setGroups();
+      });
+    };
+    reader.readAsText(file[0]);
+  }, []);
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
 
   useEffect(() => {
     let mounted = true;
     async function loadData(doenetId) {
       try {
-        console.log('did', doenetId);
         const resp = await axios.get('/api/loadGroupSettings.php', {
           params: { doenetId },
         });
@@ -160,22 +186,37 @@ export default function GroupSettings() {
           }}
         />
       </label>
+      <br />
       {preAssigned ? (
         <div>
-          <Button
-            alert
-            value="Upload and Assign CSV"
-            width="menu"
-            onClick={() => {
-              assignCollection(doenetId, [
-                ['temp0@dev.com', 'temp2@dev.com', 'temp3@dev.com'],
-                ['temp4@dev.com', 'temp5@dev.com', 'temp6@dev.com'],
-                ['temp7@dev.com', 'temp8@dev.com', 'temp9@dev.com'],
-              ]);
-            }}
-          />
+          <div key="drop" {...getRootProps()}>
+            <input {...getInputProps()} />
+            {isDragActive ? (
+              <p>Drop files here</p>
+            ) : (
+              <ButtonGroup>
+                <Button value="Upload CSV" width="menu" />
+              </ButtonGroup>
+            )}
+          </div>
           <br />
-          <CollapseSection></CollapseSection>
+          <CollapseSection title="CSV Formating">
+            <p>
+              Your file needs to contain an email address and group number. The
+              parser will ignore columns which are not listed. <br />
+              Providing a Section will distribute the entries over the Section
+              instead of the class *(Coming soon)
+            </p>
+            <div>
+              <b>Email (required)</b>
+            </div>
+            <div>
+              <b>Group number (required)</b>
+            </div>
+            <div>
+              <b>Section</b>
+            </div>
+          </CollapseSection>
         </div>
       ) : (
         <div>
@@ -213,6 +254,11 @@ export default function GroupSettings() {
             />
           </label>
           <br />
+        </div>
+      )}
+      <br />
+      <ButtonGroup vertical>
+        {preAssigned ? null : (
           <Button
             width="menu"
             value="Save"
@@ -220,8 +266,16 @@ export default function GroupSettings() {
               dispach({ type: 'save', payload: { doenetId } });
             }}
           />
-        </div>
-      )}
+        )}
+        <Button
+          alert
+          width="menu"
+          value="Assign Collection"
+          onClick={() => {
+            assignCollection(groups);
+          }}
+        />
+      </ButtonGroup>
     </div>
   );
 }
