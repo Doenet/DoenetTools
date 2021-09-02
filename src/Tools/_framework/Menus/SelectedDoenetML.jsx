@@ -77,7 +77,7 @@ export default function SelectedDoenetML() {
       });
     }}
     />
-    <AssignmentSettings role={role} item={item} />
+    <AssignmentSettings role={role} doenetId={item.doenetId} />
     </>
   }
   let assignDraftLabel = "Assign Current Draft";
