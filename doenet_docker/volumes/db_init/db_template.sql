@@ -7,7 +7,7 @@
 #
 # Host: 127.0.0.1 (MySQL 5.7.29)
 # Database: doenet_local
-# Generation Time: 2021-08-31 14:26:49 +0000
+# Generation Time: 2021-09-02 01:25:40 +0000
 # ************************************************************
 
 
@@ -172,6 +172,7 @@ CREATE TABLE `drive` (
   `image` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `color` char(6) COLLATE utf8_unicode_ci DEFAULT NULL,
   `examPasscode` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `browserExamKeys` text COLLATE utf8_unicode_ci,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
@@ -244,7 +245,7 @@ CREATE TABLE `enrollment` (
   `lastName` varchar(127) COLLATE utf8_unicode_ci DEFAULT NULL,
   `username` varchar(10) COLLATE utf8_unicode_ci DEFAULT NULL,
   `email` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `empId` int(7) DEFAULT NULL,
+  `empId` varchar(32) COLLATE utf8_unicode_ci DEFAULT NULL,
   `dateEnrolled` datetime DEFAULT NULL COMMENT 'UTC DateTime',
   `section` varchar(10) COLLATE utf8_unicode_ci DEFAULT NULL,
   `withdrew` bit(1) DEFAULT b'0',
@@ -263,28 +264,28 @@ LOCK TABLES `enrollment` WRITE;
 
 INSERT INTO `enrollment` (`id`, `driveId`, `userId`, `firstName`, `lastName`, `username`, `email`, `empId`, `dateEnrolled`, `section`, `withdrew`, `dateWithdrew`, `forTesting`, `courseCredit`, `courseGrade`, `overrideCourseGrade`, `timeLimitMultiplier`)
 VALUES
-	(1,'aI8sK4vmEhC5sdeSP3vNW','devuserid','generic','user','devuser',NULL,1234567,'2019-09-03 20:29:41','15',b'0',NULL,b'0',NULL,'A',NULL,1),
-	(2,'fsa4214fasgag1512525f',NULL,'SHOULD NOT','BE LOADED','invalid',NULL,5254243,'2019-09-03 20:29:41','2',b'0',NULL,b'0',NULL,NULL,NULL,1),
-	(4,'aI8sK4vmEhC5sdeSP3vNW','temp1','Anatole','Wickrath','awickrath0',NULL,60,NULL,NULL,b'0',NULL,b'0',NULL,'B',NULL,1),
-	(5,'aI8sK4vmEhC5sdeSP3vNW','temp2','Antony','Aylett','aaylett1',NULL,7,NULL,NULL,b'0',NULL,b'0',NULL,'B-',NULL,1),
-	(6,'aI8sK4vmEhC5sdeSP3vNW','temp3','Lindi','Rash','lrash2',NULL,5,NULL,NULL,b'0',NULL,b'0',NULL,NULL,NULL,1),
-	(7,'aI8sK4vmEhC5sdeSP3vNW','temp4','Nicholas','Peteri','npeteri3',NULL,119,NULL,NULL,b'0',NULL,b'0',NULL,'B+',NULL,1),
-	(8,'aI8sK4vmEhC5sdeSP3vNW','temp5','Savina','Michin','smichin4',NULL,852,NULL,NULL,b'0',NULL,b'0',NULL,NULL,NULL,1),
-	(9,'aI8sK4vmEhC5sdeSP3vNW','temp6','Gerry','Sallan','gsallan5',NULL,89,NULL,NULL,b'0',NULL,b'0',NULL,NULL,NULL,1),
-	(10,'aI8sK4vmEhC5sdeSP3vNW','temp7','Wakefield','Bengle','wbengle6',NULL,4786,NULL,NULL,b'0',NULL,b'0',NULL,NULL,NULL,1),
-	(11,'aI8sK4vmEhC5sdeSP3vNW','temp8','Patrice','Bavin','pbavin8',NULL,75024,NULL,NULL,b'0',NULL,b'0',NULL,NULL,NULL,1),
-	(12,'aI8sK4vmEhC5sdeSP3vNW','temp9','Merrile','McGee','mmcgee9',NULL,9240,NULL,NULL,b'0',NULL,b'0',NULL,NULL,NULL,1),
-	(13,'aI8sK4vmEhC5sdeSP3vNW','temp10','Ardath','Celler','acellera',NULL,4522,NULL,NULL,b'0',NULL,b'0',NULL,NULL,NULL,1),
-	(14,'aI8sK4vmEhC5sdeSP3vNW','temp11','Ashleigh','Lothean','alotheanb',NULL,259,NULL,NULL,b'0',NULL,b'0',NULL,NULL,NULL,1),
-	(15,'aI8sK4vmEhC5sdeSP3vNW','temp12','Salomon','Scorah','sscorahd',NULL,2,NULL,NULL,b'0',NULL,b'0',NULL,NULL,NULL,1),
-	(16,'aI8sK4vmEhC5sdeSP3vNW','temp13','Xaviera','Kupec','xkupece',NULL,4,NULL,NULL,b'0',NULL,b'0',NULL,NULL,NULL,1),
-	(17,'aI8sK4vmEhC5sdeSP3vNW','temp14','Pennie','Badder','pbadderg',NULL,3931,NULL,NULL,b'0',NULL,b'0',NULL,NULL,NULL,1),
-	(18,'aI8sK4vmEhC5sdeSP3vNW','temp15','Travis','Sarrell','tsarrellh',NULL,7947,NULL,NULL,b'0',NULL,b'0',NULL,NULL,NULL,1),
-	(19,'aI8sK4vmEhC5sdeSP3vNW','temp16','Eldin','Crosser','ecrosserj',NULL,96895,NULL,NULL,b'0',NULL,b'0',NULL,NULL,NULL,1),
-	(20,'aI8sK4vmEhC5sdeSP3vNW','temp17','Ginger','Nijs','gnijsl',NULL,60,NULL,NULL,b'0',NULL,b'0',NULL,NULL,NULL,1),
-	(21,'aI8sK4vmEhC5sdeSP3vNW','temp18','Petronille','Pidcock','ppidcockm',NULL,381,NULL,NULL,b'0',NULL,b'0',NULL,NULL,NULL,1),
-	(22,'aI8sK4vmEhC5sdeSP3vNW','temp19','Arlee','Duggleby','adugglebyn',NULL,5,NULL,NULL,b'0',NULL,b'0',NULL,NULL,NULL,1),
-	(23,'aI8sK4vmEhC5sdeSP3vNW','temp20','Ambur','Viant','avianto',NULL,34,NULL,NULL,b'0',NULL,b'0',NULL,NULL,NULL,1);
+	(1,'aI8sK4vmEhC5sdeSP3vNW','devuserid','generic','user','devuser',NULL,'1234567','2019-09-03 20:29:41','15',b'0',NULL,b'0',NULL,'A',NULL,1),
+	(2,'fsa4214fasgag1512525f',NULL,'SHOULD NOT','BE LOADED','invalid',NULL,'5254243','2019-09-03 20:29:41','2',b'0',NULL,b'0',NULL,NULL,NULL,1),
+	(4,'aI8sK4vmEhC5sdeSP3vNW','temp1','Anatole','Wickrath','awickrath0',NULL,'60',NULL,NULL,b'0',NULL,b'0',NULL,'B',NULL,1),
+	(5,'aI8sK4vmEhC5sdeSP3vNW','temp2','Antony','Aylett','aaylett1',NULL,'7',NULL,NULL,b'0',NULL,b'0',NULL,'B-',NULL,1),
+	(6,'aI8sK4vmEhC5sdeSP3vNW','temp3','Lindi','Rash','lrash2',NULL,'5',NULL,NULL,b'0',NULL,b'0',NULL,NULL,NULL,1),
+	(7,'aI8sK4vmEhC5sdeSP3vNW','temp4','Nicholas','Peteri','npeteri3',NULL,'119',NULL,NULL,b'0',NULL,b'0',NULL,'B+',NULL,1),
+	(8,'aI8sK4vmEhC5sdeSP3vNW','temp5','Savina','Michin','smichin4',NULL,'852',NULL,NULL,b'0',NULL,b'0',NULL,NULL,NULL,1),
+	(9,'aI8sK4vmEhC5sdeSP3vNW','temp6','Gerry','Sallan','gsallan5',NULL,'89',NULL,NULL,b'0',NULL,b'0',NULL,NULL,NULL,1),
+	(10,'aI8sK4vmEhC5sdeSP3vNW','temp7','Wakefield','Bengle','wbengle6',NULL,'4786',NULL,NULL,b'0',NULL,b'0',NULL,NULL,NULL,1),
+	(11,'aI8sK4vmEhC5sdeSP3vNW','temp8','Patrice','Bavin','pbavin8',NULL,'75024',NULL,NULL,b'0',NULL,b'0',NULL,NULL,NULL,1),
+	(12,'aI8sK4vmEhC5sdeSP3vNW','temp9','Merrile','McGee','mmcgee9',NULL,'9240',NULL,NULL,b'0',NULL,b'0',NULL,NULL,NULL,1),
+	(13,'aI8sK4vmEhC5sdeSP3vNW','temp10','Ardath','Celler','acellera',NULL,'4522',NULL,NULL,b'0',NULL,b'0',NULL,NULL,NULL,1),
+	(14,'aI8sK4vmEhC5sdeSP3vNW','temp11','Ashleigh','Lothean','alotheanb',NULL,'259',NULL,NULL,b'0',NULL,b'0',NULL,NULL,NULL,1),
+	(15,'aI8sK4vmEhC5sdeSP3vNW','temp12','Salomon','Scorah','sscorahd',NULL,'2',NULL,NULL,b'0',NULL,b'0',NULL,NULL,NULL,1),
+	(16,'aI8sK4vmEhC5sdeSP3vNW','temp13','Xaviera','Kupec','xkupece',NULL,'4',NULL,NULL,b'0',NULL,b'0',NULL,NULL,NULL,1),
+	(17,'aI8sK4vmEhC5sdeSP3vNW','temp14','Pennie','Badder','pbadderg',NULL,'3931',NULL,NULL,b'0',NULL,b'0',NULL,NULL,NULL,1),
+	(18,'aI8sK4vmEhC5sdeSP3vNW','temp15','Travis','Sarrell','tsarrellh',NULL,'7947',NULL,NULL,b'0',NULL,b'0',NULL,NULL,NULL,1),
+	(19,'aI8sK4vmEhC5sdeSP3vNW','temp16','Eldin','Crosser','ecrosserj',NULL,'96895',NULL,NULL,b'0',NULL,b'0',NULL,NULL,NULL,1),
+	(20,'aI8sK4vmEhC5sdeSP3vNW','temp17','Ginger','Nijs','gnijsl',NULL,'60',NULL,NULL,b'0',NULL,b'0',NULL,NULL,NULL,1),
+	(21,'aI8sK4vmEhC5sdeSP3vNW','temp18','Petronille','Pidcock','ppidcockm',NULL,'381',NULL,NULL,b'0',NULL,b'0',NULL,NULL,NULL,1),
+	(22,'aI8sK4vmEhC5sdeSP3vNW','temp19','Arlee','Duggleby','adugglebyn',NULL,'5',NULL,NULL,b'0',NULL,b'0',NULL,NULL,NULL,1),
+	(23,'aI8sK4vmEhC5sdeSP3vNW','temp20','Ambur','Viant','avianto',NULL,'34',NULL,NULL,b'0',NULL,b'0',NULL,NULL,NULL,1);
 
 /*!40000 ALTER TABLE `enrollment` ENABLE KEYS */;
 UNLOCK TABLES;
@@ -344,7 +345,6 @@ CREATE TABLE `user` (
   `userId` char(21) COLLATE utf8_unicode_ci DEFAULT NULL,
   `screenName` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT 'full email address',
   `email` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT 'full email address',
-  `studentId` varchar(32) COLLATE utf8_unicode_ci DEFAULT NULL,
   `lastName` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `firstName` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `profilePicture` varchar(128) COLLATE utf8_unicode_ci DEFAULT NULL,
@@ -361,11 +361,11 @@ CREATE TABLE `user` (
 LOCK TABLES `user` WRITE;
 /*!40000 ALTER TABLE `user` DISABLE KEYS */;
 
-INSERT INTO `user` (`id`, `userId`, `screenName`, `email`, `studentId`, `lastName`, `firstName`, `profilePicture`, `trackingConsent`, `roleStudent`, `roleInstructor`, `roleCourseDesigner`, `roleWatchdog`, `roleCommunityTA`, `roleLiveDataCommunity`)
+INSERT INTO `user` (`id`, `userId`, `screenName`, `email`, `lastName`, `firstName`, `profilePicture`, `trackingConsent`, `roleStudent`, `roleInstructor`, `roleCourseDesigner`, `roleWatchdog`, `roleCommunityTA`, `roleLiveDataCommunity`)
 VALUES
-	(1,'devuserid','DEV','devuser@example.com',NULL,'User','Dev','quokka',0,1,1,0,0,0,0),
-	(2,'s1userid','S1','s1@example.com',NULL,'User','Student1','quokka',1,1,0,0,0,0,0),
-	(26,'s2userid','S2','s2@example.com',NULL,'User','Student2','ALSDKFJLKASDJFKASJDFLKAJSDFK.png',1,1,0,0,0,0,0);
+	(1,'devuserid','DEV','devuser@example.com','User','Dev','quokka',0,1,1,0,0,0,0),
+	(2,'s1userid','S1','s1@example.com','User','Student1','quokka',1,1,0,0,0,0,0),
+	(26,'s2userid','S2','s2@example.com','User','Student2','ALSDKFJLKASDJFKASJDFLKAJSDFK.png',1,1,0,0,0,0,0);
 
 /*!40000 ALTER TABLE `user` ENABLE KEYS */;
 UNLOCK TABLES;

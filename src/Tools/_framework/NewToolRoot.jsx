@@ -121,6 +121,7 @@ export default function ToolRoot(){
     Enrollment:lazy(() => import('./ToolPanels/Enrollment')),
     CollectionEditor: lazy(() => import('./ToolPanels/CollectionEditor')),
     ChooseLearnerPanel: lazy(() => import('./ToolPanels/ChooseLearnerPanel')),
+    EndExamPanel: lazy(() => import('./ToolPanels/EndExamPanel')),
     
   }).current;
 
@@ -266,7 +267,13 @@ let navigationObj = {
       headerControls: [],
       headerControlsPositions: [],
       displayProfile:false,
-    }
+    },
+    endExam:{
+      pageName:"endExam",
+      currentMainPanel:"EndExamPanel",
+      displayProfile:false,
+      hasNoMenuPanel: true,
+    },
     
   },
   course:{
