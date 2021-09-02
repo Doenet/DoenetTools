@@ -1,9 +1,10 @@
 import axios from 'axios';
-import React, { useEffect, useReducer } from 'react';
-import { useRecoilCallback, useRecoilValue } from 'recoil';
+import React, { useEffect, useReducer, useCallback } from 'react';
+import { useRecoilValue } from 'recoil';
 import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
 import CollapseSection from '../../../_reactComponents/PanelHeaderComponents/CollapseSection';
 import { searchParamAtomFamily } from '../NewToolRoot';
+import { toastType, useToast } from '../Toast';
 
 function groupReducer(state, action) {
   switch (action.type) {
@@ -86,59 +87,38 @@ export default function GroupSettings() {
     pref: 0,
     preAssigned: false,
   });
+  const addToast = useToast();
   //TODO: load all entries from the collection table, shuffle the grouping array, assign
   //proportional sections of each entry, commit data to assignment table
-  const assignCollection = useRecoilCallback(
-    ({ snapshot }) =>
-      async (doenetId, grouping) => {
-        try {
-          console.log('go', doenetId, grouping);
-          const {
-            data: { entries },
-          } = await axios.get('/api/loadCollection.php', {
-            params: { doenetId },
+  const assignCollection = useCallback(
+    async (doenetId, grouping) => {
+      try {
+        const {
+          data: { entries },
+        } = await axios.get('/api/loadCollection.php', {
+          params: { doenetId },
+        });
+        if (entries?.length > 0) {
+          //GROUPS
+          // [ [ 'id1', 'id2', 'id3'] , ['id4', 'id5', 'id6'], ['id7', 'id8', 'id9']]
+          const shuffledEntries = shuffle(entries);
+          const shuffledGroups = shuffle(grouping);
+          axios.post('/api/assignCollection.php', {
+            doenetId,
+            groups: JSON.stringify(shuffledGroups),
+            entries: JSON.stringify(shuffledEntries),
           });
-          if (entries.length > 0) {
-            //GROUPS
-            // [ [ 'id1', 'id2', 'id3'] , ['id4', 'id5', 'id6'], ['id7', 'id8', 'id9']]
-            const shuffledEntries = shuffle(entries);
-            const shuffledGroups = shuffle(grouping);
-            const resp = axios.post('/api/assignCollection.php', {
-              doenetId,
-              groups: JSON.stringify(shuffledGroups),
-              entries: JSON.stringify(shuffledEntries),
-            });
-            console.log('test was', resp);
-          } else {
-            //Error toast
-          }
-
-          // const _doenetId = await snapshot.getPromise(
-          //   searchParamAtomFamily('doenetId'),
-          // );
-          // const versionHistory = await snapshot.getPromise(
-          //   itemHistoryAtom(doenetId),
-          // );
-
-          // //Find Assigned ContentId
-          // //Use isReleased as isAssigned for now
-          // //TODO: refactor isReleased to isAssigned
-
-          // //Set contentId and isAssigned
-          // let contentId = null;
-          // let isAssigned = false;
-          // for (let version of versionHistory.named) {
-          //   if (version.isReleased === '1') {
-          //     isAssigned = true;
-          //     contentId = version.contentId;
-          //     break;
-          //   }
-          // }
-        } catch (error) {
-          console.error(error);
+        } else {
+          addToast(
+            'Please add at least one entry to the collection before assigning',
+            toastType.ERROR,
+          );
         }
-      },
-    [],
+      } catch (error) {
+        console.error(error);
+      }
+    },
+    [addToast],
   );
 
   useEffect(() => {
@@ -170,7 +150,7 @@ export default function GroupSettings() {
         Pre-Assigned Groups:
         <input
           type="checkbox"
-          checked={!!preAssigned}
+          checked={preAssigned ?? false}
           value={preAssigned}
           onChange={(e) => {
             dispach({
