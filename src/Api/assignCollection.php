@@ -20,7 +20,7 @@ if (!array_key_exists('doenetId', $_POST)) {
     echo json_encode('Missing groups');
 } elseif (!array_key_exists('entries', $_POST)) {
     http_response_code(400);
-    echo json_encode(400);
+    echo json_encode('Missing entries');
 } else {
     $doenetId = mysqli_real_escape_string($conn, $_POST['doenetId']);
 
@@ -63,6 +63,13 @@ if ($allowed) {
     $groups = json_decode($_POST['groups']);
     $entries = json_decode($_POST['entries']);
     $numEntries = count($entries);
+
+    $sql = "UPDATE drive_content
+    SET isReleased = 1
+    WHERE doenetId = '$doenetId'
+    ";
+
+    $result = $conn->query($sql);
 
     foreach ($groups as $key => &$group) {
         foreach ($group as &$studentEmail) {

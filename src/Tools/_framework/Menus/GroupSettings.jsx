@@ -19,7 +19,6 @@ function groupReducer(state, action) {
     case 'max':
       return {
         preAssigned: state.preAssigned,
-
         min: state.min,
         max: state.min <= action.payload.max ? action.payload.max : state.max,
         pref: state.pref < action.payload.max ? action.payload.max : state.pref,
@@ -34,14 +33,22 @@ function groupReducer(state, action) {
       };
     case 'preAssigned':
       try {
-        axios.post('/api/updateGroupSettings.php', { ...state });
+        axios.post('/api/updateGroupSettings.php', {
+          ...state,
+          preAssigned: action.payload.preAssigned ? '1' : '0',
+          doenetId: action.payload.doenetId,
+        });
       } catch (error) {
         console.error(error);
       }
       return { ...state, preAssigned: action.payload.preAssigned };
     case 'save':
       try {
-        axios.post('/api/updateGroupSettings.php', { ...state });
+        axios.post('/api/updateGroupSettings.php', {
+          ...state,
+          preAssigned: state.preAssigned ? '1' : '0',
+          doenetId: action.payload.doenetId,
+        });
       } catch (error) {
         console.error(error);
       }
@@ -168,7 +175,7 @@ export default function GroupSettings() {
           onChange={(e) => {
             dispach({
               type: 'preAssigned',
-              payload: { preAssigned: e.target.checked },
+              payload: { preAssigned: e.target.checked, doenetId },
             });
           }}
         />
@@ -230,7 +237,7 @@ export default function GroupSettings() {
             width="menu"
             value="Save"
             onClick={() => {
-              dispach({ type: 'save' });
+              dispach({ type: 'save', payload: { doenetId } });
             }}
           />
         </div>
