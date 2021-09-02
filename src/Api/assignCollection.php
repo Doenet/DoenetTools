@@ -83,11 +83,11 @@ if ($allowed) {
 
             if ($result->num_rows > 0) {
                 $row = $result->fetch_assoc();
-                $studentId = $row['userId'];
+                $studentsUserId = $row['userId'];
                 $entry = $entries[$key % $numEntries];
                 $sql = "SELECT doenetId
                 FROM user_assignment
-                WHERE userId = '$studentId'
+                WHERE userId = '$studentsUserId'
                 AND doenetId = '$entry->doenetId'
                 AND contentId = '$entry->entryContentId'
                 ";
@@ -97,14 +97,14 @@ if ($allowed) {
                     $sql = "INSERT INTO user_assignment
                     (doenetId,contentId,userId)
                     VALUES
-                    ('$entry->doenetId','$entry->entryContentId','$studentId')
+                    ('$entry->doenetId','$entry->entryContentId','$studentsUserId')
                     ";
 
                     $result = $conn->query($sql);
                 }
                 $sql = "SELECT contentId
                 FROM user_assignment_attempt
-                WHERE userId = '$studentId'
+                WHERE userId = '$studentsUserId'
                 AND doenetId = '$entry->doenetId'
                 AND attemptNumber = '1'
                 ";
@@ -114,7 +114,7 @@ if ($allowed) {
 
                 $sql = "SELECT began
                 FROM user_assignment_attempt
-                WHERE userId = '$studentId'
+                WHERE userId = '$studentsUserId'
                 AND doenetId = '$entry->doenetId'
                 AND contentId = '$entry->entryContentId'
                 AND attemptNumber = '$attemptNumber'
@@ -125,7 +125,7 @@ if ($allowed) {
                     $sql = "INSERT INTO user_assignment_attempt
                     (doenetId,contentId,userId,attemptNumber,assignedVariant)
                     VALUES
-                    ('$entry->doenetId','$entry->entryContentId','$studentId','1','$entry->entryVariant')
+                    ('$entry->doenetId','$entry->entryContentId','$studentsUserId','1','$entry->entryVariant')
                     ";
 
                     $result = $conn->query($sql);
