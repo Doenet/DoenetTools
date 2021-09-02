@@ -17,6 +17,7 @@ import { DropTargetsContext, WithDropTarget } from '../DropTarget';
 import useSockets, { itemType } from '../Sockets';
 import { useDragShadowCallbacks, useSortFolder } from './DriveActions';
 import {
+  ColumnJSX,
   DoenetML,
   DragShadow,
   dragStateAtom,
@@ -130,6 +131,22 @@ function Collection(props) {
   if (isSelected && dragState.isDragging) {
     bgcolor = '#e2e2e2';
   }
+  let woIndent = 250 - props.indentLevel * indentPx;
+  let columns = `${woIndent}px repeat(4,1fr)`; //5 columns
+  if (props.numColumns === 4) {
+    columns = `${woIndent}px repeat(3,1fr)`;
+  } else if (props.numColumns === 3) {
+    columns = `${woIndent}px 1fr 1fr`;
+  } else if (props.numColumns === 2) {
+    columns = `${woIndent}px 1fr`;
+  } else if (props.numColumns === 1) {
+    columns = '100%';
+  }
+
+  let column2 = ColumnJSX(props.columnTypes[0], props.item);
+  let column3 = ColumnJSX(props.columnTypes[1], props.item);
+  let column4 = ColumnJSX(props.columnTypes[2], props.item);
+  let column5 = ColumnJSX(props.columnTypes[3], props.item);
 
   const isDraggedOver =
     dropState.activeDropTargetId === itemId &&
@@ -395,12 +412,12 @@ function Collection(props) {
           style={{
             marginLeft: `${props.indentLevel * indentPx}px`,
             display: 'grid',
-            gridTemplateColumns: '1fr',
+            gridTemplateColumns: columns,
             gridTemplateRows: '1fr',
             alignContent: 'center',
           }}
         >
-          <div style={{ display: 'inline', margin: '0px' }}>
+          <p style={{ display: 'inline', margin: '0px' }}>
             {openCloseButton}
             <span data-cy="folderIcon">
               <FontAwesomeIcon
@@ -408,7 +425,11 @@ function Collection(props) {
               />
             </span>
             <span data-cy="folderLabel">{label}</span>
-          </div>
+          </p>
+          {props.numColumns >= 2 ? column2 : null}
+          {props.numColumns >= 3 ? column3 : null}
+          {props.numColumns >= 4 ? column4 : null}
+          {props.numColumns >= 5 ? column5 : null}
         </div>
       </div>
     );
