@@ -8,6 +8,7 @@ import {
 import {
   faChevronDown,
   faChevronRight,
+  faCode,
   faLayerGroup,
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -169,27 +170,34 @@ function Collection(props) {
     </span>
   );
 
-  let openCloseButton = (
-    <button
-      style={{ border: 'none', backgroundColor: bgcolor, borderRadius: '5px' }}
-      data-doenet-driveinstanceid={props.driveInstanceId}
-      onClick={(e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        toggleOpen();
-        props?.clickCallback?.({
-          driveId: props.driveId,
-          itemId,
-          driveInstanceId: props.driveInstanceId,
-          type: itemType.COLLECTION,
-          instructionType: 'one item',
-          parentFolderId: props.item.parentFolderId,
-        });
-      }}
-    >
-      {openCloseText}
-    </button>
-  );
+  let openCloseButton = null;
+  if (!props.isViewOnly) {
+    openCloseButton = (
+      <button
+        style={{
+          border: 'none',
+          backgroundColor: bgcolor,
+          borderRadius: '5px',
+        }}
+        data-doenet-driveinstanceid={props.driveInstanceId}
+        onClick={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          toggleOpen();
+          props?.clickCallback?.({
+            driveId: props.driveId,
+            itemId,
+            driveInstanceId: props.driveInstanceId,
+            type: itemType.COLLECTION,
+            instructionType: 'one item',
+            parentFolderId: props.item.parentFolderId,
+          });
+        }}
+      >
+        {openCloseText}
+      </button>
+    );
+  }
 
   const sortHandler = ({ sortKey }) => {
     const result = sortFolder({
@@ -395,7 +403,9 @@ function Collection(props) {
           <div style={{ display: 'inline', margin: '0px' }}>
             {openCloseButton}
             <span data-cy="folderIcon">
-              <FontAwesomeIcon icon={faLayerGroup} />
+              <FontAwesomeIcon
+                icon={props.isViewOnly ? faCode : faLayerGroup}
+              />
             </span>
             <span data-cy="folderLabel">{label}</span>
           </div>
