@@ -1947,9 +1947,8 @@ export const selectedDriveItems = selectorFamily({
 });
 
 export function ColumnJSX(columnType, item) {
-  let courseRole = '';
+  // let courseRole = '';
 
-  // console.log(">>>columnType,item",columnType,item)
   // console.log(">>>item",item)
   const assignmentInfoSettings = useRecoilValueLoadable(
     loadAssignmentSelector(item.doenetId),
@@ -1978,7 +1977,7 @@ export function ColumnJSX(columnType, item) {
         <FontAwesomeIcon icon={faCheck} />
       </span>
     );
-  } else if (columnType === 'Due Date' && item.isAssigned === '1') {
+  } else if (columnType === 'Due Date' && item.isReleased === '1') {
     return <span style={{ textAlign: 'center' }}>{aInfo?.dueDate}</span>;
   }
   return <span></span>;
