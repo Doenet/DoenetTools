@@ -82,7 +82,7 @@ function shuffle(array) {
 }
 
 export default function GroupSettings() {
-  const [groups, setGroups] = useState();
+  const [groups, setGroups] = useState([]);
   const doenetId = useRecoilValue(searchParamAtomFamily('doenetId'));
   const addToast = useToast();
 
@@ -132,23 +132,36 @@ export default function GroupSettings() {
   }, []);
 
   //TODO: accept the file and store locally for assigning
-  const onDrop = useCallback((file) => {
-    const reader = new FileReader();
+  const onDrop = useCallback(
+    (file) => {
+      const reader = new FileReader();
 
-    reader.onabort = () => {};
-    reader.onerror = () => {};
-    reader.onload = () => {
-      parse(reader.result, { comment: '#' }, function (err, data) {
-        console.log(data);
-        // setHeaders(data[0]);
-        // data.shift(); //Remove head row of data
-        // setEntries(data);
-        // setProcess('Choose Columns');
-        setGroups();
-      });
-    };
-    reader.readAsText(file[0]);
-  }, []);
+      reader.onabort = () => {};
+      reader.onerror = () => {};
+      reader.onload = () => {
+        parse(reader.result, { comment: '#' }, function (err, data) {
+          const headers = data[0];
+          const emailColIdx = headers.indexOf('Email');
+          const groupNumColIdx = headers.indexOf('Group Number');
+          if (emailColIdx === -1) {
+            addToast('File missing "Email" column header', toastType.ERROR);
+          } else if (groupNumColIdx === -1) {
+            addToast(
+              'File missing "Group Number" column header',
+              toastType.ERROR,
+            );
+          } else {
+            // for(){
+            // }
+          }
+          // data.shift(); //Remove head row of data
+          setGroups();
+        });
+      };
+      reader.readAsText(file[0]);
+    },
+    [addToast],
+  );
   const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
 
   useEffect(() => {
@@ -203,22 +216,28 @@ export default function GroupSettings() {
             )}
           </div>
           <br />
-          <CollapseSection title="CSV Formating">
+          <CollapseSection title="Formatting Instructions" collapsed>
             <p>
-              Your file needs to contain an email address and group number. The
-              parser will ignore columns which are not listed. <br />
-              Providing a Section will distribute the entries over the Section
-              instead of the class *(Coming soon)
+              Your file needs to contain email address and group number columns.
+              They can be in any order, but the headers are case sensitive.
             </p>
+            <p>
+              Name fields are displayed for convenience – only required data is
+              used to assign the Collection
+            </p>
+            <div>
+              <b>First Name</b>
+            </div>
+            <div>
+              <b>Last Name</b>
+            </div>
             <div>
               <b>Email (required)</b>
             </div>
             <div>
-              <b>Group number (required)</b>
+              <b>Group Number (required)</b>
             </div>
-            <div>
-              <b>Section</b>
-            </div>
+            <p>NOTE: The parser will ignore columns which are not listed.</p>
           </CollapseSection>
         </div>
       ) : (
