@@ -73,7 +73,7 @@ export default function SelectedCollection() {
   return (
     <>
       <h2 data-cy="infoPanelItemLabel">
-        <FontAwesomeIcon icon={faLayerGroup} />; {item?.label}
+        <FontAwesomeIcon icon={faLayerGroup} /> {item?.label}
       </h2>
       <ActionButtonGroup vertical>
         <ActionButton

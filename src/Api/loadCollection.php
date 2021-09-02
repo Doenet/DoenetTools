@@ -54,10 +54,9 @@ if (array_key_exists('doenetId', $_REQUEST)) {
 }
 
 if ($allowed) {
-    $sql = "
-        SELECT doenetId, entryId, entryDoenetId, entryContentId, entryVariant
-        FROM collection
-        WHERE doenetId = '$doenetId'
+    $sql = "SELECT doenetId, entryId, entryDoenetId, entryContentId, entryVariant
+    FROM collection
+    WHERE doenetId = '$doenetId'
     ";
     $result = $conn->query($sql);
 
