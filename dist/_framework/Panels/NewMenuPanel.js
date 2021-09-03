@@ -26,7 +26,7 @@ background: white;
 display: flex;
 justify-content: space-between;
 align-items: center;
-position: ${(props) => props.fix ? "sticky" : "static"};
+position: ${(props) => props.fix ? "static" : "sticky"};
 border-bottom: 2px solid #e2e2e2;
 margin-bottom: -2px;
 top: 0;
@@ -147,8 +147,8 @@ const LoadingFallback = styled.div`
   width: 100vw;
   height: 100vh;
 `;
-export default function MenuPanel({hide, menuPanelCap = "", menusTitles = [], currentMenus = [], initOpen = [], setMenusOpen, menuPanelsOpen, displayProfile}) {
-  console.log(">>>===MenuPanel");
+export default function MenuPanel({hide, menuPanelCap = "", menusTitles = [], currentMenus = [], initOpen = [], setMenusOpen, displayProfile}) {
+  console.log(">>>===MenuPanel", hide);
   const currentSelectionMenu = useRecoilValue(selectedMenuPanelAtom);
   let menusArray = [];
   const LazyMenuPanelCapObj = useRef({
@@ -209,11 +209,11 @@ export default function MenuPanel({hide, menuPanelCap = "", menusTitles = [], cu
   return /* @__PURE__ */ React.createElement(MenuPanelsWrapper, {
     hide
   }, /* @__PURE__ */ React.createElement(MenuPanelsCap, {
-    fix: menuPanelsOpen
+    fix: hide
   }, /* @__PURE__ */ React.createElement("span", null, /* @__PURE__ */ React.createElement(Logo, null)), /* @__PURE__ */ React.createElement("span", {
     style: {marginBottom: "1px"}
   }, "Doenet"), /* @__PURE__ */ React.createElement("span", null, displayProfile ? /* @__PURE__ */ React.createElement(Profile, {
-    margin: menuPanelsOpen
+    margin: hide
   }) : null), /* @__PURE__ */ React.createElement("span", null, /* @__PURE__ */ React.createElement(CloseButton, {
     onClick: () => setMenusOpen(false)
   }, /* @__PURE__ */ React.createElement(FontAwesomeIcon, {

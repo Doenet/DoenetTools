@@ -344,6 +344,8 @@ class DoenetViewerChild extends Component {
         .then(resp => {
           console.log('>>>>resp', resp.data);
 
+          this.props.updateCreditAchievedCallback(resp.data);
+
           //TODO: need type warning (red but doesn't hang around)
           if (resp.data.viewedSolution) {
             this.props.toast('No credit awarded since solution was viewed.', toastType.INFO)

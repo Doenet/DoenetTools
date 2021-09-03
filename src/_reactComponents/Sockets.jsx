@@ -167,6 +167,31 @@ export default function useSockets(nsp) {
           assignment_isPublished: '0',
         };
       }
+
+      if (type === itemType.COLLECTION) {
+        payload = {
+          ...payload,
+          assignedDate: creationDate,
+          attemptAggregation: 'm',
+          dueDate: creationDate,
+          gradeCategory: 'l',
+          individualize: false,
+          isAssigned: '1',
+          isPublished: '0',
+          contentId:
+            'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855',
+          multipleAttempts: false,
+          numberOfAttemptsAllowed: '1',
+          proctorMakesAvailable: false,
+          showCorrectness: true,
+          showFeedback: true,
+          showHints: true,
+          showSolution: true,
+          timeLimit: null,
+          totalPointsOrPercent: '100',
+          assignment_isPublished: '0',
+        };
+      }
       try {
         const resp = await axios.post('/api/addItem.php', payload);
         if (resp.data.success) {
@@ -248,26 +273,48 @@ export default function useSockets(nsp) {
       const globalSelectedNodes = await snapshot.getPromise(
         globalSelectedNodesAtom,
       );
-      // Interrupt move action if nothing selected
-      if (globalSelectedNodes.length === 0) {
-        throw 'No items selected';
-      }
-
-      // Interrupt move action if dragging folder to itself
-      for (let gItem of globalSelectedNodes) {
-        if (gItem.itemId === targetFolderId) {
-          throw 'Cannot move folder into itself';
-        }
-      }
-
-      // if (canMove){
-      // Add to destination at index
       let destinationFolderObj = await snapshot.getPromise(
         folderDictionary({
           driveId: targetDriveId,
           folderId: targetFolderId,
         }),
       );
+
+      // Interrupt move action if nothing selected
+      if (globalSelectedNodes.length === 0) {
+        throw 'No items selected';
+      }
+
+      // Interrupt move action if dragging folder to itself or adding non ML to Collection
+      for (let gItem of globalSelectedNodes) {
+        // Get parentInfo from edited cache or derive from oldSource
+        const sourceFolderInfo = await snapshot.getPromise(
+          folderDictionary({
+            driveId: gItem.driveId,
+            folderId: gItem.parentFolderId,
+          }),
+        );
+        if (gItem.itemId === targetFolderId) {
+          throw 'Cannot move folder into itself';
+        } else if (
+          destinationFolderObj.folderInfo.itemType === itemType.COLLECTION &&
+          sourceFolderInfo.contentsDictionary[gItem.itemId].itemType !==
+            itemType.DOENETML
+        ) {
+          addToast(
+            `Can not ${
+              sourceFolderInfo.contentsDictionary[gItem.itemId].itemType
+            }s into a Collection`,
+            toastType.ERROR,
+          );
+          throw `Can not ${
+            sourceFolderInfo.contentsDictionary[gItem.itemId].itemType
+          }s into a Collection`;
+        }
+      }
+
+      // if (canMove){
+      // Add to destination at index
       let newDestinationFolderObj = JSON.parse(
         JSON.stringify(destinationFolderObj),
       );
@@ -934,7 +981,7 @@ function useAcceptBindings() {
         );
 
         // addtional folder type updates
-        if (type === 'Folder') {
+        if (type === 'Folder' || type === 'Collection') {
           set(
             folderDictionary({
               driveId: driveId,
@@ -1084,7 +1131,7 @@ function useAcceptBindings() {
         );
 
         // If a folder, update the label in the child folder
-        if (type === 'Folder') {
+        if (type === 'Folder' || type === 'Collection') {
           set(
             folderDictionary({
               driveId,

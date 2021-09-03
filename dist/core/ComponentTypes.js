@@ -159,7 +159,7 @@ import FunctionBaseOperator from './components/abstract/FunctionBaseOperator.js'
 import SectioningComponent from './components/abstract/SectioningComponent.js';
 import InlineRenderInlineChildren from './components/abstract/InlineRenderInlineChildren.js';
 import TextOrInline from './components/abstract/TextOrInline.js';
-
+import SingleCharacterInline from './components/abstract/SingleCharacterInline.js';
 
 const componentTypeArray = [
   ...Object.values(Aliases),
@@ -298,6 +298,7 @@ const componentTypeArray = [
   SectioningComponent,
   InlineRenderInlineChildren,
   TextOrInline,
+  SingleCharacterInline,
 ];
 
 export function standardComponentClasses() {

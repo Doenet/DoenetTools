@@ -77,7 +77,7 @@ export default function SelectedDoenetML() {
       });
     }}
     />
-    <AssignmentSettings role={role} item={item} />
+    <AssignmentSettings role={role} doenetId={item.doenetId} />
     </>
   }
   let assignDraftLabel = "Assign Current Draft";
@@ -213,11 +213,17 @@ export function AssignmentSettings({role, doenetId}) {
 
   const updateAssignment = useRecoilCallback(({set,snapshot})=> async ({doenetId,keyToUpdate,value,description,valueDescription=null})=>{
  
+  
     const oldAInfo = await snapshot.getPromise(loadAssignmentSelector(doenetId))
     let newAInfo = {...oldAInfo,[keyToUpdate]:value}
-    set(loadAssignmentSelector(doenetId),newAInfo);
 
-    const resp = await axios.post('/api/saveAssignmentToDraft.php', newAInfo)
+    set(loadAssignmentSelector(doenetId),newAInfo);
+    let dbAInfo = {...newAInfo};
+    
+    dbAInfo.assignedDate = UTCDBDateString(new Date(dbAInfo.assignedDate))
+    dbAInfo.dueDate = UTCDBDateString(new Date(dbAInfo.dueDate))
+
+    const resp = await axios.post('/api/saveAssignmentToDraft.php', dbAInfo)
 
     if (resp.data.success){
       if (valueDescription){
@@ -232,6 +238,21 @@ export function AssignmentSettings({role, doenetId}) {
     // });
 
   },[addToast])
+
+  // function datestring(d){
+  //   return ("0" + d.getDate()).slice(-2) + "-" + ("0"+(d.getMonth()+1)).slice(-2) + "-" +
+  //   d.getFullYear() + " " + ("0" + d.getHours()).slice(-2) + ":" + ("0" + d.getMinutes()).slice(-2);
+  // }
+  var pad = function(num) { return ('00'+num).slice(-2) };
+  function UTCDBDateString(date){
+    return date.getUTCFullYear()         + '-' +
+    pad(date.getUTCMonth() + 1)  + '-' +
+    pad(date.getUTCDate())       + ' ' +
+    pad(date.getUTCHours())      + ':' +
+    pad(date.getUTCMinutes())    + ':' +
+    pad(date.getUTCSeconds());
+  }
+
 
   //Update assignment values when selection changes
   useEffect(()=>{
@@ -256,10 +277,6 @@ export function AssignmentSettings({role, doenetId}) {
     if (aLoadable.state === "hasError"){ 
       console.error(aLoadable.contents)
       return null;}
-
-  // console.log(">>>>SelectedDoenetML role",role)
-  // console.log(">>>>SelectedDoenetML item",item)
-  // console.log(">>>>SelectedDoenetML aInfo",aInfo)
 
 
   //Student JSX
@@ -288,12 +305,12 @@ export function AssignmentSettings({role, doenetId}) {
   // placeholder="0001-01-01 01:01:01 "
   onBlur={()=>{
     if (aInfo.assignedDate !== assignedDate){
-      updateAssignment({doenetId,keyToUpdate:'assignedDate',value:assignedDate,description:'Assigned Date'})
+      updateAssignment({doenetId,keyToUpdate:'assignedDate',value:assignedDate,description:'Assigned Date',isDateTime:true})
     }}}
   onChange={(e)=>setAssignedDate(e.currentTarget.value)}
   onKeyDown={(e)=>{
     if (e.key === 'Enter' && aInfo.assignedDate !== assignedDate){
-      updateAssignment({doenetId,keyToUpdate:'assignedDate',value:assignedDate,description:'Assigned Date'})
+      updateAssignment({doenetId,keyToUpdate:'assignedDate',value:assignedDate,description:'Assigned Date',isDateTime:true})
     }
   }}
 />
@@ -311,12 +328,12 @@ export function AssignmentSettings({role, doenetId}) {
   // placeholder="0001-01-01 01:01:01 "
   onBlur={()=>{
     if (aInfo.dueDate !== dueDate){
-      updateAssignment({doenetId,keyToUpdate:'dueDate',value:dueDate,description:'Due Date'})
+      updateAssignment({doenetId,keyToUpdate:'dueDate',value:dueDate,description:'Due Date',isDateTime:true})
     }}}
   onChange={(e)=>setDueDate(e.currentTarget.value)}
   onKeyDown={(e)=>{
     if (e.key === 'Enter' && aInfo.dueDate !== dueDate){
-      updateAssignment({doenetId,keyToUpdate:'dueDate',value:dueDate,description:'Due Date'})
+      updateAssignment({doenetId,keyToUpdate:'dueDate',value:dueDate,description:'Due Date',isDateTime:true})
     }
   }}
 />

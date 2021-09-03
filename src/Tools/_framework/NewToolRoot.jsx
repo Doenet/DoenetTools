@@ -121,6 +121,7 @@ export default function ToolRoot(){
     Enrollment:lazy(() => import('./ToolPanels/Enrollment')),
     CollectionEditor: lazy(() => import('./ToolPanels/CollectionEditor')),
     ChooseLearnerPanel: lazy(() => import('./ToolPanels/ChooseLearnerPanel')),
+    EndExamPanel: lazy(() => import('./ToolPanels/EndExamPanel')),
     
   }).current;
 
@@ -266,7 +267,13 @@ let navigationObj = {
       headerControls: [],
       headerControlsPositions: [],
       displayProfile:false,
-    }
+    },
+    endExam:{
+      pageName:"endExam",
+      currentMainPanel:"EndExamPanel",
+      displayProfile:false,
+      hasNoMenuPanel: true,
+    },
     
   },
   course:{
@@ -277,9 +284,9 @@ let navigationObj = {
       pageName:"Assignment",
       menuPanelCap:"AssignmentInfoCap",
       currentMainPanel:"AssignmentViewer",
-      currentMenus:["TimerMenu"], 
-      menusTitles:["Time Remaining"],
-      menusInitOpen:[true],
+      currentMenus:["CreditAchieved","TimerMenu"], 
+      menusTitles:["Credit Achieved","Time Remaining"],
+      menusInitOpen:[true,false],
       headerControls: ["AssignmentBreadCrumb","AssignmentNewAttempt"],
       headerControlsPositions: ["Left","Right"],
     },
@@ -397,6 +404,9 @@ let navigationObj = {
       currentMainPanel:"CollectionEditor",
       headerControls: ["NavigationBreadCrumb"],
       headerControlsPositions: ["Left"],
+      currentMenus:["AssignmentSettingsMenu", "GroupSettings"],
+      menusTitles:["Assignment Settings", "Group Settings"],
+      menusInitOpen:[false, false],
     },
     enrollment:{ //allStudentsInCourse
       pageName:"Enrollment",
