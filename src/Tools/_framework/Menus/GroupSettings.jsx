@@ -46,6 +46,9 @@ function groupReducer(state, action) {
         console.error(error);
       }
       return { ...state, preAssigned: action.payload.preAssigned };
+    case 'isReleased':
+      console.log('isrel', action.payload);
+      return { ...state, isReleased: action.payload.isReleased };
     case 'save':
       try {
         axios.post('/api/updateGroupSettings.php', {
@@ -96,6 +99,7 @@ export default function GroupSettings() {
       isReleased: 0,
     },
   );
+  console.log(isReleased);
   const assignCollection = useCallback(
     async (doenetId, grouping) => {
       try {
@@ -114,6 +118,8 @@ export default function GroupSettings() {
             groups: JSON.stringify(shuffledGroups),
             entries: JSON.stringify(shuffledEntries),
           });
+          addToast('Collection has been assigned', toastType.SUCCESS);
+          dispach({ type: 'isReleased', payload: { isReleased: '1' } });
         } else {
           addToast(
             'Please add at least one entry to the collection before assigning',
@@ -140,22 +146,38 @@ export default function GroupSettings() {
       reader.onerror = () => {};
       reader.onload = () => {
         parse(reader.result, { comment: '#' }, function (err, data) {
-          const headers = data[0];
-          const emailColIdx = headers.indexOf('Email');
-          const groupNumColIdx = headers.indexOf('Group Number');
-          if (emailColIdx === -1) {
-            addToast('File missing "Email" column header', toastType.ERROR);
-          } else if (groupNumColIdx === -1) {
-            addToast(
-              'File missing "Group Number" column header',
-              toastType.ERROR,
-            );
+          if (err) {
+            console.error(err);
           } else {
-            // for(){
-            // }
+            const headers = data.shift();
+            const emailColIdx = headers.indexOf('Email');
+            const groupColIdx = headers.indexOf('Group Number');
+            const groups = [];
+            if (emailColIdx === -1) {
+              addToast('File missing "Email" column header', toastType.ERROR);
+            } else if (groupColIdx === -1) {
+              addToast(
+                'File missing "Group Number" column header',
+                toastType.ERROR,
+              );
+            } else {
+              for (let studentLine in data) {
+                let studentData = data[studentLine];
+                let groupNumber = studentData[groupColIdx] - 1;
+                if (!groups[groupNumber]) {
+                  groups[groupNumber] = [];
+                }
+                groups[groupNumber].push(studentData[emailColIdx]);
+              }
+            }
+            for (let i = 0; i < groups.length; i++) {
+              if (!groups[i]) {
+                groups[i] = [];
+              }
+            }
+            // data.shift(); //Remove head row of data
+            setGroups(groups);
           }
-          // data.shift(); //Remove head row of data
-          setGroups();
         });
       };
       reader.readAsText(file[0]);
@@ -291,7 +313,7 @@ export default function GroupSettings() {
         )}
         <Button
           alert
-          disabled={isReleased}
+          disabled={isReleased === '1'}
           width="menu"
           value="Assign Collection"
           onClick={() => {
