@@ -76,7 +76,6 @@ export default function CollectionEditor() {
     for (let key in assignedEntriesData) {
       const { doenetId, entryId, entryDoenetId, entryVariant } =
         assignedEntriesData[key];
-      console.log('v', entryVariant);
       entries.push(
         <Suspense key={entryId}>
           <CollectionEntry
@@ -409,60 +408,64 @@ function GroupsVerificationTable({ doenetId }) {
                 overflow: 'hidden',
               }}
             >
-              <tr>
-                <th
-                  colSpan={3}
+              <thead>
+                <tr>
+                  <th
+                    colSpan={3}
+                    style={{
+                      textAlign: 'center',
+                      backgroundColor: '#1a5a99',
+                      color: 'white',
+                      borderBottom: '2px solid black',
+                    }}
+                  >
+                    Group {idx + 1}
+                  </th>
+                </tr>
+                <tr
                   style={{
-                    textAlign: 'center',
                     backgroundColor: '#1a5a99',
                     color: 'white',
-                    borderBottom: '2px solid black',
                   }}
                 >
-                  Group {idx + 1}
-                </th>
-              </tr>
-              <tr
-                style={{
-                  backgroundColor: '#1a5a99',
-                  color: 'white',
-                }}
-              >
-                <th
-                  style={{
-                    whiteSpace: 'nowrap',
-                    borderRight: '2px solid black',
-                  }}
-                >
-                  First
-                </th>
-                <th
-                  style={{
-                    whiteSpace: 'nowrap',
-                  }}
-                >
-                  Last
-                </th>
-                <th
-                  style={{
-                    whiteSpace: 'nowrap',
-                    borderLeft: '2px solid black',
-                  }}
-                >
-                  Email
-                </th>
-              </tr>
-              {group.map((email, idz) => (
-                <tr key={email}>
-                  <td style={{ textAlign: 'center' }}>
-                    {namesByGroup[idx][idz].firstName}
-                  </td>
-                  <td style={{ textAlign: 'center' }}>
-                    {namesByGroup[idx][idz].lastName}
-                  </td>
-                  <td style={{ textAlign: 'center' }}>{email}</td>
+                  <th
+                    style={{
+                      whiteSpace: 'nowrap',
+                      borderRight: '2px solid black',
+                    }}
+                  >
+                    First
+                  </th>
+                  <th
+                    style={{
+                      whiteSpace: 'nowrap',
+                    }}
+                  >
+                    Last
+                  </th>
+                  <th
+                    style={{
+                      whiteSpace: 'nowrap',
+                      borderLeft: '2px solid black',
+                    }}
+                  >
+                    Email
+                  </th>
                 </tr>
-              ))}
+              </thead>
+              <tbody>
+                {group.map((email, idz) => (
+                  <tr key={email}>
+                    <td style={{ textAlign: 'center' }}>
+                      {namesByGroup[idx][idz].firstName}
+                    </td>
+                    <td style={{ textAlign: 'center' }}>
+                      {namesByGroup[idx][idz].lastName}
+                    </td>
+                    <td style={{ textAlign: 'center' }}>{email}</td>
+                  </tr>
+                ))}
+              </tbody>
             </table>
           );
         }

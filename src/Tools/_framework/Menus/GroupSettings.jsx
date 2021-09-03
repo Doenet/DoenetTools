@@ -94,7 +94,6 @@ export const csvGroups = atomFamily({
 });
 
 export default function GroupSettings() {
-  const [groups, setGroups] = useState([]);
   const doenetId = useRecoilValue(searchParamAtomFamily('doenetId'));
   const { emailsByGroup } = useRecoilValue(csvGroups(doenetId));
   const reset = useResetRecoilState(csvGroups(doenetId));
@@ -122,7 +121,7 @@ export default function GroupSettings() {
           //GROUPS
           // [ [ 'id1', 'id2', 'id3'] , ['id4', 'id5', 'id6'], ['id7', 'id8', 'id9']]
           const shuffledEntries = shuffle(entries);
-          const shuffledGroups = shuffle(grouping);
+          const shuffledGroups = shuffle([...grouping]);
           axios.post('/api/assignCollection.php', {
             doenetId,
             groups: JSON.stringify(shuffledGroups),
@@ -196,7 +195,6 @@ export default function GroupSettings() {
                   newCSVGroups.namesByGroup[i] = [];
                 }
               }
-              console.log(newCSVGroups);
               set(csvGroups(doenetId), newCSVGroups);
             }
           });
