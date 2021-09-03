@@ -25,6 +25,7 @@ import {
   serializedComponentsReplacer,
   serializedComponentsReviver,
 } from '../../../Core/utils/serializedStateProcessing';
+import { csvGroups } from '../Menus/GroupSettings';
 
 export default function CollectionEditor() {
   const [driveId, , itemId] = useRecoilValue(
@@ -75,7 +76,6 @@ export default function CollectionEditor() {
     for (let key in assignedEntriesData) {
       const { doenetId, entryId, entryDoenetId, entryVariant } =
         assignedEntriesData[key];
-      console.log('v', entryVariant);
       entries.push(
         <Suspense key={entryId}>
           <CollectionEntry
@@ -148,8 +148,14 @@ export default function CollectionEditor() {
       }}
     >
       {assignedEntries}
-      <div style={{ height: '10px', background: 'black' }}></div>
+      <div
+        style={{ height: '10px', background: 'black', borderRadius: '4px' }}
+      ></div>
       {availableEntries}
+      <div
+        style={{ height: '10px', background: 'black', borderRadius: '4px' }}
+      ></div>
+      <GroupsVerificationTable doenetId={doenetId} />
     </div>
   );
 }
@@ -191,10 +197,13 @@ const assignedEntiresInfo = atomFamily({
     key: 'assignedEntiresInfo/Default',
     get: (doenetId) => async () => {
       try {
-        const resp = await axios.get('/api/loadCollection.php', {
-          params: { doenetId },
-        });
-        return resp.data.entries ?? [];
+        if (!doenetId) {
+          const resp = await axios.get('/api/loadCollection.php', {
+            params: { doenetId },
+          });
+          return resp.data.entries ?? [];
+        }
+        return [];
       } catch (error) {
         console.error(error);
         return [];
@@ -376,6 +385,94 @@ function CollectionEntryDisplayLine({
           />
         )}
       </ButtonGroup>
+    </div>
+  );
+}
+
+function GroupsVerificationTable({ doenetId }) {
+  const { namesByGroup, emailsByGroup } = useRecoilValue(csvGroups(doenetId));
+  return (
+    <div
+      style={{
+        display: 'grid',
+        gridTemplateColumns: '1fr 1fr 1fr',
+        gap: '8px',
+      }}
+    >
+      {emailsByGroup?.map((group, idx) => {
+        if (group.length > 0) {
+          return (
+            <table
+              key={idx}
+              style={{
+                borderCollapse: 'collapse',
+                width: '100%',
+                borderRadius: '4px',
+                overflow: 'hidden',
+              }}
+            >
+              <thead>
+                <tr>
+                  <th
+                    colSpan={3}
+                    style={{
+                      textAlign: 'center',
+                      backgroundColor: '#1a5a99',
+                      color: 'white',
+                      borderBottom: '2px solid black',
+                    }}
+                  >
+                    Group {idx + 1}
+                  </th>
+                </tr>
+                <tr
+                  style={{
+                    backgroundColor: '#1a5a99',
+                    color: 'white',
+                  }}
+                >
+                  <th
+                    style={{
+                      whiteSpace: 'nowrap',
+                      borderRight: '2px solid black',
+                    }}
+                  >
+                    First
+                  </th>
+                  <th
+                    style={{
+                      whiteSpace: 'nowrap',
+                    }}
+                  >
+                    Last
+                  </th>
+                  <th
+                    style={{
+                      whiteSpace: 'nowrap',
+                      borderLeft: '2px solid black',
+                    }}
+                  >
+                    Email
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {group.map((email, idz) => (
+                  <tr key={email}>
+                    <td style={{ textAlign: 'center' }}>
+                      {namesByGroup[idx][idz].firstName}
+                    </td>
+                    <td style={{ textAlign: 'center' }}>
+                      {namesByGroup[idx][idz].lastName}
+                    </td>
+                    <td style={{ textAlign: 'center' }}>{email}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          );
+        }
+      })}
     </div>
   );
 }

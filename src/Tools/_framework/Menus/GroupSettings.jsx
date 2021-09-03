@@ -1,8 +1,13 @@
 import axios from 'axios';
 import parse from 'csv-parse';
-import React, { useEffect, useReducer, useCallback, useState } from 'react';
+import React, { useEffect, useReducer, useCallback } from 'react';
 import { useDropzone } from 'react-dropzone';
-import { useRecoilValue } from 'recoil';
+import {
+  atomFamily,
+  useRecoilCallback,
+  useRecoilValue,
+  useResetRecoilState,
+} from 'recoil';
 import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
 import ButtonGroup from '../../../_reactComponents/PanelHeaderComponents/ButtonGroup';
 import CollapseSection from '../../../_reactComponents/PanelHeaderComponents/CollapseSection';
@@ -47,7 +52,6 @@ function groupReducer(state, action) {
       }
       return { ...state, preAssigned: action.payload.preAssigned };
     case 'isReleased':
-      console.log('isrel', action.payload);
       return { ...state, isReleased: action.payload.isReleased };
     case 'save':
       try {
@@ -84,9 +88,15 @@ function shuffle(array) {
   return array;
 }
 
+export const csvGroups = atomFamily({
+  key: 'csvGroups',
+  default: { namesByGroup: [], emailsByGroup: [] },
+});
+
 export default function GroupSettings() {
-  const [groups, setGroups] = useState([]);
   const doenetId = useRecoilValue(searchParamAtomFamily('doenetId'));
+  const { emailsByGroup } = useRecoilValue(csvGroups(doenetId));
+  const reset = useResetRecoilState(csvGroups(doenetId));
   const addToast = useToast();
 
   const [{ min, max, pref, preAssigned, isReleased }, dispach] = useReducer(
@@ -99,7 +109,6 @@ export default function GroupSettings() {
       isReleased: 0,
     },
   );
-  console.log(isReleased);
   const assignCollection = useCallback(
     async (doenetId, grouping) => {
       try {
@@ -112,7 +121,7 @@ export default function GroupSettings() {
           //GROUPS
           // [ [ 'id1', 'id2', 'id3'] , ['id4', 'id5', 'id6'], ['id7', 'id8', 'id9']]
           const shuffledEntries = shuffle(entries);
-          const shuffledGroups = shuffle(grouping);
+          const shuffledGroups = shuffle([...grouping]);
           axios.post('/api/assignCollection.php', {
             doenetId,
             groups: JSON.stringify(shuffledGroups),
@@ -137,52 +146,62 @@ export default function GroupSettings() {
     //Get enrollment and split into groups by grouping prefernce
   }, []);
 
-  //TODO: accept the file and store locally for assigning
-  const onDrop = useCallback(
-    (file) => {
-      const reader = new FileReader();
+  const onDrop = useRecoilCallback(
+    ({ set }) =>
+      (file) => {
+        const reader = new FileReader();
 
-      reader.onabort = () => {};
-      reader.onerror = () => {};
-      reader.onload = () => {
-        parse(reader.result, { comment: '#' }, function (err, data) {
-          if (err) {
-            console.error(err);
-          } else {
-            const headers = data.shift();
-            const emailColIdx = headers.indexOf('Email');
-            const groupColIdx = headers.indexOf('Group Number');
-            const groups = [];
-            if (emailColIdx === -1) {
-              addToast('File missing "Email" column header', toastType.ERROR);
-            } else if (groupColIdx === -1) {
-              addToast(
-                'File missing "Group Number" column header',
-                toastType.ERROR,
-              );
+        reader.onabort = () => {};
+        reader.onerror = () => {};
+        reader.onload = () => {
+          parse(reader.result, { comment: '#' }, function (err, data) {
+            if (err) {
+              console.error(err);
+              addToast(`CSV invalid – Error: ${err}`, toastType.ERROR);
             } else {
-              for (let studentLine in data) {
-                let studentData = data[studentLine];
-                let groupNumber = studentData[groupColIdx] - 1;
-                if (!groups[groupNumber]) {
-                  groups[groupNumber] = [];
+              const headers = data.shift();
+              const emailColIdx = headers.indexOf('Email');
+              const groupColIdx = headers.indexOf('Group Number');
+              const firstNameIdx = headers.indexOf('First Name');
+              const lastNameIdx = headers.indexOf('Last Name');
+              const newCSVGroups = { namesByGroup: [], emailsByGroup: [] };
+              if (emailColIdx === -1) {
+                addToast('File missing "Email" column header', toastType.ERROR);
+              } else if (groupColIdx === -1) {
+                addToast(
+                  'File missing "Group Number" column header',
+                  toastType.ERROR,
+                );
+              } else {
+                for (let studentLine in data) {
+                  let studentData = data[studentLine];
+                  let groupNumber = studentData[groupColIdx] - 1;
+                  if (!newCSVGroups.emailsByGroup[groupNumber]) {
+                    newCSVGroups.emailsByGroup[groupNumber] = [];
+                    newCSVGroups.namesByGroup[groupNumber] = [];
+                  }
+                  newCSVGroups.emailsByGroup[groupNumber].push(
+                    studentData[emailColIdx],
+                  );
+                  newCSVGroups.namesByGroup[groupNumber].push({
+                    firstName: studentData[firstNameIdx] ?? '',
+                    lastName: studentData[lastNameIdx] ?? '',
+                  });
                 }
-                groups[groupNumber].push(studentData[emailColIdx]);
               }
-            }
-            for (let i = 0; i < groups.length; i++) {
-              if (!groups[i]) {
-                groups[i] = [];
+              for (let i = 0; i < newCSVGroups.emailsByGroup.length; i++) {
+                if (!newCSVGroups.emailsByGroup[i]) {
+                  newCSVGroups.emailsByGroup[i] = [];
+                  newCSVGroups.namesByGroup[i] = [];
+                }
               }
+              set(csvGroups(doenetId), newCSVGroups);
             }
-            // data.shift(); //Remove head row of data
-            setGroups(groups);
-          }
-        });
-      };
-      reader.readAsText(file[0]);
-    },
-    [addToast],
+          });
+        };
+        reader.readAsText(file[0]);
+      },
+    [addToast, doenetId],
   );
   const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
 
@@ -205,8 +224,9 @@ export default function GroupSettings() {
     }
     return () => {
       mounted = false;
+      reset();
     };
-  }, [doenetId]);
+  }, [doenetId, reset]);
 
   return (
     <div>
@@ -317,7 +337,7 @@ export default function GroupSettings() {
           width="menu"
           value="Assign Collection"
           onClick={() => {
-            assignCollection(doenetId, groups);
+            assignCollection(doenetId, emailsByGroup);
           }}
         />
       </ButtonGroup>
