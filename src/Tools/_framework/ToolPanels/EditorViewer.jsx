@@ -40,7 +40,6 @@ export const editorDoenetIdInitAtom = atom({
 export default function EditorViewer(props){
   // console.log(">>>>===EditorViewer")
   const viewerDoenetML = useRecoilValue(viewerDoenetMLAtom);
-  // const isCurrentDraft = useRecoilValue(currentDraftSelectedAtom)
   const paramDoenetId = useRecoilValue(searchParamAtomFamily('doenetId')) 
   const initilizedDoenetId = useRecoilValue(editorDoenetIdInitAtom);
   const [variantInfo,setVariantInfo] = useRecoilState(variantInfoAtom);
@@ -74,13 +73,12 @@ export default function EditorViewer(props){
 
   if (paramDoenetId !== initilizedDoenetId){
     //DoenetML is changing to another DoenetID
-    return <div style={props.style}></div>
+    return null;
   }
 
 
   let attemptNumber = 1;
   let solutionDisplayMode = "button";
-
 
   if (variantInfo.lastUpdatedIndexOrName === 'Index'){
     setVariantInfo((was)=>{
@@ -97,7 +95,6 @@ export default function EditorViewer(props){
     return newObj})
 
   }
-
 
   function variantCallback(generatedVariantInfo, allPossibleVariants){
     // console.log(">>>variantCallback",generatedVariantInfo,allPossibleVariants)
@@ -117,8 +114,7 @@ export default function EditorViewer(props){
   
   // console.log(`>>>Show DoenetViewer with value -${viewerDoenetML}-`)
   // console.log('>>>DoenetViewer Read Only:',!isCurrentDraft)
-  return <div style={props.style}>
-    <DoenetViewer
+  return <DoenetViewer
     key={"doenetviewer"}
     doenetML={viewerDoenetML}
     flags={{
@@ -134,9 +130,7 @@ export default function EditorViewer(props){
     allowLocalPageState={false}
     allowSaveSubmissions={false}
     allowSaveEvents={false}
-    generatedVariantCallback={variantCallback}
+    generatedVariantCallback={variantCallback} //TODO:Replace
     requestedVariant={variantInfo.requestedVariant}
     /> 
-
-  </div>
 }

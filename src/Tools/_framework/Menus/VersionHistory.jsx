@@ -365,7 +365,7 @@ if (initializedDoenetId !== doenetId){
 }
 
 
-console.log(">>>versionHistory.contents",versionHistory.contents)
+// console.log(">>>versionHistory.contents",versionHistory.contents)
 // console.log(">>>initializedDoenetId",initializedDoenetId)
 // console.log(">>>path",path)
 
@@ -392,7 +392,7 @@ console.log(">>>versionHistory.contents",versionHistory.contents)
     if (version.isReleased === '1'){
       released = "(Released)";
     }
-    options.push(<option value={version.versionId} selected={selected}>{released} {version.title}</option>,)
+    options.push(<option key={`option${version.versionId}`} value={version.versionId} selected={selected}>{released} {version.title}</option>,)
   }
 
   const version = versionsObj[inUseVersionId];
