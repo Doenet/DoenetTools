@@ -86,7 +86,7 @@ if($timeLimit > 0) {
 
 
 // Get time began and creditOverride from user_assignment_attempt
-$sql = "SELECT began, creditOverride
+$sql = "SELECT began, creditOverride, credit
         FROM user_assignment_attempt
         WHERE userId = '$userId'
         AND doenetId = '$doenetId'
@@ -101,6 +101,7 @@ if ($result->num_rows < 1){
 } else {
   $row = $result->fetch_assoc();
   $creditOverride_for_attempt = $row['creditOverride'];
+  $previousCredit_for_attempt = $row['credit'];
 
   if($timeLimit > 0) {
     // give a buffer of one minute
@@ -119,7 +120,7 @@ if ($result->num_rows < 1){
 
 // look for a due date adjustment and creditOverride for asssignment,
 // which includes check for user_assignment having an entry
-$sql = "SELECT dueDateOverride, creditOverride
+$sql = "SELECT dueDateOverride, creditOverride, credit
         FROM user_assignment
         WHERE userId = '$userId'
         AND doenetId = '$doenetId'
@@ -135,6 +136,7 @@ if ($result->num_rows < 1){
   $row = $result->fetch_assoc();
   $dueDateOverride = $row['dueDateOverride'];
   $creditOverride_for_assignment = $row['creditOverride'];
+  $previousCredit_for_assignment = $row['credit'];
 
   // If there is a due date override for this user
   // use that for the due date
@@ -223,6 +225,10 @@ $result = $conn->query($sql);
 //   - user_assignment_attempt_item
 // only if valid
 
+$set_credit_by_item = FALSE;
+$credit_by_item = array();
+
+
 if ($valid){
 
   // if have a credit override on that item
@@ -272,6 +278,8 @@ if ($valid){
       $total_credits = 0;
       $total_weights = 0;
 
+      $set_credit_by_item = TRUE;
+
       while($row = $result->fetch_assoc()){ 
           $loopItemNumber = $row['itemNumber'];
           $item_weight = $row['weight'];
@@ -285,6 +293,8 @@ if ($valid){
           }
   
           $total_credits = $total_credits + ($item_credit * $item_weight);
+
+          $credit_by_item[] = $item_credit;
       }
       $credit_for_attempt = 0;
       if ($total_weights > 0){ //Prevent divide by zero
@@ -317,25 +327,68 @@ if ($valid){
         $result = $conn->query($sql);
         $row = $result->fetch_assoc();
 
-        $max_credit_for_assignment = MAX($credit_for_attempt,$row['maxCredit']);
+        $credit_for_assignment = MAX($credit_for_attempt,$row['maxCredit']);
 
         // update credit in user_assigment
         $sql = "
             UPDATE user_assignment
-            SET credit='$max_credit_for_assignment'
+            SET credit='$credit_for_assignment'
             WHERE userId = '$userId'
             AND doenetId = '$doenetId'
             AND contentId = '$contentId'
             ";
         $result = $conn->query($sql);
 
-      } // close have NULL override of credit for assignment
+      } else {
+        // have non-NULL override of credit for assignment
+        $credit_for_assignment = $creditOverride_for_assignment;
+      } 
 
-    } // close have NULL override of credit for attempt
+    } else {
+      // have non-NULL override of credit for attempt
+      $credit_for_attempt = $creditOverride_for_attempt;
+      $credit_for_assignment = $previousCredit_for_assignment;
+    }
 
-  } // close have NULL override of credit for item
+  } else {
+    // have non-NULL override of credit for item
+    $credit_for_item = $creditOverride_for_item;
+    $credit_for_attempt = $previousCredit_for_attempt;
+    $credit_for_assignment = $previousCredit_for_assignment;
+  } 
 
-} //Close have valid attempt
+}  else {
+  // have invalid attempt
+
+  if($databaseError) {
+    $credit_for_item = NAN;
+    $credit_for_attempt = NAN;
+    $credit_for_assignment = NAN;
+  } else {
+    $credit_for_item = $previousCredit;
+    $credit_for_attempt = $previousCredit_for_attempt;
+    $credit_for_assignment = $previousCredit_for_assignment;
+  }
+
+}
+
+if(!$set_credit_by_item && !$databaseError) {
+  // look up the stored credit for each item of attempt
+  $sql = "SELECT credit
+          FROM user_assignment_attempt_item
+          WHERE userId = '$userId'
+          AND doenetId = '$doenetId'
+          AND contentId = '$contentId'
+          AND attemptNumber = '$attemptNumber'
+          ORDER BY itemNumber
+          ";
+  $result = $conn->query($sql);
+
+  while($row = $result->fetch_assoc()){ 
+    $credit_by_item[] = $row['credit'];
+  }
+
+}
 
 $response_arr = array(
     "access"=> TRUE,
@@ -344,7 +397,11 @@ $response_arr = array(
     "pastDueDate"=>$pastDueDate,
     "exceededAttemptsAllowed"=>$exceededAttemptsAllowed,
     "databaseError"=>$databaseError,
-    "valid"=>$valid
+    "valid"=>$valid,
+    "creditForItem"=>$credit_for_item,
+    "creditForAttempt"=>$credit_for_attempt,
+    "creditForAssignment"=>$credit_for_assignment,
+    "creditByItem"=>$credit_by_item
 );
 
 // set response code - 200 OK
