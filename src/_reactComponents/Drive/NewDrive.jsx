@@ -69,7 +69,11 @@ const loadAssignmentAtomFamily = atomFamily({
       const { data } = await axios.get('/api/getAllAssignmentSettings.php', {
         params: payload,
       });
-      return data.assignment;
+
+      let assignment = {...data.assignment}
+      assignment.assignedDate = new Date(`${data.assignment?.assignedDate} UTC`).toLocaleString()
+      assignment.dueDate = new Date(`${data.assignment?.dueDate} UTC`).toLocaleString()
+      return assignment;
     },
   }),
 });
@@ -80,12 +84,8 @@ export const loadAssignmentSelector = selectorFamily({
     (doenetId) =>
     async ({ get }) => {
       //new Date(`${aInfo?.assignedDate} UTC`).toLocaleString()
-      let resp = await get(loadAssignmentAtomFamily(doenetId));
-      let newResp = {...resp}
-      newResp.assignedDate = new Date(`${resp?.assignedDate} UTC`).toLocaleString()
-      newResp.dueDate = new Date(`${resp?.dueDate} UTC`).toLocaleString()
-      return newResp;
-      // return await get(loadAssignmentAtomFamily(doenetId));
+      
+      return await get(loadAssignmentAtomFamily(doenetId));
     },
   set:
     (doenetId) =>

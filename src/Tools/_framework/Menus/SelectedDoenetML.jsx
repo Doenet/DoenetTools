@@ -211,18 +211,19 @@ export function AssignmentSettings({role, doenetId}) {
   let [proctorMakesAvailable,setProctorMakesAvailable] = useState(true)
   
 
-  const updateAssignment = useRecoilCallback(({set,snapshot})=> async ({doenetId,keyToUpdate,value,description,valueDescription=null,isDateTime=false})=>{
+  const updateAssignment = useRecoilCallback(({set,snapshot})=> async ({doenetId,keyToUpdate,value,description,valueDescription=null})=>{
  
   
     const oldAInfo = await snapshot.getPromise(loadAssignmentSelector(doenetId))
     let newAInfo = {...oldAInfo,[keyToUpdate]:value}
 
-    if (isDateTime){
-      newAInfo[keyToUpdate] = UTCDBDateString(new Date(value))
-     }
     set(loadAssignmentSelector(doenetId),newAInfo);
+    let dbAInfo = {...newAInfo};
+    
+    dbAInfo.assignedDate = UTCDBDateString(new Date(dbAInfo.assignedDate))
+    dbAInfo.dueDate = UTCDBDateString(new Date(dbAInfo.dueDate))
 
-    const resp = await axios.post('/api/saveAssignmentToDraft.php', newAInfo)
+    const resp = await axios.post('/api/saveAssignmentToDraft.php', dbAInfo)
 
     if (resp.data.success){
       if (valueDescription){
@@ -255,15 +256,7 @@ export function AssignmentSettings({role, doenetId}) {
 
   //Update assignment values when selection changes
   useEffect(()=>{
-
-
-      // let localStr = new Date(`${aInfo?.assignedDate} UTC`).toLocaleString();
-      // console.log(">>>>local",localStr)
-      // console.log(">>>>UTC",UTCDBDateString(new Date(localStr)))
-
-      // setAssignedDate(new Date(`${aInfo?.assignedDate} UTC`).toLocaleString())
       setAssignedDate(aInfo?.assignedDate)
-      // setDueDate(new Date(`${aInfo?.dueDate} UTC`).toLocaleString())
       setDueDate(aInfo?.dueDate)
       setLimitAttempts(aInfo?.numberOfAttemptsAllowed !== null)
       setNumberOfAttemptsAllowed(aInfo?.numberOfAttemptsAllowed)
@@ -284,10 +277,6 @@ export function AssignmentSettings({role, doenetId}) {
     if (aLoadable.state === "hasError"){ 
       console.error(aLoadable.contents)
       return null;}
-
-  // console.log(">>>>SelectedDoenetML role",role)
-  // console.log(">>>>SelectedDoenetML item",item)
-  // console.log(">>>>SelectedDoenetML aInfo",aInfo)
 
 
   //Student JSX
