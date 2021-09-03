@@ -197,10 +197,13 @@ const assignedEntiresInfo = atomFamily({
     key: 'assignedEntiresInfo/Default',
     get: (doenetId) => async () => {
       try {
-        const resp = await axios.get('/api/loadCollection.php', {
-          params: { doenetId },
-        });
-        return resp.data.entries ?? [];
+        if (!doenetId) {
+          const resp = await axios.get('/api/loadCollection.php', {
+            params: { doenetId },
+          });
+          return resp.data.entries ?? [];
+        }
+        return [];
       } catch (error) {
         console.error(error);
         return [];
