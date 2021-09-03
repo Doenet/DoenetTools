@@ -90,7 +90,6 @@ $sql = "SELECT began, creditOverride, credit
         FROM user_assignment_attempt
         WHERE userId = '$userId'
         AND doenetId = '$doenetId'
-        AND contentId = '$contentId'
         AND attemptNumber = '$attemptNumber'
         ";
 $result = $conn->query($sql);
@@ -124,7 +123,6 @@ $sql = "SELECT dueDateOverride, creditOverride, credit
         FROM user_assignment
         WHERE userId = '$userId'
         AND doenetId = '$doenetId'
-        AND contentId = '$contentId'
         ";
 
 $result = $conn->query($sql);
@@ -158,7 +156,6 @@ $sql = "SELECT credit, creditOverride, viewedSolution
         FROM user_assignment_attempt_item
         WHERE userId = '$userId'
         AND doenetId = '$doenetId'
-        AND contentId = '$contentId'
         AND attemptNumber = '$attemptNumber'
         AND itemNumber = '$itemNumber'
         ";
@@ -190,7 +187,6 @@ $sql = "
         FROM user_assignment_attempt_item_submission
         WHERE userId = '$userId'
         AND doenetId = '$doenetId'
-        AND contentId = '$contentId'
         AND attemptNumber = '$attemptNumber'
         AND itemNumber = '$itemNumber'
         ORDER BY submissionNumber DESC
@@ -251,7 +247,6 @@ if ($valid){
     SET credit='$credit_for_item'
     WHERE userId = '$userId'
     AND doenetId = '$doenetId'
-    AND contentId = '$contentId'
     AND attemptNumber = '$attemptNumber'
     AND itemNumber = '$itemNumber'
     ";
@@ -270,7 +265,6 @@ if ($valid){
               FROM user_assignment_attempt_item
               WHERE userId = '$userId'
               AND doenetId = '$doenetId'
-              AND contentId = '$contentId'
               AND attemptNumber = '$attemptNumber'
               ORDER BY itemNumber
               ";
@@ -308,7 +302,6 @@ if ($valid){
               SET credit='$credit_for_attempt'
               WHERE userId = '$userId'
               AND doenetId = '$doenetId'
-              AND contentId = '$contentId'
               AND attemptNumber = '$attemptNumber'
               ";
       $result = $conn->query($sql);
@@ -321,7 +314,6 @@ if ($valid){
                 FROM user_assignment_attempt
                 WHERE userId = '$userId'
                 AND doenetId = '$doenetId'
-                AND contentId = '$contentId'
         ";
 
         $result = $conn->query($sql);
@@ -335,7 +327,6 @@ if ($valid){
             SET credit='$credit_for_assignment'
             WHERE userId = '$userId'
             AND doenetId = '$doenetId'
-            AND contentId = '$contentId'
             ";
         $result = $conn->query($sql);
 
@@ -361,9 +352,9 @@ if ($valid){
   // have invalid attempt
 
   if($databaseError) {
-    $credit_for_item = NAN;
-    $credit_for_attempt = NAN;
-    $credit_for_assignment = NAN;
+    $credit_for_item = 0;
+    $credit_for_attempt = 0;
+    $credit_for_assignment = 0;
   } else {
     $credit_for_item = $previousCredit;
     $credit_for_attempt = $previousCredit_for_attempt;
@@ -378,7 +369,6 @@ if(!$set_credit_by_item && !$databaseError) {
           FROM user_assignment_attempt_item
           WHERE userId = '$userId'
           AND doenetId = '$doenetId'
-          AND contentId = '$contentId'
           AND attemptNumber = '$attemptNumber'
           ORDER BY itemNumber
           ";

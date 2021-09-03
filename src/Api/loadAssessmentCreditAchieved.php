@@ -11,7 +11,6 @@ $jwtArray = include "jwtArray.php";
 $userId = $jwtArray['userId'];
 
 $doenetId = mysqli_real_escape_string($conn,$_REQUEST["doenetId"]);
-$contentId = mysqli_real_escape_string($conn,$_REQUEST["contentId"]);
 $attemptNumber = mysqli_real_escape_string($conn,$_REQUEST["attemptNumber"]);
 
 $success = TRUE;
@@ -19,9 +18,6 @@ $message = "";
 if ($doenetId == ""){
   $success = FALSE;
   $message = 'Internal Error: missing doenetId';
-}elseif ($contentId == ""){
-  $success = FALSE;
-  $message = 'Internal Error: missing contentId';
 }elseif ($attemptNumber == ""){
   $success = FALSE;
   $message = 'Internal Error: missing attemptNumber';
@@ -35,20 +31,17 @@ $sql = "SELECT credit
         FROM user_assignment
         WHERE userId = '$userId'
         AND doenetId = '$doenetId'
-        AND contentId = '$contentId'
         ";
 
 $result = $conn->query($sql);
 if ($result->num_rows < 1){ 
   $databaseError = 1;
-  $credit_for_assignment = NAN;
+  $credit_for_assignment = 0;
   $success = FALSE;
 } else {
 
   $row = $result->fetch_assoc();
-  $dueDateOverride = $row['dueDateOverride'];
-  $creditOverride_for_assignment = $row['creditOverride'];
-  $previousCredit_for_assignment = $row['credit'];
+  $credit_for_assignment = $row['credit'];
 
 }
 
@@ -57,14 +50,13 @@ $sql = "SELECT credit
         FROM user_assignment_attempt
         WHERE userId = '$userId'
         AND doenetId = '$doenetId'
-        AND contentId = '$contentId'
         AND attemptNumber = '$attemptNumber'
         ";
 $result = $conn->query($sql);
 
 if ($result->num_rows < 1){
   $databaseError = 2;
-  $credit_for_attempt = NAN;
+  $credit_for_attempt = 0;
   $success = FALSE;
 } else {
   $row = $result->fetch_assoc();
@@ -77,7 +69,6 @@ $sql = "SELECT credit
     FROM user_assignment_attempt_item
     WHERE userId = '$userId'
     AND doenetId = '$doenetId'
-    AND contentId = '$contentId'
     AND attemptNumber = '$attemptNumber'
     ORDER BY itemNumber
     ";
