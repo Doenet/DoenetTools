@@ -7,7 +7,7 @@ import {
   useRecoilValue,
   useRecoilValueLoadable,
   useRecoilState,
-  useSetRecoilState,
+  // useSetRecoilState,
   useRecoilCallback,
 } from 'recoil';
 import {
@@ -19,19 +19,19 @@ import {
 import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
 import ActionButton from '../../../_reactComponents/PanelHeaderComponents/ActionButton';
 import ActionButtonGroup from '../../../_reactComponents/PanelHeaderComponents/ActionButtonGroup';
-import Increment from '../../../_reactComponents/PanelHeaderComponents/IncrementMenu';
+// import Increment from '../../../_reactComponents/PanelHeaderComponents/IncrementMenu';
 import useSockets from '../../../_reactComponents/Sockets';
 import { pageToolViewAtom } from '../NewToolRoot';
-import {
-  itemHistoryAtom,
-  assignmentDictionarySelector,
-  useAssignment,
-} from '../ToolHandlers/CourseToolHandler';
-import { useAssignmentCallbacks } from '../../../_reactComponents/Drive/DriveActions';
+// import {
+//   itemHistoryAtom,
+//   assignmentDictionarySelector,
+//   useAssignment,
+// } from '../ToolHandlers/CourseToolHandler';
+// import { useAssignmentCallbacks } from '../../../_reactComponents/Drive/DriveActions';
 import { useToast } from '../Toast';
 import Switch from '../../_framework/Switch';
-import { selectedMenuPanelAtom } from '../Panels/NewMenuPanel';
-import ButtonGroup from '../../../_reactComponents/PanelHeaderComponents/ButtonGroup';
+// import { selectedMenuPanelAtom } from '../Panels/NewMenuPanel';
+// import ButtonGroup from '../../../_reactComponents/PanelHeaderComponents/ButtonGroup';
 import axios from 'axios';
 
 export const selectedVersionAtom = atom({
@@ -305,12 +305,12 @@ export function AssignmentSettings({role, doenetId}) {
   // placeholder="0001-01-01 01:01:01 "
   onBlur={()=>{
     if (aInfo.assignedDate !== assignedDate){
-      updateAssignment({doenetId,keyToUpdate:'assignedDate',value:assignedDate,description:'Assigned Date',isDateTime:true})
+      updateAssignment({doenetId,keyToUpdate:'assignedDate',value:assignedDate,description:'Assigned Date'})
     }}}
   onChange={(e)=>setAssignedDate(e.currentTarget.value)}
   onKeyDown={(e)=>{
     if (e.key === 'Enter' && aInfo.assignedDate !== assignedDate){
-      updateAssignment({doenetId,keyToUpdate:'assignedDate',value:assignedDate,description:'Assigned Date',isDateTime:true})
+      updateAssignment({doenetId,keyToUpdate:'assignedDate',value:assignedDate,description:'Assigned Date'})
     }
   }}
 />
@@ -328,12 +328,12 @@ export function AssignmentSettings({role, doenetId}) {
   // placeholder="0001-01-01 01:01:01 "
   onBlur={()=>{
     if (aInfo.dueDate !== dueDate){
-      updateAssignment({doenetId,keyToUpdate:'dueDate',value:dueDate,description:'Due Date',isDateTime:true})
+      updateAssignment({doenetId,keyToUpdate:'dueDate',value:dueDate,description:'Due Date'})
     }}}
   onChange={(e)=>setDueDate(e.currentTarget.value)}
   onKeyDown={(e)=>{
     if (e.key === 'Enter' && aInfo.dueDate !== dueDate){
-      updateAssignment({doenetId,keyToUpdate:'dueDate',value:dueDate,description:'Due Date',isDateTime:true})
+      updateAssignment({doenetId,keyToUpdate:'dueDate',value:dueDate,description:'Due Date'})
     }
   }}
 />
