@@ -21,11 +21,20 @@ import {
 import { returnAllPossibleVariants } from '../../../Core/utils/returnAllPossibleVariants.js';
 import { loadAssignmentSelector } from '../../../_reactComponents/Drive/NewDrive';
 import axios from 'axios';
-import { update } from '@react-spring/web';
 
 export const currentAttemptNumber = atom({
   key: 'currentAttemptNumber',
   default: null,
+});
+
+export const creditAchievedAtom = atom({
+  key: 'creditAchievedAtom',
+  default: {
+    creditByItem:[1,0,.5],
+    // creditByItem:[],
+    creditForAttempt:0,
+    creditForAssignment:0,
+  },
 });
 
 function randomInt(min, max) {
@@ -283,6 +292,13 @@ export default function AssignmentViewer() {
     [],
   );
 
+  const updateCreditAchieved = useRecoilCallback(
+    ({  set }) =>
+      async ({ creditByItem, creditForAssignment, creditForAttempt }) => {
+        // console.log(">>>>UPDATE",{ creditByItem, creditForAssignment, creditForAttempt })
+        set(creditAchievedAtom,{ creditByItem, creditForAssignment, creditForAttempt });
+  });
+
   console.log(`>>>>stage -${stage}-`);
 
   //Wait for doenetId to be defined to start
@@ -322,6 +338,7 @@ export default function AssignmentViewer() {
       allowSaveSubmissions={true}
       allowSaveEvents={true}
       requestedVariant={requestedVariant}
+      updateCreditAchievedCallback={updateCreditAchieved}
       // generatedVariantCallback={variantCallback}
     />
   );

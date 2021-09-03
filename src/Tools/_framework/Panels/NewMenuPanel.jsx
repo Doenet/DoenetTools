@@ -192,6 +192,8 @@ console.log(">>>===MenuPanel", hide)
     AssignmentSettingsMenu:lazy(() => import('../Menus/AssignmentSettingsMenu')),
     GroupSettings:lazy(() => import('../Menus/GroupSettings')),
     TimerMenu:lazy(() => import('../Menus/TimerMenu')),
+    CreditAchieved:lazy(() => import('../Menus/CreditAchieved')),
+    
   }).current;
 
   let selectionPanel = null;
