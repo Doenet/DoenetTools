@@ -7,7 +7,7 @@ import {
   useRecoilValue,
   useRecoilValueLoadable,
   useRecoilState,
-  useSetRecoilState,
+  // useSetRecoilState,
   useRecoilCallback,
 } from 'recoil';
 import {
@@ -19,25 +19,29 @@ import {
 import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
 import ActionButton from '../../../_reactComponents/PanelHeaderComponents/ActionButton';
 import ActionButtonGroup from '../../../_reactComponents/PanelHeaderComponents/ActionButtonGroup';
-import Increment from '../../../_reactComponents/PanelHeaderComponents/IncrementMenu';
+// import Increment from '../../../_reactComponents/PanelHeaderComponents/IncrementMenu';
 import useSockets from '../../../_reactComponents/Sockets';
 import { pageToolViewAtom } from '../NewToolRoot';
-import {
-  itemHistoryAtom,
-  assignmentDictionarySelector,
-  useAssignment,
-} from '../ToolHandlers/CourseToolHandler';
-import { useAssignmentCallbacks } from '../../../_reactComponents/Drive/DriveActions';
+// import {
+//   itemHistoryAtom,
+//   assignmentDictionarySelector,
+//   useAssignment,
+// } from '../ToolHandlers/CourseToolHandler';
+// import { useAssignmentCallbacks } from '../../../_reactComponents/Drive/DriveActions';
 import { useToast } from '../Toast';
 import Switch from '../../_framework/Switch';
-import { selectedMenuPanelAtom } from '../Panels/NewMenuPanel';
-import ButtonGroup from '../../../_reactComponents/PanelHeaderComponents/ButtonGroup';
+// import { selectedMenuPanelAtom } from '../Panels/NewMenuPanel';
+// import ButtonGroup from '../../../_reactComponents/PanelHeaderComponents/ButtonGroup';
 import axios from 'axios';
+
+import { DateToUTCDateString } from '../../../_utils/dateUtilityFunction';
 
 export const selectedVersionAtom = atom({
   key: 'selectedVersionAtom',
   default: '',
 });
+
+
 
 
 export default function SelectedDoenetML() {
@@ -211,18 +215,19 @@ export function AssignmentSettings({role, doenetId}) {
   let [proctorMakesAvailable,setProctorMakesAvailable] = useState(true)
   
 
-  const updateAssignment = useRecoilCallback(({set,snapshot})=> async ({doenetId,keyToUpdate,value,description,valueDescription=null,isDateTime=false})=>{
+  const updateAssignment = useRecoilCallback(({set,snapshot})=> async ({doenetId,keyToUpdate,value,description,valueDescription=null})=>{
  
   
     const oldAInfo = await snapshot.getPromise(loadAssignmentSelector(doenetId))
     let newAInfo = {...oldAInfo,[keyToUpdate]:value}
 
-    if (isDateTime){
-      newAInfo[keyToUpdate] = UTCDBDateString(new Date(value))
-     }
     set(loadAssignmentSelector(doenetId),newAInfo);
+    let dbAInfo = {...newAInfo};
+    
+    dbAInfo.assignedDate = DateToUTCDateString(new Date(dbAInfo.assignedDate))
+    dbAInfo.dueDate = DateToUTCDateString(new Date(dbAInfo.dueDate))
 
-    const resp = await axios.post('/api/saveAssignmentToDraft.php', newAInfo)
+    const resp = await axios.post('/api/saveAssignmentToDraft.php', dbAInfo)
 
     if (resp.data.success){
       if (valueDescription){
@@ -242,28 +247,11 @@ export function AssignmentSettings({role, doenetId}) {
   //   return ("0" + d.getDate()).slice(-2) + "-" + ("0"+(d.getMonth()+1)).slice(-2) + "-" +
   //   d.getFullYear() + " " + ("0" + d.getHours()).slice(-2) + ":" + ("0" + d.getMinutes()).slice(-2);
   // }
-  var pad = function(num) { return ('00'+num).slice(-2) };
-  function UTCDBDateString(date){
-    return date.getUTCFullYear()         + '-' +
-    pad(date.getUTCMonth() + 1)  + '-' +
-    pad(date.getUTCDate())       + ' ' +
-    pad(date.getUTCHours())      + ':' +
-    pad(date.getUTCMinutes())    + ':' +
-    pad(date.getUTCSeconds());
-  }
 
 
   //Update assignment values when selection changes
   useEffect(()=>{
-
-
-      // let localStr = new Date(`${aInfo?.assignedDate} UTC`).toLocaleString();
-      // console.log(">>>>local",localStr)
-      // console.log(">>>>UTC",UTCDBDateString(new Date(localStr)))
-
-      // setAssignedDate(new Date(`${aInfo?.assignedDate} UTC`).toLocaleString())
       setAssignedDate(aInfo?.assignedDate)
-      // setDueDate(new Date(`${aInfo?.dueDate} UTC`).toLocaleString())
       setDueDate(aInfo?.dueDate)
       setLimitAttempts(aInfo?.numberOfAttemptsAllowed !== null)
       setNumberOfAttemptsAllowed(aInfo?.numberOfAttemptsAllowed)
@@ -284,10 +272,6 @@ export function AssignmentSettings({role, doenetId}) {
     if (aLoadable.state === "hasError"){ 
       console.error(aLoadable.contents)
       return null;}
-
-  // console.log(">>>>SelectedDoenetML role",role)
-  // console.log(">>>>SelectedDoenetML item",item)
-  // console.log(">>>>SelectedDoenetML aInfo",aInfo)
 
 
   //Student JSX
@@ -316,12 +300,12 @@ export function AssignmentSettings({role, doenetId}) {
   // placeholder="0001-01-01 01:01:01 "
   onBlur={()=>{
     if (aInfo.assignedDate !== assignedDate){
-      updateAssignment({doenetId,keyToUpdate:'assignedDate',value:assignedDate,description:'Assigned Date',isDateTime:true})
+      updateAssignment({doenetId,keyToUpdate:'assignedDate',value:assignedDate,description:'Assigned Date'})
     }}}
   onChange={(e)=>setAssignedDate(e.currentTarget.value)}
   onKeyDown={(e)=>{
     if (e.key === 'Enter' && aInfo.assignedDate !== assignedDate){
-      updateAssignment({doenetId,keyToUpdate:'assignedDate',value:assignedDate,description:'Assigned Date',isDateTime:true})
+      updateAssignment({doenetId,keyToUpdate:'assignedDate',value:assignedDate,description:'Assigned Date'})
     }
   }}
 />
@@ -339,12 +323,12 @@ export function AssignmentSettings({role, doenetId}) {
   // placeholder="0001-01-01 01:01:01 "
   onBlur={()=>{
     if (aInfo.dueDate !== dueDate){
-      updateAssignment({doenetId,keyToUpdate:'dueDate',value:dueDate,description:'Due Date',isDateTime:true})
+      updateAssignment({doenetId,keyToUpdate:'dueDate',value:dueDate,description:'Due Date'})
     }}}
   onChange={(e)=>setDueDate(e.currentTarget.value)}
   onKeyDown={(e)=>{
     if (e.key === 'Enter' && aInfo.dueDate !== dueDate){
-      updateAssignment({doenetId,keyToUpdate:'dueDate',value:dueDate,description:'Due Date',isDateTime:true})
+      updateAssignment({doenetId,keyToUpdate:'dueDate',value:dueDate,description:'Due Date'})
     }
   }}
 />

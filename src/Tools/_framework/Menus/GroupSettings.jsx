@@ -94,6 +94,7 @@ export const csvGroups = atomFamily({
 });
 
 export default function GroupSettings() {
+  const [groups, setGroups] = useState([]);
   const doenetId = useRecoilValue(searchParamAtomFamily('doenetId'));
   const { emailsByGroup } = useRecoilValue(csvGroups(doenetId));
   const reset = useResetRecoilState(csvGroups(doenetId));
