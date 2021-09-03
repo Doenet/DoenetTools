@@ -165,18 +165,20 @@ export default function AssignmentViewer() {
             }
           }
         }
-
+        let doenetML = null;
         console.log('>>>>initializeValues contentId', contentId);
         if (!isAssigned) {
           setStage('Problem');
           setMessage('Assignment is not assigned.');
-        }
+        }else{
+
+        
         //Set doenetML
         let response = await snapshot.getPromise(fileByContentId(contentId));
         if (typeof response === 'object') {
           response = response.data;
         }
-        const doenetML = response;
+        doenetML = response;
 
         //Find allPossibleVariants
         returnAllPossibleVariants({
@@ -185,6 +187,7 @@ export default function AssignmentViewer() {
             ? setCollectionVariant
             : setVariantsFromDoenetML,
         });
+      }
         async function setVariantsFromDoenetML({ allPossibleVariants }) {
           storedAllPossibleVariants.current = allPossibleVariants;
           //Find attemptNumber
