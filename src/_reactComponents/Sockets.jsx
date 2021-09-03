@@ -25,6 +25,8 @@ import {
   selectedDriveItemsAtom,
   sortOptions,
 } from './Drive/NewDrive';
+import { DateToUTCDateString } from '../_utils/dateUtilityFunction';
+
 
 /**
  * a stored manger to allow for multiplexed socket connections.
@@ -44,6 +46,7 @@ const socketManger = atom({
   }),
   dangerouslyAllowMutability: true,
 });
+
 
 /**
  * keyed by namespace. Binding cannot be donw here until a set function is
@@ -111,7 +114,7 @@ export default function useSockets(nsp) {
     async ({ driveIdFolderId, type, label = 'Untitled', selectedItemId = null, url = null }) => {
       // Item creation
       const dt = new Date();
-      const creationDate = formatDate(dt); //TODO: get from sever
+      const creationDate = DateToUTCDateString(dt); //TODO: get from sever
       const itemId = nanoid(); //TODO: remove
       const doenetId = nanoid(); //Id per file
       const versionId = nanoid(); //Id per named version / data collection site
@@ -146,24 +149,24 @@ export default function useSockets(nsp) {
       if (type === 'DoenetML') {
         payload = {
           ...payload,
-          assignedDate: creationDate,
+          assignedDate: creationDate,  //TODO: make null
           attemptAggregation: 'm',
-          dueDate: creationDate,
-          gradeCategory: 'l',
-          individualize: false,
-          isAssigned: '1',
+          dueDate: creationDate, //TODO: make null
+          gradeCategory: '',
+          individualize: true,
+          isAssigned: '0',
           isPublished: '0',
           contentId:
             'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855',
-          multipleAttempts: true,
-          numberOfAttemptsAllowed: '2', //TODO: Update to null
+          multipleAttempts: true, //TODO: is this ignored? should we delete it?
+          numberOfAttemptsAllowed: '1', 
           proctorMakesAvailable: false,
           showCorrectness: true,
           showFeedback: true,
           showHints: true,
           showSolution: true,
-          timeLimit: '60', //TODO: Update to null
-          totalPointsOrPercent: '100',
+          timeLimit: null, 
+          totalPointsOrPercent: '10',
           assignment_isPublished: '0',
         };
       }
@@ -174,9 +177,9 @@ export default function useSockets(nsp) {
           assignedDate: creationDate,
           attemptAggregation: 'm',
           dueDate: creationDate,
-          gradeCategory: 'l',
-          individualize: false,
-          isAssigned: '1',
+          gradeCategory: '',
+          individualize: true,
+          isAssigned: '0',
           isPublished: '0',
           contentId:
             'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855',
@@ -188,7 +191,7 @@ export default function useSockets(nsp) {
           showHints: true,
           showSolution: true,
           timeLimit: null,
-          totalPointsOrPercent: '100',
+          totalPointsOrPercent: '10',
           assignment_isPublished: '0',
         };
       }
@@ -603,7 +606,7 @@ export default function useSockets(nsp) {
         const insertIndex = index ?? 0;
         let newSortOrder = '';
         const dt = new Date();
-        const creationTimestamp = formatDate(dt);
+        const creationTimestamp = formatDate(dt);  //TODO: Emilio Make sure we have the right time zones
         let globalDictionary = {};
         let globalContentIds = {};
 

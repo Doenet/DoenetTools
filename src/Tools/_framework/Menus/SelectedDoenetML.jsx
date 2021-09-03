@@ -34,10 +34,14 @@ import Switch from '../../_framework/Switch';
 // import ButtonGroup from '../../../_reactComponents/PanelHeaderComponents/ButtonGroup';
 import axios from 'axios';
 
+import { DateToUTCDateString } from '../../../_utils/dateUtilityFunction';
+
 export const selectedVersionAtom = atom({
   key: 'selectedVersionAtom',
   default: '',
 });
+
+
 
 
 export default function SelectedDoenetML() {
@@ -220,8 +224,8 @@ export function AssignmentSettings({role, doenetId}) {
     set(loadAssignmentSelector(doenetId),newAInfo);
     let dbAInfo = {...newAInfo};
     
-    dbAInfo.assignedDate = UTCDBDateString(new Date(dbAInfo.assignedDate))
-    dbAInfo.dueDate = UTCDBDateString(new Date(dbAInfo.dueDate))
+    dbAInfo.assignedDate = DateToUTCDateString(new Date(dbAInfo.assignedDate))
+    dbAInfo.dueDate = DateToUTCDateString(new Date(dbAInfo.dueDate))
 
     const resp = await axios.post('/api/saveAssignmentToDraft.php', dbAInfo)
 
@@ -243,15 +247,6 @@ export function AssignmentSettings({role, doenetId}) {
   //   return ("0" + d.getDate()).slice(-2) + "-" + ("0"+(d.getMonth()+1)).slice(-2) + "-" +
   //   d.getFullYear() + " " + ("0" + d.getHours()).slice(-2) + ":" + ("0" + d.getMinutes()).slice(-2);
   // }
-  var pad = function(num) { return ('00'+num).slice(-2) };
-  function UTCDBDateString(date){
-    return date.getUTCFullYear()         + '-' +
-    pad(date.getUTCMonth() + 1)  + '-' +
-    pad(date.getUTCDate())       + ' ' +
-    pad(date.getUTCHours())      + ':' +
-    pad(date.getUTCMinutes())    + ':' +
-    pad(date.getUTCSeconds());
-  }
 
 
   //Update assignment values when selection changes

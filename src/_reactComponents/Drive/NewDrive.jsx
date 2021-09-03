@@ -83,8 +83,6 @@ export const loadAssignmentSelector = selectorFamily({
   get:
     (doenetId) =>
     async ({ get }) => {
-      //new Date(`${aInfo?.assignedDate} UTC`).toLocaleString()
-      
       return await get(loadAssignmentAtomFamily(doenetId));
     },
   set:
