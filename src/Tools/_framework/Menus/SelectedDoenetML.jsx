@@ -276,14 +276,31 @@ export function AssignmentSettings({role, doenetId}) {
 
   //Student JSX
   if (role === 'student'){
-    return <>
-    <div>
-        <p>Due: {aInfo?.dueDate}</p>
-        <p>Time Limit: {aInfo?.timeLimit} minutes</p>
-        <p>Attempts Allowed: {aInfo?.numberOfAttemptsAllowed}</p>
-        <p>Points: {aInfo?.totalPointsOrPercent}</p>
-      </div>
-  </>
+    let nAttemptsAllowed = aInfo?.numberOfAttemptsAllowed;
+    if(nAttemptsAllowed === null) {
+      nAttemptsAllowed = "unlimited";
+    }
+    if(aInfo?.timeLimit === null) {
+      return <>
+        <div>
+          <p>Assigned: {aInfo?.assignedDate}</p>
+          <p>Due: {aInfo?.dueDate}</p>
+          <p>Attempts Allowed: {nAttemptsAllowed}</p>
+          <p>Points: {aInfo?.totalPointsOrPercent}</p>
+        </div>
+      </>
+    } else {
+      return <>
+        <div>
+          <p>Assigned: {aInfo?.assignedDate}</p>
+          <p>Due: {aInfo?.dueDate}</p>
+          <p>Time Limit: {aInfo?.timeLimit} minutes</p>
+          <p>Attempts Allowed: {nAttemptsAllowed}</p>
+          <p>Points: {aInfo?.totalPointsOrPercent}</p>
+        </div>
+      </>
+    }
+
   }
 
 
