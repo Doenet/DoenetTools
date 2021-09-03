@@ -1,17 +1,23 @@
-import { faLayerGroup } from '@fortawesome/free-solid-svg-icons';
+import { faCode, faLayerGroup } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React, { useState } from 'react';
 import { useEffect } from 'react';
-import { useRecoilValueLoadable, useSetRecoilState } from 'recoil';
+import {
+  useRecoilState,
+  useRecoilValueLoadable,
+  useSetRecoilState,
+} from 'recoil';
 import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
 import useSockets from '../../../_reactComponents/Sockets';
 import { pageToolViewAtom } from '../NewToolRoot';
 import { selectedMenuPanelAtom } from '../Panels/NewMenuPanel';
-import { selectedInformation } from './SelectedDoenetML';
+import { AssignmentSettings, selectedInformation } from './SelectedDoenetML';
 import ButtonGroup from '../../../_reactComponents/PanelHeaderComponents/ButtonGroup';
+import ActionButtonGroup from '../../../_reactComponents/PanelHeaderComponents/ActionButtonGroup';
+import ActionButton from '../../../_reactComponents/PanelHeaderComponents/ActionButton';
 
 export default function SelectedCollection() {
-  const setPageToolView = useSetRecoilState(pageToolViewAtom);
+  const [{ view }, setPageToolView] = useRecoilState(pageToolViewAtom);
   const setSelectedMenu = useSetRecoilState(selectedMenuPanelAtom);
   const selection = useRecoilValueLoadable(selectedInformation).getValue();
   const [item, setItem] = useState(selection[0]);
@@ -29,8 +35,6 @@ export default function SelectedCollection() {
     }
   }, [selection, setSelectedMenu]);
 
-  const dIcon = <FontAwesomeIcon icon={faLayerGroup} />;
-
   const renameItemCallback = (newLabel) => {
     renameItem({
       driveIdFolderId: {
@@ -42,11 +46,53 @@ export default function SelectedCollection() {
       newLabel: newLabel,
     });
   };
+  if (view === 'student') {
+    return (
+      <>
+        <h2 data-cy="infoPanelItemLabel">
+          <FontAwesomeIcon icon={faCode} /> {item?.label}
+        </h2>
+        <ActionButton
+          width="menu"
+          value="Take Assignment"
+          onClick={() => {
+            setPageToolView({
+              page: 'course',
+              tool: 'assignment',
+              view: '',
+              params: {
+                doenetId: item?.doenetId,
+              },
+            });
+          }}
+        />
+        <AssignmentSettings role={view} doenetId={item.doenetId} />
+      </>
+    );
+  }
   return (
     <>
       <h2 data-cy="infoPanelItemLabel">
-        {dIcon} {item.label}
+        <FontAwesomeIcon icon={faLayerGroup} /> {item?.label}
       </h2>
+      <ActionButtonGroup vertical>
+        <ActionButton
+          value="Edit Collection"
+          width="menu"
+          onClick={() => {
+            setPageToolView({
+              page: 'course',
+              tool: 'editor',
+              view: '',
+              params: {
+                doenetId: item.doenetId,
+                path: `${item.driveId}:${item.parentFolderId}:${item.itemId}:Collection`,
+              },
+            });
+          }}
+        />
+      </ActionButtonGroup>
+      <br />
       <label>
         Collection Label
         <input
@@ -71,22 +117,9 @@ export default function SelectedCollection() {
         />
       </label>
       <br />
+      <AssignmentSettings role={view} doenetId={item.doenetId} />
+      <br />
       <ButtonGroup vertical>
-        <Button
-          value="Edit Collection"
-          width="menu"
-          onClick={() => {
-            setPageToolView({
-              page: 'course',
-              tool: 'editor',
-              view: '',
-              params: {
-                doenetId: item.doenetId,
-                path: `${item.driveId}:${item.parentFolderId}:${item.itemId}:Collection`,
-              },
-            });
-          }}
-        />
         <Button
           alert
           width="menu"

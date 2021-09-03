@@ -1,9 +1,13 @@
 import axios from 'axios';
-import React, { useEffect, useReducer } from 'react';
-import { useRecoilCallback, useRecoilValue } from 'recoil';
+import parse from 'csv-parse';
+import React, { useEffect, useReducer, useCallback, useState } from 'react';
+import { useDropzone } from 'react-dropzone';
+import { useRecoilValue } from 'recoil';
 import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
+import ButtonGroup from '../../../_reactComponents/PanelHeaderComponents/ButtonGroup';
 import CollapseSection from '../../../_reactComponents/PanelHeaderComponents/CollapseSection';
 import { searchParamAtomFamily } from '../NewToolRoot';
+import { toastType, useToast } from '../Toast';
 
 function groupReducer(state, action) {
   switch (action.type) {
@@ -11,15 +15,14 @@ function groupReducer(state, action) {
       return { ...action.payload };
     case 'min':
       return {
-        preAssigned: state.preAssigned,
+        ...state,
         min: action.payload.min > 1 ? action.payload.min : 1,
         max: state.max < action.payload.min ? action.payload.min : state.max,
         pref: state.pref < action.payload.min ? action.payload.min : state.pref,
       };
     case 'max':
       return {
-        preAssigned: state.preAssigned,
-
+        ...state,
         min: state.min,
         max: state.min <= action.payload.max ? action.payload.max : state.max,
         pref: state.pref < action.payload.max ? action.payload.max : state.pref,
@@ -34,14 +37,24 @@ function groupReducer(state, action) {
       };
     case 'preAssigned':
       try {
-        axios.post('/api/updateGroupSettings.php', { ...state });
+        axios.post('/api/updateGroupSettings.php', {
+          ...state,
+          preAssigned: action.payload.preAssigned,
+          doenetId: action.payload.doenetId,
+        });
       } catch (error) {
         console.error(error);
       }
       return { ...state, preAssigned: action.payload.preAssigned };
+    case 'isReleased':
+      console.log('isrel', action.payload);
+      return { ...state, isReleased: action.payload.isReleased };
     case 'save':
       try {
-        axios.post('/api/updateGroupSettings.php', { ...state });
+        axios.post('/api/updateGroupSettings.php', {
+          ...state,
+          doenetId: action.payload.doenetId,
+        });
       } catch (error) {
         console.error(error);
       }
@@ -72,73 +85,111 @@ function shuffle(array) {
 }
 
 export default function GroupSettings() {
+  const [groups, setGroups] = useState([]);
   const doenetId = useRecoilValue(searchParamAtomFamily('doenetId'));
-  const [{ min, max, pref, preAssigned }, dispach] = useReducer(groupReducer, {
-    min: 0,
-    max: 0,
-    pref: 0,
-    preAssigned: false,
-  });
-  //TODO: load all entries from the collection table, shuffle the grouping array, assign
-  //proportional sections of each entry, commit data to assignment table
-  const assignCollection = useRecoilCallback(
-    ({ snapshot }) =>
-      async (doenetId, grouping) => {
-        try {
-          console.log('go', doenetId, grouping);
-          const {
-            data: { entries },
-          } = await axios.get('/api/loadCollection.php', {
-            params: { doenetId },
-          });
-          if (entries.length > 0) {
-            //GROUPS
-            // [ [ 'id1', 'id2', 'id3'] , ['id4', 'id5', 'id6'], ['id7', 'id8', 'id9']]
-            const shuffledEntries = shuffle(entries);
-            const shuffledGroups = shuffle(grouping);
-            const resp = axios.post('/api/assignCollection.php', {
-              doenetId,
-              groups: JSON.stringify(shuffledGroups),
-              entries: JSON.stringify(shuffledEntries),
-            });
-            console.log('test was', resp);
-          } else {
-            //Error toast
-          }
+  const addToast = useToast();
 
-          // const _doenetId = await snapshot.getPromise(
-          //   searchParamAtomFamily('doenetId'),
-          // );
-          // const versionHistory = await snapshot.getPromise(
-          //   itemHistoryAtom(doenetId),
-          // );
-
-          // //Find Assigned ContentId
-          // //Use isReleased as isAssigned for now
-          // //TODO: refactor isReleased to isAssigned
-
-          // //Set contentId and isAssigned
-          // let contentId = null;
-          // let isAssigned = false;
-          // for (let version of versionHistory.named) {
-          //   if (version.isReleased === '1') {
-          //     isAssigned = true;
-          //     contentId = version.contentId;
-          //     break;
-          //   }
-          // }
-        } catch (error) {
-          console.error(error);
-        }
-      },
-    [],
+  const [{ min, max, pref, preAssigned, isReleased }, dispach] = useReducer(
+    groupReducer,
+    {
+      min: 0,
+      max: 0,
+      pref: 0,
+      preAssigned: 0,
+      isReleased: 0,
+    },
   );
+  console.log(isReleased);
+  const assignCollection = useCallback(
+    async (doenetId, grouping) => {
+      try {
+        const {
+          data: { entries },
+        } = await axios.get('/api/loadCollection.php', {
+          params: { doenetId },
+        });
+        if (entries?.length > 0) {
+          //GROUPS
+          // [ [ 'id1', 'id2', 'id3'] , ['id4', 'id5', 'id6'], ['id7', 'id8', 'id9']]
+          const shuffledEntries = shuffle(entries);
+          const shuffledGroups = shuffle(grouping);
+          axios.post('/api/assignCollection.php', {
+            doenetId,
+            groups: JSON.stringify(shuffledGroups),
+            entries: JSON.stringify(shuffledEntries),
+          });
+          addToast('Collection has been assigned', toastType.SUCCESS);
+          dispach({ type: 'isReleased', payload: { isReleased: '1' } });
+        } else {
+          addToast(
+            'Please add at least one entry to the collection before assigning',
+            toastType.ERROR,
+          );
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    },
+    [addToast],
+  );
+  //TODO: implement
+  const generateRandomGroups = useCallback(() => {
+    //Get enrollment and split into groups by grouping prefernce
+  }, []);
+
+  //TODO: accept the file and store locally for assigning
+  const onDrop = useCallback(
+    (file) => {
+      const reader = new FileReader();
+
+      reader.onabort = () => {};
+      reader.onerror = () => {};
+      reader.onload = () => {
+        parse(reader.result, { comment: '#' }, function (err, data) {
+          if (err) {
+            console.error(err);
+          } else {
+            const headers = data.shift();
+            const emailColIdx = headers.indexOf('Email');
+            const groupColIdx = headers.indexOf('Group Number');
+            const groups = [];
+            if (emailColIdx === -1) {
+              addToast('File missing "Email" column header', toastType.ERROR);
+            } else if (groupColIdx === -1) {
+              addToast(
+                'File missing "Group Number" column header',
+                toastType.ERROR,
+              );
+            } else {
+              for (let studentLine in data) {
+                let studentData = data[studentLine];
+                let groupNumber = studentData[groupColIdx] - 1;
+                if (!groups[groupNumber]) {
+                  groups[groupNumber] = [];
+                }
+                groups[groupNumber].push(studentData[emailColIdx]);
+              }
+            }
+            for (let i = 0; i < groups.length; i++) {
+              if (!groups[i]) {
+                groups[i] = [];
+              }
+            }
+            // data.shift(); //Remove head row of data
+            setGroups(groups);
+          }
+        });
+      };
+      reader.readAsText(file[0]);
+    },
+    [addToast],
+  );
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
 
   useEffect(() => {
     let mounted = true;
     async function loadData(doenetId) {
       try {
-        console.log('did', doenetId);
         const resp = await axios.get('/api/loadGroupSettings.php', {
           params: { doenetId },
         });
@@ -163,32 +214,53 @@ export default function GroupSettings() {
         Pre-Assigned Groups:
         <input
           type="checkbox"
-          checked={!!preAssigned}
-          value={preAssigned}
+          checked={preAssigned === '1'}
+          value={preAssigned === '1'}
           onChange={(e) => {
             dispach({
               type: 'preAssigned',
-              payload: { preAssigned: e.target.checked },
+              payload: { preAssigned: e.target.checked ? '1' : '0', doenetId },
             });
           }}
         />
       </label>
-      {preAssigned ? (
+      <br />
+      {preAssigned === '1' ? (
         <div>
-          <Button
-            alert
-            value="Upload and Assign CSV"
-            width="menu"
-            onClick={() => {
-              assignCollection(doenetId, [
-                ['temp0@dev.com', 'temp2@dev.com', 'temp3@dev.com'],
-                ['temp4@dev.com', 'temp5@dev.com', 'temp6@dev.com'],
-                ['temp7@dev.com', 'temp8@dev.com', 'temp9@dev.com'],
-              ]);
-            }}
-          />
+          <div key="drop" {...getRootProps()}>
+            <input {...getInputProps()} />
+            {isDragActive ? (
+              <p>Drop files here</p>
+            ) : (
+              <ButtonGroup>
+                <Button value="Upload CSV" width="menu" />
+              </ButtonGroup>
+            )}
+          </div>
           <br />
-          <CollapseSection></CollapseSection>
+          <CollapseSection title="Formatting Instructions" collapsed>
+            <p>
+              Your file needs to contain email address and group number columns.
+              They can be in any order, but the headers are case sensitive.
+            </p>
+            <p>
+              Name fields are displayed for convenience – only required data is
+              used to assign the Collection
+            </p>
+            <div>
+              <b>First Name</b>
+            </div>
+            <div>
+              <b>Last Name</b>
+            </div>
+            <div>
+              <b>Email (required)</b>
+            </div>
+            <div>
+              <b>Group Number (required)</b>
+            </div>
+            <p>NOTE: The parser will ignore columns which are not listed.</p>
+          </CollapseSection>
         </div>
       ) : (
         <div>
@@ -226,15 +298,29 @@ export default function GroupSettings() {
             />
           </label>
           <br />
+        </div>
+      )}
+      <br />
+      <ButtonGroup vertical>
+        {preAssigned === '1' ? null : (
           <Button
             width="menu"
             value="Save"
             onClick={() => {
-              dispach({ type: 'save' });
+              dispach({ type: 'save', payload: { doenetId } });
             }}
           />
-        </div>
-      )}
+        )}
+        <Button
+          alert
+          disabled={isReleased === '1'}
+          width="menu"
+          value="Assign Collection"
+          onClick={() => {
+            assignCollection(doenetId, groups);
+          }}
+        />
+      </ButtonGroup>
     </div>
   );
 }
