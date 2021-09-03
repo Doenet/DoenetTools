@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { 
   atom,
   useRecoilValue,
-  useRecoilState,
+  // useRecoilState,
   useRecoilValueLoadable,
   useRecoilCallback,
  } from 'recoil';
@@ -25,7 +25,7 @@ import { nanoid } from 'nanoid';
 import axios from "axios";
 import { useToast, toastType } from '@Toast';
 import { folderDictionary } from '../../../_reactComponents/Drive/NewDrive';
-import { faPassport } from '@fortawesome/free-solid-svg-icons';
+import { editorSaveTimestamp } from '../ToolPanels/DoenetMLEditor'; 
 
 export const currentDraftSelectedAtom = atom({
   key:"currentDraftSelectedAtom",
@@ -47,10 +47,6 @@ console.log(">>>===VersionHistory")
   const addToast = useToast();
   const currentDraftSelected = useRecoilValue(currentDraftSelectedAtom)
   const [driveId, folderId, itemId] = path.split(':');
-
-//   // const activeVersionId  = useRecoilValue(versionHistoryActiveAtom);
-//   // const [editingVersionId,setEditingVersionId] = useRecoilState(EditingVersionIdAtom);
-
 
   const setReleaseNamed = useRecoilCallback(({set,snapshot})=> async ({doenetId,versionId,driveId,folderId,itemId})=>{
     let doenetIsReleased = false;
@@ -142,18 +138,6 @@ console.log(">>>===VersionHistory")
       return newFolderInfo;
     })
 })
-
-  const versionHistoryActive = useRecoilCallback(({snapshot,set})=> async (version)=>{
-//     set(versionHistoryActiveAtom,version.versionId)
-//     let doenetML = await snapshot.getPromise(fileByContentId(version.contentId));
-//     // const doenetML = loadableDoenetML.data;
-//     set(editorDoenetMLAtom,doenetML);
-//     set(viewerDoenetMLAtom,(was)=>{
-//       let newObj = {...was}
-//       newObj.doenetML = doenetML;
-//       newObj.updateNumber = was.updateNumber+1;
-//       return newObj});
-  })
 
   const setAsCurrent = useRecoilCallback(({snapshot,set})=> async ({doenetId,versionId})=>{
     //Build current draft to named save
@@ -314,51 +298,64 @@ console.log(">>>===VersionHistory")
     set(selectedVersionIdAtom,versionId);
     set(currentDraftSelectedAtom,isCurrentDraft); //Use to determine to make read only or not
 
-    //Get DoenetML
+    //Get DoenetML of currently selected version
     const oldVersions = await snapshot.getPromise(itemHistoryAtom(doenetId));
-    let contentId = oldVersions.draft.contentId;
+    let newVersions = {...oldVersions};
+
+    let oldDraftContentId = oldVersions.draft.contentId;
     if (!isCurrentDraft){
-      //Test if we left the draft and it needs to be saved
       const wasDraftSelected = await snapshot.getPromise(currentDraftSelectedAtom);
       if (wasDraftSelected){
-        const textEditorDoenetML = await snapshot.getPromise(textEditorDoenetMLAtom);
-        const textEditorContentId = getSHAofContent(textEditorDoenetML);
-        if (textEditorContentId !== contentId){
-          //Save draft
+        //we left the draft and it needs to be saved
+        const newDraftDoenetML = await snapshot.getPromise(textEditorDoenetMLAtom);
+        const newDraftContentId = getSHAofContent(newDraftDoenetML);
+        if (newDraftContentId !== oldDraftContentId){
+
+          //Save new draft
           let newDraft = {...oldVersions.draft};
-          newDraft.contentId = textEditorContentId;
+          newDraft.contentId = newDraftContentId;
           newDraft.timestamp = buildTimestamp();
-          let oldVersionsReplacement = {...oldVersions};
+          
 
-          oldVersionsReplacement.draft = newDraft;
-          set(itemHistoryAtom(doenetId),oldVersionsReplacement)
-          set(fileByContentId(textEditorContentId),textEditorDoenetML)
-
-          //Save in localStorage
-          // localStorage.setItem(textEditorContentId,textEditorDoenetML)
+          newVersions.draft = newDraft;
+          set(itemHistoryAtom(doenetId),newVersions)
+          set(fileByContentId(newDraftContentId),newDraftDoenetML)
 
           let newDBVersion = {...newDraft,
-            doenetML:textEditorDoenetML,
+            doenetML:newDraftDoenetML,
             doenetId
           }
-
-          axios.post("/api/saveNewVersion.php",newDBVersion)
-          // .then((resp)=>{console.log(">>>resp saveNewVersion",resp.data)}) 
-        }
-      }
-
-      for (let version of oldVersions.named){
-        if (version.versionId === versionId){
-          contentId = version.contentId;
+          
+          try {
+            const { data } = await axios.post("/api/saveNewVersion.php",newDBVersion)
+            if (data.success){
+              set(editorSaveTimestamp,new Date());
+            }else{
+              //TODO: Toast here
+              console.log("ERROR",data.message)
+            }
+          } catch (error) {
+            console.log("ERROR",error)
+          }
         }
       }
     }
-    const doenetML = await snapshot.getPromise(fileByContentId(contentId));
-    // console.log(">>>display this doenetML",doenetML)
+    //Assume user just selected the draft version
+    let displayContentId = newVersions.draft.contentId;
+    //If selected version is named use that contentId
+    for (let version of newVersions.named){
+      if (version.versionId === versionId){
+        displayContentId = version.contentId;
+        break;
+      }
+    }
+
+    const doenetML = await snapshot.getPromise(fileByContentId(displayContentId));
+
     //Display doenetML in viewer and text editor
     set(viewerDoenetMLAtom,doenetML)
     set(updateTextEditorDoenetMLAtom,doenetML)
-    set(textEditorDoenetMLAtom,doenetML)
+    // set(textEditorDoenetMLAtom,doenetML) //This causes current draft to be overwritten
     
   })
   
@@ -372,7 +369,8 @@ console.log(">>>versionHistory.contents",versionHistory.contents)
 // console.log(">>>initializedDoenetId",initializedDoenetId)
 // console.log(">>>path",path)
 
-    if (!versionHistory.contents.named){
+//Protected if not defined yet
+    if (!versionHistory?.contents?.named){
       return null;
     }
 
@@ -384,7 +382,7 @@ console.log(">>>versionHistory.contents",versionHistory.contents)
   
   
   for (let version of versionHistory.contents.named){
-    // console.log(">>>version",version)
+
     versionsObj[version.versionId] = version;
     let selected = false;
     if (version.versionId === inUseVersionId){
@@ -397,17 +395,13 @@ console.log(">>>versionHistory.contents",versionHistory.contents)
     options.push(<option value={version.versionId} selected={selected}>{released} {version.title}</option>,)
   }
 
-
   const version = versionsObj[inUseVersionId];
   let releaseButtonText = "Release";
   if (version?.isReleased === '1'){
     releaseButtonText = "Retract"
   }
-
-
-  // console.log(">>>currentDraftSelected",currentDraftSelected)
      
-  return <div  style={props.style}>
+  return <>
     <div style={{margin:"6px 0px 6px 0px"}}>
     <Button disabled={!currentDraftSelected} width="menu" value="Save Version" onClick={()=>saveVersion(doenetId)} />
     </div>
@@ -437,9 +431,5 @@ console.log(">>>versionHistory.contents",versionHistory.contents)
        {/* <div><button onClick={()=>versionHistoryActive(version)} >View</button></div>  */}
        <div><Button disabled={currentDraftSelected} onClick={()=>setAsCurrent({doenetId,versionId:version.versionId})} value="Set As Current" /></div> 
        <div><Button disabled={currentDraftSelected} onClick={()=>setReleaseNamed({doenetId,versionId:version.versionId,driveId,folderId,itemId})} value={releaseButtonText} /></div>
-  </div>
-  
-  // return <div style={props.style}>
-  //   <div>Enter VersionHistory code</div>
-  // </div>
+  </>
 }
