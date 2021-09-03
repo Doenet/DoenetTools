@@ -47,7 +47,6 @@ function groupReducer(state, action) {
       }
       return { ...state, preAssigned: action.payload.preAssigned };
     case 'isReleased':
-      console.log('isrel', action.payload);
       return { ...state, isReleased: action.payload.isReleased };
     case 'save':
       try {
@@ -137,7 +136,6 @@ export default function GroupSettings() {
     //Get enrollment and split into groups by grouping prefernce
   }, []);
 
-  //TODO: accept the file and store locally for assigning
   const onDrop = useCallback(
     (file) => {
       const reader = new FileReader();
@@ -148,6 +146,7 @@ export default function GroupSettings() {
         parse(reader.result, { comment: '#' }, function (err, data) {
           if (err) {
             console.error(err);
+            addToast(`CSV invalid; Error: ${err}`, toastType.ERROR);
           } else {
             const headers = data.shift();
             const emailColIdx = headers.indexOf('Email');
@@ -175,7 +174,6 @@ export default function GroupSettings() {
                 groups[i] = [];
               }
             }
-            // data.shift(); //Remove head row of data
             setGroups(groups);
           }
         });
