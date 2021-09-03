@@ -14,8 +14,8 @@ export default function TimerMenu(){
   const [endTime,setEndTime] = useState(null);
   const [refresh,setRefresh] = useState(new Date())
   // console.log(">>>>userAttemptNumber",userAttemptNumber)
-  // console.log(">>>>endTime",endTime);
-  // console.log(">>>>refresh",refresh);
+  console.log(">>>>endTime",endTime);
+  console.log(">>>>timeLimit",timeLimit);
   let timer = useRef(null);
 
   //Need fresh data on began time each time 
