@@ -24,6 +24,7 @@ export default function TimerMenu(){
       const { data } = await axios.get('/api/loadTakenVariants.php', {
         params: { doenetId },
       })
+      
       for (let [i,attemptNumber] of Object.entries(data.attemptNumbers)){
         //Testing numbers are equal not objects so use ==
         if (attemptNumber == userAttemptNumber){
@@ -35,7 +36,7 @@ export default function TimerMenu(){
         }
       }
 
-      let endDT = new Date(startDT.getTime() + timeLimit*60000);
+      let endDT = new Date(startDT.getTime() + timeLimit*60000*data.timeLimitMultiplier);
       setEndTime(endDT);
 
     }
@@ -49,7 +50,7 @@ export default function TimerMenu(){
     if (timeLimit > 0){
       let mins_floor = Math.floor((endTime - new Date()) / 60000);
       let mins_raw = (endTime - new Date()) / 60000;
-      console.log(">>>>mins_raw",mins_raw)
+ 
         if (mins_raw <= 0){
           setTimeDisplay(`Time's Up`);
         }else{
