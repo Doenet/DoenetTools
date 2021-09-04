@@ -49,7 +49,7 @@ $exceededAttemptsAllowed = FALSE;
 $viewedSolution = FALSE;
 
 
-if($attemptNumber > $numberOfAttemptsAllowed) {
+if($numberOfAttemptsAllowed !== null && $attemptNumber > $numberOfAttemptsAllowed) {
   $exceededAttemptsAllowed = TRUE;
   $valid = 0;
 }
