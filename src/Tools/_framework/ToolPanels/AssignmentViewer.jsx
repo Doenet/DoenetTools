@@ -175,17 +175,26 @@ export default function AssignmentViewer() {
           setMessage('Assignment is not assigned.');
           return;
         }
-        if (new Date(assignedDate) > new Date()){
-          setStage('Problem');
-          setMessage('Assignment is not yet available.');
-          return;
-        }
+
+        // TODO: add a flag to enable the below feature
+        // where a assignment is not available until the assigned date
+
+        // if (new Date(assignedDate) > new Date()){
+        //   setStage('Problem');
+        //   setMessage('Assignment is not yet available.');
+        //   return;
+        // }
      
-        if (new Date(dueDate) < new Date()){
-          setStage('Problem');
-          setMessage('Assignment is past due.');
-          return;
-        }
+
+        // TODO: would some instructor want the below feature
+        // where an assigment is no longer Available
+        // after the due date?
+
+        // if (new Date(dueDate) < new Date()){
+        //   setStage('Problem');
+        //   setMessage('Assignment is past due.');
+        //   return;
+        // }
 
         
         //Set doenetML
