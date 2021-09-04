@@ -32,7 +32,9 @@ export default function DriveInfoCap(){
  {/* <div style={{position: 'relative', paddingBottom: '100px'}}>
     <img style={{position: "absolute", clip: "rect(0, 240px, 100px, 0)" }} src={imageURL} alt={`${label} course`} height='100px' />
     </div> */}
+    <div style={{padding:'8px'}}>
     <div>{label}</div>
     <div>{roles}</div>
+    </div>
   </>
 }
