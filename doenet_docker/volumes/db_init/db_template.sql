@@ -7,7 +7,7 @@
 #
 # Host: 127.0.0.1 (MySQL 5.7.29)
 # Database: doenet_local
-# Generation Time: 2021-09-02 01:25:40 +0000
+# Generation Time: 2021-09-04 23:32:03 +0000
 # ************************************************************
 
 
@@ -27,7 +27,7 @@ DROP TABLE IF EXISTS `assignment`;
 
 CREATE TABLE `assignment` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `doenetId` char(21) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT 'matches code table contentId',
+  `doenetId` char(21) COLLATE utf8_unicode_ci NOT NULL DEFAULT '' COMMENT 'matches code table contentId',
   `contentId` char(64) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT 'matches code table contentId',
   `driveId` char(21) COLLATE utf8_unicode_ci DEFAULT NULL,
   `assignedDate` datetime DEFAULT NULL COMMENT 'UTC DATETIME NULL means open until the dueDate. If dueDate is also NULL then open all the time.',
@@ -46,7 +46,8 @@ CREATE TABLE `assignment` (
   `showCorrectness` tinyint(1) NOT NULL DEFAULT '1',
   `proctorMakesAvailable` tinyint(1) NOT NULL DEFAULT '0' COMMENT 'Released by proctor or instructor',
   `examCoverHTML` text COLLATE utf8_unicode_ci,
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `doenetId` (`doenetId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 LOCK TABLES `assignment` WRITE;
@@ -342,7 +343,7 @@ DROP TABLE IF EXISTS `user`;
 
 CREATE TABLE `user` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `userId` char(21) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `userId` char(21) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
   `screenName` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT 'full email address',
   `email` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT 'full email address',
   `lastName` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
@@ -380,7 +381,7 @@ CREATE TABLE `user_assignment` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `doenetId` char(21) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
   `contentId` char(64) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
-  `userId` char(21) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT 'NULL means no group',
+  `userId` char(21) COLLATE utf8_unicode_ci NOT NULL DEFAULT '' COMMENT 'NULL means no group',
   `dueDateOverride` datetime DEFAULT NULL COMMENT 'UTC DATETIME NULL means no override',
   `numberOfAttemptsAllowedOverride` int(11) DEFAULT NULL,
   `groupId` char(21) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT 'NULL means no group',
@@ -437,7 +438,7 @@ CREATE TABLE `user_assignment_attempt_item` (
   `viewedSolution` tinyint(1) DEFAULT '0',
   `viewedSolutionDate` datetime DEFAULT NULL COMMENT 'Datetime when they first viewed the solution',
   PRIMARY KEY (`id`),
-  KEY `userId` (`userId`,`doenetId`,`attemptNumber`,`itemNumber`)
+  UNIQUE KEY `unique_rows` (`userId`,`doenetId`,`attemptNumber`,`itemNumber`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 
@@ -449,18 +450,18 @@ DROP TABLE IF EXISTS `user_assignment_attempt_item_submission`;
 
 CREATE TABLE `user_assignment_attempt_item_submission` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `doenetId` char(21) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `doenetId` char(21) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
   `contentId` char(64) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `userId` char(21) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `attemptNumber` int(11) DEFAULT NULL,
-  `itemNumber` int(11) DEFAULT NULL,
-  `submissionNumber` int(11) DEFAULT NULL,
+  `userId` char(21) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
+  `attemptNumber` int(11) NOT NULL,
+  `itemNumber` int(11) NOT NULL,
+  `submissionNumber` int(11) NOT NULL,
   `stateVariables` mediumtext COLLATE utf8_unicode_ci COMMENT 'JSON used to persist state of user''s experience',
   `credit` float DEFAULT NULL,
   `submittedDate` datetime NOT NULL,
   `valid` tinyint(1) NOT NULL DEFAULT '1' COMMENT 'Past the due date. When the assesment wasn''t open.',
   PRIMARY KEY (`id`),
-  UNIQUE KEY `unique rows` (`doenetId`,`attemptNumber`,`itemNumber`,`submissionNumber`)
+  UNIQUE KEY `unique_rows` (`userId`,`doenetId`,`attemptNumber`,`itemNumber`,`submissionNumber`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 
