@@ -10,6 +10,7 @@ export default function CreditAchieved(){
   const recoilAttemptNumber = useRecoilValue(currentAttemptNumber);
   const recoilDoenetId = useRecoilValue(searchParamAtomFamily('doenetId'));
   const lastAttemptNumber = useRef(null)
+  let [disabled,setDisabled] = useState(false);
 
   const {creditByItem,creditForAttempt,creditForAssignment} = useRecoilValue(creditAchievedAtom);
   let [stage,setStage] = useState('Initialize');
@@ -19,22 +20,34 @@ export default function CreditAchieved(){
 
   const initialize = useRecoilCallback(({set})=> async (attemptNumber,doenetId)=>{
 
+  
    const { data }  = await axios.get(`api/loadAssessmentCreditAchieved.php`,{params:{attemptNumber,doenetId}});
 
-    const { creditByItem, creditForAssignment, creditForAttempt } = data;
-    set(creditAchievedAtom,(was)=>{
-      let newObj = {...was};
-      newObj.creditByItem = creditByItem;
-      newObj.creditForAssignment = creditForAssignment;
-      newObj.creditForAttempt = creditForAttempt;
-      return newObj;
-    })
+  const { 
+    creditByItem, 
+    creditForAssignment, 
+    creditForAttempt,
+    showCorrectness 
+ } = data;
+
+    if (Number(showCorrectness) === 0){
+      setDisabled(true);
+    }else{
+      set(creditAchievedAtom,(was)=>{
+        let newObj = {...was};
+        newObj.creditByItem = creditByItem;
+        newObj.creditForAssignment = creditForAssignment;
+        newObj.creditForAttempt = creditForAttempt;
+        return newObj;
+      })
+    }
+    
     lastAttemptNumber.current = attemptNumber;
     setStage('Ready');
 
   },[])
 
-  console.log(`>>>>stage -${stage}-`);
+  // console.log(`>>>>stage -${stage}-`);
 
   if (!recoilAttemptNumber || !recoilDoenetId){
     return null;
@@ -48,6 +61,9 @@ export default function CreditAchieved(){
   if (lastAttemptNumber.current !== recoilAttemptNumber){
     initialize(recoilAttemptNumber,recoilDoenetId);
     return null;
+  }
+  if (disabled){
+    return <div style={{fontSize:"20px",textAlign:"center"}}>Not Available</div>
   }
 
  return <div>

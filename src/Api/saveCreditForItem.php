@@ -128,7 +128,11 @@ if ($result->num_rows < 1){
 
 // look for a due date adjustment and creditOverride for asssignment,
 // which includes check for user_assignment having an entry
-$sql = "SELECT dueDateOverride, creditOverride, credit
+$sql = "SELECT 
+        NOW() AS now,
+        dueDateOverride, 
+        creditOverride, 
+        credit
         FROM user_assignment
         WHERE userId = '$userId'
         AND doenetId = '$doenetId'
@@ -150,9 +154,11 @@ if ($result->num_rows < 1){
   if($dueDateOverride) {
     $dueDate = $dueDateOverride;
   }
-  
+  $dueDate_seconds = strtotime($dueDate);
+  $now_seconds = strtotime($row['now']);
+  $dueDate_diff = $now_seconds - $dueDate_seconds;
   // give one minute buffer on due date
-  if(strtotime($dueDate) < strtotime("-1 minute")) {
+  if($dueDate_seconds < $now_seconds) {
     $pastDueDate = TRUE;
     $valid = 0;
   }
@@ -405,6 +411,7 @@ $response_arr = array(
     "effective_timelimit_seconds"=>$effective_timelimit_seconds,
     "now_seconds"=>$now_seconds,
     "diff_seconds"=>$diff_seconds,
+    "dueDate_diff"=>$dueDate_diff,
 );
 
 // set response code - 200 OK

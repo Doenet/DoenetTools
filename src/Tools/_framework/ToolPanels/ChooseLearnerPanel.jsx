@@ -40,7 +40,7 @@ export default function ChooseLearnerPanel(props) {
     })
   });
 
-  console.log(`>>>>stage '${stage}'`)
+  // console.log(`>>>>stage '${stage}'`)
 
   if (stage === 'request password' || stage === 'problem with code'){
      return   <div
