@@ -13,9 +13,7 @@ export default function TimerMenu(){
   let [timeDisplay,setTimeDisplay] = useState("Unlimited")
   const [endTime,setEndTime] = useState(null);
   const [refresh,setRefresh] = useState(new Date())
-  // console.log(">>>>userAttemptNumber",userAttemptNumber)
-  console.log(">>>>endTime",endTime);
-  console.log(">>>>timeLimit",timeLimit);
+
   let timer = useRef(null);
 
   //Need fresh data on began time each time 
@@ -38,8 +36,6 @@ export default function TimerMenu(){
       }
 
       let endDT = new Date(startDT.getTime() + timeLimit*60000);
-      // console.log(">>>>startDT",startDT)
-      // console.log(">>>>endDT",endDT)
       setEndTime(endDT);
 
     }
@@ -47,7 +43,6 @@ export default function TimerMenu(){
   },[userAttemptNumber,timeLimit,doenetId,setEndTime])
 
   useEffect(()=>{
-    // console.log(">>>>SET TIMER DISPLAY")
     //Clear timer to prevent multiple timers
     clearTimeout(timer.current);
 
@@ -70,11 +65,6 @@ export default function TimerMenu(){
         
       }
 
-  //     if (endTime === null){
-  //       let now = new Date();
-  //       let newDateObj = new Date(now.getTime() + timeLimit*60000);
-  //       setEndTime(newDateObj);
-  //     }
     },[refresh,endTime])
 
 

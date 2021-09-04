@@ -48,8 +48,8 @@ $pastDueDate = FALSE;
 $exceededAttemptsAllowed = FALSE;
 $viewedSolution = FALSE;
 
-
-if($attemptNumber > $numberOfAttemptsAllowed) {
+//$numberOfAttemptsAllowed is '' when unlimited
+if($numberOfAttemptsAllowed != '' && $attemptNumber > $numberOfAttemptsAllowed) {
   $exceededAttemptsAllowed = TRUE;
   $valid = 0;
 }
@@ -86,7 +86,11 @@ if($timeLimit > 0) {
 
 
 // Get time began and creditOverride from user_assignment_attempt
-$sql = "SELECT began, creditOverride, credit
+$sql = "SELECT 
+        NOW() AS now,
+        began, 
+        creditOverride, 
+        credit
         FROM user_assignment_attempt
         WHERE userId = '$userId'
         AND doenetId = '$doenetId'
@@ -103,11 +107,16 @@ if ($result->num_rows < 1){
   $previousCredit_for_attempt = $row['credit'];
 
   if($timeLimit > 0) {
+
     // give a buffer of one minute
     $effectiveTimeLimit = $timeLimit+1;
 
     // if began more than timeLimit ago, we're past time
-    if(strtotime($row['began']) < strtotime("-".$effectiveTimeLimit." minutes")) {
+    $began_seconds = strtotime($row['began']);
+    $now_seconds = strtotime($row['now']);
+    $effective_timelimit_seconds = $effectiveTimeLimit * 60;
+    $diff_seconds = $now_seconds - ($began_seconds + $effective_timelimit_seconds);
+    if(($began_seconds + $effective_timelimit_seconds) < $now_seconds) {
       $timeExpired = TRUE;
       $valid = 0;
     }
@@ -391,7 +400,11 @@ $response_arr = array(
     "creditForItem"=>$credit_for_item,
     "creditForAttempt"=>$credit_for_attempt,
     "creditForAssignment"=>$credit_for_assignment,
-    "creditByItem"=>$credit_by_item
+    "creditByItem"=>$credit_by_item,
+    "began_seconds"=>$began_seconds,
+    "effective_timelimit_seconds"=>$effective_timelimit_seconds,
+    "now_seconds"=>$now_seconds,
+    "diff_seconds"=>$diff_seconds,
 );
 
 // set response code - 200 OK
