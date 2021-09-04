@@ -7,7 +7,7 @@
 #
 # Host: 127.0.0.1 (MySQL 5.7.29)
 # Database: doenet_local
-# Generation Time: 2021-09-02 01:25:40 +0000
+# Generation Time: 2021-09-04 23:26:18 +0000
 # ************************************************************
 
 
@@ -437,7 +437,7 @@ CREATE TABLE `user_assignment_attempt_item` (
   `viewedSolution` tinyint(1) DEFAULT '0',
   `viewedSolutionDate` datetime DEFAULT NULL COMMENT 'Datetime when they first viewed the solution',
   PRIMARY KEY (`id`),
-  KEY `userId` (`userId`,`doenetId`,`attemptNumber`,`itemNumber`)
+  UNIQUE KEY `unique_rows` (`userId`,`doenetId`,`attemptNumber`,`itemNumber`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 
@@ -460,7 +460,7 @@ CREATE TABLE `user_assignment_attempt_item_submission` (
   `submittedDate` datetime NOT NULL,
   `valid` tinyint(1) NOT NULL DEFAULT '1' COMMENT 'Past the due date. When the assesment wasn''t open.',
   PRIMARY KEY (`id`),
-  UNIQUE KEY `unique rows` (`doenetId`,`attemptNumber`,`itemNumber`,`submissionNumber`)
+  UNIQUE KEY `unique_rows` (`userId`,`doenetId`,`attemptNumber`,`itemNumber`,`submissionNumber`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 
