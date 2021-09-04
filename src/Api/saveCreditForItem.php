@@ -48,8 +48,8 @@ $pastDueDate = FALSE;
 $exceededAttemptsAllowed = FALSE;
 $viewedSolution = FALSE;
 
-
-if($attemptNumber > $numberOfAttemptsAllowed) {
+//$numberOfAttemptsAllowed is '' when unlimited
+if($numberOfAttemptsAllowed != '' && $attemptNumber > $numberOfAttemptsAllowed) {
   $exceededAttemptsAllowed = TRUE;
   $valid = 0;
 }
