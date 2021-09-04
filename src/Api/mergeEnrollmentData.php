@@ -181,10 +181,10 @@ lastName,
 email,
 empId,
 dateEnrolled,
-section
+section,
+withdrew
 FROM enrollment
-WHERE withdrew = '0'
-AND driveId = '$driveId'
+WHERE driveId = '$driveId'
 ORDER BY firstName
 ";
 $result = $conn->query($sql);
@@ -198,7 +198,8 @@ $enrollmentArray = array();
 				"email"=>$row["email"],
 				"empId"=>$row["empId"],
 				"dateEnrolled"=>$row["dateEnrolled"],
-				"section"=>$row["section"]
+				"section"=>$row["section"],
+				"withdrew"=>$row["withdrew"]
 			);
 			array_push($enrollmentArray,$learner);
 		}
