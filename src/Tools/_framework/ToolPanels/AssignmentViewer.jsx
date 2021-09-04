@@ -98,7 +98,10 @@ export default function AssignmentViewer() {
           searchParamAtomFamily('isCollection'),
         );
         startedInitOfDoenetId.current = doenetId;
+     
         const {
+          assignedDate,
+          dueDate,
           showCorrectness,
           showFeedback,
           showHints,
@@ -170,7 +173,19 @@ export default function AssignmentViewer() {
         if (!isAssigned) {
           setStage('Problem');
           setMessage('Assignment is not assigned.');
-        }else{
+          return;
+        }
+        if (new Date(assignedDate) > new Date()){
+          setStage('Problem');
+          setMessage('Assignment is not yet available.');
+          return;
+        }
+     
+        if (new Date(dueDate) < new Date()){
+          setStage('Problem');
+          setMessage('Assignment is past due.');
+          return;
+        }
 
         
         //Set doenetML
@@ -187,7 +202,7 @@ export default function AssignmentViewer() {
             ? setCollectionVariant
             : setVariantsFromDoenetML,
         });
-      }
+      
         async function setVariantsFromDoenetML({ allPossibleVariants }) {
           storedAllPossibleVariants.current = allPossibleVariants;
           //Find attemptNumber
