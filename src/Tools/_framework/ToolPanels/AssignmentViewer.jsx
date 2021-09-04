@@ -326,7 +326,7 @@ export default function AssignmentViewer() {
         set(creditAchievedAtom,{ creditByItem, creditForAssignment, creditForAttempt });
   });
 
-  console.log(`>>>>stage -${stage}-`);
+  // console.log(`>>>>stage -${stage}-`);
 
   //Wait for doenetId to be defined to start
   if (recoilDoenetId === '') {
