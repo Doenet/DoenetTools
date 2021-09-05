@@ -131,7 +131,7 @@ export default function SelectedDoenetML() {
     newFolderInfo.contentsDictionaryByDoenetId =  {...was.contentsDictionaryByDoenetId}
     newFolderInfo.contentsDictionaryByDoenetId[doenetId] = {...was.contentsDictionaryByDoenetId[doenetId]};
     newFolderInfo.contentsDictionaryByDoenetId[doenetId].isReleased = '1';
-    console.log(">>>>newFolderInfo",newFolderInfo)
+
     return newFolderInfo;
   })
   })
