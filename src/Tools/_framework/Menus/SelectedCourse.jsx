@@ -106,7 +106,7 @@ const CoursePassword = ({driveId})=>{
   useEffect(()=>{
     const getPassword = async (driveId)=>{
 
-    console.log(">>>>driveId",driveId)
+    // console.log(">>>>driveId",driveId)
   }
   getPassword(driveId);
   },[driveId])
