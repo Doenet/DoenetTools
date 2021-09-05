@@ -49,74 +49,41 @@ console.log(">>>===VersionHistory")
   const [driveId, folderId, itemId] = path.split(':');
 
   const setReleaseNamed = useRecoilCallback(({set,snapshot})=> async ({doenetId,versionId,driveId,folderId,itemId})=>{
-    let doenetIsReleased = false;
-    let history = await snapshot.getPromise(itemHistoryAtom(doenetId));
-    let newHistory = {...history}
-    newHistory.named = [...history.named];
-    let newVersion;
-    //Establish if we are releasing or retracting "doenetIsReleased"
-    //Toggle released
-    for (const [i,version] of newHistory.named.entries()){
-      if (versionId === version.versionId){
-        newVersion = {...version}
 
-        if (version.isReleased === '0'){
-          //release
-          newVersion.isReleased = '1';
-          doenetIsReleased = true;
-          newHistory.named.splice(i,1,newVersion)
-          break;
-        }else{
-          //retract
-          newVersion.isReleased = '0';
-          newHistory.named.splice(i,1,newVersion)
-          break;
-        }
-      }
+    const { data } = await axios.get('/api/toggleRelease.php',{params:{doenetId,versionId}});
+    const { success, message, isReleased, title } = data;
+    //Note: isReleased if true means version is now released
+
+    let actionName = 'Retracted';
+    if (isReleased === '1'){
+      actionName = 'Released';
     }
-    //If releasing then retract other named versions
-    if (doenetIsReleased){
-      for (const [i,version] of newHistory.named.entries()){
-        if (versionId !== version.versionId && version.isReleased === '1'){
-          let newVersion = {...version}
-            //retract
-            newVersion.isReleased = '0';
-            newHistory.named.splice(i,1,newVersion)
-            break; //Only one other should ever be released
-          }
-        }
-      }
-    
-
-    set(itemHistoryAtom(doenetId),newHistory);
-    
-    const doenetML = await snapshot.getPromise(fileByContentId(newVersion.contentId));
-
-    let newDBVersion = {...newVersion,
-      isNewToggleRelease:'1',
-      doenetId,
-      doenetML
-    }
-    axios.post("/api/saveNewVersion.php",newDBVersion)
-    .then((resp)=>{
-
-      if (resp.data.success){
-        let message = `'${newVersion.title}' Released`
-        if (newVersion.isReleased === '0'){
-           message = `'${newVersion.title}' Retracted`
-        }
-        addToast(message, toastType.SUCCESS)
-
-      }else{
-        let message = `Error occured releasing '${newVersion.title}'`
-        if (newVersion.isReleased === '0'){
-           message = `Error occured retracting '${newVersion.title}'`
-        }
+    if (success){
+        addToast(`"${title}" is ${actionName}`, toastType.SUCCESS)
+    }else{
         addToast(message, toastType.ERROR)
+    }
 
+//Update data structures 
+    set(itemHistoryAtom(doenetId),(was)=>{
+      let newObj = {...was}
+      let newNamed = [...was.named];
+
+      for (const [i,version] of newNamed.entries()){
+        let newVersion = {...version};
+        if (version.versionId === versionId){
+          newVersion.isReleased = isReleased;
+          newNamed[i] = newVersion;
+        }else{
+          newVersion.isReleased = '0';
+          newNamed[i] = newVersion;
+        }
       }
-
+      newObj.named = newNamed;
+      return newObj;
     })
+  
+
     set(folderDictionary({driveId,folderId}),(was)=>{
       let newFolderInfo = {...was};
       //TODO: once path has itemId fixed delete this code
@@ -126,15 +93,10 @@ console.log(">>>===VersionHistory")
           break;
         }
       }
-
-
       newFolderInfo.contentsDictionary =  {...was.contentsDictionary}
       newFolderInfo.contentsDictionary[itemId] = {...was.contentsDictionary[itemId]};
-      let newIsReleased = '0';
-      if (doenetIsReleased){
-        newIsReleased = '1';
-      }
-      newFolderInfo.contentsDictionary[itemId].isReleased = newIsReleased;
+
+      newFolderInfo.contentsDictionary[itemId].isReleased = isReleased;
       return newFolderInfo;
     })
 })
@@ -402,9 +364,7 @@ if (initializedDoenetId !== doenetId){
   }
      
   return <>
-    <div style={{margin:"6px 0px 6px 0px"}}>
-    <Button disabled={!currentDraftSelected} width="menu" value="Save Version" onClick={()=>saveVersion(doenetId)} />
-    </div>
+     <div style={{padding:"6px 0px 6px 0px"}}>   
     <select 
     size='2' 
     style={{width:'230px'}}
@@ -412,9 +372,12 @@ if (initializedDoenetId !== doenetId){
     {/* <option value={version.versionId} selected={selected}>{released} {version.title}</option> */}
     <option value={versionHistory.contents.draft.versionId} selected={currentDraftSelected}>Current Draft</option>
   </select>
-
+  </div>
+  <div style={{margin:"0px 0px 6px 0px"}}>
+    <Button disabled={!currentDraftSelected} width="menu" value="Save Version" onClick={()=>saveVersion(doenetId)} />
+    </div>
     <div style={{margin:"6px 0px 6px 0px"}}>
-    <Button disabled={!currentDraftSelected} value="Release Current" onClick={()=> {
+    <Button disabled={!currentDraftSelected} width="menu" value="Release Current" onClick={()=> {
       saveAndReleaseCurrent({doenetId,driveId,folderId,itemId});
     }}/>
     </div>
