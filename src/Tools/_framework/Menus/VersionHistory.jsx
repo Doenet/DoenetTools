@@ -389,7 +389,7 @@ if (initializedDoenetId !== doenetId){
     {options}
   </select>
   <div>Name: {version?.title}</div>
-  <ClipboardLinkButtons disabled={currentDraftSelected} contentId={version?.contentId} />
+  <ClipboardLinkButtons disabled={currentDraftSelected} contentId={version?.contentId} doenetId={doenetId} />
         <div><RenameVersionControl key={version?.versionId} disabled={currentDraftSelected} doenetId={doenetId} title={version?.title} versionId={version?.versionId} /></div>
        {/* <div><button onClick={()=>versionHistoryActive(version)} >View</button></div>  */}
        <div><Button disabled={currentDraftSelected} onClick={()=>setAsCurrent({doenetId,versionId:version.versionId})} value="Set As Current" /></div> 
