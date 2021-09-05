@@ -26,6 +26,7 @@ import axios from "axios";
 import { useToast, toastType } from '@Toast';
 import { folderDictionary } from '../../../_reactComponents/Drive/NewDrive';
 import { editorSaveTimestamp } from '../ToolPanels/DoenetMLEditor'; 
+import { DateToUTCDateString } from '../../../_utils/dateUtilityFunction';
 
 export const currentDraftSelectedAtom = atom({
   key:"currentDraftSelectedAtom",
@@ -50,7 +51,7 @@ console.log(">>>===VersionHistory")
 
   const setReleaseNamed = useRecoilCallback(({set,snapshot})=> async ({doenetId,versionId,driveId,folderId,itemId})=>{
 
-    const { data } = await axios.get('/api/toggleRelease.php',{params:{doenetId,versionId}});
+    const { data } = await axios.get('/api/releaseVersion.php',{params:{doenetId,versionId}});
     const { success, message, isReleased, title } = data;
     //Note: isReleased if true means version is now released
 
@@ -95,8 +96,11 @@ console.log(">>>===VersionHistory")
       }
       newFolderInfo.contentsDictionary =  {...was.contentsDictionary}
       newFolderInfo.contentsDictionary[itemId] = {...was.contentsDictionary[itemId]};
-
       newFolderInfo.contentsDictionary[itemId].isReleased = isReleased;
+
+      newFolderInfo.contentsDictionaryByDoenetId =  {...was.contentsDictionaryByDoenetId}
+      newFolderInfo.contentsDictionaryByDoenetId[doenetId] = {...was.contentsDictionaryByDoenetId[doenetId]};
+      newFolderInfo.contentsDictionaryByDoenetId[doenetId].isReleased = isReleased;
       return newFolderInfo;
     })
 })
@@ -208,50 +212,76 @@ console.log(">>>===VersionHistory")
 
   const saveAndReleaseCurrent = useRecoilCallback(({snapshot,set}) => 
     async ({doenetId,driveId,folderId,itemId}) => {
+
       const doenetML = await snapshot.getPromise(textEditorDoenetMLAtom);
-      const timestamp = buildTimestamp();
+      const timestamp = DateToUTCDateString(new Date());
       const contentId = getSHAofContent(doenetML);
       const versionId = nanoid();
-      const oldVersions = await snapshot.getPromise(itemHistoryAtom(doenetId));
-      let newVersions = {...oldVersions};
 
-      const title = `Save ${oldVersions.named.length+1}`
+      const { data } = await axios.post("/api/releaseDraft.php",{
+        doenetId,
+        doenetML,
+        timestamp,
+        versionId
+      })
 
+      const { success, message, title } = data;
+      if (success){
+        addToast(`"${title}" is Released.`, toastType.SUCCESS)
+      }else{
+          addToast(message, toastType.ERROR)
+      }
+
+      set(fileByContentId(contentId),doenetML);
+
+      //Update data structures 
+    set(itemHistoryAtom(doenetId),(was)=>{
+      let newObj = {...was}
+      let newNamed = [...was.named];
+      //Retract all other named versions
+      for (const [i,version] of newNamed.entries()){
+        let newVersion = {...version};
+        newVersion.isReleased = '0';
+        newNamed[i] = newVersion;
+      }
+      
       let newVersion = {
         title,
         versionId,
         timestamp,
-        isReleased:'0',
+        isReleased:'1',
         isDraft:'0',
         isNamed:'1',
         contentId
       }
-      let newDBVersion = {...newVersion,
-        doenetML,
-        doenetId
+      newNamed.unshift(newVersion);
+
+      newObj.named = newNamed;
+      return newObj;
+    })
+  
+
+    set(folderDictionary({driveId,folderId}),(was)=>{
+      let newFolderInfo = {...was};
+      //TODO: once path has itemId fixed delete this code
+      //Find itemId
+      for (let testItemId of newFolderInfo.contentIds.defaultOrder){
+        if (newFolderInfo.contentsDictionary[testItemId].doenetId === doenetId){
+          itemId = testItemId;
+          break;
+        }
       }
-      
-      newVersions.named = [newVersion,...oldVersions.named];
+      newFolderInfo.contentsDictionary =  {...was.contentsDictionary}
+      newFolderInfo.contentsDictionary[itemId] = {...was.contentsDictionary[itemId]};
+      newFolderInfo.contentsDictionary[itemId].isReleased = '1';
 
-      set(itemHistoryAtom(doenetId),newVersions)
-      set(fileByContentId(contentId),doenetML);
-      
-      //TODO: Errors don't seem to fire when offline
-      axios.post("/api/saveNewVersion.php",newDBVersion)
-        .then((resp)=>{
-          //  console.log(">>>resp saveVersion",resp.data)
-            if (resp?.data?.success){
-              addToast('New Version Saved!', toastType.SUCCESS)
-            }else{
-              addToast('Version NOT Saved!', toastType.ERROR);
-            }
-          })
-          .catch((err)=>{
-            // console.log(">>>err",err)
-            addToast('Version NOT Saved!', toastType.ERROR);
+      newFolderInfo.contentsDictionaryByDoenetId =  {...was.contentsDictionaryByDoenetId}
+      newFolderInfo.contentsDictionaryByDoenetId[doenetId] = {...was.contentsDictionaryByDoenetId[doenetId]};
+      newFolderInfo.contentsDictionaryByDoenetId[doenetId].isReleased = '1';
 
-          })
-      setReleaseNamed({doenetId,versionId,driveId,folderId,itemId});
+      return newFolderInfo;
+    })
+
 
   })
 
@@ -325,11 +355,6 @@ console.log(">>>===VersionHistory")
 if (initializedDoenetId !== doenetId){
   return <div style={props.style}></div>
 }
-
-
-// console.log(">>>versionHistory.contents",versionHistory.contents)
-// console.log(">>>initializedDoenetId",initializedDoenetId)
-// console.log(">>>path",path)
 
 //Protected if not defined yet
     if (!versionHistory?.contents?.named){

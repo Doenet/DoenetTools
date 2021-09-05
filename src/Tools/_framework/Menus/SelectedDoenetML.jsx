@@ -28,13 +28,17 @@ import { pageToolViewAtom } from '../NewToolRoot';
 //   useAssignment,
 // } from '../ToolHandlers/CourseToolHandler';
 // import { useAssignmentCallbacks } from '../../../_reactComponents/Drive/DriveActions';
-import { useToast } from '../Toast';
+// import { useToast } from '../Toast';
 import Switch from '../../_framework/Switch';
 // import { selectedMenuPanelAtom } from '../Panels/NewMenuPanel';
 // import ButtonGroup from '../../../_reactComponents/PanelHeaderComponents/ButtonGroup';
 import axios from 'axios';
+import { nanoid } from 'nanoid';
 
 import { DateToUTCDateString } from '../../../_utils/dateUtilityFunction';
+import { itemHistoryAtom, fileByContentId } from '../ToolHandlers/CourseToolHandler';
+import { useToast, toastType } from '@Toast';
+
 
 export const selectedVersionAtom = atom({
   key: 'selectedVersionAtom',
@@ -50,14 +54,86 @@ export default function SelectedDoenetML() {
   const item = useRecoilValue(selectedInformation)[0];
   let [label,setLabel] = useState('');
   const { deleteItem, renameItem } = useSockets('drive');
+  const addToast = useToast();
 
   useEffect(()=>{
     setLabel(item?.label)
   },[item?.label])
 
 
-  const assignUnassign = useRecoilCallback(({set,snapshot})=> async (doenetId)=>{
-    console.log(">>>>assignUnassign doenetId",doenetId)
+  const assignUnassign = useRecoilCallback(({set,snapshot})=> async ({label,doenetId,parentFolderId,driveId})=>{
+
+      const versionId = nanoid();
+      const timestamp = DateToUTCDateString(new Date());
+    //Get contentId of draft
+    let itemHistory = await snapshot.getPromise(itemHistoryAtom(doenetId));
+    const contentId = itemHistory.draft.contentId;
+    
+    //Get doenetML
+    let doenetML = await snapshot.getPromise(fileByContentId(contentId));
+
+    const { data } = await axios.post("/api/releaseDraft.php",{
+      doenetId,
+      doenetML,
+      timestamp,
+      versionId
+    })
+
+    const { success, message, title } = data;
+    if (success){
+      addToast(`${label}'s "${title}" is Released.`, toastType.SUCCESS)
+    }else{
+        addToast(message, toastType.ERROR)
+    }
+
+    //Update data structures 
+  set(itemHistoryAtom(doenetId),(was)=>{
+    let newObj = {...was}
+    let newNamed = [...was.named];
+    //Retract all other named versions
+    for (const [i,version] of newNamed.entries()){
+      let newVersion = {...version};
+      newVersion.isReleased = '0';
+      newNamed[i] = newVersion;
+    }
+    
+    let newVersion = {
+      title,
+      versionId,
+      timestamp,
+      isReleased:'1',
+      isDraft:'0',
+      isNamed:'1',
+      contentId
+    }
+    newNamed.unshift(newVersion);
+
+    newObj.named = newNamed;
+    return newObj;
+  })
+
+
+  set(folderDictionary({driveId,folderId:parentFolderId}),(was)=>{
+    let newFolderInfo = {...was};
+    //TODO: once path has itemId fixed delete this code
+    //Find itemId
+    let itemId = null;
+    for (let testItemId of newFolderInfo.contentIds.defaultOrder){
+      if (newFolderInfo.contentsDictionary[testItemId].doenetId === doenetId){
+        itemId = testItemId;
+        break;
+      }
+    }
+    newFolderInfo.contentsDictionary =  {...was.contentsDictionary}
+    newFolderInfo.contentsDictionary[itemId] = {...was.contentsDictionary[itemId]};
+    newFolderInfo.contentsDictionary[itemId].isReleased = '1';
+
+    newFolderInfo.contentsDictionaryByDoenetId =  {...was.contentsDictionaryByDoenetId}
+    newFolderInfo.contentsDictionaryByDoenetId[doenetId] = {...was.contentsDictionaryByDoenetId[doenetId]};
+    newFolderInfo.contentsDictionaryByDoenetId[doenetId].isReleased = '1';
+    console.log(">>>>newFolderInfo",newFolderInfo)
+    return newFolderInfo;
+  })
   })
 
   if (!item){ return null;}
@@ -84,8 +160,8 @@ export default function SelectedDoenetML() {
     <AssignmentSettings role={role} doenetId={item.doenetId} />
     </>
   }
-  let assignDraftLabel = "Assign Current Draft";
-  if (item.isReleased === "1"){ assignDraftLabel = "Unassign Content";}
+  let assignDraftLabel = "Release Current Draft";
+  // if (item.isReleased === "1"){ assignDraftLabel = "Unassign Content";}
 
   function renameItemCallback(newLabel,item){
     renameItem({
@@ -162,7 +238,7 @@ export default function SelectedDoenetML() {
 <Button 
 width="menu" 
 value={assignDraftLabel}
-onClick={()=>assignUnassign(item.doenetId)}
+onClick={()=>assignUnassign(item)}
 />
 
 <br />
