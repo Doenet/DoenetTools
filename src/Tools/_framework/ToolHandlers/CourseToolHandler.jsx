@@ -547,7 +547,7 @@ export function ClipboardLinkButtons(props){
   if(props.doenetId) {
     linkData.push(`doenetId=${props.doenetId}`);
   }
-  let embedLink = `<copy uri="doenet:${linkData.join('&')} />`
+  let embedLink = `<copy uri="doenet:${linkData.join('&')}" />`
 
 
   // if (!props.contentId){
