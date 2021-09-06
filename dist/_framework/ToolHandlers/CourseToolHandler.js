@@ -413,10 +413,18 @@ export const getSHAofContent = (doenetML) => {
 };
 export function ClipboardLinkButtons(props) {
   const addToast = useToast();
-  let link = `http://localhost/#/content?contentId=${props.contentId}`;
-  if (props.doenetId) {
-    link = `http://localhost/#/content?doenetId=${props.doenetId}`;
+  let link = `http://localhost/#/content?doenetId=${props.doenetId}`;
+  if (props.contentId) {
+    link = `http://localhost/#/content?contentId=${props.contentId}`;
   }
+  let linkData = [];
+  if (props.contentId) {
+    linkData.push(`contentId=${props.contentId}`);
+  }
+  if (props.doenetId) {
+    linkData.push(`doenetId=${props.doenetId}`);
+  }
+  let embedLink = `<copy uri="doenet:${linkData.join("&")}" />`;
   return /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement(ButtonGroup, null, /* @__PURE__ */ React.createElement(CopyToClipboard, {
     onCopy: () => addToast("Link copied to clipboard!", toastType.SUCCESS),
     text: link
@@ -426,6 +434,15 @@ export function ClipboardLinkButtons(props) {
       icon: faClipboard
     }),
     value: "copy link"
+  })), /* @__PURE__ */ React.createElement(CopyToClipboard, {
+    onCopy: () => addToast("Embed link copied to clipboard!", toastType.SUCCESS),
+    text: embedLink
+  }, /* @__PURE__ */ React.createElement(Button, {
+    disabled: props.disabled,
+    icon: /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
+      icon: faClipboard
+    }),
+    value: "copy embed link"
   })), /* @__PURE__ */ React.createElement(Button, {
     icon: /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
       icon: faExternalLinkAlt

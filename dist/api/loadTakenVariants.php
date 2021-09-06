@@ -26,6 +26,21 @@ $attemptNumbers = array();
 
 if ($success){
 
+  $sql = "
+        SELECT e.timeLimitMultiplier AS timeLimitMultiplier
+        FROM enrollment AS e
+        LEFT JOIN drive_content AS dc
+        ON e.driveId = dc.driveId
+        WHERE dc.doenetId='$doenetId'
+        AND e.userId = '$userId'";
+ 
+$result = $conn->query($sql);
+$row = $result->fetch_assoc();
+$timeLimitMultiplier = $row['timeLimitMultiplier'];
+if (!$timeLimitMultiplier){
+        $timeLimitMultiplier = "1";
+}
+
   $sql = "SELECT attemptNumber,
         generatedVariant,
         began
@@ -48,6 +63,7 @@ $response_arr = array(
         "attemptNumbers"=>$attemptNumbers,
         "variants" => $variants,
         "starts" => $starts,
+        "timeLimitMultiplier"=> $timeLimitMultiplier,
         "message"=>$message
 );
 

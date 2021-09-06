@@ -20,14 +20,14 @@ if (array_key_exists('entryId', $_POST)) {
 
     //get doenetId from entryId
     $sql = "
-        SELECT collectionDoenetId
+        SELECT doenetId
         FROM collection
         WHERE entryId = '$entryId'
     ";
     $result = $conn->query($sql);
     if ($result->num_rows > 0) {
         $row = $result->fetch_assoc();
-        $doenetId = $row['collectionDoenetId'];
+        $doenetId = $row['doenetId'];
     }
 } else {
     http_response_code(400);

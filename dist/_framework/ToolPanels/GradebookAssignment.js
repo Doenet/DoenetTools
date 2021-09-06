@@ -24,12 +24,12 @@ const getUserId = (students, name) => {
 export default function GradebookAssignmentView(props) {
   const setPageToolView = useSetRecoilState(pageToolViewAtom);
   let doenetId = useRecoilValue(searchParamAtomFamily("doenetId"));
+  let driveIdValue = useRecoilValue(searchParamAtomFamily("driveId"));
   let source = useRecoilValue(searchParamAtomFamily("source"));
   let assignmentsTable = {};
   let attempts = useRecoilValueLoadable(attemptData(doenetId));
   let students = useRecoilValueLoadable(studentData);
   let maxAttempts = 0;
-  let driveIdValue = useRecoilValue(driveId);
   if (attempts.state == "hasValue") {
     for (let userId in attempts.contents) {
       let len = Object.keys(attempts.contents[userId].attempts).length;
@@ -85,6 +85,10 @@ export default function GradebookAssignmentView(props) {
     for (let userId in students.contents) {
       let firstName = students.contents[userId].firstName;
       let lastName = students.contents[userId].lastName;
+      let role = students.contents[userId].role;
+      if (role !== "Student") {
+        continue;
+      }
       let row = {};
       row["student"] = firstName + " " + lastName;
       if (attempts.state == "hasValue") {

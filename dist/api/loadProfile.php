@@ -35,6 +35,7 @@ if ($result->num_rows > 0){
         "roleCommunityTA" => $row['roleCommunityTA'],
         "roleLiveDataCommunity" => $row['roleLiveDataCommunity'],
         "signedIn" => "1",
+        
 );
 $roleAccessList = array(
     "roleStudent" => array("Account", "Library", "Course"),
@@ -55,6 +56,7 @@ $roleAccessList = array(
 
   $profile["toolAccess"] = $toolAccessList;
   $profile["device"] = $jwtArray["deviceName"];
+$profile["userId"] = $userId;
 
     $response_arr = array("success" => "1",
                           "profile" => $profile);
@@ -77,13 +79,15 @@ $roleAccessList = array(
     "roleCommunityTA" => "0",
     "roleLiveDataCommunity" => "0",
     "signedIn" => "0",
+    "userId"=>$userId,
   );
 // $profile["toolAccess"] = array("Library", "Course", "Documentation");
 $profile["toolAccess"] = $toolAccessList;
 $profile["device"] = "N/A";
 
 $response_arr = array("success" => "1",
-                          "profile" => $profile);
+                      "profile" => $profile,
+                    );
 }
 
 // set response code - 200 OK

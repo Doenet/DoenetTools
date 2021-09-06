@@ -1,4 +1,4 @@
-import React, {useEffect} from "../../_snowpack/pkg/react.js";
+import React, {useEffect, useState} from "../../_snowpack/pkg/react.js";
 import {nanoid} from "../../_snowpack/pkg/nanoid.js";
 import axios from "../../_snowpack/pkg/axios.js";
 import Button from "../../_reactComponents/PanelHeaderComponents/Button.js";
@@ -10,6 +10,7 @@ import {
   useRecoilValue
 } from "../../_snowpack/pkg/recoil.js";
 import {useToast, toastType} from "../Toast.js";
+import Switch from "../Switch.js";
 export const enrollmentTableDataAtom = atom({
   key: "enrollmentTableDataAtom",
   default: []
@@ -40,6 +41,7 @@ export default function Enrollment(props) {
   const enrollmentTableData = useRecoilValue(enrollmentTableDataAtom);
   const setEnrollmentTableDataAtom = useSetRecoilState(enrollmentTableDataAtom);
   const driveId = useRecoilValue(searchParamAtomFamily("driveId"));
+  let [showWithdrawn, setShowWithdrawn] = useState(false);
   useEffect(() => {
     if (driveId !== "") {
       axios.get("/api/getEnrollment.php", {params: {driveId}}).then((resp) => {
@@ -56,12 +58,24 @@ export default function Enrollment(props) {
   }
   let enrollmentRows = [];
   for (let [i, rowData] of enrollmentTableData.entries()) {
-    enrollmentRows.push(/* @__PURE__ */ React.createElement("tr", {
-      key: `erow${i}`
-    }, /* @__PURE__ */ React.createElement("td", null, rowData.firstName, " ", rowData.lastName), /* @__PURE__ */ React.createElement("td", null, rowData.section), /* @__PURE__ */ React.createElement("td", null, rowData.empId), /* @__PURE__ */ React.createElement("td", null, rowData.email), /* @__PURE__ */ React.createElement("td", null, rowData.dateEnrolled), /* @__PURE__ */ React.createElement("td", null, " ", /* @__PURE__ */ React.createElement(Button, {
-      value: "Withdraw",
-      onClick: (e) => withDrawLearners(e, rowData.email)
-    }))));
+    if (rowData.withdrew === "0" || showWithdrawn) {
+      let bgcolor = "white";
+      let button = /* @__PURE__ */ React.createElement(Button, {
+        value: "Withdraw",
+        onClick: (e) => withDrawLearners(e, rowData.email)
+      });
+      if (rowData.withdrew === "1") {
+        bgcolor = "grey";
+        button = /* @__PURE__ */ React.createElement(Button, {
+          value: "Enroll",
+          onClick: (e) => enrollLearners(e, rowData.email)
+        });
+      }
+      enrollmentRows.push(/* @__PURE__ */ React.createElement("tr", {
+        style: {backgroundColor: bgcolor},
+        key: `erow${i}`
+      }, /* @__PURE__ */ React.createElement("td", null, rowData.firstName, " ", rowData.lastName), /* @__PURE__ */ React.createElement("td", null, rowData.section), /* @__PURE__ */ React.createElement("td", null, rowData.empId), /* @__PURE__ */ React.createElement("td", null, rowData.email), /* @__PURE__ */ React.createElement("td", null, rowData.withdrew === "0" ? new Date(`${rowData.dateEnrolled} UTC`).toLocaleString() : ""), /* @__PURE__ */ React.createElement("td", null, " ", button, " ")));
+    }
   }
   const enrollmentTable = /* @__PURE__ */ React.createElement("table", null, /* @__PURE__ */ React.createElement("thead", null, /* @__PURE__ */ React.createElement("tr", null, /* @__PURE__ */ React.createElement("th", null, "Name"), /* @__PURE__ */ React.createElement("th", null, "Section"), /* @__PURE__ */ React.createElement("th", null, "ID"), /* @__PURE__ */ React.createElement("th", null, "Email"), /* @__PURE__ */ React.createElement("th", null, "Date Enrolled"))), /* @__PURE__ */ React.createElement("tbody", null, enrollmentRows));
   if (process === "Choose Columns") {
@@ -214,6 +228,23 @@ export default function Enrollment(props) {
       }, /* @__PURE__ */ React.createElement("table", null, /* @__PURE__ */ React.createElement("thead", null, /* @__PURE__ */ React.createElement("tr", null, importHeads)), /* @__PURE__ */ React.createElement("tbody", null, importRows))), /* @__PURE__ */ React.createElement(ButtonGroup, null, cancelButton, mergeButton));
     }
   }
+  const enrollLearners = (e, enrollLearner) => {
+    e.preventDefault();
+    let payload = {
+      email: enrollLearner,
+      driveId
+    };
+    axios.post("/api/unWithDrawStudents.php", payload).then((resp) => {
+      const payload2 = {params: {driveId}};
+      axios.get("/api/getEnrollment.php", payload2).then((resp2) => {
+        let enrollmentArray = resp2.data.enrollmentArray;
+        setEnrollmentTableDataAtom(enrollmentArray);
+        setProcess("Display Enrollment");
+      }).catch((error) => {
+        console.warn(error);
+      });
+    });
+  };
   const withDrawLearners = (e, withdrewLearner) => {
     e.preventDefault();
     let payload = {
@@ -231,5 +262,12 @@ export default function Enrollment(props) {
       });
     });
   };
-  return /* @__PURE__ */ React.createElement(React.Fragment, null, enrollmentTable, enrollmentTableData.length === 0 ? /* @__PURE__ */ React.createElement("p", null, "No Students are currently enrolled in the course") : null);
+  return /* @__PURE__ */ React.createElement("div", {
+    style: {padding: "8px"}
+  }, enrollmentTableData.length > 0 ? /* @__PURE__ */ React.createElement("div", null, "Show Withdrawn ", /* @__PURE__ */ React.createElement(Switch, {
+    onChange: (e) => {
+      setShowWithdrawn(e.currentTarget.checked);
+    },
+    checked: showWithdrawn
+  })) : null, enrollmentTable, enrollmentTableData.length === 0 ? /* @__PURE__ */ React.createElement("p", null, "No Students are currently enrolled in the course") : null);
 }

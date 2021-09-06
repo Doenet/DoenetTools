@@ -12,6 +12,10 @@ export default function GradebookBreadCrumb() {
   const path = `${driveId}:${driveId}`;
   let assignments = useRecoilValueLoadable(assignmentData);
   let students = useRecoilValueLoadable(studentData);
+  let legacyAssignments = {contents: {}};
+  for (let [key, value] of Object.entries(assignments.contents)) {
+    legacyAssignments.contents[key] = value.label;
+  }
   return /* @__PURE__ */ React.createElement(Suspense, {
     fallback: /* @__PURE__ */ React.createElement("div", null, "loading Drive...")
   }, /* @__PURE__ */ React.createElement("div", {
@@ -26,7 +30,7 @@ export default function GradebookBreadCrumb() {
     userId,
     attemptNumber,
     source,
-    assignments,
+    assignments: legacyAssignments,
     students
   }) : /* @__PURE__ */ React.createElement("p", null, "Loading...")));
 }

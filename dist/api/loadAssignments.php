@@ -13,7 +13,10 @@ if (!isset($_GET["driveId"])) {
 } else {
     $driveId = mysqli_real_escape_string($conn,$_REQUEST["driveId"]);
     $sql = "
-    SELECT a.doenetId, dc.label
+    SELECT a.doenetId, 
+    dc.label, 
+    a.gradeCategory,
+    a.totalPointsOrPercent
     FROM assignment AS a
     LEFT JOIN drive_content as dc
     ON a.doenetId = dc.doenetId
@@ -28,10 +31,16 @@ if (!isset($_GET["driveId"])) {
 
     if ($result->num_rows > 0){
         while ($row = $result->fetch_assoc()) {
-            array_push($response_arr,
+
+            $doenetId = $row['doenetId'];
+            $arr = array(
+                "label"=>$row['label'],
+                "category"=>$row['gradeCategory'],
+                "totalPointsOrPercent"=>$row['totalPointsOrPercent']
+            );
+             array_push($response_arr,
                 array(
-                    $row['doenetId'],
-                    $row['label']
+                    $doenetId,$arr
                 )
             );
         }

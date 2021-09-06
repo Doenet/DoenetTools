@@ -1,14 +1,16 @@
 import React from "../../_snowpack/pkg/react.js";
-import {useRecoilValue, useSetRecoilState} from "../../_snowpack/pkg/recoil.js";
+import {useRecoilValue, useSetRecoilState, useRecoilValueLoadable} from "../../_snowpack/pkg/recoil.js";
 import Button from "../../_reactComponents/PanelHeaderComponents/Button.js";
 import ButtonGroup from "../../_reactComponents/PanelHeaderComponents/ButtonGroup.js";
-import {pageToolViewAtom, searchParamAtomFamily} from "../NewToolRoot.js";
+import {pageToolViewAtom, searchParamAtomFamily, profileAtom} from "../NewToolRoot.js";
 export default function Dashboard(props) {
   const setPageToolView = useSetRecoilState(pageToolViewAtom);
   const path = useRecoilValue(searchParamAtomFamily("path"));
   const pageToolView = useRecoilValue(pageToolViewAtom);
   const role = pageToolView.view;
   const driveId = path.split(":")[0];
+  const loadProfile = useRecoilValueLoadable(profileAtom);
+  let profile = loadProfile.contents;
   return /* @__PURE__ */ React.createElement("div", {
     style: props?.style ?? {}
   }, /* @__PURE__ */ React.createElement("div", {
@@ -30,7 +32,7 @@ export default function Dashboard(props) {
       view: "",
       params: {driveId}
     })
-  }) : null, /* @__PURE__ */ React.createElement(Button, {
+  }) : null, role === "instructor" ? /* @__PURE__ */ React.createElement(Button, {
     value: "GradeBook",
     onClick: () => setPageToolView((was) => {
       return {
@@ -38,6 +40,16 @@ export default function Dashboard(props) {
         tool: "gradebook",
         view: was.view,
         params: {driveId}
+      };
+    })
+  }) : /* @__PURE__ */ React.createElement(Button, {
+    value: "GradeBook",
+    onClick: () => setPageToolView((was) => {
+      return {
+        page: "course",
+        tool: "gradebookStudent",
+        view: was.view,
+        params: {driveId, userId: profile.userId}
       };
     })
   }))), /* @__PURE__ */ React.createElement("div", {

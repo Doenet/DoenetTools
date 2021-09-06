@@ -7,7 +7,6 @@ import {
   useRecoilValue,
   useRecoilValueLoadable,
   useRecoilState,
-  useSetRecoilState,
   useRecoilCallback
 } from "../../_snowpack/pkg/recoil.js";
 import {
@@ -18,20 +17,14 @@ import {
 import Button from "../../_reactComponents/PanelHeaderComponents/Button.js";
 import ActionButton from "../../_reactComponents/PanelHeaderComponents/ActionButton.js";
 import ActionButtonGroup from "../../_reactComponents/PanelHeaderComponents/ActionButtonGroup.js";
-import Increment from "../../_reactComponents/PanelHeaderComponents/IncrementMenu.js";
 import useSockets from "../../_reactComponents/Sockets.js";
 import {pageToolViewAtom} from "../NewToolRoot.js";
-import {
-  itemHistoryAtom,
-  assignmentDictionarySelector,
-  useAssignment
-} from "../ToolHandlers/CourseToolHandler.js";
-import {useAssignmentCallbacks} from "../../_reactComponents/Drive/DriveActions.js";
-import {useToast} from "../Toast.js";
 import Switch from "../Switch.js";
-import {selectedMenuPanelAtom} from "../Panels/NewMenuPanel.js";
-import ButtonGroup from "../../_reactComponents/PanelHeaderComponents/ButtonGroup.js";
 import axios from "../../_snowpack/pkg/axios.js";
+import {nanoid} from "../../_snowpack/pkg/nanoid.js";
+import {DateToUTCDateString} from "../../_utils/dateUtilityFunction.js";
+import {itemHistoryAtom, fileByContentId} from "../ToolHandlers/CourseToolHandler.js";
+import {useToast, toastType} from "../Toast.js";
 export const selectedVersionAtom = atom({
   key: "selectedVersionAtom",
   default: ""
@@ -42,11 +35,66 @@ export default function SelectedDoenetML() {
   const item = useRecoilValue(selectedInformation)[0];
   let [label, setLabel] = useState("");
   const {deleteItem, renameItem} = useSockets("drive");
+  const addToast = useToast();
   useEffect(() => {
     setLabel(item?.label);
   }, [item?.label]);
-  const assignUnassign = useRecoilCallback(({set, snapshot}) => async (doenetId) => {
-    console.log(">>>>assignUnassign doenetId", doenetId);
+  const assignUnassign = useRecoilCallback(({set, snapshot}) => async ({label: label2, doenetId, parentFolderId, driveId}) => {
+    const versionId = nanoid();
+    const timestamp = DateToUTCDateString(new Date());
+    let itemHistory = await snapshot.getPromise(itemHistoryAtom(doenetId));
+    const contentId = itemHistory.draft.contentId;
+    let doenetML = await snapshot.getPromise(fileByContentId(contentId));
+    const {data} = await axios.post("/api/releaseDraft.php", {
+      doenetId,
+      doenetML,
+      timestamp,
+      versionId
+    });
+    const {success, message, title} = data;
+    if (success) {
+      addToast(`${label2}'s "${title}" is Released.`, toastType.SUCCESS);
+    } else {
+      addToast(message, toastType.ERROR);
+    }
+    set(itemHistoryAtom(doenetId), (was) => {
+      let newObj = {...was};
+      let newNamed = [...was.named];
+      for (const [i, version] of newNamed.entries()) {
+        let newVersion2 = {...version};
+        newVersion2.isReleased = "0";
+        newNamed[i] = newVersion2;
+      }
+      let newVersion = {
+        title,
+        versionId,
+        timestamp,
+        isReleased: "1",
+        isDraft: "0",
+        isNamed: "1",
+        contentId
+      };
+      newNamed.unshift(newVersion);
+      newObj.named = newNamed;
+      return newObj;
+    });
+    set(folderDictionary({driveId, folderId: parentFolderId}), (was) => {
+      let newFolderInfo = {...was};
+      let itemId = null;
+      for (let testItemId of newFolderInfo.contentIds.defaultOrder) {
+        if (newFolderInfo.contentsDictionary[testItemId].doenetId === doenetId) {
+          itemId = testItemId;
+          break;
+        }
+      }
+      newFolderInfo.contentsDictionary = {...was.contentsDictionary};
+      newFolderInfo.contentsDictionary[itemId] = {...was.contentsDictionary[itemId]};
+      newFolderInfo.contentsDictionary[itemId].isReleased = "1";
+      newFolderInfo.contentsDictionaryByDoenetId = {...was.contentsDictionaryByDoenetId};
+      newFolderInfo.contentsDictionaryByDoenetId[doenetId] = {...was.contentsDictionaryByDoenetId[doenetId]};
+      newFolderInfo.contentsDictionaryByDoenetId[doenetId].isReleased = "1";
+      return newFolderInfo;
+    });
   });
   if (!item) {
     return null;
@@ -71,13 +119,10 @@ export default function SelectedDoenetML() {
       }
     }), /* @__PURE__ */ React.createElement(AssignmentSettings, {
       role,
-      item
+      doenetId: item.doenetId
     }));
   }
-  let assignDraftLabel = "Assign Current Draft";
-  if (item.isReleased === "1") {
-    assignDraftLabel = "Unassign Content";
-  }
+  let assignDraftLabel = "Release Current Draft";
   function renameItemCallback(newLabel, item2) {
     renameItem({
       driveIdFolderId: {
@@ -142,7 +187,7 @@ export default function SelectedDoenetML() {
   })), /* @__PURE__ */ React.createElement("br", null), /* @__PURE__ */ React.createElement("br", null), /* @__PURE__ */ React.createElement(Button, {
     width: "menu",
     value: assignDraftLabel,
-    onClick: () => assignUnassign(item.doenetId)
+    onClick: () => assignUnassign(item)
   }), /* @__PURE__ */ React.createElement("br", null), /* @__PURE__ */ React.createElement(AssignmentSettings, {
     role,
     doenetId: item.doenetId
@@ -186,7 +231,10 @@ export function AssignmentSettings({role, doenetId}) {
     const oldAInfo = await snapshot.getPromise(loadAssignmentSelector(doenetId2));
     let newAInfo = {...oldAInfo, [keyToUpdate]: value};
     set(loadAssignmentSelector(doenetId2), newAInfo);
-    const resp = await axios.post("/api/saveAssignmentToDraft.php", newAInfo);
+    let dbAInfo = {...newAInfo};
+    dbAInfo.assignedDate = DateToUTCDateString(new Date(dbAInfo.assignedDate));
+    dbAInfo.dueDate = DateToUTCDateString(new Date(dbAInfo.dueDate));
+    const resp = await axios.post("/api/saveAssignmentToDraft.php", dbAInfo);
     if (resp.data.success) {
       if (valueDescription) {
         addToast(`Updated ${description} to ${valueDescription}`);
@@ -219,7 +267,15 @@ export function AssignmentSettings({role, doenetId}) {
     return null;
   }
   if (role === "student") {
-    return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("p", null, "Due: ", aInfo?.dueDate), /* @__PURE__ */ React.createElement("p", null, "Time Limit: ", aInfo?.timeLimit, " minutes"), /* @__PURE__ */ React.createElement("p", null, "Attempts Allowed: ", aInfo?.numberOfAttemptsAllowed), /* @__PURE__ */ React.createElement("p", null, "Points: ", aInfo?.totalPointsOrPercent)));
+    let nAttemptsAllowed = aInfo?.numberOfAttemptsAllowed;
+    if (nAttemptsAllowed === null) {
+      nAttemptsAllowed = "unlimited";
+    }
+    if (aInfo?.timeLimit === null) {
+      return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("p", null, "Assigned: ", aInfo?.assignedDate), /* @__PURE__ */ React.createElement("p", null, "Due: ", aInfo?.dueDate), /* @__PURE__ */ React.createElement("p", null, "Attempts Allowed: ", nAttemptsAllowed), /* @__PURE__ */ React.createElement("p", null, "Points: ", aInfo?.totalPointsOrPercent)));
+    } else {
+      return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("p", null, "Assigned: ", aInfo?.assignedDate), /* @__PURE__ */ React.createElement("p", null, "Due: ", aInfo?.dueDate), /* @__PURE__ */ React.createElement("p", null, "Time Limit: ", aInfo?.timeLimit, " minutes"), /* @__PURE__ */ React.createElement("p", null, "Attempts Allowed: ", nAttemptsAllowed), /* @__PURE__ */ React.createElement("p", null, "Points: ", aInfo?.totalPointsOrPercent)));
+    }
   }
   return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("label", null, "Assigned Date", /* @__PURE__ */ React.createElement("input", {
     required: true,
