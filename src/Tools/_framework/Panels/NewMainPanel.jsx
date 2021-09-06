@@ -26,6 +26,9 @@ const ControlsWrapper = styled.div`
   background-color: hsl(0, 0%, 99%);
   // border-radius: 4px 4px 0 0;
   overflow: auto hidden;
+  justify-content: space-between;
+  align-items: center;
+  padding-right: 15px;
   // border-bottom: 2px solid #e3e3e3;
 `;
 
