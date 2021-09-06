@@ -19,7 +19,7 @@ export default function GradebookStudent() {
     let overView = useRecoilValueLoadable(overViewData)
     // console.log(">>>> driveId: ", driveId)
     // console.log(">>>> USERID: ", userId)
-    // console.log(">>>>assignments",assignments)
+    // console.log(">>>>assignments",assignments.contents)
     // console.log(">>>>students",students.contents)
     // console.log(">>>>overView",overView.contents)
 
