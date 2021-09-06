@@ -167,6 +167,8 @@ export default function GradebookStudentAssignmentView(props){
         key={`doenetviewer${doenetId}`}
         doenetML={doenetML}
         doenetId={doenetId}
+        userId={userId}
+        
         flags={{
           showCorrectness: true,
           readOnly: true,
