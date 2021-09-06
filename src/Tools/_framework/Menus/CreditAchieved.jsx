@@ -15,7 +15,7 @@ export default function CreditAchieved(){
   const {creditByItem,creditForAttempt,creditForAssignment} = useRecoilValue(creditAchievedAtom);
   let [stage,setStage] = useState('Initialize');
   let creditByItemsJSX = creditByItem.map((x,i)=>{
-    return <div key={`creditByItem${i}`}>Credit For Item {i+1}: {x?x:0}</div> 
+    return <div key={`creditByItem${i}`}>Credit For Item {i+1}: {x?Math.round(x*1000)/1000:0}</div> 
   })
 
   const initialize = useRecoilCallback(({set})=> async (attemptNumber,doenetId)=>{
@@ -66,9 +66,11 @@ export default function CreditAchieved(){
     return <div style={{fontSize:"20px",textAlign:"center"}}>Not Available</div>
   }
 
+
+
  return <div>
-   <div>Credit For Assignment: {creditForAssignment?creditForAssignment:0}</div>
-   <div>Credit For Attempt {recoilAttemptNumber}: {creditForAttempt?creditForAttempt:0}</div>
+   <div>Credit For Assignment: {creditForAssignment?Math.round(creditForAssignment*1000)/1000:0}</div>
+   <div>Credit For Attempt {recoilAttemptNumber}: {creditForAttempt?Math.round(creditForAttempt*1000)/1000:0}</div>
    <div>{creditByItemsJSX}</div>
  </div>
 }

@@ -28,12 +28,30 @@ export default function GradebookStudent() {
     overviewTable.headers=[{
         Header: "Assignment",
         accessor: "assignment",
+        disableFilters: true,
+        disableSortBy: true,
+    },
+    {
+        Header: "Possible Points",
+        accessor: "possiblepoints",
+        disableFilters: true,
+        disableSortBy: true,
     },
     {
         Header: "Score",
         accessor: "score",
         disableFilters: true,
-    }];
+        disableSortBy: true,
+
+    },
+    {
+        Header: "Percentage",
+        accessor: "percentage",
+        disableFilters: true,
+        disableSortBy: true,
+
+    }
+];
 
     overviewTable.rows = []
 
@@ -42,124 +60,114 @@ export default function GradebookStudent() {
     overView.state === 'hasValue' && 
     userId !== null && userId !== ''){
 
-    for(let doenetId in assignments.contents){
-        // console.log(">>>>",assignments.contents[doenetId])
-        let score = (overView.contents[userId].assignments[doenetId]) * 100 + "%";
-        let assignment = <a onClick = {(e) =>{
-                            // e.stopPropagation()
-                            setPageToolView({
-                                page: 'course',
-                                tool: 'gradebookStudentAssignment',
-                                view: '',
-                                params: { driveId, userId, doenetId, source: 'student'},
-                            })
-                        }
-                        }>{assignments.contents[doenetId].label}</a>
-                        
+    let gradeCategories = [
+        {category:'Gateway',
+        scaleFactor:0},
+        {category:'Exams'},
+        {category:'Quizzes',
+        maximumNumber:10},
+        {category:'Problem sets',
+        maximumNumber:30},
+        {category:'Projects'},
+        {category:'Participation'}
+    ];
+
+    let totalScore = 0;
+    let totalPossiblePoints = 0;
+
+    for (let {category,scaleFactor=1,maximumNumber=Infinity} of gradeCategories){
         overviewTable.rows.push({
-            assignment,
-            score
+            assignment:category
         });
-        
-    }
-}
-overviewTable.rows.push({
-    assignment:"Weighted Credit",
-    score:"wc"
-});
+        let scores = [];
+        let allpossiblepoints = [];
+  
+        for(let doenetId in assignments.contents){
 
-overviewTable.rows.push({
-    assignment:"Grade",
-    score:"g"
-});
+            let inCategory = assignments.contents[doenetId].category;
+            if (inCategory.toLowerCase() !== category.toLowerCase()){ continue;}
 
-
-    // overviewTable.headers=[{
-    //     Header: "Name",
-    //     accessor: "name",
-    // },];
-
-    // if(assignments.state == 'hasValue'){
-    //     for(let doenetId in assignments.contents){
-    //         overviewTable.headers.push({
-    //             //`/assignment/?doenetId=${doenetId}`
-    //             Header: <a onClick = {(e) =>{
-    //                 e.stopPropagation()
-
-    //                 setPageToolView({
-    //                     page: 'course',
-    //                     tool: 'gradebookStudentAssignment',
-    //                     view: '',
-    //                     params: { driveId, userId, doenetId, source: 'student'},
-    //                 })
-    //             }
-    //             }>{assignments.contents[doenetId]}</a>,
-    //             accessor: doenetId,
-    //             disableFilters: true,
-    //             // <a onClick={() => {
-    //             //     open("calendar", "fdsa", "f001");
-    //             //   }}>
-                
-
-    //         })
-    //     }
-    // }
-
-    // overviewTable.headers.push(
-    //     {
-    //         Header: "Weighted Credt",
-    //         accessor: "weight",
-    //         disableFilters: true
+            let possiblepoints = assignments.contents[doenetId].totalPointsOrPercent * 1;
+            let credit = overView.contents[userId].assignments[doenetId];
+            let score = possiblepoints * credit;
+            allpossiblepoints.push(possiblepoints);
+            scores.push(score);
             
-    //     }
-    // )
-    // overviewTable.headers.push(
-    //     {
-    //         Header: "Grade",
-    //         accessor: "grade",
-    //         sortType: gradeSorting,
-    //         disableFilters: true
-    //     },
-    // )
+            score = Math.round(score*100)/100;
+            let percentage = Math.round(credit * 1000)/10 + '%';
+            let assignment = <a onClick = {(e) =>{
+                                // e.stopPropagation()
+                                setPageToolView({
+                                    page: 'course',
+                                    tool: 'gradebookStudentAssignment',
+                                    view: '',
+                                    params: { driveId, userId, doenetId, source: 'student'},
+                                })
+                            }
+                            }>{assignments.contents[doenetId].label}</a>
+                            
+            overviewTable.rows.push({
+                assignment,
+                possiblepoints,
+                score,
+                percentage
+            });
+            
+        }
 
-    // overviewTable.rows = []
+        let numberScores = scores.length;
+        scores = scores.sort((a,b)=>b-a).slice(0,maximumNumber);
+        let categoryScore = scores.reduce((a,c)=>a+c,0) * scaleFactor;
+
+        allpossiblepoints = allpossiblepoints.sort((a,b)=>b-a).slice(0,maximumNumber);
+        let categoryPossiblePoints = allpossiblepoints.reduce((a,c)=>a+c,0) * scaleFactor;
+
+        let categoryPercentage = "0%";
+   
+        if (categoryPossiblePoints !== 0){
+            categoryPercentage = Math.round(categoryScore / categoryPossiblePoints * 1000)/10 + '%'
+        }
+        totalScore += categoryScore;
+        totalPossiblePoints += categoryPossiblePoints;
+
+        categoryScore = Math.round(categoryScore* 100)/100 
+
+        let description = "";
+        if (numberScores > maximumNumber){
+            description = <div style={{fontSize:'.8em'}}>(Based on top {maximumNumber} scores)</div>
+        }
+        if (scaleFactor !== 1 ){
+            description = <div style={{fontSize:'.8em'}}>(Based on rescaling by {scaleFactor * 100}%)</div>
+        }
+        overviewTable.rows.push({
+            // assignment:"Subtotal for ${category} Description ",
+            assignment:<>{`Subtotal for ${category}`}{description}</>,
+            score:categoryScore,
+            possiblepoints:categoryPossiblePoints,
+            percentage:categoryPercentage
+        });
+
+
+    }
+    let totalPercentage = Math.round(totalScore/totalPossiblePoints * 1000)/10 + '%'
+
+    totalScore = Math.round(totalScore*100)/100;
+    overviewTable.rows.push({
+        // assignment:"Subtotal for ${category} Description ",
+        assignment:'Course Total',
+        score:totalScore,
+        possiblepoints:totalPossiblePoints,
+        percentage:totalPercentage
+    });
+
+
     
+}
 
-
-    // if(students.state === 'hasValue' && userId !== null && userId !== ''){
-    //     //console.log(">>> userId", userId)
-    //     let firstName = students.contents[userId].firstName,
-    //         lastName = students.contents[userId].lastName,
-    //         credit = students.contents[userId].courseCredit,
-    //         generatedGrade = students.contents[userId].courseGrade,
-    //         overrideGrade = students.contents[userId].overrideCourseGrade;
-
-    //     let grade = overrideGrade ? overrideGrade : generatedGrade
-
-    //     let row = {}
-
-    //     row["name"] = firstName + " " + lastName
-        
-    //     if(overView.state == 'hasValue' && assignments.state == 'hasValue'){
-    //         for (let doenetId in assignments.contents) {
-    //             row[doenetId] = (overView.contents[userId].assignments[doenetId]) * 100 + "%"
-    //         }
-    //     }
-
-    //     row["weight"] = credit
-    //     row["grade"] = grade
-
-        
-    //     overviewTable.rows.push(row);
-    // }
-
-    //console.log("debug overviewtable", overviewTable);
-    // console.log(">>>>data",overviewTable.rows)
-    // console.log(">>>>columns",overviewTable.headers)
 
     return (
         <Styles>
-            <Table columns = {overviewTable.headers} data = {overviewTable.rows}/>
+            <Table disableSortBy={true} columns = {overviewTable.headers} data = {overviewTable.rows}/>
         </Styles>
     )
 
