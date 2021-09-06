@@ -112,9 +112,10 @@ if ($success && $init == 'true'){
   AND dc.isDeleted = 0
   ";
 
-  if ($canViewUnassignedItemsAndFolders == "0"){
-    $sql = $sql . " AND dc.isAssigned = 1";
-  }
+  //We are using isReleased as isAssigned for now
+  // if ($canViewUnassignedItemsAndFolders == "0"){
+  //   $sql = $sql . " AND dc.isAssigned = 1";
+  // }
 
   if ($canViewUnreleasedItemsAndFolders == "0"){
     $sql = $sql . " AND dc.isReleased = 1";
