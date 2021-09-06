@@ -35,6 +35,7 @@ export default function GradebookAssignmentView(props){
     let assignmentsTable = {}
     let attempts = useRecoilValueLoadable(attemptData(doenetId))
     let students = useRecoilValueLoadable(studentData)
+
     let maxAttempts = 0;
 
     let driveIdValue = useRecoilValue(driveId)
@@ -106,7 +107,11 @@ export default function GradebookAssignmentView(props){
         for (let userId in students.contents) {
             let firstName = students.contents[userId].firstName;
             let lastName = students.contents[userId].lastName;
-            
+            let role = students.contents[userId].role;
+  
+            //TODO: need a switch to filter this in the future
+            if (role !== 'Student'){ continue; }
+
             let row = {};
     
             row["student"] = firstName + " " + lastName
