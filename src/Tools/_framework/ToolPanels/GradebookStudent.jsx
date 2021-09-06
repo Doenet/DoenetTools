@@ -43,6 +43,7 @@ export default function GradebookStudent() {
     userId !== null && userId !== ''){
 
     for(let doenetId in assignments.contents){
+        // console.log(">>>>",assignments.contents[doenetId])
         let score = (overView.contents[userId].assignments[doenetId]) * 100 + "%";
         let assignment = <a onClick = {(e) =>{
                             // e.stopPropagation()
@@ -53,7 +54,7 @@ export default function GradebookStudent() {
                                 params: { driveId, userId, doenetId, source: 'student'},
                             })
                         }
-                        }>{assignments.contents[doenetId]}</a>
+                        }>{assignments.contents[doenetId].label}</a>
                         
         overviewTable.rows.push({
             assignment,

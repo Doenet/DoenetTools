@@ -225,7 +225,6 @@ export const overViewData = selector({
     get: ({get}) =>{
         const students = get(studentData)
         const assignments = get(assignmentData)
-
         let overView = {}
 
         for(let userId in students){
@@ -540,7 +539,7 @@ function GradebookOverview(props) {
                     //openOverlay({ type: "gradebookassignmentview", title: "Gradebook Assignment View", doenetId: doenetId })
                     //open("calendar", "fdsa", "f001");
                 }
-                }>{assignments.contents[doenetId]}</a>,
+                }>{assignments.contents[doenetId].label}</a>,
                 accessor: doenetId,
                 disableFilters: true,
                 // <a onClick={() => {
@@ -595,7 +594,10 @@ function GradebookOverview(props) {
             row["name"] = firstName + " " + lastName
             
             if(overView.state == 'hasValue' && assignments.state == 'hasValue'){
+                console.log(">>>>doenetId")
+
                 for (let doenetId in assignments.contents) {
+                    console.log(">>>>doenetId",doenetId)
                     row[doenetId] = (overView.contents[userId].assignments[doenetId]) * 100 + "%"
                 }
             }
