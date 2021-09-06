@@ -419,9 +419,9 @@ export function Table({ columns, data }) {
                 <th {...column.getHeaderProps(column.getSortByToggleProps())}>
                     <p>{column.render('Header')}</p>
                     <div>{column.canFilter ? column.render("Filter") : null}</div>
-                    <span className = "sortIcon"> 
+                    {column.canSort ? <span className = "sortIcon"> 
                         {column.isSorted ? (column.isSortedDesc ? <FontAwesomeIcon icon={faSortDown} /> : <FontAwesomeIcon icon={faSortUp} />) : <FontAwesomeIcon icon={faSort} />}
-                    </span>
+                    </span> : null }
                     </th>
                     ))}
             </tr>
@@ -594,10 +594,10 @@ function GradebookOverview(props) {
             row["name"] = firstName + " " + lastName
             
             if(overView.state == 'hasValue' && assignments.state == 'hasValue'){
-                console.log(">>>>doenetId")
+                // console.log(">>>>doenetId")
 
                 for (let doenetId in assignments.contents) {
-                    console.log(">>>>doenetId",doenetId)
+                    // console.log(">>>>doenetId",doenetId)
                     row[doenetId] = (overView.contents[userId].assignments[doenetId]) * 100 + "%"
                 }
             }
