@@ -31,7 +31,7 @@ if (!isset($_GET["driveId"])) {
 			array_push($response_arr,
 				array(
 					$row['userId'],
-          			$row['firstName'],
+          $row['firstName'],
 					$row['lastName'],
 					$row['courseCredit'],
 					$row['courseGrade'],

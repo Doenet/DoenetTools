@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Styles, Table, studentData, attemptData, driveId } from "./Gradebook"
 
 import {
@@ -32,6 +32,7 @@ export default function GradebookStudentAssignmentView(props){
     let maxAttempts = 0;
 
     let driveIdValue = useRecoilValue(driveId)
+    let [attemptNumber,setAttemptNumber] = useState(1);
 
     //attempts.state == 'hasValue' ? console.log(attempts.contents): console.log(attempts.state)
     if(attempts.state == 'hasValue' && userId !== null && userId !== ''){
@@ -108,10 +109,15 @@ export default function GradebookStudentAssignmentView(props){
     
 
     return(
-
+        <>
         <Styles>
             <Table columns = {assignmentsTable.headers} data = {assignmentsTable.rows}/>
         </Styles>
+        <div style={{paddingLeft:"8px"}}>
+            Viewing Attempt Number {attemptNumber}
+        </div>
+        
+        </>
     )
 
 }

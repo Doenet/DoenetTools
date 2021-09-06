@@ -177,6 +177,7 @@ export const studentData = selector({
         let students = {}
 
         for(let row of data){
+
             let [userId,
                 firstName,
                 lastName,
@@ -184,12 +185,14 @@ export const studentData = selector({
                 courseGrade,
                 overrideCourseGrade,
                 role] = row
+   
             students[userId] = {
                 firstName,
                 lastName,
                 courseCredit,
                 courseGrade,
                 overrideCourseGrade,
+                role
             }; 
         }
         return students;
@@ -575,7 +578,11 @@ function GradebookOverview(props) {
                 lastName = students.contents[userId].lastName,
                 credit = students.contents[userId].courseCredit,
                 generatedGrade = students.contents[userId].courseGrade,
-                overrideGrade = students.contents[userId].overrideCourseGrade;
+                overrideGrade = students.contents[userId].overrideCourseGrade,
+                role = students.contents[userId].role;
+                
+            //TODO: need a switch to filter this in the future
+            if (role !== 'Student'){ continue; }
 
             let grade = overrideGrade ? overrideGrade : generatedGrade
 
