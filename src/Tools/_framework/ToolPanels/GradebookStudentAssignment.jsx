@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Styles, Table, studentData, attemptData, driveId } from "./Gradebook"
 
 import {
@@ -12,6 +12,7 @@ import DoenetViewer, {
     serializedComponentsReviver,
   } from '../../../Viewer/DoenetViewer';
 import  axios from 'axios';
+
 // import { BreadcrumbProvider } from '../../../_reactComponents/Breadcrumb';
 // import { DropTargetsProvider } from '../../../_reactComponents/DropTarget';
 
@@ -33,15 +34,21 @@ export default function GradebookStudentAssignmentView(props){
     let attempts = useRecoilValueLoadable(attemptData(doenetId))
     let students = useRecoilValueLoadable(studentData)
     
-
+    // console.log(">>>>attempts",Object.keys(attempts.contents[userId].attempts).length)
     // let driveIdValue = useRecoilValue(driveId)
     // let [attemptNumber,setAttemptNumber] = useState(1); //Start with attempt 1
+    const attemptsObj =  attempts?.contents?.[userId]?.attempts;
+    // Object.keys(attempts?.contents?.[userId]?.attempts).length;
     let [attemptNumber,setAttemptNumber] = useState(null);
     let [attemptsInfo,setAttemptsInfo] = useState(null); //array of {contentId,variant}
     let assignmentsTable = {}
     let maxAttempts = 0;
 
-
+    useEffect(()=>{
+        if (attemptsObj){
+            setAttemptNumber(Object.keys(attemptsObj).length);
+        }
+    },[attemptsObj,setAttemptNumber])
 
     //Wait for doenetId and userId and attemptsInfo
     if (!doenetId || !userId){
@@ -168,7 +175,7 @@ export default function GradebookStudentAssignmentView(props){
         doenetML={doenetML}
         doenetId={doenetId}
         userId={userId}
-        
+
         flags={{
           showCorrectness: true,
           readOnly: true,
