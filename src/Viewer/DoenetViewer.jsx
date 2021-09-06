@@ -401,11 +401,13 @@ class DoenetViewerChild extends Component {
         contentId: this.contentId,
         attemptNumber: this.attemptNumber,
         doenetId: this.props.doenetId,
+        userId: this.props.userId,
       }
     }
 
     axios.get('/api/loadContentInteractions.php', payload)
       .then(resp => {
+        // console.log(">>>>resp",resp.data)
         if (!resp.data.success) {
           throw new Error(resp.data.message)
         }
