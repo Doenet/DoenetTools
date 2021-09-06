@@ -429,7 +429,7 @@ export default function BreadCrumb({ path, tool, tool2, doenetId, label, userId,
   let returnToStudentView = null
 
   if (tool === 'Gradebook' && userId !== null && userId !== '' && students.state === 'hasValue'){
-    console.log(">>>> bc userid: ", userId)
+    // console.log(">>>> bc userid: ", userId)
     returnToStudentView = (
       <BreadcrumbItem key={userId+"*"} 
       ref={returnToIndividualViewRef}

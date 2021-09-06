@@ -60,6 +60,9 @@ export default function DoenetMLEditor(props){
   let autosavetimeout = useRef(null);
 
   const saveDraft = useRecoilCallback(({snapshot,set})=> async (doenetId)=>{
+    const isCurrentDraft = await snapshot.getPromise(currentDraftSelectedAtom);
+    //Only save draft if it's being edited
+    if (isCurrentDraft){
       const doenetML = await snapshot.getPromise(textEditorDoenetMLAtom);
       const oldVersions = await snapshot.getPromise(itemHistoryAtom(doenetId));
       let newDraft = {...oldVersions.draft};
@@ -86,16 +89,17 @@ export default function DoenetMLEditor(props){
       }
 
       try {
-        const resp = await axios.post("/api/saveNewVersion.php",newDBVersion)
-        if (resp.data.success){
+        const { data } = await axios.post("/api/saveNewVersion.php",newDBVersion)
+        if (data.success){
           set(editorSaveTimestamp,new Date());
         }else{
           //TODO: Toast here
-          console.log("ERROR",resp.data.message)
+          console.log("ERROR",data.message)
         }
       } catch (error) {
         console.log("ERROR",error)
       }
+    }
     
   },[]);
 
@@ -170,8 +174,7 @@ export default function DoenetMLEditor(props){
   // console.log(`>>>Show CodeMirror with value -${updateInternalValue}-`)
   // console.log('>>>DoenetViewer Read Only:',!isCurrentDraft)
 
-  return <div style={props.style}>
-    <CodeMirror
+  return  <div><CodeMirror
     key = "codemirror"
       editorRef = {editorRef}
       setInternalValue = {updateInternalValue}
@@ -196,5 +199,5 @@ export default function DoenetMLEditor(props){
         // }
       }}
     />
-  </div>
+    </div>
 }

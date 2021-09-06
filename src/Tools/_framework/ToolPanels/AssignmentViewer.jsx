@@ -98,7 +98,10 @@ export default function AssignmentViewer() {
           searchParamAtomFamily('isCollection'),
         );
         startedInitOfDoenetId.current = doenetId;
+     
         const {
+          assignedDate,
+          dueDate,
           showCorrectness,
           showFeedback,
           showHints,
@@ -149,34 +152,70 @@ export default function AssignmentViewer() {
             console.error(error);
           }
         } else {
-          const versionHistory = await snapshot.getPromise(
-            itemHistoryAtom(doenetId),
-          );
-          //Find Assigned ContentId
-          //Use isReleased as isAssigned for now
-          //TODO: refactor isReleased to isAssigned
+          //First try to find if they have a previously assigned contentId
+          //for the current attempt
 
-          //Set contentId and isAssigned
-          for (let version of versionHistory.named) {
-            if (version.isReleased === '1') {
-              isAssigned = true;
-              contentId = version.contentId;
-              break;
+          const { data } = await axios.get(`/api/getContentIdFromAssignmentAttempt.php`,{params:{doenetId}})
+
+          if (data.foundAttempt){
+            contentId = data.contentId;
+            isAssigned = true;
+          }else{
+            //If this is the first attempt then give them the 
+            //currently released
+            const versionHistory = await snapshot.getPromise(
+              itemHistoryAtom(doenetId),
+            );
+            //Find Assigned ContentId
+            //Use isReleased as isAssigned for now
+            //TODO: refactor isReleased to isAssigned
+
+            //Set contentId and isAssigned
+            for (let version of versionHistory.named) {
+              if (version.isReleased === '1') {
+                isAssigned = true;
+                contentId = version.contentId;
+                break;
+              }
             }
           }
+          
         }
-
+        let doenetML = null;
         console.log('>>>>initializeValues contentId', contentId);
         if (!isAssigned) {
           setStage('Problem');
           setMessage('Assignment is not assigned.');
+          return;
         }
+
+        // TODO: add a flag to enable the below feature
+        // where a assignment is not available until the assigned date
+        
+        // if (new Date(assignedDate) > new Date()){
+        //   setStage('Problem');
+        //   setMessage('Assignment is not yet available.');
+        //   return;
+        // }
+     
+
+        // TODO: would some instructor want the below feature
+        // where an assigment is no longer Available
+        // after the due date?
+//TODO: Send toast
+        // if (new Date(dueDate) < new Date()){
+        //   setStage('Problem');
+        //   setMessage('Assignment is past due.');
+        //   return;
+        // }
+
+        
         //Set doenetML
         let response = await snapshot.getPromise(fileByContentId(contentId));
         if (typeof response === 'object') {
           response = response.data;
         }
-        const doenetML = response;
+        doenetML = response;
 
         //Find allPossibleVariants
         returnAllPossibleVariants({
@@ -185,6 +224,7 @@ export default function AssignmentViewer() {
             ? setCollectionVariant
             : setVariantsFromDoenetML,
         });
+      
         async function setVariantsFromDoenetML({ allPossibleVariants }) {
           storedAllPossibleVariants.current = allPossibleVariants;
           //Find attemptNumber
@@ -256,9 +296,47 @@ export default function AssignmentViewer() {
   const updateAttemptNumberAndRequestedVariant = useRecoilCallback(
     ({ snapshot, set }) =>
       async (newAttemptNumber) => {
-        let doenetId = await snapshot.getPromise(
-          searchParamAtomFamily('doenetId'),
+      //TODO: Exit properly if we are a collection
+      const isCollection = await snapshot.getPromise(
+        searchParamAtomFamily('isCollection'),
+      );
+      if (isCollection){
+        console.error("How did you get here?");
+        return;
+      }
+
+      let doenetId = await snapshot.getPromise(
+        searchParamAtomFamily('doenetId'),
+      );
+
+        //Check if contentId has changed (if not a collection)
+        const versionHistory = await snapshot.getPromise(
+          itemHistoryAtom(doenetId),
         );
+
+
+        //Find Assigned ContentId
+        //Use isReleased as isAssigned for now
+        //TODO: refactor isReleased to isAssigned
+        let contentId = null;
+        //Set contentId and isAssigned
+        for (let version of versionHistory.named) {
+          if (version.isReleased === '1') {
+
+            contentId = version.contentId;
+            break;
+          }
+        }
+
+        console.log(">>>>updateAttemptNumberAndRequestedVariant contentId",contentId)
+
+        let doenetML = null;
+
+        let response = await snapshot.getPromise(fileByContentId(contentId));
+        if (typeof response === 'object') {
+          response = response.data;
+        }
+        doenetML = response;
 
         const { data } = await axios.get('/api/loadTakenVariants.php', {
           params: { doenetId },
@@ -286,6 +364,7 @@ export default function AssignmentViewer() {
           let newObj = { ...was };
           newObj.attemptNumber = newAttemptNumber;
           newObj.requestedVariant = newRequestedVariant;
+          newObj.doenetML = doenetML;
           return newObj;
         });
       },
@@ -299,7 +378,7 @@ export default function AssignmentViewer() {
         set(creditAchievedAtom,{ creditByItem, creditForAssignment, creditForAttempt });
   });
 
-  console.log(`>>>>stage -${stage}-`);
+  // console.log(`>>>>stage -${stage}-`);
 
   //Wait for doenetId to be defined to start
   if (recoilDoenetId === '') {

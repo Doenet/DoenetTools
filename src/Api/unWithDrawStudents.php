@@ -27,17 +27,15 @@ AND du.canChangeAllDriveSettings = '1'
 $result = $conn->query($sql);
 if ($result->num_rows > 0) {
 
-
 	$sql = "
-	UPDATE enrollment SET dateEnrolled = NOW() , withDrew = 1 WHERE driveId = '$driveId' AND email='$email';
+	UPDATE enrollment SET dateWithdrew = NULL , withDrew = 0 WHERE driveId = '$driveId' AND email='$email';
 	";
   $result = $conn->query($sql);
 $response_arr = array(
 	"success" => 1
 );
          
-}
-         
+}  
 
  http_response_code(200);
 

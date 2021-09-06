@@ -45,13 +45,13 @@ export const profileAtom = atom({
       key: "profileAtom/Default",
       get: async () => {
           try{
-              const profile = JSON.parse(localStorage.getItem('Profile'));
-              if (profile){
-                return profile;
-              }
+              // const profile = JSON.parse(localStorage.getItem('Profile'));
+              // if (profile){
+              //   return profile;
+              // }
               //It wasn't stored in local storage so load it from server
               const { data } = await axios.get('/api/loadProfile.php')
-              localStorage.setItem('Profile', JSON.stringify(data.profile));
+              // localStorage.setItem('Profile', JSON.stringify(data.profile));
               return data.profile
           }catch(error){
               console.log("Error loading user profile", error.message);                

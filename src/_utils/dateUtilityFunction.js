@@ -1,4 +1,4 @@
-export default dateUtilityFunction = (date, isTimeIncluded) => {
+export function dateUtilityFunction(date, isTimeIncluded){
     const datepresent = new Date(Date.now());
     const diff = Math.floor(datepresent - date);
     const days = Math.floor(diff / (1000 * 60 * 60 * 24));
@@ -18,3 +18,14 @@ export default dateUtilityFunction = (date, isTimeIncluded) => {
       date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
     );
   };
+
+
+  export function DateToUTCDateString(date){
+    var pad = function(num) { return ('00'+num).slice(-2) };
+    return date.getUTCFullYear()         + '-' +
+    pad(date.getUTCMonth() + 1)  + '-' +
+    pad(date.getUTCDate())       + ' ' +
+    pad(date.getUTCHours())      + ':' +
+    pad(date.getUTCMinutes())    + ':' +
+    pad(date.getUTCSeconds());
+  }

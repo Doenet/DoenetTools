@@ -34,7 +34,25 @@ $userIds = array_map(function($doenetId) use($conn) {
 	return mysqli_real_escape_string($conn, $doenetId);
 }, $_POST['userIds']);
 
+$success = TRUE;
+$message = "";
 
+//TODO: Need a permission related to see grades (not du.canEditContent)
+$sql = "
+SELECT du.canEditContent 
+FROM drive_user AS du
+WHERE du.userId = '$userId'
+AND du.driveId = '$driveId'
+AND du.canEditContent = '1'
+";
+ 
+$result = $conn->query($sql);
+if ($result->num_rows < 1) {
+	$success = FALSE;
+	$message = "No access granted for enrollment data.";
+}
+
+if ($success){
 //Get existing ID's and emails
 $sql = "
 SELECT email
@@ -181,10 +199,10 @@ lastName,
 email,
 empId,
 dateEnrolled,
-section
+section,
+withdrew
 FROM enrollment
-WHERE withdrew = '0'
-AND driveId = '$driveId'
+WHERE driveId = '$driveId'
 ORDER BY firstName
 ";
 $result = $conn->query($sql);
@@ -198,12 +216,18 @@ $enrollmentArray = array();
 				"email"=>$row["email"],
 				"empId"=>$row["empId"],
 				"dateEnrolled"=>$row["dateEnrolled"],
-				"section"=>$row["section"]
+				"section"=>$row["section"],
+				"withdrew"=>$row["withdrew"]
 			);
 			array_push($enrollmentArray,$learner);
 		}
+
+
+	}
+
 $response_arr = array(
-	"success" => 1,
+	"success" => $success,
+	"message"=> $message,
 	"enrollmentArray" => $enrollmentArray,
 );
          

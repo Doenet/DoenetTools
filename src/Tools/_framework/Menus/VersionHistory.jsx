@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { 
   atom,
   useRecoilValue,
-  useRecoilState,
+  // useRecoilState,
   useRecoilValueLoadable,
   useRecoilCallback,
  } from 'recoil';
@@ -25,7 +25,8 @@ import { nanoid } from 'nanoid';
 import axios from "axios";
 import { useToast, toastType } from '@Toast';
 import { folderDictionary } from '../../../_reactComponents/Drive/NewDrive';
-import { faPassport } from '@fortawesome/free-solid-svg-icons';
+import { editorSaveTimestamp } from '../ToolPanels/DoenetMLEditor'; 
+import { DateToUTCDateString } from '../../../_utils/dateUtilityFunction';
 
 export const currentDraftSelectedAtom = atom({
   key:"currentDraftSelectedAtom",
@@ -48,79 +49,42 @@ console.log(">>>===VersionHistory")
   const currentDraftSelected = useRecoilValue(currentDraftSelectedAtom)
   const [driveId, folderId, itemId] = path.split(':');
 
-//   // const activeVersionId  = useRecoilValue(versionHistoryActiveAtom);
-//   // const [editingVersionId,setEditingVersionId] = useRecoilState(EditingVersionIdAtom);
-
-
   const setReleaseNamed = useRecoilCallback(({set,snapshot})=> async ({doenetId,versionId,driveId,folderId,itemId})=>{
-    let doenetIsReleased = false;
-    let history = await snapshot.getPromise(itemHistoryAtom(doenetId));
-    let newHistory = {...history}
-    newHistory.named = [...history.named];
-    let newVersion;
-    //Establish if we are releasing or retracting "doenetIsReleased"
-    //Toggle released
-    for (const [i,version] of newHistory.named.entries()){
-      if (versionId === version.versionId){
-        newVersion = {...version}
 
-        if (version.isReleased === '0'){
-          //release
-          newVersion.isReleased = '1';
-          doenetIsReleased = true;
-          newHistory.named.splice(i,1,newVersion)
-          break;
-        }else{
-          //retract
-          newVersion.isReleased = '0';
-          newHistory.named.splice(i,1,newVersion)
-          break;
-        }
-      }
+    const { data } = await axios.get('/api/releaseVersion.php',{params:{doenetId,versionId}});
+    const { success, message, isReleased, title } = data;
+    //Note: isReleased if true means version is now released
+
+    let actionName = 'Retracted';
+    if (isReleased === '1'){
+      actionName = 'Released';
     }
-    //If releasing then retract other named versions
-    if (doenetIsReleased){
-      for (const [i,version] of newHistory.named.entries()){
-        if (versionId !== version.versionId && version.isReleased === '1'){
-          let newVersion = {...version}
-            //retract
-            newVersion.isReleased = '0';
-            newHistory.named.splice(i,1,newVersion)
-            break; //Only one other should ever be released
-          }
-        }
-      }
-    
-
-    set(itemHistoryAtom(doenetId),newHistory);
-    
-    const doenetML = await snapshot.getPromise(fileByContentId(newVersion.contentId));
-
-    let newDBVersion = {...newVersion,
-      isNewToggleRelease:'1',
-      doenetId,
-      doenetML
-    }
-    axios.post("/api/saveNewVersion.php",newDBVersion)
-    .then((resp)=>{
-
-      if (resp.data.success){
-        let message = `'${newVersion.title}' Released`
-        if (newVersion.isReleased === '0'){
-           message = `'${newVersion.title}' Retracted`
-        }
-        addToast(message, toastType.SUCCESS)
-
-      }else{
-        let message = `Error occured releasing '${newVersion.title}'`
-        if (newVersion.isReleased === '0'){
-           message = `Error occured retracting '${newVersion.title}'`
-        }
+    if (success){
+        addToast(`"${title}" is ${actionName}`, toastType.SUCCESS)
+    }else{
         addToast(message, toastType.ERROR)
+    }
 
+//Update data structures 
+    set(itemHistoryAtom(doenetId),(was)=>{
+      let newObj = {...was}
+      let newNamed = [...was.named];
+
+      for (const [i,version] of newNamed.entries()){
+        let newVersion = {...version};
+        if (version.versionId === versionId){
+          newVersion.isReleased = isReleased;
+          newNamed[i] = newVersion;
+        }else{
+          newVersion.isReleased = '0';
+          newNamed[i] = newVersion;
+        }
       }
-
+      newObj.named = newNamed;
+      return newObj;
     })
+  
+
     set(folderDictionary({driveId,folderId}),(was)=>{
       let newFolderInfo = {...was};
       //TODO: once path has itemId fixed delete this code
@@ -130,30 +94,16 @@ console.log(">>>===VersionHistory")
           break;
         }
       }
-
-
       newFolderInfo.contentsDictionary =  {...was.contentsDictionary}
       newFolderInfo.contentsDictionary[itemId] = {...was.contentsDictionary[itemId]};
-      let newIsReleased = '0';
-      if (doenetIsReleased){
-        newIsReleased = '1';
-      }
-      newFolderInfo.contentsDictionary[itemId].isReleased = newIsReleased;
+      newFolderInfo.contentsDictionary[itemId].isReleased = isReleased;
+
+      newFolderInfo.contentsDictionaryByDoenetId =  {...was.contentsDictionaryByDoenetId}
+      newFolderInfo.contentsDictionaryByDoenetId[doenetId] = {...was.contentsDictionaryByDoenetId[doenetId]};
+      newFolderInfo.contentsDictionaryByDoenetId[doenetId].isReleased = isReleased;
       return newFolderInfo;
     })
 })
-
-  const versionHistoryActive = useRecoilCallback(({snapshot,set})=> async (version)=>{
-//     set(versionHistoryActiveAtom,version.versionId)
-//     let doenetML = await snapshot.getPromise(fileByContentId(version.contentId));
-//     // const doenetML = loadableDoenetML.data;
-//     set(editorDoenetMLAtom,doenetML);
-//     set(viewerDoenetMLAtom,(was)=>{
-//       let newObj = {...was}
-//       newObj.doenetML = doenetML;
-//       newObj.updateNumber = was.updateNumber+1;
-//       return newObj});
-  })
 
   const setAsCurrent = useRecoilCallback(({snapshot,set})=> async ({doenetId,versionId})=>{
     //Build current draft to named save
@@ -262,50 +212,76 @@ console.log(">>>===VersionHistory")
 
   const saveAndReleaseCurrent = useRecoilCallback(({snapshot,set}) => 
     async ({doenetId,driveId,folderId,itemId}) => {
+
       const doenetML = await snapshot.getPromise(textEditorDoenetMLAtom);
-      const timestamp = buildTimestamp();
+      const timestamp = DateToUTCDateString(new Date());
       const contentId = getSHAofContent(doenetML);
       const versionId = nanoid();
-      const oldVersions = await snapshot.getPromise(itemHistoryAtom(doenetId));
-      let newVersions = {...oldVersions};
 
-      const title = `Save ${oldVersions.named.length+1}`
+      const { data } = await axios.post("/api/releaseDraft.php",{
+        doenetId,
+        doenetML,
+        timestamp,
+        versionId
+      })
 
+      const { success, message, title } = data;
+      if (success){
+        addToast(`"${title}" is Released.`, toastType.SUCCESS)
+      }else{
+          addToast(message, toastType.ERROR)
+      }
+
+      set(fileByContentId(contentId),doenetML);
+
+      //Update data structures 
+    set(itemHistoryAtom(doenetId),(was)=>{
+      let newObj = {...was}
+      let newNamed = [...was.named];
+      //Retract all other named versions
+      for (const [i,version] of newNamed.entries()){
+        let newVersion = {...version};
+        newVersion.isReleased = '0';
+        newNamed[i] = newVersion;
+      }
+      
       let newVersion = {
         title,
         versionId,
         timestamp,
-        isReleased:'0',
+        isReleased:'1',
         isDraft:'0',
         isNamed:'1',
         contentId
       }
-      let newDBVersion = {...newVersion,
-        doenetML,
-        doenetId
+      newNamed.unshift(newVersion);
+
+      newObj.named = newNamed;
+      return newObj;
+    })
+  
+
+    set(folderDictionary({driveId,folderId}),(was)=>{
+      let newFolderInfo = {...was};
+      //TODO: once path has itemId fixed delete this code
+      //Find itemId
+      for (let testItemId of newFolderInfo.contentIds.defaultOrder){
+        if (newFolderInfo.contentsDictionary[testItemId].doenetId === doenetId){
+          itemId = testItemId;
+          break;
+        }
       }
-      
-      newVersions.named = [newVersion,...oldVersions.named];
+      newFolderInfo.contentsDictionary =  {...was.contentsDictionary}
+      newFolderInfo.contentsDictionary[itemId] = {...was.contentsDictionary[itemId]};
+      newFolderInfo.contentsDictionary[itemId].isReleased = '1';
 
-      set(itemHistoryAtom(doenetId),newVersions)
-      set(fileByContentId(contentId),doenetML);
-      
-      //TODO: Errors don't seem to fire when offline
-      axios.post("/api/saveNewVersion.php",newDBVersion)
-        .then((resp)=>{
-          //  console.log(">>>resp saveVersion",resp.data)
-            if (resp?.data?.success){
-              addToast('New Version Saved!', toastType.SUCCESS)
-            }else{
-              addToast('Version NOT Saved!', toastType.ERROR);
-            }
-          })
-          .catch((err)=>{
-            // console.log(">>>err",err)
-            addToast('Version NOT Saved!', toastType.ERROR);
+      newFolderInfo.contentsDictionaryByDoenetId =  {...was.contentsDictionaryByDoenetId}
+      newFolderInfo.contentsDictionaryByDoenetId[doenetId] = {...was.contentsDictionaryByDoenetId[doenetId]};
+      newFolderInfo.contentsDictionaryByDoenetId[doenetId].isReleased = '1';
 
-          })
-      setReleaseNamed({doenetId,versionId,driveId,folderId,itemId});
+      return newFolderInfo;
+    })
+
 
   })
 
@@ -314,51 +290,64 @@ console.log(">>>===VersionHistory")
     set(selectedVersionIdAtom,versionId);
     set(currentDraftSelectedAtom,isCurrentDraft); //Use to determine to make read only or not
 
-    //Get DoenetML
+    //Get DoenetML of currently selected version
     const oldVersions = await snapshot.getPromise(itemHistoryAtom(doenetId));
-    let contentId = oldVersions.draft.contentId;
+    let newVersions = {...oldVersions};
+
+    let oldDraftContentId = oldVersions.draft.contentId;
     if (!isCurrentDraft){
-      //Test if we left the draft and it needs to be saved
       const wasDraftSelected = await snapshot.getPromise(currentDraftSelectedAtom);
       if (wasDraftSelected){
-        const textEditorDoenetML = await snapshot.getPromise(textEditorDoenetMLAtom);
-        const textEditorContentId = getSHAofContent(textEditorDoenetML);
-        if (textEditorContentId !== contentId){
-          //Save draft
+        //we left the draft and it needs to be saved
+        const newDraftDoenetML = await snapshot.getPromise(textEditorDoenetMLAtom);
+        const newDraftContentId = getSHAofContent(newDraftDoenetML);
+        if (newDraftContentId !== oldDraftContentId){
+
+          //Save new draft
           let newDraft = {...oldVersions.draft};
-          newDraft.contentId = textEditorContentId;
+          newDraft.contentId = newDraftContentId;
           newDraft.timestamp = buildTimestamp();
-          let oldVersionsReplacement = {...oldVersions};
+          
 
-          oldVersionsReplacement.draft = newDraft;
-          set(itemHistoryAtom(doenetId),oldVersionsReplacement)
-          set(fileByContentId(textEditorContentId),textEditorDoenetML)
-
-          //Save in localStorage
-          // localStorage.setItem(textEditorContentId,textEditorDoenetML)
+          newVersions.draft = newDraft;
+          set(itemHistoryAtom(doenetId),newVersions)
+          set(fileByContentId(newDraftContentId),newDraftDoenetML)
 
           let newDBVersion = {...newDraft,
-            doenetML:textEditorDoenetML,
+            doenetML:newDraftDoenetML,
             doenetId
           }
-
-          axios.post("/api/saveNewVersion.php",newDBVersion)
-          // .then((resp)=>{console.log(">>>resp saveNewVersion",resp.data)}) 
-        }
-      }
-
-      for (let version of oldVersions.named){
-        if (version.versionId === versionId){
-          contentId = version.contentId;
+          
+          try {
+            const { data } = await axios.post("/api/saveNewVersion.php",newDBVersion)
+            if (data.success){
+              set(editorSaveTimestamp,new Date());
+            }else{
+              //TODO: Toast here
+              console.log("ERROR",data.message)
+            }
+          } catch (error) {
+            console.log("ERROR",error)
+          }
         }
       }
     }
-    const doenetML = await snapshot.getPromise(fileByContentId(contentId));
-    // console.log(">>>display this doenetML",doenetML)
+    //Assume user just selected the draft version
+    let displayContentId = newVersions.draft.contentId;
+    //If selected version is named use that contentId
+    for (let version of newVersions.named){
+      if (version.versionId === versionId){
+        displayContentId = version.contentId;
+        break;
+      }
+    }
+
+    const doenetML = await snapshot.getPromise(fileByContentId(displayContentId));
+
     //Display doenetML in viewer and text editor
     set(viewerDoenetMLAtom,doenetML)
     set(updateTextEditorDoenetMLAtom,doenetML)
-    set(textEditorDoenetMLAtom,doenetML)
+    // set(textEditorDoenetMLAtom,doenetML) //This causes current draft to be overwritten
     
   })
   
@@ -367,12 +356,8 @@ if (initializedDoenetId !== doenetId){
   return <div style={props.style}></div>
 }
 
-
-console.log(">>>versionHistory.contents",versionHistory.contents)
-// console.log(">>>initializedDoenetId",initializedDoenetId)
-// console.log(">>>path",path)
-
-    if (!versionHistory.contents.named){
+//Protected if not defined yet
+    if (!versionHistory?.contents?.named){
       return null;
     }
 
@@ -384,7 +369,7 @@ console.log(">>>versionHistory.contents",versionHistory.contents)
   
   
   for (let version of versionHistory.contents.named){
-    // console.log(">>>version",version)
+
     versionsObj[version.versionId] = version;
     let selected = false;
     if (version.versionId === inUseVersionId){
@@ -394,23 +379,17 @@ console.log(">>>versionHistory.contents",versionHistory.contents)
     if (version.isReleased === '1'){
       released = "(Released)";
     }
-    options.push(<option value={version.versionId} selected={selected}>{released} {version.title}</option>,)
+    options.push(<option key={`option${version.versionId}`} value={version.versionId} selected={selected}>{released} {version.title}</option>,)
   }
-
 
   const version = versionsObj[inUseVersionId];
   let releaseButtonText = "Release";
   if (version?.isReleased === '1'){
     releaseButtonText = "Retract"
   }
-
-
-  // console.log(">>>currentDraftSelected",currentDraftSelected)
      
-  return <div  style={props.style}>
-    <div style={{margin:"6px 0px 6px 0px"}}>
-    <Button disabled={!currentDraftSelected} width="menu" value="Save Version" onClick={()=>saveVersion(doenetId)} />
-    </div>
+  return <>
+     <div style={{padding:"6px 0px 6px 0px"}}>   
     <select 
     size='2' 
     style={{width:'230px'}}
@@ -418,9 +397,12 @@ console.log(">>>versionHistory.contents",versionHistory.contents)
     {/* <option value={version.versionId} selected={selected}>{released} {version.title}</option> */}
     <option value={versionHistory.contents.draft.versionId} selected={currentDraftSelected}>Current Draft</option>
   </select>
-
+  </div>
+  <div style={{margin:"0px 0px 6px 0px"}}>
+    <Button disabled={!currentDraftSelected} width="menu" value="Save Version" onClick={()=>saveVersion(doenetId)} />
+    </div>
     <div style={{margin:"6px 0px 6px 0px"}}>
-    <Button disabled={!currentDraftSelected} value="Release Current" onClick={()=> {
+    <Button disabled={!currentDraftSelected} width="menu" value="Release Current" onClick={()=> {
       saveAndReleaseCurrent({doenetId,driveId,folderId,itemId});
     }}/>
     </div>
@@ -432,14 +414,10 @@ console.log(">>>versionHistory.contents",versionHistory.contents)
     {options}
   </select>
   <div>Name: {version?.title}</div>
-  <ClipboardLinkButtons disabled={currentDraftSelected} contentId={version?.contentId} />
+  <ClipboardLinkButtons disabled={currentDraftSelected} contentId={version?.contentId} doenetId={doenetId} />
         <div><RenameVersionControl key={version?.versionId} disabled={currentDraftSelected} doenetId={doenetId} title={version?.title} versionId={version?.versionId} /></div>
        {/* <div><button onClick={()=>versionHistoryActive(version)} >View</button></div>  */}
        <div><Button disabled={currentDraftSelected} onClick={()=>setAsCurrent({doenetId,versionId:version.versionId})} value="Set As Current" /></div> 
        <div><Button disabled={currentDraftSelected} onClick={()=>setReleaseNamed({doenetId,versionId:version.versionId,driveId,folderId,itemId})} value={releaseButtonText} /></div>
-  </div>
-  
-  // return <div style={props.style}>
-  //   <div>Enter VersionHistory code</div>
-  // </div>
+  </>
 }

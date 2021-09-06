@@ -1,8 +1,8 @@
 import React from 'react';
-import { useRecoilValue, useSetRecoilState } from 'recoil';
+import { useRecoilValue, useSetRecoilState, useRecoilValueLoadable } from 'recoil';
 import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
 import ButtonGroup from '../../../_reactComponents/PanelHeaderComponents/ButtonGroup';
-import { pageToolViewAtom, searchParamAtomFamily } from '../NewToolRoot';
+import { pageToolViewAtom, searchParamAtomFamily, profileAtom } from '../NewToolRoot';
 
 export default function Dashboard(props) {
   const setPageToolView = useSetRecoilState(pageToolViewAtom);
@@ -10,6 +10,9 @@ export default function Dashboard(props) {
   const pageToolView = useRecoilValue(pageToolViewAtom) 
   const role = pageToolView.view;
   const driveId = path.split(':')[0];
+
+  const loadProfile = useRecoilValueLoadable(profileAtom);
+    let profile = loadProfile.contents;
 
   return (
     
@@ -39,16 +42,31 @@ export default function Dashboard(props) {
           }
         />
         : null }
+        {role === 'instructor' ?
+        <Button value="GradeBook" 
+        onClick={() => 
+        setPageToolView((was)=>{return {
+          page: 'course',
+          tool: 'gradebook',
+          view: was.view,
+          params: { driveId },
+          }})
+        } 
+      />
+        : 
         <Button value="GradeBook" 
           onClick={() => 
           setPageToolView((was)=>{return {
             page: 'course',
-            tool: 'gradebook',
+            tool: 'gradebookStudent',
             view: was.view,
-            params: { driveId },
+            params: { driveId, userId:profile.userId },
             }})
+
           } 
         />
+         }
+        
         </ButtonGroup>
       </div>
       <div style={{border: '2px solid black', borderRadius: '5px', marginTop: '10px', height: '560px', margin: '10px'}}>

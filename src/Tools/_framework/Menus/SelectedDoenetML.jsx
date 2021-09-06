@@ -7,7 +7,7 @@ import {
   useRecoilValue,
   useRecoilValueLoadable,
   useRecoilState,
-  useSetRecoilState,
+  // useSetRecoilState,
   useRecoilCallback,
 } from 'recoil';
 import {
@@ -19,25 +19,33 @@ import {
 import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
 import ActionButton from '../../../_reactComponents/PanelHeaderComponents/ActionButton';
 import ActionButtonGroup from '../../../_reactComponents/PanelHeaderComponents/ActionButtonGroup';
-import Increment from '../../../_reactComponents/PanelHeaderComponents/IncrementMenu';
+// import Increment from '../../../_reactComponents/PanelHeaderComponents/IncrementMenu';
 import useSockets from '../../../_reactComponents/Sockets';
 import { pageToolViewAtom } from '../NewToolRoot';
-import {
-  itemHistoryAtom,
-  assignmentDictionarySelector,
-  useAssignment,
-} from '../ToolHandlers/CourseToolHandler';
-import { useAssignmentCallbacks } from '../../../_reactComponents/Drive/DriveActions';
-import { useToast } from '../Toast';
+// import {
+//   itemHistoryAtom,
+//   assignmentDictionarySelector,
+//   useAssignment,
+// } from '../ToolHandlers/CourseToolHandler';
+// import { useAssignmentCallbacks } from '../../../_reactComponents/Drive/DriveActions';
+// import { useToast } from '../Toast';
 import Switch from '../../_framework/Switch';
-import { selectedMenuPanelAtom } from '../Panels/NewMenuPanel';
-import ButtonGroup from '../../../_reactComponents/PanelHeaderComponents/ButtonGroup';
+// import { selectedMenuPanelAtom } from '../Panels/NewMenuPanel';
+// import ButtonGroup from '../../../_reactComponents/PanelHeaderComponents/ButtonGroup';
 import axios from 'axios';
+import { nanoid } from 'nanoid';
+
+import { DateToUTCDateString } from '../../../_utils/dateUtilityFunction';
+import { itemHistoryAtom, fileByContentId } from '../ToolHandlers/CourseToolHandler';
+import { useToast, toastType } from '@Toast';
+
 
 export const selectedVersionAtom = atom({
   key: 'selectedVersionAtom',
   default: '',
 });
+
+
 
 
 export default function SelectedDoenetML() {
@@ -46,14 +54,86 @@ export default function SelectedDoenetML() {
   const item = useRecoilValue(selectedInformation)[0];
   let [label,setLabel] = useState('');
   const { deleteItem, renameItem } = useSockets('drive');
+  const addToast = useToast();
 
   useEffect(()=>{
     setLabel(item?.label)
   },[item?.label])
 
 
-  const assignUnassign = useRecoilCallback(({set,snapshot})=> async (doenetId)=>{
-    console.log(">>>>assignUnassign doenetId",doenetId)
+  const assignUnassign = useRecoilCallback(({set,snapshot})=> async ({label,doenetId,parentFolderId,driveId})=>{
+
+      const versionId = nanoid();
+      const timestamp = DateToUTCDateString(new Date());
+    //Get contentId of draft
+    let itemHistory = await snapshot.getPromise(itemHistoryAtom(doenetId));
+    const contentId = itemHistory.draft.contentId;
+    
+    //Get doenetML
+    let doenetML = await snapshot.getPromise(fileByContentId(contentId));
+
+    const { data } = await axios.post("/api/releaseDraft.php",{
+      doenetId,
+      doenetML,
+      timestamp,
+      versionId
+    })
+
+    const { success, message, title } = data;
+    if (success){
+      addToast(`${label}'s "${title}" is Released.`, toastType.SUCCESS)
+    }else{
+        addToast(message, toastType.ERROR)
+    }
+
+    //Update data structures 
+  set(itemHistoryAtom(doenetId),(was)=>{
+    let newObj = {...was}
+    let newNamed = [...was.named];
+    //Retract all other named versions
+    for (const [i,version] of newNamed.entries()){
+      let newVersion = {...version};
+      newVersion.isReleased = '0';
+      newNamed[i] = newVersion;
+    }
+    
+    let newVersion = {
+      title,
+      versionId,
+      timestamp,
+      isReleased:'1',
+      isDraft:'0',
+      isNamed:'1',
+      contentId
+    }
+    newNamed.unshift(newVersion);
+
+    newObj.named = newNamed;
+    return newObj;
+  })
+
+
+  set(folderDictionary({driveId,folderId:parentFolderId}),(was)=>{
+    let newFolderInfo = {...was};
+    //TODO: once path has itemId fixed delete this code
+    //Find itemId
+    let itemId = null;
+    for (let testItemId of newFolderInfo.contentIds.defaultOrder){
+      if (newFolderInfo.contentsDictionary[testItemId].doenetId === doenetId){
+        itemId = testItemId;
+        break;
+      }
+    }
+    newFolderInfo.contentsDictionary =  {...was.contentsDictionary}
+    newFolderInfo.contentsDictionary[itemId] = {...was.contentsDictionary[itemId]};
+    newFolderInfo.contentsDictionary[itemId].isReleased = '1';
+
+    newFolderInfo.contentsDictionaryByDoenetId =  {...was.contentsDictionaryByDoenetId}
+    newFolderInfo.contentsDictionaryByDoenetId[doenetId] = {...was.contentsDictionaryByDoenetId[doenetId]};
+    newFolderInfo.contentsDictionaryByDoenetId[doenetId].isReleased = '1';
+
+    return newFolderInfo;
+  })
   })
 
   if (!item){ return null;}
@@ -80,8 +160,8 @@ export default function SelectedDoenetML() {
     <AssignmentSettings role={role} doenetId={item.doenetId} />
     </>
   }
-  let assignDraftLabel = "Assign Current Draft";
-  if (item.isReleased === "1"){ assignDraftLabel = "Unassign Content";}
+  let assignDraftLabel = "Release Current Draft";
+  // if (item.isReleased === "1"){ assignDraftLabel = "Unassign Content";}
 
   function renameItemCallback(newLabel,item){
     renameItem({
@@ -158,7 +238,7 @@ export default function SelectedDoenetML() {
 <Button 
 width="menu" 
 value={assignDraftLabel}
-onClick={()=>assignUnassign(item.doenetId)}
+onClick={()=>assignUnassign(item)}
 />
 
 <br />
@@ -220,8 +300,8 @@ export function AssignmentSettings({role, doenetId}) {
     set(loadAssignmentSelector(doenetId),newAInfo);
     let dbAInfo = {...newAInfo};
     
-    dbAInfo.assignedDate = UTCDBDateString(new Date(dbAInfo.assignedDate))
-    dbAInfo.dueDate = UTCDBDateString(new Date(dbAInfo.dueDate))
+    dbAInfo.assignedDate = DateToUTCDateString(new Date(dbAInfo.assignedDate))
+    dbAInfo.dueDate = DateToUTCDateString(new Date(dbAInfo.dueDate))
 
     const resp = await axios.post('/api/saveAssignmentToDraft.php', dbAInfo)
 
@@ -243,15 +323,6 @@ export function AssignmentSettings({role, doenetId}) {
   //   return ("0" + d.getDate()).slice(-2) + "-" + ("0"+(d.getMonth()+1)).slice(-2) + "-" +
   //   d.getFullYear() + " " + ("0" + d.getHours()).slice(-2) + ":" + ("0" + d.getMinutes()).slice(-2);
   // }
-  var pad = function(num) { return ('00'+num).slice(-2) };
-  function UTCDBDateString(date){
-    return date.getUTCFullYear()         + '-' +
-    pad(date.getUTCMonth() + 1)  + '-' +
-    pad(date.getUTCDate())       + ' ' +
-    pad(date.getUTCHours())      + ':' +
-    pad(date.getUTCMinutes())    + ':' +
-    pad(date.getUTCSeconds());
-  }
 
 
   //Update assignment values when selection changes
@@ -281,14 +352,31 @@ export function AssignmentSettings({role, doenetId}) {
 
   //Student JSX
   if (role === 'student'){
-    return <>
-    <div>
-        <p>Due: {aInfo?.dueDate}</p>
-        <p>Time Limit: {aInfo?.timeLimit} minutes</p>
-        <p>Attempts Allowed: {aInfo?.numberOfAttemptsAllowed}</p>
-        <p>Points: {aInfo?.totalPointsOrPercent}</p>
-      </div>
-  </>
+    let nAttemptsAllowed = aInfo?.numberOfAttemptsAllowed;
+    if(nAttemptsAllowed === null) {
+      nAttemptsAllowed = "unlimited";
+    }
+    if(aInfo?.timeLimit === null) {
+      return <>
+        <div>
+          <p>Assigned: {aInfo?.assignedDate}</p>
+          <p>Due: {aInfo?.dueDate}</p>
+          <p>Attempts Allowed: {nAttemptsAllowed}</p>
+          <p>Points: {aInfo?.totalPointsOrPercent}</p>
+        </div>
+      </>
+    } else {
+      return <>
+        <div>
+          <p>Assigned: {aInfo?.assignedDate}</p>
+          <p>Due: {aInfo?.dueDate}</p>
+          <p>Time Limit: {aInfo?.timeLimit} minutes</p>
+          <p>Attempts Allowed: {nAttemptsAllowed}</p>
+          <p>Points: {aInfo?.totalPointsOrPercent}</p>
+        </div>
+      </>
+    }
+
   }
 
 
@@ -305,12 +393,12 @@ export function AssignmentSettings({role, doenetId}) {
   // placeholder="0001-01-01 01:01:01 "
   onBlur={()=>{
     if (aInfo.assignedDate !== assignedDate){
-      updateAssignment({doenetId,keyToUpdate:'assignedDate',value:assignedDate,description:'Assigned Date',isDateTime:true})
+      updateAssignment({doenetId,keyToUpdate:'assignedDate',value:assignedDate,description:'Assigned Date'})
     }}}
   onChange={(e)=>setAssignedDate(e.currentTarget.value)}
   onKeyDown={(e)=>{
     if (e.key === 'Enter' && aInfo.assignedDate !== assignedDate){
-      updateAssignment({doenetId,keyToUpdate:'assignedDate',value:assignedDate,description:'Assigned Date',isDateTime:true})
+      updateAssignment({doenetId,keyToUpdate:'assignedDate',value:assignedDate,description:'Assigned Date'})
     }
   }}
 />
@@ -328,12 +416,12 @@ export function AssignmentSettings({role, doenetId}) {
   // placeholder="0001-01-01 01:01:01 "
   onBlur={()=>{
     if (aInfo.dueDate !== dueDate){
-      updateAssignment({doenetId,keyToUpdate:'dueDate',value:dueDate,description:'Due Date',isDateTime:true})
+      updateAssignment({doenetId,keyToUpdate:'dueDate',value:dueDate,description:'Due Date'})
     }}}
   onChange={(e)=>setDueDate(e.currentTarget.value)}
   onKeyDown={(e)=>{
     if (e.key === 'Enter' && aInfo.dueDate !== dueDate){
-      updateAssignment({doenetId,keyToUpdate:'dueDate',value:dueDate,description:'Due Date',isDateTime:true})
+      updateAssignment({doenetId,keyToUpdate:'dueDate',value:dueDate,description:'Due Date'})
     }
   }}
 />

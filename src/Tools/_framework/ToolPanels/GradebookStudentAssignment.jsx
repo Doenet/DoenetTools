@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Styles, Table, studentData, attemptData, driveId } from "./Gradebook"
 
 import {
@@ -8,6 +8,11 @@ import {
   } from "recoil";
  
 import { pageToolViewAtom, searchParamAtomFamily } from '../NewToolRoot';
+import DoenetViewer, {
+    serializedComponentsReviver,
+  } from '../../../Viewer/DoenetViewer';
+import  axios from 'axios';
+
 // import { BreadcrumbProvider } from '../../../_reactComponents/Breadcrumb';
 // import { DropTargetsProvider } from '../../../_reactComponents/DropTarget';
 
@@ -22,16 +27,70 @@ const getUserId = (students, name) => {
     return -1;
 } 
 export default function GradebookStudentAssignmentView(props){
-    const setPageToolView = useSetRecoilState(pageToolViewAtom);
+    // const setPageToolView = useSetRecoilState(pageToolViewAtom);
+    // let source = useRecoilValue(searchParamAtomFamily('source'))
     let doenetId = useRecoilValue(searchParamAtomFamily('doenetId'))
     let userId = useRecoilValue(searchParamAtomFamily('userId'))
-    let source = useRecoilValue(searchParamAtomFamily('source'))
-    let assignmentsTable = {}
     let attempts = useRecoilValueLoadable(attemptData(doenetId))
     let students = useRecoilValueLoadable(studentData)
+    
+    // console.log(">>>>attempts",Object.keys(attempts.contents[userId].attempts).length)
+    // let driveIdValue = useRecoilValue(driveId)
+    // let [attemptNumber,setAttemptNumber] = useState(1); //Start with attempt 1
+    const attemptsObj =  attempts?.contents?.[userId]?.attempts;
+    // Object.keys(attempts?.contents?.[userId]?.attempts).length;
+    let [attemptNumber,setAttemptNumber] = useState(null);
+    let [attemptsInfo,setAttemptsInfo] = useState(null); //array of {contentId,variant}
+    let assignmentsTable = {}
     let maxAttempts = 0;
 
-    let driveIdValue = useRecoilValue(driveId)
+    useEffect(()=>{
+        if (attemptsObj){
+            setAttemptNumber(Object.keys(attemptsObj).length);
+        }
+    },[attemptsObj,setAttemptNumber])
+
+    //Wait for doenetId and userId and attemptsInfo
+    if (!doenetId || !userId){
+        return null;
+    }
+
+    async function loadAssignmentInfo(doenetId,userId){
+        
+        const { data } = await axios.get(`/api/getContentIdsAndVariants.php`,{params:{doenetId,userId}})
+        let dataAttemptInfo = [];
+        let contentIdToDoenetML = {}; //Don't request from server more than once
+        for (let attempt of data.attemptInfo){
+            let gvariant = JSON.parse(attempt.variant, serializedComponentsReviver);
+            let doenetML = contentIdToDoenetML[attempt.contentId];
+
+            if (doenetML){
+                dataAttemptInfo.push({
+                    contentId:attempt.contentId,
+                    variant:{name:gvariant.name},
+                    doenetML
+                    })
+            }else{
+                const { data } = await axios.get(`/media/${attempt.contentId}.doenet`); 
+                contentIdToDoenetML[attempt.contentId] = data;
+                dataAttemptInfo.push({
+                    contentId:attempt.contentId,
+                    variant:{name:gvariant.name},
+                    doenetML: data
+                    })
+            }
+            
+
+        }
+        setAttemptsInfo(dataAttemptInfo);
+    }
+
+    if (attemptsInfo === null){
+        loadAssignmentInfo(doenetId,userId)
+        return null;
+    }
+
+
 
     //attempts.state == 'hasValue' ? console.log(attempts.contents): console.log(attempts.state)
     if(attempts.state == 'hasValue' && userId !== null && userId !== ''){
@@ -53,16 +112,15 @@ export default function GradebookStudentAssignmentView(props){
             accessor: "a"+i,
             disableFilters: true,
             Cell: row  =><a onClick = {(e) =>{
-                
+                setAttemptNumber(i)
                 //e.stopPropagation()
-                //open("calendar", "fdsa", "f001");
 
-                setPageToolView({
-                    page: 'course',
-                    tool: 'gradebookAttempt',
-                    view: '',
-                    params: { driveId: driveIdValue, doenetId, userId, attemptNumber: i, source},
-                })
+                // setPageToolView({
+                //     page: 'course',
+                //     tool: 'gradebookAttempt',
+                //     view: '',
+                //     params: { driveId: driveIdValue, doenetId, userId, attemptNumber: i, source},
+                // })
             }}> {row.value} </a>
         })
     }
@@ -104,14 +162,56 @@ export default function GradebookStudentAssignmentView(props){
         assignmentsTable.rows.push(row);
     }
 
-    //console.log("in component");
+
+
+    let dViewer = null;
+    if (attemptNumber > 0){
+        // let contentId = attemptsInfo[attemptNumber-1].contentId
+        let variant = attemptsInfo[attemptNumber-1].variant
+        let doenetML = attemptsInfo[attemptNumber-1].doenetML
+  
+        dViewer = <DoenetViewer
+        key={`doenetviewer${doenetId}`}
+        doenetML={doenetML}
+        doenetId={doenetId}
+        userId={userId}
+
+        flags={{
+          showCorrectness: true,
+          readOnly: true,
+          solutionDisplayMode: 'button',
+          showFeedback: true,
+          showHints: true,
+          isAssignment: true,
+        }}
+        attemptNumber={attemptNumber}
+        allowLoadPageState={true}
+        allowSavePageState={false}
+        allowLocalPageState={false} //Still working out localStorage kinks
+        allowSaveSubmissions={false}
+        allowSaveEvents={false}
+      //   requestedVariant={requestedVariant}
+        requestedVariant={variant}
+      //   updateCreditAchievedCallback={updateCreditAchieved}
+        // generatedVariantCallback={variantCallback}
+      />
+    }
     
 
     return(
-
+        <>
         <Styles>
             <Table columns = {assignmentsTable.headers} data = {assignmentsTable.rows}/>
         </Styles>
+        {attemptNumber > 0 ? 
+        <>
+        <div style={{paddingLeft:"8px"}}>
+            Viewing Attempt Number {attemptNumber}
+        </div>
+        {dViewer}
+        </>
+          : <div>Click an attempt&apos;s grade to see your attempt</div>  }
+        </>
     )
 
 }

@@ -533,11 +533,22 @@ export const getSHAofContent = (doenetML)=>{
 
 export function ClipboardLinkButtons(props){
   const addToast = useToast();
-  let link = `http://localhost/#/content?contentId=${props.contentId}`
+  let link = `http://localhost/#/content?doenetId=${props.doenetId}`
 
-  if (props.doenetId){
-    link = `http://localhost/#/content?doenetId=${props.doenetId}`
+  if (props.contentId){
+    link = `http://localhost/#/content?contentId=${props.contentId}`
   }
+
+
+  let linkData = []
+  if(props.contentId) {
+    linkData.push(`contentId=${props.contentId}`);
+  }
+  if(props.doenetId) {
+    linkData.push(`doenetId=${props.doenetId}`);
+  }
+  let embedLink = `<copy uri="doenet:${linkData.join('&')}" />`
+
 
   // if (!props.contentId){
   //   console.error("Component only handles contentId at this point")
@@ -551,6 +562,10 @@ export function ClipboardLinkButtons(props){
   <CopyToClipboard onCopy={()=>addToast('Link copied to clipboard!', toastType.SUCCESS)} text={link}>
   {/* <button>copy link <FontAwesomeIcon icon={faClipboard}/></button>  */}
   <Button disabled={props.disabled} icon={<FontAwesomeIcon icon={faClipboard}/>} value="copy link" />
+  </CopyToClipboard>
+
+  <CopyToClipboard onCopy={()=>addToast('Embed link copied to clipboard!', toastType.SUCCESS)} text={embedLink}>
+  <Button disabled={props.disabled} icon={<FontAwesomeIcon icon={faClipboard}/>} value="copy embed link" />
   </CopyToClipboard>
 
   <Button 

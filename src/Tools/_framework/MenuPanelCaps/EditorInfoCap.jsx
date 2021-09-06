@@ -33,7 +33,7 @@ export default function EditorInfoCap(){
     <div style={{position: 'relative', paddingBottom: '100px'}}>
     <img style={{position: "absolute", height: "100px", objectFit: 'cover'}} src={imageURL} alt={`${course_label} course`} width='240px' />
     </div>
-    <div style={{padding:"4px"}}>
+    <div style={{padding:"8px"}}>
     <div>{course_label}</div>
     <div>{docInfo.label}</div>
     <div>{status} </div>

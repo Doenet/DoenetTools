@@ -47,8 +47,11 @@ export default function AssignmentInfoCap(){
     <div style={{position: 'relative', paddingBottom: '100px'}}>
     <img style={{position: "absolute", clip: "rect(0, 240px, 100px, 0)" }} src={imageURL} alt={`${driveLabel} course`} width='240px' />
     </div>
+    <div style={{padding:'8px'}}>
     <div>{driveLabel}</div>
     <div>{docInfo.label}</div>
     <div>{recoilAttemptNumber}/{attemptsAllowedDescription} Attempts</div>
+    </div>
+    
   </div>
 }

@@ -124,7 +124,8 @@ const assignmentDataQuerry = atom({
         key:"assignmentDataQuerry/Default",
         get: async ({get}) => {
             try{
-                const driveIdPayload = {params: { driveId:get(driveId)}}
+                const driveId = get(searchParamAtomFamily('driveId'));
+                const driveIdPayload = {params: { driveId }}
                 const { data } = await axios.get('/api/loadAssignments.php', driveIdPayload)
                 
                 return data
@@ -158,7 +159,8 @@ const studentDataQuerry = atom({
     default: selector({
         key: "studentDataQuerry/Default",
         get: async ({get}) => {
-            const driveIdPayload = {params: { driveId:get(driveId)}}
+            const driveId = get(searchParamAtomFamily('driveId'));
+            const driveIdPayload = {params: { driveId }}
             try{
                 const { data } = await axios.get('/api/loadGradebookEnrollment.php', driveIdPayload)
                 return data;
@@ -177,6 +179,7 @@ export const studentData = selector({
         let students = {}
 
         for(let row of data){
+
             let [userId,
                 firstName,
                 lastName,
@@ -184,12 +187,14 @@ export const studentData = selector({
                 courseGrade,
                 overrideCourseGrade,
                 role] = row
+   
             students[userId] = {
                 firstName,
                 lastName,
                 courseCredit,
                 courseGrade,
                 overrideCourseGrade,
+                role
             }; 
         }
         return students;
@@ -202,7 +207,9 @@ const overViewDataQuerry = atom({
         key: "overViewDataQuerry/Default",
         get: async ({get}) =>{
             try{
-                const driveIdPayload = {params: { driveId:get(driveId)}}
+            const driveId = get(searchParamAtomFamily('driveId'));
+
+                const driveIdPayload = {params: { driveId }}
                 let { data } = await axios.get('/api/loadGradebookOverview.php', driveIdPayload)
                 return data
             }catch(error){
@@ -218,7 +225,6 @@ export const overViewData = selector({
     get: ({get}) =>{
         const students = get(studentData)
         const assignments = get(assignmentData)
-
         let overView = {}
 
         for(let userId in students){
@@ -533,7 +539,7 @@ function GradebookOverview(props) {
                     //openOverlay({ type: "gradebookassignmentview", title: "Gradebook Assignment View", doenetId: doenetId })
                     //open("calendar", "fdsa", "f001");
                 }
-                }>{assignments.contents[doenetId]}</a>,
+                }>{assignments.contents[doenetId].label}</a>,
                 accessor: doenetId,
                 disableFilters: true,
                 // <a onClick={() => {
@@ -575,7 +581,11 @@ function GradebookOverview(props) {
                 lastName = students.contents[userId].lastName,
                 credit = students.contents[userId].courseCredit,
                 generatedGrade = students.contents[userId].courseGrade,
-                overrideGrade = students.contents[userId].overrideCourseGrade;
+                overrideGrade = students.contents[userId].overrideCourseGrade,
+                role = students.contents[userId].role;
+                
+            //TODO: need a switch to filter this in the future
+            if (role !== 'Student'){ continue; }
 
             let grade = overrideGrade ? overrideGrade : generatedGrade
 
@@ -584,7 +594,10 @@ function GradebookOverview(props) {
             row["name"] = firstName + " " + lastName
             
             if(overView.state == 'hasValue' && assignments.state == 'hasValue'){
+                console.log(">>>>doenetId")
+
                 for (let doenetId in assignments.contents) {
+                    console.log(">>>>doenetId",doenetId)
                     row[doenetId] = (overView.contents[userId].assignments[doenetId]) * 100 + "%"
                 }
             }

@@ -13,9 +13,7 @@ export default function TimerMenu(){
   let [timeDisplay,setTimeDisplay] = useState("Unlimited")
   const [endTime,setEndTime] = useState(null);
   const [refresh,setRefresh] = useState(new Date())
-  // console.log(">>>>userAttemptNumber",userAttemptNumber)
-  console.log(">>>>endTime",endTime);
-  console.log(">>>>timeLimit",timeLimit);
+
   let timer = useRef(null);
 
   //Need fresh data on began time each time 
@@ -26,6 +24,7 @@ export default function TimerMenu(){
       const { data } = await axios.get('/api/loadTakenVariants.php', {
         params: { doenetId },
       })
+      
       for (let [i,attemptNumber] of Object.entries(data.attemptNumbers)){
         //Testing numbers are equal not objects so use ==
         if (attemptNumber == userAttemptNumber){
@@ -37,9 +36,7 @@ export default function TimerMenu(){
         }
       }
 
-      let endDT = new Date(startDT.getTime() + timeLimit*60000);
-      // console.log(">>>>startDT",startDT)
-      // console.log(">>>>endDT",endDT)
+      let endDT = new Date(startDT.getTime() + timeLimit*60000*data.timeLimitMultiplier);
       setEndTime(endDT);
 
     }
@@ -47,22 +44,25 @@ export default function TimerMenu(){
   },[userAttemptNumber,timeLimit,doenetId,setEndTime])
 
   useEffect(()=>{
-    // console.log(">>>>SET TIMER DISPLAY")
     //Clear timer to prevent multiple timers
     clearTimeout(timer.current);
 
     if (timeLimit > 0){
-      let mins = Math.floor((endTime - new Date()) / 60000);
-        if (mins <= 0){
+      let mins_floor = Math.floor((endTime - new Date()) / 60000);
+      let mins_raw = (endTime - new Date()) / 60000;
+ 
+        if (mins_raw <= 0){
           setTimeDisplay(`Time's Up`);
         }else{
-          if (mins === 1){
+          if(mins_raw < 1){
+            setTimeDisplay(`< 1 Min`);
+          }else if (mins_floor === 1){
             setTimeDisplay(`1 Min`);
           }else{
-            setTimeDisplay(`${mins} Mins`);
+            setTimeDisplay(`${mins_floor} Mins`);
           }
           timer.current = setTimeout(()=>{
-            if (new Date() < endTime){
+            if (mins_raw >= 0){
               setRefresh(new Date())
             }
           },10000)
@@ -70,11 +70,6 @@ export default function TimerMenu(){
         
       }
 
-  //     if (endTime === null){
-  //       let now = new Date();
-  //       let newDateObj = new Date(now.getTime() + timeLimit*60000);
-  //       setEndTime(newDateObj);
-  //     }
     },[refresh,endTime])
 
 

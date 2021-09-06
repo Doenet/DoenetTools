@@ -15,12 +15,17 @@ export default function GradebookBreadCrumb() {
   let assignments = useRecoilValueLoadable(assignmentData);
   let students = useRecoilValueLoadable(studentData);
 
+  let legacyAssignments = {contents:{}};
+  for (let [key,value] of Object.entries(assignments.contents)){
+    legacyAssignments.contents[key] = value.label;
+  }
+
   return (
     <Suspense fallback={<div>loading Drive...</div>}>
       <div style={{ 
         margin: '-9px 0px 0px -25px', 
         maxWidth: '850px' }}>
-        {assignments.state === 'hasValue' && students.state === 'hasValue' ? <BreadCrumb path={path} tool='Gradebook' doenetId = {doenetId} userId = {userId} attemptNumber = {attemptNumber} source = {source} assignments = {assignments} students = {students}/> : <p>Loading...</p>}
+        {assignments.state === 'hasValue' && students.state === 'hasValue' ? <BreadCrumb path={path} tool='Gradebook' doenetId = {doenetId} userId = {userId} attemptNumber = {attemptNumber} source = {source} assignments = {legacyAssignments} students = {students}/> : <p>Loading...</p>}
       </div>
     </Suspense>
   );
