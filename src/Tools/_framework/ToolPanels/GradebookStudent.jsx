@@ -8,23 +8,26 @@ import {
 import { pageToolViewAtom, searchParamAtomFamily } from '../NewToolRoot';
 import { Styles, Table, studentData, assignmentData,  overViewData, gradeSorting} from "./Gradebook"
 
-export default function GradebookStudent(props) {
+export default function GradebookStudent() {
+
     //const { openOverlay, activateMenuPanel } = useToolControlHelper();
     let driveId = useRecoilValue(searchParamAtomFamily('driveId'));
-    console.log(">>> driveId: ", driveId)
     let userId = useRecoilValue(searchParamAtomFamily('userId'))
-    console.log(">>> USERID: ", userId)
-
     const setPageToolView = useSetRecoilState(pageToolViewAtom);
+    let assignments = useRecoilValueLoadable(assignmentData);
+    let students = useRecoilValueLoadable(studentData)
+    let overView = useRecoilValueLoadable(overViewData)
+    // console.log(">>>> driveId: ", driveId)
+    // console.log(">>>> USERID: ", userId)
+    // console.log(">>>>assignments",assignments)
+    // console.log(">>>>students",students.contents)
+    // console.log(">>>>overView",overView.contents)
+
     let overviewTable = {}
     overviewTable.headers=[{
         Header: "Name",
         accessor: "name",
     },];
-
-    let assignments = useRecoilValueLoadable(assignmentData);
-    //let assignments = { contents: {}}
-
 
     if(assignments.state == 'hasValue'){
         for(let doenetId in assignments.contents){
@@ -71,10 +74,7 @@ export default function GradebookStudent(props) {
 
     overviewTable.rows = []
     
-    let students = useRecoilValueLoadable(studentData)
-    //let students = { state:'hasError', contents: {}}
-    let overView = useRecoilValueLoadable(overViewData)
-    //let overView = { state:'hasError', contents: {}}
+
 
     if(students.state === 'hasValue' && userId !== null && userId !== ''){
         //console.log(">>> userId", userId)

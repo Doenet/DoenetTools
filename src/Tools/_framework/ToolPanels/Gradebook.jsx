@@ -124,7 +124,8 @@ const assignmentDataQuerry = atom({
         key:"assignmentDataQuerry/Default",
         get: async ({get}) => {
             try{
-                const driveIdPayload = {params: { driveId:get(driveId)}}
+                const driveId = get(searchParamAtomFamily('driveId'));
+                const driveIdPayload = {params: { driveId }}
                 const { data } = await axios.get('/api/loadAssignments.php', driveIdPayload)
                 
                 return data
@@ -158,7 +159,8 @@ const studentDataQuerry = atom({
     default: selector({
         key: "studentDataQuerry/Default",
         get: async ({get}) => {
-            const driveIdPayload = {params: { driveId:get(driveId)}}
+            const driveId = get(searchParamAtomFamily('driveId'));
+            const driveIdPayload = {params: { driveId }}
             try{
                 const { data } = await axios.get('/api/loadGradebookEnrollment.php', driveIdPayload)
                 return data;
@@ -205,7 +207,9 @@ const overViewDataQuerry = atom({
         key: "overViewDataQuerry/Default",
         get: async ({get}) =>{
             try{
-                const driveIdPayload = {params: { driveId:get(driveId)}}
+            const driveId = get(searchParamAtomFamily('driveId'));
+
+                const driveIdPayload = {params: { driveId }}
                 let { data } = await axios.get('/api/loadGradebookOverview.php', driveIdPayload)
                 return data
             }catch(error){
