@@ -118,7 +118,7 @@ if ($success && $init == 'true'){
   // }
 
   if ($canViewUnreleasedItemsAndFolders == "0"){
-    $sql = $sql . " AND dc.isReleased = 1";
+    $sql = $sql . " AND (dc.isReleased = 1 OR dc.itemType='Folder')";
   }
  
   $result = $conn->query($sql); 
