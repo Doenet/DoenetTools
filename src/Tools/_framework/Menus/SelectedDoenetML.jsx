@@ -219,16 +219,28 @@ export default function SelectedDoenetML() {
           onChange={(e) => setLabel(e.target.value)}
           onKeyDown={(e) => {
             if (e.key === 'Enter') {
+              let effectiveLabel = label;
+              if (label === ''){
+                effectiveLabel = 'Untitled';
+                addToast("Label for the doenetML can't be blank.");
+                setLabel(effectiveLabel);
+              }
               //Only rename if label has changed
-              if (item.label !== label) {
-                renameItemCallback(label,item);
+              if (item.label !== effectiveLabel) {
+                renameItemCallback(effectiveLabel,item);
               }
             }
           }}
           onBlur={() => {
+            let effectiveLabel = label;
+              if (label === ''){
+                effectiveLabel = 'Untitled';
+                addToast("Label for the doenetML can't be blank.");
+                setLabel(effectiveLabel);
+              }
             //Only rename if label has changed
-            if (item.label !== label) {
-              renameItemCallback(label,item);
+            if (item.label !== effectiveLabel) {
+              renameItemCallback(effectiveLabel,item);
             }
           }}
         />
