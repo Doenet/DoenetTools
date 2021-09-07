@@ -70,7 +70,7 @@ export default function CollectionEditor() {
   const assignedEntriesData = useRecoilValueLoadable(
     assignedEntiresInfo(doenetId),
   ).getValue();
-
+  console.log('assInfo', assignedEntriesData, doenetId);
   useEffect(() => {
     const entries = [];
     for (let key in assignedEntriesData) {
@@ -202,8 +202,10 @@ const assignedEntiresInfo = atomFamily({
             params: { doenetId },
           });
           return resp.data.entries ?? [];
+        } else {
+          console.warn('undefined doenetId in Collections Editor');
+          return [];
         }
-        return [];
       } catch (error) {
         console.error(error);
         return [];
