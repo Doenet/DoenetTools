@@ -27,7 +27,6 @@ export default function ChooseLearnerPanel(props) {
       return newObj;
     });
   });
-  console.log(`>>>>stage '${stage}'`);
   if (stage === "request password" || stage === "problem with code") {
     return /* @__PURE__ */ React.createElement("div", {
       style: {

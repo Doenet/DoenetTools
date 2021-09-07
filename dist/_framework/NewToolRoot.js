@@ -40,12 +40,7 @@ export const profileAtom = atom({
     key: "profileAtom/Default",
     get: async () => {
       try {
-        const profile = JSON.parse(localStorage.getItem("Profile"));
-        if (profile) {
-          return profile;
-        }
         const {data} = await axios.get("/api/loadProfile.php");
-        localStorage.setItem("Profile", JSON.stringify(data.profile));
         return data.profile;
       } catch (error) {
         console.log("Error loading user profile", error.message);
@@ -105,7 +100,8 @@ export default function ToolRoot() {
     DoenetMLEditor: lazy(() => import("./ToolPanels/DoenetMLEditor.js")),
     Enrollment: lazy(() => import("./ToolPanels/Enrollment.js")),
     CollectionEditor: lazy(() => import("./ToolPanels/CollectionEditor.js")),
-    ChooseLearnerPanel: lazy(() => import("./ToolPanels/ChooseLearnerPanel.js"))
+    ChooseLearnerPanel: lazy(() => import("./ToolPanels/ChooseLearnerPanel.js")),
+    EndExamPanel: lazy(() => import("./ToolPanels/EndExamPanel.js"))
   }).current;
   const LazyControlObj = useRef({
     BackButton: lazy(() => import("./HeaderControls/BackButton.js")),
@@ -224,6 +220,12 @@ let navigationObj = {
       headerControls: [],
       headerControlsPositions: [],
       displayProfile: false
+    },
+    endExam: {
+      pageName: "endExam",
+      currentMainPanel: "EndExamPanel",
+      displayProfile: false,
+      hasNoMenuPanel: true
     }
   },
   course: {
@@ -234,9 +236,9 @@ let navigationObj = {
       pageName: "Assignment",
       menuPanelCap: "AssignmentInfoCap",
       currentMainPanel: "AssignmentViewer",
-      currentMenus: ["TimerMenu"],
-      menusTitles: ["Time Remaining"],
-      menusInitOpen: [true],
+      currentMenus: ["CreditAchieved", "TimerMenu"],
+      menusTitles: ["Credit Achieved", "Time Remaining"],
+      menusInitOpen: [true, false],
       headerControls: ["AssignmentBreadCrumb", "AssignmentNewAttempt"],
       headerControlsPositions: ["Left", "Right"]
     },
@@ -346,7 +348,10 @@ let navigationObj = {
     collection: {
       currentMainPanel: "CollectionEditor",
       headerControls: ["NavigationBreadCrumb"],
-      headerControlsPositions: ["Left"]
+      headerControlsPositions: ["Left"],
+      currentMenus: ["AssignmentSettingsMenu", "GroupSettings"],
+      menusTitles: ["Assignment Settings", "Group Settings"],
+      menusInitOpen: [false, false]
     },
     enrollment: {
       pageName: "Enrollment",

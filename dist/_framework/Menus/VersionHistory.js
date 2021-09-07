@@ -1,8 +1,7 @@
-import React, {useState} from "../../_snowpack/pkg/react.js";
+import React from "../../_snowpack/pkg/react.js";
 import {
   atom,
   useRecoilValue,
-  useRecoilState,
   useRecoilValueLoadable,
   useRecoilCallback
 } from "../../_snowpack/pkg/recoil.js";
@@ -26,7 +25,8 @@ import {nanoid} from "../../_snowpack/pkg/nanoid.js";
 import axios from "../../_snowpack/pkg/axios.js";
 import {useToast, toastType} from "../Toast.js";
 import {folderDictionary} from "../../_reactComponents/Drive/NewDrive.js";
-import {faPassport} from "../../_snowpack/pkg/@fortawesome/free-solid-svg-icons.js";
+import {editorSaveTimestamp} from "../ToolPanels/DoenetMLEditor.js";
+import {DateToUTCDateString} from "../../_utils/dateUtilityFunction.js";
 export const currentDraftSelectedAtom = atom({
   key: "currentDraftSelectedAtom",
   default: true
@@ -46,58 +46,32 @@ export default function VersionHistory(props) {
   const currentDraftSelected = useRecoilValue(currentDraftSelectedAtom);
   const [driveId, folderId, itemId] = path.split(":");
   const setReleaseNamed = useRecoilCallback(({set, snapshot}) => async ({doenetId: doenetId2, versionId, driveId: driveId2, folderId: folderId2, itemId: itemId2}) => {
-    let doenetIsReleased = false;
-    let history = await snapshot.getPromise(itemHistoryAtom(doenetId2));
-    let newHistory = {...history};
-    newHistory.named = [...history.named];
-    let newVersion;
-    for (const [i, version2] of newHistory.named.entries()) {
-      if (versionId === version2.versionId) {
-        newVersion = {...version2};
-        if (version2.isReleased === "0") {
-          newVersion.isReleased = "1";
-          doenetIsReleased = true;
-          newHistory.named.splice(i, 1, newVersion);
-          break;
+    const {data} = await axios.get("/api/releaseVersion.php", {params: {doenetId: doenetId2, versionId}});
+    const {success, message, isReleased, title} = data;
+    let actionName = "Retracted";
+    if (isReleased === "1") {
+      actionName = "Released";
+    }
+    if (success) {
+      addToast(`"${title}" is ${actionName}`, toastType.SUCCESS);
+    } else {
+      addToast(message, toastType.ERROR);
+    }
+    set(itemHistoryAtom(doenetId2), (was) => {
+      let newObj = {...was};
+      let newNamed = [...was.named];
+      for (const [i, version2] of newNamed.entries()) {
+        let newVersion = {...version2};
+        if (version2.versionId === versionId) {
+          newVersion.isReleased = isReleased;
+          newNamed[i] = newVersion;
         } else {
           newVersion.isReleased = "0";
-          newHistory.named.splice(i, 1, newVersion);
-          break;
+          newNamed[i] = newVersion;
         }
       }
-    }
-    if (doenetIsReleased) {
-      for (const [i, version2] of newHistory.named.entries()) {
-        if (versionId !== version2.versionId && version2.isReleased === "1") {
-          let newVersion2 = {...version2};
-          newVersion2.isReleased = "0";
-          newHistory.named.splice(i, 1, newVersion2);
-          break;
-        }
-      }
-    }
-    set(itemHistoryAtom(doenetId2), newHistory);
-    const doenetML = await snapshot.getPromise(fileByContentId(newVersion.contentId));
-    let newDBVersion = {
-      ...newVersion,
-      isNewToggleRelease: "1",
-      doenetId: doenetId2,
-      doenetML
-    };
-    axios.post("/api/saveNewVersion.php", newDBVersion).then((resp) => {
-      if (resp.data.success) {
-        let message = `'${newVersion.title}' Released`;
-        if (newVersion.isReleased === "0") {
-          message = `'${newVersion.title}' Retracted`;
-        }
-        addToast(message, toastType.SUCCESS);
-      } else {
-        let message = `Error occured releasing '${newVersion.title}'`;
-        if (newVersion.isReleased === "0") {
-          message = `Error occured retracting '${newVersion.title}'`;
-        }
-        addToast(message, toastType.ERROR);
-      }
+      newObj.named = newNamed;
+      return newObj;
     });
     set(folderDictionary({driveId: driveId2, folderId: folderId2}), (was) => {
       let newFolderInfo = {...was};
@@ -109,15 +83,12 @@ export default function VersionHistory(props) {
       }
       newFolderInfo.contentsDictionary = {...was.contentsDictionary};
       newFolderInfo.contentsDictionary[itemId2] = {...was.contentsDictionary[itemId2]};
-      let newIsReleased = "0";
-      if (doenetIsReleased) {
-        newIsReleased = "1";
-      }
-      newFolderInfo.contentsDictionary[itemId2].isReleased = newIsReleased;
+      newFolderInfo.contentsDictionary[itemId2].isReleased = isReleased;
+      newFolderInfo.contentsDictionaryByDoenetId = {...was.contentsDictionaryByDoenetId};
+      newFolderInfo.contentsDictionaryByDoenetId[doenetId2] = {...was.contentsDictionaryByDoenetId[doenetId2]};
+      newFolderInfo.contentsDictionaryByDoenetId[doenetId2].isReleased = isReleased;
       return newFolderInfo;
     });
-  });
-  const versionHistoryActive = useRecoilCallback(({snapshot, set}) => async (version2) => {
   });
   const setAsCurrent = useRecoilCallback(({snapshot, set}) => async ({doenetId: doenetId2, versionId}) => {
     const was = await snapshot.getPromise(itemHistoryAtom(doenetId2));
@@ -191,84 +162,113 @@ export default function VersionHistory(props) {
   });
   const saveAndReleaseCurrent = useRecoilCallback(({snapshot, set}) => async ({doenetId: doenetId2, driveId: driveId2, folderId: folderId2, itemId: itemId2}) => {
     const doenetML = await snapshot.getPromise(textEditorDoenetMLAtom);
-    const timestamp = buildTimestamp();
+    const timestamp = DateToUTCDateString(new Date());
     const contentId = getSHAofContent(doenetML);
     const versionId = nanoid();
-    const oldVersions = await snapshot.getPromise(itemHistoryAtom(doenetId2));
-    let newVersions = {...oldVersions};
-    const title = `Save ${oldVersions.named.length + 1}`;
-    let newVersion = {
-      title,
-      versionId,
-      timestamp,
-      isReleased: "0",
-      isDraft: "0",
-      isNamed: "1",
-      contentId
-    };
-    let newDBVersion = {
-      ...newVersion,
+    const {data} = await axios.post("/api/releaseDraft.php", {
+      doenetId: doenetId2,
       doenetML,
-      doenetId: doenetId2
-    };
-    newVersions.named = [newVersion, ...oldVersions.named];
-    set(itemHistoryAtom(doenetId2), newVersions);
-    set(fileByContentId(contentId), doenetML);
-    axios.post("/api/saveNewVersion.php", newDBVersion).then((resp) => {
-      if (resp?.data?.success) {
-        addToast("New Version Saved!", toastType.SUCCESS);
-      } else {
-        addToast("Version NOT Saved!", toastType.ERROR);
-      }
-    }).catch((err) => {
-      addToast("Version NOT Saved!", toastType.ERROR);
+      timestamp,
+      versionId
     });
-    setReleaseNamed({doenetId: doenetId2, versionId, driveId: driveId2, folderId: folderId2, itemId: itemId2});
+    const {success, message, title} = data;
+    if (success) {
+      addToast(`"${title}" is Released.`, toastType.SUCCESS);
+    } else {
+      addToast(message, toastType.ERROR);
+    }
+    set(fileByContentId(contentId), doenetML);
+    set(itemHistoryAtom(doenetId2), (was) => {
+      let newObj = {...was};
+      let newNamed = [...was.named];
+      for (const [i, version2] of newNamed.entries()) {
+        let newVersion2 = {...version2};
+        newVersion2.isReleased = "0";
+        newNamed[i] = newVersion2;
+      }
+      let newVersion = {
+        title,
+        versionId,
+        timestamp,
+        isReleased: "1",
+        isDraft: "0",
+        isNamed: "1",
+        contentId
+      };
+      newNamed.unshift(newVersion);
+      newObj.named = newNamed;
+      return newObj;
+    });
+    set(folderDictionary({driveId: driveId2, folderId: folderId2}), (was) => {
+      let newFolderInfo = {...was};
+      for (let testItemId of newFolderInfo.contentIds.defaultOrder) {
+        if (newFolderInfo.contentsDictionary[testItemId].doenetId === doenetId2) {
+          itemId2 = testItemId;
+          break;
+        }
+      }
+      newFolderInfo.contentsDictionary = {...was.contentsDictionary};
+      newFolderInfo.contentsDictionary[itemId2] = {...was.contentsDictionary[itemId2]};
+      newFolderInfo.contentsDictionary[itemId2].isReleased = "1";
+      newFolderInfo.contentsDictionaryByDoenetId = {...was.contentsDictionaryByDoenetId};
+      newFolderInfo.contentsDictionaryByDoenetId[doenetId2] = {...was.contentsDictionaryByDoenetId[doenetId2]};
+      newFolderInfo.contentsDictionaryByDoenetId[doenetId2].isReleased = "1";
+      return newFolderInfo;
+    });
   });
   const setSelectedVersionId = useRecoilCallback(({snapshot, set}) => async ({doenetId: doenetId2, versionId, isCurrentDraft}) => {
     set(selectedVersionIdAtom, versionId);
     set(currentDraftSelectedAtom, isCurrentDraft);
     const oldVersions = await snapshot.getPromise(itemHistoryAtom(doenetId2));
-    let contentId = oldVersions.draft.contentId;
+    let newVersions = {...oldVersions};
+    let oldDraftContentId = oldVersions.draft.contentId;
     if (!isCurrentDraft) {
       const wasDraftSelected = await snapshot.getPromise(currentDraftSelectedAtom);
       if (wasDraftSelected) {
-        const textEditorDoenetML = await snapshot.getPromise(textEditorDoenetMLAtom);
-        const textEditorContentId = getSHAofContent(textEditorDoenetML);
-        if (textEditorContentId !== contentId) {
+        const newDraftDoenetML = await snapshot.getPromise(textEditorDoenetMLAtom);
+        const newDraftContentId = getSHAofContent(newDraftDoenetML);
+        if (newDraftContentId !== oldDraftContentId) {
           let newDraft = {...oldVersions.draft};
-          newDraft.contentId = textEditorContentId;
+          newDraft.contentId = newDraftContentId;
           newDraft.timestamp = buildTimestamp();
-          let oldVersionsReplacement = {...oldVersions};
-          oldVersionsReplacement.draft = newDraft;
-          set(itemHistoryAtom(doenetId2), oldVersionsReplacement);
-          set(fileByContentId(textEditorContentId), textEditorDoenetML);
+          newVersions.draft = newDraft;
+          set(itemHistoryAtom(doenetId2), newVersions);
+          set(fileByContentId(newDraftContentId), newDraftDoenetML);
           let newDBVersion = {
             ...newDraft,
-            doenetML: textEditorDoenetML,
+            doenetML: newDraftDoenetML,
             doenetId: doenetId2
           };
-          axios.post("/api/saveNewVersion.php", newDBVersion);
-        }
-      }
-      for (let version2 of oldVersions.named) {
-        if (version2.versionId === versionId) {
-          contentId = version2.contentId;
+          try {
+            const {data} = await axios.post("/api/saveNewVersion.php", newDBVersion);
+            if (data.success) {
+              set(editorSaveTimestamp, new Date());
+            } else {
+              console.log("ERROR", data.message);
+            }
+          } catch (error) {
+            console.log("ERROR", error);
+          }
         }
       }
     }
-    const doenetML = await snapshot.getPromise(fileByContentId(contentId));
+    let displayContentId = newVersions.draft.contentId;
+    for (let version2 of newVersions.named) {
+      if (version2.versionId === versionId) {
+        displayContentId = version2.contentId;
+        break;
+      }
+    }
+    const doenetML = await snapshot.getPromise(fileByContentId(displayContentId));
     set(viewerDoenetMLAtom, doenetML);
     set(updateTextEditorDoenetMLAtom, doenetML);
-    set(textEditorDoenetMLAtom, doenetML);
   });
   if (initializedDoenetId !== doenetId) {
     return /* @__PURE__ */ React.createElement("div", {
       style: props.style
     });
   }
-  console.log(">>>versionHistory.contents", versionHistory.contents);
-  if (!versionHistory.contents.named) {
+  if (!versionHistory?.contents?.named) {
     return null;
   }
   let options = [];
@@ -285,6 +285,7 @@ export default function VersionHistory(props) {
       released = "(Released)";
     }
     options.push(/* @__PURE__ */ React.createElement("option", {
+      key: `option${version2.versionId}`,
       value: version2.versionId,
       selected
     }, released, " ", version2.title));
@@ -294,16 +295,9 @@ export default function VersionHistory(props) {
   if (version?.isReleased === "1") {
     releaseButtonText = "Retract";
   }
-  return /* @__PURE__ */ React.createElement("div", {
-    style: props.style
-  }, /* @__PURE__ */ React.createElement("div", {
-    style: {margin: "6px 0px 6px 0px"}
-  }, /* @__PURE__ */ React.createElement(Button, {
-    disabled: !currentDraftSelected,
-    width: "menu",
-    value: "Save Version",
-    onClick: () => saveVersion(doenetId)
-  })), /* @__PURE__ */ React.createElement("select", {
+  return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("div", {
+    style: {padding: "6px 0px 6px 0px"}
+  }, /* @__PURE__ */ React.createElement("select", {
     size: "2",
     style: {width: "230px"},
     onChange: (e) => {
@@ -312,10 +306,18 @@ export default function VersionHistory(props) {
   }, /* @__PURE__ */ React.createElement("option", {
     value: versionHistory.contents.draft.versionId,
     selected: currentDraftSelected
-  }, "Current Draft")), /* @__PURE__ */ React.createElement("div", {
+  }, "Current Draft"))), /* @__PURE__ */ React.createElement("div", {
+    style: {margin: "0px 0px 6px 0px"}
+  }, /* @__PURE__ */ React.createElement(Button, {
+    disabled: !currentDraftSelected,
+    width: "menu",
+    value: "Save Version",
+    onClick: () => saveVersion(doenetId)
+  })), /* @__PURE__ */ React.createElement("div", {
     style: {margin: "6px 0px 6px 0px"}
   }, /* @__PURE__ */ React.createElement(Button, {
     disabled: !currentDraftSelected,
+    width: "menu",
     value: "Release Current",
     onClick: () => {
       saveAndReleaseCurrent({doenetId, driveId, folderId, itemId});
@@ -328,7 +330,8 @@ export default function VersionHistory(props) {
     }
   }, options), /* @__PURE__ */ React.createElement("div", null, "Name: ", version?.title), /* @__PURE__ */ React.createElement(ClipboardLinkButtons, {
     disabled: currentDraftSelected,
-    contentId: version?.contentId
+    contentId: version?.contentId,
+    doenetId
   }), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement(RenameVersionControl, {
     key: version?.versionId,
     disabled: currentDraftSelected,

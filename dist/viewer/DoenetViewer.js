@@ -203,6 +203,7 @@ class DoenetViewerChild extends Component {
       };
       axios.post("/api/saveCreditForItem.php", payload2).then((resp) => {
         console.log(">>>>resp", resp.data);
+        this.props.updateCreditAchievedCallback(resp.data);
         if (resp.data.viewedSolution) {
           this.props.toast("No credit awarded since solution was viewed.", toastType.INFO);
         }
@@ -247,7 +248,8 @@ class DoenetViewerChild extends Component {
       params: {
         contentId: this.contentId,
         attemptNumber: this.attemptNumber,
-        doenetId: this.props.doenetId
+        doenetId: this.props.doenetId,
+        userId: this.props.userId
       }
     };
     axios.get("/api/loadContentInteractions.php", payload).then((resp) => {

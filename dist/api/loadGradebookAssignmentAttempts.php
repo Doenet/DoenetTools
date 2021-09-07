@@ -17,6 +17,19 @@ if (!isset($_GET["doenetId"])) {
     echo "Database Retrieval Error: No assignment specified!";
 } else {
     $doenetId = mysqli_real_escape_string($conn,$_REQUEST["doenetId"]);
+
+    $sql = "
+    SELECT du.role AS role
+    FROM drive_user AS du
+    LEFT JOIN drive_content AS dc
+    ON dc.driveId = du.driveId
+    WHERE dc.doenetId = '$doenetId'
+    and du.userId = '$userId'
+    ";
+
+    $result = $conn->query($sql);  
+    $row = $result->fetch_assoc();
+    $role = $row['role'];
     // echo($doenetId);
     // check to make sure assignment exists
     $sql = "
@@ -28,18 +41,37 @@ if (!isset($_GET["doenetId"])) {
     $result = $conn->query($sql);
     if ($result->num_rows == 1) {
         // do the actual query
-        $sql = "
-        SELECT 
-		ua.userId as userId,
-		ua.credit as assignmentCredit,
-		uaa.attemptNumber as attemptNumber,
-		uaa.credit as attemptCredit
-        FROM user_assignment_attempt AS uaa
-        RIGHT JOIN user_assignment AS ua
-        ON ua.doenetId = uaa.doenetId 
-        AND ua.userId = uaa.userId
-        WHERE uaa.doenetId = '$doenetId'
-        ";
+
+        if ($role == 'Student'){
+            $sql = "
+            SELECT 
+            ua.userId as userId,
+            ua.credit as assignmentCredit,
+            uaa.attemptNumber as attemptNumber,
+            uaa.credit as attemptCredit
+            FROM user_assignment_attempt AS uaa
+            RIGHT JOIN user_assignment AS ua
+            ON ua.doenetId = uaa.doenetId 
+            AND ua.userId = uaa.userId
+            WHERE uaa.doenetId = '$doenetId'
+            AND uaa.userId = '$userId'
+            ";
+        }else{
+            $sql = "
+            SELECT 
+            ua.userId as userId,
+            ua.credit as assignmentCredit,
+            uaa.attemptNumber as attemptNumber,
+            uaa.credit as attemptCredit
+            FROM user_assignment_attempt AS uaa
+            RIGHT JOIN user_assignment AS ua
+            ON ua.doenetId = uaa.doenetId 
+            AND ua.userId = uaa.userId
+            WHERE uaa.doenetId = '$doenetId'
+            ";
+        }
+
+        
     
         $result = $conn->query($sql);
         $response_arr = array();

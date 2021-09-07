@@ -45,5 +45,7 @@ export default function AssignmentInfoCap() {
     src: imageURL,
     alt: `${driveLabel} course`,
     width: "240px"
-  })), /* @__PURE__ */ React.createElement("div", null, driveLabel), /* @__PURE__ */ React.createElement("div", null, docInfo.label), /* @__PURE__ */ React.createElement("div", null, recoilAttemptNumber, "/", attemptsAllowedDescription, " Attempts"));
+  })), /* @__PURE__ */ React.createElement("div", {
+    style: {padding: "8px"}
+  }, /* @__PURE__ */ React.createElement("div", null, driveLabel), /* @__PURE__ */ React.createElement("div", null, docInfo.label), /* @__PURE__ */ React.createElement("div", null, recoilAttemptNumber, "/", attemptsAllowedDescription, " Attempts")));
 }

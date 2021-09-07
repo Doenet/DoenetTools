@@ -175,7 +175,6 @@ const DriveCardWrapper = (props) => {
       }
     }, /* @__PURE__ */ React.createElement("div", {
       role: "button",
-      key: `divbutton${item.driveId}`,
       style: {height: "100%", outline: "none"},
       tabIndex: index + 1,
       onClick: (e) => {
@@ -192,7 +191,6 @@ const DriveCardWrapper = (props) => {
         setPageToolView({page: "course", tool: "dashboard", view: "", params: {path: `${item.driveId}:${item.driveId}:${item.driveId}:Drive`}});
       }
     }, /* @__PURE__ */ React.createElement(DriveCard, {
-      key: `dcard${item.driveId}`,
       image: item.image,
       color: item.color,
       label: item.label,
