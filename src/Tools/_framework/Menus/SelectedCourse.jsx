@@ -10,13 +10,13 @@ import {
 } from '../../../_reactComponents/Drive/NewDrive';
 import {
   faChalkboard,
-  faUserCircle,
+  // faUserCircle,
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { drivecardSelectedNodesAtom } from '../ToolHandlers/CourseToolHandler';
 import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
 import DoenetDriveCardMenu from '../../../_reactComponents/Drive/DoenetDriveCardMenu';
-import { driveColors, driveImages } from '../../../_reactComponents/Drive/util';
+import { driveColors } from '../../../_reactComponents/Drive/util';
 import { useToast } from '../../_framework/Toast';
 import ButtonGroup from '../../../_reactComponents/PanelHeaderComponents/ButtonGroup';
 
@@ -124,6 +124,7 @@ const DriveInfoPanel = function (props) {
   );
   // const [selectedUserId, setSelectedUserId] = useState('');
   const setDrivecardSelection = useSetRecoilState(drivecardSelectedNodesAtom);
+  const addToast = useToast();
 
   if (driveUsers.state === 'loading') {
     return null;
@@ -310,6 +311,7 @@ const DriveInfoPanel = function (props) {
       />
     </ButtonGroup>
   );
+
   return (
     <>
       <h2 data-cy="infoPanelItemLabel">
@@ -324,26 +326,42 @@ const DriveInfoPanel = function (props) {
           value={driveLabel}
           onChange={(e) => setDriveLabel(e.target.value)}
           onKeyDown={(e) => {
+            let effectiveDriveLabel = driveLabel;
+            if (driveLabel === ''){
+              effectiveDriveLabel = 'Untitled';
+              setDriveLabel(effectiveDriveLabel)
+              addToast("Label for the course can't be blank.");
+            }
             if (e.keyCode === 13) {
-              setPanelDriveLabel(driveLabel);
+              setPanelDriveLabel(effectiveDriveLabel);
               setDrivesInfo({
                 color: props.color,
-                label: driveLabel,
+                label: effectiveDriveLabel,
                 image: props.image,
                 newDriveId: props.driveId,
                 type: 'update drive label',
               });
             }
+            
           }}
           onBlur={() => {
-            setPanelDriveLabel(driveLabel);
-            setDrivesInfo({
-              color: props.color,
-              label: driveLabel,
-              image: props.image,
-              newDriveId: props.driveId,
-              type: 'update drive label',
-            });
+            let effectiveDriveLabel = driveLabel;
+            if (driveLabel === ''){
+              effectiveDriveLabel = 'Untitled';
+              setDriveLabel(effectiveDriveLabel)
+              addToast("Label for the course can't be blank.");
+            }
+           
+              setPanelDriveLabel(effectiveDriveLabel);
+              setDrivesInfo({
+                color: props.color,
+                label: effectiveDriveLabel,
+                image: props.image,
+                newDriveId: props.driveId,
+                type: 'update drive label',
+              });
+            
+            
           }}
         />
       </label>

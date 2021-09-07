@@ -9,6 +9,7 @@ import { selectedMenuPanelAtom } from '../Panels/NewMenuPanel';
 import { selectedInformation } from './SelectedDoenetML';
 import ButtonGroup from '../../../_reactComponents/PanelHeaderComponents/ButtonGroup';
 import { pageToolViewAtom } from '../NewToolRoot';
+import { useToast } from '../../_framework/Toast';
 
 
 export default function SelectedFolder() {
@@ -20,6 +21,7 @@ export default function SelectedFolder() {
   const [item, setItem] = useState(selection[0]);
   const [label, setLabel] = useState(selection[0]?.label ?? '');
   const { deleteItem, renameItem } = useSockets('drive');
+  const addToast = useToast();
 
   useEffect(() => {
     if (!selection[0]) {
@@ -59,16 +61,28 @@ export default function SelectedFolder() {
           onChange={(e) => setLabel(e.target.value)}
           onKeyDown={(e) => {
             if (e.key === 'Enter') {
+              let effectiveLabel = label;
+              if (label === ''){
+                effectiveLabel = 'Untitled';
+                addToast("Label for the folder can't be blank.");
+                setLabel(effectiveLabel);
+              }
               //Only rename if label has changed
-              if (item.label !== label) {
-                renameItemCallback(label);
+              if (item.label !== effectiveLabel) {
+                renameItemCallback(effectiveLabel);
+                setLabel(effectiveLabel);
               }
             }
           }}
           onBlur={() => {
+            let effectiveLabel = label;
+              if (label === ''){
+                effectiveLabel = 'Untitled';
+                addToast("Label for the folder can't be blank.");
+              }
             //Only rename if label has changed
-            if (item.label !== label) {
-              renameItemCallback(label);
+            if (item.label !== effectiveLabel) {
+              renameItemCallback(effectiveLabel);
             }
           }}
         />
