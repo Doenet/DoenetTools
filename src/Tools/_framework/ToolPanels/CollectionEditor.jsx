@@ -70,7 +70,7 @@ export default function CollectionEditor() {
   const assignedEntriesData = useRecoilValueLoadable(
     assignedEntiresInfo(doenetId),
   ).getValue();
-  console.log('assInfo', assignedEntriesData, doenetId);
+
   useEffect(() => {
     const entries = [];
     for (let key in assignedEntriesData) {
