@@ -82,7 +82,7 @@ export default function SelectedCollection() {
           onClick={() => {
             setPageToolView({
               page: 'course',
-              tool: 'editor',
+              tool: 'collection',
               view: '',
               params: {
                 doenetId: item.doenetId,
