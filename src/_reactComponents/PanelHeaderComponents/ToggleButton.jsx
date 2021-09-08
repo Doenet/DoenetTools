@@ -55,10 +55,12 @@ export default function ToggleButton(props) {
         }
     }
     if (isSelected === true) {
-        toggleButton.backgroundColor = `${color}`;
-        toggleButton.color = '#FFF';
-        toggleButton.border = '2px solid #FFF';
-        if (props.switch_value) toggleButton.value = props.switch_value
+        if (!props.disabled) {
+            toggleButton.backgroundColor = `${color}`;
+            toggleButton.color = '#FFF';
+            toggleButton.border = '2px solid #FFF';
+            if (props.switch_value) toggleButton.value = props.switch_value
+        }
     }
     function handleClick() {
         if (isSelected === false) {

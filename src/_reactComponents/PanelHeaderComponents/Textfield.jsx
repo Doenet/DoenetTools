@@ -38,9 +38,11 @@ export default function Textfield(props) {
     if (props.label) {
       label.value = props.label;
   }
+  var disable = "";
   if (props.disabled) {
     textfield.border = '2px solid #e2e2e2';
     textfield.cursor = 'not-allowed';
+    disable = "disabled";
   }
   if (props.value) {
     textfield.value = props.value;
@@ -62,7 +64,7 @@ function handleChange(e) {
         <>
           <div style={container}>
                 <p style={label}>{label.value}</p>
-                <textarea defaultValue={textfield.value} style={textfield} onChange={(e) => { handleChange(e) }}></textarea>
+                <textarea defaultValue={textfield.value} style={textfield} onChange={(e) => { handleChange(e) }} disabled={disable}></textarea>
           </div>
         </>
     )

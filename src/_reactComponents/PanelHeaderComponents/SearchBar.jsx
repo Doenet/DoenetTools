@@ -50,11 +50,13 @@ export default function Searchbar(props) {
         fontSize: '12px',
         overflow: 'hidden'
     }
+    var disable = "";
     if (props.disabled) {
         submitButton.backgroundColor = '#e2e2e2';
         submitButton.color = 'black';
         submitButton.cursor = 'not-allowed';
         searchBar.cursor = 'not-allowed';
+        disable = "disabled";
     }
     // if (props.action) {
     //     function searchSubmitAction() {
@@ -83,7 +85,7 @@ export default function Searchbar(props) {
         <div style={{display: "table-cell"}} onClick={() => { clearInput()}}>
             <FontAwesomeIcon icon={faSearch} style={searchIcon}/>
             <button style={cancelButton} onClick={() => { clearInput() }} ><FontAwesomeIcon icon={faTimes}/></button>
-            <input id="search" type="text" defaultValue="Search..." style={searchBar} onKeyUp={() => { changeSearchTerm() }}/>
+            <input id="search" type="text" defaultValue="Search..." style={searchBar} onKeyUp={() => { changeSearchTerm() }} disabled={disable}/>
             <div style={{padding: '3px', display:'inline'}}></div>
             <button style={submitButton} onClick={() => { searchSubmitAction() }}>Search</button>
         </div>

@@ -242,6 +242,10 @@ export default function attempt() {
         propPreview: '<DropdownMenu items = {[[1, "one"], [2, "two"]]} onChange={(({ value }) => console.log(">>>", value)} />',
         propCode: {items: [[1, "one"], [2, "two"]], onChange: ({ value }) => console.log(">>>", value)},
         description: 'Function called when data changes'},
+        {name: 'Disabled',
+        propPreview: '<DropdownMenu items = {[[1, "one"], [2, "two"], [3, "three"]]} disabled/>',
+        propCode: {items: [[1, "one"], [2, "two"], [3, "three"]], disabled},
+        description: 'Makes disabled'},
       ]
     },
     {
