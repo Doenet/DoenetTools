@@ -33,12 +33,18 @@ position: ${(props) => props.fix ? 'static' : 'sticky'};
 border-bottom: 2px solid #e2e2e2;
 margin-bottom: -2px;
 top: 0;
+z-index: 2;
 `;
 const MenuPanelsCapComponent = styled.div`
 width: 240px;
 background: white;
 border-top: 1px solid #e2e2e2;
 border-top: 1px solid #e2e2e2;
+border-bottom: 2px solid #e2e2e2;
+margin-bottom: -2px;
+position: sticky;
+top: 35px;
+z-index: 2;
 `;
 
 const MenuHeaderButton = styled.button`
@@ -216,7 +222,6 @@ console.log(">>>===MenuPanel", hide)
       {React.createElement(LazyMenuPanelCapObj[menuPanelCap])}
         </Suspense>
     </MenuPanelsCapComponent>;
-
   }
 
 
@@ -264,8 +269,8 @@ console.log(">>>===MenuPanel", hide)
       </MenuPanelsCap>
       {menuPanelCapComponent}
 
-    {selectionPanel}
-    <div>{menusArray}</div>
+      {selectionPanel}
+      <div>{menusArray}</div>
 
     </MenuPanelsWrapper>
   );
