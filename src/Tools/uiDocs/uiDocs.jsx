@@ -240,8 +240,8 @@ export default function attempt() {
           propPreview: '<DateTime disabled=true />',
           propCode: {disabled: true},
           description: 'disables component'},
-          {name: 'onChange',
-          propPreview: '<DateTime onChange={(( newDate ) => console.log(">>>", newDate)} />',
+          {name: 'callBack',
+          propPreview: '<DateTime callBack={(( newDate ) => console.log(">>>", newDate)} />',
           propCode: {callBack: ( newDate ) => console.log(">>>", newDate)},
           description: 'Function called when data changes'},
       ]
