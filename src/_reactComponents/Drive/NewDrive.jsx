@@ -70,9 +70,13 @@ const loadAssignmentAtomFamily = atomFamily({
         params: payload,
       });
 
-      let assignment = {...data.assignment}
-      assignment.assignedDate = new Date(`${data.assignment?.assignedDate} UTC`).toLocaleString()
-      assignment.dueDate = new Date(`${data.assignment?.dueDate} UTC`).toLocaleString()
+      let assignment = { ...data.assignment };
+      assignment.assignedDate = new Date(
+        `${data.assignment?.assignedDate} UTC`,
+      ).toLocaleString();
+      assignment.dueDate = new Date(
+        `${data.assignment?.dueDate} UTC`,
+      ).toLocaleString();
       return assignment;
     },
   }),
@@ -505,7 +509,7 @@ export const folderDictionaryFilterAtom = atomFamily({
   key: 'folderDictionaryFilterAtom',
   default: selectorFamily({
     key: 'folderDictionaryFilterAtom/Default',
-    get: (driveId) => () => {
+    get: () => () => {
       return 'All';
     },
   }),
@@ -1790,7 +1794,10 @@ export const selectedDriveItems = selectorFamily({
         for (let itemId of folderObj.contentIds.defaultOrder) {
           itemIdArr.push(itemId);
           parentFolderIdArr.push(parentFolderId);
-          if (folderObj.contentsDictionary[itemId].itemType === 'Folder') {
+          if (
+            folderObj.contentsDictionary[itemId].itemType === 'Folder' ||
+            folderObj.contentsDictionary[itemId].itemType === 'Collection'
+          ) {
             const isOpen = get(
               folderOpenAtom({ driveInstanceId, driveId, itemId }),
             );

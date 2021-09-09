@@ -182,6 +182,11 @@ const entryInfoByDoenetId = atomFamily({
               folderId: resp.data.parentFolderId,
             }),
           );
+          console.log(
+            'Finfo',
+            folderInfo,
+            folderInfo.contentsDictionaryByDoenetId[doenetId],
+          );
           return folderInfo.contentsDictionaryByDoenetId[doenetId] ?? {};
         } catch (error) {
           console.error(error);
