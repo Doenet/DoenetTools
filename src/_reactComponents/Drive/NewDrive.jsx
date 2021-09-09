@@ -657,7 +657,7 @@ export const getLexicographicOrder = ({
   return sortOrder;
 };
 
-function DriveHeader({
+export function DriveHeader({
   columnTypes,
   numColumns,
   setNumColumns,
@@ -1997,7 +1997,7 @@ export const DoenetML = React.memo(function DoenetML(props) {
       itemId: props.item.itemId,
     }),
   );
-  const [selectedDrive, setSelectedDrive] = useRecoilState(selectedDriveAtom);
+  // const [selectedDrive, setSelectedDrive] = useRecoilState(selectedDriveAtom);
   const [dragState] = useRecoilState(dragStateAtom);
   const {
     onDragStart,
@@ -2008,13 +2008,13 @@ export const DoenetML = React.memo(function DoenetML(props) {
     unregisterDropTarget,
   } = useDnDCallbacks();
   const globalSelectedNodes = useRecoilValue(globalSelectedNodesAtom);
-  const [folderInfoObj, setFolderInfo] = useRecoilStateLoadable(
-    folderInfoSelector({
-      driveId: props.driveId,
-      instanceId: props.driveInstanceId,
-      folderId: props.driveId,
-    }),
-  );
+  // const [folderInfoObj, setFolderInfo] = useRecoilStateLoadable(
+  //   folderInfoSelector({
+  //     driveId: props.driveId,
+  //     instanceId: props.driveInstanceId,
+  //     folderId: props.driveId,
+  //   }),
+  // );
   const parentFolderSortOrder = useRecoilValue(
     folderSortOrderAtom({
       driveId: props.driveId,
@@ -2063,7 +2063,7 @@ export const DoenetML = React.memo(function DoenetML(props) {
   }
   if (isSelected || (props.isNav && props.item.itemId === props.pathItemId)) {
     bgcolor = 'hsl(209,54%,82%)';
-    borderSide = '8px 0px 0px 0px #1A5A99';
+    // borderSide = '8px 0px 0px 0px #1A5A99';
   }
   if (isSelected && dragState.isDragging) {
     bgcolor = '#e2e2e2';
