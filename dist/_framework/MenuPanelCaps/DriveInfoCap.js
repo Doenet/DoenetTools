@@ -28,5 +28,7 @@ export default function DriveInfoCap() {
     src: imageURL,
     alt: `${label} course`,
     width: "240px"
-  })), /* @__PURE__ */ React.createElement("div", null, label), /* @__PURE__ */ React.createElement("div", null, roles));
+  })), /* @__PURE__ */ React.createElement("div", {
+    style: {padding: "8px"}
+  }, /* @__PURE__ */ React.createElement("div", null, label), /* @__PURE__ */ React.createElement("div", null, roles)));
 }

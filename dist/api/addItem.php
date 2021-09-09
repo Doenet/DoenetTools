@@ -232,6 +232,50 @@ if ($success) {
                   ";
             }
             $result = $conn->query($sql);
+
+            //Assignment
+            $sql="
+                INSERT INTO assignment
+                (
+                doenetId,
+                contentId,
+                driveId,
+                assignedDate,
+                dueDate,
+                timeLimit,
+                numberOfAttemptsAllowed,
+                attemptAggregation,
+                totalPointsOrPercent,
+                gradeCategory,
+                individualize,
+                multipleAttempts,
+                showSolution,
+                showFeedback,
+                showHints,
+                showCorrectness,
+                proctorMakesAvailable)
+                VALUES
+                (
+                '$doenetId',
+                '$contentId',
+                '$driveId',
+                '$assignedDate',
+                '$dueDate',
+                $timeLimit,
+                '$numberOfAttemptsAllowed',
+                '$attemptAggregation',
+                '$totalPointsOrPercent',
+                '$gradeCategory',
+                '$individualize',
+                '$multipleAttempts',
+                '$showSolution',
+                '$showFeedback',
+                '$showHints',
+                '$showCorrectness',
+                '$proctorMakesAvailable')
+            ";
+
+            $result = $conn->query($sql);
             break;
         default:
             $success = false;

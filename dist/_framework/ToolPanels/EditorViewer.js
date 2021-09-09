@@ -59,9 +59,7 @@ export default function EditorViewer(props) {
     };
   }, [paramDoenetId]);
   if (paramDoenetId !== initilizedDoenetId) {
-    return /* @__PURE__ */ React.createElement("div", {
-      style: props.style
-    });
+    return null;
   }
   let attemptNumber = 1;
   let solutionDisplayMode = "button";
@@ -94,9 +92,7 @@ export default function EditorViewer(props) {
       return newObj;
     });
   }
-  return /* @__PURE__ */ React.createElement("div", {
-    style: props.style
-  }, /* @__PURE__ */ React.createElement(DoenetViewer, {
+  return /* @__PURE__ */ React.createElement(DoenetViewer, {
     key: "doenetviewer",
     doenetML: viewerDoenetML,
     flags: {
@@ -114,5 +110,5 @@ export default function EditorViewer(props) {
     allowSaveEvents: false,
     generatedVariantCallback: variantCallback,
     requestedVariant: variantInfo.requestedVariant
-  }));
+  });
 }

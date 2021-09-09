@@ -112,7 +112,8 @@ const assignmentDataQuerry = atom({
     key: "assignmentDataQuerry/Default",
     get: async ({get}) => {
       try {
-        const driveIdPayload = {params: {driveId: get(driveId)}};
+        const driveId2 = get(searchParamAtomFamily("driveId"));
+        const driveIdPayload = {params: {driveId: driveId2}};
         const {data} = await axios.get("/api/loadAssignments.php", driveIdPayload);
         return data;
       } catch (error) {
@@ -141,12 +142,13 @@ const studentDataQuerry = atom({
   default: selector({
     key: "studentDataQuerry/Default",
     get: async ({get}) => {
-      const driveIdPayload = {params: {driveId: get(driveId)}};
+      const driveId2 = get(searchParamAtomFamily("driveId"));
+      const driveIdPayload = {params: {driveId: driveId2}};
       try {
         const {data} = await axios.get("/api/loadGradebookEnrollment.php", driveIdPayload);
         return data;
       } catch (error) {
-        console.log("No students associated with course ID: ", get(driveId), error);
+        console.log("No students associated with course ID: ", get(driveId2), error);
         return {};
       }
     }
@@ -172,7 +174,8 @@ export const studentData = selector({
         lastName,
         courseCredit,
         courseGrade,
-        overrideCourseGrade
+        overrideCourseGrade,
+        role
       };
     }
     return students;
@@ -184,7 +187,8 @@ const overViewDataQuerry = atom({
     key: "overViewDataQuerry/Default",
     get: async ({get}) => {
       try {
-        const driveIdPayload = {params: {driveId: get(driveId)}};
+        const driveId2 = get(searchParamAtomFamily("driveId"));
+        const driveIdPayload = {params: {driveId: driveId2}};
         let {data} = await axios.get("/api/loadGradebookOverview.php", driveIdPayload);
         return data;
       } catch (error) {
@@ -346,7 +350,7 @@ export function Table({columns, data}) {
     ...headerGroup.getHeaderGroupProps()
   }, headerGroup.headers.map((column) => /* @__PURE__ */ React.createElement("th", {
     ...column.getHeaderProps(column.getSortByToggleProps())
-  }, /* @__PURE__ */ React.createElement("p", null, column.render("Header")), /* @__PURE__ */ React.createElement("div", null, column.canFilter ? column.render("Filter") : null), /* @__PURE__ */ React.createElement("span", {
+  }, /* @__PURE__ */ React.createElement("p", null, column.render("Header")), /* @__PURE__ */ React.createElement("div", null, column.canFilter ? column.render("Filter") : null), column.canSort ? /* @__PURE__ */ React.createElement("span", {
     className: "sortIcon"
   }, column.isSorted ? column.isSortedDesc ? /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
     icon: faSortDown
@@ -354,7 +358,7 @@ export function Table({columns, data}) {
     icon: faSortUp
   }) : /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
     icon: faSort
-  }))))))), /* @__PURE__ */ React.createElement("tbody", {
+  })) : null))))), /* @__PURE__ */ React.createElement("tbody", {
     ...getTableBodyProps()
   }, rows.map((row, i) => {
     prepareRow(row);
@@ -438,7 +442,7 @@ function GradebookOverview(props) {
               params: {driveId: driveIdValue, doenetId}
             });
           }
-        }, assignments.contents[doenetId]),
+        }, assignments.contents[doenetId].label),
         accessor: doenetId,
         disableFilters: true
       });
@@ -459,7 +463,10 @@ function GradebookOverview(props) {
   let overView = useRecoilValueLoadable(overViewData);
   if (students.state == "hasValue") {
     for (let userId in students.contents) {
-      let firstName = students.contents[userId].firstName, lastName = students.contents[userId].lastName, credit = students.contents[userId].courseCredit, generatedGrade = students.contents[userId].courseGrade, overrideGrade = students.contents[userId].overrideCourseGrade;
+      let firstName = students.contents[userId].firstName, lastName = students.contents[userId].lastName, credit = students.contents[userId].courseCredit, generatedGrade = students.contents[userId].courseGrade, overrideGrade = students.contents[userId].overrideCourseGrade, role = students.contents[userId].role;
+      if (role !== "Student") {
+        continue;
+      }
       let grade = overrideGrade ? overrideGrade : generatedGrade;
       let row = {};
       row["name"] = firstName + " " + lastName;

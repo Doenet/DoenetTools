@@ -17,6 +17,7 @@ import {
   selectedDriveItemsAtom,
   sortOptions
 } from "./Drive/NewDrive.js";
+import {DateToUTCDateString} from "../_utils/dateUtilityFunction.js";
 const socketManger = atom({
   key: "socketManger",
   default: selector({
@@ -55,7 +56,7 @@ export default function useSockets(nsp) {
   const {acceptAddItem, acceptDeleteItem, acceptMoveItems, acceptRenameItem} = useAcceptBindings();
   const addItem = useRecoilCallback(({snapshot}) => async ({driveIdFolderId, type, label = "Untitled", selectedItemId = null, url = null}) => {
     const dt = new Date();
-    const creationDate = formatDate(dt);
+    const creationDate = DateToUTCDateString(dt);
     const itemId = nanoid();
     const doenetId = nanoid();
     const versionId = nanoid();
@@ -87,20 +88,43 @@ export default function useSockets(nsp) {
         assignedDate: creationDate,
         attemptAggregation: "m",
         dueDate: creationDate,
-        gradeCategory: "l",
-        individualize: false,
-        isAssigned: "1",
+        gradeCategory: "",
+        individualize: true,
+        isAssigned: "0",
         isPublished: "0",
         contentId: "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
         multipleAttempts: true,
-        numberOfAttemptsAllowed: "2",
+        numberOfAttemptsAllowed: "1",
         proctorMakesAvailable: false,
         showCorrectness: true,
         showFeedback: true,
         showHints: true,
         showSolution: true,
-        timeLimit: "60",
-        totalPointsOrPercent: "100",
+        timeLimit: null,
+        totalPointsOrPercent: "10",
+        assignment_isPublished: "0"
+      };
+    }
+    if (type === itemType.COLLECTION) {
+      payload = {
+        ...payload,
+        assignedDate: creationDate,
+        attemptAggregation: "m",
+        dueDate: creationDate,
+        gradeCategory: "",
+        individualize: true,
+        isAssigned: "0",
+        isPublished: "0",
+        contentId: "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        multipleAttempts: false,
+        numberOfAttemptsAllowed: "1",
+        proctorMakesAvailable: false,
+        showCorrectness: true,
+        showFeedback: true,
+        showHints: true,
+        showSolution: true,
+        timeLimit: null,
+        totalPointsOrPercent: "10",
         assignment_isPublished: "0"
       };
     }
@@ -138,18 +162,25 @@ export default function useSockets(nsp) {
   });
   const moveItems = useRecoilCallback(({snapshot, set}) => async ({targetDriveId, targetFolderId, index}) => {
     const globalSelectedNodes = await snapshot.getPromise(globalSelectedNodesAtom);
-    if (globalSelectedNodes.length === 0) {
-      throw "No items selected";
-    }
-    for (let gItem of globalSelectedNodes) {
-      if (gItem.itemId === targetFolderId) {
-        throw "Cannot move folder into itself";
-      }
-    }
     let destinationFolderObj = await snapshot.getPromise(folderDictionary({
       driveId: targetDriveId,
       folderId: targetFolderId
     }));
+    if (globalSelectedNodes.length === 0) {
+      throw "No items selected";
+    }
+    for (let gItem of globalSelectedNodes) {
+      const sourceFolderInfo = await snapshot.getPromise(folderDictionary({
+        driveId: gItem.driveId,
+        folderId: gItem.parentFolderId
+      }));
+      if (gItem.itemId === targetFolderId) {
+        throw "Cannot move folder into itself";
+      } else if (destinationFolderObj.folderInfo.itemType === itemType.COLLECTION && sourceFolderInfo.contentsDictionary[gItem.itemId].itemType !== itemType.DOENETML) {
+        addToast(`Can not ${sourceFolderInfo.contentsDictionary[gItem.itemId].itemType}s into a Collection`, toastType.ERROR);
+        throw `Can not ${sourceFolderInfo.contentsDictionary[gItem.itemId].itemType}s into a Collection`;
+      }
+    }
     let newDestinationFolderObj = JSON.parse(JSON.stringify(destinationFolderObj));
     let editedCache = {};
     let driveIdChanged = [];
@@ -526,7 +557,7 @@ function useAcceptBindings() {
       driveId,
       folderId: parentFolderId
     }), newObj);
-    if (type === "Folder") {
+    if (type === "Folder" || type === "Collection") {
       set(folderDictionary({
         driveId,
         folderId: itemId
@@ -608,7 +639,7 @@ function useAcceptBindings() {
       driveId,
       folderId
     }), newFInfo);
-    if (type === "Folder") {
+    if (type === "Folder" || type === "Collection") {
       set(folderDictionary({
         driveId,
         folderId: itemId

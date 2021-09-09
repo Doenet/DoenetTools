@@ -1,13 +1,14 @@
 import React, {useContext, useEffect, useRef} from "../../_snowpack/pkg/react.js";
 import {
   useRecoilState,
-  useRecoilStateLoadable,
   useRecoilValue,
+  useRecoilValueLoadable,
   useSetRecoilState
 } from "../../_snowpack/pkg/recoil.js";
 import {
   faChevronDown,
   faChevronRight,
+  faCode,
   faLayerGroup
 } from "../../_snowpack/pkg/@fortawesome/free-solid-svg-icons.js";
 import {FontAwesomeIcon} from "../../_snowpack/pkg/@fortawesome/react-fontawesome.js";
@@ -16,7 +17,6 @@ import {DropTargetsContext, WithDropTarget} from "../DropTarget/index.js";
 import useSockets, {itemType} from "../Sockets.js";
 import {useDragShadowCallbacks, useSortFolder} from "./DriveActions.js";
 import {
-  clearDriveAndItemSelections,
   ColumnJSX,
   DoenetML,
   DragShadow,
@@ -28,18 +28,22 @@ import {
   folderOpenSelector,
   folderSortOrderAtom,
   globalSelectedNodesAtom,
-  selectedDriveAtom,
   selectedDriveItemsAtom,
   sortOptions,
   useDnDCallbacks
 } from "./NewDrive.js";
+import {useState} from "../../_snowpack/pkg/react.js";
 function Collection(props) {
   const itemId = props?.item.itemId;
-  const [folderInfoObj, setFolderInfo] = useRecoilStateLoadable(folderInfoSelector({
+  const {folderInfo, contentsDictionary, contentIdsArr} = useRecoilValueLoadable(folderInfoSelector({
     driveId: props.driveId,
     instanceId: props.driveInstanceId,
     folderId: itemId
-  }));
+  })).getValue();
+  const [label, setLabel] = useState(folderInfo?.label);
+  useEffect(() => {
+    setLabel(folderInfo.label);
+  }, [folderInfo.label]);
   const {
     onDragStart,
     onDrag,
@@ -58,7 +62,6 @@ function Collection(props) {
     folderId: props.item?.parentFolderId
   }));
   const parentFolderSortOrderRef = useRef(parentFolderSortOrder);
-  const [selectedDrive, setSelectedDrive] = useRecoilState(selectedDriveAtom);
   const isSelected = useRecoilValue(selectedDriveItemsAtom({
     driveId: props.driveId,
     driveInstanceId: props.driveInstanceId,
@@ -73,7 +76,6 @@ function Collection(props) {
     });
   };
   const globalSelectedNodes = useRecoilValue(globalSelectedNodesAtom);
-  const clearSelections = useSetRecoilState(clearDriveAndItemSelections);
   const isOpen = useRecoilValue(folderOpenAtom({
     driveInstanceId: props.driveInstanceId,
     driveId: props.driveId,
@@ -96,17 +98,27 @@ function Collection(props) {
   let bgcolor = "#ffffff";
   let borderSide = "0px";
   let marginSize = "0";
-  let widthSize = "60vw";
-  if (props.isNav) {
-    marginSize = "0px";
-    widthSize = "224px";
-  }
   if (isSelected) {
     bgcolor = "hsl(209,54%,82%)";
   }
   if (isSelected && dragState.isDragging) {
     bgcolor = "#e2e2e2";
   }
+  let woIndent = 250 - props.indentLevel * indentPx;
+  let columns = `${woIndent}px repeat(4,1fr)`;
+  if (props.numColumns === 4) {
+    columns = `${woIndent}px repeat(3,1fr)`;
+  } else if (props.numColumns === 3) {
+    columns = `${woIndent}px 1fr 1fr`;
+  } else if (props.numColumns === 2) {
+    columns = `${woIndent}px 1fr`;
+  } else if (props.numColumns === 1) {
+    columns = "100%";
+  }
+  let column2 = ColumnJSX(props.columnTypes[0], props.item);
+  let column3 = ColumnJSX(props.columnTypes[1], props.item);
+  let column4 = ColumnJSX(props.columnTypes[2], props.item);
+  let column5 = ColumnJSX(props.columnTypes[3], props.item);
   const isDraggedOver = dropState.activeDropTargetId === itemId && !dragState.draggedItemsId?.has(itemId);
   if (isDraggedOver) {
     bgcolor = "#f0f0f0";
@@ -122,17 +134,6 @@ function Collection(props) {
   useEffect(() => {
     parentFolderSortOrderRef.current = parentFolderSortOrder;
   }, [parentFolderSortOrder]);
-  if (props.isNav && itemId === props.pathItemId) {
-    borderSide = "8px solid #1A5A99";
-  }
-  if (folderInfoObj.state === "loading") {
-    return null;
-  }
-  if (folderInfoObj.state === "hasError") {
-    console.error(folderInfoObj.contents);
-    return null;
-  }
-  let {folderInfo, contentsDictionary, contentIdsArr} = folderInfoObj.contents;
   let openCloseText = isOpen ? /* @__PURE__ */ React.createElement("span", {
     "data-cy": "folderToggleCloseIcon"
   }, /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
@@ -142,23 +143,30 @@ function Collection(props) {
   }, /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
     icon: faChevronRight
   }));
-  let openCloseButton = /* @__PURE__ */ React.createElement("button", {
-    style: {border: "none", backgroundColor: bgcolor, borderRadius: "5px"},
-    "data-doenet-driveinstanceid": props.driveInstanceId,
-    onClick: (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-      toggleOpen();
-      props?.clickCallback?.({
-        driveId: props.driveId,
-        itemId,
-        driveInstanceId: props.driveInstanceId,
-        type: itemType.COLLECTION,
-        instructionType: "one item",
-        parentFolderId: props.item.parentFolderId
-      });
-    }
-  }, openCloseText);
+  let openCloseButton = null;
+  if (!props.isViewOnly) {
+    openCloseButton = /* @__PURE__ */ React.createElement("button", {
+      style: {
+        border: "none",
+        backgroundColor: bgcolor,
+        borderRadius: "5px"
+      },
+      "data-doenet-driveinstanceid": props.driveInstanceId,
+      onClick: (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        toggleOpen();
+        props?.clickCallback?.({
+          driveId: props.driveId,
+          itemId,
+          driveInstanceId: props.driveInstanceId,
+          type: itemType.COLLECTION,
+          instructionType: "one item",
+          parentFolderId: props.item.parentFolderId
+        });
+      }
+    }, openCloseText);
+  }
   const sortHandler = ({sortKey}) => {
     const result = sortFolder({
       driveIdInstanceIdFolderId: {
@@ -168,7 +176,7 @@ function Collection(props) {
       },
       sortKey
     });
-    result.then((resp) => {
+    result.then(() => {
     }).catch((e) => {
       onSortFolderError({errorMessage: e.message});
     });
@@ -217,8 +225,6 @@ function Collection(props) {
     }
   };
   const onDragHover = () => {
-    if (props.isNav)
-      return;
     if (!isOpenRef.current && !isSelectedRef.current) {
       toggleOpen();
       markFolderDraggedOpened();
@@ -234,11 +240,10 @@ function Collection(props) {
   const onDragEndCb = () => {
     onDragEnd();
   };
-  let label = folderInfo?.label;
-  let folder = null;
+  let collection = null;
   let items = null;
   if (!props.driveObj) {
-    folder = /* @__PURE__ */ React.createElement("div", {
+    collection = /* @__PURE__ */ React.createElement("div", {
       role: "button",
       "data-doenet-driveinstanceid": props.driveInstanceId,
       "data-cy": "driveItem",
@@ -259,7 +264,7 @@ function Collection(props) {
         if (e.key === "Enter") {
           props?.doubleClickCallback?.({
             driveId: props.driveId,
-            parentFolderId: itemId,
+            parentFolderId: props.item.parentFolderId,
             item: props.item,
             type: itemType.COLLECTION
           });
@@ -275,7 +280,7 @@ function Collection(props) {
             driveInstanceId: props.driveInstanceId,
             type: itemType.COLLECTION,
             instructionType: "one item",
-            parentFolderId: itemId
+            parentFolderId: props.item.parentFolderId
           });
         } else if (e.shiftKey && !e.metaKey) {
           props?.clickCallback?.({
@@ -284,7 +289,7 @@ function Collection(props) {
             itemId,
             type: itemType.COLLECTION,
             instructionType: "range to item",
-            parentFolderId: itemId
+            parentFolderId: props.item.parentFolderId
           });
         } else if (!e.shiftKey && e.metaKey) {
           props?.clickCallback?.({
@@ -293,7 +298,7 @@ function Collection(props) {
             itemId,
             type: itemType.COLLECTION,
             instructionType: "add item",
-            parentFolderId: itemId
+            parentFolderId: props.item.parentFolderId
           });
         }
       },
@@ -307,33 +312,30 @@ function Collection(props) {
           type: itemType.COLLECTION
         });
       },
-      onBlur: (e) => {
-        if (!props.isNav) {
-        }
+      onBlur: () => {
       }
     }, /* @__PURE__ */ React.createElement("div", {
       className: "noselect",
       style: {
         marginLeft: `${props.indentLevel * indentPx}px`,
         display: "grid",
-        gridTemplateColumns: "1fr",
+        gridTemplateColumns: columns,
         gridTemplateRows: "1fr",
         alignContent: "center"
       }
-    }, /* @__PURE__ */ React.createElement("div", {
+    }, /* @__PURE__ */ React.createElement("p", {
       style: {display: "inline", margin: "0px"}
     }, openCloseButton, /* @__PURE__ */ React.createElement("span", {
       "data-cy": "folderIcon"
     }, /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
-      icon: faLayerGroup
+      icon: props.isViewOnly ? faCode : faLayerGroup
     })), /* @__PURE__ */ React.createElement("span", {
       "data-cy": "folderLabel"
-    }, label))));
+    }, label)), props.numColumns >= 2 ? column2 : null, props.numColumns >= 3 ? column3 : null, props.numColumns >= 4 ? column4 : null, props.numColumns >= 5 ? column5 : null));
   }
   let draggableClassName = "";
-  if (!props.isNav && !props.isViewOnly) {
+  if (!props.isViewOnly) {
     const onDragStartCallback = () => {
-      console.log(globalSelectedNodes.length === 0, !isSelected);
       if (globalSelectedNodes.length === 0 || !isSelected) {
         props?.clickCallback?.({
           instructionType: "clear all",
@@ -349,7 +351,7 @@ function Collection(props) {
         });
       }
     };
-    folder = /* @__PURE__ */ React.createElement(Draggable, {
+    collection = /* @__PURE__ */ React.createElement(Draggable, {
       key: `dnode${props.driveInstanceId}${itemId}`,
       id: itemId,
       className: draggableClassName,
@@ -361,11 +363,11 @@ function Collection(props) {
       }),
       onDrag,
       onDragEnd: onDragEndCb,
-      ghostElement: renderDragGhost(itemId, folder)
-    }, folder);
+      ghostElement: renderDragGhost(itemId, collection)
+    }, collection);
   }
   const dropTargetId = props.driveObj ? props.driveId : itemId;
-  folder = /* @__PURE__ */ React.createElement(WithDropTarget, {
+  collection = /* @__PURE__ */ React.createElement(WithDropTarget, {
     key: `wdtnode${props.driveInstanceId}${itemId}`,
     id: dropTargetId,
     registerDropTarget,
@@ -378,7 +380,7 @@ function Collection(props) {
       },
       onDrop
     }
-  }, folder);
+  }, collection);
   if (isOpen || props.driveObj && !props.rootCollapsible) {
     let dictionary = contentsDictionary;
     items = [];
@@ -399,7 +401,6 @@ function Collection(props) {
             indentLevel: props.indentLevel + 1,
             driveInstanceId: props.driveInstanceId,
             route: props.route,
-            isNav: props.isNav,
             pathItemId: props.pathItemId,
             clickCallback: props.clickCallback,
             doubleClickCallback: props.doubleClickCallback,
@@ -427,6 +428,6 @@ function Collection(props) {
   }
   return /* @__PURE__ */ React.createElement("div", {
     "data-cy": "drive"
-  }, folder, items);
+  }, collection, items);
 }
 export default Collection;

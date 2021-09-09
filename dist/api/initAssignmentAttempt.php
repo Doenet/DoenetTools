@@ -53,7 +53,6 @@ $sql = "SELECT doenetId
     FROM user_assignment
     WHERE userId = '$userId'
     AND doenetId = '$doenetId'
-    AND contentId = '$contentId'
     ";
 $result = $conn->query($sql);
 
@@ -95,7 +94,6 @@ $result = $conn->query($sql);
   FROM user_assignment_attempt
   WHERE userId = '$userId'
   AND doenetId = '$doenetId'
-  AND contentId = '$contentId'
   AND attemptNumber = '$attemptNumber'
   ";
   $result = $conn->query($sql);
@@ -117,7 +115,6 @@ $result = $conn->query($sql);
   SET began=NOW()
   WHERE userId = '$userId'
   AND doenetId = '$doenetId'
-  AND contentId = '$contentId'
   AND attemptNumber = '$attemptNumber'
   ";
   $result = $conn->query($sql);
@@ -131,7 +128,6 @@ $sql = "SELECT userId
         FROM  user_assignment_attempt_item
         WHERE userId = '$userId'
         AND doenetId = '$doenetId'
-        AND contentId = '$contentId'
         AND attemptNumber = '$attemptNumber'
 ";
 

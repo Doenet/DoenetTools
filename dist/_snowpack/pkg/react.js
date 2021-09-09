@@ -13,6 +13,7 @@ var useContext = react.useContext;
 var useEffect = react.useEffect;
 var useLayoutEffect = react.useLayoutEffect;
 var useMemo = react.useMemo;
+var useReducer = react.useReducer;
 var useRef = react.useRef;
 var useState = react.useState;
-export { Component, Suspense, createContext, lazy, useCallback, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState };
+export { Component, Suspense, createContext, lazy, useCallback, useContext, useEffect, useLayoutEffect, useMemo, useReducer, useRef, useState };

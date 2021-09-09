@@ -419,9 +419,9 @@ export function Table({ columns, data }) {
                 <th {...column.getHeaderProps(column.getSortByToggleProps())}>
                     <p>{column.render('Header')}</p>
                     <div>{column.canFilter ? column.render("Filter") : null}</div>
-                    <span className = "sortIcon"> 
+                    {column.canSort ? <span className = "sortIcon"> 
                         {column.isSorted ? (column.isSortedDesc ? <FontAwesomeIcon icon={faSortDown} /> : <FontAwesomeIcon icon={faSortUp} />) : <FontAwesomeIcon icon={faSort} />}
-                    </span>
+                    </span> : null }
                     </th>
                     ))}
             </tr>
@@ -551,14 +551,7 @@ function GradebookOverview(props) {
         }
     }
 
-    overviewTable.headers.push(
-        {
-            Header: "Weighted Credt",
-            accessor: "weight",
-            disableFilters: true
-            
-        }
-    )
+   
     overviewTable.headers.push(
         {
             Header: "Grade",
@@ -579,7 +572,7 @@ function GradebookOverview(props) {
             
             let firstName = students.contents[userId].firstName,
                 lastName = students.contents[userId].lastName,
-                credit = students.contents[userId].courseCredit,
+                // credit = students.contents[userId].courseCredit,
                 generatedGrade = students.contents[userId].courseGrade,
                 overrideGrade = students.contents[userId].overrideCourseGrade,
                 role = students.contents[userId].role;
@@ -594,15 +587,14 @@ function GradebookOverview(props) {
             row["name"] = firstName + " " + lastName
             
             if(overView.state == 'hasValue' && assignments.state == 'hasValue'){
-                console.log(">>>>doenetId")
 
                 for (let doenetId in assignments.contents) {
-                    console.log(">>>>doenetId",doenetId)
-                    row[doenetId] = (overView.contents[userId].assignments[doenetId]) * 100 + "%"
+                    // row[doenetId] = (overView.contents[userId].assignments[doenetId]) * 100 + "%"
+                    row[doenetId] = Math.round((overView.contents[userId].assignments[doenetId]) * 10000) / 100 + "%" 
                 }
             }
 
-            row["weight"] = credit
+            // row["weight"] = credit
             row["grade"] = grade
 
             
