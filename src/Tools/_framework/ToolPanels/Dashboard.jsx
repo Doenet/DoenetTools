@@ -3,6 +3,7 @@ import { useRecoilValue, useSetRecoilState, useRecoilValueLoadable } from 'recoi
 import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
 import ButtonGroup from '../../../_reactComponents/PanelHeaderComponents/ButtonGroup';
 import { pageToolViewAtom, searchParamAtomFamily, profileAtom } from '../NewToolRoot';
+import Next7Days from '../Widgets/Next7Days';
 
 export default function Dashboard(props) {
   const setPageToolView = useSetRecoilState(pageToolViewAtom);
@@ -69,11 +70,8 @@ export default function Dashboard(props) {
         
         </ButtonGroup>
       </div>
-      <div style={{border: '2px solid black', borderRadius: '5px', marginTop: '10px', height: '560px', margin: '10px'}}>
-        <p 
-        style={{marginLeft: '18px'}}
-        // style={{position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', }}
-        >More coming soon!</p>
+      <div style={{ marginTop: '10px', margin: '10px'}}>
+      <Next7Days driveId={driveId}/>
       </div>
     </div>
   );
