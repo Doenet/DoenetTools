@@ -224,7 +224,7 @@ export default function Next7Days({ driveId }) {
       <DropTargetsProvider>
         <Suspense fallback={<div>loading Drive...</div>}>
           <Container>
-            <h2>The Next Seven Days</h2>
+            <h2>Due in the Next Seven Days</h2>
             <DriveHeader
             columnTypes={columnTypes}
             numColumns={numColumns}
