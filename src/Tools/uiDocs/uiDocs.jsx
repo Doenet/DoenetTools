@@ -22,6 +22,8 @@ import { faCode } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Increment from '../../_reactComponents/PanelHeaderComponents/IncrementMenu.jsx';
 import DropdownMenu from '../../_reactComponents/PanelHeaderComponents/DropdownMenu.jsx';
+import DateTime from '../../_reactComponents/PanelHeaderComponents/DateTime.jsx'
+
 
 
 // === HOW TO ADD TO UI DOCS ===
@@ -207,6 +209,41 @@ export default function attempt() {
         // propPreview: '<ActionButtonGroup width="500px" />',
         // propCode: {width: '500px'},
         // description: 'Sets width to custom dimensions'},
+      ]
+    },
+    {
+      name: 'DateTime',
+      id: 'datetime', 
+      code: DateTime,
+      codePreview: '<DateTime/>',
+      req_props: null,
+      req_children: null,
+      use: 'Allows user to pick date and time',
+      props: [
+          {name: 'showArrowButtons',
+          propPreview: '<DateTime showArrowButtons={true}/>',
+          propCode: {showArrowButtons: 'true'},
+          description: 'arrow buttons for time - true/false only'},
+          {name: 'Precision',
+          propPreview: '<DateTime precision={second}/>',
+          propCode: {precision: 'second'},
+          description: 'precision of time picker - minute/second only'},
+          {name: 'Date',
+          propPreview: '<DateTime date=false/>',
+          propCode: {date: false},
+          description: 'want calendar or not - true/false only'},
+          {name: 'Time',
+          propPreview: '<DateTime time=false/>',
+          propCode: {time: false},
+          description: 'want time selector or not - true/false only'},
+          {name: 'Disabled',
+          propPreview: '<DateTime disabled=true />',
+          propCode: {disabled: true},
+          description: 'disables component'},
+          {name: 'callBack',
+          propPreview: '<DateTime callBack={(( newDate ) => console.log(">>>", newDate)} />',
+          propCode: {callBack: ( newDate ) => console.log(">>>", newDate)},
+          description: 'Function called when data changes'},
       ]
     },
     {
