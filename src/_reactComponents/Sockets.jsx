@@ -1132,10 +1132,20 @@ function useAcceptBindings() {
         // Rename in folder
         let newFInfo = { ...fInfo };
         newFInfo['contentsDictionary'] = { ...fInfo.contentsDictionary };
+        newFInfo['contentsDictionaryByDoenetId'] = {
+          ...fInfo.contentsDictionaryByDoenetId,
+        };
+
         newFInfo['contentsDictionary'][itemId] = {
           ...fInfo.contentsDictionary[itemId],
         };
         newFInfo['contentsDictionary'][itemId].label = label;
+
+        newFInfo['contentsDictionaryByDoenetId'][
+          newFInfo['contentsDictionary'][itemId].doenetId
+        ] = {
+          ...fInfo.contentsDictionary[itemId],
+        };
         newFInfo['contentsDictionaryByDoenetId'][
           newFInfo['contentsDictionary'][itemId].doenetId
         ].label = label;
