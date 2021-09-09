@@ -123,7 +123,7 @@ export default function AssignmentViewer() {
             const { data } = await axios.get('/api/checkSEBheaders.php', {
               params: { doenetId },
             });
-            console.log('>>>>data', data);
+            // console.log('>>>>data', data);
             if (data.legitAccessKey !== '1') {
               setStage('Problem');
               setMessage('Browser not configured properly to take an exam.');
