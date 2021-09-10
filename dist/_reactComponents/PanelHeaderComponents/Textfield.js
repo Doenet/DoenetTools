@@ -34,9 +34,11 @@ export default function Textfield(props) {
   if (props.label) {
     label.value = props.label;
   }
+  var disable = "";
   if (props.disabled) {
     textfield.border = "2px solid #e2e2e2";
     textfield.cursor = "not-allowed";
+    disable = "disabled";
   }
   if (props.value) {
     textfield.value = props.value;
@@ -63,6 +65,7 @@ export default function Textfield(props) {
     style: textfield,
     onChange: (e) => {
       handleChange(e);
-    }
+    },
+    disabled: disable
   })));
 }

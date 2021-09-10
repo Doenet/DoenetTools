@@ -5,10 +5,10 @@ import {searchParamAtomFamily} from "../NewToolRoot.js";
 import {folderDictionary} from "../../_reactComponents/Drive/NewDrive.js";
 export default function EditorBreadCrumb() {
   const path = useRecoilValue(searchParamAtomFamily("path"));
-  let [driveId, folderId] = path.split(":");
+  let [driveId, folderId, itemId] = path.split(":");
   const doenetId = useRecoilValue(searchParamAtomFamily("doenetId"));
   let folderInfo = useRecoilValue(folderDictionary({driveId, folderId}));
-  const docInfo = folderInfo.contentsDictionaryByDoenetId[doenetId];
+  const docInfo = folderInfo.contentsDictionary[itemId];
   if (!docInfo) {
     return null;
   }

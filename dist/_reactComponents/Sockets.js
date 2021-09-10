@@ -85,9 +85,9 @@ export default function useSockets(nsp) {
     if (type === "DoenetML") {
       payload = {
         ...payload,
-        assignedDate: creationDate,
+        assignedDate: null,
         attemptAggregation: "m",
-        dueDate: creationDate,
+        dueDate: null,
         gradeCategory: "",
         individualize: true,
         isAssigned: "0",
@@ -108,9 +108,9 @@ export default function useSockets(nsp) {
     if (type === itemType.COLLECTION) {
       payload = {
         ...payload,
-        assignedDate: creationDate,
+        assignedDate: null,
         attemptAggregation: "m",
-        dueDate: creationDate,
+        dueDate: null,
         gradeCategory: "",
         individualize: true,
         isAssigned: "0",
@@ -206,6 +206,8 @@ export default function useSockets(nsp) {
         newDestinationFolderObj["contentsDictionary"][gItem.itemId] = {
           ...newSourceFInfo["contentsDictionary"][gItem.itemId]
         };
+        newDestinationFolderObj["contentsDictionaryByDoenetId"][newSourceFInfo["contentsDictionary"][gItem.itemId].doenetId] = {...newSourceFInfo["contentsDictionary"][gItem.itemId]};
+        delete newSourceFInfo["contentsDictionaryByDoenetId"][newSourceFInfo["contentsDictionary"][gItem.itemId].doenetId];
         delete newSourceFInfo["contentsDictionary"][gItem.itemId];
         if (!editedCache[gItem.driveId])
           editedCache[gItem.driveId] = {};
@@ -553,6 +555,7 @@ function useAcceptBindings() {
     newDefaultOrder.splice(index + 1, 0, itemId);
     newObj.contentIds[sortOptions.DEFAULT] = newDefaultOrder;
     newObj.contentsDictionary[itemId] = newItem;
+    newObj.contentsDictionaryByDoenetId[doenetId] = newItem;
     set(folderDictionary({
       driveId,
       folderId: parentFolderId
@@ -590,6 +593,10 @@ function useAcceptBindings() {
     }
     let newFInfo = {...fInfo};
     newFInfo["contentsDictionary"] = {...fInfo.contentsDictionary};
+    newFInfo["contentsDictionaryByDoenetId"] = {
+      ...fInfo.contentsDictionaryByDoenetId
+    };
+    delete newFInfo["contentsDictionaryByDoenetId"][newFInfo["contentsDictionary"][itemId].doenetId];
     delete newFInfo["contentsDictionary"][itemId];
     newFInfo.folderInfo = {...fInfo.folderInfo};
     newFInfo.contentIds = {};
@@ -631,10 +638,17 @@ function useAcceptBindings() {
     const fInfo = await snapshot.getPromise(folderDictionary({driveId, folderId}));
     let newFInfo = {...fInfo};
     newFInfo["contentsDictionary"] = {...fInfo.contentsDictionary};
+    newFInfo["contentsDictionaryByDoenetId"] = {
+      ...fInfo.contentsDictionaryByDoenetId
+    };
     newFInfo["contentsDictionary"][itemId] = {
       ...fInfo.contentsDictionary[itemId]
     };
     newFInfo["contentsDictionary"][itemId].label = label;
+    newFInfo["contentsDictionaryByDoenetId"][newFInfo["contentsDictionary"][itemId].doenetId] = {
+      ...fInfo.contentsDictionary[itemId]
+    };
+    newFInfo["contentsDictionaryByDoenetId"][newFInfo["contentsDictionary"][itemId].doenetId].label = label;
     set(folderDictionary({
       driveId,
       folderId

@@ -28,7 +28,7 @@ const DropdownMenu = (props) => {
         width: state.selectProps.width,
         borderWidth: "2px",
         borderStyle: "solid",
-        borderColor: "black",
+        borderColor: state.isDisabled ? "#e2e2e2" : "black",
         borderRadius: "5px",
         position: "relative",
         transition: "all 100ms",
@@ -56,7 +56,8 @@ const DropdownMenu = (props) => {
     options,
     placeholder: props.title,
     closeMenuOnSelect: true,
-    isMulti: props.isMulti ? props.isMulti : false
+    isMulti: props.isMulti ? props.isMulti : false,
+    isDisabled: props.disabled ? true : false
   });
 };
 export default DropdownMenu;

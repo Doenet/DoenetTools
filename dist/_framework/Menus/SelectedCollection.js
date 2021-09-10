@@ -20,24 +20,21 @@ export default function SelectedCollection() {
   const setSelectedMenu = useSetRecoilState(selectedMenuPanelAtom);
   const selection = useRecoilValueLoadable(selectedInformation).getValue();
   const [item, setItem] = useState(selection[0]);
-  const [label, setLabel] = useState(selection[0]?.label ?? "");
+  const [label, setLabel] = useState(item?.label ?? "");
   const {deleteItem, renameItem} = useSockets("drive");
   useEffect(() => {
-    setLabel(item.label);
-  }, [item.label]);
-  useEffect(() => {
-    if (!selection[0]) {
-      setSelectedMenu("");
-    } else {
-      setItem(selection[0]);
+    if (selection[0]) {
       setLabel(selection[0]?.label);
+      setItem(selection[0]);
+    } else {
+      setSelectedMenu("");
     }
   }, [selection, setSelectedMenu]);
   const renameItemCallback = (newLabel) => {
     renameItem({
       driveIdFolderId: {
         driveId: item.driveId,
-        folderId: item.itemId
+        folderId: item.parentFolderId
       },
       itemId: item.itemId,
       itemType: item.itemType,
@@ -49,7 +46,7 @@ export default function SelectedCollection() {
       "data-cy": "infoPanelItemLabel"
     }, /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
       icon: faCode
-    }), " ", item?.label), /* @__PURE__ */ React.createElement(ActionButton, {
+    }), " ", item.label), /* @__PURE__ */ React.createElement(ActionButton, {
       width: "menu",
       value: "Take Assignment",
       onClick: () => {
@@ -71,7 +68,7 @@ export default function SelectedCollection() {
     "data-cy": "infoPanelItemLabel"
   }, /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
     icon: faLayerGroup
-  }), " ", item?.label), /* @__PURE__ */ React.createElement(ActionButtonGroup, {
+  }), " ", item.label), /* @__PURE__ */ React.createElement(ActionButtonGroup, {
     vertical: true
   }, /* @__PURE__ */ React.createElement(ActionButton, {
     value: "Edit Collection",
@@ -79,7 +76,7 @@ export default function SelectedCollection() {
     onClick: () => {
       setPageToolView({
         page: "course",
-        tool: "editor",
+        tool: "collection",
         view: "",
         params: {
           doenetId: item.doenetId,

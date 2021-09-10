@@ -39,6 +39,8 @@ $showHints = mysqli_real_escape_string($conn,$_POST["showHints"]);
 $showCorrectness = mysqli_real_escape_string($conn,$_POST["showCorrectness"]);
 $proctorMakesAvailable = mysqli_real_escape_string($conn,$_POST["proctorMakesAvailable"]);
 if ($timeLimit == ''){$timeLimit = 'NULL';} else {$timeLimit = "'$timeLimit'"; }
+if ($dueDate == ''){$dueDate = 'NULL';} else {$dueDate = "'$dueDate'"; }
+if ($assignedDate == ''){$assignedDate = 'NULL';} else {$assignedDate = "'$assignedDate'"; }
 if ($individualize){ $individualize = '1'; } else { $individualize = '0'; }
 if ($multipleAttempts){ $multipleAttempts = '1'; } else { $multipleAttempts = '0'; }
 if ($showSolution){ $showSolution = '1'; } else { $showSolution = '0'; }
@@ -184,8 +186,8 @@ if ($success) {
             '$doenetId',
             '$contentId',
             '$driveId',
-            '$assignedDate',
-            '$dueDate',
+            $assignedDate,
+            $dueDate,
             $timeLimit,
             '$numberOfAttemptsAllowed',
             '$attemptAggregation',
@@ -259,8 +261,8 @@ if ($success) {
                 '$doenetId',
                 '$contentId',
                 '$driveId',
-                '$assignedDate',
-                '$dueDate',
+                $assignedDate,
+                $dueDate,
                 $timeLimit,
                 '$numberOfAttemptsAllowed',
                 '$attemptAggregation',

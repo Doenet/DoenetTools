@@ -132,6 +132,7 @@ for($i = 0; $i < count($mergeEmail); $i++){
 		JOIN drive_user AS du
 		ON du.userId = u.userId
 		WHERE u.email = '$email'
+		AND du.driveId = '$driveId'
 		";
 		$result = $conn->query($sql);
 
