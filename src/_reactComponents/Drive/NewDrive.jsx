@@ -71,12 +71,17 @@ const loadAssignmentAtomFamily = atomFamily({
       });
 
       let assignment = { ...data.assignment };
-      assignment.assignedDate = new Date(
-        `${data.assignment?.assignedDate} UTC`,
-      ).toLocaleString();
-      assignment.dueDate = new Date(
-        `${data.assignment?.dueDate} UTC`,
-      ).toLocaleString();
+
+      if (assignment.assignedDate !== null){
+        assignment.assignedDate = new Date(
+          `${data.assignment?.assignedDate} UTC`,
+        ).toLocaleString();
+      }
+      if (assignment.dueDate !== null){
+        assignment.dueDate = new Date(
+          `${data.assignment?.dueDate} UTC`,
+        ).toLocaleString();
+      }
       return assignment;
     },
   }),

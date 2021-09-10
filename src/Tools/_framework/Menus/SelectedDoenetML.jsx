@@ -331,10 +331,18 @@ export function AssignmentSettings({ role, doenetId }) {
         set(loadAssignmentSelector(doenetId), newAInfo);
         let dbAInfo = { ...newAInfo };
 
-        dbAInfo.assignedDate = DateToUTCDateString(
-          new Date(dbAInfo.assignedDate),
-        );
-        dbAInfo.dueDate = DateToUTCDateString(new Date(dbAInfo.dueDate));
+     
+        if (dbAInfo.assignedDate !== null){
+          dbAInfo.assignedDate = DateToUTCDateString(
+            new Date(dbAInfo.assignedDate),
+          );
+        }
+        
+        if (dbAInfo.dueDate !== null){
+          dbAInfo.dueDate = DateToUTCDateString(
+            new Date(dbAInfo.dueDate)
+          );
+        }
 
         const resp = await axios.post(
           '/api/saveAssignmentToDraft.php',
@@ -392,35 +400,62 @@ export function AssignmentSettings({ role, doenetId }) {
     if (nAttemptsAllowed === null) {
       nAttemptsAllowed = 'unlimited';
     }
-    if (aInfo?.timeLimit === null) {
-      return (
-        <>
-          <div>
-            <p>Assigned: {aInfo?.assignedDate}</p>
-            <p>Due: {aInfo?.dueDate}</p>
-            <p>Attempts Allowed: {nAttemptsAllowed}</p>
-            <p>Points: {aInfo?.totalPointsOrPercent}</p>
-          </div>
-        </>
-      );
-    } else {
-      return (
-        <>
-          <div>
-            <p>Assigned: {aInfo?.assignedDate}</p>
-            <p>Due: {aInfo?.dueDate}</p>
-            <p>Time Limit: {aInfo?.timeLimit} minutes</p>
-            <p>Attempts Allowed: {nAttemptsAllowed}</p>
-            <p>Points: {aInfo?.totalPointsOrPercent}</p>
-          </div>
-        </>
-      );
+    let timeLimitJSX = null;
+    if (aInfo?.timeLimit !== null){
+      timeLimitJSX = <p>Time Limit: {aInfo?.timeLimit} minutes</p>
     }
+    let assignedDateJSX = null;
+    if (aInfo?.assignedDate !== null){
+      assignedDateJSX = <p>Assigned: {aInfo?.assignedDate}</p>
+    }
+    let dueDateJSX = <p>No Due Date</p>
+    if (aInfo?.dueDate !== null){
+      dueDateJSX = <p>Due: {aInfo?.dueDate}</p>
+    }
+    return (
+      <>
+        <div>
+          {assignedDateJSX}
+          {dueDateJSX}
+          {timeLimitJSX}
+          <p>Attempts Allowed: {nAttemptsAllowed}</p>
+          <p>Points: {aInfo?.totalPointsOrPercent}</p>
+        </div>
+      </>
+    );
+  
   }
 
   //Instructor JSX
   return (
     <>
+    <div>
+        <label>
+        Limit Assigned
+          <Switch
+            onChange={(e) => {
+              let valueDescription = 'Always';
+              let value = null;
+              if (e.currentTarget.checked) {
+
+                valueDescription = 'Now';
+                let utc = DateToUTCDateString(new Date());
+                value = new Date(`${utc} UTC`).toLocaleString();
+              }
+
+              updateAssignment({
+                doenetId,
+                keyToUpdate: 'assignedDate',
+                value,
+                description: 'Assigned ',
+                valueDescription,
+              });
+            }}
+            checked={aInfo.assignedDate !== null}
+          ></Switch>
+        </label>
+      </div>
+      {aInfo.assignedDate !== null ? 
       <div>
         <label>
           Assigned Date
@@ -454,7 +489,36 @@ export function AssignmentSettings({ role, doenetId }) {
           />
         </label>
       </div>
+      : null }
+       <div>
+        <label>
+        Has Due Date
+          <Switch
+            onChange={(e) => {
+              let valueDescription = 'None';
+              let value = null;
+              if (e.currentTarget.checked) {
 
+                valueDescription = 'Next Week';
+                let tomorrow = new Date();
+                tomorrow.setDate(tomorrow.getDate() + 7); //Default due seven days in the future
+                let utc = DateToUTCDateString(tomorrow);
+                value = new Date(`${utc} UTC`).toLocaleString();
+              }
+
+              updateAssignment({
+                doenetId,
+                keyToUpdate: 'dueDate',
+                value,
+                description: 'Due Date ',
+                valueDescription,
+              });
+            }}
+            checked={aInfo.dueDate !== null}
+          ></Switch>
+        </label>
+      </div>
+      {aInfo.dueDate !== null ? 
       <div>
         <label>
           Due Date
@@ -488,19 +552,8 @@ export function AssignmentSettings({ role, doenetId }) {
             }}
           />
         </label>
-      </div>
-      {/* <div>
-<label>Time Limit
-<input
-  required
-  type="number"
-  name="timeLimit"
-  value={timeLimit}
-  // onBlur={}
-  // onChange={}
-/>
-</label>
-</div> */}
+      </div> : null}
+
       <div>
         <label>
           Time Limit

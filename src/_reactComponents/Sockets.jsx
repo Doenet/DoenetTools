@@ -147,9 +147,9 @@ export default function useSockets(nsp) {
       if (type === 'DoenetML') {
         payload = {
           ...payload,
-          assignedDate: creationDate, //TODO: make null
+          assignedDate: null, 
           attemptAggregation: 'm',
-          dueDate: creationDate, //TODO: make null
+          dueDate: null, 
           gradeCategory: '',
           individualize: true,
           isAssigned: '0',
@@ -172,9 +172,9 @@ export default function useSockets(nsp) {
       if (type === itemType.COLLECTION) {
         payload = {
           ...payload,
-          assignedDate: creationDate,
+          assignedDate: null,
           attemptAggregation: 'm',
-          dueDate: creationDate,
+          dueDate: null,
           gradeCategory: '',
           individualize: true,
           isAssigned: '0',
