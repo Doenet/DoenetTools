@@ -21,7 +21,8 @@ export default function TimerMenu() {
       for (let [i, attemptNumber] of Object.entries(data.attemptNumbers)) {
         if (attemptNumber == userAttemptNumber) {
           if (data.starts[i] !== null) {
-            startDT = new Date(`${data.starts[i]} UTC`);
+            let t = data.starts[i].split(/[- :]/);
+            startDT = new Date(Date.UTC(t[0], t[1] - 1, t[2], t[3], t[4], t[5]));
           }
         }
       }

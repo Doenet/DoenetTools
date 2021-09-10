@@ -49,11 +49,13 @@ export default function Searchbar(props) {
     fontSize: "12px",
     overflow: "hidden"
   };
+  var disable = "";
   if (props.disabled) {
     submitButton.backgroundColor = "#e2e2e2";
     submitButton.color = "black";
     submitButton.cursor = "not-allowed";
     searchBar.cursor = "not-allowed";
+    disable = "disabled";
   }
   if (props.width) {
     if (props.width === "menu") {
@@ -90,7 +92,8 @@ export default function Searchbar(props) {
     style: searchBar,
     onKeyUp: () => {
       changeSearchTerm();
-    }
+    },
+    disabled: disable
   }), /* @__PURE__ */ React.createElement("div", {
     style: {padding: "3px", display: "inline"}
   }), /* @__PURE__ */ React.createElement("button", {

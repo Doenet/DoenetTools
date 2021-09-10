@@ -22,6 +22,12 @@ export default class BooleanBaseOperatorOfMath extends BooleanComponent {
     delete stateVariableDefinitions.parsedExpression;
     delete stateVariableDefinitions.mathChildrenByCode;
 
+    stateVariableDefinitions.booleanOperator = {
+      returnDependencies: () => ({}),
+      definition: () => ({ newValues: { booleanOperator: x => false } })
+    }
+
+
     let constructor = this;
 
     stateVariableDefinitions.value = {
@@ -33,12 +39,16 @@ export default class BooleanBaseOperatorOfMath extends BooleanComponent {
           dependencyType: "child",
           childGroups: ["maths"],
           variableNames: ["value"]
+        },
+        booleanOperator: {
+          dependencyType: "stateVariable",
+          variableName: "booleanOperator"
         }
       }),
       definition: function ({ dependencyValues }) {
         return {
           newValues: {
-            value: constructor.applyBooleanOperator(
+            value: dependencyValues.booleanOperator(
               dependencyValues.mathChildren
                 .map(x => x.stateValues.value)
             )
