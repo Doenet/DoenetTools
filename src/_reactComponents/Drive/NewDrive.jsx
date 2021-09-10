@@ -69,17 +69,22 @@ const loadAssignmentAtomFamily = atomFamily({
       const { data } = await axios.get('/api/getAllAssignmentSettings.php', {
         params: payload,
       });
-
       let assignment = { ...data.assignment };
 
       if (assignment.assignedDate !== null){
+        // Split timestamp into [ Y, M, D, h, m, s ]
+        let t = data.assignment.assignedDate.split(/[- :]/);
+        // Apply each element to the Date function
         assignment.assignedDate = new Date(
-          `${data.assignment?.assignedDate} UTC`,
+          Date.UTC(t[0], t[1]-1, t[2], t[3], t[4], t[5])
         ).toLocaleString();
       }
       if (assignment.dueDate !== null){
+        // Split timestamp into [ Y, M, D, h, m, s ]
+        let t = data.assignment.dueDate.split(/[- :]/);
+        // Apply each element to the Date function
         assignment.dueDate = new Date(
-          `${data.assignment?.dueDate} UTC`,
+          Date.UTC(t[0], t[1]-1, t[2], t[3], t[4], t[5])
         ).toLocaleString();
       }
       return assignment;
