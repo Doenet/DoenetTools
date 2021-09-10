@@ -36,7 +36,7 @@
     "@fortawesome/react-fontawesome": "^0.1.15",
     "@handsontable/react": "^9.0.2",
     "@react-spring/web": "^9.2.4",
-    "axios": "^0.21.1",
+    "axios": "^0.21.2",
     "compromise": "^13.11.3",
     "compromise-numbers": "^1.4.0",
     "cookie": "^0.4.1",
