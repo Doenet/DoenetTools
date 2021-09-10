@@ -439,8 +439,7 @@ export function AssignmentSettings({ role, doenetId }) {
               if (e.currentTarget.checked) {
 
                 valueDescription = 'Now';
-                let utc = DateToUTCDateString(new Date());
-                value = new Date(`${utc} UTC`).toLocaleString();
+                value = new Date().toLocaleString();
               }
 
               updateAssignment({
@@ -500,10 +499,9 @@ export function AssignmentSettings({ role, doenetId }) {
               if (e.currentTarget.checked) {
 
                 valueDescription = 'Next Week';
-                let tomorrow = new Date();
-                tomorrow.setDate(tomorrow.getDate() + 7); //Default due seven days in the future
-                let utc = DateToUTCDateString(tomorrow);
-                value = new Date(`${utc} UTC`).toLocaleString();
+                let nextWeek = new Date();
+                nextWeek.setDate(nextWeek.getDate() + 7); //Default due seven days in the future
+                value = nextWeek.toLocaleString();
               }
 
               updateAssignment({
