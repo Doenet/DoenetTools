@@ -154,13 +154,16 @@ if ($result->num_rows < 1){
   if($dueDateOverride) {
     $dueDate = $dueDateOverride;
   }
-  $dueDate_seconds = strtotime($dueDate);
-  $now_seconds = strtotime($row['now']);
-  $dueDate_diff = $now_seconds - $dueDate_seconds;
-  // give one minute buffer on due date
-  if($dueDate_seconds < $now_seconds) {
-    $pastDueDate = TRUE;
-    $valid = 0;
+  //If null then it's never past due
+  if ($dueDate){
+    $dueDate_seconds = strtotime($dueDate);
+    $now_seconds = strtotime($row['now']);
+    $dueDate_diff = $now_seconds - $dueDate_seconds;
+    // give one minute buffer on due date
+    if($dueDate_seconds < $now_seconds) {
+      $pastDueDate = TRUE;
+      $valid = 0;
+    }
   }
 
 } 
