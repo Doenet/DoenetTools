@@ -57,6 +57,7 @@ ON a.doenetId = dc.doenetId
 WHERE dc.driveId = '$driveId'
 AND dc.isReleased = '1'
 AND a.dueDate < DATE_ADD(NOW(), INTERVAL 7 DAY)
+AND a.dueDate > NOW()
 ORDER BY a.dueDate ASC
 ";
 //AND a.assignedDate < NOW()
