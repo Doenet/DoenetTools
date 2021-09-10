@@ -94,7 +94,7 @@ export default function ChooseLearnerPanel(props) {
   if (stage === 'check code'){
     const checkCode = async (code)=>{
       let { data } = await axios.get('/api/checkPasscode.php',{params:{code,doenetId,driveId}})
-      console.log(">>>>data",data)
+      // console.log(">>>>data",data)
       if (data.success){
         if (driveId === ''){
           setStage('choose learner');

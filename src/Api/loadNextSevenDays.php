@@ -56,10 +56,10 @@ LEFT JOIN assignment AS a
 ON a.doenetId = dc.doenetId
 WHERE dc.driveId = '$driveId'
 AND dc.isReleased = '1'
-AND a.assignedDate < NOW()
 AND a.dueDate < DATE_ADD(NOW(), INTERVAL 7 DAY)
 ORDER BY a.dueDate ASC
 ";
+//AND a.assignedDate < NOW()
 
 $result = $conn->query($sql); 
 $assignments = [];
