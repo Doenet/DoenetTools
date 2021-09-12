@@ -830,7 +830,7 @@ describe('SelectRandomNumbers Tag Tests', function () {
     })
   });
 
-  it.skip("selected number doesn't change dynamically", () => {
+  it("selected number doesn't change dynamically", () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
