@@ -77,7 +77,19 @@ export class Paginator extends Template {
               if (Number.isFinite(nPagesPerOption)) {
                 let numberToSelect = 1;
                 if (child.attributes && child.attributes.numberToSelect) {
-                  numberToSelect = child.attributes.numberToSelect.primitive
+                  let ntsComp = child.attributes.numberToSelect.component;
+                  if(ntsComp.children) {
+                    // look for a string child
+                    for(let child of ntsComp.children) {
+                      if(child.componentType === "string") {
+                        let n = Number(child.state.value);
+                        if(Number.isFinite(n)) {
+                          numberToSelect = Math.round(n);
+                          break;
+                        }
+                      }
+                    }
+                  }
                 }
                 n += nPagesPerOption * numberToSelect;
               }

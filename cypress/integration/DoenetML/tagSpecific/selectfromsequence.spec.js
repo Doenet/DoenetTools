@@ -567,7 +567,7 @@ describe('SelectFromSequence Tag Tests', function () {
     })
   });
 
-  it.skip('select five (number initially unresolved) even numbers with replacement from -4 to 4, excluding 0', () => {
+  it('select five (number initially unresolved) even numbers with replacement from -4 to 4, excluding 0', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
@@ -677,7 +677,7 @@ describe('SelectFromSequence Tag Tests', function () {
     })
   });
 
-  it.skip("select doesn't change dynamically", () => {
+  it("select doesn't change dynamically", () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
