@@ -46,6 +46,17 @@ export default class Curve extends GraphicalComponent {
     attributes.showLabel.propagateToDescendants = true;
     attributes.layer.propagateToDescendants = true;
 
+    attributes.labelPosition = {
+      createComponentOfType: "text",
+      createStateVariable: "labelPosition",
+      defaultValue: "upperright",
+      public: true,
+      forRenderer: true,
+      toLowerCase: true,
+      validValues: ["upperright", "upperleft", "lowerright", "lowerleft", "top", "bottom", "left", "right"],
+      propagateToDescendants: true,
+    }
+
     attributes.flipFunction = {
       createComponentOfType: "boolean",
       createStateVariable: "flipFunction",

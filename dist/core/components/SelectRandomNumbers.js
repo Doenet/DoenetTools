@@ -17,7 +17,7 @@ export default class SelectRandomNumbers extends SampleRandomNumbers {
       createPrimitiveOfType: "number"
     }
     attributes.numberToSelect = {
-      createPrimitiveOfType: "number",
+      createComponentOfType: "integer",
       createStateVariable: "numberToSelect",
       defaultValue: 1,
       public: true,

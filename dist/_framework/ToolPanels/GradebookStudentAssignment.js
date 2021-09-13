@@ -10,6 +10,7 @@ import DoenetViewer, {
   serializedComponentsReviver
 } from "../../viewer/DoenetViewer.js";
 import axios from "../../_snowpack/pkg/axios.js";
+import {currentAttemptNumber} from "./AssignmentViewer.js";
 const getUserId = (students, name) => {
   for (let userId in students) {
     if (students[userId].firstName + " " + students[userId].lastName == name) {
@@ -23,6 +24,7 @@ export default function GradebookStudentAssignmentView(props) {
   let userId = useRecoilValue(searchParamAtomFamily("userId"));
   let attempts = useRecoilValueLoadable(attemptData(doenetId));
   let students = useRecoilValueLoadable(studentData);
+  const setRecoilAttemptNumber = useSetRecoilState(currentAttemptNumber);
   const attemptsObj = attempts?.contents?.[userId]?.attempts;
   let [attemptNumber, setAttemptNumber] = useState(null);
   let [attemptsInfo, setAttemptsInfo] = useState(null);
@@ -31,8 +33,9 @@ export default function GradebookStudentAssignmentView(props) {
   useEffect(() => {
     if (attemptsObj) {
       setAttemptNumber(Object.keys(attemptsObj).length);
+      setRecoilAttemptNumber(Object.keys(attemptsObj).length);
     }
-  }, [attemptsObj, setAttemptNumber]);
+  }, [attemptsObj, setAttemptNumber, setRecoilAttemptNumber]);
   if (!doenetId || !userId) {
     return null;
   }
@@ -83,6 +86,7 @@ export default function GradebookStudentAssignmentView(props) {
       Cell: (row) => /* @__PURE__ */ React.createElement("a", {
         onClick: (e) => {
           setAttemptNumber(i);
+          setRecoilAttemptNumber(i);
         }
       }, " ", row.value, " ")
     });
@@ -101,9 +105,9 @@ export default function GradebookStudentAssignmentView(props) {
     if (attempts.state == "hasValue") {
       for (let i = 1; i <= maxAttempts; i++) {
         let attemptCredit = attempts.contents[userId].attempts[i];
-        row["a" + i] = attemptCredit ? attemptCredit * 100 + "%" : "";
+        row["a" + i] = attemptCredit ? Math.round(attemptCredit * 1e3) / 10 + "%" : "";
       }
-      row["grade"] = attempts.contents[userId].credit ? attempts.contents[userId].credit * 100 + "%" : "";
+      row["grade"] = attempts.contents[userId].credit ? Math.round(attempts.contents[userId].credit * 1e3) / 10 + "%" : "";
     }
     assignmentsTable.rows.push(row);
   }
