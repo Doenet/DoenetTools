@@ -11,9 +11,13 @@ $jwtArray = include "jwtArray.php";
 $userId = $jwtArray['userId'];
 
 $doenetId = mysqli_real_escape_string($conn,$_REQUEST["doenetId"]);
+$tool = mysqli_real_escape_string($conn,$_REQUEST["tool"]);
+$studentUserId = mysqli_real_escape_string($conn,$_REQUEST["userId"]);
 $attemptNumber = mysqli_real_escape_string($conn,$_REQUEST["attemptNumber"]);
 
+
 $success = TRUE;
+$databaseError = FALSE;
 
 $message = "";
 if ($doenetId == ""){
@@ -22,72 +26,105 @@ if ($doenetId == ""){
 }elseif ($attemptNumber == ""){
   $success = FALSE;
   $message = 'Internal Error: missing attemptNumber';
+}elseif ($tool == ""){
+  $success = FALSE;
+  $message = 'Internal Error: missing tool';
 }
 
-$databaseError = FALSE;
-
-$sql = "
-SELECT showCorrectness
-FROM assignment
-WHERE doenetId = '$doenetId'
-";
-$result = $conn->query($sql);
-$row = $result->fetch_assoc();
-$showCorrectness = $row['showCorrectness'];
-
-if ($showCorrectness == '1'){ 
-  // look credit for assignment from user_asssignment
-  $sql = "SELECT credit
-          FROM user_assignment
-          WHERE userId = '$userId'
-          AND doenetId = '$doenetId'
-          ";
+//If javascript didn't send a userId use the signed in $userId
+if ($studentUserId == ""){
+  $studentUserId = $userId;
+}
+//We let users see their own grades
+//But if it's a differnet student you need to 
+//have permission
+if ($success && $studentUserId != $userId){
+  //TODO: Need a permission related to see grades (not du.canEditContent)
+  $sql = "
+  SELECT du.canEditContent 
+  FROM drive_user AS du
+  LEFT JOIN drive_content AS dc
+  ON dc.driveId = du.driveId
+  WHERE du.userId = '$userId'
+  AND dc.doenetId = '$doenetId'
+  AND du.canEditContent = '1'
+  ";
 
   $result = $conn->query($sql);
-  if ($result->num_rows < 1){ 
-    $databaseError = 1;
-    $credit_for_assignment = 0;
+  if ($result->num_rows < 1) {
     $success = FALSE;
-  } else {
-
-    $row = $result->fetch_assoc();
-    $credit_for_assignment = $row['credit'];
-
+    $message = "You don't have permission to view $studentUserId ";
   }
+}
 
-  // Get credit for attempt from user_assignment_attempt
-  $sql = "SELECT credit
-          FROM user_assignment_attempt
-          WHERE userId = '$userId'
-          AND doenetId = '$doenetId'
-          AND attemptNumber = '$attemptNumber'
-          ";
+
+if ($success){
+
+  $sql = "
+  SELECT showCorrectness
+  FROM assignment
+  WHERE doenetId = '$doenetId'
+  ";
   $result = $conn->query($sql);
+  $row = $result->fetch_assoc();
+  $showCorrectness = $row['showCorrectness'];
 
-  if ($result->num_rows < 1){
-    $databaseError = 2;
-    $credit_for_attempt = 0;
-    $success = FALSE;
-  } else {
-    $row = $result->fetch_assoc();
-    $credit_for_attempt = $row['credit'];
-  }
+  //Override show correctness is false if we are in the gradebook
+  $subTool = substr($tool,0,9);
+  if ($showCorrectness == '1' || $subTool == 'gradebook' ){ 
+    // look credit for assignment from user_asssignment
+    $sql = "SELECT credit
+            FROM user_assignment
+            WHERE userId = '$studentUserId'
+            AND doenetId = '$doenetId'
+            ";
+
+    $result = $conn->query($sql);
+    if ($result->num_rows < 1){ 
+      $databaseError = 1;
+      $credit_for_assignment = 0;
+      $success = FALSE;
+    } else {
+
+      $row = $result->fetch_assoc();
+      $credit_for_assignment = $row['credit'];
+
+    }
+
+    // Get credit for attempt from user_assignment_attempt
+    $sql = "SELECT credit
+            FROM user_assignment_attempt
+            WHERE userId = '$studentUserId'
+            AND doenetId = '$doenetId'
+            AND attemptNumber = '$attemptNumber'
+            ";
+    $result = $conn->query($sql);
+
+    if ($result->num_rows < 1){
+      $databaseError = 2;
+      $credit_for_attempt = 0;
+      $success = FALSE;
+    } else {
+      $row = $result->fetch_assoc();
+      $credit_for_attempt = $row['credit'];
+    }
 
 
-  // Get credit for each item of attempt from user_assignment_attempt_item
-  $sql = "SELECT credit
-      FROM user_assignment_attempt_item
-      WHERE userId = '$userId'
-      AND doenetId = '$doenetId'
-      AND attemptNumber = '$attemptNumber'
-      ORDER BY itemNumber
-      ";
-  $result = $conn->query($sql);
+    // Get credit for each item of attempt from user_assignment_attempt_item
+    $sql = "SELECT credit
+        FROM user_assignment_attempt_item
+        WHERE userId = '$studentUserId'
+        AND doenetId = '$doenetId'
+        AND attemptNumber = '$attemptNumber'
+        ORDER BY itemNumber
+        ";
+    $result = $conn->query($sql);
 
-  $credit_by_item = array();
+    $credit_by_item = array();
 
-  while($row = $result->fetch_assoc()){ 
-    $credit_by_item[] = $row['credit'];
+    while($row = $result->fetch_assoc()){ 
+      $credit_by_item[] = $row['credit'];
+    }
   }
 }
 

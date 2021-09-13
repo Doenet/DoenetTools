@@ -9,6 +9,9 @@ import { creditAchievedAtom, currentAttemptNumber } from '../ToolPanels/Assignme
 export default function CreditAchieved(){
   const recoilAttemptNumber = useRecoilValue(currentAttemptNumber);
   const recoilDoenetId = useRecoilValue(searchParamAtomFamily('doenetId'));
+  const recoilUserId = useRecoilValue(searchParamAtomFamily('userId'));
+  const recoilTool = useRecoilValue(searchParamAtomFamily('tool'));
+
   const lastAttemptNumber = useRef(null)
   let [disabled,setDisabled] = useState(false);
 
@@ -18,10 +21,10 @@ export default function CreditAchieved(){
     return <div key={`creditByItem${i}`}>Credit For Item {i+1}: {x?Math.round(x*1000)/1000:0}</div> 
   })
 
-  const initialize = useRecoilCallback(({set})=> async (attemptNumber,doenetId)=>{
+  const initialize = useRecoilCallback(({set})=> async (attemptNumber,doenetId,userId,tool)=>{
 
   
-   const { data }  = await axios.get(`api/loadAssessmentCreditAchieved.php`,{params:{attemptNumber,doenetId}});
+   const { data }  = await axios.get(`api/loadAssessmentCreditAchieved.php`,{params:{attemptNumber,doenetId,userId,tool}});
 
   const { 
     creditByItem, 
@@ -48,18 +51,16 @@ export default function CreditAchieved(){
   },[])
 
   // console.log(`>>>>stage -${stage}-`);
-
-  if (!recoilAttemptNumber || !recoilDoenetId){
+  if (!recoilAttemptNumber || !recoilDoenetId || !recoilTool){
     return null;
   }
-
   // if (stage === 'Initialize'){
   //   initialize(recoilAttemptNumber,recoilDoenetId);
   //   return null;
   // }
 
   if (lastAttemptNumber.current !== recoilAttemptNumber){
-    initialize(recoilAttemptNumber,recoilDoenetId);
+    initialize(recoilAttemptNumber,recoilDoenetId,recoilUserId,recoilTool);
     return null;
   }
   if (disabled){
