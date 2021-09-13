@@ -30,6 +30,48 @@ export default class FunctionCurve extends DoenetRenderer {
       strokeWidth: this.doenetSvData.selectedStyle.lineWidth,
       dash: styleToDash(this.doenetSvData.selectedStyle.lineStyle)
     };
+    if (this.doenetSvData.showLabel && this.doenetSvData.label !== "") {
+      let anchorx, offset, position;
+      console.log(`labelPosition: ${this.doenetSvData.labelPosition}`);
+      if (this.doenetSvData.labelPosition === "upperright") {
+        position = "urt";
+        offset = [-5, -10];
+        anchorx = "right";
+      } else if (this.doenetSvData.labelPosition === "upperleft") {
+        position = "ulft";
+        offset = [5, -10];
+        anchorx = "left";
+      } else if (this.doenetSvData.labelPosition === "lowerright") {
+        position = "lrt";
+        offset = [-5, 10];
+        anchorx = "right";
+      } else if (this.doenetSvData.labelPosition === "lowerleft") {
+        position = "llft";
+        offset = [5, 10];
+        anchorx = "left";
+      } else if (this.doenetSvData.labelPosition === "top") {
+        position = "top";
+        offset = [0, -10];
+        anchorx = "left";
+      } else if (this.doenetSvData.labelPosition === "bottom") {
+        position = "bot";
+        offset = [0, 10];
+        anchorx = "left";
+      } else if (this.doenetSvData.labelPosition === "left") {
+        position = "lft";
+        offset = [10, 0];
+        anchorx = "left";
+      } else {
+        position = "rt";
+        offset = [-10, 0];
+        anchorx = "right";
+      }
+      curveAttributes.label = {
+        offset,
+        position,
+        anchorx
+      };
+    }
     if (!this.doenetSvData.draggable) {
       curveAttributes.highlightStrokeWidth = this.doenetSvData.selectedStyle.lineWidth;
     }
