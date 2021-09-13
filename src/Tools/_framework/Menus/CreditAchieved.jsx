@@ -34,7 +34,7 @@ export default function CreditAchieved(){
     totalPointsOrPercent
  } = data;
 
-    if (Number(showCorrectness) === 0){
+    if (Number(showCorrectness) === 0 && tool.substring(0,9) !== 'gradebook'){
       setDisabled(true);
     }else{
       set(creditAchievedAtom,(was)=>{
