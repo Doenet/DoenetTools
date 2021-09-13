@@ -17,8 +17,9 @@ import {
   globalSelectedNodesAtom,
 } from '../../../_reactComponents/Drive/NewDrive';
 import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
+import Textfield from '../../../_reactComponents/PanelHeaderComponents/Textfield';
 import ActionButton from '../../../_reactComponents/PanelHeaderComponents/ActionButton';
-import ActionButtonGroup from '../../../_reactComponents/PanelHeaderComponents/ActionButtonGroup';
+import ButtonGroup from '../../../_reactComponents/PanelHeaderComponents/ButtonGroup';
 // import Increment from '../../../_reactComponents/PanelHeaderComponents/IncrementMenu';
 import useSockets from '../../../_reactComponents/Sockets';
 import { pageToolViewAtom } from '../NewToolRoot';
@@ -190,8 +191,8 @@ export default function SelectedDoenetML() {
       <h2 data-cy="infoPanelItemLabel">
         <FontAwesomeIcon icon={faCode} /> {item.label}
       </h2>
-      <ActionButtonGroup vertical>
-        <ActionButton
+      <ButtonGroup vertical>
+        <Button
           width="menu"
           value="Edit DoenetML"
           onClick={() => {
@@ -206,7 +207,7 @@ export default function SelectedDoenetML() {
             });
           }}
         />
-        <ActionButton
+        <Button
           width="menu"
           value="Take Assignment"
           onClick={() => {
@@ -220,9 +221,43 @@ export default function SelectedDoenetML() {
             });
           }}
         />
-      </ActionButtonGroup>
-      <br />
-      <label>
+      </ButtonGroup>
+     
+      <Textfield 
+          label="DoenetML Label" 
+          width="menu"
+          vertical 
+          data-cy="infoPanelItemLabelInput" 
+          value={label} 
+          onChange={(e) => setLabel(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') {
+              let effectiveLabel = label;
+              if (label === '') {
+                effectiveLabel = 'Untitled';
+                addToast("Label for the doenetML can't be blank.");
+                setLabel(effectiveLabel);
+              }
+              //Only rename if label has changed
+              if (item.label !== effectiveLabel) {
+                renameItemCallback(effectiveLabel, item);
+              }
+            }
+          }}
+          onBlur={() => {
+            let effectiveLabel = label;
+            if (label === '') {
+              effectiveLabel = 'Untitled';
+              addToast("Label for the doenetML can't be blank.");
+              setLabel(effectiveLabel);
+            }
+            //Only rename if label has changed
+            if (item.label !== effectiveLabel) {
+              renameItemCallback(effectiveLabel, item);
+            }
+          }}
+      />
+      {/* <label>
         DoenetML Label
         <input
           type="text"
@@ -256,9 +291,8 @@ export default function SelectedDoenetML() {
             }
           }}
         />
-      </label>
-      <br />
-      <br />
+      </label> */}
+      <br/>
       <Button
         width="menu"
         value={assignDraftLabel}

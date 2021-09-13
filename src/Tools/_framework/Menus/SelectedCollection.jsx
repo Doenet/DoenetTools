@@ -15,6 +15,7 @@ import { AssignmentSettings, selectedInformation } from './SelectedDoenetML';
 import ButtonGroup from '../../../_reactComponents/PanelHeaderComponents/ButtonGroup';
 import ActionButtonGroup from '../../../_reactComponents/PanelHeaderComponents/ActionButtonGroup';
 import ActionButton from '../../../_reactComponents/PanelHeaderComponents/ActionButton';
+import Textfield from '../../../_reactComponents/PanelHeaderComponents/Textfield';
 
 export default function SelectedCollection() {
   const [{ view }, setPageToolView] = useRecoilState(pageToolViewAtom);
@@ -89,8 +90,29 @@ export default function SelectedCollection() {
           }}
         />
       </ActionButtonGroup>
-      <br />
-      <label>
+      
+      <Textfield 
+          label="Collection Label" 
+          width="menu" 
+          vertical 
+          data-cy="infoPanelItemLabelInput" 
+          value={label}
+          onChange={(e) => setLabel(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') {
+              //Only rename if label has changed
+              if (item.label !== label) {
+                renameItemCallback(label);
+              }
+            }
+          }}
+          onBlur={() => {
+            //Only rename if label has changed
+            if (item.label !== label) {
+              renameItemCallback(label);
+            }
+          }}/>
+      {/* <label>
         Collection Label
         <input
           type="text"
@@ -112,7 +134,7 @@ export default function SelectedCollection() {
             }
           }}
         />
-      </label>
+      </label> */}
       <br />
       <AssignmentSettings role={view} doenetId={item.doenetId} />
       <br />

@@ -8,6 +8,7 @@ import useSockets from '../../../_reactComponents/Sockets';
 import { selectedMenuPanelAtom } from '../Panels/NewMenuPanel';
 import { selectedInformation } from './SelectedDoenetML';
 import ButtonGroup from '../../../_reactComponents/PanelHeaderComponents/ButtonGroup';
+import Textfield from '../../../_reactComponents/PanelHeaderComponents/Textfield';
 import { pageToolViewAtom } from '../NewToolRoot';
 import { useToast } from '../../_framework/Toast';
 
@@ -52,7 +53,41 @@ export default function SelectedFolder() {
   let modControl = null;
   if (role === 'instructor'){
     modControl = <>
-     <label>
+      <Textfield
+        label="Folder Label"
+        vertical
+        width="menu"
+        data-cy="infoPanelItemLabelInput"
+          value={label}
+          onChange={(e) => setLabel(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') {
+              let effectiveLabel = label;
+              if (label === ''){
+                effectiveLabel = 'Untitled';
+                addToast("Label for the folder can't be blank.");
+                setLabel(effectiveLabel);
+              }
+              //Only rename if label has changed
+              if (item.label !== effectiveLabel) {
+                renameItemCallback(effectiveLabel);
+                setLabel(effectiveLabel);
+              }
+            }
+          }}
+          onBlur={() => {
+            let effectiveLabel = label;
+              if (label === ''){
+                effectiveLabel = 'Untitled';
+                addToast("Label for the folder can't be blank.");
+              }
+            //Only rename if label has changed
+            if (item.label !== effectiveLabel) {
+              renameItemCallback(effectiveLabel);
+            }
+          }}
+      />
+     {/* <label>
         {item.itemType} Label
         <input
           type="text"
@@ -86,7 +121,7 @@ export default function SelectedFolder() {
             }
           }}
         />
-      </label>
+      </label> */}
       <br />
       <ButtonGroup vertical>
         <Button
