@@ -29,7 +29,8 @@ $stateVariables =  mysqli_real_escape_string($conn,$_POST["stateVariables"]);
 $sql = "SELECT attemptAggregation,
         timeLimit,
         numberOfAttemptsAllowed,
-        dueDate
+        dueDate,
+        totalPointsOrPercent
         FROM assignment
         WHERE doenetId='$doenetId'";
 
@@ -39,6 +40,7 @@ $attemptAggregation = $row['attemptAggregation'];
 $timeLimit = $row['timeLimit'];
 $numberOfAttemptsAllowed = $row['numberOfAttemptsAllowed'];
 $dueDate = $row['dueDate'];
+$totalPointsOrPercent = $row['totalPointsOrPercent'];
 
 $valid = 1;
 
@@ -415,6 +417,7 @@ $response_arr = array(
     "now_seconds"=>$now_seconds,
     "diff_seconds"=>$diff_seconds,
     "dueDate_diff"=>$dueDate_diff,
+    "totalPointsOrPercent"=>$totalPointsOrPercent,
 );
 
 // set response code - 200 OK

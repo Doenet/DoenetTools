@@ -34,6 +34,7 @@ export const creditAchievedAtom = atom({
     // creditByItem:[],
     creditForAttempt:0,
     creditForAssignment:0,
+    totalPointsOrPercent:0,
   },
 });
 
@@ -373,9 +374,9 @@ export default function AssignmentViewer() {
 
   const updateCreditAchieved = useRecoilCallback(
     ({  set }) =>
-      async ({ creditByItem, creditForAssignment, creditForAttempt }) => {
+      async ({ creditByItem, creditForAssignment, creditForAttempt, totalPointsOrPercent }) => {
         // console.log(">>>>UPDATE",{ creditByItem, creditForAssignment, creditForAttempt })
-        set(creditAchievedAtom,{ creditByItem, creditForAssignment, creditForAttempt });
+        set(creditAchievedAtom,{ creditByItem, creditForAssignment, creditForAttempt, totalPointsOrPercent });
   });
 
   // console.log(`>>>>stage -${stage}-`);
