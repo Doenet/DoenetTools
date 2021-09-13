@@ -12,6 +12,7 @@ import DoenetViewer, {
     serializedComponentsReviver,
   } from '../../../Viewer/DoenetViewer';
 import  axios from 'axios';
+import { currentAttemptNumber } from '../ToolPanels/AssignmentViewer';
 
 // import { BreadcrumbProvider } from '../../../_reactComponents/Breadcrumb';
 // import { DropTargetsProvider } from '../../../_reactComponents/DropTarget';
@@ -33,6 +34,7 @@ export default function GradebookStudentAssignmentView(props){
     let userId = useRecoilValue(searchParamAtomFamily('userId'))
     let attempts = useRecoilValueLoadable(attemptData(doenetId))
     let students = useRecoilValueLoadable(studentData)
+    const setRecoilAttemptNumber = useSetRecoilState(currentAttemptNumber);
     
     // console.log(">>>>attempts",Object.keys(attempts.contents[userId].attempts).length)
     // let driveIdValue = useRecoilValue(driveId)
@@ -47,8 +49,9 @@ export default function GradebookStudentAssignmentView(props){
     useEffect(()=>{
         if (attemptsObj){
             setAttemptNumber(Object.keys(attemptsObj).length);
+            setRecoilAttemptNumber(Object.keys(attemptsObj).length);
         }
-    },[attemptsObj,setAttemptNumber])
+    },[attemptsObj,setAttemptNumber,setRecoilAttemptNumber])
 
     //Wait for doenetId and userId and attemptsInfo
     if (!doenetId || !userId){
@@ -112,7 +115,8 @@ export default function GradebookStudentAssignmentView(props){
             accessor: "a"+i,
             disableFilters: true,
             Cell: row  =><a onClick = {(e) =>{
-                setAttemptNumber(i)
+                setAttemptNumber(i);
+                setRecoilAttemptNumber(i);
                 //e.stopPropagation()
 
                 // setPageToolView({
@@ -145,7 +149,8 @@ export default function GradebookStudentAssignmentView(props){
             for (let i = 1; i <= maxAttempts; i++) {
                 let attemptCredit = attempts.contents[userId].attempts[i];
     
-                row[("a"+i)] = attemptCredit ? attemptCredit * 100 + "%" : ""
+                // row[("a"+i)] = attemptCredit ? attemptCredit * 100 + "%" : ""
+                row[("a"+i)] = attemptCredit ? Math.round(attemptCredit * 1000)/10 + '%' : ""
                 
                 // <Link to={`/attempt/?doenetId=${doenetId}&userId=${userId}&attemptNumber=${i}`}>
                 // {
@@ -154,7 +159,8 @@ export default function GradebookStudentAssignmentView(props){
                 // </Link>
             }
 
-            row["grade"] = attempts.contents[userId].credit ? attempts.contents[userId].credit*100+ "%" : ""
+            // row["grade"] = attempts.contents[userId].credit ? attempts.contents[userId].credit*100+ "%" : ""
+            row["grade"] = attempts.contents[userId].credit ? Math.round(attempts.contents[userId].credit * 1000)/10 + '%' : ""
         }
 
         
