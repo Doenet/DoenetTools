@@ -25,7 +25,8 @@ export const creditAchievedAtom = atom({
   default: {
     creditByItem: [1, 0, 0.5],
     creditForAttempt: 0,
-    creditForAssignment: 0
+    creditForAssignment: 0,
+    totalPointsOrPercent: 0
   }
 });
 function randomInt(min, max) {
@@ -257,8 +258,8 @@ export default function AssignmentViewer() {
       return newObj;
     });
   }, []);
-  const updateCreditAchieved = useRecoilCallback(({set}) => async ({creditByItem, creditForAssignment, creditForAttempt}) => {
-    set(creditAchievedAtom, {creditByItem, creditForAssignment, creditForAttempt});
+  const updateCreditAchieved = useRecoilCallback(({set}) => async ({creditByItem, creditForAssignment, creditForAttempt, totalPointsOrPercent}) => {
+    set(creditAchievedAtom, {creditByItem, creditForAssignment, creditForAttempt, totalPointsOrPercent});
   });
   if (recoilDoenetId === "") {
     return null;
