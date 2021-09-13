@@ -61,13 +61,15 @@ if ($success && $studentUserId != $userId){
 if ($success){
 
   $sql = "
-  SELECT showCorrectness
+  SELECT showCorrectness,
+  totalPointsOrPercent
   FROM assignment
   WHERE doenetId = '$doenetId'
   ";
   $result = $conn->query($sql);
   $row = $result->fetch_assoc();
   $showCorrectness = $row['showCorrectness'];
+  $totalPointsOrPercent = $row['totalPointsOrPercent'];
 
   //Override show correctness is false if we are in the gradebook
   $subTool = substr($tool,0,9);
@@ -135,6 +137,7 @@ $response_arr = array(
   "creditForAssignment"=>$credit_for_assignment,
   "creditByItem"=>$credit_by_item,
   "showCorrectness"=>$showCorrectness,
+  "totalPointsOrPercent"=>$totalPointsOrPercent,
 );
 
 // set response code - 200 OK
