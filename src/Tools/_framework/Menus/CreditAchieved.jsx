@@ -15,7 +15,7 @@ export default function CreditAchieved(){
   const lastAttemptNumber = useRef(null)
   let [disabled,setDisabled] = useState(false);
 
-  const {creditByItem,creditForAttempt,creditForAssignment} = useRecoilValue(creditAchievedAtom);
+  const {creditByItem,creditForAttempt,creditForAssignment,totalPointsOrPercent} = useRecoilValue(creditAchievedAtom);
   let [stage,setStage] = useState('Initialize');
   let creditByItemsJSX = creditByItem.map((x,i)=>{
     return <div key={`creditByItem${i}`}>Credit For Item {i+1}: {x?Math.round(x*1000)/1000:0}</div> 
@@ -30,7 +30,8 @@ export default function CreditAchieved(){
     creditByItem, 
     creditForAssignment, 
     creditForAttempt,
-    showCorrectness 
+    showCorrectness,
+    totalPointsOrPercent
  } = data;
 
     if (Number(showCorrectness) === 0){
@@ -41,6 +42,7 @@ export default function CreditAchieved(){
         newObj.creditByItem = creditByItem;
         newObj.creditForAssignment = creditForAssignment;
         newObj.creditForAttempt = creditForAttempt;
+        newObj.totalPointsOrPercent = totalPointsOrPercent;
         return newObj;
       })
     }
@@ -68,8 +70,14 @@ export default function CreditAchieved(){
   }
 
 
+  let score = 0;
+  if (creditForAssignment){
+    score = Math.round(creditForAssignment* totalPointsOrPercent*100)/100 ;
+  }
 
  return <div>
+   <div>Possible Points: {totalPointsOrPercent}</div>
+   <div>Score: {score}</div>
    <div>Credit For Assignment: {creditForAssignment?Math.round(creditForAssignment*1000)/1000:0}</div>
    <div>Credit For Attempt {recoilAttemptNumber}: {creditForAttempt?Math.round(creditForAttempt*1000)/1000:0}</div>
    <div>{creditByItemsJSX}</div>
