@@ -1869,5 +1869,84 @@ describe('Paginator Tag Tests', function () {
 
   })
 
+  it('Paginator controls ignore ready only flag', () => {
+
+    let doenetML = `
+    <text>a</text>
+    <paginatorControls paginatorTname="pgn" name="pcontrols" />
+  
+    <paginator name="pgn">
+      <problem>
+        <title>Problem 1</title>
+        <p>1: <answer type="text"><textinput name="ti1"/><award>1</award></answer></p>
+      </problem>
+      <problem>
+        <title>Problem 2</title>
+        <p>2: <answer type="text"><textinput name="ti2"/><award>2</award></answer></p>
+      </problem>
+    </paginator>
+    <p>Credit achieved: <copy prop="creditAchieved" tname="_document1" assignNames="ca" /></p>
+    `
+
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML
+      }, "*");
+    });
+
+    // at least right now, this turns on Allow Local Page State
+    cy.get('h3 > button').click();
+    cy.get(':nth-child(11) > label > input').click()
+    cy.get('h3 > button').click();
+
+
+    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+
+    cy.get(cesc('#/_title1')).should('have.text', 'Problem 1')
+
+    cy.get('#\\/ti1_input').type("1{enter}");
+    cy.get('#\\/ti1_input').should('have.value', '1');
+    
+    cy.get('#\\/ti1_correct').should('be.visible');
+    cy.get(cesc('#/ca')).should('have.text', '0.5')
+
+    cy.get(cesc('#/pcontrols_next')).click()
+    cy.get(cesc('#/_title2')).should('have.text', 'Problem 2')
+
+    cy.get('#\\/ti2_input').type("2");
+    cy.get('#\\/ti2_input').should('have.value', '2');
+    cy.get('#\\/ti2_submit').should('be.visible');
+    cy.get(cesc('#/ca')).should('have.text', '0.5')
+
+
+    // at least right now, this turns on Read Only
+    cy.get('h3 > button').click();
+    cy.get(':nth-child(5) > label > input').click()
+    cy.get('h3 > button').click();
+    
+    cy.get('#\\/ti2_input').should('be.disabled')
+    cy.get('#\\/ti2_input').should('have.value', '2');
+    cy.get('#\\/ti2_submit').should('be.disabled')
+
+
+    cy.get(cesc('#/pcontrols_previous')).click()
+    cy.get(cesc('#/_title1')).should('have.text', 'Problem 1')
+    cy.get(cesc('#/ca')).should('have.text', '0.5');
+
+    cy.get('#\\/ti1_input').should('be.disabled')
+    cy.get('#\\/ti1_input').should('have.value', '1');
+
+
+    cy.get(cesc('#/pcontrols_next')).click()
+    cy.get(cesc('#/_title2')).should('have.text', 'Problem 2')
+    cy.get(cesc('#/ca')).should('have.text', '0.5');
+
+    cy.get('#\\/ti2_input').should('be.disabled')
+    cy.get('#\\/ti2_input').should('have.value', '2');
+    cy.get('#\\/ti2_submit').should('be.disabled')
+
+
+  })
+
 
 });
