@@ -343,6 +343,7 @@ export function AssignmentSettings({ role, doenetId }) {
   let [gradeCategory, setGradeCategory] = useState('');
   let [individualize, setIndividualize] = useState(true);
   let [showSolution, setShowSolution] = useState(true);
+  let [showSolutionInGradebook, setShowSolutionInGradebook] = useState(true);
   let [showFeedback, setShowFeedback] = useState(true);
   let [showHints, setShowHints] = useState(true);
   let [showCorrectness, setShowCorrectness] = useState(true);
@@ -413,6 +414,7 @@ export function AssignmentSettings({ role, doenetId }) {
     setGradeCategory(aInfo?.gradeCategory);
     setIndividualize(aInfo?.individualize);
     setShowSolution(aInfo?.showSolution);
+    setShowSolutionInGradebook(aInfo?.showSolutionInGradebook);
     setShowFeedback(aInfo?.showFeedback);
     setShowHints(aInfo?.showHints);
     setShowCorrectness(aInfo?.showCorrectness);
@@ -864,6 +866,29 @@ export function AssignmentSettings({ role, doenetId }) {
               });
             }}
             checked={showSolution}
+          ></Switch>
+        </label>
+      </div>
+
+      <div>
+        <label>
+          Show Solution In Gradebook
+          <Switch
+            name="showSolutionInGradebook"
+            onChange={(e) => {
+              let valueDescription = 'False';
+              if (e.currentTarget.checked) {
+                valueDescription = 'True';
+              }
+              updateAssignment({
+                doenetId,
+                keyToUpdate: 'showSolutionInGradebook',
+                value: e.currentTarget.checked,
+                description: 'Show Solution In Gradebook',
+                valueDescription,
+              });
+            }}
+            checked={showSolutionInGradebook}
           ></Switch>
         </label>
       </div>

@@ -244,7 +244,8 @@ export default class Solution extends BlockComponent {
 
     return this.coreFunctions.requestUpdate({
       updateInstructions,
-      event
+      event,
+      overrideReadOnly: true,
     })
 
   }
