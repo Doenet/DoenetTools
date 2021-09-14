@@ -48,6 +48,7 @@
     "http2-proxy": "^5.0.53",
     "hyperformula": "^0.6.2",
     "js-cookie": "^2.2.1",
+    "json-stringify-deterministic": "^1.0.1",
     "lezer": "^0.13.4",
     "lezer-xml": "^0.13.4",
     "lodash.debounce": "^4.0.8",
