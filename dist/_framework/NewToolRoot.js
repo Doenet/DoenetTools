@@ -296,10 +296,10 @@ let navigationObj = {
     gradebookStudentAssignment: {
       pageName: "Gradebook",
       currentMainPanel: "GradebookStudentAssignment",
-      currentMenus: [],
+      currentMenus: ["CreditAchieved"],
       menuPanelCap: "DriveInfoCap",
-      menusTitles: [],
-      menusInitOpen: [],
+      menusTitles: ["Credit Achieved"],
+      menusInitOpen: [true],
       headerControls: ["GradebookBreadCrumb"],
       headerControlsPositions: ["Left"]
     },

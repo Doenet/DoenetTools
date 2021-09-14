@@ -77,7 +77,19 @@ export class Paginator extends Template {
               if (Number.isFinite(nPagesPerOption)) {
                 let numberToSelect = 1;
                 if (child.attributes && child.attributes.numberToSelect) {
-                  numberToSelect = child.attributes.numberToSelect.primitive
+                  let ntsComp = child.attributes.numberToSelect.component;
+                  if(ntsComp.children) {
+                    // look for a string child
+                    for(let child of ntsComp.children) {
+                      if(child.componentType === "string") {
+                        let n = Number(child.state.value);
+                        if(Number.isFinite(n)) {
+                          numberToSelect = Math.round(n);
+                          break;
+                        }
+                      }
+                    }
+                  }
                 }
                 n += nPagesPerOption * numberToSelect;
               }
@@ -767,6 +779,7 @@ export class PaginatorPage extends Template {
 
       }
     }
+
     stateVariableDefinitions.sectionPlaceholder = {
       defaultValue: false,
       returnDependencies: () => ({}),
@@ -958,8 +971,6 @@ export class PaginatorPage extends Template {
 }
 
 
-
-
 export class PaginatorControls extends BlockComponent {
   constructor(args) {
     super(args);
@@ -1035,7 +1046,6 @@ export class PaginatorControls extends BlockComponent {
       }
     }
 
-
     stateVariableDefinitions.paginatorFullTname = {
       stateVariablesDeterminingDependencies: ["paginatorTname"],
       returnDependencies({ stateValues }) {
@@ -1108,6 +1118,80 @@ export class PaginatorControls extends BlockComponent {
         }
       }
     }
+
+    // modify disabled to ignore readOnly flag
+    // disabled attribute from parent
+
+    stateVariableDefinitions.disabled = {
+      public: true,
+      componentType: "boolean",
+      forRenderer: true,
+      neverShadow: true,
+      returnDependencies: () => ({
+        disabledPreliminary: {
+          dependencyType: "stateVariable",
+          variableName: "disabledPreliminary",
+          variablesOptional: true,
+        },
+        disabledAttr: {
+          dependencyType: "attributeComponent",
+          attributeName: "disabled",
+        },
+        sourceCompositeDisabled: {
+          dependencyType: "sourceCompositeStateVariable",
+          variableName: "disabled"
+        },
+        adapterSourceDisabled: {
+          dependencyType: "adapterSourceStateVariable",
+          variableName: "disabled"
+        },
+      }),
+      definition({ dependencyValues, usedDefault }) {
+
+        if (dependencyValues.disabledPreliminary !== null &&
+          dependencyValues.disabledAttr !== null
+        ) {
+          return {
+            newValues: {
+              disabled: dependencyValues.disabledPreliminary
+            }
+          }
+        }
+
+        let disabled = false;
+        let useEssential = true;
+
+        if (dependencyValues.sourceCompositeDisabled !== null && !usedDefault.sourceCompositeDisabled) {
+          disabled = disabled || dependencyValues.sourceCompositeDisabled;
+          useEssential = false;
+        }
+        if (dependencyValues.adapterSourceDisabled !== null && !usedDefault.adapterSourceDisabled) {
+          disabled = disabled || dependencyValues.adapterSourceDisabled;
+          useEssential = false;
+        }
+
+        // disabled wasn't supplied by parent/sourceComposite/adapterSource,
+        // was specified as a non-default from disabledPreliminary,
+        // but wasn't specified via an attribute component
+        // It must have been specified from a target shadowing
+        // or from an essential state variable
+        if (useEssential && dependencyValues.disabledPreliminary !== null && !usedDefault.disabledPreliminary) {
+          useEssential = false;
+          disabled = dependencyValues.disabledPreliminary
+        }
+
+        if (useEssential) {
+          return {
+            useEssentialOrDefaultValue: {
+              disabled: { defaultValue: false }
+            }
+          }
+        } else {
+          return { newValues: { disabled } }
+        }
+      },
+    }
+
 
     return stateVariableDefinitions;
 

@@ -138,6 +138,7 @@ const entryInfoByDoenetId = atomFamily({
           driveId: resp.data.driveId,
           folderId: resp.data.parentFolderId
         }));
+        console.log("Finfo", folderInfo, folderInfo.contentsDictionaryByDoenetId[doenetId]);
         return folderInfo.contentsDictionaryByDoenetId[doenetId] ?? {};
       } catch (error) {
         console.error(error);
@@ -152,13 +153,15 @@ const assignedEntiresInfo = atomFamily({
     key: "assignedEntiresInfo/Default",
     get: (doenetId) => async () => {
       try {
-        if (!doenetId) {
+        if (doenetId) {
           const resp = await axios.get("/api/loadCollection.php", {
             params: {doenetId}
           });
           return resp.data.entries ?? [];
+        } else {
+          console.warn("undefined doenetId in Collections Editor");
+          return [];
         }
-        return [];
       } catch (error) {
         console.error(error);
         return [];

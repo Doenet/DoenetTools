@@ -52,7 +52,7 @@ if (
         if (array_key_exists('driveId', get_defined_vars())) {
             //check user has permission to edit drive
             $sql = "
-                SELECT canChangeAllDriveSettings
+                SELECT canEditContent
                 FROM drive_user
                 WHERE userId = '$userId'
                 AND driveId = '$driveId'
@@ -60,7 +60,7 @@ if (
             $result = $conn->query($sql);
             if ($result->num_rows > 0) {
                 $row = $result->fetch_assoc();
-                $allowed = $row['canChangeAllDriveSettings'];
+                $allowed = $row['canEditContent'];
             } else {
                 //Fail because there is no DB row for the user on this drive so we shouldn't allow an add
                 http_response_code(401); //User has bad auth

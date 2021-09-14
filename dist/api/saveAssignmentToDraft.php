@@ -28,6 +28,8 @@ $showHints = mysqli_real_escape_string($conn,$_POST["showHints"]);
 $showCorrectness = mysqli_real_escape_string($conn,$_POST["showCorrectness"]);
 $proctorMakesAvailable = mysqli_real_escape_string($conn,$_POST["proctorMakesAvailable"]);
 if ($timeLimit == ''){$timeLimit = 'NULL';} else {$timeLimit = "'$timeLimit'"; }
+if ($dueDate == ''){$dueDate = 'NULL';} else {$dueDate = "'$dueDate'"; }
+if ($assignedDate == ''){$assignedDate = 'NULL';} else {$assignedDate = "'$assignedDate'"; }
 if ($numberOfAttemptsAllowed == ''){$numberOfAttemptsAllowed = 'NULL';} else {$numberOfAttemptsAllowed = "'$numberOfAttemptsAllowed'"; }
 if ($individualize){ $individualize = '1'; } else { $individualize = '0'; }
 if ($multipleAttempts){ $multipleAttempts = '1'; } else { $multipleAttempts = '0'; }
@@ -54,8 +56,8 @@ if ($doenetId == ""){
 if ($success){
 
 $sql = "UPDATE assignment SET
-assignedDate = '$assignedDate',
-dueDate = '$dueDate',
+assignedDate = $assignedDate,
+dueDate = $dueDate,
 timeLimit = $timeLimit,
 numberOfAttemptsAllowed = $numberOfAttemptsAllowed,
 attemptAggregation = '$attemptAggregation',

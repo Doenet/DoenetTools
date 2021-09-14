@@ -1,5 +1,12 @@
-import React from "../../_snowpack/pkg/react.js";
-export default function DashboardLeave(props) {
-  console.log("DashbaordLeave");
+import {selectedMenuPanelAtom} from "../Panels/NewMenuPanel.js";
+import {globalSelectedNodesAtom, clearDriveAndItemSelections} from "../../_reactComponents/Drive/NewDrive.js";
+import {useRecoilCallback} from "../../_snowpack/pkg/recoil.js";
+export default function DashboardLeave() {
+  const setSelections = useRecoilCallback(({set}) => () => {
+    set(clearDriveAndItemSelections, null);
+    set(globalSelectedNodesAtom, []);
+    set(selectedMenuPanelAtom, "");
+  });
+  setSelections();
   return null;
 }

@@ -19,6 +19,7 @@ import DoenetDriveCardMenu from '../../../_reactComponents/Drive/DoenetDriveCard
 import { driveColors } from '../../../_reactComponents/Drive/util';
 import { useToast } from '../../_framework/Toast';
 import ButtonGroup from '../../../_reactComponents/PanelHeaderComponents/ButtonGroup';
+import Textfield from '../../../_reactComponents/PanelHeaderComponents/Textfield';
 
 
 export default function SelectedCourse() {
@@ -319,7 +320,52 @@ const DriveInfoPanel = function (props) {
       </h2>
       {props.role == 'Administrator' ? <>{addAdmins}  {adminsList}</> : 
       <>
-      <label>
+      <Textfield 
+        label="Label" 
+        vertical
+        width="menu"
+        value={driveLabel}
+          onChange={(e) => setDriveLabel(e.target.value)}
+          onKeyDown={(e) => {
+            let effectiveDriveLabel = driveLabel;
+            if (driveLabel === ''){
+              effectiveDriveLabel = 'Untitled';
+              setDriveLabel(effectiveDriveLabel)
+              addToast("Label for the course can't be blank.");
+            }
+            if (e.keyCode === 13) {
+              setPanelDriveLabel(effectiveDriveLabel);
+              setDrivesInfo({
+                color: props.color,
+                label: effectiveDriveLabel,
+                image: props.image,
+                newDriveId: props.driveId,
+                type: 'update drive label',
+              });
+            }
+            
+          }}
+          onBlur={() => {
+            let effectiveDriveLabel = driveLabel;
+            if (driveLabel === ''){
+              effectiveDriveLabel = 'Untitled';
+              setDriveLabel(effectiveDriveLabel)
+              addToast("Label for the course can't be blank.");
+            }
+           
+              setPanelDriveLabel(effectiveDriveLabel);
+              setDrivesInfo({
+                color: props.color,
+                label: effectiveDriveLabel,
+                image: props.image,
+                newDriveId: props.driveId,
+                type: 'update drive label',
+              });
+            
+            
+          }}
+        />
+      {/* <label>
         Label {' '}
         <input
           type="text"
@@ -364,8 +410,7 @@ const DriveInfoPanel = function (props) {
             
           }}
         />
-      </label>
-      <br />
+      </label> */}
       <br />
       <CoursePassword driveId={props.driveId} />
       <br />

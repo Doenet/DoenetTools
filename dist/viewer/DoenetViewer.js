@@ -389,7 +389,7 @@ class DoenetViewerChild extends Component {
       this.needNewCoreFlag = true;
     }
     this.requestedVariant = adjustedRequestedVariantFromProp;
-    if (this.props.doenetML && !this.props.contentId) {
+    if (typeof this.props.doenetML === "string" && !this.props.contentId) {
       this.doenetML = this.props.doenetML;
       if (this.doenetML !== this.state.doenetML) {
         this.contentId = sha256(this.props.doenetML).toString(CryptoJS.enc.Hex);

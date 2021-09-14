@@ -71,10 +71,15 @@ export default function Enrollment(props) {
           onClick: (e) => enrollLearners(e, rowData.email)
         });
       }
+      let enrolledDateString = "";
+      if (rowData.withdrew === "0") {
+        let t = rowData.dateEnrolled.split(/[- :]/);
+        enrolledDateString = new Date(Date.UTC(t[0], t[1] - 1, t[2], t[3], t[4], t[5])).toLocaleString();
+      }
       enrollmentRows.push(/* @__PURE__ */ React.createElement("tr", {
         style: {backgroundColor: bgcolor},
         key: `erow${i}`
-      }, /* @__PURE__ */ React.createElement("td", null, rowData.firstName, " ", rowData.lastName), /* @__PURE__ */ React.createElement("td", null, rowData.section), /* @__PURE__ */ React.createElement("td", null, rowData.empId), /* @__PURE__ */ React.createElement("td", null, rowData.email), /* @__PURE__ */ React.createElement("td", null, rowData.withdrew === "0" ? new Date(`${rowData.dateEnrolled} UTC`).toLocaleString() : ""), /* @__PURE__ */ React.createElement("td", null, " ", button, " ")));
+      }, /* @__PURE__ */ React.createElement("td", null, rowData.firstName, " ", rowData.lastName), /* @__PURE__ */ React.createElement("td", null, rowData.section), /* @__PURE__ */ React.createElement("td", null, rowData.empId), /* @__PURE__ */ React.createElement("td", null, rowData.email), /* @__PURE__ */ React.createElement("td", null, enrolledDateString), /* @__PURE__ */ React.createElement("td", null, " ", button, " ")));
     }
   }
   const enrollmentTable = /* @__PURE__ */ React.createElement("table", null, /* @__PURE__ */ React.createElement("thead", null, /* @__PURE__ */ React.createElement("tr", null, /* @__PURE__ */ React.createElement("th", null, "Name"), /* @__PURE__ */ React.createElement("th", null, "Section"), /* @__PURE__ */ React.createElement("th", null, "ID"), /* @__PURE__ */ React.createElement("th", null, "Email"), /* @__PURE__ */ React.createElement("th", null, "Date Enrolled"))), /* @__PURE__ */ React.createElement("tbody", null, enrollmentRows));

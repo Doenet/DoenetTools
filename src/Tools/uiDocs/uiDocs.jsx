@@ -22,6 +22,8 @@ import { faCode } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Increment from '../../_reactComponents/PanelHeaderComponents/IncrementMenu.jsx';
 import DropdownMenu from '../../_reactComponents/PanelHeaderComponents/DropdownMenu.jsx';
+import DateTime from '../../_reactComponents/PanelHeaderComponents/DateTime.jsx'
+
 
 
 // === HOW TO ADD TO UI DOCS ===
@@ -210,6 +212,41 @@ export default function attempt() {
       ]
     },
     {
+      name: 'DateTime',
+      id: 'datetime', 
+      code: DateTime,
+      codePreview: '<DateTime/>',
+      req_props: null,
+      req_children: null,
+      use: 'Allows user to pick date and time',
+      props: [
+          {name: 'showArrowButtons',
+          propPreview: '<DateTime showArrowButtons={true}/>',
+          propCode: {showArrowButtons: 'true'},
+          description: 'arrow buttons for time - true/false only'},
+          {name: 'Precision',
+          propPreview: '<DateTime precision={second}/>',
+          propCode: {precision: 'second'},
+          description: 'precision of time picker - minute/second only'},
+          {name: 'Date',
+          propPreview: '<DateTime date=false/>',
+          propCode: {date: false},
+          description: 'want calendar or not - true/false only'},
+          {name: 'Time',
+          propPreview: '<DateTime time=false/>',
+          propCode: {time: false},
+          description: 'want time selector or not - true/false only'},
+          {name: 'Disabled',
+          propPreview: '<DateTime disabled=true />',
+          propCode: {disabled: true},
+          description: 'disables component'},
+          {name: 'callBack',
+          propPreview: '<DateTime callBack={(( newDate ) => console.log(">>>", newDate)} />',
+          propCode: {callBack: ( newDate ) => console.log(">>>", newDate)},
+          description: 'Function called when data changes'},
+      ]
+    },
+    {
       name: 'DropdownMenu',
       id: 'dropdownmenu',
       code: DropdownMenu,
@@ -242,6 +279,10 @@ export default function attempt() {
         propPreview: '<DropdownMenu items = {[[1, "one"], [2, "two"]]} onChange={(({ value }) => console.log(">>>", value)} />',
         propCode: {items: [[1, "one"], [2, "two"]], onChange: ({ value }) => console.log(">>>", value)},
         description: 'Function called when data changes'},
+        {name: 'Disabled',
+        propPreview: '<DropdownMenu items = {[[1, "one"], [2, "two"], [3, "three"]]} disabled/>',
+        propCode: {items: [[1, "one"], [2, "two"], [3, "three"]], disabled},
+        description: 'Makes disabled'},
       ]
     },
     {
@@ -383,9 +424,17 @@ export default function attempt() {
         propCode: {alert},
         description: 'Changes to alert mode (border is red)'},
         {name: 'onChange',
-        propPreview: '<Textfield onChange={(data) => console.log(data)} />',
-        propCode: {onChange: (data) => console.log(data)},
+        propPreview: '<Textfield onChange={(e) => console.log(e.target.value)} />',
+        propCode: {onChange: (e) => console.log(e.target.value)},
         description: 'Function called when data changes'},
+        {name: 'onBlur',
+        propPreview: '<Textfield onBlur={(e) => console.log(e.target.value)} />',
+        propCode: {onBlur: (e) => console.log(e.target.value)},
+        description: 'Function called when component blurs'},
+        {name: 'onKeyDown',
+        propPreview: '<Textfield onKeyDown={(e) => console.log(e.key)} />',
+        propCode: {onKeyDown: (e) => console.log(e.key)},
+        description: 'Function called when key hit with focus on component'},
         {name: 'Disabled',
             propPreview: '<Textfield disabled />',
             propCode: {disabled},

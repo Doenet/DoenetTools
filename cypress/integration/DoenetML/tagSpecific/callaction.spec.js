@@ -504,6 +504,7 @@ describe('CallAction Tag Tests', function () {
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
         components['/P'].movePoint({ x: 1, y: 7 });
+        cy.wait(10);  // to make sure all actions have chance to complete
         expect(g.activeChildren.length).eq(2);
         cy.get('#\\/nums').invoke('text').then(text => {
           let numbers2 = text.split(',').map(Number);
@@ -551,6 +552,7 @@ describe('CallAction Tag Tests', function () {
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
         components['/P'].movePoint({ x: 4, y: 2 });
+        cy.wait(10);  // to make sure all actions have chance to complete
         expect(g.activeChildren.length).eq(3);
         cy.get('#\\/nums').invoke('text').then(text => {
           let numbers2 = text.split(',').map(Number);
@@ -624,6 +626,7 @@ describe('CallAction Tag Tests', function () {
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
         components['/P'].movePoint({ x: -1, y: -7 });
+        cy.wait(10);  // to make sure all actions have chance to complete
         expect(g.activeChildren.length).eq(1);
         cy.get('#\\/nums').invoke('text').then(text => {
           let numbers2 = text.split(',').map(Number);
@@ -671,6 +674,7 @@ describe('CallAction Tag Tests', function () {
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
         components['/P'].movePoint({ x: -3, y: -4 });
+        cy.wait(10);  // to make sure all actions have chance to complete
         expect(g.activeChildren.length).eq(2);
         cy.get('#\\/nums').invoke('text').then(text => {
           let numbers2 = text.split(',').map(Number);

@@ -567,7 +567,7 @@ describe('SelectFromSequence Tag Tests', function () {
     })
   });
 
-  it.skip('select five (number initially unresolved) even numbers with replacement from -4 to 4, excluding 0', () => {
+  it('select five (number initially unresolved) even numbers with replacement from -4 to 4, excluding 0', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
@@ -677,7 +677,7 @@ describe('SelectFromSequence Tag Tests', function () {
     })
   });
 
-  it.skip("select doesn't change dynamically", () => {
+  it("select doesn't change dynamically", () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
@@ -1560,7 +1560,7 @@ describe('SelectFromSequence Tag Tests', function () {
 
   });
 
-  it('selectfromsequences hides dynamically', () => {
+  it('selectfromsequence hides dynamically', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
@@ -1600,7 +1600,7 @@ describe('SelectFromSequence Tag Tests', function () {
     })
   });
 
-  it('selectfromsequences defaults to fixed', () => {
+  it('selectfromsequence defaults to fixed', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
@@ -1671,7 +1671,7 @@ describe('SelectFromSequence Tag Tests', function () {
       cy.get('#\\/a3_input').clear().type("f{enter}")
       cy.get('#\\/b3_input').clear().type("g{enter}")
       cy.get('#\\/c3_input').clear().type("h{enter}")
-      
+
       cy.get('#\\/a').should('have.text', a)
       cy.get('#\\/b').should('have.text', "g")
       cy.get('#\\/c').should('have.text', c)
@@ -1682,7 +1682,7 @@ describe('SelectFromSequence Tag Tests', function () {
       cy.get('#\\/a4_input').clear().type("i{enter}")
       cy.get('#\\/b4_input').clear().type("j{enter}")
       cy.get('#\\/c4_input').clear().type("k{enter}")
-      
+
       cy.get('#\\/a').should('have.text', a)
       cy.get('#\\/b').should('have.text', "j")
       cy.get('#\\/c').should('have.text', c)
@@ -1703,7 +1703,7 @@ describe('SelectFromSequence Tag Tests', function () {
       cy.get('#\\/a3_input').clear().type("l{enter}")
       cy.get('#\\/b3_input').clear().type("m{enter}")
       cy.get('#\\/c3_input').clear().type("n{enter}")
-      
+
       cy.get('#\\/a').should('have.text', a)
       cy.get('#\\/b').should('have.text', "j")
       cy.get('#\\/c').should('have.text', "n")
@@ -1715,7 +1715,7 @@ describe('SelectFromSequence Tag Tests', function () {
       cy.get('#\\/a4_input').clear().type("o{enter}")
       cy.get('#\\/b4_input').clear().type("p{enter}")
       cy.get('#\\/c4_input').clear().type("q{enter}")
-      
+
       cy.get('#\\/a').should('have.text', a)
       cy.get('#\\/b').should('have.text', "j")
       cy.get('#\\/c').should('have.text', "q")
@@ -1723,6 +1723,80 @@ describe('SelectFromSequence Tag Tests', function () {
       cy.get('#\\/b2').should('have.text', "j")
       cy.get('#\\/c2').should('have.text', "q")
 
+
+    })
+  });
+
+  it('numberToSelect from selectfromsequence', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+
+    <p>n1 = <selectFromSequence from="1" to="5" assignNames="n1" /></p>
+    <p>nums = <aslist><selectFromSequence name="nums1" from="1" to="10" numberToSelect="$n1" assignNames="a1 b1 c1 d1 e1" /></aslist></p>
+    <p name="p1">a1=$a1, b1=$b1, c1=$c1, d1=$d1, e1=$e1</p>
+
+    <p>n2 = <selectFromSequence from="1" to="5" assignNames="n2" /></p>
+    <p>nums = <aslist><selectFromSequence name="nums2" from="1" to="10" numberToSelect="$n2" assignNames="a2 b2 c2 d2 e2" /></aslist></p>
+    <p name="p2">a2=$a2, b2=$b2, c2=$c2, d2=$d2, e2=$e2</p>
+
+    <p>n3 = <selectFromSequence from="1" to="5" assignNames="n3" /></p>
+    <p>nums = <aslist><selectFromSequence name="nums3" from="1" to="10" numberToSelect="$n3" assignNames="a3 b3 c3 d3 e3" /></aslist></p>
+    <p name="p3">a3=$a3, b3=$b3, c3=$c3, d3=$d3, e3=$e3</p>
+
+    <p>n4 = <selectFromSequence from="1" to="5" assignNames="n4" /></p>
+    <p>nums = <aslist><selectFromSequence name="nums4" from="1" to="10" numberToSelect="$n4" assignNames="a4 b4 c4 d4 e4" /></aslist></p>
+    <p name="p4">a4=$a4, b4=$b4, c4=$c4, d4=$d4, e4=$e4</p>
+
+    <p>n5 = <selectFromSequence from="1" to="5" assignNames="n5" /></p>
+    <p>nums = <aslist><selectFromSequence name="nums5" from="1" to="10" numberToSelect="$n5" assignNames="a5 b5 c5 d5 e5" /></aslist></p>
+    <p name="p5">a5=$a5, b5=$b5, c5=$c5, d5=$d5, e5=$e5</p>
+      `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      let n1 = components['/n1'].stateValues.value;
+      let n2 = components['/n2'].stateValues.value;
+      let n3 = components['/n3'].stateValues.value;
+      let n4 = components['/n4'].stateValues.value;
+      let n5 = components['/n5'].stateValues.value;
+
+      let nums1 = components['/nums1'].replacements.map(x => x.stateValues.value);
+      let nums2 = components['/nums2'].replacements.map(x => x.stateValues.value);
+      let nums3 = components['/nums3'].replacements.map(x => x.stateValues.value);
+      let nums4 = components['/nums4'].replacements.map(x => x.stateValues.value);
+      let nums5 = components['/nums5'].replacements.map(x => x.stateValues.value);
+
+      expect(nums1.length).eq(n1);
+      expect(nums2.length).eq(n2);
+      expect(nums3.length).eq(n3);
+      expect(nums4.length).eq(n4);
+      expect(nums5.length).eq(n5);
+
+      nums1.length = 5;
+      nums2.length = 5;
+      nums3.length = 5;
+      nums4.length = 5;
+      nums5.length = 5;
+
+      nums1.fill('', n1)
+      nums2.fill('', n2)
+      nums3.fill('', n3)
+      nums4.fill('', n4)
+      nums5.fill('', n5)
+
+
+      let l = ["a", "b", "c", "d", "e"]
+
+      cy.get('#\\/p1').should('have.text', nums1.map((v, i) => `${l[i]}1=${v}`).join(', '))
+      cy.get('#\\/p2').should('have.text', nums2.map((v, i) => `${l[i]}2=${v}`).join(', '))
+      cy.get('#\\/p3').should('have.text', nums3.map((v, i) => `${l[i]}3=${v}`).join(', '))
+      cy.get('#\\/p4').should('have.text', nums4.map((v, i) => `${l[i]}4=${v}`).join(', '))
+      cy.get('#\\/p5').should('have.text', nums5.map((v, i) => `${l[i]}5=${v}`).join(', '))
 
     })
   });

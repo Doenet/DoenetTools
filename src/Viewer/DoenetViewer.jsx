@@ -647,7 +647,8 @@ class DoenetViewerChild extends Component {
 
     this.requestedVariant = adjustedRequestedVariantFromProp;
 
-    if (this.props.doenetML && !this.props.contentId) {
+
+    if (typeof this.props.doenetML === "string" && !this.props.contentId) {
       //*** Define this.contentId if not prop
       this.doenetML = this.props.doenetML;
       if (this.doenetML !== this.state.doenetML) {
