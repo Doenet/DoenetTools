@@ -398,7 +398,7 @@ let navigationObj = {
       supportPanelIndex:0,
       headerControls: ["EditorBreadCrumb","ViewerUpdateButton",],
       headerControlsPositions: ["Left","Left"],
-      // onLeave:"",
+      onLeave:"EditorLeave",
     },
     collection: {
       currentMainPanel:"CollectionEditor",
@@ -522,6 +522,7 @@ let encodeParams = p => Object.entries(p).map(kv =>
 
     const LazyEnterLeaveObj = useRef({
       NavigationLeave:lazy(() => import('./EnterLeave/NavigationLeave')),
+      EditorLeave:lazy(() => import('./EnterLeave/EditorLeave')),
       CourseChooserLeave:lazy(() => import('./EnterLeave/CourseChooserLeave')),
       DashboardLeave:lazy(() => import('./EnterLeave/DashboardLeave')),
     }).current;
