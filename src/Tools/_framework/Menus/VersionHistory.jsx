@@ -33,7 +33,7 @@ export const currentDraftSelectedAtom = atom({
   default:true
 })
 
-const selectedVersionIdAtom = atom({
+export const selectedVersionIdAtom = atom({
   key:"selectedVersionIdAtom",
   default:null
 })
