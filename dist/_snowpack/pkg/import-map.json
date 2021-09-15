@@ -31,6 +31,7 @@
     "handsontable/dist/handsontable.full.css": "./handsontable/dist/handsontable.full.css",
     "hyperformula": "./hyperformula.js",
     "js-cookie": "./js-cookie.js",
+    "json-stringify-deterministic": "./json-stringify-deterministic.js",
     "lezer": "./lezer.js",
     "lodash.debounce": "./lodash.debounce.js",
     "lodash/cloneDeep": "./lodash/cloneDeep.js",

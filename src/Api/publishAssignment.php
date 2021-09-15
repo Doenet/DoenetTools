@@ -38,6 +38,8 @@ $multipleAttempts = mysqli_real_escape_string($conn,$_POST["multipleAttempts"]);
 if ($multipleAttempts == ''){ $multipleAttempts = '0';}
 $showSolution = mysqli_real_escape_string($conn,$_POST["showSolution"]);
 if ($showSolution == ''){ $showSolution = '1';}
+$showSolutionInGradebook = mysqli_real_escape_string($conn,$_POST["showSolutionInGradebook"]);
+if ($showSolutionInGradebook == ''){ $showSolutionInGradebook = '1';}
 $showFeedback = mysqli_real_escape_string($conn,$_POST["showFeedback"]);
 if ($showFeedback == ''){ $showFeedback = '1';}
 $showHints = mysqli_real_escape_string($conn,$_POST["showHints"]);
@@ -85,6 +87,7 @@ gradeCategory = '$gradeCategory',
 individualize = '$individualize',
 multipleAttempts = '$multipleAttempts',
 showSolution = '$showSolution',
+showSolutionInGradebook = '$showSolutionInGradebook',
 showFeedback = '$showFeedback',
 showHints = '$showHints',
 showCorrectness = '$showCorrectness',
@@ -111,6 +114,7 @@ $result = $conn->query($sql);
   individualize,
   multipleAttempts,
   showSolution,
+  showSolutionInGradebook,
   showFeedback,
   showHints,
   showCorrectness,
@@ -131,6 +135,7 @@ $result = $conn->query($sql);
   '$individualize',
   '$multipleAttempts',
   '$showSolution',
+  '$showSolutionInGradebook',
   '$showFeedback',
   '$showHints',
   '$showCorrectness',

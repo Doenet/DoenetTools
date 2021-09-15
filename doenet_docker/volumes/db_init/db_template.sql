@@ -7,7 +7,7 @@
 #
 # Host: 127.0.0.1 (MySQL 5.7.29)
 # Database: doenet_local
-# Generation Time: 2021-09-04 23:32:03 +0000
+# Generation Time: 2021-09-14 18:43:15 +0000
 # ************************************************************
 
 
@@ -41,6 +41,7 @@ CREATE TABLE `assignment` (
   `individualize` tinyint(1) NOT NULL DEFAULT '0',
   `multipleAttempts` tinyint(1) NOT NULL DEFAULT '0',
   `showSolution` tinyint(1) NOT NULL DEFAULT '1',
+  `showSolutionInGradebook` tinyint(1) NOT NULL DEFAULT '1',
   `showFeedback` tinyint(1) NOT NULL DEFAULT '1',
   `showHints` tinyint(1) NOT NULL DEFAULT '1',
   `showCorrectness` tinyint(1) NOT NULL DEFAULT '1',
@@ -53,9 +54,9 @@ CREATE TABLE `assignment` (
 LOCK TABLES `assignment` WRITE;
 /*!40000 ALTER TABLE `assignment` DISABLE KEYS */;
 
-INSERT INTO `assignment` (`id`, `doenetId`, `contentId`, `driveId`, `assignedDate`, `dueDate`, `timeLimit`, `numberOfAttemptsAllowed`, `sortOrder`, `attemptAggregation`, `totalPointsOrPercent`, `gradeCategory`, `individualize`, `multipleAttempts`, `showSolution`, `showFeedback`, `showHints`, `showCorrectness`, `proctorMakesAvailable`, `examCoverHTML`)
+INSERT INTO `assignment` (`id`, `doenetId`, `contentId`, `driveId`, `assignedDate`, `dueDate`, `timeLimit`, `numberOfAttemptsAllowed`, `sortOrder`, `attemptAggregation`, `totalPointsOrPercent`, `gradeCategory`, `individualize`, `multipleAttempts`, `showSolution`, `showSolutionInGradebook`, `showFeedback`, `showHints`, `showCorrectness`, `proctorMakesAvailable`, `examCoverHTML`)
 VALUES
-	(488,'doenetId',NULL,'driveId','2021-06-04 08:20:07','2021-06-09 08:20:07',101000,2,NULL,'m',0,'l',0,0,1,1,1,1,0,NULL);
+	(488,'doenetId',NULL,'driveId','2021-06-04 08:20:07','2021-06-09 08:20:07',101000,2,NULL,'m',0,'l',0,0,1,1,1,1,1,0,NULL);
 
 /*!40000 ALTER TABLE `assignment` ENABLE KEYS */;
 UNLOCK TABLES;

@@ -1,5 +1,5 @@
 import { c as createCommonjsModule, a as commonjsGlobal } from './_commonjsHelpers-b3efd043.js';
-import { c as core } from './core-f361e730.js';
+import { c as core } from './core-acf8b131.js';
 
 var encBase64 = createCommonjsModule(function (module, exports) {
 (function (root, factory) {
@@ -117,8 +117,7 @@ var encBase64 = createCommonjsModule(function (module, exports) {
 	          if (i % 4) {
 	              var bits1 = reverseMap[base64Str.charCodeAt(i - 1)] << ((i % 4) * 2);
 	              var bits2 = reverseMap[base64Str.charCodeAt(i)] >>> (6 - (i % 4) * 2);
-	              var bitsCombined = bits1 | bits2;
-	              words[nBytes >>> 2] |= bitsCombined << (24 - (nBytes % 4) * 8);
+	              words[nBytes >>> 2] |= (bits1 | bits2) << (24 - (nBytes % 4) * 8);
 	              nBytes++;
 	          }
 	      }

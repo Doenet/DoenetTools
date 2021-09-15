@@ -66,7 +66,7 @@ export default function CreditAchieved(){
     return null;
   }
   if (disabled){
-    return <div style={{fontSize:"20px",textAlign:"center"}}>Not Available</div>
+    return <div style={{fontSize:"20px",textAlign:"center"}}>Not Shown</div>
   }
 
 

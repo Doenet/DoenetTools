@@ -26,7 +26,7 @@ export default function CreditAchieved() {
       showCorrectness,
       totalPointsOrPercent: totalPointsOrPercent2
     } = data;
-    if (Number(showCorrectness) === 0) {
+    if (Number(showCorrectness) === 0 && tool.substring(0, 9) !== "gradebook") {
       setDisabled(true);
     } else {
       set(creditAchievedAtom, (was) => {
@@ -51,7 +51,7 @@ export default function CreditAchieved() {
   if (disabled) {
     return /* @__PURE__ */ React.createElement("div", {
       style: {fontSize: "20px", textAlign: "center"}
-    }, "Not Available");
+    }, "Not Shown");
   }
   let score = 0;
   if (creditForAssignment) {
