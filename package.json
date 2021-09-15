@@ -97,7 +97,7 @@
     "http-proxy": "^1.18.1",
     "lezer-generator": "^0.13.3",
     "prettier": "^2.4.0",
-    "snowpack": "^3.8.8",
+    "snowpack": "^3.7.0",
     "snowpack-plugin-raw-file-loader": "^1.0.9"
   },
   "eslintConfig": {
