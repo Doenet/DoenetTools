@@ -71,7 +71,7 @@ const loadAssignmentAtomFamily = atomFamily({
       });
       let assignment = { ...data.assignment };
 
-      if (assignment.assignedDate !== null){
+      if (assignment.assignedDate){
         // Split timestamp into [ Y, M, D, h, m, s ]
         let t = data.assignment.assignedDate.split(/[- :]/);
         // Apply each element to the Date function
@@ -79,7 +79,7 @@ const loadAssignmentAtomFamily = atomFamily({
           Date.UTC(t[0], t[1]-1, t[2], t[3], t[4], t[5])
         ).toLocaleString();
       }
-      if (assignment.dueDate !== null){
+      if (assignment.dueDate){
         // Split timestamp into [ Y, M, D, h, m, s ]
         let t = data.assignment.dueDate.split(/[- :]/);
         // Apply each element to the Date function
