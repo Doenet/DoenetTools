@@ -8,6 +8,7 @@ import useSockets from "../../_reactComponents/Sockets.js";
 import {selectedMenuPanelAtom} from "../Panels/NewMenuPanel.js";
 import {selectedInformation} from "./SelectedDoenetML.js";
 import ButtonGroup from "../../_reactComponents/PanelHeaderComponents/ButtonGroup.js";
+import Textfield from "../../_reactComponents/PanelHeaderComponents/Textfield.js";
 import {pageToolViewAtom} from "../NewToolRoot.js";
 import {useToast} from "../Toast.js";
 export default function SelectedFolder() {
@@ -46,8 +47,10 @@ export default function SelectedFolder() {
   }
   let modControl = null;
   if (role === "instructor") {
-    modControl = /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("label", null, item.itemType, " Label", /* @__PURE__ */ React.createElement("input", {
-      type: "text",
+    modControl = /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(Textfield, {
+      label: "Folder Label",
+      vertical: true,
+      width: "menu",
       "data-cy": "infoPanelItemLabelInput",
       value: label,
       onChange: (e) => setLabel(e.target.value),
@@ -75,7 +78,7 @@ export default function SelectedFolder() {
           renameItemCallback(effectiveLabel);
         }
       }
-    })), /* @__PURE__ */ React.createElement("br", null), /* @__PURE__ */ React.createElement(ButtonGroup, {
+    }), /* @__PURE__ */ React.createElement("br", null), /* @__PURE__ */ React.createElement(ButtonGroup, {
       vertical: true
     }, /* @__PURE__ */ React.createElement(Button, {
       alert: true,

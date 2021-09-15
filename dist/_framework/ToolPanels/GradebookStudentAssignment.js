@@ -40,9 +40,13 @@ export default function GradebookStudentAssignmentView(props) {
     return null;
   }
   async function loadAssignmentInfo(doenetId2, userId2) {
-    const {data} = await axios.get(`/api/getContentIdsAndVariants.php`, {params: {doenetId: doenetId2, userId: userId2}});
+    const {data} = await axios.get(`/api/getGradebookAssignmentAttempts.php`, {params: {doenetId: doenetId2, userId: userId2}});
     let dataAttemptInfo = [];
     let contentIdToDoenetML = {};
+    let solutionDisplayMode = "none";
+    if (data.showSolutionInGradebook) {
+      solutionDisplayMode = "button";
+    }
     for (let attempt of data.attemptInfo) {
       let gvariant = JSON.parse(attempt.variant, serializedComponentsReviver);
       let doenetML = contentIdToDoenetML[attempt.contentId];
@@ -50,7 +54,8 @@ export default function GradebookStudentAssignmentView(props) {
         dataAttemptInfo.push({
           contentId: attempt.contentId,
           variant: {name: gvariant.name},
-          doenetML
+          doenetML,
+          solutionDisplayMode
         });
       } else {
         const {data: data2} = await axios.get(`/media/${attempt.contentId}.doenet`);
@@ -58,7 +63,8 @@ export default function GradebookStudentAssignmentView(props) {
         dataAttemptInfo.push({
           contentId: attempt.contentId,
           variant: {name: gvariant.name},
-          doenetML: data2
+          doenetML: data2,
+          solutionDisplayMode
         });
       }
     }
@@ -115,6 +121,7 @@ export default function GradebookStudentAssignmentView(props) {
   if (attemptNumber > 0) {
     let variant = attemptsInfo[attemptNumber - 1].variant;
     let doenetML = attemptsInfo[attemptNumber - 1].doenetML;
+    let solutionDisplayMode = attemptsInfo[attemptNumber - 1].solutionDisplayMode;
     dViewer = /* @__PURE__ */ React.createElement(DoenetViewer, {
       key: `doenetviewer${doenetId}`,
       doenetML,
@@ -123,7 +130,7 @@ export default function GradebookStudentAssignmentView(props) {
       flags: {
         showCorrectness: true,
         readOnly: true,
-        solutionDisplayMode: "button",
+        solutionDisplayMode,
         showFeedback: true,
         showHints: true,
         isAssignment: true

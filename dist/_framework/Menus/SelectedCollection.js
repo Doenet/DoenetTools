@@ -15,6 +15,7 @@ import {AssignmentSettings, selectedInformation} from "./SelectedDoenetML.js";
 import ButtonGroup from "../../_reactComponents/PanelHeaderComponents/ButtonGroup.js";
 import ActionButtonGroup from "../../_reactComponents/PanelHeaderComponents/ActionButtonGroup.js";
 import ActionButton from "../../_reactComponents/PanelHeaderComponents/ActionButton.js";
+import Textfield from "../../_reactComponents/PanelHeaderComponents/Textfield.js";
 export default function SelectedCollection() {
   const [{view}, setPageToolView] = useRecoilState(pageToolViewAtom);
   const setSelectedMenu = useSetRecoilState(selectedMenuPanelAtom);
@@ -84,8 +85,10 @@ export default function SelectedCollection() {
         }
       });
     }
-  })), /* @__PURE__ */ React.createElement("br", null), /* @__PURE__ */ React.createElement("label", null, "Collection Label", /* @__PURE__ */ React.createElement("input", {
-    type: "text",
+  })), /* @__PURE__ */ React.createElement(Textfield, {
+    label: "Collection Label",
+    width: "menu",
+    vertical: true,
     "data-cy": "infoPanelItemLabelInput",
     value: label,
     onChange: (e) => setLabel(e.target.value),
@@ -101,7 +104,7 @@ export default function SelectedCollection() {
         renameItemCallback(label);
       }
     }
-  })), /* @__PURE__ */ React.createElement("br", null), /* @__PURE__ */ React.createElement(AssignmentSettings, {
+  }), /* @__PURE__ */ React.createElement("br", null), /* @__PURE__ */ React.createElement(AssignmentSettings, {
     role: view,
     doenetId: item.doenetId
   }), /* @__PURE__ */ React.createElement("br", null), /* @__PURE__ */ React.createElement(ButtonGroup, {
