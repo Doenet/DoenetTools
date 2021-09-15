@@ -13,12 +13,12 @@ export default function Textfield(props) {
     value: "Enter text here",
     resize: "none",
     whiteSpace: "nowrap",
-    padding: "0px 10px 0px 10px;",
+    padding: "0px 5px 0px 5px",
     lineHeight: "24px"
   };
   var label = {
     value: "Label:",
-    fontSize: "12px",
+    fontSize: "14px",
     display: `${labelVisible}`,
     marginRight: "5px",
     marginBottom: `${align == "flex" ? "none" : "0px"}`
@@ -45,26 +45,40 @@ export default function Textfield(props) {
   }
   if (props.width) {
     if (props.width === "menu") {
-      textfield.width = "235px";
+      textfield.width = "200px";
       if (props.label) {
-        container.width = "235px";
-        textfield.width = "100%";
+        container.width = "200px";
       }
     }
   }
   function handleChange(e) {
     if (props.onChange)
-      props.onChange(e.target.value);
+      props.onChange(e);
+  }
+  function handleBlur(e) {
+    if (props.onBlur)
+      props.onBlur(e);
+  }
+  function handleKeyDown(e) {
+    if (props.onKeyDown)
+      props.onKeyDown(e);
   }
   return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("div", {
     style: container
   }, /* @__PURE__ */ React.createElement("p", {
     style: label
-  }, label.value), /* @__PURE__ */ React.createElement("textarea", {
-    defaultValue: textfield.value,
+  }, label.value), /* @__PURE__ */ React.createElement("input", {
+    type: "text",
+    value: textfield.value,
     style: textfield,
     onChange: (e) => {
       handleChange(e);
+    },
+    onBlur: (e) => {
+      handleBlur(e);
+    },
+    onKeyDown: (e) => {
+      handleKeyDown(e);
     },
     disabled: disable
   })));

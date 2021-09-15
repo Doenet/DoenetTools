@@ -100,6 +100,7 @@ export default function useSockets(nsp) {
         showFeedback: true,
         showHints: true,
         showSolution: true,
+        showSolutionInGradebook: true,
         timeLimit: null,
         totalPointsOrPercent: "10",
         assignment_isPublished: "0"
@@ -123,6 +124,7 @@ export default function useSockets(nsp) {
         showFeedback: true,
         showHints: true,
         showSolution: true,
+        showSolutionInGradebook: true,
         timeLimit: null,
         totalPointsOrPercent: "10",
         assignment_isPublished: "0"

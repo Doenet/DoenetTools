@@ -55,11 +55,11 @@ const loadAssignmentAtomFamily = atomFamily({
         params: payload
       });
       let assignment = {...data.assignment};
-      if (assignment.assignedDate !== null) {
+      if (assignment.assignedDate) {
         let t = data.assignment.assignedDate.split(/[- :]/);
         assignment.assignedDate = new Date(Date.UTC(t[0], t[1] - 1, t[2], t[3], t[4], t[5])).toLocaleString();
       }
-      if (assignment.dueDate !== null) {
+      if (assignment.dueDate) {
         let t = data.assignment.dueDate.split(/[- :]/);
         assignment.dueDate = new Date(Date.UTC(t[0], t[1] - 1, t[2], t[3], t[4], t[5])).toLocaleString();
       }

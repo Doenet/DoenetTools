@@ -64,9 +64,10 @@ export default function GradebookStudentAssignmentView(props){
         let dataAttemptInfo = [];
         let contentIdToDoenetML = {}; //Don't request from server more than once
         let solutionDisplayMode = 'none';
-        if(data.showSolutionInGradebook) {
+        if(data.showSolutionInGradebook === '1') {
             solutionDisplayMode = 'button';
         }
+
         for (let attempt of data.attemptInfo){
             let gvariant = JSON.parse(attempt.variant, serializedComponentsReviver);
             let doenetML = contentIdToDoenetML[attempt.contentId];

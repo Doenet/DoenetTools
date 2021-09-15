@@ -15,8 +15,9 @@ import {
   globalSelectedNodesAtom
 } from "../../_reactComponents/Drive/NewDrive.js";
 import Button from "../../_reactComponents/PanelHeaderComponents/Button.js";
+import Textfield from "../../_reactComponents/PanelHeaderComponents/Textfield.js";
 import ActionButton from "../../_reactComponents/PanelHeaderComponents/ActionButton.js";
-import ActionButtonGroup from "../../_reactComponents/PanelHeaderComponents/ActionButtonGroup.js";
+import ButtonGroup from "../../_reactComponents/PanelHeaderComponents/ButtonGroup.js";
 import useSockets from "../../_reactComponents/Sockets.js";
 import {pageToolViewAtom} from "../NewToolRoot.js";
 import Switch from "../Switch.js";
@@ -147,9 +148,9 @@ export default function SelectedDoenetML() {
     "data-cy": "infoPanelItemLabel"
   }, /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
     icon: faCode
-  }), " ", item.label), /* @__PURE__ */ React.createElement(ActionButtonGroup, {
+  }), " ", item.label), /* @__PURE__ */ React.createElement(ButtonGroup, {
     vertical: true
-  }, /* @__PURE__ */ React.createElement(ActionButton, {
+  }, /* @__PURE__ */ React.createElement(Button, {
     width: "menu",
     value: "Edit DoenetML",
     onClick: () => {
@@ -163,7 +164,7 @@ export default function SelectedDoenetML() {
         }
       });
     }
-  }), /* @__PURE__ */ React.createElement(ActionButton, {
+  }), /* @__PURE__ */ React.createElement(Button, {
     width: "menu",
     value: "Take Assignment",
     onClick: () => {
@@ -176,8 +177,10 @@ export default function SelectedDoenetML() {
         }
       });
     }
-  })), /* @__PURE__ */ React.createElement("br", null), /* @__PURE__ */ React.createElement("label", null, "DoenetML Label", /* @__PURE__ */ React.createElement("input", {
-    type: "text",
+  })), /* @__PURE__ */ React.createElement(Textfield, {
+    label: "DoenetML Label",
+    width: "menu",
+    vertical: true,
     "data-cy": "infoPanelItemLabelInput",
     value: label,
     onChange: (e) => setLabel(e.target.value),
@@ -205,7 +208,7 @@ export default function SelectedDoenetML() {
         renameItemCallback(effectiveLabel, item);
       }
     }
-  })), /* @__PURE__ */ React.createElement("br", null), /* @__PURE__ */ React.createElement("br", null), /* @__PURE__ */ React.createElement(Button, {
+  }), /* @__PURE__ */ React.createElement("br", null), /* @__PURE__ */ React.createElement(Button, {
     width: "menu",
     value: assignDraftLabel,
     onClick: () => assignUnassign(item)
@@ -244,6 +247,7 @@ export function AssignmentSettings({role, doenetId}) {
   let [gradeCategory, setGradeCategory] = useState("");
   let [individualize, setIndividualize] = useState(true);
   let [showSolution, setShowSolution] = useState(true);
+  let [showSolutionInGradebook, setShowSolutionInGradebook] = useState(true);
   let [showFeedback, setShowFeedback] = useState(true);
   let [showHints, setShowHints] = useState(true);
   let [showCorrectness, setShowCorrectness] = useState(true);
@@ -284,6 +288,7 @@ export function AssignmentSettings({role, doenetId}) {
     setGradeCategory(aInfo?.gradeCategory);
     setIndividualize(aInfo?.individualize);
     setShowSolution(aInfo?.showSolution);
+    setShowSolutionInGradebook(aInfo?.showSolutionInGradebook);
     setShowFeedback(aInfo?.showFeedback);
     setShowHints(aInfo?.showHints);
     setShowCorrectness(aInfo?.showCorrectness);
@@ -596,6 +601,22 @@ export function AssignmentSettings({role, doenetId}) {
       });
     },
     checked: showSolution
+  }))), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("label", null, "Show Solution In Gradebook", /* @__PURE__ */ React.createElement(Switch, {
+    name: "showSolutionInGradebook",
+    onChange: (e) => {
+      let valueDescription = "False";
+      if (e.currentTarget.checked) {
+        valueDescription = "True";
+      }
+      updateAssignment({
+        doenetId,
+        keyToUpdate: "showSolutionInGradebook",
+        value: e.currentTarget.checked,
+        description: "Show Solution In Gradebook",
+        valueDescription
+      });
+    },
+    checked: showSolutionInGradebook
   }))), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("label", null, "Show Feedback", /* @__PURE__ */ React.createElement(Switch, {
     name: "showFeedback",
     onChange: (e) => {
