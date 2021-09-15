@@ -44,7 +44,7 @@ export default function GradebookStudentAssignmentView(props) {
     let dataAttemptInfo = [];
     let contentIdToDoenetML = {};
     let solutionDisplayMode = "none";
-    if (data.showSolutionInGradebook) {
+    if (data.showSolutionInGradebook === "1") {
       solutionDisplayMode = "button";
     }
     for (let attempt of data.attemptInfo) {
