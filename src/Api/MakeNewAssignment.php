@@ -39,6 +39,9 @@ else if ($multipleAttempts){ $multipleAttempts = '1';}
 $showSolution = mysqli_real_escape_string($conn,$_POST["showSolution"]);
 if ($showSolution == ''){ $showSolution = '0';}
 else if($showSolution){ $showSolution = '1';}
+$showSolutionInGradebook = mysqli_real_escape_string($conn,$_POST["showSolutionInGradebook"]);
+if ($showSolutionInGradebook == ''){ $showSolutionInGradebook = '0';}
+else if($showSolutionInGradebook){ $showSolutionInGradebook = '1';}
 $showFeedback = mysqli_real_escape_string($conn,$_POST["showFeedback"]);
 if ($showFeedback == ''){ $showFeedback = '0';}
 else if ($showFeedback){ $showFeedback = '1';}
@@ -81,6 +84,7 @@ if ($success){
       individualize=$individualize,
       multipleAttempts=$multipleAttempts,
       showSolution=$showSolution,
+      showSolutionInGradebook=$showSolutionInGradebook,
       showFeedback=$showFeedback,
       showHints=$showHints,
       showCorrectness=$showCorrectness,
@@ -106,6 +110,7 @@ if ($success){
       individualize,
       multipleAttempts,
       showSolution,
+      showSolutionInGradebook,
       showFeedback,
       showHints,
       showCorrectness,
@@ -125,6 +130,7 @@ if ($success){
       '$individualize',
       '$multipleAttempts',
       '$showSolution',
+      '$showSolutionInGradebook',
       '$showFeedback',
       '$showHints',
       '$showCorrectness',

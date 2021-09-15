@@ -36,7 +36,7 @@ if ($studentUserId == ""){
   $studentUserId = $userId;
 }
 //We let users see their own grades
-//But if it's a differnet student you need to 
+//But if it's a different student you need to 
 //have permission
 if ($success && $studentUserId != $userId){
   //TODO: Need a permission related to see grades (not du.canEditContent)

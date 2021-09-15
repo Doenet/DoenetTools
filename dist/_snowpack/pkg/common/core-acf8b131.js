@@ -1,13 +1,4 @@
-import { d as getDefaultExportFromNamespaceIfNotNamed, c as createCommonjsModule, b as commonjsRequire, a as commonjsGlobal } from './_commonjsHelpers-b3efd043.js';
-
-var _nodeResolve_empty = {};
-
-var _nodeResolve_empty$1 = /*#__PURE__*/Object.freeze({
-	__proto__: null,
-	'default': _nodeResolve_empty
-});
-
-var require$$0 = /*@__PURE__*/getDefaultExportFromNamespaceIfNotNamed(_nodeResolve_empty$1);
+import { c as createCommonjsModule, a as commonjsGlobal } from './_commonjsHelpers-b3efd043.js';
 
 var core = createCommonjsModule(function (module, exports) {
 (function (root, factory) {
@@ -17,79 +8,15 @@ var core = createCommonjsModule(function (module, exports) {
 	}
 }(commonjsGlobal, function () {
 
-	/*globals window, global, require*/
-
 	/**
 	 * CryptoJS core components.
 	 */
 	var CryptoJS = CryptoJS || (function (Math, undefined$1) {
-
-	    var crypto;
-
-	    // Native crypto from window (Browser)
-	    if (typeof window !== 'undefined' && window.crypto) {
-	        crypto = window.crypto;
-	    }
-
-	    // Native crypto in web worker (Browser)
-	    if (typeof self !== 'undefined' && self.crypto) {
-	        crypto = self.crypto;
-	    }
-
-	    // Native crypto from worker
-	    if (typeof globalThis !== 'undefined' && globalThis.crypto) {
-	        crypto = globalThis.crypto;
-	    }
-
-	    // Native (experimental IE 11) crypto from window (Browser)
-	    if (!crypto && typeof window !== 'undefined' && window.msCrypto) {
-	        crypto = window.msCrypto;
-	    }
-
-	    // Native crypto from global (NodeJS)
-	    if (!crypto && typeof commonjsGlobal !== 'undefined' && commonjsGlobal.crypto) {
-	        crypto = commonjsGlobal.crypto;
-	    }
-
-	    // Native crypto import via require (NodeJS)
-	    if (!crypto && typeof commonjsRequire === 'function') {
-	        try {
-	            crypto = require$$0;
-	        } catch (err) {}
-	    }
-
 	    /*
-	     * Cryptographically secure pseudorandom number generator
-	     *
-	     * As Math.random() is cryptographically not safe to use
-	     */
-	    var cryptoSecureRandomInt = function () {
-	        if (crypto) {
-	            // Use getRandomValues method (Browser)
-	            if (typeof crypto.getRandomValues === 'function') {
-	                try {
-	                    return crypto.getRandomValues(new Uint32Array(1))[0];
-	                } catch (err) {}
-	            }
-
-	            // Use randomBytes method (NodeJS)
-	            if (typeof crypto.randomBytes === 'function') {
-	                try {
-	                    return crypto.randomBytes(4).readInt32LE();
-	                } catch (err) {}
-	            }
-	        }
-
-	        throw new Error('Native crypto module could not be used to get secure random number.');
-	    };
-
-	    /*
-	     * Local polyfill of Object.create
-
+	     * Local polyfil of Object.create
 	     */
 	    var create = Object.create || (function () {
 	        function F() {}
-
 	        return function (obj) {
 	            var subtype;
 
@@ -312,8 +239,8 @@ var core = createCommonjsModule(function (module, exports) {
 	                }
 	            } else {
 	                // Copy one word at a time
-	                for (var j = 0; j < thatSigBytes; j += 4) {
-	                    thisWords[(thisSigBytes + j) >>> 2] = thatWords[j >>> 2];
+	                for (var i = 0; i < thatSigBytes; i += 4) {
+	                    thisWords[(thisSigBytes + i) >>> 2] = thatWords[i >>> 2];
 	                }
 	            }
 	            this.sigBytes += thatSigBytes;
@@ -371,8 +298,26 @@ var core = createCommonjsModule(function (module, exports) {
 	        random: function (nBytes) {
 	            var words = [];
 
-	            for (var i = 0; i < nBytes; i += 4) {
-	                words.push(cryptoSecureRandomInt());
+	            var r = (function (m_w) {
+	                var m_w = m_w;
+	                var m_z = 0x3ade68b1;
+	                var mask = 0xffffffff;
+
+	                return function () {
+	                    m_z = (0x9069 * (m_z & 0xFFFF) + (m_z >> 0x10)) & mask;
+	                    m_w = (0x4650 * (m_w & 0xFFFF) + (m_w >> 0x10)) & mask;
+	                    var result = ((m_z << 0x10) + m_w) & mask;
+	                    result /= 0x100000000;
+	                    result += 0.5;
+	                    return result * (Math.random() > .5 ? 1 : -1);
+	                }
+	            });
+
+	            for (var i = 0, rcache; i < nBytes; i += 4) {
+	                var _r = r((rcache || Math.random()) * 0x100000000);
+
+	                rcache = _r() * 0x3ade67b7;
+	                words.push((_r() * 0x100000000) | 0);
 	            }
 
 	            return new WordArray.init(words, nBytes);
@@ -603,8 +548,6 @@ var core = createCommonjsModule(function (module, exports) {
 	         *     var processedData = bufferedBlockAlgorithm._process(!!'flush');
 	         */
 	        _process: function (doFlush) {
-	            var processedWords;
-
 	            // Shortcuts
 	            var data = this._data;
 	            var dataWords = data.words;
@@ -637,7 +580,7 @@ var core = createCommonjsModule(function (module, exports) {
 	                }
 
 	                // Remove processed words
-	                processedWords = dataWords.splice(0, nWordsReady);
+	                var processedWords = dataWords.splice(0, nWordsReady);
 	                data.sigBytes -= nBytesReady;
 	            }
 

@@ -3438,7 +3438,7 @@ export default class Core {
 
   checkForActionChaining({ component, stateVariables }) {
 
-    if(!component) {
+    if (!component) {
       return;
     }
 
@@ -7706,9 +7706,11 @@ export default class Core {
   }
 
 
-  requestUpdate({ updateInstructions, transient = false, event, skippable = false }) {
+  requestUpdate({ updateInstructions, transient = false, event, skippable = false,
+    overrideReadOnly = false
+  }) {
 
-    if (this.flags.readOnly) {
+    if (this.flags.readOnly && !overrideReadOnly) {
 
       let sourceInformation = {};
 
