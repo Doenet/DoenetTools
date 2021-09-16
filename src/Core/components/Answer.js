@@ -2,8 +2,9 @@ import InlineComponent from './abstract/InlineComponent';
 import { deepCompare } from '../utils/deepFunctions';
 import { renameStateVariable } from '../utils/stateVariables';
 import { serializedComponentsReplacer, serializedComponentsReviver } from '../utils/serializedStateProcessing';
-// import sha1 from 'crypto-js/sha1';
-// import Base64 from 'crypto-js/enc-base64';
+import sha1 from 'crypto-js/sha1';
+import Base64 from 'crypto-js/enc-base64';
+import stringify from 'json-stringify-deterministic';
 
 export default class Answer extends InlineComponent {
   static componentType = "answer";
@@ -1047,6 +1048,7 @@ export default class Answer extends InlineComponent {
 
 
     stateVariableDefinitions.creditAchievedDependencies = {
+      additionalStateVariablesDefined: ["creditAchievedDependenciesOld"],
       returnDependencies: () => ({
         currentCreditAchievedDependencies: {
           dependencyType: "recursiveDependencyValues",
@@ -1056,21 +1058,23 @@ export default class Answer extends InlineComponent {
         },
       }),
       definition({ dependencyValues }) {
-        // we JSON.stringify because we may need to compare
-        // to values that have been JSON.stringified due to
-        // being saved in the database.
-        // JSON.stringify removes some elements (e.g. functions)
-        // so we want to use it everywhere do get a consistent comparison
+        // Use stringify from json-stringify-deterministic
+        // so that the string will be the same
+        // even if the object was built in a different order
+        // (as can happen when reloading from a database)
+
+        // For now, we also calculate the old, non-hashed dependencies
+        // so we can compare with values that were saved in database
+        // from the old system
+        let stringified = stringify(
+          dependencyValues.currentCreditAchievedDependencies,
+          { replacer: serializedComponentsReplacer }
+        );
         return {
           newValues: {
-            creditAchievedDependencies:
-              JSON.parse(
-                JSON.stringify(
-                  dependencyValues.currentCreditAchievedDependencies,
-                  serializedComponentsReplacer
-                ),
-                serializedComponentsReviver
-              )
+            creditAchievedDependenciesOld:
+              JSON.parse(stringified, serializedComponentsReviver),
+            creditAchievedDependencies: Base64.stringify(sha1(stringified))
           }
         }
       },
@@ -1107,6 +1111,10 @@ export default class Answer extends InlineComponent {
           dependencyType: "stateVariable",
           variableName: "creditAchievedDependencies",
         },
+        currentCreditAchievedDependenciesOld: {
+          dependencyType: "stateVariable",
+          variableName: "creditAchievedDependenciesOld",
+        },
         creditAchievedDependenciesAtSubmit: {
           dependencyType: "stateVariable",
           variableName: "creditAchievedDependenciesAtSubmit"
@@ -1117,20 +1125,19 @@ export default class Answer extends InlineComponent {
 
         let foundChange = true;
 
-        // Note: 
-        // - using deepCompare, because JSON.stringify does not produce
-        //   a canonical order of object, and may incorrectly indicate a change
-        //   if the objects were created in a different order
-        //   (as can happen when reconstructing a document from the database)
-
-        // TODO: we already JSON.stringified and parsed when creating the variables
-        // (so that it is consistent in case we've loaded from the database)
-        // Is there a way to accomplish this more efficiently, 
-        // i.e., without doing two passes
 
         if (dependencyValues.creditAchievedDependenciesAtSubmit) {
-          foundChange = !deepCompare(dependencyValues.currentCreditAchievedDependencies,
-            dependencyValues.creditAchievedDependenciesAtSubmit)
+          if (typeof dependencyValues.creditAchievedDependenciesAtSubmit === "string") {
+            foundChange = dependencyValues.creditAchievedDependenciesAtSubmit
+              !== dependencyValues.currentCreditAchievedDependencies;
+          } else {
+
+            // For now, we keep this backward-compatible code
+            // in case we compare with old dependencies
+            // that were saved in the database
+            foundChange = !deepCompare(dependencyValues.currentCreditAchievedDependenciesOld,
+              dependencyValues.creditAchievedDependenciesAtSubmit)
+          }
         }
 
         if (foundChange) {

@@ -23,15 +23,19 @@ $gradeCategory = mysqli_real_escape_string($conn,$_POST["gradeCategory"]);
 $individualize = mysqli_real_escape_string($conn,$_POST["individualize"]);
 $multipleAttempts = mysqli_real_escape_string($conn,$_POST["multipleAttempts"]);
 $showSolution = mysqli_real_escape_string($conn,$_POST["showSolution"]);
+$showSolutionInGradebook = mysqli_real_escape_string($conn,$_POST["showSolutionInGradebook"]);
 $showFeedback = mysqli_real_escape_string($conn,$_POST["showFeedback"]);
 $showHints = mysqli_real_escape_string($conn,$_POST["showHints"]);
 $showCorrectness = mysqli_real_escape_string($conn,$_POST["showCorrectness"]);
 $proctorMakesAvailable = mysqli_real_escape_string($conn,$_POST["proctorMakesAvailable"]);
 if ($timeLimit == ''){$timeLimit = 'NULL';} else {$timeLimit = "'$timeLimit'"; }
+if ($dueDate == ''){$dueDate = 'NULL';} else {$dueDate = "'$dueDate'"; }
+if ($assignedDate == ''){$assignedDate = 'NULL';} else {$assignedDate = "'$assignedDate'"; }
 if ($numberOfAttemptsAllowed == ''){$numberOfAttemptsAllowed = 'NULL';} else {$numberOfAttemptsAllowed = "'$numberOfAttemptsAllowed'"; }
 if ($individualize){ $individualize = '1'; } else { $individualize = '0'; }
 if ($multipleAttempts){ $multipleAttempts = '1'; } else { $multipleAttempts = '0'; }
 if ($showSolution){ $showSolution = '1'; } else { $showSolution = '0'; }
+if ($showSolutionInGradebook){ $showSolutionInGradebook = '1'; } else { $showSolutionInGradebook = '0'; }
 if ($showFeedback){ $showFeedback = '1'; } else { $showFeedback = '0'; }
 if ($showHints){ $showHints = '1'; } else { $showHints = '0'; }
 if ($showCorrectness){ $showCorrectness = '1'; } else { $showCorrectness = '0'; }
@@ -54,8 +58,8 @@ if ($doenetId == ""){
 if ($success){
 
 $sql = "UPDATE assignment SET
-assignedDate = '$assignedDate',
-dueDate = '$dueDate',
+assignedDate = $assignedDate,
+dueDate = $dueDate,
 timeLimit = $timeLimit,
 numberOfAttemptsAllowed = $numberOfAttemptsAllowed,
 attemptAggregation = '$attemptAggregation',
@@ -64,6 +68,7 @@ gradeCategory = '$gradeCategory',
 individualize = '$individualize',
 multipleAttempts = '$multipleAttempts',
 showSolution = '$showSolution',
+showSolutionInGradebook = '$showSolutionInGradebook',
 showFeedback = '$showFeedback',
 showHints = '$showHints',
 showCorrectness = '$showCorrectness',

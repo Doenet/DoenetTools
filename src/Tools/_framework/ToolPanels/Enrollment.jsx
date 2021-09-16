@@ -84,6 +84,18 @@ export default function Enrollment(props){
         bgcolor = "grey"
         button = <Button value="Enroll" onClick={(e) => enrollLearners(e,rowData.email)} />
       }
+
+      let enrolledDateString = '';
+      if (rowData.withdrew === '0'){
+        // Split timestamp into [ Y, M, D, h, m, s ]
+        let t = rowData.dateEnrolled.split(/[- :]/);
+        // Apply each element to the Date function
+        enrolledDateString = new Date(
+          Date.UTC(t[0], t[1]-1, t[2], t[3], t[4], t[5])
+        ).toLocaleString();
+
+      }
+
       enrollmentRows.push(
         <tr style={{backgroundColor:bgcolor}} key={`erow${i}`}>
           <td>
@@ -92,7 +104,7 @@ export default function Enrollment(props){
           <td>{rowData.section}</td>
           <td>{rowData.empId}</td>
           <td>{rowData.email}</td>
-          <td>{rowData.withdrew === '0'? new Date(`${rowData.dateEnrolled} UTC`).toLocaleString() : ''}</td>
+          <td>{enrolledDateString}</td>
           <td> {button} </td>
         </tr>,
       );

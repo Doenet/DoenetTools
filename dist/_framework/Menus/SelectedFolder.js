@@ -8,7 +8,9 @@ import useSockets from "../../_reactComponents/Sockets.js";
 import {selectedMenuPanelAtom} from "../Panels/NewMenuPanel.js";
 import {selectedInformation} from "./SelectedDoenetML.js";
 import ButtonGroup from "../../_reactComponents/PanelHeaderComponents/ButtonGroup.js";
+import Textfield from "../../_reactComponents/PanelHeaderComponents/Textfield.js";
 import {pageToolViewAtom} from "../NewToolRoot.js";
+import {useToast} from "../Toast.js";
 export default function SelectedFolder() {
   const pageToolView = useRecoilValue(pageToolViewAtom);
   const role = pageToolView.view;
@@ -17,6 +19,7 @@ export default function SelectedFolder() {
   const [item, setItem] = useState(selection[0]);
   const [label, setLabel] = useState(selection[0]?.label ?? "");
   const {deleteItem, renameItem} = useSockets("drive");
+  const addToast = useToast();
   useEffect(() => {
     if (!selection[0]) {
       setSelectedMenu("");
@@ -44,24 +47,38 @@ export default function SelectedFolder() {
   }
   let modControl = null;
   if (role === "instructor") {
-    modControl = /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("label", null, item.itemType, " Label", /* @__PURE__ */ React.createElement("input", {
-      type: "text",
+    modControl = /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(Textfield, {
+      label: "Folder Label",
+      vertical: true,
+      width: "menu",
       "data-cy": "infoPanelItemLabelInput",
       value: label,
       onChange: (e) => setLabel(e.target.value),
       onKeyDown: (e) => {
         if (e.key === "Enter") {
-          if (item.label !== label) {
-            renameItemCallback(label);
+          let effectiveLabel = label;
+          if (label === "") {
+            effectiveLabel = "Untitled";
+            addToast("Label for the folder can't be blank.");
+            setLabel(effectiveLabel);
+          }
+          if (item.label !== effectiveLabel) {
+            renameItemCallback(effectiveLabel);
+            setLabel(effectiveLabel);
           }
         }
       },
       onBlur: () => {
-        if (item.label !== label) {
-          renameItemCallback(label);
+        let effectiveLabel = label;
+        if (label === "") {
+          effectiveLabel = "Untitled";
+          addToast("Label for the folder can't be blank.");
+        }
+        if (item.label !== effectiveLabel) {
+          renameItemCallback(effectiveLabel);
         }
       }
-    })), /* @__PURE__ */ React.createElement("br", null), /* @__PURE__ */ React.createElement(ButtonGroup, {
+    }), /* @__PURE__ */ React.createElement("br", null), /* @__PURE__ */ React.createElement(ButtonGroup, {
       vertical: true
     }, /* @__PURE__ */ React.createElement(Button, {
       alert: true,

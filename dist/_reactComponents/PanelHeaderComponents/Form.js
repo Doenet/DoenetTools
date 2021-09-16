@@ -75,11 +75,13 @@ export default function Form(props) {
     marginRight: "5px",
     display: `${labelVisible}`
   };
+  var disable = "";
   if (props.disabled) {
     submitButton.backgroundColor = "#e2e2e2";
     submitButton.color = "black";
     submitButton.cursor = "not-allowed";
     textfield.cursor = "not-allowed";
+    disable = "disabled";
   }
   if (props.width) {
     if (props.width === "menu") {
@@ -139,7 +141,8 @@ export default function Form(props) {
     },
     onChange: (e) => {
       handleChange(e);
-    }
+    },
+    disabled: disable
   }), /* @__PURE__ */ React.createElement("button", {
     style: cancelButton,
     onClick: () => {

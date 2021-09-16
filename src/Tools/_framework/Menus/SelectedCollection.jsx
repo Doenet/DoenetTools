@@ -15,23 +15,21 @@ import { AssignmentSettings, selectedInformation } from './SelectedDoenetML';
 import ButtonGroup from '../../../_reactComponents/PanelHeaderComponents/ButtonGroup';
 import ActionButtonGroup from '../../../_reactComponents/PanelHeaderComponents/ActionButtonGroup';
 import ActionButton from '../../../_reactComponents/PanelHeaderComponents/ActionButton';
+import Textfield from '../../../_reactComponents/PanelHeaderComponents/Textfield';
 
 export default function SelectedCollection() {
   const [{ view }, setPageToolView] = useRecoilState(pageToolViewAtom);
   const setSelectedMenu = useSetRecoilState(selectedMenuPanelAtom);
   const selection = useRecoilValueLoadable(selectedInformation).getValue();
   const [item, setItem] = useState(selection[0]);
-  const [label, setLabel] = useState(selection[0]?.label ?? '');
+  const [label, setLabel] = useState(item?.label ?? '');
   const { deleteItem, renameItem } = useSockets('drive');
   useEffect(() => {
-    setLabel(item.label);
-  }, [item.label]);
-  useEffect(() => {
-    if (!selection[0]) {
-      setSelectedMenu('');
-    } else {
-      setItem(selection[0]);
+    if (selection[0]) {
       setLabel(selection[0]?.label);
+      setItem(selection[0]);
+    } else {
+      setSelectedMenu('');
     }
   }, [selection, setSelectedMenu]);
 
@@ -39,7 +37,7 @@ export default function SelectedCollection() {
     renameItem({
       driveIdFolderId: {
         driveId: item.driveId,
-        folderId: item.itemId,
+        folderId: item.parentFolderId,
       },
       itemId: item.itemId,
       itemType: item.itemType,
@@ -50,7 +48,7 @@ export default function SelectedCollection() {
     return (
       <>
         <h2 data-cy="infoPanelItemLabel">
-          <FontAwesomeIcon icon={faCode} /> {item?.label}
+          <FontAwesomeIcon icon={faCode} /> {item.label}
         </h2>
         <ActionButton
           width="menu"
@@ -73,7 +71,7 @@ export default function SelectedCollection() {
   return (
     <>
       <h2 data-cy="infoPanelItemLabel">
-        <FontAwesomeIcon icon={faLayerGroup} /> {item?.label}
+        <FontAwesomeIcon icon={faLayerGroup} /> {item.label}
       </h2>
       <ActionButtonGroup vertical>
         <ActionButton
@@ -82,7 +80,7 @@ export default function SelectedCollection() {
           onClick={() => {
             setPageToolView({
               page: 'course',
-              tool: 'editor',
+              tool: 'collection',
               view: '',
               params: {
                 doenetId: item.doenetId,
@@ -92,8 +90,29 @@ export default function SelectedCollection() {
           }}
         />
       </ActionButtonGroup>
-      <br />
-      <label>
+      
+      <Textfield 
+          label="Collection Label" 
+          width="menu" 
+          vertical 
+          data-cy="infoPanelItemLabelInput" 
+          value={label}
+          onChange={(e) => setLabel(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') {
+              //Only rename if label has changed
+              if (item.label !== label) {
+                renameItemCallback(label);
+              }
+            }
+          }}
+          onBlur={() => {
+            //Only rename if label has changed
+            if (item.label !== label) {
+              renameItemCallback(label);
+            }
+          }}/>
+      {/* <label>
         Collection Label
         <input
           type="text"
@@ -115,7 +134,7 @@ export default function SelectedCollection() {
             }
           }}
         />
-      </label>
+      </label> */}
       <br />
       <AssignmentSettings role={view} doenetId={item.doenetId} />
       <br />

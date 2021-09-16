@@ -3,6 +3,7 @@ import {useRecoilValue, useSetRecoilState, useRecoilValueLoadable} from "../../_
 import Button from "../../_reactComponents/PanelHeaderComponents/Button.js";
 import ButtonGroup from "../../_reactComponents/PanelHeaderComponents/ButtonGroup.js";
 import {pageToolViewAtom, searchParamAtomFamily, profileAtom} from "../NewToolRoot.js";
+import Next7Days from "../Widgets/Next7Days.js";
 export default function Dashboard(props) {
   const setPageToolView = useSetRecoilState(pageToolViewAtom);
   const path = useRecoilValue(searchParamAtomFamily("path"));
@@ -53,8 +54,8 @@ export default function Dashboard(props) {
       };
     })
   }))), /* @__PURE__ */ React.createElement("div", {
-    style: {border: "2px solid black", borderRadius: "5px", marginTop: "10px", height: "560px", margin: "10px"}
-  }, /* @__PURE__ */ React.createElement("p", {
-    style: {marginLeft: "18px"}
-  }, "More coming soon!")));
+    style: {marginTop: "10px", margin: "10px"}
+  }, /* @__PURE__ */ React.createElement(Next7Days, {
+    driveId
+  })));
 }

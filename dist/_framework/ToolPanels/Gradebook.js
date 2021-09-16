@@ -449,11 +449,6 @@ function GradebookOverview(props) {
     }
   }
   overviewTable.headers.push({
-    Header: "Weighted Credt",
-    accessor: "weight",
-    disableFilters: true
-  });
-  overviewTable.headers.push({
     Header: "Grade",
     accessor: "grade",
     sortType: gradeSorting,
@@ -463,7 +458,7 @@ function GradebookOverview(props) {
   let overView = useRecoilValueLoadable(overViewData);
   if (students.state == "hasValue") {
     for (let userId in students.contents) {
-      let firstName = students.contents[userId].firstName, lastName = students.contents[userId].lastName, credit = students.contents[userId].courseCredit, generatedGrade = students.contents[userId].courseGrade, overrideGrade = students.contents[userId].overrideCourseGrade, role = students.contents[userId].role;
+      let firstName = students.contents[userId].firstName, lastName = students.contents[userId].lastName, generatedGrade = students.contents[userId].courseGrade, overrideGrade = students.contents[userId].overrideCourseGrade, role = students.contents[userId].role;
       if (role !== "Student") {
         continue;
       }
@@ -472,10 +467,9 @@ function GradebookOverview(props) {
       row["name"] = firstName + " " + lastName;
       if (overView.state == "hasValue" && assignments.state == "hasValue") {
         for (let doenetId in assignments.contents) {
-          row[doenetId] = overView.contents[userId].assignments[doenetId] * 100 + "%";
+          row[doenetId] = Math.round(overView.contents[userId].assignments[doenetId] * 1e4) / 100 + "%";
         }
       }
-      row["weight"] = credit;
       row["grade"] = grade;
       overviewTable.rows.push(row);
     }

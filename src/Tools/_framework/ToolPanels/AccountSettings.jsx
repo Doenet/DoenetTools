@@ -111,7 +111,7 @@ export default function DoenetProfile(props) {
                   <h2>Account Settings currently requires sign in for use</h2>
                   <button style={{ background: '#1a5a99', borderRadius: '5px' }}>
                     <a
-                      href="/signin"
+                      href="/#/signin"
                       style={{ color: 'white', textDecoration: 'none' }}
                     >
                       Sign in with this link

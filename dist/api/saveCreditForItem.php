@@ -29,7 +29,8 @@ $stateVariables =  mysqli_real_escape_string($conn,$_POST["stateVariables"]);
 $sql = "SELECT attemptAggregation,
         timeLimit,
         numberOfAttemptsAllowed,
-        dueDate
+        dueDate,
+        totalPointsOrPercent
         FROM assignment
         WHERE doenetId='$doenetId'";
 
@@ -39,6 +40,7 @@ $attemptAggregation = $row['attemptAggregation'];
 $timeLimit = $row['timeLimit'];
 $numberOfAttemptsAllowed = $row['numberOfAttemptsAllowed'];
 $dueDate = $row['dueDate'];
+$totalPointsOrPercent = $row['totalPointsOrPercent'];
 
 $valid = 1;
 
@@ -154,13 +156,16 @@ if ($result->num_rows < 1){
   if($dueDateOverride) {
     $dueDate = $dueDateOverride;
   }
-  $dueDate_seconds = strtotime($dueDate);
-  $now_seconds = strtotime($row['now']);
-  $dueDate_diff = $now_seconds - $dueDate_seconds;
-  // give one minute buffer on due date
-  if($dueDate_seconds < $now_seconds) {
-    $pastDueDate = TRUE;
-    $valid = 0;
+  //If null then it's never past due
+  if ($dueDate){
+    $dueDate_seconds = strtotime($dueDate);
+    $now_seconds = strtotime($row['now']);
+    $dueDate_diff = $now_seconds - $dueDate_seconds;
+    // give one minute buffer on due date
+    if($dueDate_seconds < $now_seconds) {
+      $pastDueDate = TRUE;
+      $valid = 0;
+    }
   }
 
 } 
@@ -412,6 +417,7 @@ $response_arr = array(
     "now_seconds"=>$now_seconds,
     "diff_seconds"=>$diff_seconds,
     "dueDate_diff"=>$dueDate_diff,
+    "totalPointsOrPercent"=>$totalPointsOrPercent,
 );
 
 // set response code - 200 OK

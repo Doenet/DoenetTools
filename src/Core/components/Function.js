@@ -79,6 +79,17 @@ export default class Function extends InlineComponent {
       public: true,
       forRenderer: true
     };
+
+    attributes.labelPosition = {
+      createComponentOfType: "text",
+      createStateVariable: "labelPosition",
+      defaultValue: "upperright",
+      public: true,
+      forRenderer: true,
+      toLowerCase: true,
+      validValues: ["upperright", "upperleft", "lowerright", "lowerleft", "top", "bottom", "left", "right"]
+    }
+
     attributes.layer = {
       createComponentOfType: "number",
       createStateVariable: "layer",

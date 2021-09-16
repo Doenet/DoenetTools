@@ -203,7 +203,7 @@ describe('Select Tag Tests', function () {
     })
   });
 
-  it.skip('select multiple maths, initially unresolved', () => {
+  it('select multiple maths, initially unresolved', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
@@ -486,7 +486,7 @@ describe('Select Tag Tests', function () {
     })
   });
 
-  it.skip("select doesn't change dynamically", () => {
+  it("select doesn't change dynamically", () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
@@ -3208,7 +3208,6 @@ describe('Select Tag Tests', function () {
     })
   });
 
-
   it("correctly rename assignNames of multiple levels", () => {
     cy.window().then((win) => {
       win.postMessage({
@@ -3246,6 +3245,80 @@ describe('Select Tag Tests', function () {
       cy.get(cesc('#' + p2)).should('have.text', `q2 = a`)
       cy.get(cesc('#' + p3)).should('have.text', `r2 = b`)
 
+
+    })
+  });
+
+  it('numberToSelect from selectfromsequence', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+
+    <p>n1 = <selectFromSequence from="1" to="5" assignNames="n1" /></p>
+    <p>vars = <aslist><select type="text" name="vars1" numberToSelect="$n1" assignNames="a1 b1 c1 d1 e1" >u v w x y z</select></aslist></p>
+    <p name="p1">a1=$a1, b1=$b1, c1=$c1, d1=$d1, e1=$e1</p>
+
+    <p>n2 = <selectFromSequence from="1" to="5" assignNames="n2" /></p>
+    <p>vars = <aslist><select type="text" name="vars2" numberToSelect="$n2" assignNames="a2 b2 c2 d2 e2" >u v w x y z</select></aslist></p>
+    <p name="p2">a2=$a2, b2=$b2, c2=$c2, d2=$d2, e2=$e2</p>
+
+    <p>n3 = <selectFromSequence from="1" to="5" assignNames="n3" /></p>
+    <p>vars = <aslist><select type="text" name="vars3" numberToSelect="$n3" assignNames="a3 b3 c3 d3 e3" >u v w x y z</select></aslist></p>
+    <p name="p3">a3=$a3, b3=$b3, c3=$c3, d3=$d3, e3=$e3</p>
+
+    <p>n4 = <selectFromSequence from="1" to="5" assignNames="n4" /></p>
+    <p>vars = <aslist><select type="text" name="vars4" numberToSelect="$n4" assignNames="a4 b4 c4 d4 e4" >u v w x y z</select></aslist></p>
+    <p name="p4">a4=$a4, b4=$b4, c4=$c4, d4=$d4, e4=$e4</p>
+
+    <p>n5 = <selectFromSequence from="1" to="5" assignNames="n5" /></p>
+    <p>vars = <aslist><select type="text" name="vars5" numberToSelect="$n5" assignNames="a5 b5 c5 d5 e5" >u v w x y z</select></aslist></p>
+    <p name="p5">a5=$a5, b5=$b5, c5=$c5, d5=$d5, e5=$e5</p>
+      `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      let n1 = components['/n1'].stateValues.value;
+      let n2 = components['/n2'].stateValues.value;
+      let n3 = components['/n3'].stateValues.value;
+      let n4 = components['/n4'].stateValues.value;
+      let n5 = components['/n5'].stateValues.value;
+
+      let vars1 = components['/vars1'].replacements.map(x => x.replacements[0].stateValues.value);
+      let vars2 = components['/vars2'].replacements.map(x => x.replacements[0].stateValues.value);
+      let vars3 = components['/vars3'].replacements.map(x => x.replacements[0].stateValues.value);
+      let vars4 = components['/vars4'].replacements.map(x => x.replacements[0].stateValues.value);
+      let vars5 = components['/vars5'].replacements.map(x => x.replacements[0].stateValues.value);
+
+      expect(vars1.length).eq(n1);
+      expect(vars2.length).eq(n2);
+      expect(vars3.length).eq(n3);
+      expect(vars4.length).eq(n4);
+      expect(vars5.length).eq(n5);
+
+      vars1.length = 5;
+      vars2.length = 5;
+      vars3.length = 5;
+      vars4.length = 5;
+      vars5.length = 5;
+
+      vars1.fill('', n1)
+      vars2.fill('', n2)
+      vars3.fill('', n3)
+      vars4.fill('', n4)
+      vars5.fill('', n5)
+
+
+      let l = ["a", "b", "c", "d", "e"]
+
+      cy.get('#\\/p1').should('have.text', vars1.map((v, i) => `${l[i]}1=${v}`).join(', '))
+      cy.get('#\\/p2').should('have.text', vars2.map((v, i) => `${l[i]}2=${v}`).join(', '))
+      cy.get('#\\/p3').should('have.text', vars3.map((v, i) => `${l[i]}3=${v}`).join(', '))
+      cy.get('#\\/p4').should('have.text', vars4.map((v, i) => `${l[i]}4=${v}`).join(', '))
+      cy.get('#\\/p5').should('have.text', vars5.map((v, i) => `${l[i]}5=${v}`).join(', '))
 
     })
   });

@@ -12,6 +12,7 @@ import DoenetViewer, {
     serializedComponentsReviver,
   } from '../../../Viewer/DoenetViewer';
 import  axios from 'axios';
+import { currentAttemptNumber } from '../ToolPanels/AssignmentViewer';
 
 // import { BreadcrumbProvider } from '../../../_reactComponents/Breadcrumb';
 // import { DropTargetsProvider } from '../../../_reactComponents/DropTarget';
@@ -33,6 +34,7 @@ export default function GradebookStudentAssignmentView(props){
     let userId = useRecoilValue(searchParamAtomFamily('userId'))
     let attempts = useRecoilValueLoadable(attemptData(doenetId))
     let students = useRecoilValueLoadable(studentData)
+    const setRecoilAttemptNumber = useSetRecoilState(currentAttemptNumber);
     
     // console.log(">>>>attempts",Object.keys(attempts.contents[userId].attempts).length)
     // let driveIdValue = useRecoilValue(driveId)
@@ -47,8 +49,9 @@ export default function GradebookStudentAssignmentView(props){
     useEffect(()=>{
         if (attemptsObj){
             setAttemptNumber(Object.keys(attemptsObj).length);
+            setRecoilAttemptNumber(Object.keys(attemptsObj).length);
         }
-    },[attemptsObj,setAttemptNumber])
+    },[attemptsObj,setAttemptNumber,setRecoilAttemptNumber])
 
     //Wait for doenetId and userId and attemptsInfo
     if (!doenetId || !userId){
@@ -57,9 +60,14 @@ export default function GradebookStudentAssignmentView(props){
 
     async function loadAssignmentInfo(doenetId,userId){
         
-        const { data } = await axios.get(`/api/getContentIdsAndVariants.php`,{params:{doenetId,userId}})
+        const { data } = await axios.get(`/api/getGradebookAssignmentAttempts.php`,{params:{doenetId,userId}})
         let dataAttemptInfo = [];
         let contentIdToDoenetML = {}; //Don't request from server more than once
+        let solutionDisplayMode = 'none';
+        if(data.showSolutionInGradebook === '1') {
+            solutionDisplayMode = 'button';
+        }
+
         for (let attempt of data.attemptInfo){
             let gvariant = JSON.parse(attempt.variant, serializedComponentsReviver);
             let doenetML = contentIdToDoenetML[attempt.contentId];
@@ -68,7 +76,8 @@ export default function GradebookStudentAssignmentView(props){
                 dataAttemptInfo.push({
                     contentId:attempt.contentId,
                     variant:{name:gvariant.name},
-                    doenetML
+                    doenetML,
+                    solutionDisplayMode
                     })
             }else{
                 const { data } = await axios.get(`/media/${attempt.contentId}.doenet`); 
@@ -76,7 +85,8 @@ export default function GradebookStudentAssignmentView(props){
                 dataAttemptInfo.push({
                     contentId:attempt.contentId,
                     variant:{name:gvariant.name},
-                    doenetML: data
+                    doenetML: data,
+                    solutionDisplayMode
                     })
             }
             
@@ -112,7 +122,8 @@ export default function GradebookStudentAssignmentView(props){
             accessor: "a"+i,
             disableFilters: true,
             Cell: row  =><a onClick = {(e) =>{
-                setAttemptNumber(i)
+                setAttemptNumber(i);
+                setRecoilAttemptNumber(i);
                 //e.stopPropagation()
 
                 // setPageToolView({
@@ -145,7 +156,8 @@ export default function GradebookStudentAssignmentView(props){
             for (let i = 1; i <= maxAttempts; i++) {
                 let attemptCredit = attempts.contents[userId].attempts[i];
     
-                row[("a"+i)] = attemptCredit ? attemptCredit * 100 + "%" : ""
+                // row[("a"+i)] = attemptCredit ? attemptCredit * 100 + "%" : ""
+                row[("a"+i)] = attemptCredit ? Math.round(attemptCredit * 1000)/10 + '%' : ""
                 
                 // <Link to={`/attempt/?doenetId=${doenetId}&userId=${userId}&attemptNumber=${i}`}>
                 // {
@@ -154,7 +166,8 @@ export default function GradebookStudentAssignmentView(props){
                 // </Link>
             }
 
-            row["grade"] = attempts.contents[userId].credit ? attempts.contents[userId].credit*100+ "%" : ""
+            // row["grade"] = attempts.contents[userId].credit ? attempts.contents[userId].credit*100+ "%" : ""
+            row["grade"] = attempts.contents[userId].credit ? Math.round(attempts.contents[userId].credit * 1000)/10 + '%' : ""
         }
 
         
@@ -167,8 +180,9 @@ export default function GradebookStudentAssignmentView(props){
     let dViewer = null;
     if (attemptNumber > 0){
         // let contentId = attemptsInfo[attemptNumber-1].contentId
-        let variant = attemptsInfo[attemptNumber-1].variant
-        let doenetML = attemptsInfo[attemptNumber-1].doenetML
+        let variant = attemptsInfo[attemptNumber-1].variant;
+        let doenetML = attemptsInfo[attemptNumber-1].doenetML;
+        let solutionDisplayMode = attemptsInfo[attemptNumber-1].solutionDisplayMode;
   
         dViewer = <DoenetViewer
         key={`doenetviewer${doenetId}`}
@@ -179,7 +193,7 @@ export default function GradebookStudentAssignmentView(props){
         flags={{
           showCorrectness: true,
           readOnly: true,
-          solutionDisplayMode: 'button',
+          solutionDisplayMode,
           showFeedback: true,
           showHints: true,
           isAssignment: true,

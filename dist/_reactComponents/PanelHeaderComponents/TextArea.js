@@ -30,9 +30,11 @@ export default function TextArea(props) {
   if (props.label) {
     label.value = props.label;
   }
+  var disable = "";
   if (props.disabled) {
     textarea.border = "2px solid #e2e2e2";
     textarea.cursor = "not-allowed";
+    disable = "disabled";
   }
   if (props.value) {
     textarea.value = props.value;
@@ -59,6 +61,7 @@ export default function TextArea(props) {
     style: textarea,
     onChange: (e) => {
       handleChange(e);
-    }
+    },
+    disabled: disable
   })));
 }

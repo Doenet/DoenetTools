@@ -162,7 +162,7 @@ function Collection(props) {
           driveInstanceId: props.driveInstanceId,
           type: itemType.COLLECTION,
           instructionType: "one item",
-          parentFolderId: props.item.parentFolderId
+          parentFolderId: itemId
         });
       }
     }, openCloseText);
@@ -280,7 +280,7 @@ function Collection(props) {
             driveInstanceId: props.driveInstanceId,
             type: itemType.COLLECTION,
             instructionType: "one item",
-            parentFolderId: props.item.parentFolderId
+            parentFolderId: itemId
           });
         } else if (e.shiftKey && !e.metaKey) {
           props?.clickCallback?.({
@@ -289,7 +289,7 @@ function Collection(props) {
             itemId,
             type: itemType.COLLECTION,
             instructionType: "range to item",
-            parentFolderId: props.item.parentFolderId
+            parentFolderId: itemId
           });
         } else if (!e.shiftKey && e.metaKey) {
           props?.clickCallback?.({
@@ -298,7 +298,7 @@ function Collection(props) {
             itemId,
             type: itemType.COLLECTION,
             instructionType: "add item",
-            parentFolderId: props.item.parentFolderId
+            parentFolderId: itemId
           });
         }
       },
@@ -343,7 +343,7 @@ function Collection(props) {
         });
         props?.clickCallback?.({
           driveId: props.driveId,
-          parentFolderId: props.item.parentFolderId,
+          parentFolderId: itemId,
           itemId,
           driveInstanceId: props.driveInstanceId,
           instructionType: "one item",

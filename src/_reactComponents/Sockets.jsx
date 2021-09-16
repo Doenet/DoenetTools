@@ -27,7 +27,6 @@ import {
 } from './Drive/NewDrive';
 import { DateToUTCDateString } from '../_utils/dateUtilityFunction';
 
-
 /**
  * a stored manger to allow for multiplexed socket connections.
  * The dangerouslyAllowMutability flag must be set to stop dev mode
@@ -46,7 +45,6 @@ const socketManger = atom({
   }),
   dangerouslyAllowMutability: true,
 });
-
 
 /**
  * keyed by namespace. Binding cannot be donw here until a set function is
@@ -149,9 +147,9 @@ export default function useSockets(nsp) {
       if (type === 'DoenetML') {
         payload = {
           ...payload,
-          assignedDate: creationDate,  //TODO: make null
+          assignedDate: null, 
           attemptAggregation: 'm',
-          dueDate: creationDate, //TODO: make null
+          dueDate: null, 
           gradeCategory: '',
           individualize: true,
           isAssigned: '0',
@@ -159,13 +157,14 @@ export default function useSockets(nsp) {
           contentId:
             'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855',
           multipleAttempts: true, //TODO: is this ignored? should we delete it?
-          numberOfAttemptsAllowed: '1', 
+          numberOfAttemptsAllowed: '1',
           proctorMakesAvailable: false,
           showCorrectness: true,
           showFeedback: true,
           showHints: true,
           showSolution: true,
-          timeLimit: null, 
+          showSolutionInGradebook: true,
+          timeLimit: null,
           totalPointsOrPercent: '10',
           assignment_isPublished: '0',
         };
@@ -174,9 +173,9 @@ export default function useSockets(nsp) {
       if (type === itemType.COLLECTION) {
         payload = {
           ...payload,
-          assignedDate: creationDate,
+          assignedDate: null,
           attemptAggregation: 'm',
-          dueDate: creationDate,
+          dueDate: null,
           gradeCategory: '',
           individualize: true,
           isAssigned: '0',
@@ -190,6 +189,7 @@ export default function useSockets(nsp) {
           showFeedback: true,
           showHints: true,
           showSolution: true,
+          showSolutionInGradebook: true,
           timeLimit: null,
           totalPointsOrPercent: '10',
           assignment_isPublished: '0',
@@ -359,8 +359,14 @@ export default function useSockets(nsp) {
           newDestinationFolderObj['contentsDictionary'][gItem.itemId] = {
             ...newSourceFInfo['contentsDictionary'][gItem.itemId],
           };
+          newDestinationFolderObj['contentsDictionaryByDoenetId'][
+            newSourceFInfo['contentsDictionary'][gItem.itemId].doenetId
+          ] = { ...newSourceFInfo['contentsDictionary'][gItem.itemId] };
 
           // Remove item from original dictionary
+          delete newSourceFInfo['contentsDictionaryByDoenetId'][
+            newSourceFInfo['contentsDictionary'][gItem.itemId].doenetId
+          ];
           delete newSourceFInfo['contentsDictionary'][gItem.itemId];
 
           // Ensure item removed from cached parent and added to edited cache
@@ -606,7 +612,7 @@ export default function useSockets(nsp) {
         const insertIndex = index ?? 0;
         let newSortOrder = '';
         const dt = new Date();
-        const creationTimestamp = formatDate(dt);  //TODO: Emilio Make sure we have the right time zones
+        const creationTimestamp = formatDate(dt); //TODO: Emilio Make sure we have the right time zones
         let globalDictionary = {};
         let globalContentIds = {};
 
@@ -973,6 +979,7 @@ function useAcceptBindings() {
         newDefaultOrder.splice(index + 1, 0, itemId);
         newObj.contentIds[sortOptions.DEFAULT] = newDefaultOrder;
         newObj.contentsDictionary[itemId] = newItem;
+        newObj.contentsDictionaryByDoenetId[doenetId] = newItem;
 
         // Insert item info into destination folder
         set(
@@ -1041,6 +1048,13 @@ function useAcceptBindings() {
         // Remove from folder
         let newFInfo = { ...fInfo };
         newFInfo['contentsDictionary'] = { ...fInfo.contentsDictionary };
+        newFInfo['contentsDictionaryByDoenetId'] = {
+          ...fInfo.contentsDictionaryByDoenetId,
+        };
+
+        delete newFInfo['contentsDictionaryByDoenetId'][
+          newFInfo['contentsDictionary'][itemId].doenetId
+        ];
         delete newFInfo['contentsDictionary'][itemId];
         newFInfo.folderInfo = { ...fInfo.folderInfo };
         newFInfo.contentIds = {};
@@ -1120,10 +1134,23 @@ function useAcceptBindings() {
         // Rename in folder
         let newFInfo = { ...fInfo };
         newFInfo['contentsDictionary'] = { ...fInfo.contentsDictionary };
+        newFInfo['contentsDictionaryByDoenetId'] = {
+          ...fInfo.contentsDictionaryByDoenetId,
+        };
+
         newFInfo['contentsDictionary'][itemId] = {
           ...fInfo.contentsDictionary[itemId],
         };
         newFInfo['contentsDictionary'][itemId].label = label;
+
+        newFInfo['contentsDictionaryByDoenetId'][
+          newFInfo['contentsDictionary'][itemId].doenetId
+        ] = {
+          ...fInfo.contentsDictionary[itemId],
+        };
+        newFInfo['contentsDictionaryByDoenetId'][
+          newFInfo['contentsDictionary'][itemId].doenetId
+        ].label = label;
 
         set(
           folderDictionary({

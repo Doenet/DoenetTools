@@ -69,10 +69,24 @@ const loadAssignmentAtomFamily = atomFamily({
       const { data } = await axios.get('/api/getAllAssignmentSettings.php', {
         params: payload,
       });
+      let assignment = { ...data.assignment };
 
-      let assignment = {...data.assignment}
-      assignment.assignedDate = new Date(`${data.assignment?.assignedDate} UTC`).toLocaleString()
-      assignment.dueDate = new Date(`${data.assignment?.dueDate} UTC`).toLocaleString()
+      if (assignment.assignedDate){
+        // Split timestamp into [ Y, M, D, h, m, s ]
+        let t = data.assignment.assignedDate.split(/[- :]/);
+        // Apply each element to the Date function
+        assignment.assignedDate = new Date(
+          Date.UTC(t[0], t[1]-1, t[2], t[3], t[4], t[5])
+        ).toLocaleString();
+      }
+      if (assignment.dueDate){
+        // Split timestamp into [ Y, M, D, h, m, s ]
+        let t = data.assignment.dueDate.split(/[- :]/);
+        // Apply each element to the Date function
+        assignment.dueDate = new Date(
+          Date.UTC(t[0], t[1]-1, t[2], t[3], t[4], t[5])
+        ).toLocaleString();
+      }
       return assignment;
     },
   }),
@@ -505,7 +519,7 @@ export const folderDictionaryFilterAtom = atomFamily({
   key: 'folderDictionaryFilterAtom',
   default: selectorFamily({
     key: 'folderDictionaryFilterAtom/Default',
-    get: (driveId) => () => {
+    get: () => () => {
       return 'All';
     },
   }),
@@ -657,7 +671,7 @@ export const getLexicographicOrder = ({
   return sortOrder;
 };
 
-function DriveHeader({
+export function DriveHeader({
   columnTypes,
   numColumns,
   setNumColumns,
@@ -1790,7 +1804,10 @@ export const selectedDriveItems = selectorFamily({
         for (let itemId of folderObj.contentIds.defaultOrder) {
           itemIdArr.push(itemId);
           parentFolderIdArr.push(parentFolderId);
-          if (folderObj.contentsDictionary[itemId].itemType === 'Folder') {
+          if (
+            folderObj.contentsDictionary[itemId].itemType === 'Folder' ||
+            folderObj.contentsDictionary[itemId].itemType === 'Collection'
+          ) {
             const isOpen = get(
               folderOpenAtom({ driveInstanceId, driveId, itemId }),
             );
@@ -1997,7 +2014,7 @@ export const DoenetML = React.memo(function DoenetML(props) {
       itemId: props.item.itemId,
     }),
   );
-  const [selectedDrive, setSelectedDrive] = useRecoilState(selectedDriveAtom);
+  // const [selectedDrive, setSelectedDrive] = useRecoilState(selectedDriveAtom);
   const [dragState] = useRecoilState(dragStateAtom);
   const {
     onDragStart,
@@ -2008,13 +2025,13 @@ export const DoenetML = React.memo(function DoenetML(props) {
     unregisterDropTarget,
   } = useDnDCallbacks();
   const globalSelectedNodes = useRecoilValue(globalSelectedNodesAtom);
-  const [folderInfoObj, setFolderInfo] = useRecoilStateLoadable(
-    folderInfoSelector({
-      driveId: props.driveId,
-      instanceId: props.driveInstanceId,
-      folderId: props.driveId,
-    }),
-  );
+  // const [folderInfoObj, setFolderInfo] = useRecoilStateLoadable(
+  //   folderInfoSelector({
+  //     driveId: props.driveId,
+  //     instanceId: props.driveInstanceId,
+  //     folderId: props.driveId,
+  //   }),
+  // );
   const parentFolderSortOrder = useRecoilValue(
     folderSortOrderAtom({
       driveId: props.driveId,
@@ -2063,7 +2080,7 @@ export const DoenetML = React.memo(function DoenetML(props) {
   }
   if (isSelected || (props.isNav && props.item.itemId === props.pathItemId)) {
     bgcolor = 'hsl(209,54%,82%)';
-    borderSide = '8px 0px 0px 0px #1A5A99';
+    // borderSide = '8px 0px 0px 0px #1A5A99';
   }
   if (isSelected && dragState.isDragging) {
     bgcolor = '#e2e2e2';
