@@ -96,7 +96,7 @@ export default class MathInput extends DoenetRenderer {
 
     // replace ^25 with ^{2}5, since mathQuill uses standard latex conventions
     // unlike math-expression's latex parser
-    text = text.replace(/\^(\d)/g, '^{$1}');
+    text = text.replace(/\^(\w)/g, '^{$1}');
 
     let fromLatex = getFromLatex({
       functionSymbols: this.doenetSvData.functionSymbols,

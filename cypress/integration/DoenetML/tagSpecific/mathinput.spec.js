@@ -2773,7 +2773,7 @@ describe('MathInput Tag Tests', function () {
 
   })
 
-  it('substitute numerical exponents', () => {
+  it('substitute exponent with numbers', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
@@ -2824,6 +2824,27 @@ describe('MathInput Tag Tests', function () {
       expect(components['/a2'].stateValues.value.tree).eqls(['*', ['^', 3, 2], 'x']);
       expect(components['/a3'].stateValues.value.tree).eqls(['*', 9, 'x']);
     });
+
+
+    cy.get('#\\/a textarea').type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}3^x2{enter}', { force: true });
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/a'].stateValues.value.tree).eqls(['^', 3, 'x2']);
+      expect(components['/a2'].stateValues.value.tree).eqls(['^', 3, 'x2']);
+      expect(components['/a3'].stateValues.value.tree).eqls(['^', 3, 'x2']);
+    });
+
+    cy.get('#\\/a textarea').type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}3^x{rightarrow}2{enter}', { force: true });
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/a'].stateValues.value.tree).eqls(['*', ['^', 3, 'x'], 2]);
+      expect(components['/a2'].stateValues.value.tree).eqls(['*', ['^', 3, 'x'], 2]);
+      expect(components['/a3'].stateValues.value.tree).eqls(['*', 2, ['^', 3, 'x']]);
+    });
+
+
 
 
   })
