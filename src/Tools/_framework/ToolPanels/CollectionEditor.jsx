@@ -105,7 +105,7 @@ export default function CollectionEditor() {
         folderInfoObj.contentsDictionary[key].itemType === itemType.DOENETML
       ) {
         const { doenetId, isReleased } = folderInfoObj.contentsDictionary[key];
-        if (isReleased) {
+        if (isReleased == '1') {
           initEntryByDoenetId(doenetId);
           entries.push(
             <Suspense key={key}>
