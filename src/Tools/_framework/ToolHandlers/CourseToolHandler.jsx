@@ -28,6 +28,11 @@ import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
 import ButtonGroup from '../../../_reactComponents/PanelHeaderComponents/ButtonGroup';
 
 
+export const roleAtom = atom({
+  key:'roleAtom',
+  default:'Student'
+})
+
 const formatDate = (dt) => {
   const formattedDate = `${
     dt.getFullYear().toString().padStart(2, '0')}-${
