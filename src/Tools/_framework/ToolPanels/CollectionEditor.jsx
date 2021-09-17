@@ -268,7 +268,7 @@ function CollectionEntry({
               entryDoenetId: doenetId,
               //TODO: ref the selected option;
               entryVariant: JSON.stringify(
-                variants[0],
+                { name: variants[0] },
                 serializedComponentsReplacer,
               ),
             })
@@ -280,7 +280,7 @@ function CollectionEntry({
                   entryId,
                   entryDoenetId: doenetId,
                   entryVariant: JSON.stringify(
-                    variants[0],
+                    { name: variants[0] },
                     serializedComponentsReplacer,
                   ),
                 },
