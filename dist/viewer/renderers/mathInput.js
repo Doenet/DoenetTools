@@ -39,7 +39,7 @@ export default class MathInput extends DoenetRenderer {
   calculateMathExpressionFromLatex(text) {
     let expression;
     text = substituteUnicodeInLatexString(text);
-    text = text.replace(/\^(\d)/g, "^{$1}");
+    text = text.replace(/\^(\w)/g, "^{$1}");
     let fromLatex = getFromLatex({
       functionSymbols: this.doenetSvData.functionSymbols,
       splitSymbols: this.doenetSvData.splitSymbols
