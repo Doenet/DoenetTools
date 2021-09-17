@@ -82,7 +82,7 @@ export default function CollectionEditor() {
     for (let key in folderInfoObj.contentsDictionary) {
       if (folderInfoObj.contentsDictionary[key].itemType === itemType.DOENETML) {
         const {doenetId: doenetId2, isReleased} = folderInfoObj.contentsDictionary[key];
-        if (isReleased) {
+        if (isReleased == "1") {
           initEntryByDoenetId(doenetId2);
           entries.push(/* @__PURE__ */ React.createElement(Suspense, {
             key
@@ -201,7 +201,7 @@ function CollectionEntry({
         doenetId: collectionDoenetId,
         entryId: entryId2,
         entryDoenetId: doenetId,
-        entryVariant: JSON.stringify(variants[0], serializedComponentsReplacer)
+        entryVariant: JSON.stringify({name: variants[0]}, serializedComponentsReplacer)
       }).then(() => {
         setAssignedEntries((was) => [
           ...was,
@@ -209,7 +209,7 @@ function CollectionEntry({
             doenetId: collectionDoenetId,
             entryId: entryId2,
             entryDoenetId: doenetId,
-            entryVariant: JSON.stringify(variants[0], serializedComponentsReplacer)
+            entryVariant: JSON.stringify({name: variants[0]}, serializedComponentsReplacer)
           }
         ]);
       }).catch((error) => {

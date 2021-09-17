@@ -16,6 +16,7 @@ if (array_key_exists('doenetId', $_REQUEST)) {
     $sql = "SELECT contentId, assignedVariant
     FROM user_assignment_attempt
     WHERE userId ='$userId'
+    AND doenetId = '$doenetId'
     ";
     $result = $conn->query($sql);
 
