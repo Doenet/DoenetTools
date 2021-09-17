@@ -1,7 +1,8 @@
-import React, {useState} from "../../_snowpack/pkg/react.js";
+import React, {useState, useEffect} from "../../_snowpack/pkg/react.js";
 import {doenetComponentForegroundInactive} from "./theme.js";
 export default function Textfield(props) {
   const [labelVisible, setLabelVisible] = useState(props.label ? "static" : "none");
+  const [text, setText] = useState(props.value ? "Enter text here" : props.value);
   const [align, setAlign] = useState(props.vertical ? "static" : "flex");
   var textfield = {
     margin: "0px",
@@ -10,7 +11,7 @@ export default function Textfield(props) {
     fontFamily: "Arial",
     borderRadius: "5px",
     color: "#000",
-    value: "Enter text here",
+    value: `${text}`,
     resize: "none",
     whiteSpace: "nowrap",
     padding: "0px 5px 0px 5px",
@@ -28,6 +29,9 @@ export default function Textfield(props) {
     width: "auto",
     alignItems: "flex-end"
   };
+  useEffect(() => {
+    setText(props.value);
+  });
   if (props.alert) {
     textfield.border = "2px solid #C1292E";
   }
@@ -39,9 +43,6 @@ export default function Textfield(props) {
     textfield.border = "2px solid #e2e2e2";
     textfield.cursor = "not-allowed";
     disable = "disabled";
-  }
-  if (props.value) {
-    textfield.value = props.value;
   }
   if (props.width) {
     if (props.width === "menu") {
