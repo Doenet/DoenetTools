@@ -81,13 +81,13 @@ function Test() {
   if (controlsVisible) {
     buttonText = 'hide';
     controls = <div style={{padding:"8px"}}>
-      <div><button onClick={()=>{
+      <div><button id="testRunner_resetControls" onClick={()=>{
         localStorage.setItem("test settings",JSON.stringify(defaultTestSettings))
         location.href = '/test';
       }}>Reset</button></div>
       <hr />
       <div>
-        <label>Attempt Number: {attemptNumber} <button onClick={
+        <label>Attempt Number: {attemptNumber} <button id="testRunner_newAttempt" onClick={
           () => {
             testSettings.attemptNumber = testSettings.attemptNumber + 1;
             localStorage.setItem("test settings",JSON.stringify(testSettings))
@@ -102,7 +102,7 @@ function Test() {
         }>Reset Attempt Number</button></label>
       </div>
       <div>
-        <label> <input type='checkbox' checked={showCorrectness} onChange={
+        <label> <input id="testRunner_showCorrectness" type='checkbox' checked={showCorrectness} onChange={
           () => {
             testSettings.showCorrectness = !testSettings.showCorrectness;
             localStorage.setItem("test settings",JSON.stringify(testSettings))
@@ -114,7 +114,7 @@ function Test() {
         } />Show Correctness</label>
       </div>
       <div>
-        <label> <input type='checkbox' checked={readOnly} onChange={
+        <label> <input id="testRunner_readOnly" type='checkbox' checked={readOnly} onChange={
           () => {
             testSettings.readOnly = !testSettings.readOnly;
             localStorage.setItem("test settings",JSON.stringify(testSettings))
@@ -125,7 +125,7 @@ function Test() {
         } />Read Only</label>
       </div>
       <div>
-        <label> <input type='checkbox' checked={showFeedback} onChange={
+        <label> <input id="testRunner_showFeedback" type='checkbox' checked={showFeedback} onChange={
           () => {
             testSettings.showFeedback = !testSettings.showFeedback;
             localStorage.setItem("test settings",JSON.stringify(testSettings))
@@ -136,7 +136,7 @@ function Test() {
         } />Show Feedback</label>
       </div>
       <div>
-        <label> <input type='checkbox' checked={showHints} onChange={
+        <label> <input id="testRunner_showHints" type='checkbox' checked={showHints} onChange={
           () => {
             testSettings.showHints = !testSettings.showHints;
             localStorage.setItem("test settings",JSON.stringify(testSettings))
@@ -148,7 +148,7 @@ function Test() {
       </div>
      <hr />
       <div>
-        <label> <input type='checkbox' checked={allowLoadPageState} onChange={
+        <label> <input id="testRunner_allowLoadPageState" type='checkbox' checked={allowLoadPageState} onChange={
           () => {
             testSettings.allowLoadPageState = !testSettings.allowLoadPageState;
             localStorage.setItem("test settings",JSON.stringify(testSettings))
@@ -159,7 +159,7 @@ function Test() {
         } />Allow Load Page State</label>
       </div>
       <div>
-        <label> <input type='checkbox' checked={allowSavePageState} onChange={
+        <label> <input id="testRunner_allowSavePageState" type='checkbox' checked={allowSavePageState} onChange={
           () => {
             testSettings.allowSavePageState = !testSettings.allowSavePageState;
             localStorage.setItem("test settings",JSON.stringify(testSettings))
@@ -170,7 +170,7 @@ function Test() {
         } />Allow Save Page State</label>
       </div>
       <div>
-        <label> <input type='checkbox' checked={allowLocalPageState} onChange={
+        <label> <input id="testRunner_allowLocalPageState" type='checkbox' checked={allowLocalPageState} onChange={
           () => {
             testSettings.allowLocalPageState = !testSettings.allowLocalPageState;
             localStorage.setItem("test settings",JSON.stringify(testSettings))
@@ -181,7 +181,7 @@ function Test() {
         } />Allow Local Page State</label>
       </div>
       <div>
-        <label> <input type='checkbox' checked={allowSaveSubmissions} onChange={
+        <label> <input id="testRunner_allowSaveSubmissions" type='checkbox' checked={allowSaveSubmissions} onChange={
           () => {
             testSettings.allowSaveSubmissions = !testSettings.allowSaveSubmissions;
             localStorage.setItem("test settings",JSON.stringify(testSettings))
@@ -192,7 +192,7 @@ function Test() {
         } />Allow Save Submissions</label>
       </div>
       <div>
-        <label> <input type='checkbox' checked={allowSaveEvents} onChange={
+        <label> <input id="testRunner_allowSaveEvents" type='checkbox' checked={allowSaveEvents} onChange={
           () => {
             testSettings.allowSaveEvents = !testSettings.allowSaveEvents;
             localStorage.setItem("test settings",JSON.stringify(testSettings))
@@ -204,7 +204,7 @@ function Test() {
       </div>
      <hr />
       <div>
-        <label> <input type='checkbox' checked={bundledCore} onChange={
+        <label> <input id="testRunner_bundledCore" type='checkbox' checked={bundledCore} onChange={
           () => {
             testSettings.bundledCore = !testSettings.bundledCore;
             localStorage.setItem("test settings",JSON.stringify(testSettings))
@@ -224,7 +224,7 @@ function Test() {
 
   return (
     <>
-      <div style={{ backgroundColor: "#e3e3e3" }}><h3><button onClick={() => setControlsVisible(was => !was)}>{buttonText} controls</button>
+      <div style={{ backgroundColor: "#e3e3e3" }}><h3><button id="testRunner_toggleControls" onClick={() => setControlsVisible(was => !was)}>{buttonText} controls</button>
         Test Viewer and Core
            </h3>
         {controls}
