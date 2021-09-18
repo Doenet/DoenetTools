@@ -78,12 +78,12 @@ export class Paginator extends Template {
                 let numberToSelect = 1;
                 if (child.attributes && child.attributes.numberToSelect) {
                   let ntsComp = child.attributes.numberToSelect.component;
-                  if(ntsComp.children) {
+                  if (ntsComp.children) {
                     // look for a string child
-                    for(let child of ntsComp.children) {
-                      if(child.componentType === "string") {
+                    for (let child of ntsComp.children) {
+                      if (child.componentType === "string") {
                         let n = Number(child.state.value);
-                        if(Number.isFinite(n)) {
+                        if (Number.isFinite(n)) {
                           numberToSelect = Math.round(n);
                           break;
                         }
@@ -269,61 +269,6 @@ export class Paginator extends Template {
             children: [replacement],
           })
 
-          // let placeholderAttributes = {};
-          // if (replacement.attributes) {
-          //   placeholderAttributes = replacement.attributes;
-          // }
-
-          // // let isSubvariantComponent = false;
-          // // if (componentInfoObjects.allComponentClasses[
-          // //   replacement.componentType].alwaysSetUpVariant
-          // // ) {
-          // //   isSubvariantComponent = true;
-          // // }
-
-
-          // let placeholderVariants;
-          // console.log(replacement.variants)
-          // console.log(replacement)
-          // if (replacement.variants) {
-          //   placeholderVariants = replacement.variants
-          //   console.log(`variants`)
-          //   console.log(JSON.parse(JSON.stringify(replacement.variants)))
-          // }
-
-          // let placeholderChildren = [];
-          // for (let child of replacement.children) {
-          //   if (componentInfoObjects.isInheritedComponentType({
-          //     inheritedComponentType: child.componentType,
-          //     baseComponentType: "variantControl"
-          //   })) {
-          //     placeholderChildren = [JSON.parse(JSON.stringify(child))]
-          //   }
-          // }
-
-          // // if (replacement.componentType === "problem") {
-          // //   placeholderAttributes.suppresssAutomaticVariants = { primitive: true };
-          // // }
-
-          // newReplacements.push({
-          //   componentType: "paginatorPage",
-          //   children: [{
-          //     componentType: replacement.componentType,
-          //     attributes: placeholderAttributes,
-          //     variants: placeholderVariants,
-          //     state: {
-          //       hide: true,
-          //       aggregateScores: component.stateValues.preserveScores,
-          //       sectionPlaceholder: true,
-          //     },
-          //     children: placeholderChildren,
-          //   }],
-          //   state: {
-          //     sectionPlaceholder: true,
-          //   }
-          // })
-
-
         } else if (componentInfoObjects.isInheritedComponentType({
           inheritedComponentType: replacement.componentType,
           baseComponentType: "select"
@@ -366,7 +311,7 @@ export class Paginator extends Template {
       })
     }
 
-    
+
     let currentPageNumber = this.stateValues.currentPage;
 
 
@@ -556,7 +501,6 @@ export class PaginatorPageSet extends Template {
     stateVariableDefinitions.renderPage = {
       public: true,
       componentType: "boolean",
-      defaultValue: this.renderedDefault,
       returnDependencies: () => ({
         pageNumber: {
           dependencyType: "stateVariable",
@@ -637,19 +581,41 @@ export class PaginatorPageSet extends Template {
       children: [sectionReplacement]
     }]
 
+    // if have a copy of external content
+    // get attributes and variant info from the section
+    // rather than the copy
+
+    // TODO: address internal copy of a section
+
+    let effectiveSectionReplacement = sectionReplacement;
+    if (sectionReplacement.componentType === "copy") {
+      if (sectionReplacement.children && sectionReplacement.children.length == 1
+        && sectionReplacement.children[0].componentType === "externalContent") {
+        let extContent = sectionReplacement.children[0];
+        if (extContent.children && extContent.children.length === 1 &&
+          componentInfoObjects.isInheritedComponentType({
+            inheritedComponentType: extContent.children[0].componentType,
+            baseComponentType: "_sectioningComponent"
+          })) {
+          effectiveSectionReplacement = extContent.children[0];
+        }
+      }
+    }
+
+
     let placeholderAttributes = {};
-    if (sectionReplacement.attributes) {
-      placeholderAttributes = sectionReplacement.attributes;
+    if (effectiveSectionReplacement.attributes) {
+      placeholderAttributes = effectiveSectionReplacement.attributes;
     }
 
 
     let placeholderVariants;
-    if (sectionReplacement.variants) {
-      placeholderVariants = sectionReplacement.variants
+    if (effectiveSectionReplacement.variants) {
+      placeholderVariants = effectiveSectionReplacement.variants
     }
 
     let placeholderChildren = [];
-    for (let child of sectionReplacement.children) {
+    for (let child of effectiveSectionReplacement.children) {
       if (componentInfoObjects.isInheritedComponentType({
         inheritedComponentType: child.componentType,
         baseComponentType: "variantControl"
@@ -657,10 +623,6 @@ export class PaginatorPageSet extends Template {
         placeholderChildren = [JSON.parse(JSON.stringify(child))]
       }
     }
-
-    // if (replacement.componentType === "problem") {
-    //   placeholderAttributes.suppresssAutomaticVariants = { primitive: true };
-    // }
 
     let sectionComponentType = sectionReplacement.componentType;
     if (sectionComponentType === "copy") {
@@ -688,56 +650,6 @@ export class PaginatorPageSet extends Template {
     return { replacements: newReplacements }
 
   }
-
-
-  // static calculateReplacementChanges({ component, workspace, componentInfoObjects }) {
-  //   // console.log(`calculate replacement changes for ${component.componentName}`);
-
-  //   let replacementChanges = [];
-
-  //   if (!component.stateValues.rendered) {
-  //     if (workspace.rendered) {
-  //       workspace.rendered = false;
-
-  //       let replacementInstruction = {
-  //         changeType: "changeReplacementsToWithhold",
-  //         replacementsToWithhold: component.replacements.length,
-  //       };
-  //       replacementChanges.push(replacementInstruction);
-
-  //     }
-
-
-  //   } else if (!workspace.rendered) {
-
-  //     workspace.rendered = true;
-
-  //     if (component.replacementsToWithhold > 0) {
-  //       let replacementInstruction = {
-  //         changeType: "changeReplacementsToWithhold",
-  //         replacementsToWithhold: 0,
-  //       };
-  //       replacementChanges.push(replacementInstruction);
-
-  //     } else {
-  //       let replacements = this.createSerializedReplacements({ component, componentInfoObjects, workspace }).replacements;
-
-  //       let replacementInstruction = {
-  //         changeType: "add",
-  //         changeTopLevelReplacements: true,
-  //         firstReplacementInd: 0,
-  //         serializedReplacements: replacements,
-  //         replacementsToWithhold: 0,
-  //       }
-
-  //       replacementChanges.push(replacementInstruction);
-
-  //     }
-  //   }
-
-  //   return replacementChanges;
-
-  // }
 
 
 }
@@ -934,20 +846,57 @@ export class PaginatorPage extends Template {
         let replacements = this.createSerializedReplacements({ component, componentInfoObjects, workspace }).replacements;
 
         let sectionReplacement = replacements[0];
-        if (!sectionReplacement.variants) {
-          sectionReplacement.variants = {}
+
+        // if sectionReplacement or mirrorReplacement are copies to external section
+        // use variant info from the section itself rather than the copy
+
+        // TODO: address case of interal copy of section
+
+        let effectiveSectionReplacement = sectionReplacement;
+        if (sectionReplacement.componentType === "copy") {
+          if (sectionReplacement.children && sectionReplacement.children.length == 1
+            && sectionReplacement.children[0].componentType === "externalContent") {
+            let extContent = sectionReplacement.children[0];
+            if (extContent.children && extContent.children.length === 1 &&
+              componentInfoObjects.isInheritedComponentType({
+                inheritedComponentType: extContent.children[0].componentType,
+                baseComponentType: "_sectioningComponent"
+              })) {
+              effectiveSectionReplacement = extContent.children[0];
+            }
+          }
+        }
+
+        if (!effectiveSectionReplacement.variants) {
+          effectiveSectionReplacement.variants = {}
         }
 
         let mirrorPageReplacement = components[component.stateValues.mirrorPageReplacements[0].componentName]
-        if (mirrorPageReplacement.variants && mirrorPageReplacement.variants.desiredVariant) {
-          sectionReplacement.variants.desiredVariant = Object.assign({}, mirrorPageReplacement.variants.desiredVariant);
+
+        let effectiveMirrorReplacement = mirrorPageReplacement;
+        if (mirrorPageReplacement.componentType === "copy") {
+          if (mirrorPageReplacement.replacements && mirrorPageReplacement.replacements.length == 1
+            && mirrorPageReplacement.replacements[0].componentType === "externalContent") {
+            let extContent = mirrorPageReplacement.replacements[0];
+            if (extContent.replacements && extContent.replacements.length === 1 &&
+              componentInfoObjects.isInheritedComponentType({
+                inheritedComponentType: extContent.replacements[0].componentType,
+                baseComponentType: "_sectioningComponent"
+              })) {
+              effectiveMirrorReplacement = extContent.replacements[0];
+            }
+          }
+        }
+
+        if (effectiveMirrorReplacement.variants && effectiveMirrorReplacement.variants.desiredVariant) {
+          effectiveSectionReplacement.variants.desiredVariant = Object.assign({}, effectiveMirrorReplacement.variants.desiredVariant);
         } else {
-          sectionReplacement.variants.desiredVariant = {};
+          effectiveSectionReplacement.variants.desiredVariant = {};
         }
 
         // overwrite index from actual variant, even if index or name specified
         // in case they aren't valid
-        sectionReplacement.variants.desiredVariant.index = mirrorPageReplacement.sharedParameters.variantIndex;
+        effectiveSectionReplacement.variants.desiredVariant.index = effectiveMirrorReplacement.sharedParameters.variantIndex;
 
 
         let replacementInstruction = {
