@@ -51,7 +51,7 @@ const MenuHeaderButton = styled.button`
   border: none;
   border-top: ${({ linkedPanel, activePanel }) =>
     linkedPanel === activePanel ? '8px solid #1A5A99' : 'none'};
-  background-color: hsl(0, 0%, 99%);
+  background-color: hsl(0, 0%, 100%);
   border-bottom: 2px solid
     ${({ linkedPanel, activePanel }) =>
       linkedPanel === activePanel ? '#white' : 'black'};
@@ -153,7 +153,7 @@ function Menu(props){
 }
 
 const LoadingFallback = styled.div`
-  background-color: hsl(0, 0%, 99%);
+  background-color: hsl(0, 0%, 100%);
   border-radius: 4px;
   display: flex;
   justify-content: center;

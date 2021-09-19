@@ -1,12 +1,20 @@
-import React, {useEffect, useState} from "../../_snowpack/pkg/react.js";
-import {useRecoilCallback, useSetRecoilState, useRecoilState, useRecoilValueLoadable} from "../../_snowpack/pkg/recoil.js";
+import React, {useEffect, useState, useMemo} from "../../_snowpack/pkg/react.js";
+import {
+  useRecoilCallback,
+  useSetRecoilState,
+  useRecoilState,
+  useRecoilValueLoadable
+} from "../../_snowpack/pkg/recoil.js";
+import {useTransition, a} from "../../_snowpack/pkg/@react-spring/web.js";
+import useMeasure from "../../_snowpack/pkg/react-use-measure.js";
 import {selectedMenuPanelAtom} from "../Panels/NewMenuPanel.js";
 import {drivecardSelectedNodesAtom} from "../ToolHandlers/CourseToolHandler.js";
 import {pageToolViewAtom} from "../NewToolRoot.js";
 import DriveCard from "../../_reactComponents/Drive/DoenetDriveCard.js";
 import {fetchDrivesQuery} from "../../_reactComponents/Drive/NewDrive.js";
-import Measure from "../../_snowpack/pkg/react-measure.js";
 import {mainPanelClickAtom} from "../Panels/NewMainPanel.js";
+import useMedia from "./useMedia.js";
+import "./driveCardsStyle.css.proxy.js";
 export default function DriveCardsNew(props) {
   console.log(">>>===DriveCards");
   const driveInfo = useRecoilValueLoadable(fetchDrivesQuery);
@@ -38,34 +46,38 @@ const DriveCardWrapper = (props) => {
   const {isOneDriveSelect, driveInfo, drivePathSyncKey, types} = props;
   const [drivecardSelectedValue, setDrivecardSelection] = useRecoilState(drivecardSelectedNodesAtom);
   const setPageToolView = useSetRecoilState(pageToolViewAtom);
-  let driveCardItems = [];
-  let heights = [];
-  const [width, setWidth] = useState(0);
-  const getColumns = (width2) => {
-    if (width2 > 1500) {
-      return 5;
-    } else if (width2 > 1e3) {
-      return 4;
-    } else if (width2 > 600) {
-      return 3;
-    } else if (width2 > 400) {
-      return 2;
-    } else if (width2 > 200) {
-      return 1;
-    } else {
-      return 1;
-    }
-  };
-  const columns = getColumns(width);
-  heights = new Array(columns).fill(0);
+  const columns = useMedia(["(min-width: 1500px)", "(min-width: 1000px)", "(min-width: 600px)"], [5, 4, 3], 2);
+  const [ref, {width}] = useMeasure();
   let showCards = [];
   if (types[0] === "course") {
     showCards = driveInfo;
   }
-  driveCardItems = showCards.map((child, i) => {
-    const column = heights.indexOf(Math.min(...heights));
-    const xy = [width / columns * column, (heights[column] += 250) - 250];
-    return {...child, xy, width: width / columns, height: 250};
+  const [heights, driveCardItems] = useMemo(() => {
+    let heights2 = new Array(columns).fill(0);
+    let driveCardItems2 = showCards.map((child, i) => {
+      const column = heights2.indexOf(Math.min(...heights2));
+      const x = width / columns * column;
+      const y = (heights2[column] += 270) - 270;
+      return {
+        ...child,
+        x,
+        y,
+        width: width / columns,
+        height: 250,
+        drivePathSyncKey
+      };
+    });
+    return [heights2, driveCardItems2];
+  }, [columns, showCards, width]);
+  console.log(">>> driveInfo", driveInfo);
+  const transitions = useTransition(driveCardItems, {
+    key: (item) => item.driveId,
+    from: ({x, y, width: width2, height}) => ({x, y, width: width2, height, opacity: 0}),
+    enter: ({x, y, width: width2, height}) => ({x, y, width: width2, height, opacity: 1}),
+    update: ({x, y, width: width2, height}) => ({x, y, width: width2, height}),
+    leave: {height: 0, opacity: 0},
+    config: {mass: 5, tension: 500, friction: 100},
+    trail: 25
   });
   const setSelectedCourseMenu = useRecoilCallback(({set}) => () => {
     set(selectedMenuPanelAtom, "SelectedCourse");
@@ -74,7 +86,9 @@ const DriveCardWrapper = (props) => {
     if (e.key === "Enter") {
       setPageToolView({
         tool: "navigation",
-        params: {path: `${item.driveId}:${item.driveId}:${item.driveId}:Drive`}
+        params: {
+          path: `${item.driveId}:${item.driveId}:${item.driveId}:Drive`
+        }
       });
     }
   };
@@ -150,32 +164,18 @@ const DriveCardWrapper = (props) => {
   };
   return /* @__PURE__ */ React.createElement("div", {
     className: "drivecardContainer"
-  }, /* @__PURE__ */ React.createElement(Measure, {
-    bounds: true,
-    onResize: (contentRect) => {
-      setWidth(contentRect.bounds.width);
-    }
-  }, ({measureRef}) => /* @__PURE__ */ React.createElement("div", {
-    ref: measureRef,
-    style: {
-      width: "100%"
-    },
-    className: `list`
-  }, driveCardItems.map((item, index) => {
-    item["drivePathSyncKey"] = drivePathSyncKey;
+  }, /* @__PURE__ */ React.createElement("div", {
+    ref,
+    className: "driveCardList",
+    style: {height: Math.max(...heights)}
+  }, transitions((style, item, t, index) => {
+    console.log("");
     let isSelected = getSelectedCard(item);
-    return /* @__PURE__ */ React.createElement("div", {
-      key: `div${item.driveId}`,
-      className: `adiv ${isSelected ? "borderselection" : ""}`,
-      style: {
-        width: 250,
-        height: 250,
-        opacity: 1,
-        padding: 15
-      }
+    return /* @__PURE__ */ React.createElement(a.div, {
+      style
     }, /* @__PURE__ */ React.createElement("div", {
       role: "button",
-      style: {height: "100%", outline: "none"},
+      style: {height: "100%", outline: "none", padding: "10px"},
       tabIndex: index + 1,
       onClick: (e) => {
         e.preventDefault();
@@ -188,7 +188,14 @@ const DriveCardWrapper = (props) => {
         e.preventDefault();
         e.stopPropagation();
         setDrivecardSelection([]);
-        setPageToolView({page: "course", tool: "dashboard", view: "", params: {path: `${item.driveId}:${item.driveId}:${item.driveId}:Drive`}});
+        setPageToolView({
+          page: "course",
+          tool: "dashboard",
+          view: "",
+          params: {
+            path: `${item.driveId}:${item.driveId}:${item.driveId}:Drive`
+          }
+        });
       }
     }, /* @__PURE__ */ React.createElement(DriveCard, {
       image: item.image,
@@ -197,5 +204,5 @@ const DriveCardWrapper = (props) => {
       isSelected,
       role: item.role
     })));
-  }))));
+  })));
 };

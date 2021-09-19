@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { doenetComponentForegroundInactive } from "./theme"
 
 export default function Textfield(props) {
   const [labelVisible, setLabelVisible] = useState(props.label ? 'static' : 'none')
+  const [text, setText] = useState(props.value ? 'Enter text here' : props.value);
   const [align, setAlign] = useState(props.vertical ? 'static' : 'flex');
   //Assume small
   var textfield = {
@@ -12,7 +13,7 @@ export default function Textfield(props) {
         fontFamily: 'Arial',
         borderRadius: '5px',
         color: '#000',
-        value: 'Enter text here',
+        value: `${text}`,
         resize:'none',
         whiteSpace: 'nowrap',
         padding:"0px 5px 0px 5px",
@@ -32,6 +33,10 @@ export default function Textfield(props) {
         alignItems: 'flex-end'
     }
 
+    useEffect(() => {
+      setText(props.value);
+    });
+
     if (props.alert) {
       textfield.border = '2px solid #C1292E'
     }
@@ -44,9 +49,7 @@ export default function Textfield(props) {
     textfield.cursor = 'not-allowed';
     disable = "disabled";
   }
-  if (props.value) {
-    textfield.value = props.value;
-}
+  
 if (props.width) {
   if (props.width === "menu") {
     textfield.width = '200px';

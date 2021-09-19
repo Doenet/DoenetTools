@@ -12,7 +12,7 @@ export const mainPanelClickAtom = atom({
 
 const ContentWrapper = styled.div`
   grid-area: mainPanel;
-  background-color: hsl(0, 0%, 99%);
+  background-color: hsl(0, 0%, 100%);
   height: 100%;
   // border-radius: 0 0 4px 4px;
   overflow: auto;
@@ -23,7 +23,7 @@ const ControlsWrapper = styled.div`
   display: flex;
   flex-direction: row;
   gap: 4px;
-  background-color: hsl(0, 0%, 99%);
+  background-color: hsl(0, 0%, 100%);
   // border-radius: 4px 4px 0 0;
   overflow: auto hidden;
   justify-content: space-between;

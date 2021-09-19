@@ -79,26 +79,28 @@ if ($success) {
     }
 
     if ($success) {
-        //retrive contentId from assignment table
+        //retrive contentId from content table
         $sql = "SELECT contentId
-        FROM assignment
+        FROM content
         WHERE doenetId = '$entryDoenetId'
+        AND isReleased = '1'
         ";
         $result = $conn->query($sql);
         if ($result->num_rows > 0) {
             $row = $result->fetch_assoc();
             $entryContentId = $row['contentId'];
-        } else {
-            //todo this should error?
-        }
-        $sql = "INSERT INTO collection
-        (doenetId, entryId, entryDoenetId, entryContentId, entryVariant)
-        VALUES ('$doenetId', '$entryId', '$entryDoenetId', '$entryContentId', '$entryVariant')
-        ";
-        $result = $conn->query($sql);
 
-        http_response_code(201);
-        echo json_encode(['message' => $message, 'success' => $success]);
+            $sql = "INSERT INTO collection
+            (doenetId, entryId, entryDoenetId, entryContentId, entryVariant)
+            VALUES ('$doenetId', '$entryId', '$entryDoenetId', '$entryContentId', '$entryVariant')
+            ";
+
+            $result = $conn->query($sql);
+            http_response_code(201);
+            echo json_encode(['message' => $message, 'success' => $success]);
+        } else {
+            http_response_code(404);
+        }
     }
 } else {
     http_response_code(400);

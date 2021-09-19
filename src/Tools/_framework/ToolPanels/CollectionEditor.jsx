@@ -105,7 +105,7 @@ export default function CollectionEditor() {
         folderInfoObj.contentsDictionary[key].itemType === itemType.DOENETML
       ) {
         const { doenetId, isReleased } = folderInfoObj.contentsDictionary[key];
-        if (isReleased) {
+        if (isReleased == '1') {
           initEntryByDoenetId(doenetId);
           entries.push(
             <Suspense key={key}>
@@ -268,7 +268,7 @@ function CollectionEntry({
               entryDoenetId: doenetId,
               //TODO: ref the selected option;
               entryVariant: JSON.stringify(
-                variants[0],
+                { name: variants[0] },
                 serializedComponentsReplacer,
               ),
             })
@@ -280,7 +280,7 @@ function CollectionEntry({
                   entryId,
                   entryDoenetId: doenetId,
                   entryVariant: JSON.stringify(
-                    variants[0],
+                    { name: variants[0] },
                     serializedComponentsReplacer,
                   ),
                 },

@@ -426,6 +426,7 @@ export default class Select extends CompositeComponent {
     }
 
     stateVariableDefinitions.generatedVariantInfo = {
+      providePreviousValuesInDefinition: true,
       returnDependencies: ({ componentInfoObjects }) => ({
         selectedIndices: {
           dependencyType: "stateVariable",
@@ -445,7 +446,7 @@ export default class Select extends CompositeComponent {
           ignoreReplacementsOfMatchedComposites: true,
         }
       }),
-      definition({ dependencyValues, componentName }) {
+      definition({ dependencyValues, componentName, previousValues }) {
 
         let generatedVariantInfo = {
           indices: dependencyValues.selectedIndices,
@@ -460,8 +461,19 @@ export default class Select extends CompositeComponent {
           } else if (descendant.stateValues.generatedVariantInfo) {
             subvariants.push(...descendant.stateValues.generatedVariantInfo.subvariants)
           }
-
         }
+
+        for (let [ind, subvar] of subvariants.entries()) {
+          if (!subvar.subvariants && previousValues.generatedVariantInfo) {
+            // check if previously had subvariants
+            let previousSubvariants = previousValues.generatedVariantInfo.subvariants;
+            if (previousSubvariants[ind].subvariants) {
+              subvariants[ind] = Object.assign({}, subvariants[ind]);
+              subvariants[ind].subvariants = previousSubvariants[ind].subvariants;
+            }
+          }
+        }
+
         return { newValues: { generatedVariantInfo } }
 
       }
