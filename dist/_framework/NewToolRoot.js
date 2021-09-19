@@ -343,7 +343,8 @@ let navigationObj = {
       supportPanelTitles: ["DoenetML Editor"],
       supportPanelIndex: 0,
       headerControls: ["EditorBreadCrumb", "ViewerUpdateButton"],
-      headerControlsPositions: ["Left", "Left"]
+      headerControlsPositions: ["Left", "Left"],
+      onLeave: "EditorLeave"
     },
     collection: {
       currentMainPanel: "CollectionEditor",
@@ -452,6 +453,7 @@ function OnLeave() {
   let leaveComponent = null;
   const LazyEnterLeaveObj = useRef({
     NavigationLeave: lazy(() => import("./EnterLeave/NavigationLeave.js")),
+    EditorLeave: lazy(() => import("./EnterLeave/EditorLeave.js")),
     CourseChooserLeave: lazy(() => import("./EnterLeave/CourseChooserLeave.js")),
     DashboardLeave: lazy(() => import("./EnterLeave/DashboardLeave.js"))
   }).current;
