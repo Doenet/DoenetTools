@@ -244,7 +244,9 @@ export const overViewData = selector({
             let [doenetId,
                 credit,
                 userId] = data[userAssignment]
+           if (overView[userId]){
             overView[userId].assignments[doenetId] = credit
+           }
         }
 
         return overView
@@ -662,10 +664,19 @@ let gradeCategories = [
             scores.push(score);
             
             score = Math.round(score*100)/100;
-            row[doenetId] = score;
+            row[doenetId] =  <a onClick = {(e) =>{
+                setPageToolView({
+                    page: 'course',
+                    tool: 'gradebookStudentAssignment',
+                    view: '',
+                    params: { driveId: driveIdValue , doenetId, userId,source:'student'},
+                })
+  
+            }}>{score}</a>
+            // row[doenetId] = score;
         }
 
-        let numberScores = scores.length;
+        // let numberScores = scores.length;
         scores = scores.sort((a,b)=>b-a).slice(0,maximumNumber);
         let categoryScore = scores.reduce((a,c)=>a+c,0) * scaleFactor;
     
