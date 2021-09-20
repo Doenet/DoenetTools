@@ -496,11 +496,38 @@ function GradebookOverview(props) {
     let driveIdValue = useRecoilValue(driveId)
     const setPageToolView = useSetRecoilState(pageToolViewAtom);
     let students = useRecoilValueLoadable(studentData)
+    let assignments = useRecoilValueLoadable(assignmentData);
+    let overView = useRecoilValueLoadable(overViewData)
+
+// console.log(">>>>students",students.contents)
+// console.log(">>>>assignments",assignments.contents)
+// console.log(">>>>overView",overView.contents)
+
+ //Protect from values not being loaded
+ if(assignments.state !== 'hasValue' || 
+ students.state !== 'hasValue' || 
+ overView.state !== 'hasValue'){
+     return null;
+ }
+
+let gradeCategories = [
+    {category:'Gateway',
+    scaleFactor:0},
+    {category:'Exams'},
+    {category:'Quizzes',
+    maximumNumber:10},
+    {category:'Problem sets',
+    maximumNumber:30},
+    {category:'Projects'},
+    {category:'Participation'}
+];
 
     let overviewTable = {}
     overviewTable.headers = []
+    overviewTable.rows = []
+    let possiblePointRow = {}
+    let totalPossiblePoints = 0;
 
-    if(students.state == 'hasValue'){
         overviewTable.headers.push(
             {
                 Header: "Name",
@@ -517,92 +544,143 @@ function GradebookOverview(props) {
                 }}> {row.cell.row.cells[0].value} </a>
             }
         )
-    }
+        
+        possiblePointRow['name'] = "Possible Points";
 
-    let assignments = useRecoilValueLoadable(assignmentData);
-    //let assignments = { contents: {}}
+        for (let {category,scaleFactor=1,maximumNumber=Infinity} of gradeCategories){
 
-    if(assignments.state == 'hasValue'){
-        for(let doenetId in assignments.contents){
-            overviewTable.headers.push({
-                //`/assignment/?doenetId=${doenetId}`
-                Header: <a onClick = {(e) =>{
-                    e.stopPropagation()
-
-                    setPageToolView({
-                        page: 'course',
-                        tool: 'gradebookAssignment',
-                        view: '',
-                        params: { driveId: driveIdValue , doenetId},
-                    })
-                    //console.log("trying overlay");
-                    //openOverlay({ type: "gradebookassignmentview", title: "Gradebook Assignment View", doenetId: doenetId })
-                    //open("calendar", "fdsa", "f001");
-                }
-                }>{assignments.contents[doenetId].label}</a>,
-                accessor: doenetId,
-                disableFilters: true,
-                // <a onClick={() => {
-                //     open("calendar", "fdsa", "f001");
-                //   }}>
-                
-
-            })
-        }
-    }
-
-   
-    overviewTable.headers.push(
-        {
-            Header: "Grade",
-            accessor: "grade",
-            sortType: gradeSorting,
-            disableFilters: true
-        },
-    )
-
-    overviewTable.rows = []
+            let allpossiblepoints = [];
+            
+      
+            for(let doenetId in assignments.contents){
     
-    //let students = { state:'hasError', contents: {}}
-    let overView = useRecoilValueLoadable(overViewData)
-    //let overView = { state:'hasError', contents: {}}
+                let inCategory = assignments.contents[doenetId].category;
+                if (inCategory.toLowerCase() !== category.toLowerCase()){ continue;}
+    
+                let possiblepoints = assignments.contents[doenetId].totalPointsOrPercent * 1;
+                allpossiblepoints.push(possiblepoints);
 
-    if(students.state == 'hasValue'){
-        for (let userId in students.contents) {
-            
-            let firstName = students.contents[userId].firstName,
-                lastName = students.contents[userId].lastName,
-                // credit = students.contents[userId].courseCredit,
-                generatedGrade = students.contents[userId].courseGrade,
-                overrideGrade = students.contents[userId].overrideCourseGrade,
-                role = students.contents[userId].role;
-                
-            //TODO: need a switch to filter this in the future
-            if (role !== 'Student'){ continue; }
+                overviewTable.headers.push({
+                    // Cell: row  =><a onClick = {(e) =>{
+                    //     let name = row.cell.row.cells[0].value
+                    //     let userId = getUserId(students.contents, name);
+                    //     setPageToolView({
+                    //         page: 'course',
+                    //         tool: 'gradebookStudent',
+                    //         view: '',
+                    //         params: { driveId: driveIdValue, userId},
+                    //     })
+                    // }}> {row.cell.row.cells[0].value} </a>,
+                    Header: <a onClick = {(e) =>{
 
-            let grade = overrideGrade ? overrideGrade : generatedGrade
+                        setPageToolView({
+                            page: 'course',
+                            tool: 'gradebookAssignment',
+                            view: '',
+                            params: { driveId: driveIdValue , doenetId},
+                        })
+          
+                    }
+                    }>{assignments.contents[doenetId].label}</a>,
+                    accessor: doenetId,
+                    disableFilters: true,
 
-            let row = {}
+                })
+        possiblePointRow[doenetId] = possiblepoints;
 
-            row["name"] = firstName + " " + lastName
-            
-            if(overView.state == 'hasValue' && assignments.state == 'hasValue'){
-
-                for (let doenetId in assignments.contents) {
-                    // row[doenetId] = (overView.contents[userId].assignments[doenetId]) * 100 + "%"
-                    row[doenetId] = Math.round((overView.contents[userId].assignments[doenetId]) * 10000) / 100 + "%" 
-                }
-            }
-
-            // row["weight"] = credit
-            row["grade"] = grade
-
-            
-            overviewTable.rows.push(row);
+    
         }
+        let numberScores = allpossiblepoints.length;
+
+        allpossiblepoints = allpossiblepoints.sort((a,b)=>b-a).slice(0,maximumNumber);
+        let categoryPossiblePoints = allpossiblepoints.reduce((a,c)=>a+c,0) * scaleFactor;
+    
+        //category total
+        possiblePointRow[category] = categoryPossiblePoints;
+        totalPossiblePoints += categoryPossiblePoints;
+
+        let description = "";
+        if (numberScores > maximumNumber){
+            description = <div style={{fontSize:'.7em'}}>(Based on top {maximumNumber} scores)</div>
+        }
+        if (scaleFactor !== 1 ){
+            description = <div style={{fontSize:'.7em'}}>(Based on rescaling by {scaleFactor * 100}%)</div>
+        }
+
+        overviewTable.headers.push({
+           
+            Header: <div>{`${category} Total`} {description} </div>,
+            accessor: category,
+            disableFilters: true,
+
+        })
+
+       
     }
 
-    //console.log("debug overviewtable", overviewTable);
+
+    overviewTable.headers.push({
+           
+        Header: <div>Course Total</div>,
+        accessor: 'course total',
+        disableFilters: true,
+
+    })
+    possiblePointRow['course total'] = totalPossiblePoints;
+
+    overviewTable.rows.push(possiblePointRow)
+
+    for (let userId in students.contents) {
+            
+        let firstName = students.contents[userId].firstName,
+            lastName = students.contents[userId].lastName,
+            role = students.contents[userId].role;
+        //TODO: need a switch to filter this in the future
+        if (role !== 'Student'){ continue; }
+
+        // let grade = overrideGrade ? overrideGrade : generatedGrade
+
+        let row = {}
+
+        row["name"] = firstName + " " + lastName
+        
+        let totalScore = 0;
+
+    for (let {category,scaleFactor=1,maximumNumber=Infinity} of gradeCategories){
+     
+        let scores = [];
+  
+        for(let doenetId in assignments.contents){
+
+            let inCategory = assignments.contents[doenetId].category;
+            if (inCategory.toLowerCase() !== category.toLowerCase()){ continue;}
+
+            let possiblepoints = assignments.contents[doenetId].totalPointsOrPercent * 1;
+            let credit = overView.contents[userId].assignments[doenetId];
+            let score = possiblepoints * credit;
+           
+            scores.push(score);
+            
+            score = Math.round(score*100)/100;
+            row[doenetId] = score;
+        }
+
+        let numberScores = scores.length;
+        scores = scores.sort((a,b)=>b-a).slice(0,maximumNumber);
+        let categoryScore = scores.reduce((a,c)=>a+c,0) * scaleFactor;
+    
+        totalScore += categoryScore;
+
+        categoryScore = Math.round(categoryScore* 100)/100 
+        row[category] = categoryScore;
+
+    }
+
+    totalScore = Math.round(totalScore*100)/100;
+    row['course total'] = totalScore;
+
+        overviewTable.rows.push(row);
+    }
     
 
     return (
