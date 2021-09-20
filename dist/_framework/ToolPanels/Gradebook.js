@@ -220,7 +220,9 @@ export const overViewData = selector({
         credit,
         userId
       ] = data[userAssignment];
-      overView[userId].assignments[doenetId] = credit;
+      if (overView[userId]) {
+        overView[userId].assignments[doenetId] = credit;
+      }
     }
     return overView;
   }
