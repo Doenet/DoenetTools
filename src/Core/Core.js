@@ -1011,21 +1011,24 @@ export default class Core {
         if (variantControlInd !== undefined) {
           // if have desired variant name or index
           // add that information to variantControl child
-          let desiredVariant = serializedComponent.variants.desiredVariant;
-          if (desiredVariant !== undefined) {
-            if (desiredVariant.index !== undefined) {
-              variantControlChild.variants = {
-                desiredVariantIndex: desiredVariant.index
-              }
-            } else if (desiredVariant.name !== undefined) {
-              variantControlChild.variants = {
-                desiredVariantName: desiredVariant.name
+
+          if (serializedComponent.variants) {
+            let desiredVariant = serializedComponent.variants.desiredVariant;
+            if (desiredVariant !== undefined) {
+              if (desiredVariant.index !== undefined) {
+                variantControlChild.variants = {
+                  desiredVariantIndex: desiredVariant.index
+                }
+              } else if (desiredVariant.name !== undefined) {
+                variantControlChild.variants = {
+                  desiredVariantName: desiredVariant.name
+                }
               }
             }
-          }
 
-          if (serializedComponent.variants.uniqueVariants) {
-            sharedParameters.numberOfVariants = serializedComponent.variants.numberOfVariants;
+            if (serializedComponent.variants.uniqueVariants) {
+              sharedParameters.numberOfVariants = serializedComponent.variants.numberOfVariants;
+            }
           }
 
           // create variant control child

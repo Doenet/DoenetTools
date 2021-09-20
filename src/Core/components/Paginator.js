@@ -621,6 +621,13 @@ export class PaginatorPageSet extends Template {
         baseComponentType: "variantControl"
       })) {
         placeholderChildren = [JSON.parse(JSON.stringify(child))]
+        let variantChild = placeholderChildren[0];
+        if (!variantChild.doenetAttributes) {
+          variantChild.doenetAttributes = {};
+        }
+        variantChild.doenetAttributes.createUniqueName = true;
+
+        break;
       }
     }
 
