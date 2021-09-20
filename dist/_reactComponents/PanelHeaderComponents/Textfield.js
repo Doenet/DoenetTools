@@ -5,7 +5,7 @@ export default function Textfield(props) {
   const [text, setText] = useState(props.value ? "Enter text here" : props.value);
   const [align, setAlign] = useState(props.vertical ? "static" : "flex");
   var textfield = {
-    margin: "0px",
+    margin: "0px 4px 0px 4px",
     height: "24px",
     border: `2px solid ${doenetComponentForegroundInactive}`,
     fontFamily: "Arial",
@@ -15,14 +15,15 @@ export default function Textfield(props) {
     resize: "none",
     whiteSpace: "nowrap",
     padding: "0px 5px 0px 5px",
-    lineHeight: "24px"
+    lineHeight: "24px",
+    fontSize: "12px"
   };
   var label = {
     value: "Label:",
     fontSize: "14px",
     display: `${labelVisible}`,
     marginRight: "5px",
-    marginBottom: `${align == "flex" ? "none" : "0px"}`
+    marginBottom: `${align == "flex" ? "none" : "2px"}`
   };
   var container = {
     display: `${align}`,

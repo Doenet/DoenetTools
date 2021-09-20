@@ -174,6 +174,14 @@ class DoenetViewerChild extends Component {
     }
     let changeString = JSON.stringify(this.cumulativeStateVariableChanges, serializedComponentsReplacer);
     let variantString = JSON.stringify(this.generatedVariant, serializedComponentsReplacer);
+    let currentVariantString = JSON.stringify(this.core.document.stateValues.generatedVariantInfo, serializedComponentsReplacer);
+    if (currentVariantString !== variantString) {
+      this.generatedVariant = this.core.document.stateValues.generatedVariantInfo;
+      variantString = currentVariantString;
+      if (this.props.generatedVariantCallback) {
+        this.props.generatedVariantCallback(this.generatedVariant, this.allPossibleVariants);
+      }
+    }
     const data = {
       contentId,
       stateVariables: changeString,

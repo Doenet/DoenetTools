@@ -15,7 +15,7 @@ const Button = styled.button`
 `;
 Button.defaultProps = {
   theme: {
-    margin: "0",
+    margin: "0px 4px 0px 4px",
     borderRadius: "5px",
     padding: "0px 10px 0px 10px"
   }
@@ -24,7 +24,7 @@ const Label = styled.p`
   font-size: 12px;
   display: ${(props) => props.labelVisible};
   margin-right: 5px;
-  margin-bottom: ${(props) => props.align == "flex" ? "none" : "0px"};
+  margin-bottom: ${(props) => props.align == "flex" ? "none" : "2px"};
 `;
 const Container = styled.div`
   display: ${(props) => props.align};
