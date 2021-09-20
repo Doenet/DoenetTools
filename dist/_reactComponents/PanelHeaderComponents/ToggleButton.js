@@ -9,7 +9,7 @@ export default function ToggleButton(props) {
     color = "#e2e2e2";
   }
   var toggleButton = {
-    margin: "0px",
+    margin: "0px 4px 0px 4px",
     height: "24px",
     border: `2px solid ${color}`,
     color: `${color}`,
@@ -31,7 +31,7 @@ export default function ToggleButton(props) {
     fontSize: "12px",
     display: `${labelVisible}`,
     marginRight: "5px",
-    marginBottom: `${align == "flex" ? "none" : "0px"}`
+    marginBottom: `${align == "flex" ? "none" : "2px"}`
   };
   var container = {
     display: `${align}`,

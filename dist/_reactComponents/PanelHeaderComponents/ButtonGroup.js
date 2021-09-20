@@ -13,7 +13,7 @@ export default function ButtonGroup(props) {
     padding: "0px 12px 0px 10px"
   };
   const verticalButtonGroup = {
-    margin: "2px 0px 2px 0px",
+    margin: "4px 4px 4px 4px",
     borderRadius: "0",
     padding: "0px 10px 0px 10px"
   };
