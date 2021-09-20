@@ -499,9 +499,9 @@ function GradebookOverview(props) {
     let assignments = useRecoilValueLoadable(assignmentData);
     let overView = useRecoilValueLoadable(overViewData)
 
-// console.log(">>>>students",students.contents)
-// console.log(">>>>assignments",assignments.contents)
-// console.log(">>>>overView",overView.contents)
+console.log(">>>>students",students)
+console.log(">>>>assignments",assignments)
+console.log(">>>>overView",overView)
 
  //Protect from values not being loaded
  if(assignments.state !== 'hasValue' || 
