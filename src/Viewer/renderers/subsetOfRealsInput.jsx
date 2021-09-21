@@ -38,6 +38,7 @@ const ModeButton = styled.button`
 export default class subsetOfReals extends DoenetRenderer {
   constructor(props) {
     super(props);
+    this.bounds = React.createRef();
 
     this.buildLine = this.buildLine.bind(this);
     this.handleInput = this.handleInput.bind(this);
@@ -115,8 +116,8 @@ export default class subsetOfReals extends DoenetRenderer {
   }
 
   xPositionToXValue(xPosition) {
-    // TODO: why do we have to subtract 30?
-    let relativeX = xPosition - this.firstHashXPosition - 30;
+    
+    let relativeX = xPosition - this.firstHashXPosition;
     let shiftAmount = 10;
     let intervalValueWidth = 1;
     let value = relativeX / this.xBetweenHashes * intervalValueWidth;
@@ -226,7 +227,8 @@ export default class subsetOfReals extends DoenetRenderer {
 
   handleInput(e, inputState) {
 
-    let xPosition = this.xPositionToXValue(e.clientX);
+    let mouseLeft = e.clientX - this.bounds.current.offsetLeft 
+    let xPosition = this.xPositionToXValue(mouseLeft);
 
     if (inputState === "up") {
 
@@ -359,7 +361,7 @@ export default class subsetOfReals extends DoenetRenderer {
 
     return (
       <>
-        <div>
+        <div ref={this.bounds}>
           {/* <span>
             <ModeButton
               style={addPointStyle}
