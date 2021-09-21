@@ -26,6 +26,7 @@ const ModeButton = styled.button`
 export default class subsetOfReals extends DoenetRenderer {
   constructor(props) {
     super(props);
+    this.bounds = React.createRef();
     this.buildLine = this.buildLine.bind(this);
     this.handleInput = this.handleInput.bind(this);
     this.switchMode = this.switchMode.bind(this);
@@ -79,7 +80,7 @@ export default class subsetOfReals extends DoenetRenderer {
     return position;
   }
   xPositionToXValue(xPosition) {
-    let relativeX = xPosition - this.firstHashXPosition - 30;
+    let relativeX = xPosition - this.firstHashXPosition;
     let shiftAmount = 10;
     let intervalValueWidth = 1;
     let value = relativeX / this.xBetweenHashes * intervalValueWidth;
@@ -160,7 +161,8 @@ export default class subsetOfReals extends DoenetRenderer {
     }
   }
   handleInput(e, inputState) {
-    let xPosition = this.xPositionToXValue(e.clientX);
+    let mouseLeft = e.clientX - this.bounds.current.offsetLeft;
+    let xPosition = this.xPositionToXValue(mouseLeft);
     if (inputState === "up") {
       let pointInd = -1;
       for (let [ind, pt] of this.doenetSvData.points.entries()) {
@@ -244,7 +246,9 @@ export default class subsetOfReals extends DoenetRenderer {
     if (this.state.mode === "move points") {
       movePointsStyle = {backgroundColor: activeButtonColor};
     }
-    return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("span", null, /* @__PURE__ */ React.createElement(ModeButton, {
+    return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("div", {
+      ref: this.bounds
+    }, /* @__PURE__ */ React.createElement("span", null, /* @__PURE__ */ React.createElement(ModeButton, {
       style: addRemovePointsStyle,
       onClick: () => this.switchMode("add remove points")
     }, "Add/Remove boundary points")), /* @__PURE__ */ React.createElement("span", null, /* @__PURE__ */ React.createElement(ModeButton, {
