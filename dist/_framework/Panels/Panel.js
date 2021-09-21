@@ -44,7 +44,7 @@ const Background = styled.div`
   height: ${({$vertical}) => $vertical ? "100%" : ""};
   width: ${({$vertical}) => $vertical ? "" : "100%"};
   border-radius: 4px;
-  background-color: hsl(0, 0%, 99%);
+  background-color: hsl(0, 0%, 100%);
 `;
 const DragHandle = styled.div`
   flex: 0 0 ${({$handleSize}) => $handleSize}px;

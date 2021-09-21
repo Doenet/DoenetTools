@@ -19,6 +19,7 @@ import {
 import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
 import Textfield from '../../../_reactComponents/PanelHeaderComponents/Textfield';
 import ActionButton from '../../../_reactComponents/PanelHeaderComponents/ActionButton';
+import ActionButtonGroup from '../../../_reactComponents/PanelHeaderComponents/ActionButtonGroup';
 import ButtonGroup from '../../../_reactComponents/PanelHeaderComponents/ButtonGroup';
 // import Increment from '../../../_reactComponents/PanelHeaderComponents/IncrementMenu';
 import useSockets from '../../../_reactComponents/Sockets';
@@ -191,8 +192,8 @@ export default function SelectedDoenetML() {
       <h2 data-cy="infoPanelItemLabel">
         <FontAwesomeIcon icon={faCode} /> {item.label}
       </h2>
-      <ButtonGroup vertical>
-        <Button
+      <ActionButtonGroup vertical>
+        <ActionButton
           width="menu"
           value="Edit DoenetML"
           onClick={() => {
@@ -207,7 +208,7 @@ export default function SelectedDoenetML() {
             });
           }}
         />
-        <Button
+        <ActionButton
           width="menu"
           value="Take Assignment"
           onClick={() => {
@@ -221,7 +222,7 @@ export default function SelectedDoenetML() {
             });
           }}
         />
-      </ButtonGroup>
+      </ActionButtonGroup>
      
       <Textfield 
           label="DoenetML Label" 

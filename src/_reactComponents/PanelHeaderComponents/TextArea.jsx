@@ -6,7 +6,7 @@ export default function TextArea(props) {
   const [align, setAlign] = useState(props.vertical ? 'static' : 'flex');
   //Assume small
   var textarea = {
-        margin: '0px',
+        margin: '0px 4px 0px 4px',
         height: '24px',
         border: `2px solid ${doenetComponentForegroundInactive}`,
         fontFamily: 'Arial',
@@ -19,7 +19,7 @@ export default function TextArea(props) {
         fontSize: '12px',
         display: `${labelVisible}`,
         marginRight: '5px',
-        marginBottom: `${align == 'flex' ? 'none' : '0px'}`
+        marginBottom: `${align == 'flex' ? 'none' : '2px'}`
     }
     
     var container = {
