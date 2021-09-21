@@ -287,7 +287,7 @@ export default class SubsetOfReals extends MathComponent {
             let num = me.fromAst(tree).evaluate_to_constant();
 
             if (Number.isFinite(num)) {
-              return new subset.Singleton(num)
+              return new subsets.Singleton(num)
             } else {
               return null;
             }
