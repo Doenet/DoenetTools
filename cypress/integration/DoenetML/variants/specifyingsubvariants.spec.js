@@ -1,4 +1,13 @@
 import { numberToLetters } from "../../../../src/Core/utils/sequence";
+import cssesc from 'cssesc';
+
+function cesc(s) {
+  s = cssesc(s, { isIdentifier: true });
+  if (s.slice(0, 2) === '\\#') {
+    s = s.slice(1);
+  }
+  return s;
+}
 
 describe('Specifying subvariants tests', function () {
 
@@ -1432,7 +1441,7 @@ describe('Specifying subvariants tests', function () {
                   let variantInd = titlesToInd[problem.stateValues.title];
                   expect(variantInd).eq(problemInds[i - 1]);
 
-                  if(i !== 1) {
+                  if (i !== 1) {
                     generatedVariantInfo.subvariants[1].indices.push(variantInd);
                   }
 
@@ -1453,7 +1462,7 @@ describe('Specifying subvariants tests', function () {
                         subvariants: []
                       }]
                     }
-                    if(i == 1) {
+                    if (i == 1) {
                       generatedVariantInfo.subvariants[0] = problemVariantInfo;
                     } else {
                       generatedVariantInfo.subvariants[1].subvariants.push(
@@ -1698,6 +1707,789 @@ describe('Specifying subvariants tests', function () {
 
     }
   })
+
+  it('problem variants are the same in multiple contexts', () => {
+
+
+    let problemAlone = `
+      <text>a</text>
+      <problem name="problem1">
+        <p>a = <selectFromSequence assignNames="a" from="1" to="1000" /></p>
+        <p>v = <select assignNames="v">a b c d e f g h i j k l m n o p q r s t u v w x y z</select></p>
+
+        <select numberToSelect="2" assignNames="(o1) (o2)">
+          <option>
+            <select assignNamesSkip="2">
+              <option>
+                <group newNamespace>
+                  <math name="m">x^2</math>
+                  <text name="t">apple</text>
+                </group>
+              </option>
+              <option>
+                <group newNamespace>
+                  <math name="m">y^3</math>
+                  <text name="t">banana</text>
+                </group>
+              </option>
+            </select>
+          </option>
+          <option>
+            <group newNamespace>
+              <math name="m">2q</math>
+              <text name="t">pear</text>
+            </group>
+          </option>
+          <option>
+            <group newNamespace>
+              <select assignNames="m">uv wx yz</select>
+              <selectFromSequence type="letters" assignNames="t" from="gh" to="hg" />
+            </group>
+          </option>
+        </select>
+
+        <p><m>$a$v</m> <answer name="ans1">$a$v</answer></p>
+
+        <p>$(o1/m): <answer name="ans2">$(o1/m)</answer></p>
+        <p>$(o1/t): <answer name="ans3" type="text">$(o1/t)</answer></p>
+
+        <p>$(o2/m): <answer name="ans4">$(o2/m)</answer></p>
+        <p>$(o2/t): <answer name="ans5" type="text">$(o2/t)</answer></p>
+
+      </problem>
+    `
+
+    let problemWithSiblings = `
+      <text>a</text>
+      <problem newNamespace>
+        <p>n = <selectFromSequence from="-99" to="99" assignNames="n" /></p>
+        <p><m>$n = </m> <answer>$n</answer></p>
+      </problem>
+      <problem newNamespace name="problem2">
+        <p>a = <selectFromSequence assignNames="a" from="1" to="1000" /></p>
+        <p>v = <select assignNames="v">a b c d e f g h i j k l m n o p q r s t u v w x y z</select></p>
+
+        <select numberToSelect="2" assignNames="(o1) (o2)">
+          <option>
+            <select assignNamesSkip="2">
+              <option>
+                <group newNamespace>
+                  <math name="m">x^2</math>
+                  <text name="t">apple</text>
+                </group>
+              </option>
+              <option>
+                <group newNamespace>
+                  <math name="m">y^3</math>
+                  <text name="t">banana</text>
+                </group>
+              </option>
+            </select>
+          </option>
+          <option>
+            <group newNamespace>
+              <math name="m">2q</math>
+              <text name="t">pear</text>
+            </group>
+          </option>
+          <option>
+            <group newNamespace>
+              <select assignNames="m">uv wx yz</select>
+              <selectFromSequence type="letters" assignNames="t" from="gh" to="hg" />
+            </group>
+          </option>
+        </select>
+
+        <p><m>$a$v</m> <answer name="ans1">$a$v</answer></p>
+
+        <p>$(o1/m): <answer name="ans2">$(o1/m)</answer></p>
+        <p>$(o1/t): <answer name="ans3" type="text">$(o1/t)</answer></p>
+
+        <p>$(o2/m): <answer name="ans4">$(o2/m)</answer></p>
+        <p>$(o2/t): <answer name="ans5" type="text">$(o2/t)</answer></p>
+
+      </problem>
+      <problem newNamespace name="problem3">
+        <p>m = <select assignNames='m' type='number'>2 3 5 7 11 13 17 19 23 29 31 37 41 43 47 53 59 61 67 71 73 79 83 89 97</select></p>
+        <p><m>$m = </m> <answer>$m</answer></p>
+      </problem>
+    `
+
+    let problemRepeated = `
+      <text>a</text>
+      <problem name="problem1" newNamespace>
+        <p>a = <selectFromSequence assignNames="a" from="1" to="1000" /></p>
+        <p>v = <select assignNames="v">a b c d e f g h i j k l m n o p q r s t u v w x y z</select></p>
+
+        <select numberToSelect="2" assignNames="(o1) (o2)">
+          <option>
+            <select assignNamesSkip="2">
+              <option>
+                <group newNamespace>
+                  <math name="m">x^2</math>
+                  <text name="t">apple</text>
+                </group>
+              </option>
+              <option>
+                <group newNamespace>
+                  <math name="m">y^3</math>
+                  <text name="t">banana</text>
+                </group>
+              </option>
+            </select>
+          </option>
+          <option>
+            <group newNamespace>
+              <math name="m">2q</math>
+              <text name="t">pear</text>
+            </group>
+          </option>
+          <option>
+            <group newNamespace>
+              <select assignNames="m">uv wx yz</select>
+              <selectFromSequence type="letters" assignNames="t" from="gh" to="hg" />
+            </group>
+          </option>
+        </select>
+
+        <p><m>$a$v</m> <answer name="ans1">$a$v</answer></p>
+
+        <p>$(o1/m): <answer name="ans2">$(o1/m)</answer></p>
+        <p>$(o1/t): <answer name="ans3" type="text">$(o1/t)</answer></p>
+
+        <p>$(o2/m): <answer name="ans4">$(o2/m)</answer></p>
+        <p>$(o2/t): <answer name="ans5" type="text">$(o2/t)</answer></p>
+
+      </problem>
+      <problem name="problem2" newNamespace>
+        <p>a = <selectFromSequence assignNames="a" from="1" to="1000" /></p>
+        <p>v = <select assignNames="v">a b c d e f g h i j k l m n o p q r s t u v w x y z</select></p>
+
+        <select numberToSelect="2" assignNames="(o1) (o2)">
+          <option>
+            <select assignNamesSkip="2">
+              <option>
+                <group newNamespace>
+                  <math name="m">x^2</math>
+                  <text name="t">apple</text>
+                </group>
+              </option>
+              <option>
+                <group newNamespace>
+                  <math name="m">y^3</math>
+                  <text name="t">banana</text>
+                </group>
+              </option>
+            </select>
+          </option>
+          <option>
+            <group newNamespace>
+              <math name="m">2q</math>
+              <text name="t">pear</text>
+            </group>
+          </option>
+          <option>
+            <group newNamespace>
+              <select assignNames="m">uv wx yz</select>
+              <selectFromSequence type="letters" assignNames="t" from="gh" to="hg" />
+            </group>
+          </option>
+        </select>
+
+        <p><m>$a$v</m> <answer name="ans1">$a$v</answer></p>
+
+        <p>$(o1/m): <answer name="ans2">$(o1/m)</answer></p>
+        <p>$(o1/t): <answer name="ans3" type="text">$(o1/t)</answer></p>
+
+        <p>$(o2/m): <answer name="ans4">$(o2/m)</answer></p>
+        <p>$(o2/t): <answer name="ans5" type="text">$(o2/t)</answer></p>
+
+      </problem>
+      <problem name="problem3" newNamespace>
+        <p>a = <selectFromSequence assignNames="a" from="1" to="1000" /></p>
+        <p>v = <select assignNames="v">a b c d e f g h i j k l m n o p q r s t u v w x y z</select></p>
+
+        <select numberToSelect="2" assignNames="(o1) (o2)">
+          <option>
+            <select assignNamesSkip="2">
+              <option>
+                <group newNamespace>
+                  <math name="m">x^2</math>
+                  <text name="t">apple</text>
+                </group>
+              </option>
+              <option>
+                <group newNamespace>
+                  <math name="m">y^3</math>
+                  <text name="t">banana</text>
+                </group>
+              </option>
+            </select>
+          </option>
+          <option>
+            <group newNamespace>
+              <math name="m">2q</math>
+              <text name="t">pear</text>
+            </group>
+          </option>
+          <option>
+            <group newNamespace>
+              <select assignNames="m">uv wx yz</select>
+              <selectFromSequence type="letters" assignNames="t" from="gh" to="hg" />
+            </group>
+          </option>
+        </select>
+
+        <p><m>$a$v</m> <answer name="ans1">$a$v</answer></p>
+
+        <p>$(o1/m): <answer name="ans2">$(o1/m)</answer></p>
+        <p>$(o1/t): <answer name="ans3" type="text">$(o1/t)</answer></p>
+
+        <p>$(o2/m): <answer name="ans4">$(o2/m)</answer></p>
+        <p>$(o2/t): <answer name="ans5" type="text">$(o2/t)</answer></p>
+
+      </problem>
+    `
+
+    let problemRepeatedAsExternalCopies = `
+      <text>a</text>
+      <copy uri="doenet:contentId=bb4ca2c44eba4f691b4591a7e20ef8007e5a825dd45f48bc4758d3a43f5af2fa" componentType="problem" assignNames="problem1" />
+      <copy uri="doenet:contentId=bb4ca2c44eba4f691b4591a7e20ef8007e5a825dd45f48bc4758d3a43f5af2fa" componentType="problem" assignNames="problem2" />
+      <copy uri="doenet:contentId=bb4ca2c44eba4f691b4591a7e20ef8007e5a825dd45f48bc4758d3a43f5af2fa" componentType="problem" assignNames="problem3" />
+    `
+
+    // TODO: how to make this work?
+    let problemRepeatedAsCopies = `
+      <text>a</text>
+      <problem name="problem1" newNamespace>
+        <p>a = <selectFromSequence assignNames="a" from="1" to="1000" /></p>
+        <p>v = <select assignNames="v">a b c d e f g h i j k l m n o p q r s t u v w x y z</select></p>
+
+        <select numberToSelect="2" assignNames="(o1) (o2)">
+          <option>
+            <select assignNamesSkip="2">
+              <option>
+                <group newNamespace>
+                  <math name="m">x^2</math>
+                  <text name="t">apple</text>
+                </group>
+              </option>
+              <option>
+                <group newNamespace>
+                  <math name="m">y^3</math>
+                  <text name="t">banana</text>
+                </group>
+              </option>
+            </select>
+          </option>
+          <option>
+            <group newNamespace>
+              <math name="m">2q</math>
+              <text name="t">pear</text>
+            </group>
+          </option>
+          <option>
+            <group newNamespace>
+              <select assignNames="m">uv wx yz</select>
+              <selectFromSequence type="letters" assignNames="t" from="gh" to="hg" />
+            </group>
+          </option>
+        </select>
+
+        <p><m>$a$v</m> <answer name="ans1">$a$v</answer></p>
+
+        <p>$(o1/m): <answer name="ans2">$(o1/m)</answer></p>
+        <p>$(o1/t): <answer name="ans3" type="text">$(o1/t)</answer></p>
+
+        <p>$(o2/m): <answer name="ans4">$(o2/m)</answer></p>
+        <p>$(o2/t): <answer name="ans5" type="text">$(o2/t)</answer></p>
+
+      </problem>
+      <copy tname="problem1" assignNames="problem2" />
+      <copy tname="problem1" assignNames="problem3" />
+    `
+
+    let problemRepeatedAsExternalCopiesInPaginator = `
+      <text>a</text>
+      <paginatorControls paginatorTname="pgn" name="pcontrols" />
+      <paginator name="pgn">
+        <copy uri="doenet:contentId=bb4ca2c44eba4f691b4591a7e20ef8007e5a825dd45f48bc4758d3a43f5af2fa" componentType="problem" assignNames="problem1" />
+        <copy uri="doenet:contentId=bb4ca2c44eba4f691b4591a7e20ef8007e5a825dd45f48bc4758d3a43f5af2fa" componentType="problem" assignNames="problem2" />
+        <copy uri="doenet:contentId=bb4ca2c44eba4f691b4591a7e20ef8007e5a825dd45f48bc4758d3a43f5af2fa" componentType="problem" assignNames="problem3" />
+      </paginator>
+    `
+
+
+    function checkProblemInstance({ probName, probInfo, components, enterValues = false }) {
+
+      expect(components[`${probName}/a`].stateValues.value.toString()).eq(probInfo.a.toString())
+      expect(components[`${probName}/v`].stateValues.value.toString()).eq(probInfo.v.toString())
+      expect(components[`${probName}/o1/m`].stateValues.value.toString()).eq(probInfo.o1m.toString())
+      expect(components[`${probName}/o1/t`].stateValues.value.toString()).eq(probInfo.o1t.toString())
+      expect(components[`${probName}/o2/m`].stateValues.value.toString()).eq(probInfo.o2m.toString())
+      expect(components[`${probName}/o2/t`].stateValues.value.toString()).eq(probInfo.o2t.toString())
+
+
+      if (enterValues) {
+        let mathinput1Name = components[`${probName}/ans1`].stateValues.inputChildren[0].componentName;
+        let mathinput1Anchor = cesc('#' + mathinput1Name) + " textarea";
+        let answer1Correct = cesc('#' + mathinput1Name + "_correct");
+
+        let mathinput2Name = components[`${probName}/ans2`].stateValues.inputChildren[0].componentName;
+        let mathinput2Anchor = cesc('#' + mathinput2Name) + " textarea";
+        let answer2Correct = cesc('#' + mathinput2Name + "_correct");
+
+        let textinput3Name = components[`${probName}/ans3`].stateValues.inputChildren[0].componentName;
+        let textinput3Anchor = cesc('#' + textinput3Name) + "_input";
+        let answer3Correct = cesc('#' + textinput3Name + "_correct");
+
+        let mathinput4Name = components[`${probName}/ans4`].stateValues.inputChildren[0].componentName;
+        let mathinput4Anchor = cesc('#' + mathinput4Name) + " textarea";
+        let answer4Correct = cesc('#' + mathinput4Name + "_correct");
+
+        let textinput5Name = components[`${probName}/ans5`].stateValues.inputChildren[0].componentName;
+        let textinput5Anchor = cesc('#' + textinput5Name) + "_input";
+        let answer5Correct = cesc('#' + textinput5Name + "_correct");
+
+
+        cy.get(mathinput1Anchor).type(`${probInfo.a}${probInfo.v.toString()}{enter}`, { force: true });
+        cy.get(answer1Correct).should('be.visible');
+
+        cy.get(mathinput2Anchor).type(`${probInfo.o1m.toString()}{enter}`, { force: true });
+        cy.get(answer2Correct).should('be.visible');
+
+        cy.get(textinput3Anchor).type(`${probInfo.o1t}{enter}`);
+        cy.get(answer3Correct).should('be.visible');
+
+        cy.get(mathinput4Anchor).type(`${probInfo.o2m.toString()}{enter}`, { force: true });
+        cy.get(answer4Correct).should('be.visible');
+
+        cy.get(textinput5Anchor).type(`${probInfo.o2t}{enter}`);
+        cy.get(answer5Correct).should('be.visible');
+
+      }
+
+    }
+
+
+    cy.log(`map out first 3 variants`)
+    let problemInfo = [];
+
+    for (let ind = 0; ind < 3; ind++) {
+
+      cy.window().then((win) => {
+        win.postMessage({
+          doenetML: `
+      <text>b</text>
+      `}, "*");
+      });
+      cy.get('#\\/_text1').should('have.text', 'b') //wait for page to load
+
+
+      cy.window().then((win) => {
+        win.postMessage({
+          doenetML: problemAlone,
+          requestedVariant: {
+            subvariants: [{
+              index: ind + 1
+            }]
+          }
+        }, "*");
+      });
+
+      // to wait for page to load
+      cy.get('#\\/_text1').should('have.text', `a`)
+
+      cy.window().then((win) => {
+
+        let components = Object.assign({}, win.state.components);
+
+        expect(components["/_document1"].stateValues.generatedVariantInfo.subvariants[0].index).eq(ind + 1)
+
+        let thisProbInfo = {};
+        let thisProbName = "";
+
+        thisProbInfo.a = components[`${thisProbName}/a`].stateValues.value;
+        thisProbInfo.v = components[`${thisProbName}/v`].stateValues.value;
+        thisProbInfo.o1m = components[`${thisProbName}/o1/m`].stateValues.value;
+        thisProbInfo.o1t = components[`${thisProbName}/o1/t`].stateValues.value;
+        thisProbInfo.o2m = components[`${thisProbName}/o2/m`].stateValues.value;
+        thisProbInfo.o2t = components[`${thisProbName}/o2/t`].stateValues.value;
+
+
+        problemInfo.push(thisProbInfo);
+
+      })
+
+    }
+
+
+    cy.log(`repeat to see if consistent`)
+
+    for (let ind = 0; ind < 3; ind++) {
+
+      cy.window().then((win) => {
+        win.postMessage({
+          doenetML: `
+      <text>b</text>
+      `}, "*");
+      });
+      cy.get('#\\/_text1').should('have.text', 'b') //wait for page to load
+
+
+      cy.window().then((win) => {
+        win.postMessage({
+          doenetML: problemAlone,
+          requestedVariant: {
+            subvariants: [{
+              index: ind + 1
+            }]
+          }
+        }, "*");
+      });
+
+      // to wait for page to load
+      cy.get('#\\/_text1').should('have.text', `a`)
+
+      cy.window().then((win) => {
+
+        let components = Object.assign({}, win.state.components);
+
+        expect(components["/_document1"].stateValues.generatedVariantInfo.subvariants[0].index).eq(ind + 1)
+
+        checkProblemInstance({
+          probName: "",
+          probInfo: problemInfo[ind],
+          components,
+          enterValues: false
+        })
+
+
+      })
+
+    }
+
+
+    cy.log(`check with siblings`)
+
+    for (let ind = 0; ind < 3; ind++) {
+
+      cy.window().then((win) => {
+        win.postMessage({
+          doenetML: `
+      <text>b</text>
+      `}, "*");
+      });
+      cy.get('#\\/_text1').should('have.text', 'b') //wait for page to load
+
+
+      cy.window().then((win) => {
+        win.postMessage({
+          doenetML: problemWithSiblings,
+          requestedVariant: {
+            subvariants: [
+              { index: 2 * ind },
+              { index: ind + 1 },
+              { index: -ind },
+            ]
+          }
+        }, "*");
+      });
+
+      // to wait for page to load
+      cy.get('#\\/_text1').should('have.text', `a`)
+
+      cy.window().then((win) => {
+
+        let components = Object.assign({}, win.state.components);
+
+        expect(components["/_document1"].stateValues.generatedVariantInfo.subvariants[1].index).eq(ind + 1)
+
+        checkProblemInstance({
+          probName: "/problem2",
+          probInfo: problemInfo[ind],
+          components,
+          enterValues: false
+        })
+
+
+      })
+
+    }
+
+    cy.log(`check repeated`)
+
+    for (let ind = 0; ind < 3; ind++) {
+
+      cy.window().then((win) => {
+        win.postMessage({
+          doenetML: `
+      <text>b</text>
+      `}, "*");
+      });
+      cy.get('#\\/_text1').should('have.text', 'b') //wait for page to load
+
+
+      cy.window().then((win) => {
+        win.postMessage({
+          doenetML: problemRepeated,
+          requestedVariant: {
+            subvariants: [
+              { index: 3 - ind },
+              { index: (ind + 1) % 3 + 1 },
+              { index: (4 - ind) % 3 + 1 },
+            ]
+          }
+        }, "*");
+      });
+
+      // to wait for page to load
+      cy.get('#\\/_text1').should('have.text', `a`)
+
+      cy.window().then((win) => {
+
+        let components = Object.assign({}, win.state.components);
+
+        expect(components["/_document1"].stateValues.generatedVariantInfo.subvariants[0].index).eq(3 - ind)
+        expect(components["/_document1"].stateValues.generatedVariantInfo.subvariants[1].index).eq((ind + 1) % 3 + 1)
+        expect(components["/_document1"].stateValues.generatedVariantInfo.subvariants[2].index).eq((4 - ind) % 3 + 1)
+
+        checkProblemInstance({
+          probName: "/problem1",
+          probInfo: problemInfo[3 - ind - 1],
+          components,
+          enterValues: false
+        })
+
+        checkProblemInstance({
+          probName: "/problem2",
+          probInfo: problemInfo[(ind + 1) % 3],
+          components,
+          enterValues: false
+        })
+
+        checkProblemInstance({
+          probName: "/problem3",
+          probInfo: problemInfo[(4 - ind) % 3],
+          components,
+          enterValues: false
+        })
+
+
+
+      })
+
+    }
+
+    cy.log(`check repeated as external copies`)
+
+    for (let ind = 0; ind < 3; ind++) {
+
+      cy.window().then((win) => {
+        win.postMessage({
+          doenetML: `
+      <text>b</text>
+      `}, "*");
+      });
+      cy.get('#\\/_text1').should('have.text', 'b') //wait for page to load
+
+
+      cy.window().then((win) => {
+        win.postMessage({
+          doenetML: problemRepeatedAsExternalCopies,
+          requestedVariant: {
+            subvariants: [
+              { index: 3 - ind },
+              { index: (ind + 1) % 3 + 1 },
+              { index: (4 - ind) % 3 + 1 },
+            ]
+          }
+        }, "*");
+      });
+
+      // to wait for page to load
+      cy.get('#\\/_text1').should('have.text', `a`)
+
+      cy.window().then((win) => {
+
+        let components = Object.assign({}, win.state.components);
+
+        expect(components["/_document1"].stateValues.generatedVariantInfo.subvariants[0].index).eq(3 - ind)
+        expect(components["/_document1"].stateValues.generatedVariantInfo.subvariants[1].index).eq((ind + 1) % 3 + 1)
+        expect(components["/_document1"].stateValues.generatedVariantInfo.subvariants[2].index).eq((4 - ind) % 3 + 1)
+
+        checkProblemInstance({
+          probName: "/problem1",
+          probInfo: problemInfo[3 - ind - 1],
+          components,
+          enterValues: false
+        })
+
+        checkProblemInstance({
+          probName: "/problem2",
+          probInfo: problemInfo[(ind + 1) % 3],
+          components,
+          enterValues: false
+        })
+
+        checkProblemInstance({
+          probName: "/problem3",
+          probInfo: problemInfo[(4 - ind) % 3],
+          components,
+          enterValues: false
+        })
+
+
+
+      })
+
+    }
+
+
+    // cy.log(`check repeated as internal copies`)
+
+    // for (let ind = 0; ind < 3; ind++) {
+
+    //   cy.window().then((win) => {
+    //     win.postMessage({
+    //       doenetML: `
+    //   <text>b</text>
+    //   `}, "*");
+    //   });
+    //   cy.get('#\\/_text1').should('have.text', 'b') //wait for page to load
+
+
+    //   cy.window().then((win) => {
+    //     win.postMessage({
+    //       doenetML: problemRepeatedAsCopies,
+    //       requestedVariant: {
+    //         subvariants: [
+    //           { index: 3 - ind },
+    //           { index: (ind + 1) % 3 + 1 },
+    //           { index: (4 - ind) % 3 + 1 },
+    //         ]
+    //       }
+    //     }, "*");
+    //   });
+
+    //   // to wait for page to load
+    //   cy.get('#\\/_text1').should('have.text', `a`)
+
+    //   cy.window().then((win) => {
+
+    //     let components = Object.assign({}, win.state.components);
+
+    //     console.log(JSON.parse(JSON.stringify(components["/_document1"].stateValues.generatedVariantInfo)))
+
+    //     console.log(components)
+
+    //     expect(components["/_document1"].stateValues.generatedVariantInfo.subvariants[0].index).eq(3 - ind)
+    //     expect(components["/_document1"].stateValues.generatedVariantInfo.subvariants[1].index).eq((ind + 1) % 3 + 1)
+    //     expect(components["/_document1"].stateValues.generatedVariantInfo.subvariants[2].index).eq((4 - ind) % 3 + 1)
+
+    //     checkProblemInstance({
+    //       probName: "/problem1",
+    //       probInfo: problemInfo[3-ind-1],
+    //       components,
+    //       enterValues: true
+    //     })
+
+    //     checkProblemInstance({
+    //       probName: "/problem2",
+    //       probInfo: problemInfo[(ind + 1) % 3],
+    //       components,
+    //       enterValues: true
+    //     })
+
+    //     checkProblemInstance({
+    //       probName: "/problem3",
+    //       probInfo: problemInfo[(4 - ind) % 3],
+    //       components,
+    //       enterValues: true
+    //     })
+
+    //   })
+
+    // }
+
+
+    cy.log(`check repeated as external copies in paginator`)
+
+    for (let ind = 0; ind < 3; ind++) {
+
+      cy.window().then((win) => {
+        win.postMessage({
+          doenetML: `
+      <text>b</text>
+      `}, "*");
+      });
+      cy.get('#\\/_text1').should('have.text', 'b') //wait for page to load
+
+
+      cy.window().then((win) => {
+        win.postMessage({
+          doenetML: problemRepeatedAsExternalCopiesInPaginator,
+          requestedVariant: {
+            subvariants: [
+              { index: 3 - ind },
+              { index: (ind + 1) % 3 + 1 },
+              { index: (4 - ind) % 3 + 1 },
+            ]
+          }
+        }, "*");
+      });
+
+      // to wait for page to load
+      cy.get('#\\/_text1').should('have.text', `a`)
+
+      cy.window().then((win) => {
+
+        let components = Object.assign({}, win.state.components);
+
+        expect(components["/_document1"].stateValues.generatedVariantInfo.subvariants[0].index).eq(3 - ind)
+        expect(components["/_document1"].stateValues.generatedVariantInfo.subvariants[1].index).eq((ind + 1) % 3 + 1)
+        expect(components["/_document1"].stateValues.generatedVariantInfo.subvariants[2].index).eq((4 - ind) % 3 + 1)
+
+        checkProblemInstance({
+          probName: "/problem1",
+          probInfo: problemInfo[3 - ind - 1],
+          components,
+          enterValues: false
+        })
+
+        cy.get(cesc('#/pcontrols_next')).click()
+        cy.wait(100)
+        cy.window().then((win) => {
+
+          let components = Object.assign({}, win.state.components);
+          checkProblemInstance({
+            probName: "/problem2",
+            probInfo: problemInfo[(ind + 1) % 3],
+            components,
+            enterValues: false
+          })
+        })
+
+        cy.get(cesc('#/pcontrols_next')).click()
+        cy.wait(100)
+        cy.window().then((win) => {
+
+          let components = Object.assign({}, win.state.components);
+          checkProblemInstance({
+            probName: "/problem3",
+            probInfo: problemInfo[(4 - ind) % 3],
+            components,
+            enterValues: false
+          })
+        })
+
+      })
+
+    }
+
+
+  })
+
 
 
 });

@@ -144,8 +144,8 @@ function Menu(props){
     <MenuPanelTitle isOpen={isOpen} onClick={()=>setIsOpen(was=>!was)}><h3>{props.title}</h3></MenuPanelTitle>
     <div style={{
       display: hideShowStyle,
-      // paddingTop: "0px", 
-      paddingBottom: "1px", 
+      paddingTop: "4px", 
+      paddingBottom: "4px", 
       paddingLeft: "4px",
       paddingRight: "4px",
       backgroundColor:"white"}}>{props.children}</div>
