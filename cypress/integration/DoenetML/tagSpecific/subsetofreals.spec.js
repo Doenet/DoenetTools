@@ -809,6 +809,94 @@ describe('SubsetOfReals Tag Tests', function () {
 
   })
 
+  it("element of union and intersections of intervals and singletons", () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <p><subsetOfReals name="u1">x elementof (4,5) union (6,7)</subsetOfReals></p>
+  <p><subsetOfReals name="u2">x elementof (4,5) union (5,6)</subsetOfReals></p>
+  <p><subsetOfReals name="u3">x elementof (4,5] union (5,6]</subsetOfReals></p>
+  <p><subsetOfReals name="u4">x elementof (4,5] union [5,6]</subsetOfReals></p>
+  <p><subsetOfReals name="u5">x elementof (4,6) union (5,7)</subsetOfReals></p>
+  <p><subsetOfReals name="u6">x elementof (4,8) union (5,7)</subsetOfReals></p>
+  <p><subsetOfReals name="u7">x elementof (4,7) union (5,7]</subsetOfReals></p>
+  <p><subsetOfReals name="u8">x elementof (4,6) union {4}</subsetOfReals></p>
+  <p><subsetOfReals name="u9">x elementof (4,6) union {5}</subsetOfReals></p>
+  <p><subsetOfReals name="u10">x elementof (4,6) union {6}</subsetOfReals></p>
+  <p><subsetOfReals name="u11">x elementof (4,6) union {7}</subsetOfReals></p>
+  <p><subsetOfReals name="u12">x elementof (4,5) union (5,6) union {5}</subsetOfReals></p>
+  <p><subsetOfReals name="u13">x elementof (-infinity,5) union (2,infinity)</subsetOfReals></p>
+  <p><subsetOfReals name="u14">x elementof (-infinity,5) union [2,infinity)</subsetOfReals></p>
+  <p><subsetOfReals name="u15">x elementof (-infinity,5] union (2,infinity)</subsetOfReals></p>
+  <p><subsetOfReals name="u16">x elementof (-infinity,5] union [2,infinity)</subsetOfReals></p>
+  <p><subsetOfReals name="u17">x elementof (-infinity,5) union (9,infinity) union (4,10)</subsetOfReals></p>
+  <p><subsetOfReals name="u18">x elementof [-4,-2) union {-4}</subsetOfReals></p>
+
+  <p><subsetOfReals name="i1">x elementof (4,5) intersect (6,7)</subsetOfReals></p>
+  <p><subsetOfReals name="i2">x elementof (4,5) intersect (5,6)</subsetOfReals></p>
+  <p><subsetOfReals name="i3">x elementof (4,5] intersect (5,6]</subsetOfReals></p>
+  <p><subsetOfReals name="i4">x elementof (4,5] intersect [5,6]</subsetOfReals></p>
+  <p><subsetOfReals name="i5">x elementof (4,6) intersect (5,7)</subsetOfReals></p>
+  <p><subsetOfReals name="i6">x elementof (4,8) intersect (5,7)</subsetOfReals></p>
+  <p><subsetOfReals name="i7">x elementof (4,7) intersect (5,7]</subsetOfReals></p>
+  <p><subsetOfReals name="i8">x elementof (4,6) intersect {4}</subsetOfReals></p>
+  <p><subsetOfReals name="i9">x elementof (4,6) intersect {5}</subsetOfReals></p>
+  <p><subsetOfReals name="i10">x elementof (4,6) intersect {6}</subsetOfReals></p>
+  <p><subsetOfReals name="i11">x elementof (4,6) intersect {7}</subsetOfReals></p>
+  <p><subsetOfReals name="i12">x elementof (4,5) intersect (5,6) intersect {5}</subsetOfReals></p>
+  <p><subsetOfReals name="i13">x elementof (-infinity,5) intersect (2,infinity)</subsetOfReals></p>
+  <p><subsetOfReals name="i14">x elementof (-infinity,5) intersect [2,infinity)</subsetOfReals></p>
+  <p><subsetOfReals name="i15">x elementof (-infinity,5] intersect (2,infinity)</subsetOfReals></p>
+  <p><subsetOfReals name="i16">x elementof (-infinity,5] intersect [2,infinity)</subsetOfReals></p>
+  <p><subsetOfReals name="i17">x elementof (-infinity,5) intersect (9,infinity) intersect (4,10)</subsetOfReals></p>
+  <p><subsetOfReals name="i18">x elementof [-4,-2) intersect {-4}</subsetOfReals></p>
+
+
+  `}, "*");
+    });
+    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
+
+    cy.get('#\\/u1 .mjx-mrow').eq(0).should('have.text', "(4,5)∪(6,7)")
+    cy.get('#\\/u2 .mjx-mrow').eq(0).should('have.text', "(4,5)∪(5,6)")
+    cy.get('#\\/u3 .mjx-mrow').eq(0).should('have.text', "(4,6)")
+    cy.get('#\\/u4 .mjx-mrow').eq(0).should('have.text', "(4,6]")
+    cy.get('#\\/u5 .mjx-mrow').eq(0).should('have.text', "(4,7)")
+    cy.get('#\\/u6 .mjx-mrow').eq(0).should('have.text', "(4,8)")
+    cy.get('#\\/u7 .mjx-mrow').eq(0).should('have.text', "(4,7]")
+    cy.get('#\\/u8 .mjx-mrow').eq(0).should('have.text', "[4,6)")
+    cy.get('#\\/u9 .mjx-mrow').eq(0).should('have.text', "(4,6)")
+    cy.get('#\\/u10 .mjx-mrow').eq(0).should('have.text', "(4,6]")
+    cy.get('#\\/u11 .mjx-mrow').eq(0).should('have.text', "(4,6)∪{7}")
+    cy.get('#\\/u12 .mjx-mrow').eq(0).should('have.text', "(4,6)")
+    cy.get('#\\/u13 .mjx-mrow').eq(0).should('have.text', "R")
+    cy.get('#\\/u14 .mjx-mrow').eq(0).should('have.text', "R")
+    cy.get('#\\/u15 .mjx-mrow').eq(0).should('have.text', "R")
+    cy.get('#\\/u16 .mjx-mrow').eq(0).should('have.text', "R")
+    cy.get('#\\/u17 .mjx-mrow').eq(0).should('have.text', "R")
+    cy.get('#\\/u18 .mjx-mrow').eq(0).should('have.text', "[−4,−2)")
+
+    cy.get('#\\/i1 .mjx-mrow').eq(0).should('have.text', "∅")
+    cy.get('#\\/i2 .mjx-mrow').eq(0).should('have.text', "∅")
+    cy.get('#\\/i3 .mjx-mrow').eq(0).should('have.text', "∅")
+    cy.get('#\\/i4 .mjx-mrow').eq(0).should('have.text', "{5}")
+    cy.get('#\\/i5 .mjx-mrow').eq(0).should('have.text', "(5,6)")
+    cy.get('#\\/i6 .mjx-mrow').eq(0).should('have.text', "(5,7)")
+    cy.get('#\\/i7 .mjx-mrow').eq(0).should('have.text', "(5,7)")
+    cy.get('#\\/i8 .mjx-mrow').eq(0).should('have.text', "∅")
+    cy.get('#\\/i9 .mjx-mrow').eq(0).should('have.text', "{5}")
+    cy.get('#\\/i10 .mjx-mrow').eq(0).should('have.text', "∅")
+    cy.get('#\\/i11 .mjx-mrow').eq(0).should('have.text', "∅")
+    cy.get('#\\/i12 .mjx-mrow').eq(0).should('have.text', "∅")
+    cy.get('#\\/i13 .mjx-mrow').eq(0).should('have.text', "(2,5)")
+    cy.get('#\\/i14 .mjx-mrow').eq(0).should('have.text', "[2,5)")
+    cy.get('#\\/i15 .mjx-mrow').eq(0).should('have.text', "(2,5]")
+    cy.get('#\\/i16 .mjx-mrow').eq(0).should('have.text', "[2,5]")
+    cy.get('#\\/i17 .mjx-mrow').eq(0).should('have.text', "∅")
+    cy.get('#\\/i18 .mjx-mrow').eq(0).should('have.text', "{−4}")
+
+
+  })
 
   it("ands and ors with inequalities", () => {
     cy.window().then((win) => {

@@ -519,14 +519,18 @@ var appliedFunctionSymbols = [
   'count', 'mod'
 ];
 
+let allowedLatexSymbols = ['alpha', 'beta', 'gamma', 'Gamma', 'delta', 'Delta', 'epsilon', 'zeta', 'eta', 'theta', 'Theta', 'iota', 'kappa', 'lambda', 'Lambda', 'mu', 'nu', 'xi', 'Xi', 'pi', 'Pi', 'rho', 'sigma', 'Sigma', 'tau', 'Tau', 'upsilon', 'Upsilon', 'phi', 'Phi', 'chi', 'psi', 'Psi', 'omega', 'Omega', 'partial', 'varnothing', 'emptyset']
+
 function getFromLatex({ functionSymbols, splitSymbols }) {
   if (splitSymbols) {
     return x => me.fromAst((new me.converters.latexToAstObj({
-      appliedFunctionSymbols, functionSymbols, splitSymbols
+      appliedFunctionSymbols, functionSymbols, splitSymbols,
+      allowedLatexSymbols
     })).convert(wrapWordIncludingNumberWithVar(x)))
   } else {
     return x => me.fromAst((new me.converters.latexToAstObj({
-      appliedFunctionSymbols, functionSymbols, splitSymbols
+      appliedFunctionSymbols, functionSymbols, splitSymbols,
+      allowedLatexSymbols
     })).convert(wrapWordWithVar(x)))
   }
 }
@@ -584,6 +588,7 @@ function substituteUnicodeInLatexString(latexString) {
     ['\u222A', ' \\cup '], // ∪
     ['\u2229', ' \\cap '], // ∩
     ['\u221E', ' \\infty '], // ∞
+    ['\u2205', ' \\emptyset '], // ∅
 
   ]
 
