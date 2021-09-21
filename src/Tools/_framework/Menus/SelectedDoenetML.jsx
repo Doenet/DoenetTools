@@ -337,6 +337,7 @@ export function AssignmentSettings({ role, doenetId }) {
   let [assignedDate, setAssignedDate] = useState('');
   let [dueDate, setDueDate] = useState('');
   let [pinnedUntilDate, setPinnedUntilDate] = useState('');
+  let [pinnedAfterDate, setPinnedAfterDate] = useState('');
   let [limitAttempts, setLimitAttempts] = useState(true);
   let [numberOfAttemptsAllowed, setNumberOfAttemptsAllowed] = useState(1);
   let [timeLimit, setTimeLimit] = useState(60);
@@ -359,11 +360,17 @@ export function AssignmentSettings({ role, doenetId }) {
         value,
         description,
         valueDescription = null,
+        secondKeyToUpdate = null,
+        secondValue,
       }) => {
         const oldAInfo = await snapshot.getPromise(
           loadAssignmentSelector(doenetId),
         );
         let newAInfo = { ...oldAInfo, [keyToUpdate]: value };
+
+        if (secondKeyToUpdate){
+          newAInfo[secondKeyToUpdate] = secondValue;
+        }
 
         set(loadAssignmentSelector(doenetId), newAInfo);
         let dbAInfo = { ...newAInfo };
@@ -387,7 +394,12 @@ export function AssignmentSettings({ role, doenetId }) {
           );
         }
 
-        
+        if (dbAInfo.pinnedAfterDate !== null){
+          dbAInfo.pinnedAfterDate = DateToUTCDateString(
+            new Date(dbAInfo.pinnedAfterDate)
+          );
+        }
+
         const resp = await axios.post(
           '/api/saveAssignmentToDraft.php',
           dbAInfo,
@@ -430,9 +442,9 @@ export function AssignmentSettings({ role, doenetId }) {
     setProctorMakesAvailable(aInfo?.proctorMakesAvailable);
     setTimeLimit(aInfo?.timeLimit);
     setPinnedUntilDate(aInfo?.pinnedUntilDate);
+    setPinnedAfterDate(aInfo?.pinnedAfterDate);
     
   }, [aInfo]);
-  console.log(">>>>aInfo.pinnedUntilDate",aInfo.pinnedUntilDate)
 
   if (aLoadable.state === 'loading') {
     return null;
@@ -1005,27 +1017,84 @@ export function AssignmentSettings({ role, doenetId }) {
           onChange={(e) => {
             let valueDescription = 'None';
             let value = null;
+            let secondValue = null;
+            //Start date
             if (e.currentTarget.checked) {
 
-              valueDescription = 'Next Year';
+              valueDescription = 'Now to Next Year';
+              let today = new Date(); //Default start now
+              value = today.toLocaleString();
+
               let nextWeek = new Date();
               nextWeek.setDate(nextWeek.getDate() + 365); //Default due seven days in the future
-              value = nextWeek.toLocaleString();
+              secondValue = nextWeek.toLocaleString();
             }
 
             updateAssignment({
               doenetId,
-              keyToUpdate: 'pinnedUntilDate',
+              keyToUpdate: 'pinnedAfterDate',
               value,
-              description: 'Pinned Until Date ',
+              description: 'Pinned Dates ',
               valueDescription,
+              secondKeyToUpdate: 'pinnedUntilDate',
+              secondValue
             });
+
+            //End Date
+            // if (e.currentTarget.checked) {
+
+           
+            // }
+
+            // updateAssignment({
+            //   doenetId,
+            //   keyToUpdate: 'pinnedUntilDate',
+            //   value,
+            //   description: 'Pinned Until Date ',
+            //   valueDescription,
+            // });
+
+
           }}
           
             checked={aInfo.pinnedUntilDate !== null}
           ></Switch>
       </div>
       {aInfo.pinnedUntilDate !== null ? 
+      <>
+      <div>
+      <label>
+        Pinned After Date
+        <input
+          required
+          type="text"
+          name="pinnedAfterDate"
+          value={pinnedAfterDate}
+          // placeholder="0001-01-01 01:01:01 "
+          onBlur={() => {
+            if (aInfo.pinnedAfterDate !== pinnedAfterDate) {
+              updateAssignment({
+                doenetId,
+                keyToUpdate: 'pinnedAfterDate',
+                value: pinnedAfterDate,
+                description: 'Pinned After Date',
+              });
+            }
+          }}
+          onChange={(e) => setPinnedAfterDate(e.currentTarget.value)}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' && aInfo.pinnedAfterDate !== pinnedAfterDate) {
+              updateAssignment({
+                doenetId,
+                keyToUpdate: 'pinnedAfterDate',
+                value: pinnedAfterDate,
+                description: 'Pinned After Date',
+              });
+            }
+          }}
+        />
+      </label>
+    </div>
       <div>
         <label>
           Pinned Until Date
@@ -1059,6 +1128,7 @@ export function AssignmentSettings({ role, doenetId }) {
           />
         </label>
       </div>
+      </>
       : null }
 
 

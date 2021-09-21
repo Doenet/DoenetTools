@@ -29,8 +29,10 @@ $showHints = mysqli_real_escape_string($conn,$_POST["showHints"]);
 $showCorrectness = mysqli_real_escape_string($conn,$_POST["showCorrectness"]);
 $proctorMakesAvailable = mysqli_real_escape_string($conn,$_POST["proctorMakesAvailable"]);
 $pinnedUntilDate = mysqli_real_escape_string($conn,$_POST["pinnedUntilDate"]);
+$pinnedAfterDate = mysqli_real_escape_string($conn,$_POST["pinnedAfterDate"]);
 
 if ($pinnedUntilDate == ''){$pinnedUntilDate = 'NULL';} else {$pinnedUntilDate = "'$pinnedUntilDate'"; }
+if ($pinnedAfterDate == ''){$pinnedAfterDate = 'NULL';} else {$pinnedAfterDate = "'$pinnedAfterDate'"; }
 
 if ($timeLimit == ''){$timeLimit = 'NULL';} else {$timeLimit = "'$timeLimit'"; }
 if ($dueDate == ''){$dueDate = 'NULL';} else {$dueDate = "'$dueDate'"; }
@@ -65,6 +67,7 @@ $sql = "UPDATE assignment SET
 assignedDate = $assignedDate,
 dueDate = $dueDate,
 pinnedUntilDate = $pinnedUntilDate,
+pinnedAfterDate = $pinnedAfterDate,
 timeLimit = $timeLimit,
 numberOfAttemptsAllowed = $numberOfAttemptsAllowed,
 attemptAggregation = '$attemptAggregation',

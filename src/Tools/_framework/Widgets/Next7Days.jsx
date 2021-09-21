@@ -38,8 +38,7 @@ export default function Next7Days({ driveId }) {
   let [problemMessage,setProblemMessage] = useState("");
 
   let loadAssignmentArray = useRecoilCallback(({snapshot,set})=> async (driveId)=>{
-    const { data } = await axios.get('/api/loadNextSevenDays.php',{params:{driveId}});
-    // console.log(">>>>data",data)
+    const { data } = await axios.get('/api/loadTODO.php',{params:{driveId}});
     if (!data.success){
       setProblemMessage(data.message);
       return
@@ -224,7 +223,7 @@ export default function Next7Days({ driveId }) {
       <DropTargetsProvider>
         <Suspense fallback={<div>loading Drive...</div>}>
           <Container>
-            <h2>Due in the Next Seven Days</h2>
+            <h2>Current Content</h2>
             <DriveHeader
             columnTypes={columnTypes}
             numColumns={numColumns}
