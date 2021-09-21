@@ -127,7 +127,8 @@ export default class Textinput extends Input {
             }]
           };
         }
-        // no children, so value is essential and give it the desired value
+
+        // subsetValue is essential; give it the desired value
         return {
           success: true,
           instructions: [{
