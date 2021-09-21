@@ -46,7 +46,7 @@ z-index: 2;
 const MenuHeaderButton = styled.button`
   border: none;
   border-top: ${({linkedPanel, activePanel}) => linkedPanel === activePanel ? "8px solid #1A5A99" : "none"};
-  background-color: hsl(0, 0%, 99%);
+  background-color: hsl(0, 0%, 100%);
   border-bottom: 2px solid
     ${({linkedPanel, activePanel}) => linkedPanel === activePanel ? "#white" : "black"};
   width: 100%;
@@ -136,7 +136,8 @@ function Menu(props) {
   }, /* @__PURE__ */ React.createElement("h3", null, props.title)), /* @__PURE__ */ React.createElement("div", {
     style: {
       display: hideShowStyle,
-      paddingBottom: "1px",
+      paddingTop: "4px",
+      paddingBottom: "4px",
       paddingLeft: "4px",
       paddingRight: "4px",
       backgroundColor: "white"
@@ -144,7 +145,7 @@ function Menu(props) {
   }, props.children));
 }
 const LoadingFallback = styled.div`
-  background-color: hsl(0, 0%, 99%);
+  background-color: hsl(0, 0%, 100%);
   border-radius: 4px;
   display: flex;
   justify-content: center;

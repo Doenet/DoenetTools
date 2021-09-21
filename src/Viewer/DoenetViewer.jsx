@@ -291,8 +291,22 @@ class DoenetViewerChild extends Component {
 
     let changeString = JSON.stringify(this.cumulativeStateVariableChanges, serializedComponentsReplacer);
 
-
     let variantString = JSON.stringify(this.generatedVariant, serializedComponentsReplacer);
+
+
+    // check if generated variant changed
+    // (which could happen, at least for now, when paginator changes pages)
+    let currentVariantString = JSON.stringify(this.core.document.stateValues.generatedVariantInfo, serializedComponentsReplacer);
+    if(currentVariantString !== variantString) {
+      this.generatedVariant = this.core.document.stateValues.generatedVariantInfo;
+      variantString = currentVariantString;
+      if (this.props.generatedVariantCallback) {
+        this.props.generatedVariantCallback(this.generatedVariant, this.allPossibleVariants);
+      }
+
+    }
+
+
 
     // save to database
     // check the cookie to see if allowed to record

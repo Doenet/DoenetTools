@@ -2,7 +2,7 @@ import React from "../../_snowpack/pkg/react.js";
 import styled from "../../_snowpack/pkg/styled-components.js";
 const ContentWrapper = styled.div`
   grid-area: mainPanel;
-  background-color: hsl(0, 0%, 99%);
+  background-color: hsl(0, 0%, 100%);
   height: 100%;
   border-radius: 0 0 4px 4px;
   overflow: auto;

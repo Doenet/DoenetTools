@@ -17,6 +17,7 @@ import {
 import Button from "../../_reactComponents/PanelHeaderComponents/Button.js";
 import Textfield from "../../_reactComponents/PanelHeaderComponents/Textfield.js";
 import ActionButton from "../../_reactComponents/PanelHeaderComponents/ActionButton.js";
+import ActionButtonGroup from "../../_reactComponents/PanelHeaderComponents/ActionButtonGroup.js";
 import ButtonGroup from "../../_reactComponents/PanelHeaderComponents/ButtonGroup.js";
 import useSockets from "../../_reactComponents/Sockets.js";
 import {pageToolViewAtom} from "../NewToolRoot.js";
@@ -148,9 +149,9 @@ export default function SelectedDoenetML() {
     "data-cy": "infoPanelItemLabel"
   }, /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
     icon: faCode
-  }), " ", item.label), /* @__PURE__ */ React.createElement(ButtonGroup, {
+  }), " ", item.label), /* @__PURE__ */ React.createElement(ActionButtonGroup, {
     vertical: true
-  }, /* @__PURE__ */ React.createElement(Button, {
+  }, /* @__PURE__ */ React.createElement(ActionButton, {
     width: "menu",
     value: "Edit DoenetML",
     onClick: () => {
@@ -164,7 +165,7 @@ export default function SelectedDoenetML() {
         }
       });
     }
-  }), /* @__PURE__ */ React.createElement(Button, {
+  }), /* @__PURE__ */ React.createElement(ActionButton, {
     width: "menu",
     value: "Take Assignment",
     onClick: () => {

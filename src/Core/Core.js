@@ -1011,21 +1011,24 @@ export default class Core {
         if (variantControlInd !== undefined) {
           // if have desired variant name or index
           // add that information to variantControl child
-          let desiredVariant = serializedComponent.variants.desiredVariant;
-          if (desiredVariant !== undefined) {
-            if (desiredVariant.index !== undefined) {
-              variantControlChild.variants = {
-                desiredVariantIndex: desiredVariant.index
-              }
-            } else if (desiredVariant.name !== undefined) {
-              variantControlChild.variants = {
-                desiredVariantName: desiredVariant.name
+
+          if (serializedComponent.variants) {
+            let desiredVariant = serializedComponent.variants.desiredVariant;
+            if (desiredVariant !== undefined) {
+              if (desiredVariant.index !== undefined) {
+                variantControlChild.variants = {
+                  desiredVariantIndex: desiredVariant.index
+                }
+              } else if (desiredVariant.name !== undefined) {
+                variantControlChild.variants = {
+                  desiredVariantName: desiredVariant.name
+                }
               }
             }
-          }
 
-          if (serializedComponent.variants.uniqueVariants) {
-            sharedParameters.numberOfVariants = serializedComponent.variants.numberOfVariants;
+            if (serializedComponent.variants.uniqueVariants) {
+              sharedParameters.numberOfVariants = serializedComponent.variants.numberOfVariants;
+            }
           }
 
           // create variant control child
@@ -8181,10 +8184,34 @@ export default class Core {
           nFailures += 1;
           continue;
         }
-        // get value of state variable so it will determine if essential
-        compStateObj.value;
 
-        compStateObj._previousValue = compStateObj.value;
+        // get value of state variable so it will determine if essential
+
+        // TODO: we can run into problems here when processing new state variables
+        // during the initial setup (i.e., when loading values from the database)
+        // where a state variable is not yet resolved but force resolving it
+        // (via evaluating it) could evaluate it the a dependent component
+        // has been created (via a composite)
+        // This is particular important with selects, as evaluating them
+        // prematurely would lead them expanding with wrong values.
+        // Stopgap for the one place where this occured so far
+        // was to introduce willBeEssential, which avoided premature evaluation.
+        // A better solution would be to keep track of state variables 
+        // whose values we cannot yet give in order to try to set those values
+        // at the end.
+
+        if (!compStateObj.isResolved) {
+          this.dependencies.resolveIfReady({
+            componentName: cName,
+            type: "stateVariable",
+            stateVariable: vName
+          })
+        }
+
+        if (compStateObj.isResolved || !(compStateObj.esssential || compStateObj.willBeEssential)) {
+          compStateObj.value;
+          compStateObj._previousValue = compStateObj.value;
+        }
 
         if (compStateObj.isArray) {
 
@@ -8272,9 +8299,15 @@ export default class Core {
           // don't have array
 
           if (!compStateObj.essential) {
-            console.warn(`can't update state variable ${vName} of component ${cName}, as it is not an essential state variable.`);
-            nFailures += 1;
-            continue;
+
+            if (compStateObj.willBeEssential) {
+              compStateObj.essential = true;
+              delete compStateObj.value;
+            } else {
+              console.warn(`can't update state variable ${vName} of component ${cName}, as it is not an essential state variable.`);
+              nFailures += 1;
+              continue;
+            }
           }
 
           if (compStateObj.set) {

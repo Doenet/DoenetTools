@@ -711,18 +711,12 @@ export default class Answer extends InlineComponent {
     stateVariableDefinitions.nSubmittedResponses = {
       public: true,
       componentType: "number",
-      returnDependencies: () => ({
-        nResponses: {
-          dependencyType: "stateVariable",
-          variableName: "nResponses"
-        }
-      }),
-      definition: ({ dependencyValues }) => ({
+      returnDependencies: () => ({}),
+      definition: () => ({
         useEssentialOrDefaultValue: {
           nSubmittedResponses: {
             variablesToCheck: ["nSubmittedResponses"],
-            // defaultValue: Math.max(1, dependencyValues.nResponses)
-            defaultValue: 0//dependencyValues.nResponses
+            defaultValue: 0
           }
         }
       }),
@@ -1106,6 +1100,7 @@ export default class Answer extends InlineComponent {
     stateVariableDefinitions.justSubmitted = {
       forRenderer: true,
       defaultValue: false,
+      willBeEssential: true,
       returnDependencies: () => ({
         currentCreditAchievedDependencies: {
           dependencyType: "stateVariable",
