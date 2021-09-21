@@ -730,7 +730,7 @@ export function AssignmentSettings({ role, doenetId }) {
           Attempt Aggregation
           {/* {attemptAggregation} */}
           <DropdownMenu
-            width="150px"
+            width="menu"
             valueIndex={attemptAggregation === 'm' ? 1 : 2}
             items={[
               ['m', 'Maximum'],

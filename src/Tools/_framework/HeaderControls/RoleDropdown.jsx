@@ -60,7 +60,7 @@ export default function RoleDropdown() {
       absolute
       top={5}
       right={5}
-      width="100px"
+      width="200px"
       items={[
         ['instructor', 'Instructor'],
         ['student', 'Student'],
