@@ -60,6 +60,11 @@ AND a.dueDate < DATE_ADD(NOW(), INTERVAL 7 DAY)
 AND a.dueDate > NOW())
 OR (dc.driveId = '$driveId'
 AND dc.isReleased = '1'
+AND a.dueDate IS NULL
+AND a.assignedDate > DATE_ADD(NOW(), INTERVAL -7 DAY)
+AND a.assignedDate < NOW())
+OR (dc.driveId = '$driveId'
+AND dc.isReleased = '1'
 AND a.assignedDate < NOW()
 AND a.dueDate > NOW())
 OR (dc.driveId = '$driveId'

@@ -50,7 +50,8 @@ export default function Next7Days({ driveId }) {
   })
 
   let view = 'Student';
-  let columnTypes = ['Due Date']
+  let columnTypes = ['Assigned Date','Due Date']
+  // let columnTypes = ['Due Date']
   let isNav = false;
   let driveInstanceId = 'not used'; //TODO: make this unique so widget is independent of other instances
   let pathItemId = 'not used';
