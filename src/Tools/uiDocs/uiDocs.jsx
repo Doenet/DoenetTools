@@ -68,6 +68,8 @@ export default function attempt() {
   const font = () => {};
   const vertical = () => {};
   const disabled = () => {};
+  const absolute = () => {};
+  const left = () => {};
 
 //=== DATA STRUCTURE SECTION ===
   let dataStructure = [
@@ -267,6 +269,18 @@ export default function attempt() {
         propPreview: '<DropdownMenu items = {[[1, "one"], [2, "two"]]} title="Choose your favorite number"/>',
         propCode: {items: [[1, "one"], [2, "two"]], title: "Choose your favorite number"},
         description: 'Sets default text'},
+        {name: 'Value Index',
+        propPreview: '<DropdownMenu items = {[[1, "one"], [2, "two"]]} valueIndex={"2"} title="Choose your favorite number"/>',
+        propCode: {items: [[1, "one"], [2, "two"]], title: "Choose your favorite number", valueIndex: '1'},
+        description: 'To manually set the value of the dropdown'},
+        {name: 'Absolute',
+        propPreview: '<DropdownMenu items = {[[1, "one"], [2, "two"]]} absolute title="Choose your favorite number"/>',
+        propCode: {items: [[1, "one"], [2, "two"]], title: "Choose your favorite number", absolute: 'absolute'},
+        description: 'To position the element absolutely - "absolute" or "relative" only'},
+        {name: 'Absolute Position',
+        propPreview: '<DropdownMenu items = {[[1, "one"], [2, "two"]]} absolute left title="Choose your favorite number"/>',
+        propCode: {items: [[1, "one"], [2, "two"]], title: "Choose your favorite number", absolute: 'absolute', left},
+        description: 'To position the element when set to absolute - "top" or "bottom" or "right" or "left" only'},
         {name: 'Width - Menu Panel',
         propPreview: '<DropdownMenu items = {[[1, "one"], [2, "two"]]} width="menu" />',
         propCode: {items: [[1, "one"], [2, "two"]], width: 'menu'},
