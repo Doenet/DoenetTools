@@ -1,6 +1,8 @@
 import { faCode } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React, { useState, useEffect } from 'react';
+import DropdownMenu from '../../../_reactComponents/PanelHeaderComponents/DropdownMenu';
+
 import {
   atom,
   selector,
@@ -223,29 +225,16 @@ export default function SelectedDoenetML() {
           }}
         />
       </ActionButtonGroup>
-     
-      <Textfield 
-          label="DoenetML Label" 
-          width="menu"
-          vertical 
-          data-cy="infoPanelItemLabelInput" 
-          value={label} 
-          onChange={(e) => setLabel(e.target.value)}
-          onKeyDown={(e) => {
-            if (e.key === 'Enter') {
-              let effectiveLabel = label;
-              if (label === '') {
-                effectiveLabel = 'Untitled';
-                addToast("Label for the doenetML can't be blank.");
-                setLabel(effectiveLabel);
-              }
-              //Only rename if label has changed
-              if (item.label !== effectiveLabel) {
-                renameItemCallback(effectiveLabel, item);
-              }
-            }
-          }}
-          onBlur={() => {
+
+      <Textfield
+        label="DoenetML Label"
+        width="menu"
+        vertical
+        data-cy="infoPanelItemLabelInput"
+        value={label}
+        onChange={(e) => setLabel(e.target.value)}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter') {
             let effectiveLabel = label;
             if (label === '') {
               effectiveLabel = 'Untitled';
@@ -256,7 +245,20 @@ export default function SelectedDoenetML() {
             if (item.label !== effectiveLabel) {
               renameItemCallback(effectiveLabel, item);
             }
-          }}
+          }
+        }}
+        onBlur={() => {
+          let effectiveLabel = label;
+          if (label === '') {
+            effectiveLabel = 'Untitled';
+            addToast("Label for the doenetML can't be blank.");
+            setLabel(effectiveLabel);
+          }
+          //Only rename if label has changed
+          if (item.label !== effectiveLabel) {
+            renameItemCallback(effectiveLabel, item);
+          }
+        }}
       />
       {/* <label>
         DoenetML Label
@@ -293,7 +295,7 @@ export default function SelectedDoenetML() {
           }}
         />
       </label> */}
-      <br/>
+      <br />
       <Button
         width="menu"
         value={assignDraftLabel}
@@ -375,17 +377,14 @@ export function AssignmentSettings({ role, doenetId }) {
         set(loadAssignmentSelector(doenetId), newAInfo);
         let dbAInfo = { ...newAInfo };
 
-     
-        if (dbAInfo.assignedDate !== null){
+        if (dbAInfo.assignedDate !== null) {
           dbAInfo.assignedDate = DateToUTCDateString(
             new Date(dbAInfo.assignedDate),
           );
         }
-        
-        if (dbAInfo.dueDate !== null){
-          dbAInfo.dueDate = DateToUTCDateString(
-            new Date(dbAInfo.dueDate)
-          );
+
+        if (dbAInfo.dueDate !== null) {
+          dbAInfo.dueDate = DateToUTCDateString(new Date(dbAInfo.dueDate));
         }
 
         if (dbAInfo.pinnedUntilDate !== null){
@@ -461,16 +460,16 @@ export function AssignmentSettings({ role, doenetId }) {
       nAttemptsAllowed = 'unlimited';
     }
     let timeLimitJSX = null;
-    if (aInfo?.timeLimit !== null){
-      timeLimitJSX = <p>Time Limit: {aInfo?.timeLimit} minutes</p>
+    if (aInfo?.timeLimit !== null) {
+      timeLimitJSX = <p>Time Limit: {aInfo?.timeLimit} minutes</p>;
     }
     let assignedDateJSX = null;
-    if (aInfo?.assignedDate !== null){
-      assignedDateJSX = <p>Assigned: {aInfo?.assignedDate}</p>
+    if (aInfo?.assignedDate !== null) {
+      assignedDateJSX = <p>Assigned: {aInfo?.assignedDate}</p>;
     }
-    let dueDateJSX = <p>No Due Date</p>
-    if (aInfo?.dueDate !== null){
-      dueDateJSX = <p>Due: {aInfo?.dueDate}</p>
+    let dueDateJSX = <p>No Due Date</p>;
+    if (aInfo?.dueDate !== null) {
+      dueDateJSX = <p>Due: {aInfo?.dueDate}</p>;
     }
     return (
       <>
@@ -483,21 +482,19 @@ export function AssignmentSettings({ role, doenetId }) {
         </div>
       </>
     );
-  
   }
 
   //Instructor JSX
   return (
     <>
-    <div>
+      <div>
         <label>
-        Limit Assigned
+          Limit Assigned
           <Switch
             onChange={(e) => {
               let valueDescription = 'Always';
               let value = null;
               if (e.currentTarget.checked) {
-
                 valueDescription = 'Now';
                 value = new Date().toLocaleString();
               }
@@ -514,50 +511,49 @@ export function AssignmentSettings({ role, doenetId }) {
           ></Switch>
         </label>
       </div>
-      {aInfo.assignedDate !== null ? 
+      {aInfo.assignedDate !== null ? (
+        <div>
+          <label>
+            Assigned Date
+            <input
+              required
+              type="text"
+              name="assignedDate"
+              value={assignedDate}
+              // placeholder="0001-01-01 01:01:01 "
+              onBlur={() => {
+                if (aInfo.assignedDate !== assignedDate) {
+                  updateAssignment({
+                    doenetId,
+                    keyToUpdate: 'assignedDate',
+                    value: assignedDate,
+                    description: 'Assigned Date',
+                  });
+                }
+              }}
+              onChange={(e) => setAssignedDate(e.currentTarget.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' && aInfo.assignedDate !== assignedDate) {
+                  updateAssignment({
+                    doenetId,
+                    keyToUpdate: 'assignedDate',
+                    value: assignedDate,
+                    description: 'Assigned Date',
+                  });
+                }
+              }}
+            />
+          </label>
+        </div>
+      ) : null}
       <div>
         <label>
-          Assigned Date
-          <input
-            required
-            type="text"
-            name="assignedDate"
-            value={assignedDate}
-            // placeholder="0001-01-01 01:01:01 "
-            onBlur={() => {
-              if (aInfo.assignedDate !== assignedDate) {
-                updateAssignment({
-                  doenetId,
-                  keyToUpdate: 'assignedDate',
-                  value: assignedDate,
-                  description: 'Assigned Date',
-                });
-              }
-            }}
-            onChange={(e) => setAssignedDate(e.currentTarget.value)}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter' && aInfo.assignedDate !== assignedDate) {
-                updateAssignment({
-                  doenetId,
-                  keyToUpdate: 'assignedDate',
-                  value: assignedDate,
-                  description: 'Assigned Date',
-                });
-              }
-            }}
-          />
-        </label>
-      </div>
-      : null }
-       <div>
-        <label>
-        Has Due Date
+          Has Due Date
           <Switch
             onChange={(e) => {
               let valueDescription = 'None';
               let value = null;
               if (e.currentTarget.checked) {
-
                 valueDescription = 'Next Week';
                 let nextWeek = new Date();
                 nextWeek.setDate(nextWeek.getDate() + 7); //Default due seven days in the future
@@ -576,41 +572,42 @@ export function AssignmentSettings({ role, doenetId }) {
           ></Switch>
         </label>
       </div>
-      {aInfo.dueDate !== null ? 
-      <div>
-        <label>
-          Due Date
-          <br />
-          <input
-            required
-            type="text"
-            name="dueDate"
-            value={dueDate}
-            // placeholder="0001-01-01 01:01:01 "
-            onBlur={() => {
-              if (aInfo.dueDate !== dueDate) {
-                updateAssignment({
-                  doenetId,
-                  keyToUpdate: 'dueDate',
-                  value: dueDate,
-                  description: 'Due Date',
-                });
-              }
-            }}
-            onChange={(e) => setDueDate(e.currentTarget.value)}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter' && aInfo.dueDate !== dueDate) {
-                updateAssignment({
-                  doenetId,
-                  keyToUpdate: 'dueDate',
-                  value: dueDate,
-                  description: 'Due Date',
-                });
-              }
-            }}
-          />
-        </label>
-      </div> : null}
+      {aInfo.dueDate !== null ? (
+        <div>
+          <label>
+            Due Date
+            <br />
+            <input
+              required
+              type="text"
+              name="dueDate"
+              value={dueDate}
+              // placeholder="0001-01-01 01:01:01 "
+              onBlur={() => {
+                if (aInfo.dueDate !== dueDate) {
+                  updateAssignment({
+                    doenetId,
+                    keyToUpdate: 'dueDate',
+                    value: dueDate,
+                    description: 'Due Date',
+                  });
+                }
+              }}
+              onChange={(e) => setDueDate(e.currentTarget.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' && aInfo.dueDate !== dueDate) {
+                  updateAssignment({
+                    doenetId,
+                    keyToUpdate: 'dueDate',
+                    value: dueDate,
+                    description: 'Due Date',
+                  });
+                }
+              }}
+            />
+          </label>
+        </div>
+      ) : null}
 
       <div>
         <label>
@@ -756,26 +753,27 @@ export function AssignmentSettings({ role, doenetId }) {
         <label>
           Attempt Aggregation
           {/* {attemptAggregation} */}
-          <select
-            name="attemptAggregation"
-            value={attemptAggregation}
-            onChange={(e) => {
+          <DropdownMenu
+            width="menu"
+            valueIndex={attemptAggregation === 'm' ? 1 : 2}
+            items={[
+              ['m', 'Maximum'],
+              ['l', 'Last Attempt'],
+            ]}
+            onChange={({ value: val }) => {
               let valueDescription = 'Maximum';
-              if (e.currentTarget.value === 'l') {
+              if (val === 'l') {
                 valueDescription = 'Last Attempt';
               }
               updateAssignment({
                 doenetId,
                 keyToUpdate: 'attemptAggregation',
-                value: e.currentTarget.value,
+                value: val,
                 description: 'Attempt Aggregation',
                 valueDescription,
               });
             }}
-          >
-            <option value="m">Maximum</option>
-            <option value="l">Last Attempt</option>
-          </select>
+          />
         </label>
       </div>
 
