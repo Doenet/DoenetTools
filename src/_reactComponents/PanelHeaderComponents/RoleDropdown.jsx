@@ -32,15 +32,18 @@ export function RoleDropdown() {
   const [effectiveRole,setEffectiveRole] = useRecoilState(effectiveRoleAtom);
   const [permittedRole,setPermittedRole ] = useRecoilState(permittedRoleAtom);
   const path = useRecoilValue(searchParamAtomFamily('path'));
+  const searchDriveId = useRecoilValue(searchParamAtomFamily('driveId'));
   const recoilDriveId = useRecoilValue(permsForDriveIdAtom);
 
   let driveId = '';
   if (path){
     [driveId] = path.split(':');
   }
+  if (searchDriveId !== ''){
+    driveId = searchDriveId;
+  }
 
   const initilizeEffectiveRole = useRecoilCallback(({ set, snapshot }) => async (driveId) => {
-
     let role = 'instructor';
   
     //If driveId then test if intructor is available
@@ -66,7 +69,7 @@ export function RoleDropdown() {
   },[driveId]);
 
  
-  if (effectiveRole === '' || recoilDriveId !== driveId) {
+  if (effectiveRole === '' || (recoilDriveId !== driveId && driveId !== '')) {
     //first time through so initialize
     initilizeEffectiveRole(driveId);
     return null;
@@ -80,19 +83,30 @@ export function RoleDropdown() {
     return null;
   }
 
+
+  let items = [
+    ['instructor', 'Instructor'],
+    ['student', 'Student'],
+  ]
+
+  let defaultIndex = 0;
+  for (let [i,item] of Object.entries(items)){
+    if (item[0] === effectiveRole){
+      defaultIndex = Number(i) + 1;
+      break;
+    }
+  }
+
   return (
     <>
     Role
     <DropdownMenu
       width="150px"
-      items={[
-        ['instructor', 'Instructor'],
-        ['student', 'Student'],
-      ]}
+      items={items}
       title="Role"
-      defaultIndex="1"
+      defaultIndex={defaultIndex}
       onChange={({ value }) =>
-      setEffectiveRole(value)
+        setEffectiveRole(value)
       }
     />
     </>
