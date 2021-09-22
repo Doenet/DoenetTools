@@ -531,9 +531,17 @@ function GradebookOverview(props) {
         let score = possiblepoints * credit;
         scores.push(score);
         score = Math.round(score * 100) / 100;
-        row[doenetId] = score;
+        row[doenetId] = /* @__PURE__ */ React.createElement("a", {
+          onClick: (e) => {
+            setPageToolView({
+              page: "course",
+              tool: "gradebookStudentAssignment",
+              view: "",
+              params: {driveId: driveIdValue, doenetId, userId, source: "student"}
+            });
+          }
+        }, score);
       }
-      let numberScores = scores.length;
       scores = scores.sort((a, b) => b - a).slice(0, maximumNumber);
       let categoryScore = scores.reduce((a, c) => a + c, 0) * scaleFactor;
       totalScore += categoryScore;

@@ -30,6 +30,8 @@ $assignment = array();
   $sql = "SELECT
   a.assignedDate AS assignedDate,
   a.dueDate AS dueDate,
+  a.pinnedAfterDate As pinnedAfterDate,
+  a.pinnedUntilDate As pinnedUntilDate,
   a.timeLimit AS timeLimit,
   a.numberOfAttemptsAllowed AS numberOfAttemptsAllowed,
   a.attemptAggregation AS attemptAggregation,
@@ -53,6 +55,8 @@ $assignment = array();
     $assignment = array(
           "assignment_title" => $row['assignment_title'],
           "assignedDate" => $row['assignedDate'],
+          "pinnedAfterDate" => $row['pinnedAfterDate'],
+          "pinnedUntilDate" => $row['pinnedUntilDate'],
           "dueDate" => $row['dueDate'],
           "timeLimit" => $row['timeLimit'],
           "numberOfAttemptsAllowed" => $row['numberOfAttemptsAllowed'],

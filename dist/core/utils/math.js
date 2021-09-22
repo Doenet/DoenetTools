@@ -14,6 +14,8 @@ export var appliedFunctionSymbolsDefault = [
   'count', 'mod'
 ];
 
+let allowedLatexSymbols = ['alpha', 'beta', 'gamma', 'Gamma', 'delta', 'Delta', 'epsilon', 'zeta', 'eta', 'theta', 'Theta', 'iota', 'kappa', 'lambda', 'Lambda', 'mu', 'nu', 'xi', 'Xi', 'pi', 'Pi', 'rho', 'sigma', 'Sigma', 'tau', 'Tau', 'upsilon', 'Upsilon', 'phi', 'Phi', 'chi', 'psi', 'Psi', 'omega', 'Omega', 'partial', 'varnothing', 'emptyset']
+
 export var textToAst = new me.converters.textToAstObj({
   appliedFunctionSymbols: appliedFunctionSymbolsDefault
 });
@@ -29,7 +31,8 @@ export function getFromText({
 }
 
 export var latexToAst = new me.converters.latexToAstObj({
-  appliedFunctionSymbols: appliedFunctionSymbolsDefault
+  appliedFunctionSymbols: appliedFunctionSymbolsDefault,
+  allowedLatexSymbols,
 });
 
 export function getFromLatex({
@@ -40,10 +43,12 @@ export function getFromLatex({
   if (splitSymbols) {
     return x => me.fromAst((new me.converters.latexToAstObj({
       appliedFunctionSymbols, functionSymbols,
+      allowedLatexSymbols,
     })).convert(wrapWordIncludingNumberWithVar(x)))
   } else {
     return x => me.fromAst((new me.converters.latexToAstObj({
       appliedFunctionSymbols, functionSymbols,
+      allowedLatexSymbols,
     })).convert(wrapWordWithVar(x)))
   }
 
@@ -397,7 +402,7 @@ export function wrapWordWithVar(string) {
     string = string.substring(endMatch);
     match = string.match(regex);
   }
-  newString +=  wrapWordWithVarSub(string);
+  newString += wrapWordWithVarSub(string);
 
   return newString;
 

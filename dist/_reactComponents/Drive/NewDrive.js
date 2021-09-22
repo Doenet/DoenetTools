@@ -1452,6 +1452,10 @@ export function ColumnJSX(columnType, item) {
     return /* @__PURE__ */ React.createElement("span", {
       style: {textAlign: "center"}
     }, aInfo?.dueDate);
+  } else if (columnType === "Assigned Date" && item.isReleased === "1") {
+    return /* @__PURE__ */ React.createElement("span", {
+      style: {textAlign: "center"}
+    }, aInfo?.assignedDate);
   }
   return /* @__PURE__ */ React.createElement("span", null);
 }

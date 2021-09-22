@@ -28,7 +28,7 @@ export default function Next7Days({driveId}) {
   let [initialized, setInitialized] = useState(false);
   let [problemMessage, setProblemMessage] = useState("");
   let loadAssignmentArray = useRecoilCallback(({snapshot, set}) => async (driveId2) => {
-    const {data} = await axios.get("/api/loadNextSevenDays.php", {params: {driveId: driveId2}});
+    const {data} = await axios.get("/api/loadTODO.php", {params: {driveId: driveId2}});
     if (!data.success) {
       setProblemMessage(data.message);
       return;
@@ -38,7 +38,7 @@ export default function Next7Days({driveId}) {
     }
   });
   let view = "Student";
-  let columnTypes = ["Due Date"];
+  let columnTypes = ["Assigned Date", "Due Date"];
   let isNav = false;
   let driveInstanceId = "not used";
   let pathItemId = "not used";
@@ -159,7 +159,7 @@ export default function Next7Days({driveId}) {
   }
   return /* @__PURE__ */ React.createElement(BreadcrumbProvider, null, /* @__PURE__ */ React.createElement(DropTargetsProvider, null, /* @__PURE__ */ React.createElement(Suspense, {
     fallback: /* @__PURE__ */ React.createElement("div", null, "loading Drive...")
-  }, /* @__PURE__ */ React.createElement(Container, null, /* @__PURE__ */ React.createElement("h2", null, "Due in the Next Seven Days"), /* @__PURE__ */ React.createElement(DriveHeader, {
+  }, /* @__PURE__ */ React.createElement(Container, null, /* @__PURE__ */ React.createElement("h2", null, "Current Content"), /* @__PURE__ */ React.createElement(DriveHeader, {
     columnTypes,
     numColumns,
     setNumColumns,
