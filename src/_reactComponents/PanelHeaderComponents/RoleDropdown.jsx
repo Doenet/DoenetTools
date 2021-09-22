@@ -39,10 +39,6 @@ export function RoleDropdown() {
     [driveId] = path.split(':');
   }
 
-  console.log(">>>>effectiveRole",effectiveRole)
-  console.log(">>>>permittedRole",permittedRole)
-  console.log(">>>>driveId",driveId)
-
   const initilizeEffectiveRole = useRecoilCallback(({ set, snapshot }) => async (driveId) => {
 
     let role = 'instructor';
