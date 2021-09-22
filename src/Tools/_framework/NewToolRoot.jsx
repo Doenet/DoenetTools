@@ -136,7 +136,6 @@ export default function ToolRoot(){
     GradebookBreadCrumb: lazy(() => import('./HeaderControls/GradebookBreadCrumb')),
     AssignmentBreadCrumb: lazy(() => import('./HeaderControls/AssignmentBreadCrumb')),
     AssignmentNewAttempt: lazy(() => import('./HeaderControls/AssignmentNewAttempt')),
-    RoleDropdown: lazy(() => import('./HeaderControls/RoleDropdown')),
   }).current;
 
    let MainPanelKey = `${toolRootMenusAndPanels.pageName}-${toolRootMenusAndPanels.currentMainPanel}`;
@@ -307,8 +306,8 @@ let navigationObj = {
       currentMenus:[],
       menusTitles:[],
       menusInitOpen:[],
-      headerControls: ["DashboardBreadCrumb","RoleDropdown"],
-      headerControlsPositions: ["Left","Right"],
+      headerControls: ["DashboardBreadCrumb"],
+      headerControlsPositions: ["Left"],
       onLeave:"DashboardLeave",
     },
     gradebook: {
@@ -373,8 +372,8 @@ let navigationObj = {
       currentMenus:[],
       menusTitles:[],
       menusInitOpen:[],
-      headerControls: ["NavigationBreadCrumb","RoleDropdown"],
-      headerControlsPositions: ["Left","Right"],
+      headerControls: ["NavigationBreadCrumb"],
+      headerControlsPositions: ["Left"],
       onLeave:"NavigationLeave",
       views:{
         instructor:{

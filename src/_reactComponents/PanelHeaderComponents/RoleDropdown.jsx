@@ -5,24 +5,25 @@ import {
   useRecoilState,
   useRecoilValue,
 } from 'recoil';
-import { pageToolViewAtom } from '../NewToolRoot';
+import { pageToolViewAtom } from '../../Tools/_framework/NewToolRoot';
 // import DropdownMenu from '../../../_reactComponents/PanelHeaderComponents/DropdownMenu';
-import { searchParamAtomFamily } from '../NewToolRoot';
-import { fetchDrivesQuery } from '../../../_reactComponents/Drive/NewDrive';
-import DropdownMenu from '../../../_reactComponents/PanelHeaderComponents/DropdownMenu';
+import { searchParamAtomFamily } from '../../Tools/_framework/NewToolRoot';
+import { fetchDrivesQuery } from '../Drive/NewDrive';
+import DropdownMenu from './DropdownMenu';
 
-const driveRole = atom({
-  key: 'driveRole',
+export const EffectiveRole = atom({
+  key: 'EffectiveRole',
   default: '',
 });
 
 export default function RoleDropdown() {
+  
   const [pageToolView, setPageToolView] = useRecoilState(pageToolViewAtom);
   let view_role = pageToolView.view;
-  const drive_role = useRecoilValue(driveRole);
+  const effective_role = useRecoilValue(EffectiveRole);
   // console.log(">>>>===RoleDropdown")
   // console.log(">>>>view_role",view_role)
-  // console.log(">>>>drive_role",drive_role)
+  console.log(">>>>effective_role",effective_role)
 
   const initilizeView = useRecoilCallback(({ set, snapshot }) => async () => {
     const path = await snapshot.getPromise(searchParamAtomFamily('path'));
@@ -36,7 +37,7 @@ export default function RoleDropdown() {
         }
       }
     }
-    set(driveRole, role);
+    set(EffectiveRole, role);
     set(pageToolViewAtom, (was) => {
       let newObj = { ...was };
       newObj.view = role;
@@ -44,6 +45,7 @@ export default function RoleDropdown() {
       return newObj;
     });
   });
+
   useEffect(() => {
     if (view_role === '') {
       initilizeView();
@@ -51,16 +53,20 @@ export default function RoleDropdown() {
   }, [view_role]);
   //first time through so set view
 
-  if (drive_role !== 'instructor') {
+  if (pageToolView.tool === 'enrollment'){
     return null;
   }
 
+  if (effective_role !== 'instructor') {
+    return null;
+  }
+
+
   return (
+    <>
+    Role
     <DropdownMenu
-      absolute
-      top={5}
-      right={5}
-      width="200px"
+      width="150px"
       items={[
         ['instructor', 'Instructor'],
         ['student', 'Student'],
@@ -75,5 +81,6 @@ export default function RoleDropdown() {
         })
       }
     />
+    </>
   );
 }

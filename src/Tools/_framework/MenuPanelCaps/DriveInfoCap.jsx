@@ -4,6 +4,7 @@ import { fetchDrivesQuery } from '../../../_reactComponents/Drive/NewDrive';
 import { searchParamAtomFamily } from '../NewToolRoot';
 import DropdownMenu from '../../../_reactComponents/PanelHeaderComponents/DropdownMenu';
 import { roleAtom } from '../ToolHandlers/CourseToolHandler';
+import RoleDropdown from '../../../_reactComponents/PanelHeaderComponents/RoleDropdown';
 
 export default function DriveInfoCap(){
   let path = useRecoilValue(searchParamAtomFamily('path'));
@@ -28,7 +29,7 @@ export default function DriveInfoCap(){
 
  let imageURL = `/media/drive_pictures/${image}`
 
- let activeRoleChoices = [[1,'Instructor'],[2,'Student']];
+//  let activeRoleChoices = [[1,'Instructor'],[2,'Student']];
  let defaultIndex = 1;
 //  for (let choice of activeRoleChoices){
 //    console.log(">>>>choice",choice)
@@ -47,9 +48,7 @@ export default function DriveInfoCap(){
     <div style={{padding:'8px'}}>
     <div>{label}</div>
     <div>{roles}</div>
-    <div>Active Role <DropdownMenu items={activeRoleChoices} defaultIndex={"1"} width="140px" onChange={(choiceObj)=>{
-      console.log(">>>>",choiceObj)
-    }}/></div>
+    <div><RoleDropdown /></div>
     </div>
   </>
 }
