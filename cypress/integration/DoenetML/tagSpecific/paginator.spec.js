@@ -207,6 +207,8 @@ describe('Paginator Tag Tests', function () {
         expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('4')
       })
 
+      cy.wait(100); // wait to make sure win.state.components is populated with new components
+
       cy.window().then((win) => {
         components = Object.assign({}, win.state.components);
 
@@ -838,6 +840,8 @@ describe('Paginator Tag Tests', function () {
 
       cy.get(answer4Correct).should('be.visible')
       cy.get(cesc('#/ca')).should('have.text', '0.333');
+
+      cy.wait(100); // wait to make sure win.state.components is populated with new components
 
       cy.window().then((win) => {
         components = Object.assign({}, win.state.components);
@@ -1751,6 +1755,297 @@ describe('Paginator Tag Tests', function () {
 
   })
 
+  it('External and internal copies, with variantcontrols in document and problem', () => {
+
+    let doenetML = `
+    <text>a</text>
+    <variantControl nVariants="100" />
+    <setup>
+      <problem name="problema" newNamespace>
+        <variantControl nVariants="1" />
+        <title>A hard problem</title>
+        <p>What is 1+1? <answer><mathinput /><award>2</award></answer></p>
+      </problem>
+    </setup>
+
+    <paginatorControls paginatorTname="pgn" name="pcontrols" />
+  
+    <paginator name="pgn">
+      <copy assignNames="problem1" uri="doenet:contentId=a666134b719e70e8acb48d91d582d1efd90d7f11fb499ab77f9f1fa5dafdb96d" componentType="problem" />
+      <copy assignNames="problem2" uri="doenet:contentId=64e31126079d65ea41e90129fa96a7fd54f1faa73fb7b2ef99d8bbed1d13f69a" componentType="problem" />
+      <copy assignNames="problem3" tname="problema" componentType="problem" link="false" />
+  
+    </paginator>
+    <p>Credit achieved: <copy prop="creditAchieved" tname="_document1" assignNames="ca" /></p>
+    `
+
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML,
+        requestedVariant: {
+          subvariants: [{}, {
+            name: "mouse"
+          }]
+        }
+      }, "*");
+    });
+
+    // at least right now, this turns on Allow Local Page State
+    cy.get('h3 > button').click();
+    cy.get(':nth-child(11) > label > input').click()
+    cy.get('h3 > button').click();
+
+
+    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+
+    cy.get(cesc('#/problem1/_title1')).should('have.text', 'Animal sounds')
+    cy.get(cesc('#/ca')).should('have.text', '0')
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      let choices = [...components['/problem1/_choiceinput1'].stateValues.choiceTexts];
+      let mouseInd = choices.indexOf("squeak") + 1;
+      cy.get(cesc(`#/problem1/_choiceinput1_choice${mouseInd}_input`)).click();
+    })
+
+    cy.get(cesc(`#/problem1/_choiceinput1_submit`)).click();
+    cy.get(cesc(`#/problem1/_choiceinput1_correct`)).should('be.visible');
+    cy.get(cesc('#/ca')).should('have.text', '0.333')
+
+
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+      <text>b</text>
+      `}, "*");
+    });
+    cy.get('#\\/_text1').should('have.text', 'b') //wait for page to load
+
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML
+      }, "*");
+    });
+    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+
+
+    cy.get(cesc('#/problem1/_title1')).should('have.text', 'Animal sounds')
+    cy.get(cesc(`#/problem1/_choiceinput1_correct`)).should('be.visible');
+    cy.get(cesc('#/ca')).should('have.text', '0.333')
+
+    cy.get(cesc('#/pcontrols_next')).click()
+    cy.get(cesc('#/problem2/derivativeProblem/_title1')).should('have.text', 'Derivative problem')
+    cy.get(cesc('#/ca')).should('have.text', '0.333')
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      let mathinput2Name = components["/problem2/derivativeProblem/_answer1"].stateValues.inputChildren[0].componentName;
+
+      let mathinput2Anchor = cesc(`#${mathinput2Name}`) + " textarea";
+      let mathinput2Correct = cesc(`#${mathinput2Name}_correct`);
+
+      cy.get(mathinput2Anchor).type('2x{enter}', { force: true })
+      cy.get(mathinput2Correct).should("be.visible");
+      cy.get(cesc('#/ca')).should('have.text', '0.667')
+
+
+      cy.get(cesc('#/pcontrols_previous')).click();
+      cy.get(cesc('#/problem1/_title1')).should('have.text', 'Animal sounds')
+      cy.get(cesc(`#/problem1/_choiceinput1_correct`)).should('be.visible');
+      cy.get(cesc('#/ca')).should('have.text', '0.667')
+
+
+      cy.window().then((win) => {
+        win.postMessage({
+          doenetML: `
+      <text>b</text>
+      `}, "*");
+      });
+      cy.get('#\\/_text1').should('have.text', 'b') //wait for page to load
+
+      cy.window().then((win) => {
+        win.postMessage({
+          doenetML
+        }, "*");
+      });
+      cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+
+
+      cy.get(cesc('#/problem1/_title1')).should('have.text', 'Animal sounds')
+      cy.get(cesc(`#/problem1/_choiceinput1_correct`)).should('be.visible');
+      cy.get(cesc('#/ca')).should('have.text', '0.667')
+
+      cy.get(cesc('#/pcontrols_next')).click()
+      cy.get(cesc('#/problem2/derivativeProblem/_title1')).should('have.text', 'Derivative problem')
+      cy.get(mathinput2Correct).should("be.visible");
+      cy.get(cesc('#/ca')).should('have.text', '0.667')
+
+      cy.get(cesc('#/pcontrols_next')).click()
+      cy.get(cesc('#/problem3/_title1')).should('have.text', 'A hard problem')
+      cy.get(cesc('#/ca')).should('have.text', '0.667')
+
+
+      cy.get(cesc('#/problem3/_mathinput1') + " textarea").type('2{enter}', { force: true })
+      cy.get(cesc('#/problem3/_mathinput1_correct')).should('be.visible');
+      cy.get(cesc('#/ca')).should('have.text', '1')
+
+
+      cy.window().then((win) => {
+        win.postMessage({
+          doenetML: `
+      <text>b</text>
+      `}, "*");
+      });
+      cy.get('#\\/_text1').should('have.text', 'b') //wait for page to load
+
+      cy.window().then((win) => {
+        win.postMessage({
+          doenetML
+        }, "*");
+      });
+      cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+
+
+      cy.get(cesc('#/problem3/_title1')).should('have.text', 'A hard problem')
+      cy.get(cesc('#/problem3/_mathinput1_correct')).should('be.visible');
+      cy.get(cesc('#/ca')).should('have.text', '1')
+
+      cy.get(cesc('#/pcontrols_previous')).click()
+      cy.get(cesc('#/problem2/derivativeProblem/_title1')).should('have.text', 'Derivative problem')
+      cy.get(mathinput2Correct).should("be.visible");
+      cy.get(cesc('#/ca')).should('have.text', '1')
+
+      cy.get(cesc('#/pcontrols_previous')).click()
+      cy.get(cesc('#/problem1/_title1')).should('have.text', 'Animal sounds')
+      cy.get(cesc(`#/problem1/_choiceinput1_correct`)).should('be.visible');
+      cy.get(cesc('#/ca')).should('have.text', '1')
+
+
+    })
+
+
+  })
+
+  it('Variantcontrols in document and problem', () => {
+
+    let doenetML = `
+    <text>a</text>
+    <variantControl nVariants="100" />
+
+    <paginatorControls paginatorTname="pgn" name="pcontrols" />
+
+    <paginator name="pgn">
+      <problem>
+        <title>Type a number</title>
+        <variantControl nVariants="100" />
+        <selectFromSequence assignNames="a" from="1" to="1000" hide />
+        $a: <answer>$a</answer>
+      </problem>  
+      <problem>
+        <title>Type a letter</title>
+        <variantControl nVariants="3" />
+        <select assignNames="b" hide >u v w x y z</select>
+        $b: <answer>$b</answer>
+      </problem>  
+     
+    </paginator>
+    <p>Credit achieved: <copy prop="creditAchieved" tname="_document1" assignNames="ca" /></p>
+    `
+
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML
+      }, "*");
+    });
+
+    // at least right now, this turns on Allow Local Page State
+    cy.get('h3 > button').click();
+    cy.get(':nth-child(11) > label > input').click()
+    cy.get('h3 > button').click();
+
+
+    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+
+    cy.get(cesc('#/_title1')).should('have.text', 'Type a number')
+    cy.get(cesc('#/ca')).should('have.text', '0')
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      let a = components["/a"].stateValues.value;
+
+      let mathinput1Name = components["/_answer1"].stateValues.inputChildren[0].componentName;
+      let mathinput1Anchor = cesc(`#${mathinput1Name}`) + " textarea";
+      let mathinput1Correct = cesc(`#${mathinput1Name}_correct`);
+
+      cy.get(mathinput1Anchor).type(`${a}{enter}`, {force: true});
+      cy.get(mathinput1Correct).should('be.visible');
+      cy.get(cesc('#/ca')).should('have.text', '0.5')
+
+    })
+
+
+    cy.get(cesc('#/pcontrols_next')).click()
+    cy.get(cesc('#/_title2')).should('have.text', 'Type a letter')
+    cy.get(cesc('#/ca')).should('have.text', '0.5')
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      let b = components["/b"].stateValues.value;
+
+      let mathinput2Name = components["/_answer2"].stateValues.inputChildren[0].componentName;
+      let mathinput2Anchor = cesc(`#${mathinput2Name}`) + " textarea";
+      let mathinput2Correct = cesc(`#${mathinput2Name}_correct`);
+
+      cy.get(mathinput2Anchor).type(`${b}{enter}`, {force: true});
+      cy.get(mathinput2Correct).should('be.visible');
+      cy.get(cesc('#/ca')).should('have.text', '1')
+
+    })
+
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+      <text>b</text>
+      `}, "*");
+    });
+    cy.get('#\\/_text1').should('have.text', 'b') //wait for page to load
+
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML
+      }, "*");
+    });
+    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+
+    cy.get(cesc('#/_title2')).should('have.text', 'Type a letter')
+    cy.get(cesc('#/ca')).should('have.text', '1')
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+
+      let mathinput2Name = components["/_answer2"].stateValues.inputChildren[0].componentName;
+      let mathinput2Correct = cesc(`#${mathinput2Name}_correct`);
+
+      cy.get(mathinput2Correct).should('be.visible');
+
+    })
+
+    cy.get(cesc('#/pcontrols_previous')).click()
+    cy.get(cesc('#/_title1')).should('have.text', 'Type a number')
+    cy.get(cesc('#/ca')).should('have.text', '1')
+
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+
+      let mathinput1Name = components["/_answer1"].stateValues.inputChildren[0].componentName;
+      let mathinput1Correct = cesc(`#${mathinput1Name}_correct`);
+
+      cy.get(mathinput1Correct).should('be.visible');
+
+    })
+
+
+  })
+
   it('Submit all answers on page change', () => {
 
     let doenetML = `
@@ -1869,7 +2164,7 @@ describe('Paginator Tag Tests', function () {
 
   })
 
-  it('Paginator controls ignore ready only flag', () => {
+  it('Paginator controls ignore read only flag', () => {
 
     let doenetML = `
     <text>a</text>
@@ -1906,7 +2201,7 @@ describe('Paginator Tag Tests', function () {
 
     cy.get('#\\/ti1_input').type("1{enter}");
     cy.get('#\\/ti1_input').should('have.value', '1');
-    
+
     cy.get('#\\/ti1_correct').should('be.visible');
     cy.get(cesc('#/ca')).should('have.text', '0.5')
 
@@ -1923,7 +2218,7 @@ describe('Paginator Tag Tests', function () {
     cy.get('h3 > button').click();
     cy.get(':nth-child(5) > label > input').click()
     cy.get('h3 > button').click();
-    
+
     cy.get('#\\/ti2_input').should('be.disabled')
     cy.get('#\\/ti2_input').should('have.value', '2');
     cy.get('#\\/ti2_submit').should('be.disabled')
@@ -1945,6 +2240,409 @@ describe('Paginator Tag Tests', function () {
     cy.get('#\\/ti2_input').should('have.value', '2');
     cy.get('#\\/ti2_submit').should('be.disabled')
 
+
+  })
+
+  it('Variants stay consistent with external copies', () => {
+
+    let doenetMLWithSelects = `
+    <text>a</text>
+    <paginatorControls paginatorTname="pgn" name="pcontrols" />
+
+    <paginator name="pgn">
+      <select numberToSelect="2" assignNames="((problem1)) ((problem2))">
+        <option>
+          <copy uri="doenet:contentId=bb4ca2c44eba4f691b4591a7e20ef8007e5a825dd45f48bc4758d3a43f5af2fa" componentType="problem" />
+        </option>
+        <option>
+          <copy uri="doenet:contentId=a666134b719e70e8acb48d91d582d1efd90d7f11fb499ab77f9f1fa5dafdb96d" componentType="problem" />
+        </option>
+      </select>    
+    </paginator>
+    
+    <p>Credit achieved: <copy prop="creditAchieved" tname="_document1" assignNames="ca" /></p>
+    `
+
+    let doenetMLorder1 = `
+    <text>a</text>
+    <paginatorControls paginatorTname="pgn" name="pcontrols" />
+    <paginator name="pgn">
+      <copy uri="doenet:contentId=bb4ca2c44eba4f691b4591a7e20ef8007e5a825dd45f48bc4758d3a43f5af2fa" componentType="problem" assignNames="problem1" />
+      <copy uri="doenet:contentId=a666134b719e70e8acb48d91d582d1efd90d7f11fb499ab77f9f1fa5dafdb96d" componentType="problem" assignNames="problem2" />
+    </paginator>
+    
+    <p>Credit achieved: <copy prop="creditAchieved" tname="_document1" assignNames="ca" /></p>
+    `
+
+    let doenetMLorder2 = `
+    <text>a</text>
+    <paginatorControls paginatorTname="pgn" name="pcontrols" />
+    <paginator name="pgn">
+      <copy uri="doenet:contentId=a666134b719e70e8acb48d91d582d1efd90d7f11fb499ab77f9f1fa5dafdb96d" componentType="problem" assignNames="problem1" />
+      <copy uri="doenet:contentId=bb4ca2c44eba4f691b4591a7e20ef8007e5a825dd45f48bc4758d3a43f5af2fa" componentType="problem" assignNames="problem2" />
+    </paginator>
+    
+    <p>Credit achieved: <copy prop="creditAchieved" tname="_document1" assignNames="ca" /></p>
+    `
+
+    let allDoenetMLs = [
+      doenetMLorder1, doenetMLorder2,
+      doenetMLWithSelects, doenetMLWithSelects,
+      doenetMLWithSelects, doenetMLWithSelects
+    ]
+
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: ''
+      }, "*");
+    });
+
+    cy.get('#testRunner_toggleControls').click();
+    cy.get('#testRunner_allowLocalPageState').click()
+    cy.wait(1000)
+    cy.get('#testRunner_toggleControls').click();
+
+
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: allDoenetMLs[0],
+      }, "*");
+    });
+
+
+    for (let attemptNumber = 1; attemptNumber <= 6; attemptNumber++) {
+
+      if (attemptNumber > 1) {
+        cy.get('#testRunner_toggleControls').click();
+        cy.get('#testRunner_newAttempt').click()
+        cy.get('#testRunner_toggleControls').click();
+
+        cy.wait(1000)
+        cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+
+
+        cy.window().then((win) => {
+          win.postMessage({
+            doenetML: `
+        <text>b</text>
+        `}, "*");
+        });
+        cy.get('#\\/_text1').should('have.text', 'b') //wait for page to load
+
+        cy.window().then((win) => {
+          win.postMessage({
+            doenetML: allDoenetMLs[attemptNumber - 1]
+          }, "*");
+        });
+        cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+
+
+      }
+
+
+
+      let problemInfo = [{}, {}];
+      let problemOrder;
+
+      cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+
+
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
+
+        expect(components["/_document1"].stateValues.generatedVariantInfo.index).eq(attemptNumber)
+
+        if (components["/problem1/a"]) {
+          problemOrder = [1, 2];
+        } else {
+          problemOrder = [2, 1];
+        }
+
+        let creditAchieved = 0;
+
+        for (let ind = 0; ind < 2; ind++) {
+          if (ind === 1) {
+            cy.get(cesc('#/pcontrols_next')).click()
+          }
+
+          cy.wait(0).then(_ => {
+
+            cy.get(cesc('#/ca')).should('have.text', `${creditAchieved}`)
+
+
+            let thisProbInfo = problemInfo[ind];
+            let thisProbName = `/problem${ind + 1}`
+
+            if (problemOrder[ind] === 1) {
+
+              cy.get(cesc(`#${thisProbName}/_problem1_title`)).should('have.text', `Problem ${ind + 1}`)
+              cy.wait(10);
+
+              cy.window().then((win) => {
+                components = Object.assign({}, win.state.components);
+
+                thisProbInfo.a = components[`${thisProbName}/a`].stateValues.value;
+                thisProbInfo.v = components[`${thisProbName}/v`].stateValues.value;
+                thisProbInfo.o1m = components[`${thisProbName}/o1/m`].stateValues.value;
+                thisProbInfo.o1t = components[`${thisProbName}/o1/t`].stateValues.value;
+                thisProbInfo.o2m = components[`${thisProbName}/o2/m`].stateValues.value;
+                thisProbInfo.o2t = components[`${thisProbName}/o2/t`].stateValues.value;
+
+                let mathinput1Name = components[`${thisProbName}/ans1`].stateValues.inputChildren[0].componentName;
+                let mathinput1Anchor = cesc('#' + mathinput1Name) + " textarea";
+                let answer1Correct = cesc('#' + mathinput1Name + "_correct");
+
+                let mathinput2Name = components[`${thisProbName}/ans2`].stateValues.inputChildren[0].componentName;
+                let mathinput2Anchor = cesc('#' + mathinput2Name) + " textarea";
+                let answer2Correct = cesc('#' + mathinput2Name + "_correct");
+
+                let textinput3Name = components[`${thisProbName}/ans3`].stateValues.inputChildren[0].componentName;
+                let textinput3Anchor = cesc('#' + textinput3Name) + "_input";
+                let answer3Correct = cesc('#' + textinput3Name + "_correct");
+
+                let mathinput4Name = components[`${thisProbName}/ans4`].stateValues.inputChildren[0].componentName;
+                let mathinput4Anchor = cesc('#' + mathinput4Name) + " textarea";
+                let answer4Correct = cesc('#' + mathinput4Name + "_correct");
+
+                let textinput5Name = components[`${thisProbName}/ans5`].stateValues.inputChildren[0].componentName;
+                let textinput5Anchor = cesc('#' + textinput5Name) + "_input";
+                let answer5Correct = cesc('#' + textinput5Name + "_correct");
+
+
+                cy.get(mathinput1Anchor).type(`${thisProbInfo.a}${thisProbInfo.v.toString()}{enter}`, { force: true });
+                cy.get(answer1Correct).should('be.visible');
+
+                cy.get(mathinput2Anchor).type(`${thisProbInfo.o1m.toString()}{enter}`, { force: true });
+                cy.get(answer2Correct).should('be.visible');
+
+                cy.get(textinput3Anchor).type(`${thisProbInfo.o1t}{enter}`);
+                cy.get(answer3Correct).should('be.visible');
+
+                cy.get(mathinput4Anchor).type(`${thisProbInfo.o2m.toString()}{enter}`, { force: true });
+                cy.get(answer4Correct).should('be.visible');
+
+                cy.get(textinput5Anchor).type(`${thisProbInfo.o2t}{enter}`);
+                cy.get(answer5Correct).should('be.visible');
+              })
+
+            } else {
+              cy.get(cesc(`#${thisProbName}/_problem1_title`)).should('have.text', `Animal sounds`)
+              cy.wait(10);
+
+              cy.window().then((win) => {
+                components = Object.assign({}, win.state.components);
+
+                thisProbInfo.animal = components[`${thisProbName}/animal`].stateValues.value;
+                thisProbInfo.sound = components[`${thisProbName}/sound`].stateValues.value;
+
+                thisProbInfo.choices = [...components[`${thisProbName}/_choiceinput1`].stateValues.choiceTexts];
+                thisProbInfo.animalInd = thisProbInfo.choices.indexOf(thisProbInfo.sound) + 1;
+                cy.get(cesc(`#${thisProbName}/_choiceinput1_choice${thisProbInfo.animalInd}_input`)).click();
+
+                cy.get(cesc(`#${thisProbName}/_choiceinput1_submit`)).click();
+                cy.get(cesc(`#${thisProbName}/_choiceinput1_correct`)).should('be.visible');
+              })
+            }
+
+            creditAchieved += 0.5;
+          })
+
+
+        }
+
+      })
+
+
+      cy.window().then((win) => {
+        win.postMessage({
+          doenetML: `
+      <text>b</text>
+      `}, "*");
+      });
+      cy.get('#\\/_text1').should('have.text', 'b') //wait for page to load
+
+      cy.window().then((win) => {
+        win.postMessage({
+          doenetML: allDoenetMLs[attemptNumber - 1]
+        }, "*");
+      });
+      cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+
+
+      for (let ind = 1; ind >= 0; ind--) {
+        if (ind === 0) {
+          cy.get(cesc('#/pcontrols_previous')).click()
+        }
+
+        cy.wait(0).then(_ => {
+
+          cy.get(cesc('#/ca')).should('have.text', `1`)
+
+
+          let thisProbInfo = problemInfo[ind];
+          let thisProbName = `/problem${ind + 1}`
+
+          if (problemOrder[ind] === 1) {
+
+            cy.get(cesc(`#${thisProbName}/_problem1_title`)).should('have.text', `Problem ${ind + 1}`)
+            cy.wait(10);
+
+            cy.window().then((win) => {
+              let components = Object.assign({}, win.state.components);
+
+              expect(components[`${thisProbName}/a`].stateValues.value.toString()).eq(thisProbInfo.a.toString())
+              expect(components[`${thisProbName}/v`].stateValues.value.toString()).eq(thisProbInfo.v.toString())
+              expect(components[`${thisProbName}/o1/m`].stateValues.value.toString()).eq(thisProbInfo.o1m.toString())
+              expect(components[`${thisProbName}/o1/t`].stateValues.value.toString()).eq(thisProbInfo.o1t.toString())
+              expect(components[`${thisProbName}/o2/m`].stateValues.value.toString()).eq(thisProbInfo.o2m.toString())
+              expect(components[`${thisProbName}/o2/t`].stateValues.value.toString()).eq(thisProbInfo.o2t.toString())
+
+
+              let mathinput1Name = components[`${thisProbName}/ans1`].stateValues.inputChildren[0].componentName;
+              let answer1Correct = cesc('#' + mathinput1Name + "_correct");
+
+              let mathinput2Name = components[`${thisProbName}/ans2`].stateValues.inputChildren[0].componentName;
+              let answer2Correct = cesc('#' + mathinput2Name + "_correct");
+
+              let textinput3Name = components[`${thisProbName}/ans3`].stateValues.inputChildren[0].componentName;
+              let answer3Correct = cesc('#' + textinput3Name + "_correct");
+
+              let mathinput4Name = components[`${thisProbName}/ans4`].stateValues.inputChildren[0].componentName;
+              let answer4Correct = cesc('#' + mathinput4Name + "_correct");
+
+              let textinput5Name = components[`${thisProbName}/ans5`].stateValues.inputChildren[0].componentName;
+              let answer5Correct = cesc('#' + textinput5Name + "_correct");
+
+
+              cy.get(answer1Correct).should('be.visible');
+
+              cy.get(answer2Correct).should('be.visible');
+
+              cy.get(answer3Correct).should('be.visible');
+
+              cy.get(answer4Correct).should('be.visible');
+
+              cy.get(answer5Correct).should('be.visible');
+            })
+
+          } else {
+            cy.get(cesc(`#${thisProbName}/_problem1_title`)).should('have.text', `Animal sounds`)
+            cy.get(cesc(`#${thisProbName}/_choiceinput1_correct`)).should('be.visible');
+
+            cy.wait(10);
+
+            cy.window().then((win) => {
+              let components = Object.assign({}, win.state.components);
+
+              expect(components[`${thisProbName}/animal`].stateValues.value).eq(thisProbInfo.animal)
+              expect(components[`${thisProbName}/sound`].stateValues.value).eq(thisProbInfo.sound)
+              expect(components[`${thisProbName}/_choiceinput1`].stateValues.choiceTexts).eqls(thisProbInfo.choices)
+              expect(thisProbInfo.choices.indexOf(thisProbInfo.sound) + 1).eq(thisProbInfo.animalInd)
+              cy.get(cesc(`#${thisProbName}/_choiceinput1_correct`)).should('be.visible');
+            })
+          }
+
+        })
+
+
+      }
+
+
+      cy.window().then((win) => {
+        win.postMessage({
+          doenetML: `
+      <text>b</text>
+      `}, "*");
+      });
+      cy.get('#\\/_text1').should('have.text', 'b') //wait for page to load
+
+      cy.window().then((win) => {
+        win.postMessage({
+          doenetML: allDoenetMLs[attemptNumber - 1]
+        }, "*");
+      });
+      cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+
+
+      for (let ind = 0; ind < 2; ind++) {
+        if (ind === 1) {
+          cy.get(cesc('#/pcontrols_next')).click()
+        }
+
+        cy.wait(0).then(_ => {
+
+          cy.get(cesc('#/ca')).should('have.text', `1`)
+
+
+          let thisProbInfo = problemInfo[ind];
+          let thisProbName = `/problem${ind + 1}`
+
+          if (problemOrder[ind] === 1) {
+
+            cy.get(cesc(`#${thisProbName}/_problem1_title`)).should('have.text', `Problem ${ind + 1}`)
+            cy.wait(10);
+
+            cy.window().then((win) => {
+              let components = Object.assign({}, win.state.components);
+
+              expect(components[`${thisProbName}/a`].stateValues.value.toString()).eq(thisProbInfo.a.toString())
+              expect(components[`${thisProbName}/v`].stateValues.value.toString()).eq(thisProbInfo.v.toString())
+              expect(components[`${thisProbName}/o1/m`].stateValues.value.toString()).eq(thisProbInfo.o1m.toString())
+              expect(components[`${thisProbName}/o1/t`].stateValues.value.toString()).eq(thisProbInfo.o1t.toString())
+              expect(components[`${thisProbName}/o2/m`].stateValues.value.toString()).eq(thisProbInfo.o2m.toString())
+              expect(components[`${thisProbName}/o2/t`].stateValues.value.toString()).eq(thisProbInfo.o2t.toString())
+
+
+              let mathinput1Name = components[`${thisProbName}/ans1`].stateValues.inputChildren[0].componentName;
+              let answer1Correct = cesc('#' + mathinput1Name + "_correct");
+
+              let mathinput2Name = components[`${thisProbName}/ans2`].stateValues.inputChildren[0].componentName;
+              let answer2Correct = cesc('#' + mathinput2Name + "_correct");
+
+              let textinput3Name = components[`${thisProbName}/ans3`].stateValues.inputChildren[0].componentName;
+              let answer3Correct = cesc('#' + textinput3Name + "_correct");
+
+              let mathinput4Name = components[`${thisProbName}/ans4`].stateValues.inputChildren[0].componentName;
+              let answer4Correct = cesc('#' + mathinput4Name + "_correct");
+
+              let textinput5Name = components[`${thisProbName}/ans5`].stateValues.inputChildren[0].componentName;
+              let answer5Correct = cesc('#' + textinput5Name + "_correct");
+
+
+              cy.get(answer1Correct).should('be.visible');
+
+              cy.get(answer2Correct).should('be.visible');
+
+              cy.get(answer3Correct).should('be.visible');
+
+              cy.get(answer4Correct).should('be.visible');
+
+              cy.get(answer5Correct).should('be.visible');
+            })
+
+          } else {
+            cy.get(cesc(`#${thisProbName}/_problem1_title`)).should('have.text', `Animal sounds`)
+            cy.get(cesc(`#${thisProbName}/_choiceinput1_correct`)).should('be.visible');
+
+            cy.wait(10);
+
+            cy.window().then((win) => {
+              let components = Object.assign({}, win.state.components);
+
+              expect(components[`${thisProbName}/animal`].stateValues.value).eq(thisProbInfo.animal)
+              expect(components[`${thisProbName}/sound`].stateValues.value).eq(thisProbInfo.sound)
+              expect(components[`${thisProbName}/_choiceinput1`].stateValues.choiceTexts).eqls(thisProbInfo.choices)
+              expect(thisProbInfo.choices.indexOf(thisProbInfo.sound) + 1).eq(thisProbInfo.animalInd)
+              cy.get(cesc(`#${thisProbName}/_choiceinput1_correct`)).should('be.visible');
+            })
+          }
+
+        })
+
+
+      }
+
+    }
 
   })
 

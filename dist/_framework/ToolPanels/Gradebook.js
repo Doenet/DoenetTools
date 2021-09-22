@@ -220,7 +220,9 @@ export const overViewData = selector({
         credit,
         userId
       ] = data[userAssignment];
-      overView[userId].assignments[doenetId] = credit;
+      if (overView[userId]) {
+        overView[userId].assignments[doenetId] = credit;
+      }
     }
     return overView;
   }
@@ -408,33 +410,65 @@ function GradebookOverview(props) {
   let driveIdValue = useRecoilValue(driveId);
   const setPageToolView = useSetRecoilState(pageToolViewAtom);
   let students = useRecoilValueLoadable(studentData);
+  let assignments = useRecoilValueLoadable(assignmentData);
+  let overView = useRecoilValueLoadable(overViewData);
+  console.log(">>>>students", students);
+  console.log(">>>>assignments", assignments);
+  console.log(">>>>overView", overView);
+  if (assignments.state !== "hasValue" || students.state !== "hasValue" || overView.state !== "hasValue") {
+    return null;
+  }
+  let gradeCategories = [
+    {
+      category: "Gateway",
+      scaleFactor: 0
+    },
+    {category: "Exams"},
+    {
+      category: "Quizzes",
+      maximumNumber: 10
+    },
+    {
+      category: "Problem sets",
+      maximumNumber: 30
+    },
+    {category: "Projects"},
+    {category: "Participation"}
+  ];
   let overviewTable = {};
   overviewTable.headers = [];
-  if (students.state == "hasValue") {
-    overviewTable.headers.push({
-      Header: "Name",
-      accessor: "name",
-      Cell: (row) => /* @__PURE__ */ React.createElement("a", {
-        onClick: (e) => {
-          let name = row.cell.row.cells[0].value;
-          let userId = getUserId(students.contents, name);
-          setPageToolView({
-            page: "course",
-            tool: "gradebookStudent",
-            view: "",
-            params: {driveId: driveIdValue, userId}
-          });
-        }
-      }, " ", row.cell.row.cells[0].value, " ")
-    });
-  }
-  let assignments = useRecoilValueLoadable(assignmentData);
-  if (assignments.state == "hasValue") {
+  overviewTable.rows = [];
+  let possiblePointRow = {};
+  let totalPossiblePoints = 0;
+  overviewTable.headers.push({
+    Header: "Name",
+    accessor: "name",
+    Cell: (row) => /* @__PURE__ */ React.createElement("a", {
+      onClick: (e) => {
+        let name = row.cell.row.cells[0].value;
+        let userId = getUserId(students.contents, name);
+        setPageToolView({
+          page: "course",
+          tool: "gradebookStudent",
+          view: "",
+          params: {driveId: driveIdValue, userId}
+        });
+      }
+    }, " ", row.cell.row.cells[0].value, " ")
+  });
+  possiblePointRow["name"] = "Possible Points";
+  for (let {category, scaleFactor = 1, maximumNumber = Infinity} of gradeCategories) {
+    let allpossiblepoints = [];
     for (let doenetId in assignments.contents) {
+      let inCategory = assignments.contents[doenetId].category;
+      if (inCategory.toLowerCase() !== category.toLowerCase()) {
+        continue;
+      }
+      let possiblepoints = assignments.contents[doenetId].totalPointsOrPercent * 1;
+      allpossiblepoints.push(possiblepoints);
       overviewTable.headers.push({
         Header: /* @__PURE__ */ React.createElement("a", {
           onClick: (e) => {
-            e.stopPropagation();
             setPageToolView({
               page: "course",
               tool: "gradebookAssignment",
@@ -446,33 +480,77 @@ function GradebookOverview(props) {
         accessor: doenetId,
         disableFilters: true
       });
+      possiblePointRow[doenetId] = possiblepoints;
     }
+    let numberScores = allpossiblepoints.length;
+    allpossiblepoints = allpossiblepoints.sort((a, b) => b - a).slice(0, maximumNumber);
+    let categoryPossiblePoints = allpossiblepoints.reduce((a, c) => a + c, 0) * scaleFactor;
+    possiblePointRow[category] = categoryPossiblePoints;
+    totalPossiblePoints += categoryPossiblePoints;
+    let description = "";
+    if (numberScores > maximumNumber) {
+      description = /* @__PURE__ */ React.createElement("div", {
+        style: {fontSize: ".7em"}
+      }, "(Based on top ", maximumNumber, " scores)");
+    }
+    if (scaleFactor !== 1) {
+      description = /* @__PURE__ */ React.createElement("div", {
+        style: {fontSize: ".7em"}
+      }, "(Based on rescaling by ", scaleFactor * 100, "%)");
+    }
+    overviewTable.headers.push({
+      Header: /* @__PURE__ */ React.createElement("div", null, `${category} Total`, " ", description, " "),
+      accessor: category,
+      disableFilters: true
+    });
   }
   overviewTable.headers.push({
-    Header: "Grade",
-    accessor: "grade",
-    sortType: gradeSorting,
+    Header: /* @__PURE__ */ React.createElement("div", null, "Course Total"),
+    accessor: "course total",
     disableFilters: true
   });
-  overviewTable.rows = [];
-  let overView = useRecoilValueLoadable(overViewData);
-  if (students.state == "hasValue") {
-    for (let userId in students.contents) {
-      let firstName = students.contents[userId].firstName, lastName = students.contents[userId].lastName, generatedGrade = students.contents[userId].courseGrade, overrideGrade = students.contents[userId].overrideCourseGrade, role = students.contents[userId].role;
-      if (role !== "Student") {
-        continue;
-      }
-      let grade = overrideGrade ? overrideGrade : generatedGrade;
-      let row = {};
-      row["name"] = firstName + " " + lastName;
-      if (overView.state == "hasValue" && assignments.state == "hasValue") {
-        for (let doenetId in assignments.contents) {
-          row[doenetId] = Math.round(overView.contents[userId].assignments[doenetId] * 1e4) / 100 + "%";
-        }
-      }
-      row["grade"] = grade;
-      overviewTable.rows.push(row);
+  possiblePointRow["course total"] = totalPossiblePoints;
+  overviewTable.rows.push(possiblePointRow);
+  for (let userId in students.contents) {
+    let firstName = students.contents[userId].firstName, lastName = students.contents[userId].lastName, role = students.contents[userId].role;
+    if (role !== "Student") {
+      continue;
     }
+    let row = {};
+    row["name"] = firstName + " " + lastName;
+    let totalScore = 0;
+    for (let {category, scaleFactor = 1, maximumNumber = Infinity} of gradeCategories) {
+      let scores = [];
+      for (let doenetId in assignments.contents) {
+        let inCategory = assignments.contents[doenetId].category;
+        if (inCategory.toLowerCase() !== category.toLowerCase()) {
+          continue;
+        }
+        let possiblepoints = assignments.contents[doenetId].totalPointsOrPercent * 1;
+        let credit = overView.contents[userId].assignments[doenetId];
+        let score = possiblepoints * credit;
+        scores.push(score);
+        score = Math.round(score * 100) / 100;
+        row[doenetId] = /* @__PURE__ */ React.createElement("a", {
+          onClick: (e) => {
+            setPageToolView({
+              page: "course",
+              tool: "gradebookStudentAssignment",
+              view: "",
+              params: {driveId: driveIdValue, doenetId, userId, source: "student"}
+            });
+          }
+        }, score);
+      }
+      scores = scores.sort((a, b) => b - a).slice(0, maximumNumber);
+      let categoryScore = scores.reduce((a, c) => a + c, 0) * scaleFactor;
+      totalScore += categoryScore;
+      categoryScore = Math.round(categoryScore * 100) / 100;
+      row[category] = categoryScore;
+    }
+    totalScore = Math.round(totalScore * 100) / 100;
+    row["course total"] = totalScore;
+    overviewTable.rows.push(row);
   }
   return /* @__PURE__ */ React.createElement(Styles, null, /* @__PURE__ */ React.createElement(Table, {
     columns: overviewTable.headers,

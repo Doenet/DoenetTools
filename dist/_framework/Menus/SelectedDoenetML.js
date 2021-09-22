@@ -17,6 +17,7 @@ import {
 import Button from "../../_reactComponents/PanelHeaderComponents/Button.js";
 import Textfield from "../../_reactComponents/PanelHeaderComponents/Textfield.js";
 import ActionButton from "../../_reactComponents/PanelHeaderComponents/ActionButton.js";
+import ActionButtonGroup from "../../_reactComponents/PanelHeaderComponents/ActionButtonGroup.js";
 import ButtonGroup from "../../_reactComponents/PanelHeaderComponents/ButtonGroup.js";
 import useSockets from "../../_reactComponents/Sockets.js";
 import {pageToolViewAtom} from "../NewToolRoot.js";
@@ -148,9 +149,9 @@ export default function SelectedDoenetML() {
     "data-cy": "infoPanelItemLabel"
   }, /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
     icon: faCode
-  }), " ", item.label), /* @__PURE__ */ React.createElement(ButtonGroup, {
+  }), " ", item.label), /* @__PURE__ */ React.createElement(ActionButtonGroup, {
     vertical: true
-  }, /* @__PURE__ */ React.createElement(Button, {
+  }, /* @__PURE__ */ React.createElement(ActionButton, {
     width: "menu",
     value: "Edit DoenetML",
     onClick: () => {
@@ -164,7 +165,7 @@ export default function SelectedDoenetML() {
         }
       });
     }
-  }), /* @__PURE__ */ React.createElement(Button, {
+  }), /* @__PURE__ */ React.createElement(ActionButton, {
     width: "menu",
     value: "Take Assignment",
     onClick: () => {
@@ -239,6 +240,8 @@ export function AssignmentSettings({role, doenetId}) {
   const addToast = useToast();
   let [assignedDate, setAssignedDate] = useState("");
   let [dueDate, setDueDate] = useState("");
+  let [pinnedUntilDate, setPinnedUntilDate] = useState("");
+  let [pinnedAfterDate, setPinnedAfterDate] = useState("");
   let [limitAttempts, setLimitAttempts] = useState(true);
   let [numberOfAttemptsAllowed, setNumberOfAttemptsAllowed] = useState(1);
   let [timeLimit, setTimeLimit] = useState(60);
@@ -257,10 +260,15 @@ export function AssignmentSettings({role, doenetId}) {
     keyToUpdate,
     value,
     description,
-    valueDescription = null
+    valueDescription = null,
+    secondKeyToUpdate = null,
+    secondValue
   }) => {
     const oldAInfo = await snapshot.getPromise(loadAssignmentSelector(doenetId2));
     let newAInfo = {...oldAInfo, [keyToUpdate]: value};
+    if (secondKeyToUpdate) {
+      newAInfo[secondKeyToUpdate] = secondValue;
+    }
     set(loadAssignmentSelector(doenetId2), newAInfo);
     let dbAInfo = {...newAInfo};
     if (dbAInfo.assignedDate !== null) {
@@ -268,6 +276,12 @@ export function AssignmentSettings({role, doenetId}) {
     }
     if (dbAInfo.dueDate !== null) {
       dbAInfo.dueDate = DateToUTCDateString(new Date(dbAInfo.dueDate));
+    }
+    if (dbAInfo.pinnedUntilDate !== null) {
+      dbAInfo.pinnedUntilDate = DateToUTCDateString(new Date(dbAInfo.pinnedUntilDate));
+    }
+    if (dbAInfo.pinnedAfterDate !== null) {
+      dbAInfo.pinnedAfterDate = DateToUTCDateString(new Date(dbAInfo.pinnedAfterDate));
     }
     const resp = await axios.post("/api/saveAssignmentToDraft.php", dbAInfo);
     if (resp.data.success) {
@@ -294,6 +308,8 @@ export function AssignmentSettings({role, doenetId}) {
     setShowCorrectness(aInfo?.showCorrectness);
     setProctorMakesAvailable(aInfo?.proctorMakesAvailable);
     setTimeLimit(aInfo?.timeLimit);
+    setPinnedUntilDate(aInfo?.pinnedUntilDate);
+    setPinnedAfterDate(aInfo?.pinnedAfterDate);
   }, [aInfo]);
   if (aLoadable.state === "loading") {
     return null;
@@ -681,7 +697,83 @@ export function AssignmentSettings({role, doenetId}) {
       });
     },
     checked: proctorMakesAvailable
-  }))));
+  }))), /* @__PURE__ */ React.createElement("div", null, "Pin Assignment", /* @__PURE__ */ React.createElement(Switch, {
+    onChange: (e) => {
+      let valueDescription = "None";
+      let value = null;
+      let secondValue = null;
+      if (e.currentTarget.checked) {
+        valueDescription = "Now to Next Year";
+        let today = new Date();
+        value = today.toLocaleString();
+        let nextWeek = new Date();
+        nextWeek.setDate(nextWeek.getDate() + 365);
+        secondValue = nextWeek.toLocaleString();
+      }
+      updateAssignment({
+        doenetId,
+        keyToUpdate: "pinnedAfterDate",
+        value,
+        description: "Pinned Dates ",
+        valueDescription,
+        secondKeyToUpdate: "pinnedUntilDate",
+        secondValue
+      });
+    },
+    checked: aInfo.pinnedUntilDate !== null
+  })), aInfo.pinnedUntilDate !== null ? /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("label", null, "Pinned After Date", /* @__PURE__ */ React.createElement("input", {
+    required: true,
+    type: "text",
+    name: "pinnedAfterDate",
+    value: pinnedAfterDate,
+    onBlur: () => {
+      if (aInfo.pinnedAfterDate !== pinnedAfterDate) {
+        updateAssignment({
+          doenetId,
+          keyToUpdate: "pinnedAfterDate",
+          value: pinnedAfterDate,
+          description: "Pinned After Date"
+        });
+      }
+    },
+    onChange: (e) => setPinnedAfterDate(e.currentTarget.value),
+    onKeyDown: (e) => {
+      if (e.key === "Enter" && aInfo.pinnedAfterDate !== pinnedAfterDate) {
+        updateAssignment({
+          doenetId,
+          keyToUpdate: "pinnedAfterDate",
+          value: pinnedAfterDate,
+          description: "Pinned After Date"
+        });
+      }
+    }
+  }))), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("label", null, "Pinned Until Date", /* @__PURE__ */ React.createElement("input", {
+    required: true,
+    type: "text",
+    name: "pinnedUntilDate",
+    value: pinnedUntilDate,
+    onBlur: () => {
+      if (aInfo.pinnedUntilDate !== pinnedUntilDate) {
+        updateAssignment({
+          doenetId,
+          keyToUpdate: "pinnedUntilDate",
+          value: pinnedUntilDate,
+          description: "Pinned Until Date"
+        });
+      }
+    },
+    onChange: (e) => setPinnedUntilDate(e.currentTarget.value),
+    onKeyDown: (e) => {
+      if (e.key === "Enter" && aInfo.pinnedUntilDate !== pinnedUntilDate) {
+        updateAssignment({
+          doenetId,
+          keyToUpdate: "pinnedUntilDate",
+          value: pinnedUntilDate,
+          description: "Pinned Until Date"
+        });
+      }
+    }
+  })))) : null);
 }
 export const selectedInformation = selector({
   key: "selectedInformation",

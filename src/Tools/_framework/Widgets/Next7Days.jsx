@@ -38,8 +38,7 @@ export default function Next7Days({ driveId }) {
   let [problemMessage,setProblemMessage] = useState("");
 
   let loadAssignmentArray = useRecoilCallback(({snapshot,set})=> async (driveId)=>{
-    const { data } = await axios.get('/api/loadNextSevenDays.php',{params:{driveId}});
-    // console.log(">>>>data",data)
+    const { data } = await axios.get('/api/loadTODO.php',{params:{driveId}});
     if (!data.success){
       setProblemMessage(data.message);
       return
@@ -51,7 +50,8 @@ export default function Next7Days({ driveId }) {
   })
 
   let view = 'Student';
-  let columnTypes = ['Due Date']
+  let columnTypes = ['Assigned Date','Due Date']
+  // let columnTypes = ['Due Date']
   let isNav = false;
   let driveInstanceId = 'not used'; //TODO: make this unique so widget is independent of other instances
   let pathItemId = 'not used';
@@ -224,7 +224,7 @@ export default function Next7Days({ driveId }) {
       <DropTargetsProvider>
         <Suspense fallback={<div>loading Drive...</div>}>
           <Container>
-            <h2>Due in the Next Seven Days</h2>
+            <h2>Current Content</h2>
             <DriveHeader
             columnTypes={columnTypes}
             numColumns={numColumns}

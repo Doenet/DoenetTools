@@ -39,7 +39,7 @@ export default class MathInput extends DoenetRenderer {
   calculateMathExpressionFromLatex(text) {
     let expression;
     text = substituteUnicodeInLatexString(text);
-    text = text.replace(/\^(\d)/g, "^{$1}");
+    text = text.replace(/\^(\w)/g, "^{$1}");
     let fromLatex = getFromLatex({
       functionSymbols: this.doenetSvData.functionSymbols,
       splitSymbols: this.doenetSvData.splitSymbols
@@ -325,18 +325,21 @@ var appliedFunctionSymbols = [
   "count",
   "mod"
 ];
+let allowedLatexSymbols = ["alpha", "beta", "gamma", "Gamma", "delta", "Delta", "epsilon", "zeta", "eta", "theta", "Theta", "iota", "kappa", "lambda", "Lambda", "mu", "nu", "xi", "Xi", "pi", "Pi", "rho", "sigma", "Sigma", "tau", "Tau", "upsilon", "Upsilon", "phi", "Phi", "chi", "psi", "Psi", "omega", "Omega", "partial", "varnothing", "emptyset"];
 function getFromLatex({functionSymbols, splitSymbols}) {
   if (splitSymbols) {
     return (x) => me.fromAst(new me.converters.latexToAstObj({
       appliedFunctionSymbols,
       functionSymbols,
-      splitSymbols
+      splitSymbols,
+      allowedLatexSymbols
     }).convert(wrapWordIncludingNumberWithVar(x)));
   } else {
     return (x) => me.fromAst(new me.converters.latexToAstObj({
       appliedFunctionSymbols,
       functionSymbols,
-      splitSymbols
+      splitSymbols,
+      allowedLatexSymbols
     }).convert(wrapWordWithVar(x)));
   }
 }
@@ -390,7 +393,8 @@ function substituteUnicodeInLatexString(latexString) {
     ["·", " \\cdot "],
     ["∪", " \\cup "],
     ["∩", " \\cap "],
-    ["∞", " \\infty "]
+    ["∞", " \\infty "],
+    ["∅", " \\emptyset "]
   ];
   for (let sub of substitutions) {
     latexString = latexString.replaceAll(sub[0], sub[1]);

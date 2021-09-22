@@ -140,6 +140,8 @@ import Endpoint from './components/Endpoint';
 import Sort from './components/Sort';
 import SolveEquations from './components/SolveEquations';
 import SolutionContainer from './components/SolutionContainer';
+import SubsetOfRealsInput from './components/SubsetOfRealsInput';
+import SubsetOfReals from './components/SubsetOfReals';
 
 
 //Extended
@@ -278,6 +280,8 @@ const componentTypeArray = [
   Sort,
   SolveEquations,
   SolutionContainer,
+  SubsetOfRealsInput,
+  SubsetOfReals,
 
   BaseComponent,
   InlineComponent,
