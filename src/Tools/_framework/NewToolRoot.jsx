@@ -597,11 +597,11 @@ let encodeParams = p => Object.entries(p).map(kv =>
         nextPageToolView.tool = '';
       }
       //Maintain View when search parameters change
-      if (nextPageToolView.page === lastPageToolView.current.page &&
-          nextPageToolView.tool === lastPageToolView.current.tool
-        ){
-          nextPageToolView.view = lastPageToolView.current.view;
-        }
+      // if (nextPageToolView.page === lastPageToolView.current.page &&
+      //     nextPageToolView.tool === lastPageToolView.current.tool
+      //   ){
+      //     nextPageToolView.view = lastPageToolView.current.view;
+      //   }
     }
 
     //Recoil change test
@@ -686,20 +686,20 @@ let encodeParams = p => Object.entries(p).map(kv =>
     // console.log(">>>>page",isPageChange,"Tool",isToolChange,"view",isViewChange)
     // console.log(">>>>nextPageToolView",nextPageToolView)
     // console.log(">>>>nextMenusAndPanels",nextMenusAndPanels)
-    let viewOverrides = nextMenusAndPanels?.views?.[nextPageToolView.view]
+    // let viewOverrides = nextMenusAndPanels?.views?.[nextPageToolView.view]
     
 
     //Have view Override the next menu and panels
-    if (typeof viewOverrides === 'object' && viewOverrides !== null){
+    // if (typeof viewOverrides === 'object' && viewOverrides !== null){
       // console.log(">>>>IMPLEMENTING OVERRIDES!!!!!!")
       // console.log(">>>>viewOverrides",viewOverrides)
       // console.log(">>>>nextPageToolView.view",nextPageToolView.view)
-      nextMenusAndPanels = {... navigationObj[nextPageToolView.page][nextPageToolView.tool]};
+      // nextMenusAndPanels = {... navigationObj[nextPageToolView.page][nextPageToolView.tool]};
 
-      for (let key of Object.keys(viewOverrides)){
-        nextMenusAndPanels[key] = viewOverrides[key];
-      }
-    }
+      // for (let key of Object.keys(viewOverrides)){
+        // nextMenusAndPanels[key] = viewOverrides[key];
+      // }
+    // }
     // console.log(">>> |view| ",nextPageToolView.view,"nextMenusAndPanels",nextMenusAndPanels)
 
 
