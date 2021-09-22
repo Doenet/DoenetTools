@@ -16,20 +16,40 @@ export const effectiveRoleAtom = atom({
   default: '',
 });
 
+const permittedRoleAtom = atom({
+  key: 'permittedRoleAtom',
+  default: '',
+});
+
+const permsForDriveIdAtom = atom({
+  key: 'permsForDriveIdAtom',
+  default: '',
+});
+
 export function RoleDropdown() {
   
   const { tool } = useRecoilValue(pageToolViewAtom);
   const [effectiveRole,setEffectiveRole] = useRecoilState(effectiveRoleAtom);
-  const [permittedRole,setPermittedRole ] = useState('');
+  const [permittedRole,setPermittedRole ] = useRecoilState(permittedRoleAtom);
+  const path = useRecoilValue(searchParamAtomFamily('path'));
+  const recoilDriveId = useRecoilValue(permsForDriveIdAtom);
 
-  const initilizeEffectiveRole = useRecoilCallback(({ set, snapshot }) => async () => {
+  let driveId = '';
+  if (path){
+    [driveId] = path.split(':');
+  }
+
+  console.log(">>>>effectiveRole",effectiveRole)
+  console.log(">>>>permittedRole",permittedRole)
+  console.log(">>>>driveId",driveId)
+
+  const initilizeEffectiveRole = useRecoilCallback(({ set, snapshot }) => async (driveId) => {
 
     let role = 'instructor';
   
     //If driveId then test if intructor is available
-    const path = await snapshot.getPromise(searchParamAtomFamily('path'));
-    if (path){
-      let [driveId] = path.split(':');
+    // const path = await snapshot.getPromise(searchParamAtomFamily('path'));
+    if (driveId !== ''){
       const driveInfo = await snapshot.getPromise(fetchDrivesQuery);
       
       for (let drive of driveInfo.driveIdsAndLabels) {
@@ -44,14 +64,15 @@ export function RoleDropdown() {
     }
     
     set(effectiveRoleAtom, role);
+    set(permsForDriveIdAtom, driveId)
     setPermittedRole(role);
 
-  });
+  },[driveId]);
 
  
-  if (effectiveRole === '') {
+  if (effectiveRole === '' || recoilDriveId !== driveId) {
     //first time through so initialize
-    initilizeEffectiveRole();
+    initilizeEffectiveRole(driveId);
     return null;
   }
 
@@ -59,7 +80,7 @@ export function RoleDropdown() {
     return null;
   }
 
-  if (permittedRole !== 'instructor') {
+  if (permittedRole === 'student') {
     return null;
   }
 
