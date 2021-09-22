@@ -8,8 +8,8 @@ import {
   selector,
   useRecoilValue,
   useRecoilValueLoadable,
-  useRecoilState,
-  // useSetRecoilState,
+  // useRecoilState,
+  useSetRecoilState,
   useRecoilCallback,
 } from 'recoil';
 import {
@@ -45,6 +45,8 @@ import {
   fileByContentId,
 } from '../ToolHandlers/CourseToolHandler';
 import { useToast, toastType } from '@Toast';
+import { effectiveRoleAtom } from '../../../_reactComponents/PanelHeaderComponents/RoleDropdown';
+
 
 export const selectedVersionAtom = atom({
   key: 'selectedVersionAtom',
@@ -52,8 +54,8 @@ export const selectedVersionAtom = atom({
 });
 
 export default function SelectedDoenetML() {
-  const [pageToolView, setPageToolView] = useRecoilState(pageToolViewAtom);
-  const role = pageToolView.view;
+  const setPageToolView = useSetRecoilState(pageToolViewAtom);
+  const effectiveRole = useRecoilValue(effectiveRoleAtom);
   const item = useRecoilValue(selectedInformation)[0];
   let [label, setLabel] = useState('');
   const { deleteItem, renameItem } = useSockets('drive');
@@ -151,7 +153,7 @@ export default function SelectedDoenetML() {
     return null;
   }
 
-  if (role === 'student') {
+  if (effectiveRole === 'student') {
     return (
       <>
         <h2 data-cy="infoPanelItemLabel">
@@ -171,7 +173,7 @@ export default function SelectedDoenetML() {
             });
           }}
         />
-        <AssignmentSettings role={role} doenetId={item.doenetId} />
+        <AssignmentSettings role={effectiveRole} doenetId={item.doenetId} />
       </>
     );
   }
@@ -303,7 +305,7 @@ export default function SelectedDoenetML() {
       />
 
       <br />
-      <AssignmentSettings role={role} doenetId={item.doenetId} />
+      <AssignmentSettings role={effectiveRole} doenetId={item.doenetId} />
       <br />
       <br />
       <Button

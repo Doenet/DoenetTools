@@ -4,14 +4,14 @@ import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
 import ButtonGroup from '../../../_reactComponents/PanelHeaderComponents/ButtonGroup';
 import { pageToolViewAtom, searchParamAtomFamily, profileAtom } from '../NewToolRoot';
 import Next7Days from '../Widgets/Next7Days';
+import { effectiveRoleAtom } from '../../../_reactComponents/PanelHeaderComponents/RoleDropdown';
+
 
 export default function Dashboard(props) {
   const setPageToolView = useSetRecoilState(pageToolViewAtom);
   const path = useRecoilValue(searchParamAtomFamily('path'));
-  const pageToolView = useRecoilValue(pageToolViewAtom) 
-  const role = pageToolView.view;
   const driveId = path.split(':')[0];
-
+  const effectiveRole = useRecoilValue(effectiveRoleAtom);
   const loadProfile = useRecoilValueLoadable(profileAtom);
     let profile = loadProfile.contents;
 
@@ -30,7 +30,7 @@ export default function Dashboard(props) {
           })}}
           
         />
-        {role === 'instructor' ?
+        {effectiveRole === 'instructor' ?
         <Button
           value="Enrollment"
           onClick={() =>
@@ -43,7 +43,7 @@ export default function Dashboard(props) {
           }
         />
         : null }
-        {role === 'instructor' ?
+        {effectiveRole === 'instructor' ?
         <Button value="GradeBook" 
         onClick={() => 
         setPageToolView((was)=>{return {

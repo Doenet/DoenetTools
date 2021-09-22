@@ -369,21 +369,24 @@ let navigationObj = {
       pageName:"Course",
       currentMainPanel:"NavigationPanel",
       menuPanelCap:"DriveInfoCap",
-      currentMenus:[],
-      menusTitles:[],
-      menusInitOpen:[],
+      currentMenus:["AddDriveItems"],
+      menusTitles:["Add Items"],
+      menusInitOpen:[true],
+      // currentMenus:[],
+      // menusTitles:[],
+      // menusInitOpen:[],
       headerControls: ["NavigationBreadCrumb"],
       headerControlsPositions: ["Left"],
       onLeave:"NavigationLeave",
-      views:{
-        instructor:{
-          currentMenus:["AddDriveItems"],
-          menusTitles:["Add Items"],
-          menusInitOpen:[true],
-        },
-        student:{
-        }
-      }
+      // views:{
+      //   instructor:{
+      //     currentMenus:["AddDriveItems"],
+      //     menusTitles:["Add Items"],
+      //     menusInitOpen:[true],
+      //   },
+      //   student:{
+      //   }
+      // }
     },
     editor:{ //singleFile
       pageName:"Course",
