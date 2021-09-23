@@ -147,9 +147,9 @@ export default function useSockets(nsp) {
       if (type === 'DoenetML') {
         payload = {
           ...payload,
-          assignedDate: null, 
+          assignedDate: null,
           attemptAggregation: 'm',
-          dueDate: null, 
+          dueDate: null,
           gradeCategory: '',
           individualize: true,
           isAssigned: '0',
@@ -359,6 +359,10 @@ export default function useSockets(nsp) {
           newDestinationFolderObj['contentsDictionary'][gItem.itemId] = {
             ...newSourceFInfo['contentsDictionary'][gItem.itemId],
           };
+
+          if (!newDestinationFolderObj['contentsDictionaryByDoenetId']) {
+            newDestinationFolderObj['contentsDictionaryByDoenetId'] = {};
+          }
           newDestinationFolderObj['contentsDictionaryByDoenetId'][
             newSourceFInfo['contentsDictionary'][gItem.itemId].doenetId
           ] = { ...newSourceFInfo['contentsDictionary'][gItem.itemId] };
