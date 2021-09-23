@@ -8,6 +8,7 @@
 */
 
 import me from '../../_snowpack/pkg/math-expressions.js';
+import { deepCompare } from './deepFunctions.js';
 
 
 /**
@@ -460,3 +461,279 @@ const theModule = {
 
 /** **************************************************************/
 export default theModule;
+
+
+function buildSubsetFromIntervals(tree, variable) {
+
+  if (!Array.isArray(tree)) {
+    if (Number.isFinite(tree)) {
+      return new Singleton(tree)
+    } else if (tree === "R") {
+      return new RealLine();
+    } else if (tree === "varnothing" || tree === "emptyset") {
+      return new EmptySet();
+    } else {
+      return null;
+    }
+  }
+
+  let operator = tree[0];
+
+  if (operator === "interval") {
+    let endpoints = tree[1];
+    let closed = tree[2];
+
+    let left = endpoints[1];
+    if (!Number.isFinite(left)) {
+      left = me.fromAst(left).evaluate_to_constant();
+      if (!(Number.isFinite(left) || left === Infinity || left === -Infinity)) {
+        return null;
+      }
+    }
+
+    let right = endpoints[2];
+    if (!Number.isFinite(right)) {
+      right = me.fromAst(right).evaluate_to_constant();
+      if (!(Number.isFinite(right) || right === Infinity || right === -Infinity)) {
+        return null;
+      }
+    }
+
+    if (closed[1]) {
+      if (closed[2]) {
+        return new ClosedInterval(left, right)
+      } else {
+        return new ClosedOpenInterval(left, right)
+      }
+    } else {
+      if (closed[2]) {
+        return new OpenClosedInterval(left, right)
+      } else {
+        return new OpenInterval(left, right)
+      }
+    }
+
+  } else if (operator === "union" || operator === "or") {
+    let pieces = tree.slice(1).map(x => buildSubsetFromIntervals(x, variable)).filter(x => x);
+
+    if (pieces.length === 0) {
+      return null;
+    } else if (pieces.length === 1) {
+      return pieces[0];
+    } else {
+      return new Union(pieces);
+    }
+
+  } else if (operator === "intersect" || operator === "and") {
+    let pieces = tree.slice(1).map(x => buildSubsetFromIntervals(x, variable)).filter(x => x);
+
+    if (pieces.length === 0) {
+      return null;
+    } else {
+      return pieces.reduce((a, c) => a.intersect(c))
+    }
+
+  } else if (operator === "set") {
+    let pieces = tree.slice(1).map(x => buildSubsetFromIntervals(x, variable)).filter(x => x);
+
+    if (pieces.length === 0) {
+      return null;
+    } else if (pieces.length === 1) {
+      return pieces[0];
+    } else {
+      return new Union(pieces);
+    }
+
+  } else if (["<", "le", ">", "ge", "=", "ne"].includes(operator)) {
+    let left = tree[1];
+    let varAtLeft = false;
+    if (!Number.isFinite(left)) {
+      if (deepCompare(left, variable)) {
+        varAtLeft = true;
+      } else {
+        left = me.fromAst(left).evaluate_to_constant();
+        if (!(Number.isFinite(left) || left === Infinity || left === -Infinity)) {
+          return null;
+        }
+      }
+    }
+
+    let right = tree[2];
+    let varAtRight = false;
+    if (!Number.isFinite(right)) {
+      if (deepCompare(right, variable)) {
+        varAtRight = true;
+      } else {
+        right = me.fromAst(right).evaluate_to_constant();
+        if (!(Number.isFinite(right) || right === Infinity || right === -Infinity)) {
+          return null;
+        }
+      }
+    }
+
+    if (varAtLeft) {
+      if (varAtRight) {
+        return null;
+      } else {
+        if (operator === "<") {
+          return new OpenInterval(-Infinity, right)
+        } else if (operator === "le") {
+          return new OpenClosedInterval(-Infinity, right)
+        } else if (operator === ">") {
+          return new OpenInterval(right, Infinity)
+        } else if (operator === "ge") {
+          return new ClosedOpenInterval(right, Infinity)
+        } else if (operator === "=") {
+          if (Number.isFinite(right)) {
+            return new Singleton(right)
+          } else {
+            return new EmptySet();
+          }
+        } else {
+          // operator === "ne"
+          if (Number.isFinite(right)) {
+            return new Union([
+              new OpenInterval(-Infinity, right),
+              new OpenInterval(right, Infinity)
+            ])
+          } else {
+            return new RealLine();
+          }
+        }
+      }
+    } else {
+      if (varAtRight) {
+        if (operator === "<") {
+          return new OpenInterval(left, Infinity)
+        } else if (operator === "le") {
+          return new ClosedOpenInterval(left, Infinity)
+        } else if (operator === ">") {
+          return new OpenInterval(-Infinity, left)
+        } else if (operator === "ge") {
+          return new OpenClosedInterval(-Infinity, left)
+        } else if (operator === "=") {
+          if (Number.isFinite(left)) {
+            return new Singleton(left)
+          } else {
+            return new EmptySet();
+          }
+        } else {
+          // operator === "ne"
+          if (Number.isFinite(left)) {
+            return new Union([
+              new OpenInterval(-Infinity, left),
+              new OpenInterval(left, Infinity)
+            ])
+          } else {
+            return new RealLine();
+          }
+        }
+      } else {
+        return null;
+      }
+    }
+
+  } else if (["lts", "gts"].includes(operator)) {
+
+    let vals = tree[1].slice(1);
+    let strict = tree[2].slice(1);
+
+    if (vals.length !== 3 || !deepCompare(vals[1], variable)) {
+      return null;
+    }
+
+    if (operator === "gts") {
+      vals.reverse();
+      strict.reverse();
+    }
+
+
+    let left = vals[0];
+    if (!Number.isFinite(left)) {
+      left = me.fromAst(left).evaluate_to_constant();
+      if (!(Number.isFinite(left) || left === Infinity || left === -Infinity)) {
+        return null;
+      }
+    }
+
+    let right = vals[2];
+    if (!Number.isFinite(right)) {
+      right = me.fromAst(right).evaluate_to_constant();
+      if (!(Number.isFinite(right) || right === Infinity || right === -Infinity)) {
+        return null;
+      }
+    }
+
+    if (strict[0]) {
+      if (strict[1]) {
+        return new OpenInterval(left, right)
+      } else {
+        return new OpenClosedInterval(left, right)
+      }
+    } else {
+      if (strict[1]) {
+        return new ClosedOpenInterval(left, right)
+      } else {
+        return new ClosedInterval(left, right)
+      }
+    }
+
+  } else if (operator === "|") {
+    let variable = tree[1];
+    return buildSubsetFromIntervals(tree[2], variable)
+
+  } else if (operator === "^" && (tree[2] === "C" || tree[2] === "c")) {
+    let orig = buildSubsetFromIntervals(tree[1], variable);
+    if (orig) {
+      return orig.complement();
+    } else {
+      return null;
+    }
+
+  } else if (operator === "in") {
+    if (deepCompare(tree[1], variable)) {
+      return buildSubsetFromIntervals(tree[2], variable)
+    } else {
+      return null;
+    }
+  } else if (operator === "ni") {
+    if (deepCompare(tree[2], variable)) {
+      return buildSubsetFromIntervals(tree[1], variable)
+    } else {
+      return null;
+    }
+  } else if (operator === "notin") {
+    if (deepCompare(tree[1], variable)) {
+      let orig = buildSubsetFromIntervals(tree[2], variable);
+      if (orig) {
+        return orig.complement();
+      }
+    }
+    return null;
+  } else if (operator === "notni") {
+    if (deepCompare(tree[2], variable)) {
+      let orig = buildSubsetFromIntervals(tree[1], variable);
+      if (orig) {
+        return orig.complement();
+      }
+    }
+    return null;
+  } else {
+    let num = me.fromAst(tree).evaluate_to_constant();
+
+    if (Number.isFinite(num)) {
+      return new Singleton(num)
+    } else {
+      return null;
+    }
+  }
+
+}
+
+export function buildSubsetFromMathExpression(expr, variable) {
+
+  return buildSubsetFromIntervals(
+    expr.to_intervals().tree,
+    variable.tree
+  )
+}

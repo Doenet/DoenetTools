@@ -29,6 +29,7 @@ if (!isset($_GET["driveId"])) {
 		$have_permission = TRUE; 
 	}
 
+	//TODO: remove e.withdrew to control it in js
 	if ($have_permission){
 	$sql = "
 		SELECT du.userId, e.firstName, e.lastName, e.courseCredit, e.courseGrade, e.overrideCourseGrade, du.role
@@ -36,6 +37,7 @@ if (!isset($_GET["driveId"])) {
 		LEFT JOIN enrollment AS e
 		ON du.userId = e.userId
 		WHERE du.driveId = '$driveId'
+		AND e.withdrew = '0'
 		ORDER BY e.lastName
 	";
 }else{

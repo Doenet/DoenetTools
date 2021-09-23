@@ -2000,6 +2000,8 @@ export function ColumnJSX(columnType, item) {
     );
   } else if (columnType === 'Due Date' && item.isReleased === '1') {
     return <span style={{ textAlign: 'center' }}>{aInfo?.dueDate}</span>;
+  } else if (columnType === 'Assigned Date' && item.isReleased === '1') {
+    return <span style={{ textAlign: 'center' }}>{aInfo?.assignedDate}</span>;
   }
   return <span></span>;
 }

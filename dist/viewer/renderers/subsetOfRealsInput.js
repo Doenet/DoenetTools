@@ -23,9 +23,10 @@ const ModeButton = styled.button`
   margin-left: 1px;
   margin-top: 1px;
 `;
-export default class IntervalInput extends DoenetRenderer {
+export default class subsetOfReals extends DoenetRenderer {
   constructor(props) {
     super(props);
+    this.bounds = React.createRef();
     this.buildLine = this.buildLine.bind(this);
     this.handleInput = this.handleInput.bind(this);
     this.switchMode = this.switchMode.bind(this);
@@ -43,6 +44,7 @@ export default class IntervalInput extends DoenetRenderer {
     this.storedLines = [];
     this.firstHashXPosition = 40;
     this.xBetweenHashes = 36;
+    this.pointHitTolerance = 0.2;
   }
   buildLine() {
     this.hashLines = [];
@@ -55,9 +57,9 @@ export default class IntervalInput extends DoenetRenderer {
       this.hashLines.push(/* @__PURE__ */ React.createElement("line", {
         key: "hash" + x,
         x1: x,
-        y1: "20",
+        y1: "35",
         x2: x,
-        y2: "50",
+        y2: "45",
         style: {stroke: "black", strokeWidth: "1"},
         shapeRendering: "geometricPrecision"
       }));
@@ -74,7 +76,8 @@ export default class IntervalInput extends DoenetRenderer {
     let shiftAmount = 10;
     let intervalValueWidth = 1;
     let shiftedXValue = xValue + shiftAmount;
-    return this.firstHashXPosition + shiftedXValue / intervalValueWidth * this.xBetweenHashes;
+    let position = this.firstHashXPosition + shiftedXValue / intervalValueWidth * this.xBetweenHashes;
+    return position;
   }
   xPositionToXValue(xPosition) {
     let relativeX = xPosition - this.firstHashXPosition;
@@ -85,10 +88,11 @@ export default class IntervalInput extends DoenetRenderer {
     return value;
   }
   buildPoints() {
-    for (let xValue of this.doenetSvData.numericalPoints) {
-      let closed = true;
+    this.storedPoints = [];
+    for (let pt of this.doenetSvData.points) {
+      let closed = pt.inSubset;
       let remove = false;
-      let xPosition = this.xValueToXPosition(xValue);
+      let xPosition = this.xValueToXPosition(pt.value);
       let currentFillColor = this.primaryColor;
       if (!closed) {
         currentFillColor = "white";
@@ -109,29 +113,17 @@ export default class IntervalInput extends DoenetRenderer {
     }
   }
   buildIntervals() {
-    for (let intervalObj of this.doenetSvData.numericalIntervals) {
-      console.log(intervalObj);
-      if (intervalObj.end < intervalObj.start) {
+    this.storedLines = [];
+    for (let intervalObj of this.doenetSvData.intervals) {
+      if (intervalObj.right < intervalObj.left || !intervalObj.inSubset) {
         continue;
       }
-      let lowerXPosition = this.xValueToXPosition(intervalObj.start);
-      let higherXPosition = this.xValueToXPosition(intervalObj.end);
+      let lowerXPosition = this.xValueToXPosition(intervalObj.left);
+      let higherXPosition = this.xValueToXPosition(intervalObj.right);
       const lowerPointKey = `lowerIntervalPoint${lowerXPosition}`;
       const higherPointKey = `higherIntervalPoint${higherXPosition}`;
       const lineKey = `line${lowerXPosition}-${higherXPosition}`;
-      let remove = false;
       let currentFillColor = this.primaryColor;
-      if (remove) {
-        currentFillColor = this.removeColor;
-      }
-      let lowerFillColor = "white";
-      if (intervalObj.startClosed) {
-        lowerFillColor = currentFillColor;
-      }
-      let higherFillColor = "white";
-      if (intervalObj.endClosed) {
-        higherFillColor = currentFillColor;
-      }
       let lowerLine = lowerXPosition;
       let higherLine = higherXPosition;
       if (lowerXPosition < 38) {
@@ -140,20 +132,10 @@ export default class IntervalInput extends DoenetRenderer {
           key: lowerPointKey,
           points: "5,40 20,46 20,34",
           style: {
-            fill: lowerFillColor,
-            stroke: lowerFillColor,
+            fill: currentFillColor,
+            stroke: currentFillColor,
             strokeWidth: "1"
           }
-        }));
-      } else {
-        this.storedPoints.push(/* @__PURE__ */ React.createElement("circle", {
-          key: lowerPointKey,
-          cx: lowerXPosition,
-          cy: "40",
-          r: "6",
-          stroke: "black",
-          strokeWidth: "1",
-          fill: lowerFillColor
         }));
       }
       if (higherXPosition > 778) {
@@ -162,23 +144,12 @@ export default class IntervalInput extends DoenetRenderer {
           key: higherPointKey,
           points: "795,40 780,46 780,34",
           style: {
-            fill: higherFillColor,
-            stroke: higherFillColor,
+            fill: currentFillColor,
+            stroke: currentFillColor,
             strokeWidth: "1"
           }
         }));
-      } else {
-        this.storedPoints.push(/* @__PURE__ */ React.createElement("circle", {
-          key: higherPointKey,
-          cx: higherXPosition,
-          cy: "40",
-          r: "6",
-          stroke: "black",
-          strokeWidth: "1",
-          fill: higherFillColor
-        }));
       }
-      console.log(`lowerXPosition ${lowerXPosition} higherXPosition ${higherXPosition}`);
       this.storedLines.push(/* @__PURE__ */ React.createElement("line", {
         key: lineKey,
         x1: lowerLine,
@@ -190,9 +161,64 @@ export default class IntervalInput extends DoenetRenderer {
     }
   }
   handleInput(e, inputState) {
+    let mouseLeft = e.clientX - this.bounds.current.offsetLeft;
+    let xPosition = this.xPositionToXValue(mouseLeft);
     if (inputState === "up") {
-      let xPosition = this.xPositionToXValue(e.clientX);
-      console.log(xPosition);
+      let pointInd = -1;
+      for (let [ind, pt] of this.doenetSvData.points.entries()) {
+        if (Math.abs(pt.value - xPosition) < this.pointHitTolerance) {
+          pointInd = ind;
+          break;
+        }
+      }
+      if (this.state.mode === "add remove points") {
+        if (pointInd !== -1) {
+          this.actions.deletePoint(pointInd);
+          this.forceUpdate();
+        } else if (!this.doenetSvData.points.map((x) => x.value).includes(xPosition)) {
+          this.actions.addPoint(xPosition);
+          this.forceUpdate();
+        }
+      } else if (this.state.mode === "toggle") {
+        if (pointInd !== -1) {
+          this.actions.togglePoint(pointInd);
+        } else {
+          let intervalInd = 0;
+          for (let pt of this.doenetSvData.points) {
+            if (pt.value < xPosition) {
+              intervalInd++;
+            }
+          }
+          this.actions.toggleInterval(intervalInd);
+        }
+        this.forceUpdate();
+      }
+    }
+    if (inputState === "down") {
+      if (this.state.mode === "move points") {
+        let pointInd = -1;
+        for (let [ind, pt] of this.doenetSvData.points.entries()) {
+          if (Math.abs(pt.value - xPosition) < this.pointHitTolerance) {
+            pointInd = ind;
+            break;
+          }
+        }
+        if (pointInd !== -1) {
+          this.pointGrabbed = pointInd;
+          this.pointGrabbedLocation = xPosition;
+        }
+      }
+    }
+    if (inputState === "move") {
+      if (this.pointsGrabbed !== void 0) {
+        let pointInd = -1;
+        for (let [ind, pt] of this.doenetSvData.points.entries()) {
+          if (Math.abs(pt.value - this.pointGrabbedLocation) < this.pointHitTolerance) {
+            pointInd = ind;
+            break;
+          }
+        }
+      }
     }
   }
   switchMode(mode) {
@@ -208,38 +234,30 @@ export default class IntervalInput extends DoenetRenderer {
     this.buildIntervals();
     const activeButtonColor = "lightblue";
     const inactiveButtonColor = "lightgrey";
-    let addIntervalStyle = {backgroundColor: inactiveButtonColor};
-    if (this.state.mode === "add interval" || this.state.mode === "add 2nd intervalPoint") {
-      addIntervalStyle = {backgroundColor: activeButtonColor};
+    let addRemovePointsStyle = {backgroundColor: inactiveButtonColor};
+    if (this.state.mode === "add remove points") {
+      addRemovePointsStyle = {backgroundColor: activeButtonColor};
     }
-    let removeIntervalStyle = {backgroundColor: inactiveButtonColor};
-    if (this.state.mode === "remove interval") {
-      removeIntervalStyle = {backgroundColor: activeButtonColor};
+    let toggleStyle = {backgroundColor: inactiveButtonColor};
+    if (this.state.mode === "toggle") {
+      toggleStyle = {backgroundColor: activeButtonColor};
     }
-    let addPointStyle = {backgroundColor: inactiveButtonColor};
-    if (this.state.mode === "add point") {
-      addPointStyle = {backgroundColor: activeButtonColor};
+    let movePointsStyle = {backgroundColor: inactiveButtonColor};
+    if (this.state.mode === "move points") {
+      movePointsStyle = {backgroundColor: activeButtonColor};
     }
-    let removePointStyle = {backgroundColor: inactiveButtonColor};
-    if (this.state.mode === "remove point") {
-      removePointStyle = {backgroundColor: activeButtonColor};
-    }
-    return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("span", null, /* @__PURE__ */ React.createElement(ModeButton, {
-      style: addIntervalStyle,
-      onClick: () => this.switchMode("add interval")
-    }, "Add Interval")), /* @__PURE__ */ React.createElement("span", null, /* @__PURE__ */ React.createElement(ModeButton, {
-      style: removeIntervalStyle,
-      onClick: () => this.switchMode("remove interval")
-    }, "Remove Interval")), /* @__PURE__ */ React.createElement("span", null, /* @__PURE__ */ React.createElement(ModeButton, {
-      style: addPointStyle,
-      onClick: () => this.switchMode("add point")
-    }, "Add Point")), /* @__PURE__ */ React.createElement("span", null, /* @__PURE__ */ React.createElement(ModeButton, {
-      style: removePointStyle,
-      onClick: () => this.switchMode("remove point")
-    }, "Remove Point")), /* @__PURE__ */ React.createElement("span", null, /* @__PURE__ */ React.createElement(ModeButton, {
-      style: {backgroundColor: inactiveButtonColor},
-      onClick: () => console.log("simplify")
-    }, "Simplify"))), /* @__PURE__ */ React.createElement("svg", {
+    return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("div", {
+      ref: this.bounds
+    }, /* @__PURE__ */ React.createElement("span", null, /* @__PURE__ */ React.createElement(ModeButton, {
+      style: addRemovePointsStyle,
+      onClick: () => this.switchMode("add remove points")
+    }, "Add/Remove boundary points")), /* @__PURE__ */ React.createElement("span", null, /* @__PURE__ */ React.createElement(ModeButton, {
+      style: toggleStyle,
+      onClick: () => this.switchMode("toggle")
+    }, "Toggle points and intervals")), /* @__PURE__ */ React.createElement("span", null, /* @__PURE__ */ React.createElement(ModeButton, {
+      style: movePointsStyle,
+      onClick: () => this.switchMode("move points")
+    }, "Move Points -- doesn't work"))), /* @__PURE__ */ React.createElement("svg", {
       width: "808",
       height: "80",
       style: {backgroundColor: "white"},
@@ -266,7 +284,7 @@ export default class IntervalInput extends DoenetRenderer {
       y1: "40",
       x2: "780",
       y2: "40",
-      style: {stroke: "black", strokeWidth: "4"}
+      style: {stroke: "black", strokeWidth: "2"}
     }), this.storedPoints, this.labels));
   }
 }
