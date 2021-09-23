@@ -470,7 +470,8 @@ function buildSubsetFromIntervals(tree, variable) {
       return new Singleton(tree)
     } else if (tree === "R") {
       return new RealLine();
-    } else if (tree === "varnothing" || tree === "emptyset") {
+    } else if (tree === "varnothing" || tree === "emptyset" || tree === "\u2205") {
+      // TODO: eliminate \uff3f once have varnothing integrated into latex parser
       return new EmptySet();
     } else {
       return null;

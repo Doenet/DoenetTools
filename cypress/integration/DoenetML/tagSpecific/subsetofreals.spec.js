@@ -1342,6 +1342,130 @@ describe('SubsetOfReals Tag Tests', function () {
   })
 
 
+  it("modifying copies of subsets", () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <p>Enter subset: <mathinput name="input0" prefill="(0,1)" /></p>
+  <p>Subset 1: <subsetOfReals name="s1">$input0</subsetOfReals></p>
+  <p>Subset 2: <copy tname="s1" assignNames="s2" /></p>
+  <p>Subset 3: <copy prop="value" tname="s1" assignNames="s3" /></p>
+  <p>Subset 4: <copy tname="s2" assignNames="s4" /></p>
+  <p>Subset 5: <copy prop="value" tname="s2" assignNames="s5" /></p>
+  <p>Subset 6: <copy tname="s3" assignNames="s6" /></p>
+  <p>Subset 7: <copy prop="value" tname="s3" assignNames="s7" /></p>
+  <p>Subset 8: <subsetOfReals name="s8">$s1</subsetOfReals></p>
+  <p>Subset 9: <subsetOfReals name="s9">$(s1{prop='value'})</subsetOfReals></p>
+  <p>Modify subset 1: <mathinput name="input1" bindValueTo="$s1" /></p>
+  <p>Modify subset 2: <mathinput name="input2" bindValueTo="$s2" /></p>
+  <p>Modify subset 3: <mathinput name="input3" bindValueTo="$s3" /></p>
+  <p>Modify subset 4: <mathinput name="input4" bindValueTo="$s4" /></p>
+  <p>Modify subset 5: <mathinput name="input5" bindValueTo="$s5" /></p>
+  <p>Modify subset 6: <mathinput name="input6" bindValueTo="$s6" /></p>
+  <p>Modify subset 7: <mathinput name="input7" bindValueTo="$s7" /></p>
+  <p>Modify subset 8: <mathinput name="input8" bindValueTo="$s8" /></p>
+  <p>Modify subset 9: <mathinput name="input9" bindValueTo="$s9" /></p>
+
+  `}, "*");
+    });
+    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
+
+
+    function checkDisplay(str, str0) {
+      if(str0 === undefined) {
+        str0 = str;
+      }
+
+      cy.get('#\\/s1 .mjx-mrow').eq(0).should('have.text', str)
+      cy.get('#\\/s2 .mjx-mrow').eq(0).should('have.text', str)
+      cy.get('#\\/s3 .mjx-mrow').eq(0).should('have.text', str)
+      cy.get('#\\/s4 .mjx-mrow').eq(0).should('have.text', str)
+      cy.get('#\\/s5 .mjx-mrow').eq(0).should('have.text', str)
+      cy.get('#\\/s6 .mjx-mrow').eq(0).should('have.text', str)
+      cy.get('#\\/s7 .mjx-mrow').eq(0).should('have.text', str)
+      cy.get('#\\/s8 .mjx-mrow').eq(0).should('have.text', str)
+      cy.get('#\\/s9 .mjx-mrow').eq(0).should('have.text', str)
+      cy.get(`#\\/input0 .mq-editable-field`).invoke('text').then((text) => {
+        expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal(str0)
+      })
+      cy.get(`#\\/input1 .mq-editable-field`).invoke('text').then((text) => {
+        expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal(str)
+      })
+      cy.get(`#\\/input2 .mq-editable-field`).invoke('text').then((text) => {
+        expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal(str)
+      })
+      cy.get(`#\\/input3 .mq-editable-field`).invoke('text').then((text) => {
+        expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal(str)
+      })
+      cy.get(`#\\/input4 .mq-editable-field`).invoke('text').then((text) => {
+        expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal(str)
+      })
+      cy.get(`#\\/input5 .mq-editable-field`).invoke('text').then((text) => {
+        expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal(str)
+      })
+      cy.get(`#\\/input6 .mq-editable-field`).invoke('text').then((text) => {
+        expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal(str)
+      })
+      cy.get(`#\\/input7 .mq-editable-field`).invoke('text').then((text) => {
+        expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal(str)
+      })
+      cy.get(`#\\/input8 .mq-editable-field`).invoke('text').then((text) => {
+        expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal(str)
+      })
+      cy.get(`#\\/input9 .mq-editable-field`).invoke('text').then((text) => {
+        expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal(str)
+      })
+    }
+
+
+    checkDisplay("(0,1)")
+
+    cy.get("#\\/input0 textarea").type("{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}x>=3{enter}", { force: true })
+
+    checkDisplay("[3,∞)","x≥3")
+
+    cy.get("#\\/input1 textarea").type("{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{{}q\\mid q=5}{enter}", { force: true })
+
+    checkDisplay("{5}")
+
+    cy.get("#\\/input2 textarea").type("{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}[-\\infty, \\pi){enter}", { force: true })
+
+    checkDisplay("(−∞,3.141592654)")
+
+
+    cy.get("#\\/input3 textarea").type("{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(-\\infty,\\infty){enter}", { force: true })
+
+    checkDisplay("R")
+    
+
+    cy.get("#\\/input4 textarea").type("{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}x\\in \\emptyset {enter}", { force: true })
+
+    checkDisplay("∅")
+
+    cy.get("#\\/input5 textarea").type("{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}x\\notin [9, \\infty){enter}", { force: true })
+
+    checkDisplay("(−∞,9)")
+
+    cy.get("#\\/input6 textarea").type("{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{7}\\ni x{enter}", { force: true })
+
+    checkDisplay("{7}")
+
+    cy.get("#\\/input7 textarea").type("{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(-\\infty, -2) \\notni x{enter}", { force: true })
+
+    checkDisplay("[−2,∞)")
+
+    cy.get("#\\/input8 textarea").type("{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{{}1}^c{rightArrow} \\cap {{}v\\mid v>=1}{enter}", { force: true })
+
+    checkDisplay("(1,∞)")
+
+    cy.get("#\\/input9 textarea").type("{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}x\\ne -6{enter}", { force: true })
+
+    checkDisplay("(−∞,−6)∪(−6,∞)")
+
+  })
+
+
 })
 
 
