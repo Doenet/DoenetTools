@@ -37,6 +37,7 @@ const DropdownMenu = (props) => {
     }),
     control: (provided, state) => {
       return {
+        margin: '0px 4px 0px 4px',
         alignItems: 'center',
         fontFamily: 'Open Sans',
         backgroundColor: 'hsl(0, 0%, 100%)',
@@ -67,7 +68,7 @@ const DropdownMenu = (props) => {
 
   var width = props.width;
   if (props.width == 'menu') {
-    width = '235px';
+    width = '210px';
   }
 
   //   console.log(options, props.def);

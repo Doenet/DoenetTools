@@ -809,7 +809,7 @@ describe('SubsetOfReals Tag Tests', function () {
 
   })
 
-  it("element of union and intersections of intervals and singletons", () => {
+  it("x element of union and intersections of intervals and singletons", () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
@@ -895,6 +895,271 @@ describe('SubsetOfReals Tag Tests', function () {
     cy.get('#\\/i17 .mjx-mrow').eq(0).should('have.text', "∅")
     cy.get('#\\/i18 .mjx-mrow').eq(0).should('have.text', "{−4}")
 
+
+  })
+
+  it("union and intersections of intervals and singletons contains element x", () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <p><subsetOfReals name="u1">(4,5) union (6,7) containselement x</subsetOfReals></p>
+  <p><subsetOfReals name="u2">(4,5) union (5,6) containselement x</subsetOfReals></p>
+  <p><subsetOfReals name="u3">(4,5] union (5,6] containselement x</subsetOfReals></p>
+  <p><subsetOfReals name="u4">(4,5] union [5,6] containselement x</subsetOfReals></p>
+  <p><subsetOfReals name="u5">(4,6) union (5,7) containselement x</subsetOfReals></p>
+  <p><subsetOfReals name="u6">(4,8) union (5,7) containselement x</subsetOfReals></p>
+  <p><subsetOfReals name="u7">(4,7) union (5,7] containselement x</subsetOfReals></p>
+  <p><subsetOfReals name="u8">(4,6) union {4} containselement x</subsetOfReals></p>
+  <p><subsetOfReals name="u9">(4,6) union {5} containselement x</subsetOfReals></p>
+  <p><subsetOfReals name="u10">(4,6) union {6} containselement x</subsetOfReals></p>
+  <p><subsetOfReals name="u11">(4,6) union {7} containselement x</subsetOfReals></p>
+  <p><subsetOfReals name="u12">(4,5) union (5,6) union {5} containselement x</subsetOfReals></p>
+  <p><subsetOfReals name="u13">(-infinity,5) union (2,infinity) containselement x</subsetOfReals></p>
+  <p><subsetOfReals name="u14">(-infinity,5) union [2,infinity) containselement x</subsetOfReals></p>
+  <p><subsetOfReals name="u15">(-infinity,5] union (2,infinity) containselement x</subsetOfReals></p>
+  <p><subsetOfReals name="u16">(-infinity,5] union [2,infinity) containselement x</subsetOfReals></p>
+  <p><subsetOfReals name="u17">(-infinity,5) union (9,infinity) union (4,10) containselement x</subsetOfReals></p>
+  <p><subsetOfReals name="u18">[-4,-2) union {-4} containselement x</subsetOfReals></p>
+
+  <p><subsetOfReals name="i1">(4,5) intersect (6,7) containselement x</subsetOfReals></p>
+  <p><subsetOfReals name="i2">(4,5) intersect (5,6) containselement x</subsetOfReals></p>
+  <p><subsetOfReals name="i3">(4,5] intersect (5,6] containselement x</subsetOfReals></p>
+  <p><subsetOfReals name="i4">(4,5] intersect [5,6] containselement x</subsetOfReals></p>
+  <p><subsetOfReals name="i5">(4,6) intersect (5,7) containselement x</subsetOfReals></p>
+  <p><subsetOfReals name="i6">(4,8) intersect (5,7) containselement x</subsetOfReals></p>
+  <p><subsetOfReals name="i7">(4,7) intersect (5,7] containselement x</subsetOfReals></p>
+  <p><subsetOfReals name="i8">(4,6) intersect {4} containselement x</subsetOfReals></p>
+  <p><subsetOfReals name="i9">(4,6) intersect {5} containselement x</subsetOfReals></p>
+  <p><subsetOfReals name="i10">(4,6) intersect {6} containselement x</subsetOfReals></p>
+  <p><subsetOfReals name="i11">(4,6) intersect {7} containselement x</subsetOfReals></p>
+  <p><subsetOfReals name="i12">(4,5) intersect (5,6) intersect {5} containselement x</subsetOfReals></p>
+  <p><subsetOfReals name="i13">(-infinity,5) intersect (2,infinity) containselement x</subsetOfReals></p>
+  <p><subsetOfReals name="i14">(-infinity,5) intersect [2,infinity) containselement x</subsetOfReals></p>
+  <p><subsetOfReals name="i15">(-infinity,5] intersect (2,infinity) containselement x</subsetOfReals></p>
+  <p><subsetOfReals name="i16">(-infinity,5] intersect [2,infinity) containselement x</subsetOfReals></p>
+  <p><subsetOfReals name="i17">(-infinity,5) intersect (9,infinity) intersect (4,10) containselement x</subsetOfReals></p>
+  <p><subsetOfReals name="i18">[-4,-2) intersect {-4} containselement x</subsetOfReals></p>
+
+
+  `}, "*");
+    });
+    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
+
+    cy.get('#\\/u1 .mjx-mrow').eq(0).should('have.text', "(4,5)∪(6,7)")
+    cy.get('#\\/u2 .mjx-mrow').eq(0).should('have.text', "(4,5)∪(5,6)")
+    cy.get('#\\/u3 .mjx-mrow').eq(0).should('have.text', "(4,6)")
+    cy.get('#\\/u4 .mjx-mrow').eq(0).should('have.text', "(4,6]")
+    cy.get('#\\/u5 .mjx-mrow').eq(0).should('have.text', "(4,7)")
+    cy.get('#\\/u6 .mjx-mrow').eq(0).should('have.text', "(4,8)")
+    cy.get('#\\/u7 .mjx-mrow').eq(0).should('have.text', "(4,7]")
+    cy.get('#\\/u8 .mjx-mrow').eq(0).should('have.text', "[4,6)")
+    cy.get('#\\/u9 .mjx-mrow').eq(0).should('have.text', "(4,6)")
+    cy.get('#\\/u10 .mjx-mrow').eq(0).should('have.text', "(4,6]")
+    cy.get('#\\/u11 .mjx-mrow').eq(0).should('have.text', "(4,6)∪{7}")
+    cy.get('#\\/u12 .mjx-mrow').eq(0).should('have.text', "(4,6)")
+    cy.get('#\\/u13 .mjx-mrow').eq(0).should('have.text', "R")
+    cy.get('#\\/u14 .mjx-mrow').eq(0).should('have.text', "R")
+    cy.get('#\\/u15 .mjx-mrow').eq(0).should('have.text', "R")
+    cy.get('#\\/u16 .mjx-mrow').eq(0).should('have.text', "R")
+    cy.get('#\\/u17 .mjx-mrow').eq(0).should('have.text', "R")
+    cy.get('#\\/u18 .mjx-mrow').eq(0).should('have.text', "[−4,−2)")
+
+    cy.get('#\\/i1 .mjx-mrow').eq(0).should('have.text', "∅")
+    cy.get('#\\/i2 .mjx-mrow').eq(0).should('have.text', "∅")
+    cy.get('#\\/i3 .mjx-mrow').eq(0).should('have.text', "∅")
+    cy.get('#\\/i4 .mjx-mrow').eq(0).should('have.text', "{5}")
+    cy.get('#\\/i5 .mjx-mrow').eq(0).should('have.text', "(5,6)")
+    cy.get('#\\/i6 .mjx-mrow').eq(0).should('have.text', "(5,7)")
+    cy.get('#\\/i7 .mjx-mrow').eq(0).should('have.text', "(5,7)")
+    cy.get('#\\/i8 .mjx-mrow').eq(0).should('have.text', "∅")
+    cy.get('#\\/i9 .mjx-mrow').eq(0).should('have.text', "{5}")
+    cy.get('#\\/i10 .mjx-mrow').eq(0).should('have.text', "∅")
+    cy.get('#\\/i11 .mjx-mrow').eq(0).should('have.text', "∅")
+    cy.get('#\\/i12 .mjx-mrow').eq(0).should('have.text', "∅")
+    cy.get('#\\/i13 .mjx-mrow').eq(0).should('have.text', "(2,5)")
+    cy.get('#\\/i14 .mjx-mrow').eq(0).should('have.text', "[2,5)")
+    cy.get('#\\/i15 .mjx-mrow').eq(0).should('have.text', "(2,5]")
+    cy.get('#\\/i16 .mjx-mrow').eq(0).should('have.text', "[2,5]")
+    cy.get('#\\/i17 .mjx-mrow').eq(0).should('have.text', "∅")
+    cy.get('#\\/i18 .mjx-mrow').eq(0).should('have.text', "{−4}")
+
+
+  })
+
+  it("x in union and intersections of intervals and singletons, latex format", () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <p><subsetOfReals format="latex" name="u1">x \\in (4,5) \\cup (6,7)</subsetOfReals></p>
+  <p><subsetOfReals format="latex" name="u2">x \\in (4,5) \\cup (5,6)</subsetOfReals></p>
+  <p><subsetOfReals format="latex" name="u3">x \\in (4,5] \\cup (5,6]</subsetOfReals></p>
+  <p><subsetOfReals format="latex" name="u4">x \\in (4,5] \\cup [5,6]</subsetOfReals></p>
+  <p><subsetOfReals format="latex" name="u5">x \\in (4,6) \\cup (5,7)</subsetOfReals></p>
+  <p><subsetOfReals format="latex" name="u6">x \\in (4,8) \\cup (5,7)</subsetOfReals></p>
+  <p><subsetOfReals format="latex" name="u7">x \\in (4,7) \\cup (5,7]</subsetOfReals></p>
+  <p><subsetOfReals format="latex" name="u8">x \\in (4,6) \\cup {4}</subsetOfReals></p>
+  <p><subsetOfReals format="latex" name="u9">x \\in (4,6) \\cup {5}</subsetOfReals></p>
+  <p><subsetOfReals format="latex" name="u10">x \\in (4,6) \\cup {6}</subsetOfReals></p>
+  <p><subsetOfReals format="latex" name="u11">x \\in (4,6) \\cup {7}</subsetOfReals></p>
+  <p><subsetOfReals format="latex" name="u12">x \\in (4,5) \\cup (5,6) \\cup {5}</subsetOfReals></p>
+  <p><subsetOfReals format="latex" name="u13">x \\in (-\\infty,5) \\cup (2,\\infty)</subsetOfReals></p>
+  <p><subsetOfReals format="latex" name="u14">x \\in (-\\infty,5) \\cup [2,\\infty)</subsetOfReals></p>
+  <p><subsetOfReals format="latex" name="u15">x \\in (-\\infty,5] \\cup (2,\\infty)</subsetOfReals></p>
+  <p><subsetOfReals format="latex" name="u16">x \\in (-\\infty,5] \\cup [2,\\infty)</subsetOfReals></p>
+  <p><subsetOfReals format="latex" name="u17">x \\in (-\\infty,5) \\cup (9,\\infty) \\cup (4,10)</subsetOfReals></p>
+  <p><subsetOfReals format="latex" name="u18">x \\in [-4,-2) \\cup {-4}</subsetOfReals></p>
+
+  <p><subsetOfReals format="latex" name="i1">x \\in (4,5) \\cap (6,7)</subsetOfReals></p>
+  <p><subsetOfReals format="latex" name="i2">x \\in (4,5) \\cap (5,6)</subsetOfReals></p>
+  <p><subsetOfReals format="latex" name="i3">x \\in (4,5] \\cap (5,6]</subsetOfReals></p>
+  <p><subsetOfReals format="latex" name="i4">x \\in (4,5] \\cap [5,6]</subsetOfReals></p>
+  <p><subsetOfReals format="latex" name="i5">x \\in (4,6) \\cap (5,7)</subsetOfReals></p>
+  <p><subsetOfReals format="latex" name="i6">x \\in (4,8) \\cap (5,7)</subsetOfReals></p>
+  <p><subsetOfReals format="latex" name="i7">x \\in (4,7) \\cap (5,7]</subsetOfReals></p>
+  <p><subsetOfReals format="latex" name="i8">x \\in (4,6) \\cap {4}</subsetOfReals></p>
+  <p><subsetOfReals format="latex" name="i9">x \\in (4,6) \\cap {5}</subsetOfReals></p>
+  <p><subsetOfReals format="latex" name="i10">x \\in (4,6) \\cap {6}</subsetOfReals></p>
+  <p><subsetOfReals format="latex" name="i11">x \\in (4,6) \\cap {7}</subsetOfReals></p>
+  <p><subsetOfReals format="latex" name="i12">x \\in (4,5) \\cap (5,6) \\cap {5}</subsetOfReals></p>
+  <p><subsetOfReals format="latex" name="i13">x \\in (-\\infty,5) \\cap (2,\\infty)</subsetOfReals></p>
+  <p><subsetOfReals format="latex" name="i14">x \\in (-\\infty,5) \\cap [2,\\infty)</subsetOfReals></p>
+  <p><subsetOfReals format="latex" name="i15">x \\in (-\\infty,5] \\cap (2,\\infty)</subsetOfReals></p>
+  <p><subsetOfReals format="latex" name="i16">x \\in (-\\infty,5] \\cap [2,\\infty)</subsetOfReals></p>
+  <p><subsetOfReals format="latex" name="i17">x \\in (-\\infty,5) \\cap (9,\\infty) \\cap (4,10)</subsetOfReals></p>
+  <p><subsetOfReals format="latex" name="i18">x \\in [-4,-2) \\cap {-4}</subsetOfReals></p>
+
+
+  `}, "*");
+    });
+    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
+
+    cy.get('#\\/u1 .mjx-mrow').eq(0).should('have.text', "(4,5)∪(6,7)")
+    cy.get('#\\/u2 .mjx-mrow').eq(0).should('have.text', "(4,5)∪(5,6)")
+    cy.get('#\\/u3 .mjx-mrow').eq(0).should('have.text', "(4,6)")
+    cy.get('#\\/u4 .mjx-mrow').eq(0).should('have.text', "(4,6]")
+    cy.get('#\\/u5 .mjx-mrow').eq(0).should('have.text', "(4,7)")
+    cy.get('#\\/u6 .mjx-mrow').eq(0).should('have.text', "(4,8)")
+    cy.get('#\\/u7 .mjx-mrow').eq(0).should('have.text', "(4,7]")
+    cy.get('#\\/u8 .mjx-mrow').eq(0).should('have.text', "[4,6)")
+    cy.get('#\\/u9 .mjx-mrow').eq(0).should('have.text', "(4,6)")
+    cy.get('#\\/u10 .mjx-mrow').eq(0).should('have.text', "(4,6]")
+    cy.get('#\\/u11 .mjx-mrow').eq(0).should('have.text', "(4,6)∪{7}")
+    cy.get('#\\/u12 .mjx-mrow').eq(0).should('have.text', "(4,6)")
+    cy.get('#\\/u13 .mjx-mrow').eq(0).should('have.text', "R")
+    cy.get('#\\/u14 .mjx-mrow').eq(0).should('have.text', "R")
+    cy.get('#\\/u15 .mjx-mrow').eq(0).should('have.text', "R")
+    cy.get('#\\/u16 .mjx-mrow').eq(0).should('have.text', "R")
+    cy.get('#\\/u17 .mjx-mrow').eq(0).should('have.text', "R")
+    cy.get('#\\/u18 .mjx-mrow').eq(0).should('have.text', "[−4,−2)")
+
+    cy.get('#\\/i1 .mjx-mrow').eq(0).should('have.text', "∅")
+    cy.get('#\\/i2 .mjx-mrow').eq(0).should('have.text', "∅")
+    cy.get('#\\/i3 .mjx-mrow').eq(0).should('have.text', "∅")
+    cy.get('#\\/i4 .mjx-mrow').eq(0).should('have.text', "{5}")
+    cy.get('#\\/i5 .mjx-mrow').eq(0).should('have.text', "(5,6)")
+    cy.get('#\\/i6 .mjx-mrow').eq(0).should('have.text', "(5,7)")
+    cy.get('#\\/i7 .mjx-mrow').eq(0).should('have.text', "(5,7)")
+    cy.get('#\\/i8 .mjx-mrow').eq(0).should('have.text', "∅")
+    cy.get('#\\/i9 .mjx-mrow').eq(0).should('have.text', "{5}")
+    cy.get('#\\/i10 .mjx-mrow').eq(0).should('have.text', "∅")
+    cy.get('#\\/i11 .mjx-mrow').eq(0).should('have.text', "∅")
+    cy.get('#\\/i12 .mjx-mrow').eq(0).should('have.text', "∅")
+    cy.get('#\\/i13 .mjx-mrow').eq(0).should('have.text', "(2,5)")
+    cy.get('#\\/i14 .mjx-mrow').eq(0).should('have.text', "[2,5)")
+    cy.get('#\\/i15 .mjx-mrow').eq(0).should('have.text', "(2,5]")
+    cy.get('#\\/i16 .mjx-mrow').eq(0).should('have.text', "[2,5]")
+    cy.get('#\\/i17 .mjx-mrow').eq(0).should('have.text', "∅")
+    cy.get('#\\/i18 .mjx-mrow').eq(0).should('have.text', "{−4}")
+
+  })
+
+  it("union and intersections of intervals and singletons ni x, latex format", () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <p><subsetOfReals format="latex" name="u1">(4,5) \\cup (6,7) \\ni x</subsetOfReals></p>
+  <p><subsetOfReals format="latex" name="u2">(4,5) \\cup (5,6) \\ni x</subsetOfReals></p>
+  <p><subsetOfReals format="latex" name="u3">(4,5] \\cup (5,6] \\ni x</subsetOfReals></p>
+  <p><subsetOfReals format="latex" name="u4">(4,5] \\cup [5,6] \\ni x</subsetOfReals></p>
+  <p><subsetOfReals format="latex" name="u5">(4,6) \\cup (5,7) \\ni x</subsetOfReals></p>
+  <p><subsetOfReals format="latex" name="u6">(4,8) \\cup (5,7) \\ni x</subsetOfReals></p>
+  <p><subsetOfReals format="latex" name="u7">(4,7) \\cup (5,7] \\ni x</subsetOfReals></p>
+  <p><subsetOfReals format="latex" name="u8">(4,6) \\cup {4} \\ni x</subsetOfReals></p>
+  <p><subsetOfReals format="latex" name="u9">(4,6) \\cup {5} \\ni x</subsetOfReals></p>
+  <p><subsetOfReals format="latex" name="u10">(4,6) \\cup {6} \\ni x</subsetOfReals></p>
+  <p><subsetOfReals format="latex" name="u11">(4,6) \\cup {7} \\ni x</subsetOfReals></p>
+  <p><subsetOfReals format="latex" name="u12">(4,5) \\cup (5,6) \\cup {5} \\ni x</subsetOfReals></p>
+  <p><subsetOfReals format="latex" name="u13">(-\\infty,5) \\cup (2,\\infty) \\ni x</subsetOfReals></p>
+  <p><subsetOfReals format="latex" name="u14">(-\\infty,5) \\cup [2,\\infty) \\ni x</subsetOfReals></p>
+  <p><subsetOfReals format="latex" name="u15">(-\\infty,5] \\cup (2,\\infty) \\ni x</subsetOfReals></p>
+  <p><subsetOfReals format="latex" name="u16">(-\\infty,5] \\cup [2,\\infty) \\ni x</subsetOfReals></p>
+  <p><subsetOfReals format="latex" name="u17">(-\\infty,5) \\cup (9,\\infty) \\cup (4,10) \\ni x</subsetOfReals></p>
+  <p><subsetOfReals format="latex" name="u18">[-4,-2) \\cup {-4} \\ni x</subsetOfReals></p>
+
+  <p><subsetOfReals format="latex" name="i1">(4,5) \\cap (6,7) \\ni x</subsetOfReals></p>
+  <p><subsetOfReals format="latex" name="i2">(4,5) \\cap (5,6) \\ni x</subsetOfReals></p>
+  <p><subsetOfReals format="latex" name="i3">(4,5] \\cap (5,6] \\ni x</subsetOfReals></p>
+  <p><subsetOfReals format="latex" name="i4">(4,5] \\cap [5,6] \\ni x</subsetOfReals></p>
+  <p><subsetOfReals format="latex" name="i5">(4,6) \\cap (5,7) \\ni x</subsetOfReals></p>
+  <p><subsetOfReals format="latex" name="i6">(4,8) \\cap (5,7) \\ni x</subsetOfReals></p>
+  <p><subsetOfReals format="latex" name="i7">(4,7) \\cap (5,7] \\ni x</subsetOfReals></p>
+  <p><subsetOfReals format="latex" name="i8">(4,6) \\cap {4} \\ni x</subsetOfReals></p>
+  <p><subsetOfReals format="latex" name="i9">(4,6) \\cap {5} \\ni x</subsetOfReals></p>
+  <p><subsetOfReals format="latex" name="i10">(4,6) \\cap {6} \\ni x</subsetOfReals></p>
+  <p><subsetOfReals format="latex" name="i11">(4,6) \\cap {7} \\ni x</subsetOfReals></p>
+  <p><subsetOfReals format="latex" name="i12">(4,5) \\cap (5,6) \\cap {5} \\ni x</subsetOfReals></p>
+  <p><subsetOfReals format="latex" name="i13">(-\\infty,5) \\cap (2,\\infty) \\ni x</subsetOfReals></p>
+  <p><subsetOfReals format="latex" name="i14">(-\\infty,5) \\cap [2,\\infty) \\ni x</subsetOfReals></p>
+  <p><subsetOfReals format="latex" name="i15">(-\\infty,5] \\cap (2,\\infty) \\ni x</subsetOfReals></p>
+  <p><subsetOfReals format="latex" name="i16">(-\\infty,5] \\cap [2,\\infty) \\ni x</subsetOfReals></p>
+  <p><subsetOfReals format="latex" name="i17">(-\\infty,5) \\cap (9,\\infty) \\cap (4,10) \\ni x</subsetOfReals></p>
+  <p><subsetOfReals format="latex" name="i18">[-4,-2) \\cap {-4} \\ni x</subsetOfReals></p>
+
+
+  `}, "*");
+    });
+    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
+
+    cy.get('#\\/u1 .mjx-mrow').eq(0).should('have.text', "(4,5)∪(6,7)")
+    cy.get('#\\/u2 .mjx-mrow').eq(0).should('have.text', "(4,5)∪(5,6)")
+    cy.get('#\\/u3 .mjx-mrow').eq(0).should('have.text', "(4,6)")
+    cy.get('#\\/u4 .mjx-mrow').eq(0).should('have.text', "(4,6]")
+    cy.get('#\\/u5 .mjx-mrow').eq(0).should('have.text', "(4,7)")
+    cy.get('#\\/u6 .mjx-mrow').eq(0).should('have.text', "(4,8)")
+    cy.get('#\\/u7 .mjx-mrow').eq(0).should('have.text', "(4,7]")
+    cy.get('#\\/u8 .mjx-mrow').eq(0).should('have.text', "[4,6)")
+    cy.get('#\\/u9 .mjx-mrow').eq(0).should('have.text', "(4,6)")
+    cy.get('#\\/u10 .mjx-mrow').eq(0).should('have.text', "(4,6]")
+    cy.get('#\\/u11 .mjx-mrow').eq(0).should('have.text', "(4,6)∪{7}")
+    cy.get('#\\/u12 .mjx-mrow').eq(0).should('have.text', "(4,6)")
+    cy.get('#\\/u13 .mjx-mrow').eq(0).should('have.text', "R")
+    cy.get('#\\/u14 .mjx-mrow').eq(0).should('have.text', "R")
+    cy.get('#\\/u15 .mjx-mrow').eq(0).should('have.text', "R")
+    cy.get('#\\/u16 .mjx-mrow').eq(0).should('have.text', "R")
+    cy.get('#\\/u17 .mjx-mrow').eq(0).should('have.text', "R")
+    cy.get('#\\/u18 .mjx-mrow').eq(0).should('have.text', "[−4,−2)")
+
+    cy.get('#\\/i1 .mjx-mrow').eq(0).should('have.text', "∅")
+    cy.get('#\\/i2 .mjx-mrow').eq(0).should('have.text', "∅")
+    cy.get('#\\/i3 .mjx-mrow').eq(0).should('have.text', "∅")
+    cy.get('#\\/i4 .mjx-mrow').eq(0).should('have.text', "{5}")
+    cy.get('#\\/i5 .mjx-mrow').eq(0).should('have.text', "(5,6)")
+    cy.get('#\\/i6 .mjx-mrow').eq(0).should('have.text', "(5,7)")
+    cy.get('#\\/i7 .mjx-mrow').eq(0).should('have.text', "(5,7)")
+    cy.get('#\\/i8 .mjx-mrow').eq(0).should('have.text', "∅")
+    cy.get('#\\/i9 .mjx-mrow').eq(0).should('have.text', "{5}")
+    cy.get('#\\/i10 .mjx-mrow').eq(0).should('have.text', "∅")
+    cy.get('#\\/i11 .mjx-mrow').eq(0).should('have.text', "∅")
+    cy.get('#\\/i12 .mjx-mrow').eq(0).should('have.text', "∅")
+    cy.get('#\\/i13 .mjx-mrow').eq(0).should('have.text', "(2,5)")
+    cy.get('#\\/i14 .mjx-mrow').eq(0).should('have.text', "[2,5)")
+    cy.get('#\\/i15 .mjx-mrow').eq(0).should('have.text', "(2,5]")
+    cy.get('#\\/i16 .mjx-mrow').eq(0).should('have.text', "[2,5]")
+    cy.get('#\\/i17 .mjx-mrow').eq(0).should('have.text', "∅")
+    cy.get('#\\/i18 .mjx-mrow').eq(0).should('have.text', "{−4}")
 
   })
 
@@ -1073,6 +1338,130 @@ describe('SubsetOfReals Tag Tests', function () {
     cy.get(`#\\/displayMode_choice${1}_input`).click();
     cy.get('#\\/result .mjx-mrow').eq(0).should('have.text', "(1,3)∪(6,∞)")
 
+
+  })
+
+
+  it("modifying copies of subsets", () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <p>Enter subset: <mathinput name="input0" prefill="(0,1)" /></p>
+  <p>Subset 1: <subsetOfReals name="s1">$input0</subsetOfReals></p>
+  <p>Subset 2: <copy tname="s1" assignNames="s2" /></p>
+  <p>Subset 3: <copy prop="value" tname="s1" assignNames="s3" /></p>
+  <p>Subset 4: <copy tname="s2" assignNames="s4" /></p>
+  <p>Subset 5: <copy prop="value" tname="s2" assignNames="s5" /></p>
+  <p>Subset 6: <copy tname="s3" assignNames="s6" /></p>
+  <p>Subset 7: <copy prop="value" tname="s3" assignNames="s7" /></p>
+  <p>Subset 8: <subsetOfReals name="s8">$s1</subsetOfReals></p>
+  <p>Subset 9: <subsetOfReals name="s9">$(s1{prop='value'})</subsetOfReals></p>
+  <p>Modify subset 1: <mathinput name="input1" bindValueTo="$s1" /></p>
+  <p>Modify subset 2: <mathinput name="input2" bindValueTo="$s2" /></p>
+  <p>Modify subset 3: <mathinput name="input3" bindValueTo="$s3" /></p>
+  <p>Modify subset 4: <mathinput name="input4" bindValueTo="$s4" /></p>
+  <p>Modify subset 5: <mathinput name="input5" bindValueTo="$s5" /></p>
+  <p>Modify subset 6: <mathinput name="input6" bindValueTo="$s6" /></p>
+  <p>Modify subset 7: <mathinput name="input7" bindValueTo="$s7" /></p>
+  <p>Modify subset 8: <mathinput name="input8" bindValueTo="$s8" /></p>
+  <p>Modify subset 9: <mathinput name="input9" bindValueTo="$s9" /></p>
+
+  `}, "*");
+    });
+    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
+
+
+    function checkDisplay(str, str0) {
+      if(str0 === undefined) {
+        str0 = str;
+      }
+
+      cy.get('#\\/s1 .mjx-mrow').eq(0).should('have.text', str)
+      cy.get('#\\/s2 .mjx-mrow').eq(0).should('have.text', str)
+      cy.get('#\\/s3 .mjx-mrow').eq(0).should('have.text', str)
+      cy.get('#\\/s4 .mjx-mrow').eq(0).should('have.text', str)
+      cy.get('#\\/s5 .mjx-mrow').eq(0).should('have.text', str)
+      cy.get('#\\/s6 .mjx-mrow').eq(0).should('have.text', str)
+      cy.get('#\\/s7 .mjx-mrow').eq(0).should('have.text', str)
+      cy.get('#\\/s8 .mjx-mrow').eq(0).should('have.text', str)
+      cy.get('#\\/s9 .mjx-mrow').eq(0).should('have.text', str)
+      cy.get(`#\\/input0 .mq-editable-field`).invoke('text').then((text) => {
+        expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal(str0)
+      })
+      cy.get(`#\\/input1 .mq-editable-field`).invoke('text').then((text) => {
+        expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal(str)
+      })
+      cy.get(`#\\/input2 .mq-editable-field`).invoke('text').then((text) => {
+        expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal(str)
+      })
+      cy.get(`#\\/input3 .mq-editable-field`).invoke('text').then((text) => {
+        expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal(str)
+      })
+      cy.get(`#\\/input4 .mq-editable-field`).invoke('text').then((text) => {
+        expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal(str)
+      })
+      cy.get(`#\\/input5 .mq-editable-field`).invoke('text').then((text) => {
+        expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal(str)
+      })
+      cy.get(`#\\/input6 .mq-editable-field`).invoke('text').then((text) => {
+        expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal(str)
+      })
+      cy.get(`#\\/input7 .mq-editable-field`).invoke('text').then((text) => {
+        expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal(str)
+      })
+      cy.get(`#\\/input8 .mq-editable-field`).invoke('text').then((text) => {
+        expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal(str)
+      })
+      cy.get(`#\\/input9 .mq-editable-field`).invoke('text').then((text) => {
+        expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal(str)
+      })
+    }
+
+
+    checkDisplay("(0,1)")
+
+    cy.get("#\\/input0 textarea").type("{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}x>=3{enter}", { force: true })
+
+    checkDisplay("[3,∞)","x≥3")
+
+    cy.get("#\\/input1 textarea").type("{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{{}q\\mid q=5}{enter}", { force: true })
+
+    checkDisplay("{5}")
+
+    cy.get("#\\/input2 textarea").type("{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}[-\\infty, \\pi){enter}", { force: true })
+
+    checkDisplay("(−∞,3.141592654)")
+
+
+    cy.get("#\\/input3 textarea").type("{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(-\\infty,\\infty){enter}", { force: true })
+
+    checkDisplay("R")
+    
+
+    cy.get("#\\/input4 textarea").type("{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}x\\in \\emptyset {enter}", { force: true })
+
+    checkDisplay("∅")
+
+    cy.get("#\\/input5 textarea").type("{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}x\\notin [9, \\infty){enter}", { force: true })
+
+    checkDisplay("(−∞,9)")
+
+    cy.get("#\\/input6 textarea").type("{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{7}\\ni x{enter}", { force: true })
+
+    checkDisplay("{7}")
+
+    cy.get("#\\/input7 textarea").type("{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(-\\infty, -2) \\notni x{enter}", { force: true })
+
+    checkDisplay("[−2,∞)")
+
+    cy.get("#\\/input8 textarea").type("{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{{}1}^c{rightArrow} \\cap {{}v\\mid v>=1}{enter}", { force: true })
+
+    checkDisplay("(1,∞)")
+
+    cy.get("#\\/input9 textarea").type("{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}x\\ne -6{enter}", { force: true })
+
+    checkDisplay("(−∞,−6)∪(−6,∞)")
 
   })
 

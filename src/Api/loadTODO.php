@@ -57,24 +57,24 @@ ON a.doenetId = dc.doenetId
 WHERE (dc.driveId = '$driveId'
 AND dc.isReleased = '1'
 AND dc.isDeleted = '0'
-AND a.dueDate < DATE_ADD(NOW(), INTERVAL 7 DAY)
-AND a.dueDate > NOW())
+AND a.dueDate < DATE_ADD(CONVERT_TZ(NOW(), @@session.time_zone, '+00:00'), INTERVAL 7 DAY)
+AND a.dueDate > CONVERT_TZ(NOW(), @@session.time_zone, '+00:00'))
 OR (dc.driveId = '$driveId'
 AND dc.isReleased = '1'
 AND dc.isDeleted = '0'
 AND a.dueDate IS NULL
-AND a.assignedDate > DATE_ADD(NOW(), INTERVAL -7 DAY)
-AND a.assignedDate < NOW())
+AND a.assignedDate > DATE_ADD(CONVERT_TZ(NOW(), @@session.time_zone, '+00:00'), INTERVAL -7 DAY)
+AND a.assignedDate < CONVERT_TZ(NOW(), @@session.time_zone, '+00:00'))
 OR (dc.driveId = '$driveId'
 AND dc.isReleased = '1'
 AND dc.isDeleted = '0'
-AND a.assignedDate < NOW()
-AND a.dueDate > NOW())
+AND a.assignedDate < CONVERT_TZ(NOW(), @@session.time_zone, '+00:00')
+AND a.dueDate > CONVERT_TZ(NOW(), @@session.time_zone, '+00:00'))
 OR (dc.driveId = '$driveId'
 AND dc.isReleased = '1'
 AND dc.isDeleted = '0'
-AND a.pinnedUntilDate > NOW()
-AND a.pinnedAfterDate < NOW())
+AND a.pinnedUntilDate > CONVERT_TZ(NOW(), @@session.time_zone, '+00:00')
+AND a.pinnedAfterDate < CONVERT_TZ(NOW(), @@session.time_zone, '+00:00'))
 ORDER BY a.pinnedAfterDate DESC, a.dueDate ASC
 ";
 //AND a.assignedDate < NOW()

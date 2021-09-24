@@ -116,7 +116,7 @@ export default class subsetOfReals extends DoenetRenderer {
   }
 
   xPositionToXValue(xPosition) {
-    
+
     let relativeX = xPosition - this.firstHashXPosition;
     let shiftAmount = 10;
     let intervalValueWidth = 1;
@@ -227,46 +227,58 @@ export default class subsetOfReals extends DoenetRenderer {
 
   handleInput(e, inputState) {
 
-    let mouseLeft = e.clientX - this.bounds.current.offsetLeft 
+    let mouseLeft = e.clientX - this.bounds.current.offsetLeft
     let xPosition = this.xPositionToXValue(mouseLeft);
 
     if (inputState === "up") {
 
-      let pointInd = -1;
-      for (let [ind, pt] of this.doenetSvData.points.entries()) {
-        if (Math.abs(pt.value - xPosition) < this.pointHitTolerance) {
-          pointInd = ind;
-          break;
+      if (this.state.mode === "move points") {
+        if (this.pointGrabbed !== undefined) {
+          this.actions.movePoint({
+            pointInd: this.pointGrabbed,
+            value: xPosition,
+            transient: false
+          });
+          this.pointGrabbed = undefined;
+          this.forceUpdate();
         }
-      }
 
-      if (this.state.mode === "add remove points") {
-        if (pointInd !== -1) {
-          this.actions.deletePoint(pointInd);
-          this.forceUpdate();
-        } else if (!this.doenetSvData.points.map(x => x.value).includes(xPosition)) {
-          this.actions.addPoint(xPosition);
-          this.forceUpdate();
-        }
-      } else if (this.state.mode === "toggle") {
-        if (pointInd !== -1) {
-          this.actions.togglePoint(pointInd);
-        } else {
-          let intervalInd = 0;
-          for (let pt of this.doenetSvData.points) {
-            if (pt.value < xPosition) {
-              intervalInd++;
-            }
+      } else {
+
+        let pointInd = -1;
+        for (let [ind, pt] of this.doenetSvData.points.entries()) {
+          if (Math.abs(pt.value - xPosition) < this.pointHitTolerance) {
+            pointInd = ind;
+            break;
           }
-
-          this.actions.toggleInterval(intervalInd);
         }
-        this.forceUpdate();
+
+        if (this.state.mode === "add remove points") {
+          if (pointInd !== -1) {
+            this.actions.deletePoint(pointInd);
+            this.forceUpdate();
+          } else if (!this.doenetSvData.points.map(x => x.value).includes(xPosition)) {
+            this.actions.addPoint(xPosition);
+            this.forceUpdate();
+          }
+        } else if (this.state.mode === "toggle") {
+          if (pointInd !== -1) {
+            this.actions.togglePoint(pointInd);
+          } else {
+            let intervalInd = 0;
+            for (let pt of this.doenetSvData.points) {
+              if (pt.value < xPosition) {
+                intervalInd++;
+              }
+            }
+
+            this.actions.toggleInterval(intervalInd);
+          }
+          this.forceUpdate();
+        }
       }
 
-    }
-
-    if (inputState === "down") {
+    } else if (inputState === "down") {
       if (this.state.mode === "move points") {
 
         let pointInd = -1;
@@ -279,24 +291,30 @@ export default class subsetOfReals extends DoenetRenderer {
 
         if (pointInd !== -1) {
           this.pointGrabbed = pointInd;
-          this.pointGrabbedLocation = xPosition;
         }
       }
-    }
+    } else if (inputState === "move") {
+      if (this.pointGrabbed !== undefined) {
 
-    if (inputState === "move") {
-      if(this.pointsGrabbed !== undefined) {
+        this.actions.movePoint({
+          pointInd: this.pointGrabbed,
+          value: xPosition,
+          transient: true
+        });
 
-        // cannot rely
-        let pointInd = -1;
-        for (let [ind, pt] of this.doenetSvData.points.entries()) {
-          if (Math.abs(pt.value - this.pointGrabbedLocation) < this.pointHitTolerance) {
-            pointInd = ind;
-            break;
-          }
+        this.forceUpdate();
+      }
+    } else if (inputState == "leave") {
+      if (this.state.mode === "move points") {
+        if (this.pointGrabbed !== undefined) {
+          this.actions.movePoint({
+            pointInd: this.pointGrabbed,
+            value: xPosition,
+            transient: false
+          });
+          this.pointGrabbed = undefined;
+          this.forceUpdate();
         }
-
-
       }
     }
 
@@ -305,7 +323,7 @@ export default class subsetOfReals extends DoenetRenderer {
   }
 
   switchMode(mode) {
-    console.log(mode)
+    // console.log(mode)
     this.setState({ mode: mode });
   }
 
@@ -399,8 +417,22 @@ export default class subsetOfReals extends DoenetRenderer {
               style={movePointsStyle}
               onClick={() => this.switchMode("move points")}
             >
-              Move Points -- doesn't work
+              Move Points
             </ModeButton>
+          </span>
+          <span>
+            <button
+              onClick={() => this.actions.clear()}
+            >
+              Clear
+            </button>
+          </span>
+          <span>
+            <button
+              onClick={() => this.actions.setToR()}
+            >
+              R
+            </button>
           </span>
           {/* <span>
             <ModeButton
