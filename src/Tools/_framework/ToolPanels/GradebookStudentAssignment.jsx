@@ -8,9 +8,8 @@ import {
   } from "recoil";
  
 import { pageToolViewAtom, searchParamAtomFamily } from '../NewToolRoot';
-import DoenetViewer, {
-    serializedComponentsReviver,
-  } from '../../../Viewer/DoenetViewer';
+import DoenetViewer from '../../../Viewer/DoenetViewer';
+import { serializedComponentsReviver } from "../../../Core/utils/serializedStateProcessing";
 import  axios from 'axios';
 import { currentAttemptNumber } from '../ToolPanels/AssignmentViewer';
 
