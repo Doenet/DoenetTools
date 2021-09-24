@@ -640,12 +640,10 @@ let encodeParams = p => Object.entries(p).map(kv =>
     let isRecoilChange = false;
     if (JSON.stringify(lastPageToolView.current) !== JSON.stringify(recoilPageToolView)){
       isRecoilChange = true;
-      // console.log(">>>Recoil change nextPageToolView = recoilPageToolView",recoilPageToolView)
       if (recoilPageToolView.back){
         if (backPageToolView.current.page === "init"){
           backPageToolView.current.page = 'home'; //Go home if started with the page
         }
-        // console.log(">>>User hit back button backParams.current",backParams.current)
         let pageToolViewParams = {...backPageToolView.current,params:backParams.current}
 
         setRecoilPageToolView(pageToolViewParams)
@@ -713,27 +711,6 @@ let encodeParams = p => Object.entries(p).map(kv =>
       setRecoilPageToolView(nextPageToolView);
     }
 
-    // console.log("\n>>>>isURLChange",isURLChange,"isRecoilChange",isRecoilChange)
-    // console.log(">>>>page",isPageChange,"Tool",isToolChange,"view",isViewChange)
-    // console.log(">>>>nextPageToolView",nextPageToolView)
-    // console.log(">>>>nextMenusAndPanels",nextMenusAndPanels)
-    // let viewOverrides = nextMenusAndPanels?.views?.[nextPageToolView.view]
-    
-
-    //Have view Override the next menu and panels
-    // if (typeof viewOverrides === 'object' && viewOverrides !== null){
-      // console.log(">>>>IMPLEMENTING OVERRIDES!!!!!!")
-      // console.log(">>>>viewOverrides",viewOverrides)
-      // console.log(">>>>nextPageToolView.view",nextPageToolView.view)
-      // nextMenusAndPanels = {... navigationObj[nextPageToolView.page][nextPageToolView.tool]};
-
-      // for (let key of Object.keys(viewOverrides)){
-        // nextMenusAndPanels[key] = viewOverrides[key];
-      // }
-    // }
-    // console.log(">>> |view| ",nextPageToolView.view,"nextMenusAndPanels",nextMenusAndPanels)
-
-
 
     //Update Navigation Leave
     //Only when leaving page or tool
@@ -749,8 +726,6 @@ let encodeParams = p => Object.entries(p).map(kv =>
       }
       setSuppressMenus(null);  //Reset suppress menus
     }
-
-    // console.log(">>>>nextMenusAndPanels",nextMenusAndPanels)
 
     //Defaults for undefined 
     if (nextMenusAndPanels && nextMenusAndPanels.displayProfile === undefined){
@@ -808,22 +783,15 @@ let encodeParams = p => Object.entries(p).map(kv =>
       
       const urlPush = pathname + search;
 
-      // console.log(">>>location.search !== search",location.search !== search)
-      // console.log(">>>location.search ",location.search )
-      // console.log(">>>search",search)
-
       if (location.search !== search){
         setSearchParamAtom(searchObj)
       }
         
       //Don't add to the url history if it's the same location the browser is at
       if (location.pathname !== pathname || location.search !== search){
-        // console.log(">>>UPDATE URL!",urlPush)
         history.push(urlPush);
       }
     }
-    // console.log(">>>>AT THE END nextPageToolView",nextPageToolView)
-    // console.log(">>>>AT THE END nextMenusAndPanels",nextMenusAndPanels)
 
     lastSearchObj.current = searchObj;
     lastLocationStr.current = locationStr;
