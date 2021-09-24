@@ -3,7 +3,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React, { useState } from 'react';
 import { useEffect } from 'react';
 import {
-  useRecoilState,
+  useRecoilValue,
   useRecoilValueLoadable,
   useSetRecoilState,
 } from 'recoil';
@@ -16,9 +16,13 @@ import ButtonGroup from '../../../_reactComponents/PanelHeaderComponents/ButtonG
 import ActionButtonGroup from '../../../_reactComponents/PanelHeaderComponents/ActionButtonGroup';
 import ActionButton from '../../../_reactComponents/PanelHeaderComponents/ActionButton';
 import Textfield from '../../../_reactComponents/PanelHeaderComponents/Textfield';
+import { effectiveRoleAtom } from '../../../_reactComponents/PanelHeaderComponents/RoleDropdown';
+
 
 export default function SelectedCollection() {
-  const [{ view }, setPageToolView] = useRecoilState(pageToolViewAtom);
+  const setPageToolView = useSetRecoilState(pageToolViewAtom);
+  const effectiveRole = useRecoilValue(effectiveRoleAtom);
+
   const setSelectedMenu = useSetRecoilState(selectedMenuPanelAtom);
   const selection = useRecoilValueLoadable(selectedInformation).getValue();
   const [item, setItem] = useState(selection[0]);
@@ -44,7 +48,7 @@ export default function SelectedCollection() {
       newLabel: newLabel,
     });
   };
-  if (view === 'student') {
+  if (effectiveRole === 'student') {
     return (
       <>
         <h2 data-cy="infoPanelItemLabel">
@@ -64,7 +68,7 @@ export default function SelectedCollection() {
             });
           }}
         />
-        <AssignmentSettings role={view} doenetId={item.doenetId} />
+        <AssignmentSettings role={effectiveRole} doenetId={item.doenetId} />
       </>
     );
   }
@@ -136,7 +140,7 @@ export default function SelectedCollection() {
         />
       </label> */}
       <br />
-      <AssignmentSettings role={view} doenetId={item.doenetId} />
+      <AssignmentSettings role={effectiveRole} doenetId={item.doenetId} />
       <br />
       <ButtonGroup vertical>
         <Button
