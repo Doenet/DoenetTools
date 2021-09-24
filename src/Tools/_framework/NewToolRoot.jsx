@@ -539,11 +539,30 @@ let encodeParams = p => Object.entries(p).map(kv =>
 
     return <>{leaveComponent}</>;
   }
+
+  export const suppressMenusAtom = atom({
+    key:"suppressMenusAtom",
+    default:[]
+  })
+
+  function arraysEqual(a, b) {
+    if (a === b) return true;
+    if (a == null || b == null) return false;
+    if (a.length !== b.length) return false;
+  
+    for (var i = 0; i < a.length; ++i) {
+      if (a[i] !== b[i]) return false;
+    }
+    return true;
+  }
+
   
   const MemoizedRootController = React.memo(RootController)
   function RootController(props){
     const [recoilPageToolView,setRecoilPageToolView ] = useRecoilState(pageToolViewAtom);
     const setOnLeaveStr = useSetRecoilState(onLeaveComponentStr);
+    const [suppressMenus,setSuppressMenus] = useRecoilState(suppressMenusAtom);
+
     let lastPageToolView = useRef({page:"init",tool:"",view:""});
     let backPageToolView = useRef({page:"init",tool:"",view:""});
     let backParams = useRef({})
@@ -573,11 +592,37 @@ let encodeParams = p => Object.entries(p).map(kv =>
  
     // let enterComponent = null; //Lazy loaded entering component
     let leaveComponentName = useRef(null)
+    let lastSuppressMenu = useRef([])
     let locationStr = `${location.pathname}${location.search}`;
     let nextPageToolView = {page:"",tool:"",view:""};
     let nextMenusAndPanels = null;
     // console.log("\n>>>===RootController")
 
+    //Suppress Menu change test
+    let isSuppressMenuChange = !arraysEqual(suppressMenus, lastSuppressMenu.current);
+ 
+    //Suppression
+    if (isSuppressMenuChange){
+      lastSuppressMenu.current = suppressMenus;
+      nextMenusAndPanels = {...navigationObj[recoilPageToolView.page][recoilPageToolView.tool]};
+      nextMenusAndPanels.currentMenus = [...navigationObj[recoilPageToolView.page][recoilPageToolView.tool].currentMenus];
+      nextMenusAndPanels.menusTitles = [...navigationObj[recoilPageToolView.page][recoilPageToolView.tool].menusTitles];
+      nextMenusAndPanels.menusInitOpen = [...navigationObj[recoilPageToolView.page][recoilPageToolView.tool].menusInitOpen];
+   
+    if (suppressMenus.length > 0){
+      for (let suppressMenu of suppressMenus){
+        for (let [i,menu] of Object.entries(nextMenusAndPanels.currentMenus)){
+          if (menu === suppressMenu){
+            nextMenusAndPanels.currentMenus.splice(i,1);
+            nextMenusAndPanels.menusTitles.splice(i,1);
+            nextMenusAndPanels.menusInitOpen.splice(i,1);
+          }
+        }
+      }
+    }
+    props.setToolRootMenusAndPanels(nextMenusAndPanels)
+    return null;
+  }
 
     //URL change test
     let isURLChange = false;
@@ -596,12 +641,6 @@ let encodeParams = p => Object.entries(p).map(kv =>
         //Check for a page's default tool
         nextPageToolView.tool = '';
       }
-      //Maintain View when search parameters change
-      // if (nextPageToolView.page === lastPageToolView.current.page &&
-      //     nextPageToolView.tool === lastPageToolView.current.tool
-      //   ){
-      //     nextPageToolView.view = lastPageToolView.current.view;
-      //   }
     }
 
     //Recoil change test
@@ -623,7 +662,6 @@ let encodeParams = p => Object.entries(p).map(kv =>
       
     }
 
-    // console.log(`>>>>isURLChange ${isURLChange} isRecoilChange ${isRecoilChange}`)
 
     if (!isURLChange && !isRecoilChange){
       //Just updating tracking variables
@@ -716,6 +754,7 @@ let encodeParams = p => Object.entries(p).map(kv =>
       if (nextMenusAndPanels && nextMenusAndPanels.onLeave){
         leaveComponentName.current = nextMenusAndPanels.onLeave
       }
+      setSuppressMenus([]);  //Reset suppress menus
     }
 
     // console.log(">>>>nextMenusAndPanels",nextMenusAndPanels)

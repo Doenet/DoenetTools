@@ -24,6 +24,7 @@ import { BreadcrumbProvider } from '../../../_reactComponents/Breadcrumb/Breadcr
 import { selectedMenuPanelAtom } from '../Panels/NewMenuPanel';
 import { mainPanelClickAtom } from '../Panels/NewMainPanel';
 import { effectiveRoleAtom } from '../../../_reactComponents/PanelHeaderComponents/RoleDropdown';
+import { suppressMenusAtom } from '../NewToolRoot';
 
 export default function NavigationPanel() {
   const setPageToolView = useSetRecoilState(pageToolViewAtom);
@@ -31,6 +32,7 @@ export default function NavigationPanel() {
   const setMainPanelClear = useSetRecoilState(mainPanelClickAtom);
   const path = useRecoilValue(searchParamAtomFamily('path'));
   const [columnTypes, setColumnTypes] = useState([]);
+  const setSuppressMenus = useSetRecoilState(suppressMenusAtom);
 
   useEffect(() => {
     setMainPanelClear((was) => [
@@ -51,13 +53,15 @@ export default function NavigationPanel() {
     switch (effectiveRole) {
       case 'instructor':
         setColumnTypes(['Released', 'Assigned', 'Public']);
+        setSuppressMenus([])
         break;
       case 'student':
         setColumnTypes(['Due Date']);
+        setSuppressMenus(["AddDriveItems"])
         break;
       default:
     }
-  }, [effectiveRole]);
+  }, [effectiveRole,setSuppressMenus]);
 
   const clickCallback = useRecoilCallback(
     ({ set }) =>
