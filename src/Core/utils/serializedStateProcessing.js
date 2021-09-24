@@ -6,6 +6,7 @@ import readOnlyProxyHandler from '../ReadOnlyProxyHandler';
 import { breakEmbeddedStringByCommas } from '../components/commonsugar/breakstrings';
 import sha256 from 'crypto-js/sha256';
 import Hex from 'crypto-js/enc-hex'
+import subsets from './subset-of-reals';
 
 export function scrapeOffAllDoumentRelated(serializedComponents) {
 
@@ -1908,7 +1909,7 @@ let nanInfinityReviver = function (key, value) {
 }
 
 export function serializedComponentsReviver(key, value) {
-  return me.reviver(key, nanInfinityReviver(key, value))
+  return me.reviver(key, subsets.Subset.reviver(key, nanInfinityReviver(key, value)))
 }
 
 export function gatherVariantComponents({ serializedComponents, componentInfoObjects }) {

@@ -37,6 +37,40 @@ class Subset {
   equals(that) {
     return this.symmetricDifference(that).isEmpty();
   }
+
+  toJSON() {
+    return {
+      objectType: "subset",
+      data: Object.assign({}, this),
+      subsetType: this.constructor.name
+    }
+  }
+
+  static reviver(key, value) {
+    if (value && value.objectType === "subset" && value.subsetType !== undefined) {
+      console.log(`found subset`, value)
+      if (value.subsetType === "EmptySet") {
+        return new EmptySet();
+      } else if (value.subsetType === "RealLine") {
+        return new RealLine();
+      } else if (value.subsetType === "Singleton") {
+        return new Singleton(value.data.element)
+      } else if (value.subsetType === "Union") {
+        return new Union(value.data.subsets)
+      } else if (value.subsetType === "OpenInterval") {
+        return new OpenInterval(value.data.left, value.data.right)
+      }
+    }
+
+    return value;
+
+  }
+
+  copy() {
+    return this.constructor.reviver(null, this.toJSON());
+  }
+
+
 }
 
 /** **************************************************************/
