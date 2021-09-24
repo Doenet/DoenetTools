@@ -1,7 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
-import DoenetViewer, {
-  serializedComponentsReviver,
-} from '../../../Viewer/DoenetViewer';
+import DoenetViewer from '../../../Viewer/DoenetViewer';
+import { serializedComponentsReviver } from '../../../Core/utils/serializedStateProcessing'
 import {
   useRecoilValue,
   atom,
