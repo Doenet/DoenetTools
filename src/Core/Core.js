@@ -2164,7 +2164,8 @@ export default class Core {
             redefineDependencies = {
               linkSource: "adapter",
               adapterTargetIdentity: dep.adapterTargetIdentity,
-              adapterVariable: dep.adapterVariable
+              adapterVariable: dep.adapterVariable,
+              substituteForPrimaryStateVariable: dep.substituteForPrimaryStateVariable,
             }
           } else if (dep.dependencyType === "ancestorProp") {
             ancestorProps[dep.attribute] = dep.ancestorIdentity;
@@ -2590,7 +2591,9 @@ export default class Core {
     // being created has specified should be given the value when it
     // is created from an outside source like a reference to a prop or an adapter
     let primaryStateVariableForDefinition = "value";
-    if (componentClass.primaryStateVariableForDefinition) {
+    if (redefineDependencies.substituteForPrimaryStateVariable) {
+      primaryStateVariableForDefinition = redefineDependencies.substituteForPrimaryStateVariable;
+    } else if (componentClass.primaryStateVariableForDefinition) {
       primaryStateVariableForDefinition = componentClass.primaryStateVariableForDefinition;
     }
     let stateDef = stateVariableDefinitions[primaryStateVariableForDefinition];
