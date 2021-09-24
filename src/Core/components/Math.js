@@ -773,7 +773,11 @@ export default class MathComponent extends InlineComponent {
   //   return {};
   // }
 
-  static adapters = ["number", "text"];
+  static adapters = [
+    "number",
+    "text",
+    { componentType: "subsetOfReals", stateVariable: "value", substituteForPrimaryStateVariable: "subsetValue" }
+  ];
 
 }
 

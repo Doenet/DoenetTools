@@ -401,7 +401,7 @@ export default class subsetOfReals extends DoenetRenderer {
               style={addRemovePointsStyle}
               onClick={() => this.switchMode("add remove points")}
             >
-              Add/Remove boundary points
+              Add/Remove points
             </ModeButton>
           </span>
           <span>

@@ -920,6 +920,7 @@ export default class BaseComponent {
 
     let adapterStateVariable;
     let adapterComponentType;
+    let substituteForPrimaryStateVariable;
 
     // adapter could be either 
     // - a string specifying a public state variable, or
@@ -930,6 +931,7 @@ export default class BaseComponent {
     } else {
       adapterStateVariable = adapter.stateVariable;
       adapterComponentType = adapter.componentType;
+      substituteForPrimaryStateVariable = adapter.substituteForPrimaryStateVariable;
     }
 
     // look in state for matching public value
@@ -953,7 +955,8 @@ export default class BaseComponent {
           adapterTargetIdentity: {
             componentName: this.componentName,
             componentType: this.componentType,
-          }
+          },
+          substituteForPrimaryStateVariable
         }]
       }
     }
