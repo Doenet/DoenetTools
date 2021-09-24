@@ -42,22 +42,22 @@ class Subset {
     return {
       objectType: "subset",
       data: Object.assign({}, this),
-      subsetType: this.constructor.name
+      subsetType: this.constructor.subsetType
     }
   }
 
   static reviver(key, value) {
     if (value && value.objectType === "subset" && value.subsetType !== undefined) {
       console.log(`found subset`, value)
-      if (value.subsetType === "EmptySet") {
+      if (value.subsetType === "emptySet") {
         return new EmptySet();
-      } else if (value.subsetType === "RealLine") {
+      } else if (value.subsetType === "realLine") {
         return new RealLine();
-      } else if (value.subsetType === "Singleton") {
+      } else if (value.subsetType === "singleton") {
         return new Singleton(value.data.element)
-      } else if (value.subsetType === "Union") {
+      } else if (value.subsetType === "union") {
         return new Union(value.data.subsets)
-      } else if (value.subsetType === "OpenInterval") {
+      } else if (value.subsetType === "openInterval") {
         return new OpenInterval(value.data.left, value.data.right)
       }
     }
@@ -75,6 +75,8 @@ class Subset {
 
 /** **************************************************************/
 class EmptySet extends Subset {
+  static subsetType = "emptySet";
+
   union(that) {
     return that;
   }
@@ -106,6 +108,8 @@ class EmptySet extends Subset {
 
 /** **************************************************************/
 class RealLine extends Subset {
+  static subsetType = "realLine";
+
   union( /* that */) {
     return new RealLine();
   }
@@ -137,6 +141,8 @@ class RealLine extends Subset {
 
 /** **************************************************************/
 class Singleton extends Subset {
+  static subsetType = "singleton";
+
   constructor(element) {
     super();
 
@@ -188,6 +194,8 @@ class Singleton extends Subset {
 
 /** **************************************************************/
 class Union extends Subset {
+  static subsetType = "union";
+
   intersect(subset) {
     return new Union(this.subsets.map(s => subset.intersect(s)));
   }
@@ -380,6 +388,8 @@ class Interval extends Subset {
 
 /** **************************************************************/
 class OpenInterval extends Interval {
+  static subsetType = "openInterval";
+
   constructor(left, right) {
     super(left, right);
 
