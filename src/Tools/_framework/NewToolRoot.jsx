@@ -219,6 +219,8 @@ if (toolRootMenusAndPanels?.supportPanelOptions && toolRootMenusAndPanels?.suppo
   </>
 } 
 
+
+// These are the navigationObj options
 // currentMenus:[],
 // menusTitles:[],
 // menusInitOpen:[],
@@ -230,6 +232,7 @@ if (toolRootMenusAndPanels?.supportPanelOptions && toolRootMenusAndPanels?.suppo
 // headerControls:["BackButton"],
 // headerControlsPositions:["Right"], 
 // hasNoMenuPanel: true,
+// waitForMenuSuppression:true,
 
 
 let navigationObj = {
@@ -372,21 +375,10 @@ let navigationObj = {
       currentMenus:["AddDriveItems"],
       menusTitles:["Add Items"],
       menusInitOpen:[true],
-      // currentMenus:[],
-      // menusTitles:[],
-      // menusInitOpen:[],
       headerControls: ["NavigationBreadCrumb"],
       headerControlsPositions: ["Left"],
       onLeave:"NavigationLeave",
-      // views:{
-      //   instructor:{
-      //     currentMenus:["AddDriveItems"],
-      //     menusTitles:["Add Items"],
-      //     menusInitOpen:[true],
-      //   },
-      //   student:{
-      //   }
-      // }
+      waitForMenuSuppression:true,
     },
     editor:{ //singleFile
       pageName:"Course",
@@ -540,9 +532,10 @@ let encodeParams = p => Object.entries(p).map(kv =>
     return <>{leaveComponent}</>;
   }
 
+  //Starts as null so we can detect empty array as an update
   export const suppressMenusAtom = atom({
     key:"suppressMenusAtom",
-    default:[]
+    default:null
   })
 
   function arraysEqual(a, b) {
@@ -600,10 +593,10 @@ let encodeParams = p => Object.entries(p).map(kv =>
 
     //Suppress Menu change test
     let isSuppressMenuChange = !arraysEqual(suppressMenus, lastSuppressMenu.current);
+    lastSuppressMenu.current = suppressMenus;
  
     //Suppression
-    if (isSuppressMenuChange){
-      lastSuppressMenu.current = suppressMenus;
+    if (isSuppressMenuChange && suppressMenus !== null){
       nextMenusAndPanels = {...navigationObj[recoilPageToolView.page][recoilPageToolView.tool]};
       nextMenusAndPanels.currentMenus = [...navigationObj[recoilPageToolView.page][recoilPageToolView.tool].currentMenus];
       nextMenusAndPanels.menusTitles = [...navigationObj[recoilPageToolView.page][recoilPageToolView.tool].menusTitles];
@@ -754,7 +747,7 @@ let encodeParams = p => Object.entries(p).map(kv =>
       if (nextMenusAndPanels && nextMenusAndPanels.onLeave){
         leaveComponentName.current = nextMenusAndPanels.onLeave
       }
-      setSuppressMenus([]);  //Reset suppress menus
+      setSuppressMenus(null);  //Reset suppress menus
     }
 
     // console.log(">>>>nextMenusAndPanels",nextMenusAndPanels)
@@ -779,9 +772,22 @@ let encodeParams = p => Object.entries(p).map(kv =>
         backParams.current = currentParams.current; //Set params for back button to the previous page's params
         currentParams.current = params; 
 
-        // let newObj = {...nextMenusAndPanels} //Force refresh of root
-        // props.setToolRootMenusAndPanels(newObj)
-        props.setToolRootMenusAndPanels(nextMenusAndPanels)
+        //waitForMenuSuppression
+        //If wait for suppression only display main panel and menu cap
+        if (nextMenusAndPanels.waitForMenuSuppression){
+          let reducedSetMenusAndPanels = {...nextMenusAndPanels}
+          reducedSetMenusAndPanels.currentMenus = []
+          reducedSetMenusAndPanels.menusInitOpen = []
+          reducedSetMenusAndPanels.menusTitles = []
+          reducedSetMenusAndPanels.headerControls = []
+          reducedSetMenusAndPanels.headerControlsPositions = []
+
+          props.setToolRootMenusAndPanels(reducedSetMenusAndPanels)
+
+        }else{
+          props.setToolRootMenusAndPanels(nextMenusAndPanels)
+        }
+
       
     }
 
