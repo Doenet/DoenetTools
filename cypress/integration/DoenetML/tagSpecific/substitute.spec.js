@@ -378,15 +378,15 @@ describe('Substitute Tag Tests', function () {
     })
   });
 
-  it('substitute into text, case sensitive', () => {
+  it('substitute into text, match case', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
-    <substitute caseSensitive name="s_one" type="text" match="Be" replacement="cHe" assignNames="one">
+    <substitute matchCase name="s_one" type="text" match="Be" replacement="cHe" assignNames="one">
       <text>Big banana BerAtes brown bErry.</text>
     </substitute>
-    <substitute caseSensitive name="s_two" type="text" match="bE" replacement="cHe" assignNames="two">
+    <substitute matchCase name="s_two" type="text" match="bE" replacement="cHe" assignNames="two">
       <text>Big banana BerAtes brown bErry.</text>
     </substitute>
     `}, "*");
@@ -406,6 +406,46 @@ describe('Substitute Tag Tests', function () {
       expect(components['/one'].stateValues.value).eq(s1);
       expect(components['/s_two'].stateValues.value).eq(s2);
       expect(components['/two'].stateValues.value).eq(s2);
+
+    })
+
+  });
+
+  it('substitute into text, preserve case', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <substitute preserveCase name="s_one" type="text" match="word" replacement="new" assignNames="one">
+      <text>A word WORD Word wOrD WoRd.</text>
+    </substitute>
+    <substitute preserveCase name="s_two" type="text" match="word" replacement="NEW" assignNames="two">
+      <text>A word WORD Word wOrD WoRd.</text>
+    </substitute>
+    <substitute preserveCase name="s_three" type="text" match="word" replacement="NeW" assignNames="three">
+      <text>A word WORD Word wOrD WoRd.</text>
+    </substitute>
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+
+    let s1 = "A new NEW New new New."
+    let s2 = "A new NEW NEW nEW NEW."
+    let s3 = "A new NEW NeW neW NeW."
+
+    cy.get('#\\/one').should('have.text', s1)
+    cy.get('#\\/two').should('have.text', s2)
+    cy.get('#\\/three').should('have.text', s3)
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/s_one'].stateValues.value).eq(s1);
+      expect(components['/one'].stateValues.value).eq(s1);
+      expect(components['/s_two'].stateValues.value).eq(s2);
+      expect(components['/two'].stateValues.value).eq(s2);
+      expect(components['/s_three'].stateValues.value).eq(s3);
+      expect(components['/three'].stateValues.value).eq(s3);
 
     })
 
@@ -992,17 +1032,18 @@ describe('Substitute Tag Tests', function () {
       win.postMessage({
         doenetML: `
     <text>a</text>
-    <p>Original: <textinput name="orig" prefill="hello there" /></p>
+    <p>Original: <textinput name="orig" prefill="hello there" size="20" /></p>
     <p>Original 2:<text name="orig2">$orig</text></p>
 
     <p>Match: <textinput name="match" prefill="hello"/></p>
     <p>Match whole word: <booleaninput name="wholeWord"/></p>
-    <p>Case-sensitive match: <booleaninput name="caseSensitive"/></p>
+    <p>Match case: <booleaninput name="matchCase"/></p>
     <p>Replacement: <textinput name="replacement" prefill="bye"/></p>
+    <p>Preserve case: <booleaninput name="preserveCase"/></p>
 
-    <p>Substituted: <substitute type="text" match="$match" replacement="$replacement" matchWholeWord="$wholeWord" caseSensitive="$caseSensitive" assignNames="subbed" name="s">$orig2</substitute></p>
+    <p>Substituted: <substitute type="text" match="$match" replacement="$replacement" matchWholeWord="$wholeWord" matchCase="$matchCase" preserveCase="$preserveCase" assignNames="subbed" name="s">$orig2</substitute></p>
 
-    <p>Substituted 2: <textinput name="subbed2" bindValueTo="$subbed" /></p>
+    <p>Substituted 2: <textinput name="subbed2" bindValueTo="$subbed" size="20" /></p>
 
 
     `}, "*");
@@ -1237,8 +1278,8 @@ describe('Substitute Tag Tests', function () {
     })
 
 
-    cy.log('case sensitive')
-    cy.get('#\\/caseSensitive_input').click();
+    cy.log('match case')
+    cy.get('#\\/matchCase_input').click();
 
     cy.get('#\\/orig_input').should('have.value', 'hello then helloThere');
     cy.get('#\\/orig2').should('have.text', 'hello then helloThere');
@@ -1254,7 +1295,7 @@ describe('Substitute Tag Tests', function () {
     })
 
 
-    cy.log('Now cannot modify subbed due to replacement not matching original case sensitive')
+    cy.log('Now cannot modify subbed due to replacement not matching original case')
     cy.get('#\\/subbed2_input').type(`{end} Hello{enter}`);
 
     cy.get('#\\/orig_input').should('have.value', 'hello then helloThere Hello');
@@ -1270,7 +1311,7 @@ describe('Substitute Tag Tests', function () {
       expect(components['/subbed2'].stateValues.value).eq("Then then helloThere Hello")
     })
 
-    cy.log('Cannot add case sensitive match to subbed')
+    cy.log('Cannot add match to subbed')
     cy.get('#\\/subbed2_input').type(`{end} hello{enter}`);
 
     cy.get('#\\/orig_input').should('have.value', 'hello then helloThere Hello');
@@ -1290,7 +1331,6 @@ describe('Substitute Tag Tests', function () {
     cy.log('Change subbed to switch cases')
     cy.get('#\\/subbed2_input').type(`{home}{rightArrow}{backspace}t{rightArrow}{rightArrow}{rightArrow}{rightArrow}{rightArrow}{backspace}T{enter}`);
 
-
     cy.get('#\\/orig_input').should('have.value', 'then hello helloThere Hello');
     cy.get('#\\/orig2').should('have.text', 'then hello helloThere Hello');
     cy.get('#\\/subbed').should('have.text', 'then Then helloThere Hello');
@@ -1303,6 +1343,187 @@ describe('Substitute Tag Tests', function () {
       expect(components['/subbed'].stateValues.value).eq("then Then helloThere Hello")
       expect(components['/subbed2'].stateValues.value).eq("then Then helloThere Hello")
     })
+
+    cy.log('preserve case')
+    cy.get('#\\/preserveCase_input').click();
+
+    cy.get('#\\/orig_input').should('have.value', 'then hello helloThere Hello');
+    cy.get('#\\/orig2').should('have.text', 'then hello helloThere Hello');
+    cy.get('#\\/subbed').should('have.text', 'then then helloThere Hello');
+    cy.get('#\\/subbed2_input').should('have.value', 'then then helloThere Hello');
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/orig'].stateValues.value).eq("then hello helloThere Hello")
+      expect(components['/orig2'].stateValues.value).eq("then hello helloThere Hello")
+      expect(components['/subbed'].stateValues.value).eq("then then helloThere Hello")
+      expect(components['/subbed2'].stateValues.value).eq("then then helloThere Hello")
+    })
+
+
+    cy.log('Cannot change subbed since original contains effective replacement')
+    cy.get('#\\/subbed2_input').type(`{end} more{enter}`);
+
+    cy.get('#\\/orig_input').should('have.value', 'then hello helloThere Hello');
+    cy.get('#\\/orig2').should('have.text', 'then hello helloThere Hello');
+    cy.get('#\\/subbed').should('have.text', 'then then helloThere Hello');
+    cy.get('#\\/subbed2_input').should('have.value', 'then then helloThere Hello');
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/orig'].stateValues.value).eq("then hello helloThere Hello")
+      expect(components['/orig2'].stateValues.value).eq("then hello helloThere Hello")
+      expect(components['/subbed'].stateValues.value).eq("then then helloThere Hello")
+      expect(components['/subbed2'].stateValues.value).eq("then then helloThere Hello")
+    })
+
+    cy.log('change case of match so that effective replacement is not in original')
+    cy.get('#\\/match_input').type(`{home}{rightArrow}{backspace}H{enter}`);
+
+    cy.get('#\\/orig_input').should('have.value', 'then hello helloThere Hello');
+    cy.get('#\\/orig2').should('have.text', 'then hello helloThere Hello');
+    cy.get('#\\/subbed').should('have.text', 'then hello helloThere Then');
+    cy.get('#\\/subbed2_input').should('have.value', 'then hello helloThere Then');
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/orig'].stateValues.value).eq("then hello helloThere Hello")
+      expect(components['/orig2'].stateValues.value).eq("then hello helloThere Hello")
+      expect(components['/subbed'].stateValues.value).eq("then hello helloThere Then")
+      expect(components['/subbed2'].stateValues.value).eq("then hello helloThere Then")
+    })
+
+
+    cy.log('Can now change subbed')
+    cy.get('#\\/subbed2_input').type(`{home}{rightArrow}{backspace}T{rightArrow}{rightArrow}{rightArrow}{rightArrow}{rightArrow}{rightArrow}{rightArrow}{rightArrow}{rightArrow}{backspace}{backspace}{backspace}{backspace}{backspace}HELLO THEN{enter}`);
+
+    cy.get('#\\/orig_input').should('have.value', 'Hello HELLO THEN helloThere Hello');
+    cy.get('#\\/orig2').should('have.text', 'Hello HELLO THEN helloThere Hello');
+    cy.get('#\\/subbed').should('have.text', 'Then HELLO THEN helloThere Then');
+    cy.get('#\\/subbed2_input').should('have.value', 'Then HELLO THEN helloThere Then');
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/orig'].stateValues.value).eq("Hello HELLO THEN helloThere Hello")
+      expect(components['/orig2'].stateValues.value).eq("Hello HELLO THEN helloThere Hello")
+      expect(components['/subbed'].stateValues.value).eq("Then HELLO THEN helloThere Then")
+      expect(components['/subbed2'].stateValues.value).eq("Then HELLO THEN helloThere Then")
+    })
+
+
+    cy.log('change case of match so that effective replacement is again in original')
+    cy.get('#\\/match_input').type(`{home}{rightArrow}{rightArrow}{rightArrow}{rightArrow}{rightArrow}{backspace}{backspace}{backspace}{backspace}ELLO{enter}`);
+
+    cy.get('#\\/orig_input').should('have.value', 'Hello HELLO THEN helloThere Hello');
+    cy.get('#\\/orig2').should('have.text', 'Hello HELLO THEN helloThere Hello');
+    cy.get('#\\/subbed').should('have.text', 'Hello THEN THEN helloThere Hello');
+    cy.get('#\\/subbed2_input').should('have.value', 'Hello THEN THEN helloThere Hello');
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/orig'].stateValues.value).eq("Hello HELLO THEN helloThere Hello")
+      expect(components['/orig2'].stateValues.value).eq("Hello HELLO THEN helloThere Hello")
+      expect(components['/subbed'].stateValues.value).eq("Hello THEN THEN helloThere Hello")
+      expect(components['/subbed2'].stateValues.value).eq("Hello THEN THEN helloThere Hello")
+    })
+
+    cy.log('Cannot change subbed')
+    cy.get('#\\/subbed2_input').type(`{end} ineffective{enter}`);
+
+    cy.get('#\\/orig_input').should('have.value', 'Hello HELLO THEN helloThere Hello');
+    cy.get('#\\/orig2').should('have.text', 'Hello HELLO THEN helloThere Hello');
+    cy.get('#\\/subbed').should('have.text', 'Hello THEN THEN helloThere Hello');
+    cy.get('#\\/subbed2_input').should('have.value', 'Hello THEN THEN helloThere Hello');
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/orig'].stateValues.value).eq("Hello HELLO THEN helloThere Hello")
+      expect(components['/orig2'].stateValues.value).eq("Hello HELLO THEN helloThere Hello")
+      expect(components['/subbed'].stateValues.value).eq("Hello THEN THEN helloThere Hello")
+      expect(components['/subbed2'].stateValues.value).eq("Hello THEN THEN helloThere Hello")
+    })
+
+
+    cy.log('change original so no longer has effective replacement')
+    cy.get('#\\/orig_input').type(`{home}{rightArrow}{rightArrow}{rightArrow}{rightArrow}{rightArrow}{rightArrow}{rightArrow}{rightArrow}{rightArrow}{rightArrow}{rightArrow}{rightArrow}{rightArrow}{rightArrow}{rightArrow}{rightArrow}{backspace}{backspace}{backspace}hen{enter}`);
+
+    cy.get('#\\/orig_input').should('have.value', 'Hello HELLO Then helloThere Hello');
+    cy.get('#\\/orig2').should('have.text', 'Hello HELLO Then helloThere Hello');
+    cy.get('#\\/subbed').should('have.text', 'Hello THEN Then helloThere Hello');
+    cy.get('#\\/subbed2_input').should('have.value', 'Hello THEN Then helloThere Hello');
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/orig'].stateValues.value).eq("Hello HELLO Then helloThere Hello")
+      expect(components['/orig2'].stateValues.value).eq("Hello HELLO Then helloThere Hello")
+      expect(components['/subbed'].stateValues.value).eq("Hello THEN Then helloThere Hello")
+      expect(components['/subbed2'].stateValues.value).eq("Hello THEN Then helloThere Hello")
+    })
+
+    cy.log('Can change subbed once more')
+    cy.get('#\\/subbed2_input').type(`{end}{backspace}{backspace}{backspace}{backspace}{backspace}THEN{enter}`);
+
+    cy.get('#\\/orig_input').should('have.value', 'Hello HELLO Then helloThere HELLO');
+    cy.get('#\\/orig2').should('have.text', 'Hello HELLO Then helloThere HELLO');
+    cy.get('#\\/subbed').should('have.text', 'Hello THEN Then helloThere THEN');
+    cy.get('#\\/subbed2_input').should('have.value', 'Hello THEN Then helloThere THEN');
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/orig'].stateValues.value).eq("Hello HELLO Then helloThere HELLO")
+      expect(components['/orig2'].stateValues.value).eq("Hello HELLO Then helloThere HELLO")
+      expect(components['/subbed'].stateValues.value).eq("Hello THEN Then helloThere THEN")
+      expect(components['/subbed2'].stateValues.value).eq("Hello THEN Then helloThere THEN")
+    })
+
+    cy.log('Cannot add match to subbed')
+    cy.get('#\\/subbed2_input').type(`{end} HELLO{enter}`);
+
+    cy.get('#\\/orig_input').should('have.value', 'Hello HELLO Then helloThere HELLO');
+    cy.get('#\\/orig2').should('have.text', 'Hello HELLO Then helloThere HELLO');
+    cy.get('#\\/subbed').should('have.text', 'Hello THEN Then helloThere THEN');
+    cy.get('#\\/subbed2_input').should('have.value', 'Hello THEN Then helloThere THEN');
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/orig'].stateValues.value).eq("Hello HELLO Then helloThere HELLO")
+      expect(components['/orig2'].stateValues.value).eq("Hello HELLO Then helloThere HELLO")
+      expect(components['/subbed'].stateValues.value).eq("Hello THEN Then helloThere THEN")
+      expect(components['/subbed2'].stateValues.value).eq("Hello THEN Then helloThere THEN")
+    })
+
+
+  });
+
+  it('substitute with incomplete attributes does nothing', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <substitute assignNames="m1">x+1</substitute>
+    <substitute assignNames="m2" match="x">x+1</substitute>
+    <substitute assignNames="m3" replacement="y">x+1</substitute>
+    <substitute type="text" assignNames="t1">hello</substitute>
+    <substitute type="text" assignNames="t2" match="hello">hello</substitute>
+    <substitute type="text" assignNames="t3" replacement="bye">hello</substitute>
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+
+    cy.get('#\\/m1 .mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('x+1')
+    })
+    cy.get('#\\/m2 .mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('x+1')
+    })
+    cy.get('#\\/m3 .mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('x+1')
+    })
+
+    cy.get('#\\/t1').should('have.text','hello')
+    cy.get('#\\/t2').should('have.text','hello')
+    cy.get('#\\/t3').should('have.text','hello')
 
   });
 
