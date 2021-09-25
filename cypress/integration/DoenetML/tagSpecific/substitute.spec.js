@@ -1,3 +1,5 @@
+import me from 'math-expressions';
+
 describe('Substitute Tag Tests', function () {
 
   beforeEach(() => {
@@ -307,7 +309,7 @@ describe('Substitute Tag Tests', function () {
       expect(components['/two'].stateValues.value.tree).eqls(["+", "y", 1])
     })
   });
-  
+
   it('substitute into string sugared to text', () => {
     cy.window().then((win) => {
       win.postMessage({
@@ -574,5 +576,735 @@ describe('Substitute Tag Tests', function () {
       expect(components['/one'].stateValues.value).eq(s5);
     })
   });
+
+  it('modify in inverse direction, math', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <p>Original: <mathinput name="orig" prefill="x^2+2x+3y" /></p>
+    <p>Original 2:<math name="orig2">$orig</math></p>
+
+    <p>Match: <mathinput name="match" prefill="x"/></p>
+    <p>Replacement: <mathinput name="replacement" prefill="b"/></p>
+
+    <p>Substituted: <substitute match="$match" replacement="$replacement" assignNames="subbed" name="s">$orig2</substitute></p>
+
+    <p>Substituted 2: <mathinput name="subbed2" bindValueTo="$subbed" /></p>
+
+
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+
+    cy.get(`#\\/orig .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('x2+2x+3y')
+    })
+    cy.get('#\\/orig2 .mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('x2+2x+3y')
+    })
+
+    cy.get('#\\/subbed .mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('b2+2b+3y')
+    })
+    cy.get(`#\\/subbed2 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('b2+2b+3y')
+    })
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      let origExpr = me.fromText("x^2+2x+3y").tree;
+      let subbedExpr = me.fromText("b^2+2b+3y").tree;
+      expect(components['/orig'].stateValues.value.tree).eqls(origExpr)
+      expect(components['/orig2'].stateValues.value.tree).eqls(origExpr)
+      expect(components['/subbed'].stateValues.value.tree).eqls(subbedExpr)
+      expect(components['/subbed2'].stateValues.value.tree).eqls(subbedExpr)
+    })
+
+    cy.log('change original')
+    cy.get('#\\/orig textarea').type(`{end}{backspace}x{enter}`, { force: true });
+
+    cy.get(`#\\/orig .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('x2+2x+3x')
+    })
+    cy.get('#\\/orig2 .mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('x2+2x+3x')
+    })
+
+    cy.get('#\\/subbed .mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('b2+2b+3b')
+    })
+    cy.get(`#\\/subbed2 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('b2+2b+3b')
+    })
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      let origExpr = me.fromText("x^2+2x+3x").tree;
+      let subbedExpr = me.fromText("b^2+2b+3b").tree;
+      expect(components['/orig'].stateValues.value.tree).eqls(origExpr)
+      expect(components['/orig2'].stateValues.value.tree).eqls(origExpr)
+      expect(components['/subbed'].stateValues.value.tree).eqls(subbedExpr)
+      expect(components['/subbed2'].stateValues.value.tree).eqls(subbedExpr)
+    })
+
+
+    cy.log('change subbed')
+    cy.get('#\\/subbed2 textarea').type(`{end}{backspace}v/b{enter}`, { force: true });
+
+    cy.get(`#\\/orig .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('x2+2x+3vx')
+    })
+    cy.get('#\\/orig2 .mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('x2+2x+3vx')
+    })
+
+    cy.get('#\\/subbed .mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('b2+2b+3vb')
+    })
+    cy.get(`#\\/subbed2 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('b2+2b+3vb')
+    })
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      let origExpr = me.fromText("x^2+2x+3v/x").tree;
+      let subbedExpr = me.fromText("b^2+2b+3v/b").tree;
+      expect(components['/orig'].stateValues.value.tree).eqls(origExpr)
+      expect(components['/orig2'].stateValues.value.tree).eqls(origExpr)
+      expect(components['/subbed'].stateValues.value.tree).eqls(subbedExpr)
+      expect(components['/subbed2'].stateValues.value.tree).eqls(subbedExpr)
+    })
+
+
+    cy.log('change replacement so that it is in original')
+    cy.get('#\\/replacement textarea').type(`{end}{backspace}v{enter}`, { force: true });
+
+    cy.get(`#\\/orig .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('x2+2x+3vx')
+    })
+    cy.get('#\\/orig2 .mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('x2+2x+3vx')
+    })
+
+    cy.get('#\\/subbed .mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('v2+2v+3vv')
+    })
+    cy.get(`#\\/subbed2 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('v2+2v+3vv')
+    })
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      let origExpr = me.fromText("x^2+2x+3v/x").tree;
+      let subbedExpr = me.fromText("v^2+2v+3v/v").tree;
+      expect(components['/orig'].stateValues.value.tree).eqls(origExpr)
+      expect(components['/orig2'].stateValues.value.tree).eqls(origExpr)
+      expect(components['/subbed'].stateValues.value.tree).eqls(subbedExpr)
+      expect(components['/subbed2'].stateValues.value.tree).eqls(subbedExpr)
+    })
+
+
+    cy.log('Cannot modify subbed')
+    cy.get('#\\/subbed2 textarea').type(`{end}{backspace}+1{enter}`, { force: true });
+
+    cy.get(`#\\/orig .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('x2+2x+3vx')
+    })
+    cy.get('#\\/orig2 .mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('x2+2x+3vx')
+    })
+
+    cy.get('#\\/subbed .mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('v2+2v+3vv')
+    })
+    cy.get(`#\\/subbed2 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('v2+2v+3vv')
+    })
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      let origExpr = me.fromText("x^2+2x+3v/x").tree;
+      let subbedExpr = me.fromText("v^2+2v+3v/v").tree;
+      expect(components['/orig'].stateValues.value.tree).eqls(origExpr)
+      expect(components['/orig2'].stateValues.value.tree).eqls(origExpr)
+      expect(components['/subbed'].stateValues.value.tree).eqls(subbedExpr)
+      expect(components['/subbed2'].stateValues.value.tree).eqls(subbedExpr)
+    })
+
+
+    cy.log('change original to not contain replacement')
+    cy.get('#\\/orig textarea').type(`{end}{leftArrow}{leftArrow}{leftArrow}{backspace}u{enter}`, { force: true });
+
+    cy.get(`#\\/orig .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('x2+2x+3ux')
+    })
+    cy.get('#\\/orig2 .mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('x2+2x+3ux')
+    })
+
+    cy.get('#\\/subbed .mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('v2+2v+3uv')
+    })
+    cy.get(`#\\/subbed2 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('v2+2v+3uv')
+    })
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      let origExpr = me.fromText("x^2+2x+3u/x").tree;
+      let subbedExpr = me.fromText("v^2+2v+3u/v").tree;
+      expect(components['/orig'].stateValues.value.tree).eqls(origExpr)
+      expect(components['/orig2'].stateValues.value.tree).eqls(origExpr)
+      expect(components['/subbed'].stateValues.value.tree).eqls(subbedExpr)
+      expect(components['/subbed2'].stateValues.value.tree).eqls(subbedExpr)
+    })
+
+    cy.log('Can modify subbed again')
+    cy.get('#\\/subbed2 textarea').type(`{home}{rightArrow}{rightArrow}{rightArrow}{backspace}5{enter}`, { force: true });
+
+    cy.get(`#\\/orig .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('x5+2x+3ux')
+    })
+    cy.get('#\\/orig2 .mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('x5+2x+3ux')
+    })
+
+    cy.get('#\\/subbed .mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('v5+2v+3uv')
+    })
+    cy.get(`#\\/subbed2 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('v5+2v+3uv')
+    })
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      let origExpr = me.fromText("x^5+2x+3u/x").tree;
+      let subbedExpr = me.fromText("v^5+2v+3u/v").tree;
+      expect(components['/orig'].stateValues.value.tree).eqls(origExpr)
+      expect(components['/orig2'].stateValues.value.tree).eqls(origExpr)
+      expect(components['/subbed'].stateValues.value.tree).eqls(subbedExpr)
+      expect(components['/subbed2'].stateValues.value.tree).eqls(subbedExpr)
+    })
+
+
+    cy.log('change replacement to be more than a variable')
+    cy.get('#\\/replacement textarea').type(`{end}+1{enter}`, { force: true });
+
+    cy.get(`#\\/orig .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('x5+2x+3ux')
+    })
+    cy.get('#\\/orig2 .mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('x5+2x+3ux')
+    })
+
+    cy.get('#\\/subbed .mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(v+1)5+2(v+1)+3uv+1')
+    })
+    cy.get(`#\\/subbed2 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('(v+1)5+2(v+1)+3uv+1')
+    })
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      let origExpr = me.fromText("x^5+2x+3u/x").tree;
+      let subbedExpr = me.fromText("(v+1)^5+2(v+1)+3u/(v+1)").tree;
+      expect(components['/orig'].stateValues.value.tree).eqls(origExpr)
+      expect(components['/orig2'].stateValues.value.tree).eqls(origExpr)
+      expect(components['/subbed'].stateValues.value.tree).eqls(subbedExpr)
+      expect(components['/subbed2'].stateValues.value.tree).eqls(subbedExpr)
+    })
+
+
+    cy.log('Cannot modify subbed')
+    cy.get('#\\/subbed2 textarea').type(`{home}+7{enter}`, { force: true });
+
+    cy.get(`#\\/orig .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('x5+2x+3ux')
+    })
+    cy.get('#\\/orig2 .mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('x5+2x+3ux')
+    })
+
+    cy.get('#\\/subbed .mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(v+1)5+2(v+1)+3uv+1')
+    })
+    cy.get(`#\\/subbed2 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('(v+1)5+2(v+1)+3uv+1')
+    })
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      let origExpr = me.fromText("x^5+2x+3u/x").tree;
+      let subbedExpr = me.fromText("(v+1)^5+2(v+1)+3u/(v+1)").tree;
+      expect(components['/orig'].stateValues.value.tree).eqls(origExpr)
+      expect(components['/orig2'].stateValues.value.tree).eqls(origExpr)
+      expect(components['/subbed'].stateValues.value.tree).eqls(subbedExpr)
+      expect(components['/subbed2'].stateValues.value.tree).eqls(subbedExpr)
+    })
+
+    cy.log('change replacement to involve a subscript')
+    cy.get('#\\/replacement textarea').type(`{end}{backspace}{backspace}_3{enter}`, { force: true });
+
+    cy.get(`#\\/orig .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('x5+2x+3ux')
+    })
+    cy.get('#\\/orig2 .mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('x5+2x+3ux')
+    })
+
+    cy.get('#\\/subbed .mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('v53+2v3+3uv3')
+    })
+    cy.get(`#\\/subbed2 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('v53+2v3+3uv3')
+    })
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      let origExpr = me.fromText("x^5+2x+3u/x").tree;
+      let subbedExpr = me.fromText("v_3^5+2v_3+3u/v_3").tree;
+      expect(components['/orig'].stateValues.value.tree).eqls(origExpr)
+      expect(components['/orig2'].stateValues.value.tree).eqls(origExpr)
+      expect(components['/subbed'].stateValues.value.tree).eqls(subbedExpr)
+      expect(components['/subbed2'].stateValues.value.tree).eqls(subbedExpr)
+    })
+
+
+    cy.log('Can modify subbed once more')
+    cy.get('#\\/subbed2 textarea').type(`{home}{rightArrow}{rightArrow}{rightArrow}{backspace}9{enter}`, { force: true });
+
+    cy.get(`#\\/orig .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('v59+2x+3ux')
+    })
+    cy.get('#\\/orig2 .mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('v59+2x+3ux')
+    })
+
+    cy.get('#\\/subbed .mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('v59+2v3+3uv3')
+    })
+    cy.get(`#\\/subbed2 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('v59+2v3+3uv3')
+    })
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      let origExpr = me.fromText("v_9^5+2x+3u/x").tree;
+      let subbedExpr = me.fromText("v_9^5+2v_3+3u/v_3").tree;
+      expect(components['/orig'].stateValues.value.tree).eqls(origExpr)
+      expect(components['/orig2'].stateValues.value.tree).eqls(origExpr)
+      expect(components['/subbed'].stateValues.value.tree).eqls(subbedExpr)
+      expect(components['/subbed2'].stateValues.value.tree).eqls(subbedExpr)
+    })
+
+
+    cy.log('change match to involve a subscript')
+    cy.get('#\\/match textarea').type(`{end}{backspace}v_9{enter}`, { force: true });
+
+    cy.get(`#\\/orig .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('v59+2x+3ux')
+    })
+    cy.get('#\\/orig2 .mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('v59+2x+3ux')
+    })
+
+    cy.get('#\\/subbed .mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('v53+2x+3ux')
+    })
+    cy.get(`#\\/subbed2 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('v53+2x+3ux')
+    })
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      let origExpr = me.fromText("v_9^5+2x+3u/x").tree;
+      let subbedExpr = me.fromText("v_3^5+2x+3u/x").tree;
+      expect(components['/orig'].stateValues.value.tree).eqls(origExpr)
+      expect(components['/orig2'].stateValues.value.tree).eqls(origExpr)
+      expect(components['/subbed'].stateValues.value.tree).eqls(subbedExpr)
+      expect(components['/subbed2'].stateValues.value.tree).eqls(subbedExpr)
+    })
+    
+
+    cy.log('Can still modify subbed')
+    cy.get('#\\/subbed2 textarea').type(`{end}{leftArrow}{backspace}v_3{enter}`, { force: true });
+
+    cy.get(`#\\/orig .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('v59+2x+3uv9')
+    })
+    cy.get('#\\/orig2 .mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('v59+2x+3uv9')
+    })
+
+    cy.get('#\\/subbed .mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('v53+2x+3uv3')
+    })
+    cy.get(`#\\/subbed2 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('v53+2x+3uv3')
+    })
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      let origExpr = me.fromText("v_9^5+2x+3u/v_9").tree;
+      let subbedExpr = me.fromText("v_3^5+2x+3u/v_3").tree;
+      expect(components['/orig'].stateValues.value.tree).eqls(origExpr)
+      expect(components['/orig2'].stateValues.value.tree).eqls(origExpr)
+      expect(components['/subbed'].stateValues.value.tree).eqls(subbedExpr)
+      expect(components['/subbed2'].stateValues.value.tree).eqls(subbedExpr)
+    })
+
+
+    cy.log('Cannot modify subbed to include match')
+    cy.get('#\\/subbed2 textarea').type(`{end}+v_9{enter}`, { force: true });
+
+    cy.get(`#\\/orig .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('v59+2x+3uv9')
+    })
+    cy.get('#\\/orig2 .mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('v59+2x+3uv9')
+    })
+
+    cy.get('#\\/subbed .mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('v53+2x+3uv3')
+    })
+    cy.get(`#\\/subbed2 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('v53+2x+3uv3')
+    })
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      let origExpr = me.fromText("v_9^5+2x+3u/v_9").tree;
+      let subbedExpr = me.fromText("v_3^5+2x+3u/v_3").tree;
+      expect(components['/orig'].stateValues.value.tree).eqls(origExpr)
+      expect(components['/orig2'].stateValues.value.tree).eqls(origExpr)
+      expect(components['/subbed'].stateValues.value.tree).eqls(subbedExpr)
+      expect(components['/subbed2'].stateValues.value.tree).eqls(subbedExpr)
+    })
+    
+    
+
+  });
+
+  it('modify in inverse direction, text', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <p>Original: <textinput name="orig" prefill="hello there" /></p>
+    <p>Original 2:<text name="orig2">$orig</text></p>
+
+    <p>Match: <textinput name="match" prefill="hello"/></p>
+    <p>Match whole word: <booleaninput name="wholeWord"/></p>
+    <p>Case-sensitive match: <booleaninput name="caseSensitive"/></p>
+    <p>Replacement: <textinput name="replacement" prefill="bye"/></p>
+
+    <p>Substituted: <substitute type="text" match="$match" replacement="$replacement" matchWholeWord="$wholeWord" caseSensitive="$caseSensitive" assignNames="subbed" name="s">$orig2</substitute></p>
+
+    <p>Substituted 2: <textinput name="subbed2" bindValueTo="$subbed" /></p>
+
+
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+
+    cy.get('#\\/orig_input').should('have.value', 'hello there');
+    cy.get('#\\/orig2').should('have.text', 'hello there');
+    cy.get('#\\/subbed').should('have.text', 'bye there');
+    cy.get('#\\/subbed2_input').should('have.value', 'bye there');
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/orig'].stateValues.value).eq("hello there")
+      expect(components['/orig2'].stateValues.value).eq("hello there")
+      expect(components['/subbed'].stateValues.value).eq("bye there")
+      expect(components['/subbed2'].stateValues.value).eq("bye there")
+    })
+
+    cy.log('change original')
+    cy.get('#\\/orig_input').type(`{end}Hello{enter}`);
+
+    cy.get('#\\/orig_input').should('have.value', 'hello thereHello');
+    cy.get('#\\/orig2').should('have.text', 'hello thereHello');
+    cy.get('#\\/subbed').should('have.text', 'bye therebye');
+    cy.get('#\\/subbed2_input').should('have.value', 'bye therebye');
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/orig'].stateValues.value).eq("hello thereHello")
+      expect(components['/orig2'].stateValues.value).eq("hello thereHello")
+      expect(components['/subbed'].stateValues.value).eq("bye therebye")
+      expect(components['/subbed2'].stateValues.value).eq("bye therebye")
+    })
+
+
+    cy.log('change subbed')
+    cy.get('#\\/subbed2_input').type(`{end}Bye{enter}`);
+
+    cy.get('#\\/orig_input').should('have.value', 'hello therehellohello');
+    cy.get('#\\/orig2').should('have.text', 'hello therehellohello');
+    cy.get('#\\/subbed').should('have.text', 'bye therebyebye');
+    cy.get('#\\/subbed2_input').should('have.value', 'bye therebyebye');
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/orig'].stateValues.value).eq("hello therehellohello")
+      expect(components['/orig2'].stateValues.value).eq("hello therehellohello")
+      expect(components['/subbed'].stateValues.value).eq("bye therebyebye")
+      expect(components['/subbed2'].stateValues.value).eq("bye therebyebye")
+    })
+
+    cy.log('change replacement so that it is in original')
+    cy.get('#\\/replacement_input').clear().type(`There{enter}`);
+
+    cy.get('#\\/orig_input').should('have.value', 'hello therehellohello');
+    cy.get('#\\/orig2').should('have.text', 'hello therehellohello');
+    cy.get('#\\/subbed').should('have.text', 'There thereThereThere');
+    cy.get('#\\/subbed2_input').should('have.value', 'There thereThereThere');
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/orig'].stateValues.value).eq("hello therehellohello")
+      expect(components['/orig2'].stateValues.value).eq("hello therehellohello")
+      expect(components['/subbed'].stateValues.value).eq("There thereThereThere")
+      expect(components['/subbed2'].stateValues.value).eq("There thereThereThere")
+    })
+
+
+    cy.log('Cannot modify subbed')
+    cy.get('#\\/subbed2_input').type(`{end} extra{enter}`);
+
+    cy.get('#\\/orig_input').should('have.value', 'hello therehellohello');
+    cy.get('#\\/orig2').should('have.text', 'hello therehellohello');
+    cy.get('#\\/subbed').should('have.text', 'There thereThereThere');
+    cy.get('#\\/subbed2_input').should('have.value', 'There thereThereThere');
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/orig'].stateValues.value).eq("hello therehellohello")
+      expect(components['/orig2'].stateValues.value).eq("hello therehellohello")
+      expect(components['/subbed'].stateValues.value).eq("There thereThereThere")
+      expect(components['/subbed2'].stateValues.value).eq("There thereThereThere")
+    })
+
+    cy.log('change original to not contain replacement')
+    cy.get('#\\/orig_input').type("{end}{leftArrow}{leftArrow}{leftArrow}{leftArrow}{leftArrow}{leftArrow}{leftArrow}{leftArrow}{leftArrow}{leftArrow}{backspace}{backspace}n{enter}")
+
+    cy.get('#\\/orig_input').should('have.value', 'hello thenhellohello');
+    cy.get('#\\/orig2').should('have.text', 'hello thenhellohello');
+    cy.get('#\\/subbed').should('have.text', 'There thenThereThere');
+    cy.get('#\\/subbed2_input').should('have.value', 'There thenThereThere');
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/orig'].stateValues.value).eq("hello thenhellohello")
+      expect(components['/orig2'].stateValues.value).eq("hello thenhellohello")
+      expect(components['/subbed'].stateValues.value).eq("There thenThereThere")
+      expect(components['/subbed2'].stateValues.value).eq("There thenThereThere")
+    })
+
+    cy.log('Can modify subbed again')
+    cy.get('#\\/subbed2_input').type(`{end}{backspace}{backspace}{enter}`);
+
+    cy.get('#\\/orig_input').should('have.value', 'hello thenhelloThe');
+    cy.get('#\\/orig2').should('have.text', 'hello thenhelloThe');
+    cy.get('#\\/subbed').should('have.text', 'There thenThereThe');
+    cy.get('#\\/subbed2_input').should('have.value', 'There thenThereThe');
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/orig'].stateValues.value).eq("hello thenhelloThe")
+      expect(components['/orig2'].stateValues.value).eq("hello thenhelloThe")
+      expect(components['/subbed'].stateValues.value).eq("There thenThereThe")
+      expect(components['/subbed2'].stateValues.value).eq("There thenThereThe")
+    })
+
+    cy.log('Cannot modify subbed to include match')
+    cy.get('#\\/subbed2_input').type(`{end}HELLO{enter}`);
+
+    cy.get('#\\/orig_input').should('have.value', 'hello thenhelloThe');
+    cy.get('#\\/orig2').should('have.text', 'hello thenhelloThe');
+    cy.get('#\\/subbed').should('have.text', 'There thenThereThe');
+    cy.get('#\\/subbed2_input').should('have.value', 'There thenThereThe');
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/orig'].stateValues.value).eq("hello thenhelloThe")
+      expect(components['/orig2'].stateValues.value).eq("hello thenhelloThe")
+      expect(components['/subbed'].stateValues.value).eq("There thenThereThe")
+      expect(components['/subbed2'].stateValues.value).eq("There thenThereThe")
+    })
+
+    cy.log('match whole word')
+    cy.get('#\\/wholeWord_input').click();
+
+    cy.get('#\\/orig_input').should('have.value', 'hello thenhelloThe');
+    cy.get('#\\/orig2').should('have.text', 'hello thenhelloThe');
+    cy.get('#\\/subbed').should('have.text', 'There thenhelloThe');
+    cy.get('#\\/subbed2_input').should('have.value', 'There thenhelloThe');
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/orig'].stateValues.value).eq("hello thenhelloThe")
+      expect(components['/orig2'].stateValues.value).eq("hello thenhelloThe")
+      expect(components['/subbed'].stateValues.value).eq("There thenhelloThe")
+      expect(components['/subbed2'].stateValues.value).eq("There thenhelloThe")
+    })
+
+    
+    cy.log("change replacement so matches original, but not as a whole word")
+    cy.get('#\\/replacement_input').clear().type(`Then{enter}`);
+
+    cy.get('#\\/orig_input').should('have.value', 'hello thenhelloThe');
+    cy.get('#\\/orig2').should('have.text', 'hello thenhelloThe');
+    cy.get('#\\/subbed').should('have.text', 'Then thenhelloThe');
+    cy.get('#\\/subbed2_input').should('have.value', 'Then thenhelloThe');
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/orig'].stateValues.value).eq("hello thenhelloThe")
+      expect(components['/orig2'].stateValues.value).eq("hello thenhelloThe")
+      expect(components['/subbed'].stateValues.value).eq("Then thenhelloThe")
+      expect(components['/subbed2'].stateValues.value).eq("Then thenhelloThe")
+    })
+
+    cy.log('Can still modify subbed')
+    cy.get('#\\/subbed2_input').type(`{end}re{enter}`);
+
+    cy.get('#\\/orig_input').should('have.value', 'hello thenhelloThere');
+    cy.get('#\\/orig2').should('have.text', 'hello thenhelloThere');
+    cy.get('#\\/subbed').should('have.text', 'Then thenhelloThere');
+    cy.get('#\\/subbed2_input').should('have.value', 'Then thenhelloThere');
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/orig'].stateValues.value).eq("hello thenhelloThere")
+      expect(components['/orig2'].stateValues.value).eq("hello thenhelloThere")
+      expect(components['/subbed'].stateValues.value).eq("Then thenhelloThere")
+      expect(components['/subbed2'].stateValues.value).eq("Then thenhelloThere")
+    })
+
+
+    cy.log('Cannnot modify subbed by adding spaces to separate match')
+    cy.get('#\\/subbed2_input').type(`{end}{leftArrow}{leftArrow}{leftArrow}{leftArrow}{leftArrow} {leftArrow}{leftArrow}{leftArrow}{leftArrow}{leftArrow}{leftArrow} {enter}`);
+
+    cy.get('#\\/orig_input').should('have.value', 'hello thenhelloThere');
+    cy.get('#\\/orig2').should('have.text', 'hello thenhelloThere');
+    cy.get('#\\/subbed').should('have.text', 'Then thenhelloThere');
+    cy.get('#\\/subbed2_input').should('have.value', 'Then thenhelloThere');
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/orig'].stateValues.value).eq("hello thenhelloThere")
+      expect(components['/orig2'].stateValues.value).eq("hello thenhelloThere")
+      expect(components['/subbed'].stateValues.value).eq("Then thenhelloThere")
+      expect(components['/subbed2'].stateValues.value).eq("Then thenhelloThere")
+    })
+
+
+    cy.log("change original so that replacement matches original as a whole word")
+    cy.get('#\\/orig_input').type('{end}{leftArrow}{leftArrow}{leftArrow}{leftArrow}{leftArrow}{leftArrow}{leftArrow}{leftArrow}{leftArrow}{leftArrow} {enter}')
+
+    cy.get('#\\/orig_input').should('have.value', 'hello then helloThere');
+    cy.get('#\\/orig2').should('have.text', 'hello then helloThere');
+    cy.get('#\\/subbed').should('have.text', 'Then then helloThere');
+    cy.get('#\\/subbed2_input').should('have.value', 'Then then helloThere');
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/orig'].stateValues.value).eq("hello then helloThere")
+      expect(components['/orig2'].stateValues.value).eq("hello then helloThere")
+      expect(components['/subbed'].stateValues.value).eq("Then then helloThere")
+      expect(components['/subbed2'].stateValues.value).eq("Then then helloThere")
+    })
+
+    cy.log('Cannot modify subbed due to replacement match')
+    cy.get('#\\/subbed2_input').type(`{end}nothing{enter}`);
+
+    cy.get('#\\/orig_input').should('have.value', 'hello then helloThere');
+    cy.get('#\\/orig2').should('have.text', 'hello then helloThere');
+    cy.get('#\\/subbed').should('have.text', 'Then then helloThere');
+    cy.get('#\\/subbed2_input').should('have.value', 'Then then helloThere');
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/orig'].stateValues.value).eq("hello then helloThere")
+      expect(components['/orig2'].stateValues.value).eq("hello then helloThere")
+      expect(components['/subbed'].stateValues.value).eq("Then then helloThere")
+      expect(components['/subbed2'].stateValues.value).eq("Then then helloThere")
+    })
+
+
+    cy.log('case sensitive')
+    cy.get('#\\/caseSensitive_input').click();
+
+    cy.get('#\\/orig_input').should('have.value', 'hello then helloThere');
+    cy.get('#\\/orig2').should('have.text', 'hello then helloThere');
+    cy.get('#\\/subbed').should('have.text', 'Then then helloThere');
+    cy.get('#\\/subbed2_input').should('have.value', 'Then then helloThere');
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/orig'].stateValues.value).eq("hello then helloThere")
+      expect(components['/orig2'].stateValues.value).eq("hello then helloThere")
+      expect(components['/subbed'].stateValues.value).eq("Then then helloThere")
+      expect(components['/subbed2'].stateValues.value).eq("Then then helloThere")
+    })
+
+
+    cy.log('Now cannot modify subbed due to replacement not matching original case sensitive')
+    cy.get('#\\/subbed2_input').type(`{end} Hello{enter}`);
+
+    cy.get('#\\/orig_input').should('have.value', 'hello then helloThere Hello');
+    cy.get('#\\/orig2').should('have.text', 'hello then helloThere Hello');
+    cy.get('#\\/subbed').should('have.text', 'Then then helloThere Hello');
+    cy.get('#\\/subbed2_input').should('have.value', 'Then then helloThere Hello');
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/orig'].stateValues.value).eq("hello then helloThere Hello")
+      expect(components['/orig2'].stateValues.value).eq("hello then helloThere Hello")
+      expect(components['/subbed'].stateValues.value).eq("Then then helloThere Hello")
+      expect(components['/subbed2'].stateValues.value).eq("Then then helloThere Hello")
+    })
+
+    cy.log('Cannot add case sensitive match to subbed')
+    cy.get('#\\/subbed2_input').type(`{end} hello{enter}`);
+
+    cy.get('#\\/orig_input').should('have.value', 'hello then helloThere Hello');
+    cy.get('#\\/orig2').should('have.text', 'hello then helloThere Hello');
+    cy.get('#\\/subbed').should('have.text', 'Then then helloThere Hello');
+    cy.get('#\\/subbed2_input').should('have.value', 'Then then helloThere Hello');
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/orig'].stateValues.value).eq("hello then helloThere Hello")
+      expect(components['/orig2'].stateValues.value).eq("hello then helloThere Hello")
+      expect(components['/subbed'].stateValues.value).eq("Then then helloThere Hello")
+      expect(components['/subbed2'].stateValues.value).eq("Then then helloThere Hello")
+    })
+
+
+    cy.log('Change subbed to switch cases')
+    cy.get('#\\/subbed2_input').type(`{home}{rightArrow}{backspace}t{rightArrow}{rightArrow}{rightArrow}{rightArrow}{rightArrow}{backspace}T{enter}`);
+
+
+    cy.get('#\\/orig_input').should('have.value', 'then hello helloThere Hello');
+    cy.get('#\\/orig2').should('have.text', 'then hello helloThere Hello');
+    cy.get('#\\/subbed').should('have.text', 'then Then helloThere Hello');
+    cy.get('#\\/subbed2_input').should('have.value', 'then Then helloThere Hello');
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/orig'].stateValues.value).eq("then hello helloThere Hello")
+      expect(components['/orig2'].stateValues.value).eq("then hello helloThere Hello")
+      expect(components['/subbed'].stateValues.value).eq("then Then helloThere Hello")
+      expect(components['/subbed2'].stateValues.value).eq("then Then helloThere Hello")
+    })
+
+  });
+
 
 })
