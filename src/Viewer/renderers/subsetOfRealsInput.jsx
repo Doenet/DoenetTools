@@ -54,7 +54,6 @@ export default class subsetOfReals extends DoenetRenderer {
     }
 
     this.primaryColor = "red";
-    this.removeColor = "grey";
     this.storedPoints = [];
     this.storedLines = [];
     this.firstHashXPosition = 40;
@@ -62,10 +61,6 @@ export default class subsetOfReals extends DoenetRenderer {
 
     this.pointHitTolerance = 0.2;
 
-    // console.log(this.doenetSvData);
-    // console.log(this.doenetSvData.numericalPoints);
-    // console.log(this.doenetSvData.numericalIntervals);
-    //Infinity and -Infinity start and end
 
   }
 
@@ -132,16 +127,12 @@ export default class subsetOfReals extends DoenetRenderer {
 
     for (let pt of this.doenetSvData.points) {
       let closed = pt.inSubset;
-      let remove = false;
 
       let xPosition = this.xValueToXPosition(pt.value);
 
       let currentFillColor = this.primaryColor;
       if (!closed) {
         currentFillColor = "white";
-      }
-      if (remove) {
-        currentFillColor = this.removeColor;
       }
 
       let key = `point-${xPosition}`;
@@ -341,25 +332,6 @@ export default class subsetOfReals extends DoenetRenderer {
     const activeButtonColor = "lightblue";
     const inactiveButtonColor = "lightgrey";
 
-    // let addIntervalStyle = { backgroundColor: inactiveButtonColor };
-    // if (this.state.mode === "add interval" || this.state.mode === "add 2nd intervalPoint") {
-    //   addIntervalStyle = { backgroundColor: activeButtonColor };
-    // }
-
-    // let removeIntervalStyle = { backgroundColor: inactiveButtonColor };
-    // if (this.state.mode === "remove interval") {
-    //   removeIntervalStyle = { backgroundColor: activeButtonColor };
-    // }
-
-    // let addPointStyle = { backgroundColor: inactiveButtonColor };
-    // if (this.state.mode === "add point") {
-    //   addPointStyle = { backgroundColor: activeButtonColor };
-    // }
-
-    // let removePointStyle = { backgroundColor: inactiveButtonColor };
-    // if (this.state.mode === "remove point") {
-    //   removePointStyle = { backgroundColor: activeButtonColor };
-    // }
 
     let addRemovePointsStyle = { backgroundColor: inactiveButtonColor };
     if (this.state.mode === "add remove points") {
@@ -376,88 +348,54 @@ export default class subsetOfReals extends DoenetRenderer {
       movePointsStyle = { backgroundColor: activeButtonColor };
     }
 
+    let controlButtons = null;
+    if(!this.doenetSvData.fixed) {
+      controlButtons = <>
+        <span>
+          <ModeButton
+            style={addRemovePointsStyle}
+            onClick={() => this.switchMode("add remove points")}
+          >
+            Add/Remove points
+          </ModeButton>
+        </span>
+        <span>
+          <ModeButton
+            style={toggleStyle}
+            onClick={() => this.switchMode("toggle")}
+          >
+            Toggle points and intervals
+          </ModeButton>
+        </span>
+        <span>
+          <ModeButton
+            style={movePointsStyle}
+            onClick={() => this.switchMode("move points")}
+          >
+            Move Points
+          </ModeButton>
+        </span>
+        <span>
+          <button
+            onClick={() => this.actions.clear()}
+          >
+            Clear
+          </button>
+        </span>
+        <span>
+          <button
+            onClick={() => this.actions.setToR()}
+          >
+            R
+          </button>
+        </span>
+      </>
+    }
 
     return (
       <>
         <div ref={this.bounds}>
-          {/* <span>
-            <ModeButton
-              style={addPointStyle}
-              onClick={() => this.switchMode("add point")}
-            >
-              Add Point
-            </ModeButton>
-          </span>
-          <span>
-            <ModeButton
-              style={removePointStyle}
-              onClick={() => this.switchMode("remove point")}
-            >
-              Remove Point
-            </ModeButton>
-          </span> */}
-          <span>
-            <ModeButton
-              style={addRemovePointsStyle}
-              onClick={() => this.switchMode("add remove points")}
-            >
-              Add/Remove points
-            </ModeButton>
-          </span>
-          <span>
-            <ModeButton
-              style={toggleStyle}
-              onClick={() => this.switchMode("toggle")}
-            >
-              Toggle points and intervals
-            </ModeButton>
-          </span>
-          <span>
-            <ModeButton
-              style={movePointsStyle}
-              onClick={() => this.switchMode("move points")}
-            >
-              Move Points
-            </ModeButton>
-          </span>
-          <span>
-            <button
-              onClick={() => this.actions.clear()}
-            >
-              Clear
-            </button>
-          </span>
-          <span>
-            <button
-              onClick={() => this.actions.setToR()}
-            >
-              R
-            </button>
-          </span>
-          {/* <span>
-            <ModeButton
-              style={addIntervalStyle}
-              onClick={() => this.switchMode("add interval")}
-            >
-              Add Interval
-            </ModeButton>
-          </span>
-          <span>
-            <ModeButton
-              style={removeIntervalStyle}
-              onClick={() => this.switchMode("remove interval")}
-            >
-              Remove Interval
-            </ModeButton>
-          </span> */}
-          {/* <span>
-            <ModeButton
-              style={{ backgroundColor: inactiveButtonColor }}
-              onClick={() => console.log("simplify")}
-            >
-              Simplify
-            </ModeButton>
-          </span> */}
+          {controlButtons}
         </div>
         <svg
           width="808"
