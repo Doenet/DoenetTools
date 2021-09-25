@@ -141,7 +141,8 @@ export default class Core {
       recreatedComponents: {},
       // parentsToUpdateDescendants: new Set(),
       compositesBeingExpanded: [],
-      stateVariableUpdatesForMissingComponents: deepClone(stateVariableChanges),
+      // stateVariableUpdatesForMissingComponents: deepClone(stateVariableChanges),
+      stateVariableUpdatesForMissingComponents: JSON.parse(JSON.stringify(stateVariableChanges, serializeFunctions.serializedComponentsReplacer), serializeFunctions.serializedComponentsReviver),
     }
 
     this.animationIDs = {};

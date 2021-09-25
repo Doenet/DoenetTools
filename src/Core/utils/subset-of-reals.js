@@ -48,7 +48,6 @@ class Subset {
 
   static reviver(key, value) {
     if (value && value.objectType === "subset" && value.subsetType !== undefined) {
-      console.log(`found subset`, value)
       if (value.subsetType === "emptySet") {
         return new EmptySet();
       } else if (value.subsetType === "realLine") {
