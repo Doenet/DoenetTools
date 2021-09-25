@@ -514,10 +514,10 @@ function buildSubsetFromIntervals(tree, variable) {
     } else if (tree === "R") {
       return new RealLine();
     } else if (tree === "varnothing" || tree === "emptyset" || tree === "\u2205") {
-      // TODO: eliminate \uff3f once have varnothing integrated into latex parser
+      // TODO: eliminate \u2205 once have varnothing integrated into latex parser
       return new EmptySet();
     } else {
-      return null;
+      return new EmptySet();
     }
   }
 
@@ -531,7 +531,7 @@ function buildSubsetFromIntervals(tree, variable) {
     if (!Number.isFinite(left)) {
       left = me.fromAst(left).evaluate_to_constant();
       if (!(Number.isFinite(left) || left === Infinity || left === -Infinity)) {
-        return null;
+        return new EmptySet();
       }
     }
 
@@ -539,7 +539,7 @@ function buildSubsetFromIntervals(tree, variable) {
     if (!Number.isFinite(right)) {
       right = me.fromAst(right).evaluate_to_constant();
       if (!(Number.isFinite(right) || right === Infinity || right === -Infinity)) {
-        return null;
+        return new EmptySet();
       }
     }
 
@@ -561,7 +561,7 @@ function buildSubsetFromIntervals(tree, variable) {
     let pieces = tree.slice(1).map(x => buildSubsetFromIntervals(x, variable)).filter(x => x);
 
     if (pieces.length === 0) {
-      return null;
+      return new EmptySet();
     } else if (pieces.length === 1) {
       return pieces[0];
     } else {
@@ -572,7 +572,7 @@ function buildSubsetFromIntervals(tree, variable) {
     let pieces = tree.slice(1).map(x => buildSubsetFromIntervals(x, variable)).filter(x => x);
 
     if (pieces.length === 0) {
-      return null;
+      return new RealLine();
     } else {
       return pieces.reduce((a, c) => a.intersect(c))
     }
@@ -581,7 +581,7 @@ function buildSubsetFromIntervals(tree, variable) {
     let pieces = tree.slice(1).map(x => buildSubsetFromIntervals(x, variable)).filter(x => x);
 
     if (pieces.length === 0) {
-      return null;
+      return new EmptySet();
     } else if (pieces.length === 1) {
       return pieces[0];
     } else {
@@ -597,7 +597,7 @@ function buildSubsetFromIntervals(tree, variable) {
       } else {
         left = me.fromAst(left).evaluate_to_constant();
         if (!(Number.isFinite(left) || left === Infinity || left === -Infinity)) {
-          return null;
+          return new EmptySet();
         }
       }
     }
@@ -610,14 +610,14 @@ function buildSubsetFromIntervals(tree, variable) {
       } else {
         right = me.fromAst(right).evaluate_to_constant();
         if (!(Number.isFinite(right) || right === Infinity || right === -Infinity)) {
-          return null;
+          return new EmptySet();
         }
       }
     }
 
     if (varAtLeft) {
       if (varAtRight) {
-        return null;
+        return new EmptySet();
       } else {
         if (operator === "<") {
           return new OpenInterval(-Infinity, right)
@@ -673,7 +673,7 @@ function buildSubsetFromIntervals(tree, variable) {
           }
         }
       } else {
-        return null;
+        return new EmptySet();
       }
     }
 
@@ -683,7 +683,7 @@ function buildSubsetFromIntervals(tree, variable) {
     let strict = tree[2].slice(1);
 
     if (vals.length !== 3 || !deepCompare(vals[1], variable)) {
-      return null;
+      return new EmptySet();
     }
 
     if (operator === "gts") {
@@ -696,7 +696,7 @@ function buildSubsetFromIntervals(tree, variable) {
     if (!Number.isFinite(left)) {
       left = me.fromAst(left).evaluate_to_constant();
       if (!(Number.isFinite(left) || left === Infinity || left === -Infinity)) {
-        return null;
+        return new EmptySet();
       }
     }
 
@@ -704,7 +704,7 @@ function buildSubsetFromIntervals(tree, variable) {
     if (!Number.isFinite(right)) {
       right = me.fromAst(right).evaluate_to_constant();
       if (!(Number.isFinite(right) || right === Infinity || right === -Infinity)) {
-        return null;
+        return new EmptySet();
       }
     }
 
@@ -731,20 +731,20 @@ function buildSubsetFromIntervals(tree, variable) {
     if (orig) {
       return orig.complement();
     } else {
-      return null;
+      return new EmptySet();
     }
 
   } else if (operator === "in") {
     if (deepCompare(tree[1], variable)) {
       return buildSubsetFromIntervals(tree[2], variable)
     } else {
-      return null;
+      return new EmptySet();
     }
   } else if (operator === "ni") {
     if (deepCompare(tree[2], variable)) {
       return buildSubsetFromIntervals(tree[1], variable)
     } else {
-      return null;
+      return new EmptySet();
     }
   } else if (operator === "notin") {
     if (deepCompare(tree[1], variable)) {
@@ -753,7 +753,7 @@ function buildSubsetFromIntervals(tree, variable) {
         return orig.complement();
       }
     }
-    return null;
+    return new EmptySet();
   } else if (operator === "notni") {
     if (deepCompare(tree[2], variable)) {
       let orig = buildSubsetFromIntervals(tree[1], variable);
@@ -761,14 +761,14 @@ function buildSubsetFromIntervals(tree, variable) {
         return orig.complement();
       }
     }
-    return null;
+    return new EmptySet();
   } else {
     let num = me.fromAst(tree).evaluate_to_constant();
 
     if (Number.isFinite(num)) {
       return new Singleton(num)
     } else {
-      return null;
+      return new EmptySet();
     }
   }
 
