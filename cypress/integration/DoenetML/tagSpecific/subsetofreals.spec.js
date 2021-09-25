@@ -66,7 +66,7 @@ describe('SubsetOfReals Tag Tests', function () {
     cy.get('#\\/o6 .mjx-mrow').eq(0).should('have.text', "(−∞,5)")
     cy.get('#\\/o7 .mjx-mrow').eq(0).should('have.text', "∅")
     cy.get('#\\/o8 .mjx-mrow').eq(0).should('have.text', "R")
-    cy.get('#\\/o9 .mjx-mrow').eq(0).should('have.text', "＿")
+    cy.get('#\\/o9 .mjx-mrow').eq(0).should('have.text', "∅")
 
     cy.get('#\\/c1 .mjx-mrow').eq(0).should('have.text', "[4,5]")
     cy.get('#\\/c2 .mjx-mrow').eq(0).should('have.text', "∅")
@@ -76,7 +76,7 @@ describe('SubsetOfReals Tag Tests', function () {
     cy.get('#\\/c6 .mjx-mrow').eq(0).should('have.text', "(−∞,5]")
     cy.get('#\\/c7 .mjx-mrow').eq(0).should('have.text', "∅")
     cy.get('#\\/c8 .mjx-mrow').eq(0).should('have.text', "R")
-    cy.get('#\\/c9 .mjx-mrow').eq(0).should('have.text', "＿")
+    cy.get('#\\/c9 .mjx-mrow').eq(0).should('have.text', "∅")
 
     cy.get('#\\/oc1 .mjx-mrow').eq(0).should('have.text', "(4,5]")
     cy.get('#\\/oc2 .mjx-mrow').eq(0).should('have.text', "∅")
@@ -86,7 +86,7 @@ describe('SubsetOfReals Tag Tests', function () {
     cy.get('#\\/oc6 .mjx-mrow').eq(0).should('have.text', "(−∞,5]")
     cy.get('#\\/oc7 .mjx-mrow').eq(0).should('have.text', "∅")
     cy.get('#\\/oc8 .mjx-mrow').eq(0).should('have.text', "R")
-    cy.get('#\\/oc9 .mjx-mrow').eq(0).should('have.text', "＿")
+    cy.get('#\\/oc9 .mjx-mrow').eq(0).should('have.text', "∅")
 
     cy.get('#\\/co1 .mjx-mrow').eq(0).should('have.text', "[4,5)")
     cy.get('#\\/co2 .mjx-mrow').eq(0).should('have.text', "∅")
@@ -96,7 +96,7 @@ describe('SubsetOfReals Tag Tests', function () {
     cy.get('#\\/co6 .mjx-mrow').eq(0).should('have.text', "(−∞,5)")
     cy.get('#\\/co7 .mjx-mrow').eq(0).should('have.text', "∅")
     cy.get('#\\/co8 .mjx-mrow').eq(0).should('have.text', "R")
-    cy.get('#\\/co9 .mjx-mrow').eq(0).should('have.text', "＿")
+    cy.get('#\\/co9 .mjx-mrow').eq(0).should('have.text', "∅")
 
   })
 
@@ -159,7 +159,7 @@ describe('SubsetOfReals Tag Tests', function () {
     cy.get('#\\/o6 .mjx-mrow').eq(0).should('have.text', "x<5")
     cy.get('#\\/o7 .mjx-mrow').eq(0).should('have.text', "x∈∅")
     cy.get('#\\/o8 .mjx-mrow').eq(0).should('have.text', "x∈R")
-    cy.get('#\\/o9 .mjx-mrow').eq(0).should('have.text', "＿")
+    cy.get('#\\/o9 .mjx-mrow').eq(0).should('have.text', "x∈∅")
 
     cy.get('#\\/c1 .mjx-mrow').eq(0).should('have.text', "4≤x≤5")
     cy.get('#\\/c2 .mjx-mrow').eq(0).should('have.text', "x∈∅")
@@ -169,7 +169,7 @@ describe('SubsetOfReals Tag Tests', function () {
     cy.get('#\\/c6 .mjx-mrow').eq(0).should('have.text', "x≤5")
     cy.get('#\\/c7 .mjx-mrow').eq(0).should('have.text', "x∈∅")
     cy.get('#\\/c8 .mjx-mrow').eq(0).should('have.text', "x∈R")
-    cy.get('#\\/c9 .mjx-mrow').eq(0).should('have.text', "＿")
+    cy.get('#\\/c9 .mjx-mrow').eq(0).should('have.text', "x∈∅")
 
     cy.get('#\\/oc1 .mjx-mrow').eq(0).should('have.text', "4<x≤5")
     cy.get('#\\/oc2 .mjx-mrow').eq(0).should('have.text', "x∈∅")
@@ -179,7 +179,7 @@ describe('SubsetOfReals Tag Tests', function () {
     cy.get('#\\/oc6 .mjx-mrow').eq(0).should('have.text', "x≤5")
     cy.get('#\\/oc7 .mjx-mrow').eq(0).should('have.text', "x∈∅")
     cy.get('#\\/oc8 .mjx-mrow').eq(0).should('have.text', "x∈R")
-    cy.get('#\\/oc9 .mjx-mrow').eq(0).should('have.text', "＿")
+    cy.get('#\\/oc9 .mjx-mrow').eq(0).should('have.text', "x∈∅")
 
     cy.get('#\\/co1 .mjx-mrow').eq(0).should('have.text', "4≤x<5")
     cy.get('#\\/co2 .mjx-mrow').eq(0).should('have.text', "x∈∅")
@@ -189,7 +189,7 @@ describe('SubsetOfReals Tag Tests', function () {
     cy.get('#\\/co6 .mjx-mrow').eq(0).should('have.text', "x<5")
     cy.get('#\\/co7 .mjx-mrow').eq(0).should('have.text', "x∈∅")
     cy.get('#\\/co8 .mjx-mrow').eq(0).should('have.text', "x∈R")
-    cy.get('#\\/co9 .mjx-mrow').eq(0).should('have.text', "＿")
+    cy.get('#\\/co9 .mjx-mrow').eq(0).should('have.text', "x∈∅")
 
   })
 
@@ -252,7 +252,7 @@ describe('SubsetOfReals Tag Tests', function () {
     cy.get('#\\/o6 .mjx-mrow').eq(0).should('have.text', "v<5")
     cy.get('#\\/o7 .mjx-mrow').eq(0).should('have.text', "v∈∅")
     cy.get('#\\/o8 .mjx-mrow').eq(0).should('have.text', "v∈R")
-    cy.get('#\\/o9 .mjx-mrow').eq(0).should('have.text', "＿")
+    cy.get('#\\/o9 .mjx-mrow').eq(0).should('have.text', "v∈∅")
 
     cy.get('#\\/c1 .mjx-mrow').eq(0).should('have.text', "4≤v≤5")
     cy.get('#\\/c2 .mjx-mrow').eq(0).should('have.text', "v∈∅")
@@ -262,7 +262,7 @@ describe('SubsetOfReals Tag Tests', function () {
     cy.get('#\\/c6 .mjx-mrow').eq(0).should('have.text', "v≤5")
     cy.get('#\\/c7 .mjx-mrow').eq(0).should('have.text', "v∈∅")
     cy.get('#\\/c8 .mjx-mrow').eq(0).should('have.text', "v∈R")
-    cy.get('#\\/c9 .mjx-mrow').eq(0).should('have.text', "＿")
+    cy.get('#\\/c9 .mjx-mrow').eq(0).should('have.text', "v∈∅")
 
     cy.get('#\\/oc1 .mjx-mrow').eq(0).should('have.text', "4<v≤5")
     cy.get('#\\/oc2 .mjx-mrow').eq(0).should('have.text', "v∈∅")
@@ -272,7 +272,7 @@ describe('SubsetOfReals Tag Tests', function () {
     cy.get('#\\/oc6 .mjx-mrow').eq(0).should('have.text', "v≤5")
     cy.get('#\\/oc7 .mjx-mrow').eq(0).should('have.text', "v∈∅")
     cy.get('#\\/oc8 .mjx-mrow').eq(0).should('have.text', "v∈R")
-    cy.get('#\\/oc9 .mjx-mrow').eq(0).should('have.text', "＿")
+    cy.get('#\\/oc9 .mjx-mrow').eq(0).should('have.text', "v∈∅")
 
     cy.get('#\\/co1 .mjx-mrow').eq(0).should('have.text', "4≤v<5")
     cy.get('#\\/co2 .mjx-mrow').eq(0).should('have.text', "v∈∅")
@@ -282,7 +282,7 @@ describe('SubsetOfReals Tag Tests', function () {
     cy.get('#\\/co6 .mjx-mrow').eq(0).should('have.text', "v<5")
     cy.get('#\\/co7 .mjx-mrow').eq(0).should('have.text', "v∈∅")
     cy.get('#\\/co8 .mjx-mrow').eq(0).should('have.text', "v∈R")
-    cy.get('#\\/co9 .mjx-mrow').eq(0).should('have.text', "＿")
+    cy.get('#\\/co9 .mjx-mrow').eq(0).should('have.text', "v∈∅")
 
   })
 
@@ -354,7 +354,7 @@ describe('SubsetOfReals Tag Tests', function () {
     cy.get('#\\/o8 .mjx-mrow').eq(0).should('have.text', "(−∞,5)")
     cy.get('#\\/o9 .mjx-mrow').eq(0).should('have.text', "∅")
     cy.get('#\\/o10 .mjx-mrow').eq(0).should('have.text', "R")
-    cy.get('#\\/o11 .mjx-mrow').eq(0).should('have.text', "＿")
+    cy.get('#\\/o11 .mjx-mrow').eq(0).should('have.text', "∅")
 
     cy.get('#\\/c1 .mjx-mrow').eq(0).should('have.text', "[4,5]")
     cy.get('#\\/c2 .mjx-mrow').eq(0).should('have.text', "∅")
@@ -366,7 +366,7 @@ describe('SubsetOfReals Tag Tests', function () {
     cy.get('#\\/c8 .mjx-mrow').eq(0).should('have.text', "(−∞,5]")
     cy.get('#\\/c9 .mjx-mrow').eq(0).should('have.text', "∅")
     cy.get('#\\/c10 .mjx-mrow').eq(0).should('have.text', "R")
-    cy.get('#\\/c11 .mjx-mrow').eq(0).should('have.text', "＿")
+    cy.get('#\\/c11 .mjx-mrow').eq(0).should('have.text', "∅")
 
     cy.get('#\\/oc1 .mjx-mrow').eq(0).should('have.text', "(4,5]")
     cy.get('#\\/oc2 .mjx-mrow').eq(0).should('have.text', "∅")
@@ -378,7 +378,7 @@ describe('SubsetOfReals Tag Tests', function () {
     cy.get('#\\/oc8 .mjx-mrow').eq(0).should('have.text', "(−∞,5]")
     cy.get('#\\/oc9 .mjx-mrow').eq(0).should('have.text', "∅")
     cy.get('#\\/oc10 .mjx-mrow').eq(0).should('have.text', "R")
-    cy.get('#\\/oc11 .mjx-mrow').eq(0).should('have.text', "＿")
+    cy.get('#\\/oc11 .mjx-mrow').eq(0).should('have.text', "∅")
 
     cy.get('#\\/co1 .mjx-mrow').eq(0).should('have.text', "[4,5)")
     cy.get('#\\/co2 .mjx-mrow').eq(0).should('have.text', "∅")
@@ -390,7 +390,7 @@ describe('SubsetOfReals Tag Tests', function () {
     cy.get('#\\/co8 .mjx-mrow').eq(0).should('have.text', "(−∞,5)")
     cy.get('#\\/co9 .mjx-mrow').eq(0).should('have.text', "∅")
     cy.get('#\\/co10 .mjx-mrow').eq(0).should('have.text', "R")
-    cy.get('#\\/co11 .mjx-mrow').eq(0).should('have.text', "＿")
+    cy.get('#\\/co11 .mjx-mrow').eq(0).should('have.text', "∅")
 
   })
 
@@ -462,7 +462,7 @@ describe('SubsetOfReals Tag Tests', function () {
     cy.get('#\\/o8 .mjx-mrow').eq(0).should('have.text', "(−∞,5)")
     cy.get('#\\/o9 .mjx-mrow').eq(0).should('have.text', "∅")
     cy.get('#\\/o10 .mjx-mrow').eq(0).should('have.text', "R")
-    cy.get('#\\/o11 .mjx-mrow').eq(0).should('have.text', "＿")
+    cy.get('#\\/o11 .mjx-mrow').eq(0).should('have.text', "∅")
 
     cy.get('#\\/c1 .mjx-mrow').eq(0).should('have.text', "[4,5]")
     cy.get('#\\/c2 .mjx-mrow').eq(0).should('have.text', "∅")
@@ -474,7 +474,7 @@ describe('SubsetOfReals Tag Tests', function () {
     cy.get('#\\/c8 .mjx-mrow').eq(0).should('have.text', "(−∞,5]")
     cy.get('#\\/c9 .mjx-mrow').eq(0).should('have.text', "∅")
     cy.get('#\\/c10 .mjx-mrow').eq(0).should('have.text', "R")
-    cy.get('#\\/c11 .mjx-mrow').eq(0).should('have.text', "＿")
+    cy.get('#\\/c11 .mjx-mrow').eq(0).should('have.text', "∅")
 
     cy.get('#\\/oc1 .mjx-mrow').eq(0).should('have.text', "(4,5]")
     cy.get('#\\/oc2 .mjx-mrow').eq(0).should('have.text', "∅")
@@ -486,7 +486,7 @@ describe('SubsetOfReals Tag Tests', function () {
     cy.get('#\\/oc8 .mjx-mrow').eq(0).should('have.text', "(−∞,5]")
     cy.get('#\\/oc9 .mjx-mrow').eq(0).should('have.text', "∅")
     cy.get('#\\/oc10 .mjx-mrow').eq(0).should('have.text', "R")
-    cy.get('#\\/oc11 .mjx-mrow').eq(0).should('have.text', "＿")
+    cy.get('#\\/oc11 .mjx-mrow').eq(0).should('have.text', "∅")
 
     cy.get('#\\/co1 .mjx-mrow').eq(0).should('have.text', "[4,5)")
     cy.get('#\\/co2 .mjx-mrow').eq(0).should('have.text', "∅")
@@ -498,7 +498,7 @@ describe('SubsetOfReals Tag Tests', function () {
     cy.get('#\\/co8 .mjx-mrow').eq(0).should('have.text', "(−∞,5)")
     cy.get('#\\/co9 .mjx-mrow').eq(0).should('have.text', "∅")
     cy.get('#\\/co10 .mjx-mrow').eq(0).should('have.text', "R")
-    cy.get('#\\/co11 .mjx-mrow').eq(0).should('have.text', "＿")
+    cy.get('#\\/co11 .mjx-mrow').eq(0).should('have.text', "∅")
 
   })
 
@@ -520,7 +520,7 @@ describe('SubsetOfReals Tag Tests', function () {
     cy.get('#\\/e1 .mjx-mrow').eq(0).should('have.text', "{5}")
     cy.get('#\\/e2 .mjx-mrow').eq(0).should('have.text', "∅")
     cy.get('#\\/e3 .mjx-mrow').eq(0).should('have.text', "∅")
-    cy.get('#\\/e4 .mjx-mrow').eq(0).should('have.text', "＿")
+    cy.get('#\\/e4 .mjx-mrow').eq(0).should('have.text', "∅")
 
   })
 
@@ -592,7 +592,7 @@ describe('SubsetOfReals Tag Tests', function () {
     cy.get('#\\/o8 .mjx-mrow').eq(0).should('have.text', "(−∞,5)")
     cy.get('#\\/o9 .mjx-mrow').eq(0).should('have.text', "∅")
     cy.get('#\\/o10 .mjx-mrow').eq(0).should('have.text', "R")
-    cy.get('#\\/o11 .mjx-mrow').eq(0).should('have.text', "＿")
+    cy.get('#\\/o11 .mjx-mrow').eq(0).should('have.text', "∅")
 
     cy.get('#\\/c1 .mjx-mrow').eq(0).should('have.text', "[4,5]")
     cy.get('#\\/c2 .mjx-mrow').eq(0).should('have.text', "∅")
@@ -604,7 +604,7 @@ describe('SubsetOfReals Tag Tests', function () {
     cy.get('#\\/c8 .mjx-mrow').eq(0).should('have.text', "(−∞,5]")
     cy.get('#\\/c9 .mjx-mrow').eq(0).should('have.text', "∅")
     cy.get('#\\/c10 .mjx-mrow').eq(0).should('have.text', "R")
-    cy.get('#\\/c11 .mjx-mrow').eq(0).should('have.text', "＿")
+    cy.get('#\\/c11 .mjx-mrow').eq(0).should('have.text', "∅")
 
     cy.get('#\\/oc1 .mjx-mrow').eq(0).should('have.text', "(4,5]")
     cy.get('#\\/oc2 .mjx-mrow').eq(0).should('have.text', "∅")
@@ -616,7 +616,7 @@ describe('SubsetOfReals Tag Tests', function () {
     cy.get('#\\/oc8 .mjx-mrow').eq(0).should('have.text', "(−∞,5]")
     cy.get('#\\/oc9 .mjx-mrow').eq(0).should('have.text', "∅")
     cy.get('#\\/oc10 .mjx-mrow').eq(0).should('have.text', "R")
-    cy.get('#\\/oc11 .mjx-mrow').eq(0).should('have.text', "＿")
+    cy.get('#\\/oc11 .mjx-mrow').eq(0).should('have.text', "∅")
 
     cy.get('#\\/co1 .mjx-mrow').eq(0).should('have.text', "[4,5)")
     cy.get('#\\/co2 .mjx-mrow').eq(0).should('have.text', "∅")
@@ -628,7 +628,7 @@ describe('SubsetOfReals Tag Tests', function () {
     cy.get('#\\/co8 .mjx-mrow').eq(0).should('have.text', "(−∞,5)")
     cy.get('#\\/co9 .mjx-mrow').eq(0).should('have.text', "∅")
     cy.get('#\\/co10 .mjx-mrow').eq(0).should('have.text', "R")
-    cy.get('#\\/co11 .mjx-mrow').eq(0).should('have.text', "＿")
+    cy.get('#\\/co11 .mjx-mrow').eq(0).should('have.text', "∅")
 
   })
 
@@ -1315,7 +1315,7 @@ describe('SubsetOfReals Tag Tests', function () {
     cy.get('#\\/result .mjx-mrow').eq(0).should('have.text', "x>1")
 
     cy.get('#\\/variable textarea').type('{end}{backspace}y{enter}', { force: true })
-    cy.get('#\\/result .mjx-mrow').eq(0).should('have.text', "＿")
+    cy.get('#\\/result .mjx-mrow').eq(0).should('have.text', "y∈∅")
 
     cy.get('#\\/input textarea').type('{home}{rightArrow}{backspace}y{enter}', { force: true })
     cy.get('#\\/result .mjx-mrow').eq(0).should('have.text', "y>1")
