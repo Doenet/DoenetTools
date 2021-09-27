@@ -381,12 +381,19 @@ class DoenetViewerChild extends Component {
       return;
     }
 
+    //submissions or pageState
+    let effectivePageStateSource = "pageState"; //Default
+    if (this.props.pageStateSource){
+      effectivePageStateSource = this.props.pageStateSource;
+    }
+
     const payload = {
       params: {
         contentId: this.contentId,
         attemptNumber: this.attemptNumber,
         doenetId: this.props.doenetId,
         userId: this.props.userId,
+        pageStateSource: effectivePageStateSource,
       }
     }
 

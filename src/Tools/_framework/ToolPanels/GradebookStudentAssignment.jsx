@@ -203,6 +203,7 @@ export default function GradebookStudentAssignmentView(props){
         allowLocalPageState={false} //Still working out localStorage kinks
         allowSaveSubmissions={false}
         allowSaveEvents={false}
+        pageStateSource="submissions"
       //   requestedVariant={requestedVariant}
         requestedVariant={variant}
       //   updateCreditAchievedCallback={updateCreditAchieved}
