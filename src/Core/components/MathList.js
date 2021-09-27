@@ -42,9 +42,8 @@ export default class MathList extends InlineComponent {
     };
     attributes.mergeMathLists = {
       createComponentOfType: "boolean",
-      createStateVariable: "mergeMathLists",
+      createStateVariable: "mergeMathListsPreliminary",
       defaultValue: false,
-      public: true,
     };
 
     return attributes;
@@ -110,6 +109,37 @@ export default class MathList extends InlineComponent {
           mathsShadow: { variablesToCheck: ["coords", "mathsShadow"] }
         }
       }),
+    }
+
+    stateVariableDefinitions.mergeMathLists = {
+      public: true,
+      componentType: "boolean",
+      returnDependencies: () => ({
+        mergeMathListsPreliminary: {
+          dependencyType: "stateVariable",
+          variableName: "mergeMathListsPreliminary"
+        },
+        mathListChildren: {
+          dependencyType: "child",
+          childGroups: ["mathLists"],
+          skipComponentNames: true,
+        },
+        mathChildren: {
+          dependencyType: "child",
+          childGroups: ["maths"],
+          skipComponentNames: true,
+        }
+      }),
+      definition({ dependencyValues }) {
+        let mergeMathLists =
+          dependencyValues.mergeMathListsPreliminary
+          || (
+            dependencyValues.mathListChildren.length === 0
+            && dependencyValues.mathChildren.length === 1
+          );
+        return { newValues: { mergeMathLists } }
+      }
+
     }
 
 
