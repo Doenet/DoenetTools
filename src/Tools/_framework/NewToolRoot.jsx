@@ -269,6 +269,7 @@ let navigationObj = {
       headerControls: [],
       headerControlsPositions: [],
       displayProfile:false,
+      waitForMenuSuppression:true,
     },
     endExam:{
       pageName:"endExam",
@@ -288,9 +289,10 @@ let navigationObj = {
       currentMainPanel:"AssignmentViewer",
       currentMenus:["CreditAchieved","TimerMenu"], 
       menusTitles:["Credit Achieved","Time Remaining"],
-      menusInitOpen:[true,false],
+      menusInitOpen:[true,true],
       headerControls: ["AssignmentBreadCrumb","AssignmentNewAttempt"],
       headerControlsPositions: ["Left","Right"],
+      waitForMenuSuppression:true,
     },
     courseChooser:{ //allCourses
       pageName:"Course",
