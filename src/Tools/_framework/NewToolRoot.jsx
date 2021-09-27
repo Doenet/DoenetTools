@@ -291,6 +291,7 @@ let navigationObj = {
       menusInitOpen:[true,false],
       headerControls: ["AssignmentBreadCrumb","AssignmentNewAttempt"],
       headerControlsPositions: ["Left","Right"],
+      waitForMenuSuppression:true,
     },
     courseChooser:{ //allCourses
       pageName:"Course",
@@ -555,6 +556,7 @@ let encodeParams = p => Object.entries(p).map(kv =>
     const [recoilPageToolView,setRecoilPageToolView ] = useRecoilState(pageToolViewAtom);
     const setOnLeaveStr = useSetRecoilState(onLeaveComponentStr);
     const [suppressMenus,setSuppressMenus] = useRecoilState(suppressMenusAtom);
+    console.log(">>>>root control suppressMenus",suppressMenus)
 
     let lastPageToolView = useRef({page:"init",tool:"",view:""});
     let backPageToolView = useRef({page:"init",tool:"",view:""});
