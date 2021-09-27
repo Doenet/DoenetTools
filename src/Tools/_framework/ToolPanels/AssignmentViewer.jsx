@@ -114,13 +114,9 @@ export default function AssignmentViewer() {
           showSolution,
           proctorMakesAvailable,
         } = await snapshot.getPromise(loadAssignmentSelector(doenetId));
-        console.log(">>>>timeLimit",timeLimit)
         if (timeLimit === null){
-          console.log(">>>>TimerMenu")
-          setSuppressMenus("TimerMenu")
+          setSuppressMenus(["TimerMenu"])
         }else{
-          console.log(">>>>TimerMenu")
-          console.log(">>>>blank")
           setSuppressMenus([])
         }
         

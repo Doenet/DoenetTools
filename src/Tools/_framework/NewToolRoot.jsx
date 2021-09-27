@@ -269,6 +269,7 @@ let navigationObj = {
       headerControls: [],
       headerControlsPositions: [],
       displayProfile:false,
+      waitForMenuSuppression:true,
     },
     endExam:{
       pageName:"endExam",
@@ -288,7 +289,7 @@ let navigationObj = {
       currentMainPanel:"AssignmentViewer",
       currentMenus:["CreditAchieved","TimerMenu"], 
       menusTitles:["Credit Achieved","Time Remaining"],
-      menusInitOpen:[true,false],
+      menusInitOpen:[true,true],
       headerControls: ["AssignmentBreadCrumb","AssignmentNewAttempt"],
       headerControlsPositions: ["Left","Right"],
       waitForMenuSuppression:true,
@@ -556,7 +557,6 @@ let encodeParams = p => Object.entries(p).map(kv =>
     const [recoilPageToolView,setRecoilPageToolView ] = useRecoilState(pageToolViewAtom);
     const setOnLeaveStr = useSetRecoilState(onLeaveComponentStr);
     const [suppressMenus,setSuppressMenus] = useRecoilState(suppressMenusAtom);
-    console.log(">>>>root control suppressMenus",suppressMenus)
 
     let lastPageToolView = useRef({page:"init",tool:"",view:""});
     let backPageToolView = useRef({page:"init",tool:"",view:""});
