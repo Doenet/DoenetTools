@@ -1,9 +1,9 @@
 import React from 'react';
 
-export default function MathInputKeyboard(props){
+export default function MathInputKeyboard(){
   console.log(">>>===MathInputKeyboard")
 
-  return <div style={props.style}>
+  return <div>
     <p>Put keyboard here</p>
   </div>
 }

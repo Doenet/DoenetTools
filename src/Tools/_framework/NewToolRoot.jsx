@@ -71,6 +71,14 @@ export const paramObjAtom = atom({
   default:{}
 })
 
+//height: 120
+//open: true
+//component: "mathKeyboard"
+export const footerAtom = atom({
+  key:"footerAtom",
+  default:null
+})
+
 // **** ToolRoot ****
 //Keep  as simple as we can
 //Keep refreshes to a minimum 
@@ -78,6 +86,8 @@ export const paramObjAtom = atom({
 
 export default function ToolRoot(){
   console.log(">>>===ToolRoot ") 
+
+  let footerObj = useRecoilValue(footerAtom);
 
   const [toolRootMenusAndPanels,setToolRootMenusAndPanels] = useState({
     pageName:"init",
@@ -136,6 +146,10 @@ export default function ToolRoot(){
     GradebookBreadCrumb: lazy(() => import('./HeaderControls/GradebookBreadCrumb')),
     AssignmentBreadCrumb: lazy(() => import('./HeaderControls/AssignmentBreadCrumb')),
     AssignmentNewAttempt: lazy(() => import('./HeaderControls/AssignmentNewAttempt')),
+  }).current;
+
+  const LazyFooterObj = useRef({
+    MathInputKeyboard:lazy(() => import('./Footers/MathInputKeyboard')),
   }).current;
 
    let MainPanelKey = `${toolRootMenusAndPanels.pageName}-${toolRootMenusAndPanels.currentMainPanel}`;
@@ -200,6 +214,20 @@ if (toolRootMenusAndPanels?.supportPanelOptions && toolRootMenusAndPanels?.suppo
   }
 
 
+  //MathInputKeyboard
+  let footer = null;
+
+  if (footerObj){
+    let footerKey = `footer`
+    footer = <FooterPanel isInitOpen={footerObj.open} height={footerObj.height}>
+      <Suspense key={footerKey} fallback={<LoadingFallback>loading...</LoadingFallback>}>
+            {React.createElement(LazyFooterObj[footerObj.component],{key:{footerKey}})}
+          </Suspense>
+      </FooterPanel>
+  }
+
+  // <p>insert keyboard here</p></FooterPanel>
+
 
   return <>
     <ToolContainer >
@@ -208,12 +236,11 @@ if (toolRootMenusAndPanels?.supportPanelOptions && toolRootMenusAndPanels?.suppo
       main={<MainPanel headerControlsPositions={headerControlsPositions} headerControls={headerControls} setMenusOpen={setMenusOpen} openMenuButton={openMenuButton} displayProfile={toolRootMenusAndPanels.displayProfile} >{mainPanel}</MainPanel>} 
       support={supportPanel}
       />
-    
-      {/* <FooterPanel><button onClick={()=>props.route.history.push('/Test')}>test</button></FooterPanel> */}
+      {footer}
+      
     </ToolContainer>
     <Toast />
    
-    {/* <RootController key='root_controller' setToolRootMenusAndPanels={setToolRootMenusAndPanels}/> */}
     <MemoizedRootController key='root_controller' setToolRootMenusAndPanels={setToolRootMenusAndPanels}/>
     <MemoizedOnLeave key='MemoizedOnLeave' />
   </>

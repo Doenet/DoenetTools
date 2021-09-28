@@ -10,7 +10,7 @@ import {
   // useRecoilState,
   // useSetRecoilState,
 } from 'recoil';
-import { searchParamAtomFamily, pageToolViewAtom } from '../NewToolRoot';
+import { searchParamAtomFamily, pageToolViewAtom, footerAtom } from '../NewToolRoot';
 import {
   itemHistoryAtom,
   fileByContentId,
@@ -69,6 +69,7 @@ function pushRandomVariantOfRemaining({ previous, from }) {
 
 export default function AssignmentViewer() {
   // console.log(">>>===AssignmentViewer")
+  const setFooter = useSetRecoilState(footerAtom);
   const recoilDoenetId = useRecoilValue(searchParamAtomFamily('doenetId'));
   const setSuppressMenus = useSetRecoilState(suppressMenusAtom);
   let [stage, setStage] = useState('Initializing');
@@ -410,6 +411,21 @@ export default function AssignmentViewer() {
   }
 
   return (
+    <>
+    {/* <button onClick={()=>{
+      setFooter((was)=>{
+        let newObj = null
+        if (!was){
+          newObj = {
+            height:120,
+            open:true,
+            component:"MathInputKeyboard"
+          }
+        }
+        return newObj;
+      })
+      
+    }}>Toggle Keyboard</button> */}
     <DoenetViewer
       key={`doenetviewer${doenetId}`}
       doenetML={doenetML}
@@ -432,5 +448,6 @@ export default function AssignmentViewer() {
       updateCreditAchievedCallback={updateCreditAchieved}
       // generatedVariantCallback={variantCallback}
     />
+    </>
   );
 }
