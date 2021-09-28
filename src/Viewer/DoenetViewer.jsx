@@ -399,7 +399,8 @@ class DoenetViewerChild extends Component {
 
     axios.get('/api/loadContentInteractions.php', payload)
       .then(resp => {
-        // console.log(">>>>resp",resp.data)
+        // console.log(">>>>>resp",resp.data)
+
         if (!resp.data.success) {
           throw new Error(resp.data.message)
         }

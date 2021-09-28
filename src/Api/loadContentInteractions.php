@@ -70,7 +70,7 @@ if ($pageStateSource == "submissions"){
   AND s.contentId='$contentId'
   AND s.attemptNumber='$attemptNumber'
   AND s.doenetId='$doenetId'
-  ORDER BY submissionNumber DESC, id DESC
+  ORDER BY s.submissionNumber DESC, s.id DESC
   LIMIT 1
   ";
 }else{
