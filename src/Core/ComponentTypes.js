@@ -112,8 +112,7 @@ import Evaluate from './components/Evaluate';
 import SelectRandomNumbers from './components/SelectRandomNumbers';
 import SampleRandomNumbers from './components/SampleRandomNumbers';
 import Substitute from './components/Substitute';
-import Offsets from './components/Offsets';
-import DiscreteInfiniteSet from './components/DiscreteInfiniteSet';
+import PeriodicSet from './components/PeriodicSet';
 import Image from './components/Image';
 import Video from './components/Video';
 import Embed from './components/Embed';
@@ -253,8 +252,7 @@ const componentTypeArray = [
   SelectRandomNumbers,
   SampleRandomNumbers,
   Substitute,
-  Offsets,
-  DiscreteInfiniteSet,
+  PeriodicSet,
   Image,
   Video,
   Embed,

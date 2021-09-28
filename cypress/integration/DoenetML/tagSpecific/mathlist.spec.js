@@ -1338,6 +1338,49 @@ describe('MathList Tag Tests', function () {
 
   })
 
+  it('always merge math lists when have one math child', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <mathlist>
+      <math>a,b,c,d,e</math>
+    </mathlist>
+
+    <p>Third math: <copy prop="math3" tname="_mathlist1" /></p>
+    <p>Fifth math: <copy prop="math5" tname="_mathlist1" /></p>
+    ` }, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.log('Test value displayed in browser')
+    cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('a,b,c,d,e')
+    })
+    cy.get('#\\/_p1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('c')
+    })
+    cy.get('#\\/_p2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('e')
+    })
+
+    cy.log('Test internal values are set to the correct values')
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/_mathlist1'].stateValues.maths.length).eq(5);
+      expect(components['/_mathlist1'].stateValues.maths[0].tree).eq('a');
+      expect(components['/_mathlist1'].stateValues.maths[1].tree).eq('b');
+      expect(components['/_mathlist1'].stateValues.maths[2].tree).eq('c');
+      expect(components['/_mathlist1'].stateValues.maths[3].tree).eq('d');
+      expect(components['/_mathlist1'].stateValues.maths[4].tree).eq('e');
+      expect(components['/_mathlist1'].stateValues.math3.tree).eq('c')
+      expect(components['/_mathlist1'].stateValues.math5.tree).eq('e');
+
+    })
+
+  })
+
   // TODO: deal with hidden children of a mathlist
   it('mathlist within mathlists, with child hide', () => {
     cy.window().then((win) => {
