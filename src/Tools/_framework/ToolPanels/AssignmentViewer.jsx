@@ -6,10 +6,11 @@ import {
   atom,
   atomFamily,
   useRecoilCallback,
+  useSetRecoilState,
   // useRecoilState,
   // useSetRecoilState,
 } from 'recoil';
-import { searchParamAtomFamily, pageToolViewAtom } from '../NewToolRoot';
+import { searchParamAtomFamily, pageToolViewAtom, footerAtom } from '../NewToolRoot';
 import {
   itemHistoryAtom,
   fileByContentId,
@@ -20,6 +21,8 @@ import {
 import { returnAllPossibleVariants } from '../../../Core/utils/returnAllPossibleVariants.js';
 import { loadAssignmentSelector } from '../../../_reactComponents/Drive/NewDrive';
 import axios from 'axios';
+import { suppressMenusAtom } from '../NewToolRoot';
+
 
 export const currentAttemptNumber = atom({
   key: 'currentAttemptNumber',
@@ -66,8 +69,9 @@ function pushRandomVariantOfRemaining({ previous, from }) {
 
 export default function AssignmentViewer() {
   // console.log(">>>===AssignmentViewer")
+  const setFooter = useSetRecoilState(footerAtom);
   const recoilDoenetId = useRecoilValue(searchParamAtomFamily('doenetId'));
-
+  const setSuppressMenus = useSetRecoilState(suppressMenusAtom);
   let [stage, setStage] = useState('Initializing');
   let [message, setMessage] = useState('');
   const recoilAttemptNumber = useRecoilValue(currentAttemptNumber);
@@ -87,6 +91,8 @@ export default function AssignmentViewer() {
   let startedInitOfDoenetId = useRef(null);
   let storedAllPossibleVariants = useRef([]);
 
+  console.log(`storedAllPossibleVariants -${storedAllPossibleVariants}-`)
+
   const initializeValues = useRecoilCallback(
     ({ snapshot, set }) =>
       async (doenetId) => {
@@ -100,6 +106,7 @@ export default function AssignmentViewer() {
         startedInitOfDoenetId.current = doenetId;
      
         const {
+          timeLimit,
           assignedDate,
           dueDate,
           showCorrectness,
@@ -108,6 +115,12 @@ export default function AssignmentViewer() {
           showSolution,
           proctorMakesAvailable,
         } = await snapshot.getPromise(loadAssignmentSelector(doenetId));
+        if (timeLimit === null){
+          setSuppressMenus(["TimerMenu"])
+        }else{
+          setSuppressMenus([])
+        }
+        
         let solutionDisplayMode = 'button';
         if (!showSolution) {
           solutionDisplayMode = 'none';
@@ -182,7 +195,7 @@ export default function AssignmentViewer() {
           
         }
         let doenetML = null;
-        console.log('>>>>initializeValues contentId', contentId);
+        // console.log('>>>>initializeValues contentId', contentId);
         if (!isAssigned) {
           setStage('Problem');
           setMessage('Assignment is not assigned.');
@@ -398,6 +411,21 @@ export default function AssignmentViewer() {
   }
 
   return (
+    <>
+    {/* <button onClick={()=>{
+      setFooter((was)=>{
+        let newObj = null
+        if (!was){
+          newObj = {
+            height:120,
+            open:true,
+            component:"MathInputKeyboard"
+          }
+        }
+        return newObj;
+      })
+      
+    }}>Toggle Keyboard</button> */}
     <DoenetViewer
       key={`doenetviewer${doenetId}`}
       doenetML={doenetML}
@@ -420,5 +448,6 @@ export default function AssignmentViewer() {
       updateCreditAchievedCallback={updateCreditAchieved}
       // generatedVariantCallback={variantCallback}
     />
+    </>
   );
 }
