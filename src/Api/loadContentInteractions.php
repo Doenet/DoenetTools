@@ -16,6 +16,7 @@ $contentId = mysqli_real_escape_string($conn,$_REQUEST["contentId"]);
 $attemptNumber = mysqli_real_escape_string($conn,$_REQUEST["attemptNumber"]);
 $doenetId = mysqli_real_escape_string($conn,$_REQUEST["doenetId"]);
 $paramUserId = mysqli_real_escape_string($conn,$_REQUEST["userId"]);
+$pageStateSource = mysqli_real_escape_string($conn,$_REQUEST["pageStateSource"]);
 
 $success = TRUE;
 $message = "";
@@ -31,9 +32,14 @@ $message = 'Internal Error: missing doenetId';
 }elseif ($userId == ""){
 $success = FALSE;
 $message = "You need to be signed in for content interaction information";
+}elseif ($pageStateSource == ""){
+$success = FALSE;
+$message = 'Internal Error: missing pageStateSource';
 }
 
 
+
+if ($success){
 
 $effectiveUserId = $userId;
 if ($paramUserId !== ''){
@@ -54,15 +60,30 @@ if ($paramUserId !== ''){
   }
 }
 
-if ($success){
-
+if ($pageStateSource == "submissions"){
+  $sql = "SELECT s.stateVariables AS stateVariables, 
+  a.generatedVariant AS variant
+  FROM user_assignment_attempt_item_submission AS s
+  LEFT JOIN user_assignment_attempt AS a
+  ON a.userId = s.userId AND a.doenetId = s.doenetId AND a.attemptNumber = s.attemptNumber
+  WHERE s.userId='$effectiveUserId'
+  AND s.contentId='$contentId'
+  AND s.attemptNumber='$attemptNumber'
+  AND s.doenetId='$doenetId'
+  ORDER BY s.submissionNumber DESC, s.id DESC
+  LIMIT 1
+  ";
+}else{
   $sql = "SELECT stateVariables, variant
-        FROM content_interactions
-        WHERE userId='$effectiveUserId'
-        AND contentId='$contentId'
-        AND attemptNumber='$attemptNumber'
-        AND doenetId='$doenetId'
-        ORDER BY timestamp DESC, id DESC";
+  FROM content_interactions
+  WHERE userId='$effectiveUserId'
+  AND contentId='$contentId'
+  AND attemptNumber='$attemptNumber'
+  AND doenetId='$doenetId'
+  ORDER BY timestamp DESC, id DESC
+  LIMIT 1
+  ";
+}
 
   $result = $conn->query($sql);
   
