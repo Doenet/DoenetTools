@@ -2,6 +2,7 @@ import React from 'react';
 import { useRecoilValue } from 'recoil';
 import { fetchDrivesQuery } from '../../../_reactComponents/Drive/NewDrive';
 import { searchParamAtomFamily } from '../NewToolRoot';
+import { RoleDropdown } from '../../../_reactComponents/PanelHeaderComponents/RoleDropdown';
 
 export default function DriveInfoCap(){
   let path = useRecoilValue(searchParamAtomFamily('path'));
@@ -29,12 +30,10 @@ export default function DriveInfoCap(){
     <div style={{position: 'relative', paddingBottom: '100px'}}>
     <img style={{position: "absolute", height: "100px", objectFit: 'cover'}} src={imageURL} alt={`${label} course`} width='240px' />
     </div>
- {/* <div style={{position: 'relative', paddingBottom: '100px'}}>
-    <img style={{position: "absolute", clip: "rect(0, 240px, 100px, 0)" }} src={imageURL} alt={`${label} course`} height='100px' />
-    </div> */}
     <div style={{padding:'8px'}}>
     <div>{label}</div>
     <div>{roles}</div>
+    <div><RoleDropdown /></div>
     </div>
   </>
 }

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Styles, Table, studentData, attemptData, driveId } from "./Gradebook"
+import { Styles, Table, studentData, attemptData } from "./Gradebook"
 
 import {
     useSetRecoilState,
@@ -8,9 +8,8 @@ import {
   } from "recoil";
  
 import { pageToolViewAtom, searchParamAtomFamily } from '../NewToolRoot';
-import DoenetViewer, {
-    serializedComponentsReviver,
-  } from '../../../Viewer/DoenetViewer';
+import DoenetViewer from '../../../Viewer/DoenetViewer';
+import { serializedComponentsReviver } from "../../../Core/utils/serializedStateProcessing";
 import  axios from 'axios';
 import { currentAttemptNumber } from '../ToolPanels/AssignmentViewer';
 
@@ -28,10 +27,12 @@ const getUserId = (students, name) => {
     return -1;
 } 
 export default function GradebookStudentAssignmentView(props){
-    // const setPageToolView = useSetRecoilState(pageToolViewAtom);
-    // let source = useRecoilValue(searchParamAtomFamily('source'))
+    const setPageToolView = useSetRecoilState(pageToolViewAtom);
+    let source = useRecoilValue(searchParamAtomFamily('source'))
     let doenetId = useRecoilValue(searchParamAtomFamily('doenetId'))
     let userId = useRecoilValue(searchParamAtomFamily('userId'))
+    let driveIdValue = useRecoilValue(searchParamAtomFamily('driveId'))
+    let paramAttemptNumber = useRecoilValue(searchParamAtomFamily('attemptNumber'))
     let attempts = useRecoilValueLoadable(attemptData(doenetId))
     let students = useRecoilValueLoadable(studentData)
     const setRecoilAttemptNumber = useSetRecoilState(currentAttemptNumber);
@@ -48,10 +49,16 @@ export default function GradebookStudentAssignmentView(props){
 
     useEffect(()=>{
         if (attemptsObj){
-            setAttemptNumber(Object.keys(attemptsObj).length);
-            setRecoilAttemptNumber(Object.keys(attemptsObj).length);
+            let effectiveAttemptNumber = Object.keys(attemptsObj).length;
+            if (paramAttemptNumber && paramAttemptNumber < effectiveAttemptNumber){
+                effectiveAttemptNumber = paramAttemptNumber;
+            }
+            setAttemptNumber(effectiveAttemptNumber);
+            setRecoilAttemptNumber(effectiveAttemptNumber);
+        }else{
+            console.log(">>>>TODO TELL THEM YOU HAVENT TAKEN YET")
         }
-    },[attemptsObj,setAttemptNumber,setRecoilAttemptNumber])
+    },[attemptsObj,setAttemptNumber,setRecoilAttemptNumber,paramAttemptNumber])
 
     //Wait for doenetId and userId and attemptsInfo
     if (!doenetId || !userId){
@@ -122,16 +129,16 @@ export default function GradebookStudentAssignmentView(props){
             accessor: "a"+i,
             disableFilters: true,
             Cell: row  =><a onClick = {(e) =>{
-                setAttemptNumber(i);
-                setRecoilAttemptNumber(i);
+                // setAttemptNumber(i);
+                // setRecoilAttemptNumber(i);
                 //e.stopPropagation()
 
-                // setPageToolView({
-                //     page: 'course',
-                //     tool: 'gradebookAttempt',
-                //     view: '',
-                //     params: { driveId: driveIdValue, doenetId, userId, attemptNumber: i, source},
-                // })
+                setPageToolView({
+                    page: 'course',
+                    tool: 'gradebookStudentAssignment',
+                    view: '',
+                    params: { driveId: driveIdValue, doenetId, userId, attemptNumber: i, source},
+                })
             }}> {row.value} </a>
         })
     }
@@ -204,6 +211,7 @@ export default function GradebookStudentAssignmentView(props){
         allowLocalPageState={false} //Still working out localStorage kinks
         allowSaveSubmissions={false}
         allowSaveEvents={false}
+        pageStateSource="submissions"
       //   requestedVariant={requestedVariant}
         requestedVariant={variant}
       //   updateCreditAchievedCallback={updateCreditAchieved}

@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { Styles, Table, studentData, attemptData, driveId } from "./Gradebook"
+import { Styles, Table, studentData, attemptData } from "./Gradebook"
 
 import {
     atom,
@@ -36,43 +36,44 @@ export default function GradebookAssignmentView(props){
     let assignmentsTable = {}
     let attempts = useRecoilValueLoadable(attemptData(doenetId))
     let students = useRecoilValueLoadable(studentData)
+    console.log(">>>>attempts",attempts)
+    console.log(">>>>students",students)
+
+
+    //Wait for attempts and students to load
+    if(attempts.state !== 'hasValue' || students.state !== 'hasValue'){
+        return null;
+    }
 
     let maxAttempts = 0;
 
-    // let driveIdValue = useRecoilValue(driveId)
-    // console.log(">>>>driveIdValue",driveIdValue)
-
-    //attempts.state == 'hasValue' ? console.log(attempts.contents): console.log(attempts.state)
-    if(attempts.state == 'hasValue'){
-        for (let userId in attempts.contents) {
-
+    for (let userId in attempts.contents) {
+        if (attempts.contents[userId]?.attempts){
             let len = Object.keys(attempts.contents[userId].attempts).length;
-    
             if (len > maxAttempts) maxAttempts = len;
         }
     }
 
+    console.log(">>>>maxAttempts",maxAttempts)
+
     assignmentsTable.headers = []
-
-
-    if(students.state === 'hasValue'){
-        assignmentsTable.headers.push(
-            {
-                Header: "Student",
-                accessor: "student",
-                Cell: row  =><a onClick = {(e) =>{
-                    let name = row.cell.row.cells[0].value
-                    let userId = getUserId(students.contents, name);
-                    setPageToolView({
-                        page: 'course',
-                        tool: 'gradebookStudentAssignment',
-                        view: '',
-                        params: { driveId: driveIdValue, doenetId, userId, source: 'assignment'},
-                    })
-                }}> {row.cell.row.cells[0].value} </a>
-            }
-        )
-    }
+    assignmentsTable.headers.push(
+        {
+            Header: "Student",
+            accessor: "student",
+            Cell: row  =><a onClick = {(e) =>{
+                let name = row.cell.row.cells[0].value
+                let userId = getUserId(students.contents, name);
+                setPageToolView({
+                    page: 'course',
+                    tool: 'gradebookStudentAssignment',
+                    view: '',
+                    params: { driveId: driveIdValue, doenetId, userId, source: 'assignment'},
+                })
+            }}> {row.cell.row.cells[0].value} </a>
+        }
+    )
+    
 
     for (let i = 1; i <= maxAttempts; i++) {
         assignmentsTable.headers.push(
@@ -89,7 +90,7 @@ export default function GradebookAssignmentView(props){
 
                 setPageToolView({
                     page: 'course',
-                    tool: 'gradebookAttempt',
+                    tool: 'gradebookStudentAssignment',
                     view: '',
                     params: { driveId: driveIdValue, doenetId, userId, attemptNumber: i, source},
                 })
@@ -105,49 +106,45 @@ export default function GradebookAssignmentView(props){
 
     assignmentsTable.rows = [];
     
-    if(students.state === 'hasValue'){
-        for (let userId in students.contents) {
-            let firstName = students.contents[userId].firstName;
-            let lastName = students.contents[userId].lastName;
-            let role = students.contents[userId].role;
-  
-            //TODO: need a switch to filter this in the future
-            if (role !== 'Student'){ continue; }
+ 
+    for (let userId in students.contents) {
+        let firstName = students.contents[userId].firstName;
+        let lastName = students.contents[userId].lastName;
+        let role = students.contents[userId].role;
 
-            let row = {};
-    
-            row["student"] = firstName + " " + lastName
-    
-            if(attempts.state == 'hasValue'){
-                for (let i = 1; i <= maxAttempts; i++) {
-                    let attemptCredit = attempts.contents[userId].attempts[i];
-        
-                    row[("a"+i)] = attemptCredit ? attemptCredit * 100 + "%" : ""
-                    
-                    // <Link to={`/attempt/?doenetId=${doenetId}&userId=${userId}&attemptNumber=${i}`}>
-                    // {
-                    //     attemptCredit ? attemptCredit * 100 + "%" : "" // if attemptCredit is `undefined`, we still want a table cell so that the footer column still shows up right.
-                    // }
-                    // </Link>
-                }
+        //TODO: need a switch to filter this in the future
+        if (role !== 'Student'){ continue; }
 
-                row["grade"] = attempts.contents[userId].credit ? attempts.contents[userId].credit*100+ "%" : ""
+        let row = {};
+
+        row["student"] = firstName + " " + lastName
+
+        if(attempts.state == 'hasValue'){
+            for (let i = 1; i <= maxAttempts; i++) {
+                let attemptCredit = attempts.contents[userId].attempts[i];
+    
+                row[("a"+i)] = attemptCredit ? attemptCredit * 100 + "%" : ""
+                
+                // <Link to={`/attempt/?doenetId=${doenetId}&userId=${userId}&attemptNumber=${i}`}>
+                // {
+                //     attemptCredit ? attemptCredit * 100 + "%" : "" // if attemptCredit is `undefined`, we still want a table cell so that the footer column still shows up right.
+                // }
+                // </Link>
             }
-    
-            
-            
-            assignmentsTable.rows.push(row);
-        }
-    }
 
-    //console.log("in component");
+            row["grade"] = attempts.contents[userId].credit ? attempts.contents[userId].credit*100+ "%" : ""
+        }
+
+        
+        
+        assignmentsTable.rows.push(row);
+    }
     
 
     return(
-
-        <Styles>
-            <Table columns = {assignmentsTable.headers} data = {assignmentsTable.rows}/>
-        </Styles>
+    <Styles>
+        <Table columns = {assignmentsTable.headers} data = {assignmentsTable.rows}/>
+    </Styles>
     )
 
 }

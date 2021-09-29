@@ -3,39 +3,10 @@ import Core from './core';
 import axios from 'axios';
 import sha256 from 'crypto-js/sha256';
 import CryptoJS from 'crypto-js';
-import me from 'math-expressions';
 import { nanoid } from 'nanoid';
 import { useToast, toastType } from '@Toast';
+import { serializedComponentsReplacer, serializedComponentsReviver } from '../Core/utils/serializedStateProcessing';
 
-export function serializedComponentsReplacer(key, value) {
-  if (value !== value) {
-    return { objectType: 'special-numeric', stringValue: 'NaN' };
-  } else if (value === Infinity) {
-    return { objectType: 'special-numeric', stringValue: 'Infinity' };
-  } else if (value === -Infinity) {
-    return { objectType: 'special-numeric', stringValue: '-Infinity' };
-  }
-  return value;
-}
-
-let nanInfinityReviver = function (key, value) {
-
-  if (value && value.objectType === "special-numeric") {
-    if (value.stringValue === "NaN") {
-      return NaN;
-    } else if (value.stringValue === "Infinity") {
-      return Infinity;
-    } else if (value.stringValue === "-Infinity") {
-      return -Infinity;
-    }
-  }
-
-  return value;
-}
-
-export function serializedComponentsReviver(key, value) {
-  return me.reviver(key, nanInfinityReviver(key, value))
-}
 
 class DoenetViewerChild extends Component {
 
@@ -227,7 +198,7 @@ class DoenetViewerChild extends Component {
       this.savedUserAssignmentAttemptNumber !== this.attemptNumber
     ) {
       // console.log(">>>>savedUserAssignmentAttemptNumber!!!")
-      
+
       axios.post('/api/initAssignmentAttempt.php', {
         doenetId: this.props.doenetId,
         weights: this.core.scoredItemWeights,
@@ -236,7 +207,7 @@ class DoenetViewerChild extends Component {
         requestedVariant: JSON.stringify(this.requestedVariant, serializedComponentsReplacer),
         generatedVariant: JSON.stringify(this.generatedVariant, serializedComponentsReplacer),
         itemVariantInfo: this.itemVariantInfo.map(x => JSON.stringify(x, serializedComponentsReplacer)),
-      }).then(({data}) => {
+      }).then(({ data }) => {
         // console.log(">>>>initAssignmentAttempt data",data)
 
         this.savedUserAssignmentAttemptNumber = this.attemptNumber; //In callback
@@ -297,7 +268,7 @@ class DoenetViewerChild extends Component {
     // check if generated variant changed
     // (which could happen, at least for now, when paginator changes pages)
     let currentVariantString = JSON.stringify(this.core.document.stateValues.generatedVariantInfo, serializedComponentsReplacer);
-    if(currentVariantString !== variantString) {
+    if (currentVariantString !== variantString) {
       this.generatedVariant = this.core.document.stateValues.generatedVariantInfo;
       variantString = currentVariantString;
       if (this.props.generatedVariantCallback) {
@@ -410,18 +381,26 @@ class DoenetViewerChild extends Component {
       return;
     }
 
+    //submissions or pageState
+    let effectivePageStateSource = "pageState"; //Default
+    if (this.props.pageStateSource){
+      effectivePageStateSource = this.props.pageStateSource;
+    }
+
     const payload = {
       params: {
         contentId: this.contentId,
         attemptNumber: this.attemptNumber,
         doenetId: this.props.doenetId,
         userId: this.props.userId,
+        pageStateSource: effectivePageStateSource,
       }
     }
 
     axios.get('/api/loadContentInteractions.php', payload)
       .then(resp => {
-        // console.log(">>>>resp",resp.data)
+        // console.log(">>>>>resp",resp.data)
+
         if (!resp.data.success) {
           throw new Error(resp.data.message)
         }

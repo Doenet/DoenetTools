@@ -3111,5 +3111,169 @@ describe('MathInput Tag Tests', function () {
 
   })
 
+  it('normalize begin/end ldots in mathinput', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <mathinput name="mi" />
+
+    <p>Value: <copy prop="value" tname="mi" assignNames="m"/></p>
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.log('use periods, no commas')
+    cy.get('#\\/mi textarea').type("...x,y,z...{enter}", { force: true })
+
+    cy.get('#\\/m').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('…,x,y,z,…')
+    })
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/mi'].stateValues.value.tree).eqls([
+        "list", ["ldots"],"x","y","z", ["ldots"]
+      ]);
+      expect(components['/m'].stateValues.value.tree).eqls([
+        "list", ["ldots"],"x","y","z", ["ldots"]
+      ]);
+    })
+
+    cy.log('add spaces in between some periods')
+
+    cy.get('#\\/mi textarea').type("{home} {rightarrow} {rightarrow} {end} {leftarrow}{leftarrow} {enter}", { force: true })
+  
+    cy.get('#\\/m').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('…,x,y,z,…')
+    })
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/mi'].stateValues.value.tree).eqls([
+        "list", ["ldots"],"x","y","z", ["ldots"]
+      ]);
+      expect(components['/m'].stateValues.value.tree).eqls([
+        "list", ["ldots"],"x","y","z", ["ldots"]
+      ]);
+    })
+
+
+    cy.log('add commas after first set of periods')
+
+    cy.get('#\\/mi textarea').type("{home}{rightarrow}{rightarrow}{rightarrow}{rightarrow}{rightarrow}{rightarrow},{enter}", { force: true })
+  
+    cy.get('#\\/m').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('…,x,y,z,…')
+    })
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/mi'].stateValues.value.tree).eqls([
+        "list", ["ldots"],"x","y","z", ["ldots"]
+      ]);
+      expect(components['/m'].stateValues.value.tree).eqls([
+        "list", ["ldots"],"x","y","z", ["ldots"]
+      ]);
+    })
+
+
+    cy.log('add commas before second set of periods')
+
+    cy.get('#\\/mi textarea').type("{end}{leftarrow}{leftarrow}{leftarrow}{leftarrow}{leftarrow},{enter}", { force: true })
+  
+    cy.get('#\\/m').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('…,x,y,z,…')
+    })
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/mi'].stateValues.value.tree).eqls([
+        "list", ["ldots"],"x","y","z", ["ldots"]
+      ]);
+      expect(components['/m'].stateValues.value.tree).eqls([
+        "list", ["ldots"],"x","y","z", ["ldots"]
+      ]);
+    })
+
+
+    cy.log('change second set of periods to ldots')
+
+    cy.get('#\\/mi textarea').type("{end}{backspace}{backspace}{backspace}{backspace}{backspace}\\ldots {enter}", { force: true })
+  
+    cy.get('#\\/m').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('…,x,y,z,…')
+    })
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/mi'].stateValues.value.tree).eqls([
+        "list", ["ldots"],"x","y","z", ["ldots"]
+      ]);
+      expect(components['/m'].stateValues.value.tree).eqls([
+        "list", ["ldots"],"x","y","z", ["ldots"]
+      ]);
+    })
+
+
+    cy.log('change first set of periods to ldots')
+
+    cy.get('#\\/mi textarea').type("{home}{rightarrow}{rightarrow}{rightarrow}{rightarrow}{rightarrow}{rightarrow}{backspace}{backspace}{backspace}{backspace}{backspace}\\ldots  {enter}", { force: true })
+  
+    cy.get('#\\/m').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('…,x,y,z,…')
+    })
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/mi'].stateValues.value.tree).eqls([
+        "list", ["ldots"],"x","y","z", ["ldots"]
+      ]);
+      expect(components['/m'].stateValues.value.tree).eqls([
+        "list", ["ldots"],"x","y","z", ["ldots"]
+      ]);
+    })
+
+
+    cy.log('remove first comma')
+
+    cy.get('#\\/mi textarea').type("{rightarrow}{backspace}{enter}", { force: true })
+  
+    cy.get('#\\/m').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('…,x,y,z,…')
+    })
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/mi'].stateValues.value.tree).eqls([
+        "list", ["ldots"],"x","y","z", ["ldots"]
+      ]);
+      expect(components['/m'].stateValues.value.tree).eqls([
+        "list", ["ldots"],"x","y","z", ["ldots"]
+      ]);
+    })
+
+
+    cy.log('remove last comma')
+
+    cy.get('#\\/mi textarea').type("{end}{leftarrow}{backspace}{enter}", { force: true })
+  
+    cy.get('#\\/m').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('…,x,y,z,…')
+    })
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/mi'].stateValues.value.tree).eqls([
+        "list", ["ldots"],"x","y","z", ["ldots"]
+      ]);
+      expect(components['/m'].stateValues.value.tree).eqls([
+        "list", ["ldots"],"x","y","z", ["ldots"]
+      ]);
+    })
+
+  })
+
 
 });

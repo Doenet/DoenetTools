@@ -127,6 +127,13 @@ export default class Answer extends InlineComponent {
       public: true,
       propagateToDescendants: true,
     };
+    attributes.nPeriodicSetMatchesRequired = {
+      createComponentOfType: "integer",
+      createStateVariable: "nPeriodicSetMatchesRequired",
+      defaultValue: 3,
+      public: true,
+      propagateToDescendants: true,
+    };
     attributes.feedbackDefinitions = {
       createComponentOfType: "feedbackDefinitions",
       createStateVariable: "feedbackDefinitions",
