@@ -713,7 +713,7 @@ describe('PeriodicSet Tag Tests', function () {
     cy.get('#\\/_answer4_partial').invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('40% correct')
     })
-    
+
 
     cy.log('fill in with duplicates')
     cy.get('#\\/mi6 textarea').type('330', { force: true }).blur();
@@ -805,7 +805,7 @@ describe('PeriodicSet Tag Tests', function () {
     cy.get('#\\/_answer4_partial').invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('40% correct')
     })
-    
+
     cy.get('#\\/mi3 textarea').type('{end}{backspace}{backspace}{backspace}100', { force: true }).blur();
     cy.get('#\\/_answer3_submit').click();
     cy.get('#\\/_answer3_partial').invoke('text').then((text) => {
@@ -826,6 +826,89 @@ describe('PeriodicSet Tag Tests', function () {
       expect(text.trim().toLowerCase()).equal('40% correct')
     })
 
+
+  });
+
+  it.only('display periodic set as list', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+
+    <p>Period: <mathinput name="period" /></p>
+    <p>Offsets: <mathinput name="offsets" /></p>
+
+    <periodicSet period="$period" offsets="$offsets" name="pset" />
+  
+    <p>As list: <copy prop="asList" tname="pset" assignNames="l1" /></p>
+
+    <p>Min index: <mathinput name="minIndex" />, <mathinput name="maxIndex" /></p>
+
+    <periodicSet period="$period" offsets="$offsets" name="pset2" minIndexAsList="$minIndex" maxIndexAsList="$maxIndex" />
+
+    <p>As list with specified min/max: <copy prop="asList" tname="pset2" assignNames="l2" /></p>
+
+
+
+    `}, "*");
+    });
+
+
+    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
+
+    cy.get("#\\/l1").should('not.exist');
+    cy.get("#\\/l2").should('not.exist');
+
+    cy.get('#\\/period textarea').type('7{enter}', { force: true });
+    cy.get('#\\/offsets textarea').type('1{enter}', { force: true });
+
+    cy.get("#\\/l1").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('…,−6,1,8,…')
+    })
+    cy.get("#\\/l2").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('…,−6,1,8,…')
+    })
+
+    cy.get('#\\/minIndex textarea').type('3{enter}', { force: true });
+    cy.get("#\\/l2").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('…,…')
+    })
+    cy.get('#\\/maxIndex textarea').type('6{enter}', { force: true });
+    cy.get("#\\/l2").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('…,22,29,36,43,…')
+    })
+
+    cy.get('#\\/offsets textarea').type('{end},3{enter}', { force: true });
+    cy.get("#\\/l1").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('…,−6,−4,1,3,8,10,…')
+    })
+    cy.get("#\\/l2").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('…,22,24,29,31,36,38,43,45,…')
+    })
+
+    cy.get('#\\/offsets textarea').type('{end}{backspace}{backspace}{leftArrow}3,{enter}', { force: true });
+    cy.get("#\\/l1").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('…,−6,−4,1,3,8,10,…')
+    })
+    cy.get("#\\/l2").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('…,22,24,29,31,36,38,43,45,…')
+    })
+
+    cy.get('#\\/offsets textarea').type('{end},8{enter}', { force: true });
+    cy.get("#\\/l1").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('…,−6,−4,1,3,8,10,…')
+    })
+    cy.get("#\\/l2").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('…,22,24,29,31,36,38,43,45,…')
+    })
+
+    cy.get('#\\/offsets textarea').type('{end},79{enter}', { force: true });
+    cy.get("#\\/l1").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('…,−6,−5,−4,1,2,3,8,9,10,…')
+    })
+    cy.get("#\\/l2").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('…,22,23,24,29,30,31,36,37,38,43,44,45,…')
+    })
 
   });
 
