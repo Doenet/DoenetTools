@@ -38,6 +38,19 @@ export default class PeriodicSet extends MathComponent {
       public: true,
     }
 
+    attributes.minIndexAsList = {
+      createComponentOfType: "integer",
+      createStateVariable: "minIndexAsList",
+      defaultValue: -1,
+      public: true
+    }
+    attributes.maxIndexAsList = {
+      createComponentOfType: "integer",
+      createStateVariable: "maxIndexAsList",
+      defaultValue: 1,
+      public: true
+    }
+
     return attributes;
   }
 
@@ -129,6 +142,7 @@ export default class PeriodicSet extends MathComponent {
 
 
     stateVariableDefinitions.redundantOffsets = {
+      additionalStateVariablesDefined: ["uniqueOffsets"],
       public: true,
       componentType: "boolean",
       returnDependencies: () => ({
@@ -148,25 +162,108 @@ export default class PeriodicSet extends MathComponent {
       definition({ dependencyValues }) {
         // check if have duplicate offsets
         let redundantOffsets = false;
+        let uniqueOffsets = [];
         if (dependencyValues.period !== null) {
-          let periodNum = dependencyValues.period.evaluate_to_constant();
-          if (periodNum !== null) {
+          let periodValue = dependencyValues.period.evaluate_to_constant();
+          if (periodValue !== null) {
             for (let ind1 = 0; ind1 < dependencyValues.nOffsets; ind1++) {
+              let isUnique = true;
               for (let ind2 = 0; ind2 < ind1; ind2++) {
                 let offsetDiff = dependencyValues.offsets[ind1].subtract(dependencyValues.offsets[ind2]).evaluate_to_constant();
-                if (offsetDiff !== null && Math.abs(offsetDiff % periodNum) < 1E-10 * periodNum) {
+                if (offsetDiff !== null && Math.abs(offsetDiff % periodValue) < 1E-10 * periodValue) {
                   redundantOffsets = true;
+                  isUnique = false;
                   break;
                 }
               }
-              if (redundantOffsets) {
-                break;
+              if (isUnique) {
+                uniqueOffsets.push(dependencyValues.offsets[ind1]);
               }
             }
           }
         }
 
-        return { newValues: { redundantOffsets } }
+        return { newValues: { redundantOffsets, uniqueOffsets } }
+      }
+    }
+
+
+    stateVariableDefinitions.asList = {
+      public: true,
+      componentType: "mathList",
+      returnDependencies: () => ({
+        uniqueOffsets: {
+          dependencyType: "stateVariable",
+          variableName: "uniqueOffsets"
+        },
+        period: {
+          dependencyType: "stateVariable",
+          variableName: "period"
+        },
+        minIndexAsList: {
+          dependencyType: "stateVariable",
+          variableName: "minIndexAsList"
+        },
+        maxIndexAsList: {
+          dependencyType: "stateVariable",
+          variableName: "maxIndexAsList"
+        }
+      }),
+      definition({ dependencyValues }) {
+        let asList = [];
+        // remove redundant offsets
+        if (dependencyValues.period !== null) {
+          let periodValue = dependencyValues.period.evaluate_to_constant();
+          if (periodValue !== null) {
+
+            let period = dependencyValues.period.simplify()
+
+            let allFinite = true;
+            let shiftedOffsetsWithNumeric = [];
+            for (let offset of dependencyValues.uniqueOffsets) {
+              let offsetValue = offset.evaluate_to_constant();
+              if (offsetValue === null) {
+                allFinite = false;
+                break;
+              } else {
+                let shiftedOffset = offset.subtract(period.multiply(Math.floor(offsetValue / periodValue))).simplify();
+                let shiftedOffsetValue = shiftedOffset.evaluate_to_constant();
+                shiftedOffsetsWithNumeric.push({
+                  num: shiftedOffsetValue,
+                  offset: shiftedOffset,
+                })
+              }
+            }
+
+
+            if (allFinite) {
+
+              asList.push(me.fromAst(["ldots"]))
+              // sort by numeric value
+              shiftedOffsetsWithNumeric.sort((a, b) => a.num - b.num);
+
+              let minIndex = -1, maxIndex=1;
+
+              if(Number.isFinite(dependencyValues.minIndexAsList)) {
+                minIndex = dependencyValues.minIndexAsList;
+              }
+              if(Number.isFinite(dependencyValues.maxIndexAsList)) {
+                maxIndex = dependencyValues.maxIndexAsList;
+              }
+
+              for (let i = minIndex; i <= maxIndex; i++) {
+                for (let offsetObj of shiftedOffsetsWithNumeric) {
+                  asList.push(offsetObj.offset.add(period.multiply(i)).simplify())
+                }
+              }
+              asList.push(me.fromAst(["ldots"]))
+
+            }
+
+          }
+        }
+
+        return { newValues: { asList } }
       }
     }
 
