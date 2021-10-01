@@ -2,7 +2,7 @@ import { faCode } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React, { useState, useEffect } from 'react';
 import DropdownMenu from '../../../_reactComponents/PanelHeaderComponents/DropdownMenu';
-import DateTime from '../../../_reactComponents/PanelHeaderComponents/DateTime2';
+import DateTime from '../../../_reactComponents/PanelHeaderComponents/DateTime';
 
 import {
   atom,

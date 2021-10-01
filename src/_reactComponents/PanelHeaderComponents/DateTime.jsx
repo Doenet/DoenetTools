@@ -1,150 +1,81 @@
-import React, { useState } from 'react';
-import { TimePicker, DateInput, TimePrecision } from '@blueprintjs/datetime';
-import '@blueprintjs/datetime/lib/css/blueprint-datetime.css';
-import '@blueprintjs/core/lib/css/blueprint.css';
-
-//props
-//showArrowButtons - true/false - arrow buttons for time
-//precision - minute/second - precision of time picker
-//date - true/false - want calendar or not
-//time - true/false - want time selector or not
-//callBack - (newDate) => () - function to be called when time/date is changed
+import React, { useCallback, useState } from 'react';
+import Datetime from 'react-datetime';
+import 'react-datetime/css/react-datetime.css';
+import './DateTime.css';
 
 export default function DateTime(props) {
-  const [dateObjectState, setDateObjectState] = useState(null);
+  const [value, setValue] = useState(props.value ? props.value : null);
 
-  const dateTimeToText = (date) => {
-    return date.toLocaleString([], {
-      year: 'numeric',
-      month: 'numeric',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-    });
-  };
+  let placeholder = '';
 
-  const dateSecondTimeToText = (date) => {
-    return date.toLocaleString([], {
-      year: 'numeric',
-      month: 'numeric',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-      second: '2-digit',
-    });
-  };
-
-  const dateToText = (date) => {
-    return date.toLocaleString([], {
-      year: 'numeric',
-      month: 'numeric',
-      day: 'numeric',
-    });
-  };
-
-  const textToDate = (s) => {
-    try {
-      return new Date(s);
-    } catch {
-      return dateObjectState;
-    }
-  };
-
-  const handleDateChange = (selectedDate, isUserChange) => {
-    setDateObjectState(selectedDate);
-    if (props.callBack) {
-      props.callBack(selectedDate);
-    }
-  };
-
-  const handleTimeChange = (newTime) => {
-    setDateObjectState(newTime);
-    if (props.callBack) {
-      props.callBack(newTime);
-    }
-  };
-
-  if (props.time && props.time !== true && props.time !== false) {
-    console.log('time attribute can only take boolean values');
-    return <input />;
+  if (props.datePicker !== false) {
+    placeholder = 'mm/dd/yyyy';
   }
 
-  if (props.date && props.date !== true && props.date !== false) {
-    console.log('date attribute can only take boolean values');
-    return <input />;
+  if (props.timePicker !== false && props.precision === 'seconds') {
+    placeholder += ' hh:mm:ss';
+  } else if (props.timePicker !== false) {
+    placeholder += ' hh:mm';
   }
 
-  if (props.time === false && props.date === false) {
-    console.log("Both time and date can't be false");
-    return <input />;
-  }
+  let inputProps = {
+    disabled: props.disabled === true ? true : false,
+    placeholder: placeholder,
+  };
 
-  if (props.date === false) {
-    return (
-      <TimePicker
-        disabled={
-          props.disabled === undefined || props.disabled === null
-            ? false
-            : props.disabled
-        }
-        showArrowButtons={
-          props.showArrowButtons === null ||
-          props.showArrowButtons === undefined
-            ? false
-            : props.showArrowButtons
-        }
-        precision={
-          props.precision === 'second'
-            ? TimePrecision.SECOND
-            : TimePrecision.MINUTE
-        }
-        onChange={handleTimeChange}
-        value={dateObjectState}
-      />
-    );
-  }
+  //console.log('>>> placeholder', placeholder);
 
   return (
-    <DateInput
-      disabled={
-        props.disabled === undefined || props.disabled === null
+    <Datetime
+      style={{ minWidth: '0px', width: '200px' }}
+      value={value}
+      dateFormat={props.datePicker === false ? false : true}
+      timeFormat={
+        props.precision === 'seconds' && props.timePicker !== false
+          ? 'hh:mm:ss a'
+          : props.timePicker === false
           ? false
-          : props.disabled
+          : true
       }
-      highlightCurrentDay={true}
-      onChange={handleDateChange}
-      placeholder={
-        props.time === false
-          ? 'M/D/YYYY'
-          : props.precision === 'second'
-          ? 'M/D/YYYY, H:MM:SS'
-          : 'M/D/YYYY, H:MM'
-      }
-      timePickerProps={
-        props.time === false
-          ? undefined
-          : {
-              showArrowButtons:
-                props.showArrowButtons === null ||
-                props.showArrowButtons === undefined
-                  ? false
-                  : props.showArrowButtons,
-              precision:
-                props.precision === 'second'
-                  ? TimePrecision.SECOND
-                  : TimePrecision.MINUTE,
-            }
-      }
-      closeOnSelection={false}
-      formatDate={
-        props.time === false
-          ? dateToText
-          : props.precision === 'second'
-          ? dateSecondTimeToText
-          : dateTimeToText
-      }
-      parseDate={textToDate}
-      value={dateObjectState}
+      inputProps={inputProps}
+      onChange={(dateObjectOrString) => {
+        if (typeof dateObjectOrString === 'string') {
+          console.log('>>> value changed', dateObjectOrString);
+          setValue(null);
+        } else {
+          console.log('>>> value changed', dateObjectOrString);
+          setValue(dateObjectOrString.toDate());
+        }
+      }}
+      onClose={(_) => {
+        if (value === null) {
+          console.log('>>> value updated', value);
+          if (props.callback) {
+            props.callback({ valid: false, value: value });
+          }
+        } else {
+          console.log('>>> value updated', value);
+          if (props.callback) {
+            props.callback({
+              valid: true,
+              value: value,
+            });
+          }
+        }
+        // if (props.callback) {
+        //   if (typeof dateObjectOrString === 'string') {
+        //     console.log('>>> string', dateObjectOrString);
+        //     props.callback(false, dateObjectOrString);
+        //   } else {
+        //     console.log(
+        //       '>>> object',
+        //       dateObjectOrString,
+        //       dateObjectOrString.toDate(),
+        //     );
+        //     props.callback(true, dateObjectOrString.toDate());
+        //   }
+        // }
+      }}
     />
   );
 }
