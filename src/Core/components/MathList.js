@@ -1,16 +1,16 @@
 import InlineComponent from './abstract/InlineComponent';
 import me from 'math-expressions';
 import { returnBreakStringsIntoComponentTypeBySpaces, returnGroupIntoComponentTypeSeparatedBySpaces } from './commonsugar/lists';
+import { roundForDisplay } from '../utils/math';
 
 export default class MathList extends InlineComponent {
   static componentType = "mathList";
-  static rendererType = "asList";
   static renderChildren = true;
 
   static includeBlankStringChildren = true;
   static removeBlankStringChildrenPostSugar = true;
 
-  // when another component has a attribute that is a mathList,
+  // when another component has an attribute that is a mathList,
   // use the maths state variable to populate that attribute
   static stateVariableForAttributeValue = "maths";
   static primaryStateVariableForDefinition = "mathsShadow";
@@ -44,6 +44,26 @@ export default class MathList extends InlineComponent {
       createComponentOfType: "boolean",
       createStateVariable: "mergeMathListsPreliminary",
       defaultValue: false,
+    };
+    attributes.displayDigits = {
+      createComponentOfType: "integer",
+      createStateVariable: "displayDigits",
+      defaultValue: 10,
+      public: true,
+    };
+    attributes.displayDecimals = {
+      createComponentOfType: "integer",
+      createStateVariable: "displayDecimals",
+      defaultValue: null,
+      public: true,
+    };
+    attributes.displaySmallAsZero = {
+      createComponentOfType: "number",
+      createStateVariable: "displaySmallAsZero",
+      valueForTrue: 1E-14,
+      valueForFalse: 0,
+      defaultValue: 0,
+      public: true,
     };
 
     return attributes;
@@ -413,6 +433,7 @@ export default class MathList extends InlineComponent {
       additionalStateVariablesDefined: ["latexs"],
       public: true,
       componentType: "text",
+      forRenderer: true,
       returnDependencies: () => ({
         mathAndMathListChildren: {
           dependencyType: "child",
@@ -431,9 +452,21 @@ export default class MathList extends InlineComponent {
         mathsShadow: {
           dependencyType: "stateVariable",
           variableName: "mathsShadow",
-        }
+        },
+        displayDigits: {
+          dependencyType: "stateVariable",
+          variableName: "displayDigits"
+        },
+        displayDecimals: {
+          dependencyType: "stateVariable",
+          variableName: "displayDecimals"
+        },
+        displaySmallAsZero: {
+          dependencyType: "stateVariable",
+          variableName: "displaySmallAsZero"
+        },
       }),
-      definition: function ({ dependencyValues }) {
+      definition: function ({ dependencyValues, usedDefault }) {
         let latexs = [];
 
         if (dependencyValues.mathAndMathListChildren.length > 0) {
@@ -445,6 +478,7 @@ export default class MathList extends InlineComponent {
 
               if (dependencyValues.mergeMathLists && Array.isArray(childValue.tree) && childValue.tree[0] === "list") {
                 for (let i = 0; i < childValue.tree.length - 1; i++) {
+                  x
                   latexs.push(childValue.get_component(i).toLatex());
                 }
               } else {
@@ -456,7 +490,11 @@ export default class MathList extends InlineComponent {
             }
           }
         } else if (dependencyValues.mathsShadow !== null) {
-          latexs = dependencyValues.mathsShadow.map(x => x.toLatex())
+          latexs = dependencyValues.mathsShadow.map(x =>
+            roundForDisplay({
+              value: x,
+              dependencyValues, usedDefault
+            }).toLatex())
 
         }
 
