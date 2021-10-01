@@ -40,21 +40,21 @@ export default function DateTime(props) {
       inputProps={inputProps}
       onChange={(dateObjectOrString) => {
         if (typeof dateObjectOrString === 'string') {
-          console.log('>>> value changed', dateObjectOrString);
+          // console.log('>>> value changed', dateObjectOrString);
           setValue(null);
         } else {
-          console.log('>>> value changed', dateObjectOrString);
+          // console.log('>>> value changed', dateObjectOrString);
           setValue(dateObjectOrString.toDate());
         }
       }}
       onClose={(_) => {
         if (value === null) {
-          console.log('>>> value updated', value);
+          // console.log('>>> value updated', value);
           if (props.callback) {
             props.callback({ valid: false, value: value });
           }
         } else {
-          console.log('>>> value updated', value);
+          // console.log('>>> value updated', value);
           if (props.callback) {
             props.callback({
               valid: true,

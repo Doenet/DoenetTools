@@ -549,16 +549,12 @@ export function AssignmentSettings({ role, doenetId }) {
               value={new Date(aInfo.assignedDate)}
               callback={({ valid, value }) => {
                 if (valid) {
-                  //console.log('>>> dueDate', typeof dueDate, new Date(dueDate));
-                  console.log('>>> callback value ', value.toLocaleString());
                   updateAssignment({
                     doenetId,
                     keyToUpdate: 'assignedDate',
                     value: value.toLocaleString(),
                     description: 'Assigned Date',
                   });
-                } else {
-                  console.log('>>> valid false', valid);
                 }
               }}
             />
@@ -634,16 +630,12 @@ export function AssignmentSettings({ role, doenetId }) {
               value={new Date(aInfo.dueDate)}
               callback={({ valid, value }) => {
                 if (valid) {
-                  //console.log('>>> dueDate', typeof dueDate, new Date(dueDate));
-                  console.log('>>> callback value ', value.toLocaleString());
                   updateAssignment({
                     doenetId,
                     keyToUpdate: 'dueDate',
                     value: value.toLocaleString(),
                     description: 'Due Date',
                   });
-                } else {
-                  console.log('>>> valid false', valid);
                 }
               }}
             />
