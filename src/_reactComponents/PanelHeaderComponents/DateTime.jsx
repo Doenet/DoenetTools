@@ -1,7 +1,7 @@
-import React, { useState } from "react";
-import { TimePicker, DateInput, TimePrecision } from "@blueprintjs/datetime";
-import "@blueprintjs/datetime/lib/css/blueprint-datetime.css";
-import "@blueprintjs/core/lib/css/blueprint.css";
+import React, { useState } from 'react';
+import { TimePicker, DateInput, TimePrecision } from '@blueprintjs/datetime';
+import '@blueprintjs/datetime/lib/css/blueprint-datetime.css';
+import '@blueprintjs/core/lib/css/blueprint.css';
 
 //props
 //showArrowButtons - true/false - arrow buttons for time
@@ -15,30 +15,30 @@ export default function DateTime(props) {
 
   const dateTimeToText = (date) => {
     return date.toLocaleString([], {
-      year: "numeric",
-      month: "numeric",
-      day: "numeric",
-      hour: "2-digit",
-      minute: "2-digit"
+      year: 'numeric',
+      month: 'numeric',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
     });
   };
 
   const dateSecondTimeToText = (date) => {
     return date.toLocaleString([], {
-      year: "numeric",
-      month: "numeric",
-      day: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-      second: "2-digit",
+      year: 'numeric',
+      month: 'numeric',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
     });
   };
 
   const dateToText = (date) => {
     return date.toLocaleString([], {
-      year: "numeric",
-      month: "numeric",
-      day: "numeric"
+      year: 'numeric',
+      month: 'numeric',
+      day: 'numeric',
     });
   };
 
@@ -65,12 +65,12 @@ export default function DateTime(props) {
   };
 
   if (props.time && props.time !== true && props.time !== false) {
-    console.log("time attribute can only take boolean values");
+    console.log('time attribute can only take boolean values');
     return <input />;
   }
 
   if (props.date && props.date !== true && props.date !== false) {
-    console.log("date attribute can only take boolean values");
+    console.log('date attribute can only take boolean values');
     return <input />;
   }
 
@@ -94,7 +94,7 @@ export default function DateTime(props) {
             : props.showArrowButtons
         }
         precision={
-          props.precision === "second"
+          props.precision === 'second'
             ? TimePrecision.SECOND
             : TimePrecision.MINUTE
         }
@@ -114,7 +114,11 @@ export default function DateTime(props) {
       highlightCurrentDay={true}
       onChange={handleDateChange}
       placeholder={
-        props.time === false ? "M/D/YYYY" : props.precision === "second" ? "M/D/YYYY, H:MM:SS" : "M/D/YYYY, H:MM"
+        props.time === false
+          ? 'M/D/YYYY'
+          : props.precision === 'second'
+          ? 'M/D/YYYY, H:MM:SS'
+          : 'M/D/YYYY, H:MM'
       }
       timePickerProps={
         props.time === false
@@ -126,14 +130,18 @@ export default function DateTime(props) {
                   ? false
                   : props.showArrowButtons,
               precision:
-                props.precision === "second"
+                props.precision === 'second'
                   ? TimePrecision.SECOND
-                  : TimePrecision.MINUTE
+                  : TimePrecision.MINUTE,
             }
       }
       closeOnSelection={false}
       formatDate={
-        props.time === false ? dateToText : props.precision === "second" ? dateSecondTimeToText : dateTimeToText
+        props.time === false
+          ? dateToText
+          : props.precision === 'second'
+          ? dateSecondTimeToText
+          : dateTimeToText
       }
       parseDate={textToDate}
       value={dateObjectState}
