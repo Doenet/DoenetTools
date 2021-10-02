@@ -356,10 +356,10 @@ let navigationObj = {
     gradebookAssignment: {
       pageName: "Gradebook",
       currentMainPanel: "GradebookAssignment",
-      currentMenus:[],
+      currentMenus:["GradeUpload"],
+      menusTitles:["Upload"],
+      menusInitOpen:[false],
       menuPanelCap:"DriveInfoCap",
-      menusTitles:[],
-      menusInitOpen:[],
       headerControls: ["GradebookBreadCrumb"],
       headerControlsPositions: ["Left"]
       // onLeave:"",
