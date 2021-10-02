@@ -50,19 +50,32 @@ if ($success){
     $result = $conn->query($sql);
     $row = $result->fetch_assoc();
     $emailUserId = $row['userId'];
-    //SELECT then UPDATE or INSERT
-    // $sql = "UPDATE user_assignment_attempt
-    // SET creditOverride='$score'
-    // WHERE userId = '$emailUserId'
-    // AND doenetId = '$doenetId'
-    // AND attemptNumber = '$attemptNumber'
-    // ";
-    // $sql = "
-    // INSERT INTO user_assignment_attempt (doenetId,contentId,userId,attemptNumber,creditOverride)
-    // VALUES
-    // ('$doenetId','e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855','$emailUserId','$attemptNumber','$score')
-    // ";
-    // echo $sql;
+    //If a row exists then update else insert
+    $sql = "
+    SELECT doenetId
+    FROM user_assignment_attempt
+    WHERE userId = '$emailUserId'
+    AND doenetId = '$doenetId'
+    AND attemptNumber = '$attemptNumber'
+    ";
+    $result = $conn->query($sql);
+
+    if ($result->num_rows > 0) {
+        $sql = "UPDATE user_assignment_attempt
+        SET creditOverride='$score'
+        WHERE userId = '$emailUserId'
+        AND doenetId = '$doenetId'
+        AND attemptNumber = '$attemptNumber'
+        ";
+    }else{
+        $sql = "
+        INSERT INTO user_assignment_attempt (doenetId,contentId,userId,attemptNumber,creditOverride)
+        VALUES
+        ('$doenetId','e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855','$emailUserId','$attemptNumber','$score')
+        ";
+    }
+    $result = $conn->query($sql);
+    
   }
 }
 

@@ -156,17 +156,15 @@ function UploadChoices({ doenetId, maxAttempts }){
                     emails,
                     scores
                     }
-                console.log(">>>>payload",payload)
                 axios.post('/api/saveOverrideGrades.php',payload)
                 .catch((e)=>{
                     addToast(e, toastType.ERROR);
                     setProcess('Assignment Table')
                 })
                 .then(({data})=>{
-                    console.log(">>>>data",data)
                     if (data.success){
-                    // addToast(`Overrode scores!`);
-                    // setProcess('Assignment Table')
+                    addToast(`Overrode scores!`);
+                    setProcess('Assignment Table')
                     //Reset recoil grades data???
                     }else{
                         addToast(data.message, toastType.ERROR);
