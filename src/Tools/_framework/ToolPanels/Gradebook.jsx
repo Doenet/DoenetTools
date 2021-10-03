@@ -281,21 +281,23 @@ export const attemptData = selectorFamily({
         for(let userId in students){
             attempts[userId] = {
                 credit: null,
+                creditOverrides: {},
                 attempts: {}
             }
         }
 
         let data = get(attemptDataQuerry(doenetId))
-
         for(let row of data){
             let [userId,
                 attemptNumber,
                 assignmentCredit,
                 attemptCredit,
+                creditOverride
                 ] = row;
-
+           
             attempts[userId].credit = assignmentCredit
             attempts[userId].attempts[attemptNumber] = attemptCredit;
+            attempts[userId].creditOverrides[attemptNumber] = creditOverride;
         }
 
         return attempts;

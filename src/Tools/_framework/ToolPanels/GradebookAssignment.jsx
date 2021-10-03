@@ -165,9 +165,11 @@ function UploadChoices({ doenetId, maxAttempts }){
                     if (data.success){
                     addToast(`Overrode scores!`);
                     setProcess('Assignment Table')
-                    //Reset recoil grades data???
+                    //update data
+       
                     }else{
-                        addToast(data.message, toastType.ERROR);
+                    // console.log(">>>>data",data)
+                    addToast(data.message, toastType.ERROR);
                     }
                     
                 })
@@ -282,12 +284,15 @@ export default function GradebookAssignmentView(){
 
         row["student"] = firstName + " " + lastName
 
-        if(attempts.state == 'hasValue'){
+     
             for (let i = 1; i <= maxAttempts; i++) {
                 let attemptCredit = attempts.contents[userId].attempts[i];
-    
-                row[("a"+i)] = attemptCredit ? attemptCredit * 100 + "%" : ""
-                
+                let attemptCreditOverride = attempts.contents[userId].creditOverrides[i];
+                // let attemptOverride = attempts.contents[userId].creditOverride[i];
+                let effectiveCredit = attemptCredit;
+                if (attemptCreditOverride){effectiveCredit = attemptCreditOverride }
+                row[("a"+i)] = effectiveCredit ? effectiveCredit * 100 + "%" : ""
+                // console.log(">>>>userId",i,userId,effectiveCredit)
                 // <Link to={`/attempt/?doenetId=${doenetId}&userId=${userId}&attemptNumber=${i}`}>
                 // {
                 //     attemptCredit ? attemptCredit * 100 + "%" : "" // if attemptCredit is `undefined`, we still want a table cell so that the footer column still shows up right.

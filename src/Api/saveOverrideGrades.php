@@ -39,8 +39,23 @@ if ($attemptNumber == ""){
 //TODO: Test permission to set grades
 
 if ($success){
+
+  //Look up total points for assignment
+  $sql = "
+  SELECT 
+  attemptAggregation,
+  totalPointsOrPercent
+  FROM assignment
+  WHERE doenetId = '$doenetId'
+  ";
+  $result = $conn->query($sql);
+  $row = $result->fetch_assoc();
+  $totalPointsOrPercent = $row['totalPointsOrPercent'];
+  $attemptAggregation = $row['attemptAggregation'];
+
   foreach ($emails AS $key => $email){
-    $score = $scores[$key];
+    $score = $scores[$key] / $totalPointsOrPercent;
+
     //Find userId
     $sql = "
     SELECT userId
@@ -75,7 +90,85 @@ if ($success){
         ";
     }
     $result = $conn->query($sql);
-    
+
+    // if we don't have a record for this user on the assignment then we need to insert not update
+    $sql = "
+    SELECT creditOverride
+    FROM user_assignment
+    WHERE doenetId = '$doenetId'
+    AND userId = '$emailUserId'
+    ";
+
+    $result = $conn->query($sql);
+
+    $need_insert = TRUE;
+  if ($result->num_rows > 0) {
+    $need_insert = FALSE;
+    $row = $result->fetch_assoc();
+    $creditOverride_for_assignment = $row['creditOverride'];
+  }
+    // if we have $creditOverride_for_assignment, don't update assignment credit
+    if ($creditOverride_for_assignment != NULL){
+      continue;
+    }
+
+      $sql = "
+      SELECT 
+      credit,
+      creditOverride
+      FROM user_assignment_attempt
+      WHERE userId = '$emailUserId'
+      AND doenetId = '$doenetId'
+      ORDER BY attemptNumber DESC
+      ";
+      $result = $conn->query($sql);
+      
+    $credit_for_assignment = 0;
+
+    //Update user_assignment table
+    if ($attemptAggregation == 'm'){
+      // Find maximum attempt score
+      while($row = $result->fetch_assoc()){
+        $attemptCredit = $row['credit'];
+        $attemptCreditOverride = $row['creditOverride'];
+        $effectiveAttemptCredit = (float) $attemptCredit;
+        if ($attemptCreditOverride != NULL){
+          $effectiveAttemptCredit = (float) $attemptCreditOverride;
+        }
+        if ($effectiveAttemptCredit > $credit_for_assignment){
+          $credit_for_assignment = $effectiveAttemptCredit;
+        }
+      }
+    }else if ($attemptAggregation == 'l'){
+      // Use latest attempt score
+      $row = $result->fetch_assoc();
+      $lastCredit = $row['credit'];
+      $lastCreditOverride = $row['creditOverride'];
+
+      $credit_for_assignment = $lastCredit;
+      if ($lastCreditOverride != NULL){
+        $credit_for_assignment = $lastCreditOverride;
+      }
+    }
+
+    if ($need_insert){
+        // insert credit in user_assigment
+        $sql = "
+        INSERT INTO user_assignment (doenetId,contentId,userId,credit)
+        VALUES
+        ('$doenetId','e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855','$emailUserId','$credit_for_assignment')
+        ";
+    }else{
+        // update credit in user_assigment
+        $sql = "
+        UPDATE user_assignment
+        SET credit='$credit_for_assignment'
+        WHERE userId = '$emailUserId'
+        AND doenetId = '$doenetId'
+        ";
+    }
+    $result = $conn->query($sql);
+
   }
 }
 
