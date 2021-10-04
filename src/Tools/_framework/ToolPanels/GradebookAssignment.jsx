@@ -140,7 +140,7 @@ function UploadChoices({ doenetId, maxAttempts }){
     <br />
 
     {attemptNumber ? 
-    <div>Use column <b>{validColumns[Number(selectedColumnIndex) - 1]}</b> as <b>Attempt Number {attemptNumber}</b> to override scores?</div>
+    <div>Use column <b>{validColumns[Number(selectedColumnIndex) - 1]}</b> as <b>Attempt Number {attemptNumber}</b> to {Number(maxAttempts) + 1 === attemptNumber ? 'insert' : 'override' } scores?</div>
     : null }
     <ButtonGroup>
         <Button alert value='Cancel' onClick={()=>{
@@ -163,13 +163,13 @@ function UploadChoices({ doenetId, maxAttempts }){
                 })
                 .then(({data})=>{
                     if (data.success){
-                    addToast(`Overrode scores!`);
+                    addToast(`Updated scores!`);
                     setProcess('Assignment Table')
                     //update data
        
                     }else{
-                    // console.log(">>>>data",data)
-                    addToast(data.message, toastType.ERROR);
+                    console.log(">>>>data",data)
+                    // addToast(data.message, toastType.ERROR);
                     }
                     
                 })
@@ -264,7 +264,7 @@ export default function GradebookAssignmentView(){
     }
 
     assignmentsTable.headers.push({
-        Header: "Assignment Grade",
+        Header: "Assignment Total",
         accessor: "grade",
         disableFilters: true
     })
