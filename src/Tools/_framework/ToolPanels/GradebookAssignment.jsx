@@ -192,12 +192,13 @@ export default function GradebookAssignmentView(){
     let doenetId = useRecoilValue(searchParamAtomFamily('doenetId'))
     let driveIdValue = useRecoilValue(searchParamAtomFamily('driveId'))
     let source = useRecoilValue(searchParamAtomFamily('source'))
-    let assignmentsTable = {}
     let attempts = useRecoilValueLoadable(attemptData(doenetId))
     let students = useRecoilValueLoadable(studentData)
     let [process,setProcess] = useRecoilState(processGradesAtom);
     const setSuppressMenus = useSetRecoilState(suppressMenusAtom);
     let effectiveRole = useRecoilValue(effectiveRoleAtom);
+    let assignments = useRecoilValueLoadable(assignmentData);
+
 
     useEffect(()=>{
         if (effectiveRole === "student"){
@@ -210,12 +211,13 @@ export default function GradebookAssignmentView(){
 
 
     //Wait for attempts and students to load
-    if(attempts.state !== 'hasValue' || students.state !== 'hasValue'){
+    if(attempts.state !== 'hasValue' || students.state !== 'hasValue' || assignments.state !== 'hasValue'){
         return null;
     }
 
-   
-
+    const totalPossiblePoints = Number(assignments.contents[doenetId]?.totalPointsOrPercent);
+  
+    let assignmentsTable = {}
     let maxAttempts = 0;
 
     for (let userId in attempts.contents) {
@@ -295,21 +297,19 @@ export default function GradebookAssignmentView(){
 
      
             for (let i = 1; i <= maxAttempts; i++) {
-                let attemptCredit = attempts.contents[userId].attempts[i];
-                let attemptCreditOverride = attempts.contents[userId].creditOverrides[i];
-                // let attemptOverride = attempts.contents[userId].creditOverride[i];
-                let effectiveCredit = attemptCredit;
-                if (attemptCreditOverride){effectiveCredit = attemptCreditOverride }
-                row[("a"+i)] = effectiveCredit ? effectiveCredit * 100 + "%" : ""
-                // console.log(">>>>userId",i,userId,effectiveCredit)
+                let attemptCredit = attempts.contents[userId]?.attempts[i];
+                let pointsEarned = Math.round(attemptCredit * totalPossiblePoints * 100)/100;
+           
+                row[("a"+i)] = (attemptCredit === undefined) ? "" : pointsEarned
                 // <Link to={`/attempt/?doenetId=${doenetId}&userId=${userId}&attemptNumber=${i}`}>
                 // {
                 //     attemptCredit ? attemptCredit * 100 + "%" : "" // if attemptCredit is `undefined`, we still want a table cell so that the footer column still shows up right.
                 // }
                 // </Link>
             }
-
-            row["grade"] = attempts.contents[userId].credit ? attempts.contents[userId].credit*100+ "%" : ""
+            let totalCredit = attempts.contents[userId]?.credit;
+            let totalPointsEarned = Math.round(totalCredit * totalPossiblePoints * 100)/100;
+            row["grade"] = totalCredit ? totalPointsEarned : "0"
         
 
         

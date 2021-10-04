@@ -49,7 +49,9 @@ export default function GradebookStudentAssignmentView(props){
 
     useEffect(()=>{
         if (attemptsObj){
-            let effectiveAttemptNumber = Object.keys(attemptsObj).length;
+            let attemptNumbers = Object.keys(attemptsObj).map(Number);
+            let effectiveAttemptNumber = Math.max(0,...attemptNumbers);
+
             if (paramAttemptNumber && paramAttemptNumber < effectiveAttemptNumber){
                 effectiveAttemptNumber = paramAttemptNumber;
             }
@@ -68,7 +70,7 @@ export default function GradebookStudentAssignmentView(props){
     async function loadAssignmentInfo(doenetId,userId){
         
         const { data } = await axios.get(`/api/getGradebookAssignmentAttempts.php`,{params:{doenetId,userId}})
-        let dataAttemptInfo = [];
+        let dataAttemptInfo = {};
         let contentIdToDoenetML = {}; //Don't request from server more than once
         let solutionDisplayMode = 'none';
         if(data.showSolutionInGradebook === '1') {
@@ -76,25 +78,29 @@ export default function GradebookStudentAssignmentView(props){
         }
 
         for (let attempt of data.attemptInfo){
+            let attemptNumber = attempt.attemptNumber;
             let gvariant = JSON.parse(attempt.variant, serializedComponentsReviver);
             let doenetML = contentIdToDoenetML[attempt.contentId];
 
             if (doenetML){
-                dataAttemptInfo.push({
+                dataAttemptInfo[attemptNumber] = {
                     contentId:attempt.contentId,
-                    variant:{name:gvariant.name},
+                    variant:{name:gvariant?.name},
                     doenetML,
                     solutionDisplayMode
-                    })
+                    }
             }else{
                 const { data } = await axios.get(`/media/${attempt.contentId}.doenet`); 
+  
                 contentIdToDoenetML[attempt.contentId] = data;
-                dataAttemptInfo.push({
+           
+                dataAttemptInfo[attemptNumber] = {
                     contentId:attempt.contentId,
-                    variant:{name:gvariant.name},
+                    variant:{name:gvariant?.name},
                     doenetML: data,
                     solutionDisplayMode
-                    })
+                    }
+
             }
             
 
@@ -111,8 +117,7 @@ export default function GradebookStudentAssignmentView(props){
 
     //attempts.state == 'hasValue' ? console.log(attempts.contents): console.log(attempts.state)
     if(attempts.state == 'hasValue' && userId !== null && userId !== ''){
-        let len = Object.keys(attempts.contents[userId].attempts).length;
-        maxAttempts = len;
+        maxAttempts = Math.max(0,...Object.keys(attemptsInfo).map(Number))
     }
 
     assignmentsTable.headers = [
@@ -185,11 +190,15 @@ export default function GradebookStudentAssignmentView(props){
 
 
     let dViewer = null;
-    if (attemptNumber > 0){
-        // let contentId = attemptsInfo[attemptNumber-1].contentId
-        let variant = attemptsInfo[attemptNumber-1].variant;
-        let doenetML = attemptsInfo[attemptNumber-1].doenetML;
-        let solutionDisplayMode = attemptsInfo[attemptNumber-1].solutionDisplayMode;
+    let attemptNumberJSX = null;
+    if (attemptNumber > 0 && 
+        attemptsInfo[attemptNumber] &&
+        attemptsInfo[attemptNumber].contentId !== 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855'
+        ){
+        // let contentId = attemptsInfo[attemptNumber].contentId
+        let variant = attemptsInfo[attemptNumber].variant;
+        let doenetML = attemptsInfo[attemptNumber].doenetML;
+        let solutionDisplayMode = attemptsInfo[attemptNumber].solutionDisplayMode;
   
         dViewer = <DoenetViewer
         key={`doenetviewer${doenetId}`}
@@ -217,6 +226,11 @@ export default function GradebookStudentAssignmentView(props){
       //   updateCreditAchievedCallback={updateCreditAchieved}
         // generatedVariantCallback={variantCallback}
       />
+
+      attemptNumberJSX = <div style={{paddingLeft:"8px"}}>
+        Viewing Attempt Number {attemptNumber}
+        </div>;
+
     }
     
 
@@ -227,9 +241,7 @@ export default function GradebookStudentAssignmentView(props){
         </Styles>
         {attemptNumber > 0 ? 
         <>
-        <div style={{paddingLeft:"8px"}}>
-            Viewing Attempt Number {attemptNumber}
-        </div>
+        {attemptNumberJSX}
         {dViewer}
         </>
           : <div>Click an attempt&apos;s grade to see your attempt</div>  }
