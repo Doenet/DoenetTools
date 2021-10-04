@@ -55,6 +55,21 @@ if ($success){
   $attemptAggregation = $row['attemptAggregation'];
   $driveId = $row['driveId'];
 
+  $sql = "SELECT canChangeAllDriveSettings
+      FROM drive_user
+      WHERE userId = '$userId'
+      AND driveId = '$driveId'
+    ";
+    $result = $conn->query($sql); 
+    $row = $result->fetch_assoc();
+      $allowed = $row['canChangeAllDriveSettings'];
+      if (!$allowed) {
+        $success = FALSE;
+        $message = "You need need permission to add grades";
+      }
+
+  if ($success){
+
   foreach ($emails AS $key => $email){
     $credit = $scores[$key] / $totalPointsOrPercent;
 
@@ -174,6 +189,7 @@ if ($success){
     $result = $conn->query($sql);
 
   }
+}
 }
 
 

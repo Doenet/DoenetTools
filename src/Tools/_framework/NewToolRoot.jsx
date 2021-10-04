@@ -361,7 +361,8 @@ let navigationObj = {
       menusInitOpen:[false],
       menuPanelCap:"DriveInfoCap",
       headerControls: ["GradebookBreadCrumb"],
-      headerControlsPositions: ["Left"]
+      headerControlsPositions: ["Left"],
+      waitForMenuSuppression:true,
       // onLeave:"",
     },
     gradebookStudent: {

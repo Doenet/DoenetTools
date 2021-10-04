@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Styles, Table, studentData, attemptData, assignmentData } from "./Gradebook"
 
 import {
@@ -15,6 +15,8 @@ import ButtonGroup from "../../../_reactComponents/PanelHeaderComponents/ButtonG
 import Button from "../../../_reactComponents/PanelHeaderComponents/Button";
 import DropdownMenu from "../../../_reactComponents/PanelHeaderComponents/DropdownMenu";
 import axios from "axios";
+import { suppressMenusAtom } from '../NewToolRoot';
+import { effectiveRoleAtom } from "../../../_reactComponents/PanelHeaderComponents/RoleDropdown";
 
 export const processGradesAtom = atom({
     key: 'processGradesAtom',
@@ -169,7 +171,7 @@ function UploadChoices({ doenetId, maxAttempts }){
        
                     }else{
                     console.log(">>>>data",data)
-                    // addToast(data.message, toastType.ERROR);
+                    addToast(data.message, toastType.ERROR);
                     }
                     
                 })
@@ -194,10 +196,17 @@ export default function GradebookAssignmentView(){
     let attempts = useRecoilValueLoadable(attemptData(doenetId))
     let students = useRecoilValueLoadable(studentData)
     let [process,setProcess] = useRecoilState(processGradesAtom);
+    const setSuppressMenus = useSetRecoilState(suppressMenusAtom);
+    let effectiveRole = useRecoilValue(effectiveRoleAtom);
 
-    // console.log(">>>>process",process)
-    // console.log(">>>>attempts",attempts)
-    // console.log(">>>>students",students)
+    useEffect(()=>{
+        if (effectiveRole === "student"){
+            setSuppressMenus(["GradeUpload"])
+        }else{
+            setSuppressMenus([])
+        }
+    },[effectiveRole])
+    
 
 
     //Wait for attempts and students to load
