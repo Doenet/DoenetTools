@@ -301,7 +301,7 @@ export default function GradebookAssignmentView(){
             }
 
             row["grade"] = attempts.contents[userId].credit ? attempts.contents[userId].credit*100+ "%" : ""
-        }
+        
 
         
         
