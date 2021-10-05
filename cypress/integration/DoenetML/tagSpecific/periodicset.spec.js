@@ -829,7 +829,7 @@ describe('PeriodicSet Tag Tests', function () {
 
   });
 
-  it.only('display periodic set as list', () => {
+  it('display periodic set as list', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `

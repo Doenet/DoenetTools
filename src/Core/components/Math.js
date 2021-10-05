@@ -1322,9 +1322,9 @@ function invertMath({ desiredStateVariableValues, dependencyValues, stateValues,
 
       if (workspace.desiredExpressionAst) {
         // if have desired expresson from workspace, use that instead of currentValue
-        expressionAst = workspace.desiredExpressionAst.slice(0);
+        expressionAst = workspace.desiredExpressionAst.slice(0, desiredExpression.tree.length);
       } else {
-        expressionAst = currentValue.tree.slice(0);
+        expressionAst = currentValue.tree.slice(0, desiredExpression.tree.length);
       }
 
       let notAffected = [];
