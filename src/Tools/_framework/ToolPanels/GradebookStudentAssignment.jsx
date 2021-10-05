@@ -241,11 +241,13 @@ export default function GradebookStudentAssignmentView(props){
 
     }
     
+    let studentName = `${students.contents[userId]?.firstName} ${students.contents[userId]?.lastName}`
 
     return(
         <>
-        <div style={{paddingLeft:"8px"}}><b>{label}</b></div>
-        <div style={{paddingLeft:"8px"}}>{totalPointsOrPercent} Points Possible</div>
+        <div style={{marginLeft:'18px'}}><b>Gradebook for {studentName}</b></div>
+        <div style={{paddingLeft:"18px"}}><b>{label}</b></div>
+        <div style={{paddingLeft:"18px"}}>{totalPointsOrPercent} Points Possible</div>
         <Styles>
             <Table columns = {assignmentsTable.headers} data = {assignmentsTable.rows}/>
         </Styles>
