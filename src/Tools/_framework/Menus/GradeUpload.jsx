@@ -50,13 +50,10 @@ export default function GradeUpload(){
       </div>
       <br />
       <CollapseSection title="Formatting Instructions" collapsed={true} >
-        <p>details here</p>
-      {/* <p>Your file needs to contain an email address.  The parser will ignore columns which are not listed.</p>
-        <div><b>Email (required)</b></div>
-        <div><b>EmplID or ID</b></div>
-        <div><b>First Name</b></div>
-        <div><b>Last Name</b></div>
-        <div><b>Section</b></div> */}
+      <p>Your file needs to contain a SIS Login ID column.  The parser will ignore columns where the points don&apos;t match the points possible.</p>
+        <div><b>SIS Login ID (required)</b></div>
+        <div>First column is student name</div>
+        <div>Second row is points possible</div>
       </CollapseSection>
 
   </div>
