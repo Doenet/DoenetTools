@@ -363,7 +363,7 @@ let navigationObj = {
       headerControls: ["GradebookBreadCrumb"],
       headerControlsPositions: ["Left"],
       waitForMenuSuppression:true,
-      // onLeave:"",
+      onLeave:"GradebookAssignmentLeave",
     },
     gradebookStudent: {
       pageName: "Gradebook",
@@ -549,6 +549,8 @@ let encodeParams = p => Object.entries(p).map(kv =>
       EditorLeave:lazy(() => import('./EnterLeave/EditorLeave')),
       CourseChooserLeave:lazy(() => import('./EnterLeave/CourseChooserLeave')),
       DashboardLeave:lazy(() => import('./EnterLeave/DashboardLeave')),
+      GradebookAssignmentLeave:lazy(() => import('./EnterLeave/GradebookAssignmentLeave')),
+      
     }).current;
 
     if (leaveComponentStr){
