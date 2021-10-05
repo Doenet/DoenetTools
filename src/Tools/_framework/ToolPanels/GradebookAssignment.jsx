@@ -154,6 +154,23 @@ function UploadChoices({ doenetId, maxAttempts }){
     }
     attemptDropdownItems.push([Number(maxAttempts) + 1,`New Attempt Number`])
 
+
+    let descriptionOfUpload = null;
+    if (attemptNumber){
+        if (Number(maxAttempts) + 1 === attemptNumber){
+            //insert
+            descriptionOfUpload = <div>Use column <b>{validColumns[Number(selectedColumnIndex) - 1]}</b> to insert a new <b>Attempt Number {attemptNumber}</b>?</div>
+        }else{
+            //update
+            descriptionOfUpload = <div>Use column <b>{validColumns[Number(selectedColumnIndex) - 1]}</b> to change <b>Attempt Number {attemptNumber}</b> scores?</div>
+
+        }
+    }
+
+    {attemptNumber ? 
+        <div>Use column <b>{validColumns[Number(selectedColumnIndex) - 1]}</b> as <b>Attempt Number {attemptNumber}</b> to {Number(maxAttempts) + 1 === attemptNumber ? 'insert' : 'override' } scores?</div>
+        : null }
+
     return <>
     <div>{validColumns.length} column{validColumns.length > 1 ? 's' : null} match {totalPointsOrPercent} total points </div>
     <div><DropdownMenu items = {dropdownItems} valueIndex={selectedColumnIndex} width="400px" onChange={({value})=>{
@@ -167,9 +184,8 @@ function UploadChoices({ doenetId, maxAttempts }){
     }}/></div>
     <br />
 
-    {attemptNumber ? 
-    <div>Use column <b>{validColumns[Number(selectedColumnIndex) - 1]}</b> as <b>Attempt Number {attemptNumber}</b> to {Number(maxAttempts) + 1 === attemptNumber ? 'insert' : 'override' } scores?</div>
-    : null }
+    
+    {descriptionOfUpload}
     <ButtonGroup>
         <Button alert value='Cancel' onClick={()=>{
             addToast(`Override Cancelled`);
