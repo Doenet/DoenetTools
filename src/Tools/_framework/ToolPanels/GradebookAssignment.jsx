@@ -215,6 +215,7 @@ export default function GradebookAssignmentView(){
         return null;
     }
 
+    const label = assignments.contents[doenetId].label;
     const totalPossiblePoints = Number(assignments.contents[doenetId]?.totalPointsOrPercent);
   
     let assignmentsTable = {}
@@ -319,9 +320,13 @@ export default function GradebookAssignmentView(){
     
 
     return(
+        <>
+        <div style={{paddingLeft:"8px"}}><b>{label}</b></div>
+        <div style={{paddingLeft:"8px"}}>{totalPossiblePoints} Points Possible</div>
     <Styles>
         <Table columns = {assignmentsTable.headers} data = {assignmentsTable.rows}/>
     </Styles>
+    </>
     )
 
 }

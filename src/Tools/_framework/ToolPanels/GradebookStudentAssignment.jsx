@@ -38,12 +38,13 @@ export default function GradebookStudentAssignmentView(props){
     const setRecoilAttemptNumber = useSetRecoilState(currentAttemptNumber);
     let assignments = useRecoilValueLoadable(assignmentData);
 
-    const totalPointsOrPercent = Number(assignments.contents?.[doenetId]?.totalPointsOrPercent)
-    // console.log(">>>>attempts",Object.keys(attempts.contents[userId].attempts).length)
+  
+    const totalPointsOrPercent = Number(assignments.contents[doenetId]?.totalPointsOrPercent)
+    const label = assignments.contents[doenetId].label;
+
     // let driveIdValue = useRecoilValue(driveId)
     // let [attemptNumber,setAttemptNumber] = useState(1); //Start with attempt 1
     const attemptsObj =  attempts?.contents?.[userId]?.attempts;
-    // Object.keys(attempts?.contents?.[userId]?.attempts).length;
     let [attemptNumber,setAttemptNumber] = useState(null);
     let [attemptsInfo,setAttemptsInfo] = useState(null); //array of {contentId,variant}
     let assignmentsTable = {}
@@ -174,18 +175,11 @@ export default function GradebookStudentAssignmentView(props){
             for (let i = 1; i <= maxAttempts; i++) {
                 let attemptCredit = attempts.contents[userId].attempts[i];
     
-                // row[("a"+i)] = attemptCredit ? attemptCredit * 100 + "%" : ""
                 creditRow[("a"+i)] = attemptCredit ? Math.round(attemptCredit * 1000)/10 + '%' : ""
                 scoreRow[("a"+i)] = attemptCredit ? Math.round(attemptCredit * 100 * totalPointsOrPercent)/100 : ""
-                
-                // <Link to={`/attempt/?doenetId=${doenetId}&userId=${userId}&attemptNumber=${i}`}>
-                // {
-                //     attemptCredit ? attemptCredit * 100 + "%" : "" // if attemptCredit is `undefined`, we still want a table cell so that the footer column still shows up right.
-                // }
-                // </Link>
+        
             }
 
-            // row["total"] = attempts.contents[userId].credit ? attempts.contents[userId].credit*100+ "%" : ""
             creditRow["total"] = attempts.contents[userId].credit ? Math.round(attempts.contents[userId].credit * 1000)/10 + '%' : ""
             scoreRow["total"] = attempts.contents[userId].credit ? Math.round(attempts.contents[userId].credit * totalPointsOrPercent * 100)/100   : "0"
         }
@@ -250,6 +244,8 @@ export default function GradebookStudentAssignmentView(props){
 
     return(
         <>
+        <div style={{paddingLeft:"8px"}}><b>{label}</b></div>
+        <div style={{paddingLeft:"8px"}}>{totalPointsOrPercent} Points Possible</div>
         <Styles>
             <Table columns = {assignmentsTable.headers} data = {assignmentsTable.rows}/>
         </Styles>
