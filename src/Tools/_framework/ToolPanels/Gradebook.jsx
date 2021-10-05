@@ -154,7 +154,7 @@ export const assignmentData = selector({
     }
 })
 
-const studentDataQuerry = atom({
+export const studentDataQuerry = atom({
     key: "studentDataQuerry",
     default: selector({
         key: "studentDataQuerry/Default",
@@ -201,7 +201,7 @@ export const studentData = selector({
     }
 })
 
-const overViewDataQuerry = atom({
+export const overViewDataQuerry = atom({
     key:"overViewDataQuerry",
     default: selector({
         key: "overViewDataQuerry/Default",
@@ -253,7 +253,7 @@ export const overViewData = selector({
     }
 })
 
-const attemptDataQuerry = atomFamily({
+export const attemptDataQuerry = atomFamily({
     key: "attemptDataQuerry",
     default: selectorFamily({
         key:"attemptDataQuerry/Default",
@@ -281,21 +281,23 @@ export const attemptData = selectorFamily({
         for(let userId in students){
             attempts[userId] = {
                 credit: null,
+                creditOverrides: {},
                 attempts: {}
             }
         }
 
         let data = get(attemptDataQuerry(doenetId))
-
         for(let row of data){
             let [userId,
                 attemptNumber,
                 assignmentCredit,
                 attemptCredit,
+                creditOverride
                 ] = row;
-
+           
             attempts[userId].credit = assignmentCredit
             attempts[userId].attempts[attemptNumber] = attemptCredit;
+            attempts[userId].creditOverrides[attemptNumber] = creditOverride;
         }
 
         return attempts;
@@ -344,7 +346,6 @@ export const specificAttemptData = selectorFamily({
         return specificAttempt;
     }
 })
-
 
 const doenetMLQuerry = atomFamily({
     key: "doenetMLQuerry",
@@ -492,7 +493,6 @@ const getUserId = (students, name) => {
     return -1;
 } 
 
-
 function GradebookOverview(props) {
     //const { openOverlay, activateMenuPanel } = useToolControlHelper();
     let driveIdValue = useRecoilValue(driveId)
@@ -501,9 +501,9 @@ function GradebookOverview(props) {
     let assignments = useRecoilValueLoadable(assignmentData);
     let overView = useRecoilValueLoadable(overViewData)
 
-console.log(">>>>students",students)
-console.log(">>>>assignments",assignments)
-console.log(">>>>overView",overView)
+// console.log(">>>>students",students)
+// console.log(">>>>assignments",assignments)
+// console.log(">>>>overView",overView)
 
  //Protect from values not being loaded
  if(assignments.state !== 'hasValue' || 
