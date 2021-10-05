@@ -78,31 +78,21 @@ export default class MatrixInput extends MathInput {
       public: true,
       componentType: "integer",
       forRenderer: true,
-      stateVariablesDeterminingDependencies: ["haveBoundValue"],
-      returnDependencies({ stateValues }) {
-        let dependencies = {
-          numRowsPreliminary: {
-            dependencyType: "stateVariable",
-            variableName: "numRowsPreliminary"
-          },
-          haveBoundValue: {
-            dependencyType: "stateVariable",
-            variableName: "haveBoundValue"
-          },
-        }
-        if (stateValues.haveBoundValue) {
-          dependencies.valueOriginal = {
-            dependencyType: "stateVariable",
-            variableName: "valueOriginal"
-          }
-        }
-        return dependencies;
-      },
+      returnDependencies: () => ({
+        numRowsPreliminary: {
+          dependencyType: "stateVariable",
+          variableName: "numRowsPreliminary"
+        },
+        valueOriginal: {
+          dependencyType: "stateVariable",
+          variableName: "valueOriginal"
+        },
+      }),
       definition({ dependencyValues, usedDefault }) {
 
         let numRows = dependencyValues.numRowsPreliminary;
 
-        if (dependencyValues.haveBoundValue && usedDefault.numRowsPreliminary) {
+        if (usedDefault.numRowsPreliminary) {
           let originalTree = dependencyValues.valueOriginal.tree;
 
           if (Array.isArray(originalTree)) {
@@ -132,7 +122,7 @@ export default class MatrixInput extends MathInput {
           desiredValue: desiredNumRows
         }]
 
-        if (dependencyValues.haveBoundValue) {
+        if (stateValues.haveBoundValue) {
           let originalTree = dependencyValues.valueOriginal.tree;
           if (stateValues.numColumns === 1 && Array.isArray(originalTree)
             && (originalTree[0] === "vector" || originalTree[0] === "tuple")
@@ -219,31 +209,21 @@ export default class MatrixInput extends MathInput {
       public: true,
       componentType: "integer",
       forRenderer: true,
-      stateVariablesDeterminingDependencies: ["haveBoundValue"],
-      returnDependencies({ stateValues }) {
-        let dependencies = {
-          numColumnsPreliminary: {
-            dependencyType: "stateVariable",
-            variableName: "numColumnsPreliminary"
-          },
-          haveBoundValue: {
-            dependencyType: "stateVariable",
-            variableName: "haveBoundValue"
-          },
-        }
-        if (stateValues.haveBoundValue) {
-          dependencies.valueOriginal = {
-            dependencyType: "stateVariable",
-            variableName: "valueOriginal"
-          }
-        }
-        return dependencies;
-      },
+      returnDependencies: () => ({
+        numColumnsPreliminary: {
+          dependencyType: "stateVariable",
+          variableName: "numColumnsPreliminary"
+        },
+        valueOriginal: {
+          dependencyType: "stateVariable",
+          variableName: "valueOriginal"
+        },
+      }),
       definition({ dependencyValues, usedDefault }) {
 
         let numColumns = dependencyValues.numColumnsPreliminary;
 
-        if (dependencyValues.haveBoundValue && usedDefault.numColumnsPreliminary) {
+        if (usedDefault.numColumnsPreliminary) {
           let originalTree = dependencyValues.valueOriginal.tree;
 
           if (Array.isArray(originalTree)) {
@@ -276,7 +256,7 @@ export default class MatrixInput extends MathInput {
           desiredValue: desiredNumColumns
         }]
 
-        if (dependencyValues.haveBoundValue) {
+        if (stateValues.haveBoundValue) {
           let originalTree = dependencyValues.valueOriginal.tree;
           let operator = originalTree[0];
 

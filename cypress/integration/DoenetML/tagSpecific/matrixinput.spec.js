@@ -524,6 +524,275 @@ describe('MatrixInput Tag Tests', function () {
       win.postMessage({
         doenetML: `
     <text>a</text>
+    <p>Matrix 1: <matrixInput name="mi1" format="latex" prefill="\\begin{matrix}a & b\\\\c & d\\end{matrix}" /></p>
+    <p>Matrix 2: <copy prop="value" tname="mi1" assignNames="m1" /></p>
+    `}, "*");
+    });
+
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.get(`#\\/mi1_component_0_0 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('a')
+    })
+    cy.get(`#\\/mi1_component_0_1 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('b')
+    })
+    cy.get(`#\\/mi1_component_1_0 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('c')
+    })
+    cy.get(`#\\/mi1_component_1_1 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('d')
+    })
+    cy.get("#\\/m1").find('.mjx-mrow').eq(0).should('have.text', '[abcd]')
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      let matrixAst = ["matrix", ["tuple", 2, 2], ["tuple", ["tuple", 'a', 'b'], ["tuple", 'c', 'd']]]
+      expect(components['/mi1'].stateValues.value.tree).eqls(matrixAst);
+      expect(components['/m1'].stateValues.value.tree).eqls(matrixAst);
+    });
+
+    cy.log('remove column')
+    cy.get('#\\/mi1_columnDecrement').click();
+
+    cy.get(`#\\/mi1_component_0_0 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('a')
+    })
+    cy.get(`#\\/mi1_component_1_0 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('c')
+    })
+    cy.get("#\\/m1").find('.mjx-mrow').eq(0).should('have.text', '[ac]')
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      let matrixAst = ["matrix", ["tuple", 2, 1], ["tuple", ["tuple", 'a'], ["tuple", 'c']]]
+      expect(components['/mi1'].stateValues.value.tree).eqls(matrixAst);
+      expect(components['/m1'].stateValues.value.tree).eqls(matrixAst);
+    });
+
+
+    cy.log('change value')
+    cy.get('#\\/mi1_component_0_0 textarea').type("{end}{backspace}z{enter}", { force: true })
+
+    cy.get(`#\\/mi1_component_0_0 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('z')
+    })
+    cy.get(`#\\/mi1_component_1_0 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('c')
+    })
+    cy.get("#\\/m1").find('.mjx-mrow').eq(0).should('have.text', '[zc]')
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      let matrixAst = ["matrix", ["tuple", 2, 1], ["tuple", ["tuple", 'z'], ["tuple", 'c']]]
+      expect(components['/mi1'].stateValues.value.tree).eqls(matrixAst);
+      expect(components['/m1'].stateValues.value.tree).eqls(matrixAst);
+    });
+
+    cy.log('add column back')
+    cy.get('#\\/mi1_columnIncrement').click();
+
+    cy.get(`#\\/mi1_component_0_0 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('z')
+    })
+    cy.get(`#\\/mi1_component_0_1 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('b')
+    })
+    cy.get(`#\\/mi1_component_1_0 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('c')
+    })
+    cy.get(`#\\/mi1_component_1_1 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('d')
+    })
+    cy.get("#\\/m1").find('.mjx-mrow').eq(0).should('have.text', '[zbcd]')
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      let matrixAst = ["matrix", ["tuple", 2, 2], ["tuple", ["tuple", 'z', 'b'], ["tuple", 'c', 'd']]]
+      expect(components['/mi1'].stateValues.value.tree).eqls(matrixAst);
+      expect(components['/m1'].stateValues.value.tree).eqls(matrixAst);
+    });
+
+
+    cy.log('change values')
+    cy.get('#\\/mi1_component_0_0 textarea').type("{end}{backspace}e{enter}", { force: true })
+    cy.get('#\\/mi1_component_1_0 textarea').type("{end}{backspace}f{enter}", { force: true })
+    cy.get('#\\/mi1_component_0_1 textarea').type("{end}{backspace}g{enter}", { force: true })
+    cy.get('#\\/mi1_component_1_1 textarea').type("{end}{backspace}h{enter}", { force: true })
+
+    cy.get(`#\\/mi1_component_0_0 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('e')
+    })
+    cy.get(`#\\/mi1_component_0_1 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('g')
+    })
+    cy.get(`#\\/mi1_component_1_0 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('f')
+    })
+    cy.get(`#\\/mi1_component_1_1 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('h')
+    })
+    cy.get("#\\/m1").find('.mjx-mrow').eq(0).should('have.text', '[egfh]')
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      let matrixAst = ["matrix", ["tuple", 2, 2], ["tuple", ["tuple", 'e', 'g'], ["tuple", 'f', 'h']]]
+      expect(components['/mi1'].stateValues.value.tree).eqls(matrixAst);
+      expect(components['/m1'].stateValues.value.tree).eqls(matrixAst);
+    });
+
+
+    cy.log('add row')
+    cy.get('#\\/mi1_rowIncrement').click();
+
+    cy.get(`#\\/mi1_component_0_0 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('e')
+    })
+    cy.get(`#\\/mi1_component_0_1 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('g')
+    })
+    cy.get(`#\\/mi1_component_1_0 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('f')
+    })
+    cy.get(`#\\/mi1_component_1_1 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('h')
+    })
+    cy.get(`#\\/mi1_component_2_0 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('')
+    })
+    cy.get(`#\\/mi1_component_2_1 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('')
+    })
+    cy.get("#\\/m1").find('.mjx-mrow').eq(0).should('have.text', '⎡⎢⎣egfh＿＿⎤⎥⎦')
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      let matrixAst = ["matrix", ["tuple", 3, 2], ["tuple", ["tuple", 'e', 'g'], ["tuple", 'f', 'h'], ["tuple", '＿', '＿']]]
+      expect(components['/mi1'].stateValues.value.tree).eqls(matrixAst);
+      expect(components['/m1'].stateValues.value.tree).eqls(matrixAst);
+    });
+
+
+    cy.log('change third row values')
+    cy.get('#\\/mi1_component_2_0 textarea').type("{end}{backspace}i{enter}", { force: true })
+    cy.get('#\\/mi1_component_2_1 textarea').type("{end}{backspace}j{enter}", { force: true })
+
+    cy.get(`#\\/mi1_component_0_0 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('e')
+    })
+    cy.get(`#\\/mi1_component_0_1 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('g')
+    })
+    cy.get(`#\\/mi1_component_1_0 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('f')
+    })
+    cy.get(`#\\/mi1_component_1_1 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('h')
+    })
+    cy.get(`#\\/mi1_component_2_0 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('i')
+    })
+    cy.get(`#\\/mi1_component_2_1 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('j')
+    })
+    cy.get("#\\/m1").find('.mjx-mrow').eq(0).should('have.text', '⎡⎢⎣egfhij⎤⎥⎦')
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      let matrixAst = ["matrix", ["tuple", 3, 2], ["tuple", ["tuple", 'e', 'g'], ["tuple", 'f', 'h'], ["tuple", 'i', 'j']]]
+      expect(components['/mi1'].stateValues.value.tree).eqls(matrixAst);
+      expect(components['/m1'].stateValues.value.tree).eqls(matrixAst);
+    });
+
+
+    cy.log('down to one entry')
+    cy.get('#\\/mi1_rowDecrement').click();
+    cy.get('#\\/mi1_columnDecrement').click();
+    cy.get('#\\/mi1_rowDecrement').click();
+
+    cy.get(`#\\/mi1_component_0_0 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('e')
+    })
+    cy.get("#\\/m1").find('.mjx-mrow').eq(0).should('have.text', '[e]')
+
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      let matrixAst = ["matrix", ["tuple", 1, 1], ["tuple", ["tuple", 'e']]]
+      expect(components['/mi1'].stateValues.value.tree).eqls(matrixAst);
+      expect(components['/m1'].stateValues.value.tree).eqls(matrixAst);
+    });
+
+
+    cy.log('change value')
+    cy.get('#\\/mi1_component_0_0 textarea').type("{end}{backspace}k{enter}", { force: true })
+
+    cy.get(`#\\/mi1_component_0_0 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('k')
+    })
+    cy.get("#\\/m1").find('.mjx-mrow').eq(0).should('have.text', '[k]')
+
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      let matrixAst = ["matrix", ["tuple", 1, 1], ["tuple", ["tuple", 'k']]]
+      expect(components['/mi1'].stateValues.value.tree).eqls(matrixAst);
+      expect(components['/m1'].stateValues.value.tree).eqls(matrixAst);
+    });
+
+
+
+    cy.log('up to 3x3 entry')
+    cy.get('#\\/mi1_rowIncrement').click();
+    cy.get('#\\/mi1_columnIncrement').click();
+    cy.get('#\\/mi1_columnIncrement').click();
+    cy.get('#\\/mi1_rowIncrement').click();
+
+    cy.get(`#\\/mi1_component_0_0 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('k')
+    })
+    cy.get(`#\\/mi1_component_0_1 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('g')
+    })
+    cy.get(`#\\/mi1_component_0_2 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('')
+    })
+    cy.get(`#\\/mi1_component_1_0 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('f')
+    })
+    cy.get(`#\\/mi1_component_1_1 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('h')
+    })
+    cy.get(`#\\/mi1_component_1_2 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('')
+    })
+    cy.get(`#\\/mi1_component_2_0 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('i')
+    })
+    cy.get(`#\\/mi1_component_2_1 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('j')
+    })
+    cy.get(`#\\/mi1_component_2_2 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('')
+    })
+    cy.get("#\\/m1").find('.mjx-mrow').eq(0).should('have.text', '⎡⎢⎣kg＿fh＿ij＿⎤⎥⎦')
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      let matrixAst = ["matrix", ["tuple", 3, 3], ["tuple", ["tuple", 'k', 'g', '＿'], ["tuple", 'f', 'h', '＿'], ["tuple", 'i', 'j', '＿']]]
+      expect(components['/mi1'].stateValues.value.tree).eqls(matrixAst);
+      expect(components['/m1'].stateValues.value.tree).eqls(matrixAst);
+    });
+
+
+  })
+
+  it('prefill with matrix, start smaller', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
     <p>Number of rows: <mathinput name="numRows" /></p>
     <p>Number of columns: <mathinput name="numColumns" /></p>
 
@@ -877,6 +1146,297 @@ describe('MatrixInput Tag Tests', function () {
   })
 
   it('prefill with vector', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+
+    <p>Matrix 1: <matrixInput name="mi1" prefill="(a,b)" /></p>
+    <p>Matrix 2: <copy prop="value" tname="mi1" assignNames="m1" /></p>
+    `}, "*");
+    });
+
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.get(`#\\/mi1_component_0_0 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('a')
+    })
+    cy.get(`#\\/mi1_component_1_0 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('b')
+    })
+    cy.get("#\\/m1").find('.mjx-mrow').eq(0).should('have.text', '[ab]')
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      let matrixAst = ["matrix", ["tuple", 2, 1], ["tuple", ["tuple", 'a'], ["tuple", 'b']]]
+      expect(components['/mi1'].stateValues.value.tree).eqls(matrixAst);
+      expect(components['/m1'].stateValues.value.tree).eqls(matrixAst);
+    });
+
+    cy.log('remove row')
+    cy.get('#\\/mi1_rowDecrement').click();
+
+    cy.get(`#\\/mi1_component_0_0 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('a')
+    })
+    cy.get("#\\/m1").find('.mjx-mrow').eq(0).should('have.text', '[a]')
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      let matrixAst = ["matrix", ["tuple", 1, 1], ["tuple", ["tuple", 'a']]]
+      expect(components['/mi1'].stateValues.value.tree).eqls(matrixAst);
+      expect(components['/m1'].stateValues.value.tree).eqls(matrixAst);
+    });
+
+    cy.log('change value')
+    cy.get('#\\/mi1_component_0_0 textarea').type("{end}{backspace}e{enter}", { force: true })
+
+    cy.get(`#\\/mi1_component_0_0 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('e')
+    })
+    cy.get("#\\/m1").find('.mjx-mrow').eq(0).should('have.text', '[e]')
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      let matrixAst = ["matrix", ["tuple", 1, 1], ["tuple", ["tuple", 'e']]]
+      expect(components['/mi1'].stateValues.value.tree).eqls(matrixAst);
+      expect(components['/m1'].stateValues.value.tree).eqls(matrixAst);
+    });
+
+    cy.log('restore row')
+    cy.get('#\\/mi1_rowIncrement').click();
+
+    cy.get(`#\\/mi1_component_0_0 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('e')
+    })
+    cy.get(`#\\/mi1_component_1_0 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('b')
+    })
+    cy.get("#\\/m1").find('.mjx-mrow').eq(0).should('have.text', '[eb]')
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      let matrixAst = ["matrix", ["tuple", 2, 1], ["tuple", ["tuple", 'e'], ["tuple", 'b']]]
+      expect(components['/mi1'].stateValues.value.tree).eqls(matrixAst);
+      expect(components['/m1'].stateValues.value.tree).eqls(matrixAst);
+    });
+
+
+    cy.log('type f in second row')
+    cy.get('#\\/mi1_component_1_0 textarea').type("{end}{backspace}f{enter}", { force: true })
+
+    cy.get(`#\\/mi1_component_0_0 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('e')
+    })
+    cy.get(`#\\/mi1_component_1_0 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('f')
+    })
+    cy.get("#\\/m1").find('.mjx-mrow').eq(0).should('have.text', '[ef]')
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      let matrixAst = ["matrix", ["tuple", 2, 1], ["tuple", ["tuple", 'e'], ["tuple", 'f']]]
+      expect(components['/mi1'].stateValues.value.tree).eqls(matrixAst);
+      expect(components['/m1'].stateValues.value.tree).eqls(matrixAst);
+    });
+
+    cy.log('add column')
+    cy.get('#\\/mi1_columnIncrement').click();
+
+    cy.get(`#\\/mi1_component_0_0 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('e')
+    })
+    cy.get(`#\\/mi1_component_0_1 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('')
+    })
+    cy.get(`#\\/mi1_component_1_0 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('f')
+    })
+    cy.get(`#\\/mi1_component_1_1 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('')
+    })
+    cy.get("#\\/m1").find('.mjx-mrow').eq(0).should('have.text', '[e＿f＿]')
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      let matrixAst = ["matrix", ["tuple", 2, 2], ["tuple", ["tuple", 'e', '＿'], ["tuple", 'f', '＿']]]
+      expect(components['/mi1'].stateValues.value.tree).eqls(matrixAst);
+      expect(components['/m1'].stateValues.value.tree).eqls(matrixAst);
+    });
+
+    cy.log('g and h in second column')
+    cy.get('#\\/mi1_component_0_1 textarea').type("{end}{backspace}g{enter}", { force: true })
+    cy.get('#\\/mi1_component_1_1 textarea').type("{end}{backspace}h{enter}", { force: true })
+
+    cy.get(`#\\/mi1_component_0_0 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('e')
+    })
+    cy.get(`#\\/mi1_component_0_1 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('g')
+    })
+    cy.get(`#\\/mi1_component_1_0 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('f')
+    })
+    cy.get(`#\\/mi1_component_1_1 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('h')
+    })
+    cy.get("#\\/m1").find('.mjx-mrow').eq(0).should('have.text', '[egfh]')
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      let matrixAst = ["matrix", ["tuple", 2, 2], ["tuple", ["tuple", 'e', 'g'], ["tuple", 'f', 'h']]]
+      expect(components['/mi1'].stateValues.value.tree).eqls(matrixAst);
+      expect(components['/m1'].stateValues.value.tree).eqls(matrixAst);
+    });
+
+
+    cy.log('add row')
+    cy.get('#\\/mi1_rowIncrement').click();
+
+    cy.get(`#\\/mi1_component_0_0 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('e')
+    })
+    cy.get(`#\\/mi1_component_0_1 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('g')
+    })
+    cy.get(`#\\/mi1_component_1_0 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('f')
+    })
+    cy.get(`#\\/mi1_component_1_1 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('h')
+    })
+    cy.get(`#\\/mi1_component_2_0 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('')
+    })
+    cy.get(`#\\/mi1_component_2_1 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('')
+    })
+    cy.get("#\\/m1").find('.mjx-mrow').eq(0).should('have.text', '⎡⎢⎣egfh＿＿⎤⎥⎦')
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      let matrixAst = ["matrix", ["tuple", 3, 2], ["tuple", ["tuple", 'e', 'g'], ["tuple", 'f', 'h'], ["tuple", '＿', '＿']]]
+      expect(components['/mi1'].stateValues.value.tree).eqls(matrixAst);
+      expect(components['/m1'].stateValues.value.tree).eqls(matrixAst);
+    });
+
+
+    cy.log('change third row values')
+    cy.get('#\\/mi1_component_2_0 textarea').type("{end}{backspace}i{enter}", { force: true })
+    cy.get('#\\/mi1_component_2_1 textarea').type("{end}{backspace}j{enter}", { force: true })
+
+    cy.get(`#\\/mi1_component_0_0 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('e')
+    })
+    cy.get(`#\\/mi1_component_0_1 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('g')
+    })
+    cy.get(`#\\/mi1_component_1_0 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('f')
+    })
+    cy.get(`#\\/mi1_component_1_1 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('h')
+    })
+    cy.get(`#\\/mi1_component_2_0 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('i')
+    })
+    cy.get(`#\\/mi1_component_2_1 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('j')
+    })
+    cy.get("#\\/m1").find('.mjx-mrow').eq(0).should('have.text', '⎡⎢⎣egfhij⎤⎥⎦')
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      let matrixAst = ["matrix", ["tuple", 3, 2], ["tuple", ["tuple", 'e', 'g'], ["tuple", 'f', 'h'], ["tuple", 'i', 'j']]]
+      expect(components['/mi1'].stateValues.value.tree).eqls(matrixAst);
+      expect(components['/m1'].stateValues.value.tree).eqls(matrixAst);
+    });
+
+
+    cy.log('down to one entry')
+    cy.get('#\\/mi1_rowDecrement').click();
+    cy.get('#\\/mi1_columnDecrement').click();
+    cy.get('#\\/mi1_rowDecrement').click();
+
+    cy.get(`#\\/mi1_component_0_0 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('e')
+    })
+    cy.get("#\\/m1").find('.mjx-mrow').eq(0).should('have.text', '[e]')
+
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      let matrixAst = ["matrix", ["tuple", 1, 1], ["tuple", ["tuple", 'e']]]
+      expect(components['/mi1'].stateValues.value.tree).eqls(matrixAst);
+      expect(components['/m1'].stateValues.value.tree).eqls(matrixAst);
+    });
+
+
+    cy.log('change value')
+    cy.get('#\\/mi1_component_0_0 textarea').type("{end}{backspace}k{enter}", { force: true })
+
+    cy.get(`#\\/mi1_component_0_0 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('k')
+    })
+    cy.get("#\\/m1").find('.mjx-mrow').eq(0).should('have.text', '[k]')
+
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      let matrixAst = ["matrix", ["tuple", 1, 1], ["tuple", ["tuple", 'k']]]
+      expect(components['/mi1'].stateValues.value.tree).eqls(matrixAst);
+      expect(components['/m1'].stateValues.value.tree).eqls(matrixAst);
+    });
+
+
+
+    cy.log('up to 3x3 entry')
+    cy.get('#\\/mi1_rowIncrement').click();
+    cy.get('#\\/mi1_columnIncrement').click();
+    cy.get('#\\/mi1_columnIncrement').click();
+    cy.get('#\\/mi1_rowIncrement').click();
+
+    cy.get(`#\\/mi1_component_0_0 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('k')
+    })
+    cy.get(`#\\/mi1_component_0_1 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('g')
+    })
+    cy.get(`#\\/mi1_component_0_2 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('')
+    })
+    cy.get(`#\\/mi1_component_1_0 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('f')
+    })
+    cy.get(`#\\/mi1_component_1_1 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('h')
+    })
+    cy.get(`#\\/mi1_component_1_2 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('')
+    })
+    cy.get(`#\\/mi1_component_2_0 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('i')
+    })
+    cy.get(`#\\/mi1_component_2_1 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('j')
+    })
+    cy.get(`#\\/mi1_component_2_2 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('')
+    })
+    cy.get("#\\/m1").find('.mjx-mrow').eq(0).should('have.text', '⎡⎢⎣kg＿fh＿ij＿⎤⎥⎦')
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      let matrixAst = ["matrix", ["tuple", 3, 3], ["tuple", ["tuple", 'k', 'g', '＿'], ["tuple", 'f', 'h', '＿'], ["tuple", 'i', 'j', '＿']]]
+      expect(components['/mi1'].stateValues.value.tree).eqls(matrixAst);
+      expect(components['/m1'].stateValues.value.tree).eqls(matrixAst);
+    });
+
+
+  })
+
+  it('prefill with vector, start smaller', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
@@ -1239,6 +1799,282 @@ describe('MatrixInput Tag Tests', function () {
       win.postMessage({
         doenetML: `
     <text>a</text>
+
+    <p>Matrix 1: <matrixInput name="mi1" prefill="(a,b)^T" /></p>
+    <p>Matrix 2: <copy prop="value" tname="mi1" assignNames="m1" /></p>
+    `}, "*");
+    });
+
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.get(`#\\/mi1_component_0_0 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('a')
+    })
+    cy.get(`#\\/mi1_component_0_1 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('b')
+    })
+    cy.get("#\\/m1").find('.mjx-mrow').eq(0).should('have.text', '[ab]')
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      let matrixAst = ["matrix", ["tuple", 1, 2], ["tuple", ["tuple", 'a', 'b']]]
+      expect(components['/mi1'].stateValues.value.tree).eqls(matrixAst);
+      expect(components['/m1'].stateValues.value.tree).eqls(matrixAst);
+    });
+
+
+    cy.log('remove column')
+    cy.get('#\\/mi1_columnDecrement').click();
+
+    cy.get(`#\\/mi1_component_0_0 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('a')
+    })
+    cy.get("#\\/m1").find('.mjx-mrow').eq(0).should('have.text', '[a]')
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      let matrixAst = ["matrix", ["tuple", 1, 1], ["tuple", ["tuple", 'a']]]
+      expect(components['/mi1'].stateValues.value.tree).eqls(matrixAst);
+      expect(components['/m1'].stateValues.value.tree).eqls(matrixAst);
+    });
+
+    
+    cy.log('change value')
+    cy.get('#\\/mi1_component_0_0 textarea').type("{end}{backspace}e{enter}", { force: true })
+
+    cy.get(`#\\/mi1_component_0_0 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('e')
+    })
+    cy.get("#\\/m1").find('.mjx-mrow').eq(0).should('have.text', '[e]')
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      let matrixAst = ["matrix", ["tuple", 1, 1], ["tuple", ["tuple", 'e']]]
+      expect(components['/mi1'].stateValues.value.tree).eqls(matrixAst);
+      expect(components['/m1'].stateValues.value.tree).eqls(matrixAst);
+    });
+
+
+    cy.log('restore column')
+    cy.get('#\\/mi1_columnIncrement').click();
+
+    cy.get(`#\\/mi1_component_0_0 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('e')
+    })
+    cy.get(`#\\/mi1_component_0_1 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('b')
+    })
+    cy.get("#\\/m1").find('.mjx-mrow').eq(0).should('have.text', '[eb]')
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      let matrixAst = ["matrix", ["tuple", 1, 2], ["tuple", ["tuple", 'e', 'b']]]
+      expect(components['/mi1'].stateValues.value.tree).eqls(matrixAst);
+      expect(components['/m1'].stateValues.value.tree).eqls(matrixAst);
+    });
+
+    cy.log('add row')
+    cy.get('#\\/mi1_rowIncrement').click();
+
+    cy.get(`#\\/mi1_component_0_0 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('e')
+    })
+    cy.get(`#\\/mi1_component_0_1 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('b')
+    })
+    cy.get(`#\\/mi1_component_1_0 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('')
+    })
+    cy.get(`#\\/mi1_component_1_1 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('')
+    })
+    cy.get("#\\/m1").find('.mjx-mrow').eq(0).should('have.text', '[eb＿＿]')
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      let matrixAst = ["matrix", ["tuple", 2, 2], ["tuple", ["tuple", 'e', 'b'], ["tuple", '＿', '＿']]]
+      expect(components['/mi1'].stateValues.value.tree).eqls(matrixAst);
+      expect(components['/m1'].stateValues.value.tree).eqls(matrixAst);
+    });
+
+    cy.log('change values')
+    cy.get('#\\/mi1_component_1_0 textarea').type("{end}{backspace}f{enter}", { force: true })
+    cy.get('#\\/mi1_component_0_1 textarea').type("{end}{backspace}g{enter}", { force: true })
+    cy.get('#\\/mi1_component_1_1 textarea').type("{end}{backspace}h{enter}", { force: true })
+
+    cy.get(`#\\/mi1_component_0_0 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('e')
+    })
+    cy.get(`#\\/mi1_component_0_1 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('g')
+    })
+    cy.get(`#\\/mi1_component_1_0 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('f')
+    })
+    cy.get(`#\\/mi1_component_1_1 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('h')
+    })
+    cy.get("#\\/m1").find('.mjx-mrow').eq(0).should('have.text', '[egfh]')
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      let matrixAst = ["matrix", ["tuple", 2, 2], ["tuple", ["tuple", 'e', 'g'], ["tuple", 'f', 'h']]]
+      expect(components['/mi1'].stateValues.value.tree).eqls(matrixAst);
+      expect(components['/m1'].stateValues.value.tree).eqls(matrixAst);
+    });
+
+
+    cy.log('add row')
+    cy.get('#\\/mi1_rowIncrement').click();
+
+    cy.get(`#\\/mi1_component_0_0 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('e')
+    })
+    cy.get(`#\\/mi1_component_0_1 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('g')
+    })
+    cy.get(`#\\/mi1_component_1_0 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('f')
+    })
+    cy.get(`#\\/mi1_component_1_1 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('h')
+    })
+    cy.get(`#\\/mi1_component_2_0 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('')
+    })
+    cy.get(`#\\/mi1_component_2_1 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('')
+    })
+    cy.get("#\\/m1").find('.mjx-mrow').eq(0).should('have.text', '⎡⎢⎣egfh＿＿⎤⎥⎦')
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      let matrixAst = ["matrix", ["tuple", 3, 2], ["tuple", ["tuple", 'e', 'g'], ["tuple", 'f', 'h'], ["tuple", '＿', '＿']]]
+      expect(components['/mi1'].stateValues.value.tree).eqls(matrixAst);
+      expect(components['/m1'].stateValues.value.tree).eqls(matrixAst);
+    });
+
+
+    cy.log('change third row values')
+    cy.get('#\\/mi1_component_2_0 textarea').type("{end}{backspace}i{enter}", { force: true })
+    cy.get('#\\/mi1_component_2_1 textarea').type("{end}{backspace}j{enter}", { force: true })
+
+    cy.get(`#\\/mi1_component_0_0 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('e')
+    })
+    cy.get(`#\\/mi1_component_0_1 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('g')
+    })
+    cy.get(`#\\/mi1_component_1_0 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('f')
+    })
+    cy.get(`#\\/mi1_component_1_1 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('h')
+    })
+    cy.get(`#\\/mi1_component_2_0 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('i')
+    })
+    cy.get(`#\\/mi1_component_2_1 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('j')
+    })
+    cy.get("#\\/m1").find('.mjx-mrow').eq(0).should('have.text', '⎡⎢⎣egfhij⎤⎥⎦')
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      let matrixAst = ["matrix", ["tuple", 3, 2], ["tuple", ["tuple", 'e', 'g'], ["tuple", 'f', 'h'], ["tuple", 'i', 'j']]]
+      expect(components['/mi1'].stateValues.value.tree).eqls(matrixAst);
+      expect(components['/m1'].stateValues.value.tree).eqls(matrixAst);
+    });
+
+
+    cy.log('down to one entry')
+    cy.get('#\\/mi1_rowDecrement').click();
+    cy.get('#\\/mi1_columnDecrement').click();
+    cy.get('#\\/mi1_rowDecrement').click();
+
+    cy.get(`#\\/mi1_component_0_0 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('e')
+    })
+    cy.get("#\\/m1").find('.mjx-mrow').eq(0).should('have.text', '[e]')
+
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      let matrixAst = ["matrix", ["tuple", 1, 1], ["tuple", ["tuple", 'e']]]
+      expect(components['/mi1'].stateValues.value.tree).eqls(matrixAst);
+      expect(components['/m1'].stateValues.value.tree).eqls(matrixAst);
+    });
+
+
+    cy.log('change value')
+    cy.get('#\\/mi1_component_0_0 textarea').type("{end}{backspace}k{enter}", { force: true })
+
+    cy.get(`#\\/mi1_component_0_0 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('k')
+    })
+    cy.get("#\\/m1").find('.mjx-mrow').eq(0).should('have.text', '[k]')
+
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      let matrixAst = ["matrix", ["tuple", 1, 1], ["tuple", ["tuple", 'k']]]
+      expect(components['/mi1'].stateValues.value.tree).eqls(matrixAst);
+      expect(components['/m1'].stateValues.value.tree).eqls(matrixAst);
+    });
+
+
+
+    cy.log('up to 3x3 entry')
+    cy.get('#\\/mi1_rowIncrement').click();
+    cy.get('#\\/mi1_columnIncrement').click();
+    cy.get('#\\/mi1_columnIncrement').click();
+    cy.get('#\\/mi1_rowIncrement').click();
+
+    cy.get(`#\\/mi1_component_0_0 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('k')
+    })
+    cy.get(`#\\/mi1_component_0_1 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('g')
+    })
+    cy.get(`#\\/mi1_component_0_2 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('')
+    })
+    cy.get(`#\\/mi1_component_1_0 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('f')
+    })
+    cy.get(`#\\/mi1_component_1_1 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('h')
+    })
+    cy.get(`#\\/mi1_component_1_2 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('')
+    })
+    cy.get(`#\\/mi1_component_2_0 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('i')
+    })
+    cy.get(`#\\/mi1_component_2_1 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('j')
+    })
+    cy.get(`#\\/mi1_component_2_2 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('')
+    })
+    cy.get("#\\/m1").find('.mjx-mrow').eq(0).should('have.text', '⎡⎢⎣kg＿fh＿ij＿⎤⎥⎦')
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      let matrixAst = ["matrix", ["tuple", 3, 3], ["tuple", ["tuple", 'k', 'g', '＿'], ["tuple", 'f', 'h', '＿'], ["tuple", 'i', 'j', '＿']]]
+      expect(components['/mi1'].stateValues.value.tree).eqls(matrixAst);
+      expect(components['/m1'].stateValues.value.tree).eqls(matrixAst);
+    });
+
+
+  })
+
+  it('prefill with transpose of vector, start smaller', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
     <p>Number of rows: <mathinput name="numRows" /></p>
     <p>Number of columns: <mathinput name="numColumns" /></p>
 
@@ -1592,7 +2428,7 @@ describe('MatrixInput Tag Tests', function () {
 
   })
 
-  it('prefill with transpose of vector, alternative format', () => {
+  it('prefill with transpose of vector, start smaller, alternative format', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
