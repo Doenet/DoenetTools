@@ -1,5 +1,13 @@
 import React, { useEffect, useState } from "react";
-import { Styles, Table, studentData, attemptData, assignmentData } from "./Gradebook"
+import { Styles, 
+    Table, 
+    studentData, 
+    attemptData, 
+    assignmentData,
+    attemptDataQuerry,
+    studentDataQuerry,
+    overViewDataQuerry 
+ } from "./Gradebook"
 
 import {
     atom,
@@ -7,6 +15,7 @@ import {
     useRecoilState,
     useRecoilValue,
     useRecoilValueLoadable,
+    useRecoilCallback
   } from "recoil";
  
 import { pageToolViewAtom, searchParamAtomFamily } from '../NewToolRoot';
@@ -14,9 +23,9 @@ import { useToast, toastType } from '../Toast';
 import ButtonGroup from "../../../_reactComponents/PanelHeaderComponents/ButtonGroup";
 import Button from "../../../_reactComponents/PanelHeaderComponents/Button";
 import DropdownMenu from "../../../_reactComponents/PanelHeaderComponents/DropdownMenu";
-import axios from "axios";
 import { suppressMenusAtom } from '../NewToolRoot';
 import { effectiveRoleAtom } from "../../../_reactComponents/PanelHeaderComponents/RoleDropdown";
+import axios from "axios";
 
 export const processGradesAtom = atom({
     key: 'processGradesAtom',
@@ -56,7 +65,24 @@ function UploadChoices({ doenetId, maxAttempts }){
     let [selectedAttemptIndex,setSelectedAttemptIndex] = useState(1);
     //Need points for assignment, but wait for loaded
 
-    
+    const refreshGradebook = useRecoilCallback(({set,snapshot})=> 
+    async ({doenetId, addToast})=>{
+        const driveId = await snapshot.getPromise(searchParamAtomFamily('driveId'));
+
+        let doenetIdPayload = { params: { doenetId } };
+        let driveIdPayload = {params: { driveId }}
+
+        let attemptData = await axios.get('/api/loadGradebookAssignmentAttempts.php', doenetIdPayload)
+        let studentData = await axios.get('/api/loadGradebookEnrollment.php', driveIdPayload)
+        let overView = await axios.get('/api/loadGradebookOverview.php', driveIdPayload)
+
+        set(attemptDataQuerry(doenetId),attemptData.data);
+        set(studentDataQuerry,studentData.data);
+        set(overViewDataQuerry,overView.data);
+
+        addToast(`Updated scores!`);
+        set(processGradesAtom,'Assignment Table')
+    })
     if (assignments.state !== 'hasValue'){
         return null;
     }
@@ -165,9 +191,9 @@ function UploadChoices({ doenetId, maxAttempts }){
                 })
                 .then(({data})=>{
                     if (data.success){
-                    addToast(`Updated scores!`);
-                    setProcess('Assignment Table')
-                    //update data
+                    refreshGradebook({doenetId,addToast});
+                    // addToast(`Updated scores!`);
+                    // setProcess('Assignment Table')
        
                     }else{
                     console.log(">>>>data",data)

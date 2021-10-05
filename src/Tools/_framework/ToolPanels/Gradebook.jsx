@@ -154,7 +154,7 @@ export const assignmentData = selector({
     }
 })
 
-const studentDataQuerry = atom({
+export const studentDataQuerry = atom({
     key: "studentDataQuerry",
     default: selector({
         key: "studentDataQuerry/Default",
@@ -201,7 +201,7 @@ export const studentData = selector({
     }
 })
 
-const overViewDataQuerry = atom({
+export const overViewDataQuerry = atom({
     key:"overViewDataQuerry",
     default: selector({
         key: "overViewDataQuerry/Default",
@@ -253,7 +253,7 @@ export const overViewData = selector({
     }
 })
 
-const attemptDataQuerry = atomFamily({
+export const attemptDataQuerry = atomFamily({
     key: "attemptDataQuerry",
     default: selectorFamily({
         key:"attemptDataQuerry/Default",
@@ -346,7 +346,6 @@ export const specificAttemptData = selectorFamily({
         return specificAttempt;
     }
 })
-
 
 const doenetMLQuerry = atomFamily({
     key: "doenetMLQuerry",
@@ -493,7 +492,6 @@ const getUserId = (students, name) => {
       }
     return -1;
 } 
-
 
 function GradebookOverview(props) {
     //const { openOverlay, activateMenuPanel } = useToolControlHelper();
