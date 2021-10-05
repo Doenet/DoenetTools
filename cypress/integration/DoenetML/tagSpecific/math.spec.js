@@ -1354,4 +1354,28 @@ describe('Math Tag Tests', function () {
 
   });
 
+  it('shrink vector dimensions in inverse direction', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+  <p><text>a</text></p>
+  <math name="m">(x,y,z)</math>
+  <mathinput name="mi" bindValueTo="$m" />
+  `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.get('#\\/m').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(x,y,z)');
+    })
+
+    cy.get('#\\/mi textarea').type("{end}{leftArrow}{backspace}{backspace}", { force: true }).blur();
+
+    cy.get('#\\/m').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(x,y)');
+    })
+
+  });
+
 })
