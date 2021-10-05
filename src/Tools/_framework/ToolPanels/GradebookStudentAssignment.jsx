@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Styles, Table, studentData, attemptData } from "./Gradebook"
+import { Styles, Table, studentData, attemptData, assignmentData } from "./Gradebook"
 
 import {
     useSetRecoilState,
@@ -36,7 +36,9 @@ export default function GradebookStudentAssignmentView(props){
     let attempts = useRecoilValueLoadable(attemptData(doenetId))
     let students = useRecoilValueLoadable(studentData)
     const setRecoilAttemptNumber = useSetRecoilState(currentAttemptNumber);
-    
+    let assignments = useRecoilValueLoadable(assignmentData);
+
+    const totalPointsOrPercent = Number(assignments.contents?.[doenetId]?.totalPointsOrPercent)
     // console.log(">>>>attempts",Object.keys(attempts.contents[userId].attempts).length)
     // let driveIdValue = useRecoilValue(driveId)
     // let [attemptNumber,setAttemptNumber] = useState(1); //Start with attempt 1
@@ -122,9 +124,10 @@ export default function GradebookStudentAssignmentView(props){
 
     assignmentsTable.headers = [
         {
-            Header: "Student",
-            accessor: "student",
-        }
+            Header: "Score",
+            accessor: "score",
+            disableFilters: true
+    }
     ];
 
     for (let i = 1; i <= maxAttempts; i++) {
@@ -149,27 +152,31 @@ export default function GradebookStudentAssignmentView(props){
     }
 
     assignmentsTable.headers.push({
-        Header: "Assignment Grade",
-        accessor: "grade",
+        Header: "Assignment Total",
+        accessor: "total",
         disableFilters: true
     })
 
     assignmentsTable.rows = [];
     
     if(students.state == 'hasValue' && userId !== null && userId !== ''){
-        let firstName = students.contents[userId].firstName;
-        let lastName = students.contents[userId].lastName;
+        // let firstName = students.contents[userId].firstName;
+        // let lastName = students.contents[userId].lastName;
+        // row["score"] = firstName + " " + lastName
         
-        let row = {};
+        let creditRow = {};
+        let scoreRow = {};
 
-        row["student"] = firstName + " " + lastName
+        creditRow["score"] = "Percentage";
+        scoreRow["score"] = "Score";
 
         if(attempts.state == 'hasValue'){
             for (let i = 1; i <= maxAttempts; i++) {
                 let attemptCredit = attempts.contents[userId].attempts[i];
     
                 // row[("a"+i)] = attemptCredit ? attemptCredit * 100 + "%" : ""
-                row[("a"+i)] = attemptCredit ? Math.round(attemptCredit * 1000)/10 + '%' : ""
+                creditRow[("a"+i)] = attemptCredit ? Math.round(attemptCredit * 1000)/10 + '%' : ""
+                scoreRow[("a"+i)] = attemptCredit ? Math.round(attemptCredit * 100 * totalPointsOrPercent)/100 : ""
                 
                 // <Link to={`/attempt/?doenetId=${doenetId}&userId=${userId}&attemptNumber=${i}`}>
                 // {
@@ -178,13 +185,15 @@ export default function GradebookStudentAssignmentView(props){
                 // </Link>
             }
 
-            // row["grade"] = attempts.contents[userId].credit ? attempts.contents[userId].credit*100+ "%" : ""
-            row["grade"] = attempts.contents[userId].credit ? Math.round(attempts.contents[userId].credit * 1000)/10 + '%' : ""
+            // row["total"] = attempts.contents[userId].credit ? attempts.contents[userId].credit*100+ "%" : ""
+            creditRow["total"] = attempts.contents[userId].credit ? Math.round(attempts.contents[userId].credit * 1000)/10 + '%' : ""
+            scoreRow["total"] = attempts.contents[userId].credit ? Math.round(attempts.contents[userId].credit * totalPointsOrPercent * 100)/100   : "0"
         }
 
         
         
-        assignmentsTable.rows.push(row);
+        assignmentsTable.rows.push(scoreRow);
+        assignmentsTable.rows.push(creditRow);
     }
 
 
@@ -228,7 +237,12 @@ export default function GradebookStudentAssignmentView(props){
       />
 
       attemptNumberJSX = <div style={{paddingLeft:"8px"}}>
-        Viewing Attempt Number {attemptNumber}
+        Viewing attempt number {attemptNumber}
+        </div>;
+
+    }else{
+        attemptNumberJSX = <div style={{paddingLeft:"8px"}}>
+        No content available for attempt number {attemptNumber}
         </div>;
 
     }
