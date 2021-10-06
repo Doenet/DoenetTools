@@ -472,7 +472,7 @@ export default class MathInput extends DoenetRenderer {
 
 
 function stripLatex(latex) {
-  let s = latex.replaceAll(`\\,`, '');
+  let s = latex.replaceAll(`\\,`, '').replaceAll(/\\var{([^{}]*)}/g, '$1');
 
   return s;
 
