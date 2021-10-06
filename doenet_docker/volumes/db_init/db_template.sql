@@ -7,7 +7,7 @@
 #
 # Host: 127.0.0.1 (MySQL 5.7.29)
 # Database: doenet_local
-# Generation Time: 2021-09-21 17:37:32 +0000
+# Generation Time: 2021-10-06 14:23:47 +0000
 # ************************************************************
 
 
@@ -143,6 +143,27 @@ CREATE TABLE `content_interactions` (
 
 
 
+# Dump of table content_interactions2
+# ------------------------------------------------------------
+
+DROP TABLE IF EXISTS `content_interactions2`;
+
+CREATE TABLE `content_interactions2` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `userId` char(21) COLLATE utf8_unicode_ci NOT NULL,
+  `deviceName` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `doenetId` char(21) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
+  `contentId` char(64) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
+  `stateVariables` mediumtext COLLATE utf8_unicode_ci,
+  `variant` text COLLATE utf8_unicode_ci NOT NULL,
+  `attemptNumber` int(11) DEFAULT NULL,
+  `interactionSource` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `timestamp` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+
+
 # Dump of table course_grade_category
 # ------------------------------------------------------------
 
@@ -255,7 +276,7 @@ CREATE TABLE `enrollment` (
   `withdrew` bit(1) DEFAULT b'0',
   `dateWithdrew` datetime DEFAULT NULL COMMENT 'UTC DateTime',
   `forTesting` bit(1) DEFAULT b'0' COMMENT 'Flags account to not to be included in course calculations',
-  `courseCredit` float DEFAULT NULL,
+  `courseCredit` double DEFAULT NULL,
   `courseGrade` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `overrideCourseGrade` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `timeLimitMultiplier` float NOT NULL DEFAULT '1',
@@ -391,8 +412,8 @@ CREATE TABLE `user_assignment` (
   `groupName` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT 'NULL means no group',
   `completed` bit(1) DEFAULT NULL COMMENT 'For ToDo list',
   `completedDate` datetime DEFAULT NULL,
-  `credit` float NOT NULL DEFAULT '0' COMMENT 'Overwritten by metric used to calculate it from other tables. Always 0-1 scale.',
-  `creditOverride` float DEFAULT NULL COMMENT 'if not NULL then credit field will be set to this',
+  `credit` double NOT NULL DEFAULT '0' COMMENT 'Overwritten by metric used to calculate it from other tables. Always 0-1 scale.',
+  `creditOverride` double DEFAULT NULL COMMENT 'if not NULL then credit field will be set to this',
   PRIMARY KEY (`id`),
   UNIQUE KEY `assignment-userId` (`doenetId`,`userId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
@@ -410,8 +431,8 @@ CREATE TABLE `user_assignment_attempt` (
   `contentId` char(64) COLLATE utf8_unicode_ci NOT NULL,
   `userId` char(21) COLLATE utf8_unicode_ci NOT NULL,
   `attemptNumber` int(11) NOT NULL DEFAULT '1',
-  `credit` float DEFAULT NULL,
-  `creditOverride` float DEFAULT NULL,
+  `credit` double DEFAULT NULL,
+  `creditOverride` double DEFAULT NULL,
   `assignedVariant` text COLLATE utf8_unicode_ci COMMENT 'Like seed. Informs the selects what values to use for the content. NULL means didn''t view yet.',
   `generatedVariant` text COLLATE utf8_unicode_ci COMMENT 'Based on code',
   `began` datetime DEFAULT NULL,
@@ -434,8 +455,8 @@ CREATE TABLE `user_assignment_attempt_item` (
   `userId` char(21) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
   `attemptNumber` int(11) NOT NULL,
   `itemNumber` int(11) NOT NULL COMMENT 'The number of the scored item found in the Doenet code.',
-  `credit` float DEFAULT NULL COMMENT 'maximum credit',
-  `creditOverride` float DEFAULT NULL,
+  `credit` double DEFAULT NULL COMMENT 'maximum credit',
+  `creditOverride` double DEFAULT NULL,
   `weight` float NOT NULL DEFAULT '1' COMMENT 'Weight comes from Doenet code.',
   `generatedVariant` text COLLATE utf8_unicode_ci,
   `viewedSolution` tinyint(1) DEFAULT '0',
