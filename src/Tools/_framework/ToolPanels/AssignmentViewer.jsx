@@ -115,11 +115,15 @@ export default function AssignmentViewer() {
           showSolution,
           proctorMakesAvailable,
         } = await snapshot.getPromise(loadAssignmentSelector(doenetId));
+        let suppress = [];
         if (timeLimit === null){
-          setSuppressMenus(["TimerMenu"])
-        }else{
-          setSuppressMenus([])
+          suppress.push("TimerMenu")
         }
+        if (!showCorrectness){
+          suppress.push("CreditAchieved")
+        }
+
+        setSuppressMenus(suppress);
         
         let solutionDisplayMode = 'button';
         if (!showSolution) {
