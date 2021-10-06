@@ -280,19 +280,9 @@ export default function GradebookAssignmentView(){
         {
             Header: "Student",
             accessor: "student",
-            Cell: row  =><a onClick = {(e) =>{
-                let name = row.cell.row.cells[0].value
-                let userId = getUserId(students.contents, name);
-                setPageToolView({
-                    page: 'course',
-                    tool: 'gradebookStudentAssignment',
-                    view: '',
-                    params: { driveId: driveIdValue, doenetId, userId, source: 'assignment'},
-                })
-            }}> {row.cell.row.cells[0].value} </a>
+            
         }
     )
-    
 
     for (let i = 1; i <= maxAttempts; i++) {
         assignmentsTable.headers.push(
@@ -336,7 +326,15 @@ export default function GradebookAssignmentView(){
 
         let row = {};
 
-        row["student"] = firstName + " " + lastName
+        let name = firstName + " " + lastName
+        row["student"] = <a onClick = {(e) =>{
+            setPageToolView({
+                page: 'course',
+                tool: 'gradebookStudentAssignment',
+                view: '',
+                params: { driveId: driveIdValue, doenetId, userId, source: 'assignment'},
+            })
+        }}> {name} </a>
 
      
             for (let i = 1; i <= maxAttempts; i++) {
