@@ -25,17 +25,19 @@ import {
 import { DropTargetsProvider } from '../../../_reactComponents/DropTarget';
 import { BreadcrumbProvider } from '../../../_reactComponents/Breadcrumb/BreadcrumbProvider';
 import { selectedMenuPanelAtom } from '../Panels/NewMenuPanel';
-import { mainPanelClickAtom } from '../Panels/NewMainPanel';
+// import { mainPanelClickAtom } from '../Panels/NewMainPanel';
 import axios from 'axios';
 
 
 export default function Next7Days({ driveId }) {
+  
   const setPageToolView = useSetRecoilState(pageToolViewAtom);
-  const setMainPanelClear = useSetRecoilState(mainPanelClickAtom);
+  // const setMainPanelClear = useSetRecoilState(mainPanelClickAtom);
   let [numColumns,setNumColumns] = useState(4);
   let [assignmentArray,setAssignmentArray] = useState([]);
   let [initialized,setInitialized] = useState(false);
   let [problemMessage,setProblemMessage] = useState("");
+  let [weekShift,setWeekShift] = useState(0); //-1 means 7 days before
 
   let loadAssignmentArray = useRecoilCallback(({snapshot,set})=> async (driveId)=>{
     const { data } = await axios.get('/api/loadTODO.php',{params:{driveId}});
@@ -48,30 +50,6 @@ export default function Next7Days({ driveId }) {
     }
 
   })
-
-  let view = 'Student';
-  let columnTypes = ['Assigned Date','Due Date']
-  // let columnTypes = ['Due Date']
-  let isNav = false;
-  let driveInstanceId = 'not used'; //TODO: make this unique so widget is independent of other instances
-  let pathItemId = 'not used';
-  let route = 'not used';
-
-  useEffect(() => {
-    setMainPanelClear((was) => [
-      ...was,
-      { atom: clearDriveAndItemSelections, value: null },
-      { atom: selectedMenuPanelAtom, value: null },
-    ]);
-    return setMainPanelClear((was) =>
-      was.filter(
-        (obj) =>
-          obj.atom !== clearDriveAndItemSelections ||
-          obj.atom !== selectedMenuPanelAtom,
-      ),
-    );
-  }, [setMainPanelClear]);
-
 
   const clickCallback = useRecoilCallback(
     ({ set }) =>
@@ -144,48 +122,14 @@ export default function Next7Days({ driveId }) {
             );
         }
       },
-    [setPageToolView, view],
+    [setPageToolView],
   );
-
-  const filterCallback = useRecoilCallback(
-    ({ snapshot }) =>
-      (item) => {
-        switch (view) {
-          case 'student':
-            if (item.itemType === itemType.FOLDER) {
-              const folderContents = snapshot
-                .getLoadable(
-                  folderDictionary({
-                    driveId: item.driveId,
-                    folderId: item.itemId,
-                  }),
-                )
-                .getValue()['contentsDictionary'];
-              for (const key in folderContents) {
-                if (folderContents[key].isReleased === '1') {
-                  return true;
-                }
-              }
-              return false;
-            } else {
-              console.log('whats up', item.itemType, 'i', item);
-              return item.isReleased === '1';
-            }
-          case 'instructor':
-            return true;
-          default:
-            console.warn('No view selected');
-        }
-      },
-    [view],
-  );
-
-
 
   if (!initialized && driveId !== ""){
     //Runs every time the page is returned to
     setInitialized(true)//prevent load on each refresh
     loadAssignmentArray(driveId);
+    return null;
   }
 
   if (problemMessage !== ''){
@@ -194,63 +138,153 @@ export default function Next7Days({ driveId }) {
     </div>
   }
 
+  let today = new Date();
+  let diff = 1 - today.getDay();
+  let monday = new Date(today.getTime() + (1000 * 60 * 60 * 24 * diff) + (1000 * 60 * 60 * 24 * weekShift * 7));
+  let sunday = new Date(monday.getTime() + (1000 * 60 * 60 * 24 * 6));
+  let headerMonday = `${monday.getMonth() + 1}/${monday.getDate()}`
+  let headerSunday = `${sunday.getMonth() + 1}/${sunday.getDate()}`
 
-  let doenetMLsJSX = <div>There are no assignments due over the next seven days.</div> 
-  if (assignmentArray.length > 0){
-    doenetMLsJSX = [];
-    for (let item of assignmentArray){
-      doenetMLsJSX.push(<DoenetML
-            key={`item${item.itemId}${driveInstanceId}`}
-            driveId={driveId}
-            item={item}
-            indentLevel={0}
-            driveInstanceId={driveInstanceId}
-            route={route}
-            isNav={isNav}
-            pathItemId={pathItemId}
-            clickCallback={clickCallback}
-            doubleClickCallback={doubleClickCallback}
-            deleteItem={()=>{}}
-            numColumns={numColumns} 
-            columnTypes={columnTypes}
-            isViewOnly={true}
-          />)
-    }
-  }
+  // console.log(">>>>assignmentArray",assignmentArray)
+let rows = [];
+for (let assignment of assignmentArray){
+  rows.push(<tr key={`${assignment.doenetId}`}>
+    <td></td>
+    <td>{assignment.label}</td>
+    <td>{assignment.assignedDate}</td>
+    <td>{assignment.dueDate}</td>
+    </tr>)
+}
+  return <>
+  <div style={{
+    display:"flex",
+    // backgroundColor:"grey", 
+    alignItems:"center", 
+    justifyContent:"space-evenly",
+    width:"650px"
+    }}>
+  <span> <button onClick={()=>setWeekShift((was)=>was-1)}>Previous Week</button></span>
+  <h1>Current Content</h1>
+  <span style={{fontSize:"1.4em"}}>{headerMonday} - {headerSunday}</span>
+  <span><button onClick={()=>setWeekShift((was)=>was+1)}>Next Week</button></span>
+
+  </div>
+  
+  <table style={{width:"650px"}}>
+    <tr>
+      <th>Day</th>
+      <th>Name</th>
+      <th>Assigned</th>
+      <th>Due</th>
+    </tr>
+    {rows}
+  </table>
+  </>
+}
+
+  // useEffect(() => {
+  //   setMainPanelClear((was) => [
+  //     ...was,
+  //     { atom: clearDriveAndItemSelections, value: null },
+  //     { atom: selectedMenuPanelAtom, value: null },
+  //   ]);
+  //   return setMainPanelClear((was) =>
+  //     was.filter(
+  //       (obj) =>
+  //         obj.atom !== clearDriveAndItemSelections ||
+  //         obj.atom !== selectedMenuPanelAtom,
+  //     ),
+  //   );
+  // }, [setMainPanelClear]);
+
+  // const filterCallback = useRecoilCallback(
+  //   ({ snapshot }) =>
+  //     (item) => {
+  //       switch (view) {
+  //         case 'student':
+  //           if (item.itemType === itemType.FOLDER) {
+  //             const folderContents = snapshot
+  //               .getLoadable(
+  //                 folderDictionary({
+  //                   driveId: item.driveId,
+  //                   folderId: item.itemId,
+  //                 }),
+  //               )
+  //               .getValue()['contentsDictionary'];
+  //             for (const key in folderContents) {
+  //               if (folderContents[key].isReleased === '1') {
+  //                 return true;
+  //               }
+  //             }
+  //             return false;
+  //           } else {
+  //             console.log('whats up', item.itemType, 'i', item);
+  //             return item.isReleased === '1';
+  //           }
+  //         case 'instructor':
+  //           return true;
+  //         default:
+  //           console.warn('No view selected');
+  //       }
+  //     },
+  //   [view],
+  // );
+
+  // let doenetMLsJSX = <div>There are no assignments due over the next seven days.</div> 
+  // if (assignmentArray.length > 0){
+  //   doenetMLsJSX = [];
+  //   for (let item of assignmentArray){
+  //     doenetMLsJSX.push(<DoenetML
+  //           key={`item${item.itemId}${driveInstanceId}`}
+  //           driveId={driveId}
+  //           item={item}
+  //           indentLevel={0}
+  //           driveInstanceId={driveInstanceId}
+  //           route={route}
+  //           isNav={isNav}
+  //           pathItemId={pathItemId}
+  //           clickCallback={clickCallback}
+  //           doubleClickCallback={doubleClickCallback}
+  //           deleteItem={()=>{}}
+  //           numColumns={numColumns} 
+  //           columnTypes={columnTypes}
+  //           isViewOnly={true}
+  //         />)
+  //   }
+  // }
   
 
-  return (
-    <BreadcrumbProvider>
-      <DropTargetsProvider>
-        <Suspense fallback={<div>loading Drive...</div>}>
-          <Container>
-            <h2>Current Content</h2>
-            <DriveHeader
-            columnTypes={columnTypes}
-            numColumns={numColumns}
-            setNumColumns={setNumColumns}
-            driveInstanceId={driveInstanceId}
-            />
-            {doenetMLsJSX}
+  // return (
+  //   <BreadcrumbProvider>
+  //     <DropTargetsProvider>
+  //       <Suspense fallback={<div>loading Drive...</div>}>
+  //         <Container>
+  //           <h2>Current Content</h2>
+  //           <DriveHeader
+  //           columnTypes={columnTypes}
+  //           numColumns={numColumns}
+  //           setNumColumns={setNumColumns}
+  //           driveInstanceId={driveInstanceId}
+  //           />
+  //           {doenetMLsJSX}
                
  
-          </Container>
-        </Suspense>
-      </DropTargetsProvider>
-    </BreadcrumbProvider>
-  );
-}
+  //         </Container>
+  //       </Suspense>
+  //     </DropTargetsProvider>
+  //   </BreadcrumbProvider>
+  // );
 
-function Container(props) {
-  return (
-    <div
-      style={{
-        maxWidth: '850px',
-        margin: '10px 20px',
-        // border: "1px red solid",
-      }}
-    >
-      {props.children}
-    </div>
-  );
-}
+// function Container(props) {
+//   return (
+//     <div
+//       style={{
+//         maxWidth: '850px',
+//         margin: '10px 20px',
+//         // border: "1px red solid",
+//       }}
+//     >
+//       {props.children}
+//     </div>
+//   );
+// }

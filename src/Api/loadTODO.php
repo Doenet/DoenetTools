@@ -50,32 +50,17 @@ dc.isReleased,
 dc.itemId,
 dc.label,
 dc.parentFolderId,
-dc.sortOrder
+dc.sortOrder,
+a.assignedDate,
+a.dueDate
 FROM drive_content AS dc
 LEFT JOIN assignment AS a
 ON a.doenetId = dc.doenetId
-WHERE (dc.driveId = '$driveId'
+WHERE dc.driveId = '$driveId'
 AND dc.isReleased = '1'
 AND dc.isDeleted = '0'
-AND a.dueDate < DATE_ADD(CONVERT_TZ(NOW(), @@session.time_zone, '+00:00'), INTERVAL 7 DAY)
-AND a.dueDate > CONVERT_TZ(NOW(), @@session.time_zone, '+00:00'))
-OR (dc.driveId = '$driveId'
-AND dc.isReleased = '1'
-AND dc.isDeleted = '0'
-AND a.dueDate IS NULL
-AND a.assignedDate > DATE_ADD(CONVERT_TZ(NOW(), @@session.time_zone, '+00:00'), INTERVAL -7 DAY)
-AND a.assignedDate < CONVERT_TZ(NOW(), @@session.time_zone, '+00:00'))
-OR (dc.driveId = '$driveId'
-AND dc.isReleased = '1'
-AND dc.isDeleted = '0'
-AND a.assignedDate < CONVERT_TZ(NOW(), @@session.time_zone, '+00:00')
-AND a.dueDate > CONVERT_TZ(NOW(), @@session.time_zone, '+00:00'))
-OR (dc.driveId = '$driveId'
-AND dc.isReleased = '1'
-AND dc.isDeleted = '0'
-AND a.pinnedUntilDate > CONVERT_TZ(NOW(), @@session.time_zone, '+00:00')
-AND a.pinnedAfterDate < CONVERT_TZ(NOW(), @@session.time_zone, '+00:00'))
-ORDER BY a.pinnedAfterDate DESC, a.dueDate ASC
+AND a.assignedDate IS NOT NULL
+ORDER BY a.assignedDate DESC
 ";
 //AND a.assignedDate < NOW()
 
@@ -84,6 +69,8 @@ $assignments = [];
   while($row = $result->fetch_assoc()){
     array_push($assignments,array(
       "creationDate"=>$row['creationDate'],
+      "assignedDate"=>$row['assignedDate'],
+      "dueDate"=>$row['dueDate'],
       "doenetId"=>$row['doenetId'],
       "driveId"=>$row['driveId'],
       "isAssigned"=>$row['isAssigned'],
