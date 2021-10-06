@@ -3275,5 +3275,87 @@ describe('MathInput Tag Tests', function () {
 
   })
 
+  it('mathinput eliminates multicharacter symbols', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <math name="varWithNum">x2</math>
+    <math name="noSplit" splitSymbols="false">xyz</math>
+    <mathinput name="varWithNum2" bindValueTo="$varWithNum" />
+    <mathinput name="noSplit2" splitSymbols="false" bindValueTo="$noSplit" />
+    <copy prop="value" tname="varWithNum2" assignNames="varWithNum3"/>
+    <copy prop="value" tname="noSplit2" assignNames="noSplit3"/>
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+
+    cy.get('#\\/varWithNum').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('x2')
+    })
+    cy.get(`#\\/varWithNum2 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('x2')
+    })
+    cy.get('#\\/varWithNum3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('x2')
+    })
+    cy.get('#\\/noSplit').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('xyz')
+    })
+    cy.get(`#\\/noSplit2 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('xyz')
+    })
+    cy.get('#\\/noSplit3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('xyz')
+    })
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/varWithNum'].stateValues.value.tree).eq("x2");
+      expect(components['/varWithNum2'].stateValues.value.tree).eq("x2");
+      expect(components['/varWithNum3'].stateValues.value.tree).eq("x2");
+      expect(components['/noSplit'].stateValues.value.tree).eq("xyz");
+      expect(components['/noSplit2'].stateValues.value.tree).eq("xyz");
+      expect(components['/noSplit3'].stateValues.value.tree).eq("xyz");
+    })
+
+    cy.get('#\\/varWithNum2 textarea').type("{end}{backspace}u9j{enter}", { force: true })
+    cy.get('#\\/noSplit2 textarea').type("{end}{backspace}uv{enter}", { force: true })
+
+
+    cy.get('#\\/varWithNum').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('xu9j')
+    })
+    cy.get(`#\\/varWithNum2 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('xu9j')
+    })
+    cy.get('#\\/varWithNum3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('xu9j')
+    })
+    cy.get('#\\/noSplit').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('xyuv')
+    })
+    cy.get(`#\\/noSplit2 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('xyuv')
+    })
+    cy.get('#\\/noSplit3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('xyuv')
+    })
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/varWithNum'].stateValues.value.tree).eq("xu9j");
+      expect(components['/varWithNum2'].stateValues.value.tree).eq("xu9j");
+      expect(components['/varWithNum3'].stateValues.value.tree).eq("xu9j");
+      expect(components['/noSplit'].stateValues.value.tree).eq("xyuv");
+      expect(components['/noSplit2'].stateValues.value.tree).eq("xyuv");
+      expect(components['/noSplit3'].stateValues.value.tree).eq("xyuv");
+    })
+
+
+  })
+
 
 });
