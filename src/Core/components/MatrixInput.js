@@ -87,13 +87,19 @@ export default class MatrixInput extends MathInput {
           dependencyType: "stateVariable",
           variableName: "valueOriginal"
         },
+        haveBoundValue: {
+          dependencyType: "stateVariable",
+          variableName: "haveBoundValue"
+        },
       }),
       definition({ dependencyValues, usedDefault }) {
 
         let numRows = dependencyValues.numRowsPreliminary;
 
-        if (usedDefault.numRowsPreliminary) {
+        if (usedDefault.numRowsPreliminary || dependencyValues.haveBoundValue) {
           let originalTree = dependencyValues.valueOriginal.tree;
+
+          numRows = 1;
 
           if (Array.isArray(originalTree)) {
             let operator = originalTree[0];
@@ -122,7 +128,7 @@ export default class MatrixInput extends MathInput {
           desiredValue: desiredNumRows
         }]
 
-        if (stateValues.haveBoundValue) {
+        if (dependencyValues.haveBoundValue) {
           let originalTree = dependencyValues.valueOriginal.tree;
           if (stateValues.numColumns === 1 && Array.isArray(originalTree)
             && (originalTree[0] === "vector" || originalTree[0] === "tuple")
@@ -218,13 +224,19 @@ export default class MatrixInput extends MathInput {
           dependencyType: "stateVariable",
           variableName: "valueOriginal"
         },
+        haveBoundValue: {
+          dependencyType: "stateVariable",
+          variableName: "haveBoundValue"
+        },
       }),
       definition({ dependencyValues, usedDefault }) {
 
         let numColumns = dependencyValues.numColumnsPreliminary;
 
-        if (usedDefault.numColumnsPreliminary) {
+        if (usedDefault.numColumnsPreliminary || dependencyValues.haveBoundValue) {
           let originalTree = dependencyValues.valueOriginal.tree;
+
+          numColumns = 1;
 
           if (Array.isArray(originalTree)) {
             let operator = originalTree[0];
@@ -256,7 +268,7 @@ export default class MatrixInput extends MathInput {
           desiredValue: desiredNumColumns
         }]
 
-        if (stateValues.haveBoundValue) {
+        if (dependencyValues.haveBoundValue) {
           let originalTree = dependencyValues.valueOriginal.tree;
           let operator = originalTree[0];
 
