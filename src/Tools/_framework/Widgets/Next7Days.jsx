@@ -21,12 +21,19 @@ import {
   DoenetML,
   DriveHeader,
 } from '../../../_reactComponents/Drive/NewDrive';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import {
+  faLessThan,
+  faGreaterThan
+} from '@fortawesome/free-solid-svg-icons';
 
-import { DropTargetsProvider } from '../../../_reactComponents/DropTarget';
-import { BreadcrumbProvider } from '../../../_reactComponents/Breadcrumb/BreadcrumbProvider';
-import { selectedMenuPanelAtom } from '../Panels/NewMenuPanel';
+// import { DropTargetsProvider } from '../../../_reactComponents/DropTarget';
+// import { BreadcrumbProvider } from '../../../_reactComponents/Breadcrumb/BreadcrumbProvider';
+// import { selectedMenuPanelAtom } from '../Panels/NewMenuPanel';
 // import { mainPanelClickAtom } from '../Panels/NewMainPanel';
 import axios from 'axios';
+import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
+import ButtonGroup from '../../../_reactComponents/PanelHeaderComponents/ButtonGroup';
 
 
 export default function Next7Days({ driveId }) {
@@ -35,60 +42,63 @@ export default function Next7Days({ driveId }) {
   // const setMainPanelClear = useSetRecoilState(mainPanelClickAtom);
   let [numColumns,setNumColumns] = useState(4);
   let [assignmentArray,setAssignmentArray] = useState([]);
+  let [pinnedArray,setPinnedArray] = useState([]);
   let [initialized,setInitialized] = useState(false);
   let [problemMessage,setProblemMessage] = useState("");
   let [weekShift,setWeekShift] = useState(0); //-1 means 7 days before
 
   let loadAssignmentArray = useRecoilCallback(({snapshot,set})=> async (driveId)=>{
     const { data } = await axios.get('/api/loadTODO.php',{params:{driveId}});
+
     if (!data.success){
       setProblemMessage(data.message);
       return
     }
     if (data.assignments){
       setAssignmentArray(data.assignments);
+      setPinnedArray(data.pinned);
     }
 
   })
 
-  const clickCallback = useRecoilCallback(
-    ({ set }) =>
-      (info) => {
-        switch (info.instructionType) {
-          case 'one item':
-            set(selectedMenuPanelAtom, `Selected${info.type}`);
-            break;
-          case 'range to item':
-          case 'add item':
-            set(selectedMenuPanelAtom, `SelectedMulti`);
-            break;
-          case 'clear all':
-            set(selectedMenuPanelAtom, null);
-            break;
-          default:
-            throw new Error('NavigationPanel found invalid select instruction');
-        }
-        set(
-          selectedDriveItems({
-            driveId: info.driveId,
-            driveInstanceId: info.driveInstanceId,
-            itemId: info.itemId,
-          }),
-          {
-            instructionType: info.instructionType,
-            parentFolderId: info.parentFolderId,
-          },
-        );
-        set(selectedDriveAtom, info.driveId);
-      },
-    [],
-  );
+  // const clickCallback = useRecoilCallback(
+  //   ({ set }) =>
+  //     (info) => {
+  //       switch (info.instructionType) {
+  //         case 'one item':
+  //           set(selectedMenuPanelAtom, `Selected${info.type}`);
+  //           break;
+  //         case 'range to item':
+  //         case 'add item':
+  //           set(selectedMenuPanelAtom, `SelectedMulti`);
+  //           break;
+  //         case 'clear all':
+  //           set(selectedMenuPanelAtom, null);
+  //           break;
+  //         default:
+  //           throw new Error('NavigationPanel found invalid select instruction');
+  //       }
+  //       set(
+  //         selectedDriveItems({
+  //           driveId: info.driveId,
+  //           driveInstanceId: info.driveInstanceId,
+  //           itemId: info.itemId,
+  //         }),
+  //         {
+  //           instructionType: info.instructionType,
+  //           parentFolderId: info.parentFolderId,
+  //         },
+  //       );
+  //       set(selectedDriveAtom, info.driveId);
+  //     },
+  //   [],
+  // );
 
   const doubleClickCallback = useRecoilCallback(
-    ({ set }) =>
-      (info) => {
+    () =>
+      ({type,doenetId}) => {
 
-        switch (info.type) {
+        switch (type) {
           case itemType.DOENETML:
           
               //TODO: VariantIndex params
@@ -97,7 +107,7 @@ export default function Next7Days({ driveId }) {
                 tool: 'assignment',
                 view: '',
                 params: {
-                  doenetId: info.item.doenetId,
+                  doenetId,
                 },
               });
            
@@ -110,7 +120,7 @@ export default function Next7Days({ driveId }) {
                 tool: 'assignment',
                 view: '',
                 params: {
-                  doenetId: info.item.doenetId,
+                  doenetId,
                   isCollection: true,
                 },
               });
@@ -145,6 +155,22 @@ export default function Next7Days({ driveId }) {
   let headerMonday = `${monday.getMonth() + 1}/${monday.getDate()}`
   let headerSunday = `${sunday.getMonth() + 1}/${sunday.getDate()}`
 
+let pinnedRows = [];
+let overdueRows = [];
+//This content only shows when viewing the current week
+if (weekShift == 0){
+  const firstRowDoenetId = pinnedArray[0]?.doenetId;
+  for (let assignment of pinnedArray){
+    pinnedRows.push(<tr key={`${assignment.doenetId}`}>
+      {assignment.doenetId == firstRowDoenetId ? <td style={{fontSize:"1.4em"}} rowSpan={pinnedArray.length }>Pinned</td> : null}
+      <td colSpan="3" onDoubleClick={()=>doubleClickCallback({type:assignment.itemType,doenetId:assignment.doenetId})}>{assignment.label}</td>
+      </tr>)
+  }
+
+
+
+}
+
   // console.log(">>>>assignmentArray",assignmentArray)
 let rows = [];
 for (let assignment of assignmentArray){
@@ -161,22 +187,30 @@ for (let assignment of assignmentArray){
     // backgroundColor:"grey", 
     alignItems:"center", 
     justifyContent:"space-evenly",
-    width:"650px"
+    width:"650px",
+    height:"70px"
     }}>
-  <span> <button onClick={()=>setWeekShift((was)=>was-1)}>Previous Week</button></span>
+  <span><Button onClick={()=>setWeekShift(0)} value='Today' /> </span>
   <h1>Current Content</h1>
   <span style={{fontSize:"1.4em"}}>{headerMonday} - {headerSunday}</span>
-  <span><button onClick={()=>setWeekShift((was)=>was+1)}>Next Week</button></span>
+  <ButtonGroup>
+    <span><Button onClick={()=>setWeekShift((was)=>was-1)} icon={<FontAwesomeIcon icon={faLessThan} />} /></span> 
+    <span><Button onClick={()=>setWeekShift((was)=>was+1)} icon={<FontAwesomeIcon icon={faGreaterThan} />} /></span>
+  </ButtonGroup>
 
   </div>
   
-  <table style={{width:"650px"}}>
+  {/* <table style={{width:"650px"}}> */}
+  <table style={{width:"517px"}}>
     <tr>
-      <th>Day</th>
-      <th>Name</th>
-      <th>Assigned</th>
-      <th>Due</th>
+      <th style={{width:'100px',textAlign:'left'}}>Day</th>
+      <th style={{width:'151px',textAlign:'left'}}>Name</th>
+      <th style={{width:'133px',textAlign:'left'}}>Assigned</th>
+      <th style={{width:'133px',textAlign:'left'}}>Due</th>
+      {/* <th style={{width:'133px',textAlign:'left'}}>Completed</th> */}
     </tr>
+    {pinnedRows}
+    {overdueRows}
     {rows}
   </table>
   </>

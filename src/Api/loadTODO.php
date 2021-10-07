@@ -41,6 +41,7 @@ $result = $conn->query($sql);
 if ($success){
 $sql = "
 SELECT 
+dc.itemType,
 dc.creationDate,
 dc.doenetId,
 dc.driveId,
@@ -52,35 +53,66 @@ dc.label,
 dc.parentFolderId,
 dc.sortOrder,
 a.assignedDate,
-a.dueDate
+a.dueDate,
+a.pinnedAfterDate
 FROM drive_content AS dc
 LEFT JOIN assignment AS a
 ON a.doenetId = dc.doenetId
-WHERE dc.driveId = '$driveId'
+WHERE (dc.driveId = '$driveId'
 AND dc.isReleased = '1'
 AND dc.isDeleted = '0'
-AND a.assignedDate IS NOT NULL
-ORDER BY a.assignedDate DESC
+AND a.assignedDate IS NOT NULL )
+OR (dc.driveId = '$driveId'
+AND dc.isReleased = '1'
+AND dc.isDeleted = '0'
+AND a.pinnedUntilDate > CONVERT_TZ(NOW(), @@session.time_zone, '+00:00')
+AND a.pinnedAfterDate < CONVERT_TZ(NOW(), @@session.time_zone, '+00:00'))
+ORDER BY a.assignedDate DESC, a.pinnedAfterDate ASC
+
 ";
 //AND a.assignedDate < NOW()
 
 $result = $conn->query($sql); 
 $assignments = [];
+$pinned = [];
   while($row = $result->fetch_assoc()){
-    array_push($assignments,array(
-      "creationDate"=>$row['creationDate'],
-      "assignedDate"=>$row['assignedDate'],
-      "dueDate"=>$row['dueDate'],
-      "doenetId"=>$row['doenetId'],
-      "driveId"=>$row['driveId'],
-      "isAssigned"=>$row['isAssigned'],
-      "isPublic"=>$row['isPublic'],
-      "isReleased"=>$row['isReleased'],
-      "itemId"=>$row['itemId'],
-      "label"=>$row['label'],
-      "parentFolderId"=>$row['parentFolderId'],
-      "sortOrder"=>$row['sortOrder']
-    ));
+    
+if ($row['pinnedAfterDate'] == ""){
+  array_push($assignments,array(
+    "itemType"=>$row['itemType'],
+    "pinnedAfterDate"=>$row['pinnedAfterDate'],
+    "creationDate"=>$row['creationDate'],
+    "assignedDate"=>$row['assignedDate'],
+    "dueDate"=>$row['dueDate'],
+    "doenetId"=>$row['doenetId'],
+    "driveId"=>$row['driveId'],
+    "isAssigned"=>$row['isAssigned'],
+    "isPublic"=>$row['isPublic'],
+    "isReleased"=>$row['isReleased'],
+    "itemId"=>$row['itemId'],
+    "label"=>$row['label'],
+    "parentFolderId"=>$row['parentFolderId'],
+    "sortOrder"=>$row['sortOrder']
+  ));
+}else{
+  array_push($pinned,array(
+    "itemType"=>$row['itemType'],
+    "pinnedAfterDate"=>$row['pinnedAfterDate'],
+    "creationDate"=>$row['creationDate'],
+    "assignedDate"=>$row['assignedDate'],
+    "dueDate"=>$row['dueDate'],
+    "doenetId"=>$row['doenetId'],
+    "driveId"=>$row['driveId'],
+    "isAssigned"=>$row['isAssigned'],
+    "isPublic"=>$row['isPublic'],
+    "isReleased"=>$row['isReleased'],
+    "itemId"=>$row['itemId'],
+    "label"=>$row['label'],
+    "parentFolderId"=>$row['parentFolderId'],
+    "sortOrder"=>$row['sortOrder']
+  ));
+}
+    
   }
 
 }
@@ -91,6 +123,7 @@ $response_arr = array(
   "success"=>$success,
   "message"=>$message,
   "assignments"=>$assignments,
+  "pinned"=>$pinned,
   );
 
 
