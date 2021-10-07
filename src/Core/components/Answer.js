@@ -141,13 +141,6 @@ export default class Answer extends InlineComponent {
       propagateToDescendants: true,
       mergeArrays: true
     };
-    attributes.prefill = {
-      createComponentOfType: "text",
-      createStateVariable: "prefill",
-      defaultValue: "",
-      public: true,
-      propagateToDescendants: true,
-    };
 
 
     attributes.showCorrectness = {
