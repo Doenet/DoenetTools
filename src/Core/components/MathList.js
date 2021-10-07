@@ -126,7 +126,7 @@ export default class MathList extends InlineComponent {
       returnDependencies: () => ({}),
       definition: () => ({
         useEssentialOrDefaultValue: {
-          mathsShadow: { variablesToCheck: ["coords", "mathsShadow"] }
+          mathsShadow: { variablesToCheck: ["mathsShadow"] }
         }
       }),
     }

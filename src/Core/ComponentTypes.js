@@ -142,6 +142,7 @@ import SolveEquations from './components/SolveEquations';
 import SolutionContainer from './components/SolutionContainer';
 import SubsetOfRealsInput from './components/SubsetOfRealsInput';
 import SubsetOfReals from './components/SubsetOfReals';
+import Split from './components/Split';
 
 
 //Extended
@@ -281,6 +282,7 @@ const componentTypeArray = [
   SolutionContainer,
   SubsetOfRealsInput,
   SubsetOfReals,
+  Split,
 
   BaseComponent,
   InlineComponent,
