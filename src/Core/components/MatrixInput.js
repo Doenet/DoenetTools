@@ -47,6 +47,11 @@ export default class MatrixInput extends MathInput {
       forRenderer: true,
     }
 
+    attributes.defaultEntry = {
+      createComponentOfType: "math",
+      createStateVariable: "defaultEntry",
+      defaultValue: me.fromAst('\uff3f')
+    }
     return attributes;
   }
 
@@ -130,6 +135,7 @@ export default class MatrixInput extends MathInput {
 
         if (dependencyValues.haveBoundValue) {
           let originalTree = dependencyValues.valueOriginal.tree;
+          let defaultEntryTree = stateValues.defaultEntry.tree;
           if (stateValues.numColumns === 1 && Array.isArray(originalTree)
             && (originalTree[0] === "vector" || originalTree[0] === "tuple")
           ) {
@@ -153,7 +159,7 @@ export default class MatrixInput extends MathInput {
                 if (accumRow) {
                   accumVal = accumRow[0];
                 }
-                newTree[rowInd + 1] = accumVal === undefined ? "\uff3f" : accumVal;
+                newTree[rowInd + 1] = accumVal === undefined ? defaultEntryTree : accumVal;
               }
               instructions.push({
                 setDependency: "valueOriginal",
@@ -188,7 +194,7 @@ export default class MatrixInput extends MathInput {
 
                   for (let colInd = 0; colInd < numColumns; colInd++) {
                     let accumVal = accumRow[colInd];
-                    data[rowInd + 1][colInd + 1] = accumVal === undefined ? "\uff3f" : accumVal;
+                    data[rowInd + 1][colInd + 1] = accumVal === undefined ? defaultEntryTree : accumVal;
                   }
 
                 }
@@ -269,6 +275,7 @@ export default class MatrixInput extends MathInput {
         }]
 
         if (dependencyValues.haveBoundValue) {
+          let defaultEntryTree = stateValues.defaultEntry.tree;
           let originalTree = dependencyValues.valueOriginal.tree;
           let operator = originalTree[0];
 
@@ -299,7 +306,7 @@ export default class MatrixInput extends MathInput {
 
               for (let colInd = currentNumColumns; colInd < desiredNumColumns; colInd++) {
                 let accumVal = accumRow[colInd];
-                newTree[1][colInd + 1] = accumVal === undefined ? "\uff3f" : accumVal;
+                newTree[1][colInd + 1] = accumVal === undefined ? defaultEntryTree : accumVal;
               }
               instructions.push({
                 setDependency: "valueOriginal",
@@ -332,7 +339,7 @@ export default class MatrixInput extends MathInput {
 
                   for (let colInd = previousNumColumns; colInd < desiredNumColumns; colInd++) {
                     let accumVal = accumRow[colInd];
-                    data[rowInd + 1][colInd + 1] = accumVal === undefined ? "\uff3f" : accumVal;
+                    data[rowInd + 1][colInd + 1] = accumVal === undefined ? defaultEntryTree : accumVal;
                   }
                 }
 
@@ -448,6 +455,10 @@ export default class MatrixInput extends MathInput {
         accumulatedComponents: {
           dependencyType: "stateVariable",
           variableName: "accumulatedComponents"
+        },
+        defaultEntry: {
+          dependencyType: "stateVariable",
+          variableName: "defaultEntry"
         }
       }),
       definition({ dependencyValues }) {
@@ -488,7 +499,7 @@ export default class MatrixInput extends MathInput {
                 let accumRow = accumulatedComponents[rowInd];
                 for (let colInd = originalNumColumns; colInd < numColumns; colInd++) {
                   let accumVal = accumRow[colInd];
-                  data[rowInd + 1][colInd + 1] = accumVal === undefined ? "\uff3f" : accumVal;
+                  data[rowInd + 1][colInd + 1] = accumVal === undefined ? dependencyValues.defaultEntry.tree : accumVal;
                 }
               }
             }
@@ -507,7 +518,7 @@ export default class MatrixInput extends MathInput {
                 }
                 for (let colInd = 0; colInd < numColumns; colInd++) {
                   let accumVal = accumRow[colInd];
-                  data[rowInd + 1][colInd + 1] = accumVal === undefined ? "\uff3f" : accumVal;
+                  data[rowInd + 1][colInd + 1] = accumVal === undefined ? dependencyValues.defaultEntry.tree : accumVal;
                 }
               }
             }
@@ -546,7 +557,7 @@ export default class MatrixInput extends MathInput {
 
               for (let colInd = minCol; colInd < numColumns; colInd++) {
                 let accumVal = accumRow[colInd];
-                data[rowInd + 1][colInd + 1] = accumVal === undefined ? "\uff3f" : accumVal;
+                data[rowInd + 1][colInd + 1] = accumVal === undefined ? dependencyValues.defaultEntry.tree : accumVal;
               }
             }
 
@@ -589,7 +600,7 @@ export default class MatrixInput extends MathInput {
 
               for (let colInd = minCol; colInd < numColumns; colInd++) {
                 let accumVal = accumRow[colInd];
-                data[rowInd + 1][colInd + 1] = accumVal === undefined ? "\uff3f" : accumVal;
+                data[rowInd + 1][colInd + 1] = accumVal === undefined ? dependencyValues.defaultEntry.tree : accumVal;
               }
             }
 
@@ -626,7 +637,7 @@ export default class MatrixInput extends MathInput {
 
           for (let colInd = minCol; colInd < numColumns; colInd++) {
             let accumVal = accumRow[colInd];
-            data[rowInd + 1][colInd + 1] = accumVal === undefined ? "\uff3f" : accumVal;
+            data[rowInd + 1][colInd + 1] = accumVal === undefined ? dependencyValues.defaultEntry.tree : accumVal;
           }
         }
 

@@ -284,10 +284,10 @@ export function normalizeLatexString(latexString) {
     latexString = latexString.replaceAll(sub[0], sub[1])
   }
 
-  let startLdotsMatch = latexString.match(/^(\\ )*(\\ldots|\.(\\ )*\.(\\ )*\.)(\\ )*(.*)/)
+  let startLdotsMatch = latexString.match(/^(\\ )*(\\ldots|\.(\\ )*\.(\\ )*\.)(\\ )*(.*)$/)
 
   if (startLdotsMatch) {
-    let afterLdots = startLdotsMatch[6].trim();
+    let afterLdots = startLdotsMatch[6];
     if (afterLdots[0] !== ",") {
       latexString = "\\ldots," + afterLdots;
     } else {
@@ -295,10 +295,10 @@ export function normalizeLatexString(latexString) {
     }
   }
 
-  let endLdotsMatch = latexString.match(/(.*?)(\\ )*(\\ldots|\.(\\ )*\.(\\ )*\.)(\\ )*$/)
+  let endLdotsMatch = latexString.match(/^(.*?)(\\ )*(\\ldots|\.(\\ )*\.(\\ )*\.)(\\ )*$/)
 
   if (endLdotsMatch) {
-    let beforeLdots = endLdotsMatch[1].trim();
+    let beforeLdots = endLdotsMatch[1];
     if (beforeLdots[beforeLdots.length - 1] !== ",") {
       latexString = beforeLdots + ",\\ldots";
     } else {
