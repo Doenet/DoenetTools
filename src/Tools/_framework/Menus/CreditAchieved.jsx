@@ -4,6 +4,23 @@ import { searchParamAtomFamily } from '../NewToolRoot';
 // import { loadAssignmentSelector } from '../../../_reactComponents/Drive/NewDrive';
 import axios from 'axios';
 import { creditAchievedAtom, currentAttemptNumber } from '../ToolPanels/AssignmentViewer';
+import styled from "styled-components";
+
+const Line = styled.div`
+  border-bottom: 2px solid black;
+  height: 2px;
+  width: 230px;
+`
+
+const ScoreOnRight = styled.div`
+  position: absolute;
+  right: 0px;
+  top: 0px;
+`
+
+const ScoreContainer = styled.div`
+  position: relative;
+`
 
 
 export default function CreditAchieved(){
@@ -18,7 +35,7 @@ export default function CreditAchieved(){
   const {creditByItem,creditForAttempt,creditForAssignment,totalPointsOrPercent} = useRecoilValue(creditAchievedAtom);
   let [stage,setStage] = useState('Initialize');
   let creditByItemsJSX = creditByItem.map((x,i)=>{
-    return <div key={`creditByItem${i}`}>Credit For Item {i+1}: {x?Math.round(x*1000)/1000:0}</div> 
+    return <ScoreContainer key={`creditByItem${i}`}>Item {i+1}: <ScoreOnRight>{x?Math.round(x*1000)/1000:0}</ScoreOnRight></ScoreContainer> 
   })
 
   const initialize = useRecoilCallback(({set})=> async (attemptNumber,doenetId,userId,tool)=>{
@@ -76,10 +93,12 @@ export default function CreditAchieved(){
   }
 
  return <div>
-   <div>Possible Points: {totalPointsOrPercent}</div>
-   <div>Score: {score}</div>
-   <div>Credit For Assignment: {creditForAssignment?Math.round(creditForAssignment*1000)/1000:0}</div>
-   <div>Credit For Attempt {recoilAttemptNumber}: {creditForAttempt?Math.round(creditForAttempt*1000)/1000:0}</div>
-   <div>{creditByItemsJSX}</div>
+   <ScoreContainer>Possible Points: <ScoreOnRight>{totalPointsOrPercent}</ScoreOnRight></ScoreContainer>
+   <ScoreContainer>Final Score: <ScoreOnRight>{score}</ScoreOnRight></ScoreContainer>
+   <Line/>
+   <b>Credit For:</b>
+   <ScoreContainer>Assignment: <ScoreOnRight>{creditForAssignment?Math.round(creditForAssignment*1000)/1000:0}</ScoreOnRight></ScoreContainer>
+   <div style={{marginLeft: '15px'}}>{creditByItemsJSX}</div>
+   <ScoreContainer>Attempt {recoilAttemptNumber}: <ScoreOnRight>{creditForAttempt?Math.round(creditForAttempt*1000)/1000:0}</ScoreOnRight></ScoreContainer>
  </div>
 }

@@ -50,7 +50,7 @@ export default function AssignmentInfoCap(){
     <div style={{padding:'8px'}}>
     <div>{driveLabel}</div>
     <div>{docInfo.label}</div>
-    <div>{recoilAttemptNumber}/{attemptsAllowedDescription} Attempts</div>
+    <div>Attempt {recoilAttemptNumber} out of {attemptsAllowedDescription}</div>
     </div>
     
   </div>
