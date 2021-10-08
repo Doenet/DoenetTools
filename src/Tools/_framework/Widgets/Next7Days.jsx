@@ -7,6 +7,7 @@ import {
   useRecoilState,
   useRecoilValue,
   useSetRecoilState,
+  atom,
 } from 'recoil';
 /**
  * Internal dependencies
@@ -34,6 +35,15 @@ import {
 import axios from 'axios';
 import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
 import ButtonGroup from '../../../_reactComponents/PanelHeaderComponents/ButtonGroup';
+
+
+//array of objects
+//dotw as a number
+//time as text "01:00"
+export const classTimesAtom = atom({
+  key:'classTimesAtom',
+  default:[]
+})
 
 
 export default function Next7Days({ driveId }) {
@@ -174,6 +184,7 @@ if (weekShift == 0){
   // console.log(">>>>assignmentArray",assignmentArray)
 let rows = [];
 for (let assignment of assignmentArray){
+
   rows.push(<tr key={`${assignment.doenetId}`}>
     <td></td>
     <td>{assignment.label}</td>
