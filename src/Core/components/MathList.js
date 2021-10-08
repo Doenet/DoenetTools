@@ -126,7 +126,7 @@ export default class MathList extends InlineComponent {
       returnDependencies: () => ({}),
       definition: () => ({
         useEssentialOrDefaultValue: {
-          mathsShadow: { variablesToCheck: ["coords", "mathsShadow"] }
+          mathsShadow: { variablesToCheck: ["mathsShadow"] }
         }
       }),
     }
@@ -478,7 +478,6 @@ export default class MathList extends InlineComponent {
 
               if (dependencyValues.mergeMathLists && Array.isArray(childValue.tree) && childValue.tree[0] === "list") {
                 for (let i = 0; i < childValue.tree.length - 1; i++) {
-                  x
                   latexs.push(childValue.get_component(i).toLatex());
                 }
               } else {

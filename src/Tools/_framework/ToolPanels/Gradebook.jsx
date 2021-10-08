@@ -154,7 +154,7 @@ export const assignmentData = selector({
     }
 })
 
-const studentDataQuerry = atom({
+export const studentDataQuerry = atom({
     key: "studentDataQuerry",
     default: selector({
         key: "studentDataQuerry/Default",
@@ -201,7 +201,7 @@ export const studentData = selector({
     }
 })
 
-const overViewDataQuerry = atom({
+export const overViewDataQuerry = atom({
     key:"overViewDataQuerry",
     default: selector({
         key: "overViewDataQuerry/Default",
@@ -253,7 +253,7 @@ export const overViewData = selector({
     }
 })
 
-const attemptDataQuerry = atomFamily({
+export const attemptDataQuerry = atomFamily({
     key: "attemptDataQuerry",
     default: selectorFamily({
         key:"attemptDataQuerry/Default",
@@ -281,21 +281,23 @@ export const attemptData = selectorFamily({
         for(let userId in students){
             attempts[userId] = {
                 credit: null,
+                creditOverrides: {},
                 attempts: {}
             }
         }
 
         let data = get(attemptDataQuerry(doenetId))
-
         for(let row of data){
             let [userId,
                 attemptNumber,
                 assignmentCredit,
                 attemptCredit,
+                creditOverride
                 ] = row;
-
+           
             attempts[userId].credit = assignmentCredit
             attempts[userId].attempts[attemptNumber] = attemptCredit;
+            attempts[userId].creditOverrides[attemptNumber] = creditOverride;
         }
 
         return attempts;
@@ -344,7 +346,6 @@ export const specificAttemptData = selectorFamily({
         return specificAttempt;
     }
 })
-
 
 const doenetMLQuerry = atomFamily({
     key: "doenetMLQuerry",
@@ -492,8 +493,7 @@ const getUserId = (students, name) => {
     return -1;
 } 
 
-
-function GradebookOverview(props) {
+function GradebookOverview() {
     //const { openOverlay, activateMenuPanel } = useToolControlHelper();
     let driveIdValue = useRecoilValue(driveId)
     const setPageToolView = useSetRecoilState(pageToolViewAtom);
@@ -501,9 +501,9 @@ function GradebookOverview(props) {
     let assignments = useRecoilValueLoadable(assignmentData);
     let overView = useRecoilValueLoadable(overViewData)
 
-console.log(">>>>students",students)
-console.log(">>>>assignments",assignments)
-console.log(">>>>overView",overView)
+// console.log(">>>>students",students)
+// console.log(">>>>assignments",assignments)
+// console.log(">>>>overView",overView)
 
  //Protect from values not being loaded
  if(assignments.state !== 'hasValue' || 
@@ -534,16 +534,7 @@ let gradeCategories = [
             {
                 Header: "Name",
                 accessor: "name",
-                Cell: row  =><a onClick = {(e) =>{
-                    let name = row.cell.row.cells[0].value
-                    let userId = getUserId(students.contents, name);
-                    setPageToolView({
-                        page: 'course',
-                        tool: 'gradebookStudent',
-                        view: '',
-                        params: { driveId: driveIdValue, userId},
-                    })
-                }}> {row.cell.row.cells[0].value} </a>
+              
             }
         )
         
@@ -563,16 +554,6 @@ let gradeCategories = [
                 allpossiblepoints.push(possiblepoints);
 
                 overviewTable.headers.push({
-                    // Cell: row  =><a onClick = {(e) =>{
-                    //     let name = row.cell.row.cells[0].value
-                    //     let userId = getUserId(students.contents, name);
-                    //     setPageToolView({
-                    //         page: 'course',
-                    //         tool: 'gradebookStudent',
-                    //         view: '',
-                    //         params: { driveId: driveIdValue, userId},
-                    //     })
-                    // }}> {row.cell.row.cells[0].value} </a>,
                     Header: <a onClick = {(e) =>{
 
                         setPageToolView({
@@ -644,7 +625,15 @@ let gradeCategories = [
 
         let row = {}
 
-        row["name"] = firstName + " " + lastName
+        let name = firstName + " " + lastName;
+        row["name"] = <a onClick = {(e) =>{
+                setPageToolView({
+                    page: 'course',
+                    tool: 'gradebookStudent',
+                    view: '',
+                    params: { driveId: driveIdValue, userId},
+                })
+            }}> {name} </a>
         
         let totalScore = 0;
 
@@ -702,22 +691,6 @@ let gradeCategories = [
 
 }
 
-// function BackButton(props) {
-
-//     return(
-//         <button onClick = {() => history.go(-1)}>
-//             Courses
-//         </button>
-//     )
-// }
-
-// function CourseSelector(props){
-    
-//     return(<select onChange = {(event) => props.callback(event.target.value)}>
-//         <option value = ''>Select Course</option>
-//         {props.courseList.map((course, i) => <option key = {i} value = {course.courseId}>{course.longname}</option> )}
-//     </select>)
-// }
 
 export default function Gradebook(props){
     

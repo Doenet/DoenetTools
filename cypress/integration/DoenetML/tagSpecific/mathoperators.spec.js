@@ -1830,6 +1830,120 @@ describe('Math Operator Tag Tests', function () {
     })
   })
 
+
+  it('invert abs', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+      <text>a</text>
+      <abs name="a1">-9</abs>
+      <mathinput bindValueTo="$a1" name="a2" />
+      <copy prop="value" tname="a2" assignNames="a3" />
+      `}, "*");
+    });
+
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.get('#\\/a1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('9')
+    });
+    cy.get(`#\\/a2 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('9')
+    })
+    cy.get('#\\/a3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('9')
+    });
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/a1'].stateValues.value.tree).eq(9);
+      expect(components['/a2'].stateValues.value.tree).eq(9);
+      expect(components['/a3'].stateValues.value.tree).eq(9);
+    })
+
+    cy.get("#\\/a2 textarea").type("{end}{backspace}-3{enter}", {force: true})
+
+    cy.get('#\\/a1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('0')
+    });
+    cy.get(`#\\/a2 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('0')
+    })
+    cy.get('#\\/a3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('0')
+    });
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/a1'].stateValues.value.tree).eq(0);
+      expect(components['/a2'].stateValues.value.tree).eq(0);
+      expect(components['/a3'].stateValues.value.tree).eq(0);
+    })
+
+
+    cy.get("#\\/a2 textarea").type("{end}{backspace}7{enter}", {force: true})
+
+    cy.get('#\\/a1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('7')
+    });
+    cy.get(`#\\/a2 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('7')
+    })
+    cy.get('#\\/a3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('7')
+    });
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/a1'].stateValues.value.tree).eq(7);
+      expect(components['/a2'].stateValues.value.tree).eq(7);
+      expect(components['/a3'].stateValues.value.tree).eq(7);
+    })
+
+
+    cy.get("#\\/a2 textarea").type("{end}{backspace}x{enter}", {force: true})
+
+    cy.get('#\\/a1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('|x|')
+    });
+    cy.get(`#\\/a2 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('|x|')
+    })
+    cy.get('#\\/a3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('|x|')
+    });
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/a1'].stateValues.value.tree).eqls(["apply", "abs", "x"]);
+      expect(components['/a2'].stateValues.value.tree).eqls(["apply", "abs", "x"]);
+      expect(components['/a3'].stateValues.value.tree).eqls(["apply", "abs", "x"]);
+    })
+
+
+    cy.get("#\\/a2 textarea").type("{end}{leftArrow}{backspace}y{enter}", {force: true})
+
+    cy.get('#\\/a1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('|y|')
+    });
+    cy.get(`#\\/a2 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('|y|')
+    })
+    cy.get('#\\/a3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('|y|')
+    });
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/a1'].stateValues.value.tree).eqls(["apply", "abs", "y"]);
+      expect(components['/a2'].stateValues.value.tree).eqls(["apply", "abs", "y"]);
+      expect(components['/a3'].stateValues.value.tree).eqls(["apply", "abs", "y"]);
+    })
+
+
+  })
+
   it('floor, ceil, round and abs updatable', () => {
     cy.window().then((win) => {
       win.postMessage({

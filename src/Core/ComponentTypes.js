@@ -60,6 +60,7 @@ import Answer from './components/Answer';
 import Award from './components/Award';
 import When from './components/When';
 import MathInput from './components/MathInput';
+import MatrixInput from './components/MatrixInput';
 import TextInput from './components/TextInput';
 import BooleanInput from './components/BooleanInput';
 import ChoiceInput from './components/ChoiceInput';
@@ -141,6 +142,7 @@ import SolveEquations from './components/SolveEquations';
 import SolutionContainer from './components/SolutionContainer';
 import SubsetOfRealsInput from './components/SubsetOfRealsInput';
 import SubsetOfReals from './components/SubsetOfReals';
+import Split from './components/Split';
 
 
 //Extended
@@ -209,7 +211,7 @@ const componentTypeArray = [
   Vector,
   Angle,
   Answer, Award, When,
-  MathInput, TextInput, BooleanInput, ChoiceInput,
+  MathInput, MatrixInput, TextInput, BooleanInput, ChoiceInput,
   Choice,
   NumberComponent, Integer,
   Graph,
@@ -280,6 +282,7 @@ const componentTypeArray = [
   SolutionContainer,
   SubsetOfRealsInput,
   SubsetOfReals,
+  Split,
 
   BaseComponent,
   InlineComponent,

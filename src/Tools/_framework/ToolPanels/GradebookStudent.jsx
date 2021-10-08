@@ -20,9 +20,9 @@ export default function GradebookStudent() {
     // console.log(">>>> driveId: ", driveId)
     // console.log(">>>> USERID: ", userId)
     // console.log(">>>>assignments",assignments.contents)
-    // console.log(">>>>students",students.contents)
-    // console.log(">>>>overView",overView.contents)
+    // console.log(">>>>studentName",studentName)
 
+    // console.log(">>>>overView",overView.contents)
     let overviewTable = {}
 
     overviewTable.headers=[{
@@ -164,11 +164,14 @@ export default function GradebookStudent() {
     
 }
 
+let studentName = `${students.contents[userId]?.firstName} ${students.contents[userId]?.lastName}`
 
-    return (
+    return (<>
+    <div style={{marginLeft:'18px'}}><b>Gradebook for {studentName}</b></div>
         <Styles>
             <Table disableSortBy={true} columns = {overviewTable.headers} data = {overviewTable.rows}/>
         </Styles>
+        </>
     )
 
 }

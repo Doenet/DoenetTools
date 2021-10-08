@@ -9,27 +9,45 @@ import styled from 'styled-components';
 //snowpack is not a fan of destructing here for some reason?
 import mathquill from 'react-mathquill';
 import { getFromLatex, normalizeLatexString } from '../../Core/utils/math';
+import { deepClone } from '../../Core/utils/deepFunctions';
 //  /Doenet/utils/math';
 mathquill.addStyles(); //Styling for react-mathquill input field
 let EditableMathField = mathquill.EditableMathField;
 
-// const Prev = styled.div`
-//   font-size: 23px;
-//   // min-height: 30px;
-//   background: rgba(0, 0, 0, 0.8);
-//   width: auto;
-//   display: inline-block;
-//   border-radius: 5px;
-//   color: white;
-//   // line-height: 0px;
-//   z-index: 10;
-//   padding: 3px;
-//   // position: absolute;
-//   user-select: none;
-//   // left: ${props => `${props.left}px`};
-//   // top: ${props => `${props.top}px`};
-// `;
+const Matrix = styled.div`
+  position: relative;
+  margin: 6px;
+  display: inline-block;
+  vertical-align: middle;
+  width:auto;
+  border-style: none;
 
+  :before {
+    content: "";
+    position: absolute;
+    left: -6px;
+    top: -6px;
+    border: 1px solid #000;
+    border-right: 0px;
+    width: 6px;
+    height: 100%;
+    padding-top: 6px;
+    padding-bottom: 3px;
+  }
+
+  :after {
+    content: "";
+    position: absolute;
+    right: -6px;
+    top: -6px;
+    border: 1px solid #000;
+    border-left: 0px;
+    width: 6px;
+    height: 100%;
+    padding-top: 6px;
+    padding-bottom: 3px;
+  }
+`
 
 export default class MathInput extends DoenetRenderer {
   constructor(props) {
@@ -47,47 +65,51 @@ export default class MathInput extends DoenetRenderer {
     this.handleBlur = this.handleBlur.bind(this);
     this.handleFocus = this.handleFocus.bind(this);
     this.onChangeHandler = this.onChangeHandler.bind(this);
-    // this.handleDragEnter = this.handleDragEnter.bind(this);
-    // this.handleDragThrough = this.handleDragThrough.bind(this);
-    // this.handleDragExit = this.handleDragExit.bind(this);
 
     this.mathExpression = this.doenetSvData.valueForDisplay;
 
-    if (this.doenetSvData.rawRendererValue !== null) {
-      this.latexValue = this.doenetSvData.rawRendererValue
-    } else {
-      this.latexValue = stripLatex(this.doenetSvData.valueForDisplay.toLatex());
-      this.actions.updateRawValue({
-        rawRendererValue: this.latexValue,
+    this.latexValues = [];
+
+    let updatedRendererValues = false;
+    for (let rowInd = 0; rowInd < this.doenetSvData.numRows; rowInd++) {
+      let latexRow = [];
+      let rowRendererValues = this.doenetSvData.rawRendererValues[rowInd];
+
+      for (let colInd = 0; colInd < this.doenetSvData.numColumns; colInd++) {
+        if (rowRendererValues?.[colInd]) {
+          latexRow.push(rowRendererValues[colInd]);
+        } else {
+          latexRow.push(
+            stripLatex(this.doenetSvData.componentDisplayValues[rowInd][colInd].toLatex())
+          );
+          updatedRendererValues = true;
+        }
+      }
+      this.latexValues.push(latexRow);
+    }
+
+    if (updatedRendererValues) {
+      this.actions.updateRawValues({
+        rawRendererValues: this.latexValues,
         transient: false
       })
     }
+
     this.latexValueSetInRender = true;
 
-    // this.state = {isDragging: false, previewLeftOffset: this.doenetSvData.size * 10 + 80, previewTopOffset: 0, clickXOffset: 0, clickYOffset: 0};
-    // this.inputRef = React.createRef();
-    // this.mathInputRef = React.createRef();
 
-
-    this.valueToRevertTo = this.doenetSvData.value;
     this.valueForDisplayToRevertTo = this.doenetSvData.valueForDisplay;
-    // this.latexValueToRevertTo = this.latexValue;
     // this.previewValue = "";
 
     //Remove __ value so it doesn't show
-    if (this.latexValue === '\uFF3F') { this.latexValue = ""; }
+    this.latexValues = this.latexValues.map(x =>
+      x.map(y => y === "\uFF3F" ? "" : y)
+    )
 
   }
 
   static initializeChildrenOnConstruction = false;
 
-  componentDidMount() {
-    // if (this && this.mathInputRef){
-    //   let rect = this.mathInputRef.current.getBoundingClientRect();
-    // // this.setState({previewLeftOffset: rect.width + rect.left + 2, previewTopOffset: rect.top -17}); 
-    // this.setState({previewLeftOffset: rect.left, previewTopOffset: rect.height + rect.top - 2 });
-    // }
-  }
 
   calculateMathExpressionFromLatex(text) {
     let expression;
@@ -113,7 +135,7 @@ export default class MathInput extends DoenetRenderer {
     return expression;
   }
 
-  updateImmediateValueFromLatex(text) {
+  updateImmediateValueFromLatex(latex, rowInd, colInd) {
 
     // The check whether or not to call the updateImmediateValue action is subtle.
     // We need to achieve two effects:
@@ -124,36 +146,78 @@ export default class MathInput extends DoenetRenderer {
     // whenever the user types anything into the input
     // even if it does not change the underlying math expression
 
-    let currentMathExpressionNormalized = this.calculateMathExpressionFromLatex(this.latexValue);
-    let newMathExpression = this.calculateMathExpressionFromLatex(text);
+    let currentMathExpressionNormalized = this.calculateMathExpressionFromLatex(this.latexValues[rowInd][colInd]);
+    let newMathExpression = this.calculateMathExpressionFromLatex(latex);
 
-    let rawValueChanged = text !== this.latexValue || this.latexValueSetFromValueForDisplay;
+    let rawValueChanged = latex !== this.latexValues[rowInd][colInd] || this.latexValueSetFromValueForDisplay;
     let transientForRaw = !this.latexValueSetInRender;
 
     let actuallyUpdate = !newMathExpression.equalsViaSyntax(currentMathExpressionNormalized)
-      || (!this.latexValueSetInRender && text !== this.latexValue);
+      || (!this.latexValueSetInRender && latex !== this.latexValues[rowInd][colInd]);
 
-    // Note: must set this.latexValue before calling updateImmediateValue action
-    this.latexValue = text;
+    // Note: must set this.latexValues before calling updateImmediateValue action
+    this.latexValues[rowInd][colInd] = latex;
     this.latexValueSetInRender = false;
     this.latexValueSetFromValueForDisplay = false;
 
     if (actuallyUpdate) {
-      this.mathExpression = newMathExpression;
+      this.mathExpression = this.updateMathExpression(newMathExpression, rowInd, colInd)
       this.actions.updateImmediateValue({
-        mathExpression: newMathExpression,
-        rawRendererValue: this.latexValue,
+        mathExpression: this.mathExpression,
+        rawRendererValues: this.latexValues,
         transient: true,
         skippable: true,
       });
     } else if (rawValueChanged) {
-      this.actions.updateRawValue({
-        rawRendererValue: this.latexValue,
+      this.actions.updateRawValues({
+        rawRendererValues: this.latexValues,
         transient: transientForRaw,
         skippable: transientForRaw
       });
     }
 
+
+  }
+
+  updateMathExpression(componentValue, rowInd, colInd) {
+
+    if (this.mathExpression.tree[0] !== "matrix") {
+      this.mathExpression = createMathExpressionFromLatexValues()
+      return this.mathExpression;
+    }
+
+    let newTree = deepClone(this.mathExpression.tree);
+
+    newTree[2][rowInd + 1][colInd + 1] = componentValue.tree;
+
+    this.mathExpression = me.fromAst(newTree);
+
+    return this.mathExpression;
+
+  }
+
+  createMathExpressionFromLatexValues() {
+
+    let matrixValues = [];
+
+    for (let rowInd = 0; rowInd < this.doenetSvData.numRows; rowInd++) {
+      let row = ["tuple"];
+
+      for (let colInd = 0; colInd < this.doenetSvData.numColumns; colInd++) {
+        row.push(this.calculateMathExpressionFromLatex(this.latexValues[rowInd][colInd]).tree);
+      }
+
+      matrixValues.push(row)
+    }
+
+    let newTree = ["matrix",
+      ["tuple", this.doenetSvData.numRows, this.doenetSvData.numColumns],
+      ["tuple", ...matrixValues]
+    ]
+
+    this.mathExpression = me.fromAst(newTree);
+
+    return this.mathExpression;
 
   }
 
@@ -171,59 +235,22 @@ export default class MathInput extends DoenetRenderer {
     }
   }
 
-  // handleDragEnter(e) {
-  //   this.setState({
-  //     isDragging: true,
-  //     clickXOffset: e.pageX - this.state.previewLeftOffset,
-  //     clickYOffset: e.pageY - this.state.previewTopOffset,
-  //   })
-  // }
-
-  // handleDragThrough(e) {
-  //   if(this.state.isDragging){
-  //     // console.log();
-  //     this.setState({previewLeftOffset: e.pageX - this.state.clickXOffset, previewTopOffset: e.pageY - this.state.clickYOffset});
-  //   }
-  // }
-
-  // handleDragExit(e){
-  //   this.setState({
-  //     isDragging: false,
-  //     clickXOffset: 0,
-  //     clickYOffset: 0,
-  //   })
-  // }
 
   async handlePressEnter(e) {
-    this.valueToRevertTo = this.doenetSvData.immediateValue;
     this.valueForDisplayToRevertTo = this.mathExpression;
 
-    // this.latexValueToRevertTo = this.latexValue;
     if (!this.doenetSvData.value.equalsViaSyntax(this.doenetSvData.immediateValue)) {
       await this.actions.updateValue();
     } else {
-      await this.actions.updateRawValue({
-        rawRendererValue: this.latexValue,
+      await this.actions.updateRawValues({
+        rawRendererValues: this.latexValues,
         transient: false
       })
     }
-    if (this.doenetSvData.includeCheckWork && this.validationState === "unvalidated") {
-      await this.actions.submitAnswer();
-    }
+
     this.forceUpdate();
   }
 
-  // handleKeyDown(e) {
-  //   if (e.key === "Escape") {
-  //     if (!this.mathExpression.equalsViaSyntax(this.valueForDisplayToRevertTo)) {
-  //       this.mathExpression = this.valueForDisplayToRevertTo;
-  //       this.actions.updateImmediateValue({
-  //         mathExpression: this.valueToRevertTo
-  //       });
-  //       this.forceUpdate();
-  //     }
-  //   }
-  // }
 
   handleFocus(e) {
     this.focused = true;
@@ -232,14 +259,12 @@ export default class MathInput extends DoenetRenderer {
 
   async handleBlur(e) {
     this.focused = false;
-    this.valueToRevertTo = this.doenetSvData.immediateValue;
     this.valueForDisplayToRevertTo = this.mathExpression;
-    // this.latexValueToRevertTo = this.latexValue;
     if (!this.doenetSvData.value.equalsViaSyntax(this.doenetSvData.immediateValue)) {
       await this.actions.updateValue();
     } else {
-      await this.actions.updateRawValue({
-        rawRendererValue: this.latexValue,
+      await this.actions.updateRawValues({
+        rawRendererValues: this.latexValues,
         transient: false
       })
     }
@@ -247,8 +272,8 @@ export default class MathInput extends DoenetRenderer {
 
   }
 
-  async onChangeHandler(e) {
-    this.updateImmediateValueFromLatex(e)
+  async onChangeHandler(latex, rowInd, colInd) {
+    this.updateImmediateValueFromLatex(latex, rowInd, colInd)
     this.forceUpdate();
   }
 
@@ -276,16 +301,24 @@ export default class MathInput extends DoenetRenderer {
       // is not the same as the renderer's value
       // so we change the renderer's value to match
 
-      this.mathExpression = this.doenetSvData.valueForDisplay;
-      this.latexValue = stripLatex(this.mathExpression.toLatex());
-      if (this.latexValue === '\uFF3F') {
-        this.latexValue = "";
+      this.latexValues = [];
+      for (let rowInd = 0; rowInd < this.doenetSvData.numRows; rowInd++) {
+        let latexRow = [];
+        for (let colInd = 0; colInd < this.doenetSvData.numColumns; colInd++) {
+          let lVal = stripLatex(this.doenetSvData.componentDisplayValues[rowInd][colInd].toLatex());
+          if (lVal === "\uFF3F") {
+            latexRow.push("")
+          } else {
+            latexRow.push(lVal);
+          }
+        }
+        this.latexValues.push(latexRow);
       }
+
+      this.mathExpression = this.doenetSvData.valueForDisplay;
       this.latexValueSetInRender = true;
       this.latexValueSetFromValueForDisplay = true;
-      this.valueToRevertTo = this.doenetSvData.value;
       this.valueForDisplayToRevertTo = this.doenetSvData.valueForDisplay;
-      // this.latexValueToRevertTo = this.latexValue;
 
     }
 
@@ -398,73 +431,87 @@ export default class MathInput extends DoenetRenderer {
     // Also, just copied the list of autoCommands from MathQuill.
     // Should change it to match the functions that <math> understand,
     // i.e., import from the util/math.js in Core
+
+    let autoCommands = "sqrt pi theta integral infinity";
+    let autoOperatorNames = 'arg deg det dim exp gcd hom ker lg lim ln log max min'
+      + ' Pr'
+      + ' sin cos tan arcsin arccos arctan sinh cosh tanh sec csc cot coth'
+      + ' sin cos tan sec cosec csc cotan cot ctg'
+      + ' arcsin arccos arctan arcsec arccosec arccsc arccotan arccot arcctg'
+      + ' sinh cosh tanh sech cosech csch cotanh coth ctgh'
+      + ' arsinh arcosh artanh arsech arcosech arcsch arcotanh arcoth arctgh'
+      + ' arcsinh arccosh arctanh arcsech arccosech arccsch arccotanh arccoth arcctgh';
+
+    let matrixInputs = [];
+
+    for (let rowInd = 0; rowInd < this.doenetSvData.numRows; rowInd++) {
+      let mathinputRow = [];
+
+      for (let colInd = 0; colInd < this.doenetSvData.numColumns; colInd++) {
+        mathinputRow.push(
+          <td style={{ margin: "10px" }} key={colInd} id={this.componentName+"_component_" + rowInd + "_" + colInd}>
+            <EditableMathField
+              latex={this.latexValues[rowInd][colInd]}
+              config={{
+                autoCommands,
+                autoOperatorNames,
+                handlers: {
+                  enter: this.handlePressEnter
+                }
+              }}//more commands go here
+              onChange={(mathField) => {
+                this.onChangeHandler(mathField.latex(), rowInd, colInd)
+              }}
+              onBlur={this.handleBlur}
+              onFocus={this.handleFocus}
+            />
+          </td>
+        )
+      }
+
+      matrixInputs.push(
+        <tr key={rowInd}>
+          {mathinputRow}
+        </tr>
+      )
+
+    }
+
+    let rowNumControls = null;
+    if (this.doenetSvData.showSizeControls) {
+      rowNumControls = <span>
+        <button id={this.componentName + "_rowDecrement"} onClick={() => this.actions.updateNumRows({ numRows: this.doenetSvData.numRows - 1 })} disabled={this.doenetSvData.numRows < 2}>
+          r-
+        </button>
+        <button id={this.componentName + "_rowIncrement"} onClick={() => this.actions.updateNumRows({ numRows: this.doenetSvData.numRows + 1 })}>
+          r+
+        </button>
+      </span>
+    }
+    let colNumControls = null;
+    if (this.doenetSvData.showSizeControls) {
+      colNumControls = <span>
+        <button id={this.componentName + "_columnDecrement"} onClick={() => this.actions.updateNumColumns({ numColumns: this.doenetSvData.numColumns - 1 })} disabled={this.doenetSvData.numColumns < 2}>
+          c-
+        </button>
+        <button id={this.componentName + "_columnIncrement"} onClick={() => this.actions.updateNumColumns({ numColumns: this.doenetSvData.numColumns + 1 })}>
+          c+
+        </button>
+      </span>
+    }
+
     return <React.Fragment>
       <a name={this.componentName} />
+      <Matrix className="matrixInputSurroundingBox" id={this.componentName}>
+        <table><tbody>
+          {matrixInputs}
+        </tbody></table>
+      </Matrix>
 
 
-      <span className="textInputSurroundingBox" id={this.componentName}>
-        {/* <input
-        key={inputKey}
-        id={inputKey}
-        ref = {this.inputRef}
-        value={this.textValue}
-        disabled={disabled}
-        onChange={this.onChangeHandler}
-        onKeyPress={this.handleKeyPress}
-        onKeyDown={this.handleKeyDown}
-        onBlur={this.handleBlur}
-        onFocus={this.handleFocus}
-        style={{
-          width: `${this.doenetSvData.size * 10}px`,
-          height: "22px",
-          fontSize: "14px",
-          borderWidth: "1px",
-          borderColor: surroundingBorderColor,
-          padding: "4px",
-          // position: "absolute",
-        }}
-      /> */}
-        <span style={{ margin: "10px" }}>
-          <EditableMathField
-            latex={this.latexValue}
-            config={{
-              autoCommands: "sqrt pi theta integral infinity",
-              autoOperatorNames: 'arg deg det dim exp gcd hom ker lg lim ln log max min'
-                + ' Pr'
-                + ' sin cos tan arcsin arccos arctan sinh cosh tanh sec csc cot coth'
-                + ' sin cos tan sec cosec csc cotan cot ctg'
-                + ' arcsin arccos arctan arcsec arccosec arccsc arccotan arccot arcctg'
-                + ' sinh cosh tanh sech cosech csch cotanh coth ctgh'
-                + ' arsinh arcosh artanh arsech arcosech arcsch arcotanh arcoth arctgh'
-                + ' arcsinh arccosh arctanh arcsech arccosech arccsch arccotanh arccoth arcctgh',
-              handlers: {
-                enter: this.handlePressEnter
-              }
-            }}//more commands go here
-            onChange={(mathField) => {
-              this.onChangeHandler(mathField.latex())
-            }}
-            onBlur={this.handleBlur}
-            onFocus={this.handleFocus}
-          />
-          {/* <p>{this.mathExpression.toLatex()}</p> */}
-        </span>
-        {checkWorkButton}
-        {/* {this.textValue ? 
-      <Prev style = {{top: this.state.previewTopOffset+"px", left: this.state.previewLeftOffset+"px"}} onMouseDown = {this.handleDragEnter} onMouseMove = {this.handleDragThrough} onMouseUp = {this.handleDragExit} onMouseLeave = {this.handleDragExit}>
-        <div>
-          <MathJax.Context input='tex'>
-              <div>
-                  <MathJax.Node inline>{this.textValue ? this.previewValue : ''}</MathJax.Node>
-              </div>
-          </MathJax.Context>
-        </div>
-      </Prev> : 
-      null} */}
-      </span>
-
-
-
+      {rowNumControls}
+      {colNumControls}
+      {checkWorkButton}
     </React.Fragment>
 
   }
@@ -478,23 +525,5 @@ function stripLatex(latex) {
 
 }
 
-
-// TODO: how to fix case where have readyonly?
-// need to revert mathExpression in that case
-
-// else if(!this.mathExpression.equalsViaSyntax(this.doenetSvData.immediateValue)) {
-//   console.log(`for ${this.componentName}`)
-//   console.log(`math expression: ${this.mathExpression.toString()}`)
-//   console.log(`immediateValue: ${this.doenetSvData.immediateValue.toString()}`)
-
-//   this.mathExpression = this.doenetSvData.value;
-//   this.textValue = this.mathExpression.toString();
-//   if (this.textValue === '\uFF3F') {
-//     this.textValue = "";
-//   }
-//   this.valueToRevertTo = this.doenetSvData.value;
-//   this.textValueToRevertTo = this.textValue;
-
-// }
 
 

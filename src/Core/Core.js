@@ -9041,6 +9041,12 @@ function validateAttributeValue({ value, attributeSpecification, attribute }) {
     value = attributeSpecification.valueTransformations[value];
   }
 
+  if (attributeSpecification.transformNonFiniteTo !== undefined &&
+    !Number.isFinite(value)
+  ) {
+    value = attributeSpecification.transformNonFiniteTo;
+  }
+
   if (attributeSpecification.toLowerCase) {
     value = value.toLowerCase();
   }

@@ -356,13 +356,14 @@ let navigationObj = {
     gradebookAssignment: {
       pageName: "Gradebook",
       currentMainPanel: "GradebookAssignment",
-      currentMenus:[],
+      currentMenus:["GradeUpload"],
+      menusTitles:["Upload"],
+      menusInitOpen:[false],
       menuPanelCap:"DriveInfoCap",
-      menusTitles:[],
-      menusInitOpen:[],
       headerControls: ["GradebookBreadCrumb"],
-      headerControlsPositions: ["Left"]
-      // onLeave:"",
+      headerControlsPositions: ["Left"],
+      waitForMenuSuppression:true,
+      onLeave:"GradebookAssignmentLeave",
     },
     gradebookStudent: {
       pageName: "Gradebook",
@@ -548,6 +549,8 @@ let encodeParams = p => Object.entries(p).map(kv =>
       EditorLeave:lazy(() => import('./EnterLeave/EditorLeave')),
       CourseChooserLeave:lazy(() => import('./EnterLeave/CourseChooserLeave')),
       DashboardLeave:lazy(() => import('./EnterLeave/DashboardLeave')),
+      GradebookAssignmentLeave:lazy(() => import('./EnterLeave/GradebookAssignmentLeave')),
+      
     }).current;
 
     if (leaveComponentStr){
