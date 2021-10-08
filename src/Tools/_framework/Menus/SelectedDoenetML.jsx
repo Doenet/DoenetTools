@@ -356,6 +356,8 @@ export function AssignmentSettings({ role, doenetId }) {
   let [showHints, setShowHints] = useState(true);
   let [showCorrectness, setShowCorrectness] = useState(true);
   let [proctorMakesAvailable, setProctorMakesAvailable] = useState(true);
+  const [adDisabled, setAdDisabled] = useState(true);
+  const [ddDisabled, setDdDisabled] = useState(true);
 
   const updateAssignment = useRecoilCallback(
     ({ set, snapshot }) =>
@@ -488,7 +490,7 @@ export function AssignmentSettings({ role, doenetId }) {
   //Instructor JSX
   return (
     <>
-      <div>
+      {/* <div>
         <label>
           Limit Assigned
           <Switch
@@ -511,56 +513,46 @@ export function AssignmentSettings({ role, doenetId }) {
             checked={aInfo.assignedDate !== null}
           ></Switch>
         </label>
+      </div> */}
+      <div>
+        <label>
+          Assigned Date
+          <DateTime
+            disabled={adDisabled}
+            datePicker={true}
+            value={aInfo.assignedDate ? new Date(aInfo.assignedDate) : null}
+            checkboxValue={adDisabled}
+            checkboxCallback={(e) => {
+              let valueDescription = 'Now';
+              let value = new Date().toLocaleString();
+              if (e.currentTarget.checked) {
+                setAdDisabled(true);
+                valueDescription = 'Always';
+                value = null;
+              } else {
+                setAdDisabled(false);
+              }
+              updateAssignment({
+                doenetId,
+                keyToUpdate: 'assignedDate',
+                value,
+                description: 'Assigned ',
+                valueDescription,
+              });
+            }}
+            callback={({ valid, value }) => {
+              if (valid && value.toLocaleString() !== aInfo.assignedDate) {
+                updateAssignment({
+                  doenetId,
+                  keyToUpdate: 'assignedDate',
+                  value: value.toLocaleString(),
+                  description: 'Assigned Date',
+                });
+              }
+            }}
+          />
+        </label>
       </div>
-      {aInfo.assignedDate !== null ? (
-        <div>
-          <label>
-            Assigned Date
-            {/* <input
-              required
-              type="text"
-              name="assignedDate"
-              value={assignedDate}
-              // placeholder="0001-01-01 01:01:01 "
-              onBlur={() => {
-                if (aInfo.assignedDate !== assignedDate) {
-                  updateAssignment({
-                    doenetId,
-                    keyToUpdate: 'assignedDate',
-                    value: assignedDate,
-                    description: 'Assigned Date',
-                  });
-                }
-              }}
-              onChange={(e) => setAssignedDate(e.currentTarget.value)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' && aInfo.assignedDate !== assignedDate) {
-                  updateAssignment({
-                    doenetId,
-                    keyToUpdate: 'assignedDate',
-                    value: assignedDate,
-                    description: 'Assigned Date',
-                  });
-                }
-              }}
-            /> */}
-            <DateTime
-              datePicker={true}
-              value={new Date(aInfo.assignedDate)}
-              callback={({ valid, value }) => {
-                if (valid) {
-                  updateAssignment({
-                    doenetId,
-                    keyToUpdate: 'assignedDate',
-                    value: value.toLocaleString(),
-                    description: 'Assigned Date',
-                  });
-                }
-              }}
-            />
-          </label>
-        </div>
-      ) : null}
       <div>
         <label>
           Has Due Date
@@ -629,7 +621,7 @@ export function AssignmentSettings({ role, doenetId }) {
               datePicker={true}
               value={new Date(aInfo.dueDate)}
               callback={({ valid, value }) => {
-                if (valid) {
+                if (valid && value.toLocaleString() !== aInfo.dueDate) {
                   updateAssignment({
                     doenetId,
                     keyToUpdate: 'dueDate',

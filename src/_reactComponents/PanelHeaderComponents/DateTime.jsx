@@ -25,8 +25,22 @@ export default function DateTime(props) {
 
   //console.log('>>> placeholder', placeholder);
 
+  const renderInput = (propsRI) => {
+    return (
+      <div>
+        <input {...propsRI} />
+        <input
+          type="checkbox"
+          checked={props.checkboxValue}
+          onChange={props.checkboxCallback}
+        />
+      </div>
+    );
+  };
+
   return (
     <Datetime
+      renderInput={renderInput}
       style={{ minWidth: '0px', width: '200px' }}
       value={value}
       dateFormat={props.datePicker === false ? false : true}

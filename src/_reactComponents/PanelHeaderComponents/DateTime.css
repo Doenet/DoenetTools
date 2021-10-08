@@ -1,11 +1,11 @@
 .rdtPicker {
   min-width: 0px;
-  width: 215px;
+  width: 190px;
 }
 
 .form-control {
   border: 2px solid black;
   border-radius: 5px;
   height: 18px;
-  width: 215px;
+  width: 190px;
 }
