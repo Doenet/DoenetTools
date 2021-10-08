@@ -97,8 +97,8 @@ export default function CreditAchieved(){
    <ScoreContainer>Final Score: <ScoreOnRight>{score}</ScoreOnRight></ScoreContainer>
    <Line/>
    <b>Credit For:</b>
-   <ScoreContainer>Assignment: <ScoreOnRight>{creditForAssignment?Math.round(creditForAssignment*1000)/1000:0}</ScoreOnRight></ScoreContainer>
+   <ScoreContainer>Attempt {recoilAttemptNumber}: <ScoreOnRight>{creditForAttempt?Math.round(creditForAttempt*1000)/10:0}%</ScoreOnRight></ScoreContainer>
    <div style={{marginLeft: '15px'}}>{creditByItemsJSX}</div>
-   <ScoreContainer>Attempt {recoilAttemptNumber}: <ScoreOnRight>{creditForAttempt?Math.round(creditForAttempt*1000)/1000:0}</ScoreOnRight></ScoreContainer>
+   <ScoreContainer>Assignment: <ScoreOnRight>{creditForAssignment?Math.round(creditForAssignment*1000)/10:0}%</ScoreOnRight></ScoreContainer>
  </div>
 }
