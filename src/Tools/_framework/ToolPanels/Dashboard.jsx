@@ -23,7 +23,7 @@ export default function Dashboard(props) {
       }else{
         setSuppressMenus([])
       }
-    },[effectiveRole])
+    },[effectiveRole,setSuppressMenus])
 
   return (
     

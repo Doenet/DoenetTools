@@ -38,8 +38,9 @@ import ButtonGroup from '../../../_reactComponents/PanelHeaderComponents/ButtonG
 
 
 //array of objects
-//dotw as a number
-//time as text "01:00"
+//dotwIndex as a number starting at 0 for Sunday (the js standard)
+//startTime as text "01:00"
+//endTime as text "02:00"
 export const classTimesAtom = atom({
   key:'classTimesAtom',
   default:[]
