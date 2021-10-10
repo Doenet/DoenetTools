@@ -60,7 +60,6 @@ export default function Next7Days({ driveId }) {
 
   let loadAssignmentArray = useRecoilCallback(({snapshot,set})=> async (driveId)=>{
     const { data } = await axios.get('/api/loadTODO.php',{params:{driveId}});
-
     if (!data.success){
       setProblemMessage(data.message);
       return
@@ -68,6 +67,9 @@ export default function Next7Days({ driveId }) {
     if (data.assignments){
       setAssignmentArray(data.assignments);
       setPinnedArray(data.pinned);
+    }
+    if (data.classTimes){
+      set(classTimesAtom,data.classTimes);
     }
 
   })

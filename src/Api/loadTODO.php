@@ -75,6 +75,7 @@ ORDER BY a.assignedDate DESC, a.pinnedAfterDate ASC
 $result = $conn->query($sql); 
 $assignments = [];
 $pinned = [];
+
   while($row = $result->fetch_assoc()){
     
 if ($row['pinnedAfterDate'] == ""){
@@ -115,6 +116,23 @@ if ($row['pinnedAfterDate'] == ""){
     
   }
 
+  $classTimes = [];
+  $sql = "
+  SELECT dotwIndex,
+  DATE_FORMAT(startTime, '%H:%i') AS startTime,
+  DATE_FORMAT(endTime, '%H:%i') AS endTime
+  FROM class_times
+  WHERE driveId = '$driveId'
+  ORDER BY sortOrder
+  ";
+  $result = $conn->query($sql); 
+  while($row = $result->fetch_assoc()){
+    array_push($classTimes,array(
+      "dotwIndex"=>$row['dotwIndex'],
+      "startTime"=>$row['startTime'],
+      "endTime"=>$row['endTime']
+    ));
+  }
 }
 
 
@@ -124,6 +142,7 @@ $response_arr = array(
   "message"=>$message,
   "assignments"=>$assignments,
   "pinned"=>$pinned,
+  "classTimes"=>$classTimes,
   );
 
 

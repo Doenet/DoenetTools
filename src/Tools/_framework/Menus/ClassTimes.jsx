@@ -1,18 +1,27 @@
 import React, { useState } from 'react';
 import { 
-  useRecoilState,
+  // useRecoilState,
   useRecoilCallback,
+  useRecoilValue,
 } from 'recoil';
 import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
 import { classTimesAtom } from '../Widgets/Next7Days';
 import DropdownMenu from '../../../_reactComponents/PanelHeaderComponents/DropdownMenu';
 // import DateTime from '../../../_reactComponents/PanelHeaderComponents/DateTime';
+import axios from 'axios';
+import { searchParamAtomFamily } from '../NewToolRoot';
 
-const TimeEntry = ({initValue,valueCallback=()=>{}})=>{
-  let [time,setTime] = useState(initValue);
-  let [previousTime,setPreviousTime] = useState(initValue); //Prevent valueCallback calls if value didn't change
+const TimeEntry = ({parentValue,valueCallback=()=>{}})=>{
+  let [time,setTime] = useState(parentValue);
+  let [previousTime,setPreviousTime] = useState(parentValue); //Prevent valueCallback calls if value didn't change
 
-  return <input type='text' value={time} style={{width:"34px"}} 
+  //This causes extra calls, but updates time when prop changes
+  if (parentValue != previousTime){
+    setTime(parentValue);
+    setPreviousTime(parentValue);
+  }
+
+  return <input type='text' value={time} style={{width:"40px"}} 
   onChange={(e)=>{
     setTime(e.target.value)
   }}
@@ -34,37 +43,114 @@ const TimeEntry = ({initValue,valueCallback=()=>{}})=>{
   />
 }
 
+function sortClassTimes(classTimesArray){
+  return classTimesArray.sort((first,second)=>{
+    //Sunday at the end
+    let mondayFirstDotw = first.dotwIndex;
+    if (mondayFirstDotw === 0){ mondayFirstDotw = 7;} 
+    let mondaySecondDotw = second.dotwIndex;
+    if (mondaySecondDotw === 0){ mondaySecondDotw = 7;} 
+    if (mondayFirstDotw > mondaySecondDotw){
+      return 1
+    }else if (mondayFirstDotw < mondaySecondDotw){
+      return -1
+    }else{
+      //They are equal so go by start time
+      let firstStartDate = new Date();
+      const [firstHour,firstMinute] = first.startTime.split(':');
+      firstStartDate.setHours(firstHour,firstMinute,0,0);
+      let secondStartDate = new Date();
+      const [secondHour,secondMinute] = second.startTime.split(':');
+      secondStartDate.setHours(secondHour,secondMinute,0,0);
+      if (firstStartDate > secondStartDate){
+        return 1
+      }else{
+        return -1;
+      }
+
+    }
+   
+  });
+}
 
 export default function ClassTimes(){
-  const [timesObj,setTimesObj] = useRecoilState(classTimesAtom);
-  
-  const addClassTime = useRecoilCallback(({set})=> async ()=>{
-   set(classTimesAtom,(was)=>{
-     let newArr = [...was];
-     const newClassTime = {
+  const timesObj = useRecoilValue(classTimesAtom);
+
+  const addClassTime = useRecoilCallback(({set,snapshot})=> async ()=>{
+
+    let was = await snapshot.getPromise(classTimesAtom);
+    let newArr = [...was];
+    const newClassTime = {
       dotwIndex:1,
-       startTime:"09:00",
-       endTime:"10:00"
-     }
-     newArr.push(newClassTime);
-     return newArr;
-    })
+      startTime:"09:00",
+      endTime:"10:00"
+    }
+    newArr.push(newClassTime);
+    newArr = sortClassTimes(newArr);
+    set(classTimesAtom,newArr);
+
+    let path = await snapshot.getPromise(searchParamAtomFamily('path'));
+    let [driveId] = path.split(':');
+    let dotwIndexes = [];
+    let startTimes = [];
+    let endTimes = [];
+    for (let classTime of newArr){
+      dotwIndexes.push(classTime.dotwIndex);
+      startTimes.push(classTime.startTime);
+      endTimes.push(classTime.endTime);
+
+    }
+
+    let { data } = await axios.post('/api/updateClassTimes.php',{driveId,dotwIndexes,startTimes,endTimes})
+    console.log(">>>>data",data)
   })
 
-  const updateClassTime = useRecoilCallback(({set})=> async ({index,newClassTime})=>{
-    set(classTimesAtom,(was)=>{
-      let newArr = [...was];
+  const updateClassTime = useRecoilCallback(({set,snapshot})=> async ({index,newClassTime})=>{
+ 
+     let was = await snapshot.getPromise(classTimesAtom);
+    let newArr = [...was];
       newArr[index] = {...newClassTime};
-      return newArr;
-     })
+    newArr = sortClassTimes(newArr);
+    set(classTimesAtom,newArr);
+
+     let path = await snapshot.getPromise(searchParamAtomFamily('path'));
+    let [driveId] = path.split(':');
+    let dotwIndexes = [];
+    let startTimes = [];
+    let endTimes = [];
+    for (let classTime of newArr){
+      dotwIndexes.push(classTime.dotwIndex);
+      startTimes.push(classTime.startTime);
+      endTimes.push(classTime.endTime);
+
+    }
+
+    let { data } = await axios.post('/api/updateClassTimes.php',{driveId,dotwIndexes,startTimes,endTimes})
+    console.log(">>>>data",data)
    })
 
-   const deleteClassTime = useRecoilCallback(({set})=> async ({index})=>{
-    set(classTimesAtom,(was)=>{
-      let newArr = [...was];
-      newArr.splice(index,1);
-      return newArr;
-     })
+   const deleteClassTime = useRecoilCallback(({set,snapshot})=> async ({index})=>{
+  
+     let was = await snapshot.getPromise(classTimesAtom);
+    let newArr = [...was];
+    newArr.splice(index,1);
+    newArr = sortClassTimes(newArr);
+    set(classTimesAtom,newArr);
+
+     let path = await snapshot.getPromise(searchParamAtomFamily('path'));
+    let [driveId] = path.split(':');
+    let dotwIndexes = [];
+    let startTimes = [];
+    let endTimes = [];
+    for (let classTime of newArr){
+      dotwIndexes.push(classTime.dotwIndex);
+      startTimes.push(classTime.startTime);
+      endTimes.push(classTime.endTime);
+
+    }
+
+    let { data } = await axios.post('/api/updateClassTimes.php',{driveId,dotwIndexes,startTimes,endTimes})
+    console.log(">>>>data",data)
    })
 
 
@@ -81,7 +167,7 @@ export default function ClassTimes(){
   let timesJSX = []
   for (let [index,timeObj] of Object.entries(timesObj)){
     timesJSX.push(<tr>
-      <td><DropdownMenu width="90px" items={dotwItems} valueIndex={timeObj.dotwIndex} 
+      <td style={{width:"190px"}}><DropdownMenu width="180px" items={dotwItems} valueIndex={timeObj.dotwIndex} 
         onChange={
       ({value})=>{
         let newClassTime = {...timeObj}
@@ -89,18 +175,19 @@ export default function ClassTimes(){
       updateClassTime({index,newClassTime})
     }}
     /></td>
-      <td><TimeEntry initValue={timeObj.startTime} valueCallback={(value)=>{
-         let newClassTime = {...timeObj}
-         newClassTime.startTime = value;
-       updateClassTime({index,newClassTime})
-      }}/></td>
-      <td><TimeEntry initValue={timeObj.endTime} valueCallback={(value)=>{
-        let newClassTime = {...timeObj}
-        newClassTime.endTime = value;
-      updateClassTime({index,newClassTime})
-      }}/></td>
-      <td><Button value='x' alert onClick={()=>{deleteClassTime({index})}} /> </td>
+      <td  style={{width:"40px"}} rowSpan="2"><Button value='x' alert onClick={()=>{deleteClassTime({index})}} /> </td>
       </tr>)
+      timesJSX.push(<tr>
+        <td style={{width:"190px",textAlign:"center"}} ><TimeEntry parentValue={timeObj.startTime} valueCallback={(value)=>{
+           let newClassTime = {...timeObj}
+           newClassTime.startTime = value;
+         updateClassTime({index,newClassTime})
+        }}/> - <TimeEntry parentValue={timeObj.endTime} valueCallback={(value)=>{
+          let newClassTime = {...timeObj}
+          newClassTime.endTime = value;
+        updateClassTime({index,newClassTime})
+        }}/></td>
+        </tr>)
 
   }
 
@@ -109,12 +196,6 @@ export default function ClassTimes(){
   
   if (timesJSX.length > 0){
   classTimesTable = <table style={{width:"230px",margins:"5px"}}>
-    <tr>
-      <th style={{width:"100px"}}>Day</th>
-      <th style={{width:"50px"}}>Start</th>
-      <th style={{width:"50px"}}>End</th>
-      <th style={{width:"30px"}}></th>
-    </tr>
     {timesJSX}
   </table>
   }
