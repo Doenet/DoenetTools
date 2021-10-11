@@ -32,6 +32,28 @@ $endTimes = array_map(function($item) use($conn) {
 }, $_POST['endTimes']);
 
 if ($success){
+
+$sql = "SELECT canEditContent
+        FROM drive_user
+        WHERE userId = '$userId'
+        AND driveId = '$driveId'
+        ";
+        $result = $conn->query($sql);
+        if ($result->num_rows > 0) {
+            $row = $result->fetch_assoc();
+            $allowed = $row['canEditContent'];
+            if (!$allowed) {
+                // http_response_code(403); //User if forbidden from operation
+                $success = FALSE;
+                $message = 'Not allowed';
+            }
+        }else{
+            $success = FALSE;
+            $message = 'Not allowed';
+        }
+}
+
+if ($success){
     $sql = "
     DELETE FROM class_times
     WHERE driveId='$driveId'

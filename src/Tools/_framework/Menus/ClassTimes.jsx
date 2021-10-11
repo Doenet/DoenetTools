@@ -154,7 +154,6 @@ export default function ClassTimes(){
    })
 
 
-  // const dotw = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday']
   const dotwItems = [
     [1,'Monday'],
     [2,'Tuesday'],

@@ -51,12 +51,14 @@ export default function Next7Days({ driveId }) {
   
   const setPageToolView = useSetRecoilState(pageToolViewAtom);
   // const setMainPanelClear = useSetRecoilState(mainPanelClickAtom);
-  let [numColumns,setNumColumns] = useState(4);
+  // let [numColumns,setNumColumns] = useState(4);
   let [assignmentArray,setAssignmentArray] = useState([]);
   let [pinnedArray,setPinnedArray] = useState([]);
   let [initialized,setInitialized] = useState(false);
   let [problemMessage,setProblemMessage] = useState("");
   let [weekShift,setWeekShift] = useState(0); //-1 means 7 days before
+  let classTimes = useRecoilValue(classTimesAtom);
+  // console.log(">>>>classTimes",classTimes)
 
   let loadAssignmentArray = useRecoilCallback(({snapshot,set})=> async (driveId)=>{
     const { data } = await axios.get('/api/loadTODO.php',{params:{driveId}});
@@ -163,7 +165,7 @@ export default function Next7Days({ driveId }) {
 
   let today = new Date();
   let diff = 1 - today.getDay();
-  let monday = new Date(today.getTime() + (1000 * 60 * 60 * 24 * diff) + (1000 * 60 * 60 * 24 * weekShift * 7));
+  let monday = new Date(today.getTime() + (1000 * 60 * 60 * 24 * diff) + (1000 * 60 * 60 * 24 * (weekShift - 1) * 7));
   let sunday = new Date(monday.getTime() + (1000 * 60 * 60 * 24 * 6));
   let headerMonday = `${monday.getMonth() + 1}/${monday.getDate()}`
   let headerSunday = `${sunday.getMonth() + 1}/${sunday.getDate()}`
@@ -184,17 +186,141 @@ if (weekShift == 0){
 
 }
 
-  // console.log(">>>>assignmentArray",assignmentArray)
-let rows = [];
-for (let assignment of assignmentArray){
+let dayRows = [];
 
-  rows.push(<tr key={`${assignment.doenetId}`}>
-    <td></td>
-    <td>{assignment.label}</td>
-    <td>{assignment.assignedDate}</td>
-    <td>{assignment.dueDate}</td>
-    </tr>)
-}
+let beginningOfMondayDT = new Date(monday.getTime());
+beginningOfMondayDT.setHours(0,0,0,0);
+let endOfSundayDT = new Date(sunday.getTime());
+endOfSundayDT.setHours(23,59,59,999);
+
+//Add full assignment information to the day of the week
+let assignmentByDOTW = [[],[],[],[],[],[],[]]; 
+  for (let i = 0; i < assignmentArray.length; i++){
+    let assignment = assignmentArray[i];
+    let assignedDate = new Date(`${assignment.assignedDate} UTC`)
+    if (assignedDate < beginningOfMondayDT){ continue; }
+    if (assignedDate > endOfSundayDT){ break; }
+    let assignmentDOTW = assignedDate.getDay();
+    assignmentByDOTW[assignmentDOTW].push({...assignment});
+  }
+  //Move sunday assignments to the end of the array
+  assignmentByDOTW.push(assignmentByDOTW.shift())
+  // console.log(">>>>assignmentByDOTW",assignmentByDOTW)
+
+const dotwLabel = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday']
+
+  for (let [index,dayAssignments] of Object.entries(assignmentByDOTW)){
+    console.log(">>>>",dotwLabel[index],index,dayAssignments)
+
+    if (dayAssignments.length > 0){
+      // dayAssignments[0].ass;
+      let assignment = dayAssignments[0];
+      let assignedDate = new Date(`${assignment.assignedDate} UTC`)
+      let dueDate = new Date(`${assignment.dueDate} UTC`).toLocaleString()
+      if (dueDate === 'Invalid Date'){ dueDate = null;}
+
+      let dayLabel = `${dotwLabel[index]} ${assignedDate.getMonth() + 1}/${assignedDate.getDate()}`
+
+      dayRows.push(<tr key={`${assignment.doenetId}`}>
+            <td rowSpan={dayAssignments.length}>{dayLabel}</td>
+            <td>{assignment.label}</td>
+            <td>{assignedDate.toLocaleString()}</td>
+            <td>{dueDate}</td>
+            </tr>)
+
+      //if more than one item loop through the rest
+      for (let i = 1; i < dayAssignments.length; i++){
+        let assignment = dayAssignments[i];
+        let assignedDate = new Date(`${assignment.assignedDate} UTC`)
+        let dueDate = new Date(`${assignment.dueDate} UTC`).toLocaleString()
+        if (dueDate === 'Invalid Date'){ dueDate = null;}
+
+        dayRows.push(<tr key={`${assignment.doenetId}${i}`}>
+        <td>{assignment.label}</td>
+        <td>{assignedDate.toLocaleString()}</td>
+        <td>{dueDate}</td>
+        </tr>)
+      }
+    }
+    
+  }
+  
+
+
+
+
+// for (let [ctIndex,classTime] of Object.entries(classTimes)){
+//   // console.log(">>>>classTime",classTime)
+//   let effectiveDotwIndex = classTime.dotwIndex;
+//   if (effectiveDotwIndex == 0){effectiveDotwIndex = 7}
+//   let csdiff = effectiveDotwIndex - monday.getDay();
+//   let startDT = new Date(monday.getTime() + (1000 * 60 * 60 * 24 * csdiff));
+//   const [startHours,startMinutes] = classTime.startTime.split(':')
+//   startDT.setHours(startHours,startMinutes,0,0);
+//   let endDT = new Date(startDT.getTime());
+//   const [endHours,endMinutes] = classTime.endTime.split(':')
+//   endDT.setHours(endHours,endMinutes,0,0);
+
+//   // console.log(">>>>startDT",startDT)
+//   // console.log(">>>>endDT",endDT)
+
+//   let inClassAssignments = [];
+//   let afterClassAssignments = [];
+//   for (let i = 0; i < assignmentArray.length; i++){
+//     let assignment = assignmentArray[i];
+//     let assignedDate = new Date(`${assignment.assignedDate} UTC`)
+//     // console.log(">>>>assignedDate",assignedDate)
+//     //In Class
+//     if (startDT <= assignedDate && endDT >= assignedDate ){
+//     console.log(">>>>INCLASS assignment",assignment)
+//     }
+//     //After Class
+//     let nextClassDate = 
+//     // if (assignedDate > endDT && assignedDate < nextClassDate ){
+//     //   console.log(">>>>AFTER CLASS")
+//     // }
+//   }
+
+//   if (inClassAssignments.length < 1 && afterClassAssignments.length < 1){
+//     dayRows.push(<tr>
+//       <td>{`${dotw[classTime.dotwIndex]} ${startDT.getMonth() + 1}/${startDT.getDate()}`}</td>
+//       <td></td>
+//       <td></td>
+//       <td></td>
+//       </tr>)
+//   }else{
+//     console.log(">>>>inClassAssignments",inClassAssignments)
+//     console.log(">>>>afterClassAssignments",afterClassAssignments)
+//     // dayRows.push(<tr>
+//     //   <td>{`${dotw[classTime.dotwIndex]} ${startDT.getMonth() + 1}/${startDT.getDate()}`}</td>
+//     //   <td>x</td>
+//     //   <td>x</td>
+//     //   <td>x</td>
+//     //   </tr>)
+//   }
+
+
+  // dayRows.push(<tr>
+  //   <td>{`${dotw[classTime.dotwIndex]} ${startDT.getMonth() + 1}/${startDT.getDate()}`}</td>
+  //   <td>x</td>
+  //   <td>x</td>
+  //   <td>x</td>
+  //   </tr>)
+      
+// }
+
+  // console.log(">>>>assignmentArray",assignmentArray)
+// let rows = [];
+// for (let assignment of assignmentArray){
+
+//   rows.push(<tr key={`${assignment.doenetId}`}>
+//     <td></td>
+//     <td>{assignment.label}</td>
+//     <td>{assignment.assignedDate}</td>
+//     <td>{assignment.dueDate}</td>
+//     </tr>)
+// }
+
   return <>
   <div style={{
     display:"flex",
@@ -204,7 +330,7 @@ for (let assignment of assignmentArray){
     width:"650px",
     height:"70px"
     }}>
-  <span><Button onClick={()=>setWeekShift(0)} value='Today' /> </span>
+  <span><Button onClick={()=>setWeekShift(0)} value='This Week' /> </span>
   <h1>Current Content</h1>
   <span style={{fontSize:"1.4em"}}>{headerMonday} - {headerSunday}</span>
   <ButtonGroup>
@@ -217,15 +343,15 @@ for (let assignment of assignmentArray){
   {/* <table style={{width:"650px"}}> */}
   <table style={{width:"517px"}}>
     <tr>
-      <th style={{width:'100px',textAlign:'left'}}>Day</th>
-      <th style={{width:'151px',textAlign:'left'}}>Name</th>
-      <th style={{width:'133px',textAlign:'left'}}>Assigned</th>
-      <th style={{width:'133px',textAlign:'left'}}>Due</th>
-      {/* <th style={{width:'133px',textAlign:'left'}}>Completed</th> */}
+      <th style={{width:'140px',textAlign:'left'}}>Day</th>
+      <th style={{width:'141px',textAlign:'left'}}>Name</th>
+      <th style={{width:'123px',textAlign:'left'}}>Assigned</th>
+      <th style={{width:'123px',textAlign:'left'}}>Due</th>
+      {/* <th style={{width:'123px',textAlign:'left'}}>Completed</th> */}
     </tr>
     {pinnedRows}
     {overdueRows}
-    {rows}
+    {dayRows}
   </table>
   </>
 }
