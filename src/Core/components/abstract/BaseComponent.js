@@ -415,6 +415,10 @@ export default class BaseComponent {
       }),
       definition({ dependencyValues, usedDefault }) {
 
+        if (dependencyValues.readOnly) {
+          return { newValues: { disabled: true } }
+        }
+
         if (dependencyValues.disabledPreliminary !== null &&
           dependencyValues.disabledAttr !== null
         ) {
@@ -454,7 +458,7 @@ export default class BaseComponent {
         if (useEssential) {
           return {
             useEssentialOrDefaultValue: {
-              disabled: { defaultValue: dependencyValues.readOnly === true }
+              disabled: { defaultValue: false }
             }
           }
         } else {
