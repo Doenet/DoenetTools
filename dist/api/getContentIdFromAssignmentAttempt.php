@@ -9,15 +9,28 @@ include "db_connection.php";
 
 $jwtArray = include "jwtArray.php";
 $userId = $jwtArray['userId'];
+$examUserId = $jwtArray['examineeUserId'];
+$examDoenetId = $jwtArray['doenetId'];
 
 $success = TRUE;
 $foundAttempt = FALSE;
 $message = "";
 
+
+
 $doenetId = mysqli_real_escape_string($conn,$_REQUEST["doenetId"]);
 
+if ($userId == "" && $examUserId != "" && $examDoenetId != $doenetId){
+	$success = FALSE;
+	$message = "No access for doenetId: $doenetId";
+}
+
+if ($success){
+
+	//CHANGE $sql based on examUserId
+
 $contentId = null;
-	//check user has permission to edit drive
+
 	$sql = "
 		SELECT contentId
 		FROM user_assignment_attempt
@@ -34,6 +47,7 @@ $contentId = null;
 		
 		if ($contentId){$foundAttempt = TRUE;}
 	}
+}
 
 $response_arr = array(
 	"success" => $success,

@@ -2,6 +2,7 @@ import { r as react } from '../common/index-61a7c514.js';
 import { r as reactDom } from '../common/index-f174fb43.js';
 import { a as arrayMethodIsStrict, _ as _export, b as arrayIncludes, e as engineUserAgent, g as global_1, c as engineIsNode, f as functionBindContext, d as fails, h as documentCreateElement, i as html$2, j as internalMetadata, k as isObject$2, l as freezing, o as objectSetPrototypeOf, m as fixRegexpWellKnownSymbolLogic, r as requireObjectCoercible, n as anObject, p as regexpExecAbstract, q as advanceStringIndex, t as toLength, s as toIndexedObject, u as toInteger, v as addToUnscopables, w as arrayIteration, x as ownKeys$g, y as createProperty, z as descriptors, A as objectGetOwnPropertyDescriptor, B as collection$1, C as collectionWeak } from '../common/es.string.ends-with-34d86b94.js';
 import { c as createCommonjsModule$1, a as commonjsGlobal, b as commonjsRequire } from '../common/_commonjsHelpers-b3efd043.js';
+import { h as hooks$1 } from '../common/moment-7a40e797.js';
 
 /* eslint-disable es/no-array-prototype-indexof -- required for testing */
 
@@ -30428,7 +30429,7 @@ var pikaday = createCommonjsModule$1(function (module, exports) {
     {
         // CommonJS module
         // Load moment.js as an optional dependency
-        try { moment = hooks; } catch (e) {}
+        try { moment = hooks$1; } catch (e) {}
         module.exports = factory(moment);
     }
 }(commonjsGlobal, function (moment)

@@ -141,7 +141,8 @@ export default class Core {
       recreatedComponents: {},
       // parentsToUpdateDescendants: new Set(),
       compositesBeingExpanded: [],
-      stateVariableUpdatesForMissingComponents: deepClone(stateVariableChanges),
+      // stateVariableUpdatesForMissingComponents: deepClone(stateVariableChanges),
+      stateVariableUpdatesForMissingComponents: JSON.parse(JSON.stringify(stateVariableChanges, serializeFunctions.serializedComponentsReplacer), serializeFunctions.serializedComponentsReviver),
     }
 
     this.animationIDs = {};
@@ -2164,7 +2165,8 @@ export default class Core {
             redefineDependencies = {
               linkSource: "adapter",
               adapterTargetIdentity: dep.adapterTargetIdentity,
-              adapterVariable: dep.adapterVariable
+              adapterVariable: dep.adapterVariable,
+              substituteForPrimaryStateVariable: dep.substituteForPrimaryStateVariable,
             }
           } else if (dep.dependencyType === "ancestorProp") {
             ancestorProps[dep.attribute] = dep.ancestorIdentity;
@@ -2590,7 +2592,9 @@ export default class Core {
     // being created has specified should be given the value when it
     // is created from an outside source like a reference to a prop or an adapter
     let primaryStateVariableForDefinition = "value";
-    if (componentClass.primaryStateVariableForDefinition) {
+    if (redefineDependencies.substituteForPrimaryStateVariable) {
+      primaryStateVariableForDefinition = redefineDependencies.substituteForPrimaryStateVariable;
+    } else if (componentClass.primaryStateVariableForDefinition) {
       primaryStateVariableForDefinition = componentClass.primaryStateVariableForDefinition;
     }
     let stateDef = stateVariableDefinitions[primaryStateVariableForDefinition];
@@ -7881,7 +7885,7 @@ export default class Core {
         //   });
         // }
         if (event) {
-          event.context.itemCreditAchieved[itemNumber] = this.document.stateValues.itemCreditAchieved[itemNumber]
+          event.context.itemCreditAchieved[itemNumber] = this.document.stateValues.itemCreditAchieved[itemNumber - 1]
         }
       }
     }
@@ -8374,6 +8378,7 @@ export default class Core {
           componentName: component.componentName,
           type: "stateVariable",
           stateVariable: varName,
+          force: true,
         });
 
         if (!result.success) {
@@ -9035,6 +9040,12 @@ function validateAttributeValue({ value, attributeSpecification, attribute }) {
     value in attributeSpecification.valueTransformations
   ) {
     value = attributeSpecification.valueTransformations[value];
+  }
+
+  if (attributeSpecification.transformNonFiniteTo !== undefined &&
+    !Number.isFinite(value)
+  ) {
+    value = attributeSpecification.transformNonFiniteTo;
   }
 
   if (attributeSpecification.toLowerCase) {

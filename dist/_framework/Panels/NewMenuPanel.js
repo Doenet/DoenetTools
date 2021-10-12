@@ -178,6 +178,7 @@ export default function MenuPanel({hide, menuPanelCap = "", menusTitles = [], cu
     Variant: lazy(() => import("../Menus/Variant.js")),
     AutoSaves: lazy(() => import("../Menus/AutoSaves.js")),
     LoadEnrollment: lazy(() => import("../Menus/LoadEnrollment.js")),
+    GradeUpload: lazy(() => import("../Menus/GradeUpload.js")),
     ManualEnrollment: lazy(() => import("../Menus/ManualEnrollment.js")),
     AssignmentSettingsMenu: lazy(() => import("../Menus/AssignmentSettingsMenu.js")),
     GroupSettings: lazy(() => import("../Menus/GroupSettings.js")),

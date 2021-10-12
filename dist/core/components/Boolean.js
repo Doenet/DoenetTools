@@ -81,6 +81,13 @@ export default class BooleanComponent extends InlineComponent {
       public: true,
       ignorePropagationFromAncestors: true,
     };
+    attributes.nPeriodicSetMatchesRequired = {
+      createComponentOfType: "integer",
+      createStateVariable: "nPeriodicSetMatchesRequired",
+      defaultValue: 3,
+      public: true,
+      ignorePropagationFromAncestors: true,
+    };
     return attributes;
   }
 
@@ -262,6 +269,10 @@ export default class BooleanComponent extends InlineComponent {
         nSignErrorsMatched: {
           dependencyType: "stateVariable",
           variableName: "nSignErrorsMatched",
+        },
+        nPeriodicSetMatchesRequired: {
+          dependencyType: "stateVariable",
+          variableName: "nPeriodicSetMatchesRequired",
         },
         parsedExpression: {
           dependencyType: "stateVariable",

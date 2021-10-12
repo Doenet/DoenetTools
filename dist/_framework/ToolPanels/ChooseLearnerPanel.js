@@ -20,10 +20,14 @@ export default function ChooseLearnerPanel(props) {
     });
     location.href = `/api/examjwt.php?userId=${encodeURIComponent(choosenLearner.userId)}&doenetId=${encodeURIComponent(doenetId2)}&code=${encodeURIComponent(code2)}`;
   });
-  const setDoenetId = useRecoilCallback(({set, snapshot}) => async (doenetId2) => {
+  const setDoenetId = useRecoilCallback(({set}) => async (doenetId2, driveId2) => {
     set(pageToolViewAtom, (was) => {
       let newObj = {...was};
-      newObj.params = {doenetId: doenetId2};
+      if (doenetId2) {
+        newObj.params = {doenetId: doenetId2, driveId: driveId2};
+      } else {
+        newObj.params = {driveId: driveId2};
+      }
       return newObj;
     });
   });
@@ -96,7 +100,7 @@ export default function ChooseLearnerPanel(props) {
         style: {textAlign: "center"}
       }, /* @__PURE__ */ React.createElement("button", {
         onClick: () => {
-          setDoenetId(exam.doenetId);
+          setDoenetId(exam.doenetId, driveId);
           setStage("choose learner");
         }
       }, "Choose"))));
@@ -162,6 +166,7 @@ export default function ChooseLearnerPanel(props) {
         setStage("request password");
         setCode("");
         setChoosenLearner(null);
+        setDoenetId(null, driveId);
       }
     }), /* @__PURE__ */ React.createElement(Button, {
       value: "Yes It's me. Start Exam.",
