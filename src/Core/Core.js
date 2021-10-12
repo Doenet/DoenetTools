@@ -7885,7 +7885,7 @@ export default class Core {
         //   });
         // }
         if (event) {
-          event.context.itemCreditAchieved[itemNumber] = this.document.stateValues.itemCreditAchieved[itemNumber]
+          event.context.itemCreditAchieved[itemNumber] = this.document.stateValues.itemCreditAchieved[itemNumber - 1]
         }
       }
     }
