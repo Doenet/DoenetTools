@@ -519,6 +519,7 @@ export function AssignmentSettings({ role, doenetId }) {
           Assigned Date
           <DateTime
             disabled={adDisabled}
+            placeholder={'no assigned date'}
             datePicker={true}
             value={aInfo.assignedDate ? new Date(aInfo.assignedDate) : null}
             checkboxValue={adDisabled}
@@ -553,7 +554,7 @@ export function AssignmentSettings({ role, doenetId }) {
           />
         </label>
       </div>
-      <div>
+      {/* <div>
         <label>
           Has Due Date
           <Switch
@@ -578,13 +579,12 @@ export function AssignmentSettings({ role, doenetId }) {
             checked={aInfo.dueDate !== null}
           ></Switch>
         </label>
-      </div>
-      {aInfo.dueDate !== null ? (
-        <div>
-          <label>
-            Due Date
-            <br />
-            {/* <input
+      </div> */}
+      <div>
+        <label>
+          Due Date
+          <br />
+          {/* <input
               required
               type="text"
               name="dueDate"
@@ -617,23 +617,45 @@ export function AssignmentSettings({ role, doenetId }) {
                 }
               }}
             /> */}
-            <DateTime
-              datePicker={true}
-              value={new Date(aInfo.dueDate)}
-              callback={({ valid, value }) => {
-                if (valid && value.toLocaleString() !== aInfo.dueDate) {
-                  updateAssignment({
-                    doenetId,
-                    keyToUpdate: 'dueDate',
-                    value: value.toLocaleString(),
-                    description: 'Due Date',
-                  });
-                }
-              }}
-            />
-          </label>
-        </div>
-      ) : null}
+          <DateTime
+            disabled={ddDisabled}
+            placeholder={'no due date'}
+            datePicker={true}
+            value={aInfo.dueDate ? new Date(aInfo.dueDate) : null}
+            checkboxValue={ddDisabled}
+            checkboxCallback={(e) => {
+              let valueDescription = 'Next Week';
+              let nextWeek = new Date();
+              nextWeek.setDate(nextWeek.getDate() + 7); //Default due seven days in the future
+              let value = nextWeek.toLocaleString();
+              if (e.currentTarget.checked) {
+                setDdDisabled(true);
+                valueDescription = 'None';
+                value = null;
+              } else {
+                setDdDisabled(false);
+              }
+              updateAssignment({
+                doenetId,
+                keyToUpdate: 'dueDate',
+                value,
+                description: 'Due Date ',
+                valueDescription,
+              });
+            }}
+            callback={({ valid, value }) => {
+              if (valid && value.toLocaleString() !== aInfo.dueDate) {
+                updateAssignment({
+                  doenetId,
+                  keyToUpdate: 'dueDate',
+                  value: value.toLocaleString(),
+                  description: 'Due Date',
+                });
+              }
+            }}
+          />
+        </label>
+      </div>
 
       <div>
         <label>

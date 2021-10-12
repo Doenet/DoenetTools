@@ -18,6 +18,9 @@ export default function DateTime(props) {
     placeholder += ' hh:mm';
   }
 
+  placeholder = props.placeholder ? props.placeholder : placeholder;
+  //console.log('placeholder', placeholder);
+
   let inputProps = {
     disabled: props.disabled === true ? true : false,
     placeholder: placeholder,
