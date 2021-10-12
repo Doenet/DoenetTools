@@ -61,15 +61,16 @@ ON a.doenetId = dc.doenetId
 WHERE (dc.driveId = '$driveId'
 AND dc.isReleased = '1'
 AND dc.isDeleted = '0'
-AND a.assignedDate IS NOT NULL )
+AND a.dueDate IS NOT NULL )
 OR (dc.driveId = '$driveId'
 AND dc.isReleased = '1'
 AND dc.isDeleted = '0'
 AND a.pinnedUntilDate > CONVERT_TZ(NOW(), @@session.time_zone, '+00:00')
 AND a.pinnedAfterDate < CONVERT_TZ(NOW(), @@session.time_zone, '+00:00'))
-ORDER BY a.assignedDate ASC, a.pinnedAfterDate ASC
+ORDER BY a.dueDate ASC, a.pinnedAfterDate ASC
 
 ";
+// ORDER BY a.assignedDate ASC, a.pinnedAfterDate ASC
 //AND a.assignedDate < NOW()
 
 $result = $conn->query($sql); 
