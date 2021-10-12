@@ -35,7 +35,7 @@ import {
 import axios from 'axios';
 import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
 import ButtonGroup from '../../../_reactComponents/PanelHeaderComponents/ButtonGroup';
-
+import { selectedMenuPanelAtom } from '../Panels/NewMenuPanel';
 
 //array of objects
 //dotwIndex as a number starting at 0 for Sunday (the js standard)
@@ -46,6 +46,63 @@ export const classTimesAtom = atom({
   default:[]
 })
 
+function formatAssignedDate(dt,classTimes){
+  //After Class and In Class
+  let dtDOTW = dt.getDay();
+  for (let classTime of classTimes){
+    //Only process if it's the right day of the week
+    if (classTime.dotwIndex == dtDOTW){
+      let classStartDT = new Date(dt.getTime());
+      const [starthours,startminutes] = classTime.startTime.split(":");
+      classStartDT.setHours(starthours,startminutes,0,0);
+      let classEndDT = new Date(dt.getTime());
+      const [endhours,endminutes] = classTime.endTime.split(":");
+      classEndDT.setHours(endhours,endminutes,0,0);
+      if (dt >= classStartDT && dt < classEndDT){
+        return "In Class";
+      }else if (dt.getTime() == classEndDT.getTime()){
+        return "After Class";
+      }
+    }
+  }
+  let returnValue = dt.toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true });
+  if (returnValue === 'Invalid Date'){ returnValue = null;}
+
+ return returnValue;
+}
+
+function formatDueDate(dt,classTimes){
+ 
+  //End of Class and Before Class
+  // let internalDT = new Date(dt.getTime());
+  // internalDT.setSeconds(0,0);
+  // let dtDOTW = dt.getDay();
+  // for (let classTime of classTimes){
+  //   //Only process if it's the right day of the week
+  //   if (classTime.dotwIndex == dtDOTW){
+  //     let classStartDT = new Date(internalDT.getTime());
+  //     const [starthours,startminutes] = classTime.startTime.split(":");
+  //     classStartDT.setHours(starthours,startminutes,0,0);
+  //     let classEndDT = new Date(internalDT.getTime());
+  //     const [endhours,endminutes] = classTime.endTime.split(":");
+  //     classEndDT.setHours(endhours,endminutes,0,0);
+  //     // if (internalDT >= classStartDT && internalDT < classEndDT){
+  //       if (internalDT < classEndDT){
+  //       return "Before Class";
+  //     }else if (internalDT.getTime() == classEndDT.getTime()){
+  //       return "End of Class";
+  //     }
+  //   }
+  // }
+  // console.log(">>>>classTimes",classTimes)
+ 
+  // console.log(">>>>formatDueDate dt",dt)
+  let time = dt.toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true })
+  let returnValue = `${dt.getMonth() + 1}/${dt.getDate()} ${time}`
+  if (time === 'Invalid Date'){ returnValue = null;}
+
+ return returnValue;
+}
 
 export default function Next7Days({ driveId }) {
   
@@ -76,38 +133,38 @@ export default function Next7Days({ driveId }) {
 
   })
 
-  // const clickCallback = useRecoilCallback(
-  //   ({ set }) =>
-  //     (info) => {
-  //       switch (info.instructionType) {
-  //         case 'one item':
-  //           set(selectedMenuPanelAtom, `Selected${info.type}`);
-  //           break;
-  //         case 'range to item':
-  //         case 'add item':
-  //           set(selectedMenuPanelAtom, `SelectedMulti`);
-  //           break;
-  //         case 'clear all':
-  //           set(selectedMenuPanelAtom, null);
-  //           break;
-  //         default:
-  //           throw new Error('NavigationPanel found invalid select instruction');
-  //       }
-  //       set(
-  //         selectedDriveItems({
-  //           driveId: info.driveId,
-  //           driveInstanceId: info.driveInstanceId,
-  //           itemId: info.itemId,
-  //         }),
-  //         {
-  //           instructionType: info.instructionType,
-  //           parentFolderId: info.parentFolderId,
-  //         },
-  //       );
-  //       set(selectedDriveAtom, info.driveId);
-  //     },
-  //   [],
-  // );
+  const clickCallback = useRecoilCallback(
+    ({ set }) =>
+      (info) => {
+        switch (info.instructionType) {
+          case 'one item':
+            set(selectedMenuPanelAtom, `Selected${info.type}`);
+            break;
+          case 'range to item':
+          case 'add item':
+            set(selectedMenuPanelAtom, `SelectedMulti`);
+            break;
+          case 'clear all':
+            set(selectedMenuPanelAtom, null);
+            break;
+          default:
+            throw new Error('NavigationPanel found invalid select instruction');
+        }
+        set(
+          selectedDriveItems({
+            driveId: info.driveId,
+            driveInstanceId: info.driveInstanceId,
+            itemId: info.itemId,
+          }),
+          {
+            instructionType: info.instructionType,
+            parentFolderId: info.parentFolderId,
+          },
+        );
+        set(selectedDriveAtom, info.driveId);
+      },
+    [],
+  );
 
   const doubleClickCallback = useRecoilCallback(
     () =>
@@ -179,7 +236,7 @@ if (weekShift == 0){
   const firstRowDoenetId = pinnedArray[0]?.doenetId;
   for (let assignment of pinnedArray){
     pinnedRows.push(<tr key={`${assignment.doenetId}`}>
-      {assignment.doenetId == firstRowDoenetId ? <td style={{fontSize:"1.4em"}} rowSpan={pinnedArray.length }>Pinned</td> : null}
+      {assignment.doenetId == firstRowDoenetId ? <td style={{fontSize:"1em"}} rowSpan={pinnedArray.length }>Pinned</td> : null}
       <td colSpan="3" onDoubleClick={()=>doubleClickCallback({type:assignment.itemType,doenetId:assignment.doenetId})}>{assignment.label}</td>
       </tr>)
   }
@@ -198,6 +255,11 @@ endOfSundayDT.setHours(23,59,59,999);
 //   console.log(">>>>assignedDate",assignedDate)
 // }
 // console.log(">>>>------------------------")
+
+
+
+
+
 
 //Add full assignment information to the day of the week by index
 let assignmentByDOTW = [[],[],[],[],[],[],[]]; 
@@ -220,35 +282,52 @@ const dotwLabel = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'
     if (dayAssignments.length > 0){
       let assignment = dayAssignments[0];
       let assignedDate = new Date(`${assignment.assignedDate} UTC`)
-      let displayAssignedDate = assignedDate.toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true });
-      if (displayAssignedDate === 'Invalid Date'){ displayAssignedDate = null;}
+      assignedDate.setSeconds(0,0);
+      let displayAssignedDate = formatAssignedDate(assignedDate,classTimes);   
 
-      let dueDate = new Date(`${assignment.dueDate} UTC`).toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true })
-      if (dueDate === 'Invalid Date'){ dueDate = null;}
-
+      let dueDate = formatDueDate(new Date(`${assignment.dueDate} UTC`),classTimes) 
       let dayLabel = `${dotwLabel[index]} ${assignedDate.getMonth() + 1}/${assignedDate.getDate()}`
 
-      dayRows.push(<tr key={`${assignment.doenetId}`}>
+      //onDoubleClick={}
+//onClick={()=>console.log(">>>>CLICK",assignment.doenetId)}
+      let bgColor = null;
+      // bgColor = '#B8D2EA'; //When selected
+      let oneClick = ()=>console.log(">>>>Click",assignment);
+      //clickCallback?.({
+      //   driveId: props.driveId,
+      //   itemId,
+      //   driveInstanceId: props.driveInstanceId,
+      //   type: 'Folder',
+      //   instructionType: 'one item',
+      //   parentFolderId: itemId,
+      // });
+      let doubleClick = ()=>doubleClickCallback({type:assignment.itemType,doenetId:assignment.doenetId})
+   
+      dayRows.push(<tr key={`${assignment.doenetId}`} >
             <td rowSpan={dayAssignments.length}>{dayLabel}</td>
-            <td>{assignment.label}</td>
-            <td>{displayAssignedDate}</td>
-            <td>{dueDate}</td>
+            <td style={{backgroundColor:bgColor}} onClick={oneClick} onDoubleClick={doubleClick}>{assignment.label}</td>
+            <td style={{backgroundColor:bgColor}} onClick={oneClick} onDoubleClick={doubleClick}>{displayAssignedDate}</td>
+            <td style={{backgroundColor:bgColor}} onClick={oneClick} onDoubleClick={doubleClick}>{dueDate}</td>
             </tr>)
 
       //if more than one item loop through the rest
       for (let i = 1; i < dayAssignments.length; i++){
         let assignment = dayAssignments[i];
         let assignedDate = new Date(`${assignment.assignedDate} UTC`)
-        let displayAssignedDate = assignedDate.toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true });
-        if (displayAssignedDate === 'Invalid Date'){ displayAssignedDate = null;}
-        
-        let dueDate = new Date(`${assignment.dueDate} UTC`).toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true })
-        if (dueDate === 'Invalid Date'){ dueDate = null;}
+        assignedDate.setSeconds(0,0);
+
+        let displayAssignedDate = formatAssignedDate(assignedDate,classTimes)   
+        let dueDate = formatDueDate(new Date(`${assignment.dueDate} UTC`),classTimes) 
+
+        let bgColor = null;
+      // bgColor = '#B8D2EA';
+      let oneClick = ()=>console.log(">>>>Click",assignment);
+      let doubleClick = ()=>doubleClickCallback({type:assignment.itemType,doenetId:assignment.doenetId})
 
         dayRows.push(<tr key={`${assignment.doenetId}${i}`}>
-        <td>{assignment.label}</td>
-        <td>{displayAssignedDate}</td>
-        <td>{dueDate}</td>
+        <td style={{backgroundColor:bgColor}} onClick={oneClick} onDoubleClick={doubleClick}>{assignment.label}</td>
+        <td style={{backgroundColor:bgColor}} onClick={oneClick} onDoubleClick={doubleClick}>{displayAssignedDate}</td>
+        <td style={{backgroundColor:bgColor}} onClick={oneClick} onDoubleClick={doubleClick}>{dueDate}</td>
         </tr>)
       }
     }
@@ -351,7 +430,7 @@ const dotwLabel = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'
   </div>
   
   {/* <table style={{width:"650px"}}> */}
-  <table style={{width:"517px"}}>
+  <table style={{width:"517px",borderSpacing:"0em .2em"}}>
     <tr>
       <th style={{width:'140px',textAlign:'left'}}>Day</th>
       <th style={{width:'141px',textAlign:'left'}}>Name</th>
