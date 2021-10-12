@@ -163,9 +163,11 @@ export default function Next7Days({ driveId }) {
     </div>
   }
 
-  let today = new Date();
+  // let today = new Date();
+  let today = new Date('10/17/2021');
   let diff = 1 - today.getDay();
-  let monday = new Date(today.getTime() + (1000 * 60 * 60 * 24 * diff) + (1000 * 60 * 60 * 24 * (weekShift - 1) * 7));
+  if (diff === 1){ diff = -6} //Start week on Monday
+  let monday = new Date(today.getTime() + (1000 * 60 * 60 * 24 * diff) + (1000 * 60 * 60 * 24 * weekShift * 7) );
   let sunday = new Date(monday.getTime() + (1000 * 60 * 60 * 24 * 6));
   let headerMonday = `${monday.getMonth() + 1}/${monday.getDate()}`
   let headerSunday = `${sunday.getMonth() + 1}/${sunday.getDate()}`
@@ -181,9 +183,6 @@ if (weekShift == 0){
       <td colSpan="3" onDoubleClick={()=>doubleClickCallback({type:assignment.itemType,doenetId:assignment.doenetId})}>{assignment.label}</td>
       </tr>)
   }
-
-
-
 }
 
 let dayRows = [];
@@ -193,7 +192,14 @@ beginningOfMondayDT.setHours(0,0,0,0);
 let endOfSundayDT = new Date(sunday.getTime());
 endOfSundayDT.setHours(23,59,59,999);
 
-//Add full assignment information to the day of the week
+// for (let i = 0; i < assignmentArray.length; i++){
+//   let assignment = assignmentArray[i];
+//   let assignedDate = new Date(`${assignment.assignedDate} UTC`)
+//   console.log(">>>>assignedDate",assignedDate)
+// }
+// console.log(">>>>------------------------")
+
+//Add full assignment information to the day of the week by index
 let assignmentByDOTW = [[],[],[],[],[],[],[]]; 
   for (let i = 0; i < assignmentArray.length; i++){
     let assignment = assignmentArray[i];
@@ -210,13 +216,14 @@ let assignmentByDOTW = [[],[],[],[],[],[],[]];
 const dotwLabel = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday']
 
   for (let [index,dayAssignments] of Object.entries(assignmentByDOTW)){
-    console.log(">>>>",dotwLabel[index],index,dayAssignments)
 
     if (dayAssignments.length > 0){
-      // dayAssignments[0].ass;
       let assignment = dayAssignments[0];
       let assignedDate = new Date(`${assignment.assignedDate} UTC`)
-      let dueDate = new Date(`${assignment.dueDate} UTC`).toLocaleString()
+      let displayAssignedDate = assignedDate.toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true });
+      if (displayAssignedDate === 'Invalid Date'){ displayAssignedDate = null;}
+
+      let dueDate = new Date(`${assignment.dueDate} UTC`).toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true })
       if (dueDate === 'Invalid Date'){ dueDate = null;}
 
       let dayLabel = `${dotwLabel[index]} ${assignedDate.getMonth() + 1}/${assignedDate.getDate()}`
@@ -224,7 +231,7 @@ const dotwLabel = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'
       dayRows.push(<tr key={`${assignment.doenetId}`}>
             <td rowSpan={dayAssignments.length}>{dayLabel}</td>
             <td>{assignment.label}</td>
-            <td>{assignedDate.toLocaleString()}</td>
+            <td>{displayAssignedDate}</td>
             <td>{dueDate}</td>
             </tr>)
 
@@ -232,12 +239,15 @@ const dotwLabel = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'
       for (let i = 1; i < dayAssignments.length; i++){
         let assignment = dayAssignments[i];
         let assignedDate = new Date(`${assignment.assignedDate} UTC`)
-        let dueDate = new Date(`${assignment.dueDate} UTC`).toLocaleString()
+        let displayAssignedDate = assignedDate.toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true });
+        if (displayAssignedDate === 'Invalid Date'){ displayAssignedDate = null;}
+        
+        let dueDate = new Date(`${assignment.dueDate} UTC`).toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true })
         if (dueDate === 'Invalid Date'){ dueDate = null;}
 
         dayRows.push(<tr key={`${assignment.doenetId}${i}`}>
         <td>{assignment.label}</td>
-        <td>{assignedDate.toLocaleString()}</td>
+        <td>{displayAssignedDate}</td>
         <td>{dueDate}</td>
         </tr>)
       }

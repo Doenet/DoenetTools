@@ -67,7 +67,7 @@ AND dc.isReleased = '1'
 AND dc.isDeleted = '0'
 AND a.pinnedUntilDate > CONVERT_TZ(NOW(), @@session.time_zone, '+00:00')
 AND a.pinnedAfterDate < CONVERT_TZ(NOW(), @@session.time_zone, '+00:00'))
-ORDER BY a.assignedDate DESC, a.pinnedAfterDate ASC
+ORDER BY a.assignedDate ASC, a.pinnedAfterDate ASC
 
 ";
 //AND a.assignedDate < NOW()
