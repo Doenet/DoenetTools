@@ -4297,6 +4297,7 @@ class ChildDependency extends Dependency {
     for (let [ind, compositeInd] of this.compositeIndices.entries()) {
       if (compositeInd !== undefined) {
         result.value[ind].compositeInd = compositeInd;
+        result.value[ind].compositeTname = this.compositeTnames[compositeInd];
       }
     }
 
@@ -4333,6 +4334,7 @@ class ChildDependency extends Dependency {
   onDownstreamComponentChange() {
 
     this.compositeIndices = [];
+    this.compositeTnames = [];
 
     if (this.downstreamComponentNames.length > 0) {
 
@@ -4343,6 +4345,7 @@ class ChildDependency extends Dependency {
           inheritedComponentType: definingChild.componentType,
           baseComponentType: "_composite",
         })) {
+          this.compositeTnames[definingInd] = definingChild.stateValues.tName;
           if (definingChild.isExpanded) {
             let recursiveReplacementAdapterNames =
               definingChild.stateValues.fullRecursiveReplacements

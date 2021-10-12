@@ -8378,6 +8378,7 @@ export default class Core {
           componentName: component.componentName,
           type: "stateVariable",
           stateVariable: varName,
+          force: true,
         });
 
         if (!result.success) {

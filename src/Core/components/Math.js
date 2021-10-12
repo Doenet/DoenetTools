@@ -95,6 +95,12 @@ export default class MathComponent extends InlineComponent {
       public: true,
     }
 
+    attributes.targetsAreFunctionSymbols = {
+      createComponentOfType: "textList",
+      createStateVariable: "targetsAreFunctionSymbols",
+      defaultValue: [],
+    }
+
     attributes.splitSymbols = {
       createComponentOfType: "boolean",
       createStateVariable: "splitSymbols",
@@ -198,6 +204,29 @@ export default class MathComponent extends InlineComponent {
 
     }
 
+    stateVariableDefinitions.mathChildrenFunctionSymbols = {
+      returnDependencies: () => ({
+        targetsAreFunctionSymbols: {
+          dependencyType: "stateVariable",
+          variableName: "targetsAreFunctionSymbols"
+        },
+        mathChildren: {
+          dependencyType: "child",
+          childGroups: ["maths"],
+        }
+      }),
+      definition({ dependencyValues }) {
+        let mathChildrenFunctionSymbols = [];
+        for (let [ind, child] of dependencyValues.mathChildren.entries()) {
+          if (dependencyValues.targetsAreFunctionSymbols.includes(child.compositeTname)) {
+            mathChildrenFunctionSymbols.push(ind)
+          }
+        }
+
+        return { newValues: { mathChildrenFunctionSymbols } }
+      }
+    }
+
     stateVariableDefinitions.expressionWithCodes = {
       // deferCalculation: false,
       returnDependencies: () => ({
@@ -225,6 +254,10 @@ export default class MathComponent extends InlineComponent {
         functionSymbols: {
           dependencyType: "stateVariable",
           variableName: "functionSymbols"
+        },
+        mathChildrenFunctionSymbols: {
+          dependencyType: "stateVariable",
+          variableName: "mathChildrenFunctionSymbols"
         },
         splitSymbols: {
           dependencyType: "stateVariable",
@@ -936,12 +969,15 @@ function calculateExpressionWithCodes({ dependencyValues, changes }) {
 
   let expressionWithCodes = null;
 
+  let functionSymbols = [...dependencyValues.functionSymbols];
+  functionSymbols.push(...dependencyValues.mathChildrenFunctionSymbols.map(x => dependencyValues.codePre + x))
+
   if (inputString === "") {
     expressionWithCodes = me.fromAst('\uFF3F'); // long underscore
   } else {
     if (dependencyValues.format === "text") {
       let fromText = getFromText({
-        functionSymbols: dependencyValues.functionSymbols,
+        functionSymbols,
         splitSymbols: dependencyValues.splitSymbols
       });
       try {
@@ -953,7 +989,7 @@ function calculateExpressionWithCodes({ dependencyValues, changes }) {
     }
     else if (dependencyValues.format === "latex") {
       let fromLatex = getFromLatex({
-        functionSymbols: dependencyValues.functionSymbols,
+        functionSymbols,
         splitSymbols: dependencyValues.splitSymbols
       });
       try {
