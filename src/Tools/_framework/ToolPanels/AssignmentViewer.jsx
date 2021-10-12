@@ -173,13 +173,14 @@ export default function AssignmentViewer() {
           //for the current attempt
 
           const { data } = await axios.get(`/api/getContentIdFromAssignmentAttempt.php`,{params:{doenetId}})
-          console.log(">>>>data",data)
+   
           if (data.foundAttempt){
             contentId = data.contentId;
             isAssigned = true;
           }else{
             //If this is the first attempt then give them the 
             //currently released
+
             const versionHistory = await snapshot.getPromise(
               itemHistoryAtom(doenetId),
             );
@@ -245,9 +246,27 @@ export default function AssignmentViewer() {
         async function setVariantsFromDoenetML({ allPossibleVariants }) {
           storedAllPossibleVariants.current = allPossibleVariants;
           //Find attemptNumber
+
+
+
+
+
+
+
+
+          //***********LEFT OFF HERE!!!!!!!!!!!! */
+
+
+
+
+
+
+
+          
           const { data } = await axios.get('/api/loadTakenVariants.php', {
             params: { doenetId },
           });
+          console.log(">>>>data",data)
           let usersVariantAttempts = [];
 
           for (let variant of data.variants) {
@@ -256,6 +275,7 @@ export default function AssignmentViewer() {
               usersVariantAttempts.push(obj.name);
             }
           }
+          //TODO might skip some
           let numberOfCompletedAttempts = data.attemptNumbers.length - 1;
           if (numberOfCompletedAttempts === -1) {
             numberOfCompletedAttempts = 0;
