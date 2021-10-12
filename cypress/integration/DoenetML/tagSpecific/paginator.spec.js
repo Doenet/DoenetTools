@@ -2161,6 +2161,22 @@ describe('Paginator Tag Tests', function () {
 
     cy.get('#\\/mi6_correct').should('be.visible');
 
+    cy.log('answers not submitted when readonly')
+    cy.get('#\\/mi6 textarea').type("{end}{backspace}7", { force: true });
+    cy.get('#\\/mi6_submit').should('be.visible');
+    cy.get(cesc('#/ca')).should('have.text', '0.722');
+
+    // at least right now, this turns on Read Only
+    cy.get('h3 > button').click();
+    cy.get(':nth-child(5) > label > input').click()
+    cy.get('h3 > button').click();
+
+    cy.get(cesc('#/pcontrols_previous')).click()
+    cy.get(cesc('#/ca')).should('have.text', '0.722');
+
+    cy.get(cesc('#/pcontrols_next')).click()
+    cy.get('#\\/mi6_submit').should('be.visible');
+    cy.get(cesc('#/ca')).should('have.text', '0.722');
 
   })
 
