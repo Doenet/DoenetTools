@@ -46,56 +46,91 @@ export const classTimesAtom = atom({
   default:[]
 })
 
-function formatAssignedDate(dt,classTimes){
+function formatAssignedDate(dt,classTimes,dueDT,thisWeek){
   //After Class and In Class
-  // let dtDOTW = dt.getDay();
-  // for (let classTime of classTimes){
-  //   //Only process if it's the right day of the week
-  //   if (classTime.dotwIndex == dtDOTW){
-  //     let classStartDT = new Date(dt.getTime());
-  //     const [starthours,startminutes] = classTime.startTime.split(":");
-  //     classStartDT.setHours(starthours,startminutes,0,0);
-  //     let classEndDT = new Date(dt.getTime());
-  //     const [endhours,endminutes] = classTime.endTime.split(":");
-  //     classEndDT.setHours(endhours,endminutes,0,0);
-  //     if (dt >= classStartDT && dt < classEndDT){
-  //       return "In Class";
-  //     }else if (dt.getTime() == classEndDT.getTime()){
-  //       return "After Class";
-  //     }
-  //   }
-  // }
-  
+  let dtDOTW = dt.getDay();
+  for (let classTime of classTimes){
+  //Only process if it's the right day of the week
+    if (classTime.dotwIndex == dtDOTW){
+      let classStartDT = new Date(dt.getTime());
+      const [starthours,startminutes] = classTime.startTime.split(":");
+      classStartDT.setHours(starthours,startminutes,0,0);
+      let classEndDT = new Date(dt.getTime());
+      const [endhours,endminutes] = classTime.endTime.split(":");
+      classEndDT.setHours(endhours,endminutes,0,0);
+      
+      if (dt >= classStartDT && dt < classEndDT){
+        if (dt.getMonth() != dueDT.getMonth() || dt.getDate() != dueDT.getDate()){
+          return `In Class ${dt.getMonth()+1}/${dt.getDate()}`
+        }
+        
+        return "In Class";
+      }else if (dt.getTime() == classEndDT.getTime()){
+        if (dt.getMonth() != dueDT.getMonth() || dt.getDate() != dueDT.getDate()){
+          return `After Class ${dt.getMonth()+1}/${dt.getDate()}`
+        }
+        return "After Class";
+      }
+    }
+
+  }
+
   let time = dt.toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true })
+  if (time === 'Invalid Date'){ time = null; }
+
+  //This week only
+  if (thisWeek){
+    let today = new Date();
+    let yesterday = new Date(today.getTime() + (1000 * 60 * 60 * 24 * -1));
+    let tomorrow = new Date(today.getTime() + (1000 * 60 * 60 * 24 * 1));
+
+    //Yesterday - time
+    if (dt.getMonth() == yesterday.getMonth() && 
+        dt.getDate() == yesterday.getDate() &&
+        dt.getFullYear() == yesterday.getFullYear()){
+          return `Yesterday - ${time}`
+    }
+
+    if (dt.getMonth() == tomorrow.getMonth() && 
+        dt.getDate() == tomorrow.getDate() &&
+        dt.getFullYear() == tomorrow.getFullYear()){
+          return `Tomorrow - ${time}`
+    }
+
+    //Day of the Week
+    const dotwLabel = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday']
+    return `${dotwLabel[dt.getDay()]} - ${time}`
+
+  }
+  
   let returnValue = `${dt.getMonth() + 1}/${dt.getDate()} ${time}`
-  if (time === 'Invalid Date'){ returnValue = null;}
+  if (time === null){ returnValue = null;}
+
  return returnValue;
 }
 
 function formatDueDate(dt,classTimes){
  
   //End of Class and Before Class
-  // let internalDT = new Date(dt.getTime());
-  // internalDT.setSeconds(0,0);
-  // let dtDOTW = dt.getDay();
-  // for (let classTime of classTimes){
-  //   //Only process if it's the right day of the week
-  //   if (classTime.dotwIndex == dtDOTW){
-  //     let classStartDT = new Date(internalDT.getTime());
-  //     const [starthours,startminutes] = classTime.startTime.split(":");
-  //     classStartDT.setHours(starthours,startminutes,0,0);
-  //     let classEndDT = new Date(internalDT.getTime());
-  //     const [endhours,endminutes] = classTime.endTime.split(":");
-  //     classEndDT.setHours(endhours,endminutes,0,0);
-  //     // if (internalDT >= classStartDT && internalDT < classEndDT){
-  //       if (internalDT < classEndDT){
-  //       return "Before Class";
-  //     }else if (internalDT.getTime() == classEndDT.getTime()){
-  //       return "End of Class";
-  //     }
-  //   }
-  // }
-  // console.log(">>>>classTimes",classTimes)
+    let dtDOTW = dt.getDay();
+  for (let classTime of classTimes){
+    //Only process if it's the right day of the week
+    if (classTime.dotwIndex == dtDOTW){
+      let classStartDT = new Date(dt.getTime());
+      const [starthours,startminutes] = classTime.startTime.split(":");
+      classStartDT.setHours(starthours,startminutes,0,0);
+      let classEndDT = new Date(dt.getTime());
+      const [endhours,endminutes] = classTime.endTime.split(":");
+      classEndDT.setHours(endhours,endminutes,0,0);
+      if (dt >= classStartDT && dt < classEndDT){
+        return "In Class";
+      }else 
+      
+      if (dt.getTime() == classEndDT.getTime()){
+        return "End of Class";
+      }
+    }
+  }
  
   // console.log(">>>>formatDueDate dt",dt)
   let returnValue = dt.toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true });
@@ -295,10 +330,11 @@ const dotwLabel = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'
       let assignment = dayAssignments[0];
       let assignedDate = new Date(`${assignment.assignedDate} UTC`)
       assignedDate.setSeconds(0,0);
-      let displayAssignedDate = formatAssignedDate(assignedDate,classTimes);   
       let dueDate = new Date(`${assignment.dueDate} UTC`);
       dueDate.setSeconds(0,0);
       let displayDueDate = formatDueDate(dueDate,classTimes) 
+      let displayAssignedDate = formatAssignedDate(assignedDate,classTimes,dueDate,weekShift == 0);   
+    
       let dayLabel = `${dotwLabel[index]} ${dueDate.getMonth() + 1}/${dueDate.getDate()}`
 
       //onDoubleClick={}
@@ -333,10 +369,12 @@ const dotwLabel = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'
         let assignment = dayAssignments[i];
         let assignedDate = new Date(`${assignment.assignedDate} UTC`)
         assignedDate.setSeconds(0,0);
+        let dueDate = new Date(`${assignment.dueDate} UTC`);
+        dueDate.setSeconds(0,0);
+        let displayDueDate = formatDueDate(dueDate,classTimes) 
 
-        let displayAssignedDate = formatAssignedDate(assignedDate,classTimes)   
-        let dueDate = formatDueDate(new Date(`${assignment.dueDate} UTC`),classTimes) 
-
+        let displayAssignedDate = formatAssignedDate(assignedDate,classTimes,dueDate,weekShift == 0)   
+        
         let bgColor = null;
         if (assignment.itemId === selectedItemId){
           bgColor = '#B8D2EA'; 
@@ -357,88 +395,13 @@ const dotwLabel = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'
         dayRows.push(<tr key={`${assignment.doenetId}${i}`}>
         <td style={{backgroundColor:bgColor}} onClick={oneClick} onDoubleClick={doubleClick}>{assignment.label}</td>
         <td style={{backgroundColor:bgColor}} onClick={oneClick} onDoubleClick={doubleClick}>{displayAssignedDate}</td>
-        <td style={{backgroundColor:bgColor}} onClick={oneClick} onDoubleClick={doubleClick}>{dueDate}</td>
+        <td style={{backgroundColor:bgColor}} onClick={oneClick} onDoubleClick={doubleClick}>{displayDueDate}</td>
         </tr>)
       }
     }
     
   }
   
-
-
-
-
-// for (let [ctIndex,classTime] of Object.entries(classTimes)){
-//   // console.log(">>>>classTime",classTime)
-//   let effectiveDotwIndex = classTime.dotwIndex;
-//   if (effectiveDotwIndex == 0){effectiveDotwIndex = 7}
-//   let csdiff = effectiveDotwIndex - monday.getDay();
-//   let startDT = new Date(monday.getTime() + (1000 * 60 * 60 * 24 * csdiff));
-//   const [startHours,startMinutes] = classTime.startTime.split(':')
-//   startDT.setHours(startHours,startMinutes,0,0);
-//   let endDT = new Date(startDT.getTime());
-//   const [endHours,endMinutes] = classTime.endTime.split(':')
-//   endDT.setHours(endHours,endMinutes,0,0);
-
-//   // console.log(">>>>startDT",startDT)
-//   // console.log(">>>>endDT",endDT)
-
-//   let inClassAssignments = [];
-//   let afterClassAssignments = [];
-//   for (let i = 0; i < assignmentArray.length; i++){
-//     let assignment = assignmentArray[i];
-//     let assignedDate = new Date(`${assignment.assignedDate} UTC`)
-//     // console.log(">>>>assignedDate",assignedDate)
-//     //In Class
-//     if (startDT <= assignedDate && endDT >= assignedDate ){
-//     console.log(">>>>INCLASS assignment",assignment)
-//     }
-//     //After Class
-//     let nextClassDate = 
-//     // if (assignedDate > endDT && assignedDate < nextClassDate ){
-//     //   console.log(">>>>AFTER CLASS")
-//     // }
-//   }
-
-//   if (inClassAssignments.length < 1 && afterClassAssignments.length < 1){
-//     dayRows.push(<tr>
-//       <td>{`${dotw[classTime.dotwIndex]} ${startDT.getMonth() + 1}/${startDT.getDate()}`}</td>
-//       <td></td>
-//       <td></td>
-//       <td></td>
-//       </tr>)
-//   }else{
-//     console.log(">>>>inClassAssignments",inClassAssignments)
-//     console.log(">>>>afterClassAssignments",afterClassAssignments)
-//     // dayRows.push(<tr>
-//     //   <td>{`${dotw[classTime.dotwIndex]} ${startDT.getMonth() + 1}/${startDT.getDate()}`}</td>
-//     //   <td>x</td>
-//     //   <td>x</td>
-//     //   <td>x</td>
-//     //   </tr>)
-//   }
-
-
-  // dayRows.push(<tr>
-  //   <td>{`${dotw[classTime.dotwIndex]} ${startDT.getMonth() + 1}/${startDT.getDate()}`}</td>
-  //   <td>x</td>
-  //   <td>x</td>
-  //   <td>x</td>
-  //   </tr>)
-      
-// }
-
-  // console.log(">>>>assignmentArray",assignmentArray)
-// let rows = [];
-// for (let assignment of assignmentArray){
-
-//   rows.push(<tr key={`${assignment.doenetId}`}>
-//     <td></td>
-//     <td>{assignment.label}</td>
-//     <td>{assignment.assignedDate}</td>
-//     <td>{assignment.dueDate}</td>
-//     </tr>)
-// }
 
   return <>
   <div style={{
