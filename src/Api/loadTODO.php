@@ -136,7 +136,22 @@ if ($row['pinnedAfterDate'] == ""){
   }
 }
 
+$completed = [];
 
+$sql = "
+SELECT ua.doenetId
+FROM drive_content AS dc
+LEFT JOIN user_assignment AS ua
+ON ua.doenetId = dc.doenetId
+WHERE ua.userId = '$userId'
+AND ua.completed = '1'
+AND dc.driveId = '$driveId'
+";
+
+$result = $conn->query($sql); 
+while($row = $result->fetch_assoc()){
+  array_push($completed,$row['doenetId']);
+}
 
 $response_arr = array(
   "success"=>$success,
@@ -144,6 +159,7 @@ $response_arr = array(
   "assignments"=>$assignments,
   "pinned"=>$pinned,
   "classTimes"=>$classTimes,
+  "completed"=>$completed,
   );
 
 

@@ -146,6 +146,7 @@ export default function Next7Days({ driveId }) {
   // let [numColumns,setNumColumns] = useState(4);
   let [assignmentArray,setAssignmentArray] = useState([]);
   let [pinnedArray,setPinnedArray] = useState([]);
+  let [completedArray,setCompletedArray] = useState([]);
   let [initialized,setInitialized] = useState(false);
   let [problemMessage,setProblemMessage] = useState("");
   let [weekShift,setWeekShift] = useState(0); //-1 means 7 days before
@@ -176,6 +177,9 @@ export default function Next7Days({ driveId }) {
     }
     if (data.classTimes){
       set(classTimesAtom,data.classTimes);
+    }
+    if (data.completed){
+      setCompletedArray(data.completed);
     }
 
   })
@@ -284,7 +288,7 @@ if (weekShift == 0){
   for (let assignment of pinnedArray){
     pinnedRows.push(<tr key={`${assignment.doenetId}`}>
       {assignment.doenetId == firstRowDoenetId ? <td style={{fontSize:"1em"}} rowSpan={pinnedArray.length }>Pinned</td> : null}
-      <td colSpan="3" onDoubleClick={()=>doubleClickCallback({type:assignment.itemType,doenetId:assignment.doenetId})}>{assignment.label}</td>
+      <td colSpan="4" onDoubleClick={()=>doubleClickCallback({type:assignment.itemType,doenetId:assignment.doenetId})}>{assignment.label}</td>
       </tr>)
   }
 }
@@ -295,18 +299,6 @@ let beginningOfMondayDT = new Date(monday.getTime());
 beginningOfMondayDT.setHours(0,0,0,0);
 let endOfSundayDT = new Date(sunday.getTime());
 endOfSundayDT.setHours(23,59,59,999);
-
-// for (let i = 0; i < assignmentArray.length; i++){
-//   let assignment = assignmentArray[i];
-//   let assignedDate = new Date(`${assignment.assignedDate} UTC`)
-//   console.log(">>>>assignedDate",assignedDate)
-// }
-// console.log(">>>>------------------------")
-
-
-
-
-
 
 //Add full assignment information to the day of the week by index
 let dueByDOTW = [[],[],[],[],[],[],[]]; 
@@ -320,57 +312,23 @@ let dueByDOTW = [[],[],[],[],[],[],[]];
   }
   //Move sunday assignments to the end of the array
   dueByDOTW.push(dueByDOTW.shift())
-  // console.log(">>>>dueByDOTW",dueByDOTW)
 
 const dotwLabel = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday']
 
   for (let [index,dayAssignments] of Object.entries(dueByDOTW)){
 
     if (dayAssignments.length > 0){
-      let assignment = dayAssignments[0];
-      let assignedDate = new Date(`${assignment.assignedDate} UTC`)
-      assignedDate.setSeconds(0,0);
-      let dueDate = new Date(`${assignment.dueDate} UTC`);
-      dueDate.setSeconds(0,0);
-      let displayDueDate = formatDueDate(dueDate,classTimes) 
-      let displayAssignedDate = formatAssignedDate(assignedDate,classTimes,dueDate,weekShift == 0);   
-    
-      let dayLabel = `${dotwLabel[index]} ${dueDate.getMonth() + 1}/${dueDate.getDate()}`
-
-      //onDoubleClick={}
-//onClick={()=>console.log(">>>>CLICK",assignment.doenetId)}
-      let bgColor = null;
-      if (assignment.itemId === selectedItemId){
-        bgColor = '#B8D2EA'; 
-      }
-      let oneClick = (e)=>{
-        e.stopPropagation();
-        clickCallback({
-        driveId: assignment.driveId,
-        itemId:assignment.itemId,
-        driveInstanceId: 'currentContent',
-        type:assignment.itemType,
-        instructionType: 'one item',
-        parentFolderId: assignment.parentFolderId,
-      })
-    }
-      
-      let doubleClick = ()=>doubleClickCallback({type:assignment.itemType,doenetId:assignment.doenetId})
-   
-      dayRows.push(<tr key={`${assignment.doenetId}`} >
-            <td rowSpan={dayAssignments.length}>{dayLabel}</td>
-            <td style={{backgroundColor:bgColor}} onClick={oneClick} onDoubleClick={doubleClick}>{assignment.label}</td>
-            <td style={{backgroundColor:bgColor}} onClick={oneClick} onDoubleClick={doubleClick}>{displayAssignedDate}</td>
-            <td style={{backgroundColor:bgColor}} onClick={oneClick} onDoubleClick={doubleClick}>{displayDueDate}</td>
-            </tr>)
 
       //if more than one item loop through the rest
-      for (let i = 1; i < dayAssignments.length; i++){
+      for (let i = 0; i < dayAssignments.length; i++){
         let assignment = dayAssignments[i];
+
         let assignedDate = new Date(`${assignment.assignedDate} UTC`)
         assignedDate.setSeconds(0,0);
         let dueDate = new Date(`${assignment.dueDate} UTC`);
         dueDate.setSeconds(0,0);
+        let dayLabel = `${dotwLabel[index]} ${dueDate.getMonth() + 1}/${dueDate.getDate()}`
+
         let displayDueDate = formatDueDate(dueDate,classTimes) 
 
         let displayAssignedDate = formatAssignedDate(assignedDate,classTimes,dueDate,weekShift == 0)   
@@ -391,12 +349,47 @@ const dotwLabel = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'
         })
       }
       let doubleClick = ()=>doubleClickCallback({type:assignment.itemType,doenetId:assignment.doenetId})
+      let checked = completedArray.includes(assignment.doenetId)
+      let checkbox = <input type='checkbox' checked={checked} onClick={(e)=>{
+        e.stopPropagation();
+      if (checked){
+        setCompletedArray((was)=>{
+          let newObj = [...was];
+          newObj.splice(newObj.indexOf(assignment.doenetId),1)
+          return newObj;
+        })
+      }else{
+        setCompletedArray((was)=>{
+          let newObj = [assignment.doenetId,...was]
+          return newObj;
+        })
+      }
 
+      axios.get('/api/saveCompleted.php',{params:{doenetId:assignment.doenetId}})
+      .then(({data})=>{
+        console.log(">>>>data",data)
+      })
+     
+        }
+      }/>
+
+      if (i === 0){
+        dayRows.push(<tr key={`${assignment.doenetId}`} >
+            <td rowSpan={dayAssignments.length}>{dayLabel}</td>
+            <td style={{backgroundColor:bgColor}} onClick={oneClick} onDoubleClick={doubleClick}>{assignment.label}</td>
+            <td style={{backgroundColor:bgColor}} onClick={oneClick} onDoubleClick={doubleClick}>{displayAssignedDate}</td>
+            <td style={{backgroundColor:bgColor}} onClick={oneClick} onDoubleClick={doubleClick}>{displayDueDate}</td>
+            <td style={{backgroundColor:bgColor,textAlign:"center"}} onClick={()=>{console.log(">>>>CLICK")}} >{checkbox}</td>
+            </tr>)
+      }else{
         dayRows.push(<tr key={`${assignment.doenetId}${i}`}>
-        <td style={{backgroundColor:bgColor}} onClick={oneClick} onDoubleClick={doubleClick}>{assignment.label}</td>
-        <td style={{backgroundColor:bgColor}} onClick={oneClick} onDoubleClick={doubleClick}>{displayAssignedDate}</td>
-        <td style={{backgroundColor:bgColor}} onClick={oneClick} onDoubleClick={doubleClick}>{displayDueDate}</td>
-        </tr>)
+            <td style={{backgroundColor:bgColor}} onClick={oneClick} onDoubleClick={doubleClick}>{assignment.label}</td>
+            <td style={{backgroundColor:bgColor}} onClick={oneClick} onDoubleClick={doubleClick}>{displayAssignedDate}</td>
+            <td style={{backgroundColor:bgColor}} onClick={oneClick} onDoubleClick={doubleClick}>{displayDueDate}</td>
+            <td style={{backgroundColor:bgColor,textAlign:"center"}} onClick={()=>{console.log(">>>>CLICK")}} >{checkbox}</td>
+            </tr>)
+      }
+       
       }
     }
     
@@ -409,7 +402,7 @@ const dotwLabel = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'
     // backgroundColor:"grey", 
     alignItems:"center", 
     justifyContent:"space-evenly",
-    width:"650px",
+    width:"850px",
     height:"70px"
     }}>
   <span><Button onClick={()=>setWeekShift(0)} value='This Week' /> </span>
@@ -422,14 +415,13 @@ const dotwLabel = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'
 
   </div>
   
-  {/* <table style={{width:"650px"}}> */}
-  <table style={{width:"517px",borderSpacing:"0em .2em"}}>
+  <table style={{width:"850px",borderSpacing:"0em .2em"}}>
     <tr>
-      <th style={{width:'140px',textAlign:'left'}}>Day</th>
-      <th style={{width:'141px',textAlign:'left'}}>Name</th>
-      <th style={{width:'123px',textAlign:'left'}}>Assigned</th>
-      <th style={{width:'123px',textAlign:'left'}}>Due</th>
-      {/* <th style={{width:'123px',textAlign:'left'}}>Completed</th> */}
+      <th style={{width:'150px',textAlign:'left'}}>Day</th>
+      <th style={{width:'200px',textAlign:'left'}}>Name</th>
+      <th style={{width:'200px',textAlign:'left'}}>Assigned</th>
+      <th style={{width:'200px',textAlign:'left'}}>Due</th>
+      <th style={{width:'100px',textAlign:'center'}}>Completed</th>
     </tr>
     {pinnedRows}
     {overdueRows}
