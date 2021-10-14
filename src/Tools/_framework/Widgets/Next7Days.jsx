@@ -37,6 +37,7 @@ import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
 import ButtonGroup from '../../../_reactComponents/PanelHeaderComponents/ButtonGroup';
 import { globalSelectedNodesAtom } from '../../../_reactComponents/Drive/NewDrive';
 import { mainPanelClickAtom } from '../Panels/NewMainPanel';
+
 //array of objects
 //dotwIndex as a number starting at 0 for Sunday (the js standard)
 //startTime as text "01:00"
@@ -46,7 +47,20 @@ export const classTimesAtom = atom({
   default:[]
 })
 
+//boolean
+export const showCompletedAtom = atom({
+  key:'showCompletedAtom',
+  default:true
+})
+//boolean
+export const showOverdueAtom = atom({
+  key:'showOverdueAtom',
+  default:true
+})
+
 function formatAssignedDate(dt,classTimes,dueDT,thisWeek){
+  //If we don't have a dt datetime then return null
+  if (dt == 'Invalid Date' || dt == null){ return null; }
   //After Class and In Class
   let dtDOTW = dt.getDay();
   for (let classTime of classTimes){
@@ -139,9 +153,112 @@ function formatDueDate(dt,classTimes){
  return returnValue;
 }
 
+function buildRows({
+  dotw="",
+  rowLabel="",
+  assignments,
+  clickCallback,
+  doubleClickCallback,
+  completedArray,
+  setCompletedArray,
+  classTimes,
+  weekShift,
+  selectedItemId,
+  showCompleted
+}){
+  let newRows = [];
+  if (assignments.length > 0){
+
+    //if more than one item loop through the rest
+    for (let i = 0; i < assignments.length; i++){
+      let assignment = assignments[i];
+
+      let assignedDate = new Date(`${assignment.assignedDate} UTC`)
+      assignedDate.setSeconds(0,0);
+      let dueDate = new Date(`${assignment.dueDate} UTC`);
+      dueDate.setSeconds(0,0);
+
+      let effectiveRowLabel = `${dotw} ${dueDate.getMonth() + 1}/${dueDate.getDate()}`
+      if (rowLabel !== ""){
+        effectiveRowLabel = rowLabel;
+      }
+      let displayDueDate = formatDueDate(dueDate,classTimes) 
+
+      let displayAssignedDate = formatAssignedDate(assignedDate,classTimes,dueDate,weekShift == 0)   
+      
+      let bgColor = null;
+      if (assignment.itemId === selectedItemId){
+        bgColor = '#B8D2EA'; 
+      }
+      let oneClick = (e)=>{
+        e.stopPropagation();
+        clickCallback({
+        driveId: assignment.driveId,
+        itemId:assignment.itemId,
+        driveInstanceId: 'currentContent',
+        type:assignment.itemType,
+        instructionType: 'one item',
+        parentFolderId: assignment.parentFolderId,
+      })
+    }
+    let doubleClick = ()=>doubleClickCallback({type:assignment.itemType,doenetId:assignment.doenetId})
+    let checked = completedArray.includes(assignment.doenetId)
+
+    if (!showCompleted && checked){
+      continue;
+    }
+
+    let checkbox = <input type='checkbox' checked={checked} onClick={(e)=>{
+      e.stopPropagation();
+    if (checked){
+      setCompletedArray((was)=>{
+        let newObj = [...was];
+        newObj.splice(newObj.indexOf(assignment.doenetId),1)
+        return newObj;
+      })
+    }else{
+      setCompletedArray((was)=>{
+        let newObj = [assignment.doenetId,...was]
+        return newObj;
+      })
+    }
+
+    axios.get('/api/saveCompleted.php',{params:{doenetId:assignment.doenetId}})
+    // .then(({data})=>{
+      // console.log(">>>>data",data)
+    // })
+   
+      }
+    }/>
+
+    if (i === 0){
+      newRows.push(<tr key={`${effectiveRowLabel}${assignment.doenetId}`} >
+          <td rowSpan={assignments.length}>{effectiveRowLabel}</td>
+          <td style={{backgroundColor:bgColor}} onClick={oneClick} onDoubleClick={doubleClick}>{assignment.label}</td>
+          <td style={{backgroundColor:bgColor}} onClick={oneClick} onDoubleClick={doubleClick}>{displayAssignedDate}</td>
+          <td style={{backgroundColor:bgColor}} onClick={oneClick} onDoubleClick={doubleClick}>{displayDueDate}</td>
+          <td style={{backgroundColor:bgColor,textAlign:"center"}}  >{checkbox}</td>
+          </tr>)
+    }else{
+      newRows.push(<tr key={`${effectiveRowLabel}${assignment.doenetId}${i}`}>
+          <td style={{backgroundColor:bgColor}} onClick={oneClick} onDoubleClick={doubleClick}>{assignment.label}</td>
+          <td style={{backgroundColor:bgColor}} onClick={oneClick} onDoubleClick={doubleClick}>{displayAssignedDate}</td>
+          <td style={{backgroundColor:bgColor}} onClick={oneClick} onDoubleClick={doubleClick}>{displayDueDate}</td>
+          <td style={{backgroundColor:bgColor,textAlign:"center"}}  >{checkbox}</td>
+          </tr>)
+    }
+     
+    }
+  }
+  return newRows;
+}
+
 export default function Next7Days({ driveId }) {
   
   const setPageToolView = useSetRecoilState(pageToolViewAtom);
+  const showCompleted = useRecoilValue(showCompletedAtom);
+  const showOverdue = useRecoilValue(showOverdueAtom);
+
   // const setMainPanelClear = useSetRecoilState(mainPanelClickAtom);
   // let [numColumns,setNumColumns] = useState(4);
   let [assignmentArray,setAssignmentArray] = useState([]);
@@ -156,9 +273,8 @@ export default function Next7Days({ driveId }) {
   if (selected[0]?.driveInstanceId === "currentContent"){
     selectedItemId = selected[0].itemId;
   }
-  // console.log(">>>>selected",selected,selectedItemId)
 
-  let loadAssignmentArray = useRecoilCallback(({snapshot,set})=> async (driveId)=>{
+  let loadAssignmentArray = useRecoilCallback(({set})=> async (driveId)=>{
     //Clear selection when click on main panel
     set(mainPanelClickAtom,(was)=>[
       ...was,
@@ -286,14 +402,45 @@ let overdueRows = [];
 if (weekShift == 0){
 
 
+  pinnedRows.push(...buildRows({
+    rowLabel:"Pinned",
+    assignments:pinnedArray,
+    clickCallback,
+    doubleClickCallback,
+    completedArray,
+    setCompletedArray,
+    classTimes,
+    weekShift,
+    selectedItemId,
+    showCompleted
+  }));
 
-  const firstRowDoenetId = pinnedArray[0]?.doenetId;
-  for (let assignment of pinnedArray){
-    pinnedRows.push(<tr key={`${assignment.doenetId}`}>
-      {assignment.doenetId == firstRowDoenetId ? <td style={{fontSize:"1em"}} rowSpan={pinnedArray.length }>Pinned</td> : null}
-      <td colSpan="4" onDoubleClick={()=>doubleClickCallback({type:assignment.itemType,doenetId:assignment.doenetId})}>{assignment.label}</td>
-      </tr>)
+  if (showOverdue){
+    //Find overdue assignments
+    const now = new Date();
+    let overdueArray = [];
+    for (let assignment of assignmentArray){
+      const due = new Date(`${assignment.dueDate} UTC`);
+      if (due > now){ break; }
+      if (!completedArray.includes(assignment.doenetId)){
+        overdueArray.push(assignment);
+      }
+    }
+
+    overdueRows.push(...buildRows({
+      rowLabel:"Overdue",
+      assignments:overdueArray,
+      clickCallback,
+      doubleClickCallback,
+      completedArray,
+      setCompletedArray,
+      classTimes,
+      weekShift,
+      selectedItemId,
+      showCompleted
+    }));
   }
+  
 }
 
 let dayRows = [];
@@ -320,82 +467,19 @@ const dotwLabel = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'
 
   for (let [index,dayAssignments] of Object.entries(dueByDOTW)){
 
-    if (dayAssignments.length > 0){
-
-      //if more than one item loop through the rest
-      for (let i = 0; i < dayAssignments.length; i++){
-        let assignment = dayAssignments[i];
-
-        let assignedDate = new Date(`${assignment.assignedDate} UTC`)
-        assignedDate.setSeconds(0,0);
-        let dueDate = new Date(`${assignment.dueDate} UTC`);
-        dueDate.setSeconds(0,0);
-        let dayLabel = `${dotwLabel[index]} ${dueDate.getMonth() + 1}/${dueDate.getDate()}`
-
-        let displayDueDate = formatDueDate(dueDate,classTimes) 
-
-        let displayAssignedDate = formatAssignedDate(assignedDate,classTimes,dueDate,weekShift == 0)   
-        
-        let bgColor = null;
-        if (assignment.itemId === selectedItemId){
-          bgColor = '#B8D2EA'; 
-        }
-        let oneClick = (e)=>{
-          e.stopPropagation();
-          clickCallback({
-          driveId: assignment.driveId,
-          itemId:assignment.itemId,
-          driveInstanceId: 'currentContent',
-          type:assignment.itemType,
-          instructionType: 'one item',
-          parentFolderId: assignment.parentFolderId,
-        })
-      }
-      let doubleClick = ()=>doubleClickCallback({type:assignment.itemType,doenetId:assignment.doenetId})
-      let checked = completedArray.includes(assignment.doenetId)
-      let checkbox = <input type='checkbox' checked={checked} onClick={(e)=>{
-        e.stopPropagation();
-      if (checked){
-        setCompletedArray((was)=>{
-          let newObj = [...was];
-          newObj.splice(newObj.indexOf(assignment.doenetId),1)
-          return newObj;
-        })
-      }else{
-        setCompletedArray((was)=>{
-          let newObj = [assignment.doenetId,...was]
-          return newObj;
-        })
-      }
-
-      axios.get('/api/saveCompleted.php',{params:{doenetId:assignment.doenetId}})
-      // .then(({data})=>{
-        // console.log(">>>>data",data)
-      // })
-     
-        }
-      }/>
-
-      if (i === 0){
-        dayRows.push(<tr key={`${assignment.doenetId}`} >
-            <td rowSpan={dayAssignments.length}>{dayLabel}</td>
-            <td style={{backgroundColor:bgColor}} onClick={oneClick} onDoubleClick={doubleClick}>{assignment.label}</td>
-            <td style={{backgroundColor:bgColor}} onClick={oneClick} onDoubleClick={doubleClick}>{displayAssignedDate}</td>
-            <td style={{backgroundColor:bgColor}} onClick={oneClick} onDoubleClick={doubleClick}>{displayDueDate}</td>
-            <td style={{backgroundColor:bgColor,textAlign:"center"}}  >{checkbox}</td>
-            </tr>)
-      }else{
-        dayRows.push(<tr key={`${assignment.doenetId}${i}`}>
-            <td style={{backgroundColor:bgColor}} onClick={oneClick} onDoubleClick={doubleClick}>{assignment.label}</td>
-            <td style={{backgroundColor:bgColor}} onClick={oneClick} onDoubleClick={doubleClick}>{displayAssignedDate}</td>
-            <td style={{backgroundColor:bgColor}} onClick={oneClick} onDoubleClick={doubleClick}>{displayDueDate}</td>
-            <td style={{backgroundColor:bgColor,textAlign:"center"}}  >{checkbox}</td>
-            </tr>)
-      }
-       
-      }
-    }
-    
+    dayRows.push(...buildRows({
+      dotw:dotwLabel[index],
+      assignments:dayAssignments,
+      clickCallback,
+      doubleClickCallback,
+      completedArray,
+      setCompletedArray,
+      classTimes,
+      weekShift,
+      selectedItemId,
+      showCompleted
+    }));
+   
   }
   
 
