@@ -169,6 +169,15 @@ function buildRows({
   let newRows = [];
   if (assignments.length > 0){
 
+    let isFirstRow = true;
+    let numberOfVisibleRows = 0;
+    for (let assignment of assignments){
+      let checked = completedArray.includes(assignment.doenetId)
+
+      if (showCompleted || (!showCompleted && !checked)){
+        numberOfVisibleRows++;
+      }
+    }
     //if more than one item loop through the rest
     for (let i = 0; i < assignments.length; i++){
       let assignment = assignments[i];
@@ -230,10 +239,11 @@ function buildRows({
    
       }
     }/>
+    if (isFirstRow){
+          isFirstRow = false;
 
-    if (i === 0){
       newRows.push(<tr key={`${effectiveRowLabel}${assignment.doenetId}`} >
-          <td rowSpan={assignments.length}>{effectiveRowLabel}</td>
+          <td rowSpan={numberOfVisibleRows}>{effectiveRowLabel}</td>
           <td style={{backgroundColor:bgColor}} onClick={oneClick} onDoubleClick={doubleClick}>{assignment.label}</td>
           <td style={{backgroundColor:bgColor}} onClick={oneClick} onDoubleClick={doubleClick}>{displayAssignedDate}</td>
           <td style={{backgroundColor:bgColor}} onClick={oneClick} onDoubleClick={doubleClick}>{displayDueDate}</td>
