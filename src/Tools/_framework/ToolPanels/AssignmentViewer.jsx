@@ -247,26 +247,12 @@ export default function AssignmentViewer() {
           storedAllPossibleVariants.current = allPossibleVariants;
           //Find attemptNumber
 
-
-
-
-
-
-
-
-          //***********LEFT OFF HERE!!!!!!!!!!!! */
-
-
-
-
-
-
-
           
           const { data } = await axios.get('/api/loadTakenVariants.php', {
             params: { doenetId },
           });
-          console.log(">>>>data",data)
+          // console.log(">>>>data",data)
+
           let usersVariantAttempts = [];
 
           for (let variant of data.variants) {
@@ -275,20 +261,31 @@ export default function AssignmentViewer() {
               usersVariantAttempts.push(obj.name);
             }
           }
-          //TODO might skip some
-          let numberOfCompletedAttempts = data.attemptNumbers.length - 1;
-          if (numberOfCompletedAttempts === -1) {
-            numberOfCompletedAttempts = 0;
+  
+          let attemptNumber = Math.max(...data.attemptNumbers);
+          let needNewVariant = false;
+
+          if (attemptNumber < 1) {
+            attemptNumber = 1;
+            needNewVariant = true;
+          }else if(!data.variants[data.variants.length-1]){
+            //Starting a proctored exam so we need a variant
+            needNewVariant = true;
           }
-          let attemptNumber = numberOfCompletedAttempts + 1;
+
+
           set(currentAttemptNumber, attemptNumber);
-          //Find requestedVariant
-          usersVariantAttempts = pushRandomVariantOfRemaining({
-            previous: [...usersVariantAttempts],
-            from: allPossibleVariants,
-          });
+
+          if (needNewVariant){
+            //Find requestedVariant
+            usersVariantAttempts = pushRandomVariantOfRemaining({
+              previous: [...usersVariantAttempts],
+              from: allPossibleVariants,
+            });
+            
+          }
           let requestedVariant = {
-            name: usersVariantAttempts[numberOfCompletedAttempts],
+            name: usersVariantAttempts[usersVariantAttempts.length - 1],
           };
 
           setLoad({
@@ -365,7 +362,7 @@ export default function AssignmentViewer() {
           }
         }
 
-        console.log(">>>>updateAttemptNumberAndRequestedVariant contentId",contentId)
+        // console.log(">>>>updateAttemptNumberAndRequestedVariant contentId",contentId)
 
         let doenetML = null;
 

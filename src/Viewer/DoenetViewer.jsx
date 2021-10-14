@@ -208,7 +208,6 @@ class DoenetViewerChild extends Component {
         generatedVariant: JSON.stringify(this.generatedVariant, serializedComponentsReplacer),
         itemVariantInfo: this.itemVariantInfo.map(x => JSON.stringify(x, serializedComponentsReplacer)),
       }).then(({ data }) => {
-        // console.log(">>>>initAssignmentAttempt data",data)
 
         this.savedUserAssignmentAttemptNumber = this.attemptNumber; //In callback
       })
@@ -302,8 +301,10 @@ class DoenetViewerChild extends Component {
       return;
     }
 
+
     axios.post('/api/recordContentInteraction.php', data)
-    // .then(resp => {
+    // .then(({data}) => {
+    //   console.log(">>>>recordContentInteraction data",data)
     // });
 
 
@@ -327,7 +328,7 @@ class DoenetViewerChild extends Component {
       }
       axios.post('/api/saveCreditForItem.php', payload2)
         .then(resp => {
-          console.log('>>>>resp', resp.data);
+          // console.log('>>>>saveCreditForItem resp', resp.data);
 
           this.props.updateCreditAchievedCallback(resp.data);
 
@@ -396,6 +397,7 @@ class DoenetViewerChild extends Component {
         pageStateSource: effectivePageStateSource,
       }
     }
+    // console.log(">>>>>loadContentInteractions")
 
     axios.get('/api/loadContentInteractions.php', payload)
       .then(resp => {
@@ -476,6 +478,7 @@ class DoenetViewerChild extends Component {
 
   // TODO: if assignmentId, then need to record fact that student
   // viewed solution in user_assignment_attempt_item
+  // console.log(">>>>recordSolutionView")
   async recordSolutionView({ itemNumber, scoredComponent }) {
     const resp = await axios.post('/api/reportSolutionViewed.php', {
       doenetId: this.props.doenetId,
@@ -483,7 +486,7 @@ class DoenetViewerChild extends Component {
       attemptNumber: this.attemptNumber,
     });
 
-    //       console.log('reportSolutionViewed-->>>>',resp.data);
+          // console.log('reportSolutionViewed-->>>>',resp.data);
 
     return { allowView: true, message: "", scoredComponent };
 
@@ -532,6 +535,7 @@ class DoenetViewerChild extends Component {
 
     axios.post('/api/recordEvent.php', payload)
     // .then(resp => {
+    //   console.log(">>>>resp",resp.data)
     // });
 
   }
