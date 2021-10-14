@@ -284,6 +284,9 @@ let pinnedRows = [];
 let overdueRows = [];
 //This content only shows when viewing the current week
 if (weekShift == 0){
+
+
+
   const firstRowDoenetId = pinnedArray[0]?.doenetId;
   for (let assignment of pinnedArray){
     pinnedRows.push(<tr key={`${assignment.doenetId}`}>
@@ -366,9 +369,9 @@ const dotwLabel = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'
       }
 
       axios.get('/api/saveCompleted.php',{params:{doenetId:assignment.doenetId}})
-      .then(({data})=>{
-        console.log(">>>>data",data)
-      })
+      // .then(({data})=>{
+        // console.log(">>>>data",data)
+      // })
      
         }
       }/>
@@ -379,14 +382,14 @@ const dotwLabel = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'
             <td style={{backgroundColor:bgColor}} onClick={oneClick} onDoubleClick={doubleClick}>{assignment.label}</td>
             <td style={{backgroundColor:bgColor}} onClick={oneClick} onDoubleClick={doubleClick}>{displayAssignedDate}</td>
             <td style={{backgroundColor:bgColor}} onClick={oneClick} onDoubleClick={doubleClick}>{displayDueDate}</td>
-            <td style={{backgroundColor:bgColor,textAlign:"center"}} onClick={()=>{console.log(">>>>CLICK")}} >{checkbox}</td>
+            <td style={{backgroundColor:bgColor,textAlign:"center"}}  >{checkbox}</td>
             </tr>)
       }else{
         dayRows.push(<tr key={`${assignment.doenetId}${i}`}>
             <td style={{backgroundColor:bgColor}} onClick={oneClick} onDoubleClick={doubleClick}>{assignment.label}</td>
             <td style={{backgroundColor:bgColor}} onClick={oneClick} onDoubleClick={doubleClick}>{displayAssignedDate}</td>
             <td style={{backgroundColor:bgColor}} onClick={oneClick} onDoubleClick={doubleClick}>{displayDueDate}</td>
-            <td style={{backgroundColor:bgColor,textAlign:"center"}} onClick={()=>{console.log(">>>>CLICK")}} >{checkbox}</td>
+            <td style={{backgroundColor:bgColor,textAlign:"center"}}  >{checkbox}</td>
             </tr>)
       }
        
