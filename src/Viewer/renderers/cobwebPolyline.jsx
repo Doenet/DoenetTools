@@ -171,6 +171,10 @@ export default class CobwebPolyline extends DoenetRenderer {
       return this.createGraphicalObject();
     }
 
+    this.curveJXG.Y = this.doenetSvData.f;
+    this.curveJXG.needsUpdate = true;
+    this.curveJXG.updateCurve();
+
 
     let validCoords = true;
 
