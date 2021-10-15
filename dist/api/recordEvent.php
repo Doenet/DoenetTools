@@ -10,6 +10,8 @@ include "db_connection.php";
 
 $jwtArray = include "jwtArray.php";
 $userId = $jwtArray['userId'];
+$examUserId = $jwtArray['examineeUserId'];
+$examDoenetId = $jwtArray['doenetId'];
 
 $device = $jwtArray['deviceName'];
 
@@ -58,6 +60,16 @@ if ($doenetId == ""){
 }elseif ($timestamp == ""){
   $success = FALSE;
   $message = 'Internal Error: missing timestamp';
+}elseif ($userId == ""){
+  if ($examUserId == ""){
+    $success = FALSE;
+    $message = "No access - Need to sign in";
+  }else if ($examDoenetId != $doenetId){
+      $success = FALSE;
+      $message = "No access for doenetId: $doenetId";
+  }else{
+      $userId = $examUserId;
+  }
 }
 //TODO: Handle Anonymous
 // elseif ($userId == ""){

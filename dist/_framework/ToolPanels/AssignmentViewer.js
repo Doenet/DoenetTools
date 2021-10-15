@@ -134,7 +134,6 @@ export default function AssignmentViewer() {
       }
     } else {
       const {data} = await axios.get(`/api/getContentIdFromAssignmentAttempt.php`, {params: {doenetId: doenetId2}});
-      console.log(">>>>data", data);
       if (data.foundAttempt) {
         contentId = data.contentId;
         isAssigned = true;
@@ -176,18 +175,23 @@ export default function AssignmentViewer() {
           usersVariantAttempts.push(obj.name);
         }
       }
-      let numberOfCompletedAttempts = data.attemptNumbers.length - 1;
-      if (numberOfCompletedAttempts === -1) {
-        numberOfCompletedAttempts = 0;
+      let attemptNumber2 = Math.max(...data.attemptNumbers);
+      let needNewVariant = false;
+      if (attemptNumber2 < 1) {
+        attemptNumber2 = 1;
+        needNewVariant = true;
+      } else if (!data.variants[data.variants.length - 1]) {
+        needNewVariant = true;
       }
-      let attemptNumber2 = numberOfCompletedAttempts + 1;
       set(currentAttemptNumber, attemptNumber2);
-      usersVariantAttempts = pushRandomVariantOfRemaining({
-        previous: [...usersVariantAttempts],
-        from: allPossibleVariants
-      });
+      if (needNewVariant) {
+        usersVariantAttempts = pushRandomVariantOfRemaining({
+          previous: [...usersVariantAttempts],
+          from: allPossibleVariants
+        });
+      }
       let requestedVariant2 = {
-        name: usersVariantAttempts[numberOfCompletedAttempts]
+        name: usersVariantAttempts[usersVariantAttempts.length - 1]
       };
       setLoad({
         requestedVariant: requestedVariant2,
@@ -239,7 +243,6 @@ export default function AssignmentViewer() {
         break;
       }
     }
-    console.log(">>>>updateAttemptNumberAndRequestedVariant contentId", contentId);
     let doenetML2 = null;
     let response = await snapshot.getPromise(fileByContentId(contentId));
     if (typeof response === "object") {

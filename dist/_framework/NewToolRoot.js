@@ -276,12 +276,13 @@ let navigationObj = {
       pageName: "Dashboards",
       currentMainPanel: "Dashboard",
       menuPanelCap: "DriveInfoCap",
-      currentMenus: [],
-      menusTitles: [],
-      menusInitOpen: [],
+      currentMenus: ["ClassTimes", "CurrentContent"],
+      menusTitles: ["Class Times", "Current Content"],
+      menusInitOpen: [false, false],
       headerControls: ["DashboardBreadCrumb"],
       headerControlsPositions: ["Left"],
-      onLeave: "DashboardLeave"
+      onLeave: "DashboardLeave",
+      waitForMenuSuppression: true
     },
     gradebook: {
       pageName: "Gradebook",

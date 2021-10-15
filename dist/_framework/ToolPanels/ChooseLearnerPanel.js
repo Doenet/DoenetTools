@@ -18,6 +18,8 @@ export default function ChooseLearnerPanel(props) {
     const {data} = await axios.get("/api/incrementAttemptNumber.php", {
       params: {doenetId: doenetId2, code: code2, userId}
     });
+    console.log(">>>>data 2", data);
+    console.log(">>>>", doenetId2, code2, userId);
     location.href = `/api/examjwt.php?userId=${encodeURIComponent(choosenLearner.userId)}&doenetId=${encodeURIComponent(doenetId2)}&code=${encodeURIComponent(code2)}`;
   });
   const setDoenetId = useRecoilCallback(({set}) => async (doenetId2, driveId2) => {

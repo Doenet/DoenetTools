@@ -185,7 +185,6 @@ class DoenetViewerChild extends Component {
         stateVariables: changeString
       };
       axios.post("/api/saveCreditForItem.php", payload2).then((resp) => {
-        console.log(">>>>resp", resp.data);
         this.props.updateCreditAchievedCallback(resp.data);
         if (resp.data.viewedSolution) {
           this.props.toast("No credit awarded since solution was viewed.", toastType.INFO);
