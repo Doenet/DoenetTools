@@ -32,10 +32,14 @@ export default function ChooseLearnerPanel(props) {
     
   })
 
-  const setDoenetId = useRecoilCallback(({set,snapshot})=> async (doenetId)=>{
+  const setDoenetId = useRecoilCallback(({set})=> async (doenetId,driveId)=>{
     set(pageToolViewAtom,(was)=>{
       let newObj = {...was};
-      newObj.params = {doenetId}
+      if (doenetId){
+        newObj.params = {doenetId,driveId}
+      }else{
+        newObj.params = {driveId}
+      }
       return newObj
     })
   });
@@ -127,7 +131,7 @@ export default function ChooseLearnerPanel(props) {
         <td style={{textAlign:"center"}}>{exam.label}</td>
         {/* <td style={{textAlign:"center"}}>{exam.info}</td> */}
         <td style={{textAlign:"center"}}><button onClick={()=>{
-          setDoenetId(exam.doenetId)
+          setDoenetId(exam.doenetId,driveId)
           setStage('choose learner');
         }}>Choose</button></td>
         </tr>)
@@ -211,6 +215,7 @@ export default function ChooseLearnerPanel(props) {
        setStage('request password');
        setCode('')
        setChoosenLearner(null);
+       setDoenetId(null,driveId)
      }}/>
      <Button value="Yes It's me. Start Exam." onClick={()=>{
 

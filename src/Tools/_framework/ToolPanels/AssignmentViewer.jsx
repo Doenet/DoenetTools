@@ -141,7 +141,7 @@ export default function AssignmentViewer() {
               params: { doenetId },
             });
             // console.log('>>>>data', data);
-            if (data.legitAccessKey !== '1') {
+            if (Number(data.legitAccessKey) !== 1) {
               setStage('Problem');
               setMessage('Browser not configured properly to take an exam.');
               return;
@@ -173,7 +173,7 @@ export default function AssignmentViewer() {
           //for the current attempt
 
           const { data } = await axios.get(`/api/getContentIdFromAssignmentAttempt.php`,{params:{doenetId}})
-
+          console.log(">>>>data",data)
           if (data.foundAttempt){
             contentId = data.contentId;
             isAssigned = true;

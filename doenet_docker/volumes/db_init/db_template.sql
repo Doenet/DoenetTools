@@ -7,7 +7,7 @@
 #
 # Host: 127.0.0.1 (MySQL 5.7.29)
 # Database: doenet_local
-# Generation Time: 2021-10-06 14:23:47 +0000
+# Generation Time: 2021-10-10 00:15:27 +0000
 # ************************************************************
 
 
@@ -62,6 +62,23 @@ VALUES
 
 /*!40000 ALTER TABLE `assignment` ENABLE KEYS */;
 UNLOCK TABLES;
+
+
+# Dump of table class_times
+# ------------------------------------------------------------
+
+DROP TABLE IF EXISTS `class_times`;
+
+CREATE TABLE `class_times` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `driveId` char(21) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
+  `dotwIndex` int(1) NOT NULL,
+  `startTime` time NOT NULL,
+  `endTime` time NOT NULL,
+  `order` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
 
 
 # Dump of table collection
@@ -128,27 +145,6 @@ CREATE TABLE `content` (
 DROP TABLE IF EXISTS `content_interactions`;
 
 CREATE TABLE `content_interactions` (
-  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `userId` char(21) COLLATE utf8_unicode_ci NOT NULL,
-  `deviceName` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `doenetId` char(21) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
-  `contentId` char(64) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
-  `stateVariables` mediumtext COLLATE utf8_unicode_ci,
-  `variant` text COLLATE utf8_unicode_ci NOT NULL,
-  `attemptNumber` int(11) DEFAULT NULL,
-  `interactionSource` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `timestamp` timestamp NULL DEFAULT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
-
-
-
-# Dump of table content_interactions2
-# ------------------------------------------------------------
-
-DROP TABLE IF EXISTS `content_interactions2`;
-
-CREATE TABLE `content_interactions2` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `userId` char(21) COLLATE utf8_unicode_ci NOT NULL,
   `deviceName` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
