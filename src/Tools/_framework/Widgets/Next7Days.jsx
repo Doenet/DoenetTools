@@ -37,6 +37,7 @@ import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
 import ButtonGroup from '../../../_reactComponents/PanelHeaderComponents/ButtonGroup';
 import { globalSelectedNodesAtom } from '../../../_reactComponents/Drive/NewDrive';
 import { mainPanelClickAtom } from '../Panels/NewMainPanel';
+import { effectiveRoleAtom } from '../../../_reactComponents/PanelHeaderComponents/RoleDropdown';
 
 //array of objects
 //dotwIndex as a number starting at 0 for Sunday (the js standard)
@@ -124,6 +125,7 @@ function formatAssignedDate(dt,classTimes,dueDT,thisWeek){
 }
 
 function formatDueDate(dt,classTimes){
+  if (dt == 'Invalid Date' || dt == null){ return null; }
  
   //End of Class and Before Class
     let dtDOTW = dt.getDay();
@@ -148,6 +150,7 @@ function formatDueDate(dt,classTimes){
  
   // console.log(">>>>formatDueDate dt",dt)
   let returnValue = dt.toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true });
+  returnValue = `${dt.getMonth() + 1}/${dt.getDate()} ${returnValue}`;
   if (returnValue === 'Invalid Date'){ returnValue = null;}
 
  return returnValue;
@@ -210,7 +213,8 @@ function buildRows({
         parentFolderId: assignment.parentFolderId,
       })
     }
-    let doubleClick = ()=>doubleClickCallback({type:assignment.itemType,doenetId:assignment.doenetId})
+    let path = `${assignment.driveId}:${assignment.parentFolderId}:${assignment.itemId}:${assignment.itemType}`
+    let doubleClick = ()=>doubleClickCallback({type:assignment.itemType,doenetId:assignment.doenetId,path})
     let checked = completedArray.includes(assignment.doenetId)
 
     if (!showCompleted && checked){
@@ -344,10 +348,53 @@ export default function Next7Days({ driveId }) {
   );
 
   const doubleClickCallback = useRecoilCallback(
-    () =>
-      ({type,doenetId}) => {
+    ({snapshot}) => async ({type,doenetId,path}) => {
 
-        switch (type) {
+        let role = await snapshot.getPromise(effectiveRoleAtom);
+ 
+        if (role === 'instructor'){
+
+          switch (type) {
+            case itemType.DOENETML:
+            
+                //TODO: VariantIndex params
+                setPageToolView({
+                  page: 'course',
+                  tool: 'editor',
+                  view: '',
+                  params: {
+                    doenetId,
+                        path,
+                  },
+                });
+             
+  
+              break;
+            case itemType.COLLECTION:
+  
+                setPageToolView({
+                  page: 'course',
+                  tool: 'editor',
+                  view: '',
+                  params: {
+                    doenetId,
+                    path,
+                    isCollection: true,
+                  },
+                });
+            
+              break;
+            default:
+              throw new Error(
+                'NavigationPanel doubleClick info type not defined',
+              );
+            }
+        
+
+        }else{
+          //role: student
+
+          switch (type) {
           case itemType.DOENETML:
           
               //TODO: VariantIndex params
@@ -379,7 +426,9 @@ export default function Next7Days({ driveId }) {
             throw new Error(
               'NavigationPanel doubleClick info type not defined',
             );
+          }
         }
+        
       },
     [setPageToolView],
   );
@@ -527,109 +576,3 @@ const dotwLabel = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'
   </>
 }
 
-  // useEffect(() => {
-  //   setMainPanelClear((was) => [
-  //     ...was,
-  //     { atom: clearDriveAndItemSelections, value: null },
-  //     { atom: selectedMenuPanelAtom, value: null },
-  //   ]);
-  //   return setMainPanelClear((was) =>
-  //     was.filter(
-  //       (obj) =>
-  //         obj.atom !== clearDriveAndItemSelections ||
-  //         obj.atom !== selectedMenuPanelAtom,
-  //     ),
-  //   );
-  // }, [setMainPanelClear]);
-
-  // const filterCallback = useRecoilCallback(
-  //   ({ snapshot }) =>
-  //     (item) => {
-  //       switch (view) {
-  //         case 'student':
-  //           if (item.itemType === itemType.FOLDER) {
-  //             const folderContents = snapshot
-  //               .getLoadable(
-  //                 folderDictionary({
-  //                   driveId: item.driveId,
-  //                   folderId: item.itemId,
-  //                 }),
-  //               )
-  //               .getValue()['contentsDictionary'];
-  //             for (const key in folderContents) {
-  //               if (folderContents[key].isReleased === '1') {
-  //                 return true;
-  //               }
-  //             }
-  //             return false;
-  //           } else {
-  //             console.log('whats up', item.itemType, 'i', item);
-  //             return item.isReleased === '1';
-  //           }
-  //         case 'instructor':
-  //           return true;
-  //         default:
-  //           console.warn('No view selected');
-  //       }
-  //     },
-  //   [view],
-  // );
-
-  // let doenetMLsJSX = <div>There are no assignments due over the next seven days.</div> 
-  // if (assignmentArray.length > 0){
-  //   doenetMLsJSX = [];
-  //   for (let item of assignmentArray){
-  //     doenetMLsJSX.push(<DoenetML
-  //           key={`item${item.itemId}${driveInstanceId}`}
-  //           driveId={driveId}
-  //           item={item}
-  //           indentLevel={0}
-  //           driveInstanceId={driveInstanceId}
-  //           route={route}
-  //           isNav={isNav}
-  //           pathItemId={pathItemId}
-  //           clickCallback={clickCallback}
-  //           doubleClickCallback={doubleClickCallback}
-  //           deleteItem={()=>{}}
-  //           numColumns={numColumns} 
-  //           columnTypes={columnTypes}
-  //           isViewOnly={true}
-  //         />)
-  //   }
-  // }
-  
-
-  // return (
-  //   <BreadcrumbProvider>
-  //     <DropTargetsProvider>
-  //       <Suspense fallback={<div>loading Drive...</div>}>
-  //         <Container>
-  //           <h2>Current Content</h2>
-  //           <DriveHeader
-  //           columnTypes={columnTypes}
-  //           numColumns={numColumns}
-  //           setNumColumns={setNumColumns}
-  //           driveInstanceId={driveInstanceId}
-  //           />
-  //           {doenetMLsJSX}
-               
- 
-  //         </Container>
-  //       </Suspense>
-  //     </DropTargetsProvider>
-  //   </BreadcrumbProvider>
-  // );
-
-// function Container(props) {
-//   return (
-//     <div
-//       style={{
-//         maxWidth: '850px',
-//         margin: '10px 20px',
-//         // border: "1px red solid",
-//       }}
-//     >
-//       {props.children}
-//     </div>
-//   );
-// }
