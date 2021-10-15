@@ -32,7 +32,7 @@ const Info = styled.div`
   border-top: 2px solid #040f1a;
   height: 65px;
   width: inherit;
-  background: #f6f8ff;
+  background: #fff;
 `;
 const LabelContainer = styled.p`
   text-transform: capitalize;

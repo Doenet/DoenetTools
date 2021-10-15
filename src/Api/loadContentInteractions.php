@@ -10,6 +10,9 @@ include "db_connection.php";
 
 $jwtArray = include "jwtArray.php";
 $userId = $jwtArray['userId'];
+$examUserId = $jwtArray['examineeUserId'];
+$examDoenetId = $jwtArray['doenetId'];
+
 $device = $jwtArray['deviceName'];
 
 $contentId = mysqli_real_escape_string($conn,$_REQUEST["contentId"]);
@@ -29,12 +32,19 @@ $message = 'Internal Error: missing attemptNumber';
 }elseif ($doenetId == ""){
 $success = FALSE;
 $message = 'Internal Error: missing doenetId';
-}elseif ($userId == ""){
-$success = FALSE;
-$message = "You need to be signed in for content interaction information";
 }elseif ($pageStateSource == ""){
 $success = FALSE;
 $message = 'Internal Error: missing pageStateSource';
+}elseif ($userId == ""){
+  if ($examUserId == ""){
+    $success = FALSE;
+    $message = "No access - Need to sign in";
+  }else if ($examDoenetId != $doenetId){
+      $success = FALSE;
+      $message = "No access for doenetId: $doenetId";
+  }else{
+      $userId = $examUserId;
+  }
 }
 
 

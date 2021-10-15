@@ -132,6 +132,9 @@ export default class CobwebPolyline extends DoenetRenderer {
     if (this.polylineJXG === void 0) {
       return this.createGraphicalObject();
     }
+    this.curveJXG.Y = this.doenetSvData.f;
+    this.curveJXG.needsUpdate = true;
+    this.curveJXG.updateCurve();
     let validCoords = true;
     for (let coords of this.doenetSvData.numericalVertices) {
       if (!Number.isFinite(coords[0])) {

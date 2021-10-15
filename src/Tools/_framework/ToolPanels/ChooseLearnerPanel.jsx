@@ -23,8 +23,8 @@ export default function ChooseLearnerPanel(props) {
       const { data } = await axios.get('/api/incrementAttemptNumber.php', {
         params: { doenetId, code, userId },
       })
-      // console.log(">>>>data",data)
-      // console.log(">>>>",doenetId,code,userId)
+      console.log(">>>>data 2",data)
+      console.log(">>>>",doenetId,code,userId)
    
       location.href = `/api/examjwt.php?userId=${encodeURIComponent(
           choosenLearner.userId,
