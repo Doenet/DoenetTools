@@ -54,6 +54,7 @@ if ($userId == ""){
 			if ($contentId){$foundAttempt = TRUE;}
 		}
 	}
+}
 
 
 
