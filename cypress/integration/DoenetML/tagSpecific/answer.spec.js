@@ -12308,6 +12308,130 @@ describe('Answer Tag Tests', function () {
     })
   });
 
+  it('disable after correct, depends on external', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+
+  <graph>
+    <point name="A" x="0" y="0">
+      <constraints>
+        <attractTo><point>(3,4)</point></attractTo>
+        <attractTo><point>(-5,6)</point></attractTo>
+      </constraints>
+    </point>
+  </graph>
+
+  <p>Move point to <m>(3,4)</m>: </p>
+  <p><answer>
+    <award targetsAreResponses="A">
+      <when>$A = (3,4)</when>
+    </award>
+  </answer></p>
+  <p><answer disableAfterCorrect>
+    <award targetsAreResponses="A">
+      <when>$A = (3,4)</when>
+    </award>
+  </answer></p>
+
+  <p>Move point to <m>(-5,6)</m>: </p>
+  <p><answer>
+    <award targetsAreResponses="A">
+      <when>$A = (-5,6)</when>
+    </award>
+  </answer></p>
+  <p><answer disableAfterCorrect>
+    <award targetsAreResponses="A">
+      <when>$A = (-5,6)</when>
+    </award>
+  </answer></p>
+
+  <p><mathinput name="mi" /></p>
+
+  <p>Enter <m>x</m> in above blank.</p>
+  <p><answer>
+    <award targetsAreResponses="mi"><when>$mi=x</when></award>
+  </answer></p>
+  <p><answer disableAfterCorrect>
+    <award targetsAreResponses="mi"><when>$mi=x</when></award>
+  </answer></p>
+
+  <p>Enter <m>y</m> in above blank.</p>
+  <p><answer>
+    <award targetsAreResponses="mi"><when>$mi=y</when></award>
+  </answer></p>
+  <p><answer disableAfterCorrect>
+    <award targetsAreResponses="mi"><when>$mi=y</when></award>
+  </answer></p>
+
+   `}, "*");
+    });
+
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+
+    cy.log('Submit incorrect answers')
+    for (let i = 1; i <= 8; i++) {
+      cy.get(`#\\/_answer${i}_submit`).click();
+      cy.get(`#\\/_answer${i}_incorrect`).should('be.visible')
+    }
+
+    cy.log('submit first correct answers')
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      components["/A"].movePoint({ x: 3, y: 4 })
+    })
+    cy.get('#\\/mi textarea').type("x{enter}", { force: true });
+
+    for (let i = 1; i <= 8; i++) {
+      cy.get(`#\\/_answer${i}_submit`).click();
+      if (i % 4 === 1 || i % 4 == 2) {
+        cy.get(`#\\/_answer${i}_correct`).should('be.visible')
+      } else {
+        cy.get(`#\\/_answer${i}_incorrect`).should('be.visible')
+      }
+    }
+
+    cy.log('submit second correct answers')
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      components["/A"].movePoint({ x: -5, y: 6 })
+    })
+    cy.get('#\\/mi textarea').type("{end}{backspace}y{enter}", { force: true });
+
+    for (let i = 1; i <= 8; i++) {
+      if (i % 4 !== 2) {
+        cy.get(`#\\/_answer${i}_submit`).click();
+      }
+      if (i % 4 === 1) {
+        cy.get(`#\\/_answer${i}_incorrect`).should('be.visible')
+      } else {
+        cy.get(`#\\/_answer${i}_correct`).should('be.visible')
+      }
+    }
+
+
+    cy.log('submit second incorrect answers')
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      components["/A"].movePoint({ x: 1, y: -1 })
+    })
+    cy.get('#\\/mi textarea').type("{end}{backspace}z{enter}", { force: true });
+
+    for (let i = 1; i <= 8; i++) {
+      if (i % 4 === 2 || i % 4 === 0) {
+        cy.get(`#\\/_answer${i}_correct`).should('be.visible')
+      } else {
+        cy.get(`#\\/_answer${i}_submit`).click();
+        cy.get(`#\\/_answer${i}_incorrect`).should('be.visible')
+      }
+    }
+
+
+  });
+
   it('award based on choice text', () => {
     cy.window().then((win) => {
       win.postMessage({
