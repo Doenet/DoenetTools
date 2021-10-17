@@ -1219,6 +1219,122 @@ describe('SelectFromSequence Tag Tests', function () {
     })
   });
 
+  it('select multiple numbers with excludecombinations, adjust for round-off error', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <p><aslist><selectfromsequence from="0.1" to="0.3" step="0.1" numbertoselect="2" name="sample1" excludecombinations="(0.1 0.3) (0.2 0.3) (0.3 0.1)" /></aslist></p>
+    <p><aslist><selectfromsequence from="0.1" to="0.3" step="0.1" numbertoselect="2" name="sample2" excludecombinations="(0.1 0.3) (0.2 0.3) (0.3 0.1)" /></aslist></p>
+    <p><aslist><selectfromsequence from="0.1" to="0.3" step="0.1" numbertoselect="2" name="sample3" excludecombinations="(0.1 0.3) (0.2 0.3) (0.3 0.1)" /></aslist></p>
+    <p><aslist><selectfromsequence from="0.1" to="0.3" step="0.1" numbertoselect="2" name="sample4" excludecombinations="(0.1 0.3) (0.2 0.3) (0.3 0.1)" /></aslist></p>
+    <p><aslist><selectfromsequence from="0.1" to="0.3" step="0.1" numbertoselect="2" name="sample5" excludecombinations="(0.1 0.3) (0.2 0.3) (0.3 0.1)" /></aslist></p>
+    <p><aslist><selectfromsequence from="0.1" to="0.3" step="0.1" numbertoselect="2" name="sample6" excludecombinations="(0.1 0.3) (0.2 0.3) (0.3 0.1)" /></aslist></p>
+    <p><aslist><selectfromsequence from="0.1" to="0.3" step="0.1" numbertoselect="2" name="sample7" excludecombinations="(0.1 0.3) (0.2 0.3) (0.3 0.1)" /></aslist></p>
+    <p><aslist><selectfromsequence from="0.1" to="0.3" step="0.1" numbertoselect="2" name="sample8" excludecombinations="(0.1 0.3) (0.2 0.3) (0.3 0.1)" /></aslist></p>
+    <p><aslist><selectfromsequence from="0.1" to="0.3" step="0.1" numbertoselect="2" name="sample9" excludecombinations="(0.1 0.3) (0.2 0.3) (0.3 0.1)" /></aslist></p>
+    <p><aslist><selectfromsequence from="0.1" to="0.3" step="0.1" numbertoselect="2" name="sample10" excludecombinations="(0.1 0.3) (0.2 0.3) (0.3 0.1)" /></aslist></p>
+    <p><aslist><selectfromsequence from="0.1" to="0.3" step="0.1" numbertoselect="2" name="sample11" excludecombinations="(0.1 0.3) (0.2 0.3) (0.3 0.1)" /></aslist></p>
+    <p><aslist><selectfromsequence from="0.1" to="0.3" step="0.1" numbertoselect="2" name="sample12" excludecombinations="(0.1 0.3) (0.2 0.3) (0.3 0.1)" /></aslist></p>
+    <p><aslist><selectfromsequence from="0.1" to="0.3" step="0.1" numbertoselect="2" name="sample13" excludecombinations="(0.1 0.3) (0.2 0.3) (0.3 0.1)" /></aslist></p>
+    <p><aslist><selectfromsequence from="0.1" to="0.3" step="0.1" numbertoselect="2" name="sample14" excludecombinations="(0.1 0.3) (0.2 0.3) (0.3 0.1)" /></aslist></p>
+    <p><aslist><selectfromsequence from="0.1" to="0.3" step="0.1" numbertoselect="2" name="sample15" excludecombinations="(0.1 0.3) (0.2 0.3) (0.3 0.1)" /></aslist></p>
+    <p><aslist><selectfromsequence from="0.1" to="0.3" step="0.1" numbertoselect="2" name="sample16" excludecombinations="(0.1 0.3) (0.2 0.3) (0.3 0.1)" /></aslist></p>
+    <p><aslist><selectfromsequence from="0.1" to="0.3" step="0.1" numbertoselect="2" name="sample17" excludecombinations="(0.1 0.3) (0.2 0.3) (0.3 0.1)" /></aslist></p>
+    <p><aslist><selectfromsequence from="0.1" to="0.3" step="0.1" numbertoselect="2" name="sample18" excludecombinations="(0.1 0.3) (0.2 0.3) (0.3 0.1)" /></aslist></p>
+    <p><aslist><selectfromsequence from="0.1" to="0.3" step="0.1" numbertoselect="2" name="sample19" excludecombinations="(0.1 0.3) (0.2 0.3) (0.3 0.1)" /></aslist></p>
+    <p><aslist><selectfromsequence from="0.1" to="0.3" step="0.1" numbertoselect="2" name="sample20" excludecombinations="(0.1 0.3) (0.2 0.3) (0.3 0.1)" /></aslist></p>
+    `}, "*");
+    });
+
+    // to wait for page to load
+    cy.get('#\\/_text1').should('have.text', 'a')
+
+    let allowedCombinations = [[0.1, 0.2], [0.2, 0.1], [0.3, 0.2]];
+    let foundCombination = [false, false, false];
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      for (let ind = 1; ind <= 20; ind++) {
+        let x1 = components['/sample' + ind].replacements[0].stateValues.value;
+        let x2 = components['/sample' + ind].replacements[1].stateValues.value;
+
+        let combination = -1;
+        for(let [ind, comb] of allowedCombinations.entries()) {
+          if(Math.abs(comb[0]-x1) < 1E-14 && Math.abs(comb[1]-x2) < 1E-14) {
+            combination = ind;
+          }
+        }
+
+        expect(combination).not.eq(-1)
+
+        foundCombination[combination] = true;
+
+      }
+
+      for(let i=0; i < 3; i++) {
+        expect(foundCombination[i]).be.true;
+      }
+    })
+  });
+
+  it('select multiple math with excludecombinations, adjust for round-off error', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <p><aslist><selectfromsequence type="math" from="0.1" to="0.3" step="0.1" numbertoselect="2" name="sample1" excludecombinations="(0.1 0.3) (0.2 0.3) (0.3 0.1)" /></aslist></p>
+    <p><aslist><selectfromsequence type="math" from="0.1" to="0.3" step="0.1" numbertoselect="2" name="sample2" excludecombinations="(0.1 0.3) (0.2 0.3) (0.3 0.1)" /></aslist></p>
+    <p><aslist><selectfromsequence type="math" from="0.1" to="0.3" step="0.1" numbertoselect="2" name="sample3" excludecombinations="(0.1 0.3) (0.2 0.3) (0.3 0.1)" /></aslist></p>
+    <p><aslist><selectfromsequence type="math" from="0.1" to="0.3" step="0.1" numbertoselect="2" name="sample4" excludecombinations="(0.1 0.3) (0.2 0.3) (0.3 0.1)" /></aslist></p>
+    <p><aslist><selectfromsequence type="math" from="0.1" to="0.3" step="0.1" numbertoselect="2" name="sample5" excludecombinations="(0.1 0.3) (0.2 0.3) (0.3 0.1)" /></aslist></p>
+    <p><aslist><selectfromsequence type="math" from="0.1" to="0.3" step="0.1" numbertoselect="2" name="sample6" excludecombinations="(0.1 0.3) (0.2 0.3) (0.3 0.1)" /></aslist></p>
+    <p><aslist><selectfromsequence type="math" from="0.1" to="0.3" step="0.1" numbertoselect="2" name="sample7" excludecombinations="(0.1 0.3) (0.2 0.3) (0.3 0.1)" /></aslist></p>
+    <p><aslist><selectfromsequence type="math" from="0.1" to="0.3" step="0.1" numbertoselect="2" name="sample8" excludecombinations="(0.1 0.3) (0.2 0.3) (0.3 0.1)" /></aslist></p>
+    <p><aslist><selectfromsequence type="math" from="0.1" to="0.3" step="0.1" numbertoselect="2" name="sample9" excludecombinations="(0.1 0.3) (0.2 0.3) (0.3 0.1)" /></aslist></p>
+    <p><aslist><selectfromsequence type="math" from="0.1" to="0.3" step="0.1" numbertoselect="2" name="sample10" excludecombinations="(0.1 0.3) (0.2 0.3) (0.3 0.1)" /></aslist></p>
+    <p><aslist><selectfromsequence type="math" from="0.1" to="0.3" step="0.1" numbertoselect="2" name="sample11" excludecombinations="(0.1 0.3) (0.2 0.3) (0.3 0.1)" /></aslist></p>
+    <p><aslist><selectfromsequence type="math" from="0.1" to="0.3" step="0.1" numbertoselect="2" name="sample12" excludecombinations="(0.1 0.3) (0.2 0.3) (0.3 0.1)" /></aslist></p>
+    <p><aslist><selectfromsequence type="math" from="0.1" to="0.3" step="0.1" numbertoselect="2" name="sample13" excludecombinations="(0.1 0.3) (0.2 0.3) (0.3 0.1)" /></aslist></p>
+    <p><aslist><selectfromsequence type="math" from="0.1" to="0.3" step="0.1" numbertoselect="2" name="sample14" excludecombinations="(0.1 0.3) (0.2 0.3) (0.3 0.1)" /></aslist></p>
+    <p><aslist><selectfromsequence type="math" from="0.1" to="0.3" step="0.1" numbertoselect="2" name="sample15" excludecombinations="(0.1 0.3) (0.2 0.3) (0.3 0.1)" /></aslist></p>
+    <p><aslist><selectfromsequence type="math" from="0.1" to="0.3" step="0.1" numbertoselect="2" name="sample16" excludecombinations="(0.1 0.3) (0.2 0.3) (0.3 0.1)" /></aslist></p>
+    <p><aslist><selectfromsequence type="math" from="0.1" to="0.3" step="0.1" numbertoselect="2" name="sample17" excludecombinations="(0.1 0.3) (0.2 0.3) (0.3 0.1)" /></aslist></p>
+    <p><aslist><selectfromsequence type="math" from="0.1" to="0.3" step="0.1" numbertoselect="2" name="sample18" excludecombinations="(0.1 0.3) (0.2 0.3) (0.3 0.1)" /></aslist></p>
+    <p><aslist><selectfromsequence type="math" from="0.1" to="0.3" step="0.1" numbertoselect="2" name="sample19" excludecombinations="(0.1 0.3) (0.2 0.3) (0.3 0.1)" /></aslist></p>
+    <p><aslist><selectfromsequence type="math" from="0.1" to="0.3" step="0.1" numbertoselect="2" name="sample20" excludecombinations="(0.1 0.3) (0.2 0.3) (0.3 0.1)" /></aslist></p>
+    `}, "*");
+    });
+
+    // to wait for page to load
+    cy.get('#\\/_text1').should('have.text', 'a')
+
+    let allowedCombinations = [[0.1, 0.2], [0.2, 0.1], [0.3, 0.2]];
+    let foundCombination = [false, false, false];
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      for (let ind = 1; ind <= 20; ind++) {
+        let x1 = components['/sample' + ind].replacements[0].stateValues.value.tree;
+        let x2 = components['/sample' + ind].replacements[1].stateValues.value.tree;
+
+        let combination = -1;
+        for(let [ind, comb] of allowedCombinations.entries()) {
+          if(Math.abs(comb[0]-x1) < 1E-14 && Math.abs(comb[1]-x2) < 1E-14) {
+            combination = ind;
+          }
+        }
+
+        expect(combination).not.eq(-1)
+
+        foundCombination[combination] = true;
+
+      }
+
+      for(let i=0; i < 3; i++) {
+        expect(foundCombination[i]).be.true;
+      }
+    })
+  });
+
   it('select multiple maths with excludes and excludecombinations', () => {
     cy.window().then((win) => {
       win.postMessage({

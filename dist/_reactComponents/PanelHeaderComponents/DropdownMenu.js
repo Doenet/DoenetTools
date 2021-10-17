@@ -1,6 +1,7 @@
 import React from "../../_snowpack/pkg/react.js";
 import Select from "../../_snowpack/pkg/react-select.js";
 const DropdownMenu = (props) => {
+  console.log("right ", props.right);
   const customStyles = {
     option: (provided, state) => {
       return {
@@ -14,8 +15,25 @@ const DropdownMenu = (props) => {
       ...provided,
       width: state.selectProps.width
     }),
+    container: (provided, state) => ({
+      ...provided,
+      position: props.absolute ? "absolute" : "relative",
+      top: props.absolute && props.top ? props.top : null,
+      right: props.absolute && props.right ? props.right : null,
+      left: props.absolute && props.left ? props.left : null,
+      bottom: props.absolute && props.bottom ? props.bottom : null
+    }),
+    valueContainer: (provided, state) => ({
+      ...provided,
+      height: "20px"
+    }),
+    indicatorsContainer: (provided, state) => ({
+      ...provided,
+      height: "20px"
+    }),
     control: (provided, state) => {
       return {
+        margin: "0px 4px 0px 4px",
         alignItems: "center",
         fontFamily: "Open Sans",
         backgroundColor: "hsl(0, 0%, 100%)",
@@ -24,7 +42,8 @@ const DropdownMenu = (props) => {
         flexWrap: "wrap",
         justifyContent: "space-between",
         label: "control",
-        minHeight: 38,
+        minHeight: "20px",
+        height: "20px",
         width: state.selectProps.width,
         borderWidth: "2px",
         borderStyle: "solid",
@@ -43,10 +62,10 @@ const DropdownMenu = (props) => {
   });
   var width = props.width;
   if (props.width == "menu") {
-    width = "235px";
+    width = "210px";
   }
-  console.log(options.length);
   return /* @__PURE__ */ React.createElement(Select, {
+    value: options[props.valueIndex - 1],
     defaultValue: options[props.defaultIndex - 1],
     styles: customStyles,
     width,

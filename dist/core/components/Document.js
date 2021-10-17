@@ -592,9 +592,6 @@ export default class Document extends BaseComponent {
       object: {
         componentName: this.componentName,
         componentType: this.componentType,
-      },
-      result: {
-        creditAchieved: this.stateValues.creditAchievedIfSubmit
       }
     });
 

@@ -415,6 +415,10 @@ export default class BaseComponent {
       }),
       definition({ dependencyValues, usedDefault }) {
 
+        if (dependencyValues.readOnly) {
+          return { newValues: { disabled: true } }
+        }
+
         if (dependencyValues.disabledPreliminary !== null &&
           dependencyValues.disabledAttr !== null
         ) {
@@ -454,7 +458,7 @@ export default class BaseComponent {
         if (useEssential) {
           return {
             useEssentialOrDefaultValue: {
-              disabled: { defaultValue: dependencyValues.readOnly === true }
+              disabled: { defaultValue: false }
             }
           }
         } else {
@@ -920,6 +924,7 @@ export default class BaseComponent {
 
     let adapterStateVariable;
     let adapterComponentType;
+    let substituteForPrimaryStateVariable;
 
     // adapter could be either 
     // - a string specifying a public state variable, or
@@ -930,6 +935,7 @@ export default class BaseComponent {
     } else {
       adapterStateVariable = adapter.stateVariable;
       adapterComponentType = adapter.componentType;
+      substituteForPrimaryStateVariable = adapter.substituteForPrimaryStateVariable;
     }
 
     // look in state for matching public value
@@ -953,7 +959,8 @@ export default class BaseComponent {
           adapterTargetIdentity: {
             componentName: this.componentName,
             componentType: this.componentType,
-          }
+          },
+          substituteForPrimaryStateVariable
         }]
       }
     }
