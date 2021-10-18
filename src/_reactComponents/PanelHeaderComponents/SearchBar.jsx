@@ -58,15 +58,7 @@ export default function Searchbar(props) {
         searchBar.cursor = 'not-allowed';
         disable = "disabled";
     }
-    // if (props.action) {
-    //     function searchSubmitAction() {
-    //         props.action
-    //     }
-    // } else {
-    //     function searchSubmitAction() {
-    //         window.alert("You hit Submit!")
-    //     }
-    // }
+    
 
     if (props.width) {
         if (props.width === "menu") {
@@ -74,20 +66,47 @@ export default function Searchbar(props) {
         } 
       }
     function clearInput() {
-        document.getElementById('search').value = '';
+        setSearchTerm('');
         setCancelShown('hidden')
+        if (props.onChange){
+            props.onChange('');
+        }
     }
-    function changeSearchTerm() {
-        setSearchTerm(document.getElementById('search').value)
-        setCancelShown('visible')
+
+    function onChange(e) {
+        let val = e.target.value;
+        setSearchTerm(val);
+        if (val === ""){
+            setCancelShown('hidden')
+        }else{
+            setCancelShown('visible')
+        }
+        if (props.onChange){
+            props.onChange(val);
+        }
+    }
+
+    function searchSubmitAction() {
+        if (props.onSubmit){
+            props.onSubmit(searchTerm);
+        }
     }
     return (
-        <div style={{display: "table-cell"}} onClick={() => { clearInput()}}>
+        <div style={{display: "table-cell"}} >
             <FontAwesomeIcon icon={faSearch} style={searchIcon}/>
             <button style={cancelButton} onClick={() => { clearInput() }} ><FontAwesomeIcon icon={faTimes}/></button>
-            <input id="search" type="text" defaultValue="Search..." style={searchBar} onKeyUp={() => { changeSearchTerm() }} disabled={disable}/>
+            <input 
+            id="search" 
+            type="text" 
+            placeHolder="Search..." 
+            style={searchBar} 
+            onChange={onChange}
+            disabled={disable}
+            value={searchTerm}
+            onKeyDown={(e)=>{if (e.key === 'Enter'){searchSubmitAction()}}}
+            />
             <div style={{padding: '3px', display:'inline'}}></div>
-            <button style={submitButton} onClick={() => { searchSubmitAction() }}>Search</button>
+            <button style={submitButton} onClick={searchSubmitAction}>Search</button>
         </div>
     )
   }
