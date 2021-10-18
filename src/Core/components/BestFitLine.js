@@ -44,7 +44,7 @@ export default class BestFitLine extends Line {
       public: true,
       componentType: "number",
       returnDependencies: () => ({}),
-      definition: () => ({newValues: {nDimensions: 2}})
+      definition: () => ({ newValues: { nDimensions: 2 } })
     }
 
 
@@ -73,7 +73,7 @@ export default class BestFitLine extends Line {
     stateVariableDefinitions.equation.definition = function ({ dependencyValues }) {
 
       if (!dependencyValues.points
-        || dependencyValues.points.stateValues.nDimensions !== 2
+        || dependencyValues.points.stateValues.nDimensions < 2
         || dependencyValues.points.stateValues.points.length < 1
       ) {
         let blankMath = me.fromAst('\uff3f');
@@ -88,21 +88,17 @@ export default class BestFitLine extends Line {
       let X = [];
       let Y = [];
 
-      let allFinite = true;
 
       for (let pt of dependencyValues.points.stateValues.points) {
-        let numericalX = pt.map(x => x && x.evaluate_to_constant());
-        if (!numericalX.every(Number.isFinite)) {
-          allFinite = false;
-          break;
+        let numericalX = pt.slice(0, 2).map(x => x && x.evaluate_to_constant());
+        if (numericalX.every(Number.isFinite)) {
+          X.push([1, numericalX[0]]);
+          Y.push([numericalX[1]]);
         }
-
-        X.push([1, numericalX[0]]);
-        Y.push([numericalX[1]]);
 
       }
 
-      if (!allFinite) {
+      if (X.length === 0) {
         let blankMath = me.fromAst('\uff3f');
         return {
           newValues: {
