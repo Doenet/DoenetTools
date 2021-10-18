@@ -1168,18 +1168,46 @@ function findFirstUnmatchedClosingParens(components) {
 }
 
 export function decodeXMLEntities(serializedComponents) {
+
+  function replaceEntities(s) {
+    return s
+    .replace(/&apos;/g, "'")
+    .replace(/&quot;/g, '"')
+    .replace(/&gt;/g, '>')
+    .replace(/&lt;/g, '<')
+    .replace(/&dollar;/g, '$')
+    .replace(/&amp;/g, '&');
+  }
+
   for (let serializedComponent of serializedComponents) {
     if (serializedComponent.componentType === "string") {
-      serializedComponent.state.value =
-        serializedComponent.state.value
-          .replace(/&apos;/g, "'")
-          .replace(/&quot;/g, '"')
-          .replace(/&gt;/g, '>')
-          .replace(/&lt;/g, '<')
-          .replace(/&dollar;/g, '$')
-          .replace(/&amp;/g, '&');
-    } else if (serializedComponent.children) {
-      decodeXMLEntities(serializedComponent.children)
+      serializedComponent.state.value = replaceEntities(serializedComponent.state.value)
+    } else {
+
+      if (serializedComponent.children) {
+        decodeXMLEntities(serializedComponent.children)
+      }
+
+      if (serializedComponent.attributes) {
+        for (let attrName in serializedComponent.attributes) {
+          let attribute = serializedComponent.attributes[attrName];
+  
+          if (attribute.component) {
+            decodeXMLEntities([attribute.component])
+          } else if(attribute.primitive) {
+            if(typeof attribute.primitive === "string") {
+              attribute.primitive = replaceEntities(attribute.primitive);
+            }
+          } else {
+            if(attribute.childrenForComponent) {
+              decodeXMLEntities(attribute.childrenForComponent);
+            }
+            if(attribute.rawString) {
+              attribute.rawString = replaceEntities(attribute.rawString);
+            }
+          }
+        }
+      }
     }
   }
 }
