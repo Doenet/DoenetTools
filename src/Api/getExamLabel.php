@@ -16,8 +16,6 @@ $success = TRUE;
 $foundAttempt = FALSE;
 $message = "";
 
-
-
 $doenetId = mysqli_real_escape_string($conn,$_REQUEST["doenetId"]);
 
 if ($userId == ""){
@@ -38,20 +36,16 @@ if ($success){
 	$contentId = null;
 
 	$sql = "
-		SELECT contentId
-		FROM user_assignment_attempt
-		WHERE userId = '$userId'
-		AND doenetId = '$doenetId'
-		ORDER BY attemptNumber DESC
-		LIMIT 1
+		SELECT label
+		FROM drive_content
+		WHERE doenetId = '$doenetId'
 	";
 
 	$result = $conn->query($sql);
 	if ($result->num_rows > 0) {
 		$row = $result->fetch_assoc();
-		$contentId = $row['contentId'];
+		$label = $row['label'];
 		
-		if ($contentId){$foundAttempt = TRUE;}
 	}
 }
 
@@ -63,8 +57,7 @@ if ($success){
 $response_arr = array(
 	"success" => $success,
 	"message" => $message,
-	"foundAttempt" => $foundAttempt,
-	"contentId" => $contentId,
+	"label" => $label,
 );
          
 
