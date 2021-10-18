@@ -3,34 +3,9 @@ import Core from "./core.js";
 import axios from "../_snowpack/pkg/axios.js";
 import sha256 from "../_snowpack/pkg/crypto-js/sha256.js";
 import CryptoJS from "../_snowpack/pkg/crypto-js.js";
-import me from "../_snowpack/pkg/math-expressions.js";
 import {nanoid} from "../_snowpack/pkg/nanoid.js";
 import {useToast, toastType} from "../_framework/Toast.js";
-export function serializedComponentsReplacer(key, value) {
-  if (value !== value) {
-    return {objectType: "special-numeric", stringValue: "NaN"};
-  } else if (value === Infinity) {
-    return {objectType: "special-numeric", stringValue: "Infinity"};
-  } else if (value === -Infinity) {
-    return {objectType: "special-numeric", stringValue: "-Infinity"};
-  }
-  return value;
-}
-let nanInfinityReviver = function(key, value) {
-  if (value && value.objectType === "special-numeric") {
-    if (value.stringValue === "NaN") {
-      return NaN;
-    } else if (value.stringValue === "Infinity") {
-      return Infinity;
-    } else if (value.stringValue === "-Infinity") {
-      return -Infinity;
-    }
-  }
-  return value;
-};
-export function serializedComponentsReviver(key, value) {
-  return me.reviver(key, nanInfinityReviver(key, value));
-}
+import {serializedComponentsReplacer, serializedComponentsReviver} from "../core/utils/serializedStateProcessing.js";
 class DoenetViewerChild extends Component {
   constructor(props) {
     super(props);
@@ -210,7 +185,6 @@ class DoenetViewerChild extends Component {
         stateVariables: changeString
       };
       axios.post("/api/saveCreditForItem.php", payload2).then((resp) => {
-        console.log(">>>>resp", resp.data);
         this.props.updateCreditAchievedCallback(resp.data);
         if (resp.data.viewedSolution) {
           this.props.toast("No credit awarded since solution was viewed.", toastType.INFO);
@@ -252,12 +226,17 @@ class DoenetViewerChild extends Component {
       });
       return;
     }
+    let effectivePageStateSource = "pageState";
+    if (this.props.pageStateSource) {
+      effectivePageStateSource = this.props.pageStateSource;
+    }
     const payload = {
       params: {
         contentId: this.contentId,
         attemptNumber: this.attemptNumber,
         doenetId: this.props.doenetId,
-        userId: this.props.userId
+        userId: this.props.userId,
+        pageStateSource: effectivePageStateSource
       }
     };
     axios.get("/api/loadContentInteractions.php", payload).then((resp) => {

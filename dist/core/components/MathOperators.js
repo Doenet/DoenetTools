@@ -547,6 +547,10 @@ export class Abs extends MathBaseOperatorOneInput {
               if (valueNumeric < 0) {
                 desiredValue = me.fromAst(0)
               }
+            } else if (Array.isArray(value.tree)
+              && value.tree[0] === "apply" && value.tree[1] === "abs"
+            ) {
+              desiredValue = me.fromAst(value.tree[2]);
             }
             return desiredValue;
           }

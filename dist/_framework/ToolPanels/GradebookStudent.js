@@ -135,9 +135,12 @@ export default function GradebookStudent() {
       percentage: totalPercentage
     });
   }
-  return /* @__PURE__ */ React.createElement(Styles, null, /* @__PURE__ */ React.createElement(Table, {
+  let studentName = `${students.contents[userId]?.firstName} ${students.contents[userId]?.lastName}`;
+  return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("div", {
+    style: {marginLeft: "18px"}
+  }, /* @__PURE__ */ React.createElement("b", null, "Gradebook for ", studentName)), /* @__PURE__ */ React.createElement(Styles, null, /* @__PURE__ */ React.createElement(Table, {
     disableSortBy: true,
     columns: overviewTable.headers,
     data: overviewTable.rows
-  }));
+  })));
 }

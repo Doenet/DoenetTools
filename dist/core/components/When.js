@@ -23,7 +23,8 @@ export default class When extends BooleanComponent {
       "simplifyOnCompare", "unorderedCompare", "matchByExactPositions",
       "allowedErrorInNumbers", "includeErrorInNumberExponents",
       "allowedErrorIsAbsolute",
-      "nSignErrorsMatched"
+      "nSignErrorsMatched",
+      "nPeriodicSetMatchesRequired"
     ]) {
       delete attributes[attrName].ignorePropagationFromAncestors;
       attributes[attrName].propagateToDescendants = true;
@@ -82,6 +83,10 @@ export default class When extends BooleanComponent {
         nSignErrorsMatched: {
           dependencyType: "stateVariable",
           variableName: "nSignErrorsMatched",
+        },
+        nPeriodicSetMatchesRequired: {
+          dependencyType: "stateVariable",
+          variableName: "nPeriodicSetMatchesRequired",
         },
         parsedExpression: {
           dependencyType: "stateVariable",

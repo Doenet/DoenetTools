@@ -8,7 +8,8 @@ include "db_connection.php";
 
 $jwtArray = include "jwtArray.php";
 $userId = $jwtArray['userId'];
-
+$examUserId = $jwtArray['examineeUserId'];
+$examDoenetId = $jwtArray['doenetId'];
 
 $_POST = json_decode(file_get_contents("php://input"),true);
 $doenetId = mysqli_real_escape_string($conn,$_POST["doenetId"]);
@@ -43,6 +44,17 @@ if ($doenetId == ""){
 }elseif ($generatedVariant == ""){
     $success = FALSE;
     $message = 'Internal Error: missing generatedVariant';
+}else if ($userId == ""){
+  if ($examUserId == ""){
+          $success = FALSE;
+          $message = "No access - Need to sign in";
+  }else if ($examDoenetId != $doenetId){
+          $success = FALSE;
+          $message = "No access for doenetId: $doenetId";
+  }else{
+          $userId = $examUserId;
+  }
+
 }
 //TODO: make sure we have the right weights
 

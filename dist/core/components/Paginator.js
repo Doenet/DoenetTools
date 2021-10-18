@@ -304,7 +304,7 @@ export class Paginator extends Template {
 
   async setPage({ number }) {
 
-    if (this.stateValues.submitAllOnPageChange) {
+    if (this.stateValues.submitAllOnPageChange && !this.flags.readOnly) {
       await this.coreFunctions.performAction({
         componentName: this.stateValues.documentName,
         actionName: "submitAllAnswers"
