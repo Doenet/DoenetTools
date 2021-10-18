@@ -7,7 +7,7 @@
 #
 # Host: 127.0.0.1 (MySQL 5.7.29)
 # Database: doenet_local
-# Generation Time: 2021-10-10 00:15:27 +0000
+# Generation Time: 2021-10-18 02:23:49 +0000
 # ************************************************************
 
 
@@ -75,7 +75,7 @@ CREATE TABLE `class_times` (
   `dotwIndex` int(1) NOT NULL,
   `startTime` time NOT NULL,
   `endTime` time NOT NULL,
-  `order` int(11) DEFAULT NULL,
+  `sortOrder` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
