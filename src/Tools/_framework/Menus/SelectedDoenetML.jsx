@@ -3,6 +3,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React, { useState, useEffect } from 'react';
 import DropdownMenu from '../../../_reactComponents/PanelHeaderComponents/DropdownMenu';
 import DateTime from '../../../_reactComponents/PanelHeaderComponents/DateTime';
+import { DateToUTCDateString } from '../../../_utils/dateUtilityFunction';
 
 import {
   atom,
@@ -40,7 +41,6 @@ import Switch from '../../_framework/Switch';
 import axios from 'axios';
 import { nanoid } from 'nanoid';
 
-import { DateToUTCDateString } from '../../../_utils/dateUtilityFunction';
 import {
   itemHistoryAtom,
   fileByContentId,
@@ -356,8 +356,8 @@ export function AssignmentSettings({ role, doenetId }) {
   let [showHints, setShowHints] = useState(true);
   let [showCorrectness, setShowCorrectness] = useState(true);
   let [proctorMakesAvailable, setProctorMakesAvailable] = useState(true);
-  const [adDisabled, setAdDisabled] = useState(true);
-  const [ddDisabled, setDdDisabled] = useState(true);
+  let [adDisabled, setAdDisabled] = useState(aInfo.assignedDate ? false : true);
+  let [ddDisabled, setDdDisabled] = useState(aInfo.dueDate ? false : true);
 
   const updateAssignment = useRecoilCallback(
     ({ set, snapshot }) =>
@@ -431,6 +431,7 @@ export function AssignmentSettings({ role, doenetId }) {
   //Update assignment values when selection changes
   useEffect(() => {
     setAssignedDate(aInfo?.assignedDate);
+    setAdDisabled(aInfo.assignedDate ? false : true);
     setDueDate(aInfo?.dueDate);
     setLimitAttempts(aInfo?.numberOfAttemptsAllowed !== null);
     setNumberOfAttemptsAllowed(aInfo?.numberOfAttemptsAllowed);
@@ -518,14 +519,15 @@ export function AssignmentSettings({ role, doenetId }) {
         <label>
           Assigned Date
           <DateTime
+            // id={doenetId + '_assigneddate'}
             disabled={adDisabled}
-            placeholder={'no assigned date'}
-            datePicker={true}
-            value={aInfo.assignedDate ? new Date(aInfo.assignedDate) : null}
-            checkboxValue={adDisabled}
-            checkboxCallback={(e) => {
+            value={
+              aInfo.assignedDate ? new Date(aInfo.assignedDate + ' UTC') : null
+            }
+            checked={adDisabled}
+            checkboxOnChange={(e) => {
               let valueDescription = 'Now';
-              let value = new Date().toLocaleString();
+              let value = DateToUTCDateString(new Date());
               if (e.currentTarget.checked) {
                 setAdDisabled(true);
                 valueDescription = 'Always';
@@ -541,14 +543,26 @@ export function AssignmentSettings({ role, doenetId }) {
                 valueDescription,
               });
             }}
-            callback={({ valid, value }) => {
-              if (valid && value.toLocaleString() !== aInfo.assignedDate) {
-                updateAssignment({
-                  doenetId,
-                  keyToUpdate: 'assignedDate',
-                  value: value.toLocaleString(),
-                  description: 'Assigned Date',
-                });
+            onBlur={({ valid, value }) => {
+              if (valid) {
+                try {
+                  value = value.toDate();
+                } catch (e) {
+                  console.log('value not moment');
+                }
+                if (
+                  new Date(DateToUTCDateString(value)).getTime() !==
+                  new Date(aInfo.assignedDate).getTime()
+                ) {
+                  updateAssignment({
+                    doenetId,
+                    keyToUpdate: 'assignedDate',
+                    value: DateToUTCDateString(value),
+                    description: 'Assigned Date',
+                  });
+                }
+              } else {
+                addToast('Invalid Assigned Date');
               }
             }}
           />
@@ -580,11 +594,11 @@ export function AssignmentSettings({ role, doenetId }) {
           ></Switch>
         </label>
       </div> */}
-      <div>
+      {/* <div>
         <label>
           Due Date
-          <br />
-          {/* <input
+          <br /> */}
+      {/* <input
               required
               type="text"
               name="dueDate"
@@ -617,7 +631,7 @@ export function AssignmentSettings({ role, doenetId }) {
                 }
               }}
             /> */}
-          <DateTime
+      {/* <DateTime
             disabled={ddDisabled}
             placeholder={'no due date'}
             datePicker={true}
@@ -655,7 +669,7 @@ export function AssignmentSettings({ role, doenetId }) {
             }}
           />
         </label>
-      </div>
+      </div> */}
 
       <div>
         <label>
