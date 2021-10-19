@@ -56,7 +56,7 @@ export const showCompletedAtom = atom({
 //boolean
 export const showOverdueAtom = atom({
   key:'showOverdueAtom',
-  default:true
+  default:false
 })
 
 function formatAssignedDate(dt,classTimes,dueDT,thisWeek){
