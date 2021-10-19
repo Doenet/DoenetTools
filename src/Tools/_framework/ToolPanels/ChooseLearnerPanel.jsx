@@ -174,9 +174,11 @@ export default function ChooseLearnerPanel(props) {
       if (learner.exam_to_date[doenetId]){
 
         let lastExamDT = UTCDateStringToDate(learner.exam_to_date[doenetId]);
-
-        let time = formatAMPM(lastExamDT)
-        timeZoneCorrectLastExamDate = `${lastExamDT.getMonth() + 1}/${lastExamDT.getDate()} ${time}`;
+        if (lastExamDT){
+          let time = formatAMPM(lastExamDT)
+          timeZoneCorrectLastExamDate = `${lastExamDT.getMonth() + 1}/${lastExamDT.getDate()} ${time}`;
+        }
+        
       }
       learnerRows.push(<tr>
         <td style={{textAlign:"center"}}>{learner.firstName}</td>

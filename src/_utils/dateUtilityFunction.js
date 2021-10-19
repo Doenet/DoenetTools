@@ -20,6 +20,7 @@ export function dateUtilityFunction(date, isTimeIncluded){
   };
 
   export function UTCDateStringToDate(string){
+    if (!string || typeof string !== 'string'){ return null; }
     let t = string.split(/[- :]/);
     // Apply each element to the Date function
     return new Date(

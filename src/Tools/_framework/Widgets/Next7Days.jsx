@@ -188,17 +188,27 @@ function buildRows({
 
       
       let assignedDate = UTCDateStringToDate(assignment.assignedDate)
-      assignedDate.setSeconds(0,0);
-      let dueDate = UTCDateStringToDate(assignment.dueDate)
-      dueDate.setSeconds(0,0);
+      let displayAssignedDate = '';
 
-      let effectiveRowLabel = `${dotw} ${dueDate.getMonth() + 1}/${dueDate.getDate()}`
-      if (rowLabel !== ""){
-        effectiveRowLabel = rowLabel;
+      if (assignedDate){
+        assignedDate.setSeconds(0,0);
+        displayAssignedDate = formatAssignedDate(assignedDate,classTimes,dueDate,weekShift == 0)   
       }
-      let displayDueDate = formatDueDate(dueDate,classTimes) 
+      
+      let dueDate = UTCDateStringToDate(assignment.dueDate)
+      let displayDueDate = '';
+      let effectiveRowLabel = '';
 
-      let displayAssignedDate = formatAssignedDate(assignedDate,classTimes,dueDate,weekShift == 0)   
+      if (dueDate){
+        dueDate.setSeconds(0,0);
+        effectiveRowLabel = `${dotw} ${dueDate.getMonth() + 1}/${dueDate.getDate()}`
+        if (rowLabel !== ""){
+          effectiveRowLabel = rowLabel;
+        }
+        displayDueDate = formatDueDate(dueDate,classTimes) 
+      }
+
+      
       
       let bgColor = null;
       if (assignment.itemId === selectedItemId){
@@ -483,7 +493,7 @@ if (weekShift == 0){
     for (let assignment of assignmentArray){
       const due = UTCDateStringToDate(assignment.dueDate);
       
-      if (due > now){ break; }
+      if (!due || due > now){ break; }
       if (!completedArray.includes(assignment.doenetId)){
         overdueArray.push(assignment);
       }
@@ -517,7 +527,8 @@ let dueByDOTW = [[],[],[],[],[],[],[]];
   for (let i = 0; i < assignmentArray.length; i++){
     let assignment = assignmentArray[i];
     let dueDate = UTCDateStringToDate(assignment.dueDate)
-    if (dueDate < beginningOfMondayDT){ continue; }
+
+    if (!dueDate || dueDate < beginningOfMondayDT){ continue; }
     if (dueDate > endOfSundayDT){ break; }
     let assignmentDOTW = dueDate.getDay();
     dueByDOTW[assignmentDOTW].push({...assignment});
