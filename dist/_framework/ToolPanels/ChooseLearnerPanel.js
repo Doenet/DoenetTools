@@ -122,9 +122,12 @@ export default function ChooseLearnerPanel(props) {
       if (!learner.firstName.toLowerCase().includes(filter.toLowerCase()) && !learner.lastName.toLowerCase().includes(filter.toLowerCase())) {
         continue;
       }
-      let lastExamDT = new Date(`${learner.exam_to_date[doenetId]} UTC`);
-      let time = formatAMPM(lastExamDT);
-      let timeZoneCorrectLastExamDate = `${lastExamDT.getMonth() + 1}/${lastExamDT.getDate()} ${time}`;
+      let timeZoneCorrectLastExamDate = null;
+      if (learner.exam_to_date[doenetId]) {
+        let lastExamDT = new Date(`${learner.exam_to_date[doenetId]} UTC`);
+        let time = formatAMPM(lastExamDT);
+        timeZoneCorrectLastExamDate = `${lastExamDT.getMonth() + 1}/${lastExamDT.getDate()} ${time}`;
+      }
       learnerRows.push(/* @__PURE__ */ React.createElement("tr", null, /* @__PURE__ */ React.createElement("td", {
         style: {textAlign: "center"}
       }, learner.firstName), /* @__PURE__ */ React.createElement("td", {
