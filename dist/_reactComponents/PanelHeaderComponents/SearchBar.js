@@ -87,6 +87,10 @@ export default function Searchbar(props) {
       props.onSubmit(searchTerm);
     }
   }
+  let autoFocus = false;
+  if (props.autoFocus) {
+    autoFocus = true;
+  }
   return /* @__PURE__ */ React.createElement("div", {
     style: {display: "table-cell"}
   }, /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
@@ -111,7 +115,8 @@ export default function Searchbar(props) {
       if (e.key === "Enter") {
         searchSubmitAction();
       }
-    }
+    },
+    autoFocus
   }), /* @__PURE__ */ React.createElement("div", {
     style: {padding: "3px", display: "inline"}
   }), /* @__PURE__ */ React.createElement("button", {

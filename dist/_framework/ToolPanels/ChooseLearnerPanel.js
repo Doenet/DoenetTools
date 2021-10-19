@@ -148,6 +148,7 @@ export default function ChooseLearnerPanel(props) {
     return /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", {
       style: {marginLeft: "50px", marginBottom: "15px"}
     }, /* @__PURE__ */ React.createElement(SearchBar, {
+      autoFocus: true,
       onChange: setFilter
     })), /* @__PURE__ */ React.createElement("table", null, /* @__PURE__ */ React.createElement("thead", null, /* @__PURE__ */ React.createElement("th", {
       style: {width: "200px"}
