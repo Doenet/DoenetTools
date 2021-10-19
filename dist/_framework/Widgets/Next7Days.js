@@ -153,13 +153,13 @@ function buildRows({
       if (dueDate) {
         dueDate.setSeconds(0, 0);
         effectiveRowLabel = `${dotw} ${dueDate.getMonth() + 1}/${dueDate.getDate()}`;
-        if (rowLabel !== "") {
-          effectiveRowLabel = rowLabel;
-        }
         displayDueDate = formatDueDate(dueDate, classTimes);
         if (assignedDate) {
           displayAssignedDate = formatAssignedDate(assignedDate, classTimes, dueDate, weekShift == 0);
         }
+      }
+      if (rowLabel !== "") {
+        effectiveRowLabel = rowLabel;
       }
       let bgColor = null;
       if (assignment.itemId === selectedItemId) {
@@ -375,7 +375,7 @@ export default function Next7Days({driveId}) {
   if (problemMessage !== "") {
     return /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("h2", null, problemMessage));
   }
-  let today = new Date("10/17/2021");
+  let today = new Date();
   let diff = 1 - today.getDay();
   if (diff === 1) {
     diff = -6;
