@@ -189,7 +189,7 @@ export default function ChooseLearnerPanel(props) {
     }
 
     return <div>
-      <div style={{marginLeft:"50px",marginBottom:"15px"}}><SearchBar onChange={setFilter}/></div>
+      <div style={{marginLeft:"50px",marginBottom:"15px"}}><SearchBar autoFocus onChange={setFilter}/></div>
       <table>
         <thead>
           <th style={{width:"200px"}}>First Name</th>

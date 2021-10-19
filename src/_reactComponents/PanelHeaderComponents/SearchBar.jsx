@@ -97,6 +97,10 @@ export default function Searchbar(props) {
             props.onSubmit(searchTerm);
         }
     }
+    let autoFocus = false;
+    if (props.autoFocus){
+        autoFocus = true;
+    }
     return (
         <div style={{display: "table-cell"}} >
             <FontAwesomeIcon icon={faSearch} style={searchIcon}/>
@@ -110,6 +114,7 @@ export default function Searchbar(props) {
             disabled={disable}
             value={searchTerm}
             onKeyDown={(e)=>{if (e.key === 'Enter'){searchSubmitAction()}}}
+            autoFocus={autoFocus} 
             />
             <div style={{padding: '3px', display:'inline'}}></div>
             <button style={submitButton} onClick={searchSubmitAction}>Search</button>
