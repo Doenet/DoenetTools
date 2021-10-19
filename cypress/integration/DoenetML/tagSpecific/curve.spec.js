@@ -299,8 +299,7 @@ describe('Curve Tag Tests', function () {
 
   });
 
-  // TODO: determine how extrapolation should work
-  it.skip('extrapolate', () => {
+  it('extrapolate', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
@@ -379,13 +378,13 @@ describe('Curve Tag Tests', function () {
 
       let x = components['/_point5'].stateValues.xs[0].tree;
       let y = components['/_point5'].stateValues.xs[1].tree;
-      expect(x).closeTo(8.6, 0.1);
-      expect(y).closeTo(-7.7, 0.1);
+      expect(x).closeTo(9.1, 0.1);
+      expect(y).closeTo(-6.9, 0.1);
 
       x = components['/_point6'].stateValues.xs[0].tree;
       y = components['/_point6'].stateValues.xs[1].tree;
-      expect(x).closeTo(-8.6, 0.1);
-      expect(y).closeTo(-7.7, 0.1);
+      expect(x).closeTo(-9.1, 0.1);
+      expect(y).closeTo(-6.9, 0.1);
     })
 
     cy.log("activate bezier controls and move tangents")
@@ -405,13 +404,13 @@ describe('Curve Tag Tests', function () {
       })
       let x = components['/_point5'].stateValues.xs[0].tree;
       let y = components['/_point5'].stateValues.xs[1].tree;
-      expect(x).closeTo(5.7, 0.1);
-      expect(y).closeTo(-5.6, 0.1);
+      expect(x).closeTo(6.7, 0.1);
+      expect(y).closeTo(-4.3, 0.1);
 
       x = components['/_point6'].stateValues.xs[0].tree;
       y = components['/_point6'].stateValues.xs[1].tree;
-      expect(x).closeTo(-5.7, 0.1);
-      expect(y).closeTo(-5.6, 0.1);
+      expect(x).closeTo(-6.7, 0.1);
+      expect(y).closeTo(-4.3, 0.1);
     })
 
     cy.window().then((win) => {
@@ -429,15 +428,15 @@ describe('Curve Tag Tests', function () {
 
       let x = components['/_point5'].stateValues.xs[0].tree;
       let y = components['/_point5'].stateValues.xs[1].tree;
-      expect(x).closeTo(7.5, 0.1);
-      expect(y).closeTo(-2.5, 0.1);
+      expect(x).closeTo(7.2, 0.1);
+      expect(y).closeTo(-3, 0.1);
 
       components['/_point6'].movePoint({ x: -9, y: -3 })
 
       x = components['/_point6'].stateValues.xs[0].tree;
       y = components['/_point6'].stateValues.xs[1].tree;
-      expect(x).closeTo(-7.5, 0.1);
-      expect(y).closeTo(-2.5, 0.1);
+      expect(x).closeTo(-7.2, 0.1);
+      expect(y).closeTo(-3, 0.1);
     })
 
 
