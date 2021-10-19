@@ -38,6 +38,7 @@ import ButtonGroup from '../../../_reactComponents/PanelHeaderComponents/ButtonG
 import { globalSelectedNodesAtom } from '../../../_reactComponents/Drive/NewDrive';
 import { mainPanelClickAtom } from '../Panels/NewMainPanel';
 import { effectiveRoleAtom } from '../../../_reactComponents/PanelHeaderComponents/RoleDropdown';
+import { UTCDateStringToDate } from '../../../_utils/dateUtilityFunction';
 
 //array of objects
 //dotwIndex as a number starting at 0 for Sunday (the js standard)
@@ -185,9 +186,10 @@ function buildRows({
     for (let i = 0; i < assignments.length; i++){
       let assignment = assignments[i];
 
-      let assignedDate = new Date(`${assignment.assignedDate} UTC`)
+      
+      let assignedDate = UTCDateStringToDate(assignment.assignedDate)
       assignedDate.setSeconds(0,0);
-      let dueDate = new Date(`${assignment.dueDate} UTC`);
+      let dueDate = UTCDateStringToDate(assignment.dueDate)
       dueDate.setSeconds(0,0);
 
       let effectiveRowLabel = `${dotw} ${dueDate.getMonth() + 1}/${dueDate.getDate()}`
@@ -479,7 +481,8 @@ if (weekShift == 0){
     const now = new Date();
     let overdueArray = [];
     for (let assignment of assignmentArray){
-      const due = new Date(`${assignment.dueDate} UTC`);
+      const due = UTCDateStringToDate(assignment.dueDate);
+      
       if (due > now){ break; }
       if (!completedArray.includes(assignment.doenetId)){
         overdueArray.push(assignment);
@@ -513,7 +516,7 @@ endOfSundayDT.setHours(23,59,59,999);
 let dueByDOTW = [[],[],[],[],[],[],[]]; 
   for (let i = 0; i < assignmentArray.length; i++){
     let assignment = assignmentArray[i];
-    let dueDate = new Date(`${assignment.dueDate} UTC`)
+    let dueDate = UTCDateStringToDate(assignment.dueDate)
     if (dueDate < beginningOfMondayDT){ continue; }
     if (dueDate > endOfSundayDT){ break; }
     let assignmentDOTW = dueDate.getDay();
