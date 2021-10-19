@@ -17,16 +17,17 @@ export default function Searchbar(props) {
         overflow: 'hidden',
         width: '220px'
        }
-    var searchIcon = {
-        margin: '6px 0px 0px 6px',
-        position: 'absolute',
-        zIndex: '1',
-        color: '#000',
-        overflow: 'hidden'
+    if (props.width) {
+        if (props.width === "menu") {
+            searchBar.width = '130px'
+        } 
     }
+    let cancelLeftMargin = Number(searchBar.width.split('px')[0]) + 30 + "px"
+
     var cancelButton = {
         float: 'right',
-        margin: '6px 0px 0px 172px',
+        margin: `6px 0px 0px ${cancelLeftMargin}`,
+        // margin: '6px 0px 0px 172px',
         position: 'absolute',
         zIndex: '2',
         border: '0px',
@@ -36,6 +37,15 @@ export default function Searchbar(props) {
         overflow: 'hidden',
         outline: 'none'
     }
+
+    var searchIcon = {
+        margin: '6px 0px 0px 6px',
+        position: 'absolute',
+        zIndex: '1',
+        color: '#000',
+        overflow: 'hidden'
+    }
+
     var submitButton = {
         position: 'absolute',
         display: 'inline',
@@ -60,11 +70,7 @@ export default function Searchbar(props) {
     }
     
 
-    if (props.width) {
-        if (props.width === "menu") {
-          searchBar.width = '130px'
-        } 
-      }
+    
     function clearInput() {
         setSearchTerm('');
         setCancelShown('hidden')
@@ -98,7 +104,7 @@ export default function Searchbar(props) {
             <input 
             id="search" 
             type="text" 
-            placeHolder="Search..." 
+            placeholder="Search..." 
             style={searchBar} 
             onChange={onChange}
             disabled={disable}
