@@ -38,7 +38,7 @@ export const showCompletedAtom = atom({
 });
 export const showOverdueAtom = atom({
   key: "showOverdueAtom",
-  default: true
+  default: false
 });
 function formatAssignedDate(dt, classTimes, dueDT, thisWeek) {
   if (dt == "Invalid Date" || dt == null) {

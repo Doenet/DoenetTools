@@ -1114,9 +1114,23 @@ export default class Answer extends InlineComponent {
           dependencyType: "stateVariable",
           variableName: "creditAchievedDependenciesAtSubmit"
         },
+        disableAfterCorrect: {
+          dependencyType: "stateVariable",
+          variableName: "disableAfterCorrect"
+        },
+        hasBeenCorrect: {
+          dependencyType: "stateVariable",
+          variableName: "hasBeenCorrect"
+        }
 
       }),
       definition: function ({ dependencyValues }) {
+
+        if (dependencyValues.disableAfterCorrect && dependencyValues.hasBeenCorrect) {
+          return {
+            newValues: { justSubmitted: true }
+          }
+        }
 
         let foundChange = true;
 
