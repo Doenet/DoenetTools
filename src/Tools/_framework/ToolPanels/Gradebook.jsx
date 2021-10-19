@@ -294,10 +294,11 @@ export const attemptData = selectorFamily({
                 attemptCredit,
                 creditOverride
                 ] = row;
-           
-            attempts[userId].credit = assignmentCredit
-            attempts[userId].attempts[attemptNumber] = attemptCredit;
-            attempts[userId].creditOverrides[attemptNumber] = creditOverride;
+                if (attempts[userId]){
+                    attempts[userId].credit = assignmentCredit
+                    attempts[userId].attempts[attemptNumber] = attemptCredit;
+                    attempts[userId].creditOverrides[attemptNumber] = creditOverride;
+                }
         }
 
         return attempts;

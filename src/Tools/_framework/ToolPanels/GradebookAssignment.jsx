@@ -96,7 +96,8 @@ function UploadChoices({ doenetId, maxAttempts }){
 
     let columnIndexes = [];
     let validColumns = headers.filter((value,i)=>{
-        let columnPoints = rows?.[0]?.[i]
+        //TODO: Handle percent.  We need number to handle 200.00 is 200
+        let columnPoints = Number(rows?.[0]?.[i])
         if (columnPoints == totalPointsOrPercent){ columnIndexes.push(i) }
         return columnPoints == totalPointsOrPercent;
     })
