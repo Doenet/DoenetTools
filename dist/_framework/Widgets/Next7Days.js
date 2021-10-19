@@ -143,15 +143,22 @@ function buildRows({
     for (let i = 0; i < assignments.length; i++) {
       let assignment = assignments[i];
       let assignedDate = UTCDateStringToDate(assignment.assignedDate);
-      assignedDate.setSeconds(0, 0);
-      let dueDate = UTCDateStringToDate(assignment.dueDate);
-      dueDate.setSeconds(0, 0);
-      let effectiveRowLabel = `${dotw} ${dueDate.getMonth() + 1}/${dueDate.getDate()}`;
-      if (rowLabel !== "") {
-        effectiveRowLabel = rowLabel;
+      let displayAssignedDate = "";
+      if (assignedDate) {
+        assignedDate.setSeconds(0, 0);
+        displayAssignedDate = formatAssignedDate(assignedDate, classTimes, dueDate, weekShift == 0);
       }
-      let displayDueDate = formatDueDate(dueDate, classTimes);
-      let displayAssignedDate = formatAssignedDate(assignedDate, classTimes, dueDate, weekShift == 0);
+      let dueDate = UTCDateStringToDate(assignment.dueDate);
+      let displayDueDate = "";
+      let effectiveRowLabel = "";
+      if (dueDate) {
+        dueDate.setSeconds(0, 0);
+        effectiveRowLabel = `${dotw} ${dueDate.getMonth() + 1}/${dueDate.getDate()}`;
+        if (rowLabel !== "") {
+          effectiveRowLabel = rowLabel;
+        }
+        displayDueDate = formatDueDate(dueDate, classTimes);
+      }
       let bgColor = null;
       if (assignment.itemId === selectedItemId) {
         bgColor = "#B8D2EA";
@@ -395,7 +402,7 @@ export default function Next7Days({driveId}) {
       let overdueArray = [];
       for (let assignment of assignmentArray) {
         const due = UTCDateStringToDate(assignment.dueDate);
-        if (due > now) {
+        if (!due || due > now) {
           break;
         }
         if (!completedArray.includes(assignment.doenetId)) {
@@ -425,7 +432,7 @@ export default function Next7Days({driveId}) {
   for (let i = 0; i < assignmentArray.length; i++) {
     let assignment = assignmentArray[i];
     let dueDate = UTCDateStringToDate(assignment.dueDate);
-    if (dueDate < beginningOfMondayDT) {
+    if (!dueDate || dueDate < beginningOfMondayDT) {
       continue;
     }
     if (dueDate > endOfSundayDT) {

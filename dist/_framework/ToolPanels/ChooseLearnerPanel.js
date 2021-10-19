@@ -125,8 +125,10 @@ export default function ChooseLearnerPanel(props) {
       let timeZoneCorrectLastExamDate = null;
       if (learner.exam_to_date[doenetId]) {
         let lastExamDT = UTCDateStringToDate(learner.exam_to_date[doenetId]);
-        let time = formatAMPM(lastExamDT);
-        timeZoneCorrectLastExamDate = `${lastExamDT.getMonth() + 1}/${lastExamDT.getDate()} ${time}`;
+        if (lastExamDT) {
+          let time = formatAMPM(lastExamDT);
+          timeZoneCorrectLastExamDate = `${lastExamDT.getMonth() + 1}/${lastExamDT.getDate()} ${time}`;
+        }
       }
       learnerRows.push(/* @__PURE__ */ React.createElement("tr", null, /* @__PURE__ */ React.createElement("td", {
         style: {textAlign: "center"}
