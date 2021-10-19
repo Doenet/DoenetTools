@@ -146,7 +146,6 @@ function buildRows({
       let displayAssignedDate = "";
       if (assignedDate) {
         assignedDate.setSeconds(0, 0);
-        displayAssignedDate = formatAssignedDate(assignedDate, classTimes, dueDate, weekShift == 0);
       }
       let dueDate = UTCDateStringToDate(assignment.dueDate);
       let displayDueDate = "";
@@ -158,6 +157,9 @@ function buildRows({
           effectiveRowLabel = rowLabel;
         }
         displayDueDate = formatDueDate(dueDate, classTimes);
+        if (assignedDate) {
+          displayAssignedDate = formatAssignedDate(assignedDate, classTimes, dueDate, weekShift == 0);
+        }
       }
       let bgColor = null;
       if (assignment.itemId === selectedItemId) {

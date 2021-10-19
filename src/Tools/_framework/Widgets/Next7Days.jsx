@@ -192,7 +192,6 @@ function buildRows({
 
       if (assignedDate){
         assignedDate.setSeconds(0,0);
-        displayAssignedDate = formatAssignedDate(assignedDate,classTimes,dueDate,weekShift == 0)   
       }
       
       let dueDate = UTCDateStringToDate(assignment.dueDate)
@@ -206,6 +205,10 @@ function buildRows({
           effectiveRowLabel = rowLabel;
         }
         displayDueDate = formatDueDate(dueDate,classTimes) 
+        if (assignedDate){
+          displayAssignedDate = formatAssignedDate(assignedDate,classTimes,dueDate,weekShift == 0)   
+        }
+
       }
 
       
