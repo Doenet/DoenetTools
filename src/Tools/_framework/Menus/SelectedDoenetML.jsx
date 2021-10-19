@@ -47,7 +47,7 @@ import {
 } from '../ToolHandlers/CourseToolHandler';
 import { useToast, toastType } from '@Toast';
 import { effectiveRoleAtom } from '../../../_reactComponents/PanelHeaderComponents/RoleDropdown';
-import { typeOf } from 'react-is';
+import CalendarToggle from '../../../_reactComponents/PanelHeaderComponents/CalendarToggle';
 
 export const selectedVersionAtom = atom({
   key: 'selectedVersionAtom',
@@ -337,7 +337,6 @@ export function AssignmentSettings({ role, doenetId }) {
   const aLoadable = useRecoilValueLoadable(loadAssignmentSelector(doenetId));
   const aInfo = aLoadable.contents;
   const addToast = useToast();
-
   //Note if aLoadable is not loaded then these will default to undefined
   let [assignedDate, setAssignedDate] = useState('');
   let [dueDate, setDueDate] = useState('');
@@ -356,8 +355,6 @@ export function AssignmentSettings({ role, doenetId }) {
   let [showHints, setShowHints] = useState(true);
   let [showCorrectness, setShowCorrectness] = useState(true);
   let [proctorMakesAvailable, setProctorMakesAvailable] = useState(true);
-  let [adDisabled, setAdDisabled] = useState(aInfo.assignedDate ? false : true);
-  let [ddDisabled, setDdDisabled] = useState(aInfo.dueDate ? false : true);
 
   const updateAssignment = useRecoilCallback(
     ({ set, snapshot }) =>
@@ -413,7 +410,15 @@ export function AssignmentSettings({ role, doenetId }) {
           if (valueDescription) {
             addToast(`Updated ${description} to ${valueDescription}`);
           } else {
-            addToast(`Updated ${description} to ${value}`);
+            if (description === 'Assigned Date' || description === 'Due Date') {
+              addToast(
+                `Updated ${description} to ${new Date(
+                  value + ' UTC',
+                ).toLocaleString()}`,
+              );
+            } else {
+              addToast(`Updated ${description} to ${value}`);
+            }
           }
         }
         // set(loadAssignmentSelector(doenetId),(was)=>{
@@ -431,7 +436,6 @@ export function AssignmentSettings({ role, doenetId }) {
   //Update assignment values when selection changes
   useEffect(() => {
     setAssignedDate(aInfo?.assignedDate);
-    setAdDisabled(aInfo.assignedDate ? false : true);
     setDueDate(aInfo?.dueDate);
     setLimitAttempts(aInfo?.numberOfAttemptsAllowed !== null);
     setNumberOfAttemptsAllowed(aInfo?.numberOfAttemptsAllowed);
@@ -491,83 +495,153 @@ export function AssignmentSettings({ role, doenetId }) {
   //Instructor JSX
   return (
     <>
-      {/* <div>
-        <label>
-          Limit Assigned
-          <Switch
-            onChange={(e) => {
-              let valueDescription = 'Always';
-              let value = null;
-              if (e.currentTarget.checked) {
-                valueDescription = 'Now';
-                value = new Date().toLocaleString();
-              }
-
-              updateAssignment({
-                doenetId,
-                keyToUpdate: 'assignedDate',
-                value,
-                description: 'Assigned ',
-                valueDescription,
-              });
-            }}
-            checked={aInfo.assignedDate !== null}
-          ></Switch>
-        </label>
-      </div> */}
       <div>
         <label>
           Assigned Date
-          <DateTime
-            // id={doenetId + '_assigneddate'}
-            disabled={adDisabled}
-            value={
-              aInfo.assignedDate ? new Date(aInfo.assignedDate + ' UTC') : null
-            }
-            checked={adDisabled}
-            checkboxOnChange={(e) => {
-              let valueDescription = 'Now';
-              let value = DateToUTCDateString(new Date());
-              if (e.currentTarget.checked) {
-                setAdDisabled(true);
-                valueDescription = 'Always';
-                value = null;
-              } else {
-                setAdDisabled(false);
-              }
-              updateAssignment({
-                doenetId,
-                keyToUpdate: 'assignedDate',
-                value,
-                description: 'Assigned ',
-                valueDescription,
-              });
+          <div
+            style={{ display: 'flex' }}
+            onClick={(e) => {
+              e.preventDefault();
             }}
-            onBlur={({ valid, value }) => {
-              if (valid) {
-                try {
-                  value = value.toDate();
-                } catch (e) {
-                  console.log('value not moment');
+          >
+            <CalendarToggle
+              checked={aInfo.assignedDate !== null}
+              onClick={(e) => {
+                let valueDescription = 'None';
+                let value = null;
+
+                if (aInfo.assignedDate === null) {
+                  valueDescription = 'Now';
+                  value = DateToUTCDateString(new Date());
                 }
-                if (
-                  new Date(DateToUTCDateString(value)).getTime() !==
-                  new Date(aInfo.assignedDate).getTime()
-                ) {
-                  updateAssignment({
-                    doenetId,
-                    keyToUpdate: 'assignedDate',
-                    value: DateToUTCDateString(value),
-                    description: 'Assigned Date',
-                  });
+
+                updateAssignment({
+                  doenetId,
+                  keyToUpdate: 'assignedDate',
+                  value,
+                  description: 'Assigned Date',
+                  valueDescription,
+                });
+              }}
+            />
+            {aInfo.assignedDate !== null ? (
+              <DateTime
+                value={
+                  aInfo.assignedDate
+                    ? new Date(aInfo.assignedDate + ' UTC')
+                    : null
                 }
-              } else {
-                addToast('Invalid Assigned Date');
-              }
-            }}
-          />
+                onBlur={({ valid, value }) => {
+                  if (valid) {
+                    try {
+                      value = value.toDate();
+                    } catch (e) {
+                      // console.log('value not moment');
+                    }
+                    if (
+                      new Date(DateToUTCDateString(value)).getTime() !==
+                      new Date(aInfo.assignedDate).getTime()
+                    ) {
+                      updateAssignment({
+                        doenetId,
+                        keyToUpdate: 'assignedDate',
+                        value: DateToUTCDateString(value),
+                        description: 'Assigned Date',
+                      });
+                    }
+                  } else {
+                    addToast('Invalid Assigned Date');
+                  }
+                }}
+              />
+            ) : (
+              <input
+                value="No Assigned Date"
+                disabled
+                style={{
+                  height: '18px',
+                  width: '177px',
+                  border: '2px solid black',
+                  borderRadius: '5px',
+                }}
+              />
+            )}
+          </div>
         </label>
       </div>
+      <div>
+        <label>
+          Due Date
+          <div
+            style={{ display: 'flex' }}
+            onClick={(e) => {
+              e.preventDefault();
+            }}
+          >
+            <CalendarToggle
+              checked={aInfo.dueDate !== null}
+              onClick={(e) => {
+                let valueDescription = 'None';
+                let value = null;
+
+                if (aInfo.dueDate === null) {
+                  valueDescription = 'Next Week';
+                  let nextWeek = new Date();
+                  nextWeek.setDate(nextWeek.getDate() + 7);
+                  value = DateToUTCDateString(nextWeek);
+                }
+
+                updateAssignment({
+                  doenetId,
+                  keyToUpdate: 'dueDate',
+                  value,
+                  description: 'Due Date',
+                  valueDescription,
+                });
+              }}
+            />
+            {aInfo.dueDate !== null ? (
+              <DateTime
+                value={aInfo.dueDate ? new Date(aInfo.dueDate + ' UTC') : null}
+                onBlur={({ valid, value }) => {
+                  if (valid) {
+                    try {
+                      value = value.toDate();
+                    } catch (e) {
+                      // console.log('value not moment');
+                    }
+                    if (
+                      new Date(DateToUTCDateString(value)).getTime() !==
+                      new Date(aInfo.dueDate).getTime()
+                    ) {
+                      updateAssignment({
+                        doenetId,
+                        keyToUpdate: 'dueDate',
+                        value: DateToUTCDateString(value),
+                        description: 'Due Date',
+                      });
+                    }
+                  } else {
+                    addToast('Invalid Due Date');
+                  }
+                }}
+              />
+            ) : (
+              <input
+                value="No Due Date"
+                disabled
+                style={{
+                  height: '18px',
+                  width: '177px',
+                  border: '2px solid black',
+                  borderRadius: '5px',
+                }}
+              />
+            )}
+          </div>
+        </label>
+      </div>
+
       {/* <div>
         <label>
           Has Due Date

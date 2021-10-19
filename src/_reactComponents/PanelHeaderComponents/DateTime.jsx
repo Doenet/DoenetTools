@@ -6,18 +6,16 @@ import './DateTime.css';
 export default function DateTime(props) {
   //console.log('props', props);
   const [value, setValue] = useState(props.value);
-  const [checked, setChecked] = useState(props.checked);
   const inputRef = useRef(null);
   const [cursorStart, setCursorStart] = useState(0);
   const [cursorEnd, setCursorEnd] = useState(0);
 
   useEffect(() => {
     setValue(props.value);
-    setChecked(props.checked);
   }, [props]);
 
   useEffect(() => {
-    console.log('triggered', cursorStart, cursorEnd);
+    // console.log('triggered', cursorStart, cursorEnd);
     inputRef.current.selectionStart = cursorStart;
     inputRef.current.selectionEnd = cursorEnd;
   });
@@ -49,25 +47,16 @@ export default function DateTime(props) {
           {...propsRI}
           ref={inputRef}
           onChange={(e) => {
-            console.log(e.target.selectionStart, e.target.selectionEnd);
+            // console.log(e.target.selectionStart, e.target.selectionEnd);
             setCursorStart(e.target.selectionStart);
             setCursorEnd(e.target.selectionEnd);
             propsRI.onChange(e);
           }}
+          onClick={(e) => {
+            //console.log('clicked');
+            propsRI.onClick(e);
+          }}
         />
-        {props.checked !== null && props.checkboxOnChange !== null ? (
-          <input
-            type="checkbox"
-            checked={checked}
-            onChange={(e) => {
-              props.checkboxOnChange(e);
-              setChecked(e.currentTarget.checked);
-            }}
-          />
-        ) : null}
-        {/* <p>
-          {value ? (!isNaN(new Date(value).getDate()) ? value : value) : 'null'}
-        </p> */}
       </div>
     );
   };
@@ -95,7 +84,7 @@ export default function DateTime(props) {
       }
       inputProps={inputProps}
       onChange={(dateObjectOrString) => {
-        console.log('onChange', typeof dateObjectOrString, dateObjectOrString);
+        // console.log('onChange', typeof dateObjectOrString, dateObjectOrString);
         setValue(dateObjectOrString);
         if (props.onChange) {
           props.onChange({
