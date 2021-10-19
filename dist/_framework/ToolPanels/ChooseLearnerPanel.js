@@ -6,7 +6,7 @@ import {searchParamAtomFamily, pageToolViewAtom} from "../NewToolRoot.js";
 import Button from "../../_reactComponents/PanelHeaderComponents/Button.js";
 import ButtonGroup from "../../_reactComponents/PanelHeaderComponents/ButtonGroup.js";
 import SearchBar from "../../_reactComponents/PanelHeaderComponents/SearchBar.js";
-import {formatAMPM} from "../../_utils/dateUtilityFunction.js";
+import {formatAMPM, UTCDateStringToDate} from "../../_utils/dateUtilityFunction.js";
 export default function ChooseLearnerPanel(props) {
   const doenetId = useRecoilValue(searchParamAtomFamily("doenetId"));
   const driveId = useRecoilValue(searchParamAtomFamily("driveId"));
@@ -124,7 +124,7 @@ export default function ChooseLearnerPanel(props) {
       }
       let timeZoneCorrectLastExamDate = null;
       if (learner.exam_to_date[doenetId]) {
-        let lastExamDT = new Date(`${learner.exam_to_date[doenetId]} UTC`);
+        let lastExamDT = UTCDateStringToDate(learner.exam_to_date[doenetId]);
         let time = formatAMPM(lastExamDT);
         timeZoneCorrectLastExamDate = `${lastExamDT.getMonth() + 1}/${lastExamDT.getDate()} ${time}`;
       }

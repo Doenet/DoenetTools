@@ -28,6 +28,7 @@ import ButtonGroup from "../../_reactComponents/PanelHeaderComponents/ButtonGrou
 import {globalSelectedNodesAtom} from "../../_reactComponents/Drive/NewDrive.js";
 import {mainPanelClickAtom} from "../Panels/NewMainPanel.js";
 import {effectiveRoleAtom} from "../../_reactComponents/PanelHeaderComponents/RoleDropdown.js";
+import {UTCDateStringToDate} from "../../_utils/dateUtilityFunction.js";
 export const classTimesAtom = atom({
   key: "classTimesAtom",
   default: []
@@ -141,9 +142,9 @@ function buildRows({
     }
     for (let i = 0; i < assignments.length; i++) {
       let assignment = assignments[i];
-      let assignedDate = new Date(`${assignment.assignedDate} UTC`);
+      let assignedDate = UTCDateStringToDate(assignment.assignedDate);
       assignedDate.setSeconds(0, 0);
-      let dueDate = new Date(`${assignment.dueDate} UTC`);
+      let dueDate = UTCDateStringToDate(assignment.dueDate);
       dueDate.setSeconds(0, 0);
       let effectiveRowLabel = `${dotw} ${dueDate.getMonth() + 1}/${dueDate.getDate()}`;
       if (rowLabel !== "") {
@@ -393,7 +394,7 @@ export default function Next7Days({driveId}) {
       const now = new Date();
       let overdueArray = [];
       for (let assignment of assignmentArray) {
-        const due = new Date(`${assignment.dueDate} UTC`);
+        const due = UTCDateStringToDate(assignment.dueDate);
         if (due > now) {
           break;
         }
@@ -423,7 +424,7 @@ export default function Next7Days({driveId}) {
   let dueByDOTW = [[], [], [], [], [], [], []];
   for (let i = 0; i < assignmentArray.length; i++) {
     let assignment = assignmentArray[i];
-    let dueDate = new Date(`${assignment.dueDate} UTC`);
+    let dueDate = UTCDateStringToDate(assignment.dueDate);
     if (dueDate < beginningOfMondayDT) {
       continue;
     }
