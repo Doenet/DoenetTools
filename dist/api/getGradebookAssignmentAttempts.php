@@ -63,7 +63,10 @@ if($success) {
   $showSolutionInGradebook = $row['showSolutionInGradebook'];
 
 	$sql = "
-		SELECT contentId,generatedVariant
+		SELECT 
+		contentId,
+		generatedVariant,
+		attemptNumber
 		FROM user_assignment_attempt
 		WHERE userId = '$studentUserId'
 		AND doenetId = '$doenetId'
@@ -79,6 +82,7 @@ if($success) {
 		while($row = $result->fetch_assoc()){
 
 			array_push($attemptInfo,array(
+				"attemptNumber" => $row['attemptNumber'],
 				"contentId"=>$row['contentId'],
 				"variant"=>$row['generatedVariant']
 			));

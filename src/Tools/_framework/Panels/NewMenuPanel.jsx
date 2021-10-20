@@ -200,6 +200,8 @@ console.log(">>>===MenuPanel", hide)
     GroupSettings:lazy(() => import('../Menus/GroupSettings')),
     TimerMenu:lazy(() => import('../Menus/TimerMenu')),
     CreditAchieved:lazy(() => import('../Menus/CreditAchieved')),
+    ClassTimes:lazy(() => import('../Menus/ClassTimes')),
+    CurrentContent:lazy(() => import('../Menus/CurrentContent')),
     
   }).current;
 

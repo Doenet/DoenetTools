@@ -1640,72 +1640,68 @@ export default class Curve extends GraphicalComponent {
           dependencyType: "stateVariable",
           variableName: "extrapolateBackward"
         },
-        throughPoint1: {
+        firstSplineCoeffs: {
           dependencyType: "stateVariable",
-          variableName: "numericalThroughPoint1"
-        },
-        throughPoint2: {
-          dependencyType: "stateVariable",
-          variableName: "numericalThroughPoint2"
-        },
-        controlVector: {
-          dependencyType: "stateVariable",
-          variableName: "numericalControlVector1_1"
+          variableName: "splineCoeffs1"
         }
       }),
       definition({ dependencyValues }) {
-        if (!dependencyValues.extrapolateBackward) {
+        if (!dependencyValues.extrapolateBackward || !dependencyValues.firstSplineCoeffs) {
           return { newValues: { extrapolateBackwardCoeffs: null } }
         }
 
+        // extrapolate as a parabola oriented with the coordinate axes
+        // that matches the curvature of the first spline segment
 
-        // coefficicents to extrapolate beyond the first
-        // if extrapolateBackward is true
-        // For each curve component, we extrapolate with either
-        // - a linear function that matches the value and derivative
-        //   of the outer point, or
-        // - a quadratic function that, in addition, matches the value
-        //   of the previous point.
-        // We choose the quadratic only if its critical point
-        // is not located in the portion we extrapolate, i.e.,
-        // we don't want the extrapolated curve to turn around in either x or y direction
+        let cx = dependencyValues.firstSplineCoeffs[0];
+        let cy = dependencyValues.firstSplineCoeffs[1];
 
-        let p1 = dependencyValues.throughPoint1;
-        let p2 = dependencyValues.throughPoint2;
-        let cv1 = dependencyValues.controlVector;
+        let x0 = cx[0];
+        let xp0 = cx[1];
+        let xpp0 = 2 * cx[2];
 
-        if (!(p1 && p2 && cv1)) {
-          return { newValues: { extrapolateBackwardCoeffs: null } }
+        let y0 = cy[0];
+        let yp0 = cy[1];
+        let ypp0 = 2 * cy[2];
+
+        let d = xp0 * xp0 + yp0 * yp0;
+
+        let fac = (yp0 * xpp0 - xp0 * ypp0) / (d * d);
+
+        let dTx = yp0 * fac;
+        let dTy = -xp0 * fac;
+
+        if (dTx * xp0 > 0) {
+          // if curving toward the vertical direction
+          // orient the parabola vertically
+
+          let r = dTx / dTy;
+
+          let v = -xp0 * r;
+          let a = dTy * xp0 * xp0 * (1 + r * r) ** 2;
+
+          let c = [
+            [x0, xp0, 0],
+            [y0, v, a / 2]
+          ];
+
+          return { newValues: { extrapolateBackwardCoeffs: c } }
+        } else {
+          // if curving toward the horizontal direction
+          // orient the parabola horizontally
+
+          let r = dTy / dTx;
+
+          let v = -yp0 * r;
+          let a = dTx * yp0 * yp0 * (1 + r * r) ** 2;
+
+          let c = [
+            [x0, v, a / 2],
+            [y0, yp0, 0]
+          ];
+
+          return { newValues: { extrapolateBackwardCoeffs: c } }
         }
-
-        let c = [];
-        c[0] = [
-          p1[0],
-          -3 * cv1[0] * 4,
-          0
-        ];
-
-        let c2 = (p2[0] - p1[0] - 3 * cv1[0]) * -16;
-        if (c2 !== 0) {
-          if (cv1[0] / c2 > 0) {
-            c[0][2] = c2;
-          }
-        }
-
-        c[1] = [
-          p1[1],
-          -3 * cv1[1] * 4,
-          0
-        ];
-
-        c2 = (p2[1] - p1[1] - 3 * cv1[1]) * -16;
-        if (c2 !== 0) {
-          if (cv1[1] / c2 > 0) {
-            c[1][2] = c2;
-          }
-        }
-
-        return { newValues: { extrapolateBackwardCoeffs: c } }
 
       }
     }
@@ -1723,75 +1719,70 @@ export default class Curve extends GraphicalComponent {
         }
 
         if (stateValues.nThroughPoints >= 2) {
-          dependencies.throughPoint1 = {
+          dependencies.lastSplineCoeffs = {
             dependencyType: "stateVariable",
-            variableName: "numericalThroughPoint" + (stateValues.nThroughPoints - 1)
-          };
-          dependencies.throughPoint2 = {
-            dependencyType: "stateVariable",
-            variableName: "numericalThroughPoint" + stateValues.nThroughPoints
-          },
-            dependencies.controlVector = {
-              dependencyType: "stateVariable",
-              variableName: "numericalControlVector" + stateValues.nThroughPoints + "_2"
-            }
+            variableName: "splineCoeffs" + (stateValues.nThroughPoints - 1)
+          }
         }
         return dependencies;
       },
       definition({ dependencyValues }) {
-        if (!dependencyValues.extrapolateForward) {
+        if (!dependencyValues.extrapolateForward || !dependencyValues.lastSplineCoeffs) {
           return { newValues: { extrapolateForwardCoeffs: null } }
         }
 
+        // extrapolate as a parabola oriented with the coordinate axes
+        // that matches the curvature of the first spline segment
 
-        // coefficicents to extrapolate beyond the last
-        // if extrapolateForward is true
-        // For each curve component, we extrapolate with either
-        // - a linear function that matches the value and derivative
-        //   of the outer point, or
-        // - a quadratic function that, in addition, matches the value
-        //   of the previous point.
-        // We choose the quadratic only if its critical point
-        // is not located in the portion we extrapolate, i.e.,
-        // we don't want the extrapolated curve to turn around in either x or y direction
+        let cx = dependencyValues.lastSplineCoeffs[0];
+        let cy = dependencyValues.lastSplineCoeffs[1];
 
-        let p1 = dependencyValues.throughPoint1;
-        let p2 = dependencyValues.throughPoint2;
-        let cv2 = dependencyValues.controlVector;
+        let x0 = cx[0] + cx[1] + cx[2] + cx[3];
+        let xp0 = cx[1] + 2 * cx[2] + 3 * cx[3];
+        let xpp0 = 2 * cx[2] + 6 * cx[3];
 
-        if (!(p1 && p2 && cv2)) {
-          return { newValues: { extrapolateForwardCoeffs: null } }
+        let y0 = cy[0] + cy[1] + cy[2] + cy[3];
+        let yp0 = cy[1] + 2 * cy[2] + 3 * cy[3];
+        let ypp0 = 2 * cy[2] + 6 * cy[3];
+
+        let d = xp0 * xp0 + yp0 * yp0;
+
+        let fac = (yp0 * xpp0 - xp0 * ypp0) / (d * d);
+
+        let dTx = yp0 * fac;
+        let dTy = -xp0 * fac;
+
+        if (dTx * xp0 < 0) {
+          // if curving toward the vertical direction
+          // orient the parabola vertically
+
+          let r = dTx / dTy;
+
+          let v = -xp0 * r;
+          let a = dTy * xp0 * xp0 * (1 + r * r) ** 2;
+
+          let c = [
+            [x0, xp0, 0],
+            [y0, v, a / 2]
+          ];
+
+          return { newValues: { extrapolateForwardCoeffs: c } }
+        } else {
+          // if curving toward the horizontal direction
+          // orient the parabola horizontally
+
+          let r = dTy / dTx;
+
+          let v = -yp0 * r;
+          let a = dTx * yp0 * yp0 * (1 + r * r) ** 2;
+
+          let c = [
+            [x0, v, a / 2],
+            [y0, yp0, 0]
+          ];
+
+          return { newValues: { extrapolateForwardCoeffs: c } }
         }
-
-        let c = [];
-        c[0] = [
-          p2[0],
-          3 * cv2[0] * 4,
-          0
-        ];
-
-        let c2 = (p1[0] - p2[0] - 3 * cv2[0]) * -16
-        if (c2 !== 0) {
-          if (cv2[0] / c2 > 0) {
-            c[0][2] = c2;
-          }
-        }
-
-        c[1] = [
-          p2[1],
-          3 * cv2[1] * 4,
-          0
-        ];
-
-        c2 = (p1[1] - p2[1] - 3 * cv2[1]) * -16;
-        if (c2 !== 0) {
-          if (cv2[1] / c2 > 0) {
-            c[1][2] = c2;
-          }
-        }
-
-        return { newValues: { extrapolateForwardCoeffs: c } }
-
       }
     }
 

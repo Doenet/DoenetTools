@@ -39,7 +39,6 @@ export default class subsetOfReals extends DoenetRenderer {
       pointsAndIntervalsObj: []
     };
     this.primaryColor = "red";
-    this.removeColor = "grey";
     this.storedPoints = [];
     this.storedLines = [];
     this.firstHashXPosition = 40;
@@ -91,14 +90,10 @@ export default class subsetOfReals extends DoenetRenderer {
     this.storedPoints = [];
     for (let pt of this.doenetSvData.points) {
       let closed = pt.inSubset;
-      let remove = false;
       let xPosition = this.xValueToXPosition(pt.value);
       let currentFillColor = this.primaryColor;
       if (!closed) {
         currentFillColor = "white";
-      }
-      if (remove) {
-        currentFillColor = this.removeColor;
       }
       let key = `point-${xPosition}`;
       this.storedPoints.push(/* @__PURE__ */ React.createElement("circle", {
@@ -164,37 +159,48 @@ export default class subsetOfReals extends DoenetRenderer {
     let mouseLeft = e.clientX - this.bounds.current.offsetLeft;
     let xPosition = this.xPositionToXValue(mouseLeft);
     if (inputState === "up") {
-      let pointInd = -1;
-      for (let [ind, pt] of this.doenetSvData.points.entries()) {
-        if (Math.abs(pt.value - xPosition) < this.pointHitTolerance) {
-          pointInd = ind;
-          break;
-        }
-      }
-      if (this.state.mode === "add remove points") {
-        if (pointInd !== -1) {
-          this.actions.deletePoint(pointInd);
-          this.forceUpdate();
-        } else if (!this.doenetSvData.points.map((x) => x.value).includes(xPosition)) {
-          this.actions.addPoint(xPosition);
+      if (this.state.mode === "move points") {
+        if (this.pointGrabbed !== void 0) {
+          this.actions.movePoint({
+            pointInd: this.pointGrabbed,
+            value: xPosition,
+            transient: false
+          });
+          this.pointGrabbed = void 0;
           this.forceUpdate();
         }
-      } else if (this.state.mode === "toggle") {
-        if (pointInd !== -1) {
-          this.actions.togglePoint(pointInd);
-        } else {
-          let intervalInd = 0;
-          for (let pt of this.doenetSvData.points) {
-            if (pt.value < xPosition) {
-              intervalInd++;
-            }
+      } else {
+        let pointInd = -1;
+        for (let [ind, pt] of this.doenetSvData.points.entries()) {
+          if (Math.abs(pt.value - xPosition) < this.pointHitTolerance) {
+            pointInd = ind;
+            break;
           }
-          this.actions.toggleInterval(intervalInd);
         }
-        this.forceUpdate();
+        if (this.state.mode === "add remove points") {
+          if (pointInd !== -1) {
+            this.actions.deletePoint(pointInd);
+            this.forceUpdate();
+          } else if (!this.doenetSvData.points.map((x) => x.value).includes(xPosition)) {
+            this.actions.addPoint(xPosition);
+            this.forceUpdate();
+          }
+        } else if (this.state.mode === "toggle") {
+          if (pointInd !== -1) {
+            this.actions.togglePoint(pointInd);
+          } else {
+            let intervalInd = 0;
+            for (let pt of this.doenetSvData.points) {
+              if (pt.value < xPosition) {
+                intervalInd++;
+              }
+            }
+            this.actions.toggleInterval(intervalInd);
+          }
+          this.forceUpdate();
+        }
       }
-    }
-    if (inputState === "down") {
+    } else if (inputState === "down") {
       if (this.state.mode === "move points") {
         let pointInd = -1;
         for (let [ind, pt] of this.doenetSvData.points.entries()) {
@@ -205,24 +211,32 @@ export default class subsetOfReals extends DoenetRenderer {
         }
         if (pointInd !== -1) {
           this.pointGrabbed = pointInd;
-          this.pointGrabbedLocation = xPosition;
         }
       }
-    }
-    if (inputState === "move") {
-      if (this.pointsGrabbed !== void 0) {
-        let pointInd = -1;
-        for (let [ind, pt] of this.doenetSvData.points.entries()) {
-          if (Math.abs(pt.value - this.pointGrabbedLocation) < this.pointHitTolerance) {
-            pointInd = ind;
-            break;
-          }
+    } else if (inputState === "move") {
+      if (this.pointGrabbed !== void 0) {
+        this.actions.movePoint({
+          pointInd: this.pointGrabbed,
+          value: xPosition,
+          transient: true
+        });
+        this.forceUpdate();
+      }
+    } else if (inputState == "leave") {
+      if (this.state.mode === "move points") {
+        if (this.pointGrabbed !== void 0) {
+          this.actions.movePoint({
+            pointInd: this.pointGrabbed,
+            value: xPosition,
+            transient: false
+          });
+          this.pointGrabbed = void 0;
+          this.forceUpdate();
         }
       }
     }
   }
   switchMode(mode) {
-    console.log(mode);
     this.setState({mode});
   }
   render() {
@@ -246,18 +260,26 @@ export default class subsetOfReals extends DoenetRenderer {
     if (this.state.mode === "move points") {
       movePointsStyle = {backgroundColor: activeButtonColor};
     }
+    let controlButtons = null;
+    if (!this.doenetSvData.fixed) {
+      controlButtons = /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("span", null, /* @__PURE__ */ React.createElement(ModeButton, {
+        style: addRemovePointsStyle,
+        onClick: () => this.switchMode("add remove points")
+      }, "Add/Remove points")), /* @__PURE__ */ React.createElement("span", null, /* @__PURE__ */ React.createElement(ModeButton, {
+        style: toggleStyle,
+        onClick: () => this.switchMode("toggle")
+      }, "Toggle points and intervals")), /* @__PURE__ */ React.createElement("span", null, /* @__PURE__ */ React.createElement(ModeButton, {
+        style: movePointsStyle,
+        onClick: () => this.switchMode("move points")
+      }, "Move Points")), /* @__PURE__ */ React.createElement("span", null, /* @__PURE__ */ React.createElement("button", {
+        onClick: () => this.actions.clear()
+      }, "Clear")), /* @__PURE__ */ React.createElement("span", null, /* @__PURE__ */ React.createElement("button", {
+        onClick: () => this.actions.setToR()
+      }, "R")));
+    }
     return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("div", {
       ref: this.bounds
-    }, /* @__PURE__ */ React.createElement("span", null, /* @__PURE__ */ React.createElement(ModeButton, {
-      style: addRemovePointsStyle,
-      onClick: () => this.switchMode("add remove points")
-    }, "Add/Remove boundary points")), /* @__PURE__ */ React.createElement("span", null, /* @__PURE__ */ React.createElement(ModeButton, {
-      style: toggleStyle,
-      onClick: () => this.switchMode("toggle")
-    }, "Toggle points and intervals")), /* @__PURE__ */ React.createElement("span", null, /* @__PURE__ */ React.createElement(ModeButton, {
-      style: movePointsStyle,
-      onClick: () => this.switchMode("move points")
-    }, "Move Points -- doesn't work"))), /* @__PURE__ */ React.createElement("svg", {
+    }, controlButtons), /* @__PURE__ */ React.createElement("svg", {
       width: "808",
       height: "80",
       style: {backgroundColor: "white"},

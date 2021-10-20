@@ -508,9 +508,9 @@ export function calculateSequenceParameters({ from, to, step, length, type }) {
       }
       if (length === null) {
         if (type === "math") {
-          length = Math.floor(to.subtract(1).divide(step).evaluate_to_constant() + 1);
+          length = Math.floor((to.subtract(1).divide(step).evaluate_to_constant() + 1) * (1 + 1E-14));
         } else {
-          length = Math.floor((to - 1) / step + 1)
+          length = Math.floor(((to - 1) / step + 1) * (1 + 1E-14))
         }
       }
 
@@ -523,7 +523,7 @@ export function calculateSequenceParameters({ from, to, step, length, type }) {
         if (type === "letters") {
           if (from < 1) {
             // adjust length so that have valid letters
-            length = Math.floor((to - 1) / step + 1)
+            length = Math.floor(((to - 1) / step + 1) * (1 + 1E-14))
             from = to - step * (length - 1);
 
           }
@@ -550,10 +550,10 @@ export function calculateSequenceParameters({ from, to, step, length, type }) {
         if (length === null) {
           if (type === "math") {
             step = me.fromAst(1);
-            length = Math.floor(to.subtract(from).add(1).evaluate_to_constant());
+            length = Math.floor((to.subtract(from).add(1).evaluate_to_constant()) * (1 + 1E-14));
           } else {
             step = 1;
-            length = Math.floor(to - from + 1);
+            length = Math.floor((to - from + 1) * (1 + 1E-14));
           }
         } else {
           if (type === "math") {
@@ -570,9 +570,9 @@ export function calculateSequenceParameters({ from, to, step, length, type }) {
         if (length === null) {
           // from, to, and step, no length
           if (type === "math") {
-            length = Math.floor(to.subtract(from).divide(step).add(1).evaluate_to_constant());
+            length = Math.floor(to.subtract(from).divide(step).add(1).evaluate_to_constant() * (1 + 1E-14));
           } else {
-            length = Math.floor((to - from) / step + 1);
+            length = Math.floor(((to - from) / step + 1) * (1 + 1E-14));
           }
         } else {
           // from, to, step, and length defined
@@ -608,6 +608,10 @@ export function returnSequenceValues({ from, step, length, exclude, type, lowerc
 
     if (type === "math") {
       if (exclude.some(x => x && x.equals(value))) {
+        continue;
+      }
+    } else if (type === "number") {
+      if (exclude.some(x => Math.abs(x - value) <= 1E-14 * Math.max(Math.abs(x), Math.abs(value)))) {
         continue;
       }
     } else {

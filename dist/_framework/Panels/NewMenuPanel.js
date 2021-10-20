@@ -178,11 +178,14 @@ export default function MenuPanel({hide, menuPanelCap = "", menusTitles = [], cu
     Variant: lazy(() => import("../Menus/Variant.js")),
     AutoSaves: lazy(() => import("../Menus/AutoSaves.js")),
     LoadEnrollment: lazy(() => import("../Menus/LoadEnrollment.js")),
+    GradeUpload: lazy(() => import("../Menus/GradeUpload.js")),
     ManualEnrollment: lazy(() => import("../Menus/ManualEnrollment.js")),
     AssignmentSettingsMenu: lazy(() => import("../Menus/AssignmentSettingsMenu.js")),
     GroupSettings: lazy(() => import("../Menus/GroupSettings.js")),
     TimerMenu: lazy(() => import("../Menus/TimerMenu.js")),
-    CreditAchieved: lazy(() => import("../Menus/CreditAchieved.js"))
+    CreditAchieved: lazy(() => import("../Menus/CreditAchieved.js")),
+    ClassTimes: lazy(() => import("../Menus/ClassTimes.js")),
+    CurrentContent: lazy(() => import("../Menus/CurrentContent.js"))
   }).current;
   let selectionPanel = null;
   if (currentSelectionMenu) {

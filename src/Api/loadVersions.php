@@ -9,6 +9,8 @@ include "db_connection.php";
 
 $jwtArray = include "jwtArray.php";
 $userId = $jwtArray['userId'];
+// $examUserId = $jwtArray['examineeUserId'];
+// $examDoenetId = $jwtArray['doenetId'];
 
 $doenetId =  mysqli_real_escape_string($conn,$_REQUEST["doenetId"]);
 
@@ -19,8 +21,17 @@ if ($doenetId == ""){
     $success = FALSE;
     $message = 'Internal Error: missing doenetId';
 }elseif ($userId == ""){
-    $success = FALSE;
-    $message = "You need to be signed in to load versions";
+        $success = FALSE;
+        $message = "No access - Need to sign in";
+    // if ($examUserId == ""){
+    //     $success = FALSE;
+    //     $message = "No access - Need to sign in";
+    // }else if ($examDoenetId != $doenetId){
+    //     $success = FALSE;
+    //     $message = "No access for doenetId: $doenetId";
+    // }else{
+    //     $userId = $examUserId;
+    // }
 }
 
 if ($success){

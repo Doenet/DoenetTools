@@ -457,7 +457,7 @@ export const loadDriveInfoQuery = selectorFamily({
       const { data } = await axios.get(
         `/api/loadFolderContent.php?driveId=${driveId}&init=true`,
       );
-      // console.log("loadDriveInfoQuery DATA ",data)
+      // console.log(">>>>loadDriveInfoQuery DATA ",data)
       // let itemDictionary = {};
       //   for (let item of data.results){
       //     itemDictionary[item.itemId] = item;

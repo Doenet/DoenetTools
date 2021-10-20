@@ -96,6 +96,51 @@ describe('Copy Tag Tests', function () {
     })
   });
 
+  it('copy overwrites properties, decode XML entities', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <math modifyIndirectly="3 &gt; 4">x</math>
+    <copy name="r1" tname="_math1"/>
+    <copy name="r2" modifyIndirectly="3&lt;4" tname="_math1"/>
+    <copy name="r3" modifyIndirectly="3&lt;4" tname="r1"/>
+    <copy name="r4" tname="r2"/>
+    <copy name="r5" tname="r3"/>
+    <copy name="r6" tname="r2" modifyIndirectly="3&gt;4" />
+    <copy name="r7" tname="r3" modifyIndirectly="3&gt;4" />
+
+    <point label="A" name="A">(1,2)</point>
+    <copy name="A2" tname="A"/>
+    <copy label="B" name="B" tname="A"/>
+    <copy label="C" name="C" tname="B"/>
+    <copy name="C2" tname="C"/>
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.log(`check properties`);
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/_math1'].stateValues.modifyIndirectly).eq(false);
+      expect(components['/r1'].replacements[0].stateValues.modifyIndirectly).eq(false);
+      expect(components['/r2'].replacements[0].stateValues.modifyIndirectly).eq(true);
+      expect(components['/r3'].replacements[0].stateValues.modifyIndirectly).eq(true);
+      expect(components['/r4'].replacements[0].stateValues.modifyIndirectly).eq(true);
+      expect(components['/r5'].replacements[0].stateValues.modifyIndirectly).eq(true);
+      expect(components['/r6'].replacements[0].stateValues.modifyIndirectly).eq(false);
+      expect(components['/r7'].replacements[0].stateValues.modifyIndirectly).eq(false);
+
+      expect(components['/A'].stateValues.label).eq("A");
+      expect(components['/A2'].replacements[0].stateValues.label).eq("A");
+      expect(components['/B'].replacements[0].stateValues.label).eq("B");
+      expect(components['/C'].replacements[0].stateValues.label).eq("C");
+      expect(components['/C2'].replacements[0].stateValues.label).eq("C");
+
+    })
+  });
+
   it('copy props', () => {
     cy.window().then((win) => {
       win.postMessage({

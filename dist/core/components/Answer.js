@@ -127,19 +127,19 @@ export default class Answer extends InlineComponent {
       public: true,
       propagateToDescendants: true,
     };
+    attributes.nPeriodicSetMatchesRequired = {
+      createComponentOfType: "integer",
+      createStateVariable: "nPeriodicSetMatchesRequired",
+      defaultValue: 3,
+      public: true,
+      propagateToDescendants: true,
+    };
     attributes.feedbackDefinitions = {
       createComponentOfType: "feedbackDefinitions",
       createStateVariable: "feedbackDefinitions",
       public: true,
       propagateToDescendants: true,
       mergeArrays: true
-    };
-    attributes.prefill = {
-      createComponentOfType: "text",
-      createStateVariable: "prefill",
-      defaultValue: "",
-      public: true,
-      propagateToDescendants: true,
     };
 
 
@@ -1114,9 +1114,23 @@ export default class Answer extends InlineComponent {
           dependencyType: "stateVariable",
           variableName: "creditAchievedDependenciesAtSubmit"
         },
+        disableAfterCorrect: {
+          dependencyType: "stateVariable",
+          variableName: "disableAfterCorrect"
+        },
+        hasBeenCorrect: {
+          dependencyType: "stateVariable",
+          variableName: "hasBeenCorrect"
+        }
 
       }),
       definition: function ({ dependencyValues }) {
+
+        if (dependencyValues.disableAfterCorrect && dependencyValues.hasBeenCorrect) {
+          return {
+            newValues: { justSubmitted: true }
+          }
+        }
 
         let foundChange = true;
 

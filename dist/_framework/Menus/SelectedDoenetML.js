@@ -1,12 +1,14 @@
 import {faCode} from "../../_snowpack/pkg/@fortawesome/free-solid-svg-icons.js";
 import {FontAwesomeIcon} from "../../_snowpack/pkg/@fortawesome/react-fontawesome.js";
 import React, {useState, useEffect} from "../../_snowpack/pkg/react.js";
+import DropdownMenu from "../../_reactComponents/PanelHeaderComponents/DropdownMenu.js";
+import DateTime from "../../_reactComponents/PanelHeaderComponents/DateTime.js";
 import {
   atom,
   selector,
   useRecoilValue,
   useRecoilValueLoadable,
-  useRecoilState,
+  useSetRecoilState,
   useRecoilCallback
 } from "../../_snowpack/pkg/recoil.js";
 import {
@@ -30,13 +32,15 @@ import {
   fileByContentId
 } from "../ToolHandlers/CourseToolHandler.js";
 import {useToast, toastType} from "../Toast.js";
+import {effectiveRoleAtom} from "../../_reactComponents/PanelHeaderComponents/RoleDropdown.js";
+import {typeOf} from "../../_snowpack/pkg/react-is.js";
 export const selectedVersionAtom = atom({
   key: "selectedVersionAtom",
   default: ""
 });
 export default function SelectedDoenetML() {
-  const [pageToolView, setPageToolView] = useRecoilState(pageToolViewAtom);
-  const role = pageToolView.view;
+  const setPageToolView = useSetRecoilState(pageToolViewAtom);
+  const effectiveRole = useRecoilValue(effectiveRoleAtom);
   const item = useRecoilValue(selectedInformation)[0];
   let [label, setLabel] = useState("");
   const {deleteItem, renameItem} = useSockets("drive");
@@ -110,7 +114,7 @@ export default function SelectedDoenetML() {
   if (!item) {
     return null;
   }
-  if (role === "student") {
+  if (effectiveRole === "student") {
     return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("h2", {
       "data-cy": "infoPanelItemLabel"
     }, /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
@@ -129,7 +133,7 @@ export default function SelectedDoenetML() {
         });
       }
     }), /* @__PURE__ */ React.createElement(AssignmentSettings, {
-      role,
+      role: effectiveRole,
       doenetId: item.doenetId
     }));
   }
@@ -214,7 +218,7 @@ export default function SelectedDoenetML() {
     value: assignDraftLabel,
     onClick: () => assignUnassign(item)
   }), /* @__PURE__ */ React.createElement("br", null), /* @__PURE__ */ React.createElement(AssignmentSettings, {
-    role,
+    role: effectiveRole,
     doenetId: item.doenetId
   }), /* @__PURE__ */ React.createElement("br", null), /* @__PURE__ */ React.createElement("br", null), /* @__PURE__ */ React.createElement(Button, {
     alert: true,
@@ -354,28 +358,15 @@ export function AssignmentSettings({role, doenetId}) {
       });
     },
     checked: aInfo.assignedDate !== null
-  }))), aInfo.assignedDate !== null ? /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("label", null, "Assigned Date", /* @__PURE__ */ React.createElement("input", {
-    required: true,
-    type: "text",
-    name: "assignedDate",
-    value: assignedDate,
-    onBlur: () => {
-      if (aInfo.assignedDate !== assignedDate) {
+  }))), aInfo.assignedDate !== null ? /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("label", null, "Assigned Date", /* @__PURE__ */ React.createElement(DateTime, {
+    datePicker: true,
+    value: new Date(aInfo.assignedDate),
+    callback: ({valid, value}) => {
+      if (valid) {
         updateAssignment({
           doenetId,
           keyToUpdate: "assignedDate",
-          value: assignedDate,
-          description: "Assigned Date"
-        });
-      }
-    },
-    onChange: (e) => setAssignedDate(e.currentTarget.value),
-    onKeyDown: (e) => {
-      if (e.key === "Enter" && aInfo.assignedDate !== assignedDate) {
-        updateAssignment({
-          doenetId,
-          keyToUpdate: "assignedDate",
-          value: assignedDate,
+          value: value.toLocaleString(),
           description: "Assigned Date"
         });
       }
@@ -399,28 +390,15 @@ export function AssignmentSettings({role, doenetId}) {
       });
     },
     checked: aInfo.dueDate !== null
-  }))), aInfo.dueDate !== null ? /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("label", null, "Due Date", /* @__PURE__ */ React.createElement("br", null), /* @__PURE__ */ React.createElement("input", {
-    required: true,
-    type: "text",
-    name: "dueDate",
-    value: dueDate,
-    onBlur: () => {
-      if (aInfo.dueDate !== dueDate) {
+  }))), aInfo.dueDate !== null ? /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("label", null, "Due Date", /* @__PURE__ */ React.createElement("br", null), /* @__PURE__ */ React.createElement(DateTime, {
+    datePicker: true,
+    value: new Date(aInfo.dueDate),
+    callback: ({valid, value}) => {
+      if (valid) {
         updateAssignment({
           doenetId,
           keyToUpdate: "dueDate",
-          value: dueDate,
-          description: "Due Date"
-        });
-      }
-    },
-    onChange: (e) => setDueDate(e.currentTarget.value),
-    onKeyDown: (e) => {
-      if (e.key === "Enter" && aInfo.dueDate !== dueDate) {
-        updateAssignment({
-          doenetId,
-          keyToUpdate: "dueDate",
-          value: dueDate,
+          value: value.toLocaleString(),
           description: "Due Date"
         });
       }
@@ -513,27 +491,27 @@ export function AssignmentSettings({role, doenetId}) {
       }
     },
     onChange: (e) => setNumberOfAttemptsAllowed(e.currentTarget.value)
-  }))) : null, /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("label", null, "Attempt Aggregation", /* @__PURE__ */ React.createElement("select", {
-    name: "attemptAggregation",
-    value: attemptAggregation,
-    onChange: (e) => {
+  }))) : null, /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("label", null, "Attempt Aggregation", /* @__PURE__ */ React.createElement(DropdownMenu, {
+    width: "menu",
+    valueIndex: attemptAggregation === "m" ? 1 : 2,
+    items: [
+      ["m", "Maximum"],
+      ["l", "Last Attempt"]
+    ],
+    onChange: ({value: val}) => {
       let valueDescription = "Maximum";
-      if (e.currentTarget.value === "l") {
+      if (val === "l") {
         valueDescription = "Last Attempt";
       }
       updateAssignment({
         doenetId,
         keyToUpdate: "attemptAggregation",
-        value: e.currentTarget.value,
+        value: val,
         description: "Attempt Aggregation",
         valueDescription
       });
     }
-  }, /* @__PURE__ */ React.createElement("option", {
-    value: "m"
-  }, "Maximum"), /* @__PURE__ */ React.createElement("option", {
-    value: "l"
-  }, "Last Attempt")))), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("label", null, "Total Points Or Percent", /* @__PURE__ */ React.createElement("input", {
+  }))), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("label", null, "Total Points Or Percent", /* @__PURE__ */ React.createElement("input", {
     required: true,
     type: "number",
     name: "totalPointsOrPercent",
