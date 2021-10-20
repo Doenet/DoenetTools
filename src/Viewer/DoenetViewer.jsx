@@ -192,7 +192,7 @@ class DoenetViewerChild extends Component {
     // console.log(">>>>this.requestedVariant",this.requestedVariant)
     // console.log(">>>>this.generatedVariant",this.generatedVariant)
     // console.log(">>>>this.allowSavePageState",this.allowSavePageState)
-    // console.log(">>>>this.allowSavePageState",this.props.allowSavePageState)
+    // console.log(">>>>this.savedUserAssignmentAttemptNumber",this.savedUserAssignmentAttemptNumber)
     if (this.allowSavePageState &&
       Number.isInteger(this.attemptNumber) &&
       this.savedUserAssignmentAttemptNumber !== this.attemptNumber
@@ -208,6 +208,8 @@ class DoenetViewerChild extends Component {
         generatedVariant: JSON.stringify(this.generatedVariant, serializedComponentsReplacer),
         itemVariantInfo: this.itemVariantInfo.map(x => JSON.stringify(x, serializedComponentsReplacer)),
       }).then(({ data }) => {
+
+        // console.log(">>>>data",data)
 
         this.savedUserAssignmentAttemptNumber = this.attemptNumber; //In callback
       })
