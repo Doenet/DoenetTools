@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef, useState } from 'react';
 import styled from 'styled-components';
 import Measure from 'react-measure';
 
@@ -8,6 +8,7 @@ const BreadCrumbContainer = styled.ul`
   overflow: hidden;
   height: 22px;
   display: flex;
+  flex-wrap: wrap;
 `;
 
 const BreadcrumbItem = styled.li`
@@ -70,17 +71,65 @@ const BreadcrumbSpan = styled.span`
 //label: the lable which shows in the span
 //onClick: the function called when crumb is clicked
 export function BreadCrumb({crumbs=[]}){
+  // const measureRef = useRef(null)
+  const [crumbsWidth,setCrumbsWidth] = useState(0);
+  let lastWidth = useRef(0);
+  let mode = useRef('expanded');
+  // if (lastWidth)
+
 
   if (crumbs.length == 0){ return null}
+  console.log(">>>>crumbsWidth",crumbsWidth)
+  console.log(">>>>lastWidth.current",lastWidth.current)
+  if (mode.current === 'expanded' && lastWidth.current != 0 && lastWidth.current > crumbsWidth){
+    mode.current = 'minimized';
+  }
+  lastWidth.current = crumbsWidth;
+
   let crumbsJSX = [];
 
-  for (let [i,{label,onClick}] of Object.entries(crumbs) ){
-    crumbsJSX.push(<BreadcrumbItem key={`breadcrumbitem${i}`}>
-      <BreadcrumbSpan onClick={onClick}>{label}</BreadcrumbSpan>
-      </BreadcrumbItem>)
+  if (mode.current === 'minimized'){
+    crumbsJSX.push(<BreadcrumbItem key={`breadcrumbitem0`}>
+    <BreadcrumbSpan onClick={crumbs[0].onClick}>{crumbs[0].label}</BreadcrumbSpan>
+    </BreadcrumbItem>)
+    crumbsJSX.push(<BreadcrumbItem key={`breadcrumbitem1`}>
+    <BreadcrumbSpan onClick={()=>{}}>...</BreadcrumbSpan>
+    </BreadcrumbItem>)
+    crumbsJSX.push(<BreadcrumbItem key={`breadcrumbitem2`}>
+    <BreadcrumbSpan onClick={crumbs[crumbs.length-1].onClick}>{crumbs[crumbs.length-1].label}</BreadcrumbSpan>
+    </BreadcrumbItem>)
+  }else{
+    for (let [i,{label,onClick}] of Object.entries(crumbs) ){
+      crumbsJSX.push(<BreadcrumbItem key={`breadcrumbitem${i}`}>
+        <BreadcrumbSpan onClick={onClick}>{label}</BreadcrumbSpan>
+        </BreadcrumbItem>)
+    }
   }
 
-  return <BreadCrumbContainer> {crumbsJSX} </BreadCrumbContainer>
+  
+
+  return <Measure
+  bounds
+  onResize={(contentRect) => {
+    const width = contentRect.bounds.width;
+    setCrumbsWidth(width)
+
+    // latestWidth.current = width;
+    // updateNumColumns(contentRect.bounds.width);
+  }}
+>
+  {({ measureRef }) => (
+    
+  <BreadCrumbContainer ref={measureRef}> {crumbsJSX} </BreadCrumbContainer>
+  )}
+  </Measure>
+  // return <div style={{display:'flex',flexWrap:"wrap"}}>
+  //   <span style={{margin:"10px",backgroundColor:"purple"}}>one thing wrap me</span>
+  //   <span style={{margin:"10px",backgroundColor:"purple"}}>one thing wrap me</span>
+  //   <span style={{margin:"10px",backgroundColor:"purple"}}>one thing wrap me</span>
+  //   <span style={{margin:"10px",backgroundColor:"purple"}}>one thing wrap me</span>
+
+  //   </div>
 }
 
 
