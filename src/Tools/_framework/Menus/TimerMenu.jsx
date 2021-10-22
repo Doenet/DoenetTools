@@ -40,11 +40,8 @@ export default function TimerMenu(){
           }
         }
       }
-      console.log(">>>>startDT",startDT)
 
       let endDT = new Date(startDT.getTime() + timeLimit*60000*data.timeLimitMultiplier);
-      console.log(">>>>endDT",endDT)
-      console.log(">>>>now",new Date())
       setEndTime(endDT);
 
     }

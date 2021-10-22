@@ -66,7 +66,7 @@ export default function AssignmentInfoCap(){
 
  let attemptInfo = null;
  if (recoilAttemptNumber){
-  attemptInfo = <div>{recoilAttemptNumber}/{attemptsAllowedDescription} Attempts</div>
+  attemptInfo = <div>{recoilAttemptNumber} out of {attemptsAllowedDescription}</div>
  }
 
   return <div>

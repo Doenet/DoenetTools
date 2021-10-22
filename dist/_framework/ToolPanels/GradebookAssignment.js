@@ -79,7 +79,7 @@ function UploadChoices({doenetId, maxAttempts}) {
   }
   let columnIndexes = [];
   let validColumns = headers.filter((value, i) => {
-    let columnPoints = rows?.[0]?.[i];
+    let columnPoints = Number(rows?.[0]?.[i]);
     if (columnPoints == totalPointsOrPercent) {
       columnIndexes.push(i);
     }

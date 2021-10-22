@@ -5,6 +5,8 @@ import {useToast, toastType} from "../Toast.js";
 import {searchParamAtomFamily, pageToolViewAtom} from "../NewToolRoot.js";
 import Button from "../../_reactComponents/PanelHeaderComponents/Button.js";
 import ButtonGroup from "../../_reactComponents/PanelHeaderComponents/ButtonGroup.js";
+import SearchBar from "../../_reactComponents/PanelHeaderComponents/SearchBar.js";
+import {formatAMPM, UTCDateStringToDate} from "../../_utils/dateUtilityFunction.js";
 export default function ChooseLearnerPanel(props) {
   const doenetId = useRecoilValue(searchParamAtomFamily("doenetId"));
   const driveId = useRecoilValue(searchParamAtomFamily("driveId"));
@@ -13,13 +15,12 @@ export default function ChooseLearnerPanel(props) {
   let [learners, setLearners] = useState([]);
   let [exams, setExams] = useState([]);
   let [choosenLearner, setChoosenLearner] = useState(null);
+  let [filter, setFilter] = useState("");
   const addToast = useToast();
   const newAttempt = useRecoilCallback(({set, snapshot}) => async (doenetId2, code2, userId) => {
     const {data} = await axios.get("/api/incrementAttemptNumber.php", {
       params: {doenetId: doenetId2, code: code2, userId}
     });
-    console.log(">>>>data 2", data);
-    console.log(">>>>", doenetId2, code2, userId);
     location.href = `/api/examjwt.php?userId=${encodeURIComponent(choosenLearner.userId)}&doenetId=${encodeURIComponent(doenetId2)}&code=${encodeURIComponent(code2)}`;
   });
   const setDoenetId = useRecoilCallback(({set}) => async (doenetId2, driveId2) => {
@@ -90,7 +91,6 @@ export default function ChooseLearnerPanel(props) {
     checkCode(code);
   }
   if (stage === "choose exam") {
-    console.log(">>>>exams", exams);
     if (exams.length < 1) {
       return /* @__PURE__ */ React.createElement("h1", null, "No Exams Available!");
     }
@@ -114,12 +114,22 @@ export default function ChooseLearnerPanel(props) {
     }, "Choose")), /* @__PURE__ */ React.createElement("tbody", null, examRows)));
   }
   if (stage === "choose learner") {
-    console.log(">>>>learners", learners);
     if (learners.length < 1) {
       return /* @__PURE__ */ React.createElement("h1", null, "No One is Enrolled!");
     }
     let learnerRows = [];
     for (let learner of learners) {
+      if (!learner.firstName.toLowerCase().includes(filter.toLowerCase()) && !learner.lastName.toLowerCase().includes(filter.toLowerCase())) {
+        continue;
+      }
+      let timeZoneCorrectLastExamDate = null;
+      if (learner.exam_to_date[doenetId]) {
+        let lastExamDT = UTCDateStringToDate(learner.exam_to_date[doenetId]);
+        if (lastExamDT) {
+          let time = formatAMPM(lastExamDT);
+          timeZoneCorrectLastExamDate = `${lastExamDT.getMonth() + 1}/${lastExamDT.getDate()} ${time}`;
+        }
+      }
       learnerRows.push(/* @__PURE__ */ React.createElement("tr", null, /* @__PURE__ */ React.createElement("td", {
         style: {textAlign: "center"}
       }, learner.firstName), /* @__PURE__ */ React.createElement("td", {
@@ -128,7 +138,7 @@ export default function ChooseLearnerPanel(props) {
         style: {textAlign: "center"}
       }, learner.studentId), /* @__PURE__ */ React.createElement("td", {
         style: {textAlign: "center"}
-      }, learner.exam_to_date[doenetId]), /* @__PURE__ */ React.createElement("td", {
+      }, timeZoneCorrectLastExamDate), /* @__PURE__ */ React.createElement("td", {
         style: {textAlign: "center"}
       }, /* @__PURE__ */ React.createElement("button", {
         onClick: () => {
@@ -137,7 +147,12 @@ export default function ChooseLearnerPanel(props) {
         }
       }, "Choose"))));
     }
-    return /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("table", null, /* @__PURE__ */ React.createElement("thead", null, /* @__PURE__ */ React.createElement("th", {
+    return /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", {
+      style: {marginLeft: "50px", marginBottom: "15px"}
+    }, /* @__PURE__ */ React.createElement(SearchBar, {
+      autoFocus: true,
+      onChange: setFilter
+    })), /* @__PURE__ */ React.createElement("table", null, /* @__PURE__ */ React.createElement("thead", null, /* @__PURE__ */ React.createElement("th", {
       style: {width: "200px"}
     }, "First Name"), /* @__PURE__ */ React.createElement("th", {
       style: {width: "200px"}

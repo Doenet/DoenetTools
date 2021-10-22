@@ -19,6 +19,15 @@ export function dateUtilityFunction(date, isTimeIncluded){
     );
   };
 
+  export function UTCDateStringToDate(string){
+    if (!string || typeof string !== 'string'){ return null; }
+    let t = string.split(/[- :]/);
+    // Apply each element to the Date function
+    return new Date(
+      Date.UTC(t[0], t[1]-1, t[2], t[3], t[4], t[5])
+    );
+  }
+
   export function formatAMPM(date) {
     var hours = date.getHours();
     var minutes = date.getMinutes();
