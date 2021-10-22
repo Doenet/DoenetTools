@@ -143,6 +143,7 @@ import SolutionContainer from './components/SolutionContainer.js';
 import SubsetOfRealsInput from './components/SubsetOfRealsInput.js';
 import SubsetOfReals from './components/SubsetOfReals.js';
 import Split from './components/Split.js';
+import BestFitLine from './components/BestFitLine.js';
 
 
 //Extended
@@ -283,6 +284,7 @@ const componentTypeArray = [
   SubsetOfRealsInput,
   SubsetOfReals,
   Split,
+  BestFitLine,
 
   BaseComponent,
   InlineComponent,

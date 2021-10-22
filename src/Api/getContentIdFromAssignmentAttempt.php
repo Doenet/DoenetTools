@@ -33,28 +33,28 @@ if ($userId == ""){
 
 }
 
-	if ($success){
+if ($success){
 
-		$contentId = null;
-	
-		$sql = "
-			SELECT contentId
-			FROM user_assignment_attempt
-			WHERE userId = '$userId'
-			AND doenetId = '$doenetId'
-			ORDER BY attemptNumber DESC
-			LIMIT 1
-		";
-	
-		$result = $conn->query($sql);
-		if ($result->num_rows > 0) {
-			$row = $result->fetch_assoc();
-			$contentId = $row['contentId'];
-			
-			if ($contentId){$foundAttempt = TRUE;}
-		}
+	$contentId = null;
+
+	$sql = "
+		SELECT contentId
+		FROM user_assignment_attempt
+		WHERE userId = '$userId'
+		AND doenetId = '$doenetId'
+		ORDER BY attemptNumber DESC
+		LIMIT 1
+	";
+
+	$result = $conn->query($sql);
+	if ($result->num_rows > 0) {
+		$row = $result->fetch_assoc();
+		$contentId = $row['contentId'];
+		
+		if ($contentId){$foundAttempt = TRUE;}
 	}
 }
+
 
 
 
