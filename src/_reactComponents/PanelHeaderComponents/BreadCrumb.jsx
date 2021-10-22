@@ -88,27 +88,35 @@ export function BreadCrumb({crumbs=[]}){
 
   let crumbsJSX = [];
 
-  if (mode.current === 'minimized'){
-    crumbsJSX.push(<BreadcrumbItem key={`breadcrumbitem0`}>
-    <BreadcrumbSpan onClick={crumbs[0].onClick}>{crumbs[0].label}</BreadcrumbSpan>
-    </BreadcrumbItem>)
-    crumbsJSX.push(<BreadcrumbItem key={`breadcrumbitem1`}>
-    <BreadcrumbSpan onClick={()=>{}}>...</BreadcrumbSpan>
-    </BreadcrumbItem>)
-    crumbsJSX.push(<BreadcrumbItem key={`breadcrumbitem2`}>
-    <BreadcrumbSpan onClick={crumbs[crumbs.length-1].onClick}>{crumbs[crumbs.length-1].label}</BreadcrumbSpan>
-    </BreadcrumbItem>)
-  }else{
+  // if (mode.current === 'minimized'){
+  //   crumbsJSX.push(<BreadcrumbItem key={`breadcrumbitem0`}>
+  //   <BreadcrumbSpan onClick={crumbs[0].onClick}>{crumbs[0].label}</BreadcrumbSpan>
+  //   </BreadcrumbItem>)
+  //   crumbsJSX.push(<BreadcrumbItem key={`breadcrumbitem1`}>
+  //   <BreadcrumbSpan onClick={()=>{}}>...</BreadcrumbSpan>
+  //   </BreadcrumbItem>)
+  //   crumbsJSX.push(<BreadcrumbItem key={`breadcrumbitem2`}>
+  //   <BreadcrumbSpan onClick={crumbs[crumbs.length-1].onClick}>{crumbs[crumbs.length-1].label}</BreadcrumbSpan>
+  //   </BreadcrumbItem>)
+  // }else{
     for (let [i,{label,onClick}] of Object.entries(crumbs) ){
       crumbsJSX.push(<BreadcrumbItem key={`breadcrumbitem${i}`}>
         <BreadcrumbSpan onClick={onClick}>{label}</BreadcrumbSpan>
         </BreadcrumbItem>)
     }
-  }
+  // }
 
   
 
-  return <Measure
+  return <>
+  {/* <button style={{marginTop:'20px'}} onClick={()=>{
+    if (navigator.onLine) {
+      console.log('>>>>online');
+    } else {
+      console.log('>>>>offline');
+    }
+  }}>Test if online</button> */}
+  <Measure
   bounds
   onResize={(contentRect) => {
     const width = contentRect.bounds.width;
@@ -123,6 +131,9 @@ export function BreadCrumb({crumbs=[]}){
   <BreadCrumbContainer ref={measureRef}> {crumbsJSX} </BreadCrumbContainer>
   )}
   </Measure>
+  </>
+
+  
   // return <div style={{display:'flex',flexWrap:"wrap"}}>
   //   <span style={{margin:"10px",backgroundColor:"purple"}}>one thing wrap me</span>
   //   <span style={{margin:"10px",backgroundColor:"purple"}}>one thing wrap me</span>
