@@ -39,7 +39,7 @@ export default function DateTime(props) {
     placeholder: placeholder,
   };
 
-  const renderInput = (propsRI) => {
+  const renderInput = (propsRI, openCalendar, closeCalendar) => {
     //console.log('propRI', propsRI);
     return (
       <div>
@@ -55,6 +55,11 @@ export default function DateTime(props) {
           onClick={(e) => {
             //console.log('clicked');
             propsRI.onClick(e);
+          }}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') {
+              closeCalendar();
+            }
           }}
         />
       </div>

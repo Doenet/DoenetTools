@@ -19,7 +19,7 @@ const Button = styled.button`
 
 export default function CalendarButton(props) {
   const icon = props.checked ? faCalendarPlus : faCalendarTimes;
-  const color = props.checked ? doenetMainBlue : '#c1292e';
+  const color = props.checked ? doenetMainBlue : '#e2e2e2';
   const buttonRef = useRef(null);
 
   return (
