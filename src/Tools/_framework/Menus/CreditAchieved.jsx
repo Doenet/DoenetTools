@@ -28,15 +28,13 @@ export default function CreditAchieved(){
   const recoilDoenetId = useRecoilValue(searchParamAtomFamily('doenetId'));
   const recoilUserId = useRecoilValue(searchParamAtomFamily('userId'));
   const recoilTool = useRecoilValue(searchParamAtomFamily('tool'));
+  let [stage,setStage] = useState('Initialize');
 
   const lastAttemptNumber = useRef(null)
   let [disabled,setDisabled] = useState(false);
 
   const {creditByItem,creditForAttempt,creditForAssignment,totalPointsOrPercent} = useRecoilValue(creditAchievedAtom);
-  let [stage,setStage] = useState('Initialize');
-  let creditByItemsJSX = creditByItem.map((x,i)=>{
-    return <ScoreContainer key={`creditByItem${i}`}>Item {i+1}: <ScoreOnRight>{x?Math.round(x*1000)/1000:0}</ScoreOnRight></ScoreContainer> 
-  })
+ 
 
   const initialize = useRecoilCallback(({set})=> async (attemptNumber,doenetId,userId,tool)=>{
 
@@ -68,6 +66,11 @@ export default function CreditAchieved(){
     setStage('Ready');
 
   },[])
+
+  if (!creditByItem){ return null; }
+  let creditByItemsJSX = creditByItem.map((x,i)=>{
+    return <ScoreContainer key={`creditByItem${i}`}>Item {i+1}: <ScoreOnRight>{x?Math.round(x*1000)/1000:0}</ScoreOnRight></ScoreContainer> 
+  })
 
   // console.log(`>>>>stage -${stage}-`);
   if (!recoilAttemptNumber || !recoilDoenetId || !recoilTool){
