@@ -102,7 +102,10 @@ if ($db_contentId == 'NA'){
 $result = $conn->query($sql);
 
 }else{
-  $sql = "SELECT began
+  $sql = "SELECT 
+  began,
+  assignedVariant,
+  generatedVariant
   FROM user_assignment_attempt
   WHERE userId = '$userId'
   AND doenetId = '$doenetId'
@@ -114,21 +117,39 @@ $result = $conn->query($sql);
   $sql = "INSERT INTO user_assignment_attempt
   (doenetId,contentId,userId,attemptNumber,assignedVariant,generatedVariant,began)
   VALUES
-  ('$doenetId','$contentId','$userId','$attemptNumber','$requestedVariant','$generatedVariant',NOW())
+  ('$doenetId','$contentId','$userId','$attemptNumber','$requestedVariant','$generatedVariant',CONVERT_TZ(NOW(), @@session.time_zone, '+00:00'))
   ";
 
   $result = $conn->query($sql);
   }else{
+
+
   $row = $result->fetch_assoc();
   $began = $row['began'];
+// $row['assignedVariant'];
+// $row['generatedVariant'];
+
   if ($began == NULL){
-  $sql = "
-  UPDATE user_assignment_attempt
-  SET began=NOW()
-  WHERE userId = '$userId'
-  AND doenetId = '$doenetId'
-  AND attemptNumber = '$attemptNumber'
-  ";
+    if ($row['assignedVariant'] == NULL ||
+    $row['generatedVariant'] == NULL){
+      $sql = "
+      UPDATE user_assignment_attempt
+      SET began=CONVERT_TZ(NOW(), @@session.time_zone, '+00:00'),
+      assignedVariant='$requestedVariant',
+      generatedVariant='$generatedVariant'
+      WHERE userId = '$userId'
+      AND doenetId = '$doenetId'
+      AND attemptNumber = '$attemptNumber'
+      ";
+    }else{
+      $sql = "
+      UPDATE user_assignment_attempt
+      SET began=CONVERT_TZ(NOW(), @@session.time_zone, '+00:00')
+      WHERE userId = '$userId'
+      AND doenetId = '$doenetId'
+      AND attemptNumber = '$attemptNumber'
+      ";
+    }
   $result = $conn->query($sql);
   }
   }

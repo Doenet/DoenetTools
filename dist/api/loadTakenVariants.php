@@ -59,7 +59,7 @@ if (!$timeLimitMultiplier){
 
   $sql = "SELECT attemptNumber,
         generatedVariant,
-        began
+        CONVERT_TZ(began, @@session.time_zone, '+00:00') AS began
         FROM user_assignment_attempt
         WHERE userId='$userId'
         AND doenetId='$doenetId'
@@ -70,7 +70,6 @@ if (!$timeLimitMultiplier){
           array_push($variants,$row["generatedVariant"]);
           array_push($starts,$row["began"]);
           array_push($attemptNumbers,$row["attemptNumber"]);
-
   }
 }
 

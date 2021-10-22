@@ -38,6 +38,7 @@ import ButtonGroup from '../../../_reactComponents/PanelHeaderComponents/ButtonG
 import { globalSelectedNodesAtom } from '../../../_reactComponents/Drive/NewDrive';
 import { mainPanelClickAtom } from '../Panels/NewMainPanel';
 import { effectiveRoleAtom } from '../../../_reactComponents/PanelHeaderComponents/RoleDropdown';
+import { UTCDateStringToDate } from '../../../_utils/dateUtilityFunction';
 
 //array of objects
 //dotwIndex as a number starting at 0 for Sunday (the js standard)
@@ -185,18 +186,33 @@ function buildRows({
     for (let i = 0; i < assignments.length; i++){
       let assignment = assignments[i];
 
-      let assignedDate = new Date(`${assignment.assignedDate} UTC`)
-      assignedDate.setSeconds(0,0);
-      let dueDate = new Date(`${assignment.dueDate} UTC`);
-      dueDate.setSeconds(0,0);
+      
+      let assignedDate = UTCDateStringToDate(assignment.assignedDate)
+      let displayAssignedDate = '';
 
-      let effectiveRowLabel = `${dotw} ${dueDate.getMonth() + 1}/${dueDate.getDate()}`
+      if (assignedDate){
+        assignedDate.setSeconds(0,0);
+      }
+      
+      let dueDate = UTCDateStringToDate(assignment.dueDate)
+      let displayDueDate = '';
+      let effectiveRowLabel = '';
+
+      if (dueDate){
+        dueDate.setSeconds(0,0);
+        effectiveRowLabel = `${dotw} ${dueDate.getMonth() + 1}/${dueDate.getDate()}`
+        
+        displayDueDate = formatDueDate(dueDate,classTimes) 
+        if (assignedDate){
+          displayAssignedDate = formatAssignedDate(assignedDate,classTimes,dueDate,weekShift == 0)   
+        }
+
+      }
+      
       if (rowLabel !== ""){
         effectiveRowLabel = rowLabel;
       }
-      let displayDueDate = formatDueDate(dueDate,classTimes) 
-
-      let displayAssignedDate = formatAssignedDate(assignedDate,classTimes,dueDate,weekShift == 0)   
+      
       
       let bgColor = null;
       if (assignment.itemId === selectedItemId){
@@ -446,8 +462,7 @@ export default function Next7Days({ driveId }) {
     </div>
   }
 
-  // let today = new Date();
-  let today = new Date('10/17/2021');
+  let today = new Date();
   let diff = 1 - today.getDay();
   if (diff === 1){ diff = -6} //Start week on Monday
   let monday = new Date(today.getTime() + (1000 * 60 * 60 * 24 * diff) + (1000 * 60 * 60 * 24 * weekShift * 7) );
@@ -479,8 +494,9 @@ if (weekShift == 0){
     const now = new Date();
     let overdueArray = [];
     for (let assignment of assignmentArray){
-      const due = new Date(`${assignment.dueDate} UTC`);
-      if (due > now){ break; }
+      const due = UTCDateStringToDate(assignment.dueDate);
+      
+      if (!due || due > now){ break; }
       if (!completedArray.includes(assignment.doenetId)){
         overdueArray.push(assignment);
       }
@@ -513,8 +529,9 @@ endOfSundayDT.setHours(23,59,59,999);
 let dueByDOTW = [[],[],[],[],[],[],[]]; 
   for (let i = 0; i < assignmentArray.length; i++){
     let assignment = assignmentArray[i];
-    let dueDate = new Date(`${assignment.dueDate} UTC`)
-    if (dueDate < beginningOfMondayDT){ continue; }
+    let dueDate = UTCDateStringToDate(assignment.dueDate)
+
+    if (!dueDate || dueDate < beginningOfMondayDT){ continue; }
     if (dueDate > endOfSundayDT){ break; }
     let assignmentDOTW = dueDate.getDay();
     dueByDOTW[assignmentDOTW].push({...assignment});

@@ -7,7 +7,7 @@ import { searchParamAtomFamily, pageToolViewAtom } from '../NewToolRoot';
 import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
 import ButtonGroup from '../../../_reactComponents/PanelHeaderComponents/ButtonGroup';
 import SearchBar from '../../../_reactComponents/PanelHeaderComponents/SearchBar';
-import { formatAMPM } from '../../../_utils/dateUtilityFunction';
+import { formatAMPM, UTCDateStringToDate } from '../../../_utils/dateUtilityFunction';
 
 export default function ChooseLearnerPanel(props) {
   const doenetId = useRecoilValue(searchParamAtomFamily('doenetId'));
@@ -170,11 +170,16 @@ export default function ChooseLearnerPanel(props) {
         continue;
       }
 
-  
-      let lastExamDT = new Date(`${learner.exam_to_date[doenetId]} UTC`)
-      let time = formatAMPM(lastExamDT)
-      let timeZoneCorrectLastExamDate = `${lastExamDT.getMonth() + 1}/${lastExamDT.getDate()} ${time}`;
+      let timeZoneCorrectLastExamDate = null;
+      if (learner.exam_to_date[doenetId]){
 
+        let lastExamDT = UTCDateStringToDate(learner.exam_to_date[doenetId]);
+        if (lastExamDT){
+          let time = formatAMPM(lastExamDT)
+          timeZoneCorrectLastExamDate = `${lastExamDT.getMonth() + 1}/${lastExamDT.getDate()} ${time}`;
+        }
+        
+      }
       learnerRows.push(<tr>
         <td style={{textAlign:"center"}}>{learner.firstName}</td>
         <td style={{textAlign:"center"}}>{learner.lastName}</td>
@@ -188,7 +193,7 @@ export default function ChooseLearnerPanel(props) {
     }
 
     return <div>
-      <div style={{marginLeft:"50px",marginBottom:"15px"}}><SearchBar onChange={setFilter}/></div>
+      <div style={{marginLeft:"50px",marginBottom:"15px"}}><SearchBar autoFocus onChange={setFilter}/></div>
       <table>
         <thead>
           <th style={{width:"200px"}}>First Name</th>

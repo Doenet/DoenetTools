@@ -7686,8 +7686,11 @@ export default class Core {
         // execute asynchronously any remaining processes
         // (that got added while performAction was running)
 
-        setTimeout(this.executeProcesses, 0);
-
+        if (this.processQueue.length > 0) {
+          setTimeout(this.executeProcesses, 0);
+        } else {
+          this.processing = false;
+        }
       }
     });
 
@@ -7784,7 +7787,11 @@ export default class Core {
         // execute asynchronously any remaining processes
         // (that got added while performUpdate was running)
 
-        setTimeout(this.executeProcesses, 0);
+        if (this.processQueue.length > 0) {
+          setTimeout(this.executeProcesses, 0);
+        } else {
+          this.processing = false;
+        }
 
       }
     });
