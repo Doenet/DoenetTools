@@ -29,8 +29,10 @@ export default class Graph extends DoenetRenderer {
         boundingbox,
         axis: false,
         showCopyright: false,
-        showNavigation: this.doenetSvData.showNavigation,
+        showNavigation: this.doenetSvData.showNavigation && !this.doenetSvData.fixAxes,
         keepAspectRatio: this.doenetSvData.identicalAxisScales,
+        zoom: { wheel: !this.doenetSvData.fixAxes },
+        pan: { enabled: !this.doenetSvData.fixAxes }
       });
 
     if (this.doenetSvData.displayXAxis) {
