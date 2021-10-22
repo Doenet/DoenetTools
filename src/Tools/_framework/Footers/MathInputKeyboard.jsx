@@ -28,7 +28,9 @@ import { useRef } from 'react';
 const FunctionPanel = styled.div`
   height: 250px;
   width: 250px;
-  background-color: #e2e2e2;
+  background-color: #fff;
+  border: 0.5px solid grey;
+  border-radius: 5px;
   position: fixed;
   bottom: 247px;
   right: 0;
@@ -54,7 +56,7 @@ const Panel = styled.div`
   bottom: 0;
   left: 0;
   width: 100%;
-  background-color: #e2e2e2;
+  background-color: #fff;
   color: white;
   text-align: center;
   display: flex;
@@ -94,7 +96,7 @@ const LettersSection = styled.div`
 const Button = styled.button`
   flex-basis: 23%;
   height: 30px;
-  background: white;
+  background: '#e2e2e2';
   border: 0;
   border-radius: 3px;
 `;
@@ -103,7 +105,7 @@ const Button33 = styled.button`
   flex-basis: 30%;
   margin: 2px;
   height: 25px;
-  background: white;
+  background: 'white';
   border: 0;
   border-radius: 3px;
 `;
@@ -171,7 +173,7 @@ const LetterButton = styled.button`
   flex-basis: 9%;
   margin: 1px;
   height: 30px;
-  background: white;
+  background: '#e2e2e2';
   /* background: #167ac1; */
   border: 0;
   border-radius: 3px;
