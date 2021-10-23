@@ -1,6 +1,5 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import styled from 'styled-components';
-import Measure from 'react-measure';
 
 
 const BreadCrumbContainer = styled.ul`
@@ -8,7 +7,6 @@ const BreadCrumbContainer = styled.ul`
   overflow: hidden;
   height: 22px;
   display: flex;
-  flex-wrap: wrap;
 `;
 
 const BreadcrumbItem = styled.li`
@@ -67,102 +65,63 @@ const BreadcrumbSpan = styled.span`
   }
 `;
 
+function useOnScreen(ref, rootMargin = "0px") {
+  const [isVisible, setIsVisible] = useState(false)
+
+  useEffect(() => {
+    if (ref.current == null) return
+    const observer = new IntersectionObserver(
+      // ([entry])=>{console.log(">>>>",entry)}
+      ([entry]) => setIsVisible(entry.isIntersecting),
+      { rootMargin }
+    )
+    observer.observe(ref.current)
+    return () => {
+      if (ref.current == null) return
+      observer.unobserve(ref.current)
+    }
+  }, [ref.current, rootMargin])
+
+  return isVisible
+}
+
 //crumb 
 //label: the lable which shows in the span
 //onClick: the function called when crumb is clicked
 export function BreadCrumb({crumbs=[]}){
-  // const measureRef = useRef(null)
-  const [crumbsWidth,setCrumbsWidth] = useState(0);
-  let lastWidth = useRef(0);
-  let mode = useRef('expanded');
-  // if (lastWidth)
+  const breadCrumbRef = useRef(null)
+  let [numHidden,setNumHidden] = useState(crumbs.length);
+  let tipVisible = useOnScreen(breadCrumbRef,"0px 0px 0px 0px");
 
+    if (!tipVisible && crumbs.length > numHidden + 1){
+      setNumHidden((was)=>was+1);
+    }
 
-  if (crumbs.length == 0){ return null}
-  console.log(">>>>crumbsWidth",crumbsWidth)
-  console.log(">>>>lastWidth.current",lastWidth.current)
-  if (mode.current === 'expanded' && lastWidth.current != 0 && lastWidth.current > crumbsWidth){
-    mode.current = 'minimized';
-  }
-  lastWidth.current = crumbsWidth;
+    // if (tipVisible && numHidden > 0){
+
+    //   setNumHidden((was)=>was-1);
+    // }
+    console.log(">>>>numHidden",numHidden)
+    console.log(">>>>tipVisible",tipVisible)
+  
 
   let crumbsJSX = [];
 
-  // if (mode.current === 'minimized'){
-  //   crumbsJSX.push(<BreadcrumbItem key={`breadcrumbitem0`}>
-  //   <BreadcrumbSpan onClick={crumbs[0].onClick}>{crumbs[0].label}</BreadcrumbSpan>
-  //   </BreadcrumbItem>)
-  //   crumbsJSX.push(<BreadcrumbItem key={`breadcrumbitem1`}>
-  //   <BreadcrumbSpan onClick={()=>{}}>...</BreadcrumbSpan>
-  //   </BreadcrumbItem>)
-  //   crumbsJSX.push(<BreadcrumbItem key={`breadcrumbitem2`}>
-  //   <BreadcrumbSpan onClick={crumbs[crumbs.length-1].onClick}>{crumbs[crumbs.length-1].label}</BreadcrumbSpan>
-  //   </BreadcrumbItem>)
-  // }else{
-    for (let [i,{label,onClick}] of Object.entries(crumbs) ){
-      crumbsJSX.push(<BreadcrumbItem key={`breadcrumbitem${i}`}>
-        <BreadcrumbSpan onClick={onClick}>{label}</BreadcrumbSpan>
-        </BreadcrumbItem>)
-    }
-  // }
+  for (let [i,{label,onClick}] of Object.entries(crumbs) ){
+    if (i < numHidden){ continue; }
+    crumbsJSX.push(<BreadcrumbItem key={`breadcrumbitem${i}`}>
+      <BreadcrumbSpan onClick={onClick}>{label}</BreadcrumbSpan>
+      </BreadcrumbItem>)
+  }
 
-  
+  crumbsJSX.push(<p ref={breadCrumbRef} > </p>)
+
 
   return <>
-  {/* <button style={{marginTop:'20px'}} onClick={()=>{
-    if (navigator.onLine) {
-      console.log('>>>>online');
-    } else {
-      console.log('>>>>offline');
-    }
-  }}>Test if online</button> */}
-  <Measure
-  bounds
-  onResize={(contentRect) => {
-    const width = contentRect.bounds.width;
-    setCrumbsWidth(width)
-
-    // latestWidth.current = width;
-    // updateNumColumns(contentRect.bounds.width);
-  }}
->
-  {({ measureRef }) => (
-    
-  <BreadCrumbContainer ref={measureRef}> {crumbsJSX} </BreadCrumbContainer>
-  )}
-  </Measure>
+  <BreadCrumbContainer > {crumbsJSX} </BreadCrumbContainer>
+  
   </>
 
-  
-  // return <div style={{display:'flex',flexWrap:"wrap"}}>
-  //   <span style={{margin:"10px",backgroundColor:"purple"}}>one thing wrap me</span>
-  //   <span style={{margin:"10px",backgroundColor:"purple"}}>one thing wrap me</span>
-  //   <span style={{margin:"10px",backgroundColor:"purple"}}>one thing wrap me</span>
-  //   <span style={{margin:"10px",backgroundColor:"purple"}}>one thing wrap me</span>
 
-  //   </div>
 }
 
-
-// <BreadcrumbItem 
-// ref={returnToCourseChooserRef}
-// >
-//   <BreadcrumbSpan
-//     role="button"
-//     tabIndex="0"
-//     onKeyDown={(e) => {
-//       if (e.key === 'Enter') {
-//         setPageToolView({
-//           page: 'course',
-//           tool: 'courseChooser',
-//           view: '',
-//         });
-//       }
-//     }}
-//     onClick={() => {
-//       setPageToolView({ page: 'course', tool: 'courseChooser', view: '' });
-//     }}
-//   >
-//     <FontAwesomeIcon icon={faTh} />
-//   </BreadcrumbSpan>
-// </BreadcrumbItem>
