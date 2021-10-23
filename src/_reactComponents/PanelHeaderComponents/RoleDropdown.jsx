@@ -27,55 +27,56 @@ const permsForDriveIdAtom = atom({
 });
 
 export function RoleDropdown() {
-  
   const { tool } = useRecoilValue(pageToolViewAtom);
-  const [effectiveRole,setEffectiveRole] = useRecoilState(effectiveRoleAtom);
-  const [permittedRole,setPermittedRole ] = useRecoilState(permittedRoleAtom);
+  const [effectiveRole, setEffectiveRole] = useRecoilState(effectiveRoleAtom);
+  const [permittedRole, setPermittedRole] = useRecoilState(permittedRoleAtom);
   const path = useRecoilValue(searchParamAtomFamily('path'));
   const searchDriveId = useRecoilValue(searchParamAtomFamily('driveId'));
   const recoilDriveId = useRecoilValue(permsForDriveIdAtom);
 
   let driveId = '';
-  if (path){
+  if (path) {
     [driveId] = path.split(':');
   }
-  if (searchDriveId !== ''){
+  if (searchDriveId !== '') {
     driveId = searchDriveId;
   }
 
-  const initilizeEffectiveRole = useRecoilCallback(({ set, snapshot }) => async (driveId) => {
-    let role = 'instructor';
-  
-    //If driveId then test if intructor is available
-    // const path = await snapshot.getPromise(searchParamAtomFamily('path'));
-    if (driveId !== ''){
-      const driveInfo = await snapshot.getPromise(fetchDrivesQuery);
-      
-      for (let drive of driveInfo.driveIdsAndLabels) {
-        if (drive.driveId === driveId) {
-          if (drive.role.length === 1 && drive.role[0] === 'Student') {
-            role = 'student';
+  const initilizeEffectiveRole = useRecoilCallback(
+    ({ set, snapshot }) =>
+      async (driveId) => {
+        let role = 'instructor';
+
+        //If driveId then test if intructor is available
+        // const path = await snapshot.getPromise(searchParamAtomFamily('path'));
+        if (driveId !== '') {
+          const driveInfo = await snapshot.getPromise(fetchDrivesQuery);
+
+          for (let drive of driveInfo.driveIdsAndLabels) {
+            if (drive.driveId === driveId) {
+              if (drive.role.length === 1 && drive.role[0] === 'Student') {
+                role = 'student';
+              }
+            }
           }
+        } else {
+          role = 'student';
         }
-      }
-    }else{
-      role = 'student';
-    }
-    
-    set(effectiveRoleAtom, role);
-    set(permsForDriveIdAtom, driveId)
-    setPermittedRole(role);
 
-  },[driveId]);
+        set(effectiveRoleAtom, role);
+        set(permsForDriveIdAtom, driveId);
+        setPermittedRole(role);
+      },
+    [driveId],
+  );
 
- 
   if (effectiveRole === '' || (recoilDriveId !== driveId && driveId !== '')) {
     //first time through so initialize
     initilizeEffectiveRole(driveId);
     return null;
   }
 
-  if (tool === 'enrollment'){
+  if (tool === 'enrollment') {
     return null;
   }
 
@@ -83,15 +84,14 @@ export function RoleDropdown() {
     return null;
   }
 
-
   let items = [
     ['instructor', 'Instructor'],
     ['student', 'Student'],
-  ]
+  ];
 
   let defaultIndex = 0;
-  for (let [i,item] of Object.entries(items)){
-    if (item[0] === effectiveRole){
+  for (let [i, item] of Object.entries(items)) {
+    if (item[0] === effectiveRole) {
       defaultIndex = Number(i) + 1;
       break;
     }
@@ -99,16 +99,15 @@ export function RoleDropdown() {
 
   return (
     <>
-    Role
-    <DropdownMenu
-      width="150px"
-      items={items}
-      title="Role"
-      defaultIndex={defaultIndex}
-      onChange={({ value }) =>
-        setEffectiveRole(value)
-      }
-    />
+      Role
+      <DropdownMenu
+        width="150px"
+        // maxMenuHeight="200px"
+        items={items}
+        title="Role"
+        defaultIndex={defaultIndex}
+        onChange={({ value }) => setEffectiveRole(value)}
+      />
     </>
   );
 }
