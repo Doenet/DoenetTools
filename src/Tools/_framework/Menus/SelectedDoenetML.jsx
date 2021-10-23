@@ -410,7 +410,12 @@ export function AssignmentSettings({ role, doenetId }) {
           if (valueDescription) {
             addToast(`Updated ${description} to ${valueDescription}`);
           } else {
-            if (description === 'Assigned Date' || description === 'Due Date') {
+            if (
+              description === 'Assigned Date' ||
+              description === 'Due Date' ||
+              description === 'Pinned Until Date' ||
+              description === 'Pinned After Date'
+            ) {
               addToast(
                 `Updated ${description} to ${new Date(
                   value + ' UTC',
@@ -557,8 +562,26 @@ export function AssignmentSettings({ role, doenetId }) {
             ) : (
               <input
                 value="No Assigned Date"
-                disabled
+                onClick={(e) => {
+                  let valueDescription = 'None';
+                  let value = null;
+
+                  if (aInfo.assignedDate === null) {
+                    valueDescription = 'Now';
+                    value = DateToUTCDateString(new Date());
+                  }
+
+                  updateAssignment({
+                    doenetId,
+                    keyToUpdate: 'assignedDate',
+                    value,
+                    description: 'Assigned Date',
+                    valueDescription,
+                  });
+                }}
+                // disabled
                 style={{
+                  color: '#545454',
                   height: '18px',
                   width: '177px',
                   border: '2px solid black',
@@ -628,9 +651,29 @@ export function AssignmentSettings({ role, doenetId }) {
               />
             ) : (
               <input
+                onClick={(e) => {
+                  let valueDescription = 'None';
+                  let value = null;
+
+                  if (aInfo.dueDate === null) {
+                    valueDescription = 'Next Week';
+                    let nextWeek = new Date();
+                    nextWeek.setDate(nextWeek.getDate() + 7);
+                    value = DateToUTCDateString(nextWeek);
+                  }
+
+                  updateAssignment({
+                    doenetId,
+                    keyToUpdate: 'dueDate',
+                    value,
+                    description: 'Due Date',
+                    valueDescription,
+                  });
+                }}
                 value="No Due Date"
-                disabled
+                // disabled
                 style={{
+                  color: '#545454',
                   height: '18px',
                   width: '177px',
                   border: '2px solid black',
@@ -1040,125 +1083,185 @@ export function AssignmentSettings({ role, doenetId }) {
       </div>
 
       <div>
-        Pin Assignment
-        <Switch
-          onChange={(e) => {
-            let valueDescription = 'None';
-            let value = null;
-            let secondValue = null;
-            //Start date
-            if (e.currentTarget.checked) {
-              valueDescription = 'Now to Next Year';
-              let today = new Date(); //Default start now
-              value = today.toLocaleString();
+        <label>
+          Pin Assignment
+          <div
+            style={{ display: 'flex' }}
+            onClick={(e) => {
+              e.preventDefault();
+            }}
+          >
+            <CalendarToggle
+              checked={aInfo.pinnedUntilDate !== null}
+              onClick={(e) => {
+                let valueDescription = 'None';
+                let value = null;
+                let secondValue = null;
 
-              let nextWeek = new Date();
-              nextWeek.setDate(nextWeek.getDate() + 365); //Default due seven days in the future
-              secondValue = nextWeek.toLocaleString();
-            }
+                if (aInfo.pinnedUntilDate === null) {
+                  valueDescription = 'Now to Next Year';
+                  let today = new Date();
+                  let nextYear = new Date();
+                  nextYear.setDate(nextYear.getDate() + 365);
+                  value = DateToUTCDateString(today);
+                  secondValue = DateToUTCDateString(nextYear);
+                }
 
-            updateAssignment({
-              doenetId,
-              keyToUpdate: 'pinnedAfterDate',
-              value,
-              description: 'Pinned Dates ',
-              valueDescription,
-              secondKeyToUpdate: 'pinnedUntilDate',
-              secondValue,
-            });
+                updateAssignment({
+                  doenetId,
+                  keyToUpdate: 'pinnedAfterDate',
+                  value,
+                  description: 'Pinned Dates ',
+                  valueDescription,
+                  secondKeyToUpdate: 'pinnedUntilDate',
+                  secondValue,
+                });
+              }}
+            />
+            {aInfo.pinnedUntilDate !== null ? (
+              <DateTime
+                value={
+                  aInfo.pinnedAfterDate
+                    ? new Date(aInfo.pinnedAfterDate + ' UTC')
+                    : null
+                }
+                onBlur={({ valid, value }) => {
+                  if (valid) {
+                    try {
+                      value = value.toDate();
+                    } catch (e) {
+                      // console.log('value not moment');
+                    }
+                    if (
+                      new Date(DateToUTCDateString(value)).getTime() !==
+                      new Date(aInfo.pinnedAfterDate).getTime()
+                    ) {
+                      updateAssignment({
+                        doenetId,
+                        keyToUpdate: 'pinnedAfterDate',
+                        value: DateToUTCDateString(value),
+                        description: 'Pinned After Date',
+                      });
+                    }
+                  } else {
+                    addToast('Invalid Pin After Date');
+                  }
+                }}
+              />
+            ) : (
+              <input
+                onClick={(e) => {
+                  let valueDescription = 'None';
+                  let value = null;
+                  let secondValue = null;
 
-            //End Date
-            // if (e.currentTarget.checked) {
+                  if (aInfo.pinnedUntilDate === null) {
+                    valueDescription = 'Now to Next Year';
+                    let today = new Date();
+                    let nextYear = new Date();
+                    nextYear.setDate(nextYear.getDate() + 365);
+                    value = DateToUTCDateString(today);
+                    secondValue = DateToUTCDateString(nextYear);
+                  }
 
-            // }
+                  updateAssignment({
+                    doenetId,
+                    keyToUpdate: 'pinnedAfterDate',
+                    value,
+                    description: 'Pinned Dates ',
+                    valueDescription,
+                    secondKeyToUpdate: 'pinnedUntilDate',
+                    secondValue,
+                  });
+                }}
+                value="No Pin After Date"
+                // disabled
+                style={{
+                  color: '#545454',
+                  height: '18px',
+                  width: '177px',
+                  border: '2px solid black',
+                  borderRadius: '5px',
+                }}
+              />
+            )}
+          </div>
+          <div
+            style={{ marginLeft: '28px' }}
+            onClick={(e) => {
+              e.preventDefault();
+            }}
+          >
+            {aInfo.pinnedUntilDate !== null ? (
+              <DateTime
+                value={
+                  aInfo.pinnedUntilDate
+                    ? new Date(aInfo.pinnedUntilDate + ' UTC')
+                    : null
+                }
+                onBlur={({ valid, value }) => {
+                  if (valid) {
+                    try {
+                      value = value.toDate();
+                    } catch (e) {
+                      // console.log('value not moment');
+                    }
+                    if (
+                      new Date(DateToUTCDateString(value)).getTime() !==
+                      new Date(aInfo.pinnedUntilDate).getTime()
+                    ) {
+                      updateAssignment({
+                        doenetId,
+                        keyToUpdate: 'pinnedUntilDate',
+                        value: DateToUTCDateString(value),
+                        description: 'Pinned Until Date',
+                      });
+                    }
+                  } else {
+                    addToast('Invalid Pin Until Date');
+                  }
+                }}
+              />
+            ) : (
+              <input
+                onClick={(e) => {
+                  let valueDescription = 'None';
+                  let value = null;
+                  let secondValue = null;
 
-            // updateAssignment({
-            //   doenetId,
-            //   keyToUpdate: 'pinnedUntilDate',
-            //   value,
-            //   description: 'Pinned Until Date ',
-            //   valueDescription,
-            // });
-          }}
-          checked={aInfo.pinnedUntilDate !== null}
-        ></Switch>
+                  if (aInfo.pinnedUntilDate === null) {
+                    valueDescription = 'Now to Next Year';
+                    let today = new Date();
+                    let nextYear = new Date();
+                    nextYear.setDate(nextYear.getDate() + 365);
+                    value = DateToUTCDateString(today);
+                    secondValue = DateToUTCDateString(nextYear);
+                  }
+
+                  updateAssignment({
+                    doenetId,
+                    keyToUpdate: 'pinnedAfterDate',
+                    value,
+                    description: 'Pinned Dates ',
+                    valueDescription,
+                    secondKeyToUpdate: 'pinnedUntilDate',
+                    secondValue,
+                  });
+                }}
+                value="No Pin Until Date"
+                // disabled
+                style={{
+                  color: '#545454',
+                  height: '18px',
+                  width: '177px',
+                  border: '2px solid black',
+                  borderRadius: '5px',
+                }}
+              />
+            )}
+          </div>
+        </label>
       </div>
-      {aInfo.pinnedUntilDate !== null ? (
-        <>
-          <div>
-            <label>
-              Pinned After Date
-              <input
-                required
-                type="text"
-                name="pinnedAfterDate"
-                value={pinnedAfterDate}
-                // placeholder="0001-01-01 01:01:01 "
-                onBlur={() => {
-                  if (aInfo.pinnedAfterDate !== pinnedAfterDate) {
-                    updateAssignment({
-                      doenetId,
-                      keyToUpdate: 'pinnedAfterDate',
-                      value: pinnedAfterDate,
-                      description: 'Pinned After Date',
-                    });
-                  }
-                }}
-                onChange={(e) => setPinnedAfterDate(e.currentTarget.value)}
-                onKeyDown={(e) => {
-                  if (
-                    e.key === 'Enter' &&
-                    aInfo.pinnedAfterDate !== pinnedAfterDate
-                  ) {
-                    updateAssignment({
-                      doenetId,
-                      keyToUpdate: 'pinnedAfterDate',
-                      value: pinnedAfterDate,
-                      description: 'Pinned After Date',
-                    });
-                  }
-                }}
-              />
-            </label>
-          </div>
-          <div>
-            <label>
-              Pinned Until Date
-              <input
-                required
-                type="text"
-                name="pinnedUntilDate"
-                value={pinnedUntilDate}
-                // placeholder="0001-01-01 01:01:01 "
-                onBlur={() => {
-                  if (aInfo.pinnedUntilDate !== pinnedUntilDate) {
-                    updateAssignment({
-                      doenetId,
-                      keyToUpdate: 'pinnedUntilDate',
-                      value: pinnedUntilDate,
-                      description: 'Pinned Until Date',
-                    });
-                  }
-                }}
-                onChange={(e) => setPinnedUntilDate(e.currentTarget.value)}
-                onKeyDown={(e) => {
-                  if (
-                    e.key === 'Enter' &&
-                    aInfo.pinnedUntilDate !== pinnedUntilDate
-                  ) {
-                    updateAssignment({
-                      doenetId,
-                      keyToUpdate: 'pinnedUntilDate',
-                      value: pinnedUntilDate,
-                      description: 'Pinned Until Date',
-                    });
-                  }
-                }}
-              />
-            </label>
-          </div>
-        </>
-      ) : null}
     </>
   );
 }
