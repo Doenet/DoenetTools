@@ -228,8 +228,7 @@ export default function SelectedDoenetML() {
           }}
         />
       </ActionButtonGroup>
-
-      <Textfield
+        <Textfield
         label="DoenetML Label"
         width="menu"
         vertical
@@ -263,6 +262,7 @@ export default function SelectedDoenetML() {
           }
         }}
       />
+      
       {/* <label>
         DoenetML Label
         <input
@@ -307,7 +307,7 @@ export default function SelectedDoenetML() {
 
       <br />
       <AssignmentSettings role={effectiveRole} doenetId={item.doenetId} />
-      <br />
+      {/* <br /> */}
       <br />
       <Button
         alert
@@ -326,7 +326,7 @@ export default function SelectedDoenetML() {
           });
         }}
       />
-      <br />
+      {/* <br /> */}
     </>
   );
 }
