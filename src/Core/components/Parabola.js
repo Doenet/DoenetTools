@@ -1108,35 +1108,105 @@ export default class Parabola extends Curve {
           dependencyType: "stateVariable",
           variableName: "c"
         },
+        graphXmin: {
+          dependencyType: "stateVariable",
+          variableName: "graphXmin"
+        },
+        graphXmax: {
+          dependencyType: "stateVariable",
+          variableName: "graphXmax"
+        },
+        graphYmin: {
+          dependencyType: "stateVariable",
+          variableName: "graphYmin"
+        },
+        graphYmax: {
+          dependencyType: "stateVariable",
+          variableName: "graphYmax"
+        }
       }),
-      definition: ({ dependencyValues }) => ({
-        newValues: {
-          nearestPoint: function (variables) {
+      definition({ dependencyValues }) {
 
-            let x1 = variables.x1.evaluate_to_constant();
-            let x2 = variables.x2.evaluate_to_constant();
+        let xscale = 1, yscale = 1;
+        if (dependencyValues.graphXmin !== null &&
+          dependencyValues.graphXmax !== null &&
+          dependencyValues.graphYmin !== null &&
+          dependencyValues.graphYmax !== null
+        ) {
+          xscale = dependencyValues.graphXmax - dependencyValues.graphXmin;
+          yscale = dependencyValues.graphYmax - dependencyValues.graphYmin;
+        }
 
-            if (!(Number.isFinite(x1) && Number.isFinite(x2))) {
-              return {};
-            }
 
-            let a0 = dependencyValues.a;
-            let b0 = dependencyValues.b;
-            let c0 = dependencyValues.c;
+        let a0 = dependencyValues.a * xscale * xscale / yscale;
+        let b0 = dependencyValues.b * xscale / yscale;
+        let c0 = dependencyValues.c / yscale;
 
-            if (!(Number.isFinite(a0) && Number.isFinite(b0) && Number.isFinite(c0))) {
-              return {};
-            }
+        let skip = !(Number.isFinite(a0) && Number.isFinite(b0) && Number.isFinite(c0))
 
-            if (a0 === 0) {
-              // have line y = b0*x+c0
+        return {
+          newValues: {
+            nearestPoint: function (variables) {
 
-              let denom = b0 * b0 + 1;
+              if (skip) {
+                return {};
+              }
 
-              let result = {};
-              result.x1 = ((x1 + b0 * x2) - b0 * c0) / denom;
-              result.x2 = (b0 * (x1 + b0 * x2) + c0) / denom;
+              let x1 = variables.x1.evaluate_to_constant();
+              let x2 = variables.x2.evaluate_to_constant();
 
+              if (!(Number.isFinite(x1) && Number.isFinite(x2))) {
+                return {};
+              }
+
+              x1 /= xscale;
+              x2 /= yscale;
+
+              if (a0 === 0) {
+                // have line y = b0*x+c0
+
+                let denom = b0 * b0 + 1;
+
+                let result = {};
+                result.x1 = ((x1 + b0 * x2) - b0 * c0) / denom * xscale;
+                result.x2 = (b0 * (x1 + b0 * x2) + c0) / denom * yscale;
+
+                if (variables.x3 !== undefined) {
+                  result.x3 = 0;
+                }
+
+                return result;
+
+              }
+
+              let d2 = c0 - x2;
+              let a = 2 * a0 ** 2;
+              let b = (3 * a0 * b0) / a;
+              let c = (2 * a0 * d2 + b0 ** 2 + 1) / a;
+              let d = (b0 * d2 - x1) / a;
+
+
+              let resultCardano = cardano(b, c, d);
+
+              let x1AtMin = resultCardano[0];
+              let x2AtMin = dependencyValues.f(x1AtMin * xscale) / yscale;
+              let d2AtMin = (x1 - x1AtMin) ** 2 + (x2 - x2AtMin) ** 2;
+
+              for (let r of resultCardano.slice(1)) {
+                let x = r;
+                let fx = dependencyValues.f(x * xscale) / yscale;
+                let d2 = (x1 - x) ** 2 + (x2 - fx) ** 2;
+                if (d2 < d2AtMin) {
+                  x1AtMin = x;
+                  x2AtMin = fx;
+                  d2AtMin = d2;
+                }
+
+              }
+
+              let result = {
+                x1: x1AtMin * xscale, x2: x2AtMin * yscale
+              }
               if (variables.x3 !== undefined) {
                 result.x3 = 0;
               }
@@ -1144,43 +1214,10 @@ export default class Parabola extends Curve {
               return result;
 
             }
-
-            let a = 4 * a0 ** 2;
-            let b = (6 * a0 * b0) / a;
-            let c = (4 * a0 * c0 - 4 * a0 * x2 + 2 * b0 ** 2 + 2) / a;
-            let d = (2 * b0 * c0 - 2 * b0 * x2 - 2 * x1) / a;
-
-
-            let resultCardano = cardano(b, c, d);
-
-            let x1AtMin = resultCardano[0];
-            let x2AtMin = dependencyValues.f(x1AtMin);
-            let d2AtMin = (x1 - x1AtMin) ** 2 + (x2 - x2AtMin) ** 2;
-
-            for (let r of resultCardano.slice(1)) {
-              let x = r;
-              let fx = dependencyValues.f(x);
-              let d2 = (x1 - x) ** 2 + (x2 - fx);
-              if (d2 < d2AtMin) {
-                x1AtMin = x;
-                x2AtMin = fx;
-                d2AtMin = d2;
-              }
-
-            }
-
-            let result = {
-              x1: x1AtMin, x2: x2AtMin
-            }
-            if (variables.x3 !== undefined) {
-              result.x3 = 0;
-            }
-
-            return result;
-
           }
         }
-      })
+      }
+
     }
 
     return stateVariableDefinitions;
@@ -1254,12 +1291,12 @@ function cardano(b, c, d, ε = 1e-10) {
   // Handle roots at zero
   if (Math.abs(q) <= ε) {
     if (Math.abs(p) <= ε)
-      return [-b / 3, 3];  // Triple root
+      return [-b / 3];  // Triple root
     let s = Math.sqrt(Math.abs(p));
     if (p < 0)
       return [-s - b / 3, -b / 3, s - b / 3];
     // Edit: return only real
-    return [-b / 3, 1];
+    return [-b / 3];
   }
 
   // Discriminant
