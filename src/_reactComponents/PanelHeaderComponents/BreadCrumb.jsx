@@ -75,7 +75,7 @@ function Crumb({setSize,i,label,onClick}){
       newObj[i] = crumbRef.current.offsetWidth;
       return newObj;
     })
-  },[])
+  },[i,crumbRef,setSize])
   return <BreadcrumbItem ref={crumbRef}>
   <BreadcrumbSpan onClick={onClick}>{label}</BreadcrumbSpan>
   </BreadcrumbItem>
