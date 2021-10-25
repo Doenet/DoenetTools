@@ -1,6 +1,5 @@
 import React, { useRef, useState, useEffect } from 'react';
 import styled from 'styled-components';
-import VisibilitySensor from 'react-visibility-sensor'
 
 const BreadCrumbContainer = styled.ul`
   list-style: none;
@@ -65,50 +64,32 @@ const BreadcrumbSpan = styled.span`
   }
 `;
 
-function useSize(ref) {
-  const [size, setSize] = useState({})
 
-  useEffect(() => {
-    if (ref.current == null) return
-    const observer = new ResizeObserver(([entry]) => setSize(entry.contentRect))
-    observer.observe(ref.current)
-    return () => observer.disconnect()
-  }, [])
-
-  return size
+function Crumb({setSize,i,label,onClick}){
+  let crumbRef = useRef(null);
+  
+  useEffect(()=>{
+    // console.log(">>>>",i,crumbRef.current.offsetWidth)
+    setSize((was)=>{
+      let newObj = [...was];
+      newObj[i] = crumbRef.current.offsetWidth;
+      return newObj;
+    })
+  },[])
+  return <BreadcrumbItem ref={crumbRef}>
+  <BreadcrumbSpan onClick={onClick}>{label}</BreadcrumbSpan>
+  </BreadcrumbItem>
 }
-
 //crumb 
 //label: the lable which shows in the span
 //onClick: the function called when crumb is clicked
 export function BreadCrumb({crumbs=[]}){
   const breadCrumbRef = useRef(null)
-  let [numHidden,setNumHidden] = useState(0);
-  let [rightMostVisible,setRightMostVisible] = useState(true);
-  let crumbsWidth = useSize(breadCrumbRef)
+  let [crumbWidths,setCrumbWidths] = useState([])
   let [windowWidth,setWindowWidth] = useState(window.innerWidth);
-  // console.log(">>>>windowWidth",windowWidth)
-  // console.log(">>>>crumbsWidth",crumbsWidth.width)
-//How do we know the width 350 is big enough for the next crumb?
-  if (windowWidth - crumbsWidth.width > 350){
-    if (numHidden > 0){
-      console.log(">>>>!!!!!!!")
-      console.log(">>>>diff",windowWidth - crumbsWidth.width)
-      console.log(">>>>!!!!!!!")
-    }
-    
-    // setNumHidden((was)=>{
-    //   if (was > 0){
-    //     return was - 1;
-    //   }
-    // })
-  }
 
   function onWindowResize(){
-    let width = window.innerWidth;
-    setWindowWidth(width);
-    // console.log(">>>>window width",width)
-    // console.log(">>>>breadcrumbs width",crumbsWidth,crumbsWidth.width)
+    setWindowWidth(window.innerWidth);
   }
 
   useEffect(()=>{
@@ -117,6 +98,26 @@ export function BreadCrumb({crumbs=[]}){
       window.onresize = null;
     }
   },[])
+
+  let numHidden = 0;
+  //Wait until we have the sizes defined
+  if (crumbWidths.length == crumbs.length && breadCrumbRef){
+    let BreadcrumbLeft = breadCrumbRef.current.getBoundingClientRect().left;
+    let prevBreak = BreadcrumbLeft + 95;
+
+    for (let i = crumbWidths.length - 1; i >= 0; i-- ){
+      let width = crumbWidths[i];
+      let rightBreak = prevBreak + width;
+      // console.log(">>>>range",i+1.0,prevBreak,rightBreak)
+
+      if (windowWidth >= prevBreak && windowWidth < rightBreak){
+        numHidden = i + 1.0;
+        break;
+      }
+      prevBreak = rightBreak;
+    }
+    // console.log(">>>>Result",BreadcrumbLeft,crumbWidths,windowWidth,numHidden)
+  }
 
   let crumbsJSX = [];
 
@@ -127,56 +128,7 @@ export function BreadCrumb({crumbs=[]}){
   for (let [i,{label,onClick}] of Object.entries(crumbs) ){
     
     if (i < numHidden){ continue; }
-    let crumb = <BreadcrumbItem key={`breadcrumbitem${i}`}>
-    <BreadcrumbSpan onClick={onClick}>{label}</BreadcrumbSpan>
-    </BreadcrumbItem>;
-
-    // if (i == crumbs.length - 1){
-      crumbsJSX.push(<VisibilitySensor 
-        offset={{right:30}}
-        
-        onChange={(isVisible)=>{
-          // console.log(">>>>i",i,isVisible)
-          // setVisible(isVisible)
-        if (isVisible){
-          //if last one is visible set to zero and recalculate
-          if (i == crumbs.length - 1){
-            setNumHidden(0);
-            setRightMostVisible(true);
-
-          }
-          // if (numHidden > 0){
-          //   setNumHidden((was)=>was-1)
-          // }
-        }else{
-          console.log(">>>>crumbsWidth",crumbsWidth.width)
-          // console.log(">>>>crumbsWidth",crumbsWidth.current,crumbsWidth.current.getBoundingClientRect())
-          //Determine number to hide to make visible again
-          // if (numHidden < crumbs.length - 1){
-          //   setNumHidden((was)=>was+1)
-          // }
-          //if this item is farthest left then this is the number to hide
-            setNumHidden((was)=>{
-          let newHide = crumbs.length - i + Number(was);
-          // console.log(">>>>i was newHide",i,was,newHide)
-
-              if (was < newHide){
-                return newHide
-              }else{
-                return was
-              }
-            })
-
-            if (i == crumbs.length - 1){
-              setRightMostVisible(false);
-            }
-
-        }
-
-      }}>{crumb}</VisibilitySensor>)
-    // }else{
-    //   crumbsJSX.push(crumb)
-    // }
+    crumbsJSX.push(<Crumb key={`breadcrumbitem${i}`} label={label} onClick={onClick} i={i} setSize={setCrumbWidths} />)
   }
 
 
