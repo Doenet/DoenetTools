@@ -1,5 +1,7 @@
 import React, { useRef, useState, useEffect } from 'react';
 import styled from 'styled-components';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+
 
 const BreadCrumbContainer = styled.ul`
   list-style: none;
@@ -35,6 +37,7 @@ const BreadcrumbSpan = styled.span`
   background: #1a5a99;
   border-radius: 15px 0px 0px 15px;
   cursor: pointer;
+  white-space: nowrap;
   &::after {
     content: ' ';
     width: 0;
@@ -65,27 +68,36 @@ const BreadcrumbSpan = styled.span`
 `;
 
 
-function Crumb({setSize,i,label,onClick}){
+function Crumb({setSize,i,label=null,onClick,icon=null}){
   let crumbRef = useRef(null);
   
   useEffect(()=>{
-    // console.log(">>>>",i,crumbRef.current.offsetWidth)
     setSize((was)=>{
       let newObj = [...was];
-      newObj[i] = crumbRef.current.offsetWidth;
+      newObj[i] = crumbRef.current.getBoundingClientRect();
       return newObj;
     })
   },[i,crumbRef,setSize])
+
+  let iconJSX = null;
+  if (icon){
+    iconJSX = <FontAwesomeIcon icon={icon}/>
+  }
+
+  if (!icon && !label){
+    label = '_'
+  }
+
   return <BreadcrumbItem ref={crumbRef}>
-  <BreadcrumbSpan onClick={onClick}>{label}</BreadcrumbSpan>
+  <BreadcrumbSpan onClick={onClick}>{iconJSX}{label}</BreadcrumbSpan>
   </BreadcrumbItem>
 }
 //crumb 
-//label: the lable which shows in the span
+//label: the label which shows in the span
+//icon: the Font Awesome icon which shows in the span
 //onClick: the function called when crumb is clicked
 export function BreadCrumb({crumbs=[]}){
-  const breadCrumbRef = useRef(null)
-  let [crumbWidths,setCrumbWidths] = useState([])
+  let [crumBounds,setCrumBounds] = useState([])
   let [windowWidth,setWindowWidth] = useState(window.innerWidth);
 
   function onWindowResize(){
@@ -100,40 +112,50 @@ export function BreadCrumb({crumbs=[]}){
   },[])
 
   let numHidden = 0;
-  //Wait until we have the sizes defined
-  if (crumbWidths.length == crumbs.length && breadCrumbRef){
-    let BreadcrumbLeft = breadCrumbRef.current.getBoundingClientRect().left;
-    let prevBreak = BreadcrumbLeft + 95;
+  //Protect against too few crumbs
+  //And wait until we have the sizes defined
+  if (crumbs.length > 2 &&
+      crumBounds.length == crumbs.length){
+    
+    numHidden = crumbs.length - 2;
+    let prevBreak = crumBounds[0].right + 13; //First segment right break point
+    prevBreak = prevBreak + crumBounds[crumBounds.length -1].width + 58; //Second segment right break point Includes elipsis segment
 
-    for (let i = crumbWidths.length - 1; i >= 0; i-- ){
-      let width = crumbWidths[i];
-      let rightBreak = prevBreak + width;
-      // console.log(">>>>range",i+1.0,prevBreak,rightBreak)
+    
+    //If window is wide enough to expand from minimum size
+    if ( prevBreak < windowWidth){
 
-      if (windowWidth >= prevBreak && windowWidth < rightBreak){
-        numHidden = i + 1.0;
-        break;
+      for (let i = crumBounds.length - 2; i >= 1; i-- ){
+        let width = crumBounds[i].width;
+        let rightBreak = prevBreak + width;
+        if (i == 1){ rightBreak -=  58} //no elipsis on last break
+
+        //If in this range we know the number to hide
+        if (windowWidth >= prevBreak && windowWidth < rightBreak){
+          break;
+        }
+        prevBreak = rightBreak;
+        numHidden--;
       }
-      prevBreak = rightBreak;
     }
-    // console.log(">>>>Result",BreadcrumbLeft,crumbWidths,windowWidth,numHidden)
   }
 
   let crumbsJSX = [];
 
-  if (numHidden > 0){crumbsJSX.push(<BreadcrumbItem key={`breadcrumbitem0`}>
-    <BreadcrumbSpan>...</BreadcrumbSpan>
-    </BreadcrumbItem>)}
 
-  for (let [i,{label,onClick}] of Object.entries(crumbs) ){
+
+  for (let [i,{icon,label,onClick}] of Object.entries(crumbs) ){
     
-    if (i < numHidden){ continue; }
-    crumbsJSX.push(<Crumb key={`breadcrumbitem${i}`} label={label} onClick={onClick} i={i} setSize={setCrumbWidths} />)
+    if (i < numHidden && i != 0){ continue; }
+    crumbsJSX.push(<Crumb key={`breadcrumbitem${i}`} icon={icon} label={label} onClick={onClick} i={i} setSize={setCrumBounds} />)
   }
 
+  if (numHidden > 0){crumbsJSX[1] = <BreadcrumbItem key={`breadcrumbitem1`}>
+  <BreadcrumbSpan>...</BreadcrumbSpan>
+  </BreadcrumbItem>}
 
   return <>
-  <BreadCrumbContainer ref={breadCrumbRef}> {crumbsJSX} </BreadCrumbContainer>
+  <BreadCrumbContainer > {crumbsJSX} </BreadCrumbContainer>
   </>
 
 
