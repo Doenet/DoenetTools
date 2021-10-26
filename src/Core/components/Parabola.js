@@ -8,7 +8,7 @@ export default class Parabola extends Curve {
 
   static get stateVariablesShadowedForReference() {
     return [
-      "nThroughPoints", "throughPoints",
+      "nThroughPoints", "throughPoints", "prescribedVertex"
     ]
   };
 
@@ -17,6 +17,11 @@ export default class Parabola extends Curve {
     attributes.through = {
       createComponentOfType: "_pointListComponent",
     };
+    attributes.vertex = {
+      createComponentOfType: "point",
+      createStateVariable: "prescribedVertex",
+      defaultValue: null,
+    }
 
     delete attributes.parMin;
     delete attributes.parMax;
@@ -331,18 +336,58 @@ export default class Parabola extends Curve {
       }
     }
 
+    stateVariableDefinitions.numericalPrescribedVertex = {
+      returnDependencies: () => ({
+        prescribedVertex: {
+          dependencyType: "stateVariable",
+          variableName: "prescribedVertex",
+        }
+      }),
+      definition({ dependencyValues }) {
+        if (dependencyValues.prescribedVertex === null) {
+          return { newValues: { numericalPrescribedVertex: null } }
+        }
+
+        let x, y;
+
+        try {
+          x = dependencyValues.prescribedVertex.get_component(0).evaluate_to_constant();
+          y = dependencyValues.prescribedVertex.get_component(1).evaluate_to_constant();
+
+          if (!(Number.isFinite(x) && Number.isFinite(y))) {
+            x = NaN;
+            y = NaN;
+          }
+        } catch (e) {
+          x = NaN;
+          y = NaN;
+        }
+
+        return { newValues: { numericalPrescribedVertex: [x, y] } }
+
+      }
+    }
+
     stateVariableDefinitions.pointsAreNumerical = {
       returnDependencies: () => ({
         numericalThroughPoints: {
           dependencyType: "stateVariable",
           variableName: "numericalThroughPoints"
         },
+        numericalPrescribedVertex: {
+          dependencyType: "stateVariable",
+          variableName: "numericalPrescribedVertex"
+        }
       }),
       definition: ({ dependencyValues }) => ({
         // need to check just the first entry of numericalThroughPoints
+        // and numericalPrescribedVertex
         newValues: {
           pointsAreNumerical: dependencyValues.numericalThroughPoints
             .every(x => Number.isFinite(x[0]))
+            && (!dependencyValues.numericalPrescribedVertex ||
+              Number.isFinite(dependencyValues.numericalPrescribedVertex[0])
+            )
         },
         checkForActualChange: { pointsAreNumerical: true }
       })
@@ -366,6 +411,10 @@ export default class Parabola extends Curve {
         numericalThroughPoints: {
           dependencyType: "stateVariable",
           variableName: "numericalThroughPoints"
+        },
+        numericalPrescribedVertex: {
+          dependencyType: "stateVariable",
+          variableName: "numericalPrescribedVertex"
         },
         pointsAreNumerical: {
           dependencyType: "stateVariable",
@@ -394,7 +443,57 @@ export default class Parabola extends Curve {
         let a, b, c;
         let realValued = true;
 
+        if (dependencyValues.numericalPrescribedVertex) {
+          if (dependencyValues.numericalThroughPoints.length === 0) {
+
+            // only vertex prescribed.
+            // create parabola y = a*(x-x1)^2 + y1
+
+            let v = dependencyValues.numericalPrescribedVertex;
+            let x1 = v[0];
+            let y1 = v[1];
+
+            a = dependencyValues.aShadow;
+            b = -2 * a * x1;
+            c = a * x1 * x1 + y1;
+
+            return {
+              newValues: {
+                a, b, c,
+                realValued: true
+              }
+            }
+          } else {
+
+            // vertex and at least one point prescribed.
+            // use the first point and ignore the remaining
+
+            // create parabola y = a*(x-x1)^2 + y1
+            // where a is determined by the first point
+
+            let v = dependencyValues.numericalPrescribedVertex;
+            let x1 = v[0];
+            let y1 = v[1];
+
+            let p1 = dependencyValues.numericalThroughPoints[0];
+            let x2 = p1[0];
+            let y2 = p1[1];
+
+            a = (y2 - y1) / (x2 - x1) ** 2;
+            b = -2 * a * x1;
+            c = a * x1 * x1 + y1;
+
+            return {
+              newValues: {
+                a, b, c,
+                realValued: true
+              }
+            }
+          }
+        }
+
         if (dependencyValues.numericalThroughPoints.length === 0) {
+
           // nothing specified.  Create parabola y=a*x^2, by default
           return {
             useEssentialOrDefaultValue: {
@@ -414,6 +513,7 @@ export default class Parabola extends Curve {
           }
 
         } else if (dependencyValues.numericalThroughPoints.length === 1) {
+
           // one point
           // create parabola with point as vertex
 
