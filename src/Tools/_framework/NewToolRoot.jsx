@@ -101,7 +101,6 @@ export default function ToolRoot(){
     supportPanelIndex:0,
     hasNoMenuPanel: false,
     headerControls:[],
-    headerControlsPositions:[],
     displayProfile:true,
   });
   let mainPanel = null;
@@ -173,15 +172,12 @@ if (toolRootMenusAndPanels?.supportPanelOptions && toolRootMenusAndPanels?.suppo
 }
 
   let headerControls = null;
-  let headerControlsPositions = null;
   if (toolRootMenusAndPanels.headerControls){
     headerControls = [];
-    headerControlsPositions = [];
     for (const [i,controlName] of Object.entries(toolRootMenusAndPanels.headerControls)){
       const controlObj = LazyControlObj[controlName]
       if (controlObj){
         const key = `headerControls${MainPanelKey}`;
-        headerControlsPositions.push(toolRootMenusAndPanels.headerControlsPositions[i])
         headerControls.push(
           <Suspense key={key} fallback={<LoadingFallback>loading...</LoadingFallback>}>
             {React.createElement(controlObj,{key:{key}})}
@@ -233,7 +229,7 @@ if (toolRootMenusAndPanels?.supportPanelOptions && toolRootMenusAndPanels?.suppo
     <ToolContainer >
       {menus}
       <ContentPanel 
-      main={<MainPanel headerControlsPositions={headerControlsPositions} headerControls={headerControls} setMenusOpen={setMenusOpen} openMenuButton={openMenuButton} displayProfile={toolRootMenusAndPanels.displayProfile} >{mainPanel}</MainPanel>} 
+      main={<MainPanel headerControls={headerControls} setMenusOpen={setMenusOpen} openMenuButton={openMenuButton} displayProfile={toolRootMenusAndPanels.displayProfile} >{mainPanel}</MainPanel>} 
       support={supportPanel}
       />
       {footer}
@@ -257,7 +253,6 @@ if (toolRootMenusAndPanels?.supportPanelOptions && toolRootMenusAndPanels?.suppo
 // supportPanelIndex:0,
 // hasNoMenuPanel: true,
 // headerControls:["BackButton"],
-// headerControlsPositions:["Right"], 
 // hasNoMenuPanel: true,
 // waitForMenuSuppression:true,
 
@@ -294,7 +289,6 @@ let navigationObj = {
       menusTitles:["Time Remaining"],
       menusInitOpen:[true],
       headerControls: [],
-      headerControlsPositions: [],
       displayProfile:false,
       waitForMenuSuppression:true,
     },
@@ -318,7 +312,6 @@ let navigationObj = {
       menusTitles:["Credit Achieved","Time Remaining"],
       menusInitOpen:[true,true],
       headerControls: ["AssignmentBreadCrumb","AssignmentNewAttempt"],
-      headerControlsPositions: ["Left","Right"],
       waitForMenuSuppression:true,
     },
     courseChooser:{ //allCourses
@@ -328,7 +321,6 @@ let navigationObj = {
       menusTitles:["Create Course"],
       menusInitOpen:[true],
       headerControls: ["ChooserBreadCrumb"],
-      headerControlsPositions: ["Left"],
       onLeave:"CourseChooserLeave",
     },
     dashboard: {
@@ -339,7 +331,6 @@ let navigationObj = {
       menusTitles:["Class Times","Current Content"],
       menusInitOpen:[false,false],
       headerControls: ["DashboardBreadCrumb"],
-      headerControlsPositions: ["Left"],
       onLeave:"DashboardLeave",
       waitForMenuSuppression:true,
     },
@@ -351,7 +342,6 @@ let navigationObj = {
       menusTitles:[],
       menusInitOpen:[],
       headerControls: ["GradebookBreadCrumb"],
-      headerControlsPositions: ["Left"]
       // onLeave:"",
     },
     gradebookAssignment: {
@@ -362,7 +352,6 @@ let navigationObj = {
       menusInitOpen:[false],
       menuPanelCap:"DriveInfoCap",
       headerControls: ["GradebookBreadCrumb"],
-      headerControlsPositions: ["Left"],
       waitForMenuSuppression:true,
       onLeave:"GradebookAssignmentLeave",
     },
@@ -374,7 +363,6 @@ let navigationObj = {
       menusTitles:[],
       menusInitOpen:[],
       headerControls: ["GradebookBreadCrumb"],
-      headerControlsPositions: ["Left"]
       // onLeave:"",
     },
     gradebookStudentAssignment: {
@@ -385,7 +373,6 @@ let navigationObj = {
       menusTitles:["Credit Achieved"],
       menusInitOpen:[true],
       headerControls: ["GradebookBreadCrumb"],
-      headerControlsPositions: ["Left"]
       // onLeave:"",
     },
     gradebookAttempt: {
@@ -396,7 +383,6 @@ let navigationObj = {
       menusTitles:[],
       menusInitOpen:[],
       headerControls: ["GradebookBreadCrumb"],
-      headerControlsPositions: ["Left"]
       // onLeave:"",
     },
     navigation:{ //allFilesInCourse
@@ -407,7 +393,6 @@ let navigationObj = {
       menusTitles:["Add Items"],
       menusInitOpen:[true],
       headerControls: ["NavigationBreadCrumb"],
-      headerControlsPositions: ["Left"],
       onLeave:"NavigationLeave",
       waitForMenuSuppression:true,
     },
@@ -422,13 +407,11 @@ let navigationObj = {
       supportPanelTitles:["DoenetML Editor"],
       supportPanelIndex:0,
       headerControls: ["EditorBreadCrumb","ViewerUpdateButton",],
-      headerControlsPositions: ["Left","Left"],
       onLeave:"EditorLeave",
     },
     collection: {
       currentMainPanel:"CollectionEditor",
       headerControls: ["NavigationBreadCrumb"],
-      headerControlsPositions: ["Left"],
       currentMenus:["AssignmentSettingsMenu", "GroupSettings"],
       menusTitles:["Assignment Settings", "Group Settings"],
       menusInitOpen:[false, false],
@@ -447,9 +430,7 @@ let navigationObj = {
       supportPanelTitles:[],
       supportPanelIndex:0,
       headerControls: ["EnrollmentBreadCrumb"],
-      headerControlsPositions: ["Left"]
       // headerControls: ["BackButton"],
-      // headerControlsPositions: ["Right"]
     },
   },
   home:{
@@ -487,7 +468,6 @@ let navigationObj = {
       supportPanelIndex:0,
       hasNoMenuPanel: true,
       headerControls: ["BackButton"],
-      headerControlsPositions: ["Right"]
     }
   },
   signin:{
@@ -788,7 +768,6 @@ let encodeParams = p => Object.entries(p).map(kv =>
           reducedSetMenusAndPanels.menusInitOpen = []
           reducedSetMenusAndPanels.menusTitles = []
           reducedSetMenusAndPanels.headerControls = []
-          reducedSetMenusAndPanels.headerControlsPositions = []
 
           props.setToolRootMenusAndPanels(reducedSetMenusAndPanels)
 

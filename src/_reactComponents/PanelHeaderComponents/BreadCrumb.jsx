@@ -8,6 +8,7 @@ const BreadCrumbContainer = styled.ul`
   overflow: hidden;
   height: 22px;
   display: flex;
+  margin-left: -35px;
 `;
 
 const BreadcrumbItem = styled.li`
