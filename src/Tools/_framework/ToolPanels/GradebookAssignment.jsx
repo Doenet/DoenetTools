@@ -280,6 +280,7 @@ export default function GradebookAssignmentView(){
     assignmentsTable.headers.push(
         {
             Header: "Student",
+            Footer: "Possible Points",
             accessor: "student",
             
         }
@@ -289,6 +290,7 @@ export default function GradebookAssignmentView(){
         assignmentsTable.headers.push(
         {
             Header: "Attempt " + i,
+            Footer: totalPossiblePoints,
             accessor: "a"+i,
             disableFilters: true,
             Cell: row  =><a onClick = {(e) =>{
@@ -310,6 +312,7 @@ export default function GradebookAssignmentView(){
 
     assignmentsTable.headers.push({
         Header: "Assignment Total",
+        Footer: totalPossiblePoints,
         accessor: "grade",
         disableFilters: true
     })

@@ -199,6 +199,12 @@ class DoenetViewerChild extends Component {
     ) {
       // console.log(">>>>savedUserAssignmentAttemptNumber!!!")
 
+      //TODO: Do we need this? or does the catch handle it?
+      if (!navigator.onLine) {
+        this.props.toast("You're not connected to the internet. ", toastType.ERROR)
+      }
+    
+
       axios.post('/api/initAssignmentAttempt.php', {
         doenetId: this.props.doenetId,
         weights: this.core.scoredItemWeights,
@@ -210,6 +216,9 @@ class DoenetViewerChild extends Component {
       }).then(({ data }) => {
 
         // console.log(">>>>data",data)
+        if (!data.success){
+          this.setState({ errMsg: data.message })
+        }
 
         this.savedUserAssignmentAttemptNumber = this.attemptNumber; //In callback
       })
@@ -303,11 +312,17 @@ class DoenetViewerChild extends Component {
       return;
     }
 
+    if (!navigator.onLine) {
+      this.props.toast("You're not connected to the internet. Changes are not saved. ", toastType.ERROR)
+    }
 
     axios.post('/api/recordContentInteraction.php', data)
-    // .then(({data}) => {
-    //   console.log(">>>>recordContentInteraction data",data)
-    // });
+    .then(({data}) => {
+      if (!data.success){
+        this.props.toast(data.message, toastType.ERROR)
+      }
+      //   console.log(">>>>recordContentInteraction data",data)
+    });
 
 
     if (!this.allowSaveSubmissions) {
@@ -331,6 +346,9 @@ class DoenetViewerChild extends Component {
       axios.post('/api/saveCreditForItem.php', payload2)
         .then(resp => {
           // console.log('>>>>saveCreditForItem resp', resp.data);
+          if (!resp.data.success){
+            this.props.toast(resp.data.message, toastType.ERROR)
+          }
 
           this.props.updateCreditAchievedCallback(resp.data);
 
