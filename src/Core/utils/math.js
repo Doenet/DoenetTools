@@ -224,7 +224,7 @@ export function mergeVectorsForInverseDefinition({ desiredVector, currentVector,
   return desiredVector;
 }
 
-export function normalizeLatexString(latexString) {
+export function normalizeLatexString(latexString, { unionFromU = false } = {}) {
 
   let substitutions = [
     ['\u03B1', '\\alpha '], // 'α'
@@ -304,6 +304,16 @@ export function normalizeLatexString(latexString) {
     } else {
       latexString = beforeLdots + "\\ldots";
     }
+  }
+
+  // replace [space]or[space]
+  // with \or
+  latexString = latexString.replaceAll(/(\b|\\ )or(\b|\\ )/g, "$1\\lor$2")
+  latexString = latexString.replaceAll(/(\b|\\ )and(\b|\\ )/g, "$1\\land$2")
+
+  if(unionFromU) {
+    latexString = latexString.replaceAll(/(\b|\\ )U(\b|\\ )/g, "$1\\cup$2")
+
   }
 
 
