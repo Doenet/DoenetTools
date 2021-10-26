@@ -1782,10 +1782,10 @@ describe('Math Operator Tag Tests', function () {
         expect(text.trim()).equal('1')
       });
       cy.get('#\\/_floor4').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('2.1x')
+        expect(text.trim()).equal('floor(2.1x)')
       });
       cy.get('#\\/_ceil4').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('−3.2y')
+        expect(text.trim()).equal('ceil(−3.2y)')
       });
 
       cy.window().then((win) => {
@@ -1797,8 +1797,8 @@ describe('Math Operator Tag Tests', function () {
         expect(components['/_ceil3'].stateValues.value.tree).eq(-7000);
         expect(replacement1.stateValues.value.tree).eq(13);
         expect(replacement2.stateValues.value.tree).eq(1);
-        expect(components['/_floor4'].stateValues.value.tree).eqls(['*', 2.1, 'x']);
-        expect(components['/_ceil4'].stateValues.value.tree).eqls(['-', ['*', 3.2, 'y']]);
+        expect(components['/_floor4'].stateValues.value.tree).eqls(["apply", "floor", ['*', 2.1, 'x']]);
+        expect(components['/_ceil4'].stateValues.value.tree).eqls(["apply", "ceil", ['-', ['*', 3.2, 'y']]]);
       })
     })
   })

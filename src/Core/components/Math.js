@@ -1339,7 +1339,9 @@ function checkForScalarLinearExpression(tree, variables, inverseTree, components
 
 }
 
-function invertMath({ desiredStateVariableValues, dependencyValues, stateValues, workspace, overrideFixed }) {
+function invertMath({ desiredStateVariableValues, dependencyValues,
+  stateValues, workspace, overrideFixed
+}) {
 
   if (!stateValues.canBeModified && !overrideFixed) {
     return { success: false };
@@ -1351,7 +1353,7 @@ function invertMath({ desiredStateVariableValues, dependencyValues, stateValues,
   let arrayEntriesNotAffected;
 
   if (desiredExpression.tree[0] === "tuple" || desiredExpression.tree[0] === "vector") {
-    if (currentValue && currentValue.tree[0] === desiredExpression.tree[0]) {
+    if (currentValue && (currentValue.tree[0] === "tuple" || currentValue.tree[0] === "vector")) {
       // have vectors
       // merge desiredExpression into current expression
       let expressionAst;
@@ -1379,7 +1381,25 @@ function invertMath({ desiredStateVariableValues, dependencyValues, stateValues,
       if (foundNotAffected) {
         arrayEntriesNotAffected = notAffected;
       }
+    } else {
+      // desired expression could have undefined entries
+      // fill in with \uff3f
+      let desiredOperands = [];
+      let foundUndefined = false;
+      for (let val of desiredExpression.tree.slice(1)) {
+        if (val === undefined) {
+          desiredOperands.push('\uff3f');
+          foundUndefined = true;
+        } else {
+          desiredOperands.push(val)
+        }
+      }
+
+      if (foundUndefined) {
+        desiredExpression = me.fromAst([desiredExpression.tree[0], ...desiredOperands])
+      }
     }
+
   }
 
   let mathChildren = dependencyValues.mathChildren;

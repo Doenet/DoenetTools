@@ -89,6 +89,44 @@ export default class Point extends GraphicalComponent {
       let beginInd = cTypes.indexOf("string");
       let lastInd = cTypes.lastIndexOf("string");
 
+
+      if (beginInd === -1) {
+        // if have no strings but have exactly one macro child,
+        // use that for coords
+
+        let macroChildren = matchedChildren.filter(child =>
+          child.doenetAttributes && child.doenetAttributes.createdFromMacro
+        );
+
+        if (macroChildren.length === 1) {
+          let macroChild = macroChildren[0];
+          let macroInd = matchedChildren.indexOf(macroChild);
+
+          let newChildren = [
+            ...matchedChildren.slice(0, macroInd),
+            ...matchedChildren.slice(macroInd + 1)
+          ];
+
+          return {
+            success: true,
+            newAttributes: {
+              coords: {
+                component: {
+                  componentType: "math",
+                  children: macroChildren
+                }
+              }
+            },
+            newChildren
+          }
+
+        } else {
+          // no strings and don't have exactly one macro child
+          return { success: false }
+        }
+
+      }
+
       let newChildren = [
         ...matchedChildren.slice(0, beginInd),
         ...matchedChildren.slice(lastInd + 1)
@@ -138,7 +176,7 @@ export default class Point extends GraphicalComponent {
     };
 
     sugarInstructions.push({
-      childrenRegex: /n*s+(.*s)?n*/,
+      // childrenRegex: /n*s+(.*s)?n*/,
       replacementFunction: breakIntoXsByCommas
     })
 
