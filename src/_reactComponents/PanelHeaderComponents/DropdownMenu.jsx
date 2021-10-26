@@ -2,7 +2,7 @@ import React from 'react';
 import Select from 'react-select';
 
 const DropdownMenu = (props) => {
-  console.log('right ', props.right);
+  // console.log('right ', props.right);
   const customStyles = {
     option: (provided, state) => {
       return {

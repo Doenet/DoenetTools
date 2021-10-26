@@ -3,6 +3,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React, { useState, useEffect } from 'react';
 import DropdownMenu from '../../../_reactComponents/PanelHeaderComponents/DropdownMenu';
 import DateTime from '../../../_reactComponents/PanelHeaderComponents/DateTime';
+import { DateToUTCDateString } from '../../../_utils/dateUtilityFunction';
 
 import {
   atom,
@@ -40,14 +41,13 @@ import Switch from '../../_framework/Switch';
 import axios from 'axios';
 import { nanoid } from 'nanoid';
 
-import { DateToUTCDateString } from '../../../_utils/dateUtilityFunction';
 import {
   itemHistoryAtom,
   fileByContentId,
 } from '../ToolHandlers/CourseToolHandler';
 import { useToast, toastType } from '@Toast';
 import { effectiveRoleAtom } from '../../../_reactComponents/PanelHeaderComponents/RoleDropdown';
-import { typeOf } from 'react-is';
+import CalendarToggle from '../../../_reactComponents/PanelHeaderComponents/CalendarToggle';
 
 export const selectedVersionAtom = atom({
   key: 'selectedVersionAtom',
@@ -337,7 +337,6 @@ export function AssignmentSettings({ role, doenetId }) {
   const aLoadable = useRecoilValueLoadable(loadAssignmentSelector(doenetId));
   const aInfo = aLoadable.contents;
   const addToast = useToast();
-
   //Note if aLoadable is not loaded then these will default to undefined
   let [assignedDate, setAssignedDate] = useState('');
   let [dueDate, setDueDate] = useState('');
@@ -411,7 +410,20 @@ export function AssignmentSettings({ role, doenetId }) {
           if (valueDescription) {
             addToast(`Updated ${description} to ${valueDescription}`);
           } else {
-            addToast(`Updated ${description} to ${value}`);
+            if (
+              description === 'Assigned Date' ||
+              description === 'Due Date' ||
+              description === 'Pinned Until Date' ||
+              description === 'Pinned After Date'
+            ) {
+              addToast(
+                `Updated ${description} to ${new Date(
+                  value + ' UTC',
+                ).toLocaleString()}`,
+              );
+            } else {
+              addToast(`Updated ${description} to ${value}`);
+            }
           }
         }
         // set(loadAssignmentSelector(doenetId),(was)=>{
@@ -490,159 +502,188 @@ export function AssignmentSettings({ role, doenetId }) {
     <>
       <div>
         <label>
-          Limit Assigned
-          <Switch
-            onChange={(e) => {
-              let valueDescription = 'Always';
-              let value = null;
-              if (e.currentTarget.checked) {
-                valueDescription = 'Now';
-                value = new Date().toLocaleString();
-              }
-
-              updateAssignment({
-                doenetId,
-                keyToUpdate: 'assignedDate',
-                value,
-                description: 'Assigned ',
-                valueDescription,
-              });
+          Assigned Date
+          <div
+            style={{ display: 'flex' }}
+            onClick={(e) => {
+              e.preventDefault();
             }}
-            checked={aInfo.assignedDate !== null}
-          ></Switch>
-        </label>
-      </div>
-      {aInfo.assignedDate !== null ? (
-        <div>
-          <label>
-            Assigned Date
-            {/* <input
-              required
-              type="text"
-              name="assignedDate"
-              value={assignedDate}
-              // placeholder="0001-01-01 01:01:01 "
-              onBlur={() => {
-                if (aInfo.assignedDate !== assignedDate) {
-                  updateAssignment({
-                    doenetId,
-                    keyToUpdate: 'assignedDate',
-                    value: assignedDate,
-                    description: 'Assigned Date',
-                  });
+          >
+            <CalendarToggle
+              checked={aInfo.assignedDate !== null}
+              onClick={(e) => {
+                let valueDescription = 'None';
+                let value = null;
+
+                if (aInfo.assignedDate === null) {
+                  valueDescription = 'Now';
+                  value = DateToUTCDateString(new Date());
                 }
-              }}
-              onChange={(e) => setAssignedDate(e.currentTarget.value)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' && aInfo.assignedDate !== assignedDate) {
-                  updateAssignment({
-                    doenetId,
-                    keyToUpdate: 'assignedDate',
-                    value: assignedDate,
-                    description: 'Assigned Date',
-                  });
-                }
-              }}
-            /> */}
-            <DateTime
-              datePicker={true}
-              value={new Date(aInfo.assignedDate)}
-              callback={({ valid, value }) => {
-                if (valid) {
-                  updateAssignment({
-                    doenetId,
-                    keyToUpdate: 'assignedDate',
-                    value: value.toLocaleString(),
-                    description: 'Assigned Date',
-                  });
-                }
+
+                updateAssignment({
+                  doenetId,
+                  keyToUpdate: 'assignedDate',
+                  value,
+                  description: 'Assigned Date',
+                  valueDescription,
+                });
               }}
             />
-          </label>
-        </div>
-      ) : null}
+            {aInfo.assignedDate !== null ? (
+              <DateTime
+                value={
+                  aInfo.assignedDate
+                    ? new Date(aInfo.assignedDate + ' UTC')
+                    : null
+                }
+                onBlur={({ valid, value }) => {
+                  if (valid) {
+                    try {
+                      value = value.toDate();
+                    } catch (e) {
+                      // console.log('value not moment');
+                    }
+                    if (
+                      new Date(DateToUTCDateString(value)).getTime() !==
+                      new Date(aInfo.assignedDate).getTime()
+                    ) {
+                      updateAssignment({
+                        doenetId,
+                        keyToUpdate: 'assignedDate',
+                        value: DateToUTCDateString(value),
+                        description: 'Assigned Date',
+                      });
+                    }
+                  } else {
+                    addToast('Invalid Assigned Date');
+                  }
+                }}
+              />
+            ) : (
+              <input
+                value="No Assigned Date"
+                onClick={(e) => {
+                  let valueDescription = 'None';
+                  let value = null;
+
+                  if (aInfo.assignedDate === null) {
+                    valueDescription = 'Now';
+                    value = DateToUTCDateString(new Date());
+                  }
+
+                  updateAssignment({
+                    doenetId,
+                    keyToUpdate: 'assignedDate',
+                    value,
+                    description: 'Assigned Date',
+                    valueDescription,
+                  });
+                }}
+                // disabled
+                style={{
+                  color: '#545454',
+                  height: '18px',
+                  width: '177px',
+                  border: '2px solid black',
+                  borderRadius: '5px',
+                }}
+              />
+            )}
+          </div>
+        </label>
+      </div>
       <div>
         <label>
-          Has Due Date
-          <Switch
-            onChange={(e) => {
-              let valueDescription = 'None';
-              let value = null;
-              if (e.currentTarget.checked) {
-                valueDescription = 'Next Week';
-                let nextWeek = new Date();
-                nextWeek.setDate(nextWeek.getDate() + 7); //Default due seven days in the future
-                value = nextWeek.toLocaleString();
-              }
-
-              updateAssignment({
-                doenetId,
-                keyToUpdate: 'dueDate',
-                value,
-                description: 'Due Date ',
-                valueDescription,
-              });
+          Due Date
+          <div
+            style={{ display: 'flex' }}
+            onClick={(e) => {
+              e.preventDefault();
             }}
-            checked={aInfo.dueDate !== null}
-          ></Switch>
-        </label>
-      </div>
-      {aInfo.dueDate !== null ? (
-        <div>
-          <label>
-            Due Date
-            <br />
-            {/* <input
-              required
-              type="text"
-              name="dueDate"
-              value={dueDate}
-              // placeholder="0001-01-01 01:01:01 "
-              onBlur={() => {
-                if (aInfo.dueDate !== dueDate) {
-                  // console.log(
-                  //   '>>> saved duedate format',
-                  //   dueDate,
-                  //   typeof dueDate,
-                  // );
-                  updateAssignment({
-                    doenetId,
-                    keyToUpdate: 'dueDate',
-                    value: dueDate,
-                    description: 'Due Date',
-                  });
+          >
+            <CalendarToggle
+              checked={aInfo.dueDate !== null}
+              onClick={(e) => {
+                let valueDescription = 'None';
+                let value = null;
+
+                if (aInfo.dueDate === null) {
+                  valueDescription = 'Next Week';
+                  let nextWeek = new Date();
+                  nextWeek.setDate(nextWeek.getDate() + 7);
+                  value = DateToUTCDateString(nextWeek);
                 }
-              }}
-              onChange={(e) => setDueDate(e.currentTarget.value)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' && aInfo.dueDate !== dueDate) {
-                  updateAssignment({
-                    doenetId,
-                    keyToUpdate: 'dueDate',
-                    value: dueDate,
-                    description: 'Due Date',
-                  });
-                }
-              }}
-            /> */}
-            <DateTime
-              datePicker={true}
-              value={new Date(aInfo.dueDate)}
-              callback={({ valid, value }) => {
-                if (valid) {
-                  updateAssignment({
-                    doenetId,
-                    keyToUpdate: 'dueDate',
-                    value: value.toLocaleString(),
-                    description: 'Due Date',
-                  });
-                }
+
+                updateAssignment({
+                  doenetId,
+                  keyToUpdate: 'dueDate',
+                  value,
+                  description: 'Due Date',
+                  valueDescription,
+                });
               }}
             />
-          </label>
-        </div>
-      ) : null}
+            {aInfo.dueDate !== null ? (
+              <DateTime
+                value={aInfo.dueDate ? new Date(aInfo.dueDate + ' UTC') : null}
+                onBlur={({ valid, value }) => {
+                  if (valid) {
+                    try {
+                      value = value.toDate();
+                    } catch (e) {
+                      // console.log('value not moment');
+                    }
+                    if (
+                      new Date(DateToUTCDateString(value)).getTime() !==
+                      new Date(aInfo.dueDate).getTime()
+                    ) {
+                      updateAssignment({
+                        doenetId,
+                        keyToUpdate: 'dueDate',
+                        value: DateToUTCDateString(value),
+                        description: 'Due Date',
+                      });
+                    }
+                  } else {
+                    addToast('Invalid Due Date');
+                  }
+                }}
+              />
+            ) : (
+              <input
+                onClick={(e) => {
+                  let valueDescription = 'None';
+                  let value = null;
 
+                  if (aInfo.dueDate === null) {
+                    valueDescription = 'Next Week';
+                    let nextWeek = new Date();
+                    nextWeek.setDate(nextWeek.getDate() + 7);
+                    value = DateToUTCDateString(nextWeek);
+                  }
+
+                  updateAssignment({
+                    doenetId,
+                    keyToUpdate: 'dueDate',
+                    value,
+                    description: 'Due Date',
+                    valueDescription,
+                  });
+                }}
+                value="No Due Date"
+                // disabled
+                style={{
+                  color: '#545454',
+                  height: '18px',
+                  width: '177px',
+                  border: '2px solid black',
+                  borderRadius: '5px',
+                }}
+              />
+            )}
+          </div>
+        </label>
+      </div>
       <div>
         <label>
           Time Limit
@@ -1042,125 +1083,185 @@ export function AssignmentSettings({ role, doenetId }) {
       </div>
 
       <div>
-        Pin Assignment
-        <Switch
-          onChange={(e) => {
-            let valueDescription = 'None';
-            let value = null;
-            let secondValue = null;
-            //Start date
-            if (e.currentTarget.checked) {
-              valueDescription = 'Now to Next Year';
-              let today = new Date(); //Default start now
-              value = today.toLocaleString();
+        <label>
+          Pin Assignment
+          <div
+            style={{ display: 'flex' }}
+            onClick={(e) => {
+              e.preventDefault();
+            }}
+          >
+            <CalendarToggle
+              checked={aInfo.pinnedUntilDate !== null}
+              onClick={(e) => {
+                let valueDescription = 'None';
+                let value = null;
+                let secondValue = null;
 
-              let nextWeek = new Date();
-              nextWeek.setDate(nextWeek.getDate() + 365); //Default due seven days in the future
-              secondValue = nextWeek.toLocaleString();
-            }
+                if (aInfo.pinnedUntilDate === null) {
+                  valueDescription = 'Now to Next Year';
+                  let today = new Date();
+                  let nextYear = new Date();
+                  nextYear.setDate(nextYear.getDate() + 365);
+                  value = DateToUTCDateString(today);
+                  secondValue = DateToUTCDateString(nextYear);
+                }
 
-            updateAssignment({
-              doenetId,
-              keyToUpdate: 'pinnedAfterDate',
-              value,
-              description: 'Pinned Dates ',
-              valueDescription,
-              secondKeyToUpdate: 'pinnedUntilDate',
-              secondValue,
-            });
+                updateAssignment({
+                  doenetId,
+                  keyToUpdate: 'pinnedAfterDate',
+                  value,
+                  description: 'Pinned Dates ',
+                  valueDescription,
+                  secondKeyToUpdate: 'pinnedUntilDate',
+                  secondValue,
+                });
+              }}
+            />
+            {aInfo.pinnedUntilDate !== null ? (
+              <DateTime
+                value={
+                  aInfo.pinnedAfterDate
+                    ? new Date(aInfo.pinnedAfterDate + ' UTC')
+                    : null
+                }
+                onBlur={({ valid, value }) => {
+                  if (valid) {
+                    try {
+                      value = value.toDate();
+                    } catch (e) {
+                      // console.log('value not moment');
+                    }
+                    if (
+                      new Date(DateToUTCDateString(value)).getTime() !==
+                      new Date(aInfo.pinnedAfterDate).getTime()
+                    ) {
+                      updateAssignment({
+                        doenetId,
+                        keyToUpdate: 'pinnedAfterDate',
+                        value: DateToUTCDateString(value),
+                        description: 'Pinned After Date',
+                      });
+                    }
+                  } else {
+                    addToast('Invalid Pin After Date');
+                  }
+                }}
+              />
+            ) : (
+              <input
+                onClick={(e) => {
+                  let valueDescription = 'None';
+                  let value = null;
+                  let secondValue = null;
 
-            //End Date
-            // if (e.currentTarget.checked) {
+                  if (aInfo.pinnedUntilDate === null) {
+                    valueDescription = 'Now to Next Year';
+                    let today = new Date();
+                    let nextYear = new Date();
+                    nextYear.setDate(nextYear.getDate() + 365);
+                    value = DateToUTCDateString(today);
+                    secondValue = DateToUTCDateString(nextYear);
+                  }
 
-            // }
+                  updateAssignment({
+                    doenetId,
+                    keyToUpdate: 'pinnedAfterDate',
+                    value,
+                    description: 'Pinned Dates ',
+                    valueDescription,
+                    secondKeyToUpdate: 'pinnedUntilDate',
+                    secondValue,
+                  });
+                }}
+                value="No Pin After Date"
+                // disabled
+                style={{
+                  color: '#545454',
+                  height: '18px',
+                  width: '177px',
+                  border: '2px solid black',
+                  borderRadius: '5px',
+                }}
+              />
+            )}
+          </div>
+          <div
+            style={{ marginLeft: '28px' }}
+            onClick={(e) => {
+              e.preventDefault();
+            }}
+          >
+            {aInfo.pinnedUntilDate !== null ? (
+              <DateTime
+                value={
+                  aInfo.pinnedUntilDate
+                    ? new Date(aInfo.pinnedUntilDate + ' UTC')
+                    : null
+                }
+                onBlur={({ valid, value }) => {
+                  if (valid) {
+                    try {
+                      value = value.toDate();
+                    } catch (e) {
+                      // console.log('value not moment');
+                    }
+                    if (
+                      new Date(DateToUTCDateString(value)).getTime() !==
+                      new Date(aInfo.pinnedUntilDate).getTime()
+                    ) {
+                      updateAssignment({
+                        doenetId,
+                        keyToUpdate: 'pinnedUntilDate',
+                        value: DateToUTCDateString(value),
+                        description: 'Pinned Until Date',
+                      });
+                    }
+                  } else {
+                    addToast('Invalid Pin Until Date');
+                  }
+                }}
+              />
+            ) : (
+              <input
+                onClick={(e) => {
+                  let valueDescription = 'None';
+                  let value = null;
+                  let secondValue = null;
 
-            // updateAssignment({
-            //   doenetId,
-            //   keyToUpdate: 'pinnedUntilDate',
-            //   value,
-            //   description: 'Pinned Until Date ',
-            //   valueDescription,
-            // });
-          }}
-          checked={aInfo.pinnedUntilDate !== null}
-        ></Switch>
+                  if (aInfo.pinnedUntilDate === null) {
+                    valueDescription = 'Now to Next Year';
+                    let today = new Date();
+                    let nextYear = new Date();
+                    nextYear.setDate(nextYear.getDate() + 365);
+                    value = DateToUTCDateString(today);
+                    secondValue = DateToUTCDateString(nextYear);
+                  }
+
+                  updateAssignment({
+                    doenetId,
+                    keyToUpdate: 'pinnedAfterDate',
+                    value,
+                    description: 'Pinned Dates ',
+                    valueDescription,
+                    secondKeyToUpdate: 'pinnedUntilDate',
+                    secondValue,
+                  });
+                }}
+                value="No Pin Until Date"
+                // disabled
+                style={{
+                  color: '#545454',
+                  height: '18px',
+                  width: '177px',
+                  border: '2px solid black',
+                  borderRadius: '5px',
+                }}
+              />
+            )}
+          </div>
+        </label>
       </div>
-      {aInfo.pinnedUntilDate !== null ? (
-        <>
-          <div>
-            <label>
-              Pinned After Date
-              <input
-                required
-                type="text"
-                name="pinnedAfterDate"
-                value={pinnedAfterDate}
-                // placeholder="0001-01-01 01:01:01 "
-                onBlur={() => {
-                  if (aInfo.pinnedAfterDate !== pinnedAfterDate) {
-                    updateAssignment({
-                      doenetId,
-                      keyToUpdate: 'pinnedAfterDate',
-                      value: pinnedAfterDate,
-                      description: 'Pinned After Date',
-                    });
-                  }
-                }}
-                onChange={(e) => setPinnedAfterDate(e.currentTarget.value)}
-                onKeyDown={(e) => {
-                  if (
-                    e.key === 'Enter' &&
-                    aInfo.pinnedAfterDate !== pinnedAfterDate
-                  ) {
-                    updateAssignment({
-                      doenetId,
-                      keyToUpdate: 'pinnedAfterDate',
-                      value: pinnedAfterDate,
-                      description: 'Pinned After Date',
-                    });
-                  }
-                }}
-              />
-            </label>
-          </div>
-          <div>
-            <label>
-              Pinned Until Date
-              <input
-                required
-                type="text"
-                name="pinnedUntilDate"
-                value={pinnedUntilDate}
-                // placeholder="0001-01-01 01:01:01 "
-                onBlur={() => {
-                  if (aInfo.pinnedUntilDate !== pinnedUntilDate) {
-                    updateAssignment({
-                      doenetId,
-                      keyToUpdate: 'pinnedUntilDate',
-                      value: pinnedUntilDate,
-                      description: 'Pinned Until Date',
-                    });
-                  }
-                }}
-                onChange={(e) => setPinnedUntilDate(e.currentTarget.value)}
-                onKeyDown={(e) => {
-                  if (
-                    e.key === 'Enter' &&
-                    aInfo.pinnedUntilDate !== pinnedUntilDate
-                  ) {
-                    updateAssignment({
-                      doenetId,
-                      keyToUpdate: 'pinnedUntilDate',
-                      value: pinnedUntilDate,
-                      description: 'Pinned Until Date',
-                    });
-                  }
-                }}
-              />
-            </label>
-          </div>
-        </>
-      ) : null}
     </>
   );
 }
