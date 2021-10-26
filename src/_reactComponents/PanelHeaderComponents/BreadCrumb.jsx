@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useRef, useState, useEffect, useLayoutEffect } from 'react';
 import styled from 'styled-components';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
@@ -116,7 +116,7 @@ export function BreadCrumb({crumbs=[]}){
   },[])
 
   //Needed to update after the component is mounted
-  useEffect(()=>{
+  useLayoutEffect(()=>{
     if (containerRef.current?.getBoundingClientRect()?.left !== containerLeft){
       setContainerLeft(containerRef.current?.getBoundingClientRect()?.left);
     }
