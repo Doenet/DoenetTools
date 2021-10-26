@@ -68,7 +68,6 @@ const BreadcrumbSpan = styled.span`
   }
 `;
 
-
 function Crumb({setSize,i,label=null,onClick,icon=null}){
   let crumbRef = useRef(null);
   
@@ -98,8 +97,12 @@ function Crumb({setSize,i,label=null,onClick,icon=null}){
 //icon: the Font Awesome icon which shows in the span
 //onClick: the function called when crumb is clicked
 export function BreadCrumb({crumbs=[]}){
+  // console.log(">>>>----BREADCRUMB")
   let [crumBounds,setCrumBounds] = useState([])
   let [windowWidth,setWindowWidth] = useState(window.innerWidth);
+  let [containerLeft,setContainerLeft] = useState(0);
+
+  const containerRef = useRef(null);
 
   function onWindowResize(){
     setWindowWidth(window.innerWidth);
@@ -112,6 +115,13 @@ export function BreadCrumb({crumbs=[]}){
     }
   },[])
 
+  //Needed to update after the component is mounted
+  useEffect(()=>{
+    if (containerRef.current?.getBoundingClientRect()?.left !== containerLeft){
+      setContainerLeft(containerRef.current?.getBoundingClientRect()?.left);
+    }
+  })
+
   let numHidden = 0;
   //Protect against too few crumbs
   //And wait until we have the sizes defined
@@ -119,7 +129,7 @@ export function BreadCrumb({crumbs=[]}){
       crumBounds.length == crumbs.length){
     
     numHidden = crumbs.length - 2;
-    let prevBreak = crumBounds[0].right + 13; //First segment right break point
+    let prevBreak = containerLeft + crumBounds[0].width + 53; //First segment right break point
     prevBreak = prevBreak + crumBounds[crumBounds.length -1].width + 58; //Second segment right break point Includes elipsis segment
 
     
@@ -156,7 +166,7 @@ export function BreadCrumb({crumbs=[]}){
   </BreadcrumbItem>}
 
   return <>
-  <BreadCrumbContainer > {crumbsJSX} </BreadCrumbContainer>
+  <BreadCrumbContainer ref={containerRef}> {crumbsJSX} </BreadCrumbContainer>
   </>
 
 
