@@ -54,7 +54,7 @@ export default function Dashboard(props) {
         />
         : null }
         {effectiveRole === 'instructor' ?
-        <Button value="GradeBook" 
+        <Button value="Gradebook" 
         onClick={() => 
         setPageToolView((was)=>{return {
           page: 'course',
@@ -65,7 +65,7 @@ export default function Dashboard(props) {
         } 
       />
         : 
-        <Button value="GradeBook" 
+        <Button value="Gradebook" 
           onClick={() => 
           setPageToolView((was)=>{return {
             page: 'course',
