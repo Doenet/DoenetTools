@@ -43,7 +43,7 @@ export default function Dashboard(props) {
       params: {driveId}
     })
   }) : null, effectiveRole === "instructor" ? /* @__PURE__ */ React.createElement(Button, {
-    value: "GradeBook",
+    value: "Gradebook",
     onClick: () => setPageToolView((was) => {
       return {
         page: "course",
@@ -53,7 +53,7 @@ export default function Dashboard(props) {
       };
     })
   }) : /* @__PURE__ */ React.createElement(Button, {
-    value: "GradeBook",
+    value: "Gradebook",
     onClick: () => setPageToolView((was) => {
       return {
         page: "course",

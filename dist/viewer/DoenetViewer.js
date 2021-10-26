@@ -106,6 +106,9 @@ class DoenetViewerChild extends Component {
       });
     });
     if (this.allowSavePageState && Number.isInteger(this.attemptNumber) && this.savedUserAssignmentAttemptNumber !== this.attemptNumber) {
+      if (!navigator.onLine) {
+        this.props.toast("You're not connected to the internet. ", toastType.ERROR);
+      }
       axios.post("/api/initAssignmentAttempt.php", {
         doenetId: this.props.doenetId,
         weights: this.core.scoredItemWeights,
@@ -115,6 +118,9 @@ class DoenetViewerChild extends Component {
         generatedVariant: JSON.stringify(this.generatedVariant, serializedComponentsReplacer),
         itemVariantInfo: this.itemVariantInfo.map((x) => JSON.stringify(x, serializedComponentsReplacer))
       }).then(({data}) => {
+        if (!data.success) {
+          this.setState({errMsg: data.message});
+        }
         this.savedUserAssignmentAttemptNumber = this.attemptNumber;
       }).catch((errMsg) => {
         this.setState({errMsg: errMsg.message});
@@ -170,7 +176,14 @@ class DoenetViewerChild extends Component {
     if (!this.allowSavePageState) {
       return;
     }
-    axios.post("/api/recordContentInteraction.php", data);
+    if (!navigator.onLine) {
+      this.props.toast("You're not connected to the internet. Changes are not saved. ", toastType.ERROR);
+    }
+    axios.post("/api/recordContentInteraction.php", data).then(({data: data2}) => {
+      if (!data2.success) {
+        this.props.toast(data2.message, toastType.ERROR);
+      }
+    });
     if (!this.allowSaveSubmissions) {
       return;
     }
@@ -185,6 +198,9 @@ class DoenetViewerChild extends Component {
         stateVariables: changeString
       };
       axios.post("/api/saveCreditForItem.php", payload2).then((resp) => {
+        if (!resp.data.success) {
+          this.props.toast(resp.data.message, toastType.ERROR);
+        }
         this.props.updateCreditAchievedCallback(resp.data);
         if (resp.data.viewedSolution) {
           this.props.toast("No credit awarded since solution was viewed.", toastType.INFO);

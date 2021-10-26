@@ -39,7 +39,7 @@ export default class MathInput extends DoenetRenderer {
   }
   calculateMathExpressionFromLatex(text) {
     let expression;
-    text = normalizeLatexString(text);
+    text = normalizeLatexString(text, {unionFromU: this.doenetSvData.unionFromU});
     text = text.replace(/\^(\w)/g, "^{$1}");
     let fromLatex = getFromLatex({
       functionSymbols: this.doenetSvData.functionSymbols,

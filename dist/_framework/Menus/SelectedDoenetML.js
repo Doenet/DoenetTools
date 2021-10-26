@@ -3,6 +3,7 @@ import {FontAwesomeIcon} from "../../_snowpack/pkg/@fortawesome/react-fontawesom
 import React, {useState, useEffect} from "../../_snowpack/pkg/react.js";
 import DropdownMenu from "../../_reactComponents/PanelHeaderComponents/DropdownMenu.js";
 import DateTime from "../../_reactComponents/PanelHeaderComponents/DateTime.js";
+import {DateToUTCDateString} from "../../_utils/dateUtilityFunction.js";
 import {
   atom,
   selector,
@@ -26,14 +27,13 @@ import {pageToolViewAtom} from "../NewToolRoot.js";
 import Switch from "../Switch.js";
 import axios from "../../_snowpack/pkg/axios.js";
 import {nanoid} from "../../_snowpack/pkg/nanoid.js";
-import {DateToUTCDateString} from "../../_utils/dateUtilityFunction.js";
 import {
   itemHistoryAtom,
   fileByContentId
 } from "../ToolHandlers/CourseToolHandler.js";
 import {useToast, toastType} from "../Toast.js";
 import {effectiveRoleAtom} from "../../_reactComponents/PanelHeaderComponents/RoleDropdown.js";
-import {typeOf} from "../../_snowpack/pkg/react-is.js";
+import CalendarToggle from "../../_reactComponents/PanelHeaderComponents/CalendarToggle.js";
 export const selectedVersionAtom = atom({
   key: "selectedVersionAtom",
   default: ""
@@ -220,7 +220,7 @@ export default function SelectedDoenetML() {
   }), /* @__PURE__ */ React.createElement("br", null), /* @__PURE__ */ React.createElement(AssignmentSettings, {
     role: effectiveRole,
     doenetId: item.doenetId
-  }), /* @__PURE__ */ React.createElement("br", null), /* @__PURE__ */ React.createElement("br", null), /* @__PURE__ */ React.createElement(Button, {
+  }), /* @__PURE__ */ React.createElement("br", null), /* @__PURE__ */ React.createElement(Button, {
     alert: true,
     width: "menu",
     "data-cy": "deleteDoenetMLButton",
@@ -236,7 +236,7 @@ export default function SelectedDoenetML() {
         label: item.label
       });
     }
-  }), /* @__PURE__ */ React.createElement("br", null));
+  }));
 }
 export function AssignmentSettings({role, doenetId}) {
   const aLoadable = useRecoilValueLoadable(loadAssignmentSelector(doenetId));
@@ -292,7 +292,11 @@ export function AssignmentSettings({role, doenetId}) {
       if (valueDescription) {
         addToast(`Updated ${description} to ${valueDescription}`);
       } else {
-        addToast(`Updated ${description} to ${value}`);
+        if (description === "Assigned Date" || description === "Due Date" || description === "Pinned Until Date" || description === "Pinned After Date") {
+          addToast(`Updated ${description} to ${new Date(value + " UTC").toLocaleString()}`);
+        } else {
+          addToast(`Updated ${description} to ${value}`);
+        }
       }
     }
   }, [addToast]);
@@ -341,69 +345,143 @@ export function AssignmentSettings({role, doenetId}) {
     }
     return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("div", null, assignedDateJSX, dueDateJSX, timeLimitJSX, /* @__PURE__ */ React.createElement("p", null, "Attempts Allowed: ", nAttemptsAllowed), /* @__PURE__ */ React.createElement("p", null, "Points: ", aInfo?.totalPointsOrPercent)));
   }
-  return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("label", null, "Limit Assigned", /* @__PURE__ */ React.createElement(Switch, {
-    onChange: (e) => {
-      let valueDescription = "Always";
+  return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("label", null, "Assigned Date", /* @__PURE__ */ React.createElement("div", {
+    style: {display: "flex"},
+    onClick: (e) => {
+      e.preventDefault();
+    }
+  }, /* @__PURE__ */ React.createElement(CalendarToggle, {
+    checked: aInfo.assignedDate !== null,
+    onClick: (e) => {
+      let valueDescription = "None";
       let value = null;
-      if (e.currentTarget.checked) {
+      if (aInfo.assignedDate === null) {
         valueDescription = "Now";
-        value = new Date().toLocaleString();
+        value = DateToUTCDateString(new Date());
       }
       updateAssignment({
         doenetId,
         keyToUpdate: "assignedDate",
         value,
-        description: "Assigned ",
+        description: "Assigned Date",
+        valueDescription
+      });
+    }
+  }), aInfo.assignedDate !== null ? /* @__PURE__ */ React.createElement(DateTime, {
+    value: aInfo.assignedDate ? new Date(aInfo.assignedDate + " UTC") : null,
+    onBlur: ({valid, value}) => {
+      if (valid) {
+        try {
+          value = value.toDate();
+        } catch (e) {
+        }
+        if (new Date(DateToUTCDateString(value)).getTime() !== new Date(aInfo.assignedDate).getTime()) {
+          updateAssignment({
+            doenetId,
+            keyToUpdate: "assignedDate",
+            value: DateToUTCDateString(value),
+            description: "Assigned Date"
+          });
+        }
+      } else {
+        addToast("Invalid Assigned Date");
+      }
+    }
+  }) : /* @__PURE__ */ React.createElement("input", {
+    value: "No Assigned Date",
+    onClick: (e) => {
+      let valueDescription = "None";
+      let value = null;
+      if (aInfo.assignedDate === null) {
+        valueDescription = "Now";
+        value = DateToUTCDateString(new Date());
+      }
+      updateAssignment({
+        doenetId,
+        keyToUpdate: "assignedDate",
+        value,
+        description: "Assigned Date",
         valueDescription
       });
     },
-    checked: aInfo.assignedDate !== null
-  }))), aInfo.assignedDate !== null ? /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("label", null, "Assigned Date", /* @__PURE__ */ React.createElement(DateTime, {
-    datePicker: true,
-    value: new Date(aInfo.assignedDate),
-    callback: ({valid, value}) => {
-      if (valid) {
-        updateAssignment({
-          doenetId,
-          keyToUpdate: "assignedDate",
-          value: value.toLocaleString(),
-          description: "Assigned Date"
-        });
-      }
+    style: {
+      color: "#545454",
+      height: "18px",
+      width: "177px",
+      border: "2px solid black",
+      borderRadius: "5px"
     }
-  }))) : null, /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("label", null, "Has Due Date", /* @__PURE__ */ React.createElement(Switch, {
-    onChange: (e) => {
+  })))), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("label", null, "Due Date", /* @__PURE__ */ React.createElement("div", {
+    style: {display: "flex"},
+    onClick: (e) => {
+      e.preventDefault();
+    }
+  }, /* @__PURE__ */ React.createElement(CalendarToggle, {
+    checked: aInfo.dueDate !== null,
+    onClick: (e) => {
       let valueDescription = "None";
       let value = null;
-      if (e.currentTarget.checked) {
+      if (aInfo.dueDate === null) {
         valueDescription = "Next Week";
         let nextWeek = new Date();
         nextWeek.setDate(nextWeek.getDate() + 7);
-        value = nextWeek.toLocaleString();
+        value = DateToUTCDateString(nextWeek);
       }
       updateAssignment({
         doenetId,
         keyToUpdate: "dueDate",
         value,
-        description: "Due Date ",
+        description: "Due Date",
+        valueDescription
+      });
+    }
+  }), aInfo.dueDate !== null ? /* @__PURE__ */ React.createElement(DateTime, {
+    value: aInfo.dueDate ? new Date(aInfo.dueDate + " UTC") : null,
+    onBlur: ({valid, value}) => {
+      if (valid) {
+        try {
+          value = value.toDate();
+        } catch (e) {
+        }
+        if (new Date(DateToUTCDateString(value)).getTime() !== new Date(aInfo.dueDate).getTime()) {
+          updateAssignment({
+            doenetId,
+            keyToUpdate: "dueDate",
+            value: DateToUTCDateString(value),
+            description: "Due Date"
+          });
+        }
+      } else {
+        addToast("Invalid Due Date");
+      }
+    }
+  }) : /* @__PURE__ */ React.createElement("input", {
+    onClick: (e) => {
+      let valueDescription = "None";
+      let value = null;
+      if (aInfo.dueDate === null) {
+        valueDescription = "Next Week";
+        let nextWeek = new Date();
+        nextWeek.setDate(nextWeek.getDate() + 7);
+        value = DateToUTCDateString(nextWeek);
+      }
+      updateAssignment({
+        doenetId,
+        keyToUpdate: "dueDate",
+        value,
+        description: "Due Date",
         valueDescription
       });
     },
-    checked: aInfo.dueDate !== null
-  }))), aInfo.dueDate !== null ? /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("label", null, "Due Date", /* @__PURE__ */ React.createElement("br", null), /* @__PURE__ */ React.createElement(DateTime, {
-    datePicker: true,
-    value: new Date(aInfo.dueDate),
-    callback: ({valid, value}) => {
-      if (valid) {
-        updateAssignment({
-          doenetId,
-          keyToUpdate: "dueDate",
-          value: value.toLocaleString(),
-          description: "Due Date"
-        });
-      }
+    value: "No Due Date",
+    style: {
+      color: "#545454",
+      height: "18px",
+      width: "177px",
+      border: "2px solid black",
+      borderRadius: "5px"
     }
-  }))) : null, /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("label", null, "Time Limit", /* @__PURE__ */ React.createElement(Switch, {
+  })))), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("label", null, "Time Limit", /* @__PURE__ */ React.createElement(Switch, {
     onChange: (e) => {
       let valueDescription = "Not Limited";
       let value = null;
@@ -675,18 +753,67 @@ export function AssignmentSettings({role, doenetId}) {
       });
     },
     checked: proctorMakesAvailable
-  }))), /* @__PURE__ */ React.createElement("div", null, "Pin Assignment", /* @__PURE__ */ React.createElement(Switch, {
-    onChange: (e) => {
+  }))), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("label", null, "Pin Assignment", /* @__PURE__ */ React.createElement("div", {
+    style: {display: "flex"},
+    onClick: (e) => {
+      e.preventDefault();
+    }
+  }, /* @__PURE__ */ React.createElement(CalendarToggle, {
+    checked: aInfo.pinnedUntilDate !== null,
+    onClick: (e) => {
       let valueDescription = "None";
       let value = null;
       let secondValue = null;
-      if (e.currentTarget.checked) {
+      if (aInfo.pinnedUntilDate === null) {
         valueDescription = "Now to Next Year";
         let today = new Date();
-        value = today.toLocaleString();
-        let nextWeek = new Date();
-        nextWeek.setDate(nextWeek.getDate() + 365);
-        secondValue = nextWeek.toLocaleString();
+        let nextYear = new Date();
+        nextYear.setDate(nextYear.getDate() + 365);
+        value = DateToUTCDateString(today);
+        secondValue = DateToUTCDateString(nextYear);
+      }
+      updateAssignment({
+        doenetId,
+        keyToUpdate: "pinnedAfterDate",
+        value,
+        description: "Pinned Dates ",
+        valueDescription,
+        secondKeyToUpdate: "pinnedUntilDate",
+        secondValue
+      });
+    }
+  }), aInfo.pinnedUntilDate !== null ? /* @__PURE__ */ React.createElement(DateTime, {
+    value: aInfo.pinnedAfterDate ? new Date(aInfo.pinnedAfterDate + " UTC") : null,
+    onBlur: ({valid, value}) => {
+      if (valid) {
+        try {
+          value = value.toDate();
+        } catch (e) {
+        }
+        if (new Date(DateToUTCDateString(value)).getTime() !== new Date(aInfo.pinnedAfterDate).getTime()) {
+          updateAssignment({
+            doenetId,
+            keyToUpdate: "pinnedAfterDate",
+            value: DateToUTCDateString(value),
+            description: "Pinned After Date"
+          });
+        }
+      } else {
+        addToast("Invalid Pin After Date");
+      }
+    }
+  }) : /* @__PURE__ */ React.createElement("input", {
+    onClick: (e) => {
+      let valueDescription = "None";
+      let value = null;
+      let secondValue = null;
+      if (aInfo.pinnedUntilDate === null) {
+        valueDescription = "Now to Next Year";
+        let today = new Date();
+        let nextYear = new Date();
+        nextYear.setDate(nextYear.getDate() + 365);
+        value = DateToUTCDateString(today);
+        secondValue = DateToUTCDateString(nextYear);
       }
       updateAssignment({
         doenetId,
@@ -698,60 +825,71 @@ export function AssignmentSettings({role, doenetId}) {
         secondValue
       });
     },
-    checked: aInfo.pinnedUntilDate !== null
-  })), aInfo.pinnedUntilDate !== null ? /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("label", null, "Pinned After Date", /* @__PURE__ */ React.createElement("input", {
-    required: true,
-    type: "text",
-    name: "pinnedAfterDate",
-    value: pinnedAfterDate,
-    onBlur: () => {
-      if (aInfo.pinnedAfterDate !== pinnedAfterDate) {
-        updateAssignment({
-          doenetId,
-          keyToUpdate: "pinnedAfterDate",
-          value: pinnedAfterDate,
-          description: "Pinned After Date"
-        });
-      }
-    },
-    onChange: (e) => setPinnedAfterDate(e.currentTarget.value),
-    onKeyDown: (e) => {
-      if (e.key === "Enter" && aInfo.pinnedAfterDate !== pinnedAfterDate) {
-        updateAssignment({
-          doenetId,
-          keyToUpdate: "pinnedAfterDate",
-          value: pinnedAfterDate,
-          description: "Pinned After Date"
-        });
+    value: "No Pin After Date",
+    style: {
+      color: "#545454",
+      height: "18px",
+      width: "177px",
+      border: "2px solid black",
+      borderRadius: "5px"
+    }
+  })), /* @__PURE__ */ React.createElement("div", {
+    style: {marginLeft: "28px"},
+    onClick: (e) => {
+      e.preventDefault();
+    }
+  }, aInfo.pinnedUntilDate !== null ? /* @__PURE__ */ React.createElement(DateTime, {
+    value: aInfo.pinnedUntilDate ? new Date(aInfo.pinnedUntilDate + " UTC") : null,
+    onBlur: ({valid, value}) => {
+      if (valid) {
+        try {
+          value = value.toDate();
+        } catch (e) {
+        }
+        if (new Date(DateToUTCDateString(value)).getTime() !== new Date(aInfo.pinnedUntilDate).getTime()) {
+          updateAssignment({
+            doenetId,
+            keyToUpdate: "pinnedUntilDate",
+            value: DateToUTCDateString(value),
+            description: "Pinned Until Date"
+          });
+        }
+      } else {
+        addToast("Invalid Pin Until Date");
       }
     }
-  }))), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("label", null, "Pinned Until Date", /* @__PURE__ */ React.createElement("input", {
-    required: true,
-    type: "text",
-    name: "pinnedUntilDate",
-    value: pinnedUntilDate,
-    onBlur: () => {
-      if (aInfo.pinnedUntilDate !== pinnedUntilDate) {
-        updateAssignment({
-          doenetId,
-          keyToUpdate: "pinnedUntilDate",
-          value: pinnedUntilDate,
-          description: "Pinned Until Date"
-        });
+  }) : /* @__PURE__ */ React.createElement("input", {
+    onClick: (e) => {
+      let valueDescription = "None";
+      let value = null;
+      let secondValue = null;
+      if (aInfo.pinnedUntilDate === null) {
+        valueDescription = "Now to Next Year";
+        let today = new Date();
+        let nextYear = new Date();
+        nextYear.setDate(nextYear.getDate() + 365);
+        value = DateToUTCDateString(today);
+        secondValue = DateToUTCDateString(nextYear);
       }
+      updateAssignment({
+        doenetId,
+        keyToUpdate: "pinnedAfterDate",
+        value,
+        description: "Pinned Dates ",
+        valueDescription,
+        secondKeyToUpdate: "pinnedUntilDate",
+        secondValue
+      });
     },
-    onChange: (e) => setPinnedUntilDate(e.currentTarget.value),
-    onKeyDown: (e) => {
-      if (e.key === "Enter" && aInfo.pinnedUntilDate !== pinnedUntilDate) {
-        updateAssignment({
-          doenetId,
-          keyToUpdate: "pinnedUntilDate",
-          value: pinnedUntilDate,
-          description: "Pinned Until Date"
-        });
-      }
+    value: "No Pin Until Date",
+    style: {
+      color: "#545454",
+      height: "18px",
+      width: "177px",
+      border: "2px solid black",
+      borderRadius: "5px"
     }
-  })))) : null);
+  })))));
 }
 export const selectedInformation = selector({
   key: "selectedInformation",

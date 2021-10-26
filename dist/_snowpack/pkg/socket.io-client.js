@@ -968,7 +968,7 @@ const encodePacket = ({ type, data }, supportsBinary, callback) => {
     (data instanceof ArrayBuffer || isView(data))
   ) {
     if (supportsBinary) {
-      return callback(data instanceof ArrayBuffer ? data : data.buffer);
+      return callback(data);
     } else {
       return encodeBlobAsBase64(new Blob([data]), callback);
     }
@@ -1323,6 +1323,35 @@ Emitter.prototype.hasListeners = function(event){
 };
 });
 
+var pick = (obj, ...attr) => {
+  return attr.reduce((acc, k) => {
+    if (obj.hasOwnProperty(k)) {
+      acc[k] = obj[k];
+    }
+    return acc;
+  }, {});
+};
+
+// Keep a reference to the real timeout functions so they can be used when overridden
+const NATIVE_SET_TIMEOUT = setTimeout;
+const NATIVE_CLEAR_TIMEOUT = clearTimeout;
+
+var installTimerFunctions = (obj, opts) => {
+  if (opts.useNativeTimers) {
+    obj.setTimeoutFn = NATIVE_SET_TIMEOUT.bind(globalThis_browser);
+    obj.clearTimeoutFn = NATIVE_CLEAR_TIMEOUT.bind(globalThis_browser);
+  } else {
+    obj.setTimeoutFn = setTimeout.bind(globalThis_browser);
+    obj.clearTimeoutFn = clearTimeout.bind(globalThis_browser);
+  }
+};
+
+var util = {
+	pick: pick,
+	installTimerFunctions: installTimerFunctions
+};
+
+const { installTimerFunctions: installTimerFunctions$1 } = util;
 const debug = browser("engine.io-client:transport");
 
 class Transport extends componentEmitter {
@@ -1334,6 +1363,7 @@ class Transport extends componentEmitter {
    */
   constructor(opts) {
     super();
+    installTimerFunctions$1(this, opts);
 
     this.opts = opts;
     this.query = opts.query;
@@ -1752,25 +1782,12 @@ class Polling extends transport {
 
 var polling = Polling;
 
-var pick = (obj, ...attr) => {
-  return attr.reduce((acc, k) => {
-    if (obj.hasOwnProperty(k)) {
-      acc[k] = obj[k];
-    }
-    return acc;
-  }, {});
-};
-
-var util = {
-	pick: pick
-};
-
 /* global attachEvent */
 
 
 
 
-const { pick: pick$1 } = util;
+const { pick: pick$1, installTimerFunctions: installTimerFunctions$2 } = util;
 
 
 const debug$2 = browser("engine.io-client:polling-xhr");
@@ -1872,6 +1889,7 @@ class Request extends componentEmitter {
    */
   constructor(uri, opts) {
     super();
+    installTimerFunctions$2(this, opts);
     this.opts = opts;
 
     this.method = opts.method || "GET";
@@ -1954,7 +1972,7 @@ class Request extends componentEmitter {
           } else {
             // make sure the `error` event handler that's user-set
             // does not throw in the same tick and gets caught here
-            setTimeout(() => {
+            this.setTimeoutFn(() => {
               this.onError(typeof xhr.status === "number" ? xhr.status : 0);
             }, 0);
           }
@@ -1967,7 +1985,7 @@ class Request extends componentEmitter {
       // Need to defer since .create() is called directly from the constructor
       // and thus the 'error' event can only be only bound *after* this exception
       // occurs.  Therefore, also, we cannot throw here at all.
-      setTimeout(() => {
+      this.setTimeoutFn(() => {
         this.onError(e);
       }, 0);
       return;
@@ -2197,7 +2215,7 @@ class JSONPPolling extends polling {
       "undefined" !== typeof navigator && /gecko/i.test(navigator.userAgent);
 
     if (isUAgecko) {
-      setTimeout(function() {
+      this.setTimeoutFn(function() {
         const iframe = document.createElement("iframe");
         document.body.appendChild(iframe);
         document.body.removeChild(iframe);
@@ -2298,7 +2316,7 @@ const nextTick = (() => {
   if (isPromiseAvailable) {
     return cb => Promise.resolve().then(cb);
   } else {
-    return cb => setTimeout(cb, 0);
+    return (cb, setTimeoutFn) => setTimeoutFn(cb, 0);
   }
 })();
 
@@ -2472,7 +2490,7 @@ class WS extends transport {
           nextTick$1(() => {
             this.writable = true;
             this.emit("drain");
-          });
+          }, this.setTimeoutFn);
         }
       });
     }
@@ -2612,6 +2630,7 @@ const debug$4 = browser("engine.io-client:socket");
 
 
 
+const { installTimerFunctions: installTimerFunctions$3 } = util;
 
 class Socket extends componentEmitter {
   /**
@@ -2638,6 +2657,8 @@ class Socket extends componentEmitter {
     } else if (opts.host) {
       opts.hostname = parseuri(opts.host).host;
     }
+
+    installTimerFunctions$3(this, opts);
 
     this.secure =
       null != opts.secure
@@ -2780,7 +2801,7 @@ class Socket extends componentEmitter {
       transport = "websocket";
     } else if (0 === this.transports.length) {
       // Emit error on next tick so it can be listened to
-      setTimeout(() => {
+      this.setTimeoutFn(() => {
         this.emit("error", "No transports available");
       }, 0);
       return;
@@ -3039,8 +3060,8 @@ class Socket extends componentEmitter {
    * @api private
    */
   resetPingTimeout() {
-    clearTimeout(this.pingTimeoutTimer);
-    this.pingTimeoutTimer = setTimeout(() => {
+    this.clearTimeoutFn(this.pingTimeoutTimer);
+    this.pingTimeoutTimer = this.setTimeoutFn(() => {
       this.onClose("ping timeout");
     }, this.pingInterval + this.pingTimeout);
     if (this.opts.autoUnref) {
@@ -3217,8 +3238,8 @@ class Socket extends componentEmitter {
       debug$4('socket close with reason: "%s"', reason);
 
       // clear timers
-      clearTimeout(this.pingIntervalTimer);
-      clearTimeout(this.pingTimeoutTimer);
+      this.clearTimeoutFn(this.pingIntervalTimer);
+      this.clearTimeoutFn(this.pingTimeoutTimer);
 
       // stop event from firing again for transport
       this.transport.removeAllListeners("close");
@@ -3843,6 +3864,8 @@ class Socket extends typedEvents.StrictEventEmitter {
      */
     constructor(io, nsp, opts) {
         super();
+        this.connected = false;
+        this.disconnected = true;
         this.receiveBuffer = [];
         this.sendBuffer = [];
         this.ids = 0;
@@ -3850,13 +3873,6 @@ class Socket extends typedEvents.StrictEventEmitter {
         this.flags = {};
         this.io = io;
         this.nsp = nsp;
-        this.ids = 0;
-        this.acks = {};
-        this.receiveBuffer = [];
-        this.sendBuffer = [];
-        this.connected = false;
-        this.disconnected = true;
-        this.flags = {};
         if (opts && opts.auth) {
             this.auth = opts.auth;
         }
@@ -3873,10 +3889,10 @@ class Socket extends typedEvents.StrictEventEmitter {
             return;
         const io = this.io;
         this.subs = [
-            on_1.on(io, "open", this.onopen.bind(this)),
-            on_1.on(io, "packet", this.onpacket.bind(this)),
-            on_1.on(io, "error", this.onerror.bind(this)),
-            on_1.on(io, "close", this.onclose.bind(this)),
+            (0, on_1.on)(io, "open", this.onopen.bind(this)),
+            (0, on_1.on)(io, "packet", this.onpacket.bind(this)),
+            (0, on_1.on)(io, "error", this.onerror.bind(this)),
+            (0, on_1.on)(io, "close", this.onclose.bind(this)),
         ];
     }
     /**
@@ -4370,9 +4386,11 @@ exports.Manager = void 0;
 
 
 
+
 const debug = browser("socket.io-client:manager");
 class Manager extends typedEvents.StrictEventEmitter {
     constructor(uri, opts) {
+        var _a;
         super();
         this.nsps = {};
         this.subs = [];
@@ -4383,11 +4401,12 @@ class Manager extends typedEvents.StrictEventEmitter {
         opts = opts || {};
         opts.path = opts.path || "/socket.io";
         this.opts = opts;
+        (0, util.installTimerFunctions)(this, opts);
         this.reconnection(opts.reconnection !== false);
         this.reconnectionAttempts(opts.reconnectionAttempts || Infinity);
         this.reconnectionDelay(opts.reconnectionDelay || 1000);
         this.reconnectionDelayMax(opts.reconnectionDelayMax || 5000);
-        this.randomizationFactor(opts.randomizationFactor || 0.5);
+        this.randomizationFactor((_a = opts.randomizationFactor) !== null && _a !== void 0 ? _a : 0.5);
         this.backoff = new backo2({
             min: this.reconnectionDelay(),
             max: this.reconnectionDelayMax(),
@@ -4478,12 +4497,12 @@ class Manager extends typedEvents.StrictEventEmitter {
         this._readyState = "opening";
         this.skipReconnect = false;
         // emit `open`
-        const openSubDestroy = on_1.on(socket, "open", function () {
+        const openSubDestroy = (0, on_1.on)(socket, "open", function () {
             self.onopen();
             fn && fn();
         });
         // emit `error`
-        const errorSub = on_1.on(socket, "error", (err) => {
+        const errorSub = (0, on_1.on)(socket, "error", (err) => {
             debug("error");
             self.cleanup();
             self._readyState = "closed";
@@ -4503,7 +4522,7 @@ class Manager extends typedEvents.StrictEventEmitter {
                 openSubDestroy(); // prevents a race condition with the 'open' event
             }
             // set timer
-            const timer = setTimeout(() => {
+            const timer = this.setTimeoutFn(() => {
                 debug("connect attempt timed out after %d", timeout);
                 openSubDestroy();
                 socket.close();
@@ -4543,7 +4562,7 @@ class Manager extends typedEvents.StrictEventEmitter {
         this.emitReserved("open");
         // add new subs
         const socket = this.engine;
-        this.subs.push(on_1.on(socket, "ping", this.onping.bind(this)), on_1.on(socket, "data", this.ondata.bind(this)), on_1.on(socket, "error", this.onerror.bind(this)), on_1.on(socket, "close", this.onclose.bind(this)), on_1.on(this.decoder, "decoded", this.ondecoded.bind(this)));
+        this.subs.push((0, on_1.on)(socket, "ping", this.onping.bind(this)), (0, on_1.on)(socket, "data", this.ondata.bind(this)), (0, on_1.on)(socket, "error", this.onerror.bind(this)), (0, on_1.on)(socket, "close", this.onclose.bind(this)), (0, on_1.on)(this.decoder, "decoded", this.ondecoded.bind(this)));
     }
     /**
      * Called upon a ping.
@@ -4694,7 +4713,7 @@ class Manager extends typedEvents.StrictEventEmitter {
             const delay = this.backoff.duration();
             debug("will wait %dms before reconnect attempt", delay);
             this._reconnecting = true;
-            const timer = setTimeout(() => {
+            const timer = this.setTimeoutFn(() => {
                 if (self.skipReconnect)
                     return;
                 debug("attempting reconnect");
@@ -4758,7 +4777,7 @@ function lookup(uri, opts) {
         uri = undefined;
     }
     opts = opts || {};
-    const parsed = url_1.url(uri, opts.path || "/socket.io");
+    const parsed = (0, url_1.url)(uri, opts.path || "/socket.io");
     const source = parsed.source;
     const id = parsed.id;
     const path = parsed.path;
