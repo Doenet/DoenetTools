@@ -52,57 +52,60 @@ export function useDashboardCrumb(driveId){
 
 
 export function useNavigationCrumbs(driveId,itemId){
-  console.log(">>>>driveId",driveId)
-  console.log(">>>>itemId",itemId)
   const setPageToolView = useSetRecoilState(pageToolViewAtom);
   const [crumbs,setCrumbs] = useState([])
 
   const getCrumbs = useRecoilCallback(({snapshot})=> async (driveId,itemId)=>{
     let itemInfo = await snapshot.getPromise(loadDriveInfoQuery(driveId));
 
-    // if (driveId === itemId){
+    //Build information about folders until we get to drive
+    function parentFolder({folderInfo=[], itemId}){
 
-    // }
+      if (driveId == itemId){
+        return [{label:"Content"},...folderInfo];
+      }
+
     for (let item of itemInfo.results){
-      console.log(">>>>item.itemId",item)
-      // if (item.itemId === itemId){
-        console.log('item',item)
-        // setCrumbs((was)=>{
-        //   let newArray = [...was];
-        //   newArray.unshift({
-        //     label:
-        //   })
-        //   return newArray;
-        // })
-        // break;
-      // }
-    } 
-    // console.log(">>>>itemInfo",itemInfo)
-    // let drives = await snapshot.getPromise(fetchDrivesQuery);
-    // for (let driveIdLabel of drives.driveIdsAndLabels){
-    //   if (driveIdLabel.driveId == driveId){
-    //     setLabel(driveIdLabel.label);
-    //     return;
-    //   }
-    // }
+      if (item.itemId == itemId){
+        let newFolderInfo = [item,...folderInfo]
+        return parentFolder({folderInfo:newFolderInfo,itemId:item.parentFolderId});
+      }
+    }
+
+    }
+
+    let crumbArray = [];
+    for (let item of parentFolder({itemId})){
+
+      let params = {
+        path: `${driveId}:${driveId}:${driveId}:Drive`,
+      }
+      if (item.itemId){
+        params = {
+          path: `${driveId}:${item.parentFolderId}:${item.itemId}:Folder`,
+        }
+      }
+      crumbArray.push({
+        label:item.label,
+        onClick:()=>{
+          setPageToolView({
+            page: 'course',
+            tool: 'navigation',
+            view: '',
+            params
+          });
+    }});
+
+    }
+    setCrumbs(crumbArray);
     
   })
   useEffect(()=>{
-    getCrumbs(driveId,itemId);
+    if (crumbs.length == 0){
+      getCrumbs(driveId,itemId);
+    }
   },[getCrumbs,driveId,itemId])
 
-  // let params = {
-  //   path: `${driveId}:${driveId}:${driveId}:Drive`,
-  // }
 
-  // return {label, onClick:()=>{
-  //       setPageToolView({
-  //         page: 'course',
-  //         tool: 'dashboard',
-  //         view: '',
-  //         params
-  //       });
-  // }}
-  console.log(">>>>crumbs",crumbs)
-  return [{label:'test'}]
+  return crumbs
 }
