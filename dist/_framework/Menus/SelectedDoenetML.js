@@ -3,7 +3,7 @@ import {FontAwesomeIcon} from "../../_snowpack/pkg/@fortawesome/react-fontawesom
 import React, {useState, useEffect} from "../../_snowpack/pkg/react.js";
 import DropdownMenu from "../../_reactComponents/PanelHeaderComponents/DropdownMenu.js";
 import DateTime from "../../_reactComponents/PanelHeaderComponents/DateTime.js";
-import {DateToUTCDateString} from "../../_utils/dateUtilityFunction.js";
+import {DateToUTCDateString, DateToDateString} from "../../_utils/dateUtilityFunction.js";
 import {
   atom,
   selector,
@@ -21,7 +21,6 @@ import Button from "../../_reactComponents/PanelHeaderComponents/Button.js";
 import Textfield from "../../_reactComponents/PanelHeaderComponents/Textfield.js";
 import ActionButton from "../../_reactComponents/PanelHeaderComponents/ActionButton.js";
 import ActionButtonGroup from "../../_reactComponents/PanelHeaderComponents/ActionButtonGroup.js";
-import ButtonGroup from "../../_reactComponents/PanelHeaderComponents/ButtonGroup.js";
 import useSockets from "../../_reactComponents/Sockets.js";
 import {pageToolViewAtom} from "../NewToolRoot.js";
 import Switch from "../Switch.js";
@@ -293,7 +292,7 @@ export function AssignmentSettings({role, doenetId}) {
         addToast(`Updated ${description} to ${valueDescription}`);
       } else {
         if (description === "Assigned Date" || description === "Due Date" || description === "Pinned Until Date" || description === "Pinned After Date") {
-          addToast(`Updated ${description} to ${new Date(value + " UTC").toLocaleString()}`);
+          addToast(`Updated ${description} to ${new Date(value).toLocaleString()}`);
         } else {
           addToast(`Updated ${description} to ${value}`);
         }
@@ -357,7 +356,7 @@ export function AssignmentSettings({role, doenetId}) {
       let value = null;
       if (aInfo.assignedDate === null) {
         valueDescription = "Now";
-        value = DateToUTCDateString(new Date());
+        value = DateToDateString(new Date());
       }
       updateAssignment({
         doenetId,
@@ -368,18 +367,18 @@ export function AssignmentSettings({role, doenetId}) {
       });
     }
   }), aInfo.assignedDate !== null ? /* @__PURE__ */ React.createElement(DateTime, {
-    value: aInfo.assignedDate ? new Date(aInfo.assignedDate + " UTC") : null,
+    value: aInfo.assignedDate ? new Date(aInfo.assignedDate) : null,
     onBlur: ({valid, value}) => {
       if (valid) {
         try {
           value = value.toDate();
         } catch (e) {
         }
-        if (new Date(DateToUTCDateString(value)).getTime() !== new Date(aInfo.assignedDate).getTime()) {
+        if (new Date(DateToDateString(value)).getTime() !== new Date(aInfo.assignedDate).getTime()) {
           updateAssignment({
             doenetId,
             keyToUpdate: "assignedDate",
-            value: DateToUTCDateString(value),
+            value: DateToDateString(value),
             description: "Assigned Date"
           });
         }
@@ -394,7 +393,7 @@ export function AssignmentSettings({role, doenetId}) {
       let value = null;
       if (aInfo.assignedDate === null) {
         valueDescription = "Now";
-        value = DateToUTCDateString(new Date());
+        value = DateToDateString(new Date());
       }
       updateAssignment({
         doenetId,
@@ -425,7 +424,7 @@ export function AssignmentSettings({role, doenetId}) {
         valueDescription = "Next Week";
         let nextWeek = new Date();
         nextWeek.setDate(nextWeek.getDate() + 7);
-        value = DateToUTCDateString(nextWeek);
+        value = DateToDateString(nextWeek);
       }
       updateAssignment({
         doenetId,
@@ -436,18 +435,18 @@ export function AssignmentSettings({role, doenetId}) {
       });
     }
   }), aInfo.dueDate !== null ? /* @__PURE__ */ React.createElement(DateTime, {
-    value: aInfo.dueDate ? new Date(aInfo.dueDate + " UTC") : null,
+    value: aInfo.dueDate ? new Date(aInfo.dueDate) : null,
     onBlur: ({valid, value}) => {
       if (valid) {
         try {
           value = value.toDate();
         } catch (e) {
         }
-        if (new Date(DateToUTCDateString(value)).getTime() !== new Date(aInfo.dueDate).getTime()) {
+        if (new Date(DateToDateString(value)).getTime() !== new Date(aInfo.dueDate).getTime()) {
           updateAssignment({
             doenetId,
             keyToUpdate: "dueDate",
-            value: DateToUTCDateString(value),
+            value: DateToDateString(value),
             description: "Due Date"
           });
         }
@@ -463,7 +462,7 @@ export function AssignmentSettings({role, doenetId}) {
         valueDescription = "Next Week";
         let nextWeek = new Date();
         nextWeek.setDate(nextWeek.getDate() + 7);
-        value = DateToUTCDateString(nextWeek);
+        value = DateToDateString(nextWeek);
       }
       updateAssignment({
         doenetId,
@@ -769,8 +768,8 @@ export function AssignmentSettings({role, doenetId}) {
         let today = new Date();
         let nextYear = new Date();
         nextYear.setDate(nextYear.getDate() + 365);
-        value = DateToUTCDateString(today);
-        secondValue = DateToUTCDateString(nextYear);
+        value = DateToDateString(today);
+        secondValue = DateToDateString(nextYear);
       }
       updateAssignment({
         doenetId,
@@ -783,18 +782,18 @@ export function AssignmentSettings({role, doenetId}) {
       });
     }
   }), aInfo.pinnedUntilDate !== null ? /* @__PURE__ */ React.createElement(DateTime, {
-    value: aInfo.pinnedAfterDate ? new Date(aInfo.pinnedAfterDate + " UTC") : null,
+    value: aInfo.pinnedAfterDate ? new Date(aInfo.pinnedAfterDate) : null,
     onBlur: ({valid, value}) => {
       if (valid) {
         try {
           value = value.toDate();
         } catch (e) {
         }
-        if (new Date(DateToUTCDateString(value)).getTime() !== new Date(aInfo.pinnedAfterDate).getTime()) {
+        if (new Date(DateToDateString(value)).getTime() !== new Date(aInfo.pinnedAfterDate).getTime()) {
           updateAssignment({
             doenetId,
             keyToUpdate: "pinnedAfterDate",
-            value: DateToUTCDateString(value),
+            value: DateToDateString(value),
             description: "Pinned After Date"
           });
         }
@@ -812,8 +811,8 @@ export function AssignmentSettings({role, doenetId}) {
         let today = new Date();
         let nextYear = new Date();
         nextYear.setDate(nextYear.getDate() + 365);
-        value = DateToUTCDateString(today);
-        secondValue = DateToUTCDateString(nextYear);
+        value = DateToDateString(today);
+        secondValue = DateToDateString(nextYear);
       }
       updateAssignment({
         doenetId,
@@ -839,18 +838,18 @@ export function AssignmentSettings({role, doenetId}) {
       e.preventDefault();
     }
   }, aInfo.pinnedUntilDate !== null ? /* @__PURE__ */ React.createElement(DateTime, {
-    value: aInfo.pinnedUntilDate ? new Date(aInfo.pinnedUntilDate + " UTC") : null,
+    value: aInfo.pinnedUntilDate ? new Date(aInfo.pinnedUntilDate) : null,
     onBlur: ({valid, value}) => {
       if (valid) {
         try {
           value = value.toDate();
         } catch (e) {
         }
-        if (new Date(DateToUTCDateString(value)).getTime() !== new Date(aInfo.pinnedUntilDate).getTime()) {
+        if (new Date(DateToDateString(value)).getTime() !== new Date(aInfo.pinnedUntilDate).getTime()) {
           updateAssignment({
             doenetId,
             keyToUpdate: "pinnedUntilDate",
-            value: DateToUTCDateString(value),
+            value: DateToDateString(value),
             description: "Pinned Until Date"
           });
         }
@@ -868,8 +867,8 @@ export function AssignmentSettings({role, doenetId}) {
         let today = new Date();
         let nextYear = new Date();
         nextYear.setDate(nextYear.getDate() + 365);
-        value = DateToUTCDateString(today);
-        secondValue = DateToUTCDateString(nextYear);
+        value = DateToDateString(today);
+        secondValue = DateToDateString(nextYear);
       }
       updateAssignment({
         doenetId,
