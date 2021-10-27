@@ -66,6 +66,9 @@ class DoenetViewerChild extends Component {
 
     this.coreId = nanoid();
     // console.log(">>>CREATE core this.coreId!!!",this.coreId)  
+    try {
+
+  
     if (this.props.core) {
       new this.props.core({
         coreId: this.coreId,
@@ -101,6 +104,10 @@ class DoenetViewerChild extends Component {
         stateVariableChanges: this.cumulativeStateVariableChanges,
       });
     }
+  } catch(e){
+    this.props.setIsInErrorState(true)
+    this.setState({errMsg:e.message});
+  }
 
 
 
@@ -217,12 +224,14 @@ class DoenetViewerChild extends Component {
 
         // console.log(">>>>data",data)
         if (!data.success){
+          this.props.setIsInErrorState(true)
           this.setState({ errMsg: data.message })
         }
 
         this.savedUserAssignmentAttemptNumber = this.attemptNumber; //In callback
       })
         .catch(errMsg => {
+          this.props.setIsInErrorState(true)
           this.setState({ errMsg: errMsg.message })
         })
 
@@ -434,6 +443,7 @@ class DoenetViewerChild extends Component {
         }
       })
       .catch(errMsg => {
+        this.props.setIsInErrorState(true)
         this.setState({ errMsg: errMsg.message })
       })
 
