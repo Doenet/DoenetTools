@@ -140,3 +140,34 @@ export function useEditorCrumb({doenetId,driveId,folderId,itemId}){
         });
   }}
 }
+
+export function useAssignmentCrumb({doenetId,driveId,folderId,itemId}){
+  
+  const setPageToolView = useSetRecoilState(pageToolViewAtom);
+  const [label,setLabel] = useState('test')
+
+  const getDocumentLabel = useRecoilCallback(({snapshot})=> async ({itemId,driveId,folderId})=>{
+    let folderInfo = await snapshot.getPromise(folderDictionary({driveId,folderId}));
+    const docInfo = folderInfo.contentsDictionary[itemId]
+    setLabel(docInfo.label);
+    
+  },[])
+
+  useEffect(()=>{
+    getDocumentLabel({itemId,driveId,folderId});
+  },[doenetId,driveId,folderId,getDocumentLabel])
+
+  let params = {
+    doenetId,
+    // path: `${driveId}:${folderId}:${itemId}:DoenetML`
+  }
+
+  return {label, onClick:()=>{
+        setPageToolView({
+          page: 'course',
+          tool: 'assignment',
+          view: '',
+          params
+        });
+  }}
+}
