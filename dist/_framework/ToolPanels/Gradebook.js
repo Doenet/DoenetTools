@@ -20,28 +20,31 @@ export const Styles = styled.div`
   table {
     border-collapse: collapse;
     border-spacing: 0;
-    border: 1px solid gray;
     
     thead {
-        border-bottom: 1px solid gray;
+        position: sticky;
+        top: 0;
+        box-shadow: 0 2px 0 0px #000000;
     }
     
     a {
         color: inherit;
         text-decoration: none;
     }
+
     .sortIcon {
         padding-left: 4px;
     }
-    tbody tr:nth-child(even) {background: #CCC}
-    tbody tr:nth-child(odd) {background: #FFF}
+  
+    tbody tr:not(:last-child) {border-bottom: 1px solid #e2e2e2;}
+ 
     td:first-child {
         text-align: left;
         max-width: 15rem;
         text-overflow: ellipsis;
         white-space: nowrap;
-        overflow: hidden;
     }
+
     th {
         position: sticky;
         top: 0;
@@ -52,6 +55,7 @@ export const Styles = styled.div`
         padding: 2px;
         max-height: 10rem;
     }
+    
     th:first-child {
         vertical-align: bottom;
         max-width: 15rem;
@@ -59,25 +63,43 @@ export const Styles = styled.div`
             margin: 5px;
         }
     }
+
     th > p {
         height: 100%;
     }
-    th:not(:first-child) > p{
+
+    tr:not(:first-child) th:not(:first-child) > p{
         writing-mode: vertical-rl;
         text-align: left;
         transform: rotate(180deg);
     }
+
+    thead tr:only-child th:not(:first-child) > p{
+        writing-mode: vertical-rl;
+        text-align: left;
+        transform: rotate(180deg);
+    }
+    
     td {
         user-select: none;
         text-align: center;
         max-width: 5rem;
     }
     td, th {
-        border-right: 1px solid gray;
+        border-right: 2px solid black;
         :last-child {
             border-right: 0;
         }
     }
+
+    tfoot {
+        font-weight: bolder;
+        position: sticky;
+        bottom: 0;
+        background-color: white;
+        box-shadow: inset 0 2px 0 #000000;
+      }
+
   }
 `;
 export const driveId = atom({
@@ -339,6 +361,7 @@ export function Table({columns, data}) {
     getTableProps,
     getTableBodyProps,
     headerGroups,
+    footerGroups,
     rows,
     prepareRow,
     state,
@@ -376,7 +399,7 @@ export function Table({columns, data}) {
         ...cell.getCellProps()
       }, cell.render("Cell"));
     }));
-  })));
+  })), /* @__PURE__ */ React.createElement("tfoot", null, /* @__PURE__ */ React.createElement("tr", null, footerGroups[0].headers.map((column) => /* @__PURE__ */ React.createElement("td", null, /* @__PURE__ */ React.createElement("p", null, column.render("Footer")))))));
 }
 export function gradeSorting(a, b, columnID) {
   const order = {"+": -1, "-": 1, undefined: 0};
@@ -400,7 +423,8 @@ function DefaultColumnFilter({
     onChange: (e) => {
       setFilter(e.target.value || void 0);
     },
-    placeholder: `Search ${count} records...`
+    placeholder: `Search ${count} records...`,
+    style: {border: "2px solid black", borderRadius: "5px"}
   });
 }
 const getUserId = (students, name) => {
@@ -444,7 +468,8 @@ function GradebookOverview() {
   let totalPossiblePoints = 0;
   overviewTable.headers.push({
     Header: "Name",
-    accessor: "name"
+    accessor: "name",
+    Footer: "Possible Points"
   });
   possiblePointRow["name"] = "Possible Points";
   for (let {category, scaleFactor = 1, maximumNumber = Infinity} of gradeCategories) {
@@ -457,25 +482,31 @@ function GradebookOverview() {
       let possiblepoints = assignments.contents[doenetId].totalPointsOrPercent * 1;
       allpossiblepoints.push(possiblepoints);
       overviewTable.headers.push({
-        Header: /* @__PURE__ */ React.createElement("a", {
-          onClick: (e) => {
-            setPageToolView({
-              page: "course",
-              tool: "gradebookAssignment",
-              view: "",
-              params: {driveId: driveIdValue, doenetId}
-            });
+        Header: category,
+        columns: [
+          {
+            Header: /* @__PURE__ */ React.createElement("a", {
+              style: {fontWeight: "normal"},
+              onClick: (e) => {
+                setPageToolView({
+                  page: "course",
+                  tool: "gradebookAssignment",
+                  view: "",
+                  params: {driveId: driveIdValue, doenetId}
+                });
+              }
+            }, assignments.contents[doenetId].label),
+            accessor: doenetId,
+            Footer: possiblepoints,
+            disableFilters: true
           }
-        }, assignments.contents[doenetId].label),
-        accessor: doenetId,
-        disableFilters: true
+        ]
       });
       possiblePointRow[doenetId] = possiblepoints;
     }
     let numberScores = allpossiblepoints.length;
     allpossiblepoints = allpossiblepoints.sort((a, b) => b - a).slice(0, maximumNumber);
     let categoryPossiblePoints = allpossiblepoints.reduce((a, c) => a + c, 0) * scaleFactor;
-    possiblePointRow[category] = categoryPossiblePoints;
     totalPossiblePoints += categoryPossiblePoints;
     let description = "";
     if (numberScores > maximumNumber) {
@@ -491,16 +522,16 @@ function GradebookOverview() {
     overviewTable.headers.push({
       Header: /* @__PURE__ */ React.createElement("div", null, `${category} Total`, " ", description, " "),
       accessor: category,
+      Footer: categoryPossiblePoints,
       disableFilters: true
     });
   }
   overviewTable.headers.push({
     Header: /* @__PURE__ */ React.createElement("div", null, "Course Total"),
     accessor: "course total",
+    Footer: totalPossiblePoints,
     disableFilters: true
   });
-  possiblePointRow["course total"] = totalPossiblePoints;
-  overviewTable.rows.push(possiblePointRow);
   for (let userId in students.contents) {
     let firstName = students.contents[userId].firstName, lastName = students.contents[userId].lastName, role = students.contents[userId].role;
     if (role !== "Student") {
@@ -509,6 +540,7 @@ function GradebookOverview() {
     let row = {};
     let name = firstName + " " + lastName;
     row["name"] = /* @__PURE__ */ React.createElement("a", {
+      style: {cursor: "pointer"},
       onClick: (e) => {
         setPageToolView({
           page: "course",
@@ -552,6 +584,7 @@ function GradebookOverview() {
     row["course total"] = totalScore;
     overviewTable.rows.push(row);
   }
+  console.log("rows", overviewTable.rows);
   return /* @__PURE__ */ React.createElement(Styles, null, /* @__PURE__ */ React.createElement(Table, {
     columns: overviewTable.headers,
     data: overviewTable.rows

@@ -3,8 +3,8 @@ import { r as react } from './index-61a7c514.js';
 import { p as propTypes } from './index-01840a39.js';
 import { a as _extends, _ as _objectWithoutPropertiesLoose } from './setPrototypeOf-ac807fbe.js';
 import { g as global } from './_polyfill-node:global-acbc543a.js';
-import './index-dff27331.js';
-import './hoist-non-react-statics.cjs-d174c13c.js';
+import { c as createCommonjsModule } from './_commonjsHelpers-b3efd043.js';
+import './hoist-non-react-statics.cjs-99a47c26.js';
 
 function isAbsolute(pathname) {
   return pathname.charAt(0) === '/';
@@ -1584,6 +1584,59 @@ pathToRegexp_1.compile = compile_1;
 pathToRegexp_1.tokensToFunction = tokensToFunction_1;
 pathToRegexp_1.tokensToRegExp = tokensToRegExp_1;
 
+/** @license React v16.13.1
+ * react-is.production.min.js
+ *
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+var b="function"===typeof Symbol&&Symbol.for,c=b?Symbol.for("react.element"):60103,d=b?Symbol.for("react.portal"):60106,e=b?Symbol.for("react.fragment"):60107,f=b?Symbol.for("react.strict_mode"):60108,g=b?Symbol.for("react.profiler"):60114,h=b?Symbol.for("react.provider"):60109,k=b?Symbol.for("react.context"):60110,l=b?Symbol.for("react.async_mode"):60111,m=b?Symbol.for("react.concurrent_mode"):60111,n=b?Symbol.for("react.forward_ref"):60112,p=b?Symbol.for("react.suspense"):60113,q=b?
+Symbol.for("react.suspense_list"):60120,r=b?Symbol.for("react.memo"):60115,t=b?Symbol.for("react.lazy"):60116,v=b?Symbol.for("react.block"):60121,w=b?Symbol.for("react.fundamental"):60117,x=b?Symbol.for("react.responder"):60118,y=b?Symbol.for("react.scope"):60119;
+function z(a){if("object"===typeof a&&null!==a){var u=a.$$typeof;switch(u){case c:switch(a=a.type,a){case l:case m:case e:case g:case f:case p:return a;default:switch(a=a&&a.$$typeof,a){case k:case n:case t:case r:case h:return a;default:return u}}case d:return u}}}function A(a){return z(a)===m}var AsyncMode=l;var ConcurrentMode=m;var ContextConsumer=k;var ContextProvider=h;var Element=c;var ForwardRef=n;var Fragment=e;var Lazy=t;var Memo=r;var Portal=d;
+var Profiler=g;var StrictMode=f;var Suspense=p;var isAsyncMode=function(a){return A(a)||z(a)===l};var isConcurrentMode=A;var isContextConsumer=function(a){return z(a)===k};var isContextProvider=function(a){return z(a)===h};var isElement=function(a){return "object"===typeof a&&null!==a&&a.$$typeof===c};var isForwardRef=function(a){return z(a)===n};var isFragment=function(a){return z(a)===e};var isLazy=function(a){return z(a)===t};
+var isMemo=function(a){return z(a)===r};var isPortal=function(a){return z(a)===d};var isProfiler=function(a){return z(a)===g};var isStrictMode=function(a){return z(a)===f};var isSuspense=function(a){return z(a)===p};
+var isValidElementType=function(a){return "string"===typeof a||"function"===typeof a||a===e||a===m||a===g||a===f||a===p||a===q||"object"===typeof a&&null!==a&&(a.$$typeof===t||a.$$typeof===r||a.$$typeof===h||a.$$typeof===k||a.$$typeof===n||a.$$typeof===w||a.$$typeof===x||a.$$typeof===y||a.$$typeof===v)};var typeOf=z;
+
+var reactIs_production_min = {
+	AsyncMode: AsyncMode,
+	ConcurrentMode: ConcurrentMode,
+	ContextConsumer: ContextConsumer,
+	ContextProvider: ContextProvider,
+	Element: Element,
+	ForwardRef: ForwardRef,
+	Fragment: Fragment,
+	Lazy: Lazy,
+	Memo: Memo,
+	Portal: Portal,
+	Profiler: Profiler,
+	StrictMode: StrictMode,
+	Suspense: Suspense,
+	isAsyncMode: isAsyncMode,
+	isConcurrentMode: isConcurrentMode,
+	isContextConsumer: isContextConsumer,
+	isContextProvider: isContextProvider,
+	isElement: isElement,
+	isForwardRef: isForwardRef,
+	isFragment: isFragment,
+	isLazy: isLazy,
+	isMemo: isMemo,
+	isPortal: isPortal,
+	isProfiler: isProfiler,
+	isStrictMode: isStrictMode,
+	isSuspense: isSuspense,
+	isValidElementType: isValidElementType,
+	typeOf: typeOf
+};
+
+var reactIs = createCommonjsModule(function (module) {
+
+{
+  module.exports = reactIs_production_min;
+}
+});
+
 // TODO: Replace with React.createContext once we can assume React 16+
 
 var createNamedContext = function createNamedContext(name) {
@@ -1592,29 +1645,15 @@ var createNamedContext = function createNamedContext(name) {
   return context;
 };
 
-var historyContext =
-/*#__PURE__*/
-createNamedContext("Router-History");
+var historyContext = /*#__PURE__*/createNamedContext("Router-History");
 
-// TODO: Replace with React.createContext once we can assume React 16+
-
-var createNamedContext$1 = function createNamedContext(name) {
-  var context = index();
-  context.displayName = name;
-  return context;
-};
-
-var context =
-/*#__PURE__*/
-createNamedContext$1("Router");
+var context = /*#__PURE__*/createNamedContext("Router");
 
 /**
  * The public API for putting history on context.
  */
 
-var Router =
-/*#__PURE__*/
-function (_React$Component) {
+var Router = /*#__PURE__*/function (_React$Component) {
   _inheritsLoose(Router, _React$Component);
 
   Router.computeRootMatch = function computeRootMatch(pathname) {
@@ -1669,18 +1708,22 @@ function (_React$Component) {
   };
 
   _proto.componentWillUnmount = function componentWillUnmount() {
-    if (this.unlisten) this.unlisten();
+    if (this.unlisten) {
+      this.unlisten();
+      this._isMounted = false;
+      this._pendingLocation = null;
+    }
   };
 
   _proto.render = function render() {
-    return react.createElement(context.Provider, {
+    return /*#__PURE__*/react.createElement(context.Provider, {
       value: {
         history: this.props.history,
         location: this.state.location,
         match: Router.computeRootMatch(this.state.location.pathname),
         staticContext: this.props.staticContext
       }
-    }, react.createElement(historyContext.Provider, {
+    }, /*#__PURE__*/react.createElement(historyContext.Provider, {
       children: this.props.children || null,
       value: this.props.history
     }));
@@ -1693,9 +1736,7 @@ function (_React$Component) {
  * The public API for a <Router> that stores location in memory.
  */
 
-var MemoryRouter =
-/*#__PURE__*/
-function (_React$Component) {
+var MemoryRouter = /*#__PURE__*/function (_React$Component) {
   _inheritsLoose(MemoryRouter, _React$Component);
 
   function MemoryRouter() {
@@ -1713,7 +1754,7 @@ function (_React$Component) {
   var _proto = MemoryRouter.prototype;
 
   _proto.render = function render() {
-    return react.createElement(Router, {
+    return /*#__PURE__*/react.createElement(Router, {
       history: this.history,
       children: this.props.children
     });
@@ -1722,9 +1763,7 @@ function (_React$Component) {
   return MemoryRouter;
 }(react.Component);
 
-var Lifecycle =
-/*#__PURE__*/
-function (_React$Component) {
+var Lifecycle = /*#__PURE__*/function (_React$Component) {
   _inheritsLoose(Lifecycle, _React$Component);
 
   function Lifecycle() {
@@ -1831,14 +1870,16 @@ function matchPath(pathname, options) {
     };
   }, null);
 }
+
+function isEmptyChildren(children) {
+  return react.Children.count(children) === 0;
+}
 /**
  * The public API for matching a single path and rendering.
  */
 
 
-var Route =
-/*#__PURE__*/
-function (_React$Component) {
+var Route = /*#__PURE__*/function (_React$Component) {
   _inheritsLoose(Route, _React$Component);
 
   function Route() {
@@ -1850,7 +1891,7 @@ function (_React$Component) {
   _proto.render = function render() {
     var _this = this;
 
-    return react.createElement(context.Consumer, null, function (context$1) {
+    return /*#__PURE__*/react.createElement(context.Consumer, null, function (context$1) {
       !context$1 ?  invariant(false) : void 0;
       var location = _this.props.location || context$1.location;
       var match = _this.props.computedMatch ? _this.props.computedMatch // <Switch> already computed the match for us
@@ -1867,13 +1908,13 @@ function (_React$Component) {
           render = _this$props.render; // Preact uses an empty array as children by
       // default, so use null if that's the case.
 
-      if (Array.isArray(children) && children.length === 0) {
+      if (Array.isArray(children) && isEmptyChildren(children)) {
         children = null;
       }
 
-      return react.createElement(context.Provider, {
+      return /*#__PURE__*/react.createElement(context.Provider, {
         value: props
-      }, props.match ? children ? typeof children === "function" ?  children(props) : children : component ? react.createElement(component, props) : render ? render(props) : null : typeof children === "function" ?  children(props) : null);
+      }, props.match ? children ? typeof children === "function" ?  children(props) : children : component ? /*#__PURE__*/react.createElement(component, props) : render ? render(props) : null : typeof children === "function" ?  children(props) : null);
     });
   };
 
@@ -1919,9 +1960,7 @@ function noop() {}
  */
 
 
-var StaticRouter =
-/*#__PURE__*/
-function (_React$Component) {
+var StaticRouter = /*#__PURE__*/function (_React$Component) {
   _inheritsLoose(StaticRouter, _React$Component);
 
   function StaticRouter() {
@@ -1989,7 +2028,7 @@ function (_React$Component) {
       listen: this.handleListen,
       block: this.handleBlock
     };
-    return react.createElement(Router, _extends({}, rest, {
+    return /*#__PURE__*/react.createElement(Router, _extends({}, rest, {
       history: history,
       staticContext: context
     }));
@@ -2002,9 +2041,7 @@ function (_React$Component) {
  * The public API for rendering the first <Route> that matches.
  */
 
-var Switch =
-/*#__PURE__*/
-function (_React$Component) {
+var Switch = /*#__PURE__*/function (_React$Component) {
   _inheritsLoose(Switch, _React$Component);
 
   function Switch() {
@@ -2016,7 +2053,7 @@ function (_React$Component) {
   _proto.render = function render() {
     var _this = this;
 
-    return react.createElement(context.Consumer, null, function (context) {
+    return /*#__PURE__*/react.createElement(context.Consumer, null, function (context) {
       !context ?  invariant(false) : void 0;
       var location = _this.props.location || context.location;
       var element, match; // We use React.Children.forEach instead of React.Children.toArray().find()
@@ -2025,7 +2062,7 @@ function (_React$Component) {
       // component at different URLs.
 
       react.Children.forEach(_this.props.children, function (child) {
-        if (match == null && react.isValidElement(child)) {
+        if (match == null && /*#__PURE__*/react.isValidElement(child)) {
           element = child;
           var path = child.props.path || child.props.from;
           match = path ? matchPath(location.pathname, _extends({}, child.props, {
@@ -2033,7 +2070,7 @@ function (_React$Component) {
           })) : context.match;
         }
       });
-      return match ? react.cloneElement(element, {
+      return match ? /*#__PURE__*/react.cloneElement(element, {
         location: location,
         computedMatch: match
       }) : null;
@@ -2053,4 +2090,4 @@ function useLocation() {
   return useContext(context).location;
 }
 
-export { Router as R, useLocation as a, createHashHistory as b, createBrowserHistory as c, context as d, createLocation as e, invariant as i, matchPath as m, useHistory as u };
+export { Router as R, useLocation as a, createHashHistory as b, createBrowserHistory as c, context as d, createLocation as e, createPath as f, invariant as i, matchPath as m, useHistory as u };

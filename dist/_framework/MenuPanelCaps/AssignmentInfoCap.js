@@ -52,7 +52,7 @@ export default function AssignmentInfoCap() {
   }
   let attemptInfo = null;
   if (recoilAttemptNumber) {
-    attemptInfo = /* @__PURE__ */ React.createElement("div", null, recoilAttemptNumber, "/", attemptsAllowedDescription, " Attempts");
+    attemptInfo = /* @__PURE__ */ React.createElement("div", null, recoilAttemptNumber, " out of ", attemptsAllowedDescription);
   }
   return /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", {
     style: {position: "relative", paddingBottom: "100px"}

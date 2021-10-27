@@ -37,6 +37,16 @@ var faBookOpen = {
   iconName: 'book-open',
   icon: [576, 512, [], "f518", "M542.22 32.05c-54.8 3.11-163.72 14.43-230.96 55.59-4.64 2.84-7.27 7.89-7.27 13.17v363.87c0 11.55 12.63 18.85 23.28 13.49 69.18-34.82 169.23-44.32 218.7-46.92 16.89-.89 30.02-14.43 30.02-30.66V62.75c.01-17.71-15.35-31.74-33.77-30.7zM264.73 87.64C197.5 46.48 88.58 35.17 33.78 32.05 15.36 31.01 0 45.04 0 62.75V400.6c0 16.24 13.13 29.78 30.02 30.66 49.49 2.6 149.59 12.11 218.77 46.95 10.62 5.35 23.21-1.94 23.21-13.46V100.63c0-5.29-2.62-10.14-7.27-12.99z"]
 };
+var faCalendarPlus = {
+  prefix: 'fas',
+  iconName: 'calendar-plus',
+  icon: [448, 512, [], "f271", "M436 160H12c-6.6 0-12-5.4-12-12v-36c0-26.5 21.5-48 48-48h48V12c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v52h128V12c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v52h48c26.5 0 48 21.5 48 48v36c0 6.6-5.4 12-12 12zM12 192h424c6.6 0 12 5.4 12 12v260c0 26.5-21.5 48-48 48H48c-26.5 0-48-21.5-48-48V204c0-6.6 5.4-12 12-12zm316 140c0-6.6-5.4-12-12-12h-60v-60c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v60h-60c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h60v60c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12v-60h60c6.6 0 12-5.4 12-12v-40z"]
+};
+var faCalendarTimes = {
+  prefix: 'fas',
+  iconName: 'calendar-times',
+  icon: [448, 512, [], "f273", "M436 160H12c-6.6 0-12-5.4-12-12v-36c0-26.5 21.5-48 48-48h48V12c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v52h128V12c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v52h48c26.5 0 48 21.5 48 48v36c0 6.6-5.4 12-12 12zM12 192h424c6.6 0 12 5.4 12 12v260c0 26.5-21.5 48-48 48H48c-26.5 0-48-21.5-48-48V204c0-6.6 5.4-12 12-12zm257.3 160l48.1-48.1c4.7-4.7 4.7-12.3 0-17l-28.3-28.3c-4.7-4.7-12.3-4.7-17 0L224 306.7l-48.1-48.1c-4.7-4.7-12.3-4.7-17 0l-28.3 28.3c-4.7 4.7-4.7 12.3 0 17l48.1 48.1-48.1 48.1c-4.7 4.7-4.7 12.3 0 17l28.3 28.3c4.7 4.7 12.3 4.7 17 0l48.1-48.1 48.1 48.1c4.7 4.7 12.3 4.7 17 0l28.3-28.3c4.7-4.7 4.7-12.3 0-17L269.3 352z"]
+};
 var faCaretDown = {
   prefix: 'fas',
   iconName: 'caret-down',
@@ -106,6 +116,11 @@ var faGripLinesVertical = {
   prefix: 'fas',
   iconName: 'grip-lines-vertical',
   icon: [256, 512, [], "f7a5", "M96 496V16c0-8.8-7.2-16-16-16H48c-8.8 0-16 7.2-16 16v480c0 8.8 7.2 16 16 16h32c8.8 0 16-7.2 16-16zm128 0V16c0-8.8-7.2-16-16-16h-32c-8.8 0-16 7.2-16 16v480c0 8.8 7.2 16 16 16h32c8.8 0 16-7.2 16-16z"]
+};
+var faHandMiddleFinger = {
+  prefix: 'fas',
+  iconName: 'hand-middle-finger',
+  icon: [512, 512, [], "f806", "M479.93 317.12a37.33 37.33 0 0 0-28.28-36.19L416 272v-49.59c0-11.44-9.69-21.29-23.15-23.54l-38.4-6.4C336.63 189.5 320 200.86 320 216v32a8 8 0 0 1-16 0V50c0-26.28-20.25-49.2-46.52-50A48 48 0 0 0 208 48v200a8 8 0 0 1-16 0v-32c0-15.15-16.63-26.51-34.45-23.54l-30.68 5.12c-18 3-30.87 16.12-30.87 31.38V376a8 8 0 0 1-16 0v-76l-27.36 15A37.34 37.34 0 0 0 32 348.4v73.47a37.31 37.31 0 0 0 10.93 26.39l30.93 30.93A112 112 0 0 0 153.05 512h215A112 112 0 0 0 480 400z"]
 };
 var faKeyboard = {
   prefix: 'fas',
@@ -188,4 +203,4 @@ var faUser = {
   icon: [448, 512, [], "f007", "M224 256c70.7 0 128-57.3 128-128S294.7 0 224 0 96 57.3 96 128s57.3 128 128 128zm89.6 32h-16.7c-22.2 10.2-46.9 16-72.9 16s-50.6-5.8-72.9-16h-16.7C60.2 288 0 348.2 0 422.4V464c0 26.5 21.5 48 48 48h352c26.5 0 48-21.5 48-48v-41.6c0-74.2-60.2-134.4-134.4-134.4z"]
 };
 
-export { faAngleLeft, faAngleRight, faArrowLeft, faArrowUp, faBackspace, faBars, faBookOpen, faCaretDown, faCaretRight, faChalkboard, faCheck, faChevronDown, faChevronLeft, faChevronRight, faCloud, faCode, faExternalLinkAlt, faFolder, faGreaterThan, faGripLines, faGripLinesVertical, faKeyboard, faLayerGroup, faLessThan, faLevelDownAlt, faLightbulb, faMinus, faPercentage, faPlus, faPuzzlePiece, faSearch, faSort, faSortDown, faSortUp, faTh, faTimes, faUser };
+export { faAngleLeft, faAngleRight, faArrowLeft, faArrowUp, faBackspace, faBars, faBookOpen, faCalendarPlus, faCalendarTimes, faCaretDown, faCaretRight, faChalkboard, faCheck, faChevronDown, faChevronLeft, faChevronRight, faCloud, faCode, faExternalLinkAlt, faFolder, faGreaterThan, faGripLines, faGripLinesVertical, faHandMiddleFinger, faKeyboard, faLayerGroup, faLessThan, faLevelDownAlt, faLightbulb, faMinus, faPercentage, faPlus, faPuzzlePiece, faSearch, faSort, faSortDown, faSortUp, faTh, faTimes, faUser };
