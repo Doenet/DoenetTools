@@ -39,38 +39,43 @@ class DoenetViewerChild extends Component {
       this.requestedVariantFromDatabase = true;
     }
     this.coreId = nanoid();
-    if (this.props.core) {
-      new this.props.core({
-        coreId: this.coreId,
-        coreReadyCallback: this.coreReady,
-        coreUpdatedCallback: this.update,
-        doenetML: this.doenetML,
-        externalFunctions: {
-          localStateChanged: this.localStateChanged,
-          recordSolutionView: this.recordSolutionView,
-          recordEvent: this.recordEvent,
-          contentIdsToDoenetMLs: this.contentIdsToDoenetMLs.bind(this)
-        },
-        flags: this.props.flags,
-        requestedVariant: this.requestedVariant,
-        stateVariableChanges: this.cumulativeStateVariableChanges
-      });
-    } else {
-      new Core({
-        coreId: this.coreId,
-        coreReadyCallback: this.coreReady,
-        coreUpdatedCallback: this.update,
-        doenetML: this.doenetML,
-        externalFunctions: {
-          localStateChanged: this.localStateChanged,
-          recordSolutionView: this.recordSolutionView,
-          recordEvent: this.recordEvent,
-          contentIdsToDoenetMLs: this.contentIdsToDoenetMLs.bind(this)
-        },
-        flags: this.props.flags,
-        requestedVariant: this.requestedVariant,
-        stateVariableChanges: this.cumulativeStateVariableChanges
-      });
+    try {
+      if (this.props.core) {
+        new this.props.core({
+          coreId: this.coreId,
+          coreReadyCallback: this.coreReady,
+          coreUpdatedCallback: this.update,
+          doenetML: this.doenetML,
+          externalFunctions: {
+            localStateChanged: this.localStateChanged,
+            recordSolutionView: this.recordSolutionView,
+            recordEvent: this.recordEvent,
+            contentIdsToDoenetMLs: this.contentIdsToDoenetMLs.bind(this)
+          },
+          flags: this.props.flags,
+          requestedVariant: this.requestedVariant,
+          stateVariableChanges: this.cumulativeStateVariableChanges
+        });
+      } else {
+        new Core({
+          coreId: this.coreId,
+          coreReadyCallback: this.coreReady,
+          coreUpdatedCallback: this.update,
+          doenetML: this.doenetML,
+          externalFunctions: {
+            localStateChanged: this.localStateChanged,
+            recordSolutionView: this.recordSolutionView,
+            recordEvent: this.recordEvent,
+            contentIdsToDoenetMLs: this.contentIdsToDoenetMLs.bind(this)
+          },
+          flags: this.props.flags,
+          requestedVariant: this.requestedVariant,
+          stateVariableChanges: this.cumulativeStateVariableChanges
+        });
+      }
+    } catch (e) {
+      this.props.setIsInErrorState(true);
+      this.setState({errMsg: e.message});
     }
   }
   coreReady(core) {
@@ -119,10 +124,12 @@ class DoenetViewerChild extends Component {
         itemVariantInfo: this.itemVariantInfo.map((x) => JSON.stringify(x, serializedComponentsReplacer))
       }).then(({data}) => {
         if (!data.success) {
+          this.props.setIsInErrorState(true);
           this.setState({errMsg: data.message});
         }
         this.savedUserAssignmentAttemptNumber = this.attemptNumber;
       }).catch((errMsg) => {
+        this.props.setIsInErrorState(true);
         this.setState({errMsg: errMsg.message});
       });
     }
@@ -266,6 +273,7 @@ class DoenetViewerChild extends Component {
         });
       }
     }).catch((errMsg) => {
+      this.props.setIsInErrorState(true);
       this.setState({errMsg: errMsg.message});
     });
   }

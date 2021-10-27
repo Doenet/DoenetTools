@@ -129,7 +129,7 @@ export default function EditorViewer(){
 
 
 
-  console.log(`>>>>Show DoenetViewer with value -${viewerDoenetML}- -${refreshNumber}-`)
+  // console.log(`>>>>Show DoenetViewer with value -${viewerDoenetML}- -${refreshNumber}-`)
   // console.log('>>>DoenetViewer Read Only:',!isCurrentDraft)
   return <DoenetViewer
     key={`doenetviewer${refreshNumber}`}
