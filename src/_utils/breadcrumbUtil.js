@@ -171,3 +171,22 @@ export function useAssignmentCrumb({doenetId,driveId,folderId,itemId}){
         });
   }}
 }
+
+
+export function useEnrollmentCrumb(driveId){
+
+  const setPageToolView = useSetRecoilState(pageToolViewAtom);
+
+  let params = {
+    driveId,
+  }
+
+  return {label:'Enrollment', onClick:()=>{
+        setPageToolView({
+          page: 'course',
+          tool: 'enrollment',
+          view: '',
+          params
+        });
+  }}
+}
