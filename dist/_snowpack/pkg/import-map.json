@@ -44,7 +44,6 @@
     "react-datetime/css/react-datetime.css": "./react-datetime/css/react-datetime.css",
     "react-dom": "./react-dom.js",
     "react-dropzone": "./react-dropzone.js",
-    "react-is": "./react-is.js",
     "react-mathjax": "./react-mathjax.js",
     "react-mathquill": "./react-mathquill.js",
     "react-measure": "./react-measure.js",

@@ -1782,10 +1782,10 @@ describe('Math Operator Tag Tests', function () {
         expect(text.trim()).equal('1')
       });
       cy.get('#\\/_floor4').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('2.1x')
+        expect(text.trim()).equal('floor(2.1x)')
       });
       cy.get('#\\/_ceil4').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('−3.2y')
+        expect(text.trim()).equal('ceil(−3.2y)')
       });
 
       cy.window().then((win) => {
@@ -1797,8 +1797,8 @@ describe('Math Operator Tag Tests', function () {
         expect(components['/_ceil3'].stateValues.value.tree).eq(-7000);
         expect(replacement1.stateValues.value.tree).eq(13);
         expect(replacement2.stateValues.value.tree).eq(1);
-        expect(components['/_floor4'].stateValues.value.tree).eqls(['*', 2.1, 'x']);
-        expect(components['/_ceil4'].stateValues.value.tree).eqls(['-', ['*', 3.2, 'y']]);
+        expect(components['/_floor4'].stateValues.value.tree).eqls(["apply", "floor", ['*', 2.1, 'x']]);
+        expect(components['/_ceil4'].stateValues.value.tree).eqls(["apply", "ceil", ['-', ['*', 3.2, 'y']]]);
       })
     })
   })
@@ -2082,6 +2082,38 @@ describe('Math Operator Tag Tests', function () {
     })
 
   });
+
+  it('sign', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+      <text>a</text>
+      <sign>-5.3</sign>
+      <sign>63</sign>
+      <sign>0</sign>
+      `}, "*");
+    });
+
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.get('#\\/_sign1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('−1')
+    });
+    cy.get('#\\/_sign2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('1')
+    });
+    cy.get('#\\/_sign3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('0')
+    });
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/_sign1'].stateValues.value.tree).eq(-1);
+      expect(components['/_sign2'].stateValues.value.tree).eq(1);
+      expect(components['/_sign3'].stateValues.value.tree).eq(0);
+    })
+  })
 
   it('mean', () => {
     cy.window().then((win) => {

@@ -969,6 +969,21 @@ function getDefaultAdapter() {
   return adapter;
 }
 
+function stringifySafely(rawValue, parser, encoder) {
+  if (utils.isString(rawValue)) {
+    try {
+      (parser || JSON.parse)(rawValue);
+      return utils.trim(rawValue);
+    } catch (e) {
+      if (e.name !== 'SyntaxError') {
+        throw e;
+      }
+    }
+  }
+
+  return (encoder || JSON.stringify)(rawValue);
+}
+
 var defaults = {
 
   transitional: {
@@ -1001,7 +1016,7 @@ var defaults = {
     }
     if (utils.isObject(data) || (headers && headers['Content-Type'] === 'application/json')) {
       setContentTypeIfUnset(headers, 'application/json');
-      return JSON.stringify(data);
+      return stringifySafely(data);
     }
     return data;
   }],
@@ -1245,32 +1260,32 @@ var mergeConfig = function mergeConfig(config1, config2) {
 
 const _args = [
   [
-    "axios@0.21.2",
+    "axios@0.21.4",
     "/home/node/workspace"
   ]
 ];
-const _from = "axios@0.21.2";
-const _id = "axios@0.21.2";
+const _from = "axios@0.21.4";
+const _id = "axios@0.21.4";
 const _inBundle = false;
-const _integrity = "sha512-87otirqUw3e8CzHTMO+/9kh/FSgXt/eVDvipijwDtEuwbkySWZ9SBm6VEubmJ/kLKEoLQV/POhxXFb66bfekfg==";
+const _integrity = "sha512-ut5vewkiu8jjGBdqpM44XxjuCjq9LAKeHVmoVfHVzy8eHgxxq8SbAVQNovDA8mVi05kP0Ea/n/UzcSHcTJQfNg==";
 const _location = "/axios";
 const _phantomChildren = {
 };
 const _requested = {
   type: "version",
   registry: true,
-  raw: "axios@0.21.2",
+  raw: "axios@0.21.4",
   name: "axios",
   escapedName: "axios",
-  rawSpec: "0.21.2",
+  rawSpec: "0.21.4",
   saveSpec: null,
-  fetchSpec: "0.21.2"
+  fetchSpec: "0.21.4"
 };
 const _requiredBy = [
   "/"
 ];
-const _resolved = "https://registry.npmjs.org/axios/-/axios-0.21.2.tgz";
-const _spec = "0.21.2";
+const _resolved = "https://registry.npmjs.org/axios/-/axios-0.21.4.tgz";
+const _spec = "0.21.4";
 const _where = "/home/node/workspace";
 const author = {
   name: "Matt Zabriskie"
@@ -1355,7 +1370,7 @@ const scripts = {
 };
 const typings = "./index.d.ts";
 const unpkg = "dist/axios.min.js";
-const version = "0.21.2";
+const version = "0.21.4";
 var pkg = {
   _args: _args,
   _from: _from,
@@ -1565,7 +1580,7 @@ Axios.prototype.request = function request(config) {
     var chain = [dispatchRequest, undefined];
 
     Array.prototype.unshift.apply(chain, requestInterceptorChain);
-    chain.concat(responseInterceptorChain);
+    chain = chain.concat(responseInterceptorChain);
 
     promise = Promise.resolve(config);
     while (chain.length) {

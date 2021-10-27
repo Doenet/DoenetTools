@@ -3,7 +3,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React, { useState, useEffect } from 'react';
 import DropdownMenu from '../../../_reactComponents/PanelHeaderComponents/DropdownMenu';
 import DateTime from '../../../_reactComponents/PanelHeaderComponents/DateTime';
-import { DateToUTCDateString } from '../../../_utils/dateUtilityFunction';
+import { DateToUTCDateString,DateToDateString } from '../../../_utils/dateUtilityFunction';
 
 import {
   atom,
@@ -24,7 +24,7 @@ import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
 import Textfield from '../../../_reactComponents/PanelHeaderComponents/Textfield';
 import ActionButton from '../../../_reactComponents/PanelHeaderComponents/ActionButton';
 import ActionButtonGroup from '../../../_reactComponents/PanelHeaderComponents/ActionButtonGroup';
-import ButtonGroup from '../../../_reactComponents/PanelHeaderComponents/ButtonGroup';
+// import ButtonGroup from '../../../_reactComponents/PanelHeaderComponents/ButtonGroup';
 // import Increment from '../../../_reactComponents/PanelHeaderComponents/IncrementMenu';
 import useSockets from '../../../_reactComponents/Sockets';
 import { pageToolViewAtom } from '../NewToolRoot';
@@ -417,9 +417,7 @@ export function AssignmentSettings({ role, doenetId }) {
               description === 'Pinned After Date'
             ) {
               addToast(
-                `Updated ${description} to ${new Date(
-                  value + ' UTC',
-                ).toLocaleString()}`,
+                `Updated ${description} to ${new Date(value).toLocaleString()}`,
               );
             } else {
               addToast(`Updated ${description} to ${value}`);
@@ -517,7 +515,7 @@ export function AssignmentSettings({ role, doenetId }) {
 
                 if (aInfo.assignedDate === null) {
                   valueDescription = 'Now';
-                  value = DateToUTCDateString(new Date());
+                  value = DateToDateString(new Date());
                 }
 
                 updateAssignment({
@@ -533,7 +531,7 @@ export function AssignmentSettings({ role, doenetId }) {
               <DateTime
                 value={
                   aInfo.assignedDate
-                    ? new Date(aInfo.assignedDate + ' UTC')
+                    ? new Date(aInfo.assignedDate)
                     : null
                 }
                 onBlur={({ valid, value }) => {
@@ -544,13 +542,13 @@ export function AssignmentSettings({ role, doenetId }) {
                       // console.log('value not moment');
                     }
                     if (
-                      new Date(DateToUTCDateString(value)).getTime() !==
+                      new Date(DateToDateString(value)).getTime() !==
                       new Date(aInfo.assignedDate).getTime()
                     ) {
                       updateAssignment({
                         doenetId,
                         keyToUpdate: 'assignedDate',
-                        value: DateToUTCDateString(value),
+                        value: DateToDateString(value),
                         description: 'Assigned Date',
                       });
                     }
@@ -568,7 +566,7 @@ export function AssignmentSettings({ role, doenetId }) {
 
                   if (aInfo.assignedDate === null) {
                     valueDescription = 'Now';
-                    value = DateToUTCDateString(new Date());
+                    value = DateToDateString(new Date());
                   }
 
                   updateAssignment({
@@ -611,7 +609,7 @@ export function AssignmentSettings({ role, doenetId }) {
                   valueDescription = 'Next Week';
                   let nextWeek = new Date();
                   nextWeek.setDate(nextWeek.getDate() + 7);
-                  value = DateToUTCDateString(nextWeek);
+                  value = DateToDateString(nextWeek);
                 }
 
                 updateAssignment({
@@ -625,7 +623,7 @@ export function AssignmentSettings({ role, doenetId }) {
             />
             {aInfo.dueDate !== null ? (
               <DateTime
-                value={aInfo.dueDate ? new Date(aInfo.dueDate + ' UTC') : null}
+                value={aInfo.dueDate ? new Date(aInfo.dueDate) : null}
                 onBlur={({ valid, value }) => {
                   if (valid) {
                     try {
@@ -634,13 +632,13 @@ export function AssignmentSettings({ role, doenetId }) {
                       // console.log('value not moment');
                     }
                     if (
-                      new Date(DateToUTCDateString(value)).getTime() !==
+                      new Date(DateToDateString(value)).getTime() !==
                       new Date(aInfo.dueDate).getTime()
                     ) {
                       updateAssignment({
                         doenetId,
                         keyToUpdate: 'dueDate',
-                        value: DateToUTCDateString(value),
+                        value: DateToDateString(value),
                         description: 'Due Date',
                       });
                     }
@@ -659,7 +657,7 @@ export function AssignmentSettings({ role, doenetId }) {
                     valueDescription = 'Next Week';
                     let nextWeek = new Date();
                     nextWeek.setDate(nextWeek.getDate() + 7);
-                    value = DateToUTCDateString(nextWeek);
+                    value = DateToDateString(nextWeek);
                   }
 
                   updateAssignment({
@@ -1103,8 +1101,8 @@ export function AssignmentSettings({ role, doenetId }) {
                   let today = new Date();
                   let nextYear = new Date();
                   nextYear.setDate(nextYear.getDate() + 365);
-                  value = DateToUTCDateString(today);
-                  secondValue = DateToUTCDateString(nextYear);
+                  value = DateToDateString(today);
+                  secondValue = DateToDateString(nextYear);
                 }
 
                 updateAssignment({
@@ -1122,7 +1120,7 @@ export function AssignmentSettings({ role, doenetId }) {
               <DateTime
                 value={
                   aInfo.pinnedAfterDate
-                    ? new Date(aInfo.pinnedAfterDate + ' UTC')
+                    ? new Date(aInfo.pinnedAfterDate )
                     : null
                 }
                 onBlur={({ valid, value }) => {
@@ -1133,13 +1131,13 @@ export function AssignmentSettings({ role, doenetId }) {
                       // console.log('value not moment');
                     }
                     if (
-                      new Date(DateToUTCDateString(value)).getTime() !==
+                      new Date(DateToDateString(value)).getTime() !==
                       new Date(aInfo.pinnedAfterDate).getTime()
                     ) {
                       updateAssignment({
                         doenetId,
                         keyToUpdate: 'pinnedAfterDate',
-                        value: DateToUTCDateString(value),
+                        value: DateToDateString(value),
                         description: 'Pinned After Date',
                       });
                     }
@@ -1160,8 +1158,8 @@ export function AssignmentSettings({ role, doenetId }) {
                     let today = new Date();
                     let nextYear = new Date();
                     nextYear.setDate(nextYear.getDate() + 365);
-                    value = DateToUTCDateString(today);
-                    secondValue = DateToUTCDateString(nextYear);
+                    value = DateToDateString(today);
+                    secondValue = DateToDateString(nextYear);
                   }
 
                   updateAssignment({
@@ -1196,7 +1194,7 @@ export function AssignmentSettings({ role, doenetId }) {
               <DateTime
                 value={
                   aInfo.pinnedUntilDate
-                    ? new Date(aInfo.pinnedUntilDate + ' UTC')
+                    ? new Date(aInfo.pinnedUntilDate)
                     : null
                 }
                 onBlur={({ valid, value }) => {
@@ -1207,13 +1205,13 @@ export function AssignmentSettings({ role, doenetId }) {
                       // console.log('value not moment');
                     }
                     if (
-                      new Date(DateToUTCDateString(value)).getTime() !==
+                      new Date(DateToDateString(value)).getTime() !==
                       new Date(aInfo.pinnedUntilDate).getTime()
                     ) {
                       updateAssignment({
                         doenetId,
                         keyToUpdate: 'pinnedUntilDate',
-                        value: DateToUTCDateString(value),
+                        value: DateToDateString(value),
                         description: 'Pinned Until Date',
                       });
                     }
@@ -1234,8 +1232,8 @@ export function AssignmentSettings({ role, doenetId }) {
                     let today = new Date();
                     let nextYear = new Date();
                     nextYear.setDate(nextYear.getDate() + 365);
-                    value = DateToUTCDateString(today);
-                    secondValue = DateToUTCDateString(nextYear);
+                    value = DateToDateString(today);
+                    secondValue = DateToDateString(nextYear);
                   }
 
                   updateAssignment({
