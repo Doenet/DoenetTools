@@ -2,7 +2,7 @@ import { faTh } from '@fortawesome/free-solid-svg-icons';
 import { useEffect, useState } from 'react';
 import { useRecoilCallback, useSetRecoilState } from 'recoil';
 import { pageToolViewAtom } from '../Tools/_framework/NewToolRoot';
-import { fetchDrivesQuery, loadDriveInfoQuery } from '../_reactComponents/Drive/NewDrive';
+import { fetchDrivesQuery, loadDriveInfoQuery, folderDictionary } from '../_reactComponents/Drive/NewDrive';
 
 export function useCourseChooserCrumb(){
 
@@ -108,4 +108,35 @@ export function useNavigationCrumbs(driveId,folderId){
 
 
   return crumbs
+}
+
+export function useEditorCrumb({doenetId,driveId,folderId,itemId}){
+  
+  const setPageToolView = useSetRecoilState(pageToolViewAtom);
+  const [label,setLabel] = useState('test')
+
+  const getDocumentLabel = useRecoilCallback(({snapshot})=> async ({itemId,driveId,folderId})=>{
+    let folderInfo = await snapshot.getPromise(folderDictionary({driveId,folderId}));
+    const docInfo = folderInfo.contentsDictionary[itemId]
+    setLabel(docInfo.label);
+    
+  },[])
+
+  useEffect(()=>{
+    getDocumentLabel({itemId,driveId,folderId});
+  },[doenetId,driveId,folderId,getDocumentLabel])
+
+  let params = {
+    doenetId,
+    path: `${driveId}:${folderId}:${itemId}:DoenetML`
+  }
+
+  return {label, onClick:()=>{
+        setPageToolView({
+          page: 'course',
+          tool: 'editor',
+          view: '',
+          params
+        });
+  }}
 }
