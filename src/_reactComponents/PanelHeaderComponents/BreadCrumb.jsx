@@ -38,7 +38,6 @@ const BreadcrumbSpan = styled.span`
   background: #1a5a99;
   border-radius: 15px 0px 0px 15px;
   cursor: pointer;
-  white-space: nowrap;
   &::after {
     content: ' ';
     width: 0;
@@ -68,6 +67,13 @@ const BreadcrumbSpan = styled.span`
   }
 `;
 
+const CrumbTextDiv = styled.div`
+white-space: nowrap;
+overflow: hidden;
+text-overflow: ellipsis;
+max-width: 175px;
+`
+
 function Crumb({setSize,i,label=null,onClick,icon=null}){
   let crumbRef = useRef(null);
   
@@ -89,7 +95,7 @@ function Crumb({setSize,i,label=null,onClick,icon=null}){
   }
 
   return <BreadcrumbItem ref={crumbRef}>
-  <BreadcrumbSpan onClick={onClick}>{iconJSX}{label}</BreadcrumbSpan>
+  <BreadcrumbSpan onClick={onClick}>{iconJSX}<CrumbTextDiv>{label}</CrumbTextDiv></BreadcrumbSpan>
   </BreadcrumbItem>
 }
 //crumb 
@@ -116,6 +122,7 @@ export function BreadCrumb({crumbs=[]}){
   },[])
 
   //Needed to update after the component is mounted
+  //So we are fine with the warning
   useLayoutEffect(()=>{
     if (containerRef.current?.getBoundingClientRect()?.left !== containerLeft){
       setContainerLeft(containerRef.current?.getBoundingClientRect()?.left);

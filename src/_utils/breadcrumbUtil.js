@@ -32,6 +32,7 @@ export function useDashboardCrumb(driveId){
     }
     
   })
+
   useEffect(()=>{
     getDriveLabel(driveId);
   },[driveId])
@@ -50,8 +51,8 @@ export function useDashboardCrumb(driveId){
   }}
 }
 
+export function useNavigationCrumbs(driveId,folderId){
 
-export function useNavigationCrumbs(driveId,itemId){
   const setPageToolView = useSetRecoilState(pageToolViewAtom);
   const [crumbs,setCrumbs] = useState([])
 
@@ -82,7 +83,7 @@ export function useNavigationCrumbs(driveId,itemId){
       }
       if (item.itemId){
         params = {
-          path: `${driveId}:${item.parentFolderId}:${item.itemId}:Folder`,
+          path: `${driveId}:${item.itemId}:${item.itemId}:Folder`,
         }
       }
       crumbArray.push({
@@ -94,17 +95,16 @@ export function useNavigationCrumbs(driveId,itemId){
             view: '',
             params
           });
-    }});
+      }});
 
     }
     setCrumbs(crumbArray);
+  },[setPageToolView])
     
-  })
+
   useEffect(()=>{
-    if (crumbs.length == 0){
-      getCrumbs(driveId,itemId);
-    }
-  },[getCrumbs,driveId,itemId])
+      getCrumbs(driveId,folderId);
+  },[getCrumbs,driveId,folderId])
 
 
   return crumbs
