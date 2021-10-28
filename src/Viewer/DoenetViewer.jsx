@@ -6,6 +6,8 @@ import CryptoJS from 'crypto-js';
 import { nanoid } from 'nanoid';
 import { useToast, toastType } from '@Toast';
 import { serializedComponentsReplacer, serializedComponentsReviver } from '../Core/utils/serializedStateProcessing';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faExclamationCircle } from '@fortawesome/free-solid-svg-icons';
 
 
 class DoenetViewerChild extends Component {
@@ -623,10 +625,13 @@ class DoenetViewerChild extends Component {
 
   }
 
+
+
   render() {
 
     if (this.state.errMsg !== null) {
-      return <div>{this.state.errMsg}</div>
+      let errorIcon = <span style={{fontSize:"1em",color:"#C1292E"}}><FontAwesomeIcon icon={faExclamationCircle}/></span>
+      return <div style={{fontSize:"1.3em",marginLeft:"20px",marginTop:"20px"}}>{errorIcon} {this.state.errMsg}</div>
     }
 
     this.allowLoadPageState = true;
