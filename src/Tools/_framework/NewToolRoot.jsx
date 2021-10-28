@@ -406,7 +406,8 @@ let navigationObj = {
       supportPanelOptions:["DoenetMLEditor"],
       supportPanelTitles:["DoenetML Editor"],
       supportPanelIndex:0,
-      headerControls: ["EditorBreadCrumb","ViewerUpdateButton",],
+      headerControls: ["EditorBreadCrumb"],
+      // headerControls: ["EditorBreadCrumb","ViewerUpdateButton",],
       onLeave:"EditorLeave",
     },
     collection: {

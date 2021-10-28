@@ -1,7 +1,8 @@
 import React, { useRef, useState, useEffect, useLayoutEffect } from 'react';
 import styled from 'styled-components';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-
+import { panelsInfoAtom } from '../../Tools/_framework/Panels/NewContentPanel';
+import { useRecoilValue } from 'recoil';
 
 const BreadCrumbContainer = styled.ul`
   list-style: none;
@@ -107,6 +108,7 @@ export function BreadCrumb({crumbs=[]}){
   let [crumBounds,setCrumBounds] = useState([])
   let [windowWidth,setWindowWidth] = useState(window.innerWidth);
   let [containerLeft,setContainerLeft] = useState(0);
+  let panelsInfo = useRecoilValue(panelsInfoAtom);
 
   const containerRef = useRef(null);
 
@@ -137,19 +139,31 @@ export function BreadCrumb({crumbs=[]}){
     
     numHidden = crumbs.length - 2;
     let prevBreak = containerLeft + crumBounds[0].width + 53; //First segment right break point
+
     prevBreak = prevBreak + crumBounds[crumBounds.length -1].width + 58; //Second segment right break point Includes elipsis segment
 
+    let effectiveWidth = windowWidth;
+    if (panelsInfo?.isActive){
+      //if menu panel is closed (indirect measurement)
+
+      effectiveWidth = (windowWidth  * panelsInfo.propotion) - 10;
+      //if menu panel is open (indirect measurement)
+      if (containerLeft > 100){
+        effectiveWidth = ((windowWidth - 240) * panelsInfo.propotion) + 240 - 10;
+      }
+    }
+  console.log("\n\n>>>>effectiveWidth",effectiveWidth,windowWidth,containerLeft,panelsInfo.propotion)
     
     //If window is wide enough to expand from minimum size
-    if ( prevBreak < windowWidth){
+    if ( prevBreak < effectiveWidth){
 
       for (let i = crumBounds.length - 2; i >= 1; i-- ){
         let width = crumBounds[i].width;
         let rightBreak = prevBreak + width;
         if (i == 1){ rightBreak -=  58} //no elipsis on last break
-
+console.log(">>>>prevBreak rightBreak",prevBreak,rightBreak)
         //If in this range we know the number to hide
-        if (windowWidth >= prevBreak && windowWidth < rightBreak){
+        if (effectiveWidth >= prevBreak && effectiveWidth < rightBreak){
           break;
         }
         prevBreak = rightBreak;
