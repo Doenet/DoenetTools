@@ -1,8 +1,10 @@
 import { faTh } from '@fortawesome/free-solid-svg-icons';
 import { useEffect, useState } from 'react';
-import { useRecoilCallback, useSetRecoilState } from 'recoil';
+import { useRecoilCallback, useRecoilValue, useSetRecoilState } from 'recoil';
 import { pageToolViewAtom } from '../Tools/_framework/NewToolRoot';
 import { fetchDrivesQuery, loadDriveInfoQuery, folderDictionary } from '../_reactComponents/Drive/NewDrive';
+import { effectiveRoleAtom } from '../_reactComponents/PanelHeaderComponents/RoleDropdown';
+import { studentData, assignmentData } from '../Tools/_framework/ToolPanels/Gradebook';
 
 export function useCourseChooserCrumb(){
 
@@ -172,7 +174,6 @@ export function useAssignmentCrumb({doenetId,driveId,folderId,itemId}){
   }}
 }
 
-
 export function useEnrollmentCrumb(driveId){
 
   const setPageToolView = useSetRecoilState(pageToolViewAtom);
@@ -189,4 +190,176 @@ export function useEnrollmentCrumb(driveId){
           params
         });
   }}
+}
+
+export function useGradebookCrumbs(){
+
+  const setPageToolView = useSetRecoilState(pageToolViewAtom);
+  const [crumbs,setCrumbs] = useState([])
+  const role = useRecoilValue(effectiveRoleAtom);
+
+  const getCrumbs = useRecoilCallback(({snapshot})=> async (role)=>{
+    if (role == ''){ return; } //wait for role to be defined
+    let pageToolView = await snapshot.getPromise(pageToolViewAtom);
+    let driveId = pageToolView.params?.driveId;
+    let doenetId = pageToolView.params?.doenetId;
+    let userId = pageToolView.params?.userId;
+    let previousCrumb = pageToolView.params?.previousCrumb;
+    
+    let tool = pageToolView.tool;
+    let crumbArray = []
+    //Define gradebook tool crumb 
+    if (role == 'instructor'){
+    {
+      let params = {
+        driveId,
+      }
+      crumbArray.push({
+        label:'Gradebook', onClick:()=>{
+          setPageToolView({
+            page: 'course',
+            tool: 'gradebook',
+            view: '',
+            params
+          });
+        }
+      })
+    }
+  }
+
+    if (tool == 'gradebook'){
+      setCrumbs(crumbArray);
+      return;
+    }
+
+    //Handle gradebookStudent
+   if (tool == 'gradebookStudent' ||
+   role == 'student' && tool == 'gradebookStudentAssignment' ||
+   previousCrumb == 'student' && tool == 'gradebookStudentAssignment'
+   ){
+     let label = 'Gradebook';
+     if (role == 'instructor'){
+        const students = await snapshot.getPromise(studentData);
+        const student = students[userId];
+        label = `${student.firstName} ${student.lastName}` 
+     }
+
+      let params = {
+        driveId,
+        userId
+      }
+      crumbArray.push({
+        label, onClick:()=>{
+          setPageToolView({
+            page: 'course',
+            tool: 'gradebookStudent',
+            view: '',
+            params
+          });
+    }
+    })
+    }
+
+    if (tool == 'gradebookStudent'){
+      setCrumbs(crumbArray);
+      return;
+    }
+
+    //Only instructors see this
+    if (tool == 'gradebookAssignment' ||
+    previousCrumb == 'assignment' && tool == 'gradebookStudentAssignment'
+    ){
+      if (role == 'student'){
+        crumbArray.push({label:'Not Available'})
+      }else{
+        const assignments = await snapshot.getPromise(assignmentData); 
+        let assignmentName = assignments[doenetId].label;
+
+        let params = {
+          driveId,
+          doenetId
+        }
+        crumbArray.push({
+          label:assignmentName, onClick:()=>{
+            setPageToolView({
+              page: 'course',
+              tool: 'gradebookAssignment',
+              view: '',
+              params
+            });
+      }
+      })
+      }
+    }
+
+    if (tool == 'gradebookAssignment'){
+      setCrumbs(crumbArray);
+      return;
+    }
+
+    //tool is gradebookStudentAssignment
+    if (role == 'student'){
+      const assignments = await snapshot.getPromise(assignmentData); 
+        let assignmentName = assignments[doenetId].label;
+        let params = {
+          driveId,
+          userId,
+          doenetId
+        }
+        crumbArray.push({
+          label:assignmentName, onClick:()=>{
+            setPageToolView({
+              page: 'course',
+              tool: 'gradebookStudentAssignment',
+              view: '',
+              params
+            });
+      }
+      })
+    }else{
+      let crumbLabel = '_';
+      if (previousCrumb == 'student'){
+        
+        const assignments = await snapshot.getPromise(assignmentData); 
+        crumbLabel = assignments[doenetId].label;
+      }
+      if (previousCrumb == 'assignment'){
+        const students = await snapshot.getPromise(studentData);
+        const student = students[userId];
+        crumbLabel = `${student.firstName} ${student.lastName}` 
+        
+      }
+  
+      let params = {
+        driveId,
+        userId,
+        doenetId,
+        previousCrumb
+      }
+      crumbArray.push({
+        label:crumbLabel, onClick:()=>{
+          setPageToolView({
+            page: 'course',
+            tool: 'gradebookStudentAssignment',
+            view: '',
+            params
+          });
+    }
+    })
+
+    }
+
+
+    setCrumbs(crumbArray);
+
+
+  },[setPageToolView])
+    
+
+  useEffect(()=>{
+      getCrumbs(role);
+  },[getCrumbs,role])
+
+
+  return crumbs
 }
