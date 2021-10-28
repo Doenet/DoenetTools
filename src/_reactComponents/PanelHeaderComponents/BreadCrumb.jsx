@@ -103,7 +103,7 @@ function Crumb({setSize,i,label=null,onClick,icon=null}){
 //label: the label which shows in the span
 //icon: the Font Awesome icon which shows in the span
 //onClick: the function called when crumb is clicked
-export function BreadCrumb({crumbs=[]}){
+export function BreadCrumb({crumbs=[],offset=0}){
   // console.log(">>>>----BREADCRUMB")
   let [crumBounds,setCrumBounds] = useState([])
   let [windowWidth,setWindowWidth] = useState(window.innerWidth);
@@ -152,7 +152,10 @@ export function BreadCrumb({crumbs=[]}){
         effectiveWidth = ((windowWidth - 240) * panelsInfo.propotion) + 240 - 10;
       }
     }
-  console.log("\n\n>>>>effectiveWidth",effectiveWidth,windowWidth,containerLeft,panelsInfo.propotion)
+  // console.log("\n\n>>>>effectiveWidth",effectiveWidth,windowWidth,containerLeft,panelsInfo.propotion)
+
+    effectiveWidth -= offset;
+  // console.log(">>>>after",effectiveWidth)
     
     //If window is wide enough to expand from minimum size
     if ( prevBreak < effectiveWidth){
@@ -161,7 +164,7 @@ export function BreadCrumb({crumbs=[]}){
         let width = crumBounds[i].width;
         let rightBreak = prevBreak + width;
         if (i == 1){ rightBreak -=  58} //no elipsis on last break
-console.log(">>>>prevBreak rightBreak",prevBreak,rightBreak)
+// console.log(">>>>prevBreak rightBreak",prevBreak,rightBreak)
         //If in this range we know the number to hide
         if (effectiveWidth >= prevBreak && effectiveWidth < rightBreak){
           break;
