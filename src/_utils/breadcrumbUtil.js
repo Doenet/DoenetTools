@@ -53,6 +53,38 @@ export function useDashboardCrumb(driveId){
   }}
 }
 
+export function useCollectionCrumb(doenetId,path){
+  
+  const setPageToolView = useSetRecoilState(pageToolViewAtom);
+  const [label,setLabel] = useState('')
+
+  const getDocumentLabel = useRecoilCallback(({snapshot})=> async ({path})=>{
+    let [driveId,folderId] = path.split(':')
+    let folderInfo = await snapshot.getPromise(folderDictionary({driveId,folderId}));
+    setLabel(folderInfo.folderInfo.label);
+  },[])
+
+  useEffect(()=>{
+    getDocumentLabel({path});
+  },[path,getDocumentLabel])
+
+
+  let params = {
+    doenetId,
+    path,
+  }
+
+
+  return {label, onClick:()=>{
+        setPageToolView({
+          page: 'course',
+          tool: 'collection',
+          view: '',
+          params
+        });
+  }}
+}
+
 export function useNavigationCrumbs(driveId,folderId){
 
   const setPageToolView = useSetRecoilState(pageToolViewAtom);
@@ -69,8 +101,11 @@ export function useNavigationCrumbs(driveId,folderId){
       }
 
     for (let item of itemInfo.results){
+      let newFolderInfo;
       if (item.itemId == itemId){
-        let newFolderInfo = [item,...folderInfo]
+        if (item.itemType !== 'Collection'){ 
+          newFolderInfo = [item,...folderInfo]
+        }
         return parentFolder({folderInfo:newFolderInfo,itemId:item.parentFolderId});
       }
     }
@@ -115,7 +150,7 @@ export function useNavigationCrumbs(driveId,folderId){
 export function useEditorCrumb({doenetId,driveId,folderId,itemId}){
   
   const setPageToolView = useSetRecoilState(pageToolViewAtom);
-  const [label,setLabel] = useState('test')
+  const [label,setLabel] = useState('')
 
   const getDocumentLabel = useRecoilCallback(({snapshot})=> async ({itemId,driveId,folderId})=>{
     let folderInfo = await snapshot.getPromise(folderDictionary({driveId,folderId}));

@@ -138,6 +138,7 @@ export default function ToolRoot(){
     BackButton:lazy(() => import('./HeaderControls/BackButton')),
     ViewerUpdateButton:lazy(() => import('./HeaderControls/ViewerUpdateButton')),
     NavigationBreadCrumb: lazy(() => import('./HeaderControls/NavigationBreadCrumb')),
+    CollectionBreadCrumb: lazy(() => import('./HeaderControls/CollectionBreadCrumb')),
     ChooserBreadCrumb: lazy(() => import('./HeaderControls/ChooserBreadCrumb')),
     DashboardBreadCrumb: lazy(() => import('./HeaderControls/DashboardBreadCrumb')),
     EnrollmentBreadCrumb: lazy(() => import('./HeaderControls/EnrollmentBreadCrumb')),
@@ -411,7 +412,7 @@ let navigationObj = {
     },
     collection: {
       currentMainPanel:"CollectionEditor",
-      headerControls: ["NavigationBreadCrumb"],
+      headerControls: ["CollectionBreadCrumb"],
       currentMenus:["AssignmentSettingsMenu", "GroupSettings"],
       menusTitles:["Assignment Settings", "Group Settings"],
       menusInitOpen:[false, false],
