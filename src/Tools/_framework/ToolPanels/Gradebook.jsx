@@ -713,7 +713,7 @@ let gradeCategories = [
                     page: 'course',
                     tool: 'gradebookStudentAssignment',
                     view: '',
-                    params: { driveId: driveIdValue , doenetId, userId,source:'student'},
+                    params: { driveId: driveIdValue , doenetId, userId, previousCrumb:'student'},
                 })
   
             }}>{score}</a>
