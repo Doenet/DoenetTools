@@ -3,7 +3,7 @@ import {FontAwesomeIcon} from "../../_snowpack/pkg/@fortawesome/react-fontawesom
 import React, {useState} from "../../_snowpack/pkg/react.js";
 import {useEffect} from "../../_snowpack/pkg/react.js";
 import {
-  useRecoilState,
+  useRecoilValue,
   useRecoilValueLoadable,
   useSetRecoilState
 } from "../../_snowpack/pkg/recoil.js";
@@ -16,8 +16,10 @@ import ButtonGroup from "../../_reactComponents/PanelHeaderComponents/ButtonGrou
 import ActionButtonGroup from "../../_reactComponents/PanelHeaderComponents/ActionButtonGroup.js";
 import ActionButton from "../../_reactComponents/PanelHeaderComponents/ActionButton.js";
 import Textfield from "../../_reactComponents/PanelHeaderComponents/Textfield.js";
+import {effectiveRoleAtom} from "../../_reactComponents/PanelHeaderComponents/RoleDropdown.js";
 export default function SelectedCollection() {
-  const [{view}, setPageToolView] = useRecoilState(pageToolViewAtom);
+  const setPageToolView = useSetRecoilState(pageToolViewAtom);
+  const effectiveRole = useRecoilValue(effectiveRoleAtom);
   const setSelectedMenu = useSetRecoilState(selectedMenuPanelAtom);
   const selection = useRecoilValueLoadable(selectedInformation).getValue();
   const [item, setItem] = useState(selection[0]);
@@ -42,7 +44,7 @@ export default function SelectedCollection() {
       newLabel
     });
   };
-  if (view === "student") {
+  if (effectiveRole === "student") {
     return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("h2", {
       "data-cy": "infoPanelItemLabel"
     }, /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
@@ -61,7 +63,7 @@ export default function SelectedCollection() {
         });
       }
     }), /* @__PURE__ */ React.createElement(AssignmentSettings, {
-      role: view,
+      role: effectiveRole,
       doenetId: item.doenetId
     }));
   }
@@ -105,7 +107,7 @@ export default function SelectedCollection() {
       }
     }
   }), /* @__PURE__ */ React.createElement("br", null), /* @__PURE__ */ React.createElement(AssignmentSettings, {
-    role: view,
+    role: effectiveRole,
     doenetId: item.doenetId
   }), /* @__PURE__ */ React.createElement("br", null), /* @__PURE__ */ React.createElement(ButtonGroup, {
     vertical: true

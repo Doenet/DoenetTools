@@ -1,15 +1,17 @@
 import React, {useEffect, useState} from "../../_snowpack/pkg/react.js";
 import {useRecoilValue} from "../../_snowpack/pkg/recoil.js";
 import {folderDictionary, fetchDrivesQuery, loadAssignmentSelector} from "../../_reactComponents/Drive/NewDrive.js";
-import {searchParamAtomFamily} from "../NewToolRoot.js";
+import {searchParamAtomFamily, pageToolViewAtom} from "../NewToolRoot.js";
 import axios from "../../_snowpack/pkg/axios.js";
 import {currentAttemptNumber} from "../ToolPanels/AssignmentViewer.js";
 export default function AssignmentInfoCap() {
   let doenetId = useRecoilValue(searchParamAtomFamily("doenetId"));
+  let {page} = useRecoilValue(pageToolViewAtom);
   const {numberOfAttemptsAllowed} = useRecoilValue(loadAssignmentSelector(doenetId));
   const recoilAttemptNumber = useRecoilValue(currentAttemptNumber);
   let [driveId, setDriveId] = useState("");
   let [folderId, setFolderId] = useState("");
+  let [doenetIdLabel, setDoenetIdLabel] = useState("");
   useEffect(() => {
     axios.get("/api/findDriveIdFolderId.php", {
       params: {doenetId}
@@ -17,12 +19,22 @@ export default function AssignmentInfoCap() {
       setDriveId(resp.data.driveId);
       setFolderId(resp.data.parentFolderId);
     });
+    if (page === "exam") {
+      axios.get("/api/getExamLabel.php", {
+        params: {doenetId}
+      }).then((resp) => {
+        setDoenetIdLabel(resp.data.label);
+      });
+    }
   }, [doenetId]);
   const driveInfo = useRecoilValue(fetchDrivesQuery);
-  let folderInfo = useRecoilValue(folderDictionary({driveId, folderId}));
-  const docInfo = folderInfo?.contentsDictionaryByDoenetId?.[doenetId];
-  if (!docInfo) {
-    return null;
+  let contentLabel = "";
+  if (page === "course") {
+    let folderInfo = useRecoilValue(folderDictionary({driveId, folderId}));
+    const docInfo = folderInfo?.contentsDictionaryByDoenetId?.[doenetId];
+    contentLabel = docInfo?.label;
+  } else if (page === "exam") {
+    contentLabel = doenetIdLabel;
   }
   let image;
   let driveLabel = "";
@@ -38,14 +50,18 @@ export default function AssignmentInfoCap() {
   if (!numberOfAttemptsAllowed) {
     attemptsAllowedDescription = "Unlimited";
   }
+  let attemptInfo = null;
+  if (recoilAttemptNumber) {
+    attemptInfo = /* @__PURE__ */ React.createElement("div", null, recoilAttemptNumber, " out of ", attemptsAllowedDescription);
+  }
   return /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", {
     style: {position: "relative", paddingBottom: "100px"}
   }, /* @__PURE__ */ React.createElement("img", {
-    style: {position: "absolute", clip: "rect(0, 240px, 100px, 0)"},
+    style: {position: "absolute", height: "100px", objectFit: "cover"},
     src: imageURL,
     alt: `${driveLabel} course`,
     width: "240px"
   })), /* @__PURE__ */ React.createElement("div", {
     style: {padding: "8px"}
-  }, /* @__PURE__ */ React.createElement("div", null, driveLabel), /* @__PURE__ */ React.createElement("div", null, docInfo.label), /* @__PURE__ */ React.createElement("div", null, recoilAttemptNumber, "/", attemptsAllowedDescription, " Attempts")));
+  }, /* @__PURE__ */ React.createElement("div", null, driveLabel), /* @__PURE__ */ React.createElement("div", null, contentLabel), attemptInfo));
 }

@@ -103,6 +103,14 @@ export default class MathInput extends Input {
     attributes.bindValueTo = {
       createComponentOfType: "math"
     };
+    attributes.unionFromU = {
+      createComponentOfType: "boolean",
+      createStateVariable: "unionFromU",
+      defaultValue: false,
+      public: true,
+      forRenderer: true,
+    }
+
     return attributes;
   }
 

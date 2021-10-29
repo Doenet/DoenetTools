@@ -1975,7 +1975,7 @@ describe('Paginator Tag Tests', function () {
       let mathinput1Anchor = cesc(`#${mathinput1Name}`) + " textarea";
       let mathinput1Correct = cesc(`#${mathinput1Name}_correct`);
 
-      cy.get(mathinput1Anchor).type(`${a}{enter}`, {force: true});
+      cy.get(mathinput1Anchor).type(`${a}{enter}`, { force: true });
       cy.get(mathinput1Correct).should('be.visible');
       cy.get(cesc('#/ca')).should('have.text', '0.5')
 
@@ -1994,7 +1994,7 @@ describe('Paginator Tag Tests', function () {
       let mathinput2Anchor = cesc(`#${mathinput2Name}`) + " textarea";
       let mathinput2Correct = cesc(`#${mathinput2Name}_correct`);
 
-      cy.get(mathinput2Anchor).type(`${b}{enter}`, {force: true});
+      cy.get(mathinput2Anchor).type(`${b}{enter}`, { force: true });
       cy.get(mathinput2Correct).should('be.visible');
       cy.get(cesc('#/ca')).should('have.text', '1')
 
@@ -2161,6 +2161,22 @@ describe('Paginator Tag Tests', function () {
 
     cy.get('#\\/mi6_correct').should('be.visible');
 
+    cy.log('answers not submitted when readonly')
+    cy.get('#\\/mi6 textarea').type("{end}{backspace}7", { force: true });
+    cy.get('#\\/mi6_submit').should('be.visible');
+    cy.get(cesc('#/ca')).should('have.text', '0.722');
+
+    // at least right now, this turns on Read Only
+    cy.get('h3 > button').click();
+    cy.get(':nth-child(5) > label > input').click()
+    cy.get('h3 > button').click();
+
+    cy.get(cesc('#/pcontrols_previous')).click()
+    cy.get(cesc('#/ca')).should('have.text', '0.722');
+
+    cy.get(cesc('#/pcontrols_next')).click()
+    cy.get('#\\/mi6_submit').should('be.visible');
+    cy.get(cesc('#/ca')).should('have.text', '0.722');
 
   })
 
@@ -2643,6 +2659,267 @@ describe('Paginator Tag Tests', function () {
       }
 
     }
+
+  })
+
+  it('Conditional content data is saved', () => {
+
+    let doenetML = `
+    <text>a</text>
+    <paginatorControls paginatorTname="pgn" name="pcontrols" />
+
+    <paginator name="pgn" submitAllOnPageChange>
+
+    <problem name="problem1" newNamespace>
+
+      <setup>
+        <selectFromSequence from="1" to="2" assignNames="n" />
+      </setup>
+
+      <conditionalContent>
+        <case condition="$n=1">
+        <p>Answer x: <answer>x</answer></p>
+        </case>
+        <case condition="$n=2">
+        <p>Answer y: <answer>y</answer></p>
+        </case>
+      </conditionalContent>
+      
+      <conditionalContent condition="$n=1" >
+        <p>Answer 2x: <answer name="a1">2x</answer></p>
+      </conditionalContent>
+      <conditionalContent condition="$n=2" >
+        <p>Answer 2y: <answer name="a2">2y</answer></p>
+      </conditionalContent>
+    </problem>
+    
+    <problem name="problem2" newNamespace>
+    
+      <setup>
+        <number name="n">1</number>
+      </setup>
+      
+      <conditionalContent>
+        <case condition="$n=1">
+        <p>Answer 1: <answer>1</answer></p>
+        </case>
+        <else>
+        <p>Answer 1b: <answer>1b</answer></p>
+        </else>
+      </conditionalContent>
+      
+      <conditionalContent condition="$n=1" >
+        <p>Answer 2: <answer>2</answer></p>
+      </conditionalContent>
+    
+    </problem>
+    </paginator>
+    
+    <p>Credit achieved: <copy prop="creditAchieved" tname="_document1" assignNames="ca" /></p>
+  
+    `
+
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: ''
+      }, "*");
+    });
+
+    cy.get('#testRunner_toggleControls').click();
+    cy.get('#testRunner_allowLocalPageState').click()
+    cy.wait(1000)
+    cy.get('#testRunner_toggleControls').click();
+
+
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML,
+      }, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+
+    cy.get('#\\/problem1_title').should('have.text', 'Problem 1')
+    cy.get('#\\/ca').should('have.text', '0')
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      let n = components["/problem1/n"].stateValues.value;
+
+      let mathinput1Name = components[`/problem1/_answer${n}`].stateValues.inputChildren[0].componentName;
+      let mathinput1Anchor = cesc('#' + mathinput1Name) + " textarea";
+      let mathinput1DisplayAnchor = cesc('#' + mathinput1Name) + " .mq-editable-field";
+      let answer1Correct = cesc('#' + mathinput1Name + "_correct");
+      let answer1Submit = cesc('#' + mathinput1Name + "_submit");
+
+      let mathinput2Name = components[`/problem1/a${n}`].stateValues.inputChildren[0].componentName;
+      let mathinput2Anchor = cesc('#' + mathinput2Name) + " textarea";
+      let mathinput2DisplayAnchor = cesc('#' + mathinput2Name) + " .mq-editable-field";
+      let answer2Correct = cesc('#' + mathinput2Name + "_correct");
+      let answer2Submit = cesc('#' + mathinput2Name + "_submit");
+
+      let correctAnswer = n === 1 ? 'x' : 'y';
+
+      cy.get(mathinput1Anchor).type(`${correctAnswer}`, { force: true })
+      cy.get(mathinput1DisplayAnchor).invoke('text').then((text) => {
+        expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal(correctAnswer)
+      })
+      cy.get(answer1Submit).should('be.visible');
+
+      cy.get('#\\/ca').should('have.text', '0')
+
+
+      cy.get(mathinput2Anchor).type(`2${correctAnswer}`, { force: true })
+      cy.get(mathinput2DisplayAnchor).invoke('text').then((text) => {
+        expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal(`2${correctAnswer}`)
+      })
+      cy.get(answer2Submit).should('be.visible');
+
+      cy.get('#\\/ca').should('have.text', '0')
+
+      cy.get(cesc('#/pcontrols_next')).click()
+      cy.get('#\\/problem2_title').should('have.text', 'Problem 2')
+      cy.get('#\\/ca').should('have.text', '0.5')
+
+      cy.get(cesc('#/pcontrols_previous')).click()
+      cy.get('#\\/problem1_title').should('have.text', 'Problem 1')
+      cy.get('#\\/ca').should('have.text', '0.5')
+
+      cy.get(mathinput1DisplayAnchor).invoke('text').then((text) => {
+        expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal(correctAnswer)
+      })
+      cy.get(answer1Correct).should('be.visible');
+
+      cy.get(mathinput2DisplayAnchor).invoke('text').then((text) => {
+        expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal(`2${correctAnswer}`)
+      })
+      cy.get(answer2Correct).should('be.visible');
+
+
+      cy.get(cesc('#/pcontrols_next')).click()
+      cy.get('#\\/problem2_title').should('have.text', 'Problem 2')
+      cy.get('#\\/ca').should('have.text', '0.5')
+
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
+
+        let mathinput3Name = components[`/problem2/_answer1`].stateValues.inputChildren[0].componentName;
+        let mathinput3Anchor = cesc('#' + mathinput3Name) + " textarea";
+        let mathinput3DisplayAnchor = cesc('#' + mathinput3Name) + " .mq-editable-field";
+        let answer3Correct = cesc('#' + mathinput3Name + "_correct");
+
+        let mathinput4Name = components[`/problem2/_answer3`].stateValues.inputChildren[0].componentName;
+        let mathinput4Anchor = cesc('#' + mathinput4Name) + " textarea";
+        let mathinput4DisplayAnchor = cesc('#' + mathinput4Name) + " .mq-editable-field";
+        let answer4Correct = cesc('#' + mathinput4Name + "_correct");
+
+
+        cy.get(mathinput3Anchor).type(`1{enter}`, { force: true })
+        cy.get(mathinput3DisplayAnchor).invoke('text').then((text) => {
+          expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('1')
+        })
+        cy.get(answer3Correct).should('be.visible');
+
+        cy.get('#\\/ca').should('have.text', '0.75')
+
+
+        cy.get(mathinput4Anchor).type(`2{enter}`, { force: true })
+        cy.get(mathinput4DisplayAnchor).invoke('text').then((text) => {
+          expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('2')
+        })
+        cy.get(answer4Correct).should('be.visible');
+
+        cy.get('#\\/ca').should('have.text', '1')
+
+
+
+        cy.get(cesc('#/pcontrols_previous')).click()
+        cy.get('#\\/problem1_title').should('have.text', 'Problem 1')
+        cy.get('#\\/ca').should('have.text', '1')
+
+        cy.get(mathinput1DisplayAnchor).invoke('text').then((text) => {
+          expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal(correctAnswer)
+        })
+        cy.get(answer1Correct).should('be.visible');
+
+        cy.get(mathinput2DisplayAnchor).invoke('text').then((text) => {
+          expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal(`2${correctAnswer}`)
+        })
+        cy.get(answer2Correct).should('be.visible');
+
+
+        cy.get(cesc('#/pcontrols_next')).click()
+        cy.get('#\\/problem2_title').should('have.text', 'Problem 2')
+        cy.get('#\\/ca').should('have.text', '1')
+
+        cy.get(mathinput3DisplayAnchor).invoke('text').then((text) => {
+          expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('1')
+        })
+        cy.get(answer3Correct).should('be.visible');
+
+        cy.get(mathinput4DisplayAnchor).invoke('text').then((text) => {
+          expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('2')
+        })
+        cy.get(answer4Correct).should('be.visible');
+
+        cy.get('#\\/ca').should('have.text', '1')
+
+
+        cy.window().then((win) => {
+          win.postMessage({
+            doenetML: '<text>b</text>',
+          }, "*");
+        });
+
+        cy.get('#\\/_text1').should('have.text', 'b') //wait for page to load
+
+
+
+        cy.window().then((win) => {
+          win.postMessage({
+            doenetML,
+          }, "*");
+        });
+
+        cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+
+        cy.get('#\\/problem2_title').should('have.text', 'Problem 2')
+        cy.get('#\\/ca').should('have.text', '1')
+
+        cy.get(mathinput3DisplayAnchor).invoke('text').then((text) => {
+          expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('1')
+        })
+        cy.get(answer3Correct).should('be.visible');
+
+        cy.get(mathinput4DisplayAnchor).invoke('text').then((text) => {
+          expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('2')
+        })
+        cy.get(answer4Correct).should('be.visible');
+
+        cy.get('#\\/ca').should('have.text', '1')
+
+
+        cy.get(cesc('#/pcontrols_previous')).click()
+        cy.get('#\\/problem1_title').should('have.text', 'Problem 1')
+        cy.get('#\\/ca').should('have.text', '1')
+
+        cy.get(mathinput1DisplayAnchor).invoke('text').then((text) => {
+          expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal(correctAnswer)
+        })
+        cy.get(answer1Correct).should('be.visible');
+
+        cy.get(mathinput2DisplayAnchor).invoke('text').then((text) => {
+          expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal(`2${correctAnswer}`)
+        })
+        cy.get(answer2Correct).should('be.visible');
+
+
+
+      })
+
+
+    })
+
 
   })
 

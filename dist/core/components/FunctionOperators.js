@@ -264,7 +264,7 @@ export class Derivative extends FunctionBaseOperator {
           }
           return { newValues: { nInputs } };
         } else if (dependencyValues.variablesAttr !== null) {
-          return { newValues: { nInputs: dependencyValues.variablesAttr.stateValues.nComponents } }
+          return { newValues: { nInputs: Math.max(1, dependencyValues.variablesAttr.stateValues.nComponents) } }
         } else if (dependencyValues.functionChild.length > 0) {
           return {
             newValues: {

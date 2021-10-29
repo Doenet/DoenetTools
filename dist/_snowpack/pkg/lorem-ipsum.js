@@ -1,17 +1,6 @@
 import { c as createCommonjsModule } from './common/_commonjsHelpers-b3efd043.js';
 import { p as process } from './common/process-e9e98960.js';
 
-var words = createCommonjsModule(function (module, exports) {
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.WORDS = void 0;
-var WORDS = ["ad", "adipisicing", "aliqua", "aliquip", "amet", "anim", "aute", "cillum", "commodo", "consectetur", "consequat", "culpa", "cupidatat", "deserunt", "do", "dolor", "dolore", "duis", "ea", "eiusmod", "elit", "enim", "esse", "est", "et", "eu", "ex", "excepteur", "exercitation", "fugiat", "id", "in", "incididunt", "ipsum", "irure", "labore", "laboris", "laborum", "Lorem", "magna", "minim", "mollit", "nisi", "non", "nostrud", "nulla", "occaecat", "officia", "pariatur", "proident", "qui", "quis", "reprehenderit", "sint", "sit", "sunt", "tempor", "ullamco", "ut", "velit", "veniam", "voluptate"];
-exports.WORDS = WORDS;
-
-});
-
 var formats = createCommonjsModule(function (module, exports) {
 
 Object.defineProperty(exports, "__esModule", {
@@ -24,6 +13,40 @@ var FORMAT_PLAIN = "plain";
 exports.FORMAT_PLAIN = FORMAT_PLAIN;
 var FORMATS = [FORMAT_HTML, FORMAT_PLAIN];
 exports.FORMATS = FORMATS;
+
+});
+
+var units = createCommonjsModule(function (module, exports) {
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.UNITS = exports.UNIT_PARAGRAPH = exports.UNIT_PARAGRAPHS = exports.UNIT_SENTENCE = exports.UNIT_SENTENCES = exports.UNIT_WORD = exports.UNIT_WORDS = void 0;
+var UNIT_WORDS = "words";
+exports.UNIT_WORDS = UNIT_WORDS;
+var UNIT_WORD = "word";
+exports.UNIT_WORD = UNIT_WORD;
+var UNIT_SENTENCES = "sentences";
+exports.UNIT_SENTENCES = UNIT_SENTENCES;
+var UNIT_SENTENCE = "sentence";
+exports.UNIT_SENTENCE = UNIT_SENTENCE;
+var UNIT_PARAGRAPHS = "paragraphs";
+exports.UNIT_PARAGRAPHS = UNIT_PARAGRAPHS;
+var UNIT_PARAGRAPH = "paragraph";
+exports.UNIT_PARAGRAPH = UNIT_PARAGRAPH;
+var UNITS = [UNIT_WORDS, UNIT_WORD, UNIT_SENTENCES, UNIT_SENTENCE, UNIT_PARAGRAPHS, UNIT_PARAGRAPH];
+exports.UNITS = UNITS;
+
+});
+
+var words = createCommonjsModule(function (module, exports) {
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.WORDS = void 0;
+var WORDS = ["ad", "adipisicing", "aliqua", "aliquip", "amet", "anim", "aute", "cillum", "commodo", "consectetur", "consequat", "culpa", "cupidatat", "deserunt", "do", "dolor", "dolore", "duis", "ea", "eiusmod", "elit", "enim", "esse", "est", "et", "eu", "ex", "excepteur", "exercitation", "fugiat", "id", "in", "incididunt", "ipsum", "irure", "labore", "laboris", "laborum", "Lorem", "magna", "minim", "mollit", "nisi", "non", "nostrud", "nulla", "occaecat", "officia", "pariatur", "proident", "qui", "quis", "reprehenderit", "sint", "sit", "sunt", "tempor", "ullamco", "ut", "velit", "veniam", "voluptate"];
+exports.WORDS = WORDS;
 
 });
 
@@ -46,7 +69,7 @@ var capitalize_1 = createCommonjsModule(function (module, exports) {
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.default = void 0;
+exports["default"] = void 0;
 
 /**
  * @param str  A string that may or may not be capitalized.
@@ -58,7 +81,7 @@ var capitalize = function capitalize(str) {
 };
 
 var _default = capitalize;
-exports.default = _default;
+exports["default"] = _default;
 
 });
 
@@ -67,7 +90,7 @@ var isNode_1 = createCommonjsModule(function (module, exports) {
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.default = void 0;
+exports["default"] = void 0;
 
 /**
  * @returns  True if the runtime is NodeJS.
@@ -77,7 +100,7 @@ var isNode = function isNode() {
 };
 
 var _default = isNode;
-exports.default = _default;
+exports["default"] = _default;
 
 });
 
@@ -86,17 +109,28 @@ var isReactNative_1 = createCommonjsModule(function (module, exports) {
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.default = void 0;
+exports["default"] = void 0;
 
 /**
+ * Check if runtime is ReactNative.
+ * Solution based on https://github.com/knicklabs/lorem-ipsum.js/pull/52/files
+ *
  * @returns  True if runtime is ReactNative.
  */
 var isReactNative = function isReactNative() {
-  return typeof navigator !== "undefined" && navigator.product === "ReactNative";
+  var isReactNativeResult = false;
+
+  try {
+    isReactNativeResult = navigator.product === "ReactNative";
+  } catch (e) {
+    isReactNativeResult = false;
+  }
+
+  return isReactNativeResult;
 };
 
 var _default = isReactNative;
-exports.default = _default;
+exports["default"] = _default;
 
 });
 
@@ -120,7 +154,7 @@ var isWindows_1 = createCommonjsModule(function (module, exports) {
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.default = void 0;
+exports["default"] = void 0;
 
 
 
@@ -128,11 +162,19 @@ exports.default = void 0;
  * @returns True if process is windows.
  */
 var isWindows = function isWindows() {
-  return typeof process !== "undefined" && process.platform === platforms.SUPPORTED_PLATFORMS.WIN32;
+  var isWindowsResult = false;
+
+  try {
+    isWindowsResult = process.platform === platforms.SUPPORTED_PLATFORMS.WIN32;
+  } catch (e) {
+    isWindowsResult = false;
+  }
+
+  return isWindowsResult;
 };
 
 var _default = isWindows;
-exports.default = _default;
+exports["default"] = _default;
 
 });
 
@@ -141,7 +183,7 @@ var makeArrayOfLength_1 = createCommonjsModule(function (module, exports) {
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.default = void 0;
+exports["default"] = void 0;
 
 /**
  * @param length Length "x".
@@ -155,7 +197,7 @@ var makeArrayOfLength = function makeArrayOfLength() {
 };
 
 var _default = makeArrayOfLength;
-exports.default = _default;
+exports["default"] = _default;
 
 });
 
@@ -164,7 +206,7 @@ var makeArrayOfStrings_1 = createCommonjsModule(function (module, exports) {
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.default = void 0;
+exports["default"] = void 0;
 
 
 
@@ -180,7 +222,7 @@ var makeArrayOfStrings = function makeArrayOfStrings(length, makeString) {
 };
 
 var _default = makeArrayOfStrings;
-exports.default = _default;
+exports["default"] = _default;
 
 });
 
@@ -192,37 +234,37 @@ Object.defineProperty(exports, "__esModule", {
 Object.defineProperty(exports, "capitalize", {
   enumerable: true,
   get: function get() {
-    return _capitalize.default;
+    return _capitalize["default"];
   }
 });
 Object.defineProperty(exports, "isNode", {
   enumerable: true,
   get: function get() {
-    return _isNode.default;
+    return _isNode["default"];
   }
 });
 Object.defineProperty(exports, "isReactNative", {
   enumerable: true,
   get: function get() {
-    return _isReactNative.default;
+    return _isReactNative["default"];
   }
 });
 Object.defineProperty(exports, "isWindows", {
   enumerable: true,
   get: function get() {
-    return _isWindows.default;
+    return _isWindows["default"];
   }
 });
 Object.defineProperty(exports, "makeArrayOfLength", {
   enumerable: true,
   get: function get() {
-    return _makeArrayOfLength.default;
+    return _makeArrayOfLength["default"];
   }
 });
 Object.defineProperty(exports, "makeArrayOfStrings", {
   enumerable: true,
   get: function get() {
-    return _makeArrayOfStrings.default;
+    return _makeArrayOfStrings["default"];
   }
 });
 
@@ -238,7 +280,7 @@ var _makeArrayOfLength = _interopRequireDefault(makeArrayOfLength_1);
 
 var _makeArrayOfStrings = _interopRequireDefault(makeArrayOfStrings_1);
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
 
 });
 
@@ -247,7 +289,7 @@ var generator = createCommonjsModule(function (module, exports) {
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.default = void 0;
+exports["default"] = void 0;
 
 
 
@@ -261,9 +303,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
-var Generator =
-/*#__PURE__*/
-function () {
+var Generator = /*#__PURE__*/function () {
   function Generator() {
     var _ref = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
         _ref$sentencesPerPara = _ref.sentencesPerParagraph,
@@ -355,7 +395,7 @@ function () {
 }();
 
 var _default = Generator;
-exports.default = _default;
+exports["default"] = _default;
 
 });
 
@@ -364,7 +404,7 @@ var LoremIpsum_1 = createCommonjsModule(function (module, exports) {
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.default = void 0;
+exports["default"] = void 0;
 
 
 
@@ -374,7 +414,7 @@ var _generator = _interopRequireDefault(generator);
 
 
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -384,9 +424,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
-var LoremIpsum =
-/*#__PURE__*/
-function () {
+var LoremIpsum = /*#__PURE__*/function () {
   function LoremIpsum() {
     var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
     var format = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : formats.FORMAT_PLAIN;
@@ -394,19 +432,16 @@ function () {
 
     _classCallCheck(this, LoremIpsum);
 
+    this.format = format;
+    this.suffix = suffix;
+
     _defineProperty(this, "generator", void 0);
-
-    _defineProperty(this, "format", void 0);
-
-    _defineProperty(this, "suffix", void 0);
 
     if (formats.FORMATS.indexOf(format.toLowerCase()) === -1) {
       throw new Error("".concat(format, " is an invalid format. Please use ").concat(formats.FORMATS.join(" or "), "."));
     }
 
-    this.format = format.toLowerCase();
-    this.suffix = suffix;
-    this.generator = new _generator.default(options);
+    this.generator = new _generator["default"](options);
   }
 
   _createClass(LoremIpsum, [{
@@ -462,7 +497,7 @@ function () {
 }();
 
 var _default = LoremIpsum;
-exports.default = _default;
+exports["default"] = _default;
 
 });
 
@@ -474,23 +509,27 @@ Object.defineProperty(exports, "__esModule", {
 Object.defineProperty(exports, "LoremIpsum", {
   enumerable: true,
   get: function get() {
-    return _LoremIpsum.default;
+    return _LoremIpsum["default"];
   }
 });
 exports.loremIpsum = void 0;
 
 
 
+
+
+
+
 var _LoremIpsum = _interopRequireDefault(LoremIpsum_1);
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
 
 var loremIpsum = function loremIpsum() {
   var _ref = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
       _ref$count = _ref.count,
       count = _ref$count === void 0 ? 1 : _ref$count,
       _ref$format = _ref.format,
-      format = _ref$format === void 0 ? "plain" : _ref$format,
+      format = _ref$format === void 0 ? formats.FORMAT_PLAIN : _ref$format,
       _ref$paragraphLowerBo = _ref.paragraphLowerBound,
       paragraphLowerBound = _ref$paragraphLowerBo === void 0 ? 3 : _ref$paragraphLowerBo,
       _ref$paragraphUpperBo = _ref.paragraphUpperBound,
@@ -501,7 +540,7 @@ var loremIpsum = function loremIpsum() {
       _ref$sentenceUpperBou = _ref.sentenceUpperBound,
       sentenceUpperBound = _ref$sentenceUpperBou === void 0 ? 15 : _ref$sentenceUpperBou,
       _ref$units = _ref.units,
-      units = _ref$units === void 0 ? "sentences" : _ref$units,
+      units$1 = _ref$units === void 0 ? units.UNIT_SENTENCES : _ref$units,
       _ref$words = _ref.words,
       words$1 = _ref$words === void 0 ? words.WORDS : _ref$words,
       _ref$suffix = _ref.suffix,
@@ -519,19 +558,19 @@ var loremIpsum = function loremIpsum() {
       min: sentenceLowerBound
     }
   };
-  var lorem = new _LoremIpsum.default(options, format, suffix);
+  var lorem = new _LoremIpsum["default"](options, format, suffix);
 
-  switch (units) {
-    case "paragraphs":
-    case "paragraph":
+  switch (units$1) {
+    case units.UNIT_PARAGRAPHS:
+    case units.UNIT_PARAGRAPH:
       return lorem.generateParagraphs(count);
 
-    case "sentences":
-    case "sentence":
+    case units.UNIT_SENTENCES:
+    case units.UNIT_SENTENCE:
       return lorem.generateSentences(count);
 
-    case "words":
-    case "word":
+    case units.UNIT_WORDS:
+    case units.UNIT_WORD:
       return lorem.generateWords(count);
 
     default:

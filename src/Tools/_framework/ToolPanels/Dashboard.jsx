@@ -1,10 +1,11 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useRecoilValue, useSetRecoilState, useRecoilValueLoadable } from 'recoil';
 import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
 import ButtonGroup from '../../../_reactComponents/PanelHeaderComponents/ButtonGroup';
 import { pageToolViewAtom, searchParamAtomFamily, profileAtom } from '../NewToolRoot';
 import Next7Days from '../Widgets/Next7Days';
 import { effectiveRoleAtom } from '../../../_reactComponents/PanelHeaderComponents/RoleDropdown';
+import { suppressMenusAtom } from '../NewToolRoot';
 
 
 export default function Dashboard(props) {
@@ -12,8 +13,17 @@ export default function Dashboard(props) {
   const path = useRecoilValue(searchParamAtomFamily('path'));
   const driveId = path.split(':')[0];
   const effectiveRole = useRecoilValue(effectiveRoleAtom);
+  const setSuppressMenus = useSetRecoilState(suppressMenusAtom);
   const loadProfile = useRecoilValueLoadable(profileAtom);
-    let profile = loadProfile.contents;
+  let profile = loadProfile.contents;
+
+    useEffect(()=>{
+      if (effectiveRole === 'student'){
+        setSuppressMenus(["ClassTimes"])
+      }else{
+        setSuppressMenus([])
+      }
+    },[effectiveRole,setSuppressMenus])
 
   return (
     
@@ -44,7 +54,7 @@ export default function Dashboard(props) {
         />
         : null }
         {effectiveRole === 'instructor' ?
-        <Button value="GradeBook" 
+        <Button value="Gradebook" 
         onClick={() => 
         setPageToolView((was)=>{return {
           page: 'course',
@@ -55,7 +65,7 @@ export default function Dashboard(props) {
         } 
       />
         : 
-        <Button value="GradeBook" 
+        <Button value="Gradebook" 
           onClick={() => 
           setPageToolView((was)=>{return {
             page: 'course',

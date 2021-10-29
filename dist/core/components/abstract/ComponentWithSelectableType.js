@@ -146,6 +146,21 @@ export class ComponentWithSelectableType extends BaseComponent {
           newValues: { value },
           setComponentType: { value: dependencyValues.type },
         };
+      },
+      inverseDefinition({ desiredStateVariableValues, dependencyValues }) {
+        if (dependencyValues.atMostOneChild.length > 0) {
+          return {
+            success: true,
+            instructions: [{
+              setDependency: "atMostOneChild",
+              desiredValue: desiredStateVariableValues.value,
+              childIndex: 0,
+              variableIndex: 0,
+            }]
+          };
+        } else {
+          return { success: false }
+        }
       }
     }
 

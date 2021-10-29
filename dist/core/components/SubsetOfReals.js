@@ -48,28 +48,101 @@ export default class SubsetOfReals extends MathComponent {
       newName: "unnormalizedValuePreliminary"
     });
 
-    stateVariableDefinitions.subsetValue = {
+    stateVariableDefinitions.value.componentType = "math";
+
+    stateVariableDefinitions.haveSingleSubsetChild = {
       returnDependencies: () => ({
-        unnormalizedValuePreliminary: {
-          dependencyType: "stateVariable",
-          variableName: "unnormalizedValuePreliminary"
-        },
-        variable: {
-          dependencyType: "stateVariable",
-          variableName: "variable"
-        },
+        mathChildren: {
+          dependencyType: "child",
+          childGroups: ["maths"]
+        }
       }),
+      definition({ dependencyValues, componentInfoObjects }) {
+
+        let haveSingleSubsetChild = 
+        dependencyValues.mathChildren.length === 1 &&
+        dependencyValues.mathChildren.filter(child =>
+          componentInfoObjects.isInheritedComponentType({
+            inheritedComponentType: child.componentType,
+            baseComponentType: "subsetOfReals"
+          })
+        ).length === 1;
+
+        return { newValues: { haveSingleSubsetChild } }
+      }
+    }
+
+    stateVariableDefinitions.subsetValue = {
+      stateVariablesDeterminingDependencies: ["haveSingleSubsetChild"],
+      returnDependencies({ stateValues }) {
+        let dependencies = {
+          haveSingleSubsetChild: {
+            dependencyType: "stateVariable",
+            variableName: "haveSingleSubsetChild"
+          },
+        }
+
+        if (stateValues.haveSingleSubsetChild) {
+          dependencies.subsetChild = {
+            dependencyType: "child",
+            childGroups: ["maths"],
+            variableNames: ["subsetValue"]
+          }
+        } else {
+          dependencies.unnormalizedValuePreliminary = {
+            dependencyType: "stateVariable",
+            variableName: "unnormalizedValuePreliminary"
+          };
+          dependencies.variable = {
+            dependencyType: "stateVariable",
+            variableName: "variable"
+          };
+        }
+        return dependencies;
+      },
       definition({ dependencyValues }) {
 
-        let subsetValue = buildSubsetFromMathExpression(
-          dependencyValues.unnormalizedValuePreliminary,
-          dependencyValues.variable
-        )
+        let subsetValue;
+
+        if (dependencyValues.haveSingleSubsetChild) {
+          subsetValue = dependencyValues.subsetChild[0].stateValues.subsetValue;
+        } else {
+          subsetValue = buildSubsetFromMathExpression(
+            dependencyValues.unnormalizedValuePreliminary,
+            dependencyValues.variable
+          )
+        }
 
         return { newValues: { subsetValue } }
       },
-      inverseDefinition({ desiredStateVariableValues }) {
+      inverseDefinition({ desiredStateVariableValues, dependencyValues, stateValues }) {
 
+        if (dependencyValues.haveSingleSubsetChild) {
+          return {
+            success: true,
+            instructions: [{
+              setDependency: "subsetChild",
+              desiredValue: desiredStateVariableValues.subsetValue,
+              childIndex: 0,
+              variableIndex: 0
+            }]
+          }
+        } else {
+
+          let mathExpression = mathExpressionFromSubsetValue({
+            subsetValue: desiredStateVariableValues.subsetValue,
+            variable: dependencyValues.variable,
+            displayMode: stateValues.displayMode
+          })
+
+          return {
+            success: true,
+            instructions: [{
+              setDependency: "unnormalizedValuePreliminary",
+              desiredValue: mathExpression
+            }]
+          }
+        }
       }
     }
 

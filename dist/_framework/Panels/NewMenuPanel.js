@@ -100,25 +100,16 @@ border-bottom: ${(props) => props.isOpen ? "2px solid black" : "0px solid black"
 margin-top: 2px;
 `;
 function SelectionMenu(props) {
+  console.log("child", props.children);
   return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("div", {
     style: {
-      marginTop: "2px",
-      paddingBottom: "4px",
+      paddingBottom: "8px",
       paddingLeft: "4px",
       paddingRight: "4px",
       backgroundColor: "white",
       borderLeft: "8px solid #1A5A99"
     }
-  }, /* @__PURE__ */ React.createElement("h3", {
-    style: {
-      textAlign: "center",
-      width: "240px",
-      height: "35px",
-      fontSize: "16px",
-      marginTop: "5px",
-      marginLeft: "-8px"
-    }
-  }, "Current Selection"), props.children));
+  }, props.children));
 }
 function Menu(props) {
   let isInitOpen = props.isInitOpen;
@@ -178,11 +169,14 @@ export default function MenuPanel({hide, menuPanelCap = "", menusTitles = [], cu
     Variant: lazy(() => import("../Menus/Variant.js")),
     AutoSaves: lazy(() => import("../Menus/AutoSaves.js")),
     LoadEnrollment: lazy(() => import("../Menus/LoadEnrollment.js")),
+    GradeUpload: lazy(() => import("../Menus/GradeUpload.js")),
     ManualEnrollment: lazy(() => import("../Menus/ManualEnrollment.js")),
     AssignmentSettingsMenu: lazy(() => import("../Menus/AssignmentSettingsMenu.js")),
     GroupSettings: lazy(() => import("../Menus/GroupSettings.js")),
     TimerMenu: lazy(() => import("../Menus/TimerMenu.js")),
-    CreditAchieved: lazy(() => import("../Menus/CreditAchieved.js"))
+    CreditAchieved: lazy(() => import("../Menus/CreditAchieved.js")),
+    ClassTimes: lazy(() => import("../Menus/ClassTimes.js")),
+    CurrentContent: lazy(() => import("../Menus/CurrentContent.js"))
   }).current;
   let selectionPanel = null;
   if (currentSelectionMenu) {

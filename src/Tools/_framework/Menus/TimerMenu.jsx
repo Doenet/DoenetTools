@@ -24,7 +24,7 @@ export default function TimerMenu(){
       const { data } = await axios.get('/api/loadTakenVariants.php', {
         params: { doenetId },
       })
-      
+
       for (let [i,attemptNumber] of Object.entries(data.attemptNumbers)){
         //Testing numbers are equal not objects so use ==
         if (attemptNumber == userAttemptNumber){

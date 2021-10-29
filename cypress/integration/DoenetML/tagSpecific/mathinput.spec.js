@@ -3689,5 +3689,172 @@ describe('MathInput Tag Tests', function () {
 
   })
 
+  it('convert and/or into logicals', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <mathinput name="mi" />
+
+    <p>Value: <copy prop="value" tname="mi" assignNames="m"/></p>
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.log('equalities with or')
+    cy.get('#\\/mi textarea').type("x=1 or u=x{enter}", { force: true })
+
+    cy.get('#\\/m').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(x=1)∨(u=x)')
+    })
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/mi'].stateValues.value.tree).eqls([
+        "or", ["=", "x", 1], ["=", "u", "x"]
+      ]);
+      expect(components['/m'].stateValues.value.tree).eqls([
+        "or", ["=", "x", 1], ["=", "u", "x"]
+      ]);
+    })
+
+    cy.log('inequalities with and')
+    cy.get('#\\/mi textarea').type("{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}x>3 and x <= 5{enter}", { force: true })
+
+    cy.get('#\\/m').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(x>3)∧(x≤5)')
+    })
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/mi'].stateValues.value.tree).eqls([
+        "and", [">", "x", 3], ["le", "x", 5]
+      ]);
+      expect(components['/m'].stateValues.value.tree).eqls([
+        "and", [">", "x", 3], ["le", "x", 5]
+      ]);
+    })
+
+
+    cy.log(`don't convert if not word`)
+    cy.get('#\\/mi textarea').type("{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}AandBorC{enter}", { force: true })
+
+    cy.get('#\\/m').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('AandBorC')
+    })
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/mi'].stateValues.value.tree).eqls([
+        "*", "A", "a", "n", "d", "B", "o", "r", "C"
+      ]);
+      expect(components['/m'].stateValues.value.tree).eqls([
+        "*", "A", "a", "n", "d", "B", "o", "r", "C"
+      ]);
+    })
+
+    cy.log(`add parens or spaces`)
+    cy.get('#\\/mi textarea').type("{home}({rightArrow}){rightArrow}{rightArrow}{rightArrow} {rightArrow} {rightArrow}{rightArrow}({rightArrow}){enter}", { force: true })
+
+    cy.get('#\\/m').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(A∧B)∨C')
+    })
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/mi'].stateValues.value.tree).eqls([
+        "or", ["and", "A", "B"], "C"
+      ]);
+      expect(components['/m'].stateValues.value.tree).eqls([
+        "or", ["and", "A", "B"], "C"
+      ]);
+    })
+  })
+
+  it('union from U', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <booleanInput name="ufu" />
+    <mathinput name="mi" unionFromU="$ufu" />
+
+    <p>Value: <copy prop="value" tname="mi" assignNames="m"/></p>
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.log('A U B without unionFromU')
+    cy.get('#\\/mi textarea').type("A U B{enter}", { force: true })
+
+    cy.get('#\\/m').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('AUB')
+    })
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/mi'].stateValues.value.tree).eqls([
+        "*", "A", "U", "B"
+      ]);
+      expect(components['/m'].stateValues.value.tree).eqls([
+        "*", "A", "U", "B"
+      ]);
+    })
+
+    cy.log('active unionFromU and modify text')
+    cy.get('#\\/ufu').click();
+    cy.get('#\\/mi textarea').type("{end} {enter}", { force: true })
+
+    cy.get('#\\/m').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('A∪B')
+    })
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/mi'].stateValues.value.tree).eqls([
+        "union", "A", "B"
+      ]);
+      expect(components['/m'].stateValues.value.tree).eqls([
+        "union", "A", "B"
+      ]);
+    })
+
+    cy.log('no substitution without spaces')
+    cy.get('#\\/mi textarea').type("{end}{backspace}{leftArrow}{backspace}{enter}", { force: true })
+
+    cy.get('#\\/m').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('AUB')
+    })
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/mi'].stateValues.value.tree).eqls([
+        "*", "A", "U", "B"
+      ]);
+      expect(components['/m'].stateValues.value.tree).eqls([
+        "*", "A", "U", "B"
+      ]);
+    })
+
+    cy.log('add parents')
+    cy.get('#\\/mi textarea').type("{end}){leftArrow}{leftArrow}({enter}", { force: true })
+
+    cy.get('#\\/m').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('A∪B')
+    })
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/mi'].stateValues.value.tree).eqls([
+        "union", "A", "B"
+      ]);
+      expect(components['/m'].stateValues.value.tree).eqls([
+        "union", "A", "B"
+      ]);
+    })
+
+  })
 
 });

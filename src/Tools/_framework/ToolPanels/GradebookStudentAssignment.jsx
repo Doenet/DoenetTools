@@ -126,37 +126,38 @@ export default function GradebookStudentAssignmentView(props){
     assignmentsTable.headers = [
         {
             Header: "Score",
+            Footer: "Possible Points",
             accessor: "score",
             disableFilters: true
     }
     ];
 
-    for (let i = 1; i <= maxAttempts; i++) {
-        assignmentsTable.headers.push(
-        {
-            Header: "Attempt " + i,
-            accessor: "a"+i,
-            disableFilters: true,
-            Cell: row  =><a onClick = {(e) =>{
-                // setAttemptNumber(i);
-                // setRecoilAttemptNumber(i);
-                //e.stopPropagation()
+    // for (let i = 1; i <= maxAttempts; i++) {
+    //     assignmentsTable.headers.push(
+    //     {
+    //         Header: "Attempt " + i,
+    //         accessor: "a"+i,
+    //         disableFilters: true,
+    //         Cell: row  =><a onClick = {(e) =>{
+    //             // setAttemptNumber(i);
+    //             // setRecoilAttemptNumber(i);
+    //             //e.stopPropagation()
 
-                setPageToolView({
-                    page: 'course',
-                    tool: 'gradebookStudentAssignment',
-                    view: '',
-                    params: { driveId: driveIdValue, doenetId, userId, attemptNumber: i, source},
-                })
-            }}> {row.value} </a>
-        })
-    }
+    //             setPageToolView({
+    //                 page: 'course',
+    //                 tool: 'gradebookStudentAssignment',
+    //                 view: '',
+    //                 params: { driveId: driveIdValue, doenetId, userId, attemptNumber: i, source},
+    //             })
+    //         }}> {row.value} </a>
+    //     })
+    // }
 
-    assignmentsTable.headers.push({
-        Header: "Assignment Total",
-        accessor: "total",
-        disableFilters: true
-    })
+    // assignmentsTable.headers.push({
+    //     Header: "Assignment Total",
+    //     accessor: "total",
+    //     disableFilters: true
+    // })
 
     assignmentsTable.rows = [];
     
@@ -190,7 +191,34 @@ export default function GradebookStudentAssignmentView(props){
         assignmentsTable.rows.push(creditRow);
     }
 
+    assignmentsTable.headers.push({
+        Header: "Assignment Total",
+        Footer: totalPointsOrPercent,
+        accessor: "total",
+        disableFilters: true
+    })
 
+    for (let i = 1; i <= maxAttempts; i++) {
+        assignmentsTable.headers.push(
+        {
+            Header: "Attempt " + i,
+            Footer: totalPointsOrPercent,
+            accessor: "a"+i,
+            disableFilters: true,
+            Cell: row  =><a onClick = {(e) =>{
+                // setAttemptNumber(i);
+                // setRecoilAttemptNumber(i);
+                //e.stopPropagation()
+
+                setPageToolView({
+                    page: 'course',
+                    tool: 'gradebookStudentAssignment',
+                    view: '',
+                    params: { driveId: driveIdValue, doenetId, userId, attemptNumber: i, source},
+                })
+            }}> {row.value} </a>
+        })
+    }
 
     let dViewer = null;
     let attemptNumberJSX = null;

@@ -144,7 +144,7 @@ export default function AssignmentViewer() {
               params: { doenetId },
             });
             // console.log('>>>>data', data);
-            if (data.legitAccessKey !== '1') {
+            if (Number(data.legitAccessKey) !== 1) {
               setStage('Problem');
               setMessage('Browser not configured properly to take an exam.');
               return;
@@ -186,6 +186,7 @@ export default function AssignmentViewer() {
           } else {
             //If this is the first attempt then give them the
             //currently released
+
             const versionHistory = await snapshot.getPromise(
               itemHistoryAtom(doenetId),
             );
@@ -248,9 +249,12 @@ export default function AssignmentViewer() {
         async function setVariantsFromDoenetML({ allPossibleVariants }) {
           storedAllPossibleVariants.current = allPossibleVariants;
           //Find attemptNumber
+
           const { data } = await axios.get('/api/loadTakenVariants.php', {
             params: { doenetId },
           });
+          // console.log(">>>>data",data)
+
           let usersVariantAttempts = [];
 
           for (let variant of data.variants) {
@@ -259,19 +263,29 @@ export default function AssignmentViewer() {
               usersVariantAttempts.push(obj.name);
             }
           }
-          let numberOfCompletedAttempts = data.attemptNumbers.length - 1;
-          if (numberOfCompletedAttempts === -1) {
-            numberOfCompletedAttempts = 0;
+
+          let attemptNumber = Math.max(...data.attemptNumbers);
+          let needNewVariant = false;
+
+          if (attemptNumber < 1) {
+            attemptNumber = 1;
+            needNewVariant = true;
+          } else if (!data.variants[data.variants.length - 1]) {
+            //Starting a proctored exam so we need a variant
+            needNewVariant = true;
           }
-          let attemptNumber = numberOfCompletedAttempts + 1;
+
           set(currentAttemptNumber, attemptNumber);
-          //Find requestedVariant
-          usersVariantAttempts = pushRandomVariantOfRemaining({
-            previous: [...usersVariantAttempts],
-            from: allPossibleVariants,
-          });
+
+          if (needNewVariant) {
+            //Find requestedVariant
+            usersVariantAttempts = pushRandomVariantOfRemaining({
+              previous: [...usersVariantAttempts],
+              from: allPossibleVariants,
+            });
+          }
           let requestedVariant = {
-            name: usersVariantAttempts[numberOfCompletedAttempts],
+            name: usersVariantAttempts[usersVariantAttempts.length - 1],
           };
 
           setLoad({
@@ -346,10 +360,7 @@ export default function AssignmentViewer() {
           }
         }
 
-        console.log(
-          '>>>>updateAttemptNumberAndRequestedVariant contentId',
-          contentId,
-        );
+        // console.log(">>>>updateAttemptNumberAndRequestedVariant contentId",contentId)
 
         let doenetML = null;
 

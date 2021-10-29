@@ -96,7 +96,8 @@ function UploadChoices({ doenetId, maxAttempts }){
 
     let columnIndexes = [];
     let validColumns = headers.filter((value,i)=>{
-        let columnPoints = rows?.[0]?.[i]
+        //TODO: Handle percent.  We need number to handle 200.00 is 200
+        let columnPoints = Number(rows?.[0]?.[i])
         if (columnPoints == totalPointsOrPercent){ columnIndexes.push(i) }
         return columnPoints == totalPointsOrPercent;
     })
@@ -279,6 +280,7 @@ export default function GradebookAssignmentView(){
     assignmentsTable.headers.push(
         {
             Header: "Student",
+            Footer: "Possible Points",
             accessor: "student",
             
         }
@@ -288,6 +290,7 @@ export default function GradebookAssignmentView(){
         assignmentsTable.headers.push(
         {
             Header: "Attempt " + i,
+            Footer: totalPossiblePoints,
             accessor: "a"+i,
             disableFilters: true,
             Cell: row  =><a onClick = {(e) =>{
@@ -309,6 +312,7 @@ export default function GradebookAssignmentView(){
 
     assignmentsTable.headers.push({
         Header: "Assignment Total",
+        Footer: totalPossiblePoints,
         accessor: "grade",
         disableFilters: true
     })

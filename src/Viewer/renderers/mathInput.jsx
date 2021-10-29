@@ -69,7 +69,14 @@ export default function MathInput(props) {
   const calculateMathExpressionFromLatex = (text) => {
     let expression;
 
-    text = normalizeLatexString(text);
+    text = normalizeLatexString(text, {
+      unionFromU: this.doenetSvData.unionFromU,
+    });
+
+    // replace ^25 with ^{2}5, since mathQuill uses standard latex conventions
+    // unlike math-expression's latex parser
+    text = text.replace(/\^(\w)/g, '^{$1}');
+
     let fromLatex = getFromLatex({
       functionSymbols: SVs.functionSymbols,
     });

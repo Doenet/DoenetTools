@@ -132,6 +132,7 @@ export default class Core {
       componentsTouched: [],
       compositesToExpand: new Set([]),
       compositesToUpdateReplacements: [],
+      inactiveCompositesToUpdateReplacements: [],
       componentsToUpdateActionChaining: {},
 
       unresolvedDependencies: {},
@@ -2026,7 +2027,7 @@ export default class Core {
 
         } else {
           // don't use any replacements that are marked as being withheld
-          this.markWithheldReplacementInactive(child);
+          this.markWithheldReplacementsInactive(child);
 
           replacements = child.replacements;
           if (child.replacementsToWithhold > 0) {
@@ -2075,7 +2076,7 @@ export default class Core {
 
   }
 
-  markWithheldReplacementInactive(composite) {
+  markWithheldReplacementsInactive(composite) {
 
     let numActive = composite.replacements.length;
 
@@ -2096,6 +2097,19 @@ export default class Core {
         repl, true
       );
     }
+
+    // composite is newly active
+    // if updates to replacements were postponed
+    // add them back to the queue
+    if (!composite.stateValues.isInactiveCompositeReplacement) {
+      let cName = composite.componentName;
+      if (this.updateInfo.inactiveCompositesToUpdateReplacements.includes(cName)) {
+        this.updateInfo.inactiveCompositesToUpdateReplacements
+          = this.updateInfo.inactiveCompositesToUpdateReplacements.filter(x => x != cName);
+        this.updateInfo.compositesToUpdateReplacements.push(cName);
+      }
+
+    }
   }
 
   changeInactiveComponentAndDescendants(component, inactive) {
@@ -2113,8 +2127,15 @@ export default class Core {
         this.changeInactiveComponentAndDescendants(this._components[childName], inactive)
       }
 
+      for (let attrName in component.attributes) {
+        let attrComp = component.attributes[attrName].component;
+        if (attrComp) {
+          this.changeInactiveComponentAndDescendants(this._components[attrComp.componentName], inactive)
+        }
+      }
+
       if (component.replacements) {
-        this.markWithheldReplacementInactive(component);
+        this.markWithheldReplacementsInactive(component);
       }
     }
   }
@@ -7665,8 +7686,11 @@ export default class Core {
         // execute asynchronously any remaining processes
         // (that got added while performAction was running)
 
-        setTimeout(this.executeProcesses, 0);
-
+        if (this.processQueue.length > 0) {
+          setTimeout(this.executeProcesses, 0);
+        } else {
+          this.processing = false;
+        }
       }
     });
 
@@ -7763,7 +7787,11 @@ export default class Core {
         // execute asynchronously any remaining processes
         // (that got added while performUpdate was running)
 
-        setTimeout(this.executeProcesses, 0);
+        if (this.processQueue.length > 0) {
+          setTimeout(this.executeProcesses, 0);
+        } else {
+          this.processing = false;
+        }
 
       }
     });
@@ -7885,7 +7913,7 @@ export default class Core {
         //   });
         // }
         if (event) {
-          event.context.itemCreditAchieved[itemNumber] = this.document.stateValues.itemCreditAchieved[itemNumber]
+          event.context.itemCreditAchieved[itemNumber] = this.document.stateValues.itemCreditAchieved[itemNumber - 1]
         }
       }
     }
@@ -8100,26 +8128,30 @@ export default class Core {
         ) {
 
           if (composite.state.readyToExpandWhenResolved.initiallyResolved) {
-            let result = this.updateCompositeReplacements({
-              component: composite,
-              componentChanges,
-            });
+            if (composite.stateValues.isInactiveCompositeReplacement) {
+              this.updateInfo.inactiveCompositesToUpdateReplacements.push(cName)
+            } else {
+              let result = this.updateCompositeReplacements({
+                component: composite,
+                componentChanges,
+              });
 
-            for (let componentName in result.addedComponents) {
-              updatedComposites = true;
-              this.changedStateVariables[componentName] = {};
-              for (let varName in this._components[componentName].state) {
-                let stateVarObj = this._components[componentName].state[varName];
-                if (stateVarObj.isArray) {
-                  this.changedStateVariables[componentName][varName] =
-                    new Set(stateVarObj.getAllArrayKeys(stateVarObj.arraySize))
-                } else if (!stateVarObj.isArrayEntry) {
-                  this.changedStateVariables[componentName][varName] = true;
+              for (let componentName in result.addedComponents) {
+                updatedComposites = true;
+                this.changedStateVariables[componentName] = {};
+                for (let varName in this._components[componentName].state) {
+                  let stateVarObj = this._components[componentName].state[varName];
+                  if (stateVarObj.isArray) {
+                    this.changedStateVariables[componentName][varName] =
+                      new Set(stateVarObj.getAllArrayKeys(stateVarObj.arraySize))
+                  } else if (!stateVarObj.isArrayEntry) {
+                    this.changedStateVariables[componentName][varName] = true;
+                  }
                 }
               }
-            }
-            if (Object.keys(result.deletedComponents).length > 0) {
-              updatedComposites = true;
+              if (Object.keys(result.deletedComponents).length > 0) {
+                updatedComposites = true;
+              }
             }
           } else {
             compositesNotReady.push(cName)
@@ -8378,6 +8410,7 @@ export default class Core {
           componentName: component.componentName,
           type: "stateVariable",
           stateVariable: varName,
+          force: true,
         });
 
         if (!result.success) {
