@@ -66,40 +66,49 @@ class DoenetViewerChild extends Component {
 
     this.coreId = nanoid();
     // console.log(">>>CREATE core this.coreId!!!",this.coreId)  
-    if (this.props.core) {
-      new this.props.core({
-        coreId: this.coreId,
-        coreReadyCallback: this.coreReady,
-        coreUpdatedCallback: this.update,
-        doenetML: this.doenetML,
-        externalFunctions: {
-          localStateChanged: this.localStateChanged,
-          // submitResponse: this.submitResponse,
-          recordSolutionView: this.recordSolutionView,
-          recordEvent: this.recordEvent,
-          contentIdsToDoenetMLs: this.contentIdsToDoenetMLs.bind(this)
-        },
-        flags: this.props.flags,
-        requestedVariant: this.requestedVariant,
-        stateVariableChanges: this.cumulativeStateVariableChanges,
-      });
-    } else {
-      new Core({
-        coreId: this.coreId,
-        coreReadyCallback: this.coreReady,
-        coreUpdatedCallback: this.update,
-        doenetML: this.doenetML,
-        externalFunctions: {
-          localStateChanged: this.localStateChanged,
-          // submitResponse: this.submitResponse,
-          recordSolutionView: this.recordSolutionView,
-          recordEvent: this.recordEvent,
-          contentIdsToDoenetMLs: this.contentIdsToDoenetMLs.bind(this)
-        },
-        flags: this.props.flags,
-        requestedVariant: this.requestedVariant,
-        stateVariableChanges: this.cumulativeStateVariableChanges,
-      });
+    try {
+
+
+      if (this.props.core) {
+        new this.props.core({
+          coreId: this.coreId,
+          coreReadyCallback: this.coreReady,
+          coreUpdatedCallback: this.update,
+          doenetML: this.doenetML,
+          externalFunctions: {
+            localStateChanged: this.localStateChanged,
+            // submitResponse: this.submitResponse,
+            recordSolutionView: this.recordSolutionView,
+            recordEvent: this.recordEvent,
+            contentIdsToDoenetMLs: this.contentIdsToDoenetMLs.bind(this)
+          },
+          flags: this.props.flags,
+          requestedVariant: this.requestedVariant,
+          stateVariableChanges: this.cumulativeStateVariableChanges,
+        });
+      } else {
+        new Core({
+          coreId: this.coreId,
+          coreReadyCallback: this.coreReady,
+          coreUpdatedCallback: this.update,
+          doenetML: this.doenetML,
+          externalFunctions: {
+            localStateChanged: this.localStateChanged,
+            // submitResponse: this.submitResponse,
+            recordSolutionView: this.recordSolutionView,
+            recordEvent: this.recordEvent,
+            contentIdsToDoenetMLs: this.contentIdsToDoenetMLs.bind(this)
+          },
+          flags: this.props.flags,
+          requestedVariant: this.requestedVariant,
+          stateVariableChanges: this.cumulativeStateVariableChanges,
+        });
+      }
+    } catch (e) {
+      if (this.props.setIsInErrorState) {
+        this.props.setIsInErrorState(true)
+      }
+      this.setState({ errMsg: e.message });
     }
 
 
@@ -203,7 +212,7 @@ class DoenetViewerChild extends Component {
       if (!navigator.onLine) {
         this.props.toast("You're not connected to the internet. ", toastType.ERROR)
       }
-    
+
 
       axios.post('/api/initAssignmentAttempt.php', {
         doenetId: this.props.doenetId,
@@ -216,13 +225,19 @@ class DoenetViewerChild extends Component {
       }).then(({ data }) => {
 
         // console.log(">>>>data",data)
-        if (!data.success){
+        if (!data.success) {
+          if (this.props.setIsInErrorState) {
+            this.props.setIsInErrorState(true)
+          }
           this.setState({ errMsg: data.message })
         }
 
         this.savedUserAssignmentAttemptNumber = this.attemptNumber; //In callback
       })
         .catch(errMsg => {
+          if (this.props.setIsInErrorState) {
+            this.props.setIsInErrorState(true)
+          }
           this.setState({ errMsg: errMsg.message })
         })
 
@@ -317,12 +332,12 @@ class DoenetViewerChild extends Component {
     }
 
     axios.post('/api/recordContentInteraction.php', data)
-    .then(({data}) => {
-      if (!data.success){
-        this.props.toast(data.message, toastType.ERROR)
-      }
-      //   console.log(">>>>recordContentInteraction data",data)
-    });
+      .then(({ data }) => {
+        if (!data.success) {
+          this.props.toast(data.message, toastType.ERROR)
+        }
+        //   console.log(">>>>recordContentInteraction data",data)
+      });
 
 
     if (!this.allowSaveSubmissions) {
@@ -346,7 +361,7 @@ class DoenetViewerChild extends Component {
       axios.post('/api/saveCreditForItem.php', payload2)
         .then(resp => {
           // console.log('>>>>saveCreditForItem resp', resp.data);
-          if (!resp.data.success){
+          if (!resp.data.success) {
             this.props.toast(resp.data.message, toastType.ERROR)
           }
 
@@ -404,7 +419,7 @@ class DoenetViewerChild extends Component {
 
     //submissions or pageState
     let effectivePageStateSource = "pageState"; //Default
-    if (this.props.pageStateSource){
+    if (this.props.pageStateSource) {
       effectivePageStateSource = this.props.pageStateSource;
     }
 
@@ -434,6 +449,9 @@ class DoenetViewerChild extends Component {
         }
       })
       .catch(errMsg => {
+        if (this.props.setIsInErrorState) {
+          this.props.setIsInErrorState(true)
+        }
         this.setState({ errMsg: errMsg.message })
       })
 
@@ -506,7 +524,7 @@ class DoenetViewerChild extends Component {
       attemptNumber: this.attemptNumber,
     });
 
-          // console.log('reportSolutionViewed-->>>>',resp.data);
+    // console.log('reportSolutionViewed-->>>>',resp.data);
 
     return { allowView: true, message: "", scoredComponent };
 

@@ -226,11 +226,13 @@ export default function GradebookAssignmentView() {
   assignmentsTable.headers = [];
   assignmentsTable.headers.push({
     Header: "Student",
+    Footer: "Possible Points",
     accessor: "student"
   });
   for (let i = 1; i <= maxAttempts; i++) {
     assignmentsTable.headers.push({
       Header: "Attempt " + i,
+      Footer: totalPossiblePoints,
       accessor: "a" + i,
       disableFilters: true,
       Cell: (row) => /* @__PURE__ */ React.createElement("a", {
@@ -249,6 +251,7 @@ export default function GradebookAssignmentView() {
   }
   assignmentsTable.headers.push({
     Header: "Assignment Total",
+    Footer: totalPossiblePoints,
     accessor: "grade",
     disableFilters: true
   });

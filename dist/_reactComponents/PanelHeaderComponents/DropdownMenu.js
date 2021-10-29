@@ -1,7 +1,7 @@
+import {faHandMiddleFinger} from "../../_snowpack/pkg/@fortawesome/free-solid-svg-icons.js";
 import React from "../../_snowpack/pkg/react.js";
 import Select from "../../_snowpack/pkg/react-select.js";
 const DropdownMenu = (props) => {
-  console.log("right ", props.right);
   const customStyles = {
     option: (provided, state) => {
       return {
@@ -13,7 +13,9 @@ const DropdownMenu = (props) => {
     },
     menu: (provided, state) => ({
       ...provided,
-      width: state.selectProps.width
+      width: state.selectProps.width,
+      maxHeigh: state.selectProps.maxMenuHeight,
+      overflow: "scroll"
     }),
     container: (provided, state) => ({
       ...provided,
@@ -69,6 +71,7 @@ const DropdownMenu = (props) => {
     defaultValue: options[props.defaultIndex - 1],
     styles: customStyles,
     width,
+    maxMenuHeight: props.maxMenuHeight,
     isSearchable: false,
     autoFocus: false,
     onChange: props.onChange,

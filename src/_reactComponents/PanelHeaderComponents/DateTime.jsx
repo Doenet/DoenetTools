@@ -1,10 +1,24 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState, useRef } from 'react';
 import Datetime from 'react-datetime';
 import 'react-datetime/css/react-datetime.css';
 import './DateTime.css';
 
 export default function DateTime(props) {
-  const [value, setValue] = useState(props.value ? props.value : null);
+  //console.log('props', props);
+  const [value, setValue] = useState(props.value);
+  const inputRef = useRef(null);
+  const [cursorStart, setCursorStart] = useState(0);
+  const [cursorEnd, setCursorEnd] = useState(0);
+
+  useEffect(() => {
+    setValue(props.value);
+  }, [props]);
+
+  useEffect(() => {
+    // console.log('triggered', cursorStart, cursorEnd);
+    inputRef.current.selectionStart = cursorStart;
+    inputRef.current.selectionEnd = cursorEnd;
+  });
 
   let placeholder = '';
 
@@ -18,16 +32,52 @@ export default function DateTime(props) {
     placeholder += ' hh:mm';
   }
 
+  placeholder = props.placeholder ? props.placeholder : placeholder;
+
   let inputProps = {
     disabled: props.disabled === true ? true : false,
     placeholder: placeholder,
   };
 
-  //console.log('>>> placeholder', placeholder);
+  const renderInput = (propsRI, openCalendar, closeCalendar) => {
+    //console.log('propRI', propsRI);
+    return (
+      <div>
+        <input
+          {...propsRI}
+          ref={inputRef}
+          onChange={(e) => {
+            // console.log(e.target.selectionStart, e.target.selectionEnd);
+            setCursorStart(e.target.selectionStart);
+            setCursorEnd(e.target.selectionEnd);
+            propsRI.onChange(e);
+          }}
+          onClick={(e) => {
+            //console.log('clicked');
+            propsRI.onClick(e);
+          }}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') {
+              closeCalendar();
+            }
+          }}
+        />
+      </div>
+    );
+  };
+
+  // console.log(
+  //   'placeholder',
+  //   placeholder,
+  //   'value: ',
+  //   value,
+  //   ' props.value: ',
+  //   props.value,
+  // );
 
   return (
     <Datetime
-      style={{ minWidth: '0px', width: '200px' }}
+      renderInput={renderInput}
       value={value}
       dateFormat={props.datePicker === false ? false : true}
       timeFormat={
@@ -39,42 +89,23 @@ export default function DateTime(props) {
       }
       inputProps={inputProps}
       onChange={(dateObjectOrString) => {
-        if (typeof dateObjectOrString === 'string') {
-          // console.log('>>> value changed', dateObjectOrString);
-          setValue(null);
-        } else {
-          // console.log('>>> value changed', dateObjectOrString);
-          setValue(dateObjectOrString.toDate());
+        // console.log('onChange', typeof dateObjectOrString, dateObjectOrString);
+        setValue(dateObjectOrString);
+        if (props.onChange) {
+          props.onChange({
+            valid: typeof dateObjectOrString !== 'string',
+            value: dateObjectOrString,
+          });
         }
       }}
       onClose={(_) => {
-        if (value === null) {
-          // console.log('>>> value updated', value);
-          if (props.callback) {
-            props.callback({ valid: false, value: value });
-          }
-        } else {
-          // console.log('>>> value updated', value);
-          if (props.callback) {
-            props.callback({
-              valid: true,
-              value: value,
-            });
-          }
+        //console.log('onBlur', dateObjectOrString.toDate());
+        if (props.onBlur) {
+          props.onBlur({
+            valid: typeof value !== 'string',
+            value: value,
+          });
         }
-        // if (props.callback) {
-        //   if (typeof dateObjectOrString === 'string') {
-        //     console.log('>>> string', dateObjectOrString);
-        //     props.callback(false, dateObjectOrString);
-        //   } else {
-        //     console.log(
-        //       '>>> object',
-        //       dateObjectOrString,
-        //       dateObjectOrString.toDate(),
-        //     );
-        //     props.callback(true, dateObjectOrString.toDate());
-        //   }
-        // }
       }}
     />
   );

@@ -1635,16 +1635,45 @@ export default class Curve extends GraphicalComponent {
     }
 
     stateVariableDefinitions.extrapolateBackwardCoeffs = {
-      returnDependencies: () => ({
-        extrapolateBackward: {
-          dependencyType: "stateVariable",
-          variableName: "extrapolateBackward"
-        },
-        firstSplineCoeffs: {
-          dependencyType: "stateVariable",
-          variableName: "splineCoeffs1"
+      stateVariablesDeterminingDependencies: ["extrapolateBackward"],
+      returnDependencies({ stateValues }) {
+
+        let dependencies = {
+          extrapolateBackward: {
+            dependencyType: "stateVariable",
+            variableName: "extrapolateBackward"
+          },
+          nThroughPoints: {
+            dependencyType: "stateVariable",
+            variableName: "nThroughPoints"
+          }
+        };
+
+        if (stateValues.extrapolateBackward) {
+          dependencies.firstSplineCoeffs = {
+            dependencyType: "stateVariable",
+            variableName: "splineCoeffs1"
+          };
+          dependencies.graphXmin = {
+            dependencyType: "stateVariable",
+            variableName: "graphXmin"
+          };
+          dependencies.graphXmax = {
+            dependencyType: "stateVariable",
+            variableName: "graphXmax"
+          };
+          dependencies.graphYmin = {
+            dependencyType: "stateVariable",
+            variableName: "graphYmin"
+          };
+          dependencies.graphYmax = {
+            dependencyType: "stateVariable",
+            variableName: "graphYmax"
+          };
         }
-      }),
+
+        return dependencies;
+      },
       definition({ dependencyValues }) {
         if (!dependencyValues.extrapolateBackward || !dependencyValues.firstSplineCoeffs) {
           return { newValues: { extrapolateBackwardCoeffs: null } }
@@ -1668,6 +1697,46 @@ export default class Curve extends GraphicalComponent {
 
         let fac = (yp0 * xpp0 - xp0 * ypp0) / (d * d);
 
+        if (Math.abs(fac) < 1E-12 || Math.abs(xp0) < 1E-12 || Math.abs(yp0) < 1E-12) {
+          // curvature is zero or pointed at right angle
+          // extrapolate as straight line
+
+          let xpEffective = xp0;
+          let ypEffective = yp0;
+
+          if (dependencyValues.graphXmin !== null
+            && dependencyValues.graphXmax !== null
+            && dependencyValues.graphYmin !== null
+            && dependencyValues.graphYmax !== null
+          ) {
+
+            // if in graph, scale speed if needed to make sure leave graph
+
+            let xscale = dependencyValues.graphXmax - dependencyValues.graphXmin;
+            let yscale = dependencyValues.graphYmax - dependencyValues.graphYmin;
+            let tMax = dependencyValues.nThroughPoints - 1;
+
+            let scaleSpeedToReachXEdge = xscale / tMax / Math.abs(xpEffective);
+            let scaleSpeedToReachYEdge = yscale / tMax / Math.abs(ypEffective);
+
+            let minScale = Math.min(scaleSpeedToReachXEdge,scaleSpeedToReachYEdge);
+
+            if(minScale > 1) {
+              xpEffective *= minScale;
+              ypEffective *= minScale
+            }
+
+          }
+
+          let c = [
+            [x0, xpEffective, 0],
+            [y0, ypEffective, 0]
+          ];
+
+          return { newValues: { extrapolateBackwardCoeffs: c } }
+
+        }
+
         let dTx = yp0 * fac;
         let dTy = -xp0 * fac;
 
@@ -1676,12 +1745,56 @@ export default class Curve extends GraphicalComponent {
           // orient the parabola vertically
 
           let r = dTx / dTy;
+          let rFactor = (1 + r * r) ** 2;
 
-          let v = -xp0 * r;
-          let a = dTy * xp0 * xp0 * (1 + r * r) ** 2;
+          let xpEffective = xp0;
+
+          if (dependencyValues.graphXmin !== null
+            && dependencyValues.graphXmax !== null
+            && dependencyValues.graphYmin !== null
+            && dependencyValues.graphYmax !== null
+          ) {
+            // if we are in graph, make sure that the speed of the parametrization
+            // is fast enough for the curve to leave the graph while
+            // the parameter increases by the amount nThroughPoints - 1
+
+            let xscale = dependencyValues.graphXmax - dependencyValues.graphXmin;
+            let yscale = dependencyValues.graphYmax - dependencyValues.graphYmin;
+
+            let tMax = dependencyValues.nThroughPoints - 1;
+
+            let minSpeedToReachXEdge = xscale / tMax;
+
+
+            // y = a*v^2*t^2 + b*v*t
+            // where a = dTy*rFactor/2 and b = -r.
+            // Find minimum v where reach edge by tMax
+
+            let minSpeedToReachYEdge = Infinity;
+
+            if (dTy !== 0) {
+              let alpha = dTy * rFactor / 2 * tMax * tMax;
+              let beta = -r * tMax;
+              // y = alpha*v^2 + beta*v
+              // if alpha > 0, solve for y = yscale
+              // else if alpha < 0 solve for y = -yscale
+              let sr = Math.sqrt(beta * beta + 4 * Math.abs(alpha) * yscale);
+              minSpeedToReachYEdge = (Math.abs(beta) + sr) / (2 * Math.abs(alpha));
+            }
+
+            let minSpeed = Math.min(minSpeedToReachXEdge, minSpeedToReachYEdge);
+
+            if (minSpeed > Math.abs(xpEffective)) {
+              xpEffective *= minSpeed / Math.abs(xpEffective)
+            }
+
+          }
+
+          let v = -xpEffective * r;
+          let a = dTy * xpEffective * xpEffective * rFactor;
 
           let c = [
-            [x0, xp0, 0],
+            [x0, xpEffective, 0],
             [y0, v, a / 2]
           ];
 
@@ -1691,13 +1804,58 @@ export default class Curve extends GraphicalComponent {
           // orient the parabola horizontally
 
           let r = dTy / dTx;
+          let rFactor = (1 + r * r) ** 2;
 
-          let v = -yp0 * r;
-          let a = dTx * yp0 * yp0 * (1 + r * r) ** 2;
+
+          let ypEffective = yp0;
+
+          if (dependencyValues.graphXmin !== null
+            && dependencyValues.graphXmax !== null
+            && dependencyValues.graphYmin !== null
+            && dependencyValues.graphYmax !== null
+          ) {
+            // if we are in graph, make sure that the speed of the parametrization
+            // is fast enough for the curve to leave the graph while
+            // the parameter increases by the amount nThroughPoints - 1
+
+            let xscale = dependencyValues.graphXmax - dependencyValues.graphXmin;
+            let yscale = dependencyValues.graphYmax - dependencyValues.graphYmin;
+
+            let tMax = dependencyValues.nThroughPoints - 1;
+
+            let minSpeedToReachYEdge = yscale / tMax;
+
+
+            // y = a*v^2*t^2 + b*v*t
+            // where a = dTy*rFactor/2 and b = -r.
+            // Find minimum v where reach edge by tMax
+
+            let minSpeedToReachXEdge = Infinity;
+
+            if (dTx !== 0) {
+              let alpha = dTx * rFactor / 2 * tMax * tMax;
+              let beta = -r * tMax;
+              // c = alpha*v^2 + beta*v
+              // if alpha > 0, solve for x = xscale
+              // else if alpha < 0 solve for x = -xscale
+              let sr = Math.sqrt(beta * beta + 4 * Math.abs(alpha) * xscale);
+              minSpeedToReachXEdge = (Math.abs(beta) + sr) / (2 * Math.abs(alpha));
+            }
+
+            let minSpeed = Math.min(minSpeedToReachXEdge, minSpeedToReachYEdge);
+
+            if (minSpeed > Math.abs(ypEffective)) {
+              ypEffective *= minSpeed / Math.abs(ypEffective)
+            }
+
+          }
+
+          let v = -ypEffective * r;
+          let a = dTx * ypEffective * ypEffective * rFactor;
 
           let c = [
             [x0, v, a / 2],
-            [y0, yp0, 0]
+            [y0, ypEffective, 0]
           ];
 
           return { newValues: { extrapolateBackwardCoeffs: c } }
@@ -1708,7 +1866,7 @@ export default class Curve extends GraphicalComponent {
 
 
     stateVariableDefinitions.extrapolateForwardCoeffs = {
-      stateVariablesDeterminingDependencies: ["nThroughPoints"],
+      stateVariablesDeterminingDependencies: ["nThroughPoints", "extrapolateForward"],
       returnDependencies({ stateValues }) {
 
         let dependencies = {
@@ -1716,13 +1874,33 @@ export default class Curve extends GraphicalComponent {
             dependencyType: "stateVariable",
             variableName: "extrapolateForward"
           },
+          nThroughPoints: {
+            dependencyType: "stateVariable",
+            variableName: "nThroughPoints"
+          }
         }
 
-        if (stateValues.nThroughPoints >= 2) {
+        if (stateValues.extrapolateForward && stateValues.nThroughPoints >= 2) {
           dependencies.lastSplineCoeffs = {
             dependencyType: "stateVariable",
             variableName: "splineCoeffs" + (stateValues.nThroughPoints - 1)
-          }
+          };
+          dependencies.graphXmin = {
+            dependencyType: "stateVariable",
+            variableName: "graphXmin"
+          };
+          dependencies.graphXmax = {
+            dependencyType: "stateVariable",
+            variableName: "graphXmax"
+          };
+          dependencies.graphYmin = {
+            dependencyType: "stateVariable",
+            variableName: "graphYmin"
+          };
+          dependencies.graphYmax = {
+            dependencyType: "stateVariable",
+            variableName: "graphYmax"
+          };
         }
         return dependencies;
       },
@@ -1749,6 +1927,46 @@ export default class Curve extends GraphicalComponent {
 
         let fac = (yp0 * xpp0 - xp0 * ypp0) / (d * d);
 
+        if (Math.abs(fac) < 1E-12 || Math.abs(xp0) < 1E-12 || Math.abs(yp0) < 1E-12) {
+          // curvature is zero or pointed at right angle
+          // extrapolate as straight line
+
+          let xpEffective = xp0;
+          let ypEffective = yp0;
+
+          if (dependencyValues.graphXmin !== null
+            && dependencyValues.graphXmax !== null
+            && dependencyValues.graphYmin !== null
+            && dependencyValues.graphYmax !== null
+          ) {
+
+            // if in graph, scale speed if needed to make sure leave graph
+
+            let xscale = dependencyValues.graphXmax - dependencyValues.graphXmin;
+            let yscale = dependencyValues.graphYmax - dependencyValues.graphYmin;
+            let tMax = dependencyValues.nThroughPoints - 1;
+
+            let scaleSpeedToReachXEdge = xscale / tMax / Math.abs(xpEffective);
+            let scaleSpeedToReachYEdge = yscale / tMax / Math.abs(ypEffective);
+
+            let minScale = Math.min(scaleSpeedToReachXEdge,scaleSpeedToReachYEdge);
+
+            if(minScale > 1) {
+              xpEffective *= minScale;
+              ypEffective *= minScale
+            }
+
+          }
+
+          let c = [
+            [x0, xpEffective, 0],
+            [y0, ypEffective, 0]
+          ];
+
+          return { newValues: { extrapolateForwardCoeffs: c } }
+
+        }
+
         let dTx = yp0 * fac;
         let dTy = -xp0 * fac;
 
@@ -1757,12 +1975,56 @@ export default class Curve extends GraphicalComponent {
           // orient the parabola vertically
 
           let r = dTx / dTy;
+          let rFactor = (1 + r * r) ** 2;
 
-          let v = -xp0 * r;
-          let a = dTy * xp0 * xp0 * (1 + r * r) ** 2;
+          let xpEffective = xp0;
+
+          if (dependencyValues.graphXmin !== null
+            && dependencyValues.graphXmax !== null
+            && dependencyValues.graphYmin !== null
+            && dependencyValues.graphYmax !== null
+          ) {
+            // if we are in graph, make sure that the speed of the parametrization
+            // is fast enough for the curve to leave the graph while
+            // the parameter increases by the amount nThroughPoints - 1
+
+            let xscale = dependencyValues.graphXmax - dependencyValues.graphXmin;
+            let yscale = dependencyValues.graphYmax - dependencyValues.graphYmin;
+
+            let tMax = dependencyValues.nThroughPoints - 1;
+
+            let minSpeedToReachXEdge = xscale / tMax;
+
+
+            // y = a*v^2*t^2 + b*v*t
+            // where a = dTy*rFactor/2 and b = -r.
+            // Find minimum v where reach edge by tMax
+
+            let minSpeedToReachYEdge = Infinity;
+
+            if (dTy !== 0) {
+              let alpha = dTy * rFactor / 2 * tMax * tMax;
+              let beta = -r * tMax;
+              // y = alpha*v^2 + beta*v
+              // if alpha > 0, solve for y = yscale
+              // else if alpha < 0 solve for y = -yscale
+              let sr = Math.sqrt(beta * beta + 4 * Math.abs(alpha) * yscale);
+              minSpeedToReachYEdge = (Math.abs(beta) + sr) / (2 * Math.abs(alpha));
+            }
+
+            let minSpeed = Math.min(minSpeedToReachXEdge, minSpeedToReachYEdge);
+
+            if (minSpeed > Math.abs(xpEffective)) {
+              xpEffective *= minSpeed / Math.abs(xpEffective)
+            }
+
+          }
+
+          let v = -xpEffective * r;
+          let a = dTy * xpEffective * xpEffective * rFactor;
 
           let c = [
-            [x0, xp0, 0],
+            [x0, xpEffective, 0],
             [y0, v, a / 2]
           ];
 
@@ -1772,13 +2034,57 @@ export default class Curve extends GraphicalComponent {
           // orient the parabola horizontally
 
           let r = dTy / dTx;
+          let rFactor = (1 + r * r) ** 2;
 
-          let v = -yp0 * r;
-          let a = dTx * yp0 * yp0 * (1 + r * r) ** 2;
+          let ypEffective = yp0;
+
+          if (dependencyValues.graphXmin !== null
+            && dependencyValues.graphXmax !== null
+            && dependencyValues.graphYmin !== null
+            && dependencyValues.graphYmax !== null
+          ) {
+            // if we are in graph, make sure that the speed of the parametrization
+            // is fast enough for the curve to leave the graph while
+            // the parameter increases by the amount nThroughPoints - 1
+
+            let xscale = dependencyValues.graphXmax - dependencyValues.graphXmin;
+            let yscale = dependencyValues.graphYmax - dependencyValues.graphYmin;
+
+            let tMax = dependencyValues.nThroughPoints - 1;
+
+            let minSpeedToReachYEdge = yscale / tMax;
+
+
+            // y = a*v^2*t^2 + b*v*t
+            // where a = dTy*rFactor/2 and b = -r.
+            // Find minimum v where reach edge by tMax
+
+            let minSpeedToReachXEdge = Infinity;
+
+            if (dTx !== 0) {
+              let alpha = dTx * rFactor / 2 * tMax * tMax;
+              let beta = -r * tMax;
+              // c = alpha*v^2 + beta*v
+              // if alpha > 0, solve for x = xscale
+              // else if alpha < 0 solve for x = -xscale
+              let sr = Math.sqrt(beta * beta + 4 * Math.abs(alpha) * xscale);
+              minSpeedToReachXEdge = (Math.abs(beta) + sr) / (2 * Math.abs(alpha));
+            }
+
+            let minSpeed = Math.min(minSpeedToReachXEdge, minSpeedToReachYEdge);
+
+            if (minSpeed > Math.abs(ypEffective)) {
+              ypEffective *= minSpeed / Math.abs(ypEffective)
+            }
+
+          }
+
+          let v = -ypEffective * r;
+          let a = dTx * ypEffective * ypEffective * rFactor;
 
           let c = [
             [x0, v, a / 2],
-            [y0, yp0, 0]
+            [y0, ypEffective, 0]
           ];
 
           return { newValues: { extrapolateForwardCoeffs: c } }
