@@ -26,6 +26,8 @@ import {
 
 import { panelOpen } from '../Panels/Panel';
 
+import { doenetMainBlue } from '../../../_reactComponents/PanelHeaderComponents/theme';
+
 import { useRef } from 'react';
 
 const FunctionPanel = styled.div`
@@ -158,7 +160,7 @@ const DeleteButton = styled.button`
 const BlueButton = styled.button`
   flex-basis: 90%;
   height: 30px;
-  background: #167ac1;
+  background: ${doenetMainBlue};
   border: 0;
   border-radius: 3px;
 `;
@@ -167,7 +169,7 @@ const Blue20Button = styled.button`
   flex-basis: 19%;
   margin: 1px;
   height: 30px;
-  background: #167ac1;
+  background: ${doenetMainBlue};
   border: 0;
   border-radius: 3px;
 `;
