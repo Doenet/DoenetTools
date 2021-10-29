@@ -32,3 +32,8 @@ export const functionRef = atom({
   key: 'functionRef',
   default: null,
 });
+
+export const footerPanelToggle = atom({
+  key: 'footerPanelToggle',
+  default: true,
+});

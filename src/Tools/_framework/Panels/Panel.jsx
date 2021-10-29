@@ -3,7 +3,10 @@ import styled from 'styled-components';
 import { animated, useSpring } from '@react-spring/web';
 import { useGesture } from 'react-use-gesture';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faGripLinesVertical, faGripLines } from '@fortawesome/free-solid-svg-icons';
+import {
+  faGripLinesVertical,
+  faGripLines,
+} from '@fortawesome/free-solid-svg-icons';
 import { useRecoilState, atomFamily } from 'recoil';
 
 export const handleDirection = {
@@ -67,7 +70,7 @@ const DragHandle = styled.div`
   touch-action: none;
 `;
 
-const panelOpen = atomFamily({
+export const panelOpen = atomFamily({
   key: 'panelOpenAtom',
   default: false,
 });
@@ -81,6 +84,7 @@ export default function DragPanel({
   panelSize = 240,
   isInitOpen = false,
 }) {
+  console.log('id', id);
   const [open, setOpen] = useRecoilState(panelOpen(id));
   const [{ dir }, api] = useSpring(
     () => ({

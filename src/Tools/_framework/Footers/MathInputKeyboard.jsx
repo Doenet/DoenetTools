@@ -10,6 +10,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 
 import {
+  useRecoilState,
   useRecoilValue,
   useRecoilValueLoadable,
   useSetRecoilState,
@@ -22,6 +23,8 @@ import {
   functionRef,
   focusedMathFieldReturn,
 } from './MathInputSelector';
+
+import { panelOpen } from '../Panels/Panel';
 
 import { useRef } from 'react';
 
@@ -191,7 +194,9 @@ const ToggleButton = styled.button`
 `;
 
 export default function VirtualKeyboard() {
-  const [toggleKeyboard, setToggleKeyboard] = useState(true);
+  const [toggleKeyboard, setToggleKeyboard] = useRecoilState(
+    panelOpen('keyboard'),
+  );
   const [toggleLetters, setToggleLetters] = useState(false);
   const [toggleFunctions, setToggleFunctions] = useState(false);
   const [toggleCase, setToggleCase] = useState(false);
@@ -212,9 +217,15 @@ export default function VirtualKeyboard() {
     //console.log(">>> ref: ", containerRef, toggleButtonRef, functionTabRef)
   }, [toggleKeyboard, toggleLetters, toggleFunctions, toggleCase, selectedTab]);
 
+  useEffect(() => {
+    if (!toggleKeyboard) {
+      setToggleFunctions(false);
+    }
+  }, [toggleKeyboard]);
+
   const handleToggleKeyboard = () => {
     setToggleFunctions(toggleKeyboard ? false : toggleFunctions);
-    setToggleKeyboard(!toggleKeyboard);
+    // setToggleKeyboard(!toggleKeyboard);
   };
 
   const handleToggleLetters = () => {
@@ -254,17 +265,17 @@ export default function VirtualKeyboard() {
             </TabHeader>
             <TabHeader
               onClick={handleTabSelection}
-              value="Stat"
-              selected={selectedTab === 'Stat'}
+              value="Sets"
+              selected={selectedTab === 'Sets'}
             >
-              Stat
+              Sets
             </TabHeader>
             <TabHeader
               onClick={handleTabSelection}
-              value="Misc"
-              selected={selectedTab === 'Misc'}
+              value="Calc"
+              selected={selectedTab === 'Calc'}
             >
-              Misc
+              Calc
             </TabHeader>
             {selectedTab === 'Trig' ? (
               <>
@@ -323,10 +334,45 @@ export default function VirtualKeyboard() {
                   <MathJax.Node inline formula={'sech'} />
                 </Button33>
               </>
-            ) : selectedTab === 'Stat' ? (
-              <Button>mean</Button>
+            ) : selectedTab === 'Sets' ? (
+              <>
+                <Button33 onClick={() => callback('write \\cup')}>
+                  <MathJax.Node inline formula={'\\cup'} />
+                </Button33>
+                <Button33 onClick={() => callback('write \\cap')}>
+                  <MathJax.Node inline formula={'\\cap'} />
+                </Button33>
+                <Button33 onClick={() => callback('write \\subset')}>
+                  <MathJax.Node inline formula={'\\subset'} />
+                </Button33>
+                <Button33 onClick={() => callback('write \\supset')}>
+                  <MathJax.Node inline formula={'\\supset'} />
+                </Button33>
+                <Button33 onClick={() => callback('write \\subseteq')}>
+                  <MathJax.Node inline formula={'\\subseteq'} />
+                </Button33>
+                <Button33 onClick={() => callback('write \\supseteq')}>
+                  <MathJax.Node inline formula={'\\supseteq'} />
+                </Button33>
+                <Button33 onClick={() => callback('write \\nsubseteq')}>
+                  <MathJax.Node inline formula={'\\nsubseteq'} />
+                </Button33>
+                <Button33 onClick={() => callback('write \\nsupseteq')}>
+                  <MathJax.Node inline formula={'\\nsupseteq'} />
+                </Button33>
+                <Button33 onClick={() => callback('write \\emptyset')}>
+                  <MathJax.Node inline formula={'\\emptyset'} />
+                </Button33>
+              </>
             ) : (
-              <Button>ceil</Button>
+              <>
+                <Button33 onClick={() => callback('write \\partial')}>
+                  <MathJax.Node inline formula={'\\partial'} />
+                </Button33>
+                <Button33 onClick={() => callback('write \\int')}>
+                  <MathJax.Node inline formula={'\\int'} />
+                </Button33>
+              </>
             )}
           </FunctionPanel>
         ) : null}
@@ -571,18 +617,18 @@ export default function VirtualKeyboard() {
             <Panel
               tabIndex="0"
               ref={containerRef}
-              onBlur={(e) => {
-                if (
-                  functionTabRef &&
-                  functionTabRef.current &&
-                  functionTabRef.current.contains(e.relatedTarget)
-                ) {
-                  console.log('>>> clicked inside the panel functional panel');
-                } else {
-                  console.log('blurred');
-                  setToggleFunctions(false);
-                }
-              }}
+              // onBlur={(e) => {
+              //   if (
+              //     functionTabRef &&
+              //     functionTabRef.current &&
+              //     functionTabRef.current.contains(e.relatedTarget)
+              //   ) {
+              //     console.log('>>> clicked inside the panel functional panel');
+              //   } else {
+              //     console.log('blurred');
+              //     setToggleFunctions(false);
+              //   }
+              // }}
             >
               <Section>
                 <Button onClick={() => callback('write x')}>

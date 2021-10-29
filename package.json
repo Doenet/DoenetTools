@@ -15,7 +15,7 @@
     "test": "cypress open",
     "test:all": "cypress run -b 'chrome' --config video=false --headless",
     "publish_db": "docker-compose up -d mysql && docker exec --privileged -w /var/lib/mysql mysql mysqldump --databases --add-drop-database --add-drop-table -u root -phelloworld doenet_local > ./volumes/db_init/db_template.sql",
-    "reset_db": "docker exec -i doenet-mysql-1 sh -c 'mysql -u root -phelloworld doenet_local' < ./doenet_docker/volumes/db_init/db_template.sql",
+    "reset_db": "docker exec -i doenet_mysql_1 sh -c 'mysql -u root -phelloworld doenet_local' < ./doenet_docker/volumes/db_init/db_template.sql",
     "reset_volumes": "docker volume rm doenet-node-modules doenet_vendor",
     "format": "prettier --write \"src/**/*.{js,jsx,json}\"",
     "lint": "eslint \"src/**/*.{js,jsx}\"",

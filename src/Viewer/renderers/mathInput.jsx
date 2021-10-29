@@ -70,7 +70,7 @@ export default function MathInput(props) {
     let expression;
 
     text = normalizeLatexString(text, {
-      unionFromU: this.doenetSvData.unionFromU,
+      unionFromU: SVs.unionFromU,
     });
 
     // replace ^25 with ^{2}5, since mathQuill uses standard latex conventions
@@ -329,7 +329,8 @@ export default function MathInput(props) {
           <EditableMathField
             latex={latexValue}
             config={{
-              autoCommands: 'sqrt pi theta integral infinity',
+              autoCommands:
+                'alpha beta gamma delta epsilon zeta eta mu nu xi omega rho sigma tau phi chi psi omega iota kappa lambda Gamma Delta Xi Omega Sigma Phi Psi Omega Lambda sqrt pi Pi theta Theta integral infinity',
               autoOperatorNames:
                 'arg deg det dim exp gcd hom ker lg lim ln log max min' +
                 ' Pr' +
