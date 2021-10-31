@@ -953,11 +953,11 @@ export default class Answer extends InlineComponent {
           // that give the maximum credit (which will be creditAchieved)
           // Always process awards if haven't matched an award in case want to
           // use an award with credit=0 to trigger feedback
-          let awardCredits = Array(n).fill(0);
+          let awardCredits = Array(n).fill(null);
           let minimumFromAwardCredits = 0;
           for (let child of dependencyValues.awardChildren) {
             let creditFromChild = child.stateValues.creditAchieved;
-            if (creditFromChild > minimumFromAwardCredits || awardsUsed[0] === null) {
+            if (creditFromChild > minimumFromAwardCredits || awardsUsed[n-1] === null) {
               if (child.stateValues.fractionSatisfied > 0) {
                 if (awardsUsed[0] === null) {
                   awardsUsed[0] = child.componentName;
@@ -965,7 +965,7 @@ export default class Answer extends InlineComponent {
                   minimumFromAwardCredits = Math.min(...awardCredits);
                 } else {
                   for (let [ind, credit] of awardCredits.entries()) {
-                    if (creditFromChild > credit) {
+                    if (creditFromChild > credit || credit === null) {
                       awardsUsed.splice(ind, 0, child.componentName);
                       awardsUsed = awardsUsed.slice(0, n)
                       awardCredits.splice(ind, 0, creditFromChild);
@@ -1098,6 +1098,8 @@ export default class Answer extends InlineComponent {
 
 
     stateVariableDefinitions.justSubmitted = {
+      public: true,
+      componentType: "boolean",
       forRenderer: true,
       defaultValue: false,
       willBeEssential: true,

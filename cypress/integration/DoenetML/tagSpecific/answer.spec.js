@@ -11597,6 +11597,193 @@ describe('Answer Tag Tests', function () {
 
   });
 
+  it('number of awards credited, zero credits are triggered', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+        <text>a</text>
+        <p>
+        <mathinput name="mi1" />
+        <mathinput name="mi2" />
+        <mathinput name="mi3" />
+        <answer nAwardsCredited="3" name="a">
+          <award targetsAreResponses="mi1 mi2 mi3" matchPartial>
+            <when>$mi1=x and $mi2=y and $mi3=z</when>
+          </award>
+          <award credit="0" feedbackText="Nothing is in the right spot">
+            <when>$mi1!=x and $mi2!=y and $mi3!=z</when>
+          </award>
+          <award credit="0" feedbackText="x is in the wrong spot">
+            <when>$mi2=x or $mi3=x</when>
+          </award>
+          <award credit="0" feedbackText="y is in the wrong spot">
+            <when>$mi1=y or $mi3=y</when>
+          </award>
+          <award credit="0" feedbackText="z is in the wrong spot">
+            <when>$mi1=z or $mi2=z</when>
+          </award>
+          </answer>
+        </p>
+
+        <copy prop="feedbacks" tname="a" assignNames="fb1 fb2 fb3 fb4 fb5" />
+
+        <p>Credit: <copy assignNames="ca" prop="creditAchieved" tname="a" displayDecimals="3" /></p>
+
+ `}, "*");
+    });
+
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    let submitAnchor = cesc('#/a_submit');
+    let correctAnchor = cesc('#/a_correct');
+    let incorrectAnchor = cesc('#/a_incorrect');
+    let partialAnchor = cesc('#/a_partial');
+
+    cy.get(submitAnchor).should('be.visible');
+    cy.get(correctAnchor).should('not.exist');
+    cy.get(incorrectAnchor).should('not.exist');
+    cy.get(partialAnchor).should('not.exist');
+
+    cy.get('#\\/fb1').should('not.exist')
+    cy.get('#\\/fb2').should('not.exist')
+    cy.get('#\\/fb3').should('not.exist')
+    cy.get('#\\/fb4').should('not.exist')
+    cy.get('#\\/fb5').should('not.exist')
+
+
+    cy.get('#\\/a_submit').click();
+
+    cy.get(submitAnchor).should('not.exist');
+    cy.get(correctAnchor).should('not.exist');
+    cy.get(incorrectAnchor).should('be.visible');
+    cy.get(partialAnchor).should('not.exist');
+
+    cy.get('#\\/fb1').should('have.text', 'Nothing is in the right spot')
+    cy.get('#\\/fb2').should('not.exist')
+    cy.get('#\\/fb3').should('not.exist')
+    cy.get('#\\/fb4').should('not.exist')
+    cy.get('#\\/fb5').should('not.exist')
+    cy.get("#\\/ca").should('have.text', '0')
+
+
+    cy.get("#\\/mi1 textarea").type("z{enter}", { force: true });
+    cy.get('#\\/a_submit').click();
+
+    cy.get(submitAnchor).should('not.exist');
+    cy.get(correctAnchor).should('not.exist');
+    cy.get(incorrectAnchor).should('be.visible');
+    cy.get(partialAnchor).should('not.exist');
+
+    cy.get('#\\/fb1').should('have.text', 'Nothing is in the right spot')
+    cy.get('#\\/fb2').should('have.text', 'z is in the wrong spot')
+    cy.get('#\\/fb3').should('not.exist')
+    cy.get('#\\/fb4').should('not.exist')
+    cy.get('#\\/fb5').should('not.exist')
+    cy.get("#\\/ca").should('have.text', '0')
+
+
+    cy.get("#\\/mi2 textarea").type("y{enter}", { force: true });
+    cy.get('#\\/a_submit').click();
+
+    cy.get(submitAnchor).should('not.exist');
+    cy.get(correctAnchor).should('not.exist');
+    cy.get(incorrectAnchor).should('not.exist');
+    cy.get(partialAnchor).invoke('text').then((text) => {
+      expect(text.trim().toLowerCase()).equal('33% correct')
+    })
+    cy.get('#\\/fb1').should('have.text', 'z is in the wrong spot')
+    cy.get('#\\/fb2').should('not.exist')
+    cy.get('#\\/fb3').should('not.exist')
+    cy.get('#\\/fb4').should('not.exist')
+    cy.get('#\\/fb5').should('not.exist')
+    cy.get("#\\/ca").should('have.text', '0.333')
+
+    cy.get("#\\/mi3 textarea").type("x{enter}", { force: true });
+    cy.get('#\\/a_submit').click();
+
+    cy.get(submitAnchor).should('not.exist');
+    cy.get(correctAnchor).should('not.exist');
+    cy.get(incorrectAnchor).should('not.exist');
+    cy.get(partialAnchor).invoke('text').then((text) => {
+      expect(text.trim().toLowerCase()).equal('33% correct')
+    })
+    cy.get('#\\/fb1').should('have.text', 'x is in the wrong spot')
+    cy.get('#\\/fb2').should('have.text', 'z is in the wrong spot')
+    cy.get('#\\/fb3').should('not.exist')
+    cy.get('#\\/fb4').should('not.exist')
+    cy.get('#\\/fb5').should('not.exist')
+    cy.get("#\\/ca").should('have.text', '0.333')
+
+
+    cy.get("#\\/mi1 textarea").type("{end}{backspace}y{enter}", { force: true });
+    cy.get('#\\/a_submit').click();
+
+    cy.get(submitAnchor).should('not.exist');
+    cy.get(correctAnchor).should('not.exist');
+    cy.get(incorrectAnchor).should('not.exist');
+    cy.get(partialAnchor).invoke('text').then((text) => {
+      expect(text.trim().toLowerCase()).equal('33% correct')
+    })
+    cy.get('#\\/fb1').should('have.text', 'x is in the wrong spot')
+    cy.get('#\\/fb2').should('have.text', 'y is in the wrong spot')
+    cy.get('#\\/fb3').should('not.exist')
+    cy.get('#\\/fb4').should('not.exist')
+    cy.get('#\\/fb5').should('not.exist')
+    cy.get("#\\/ca").should('have.text', '0.333')
+
+
+    cy.get("#\\/mi2 textarea").type("{end}{backspace}z{enter}", { force: true });
+    cy.get('#\\/a_submit').click();
+
+    cy.get(submitAnchor).should('not.exist');
+    cy.get(correctAnchor).should('not.exist');
+    cy.get(incorrectAnchor).should('be.visible');
+    cy.get(partialAnchor).should('not.exist');
+
+    cy.get('#\\/fb1').should('have.text', 'Nothing is in the right spot')
+    cy.get('#\\/fb2').should('have.text', 'x is in the wrong spot')
+    cy.get('#\\/fb3').should('have.text', 'y is in the wrong spot')
+    cy.get('#\\/fb4').should('not.exist')
+    cy.get('#\\/fb5').should('not.exist')
+    cy.get("#\\/ca").should('have.text', '0')
+
+    cy.get("#\\/mi2 textarea").type("{end}{backspace}y{enter}", { force: true });
+    cy.get("#\\/mi3 textarea").type("{end}{backspace}z{enter}", { force: true });
+    cy.get('#\\/a_submit').click();
+
+    cy.get(submitAnchor).should('not.exist');
+    cy.get(correctAnchor).should('not.exist');
+    cy.get(incorrectAnchor).should('not.exist');
+    cy.get(partialAnchor).invoke('text').then((text) => {
+      expect(text.trim().toLowerCase()).equal('67% correct')
+    })
+    cy.get('#\\/fb1').should('have.text', 'y is in the wrong spot')
+    cy.get('#\\/fb2').should('not.exist')
+    cy.get('#\\/fb3').should('not.exist')
+    cy.get('#\\/fb4').should('not.exist')
+    cy.get('#\\/fb5').should('not.exist')
+    cy.get("#\\/ca").should('have.text', '0.667')
+
+
+    cy.get("#\\/mi1 textarea").type("{end}{backspace}x{enter}", { force: true });
+    cy.get('#\\/a_submit').click();
+
+    cy.get(submitAnchor).should('not.exist');
+    cy.get(correctAnchor).should('be.visible');
+    cy.get(incorrectAnchor).should('not.exist');
+    cy.get(partialAnchor).should('not.exist');
+    cy.get('#\\/fb1').should('not.exist')
+    cy.get('#\\/fb2').should('not.exist')
+    cy.get('#\\/fb3').should('not.exist')
+    cy.get('#\\/fb4').should('not.exist')
+    cy.get('#\\/fb5').should('not.exist')
+    cy.get("#\\/ca").should('have.text', '1')
+
+
+
+  });
+
   it('nSubmissions', () => {
     cy.window().then((win) => {
       win.postMessage({
@@ -12577,6 +12764,60 @@ describe('Answer Tag Tests', function () {
 
     cy.get('#\\/mi textarea').type("x{enter}", { force: true })
     cy.get('#\\/mi_incorrect').should('be.visible')
+
+  });
+
+  it('copy justSubmitted attribute', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <answer name="ans">
+    <mathinput name="mi" />
+    <award>1</award>
+  </answer>
+  <conditionalContent condition="$(ans{prop='justSubmitted'})" assignNames="just">
+    <p>The answer was just submitted.</p>
+  </conditionalContent>
+   `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.get('#\\/mi_submit').should('be.visible')
+    cy.get('#\\/mi_correct').should('not.exist')
+    cy.get('#\\/mi_incorrect').should('not.exist')
+    cy.get('#\\/just').should('not.exist')
+
+    cy.get('#\\/mi textarea').type("x", { force: true })
+    cy.get('#\\/mi_submit').should('be.visible')
+    cy.get('#\\/mi_correct').should('not.exist')
+    cy.get('#\\/mi_incorrect').should('not.exist')
+    cy.get('#\\/just').should('not.exist')
+
+    cy.get('#\\/mi_submit').click();
+    cy.get('#\\/mi_submit').should('not.exist')
+    cy.get('#\\/mi_correct').should('not.exist')
+    cy.get('#\\/mi_incorrect').should('be.visible')
+    cy.get('#\\/just').should('have.text', 'The answer was just submitted.')
+
+    cy.get('#\\/mi textarea').type("{end}{backspace}1", { force: true })
+    cy.get('#\\/mi_submit').should('be.visible')
+    cy.get('#\\/mi_correct').should('not.exist')
+    cy.get('#\\/mi_incorrect').should('not.exist')
+    cy.get('#\\/just').should('not.exist')
+
+    cy.get('#\\/mi textarea').type("{enter}", { force: true })
+    cy.get('#\\/mi_submit').should('not.exist')
+    cy.get('#\\/mi_correct').should('be.visible')
+    cy.get('#\\/mi_incorrect').should('not.exist')
+    cy.get('#\\/just').should('have.text', 'The answer was just submitted.')
+
+    cy.get('#\\/mi textarea').type("{end}{backspace}1", { force: true })
+    cy.get('#\\/mi_submit').should('be.visible')
+    cy.get('#\\/mi_correct').should('not.exist')
+    cy.get('#\\/mi_incorrect').should('not.exist')
+    cy.get('#\\/just').should('not.exist')
 
   });
 
