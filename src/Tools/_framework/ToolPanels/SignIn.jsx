@@ -1,6 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Cookies from 'js-cookie'; // import Textinput from "../imports/Textinput";
 import axios from 'axios';
+import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
+import Textfield from '../../../_reactComponents/PanelHeaderComponents/Textfield';
+
 
 
 export default function SignIn(props) {
@@ -12,7 +15,7 @@ export default function SignIn(props) {
   let [isSentEmail, setIsSentEmail] = useState(false);
   let [deviceName, setDeviceName] = useState('');
   console.log(signInStage)
-
+ 
   const jwt = Cookies.get();
 
   const emailRef = useRef(null);
@@ -162,13 +165,12 @@ export default function SignIn(props) {
         }}
       >
         <h2 style={{ textAlign: 'center' }}>Code Expired</h2>
-        <button
-          onClick={() => {
+        <Button
+           onClick={() => {
             location.href = '/#/signin';
           }}
-        >
-          Restart Signin
-        </button>
+          value="Restart Signin"
+        ></Button>
       </div>
     );
   }
@@ -218,37 +220,34 @@ export default function SignIn(props) {
         }}
       >
         {heading}
-        <div style={{ weight: 'bold' }}>Device Name: {deviceName}</div>
+        <div style={{ weight: 'bold', fontSize: '14px' }}>Device Name: {deviceName}</div>
         <div>
-          <p>Check your email for a code to complete sign in.</p>
+          <p style={{ fontSize: '14px' }}>Check your email for a code to complete sign in.</p>
         </div>
         <p>
-          <label>
-            Code (9 digit code):{' '}
-            <input
-              type="text"
-              ref={codeRef}
-              value={nineCode}
-              data-cy="signinCodeInput"
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' && validCode) {
-                  setSignInStage('check code');
-                }
-              }}
-              onChange={(e) => {
-                setNineCode(e.target.value);
-              }}
-            />
-          </label>
+          <Textfield
+            label="Code (9 digit code):"
+            type="text"
+            ref={codeRef}
+            value={nineCode}
+            data-cy="signinCodeInput"
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' && validCode) {
+                setSignInStage('check code');
+              }
+            }}
+            onChange={(e) => {
+              setNineCode(e.target.value);
+            }}
+          ></Textfield>
         </p>
-        <button
+        <Button
           disabled={!validCode}
           style={{}}
           onClick={() => setSignInStage('check code')}
           data-cy="signInButton"
-        >
-          Sign In
-        </button>
+          value="Sign In"
+        ></Button>
       </div>
       </div>
     );
@@ -279,27 +278,24 @@ export default function SignIn(props) {
           src={'/media/Doenet_Logo_Frontpage.png'}
         />
         <div>
-          <p>
-            <label>
-              Email Address:{' '}
-              <input
-                type="text"
-                label="Email Address"
-                ref={emailRef}
-                value={email}
-                data-cy="signinEmailInput"
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter' && validEmail) {
-                    setSignInStage('enter code');
-                  }
-                }}
-                onChange={(e) => {
-                  setEmail(e.target.value);
-                }}
-              />
-            </label>
+          <p style={{ marginLeft: '2px' }}>
+            <Textfield
+              label="Email Address:"
+              type="text"
+              ref={emailRef}
+              value={email}
+              data-cy="signinEmailInput"
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' && validEmail) {
+                  setSignInStage('enter code');
+                }
+              }}
+              onChange={(e) => {
+                setEmail(e.target.value);
+              }}
+            ></Textfield>
           </p>
-          <p>
+          <p style={{ fontSize: '14px' }}>
             <input
               type="checkbox"
               checked={stay}
@@ -315,14 +311,13 @@ export default function SignIn(props) {
             />{' '}
             Stay Logged In
           </p>
-          <button
+          <Button 
             disabled={!validEmail}
             style={{ float: 'right' }}
             onClick={() => setSignInStage('enter code')}
             data-cy="sendEmailButton"
-          >
-            Send Email
-          </button>
+            value="Send Email"
+          ></Button>
         </div>
       </div></div>
     );

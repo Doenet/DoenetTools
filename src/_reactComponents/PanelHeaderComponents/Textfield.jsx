@@ -31,7 +31,7 @@ export default function Textfield(props) {
     var container = {
         display: `${align}`,
         width: 'auto',
-        alignItems: 'flex-end'
+        alignItems: 'center'
     }
 
     useEffect(() => {
