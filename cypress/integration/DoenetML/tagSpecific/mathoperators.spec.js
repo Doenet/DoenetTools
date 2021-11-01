@@ -5736,6 +5736,41 @@ describe('Math Operator Tag Tests', function () {
     })
   })
 
+  it('gcd', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+      <text>a</text>
+      <gcd><number>135</number><number>81</number></gcd>
+      <gcd>135 81 63</gcd>
+      <gcd>x y z</gcd>
+      `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+
+
+    cy.get('#\\/_gcd1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('27')
+    });
+    cy.get('#\\/_gcd2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('9')
+    });
+    cy.get('#\\/_gcd3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('gcd(x,y,z)')
+    });
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+   
+      expect(components['/_gcd1'].stateValues.value.tree).eq(27);
+      expect(components['/_gcd2'].stateValues.value.tree).eq(9);
+      expect(components['/_gcd3'].stateValues.value.tree).eqls(["apply", "gcd", ["tuple", "x", "y", "z"]]);
+
+
+    })
+  })
+
+
   it('extract parts of math expression', () => {
     cy.window().then((win) => {
       win.postMessage({
