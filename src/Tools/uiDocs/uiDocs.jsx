@@ -975,7 +975,7 @@ export default function attempt() {
           </a>
         </p>
         <p>
-          <i>required</i> - if component requires user input, see styling
+          *<i>alert</i> - if component requires user's attention, give red #C1292E border, see styling
           <a
             href="https://docs.google.com/document/d/16YDi2lUs6CjUYHfZBwjbBBtaWgJyY1uNbSRf3cj44D8/edit#bookmark=id.tptn3i5d03g0"
             target="_blank"
@@ -988,7 +988,7 @@ export default function attempt() {
 
         <h2>Standard Props (* denotes required)</h2>
         <p>
-          *<i>aria-label</i> = built in HTML accessibility requirement
+          <i>width</i> = menu (235px) is the only option, otherwise the size should be a default based on input (text, icons, ...)
         </p>
         <p>
           <i>value</i> = information expected to be shown on component (text on
@@ -1006,29 +1006,22 @@ export default function attempt() {
           </a>
         </p>
         <p>
-          <i>placeholder</i> = default shown before user input, use light gray
-          (#e2e2e2) font
+          <i>value + icon</i> = ability to have icon and value together
         </p>
         <p>
-          <i>size</i> = small, medium, large as shown
-          <a
-            href="https://docs.google.com/document/d/16YDi2lUs6CjUYHfZBwjbBBtaWgJyY1uNbSRf3cj44D8/edit#bookmark=id.1q2bsnet5j1p"
-            target="_blank"
-          >
-            {' '}
-            here{' '}
-          </a>
-          - this includes font size
+          <i>label</i> = text before componenet telling user what it is for, 14px font size
         </p>
         <p>
-          *<i>margin</i> = 0px default, make it able to be changed when called
+          <i>vertical label</i> = ability to have label stack on top of component, label must be there for vertical label to work
         </p>
         <p>
-          <i>width</i> = choose default based on where/how component will be
-          implemented, consider whether width can be changed - add if needed
+          <i>placeholder</i> = default shown before user input
         </p>
         <p>
-          <i>height</i> = same concept as width
+          *<i>margin</i> = default is 0px, make 4px left and right margin with 2px bottom margin on label if prop margin
+        </p>
+        <p>
+          *<i>aria-label</i> = built in HTML accessibility requirement
         </p>
         <p>
           <i>onClick</i> = you know what this is, don’t use callback function
@@ -1038,6 +1031,12 @@ export default function attempt() {
           function!
         </p>
         <p>
+          <i>onBlur</i> = same idea
+        </p>
+        <p>
+          <i>onKeyDown</i> = same thing here
+        </p>
+        {/* <p>
           <i>onHover</i> = you can guess this, see
           <a
             href="https://docs.google.com/document/d/16YDi2lUs6CjUYHfZBwjbBBtaWgJyY1uNbSRf3cj44D8/edit#bookmark=id.4fxdjra8uv4t"
@@ -1046,8 +1045,8 @@ export default function attempt() {
             {' '}
             here{' '}
           </a>
-        </p>
-        <p>
+        </p> */}
+        {/* <p>
           <i>onFocus</i> = yeah, you know this, too; styling shown
           <a
             href="https://docs.google.com/document/d/16YDi2lUs6CjUYHfZBwjbBBtaWgJyY1uNbSRf3cj44D8/edit#bookmark=id.u2sku2msba84"
@@ -1056,7 +1055,7 @@ export default function attempt() {
             {' '}
             here{' '}
           </a>
-        </p>
+        </p> */}
         <hr />
 
         <h2>Comments on Styling</h2>
