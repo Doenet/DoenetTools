@@ -274,10 +274,10 @@ export default function VirtualKeyboard() {
             </TabHeader>
             <TabHeader
               onClick={handleTabSelection}
-              value="Calc"
-              selected={selectedTab === 'Calc'}
+              value="Misc"
+              selected={selectedTab === 'Misc'}
             >
-              Calc
+              Misc
             </TabHeader>
             {selectedTab === 'Trig' ? (
               <>
@@ -368,11 +368,43 @@ export default function VirtualKeyboard() {
               </>
             ) : (
               <>
-                <Button33 onClick={() => callback('write \\partial')}>
-                  <MathJax.Node inline formula={'\\partial'} />
+                <Button33
+                  onClick={() =>
+                    callback('write \\frac{\\partial}{\\partial{x}}')
+                  }
+                >
+                  <MathJax.Node
+                    inline
+                    formula={'\\frac{\\partial}{\\partial x}'}
+                  />
                 </Button33>
                 <Button33 onClick={() => callback('write \\int')}>
                   <MathJax.Node inline formula={'\\int'} />
+                </Button33>
+                <Button33 onClick={() => callback('write \\frac{d}{dx}')}>
+                  <MathJax.Node inline formula={'\\frac{d}{dx}'} />
+                </Button33>
+                <Button33 onClick={() => callback('write \\log_{}')}>
+                  <MathJax.Node inline formula={'\\log_ab'} />
+                </Button33>
+                <Button33 onClick={() => callback('cmd \\ln')}>
+                  <MathJax.Node inline formula={'\\ln'} />
+                </Button33>
+                <Button33
+                  onClick={() => {
+                    callback('write e^{}');
+                    callback('keystroke Left');
+                  }}
+                >
+                  <MathJax.Node inline formula={'e^{x}'} />
+                </Button33>
+                <Button33
+                  onClick={() => {
+                    callback('write 10^{}');
+                    callback('keystroke Left');
+                  }}
+                >
+                  <MathJax.Node inline formula={'10^{x}'} />
                 </Button33>
               </>
             )}

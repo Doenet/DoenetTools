@@ -3,7 +3,11 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React, { useState, useEffect } from 'react';
 import DropdownMenu from '../../../_reactComponents/PanelHeaderComponents/DropdownMenu';
 import DateTime from '../../../_reactComponents/PanelHeaderComponents/DateTime';
-import { DateToUTCDateString,DateToDateString } from '../../../_utils/dateUtilityFunction';
+import {
+  DateToUTCDateString,
+  DateToDateString,
+} from '../../../_utils/dateUtilityFunction';
+import Increment from '../../../_reactComponents/PanelHeaderComponents/IncrementMenu';
 
 import {
   atom,
@@ -228,7 +232,7 @@ export default function SelectedDoenetML() {
           }}
         />
       </ActionButtonGroup>
-        <Textfield
+      <Textfield
         label="DoenetML Label"
         width="menu"
         vertical
@@ -262,7 +266,7 @@ export default function SelectedDoenetML() {
           }
         }}
       />
-      
+
       {/* <label>
         DoenetML Label
         <input
@@ -529,11 +533,7 @@ export function AssignmentSettings({ role, doenetId }) {
             />
             {aInfo.assignedDate !== null ? (
               <DateTime
-                value={
-                  aInfo.assignedDate
-                    ? new Date(aInfo.assignedDate)
-                    : null
-                }
+                value={aInfo.assignedDate ? new Date(aInfo.assignedDate) : null}
                 onBlur={({ valid, value }) => {
                   if (valid) {
                     try {
@@ -1119,9 +1119,7 @@ export function AssignmentSettings({ role, doenetId }) {
             {aInfo.pinnedUntilDate !== null ? (
               <DateTime
                 value={
-                  aInfo.pinnedAfterDate
-                    ? new Date(aInfo.pinnedAfterDate )
-                    : null
+                  aInfo.pinnedAfterDate ? new Date(aInfo.pinnedAfterDate) : null
                 }
                 onBlur={({ valid, value }) => {
                   if (valid) {
@@ -1193,9 +1191,7 @@ export function AssignmentSettings({ role, doenetId }) {
             {aInfo.pinnedUntilDate !== null ? (
               <DateTime
                 value={
-                  aInfo.pinnedUntilDate
-                    ? new Date(aInfo.pinnedUntilDate)
-                    : null
+                  aInfo.pinnedUntilDate ? new Date(aInfo.pinnedUntilDate) : null
                 }
                 onBlur={({ valid, value }) => {
                   if (valid) {
