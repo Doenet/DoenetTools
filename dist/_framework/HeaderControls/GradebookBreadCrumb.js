@@ -1,36 +1,16 @@
 import React, {Suspense} from "../../_snowpack/pkg/react.js";
-import {useRecoilValue, useRecoilValueLoadable} from "../../_snowpack/pkg/recoil.js";
-import BreadCrumb from "../../_reactComponents/Breadcrumb/BreadCrumb.js";
+import {useRecoilValue} from "../../_snowpack/pkg/recoil.js";
+import {BreadCrumb} from "../../_reactComponents/PanelHeaderComponents/BreadCrumb.js";
 import {searchParamAtomFamily} from "../NewToolRoot.js";
-import {assignmentData, studentData} from "../ToolPanels/Gradebook.js";
+import {useCourseChooserCrumb, useDashboardCrumb, useGradebookCrumbs} from "../../_utils/breadcrumbUtil.js";
 export default function GradebookBreadCrumb() {
   const driveId = useRecoilValue(searchParamAtomFamily("driveId"));
-  const doenetId = useRecoilValue(searchParamAtomFamily("doenetId"));
-  const userId = useRecoilValue(searchParamAtomFamily("userId"));
-  const attemptNumber = useRecoilValue(searchParamAtomFamily("attemptNumber"));
-  const source = useRecoilValue(searchParamAtomFamily("source"));
-  const path = `${driveId}:${driveId}`;
-  let assignments = useRecoilValueLoadable(assignmentData);
-  let students = useRecoilValueLoadable(studentData);
-  let legacyAssignments = {contents: {}};
-  for (let [key, value] of Object.entries(assignments.contents)) {
-    legacyAssignments.contents[key] = value.label;
-  }
+  const courseChooserCrumb = useCourseChooserCrumb();
+  const dashboardCrumb = useDashboardCrumb(driveId);
+  const gradebookCrumbs = useGradebookCrumbs();
   return /* @__PURE__ */ React.createElement(Suspense, {
-    fallback: /* @__PURE__ */ React.createElement("div", null, "loading Drive...")
-  }, /* @__PURE__ */ React.createElement("div", {
-    style: {
-      margin: "-9px 0px 0px -25px",
-      maxWidth: "850px"
-    }
-  }, assignments.state === "hasValue" && students.state === "hasValue" ? /* @__PURE__ */ React.createElement(BreadCrumb, {
-    path,
-    tool: "Gradebook",
-    doenetId,
-    userId,
-    attemptNumber,
-    source,
-    assignments: legacyAssignments,
-    students
-  }) : /* @__PURE__ */ React.createElement("p", null, "Loading...")));
+    fallback: /* @__PURE__ */ React.createElement("div", null, "loading Breadcrumbs...")
+  }, /* @__PURE__ */ React.createElement(BreadCrumb, {
+    crumbs: [courseChooserCrumb, dashboardCrumb, ...gradebookCrumbs]
+  }));
 }

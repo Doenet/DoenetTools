@@ -189,7 +189,6 @@ export default function GradebookAssignmentView() {
   const setPageToolView = useSetRecoilState(pageToolViewAtom);
   let doenetId = useRecoilValue(searchParamAtomFamily("doenetId"));
   let driveIdValue = useRecoilValue(searchParamAtomFamily("driveId"));
-  let source = useRecoilValue(searchParamAtomFamily("source"));
   let attempts = useRecoilValueLoadable(attemptData(doenetId));
   let students = useRecoilValueLoadable(studentData);
   let [process, setProcess] = useRecoilState(processGradesAtom);
@@ -243,7 +242,7 @@ export default function GradebookAssignmentView() {
             page: "course",
             tool: "gradebookStudentAssignment",
             view: "",
-            params: {driveId: driveIdValue, doenetId, userId, attemptNumber: i, source}
+            params: {driveId: driveIdValue, doenetId, userId, attemptNumber: i, previousCrumb: "assignment"}
           });
         }
       }, " ", row.value, " ")
@@ -271,7 +270,7 @@ export default function GradebookAssignmentView() {
           page: "course",
           tool: "gradebookStudentAssignment",
           view: "",
-          params: {driveId: driveIdValue, doenetId, userId, source: "assignment"}
+          params: {driveId: driveIdValue, doenetId, userId, previousCrumb: "assignment"}
         });
       }
     }, " ", name, " ");

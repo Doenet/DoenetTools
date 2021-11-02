@@ -909,6 +909,47 @@ export class Mod extends MathBaseOperator {
   }
 }
 
+export class Gcd extends MathBaseOperator {
+  static componentType = "gcd";
+
+  static returnStateVariableDefinitions() {
+
+    let stateVariableDefinitions = super.returnStateVariableDefinitions();
+
+    stateVariableDefinitions.numericOperator = {
+      returnDependencies: () => ({}),
+      definition: () => ({
+        newValues: {
+          numericOperator: function (inputs) {
+            if(inputs.every(Number.isInteger)) {
+              return gcd(...inputs);
+            }
+            return NaN;
+          }
+        }
+      })
+    }
+
+
+    stateVariableDefinitions.mathOperator = {
+      returnDependencies: () => ({}),
+      definition: () => ({
+        newValues: {
+          mathOperator: function (inputs) {
+            return me.fromAst([
+              "apply", "gcd", ["tuple", ...inputs.map(x => x.tree)]
+            ])
+          }
+        }
+      })
+    }
+
+
+    return stateVariableDefinitions;
+
+  }
+}
+
 
 export class ExtractMath extends MathBaseOperatorOneInput {
   static componentType = "extractMath";
@@ -1105,4 +1146,15 @@ export class ExtractMath extends MathBaseOperatorOneInput {
 
   }
 
+}
+
+
+function gcd(x, y, ...z) {
+  if (!y && z.length > 0) {
+    return gcd(x, ...z);
+  }
+  if (!y) {
+    return x;
+  }
+  return gcd(y, x % y, ...z);
 }

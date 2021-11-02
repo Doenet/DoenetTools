@@ -30,7 +30,7 @@ export default function GradebookStudentAssignmentView(props) {
   const setRecoilAttemptNumber = useSetRecoilState(currentAttemptNumber);
   let assignments = useRecoilValueLoadable(assignmentData);
   const totalPointsOrPercent = Number(assignments.contents[doenetId]?.totalPointsOrPercent);
-  const label = assignments.contents[doenetId].label;
+  const label = assignments.contents[doenetId]?.label;
   const attemptsObj = attempts?.contents?.[userId]?.attempts;
   let [attemptNumber, setAttemptNumber] = useState(null);
   let [attemptsInfo, setAttemptsInfo] = useState(null);
