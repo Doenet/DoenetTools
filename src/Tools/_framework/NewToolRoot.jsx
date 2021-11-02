@@ -99,9 +99,8 @@ export default function ToolRoot() {
     supportPanelTitles: [],
     supportPanelIndex: 0,
     hasNoMenuPanel: false,
-    headerControls: [],
-    headerControlsPositions: [],
-    displayProfile: true,
+    headerControls:[],
+    displayProfile:true,
   });
   let mainPanel = null;
   let supportPanel = <SupportPanel hide={true}>null</SupportPanel>;
@@ -136,13 +135,10 @@ export default function ToolRoot() {
   }).current;
 
   const LazyControlObj = useRef({
-    BackButton: lazy(() => import('./HeaderControls/BackButton')),
-    ViewerUpdateButton: lazy(() =>
-      import('./HeaderControls/ViewerUpdateButton'),
-    ),
-    NavigationBreadCrumb: lazy(() =>
-      import('./HeaderControls/NavigationBreadCrumb'),
-    ),
+    BackButton:lazy(() => import('./HeaderControls/BackButton')),
+    ViewerUpdateButton:lazy(() => import('./HeaderControls/ViewerUpdateButton')),
+    NavigationBreadCrumb: lazy(() => import('./HeaderControls/NavigationBreadCrumb')),
+    CollectionBreadCrumb: lazy(() => import('./HeaderControls/CollectionBreadCrumb')),
     ChooserBreadCrumb: lazy(() => import('./HeaderControls/ChooserBreadCrumb')),
     DashboardBreadCrumb: lazy(() =>
       import('./HeaderControls/DashboardBreadCrumb'),
@@ -210,19 +206,12 @@ export default function ToolRoot() {
   }
 
   let headerControls = null;
-  let headerControlsPositions = null;
-  if (toolRootMenusAndPanels.headerControls) {
+  if (toolRootMenusAndPanels.headerControls){
     headerControls = [];
-    headerControlsPositions = [];
-    for (const [i, controlName] of Object.entries(
-      toolRootMenusAndPanels.headerControls,
-    )) {
-      const controlObj = LazyControlObj[controlName];
-      if (controlObj) {
+    for (const [i,controlName] of Object.entries(toolRootMenusAndPanels.headerControls)){
+      const controlObj = LazyControlObj[controlName]
+      if (controlObj){
         const key = `headerControls${MainPanelKey}`;
-        headerControlsPositions.push(
-          toolRootMenusAndPanels.headerControlsPositions[i],
-        );
         headerControls.push(
           <Suspense
             key={key}
@@ -283,31 +272,13 @@ export default function ToolRoot() {
 
   // <p>insert keyboard here</p></FooterPanel>
 
-  return (
-    <>
-      <ToolContainer>
-        {menus}
-        <ContentPanel
-          main={
-            <MainPanel
-              headerControlsPositions={headerControlsPositions}
-              headerControls={headerControls}
-              setMenusOpen={setMenusOpen}
-              openMenuButton={openMenuButton}
-              displayProfile={toolRootMenusAndPanels.displayProfile}
-            >
-              {mainPanel}
-            </MainPanel>
-          }
-          support={supportPanel}
-        />
-        {footer}
-      </ToolContainer>
-      <Toast />
 
-      <MemoizedRootController
-        key="root_controller"
-        setToolRootMenusAndPanels={setToolRootMenusAndPanels}
+  return <>
+    <ToolContainer >
+      {menus}
+      <ContentPanel 
+      main={<MainPanel headerControls={headerControls} setMenusOpen={setMenusOpen} openMenuButton={openMenuButton} displayProfile={toolRootMenusAndPanels.displayProfile} >{mainPanel}</MainPanel>} 
+      support={supportPanel}
       />
       <MemoizedOnLeave key="MemoizedOnLeave" />
     </>
@@ -324,7 +295,6 @@ export default function ToolRoot() {
 // supportPanelIndex:0,
 // hasNoMenuPanel: true,
 // headerControls:["BackButton"],
-// headerControlsPositions:["Right"],
 // hasNoMenuPanel: true,
 // waitForMenuSuppression:true,
 
@@ -359,9 +329,8 @@ let navigationObj = {
       menusTitles: ['Time Remaining'],
       menusInitOpen: [true],
       headerControls: [],
-      headerControlsPositions: [],
-      displayProfile: false,
-      waitForMenuSuppression: true,
+      displayProfile:false,
+      waitForMenuSuppression:true,
     },
     endExam: {
       pageName: 'endExam',
@@ -375,130 +344,116 @@ let navigationObj = {
       defaultTool: 'courseChooser',
     },
     assignment: {
-      pageName: 'Assignment',
-      menuPanelCap: 'AssignmentInfoCap',
-      currentMainPanel: 'AssignmentViewer',
-      currentMenus: ['CreditAchieved', 'TimerMenu'],
-      menusTitles: ['Credit Achieved', 'Time Remaining'],
-      menusInitOpen: [true, true],
-      headerControls: ['AssignmentBreadCrumb', 'AssignmentNewAttempt'],
-      headerControlsPositions: ['Left', 'Right'],
-      waitForMenuSuppression: true,
+      pageName:"Assignment",
+      menuPanelCap:"AssignmentInfoCap",
+      currentMainPanel:"AssignmentViewer",
+      currentMenus:["CreditAchieved","TimerMenu"], 
+      menusTitles:["Credit Achieved","Time Remaining"],
+      menusInitOpen:[true,true],
+      headerControls: ["AssignmentBreadCrumb","AssignmentNewAttempt"],
+      waitForMenuSuppression:true,
     },
-    courseChooser: {
-      //allCourses
-      pageName: 'Course',
-      currentMainPanel: 'DriveCards',
-      currentMenus: ['CreateCourse'],
-      menusTitles: ['Create Course'],
-      menusInitOpen: [true],
-      headerControls: ['ChooserBreadCrumb'],
-      headerControlsPositions: ['Left'],
-      onLeave: 'CourseChooserLeave',
+    courseChooser:{ //allCourses
+      pageName:"Course",
+      currentMainPanel:"DriveCards",
+      currentMenus:["CreateCourse"],
+      menusTitles:["Create Course"],
+      menusInitOpen:[true],
+      headerControls: ["ChooserBreadCrumb"],
+      onLeave:"CourseChooserLeave",
     },
     dashboard: {
-      pageName: 'Dashboards',
-      currentMainPanel: 'Dashboard',
-      menuPanelCap: 'DriveInfoCap',
-      currentMenus: ['ClassTimes', 'CurrentContent'],
-      menusTitles: ['Class Times', 'Current Content'],
-      menusInitOpen: [false, false],
-      headerControls: ['DashboardBreadCrumb'],
-      headerControlsPositions: ['Left'],
-      onLeave: 'DashboardLeave',
-      waitForMenuSuppression: true,
+      pageName: "Dashboards",
+      currentMainPanel: "Dashboard",
+      menuPanelCap:"DriveInfoCap",
+      currentMenus:["ClassTimes","CurrentContent"],
+      menusTitles:["Class Times","Current Content"],
+      menusInitOpen:[false,false],
+      headerControls: ["DashboardBreadCrumb"],
+      onLeave:"DashboardLeave",
+      waitForMenuSuppression:true,
     },
     gradebook: {
-      pageName: 'Gradebook',
-      currentMainPanel: 'Gradebook',
-      currentMenus: [],
-      menuPanelCap: 'DriveInfoCap',
-      menusTitles: [],
-      menusInitOpen: [],
-      headerControls: ['GradebookBreadCrumb'],
-      headerControlsPositions: ['Left'],
+      pageName: "Gradebook",
+      currentMainPanel: "Gradebook",
+      currentMenus:[],
+      menuPanelCap:"DriveInfoCap",
+      menusTitles:[],
+      menusInitOpen:[],
+      headerControls: ["GradebookBreadCrumb"],
       // onLeave:"",
     },
     gradebookAssignment: {
-      pageName: 'Gradebook',
-      currentMainPanel: 'GradebookAssignment',
-      currentMenus: ['GradeUpload'],
-      menusTitles: ['Upload'],
-      menusInitOpen: [false],
-      menuPanelCap: 'DriveInfoCap',
-      headerControls: ['GradebookBreadCrumb'],
-      headerControlsPositions: ['Left'],
-      waitForMenuSuppression: true,
-      onLeave: 'GradebookAssignmentLeave',
+      pageName: "Gradebook",
+      currentMainPanel: "GradebookAssignment",
+      currentMenus:["GradeUpload"],
+      menusTitles:["Upload"],
+      menusInitOpen:[false],
+      menuPanelCap:"DriveInfoCap",
+      headerControls: ["GradebookBreadCrumb"],
+      waitForMenuSuppression:true,
+      onLeave:"GradebookAssignmentLeave",
     },
     gradebookStudent: {
-      pageName: 'Gradebook',
-      currentMainPanel: 'GradebookStudent',
-      currentMenus: [],
-      menuPanelCap: 'DriveInfoCap',
-      menusTitles: [],
-      menusInitOpen: [],
-      headerControls: ['GradebookBreadCrumb'],
-      headerControlsPositions: ['Left'],
+      pageName: "Gradebook",
+      currentMainPanel: "GradebookStudent",
+      currentMenus:[],
+      menuPanelCap:"DriveInfoCap",
+      menusTitles:[],
+      menusInitOpen:[],
+      headerControls: ["GradebookBreadCrumb"],
       // onLeave:"",
     },
     gradebookStudentAssignment: {
-      pageName: 'Gradebook',
-      currentMainPanel: 'GradebookStudentAssignment',
-      currentMenus: ['CreditAchieved'],
-      menuPanelCap: 'DriveInfoCap',
-      menusTitles: ['Credit Achieved'],
-      menusInitOpen: [true],
-      headerControls: ['GradebookBreadCrumb'],
-      headerControlsPositions: ['Left'],
+      pageName: "Gradebook",
+      currentMainPanel: "GradebookStudentAssignment",
+      currentMenus:["CreditAchieved"],
+      menuPanelCap:"DriveInfoCap",
+      menusTitles:["Credit Achieved"],
+      menusInitOpen:[true],
+      headerControls: ["GradebookBreadCrumb"],
       // onLeave:"",
     },
     gradebookAttempt: {
-      pageName: 'Gradebook',
-      currentMainPanel: 'GradebookAttempt',
-      currentMenus: [],
-      menuPanelCap: 'DriveInfoCap',
-      menusTitles: [],
-      menusInitOpen: [],
-      headerControls: ['GradebookBreadCrumb'],
-      headerControlsPositions: ['Left'],
+      pageName: "Gradebook",
+      currentMainPanel: "GradebookAttempt",
+      currentMenus:[],
+      menuPanelCap:"DriveInfoCap",
+      menusTitles:[],
+      menusInitOpen:[],
+      headerControls: ["GradebookBreadCrumb"],
       // onLeave:"",
     },
-    navigation: {
-      //allFilesInCourse
-      pageName: 'Course',
-      currentMainPanel: 'NavigationPanel',
-      menuPanelCap: 'DriveInfoCap',
-      currentMenus: ['AddDriveItems'],
-      menusTitles: ['Add Items'],
-      menusInitOpen: [true],
-      headerControls: ['NavigationBreadCrumb'],
-      headerControlsPositions: ['Left'],
-      onLeave: 'NavigationLeave',
-      waitForMenuSuppression: true,
+    navigation:{ //allFilesInCourse
+      pageName:"Course",
+      currentMainPanel:"NavigationPanel",
+      menuPanelCap:"DriveInfoCap",
+      currentMenus:["AddDriveItems"],
+      menusTitles:["Add Items"],
+      menusInitOpen:[true],
+      headerControls: ["NavigationBreadCrumb"],
+      onLeave:"NavigationLeave",
+      waitForMenuSuppression:true,
     },
-    editor: {
-      //singleFile
-      pageName: 'Course',
-      menuPanelCap: 'EditorInfoCap',
-      currentMainPanel: 'EditorViewer',
-      currentMenus: ['VersionHistory', 'Variant', 'AssignmentSettingsMenu'],
-      menusTitles: ['Version History', 'Variant', 'Assignment Settings'],
-      menusInitOpen: [false, false, false],
-      supportPanelOptions: ['DoenetMLEditor'],
-      supportPanelTitles: ['DoenetML Editor'],
-      supportPanelIndex: 0,
-      headerControls: ['EditorBreadCrumb', 'ViewerUpdateButton'],
-      headerControlsPositions: ['Left', 'Left'],
-      onLeave: 'EditorLeave',
+    editor:{ //singleFile
+      pageName:"Course",
+      menuPanelCap:"EditorInfoCap",
+      currentMainPanel:"EditorViewer",
+      currentMenus:["VersionHistory","Variant","AssignmentSettingsMenu"], 
+      menusTitles:["Version History","Variant","Assignment Settings"],
+      menusInitOpen:[false,false,false],
+      supportPanelOptions:["DoenetMLEditor"],
+      supportPanelTitles:["DoenetML Editor"],
+      supportPanelIndex:0,
+      headerControls: ["EditorBreadCrumb","ViewerUpdateButton",],
+      onLeave:"EditorLeave",
     },
     collection: {
-      currentMainPanel: 'CollectionEditor',
-      headerControls: ['NavigationBreadCrumb'],
-      headerControlsPositions: ['Left'],
-      currentMenus: ['AssignmentSettingsMenu', 'GroupSettings'],
-      menusTitles: ['Assignment Settings', 'Group Settings'],
-      menusInitOpen: [false, false],
+      currentMainPanel:"CollectionEditor",
+      headerControls: ["CollectionBreadCrumb"],
+      currentMenus:["AssignmentSettingsMenu", "GroupSettings"],
+      menusTitles:["Assignment Settings", "Group Settings"],
+      menusInitOpen:[false, false],
     },
     enrollment: {
       //allStudentsInCourse
@@ -507,17 +462,15 @@ let navigationObj = {
       // currentMenus:["LoadEnrollment","ManualEnrollment"],
       // menusTitles:["Load","Manual"],
       // menusInitOpen:[false,false],
-      currentMenus: ['LoadEnrollment'],
-      menusTitles: ['Import Learners'],
-      menusInitOpen: [false],
-      currentMainPanel: 'Enrollment',
-      supportPanelOptions: [],
-      supportPanelTitles: [],
-      supportPanelIndex: 0,
-      headerControls: ['EnrollmentBreadCrumb'],
-      headerControlsPositions: ['Left'],
+      currentMenus:["LoadEnrollment"],
+      menusTitles:["Import Learners"],
+      menusInitOpen:[false],
+      currentMainPanel:"Enrollment",
+      supportPanelOptions:[],
+      supportPanelTitles:[],
+      supportPanelIndex:0,
+      headerControls: ["EnrollmentBreadCrumb"],
       // headerControls: ["BackButton"],
-      // headerControlsPositions: ["Right"]
     },
   },
   home: {
@@ -554,9 +507,8 @@ let navigationObj = {
       supportPanelTitles: [],
       supportPanelIndex: 0,
       hasNoMenuPanel: true,
-      headerControls: ['BackButton'],
-      headerControlsPositions: ['Right'],
-    },
+      headerControls: ["BackButton"],
+    }
   },
   signin: {
     default: {
@@ -896,13 +848,37 @@ function RootController(props) {
     }
   }
 
-  if (isRecoilChange) {
-    //push url with no refresh
-    let tool = nextPageToolView.tool;
-    let pathname = '/' + recoilPageToolView.page;
-    searchObj = { ...recoilPageToolView.params };
-    if (tool !== '' && tool !== undefined) {
-      searchObj = { tool, ...recoilPageToolView.params };
+   
+
+    //Only update ToolRoot if nextMenusAndPanels was indicated as a change
+    if (nextMenusAndPanels && JSON.stringify(nextPageToolView) !== JSON.stringify(lastPageToolView.current) ){
+      backPageToolView.current = lastPageToolView.current;  //Set PageToolView for back button
+      let params = {};
+      if (isURLChange){
+        params = searchObj;
+      }else if (isRecoilChange){
+        params = recoilPageToolView.params;
+      }
+
+        backParams.current = currentParams.current; //Set params for back button to the previous page's params
+        currentParams.current = params; 
+
+        //waitForMenuSuppression
+        //If wait for suppression only display main panel and menu cap
+        if (nextMenusAndPanels.waitForMenuSuppression){
+          let reducedSetMenusAndPanels = {...nextMenusAndPanels}
+          reducedSetMenusAndPanels.currentMenus = []
+          reducedSetMenusAndPanels.menusInitOpen = []
+          reducedSetMenusAndPanels.menusTitles = []
+          reducedSetMenusAndPanels.headerControls = []
+
+          props.setToolRootMenusAndPanels(reducedSetMenusAndPanels)
+
+        }else{
+          props.setToolRootMenusAndPanels(nextMenusAndPanels)
+        }
+
+      
     }
 
     let search = '';

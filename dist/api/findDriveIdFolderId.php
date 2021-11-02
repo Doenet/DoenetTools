@@ -42,7 +42,7 @@ if ($success) {
     //get driveId from doenetId
     //TODO: should be a sql join query with userId
     $sql = "
-        SELECT driveId, parentFolderId
+        SELECT driveId, parentFolderId, itemId
         FROM drive_content
         WHERE doenetId = '$doenetId'
     ";
@@ -51,6 +51,7 @@ if ($success) {
         $row = $result->fetch_assoc();
         $driveId = $row['driveId'];
         $parentFolderId = $row['parentFolderId'];
+        $itemId = $row['itemId'];
     }
 
     if (
@@ -96,6 +97,7 @@ if ($success) {
         'success' => $success,
         'message' => $message,
         'driveId' => $driveId,
+        'itemId' => $itemId,
         'parentFolderId' => $parentFolderId,
     ]);
 }

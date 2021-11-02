@@ -68,7 +68,7 @@ export default function GradebookStudent() {
               page: "course",
               tool: "gradebookStudentAssignment",
               view: "",
-              params: {driveId, userId, doenetId, source: "student"}
+              params: {driveId, userId, doenetId, previousCrumb: "student"}
             });
           },
           style: {paddingLeft: "15px"}

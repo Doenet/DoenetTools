@@ -40,7 +40,7 @@ export default function GradebookStudentAssignmentView(props){
 
   
     const totalPointsOrPercent = Number(assignments.contents[doenetId]?.totalPointsOrPercent)
-    const label = assignments.contents[doenetId].label;
+    const label = assignments.contents[doenetId]?.label;
 
     // let driveIdValue = useRecoilValue(driveId)
     // let [attemptNumber,setAttemptNumber] = useState(1); //Start with attempt 1
