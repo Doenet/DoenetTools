@@ -22,11 +22,11 @@ import {
   DoenetML,
   DriveHeader,
 } from '../../../_reactComponents/Drive/NewDrive';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import {
-  faLessThan,
-  faGreaterThan
-} from '@fortawesome/free-solid-svg-icons';
+// import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+// import {
+//   faLessThan,
+//   faGreaterThan
+// } from '@fortawesome/free-solid-svg-icons';
 
 // import { DropTargetsProvider } from '../../../_reactComponents/DropTarget';
 // import { BreadcrumbProvider } from '../../../_reactComponents/Breadcrumb/BreadcrumbProvider';
@@ -39,6 +39,9 @@ import { globalSelectedNodesAtom } from '../../../_reactComponents/Drive/NewDriv
 import { mainPanelClickAtom } from '../Panels/NewMainPanel';
 import { effectiveRoleAtom } from '../../../_reactComponents/PanelHeaderComponents/RoleDropdown';
 import { UTCDateStringToDate } from '../../../_utils/dateUtilityFunction';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faChevronLeft, faChevronRight } from '@fortawesome/free-solid-svg-icons';
+
 
 //array of objects
 //dotwIndex as a number starting at 0 for Sunday (the js standard)
@@ -258,23 +261,31 @@ function buildRows({
     // })
    
       }
-    }/>
+
+      
+    }
+    style={{
+      height: '18px',
+      width: '177px',
+      border: '2px solid black',
+      borderRadius: '5px',
+    }}/>
     if (isFirstRow){
           isFirstRow = false;
 
       newRows.push(<tr key={`${effectiveRowLabel}${assignment.doenetId}`} >
-          <td rowSpan={numberOfVisibleRows}>{effectiveRowLabel}</td>
-          <td style={{backgroundColor:bgColor}} onClick={oneClick} onDoubleClick={doubleClick}>{assignment.label}</td>
-          <td style={{backgroundColor:bgColor}} onClick={oneClick} onDoubleClick={doubleClick}>{displayAssignedDate}</td>
-          <td style={{backgroundColor:bgColor}} onClick={oneClick} onDoubleClick={doubleClick}>{displayDueDate}</td>
-          <td style={{backgroundColor:bgColor,textAlign:"center"}}  >{checkbox}</td>
+          <td style={{borderBottom: '2px solid black', padding: '8px'}} rowSpan={numberOfVisibleRows}>{effectiveRowLabel}</td>
+          <td style={{backgroundColor:bgColor, padding: '8px', borderBottom: '2px solid black'}} onClick={oneClick} onDoubleClick={doubleClick}>{assignment.label}</td>
+          <td style={{backgroundColor:bgColor, padding: '8px', borderBottom: '2px solid black'}} onClick={oneClick} onDoubleClick={doubleClick}>{displayAssignedDate}</td>
+          <td style={{backgroundColor:bgColor, padding: '8px', borderBottom: '2px solid black'}} onClick={oneClick} onDoubleClick={doubleClick}>{displayDueDate}</td>
+          <td style={{backgroundColor:bgColor, padding: '8px', borderBottom: '2px solid black',textAlign:"center"}}  >{checkbox}</td>
           </tr>)
     }else{
-      newRows.push(<tr key={`${effectiveRowLabel}${assignment.doenetId}${i}`}>
-          <td style={{backgroundColor:bgColor}} onClick={oneClick} onDoubleClick={doubleClick}>{assignment.label}</td>
-          <td style={{backgroundColor:bgColor}} onClick={oneClick} onDoubleClick={doubleClick}>{displayAssignedDate}</td>
-          <td style={{backgroundColor:bgColor}} onClick={oneClick} onDoubleClick={doubleClick}>{displayDueDate}</td>
-          <td style={{backgroundColor:bgColor,textAlign:"center"}}  >{checkbox}</td>
+      newRows.push(<tr key={`${effectiveRowLabel}${assignment.doenetId}${i}`} >
+          <td style={{backgroundColor:bgColor, padding: '8px', borderBottom: '2px solid black'}} onClick={oneClick} onDoubleClick={doubleClick}>{assignment.label}</td>
+          <td style={{backgroundColor:bgColor, padding: '8px', borderBottom: '2px solid black'}} onClick={oneClick} onDoubleClick={doubleClick}>{displayAssignedDate}</td>
+          <td style={{backgroundColor:bgColor, padding: '8px', borderBottom: '2px solid black'}} onClick={oneClick} onDoubleClick={doubleClick}>{displayDueDate}</td>
+          <td style={{backgroundColor:bgColor, padding: '8px', borderBottom: '2px solid black',textAlign:"center"}}  >{checkbox}</td>
           </tr>)
     }
      
@@ -572,19 +583,19 @@ const dotwLabel = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'
   <h1>Current Content</h1>
   <span style={{fontSize:"1.4em"}}>{headerMonday} - {headerSunday}</span>
   <ButtonGroup>
-    <span><Button onClick={()=>setWeekShift((was)=>was-1)} icon={<FontAwesomeIcon icon={faLessThan} />} /></span> 
-    <span><Button onClick={()=>setWeekShift((was)=>was+1)} icon={<FontAwesomeIcon icon={faGreaterThan} />} /></span>
+    <span><Button onClick={()=>setWeekShift((was)=>was-1)} icon={<FontAwesomeIcon icon={faChevronLeft} />} /></span> 
+    <span><Button onClick={()=>setWeekShift((was)=>was+1)} icon={<FontAwesomeIcon icon={faChevronRight} />} /></span>
   </ButtonGroup>
 
   </div>
   
   <table style={{width:"850px",borderSpacing:"0em .2em"}}>
     <tr>
-      <th style={{width:'150px',textAlign:'left'}}>Day</th>
-      <th style={{width:'200px',textAlign:'left'}}>Name</th>
-      <th style={{width:'200px',textAlign:'left'}}>Assigned</th>
-      <th style={{width:'200px',textAlign:'left'}}>Due</th>
-      <th style={{width:'100px',textAlign:'center'}}>Completed</th>
+      <th style={{width:'150px', padding: '8px', textAlign:'left', borderBottom: '2px solid black'}}>Day</th>
+      <th style={{width:'200px', padding: '8px', textAlign:'left', borderBottom: '2px solid black'}}>Name</th>
+      <th style={{width:'200px', padding: '8px', textAlign:'left', borderBottom: '2px solid black'}}>Assigned</th>
+      <th style={{width:'200px', padding: '8px', textAlign:'left', borderBottom: '2px solid black'}}>Due</th>
+      <th style={{width:'100px', padding: '8px', textAlign:'center', borderBottom: '2px solid black'}}>Completed</th>
     </tr>
     {pinnedRows}
     {overdueRows}
