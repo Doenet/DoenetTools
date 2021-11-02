@@ -36,8 +36,7 @@ export const Styles = styled.div`
     }
     
     a {
-        color: inherit;
-        text-decoration: none;
+        text-decoration: #1A5A99 underline;
     }
 
     .sortIcon {
@@ -51,6 +50,7 @@ export const Styles = styled.div`
         max-width: 15rem;
         text-overflow: ellipsis;
         white-space: nowrap;
+        overflow: hidden;
     }
 
     th {
@@ -62,6 +62,9 @@ export const Styles = styled.div`
         //word-wrap: break-word;
         padding: 2px;
         max-height: 10rem;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        overflow: hidden;
     }
     
     th:first-child {
