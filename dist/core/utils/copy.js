@@ -32,8 +32,14 @@ export function postProcessCopy({ serializedComponents, componentName,
             assignNamesFound.push(originalNamespace + "/" + cName);
           }
         }
-        if (component.attributes && component.attributes.alias) {
-          activeAliases.push(component.attributes.alias.primitive);
+        if (component.attributes) {
+          if (component.attributes.alias) {
+            activeAliases.push(component.attributes.alias.primitive);
+          }
+          if (component.attributes.indexAlias) {
+            activeAliases.push(component.attributes.indexAlias.primitive);
+          }
+
         }
       }
 
@@ -72,8 +78,14 @@ export function postProcessCopy({ serializedComponents, componentName,
           throw Error('we need to create a fullTName here, then.')
         }
       } else {
-        // don't create if matches an alias
-        if (!activeAliases.includes(component.doenetAttributes.tName)) {
+        if (activeAliases.includes(component.doenetAttributes.tName)) {
+          // TODO: is the this right thing to do?
+          // Not clear if following the same rules for when a match would override an alias
+          // Setting fullTName to a relative name presumably prevents the fullTName
+          // from ever matching anything.  Is that what we want?
+          component.doenetAttributes.fullTName = component.doenetAttributes.tName;
+        } else {
+          // don't create if matches an alias
           if (copiesByFullTName[fullTName] === undefined) {
             copiesByFullTName[fullTName] = [];
           }

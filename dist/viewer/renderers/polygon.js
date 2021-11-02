@@ -34,7 +34,7 @@ export default class Polygon extends DoenetRenderer {
       dash: styleToDash(this.doenetSvData.selectedStyle.lineStyle)
     };
     if (!this.doenetSvData.draggable || this.doenetSvData.fixed) {
-      jsxBorderAttributes.highlightStrokeWidth = this.doenetSvData.selectedStyle.lineWidth;
+      this.jsxBorderAttributes.highlightStrokeWidth = this.doenetSvData.selectedStyle.lineWidth;
     }
     this.jsxPolygonAttributes = {
       name: this.doenetSvData.label,
@@ -139,6 +139,23 @@ export default class Polygon extends DoenetRenderer {
     }
   }
   deleteGraphicalObject() {
+    for (let i = 0; i < this.doenetSvData.nVertices; i++) {
+      let vertex = this.polygonJXG.vertices[i];
+      if (vertex) {
+        vertex.off("drag");
+        vertex.off("up");
+      }
+    }
+    if (this.polygonJXG.borders) {
+      for (let i = 0; i < this.polygonJXG.borders.length; i++) {
+        let border = this.polygonJXG.borders[i];
+        if (border) {
+          border.off("drag");
+          border.off("up");
+          border.off("down");
+        }
+      }
+    }
     this.props.board.removeObject(this.polygonJXG);
     delete this.polygonJXG;
   }
