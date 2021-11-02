@@ -11006,7 +11006,7 @@ describe('Answer Tag Tests', function () {
     cy.get(partialAnchor).should('not.exist');
 
     cy.get('#\\/fb1').should('have.text', 'At least the first is a number')
-    cy.get('#\\/fb2').should('not.exist')
+    cy.get('#\\/fb2').should('have.text', 'At least the second is a number')
     cy.get('#\\/fb3').should('not.exist')
     cy.get('#\\/fb4').should('not.exist')
     cy.get('#\\/fb5').should('not.exist')
@@ -11039,8 +11039,8 @@ describe('Answer Tag Tests', function () {
     })
 
     cy.get('#\\/fb1').should('have.text', 'First is greater than 3')
-    cy.get('#\\/fb2').should('not.exist')
-    cy.get('#\\/fb3').should('not.exist')
+    cy.get('#\\/fb2').should('have.text', 'At least the first is a number')
+    cy.get('#\\/fb3').should('have.text', 'At least the second is a number')
     cy.get('#\\/fb4').should('not.exist')
     cy.get('#\\/fb5').should('not.exist')
 
@@ -11136,7 +11136,7 @@ describe('Answer Tag Tests', function () {
 
     cy.get('#\\/fb1').should('have.text', 'First is greater than 3')
     cy.get('#\\/fb2').should('have.text', 'Second is greater than 3')
-    cy.get('#\\/fb3').should('not.exist')
+    cy.get('#\\/fb3').should('have.text', 'At least the first is a number')
     cy.get('#\\/fb4').should('not.exist')
     cy.get('#\\/fb5').should('not.exist')
 
@@ -11367,8 +11367,8 @@ describe('Answer Tag Tests', function () {
     cy.get(partialAnchor).should('not.exist');
 
     cy.get('#\\/fb1').should('have.text', 'The first should be a number')
-    cy.get('#\\/fb2').should('not.exist')
-    cy.get('#\\/fb3').should('not.exist')
+    cy.get('#\\/fb2').should('have.text', 'The second should be a number')
+    cy.get('#\\/fb3').should('have.text', 'The third should be a number')
     cy.get('#\\/fb4').should('not.exist')
     cy.get('#\\/fb5').should('not.exist')
     cy.get("#\\/ca").should('have.text', '0')
@@ -11383,7 +11383,7 @@ describe('Answer Tag Tests', function () {
     cy.get(partialAnchor).should('not.exist');
 
     cy.get('#\\/fb1').should('have.text', 'The second should be a number')
-    cy.get('#\\/fb2').should('not.exist')
+    cy.get('#\\/fb2').should('have.text', 'The third should be a number')
     cy.get('#\\/fb3').should('not.exist')
     cy.get('#\\/fb4').should('not.exist')
     cy.get('#\\/fb5').should('not.exist')

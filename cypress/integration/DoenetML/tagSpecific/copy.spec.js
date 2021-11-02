@@ -2129,6 +2129,249 @@ describe('Copy Tag Tests', function () {
   });
 
 
+  it('copy dynamic map no link, check aliases', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+
+    <section name="section1" newNamespace>
+      <setup>
+        <number name="n">2</number>
+      </setup>
+
+      <updateValue name="addP" label="Add p" tName="n" newValue="$n+1" />
+      <updateValue name="removeP" label="Remove p" tName="n" newValue="$n-1" />
+      <map assignNames="(p1) (p2) (p3) (p4)">
+        <template><p>i=$i, v=$v</p></template>
+        <sources indexAlias="i" alias="v"><sequence length="$n" from="11" /></sources>
+      </map>
+    </section>
+    
+    <section name="section2" newNamespace>
+      <copy tname='../section1/_map1' link='false' assignNames='(p1) (p2) (p3) (p4)' />
+    </section>
+
+    <section name="section3">
+      <copy tname='section1/_map1' link='false' assignNames='(p1) (p2) (p3) (p4)' />
+    </section>
+
+    <copy tname='section1' link='false' assignNames="section4" />
+    
+    <section name="section5" newNamespace>
+      <copy tname='../section1/_map1' assignNames='(p1) (p2) (p3) (p4)' />
+    </section>
+
+    <section name="section6">
+      <copy tname='section1/_map1' assignNames='(p1a) (p2a) (p3a) (p4a)' />
+    </section>
+
+    <copy tname='section1' assignNames="section7" />
+  
+    `}, "*");
+    });
+
+    // to wait for page to load
+    cy.get('#\\/_text1').should('have.text', 'a');
+
+    cy.get(cesc('#/section1_title')).should('have.text', 'Section 1')
+    cy.get(cesc('#/section1/p1')).should('have.text', "i=1, v=11");
+    cy.get(cesc('#/section1/p2')).should('have.text', "i=2, v=12");
+    cy.get(cesc('#/section1/p3')).should('not.exist');
+    cy.get(cesc('#/section1/p4')).should('not.exist');
+
+    cy.get(cesc('#/section2_title')).should('have.text', 'Section 2')
+    cy.get(cesc('#/section2/p1')).should('have.text', "i=1, v=11");
+    cy.get(cesc('#/section2/p2')).should('have.text', "i=2, v=12");
+    cy.get(cesc('#/section2/p3')).should('not.exist');
+    cy.get(cesc('#/section2/p4')).should('not.exist');
+
+    cy.get(cesc('#/section3_title')).should('have.text', 'Section 3')
+    cy.get(cesc('#/p1')).should('have.text', "i=1, v=11");
+    cy.get(cesc('#/p2')).should('have.text', "i=2, v=12");
+    cy.get(cesc('#/p3')).should('not.exist');
+    cy.get(cesc('#/p4')).should('not.exist');
+
+    cy.get(cesc('#/section4_title')).should('have.text', 'Section 4')
+    cy.get(cesc('#/section4/p1')).should('have.text', "i=1, v=11");
+    cy.get(cesc('#/section4/p2')).should('have.text', "i=2, v=12");
+    cy.get(cesc('#/section4/p3')).should('not.exist');
+    cy.get(cesc('#/section4/p4')).should('not.exist');
+
+    cy.get(cesc('#/section5_title')).should('have.text', 'Section 5')
+    cy.get(cesc('#/section5/p1')).should('have.text', "i=1, v=11");
+    cy.get(cesc('#/section5/p2')).should('have.text', "i=2, v=12");
+    cy.get(cesc('#/section5/p3')).should('not.exist');
+    cy.get(cesc('#/section5/p4')).should('not.exist');
+
+    cy.get(cesc('#/section6_title')).should('have.text', 'Section 6')
+    cy.get(cesc('#/p1a')).should('have.text', "i=1, v=11");
+    cy.get(cesc('#/p2a')).should('have.text', "i=2, v=12");
+    cy.get(cesc('#/p3a')).should('not.exist');
+    cy.get(cesc('#/p4a')).should('not.exist');
+
+    cy.get(cesc('#/section7_title')).should('have.text', 'Section 1')
+    cy.get(cesc('#/section7/p1')).should('have.text', "i=1, v=11");
+    cy.get(cesc('#/section7/p2')).should('have.text', "i=2, v=12");
+    cy.get(cesc('#/section7/p3')).should('not.exist');
+    cy.get(cesc('#/section7/p4')).should('not.exist');
+
+
+    cy.get(cesc('#/section1/addP')).click();
+
+    cy.get(cesc('#/section1/p1')).should('have.text', "i=1, v=11");
+    cy.get(cesc('#/section1/p2')).should('have.text', "i=2, v=12");
+    cy.get(cesc('#/section1/p3')).should('have.text', "i=3, v=13");
+    cy.get(cesc('#/section1/p4')).should('not.exist');
+
+    cy.get(cesc('#/section2/p1')).should('have.text', "i=1, v=11");
+    cy.get(cesc('#/section2/p2')).should('have.text', "i=2, v=12");
+    cy.get(cesc('#/section2/p3')).should('not.exist');
+    cy.get(cesc('#/section2/p4')).should('not.exist');
+
+    cy.get(cesc('#/p1')).should('have.text', "i=1, v=11");
+    cy.get(cesc('#/p2')).should('have.text', "i=2, v=12");
+    cy.get(cesc('#/p3')).should('not.exist');
+    cy.get(cesc('#/p4')).should('not.exist');
+
+    cy.get(cesc('#/section4/p1')).should('have.text', "i=1, v=11");
+    cy.get(cesc('#/section4/p2')).should('have.text', "i=2, v=12");
+    cy.get(cesc('#/section4/p3')).should('not.exist');
+    cy.get(cesc('#/section4/p4')).should('not.exist');
+
+    cy.get(cesc('#/section5/p1')).should('have.text', "i=1, v=11");
+    cy.get(cesc('#/section5/p2')).should('have.text', "i=2, v=12");
+    cy.get(cesc('#/section5/p3')).should('have.text', "i=3, v=13");
+    cy.get(cesc('#/section5/p4')).should('not.exist');
+
+    cy.get(cesc('#/p1a')).should('have.text', "i=1, v=11");
+    cy.get(cesc('#/p2a')).should('have.text', "i=2, v=12");
+    cy.get(cesc('#/p3a')).should('have.text', "i=3, v=13");
+    cy.get(cesc('#/p4a')).should('not.exist');
+
+    cy.get(cesc('#/section7/p1')).should('have.text', "i=1, v=11");
+    cy.get(cesc('#/section7/p2')).should('have.text', "i=2, v=12");
+    cy.get(cesc('#/section7/p3')).should('have.text', "i=3, v=13");
+    cy.get(cesc('#/section7/p4')).should('not.exist');
+
+
+    cy.get(cesc('#/section7/removeP')).click();
+
+    cy.get(cesc('#/section1/p1')).should('have.text', "i=1, v=11");
+    cy.get(cesc('#/section1/p2')).should('have.text', "i=2, v=12");
+    cy.get(cesc('#/section1/p3')).should('not.exist');
+    cy.get(cesc('#/section1/p4')).should('not.exist');
+
+    cy.get(cesc('#/section2/p1')).should('have.text', "i=1, v=11");
+    cy.get(cesc('#/section2/p2')).should('have.text', "i=2, v=12");
+    cy.get(cesc('#/section2/p3')).should('not.exist');
+    cy.get(cesc('#/section2/p4')).should('not.exist');
+
+    cy.get(cesc('#/p1')).should('have.text', "i=1, v=11");
+    cy.get(cesc('#/p2')).should('have.text', "i=2, v=12");
+    cy.get(cesc('#/p3')).should('not.exist');
+    cy.get(cesc('#/p4')).should('not.exist');
+
+    cy.get(cesc('#/section4/p1')).should('have.text', "i=1, v=11");
+    cy.get(cesc('#/section4/p2')).should('have.text', "i=2, v=12");
+    cy.get(cesc('#/section4/p3')).should('not.exist');
+    cy.get(cesc('#/section4/p4')).should('not.exist');
+
+    cy.get(cesc('#/section5/p1')).should('have.text', "i=1, v=11");
+    cy.get(cesc('#/section5/p2')).should('have.text', "i=2, v=12");
+    cy.get(cesc('#/section5/p3')).should('not.exist');
+    cy.get(cesc('#/section5/p4')).should('not.exist');
+
+    cy.get(cesc('#/p1a')).should('have.text', "i=1, v=11");
+    cy.get(cesc('#/p2a')).should('have.text', "i=2, v=12");
+    cy.get(cesc('#/p3a')).should('not.exist');
+    cy.get(cesc('#/p4a')).should('not.exist');
+
+    cy.get(cesc('#/section7/p1')).should('have.text', "i=1, v=11");
+    cy.get(cesc('#/section7/p2')).should('have.text', "i=2, v=12");
+    cy.get(cesc('#/section7/p3')).should('not.exist');
+    cy.get(cesc('#/section7/p4')).should('not.exist');
+
+
+    cy.get(cesc('#/section4/addP')).click();
+
+    cy.get(cesc('#/section1/p1')).should('have.text', "i=1, v=11");
+    cy.get(cesc('#/section1/p2')).should('have.text', "i=2, v=12");
+    cy.get(cesc('#/section1/p3')).should('not.exist');
+    cy.get(cesc('#/section1/p4')).should('not.exist');
+
+    cy.get(cesc('#/section2/p1')).should('have.text', "i=1, v=11");
+    cy.get(cesc('#/section2/p2')).should('have.text', "i=2, v=12");
+    cy.get(cesc('#/section2/p3')).should('not.exist');
+    cy.get(cesc('#/section2/p4')).should('not.exist');
+
+    cy.get(cesc('#/p1')).should('have.text', "i=1, v=11");
+    cy.get(cesc('#/p2')).should('have.text', "i=2, v=12");
+    cy.get(cesc('#/p3')).should('not.exist');
+    cy.get(cesc('#/p4')).should('not.exist');
+
+    cy.get(cesc('#/section4/p1')).should('have.text', "i=1, v=11");
+    cy.get(cesc('#/section4/p2')).should('have.text', "i=2, v=12");
+    cy.get(cesc('#/section4/p3')).should('have.text', "i=3, v=13");
+    cy.get(cesc('#/section4/p4')).should('not.exist');
+
+    cy.get(cesc('#/section5/p1')).should('have.text', "i=1, v=11");
+    cy.get(cesc('#/section5/p2')).should('have.text', "i=2, v=12");
+    cy.get(cesc('#/section5/p3')).should('not.exist');
+    cy.get(cesc('#/section5/p4')).should('not.exist');
+
+    cy.get(cesc('#/p1a')).should('have.text', "i=1, v=11");
+    cy.get(cesc('#/p2a')).should('have.text', "i=2, v=12");
+    cy.get(cesc('#/p3a')).should('not.exist');
+    cy.get(cesc('#/p4a')).should('not.exist');
+
+    cy.get(cesc('#/section7/p1')).should('have.text', "i=1, v=11");
+    cy.get(cesc('#/section7/p2')).should('have.text', "i=2, v=12");
+    cy.get(cesc('#/section7/p3')).should('not.exist');
+    cy.get(cesc('#/section7/p4')).should('not.exist');
+
+
+    cy.get(cesc('#/section4/removeP')).click();
+
+    cy.get(cesc('#/section1/p1')).should('have.text', "i=1, v=11");
+    cy.get(cesc('#/section1/p2')).should('have.text', "i=2, v=12");
+    cy.get(cesc('#/section1/p3')).should('not.exist');
+    cy.get(cesc('#/section1/p4')).should('not.exist');
+
+    cy.get(cesc('#/section2/p1')).should('have.text', "i=1, v=11");
+    cy.get(cesc('#/section2/p2')).should('have.text', "i=2, v=12");
+    cy.get(cesc('#/section2/p3')).should('not.exist');
+    cy.get(cesc('#/section2/p4')).should('not.exist');
+
+    cy.get(cesc('#/p1')).should('have.text', "i=1, v=11");
+    cy.get(cesc('#/p2')).should('have.text', "i=2, v=12");
+    cy.get(cesc('#/p3')).should('not.exist');
+    cy.get(cesc('#/p4')).should('not.exist');
+
+    cy.get(cesc('#/section4/p1')).should('have.text', "i=1, v=11");
+    cy.get(cesc('#/section4/p2')).should('have.text', "i=2, v=12");
+    cy.get(cesc('#/section4/p3')).should('not.exist');
+    cy.get(cesc('#/section4/p4')).should('not.exist');
+
+    cy.get(cesc('#/section5/p1')).should('have.text', "i=1, v=11");
+    cy.get(cesc('#/section5/p2')).should('have.text', "i=2, v=12");
+    cy.get(cesc('#/section5/p3')).should('not.exist');
+    cy.get(cesc('#/section5/p4')).should('not.exist');
+
+    cy.get(cesc('#/p1a')).should('have.text', "i=1, v=11");
+    cy.get(cesc('#/p2a')).should('have.text', "i=2, v=12");
+    cy.get(cesc('#/p3a')).should('not.exist');
+    cy.get(cesc('#/p4a')).should('not.exist');
+
+    cy.get(cesc('#/section7/p1')).should('have.text', "i=1, v=11");
+    cy.get(cesc('#/section7/p2')).should('have.text', "i=2, v=12");
+    cy.get(cesc('#/section7/p3')).should('not.exist');
+    cy.get(cesc('#/section7/p4')).should('not.exist');
+
+
+  });
+
+
   it('external content cannot reach outside namespace', () => {
     cy.window().then((win) => {
       win.postMessage({

@@ -44,7 +44,7 @@ export default class Polygon extends DoenetRenderer {
     };
 
     if (!this.doenetSvData.draggable || this.doenetSvData.fixed) {
-      jsxBorderAttributes.highlightStrokeWidth = this.doenetSvData.selectedStyle.lineWidth;
+      this.jsxBorderAttributes.highlightStrokeWidth = this.doenetSvData.selectedStyle.lineWidth;
     }
 
 
