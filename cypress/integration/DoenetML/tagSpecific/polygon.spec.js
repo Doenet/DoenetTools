@@ -2465,4 +2465,36 @@ describe('Polygon Tag Tests', function () {
     })
 
   })
+
+  it('constrain to polygon, different scales from graph', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <graph>
+    <polygon vertices="(1,3) (5,7) (-2,6)" name="p" fixed />
+  </graph>
+  `}, "*");
+    });
+    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/p'].stateValues.vertices[0].map(x => x.tree)).eqls([1, 3]);
+      expect(components['/p'].stateValues.vertices[1].map(x => x.tree)).eqls([5, 7]);
+      expect(components['/p'].stateValues.vertices[2].map(x => x.tree)).eqls([-2, 6]);
+      expect(components['/p'].stateValues.fixed).eq(true);
+
+    })
+
+    cy.log('cannot move vertices')
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      components['/p'].movePolygon({ pointCoords: [[4, 7], [8, 10], [1, 9]] });
+      expect(components['/p'].stateValues.vertices[0].map(x => x.tree)).eqls([1, 3]);
+      expect(components['/p'].stateValues.vertices[1].map(x => x.tree)).eqls([5, 7]);
+      expect(components['/p'].stateValues.vertices[2].map(x => x.tree)).eqls([-2, 6]);
+    })
+
+  })
 });
