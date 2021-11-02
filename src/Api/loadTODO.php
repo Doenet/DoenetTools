@@ -76,46 +76,45 @@ ORDER BY a.dueDate ASC, a.pinnedAfterDate ASC
 $result = $conn->query($sql); 
 $assignments = [];
 $pinned = [];
-
+if ($result->num_rows > 0) {
   while($row = $result->fetch_assoc()){
-    
-if ($row['pinnedAfterDate'] == ""){
-  array_push($assignments,array(
-    "itemType"=>$row['itemType'],
-    "pinnedAfterDate"=>$row['pinnedAfterDate'],
-    "creationDate"=>$row['creationDate'],
-    "assignedDate"=>$row['assignedDate'],
-    "dueDate"=>$row['dueDate'],
-    "doenetId"=>$row['doenetId'],
-    "driveId"=>$row['driveId'],
-    "isAssigned"=>$row['isAssigned'],
-    "isPublic"=>$row['isPublic'],
-    "isReleased"=>$row['isReleased'],
-    "itemId"=>$row['itemId'],
-    "label"=>$row['label'],
-    "parentFolderId"=>$row['parentFolderId'],
-    "sortOrder"=>$row['sortOrder']
-  ));
-}else{
-  array_push($pinned,array(
-    "itemType"=>$row['itemType'],
-    "pinnedAfterDate"=>$row['pinnedAfterDate'],
-    "creationDate"=>$row['creationDate'],
-    "assignedDate"=>$row['assignedDate'],
-    "dueDate"=>$row['dueDate'],
-    "doenetId"=>$row['doenetId'],
-    "driveId"=>$row['driveId'],
-    "isAssigned"=>$row['isAssigned'],
-    "isPublic"=>$row['isPublic'],
-    "isReleased"=>$row['isReleased'],
-    "itemId"=>$row['itemId'],
-    "label"=>$row['label'],
-    "parentFolderId"=>$row['parentFolderId'],
-    "sortOrder"=>$row['sortOrder']
-  ));
-}
-    
+    if ($row['pinnedAfterDate'] == ""){
+      array_push($assignments,array(
+        "itemType"=>$row['itemType'],
+        "pinnedAfterDate"=>$row['pinnedAfterDate'],
+        "creationDate"=>$row['creationDate'],
+        "assignedDate"=>$row['assignedDate'],
+        "dueDate"=>$row['dueDate'],
+        "doenetId"=>$row['doenetId'],
+        "driveId"=>$row['driveId'],
+        "isAssigned"=>$row['isAssigned'],
+        "isPublic"=>$row['isPublic'],
+        "isReleased"=>$row['isReleased'],
+        "itemId"=>$row['itemId'],
+        "label"=>$row['label'],
+        "parentFolderId"=>$row['parentFolderId'],
+        "sortOrder"=>$row['sortOrder']
+      ));
+    }else{
+      array_push($pinned,array(
+        "itemType"=>$row['itemType'],
+        "pinnedAfterDate"=>$row['pinnedAfterDate'],
+        "creationDate"=>$row['creationDate'],
+        "assignedDate"=>$row['assignedDate'],
+        "dueDate"=>$row['dueDate'],
+        "doenetId"=>$row['doenetId'],
+        "driveId"=>$row['driveId'],
+        "isAssigned"=>$row['isAssigned'],
+        "isPublic"=>$row['isPublic'],
+        "isReleased"=>$row['isReleased'],
+        "itemId"=>$row['itemId'],
+        "label"=>$row['label'],
+        "parentFolderId"=>$row['parentFolderId'],
+        "sortOrder"=>$row['sortOrder']
+      ));
+    }
   }
+}
 
   $classTimes = [];
   $sql = "
@@ -127,12 +126,14 @@ if ($row['pinnedAfterDate'] == ""){
   ORDER BY sortOrder
   ";
   $result = $conn->query($sql); 
-  while($row = $result->fetch_assoc()){
-    array_push($classTimes,array(
-      "dotwIndex"=>$row['dotwIndex'],
-      "startTime"=>$row['startTime'],
-      "endTime"=>$row['endTime']
-    ));
+  if ($result->num_rows > 0) {
+    while($row = $result->fetch_assoc()){
+      array_push($classTimes,array(
+        "dotwIndex"=>$row['dotwIndex'],
+        "startTime"=>$row['startTime'],
+        "endTime"=>$row['endTime']
+      ));
+    }
   }
 }
 
@@ -149,8 +150,10 @@ AND dc.driveId = '$driveId'
 ";
 
 $result = $conn->query($sql); 
-while($row = $result->fetch_assoc()){
-  array_push($completed,$row['doenetId']);
+if ($result->num_rows > 0) {
+  while($row = $result->fetch_assoc()){
+    array_push($completed,$row['doenetId']);
+  }
 }
 
 $response_arr = array(

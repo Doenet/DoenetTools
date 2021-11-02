@@ -6,6 +6,8 @@ import CryptoJS from "../_snowpack/pkg/crypto-js.js";
 import {nanoid} from "../_snowpack/pkg/nanoid.js";
 import {useToast, toastType} from "../_framework/Toast.js";
 import {serializedComponentsReplacer, serializedComponentsReviver} from "../core/utils/serializedStateProcessing.js";
+import {FontAwesomeIcon} from "../_snowpack/pkg/@fortawesome/react-fontawesome.js";
+import {faExclamationCircle} from "../_snowpack/pkg/@fortawesome/free-solid-svg-icons.js";
 class DoenetViewerChild extends Component {
   constructor(props) {
     super(props);
@@ -74,7 +76,9 @@ class DoenetViewerChild extends Component {
         });
       }
     } catch (e) {
-      this.props.setIsInErrorState(true);
+      if (this.props.setIsInErrorState) {
+        this.props.setIsInErrorState(true);
+      }
       this.setState({errMsg: e.message});
     }
   }
@@ -124,12 +128,16 @@ class DoenetViewerChild extends Component {
         itemVariantInfo: this.itemVariantInfo.map((x) => JSON.stringify(x, serializedComponentsReplacer))
       }).then(({data}) => {
         if (!data.success) {
-          this.props.setIsInErrorState(true);
+          if (this.props.setIsInErrorState) {
+            this.props.setIsInErrorState(true);
+          }
           this.setState({errMsg: data.message});
         }
         this.savedUserAssignmentAttemptNumber = this.attemptNumber;
       }).catch((errMsg) => {
-        this.props.setIsInErrorState(true);
+        if (this.props.setIsInErrorState) {
+          this.props.setIsInErrorState(true);
+        }
         this.setState({errMsg: errMsg.message});
       });
     }
@@ -273,7 +281,9 @@ class DoenetViewerChild extends Component {
         });
       }
     }).catch((errMsg) => {
-      this.props.setIsInErrorState(true);
+      if (this.props.setIsInErrorState) {
+        this.props.setIsInErrorState(true);
+      }
       this.setState({errMsg: errMsg.message});
     });
   }
@@ -366,7 +376,14 @@ class DoenetViewerChild extends Component {
   }
   render() {
     if (this.state.errMsg !== null) {
-      return /* @__PURE__ */ React.createElement("div", null, this.state.errMsg);
+      let errorIcon = /* @__PURE__ */ React.createElement("span", {
+        style: {fontSize: "1em", color: "#C1292E"}
+      }, /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
+        icon: faExclamationCircle
+      }));
+      return /* @__PURE__ */ React.createElement("div", {
+        style: {fontSize: "1.3em", marginLeft: "20px", marginTop: "20px"}
+      }, errorIcon, " ", this.state.errMsg);
     }
     this.allowLoadPageState = true;
     if (this.props.allowLoadPageState === false) {

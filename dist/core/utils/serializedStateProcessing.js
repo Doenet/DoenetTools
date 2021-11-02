@@ -1566,10 +1566,10 @@ export function createComponentNames({ serializedComponents, namespaceStack = []
       if (!prescribedNameFromDoenetAttributes && !doenetAttributes.createdFromSugar) {
 
         if (!(/[a-zA-Z]/.test(prescribedName.substring(0, 1)))) {
-          throw Error("Component name must begin with a letter");
+          throw Error(`Invalid component name: ${prescribedName}.  Component name must begin with a letter`);
         }
         if (!(/^[a-zA-Z0-9_\-]+$/.test(prescribedName))) {
-          throw Error("Component name can contain only letters, numbers, hyphens, and underscores");
+          throw Error(`Invalid component name: ${prescribedName}.  Component name can contain only letters, numbers, hyphens, and underscores`);
         }
       }
 
