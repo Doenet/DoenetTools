@@ -826,16 +826,7 @@ export default class BaseComponent {
     }
 
 
-    if (parameters.forLink) {
-      serializedComponent.originalName = this.componentName;
-      serializedComponent.originalDoenetAttributes = deepClone(this.doenetAttributes);
-      serializedComponent.doenetAttributes = deepClone(this.doenetAttributes);
-      serializedComponent.originalAttributes = deepClone(serializedComponent.attributes);
-
-      delete serializedComponent.doenetAttributes.prescribedName;
-      delete serializedComponent.doenetAttributes.assignNames;
-
-    } else {
+    if (!parameters.forLink) {
       let additionalState = {};
       for (let item in this.state) {
         // evaluate state variable first so that 
@@ -853,15 +844,17 @@ export default class BaseComponent {
         serializedComponent.state = additionalState;
       }
 
-      serializedComponent.originalName = this.componentName;
-      serializedComponent.originalDoenetAttributes = deepClone(this.doenetAttributes);
-      serializedComponent.doenetAttributes = deepClone(this.doenetAttributes);
-      serializedComponent.originalAttributes = deepClone(serializedComponent.attributes);
-
-      delete serializedComponent.doenetAttributes.prescribedName;
-      delete serializedComponent.doenetAttributes.assignNames;
-
     }
+
+
+    serializedComponent.originalName = this.componentName;
+    serializedComponent.originalDoenetAttributes = deepClone(this.doenetAttributes);
+    serializedComponent.doenetAttributes = deepClone(this.doenetAttributes);
+    serializedComponent.originalAttributes = deepClone(serializedComponent.attributes);
+
+    delete serializedComponent.doenetAttributes.prescribedName;
+    delete serializedComponent.doenetAttributes.assignNames;
+
 
     return serializedComponent;
 
