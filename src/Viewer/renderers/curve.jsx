@@ -123,9 +123,7 @@ export default class FunctionCurve extends DoenetRenderer {
 
     if (this.doenetSvData.curveType === "bezier") {
 
-      if (!this.props.board.eventHandlers.up) {
-        this.props.board.on('up', this.upBoard);
-      }
+      this.props.board.on('up', this.upBoard);
       this.curveJXG.on('down', this.downOther);
 
       this.segmentAttributes = {
@@ -239,16 +237,37 @@ export default class FunctionCurve extends DoenetRenderer {
 
   deleteControls() {
     if (this.segmentsJXG) {
-      this.segmentsJXG.forEach(x => x.forEach(y => { if (y) { this.props.board.removeObject(y) } }));
+      this.segmentsJXG.forEach(x => x.forEach(y => {
+        if (y) {
+          y.off('down');
+          this.props.board.removeObject(y)
+        }
+      }));
       this.segmentsJXG = [];
-      this.controlPointsJXG.forEach(x => x.forEach(y => { if (y) { this.props.board.removeObject(y) } }));
+      this.controlPointsJXG.forEach(x => x.forEach(y => {
+        if (y) {
+          y.off('drag')
+          y.off('down')
+          y.off('up')
+          this.props.board.removeObject(y)
+        }
+      }));
       this.controlPointsJXG = [];
-      this.throughPointsJXG.forEach(x => this.props.board.removeObject(x));
+      this.throughPointsJXG.forEach(x => {
+        x.off('drag')
+        x.off('down')
+        x.off('up')
+        this.props.board.removeObject(x)
+      });
       this.throughPointsJXG = [];
     }
   }
 
   deleteGraphicalObject() {
+
+    this.props.board.off('up', this.upBoard);
+    this.curveJXG.off('down');
+
     this.props.board.removeObject(this.curveJXG);
     delete this.curveJXG;
     if (this.reflectLine !== undefined) {
@@ -602,15 +621,28 @@ export default class FunctionCurve extends DoenetRenderer {
     } else if (this.doenetSvData.numericalThroughPoints.length < this.previousNumberOfPoints) {
       for (let i = this.previousNumberOfPoints - 1; i >= this.doenetSvData.numericalThroughPoints.length; i--) {
 
+        this.segmentsJXG[i][0].off('down')
+        this.segmentsJXG[i][1].off('down')
         this.props.board.removeObject(this.segmentsJXG[i][0])
         this.props.board.removeObject(this.segmentsJXG[i][1]);
         this.segmentsJXG.pop();
 
+        this.controlPointsJXG[i][0].off('drag')
+        this.controlPointsJXG[i][0].off('down')
+        this.controlPointsJXG[i][0].off('up')
+        this.controlPointsJXG[i][1].off('drag')
+        this.controlPointsJXG[i][1].off('down')
+        this.controlPointsJXG[i][1].off('up')
         this.props.board.removeObject(this.controlPointsJXG[i][0])
         this.props.board.removeObject(this.controlPointsJXG[i][1]);
         this.controlPointsJXG.pop();
 
-        this.props.board.removeObject(this.throughPointsJXG.pop());
+
+        let tp = this.throughPointsJXG.pop();
+        tp.off('drag')
+        tp.off('down')
+        tp.off('up')
+        this.props.board.removeObject(tp);
       }
 
       let iNewLast = this.doenetSvData.numericalThroughPoints.length - 1
