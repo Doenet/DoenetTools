@@ -317,20 +317,9 @@ export default class Graph extends DoenetRenderer {
 
 
   componentWillUnmount() {
-    // let allRenderers = this.renderers;
-    // for(let componentName in allRenderers) {
-    //   let componentRenderer = allRenderers[componentName];
-    //   if(componentRenderer.deleteGraphicalObject !== undefined) {
-    //     componentRenderer.deleteGraphicalObject();
-    //   }
-    // }
+    this.board.off('boundingbox');
   }
 
-
-  componentDidUpdate() {
-    // this.updateGraphicalComponents();
-    //window.MathJax.Hub.Queue(["Typeset",window.MathJax.Hub, "#"+this.component.componentName]);
-  }
 
   render() {
 

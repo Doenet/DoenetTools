@@ -73,6 +73,10 @@ export default class Circle extends DoenetRenderer {
   }
 
   deleteGraphicalObject() {
+    this.circleJXG.off('drag');
+    this.circleJXG.off('up');
+    this.circleJXG.off('down');
+
     this.props.board.removeObject(this.circleJXG);
     delete this.circleJXG;
   }
