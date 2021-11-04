@@ -1,5 +1,4 @@
 import React, {useEffect, useState} from "../../_snowpack/pkg/react.js";
-import {nanoid} from "../../_snowpack/pkg/nanoid.js";
 import axios from "../../_snowpack/pkg/axios.js";
 import Button from "../../_reactComponents/PanelHeaderComponents/Button.js";
 import ButtonGroup from "../../_reactComponents/PanelHeaderComponents/ButtonGroup.js";
@@ -153,11 +152,8 @@ export default function Enrollment(props) {
       let mergeLastName = [];
       let mergeEmail = [];
       let mergeSection = [];
-      let userIds = [];
       for (let [i, rowdata] of entries.entries()) {
         let rowcells = [];
-        let userId = nanoid();
-        userIds.push(userId);
         if (columnToIndex.empId != null && typeof rowdata[columnToIndex.empId] == "string") {
           let empId = rowdata[columnToIndex.empId].replace(/"/g, "");
           rowcells.push(/* @__PURE__ */ React.createElement("td", {
@@ -214,8 +210,7 @@ export default function Enrollment(props) {
             mergeFirstName,
             mergeLastName,
             mergeEmail,
-            mergeSection,
-            userIds
+            mergeSection
           };
           console.log(">>>>payload", payload);
           axios.post("/api/mergeEnrollmentData.php", payload).then((resp) => {

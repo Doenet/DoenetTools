@@ -26,7 +26,7 @@ export default class Polygon extends DoenetRenderer {
     };
     this.jsxBorderAttributes = {
       highlight: false,
-      visible: true,
+      visible: !this.doenetSvData.hidden,
       layer: 10 * this.doenetSvData.layer + 7,
       strokeColor: this.doenetSvData.selectedStyle.lineColor,
       highlightStrokeColor: this.doenetSvData.selectedStyle.lineColor,
@@ -63,7 +63,9 @@ export default class Polygon extends DoenetRenderer {
   initializePoints() {
     for (let i = 0; i < this.doenetSvData.nVertices; i++) {
       let vertex = this.polygonJXG.vertices[i];
+      vertex.off("drag");
       vertex.on("drag", (x) => this.onDragHandler(i, true));
+      vertex.off("up");
       vertex.on("up", (x) => this.onDragHandler(i, false));
     }
   }
@@ -133,8 +135,11 @@ export default class Polygon extends DoenetRenderer {
     }
     for (let i = 0; i < this.polygonJXG.borders.length; i++) {
       let border = this.polygonJXG.borders[i];
+      border.off("drag");
       border.on("drag", (e) => onDragBorder(i, e));
+      border.off("up");
       border.on("up", onUpBorder);
+      border.off("down");
       border.on("down", onDownBorder);
     }
   }
@@ -149,11 +154,9 @@ export default class Polygon extends DoenetRenderer {
     if (this.polygonJXG.borders) {
       for (let i = 0; i < this.polygonJXG.borders.length; i++) {
         let border = this.polygonJXG.borders[i];
-        if (border) {
-          border.off("drag");
-          border.off("up");
-          border.off("down");
-        }
+        border.off("drag");
+        border.off("up");
+        border.off("down");
       }
     }
     this.props.board.removeObject(this.polygonJXG);
@@ -197,7 +200,16 @@ export default class Polygon extends DoenetRenderer {
       this.initializePoints();
       this.initializeBorders();
     } else if (this.doenetSvData.nVertices < this.previousNVertices) {
+      for (let i = 0; i < this.polygonJXG.borders.length; i++) {
+        let border = this.polygonJXG.borders[i];
+        border.off("drag");
+        border.off("up");
+        border.off("down");
+      }
       for (let i = this.previousNVertices - 1; i >= this.doenetSvData.nVertices; i--) {
+        this.polygonJXG.vertices[i].drag("drag");
+        this.polygonJXG.vertices[i].drag("down");
+        this.polygonJXG.vertices[i].drag("up");
         this.polygonJXG.removePoints(this.polygonJXG.vertices[i]);
       }
       this.initializePoints();
