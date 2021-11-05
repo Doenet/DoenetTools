@@ -126,6 +126,7 @@ export default function ToolRoot(){
     GradebookAttempt: lazy(() => import('./ToolPanels/GradebookAttempt')),
     EditorViewer:lazy(() => import('./ToolPanels/EditorViewer')),
     AssignmentViewer:lazy(() => import('./ToolPanels/AssignmentViewer')),
+    SurveyListViewer:lazy(() => import('./ToolPanels/SurveyListViewer')),
     DoenetMLEditor:lazy(() => import('./ToolPanels/DoenetMLEditor')),
     Enrollment:lazy(() => import('./ToolPanels/Enrollment')),
     CollectionEditor: lazy(() => import('./ToolPanels/CollectionEditor')),
@@ -497,6 +498,21 @@ let navigationObj = {
       hasNoMenuPanel: true,
     }
   },
+  survey:{
+    default:{
+      defaultTool:'surveyList'
+    },
+    surveyList: {
+      pageName:"surveyList",
+      // menuPanelCap:"AssignmentInfoCap",
+      currentMainPanel:"SurveyListViewer",
+      // currentMenus:[], 
+      // menusTitles:[],
+      // menusInitOpen:[],
+      // headerControls: ["AssignmentBreadCrumb","AssignmentNewAttempt"],
+      // waitForMenuSuppression:true,
+    },
+  }
   
 }
 
