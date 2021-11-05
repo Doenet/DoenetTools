@@ -44,7 +44,7 @@ Attribute {
   AttributeName Is AttributeValue
 }
 
-AttributeValue { "\"" (attributeContent | EntityReference | CharacterReference | Macro)* "\"" }
+AttributeValue {singleQuoteAttributeValue | doubleQuoteAttributeValue}
 
 Comment { "<!--" commentContent* "-->" }
 
@@ -59,8 +59,12 @@ Comment { "<!--" commentContent* "-->" }
 
 @external tokens commentContent from "./tokens.js" { commentContent }
 
+singleQuoteAttributeValue { "'" (attributeContentSingleQuote | EntityReference | CharacterReference | Macro)* "'" }
+doubleQuoteAttributeValue { "\"" (attributeContentDoubleQuote | EntityReference | CharacterReference | Macro)* "\"" }
+
 @tokens {
   endTag { ">" }
+
 
   selfCloseEndTag { "/>" }
 
@@ -76,7 +80,9 @@ Comment { "<!--" commentContent* "-->" }
 
   AttributeName { identifier }
 
-  attributeContent { "$" |  !["&$ \t\r\n]  !["&$]* }
+  attributeContentSingleQuote { "$" |  !['&$ \t\r\n]  !['&$]* }
+
+  attributeContentDoubleQuote { "$" |  !["&$ \t\r\n]  !["&$]* }
 
   EntityReference { "&" ![#; ]+ ";" }
 
@@ -88,9 +94,11 @@ Comment { "<!--" commentContent* "-->" }
 
   space { std.whitespace+ }
 
-  @precedence {Macro, attributeContent}
+  @precedence {Macro, attributeContentSingleQuote}
+  @precedence {Macro, attributeContentDoubleQuote}
 
-  @precedence {attributeContent, space}
+  @precedence {attributeContentSingleQuote, space}
+  @precedence {attributeContentDoubleQuote, space}
 
   @precedence {space, Text}
 

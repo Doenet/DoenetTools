@@ -4,7 +4,7 @@ export const
   StartCloseTag = 2,
   mismatchedStartCloseTag = 3,
   incompleteStartCloseTag = 4,
-  commentContent = 27,
+  commentContent = 28,
   Document = 5,
   Text = 6,
   Comment = 7,
