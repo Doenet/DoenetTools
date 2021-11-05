@@ -34,14 +34,18 @@ $gradeCategory = mysqli_real_escape_string($conn,$_POST["gradeCategory"]);
 $individualize = mysqli_real_escape_string($conn,$_POST["individualize"]);
 $multipleAttempts = mysqli_real_escape_string($conn,$_POST["multipleAttempts"]);
 $showSolution = mysqli_real_escape_string($conn,$_POST["showSolution"]);
+$showSolutionInGradebook = mysqli_real_escape_string($conn,$_POST["showSolutionInGradebook"]);
 $showFeedback = mysqli_real_escape_string($conn,$_POST["showFeedback"]);
 $showHints = mysqli_real_escape_string($conn,$_POST["showHints"]);
 $showCorrectness = mysqli_real_escape_string($conn,$_POST["showCorrectness"]);
 $proctorMakesAvailable = mysqli_real_escape_string($conn,$_POST["proctorMakesAvailable"]);
 if ($timeLimit == ''){$timeLimit = 'NULL';} else {$timeLimit = "'$timeLimit'"; }
+if ($dueDate == ''){$dueDate = 'NULL';} else {$dueDate = "'$dueDate'"; }
+if ($assignedDate == ''){$assignedDate = 'NULL';} else {$assignedDate = "'$assignedDate'"; }
 if ($individualize){ $individualize = '1'; } else { $individualize = '0'; }
 if ($multipleAttempts){ $multipleAttempts = '1'; } else { $multipleAttempts = '0'; }
 if ($showSolution){ $showSolution = '1'; } else { $showSolution = '0'; }
+if ($showSolutionInGradebook){ $showSolutionInGradebook = '1'; } else { $showSolutionInGradebook = '0'; }
 if ($showFeedback){ $showFeedback = '1'; } else { $showFeedback = '0'; }
 if ($showHints){ $showHints = '1'; } else { $showHints = '0'; }
 if ($showCorrectness){ $showCorrectness = '1'; } else { $showCorrectness = '0'; }
@@ -175,6 +179,7 @@ if ($success) {
             individualize,
             multipleAttempts,
             showSolution,
+            showSolutionInGradebook,
             showFeedback,
             showHints,
             showCorrectness,
@@ -184,8 +189,8 @@ if ($success) {
             '$doenetId',
             '$contentId',
             '$driveId',
-            '$assignedDate',
-            '$dueDate',
+            $assignedDate,
+            $dueDate,
             $timeLimit,
             '$numberOfAttemptsAllowed',
             '$attemptAggregation',
@@ -194,6 +199,7 @@ if ($success) {
             '$individualize',
             '$multipleAttempts',
             '$showSolution',
+            '$showSolutionInGradebook',
             '$showFeedback',
             '$showHints',
             '$showCorrectness',
@@ -231,6 +237,52 @@ if ($success) {
                   ('$doenetId','$versionId','$emptyContentId','Draft',NOW(),'1','0','1')
                   ";
             }
+            $result = $conn->query($sql);
+
+            //Assignment
+            $sql="
+                INSERT INTO assignment
+                (
+                doenetId,
+                contentId,
+                driveId,
+                assignedDate,
+                dueDate,
+                timeLimit,
+                numberOfAttemptsAllowed,
+                attemptAggregation,
+                totalPointsOrPercent,
+                gradeCategory,
+                individualize,
+                multipleAttempts,
+                showSolution,
+                showSolutionInGradebook,
+                showFeedback,
+                showHints,
+                showCorrectness,
+                proctorMakesAvailable)
+                VALUES
+                (
+                '$doenetId',
+                '$contentId',
+                '$driveId',
+                $assignedDate,
+                $dueDate,
+                $timeLimit,
+                '$numberOfAttemptsAllowed',
+                '$attemptAggregation',
+                '$totalPointsOrPercent',
+                '$gradeCategory',
+                '$individualize',
+                '$multipleAttempts',
+                '$showSolution',
+                '$showSolutionInGradebook',
+                '$showFeedback',
+                '$showHints',
+                '$showCorrectness',
+                '$proctorMakesAvailable')
+            ";
+
             $result = $conn->query($sql);
             break;
         default:

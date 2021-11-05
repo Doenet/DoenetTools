@@ -37,22 +37,51 @@ describe('Text Tag Tests', function () {
 
   })
 
-  it('text attribute of paragraph components', () => {
+  it('text from paragraph components', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
     <p name="orig"><q>Hello,</q> said the <em>cow</em>.  <sq>Bye,</sq> came the <alert>reply</alert>.  The <attr>text</attr> attribute of <tag>text</tag> or <tage>text</tage> doesn't <term>do</term> <c>much</c>.</p>
 
     <p name="textOnly"><copy prop="text" tname="orig" assignNames="t" /></p>
+
+    <p name="insideText"><text name="t2"><q>Hello,</q> said the <em>cow</em>.  <sq>Bye,</sq> came the <alert>reply</alert>.  The <attr>text</attr> attribute of <tag>text</tag> or <tage>text</tage> doesn't <term>do</term> <c>much</c>.</text></p>
     `}, "*");
     });
 
     cy.get('#\\/orig').should('have.text', `“Hello,” said the cow.  ‘Bye,’ came the reply.  The text attribute of <text> or <text/> doesn't do much.`)
     cy.get('#\\/textOnly').should('have.text', `"Hello," said the cow.  'Bye,' came the reply.  The text attribute of <text> or <text/> doesn't do much.`)
+    cy.get('#\\/insideText').should('have.text', `"Hello," said the cow.  'Bye,' came the reply.  The text attribute of <text> or <text/> doesn't do much.`)
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/t'].stateValues.value).eq(`"Hello," said the cow.  'Bye,' came the reply.  The text attribute of <text> or <text/> doesn't do much.`)
+      expect(components['/t2'].stateValues.value).eq(`"Hello," said the cow.  'Bye,' came the reply.  The text attribute of <text> or <text/> doesn't do much.`)
+    })
+
+
+  })
+
+  it('text from single character components', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <p name="orig">Pick a number from 1 <ndash/> 2 <mdash/> no, maybe from<nbsp/>3<ellipsis /></p>
+
+    <p name="textOnly"><copy prop="text" tname="orig" assignNames="t" /></p>
+
+    <p name="insideText"><text name="t2">Pick a number from 1 <ndash/> 2 <mdash/> no, maybe from<nbsp/>3<ellipsis /></text></p>
+    `}, "*");
+    });
+
+    cy.get('#\\/orig').should('have.text', 'Pick a number from 1 – 2 — no, maybe from\u00a03…')
+    cy.get('#\\/textOnly').should('have.text', 'Pick a number from 1 – 2 — no, maybe from\u00a03…')
+    cy.get('#\\/insideText').should('have.text', 'Pick a number from 1 – 2 — no, maybe from\u00a03…')
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/t'].stateValues.value).eq(`Pick a number from 1 – 2 — no, maybe from\u00a03…`)
+      expect(components['/t2'].stateValues.value).eq(`Pick a number from 1 – 2 — no, maybe from\u00a03…`)
     })
 
 

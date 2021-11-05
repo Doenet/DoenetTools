@@ -79,11 +79,13 @@ export default function Form(props) {
       display: `${labelVisible}`,
 
     }
+    var disable = "";
     if (props.disabled) {
         submitButton.backgroundColor = '#e2e2e2';
         submitButton.color = 'black';
         submitButton.cursor = 'not-allowed';
         textfield.cursor = 'not-allowed';
+        disable = "disabled";
     }
 
 
@@ -147,6 +149,7 @@ export default function Form(props) {
             onChange={(e) => {
               handleChange(e);
             }}
+            disabled={disable}
           />
           <button
             style={cancelButton}

@@ -1,20 +1,23 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState } from 'react';
 import { useRecoilValue, useRecoilCallback } from 'recoil';
-import Cookies from 'js-cookie'; // import Textinput from "../imports/Textinput";
+// import Cookies from 'js-cookie'; // import Textinput from "../imports/Textinput";
 import axios from 'axios';
 import { useToast, toastType } from '../../../Tools/_framework/Toast';
-import { searchParamAtomFamily } from '../NewToolRoot';
+import { searchParamAtomFamily, pageToolViewAtom } from '../NewToolRoot';
 import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
 import ButtonGroup from '../../../_reactComponents/PanelHeaderComponents/ButtonGroup';
-// import { loadAssignmentSelector } from '../../../_reactComponents/Drive/NewDrive';
-import { variantsAndAttemptsByDoenetId } from '../ToolPanels/AssignmentViewer';
+import SearchBar from '../../../_reactComponents/PanelHeaderComponents/SearchBar';
+import { formatAMPM, UTCDateStringToDate } from '../../../_utils/dateUtilityFunction';
 
 export default function ChooseLearnerPanel(props) {
   const doenetId = useRecoilValue(searchParamAtomFamily('doenetId'));
+  const driveId = useRecoilValue(searchParamAtomFamily('driveId'));
   let [stage, setStage] = useState('request password');
   let [code,setCode] = useState('');
   let [learners,setLearners] = useState([]);
+  let [exams,setExams] = useState([]);
   let [choosenLearner,setChoosenLearner] = useState(null);
+  let [filter,setFilter] = useState('')
   const addToast = useToast();
 
   const newAttempt = useRecoilCallback(({set,snapshot})=> async (doenetId,code,userId)=>{
@@ -22,7 +25,7 @@ export default function ChooseLearnerPanel(props) {
       const { data } = await axios.get('/api/incrementAttemptNumber.php', {
         params: { doenetId, code, userId },
       })
-      // console.log(">>>>data",data)
+      // console.log(">>>>data 2",data)
       // console.log(">>>>",doenetId,code,userId)
    
       location.href = `/api/examjwt.php?userId=${encodeURIComponent(
@@ -31,7 +34,19 @@ export default function ChooseLearnerPanel(props) {
     
   })
 
-  console.log(`>>>>stage '${stage}'`)
+  const setDoenetId = useRecoilCallback(({set})=> async (doenetId,driveId)=>{
+    set(pageToolViewAtom,(was)=>{
+      let newObj = {...was};
+      if (doenetId){
+        newObj.params = {doenetId,driveId}
+      }else{
+        newObj.params = {driveId}
+      }
+      return newObj
+    })
+  });
+
+  // console.log(`>>>>stage '${stage}'`)
 
   if (stage === 'request password' || stage === 'problem with code'){
      return   <div
@@ -84,11 +99,17 @@ export default function ChooseLearnerPanel(props) {
 
   if (stage === 'check code'){
     const checkCode = async (code)=>{
-      let { data } = await axios.get('/api/checkPasscode.php',{params:{code,doenetId}})
-      console.log(">>>>data",data)
+      let { data } = await axios.get('/api/checkPasscode.php',{params:{code,doenetId,driveId}})
+      // console.log(">>>>data",data)
       if (data.success){
-        setStage('choose learner');
+        if (driveId === ''){
+          setStage('choose learner');
+        }else{
+          setStage('choose exam');
+        }
         setLearners(data.learners);
+        setExams(data.exams);
+        
       }else{
       addToast(data.message);
       setStage('problem with code');
@@ -99,18 +120,71 @@ export default function ChooseLearnerPanel(props) {
    
   }
 
+  //https://localhost/#/exam?tool=chooseLearner&driveId=fjVHU0x9nhv3DMmS5ypqQ
+  if (stage === 'choose exam'){
+    // console.log(">>>>exams",exams);
+
+    if (exams.length < 1){
+      return <h1>No Exams Available!</h1>
+    }
+    let examRows = [];
+    for (let exam of exams){
+      examRows.push(<tr>
+        <td style={{textAlign:"center"}}>{exam.label}</td>
+        {/* <td style={{textAlign:"center"}}>{exam.info}</td> */}
+        <td style={{textAlign:"center"}}><button onClick={()=>{
+          setDoenetId(exam.doenetId,driveId)
+          setStage('choose learner');
+        }}>Choose</button></td>
+        </tr>)
+    }
+    //Need search and filter
+    return <div>
+
+      <table>
+        <thead>
+          <th style={{width:"200px"}}>Exam</th>
+          {/* <th style={{width:"200px"}}>Info</th> */}
+          <th style={{width:"100px"}}>Choose</th>
+        </thead>
+        <tbody>
+          {examRows}
+        </tbody>
+      </table>
+    </div>;
+  }
+
   if (stage === 'choose learner'){
-    console.log(">>>>learners",learners);
+    // console.log(">>>>learners",learners);
     if (learners.length < 1){
       return <h1>No One is Enrolled!</h1>
     }
     let learnerRows = [];
 
     for (let learner of learners){
+      //filter
+      if (
+       !learner.firstName.toLowerCase().includes(filter.toLowerCase()) &&
+       !learner.lastName.toLowerCase().includes(filter.toLowerCase())
+      ){
+        continue;
+      }
+
+      let timeZoneCorrectLastExamDate = null;
+      if (learner.exam_to_date[doenetId]){
+
+        let lastExamDT = UTCDateStringToDate(learner.exam_to_date[doenetId]);
+        if (lastExamDT){
+          let time = formatAMPM(lastExamDT)
+          timeZoneCorrectLastExamDate = `${lastExamDT.getMonth() + 1}/${lastExamDT.getDate()} ${time}`;
+        }
+        
+      }
       learnerRows.push(<tr>
         <td style={{textAlign:"center"}}>{learner.firstName}</td>
         <td style={{textAlign:"center"}}>{learner.lastName}</td>
         <td style={{textAlign:"center"}}>{learner.studentId}</td>
+        <td style={{textAlign:"center"}}>{timeZoneCorrectLastExamDate}</td>
         <td style={{textAlign:"center"}}><button onClick={()=>{
           setChoosenLearner(learner);
           setStage('student final check');
@@ -118,14 +192,14 @@ export default function ChooseLearnerPanel(props) {
         </tr>)
     }
 
-    //Need search and filter
     return <div>
-
+      <div style={{marginLeft:"50px",marginBottom:"15px"}}><SearchBar autoFocus onChange={setFilter}/></div>
       <table>
         <thead>
           <th style={{width:"200px"}}>First Name</th>
           <th style={{width:"200px"}}>Last Name</th>
           <th style={{width:"200px"}}>Student ID</th>
+          <th style={{width:"200px"}}>Last Exam</th>
           <th style={{width:"100px"}}>Choose</th>
         </thead>
         <tbody>
@@ -160,6 +234,7 @@ export default function ChooseLearnerPanel(props) {
        setStage('request password');
        setCode('')
        setChoosenLearner(null);
+       setDoenetId(null,driveId)
      }}/>
      <Button value="Yes It's me. Start Exam." onClick={()=>{
 
@@ -176,57 +251,6 @@ export default function ChooseLearnerPanel(props) {
 }
 
 
-
-  // let [email, setEmail] = useState('');
-  // let [nineCode, setNineCode] = useState('');
-  // let [maxAge, setMaxAge] = useState(0); //'2147483647' sec
-
-  // let [signInStage, setSignInStage] = useState('beginning');
-  // let [isSentEmail, setIsSentEmail] = useState(false);
-  // let [deviceName, setDeviceName] = useState('');
-  // console.log(signInStage)
-
-  // // const jwt = Cookies.get();
-
-  // const emailRef = useRef(null);
-  // const codeRef = useRef(null);
-
-  // let validEmail = false;
-  // if (/^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(email)) {
-  //   validEmail = true;
-  // }
-
-  // let validCode = false;
-  // if (/^\d{9}$/.test(nineCode)) {
-  //   validCode = true;
-  // }
-
-  // // useEffect(() => {
-  // //   if (codeRef.current !== null && !validCode) {
-  // //     codeRef.current.focus();
-  // //   } else if (emailRef.current !== null && !validEmail) {
-  // //     emailRef.current.focus();
-  // //   }
-  // // });
-
-  // //If already signed in go to course
-  // // if (Object.keys(jwt).includes('JWT_JS')) {
-  // //   axios
-  // //   .get('/api/loadProfile.php', {params: {}})
-  // //   .then((resp) => {
-  // //     if (resp.data.success === '1') {
-  // //       localStorage.setItem("Profile",JSON.stringify(resp.data.profile));
-  // //       location.href = '/#/course';
-  // //     }else{
-  // //       //  Error currently does nothing
-  // //     }})
-  // //     .catch((error) => {
-  // //       console.log(error)
-  // //       //  Error currently does nothing
-  // //     });
-
-  // //     return null;
-  // // }
 
   // // ** *** *** *** *** **
   // //Developer only sign in as devuser
@@ -262,259 +286,3 @@ export default function ChooseLearnerPanel(props) {
   // //     '123456789',
   // //   )}&deviceName=${deviceName}&newAccount=${'0'}&stay=${'1'}`;
   // // }
-
-  // if (signInStage === 'check code') {
-  //   //Ask Server for data which matches email address
-
-  //   const data = {
-  //     emailaddress: email,
-  //     nineCode: nineCode,
-  //     deviceName: deviceName,
-  //   };
-  //   const payload = {
-  //     params: data,
-  //   };
-  //   axios
-  //     .get('/api/checkCredentials.php', payload)
-  //     .then((resp) => {
-  //       // console.log('checkCredentials resp',resp);
-
-  //       if (resp.data.success) {
-  //         let newAccount = '1';
-  //         if (resp.data.existed) {
-  //           newAccount = '0';
-  //         }
-  //         let stay = '0';
-  //         if (maxAge > 0) {
-  //           stay = '1';
-  //         }
-
-  //         // console.log(`/api/jwt.php?emailaddress=${encodeURIComponent(email)}&nineCode=${encodeURIComponent(nineCode)}&deviceName=${deviceName}&newAccount=${newAccount}&stay=${stay}`)
-  //         location.href = `/api/jwt.php?emailaddress=${encodeURIComponent(
-  //           email,
-  //         )}&nineCode=${encodeURIComponent(
-  //           nineCode,
-  //         )}&deviceName=${deviceName}&newAccount=${newAccount}&stay=${stay}`;
-  //       } else {
-  //         if (resp.data.reason === 'Code expired') {
-  //           setSignInStage('Code expired');
-  //         } else if (resp.data.reason === 'Invalid Code') {
-  //           setSignInStage('Invalid Code');
-  //         }
-  //       }
-  //     })
-  //     .catch((error) => {
-  //       console.error(error)
-  //     });
-
-  //   return (
-  //     <div>
-  //     <div
-  //       style={{
-  //         position: 'absolute',
-  //         top: '50%',
-  //         left: '50%',
-  //         transform: 'translate(-50%, -50%)',
-  //         margin: '20',
-  //       }}
-  //     >
-  //       <h2 style={{ textAlign: 'center' }}>Signing in...</h2>
-  //     </div></div>
-  //   );
-  // }
-
-  // if (signInStage === 'Code expired') {
-  //   return (
-  //     <div
-  //       style={{
-  //         position: 'absolute',
-  //         top: '50%',
-  //         left: '50%',
-  //         transform: 'translate(-50%, -50%)',
-  //         margin: '20',
-  //       }}
-  //     >
-  //       <h2 style={{ textAlign: 'center' }}>Code Expired</h2>
-  //       <button
-  //         onClick={() => {
-  //           location.href = '/#/signin';
-  //         }}
-  //       >
-  //         Restart Signin
-  //       </button>
-  //     </div>
-  //   );
-  // }
-
-  // if (signInStage === 'enter code' || signInStage === 'Invalid Code') {
-  //   if (!isSentEmail) {
-  //     const phpUrl = '/api/sendSignInEmail.php';
-  //     const data = {
-  //       emailaddress: email,
-  //     };
-  //     const payload = {
-  //       params: data,
-  //     };
-  //     axios
-  //       .get(phpUrl, payload)
-  //       .then((resp) => {
-  //         setDeviceName(resp.data.deviceName);
-  //         let cookieSettingsObj = { path: '/', sameSite: 'strict' };
-  //         if (maxAge > 0) {
-  //           cookieSettingsObj.maxAge = maxAge;
-  //         }
-  //         // Cookies.set('Device', resp.data.deviceName, cookieSettingsObj);
-  //         // Cookies.set('Stay', maxAge, cookieSettingsObj);
-  //       })
-  //       .catch((error) => {
-  //         this.setState({ error: error });
-  //       });
-  //     setIsSentEmail(true);
-  //   }
-
-  //   let heading = <h2 style={{ textAlign: 'center' }}>Email Sent!</h2>;
-  //   if (signInStage === 'Invalid Code') {
-  //     heading = (
-  //       <h2 style={{ textAlign: 'center' }}>Invalid Code. Try again.</h2>
-  //     );
-  //   }
-
-  //   return (
-  //     <div style={props.style}>
-  //     <div
-  //       style={{
-  //         position: 'absolute',
-  //         top: '50%',
-  //         left: '50%',
-  //         transform: 'translate(-50%, -50%)',
-  //         margin: '20',
-  //       }}
-  //     >
-  //       {heading}
-  //       <div style={{ weight: 'bold' }}>Device Name: {deviceName}</div>
-  //       <div>
-  //         <p>Check your email for a code to complete sign in.</p>
-  //       </div>
-  //       <p>
-  //         <label>
-  //           Code (9 digit code):{' '}
-  //           <input
-  //             type="text"
-  //             ref={codeRef}
-  //             value={nineCode}
-  //             data-cy="signinCodeInput"
-  //             onKeyDown={(e) => {
-  //               if (e.key === 'Enter' && validCode) {
-  //                 setSignInStage('check code');
-  //               }
-  //             }}
-  //             onChange={(e) => {
-  //               setNineCode(e.target.value);
-  //             }}
-  //           />
-  //         </label>
-  //       </p>
-  //       <button
-  //         disabled={!validCode}
-  //         style={{}}
-  //         onClick={() => setSignInStage('check code')}
-  //         data-cy="signInButton"
-  //       >
-  //         Sign In
-  //       </button>
-  //     </div>
-  //     </div>
-  //   );
-  // }
-
-  // if (signInStage === 'beginning') {
-  //   let stay = 0;
-  //   if (maxAge > 0) {
-  //     stay = 1;
-  //   }
-  //   return (
-  //     <div style={props.style}>
-  //     <div
-  //       style={{
-  //         position: 'absolute',
-  //         top: '50%',
-  //         left: '50%',
-  //         transform: 'translate(-50%, -50%)',
-  //         display: 'flex',
-  //         justifyContent: 'center',
-  //         alignItems: 'center',
-  //         margin: '20',
-  //       }}
-  //     >
-  //       <img
-  //         style={{ width: '250px', height: '250px' }}
-  //         alt="Doenet Logo"
-  //         src={'/media/Doenet_Logo_Frontpage.png'}
-  //       />
-  //       <div>
-  //         <p>
-  //           <label>
-  //             Email Address:{' '}
-  //             <input
-  //               type="text"
-  //               label="Email Address"
-  //               ref={emailRef}
-  //               value={email}
-  //               data-cy="signinEmailInput"
-  //               onKeyDown={(e) => {
-  //                 if (e.key === 'Enter' && validEmail) {
-  //                   setSignInStage('enter code');
-  //                 }
-  //               }}
-  //               onChange={(e) => {
-  //                 setEmail(e.target.value);
-  //               }}
-  //             />
-  //           </label>
-  //         </p>
-  //         <p>
-  //           <input
-  //             type="checkbox"
-  //             checked={stay}
-  //             onChange={(e) => {
-  //               if (e.target.checked) {
-  //                 // console.log('stay')
-  //                 setMaxAge(240000); //2147483647 sec
-  //               } else {
-  //                 // console.log('not stay')
-  //                 setMaxAge(0);
-  //               }
-  //             }}
-  //           />{' '}
-  //           Stay Logged In
-  //         </p>
-  //         <button
-  //           disabled={!validEmail}
-  //           style={{ float: 'right' }}
-  //           onClick={() => setSignInStage('enter code')}
-  //           data-cy="sendEmailButton"
-  //         >
-  //           Send Email
-  //         </button>
-  //       </div>
-  //     </div></div>
-  //   );
-  // }
-
-  // return (
-  //   <div style={props.style}>
-  //   <div
-  //     style={{
-  //       position: 'absolute',
-  //       top: '50%',
-  //       left: '50%',
-  //       transform: 'translate(-50%, -50%)',
-  //       display: 'flex',
-  //       justifyContent: 'center',
-  //       alignItems: 'center',
-  //       margin: '20',
-  //     }}
-  //   >
-  //     <h2 style={{ textAlign: 'center' }}>Loading...</h2>
-  //   </div></div>
-  // );

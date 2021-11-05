@@ -69,6 +69,58 @@ describe('Conditional Content Tag Tests', function () {
 
   })
 
+  it('inline content containing sign of number, use XML entities', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <mathinput name="n" />
+
+  <p>You typed 
+    <conditionalcontent condition="$n &gt; 0">
+      a positive number.
+    </conditionalcontent>
+    <conditionalcontent condition="$n &lt; 0">
+      a negative number.
+    </conditionalcontent>
+    <conditionalcontent condition="$n=0">
+      zero.
+    </conditionalcontent>
+    <conditionalcontent condition="not ($n&gt;0 or $n&lt;0 or $n=0)" >
+      something else.
+    </conditionalcontent>
+  </p>
+  `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a')
+
+    cy.get('p#\\/_p1').invoke('text').then((text) => {
+      expect(text.replace(/\s+/g, " ").trim()).equal('You typed something else.')
+    });
+
+    cy.get('#\\/n textarea').type("10{enter}", { force: true });
+    cy.get('p#\\/_p1').invoke('text').then((text) => {
+      expect(text.replace(/\s+/g, " ").trim()).equal('You typed a positive number.')
+    });
+
+    cy.get('#\\/n textarea').type("{end}{backspace}{backspace}-5/9{enter}", { force: true });
+    cy.get('p#\\/_p1').invoke('text').then((text) => {
+      expect(text.replace(/\s+/g, " ").trim()).equal('You typed a negative number.')
+    });
+
+    cy.get('#\\/n textarea').type("{end}{backspace}{backspace}{backspace}{backspace}5-5{enter}", { force: true });
+    cy.get('p#\\/_p1').invoke('text').then((text) => {
+      expect(text.replace(/\s+/g, " ").trim()).equal('You typed zero.')
+    });
+
+    cy.get('#\\/n textarea').type("{end}{backspace}{backspace}{backspace}-x{enter}", { force: true });
+    cy.get('p#\\/_p1').invoke('text').then((text) => {
+      expect(text.replace(/\s+/g, " ").trim()).equal('You typed something else.')
+    });
+
+  })
+
   it('block content containing sign of number', () => {
     cy.window().then((win) => {
       win.postMessage({

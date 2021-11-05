@@ -59,6 +59,7 @@ import { useDragShadowCallbacks, useSortFolder } from './DriveActions';
 import useSockets from '../Sockets';
 import { BreadcrumbContext } from '../Breadcrumb/BreadcrumbProvider';
 import Collection from './Collection';
+import { UTCDateStringToDate } from '../../_utils/dateUtilityFunction';
 
 const loadAssignmentAtomFamily = atomFamily({
   key: 'loadAssignmentAtomFamily',
@@ -69,7 +70,22 @@ const loadAssignmentAtomFamily = atomFamily({
       const { data } = await axios.get('/api/getAllAssignmentSettings.php', {
         params: payload,
       });
-      return data.assignment;
+      let assignment = { ...data.assignment };
+
+      if (assignment.assignedDate){
+        assignment.assignedDate = UTCDateStringToDate(assignment.assignedDate).toLocaleString();
+      }
+      if (assignment.dueDate){
+        assignment.dueDate = UTCDateStringToDate(assignment.dueDate).toLocaleString();
+      }
+      if (assignment.pinnedAfterDate){
+        assignment.pinnedAfterDate = UTCDateStringToDate(assignment.pinnedAfterDate).toLocaleString();
+      }
+      if (assignment.pinnedUntilDate){
+        assignment.pinnedUntilDate = UTCDateStringToDate(assignment.pinnedUntilDate).toLocaleString();
+      }
+
+      return assignment;
     },
   }),
 });
@@ -439,7 +455,7 @@ export const loadDriveInfoQuery = selectorFamily({
       const { data } = await axios.get(
         `/api/loadFolderContent.php?driveId=${driveId}&init=true`,
       );
-      // console.log("loadDriveInfoQuery DATA ",data)
+      // console.log(">>>>loadDriveInfoQuery DATA ",data)
       // let itemDictionary = {};
       //   for (let item of data.results){
       //     itemDictionary[item.itemId] = item;
@@ -501,7 +517,7 @@ export const folderDictionaryFilterAtom = atomFamily({
   key: 'folderDictionaryFilterAtom',
   default: selectorFamily({
     key: 'folderDictionaryFilterAtom/Default',
-    get: (driveId) => () => {
+    get: () => () => {
       return 'All';
     },
   }),
@@ -653,7 +669,7 @@ export const getLexicographicOrder = ({
   return sortOrder;
 };
 
-function DriveHeader({
+export function DriveHeader({
   columnTypes,
   numColumns,
   setNumColumns,
@@ -988,13 +1004,14 @@ function Folder(props) {
     itemId = props.driveId;
   }
 
-  const [folderInfoObj, setFolderInfo] = useRecoilStateLoadable(
-    folderInfoSelector({
-      driveId: props.driveId,
-      instanceId: props.driveInstanceId,
-      folderId: props.folderId,
-    }),
-  );
+  const { folderInfo, contentsDictionary, contentIdsArr } =
+    useRecoilValueLoadable(
+      folderInfoSelector({
+        driveId: props.driveId,
+        instanceId: props.driveInstanceId,
+        folderId: props.folderId,
+      }),
+    ).getValue();
   // const [folderInfoObj, setFolderInfo] = useRecoilStateLoadable(folderDictionaryFilterSelector({driveId:props.driveId,folderId:props.folderId}))
 
   const {
@@ -1117,16 +1134,6 @@ function Folder(props) {
   if (props.isNav && itemId === props.pathItemId) {
     borderSide = '8px solid #1A5A99';
   }
-
-  if (folderInfoObj.state === 'loading') {
-    return null;
-  }
-  if (folderInfoObj.state === 'hasError') {
-    console.error(folderInfoObj.contents);
-    return null;
-  }
-  let { folderInfo, contentsDictionary, contentIdsArr } =
-    folderInfoObj.contents;
 
   let openCloseText = isOpen ? (
     <span data-cy="folderToggleCloseIcon">
@@ -1654,18 +1661,20 @@ function Folder(props) {
             break;
           case 'Collection':
             items.push(
-              <Collection
-                driveId={props.driveId}
-                driveInstanceId={props.driveInstanceId}
-                key={`item${itemId}${props.driveInstanceId}`}
-                item={item}
-                clickCallback={props.clickCallback}
-                doubleClickCallback={props.doubleClickCallback}
-                numColumns={props.numColumns}
-                columnTypes={props.columnTypes}
-                indentLevel={props.indentLevel + 1}
-                isViewOnly={props.isViewOnly}
-              />,
+              <Suspense>
+                <Collection
+                  driveId={props.driveId}
+                  driveInstanceId={props.driveInstanceId}
+                  key={`item${itemId}${props.driveInstanceId}`}
+                  item={item}
+                  clickCallback={props.clickCallback}
+                  doubleClickCallback={props.doubleClickCallback}
+                  numColumns={props.numColumns}
+                  columnTypes={props.columnTypes}
+                  indentLevel={props.indentLevel + 1}
+                  isViewOnly={props.isViewOnly}
+                />
+              </Suspense>,
             );
             break;
           default:
@@ -1793,7 +1802,10 @@ export const selectedDriveItems = selectorFamily({
         for (let itemId of folderObj.contentIds.defaultOrder) {
           itemIdArr.push(itemId);
           parentFolderIdArr.push(parentFolderId);
-          if (folderObj.contentsDictionary[itemId].itemType === 'Folder') {
+          if (
+            folderObj.contentsDictionary[itemId].itemType === 'Folder' ||
+            folderObj.contentsDictionary[itemId].itemType === 'Collection'
+          ) {
             const isOpen = get(
               folderOpenAtom({ driveInstanceId, driveId, itemId }),
             );
@@ -1954,9 +1966,8 @@ export const selectedDriveItems = selectorFamily({
 });
 
 export function ColumnJSX(columnType, item) {
-  let courseRole = '';
+  // let courseRole = '';
 
-  // console.log(">>>columnType,item",columnType,item)
   // console.log(">>>item",item)
   const assignmentInfoSettings = useRecoilValueLoadable(
     loadAssignmentSelector(item.doenetId),
@@ -1985,8 +1996,10 @@ export function ColumnJSX(columnType, item) {
         <FontAwesomeIcon icon={faCheck} />
       </span>
     );
-  } else if (columnType === 'Due Date' && item.isAssigned === '1') {
+  } else if (columnType === 'Due Date' && item.isReleased === '1') {
     return <span style={{ textAlign: 'center' }}>{aInfo?.dueDate}</span>;
+  } else if (columnType === 'Assigned Date' && item.isReleased === '1') {
+    return <span style={{ textAlign: 'center' }}>{aInfo?.assignedDate}</span>;
   }
   return <span></span>;
 }
@@ -2001,7 +2014,7 @@ export const DoenetML = React.memo(function DoenetML(props) {
       itemId: props.item.itemId,
     }),
   );
-  const [selectedDrive, setSelectedDrive] = useRecoilState(selectedDriveAtom);
+  // const [selectedDrive, setSelectedDrive] = useRecoilState(selectedDriveAtom);
   const [dragState] = useRecoilState(dragStateAtom);
   const {
     onDragStart,
@@ -2012,13 +2025,13 @@ export const DoenetML = React.memo(function DoenetML(props) {
     unregisterDropTarget,
   } = useDnDCallbacks();
   const globalSelectedNodes = useRecoilValue(globalSelectedNodesAtom);
-  const [folderInfoObj, setFolderInfo] = useRecoilStateLoadable(
-    folderInfoSelector({
-      driveId: props.driveId,
-      instanceId: props.driveInstanceId,
-      folderId: props.driveId,
-    }),
-  );
+  // const [folderInfoObj, setFolderInfo] = useRecoilStateLoadable(
+  //   folderInfoSelector({
+  //     driveId: props.driveId,
+  //     instanceId: props.driveInstanceId,
+  //     folderId: props.driveId,
+  //   }),
+  // );
   const parentFolderSortOrder = useRecoilValue(
     folderSortOrderAtom({
       driveId: props.driveId,
@@ -2067,7 +2080,7 @@ export const DoenetML = React.memo(function DoenetML(props) {
   }
   if (isSelected || (props.isNav && props.item.itemId === props.pathItemId)) {
     bgcolor = 'hsl(209,54%,82%)';
-    borderSide = '8px 0px 0px 0px #1A5A99';
+    // borderSide = '8px 0px 0px 0px #1A5A99';
   }
   if (isSelected && dragState.isDragging) {
     bgcolor = '#e2e2e2';

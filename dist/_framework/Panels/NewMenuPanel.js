@@ -26,21 +26,27 @@ background: white;
 display: flex;
 justify-content: space-between;
 align-items: center;
-position: ${(props) => props.fix ? "sticky" : "static"};
+position: ${(props) => props.fix ? "static" : "sticky"};
 border-bottom: 2px solid #e2e2e2;
 margin-bottom: -2px;
 top: 0;
+z-index: 2;
 `;
 const MenuPanelsCapComponent = styled.div`
 width: 240px;
 background: white;
 border-top: 1px solid #e2e2e2;
 border-top: 1px solid #e2e2e2;
+border-bottom: 2px solid #e2e2e2;
+margin-bottom: -2px;
+position: sticky;
+top: 35px;
+z-index: 2;
 `;
 const MenuHeaderButton = styled.button`
   border: none;
   border-top: ${({linkedPanel, activePanel}) => linkedPanel === activePanel ? "8px solid #1A5A99" : "none"};
-  background-color: hsl(0, 0%, 99%);
+  background-color: hsl(0, 0%, 100%);
   border-bottom: 2px solid
     ${({linkedPanel, activePanel}) => linkedPanel === activePanel ? "#white" : "black"};
   width: 100%;
@@ -94,25 +100,16 @@ border-bottom: ${(props) => props.isOpen ? "2px solid black" : "0px solid black"
 margin-top: 2px;
 `;
 function SelectionMenu(props) {
+  console.log("child", props.children);
   return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("div", {
     style: {
-      marginTop: "2px",
-      paddingBottom: "4px",
+      paddingBottom: "8px",
       paddingLeft: "4px",
       paddingRight: "4px",
       backgroundColor: "white",
       borderLeft: "8px solid #1A5A99"
     }
-  }, /* @__PURE__ */ React.createElement("h3", {
-    style: {
-      textAlign: "center",
-      width: "240px",
-      height: "35px",
-      fontSize: "16px",
-      marginTop: "5px",
-      marginLeft: "-8px"
-    }
-  }, "Current Selection"), props.children));
+  }, props.children));
 }
 function Menu(props) {
   let isInitOpen = props.isInitOpen;
@@ -130,7 +127,8 @@ function Menu(props) {
   }, /* @__PURE__ */ React.createElement("h3", null, props.title)), /* @__PURE__ */ React.createElement("div", {
     style: {
       display: hideShowStyle,
-      paddingBottom: "1px",
+      paddingTop: "4px",
+      paddingBottom: "4px",
       paddingLeft: "4px",
       paddingRight: "4px",
       backgroundColor: "white"
@@ -138,7 +136,7 @@ function Menu(props) {
   }, props.children));
 }
 const LoadingFallback = styled.div`
-  background-color: hsl(0, 0%, 99%);
+  background-color: hsl(0, 0%, 100%);
   border-radius: 4px;
   display: flex;
   justify-content: center;
@@ -147,8 +145,8 @@ const LoadingFallback = styled.div`
   width: 100vw;
   height: 100vh;
 `;
-export default function MenuPanel({hide, menuPanelCap = "", menusTitles = [], currentMenus = [], initOpen = [], setMenusOpen, menuPanelsOpen, displayProfile}) {
-  console.log(">>>===MenuPanel");
+export default function MenuPanel({hide, menuPanelCap = "", menusTitles = [], currentMenus = [], initOpen = [], setMenusOpen, displayProfile}) {
+  console.log(">>>===MenuPanel", hide);
   const currentSelectionMenu = useRecoilValue(selectedMenuPanelAtom);
   let menusArray = [];
   const LazyMenuPanelCapObj = useRef({
@@ -171,9 +169,14 @@ export default function MenuPanel({hide, menuPanelCap = "", menusTitles = [], cu
     Variant: lazy(() => import("../Menus/Variant.js")),
     AutoSaves: lazy(() => import("../Menus/AutoSaves.js")),
     LoadEnrollment: lazy(() => import("../Menus/LoadEnrollment.js")),
+    GradeUpload: lazy(() => import("../Menus/GradeUpload.js")),
     ManualEnrollment: lazy(() => import("../Menus/ManualEnrollment.js")),
     AssignmentSettingsMenu: lazy(() => import("../Menus/AssignmentSettingsMenu.js")),
-    TimerMenu: lazy(() => import("../Menus/TimerMenu.js"))
+    GroupSettings: lazy(() => import("../Menus/GroupSettings.js")),
+    TimerMenu: lazy(() => import("../Menus/TimerMenu.js")),
+    CreditAchieved: lazy(() => import("../Menus/CreditAchieved.js")),
+    ClassTimes: lazy(() => import("../Menus/ClassTimes.js")),
+    CurrentContent: lazy(() => import("../Menus/CurrentContent.js"))
   }).current;
   let selectionPanel = null;
   if (currentSelectionMenu) {
@@ -209,11 +212,11 @@ export default function MenuPanel({hide, menuPanelCap = "", menusTitles = [], cu
   return /* @__PURE__ */ React.createElement(MenuPanelsWrapper, {
     hide
   }, /* @__PURE__ */ React.createElement(MenuPanelsCap, {
-    fix: menuPanelsOpen
+    fix: hide
   }, /* @__PURE__ */ React.createElement("span", null, /* @__PURE__ */ React.createElement(Logo, null)), /* @__PURE__ */ React.createElement("span", {
     style: {marginBottom: "1px"}
   }, "Doenet"), /* @__PURE__ */ React.createElement("span", null, displayProfile ? /* @__PURE__ */ React.createElement(Profile, {
-    margin: menuPanelsOpen
+    margin: hide
   }) : null), /* @__PURE__ */ React.createElement("span", null, /* @__PURE__ */ React.createElement(CloseButton, {
     onClick: () => setMenusOpen(false)
   }, /* @__PURE__ */ React.createElement(FontAwesomeIcon, {

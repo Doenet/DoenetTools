@@ -1,0 +1,20 @@
+.rdtPicker {
+  min-width: 0px;
+  width: 175px;
+}
+
+.form-control {
+  border: 2px solid black;
+  border-radius: 5px;
+  height: 18px;
+  width: 177px;
+}
+
+.rdtPicker td.rdtActive,
+.rdtPicker td.rdtActive:hover {
+  background-color: #1a5a99;
+}
+
+.rdtPicker td.rdtToday:before {
+  border-bottom: 7px solid #1a5a99;
+}

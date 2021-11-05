@@ -8,7 +8,7 @@ import styled from 'styled-components';
 // import MathJax from 'react-mathjax2';
 //snowpack is not a fan of destructing here for some reason?
 import mathquill from 'react-mathquill';
-// import { latexToAst, substituteUnicodeInLatexString } from '../../Core/utils/math';
+import { getFromLatex, normalizeLatexString } from '../../Core/utils/math';
 //  /Doenet/utils/math';
 mathquill.addStyles(); //Styling for react-mathquill input field
 let EditableMathField = mathquill.EditableMathField;
@@ -92,11 +92,11 @@ export default class MathInput extends DoenetRenderer {
   calculateMathExpressionFromLatex(text) {
     let expression;
 
-    text = substituteUnicodeInLatexString(text);
+    text = normalizeLatexString(text, { unionFromU: this.doenetSvData.unionFromU });
 
     // replace ^25 with ^{2}5, since mathQuill uses standard latex conventions
     // unlike math-expression's latex parser
-    text = text.replace(/\^(\d)/g, '^{$1}');
+    text = text.replace(/\^(\w)/g, '^{$1}');
 
     let fromLatex = getFromLatex({
       functionSymbols: this.doenetSvData.functionSymbols,
@@ -472,7 +472,7 @@ export default class MathInput extends DoenetRenderer {
 
 
 function stripLatex(latex) {
-  let s = latex.replaceAll(`\\,`, '');
+  let s = latex.replaceAll(`\\,`, '').replaceAll(/\\var{([^{}]*)}/g, '$1');
 
   return s;
 
@@ -498,200 +498,3 @@ function stripLatex(latex) {
 // }
 
 
-//---------------------------------------------------------------
-
-// since can't import this from core/utils/math.js
-// include functions here
-
-// TODO: determine how to import so don't repeat code
-
-var appliedFunctionSymbols = [
-  "abs", "exp", "log", "ln", "log10", "sign", "sqrt", "erf",
-  "acos", "acosh", "acot", "acoth", "acsc", "acsch", "asec",
-  "asech", "asin", "asinh", "atan", "atanh",
-  "cos", "cosh", "cot", "coth", "csc", "csch", "sec",
-  "sech", "sin", "sinh", "tan", "tanh",
-  'arcsin', 'arccos', 'arctan', 'arccsc', 'arcsec', 'arccot', 'cosec',
-  'arg',
-  'min', 'max', 'mean', 'median',
-  'floor', 'ceil', 'round',
-  'sum', 'prod', 'var', 'std',
-  'count', 'mod'
-];
-
-function getFromLatex({ functionSymbols, splitSymbols }) {
-  if (splitSymbols) {
-    return x => me.fromAst((new me.converters.latexToAstObj({
-      appliedFunctionSymbols, functionSymbols, splitSymbols
-    })).convert(wrapWordIncludingNumberWithVar(x)))
-  } else {
-    return x => me.fromAst((new me.converters.latexToAstObj({
-      appliedFunctionSymbols, functionSymbols, splitSymbols
-    })).convert(wrapWordWithVar(x)))
-  }
-}
-
-
-function substituteUnicodeInLatexString(latexString) {
-
-  let substitutions = [
-    ['\u03B1', '\\alpha '], // 'α'
-    ['\u03B2', '\\beta '], // 'β'
-    ['\u03D0', '\\beta '], // 'ϐ'
-    ['\u0393', '\\Gamma '], // 'Γ'
-    ['\u03B3', '\\gamma '], // 'γ'
-    ['\u0394', '\\Delta '], // 'Δ'
-    ['\u03B4', '\\delta '], // 'δ'
-    ['\u03B5', '\\epsilon '], // 'ε' should this be varepsilon?
-    ['\u03F5', '\\epsilon '], // 'ϵ'
-    ['\u03B6', '\\zeta '], // 'ζ'
-    ['\u03B7', '\\eta '], // 'η'
-    ['\u0398', '\\Theta '], // 'Θ'
-    ['\u03F4', '\\Theta '], // 'ϴ'
-    ['\u03B8', '\\theta '], // 'θ'
-    ['\u1DBF', '\\theta '], // 'ᶿ'
-    ['\u03D1', '\\theta '], // 'ϑ'
-    ['\u03B9', '\\iota '], // 'ι'
-    ['\u03BA', '\\kappa '], // 'κ'
-    ['\u039B', '\\Lambda '], // 'Λ'
-    ['\u03BB', '\\lambda '], // 'λ'
-    ['\u03BC', '\\mu '], // 'μ'
-    ['\u00B5', '\\mu '], // 'µ' should this be micro?
-    ['\u03BD', '\\nu '], // 'ν'
-    ['\u039E', '\\Xi '], // 'Ξ'
-    ['\u03BE', '\\xi '], // 'ξ'
-    ['\u03A0', '\\Pi '], // 'Π'
-    ['\u03C0', '\\pi '], // 'π'
-    ['\u03D6', '\\pi '], // 'ϖ' should this be varpi?
-    ['\u03C1', '\\rho '], // 'ρ'
-    ['\u03F1', '\\rho '], // 'ϱ' should this be varrho?
-    ['\u03A3', '\\Sigma '], // 'Σ'
-    ['\u03C3', '\\sigma '], // 'σ'
-    ['\u03C2', '\\sigma '], // 'ς' should this be varsigma?
-    ['\u03C4', '\\tau '], // 'τ'
-    ['\u03A5', '\\Upsilon '], // 'Υ'
-    ['\u03C5', '\\upsilon '], // 'υ'
-    ['\u03A6', '\\Phi '], // 'Φ'
-    ['\u03C6', '\\phi '], // 'φ' should this be varphi?
-    ['\u03D5', '\\phi '], // 'ϕ'
-    ['\u03A8', '\\Psi '], // 'Ψ'
-    ['\u03C8', '\\psi '], // 'ψ'
-    ['\u03A9', '\\Omega '], // 'Ω'
-    ['\u03C9', '\\omega '], // 'ω'
-    ['\u2212', '-'], // minus sign
-    ['\u22C5', ' \\cdot '], // dot operator
-    ['\u00B7', ' \\cdot '], // middle dot
-    ['\u222A', ' \\cup '], // ∪
-    ['\u2229', ' \\cap '], // ∩
-    ['\u221E', ' \\infty '], // ∞
-
-  ]
-
-  for (let sub of substitutions) {
-    latexString = latexString.replaceAll(sub[0], sub[1])
-  }
-
-  return latexString;
-
-}
-
-
-function wrapWordWithVar(string) {
-
-  // wrap words that aren't already in a \var with a \var
-
-  let newString = "";
-
-  let regex = /\\var\s*{[^{}]*}/
-  let match = string.match(regex);
-  while (match) {
-    let beginMatch = match.index;
-    let endMatch = beginMatch + match[0].length;
-    newString += wrapWordWithVarSub(string.substring(0, beginMatch));
-    newString += string.substring(beginMatch, endMatch);
-    string = string.substring(endMatch);
-    match = string.match(regex);
-  }
-  newString += wrapWordWithVarSub(string);
-
-  return newString;
-
-}
-
-function wrapWordWithVarSub(string) {
-
-  let newString = "";
-
-  let regex = /([^a-zA-Z0-9]?)([a-zA-Z][a-zA-Z0-9]+)([^a-zA-Z0-9]?)/;
-  let match = string.match(regex);
-  while (match) {
-    let beginMatch = match.index;
-    let endMatch = beginMatch + match[0].length - match[3].length;
-    if (match[1] === "\\") {
-      // start with backslash, so skip
-      newString += string.substring(0, endMatch);
-      string = string.substring(endMatch);
-    } else {
-      let beginWord = beginMatch + match[1].length;
-      newString += string.substring(0, beginWord);
-      newString += `\\var{${match[2]}}`;
-      string = string.substring(endMatch);
-    }
-
-    match = string.match(regex);
-  }
-
-  newString += string;
-
-  return newString;
-
-}
-
-function wrapWordIncludingNumberWithVar(string) {
-
-  let newString = "";
-
-  let regex = /\\var\s*{[^{}]*}/
-  let match = string.match(regex);
-  while (match) {
-    let beginMatch = match.index;
-    let endMatch = beginMatch + match[0].length;
-    newString += wrapWordIncludingNumberWithVarSub(string.substring(0, beginMatch));
-    newString += string.substring(beginMatch, endMatch);
-    string = string.substring(endMatch);
-    match = string.match(regex);
-  }
-  newString += wrapWordIncludingNumberWithVarSub(string);
-
-  return newString;
-
-}
-
-function wrapWordIncludingNumberWithVarSub(string) {
-
-  let newString = "";
-
-  let regex = /([^a-zA-Z0-9]?)([a-zA-Z][a-zA-Z0-9]*[0-9][a-zA-Z0-9]*)([^a-zA-Z0-9]?)/;
-  let match = string.match(regex);
-  while (match) {
-    let beginMatch = match.index;
-    let endMatch = beginMatch + match[0].length - match[3].length;
-    if (match[1] === "\\") {
-      // start with backslash, so skip
-      newString += string.substring(0, endMatch);
-      string = string.substring(endMatch);
-    } else {
-      let beginWord = beginMatch + match[1].length;
-      newString += string.substring(0, beginWord);
-      newString += `\\var{${match[2]}}`;
-      string = string.substring(endMatch);
-    }
-
-    match = string.match(regex);
-  }
-
-  newString += string;
-
-  return newString;
-
-}

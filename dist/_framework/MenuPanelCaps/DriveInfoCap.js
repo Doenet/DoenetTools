@@ -2,6 +2,7 @@ import React from "../../_snowpack/pkg/react.js";
 import {useRecoilValue} from "../../_snowpack/pkg/recoil.js";
 import {fetchDrivesQuery} from "../../_reactComponents/Drive/NewDrive.js";
 import {searchParamAtomFamily} from "../NewToolRoot.js";
+import {RoleDropdown} from "../../_reactComponents/PanelHeaderComponents/RoleDropdown.js";
 export default function DriveInfoCap() {
   let path = useRecoilValue(searchParamAtomFamily("path"));
   let driveId = useRecoilValue(searchParamAtomFamily("driveId"));
@@ -28,5 +29,7 @@ export default function DriveInfoCap() {
     src: imageURL,
     alt: `${label} course`,
     width: "240px"
-  })), /* @__PURE__ */ React.createElement("div", null, label), /* @__PURE__ */ React.createElement("div", null, roles));
+  })), /* @__PURE__ */ React.createElement("div", {
+    style: {padding: "8px"}
+  }, /* @__PURE__ */ React.createElement("div", null, label), /* @__PURE__ */ React.createElement("div", null, roles), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement(RoleDropdown, null))));
 }

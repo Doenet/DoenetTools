@@ -96,6 +96,96 @@ describe('Document Tag Tests', function () {
 
   })
 
+  it('item credit achieved, skip weight 0', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <copy assignNames="docCa" prop="creditAchieved" tname="_document1" />
+  <p>x: <answer name="x">x</answer></p>
+  <p>a: <answer name="a" weight="0">a</answer></p>
+  <problem>
+    <p>y: <answer name="y">y</answer></p>
+  </problem>
+  <problem weight="0">
+    <p>b: <answer name="b">b</answer></p>
+  </problem>
+  <problem>
+    <p>z: <answer name="z">z</answer></p>
+  </problem>
+
+  `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+    cy.get('#\\/docCa').should('have.text', '0');
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components["/_document1"].stateValues.itemCreditAchieved).eqls([0, 0, 0])
+
+      let mathinputXName = components["/x"].stateValues.inputChildren[0].componentName;
+      let mathinputXAnchor = cesc('#' + mathinputXName) + " textarea";
+      let mathinputXCorrect = cesc('#' + mathinputXName) + "_correct";
+      let mathinputYName = components["/y"].stateValues.inputChildren[0].componentName;
+      let mathinputYAnchor = cesc('#' + mathinputYName) + " textarea";
+      let mathinputYCorrect = cesc('#' + mathinputYName) + "_correct";
+      let mathinputZName = components["/z"].stateValues.inputChildren[0].componentName;
+      let mathinputZAnchor = cesc('#' + mathinputZName) + " textarea";
+      let mathinputZCorrect = cesc('#' + mathinputZName) + "_correct";
+      let mathinputAName = components["/a"].stateValues.inputChildren[0].componentName;
+      let mathinputAAnchor = cesc('#' + mathinputAName) + " textarea";
+      let mathinputACorrect = cesc('#' + mathinputAName) + "_correct";
+      let mathinputBName = components["/b"].stateValues.inputChildren[0].componentName;
+      let mathinputBAnchor = cesc('#' + mathinputBName) + " textarea";
+      let mathinputBCorrect = cesc('#' + mathinputBName) + "_correct";
+
+
+      cy.get(mathinputXAnchor).type('x{enter}', { force: true });
+      cy.get(mathinputXCorrect).should('be.visible');
+      cy.get('#\\/docCa').should('have.text', '0.333');
+
+      cy.window().then((win) => {
+        expect(components["/_document1"].stateValues.itemCreditAchieved).eqls([1, 0, 0])
+      })
+
+      cy.get(mathinputAAnchor).type('a{enter}', { force: true });
+      cy.get(mathinputACorrect).should('be.visible');
+      cy.get('#\\/docCa').should('have.text', '0.333');
+
+      cy.window().then((win) => {
+        expect(components["/_document1"].stateValues.itemCreditAchieved).eqls([1, 0, 0])
+      })
+
+      cy.get(mathinputYAnchor).type('y{enter}', { force: true });
+      cy.get(mathinputYCorrect).should('be.visible');
+      cy.get('#\\/docCa').should('have.text', '0.667');
+
+      cy.window().then((win) => {
+        expect(components["/_document1"].stateValues.itemCreditAchieved).eqls([1, 1, 0])
+      })
+
+
+      cy.get(mathinputBAnchor).type('b{enter}', { force: true });
+      cy.get(mathinputBCorrect).should('be.visible');
+      cy.get('#\\/docCa').should('have.text', '0.667');
+
+      cy.window().then((win) => {
+        expect(components["/_document1"].stateValues.itemCreditAchieved).eqls([1, 1, 0])
+      })
+
+
+      cy.get(mathinputZAnchor).type('z{enter}', { force: true });
+      cy.get(mathinputZCorrect).should('be.visible');
+      cy.get('#\\/docCa').should('have.text', '1');
+
+      cy.window().then((win) => {
+        expect(components["/_document1"].stateValues.itemCreditAchieved).eqls([1, 1, 1])
+      })
+
+    });
+  })
+
 
 })
 

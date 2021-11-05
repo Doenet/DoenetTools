@@ -1,5 +1,5 @@
 import me from 'math-expressions';
-
+import subsets from './subset-of-reals';
 
 
 // from https://stackoverflow.com/a/40293777
@@ -11,7 +11,7 @@ export function deepClone(obj, BaseComponent, hash) {
   // Do not try to clone Doenet components
   if (BaseComponent !== undefined && obj instanceof BaseComponent) return obj;
 
-  if (obj instanceof me.class) {
+  if (obj instanceof me.class || obj instanceof subsets.Subset) {
     return obj.copy();
   }
 

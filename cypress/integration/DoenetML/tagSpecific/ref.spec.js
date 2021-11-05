@@ -131,7 +131,6 @@ describe('ref Tag Tests', function () {
 
   });
 
-
   it('simple url', () => {
     cy.window().then((win) => {
       win.postMessage({
@@ -147,6 +146,21 @@ describe('ref Tag Tests', function () {
 
   })
 
+  it('url with XML entity', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+  <p>A link to <ref uri="http://doenet.org/#a&amp;b">Doenet</ref>.</p>
+  `}, "*");
+    });
+
+    cy.get('#\\/_p1').should('have.text', 'A link to Doenet.')
+
+    cy.get('#\\/_ref1').should('have.text', 'Doenet').invoke('attr', 'href')
+      .then((href) => expect(href).eq("http://doenet.org/#a&b"));
+
+  })
+
   it('ref to DoenetId', () => {
     cy.window().then((win) => {
       win.postMessage({
@@ -158,10 +172,9 @@ describe('ref Tag Tests', function () {
     cy.get('#\\/_p1').should('have.text', 'A link to a Doenet doc.')
 
     cy.get('#\\/_ref1').should('have.text', 'a Doenet doc').invoke('attr', 'href')
-      .then((href) => expect(href).eq("https://www.doenet.org/#/content/?doenetId=abcdefg"));
+      .then((href) => expect(href).eq("https://www.doenet.org/#/course?tool=assignment&doenetId=abcdefg"));
 
   })
-
 
   it('url with no link text', () => {
     cy.window().then((win) => {
@@ -177,7 +190,6 @@ describe('ref Tag Tests', function () {
       .then((href) => expect(href).eq("http://doenet.org"));
 
   })
-
 
   // TODO: do we allow one to use a component/copy inside a uri?
   it('referencing refs', () => {
@@ -217,7 +229,6 @@ describe('ref Tag Tests', function () {
     //   .then((href) => expect(href).eq("http://doenet.org"));
 
   })
-
 
   it('create button', () => {
     cy.window().then((win) => {

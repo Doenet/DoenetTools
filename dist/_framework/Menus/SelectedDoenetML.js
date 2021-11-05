@@ -1,12 +1,14 @@
 import {faCode} from "../../_snowpack/pkg/@fortawesome/free-solid-svg-icons.js";
 import {FontAwesomeIcon} from "../../_snowpack/pkg/@fortawesome/react-fontawesome.js";
 import React, {useState, useEffect} from "../../_snowpack/pkg/react.js";
+import DropdownMenu from "../../_reactComponents/PanelHeaderComponents/DropdownMenu.js";
+import DateTime from "../../_reactComponents/PanelHeaderComponents/DateTime.js";
+import {DateToUTCDateString, DateToDateString} from "../../_utils/dateUtilityFunction.js";
 import {
   atom,
   selector,
   useRecoilValue,
   useRecoilValueLoadable,
-  useRecoilState,
   useSetRecoilState,
   useRecoilCallback
 } from "../../_snowpack/pkg/recoil.js";
@@ -16,42 +18,102 @@ import {
   globalSelectedNodesAtom
 } from "../../_reactComponents/Drive/NewDrive.js";
 import Button from "../../_reactComponents/PanelHeaderComponents/Button.js";
+import Textfield from "../../_reactComponents/PanelHeaderComponents/Textfield.js";
 import ActionButton from "../../_reactComponents/PanelHeaderComponents/ActionButton.js";
 import ActionButtonGroup from "../../_reactComponents/PanelHeaderComponents/ActionButtonGroup.js";
-import Increment from "../../_reactComponents/PanelHeaderComponents/IncrementMenu.js";
 import useSockets from "../../_reactComponents/Sockets.js";
 import {pageToolViewAtom} from "../NewToolRoot.js";
+import Switch from "../Switch.js";
+import axios from "../../_snowpack/pkg/axios.js";
+import {nanoid} from "../../_snowpack/pkg/nanoid.js";
 import {
   itemHistoryAtom,
-  assignmentDictionarySelector,
-  useAssignment
+  fileByContentId
 } from "../ToolHandlers/CourseToolHandler.js";
-import {useAssignmentCallbacks} from "../../_reactComponents/Drive/DriveActions.js";
-import {useToast} from "../Toast.js";
-import Switch from "../Switch.js";
-import {selectedMenuPanelAtom} from "../Panels/NewMenuPanel.js";
-import ButtonGroup from "../../_reactComponents/PanelHeaderComponents/ButtonGroup.js";
-import axios from "../../_snowpack/pkg/axios.js";
+import {useToast, toastType} from "../Toast.js";
+import {effectiveRoleAtom} from "../../_reactComponents/PanelHeaderComponents/RoleDropdown.js";
+import CalendarToggle from "../../_reactComponents/PanelHeaderComponents/CalendarToggle.js";
 export const selectedVersionAtom = atom({
   key: "selectedVersionAtom",
   default: ""
 });
 export default function SelectedDoenetML() {
-  const [pageToolView, setPageToolView] = useRecoilState(pageToolViewAtom);
-  const role = pageToolView.view;
+  const setPageToolView = useSetRecoilState(pageToolViewAtom);
+  const effectiveRole = useRecoilValue(effectiveRoleAtom);
   const item = useRecoilValue(selectedInformation)[0];
   let [label, setLabel] = useState("");
   const {deleteItem, renameItem} = useSockets("drive");
+  const addToast = useToast();
   useEffect(() => {
     setLabel(item?.label);
   }, [item?.label]);
-  const assignUnassign = useRecoilCallback(({set, snapshot}) => async (doenetId) => {
-    console.log(">>>>assignUnassign doenetId", doenetId);
+  const assignUnassign = useRecoilCallback(({set, snapshot}) => async ({label: label2, doenetId, parentFolderId, driveId}) => {
+    const versionId = nanoid();
+    const timestamp = DateToUTCDateString(new Date());
+    let itemHistory = await snapshot.getPromise(itemHistoryAtom(doenetId));
+    const contentId = itemHistory.draft.contentId;
+    let doenetML = await snapshot.getPromise(fileByContentId(contentId));
+    const {data} = await axios.post("/api/releaseDraft.php", {
+      doenetId,
+      doenetML,
+      timestamp,
+      versionId
+    });
+    const {success, message, title} = data;
+    if (success) {
+      addToast(`${label2}'s "${title}" is Released.`, toastType.SUCCESS);
+    } else {
+      addToast(message, toastType.ERROR);
+    }
+    set(itemHistoryAtom(doenetId), (was) => {
+      let newObj = {...was};
+      let newNamed = [...was.named];
+      for (const [i, version] of newNamed.entries()) {
+        let newVersion2 = {...version};
+        newVersion2.isReleased = "0";
+        newNamed[i] = newVersion2;
+      }
+      let newVersion = {
+        title,
+        versionId,
+        timestamp,
+        isReleased: "1",
+        isDraft: "0",
+        isNamed: "1",
+        contentId
+      };
+      newNamed.unshift(newVersion);
+      newObj.named = newNamed;
+      return newObj;
+    });
+    set(folderDictionary({driveId, folderId: parentFolderId}), (was) => {
+      let newFolderInfo = {...was};
+      let itemId = null;
+      for (let testItemId of newFolderInfo.contentIds.defaultOrder) {
+        if (newFolderInfo.contentsDictionary[testItemId].doenetId === doenetId) {
+          itemId = testItemId;
+          break;
+        }
+      }
+      newFolderInfo.contentsDictionary = {...was.contentsDictionary};
+      newFolderInfo.contentsDictionary[itemId] = {
+        ...was.contentsDictionary[itemId]
+      };
+      newFolderInfo.contentsDictionary[itemId].isReleased = "1";
+      newFolderInfo.contentsDictionaryByDoenetId = {
+        ...was.contentsDictionaryByDoenetId
+      };
+      newFolderInfo.contentsDictionaryByDoenetId[doenetId] = {
+        ...was.contentsDictionaryByDoenetId[doenetId]
+      };
+      newFolderInfo.contentsDictionaryByDoenetId[doenetId].isReleased = "1";
+      return newFolderInfo;
+    });
   });
   if (!item) {
     return null;
   }
-  if (role === "student") {
+  if (effectiveRole === "student") {
     return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("h2", {
       "data-cy": "infoPanelItemLabel"
     }, /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
@@ -70,14 +132,11 @@ export default function SelectedDoenetML() {
         });
       }
     }), /* @__PURE__ */ React.createElement(AssignmentSettings, {
-      role,
-      item
+      role: effectiveRole,
+      doenetId: item.doenetId
     }));
   }
-  let assignDraftLabel = "Assign Current Draft";
-  if (item.isReleased === "1") {
-    assignDraftLabel = "Unassign Content";
-  }
+  let assignDraftLabel = "Release Current Draft";
   function renameItemCallback(newLabel, item2) {
     renameItem({
       driveIdFolderId: {
@@ -122,31 +181,45 @@ export default function SelectedDoenetML() {
         }
       });
     }
-  })), /* @__PURE__ */ React.createElement("br", null), /* @__PURE__ */ React.createElement("label", null, "DoenetML Label", /* @__PURE__ */ React.createElement("input", {
-    type: "text",
+  })), /* @__PURE__ */ React.createElement(Textfield, {
+    label: "DoenetML Label",
+    width: "menu",
+    vertical: true,
     "data-cy": "infoPanelItemLabelInput",
     value: label,
     onChange: (e) => setLabel(e.target.value),
     onKeyDown: (e) => {
       if (e.key === "Enter") {
-        if (item.label !== label) {
-          renameItemCallback(label, item);
+        let effectiveLabel = label;
+        if (label === "") {
+          effectiveLabel = "Untitled";
+          addToast("Label for the doenetML can't be blank.");
+          setLabel(effectiveLabel);
+        }
+        if (item.label !== effectiveLabel) {
+          renameItemCallback(effectiveLabel, item);
         }
       }
     },
     onBlur: () => {
-      if (item.label !== label) {
-        renameItemCallback(label, item);
+      let effectiveLabel = label;
+      if (label === "") {
+        effectiveLabel = "Untitled";
+        addToast("Label for the doenetML can't be blank.");
+        setLabel(effectiveLabel);
+      }
+      if (item.label !== effectiveLabel) {
+        renameItemCallback(effectiveLabel, item);
       }
     }
-  })), /* @__PURE__ */ React.createElement("br", null), /* @__PURE__ */ React.createElement("br", null), /* @__PURE__ */ React.createElement(Button, {
+  }), /* @__PURE__ */ React.createElement("br", null), /* @__PURE__ */ React.createElement(Button, {
     width: "menu",
     value: assignDraftLabel,
-    onClick: () => assignUnassign(item.doenetId)
+    onClick: () => assignUnassign(item)
   }), /* @__PURE__ */ React.createElement("br", null), /* @__PURE__ */ React.createElement(AssignmentSettings, {
-    role,
+    role: effectiveRole,
     doenetId: item.doenetId
-  }), /* @__PURE__ */ React.createElement("br", null), /* @__PURE__ */ React.createElement("br", null), /* @__PURE__ */ React.createElement(Button, {
+  }), /* @__PURE__ */ React.createElement("br", null), /* @__PURE__ */ React.createElement(Button, {
     alert: true,
     width: "menu",
     "data-cy": "deleteDoenetMLButton",
@@ -162,7 +235,7 @@ export default function SelectedDoenetML() {
         label: item.label
       });
     }
-  }), /* @__PURE__ */ React.createElement("br", null));
+  }));
 }
 export function AssignmentSettings({role, doenetId}) {
   const aLoadable = useRecoilValueLoadable(loadAssignmentSelector(doenetId));
@@ -170,6 +243,8 @@ export function AssignmentSettings({role, doenetId}) {
   const addToast = useToast();
   let [assignedDate, setAssignedDate] = useState("");
   let [dueDate, setDueDate] = useState("");
+  let [pinnedUntilDate, setPinnedUntilDate] = useState("");
+  let [pinnedAfterDate, setPinnedAfterDate] = useState("");
   let [limitAttempts, setLimitAttempts] = useState(true);
   let [numberOfAttemptsAllowed, setNumberOfAttemptsAllowed] = useState(1);
   let [timeLimit, setTimeLimit] = useState(60);
@@ -178,20 +253,49 @@ export function AssignmentSettings({role, doenetId}) {
   let [gradeCategory, setGradeCategory] = useState("");
   let [individualize, setIndividualize] = useState(true);
   let [showSolution, setShowSolution] = useState(true);
+  let [showSolutionInGradebook, setShowSolutionInGradebook] = useState(true);
   let [showFeedback, setShowFeedback] = useState(true);
   let [showHints, setShowHints] = useState(true);
   let [showCorrectness, setShowCorrectness] = useState(true);
   let [proctorMakesAvailable, setProctorMakesAvailable] = useState(true);
-  const updateAssignment = useRecoilCallback(({set, snapshot}) => async ({doenetId: doenetId2, keyToUpdate, value, description, valueDescription = null}) => {
+  const updateAssignment = useRecoilCallback(({set, snapshot}) => async ({
+    doenetId: doenetId2,
+    keyToUpdate,
+    value,
+    description,
+    valueDescription = null,
+    secondKeyToUpdate = null,
+    secondValue
+  }) => {
     const oldAInfo = await snapshot.getPromise(loadAssignmentSelector(doenetId2));
     let newAInfo = {...oldAInfo, [keyToUpdate]: value};
+    if (secondKeyToUpdate) {
+      newAInfo[secondKeyToUpdate] = secondValue;
+    }
     set(loadAssignmentSelector(doenetId2), newAInfo);
-    const resp = await axios.post("/api/saveAssignmentToDraft.php", newAInfo);
+    let dbAInfo = {...newAInfo};
+    if (dbAInfo.assignedDate !== null) {
+      dbAInfo.assignedDate = DateToUTCDateString(new Date(dbAInfo.assignedDate));
+    }
+    if (dbAInfo.dueDate !== null) {
+      dbAInfo.dueDate = DateToUTCDateString(new Date(dbAInfo.dueDate));
+    }
+    if (dbAInfo.pinnedUntilDate !== null) {
+      dbAInfo.pinnedUntilDate = DateToUTCDateString(new Date(dbAInfo.pinnedUntilDate));
+    }
+    if (dbAInfo.pinnedAfterDate !== null) {
+      dbAInfo.pinnedAfterDate = DateToUTCDateString(new Date(dbAInfo.pinnedAfterDate));
+    }
+    const resp = await axios.post("/api/saveAssignmentToDraft.php", dbAInfo);
     if (resp.data.success) {
       if (valueDescription) {
         addToast(`Updated ${description} to ${valueDescription}`);
       } else {
-        addToast(`Updated ${description} to ${value}`);
+        if (description === "Assigned Date" || description === "Due Date" || description === "Pinned Until Date" || description === "Pinned After Date") {
+          addToast(`Updated ${description} to ${new Date(value).toLocaleString()}`);
+        } else {
+          addToast(`Updated ${description} to ${value}`);
+        }
       }
     }
   }, [addToast]);
@@ -205,11 +309,14 @@ export function AssignmentSettings({role, doenetId}) {
     setGradeCategory(aInfo?.gradeCategory);
     setIndividualize(aInfo?.individualize);
     setShowSolution(aInfo?.showSolution);
+    setShowSolutionInGradebook(aInfo?.showSolutionInGradebook);
     setShowFeedback(aInfo?.showFeedback);
     setShowHints(aInfo?.showHints);
     setShowCorrectness(aInfo?.showCorrectness);
     setProctorMakesAvailable(aInfo?.proctorMakesAvailable);
     setTimeLimit(aInfo?.timeLimit);
+    setPinnedUntilDate(aInfo?.pinnedUntilDate);
+    setPinnedAfterDate(aInfo?.pinnedAfterDate);
   }, [aInfo]);
   if (aLoadable.state === "loading") {
     return null;
@@ -219,41 +326,161 @@ export function AssignmentSettings({role, doenetId}) {
     return null;
   }
   if (role === "student") {
-    return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("p", null, "Due: ", aInfo?.dueDate), /* @__PURE__ */ React.createElement("p", null, "Time Limit: ", aInfo?.timeLimit, " minutes"), /* @__PURE__ */ React.createElement("p", null, "Attempts Allowed: ", aInfo?.numberOfAttemptsAllowed), /* @__PURE__ */ React.createElement("p", null, "Points: ", aInfo?.totalPointsOrPercent)));
+    let nAttemptsAllowed = aInfo?.numberOfAttemptsAllowed;
+    if (nAttemptsAllowed === null) {
+      nAttemptsAllowed = "unlimited";
+    }
+    let timeLimitJSX = null;
+    if (aInfo?.timeLimit !== null) {
+      timeLimitJSX = /* @__PURE__ */ React.createElement("p", null, "Time Limit: ", aInfo?.timeLimit, " minutes");
+    }
+    let assignedDateJSX = null;
+    if (aInfo?.assignedDate !== null) {
+      assignedDateJSX = /* @__PURE__ */ React.createElement("p", null, "Assigned: ", aInfo?.assignedDate);
+    }
+    let dueDateJSX = /* @__PURE__ */ React.createElement("p", null, "No Due Date");
+    if (aInfo?.dueDate !== null) {
+      dueDateJSX = /* @__PURE__ */ React.createElement("p", null, "Due: ", aInfo?.dueDate);
+    }
+    return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("div", null, assignedDateJSX, dueDateJSX, timeLimitJSX, /* @__PURE__ */ React.createElement("p", null, "Attempts Allowed: ", nAttemptsAllowed), /* @__PURE__ */ React.createElement("p", null, "Points: ", aInfo?.totalPointsOrPercent)));
   }
-  return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("label", null, "Assigned Date", /* @__PURE__ */ React.createElement("input", {
-    required: true,
-    type: "text",
-    name: "assignedDate",
-    value: assignedDate,
-    onBlur: () => {
-      if (aInfo.assignedDate !== assignedDate) {
-        updateAssignment({doenetId, keyToUpdate: "assignedDate", value: assignedDate, description: "Assigned Date"});
+  return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("label", null, "Assigned Date", /* @__PURE__ */ React.createElement("div", {
+    style: {display: "flex"},
+    onClick: (e) => {
+      e.preventDefault();
+    }
+  }, /* @__PURE__ */ React.createElement(CalendarToggle, {
+    checked: aInfo.assignedDate !== null,
+    onClick: (e) => {
+      let valueDescription = "None";
+      let value = null;
+      if (aInfo.assignedDate === null) {
+        valueDescription = "Now";
+        value = DateToDateString(new Date());
       }
-    },
-    onChange: (e) => setAssignedDate(e.currentTarget.value),
-    onKeyDown: (e) => {
-      if (e.key === "Enter" && aInfo.assignedDate !== assignedDate) {
-        updateAssignment({doenetId, keyToUpdate: "assignedDate", value: assignedDate, description: "Assigned Date"});
+      updateAssignment({
+        doenetId,
+        keyToUpdate: "assignedDate",
+        value,
+        description: "Assigned Date",
+        valueDescription
+      });
+    }
+  }), aInfo.assignedDate !== null ? /* @__PURE__ */ React.createElement(DateTime, {
+    value: aInfo.assignedDate ? new Date(aInfo.assignedDate) : null,
+    onBlur: ({valid, value}) => {
+      if (valid) {
+        try {
+          value = value.toDate();
+        } catch (e) {
+        }
+        if (new Date(DateToDateString(value)).getTime() !== new Date(aInfo.assignedDate).getTime()) {
+          updateAssignment({
+            doenetId,
+            keyToUpdate: "assignedDate",
+            value: DateToDateString(value),
+            description: "Assigned Date"
+          });
+        }
+      } else {
+        addToast("Invalid Assigned Date");
       }
     }
-  }))), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("label", null, "Due Date", /* @__PURE__ */ React.createElement("br", null), /* @__PURE__ */ React.createElement("input", {
-    required: true,
-    type: "text",
-    name: "dueDate",
-    value: dueDate,
-    onBlur: () => {
-      if (aInfo.dueDate !== dueDate) {
-        updateAssignment({doenetId, keyToUpdate: "dueDate", value: dueDate, description: "Due Date"});
+  }) : /* @__PURE__ */ React.createElement("input", {
+    value: "No Assigned Date",
+    onClick: (e) => {
+      let valueDescription = "None";
+      let value = null;
+      if (aInfo.assignedDate === null) {
+        valueDescription = "Now";
+        value = DateToDateString(new Date());
       }
+      updateAssignment({
+        doenetId,
+        keyToUpdate: "assignedDate",
+        value,
+        description: "Assigned Date",
+        valueDescription
+      });
     },
-    onChange: (e) => setDueDate(e.currentTarget.value),
-    onKeyDown: (e) => {
-      if (e.key === "Enter" && aInfo.dueDate !== dueDate) {
-        updateAssignment({doenetId, keyToUpdate: "dueDate", value: dueDate, description: "Due Date"});
+    style: {
+      color: "#545454",
+      height: "18px",
+      width: "177px",
+      border: "2px solid black",
+      borderRadius: "5px"
+    }
+  })))), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("label", null, "Due Date", /* @__PURE__ */ React.createElement("div", {
+    style: {display: "flex"},
+    onClick: (e) => {
+      e.preventDefault();
+    }
+  }, /* @__PURE__ */ React.createElement(CalendarToggle, {
+    checked: aInfo.dueDate !== null,
+    onClick: (e) => {
+      let valueDescription = "None";
+      let value = null;
+      if (aInfo.dueDate === null) {
+        valueDescription = "Next Week";
+        let nextWeek = new Date();
+        nextWeek.setDate(nextWeek.getDate() + 7);
+        value = DateToDateString(nextWeek);
+      }
+      updateAssignment({
+        doenetId,
+        keyToUpdate: "dueDate",
+        value,
+        description: "Due Date",
+        valueDescription
+      });
+    }
+  }), aInfo.dueDate !== null ? /* @__PURE__ */ React.createElement(DateTime, {
+    value: aInfo.dueDate ? new Date(aInfo.dueDate) : null,
+    onBlur: ({valid, value}) => {
+      if (valid) {
+        try {
+          value = value.toDate();
+        } catch (e) {
+        }
+        if (new Date(DateToDateString(value)).getTime() !== new Date(aInfo.dueDate).getTime()) {
+          updateAssignment({
+            doenetId,
+            keyToUpdate: "dueDate",
+            value: DateToDateString(value),
+            description: "Due Date"
+          });
+        }
+      } else {
+        addToast("Invalid Due Date");
       }
     }
-  }))), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("label", null, "Time Limit", /* @__PURE__ */ React.createElement(Switch, {
+  }) : /* @__PURE__ */ React.createElement("input", {
+    onClick: (e) => {
+      let valueDescription = "None";
+      let value = null;
+      if (aInfo.dueDate === null) {
+        valueDescription = "Next Week";
+        let nextWeek = new Date();
+        nextWeek.setDate(nextWeek.getDate() + 7);
+        value = DateToDateString(nextWeek);
+      }
+      updateAssignment({
+        doenetId,
+        keyToUpdate: "dueDate",
+        value,
+        description: "Due Date",
+        valueDescription
+      });
+    },
+    value: "No Due Date",
+    style: {
+      color: "#545454",
+      height: "18px",
+      width: "177px",
+      border: "2px solid black",
+      borderRadius: "5px"
+    }
+  })))), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("label", null, "Time Limit", /* @__PURE__ */ React.createElement(Switch, {
     onChange: (e) => {
       let valueDescription = "Not Limited";
       let value = null;
@@ -261,7 +488,13 @@ export function AssignmentSettings({role, doenetId}) {
         valueDescription = "60 Minutes";
         value = "60";
       }
-      updateAssignment({doenetId, keyToUpdate: "timeLimit", value, description: "Time Limit ", valueDescription});
+      updateAssignment({
+        doenetId,
+        keyToUpdate: "timeLimit",
+        value,
+        description: "Time Limit ",
+        valueDescription
+      });
     },
     checked: aInfo.timeLimit > 0
   }))), aInfo.timeLimit > 0 ? /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("label", null, "Time Limit in Minutes", /* @__PURE__ */ React.createElement("input", {
@@ -270,13 +503,25 @@ export function AssignmentSettings({role, doenetId}) {
     onBlur: () => {
       if (aInfo.timeLimit !== timeLimit) {
         let valueDescription = `${timeLimit} Minutes`;
-        updateAssignment({doenetId, keyToUpdate: "timeLimit", value: timeLimit, description: "Time Limit", valueDescription});
+        updateAssignment({
+          doenetId,
+          keyToUpdate: "timeLimit",
+          value: timeLimit,
+          description: "Time Limit",
+          valueDescription
+        });
       }
     },
     onKeyDown: (e) => {
       if (e.key === "Enter" && aInfo.timeLimit !== timeLimit) {
         let valueDescription = `${timeLimit} Minutes`;
-        updateAssignment({doenetId, keyToUpdate: "timeLimit", value: timeLimit, description: "Time Limit", valueDescription});
+        updateAssignment({
+          doenetId,
+          keyToUpdate: "timeLimit",
+          value: timeLimit,
+          description: "Time Limit",
+          valueDescription
+        });
       }
     },
     onChange: (e) => setTimeLimit(e.currentTarget.value)
@@ -289,7 +534,13 @@ export function AssignmentSettings({role, doenetId}) {
         valueDescription = "1";
         value = "1";
       }
-      updateAssignment({doenetId, keyToUpdate: "numberOfAttemptsAllowed", value, description: "Attempts Allowed ", valueDescription});
+      updateAssignment({
+        doenetId,
+        keyToUpdate: "numberOfAttemptsAllowed",
+        value,
+        description: "Attempts Allowed ",
+        valueDescription
+      });
     },
     checked: aInfo.numberOfAttemptsAllowed > 0
   }))), aInfo.numberOfAttemptsAllowed > 0 ? /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("label", null, "Number of Attempts Allowed", /* @__PURE__ */ React.createElement("input", {
@@ -298,42 +549,68 @@ export function AssignmentSettings({role, doenetId}) {
     value: numberOfAttemptsAllowed,
     onBlur: () => {
       if (aInfo.numberOfAttemptsAllowed !== numberOfAttemptsAllowed) {
-        updateAssignment({doenetId, keyToUpdate: "numberOfAttemptsAllowed", value: numberOfAttemptsAllowed, description: "Attempts Allowed"});
+        updateAssignment({
+          doenetId,
+          keyToUpdate: "numberOfAttemptsAllowed",
+          value: numberOfAttemptsAllowed,
+          description: "Attempts Allowed"
+        });
       }
     },
     onKeyDown: (e) => {
       if (e.key === "Enter" && aInfo.numberOfAttemptsAllowed !== numberOfAttemptsAllowed) {
-        updateAssignment({doenetId, keyToUpdate: "numberOfAttemptsAllowed", value: numberOfAttemptsAllowed, description: "Attempts Allowed"});
+        updateAssignment({
+          doenetId,
+          keyToUpdate: "numberOfAttemptsAllowed",
+          value: numberOfAttemptsAllowed,
+          description: "Attempts Allowed"
+        });
       }
     },
     onChange: (e) => setNumberOfAttemptsAllowed(e.currentTarget.value)
-  }))) : null, /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("label", null, "Attempt Aggregation", /* @__PURE__ */ React.createElement("select", {
-    name: "attemptAggregation",
-    value: attemptAggregation,
-    onChange: (e) => {
+  }))) : null, /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("label", null, "Attempt Aggregation", /* @__PURE__ */ React.createElement(DropdownMenu, {
+    width: "menu",
+    valueIndex: attemptAggregation === "m" ? 1 : 2,
+    items: [
+      ["m", "Maximum"],
+      ["l", "Last Attempt"]
+    ],
+    onChange: ({value: val}) => {
       let valueDescription = "Maximum";
-      if (e.currentTarget.value === "l") {
+      if (val === "l") {
         valueDescription = "Last Attempt";
       }
-      updateAssignment({doenetId, keyToUpdate: "attemptAggregation", value: e.currentTarget.value, description: "Attempt Aggregation", valueDescription});
+      updateAssignment({
+        doenetId,
+        keyToUpdate: "attemptAggregation",
+        value: val,
+        description: "Attempt Aggregation",
+        valueDescription
+      });
     }
-  }, /* @__PURE__ */ React.createElement("option", {
-    value: "m"
-  }, "Maximum"), /* @__PURE__ */ React.createElement("option", {
-    value: "l"
-  }, "Last Attempt")))), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("label", null, "Total Points Or Percent:", /* @__PURE__ */ React.createElement("input", {
+  }))), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("label", null, "Total Points Or Percent", /* @__PURE__ */ React.createElement("input", {
     required: true,
     type: "number",
     name: "totalPointsOrPercent",
     value: totalPointsOrPercent,
     onBlur: () => {
       if (aInfo.totalPointsOrPercent !== totalPointsOrPercent) {
-        updateAssignment({doenetId, keyToUpdate: "totalPointsOrPercent", value: totalPointsOrPercent, description: "Total Points Or Percent"});
+        updateAssignment({
+          doenetId,
+          keyToUpdate: "totalPointsOrPercent",
+          value: totalPointsOrPercent,
+          description: "Total Points Or Percent"
+        });
       }
     },
     onKeyDown: (e) => {
       if (e.key === "Enter" && aInfo.totalPointsOrPercent !== totalPointsOrPercent) {
-        updateAssignment({doenetId, keyToUpdate: "totalPointsOrPercent", value: totalPointsOrPercent, description: "Total Points Or Percent"});
+        updateAssignment({
+          doenetId,
+          keyToUpdate: "totalPointsOrPercent",
+          value: totalPointsOrPercent,
+          description: "Total Points Or Percent"
+        });
       }
     },
     onChange: (e) => setTotalPointsOrPercent(e.currentTarget.value)
@@ -344,12 +621,22 @@ export function AssignmentSettings({role, doenetId}) {
     value: gradeCategory,
     onBlur: () => {
       if (aInfo.gradeCategory !== gradeCategory) {
-        updateAssignment({doenetId, keyToUpdate: "gradeCategory", value: gradeCategory, description: "Grade Category"});
+        updateAssignment({
+          doenetId,
+          keyToUpdate: "gradeCategory",
+          value: gradeCategory,
+          description: "Grade Category"
+        });
       }
     },
     onKeyDown: (e) => {
       if (e.key === "Enter" && aInfo.gradeCategory !== gradeCategory) {
-        updateAssignment({doenetId, keyToUpdate: "gradeCategory", value: gradeCategory, description: "Grade Category"});
+        updateAssignment({
+          doenetId,
+          keyToUpdate: "gradeCategory",
+          value: gradeCategory,
+          description: "Grade Category"
+        });
       }
     },
     onChange: (e) => setGradeCategory(e.currentTarget.value)
@@ -360,7 +647,13 @@ export function AssignmentSettings({role, doenetId}) {
       if (e.currentTarget.checked) {
         valueDescription = "True";
       }
-      updateAssignment({doenetId, keyToUpdate: "individualize", value: e.currentTarget.checked, description: "Individualize", valueDescription});
+      updateAssignment({
+        doenetId,
+        keyToUpdate: "individualize",
+        value: e.currentTarget.checked,
+        description: "Individualize",
+        valueDescription
+      });
     },
     checked: individualize
   }))), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("label", null, "Show Solution", /* @__PURE__ */ React.createElement(Switch, {
@@ -370,9 +663,31 @@ export function AssignmentSettings({role, doenetId}) {
       if (e.currentTarget.checked) {
         valueDescription = "True";
       }
-      updateAssignment({doenetId, keyToUpdate: "showSolution", value: e.currentTarget.checked, description: "Show Solution", valueDescription});
+      updateAssignment({
+        doenetId,
+        keyToUpdate: "showSolution",
+        value: e.currentTarget.checked,
+        description: "Show Solution",
+        valueDescription
+      });
     },
     checked: showSolution
+  }))), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("label", null, "Show Solution In Gradebook", /* @__PURE__ */ React.createElement(Switch, {
+    name: "showSolutionInGradebook",
+    onChange: (e) => {
+      let valueDescription = "False";
+      if (e.currentTarget.checked) {
+        valueDescription = "True";
+      }
+      updateAssignment({
+        doenetId,
+        keyToUpdate: "showSolutionInGradebook",
+        value: e.currentTarget.checked,
+        description: "Show Solution In Gradebook",
+        valueDescription
+      });
+    },
+    checked: showSolutionInGradebook
   }))), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("label", null, "Show Feedback", /* @__PURE__ */ React.createElement(Switch, {
     name: "showFeedback",
     onChange: (e) => {
@@ -380,7 +695,13 @@ export function AssignmentSettings({role, doenetId}) {
       if (e.currentTarget.checked) {
         valueDescription = "True";
       }
-      updateAssignment({doenetId, keyToUpdate: "showFeedback", value: e.currentTarget.checked, description: "Show Feedback", valueDescription});
+      updateAssignment({
+        doenetId,
+        keyToUpdate: "showFeedback",
+        value: e.currentTarget.checked,
+        description: "Show Feedback",
+        valueDescription
+      });
     },
     checked: showFeedback
   }))), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("label", null, "Show Hints", /* @__PURE__ */ React.createElement(Switch, {
@@ -390,7 +711,13 @@ export function AssignmentSettings({role, doenetId}) {
       if (e.currentTarget.checked) {
         valueDescription = "True";
       }
-      updateAssignment({doenetId, keyToUpdate: "showHints", value: e.currentTarget.checked, description: "Show Hints", valueDescription});
+      updateAssignment({
+        doenetId,
+        keyToUpdate: "showHints",
+        value: e.currentTarget.checked,
+        description: "Show Hints",
+        valueDescription
+      });
     },
     checked: showHints
   }))), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("label", null, "Show Correctness", /* @__PURE__ */ React.createElement(Switch, {
@@ -400,7 +727,13 @@ export function AssignmentSettings({role, doenetId}) {
       if (e.currentTarget.checked) {
         valueDescription = "True";
       }
-      updateAssignment({doenetId, keyToUpdate: "showCorrectness", value: e.currentTarget.checked, description: "Show Correctness", valueDescription});
+      updateAssignment({
+        doenetId,
+        keyToUpdate: "showCorrectness",
+        value: e.currentTarget.checked,
+        description: "Show Correctness",
+        valueDescription
+      });
     },
     checked: showCorrectness
   }))), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("label", null, "Proctor Makes Available", /* @__PURE__ */ React.createElement(Switch, {
@@ -410,10 +743,152 @@ export function AssignmentSettings({role, doenetId}) {
       if (e.currentTarget.checked) {
         valueDescription = "True";
       }
-      updateAssignment({doenetId, keyToUpdate: "proctorMakesAvailable", value: e.currentTarget.checked, description: "Proctor Makes Available", valueDescription});
+      updateAssignment({
+        doenetId,
+        keyToUpdate: "proctorMakesAvailable",
+        value: e.currentTarget.checked,
+        description: "Proctor Makes Available",
+        valueDescription
+      });
     },
     checked: proctorMakesAvailable
-  }))));
+  }))), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("label", null, "Pin Assignment", /* @__PURE__ */ React.createElement("div", {
+    style: {display: "flex"},
+    onClick: (e) => {
+      e.preventDefault();
+    }
+  }, /* @__PURE__ */ React.createElement(CalendarToggle, {
+    checked: aInfo.pinnedUntilDate !== null,
+    onClick: (e) => {
+      let valueDescription = "None";
+      let value = null;
+      let secondValue = null;
+      if (aInfo.pinnedUntilDate === null) {
+        valueDescription = "Now to Next Year";
+        let today = new Date();
+        let nextYear = new Date();
+        nextYear.setDate(nextYear.getDate() + 365);
+        value = DateToDateString(today);
+        secondValue = DateToDateString(nextYear);
+      }
+      updateAssignment({
+        doenetId,
+        keyToUpdate: "pinnedAfterDate",
+        value,
+        description: "Pinned Dates ",
+        valueDescription,
+        secondKeyToUpdate: "pinnedUntilDate",
+        secondValue
+      });
+    }
+  }), aInfo.pinnedUntilDate !== null ? /* @__PURE__ */ React.createElement(DateTime, {
+    value: aInfo.pinnedAfterDate ? new Date(aInfo.pinnedAfterDate) : null,
+    onBlur: ({valid, value}) => {
+      if (valid) {
+        try {
+          value = value.toDate();
+        } catch (e) {
+        }
+        if (new Date(DateToDateString(value)).getTime() !== new Date(aInfo.pinnedAfterDate).getTime()) {
+          updateAssignment({
+            doenetId,
+            keyToUpdate: "pinnedAfterDate",
+            value: DateToDateString(value),
+            description: "Pinned After Date"
+          });
+        }
+      } else {
+        addToast("Invalid Pin After Date");
+      }
+    }
+  }) : /* @__PURE__ */ React.createElement("input", {
+    onClick: (e) => {
+      let valueDescription = "None";
+      let value = null;
+      let secondValue = null;
+      if (aInfo.pinnedUntilDate === null) {
+        valueDescription = "Now to Next Year";
+        let today = new Date();
+        let nextYear = new Date();
+        nextYear.setDate(nextYear.getDate() + 365);
+        value = DateToDateString(today);
+        secondValue = DateToDateString(nextYear);
+      }
+      updateAssignment({
+        doenetId,
+        keyToUpdate: "pinnedAfterDate",
+        value,
+        description: "Pinned Dates ",
+        valueDescription,
+        secondKeyToUpdate: "pinnedUntilDate",
+        secondValue
+      });
+    },
+    value: "No Pin After Date",
+    style: {
+      color: "#545454",
+      height: "18px",
+      width: "177px",
+      border: "2px solid black",
+      borderRadius: "5px"
+    }
+  })), /* @__PURE__ */ React.createElement("div", {
+    style: {marginLeft: "28px"},
+    onClick: (e) => {
+      e.preventDefault();
+    }
+  }, aInfo.pinnedUntilDate !== null ? /* @__PURE__ */ React.createElement(DateTime, {
+    value: aInfo.pinnedUntilDate ? new Date(aInfo.pinnedUntilDate) : null,
+    onBlur: ({valid, value}) => {
+      if (valid) {
+        try {
+          value = value.toDate();
+        } catch (e) {
+        }
+        if (new Date(DateToDateString(value)).getTime() !== new Date(aInfo.pinnedUntilDate).getTime()) {
+          updateAssignment({
+            doenetId,
+            keyToUpdate: "pinnedUntilDate",
+            value: DateToDateString(value),
+            description: "Pinned Until Date"
+          });
+        }
+      } else {
+        addToast("Invalid Pin Until Date");
+      }
+    }
+  }) : /* @__PURE__ */ React.createElement("input", {
+    onClick: (e) => {
+      let valueDescription = "None";
+      let value = null;
+      let secondValue = null;
+      if (aInfo.pinnedUntilDate === null) {
+        valueDescription = "Now to Next Year";
+        let today = new Date();
+        let nextYear = new Date();
+        nextYear.setDate(nextYear.getDate() + 365);
+        value = DateToDateString(today);
+        secondValue = DateToDateString(nextYear);
+      }
+      updateAssignment({
+        doenetId,
+        keyToUpdate: "pinnedAfterDate",
+        value,
+        description: "Pinned Dates ",
+        valueDescription,
+        secondKeyToUpdate: "pinnedUntilDate",
+        secondValue
+      });
+    },
+    value: "No Pin Until Date",
+    style: {
+      color: "#545454",
+      height: "18px",
+      width: "177px",
+      border: "2px solid black",
+      borderRadius: "5px"
+    }
+  })))));
 }
 export const selectedInformation = selector({
   key: "selectedInformation",

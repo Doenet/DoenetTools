@@ -17,22 +17,22 @@ $_POST = json_decode(file_get_contents('php://input'), true);
 
 if (
     array_key_exists('entryId', $_POST) &&
-    array_key_exists('variant', $_POST)
+    array_key_exists('entryVariant', $_POST)
 ) {
     $entryId = mysqli_real_escape_string($conn, $_POST['entryId']);
-    $variant = mysqli_real_escape_string($conn, $_POST['variant']);
+    $entryVariant = mysqli_real_escape_string($conn, $_POST['entryVariant']);
 
     //get doenetId from entryId
     //TODO: should be a sql join query with userId
     $sql = "
-        SELECT collectionDoenetId
+        SELECT doenetId
         FROM collection
         WHERE entryId = '$entryId'
     ";
     $result = $conn->query($sql);
     if ($result->num_rows > 0) {
         $row = $result->fetch_assoc();
-        $doenetId = $row['collectionDoenetId'];
+        $doenetId = $row['doenetId'];
     }
 
     if (array_key_exists('doenetId', get_defined_vars())) {
@@ -52,7 +52,7 @@ if (
         if (array_key_exists('driveId', get_defined_vars())) {
             //check user has permission to edit drive
             $sql = "
-                SELECT canChangeAllDriveSettings
+                SELECT canEditContent
                 FROM drive_user
                 WHERE userId = '$userId'
                 AND driveId = '$driveId'
@@ -60,7 +60,7 @@ if (
             $result = $conn->query($sql);
             if ($result->num_rows > 0) {
                 $row = $result->fetch_assoc();
-                $allowed = $row['canChangeAllDriveSettings'];
+                $allowed = $row['canEditContent'];
             } else {
                 //Fail because there is no DB row for the user on this drive so we shouldn't allow an add
                 http_response_code(401); //User has bad auth
@@ -69,7 +69,7 @@ if (
             if ($allowed) {
                 $sql = "
                     UPDATE collection
-                    SET variant = '$variant'
+                    SET entryVariant = '$entryVariant'
                     WHERE entryId ='$entryId'
                 ";
                 $result = $conn->query($sql);

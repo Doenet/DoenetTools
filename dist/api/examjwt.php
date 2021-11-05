@@ -34,8 +34,7 @@ http_response_code(200);
 $expirationTime = 2147483647;
 
 $payload = [
-    'userId' => $userId,
-    // 'euserId' => $userId,
+    'examineeUserId' => $userId,
     'doenetId' => $doenetId,
 ];
 $jwt = JWT::encode($payload, $key);

@@ -2,8 +2,9 @@ import InlineComponent from './abstract/InlineComponent.js';
 import { deepCompare } from '../utils/deepFunctions.js';
 import { renameStateVariable } from '../utils/stateVariables.js';
 import { serializedComponentsReplacer, serializedComponentsReviver } from '../utils/serializedStateProcessing.js';
-// import sha1 from 'crypto-js/sha1';
-// import Base64 from 'crypto-js/enc-base64';
+import sha1 from '../../_snowpack/pkg/crypto-js/sha1.js';
+import Base64 from '../../_snowpack/pkg/crypto-js/enc-base64.js';
+import stringify from '../../_snowpack/pkg/json-stringify-deterministic.js';
 
 export default class Answer extends InlineComponent {
   static componentType = "answer";
@@ -126,19 +127,19 @@ export default class Answer extends InlineComponent {
       public: true,
       propagateToDescendants: true,
     };
+    attributes.nPeriodicSetMatchesRequired = {
+      createComponentOfType: "integer",
+      createStateVariable: "nPeriodicSetMatchesRequired",
+      defaultValue: 3,
+      public: true,
+      propagateToDescendants: true,
+    };
     attributes.feedbackDefinitions = {
       createComponentOfType: "feedbackDefinitions",
       createStateVariable: "feedbackDefinitions",
       public: true,
       propagateToDescendants: true,
       mergeArrays: true
-    };
-    attributes.prefill = {
-      createComponentOfType: "text",
-      createStateVariable: "prefill",
-      defaultValue: "",
-      public: true,
-      propagateToDescendants: true,
     };
 
 
@@ -710,18 +711,12 @@ export default class Answer extends InlineComponent {
     stateVariableDefinitions.nSubmittedResponses = {
       public: true,
       componentType: "number",
-      returnDependencies: () => ({
-        nResponses: {
-          dependencyType: "stateVariable",
-          variableName: "nResponses"
-        }
-      }),
-      definition: ({ dependencyValues }) => ({
+      returnDependencies: () => ({}),
+      definition: () => ({
         useEssentialOrDefaultValue: {
           nSubmittedResponses: {
             variablesToCheck: ["nSubmittedResponses"],
-            // defaultValue: Math.max(1, dependencyValues.nResponses)
-            defaultValue: 0//dependencyValues.nResponses
+            defaultValue: 0
           }
         }
       }),
@@ -958,11 +953,11 @@ export default class Answer extends InlineComponent {
           // that give the maximum credit (which will be creditAchieved)
           // Always process awards if haven't matched an award in case want to
           // use an award with credit=0 to trigger feedback
-          let awardCredits = Array(n).fill(0);
+          let awardCredits = Array(n).fill(null);
           let minimumFromAwardCredits = 0;
           for (let child of dependencyValues.awardChildren) {
             let creditFromChild = child.stateValues.creditAchieved;
-            if (creditFromChild > minimumFromAwardCredits || awardsUsed[0] === null) {
+            if (creditFromChild > minimumFromAwardCredits || awardsUsed[n-1] === null) {
               if (child.stateValues.fractionSatisfied > 0) {
                 if (awardsUsed[0] === null) {
                   awardsUsed[0] = child.componentName;
@@ -970,7 +965,7 @@ export default class Answer extends InlineComponent {
                   minimumFromAwardCredits = Math.min(...awardCredits);
                 } else {
                   for (let [ind, credit] of awardCredits.entries()) {
-                    if (creditFromChild > credit) {
+                    if (creditFromChild > credit || credit === null) {
                       awardsUsed.splice(ind, 0, child.componentName);
                       awardsUsed = awardsUsed.slice(0, n)
                       awardCredits.splice(ind, 0, creditFromChild);
@@ -1047,6 +1042,7 @@ export default class Answer extends InlineComponent {
 
 
     stateVariableDefinitions.creditAchievedDependencies = {
+      additionalStateVariablesDefined: ["creditAchievedDependenciesOld"],
       returnDependencies: () => ({
         currentCreditAchievedDependencies: {
           dependencyType: "recursiveDependencyValues",
@@ -1056,21 +1052,23 @@ export default class Answer extends InlineComponent {
         },
       }),
       definition({ dependencyValues }) {
-        // we JSON.stringify because we may need to compare
-        // to values that have been JSON.stringified due to
-        // being saved in the database.
-        // JSON.stringify removes some elements (e.g. functions)
-        // so we want to use it everywhere do get a consistent comparison
+        // Use stringify from json-stringify-deterministic
+        // so that the string will be the same
+        // even if the object was built in a different order
+        // (as can happen when reloading from a database)
+
+        // For now, we also calculate the old, non-hashed dependencies
+        // so we can compare with values that were saved in database
+        // from the old system
+        let stringified = stringify(
+          dependencyValues.currentCreditAchievedDependencies,
+          { replacer: serializedComponentsReplacer }
+        );
         return {
           newValues: {
-            creditAchievedDependencies:
-              JSON.parse(
-                JSON.stringify(
-                  dependencyValues.currentCreditAchievedDependencies,
-                  serializedComponentsReplacer
-                ),
-                serializedComponentsReviver
-              )
+            creditAchievedDependenciesOld:
+              JSON.parse(stringified, serializedComponentsReviver),
+            creditAchievedDependencies: Base64.stringify(sha1(stringified))
           }
         }
       },
@@ -1100,37 +1098,57 @@ export default class Answer extends InlineComponent {
 
 
     stateVariableDefinitions.justSubmitted = {
+      public: true,
+      componentType: "boolean",
       forRenderer: true,
       defaultValue: false,
+      willBeEssential: true,
       returnDependencies: () => ({
         currentCreditAchievedDependencies: {
           dependencyType: "stateVariable",
           variableName: "creditAchievedDependencies",
         },
+        currentCreditAchievedDependenciesOld: {
+          dependencyType: "stateVariable",
+          variableName: "creditAchievedDependenciesOld",
+        },
         creditAchievedDependenciesAtSubmit: {
           dependencyType: "stateVariable",
           variableName: "creditAchievedDependenciesAtSubmit"
         },
+        disableAfterCorrect: {
+          dependencyType: "stateVariable",
+          variableName: "disableAfterCorrect"
+        },
+        hasBeenCorrect: {
+          dependencyType: "stateVariable",
+          variableName: "hasBeenCorrect"
+        }
 
       }),
       definition: function ({ dependencyValues }) {
 
+        if (dependencyValues.disableAfterCorrect && dependencyValues.hasBeenCorrect) {
+          return {
+            newValues: { justSubmitted: true }
+          }
+        }
+
         let foundChange = true;
 
-        // Note: 
-        // - using deepCompare, because JSON.stringify does not produce
-        //   a canonical order of object, and may incorrectly indicate a change
-        //   if the objects were created in a different order
-        //   (as can happen when reconstructing a document from the database)
-
-        // TODO: we already JSON.stringified and parsed when creating the variables
-        // (so that it is consistent in case we've loaded from the database)
-        // Is there a way to accomplish this more efficiently, 
-        // i.e., without doing two passes
 
         if (dependencyValues.creditAchievedDependenciesAtSubmit) {
-          foundChange = !deepCompare(dependencyValues.currentCreditAchievedDependencies,
-            dependencyValues.creditAchievedDependenciesAtSubmit)
+          if (typeof dependencyValues.creditAchievedDependenciesAtSubmit === "string") {
+            foundChange = dependencyValues.creditAchievedDependenciesAtSubmit
+              !== dependencyValues.currentCreditAchievedDependencies;
+          } else {
+
+            // For now, we keep this backward-compatible code
+            // in case we compare with old dependencies
+            // that were saved in the database
+            foundChange = !deepCompare(dependencyValues.currentCreditAchievedDependenciesOld,
+              dependencyValues.creditAchievedDependenciesAtSubmit)
+          }
         }
 
         if (foundChange) {

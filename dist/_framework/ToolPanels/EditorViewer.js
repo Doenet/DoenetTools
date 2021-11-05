@@ -30,13 +30,23 @@ export const editorDoenetIdInitAtom = atom({
   key: "editorDoenetIdInitAtom",
   default: ""
 });
-export default function EditorViewer(props) {
+export const refreshNumberAtom = atom({
+  key: "refreshNumberAtom",
+  default: 0
+});
+export const editorViewerErrorStateAtom = atom({
+  key: "editorViewerErrorStateAtom",
+  default: false
+});
+export default function EditorViewer() {
   const viewerDoenetML = useRecoilValue(viewerDoenetMLAtom);
   const paramDoenetId = useRecoilValue(searchParamAtomFamily("doenetId"));
   const initilizedDoenetId = useRecoilValue(editorDoenetIdInitAtom);
   const [variantInfo, setVariantInfo] = useRecoilState(variantInfoAtom);
   const setVariantPanel = useSetRecoilState(variantPanelAtom);
   const setEditorInit = useSetRecoilState(editorDoenetIdInitAtom);
+  const refreshNumber = useRecoilValue(refreshNumberAtom);
+  const setIsInErrorState = useSetRecoilState(editorViewerErrorStateAtom);
   let initDoenetML = useRecoilCallback(({snapshot, set}) => async (doenetId) => {
     const versionHistory = await snapshot.getPromise(itemHistoryAtom(doenetId));
     const contentId = versionHistory.draft.contentId;
@@ -59,9 +69,7 @@ export default function EditorViewer(props) {
     };
   }, [paramDoenetId]);
   if (paramDoenetId !== initilizedDoenetId) {
-    return /* @__PURE__ */ React.createElement("div", {
-      style: props.style
-    });
+    return null;
   }
   let attemptNumber = 1;
   let solutionDisplayMode = "button";
@@ -94,10 +102,8 @@ export default function EditorViewer(props) {
       return newObj;
     });
   }
-  return /* @__PURE__ */ React.createElement("div", {
-    style: props.style
-  }, /* @__PURE__ */ React.createElement(DoenetViewer, {
-    key: "doenetviewer",
+  return /* @__PURE__ */ React.createElement(DoenetViewer, {
+    key: `doenetviewer${refreshNumber}`,
     doenetML: viewerDoenetML,
     flags: {
       showCorrectness: true,
@@ -113,6 +119,7 @@ export default function EditorViewer(props) {
     allowSaveSubmissions: false,
     allowSaveEvents: false,
     generatedVariantCallback: variantCallback,
-    requestedVariant: variantInfo.requestedVariant
-  }));
+    requestedVariant: variantInfo.requestedVariant,
+    setIsInErrorState
+  });
 }

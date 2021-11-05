@@ -847,6 +847,55 @@ describe('Math Tag Tests', function () {
 
   });
 
+  it('targetsAreFunctionSymbols', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+  <p><text>a</text></p>
+  <p><select assignNames="f">f g h k m n</select></p>
+  <p><select assignNames="x">s t u v w x y z</select></p>
+
+  <p><math>$f($x)</math></p>
+  <p><math>$x($f)</math></p>
+  <p><math targetsAreFunctionSymbols="f">$f($x)</math></p>
+  <p><math targetsAreFunctionSymbols="f">$x($f)</math></p>
+  `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      let f = components["/f"].stateValues.value.tree;
+      let x = components["/x"].stateValues.value.tree;
+
+      cy.log('Test value displayed in browser')
+      cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal(`${f}${x}`)
+      })
+      cy.get('#\\/_math2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal(`${x}${f}`)
+      })
+      cy.get('#\\/_math3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal(`${f}(${x})`)
+      })
+      cy.get('#\\/_math4').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal(`${x}${f}`)
+      })
+
+      cy.log('Test internal values')
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
+        expect(components['/_math1'].stateValues.value.tree).eqls(["*", f, x]);
+        expect(components['/_math2'].stateValues.value.tree).eqls(["*", x, f]);
+        expect(components['/_math3'].stateValues.value.tree).eqls(["apply", f, x]);
+        expect(components['/_math4'].stateValues.value.tree).eqls(["*", x, f]);
+
+      });
+    })
+
+
+  });
+
   it('split symbols', () => {
     cy.window().then((win) => {
       win.postMessage({
@@ -1351,6 +1400,30 @@ describe('Math Tag Tests', function () {
 
     });
 
+
+  });
+
+  it('shrink vector dimensions in inverse direction', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+  <p><text>a</text></p>
+  <math name="m">(x,y,z)</math>
+  <mathinput name="mi" bindValueTo="$m" />
+  `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.get('#\\/m').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(x,y,z)');
+    })
+
+    cy.get('#\\/mi textarea').type("{end}{leftArrow}{backspace}{backspace}", { force: true }).blur();
+
+    cy.get('#\\/m').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(x,y)');
+    })
 
   });
 

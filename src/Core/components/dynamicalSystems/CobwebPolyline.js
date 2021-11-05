@@ -55,6 +55,10 @@ export default class CobwebPolyline extends Polyline {
       defaultValue: false,
     }
 
+    attributes.defaultPoint = {
+      createComponentOfType: "point",
+    }
+
     return attributes;
 
   }
@@ -262,6 +266,11 @@ export default class CobwebPolyline extends Polyline {
             dependencyType: "ancestor",
             componentType: "graph",
             variableNames: ["xmin", "xmax", "ymin", "ymax"]
+          },
+          defaultPoint: {
+            dependencyType: "attributeComponent",
+            attributeName: "defaultPoint",
+            variableNames: ["xs"]
           }
         }
       }),
@@ -275,6 +284,12 @@ export default class CobwebPolyline extends Polyline {
           originalVertices[arrayKey] = {
             variablesToCheck: ["originalVertex" + jointVarEnding],
             get defaultValue() {
+              if (globalDependencyValues.defaultPoint) {
+                let xs = globalDependencyValues.defaultPoint.stateValues.xs;
+                if (xs.length === 2 && arrayIndices[1] < 2) {
+                  return xs[arrayIndices[1]];
+                }
+              }
               if (globalDependencyValues.graphAncestor) {
                 if (arrayIndices[1] === 0) {
                   let xmin = globalDependencyValues.graphAncestor.stateValues.xmin;
@@ -672,7 +687,7 @@ export default class CobwebPolyline extends Polyline {
     stateVariableDefinitions.iterateValues = {
       isArray: true,
       public: true,
-      componentType: "number",
+      componentType: "math",
       entryPrefixes: ["iterateValue"],
       returnArraySizeDependencies: () => ({
         nIterateValues: {

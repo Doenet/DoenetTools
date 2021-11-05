@@ -1,18 +1,19 @@
 import React, { Suspense } from 'react';
 import { useRecoilValue } from 'recoil';
-import BreadCrumb from '../../../_reactComponents/Breadcrumb/BreadCrumb';
+import { BreadCrumb } from '../../../_reactComponents/PanelHeaderComponents/BreadCrumb';
 import { searchParamAtomFamily } from '../NewToolRoot';
+import { useCourseChooserCrumb, useDashboardCrumb } from '../../../_utils/breadcrumbUtil';
 
 export default function DashboardBreadCrumb() {
   const path = useRecoilValue(searchParamAtomFamily('path'));
+  const [driveId] = path.split(':');
+  
+  const courseChooserCrumb = useCourseChooserCrumb();
+  const dashboardCrumb = useDashboardCrumb(driveId);
 
   return (
-    <Suspense fallback={<div>loading Drive...</div>}>
-      <div style={{ 
-        margin: '-9px 0px 0px -25px', 
-        maxWidth: '850px' }}>
-        <BreadCrumb path={path} />
-      </div>
+    <Suspense fallback={<div>loading Breadcrumbs...</div>}>
+      <BreadCrumb crumbs={[courseChooserCrumb,dashboardCrumb]}/>
     </Suspense>
   );
 }

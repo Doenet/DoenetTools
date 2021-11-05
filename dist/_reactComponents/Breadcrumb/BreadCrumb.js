@@ -1,4 +1,4 @@
-import React, {useCallback} from "../../_snowpack/pkg/react.js";
+import React, {useCallback, useEffect, useRef} from "../../_snowpack/pkg/react.js";
 import {faTh} from "../../_snowpack/pkg/@fortawesome/free-solid-svg-icons.js";
 import {FontAwesomeIcon} from "../../_snowpack/pkg/@fortawesome/react-fontawesome.js";
 import {
@@ -17,7 +17,9 @@ import {pageToolViewAtom} from "../../_framework/NewToolRoot.js";
 import styled from "../../_snowpack/pkg/styled-components.js";
 const Breadcrumb = styled.ul`
   list-style: none;
-  overflow: hidden; ;
+  overflow: hidden;
+  height: 22px;
+  display: flex;
 `;
 const BreadcrumbItem = styled.li`
   float: left;
@@ -40,7 +42,6 @@ const BreadcrumbItem = styled.li`
 const BreadcrumbSpan = styled.span`
   padding: 0px 0px 0px 45px;
   position: relative;
-  display: block;
   float: left;
   color: white;
   background: #1a5a99;
@@ -48,7 +49,6 @@ const BreadcrumbSpan = styled.span`
   cursor: pointer;
   &::after {
     content: ' ';
-    display: block;
     width: 0;
     height: 0;
     border-top: 50px solid transparent;
@@ -62,7 +62,6 @@ const BreadcrumbSpan = styled.span`
   }
   &::before {
     content: ' ';
-    display: block;
     width: 0;
     height: 0;
     border-top: 50px solid transparent;
@@ -114,6 +113,42 @@ export default function BreadCrumb({path, tool, tool2, doenetId, label, userId, 
   const [driveId, parentFolderId] = path.split(":");
   const setPageToolView = useSetRecoilState(pageToolViewAtom);
   const clearSelections = useSetRecoilState(clearDriveAndItemSelections);
+  const returnToCourseChooserRef = useRef(null);
+  const returnToDashboardRef = useRef(null);
+  const returnToToolHeadRef = useRef(null);
+  const childrenRef = useRef(null);
+  const returnToToolHead2Ref = useRef(null);
+  const returnToIndividualViewRef = useRef(null);
+  const returnToMixedViewRef = useRef(null);
+  const returnToAttemptViewRef = useRef(null);
+  useEffect(() => {
+    var width = 0;
+    if (returnToCourseChooserRef.current != null) {
+      width = returnToCourseChooserRef.current.offsetWidth;
+      if (returnToDashboardRef.current != null) {
+        width = returnToCourseChooserRef.current.offsetWidth + returnToDashboardRef.current.offsetWidth;
+        if (returnToToolHeadRef.current != null) {
+          width += returnToToolHeadRef.current.offsetWidth;
+          if (childrenRef.current != null) {
+            width += childrenRef.current.offsetWidth;
+            if (returnToToolHead2Ref.current != null) {
+              width += returnToToolHead2Ref.current.offsetWidth;
+              if (returnToIndividualViewRef.current != null) {
+                width += returnToIndividualViewRef.current.offsetWidth;
+                if (returnToMixedViewRef.current != null) {
+                  width += returnToMixedViewRef.current.offsetWidth;
+                  if (returnToAttemptViewRef.current != null) {
+                    width += returnToAttemptViewRef.current.offsetWidth;
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+    console.log("width", width);
+  }, []);
   const items = useRecoilValue(breadcrumbItemAtomFamily({
     driveId,
     folderId: parentFolderId
@@ -171,7 +206,9 @@ export default function BreadCrumb({path, tool, tool2, doenetId, label, userId, 
       }
     }, tool));
   }
-  const returnToCourseChooser = /* @__PURE__ */ React.createElement(BreadcrumbItem, null, /* @__PURE__ */ React.createElement(BreadcrumbSpan, {
+  const returnToCourseChooser = /* @__PURE__ */ React.createElement(BreadcrumbItem, {
+    ref: returnToCourseChooserRef
+  }, /* @__PURE__ */ React.createElement(BreadcrumbSpan, {
     role: "button",
     tabIndex: "0",
     onKeyDown: (e) => {
@@ -192,7 +229,9 @@ export default function BreadCrumb({path, tool, tool2, doenetId, label, userId, 
   if (tool === "CourseChooser") {
     return /* @__PURE__ */ React.createElement(Breadcrumb, null, returnToCourseChooser);
   }
-  const returnToDashboard = /* @__PURE__ */ React.createElement(BreadcrumbItem, null, /* @__PURE__ */ React.createElement(BreadcrumbSpan, {
+  const returnToDashboard = /* @__PURE__ */ React.createElement(BreadcrumbItem, {
+    ref: returnToDashboardRef
+  }, /* @__PURE__ */ React.createElement(BreadcrumbSpan, {
     role: "button",
     tabIndex: "0",
     onKeyDown: (e) => {
@@ -248,7 +287,9 @@ export default function BreadCrumb({path, tool, tool2, doenetId, label, userId, 
     params2 = {doenetId, path};
   }
   if (tool2) {
-    returnToToolHead2 = /* @__PURE__ */ React.createElement(BreadcrumbItem, null, /* @__PURE__ */ React.createElement(BreadcrumbSpan, {
+    returnToToolHead2 = /* @__PURE__ */ React.createElement(BreadcrumbItem, {
+      ref: returnToToolHead2Ref
+    }, /* @__PURE__ */ React.createElement(BreadcrumbSpan, {
       role: "button",
       tabIndex: "0",
       onKeyDown: (e) => {
@@ -274,7 +315,8 @@ export default function BreadCrumb({path, tool, tool2, doenetId, label, userId, 
   let returnToAssignmentView = null;
   if (tool === "Gradebook" && doenetId !== null && doenetId !== "" && assignments.state === "hasValue") {
     returnToAssignmentView = /* @__PURE__ */ React.createElement(BreadcrumbItem, {
-      key: doenetId
+      key: doenetId,
+      ref: returnToIndividualViewRef
     }, /* @__PURE__ */ React.createElement(BreadcrumbSpan, {
       role: "button",
       tabIndex: "0",
@@ -300,9 +342,9 @@ export default function BreadCrumb({path, tool, tool2, doenetId, label, userId, 
   }
   let returnToStudentView = null;
   if (tool === "Gradebook" && userId !== null && userId !== "" && students.state === "hasValue") {
-    console.log(">>>> bc userid: ", userId);
     returnToStudentView = /* @__PURE__ */ React.createElement(BreadcrumbItem, {
-      key: userId + "*"
+      key: userId + "*",
+      ref: returnToIndividualViewRef
     }, /* @__PURE__ */ React.createElement(BreadcrumbSpan, {
       role: "button",
       tabIndex: "0",
@@ -330,7 +372,8 @@ export default function BreadCrumb({path, tool, tool2, doenetId, label, userId, 
   if (tool === "Gradebook" && doenetId !== null && doenetId !== "" && userId !== null && userId !== "" && attemptNumber !== null && attemptNumber !== "") {
     console.log(">>>>", {doenetId, userId, attemptNumber});
     returnToAttemptView = /* @__PURE__ */ React.createElement(BreadcrumbItem, {
-      key: userId + "_" + attemptNumber
+      key: userId + "_" + attemptNumber,
+      ref: returnToAttemptViewRef
     }, /* @__PURE__ */ React.createElement(BreadcrumbSpan, {
       role: "button",
       tabIndex: "0",
@@ -369,7 +412,8 @@ export default function BreadCrumb({path, tool, tool2, doenetId, label, userId, 
   let returnToMixedView = null;
   if (tool === "Gradebook" && doenetId !== null && doenetId !== "" && userId !== null && userId !== "" && students.state === "hasValue" && assignments.state === "hasValue") {
     returnToMixedView = /* @__PURE__ */ React.createElement(BreadcrumbItem, {
-      key: userId + "_" + doenetId
+      key: userId + "_" + doenetId,
+      ref: returnToMixedViewRef
     }, /* @__PURE__ */ React.createElement(BreadcrumbSpan, {
       role: "button",
       tabIndex: "0",

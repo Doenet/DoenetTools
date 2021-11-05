@@ -45,6 +45,7 @@ import {useDragShadowCallbacks, useSortFolder} from "./DriveActions.js";
 import useSockets from "../Sockets.js";
 import {BreadcrumbContext} from "../Breadcrumb/BreadcrumbProvider.js";
 import Collection from "./Collection.js";
+import {UTCDateStringToDate} from "../../_utils/dateUtilityFunction.js";
 const loadAssignmentAtomFamily = atomFamily({
   key: "loadAssignmentAtomFamily",
   default: selectorFamily({
@@ -54,7 +55,20 @@ const loadAssignmentAtomFamily = atomFamily({
       const {data} = await axios.get("/api/getAllAssignmentSettings.php", {
         params: payload
       });
-      return data.assignment;
+      let assignment = {...data.assignment};
+      if (assignment.assignedDate) {
+        assignment.assignedDate = UTCDateStringToDate(assignment.assignedDate).toLocaleString();
+      }
+      if (assignment.dueDate) {
+        assignment.dueDate = UTCDateStringToDate(assignment.dueDate).toLocaleString();
+      }
+      if (assignment.pinnedAfterDate) {
+        assignment.pinnedAfterDate = UTCDateStringToDate(assignment.pinnedAfterDate).toLocaleString();
+      }
+      if (assignment.pinnedUntilDate) {
+        assignment.pinnedUntilDate = UTCDateStringToDate(assignment.pinnedUntilDate).toLocaleString();
+      }
+      return assignment;
     }
   })
 });
@@ -378,7 +392,7 @@ export const folderDictionaryFilterAtom = atomFamily({
   key: "folderDictionaryFilterAtom",
   default: selectorFamily({
     key: "folderDictionaryFilterAtom/Default",
-    get: (driveId) => () => {
+    get: () => () => {
       return "All";
     }
   })
@@ -493,7 +507,7 @@ export const getLexicographicOrder = ({
   const sortOrder = getSortOrder(prevItemOrder, nextItemOrder);
   return sortOrder;
 };
-function DriveHeader({
+export function DriveHeader({
   columnTypes,
   numColumns,
   setNumColumns,
@@ -695,11 +709,11 @@ function Folder(props) {
   if (!itemId) {
     itemId = props.driveId;
   }
-  const [folderInfoObj, setFolderInfo] = useRecoilStateLoadable(folderInfoSelector({
+  const {folderInfo, contentsDictionary, contentIdsArr} = useRecoilValueLoadable(folderInfoSelector({
     driveId: props.driveId,
     instanceId: props.driveInstanceId,
     folderId: props.folderId
-  }));
+  })).getValue();
   const {
     onDragStart,
     onDrag,
@@ -785,14 +799,6 @@ function Folder(props) {
   if (props.isNav && itemId === props.pathItemId) {
     borderSide = "8px solid #1A5A99";
   }
-  if (folderInfoObj.state === "loading") {
-    return null;
-  }
-  if (folderInfoObj.state === "hasError") {
-    console.error(folderInfoObj.contents);
-    return null;
-  }
-  let {folderInfo, contentsDictionary, contentIdsArr} = folderInfoObj.contents;
   let openCloseText = isOpen ? /* @__PURE__ */ React.createElement("span", {
     "data-cy": "folderToggleCloseIcon"
   }, /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
@@ -1195,7 +1201,7 @@ function Folder(props) {
             }));
             break;
           case "Collection":
-            items.push(/* @__PURE__ */ React.createElement(Collection, {
+            items.push(/* @__PURE__ */ React.createElement(Suspense, null, /* @__PURE__ */ React.createElement(Collection, {
               driveId: props.driveId,
               driveInstanceId: props.driveInstanceId,
               key: `item${itemId2}${props.driveInstanceId}`,
@@ -1206,7 +1212,7 @@ function Folder(props) {
               columnTypes: props.columnTypes,
               indentLevel: props.indentLevel + 1,
               isViewOnly: props.isViewOnly
-            }));
+            })));
             break;
           default:
             console.warn(`Item not rendered of type ${item.itemType}`);
@@ -1300,7 +1306,7 @@ export const selectedDriveItems = selectorFamily({
       for (let itemId2 of folderObj.contentIds.defaultOrder) {
         itemIdArr.push(itemId2);
         parentFolderIdArr.push(parentFolderId);
-        if (folderObj.contentsDictionary[itemId2].itemType === "Folder") {
+        if (folderObj.contentsDictionary[itemId2].itemType === "Folder" || folderObj.contentsDictionary[itemId2].itemType === "Collection") {
           const isOpen = get(folderOpenAtom({driveInstanceId: driveInstanceId2, driveId: driveId2, itemId: itemId2}));
           if (isOpen) {
             const [folderItemIdArr, folderParentFolderIdsArr] = buildItemIdsAndParentIds({
@@ -1424,7 +1430,6 @@ export const selectedDriveItems = selectorFamily({
   }
 });
 export function ColumnJSX(columnType, item) {
-  let courseRole = "";
   const assignmentInfoSettings = useRecoilValueLoadable(loadAssignmentSelector(item.doenetId));
   let aInfo = {};
   if (assignmentInfoSettings?.state === "hasValue") {
@@ -1448,10 +1453,14 @@ export function ColumnJSX(columnType, item) {
     }, /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
       icon: faCheck
     }));
-  } else if (columnType === "Due Date" && item.isAssigned === "1") {
+  } else if (columnType === "Due Date" && item.isReleased === "1") {
     return /* @__PURE__ */ React.createElement("span", {
       style: {textAlign: "center"}
     }, aInfo?.dueDate);
+  } else if (columnType === "Assigned Date" && item.isReleased === "1") {
+    return /* @__PURE__ */ React.createElement("span", {
+      style: {textAlign: "center"}
+    }, aInfo?.assignedDate);
   }
   return /* @__PURE__ */ React.createElement("span", null);
 }
@@ -1461,7 +1470,6 @@ export const DoenetML = React.memo(function DoenetML2(props) {
     driveInstanceId: props.driveInstanceId,
     itemId: props.item.itemId
   }));
-  const [selectedDrive, setSelectedDrive] = useRecoilState(selectedDriveAtom);
   const [dragState] = useRecoilState(dragStateAtom);
   const {
     onDragStart,
@@ -1472,11 +1480,6 @@ export const DoenetML = React.memo(function DoenetML2(props) {
     unregisterDropTarget
   } = useDnDCallbacks();
   const globalSelectedNodes = useRecoilValue(globalSelectedNodesAtom);
-  const [folderInfoObj, setFolderInfo] = useRecoilStateLoadable(folderInfoSelector({
-    driveId: props.driveId,
-    instanceId: props.driveInstanceId,
-    folderId: props.driveId
-  }));
   const parentFolderSortOrder = useRecoilValue(folderSortOrderAtom({
     driveId: props.driveId,
     instanceId: props.driveInstanceId,
@@ -1516,7 +1519,6 @@ export const DoenetML = React.memo(function DoenetML2(props) {
   }
   if (isSelected || props.isNav && props.item.itemId === props.pathItemId) {
     bgcolor = "hsl(209,54%,82%)";
-    borderSide = "8px 0px 0px 0px #1A5A99";
   }
   if (isSelected && dragState.isDragging) {
     bgcolor = "#e2e2e2";

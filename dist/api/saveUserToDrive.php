@@ -20,9 +20,22 @@ $response_arr = array(
   "success"=>FALSE
 );
 
-//TODO: Check for permisions first
+//TODO: Need a permission related to see grades (not du.canEditContent)
+$sql = "
+SELECT du.canChangeAllDriveSettings 
+FROM drive_user AS du
+WHERE du.userId = '$userId'
+AND du.driveId = '$driveId'
+AND du.canChangeAllDriveSettings = '1'
+";
+ 
+$result = $conn->query($sql);
+if ($result->num_rows < 1) {
+	$success = FALSE;
+	$message = "No access granted for to add or remove users.";
+}
 
-
+if ($success){
 if ($type === "Remove User"){
   for($k = 0; $k < count($selected_userId); $k++){
 
@@ -139,7 +152,7 @@ if ($type === "Remove User"){
     
   }
 
-
+}
 // set response code - 200 OK
 http_response_code(200);
 

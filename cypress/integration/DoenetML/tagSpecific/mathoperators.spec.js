@@ -1782,10 +1782,10 @@ describe('Math Operator Tag Tests', function () {
         expect(text.trim()).equal('1')
       });
       cy.get('#\\/_floor4').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('2.1x')
+        expect(text.trim()).equal('floor(2.1x)')
       });
       cy.get('#\\/_ceil4').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('−3.2y')
+        expect(text.trim()).equal('ceil(−3.2y)')
       });
 
       cy.window().then((win) => {
@@ -1797,8 +1797,8 @@ describe('Math Operator Tag Tests', function () {
         expect(components['/_ceil3'].stateValues.value.tree).eq(-7000);
         expect(replacement1.stateValues.value.tree).eq(13);
         expect(replacement2.stateValues.value.tree).eq(1);
-        expect(components['/_floor4'].stateValues.value.tree).eqls(['*', 2.1, 'x']);
-        expect(components['/_ceil4'].stateValues.value.tree).eqls(['-', ['*', 3.2, 'y']]);
+        expect(components['/_floor4'].stateValues.value.tree).eqls(["apply", "floor", ['*', 2.1, 'x']]);
+        expect(components['/_ceil4'].stateValues.value.tree).eqls(["apply", "ceil", ['-', ['*', 3.2, 'y']]]);
       })
     })
   })
@@ -1828,6 +1828,120 @@ describe('Math Operator Tag Tests', function () {
       expect(components['/_abs1'].stateValues.value.tree).eq(5.3);
       expect(components['/_abs2'].stateValues.value.tree).eqls(['apply', 'abs', ['-', 'x']]);
     })
+  })
+
+
+  it('invert abs', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+      <text>a</text>
+      <abs name="a1">-9</abs>
+      <mathinput bindValueTo="$a1" name="a2" />
+      <copy prop="value" tname="a2" assignNames="a3" />
+      `}, "*");
+    });
+
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.get('#\\/a1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('9')
+    });
+    cy.get(`#\\/a2 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('9')
+    })
+    cy.get('#\\/a3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('9')
+    });
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/a1'].stateValues.value.tree).eq(9);
+      expect(components['/a2'].stateValues.value.tree).eq(9);
+      expect(components['/a3'].stateValues.value.tree).eq(9);
+    })
+
+    cy.get("#\\/a2 textarea").type("{end}{backspace}-3{enter}", {force: true})
+
+    cy.get('#\\/a1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('0')
+    });
+    cy.get(`#\\/a2 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('0')
+    })
+    cy.get('#\\/a3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('0')
+    });
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/a1'].stateValues.value.tree).eq(0);
+      expect(components['/a2'].stateValues.value.tree).eq(0);
+      expect(components['/a3'].stateValues.value.tree).eq(0);
+    })
+
+
+    cy.get("#\\/a2 textarea").type("{end}{backspace}7{enter}", {force: true})
+
+    cy.get('#\\/a1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('7')
+    });
+    cy.get(`#\\/a2 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('7')
+    })
+    cy.get('#\\/a3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('7')
+    });
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/a1'].stateValues.value.tree).eq(7);
+      expect(components['/a2'].stateValues.value.tree).eq(7);
+      expect(components['/a3'].stateValues.value.tree).eq(7);
+    })
+
+
+    cy.get("#\\/a2 textarea").type("{end}{backspace}x{enter}", {force: true})
+
+    cy.get('#\\/a1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('|x|')
+    });
+    cy.get(`#\\/a2 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('|x|')
+    })
+    cy.get('#\\/a3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('|x|')
+    });
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/a1'].stateValues.value.tree).eqls(["apply", "abs", "x"]);
+      expect(components['/a2'].stateValues.value.tree).eqls(["apply", "abs", "x"]);
+      expect(components['/a3'].stateValues.value.tree).eqls(["apply", "abs", "x"]);
+    })
+
+
+    cy.get("#\\/a2 textarea").type("{end}{leftArrow}{backspace}y{enter}", {force: true})
+
+    cy.get('#\\/a1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('|y|')
+    });
+    cy.get(`#\\/a2 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('|y|')
+    })
+    cy.get('#\\/a3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('|y|')
+    });
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/a1'].stateValues.value.tree).eqls(["apply", "abs", "y"]);
+      expect(components['/a2'].stateValues.value.tree).eqls(["apply", "abs", "y"]);
+      expect(components['/a3'].stateValues.value.tree).eqls(["apply", "abs", "y"]);
+    })
+
+
   })
 
   it('floor, ceil, round and abs updatable', () => {
@@ -1968,6 +2082,38 @@ describe('Math Operator Tag Tests', function () {
     })
 
   });
+
+  it('sign', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+      <text>a</text>
+      <sign>-5.3</sign>
+      <sign>63</sign>
+      <sign>0</sign>
+      `}, "*");
+    });
+
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.get('#\\/_sign1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('−1')
+    });
+    cy.get('#\\/_sign2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('1')
+    });
+    cy.get('#\\/_sign3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('0')
+    });
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/_sign1'].stateValues.value.tree).eq(-1);
+      expect(components['/_sign2'].stateValues.value.tree).eq(1);
+      expect(components['/_sign3'].stateValues.value.tree).eq(0);
+    })
+  })
 
   it('mean', () => {
     cy.window().then((win) => {
@@ -5589,6 +5735,41 @@ describe('Math Operator Tag Tests', function () {
       })
     })
   })
+
+  it('gcd', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+      <text>a</text>
+      <gcd><number>135</number><number>81</number></gcd>
+      <gcd>135 81 63</gcd>
+      <gcd>x y z</gcd>
+      `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+
+
+    cy.get('#\\/_gcd1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('27')
+    });
+    cy.get('#\\/_gcd2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('9')
+    });
+    cy.get('#\\/_gcd3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('gcd(x,y,z)')
+    });
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+   
+      expect(components['/_gcd1'].stateValues.value.tree).eq(27);
+      expect(components['/_gcd2'].stateValues.value.tree).eq(9);
+      expect(components['/_gcd3'].stateValues.value.tree).eqls(["apply", "gcd", ["tuple", "x", "y", "z"]]);
+
+
+    })
+  })
+
 
   it('extract parts of math expression', () => {
     cy.window().then((win) => {

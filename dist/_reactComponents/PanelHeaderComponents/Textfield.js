@@ -1,68 +1,97 @@
-import React, {useState} from "../../_snowpack/pkg/react.js";
+import React, {useState, useEffect, useRef} from "../../_snowpack/pkg/react.js";
 import {doenetComponentForegroundInactive} from "./theme.js";
 export default function Textfield(props) {
   const [labelVisible, setLabelVisible] = useState(props.label ? "static" : "none");
+  const [text, setText] = useState(props.value ? "Enter text here" : props.value);
   const [align, setAlign] = useState(props.vertical ? "static" : "flex");
+  const [cursorStart, setCursorStart] = useState(0);
+  const [cursorEnd, setCursorEnd] = useState(0);
+  const inputRef = useRef(null);
   var textfield = {
-    margin: "0px",
+    margin: "0px 4px 0px 4px",
     height: "24px",
     border: `2px solid ${doenetComponentForegroundInactive}`,
     fontFamily: "Arial",
     borderRadius: "5px",
     color: "#000",
-    value: "Enter text here",
+    value: `${text}`,
     resize: "none",
     whiteSpace: "nowrap",
-    padding: "0px 10px 0px 10px;",
-    lineHeight: "24px"
+    padding: "0px 5px 0px 5px",
+    lineHeight: "24px",
+    fontSize: "12px"
   };
   var label = {
     value: "Label:",
-    fontSize: "12px",
+    fontSize: "14px",
     display: `${labelVisible}`,
     marginRight: "5px",
-    marginBottom: `${align == "flex" ? "none" : "0px"}`
+    marginBottom: `${align == "flex" ? "none" : "2px"}`
   };
   var container = {
     display: `${align}`,
     width: "auto",
     alignItems: "flex-end"
   };
+  useEffect(() => {
+    setText(props.value);
+  }, [props]);
+  useEffect(() => {
+    inputRef.current.selectionStart = cursorStart;
+    inputRef.current.selectionEnd = cursorEnd;
+  });
   if (props.alert) {
     textfield.border = "2px solid #C1292E";
   }
   if (props.label) {
     label.value = props.label;
   }
+  var disable = "";
   if (props.disabled) {
     textfield.border = "2px solid #e2e2e2";
     textfield.cursor = "not-allowed";
-  }
-  if (props.value) {
-    textfield.value = props.value;
+    disable = "disabled";
   }
   if (props.width) {
     if (props.width === "menu") {
-      textfield.width = "235px";
+      textfield.width = "200px";
       if (props.label) {
-        container.width = "235px";
-        textfield.width = "100%";
+        container.width = "200px";
       }
     }
   }
   function handleChange(e) {
     if (props.onChange)
-      props.onChange(e.target.value);
+      props.onChange(e);
+    setCursorStart(e.target.selectionStart);
+    setCursorEnd(e.target.selectionEnd);
+  }
+  function handleBlur(e) {
+    if (props.onBlur)
+      props.onBlur(e);
+  }
+  function handleKeyDown(e) {
+    if (props.onKeyDown)
+      props.onKeyDown(e);
   }
   return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("div", {
     style: container
   }, /* @__PURE__ */ React.createElement("p", {
     style: label
-  }, label.value), /* @__PURE__ */ React.createElement("textarea", {
-    defaultValue: textfield.value,
+  }, label.value), /* @__PURE__ */ React.createElement("input", {
+    type: "text",
+    ref: inputRef,
+    value: textfield.value,
     style: textfield,
     onChange: (e) => {
       handleChange(e);
-    }
+    },
+    onBlur: (e) => {
+      handleBlur(e);
+    },
+    onKeyDown: (e) => {
+      handleKeyDown(e);
+    },
+    disabled: disable
   })));
 }

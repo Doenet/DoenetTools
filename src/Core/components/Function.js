@@ -79,6 +79,17 @@ export default class Function extends InlineComponent {
       public: true,
       forRenderer: true
     };
+
+    attributes.labelPosition = {
+      createComponentOfType: "text",
+      createStateVariable: "labelPosition",
+      defaultValue: "upperright",
+      public: true,
+      forRenderer: true,
+      toLowerCase: true,
+      validValues: ["upperright", "upperleft", "lowerright", "lowerleft", "top", "bottom", "left", "right"]
+    }
+
     attributes.layer = {
       createComponentOfType: "number",
       createStateVariable: "layer",
@@ -424,7 +435,7 @@ export default class Function extends InlineComponent {
           }
           return { newValues: { nInputs } };
         } else if (dependencyValues.variablesAttr !== null) {
-          return { newValues: { nInputs: dependencyValues.variablesAttr.stateValues.nComponents } }
+          return { newValues: { nInputs: Math.max(1, dependencyValues.variablesAttr.stateValues.nComponents) } }
         } else if (dependencyValues.functionChild.length > 0) {
           return {
             newValues: {

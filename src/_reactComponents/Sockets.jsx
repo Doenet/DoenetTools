@@ -25,6 +25,7 @@ import {
   selectedDriveItemsAtom,
   sortOptions,
 } from './Drive/NewDrive';
+import { DateToUTCDateString } from '../_utils/dateUtilityFunction';
 
 /**
  * a stored manger to allow for multiplexed socket connections.
@@ -111,7 +112,7 @@ export default function useSockets(nsp) {
     async ({ driveIdFolderId, type, label = 'Untitled', selectedItemId = null, url = null }) => {
       // Item creation
       const dt = new Date();
-      const creationDate = formatDate(dt); //TODO: get from sever
+      const creationDate = DateToUTCDateString(dt); //TODO: get from sever
       const itemId = nanoid(); //TODO: remove
       const doenetId = nanoid(); //Id per file
       const versionId = nanoid(); //Id per named version / data collection site
@@ -146,24 +147,51 @@ export default function useSockets(nsp) {
       if (type === 'DoenetML') {
         payload = {
           ...payload,
-          assignedDate: creationDate,
+          assignedDate: null,
           attemptAggregation: 'm',
-          dueDate: creationDate,
-          gradeCategory: 'l',
-          individualize: false,
-          isAssigned: '1',
+          dueDate: null,
+          gradeCategory: '',
+          individualize: true,
+          isAssigned: '0',
           isPublished: '0',
           contentId:
             'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855',
-          multipleAttempts: true,
-          numberOfAttemptsAllowed: '2', //TODO: Update to null
+          multipleAttempts: true, //TODO: is this ignored? should we delete it?
+          numberOfAttemptsAllowed: '1',
           proctorMakesAvailable: false,
           showCorrectness: true,
           showFeedback: true,
           showHints: true,
           showSolution: true,
-          timeLimit: '60', //TODO: Update to null
-          totalPointsOrPercent: '100',
+          showSolutionInGradebook: true,
+          timeLimit: null,
+          totalPointsOrPercent: '10',
+          assignment_isPublished: '0',
+        };
+      }
+
+      if (type === itemType.COLLECTION) {
+        payload = {
+          ...payload,
+          assignedDate: null,
+          attemptAggregation: 'm',
+          dueDate: null,
+          gradeCategory: '',
+          individualize: true,
+          isAssigned: '0',
+          isPublished: '0',
+          contentId:
+            'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855',
+          multipleAttempts: false,
+          numberOfAttemptsAllowed: '1',
+          proctorMakesAvailable: false,
+          showCorrectness: true,
+          showFeedback: true,
+          showHints: true,
+          showSolution: true,
+          showSolutionInGradebook: true,
+          timeLimit: null,
+          totalPointsOrPercent: '10',
           assignment_isPublished: '0',
         };
       }
@@ -248,26 +276,48 @@ export default function useSockets(nsp) {
       const globalSelectedNodes = await snapshot.getPromise(
         globalSelectedNodesAtom,
       );
-      // Interrupt move action if nothing selected
-      if (globalSelectedNodes.length === 0) {
-        throw 'No items selected';
-      }
-
-      // Interrupt move action if dragging folder to itself
-      for (let gItem of globalSelectedNodes) {
-        if (gItem.itemId === targetFolderId) {
-          throw 'Cannot move folder into itself';
-        }
-      }
-
-      // if (canMove){
-      // Add to destination at index
       let destinationFolderObj = await snapshot.getPromise(
         folderDictionary({
           driveId: targetDriveId,
           folderId: targetFolderId,
         }),
       );
+
+      // Interrupt move action if nothing selected
+      if (globalSelectedNodes.length === 0) {
+        throw 'No items selected';
+      }
+
+      // Interrupt move action if dragging folder to itself or adding non ML to Collection
+      for (let gItem of globalSelectedNodes) {
+        // Get parentInfo from edited cache or derive from oldSource
+        const sourceFolderInfo = await snapshot.getPromise(
+          folderDictionary({
+            driveId: gItem.driveId,
+            folderId: gItem.parentFolderId,
+          }),
+        );
+        if (gItem.itemId === targetFolderId) {
+          throw 'Cannot move folder into itself';
+        } else if (
+          destinationFolderObj.folderInfo.itemType === itemType.COLLECTION &&
+          sourceFolderInfo.contentsDictionary[gItem.itemId].itemType !==
+            itemType.DOENETML
+        ) {
+          addToast(
+            `Can not ${
+              sourceFolderInfo.contentsDictionary[gItem.itemId].itemType
+            }s into a Collection`,
+            toastType.ERROR,
+          );
+          throw `Can not ${
+            sourceFolderInfo.contentsDictionary[gItem.itemId].itemType
+          }s into a Collection`;
+        }
+      }
+
+      // if (canMove){
+      // Add to destination at index
       let newDestinationFolderObj = JSON.parse(
         JSON.stringify(destinationFolderObj),
       );
@@ -310,7 +360,17 @@ export default function useSockets(nsp) {
             ...newSourceFInfo['contentsDictionary'][gItem.itemId],
           };
 
+          if (!newDestinationFolderObj['contentsDictionaryByDoenetId']) {
+            newDestinationFolderObj['contentsDictionaryByDoenetId'] = {};
+          }
+          newDestinationFolderObj['contentsDictionaryByDoenetId'][
+            newSourceFInfo['contentsDictionary'][gItem.itemId].doenetId
+          ] = { ...newSourceFInfo['contentsDictionary'][gItem.itemId] };
+
           // Remove item from original dictionary
+          delete newSourceFInfo['contentsDictionaryByDoenetId'][
+            newSourceFInfo['contentsDictionary'][gItem.itemId].doenetId
+          ];
           delete newSourceFInfo['contentsDictionary'][gItem.itemId];
 
           // Ensure item removed from cached parent and added to edited cache
@@ -556,7 +616,7 @@ export default function useSockets(nsp) {
         const insertIndex = index ?? 0;
         let newSortOrder = '';
         const dt = new Date();
-        const creationTimestamp = formatDate(dt);
+        const creationTimestamp = formatDate(dt); //TODO: Emilio Make sure we have the right time zones
         let globalDictionary = {};
         let globalContentIds = {};
 
@@ -923,6 +983,7 @@ function useAcceptBindings() {
         newDefaultOrder.splice(index + 1, 0, itemId);
         newObj.contentIds[sortOptions.DEFAULT] = newDefaultOrder;
         newObj.contentsDictionary[itemId] = newItem;
+        newObj.contentsDictionaryByDoenetId[doenetId] = newItem;
 
         // Insert item info into destination folder
         set(
@@ -934,7 +995,7 @@ function useAcceptBindings() {
         );
 
         // addtional folder type updates
-        if (type === 'Folder') {
+        if (type === 'Folder' || type === 'Collection') {
           set(
             folderDictionary({
               driveId: driveId,
@@ -991,6 +1052,13 @@ function useAcceptBindings() {
         // Remove from folder
         let newFInfo = { ...fInfo };
         newFInfo['contentsDictionary'] = { ...fInfo.contentsDictionary };
+        newFInfo['contentsDictionaryByDoenetId'] = {
+          ...fInfo.contentsDictionaryByDoenetId,
+        };
+
+        delete newFInfo['contentsDictionaryByDoenetId'][
+          newFInfo['contentsDictionary'][itemId].doenetId
+        ];
         delete newFInfo['contentsDictionary'][itemId];
         newFInfo.folderInfo = { ...fInfo.folderInfo };
         newFInfo.contentIds = {};
@@ -1070,10 +1138,23 @@ function useAcceptBindings() {
         // Rename in folder
         let newFInfo = { ...fInfo };
         newFInfo['contentsDictionary'] = { ...fInfo.contentsDictionary };
+        newFInfo['contentsDictionaryByDoenetId'] = {
+          ...fInfo.contentsDictionaryByDoenetId,
+        };
+
         newFInfo['contentsDictionary'][itemId] = {
           ...fInfo.contentsDictionary[itemId],
         };
         newFInfo['contentsDictionary'][itemId].label = label;
+
+        newFInfo['contentsDictionaryByDoenetId'][
+          newFInfo['contentsDictionary'][itemId].doenetId
+        ] = {
+          ...fInfo.contentsDictionary[itemId],
+        };
+        newFInfo['contentsDictionaryByDoenetId'][
+          newFInfo['contentsDictionary'][itemId].doenetId
+        ].label = label;
 
         set(
           folderDictionary({
@@ -1084,7 +1165,7 @@ function useAcceptBindings() {
         );
 
         // If a folder, update the label in the child folder
-        if (type === 'Folder') {
+        if (type === 'Folder' || type === 'Collection') {
           set(
             folderDictionary({
               driveId,

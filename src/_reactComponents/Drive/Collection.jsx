@@ -1,13 +1,14 @@
 import React, { useContext, useEffect, useRef } from 'react';
 import {
   useRecoilState,
-  useRecoilStateLoadable,
   useRecoilValue,
+  useRecoilValueLoadable,
   useSetRecoilState,
 } from 'recoil';
 import {
   faChevronDown,
   faChevronRight,
+  faCode,
   faLayerGroup,
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -16,7 +17,6 @@ import { DropTargetsContext, WithDropTarget } from '../DropTarget';
 import useSockets, { itemType } from '../Sockets';
 import { useDragShadowCallbacks, useSortFolder } from './DriveActions';
 import {
-  clearDriveAndItemSelections,
   ColumnJSX,
   DoenetML,
   DragShadow,
@@ -28,24 +28,29 @@ import {
   folderOpenSelector,
   folderSortOrderAtom,
   globalSelectedNodesAtom,
-  selectedDriveAtom,
   selectedDriveItemsAtom,
   sortOptions,
   useDnDCallbacks,
 } from './NewDrive';
+import { useState } from 'react';
 
 function Collection(props) {
   const itemId = props?.item.itemId;
 
-  const [folderInfoObj, setFolderInfo] = useRecoilStateLoadable(
-    folderInfoSelector({
-      driveId: props.driveId,
-      instanceId: props.driveInstanceId,
-      folderId: itemId,
-    }),
-  );
+  const { folderInfo, contentsDictionary, contentIdsArr } =
+    useRecoilValueLoadable(
+      folderInfoSelector({
+        driveId: props.driveId,
+        instanceId: props.driveInstanceId,
+        folderId: itemId,
+      }),
+    ).getValue();
   // const [folderInfoObj, setFolderInfo] = useRecoilStateLoadable(folderDictionaryFilterSelector({driveId:props.driveId,folderId:itemId}))
+  const [label, setLabel] = useState(folderInfo?.label);
 
+  useEffect(() => {
+    setLabel(folderInfo.label);
+  }, [folderInfo.label]);
   const {
     onDragStart,
     onDrag,
@@ -68,7 +73,6 @@ function Collection(props) {
     }),
   );
   const parentFolderSortOrderRef = useRef(parentFolderSortOrder); // for memoized DnD callbacks
-  const [selectedDrive, setSelectedDrive] = useRecoilState(selectedDriveAtom);
   const isSelected = useRecoilValue(
     selectedDriveItemsAtom({
       driveId: props.driveId,
@@ -86,7 +90,6 @@ function Collection(props) {
   };
 
   const globalSelectedNodes = useRecoilValue(globalSelectedNodesAtom);
-  const clearSelections = useSetRecoilState(clearDriveAndItemSelections);
 
   //Used to determine range of items in Shift Click
   const isOpen = useRecoilValue(
@@ -122,17 +125,28 @@ function Collection(props) {
   let bgcolor = '#ffffff';
   let borderSide = '0px';
   let marginSize = '0';
-  let widthSize = '60vw';
-  if (props.isNav) {
-    marginSize = '0px';
-    widthSize = '224px';
-  }
   if (isSelected) {
     bgcolor = 'hsl(209,54%,82%)';
   }
   if (isSelected && dragState.isDragging) {
     bgcolor = '#e2e2e2';
   }
+  let woIndent = 250 - props.indentLevel * indentPx;
+  let columns = `${woIndent}px repeat(4,1fr)`; //5 columns
+  if (props.numColumns === 4) {
+    columns = `${woIndent}px repeat(3,1fr)`;
+  } else if (props.numColumns === 3) {
+    columns = `${woIndent}px 1fr 1fr`;
+  } else if (props.numColumns === 2) {
+    columns = `${woIndent}px 1fr`;
+  } else if (props.numColumns === 1) {
+    columns = '100%';
+  }
+
+  let column2 = ColumnJSX(props.columnTypes[0], props.item);
+  let column3 = ColumnJSX(props.columnTypes[1], props.item);
+  let column4 = ColumnJSX(props.columnTypes[2], props.item);
+  let column5 = ColumnJSX(props.columnTypes[3], props.item);
 
   const isDraggedOver =
     dropState.activeDropTargetId === itemId &&
@@ -163,20 +177,6 @@ function Collection(props) {
   //   }
   // }, [folderCacheDirty])
 
-  if (props.isNav && itemId === props.pathItemId) {
-    borderSide = '8px solid #1A5A99';
-  }
-
-  if (folderInfoObj.state === 'loading') {
-    return null;
-  }
-  if (folderInfoObj.state === 'hasError') {
-    console.error(folderInfoObj.contents);
-    return null;
-  }
-  let { folderInfo, contentsDictionary, contentIdsArr } =
-    folderInfoObj.contents;
-
   let openCloseText = isOpen ? (
     <span data-cy="folderToggleCloseIcon">
       <FontAwesomeIcon icon={faChevronDown} />
@@ -187,27 +187,34 @@ function Collection(props) {
     </span>
   );
 
-  let openCloseButton = (
-    <button
-      style={{ border: 'none', backgroundColor: bgcolor, borderRadius: '5px' }}
-      data-doenet-driveinstanceid={props.driveInstanceId}
-      onClick={(e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        toggleOpen();
-        props?.clickCallback?.({
-          driveId: props.driveId,
-          itemId,
-          driveInstanceId: props.driveInstanceId,
-          type: itemType.COLLECTION,
-          instructionType: 'one item',
-          parentFolderId: props.item.parentFolderId,
-        });
-      }}
-    >
-      {openCloseText}
-    </button>
-  );
+  let openCloseButton = null;
+  if (!props.isViewOnly) {
+    openCloseButton = (
+      <button
+        style={{
+          border: 'none',
+          backgroundColor: bgcolor,
+          borderRadius: '5px',
+        }}
+        data-doenet-driveinstanceid={props.driveInstanceId}
+        onClick={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          toggleOpen();
+          props?.clickCallback?.({
+            driveId: props.driveId,
+            itemId,
+            driveInstanceId: props.driveInstanceId,
+            type: itemType.COLLECTION,
+            instructionType: 'one item',
+            parentFolderId: itemId,
+          });
+        }}
+      >
+        {openCloseText}
+      </button>
+    );
+  }
 
   const sortHandler = ({ sortKey }) => {
     const result = sortFolder({
@@ -219,7 +226,7 @@ function Collection(props) {
       sortKey: sortKey,
     });
     result
-      .then((resp) => {})
+      .then(() => {})
       .catch((e) => {
         onSortFolderError({ errorMessage: e.message });
       });
@@ -275,8 +282,6 @@ function Collection(props) {
   };
 
   const onDragHover = () => {
-    if (props.isNav) return;
-
     // Open folder if initially closed
     if (!isOpenRef.current && !isSelectedRef.current) {
       toggleOpen();
@@ -311,13 +316,11 @@ function Collection(props) {
   //   >{ buttonLabel }</button>;
   // }
 
-  let label = folderInfo?.label;
-
-  let folder = null;
+  let collection = null;
   let items = null;
 
   if (!props.driveObj) {
-    folder = (
+    collection = (
       <div
         role="button"
         data-doenet-driveinstanceid={props.driveInstanceId}
@@ -342,7 +345,7 @@ function Collection(props) {
           if (e.key === 'Enter') {
             props?.doubleClickCallback?.({
               driveId: props.driveId,
-              parentFolderId: itemId,
+              parentFolderId: props.item.parentFolderId,
               item: props.item,
               type: itemType.COLLECTION,
             });
@@ -390,20 +393,18 @@ function Collection(props) {
             type: itemType.COLLECTION,
           });
         }}
-        onBlur={(e) => {
+        onBlur={() => {
           //Don't clear on navigation changes
-          if (!props.isNav) {
-            //Only clear if focus goes outside of this node group
-            // if (e.relatedTarget === null ||
-            //   (e.relatedTarget.dataset.doenetDriveinstanceid !== props.driveInstanceId &&
-            //   !e.relatedTarget.dataset.doenetDriveStayselected)
-            //   ){
-            //     setSelected({instructionType:"clear all"})
-            // }
-            // if (e?.relatedTarget?.dataset?.doenetDeselectDrive){
-            //   setSelected({instructionType:"clear all"});
-            // }
-          }
+          //Only clear if focus goes outside of this node group
+          // if (e.relatedTarget === null ||
+          //   (e.relatedTarget.dataset.doenetDriveinstanceid !== props.driveInstanceId &&
+          //   !e.relatedTarget.dataset.doenetDriveStayselected)
+          //   ){
+          //     setSelected({instructionType:"clear all"})
+          // }
+          // if (e?.relatedTarget?.dataset?.doenetDeselectDrive){
+          //   setSelected({instructionType:"clear all"});
+          // }
         }}
       >
         <div
@@ -411,18 +412,24 @@ function Collection(props) {
           style={{
             marginLeft: `${props.indentLevel * indentPx}px`,
             display: 'grid',
-            gridTemplateColumns: '1fr',
+            gridTemplateColumns: columns,
             gridTemplateRows: '1fr',
             alignContent: 'center',
           }}
         >
-          <div style={{ display: 'inline', margin: '0px' }}>
+          <p style={{ display: 'inline', margin: '0px' }}>
             {openCloseButton}
             <span data-cy="folderIcon">
-              <FontAwesomeIcon icon={faLayerGroup} />
+              <FontAwesomeIcon
+                icon={props.isViewOnly ? faCode : faLayerGroup}
+              />
             </span>
             <span data-cy="folderLabel">{label}</span>
-          </div>
+          </p>
+          {props.numColumns >= 2 ? column2 : null}
+          {props.numColumns >= 3 ? column3 : null}
+          {props.numColumns >= 4 ? column4 : null}
+          {props.numColumns >= 5 ? column5 : null}
         </div>
       </div>
     );
@@ -430,9 +437,8 @@ function Collection(props) {
 
   // make folder draggable and droppable
   let draggableClassName = '';
-  if (!props.isNav && !props.isViewOnly) {
+  if (!props.isViewOnly) {
     const onDragStartCallback = () => {
-      console.log(globalSelectedNodes.length === 0, !isSelected);
       if (globalSelectedNodes.length === 0 || !isSelected) {
         props?.clickCallback?.({
           instructionType: 'clear all',
@@ -440,7 +446,7 @@ function Collection(props) {
         });
         props?.clickCallback?.({
           driveId: props.driveId,
-          parentFolderId: props.item.parentFolderId,
+          parentFolderId: itemId,
           itemId,
           driveInstanceId: props.driveInstanceId,
           instructionType: 'one item',
@@ -448,7 +454,7 @@ function Collection(props) {
         });
       }
     };
-    folder = (
+    collection = (
       <Draggable
         key={`dnode${props.driveInstanceId}${itemId}`}
         id={itemId}
@@ -463,15 +469,15 @@ function Collection(props) {
         }
         onDrag={onDrag}
         onDragEnd={onDragEndCb}
-        ghostElement={renderDragGhost(itemId, folder)}
+        ghostElement={renderDragGhost(itemId, collection)}
       >
-        {folder}
+        {collection}
       </Draggable>
     );
   }
 
   const dropTargetId = props.driveObj ? props.driveId : itemId;
-  folder = (
+  collection = (
     <WithDropTarget
       key={`wdtnode${props.driveInstanceId}${itemId}`}
       id={dropTargetId}
@@ -486,11 +492,11 @@ function Collection(props) {
         onDrop: onDrop,
       }}
     >
-      {folder}
+      {collection}
     </WithDropTarget>
   );
 
-  // if (props.driveObj && !props.isNav) {
+  // if (props.driveObj) {
   //   const sortButtons = <div style={{marginLeft: "2.5vw"}}>
   //     {sortNodeButtonFactory({buttonLabel: "Sort Custom", sortKey: sortOptions.DEFAULT, sortHandler})}
   //     {sortNodeButtonFactory({buttonLabel: "Sort Label ASC", sortKey: sortOptions.LABEL_ASC, sortHandler})}
@@ -528,7 +534,6 @@ function Collection(props) {
               indentLevel={props.indentLevel + 1}
               driveInstanceId={props.driveInstanceId}
               route={props.route}
-              isNav={props.isNav}
               pathItemId={props.pathItemId}
               clickCallback={props.clickCallback}
               doubleClickCallback={props.doubleClickCallback}
@@ -559,7 +564,7 @@ function Collection(props) {
 
   return (
     <div data-cy="drive">
-      {folder}
+      {collection}
       {items}
     </div>
   );

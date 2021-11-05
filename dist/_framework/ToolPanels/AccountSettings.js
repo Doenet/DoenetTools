@@ -79,7 +79,7 @@ export default function DoenetProfile(props) {
     }, /* @__PURE__ */ React.createElement("h2", null, "You are not signed in"), /* @__PURE__ */ React.createElement("h2", null, "Account Settings currently requires sign in for use"), /* @__PURE__ */ React.createElement("button", {
       style: {background: "#1a5a99", borderRadius: "5px"}
     }, /* @__PURE__ */ React.createElement("a", {
-      href: "/signin",
+      href: "/#/signin",
       style: {color: "white", textDecoration: "none"}
     }, "Sign in with this link")))));
   }

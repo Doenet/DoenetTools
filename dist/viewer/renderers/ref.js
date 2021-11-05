@@ -9,33 +9,48 @@ export default class Ref extends DoenetRenderer {
     if (this.children.length === 0) {
       linkContent = this.doenetSvData.linkText;
     }
+    let url = "";
+    let target = "_blank";
+    let haveValidTarget = false;
     if (this.doenetSvData.contentId) {
-      return /* @__PURE__ */ React.createElement("a", {
-        target: "_blank",
-        id: this.componentName,
-        name: this.componentName,
-        href: `https://www.doenet.org/#/content/?contentId=${this.doenetSvData.contentId}`
-      }, linkContent);
+      url = `https://www.doenet.org/#/content/?contentId=${this.doenetSvData.contentId}`;
+      haveValidTarget = true;
     } else if (this.doenetSvData.doenetId) {
-      return /* @__PURE__ */ React.createElement("a", {
-        target: "_blank",
-        id: this.componentName,
-        name: this.componentName,
-        href: `https://www.doenet.org/#/content/?doenetId=${this.doenetSvData.doenetId}`
-      }, linkContent);
+      url = `https://www.doenet.org/#/course?tool=assignment&doenetId=${this.doenetSvData.doenetId}`;
+      haveValidTarget = true;
     } else if (this.doenetSvData.uri) {
-      return /* @__PURE__ */ React.createElement("a", {
-        target: "_blank",
-        id: this.componentName,
-        name: this.componentName,
-        href: this.doenetSvData.uri
-      }, linkContent);
+      url = this.doenetSvData.uri;
+      if (url.substring(0, 8) === "https://" || url.substring(0, 7) === "http://") {
+        haveValidTarget = true;
+      }
     } else {
-      return /* @__PURE__ */ React.createElement("a", {
-        id: this.componentName,
-        name: this.componentName,
-        href: "#" + this.doenetSvData.targetName
-      }, linkContent);
+      url = "#" + this.doenetSvData.targetName;
+      target = null;
+      haveValidTarget = true;
+    }
+    if (this.doenetSvData.createButton) {
+      return /* @__PURE__ */ React.createElement("span", {
+        id: this.componentName
+      }, /* @__PURE__ */ React.createElement("a", {
+        name: this.componentName
+      }), /* @__PURE__ */ React.createElement("button", {
+        id: this.componentName + "_button",
+        onClick: () => window.location.href = url,
+        disabled: this.doenetSvData.disabled
+      }, this.doenetSvData.linkText));
+    } else {
+      if (haveValidTarget) {
+        return /* @__PURE__ */ React.createElement("a", {
+          target,
+          id: this.componentName,
+          name: this.componentName,
+          href: url
+        }, linkContent);
+      } else {
+        return /* @__PURE__ */ React.createElement("span", {
+          id: this.componentName
+        }, linkContent);
+      }
     }
   }
 }

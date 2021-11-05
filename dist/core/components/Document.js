@@ -177,7 +177,9 @@ export default class Document extends BaseComponent {
           if (descendant.stateValues.aggregateScores ||
             descendant.stateValues.scoredDescendants === undefined
           ) {
-            scoredDescendants.push(descendant)
+            if(descendant.stateValues.weight !== 0) {
+              scoredDescendants.push(descendant)
+            }
           } else {
             scoredDescendants.push(...descendant.stateValues.scoredDescendants)
           }
@@ -481,6 +483,7 @@ export default class Document extends BaseComponent {
 
 
     stateVariableDefinitions.generatedVariantInfo = {
+      providePreviousValuesInDefinition: true,
       returnDependencies: ({ sharedParameters, componentInfoObjects }) => ({
         variantIndex: {
           dependencyType: "value",
@@ -506,7 +509,7 @@ export default class Document extends BaseComponent {
           dependencyType: "variants",
         },
       }),
-      definition({ dependencyValues, componentName }) {
+      definition({ dependencyValues, componentName, previousValues }) {
 
         let subvariantsSpecified = Boolean(
           dependencyValues.variants.desiredVariant &&
@@ -531,8 +534,19 @@ export default class Document extends BaseComponent {
           } else if (descendant.stateValues.generatedVariantInfo) {
             subvariants.push(...descendant.stateValues.generatedVariantInfo.subvariants)
           }
-
         }
+
+        for (let [ind, subvar] of subvariants.entries()) {
+          if (!subvar.subvariants && previousValues.generatedVariantInfo) {
+            // check if previously had subvariants
+            let previousSubvariants = previousValues.generatedVariantInfo.subvariants;
+            if (previousSubvariants[ind].subvariants) {
+              subvariants[ind] = Object.assign({}, subvariants[ind]);
+              subvariants[ind].subvariants = previousSubvariants[ind].subvariants;
+            }
+          }
+        }
+
         return { newValues: { generatedVariantInfo } }
 
       }
@@ -578,9 +592,6 @@ export default class Document extends BaseComponent {
       object: {
         componentName: this.componentName,
         componentType: this.componentType,
-      },
-      result: {
-        creditAchieved: this.stateValues.creditAchievedIfSubmit
       }
     });
 

@@ -4883,9 +4883,11 @@ describe('Circle Tag Tests', function () {
       let components = Object.assign({}, win.state.components);
       t1x = -3, t1y = 1, t2x = 4, t2y = 0, t3x = -1, t3y = 7;
 
-      components['/t'].movePolygon({pointCoords: [
-        [t1x, t1y], [t2x, t2y], [t3x, t3y]
-      ]})
+      components['/t'].movePolygon({
+        pointCoords: [
+          [t1x, t1y], [t2x, t2y], [t3x, t3y]
+        ]
+      })
 
       // calculate center and radius from circle itself
       circx = components['/c'].stateValues.numericalCenter[0];
@@ -6629,5 +6631,94 @@ describe('Circle Tag Tests', function () {
 
     })
   })
+
+  it('handle initially undefined center', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <p>Center: <mathinput name="c" /></p>
+  <graph>
+    <circle center="$c" name="circ" />
+  </graph>
+  <graph>
+    <copy tname="circ" assignNames="circ2" />
+  </graph>
+  `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a')// to wait for page to load
+
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/circ'].stateValues.numericalCenter).eqls([NaN, NaN]);
+      expect(components['/circ'].stateValues.numericalRadius).eq(1);
+      expect(components['/circ2'].stateValues.numericalCenter).eqls([NaN, NaN]);
+      expect(components['/circ2'].stateValues.numericalRadius).eq(1);
+    });
+
+    cy.log("enter point for center");
+    cy.get('#\\/c textarea').type("(2,1){enter}", { force: true })
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/circ'].stateValues.numericalCenter).eqls([2,1]);
+      expect(components['/circ'].stateValues.numericalRadius).eq(1);
+      expect(components['/circ2'].stateValues.numericalCenter).eqls([2,1]);
+      expect(components['/circ2'].stateValues.numericalRadius).eq(1);
+    })
+
+    cy.log(`move circle`)
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      components['/circ'].moveCircle({ center: [-7, 2] });
+      expect(components['/circ'].stateValues.numericalCenter).eqls([-7,2]);
+      expect(components['/circ'].stateValues.numericalRadius).eq(1);
+      expect(components['/circ2'].stateValues.numericalCenter).eqls([-7,2]);
+      expect(components['/circ2'].stateValues.numericalRadius).eq(1);
+    })
+
+    cy.log("change point for center");
+    cy.get('#\\/c textarea').type("{end}{leftArrow}{backspace}-4{enter}", { force: true })
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/circ'].stateValues.numericalCenter).eqls([-7,-4]);
+      expect(components['/circ'].stateValues.numericalRadius).eq(1);
+      expect(components['/circ2'].stateValues.numericalCenter).eqls([-7,-4]);
+      expect(components['/circ2'].stateValues.numericalRadius).eq(1);
+    })
+
+    cy.log(`move circle2`)
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      components['/circ2'].moveCircle({ center: [6,9] });
+      expect(components['/circ'].stateValues.numericalCenter).eqls([6,9]);
+      expect(components['/circ'].stateValues.numericalRadius).eq(1);
+      expect(components['/circ2'].stateValues.numericalCenter).eqls([6,9]);
+      expect(components['/circ2'].stateValues.numericalRadius).eq(1);
+    })
+
+    cy.log("center undefined again");
+    cy.get('#\\/c textarea').type("{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{enter}", { force: true })
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/circ'].stateValues.numericalCenter).eqls([NaN,NaN]);
+      expect(components['/circ'].stateValues.numericalRadius).eq(1);
+      expect(components['/circ2'].stateValues.numericalCenter).eqls([NaN,NaN]);
+      expect(components['/circ2'].stateValues.numericalRadius).eq(1);
+    })
+
+    cy.log("enter new point for center");
+    cy.get('#\\/c textarea').type("(5,4){enter}", { force: true })
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/circ'].stateValues.numericalCenter).eqls([5,4]);
+      expect(components['/circ'].stateValues.numericalRadius).eq(1);
+      expect(components['/circ2'].stateValues.numericalCenter).eqls([5,4]);
+      expect(components['/circ2'].stateValues.numericalRadius).eq(1);
+    })
+
+  })
+
 
 });

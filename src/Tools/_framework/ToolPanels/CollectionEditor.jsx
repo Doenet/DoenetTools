@@ -14,12 +14,18 @@ import { folderDictionaryFilterSelector } from '../../../_reactComponents/Drive/
 import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
 import ButtonGroup from '../../../_reactComponents/PanelHeaderComponents/ButtonGroup';
 import { searchParamAtomFamily } from '../NewToolRoot';
-import DoenetViewer from '../../../Viewer/DoenetViewer';
 import {
   fileByContentId,
   itemHistoryAtom,
 } from '../ToolHandlers/CourseToolHandler';
 import axios from 'axios';
+import { returnAllPossibleVariants } from '../../../Core/utils/returnAllPossibleVariants';
+import { itemType } from '../../../_reactComponents/Sockets';
+import {
+  serializedComponentsReplacer,
+  serializedComponentsReviver,
+} from '../../../Core/utils/serializedStateProcessing';
+import { csvGroups } from '../Menus/GroupSettings';
 
 export default function CollectionEditor() {
   const [driveId, , itemId] = useRecoilValue(
@@ -27,6 +33,7 @@ export default function CollectionEditor() {
   ).split(':');
   const doenetId = useRecoilValue(searchParamAtomFamily('doenetId'));
   const [availableEntries, setAvailableEntries] = useState([]);
+  const [assignedEntries, setAssignedEntries] = useState([]);
 
   const initEntryByDoenetId = useRecoilCallback(
     ({ snapshot, set }) =>
@@ -47,28 +54,12 @@ export default function CollectionEditor() {
           if (typeof response === 'object') {
             response = response.data;
           }
-          set(
-            hiddenViewerByDoenetId(doenetId),
-            <div style={{ display: 'none' }}>
-              <DoenetViewer
-                doenetML={response}
-                generatedVariantCallback={(
-                  generatedVariantInfo,
-                  allPossibleVariants,
-                ) => {
-                  const cleanGeneratedVariant = JSON.parse(
-                    JSON.stringify(generatedVariantInfo),
-                  );
-                  cleanGeneratedVariant.lastUpdatedIndexOrName = null;
-                  set(possibleVariantsByDoenetId(doenetId), {
-                    index: cleanGeneratedVariant.index,
-                    name: cleanGeneratedVariant.name,
-                    allPossibleVariants,
-                  });
-                }}
-              />
-            </div>,
-          );
+          returnAllPossibleVariants({
+            doenetML: response,
+            callback: ({ allPossibleVariants }) => {
+              set(possibleVariantsByDoenetId(doenetId), allPossibleVariants);
+            },
+          });
         } finally {
           release();
         }
@@ -76,9 +67,29 @@ export default function CollectionEditor() {
     [],
   );
 
-  const assignedEntries = useRecoilValueLoadable(
-    assignedEntiresQuery(doenetId),
+  const assignedEntriesData = useRecoilValueLoadable(
+    assignedEntiresInfo(doenetId),
   ).getValue();
+
+  useEffect(() => {
+    const entries = [];
+    for (let key in assignedEntriesData) {
+      const { doenetId, entryId, entryDoenetId, entryVariant } =
+        assignedEntriesData[key];
+      entries.push(
+        <Suspense key={entryId}>
+          <CollectionEntry
+            collectionDoenetId={doenetId}
+            doenetId={entryDoenetId}
+            entryId={entryId}
+            variant={JSON.parse(entryVariant, serializedComponentsReviver).name}
+            assigned
+          />
+        </Suspense>,
+      );
+    }
+    setAssignedEntries(entries);
+  }, [assignedEntriesData]);
 
   const folderInfoObj = useRecoilValueLoadable(
     folderDictionaryFilterSelector({
@@ -90,20 +101,42 @@ export default function CollectionEditor() {
   useEffect(() => {
     const entries = [];
     for (let key in folderInfoObj.contentsDictionary) {
-      const { doenetId } = folderInfoObj.contentsDictionary[key];
-      initEntryByDoenetId(doenetId);
-      entries.push(
-        <Suspense key={key}>
-          <CollectionEntry
-            doenetId={doenetId}
-            collectionDoenetId={folderInfoObj.folderInfo.doenetId}
-          />
-        </Suspense>,
-      );
+      if (
+        folderInfoObj.contentsDictionary[key].itemType === itemType.DOENETML
+      ) {
+        const { doenetId, isReleased } = folderInfoObj.contentsDictionary[key];
+        if (isReleased == '1') {
+          initEntryByDoenetId(doenetId);
+          entries.push(
+            <Suspense key={key}>
+              <CollectionEntry
+                collectionDoenetId={folderInfoObj.folderInfo.doenetId}
+                doenetId={doenetId}
+              />
+            </Suspense>,
+          );
+        }
+      }
     }
     setAvailableEntries(entries);
+    return () => {
+      setAvailableEntries([]);
+    };
   }, [folderInfoObj, initEntryByDoenetId]);
-
+  if (availableEntries.length === 0) {
+    return (
+      <div
+        style={{
+          padding: '8px',
+        }}
+      >
+        <p>
+          No Relesed DoenetML files were found in this Colletion. Please add
+          files from the Content screen to continue.
+        </p>
+      </div>
+    );
+  }
   return (
     <div
       style={{
@@ -115,20 +148,21 @@ export default function CollectionEditor() {
       }}
     >
       {assignedEntries}
-      <div style={{ height: '10px', background: 'black' }}></div>
+      <div
+        style={{ height: '10px', background: 'black', borderRadius: '4px' }}
+      ></div>
       {availableEntries}
+      <div
+        style={{ height: '10px', background: 'black', borderRadius: '4px' }}
+      ></div>
+      <GroupsVerificationTable doenetId={doenetId} />
     </div>
   );
 }
 
-const hiddenViewerByDoenetId = atomFamily({
-  key: 'hiddenViewerByDoenetId',
-  default: null,
-});
-
 const possibleVariantsByDoenetId = atomFamily({
   key: 'possibleVariantsByDoenetId',
-  default: {},
+  default: [],
 });
 
 const entryInfoByDoenetId = atomFamily({
@@ -142,15 +176,18 @@ const entryInfoByDoenetId = atomFamily({
           const resp = await axios.get('/api/findDriveIdFolderId.php', {
             params: { doenetId },
           });
-          if (resp.status === 200) {
-            const folderInfo = await get(
-              folderDictionaryFilterSelector({
-                driveId: resp.data.driveId,
-                folderId: resp.data.parentFolderId,
-              }),
-            );
-            return folderInfo.contentsDictionaryByDoenetId[doenetId];
-          }
+          const folderInfo = await get(
+            folderDictionaryFilterSelector({
+              driveId: resp.data.driveId,
+              folderId: resp.data.parentFolderId,
+            }),
+          );
+          console.log(
+            'Finfo',
+            folderInfo,
+            folderInfo.contentsDictionaryByDoenetId[doenetId],
+          );
+          return folderInfo.contentsDictionaryByDoenetId[doenetId] ?? {};
         } catch (error) {
           console.error(error);
           return {};
@@ -159,34 +196,21 @@ const entryInfoByDoenetId = atomFamily({
   }),
 });
 
-const assignedEntiresQuery = atomFamily({
-  key: 'assignedEntiresQuery',
+const assignedEntiresInfo = atomFamily({
+  key: 'assignedEntiresInfo',
   default: selectorFamily({
-    key: 'assignedEntiresQuery/Default',
+    key: 'assignedEntiresInfo/Default',
     get: (doenetId) => async () => {
       try {
-        const resp = await axios.get('/api/loadCollection.php', {
-          params: { doenetId },
-        });
-        const entries = [];
-        if (resp.status === 200) {
-          for (let key in resp.data.entries) {
-            const { collectionDoenetId, entryDoenetId, entryId, variant } =
-              resp.data.entries[key];
-            entries.push(
-              <Suspense key={entryId}>
-                <CollectionEntry
-                  collectionDoenetId={collectionDoenetId}
-                  doenetId={entryDoenetId}
-                  entryId={entryId}
-                  variant={variant}
-                  assigned
-                />
-              </Suspense>,
-            );
-          }
+        if (doenetId) {
+          const resp = await axios.get('/api/loadCollection.php', {
+            params: { doenetId },
+          });
+          return resp.data.entries ?? [];
+        } else {
+          console.warn('undefined doenetId in Collections Editor');
+          return [];
         }
-        return entries;
       } catch (error) {
         console.error(error);
         return [];
@@ -202,11 +226,9 @@ function CollectionEntry({
   assigned,
   variant,
 }) {
-  const hiddenViewer = useRecoilValue(hiddenViewerByDoenetId(doenetId));
-  const [selectedVariant, setSelectedVariant] = useState(variant);
   //TODO: should be a socket interaction
   const setAssignedEntries = useSetRecoilState(
-    assignedEntiresQuery(collectionDoenetId),
+    assignedEntiresInfo(collectionDoenetId),
   );
   const entryInfo = useRecoilValueLoadable(
     entryInfoByDoenetId(doenetId),
@@ -219,18 +241,15 @@ function CollectionEntry({
 
   useEffect(() => {
     const options = [];
-    for (let key in variants.allPossibleVariants) {
+    for (let key in variants) {
       options.push(
-        <option
-          key={variants.allPossibleVariants[key]}
-          value={variants.allPossibleVariants[key]}
-        >
-          {variants.allPossibleVariants[key]}
+        <option key={variants[key]} value={variants[key]}>
+          {variants[key]}
         </option>,
       );
     }
     setSelectOptions(options);
-  }, [variants.allPossibleVariants]);
+  }, [variants]);
 
   return (
     <>
@@ -238,62 +257,81 @@ function CollectionEntry({
         label={entryInfo.label}
         assigned={assigned}
         selectOptions={selectOptions}
-        selectedVariant={selectedVariant}
+        selectedVariant={variant}
         addEntryToAssignment={() => {
           //TODO: failure toast??
           const entryId = nanoid();
           axios
             .post('/api/addCollectionEntry.php', {
-              collectionDoenetId,
-              entryDoenetId: doenetId,
-              label: entryInfo.label,
+              doenetId: collectionDoenetId,
               entryId,
+              entryDoenetId: doenetId,
               //TODO: ref the selected option;
-              variant: variants.allPossibleVariants[0],
+              entryVariant: JSON.stringify(
+                { name: variants[0] },
+                serializedComponentsReplacer,
+              ),
             })
-            .then((resp) => {
-              if (resp.status === 200) {
-                setAssignedEntries((was) => [
-                  ...was,
-                  <Suspense key={entryId}>
-                    <CollectionEntry
-                      collectionDoenetId={collectionDoenetId}
-                      doenetId={doenetId}
-                      entryId={entryId}
-                      label={entryInfo?.label}
-                      variant={variants.allPossibleVariants[0]}
-                      assigned
-                    />
-                  </Suspense>,
-                ]);
-              }
+            .then(() => {
+              setAssignedEntries((was) => [
+                ...was,
+                {
+                  doenetId: collectionDoenetId,
+                  entryId,
+                  entryDoenetId: doenetId,
+                  entryVariant: JSON.stringify(
+                    { name: variants[0] },
+                    serializedComponentsReplacer,
+                  ),
+                },
+              ]);
+            })
+            .catch((error) => {
+              console.error(error);
             });
         }}
         removeEntryFromAssignment={() => {
           axios
             .post('/api/removeCollectionEntry.php', { entryId })
-            .then((resp) => {
+            .then(() => {
               //TODO: failure toast??
-              if (resp.status === 200) {
-                setAssignedEntries((was) =>
-                  was.filter((entryJSX) => entryJSX.key !== entryId),
-                );
-              }
+              setAssignedEntries((was) =>
+                was.filter((entry) => entry.entryId !== entryId),
+              );
+            })
+            .catch((error) => {
+              console.error(error);
             });
         }}
         onVariantSelect={(newSelectedVariant) => {
           axios
             .post('/api/updateCollectionEntryVariant.php', {
               entryId,
-              variant: newSelectedVariant,
+              entryVariant: JSON.stringify(
+                { name: newSelectedVariant },
+                serializedComponentsReplacer,
+              ),
             })
             .then(() => {
-              setSelectedVariant(newSelectedVariant);
+              setAssignedEntries((was) =>
+                was.map((entry) => {
+                  if (entry.entryId === entryId) {
+                    return {
+                      ...entry,
+                      entryVariant: JSON.stringify(
+                        { name: newSelectedVariant },
+                        serializedComponentsReplacer,
+                      ),
+                    };
+                  } else {
+                    return entry;
+                  }
+                }),
+              );
             })
             .catch((error) => console.error(error));
         }}
       />
-      {!assigned ? hiddenViewer : null}
     </>
   );
 }
@@ -328,6 +366,11 @@ function CollectionEntryDisplayLine({
                 e.stopPropagation();
                 onVariantSelect?.(e.target.value);
               }}
+              onBlur={(e) => {
+                if (e.target.value !== selectedVariant) {
+                  onVariantSelect?.(e.target.value);
+                }
+              }}
             >
               {selectOptions}
             </select>
@@ -349,6 +392,94 @@ function CollectionEntryDisplayLine({
           />
         )}
       </ButtonGroup>
+    </div>
+  );
+}
+
+function GroupsVerificationTable({ doenetId }) {
+  const { namesByGroup, emailsByGroup } = useRecoilValue(csvGroups(doenetId));
+  return (
+    <div
+      style={{
+        display: 'grid',
+        gridTemplateColumns: '1fr 1fr 1fr',
+        gap: '8px',
+      }}
+    >
+      {emailsByGroup?.map((group, idx) => {
+        if (group.length > 0) {
+          return (
+            <table
+              key={idx}
+              style={{
+                borderCollapse: 'collapse',
+                width: '100%',
+                borderRadius: '4px',
+                overflow: 'hidden',
+              }}
+            >
+              <thead>
+                <tr>
+                  <th
+                    colSpan={3}
+                    style={{
+                      textAlign: 'center',
+                      backgroundColor: '#1a5a99',
+                      color: 'white',
+                      borderBottom: '2px solid black',
+                    }}
+                  >
+                    Group {idx + 1}
+                  </th>
+                </tr>
+                <tr
+                  style={{
+                    backgroundColor: '#1a5a99',
+                    color: 'white',
+                  }}
+                >
+                  <th
+                    style={{
+                      whiteSpace: 'nowrap',
+                      borderRight: '2px solid black',
+                    }}
+                  >
+                    First
+                  </th>
+                  <th
+                    style={{
+                      whiteSpace: 'nowrap',
+                    }}
+                  >
+                    Last
+                  </th>
+                  <th
+                    style={{
+                      whiteSpace: 'nowrap',
+                      borderLeft: '2px solid black',
+                    }}
+                  >
+                    Email
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {group.map((email, idz) => (
+                  <tr key={email}>
+                    <td style={{ textAlign: 'center' }}>
+                      {namesByGroup[idx][idz].firstName}
+                    </td>
+                    <td style={{ textAlign: 'center' }}>
+                      {namesByGroup[idx][idz].lastName}
+                    </td>
+                    <td style={{ textAlign: 'center' }}>{email}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          );
+        }
+      })}
     </div>
   );
 }

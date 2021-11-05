@@ -1,15 +1,29 @@
-import React from 'react';
-import { useRecoilValue, useSetRecoilState } from 'recoil';
+import React, { useEffect } from 'react';
+import { useRecoilValue, useSetRecoilState, useRecoilValueLoadable } from 'recoil';
 import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
 import ButtonGroup from '../../../_reactComponents/PanelHeaderComponents/ButtonGroup';
-import { pageToolViewAtom, searchParamAtomFamily } from '../NewToolRoot';
+import { pageToolViewAtom, searchParamAtomFamily, profileAtom } from '../NewToolRoot';
+import Next7Days from '../Widgets/Next7Days';
+import { effectiveRoleAtom } from '../../../_reactComponents/PanelHeaderComponents/RoleDropdown';
+import { suppressMenusAtom } from '../NewToolRoot';
+
 
 export default function Dashboard(props) {
   const setPageToolView = useSetRecoilState(pageToolViewAtom);
   const path = useRecoilValue(searchParamAtomFamily('path'));
-  const pageToolView = useRecoilValue(pageToolViewAtom) 
-  const role = pageToolView.view;
   const driveId = path.split(':')[0];
+  const effectiveRole = useRecoilValue(effectiveRoleAtom);
+  const setSuppressMenus = useSetRecoilState(suppressMenusAtom);
+  const loadProfile = useRecoilValueLoadable(profileAtom);
+  let profile = loadProfile.contents;
+
+    useEffect(()=>{
+      if (effectiveRole === 'student'){
+        setSuppressMenus(["ClassTimes"])
+      }else{
+        setSuppressMenus([])
+      }
+    },[effectiveRole,setSuppressMenus])
 
   return (
     
@@ -26,7 +40,7 @@ export default function Dashboard(props) {
           })}}
           
         />
-        {role === 'instructor' ?
+        {effectiveRole === 'instructor' ?
         <Button
           value="Enrollment"
           onClick={() =>
@@ -39,23 +53,35 @@ export default function Dashboard(props) {
           }
         />
         : null }
-        <Button value="GradeBook" 
+        {effectiveRole === 'instructor' ?
+        <Button value="Gradebook" 
+        onClick={() => 
+        setPageToolView((was)=>{return {
+          page: 'course',
+          tool: 'gradebook',
+          view: was.view,
+          params: { driveId },
+          }})
+        } 
+      />
+        : 
+        <Button value="Gradebook" 
           onClick={() => 
           setPageToolView((was)=>{return {
             page: 'course',
-            tool: 'gradebook',
+            tool: 'gradebookStudent',
             view: was.view,
-            params: { driveId },
+            params: { driveId, userId:profile.userId },
             }})
+
           } 
         />
+         }
+        
         </ButtonGroup>
       </div>
-      <div style={{border: '2px solid black', borderRadius: '5px', marginTop: '10px', height: '560px', margin: '10px'}}>
-        <p 
-        style={{marginLeft: '18px'}}
-        // style={{position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', }}
-        >More coming soon!</p>
+      <div style={{ marginTop: '10px', margin: '10px'}}>
+      <Next7Days driveId={driveId}/>
       </div>
     </div>
   );

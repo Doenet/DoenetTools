@@ -33,19 +33,25 @@ position: ${(props) => props.fix ? 'static' : 'sticky'};
 border-bottom: 2px solid #e2e2e2;
 margin-bottom: -2px;
 top: 0;
+z-index: 2;
 `;
 const MenuPanelsCapComponent = styled.div`
 width: 240px;
 background: white;
 border-top: 1px solid #e2e2e2;
 border-top: 1px solid #e2e2e2;
+border-bottom: 2px solid #e2e2e2;
+margin-bottom: -2px;
+position: sticky;
+top: 35px;
+z-index: 2;
 `;
 
 const MenuHeaderButton = styled.button`
   border: none;
   border-top: ${({ linkedPanel, activePanel }) =>
     linkedPanel === activePanel ? '8px solid #1A5A99' : 'none'};
-  background-color: hsl(0, 0%, 99%);
+  background-color: hsl(0, 0%, 100%);
   border-bottom: 2px solid
     ${({ linkedPanel, activePanel }) =>
       linkedPanel === activePanel ? '#white' : 'black'};
@@ -105,20 +111,20 @@ margin-top: 2px;
 `
 
 function SelectionMenu(props){
-
+  console.log("child", props.children);
   return <>
     <div style={{
-      // paddingTop: "0px", 
-      marginTop: "2px",
-      paddingBottom: "4px", 
+      // paddingTop: "4px", 
+      // marginTop: "2px",
+      paddingBottom: "8px", 
       paddingLeft: "4px",
       paddingRight: "4px",
       // backgroundColor:"hsl(209,54%,90%)"
       backgroundColor: 'white',
       borderLeft:"8px solid #1A5A99"
       }}>
-        <h3 style={{textAlign: "center", width: "240px", height: "35px",
- fontSize: "16px", marginTop: "5px", marginLeft: "-8px"}}>Current Selection</h3>
+        {/* <h3 style={{textAlign: "center", width: "240px", height: "35px",
+ fontSize: "16px", marginTop: "5px", marginLeft: "-8px"}}>Current Selection</h3> */}
         {props.children}
         </div>
   </>
@@ -138,8 +144,8 @@ function Menu(props){
     <MenuPanelTitle isOpen={isOpen} onClick={()=>setIsOpen(was=>!was)}><h3>{props.title}</h3></MenuPanelTitle>
     <div style={{
       display: hideShowStyle,
-      // paddingTop: "0px", 
-      paddingBottom: "1px", 
+      paddingTop: "4px", 
+      paddingBottom: "4px", 
       paddingLeft: "4px",
       paddingRight: "4px",
       backgroundColor:"white"}}>{props.children}</div>
@@ -147,7 +153,7 @@ function Menu(props){
 }
 
 const LoadingFallback = styled.div`
-  background-color: hsl(0, 0%, 99%);
+  background-color: hsl(0, 0%, 100%);
   border-radius: 4px;
   display: flex;
   justify-content: center;
@@ -188,10 +194,14 @@ console.log(">>>===MenuPanel", hide)
     Variant:lazy(() => import('../Menus/Variant')),
     AutoSaves:lazy(() => import('../Menus/AutoSaves')),
     LoadEnrollment:lazy(() => import('../Menus/LoadEnrollment')),
+    GradeUpload:lazy(() => import('../Menus/GradeUpload')),
     ManualEnrollment:lazy(() => import('../Menus/ManualEnrollment')),
     AssignmentSettingsMenu:lazy(() => import('../Menus/AssignmentSettingsMenu')),
+    GroupSettings:lazy(() => import('../Menus/GroupSettings')),
     TimerMenu:lazy(() => import('../Menus/TimerMenu')),
-    
+    CreditAchieved:lazy(() => import('../Menus/CreditAchieved')),
+    ClassTimes:lazy(() => import('../Menus/ClassTimes')),
+    CurrentContent:lazy(() => import('../Menus/CurrentContent')),
     
   }).current;
 
@@ -215,7 +225,6 @@ console.log(">>>===MenuPanel", hide)
       {React.createElement(LazyMenuPanelCapObj[menuPanelCap])}
         </Suspense>
     </MenuPanelsCapComponent>;
-
   }
 
 
@@ -263,8 +272,8 @@ console.log(">>>===MenuPanel", hide)
       </MenuPanelsCap>
       {menuPanelCapComponent}
 
-    {selectionPanel}
-    <div>{menusArray}</div>
+      {selectionPanel}
+      <div>{menusArray}</div>
 
     </MenuPanelsWrapper>
   );

@@ -423,10 +423,9 @@ export class Ceil extends MathBaseOperatorOneInput {
 
             let numericValue = value.evaluate_to_constant();
 
-            // if don't have a number, just return value unchanged
-            // TODO: is this the right behavior?
+            // if don't have a number, just return symbolic ceil
             if (!Number.isFinite(numericValue)) {
-              return value;
+              return me.fromAst(['apply', 'ceil', value.tree])
             }
 
             // to account for roundoff error, if within rounding error of integer, use that
@@ -473,10 +472,9 @@ export class Floor extends MathBaseOperatorOneInput {
 
             let numericValue = value.evaluate_to_constant();
 
-            // if don't have a number, just return value unchanged
-            // TODO: is this the right behavior?
+            // if don't have a number, just return symbolic floor
             if (!Number.isFinite(numericValue)) {
-              return value;
+              return me.fromAst(['apply', 'floor', value.tree])
             }
 
             // to account for roundoff error, if within rounding error of integer, use that
@@ -547,6 +545,10 @@ export class Abs extends MathBaseOperatorOneInput {
               if (valueNumeric < 0) {
                 desiredValue = me.fromAst(0)
               }
+            } else if (Array.isArray(value.tree)
+              && value.tree[0] === "apply" && value.tree[1] === "abs"
+            ) {
+              desiredValue = me.fromAst(value.tree[2]);
             }
             return desiredValue;
           }
@@ -558,6 +560,40 @@ export class Abs extends MathBaseOperatorOneInput {
 
   }
 
+}
+
+
+export class Sign extends MathBaseOperatorOneInput {
+  static componentType = "sign";
+
+  static returnStateVariableDefinitions() {
+
+    let stateVariableDefinitions = super.returnStateVariableDefinitions();
+
+    stateVariableDefinitions.mathOperator = {
+      returnDependencies: () => ({}),
+      definition: () => ({
+        newValues: {
+          mathOperator: function (value) {
+
+            let numericValue = value.evaluate_to_constant();
+
+            // if don't have a number, just return symbolic sign
+            if (!Number.isFinite(numericValue)) {
+              return me.fromAst(['apply', 'sign', value.tree])
+            }
+
+            return me.fromAst(Math.sign(numericValue));
+
+          }
+        }
+      })
+    }
+
+
+    return stateVariableDefinitions;
+
+  }
 }
 
 
@@ -873,6 +909,47 @@ export class Mod extends MathBaseOperator {
   }
 }
 
+export class Gcd extends MathBaseOperator {
+  static componentType = "gcd";
+
+  static returnStateVariableDefinitions() {
+
+    let stateVariableDefinitions = super.returnStateVariableDefinitions();
+
+    stateVariableDefinitions.numericOperator = {
+      returnDependencies: () => ({}),
+      definition: () => ({
+        newValues: {
+          numericOperator: function (inputs) {
+            if(inputs.every(Number.isInteger)) {
+              return gcd(...inputs);
+            }
+            return NaN;
+          }
+        }
+      })
+    }
+
+
+    stateVariableDefinitions.mathOperator = {
+      returnDependencies: () => ({}),
+      definition: () => ({
+        newValues: {
+          mathOperator: function (inputs) {
+            return me.fromAst([
+              "apply", "gcd", ["tuple", ...inputs.map(x => x.tree)]
+            ])
+          }
+        }
+      })
+    }
+
+
+    return stateVariableDefinitions;
+
+  }
+}
+
 
 export class ExtractMath extends MathBaseOperatorOneInput {
   static componentType = "extractMath";
@@ -1069,4 +1146,15 @@ export class ExtractMath extends MathBaseOperatorOneInput {
 
   }
 
+}
+
+
+function gcd(x, y, ...z) {
+  if (!y && z.length > 0) {
+    return gcd(x, ...z);
+  }
+  if (!y) {
+    return x;
+  }
+  return gcd(y, x % y, ...z);
 }

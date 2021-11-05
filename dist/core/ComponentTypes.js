@@ -60,6 +60,7 @@ import Answer from './components/Answer.js';
 import Award from './components/Award.js';
 import When from './components/When.js';
 import MathInput from './components/MathInput.js';
+import MatrixInput from './components/MatrixInput.js';
 import TextInput from './components/TextInput.js';
 import BooleanInput from './components/BooleanInput.js';
 import ChoiceInput from './components/ChoiceInput.js';
@@ -112,8 +113,7 @@ import Evaluate from './components/Evaluate.js';
 import SelectRandomNumbers from './components/SelectRandomNumbers.js';
 import SampleRandomNumbers from './components/SampleRandomNumbers.js';
 import Substitute from './components/Substitute.js';
-import Offsets from './components/Offsets.js';
-import DiscreteInfiniteSet from './components/DiscreteInfiniteSet.js';
+import PeriodicSet from './components/PeriodicSet.js';
 import Image from './components/Image.js';
 import Video from './components/Video.js';
 import Embed from './components/Embed.js';
@@ -140,6 +140,10 @@ import Endpoint from './components/Endpoint.js';
 import Sort from './components/Sort.js';
 import SolveEquations from './components/SolveEquations.js';
 import SolutionContainer from './components/SolutionContainer.js';
+import SubsetOfRealsInput from './components/SubsetOfRealsInput.js';
+import SubsetOfReals from './components/SubsetOfReals.js';
+import Split from './components/Split.js';
+import BestFitLine from './components/BestFitLine.js';
 
 
 //Extended
@@ -159,7 +163,7 @@ import FunctionBaseOperator from './components/abstract/FunctionBaseOperator.js'
 import SectioningComponent from './components/abstract/SectioningComponent.js';
 import InlineRenderInlineChildren from './components/abstract/InlineRenderInlineChildren.js';
 import TextOrInline from './components/abstract/TextOrInline.js';
-
+import SingleCharacterInline from './components/abstract/SingleCharacterInline.js';
 
 const componentTypeArray = [
   ...Object.values(Aliases),
@@ -208,7 +212,7 @@ const componentTypeArray = [
   Vector,
   Angle,
   Answer, Award, When,
-  MathInput, TextInput, BooleanInput, ChoiceInput,
+  MathInput, MatrixInput, TextInput, BooleanInput, ChoiceInput,
   Choice,
   NumberComponent, Integer,
   Graph,
@@ -251,8 +255,7 @@ const componentTypeArray = [
   SelectRandomNumbers,
   SampleRandomNumbers,
   Substitute,
-  Offsets,
-  DiscreteInfiniteSet,
+  PeriodicSet,
   Image,
   Video,
   Embed,
@@ -278,6 +281,10 @@ const componentTypeArray = [
   Sort,
   SolveEquations,
   SolutionContainer,
+  SubsetOfRealsInput,
+  SubsetOfReals,
+  Split,
+  BestFitLine,
 
   BaseComponent,
   InlineComponent,
@@ -298,6 +305,7 @@ const componentTypeArray = [
   SectioningComponent,
   InlineRenderInlineChildren,
   TextOrInline,
+  SingleCharacterInline,
 ];
 
 export function standardComponentClasses() {

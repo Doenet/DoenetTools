@@ -3,7 +3,7 @@ import styled from "../../_snowpack/pkg/styled-components.js";
 const SupportWapper = styled.div`
   overflow: auto;
   grid-area: supportPanel;
-  background-color: hsl(0, 0%, 99%);
+  background-color: hsl(0, 0%, 100%);
   height: 100%;
   border-radius: 0 0 4px 4px;
 `;

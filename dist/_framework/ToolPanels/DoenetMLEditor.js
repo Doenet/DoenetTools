@@ -40,35 +40,38 @@ export default function DoenetMLEditor(props) {
   let timeout = useRef(null);
   let autosavetimeout = useRef(null);
   const saveDraft = useRecoilCallback(({snapshot, set}) => async (doenetId) => {
-    const doenetML = await snapshot.getPromise(textEditorDoenetMLAtom);
-    const oldVersions = await snapshot.getPromise(itemHistoryAtom(doenetId));
-    let newDraft = {...oldVersions.draft};
-    const contentId = getSHAofContent(doenetML);
-    newDraft.contentId = contentId;
-    newDraft.timestamp = buildTimestamp();
-    set(itemHistoryAtom(doenetId), (was) => {
-      let asyncDraft = {...was.draft};
-      asyncDraft.contentId = contentId;
-      asyncDraft.timestamp = newDraft.timestamp;
-      let asyncReplacement = {...was};
-      asyncReplacement.draft = asyncDraft;
-      return asyncReplacement;
-    });
-    set(fileByContentId(contentId), doenetML);
-    let newDBVersion = {
-      ...newDraft,
-      doenetML,
-      doenetId
-    };
-    try {
-      const resp = await axios.post("/api/saveNewVersion.php", newDBVersion);
-      if (resp.data.success) {
-        set(editorSaveTimestamp, new Date());
-      } else {
-        console.log("ERROR", resp.data.message);
+    const isCurrentDraft2 = await snapshot.getPromise(currentDraftSelectedAtom);
+    if (isCurrentDraft2) {
+      const doenetML = await snapshot.getPromise(textEditorDoenetMLAtom);
+      const oldVersions = await snapshot.getPromise(itemHistoryAtom(doenetId));
+      let newDraft = {...oldVersions.draft};
+      const contentId = getSHAofContent(doenetML);
+      newDraft.contentId = contentId;
+      newDraft.timestamp = buildTimestamp();
+      set(itemHistoryAtom(doenetId), (was) => {
+        let asyncDraft = {...was.draft};
+        asyncDraft.contentId = contentId;
+        asyncDraft.timestamp = newDraft.timestamp;
+        let asyncReplacement = {...was};
+        asyncReplacement.draft = asyncDraft;
+        return asyncReplacement;
+      });
+      set(fileByContentId(contentId), doenetML);
+      let newDBVersion = {
+        ...newDraft,
+        doenetML,
+        doenetId
+      };
+      try {
+        const {data} = await axios.post("/api/saveNewVersion.php", newDBVersion);
+        if (data.success) {
+          set(editorSaveTimestamp, new Date());
+        } else {
+          console.log("ERROR", data.message);
+        }
+      } catch (error) {
+        console.log("ERROR", error);
       }
-    } catch (error) {
-      console.log("ERROR", error);
     }
   }, []);
   const autoSave = useRecoilCallback(({snapshot, set}) => async (doenetId) => {
@@ -126,9 +129,7 @@ export default function DoenetMLEditor(props) {
   if (paramDoenetId !== initilizedDoenetId) {
     return null;
   }
-  return /* @__PURE__ */ React.createElement("div", {
-    style: props.style
-  }, /* @__PURE__ */ React.createElement(CodeMirror, {
+  return /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement(CodeMirror, {
     key: "codemirror",
     editorRef,
     setInternalValue: updateInternalValue,

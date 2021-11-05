@@ -12,7 +12,8 @@ date_default_timezone_set('UTC');
 
 $jwtArray = include "jwtArray.php";
 $userId = $jwtArray['userId'];
-
+$examUserId = $jwtArray['examineeUserId'];
+$examDoenetId = $jwtArray['doenetId'];
 
 $_POST = json_decode(file_get_contents("php://input"),true);
 $doenetId = mysqli_real_escape_string($conn,$_POST["doenetId"]);
@@ -24,12 +25,48 @@ $stateVariables =  mysqli_real_escape_string($conn,$_POST["stateVariables"]);
 
 //TODO: check if attempt is older than given attempt
 
+$success = TRUE;
+$message = "";
+
+if ($doenetId == ""){
+$success = FALSE;
+$message = 'Internal Error: missing doenetId';
+}elseif ($contentId == ""){
+$success = FALSE;
+$message = 'Internal Error: missing contentId';
+}elseif ($attemptNumber == ""){
+  $success = FALSE;
+  $message = 'Internal Error: missing attemptNumber';
+}elseif ($credit == ""){
+  $success = FALSE;
+  $message = 'Internal Error: missing credit';
+}elseif ($itemNumber == ""){
+  $success = FALSE;
+  $message = 'Internal Error: missing itemNumber';
+}elseif ($stateVariables == ""){
+  $success = FALSE;
+  $message = 'Internal Error: missing stateVariables';
+}elseif ($userId == ""){
+  if ($examUserId == ""){
+    $success = FALSE;
+    $message = "No access - Need to sign in";
+  }else if ($examDoenetId != $doenetId){
+      $success = FALSE;
+      $message = "No access for doenetId: $doenetId";
+  }else{
+      $userId = $examUserId;
+  }
+}
+
+if ($success){
+
 
 //**Find assessment settings
 $sql = "SELECT attemptAggregation,
         timeLimit,
         numberOfAttemptsAllowed,
-        dueDate
+        dueDate,
+        totalPointsOrPercent
         FROM assignment
         WHERE doenetId='$doenetId'";
 
@@ -39,6 +76,7 @@ $attemptAggregation = $row['attemptAggregation'];
 $timeLimit = $row['timeLimit'];
 $numberOfAttemptsAllowed = $row['numberOfAttemptsAllowed'];
 $dueDate = $row['dueDate'];
+$totalPointsOrPercent = $row['totalPointsOrPercent'];
 
 $valid = 1;
 
@@ -48,8 +86,8 @@ $pastDueDate = FALSE;
 $exceededAttemptsAllowed = FALSE;
 $viewedSolution = FALSE;
 
-
-if($attemptNumber > $numberOfAttemptsAllowed) {
+//$numberOfAttemptsAllowed is '' when unlimited
+if($numberOfAttemptsAllowed != '' && $attemptNumber > $numberOfAttemptsAllowed) {
   $exceededAttemptsAllowed = TRUE;
   $valid = 0;
 }
@@ -73,8 +111,9 @@ if($timeLimit > 0) {
 
   
   if ($result->num_rows < 1) {
-    $databaseError = 1;
-    $valid = 0;
+    //TODO: handle Owners and Admins not being enrolled.
+    // $databaseError = 1;
+    // $valid = 0;
   } else {
     $row = $result->fetch_assoc();
     $timeLimit = ceil($timeLimit * $row["timeLimitMultiplier"]) ;
@@ -85,11 +124,14 @@ if($timeLimit > 0) {
 
 
 // Get time began and creditOverride from user_assignment_attempt
-$sql = "SELECT began, creditOverride
+$sql = "SELECT 
+        NOW() AS now,
+        began, 
+        creditOverride, 
+        credit
         FROM user_assignment_attempt
         WHERE userId = '$userId'
         AND doenetId = '$doenetId'
-        AND contentId = '$contentId'
         AND attemptNumber = '$attemptNumber'
         ";
 $result = $conn->query($sql);
@@ -100,13 +142,19 @@ if ($result->num_rows < 1){
 } else {
   $row = $result->fetch_assoc();
   $creditOverride_for_attempt = $row['creditOverride'];
+  $previousCredit_for_attempt = $row['credit'];
 
   if($timeLimit > 0) {
+
     // give a buffer of one minute
     $effectiveTimeLimit = $timeLimit+1;
 
     // if began more than timeLimit ago, we're past time
-    if(strtotime($row['began']) < strtotime("-".$effectiveTimeLimit." minutes")) {
+    $began_seconds = strtotime($row['began']);
+    $now_seconds = strtotime($row['now']);
+    $effective_timelimit_seconds = $effectiveTimeLimit * 60;
+    $diff_seconds = $now_seconds - ($began_seconds + $effective_timelimit_seconds);
+    if(($began_seconds + $effective_timelimit_seconds) < $now_seconds) {
       $timeExpired = TRUE;
       $valid = 0;
     }
@@ -118,11 +166,14 @@ if ($result->num_rows < 1){
 
 // look for a due date adjustment and creditOverride for asssignment,
 // which includes check for user_assignment having an entry
-$sql = "SELECT dueDateOverride, creditOverride
+$sql = "SELECT 
+        NOW() AS now,
+        dueDateOverride, 
+        creditOverride, 
+        credit
         FROM user_assignment
         WHERE userId = '$userId'
         AND doenetId = '$doenetId'
-        AND contentId = '$contentId'
         ";
 
 $result = $conn->query($sql);
@@ -134,17 +185,23 @@ if ($result->num_rows < 1){
   $row = $result->fetch_assoc();
   $dueDateOverride = $row['dueDateOverride'];
   $creditOverride_for_assignment = $row['creditOverride'];
+  $previousCredit_for_assignment = $row['credit'];
 
   // If there is a due date override for this user
   // use that for the due date
   if($dueDateOverride) {
     $dueDate = $dueDateOverride;
   }
-  
-  // give one minute buffer on due date
-  if(strtotime($dueDate) < strtotime("-1 minute")) {
-    $pastDueDate = TRUE;
-    $valid = 0;
+  //If null then it's never past due
+  if ($dueDate){
+    $dueDate_seconds = strtotime($dueDate);
+    $now_seconds = strtotime($row['now']);
+    $dueDate_diff = $now_seconds - $dueDate_seconds;
+    // give one minute buffer on due date
+    if($dueDate_seconds < $now_seconds) {
+      $pastDueDate = TRUE;
+      $valid = 0;
+    }
   }
 
 } 
@@ -155,7 +212,6 @@ $sql = "SELECT credit, creditOverride, viewedSolution
         FROM user_assignment_attempt_item
         WHERE userId = '$userId'
         AND doenetId = '$doenetId'
-        AND contentId = '$contentId'
         AND attemptNumber = '$attemptNumber'
         AND itemNumber = '$itemNumber'
         ";
@@ -180,14 +236,12 @@ if ($result->num_rows < 1){
 // we insert a row into user_assignment_attempt_item_submission
 // whether or not it is valid
 
-
 //Find submissionNumber
 $sql = "
         SELECT submissionNumber
         FROM user_assignment_attempt_item_submission
         WHERE userId = '$userId'
         AND doenetId = '$doenetId'
-        AND contentId = '$contentId'
         AND attemptNumber = '$attemptNumber'
         AND itemNumber = '$itemNumber'
         ORDER BY submissionNumber DESC
@@ -222,6 +276,10 @@ $result = $conn->query($sql);
 //   - user_assignment_attempt_item
 // only if valid
 
+$set_credit_by_item = FALSE;
+$credit_by_item = array();
+
+
 if ($valid){
 
   // if have a credit override on that item
@@ -244,7 +302,6 @@ if ($valid){
     SET credit='$credit_for_item'
     WHERE userId = '$userId'
     AND doenetId = '$doenetId'
-    AND contentId = '$contentId'
     AND attemptNumber = '$attemptNumber'
     AND itemNumber = '$itemNumber'
     ";
@@ -263,13 +320,14 @@ if ($valid){
               FROM user_assignment_attempt_item
               WHERE userId = '$userId'
               AND doenetId = '$doenetId'
-              AND contentId = '$contentId'
               AND attemptNumber = '$attemptNumber'
               ORDER BY itemNumber
               ";
       $result = $conn->query($sql);
       $total_credits = 0;
       $total_weights = 0;
+
+      $set_credit_by_item = TRUE;
 
       while($row = $result->fetch_assoc()){ 
           $loopItemNumber = $row['itemNumber'];
@@ -284,6 +342,8 @@ if ($valid){
           }
   
           $total_credits = $total_credits + ($item_credit * $item_weight);
+
+          $credit_by_item[] = $item_credit;
       }
       $credit_for_attempt = 0;
       if ($total_weights > 0){ //Prevent divide by zero
@@ -297,7 +357,6 @@ if ($valid){
               SET credit='$credit_for_attempt'
               WHERE userId = '$userId'
               AND doenetId = '$doenetId'
-              AND contentId = '$contentId'
               AND attemptNumber = '$attemptNumber'
               ";
       $result = $conn->query($sql);
@@ -310,40 +369,93 @@ if ($valid){
                 FROM user_assignment_attempt
                 WHERE userId = '$userId'
                 AND doenetId = '$doenetId'
-                AND contentId = '$contentId'
         ";
 
         $result = $conn->query($sql);
         $row = $result->fetch_assoc();
 
-        $max_credit_for_assignment = MAX($credit_for_attempt,$row['maxCredit']);
+        $credit_for_assignment = MAX($credit_for_attempt,$row['maxCredit']);
 
         // update credit in user_assigment
         $sql = "
             UPDATE user_assignment
-            SET credit='$max_credit_for_assignment'
+            SET credit='$credit_for_assignment'
             WHERE userId = '$userId'
             AND doenetId = '$doenetId'
-            AND contentId = '$contentId'
             ";
         $result = $conn->query($sql);
 
-      } // close have NULL override of credit for assignment
+      } else {
+        // have non-NULL override of credit for assignment
+        $credit_for_assignment = $creditOverride_for_assignment;
+      } 
 
-    } // close have NULL override of credit for attempt
+    } else {
+      // have non-NULL override of credit for attempt
+      $credit_for_attempt = $creditOverride_for_attempt;
+      $credit_for_assignment = $previousCredit_for_assignment;
+    }
 
-  } // close have NULL override of credit for item
+  } else {
+    // have non-NULL override of credit for item
+    $credit_for_item = $creditOverride_for_item;
+    $credit_for_attempt = $previousCredit_for_attempt;
+    $credit_for_assignment = $previousCredit_for_assignment;
+  } 
 
-} //Close have valid attempt
+}  else {
+  // have invalid attempt
+
+  if($databaseError) {
+    $credit_for_item = 0;
+    $credit_for_attempt = 0;
+    $credit_for_assignment = 0;
+  } else {
+    $credit_for_item = $previousCredit;
+    $credit_for_attempt = $previousCredit_for_attempt;
+    $credit_for_assignment = $previousCredit_for_assignment;
+  }
+
+}
+
+if(!$set_credit_by_item && !$databaseError) {
+  // look up the stored credit for each item of attempt
+  $sql = "SELECT credit
+          FROM user_assignment_attempt_item
+          WHERE userId = '$userId'
+          AND doenetId = '$doenetId'
+          AND attemptNumber = '$attemptNumber'
+          ORDER BY itemNumber
+          ";
+  $result = $conn->query($sql);
+
+  while($row = $result->fetch_assoc()){ 
+    $credit_by_item[] = $row['credit'];
+  }
+
+}
+}
 
 $response_arr = array(
+    "success"=>$success,
+    "message"=>$message,
     "access"=> TRUE,
     "viewedSolution"=>$viewedSolution,
     "timeExpired"=>$timeExpired,
     "pastDueDate"=>$pastDueDate,
     "exceededAttemptsAllowed"=>$exceededAttemptsAllowed,
     "databaseError"=>$databaseError,
-    "valid"=>$valid
+    "valid"=>$valid,
+    "creditForItem"=>$credit_for_item,
+    "creditForAttempt"=>$credit_for_attempt,
+    "creditForAssignment"=>$credit_for_assignment,
+    "creditByItem"=>$credit_by_item,
+    "began_seconds"=>$began_seconds,
+    "effective_timelimit_seconds"=>$effective_timelimit_seconds,
+    "now_seconds"=>$now_seconds,
+    "diff_seconds"=>$diff_seconds,
+    "dueDate_diff"=>$dueDate_diff,
+    "totalPointsOrPercent"=>$totalPointsOrPercent,
 );
 
 // set response code - 200 OK

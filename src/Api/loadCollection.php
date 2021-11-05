@@ -16,10 +16,9 @@ if (array_key_exists('doenetId', $_REQUEST)) {
     $doenetId = mysqli_real_escape_string($conn, $_REQUEST['doenetId']);
 
     //get driveId from doenetId TODO: should be a sql join query with userId
-    $sql = "
-        SELECT driveId
-        FROM `drive_content`
-        WHERE doenetId = '$doenetId'
+    $sql = "SELECT driveId
+    FROM `drive_content`
+    WHERE doenetId = '$doenetId'
     ";
     $result = $conn->query($sql);
     if ($result->num_rows > 0) {
@@ -29,11 +28,10 @@ if (array_key_exists('doenetId', $_REQUEST)) {
 
     if (array_key_exists('driveId', get_defined_vars())) {
         //check user has permission to edit drive
-        $sql = "
-            SELECT canEditContent
-            FROM drive_user
-            WHERE userId = '$userId'
-            AND driveId = '$driveId'
+        $sql = "SELECT canEditContent
+        FROM drive_user
+        WHERE userId = '$userId'
+        AND driveId = '$driveId'
         ";
         $result = $conn->query($sql);
         if ($result->num_rows > 0) {
@@ -56,10 +54,9 @@ if (array_key_exists('doenetId', $_REQUEST)) {
 }
 
 if ($allowed) {
-    $sql = "
-        SELECT collectionDoenetId, entryDoenetId, entryId, variant
-        FROM collection
-        WHERE collectionDoenetId = '$doenetId'
+    $sql = "SELECT doenetId, entryId, entryDoenetId, entryContentId, entryVariant
+    FROM collection
+    WHERE doenetId = '$doenetId'
     ";
     $result = $conn->query($sql);
 
@@ -67,10 +64,11 @@ if ($allowed) {
     if ($result->num_rows > 0) {
         while ($row = $result->fetch_assoc()) {
             array_push($entry_arr, [
-                'collectionDoenetId' => $row['collectionDoenetId'],
-                'entryDoenetId' => $row['entryDoenetId'],
+                'doenetId' => $row['doenetId'],
                 'entryId' => $row['entryId'],
-                'variant' => $row['variant'],
+                'entryDoenetId' => $row['entryDoenetId'],
+                'entryContentId' => $row['entryContentId'],
+                'entryVariant' => $row['entryVariant'],
             ]);
         }
 

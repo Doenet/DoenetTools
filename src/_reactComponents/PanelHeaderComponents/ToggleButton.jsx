@@ -11,7 +11,7 @@ export default function ToggleButton(props) {
     }
     //Assume small
     var toggleButton = {
-        margin: '0px',
+        margin: '0px 4px 0px 4px',
         height: '24px',
         border: `2px solid ${color}`,
         color: `${color}`,
@@ -33,7 +33,7 @@ export default function ToggleButton(props) {
         fontSize: '12px',
         display: `${labelVisible}`,
         marginRight: '5px',
-        marginBottom: `${align == 'flex' ? 'none' : '0px'}`
+        marginBottom: `${align == 'flex' ? 'none' : '2px'}`
     }
     
     var container = {
@@ -55,10 +55,12 @@ export default function ToggleButton(props) {
         }
     }
     if (isSelected === true) {
-        toggleButton.backgroundColor = `${color}`;
-        toggleButton.color = '#FFF';
-        toggleButton.border = '2px solid #FFF';
-        if (props.switch_value) toggleButton.value = props.switch_value
+        if (!props.disabled) {
+            toggleButton.backgroundColor = `${color}`;
+            toggleButton.color = '#FFF';
+            toggleButton.border = '2px solid #FFF';
+            if (props.switch_value) toggleButton.value = props.switch_value
+        }
     }
     function handleClick() {
         if (isSelected === false) {

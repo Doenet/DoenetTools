@@ -11,6 +11,7 @@ mathquill.addStyles();
 let EditableMathField = mathquill.EditableMathField;
 import {focusedMathField, palletRef, buttonRef, functionRef} from "../../_framework/temp/MathInputSelector.js";
 import {useRecoilValue, useSetRecoilState} from "../../_snowpack/pkg/recoil.js";
+import {getFromLatex, normalizeLatexString} from "../../core/utils/math.js";
 export default function MathInput(props) {
   let [name, SVs, actions] = useDoenetRender(props);
   const [latex, setLatex] = useState("");
@@ -31,8 +32,8 @@ export default function MathInput(props) {
   let initializeChildrenOnConstruction = false;
   const calculateMathExpressionFromLatex = (text) => {
     let expression;
-    text = substituteUnicodeInLatexString(text);
-    let fromLatex = getCustomFromLatex({
+    text = normalizeLatexString(text);
+    let fromLatex = getFromLatex({
       functionSymbols: SVs.functionSymbols
     });
     try {
@@ -228,116 +229,4 @@ export default function MathInput(props) {
 function stripLatex(latex) {
   let s = latex.replaceAll(`\\,`, "");
   return s;
-}
-var appliedFunctionSymbols = [
-  "abs",
-  "exp",
-  "log",
-  "ln",
-  "log10",
-  "sign",
-  "sqrt",
-  "erf",
-  "acos",
-  "acosh",
-  "acot",
-  "acoth",
-  "acsc",
-  "acsch",
-  "asec",
-  "asech",
-  "asin",
-  "asinh",
-  "atan",
-  "atanh",
-  "cos",
-  "cosh",
-  "cot",
-  "coth",
-  "csc",
-  "csch",
-  "sec",
-  "sech",
-  "sin",
-  "sinh",
-  "tan",
-  "tanh",
-  "arcsin",
-  "arccos",
-  "arctan",
-  "arccsc",
-  "arcsec",
-  "arccot",
-  "cosec",
-  "arg",
-  "min",
-  "max",
-  "mean",
-  "median",
-  "floor",
-  "ceil",
-  "round",
-  "sum",
-  "prod",
-  "var",
-  "std",
-  "count",
-  "mod"
-];
-function getCustomFromLatex({functionSymbols}) {
-  return (x) => me.fromAst(new me.converters.latexToAstObj({
-    appliedFunctionSymbols,
-    functionSymbols
-  }).convert(x));
-}
-function substituteUnicodeInLatexString(latexString) {
-  let substitutions = [
-    ["α", "\\alpha "],
-    ["β", "\\beta "],
-    ["ϐ", "\\beta "],
-    ["Γ", "\\Gamma "],
-    ["γ", "\\gamma "],
-    ["Δ", "\\Delta "],
-    ["δ", "\\delta "],
-    ["ε", "\\epsilon "],
-    ["ϵ", "\\epsilon "],
-    ["ζ", "\\zeta "],
-    ["η", "\\eta "],
-    ["Θ", "\\Theta "],
-    ["ϴ", "\\Theta "],
-    ["θ", "\\theta "],
-    ["ᶿ", "\\theta "],
-    ["ϑ", "\\theta "],
-    ["ι", "\\iota "],
-    ["κ", "\\kappa "],
-    ["Λ", "\\Lambda "],
-    ["λ", "\\lambda "],
-    ["μ", "\\mu "],
-    ["µ", "\\mu "],
-    ["ν", "\\nu "],
-    ["Ξ", "\\Xi "],
-    ["ξ", "\\xi "],
-    ["Π", "\\Pi "],
-    ["π", "\\pi "],
-    ["ϖ", "\\pi "],
-    ["ρ", "\\rho "],
-    ["ϱ", "\\rho "],
-    ["Σ", "\\Sigma "],
-    ["σ", "\\sigma "],
-    ["ς", "\\sigma "],
-    ["τ", "\\tau "],
-    ["Υ", "\\Upsilon "],
-    ["υ", "\\upsilon "],
-    ["Φ", "\\Phi "],
-    ["φ", "\\phi "],
-    ["ϕ", "\\phi "],
-    ["Ψ", "\\Psi "],
-    ["ψ", "\\psi "],
-    ["Ω", "\\Omega "],
-    ["ω", "\\omega "]
-  ];
-  for (let sub of substitutions) {
-    latexString = latexString.replaceAll(sub[0], sub[1]);
-  }
-  return latexString;
 }

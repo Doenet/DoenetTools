@@ -23,12 +23,16 @@ import { DropTargetsProvider } from '../../../_reactComponents/DropTarget';
 import { BreadcrumbProvider } from '../../../_reactComponents/Breadcrumb/BreadcrumbProvider';
 import { selectedMenuPanelAtom } from '../Panels/NewMenuPanel';
 import { mainPanelClickAtom } from '../Panels/NewMainPanel';
+import { effectiveRoleAtom } from '../../../_reactComponents/PanelHeaderComponents/RoleDropdown';
+import { suppressMenusAtom } from '../NewToolRoot';
 
 export default function NavigationPanel() {
-  const [{ view }, setPageToolView] = useRecoilState(pageToolViewAtom);
+  const setPageToolView = useSetRecoilState(pageToolViewAtom);
+  const effectiveRole = useRecoilValue(effectiveRoleAtom);
   const setMainPanelClear = useSetRecoilState(mainPanelClickAtom);
   const path = useRecoilValue(searchParamAtomFamily('path'));
   const [columnTypes, setColumnTypes] = useState([]);
+  const setSuppressMenus = useSetRecoilState(suppressMenusAtom);
 
   useEffect(() => {
     setMainPanelClear((was) => [
@@ -46,16 +50,18 @@ export default function NavigationPanel() {
   }, [setMainPanelClear]);
 
   useLayoutEffect(() => {
-    switch (view) {
+    switch (effectiveRole) {
       case 'instructor':
         setColumnTypes(['Released', 'Assigned', 'Public']);
+        setSuppressMenus([])
         break;
       case 'student':
         setColumnTypes(['Due Date']);
+        setSuppressMenus(["AddDriveItems"])
         break;
       default:
     }
-  }, [view]);
+  }, [effectiveRole,setSuppressMenus]);
 
   const clickCallback = useRecoilCallback(
     ({ set }) =>
@@ -104,7 +110,7 @@ export default function NavigationPanel() {
             }));
             break;
           case itemType.DOENETML:
-            if (view === 'student') {
+            if (effectiveRole === 'student') {
               //TODO: VariantIndex params
               setPageToolView({
                 page: 'course',
@@ -114,7 +120,7 @@ export default function NavigationPanel() {
                   doenetId: info.item.doenetId,
                 },
               });
-            } else if (view === 'instructor') {
+            } else if (effectiveRole === 'instructor') {
               setPageToolView({
                 page: 'course',
                 tool: 'editor',
@@ -128,15 +134,27 @@ export default function NavigationPanel() {
 
             break;
           case itemType.COLLECTION:
-            setPageToolView({
-              page: 'course',
-              tool: 'collection',
-              view: '',
-              params: {
-                doenetId: info.item.doenetId,
-                path: `${info.driveId}:${info.item.itemId}:${info.item.itemId}:Collection`,
-              },
-            });
+            if (effectiveRole === 'student') {
+              setPageToolView({
+                page: 'course',
+                tool: 'assignment',
+                view: '',
+                params: {
+                  doenetId: info.item.doenetId,
+                  isCollection: true,
+                },
+              });
+            } else if (effectiveRole === 'instructor') {
+              setPageToolView({
+                page: 'course',
+                tool: 'collection',
+                view: '',
+                params: {
+                  doenetId: info.item.doenetId,
+                  path: `${info.driveId}:${info.item.itemId}:${info.item.itemId}:Collection`,
+                },
+              });
+            }
             break;
           default:
             throw new Error(
@@ -144,13 +162,13 @@ export default function NavigationPanel() {
             );
         }
       },
-    [setPageToolView, view],
+    [setPageToolView, effectiveRole],
   );
 
   const filterCallback = useRecoilCallback(
     ({ snapshot }) =>
       (item) => {
-        switch (view) {
+        switch (effectiveRole) {
           case 'student':
             if (item.itemType === itemType.FOLDER) {
               const folderContents = snapshot
@@ -168,6 +186,7 @@ export default function NavigationPanel() {
               }
               return false;
             } else {
+              console.log('whats up', item.itemType, 'i', item);
               return item.isReleased === '1';
             }
           case 'instructor':
@@ -176,7 +195,7 @@ export default function NavigationPanel() {
             console.warn('No view selected');
         }
       },
-    [view],
+    [effectiveRole],
   );
 
   return (
@@ -191,7 +210,7 @@ export default function NavigationPanel() {
               urlClickBehavior="select"
               clickCallback={clickCallback}
               doubleClickCallback={doubleClickCallback}
-              isViewOnly={view === 'student'} //TODO: Update for better compatabilty with roles/views
+              isViewOnly={effectiveRole === 'student'} //TODO: Update for better compatabilty with roles/views
             />
           </Container>
         </Suspense>

@@ -1,5 +1,4 @@
-import React, { useEffect } from 'react';
-import { nanoid } from 'nanoid';
+import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
 import ButtonGroup from '../../../_reactComponents/PanelHeaderComponents/ButtonGroup';
@@ -10,6 +9,7 @@ import {
   useRecoilValue,
 } from 'recoil';
 import { useToast, toastType } from '@Toast';
+import Switch from '../../_framework/Switch';
 
 
 
@@ -49,7 +49,7 @@ export default function Enrollment(props){
   const setEnrollmentTableDataAtom = useSetRecoilState(enrollmentTableDataAtom); 
 
   const driveId = useRecoilValue(searchParamAtomFamily('driveId'))
-
+  let [showWithdrawn,setShowWithdrawn] = useState(false);
 
   //Load Enrollment Data When CourseId changes
   useEffect(() => {
@@ -76,18 +76,39 @@ export default function Enrollment(props){
 
   let enrollmentRows = [];
   for (let [i, rowData] of enrollmentTableData.entries()) {
-    enrollmentRows.push(
-      <tr key={`erow${i}`}>
-        <td>
-          {rowData.firstName} {rowData.lastName}
-        </td>
-        <td>{rowData.section}</td>
-        <td>{rowData.empId}</td>
-        <td>{rowData.email}</td>
-        <td>{rowData.dateEnrolled}</td>
-        <td> <Button value="Withdraw" onClick={(e) => withDrawLearners(e,rowData.email)} /></td>
-      </tr>,
-    );
+    if (rowData.withdrew === '0' || showWithdrawn){
+      let bgcolor = "white";
+      let button = <Button value="Withdraw" onClick={(e) => withDrawLearners(e,rowData.email)} />
+      if (rowData.withdrew === '1'){
+        bgcolor = "grey"
+        button = <Button value="Enroll" onClick={(e) => enrollLearners(e,rowData.email)} />
+      }
+
+      let enrolledDateString = '';
+      if (rowData.withdrew === '0'){
+        // Split timestamp into [ Y, M, D, h, m, s ]
+        let t = rowData.dateEnrolled.split(/[- :]/);
+        // Apply each element to the Date function
+        enrolledDateString = new Date(
+          Date.UTC(t[0], t[1]-1, t[2], t[3], t[4], t[5])
+        ).toLocaleString();
+
+      }
+
+      enrollmentRows.push(
+        <tr style={{backgroundColor:bgcolor}} key={`erow${i}`}>
+          <td>
+            {rowData.firstName} {rowData.lastName}
+          </td>
+          <td>{rowData.section}</td>
+          <td>{rowData.empId}</td>
+          <td>{rowData.email}</td>
+          <td>{enrolledDateString}</td>
+          <td> {button} </td>
+        </tr>,
+      );
+    }
+    
   }
 
   const enrollmentTable = (
@@ -171,12 +192,10 @@ export default function Enrollment(props){
       let mergeLastName = [];
       let mergeEmail = [];
       let mergeSection = [];
-      let userIds = [];
+
       for (let [i, rowdata] of entries.entries()) {
         let rowcells = [];
-        let userId = nanoid();
-        userIds.push(userId);
-
+  
         if (
           columnToIndex.empId != null &&
           typeof rowdata[columnToIndex.empId] == 'string'
@@ -239,7 +258,6 @@ export default function Enrollment(props){
                      mergeLastName,
                      mergeEmail,
                      mergeSection,
-                     userIds,
                    };
                    console.log(">>>>payload",payload)
                    axios
@@ -277,31 +295,32 @@ export default function Enrollment(props){
     }
   }
 
-  // const enrollManual = (e) => {
-  //   e.preventDefault();
+  
 
-  //   let payload = {
-  //     email: enrolllearner,
-  //     userId: nanoid(),
-  //     driveId: driveId,
-  //   };
-  //   axios.post('/api/manualEnrollment.php', payload).then((resp) => {
-  //     const payload = { params: { driveId } };
-  //     axios
-  //       .get('/api/getEnrollment.php', payload)
-  //       .then((resp) => {
-  //         let enrollmentArray = resp.data.enrollmentArray;
-  //         setEnrollmentTableDataAtom(enrollmentArray);
-  //         setProcess('Display Enrollment');
-  //         setEnrolllearner('');
-  //       })
-  //       .catch((error) => {
-  //         console.warn(error);
-  //       });
-  //   });
-  // };
+const enrollLearners = (e,enrollLearner) => {
+  e.preventDefault();
 
-  const withDrawLearners = (e,withdrewLearner) => {
+  let payload = {
+    email: enrollLearner,
+    driveId: driveId,
+  };
+  axios.post('/api/unWithDrawStudents.php', payload).then((resp) => {
+    const payload = { params: { driveId } };
+    axios
+      .get('/api/getEnrollment.php', payload)
+      .then((resp) => {
+        let enrollmentArray = resp.data.enrollmentArray;
+        setEnrollmentTableDataAtom(enrollmentArray);
+        setProcess('Display Enrollment');
+      })
+      .catch((error) => {
+        console.warn(error);
+      });
+  });
+};
+ 
+
+const withDrawLearners = (e,withdrewLearner) => {
     e.preventDefault();
 
     let payload = {
@@ -341,11 +360,17 @@ export default function Enrollment(props){
 
 
   return (
-    <>
+    <div style={{padding:"8px"}}>
+    {enrollmentTableData.length > 0 ? (<div>Show Withdrawn <Switch
+    onChange={(e)=>{
+      setShowWithdrawn(e.currentTarget.checked)
+      }}
+    checked={showWithdrawn}
+  /></div>) : null}
       {enrollmentTable}
       {enrollmentTableData.length === 0 ? (
         <p>No Students are currently enrolled in the course</p>
       ) : null}
-    </>
+    </div>
   );
 }

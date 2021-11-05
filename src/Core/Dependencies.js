@@ -1694,15 +1694,36 @@ export class DependencyHandler {
 
     if (typeBlocked === "stateVariable") {
       let component = this._components[componentNameBlocked]
-      let stateVarObj = component.state[stateVariableBlocked];
-      stateVarObj.isResolved = false;
-      if (stateVarObj.initiallyResolved) {
-        // note: markStateVariableAndUpstreamDependentsStale includes
-        // any additionalStateVariablesDefined with stateVariable
-        this.core.markStateVariableAndUpstreamDependentsStale({
-          component,
-          varName: stateVariableBlocked,
-        })
+      if (component) {
+        let stateVarObj = component.state[stateVariableBlocked];
+        stateVarObj.isResolved = false;
+        if (stateVarObj.initiallyResolved) {
+          // note: markStateVariableAndUpstreamDependentsStale includes
+          // any additionalStateVariablesDefined with stateVariable
+          this.core.markStateVariableAndUpstreamDependentsStale({
+            component,
+            varName: stateVariableBlocked,
+          })
+
+          // record that stateVarObj is blocking its upstream dependencies
+          let upDeps = this.upstreamDependencies[componentNameBlocked][stateVariableBlocked];
+          if (upDeps) {
+            for (let dep of upDeps) {
+              if (this._components[dep.upstreamComponentName]) {
+                for (let vName of dep.upstreamVariableNames) {
+                  this.addBlocker({
+                    blockerComponentName: componentNameBlocked,
+                    blockerType: "stateVariable",
+                    blockerStateVariable: stateVariableBlocked,
+                    componentNameBlocked: dep.upstreamComponentName,
+                    typeBlocked: "stateVariable",
+                    stateVariableBlocked: vName,
+                  })
+                }
+              }
+            }
+          }
+        }
       }
     }
 
@@ -4297,6 +4318,7 @@ class ChildDependency extends Dependency {
     for (let [ind, compositeInd] of this.compositeIndices.entries()) {
       if (compositeInd !== undefined) {
         result.value[ind].compositeInd = compositeInd;
+        result.value[ind].compositeTname = this.compositeTnames[compositeInd];
       }
     }
 
@@ -4333,6 +4355,7 @@ class ChildDependency extends Dependency {
   onDownstreamComponentChange() {
 
     this.compositeIndices = [];
+    this.compositeTnames = [];
 
     if (this.downstreamComponentNames.length > 0) {
 
@@ -4343,6 +4366,7 @@ class ChildDependency extends Dependency {
           inheritedComponentType: definingChild.componentType,
           baseComponentType: "_composite",
         })) {
+          this.compositeTnames[definingInd] = definingChild.stateValues.tName;
           if (definingChild.isExpanded) {
             let recursiveReplacementAdapterNames =
               definingChild.stateValues.fullRecursiveReplacements

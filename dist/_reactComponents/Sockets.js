@@ -17,6 +17,7 @@ import {
   selectedDriveItemsAtom,
   sortOptions
 } from "./Drive/NewDrive.js";
+import {DateToUTCDateString} from "../_utils/dateUtilityFunction.js";
 const socketManger = atom({
   key: "socketManger",
   default: selector({
@@ -55,7 +56,7 @@ export default function useSockets(nsp) {
   const {acceptAddItem, acceptDeleteItem, acceptMoveItems, acceptRenameItem} = useAcceptBindings();
   const addItem = useRecoilCallback(({snapshot}) => async ({driveIdFolderId, type, label = "Untitled", selectedItemId = null, url = null}) => {
     const dt = new Date();
-    const creationDate = formatDate(dt);
+    const creationDate = DateToUTCDateString(dt);
     const itemId = nanoid();
     const doenetId = nanoid();
     const versionId = nanoid();
@@ -84,23 +85,48 @@ export default function useSockets(nsp) {
     if (type === "DoenetML") {
       payload = {
         ...payload,
-        assignedDate: creationDate,
+        assignedDate: null,
         attemptAggregation: "m",
-        dueDate: creationDate,
-        gradeCategory: "l",
-        individualize: false,
-        isAssigned: "1",
+        dueDate: null,
+        gradeCategory: "",
+        individualize: true,
+        isAssigned: "0",
         isPublished: "0",
         contentId: "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
         multipleAttempts: true,
-        numberOfAttemptsAllowed: "2",
+        numberOfAttemptsAllowed: "1",
         proctorMakesAvailable: false,
         showCorrectness: true,
         showFeedback: true,
         showHints: true,
         showSolution: true,
-        timeLimit: "60",
-        totalPointsOrPercent: "100",
+        showSolutionInGradebook: true,
+        timeLimit: null,
+        totalPointsOrPercent: "10",
+        assignment_isPublished: "0"
+      };
+    }
+    if (type === itemType.COLLECTION) {
+      payload = {
+        ...payload,
+        assignedDate: null,
+        attemptAggregation: "m",
+        dueDate: null,
+        gradeCategory: "",
+        individualize: true,
+        isAssigned: "0",
+        isPublished: "0",
+        contentId: "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        multipleAttempts: false,
+        numberOfAttemptsAllowed: "1",
+        proctorMakesAvailable: false,
+        showCorrectness: true,
+        showFeedback: true,
+        showHints: true,
+        showSolution: true,
+        showSolutionInGradebook: true,
+        timeLimit: null,
+        totalPointsOrPercent: "10",
         assignment_isPublished: "0"
       };
     }
@@ -138,18 +164,25 @@ export default function useSockets(nsp) {
   });
   const moveItems = useRecoilCallback(({snapshot, set}) => async ({targetDriveId, targetFolderId, index}) => {
     const globalSelectedNodes = await snapshot.getPromise(globalSelectedNodesAtom);
-    if (globalSelectedNodes.length === 0) {
-      throw "No items selected";
-    }
-    for (let gItem of globalSelectedNodes) {
-      if (gItem.itemId === targetFolderId) {
-        throw "Cannot move folder into itself";
-      }
-    }
     let destinationFolderObj = await snapshot.getPromise(folderDictionary({
       driveId: targetDriveId,
       folderId: targetFolderId
     }));
+    if (globalSelectedNodes.length === 0) {
+      throw "No items selected";
+    }
+    for (let gItem of globalSelectedNodes) {
+      const sourceFolderInfo = await snapshot.getPromise(folderDictionary({
+        driveId: gItem.driveId,
+        folderId: gItem.parentFolderId
+      }));
+      if (gItem.itemId === targetFolderId) {
+        throw "Cannot move folder into itself";
+      } else if (destinationFolderObj.folderInfo.itemType === itemType.COLLECTION && sourceFolderInfo.contentsDictionary[gItem.itemId].itemType !== itemType.DOENETML) {
+        addToast(`Can not ${sourceFolderInfo.contentsDictionary[gItem.itemId].itemType}s into a Collection`, toastType.ERROR);
+        throw `Can not ${sourceFolderInfo.contentsDictionary[gItem.itemId].itemType}s into a Collection`;
+      }
+    }
     let newDestinationFolderObj = JSON.parse(JSON.stringify(destinationFolderObj));
     let editedCache = {};
     let driveIdChanged = [];
@@ -175,6 +208,11 @@ export default function useSockets(nsp) {
         newDestinationFolderObj["contentsDictionary"][gItem.itemId] = {
           ...newSourceFInfo["contentsDictionary"][gItem.itemId]
         };
+        if (!newDestinationFolderObj["contentsDictionaryByDoenetId"]) {
+          newDestinationFolderObj["contentsDictionaryByDoenetId"] = {};
+        }
+        newDestinationFolderObj["contentsDictionaryByDoenetId"][newSourceFInfo["contentsDictionary"][gItem.itemId].doenetId] = {...newSourceFInfo["contentsDictionary"][gItem.itemId]};
+        delete newSourceFInfo["contentsDictionaryByDoenetId"][newSourceFInfo["contentsDictionary"][gItem.itemId].doenetId];
         delete newSourceFInfo["contentsDictionary"][gItem.itemId];
         if (!editedCache[gItem.driveId])
           editedCache[gItem.driveId] = {};
@@ -522,11 +560,12 @@ function useAcceptBindings() {
     newDefaultOrder.splice(index + 1, 0, itemId);
     newObj.contentIds[sortOptions.DEFAULT] = newDefaultOrder;
     newObj.contentsDictionary[itemId] = newItem;
+    newObj.contentsDictionaryByDoenetId[doenetId] = newItem;
     set(folderDictionary({
       driveId,
       folderId: parentFolderId
     }), newObj);
-    if (type === "Folder") {
+    if (type === "Folder" || type === "Collection") {
       set(folderDictionary({
         driveId,
         folderId: itemId
@@ -559,6 +598,10 @@ function useAcceptBindings() {
     }
     let newFInfo = {...fInfo};
     newFInfo["contentsDictionary"] = {...fInfo.contentsDictionary};
+    newFInfo["contentsDictionaryByDoenetId"] = {
+      ...fInfo.contentsDictionaryByDoenetId
+    };
+    delete newFInfo["contentsDictionaryByDoenetId"][newFInfo["contentsDictionary"][itemId].doenetId];
     delete newFInfo["contentsDictionary"][itemId];
     newFInfo.folderInfo = {...fInfo.folderInfo};
     newFInfo.contentIds = {};
@@ -600,15 +643,22 @@ function useAcceptBindings() {
     const fInfo = await snapshot.getPromise(folderDictionary({driveId, folderId}));
     let newFInfo = {...fInfo};
     newFInfo["contentsDictionary"] = {...fInfo.contentsDictionary};
+    newFInfo["contentsDictionaryByDoenetId"] = {
+      ...fInfo.contentsDictionaryByDoenetId
+    };
     newFInfo["contentsDictionary"][itemId] = {
       ...fInfo.contentsDictionary[itemId]
     };
     newFInfo["contentsDictionary"][itemId].label = label;
+    newFInfo["contentsDictionaryByDoenetId"][newFInfo["contentsDictionary"][itemId].doenetId] = {
+      ...fInfo.contentsDictionary[itemId]
+    };
+    newFInfo["contentsDictionaryByDoenetId"][newFInfo["contentsDictionary"][itemId].doenetId].label = label;
     set(folderDictionary({
       driveId,
       folderId
     }), newFInfo);
-    if (type === "Folder") {
+    if (type === "Folder" || type === "Collection") {
       set(folderDictionary({
         driveId,
         folderId: itemId

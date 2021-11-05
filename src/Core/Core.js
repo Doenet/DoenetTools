@@ -132,6 +132,7 @@ export default class Core {
       componentsTouched: [],
       compositesToExpand: new Set([]),
       compositesToUpdateReplacements: [],
+      inactiveCompositesToUpdateReplacements: [],
       componentsToUpdateActionChaining: {},
 
       unresolvedDependencies: {},
@@ -141,7 +142,8 @@ export default class Core {
       recreatedComponents: {},
       // parentsToUpdateDescendants: new Set(),
       compositesBeingExpanded: [],
-      stateVariableUpdatesForMissingComponents: deepClone(stateVariableChanges),
+      // stateVariableUpdatesForMissingComponents: deepClone(stateVariableChanges),
+      stateVariableUpdatesForMissingComponents: JSON.parse(JSON.stringify(stateVariableChanges, serializeFunctions.serializedComponentsReplacer), serializeFunctions.serializedComponentsReviver),
     }
 
     this.animationIDs = {};
@@ -1011,21 +1013,24 @@ export default class Core {
         if (variantControlInd !== undefined) {
           // if have desired variant name or index
           // add that information to variantControl child
-          let desiredVariant = serializedComponent.variants.desiredVariant;
-          if (desiredVariant !== undefined) {
-            if (desiredVariant.index !== undefined) {
-              variantControlChild.variants = {
-                desiredVariantIndex: desiredVariant.index
-              }
-            } else if (desiredVariant.name !== undefined) {
-              variantControlChild.variants = {
-                desiredVariantName: desiredVariant.name
+
+          if (serializedComponent.variants) {
+            let desiredVariant = serializedComponent.variants.desiredVariant;
+            if (desiredVariant !== undefined) {
+              if (desiredVariant.index !== undefined) {
+                variantControlChild.variants = {
+                  desiredVariantIndex: desiredVariant.index
+                }
+              } else if (desiredVariant.name !== undefined) {
+                variantControlChild.variants = {
+                  desiredVariantName: desiredVariant.name
+                }
               }
             }
-          }
 
-          if (serializedComponent.variants.uniqueVariants) {
-            sharedParameters.numberOfVariants = serializedComponent.variants.numberOfVariants;
+            if (serializedComponent.variants.uniqueVariants) {
+              sharedParameters.numberOfVariants = serializedComponent.variants.numberOfVariants;
+            }
           }
 
           // create variant control child
@@ -2022,7 +2027,7 @@ export default class Core {
 
         } else {
           // don't use any replacements that are marked as being withheld
-          this.markWithheldReplacementInactive(child);
+          this.markWithheldReplacementsInactive(child);
 
           replacements = child.replacements;
           if (child.replacementsToWithhold > 0) {
@@ -2071,7 +2076,7 @@ export default class Core {
 
   }
 
-  markWithheldReplacementInactive(composite) {
+  markWithheldReplacementsInactive(composite) {
 
     let numActive = composite.replacements.length;
 
@@ -2092,6 +2097,19 @@ export default class Core {
         repl, true
       );
     }
+
+    // composite is newly active
+    // if updates to replacements were postponed
+    // add them back to the queue
+    if (!composite.stateValues.isInactiveCompositeReplacement) {
+      let cName = composite.componentName;
+      if (this.updateInfo.inactiveCompositesToUpdateReplacements.includes(cName)) {
+        this.updateInfo.inactiveCompositesToUpdateReplacements
+          = this.updateInfo.inactiveCompositesToUpdateReplacements.filter(x => x != cName);
+        this.updateInfo.compositesToUpdateReplacements.push(cName);
+      }
+
+    }
   }
 
   changeInactiveComponentAndDescendants(component, inactive) {
@@ -2109,8 +2127,15 @@ export default class Core {
         this.changeInactiveComponentAndDescendants(this._components[childName], inactive)
       }
 
+      for (let attrName in component.attributes) {
+        let attrComp = component.attributes[attrName].component;
+        if (attrComp) {
+          this.changeInactiveComponentAndDescendants(this._components[attrComp.componentName], inactive)
+        }
+      }
+
       if (component.replacements) {
-        this.markWithheldReplacementInactive(component);
+        this.markWithheldReplacementsInactive(component);
       }
     }
   }
@@ -2161,7 +2186,8 @@ export default class Core {
             redefineDependencies = {
               linkSource: "adapter",
               adapterTargetIdentity: dep.adapterTargetIdentity,
-              adapterVariable: dep.adapterVariable
+              adapterVariable: dep.adapterVariable,
+              substituteForPrimaryStateVariable: dep.substituteForPrimaryStateVariable,
             }
           } else if (dep.dependencyType === "ancestorProp") {
             ancestorProps[dep.attribute] = dep.ancestorIdentity;
@@ -2587,7 +2613,9 @@ export default class Core {
     // being created has specified should be given the value when it
     // is created from an outside source like a reference to a prop or an adapter
     let primaryStateVariableForDefinition = "value";
-    if (componentClass.primaryStateVariableForDefinition) {
+    if (redefineDependencies.substituteForPrimaryStateVariable) {
+      primaryStateVariableForDefinition = redefineDependencies.substituteForPrimaryStateVariable;
+    } else if (componentClass.primaryStateVariableForDefinition) {
       primaryStateVariableForDefinition = componentClass.primaryStateVariableForDefinition;
     }
     let stateDef = stateVariableDefinitions[primaryStateVariableForDefinition];
@@ -3438,7 +3466,7 @@ export default class Core {
 
   checkForActionChaining({ component, stateVariables }) {
 
-    if(!component) {
+    if (!component) {
       return;
     }
 
@@ -7658,8 +7686,11 @@ export default class Core {
         // execute asynchronously any remaining processes
         // (that got added while performAction was running)
 
-        setTimeout(this.executeProcesses, 0);
-
+        if (this.processQueue.length > 0) {
+          setTimeout(this.executeProcesses, 0);
+        } else {
+          this.processing = false;
+        }
       }
     });
 
@@ -7706,9 +7737,11 @@ export default class Core {
   }
 
 
-  requestUpdate({ updateInstructions, transient = false, event, skippable = false }) {
+  requestUpdate({ updateInstructions, transient = false, event, skippable = false,
+    overrideReadOnly = false
+  }) {
 
-    if (this.flags.readOnly) {
+    if (this.flags.readOnly && !overrideReadOnly) {
 
       let sourceInformation = {};
 
@@ -7754,7 +7787,11 @@ export default class Core {
         // execute asynchronously any remaining processes
         // (that got added while performUpdate was running)
 
-        setTimeout(this.executeProcesses, 0);
+        if (this.processQueue.length > 0) {
+          setTimeout(this.executeProcesses, 0);
+        } else {
+          this.processing = false;
+        }
 
       }
     });
@@ -7876,7 +7913,7 @@ export default class Core {
         //   });
         // }
         if (event) {
-          event.context.itemCreditAchieved[itemNumber] = this.document.stateValues.itemCreditAchieved[itemNumber]
+          event.context.itemCreditAchieved[itemNumber] = this.document.stateValues.itemCreditAchieved[itemNumber - 1]
         }
       }
     }
@@ -8091,26 +8128,30 @@ export default class Core {
         ) {
 
           if (composite.state.readyToExpandWhenResolved.initiallyResolved) {
-            let result = this.updateCompositeReplacements({
-              component: composite,
-              componentChanges,
-            });
+            if (composite.stateValues.isInactiveCompositeReplacement) {
+              this.updateInfo.inactiveCompositesToUpdateReplacements.push(cName)
+            } else {
+              let result = this.updateCompositeReplacements({
+                component: composite,
+                componentChanges,
+              });
 
-            for (let componentName in result.addedComponents) {
-              updatedComposites = true;
-              this.changedStateVariables[componentName] = {};
-              for (let varName in this._components[componentName].state) {
-                let stateVarObj = this._components[componentName].state[varName];
-                if (stateVarObj.isArray) {
-                  this.changedStateVariables[componentName][varName] =
-                    new Set(stateVarObj.getAllArrayKeys(stateVarObj.arraySize))
-                } else if (!stateVarObj.isArrayEntry) {
-                  this.changedStateVariables[componentName][varName] = true;
+              for (let componentName in result.addedComponents) {
+                updatedComposites = true;
+                this.changedStateVariables[componentName] = {};
+                for (let varName in this._components[componentName].state) {
+                  let stateVarObj = this._components[componentName].state[varName];
+                  if (stateVarObj.isArray) {
+                    this.changedStateVariables[componentName][varName] =
+                      new Set(stateVarObj.getAllArrayKeys(stateVarObj.arraySize))
+                  } else if (!stateVarObj.isArrayEntry) {
+                    this.changedStateVariables[componentName][varName] = true;
+                  }
                 }
               }
-            }
-            if (Object.keys(result.deletedComponents).length > 0) {
-              updatedComposites = true;
+              if (Object.keys(result.deletedComponents).length > 0) {
+                updatedComposites = true;
+              }
             }
           } else {
             compositesNotReady.push(cName)
@@ -8179,10 +8220,34 @@ export default class Core {
           nFailures += 1;
           continue;
         }
-        // get value of state variable so it will determine if essential
-        compStateObj.value;
 
-        compStateObj._previousValue = compStateObj.value;
+        // get value of state variable so it will determine if essential
+
+        // TODO: we can run into problems here when processing new state variables
+        // during the initial setup (i.e., when loading values from the database)
+        // where a state variable is not yet resolved but force resolving it
+        // (via evaluating it) could evaluate it the a dependent component
+        // has been created (via a composite)
+        // This is particular important with selects, as evaluating them
+        // prematurely would lead them expanding with wrong values.
+        // Stopgap for the one place where this occured so far
+        // was to introduce willBeEssential, which avoided premature evaluation.
+        // A better solution would be to keep track of state variables 
+        // whose values we cannot yet give in order to try to set those values
+        // at the end.
+
+        if (!compStateObj.isResolved) {
+          this.dependencies.resolveIfReady({
+            componentName: cName,
+            type: "stateVariable",
+            stateVariable: vName
+          })
+        }
+
+        if (compStateObj.isResolved || !(compStateObj.esssential || compStateObj.willBeEssential)) {
+          compStateObj.value;
+          compStateObj._previousValue = compStateObj.value;
+        }
 
         if (compStateObj.isArray) {
 
@@ -8270,9 +8335,15 @@ export default class Core {
           // don't have array
 
           if (!compStateObj.essential) {
-            console.warn(`can't update state variable ${vName} of component ${cName}, as it is not an essential state variable.`);
-            nFailures += 1;
-            continue;
+
+            if (compStateObj.willBeEssential) {
+              compStateObj.essential = true;
+              delete compStateObj.value;
+            } else {
+              console.warn(`can't update state variable ${vName} of component ${cName}, as it is not an essential state variable.`);
+              nFailures += 1;
+              continue;
+            }
           }
 
           if (compStateObj.set) {
@@ -8339,6 +8410,7 @@ export default class Core {
           componentName: component.componentName,
           type: "stateVariable",
           stateVariable: varName,
+          force: true,
         });
 
         if (!result.success) {
@@ -9000,6 +9072,12 @@ function validateAttributeValue({ value, attributeSpecification, attribute }) {
     value in attributeSpecification.valueTransformations
   ) {
     value = attributeSpecification.valueTransformations[value];
+  }
+
+  if (attributeSpecification.transformNonFiniteTo !== undefined &&
+    !Number.isFinite(value)
+  ) {
+    value = attributeSpecification.transformNonFiniteTo;
   }
 
   if (attributeSpecification.toLowerCase) {

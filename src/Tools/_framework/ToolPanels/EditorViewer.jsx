@@ -37,15 +37,27 @@ export const editorDoenetIdInitAtom = atom({
   default:""
 })
 
-export default function EditorViewer(props){
+export const refreshNumberAtom = atom({
+  key:"refreshNumberAtom",
+  default:0
+})
+
+export const editorViewerErrorStateAtom = atom({
+  key:"editorViewerErrorStateAtom",
+  default:false
+})
+
+export default function EditorViewer(){
   // console.log(">>>>===EditorViewer")
   const viewerDoenetML = useRecoilValue(viewerDoenetMLAtom);
-  // const isCurrentDraft = useRecoilValue(currentDraftSelectedAtom)
   const paramDoenetId = useRecoilValue(searchParamAtomFamily('doenetId')) 
   const initilizedDoenetId = useRecoilValue(editorDoenetIdInitAtom);
   const [variantInfo,setVariantInfo] = useRecoilState(variantInfoAtom);
   const setVariantPanel = useSetRecoilState(variantPanelAtom);
   const setEditorInit = useSetRecoilState(editorDoenetIdInitAtom);
+  const refreshNumber = useRecoilValue(refreshNumberAtom);
+  const setIsInErrorState = useSetRecoilState(editorViewerErrorStateAtom);
+
 
   let initDoenetML = useRecoilCallback(({snapshot,set})=> async (doenetId)=>{
     const versionHistory = await snapshot.getPromise((itemHistoryAtom(doenetId)));
@@ -74,13 +86,12 @@ export default function EditorViewer(props){
 
   if (paramDoenetId !== initilizedDoenetId){
     //DoenetML is changing to another DoenetID
-    return <div style={props.style}></div>
+    return null;
   }
 
 
   let attemptNumber = 1;
   let solutionDisplayMode = "button";
-
 
   if (variantInfo.lastUpdatedIndexOrName === 'Index'){
     setVariantInfo((was)=>{
@@ -99,6 +110,7 @@ export default function EditorViewer(props){
   }
 
 
+
   function variantCallback(generatedVariantInfo, allPossibleVariants){
     // console.log(">>>variantCallback",generatedVariantInfo,allPossibleVariants)
     const cleanGeneratedVariant = JSON.parse(JSON.stringify(generatedVariantInfo))
@@ -114,12 +126,13 @@ export default function EditorViewer(props){
       return newObj;
     });
   }
-  
-  // console.log(`>>>Show DoenetViewer with value -${viewerDoenetML}-`)
+
+
+
+  // console.log(`>>>>Show DoenetViewer with value -${viewerDoenetML}- -${refreshNumber}-`)
   // console.log('>>>DoenetViewer Read Only:',!isCurrentDraft)
-  return <div style={props.style}>
-    <DoenetViewer
-    key={"doenetviewer"}
+  return <DoenetViewer
+    key={`doenetviewer${refreshNumber}`}
     doenetML={viewerDoenetML}
     flags={{
       showCorrectness: true,
@@ -134,9 +147,8 @@ export default function EditorViewer(props){
     allowLocalPageState={false}
     allowSaveSubmissions={false}
     allowSaveEvents={false}
-    generatedVariantCallback={variantCallback}
+    generatedVariantCallback={variantCallback} //TODO:Replace
     requestedVariant={variantInfo.requestedVariant}
+    setIsInErrorState={setIsInErrorState}
     /> 
-
-  </div>
 }

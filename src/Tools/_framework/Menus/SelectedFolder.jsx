@@ -8,18 +8,19 @@ import useSockets from '../../../_reactComponents/Sockets';
 import { selectedMenuPanelAtom } from '../Panels/NewMenuPanel';
 import { selectedInformation } from './SelectedDoenetML';
 import ButtonGroup from '../../../_reactComponents/PanelHeaderComponents/ButtonGroup';
-import { pageToolViewAtom } from '../NewToolRoot';
+import Textfield from '../../../_reactComponents/PanelHeaderComponents/Textfield';
+import { useToast } from '../../_framework/Toast';
+import { effectiveRoleAtom } from '../../../_reactComponents/PanelHeaderComponents/RoleDropdown';
 
 
 export default function SelectedFolder() {
-  const pageToolView = useRecoilValue(pageToolViewAtom);
-  const role = pageToolView.view;
-  // console.log(">>>>SelectedFolder role",role)
+  const effectiveRole = useRecoilValue(effectiveRoleAtom);
   const setSelectedMenu = useSetRecoilState(selectedMenuPanelAtom);
   const selection = useRecoilValueLoadable(selectedInformation).getValue();
   const [item, setItem] = useState(selection[0]);
   const [label, setLabel] = useState(selection[0]?.label ?? '');
   const { deleteItem, renameItem } = useSockets('drive');
+  const addToast = useToast();
 
   useEffect(() => {
     if (!selection[0]) {
@@ -48,9 +49,43 @@ export default function SelectedFolder() {
     return null;
   }
   let modControl = null;
-  if (role === 'instructor'){
+  if (effectiveRole === 'instructor'){
     modControl = <>
-     <label>
+      <Textfield
+        label="Folder Label"
+        vertical
+        width="menu"
+        data-cy="infoPanelItemLabelInput"
+          value={label}
+          onChange={(e) => setLabel(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') {
+              let effectiveLabel = label;
+              if (label === ''){
+                effectiveLabel = 'Untitled';
+                addToast("Label for the folder can't be blank.");
+                setLabel(effectiveLabel);
+              }
+              //Only rename if label has changed
+              if (item.label !== effectiveLabel) {
+                renameItemCallback(effectiveLabel);
+                setLabel(effectiveLabel);
+              }
+            }
+          }}
+          onBlur={() => {
+            let effectiveLabel = label;
+              if (label === ''){
+                effectiveLabel = 'Untitled';
+                addToast("Label for the folder can't be blank.");
+              }
+            //Only rename if label has changed
+            if (item.label !== effectiveLabel) {
+              renameItemCallback(effectiveLabel);
+            }
+          }}
+      />
+     {/* <label>
         {item.itemType} Label
         <input
           type="text"
@@ -59,20 +94,32 @@ export default function SelectedFolder() {
           onChange={(e) => setLabel(e.target.value)}
           onKeyDown={(e) => {
             if (e.key === 'Enter') {
+              let effectiveLabel = label;
+              if (label === ''){
+                effectiveLabel = 'Untitled';
+                addToast("Label for the folder can't be blank.");
+                setLabel(effectiveLabel);
+              }
               //Only rename if label has changed
-              if (item.label !== label) {
-                renameItemCallback(label);
+              if (item.label !== effectiveLabel) {
+                renameItemCallback(effectiveLabel);
+                setLabel(effectiveLabel);
               }
             }
           }}
           onBlur={() => {
+            let effectiveLabel = label;
+              if (label === ''){
+                effectiveLabel = 'Untitled';
+                addToast("Label for the folder can't be blank.");
+              }
             //Only rename if label has changed
-            if (item.label !== label) {
-              renameItemCallback(label);
+            if (item.label !== effectiveLabel) {
+              renameItemCallback(effectiveLabel);
             }
           }}
         />
-      </label>
+      </label> */}
       <br />
       <ButtonGroup vertical>
         <Button

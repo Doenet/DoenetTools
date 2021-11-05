@@ -19,29 +19,28 @@ $_POST = json_decode(file_get_contents('php://input'), true);
 if (!array_key_exists('entryId', $_POST)) {
     $success = false;
     $message = 'Missing entryId';
-} elseif (!array_key_exists('variant', $_POST)) {
-    $success = false;
-    $message = 'Missing variant';
 } elseif (!array_key_exists('entryDoenetId', $_POST)) {
     $success = false;
     $message = 'Missing entryDoenetId';
-} elseif (!array_key_exists('collectionDoenetId', $_POST)) {
+} elseif (!array_key_exists('entryVariant', $_POST)) {
     $success = false;
-    $message = 'Missing collectionDoenetId';
+    $message = 'Missing entryVariant';
+} elseif (!array_key_exists('doenetId', $_POST)) {
+    $success = false;
+    $message = 'Missing doenetId';
 }
 
 if ($success) {
-    $doenetId = mysqli_real_escape_string($conn, $_POST['collectionDoenetId']);
-    $entryDoenetId = mysqli_real_escape_string($conn, $_POST['entryDoenetId']);
+    $doenetId = mysqli_real_escape_string($conn, $_POST['doenetId']);
     $entryId = mysqli_real_escape_string($conn, $_POST['entryId']);
-    $variant = mysqli_real_escape_string($conn, $_POST['variant']);
+    $entryDoenetId = mysqli_real_escape_string($conn, $_POST['entryDoenetId']);
+    $entryVariant = mysqli_real_escape_string($conn, $_POST['entryVariant']);
 
     //get driveId from doenetId
     //TODO: should be a sql join query with userId
-    $sql = "
-        SELECT driveId
-        FROM `drive_content`
-        WHERE doenetId = '$doenetId'
+    $sql = "SELECT driveId
+    FROM `drive_content`
+    WHERE doenetId = '$doenetId'
     ";
     $result = $conn->query($sql);
     if ($result->num_rows > 0) {
@@ -51,16 +50,15 @@ if ($success) {
 
     if (array_key_exists('driveId', get_defined_vars())) {
         //check user has permission to edit drive
-        $sql = "
-            SELECT canChangeAllDriveSettings
-            FROM drive_user
-            WHERE userId = '$userId'
-            AND driveId = '$driveId'
+        $sql = "SELECT canEditContent
+        FROM drive_user
+        WHERE userId = '$userId'
+        AND driveId = '$driveId'
         ";
         $result = $conn->query($sql);
         if ($result->num_rows > 0) {
             $row = $result->fetch_assoc();
-            $canAdd = $row['canChangeAllDriveSettings'];
+            $canAdd = $row['canEditContent'];
             if (!$canAdd) {
                 http_response_code(403); //User if forbidden from operation
                 $success = false;
@@ -81,15 +79,28 @@ if ($success) {
     }
 
     if ($success) {
-        $sql = "
-            INSERT INTO collection
-            (collectionDoenetId, entryDoenetId, entryId, variant)
-            VALUES ('$doenetId', '$entryDoenetId','$entryId','$variant')
+        //retrive contentId from content table
+        $sql = "SELECT contentId
+        FROM content
+        WHERE doenetId = '$entryDoenetId'
+        AND isReleased = '1'
         ";
         $result = $conn->query($sql);
+        if ($result->num_rows > 0) {
+            $row = $result->fetch_assoc();
+            $entryContentId = $row['contentId'];
 
-        http_response_code(200);
-        echo json_encode(['message' => $message, 'success' => $success]);
+            $sql = "INSERT INTO collection
+            (doenetId, entryId, entryDoenetId, entryContentId, entryVariant)
+            VALUES ('$doenetId', '$entryId', '$entryDoenetId', '$entryContentId', '$entryVariant')
+            ";
+
+            $result = $conn->query($sql);
+            http_response_code(201);
+            echo json_encode(['message' => $message, 'success' => $success]);
+        } else {
+            http_response_code(404);
+        }
     }
 } else {
     http_response_code(400);

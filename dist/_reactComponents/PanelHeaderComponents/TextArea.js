@@ -4,7 +4,7 @@ export default function TextArea(props) {
   const [labelVisible, setLabelVisible] = useState(props.label ? "static" : "none");
   const [align, setAlign] = useState(props.vertical ? "static" : "flex");
   var textarea = {
-    margin: "0px",
+    margin: "0px 4px 0px 4px",
     height: "24px",
     border: `2px solid ${doenetComponentForegroundInactive}`,
     fontFamily: "Arial",
@@ -17,7 +17,7 @@ export default function TextArea(props) {
     fontSize: "12px",
     display: `${labelVisible}`,
     marginRight: "5px",
-    marginBottom: `${align == "flex" ? "none" : "0px"}`
+    marginBottom: `${align == "flex" ? "none" : "2px"}`
   };
   var container = {
     display: `${align}`,
@@ -30,9 +30,11 @@ export default function TextArea(props) {
   if (props.label) {
     label.value = props.label;
   }
+  var disable = "";
   if (props.disabled) {
     textarea.border = "2px solid #e2e2e2";
     textarea.cursor = "not-allowed";
+    disable = "disabled";
   }
   if (props.value) {
     textarea.value = props.value;
@@ -59,6 +61,7 @@ export default function TextArea(props) {
     style: textarea,
     onChange: (e) => {
       handleChange(e);
-    }
+    },
+    disabled: disable
   })));
 }

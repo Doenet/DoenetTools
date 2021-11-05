@@ -28,21 +28,23 @@ export const Styles = styled.div`
   table {
     border-collapse: collapse;
     border-spacing: 0;
-    border: 1px solid gray;
     
     thead {
-        border-bottom: 1px solid gray;
+        position: sticky;
+        top: 0;
+        box-shadow: 0 2px 0 0px #000000;
     }
     
     a {
-        color: inherit;
-        text-decoration: none;
+        text-decoration: #1A5A99 underline;
     }
+
     .sortIcon {
         padding-left: 4px;
     }
-    tbody tr:nth-child(even) {background: #CCC}
-    tbody tr:nth-child(odd) {background: #FFF}
+  
+    tbody tr:not(:last-child) {border-bottom: 1px solid #e2e2e2;}
+ 
     td:first-child {
         text-align: left;
         max-width: 15rem;
@@ -50,6 +52,7 @@ export const Styles = styled.div`
         white-space: nowrap;
         overflow: hidden;
     }
+
     th {
         position: sticky;
         top: 0;
@@ -59,7 +62,11 @@ export const Styles = styled.div`
         //word-wrap: break-word;
         padding: 2px;
         max-height: 10rem;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        overflow: hidden;
     }
+    
     th:first-child {
         vertical-align: bottom;
         max-width: 15rem;
@@ -67,25 +74,43 @@ export const Styles = styled.div`
             margin: 5px;
         }
     }
+
     th > p {
         height: 100%;
     }
-    th:not(:first-child) > p{
+
+    tr:not(:first-child) th:not(:first-child) > p{
         writing-mode: vertical-rl;
         text-align: left;
         transform: rotate(180deg);
     }
+
+    thead tr:only-child th:not(:first-child) > p{
+        writing-mode: vertical-rl;
+        text-align: left;
+        transform: rotate(180deg);
+    }
+    
     td {
         user-select: none;
         text-align: center;
         max-width: 5rem;
     }
     td, th {
-        border-right: 1px solid gray;
+        border-right: 2px solid black;
         :last-child {
             border-right: 0;
         }
     }
+
+    tfoot {
+        font-weight: bolder;
+        position: sticky;
+        bottom: 0;
+        background-color: white;
+        box-shadow: inset 0 2px 0 #000000;
+      }
+
   }
 `
 
@@ -124,7 +149,8 @@ const assignmentDataQuerry = atom({
         key:"assignmentDataQuerry/Default",
         get: async ({get}) => {
             try{
-                const driveIdPayload = {params: { driveId:get(driveId)}}
+                const driveId = get(searchParamAtomFamily('driveId'));
+                const driveIdPayload = {params: { driveId }}
                 const { data } = await axios.get('/api/loadAssignments.php', driveIdPayload)
                 
                 return data
@@ -153,12 +179,13 @@ export const assignmentData = selector({
     }
 })
 
-const studentDataQuerry = atom({
+export const studentDataQuerry = atom({
     key: "studentDataQuerry",
     default: selector({
         key: "studentDataQuerry/Default",
         get: async ({get}) => {
-            const driveIdPayload = {params: { driveId:get(driveId)}}
+            const driveId = get(searchParamAtomFamily('driveId'));
+            const driveIdPayload = {params: { driveId }}
             try{
                 const { data } = await axios.get('/api/loadGradebookEnrollment.php', driveIdPayload)
                 return data;
@@ -177,6 +204,7 @@ export const studentData = selector({
         let students = {}
 
         for(let row of data){
+
             let [userId,
                 firstName,
                 lastName,
@@ -184,25 +212,29 @@ export const studentData = selector({
                 courseGrade,
                 overrideCourseGrade,
                 role] = row
+   
             students[userId] = {
                 firstName,
                 lastName,
                 courseCredit,
                 courseGrade,
                 overrideCourseGrade,
+                role
             }; 
         }
         return students;
     }
 })
 
-const overViewDataQuerry = atom({
+export const overViewDataQuerry = atom({
     key:"overViewDataQuerry",
     default: selector({
         key: "overViewDataQuerry/Default",
         get: async ({get}) =>{
             try{
-                const driveIdPayload = {params: { driveId:get(driveId)}}
+            const driveId = get(searchParamAtomFamily('driveId'));
+
+                const driveIdPayload = {params: { driveId }}
                 let { data } = await axios.get('/api/loadGradebookOverview.php', driveIdPayload)
                 return data
             }catch(error){
@@ -218,7 +250,6 @@ export const overViewData = selector({
     get: ({get}) =>{
         const students = get(studentData)
         const assignments = get(assignmentData)
-
         let overView = {}
 
         for(let userId in students){
@@ -238,14 +269,16 @@ export const overViewData = selector({
             let [doenetId,
                 credit,
                 userId] = data[userAssignment]
+           if (overView[userId]){
             overView[userId].assignments[doenetId] = credit
+           }
         }
 
         return overView
     }
 })
 
-const attemptDataQuerry = atomFamily({
+export const attemptDataQuerry = atomFamily({
     key: "attemptDataQuerry",
     default: selectorFamily({
         key:"attemptDataQuerry/Default",
@@ -273,21 +306,24 @@ export const attemptData = selectorFamily({
         for(let userId in students){
             attempts[userId] = {
                 credit: null,
+                creditOverrides: {},
                 attempts: {}
             }
         }
 
         let data = get(attemptDataQuerry(doenetId))
-
         for(let row of data){
             let [userId,
                 attemptNumber,
                 assignmentCredit,
                 attemptCredit,
+                creditOverride
                 ] = row;
-
-            attempts[userId].credit = assignmentCredit
-            attempts[userId].attempts[attemptNumber] = attemptCredit;
+                if (attempts[userId]){
+                    attempts[userId].credit = assignmentCredit
+                    attempts[userId].attempts[attemptNumber] = attemptCredit;
+                    attempts[userId].creditOverrides[attemptNumber] = creditOverride;
+                }
         }
 
         return attempts;
@@ -337,7 +373,6 @@ export const specificAttemptData = selectorFamily({
     }
 })
 
-
 const doenetMLQuerry = atomFamily({
     key: "doenetMLQuerry",
     default: selectorFamily({
@@ -386,6 +421,7 @@ export function Table({ columns, data }) {
       getTableProps,
       getTableBodyProps,
       headerGroups,
+      footerGroups,
       rows,
       prepareRow,
       state,
@@ -402,6 +438,8 @@ export function Table({ columns, data }) {
         useGlobalFilter,
         useSortBy, // useGlobalFilter
     )
+
+    // console.log("footer nonsense", footerGroups[0].headers.map(column => column.Footer));
   
     // Render the UI for your table
     return (
@@ -413,14 +451,15 @@ export function Table({ columns, data }) {
                 <th {...column.getHeaderProps(column.getSortByToggleProps())}>
                     <p>{column.render('Header')}</p>
                     <div>{column.canFilter ? column.render("Filter") : null}</div>
-                    <span className = "sortIcon"> 
+                    {column.canSort ? <span className = "sortIcon"> 
                         {column.isSorted ? (column.isSortedDesc ? <FontAwesomeIcon icon={faSortDown} /> : <FontAwesomeIcon icon={faSortUp} />) : <FontAwesomeIcon icon={faSort} />}
-                    </span>
+                    </span> : null }
                     </th>
                     ))}
             </tr>
             ))}
         </thead>
+        
         <tbody {...getTableBodyProps()}>
           {rows.map((row, i) => {
             prepareRow(row)
@@ -433,6 +472,21 @@ export function Table({ columns, data }) {
             )
           })}
         </tbody>
+        
+        <tfoot>
+            {/* <tr>
+
+            </tr> */}
+            
+            <tr >
+                {footerGroups[0].headers.map(column => (
+                <td >
+                    <p>{column.render('Footer')}</p>
+                </td>
+                ))}
+            </tr>
+            
+        </tfoot>
       </table>
     )
   }
@@ -469,6 +523,7 @@ function DefaultColumnFilter({
             setFilter(e.target.value || undefined) // Set undefined to remove the filter entirely
         }}
         placeholder={`Search ${count} records...`}
+        style={{border: '2px solid black', borderRadius: '5px'}}
         />
     )
 }
@@ -484,146 +539,236 @@ const getUserId = (students, name) => {
     return -1;
 } 
 
-
-function GradebookOverview(props) {
+function GradebookOverview() {
     //const { openOverlay, activateMenuPanel } = useToolControlHelper();
     let driveIdValue = useRecoilValue(driveId)
     const setPageToolView = useSetRecoilState(pageToolViewAtom);
     let students = useRecoilValueLoadable(studentData)
+    let assignments = useRecoilValueLoadable(assignmentData);
+    let overView = useRecoilValueLoadable(overViewData)
+
+// console.log(">>>>students",students)
+// console.log(">>>>assignments",assignments)
+// console.log(">>>>overView",overView)
+
+ //Protect from values not being loaded
+ if(assignments.state !== 'hasValue' || 
+ students.state !== 'hasValue' || 
+ overView.state !== 'hasValue'){
+     return null;
+ }
+
+let gradeCategories = [
+    {category:'Gateway',
+    scaleFactor:0},
+    {category:'Exams'},
+    {category:'Quizzes',
+    maximumNumber:10},
+    {category:'Problem sets',
+    maximumNumber:30},
+    {category:'Projects'},
+    {category:'Participation'}
+];
 
     let overviewTable = {}
     overviewTable.headers = []
+    overviewTable.rows = []
+    let possiblePointRow = {}
+    let totalPossiblePoints = 0;
 
-    if(students.state == 'hasValue'){
         overviewTable.headers.push(
             {
                 Header: "Name",
                 accessor: "name",
-                Cell: row  =><a onClick = {(e) =>{
-                    let name = row.cell.row.cells[0].value
-                    let userId = getUserId(students.contents, name);
-                    setPageToolView({
-                        page: 'course',
-                        tool: 'gradebookStudent',
-                        view: '',
-                        params: { driveId: driveIdValue, userId},
-                    })
-                }}> {row.cell.row.cells[0].value} </a>
+                Footer: "Possible Points",
             }
         )
-    }
+        
+        possiblePointRow['name'] = "Possible Points";
 
-    let assignments = useRecoilValueLoadable(assignmentData);
-    //let assignments = { contents: {}}
+        for (let {category,scaleFactor=1,maximumNumber=Infinity} of gradeCategories){
 
-    if(assignments.state == 'hasValue'){
-        for(let doenetId in assignments.contents){
-            overviewTable.headers.push({
-                //`/assignment/?doenetId=${doenetId}`
-                Header: <a onClick = {(e) =>{
-                    e.stopPropagation()
+            let allpossiblepoints = [];
+            
+      
+            for(let doenetId in assignments.contents){
+    
+                let inCategory = assignments.contents[doenetId].category;
+                if (inCategory.toLowerCase() !== category.toLowerCase()){ continue;}
+    
+                let possiblepoints = assignments.contents[doenetId].totalPointsOrPercent * 1;
+                allpossiblepoints.push(possiblepoints);
+                // let c = <p>{category}</p>
 
-                    setPageToolView({
-                        page: 'course',
-                        tool: 'gradebookAssignment',
-                        view: '',
-                        params: { driveId: driveIdValue , doenetId},
-                    })
-                    //console.log("trying overlay");
-                    //openOverlay({ type: "gradebookassignmentview", title: "Gradebook Assignment View", doenetId: doenetId })
-                    //open("calendar", "fdsa", "f001");
-                }
-                }>{assignments.contents[doenetId]}</a>,
-                accessor: doenetId,
-                disableFilters: true,
-                // <a onClick={() => {
-                //     open("calendar", "fdsa", "f001");
-                //   }}>
+                overviewTable.headers.push({
+                    Header: category,
+                    columns: [
+                        {Header: <a 
+                            style={{fontWeight: 'normal'}}
+                            onClick = {(e) =>{
+
+                                setPageToolView({
+                                    page: 'course',
+                                    tool: 'gradebookAssignment',
+                                    view: '',
+                                    params: { driveId: driveIdValue , doenetId},
+                                })
                 
+                            }
+                            }>{assignments.contents[doenetId].label}</a>,
+                            accessor: doenetId,
+                            Footer: possiblepoints,
+                            disableFilters: true},
+                    ]
+                    
 
-            })
+                })
+            possiblePointRow[doenetId] = possiblepoints;
+
+    
         }
+        let numberScores = allpossiblepoints.length;
+
+        allpossiblepoints = allpossiblepoints.sort((a,b)=>b-a).slice(0,maximumNumber);
+        let categoryPossiblePoints = allpossiblepoints.reduce((a,c)=>a+c,0) * scaleFactor;
+    
+        //category total
+        // possiblePointRow[category] = categoryPossiblePoints;
+        totalPossiblePoints += categoryPossiblePoints;
+
+        let description = "";
+        if (numberScores > maximumNumber){
+            description = <div style={{fontSize:'.7em'}}>(Based on top {maximumNumber} scores)</div>
+        }
+        if (scaleFactor !== 1 ){
+            description = <div style={{fontSize:'.7em'}}>(Based on rescaling by {scaleFactor * 100}%)</div>
+        }
+
+        overviewTable.headers.push({
+           
+            Header: <div>{`${category} Total`} {description} </div>,
+            accessor: category,
+            Footer: categoryPossiblePoints,
+            disableFilters: true,
+
+        })
+
+       
+        }
+
+
+    overviewTable.headers.push({
+           
+        Header: <div>Course Total</div>,
+        accessor: 'course total',
+        Footer: totalPossiblePoints,
+        disableFilters: true,
+
+    })
+    // possiblePointRow['course total'] = totalPossiblePoints;
+
+    // overviewTable.rows.push(possiblePointRow)
+
+    for (let userId in students.contents) {
+            
+        let firstName = students.contents[userId].firstName,
+            lastName = students.contents[userId].lastName,
+            role = students.contents[userId].role;
+        //TODO: need a switch to filter this in the future
+        if (role !== 'Student'){ continue; }
+
+        // let grade = overrideGrade ? overrideGrade : generatedGrade
+
+        let row = {}
+
+        let name = firstName + " " + lastName;
+        row["name"] = <a 
+            style={{cursor: 'pointer'}}
+            onClick = {(e) =>{
+                setPageToolView({
+                    page: 'course',
+                    tool: 'gradebookStudent',
+                    view: '',
+                    params: { driveId: driveIdValue, userId},
+                })
+            }}> {name} </a>
+        
+        let totalScore = 0;
+
+    for (let {category,scaleFactor=1,maximumNumber=Infinity} of gradeCategories){
+     
+        let scores = [];
+  
+        for(let doenetId in assignments.contents){
+
+            let inCategory = assignments.contents[doenetId].category;
+            if (inCategory.toLowerCase() !== category.toLowerCase()){ continue;}
+
+            let possiblepoints = assignments.contents[doenetId].totalPointsOrPercent * 1;
+            let credit = overView.contents[userId].assignments[doenetId];
+            let score = possiblepoints * credit;
+           
+            scores.push(score);
+            
+            score = Math.round(score*100)/100;
+            row[doenetId] =  <a onClick = {(e) =>{
+                setPageToolView({
+                    page: 'course',
+                    tool: 'gradebookStudentAssignment',
+                    view: '',
+                    params: { driveId: driveIdValue , doenetId, userId, previousCrumb:'student'},
+                })
+  
+            }}>{score}</a>
+            // row[doenetId] = score;
+        }
+
+        // let numberScores = scores.length;
+        scores = scores.sort((a,b)=>b-a).slice(0,maximumNumber);
+        let categoryScore = scores.reduce((a,c)=>a+c,0) * scaleFactor;
+    
+        totalScore += categoryScore;
+
+        categoryScore = Math.round(categoryScore* 100)/100 
+        row[category] = categoryScore;
+
     }
 
-    overviewTable.headers.push(
-        {
-            Header: "Weighted Credt",
-            accessor: "weight",
-            disableFilters: true
-            
-        }
-    )
-    overviewTable.headers.push(
-        {
-            Header: "Grade",
-            accessor: "grade",
-            sortType: gradeSorting,
-            disableFilters: true
-        },
-    )
+    totalScore = Math.round(totalScore*100)/100;
+    row['course total'] = totalScore;
 
-    overviewTable.rows = []
-    
-    //let students = { state:'hasError', contents: {}}
-    let overView = useRecoilValueLoadable(overViewData)
-    //let overView = { state:'hasError', contents: {}}
-
-    if(students.state == 'hasValue'){
-        for (let userId in students.contents) {
-            
-            let firstName = students.contents[userId].firstName,
-                lastName = students.contents[userId].lastName,
-                credit = students.contents[userId].courseCredit,
-                generatedGrade = students.contents[userId].courseGrade,
-                overrideGrade = students.contents[userId].overrideCourseGrade;
-
-            let grade = overrideGrade ? overrideGrade : generatedGrade
-
-            let row = {}
-
-            row["name"] = firstName + " " + lastName
-            
-            if(overView.state == 'hasValue' && assignments.state == 'hasValue'){
-                for (let doenetId in assignments.contents) {
-                    row[doenetId] = (overView.contents[userId].assignments[doenetId]) * 100 + "%"
-                }
-            }
-
-            row["weight"] = credit
-            row["grade"] = grade
-
-            
-            overviewTable.rows.push(row);
-        }
+        overviewTable.rows.push(row);
     }
-
-    //console.log("debug overviewtable", overviewTable);
     
+    // getTrProps = (row) => {
+    //     if (rowInfo) {
+    //       return {
+    //         style: {
+    //           background: rowInfo.row.age > 20 ? 'red' : 'green',
+    //           color: 'white'
+    //         }
+    //       }
+    //     }
+    //     return {};
+    //   }
 
+    console.log("rows", overviewTable.rows);
     return (
         <Styles>
-            <Table columns = {overviewTable.headers} data = {overviewTable.rows}/>
+            <Table 
+                columns = {overviewTable.headers} 
+                data = {overviewTable.rows}
+                // getRowProps={row => ({
+                //     style: {
+                //       backgroundColor: overviewTable.rows[0]['name'] === "Possible Points" ? '#e2e2e2' : 'white',
+                //     },
+                //   })}
+            />
         </Styles>
     )
 
 }
 
-// function BackButton(props) {
-
-//     return(
-//         <button onClick = {() => history.go(-1)}>
-//             Courses
-//         </button>
-//     )
-// }
-
-// function CourseSelector(props){
-    
-//     return(<select onChange = {(event) => props.callback(event.target.value)}>
-//         <option value = ''>Select Course</option>
-//         {props.courseList.map((course, i) => <option key = {i} value = {course.courseId}>{course.longname}</option> )}
-//     </select>)
-// }
 
 export default function Gradebook(props){
     

@@ -7,7 +7,7 @@
 #
 # Host: 127.0.0.1 (MySQL 5.7.29)
 # Database: doenet_local
-# Generation Time: 2021-08-29 20:32:50 +0000
+# Generation Time: 2021-10-18 02:23:49 +0000
 # ************************************************************
 
 
@@ -27,10 +27,12 @@ DROP TABLE IF EXISTS `assignment`;
 
 CREATE TABLE `assignment` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `doenetId` char(21) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT 'matches code table contentId',
+  `doenetId` char(21) COLLATE utf8_unicode_ci NOT NULL DEFAULT '' COMMENT 'matches code table contentId',
   `contentId` char(64) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT 'matches code table contentId',
   `driveId` char(21) COLLATE utf8_unicode_ci DEFAULT NULL,
   `assignedDate` datetime DEFAULT NULL COMMENT 'UTC DATETIME NULL means open until the dueDate. If dueDate is also NULL then open all the time.',
+  `pinnedAfterDate` datetime DEFAULT NULL COMMENT 'UTC DATETIME NULL means shows immediately',
+  `pinnedUntilDate` datetime DEFAULT NULL COMMENT 'UTC DATETIME NULL means never stops being pinned',
   `dueDate` datetime DEFAULT NULL COMMENT 'UTC DATETIME NULL means never closes',
   `timeLimit` int(11) DEFAULT NULL COMMENT 'NULL means it''s not timed',
   `numberOfAttemptsAllowed` int(11) DEFAULT NULL COMMENT 'NULL means infinite, Assignment Level Number Of Attempts',
@@ -41,23 +43,42 @@ CREATE TABLE `assignment` (
   `individualize` tinyint(1) NOT NULL DEFAULT '0',
   `multipleAttempts` tinyint(1) NOT NULL DEFAULT '0',
   `showSolution` tinyint(1) NOT NULL DEFAULT '1',
+  `showSolutionInGradebook` tinyint(1) NOT NULL DEFAULT '1',
   `showFeedback` tinyint(1) NOT NULL DEFAULT '1',
   `showHints` tinyint(1) NOT NULL DEFAULT '1',
   `showCorrectness` tinyint(1) NOT NULL DEFAULT '1',
   `proctorMakesAvailable` tinyint(1) NOT NULL DEFAULT '0' COMMENT 'Released by proctor or instructor',
   `examCoverHTML` text COLLATE utf8_unicode_ci,
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `doenetId` (`doenetId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 LOCK TABLES `assignment` WRITE;
 /*!40000 ALTER TABLE `assignment` DISABLE KEYS */;
 
-INSERT INTO `assignment` (`id`, `doenetId`, `contentId`, `driveId`, `assignedDate`, `dueDate`, `timeLimit`, `numberOfAttemptsAllowed`, `sortOrder`, `attemptAggregation`, `totalPointsOrPercent`, `gradeCategory`, `individualize`, `multipleAttempts`, `showSolution`, `showFeedback`, `showHints`, `showCorrectness`, `proctorMakesAvailable`, `examCoverHTML`)
+INSERT INTO `assignment` (`id`, `doenetId`, `contentId`, `driveId`, `assignedDate`, `pinnedAfterDate`, `pinnedUntilDate`, `dueDate`, `timeLimit`, `numberOfAttemptsAllowed`, `sortOrder`, `attemptAggregation`, `totalPointsOrPercent`, `gradeCategory`, `individualize`, `multipleAttempts`, `showSolution`, `showSolutionInGradebook`, `showFeedback`, `showHints`, `showCorrectness`, `proctorMakesAvailable`, `examCoverHTML`)
 VALUES
-	(488,'doenetId',NULL,'driveId','2021-06-04 08:20:07','2021-06-09 08:20:07',101000,2,NULL,'m',0,'l',0,0,1,1,1,1,0,NULL);
+	(488,'doenetId',NULL,'driveId','2021-06-04 08:20:07',NULL,NULL,'2021-06-09 08:20:07',101000,2,NULL,'m',0,'l',0,0,1,1,1,1,1,0,NULL);
 
 /*!40000 ALTER TABLE `assignment` ENABLE KEYS */;
 UNLOCK TABLES;
+
+
+# Dump of table class_times
+# ------------------------------------------------------------
+
+DROP TABLE IF EXISTS `class_times`;
+
+CREATE TABLE `class_times` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `driveId` char(21) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
+  `dotwIndex` int(1) NOT NULL,
+  `startTime` time NOT NULL,
+  `endTime` time NOT NULL,
+  `sortOrder` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
 
 
 # Dump of table collection
@@ -67,10 +88,28 @@ DROP TABLE IF EXISTS `collection`;
 
 CREATE TABLE `collection` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `collectionDoenetId` char(21) DEFAULT '',
+  `doenetId` char(21) DEFAULT '',
+  `entryId` char(21) NOT NULL,
   `entryDoenetId` char(21) NOT NULL DEFAULT '',
-  `entryId` char(21) NOT NULL DEFAULT '',
-  `variant` text NOT NULL,
+  `entryContentId` char(64) NOT NULL DEFAULT '',
+  `entryVariant` text NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+
+
+# Dump of table collection_groups
+# ------------------------------------------------------------
+
+DROP TABLE IF EXISTS `collection_groups`;
+
+CREATE TABLE `collection_groups` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `doenetId` char(21) NOT NULL DEFAULT '',
+  `minStudents` int(11) NOT NULL DEFAULT '1',
+  `maxStudents` int(11) NOT NULL DEFAULT '1',
+  `preferredStudents` int(11) NOT NULL DEFAULT '1',
+  `preAssigned` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
@@ -154,6 +193,7 @@ CREATE TABLE `drive` (
   `image` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `color` char(6) COLLATE utf8_unicode_ci DEFAULT NULL,
   `examPasscode` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `browserExamKeys` text COLLATE utf8_unicode_ci,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
@@ -226,13 +266,13 @@ CREATE TABLE `enrollment` (
   `lastName` varchar(127) COLLATE utf8_unicode_ci DEFAULT NULL,
   `username` varchar(10) COLLATE utf8_unicode_ci DEFAULT NULL,
   `email` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `empId` int(7) DEFAULT NULL,
+  `empId` varchar(32) COLLATE utf8_unicode_ci DEFAULT NULL,
   `dateEnrolled` datetime DEFAULT NULL COMMENT 'UTC DateTime',
   `section` varchar(10) COLLATE utf8_unicode_ci DEFAULT NULL,
   `withdrew` bit(1) DEFAULT b'0',
   `dateWithdrew` datetime DEFAULT NULL COMMENT 'UTC DateTime',
   `forTesting` bit(1) DEFAULT b'0' COMMENT 'Flags account to not to be included in course calculations',
-  `courseCredit` float DEFAULT NULL,
+  `courseCredit` double DEFAULT NULL,
   `courseGrade` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `overrideCourseGrade` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `timeLimitMultiplier` float NOT NULL DEFAULT '1',
@@ -245,28 +285,28 @@ LOCK TABLES `enrollment` WRITE;
 
 INSERT INTO `enrollment` (`id`, `driveId`, `userId`, `firstName`, `lastName`, `username`, `email`, `empId`, `dateEnrolled`, `section`, `withdrew`, `dateWithdrew`, `forTesting`, `courseCredit`, `courseGrade`, `overrideCourseGrade`, `timeLimitMultiplier`)
 VALUES
-	(1,'aI8sK4vmEhC5sdeSP3vNW','devuserid','generic','user','devuser',NULL,1234567,'2019-09-03 20:29:41','15',b'0',NULL,b'0',NULL,'A',NULL,1),
-	(2,'fsa4214fasgag1512525f',NULL,'SHOULD NOT','BE LOADED','invalid',NULL,5254243,'2019-09-03 20:29:41','2',b'0',NULL,b'0',NULL,NULL,NULL,1),
-	(4,'aI8sK4vmEhC5sdeSP3vNW','temp1','Anatole','Wickrath','awickrath0',NULL,60,NULL,NULL,b'0',NULL,b'0',NULL,'B',NULL,1),
-	(5,'aI8sK4vmEhC5sdeSP3vNW','temp2','Antony','Aylett','aaylett1',NULL,7,NULL,NULL,b'0',NULL,b'0',NULL,'B-',NULL,1),
-	(6,'aI8sK4vmEhC5sdeSP3vNW','temp3','Lindi','Rash','lrash2',NULL,5,NULL,NULL,b'0',NULL,b'0',NULL,NULL,NULL,1),
-	(7,'aI8sK4vmEhC5sdeSP3vNW','temp4','Nicholas','Peteri','npeteri3',NULL,119,NULL,NULL,b'0',NULL,b'0',NULL,'B+',NULL,1),
-	(8,'aI8sK4vmEhC5sdeSP3vNW','temp5','Savina','Michin','smichin4',NULL,852,NULL,NULL,b'0',NULL,b'0',NULL,NULL,NULL,1),
-	(9,'aI8sK4vmEhC5sdeSP3vNW','temp6','Gerry','Sallan','gsallan5',NULL,89,NULL,NULL,b'0',NULL,b'0',NULL,NULL,NULL,1),
-	(10,'aI8sK4vmEhC5sdeSP3vNW','temp7','Wakefield','Bengle','wbengle6',NULL,4786,NULL,NULL,b'0',NULL,b'0',NULL,NULL,NULL,1),
-	(11,'aI8sK4vmEhC5sdeSP3vNW','temp8','Patrice','Bavin','pbavin8',NULL,75024,NULL,NULL,b'0',NULL,b'0',NULL,NULL,NULL,1),
-	(12,'aI8sK4vmEhC5sdeSP3vNW','temp9','Merrile','McGee','mmcgee9',NULL,9240,NULL,NULL,b'0',NULL,b'0',NULL,NULL,NULL,1),
-	(13,'aI8sK4vmEhC5sdeSP3vNW','temp10','Ardath','Celler','acellera',NULL,4522,NULL,NULL,b'0',NULL,b'0',NULL,NULL,NULL,1),
-	(14,'aI8sK4vmEhC5sdeSP3vNW','temp11','Ashleigh','Lothean','alotheanb',NULL,259,NULL,NULL,b'0',NULL,b'0',NULL,NULL,NULL,1),
-	(15,'aI8sK4vmEhC5sdeSP3vNW','temp12','Salomon','Scorah','sscorahd',NULL,2,NULL,NULL,b'0',NULL,b'0',NULL,NULL,NULL,1),
-	(16,'aI8sK4vmEhC5sdeSP3vNW','temp13','Xaviera','Kupec','xkupece',NULL,4,NULL,NULL,b'0',NULL,b'0',NULL,NULL,NULL,1),
-	(17,'aI8sK4vmEhC5sdeSP3vNW','temp14','Pennie','Badder','pbadderg',NULL,3931,NULL,NULL,b'0',NULL,b'0',NULL,NULL,NULL,1),
-	(18,'aI8sK4vmEhC5sdeSP3vNW','temp15','Travis','Sarrell','tsarrellh',NULL,7947,NULL,NULL,b'0',NULL,b'0',NULL,NULL,NULL,1),
-	(19,'aI8sK4vmEhC5sdeSP3vNW','temp16','Eldin','Crosser','ecrosserj',NULL,96895,NULL,NULL,b'0',NULL,b'0',NULL,NULL,NULL,1),
-	(20,'aI8sK4vmEhC5sdeSP3vNW','temp17','Ginger','Nijs','gnijsl',NULL,60,NULL,NULL,b'0',NULL,b'0',NULL,NULL,NULL,1),
-	(21,'aI8sK4vmEhC5sdeSP3vNW','temp18','Petronille','Pidcock','ppidcockm',NULL,381,NULL,NULL,b'0',NULL,b'0',NULL,NULL,NULL,1),
-	(22,'aI8sK4vmEhC5sdeSP3vNW','temp19','Arlee','Duggleby','adugglebyn',NULL,5,NULL,NULL,b'0',NULL,b'0',NULL,NULL,NULL,1),
-	(23,'aI8sK4vmEhC5sdeSP3vNW','temp20','Ambur','Viant','avianto',NULL,34,NULL,NULL,b'0',NULL,b'0',NULL,NULL,NULL,1);
+	(1,'aI8sK4vmEhC5sdeSP3vNW','devuserid','generic','user','devuser',NULL,'1234567','2019-09-03 20:29:41','15',b'0',NULL,b'0',NULL,'A',NULL,1),
+	(2,'fsa4214fasgag1512525f',NULL,'SHOULD NOT','BE LOADED','invalid',NULL,'5254243','2019-09-03 20:29:41','2',b'0',NULL,b'0',NULL,NULL,NULL,1),
+	(4,'aI8sK4vmEhC5sdeSP3vNW','temp1','Anatole','Wickrath','awickrath0',NULL,'60',NULL,NULL,b'0',NULL,b'0',NULL,'B',NULL,1),
+	(5,'aI8sK4vmEhC5sdeSP3vNW','temp2','Antony','Aylett','aaylett1',NULL,'7',NULL,NULL,b'0',NULL,b'0',NULL,'B-',NULL,1),
+	(6,'aI8sK4vmEhC5sdeSP3vNW','temp3','Lindi','Rash','lrash2',NULL,'5',NULL,NULL,b'0',NULL,b'0',NULL,NULL,NULL,1),
+	(7,'aI8sK4vmEhC5sdeSP3vNW','temp4','Nicholas','Peteri','npeteri3',NULL,'119',NULL,NULL,b'0',NULL,b'0',NULL,'B+',NULL,1),
+	(8,'aI8sK4vmEhC5sdeSP3vNW','temp5','Savina','Michin','smichin4',NULL,'852',NULL,NULL,b'0',NULL,b'0',NULL,NULL,NULL,1),
+	(9,'aI8sK4vmEhC5sdeSP3vNW','temp6','Gerry','Sallan','gsallan5',NULL,'89',NULL,NULL,b'0',NULL,b'0',NULL,NULL,NULL,1),
+	(10,'aI8sK4vmEhC5sdeSP3vNW','temp7','Wakefield','Bengle','wbengle6',NULL,'4786',NULL,NULL,b'0',NULL,b'0',NULL,NULL,NULL,1),
+	(11,'aI8sK4vmEhC5sdeSP3vNW','temp8','Patrice','Bavin','pbavin8',NULL,'75024',NULL,NULL,b'0',NULL,b'0',NULL,NULL,NULL,1),
+	(12,'aI8sK4vmEhC5sdeSP3vNW','temp9','Merrile','McGee','mmcgee9',NULL,'9240',NULL,NULL,b'0',NULL,b'0',NULL,NULL,NULL,1),
+	(13,'aI8sK4vmEhC5sdeSP3vNW','temp10','Ardath','Celler','acellera',NULL,'4522',NULL,NULL,b'0',NULL,b'0',NULL,NULL,NULL,1),
+	(14,'aI8sK4vmEhC5sdeSP3vNW','temp11','Ashleigh','Lothean','alotheanb',NULL,'259',NULL,NULL,b'0',NULL,b'0',NULL,NULL,NULL,1),
+	(15,'aI8sK4vmEhC5sdeSP3vNW','temp12','Salomon','Scorah','sscorahd',NULL,'2',NULL,NULL,b'0',NULL,b'0',NULL,NULL,NULL,1),
+	(16,'aI8sK4vmEhC5sdeSP3vNW','temp13','Xaviera','Kupec','xkupece',NULL,'4',NULL,NULL,b'0',NULL,b'0',NULL,NULL,NULL,1),
+	(17,'aI8sK4vmEhC5sdeSP3vNW','temp14','Pennie','Badder','pbadderg',NULL,'3931',NULL,NULL,b'0',NULL,b'0',NULL,NULL,NULL,1),
+	(18,'aI8sK4vmEhC5sdeSP3vNW','temp15','Travis','Sarrell','tsarrellh',NULL,'7947',NULL,NULL,b'0',NULL,b'0',NULL,NULL,NULL,1),
+	(19,'aI8sK4vmEhC5sdeSP3vNW','temp16','Eldin','Crosser','ecrosserj',NULL,'96895',NULL,NULL,b'0',NULL,b'0',NULL,NULL,NULL,1),
+	(20,'aI8sK4vmEhC5sdeSP3vNW','temp17','Ginger','Nijs','gnijsl',NULL,'60',NULL,NULL,b'0',NULL,b'0',NULL,NULL,NULL,1),
+	(21,'aI8sK4vmEhC5sdeSP3vNW','temp18','Petronille','Pidcock','ppidcockm',NULL,'381',NULL,NULL,b'0',NULL,b'0',NULL,NULL,NULL,1),
+	(22,'aI8sK4vmEhC5sdeSP3vNW','temp19','Arlee','Duggleby','adugglebyn',NULL,'5',NULL,NULL,b'0',NULL,b'0',NULL,NULL,NULL,1),
+	(23,'aI8sK4vmEhC5sdeSP3vNW','temp20','Ambur','Viant','avianto',NULL,'34',NULL,NULL,b'0',NULL,b'0',NULL,NULL,NULL,1);
 
 /*!40000 ALTER TABLE `enrollment` ENABLE KEYS */;
 UNLOCK TABLES;
@@ -323,10 +363,9 @@ DROP TABLE IF EXISTS `user`;
 
 CREATE TABLE `user` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `userId` char(21) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `userId` char(21) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
   `screenName` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT 'full email address',
   `email` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT 'full email address',
-  `studentId` varchar(32) COLLATE utf8_unicode_ci DEFAULT NULL,
   `lastName` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `firstName` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `profilePicture` varchar(128) COLLATE utf8_unicode_ci DEFAULT NULL,
@@ -343,11 +382,11 @@ CREATE TABLE `user` (
 LOCK TABLES `user` WRITE;
 /*!40000 ALTER TABLE `user` DISABLE KEYS */;
 
-INSERT INTO `user` (`id`, `userId`, `screenName`, `email`, `studentId`, `lastName`, `firstName`, `profilePicture`, `trackingConsent`, `roleStudent`, `roleInstructor`, `roleCourseDesigner`, `roleWatchdog`, `roleCommunityTA`, `roleLiveDataCommunity`)
+INSERT INTO `user` (`id`, `userId`, `screenName`, `email`, `lastName`, `firstName`, `profilePicture`, `trackingConsent`, `roleStudent`, `roleInstructor`, `roleCourseDesigner`, `roleWatchdog`, `roleCommunityTA`, `roleLiveDataCommunity`)
 VALUES
-	(1,'devuserid','DEV','devuser@example.com',NULL,'User','Dev','quokka',0,1,1,0,0,0,0),
-	(2,'s1userid','S1','s1@example.com',NULL,'User','Student1','quokka',1,1,0,0,0,0,0),
-	(26,'s2userid','S2','s2@example.com',NULL,'User','Student2','ALSDKFJLKASDJFKASJDFLKAJSDFK.png',1,1,0,0,0,0,0);
+	(1,'devuserid','DEV','devuser@example.com','User','Dev','quokka',0,1,1,0,0,0,0),
+	(2,'s1userid','S1','s1@example.com','User','Student1','quokka',1,1,0,0,0,0,0),
+	(26,'s2userid','S2','s2@example.com','User','Student2','ALSDKFJLKASDJFKASJDFLKAJSDFK.png',1,1,0,0,0,0,0);
 
 /*!40000 ALTER TABLE `user` ENABLE KEYS */;
 UNLOCK TABLES;
@@ -362,15 +401,15 @@ CREATE TABLE `user_assignment` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `doenetId` char(21) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
   `contentId` char(64) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
-  `userId` char(21) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT 'NULL means no group',
+  `userId` char(21) COLLATE utf8_unicode_ci NOT NULL DEFAULT '' COMMENT 'NULL means no group',
   `dueDateOverride` datetime DEFAULT NULL COMMENT 'UTC DATETIME NULL means no override',
   `numberOfAttemptsAllowedOverride` int(11) DEFAULT NULL,
   `groupId` char(21) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT 'NULL means no group',
   `groupName` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT 'NULL means no group',
   `completed` bit(1) DEFAULT NULL COMMENT 'For ToDo list',
   `completedDate` datetime DEFAULT NULL,
-  `credit` float NOT NULL DEFAULT '0' COMMENT 'Overwritten by metric used to calculate it from other tables. Always 0-1 scale.',
-  `creditOverride` float DEFAULT NULL COMMENT 'if not NULL then credit field will be set to this',
+  `credit` double NOT NULL DEFAULT '0' COMMENT 'Overwritten by metric used to calculate it from other tables. Always 0-1 scale.',
+  `creditOverride` double DEFAULT NULL COMMENT 'if not NULL then credit field will be set to this',
   PRIMARY KEY (`id`),
   UNIQUE KEY `assignment-userId` (`doenetId`,`userId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
@@ -388,8 +427,8 @@ CREATE TABLE `user_assignment_attempt` (
   `contentId` char(64) COLLATE utf8_unicode_ci NOT NULL,
   `userId` char(21) COLLATE utf8_unicode_ci NOT NULL,
   `attemptNumber` int(11) NOT NULL DEFAULT '1',
-  `credit` float DEFAULT NULL,
-  `creditOverride` float DEFAULT NULL,
+  `credit` double DEFAULT NULL,
+  `creditOverride` double DEFAULT NULL,
   `assignedVariant` text COLLATE utf8_unicode_ci COMMENT 'Like seed. Informs the selects what values to use for the content. NULL means didn''t view yet.',
   `generatedVariant` text COLLATE utf8_unicode_ci COMMENT 'Based on code',
   `began` datetime DEFAULT NULL,
@@ -412,14 +451,14 @@ CREATE TABLE `user_assignment_attempt_item` (
   `userId` char(21) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
   `attemptNumber` int(11) NOT NULL,
   `itemNumber` int(11) NOT NULL COMMENT 'The number of the scored item found in the Doenet code.',
-  `credit` float DEFAULT NULL COMMENT 'maximum credit',
-  `creditOverride` float DEFAULT NULL,
+  `credit` double DEFAULT NULL COMMENT 'maximum credit',
+  `creditOverride` double DEFAULT NULL,
   `weight` float NOT NULL DEFAULT '1' COMMENT 'Weight comes from Doenet code.',
   `generatedVariant` text COLLATE utf8_unicode_ci,
   `viewedSolution` tinyint(1) DEFAULT '0',
   `viewedSolutionDate` datetime DEFAULT NULL COMMENT 'Datetime when they first viewed the solution',
   PRIMARY KEY (`id`),
-  KEY `userId` (`userId`,`doenetId`,`attemptNumber`,`itemNumber`)
+  UNIQUE KEY `unique_rows` (`userId`,`doenetId`,`attemptNumber`,`itemNumber`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 
@@ -431,18 +470,18 @@ DROP TABLE IF EXISTS `user_assignment_attempt_item_submission`;
 
 CREATE TABLE `user_assignment_attempt_item_submission` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `doenetId` char(21) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `doenetId` char(21) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
   `contentId` char(64) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `userId` char(21) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `attemptNumber` int(11) DEFAULT NULL,
-  `itemNumber` int(11) DEFAULT NULL,
-  `submissionNumber` int(11) DEFAULT NULL,
+  `userId` char(21) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
+  `attemptNumber` int(11) NOT NULL,
+  `itemNumber` int(11) NOT NULL,
+  `submissionNumber` int(11) NOT NULL,
   `stateVariables` mediumtext COLLATE utf8_unicode_ci COMMENT 'JSON used to persist state of user''s experience',
   `credit` float DEFAULT NULL,
   `submittedDate` datetime NOT NULL,
   `valid` tinyint(1) NOT NULL DEFAULT '1' COMMENT 'Past the due date. When the assesment wasn''t open.',
   PRIMARY KEY (`id`),
-  UNIQUE KEY `unique rows` (`doenetId`,`attemptNumber`,`itemNumber`,`submissionNumber`)
+  UNIQUE KEY `unique_rows` (`userId`,`doenetId`,`attemptNumber`,`itemNumber`,`submissionNumber`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 

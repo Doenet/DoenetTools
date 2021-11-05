@@ -30,6 +30,8 @@ $assignment = array();
   $sql = "SELECT
   a.assignedDate AS assignedDate,
   a.dueDate AS dueDate,
+  a.pinnedAfterDate As pinnedAfterDate,
+  a.pinnedUntilDate As pinnedUntilDate,
   a.timeLimit AS timeLimit,
   a.numberOfAttemptsAllowed AS numberOfAttemptsAllowed,
   a.attemptAggregation AS attemptAggregation,
@@ -38,6 +40,7 @@ $assignment = array();
   a.individualize AS individualize,
   a.multipleAttempts AS multipleAttempts,
   a.showSolution AS showSolution,
+  a.showSolutionInGradebook AS showSolutionInGradebook,
   a.showFeedback AS showFeedback,
   a.showHints AS showHints,
   a.showCorrectness AS showCorrectness,
@@ -52,6 +55,8 @@ $assignment = array();
     $assignment = array(
           "assignment_title" => $row['assignment_title'],
           "assignedDate" => $row['assignedDate'],
+          "pinnedAfterDate" => $row['pinnedAfterDate'],
+          "pinnedUntilDate" => $row['pinnedUntilDate'],
           "dueDate" => $row['dueDate'],
           "timeLimit" => $row['timeLimit'],
           "numberOfAttemptsAllowed" => $row['numberOfAttemptsAllowed'],
@@ -61,6 +66,7 @@ $assignment = array();
           "individualize" => $row['individualize'] == '1' ? true : false,
           "multipleAttempts" => $row['multipleAttempts']  == '1' ? true : false,
           "showSolution" => $row['showSolution'] == '1' ? true : false,
+          "showSolutionInGradebook" => $row['showSolutionInGradebook'] == '1' ? true : false,
           "showFeedback" => $row['showFeedback'] == '1' ? true : false,
           "showHints" => $row['showHints'] == '1' ? true : false,
           "showCorrectness" => $row['showCorrectness'] == '1' ? true : false,

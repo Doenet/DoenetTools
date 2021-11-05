@@ -10,7 +10,7 @@ export const mainPanelClickAtom = atom({
 });
 const ContentWrapper = styled.div`
   grid-area: mainPanel;
-  background-color: hsl(0, 0%, 99%);
+  background-color: hsl(0, 0%, 100%);
   height: 100%;
   // border-radius: 0 0 4px 4px;
   overflow: auto;
@@ -20,9 +20,12 @@ const ControlsWrapper = styled.div`
   display: flex;
   flex-direction: row;
   gap: 4px;
-  background-color: hsl(0, 0%, 99%);
+  background-color: hsl(0, 0%, 100%);
   // border-radius: 4px 4px 0 0;
   overflow: auto hidden;
+  justify-content: flex-start;
+  align-items: center;
+  height: 40px;
   // border-bottom: 2px solid #e3e3e3;
 `;
 const OpenButton = styled.button`
@@ -33,7 +36,7 @@ color: white;
 border: none;
 display: inline-block;
 `;
-export default function MainPanel({headerControls, headerControlsPositions, children, setMenusOpen, openMenuButton, displayProfile}) {
+export default function MainPanel({headerControls, children, setMenusOpen, openMenuButton, displayProfile}) {
   console.log(">>>===main panel");
   const mpOnClick = useRecoilCallback(({set, snapshot}) => async () => {
     const atomArray = await snapshot.getPromise(mainPanelClickAtom);
@@ -57,7 +60,6 @@ export default function MainPanel({headerControls, headerControlsPositions, chil
   }
   if (headerControls) {
     for (const [i, control] of Object.entries(headerControls)) {
-      const position = headerControlsPositions[i];
       controls.push(/* @__PURE__ */ React.createElement("span", {
         key: `headControl${i}`
       }, control));

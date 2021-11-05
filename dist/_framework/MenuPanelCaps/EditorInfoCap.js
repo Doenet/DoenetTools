@@ -33,6 +33,6 @@ export default function EditorInfoCap() {
     alt: `${course_label} course`,
     width: "240px"
   })), /* @__PURE__ */ React.createElement("div", {
-    style: {padding: "4px"}
+    style: {padding: "8px"}
   }, /* @__PURE__ */ React.createElement("div", null, course_label), /* @__PURE__ */ React.createElement("div", null, docInfo.label), /* @__PURE__ */ React.createElement("div", null, status, " ")));
 }
