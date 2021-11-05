@@ -123,6 +123,8 @@ export function useNavigationCrumbs(driveId,folderId){
           path: `${driveId}:${item.itemId}:${item.itemId}:Folder`,
         }
       }
+      //WHY ARE THESE NOT SET SOMETIMES?
+      console.log(">>>>params",params)
       crumbArray.push({
         label:item.label,
         onClick:()=>{
@@ -143,6 +145,10 @@ export function useNavigationCrumbs(driveId,folderId){
       getCrumbs(driveId,folderId);
   },[getCrumbs,driveId,folderId])
 
+  // console.log("\n>>>>navigation")
+  // console.log(">>>>driveId",driveId)
+  // console.log(">>>>folderId",folderId)
+  // console.log(">>>>crumbs",crumbs)
 
   return crumbs
 }
