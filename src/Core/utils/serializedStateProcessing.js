@@ -143,7 +143,6 @@ export function expandDoenetMLsToFullSerializedComponents({
 
   for (let doenetML of doenetMLs) {
 
-
     let serializedComponents = parseAndCompile(doenetML);
 
     correctComponentTypeCapitalization(serializedComponents, componentTypeLowerCaseMapping);
@@ -1202,7 +1201,7 @@ export function decodeXMLEntities(serializedComponents) {
       if (serializedComponent.attributes) {
         for (let attrName in serializedComponent.attributes) {
           let attribute = serializedComponent.attributes[attrName];
-  
+
           if (attribute.component) {
             decodeXMLEntities([attribute.component])
           } else if(attribute.primitive) {

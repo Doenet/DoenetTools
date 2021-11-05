@@ -51,7 +51,6 @@ export function parseAndCompile(inText){
                 //move out of Attribute to maintain loop invariant
                 cursor.parent();
                 attrs[attrName] = attrValue;
-
             }
 
             //get back to the level of OpenTag in order to parse tag body
@@ -78,7 +77,6 @@ export function parseAndCompile(inText){
                     break;
                 } else if (cursor.name === "Macro"){
                     //add the macro to the children, ignoring the dollar sign in the name.
-                    //TODO decide if this format (a singleton object with the tag macroName) is ideal.
                     element.children.push({componentType: "string", state: {value: inText.substring(cursor.from,cursor.to)},  props: {}});
                     // element.children.push({componentType: "macro", macroName : inText.substring(cursor.from+1,cursor.to)});
                 } else if (cursor.name === "Comment") {
@@ -134,11 +132,10 @@ export function parseAndCompile(inText){
     if(!tc.firstChild()){
         return out;
     }
-    //TODO handle things that aren't elements here.
     // the way the parser is structured is that the first row of the tree is just going to be Elements
     // We traverse the first row, each compiled Element it all to an array, and return that
     // We create a new cursor for each element to avoid having to worry about cursor state between elements
-    // This should only create n many pointers for n elements, which is a very small amount of memory in the grand scheme here
+    // This should only create n many pointers for n elements, which is a small amount of memory overall
     out.push(compileElement(tc.node.cursor))
     while(tc.nextSibling()){
         if(tc.node.name === "Element"){
@@ -147,7 +144,6 @@ export function parseAndCompile(inText){
             continue;
         } else if (tc.node.name === "Macro") {
             //add the macro to the children, ignoring the dollar sign in the name.
-            //TODO decide if this format (a singleton object with the tag macroName) is ideal.
             // out.push({macroName : inText.substring(tc.node.from+1,tc.node.to)});
             out.push({componentType: "string", state: {value: inText.substring(cursor.from,cursor.to)},  props: {}});
         } else if(tc.node.name === "Text"){
@@ -161,15 +157,6 @@ export function parseAndCompile(inText){
     }
     return out;
 }
-
-/**
- * do post processing on the compiled tree in order to acheive the same output as the old parse
- */
-// export function formatTree(tree, lowerCaseMapping){
-
-
-// }
-
 
 /**
  * pretty-print the tree pointed to by a tree-cursor.

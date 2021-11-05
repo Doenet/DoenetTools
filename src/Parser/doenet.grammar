@@ -65,7 +65,6 @@ doubleQuoteAttributeValue { "\"" (attributeContentDoubleQuote | EntityReference 
 @tokens {
   endTag { ">" }
 
-
   selfCloseEndTag { "/>" }
 
   nameChar {
@@ -76,7 +75,7 @@ doubleQuoteAttributeValue { "\"" (attributeContentDoubleQuote | EntityReference 
 
   TagName { identifier }
 
-  Macro { "$" identifier}
+  Macro { "$" "$"? identifier | "$" "$"? "(" identifier ")" }
 
   AttributeName { identifier }
 
@@ -103,7 +102,5 @@ doubleQuoteAttributeValue { "\"" (attributeContentDoubleQuote | EntityReference 
   @precedence {space, Text}
 
 }
-
 @skip { space }
-
 @detectDelim
