@@ -84,6 +84,14 @@ export default class AreaBetweenCurveXAxis extends DoenetRenderer {
       return this.createGraphicalObject();
     }
 
+    this.curveJXG.Y = this.doenetSvData.function;
+    // Since not drawing curve, do we need to update it?
+    // this.curveJXG.needsUpdate = true;
+    // this.curveJXG.updateCurve();
+
+    this.integralJXG.visProp["visible"] = !this.doenetSvData.hidden;
+    this.integralJXG.visPropCalc["visible"] = !this.doenetSvData.hidden;
+
     let [x1, x2] = this.doenetSvData.boundaryValues;
     let [y1, y2] = this.doenetSvData.boundaryValues.map(this.doenetSvData.function)
     this.integralJXG.curveLeft.coords.setCoordinates(JXG.COORDS_BY_USER, [x1, y1]);
@@ -95,6 +103,9 @@ export default class AreaBetweenCurveXAxis extends DoenetRenderer {
 
     this.integralJXG.curveRight.needsUpdate = true;
     this.integralJXG.curveRight.update();
+
+    this.integralJXG.needsUpdate = true;
+    this.integralJXG.update();
 
     this.props.board.updateRenderer();
 
