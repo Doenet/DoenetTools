@@ -2758,6 +2758,14 @@ export default class Core {
         }
       }
 
+      if ("targetAttributesToAlwaysIgnore" in compositeComponent.state) {
+        thisDependencies.targetAttributesToAlwaysIgnore = {
+          dependencyType: "stateVariable",
+          componentName: compositeComponent.componentName,
+          variableName: "targetAttributesToAlwaysIgnore",
+        };
+      }
+
       // We overwrite targetVariable here as the instructions
       // mean we should map this variable from the target
       // onto attribute of replacement
@@ -2792,9 +2800,16 @@ export default class Core {
             attributeValue = dependencyValues.attributePrimitive;
           } else {
 
+            let targetAttributesToIgnore = [];
+            if(dependencyValues.targetAttributesToIgnore) {
+              targetAttributesToIgnore.push(...dependencyValues.targetAttributesToIgnore)
+            }
+            if(dependencyValues.targetAttributesToAlwaysIgnore) {
+              targetAttributesToIgnore.push(...dependencyValues.targetAttributesToAlwaysIgnore);
+            }
+
             if (dependencyValues.targetVariable !== undefined
-              && !(dependencyValues.targetAttributesToIgnore &&
-                dependencyValues.targetAttributesToIgnore.includes(attrName))
+              && !targetAttributesToIgnore.includes(attrName)
               && !usedDefault.targetVariable) {
               // if don't have attribute component or primitive
               // and target has attribute, use that value
@@ -2847,9 +2862,16 @@ export default class Core {
               return { success: false }
             }
 
+            let targetAttributesToIgnore = [];
+            if(dependencyValues.targetAttributesToIgnore) {
+              targetAttributesToIgnore.push(...dependencyValues.targetAttributesToIgnore)
+            }
+            if(dependencyValues.targetAttributesToAlwaysIgnore) {
+              targetAttributesToIgnore.push(...dependencyValues.targetAttributesToAlwaysIgnore);
+            }
+
             if (dependencyValues.targetVariable !== undefined
-              && !(dependencyValues.targetAttributesToIgnore &&
-                dependencyValues.targetAttributesToIgnore.includes(attrName))
+              && !dependencyValues.targetAttributesToIgnore.includes(attrName)
               && !usedDefault.targetVariable) {
               //  if target has attribute, set that value
               return {
@@ -2910,9 +2932,16 @@ export default class Core {
             attributeValue = dependencyValues.attributePrimitive;
           } else {
 
+            let targetAttributesToIgnore = [];
+            if(dependencyValues.targetAttributesToIgnore) {
+              targetAttributesToIgnore.push(...dependencyValues.targetAttributesToIgnore)
+            }
+            if(dependencyValues.targetAttributesToAlwaysIgnore) {
+              targetAttributesToIgnore.push(...dependencyValues.targetAttributesToAlwaysIgnore);
+            }
+
             if (dependencyValues.targetVariable !== undefined
-              && !(dependencyValues.targetAttributesToIgnore &&
-                dependencyValues.targetAttributesToIgnore.includes(attrName))
+              && !targetAttributesToIgnore.includes(attrName)
               && !usedDefault.targetVariable) {
               // if don't have attribute component or primitive
               // and target has attribute, use that value
@@ -2952,9 +2981,16 @@ export default class Core {
               return { success: false }
             }
 
+            let targetAttributesToIgnore = [];
+            if(dependencyValues.targetAttributesToIgnore) {
+              targetAttributesToIgnore.push(...dependencyValues.targetAttributesToIgnore)
+            }
+            if(dependencyValues.targetAttributesToAlwaysIgnore) {
+              targetAttributesToIgnore.push(...dependencyValues.targetAttributesToAlwaysIgnore);
+            }
+
             if (dependencyValues.targetVariable !== undefined
-              && !(dependencyValues.targetAttributesToIgnore &&
-                dependencyValues.targetAttributesToIgnore.includes(attrName))
+              && !targetAttributesToIgnore.includes(attrName)
             ) {
               //  if target has attribute, set that value
               return {
