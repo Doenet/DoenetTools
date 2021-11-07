@@ -933,6 +933,8 @@ export default class Core {
     if (componentClass.descendantCompositesMustHaveAReplacement) {
       sharedParameters.compositesMustHaveAReplacement = true;
       sharedParameters.compositesDefaultReplacementType = componentClass.descendantCompositesDefaultReplacementType;
+    } else if (componentClass.descendantCompositesMustHaveAReplacement === false) {
+      sharedParameters.compositesMustHaveAReplacement = false;
     }
 
     // check if component has any attributes to propagate to descendants
@@ -2801,10 +2803,10 @@ export default class Core {
           } else {
 
             let targetAttributesToIgnore = [];
-            if(dependencyValues.targetAttributesToIgnore) {
+            if (dependencyValues.targetAttributesToIgnore) {
               targetAttributesToIgnore.push(...dependencyValues.targetAttributesToIgnore)
             }
-            if(dependencyValues.targetAttributesToAlwaysIgnore) {
+            if (dependencyValues.targetAttributesToAlwaysIgnore) {
               targetAttributesToIgnore.push(...dependencyValues.targetAttributesToAlwaysIgnore);
             }
 
@@ -2863,10 +2865,10 @@ export default class Core {
             }
 
             let targetAttributesToIgnore = [];
-            if(dependencyValues.targetAttributesToIgnore) {
+            if (dependencyValues.targetAttributesToIgnore) {
               targetAttributesToIgnore.push(...dependencyValues.targetAttributesToIgnore)
             }
-            if(dependencyValues.targetAttributesToAlwaysIgnore) {
+            if (dependencyValues.targetAttributesToAlwaysIgnore) {
               targetAttributesToIgnore.push(...dependencyValues.targetAttributesToAlwaysIgnore);
             }
 
@@ -2933,10 +2935,10 @@ export default class Core {
           } else {
 
             let targetAttributesToIgnore = [];
-            if(dependencyValues.targetAttributesToIgnore) {
+            if (dependencyValues.targetAttributesToIgnore) {
               targetAttributesToIgnore.push(...dependencyValues.targetAttributesToIgnore)
             }
-            if(dependencyValues.targetAttributesToAlwaysIgnore) {
+            if (dependencyValues.targetAttributesToAlwaysIgnore) {
               targetAttributesToIgnore.push(...dependencyValues.targetAttributesToAlwaysIgnore);
             }
 
@@ -2982,10 +2984,10 @@ export default class Core {
             }
 
             let targetAttributesToIgnore = [];
-            if(dependencyValues.targetAttributesToIgnore) {
+            if (dependencyValues.targetAttributesToIgnore) {
               targetAttributesToIgnore.push(...dependencyValues.targetAttributesToIgnore)
             }
-            if(dependencyValues.targetAttributesToAlwaysIgnore) {
+            if (dependencyValues.targetAttributesToAlwaysIgnore) {
               targetAttributesToIgnore.push(...dependencyValues.targetAttributesToAlwaysIgnore);
             }
 

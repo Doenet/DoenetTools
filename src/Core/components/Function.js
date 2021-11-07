@@ -1586,7 +1586,8 @@ export default class Function extends InlineComponent {
                     }
                     minimumAtPreviousRight = (Math.abs(x - dx) < eps);
                   } else {
-                    break;
+                    minimumAtPreviousRight = false;
+                    continue;
                   }
                 }
               } else {
@@ -1612,7 +1613,8 @@ export default class Function extends InlineComponent {
                     }
                     minimumAtPreviousRight = (Math.abs(x - dx) < eps);
                   } else {
-                    break;
+                    minimumAtPreviousRight = false;
+                    continue;
                   }
                 }
 
@@ -2032,7 +2034,8 @@ export default class Function extends InlineComponent {
                     }
                     maximumAtPreviousRight = (Math.abs(x - dx) < eps);
                   } else {
-                    break;
+                    maximumAtPreviousRight = false;
+                    continue;
                   }
                 }
               } else {
@@ -2058,7 +2061,8 @@ export default class Function extends InlineComponent {
                     }
                     maximumAtPreviousRight = (Math.abs(x - dx) < eps);
                   } else {
-                    break;
+                    maximumAtPreviousRight = false;
+                    continue;
                   }
                 }
               } else {
@@ -3275,7 +3279,7 @@ function calculateInterpolationPoints({ dependencyValues, numerics }) {
         }
       } else {
         // must be first point that is followed by an extremum
-        if(p.y !== null && p.y < pNext.y - yscale) {
+        if (p.y !== null && p.y < pNext.y - yscale) {
           return addMinimum({
             x: p.x,
             y: p.y,

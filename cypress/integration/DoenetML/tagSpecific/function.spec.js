@@ -2185,6 +2185,132 @@ describe('Function Tag Tests', function () {
 
   });
 
+
+  it('calculated extrema from spline, restrict domain, just through points', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <graph>
+    <point>(0, 0)</point>
+    <point>(2, -1.8)</point>
+    <point>(5,-4)</point>
+    <point>(7,0)</point>
+    <point>(8,1)</point>
+    <function through="$_point1 $_point2 $_point3 $_point4 $_point5" domain="(0,10)" />
+    <copy prop="maxima" tname="_function1" />
+    <copy prop="minima" tname="_function1" />
+    </graph>
+
+    <p>Number of maxima: <copy prop="numbermaxima" name="numbermaxima" tname="_function1" /></p>
+    <p>Maxima: <math simplify="none"><copy prop="maxima" tname="_function1" /></math></p>
+    <p>Number of minima: <copy prop="numberminima" name="numberminima" tname="_function1" /></p>
+    <p>Minima: <math simplify="none"><copy prop="minima" tname="_function1" /></math></p>
+    <p>Number of extrema: <copy prop="numberextrema" name="numberextrema" tname="_function1" /></p>
+    <p>Extrema: <math simplify="none"><copy prop="extrema" tname="_function1" /></math></p>
+    `}, "*");
+    });
+
+    //wait for window to load
+    cy.get('#\\/_text1').should('have.text', 'a');
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+
+      let numberMaximaAnchor = cesc('#' + components["/numbermaxima"].replacements[0].componentName);
+      let numberMinimaAnchor = cesc('#' + components["/numberminima"].replacements[0].componentName);
+      let numberExtremaAnchor = cesc('#' + components["/numberextrema"].replacements[0].componentName);
+
+      // it is set up so that minimum of quadratic interpolating between first two points
+      // is past maximum of domain
+      // check for bug where this stopped looking for minima
+      cy.get(numberMaximaAnchor).should('have.text', '0');
+      cy.get(numberMinimaAnchor).should('have.text', '1');
+      cy.get('#\\/_math2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('(5,−4)');
+      });
+      cy.get(numberExtremaAnchor).should('have.text', '1');
+
+      cy.get('#\\/_math3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('(5,−4)');
+      });
+
+
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
+
+        // now move points so that the minimum of the cubic interpolating between
+        // the first two points is past maximum of the domain
+        // check for bug where this stopped looking for minima
+
+        components['/_point1'].movePoint({ x: 0, y: -0.35 });
+        components['/_point2'].movePoint({ x: 1.8, y: -1.36 });
+        components['/_point5'].movePoint({ x: 1, y: -0.866 });
+
+        cy.get(numberMaximaAnchor).should('have.text', '0');
+        cy.get(numberMinimaAnchor).should('have.text', '1');
+        cy.get('#\\/_math2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(5,−4)');
+        });
+        cy.get(numberExtremaAnchor).should('have.text', '1');
+        cy.get('#\\/_math3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(5,−4)');
+        });
+
+      });
+
+
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
+
+        // now move points so that maximum of quadratic interpolating between first two points
+        // is past maximum of domain
+        // check for bug where this stopped looking for maxima
+
+        components['/_point1'].movePoint({ x: 0, y: 0 });
+        components['/_point2'].movePoint({ x: 2, y: 1.8 });
+        components['/_point3'].movePoint({ x: 5, y: 4 });
+        components['/_point5'].movePoint({ x: 8, y: -1 });
+
+        cy.get(numberMaximaAnchor).should('have.text', '1');
+        cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(5,4)');
+        });
+        cy.get(numberMinimaAnchor).should('have.text', '0');
+        cy.get(numberExtremaAnchor).should('have.text', '1');
+        cy.get('#\\/_math3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(5,4)');
+        });
+
+      });
+
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
+
+        // now move points so that the maximum of the cubic interpolating between
+        // the first two points is past maximum of the domain
+        // check for bug where this stopped looking for maximum
+
+        components['/_point1'].movePoint({ x: 0, y: 0.35 });
+        components['/_point2'].movePoint({ x: 1.8, y: 1.36 });
+        components['/_point5'].movePoint({ x: 1, y: 0.866 });
+
+        cy.get(numberMaximaAnchor).should('have.text', '1');
+        cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(5,4)');
+        });
+        cy.get(numberMinimaAnchor).should('have.text', '0');
+        cy.get(numberExtremaAnchor).should('have.text', '1');
+        cy.get('#\\/_math3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(5,4)');
+        });
+
+      });
+
+    })
+
+  });
+
   it('calculated extrema from gaussians', () => {
     cy.window().then((win) => {
       win.postMessage({
