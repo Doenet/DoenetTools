@@ -453,6 +453,99 @@ describe('Function Tag Tests', function () {
     })
   });
 
+  it('function two extrema, same height', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <graph>
+    <function extrema="(0,0) (1,0)" />
+    </graph>
+    `}, "*");
+    });
+
+    //wait for window to load
+    cy.get('#\\/_text1').should('have.text', 'a');
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      let f = components['/_function1'].stateValues.fs[0];
+      expect(f(0)).closeTo(0, 1E-12);
+      expect(f(1)).closeTo(0, 1E-12);
+      expect(f(0.5)).closeTo(-1, 1E-12);
+      // like parabola to left of maximum
+      expect(f(-1)).closeTo(-1, 1E-12);
+      expect(f(-2)).closeTo(-4, 1E-12);
+      expect(f(-3)).closeTo(-9, 1E-12);
+      // like parabola to right of maximum
+      expect(f(2)).closeTo(-1, 1E-12);
+      expect(f(3)).closeTo(-4, 1E-12);
+      expect(f(4)).closeTo(-9, 1E-12);
+    })
+  });
+
+  it('function two extrema, second higher', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <graph>
+    <function extrema="(0,0) (1,2)" />
+    </graph>
+    `}, "*");
+    });
+
+    //wait for window to load
+    cy.get('#\\/_text1').should('have.text', 'a');
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      let f = components['/_function1'].stateValues.fs[0];
+      expect(f(0)).closeTo(0, 1E-12);
+      expect(f(1)).closeTo(2, 1E-12);
+      expect(f(0.5)).closeTo(1, 1E-12);
+      // like parabola to left of minimum
+      expect(f(-1)).closeTo(1, 1E-12);
+      expect(f(-2)).closeTo(4, 1E-12);
+      expect(f(-3)).closeTo(9, 1E-12);
+      // like parabola to right of maximum
+      expect(f(2)).closeTo(1, 1E-12);
+      expect(f(3)).closeTo(-2, 1E-12);
+      expect(f(4)).closeTo(-7, 1E-12);
+    })
+  });
+
+  it('function two extrema, second lower', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <graph>
+    <function extrema="(0,0) (1,-2)" />
+    </graph>
+    `}, "*");
+    });
+
+    //wait for window to load
+    cy.get('#\\/_text1').should('have.text', 'a');
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      let f = components['/_function1'].stateValues.fs[0];
+      expect(f(0)).closeTo(0, 1E-12);
+      expect(f(1)).closeTo(-2, 1E-12);
+      expect(f(0.5)).closeTo(-1, 1E-12);
+      // like parabola to left of maximum
+      expect(f(-1)).closeTo(-1, 1E-12);
+      expect(f(-2)).closeTo(-4, 1E-12);
+      expect(f(-3)).closeTo(-9, 1E-12);
+      // like parabola to right of minimum
+      expect(f(2)).closeTo(-1, 1E-12);
+      expect(f(3)).closeTo(2, 1E-12);
+      expect(f(4)).closeTo(7, 1E-12);
+    })
+  });
+
   it('function with two minima', () => {
     cy.window().then((win) => {
       win.postMessage({
