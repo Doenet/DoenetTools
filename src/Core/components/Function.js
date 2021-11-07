@@ -3273,6 +3273,30 @@ function calculateInterpolationPoints({ dependencyValues, numerics }) {
             pNext,
           });
         }
+      } else {
+        // must be first point that is followed by an extremum
+        if(p.y !== null && p.y < pNext.y - yscale) {
+          return addMinimum({
+            x: p.x,
+            y: p.y,
+            typePrev,
+            xPrev,
+            yPrev,
+            yNext,
+            pNext,
+          });
+        } else {
+          return addMaximum({
+            x: p.x,
+            y: p.y,
+            typePrev,
+            xPrev,
+            yPrev,
+            yNext,
+            pNext,
+          });
+        }
+
       }
     }
     else if (p.type === "point") {
