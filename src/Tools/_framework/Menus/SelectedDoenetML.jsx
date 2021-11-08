@@ -192,6 +192,28 @@ export default function SelectedDoenetML() {
       newLabel: newLabel,
     });
   }
+
+  let surveyButton = null;
+  // console.log(">>>>item",item)
+  //TODO: Need info about points (or flag for survey)
+  // if (item.isReleased === '1'){
+  //   surveyButton = <ActionButton
+  //   width="menu"
+  //   value="View Survey"
+  //   onClick={() => {
+  //     setPageToolView({
+  //       page: 'course',
+  //       tool: 'surveyData',
+  //       view: '',
+  //       params: {
+  //         doenetId: item.doenetId,
+  //         driveId: item.driveId,
+  //       },
+  //     });
+  //   }}
+  // />
+  // }
+
   return (
     <>
       <h2 data-cy="infoPanelItemLabel">
@@ -227,6 +249,7 @@ export default function SelectedDoenetML() {
             });
           }}
         />
+        {surveyButton}
       </ActionButtonGroup>
         <Textfield
         label="DoenetML Label"

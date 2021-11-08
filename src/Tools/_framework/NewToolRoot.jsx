@@ -126,6 +126,8 @@ export default function ToolRoot(){
     GradebookAttempt: lazy(() => import('./ToolPanels/GradebookAttempt')),
     EditorViewer:lazy(() => import('./ToolPanels/EditorViewer')),
     AssignmentViewer:lazy(() => import('./ToolPanels/AssignmentViewer')),
+    SurveyListViewer:lazy(() => import('./ToolPanels/SurveyListViewer')),
+    SurveyDataViewer:lazy(() => import('./ToolPanels/SurveyDataViewer')),
     DoenetMLEditor:lazy(() => import('./ToolPanels/DoenetMLEditor')),
     Enrollment:lazy(() => import('./ToolPanels/Enrollment')),
     CollectionEditor: lazy(() => import('./ToolPanels/CollectionEditor')),
@@ -142,6 +144,7 @@ export default function ToolRoot(){
     ChooserBreadCrumb: lazy(() => import('./HeaderControls/ChooserBreadCrumb')),
     DashboardBreadCrumb: lazy(() => import('./HeaderControls/DashboardBreadCrumb')),
     EnrollmentBreadCrumb: lazy(() => import('./HeaderControls/EnrollmentBreadCrumb')),
+    SurveyBreadCrumb: lazy(() => import('./HeaderControls/SurveyBreadCrumb')),
     EditorBreadCrumb: lazy(() => import('./HeaderControls/EditorBreadCrumb')),
     GradebookBreadCrumb: lazy(() => import('./HeaderControls/GradebookBreadCrumb')),
     AssignmentBreadCrumb: lazy(() => import('./HeaderControls/AssignmentBreadCrumb')),
@@ -433,6 +436,20 @@ let navigationObj = {
       headerControls: ["EnrollmentBreadCrumb"],
       // headerControls: ["BackButton"],
     },
+    surveyList: {
+      pageName:"surveyList",
+      menuPanelCap:"DriveInfoCap",
+      currentMainPanel:"SurveyListViewer",
+      headerControls: ["SurveyBreadCrumb"],
+
+    },
+    surveyData: {
+      pageName:"surveyData",
+      menuPanelCap:"DriveInfoCap",
+      currentMainPanel:"SurveyDataViewer",
+      headerControls: ["SurveyBreadCrumb"],
+
+    },
   },
   home:{
     default:{
@@ -497,6 +514,7 @@ let navigationObj = {
       hasNoMenuPanel: true,
     }
   },
+  
   
 }
 
