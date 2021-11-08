@@ -11,23 +11,26 @@ include "db_connection.php";
 $jwtArray = include "jwtArray.php";
 $userId = $jwtArray['userId'];
 
-$driveId = mysqli_real_escape_string($conn,$_REQUEST["driveId"]);
+$doenetId = mysqli_real_escape_string($conn,$_REQUEST["doenetId"]);
 
 $success = TRUE;
 $message = "";
 
-if ($driveId == ""){
+if ($doenetId == ""){
   $success = FALSE;
-  $message = 'Internal Error: missing driveId';
+  $message = 'Internal Error: missing doenetId';
 }
 
-//Check if they have view rights
+// //Check if they have view rights
 if ($success){
+
   $sql = "
-  SELECT role
-  FROM drive_user
-  WHERE driveId = '$driveId'
-  and userId = '$userId'
+  SELECT du.role 
+  FROM drive_user AS du
+  LEFT JOIN drive_content AS dc
+  ON dc.driveId = du.driveId
+  WHERE du.userId = '$userId'
+  AND dc.doenetId = '$doenetId'
   ";
 
   $result = $conn->query($sql);  
@@ -44,29 +47,32 @@ if ($success){
 
 }
 
-//Get Assignment data
+//Get Survey data
 if ($success){
   $sql = "
-  SELECT dc.label, dc.doenetId
-  FROM drive_content AS dc
-  INNER JOIN assignment AS a
-  ON dc.doenetId = a.doenetId
-  WHERE
-  dc.driveId = '$driveId'
-  AND a.gradeCategory = ''
-  AND a.totalPointsOrPercent = 0
-  AND dc.isDeleted = '0'
-  AND dc.isReleased = '1'
+  SELECT e.firstName,
+  e.lastName,
+  e.email,
+  e.empId,
+  ci.stateVariables
+  FROM content_interactions AS ci
+  LEFT JOIN assignment AS a
+  ON a.doenetId = ci.doenetId
+  LEFT JOIN enrollment AS e
+  ON e.userId = ci.userId AND a.driveId = e.driveId
+  WHERE ci.doenetId = '$doenetId'
   ";
 
-
 $result = $conn->query($sql); 
-$surveys = [];
+$responses = [];
 if ($result->num_rows > 0) {
     while($row = $result->fetch_assoc()){
-      array_push($surveys,array(
-                "label"=>$row['label'],
-                "doenetId"=>$row['doenetId'],
+      array_push($responses,array(
+                "firstName"=>$row['firstName'],
+                "lastName"=>$row['lastName'],
+                "studentId"=>$row['empId'],
+                "email"=>$row['email'],
+                "stateVariables"=>$row['stateVariables'],
       ));
     }
 }
@@ -75,7 +81,7 @@ if ($result->num_rows > 0) {
 $response_arr = array(
   "success"=>$success,
   "message"=>$message,
-  "surveys"=>$surveys,
+  "responses"=>$responses,
   );
 
 

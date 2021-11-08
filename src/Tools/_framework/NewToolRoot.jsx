@@ -127,6 +127,7 @@ export default function ToolRoot(){
     EditorViewer:lazy(() => import('./ToolPanels/EditorViewer')),
     AssignmentViewer:lazy(() => import('./ToolPanels/AssignmentViewer')),
     SurveyListViewer:lazy(() => import('./ToolPanels/SurveyListViewer')),
+    SurveyDataViewer:lazy(() => import('./ToolPanels/SurveyDataViewer')),
     DoenetMLEditor:lazy(() => import('./ToolPanels/DoenetMLEditor')),
     Enrollment:lazy(() => import('./ToolPanels/Enrollment')),
     CollectionEditor: lazy(() => import('./ToolPanels/CollectionEditor')),
@@ -504,13 +505,11 @@ let navigationObj = {
     },
     surveyList: {
       pageName:"surveyList",
-      // menuPanelCap:"AssignmentInfoCap",
       currentMainPanel:"SurveyListViewer",
-      // currentMenus:[], 
-      // menusTitles:[],
-      // menusInitOpen:[],
-      // headerControls: ["AssignmentBreadCrumb","AssignmentNewAttempt"],
-      // waitForMenuSuppression:true,
+    },
+    surveyData: {
+      pageName:"surveyData",
+      currentMainPanel:"SurveyDataViewer",
     },
   }
   
