@@ -144,6 +144,7 @@ export default function ToolRoot(){
     ChooserBreadCrumb: lazy(() => import('./HeaderControls/ChooserBreadCrumb')),
     DashboardBreadCrumb: lazy(() => import('./HeaderControls/DashboardBreadCrumb')),
     EnrollmentBreadCrumb: lazy(() => import('./HeaderControls/EnrollmentBreadCrumb')),
+    SurveyBreadCrumb: lazy(() => import('./HeaderControls/SurveyBreadCrumb')),
     EditorBreadCrumb: lazy(() => import('./HeaderControls/EditorBreadCrumb')),
     GradebookBreadCrumb: lazy(() => import('./HeaderControls/GradebookBreadCrumb')),
     AssignmentBreadCrumb: lazy(() => import('./HeaderControls/AssignmentBreadCrumb')),
@@ -435,6 +436,20 @@ let navigationObj = {
       headerControls: ["EnrollmentBreadCrumb"],
       // headerControls: ["BackButton"],
     },
+    surveyList: {
+      pageName:"surveyList",
+      menuPanelCap:"DriveInfoCap",
+      currentMainPanel:"SurveyListViewer",
+      headerControls: ["SurveyBreadCrumb"],
+
+    },
+    surveyData: {
+      pageName:"surveyData",
+      menuPanelCap:"DriveInfoCap",
+      currentMainPanel:"SurveyDataViewer",
+      headerControls: ["SurveyBreadCrumb"],
+
+    },
   },
   home:{
     default:{
@@ -499,19 +514,7 @@ let navigationObj = {
       hasNoMenuPanel: true,
     }
   },
-  survey:{
-    default:{
-      defaultTool:'surveyList'
-    },
-    surveyList: {
-      pageName:"surveyList",
-      currentMainPanel:"SurveyListViewer",
-    },
-    surveyData: {
-      pageName:"surveyData",
-      currentMainPanel:"SurveyDataViewer",
-    },
-  }
+  
   
 }
 

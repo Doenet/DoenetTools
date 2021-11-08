@@ -36,7 +36,7 @@ export default function SurveyListViewer() {
       <td style={{textAlign:'left'}}>{survey.label}</td>
       <td><Button value='View' onClick={()=>{
         setPageToolView({
-          page: 'survey',
+          page: 'course',
           tool: 'surveyData',
           view: null,
           params: { driveId,doenetId:survey.doenetId },

@@ -41,6 +41,7 @@ export default function Dashboard(props) {
           
         />
         {effectiveRole === 'instructor' ?
+        <>
         <Button
           value="Enrollment"
           onClick={() =>
@@ -52,6 +53,18 @@ export default function Dashboard(props) {
             })
           }
         />
+        <Button
+          value="Surveys"
+          onClick={() =>
+            setPageToolView({
+              page: 'course',
+              tool: 'surveyList',
+              view: '',
+              params: { driveId },
+            })
+          }
+        />
+        </>
         : null }
         {effectiveRole === 'instructor' ?
         <Button value="Gradebook" 

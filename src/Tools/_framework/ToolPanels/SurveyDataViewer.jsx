@@ -44,7 +44,13 @@ export default function SurveyDataViewer() {
         );
         for (let key of Object.keys(svars)){
           if (!columns.includes(key)){
+            let value = svars[key];
+            if (value?.immediateValue ||
+              value?.value ||
+              value?.allSelectedIndices
+              ){
             columns.push(key);
+            }
           }
         }
 
