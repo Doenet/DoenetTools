@@ -377,7 +377,7 @@ export function AssignmentSettings({ role, doenetId }) {
   let [showFeedback, setShowFeedback] = useState(true);
   let [showHints, setShowHints] = useState(true);
   let [showCorrectness, setShowCorrectness] = useState(true);
-  // let [showCreditAchievedMenu, setShowCreditAchievedMenu] = useState(true);
+  let [showCreditAchievedMenu, setShowCreditAchievedMenu] = useState(true);
   let [proctorMakesAvailable, setProctorMakesAvailable] = useState(true);
 
   const updateAssignment = useRecoilCallback(
@@ -475,7 +475,7 @@ export function AssignmentSettings({ role, doenetId }) {
     setShowFeedback(aInfo?.showFeedback);
     setShowHints(aInfo?.showHints);
     setShowCorrectness(aInfo?.showCorrectness);
-    // setShowCreditAchievedMenu(aInfo?.showCreditAchievedMenu);
+    setShowCreditAchievedMenu(aInfo?.showCreditAchievedMenu);
     setProctorMakesAvailable(aInfo?.proctorMakesAvailable);
     setTimeLimit(aInfo?.timeLimit);
     setPinnedUntilDate(aInfo?.pinnedUntilDate);
@@ -1082,7 +1082,7 @@ export function AssignmentSettings({ role, doenetId }) {
         </label>
       </div>
 
-      {/* <div>
+      <div>
         <label>
           Show Credit Achieved Menu
           <Switch
@@ -1103,7 +1103,7 @@ export function AssignmentSettings({ role, doenetId }) {
             checked={showCreditAchievedMenu}
           ></Switch>
         </label>
-      </div> */}
+      </div>
 
       <div>
         <label>
