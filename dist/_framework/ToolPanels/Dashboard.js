@@ -34,7 +34,7 @@ export default function Dashboard(props) {
         return {...was, tool: "navigation"};
       });
     }
-  }), effectiveRole === "instructor" ? /* @__PURE__ */ React.createElement(Button, {
+  }), effectiveRole === "instructor" ? /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(Button, {
     value: "Enrollment",
     onClick: () => setPageToolView({
       page: "course",
@@ -42,7 +42,15 @@ export default function Dashboard(props) {
       view: "",
       params: {driveId}
     })
-  }) : null, effectiveRole === "instructor" ? /* @__PURE__ */ React.createElement(Button, {
+  }), /* @__PURE__ */ React.createElement(Button, {
+    value: "Surveys",
+    onClick: () => setPageToolView({
+      page: "course",
+      tool: "surveyList",
+      view: "",
+      params: {driveId}
+    })
+  })) : null, effectiveRole === "instructor" ? /* @__PURE__ */ React.createElement(Button, {
     value: "Gradebook",
     onClick: () => setPageToolView((was) => {
       return {

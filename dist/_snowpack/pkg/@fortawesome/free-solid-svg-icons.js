@@ -187,6 +187,11 @@ var faTh = {
   iconName: 'th',
   icon: [512, 512, [], "f00a", "M149.333 56v80c0 13.255-10.745 24-24 24H24c-13.255 0-24-10.745-24-24V56c0-13.255 10.745-24 24-24h101.333c13.255 0 24 10.745 24 24zm181.334 240v-80c0-13.255-10.745-24-24-24H205.333c-13.255 0-24 10.745-24 24v80c0 13.255 10.745 24 24 24h101.333c13.256 0 24.001-10.745 24.001-24zm32-240v80c0 13.255 10.745 24 24 24H488c13.255 0 24-10.745 24-24V56c0-13.255-10.745-24-24-24H386.667c-13.255 0-24 10.745-24 24zm-32 80V56c0-13.255-10.745-24-24-24H205.333c-13.255 0-24 10.745-24 24v80c0 13.255 10.745 24 24 24h101.333c13.256 0 24.001-10.745 24.001-24zm-205.334 56H24c-13.255 0-24 10.745-24 24v80c0 13.255 10.745 24 24 24h101.333c13.255 0 24-10.745 24-24v-80c0-13.255-10.745-24-24-24zM0 376v80c0 13.255 10.745 24 24 24h101.333c13.255 0 24-10.745 24-24v-80c0-13.255-10.745-24-24-24H24c-13.255 0-24 10.745-24 24zm386.667-56H488c13.255 0 24-10.745 24-24v-80c0-13.255-10.745-24-24-24H386.667c-13.255 0-24 10.745-24 24v80c0 13.255 10.745 24 24 24zm0 160H488c13.255 0 24-10.745 24-24v-80c0-13.255-10.745-24-24-24H386.667c-13.255 0-24 10.745-24 24v80c0 13.255 10.745 24 24 24zM181.333 376v80c0 13.255 10.745 24 24 24h101.333c13.255 0 24-10.745 24-24v-80c0-13.255-10.745-24-24-24H205.333c-13.255 0-24 10.745-24 24z"]
 };
+var faThumbtack = {
+  prefix: 'fas',
+  iconName: 'thumbtack',
+  icon: [384, 512, [], "f08d", "M298.028 214.267L285.793 96H328c13.255 0 24-10.745 24-24V24c0-13.255-10.745-24-24-24H56C42.745 0 32 10.745 32 24v48c0 13.255 10.745 24 24 24h42.207L85.972 214.267C37.465 236.82 0 277.261 0 328c0 13.255 10.745 24 24 24h136v104.007c0 1.242.289 2.467.845 3.578l24 48c2.941 5.882 11.364 5.893 14.311 0l24-48a8.008 8.008 0 0 0 .845-3.578V352h136c13.255 0 24-10.745 24-24-.001-51.183-37.983-91.42-85.973-113.733z"]
+};
 var faTimes = {
   prefix: 'fas',
   iconName: 'times',
@@ -198,4 +203,4 @@ var faUser = {
   icon: [448, 512, [], "f007", "M224 256c70.7 0 128-57.3 128-128S294.7 0 224 0 96 57.3 96 128s57.3 128 128 128zm89.6 32h-16.7c-22.2 10.2-46.9 16-72.9 16s-50.6-5.8-72.9-16h-16.7C60.2 288 0 348.2 0 422.4V464c0 26.5 21.5 48 48 48h352c26.5 0 48-21.5 48-48v-41.6c0-74.2-60.2-134.4-134.4-134.4z"]
 };
 
-export { faAngleLeft, faAngleRight, faArrowLeft, faArrowUp, faBackspace, faBars, faBookOpen, faCalendarPlus, faCalendarTimes, faCaretDown, faCaretRight, faChalkboard, faCheck, faChevronDown, faChevronLeft, faChevronRight, faCloud, faCode, faExclamationCircle, faExternalLinkAlt, faFolder, faGripLines, faGripLinesVertical, faHandMiddleFinger, faKeyboard, faLayerGroup, faLevelDownAlt, faLightbulb, faMinus, faPercentage, faPlus, faPuzzlePiece, faSearch, faSort, faSortDown, faSortUp, faTh, faTimes, faUser };
+export { faAngleLeft, faAngleRight, faArrowLeft, faArrowUp, faBackspace, faBars, faBookOpen, faCalendarPlus, faCalendarTimes, faCaretDown, faCaretRight, faChalkboard, faCheck, faChevronDown, faChevronLeft, faChevronRight, faCloud, faCode, faExclamationCircle, faExternalLinkAlt, faFolder, faGripLines, faGripLinesVertical, faHandMiddleFinger, faKeyboard, faLayerGroup, faLevelDownAlt, faLightbulb, faMinus, faPercentage, faPlus, faPuzzlePiece, faSearch, faSort, faSortDown, faSortUp, faTh, faThumbtack, faTimes, faUser };
