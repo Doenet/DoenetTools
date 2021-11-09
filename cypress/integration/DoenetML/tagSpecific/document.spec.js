@@ -96,7 +96,7 @@ describe('Document Tag Tests', function () {
 
   })
 
-  it('item credit achieved, skip weight 0', () => {
+  it(`item credit achieved, don't skip weight 0`, () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
@@ -122,7 +122,7 @@ describe('Document Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components["/_document1"].stateValues.itemCreditAchieved).eqls([0, 0, 0])
+      expect(components["/_document1"].stateValues.itemCreditAchieved).eqls([0, 0, 0, 0, 0])
 
       let mathinputXName = components["/x"].stateValues.inputChildren[0].componentName;
       let mathinputXAnchor = cesc('#' + mathinputXName) + " textarea";
@@ -146,7 +146,7 @@ describe('Document Tag Tests', function () {
       cy.get('#\\/docCa').should('have.text', '0.333');
 
       cy.window().then((win) => {
-        expect(components["/_document1"].stateValues.itemCreditAchieved).eqls([1, 0, 0])
+        expect(components["/_document1"].stateValues.itemCreditAchieved).eqls([1, 0, 0, 0, 0])
       })
 
       cy.get(mathinputAAnchor).type('a{enter}', { force: true });
@@ -154,7 +154,7 @@ describe('Document Tag Tests', function () {
       cy.get('#\\/docCa').should('have.text', '0.333');
 
       cy.window().then((win) => {
-        expect(components["/_document1"].stateValues.itemCreditAchieved).eqls([1, 0, 0])
+        expect(components["/_document1"].stateValues.itemCreditAchieved).eqls([1, 1, 0, 0, 0])
       })
 
       cy.get(mathinputYAnchor).type('y{enter}', { force: true });
@@ -162,7 +162,7 @@ describe('Document Tag Tests', function () {
       cy.get('#\\/docCa').should('have.text', '0.667');
 
       cy.window().then((win) => {
-        expect(components["/_document1"].stateValues.itemCreditAchieved).eqls([1, 1, 0])
+        expect(components["/_document1"].stateValues.itemCreditAchieved).eqls([1, 1, 1, 0, 0])
       })
 
 
@@ -171,7 +171,7 @@ describe('Document Tag Tests', function () {
       cy.get('#\\/docCa').should('have.text', '0.667');
 
       cy.window().then((win) => {
-        expect(components["/_document1"].stateValues.itemCreditAchieved).eqls([1, 1, 0])
+        expect(components["/_document1"].stateValues.itemCreditAchieved).eqls([1, 1, 1, 1, 0])
       })
 
 
@@ -180,7 +180,7 @@ describe('Document Tag Tests', function () {
       cy.get('#\\/docCa').should('have.text', '1');
 
       cy.window().then((win) => {
-        expect(components["/_document1"].stateValues.itemCreditAchieved).eqls([1, 1, 1])
+        expect(components["/_document1"].stateValues.itemCreditAchieved).eqls([1, 1, 1, 1, 1])
       })
 
     });
