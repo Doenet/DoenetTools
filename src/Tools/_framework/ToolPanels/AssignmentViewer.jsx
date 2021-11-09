@@ -110,6 +110,7 @@ export default function AssignmentViewer() {
           assignedDate,
           dueDate,
           showCorrectness,
+          showCreditAchievedMenu,
           showFeedback,
           showHints,
           showSolution,
@@ -119,7 +120,8 @@ export default function AssignmentViewer() {
         if (timeLimit === null){
           suppress.push("TimerMenu")
         }
-        if (!showCorrectness){
+        
+        if (!showCorrectness || !showCreditAchievedMenu){
           suppress.push("CreditAchieved")
         }
 
