@@ -27,6 +27,7 @@ $showSolutionInGradebook = mysqli_real_escape_string($conn,$_POST["showSolutionI
 $showFeedback = mysqli_real_escape_string($conn,$_POST["showFeedback"]);
 $showHints = mysqli_real_escape_string($conn,$_POST["showHints"]);
 $showCorrectness = mysqli_real_escape_string($conn,$_POST["showCorrectness"]);
+$showCreditAchievedMenu = mysqli_real_escape_string($conn,$_POST["showCreditAchievedMenu"]);
 $proctorMakesAvailable = mysqli_real_escape_string($conn,$_POST["proctorMakesAvailable"]);
 $pinnedUntilDate = mysqli_real_escape_string($conn,$_POST["pinnedUntilDate"]);
 $pinnedAfterDate = mysqli_real_escape_string($conn,$_POST["pinnedAfterDate"]);
@@ -45,6 +46,7 @@ if ($showSolutionInGradebook){ $showSolutionInGradebook = '1'; } else { $showSol
 if ($showFeedback){ $showFeedback = '1'; } else { $showFeedback = '0'; }
 if ($showHints){ $showHints = '1'; } else { $showHints = '0'; }
 if ($showCorrectness){ $showCorrectness = '1'; } else { $showCorrectness = '0'; }
+if ($showCreditAchievedMenu){ $showCreditAchievedMenu = '1'; } else { $showCreditAchievedMenu = '0'; }
 if ($proctorMakesAvailable){ $proctorMakesAvailable = '1'; } else { $proctorMakesAvailable = '0'; }
 
 $makeContent =  mysqli_real_escape_string($conn,$_POST["makeContent"]);
@@ -80,6 +82,7 @@ showSolutionInGradebook = '$showSolutionInGradebook',
 showFeedback = '$showFeedback',
 showHints = '$showHints',
 showCorrectness = '$showCorrectness',
+showCreditAchievedMenu = '$showCreditAchievedMenu',
 proctorMakesAvailable = '$proctorMakesAvailable'
 WHERE doenetId = '$doenetId' 
 ";

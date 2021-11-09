@@ -215,9 +215,7 @@ export default class SectioningComponent extends BlockComponent {
           if (descendant.stateValues.aggregateScores ||
             descendant.stateValues.scoredDescendants === undefined
           ) {
-            if (descendant.stateValues.weight !== 0) {
-              scoredDescendants.push(descendant)
-            }
+            scoredDescendants.push(descendant)
           } else {
             scoredDescendants.push(...descendant.stateValues.scoredDescendants)
           }
