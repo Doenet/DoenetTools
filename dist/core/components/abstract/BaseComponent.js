@@ -821,7 +821,11 @@ export default class BaseComponent {
         }
       } else {
         // always copy others
-        serializedComponent.attributes[attrName] = JSON.parse(JSON.stringify(attribute));
+        // TODO: for now not copying isResponse if linked
+        // but not sure if that is the right thing to do
+        if (attrName !== "isResponse" || !parameters.forLink) {
+          serializedComponent.attributes[attrName] = JSON.parse(JSON.stringify(attribute));
+        }
       }
     }
 

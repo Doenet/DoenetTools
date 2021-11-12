@@ -13,6 +13,10 @@ export default class BooleanList extends InlineComponent {
   // use the booleans state variable to populate that attribute
   static stateVariableForAttributeValue = "booleans";
 
+  // even if inside a component that turned on descendantCompositesMustHaveAReplacement
+  // don't required composite replacements
+  static descendantCompositesMustHaveAReplacement = false;
+
   static createAttributesObject(args) {
     let attributes = super.createAttributesObject(args);
     attributes.unordered = {
@@ -327,7 +331,7 @@ export default class BooleanList extends InlineComponent {
           skipComponentNames: true,
         },
         parentNComponentsToDisplayByChild: {
-          dependencyType: "parentStateVariable", 
+          dependencyType: "parentStateVariable",
           parentComponentType: "booleanList",
           variableName: "nComponentsToDisplayByChild"
         }
@@ -336,7 +340,7 @@ export default class BooleanList extends InlineComponent {
 
         let nComponentsToDisplay = dependencyValues.nComponents;
 
-        if(dependencyValues.parentNComponentsToDisplayByChild !== null) {
+        if (dependencyValues.parentNComponentsToDisplayByChild !== null) {
           // have a parent booleanList, which could have limited
           // boolean of components to display
           nComponentsToDisplay = dependencyValues.parentNComponentsToDisplayByChild[componentName]
@@ -350,7 +354,7 @@ export default class BooleanList extends InlineComponent {
         let nBooleanLists = 0;
         for (let child of dependencyValues.booleanAndBooleanListChildren) {
           let nComponentsLeft = Math.max(0, nComponentsToDisplay - nComponentsSoFar);
-          if(nComponentsLeft > 0) {
+          if (nComponentsLeft > 0) {
             nChildrenToDisplay++;
           }
           if (componentInfoObjects.isInheritedComponentType({

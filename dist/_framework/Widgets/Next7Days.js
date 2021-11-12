@@ -25,7 +25,7 @@ import {mainPanelClickAtom} from "../Panels/NewMainPanel.js";
 import {effectiveRoleAtom} from "../../_reactComponents/PanelHeaderComponents/RoleDropdown.js";
 import {UTCDateStringToDate} from "../../_utils/dateUtilityFunction.js";
 import {FontAwesomeIcon} from "../../_snowpack/pkg/@fortawesome/react-fontawesome.js";
-import {faChevronLeft, faChevronRight} from "../../_snowpack/pkg/@fortawesome/free-solid-svg-icons.js";
+import {faChevronLeft, faChevronRight, faThumbtack} from "../../_snowpack/pkg/@fortawesome/free-solid-svg-icons.js";
 export const classTimesAtom = atom({
   key: "classTimesAtom",
   default: []
@@ -149,7 +149,7 @@ function buildRows({
       let effectiveRowLabel = "";
       if (dueDate) {
         dueDate.setSeconds(0, 0);
-        effectiveRowLabel = `${dotw} ${dueDate.getMonth() + 1}/${dueDate.getDate()}`;
+        effectiveRowLabel = `${dotw} `;
         displayDueDate = formatDueDate(dueDate, classTimes);
         if (assignedDate) {
           displayAssignedDate = formatAssignedDate(assignedDate, classTimes, dueDate, weekShift == 0);
@@ -390,9 +390,12 @@ export default function Next7Days({driveId}) {
   let headerSunday = `${sunday.getMonth() + 1}/${sunday.getDate()}`;
   let pinnedRows = [];
   let overdueRows = [];
+  let pinnedName = /* @__PURE__ */ React.createElement("p", null, /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
+    icon: faThumbtack
+  }), "  Pinned");
   if (weekShift == 0) {
     pinnedRows.push(...buildRows({
-      rowLabel: "Pinned",
+      rowLabel: pinnedName,
       assignments: pinnedArray,
       clickCallback,
       doubleClickCallback,
@@ -474,7 +477,7 @@ export default function Next7Days({driveId}) {
   }, /* @__PURE__ */ React.createElement("span", null, /* @__PURE__ */ React.createElement(Button, {
     onClick: () => setWeekShift(0),
     value: "This Week"
-  }), " "), /* @__PURE__ */ React.createElement("h1", null, "Current Content"), /* @__PURE__ */ React.createElement("span", {
+  }), " "), /* @__PURE__ */ React.createElement("h1", null, "Content by Week"), /* @__PURE__ */ React.createElement("span", {
     style: {fontSize: "1.4em"}
   }, headerMonday, " - ", headerSunday), /* @__PURE__ */ React.createElement(ButtonGroup, null, /* @__PURE__ */ React.createElement("span", null, /* @__PURE__ */ React.createElement(Button, {
     onClick: () => setWeekShift((was) => was - 1),
