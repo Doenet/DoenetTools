@@ -3,7 +3,7 @@ import Cookies from 'js-cookie'; // import Textinput from "../imports/Textinput"
 import axios from 'axios';
 import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
 import Textfield from '../../../_reactComponents/PanelHeaderComponents/Textfield';
-
+import {useToast, toastType} from "../Toast.js";
 
 
 export default function SignIn(props) {
@@ -14,6 +14,13 @@ export default function SignIn(props) {
   let [signInStage, setSignInStage] = useState('beginning');
   let [isSentEmail, setIsSentEmail] = useState(false);
   let [deviceName, setDeviceName] = useState('');
+  let [sendEmailAlert, setSendEmailAlert] = useState(false);
+  let [signInAlert, setSignInAlert] = useState(false);
+  let [validEmail, setValidEmail] = useState(false);
+  let [validCode, setValidCode] = useState(false);
+  let [sendEmailDisabled, setSendEmailDisabled] = useState(true);
+  let [signInDisabled, setSignInDisabled] = useState(true);
+
   console.log(signInStage)
  
   const jwt = Cookies.get();
@@ -21,17 +28,34 @@ export default function SignIn(props) {
   const emailRef = useRef(null);
   const codeRef = useRef(null);
 
-  let validEmail = false;
-  if (/^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(email)) {
-    validEmail = true;
-  }
+  const toast = useToast();
 
-  let validCode = false;
-  if (/^\d{9}$/.test(nineCode)) {
-    validCode = true;
-  }
+  function validateEmail(inputEmail) {
+    if (/^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(inputEmail)) {
+      setSendEmailDisabled(false);
+      setValidEmail(true);
+      setSendEmailAlert(false);
+    } else {
+      setSendEmailDisabled(true);
+      setValidEmail(false);
+      setSendEmailAlert(true);
+    }
+  };
 
   useEffect(() => {
+      if (/\d{9}/.test(nineCode)) {
+        setSignInDisabled(false);
+        setValidCode(true);
+        setSignInAlert(false);
+      } else if (nineCode === '') {
+        setSignInDisabled(true);
+        setValidCode(false);
+        setSignInAlert(false);
+      } else {
+        setSignInDisabled(true);
+        setValidCode(false);
+        setSignInAlert(true);
+      }
     if (codeRef.current !== null && !validCode) {
       codeRef.current.focus();
     } else if (emailRef.current !== null && !validEmail) {
@@ -129,14 +153,19 @@ export default function SignIn(props) {
           if (resp.data.reason === 'Code expired') {
             setSignInStage('Code expired');
           } else if (resp.data.reason === 'Invalid Code') {
-            setSignInStage('Invalid Code');
+            setSignInStage('enter code');
+            toast('Invalid code. Please try again.', toastType.ERROR);
           }
         }
       })
       .catch((error) => {
         console.error(error)
       });
+      setSignInStage('Loading');
 
+    return null
+  }
+  if (signInStage === 'Loading') {
     return (
       <div>
       <div
@@ -152,7 +181,6 @@ export default function SignIn(props) {
       </div></div>
     );
   }
-
   if (signInStage === 'Code expired') {
     return (
       <div
@@ -231,9 +259,22 @@ export default function SignIn(props) {
             ref={codeRef}
             value={nineCode}
             data-cy="signinCodeInput"
+            alert={signInAlert}
             onKeyDown={(e) => {
-              if (e.key === 'Enter' && validCode) {
+              // Trying to make it so the user can copy and paste a correct code --> enable sign-in button
+              // Basically trying to make it so the valid/invalid email is detected when the cursor is still within the textfield
+
+              // if (((e.key === 'Enter') || ((e.ctrlKey || e.metaKey) && e.keyCode == 86)) && validCode) {
+                if (e.key === 'Enter' && validCode) {
                 setSignInStage('check code');
+              // } else if (((e.key === 'Enter') || ((e.ctrlKey || e.metaKey) && e.keyCode == 86)) && !validCode) {
+                } else if (e.key === 'Enter' && !validCode) {
+                toast('Invalid code format. Please enter 9 digits.', toastType.ERROR);
+              }
+            }}
+            onBlur={() => {
+              if (!validCode && !signInAlert) {
+                toast('Invalid code format. Please enter 9 digits.', toastType.ERROR);
               }
             }}
             onChange={(e) => {
@@ -242,9 +283,12 @@ export default function SignIn(props) {
           ></Textfield>
         </p>
         <Button
-          disabled={!validCode}
-          style={{}}
-          onClick={() => setSignInStage('check code')}
+          disabled={signInDisabled}
+          onClick={() => {
+            if (validCode) {
+              setSignInStage('check code');
+            }  
+          }}
           data-cy="signInButton"
           value="Sign In"
         ></Button>
@@ -284,10 +328,20 @@ export default function SignIn(props) {
               type="text"
               ref={emailRef}
               value={email}
+              alert={sendEmailAlert}
               data-cy="signinEmailInput"
               onKeyDown={(e) => {
+                validateEmail(email);
                 if (e.key === 'Enter' && validEmail) {
                   setSignInStage('enter code');
+                } else if (e.key === 'Enter' && !validEmail) {
+                  toast('Invalid email. Please try again.', toastType.ERROR);
+                }
+              }}
+              onBlur={() => {
+                validateEmail(email); 
+                if (!validEmail && !sendEmailAlert) {
+                  toast('Invalid email. Please try again.', toastType.ERROR);
                 }
               }}
               onChange={(e) => {
@@ -311,10 +365,13 @@ export default function SignIn(props) {
             />{' '}
             Stay Logged In
           </p>
-          <Button 
-            disabled={!validEmail}
-            style={{ float: 'right' }}
-            onClick={() => setSignInStage('enter code')}
+          <Button
+            disabled={sendEmailDisabled}
+            onClick={() => {
+              if (validEmail) {
+                setSignInStage('enter code')
+              }
+            }}
             data-cy="sendEmailButton"
             value="Send Email"
           ></Button>
