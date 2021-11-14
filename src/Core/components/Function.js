@@ -1,7 +1,7 @@
 import InlineComponent from './abstract/InlineComponent';
 import me from 'math-expressions';
 import { normalizeMathExpression, returnNVariables } from '../utils/math';
-import { returnDefaultStyleDefinitions } from '../utils/style';
+import { returnSelectedStyleStateVariableDefinition } from '../utils/style';
 
 export default class Function extends InlineComponent {
   static componentType = "function";
@@ -191,44 +191,9 @@ export default class Function extends InlineComponent {
 
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
-    stateVariableDefinitions.selectedStyle = {
-      forRenderer: true,
-      returnDependencies: () => ({
-        styleNumber: {
-          dependencyType: "stateVariable",
-          variableName: "styleNumber",
-        },
-        ancestorWithStyle: {
-          dependencyType: "ancestor",
-          variableNames: ["styleDefinitions"]
-        }
-      }),
-      definition: function ({ dependencyValues }) {
+    let selectedStyleDefinition = returnSelectedStyleStateVariableDefinition();
 
-        let styleDefinitions = dependencyValues.ancestorWithStyle.stateValues.styleDefinitions;
-        if (!styleDefinitions) {
-          styleDefinitions = returnDefaultStyleDefinitions();
-        }
-
-        let selectedStyle;
-
-        for (let styleDefinition of styleDefinitions) {
-          if (dependencyValues.styleNumber === styleDefinition.styleNumber) {
-            if (selectedStyle === undefined) {
-              selectedStyle = styleDefinition;
-            } else {
-              // attributes from earlier matches take precedence
-              selectedStyle = Object.assign(Object.assign({}, styleDefinition), selectedStyle)
-            }
-          }
-        }
-
-        if (selectedStyle === undefined) {
-          selectedStyle = styleDefinitions[0];
-        }
-        return { newValues: { selectedStyle } };
-      }
-    }
+    Object.assign(stateVariableDefinitions, selectedStyleDefinition);
 
     stateVariableDefinitions.styleDescription = {
       public: true,
