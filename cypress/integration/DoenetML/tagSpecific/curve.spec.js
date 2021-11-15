@@ -717,6 +717,99 @@ describe('Curve Tag Tests', function () {
 
   });
 
+  it('extrapolate modes', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <booleaninput name="eb"/>
+    <booleaninput name="ef"/>
+    
+    <graph>
+      <curve through="(1,2) (3,4) (-5,6)" extrapolateBackward="$eb" extrapolateForward="$ef">
+        <bezierControls>(1,0) (-1,0) (0, -1)</bezierControls>
+      </curve>
+    
+    </graph>
+    
+    <p>ebm: <copy prop="extrapolateBackwardMode" tname="_curve1" assignNames="ebm" /></p>
+    <p>efm: <copy prop="extrapolateForwardMode" tname="_curve1" assignNames="efm" /></p>
+
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  //wait for window to load
+
+    cy.get('#\\/ebm').should('have.text', '')
+    cy.get('#\\/efm').should('have.text', '')
+
+    cy.log('extrapolate backward')
+    cy.get("#\\/eb_input").click();
+    cy.get('#\\/ebm').should('have.text', 'line')
+    cy.get('#\\/efm').should('have.text', '')
+
+    cy.log('move first control vector')
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      components['/_curve1'].moveControlVector({
+        controlVectorInds: [0, 0],
+        controlVector: [1, -1]
+      })
+
+      cy.get('#\\/ebm').should('have.text', 'parabolaHorizontal')
+      cy.get('#\\/efm').should('have.text', '')
+  
+    })
+
+    cy.log('move second through point')
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+
+      components['/_curve1'].moveThroughPoint({
+        throughPointInd: 1,
+        throughPoint: [-1, 4]
+      });
+
+      cy.get('#\\/ebm').should('have.text', 'parabolaVertical')
+      cy.get('#\\/efm').should('have.text', '')
+  
+    })
+
+    cy.log('extrapolate foward')
+    cy.get("#\\/ef_input").click();
+    cy.get('#\\/ebm').should('have.text', 'parabolaVertical')
+    cy.get('#\\/efm').should('have.text', 'line')
+
+    cy.log('move last control vector')
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      components['/_curve1'].moveControlVector({
+        controlVectorInds: [2, 0],
+        controlVector: [1, -1]
+      })
+
+      cy.get('#\\/ebm').should('have.text', 'parabolaVertical')
+      cy.get('#\\/efm').should('have.text', 'parabolaVertical')
+  
+    })
+
+
+    cy.log('move last control vector again')
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      components['/_curve1'].moveControlVector({
+        controlVectorInds: [2, 0],
+        controlVector: [-1, -1]
+      })
+
+      cy.get('#\\/ebm').should('have.text', 'parabolaVertical')
+      cy.get('#\\/efm').should('have.text', 'parabolaHorizontal')
+  
+    })
+
+
+  });
+
   it('variable length curve', () => {
     cy.window().then((win) => {
       win.postMessage({

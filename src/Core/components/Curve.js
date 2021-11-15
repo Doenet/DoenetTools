@@ -1636,6 +1636,11 @@ export default class Curve extends GraphicalComponent {
 
     stateVariableDefinitions.extrapolateBackwardCoeffs = {
       stateVariablesDeterminingDependencies: ["extrapolateBackward"],
+      additionalStateVariablesDefined: [{
+        variableName: "extrapolateBackwardMode",
+        public: true,
+        componentType: "text"
+      }],
       returnDependencies({ stateValues }) {
 
         let dependencies = {
@@ -1676,7 +1681,12 @@ export default class Curve extends GraphicalComponent {
       },
       definition({ dependencyValues }) {
         if (!dependencyValues.extrapolateBackward || !dependencyValues.firstSplineCoeffs) {
-          return { newValues: { extrapolateBackwardCoeffs: null } }
+          return {
+            newValues: {
+              extrapolateBackwardCoeffs: null,
+              extrapolateBackwardMode: ""
+            }
+          }
         }
 
         // extrapolate as a parabola oriented with the coordinate axes
@@ -1719,9 +1729,9 @@ export default class Curve extends GraphicalComponent {
             let scaleSpeedToReachXEdge = xscale / tMax / Math.abs(xpEffective);
             let scaleSpeedToReachYEdge = yscale / tMax / Math.abs(ypEffective);
 
-            let minScale = Math.min(scaleSpeedToReachXEdge,scaleSpeedToReachYEdge);
+            let minScale = Math.min(scaleSpeedToReachXEdge, scaleSpeedToReachYEdge);
 
-            if(minScale > 1) {
+            if (minScale > 1) {
               xpEffective *= minScale;
               ypEffective *= minScale
             }
@@ -1733,7 +1743,12 @@ export default class Curve extends GraphicalComponent {
             [y0, ypEffective, 0]
           ];
 
-          return { newValues: { extrapolateBackwardCoeffs: c } }
+          return {
+            newValues: {
+              extrapolateBackwardCoeffs: c,
+              extrapolateBackwardMode: "line"
+            }
+          }
 
         }
 
@@ -1798,7 +1813,12 @@ export default class Curve extends GraphicalComponent {
             [y0, v, a / 2]
           ];
 
-          return { newValues: { extrapolateBackwardCoeffs: c } }
+          return {
+            newValues: {
+              extrapolateBackwardCoeffs: c,
+              extrapolateBackwardMode: "parabolaVertical"
+            }
+          }
         } else {
           // if curving toward the horizontal direction
           // orient the parabola horizontally
@@ -1858,7 +1878,12 @@ export default class Curve extends GraphicalComponent {
             [y0, ypEffective, 0]
           ];
 
-          return { newValues: { extrapolateBackwardCoeffs: c } }
+          return {
+            newValues: {
+              extrapolateBackwardCoeffs: c,
+              extrapolateBackwardMode: "parabolaHorizontal"
+            }
+          }
         }
 
       }
@@ -1867,6 +1892,11 @@ export default class Curve extends GraphicalComponent {
 
     stateVariableDefinitions.extrapolateForwardCoeffs = {
       stateVariablesDeterminingDependencies: ["nThroughPoints", "extrapolateForward"],
+      additionalStateVariablesDefined: [{
+        variableName: "extrapolateForwardMode",
+        public: true,
+        componentType: "text"
+      }],
       returnDependencies({ stateValues }) {
 
         let dependencies = {
@@ -1906,7 +1936,12 @@ export default class Curve extends GraphicalComponent {
       },
       definition({ dependencyValues }) {
         if (!dependencyValues.extrapolateForward || !dependencyValues.lastSplineCoeffs) {
-          return { newValues: { extrapolateForwardCoeffs: null } }
+          return {
+            newValues: {
+              extrapolateForwardCoeffs: null,
+              extrapolateForwardMode: ""
+            }
+          }
         }
 
         // extrapolate as a parabola oriented with the coordinate axes
@@ -1949,9 +1984,9 @@ export default class Curve extends GraphicalComponent {
             let scaleSpeedToReachXEdge = xscale / tMax / Math.abs(xpEffective);
             let scaleSpeedToReachYEdge = yscale / tMax / Math.abs(ypEffective);
 
-            let minScale = Math.min(scaleSpeedToReachXEdge,scaleSpeedToReachYEdge);
+            let minScale = Math.min(scaleSpeedToReachXEdge, scaleSpeedToReachYEdge);
 
-            if(minScale > 1) {
+            if (minScale > 1) {
               xpEffective *= minScale;
               ypEffective *= minScale
             }
@@ -1963,7 +1998,12 @@ export default class Curve extends GraphicalComponent {
             [y0, ypEffective, 0]
           ];
 
-          return { newValues: { extrapolateForwardCoeffs: c } }
+          return {
+            newValues: {
+              extrapolateForwardCoeffs: c,
+              extrapolateForwardMode: "line"
+            }
+          }
 
         }
 
@@ -2028,7 +2068,12 @@ export default class Curve extends GraphicalComponent {
             [y0, v, a / 2]
           ];
 
-          return { newValues: { extrapolateForwardCoeffs: c } }
+          return {
+            newValues: {
+              extrapolateForwardCoeffs: c,
+              extrapolateForwardMode: "parabolaVertical"
+            }
+          }
         } else {
           // if curving toward the horizontal direction
           // orient the parabola horizontally
@@ -2087,7 +2132,12 @@ export default class Curve extends GraphicalComponent {
             [y0, ypEffective, 0]
           ];
 
-          return { newValues: { extrapolateForwardCoeffs: c } }
+          return {
+            newValues: {
+              extrapolateForwardCoeffs: c,
+              extrapolateForwardMode: "parabolaHorizontal"
+            }
+          }
         }
       }
     }
