@@ -43,7 +43,7 @@ export default class Point extends DoenetRenderer {
     if (this.doenetSvData.draggable && !this.doenetSvData.fixed) {
       jsxPointAttributes.highlightFillColor = "#EEEEEE";
       jsxPointAttributes.highlightStrokeColor = "#C3D9FF";
-      jsxPointAttributes.showInfoBox = true;
+      jsxPointAttributes.showInfoBox = this.doenetSvData.showCoordsWhenDragging;
     } else {
       jsxPointAttributes.highlightFillColor = this.doenetSvData.selectedStyle.markerColor;
       jsxPointAttributes.highlightStrokeColor = this.doenetSvData.selectedStyle.markerColor;
@@ -129,7 +129,7 @@ export default class Point extends DoenetRenderer {
     if (this.doenetSvData.draggable && !this.doenetSvData.fixed) {
       this.pointJXG.visProp.highlightfillcolor = "#EEEEEE";
       this.pointJXG.visProp.highlightstrokecolor = "#C3D9FF";
-      this.pointJXG.visProp.showinfobox = true;
+      this.pointJXG.visProp.showinfobox = this.doenetSvData.showCoordsWhenDragging;
       this.pointJXG.visProp.fixed = false;
     } else {
       this.pointJXG.visProp.highlightfillcolor = this.doenetSvData.selectedStyle.markerColor;
