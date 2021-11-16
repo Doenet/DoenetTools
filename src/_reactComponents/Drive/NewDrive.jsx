@@ -59,6 +59,7 @@ import { useDragShadowCallbacks, useSortFolder } from './DriveActions';
 import useSockets from '../Sockets';
 import { BreadcrumbContext } from '../Breadcrumb/BreadcrumbProvider';
 import Collection from './Collection';
+import { UTCDateStringToDate } from '../../_utils/dateUtilityFunction';
 
 const loadAssignmentAtomFamily = atomFamily({
   key: 'loadAssignmentAtomFamily',
@@ -72,21 +73,18 @@ const loadAssignmentAtomFamily = atomFamily({
       let assignment = { ...data.assignment };
 
       if (assignment.assignedDate){
-        // Split timestamp into [ Y, M, D, h, m, s ]
-        let t = data.assignment.assignedDate.split(/[- :]/);
-        // Apply each element to the Date function
-        assignment.assignedDate = new Date(
-          Date.UTC(t[0], t[1]-1, t[2], t[3], t[4], t[5])
-        ).toLocaleString();
+        assignment.assignedDate = UTCDateStringToDate(assignment.assignedDate).toLocaleString();
       }
       if (assignment.dueDate){
-        // Split timestamp into [ Y, M, D, h, m, s ]
-        let t = data.assignment.dueDate.split(/[- :]/);
-        // Apply each element to the Date function
-        assignment.dueDate = new Date(
-          Date.UTC(t[0], t[1]-1, t[2], t[3], t[4], t[5])
-        ).toLocaleString();
+        assignment.dueDate = UTCDateStringToDate(assignment.dueDate).toLocaleString();
       }
+      if (assignment.pinnedAfterDate){
+        assignment.pinnedAfterDate = UTCDateStringToDate(assignment.pinnedAfterDate).toLocaleString();
+      }
+      if (assignment.pinnedUntilDate){
+        assignment.pinnedUntilDate = UTCDateStringToDate(assignment.pinnedUntilDate).toLocaleString();
+      }
+
       return assignment;
     },
   }),
@@ -457,7 +455,7 @@ export const loadDriveInfoQuery = selectorFamily({
       const { data } = await axios.get(
         `/api/loadFolderContent.php?driveId=${driveId}&init=true`,
       );
-      // console.log("loadDriveInfoQuery DATA ",data)
+      // console.log(">>>>loadDriveInfoQuery DATA ",data)
       // let itemDictionary = {};
       //   for (let item of data.results){
       //     itemDictionary[item.itemId] = item;

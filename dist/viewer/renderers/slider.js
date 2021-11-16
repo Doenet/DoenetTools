@@ -464,12 +464,12 @@ export default function Slider(props) {
       style: {marginTop: "-20px"},
       value: "Prev",
       onClick: (e) => handlePrevious(e),
-      "data-cy": "prevbutton"
+      "data-cy": `${name}-prevbutton`
     }), /* @__PURE__ */ React.createElement(Button, {
       style: {marginTop: "-20px"},
       value: "Next",
       onClick: (e) => handleNext(e),
-      "data-cy": "nextbutton"
+      "data-cy": `${name}-nextbutton`
     }));
   } else {
     null;
@@ -492,7 +492,7 @@ export default function Slider(props) {
     "data-cy": "slider1"
   }, /* @__PURE__ */ React.createElement(StyledThumb, {
     style: {left: `${thumbXPos - 4}px`},
-    "data-cy": "slider1-handle"
+    "data-cy": `${name}-handle`
   }), ticksAndLabels)), /* @__PURE__ */ React.createElement("div", {
     style: {height: SVs.showControls ? "20px" : "0px"}
   }, controls));

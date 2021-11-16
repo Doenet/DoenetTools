@@ -48,7 +48,8 @@ if (!isset($_GET["doenetId"])) {
             ua.userId as userId,
             ua.credit as assignmentCredit,
             uaa.attemptNumber as attemptNumber,
-            uaa.credit as attemptCredit
+            uaa.credit as attemptCredit,
+            uaa.creditOverride as creditOverride
             FROM user_assignment_attempt AS uaa
             RIGHT JOIN user_assignment AS ua
             ON ua.doenetId = uaa.doenetId 
@@ -62,7 +63,8 @@ if (!isset($_GET["doenetId"])) {
             ua.userId as userId,
             ua.credit as assignmentCredit,
             uaa.attemptNumber as attemptNumber,
-            uaa.credit as attemptCredit
+            uaa.credit as attemptCredit,
+            uaa.creditOverride as creditOverride
             FROM user_assignment_attempt AS uaa
             RIGHT JOIN user_assignment AS ua
             ON ua.doenetId = uaa.doenetId 
@@ -83,6 +85,7 @@ if (!isset($_GET["doenetId"])) {
                     $row['attemptNumber'],
                     $row['assignmentCredit'],
                     $row['attemptCredit'],
+                    $row['creditOverride'],
                 )
             );
         }

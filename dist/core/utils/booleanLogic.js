@@ -585,6 +585,7 @@ export function evaluateLogic({ logicTree,
         includeErrorInNumberExponents: dependencyValues.includeErrorInNumberExponents,
         allowedErrorIsAbsolute: dependencyValues.allowedErrorIsAbsolute,
         nSignErrorsMatched: dependencyValues.nSignErrorsMatched,
+        nPeriodicSetMatchesRequired: dependencyValues.nPeriodicSetMatchesRequired,
       }));
 
       // return average of fraction_equal
@@ -605,6 +606,7 @@ export function evaluateLogic({ logicTree,
           includeErrorInNumberExponents: dependencyValues.includeErrorInNumberExponents,
           allowedErrorIsAbsolute: dependencyValues.allowedErrorIsAbsolute,
           nSignErrorsMatched: dependencyValues.nSignErrorsMatched,
+          nPeriodicSetMatchesRequired: dependencyValues.nPeriodicSetMatchesRequired,
         }
       ).fraction_equal === 1) ? 1 : 0;
     }
@@ -625,6 +627,7 @@ export function evaluateLogic({ logicTree,
         includeErrorInNumberExponents: dependencyValues.includeErrorInNumberExponents,
         allowedErrorIsAbsolute: dependencyValues.allowedErrorIsAbsolute,
         nSignErrorsMatched: dependencyValues.nSignErrorsMatched,
+        nPeriodicSetMatchesRequired: dependencyValues.nPeriodicSetMatchesRequired,
       }
     ).fraction_equal;
 
@@ -655,6 +658,7 @@ export function evaluateLogic({ logicTree,
         includeErrorInNumberExponents: dependencyValues.includeErrorInNumberExponents,
         allowedErrorIsAbsolute: dependencyValues.allowedErrorIsAbsolute,
         nSignErrorsMatched: dependencyValues.nSignErrorsMatched,
+        nPeriodicSetMatchesRequired: dependencyValues.nPeriodicSetMatchesRequired,
       }));
 
       let max_fraction = results.reduce((a, c) => Math.max(a, c.fraction_equal), 0);
@@ -679,6 +683,7 @@ export function evaluateLogic({ logicTree,
         includeErrorInNumberExponents: dependencyValues.includeErrorInNumberExponents,
         allowedErrorIsAbsolute: dependencyValues.allowedErrorIsAbsolute,
         nSignErrorsMatched: dependencyValues.nSignErrorsMatched,
+        nPeriodicSetMatchesRequired: dependencyValues.nPeriodicSetMatchesRequired,
       }).fraction_equal === 1);
 
       if (operator === "in") {

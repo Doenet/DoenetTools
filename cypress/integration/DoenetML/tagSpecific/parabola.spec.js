@@ -4521,7 +4521,6 @@ describe('Parabola Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let p3 = components["/g3"].activeChildren[0];
       let A3 = components["/g3"].activeChildren[1];
 
       let [x1, x2] = components["/A"].stateValues.xs.map(x => x.tree);
@@ -4568,6 +4567,99 @@ describe('Parabola Tag Tests', function () {
       expect(x23).eq(x2)
 
       A3.movePoint({ x: 1.1, y: 9 });
+      [x1, x2] = components["/A"].stateValues.xs.map(x => x.tree);
+      [x12, x22] = components["/A2"].stateValues.xs.map(x => x.tree);
+      [x13, x23] = A3.stateValues.xs.map(x => x.tree);
+      expect(x1).greaterThan(1.11)
+      expect(x2).closeTo(f_p(x1), 1E-14);
+      expect(x12).eq(x1)
+      expect(x13).eq(x1)
+      expect(x22).eq(x2)
+      expect(x23).eq(x2)
+
+
+    })
+
+
+
+
+
+  });
+
+
+  it('constrain to parabola opening downward', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <graph>
+    <parabola through="(1,-2) (2,-3) (0,-3)" name="p" />
+    <point x="0" y="0" name="A">
+      <constraints>
+        <constrainTo>$p</constrainTo>
+      </constraints>
+    </point>
+    </graph>
+    <graph name="g2">
+      <copy assignNames="p2" tname="p" />
+      <copy assignNames="A2" tname="A" />
+    </graph>
+    <copy assignNames="g3" tname="g2"/>
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
+
+    let f_p = x => -((x - 1) ** 2 + 2);
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      let A3 = components["/g3"].activeChildren[1];
+
+      let [x1, x2] = components["/A"].stateValues.xs.map(x => x.tree);
+      let [x12, x22] = components["/A2"].stateValues.xs.map(x => x.tree);
+      let [x13, x23] = A3.stateValues.xs.map(x => x.tree);
+      expect(x1).greaterThan(0)
+      expect(x2).closeTo(f_p(x1), 1E-14);
+      expect(x12).eq(x1)
+      expect(x13).eq(x1)
+      expect(x22).eq(x2)
+      expect(x23).eq(x2)
+
+      components["/A"].movePoint({ x: 9, y: 2 });
+      [x1, x2] = components["/A"].stateValues.xs.map(x => x.tree);
+      [x12, x22] = components["/A2"].stateValues.xs.map(x => x.tree);
+      [x13, x23] = A3.stateValues.xs.map(x => x.tree);
+      expect(x1).lessThan(9)
+      expect(x2).closeTo(f_p(x1), 1E-14);
+      expect(x12).eq(x1)
+      expect(x13).eq(x1)
+      expect(x22).eq(x2)
+      expect(x23).eq(x2)
+
+      components["/A2"].movePoint({ x: -9, y: -4 });
+      [x1, x2] = components["/A"].stateValues.xs.map(x => x.tree);
+      [x12, x22] = components["/A2"].stateValues.xs.map(x => x.tree);
+      [x13, x23] = A3.stateValues.xs.map(x => x.tree);
+      expect(x1).greaterThan(-9)
+      expect(x2).closeTo(f_p(x1), 1E-14);
+      expect(x12).eq(x1)
+      expect(x13).eq(x1)
+      expect(x22).eq(x2)
+      expect(x23).eq(x2)
+
+      A3.movePoint({ x: 0.9, y: -9 });
+      [x1, x2] = components["/A"].stateValues.xs.map(x => x.tree);
+      [x12, x22] = components["/A2"].stateValues.xs.map(x => x.tree);
+      [x13, x23] = A3.stateValues.xs.map(x => x.tree);
+      expect(x1).lessThan(0.9)
+      expect(x2).closeTo(f_p(x1), 1E-14);
+      expect(x12).eq(x1)
+      expect(x13).eq(x1)
+      expect(x22).eq(x2)
+      expect(x23).eq(x2)
+
+      A3.movePoint({ x: 1.1, y: -9 });
       [x1, x2] = components["/A"].stateValues.xs.map(x => x.tree);
       [x12, x22] = components["/A2"].stateValues.xs.map(x => x.tree);
       [x13, x23] = A3.stateValues.xs.map(x => x.tree);
@@ -4665,5 +4757,120 @@ describe('Parabola Tag Tests', function () {
 
   });
 
+
+  it('constrain to parabola opening downward, different axis scales', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <graph ymin="-1000" ymax="1000">
+    <parabola through="(1,-200) (2,-300) (0,-300)" name="p" />
+    <point x="0" y="0" name="A">
+      <constraints>
+        <constrainTo>$p</constrainTo>
+      </constraints>
+    </point>
+    </graph>
+    <graph name="g2">
+      <copy assignNames="p2" tname="p" />
+      <copy assignNames="A2" tname="A" />
+    </graph>
+    <copy assignNames="g3" tname="g2"/>
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
+
+    let f_p = x => -100*((x - 1) ** 2 + 2);
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      let A3 = components["/g3"].activeChildren[1];
+
+      let [x1, x2] = components["/A"].stateValues.xs.map(x => x.tree);
+      let [x12, x22] = components["/A2"].stateValues.xs.map(x => x.tree);
+      let [x13, x23] = A3.stateValues.xs.map(x => x.tree);
+      expect(x1).greaterThan(0)
+      expect(x2).closeTo(f_p(x1), 1E-12);
+      expect(x12).eq(x1)
+      expect(x13).eq(x1)
+      expect(x22).eq(x2)
+      expect(x23).eq(x2)
+
+      components["/A"].movePoint({ x: 9, y: 200 });
+      [x1, x2] = components["/A"].stateValues.xs.map(x => x.tree);
+      [x12, x22] = components["/A2"].stateValues.xs.map(x => x.tree);
+      [x13, x23] = A3.stateValues.xs.map(x => x.tree);
+      expect(x1).lessThan(9)
+      expect(x2).closeTo(f_p(x1), 1E-12);
+      expect(x12).eq(x1)
+      expect(x13).eq(x1)
+      expect(x22).eq(x2)
+      expect(x23).eq(x2)
+
+      components["/A2"].movePoint({ x: -9, y: -400 });
+      [x1, x2] = components["/A"].stateValues.xs.map(x => x.tree);
+      [x12, x22] = components["/A2"].stateValues.xs.map(x => x.tree);
+      [x13, x23] = A3.stateValues.xs.map(x => x.tree);
+      expect(x1).greaterThan(-9)
+      expect(x2).closeTo(f_p(x1), 1E-12);
+      expect(x12).eq(x1)
+      expect(x13).eq(x1)
+      expect(x22).eq(x2)
+      expect(x23).eq(x2)
+
+      A3.movePoint({ x: 0.9, y: -900 });
+      [x1, x2] = components["/A"].stateValues.xs.map(x => x.tree);
+      [x12, x22] = components["/A2"].stateValues.xs.map(x => x.tree);
+      [x13, x23] = A3.stateValues.xs.map(x => x.tree);
+      expect(x1).lessThan(0.9)
+      expect(x2).closeTo(f_p(x1), 1E-12);
+      expect(x12).eq(x1)
+      expect(x13).eq(x1)
+      expect(x22).eq(x2)
+      expect(x23).eq(x2)
+
+      A3.movePoint({ x: 1.1, y: -900 });
+      [x1, x2] = components["/A"].stateValues.xs.map(x => x.tree);
+      [x12, x22] = components["/A2"].stateValues.xs.map(x => x.tree);
+      [x13, x23] = A3.stateValues.xs.map(x => x.tree);
+      expect(x1).greaterThan(1.11)
+      expect(x2).closeTo(f_p(x1), 1E-12);
+      expect(x12).eq(x1)
+      expect(x13).eq(x1)
+      expect(x22).eq(x2)
+      expect(x23).eq(x2)
+
+      components["/A"].movePoint({ x: 9, y: 0 });
+      [x1, x2] = components["/A"].stateValues.xs.map(x => x.tree);
+      [x12, x22] = components["/A2"].stateValues.xs.map(x => x.tree);
+      [x13, x23] = A3.stateValues.xs.map(x => x.tree);
+      expect(x1).greaterThan(2)
+      expect(x2).closeTo(f_p(x1), 1E-12);
+      expect(x12).eq(x1)
+      expect(x13).eq(x1)
+      expect(x22).eq(x2)
+      expect(x23).eq(x2)
+
+
+      components["/A2"].movePoint({ x: -9, y: 100 });
+      [x1, x2] = components["/A"].stateValues.xs.map(x => x.tree);
+      [x12, x22] = components["/A2"].stateValues.xs.map(x => x.tree);
+      [x13, x23] = A3.stateValues.xs.map(x => x.tree);
+      expect(x1).lessThan(0)
+      expect(x2).closeTo(f_p(x1), 1E-12);
+      expect(x12).eq(x1)
+      expect(x13).eq(x1)
+      expect(x22).eq(x2)
+      expect(x23).eq(x2)
+
+
+    })
+
+
+
+
+
+  });
 
 });

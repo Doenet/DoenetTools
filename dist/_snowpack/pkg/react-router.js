@@ -1,4 +1,4 @@
-export { u as useHistory, a as useLocation } from './common/react-router-7e00dcf5.js';
+export { u as useHistory, a as useLocation } from './common/react-router-96a90867.js';
 import './common/inheritsLoose-90c3012b.js';
 import './common/setPrototypeOf-ac807fbe.js';
 import './common/index-61a7c514.js';

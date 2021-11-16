@@ -18,8 +18,10 @@ export default class Graph extends DoenetRenderer {
       boundingbox,
       axis: false,
       showCopyright: false,
-      showNavigation: this.doenetSvData.showNavigation,
-      keepAspectRatio: this.doenetSvData.identicalAxisScales
+      showNavigation: this.doenetSvData.showNavigation && !this.doenetSvData.fixAxes,
+      keepAspectRatio: this.doenetSvData.identicalAxisScales,
+      zoom: {wheel: !this.doenetSvData.fixAxes},
+      pan: {enabled: !this.doenetSvData.fixAxes}
     });
     if (this.doenetSvData.displayXAxis) {
       let xaxisOptions = {};
@@ -263,8 +265,7 @@ export default class Graph extends DoenetRenderer {
     }
   }
   componentWillUnmount() {
-  }
-  componentDidUpdate() {
+    this.board.off("boundingbox");
   }
   render() {
     const divStyle = {

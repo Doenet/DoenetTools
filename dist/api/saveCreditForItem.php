@@ -12,7 +12,8 @@ date_default_timezone_set('UTC');
 
 $jwtArray = include "jwtArray.php";
 $userId = $jwtArray['userId'];
-
+$examUserId = $jwtArray['examineeUserId'];
+$examDoenetId = $jwtArray['doenetId'];
 
 $_POST = json_decode(file_get_contents("php://input"),true);
 $doenetId = mysqli_real_escape_string($conn,$_POST["doenetId"]);
@@ -23,6 +24,41 @@ $itemNumber = mysqli_real_escape_string($conn,$_POST["itemNumber"]);
 $stateVariables =  mysqli_real_escape_string($conn,$_POST["stateVariables"]);
 
 //TODO: check if attempt is older than given attempt
+
+$success = TRUE;
+$message = "";
+
+if ($doenetId == ""){
+$success = FALSE;
+$message = 'Internal Error: missing doenetId';
+}elseif ($contentId == ""){
+$success = FALSE;
+$message = 'Internal Error: missing contentId';
+}elseif ($attemptNumber == ""){
+  $success = FALSE;
+  $message = 'Internal Error: missing attemptNumber';
+}elseif ($credit == ""){
+  $success = FALSE;
+  $message = 'Internal Error: missing credit';
+}elseif ($itemNumber == ""){
+  $success = FALSE;
+  $message = 'Internal Error: missing itemNumber';
+}elseif ($stateVariables == ""){
+  $success = FALSE;
+  $message = 'Internal Error: missing stateVariables';
+}elseif ($userId == ""){
+  if ($examUserId == ""){
+    $success = FALSE;
+    $message = "No access - Need to sign in";
+  }else if ($examDoenetId != $doenetId){
+      $success = FALSE;
+      $message = "No access for doenetId: $doenetId";
+  }else{
+      $userId = $examUserId;
+  }
+}
+
+if ($success){
 
 
 //**Find assessment settings
@@ -199,7 +235,6 @@ if ($result->num_rows < 1){
 
 // we insert a row into user_assignment_attempt_item_submission
 // whether or not it is valid
-
 
 //Find submissionNumber
 $sql = "
@@ -399,8 +434,11 @@ if(!$set_credit_by_item && !$databaseError) {
   }
 
 }
+}
 
 $response_arr = array(
+    "success"=>$success,
+    "message"=>$message,
     "access"=> TRUE,
     "viewedSolution"=>$viewedSolution,
     "timeExpired"=>$timeExpired,

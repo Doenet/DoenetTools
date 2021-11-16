@@ -115,7 +115,7 @@ export default class FunctionOperator extends Function {
 
     stateVariableDefinitions.formula = {
       public: true,
-      componentType: "formula",
+      componentType: "math",
       additionalStateVariablesDefined: ["operatorBasedOnFormula"],
       // stateVariablesDeterminingDependencies: ["operatorBasedOnFormulaIfAvailable"],
       returnDependencies: () => ({

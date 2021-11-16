@@ -163,6 +163,48 @@ describe('Sequence Tag Tests', function () {
     })
   });
 
+  it('number sequence, from and to, adjust for round-off error', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <aslist><sequence from="1" to="(0.1+0.7)*10"/></aslist>
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      let children = components['/_aslist1'].activeChildren;
+      expect(children.length).eq(8);
+      for (let i = 0; i < 8; i++) {
+        expect(children[i].stateValues.value).eq(i + 1);
+      }
+    })
+  });
+
+  it('math sequence, from and to, adjust for round-off error', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <aslist><sequence type="math" from="1" to="(0.1+0.7)*10"/></aslist>
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      let children = components['/_aslist1'].activeChildren;
+      expect(children.length).eq(8);
+      for (let i = 0; i < 8; i++) {
+        expect(children[i].stateValues.value.tree).eq(i + 1);
+      }
+    })
+  });
+
   it('number sequence, from and step', () => {
     cy.window().then((win) => {
       win.postMessage({
@@ -226,6 +268,48 @@ describe('Sequence Tag Tests', function () {
     })
   });
 
+  it('number sequence, to and step, adjust for round-off error', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <aslist><sequence to="1.4" step="0.1"/></aslist>
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      let children = components['/_aslist1'].activeChildren;
+      expect(children.length).eq(5);
+      for (let i = 0; i < 5; i++) {
+        expect(Math.abs(children[i].stateValues.value - (1 + i * 0.1))).lessThan(1E-14)
+      }
+    })
+  });
+
+  it('math sequence, to and step, adjust for round-off error', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <aslist><sequence type="math" to="1.4" step="0.1"/></aslist>
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      let children = components['/_aslist1'].activeChildren;
+      expect(children.length).eq(5);
+      for (let i = 0; i < 5; i++) {
+        expect(Math.abs(children[i].stateValues.value.tree - (1 + i * 0.1))).lessThan(1E-14)
+      }
+    })
+  });
+
   it('number sequence, to and length', () => {
     cy.window().then((win) => {
       win.postMessage({
@@ -285,6 +369,52 @@ describe('Sequence Tag Tests', function () {
       expect(children.length).eq(4);
       for (let i = 0; i < 4; i++) {
         expect(children[i].stateValues.value).eq(9 - 2 * i);
+      }
+    })
+  });
+
+  it('number sequence, from, to, and step, adjust for round-off errors', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <aslist><sequence from="0.2" to="0.5" step="0.1" /></aslist>
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+
+    let sequence = [0.2, 0.3, 0.4, 0.5]
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      let children = components['/_aslist1'].activeChildren;
+      expect(children.length).eq(4);
+      for (let i = 0; i < 4; i++) {
+        expect(Math.abs(children[i].stateValues.value - sequence[i])).lessThan(1E-14);
+      }
+    })
+  });
+
+  it('math sequence, from, to, and step, adjust for round-off errors', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <aslist><sequence type="math" from="0.2" to="0.5" step="0.1" /></aslist>
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+
+    let sequence = [0.2, 0.3, 0.4, 0.5]
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      let children = components['/_aslist1'].activeChildren;
+      expect(children.length).eq(4);
+      for (let i = 0; i < 4; i++) {
+        expect(Math.abs(children[i].stateValues.value.tree - sequence[i])).lessThan(1E-14);
       }
     })
   });
@@ -499,7 +629,7 @@ describe('Sequence Tag Tests', function () {
       win.postMessage({
         doenetML: `
     <text>a</text>
-    <aslist><sequence from="1" length="10" exclude="$exclude2  2 6" />
+    <aslist><sequence from="-1" length="10" exclude="$exclude2  0 6" />
     </aslist>
     <p>Also exclude: <mathinput name="exclude2" /></p>
     `}, "*");
@@ -513,26 +643,26 @@ describe('Sequence Tag Tests', function () {
       expect(children.length).eq(8);
       let ind = 0;
       for (let i = 0; i < 10; i++) {
-        if (i == 1 || i == 5) {
+        if (i == 1 || i == 7) {
           continue;
         }
-        expect(children[ind].stateValues.value).eq(1 + i);
+        expect(children[ind].stateValues.value).eq(i - 1);
         ind++
       }
     })
 
-    cy.log("also exclude 9")
-    cy.get('#\\/exclude2 textarea').type(`{end}{backspace}9{enter}`, { force: true });
+    cy.log("also exclude 7")
+    cy.get('#\\/exclude2 textarea').type(`{end}{backspace}7{enter}`, { force: true });
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       let children = components['/_aslist1'].activeChildren;
       expect(children.length).eq(7);
       let ind = 0;
       for (let i = 0; i < 10; i++) {
-        if (i == 1 || i == 5 || i == 8) {
+        if (i == 1 || i == 7 || i == 8) {
           continue;
         }
-        expect(children[ind].stateValues.value).eq(1 + i);
+        expect(children[ind].stateValues.value).eq(i - 1);
         ind++
       }
     })
@@ -545,10 +675,10 @@ describe('Sequence Tag Tests', function () {
       expect(children.length).eq(8);
       let ind = 0;
       for (let i = 0; i < 10; i++) {
-        if (i == 1 || i == 5) {
+        if (i == 1 || i == 7) {
           continue;
         }
-        expect(children[ind].stateValues.value).eq(1 + i);
+        expect(children[ind].stateValues.value).eq(i - 1);
         ind++
       }
     })
@@ -561,10 +691,10 @@ describe('Sequence Tag Tests', function () {
       expect(children.length).eq(8);
       let ind = 0;
       for (let i = 0; i < 10; i++) {
-        if (i == 1 || i == 5) {
+        if (i == 1 || i == 7) {
           continue;
         }
-        expect(children[ind].stateValues.value).eq(1 + i);
+        expect(children[ind].stateValues.value).eq(i - 1);
         ind++
       }
     })
@@ -578,10 +708,10 @@ describe('Sequence Tag Tests', function () {
       expect(children.length).eq(7);
       let ind = 0;
       for (let i = 0; i < 10; i++) {
-        if (i == 1 || i == 5 || i == 2) {
+        if (i == 1 || i == 7 || i == 4) {
           continue;
         }
-        expect(children[ind].stateValues.value).eq(1 + i);
+        expect(children[ind].stateValues.value).eq(i - 1);
         ind++
       }
     })
@@ -595,13 +725,39 @@ describe('Sequence Tag Tests', function () {
       expect(children.length).eq(8);
       let ind = 0;
       for (let i = 0; i < 10; i++) {
-        if (i == 1 || i == 5) {
+        if (i == 1 || i == 7) {
           continue;
         }
-        expect(children[ind].stateValues.value).eq(1 + i);
+        expect(children[ind].stateValues.value).eq(i - 1);
         ind++
       }
     })
+
+  });
+
+  it('number sequence, excludes, adjust for round-off errors', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <aslist><sequence from='.1' to=' .8' step=' .1' exclude='.3 .6 .7' />
+    </aslist>
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+
+    let sequence = [0.1, 0.2, 0.4, 0.5, 0.8];
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      let children = components['/_aslist1'].activeChildren;
+      expect(children.length).eq(5);
+      for (let i = 0; i < 5; i++) {
+        expect(Math.abs(children[i].stateValues.value - sequence[i])).lessThan(1E-14);
+      }
+    })
+
 
   });
 
@@ -828,6 +984,33 @@ describe('Sequence Tag Tests', function () {
     })
 
   });
+
+  it('math sequence, excludes, adjust for round-off errors', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <aslist><sequence type="math" from='.1' to=' .8' step=' .1' exclude='.3 .6 .7' />
+    </aslist>
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+
+    let sequence = [0.1, 0.2, 0.4, 0.5, 0.8];
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      let children = components['/_aslist1'].activeChildren;
+      expect(children.length).eq(5);
+      for (let i = 0; i < 5; i++) {
+        expect(Math.abs(children[i].stateValues.value.tree - sequence[i])).lessThan(1E-14);
+      }
+    })
+
+
+  });
+
 
   it('sequence of decimals rounds on display', () => {
     cy.window().then((win) => {

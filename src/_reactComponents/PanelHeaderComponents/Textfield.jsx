@@ -1,10 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { doenetComponentForegroundInactive } from "./theme"
 
 export default function Textfield(props) {
   const [labelVisible, setLabelVisible] = useState(props.label ? 'static' : 'none')
   const [text, setText] = useState(props.value ? 'Enter text here' : props.value);
   const [align, setAlign] = useState(props.vertical ? 'static' : 'flex');
+  const [cursorStart, setCursorStart] = useState(0);
+  const [cursorEnd, setCursorEnd] = useState(0);
+  const inputRef = useRef(null);
   //Assume small
   var textfield = {
         margin: '0px 4px 0px 4px',
@@ -36,6 +39,11 @@ export default function Textfield(props) {
 
     useEffect(() => {
       setText(props.value);
+    }, [props]);
+
+    useEffect(() => {
+      inputRef.current.selectionStart = cursorStart;
+      inputRef.current.selectionEnd = cursorEnd;
     });
 
     if (props.alert) {
@@ -66,6 +74,8 @@ if (props.width) {
 }
 function handleChange(e) {
   if (props.onChange) props.onChange(e)
+  setCursorStart(e.target.selectionStart);
+  setCursorEnd(e.target.selectionEnd);
 }
 
 function handleBlur(e) {
@@ -80,7 +90,7 @@ function handleKeyDown(e) {
         <>
           <div style={container}>
                 <p style={label}>{label.value}</p>
-                <input type="text" autoFocus={autofocus} value={textfield.value} style={textfield} onChange={(e) => { handleChange(e) }} onBlur={(e) => { handleBlur(e) }} onKeyDown={(e) => { handleKeyDown(e) }} disabled={disable}></input>
+                <input type="text" ref={inputRef} autoFocus={autofocus} value={textfield.value} style={textfield} onChange={(e) => { handleChange(e) }} onBlur={(e) => { handleBlur(e) }} onKeyDown={(e) => { handleKeyDown(e) }} disabled={disable}></input>
           </div>
         </>
     )

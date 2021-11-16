@@ -47,10 +47,11 @@ export default class MathInput extends Input {
   static createAttributesObject(args) {
     let attributes = super.createAttributesObject(args);
     attributes.prefill = {
-      createComponentOfType: "text",
+      createComponentOfType: "math",
       createStateVariable: "prefill",
-      defaultValue: "",
+      defaultValue: me.fromAst("\uff3f"),
       public: true,
+      copyComponentAttributesForCreatedComponent: ["format", "functionSymbols", "splitSymbols"],
     };
     attributes.format = {
       createComponentOfType: "text",
@@ -102,6 +103,14 @@ export default class MathInput extends Input {
     attributes.bindValueTo = {
       createComponentOfType: "math"
     };
+    attributes.unionFromU = {
+      createComponentOfType: "boolean",
+      createStateVariable: "unionFromU",
+      defaultValue: false,
+      public: true,
+      forRenderer: true,
+    }
+
     return attributes;
   }
 
@@ -128,19 +137,7 @@ export default class MathInput extends Input {
         prefill: {
           dependencyType: "stateVariable",
           variableName: "prefill"
-        },
-        format: {
-          dependencyType: "stateVariable",
-          variableName: "format"
-        },
-        functionSymbols: {
-          dependencyType: "stateVariable",
-          variableName: "functionSymbols"
-        },
-        splitSymbols: {
-          dependencyType: "stateVariable",
-          variableName: "splitSymbols"
-        },
+        }
       }),
       definition: function ({ dependencyValues }) {
         if (!dependencyValues.bindValueTo) {
@@ -148,14 +145,7 @@ export default class MathInput extends Input {
             useEssentialOrDefaultValue: {
               value: {
                 variablesToCheck: "value",
-                get defaultValue() {
-                  return parseValueIntoMath({
-                    inputString: dependencyValues.prefill,
-                    format: dependencyValues.format,
-                    functionSymbols: dependencyValues.functionSymbols,
-                    splitSymbols: dependencyValues.splitSymbols,
-                  })
-                }
+                defaultValue: dependencyValues.prefill
               }
             }
           }
@@ -432,38 +422,4 @@ export default class MathInput extends Input {
     }
   }
 
-}
-
-
-function parseValueIntoMath({ inputString, format, functionSymbols, splitSymbols }) {
-
-  if (!inputString) {
-    return me.fromAst('\uFF3F');
-  }
-
-  let expression;
-  if (format === "latex") {
-    let fromLatex = getFromLatex({
-      functionSymbols,
-      splitSymbols
-    });
-    try {
-      expression = fromLatex(inputString);
-    } catch (e) {
-      console.warn(`Invalid latex for mathInput: ${inputString}`)
-      expression = me.fromAst('\uFF3F');
-    }
-  } else if (format === "text") {
-    let fromText = getFromText({
-      functionSymbols,
-      splitSymbols,
-    });
-    try {
-      expression = fromText(inputString);
-    } catch (e) {
-      console.warn(`Invalid text for mathInput: ${inputString}`)
-      expression = me.fromAst('\uFF3F');
-    }
-  }
-  return expression;
 }

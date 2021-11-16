@@ -92,7 +92,7 @@ export default class MathInput extends DoenetRenderer {
   calculateMathExpressionFromLatex(text) {
     let expression;
 
-    text = normalizeLatexString(text);
+    text = normalizeLatexString(text, { unionFromU: this.doenetSvData.unionFromU });
 
     // replace ^25 with ^{2}5, since mathQuill uses standard latex conventions
     // unlike math-expression's latex parser
@@ -472,7 +472,7 @@ export default class MathInput extends DoenetRenderer {
 
 
 function stripLatex(latex) {
-  let s = latex.replaceAll(`\\,`, '');
+  let s = latex.replaceAll(`\\,`, '').replaceAll(/\\var{([^{}]*)}/g, '$1');
 
   return s;
 

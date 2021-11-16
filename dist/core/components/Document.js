@@ -1,6 +1,6 @@
 import BaseComponent from './abstract/BaseComponent.js';
 import { getVariantsForDescendants } from '../utils/variants.js';
-import { returnDefaultStyleDefinitions } from '../utils/style.js';
+import { returnStyleDefinitionStateVariables } from '../utils/style.js';
 import { numberToLetters } from '../utils/sequence.js';
 
 export default class Document extends BaseComponent {
@@ -36,14 +36,6 @@ export default class Document extends BaseComponent {
       mergeArrayWithDefault: true,
       public: true,
     };
-    attributes.styleDefinitions = {
-      createComponentOfType: "styleDefinitions",
-      createStateVariable: "styleDefinitions",
-      get defaultValue() { return returnDefaultStyleDefinitions() },
-      propagateToDescendants: true,
-      mergeArrayWithDefault: true,
-      public: true,
-    };
     return attributes;
   }
 
@@ -59,6 +51,12 @@ export default class Document extends BaseComponent {
       group: "description",
       componentTypes: ["description"]
     }, {
+      group: "setups",
+      componentTypes: ["setup"]
+    }, {
+      group: "styleDefinitions",
+      componentTypes: ["styleDefinitions"]
+    }, {
       group: "anything",
       componentTypes: ["_base"]
     }]
@@ -70,6 +68,9 @@ export default class Document extends BaseComponent {
 
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
+    let styleDefinitionStateVariables = returnStyleDefinitionStateVariables();
+
+    Object.assign(stateVariableDefinitions, styleDefinitionStateVariables);
 
     stateVariableDefinitions.titleChildName = {
       forRenderer: true,
@@ -177,9 +178,7 @@ export default class Document extends BaseComponent {
           if (descendant.stateValues.aggregateScores ||
             descendant.stateValues.scoredDescendants === undefined
           ) {
-            if(descendant.stateValues.weight !== 0) {
-              scoredDescendants.push(descendant)
-            }
+            scoredDescendants.push(descendant)
           } else {
             scoredDescendants.push(...descendant.stateValues.scoredDescendants)
           }
@@ -592,9 +591,6 @@ export default class Document extends BaseComponent {
       object: {
         componentName: this.componentName,
         componentType: this.componentType,
-      },
-      result: {
-        creditAchieved: this.stateValues.creditAchievedIfSubmit
       }
     });
 

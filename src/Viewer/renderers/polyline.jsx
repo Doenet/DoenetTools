@@ -112,11 +112,17 @@ export default class Line extends DoenetRenderer {
 
   deleteGraphicalObject() {
 
+
+    this.polylineJXG.off('drag');
+    this.polylineJXG.off('down');
+    this.polylineJXG.off('up');
     this.props.board.removeObject(this.polylineJXG);
     delete this.polylineJXG;
 
     for (let i = 0; i < this.doenetSvData.nVertices; i++) {
-
+      this.pointsJXG[i].off('drag');
+      this.pointsJXG[i].off('down');
+      this.pointsJXG[i].off('up');
       this.props.board.removeObject(this.pointsJXG[i]);
       delete this.pointsJXG[i];
     }
@@ -166,7 +172,11 @@ export default class Line extends DoenetRenderer {
       }
     } else if (this.doenetSvData.nVertices < this.previousNVertices) {
       for (let i = this.doenetSvData.nVertices; i < this.previousNVertices; i++) {
-        this.props.board.removeObject(this.pointsJXG.pop());
+        let pt = this.pointsJXG.pop()
+        pt.off('drag');
+        pt.off('down');
+        pt.off('up');
+        this.props.board.removeObject(pt);
       }
       this.polylineJXG.dataX.length = this.doenetSvData.nVertices;
     }

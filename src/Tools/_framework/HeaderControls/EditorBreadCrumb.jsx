@@ -1,35 +1,26 @@
 import React, { Suspense } from 'react';
 import { useRecoilValue } from 'recoil';
-import BreadCrumb from '../../../_reactComponents/Breadcrumb/BreadCrumb';
+import { BreadCrumb } from '../../../_reactComponents/PanelHeaderComponents/BreadCrumb';
 import { searchParamAtomFamily } from '../NewToolRoot';
-import { folderDictionary } from '../../../_reactComponents/Drive/NewDrive';
+import { 
+  useCourseChooserCrumb, 
+  useDashboardCrumb, 
+  useNavigationCrumbs,
+  useEditorCrumb, 
+} from '../../../_utils/breadcrumbUtil';
 
 export default function EditorBreadCrumb() {
+  const chooserCrumb = useCourseChooserCrumb();
   const path = useRecoilValue(searchParamAtomFamily('path'));
-  let [driveId, folderId, itemId] = path.split(':');
-  const doenetId = useRecoilValue(searchParamAtomFamily('doenetId'));
-  let folderInfo = useRecoilValue(folderDictionary({ driveId, folderId }));
-  const docInfo = folderInfo.contentsDictionary[itemId];
-  if (!docInfo) {
-    return null;
-  }
+  const [driveId,folderId,itemId] = path.split(':');
+  const dashboardCrumb = useDashboardCrumb(driveId);
+  const navigationCrumbs = useNavigationCrumbs(driveId,folderId)
+  const doenetId = useRecoilValue(searchParamAtomFamily('doenetId')); 
+  const editorCrumb = useEditorCrumb({doenetId,driveId,folderId,itemId});
 
   return (
-    <Suspense fallback={<div>loading Drive...</div>}>
-      <div
-        style={{
-          margin: '-9px 0px 0px -25px',
-          maxWidth: '850px',
-        }}
-      >
-        <BreadCrumb
-          tool="Content"
-          tool2="Editor"
-          doenetId={doenetId}
-          path={path}
-          label={docInfo.label}
-        />
-      </div>
+    <Suspense fallback={<div>Loading Breadcrumb...</div>}>
+      <BreadCrumb crumbs={[chooserCrumb,dashboardCrumb,...navigationCrumbs,editorCrumb]} offset={62}/>
     </Suspense>
   );
 }

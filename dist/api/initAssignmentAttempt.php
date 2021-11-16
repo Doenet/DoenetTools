@@ -8,7 +8,8 @@ include "db_connection.php";
 
 $jwtArray = include "jwtArray.php";
 $userId = $jwtArray['userId'];
-
+$examUserId = $jwtArray['examineeUserId'];
+$examDoenetId = $jwtArray['doenetId'];
 
 $_POST = json_decode(file_get_contents("php://input"),true);
 $doenetId = mysqli_real_escape_string($conn,$_POST["doenetId"]);
@@ -43,6 +44,17 @@ if ($doenetId == ""){
 }elseif ($generatedVariant == ""){
     $success = FALSE;
     $message = 'Internal Error: missing generatedVariant';
+}else if ($userId == ""){
+  if ($examUserId == ""){
+          $success = FALSE;
+          $message = "No access - Need to sign in";
+  }else if ($examDoenetId != $doenetId){
+          $success = FALSE;
+          $message = "No access for doenetId: $doenetId";
+  }else{
+          $userId = $examUserId;
+  }
+
 }
 //TODO: make sure we have the right weights
 
@@ -90,7 +102,10 @@ if ($db_contentId == 'NA'){
 $result = $conn->query($sql);
 
 }else{
-  $sql = "SELECT began
+  $sql = "SELECT 
+  began,
+  assignedVariant,
+  generatedVariant
   FROM user_assignment_attempt
   WHERE userId = '$userId'
   AND doenetId = '$doenetId'
@@ -102,21 +117,39 @@ $result = $conn->query($sql);
   $sql = "INSERT INTO user_assignment_attempt
   (doenetId,contentId,userId,attemptNumber,assignedVariant,generatedVariant,began)
   VALUES
-  ('$doenetId','$contentId','$userId','$attemptNumber','$requestedVariant','$generatedVariant',NOW())
+  ('$doenetId','$contentId','$userId','$attemptNumber','$requestedVariant','$generatedVariant',CONVERT_TZ(NOW(), @@session.time_zone, '+00:00'))
   ";
 
   $result = $conn->query($sql);
   }else{
+
+
   $row = $result->fetch_assoc();
   $began = $row['began'];
+// $row['assignedVariant'];
+// $row['generatedVariant'];
+
   if ($began == NULL){
-  $sql = "
-  UPDATE user_assignment_attempt
-  SET began=NOW()
-  WHERE userId = '$userId'
-  AND doenetId = '$doenetId'
-  AND attemptNumber = '$attemptNumber'
-  ";
+    if ($row['assignedVariant'] == NULL ||
+    $row['generatedVariant'] == NULL){
+      $sql = "
+      UPDATE user_assignment_attempt
+      SET began=CONVERT_TZ(NOW(), @@session.time_zone, '+00:00'),
+      assignedVariant='$requestedVariant',
+      generatedVariant='$generatedVariant'
+      WHERE userId = '$userId'
+      AND doenetId = '$doenetId'
+      AND attemptNumber = '$attemptNumber'
+      ";
+    }else{
+      $sql = "
+      UPDATE user_assignment_attempt
+      SET began=CONVERT_TZ(NOW(), @@session.time_zone, '+00:00')
+      WHERE userId = '$userId'
+      AND doenetId = '$doenetId'
+      AND attemptNumber = '$attemptNumber'
+      ";
+    }
   $result = $conn->query($sql);
   }
   }

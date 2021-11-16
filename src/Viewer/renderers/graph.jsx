@@ -29,8 +29,10 @@ export default class Graph extends DoenetRenderer {
         boundingbox,
         axis: false,
         showCopyright: false,
-        showNavigation: this.doenetSvData.showNavigation,
+        showNavigation: this.doenetSvData.showNavigation && !this.doenetSvData.fixAxes,
         keepAspectRatio: this.doenetSvData.identicalAxisScales,
+        zoom: { wheel: !this.doenetSvData.fixAxes },
+        pan: { enabled: !this.doenetSvData.fixAxes }
       });
 
     if (this.doenetSvData.displayXAxis) {
@@ -315,20 +317,9 @@ export default class Graph extends DoenetRenderer {
 
 
   componentWillUnmount() {
-    // let allRenderers = this.renderers;
-    // for(let componentName in allRenderers) {
-    //   let componentRenderer = allRenderers[componentName];
-    //   if(componentRenderer.deleteGraphicalObject !== undefined) {
-    //     componentRenderer.deleteGraphicalObject();
-    //   }
-    // }
+    this.board.off('boundingbox');
   }
 
-
-  componentDidUpdate() {
-    // this.updateGraphicalComponents();
-    //window.MathJax.Hub.Queue(["Typeset",window.MathJax.Hub, "#"+this.component.componentName]);
-  }
 
   render() {
 

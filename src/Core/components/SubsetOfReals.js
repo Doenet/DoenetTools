@@ -59,7 +59,9 @@ export default class SubsetOfReals extends MathComponent {
       }),
       definition({ dependencyValues, componentInfoObjects }) {
 
-        let haveSingleSubsetChild = dependencyValues.mathChildren.filter(child =>
+        let haveSingleSubsetChild = 
+        dependencyValues.mathChildren.length === 1 &&
+        dependencyValues.mathChildren.filter(child =>
           componentInfoObjects.isInheritedComponentType({
             inheritedComponentType: child.componentType,
             baseComponentType: "subsetOfReals"

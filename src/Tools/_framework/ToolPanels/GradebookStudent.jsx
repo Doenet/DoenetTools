@@ -20,37 +20,38 @@ export default function GradebookStudent() {
     // console.log(">>>> driveId: ", driveId)
     // console.log(">>>> USERID: ", userId)
     // console.log(">>>>assignments",assignments.contents)
-    // console.log(">>>>students",students.contents)
-    // console.log(">>>>overView",overView.contents)
+    // console.log(">>>>studentName",studentName)
 
+    // console.log(">>>>overView",overView.contents)
     let overviewTable = {}
 
     overviewTable.headers=[{
         Header: "Assignment",
+        Footer: "Course Total",
         accessor: "assignment",
         disableFilters: true,
         disableSortBy: true,
     },
-    {
-        Header: "Possible Points",
-        accessor: "possiblepoints",
-        disableFilters: true,
-        disableSortBy: true,
-    },
-    {
-        Header: "Score",
-        accessor: "score",
-        disableFilters: true,
-        disableSortBy: true,
+    // {
+    //     Header: "Possible Points",
+    //     accessor: "possiblepoints",
+    //     disableFilters: true,
+    //     disableSortBy: true,
+    // },
+    // {
+    //     Header: "Score",
+    //     accessor: "score",
+    //     disableFilters: true,
+    //     disableSortBy: true,
 
-    },
-    {
-        Header: "Percentage",
-        accessor: "percentage",
-        disableFilters: true,
-        disableSortBy: true,
+    // },
+    // {
+    //     Header: "Percentage",
+    //     accessor: "percentage",
+    //     disableFilters: true,
+    //     disableSortBy: true,
 
-    }
+    // }
 ];
 
     overviewTable.rows = []
@@ -76,7 +77,10 @@ export default function GradebookStudent() {
     let totalPossiblePoints = 0;
 
     for (let {category,scaleFactor=1,maximumNumber=Infinity} of gradeCategories){
+        // let c = <b>{assignment?.category}</b>;
+
         overviewTable.rows.push({
+            // c
             assignment:category
         });
         let scores = [];
@@ -101,10 +105,12 @@ export default function GradebookStudent() {
                                     page: 'course',
                                     tool: 'gradebookStudentAssignment',
                                     view: '',
-                                    params: { driveId, userId, doenetId, source: 'student'},
+                                    params: { driveId, userId, doenetId, previousCrumb: 'student'},
                                 })
                             }
-                            }>{assignments.contents[doenetId].label}</a>
+                            }
+                            style={{paddingLeft: '15px'}}
+                            >{assignments.contents[doenetId].label}</a>
                             
             overviewTable.rows.push({
                 assignment,
@@ -141,7 +147,7 @@ export default function GradebookStudent() {
         }
         overviewTable.rows.push({
             // assignment:"Subtotal for ${category} Description ",
-            assignment:<>{`Subtotal for ${category}`}{description}</>,
+            assignment:<b>{`Subtotal for ${category}`}{description}</b>,
             score:categoryScore,
             possiblepoints:categoryPossiblePoints,
             percentage:categoryPercentage
@@ -152,23 +158,51 @@ export default function GradebookStudent() {
     let totalPercentage = Math.round(totalScore/totalPossiblePoints * 1000)/10 + '%'
 
     totalScore = Math.round(totalScore*100)/100;
-    overviewTable.rows.push({
-        // assignment:"Subtotal for ${category} Description ",
-        assignment:'Course Total',
-        score:totalScore,
-        possiblepoints:totalPossiblePoints,
-        percentage:totalPercentage
-    });
+    overviewTable.headers.push({
+        Header: "Possible Points",
+        Footer: totalPossiblePoints,
+        accessor: "possiblepoints",
+        disableFilters: true,
+        disableSortBy: true,
+    },
+    {
+        Header: "Score",
+        Footer: totalScore,
+        accessor: "score",
+        disableFilters: true,
+        disableSortBy: true,
+
+    },
+    {
+        Header: "Percentage",
+        Footer: totalPercentage,
+        accessor: "percentage",
+        disableFilters: true,
+        disableSortBy: true,
+
+    })
+    // overviewTable.rows.push({
+    //     // assignment:"Subtotal for ${category} Description ",
+    //     assignment:<b>Course Total</b>,
+    //     score:totalScore,
+    //     possiblepoints:totalPossiblePoints,
+    //     percentage:totalPercentage
+    // });
 
 
     
 }
 
+let studentName = `${students.contents[userId]?.firstName} ${students.contents[userId]?.lastName}`
 
-    return (
+console.log("rows", overviewTable.rows)
+
+    return (<>
+    <div style={{marginLeft:'18px'}}><b>Gradebook for {studentName}</b></div>
         <Styles>
             <Table disableSortBy={true} columns = {overviewTable.headers} data = {overviewTable.rows}/>
         </Styles>
+        </>
     )
 
 }

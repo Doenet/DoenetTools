@@ -9,15 +9,40 @@ include 'db_connection.php';
 
 $jwtArray = include 'jwtArray.php';
 $userId = $jwtArray['userId'];
-$allowed = false;
+$examUserId = $jwtArray['examineeUserId'];
+$examDoenetId = $jwtArray['doenetId'];
 
-if (array_key_exists('doenetId', $_REQUEST)) {
-    $doenetId = mysqli_real_escape_string($conn, $_REQUEST['doenetId']);
+$allowed = false;
+$success = true;
+$response_code = 200;
+$message = '';
+
+$doenetId = mysqli_real_escape_string($conn, $_REQUEST['doenetId']);
+
+
+if ($doenetId == ""){
+    $success = FALSE;
+    $message = 'Internal Error: missing doenetId';
+}else if ($userId == ""){
+	if ($examUserId == ""){
+		$success = FALSE;
+		$message = "No access - Need to sign in";
+	}else if ($examDoenetId != $doenetId){
+		$success = FALSE;
+		$message = "No access for doenetId: $doenetId";
+	}else{
+		$userId = $examUserId;
+	}
+
+}
+
+if ($success) {
+    
 
     //get driveId from doenetId
     //TODO: should be a sql join query with userId
     $sql = "
-        SELECT driveId, parentFolderId
+        SELECT driveId, parentFolderId, itemId
         FROM drive_content
         WHERE doenetId = '$doenetId'
     ";
@@ -26,6 +51,7 @@ if (array_key_exists('doenetId', $_REQUEST)) {
         $row = $result->fetch_assoc();
         $driveId = $row['driveId'];
         $parentFolderId = $row['parentFolderId'];
+        $itemId = $row['itemId'];
     }
 
     if (
@@ -60,17 +86,19 @@ if (array_key_exists('doenetId', $_REQUEST)) {
         http_response_code(400);
         echo json_encode(['message' => 'doenetId Invalid']);
     }
-} else {
-    http_response_code(400);
-    echo json_encode(['message' => 'Missing DoenetId']);
 }
 
-if ($allowed) {
-    http_response_code(200);
+
+if ($success) {
+    http_response_code($response_code);
+
     echo json_encode([
+        'allowed' => $allowed,
+        'success' => $success,
+        'message' => $message,
         'driveId' => $driveId,
+        'itemId' => $itemId,
         'parentFolderId' => $parentFolderId,
-        'message' => '',
     ]);
 }
 

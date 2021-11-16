@@ -415,6 +415,10 @@ export default class BaseComponent {
       }),
       definition({ dependencyValues, usedDefault }) {
 
+        if (dependencyValues.readOnly) {
+          return { newValues: { disabled: true } }
+        }
+
         if (dependencyValues.disabledPreliminary !== null &&
           dependencyValues.disabledAttr !== null
         ) {
@@ -454,7 +458,7 @@ export default class BaseComponent {
         if (useEssential) {
           return {
             useEssentialOrDefaultValue: {
-              disabled: { defaultValue: dependencyValues.readOnly === true }
+              disabled: { defaultValue: false }
             }
           }
         } else {
@@ -817,21 +821,16 @@ export default class BaseComponent {
         }
       } else {
         // always copy others
-        serializedComponent.attributes[attrName] = JSON.parse(JSON.stringify(attribute));
+        // TODO: for now not copying isResponse if linked
+        // but not sure if that is the right thing to do
+        if (attrName !== "isResponse" || !parameters.forLink) {
+          serializedComponent.attributes[attrName] = JSON.parse(JSON.stringify(attribute));
+        }
       }
     }
 
 
-    if (parameters.forLink) {
-      serializedComponent.originalName = this.componentName;
-      serializedComponent.originalDoenetAttributes = deepClone(this.doenetAttributes);
-      serializedComponent.doenetAttributes = deepClone(this.doenetAttributes);
-      serializedComponent.originalAttributes = deepClone(serializedComponent.attributes);
-
-      delete serializedComponent.doenetAttributes.prescribedName;
-      delete serializedComponent.doenetAttributes.assignNames;
-
-    } else {
+    if (!parameters.forLink) {
       let additionalState = {};
       for (let item in this.state) {
         // evaluate state variable first so that 
@@ -849,15 +848,17 @@ export default class BaseComponent {
         serializedComponent.state = additionalState;
       }
 
-      serializedComponent.originalName = this.componentName;
-      serializedComponent.originalDoenetAttributes = deepClone(this.doenetAttributes);
-      serializedComponent.doenetAttributes = deepClone(this.doenetAttributes);
-      serializedComponent.originalAttributes = deepClone(serializedComponent.attributes);
-
-      delete serializedComponent.doenetAttributes.prescribedName;
-      delete serializedComponent.doenetAttributes.assignNames;
-
     }
+
+
+    serializedComponent.originalName = this.componentName;
+    serializedComponent.originalDoenetAttributes = deepClone(this.doenetAttributes);
+    serializedComponent.doenetAttributes = deepClone(this.doenetAttributes);
+    serializedComponent.originalAttributes = deepClone(serializedComponent.attributes);
+
+    delete serializedComponent.doenetAttributes.prescribedName;
+    delete serializedComponent.doenetAttributes.assignNames;
+
 
     return serializedComponent;
 

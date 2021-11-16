@@ -37,7 +37,17 @@ export const editorDoenetIdInitAtom = atom({
   default:""
 })
 
-export default function EditorViewer(props){
+export const refreshNumberAtom = atom({
+  key:"refreshNumberAtom",
+  default:0
+})
+
+export const editorViewerErrorStateAtom = atom({
+  key:"editorViewerErrorStateAtom",
+  default:false
+})
+
+export default function EditorViewer(){
   // console.log(">>>>===EditorViewer")
   const viewerDoenetML = useRecoilValue(viewerDoenetMLAtom);
   const paramDoenetId = useRecoilValue(searchParamAtomFamily('doenetId')) 
@@ -45,6 +55,9 @@ export default function EditorViewer(props){
   const [variantInfo,setVariantInfo] = useRecoilState(variantInfoAtom);
   const setVariantPanel = useSetRecoilState(variantPanelAtom);
   const setEditorInit = useSetRecoilState(editorDoenetIdInitAtom);
+  const refreshNumber = useRecoilValue(refreshNumberAtom);
+  const setIsInErrorState = useSetRecoilState(editorViewerErrorStateAtom);
+
 
   let initDoenetML = useRecoilCallback(({snapshot,set})=> async (doenetId)=>{
     const versionHistory = await snapshot.getPromise((itemHistoryAtom(doenetId)));
@@ -96,6 +109,8 @@ export default function EditorViewer(props){
 
   }
 
+
+
   function variantCallback(generatedVariantInfo, allPossibleVariants){
     // console.log(">>>variantCallback",generatedVariantInfo,allPossibleVariants)
     const cleanGeneratedVariant = JSON.parse(JSON.stringify(generatedVariantInfo))
@@ -111,11 +126,13 @@ export default function EditorViewer(props){
       return newObj;
     });
   }
-  
-  // console.log(`>>>Show DoenetViewer with value -${viewerDoenetML}-`)
+
+
+
+  // console.log(`>>>>Show DoenetViewer with value -${viewerDoenetML}- -${refreshNumber}-`)
   // console.log('>>>DoenetViewer Read Only:',!isCurrentDraft)
   return <DoenetViewer
-    key={"doenetviewer"}
+    key={`doenetviewer${refreshNumber}`}
     doenetML={viewerDoenetML}
     flags={{
       showCorrectness: true,
@@ -132,5 +149,6 @@ export default function EditorViewer(props){
     allowSaveEvents={false}
     generatedVariantCallback={variantCallback} //TODO:Replace
     requestedVariant={variantInfo.requestedVariant}
+    setIsInErrorState={setIsInErrorState}
     /> 
 }

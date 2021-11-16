@@ -10,6 +10,8 @@ include "db_connection.php";
 
 $jwtArray = include "jwtArray.php";
 $userId = $jwtArray['userId'];
+$examUserId = $jwtArray['examineeUserId'];
+$examDoenetId = $jwtArray['doenetId'];
 
 $doenetId = mysqli_real_escape_string($conn,$_REQUEST["doenetId"]);
 
@@ -19,7 +21,21 @@ $message = "";
 if ($doenetId == ""){
 $success = FALSE;
 $message = 'Internal Error: missing doenetId';
+}else if ($userId == ""){
+        if ($examUserId == ""){
+                $success = FALSE;
+                $message = "No access - Need to sign in";
+        }else if ($examDoenetId != $doenetId){
+                $success = FALSE;
+                $message = "No access for doenetId: $doenetId";
+        }else{
+                $userId = $examUserId;
+        }
+
 }
+
+
+
 $variants = array();
 $starts = array();
 $attemptNumbers = array();
@@ -43,7 +59,7 @@ if (!$timeLimitMultiplier){
 
   $sql = "SELECT attemptNumber,
         generatedVariant,
-        began
+        CONVERT_TZ(began, @@session.time_zone, '+00:00') AS began
         FROM user_assignment_attempt
         WHERE userId='$userId'
         AND doenetId='$doenetId'
@@ -54,7 +70,6 @@ if (!$timeLimitMultiplier){
           array_push($variants,$row["generatedVariant"]);
           array_push($starts,$row["began"]);
           array_push($attemptNumbers,$row["attemptNumber"]);
-
   }
 }
 

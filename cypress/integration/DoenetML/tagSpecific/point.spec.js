@@ -116,6 +116,96 @@ describe('Point Tag Tests', function () {
 
   })
 
+  it('point sugar from single macro', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <mathinput name="coords" />
+    <graph>
+      <point label="P" name="P">$coords</point>
+    </graph>
+    <graph>
+      <copy tname="P" assignNames="Q" label="Q" />
+    </graph>
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.log('initially undefined')
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/P'].stateValues.xs.map(x => x.tree)).eqls(['\uff3f'])
+      expect(components['/P'].stateValues.coords.tree).eqls('\uff3f')
+      expect(components['/Q'].stateValues.xs.map(x => x.tree)).eqls(['\uff3f'])
+      expect(components['/Q'].stateValues.coords.tree).eqls('\uff3f')
+    })
+
+    cy.log('create 2D point')
+    cy.get('#\\/coords textarea').type("(-1,-7){enter}", { force: true })
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/P'].stateValues.xs.map(x => x.tree)).eqls([-1, -7])
+      expect(components['/P'].stateValues.coords.tree).eqls(["vector", -1, -7])
+      expect(components['/Q'].stateValues.xs.map(x => x.tree)).eqls([-1, -7])
+      expect(components['/Q'].stateValues.coords.tree).eqls(["vector", -1, -7])
+    })
+
+    cy.log('move point P to (3,5)')
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      components['/P'].movePoint({ x: 3, y: 5 });
+      expect(components['/P'].stateValues.xs.map(x => x.tree)).eqls([3, 5])
+      expect(components['/P'].stateValues.coords.tree).eqls(["vector", 3, 5])
+      expect(components['/Q'].stateValues.xs.map(x => x.tree)).eqls([3, 5])
+      expect(components['/Q'].stateValues.coords.tree).eqls(["vector", 3, 5])
+    })
+
+    cy.log('move point Q to (9,1)')
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      components['/Q'].movePoint({ x: 9, y: 1 });
+      expect(components['/P'].stateValues.xs.map(x => x.tree)).eqls([9, 1])
+      expect(components['/P'].stateValues.coords.tree).eqls(["vector", 9, 1])
+      expect(components['/Q'].stateValues.xs.map(x => x.tree)).eqls([9, 1])
+      expect(components['/Q'].stateValues.coords.tree).eqls(["vector", 9, 1])
+    })
+
+    cy.log('make point undefined again')
+    cy.get('#\\/coords textarea').type("{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{enter}", { force: true })
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/P'].stateValues.xs.map(x => x.tree)).eqls(['\uff3f'])
+      expect(components['/P'].stateValues.coords.tree).eqls('\uff3f')
+      expect(components['/Q'].stateValues.xs.map(x => x.tree)).eqls(['\uff3f'])
+      expect(components['/Q'].stateValues.coords.tree).eqls('\uff3f')
+    })
+
+
+    cy.log('create 1D point')
+    cy.get('#\\/coords textarea').type("-3{enter}", { force: true })
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/P'].stateValues.xs.map(x => x.tree)).eqls([-3])
+      expect(components['/P'].stateValues.coords.tree).eqls(-3)
+      expect(components['/Q'].stateValues.xs.map(x => x.tree)).eqls([-3])
+      expect(components['/Q'].stateValues.coords.tree).eqls(-3)
+    })
+
+
+    cy.log('create 3D point')
+    cy.get('#\\/coords textarea').type("{end}{backspace}{backspace}(6,5,4){enter}", { force: true })
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/P'].stateValues.xs.map(x => x.tree)).eqls([6, 5, 4])
+      expect(components['/P'].stateValues.coords.tree).eqls(["vector", 6, 5, 4])
+      expect(components['/Q'].stateValues.xs.map(x => x.tree)).eqls([6, 5, 4])
+      expect(components['/Q'].stateValues.coords.tree).eqls(["vector", 6, 5, 4])
+    })
+
+  });
+
   it('test invertible due to modifyIndirectly', () => {
     cy.window().then((win) => {
       win.postMessage({
@@ -1028,7 +1118,7 @@ describe('Point Tag Tests', function () {
 
   <graph>
   <point x="1" y="2">
-    $toGrid
+    <copy tname="toGrid" />
   </point>
   </graph>
   <math><copy prop="coords" tname="_point1" /></math>
@@ -1596,7 +1686,7 @@ describe('Point Tag Tests', function () {
   <graph>
 
   <point xs="-7.1 8.9">
-    $toGrid
+    <copy tname="toGrid" />
   </point>
 
   </graph>

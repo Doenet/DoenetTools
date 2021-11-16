@@ -68,6 +68,15 @@ export default class Point extends GraphicalComponent {
       toLowerCase: true,
       validValues: ["upperright", "upperleft", "lowerright", "lowerleft"]
     }
+
+    attributes.showCoordsWhenDragging = {
+      createComponentOfType: "boolean",
+      createStateVariable: "showCoordsWhenDragging",
+      defaultValue: true,
+      public: true,
+      forRenderer: true
+    }
+
     return attributes;
   }
 
@@ -88,6 +97,44 @@ export default class Point extends GraphicalComponent {
       let cTypes = matchedChildren.map(x => x.componentType)
       let beginInd = cTypes.indexOf("string");
       let lastInd = cTypes.lastIndexOf("string");
+
+
+      if (beginInd === -1) {
+        // if have no strings but have exactly one macro child,
+        // use that for coords
+
+        let macroChildren = matchedChildren.filter(child =>
+          child.doenetAttributes && child.doenetAttributes.createdFromMacro
+        );
+
+        if (macroChildren.length === 1) {
+          let macroChild = macroChildren[0];
+          let macroInd = matchedChildren.indexOf(macroChild);
+
+          let newChildren = [
+            ...matchedChildren.slice(0, macroInd),
+            ...matchedChildren.slice(macroInd + 1)
+          ];
+
+          return {
+            success: true,
+            newAttributes: {
+              coords: {
+                component: {
+                  componentType: "math",
+                  children: macroChildren
+                }
+              }
+            },
+            newChildren
+          }
+
+        } else {
+          // no strings and don't have exactly one macro child
+          return { success: false }
+        }
+
+      }
 
       let newChildren = [
         ...matchedChildren.slice(0, beginInd),
@@ -138,7 +185,7 @@ export default class Point extends GraphicalComponent {
     };
 
     sugarInstructions.push({
-      childrenRegex: /n*s+(.*s)?n*/,
+      // childrenRegex: /n*s+(.*s)?n*/,
       replacementFunction: breakIntoXsByCommas
     })
 
@@ -1049,11 +1096,17 @@ export default class Point extends GraphicalComponent {
     })
   }
 
+  switchPoint() {
+  }
+
   actions = {
     movePoint: this.movePoint.bind(
       new Proxy(this, this.readOnlyProxyHandler)
     ),
     finalizePointPosition: this.finalizePointPosition.bind(
+      new Proxy(this, this.readOnlyProxyHandler)
+    ),
+    switchPoint: this.switchPoint.bind(
       new Proxy(this, this.readOnlyProxyHandler)
     )
   };

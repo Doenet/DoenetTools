@@ -18,18 +18,9 @@ import {
 import {
   faClipboard
 } from "../../_snowpack/pkg/@fortawesome/free-regular-svg-icons.js";
-import {nanoid} from "../../_snowpack/pkg/nanoid.js";
-import {fetchDrivesQuery, folderDictionaryFilterSelector, loadAssignmentSelector} from "../../_reactComponents/Drive/NewDrive.js";
+import {loadAssignmentSelector} from "../../_reactComponents/Drive/NewDrive.js";
 import Button from "../../_reactComponents/PanelHeaderComponents/Button.js";
 import ButtonGroup from "../../_reactComponents/PanelHeaderComponents/ButtonGroup.js";
-const formatDate = (dt) => {
-  const formattedDate = `${dt.getFullYear().toString().padStart(2, "0")}-${(dt.getMonth() + 1).toString().padStart(2, "0")}-${dt.getDate().toString().padStart(2, "0")} ${dt.getHours().toString().padStart(2, "0")}:${dt.getMinutes().toString().padStart(2, "0")}:${dt.getSeconds().toString().padStart(2, "0")}`;
-  return formattedDate;
-};
-const formatFutureDate = (dt) => {
-  const formattedFutureDate = `${dt.getFullYear().toString().padStart(2, "0")}-${(dt.getMonth() + 1).toString().padStart(2, "0")}-${dt.getDate().toString().padStart(2, "0")} ${dt.getHours().toString().padStart(2, "0")}:${dt.getMinutes().toString().padStart(2, "0")}:${dt.getSeconds().toString().padStart(2, "0")}`;
-  return formattedFutureDate;
-};
 export const itemHistoryAtom = atomFamily({
   key: "itemHistoryAtom",
   default: selectorFamily({

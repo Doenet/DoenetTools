@@ -13,13 +13,6 @@ export default function AddDriveItems() {
     width: "menu",
     onClick: () => addItem({
       driveIdFolderId: {driveId, folderId: parentFolderId},
-      type: itemType.FOLDER
-    }),
-    value: "Add Folder"
-  }, "Add Folder"), /* @__PURE__ */ React.createElement(Button, {
-    width: "menu",
-    onClick: () => addItem({
-      driveIdFolderId: {driveId, folderId: parentFolderId},
       type: itemType.DOENETML
     }),
     value: "Add DoenetML"
@@ -30,5 +23,12 @@ export default function AddDriveItems() {
       type: itemType.COLLECTION
     }),
     value: "Add Collection"
-  }));
+  }), /* @__PURE__ */ React.createElement(Button, {
+    width: "menu",
+    onClick: () => addItem({
+      driveIdFolderId: {driveId, folderId: parentFolderId},
+      type: itemType.FOLDER
+    }),
+    value: "Add Folder"
+  }, "Add Folder"));
 }

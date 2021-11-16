@@ -1,9 +1,9 @@
 <?php
 
-$id = "";
-for ($i=1; $i<=21; $i++){
-    $num = rand(1,62);
-    switch($num) {
+$random_id = "";
+for ($iteration_num=1; $iteration_num<=21; $iteration_num++){
+    $random_num = rand(1,62);
+    switch($random_num) {
         case "1"  : $rand_value = "a"; break;
         case "2"  : $rand_value = "b"; break;
         case "3"  : $rand_value = "c"; break;
@@ -67,8 +67,8 @@ for ($i=1; $i<=21; $i++){
         case "61" : $rand_value = "Y"; break;
         case "62" : $rand_value = "Z"; break;
         }
-        $id = $id . $rand_value;
+        $random_id = $random_id . $rand_value;
 }
-return $id;
+return $random_id;
 
 ?>

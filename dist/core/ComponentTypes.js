@@ -60,6 +60,7 @@ import Answer from './components/Answer.js';
 import Award from './components/Award.js';
 import When from './components/When.js';
 import MathInput from './components/MathInput.js';
+import MatrixInput from './components/MatrixInput.js';
 import TextInput from './components/TextInput.js';
 import BooleanInput from './components/BooleanInput.js';
 import ChoiceInput from './components/ChoiceInput.js';
@@ -112,8 +113,7 @@ import Evaluate from './components/Evaluate.js';
 import SelectRandomNumbers from './components/SelectRandomNumbers.js';
 import SampleRandomNumbers from './components/SampleRandomNumbers.js';
 import Substitute from './components/Substitute.js';
-import Offsets from './components/Offsets.js';
-import DiscreteInfiniteSet from './components/DiscreteInfiniteSet.js';
+import PeriodicSet from './components/PeriodicSet.js';
 import Image from './components/Image.js';
 import Video from './components/Video.js';
 import Embed from './components/Embed.js';
@@ -142,6 +142,10 @@ import SolveEquations from './components/SolveEquations.js';
 import SolutionContainer from './components/SolutionContainer.js';
 import SubsetOfRealsInput from './components/SubsetOfRealsInput.js';
 import SubsetOfReals from './components/SubsetOfReals.js';
+import Split from './components/Split.js';
+import BestFitLine from './components/BestFitLine.js';
+import AreaBetweenCurveXAxis from './components/AreaBetweenCurveXAxis.js';
+import RegionHalfPlane from './components/RegionHalfPlane.js';
 
 
 //Extended
@@ -210,7 +214,7 @@ const componentTypeArray = [
   Vector,
   Angle,
   Answer, Award, When,
-  MathInput, TextInput, BooleanInput, ChoiceInput,
+  MathInput, MatrixInput, TextInput, BooleanInput, ChoiceInput,
   Choice,
   NumberComponent, Integer,
   Graph,
@@ -253,8 +257,7 @@ const componentTypeArray = [
   SelectRandomNumbers,
   SampleRandomNumbers,
   Substitute,
-  Offsets,
-  DiscreteInfiniteSet,
+  PeriodicSet,
   Image,
   Video,
   Embed,
@@ -282,6 +285,10 @@ const componentTypeArray = [
   SolutionContainer,
   SubsetOfRealsInput,
   SubsetOfReals,
+  Split,
+  BestFitLine,
+  AreaBetweenCurveXAxis,
+  RegionHalfPlane,
 
   BaseComponent,
   InlineComponent,

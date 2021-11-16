@@ -10,12 +10,16 @@ include "db_connection.php";
 
 $jwtArray = include "jwtArray.php";
 $userId = $jwtArray['userId'];
+$examUserId = $jwtArray['examineeUserId'];
+$examDoenetId = $jwtArray['doenetId'];
+
 $device = $jwtArray['deviceName'];
 
 $contentId = mysqli_real_escape_string($conn,$_REQUEST["contentId"]);
 $attemptNumber = mysqli_real_escape_string($conn,$_REQUEST["attemptNumber"]);
 $doenetId = mysqli_real_escape_string($conn,$_REQUEST["doenetId"]);
 $paramUserId = mysqli_real_escape_string($conn,$_REQUEST["userId"]);
+$pageStateSource = mysqli_real_escape_string($conn,$_REQUEST["pageStateSource"]);
 
 $success = TRUE;
 $message = "";
@@ -28,12 +32,24 @@ $message = 'Internal Error: missing attemptNumber';
 }elseif ($doenetId == ""){
 $success = FALSE;
 $message = 'Internal Error: missing doenetId';
-}elseif ($userId == ""){
+}elseif ($pageStateSource == ""){
 $success = FALSE;
-$message = "You need to be signed in for content interaction information";
+$message = 'Internal Error: missing pageStateSource';
+}elseif ($userId == ""){
+  if ($examUserId == ""){
+    $success = FALSE;
+    $message = "No access - Need to sign in";
+  }else if ($examDoenetId != $doenetId){
+      $success = FALSE;
+      $message = "No access for doenetId: $doenetId";
+  }else{
+      $userId = $examUserId;
+  }
 }
 
 
+
+if ($success){
 
 $effectiveUserId = $userId;
 if ($paramUserId !== ''){
@@ -54,15 +70,30 @@ if ($paramUserId !== ''){
   }
 }
 
-if ($success){
-
+if ($pageStateSource == "submissions"){
+  $sql = "SELECT s.stateVariables AS stateVariables, 
+  a.generatedVariant AS variant
+  FROM user_assignment_attempt_item_submission AS s
+  LEFT JOIN user_assignment_attempt AS a
+  ON a.userId = s.userId AND a.doenetId = s.doenetId AND a.attemptNumber = s.attemptNumber
+  WHERE s.userId='$effectiveUserId'
+  AND s.contentId='$contentId'
+  AND s.attemptNumber='$attemptNumber'
+  AND s.doenetId='$doenetId'
+  ORDER BY s.submittedDate DESC, s.id DESC
+  LIMIT 1
+  ";
+}else{
   $sql = "SELECT stateVariables, variant
-        FROM content_interactions
-        WHERE userId='$effectiveUserId'
-        AND contentId='$contentId'
-        AND attemptNumber='$attemptNumber'
-        AND doenetId='$doenetId'
-        ORDER BY timestamp DESC, id DESC";
+  FROM content_interactions
+  WHERE userId='$effectiveUserId'
+  AND contentId='$contentId'
+  AND attemptNumber='$attemptNumber'
+  AND doenetId='$doenetId'
+  ORDER BY timestamp DESC, id DESC
+  LIMIT 1
+  ";
+}
 
   $result = $conn->query($sql);
   

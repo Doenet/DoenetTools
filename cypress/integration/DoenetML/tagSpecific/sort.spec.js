@@ -487,6 +487,78 @@ describe('Sort Tag Tests', function () {
 
   })
 
+  it('sort vectors', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <graph>
+    <vector name="A" displacement="(0,1)" tail="(5,2)" />
+    <vector name="B" displacement="(-2,1)" tail="(3,7)" />
+    <vector name="C" displacement="(7,1)" tail="(-4,3)" />
+    <vector name="D" displacement="(3,1)" tail="(1,6)" />
+    <vector name="E" displacement="(5,1)" tail="(0,-3)" />
+  </graph>
+
+  <sort assignNames="V1 V2 V3 V4 V5">$A$B$C$D$E</sort>
+  <sort assignNames="Vd1 Vd2 Vd3 Vd4 Vd5" sortVectorsBy="displacement">$A$B$C$D$E</sort>
+  <sort assignNames="Vt1 Vt2 Vt3 Vt4 Vt5" sortVectorsBy="tail">$A$B$C$D$E</sort>
+  `}, "*");
+    });
+    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
+
+    cy.get('#\\/V1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(−2,1)')
+    })
+    cy.get('#\\/V2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(0,1)')
+    })
+    cy.get('#\\/V3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(3,1)')
+    })
+    cy.get('#\\/V4').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(5,1)')
+    })
+    cy.get('#\\/V5').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(7,1)')
+    })
+
+
+    cy.get('#\\/Vd1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(−2,1)')
+    })
+    cy.get('#\\/Vd2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(0,1)')
+    })
+    cy.get('#\\/Vd3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(3,1)')
+    })
+    cy.get('#\\/Vd4').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(5,1)')
+    })
+    cy.get('#\\/Vd5').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(7,1)')
+    })
+
+
+    cy.get('#\\/Vt1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(7,1)')
+    })
+    cy.get('#\\/Vt2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(5,1)')
+    })
+    cy.get('#\\/Vt3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(3,1)')
+    })
+    cy.get('#\\/Vt4').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(−2,1)')
+    })
+    cy.get('#\\/Vt5').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(0,1)')
+    })
+
+
+  })
 
 })
 

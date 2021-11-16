@@ -33,7 +33,7 @@ const DragHandle = styled.div`
   width: 8px;
   box-sizing: border-box;
 `;
-const panelsInfoAtom = atom({
+export const panelsInfoAtom = atom({
   key: "panelsInfoAtom",
   default: {propotion: 0.5, isActive: false}
 });

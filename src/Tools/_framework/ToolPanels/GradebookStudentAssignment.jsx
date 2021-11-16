@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Styles, Table, studentData, attemptData } from "./Gradebook"
+import { Styles, Table, studentData, attemptData, assignmentData } from "./Gradebook"
 
 import {
     useSetRecoilState,
@@ -36,12 +36,15 @@ export default function GradebookStudentAssignmentView(props){
     let attempts = useRecoilValueLoadable(attemptData(doenetId))
     let students = useRecoilValueLoadable(studentData)
     const setRecoilAttemptNumber = useSetRecoilState(currentAttemptNumber);
-    
-    // console.log(">>>>attempts",Object.keys(attempts.contents[userId].attempts).length)
+    let assignments = useRecoilValueLoadable(assignmentData);
+
+  
+    const totalPointsOrPercent = Number(assignments.contents[doenetId]?.totalPointsOrPercent)
+    const label = assignments.contents[doenetId]?.label;
+
     // let driveIdValue = useRecoilValue(driveId)
     // let [attemptNumber,setAttemptNumber] = useState(1); //Start with attempt 1
     const attemptsObj =  attempts?.contents?.[userId]?.attempts;
-    // Object.keys(attempts?.contents?.[userId]?.attempts).length;
     let [attemptNumber,setAttemptNumber] = useState(null);
     let [attemptsInfo,setAttemptsInfo] = useState(null); //array of {contentId,variant}
     let assignmentsTable = {}
@@ -49,7 +52,9 @@ export default function GradebookStudentAssignmentView(props){
 
     useEffect(()=>{
         if (attemptsObj){
-            let effectiveAttemptNumber = Object.keys(attemptsObj).length;
+            let attemptNumbers = Object.keys(attemptsObj).map(Number);
+            let effectiveAttemptNumber = Math.max(0,...attemptNumbers);
+
             if (paramAttemptNumber && paramAttemptNumber < effectiveAttemptNumber){
                 effectiveAttemptNumber = paramAttemptNumber;
             }
@@ -68,7 +73,7 @@ export default function GradebookStudentAssignmentView(props){
     async function loadAssignmentInfo(doenetId,userId){
         
         const { data } = await axios.get(`/api/getGradebookAssignmentAttempts.php`,{params:{doenetId,userId}})
-        let dataAttemptInfo = [];
+        let dataAttemptInfo = {};
         let contentIdToDoenetML = {}; //Don't request from server more than once
         let solutionDisplayMode = 'none';
         if(data.showSolutionInGradebook === '1') {
@@ -76,25 +81,29 @@ export default function GradebookStudentAssignmentView(props){
         }
 
         for (let attempt of data.attemptInfo){
+            let attemptNumber = attempt.attemptNumber;
             let gvariant = JSON.parse(attempt.variant, serializedComponentsReviver);
             let doenetML = contentIdToDoenetML[attempt.contentId];
 
             if (doenetML){
-                dataAttemptInfo.push({
+                dataAttemptInfo[attemptNumber] = {
                     contentId:attempt.contentId,
-                    variant:{name:gvariant.name},
+                    variant:{name:gvariant?.name},
                     doenetML,
                     solutionDisplayMode
-                    })
+                    }
             }else{
                 const { data } = await axios.get(`/media/${attempt.contentId}.doenet`); 
+  
                 contentIdToDoenetML[attempt.contentId] = data;
-                dataAttemptInfo.push({
+           
+                dataAttemptInfo[attemptNumber] = {
                     contentId:attempt.contentId,
-                    variant:{name:gvariant.name},
+                    variant:{name:gvariant?.name},
                     doenetML: data,
                     solutionDisplayMode
-                    })
+                    }
+
             }
             
 
@@ -111,21 +120,89 @@ export default function GradebookStudentAssignmentView(props){
 
     //attempts.state == 'hasValue' ? console.log(attempts.contents): console.log(attempts.state)
     if(attempts.state == 'hasValue' && userId !== null && userId !== ''){
-        let len = Object.keys(attempts.contents[userId].attempts).length;
-        maxAttempts = len;
+        maxAttempts = Math.max(0,...Object.keys(attemptsInfo).map(Number))
     }
 
     assignmentsTable.headers = [
         {
-            Header: "Student",
-            accessor: "student",
-        }
+            Header: "Score",
+            Footer: "Possible Points",
+            accessor: "score",
+            disableFilters: true
+    }
     ];
+
+    // for (let i = 1; i <= maxAttempts; i++) {
+    //     assignmentsTable.headers.push(
+    //     {
+    //         Header: "Attempt " + i,
+    //         accessor: "a"+i,
+    //         disableFilters: true,
+    //         Cell: row  =><a onClick = {(e) =>{
+    //             // setAttemptNumber(i);
+    //             // setRecoilAttemptNumber(i);
+    //             //e.stopPropagation()
+
+    //             setPageToolView({
+    //                 page: 'course',
+    //                 tool: 'gradebookStudentAssignment',
+    //                 view: '',
+    //                 params: { driveId: driveIdValue, doenetId, userId, attemptNumber: i, source},
+    //             })
+    //         }}> {row.value} </a>
+    //     })
+    // }
+
+    // assignmentsTable.headers.push({
+    //     Header: "Assignment Total",
+    //     accessor: "total",
+    //     disableFilters: true
+    // })
+
+    assignmentsTable.rows = [];
+    
+    if(students.state == 'hasValue' && userId !== null && userId !== ''){
+        // let firstName = students.contents[userId].firstName;
+        // let lastName = students.contents[userId].lastName;
+        // row["score"] = firstName + " " + lastName
+        
+        let creditRow = {};
+        let scoreRow = {};
+
+        creditRow["score"] = "Percentage";
+        scoreRow["score"] = "Score";
+
+        if(attempts.state == 'hasValue'){
+            for (let i = 1; i <= maxAttempts; i++) {
+                let attemptCredit = attempts.contents[userId].attempts[i];
+    
+                creditRow[("a"+i)] = attemptCredit ? Math.round(attemptCredit * 1000)/10 + '%' : ""
+                scoreRow[("a"+i)] = attemptCredit ? Math.round(attemptCredit * 100 * totalPointsOrPercent)/100 : ""
+        
+            }
+
+            creditRow["total"] = attempts.contents[userId].credit ? Math.round(attempts.contents[userId].credit * 1000)/10 + '%' : ""
+            scoreRow["total"] = attempts.contents[userId].credit ? Math.round(attempts.contents[userId].credit * totalPointsOrPercent * 100)/100   : "0"
+        }
+
+        
+        
+        assignmentsTable.rows.push(scoreRow);
+        assignmentsTable.rows.push(creditRow);
+    }
+
+    assignmentsTable.headers.push({
+        Header: "Assignment Total",
+        Footer: totalPointsOrPercent,
+        accessor: "total",
+        disableFilters: true
+    })
 
     for (let i = 1; i <= maxAttempts; i++) {
         assignmentsTable.headers.push(
         {
             Header: "Attempt " + i,
+            Footer: totalPointsOrPercent,
             accessor: "a"+i,
             disableFilters: true,
             Cell: row  =><a onClick = {(e) =>{
@@ -143,53 +220,16 @@ export default function GradebookStudentAssignmentView(props){
         })
     }
 
-    assignmentsTable.headers.push({
-        Header: "Assignment Grade",
-        accessor: "grade",
-        disableFilters: true
-    })
-
-    assignmentsTable.rows = [];
-    
-    if(students.state == 'hasValue' && userId !== null && userId !== ''){
-        let firstName = students.contents[userId].firstName;
-        let lastName = students.contents[userId].lastName;
-        
-        let row = {};
-
-        row["student"] = firstName + " " + lastName
-
-        if(attempts.state == 'hasValue'){
-            for (let i = 1; i <= maxAttempts; i++) {
-                let attemptCredit = attempts.contents[userId].attempts[i];
-    
-                // row[("a"+i)] = attemptCredit ? attemptCredit * 100 + "%" : ""
-                row[("a"+i)] = attemptCredit ? Math.round(attemptCredit * 1000)/10 + '%' : ""
-                
-                // <Link to={`/attempt/?doenetId=${doenetId}&userId=${userId}&attemptNumber=${i}`}>
-                // {
-                //     attemptCredit ? attemptCredit * 100 + "%" : "" // if attemptCredit is `undefined`, we still want a table cell so that the footer column still shows up right.
-                // }
-                // </Link>
-            }
-
-            // row["grade"] = attempts.contents[userId].credit ? attempts.contents[userId].credit*100+ "%" : ""
-            row["grade"] = attempts.contents[userId].credit ? Math.round(attempts.contents[userId].credit * 1000)/10 + '%' : ""
-        }
-
-        
-        
-        assignmentsTable.rows.push(row);
-    }
-
-
-
     let dViewer = null;
-    if (attemptNumber > 0){
-        // let contentId = attemptsInfo[attemptNumber-1].contentId
-        let variant = attemptsInfo[attemptNumber-1].variant;
-        let doenetML = attemptsInfo[attemptNumber-1].doenetML;
-        let solutionDisplayMode = attemptsInfo[attemptNumber-1].solutionDisplayMode;
+    let attemptNumberJSX = null;
+    if (attemptNumber > 0 && 
+        attemptsInfo[attemptNumber] &&
+        attemptsInfo[attemptNumber].contentId !== 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855'
+        ){
+        // let contentId = attemptsInfo[attemptNumber].contentId
+        let variant = attemptsInfo[attemptNumber].variant;
+        let doenetML = attemptsInfo[attemptNumber].doenetML;
+        let solutionDisplayMode = attemptsInfo[attemptNumber].solutionDisplayMode;
   
         dViewer = <DoenetViewer
         key={`doenetviewer${doenetId}`}
@@ -217,19 +257,31 @@ export default function GradebookStudentAssignmentView(props){
       //   updateCreditAchievedCallback={updateCreditAchieved}
         // generatedVariantCallback={variantCallback}
       />
+
+      attemptNumberJSX = <div style={{paddingLeft:"8px"}}>
+        Viewing attempt number {attemptNumber}
+        </div>;
+
+    }else{
+        attemptNumberJSX = <div style={{paddingLeft:"8px"}}>
+        No content available for attempt number {attemptNumber}
+        </div>;
+
     }
     
+    let studentName = `${students.contents[userId]?.firstName} ${students.contents[userId]?.lastName}`
 
     return(
         <>
+        <div style={{marginLeft:'18px'}}><b>Gradebook for {studentName}</b></div>
+        <div style={{paddingLeft:"18px"}}><b>{label}</b></div>
+        <div style={{paddingLeft:"18px"}}>{totalPointsOrPercent} Points Possible</div>
         <Styles>
             <Table columns = {assignmentsTable.headers} data = {assignmentsTable.rows}/>
         </Styles>
         {attemptNumber > 0 ? 
         <>
-        <div style={{paddingLeft:"8px"}}>
-            Viewing Attempt Number {attemptNumber}
-        </div>
+        {attemptNumberJSX}
         {dViewer}
         </>
           : <div>Click an attempt&apos;s grade to see your attempt</div>  }

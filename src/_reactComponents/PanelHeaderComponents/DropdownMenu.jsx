@@ -1,8 +1,9 @@
+import { faHandMiddleFinger } from '@fortawesome/free-solid-svg-icons';
 import React from 'react';
 import Select from 'react-select';
 
 const DropdownMenu = (props) => {
-  console.log('right ', props.right);
+  // console.log('right ', props.right);
   const customStyles = {
     option: (provided, state) => {
       return {
@@ -15,6 +16,8 @@ const DropdownMenu = (props) => {
     menu: (provided, state) => ({
       ...provided,
       width: state.selectProps.width,
+      maxHeigh: state.selectProps.maxMenuHeight,
+      overflow: 'scroll',
     }),
     container: (provided, state) => ({
       ...provided,
@@ -78,6 +81,7 @@ const DropdownMenu = (props) => {
       defaultValue={options[props.defaultIndex - 1]}
       styles={customStyles}
       width={width}
+      maxMenuHeight={props.maxMenuHeight}
       isSearchable={false}
       autoFocus={false}
       onChange={props.onChange}

@@ -20,21 +20,23 @@ export const Styles = styled.div`
   table {
     border-collapse: collapse;
     border-spacing: 0;
-    border: 1px solid gray;
     
     thead {
-        border-bottom: 1px solid gray;
+        position: sticky;
+        top: 0;
+        box-shadow: 0 2px 0 0px #000000;
     }
     
     a {
-        color: inherit;
-        text-decoration: none;
+        text-decoration: #1A5A99 underline;
     }
+
     .sortIcon {
         padding-left: 4px;
     }
-    tbody tr:nth-child(even) {background: #CCC}
-    tbody tr:nth-child(odd) {background: #FFF}
+  
+    tbody tr:not(:last-child) {border-bottom: 1px solid #e2e2e2;}
+ 
     td:first-child {
         text-align: left;
         max-width: 15rem;
@@ -42,6 +44,7 @@ export const Styles = styled.div`
         white-space: nowrap;
         overflow: hidden;
     }
+
     th {
         position: sticky;
         top: 0;
@@ -51,7 +54,11 @@ export const Styles = styled.div`
         //word-wrap: break-word;
         padding: 2px;
         max-height: 10rem;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        overflow: hidden;
     }
+    
     th:first-child {
         vertical-align: bottom;
         max-width: 15rem;
@@ -59,25 +66,43 @@ export const Styles = styled.div`
             margin: 5px;
         }
     }
+
     th > p {
         height: 100%;
     }
-    th:not(:first-child) > p{
+
+    tr:not(:first-child) th:not(:first-child) > p{
         writing-mode: vertical-rl;
         text-align: left;
         transform: rotate(180deg);
     }
+
+    thead tr:only-child th:not(:first-child) > p{
+        writing-mode: vertical-rl;
+        text-align: left;
+        transform: rotate(180deg);
+    }
+    
     td {
         user-select: none;
         text-align: center;
         max-width: 5rem;
     }
     td, th {
-        border-right: 1px solid gray;
+        border-right: 2px solid black;
         :last-child {
             border-right: 0;
         }
     }
+
+    tfoot {
+        font-weight: bolder;
+        position: sticky;
+        bottom: 0;
+        background-color: white;
+        box-shadow: inset 0 2px 0 #000000;
+      }
+
   }
 `;
 export const driveId = atom({
@@ -137,7 +162,7 @@ export const assignmentData = selector({
   set: ({set, get}, newValue) => {
   }
 });
-const studentDataQuerry = atom({
+export const studentDataQuerry = atom({
   key: "studentDataQuerry",
   default: selector({
     key: "studentDataQuerry/Default",
@@ -181,7 +206,7 @@ export const studentData = selector({
     return students;
   }
 });
-const overViewDataQuerry = atom({
+export const overViewDataQuerry = atom({
   key: "overViewDataQuerry",
   default: selector({
     key: "overViewDataQuerry/Default",
@@ -227,7 +252,7 @@ export const overViewData = selector({
     return overView;
   }
 });
-const attemptDataQuerry = atomFamily({
+export const attemptDataQuerry = atomFamily({
   key: "attemptDataQuerry",
   default: selectorFamily({
     key: "attemptDataQuerry/Default",
@@ -251,6 +276,7 @@ export const attemptData = selectorFamily({
     for (let userId in students) {
       attempts[userId] = {
         credit: null,
+        creditOverrides: {},
         attempts: {}
       };
     }
@@ -260,10 +286,14 @@ export const attemptData = selectorFamily({
         userId,
         attemptNumber,
         assignmentCredit,
-        attemptCredit
+        attemptCredit,
+        creditOverride
       ] = row;
-      attempts[userId].credit = assignmentCredit;
-      attempts[userId].attempts[attemptNumber] = attemptCredit;
+      if (attempts[userId]) {
+        attempts[userId].credit = assignmentCredit;
+        attempts[userId].attempts[attemptNumber] = attemptCredit;
+        attempts[userId].creditOverrides[attemptNumber] = creditOverride;
+      }
     }
     return attempts;
   }
@@ -334,6 +364,7 @@ export function Table({columns, data}) {
     getTableProps,
     getTableBodyProps,
     headerGroups,
+    footerGroups,
     rows,
     prepareRow,
     state,
@@ -371,7 +402,7 @@ export function Table({columns, data}) {
         ...cell.getCellProps()
       }, cell.render("Cell"));
     }));
-  })));
+  })), /* @__PURE__ */ React.createElement("tfoot", null, /* @__PURE__ */ React.createElement("tr", null, footerGroups[0].headers.map((column) => /* @__PURE__ */ React.createElement("td", null, /* @__PURE__ */ React.createElement("p", null, column.render("Footer")))))));
 }
 export function gradeSorting(a, b, columnID) {
   const order = {"+": -1, "-": 1, undefined: 0};
@@ -395,7 +426,8 @@ function DefaultColumnFilter({
     onChange: (e) => {
       setFilter(e.target.value || void 0);
     },
-    placeholder: `Search ${count} records...`
+    placeholder: `Search ${count} records...`,
+    style: {border: "2px solid black", borderRadius: "5px"}
   });
 }
 const getUserId = (students, name) => {
@@ -406,15 +438,12 @@ const getUserId = (students, name) => {
   }
   return -1;
 };
-function GradebookOverview(props) {
+function GradebookOverview() {
   let driveIdValue = useRecoilValue(driveId);
   const setPageToolView = useSetRecoilState(pageToolViewAtom);
   let students = useRecoilValueLoadable(studentData);
   let assignments = useRecoilValueLoadable(assignmentData);
   let overView = useRecoilValueLoadable(overViewData);
-  console.log(">>>>students", students);
-  console.log(">>>>assignments", assignments);
-  console.log(">>>>overView", overView);
   if (assignments.state !== "hasValue" || students.state !== "hasValue" || overView.state !== "hasValue") {
     return null;
   }
@@ -443,18 +472,7 @@ function GradebookOverview(props) {
   overviewTable.headers.push({
     Header: "Name",
     accessor: "name",
-    Cell: (row) => /* @__PURE__ */ React.createElement("a", {
-      onClick: (e) => {
-        let name = row.cell.row.cells[0].value;
-        let userId = getUserId(students.contents, name);
-        setPageToolView({
-          page: "course",
-          tool: "gradebookStudent",
-          view: "",
-          params: {driveId: driveIdValue, userId}
-        });
-      }
-    }, " ", row.cell.row.cells[0].value, " ")
+    Footer: "Possible Points"
   });
   possiblePointRow["name"] = "Possible Points";
   for (let {category, scaleFactor = 1, maximumNumber = Infinity} of gradeCategories) {
@@ -467,25 +485,31 @@ function GradebookOverview(props) {
       let possiblepoints = assignments.contents[doenetId].totalPointsOrPercent * 1;
       allpossiblepoints.push(possiblepoints);
       overviewTable.headers.push({
-        Header: /* @__PURE__ */ React.createElement("a", {
-          onClick: (e) => {
-            setPageToolView({
-              page: "course",
-              tool: "gradebookAssignment",
-              view: "",
-              params: {driveId: driveIdValue, doenetId}
-            });
+        Header: category,
+        columns: [
+          {
+            Header: /* @__PURE__ */ React.createElement("a", {
+              style: {fontWeight: "normal"},
+              onClick: (e) => {
+                setPageToolView({
+                  page: "course",
+                  tool: "gradebookAssignment",
+                  view: "",
+                  params: {driveId: driveIdValue, doenetId}
+                });
+              }
+            }, assignments.contents[doenetId].label),
+            accessor: doenetId,
+            Footer: possiblepoints,
+            disableFilters: true
           }
-        }, assignments.contents[doenetId].label),
-        accessor: doenetId,
-        disableFilters: true
+        ]
       });
       possiblePointRow[doenetId] = possiblepoints;
     }
     let numberScores = allpossiblepoints.length;
     allpossiblepoints = allpossiblepoints.sort((a, b) => b - a).slice(0, maximumNumber);
     let categoryPossiblePoints = allpossiblepoints.reduce((a, c) => a + c, 0) * scaleFactor;
-    possiblePointRow[category] = categoryPossiblePoints;
     totalPossiblePoints += categoryPossiblePoints;
     let description = "";
     if (numberScores > maximumNumber) {
@@ -501,23 +525,34 @@ function GradebookOverview(props) {
     overviewTable.headers.push({
       Header: /* @__PURE__ */ React.createElement("div", null, `${category} Total`, " ", description, " "),
       accessor: category,
+      Footer: categoryPossiblePoints,
       disableFilters: true
     });
   }
   overviewTable.headers.push({
     Header: /* @__PURE__ */ React.createElement("div", null, "Course Total"),
     accessor: "course total",
+    Footer: totalPossiblePoints,
     disableFilters: true
   });
-  possiblePointRow["course total"] = totalPossiblePoints;
-  overviewTable.rows.push(possiblePointRow);
   for (let userId in students.contents) {
     let firstName = students.contents[userId].firstName, lastName = students.contents[userId].lastName, role = students.contents[userId].role;
     if (role !== "Student") {
       continue;
     }
     let row = {};
-    row["name"] = firstName + " " + lastName;
+    let name = firstName + " " + lastName;
+    row["name"] = /* @__PURE__ */ React.createElement("a", {
+      style: {cursor: "pointer"},
+      onClick: (e) => {
+        setPageToolView({
+          page: "course",
+          tool: "gradebookStudent",
+          view: "",
+          params: {driveId: driveIdValue, userId}
+        });
+      }
+    }, " ", name, " ");
     let totalScore = 0;
     for (let {category, scaleFactor = 1, maximumNumber = Infinity} of gradeCategories) {
       let scores = [];
@@ -537,7 +572,7 @@ function GradebookOverview(props) {
               page: "course",
               tool: "gradebookStudentAssignment",
               view: "",
-              params: {driveId: driveIdValue, doenetId, userId, source: "student"}
+              params: {driveId: driveIdValue, doenetId, userId, previousCrumb: "student"}
             });
           }
         }, score);
@@ -552,6 +587,7 @@ function GradebookOverview(props) {
     row["course total"] = totalScore;
     overviewTable.rows.push(row);
   }
+  console.log("rows", overviewTable.rows);
   return /* @__PURE__ */ React.createElement(Styles, null, /* @__PURE__ */ React.createElement(Table, {
     columns: overviewTable.headers,
     data: overviewTable.rows

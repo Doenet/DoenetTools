@@ -18,19 +18,6 @@ export default function AddDriveItems() {
         onClick={() =>
           addItem({
             driveIdFolderId: { driveId, folderId: parentFolderId },
-            type: itemType.FOLDER,
-          })
-        }
-        value="Add Folder"
-      >
-        Add Folder
-      </Button>
-
-      <Button
-        width="menu"
-        onClick={() =>
-          addItem({
-            driveIdFolderId: { driveId, folderId: parentFolderId },
             type: itemType.DOENETML,
           })
         }
@@ -48,6 +35,19 @@ export default function AddDriveItems() {
         }
         value="Add Collection"
       />
+      <Button
+        width="menu"
+        onClick={() =>
+          addItem({
+            driveIdFolderId: { driveId, folderId: parentFolderId },
+            type: itemType.FOLDER,
+          })
+        }
+        value="Add Folder"
+      >
+        Add Folder
+      </Button>
+      
     </ButtonGroup>
     
   );

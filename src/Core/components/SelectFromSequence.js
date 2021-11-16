@@ -587,6 +587,10 @@ function makeSelection({ dependencyValues }) {
           if (dependencyValues.exclude.some(x => x.equals(componentValue))) {
             throw Error("Specified index of selectfromsequence that was excluded")
           }
+        } else if (dependencyValues.type === "number") {
+          if (dependencyValues.exclude.some(x => Math.abs(x - componentValue) <= 1E-14 * Math.max(Math.abs(x), Math.abs(componentValue)))) {
+            throw Error("Specified index of selectfromsequence that was excluded")
+          }
         } else {
           if (dependencyValues.exclude.includes(componentValue)) {
             throw Error("Specified index of selectfromsequence that was excluded")
@@ -597,6 +601,10 @@ function makeSelection({ dependencyValues }) {
         let matchedExcludedCombinationIndex = false
         if (dependencyValues.type === "math") {
           if (dependencyValues.excludedCombinations.some(x => x[indNumber].equals(componentValue))) {
+            matchedExcludedCombinationIndex = true;
+          }
+        } else if (dependencyValues.type === "number") {
+          if (dependencyValues.excludedCombinations.some(x => Math.abs(x[indNumber] - componentValue) <= 1E-14 * Math.max(Math.abs(x[indNumber]), Math.abs(componentValue)))) {
             matchedExcludedCombinationIndex = true;
           }
         } else {
@@ -672,6 +680,10 @@ function makeSelection({ dependencyValues }) {
           if (dependencyValues.exclude.some(x => x.equals(componentValue))) {
             continue;
           }
+        } else if (dependencyValues.type === "number") {
+          if (dependencyValues.exclude.some(x => Math.abs(x - componentValue) <= 1E-14 * Math.max(Math.abs(x), Math.abs(componentValue)))) {
+            continue;
+          }
         } else {
           if (dependencyValues.exclude.includes(componentValue)) {
             continue;
@@ -717,6 +729,10 @@ function makeSelection({ dependencyValues }) {
       // try again if hit excluded combination
       if (dependencyValues.type === "math") {
         if (dependencyValues.excludedCombinations.some(x => x.every((v, i) => v.equals(selectedValues[i])))) {
+          continue;
+        }
+      } else if (dependencyValues.type === "number") {
+        if (dependencyValues.excludedCombinations.some(x => x.every((v, i) => Math.abs(v - selectedValues[i]) <= 1E-14 * Math.max(Math.abs(v), Math.abs(selectedValues[i]))))) {
           continue;
         }
       } else {
@@ -809,6 +825,10 @@ function selectValuesAndIndices({ stateValues, numberUniqueRequired = 1, numberT
           if (stateValues.exclude.some(x => x.equals(componentValue))) {
             continue;
           }
+        } else if (stateValues.type === "number") {
+          if (stateValues.exclude.some(x => Math.abs(x - componentValue) <= 1E-14 * Math.max(Math.abs(x), Math.abs(componentValue)))) {
+            continue;
+          }
         } else {
           if (stateValues.exclude.includes(componentValue)) {
             continue;
@@ -852,6 +872,10 @@ function selectValuesAndIndices({ stateValues, numberUniqueRequired = 1, numberT
 
     if (stateValues.type === "math") {
       if (stateValues.exclude.some(x => x.equals(componentValue))) {
+        continue;
+      }
+    } else if (stateValues.type === "number") {
+      if (stateValues.exclude.some(x => Math.abs(x - componentValue) <= 1E-14 * Math.abs(Math.max(x), Math.abs(componentValue)))) {
         continue;
       }
     } else {

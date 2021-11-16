@@ -453,6 +453,99 @@ describe('Function Tag Tests', function () {
     })
   });
 
+  it('function two extrema, same height', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <graph>
+    <function extrema="(0,0) (1,0)" />
+    </graph>
+    `}, "*");
+    });
+
+    //wait for window to load
+    cy.get('#\\/_text1').should('have.text', 'a');
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      let f = components['/_function1'].stateValues.fs[0];
+      expect(f(0)).closeTo(0, 1E-12);
+      expect(f(1)).closeTo(0, 1E-12);
+      expect(f(0.5)).closeTo(-1, 1E-12);
+      // like parabola to left of maximum
+      expect(f(-1)).closeTo(-1, 1E-12);
+      expect(f(-2)).closeTo(-4, 1E-12);
+      expect(f(-3)).closeTo(-9, 1E-12);
+      // like parabola to right of maximum
+      expect(f(2)).closeTo(-1, 1E-12);
+      expect(f(3)).closeTo(-4, 1E-12);
+      expect(f(4)).closeTo(-9, 1E-12);
+    })
+  });
+
+  it('function two extrema, second higher', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <graph>
+    <function extrema="(0,0) (1,2)" />
+    </graph>
+    `}, "*");
+    });
+
+    //wait for window to load
+    cy.get('#\\/_text1').should('have.text', 'a');
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      let f = components['/_function1'].stateValues.fs[0];
+      expect(f(0)).closeTo(0, 1E-12);
+      expect(f(1)).closeTo(2, 1E-12);
+      expect(f(0.5)).closeTo(1, 1E-12);
+      // like parabola to left of minimum
+      expect(f(-1)).closeTo(1, 1E-12);
+      expect(f(-2)).closeTo(4, 1E-12);
+      expect(f(-3)).closeTo(9, 1E-12);
+      // like parabola to right of maximum
+      expect(f(2)).closeTo(1, 1E-12);
+      expect(f(3)).closeTo(-2, 1E-12);
+      expect(f(4)).closeTo(-7, 1E-12);
+    })
+  });
+
+  it('function two extrema, second lower', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <graph>
+    <function extrema="(0,0) (1,-2)" />
+    </graph>
+    `}, "*");
+    });
+
+    //wait for window to load
+    cy.get('#\\/_text1').should('have.text', 'a');
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      let f = components['/_function1'].stateValues.fs[0];
+      expect(f(0)).closeTo(0, 1E-12);
+      expect(f(1)).closeTo(-2, 1E-12);
+      expect(f(0.5)).closeTo(-1, 1E-12);
+      // like parabola to left of maximum
+      expect(f(-1)).closeTo(-1, 1E-12);
+      expect(f(-2)).closeTo(-4, 1E-12);
+      expect(f(-3)).closeTo(-9, 1E-12);
+      // like parabola to right of minimum
+      expect(f(2)).closeTo(-1, 1E-12);
+      expect(f(3)).closeTo(2, 1E-12);
+      expect(f(4)).closeTo(7, 1E-12);
+    })
+  });
+
   it('function with two minima', () => {
     cy.window().then((win) => {
       win.postMessage({
@@ -1577,6 +1670,40 @@ describe('Function Tag Tests', function () {
     })
   });
 
+  it('function with empty variables attribute', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <graph>
+    <function variables="">
+      x^2 sin(pi x/2)/100
+    </function>
+
+    </graph>
+    `}, "*");
+    });
+
+    //wait for window to load
+    cy.get('#\\/_text1').should('have.text', 'a');
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      let f = components['/_function1'].stateValues.fs[0];
+      let numericalf = components['/_function1'].stateValues.numericalfs[0];
+      let symbolicf = components['/_function1'].stateValues.symbolicfs[0];
+
+      expect(f(-5)).closeTo(25 * Math.sin(0.5 * Math.PI * (-5)) / 100, 1E-12);
+      expect(f(3)).closeTo(9 * Math.sin(0.5 * Math.PI * (3)) / 100, 1E-12);
+      expect(numericalf(-5)).closeTo(25 * Math.sin(0.5 * Math.PI * (-5)) / 100, 1E-12);
+      expect(numericalf(3)).closeTo(9 * Math.sin(0.5 * Math.PI * (3)) / 100, 1E-12);
+      expect(symbolicf(-5).equals(me.fromText('(-5)^2sin(pi(-5)/2)/100'))).eq(true)
+      expect(symbolicf(3).equals(me.fromText('(3)^2sin(pi(3)/2)/100'))).eq(true)
+      expect(symbolicf('p').equals(me.fromText('p^2sin(pi p/2)/100'))).eq(true)
+
+    })
+  });
+
   it('function determined by function', () => {
     cy.window().then((win) => {
       win.postMessage({
@@ -2054,6 +2181,132 @@ describe('Function Tag Tests', function () {
         });
 
       });
+    })
+
+  });
+
+
+  it('calculated extrema from spline, restrict domain, just through points', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <graph>
+    <point>(0, 0)</point>
+    <point>(2, -1.8)</point>
+    <point>(5,-4)</point>
+    <point>(7,0)</point>
+    <point>(8,1)</point>
+    <function through="$_point1 $_point2 $_point3 $_point4 $_point5" domain="(0,10)" />
+    <copy prop="maxima" tname="_function1" />
+    <copy prop="minima" tname="_function1" />
+    </graph>
+
+    <p>Number of maxima: <copy prop="numbermaxima" name="numbermaxima" tname="_function1" /></p>
+    <p>Maxima: <math simplify="none"><copy prop="maxima" tname="_function1" /></math></p>
+    <p>Number of minima: <copy prop="numberminima" name="numberminima" tname="_function1" /></p>
+    <p>Minima: <math simplify="none"><copy prop="minima" tname="_function1" /></math></p>
+    <p>Number of extrema: <copy prop="numberextrema" name="numberextrema" tname="_function1" /></p>
+    <p>Extrema: <math simplify="none"><copy prop="extrema" tname="_function1" /></math></p>
+    `}, "*");
+    });
+
+    //wait for window to load
+    cy.get('#\\/_text1').should('have.text', 'a');
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+
+      let numberMaximaAnchor = cesc('#' + components["/numbermaxima"].replacements[0].componentName);
+      let numberMinimaAnchor = cesc('#' + components["/numberminima"].replacements[0].componentName);
+      let numberExtremaAnchor = cesc('#' + components["/numberextrema"].replacements[0].componentName);
+
+      // it is set up so that minimum of quadratic interpolating between first two points
+      // is past maximum of domain
+      // check for bug where this stopped looking for minima
+      cy.get(numberMaximaAnchor).should('have.text', '0');
+      cy.get(numberMinimaAnchor).should('have.text', '1');
+      cy.get('#\\/_math2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('(5,−4)');
+      });
+      cy.get(numberExtremaAnchor).should('have.text', '1');
+
+      cy.get('#\\/_math3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('(5,−4)');
+      });
+
+
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
+
+        // now move points so that the minimum of the cubic interpolating between
+        // the first two points is past maximum of the domain
+        // check for bug where this stopped looking for minima
+
+        components['/_point1'].movePoint({ x: 0, y: -0.35 });
+        components['/_point2'].movePoint({ x: 1.8, y: -1.36 });
+        components['/_point5'].movePoint({ x: 1, y: -0.866 });
+
+        cy.get(numberMaximaAnchor).should('have.text', '0');
+        cy.get(numberMinimaAnchor).should('have.text', '1');
+        cy.get('#\\/_math2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(5,−4)');
+        });
+        cy.get(numberExtremaAnchor).should('have.text', '1');
+        cy.get('#\\/_math3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(5,−4)');
+        });
+
+      });
+
+
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
+
+        // now move points so that maximum of quadratic interpolating between first two points
+        // is past maximum of domain
+        // check for bug where this stopped looking for maxima
+
+        components['/_point1'].movePoint({ x: 0, y: 0 });
+        components['/_point2'].movePoint({ x: 2, y: 1.8 });
+        components['/_point3'].movePoint({ x: 5, y: 4 });
+        components['/_point5'].movePoint({ x: 8, y: -1 });
+
+        cy.get(numberMaximaAnchor).should('have.text', '1');
+        cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(5,4)');
+        });
+        cy.get(numberMinimaAnchor).should('have.text', '0');
+        cy.get(numberExtremaAnchor).should('have.text', '1');
+        cy.get('#\\/_math3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(5,4)');
+        });
+
+      });
+
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
+
+        // now move points so that the maximum of the cubic interpolating between
+        // the first two points is past maximum of the domain
+        // check for bug where this stopped looking for maximum
+
+        components['/_point1'].movePoint({ x: 0, y: 0.35 });
+        components['/_point2'].movePoint({ x: 1.8, y: 1.36 });
+        components['/_point5'].movePoint({ x: 1, y: 0.866 });
+
+        cy.get(numberMaximaAnchor).should('have.text', '1');
+        cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(5,4)');
+        });
+        cy.get(numberMinimaAnchor).should('have.text', '0');
+        cy.get(numberExtremaAnchor).should('have.text', '1');
+        cy.get('#\\/_math3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(5,4)');
+        });
+
+      });
+
     })
 
   });

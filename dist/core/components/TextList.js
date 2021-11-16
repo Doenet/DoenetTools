@@ -3,7 +3,6 @@ import { returnBreakStringsIntoComponentTypeBySpaces, returnGroupIntoComponentTy
 
 export default class TextList extends InlineComponent {
   static componentType = "textList";
-  static rendererType = "asList";
   static renderChildren = true;
 
   static includeBlankStringChildren = true;
@@ -12,6 +11,11 @@ export default class TextList extends InlineComponent {
   // when another component has a attribute that is a textList,
   // use the texts state variable to populate that attribute
   static stateVariableForAttributeValue = "texts";
+  static primaryStateVariableForDefinition = "textsShadow";
+
+  // even if inside a component that turned on descendantCompositesMustHaveAReplacement
+  // don't required composite replacements
+  static descendantCompositesMustHaveAReplacement = false;
 
   static createAttributesObject(args) {
     let attributes = super.createAttributesObject(args);
@@ -86,6 +90,16 @@ export default class TextList extends InlineComponent {
       definition: () => ({ newValues: { overrideChildHide: true } })
     }
 
+    stateVariableDefinitions.textsShadow = {
+      defaultValue: null,
+      returnDependencies: () => ({}),
+      definition: () => ({
+        useEssentialOrDefaultValue: {
+          textsShadow: { variablesToCheck: ["textsShadow"] }
+        }
+      }),
+    }
+
     stateVariableDefinitions.nComponents = {
       public: true,
       componentType: "number",
@@ -106,6 +120,10 @@ export default class TextList extends InlineComponent {
             childGroups: ["texts", "textLists"],
             skipComponentNames: true,
           },
+          textsShadow: {
+            dependencyType: "stateVariable",
+            variableName: "textsShadow",
+          }
         }
       },
       definition: function ({ dependencyValues, componentInfoObjects }) {
@@ -113,23 +131,27 @@ export default class TextList extends InlineComponent {
         let nComponents = 0;
         let childIndexByArrayKey = [];
 
-        let nTextLists = 0;
-        for (let [childInd, child] of dependencyValues.textAndTextListChildren.entries()) {
-          if (componentInfoObjects.isInheritedComponentType({
-            inheritedComponentType: child.componentType,
-            baseComponentType: "textList"
-          })) {
-            let textListChild = dependencyValues.textListChildren[nTextLists];
-            nTextLists++;
-            for (let i = 0; i < textListChild.stateValues.nComponents; i++) {
-              childIndexByArrayKey[nComponents + i] = [childInd, i];
-            }
-            nComponents += textListChild.stateValues.nComponents;
+        if (dependencyValues.textAndTextListChildren.length > 0) {
+          let nTextLists = 0;
+          for (let [childInd, child] of dependencyValues.textAndTextListChildren.entries()) {
+            if (componentInfoObjects.isInheritedComponentType({
+              inheritedComponentType: child.componentType,
+              baseComponentType: "textList"
+            })) {
+              let textListChild = dependencyValues.textListChildren[nTextLists];
+              nTextLists++;
+              for (let i = 0; i < textListChild.stateValues.nComponents; i++) {
+                childIndexByArrayKey[nComponents + i] = [childInd, i];
+              }
+              nComponents += textListChild.stateValues.nComponents;
 
-          } else {
-            childIndexByArrayKey[nComponents] = [childInd, 0];
-            nComponents += 1;
+            } else {
+              childIndexByArrayKey[nComponents] = [childInd, 0];
+              nComponents += 1;
+            }
           }
+        } else if (dependencyValues.textsShadow !== null) {
+          nComponents = dependencyValues.textsShadow.length;
         }
 
         let maxNum = dependencyValues.maximumNumber;
@@ -167,6 +189,10 @@ export default class TextList extends InlineComponent {
           childIndexByArrayKey: {
             dependencyType: "stateVariable",
             variableName: "childIndexByArrayKey"
+          },
+          textsShadow: {
+            dependencyType: "stateVariable",
+            variableName: "textsShadow",
           }
         };
 
@@ -208,6 +234,8 @@ export default class TextList extends InlineComponent {
               texts[arrayKey] = child.stateValues["text" + textIndex];
             }
 
+          } else if (globalDependencyValues.textsShadow !== null) {
+            texts[arrayKey] = globalDependencyValues.textsShadow[arrayKey];
           }
 
         }
@@ -272,6 +300,7 @@ export default class TextList extends InlineComponent {
     stateVariableDefinitions.text = {
       public: true,
       componentType: "text",
+      forRenderer: true,
       returnDependencies: () => ({
         texts: {
           dependencyType: "stateVariable",

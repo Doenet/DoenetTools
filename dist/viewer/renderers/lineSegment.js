@@ -36,7 +36,8 @@ export default class LineSegment extends DoenetRenderer {
       strokeColor: "none",
       highlightStrokeColor: "none",
       highlightFillColor: "lightgray",
-      layer: 10 * this.doenetSvData.layer + 8
+      layer: 10 * this.doenetSvData.layer + 8,
+      showInfoBox: this.doenetSvData.showCoordsWhenDragging
     });
     if (!this.doenetSvData.draggable || this.doenetSvData.fixed) {
       jsxPointAttributes.visible = false;
@@ -72,10 +73,19 @@ export default class LineSegment extends DoenetRenderer {
     return this.lineSegmentJXG;
   }
   deleteGraphicalObject() {
+    this.lineSegmentJXG.off("drag");
+    this.lineSegmentJXG.off("down");
+    this.lineSegmentJXG.off("up");
     this.props.board.removeObject(this.lineSegmentJXG);
     delete this.lineSegmentJXG;
+    this.point1JXG.off("drag");
+    this.point1JXG.off("down");
+    this.point1JXG.off("up");
     this.props.board.removeObject(this.point1JXG);
     delete this.point1JXG;
+    this.point2JXG.off("drag");
+    this.point2JXG.off("down");
+    this.point2JXG.off("up");
     this.props.board.removeObject(this.point2JXG);
     delete this.point2JXG;
   }

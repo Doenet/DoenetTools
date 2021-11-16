@@ -10088,4 +10088,48 @@ describe('Vector Tag Tests', function () {
     })
   })
 
+
+  it('1D vector', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+
+  <vector>1</vector>
+
+  <copy prop="tail" tname="_vector1" assignNames="t" />
+  <copy prop="head" tname="_vector1" assignNames="h"/>
+  <copy prop="displacement" tname="_vector1" assignNames="d" />
+  `}, "*");
+    });
+
+    // to wait for page to load
+    cy.get('#\\/_text1').should('have.text', 'a');
+
+    cy.get('#\\/_vector1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('1')
+    })
+    cy.get('#\\/t').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('0')
+    })
+    cy.get('#\\/h').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('1')
+    })
+    cy.get('#\\/d').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('1')
+    })
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components["/_vector1"].stateValues.head.map(x=>x.tree)).eqls([1])
+      expect(components["/_vector1"].stateValues.tail.map(x=>x.tree)).eqls([0])
+      expect(components["/_vector1"].stateValues.displacement.map(x=>x.tree)).eqls([1])
+
+      expect(components["/h"].stateValues.xs.map(x=>x.tree)).eqls([1])
+      expect(components["/t"].stateValues.xs.map(x=>x.tree)).eqls([0])
+      expect(components["/d"].stateValues.displacement.map(x=>x.tree)).eqls([1])
+
+    })
+  })
+
 });

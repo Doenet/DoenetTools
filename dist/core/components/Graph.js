@@ -110,6 +110,13 @@ export default class Graph extends BlockComponent {
       public: true,
       forRenderer: true
     };
+    attributes.fixAxes = {
+      createComponentOfType: "boolean",
+      createStateVariable: "fixAxes",
+      defaultValue: false,
+      public: true,
+      forRenderer: true
+    };
     attributes.grid = {
       createComponentOfType: "text",
       createStateVariable: "grid",
@@ -279,7 +286,10 @@ export default class Graph extends BlockComponent {
         }
 
       },
-      inverseDefinition({ desiredStateVariableValues }) {
+      inverseDefinition({ desiredStateVariableValues, stateValues }) {
+        if (stateValues.fixAxes) {
+          return { success: false }
+        }
         return {
           success: true,
           instructions: [{
@@ -380,7 +390,10 @@ export default class Graph extends BlockComponent {
         }
 
       },
-      inverseDefinition({ desiredStateVariableValues }) {
+      inverseDefinition({ desiredStateVariableValues, stateValues }) {
+        if (stateValues.fixAxes) {
+          return { success: false }
+        }
         return {
           success: true,
           instructions: [{
@@ -471,7 +484,10 @@ export default class Graph extends BlockComponent {
         }
 
       },
-      inverseDefinition({ desiredStateVariableValues }) {
+      inverseDefinition({ desiredStateVariableValues, stateValues }) {
+        if (stateValues.fixAxes) {
+          return { success: false }
+        }
         return {
           success: true,
           instructions: [{
@@ -575,7 +591,10 @@ export default class Graph extends BlockComponent {
 
 
       },
-      inverseDefinition({ desiredStateVariableValues }) {
+      inverseDefinition({ desiredStateVariableValues, stateValues }) {
+        if (stateValues.fixAxes) {
+          return { success: false }
+        }
         return {
           success: true,
           instructions: [{

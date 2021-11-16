@@ -9,11 +9,10 @@ import {selectedMenuPanelAtom} from "../Panels/NewMenuPanel.js";
 import {selectedInformation} from "./SelectedDoenetML.js";
 import ButtonGroup from "../../_reactComponents/PanelHeaderComponents/ButtonGroup.js";
 import Textfield from "../../_reactComponents/PanelHeaderComponents/Textfield.js";
-import {pageToolViewAtom} from "../NewToolRoot.js";
 import {useToast} from "../Toast.js";
+import {effectiveRoleAtom} from "../../_reactComponents/PanelHeaderComponents/RoleDropdown.js";
 export default function SelectedFolder() {
-  const pageToolView = useRecoilValue(pageToolViewAtom);
-  const role = pageToolView.view;
+  const effectiveRole = useRecoilValue(effectiveRoleAtom);
   const setSelectedMenu = useSetRecoilState(selectedMenuPanelAtom);
   const selection = useRecoilValueLoadable(selectedInformation).getValue();
   const [item, setItem] = useState(selection[0]);
@@ -46,7 +45,7 @@ export default function SelectedFolder() {
     return null;
   }
   let modControl = null;
-  if (role === "instructor") {
+  if (effectiveRole === "instructor") {
     modControl = /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(Textfield, {
       label: "Folder Label",
       vertical: true,

@@ -1,142 +1,112 @@
-import React, { useState } from "react";
-import { TimePicker, DateInput, TimePrecision } from "@blueprintjs/datetime";
-import "@blueprintjs/datetime/lib/css/blueprint-datetime.css";
-import "@blueprintjs/core/lib/css/blueprint.css";
-
-//props
-//showArrowButtons - true/false - arrow buttons for time
-//precision - minute/second - precision of time picker
-//date - true/false - want calendar or not
-//time - true/false - want time selector or not
-//callBack - (newDate) => () - function to be called when time/date is changed
+import React, { useCallback, useEffect, useState, useRef } from 'react';
+import Datetime from 'react-datetime';
+import 'react-datetime/css/react-datetime.css';
+import './DateTime.css';
 
 export default function DateTime(props) {
-  const [dateObjectState, setDateObjectState] = useState(null);
+  //console.log('props', props);
+  const [value, setValue] = useState(props.value);
+  const inputRef = useRef(null);
+  const [cursorStart, setCursorStart] = useState(0);
+  const [cursorEnd, setCursorEnd] = useState(0);
 
-  const dateTimeToText = (date) => {
-    return date.toLocaleString([], {
-      year: "numeric",
-      month: "numeric",
-      day: "numeric",
-      hour: "2-digit",
-      minute: "2-digit"
-    });
-  };
+  useEffect(() => {
+    setValue(props.value);
+  }, [props]);
 
-  const dateSecondTimeToText = (date) => {
-    return date.toLocaleString([], {
-      year: "numeric",
-      month: "numeric",
-      day: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-      second: "2-digit",
-    });
-  };
+  useEffect(() => {
+    // console.log('triggered', cursorStart, cursorEnd);
+    inputRef.current.selectionStart = cursorStart;
+    inputRef.current.selectionEnd = cursorEnd;
+  });
 
-  const dateToText = (date) => {
-    return date.toLocaleString([], {
-      year: "numeric",
-      month: "numeric",
-      day: "numeric"
-    });
-  };
+  let placeholder = '';
 
-  const textToDate = (s) => {
-    try {
-      return new Date(s);
-    } catch {
-      return dateObjectState;
-    }
-  };
-
-  const handleDateChange = (selectedDate, isUserChange) => {
-    setDateObjectState(selectedDate);
-    if (props.callBack) {
-      props.callBack(selectedDate);
-    }
-  };
-
-  const handleTimeChange = (newTime) => {
-    setDateObjectState(newTime);
-    if (props.callBack) {
-      props.callBack(newTime);
-    }
-  };
-
-  if (props.time && props.time !== true && props.time !== false) {
-    console.log("time attribute can only take boolean values");
-    return <input />;
+  if (props.datePicker !== false) {
+    placeholder = 'mm/dd/yyyy';
   }
 
-  if (props.date && props.date !== true && props.date !== false) {
-    console.log("date attribute can only take boolean values");
-    return <input />;
+  if (props.timePicker !== false && props.precision === 'seconds') {
+    placeholder += ' hh:mm:ss';
+  } else if (props.timePicker !== false) {
+    placeholder += ' hh:mm';
   }
 
-  if (props.time === false && props.date === false) {
-    console.log("Both time and date can't be false");
-    return <input />;
-  }
+  placeholder = props.placeholder ? props.placeholder : placeholder;
 
-  if (props.date === false) {
+  let inputProps = {
+    disabled: props.disabled === true ? true : false,
+    placeholder: placeholder,
+  };
+
+  const renderInput = (propsRI, openCalendar, closeCalendar) => {
+    //console.log('propRI', propsRI);
     return (
-      <TimePicker
-        disabled={
-          props.disabled === undefined || props.disabled === null
-            ? false
-            : props.disabled
-        }
-        showArrowButtons={
-          props.showArrowButtons === null ||
-          props.showArrowButtons === undefined
-            ? false
-            : props.showArrowButtons
-        }
-        precision={
-          props.precision === "second"
-            ? TimePrecision.SECOND
-            : TimePrecision.MINUTE
-        }
-        onChange={handleTimeChange}
-        value={dateObjectState}
-      />
+      <div>
+        <input
+          {...propsRI}
+          ref={inputRef}
+          onChange={(e) => {
+            // console.log(e.target.selectionStart, e.target.selectionEnd);
+            setCursorStart(e.target.selectionStart);
+            setCursorEnd(e.target.selectionEnd);
+            propsRI.onChange(e);
+          }}
+          onClick={(e) => {
+            //console.log('clicked');
+            propsRI.onClick(e);
+          }}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') {
+              closeCalendar();
+            }
+          }}
+        />
+      </div>
     );
-  }
+  };
+
+  // console.log(
+  //   'placeholder',
+  //   placeholder,
+  //   'value: ',
+  //   value,
+  //   ' props.value: ',
+  //   props.value,
+  // );
 
   return (
-    <DateInput
-      disabled={
-        props.disabled === undefined || props.disabled === null
+    <Datetime
+      renderInput={renderInput}
+      value={value}
+      dateFormat={props.datePicker === false ? false : true}
+      timeFormat={
+        props.precision === 'seconds' && props.timePicker !== false
+          ? 'hh:mm:ss a'
+          : props.timePicker === false
           ? false
-          : props.disabled
+          : true
       }
-      highlightCurrentDay={true}
-      onChange={handleDateChange}
-      placeholder={
-        props.time === false ? "M/D/YYYY" : props.precision === "second" ? "M/D/YYYY, H:MM:SS" : "M/D/YYYY, H:MM"
-      }
-      timePickerProps={
-        props.time === false
-          ? undefined
-          : {
-              showArrowButtons:
-                props.showArrowButtons === null ||
-                props.showArrowButtons === undefined
-                  ? false
-                  : props.showArrowButtons,
-              precision:
-                props.precision === "second"
-                  ? TimePrecision.SECOND
-                  : TimePrecision.MINUTE
-            }
-      }
-      closeOnSelection={false}
-      formatDate={
-        props.time === false ? dateToText : props.precision === "second" ? dateSecondTimeToText : dateTimeToText
-      }
-      parseDate={textToDate}
-      value={dateObjectState}
+      inputProps={inputProps}
+      onChange={(dateObjectOrString) => {
+        // console.log('onChange', typeof dateObjectOrString, dateObjectOrString);
+        setValue(dateObjectOrString);
+        if (props.onChange) {
+          props.onChange({
+            valid: typeof dateObjectOrString !== 'string',
+            value: dateObjectOrString,
+          });
+        }
+      }}
+      onClose={(_) => {
+        //console.log('onBlur', dateObjectOrString.toDate());
+        if (props.onBlur) {
+          props.onBlur({
+            valid: typeof value !== 'string',
+            value: value,
+          });
+        }
+      }}
     />
   );
 }

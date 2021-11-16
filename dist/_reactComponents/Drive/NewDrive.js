@@ -45,6 +45,7 @@ import {useDragShadowCallbacks, useSortFolder} from "./DriveActions.js";
 import useSockets from "../Sockets.js";
 import {BreadcrumbContext} from "../Breadcrumb/BreadcrumbProvider.js";
 import Collection from "./Collection.js";
+import {UTCDateStringToDate} from "../../_utils/dateUtilityFunction.js";
 const loadAssignmentAtomFamily = atomFamily({
   key: "loadAssignmentAtomFamily",
   default: selectorFamily({
@@ -56,12 +57,16 @@ const loadAssignmentAtomFamily = atomFamily({
       });
       let assignment = {...data.assignment};
       if (assignment.assignedDate) {
-        let t = data.assignment.assignedDate.split(/[- :]/);
-        assignment.assignedDate = new Date(Date.UTC(t[0], t[1] - 1, t[2], t[3], t[4], t[5])).toLocaleString();
+        assignment.assignedDate = UTCDateStringToDate(assignment.assignedDate).toLocaleString();
       }
       if (assignment.dueDate) {
-        let t = data.assignment.dueDate.split(/[- :]/);
-        assignment.dueDate = new Date(Date.UTC(t[0], t[1] - 1, t[2], t[3], t[4], t[5])).toLocaleString();
+        assignment.dueDate = UTCDateStringToDate(assignment.dueDate).toLocaleString();
+      }
+      if (assignment.pinnedAfterDate) {
+        assignment.pinnedAfterDate = UTCDateStringToDate(assignment.pinnedAfterDate).toLocaleString();
+      }
+      if (assignment.pinnedUntilDate) {
+        assignment.pinnedUntilDate = UTCDateStringToDate(assignment.pinnedUntilDate).toLocaleString();
       }
       return assignment;
     }

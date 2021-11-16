@@ -1,41 +1,39 @@
 import React, { Suspense, useState, useEffect } from 'react';
 import { useRecoilValue } from 'recoil';
-import BreadCrumb from '../../../_reactComponents/Breadcrumb/BreadCrumb';
+import { BreadCrumb } from '../../../_reactComponents/PanelHeaderComponents/BreadCrumb';
 import { searchParamAtomFamily } from '../NewToolRoot';
 import axios from 'axios';
-import { folderDictionary } from '../../../_reactComponents/Drive/NewDrive';
-
+import { 
+  useCourseChooserCrumb, 
+  useDashboardCrumb, 
+  useNavigationCrumbs,
+  useAssignmentCrumb, 
+} from '../../../_utils/breadcrumbUtil';
 
 export default function AssignmentBreadCrumb() {
-  // const path = useRecoilValue(searchParamAtomFamily('path'));
   const doenetId = useRecoilValue(searchParamAtomFamily('doenetId'));
 
-  let [path,setPath] = useState(":");
+  let [path,setPath] = useState("::");
 
   useEffect(()=>{
     axios.get('/api/findDriveIdFolderId.php', {
       params: { doenetId },
     }).then((resp)=>{
-      setPath(`${resp.data.driveId}:${resp.data.parentFolderId}`)
+      // console.log(">>>>resp",resp.data)
+      setPath(`${resp.data.driveId}:${resp.data.parentFolderId}:${resp.data.itemId}`)
     })
   },[doenetId])
 
-  let [driveId,folderId] = path.split(':');
-  let folderInfo = useRecoilValue(folderDictionary({driveId,folderId}))
-  const docInfo = folderInfo?.contentsDictionaryByDoenetId?.[doenetId]
-  if (!docInfo){ return null;}
-
-  if (path === ":"){ return null;}
-
-
+  let [driveId,folderId,itemId] = path.split(':');
+  const chooserCrumb = useCourseChooserCrumb();
+  const dashboardCrumb = useDashboardCrumb(driveId);
+  const navigationCrumbs = useNavigationCrumbs(driveId,folderId)
+  const assignmentCrumb = useAssignmentCrumb({doenetId,driveId,folderId,itemId});
 
   return (
-    <Suspense fallback={<div>loading Drive...</div>}>
-      <div style={{ 
-        margin: '-9px 0px 0px -25px', 
-        maxWidth: '850px' }}>
-        <BreadCrumb  tool="Content" tool2="Assignment" doenetId={doenetId} path={path} label={docInfo.label}/>
-      </div>
+    <Suspense fallback={<div>Loading Breadcrumb...</div>}>
+      <BreadCrumb crumbs={[chooserCrumb,dashboardCrumb,...navigationCrumbs,assignmentCrumb]}  offset={300}/>
+      {/* <BreadCrumb crumbs={[chooserCrumb,dashboardCrumb,...navigationCrumbs,assignmentCrumb]}  offset={90}/> */}
     </Suspense>
   );
 }

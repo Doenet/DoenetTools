@@ -54,6 +54,9 @@ export default class Line extends DoenetRenderer {
     return this.lineJXG;
   }
   deleteGraphicalObject() {
+    this.lineJXG.off("drag");
+    this.lineJXG.off("down");
+    this.lineJXG.off("up");
     this.props.board.removeObject(this.lineJXG);
     delete this.lineJXG;
   }

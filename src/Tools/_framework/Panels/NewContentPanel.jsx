@@ -37,12 +37,12 @@ const DragHandle = styled.div`
   box-sizing: border-box;
 `;
 
-const panelsInfoAtom = atom({
+export const panelsInfoAtom = atom({
   key: 'panelsInfoAtom',
   default: { propotion: 0.5, isActive: false },
 });
 
-  const panelPropotion = selector({
+const panelPropotion = selector({
   key: 'panelPropotion',
     get: ({ get }) => {
     const info = get(panelsInfoAtom);

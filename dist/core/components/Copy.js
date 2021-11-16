@@ -68,6 +68,12 @@ export default class Copy extends CompositeComponent {
       defaultValue: ["hide"],
       public: true,
     };
+    attributes.targetAttributesToAlwaysIgnore = {
+      createComponentOfType: "textList",
+      createStateVariable: "targetAttributesToAlwaysIgnore",
+      defaultValue: ["isResponse"],
+      public: true,
+    };
     attributes.link = {
       createPrimitiveOfType: "boolean",
     };
@@ -391,13 +397,38 @@ export default class Copy extends CompositeComponent {
       }
     }
 
+    stateVariableDefinitions.linkAttrForDetermineDeps = {
+      returnDependencies: () => ({
+        linkAttr: {
+          dependencyType: "attributePrimitive",
+          attributeName: "link"
+        },
+      }),
+      definition({ dependencyValues }) {
+        let linkAttrForDetermineDeps;
+        if (dependencyValues.linkAttr === null) {
+          linkAttrForDetermineDeps = true;
+        } else {
+          linkAttrForDetermineDeps = dependencyValues.linkAttr;
+        }
+
+        return { newValues: { linkAttrForDetermineDeps } };
+      }
+    }
+
+
     stateVariableDefinitions.replacementSourceIdentities = {
       stateVariablesDeterminingDependencies: [
-        "targetComponent", "componentIndex", "propName", "obtainPropFromComposite"
+        "targetComponent", "componentIndex", "propName",
+        "obtainPropFromComposite", "linkAttrForDetermineDeps"
       ],
+      additionalStateVariablesDefined: ["addLevelToAssignNames"],
       returnDependencies: function ({ stateValues, componentInfoObjects }) {
 
         let dependencies = {};
+
+        let addLevelToAssignNames = false;
+        let useReplacements = false;
 
         if (stateValues.targetComponent !== null) {
 
@@ -408,22 +439,36 @@ export default class Copy extends CompositeComponent {
             })
             && !(stateValues.propName && stateValues.obtainPropFromComposite)
           ) {
-            dependencies.targets = {
-              dependencyType: "replacement",
-              compositeName: stateValues.targetComponent.componentName,
-              recursive: true,
-              componentIndex: stateValues.componentIndex,
+
+            if (stateValues.linkAttrForDetermineDeps) {
+
+              useReplacements = true;
+              dependencies.targets = {
+                dependencyType: "replacement",
+                compositeName: stateValues.targetComponent.componentName,
+                recursive: true,
+                componentIndex: stateValues.componentIndex,
+              }
+            } else {
+              addLevelToAssignNames = true;
             }
-          } else if (stateValues.componentIndex === null || stateValues.componentIndex === 1) {
+          }
+
+
+          if (!useReplacements && (stateValues.componentIndex === null || stateValues.componentIndex === 1)) {
             // if we don't have a composite, componentIndex can only match if it is 1
             dependencies.targets = {
               dependencyType: "stateVariable",
               variableName: "targetComponent"
             }
           }
-
-
         }
+
+        dependencies.addLevelToAssignNames = {
+          dependencyType: "value",
+          value: addLevelToAssignNames
+        }
+
         return dependencies;
       },
       definition({ dependencyValues }) {
@@ -435,7 +480,12 @@ export default class Copy extends CompositeComponent {
             replacementSourceIdentities = [replacementSourceIdentities];
           }
         }
-        return { newValues: { replacementSourceIdentities } };
+        return {
+          newValues: {
+            replacementSourceIdentities,
+            addLevelToAssignNames: dependencyValues.addLevelToAssignNames
+          }
+        };
       },
     }
 
@@ -817,6 +867,28 @@ export default class Copy extends CompositeComponent {
       definition: () => ({ newValues: { needsReplacementsUpdatedWhenStale: true } })
     }
 
+    stateVariableDefinitions.effectiveAssignNames = {
+      returnDependencies: () => ({
+        assignNames: {
+          dependencyType: "doenetAttribute",
+          attributeName: "assignNames"
+        },
+        addLevelToAssignNames: {
+          dependencyType: "stateVariable",
+          variableName: "addLevelToAssignNames"
+        }
+      }),
+      definition({ dependencyValues }) {
+        let effectiveAssignNames = dependencyValues.assignNames;
+
+        if (effectiveAssignNames && dependencyValues.addLevelToAssignNames) {
+          effectiveAssignNames = [effectiveAssignNames]
+        }
+
+        return { newValues: { effectiveAssignNames } }
+      }
+    }
+
     return stateVariableDefinitions;
 
   }
@@ -887,7 +959,7 @@ export default class Copy extends CompositeComponent {
 
 
       let processResult = serializeFunctions.processAssignNames({
-        assignNames: component.doenetAttributes.assignNames,
+        assignNames: component.stateValues.effectiveAssignNames,
         serializedComponents: replacements,
         parentName: component.componentName,
         parentCreatesNewNamespace: newNamespace,
@@ -925,7 +997,7 @@ export default class Copy extends CompositeComponent {
       }];
 
       let processResult = serializeFunctions.processAssignNames({
-        assignNames: component.doenetAttributes.assignNames,
+        assignNames: component.stateValues.effectiveAssignNames,
         serializedComponents: replacements,
         parentName: component.componentName,
         parentCreatesNewNamespace: newNamespace,
@@ -1200,7 +1272,7 @@ export default class Copy extends CompositeComponent {
       }
 
       let processResult = serializeFunctions.processAssignNames({
-        assignNames: component.doenetAttributes.assignNames,
+        assignNames: component.stateValues.effectiveAssignNames,
         serializedComponents: replacements,
         parentName: component.componentName,
         parentCreatesNewNamespace: newNamespace,
@@ -1288,7 +1360,7 @@ export default class Copy extends CompositeComponent {
       });
 
       let processResult = serializeFunctions.processAssignNames({
-        assignNames: component.doenetAttributes.assignNames,
+        assignNames: component.stateValues.effectiveAssignNames,
         serializedComponents: results.serializedReplacements,
         parentName: component.componentName,
         parentCreatesNewNamespace: newNamespace,
@@ -1339,7 +1411,7 @@ export default class Copy extends CompositeComponent {
     }
 
     let processResult = serializeFunctions.processAssignNames({
-      assignNames: component.doenetAttributes.assignNames,
+      assignNames: component.stateValues.effectiveAssignNames,
       serializedComponents: serializedReplacements,
       parentName: component.componentName,
       parentCreatesNewNamespace: newNamespace,
