@@ -7,6 +7,7 @@ import ActionButton from '../../_reactComponents/PanelHeaderComponents/ActionBut
 import ActionButtonGroup from '../../_reactComponents/PanelHeaderComponents/ActionButtonGroup.jsx';
 import SearchBar from '../../_reactComponents/PanelHeaderComponents/SearchBar.jsx';
 import ToggleButton from '../../_reactComponents/PanelHeaderComponents/ToggleButton.jsx';
+import ToggleButtonGroup from '../../_reactComponents/PanelHeaderComponents/ToggleButtonGroup.jsx';
 import Button from '../../_reactComponents/PanelHeaderComponents/Button.jsx';
 import ButtonGroup from '../../_reactComponents/PanelHeaderComponents/ButtonGroup.jsx';
 import Form from '../../_reactComponents/PanelHeaderComponents/Form.jsx';
@@ -866,6 +867,36 @@ export default function attempt() {
           propPreview: '<Increment disabled />',
           propCode: { disabled },
           description: 'Makes button not able to be used.',
+        },
+      ],
+    },
+    {
+      name: 'ToggleButtonGroup',
+      id: 'togglebuttongroup',
+      code: ToggleButtonGroup,
+      codePreview:
+        '<ToggleButtonGroup> <ToggleButton/> <ToggleButton/> <ToggleButton/> </ToggleButtonGroup>',
+      req_props: null,
+      req_children: [
+        React.createElement(ToggleButton),
+        React.createElement(ToggleButton),
+        React.createElement(ToggleButton),
+      ],
+      use: 'This groups related Toggle buttons together.',
+      props: [
+        //     // {name: 'Width - Menu Panel',
+        //     // propPreview: '<ToggleButtonGroup width="menu" />',
+        //     // propCode: {width: 'menu'},
+        //     // description: 'Sets width to fill menu panel width'},
+        //     // {name: 'Width - Custom',
+        //     // propPreview: '<ToggleButtonGroup width="500px" />',
+        //     // propCode: {width: '500px'},
+        //     // description: 'Sets width to custom dimensions'},
+        {
+          name: 'Vertical',
+          propPreview: '<ToggleButtonGroup vertical />',
+          propCode: { vertical },
+          description: 'Aligns buttons vertically',
         },
       ],
     },
