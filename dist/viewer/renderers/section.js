@@ -149,23 +149,76 @@ export default class Section extends DoenetRenderer {
     let content;
     if (this.doenetSvData.collapsible) {
       if (this.doenetSvData.open) {
-        content = /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("a", {
-          name: this.componentName
-        }), /* @__PURE__ */ React.createElement("span", {
-          style: {
-            display: "block",
-            backgroundColor: "#ebebeb",
-            cursor: "pointer"
-          },
-          onClick: this.actions.closeSection
-        }, /* @__PURE__ */ React.createElement("a", {
-          name: this.componentName
-        }), heading), /* @__PURE__ */ React.createElement("span", {
-          style: {
-            display: "block",
-            backgroundColor: "white"
+        if (this.doenetSvData.boxed) {
+          if (this.doenetSvData.level === 0) {
+            heading = /* @__PURE__ */ React.createElement("h1", {
+              id,
+              style: {fontSize: "2em", marginBottom: "0px"}
+            }, title);
+          } else if (this.doenetSvData.level === 1) {
+            heading = /* @__PURE__ */ React.createElement("h2", {
+              id,
+              style: {fontSize: "1.5em", marginBottom: "0px"}
+            }, title);
+          } else if (this.doenetSvData.level === 2) {
+            heading = /* @__PURE__ */ React.createElement("h3", {
+              id,
+              style: {fontSize: "1.17em", marginBottom: "0px"}
+            }, title);
+          } else if (this.doenetSvData.level === 3) {
+            heading = /* @__PURE__ */ React.createElement("h4", {
+              id,
+              style: {fontSize: "1em", marginBottom: "0px"}
+            }, title);
+          } else if (this.doenetSvData.level === 4) {
+            heading = /* @__PURE__ */ React.createElement("h5", {
+              id,
+              style: {fontSize: ".83em", marginBottom: "0px"}
+            }, title);
+          } else if (this.doenetSvData.level === 5) {
+            heading = /* @__PURE__ */ React.createElement("h6", {
+              id,
+              style: {fontSize: ".67em", marginBottom: "0px"}
+            }, title);
           }
-        }, childrenToRender, checkworkComponent));
+          content = /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("a", {
+            name: this.componentName
+          }), /* @__PURE__ */ React.createElement("span", {
+            style: {
+              display: "block",
+              backgroundColor: "#ebebeb",
+              cursor: "pointer"
+            },
+            onClick: this.actions.closeSection
+          }, /* @__PURE__ */ React.createElement("a", {
+            name: this.componentName
+          }), heading), /* @__PURE__ */ React.createElement("span", {
+            style: {
+              display: "block",
+              padding: "6px",
+              border: "1px solid #C9C9C9",
+              backgroundColor: "white"
+            }
+          }, childrenToRender, checkworkComponent));
+        } else {
+          content = /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("a", {
+            name: this.componentName
+          }), /* @__PURE__ */ React.createElement("span", {
+            style: {
+              display: "block",
+              backgroundColor: "#ebebeb",
+              cursor: "pointer"
+            },
+            onClick: this.actions.closeSection
+          }, /* @__PURE__ */ React.createElement("a", {
+            name: this.componentName
+          }), heading), /* @__PURE__ */ React.createElement("span", {
+            style: {
+              display: "block",
+              backgroundColor: "white"
+            }
+          }, childrenToRender, checkworkComponent));
+        }
       } else {
         content = /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("a", {
           name: this.componentName

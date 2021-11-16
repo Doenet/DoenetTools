@@ -132,10 +132,12 @@ if ($success){
     WHERE dc.driveId = '$driveId'
     AND dc.isReleased = '1'
     AND a.proctorMakesAvailable = '1'
-    AND (a.assignedDate <= CONVERT_TZ(NOW(), @@session.time_zone, '+00:00') OR a.assignedDate IS NULL)
-    AND (a.dueDate >= CONVERT_TZ(NOW(), @@session.time_zone, '+00:00') OR a.dueDate IS NULL)
+    
     ORDER BY dc.label
     ";
+    // AND (a.assignedDate <= CONVERT_TZ(NOW(), @@session.time_zone, '+00:00') OR a.assignedDate IS NULL)
+    // AND (a.dueDate >= CONVERT_TZ(NOW(), @@session.time_zone, '+00:00') OR a.dueDate IS NULL)
+
     $result = $conn->query($sql);
     $exams = array();
     while($row = $result->fetch_assoc()) {

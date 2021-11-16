@@ -68,6 +68,12 @@ export default class Copy extends CompositeComponent {
       defaultValue: ["hide"],
       public: true,
     };
+    attributes.targetAttributesToAlwaysIgnore = {
+      createComponentOfType: "textList",
+      createStateVariable: "targetAttributesToAlwaysIgnore",
+      defaultValue: ["isResponse"],
+      public: true,
+    };
     attributes.link = {
       createPrimitiveOfType: "boolean",
     };

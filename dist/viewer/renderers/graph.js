@@ -265,8 +265,7 @@ export default class Graph extends DoenetRenderer {
     }
   }
   componentWillUnmount() {
-  }
-  componentDidUpdate() {
+    this.board.off("boundingbox");
   }
   render() {
     const divStyle = {

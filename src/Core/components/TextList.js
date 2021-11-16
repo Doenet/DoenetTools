@@ -13,6 +13,10 @@ export default class TextList extends InlineComponent {
   static stateVariableForAttributeValue = "texts";
   static primaryStateVariableForDefinition = "textsShadow";
 
+  // even if inside a component that turned on descendantCompositesMustHaveAReplacement
+  // don't required composite replacements
+  static descendantCompositesMustHaveAReplacement = false;
+
   static createAttributesObject(args) {
     let attributes = super.createAttributesObject(args);
 

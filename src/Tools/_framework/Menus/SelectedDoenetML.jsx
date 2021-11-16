@@ -192,6 +192,28 @@ export default function SelectedDoenetML() {
       newLabel: newLabel,
     });
   }
+
+  let surveyButton = null;
+  // console.log(">>>>item",item)
+  //TODO: Need info about points (or flag for survey)
+  // if (item.isReleased === '1'){
+  //   surveyButton = <ActionButton
+  //   width="menu"
+  //   value="View Survey"
+  //   onClick={() => {
+  //     setPageToolView({
+  //       page: 'course',
+  //       tool: 'surveyData',
+  //       view: '',
+  //       params: {
+  //         doenetId: item.doenetId,
+  //         driveId: item.driveId,
+  //       },
+  //     });
+  //   }}
+  // />
+  // }
+
   return (
     <>
       <h2 data-cy="infoPanelItemLabel">
@@ -227,6 +249,7 @@ export default function SelectedDoenetML() {
             });
           }}
         />
+        {surveyButton}
       </ActionButtonGroup>
         <Textfield
         label="DoenetML Label"
@@ -354,6 +377,7 @@ export function AssignmentSettings({ role, doenetId }) {
   let [showFeedback, setShowFeedback] = useState(true);
   let [showHints, setShowHints] = useState(true);
   let [showCorrectness, setShowCorrectness] = useState(true);
+  let [showCreditAchievedMenu, setShowCreditAchievedMenu] = useState(true);
   let [proctorMakesAvailable, setProctorMakesAvailable] = useState(true);
 
   const updateAssignment = useRecoilCallback(
@@ -451,6 +475,7 @@ export function AssignmentSettings({ role, doenetId }) {
     setShowFeedback(aInfo?.showFeedback);
     setShowHints(aInfo?.showHints);
     setShowCorrectness(aInfo?.showCorrectness);
+    setShowCreditAchievedMenu(aInfo?.showCreditAchievedMenu);
     setProctorMakesAvailable(aInfo?.proctorMakesAvailable);
     setTimeLimit(aInfo?.timeLimit);
     setPinnedUntilDate(aInfo?.pinnedUntilDate);
@@ -1053,6 +1078,29 @@ export function AssignmentSettings({ role, doenetId }) {
               });
             }}
             checked={showCorrectness}
+          ></Switch>
+        </label>
+      </div>
+
+      <div>
+        <label>
+          Show Credit Achieved Menu
+          <Switch
+            name="showCreditAchievedMenu"
+            onChange={(e) => {
+              let valueDescription = 'False';
+              if (e.currentTarget.checked) {
+                valueDescription = 'True';
+              }
+              updateAssignment({
+                doenetId,
+                keyToUpdate: 'showCreditAchievedMenu',
+                value: e.currentTarget.checked,
+                description: 'Show Credit Achieved Menu',
+                valueDescription,
+              });
+            }}
+            checked={showCreditAchievedMenu}
           ></Switch>
         </label>
       </div>

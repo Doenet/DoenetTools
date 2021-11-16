@@ -148,6 +148,7 @@ export default function SelectedDoenetML() {
       newLabel
     });
   }
+  let surveyButton = null;
   return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("h2", {
     "data-cy": "infoPanelItemLabel"
   }, /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
@@ -181,7 +182,7 @@ export default function SelectedDoenetML() {
         }
       });
     }
-  })), /* @__PURE__ */ React.createElement(Textfield, {
+  }), surveyButton), /* @__PURE__ */ React.createElement(Textfield, {
     label: "DoenetML Label",
     width: "menu",
     vertical: true,
@@ -257,6 +258,7 @@ export function AssignmentSettings({role, doenetId}) {
   let [showFeedback, setShowFeedback] = useState(true);
   let [showHints, setShowHints] = useState(true);
   let [showCorrectness, setShowCorrectness] = useState(true);
+  let [showCreditAchievedMenu, setShowCreditAchievedMenu] = useState(true);
   let [proctorMakesAvailable, setProctorMakesAvailable] = useState(true);
   const updateAssignment = useRecoilCallback(({set, snapshot}) => async ({
     doenetId: doenetId2,
@@ -313,6 +315,7 @@ export function AssignmentSettings({role, doenetId}) {
     setShowFeedback(aInfo?.showFeedback);
     setShowHints(aInfo?.showHints);
     setShowCorrectness(aInfo?.showCorrectness);
+    setShowCreditAchievedMenu(aInfo?.showCreditAchievedMenu);
     setProctorMakesAvailable(aInfo?.proctorMakesAvailable);
     setTimeLimit(aInfo?.timeLimit);
     setPinnedUntilDate(aInfo?.pinnedUntilDate);
@@ -736,6 +739,22 @@ export function AssignmentSettings({role, doenetId}) {
       });
     },
     checked: showCorrectness
+  }))), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("label", null, "Show Credit Achieved Menu", /* @__PURE__ */ React.createElement(Switch, {
+    name: "showCreditAchievedMenu",
+    onChange: (e) => {
+      let valueDescription = "False";
+      if (e.currentTarget.checked) {
+        valueDescription = "True";
+      }
+      updateAssignment({
+        doenetId,
+        keyToUpdate: "showCreditAchievedMenu",
+        value: e.currentTarget.checked,
+        description: "Show Credit Achieved Menu",
+        valueDescription
+      });
+    },
+    checked: showCreditAchievedMenu
   }))), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("label", null, "Proctor Makes Available", /* @__PURE__ */ React.createElement(Switch, {
     name: "proctorMakesAvailable",
     onChange: (e) => {

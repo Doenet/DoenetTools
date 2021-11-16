@@ -172,9 +172,55 @@ export default class Section extends DoenetRenderer {
     let content;
 
     if (this.doenetSvData.collapsible) {
+     
 
       if (this.doenetSvData.open) {
-        content = <>
+
+        if (this.doenetSvData.boxed){
+          if (this.doenetSvData.level === 0) {
+            heading = <h1 id={id} style={{fontSize:'2em',marginBottom:"0px"}}>{title}</h1>;
+          } else if (this.doenetSvData.level === 1) {
+            heading = <h2 id={id} style={{fontSize:'1.5em',marginBottom:"0px"}}>{title}</h2>;
+          } else if (this.doenetSvData.level === 2) {
+            heading = <h3 id={id} style={{fontSize:'1.17em',marginBottom:"0px"}}>{title}</h3>;
+          } else if (this.doenetSvData.level === 3) {
+            heading = <h4 id={id} style={{fontSize:'1em',marginBottom:"0px"}}>{title}</h4>;
+          } else if (this.doenetSvData.level === 4) {
+            heading = <h5 id={id} style={{fontSize:'.83em',marginBottom:"0px"}}>{title}</h5>;
+          } else if (this.doenetSvData.level === 5) {
+            heading = <h6 id={id} style={{fontSize:'.67em',marginBottom:"0px"}}>{title}</h6>;
+          }
+          content = <>
+          <a name={this.componentName} />
+         
+          <span style={{
+            display: "block",
+            // margin: "4px 4px 0px 4px",
+            // padding: "6px",
+            // border: "1px solid #C9C9C9",
+            backgroundColor: "#ebebeb",
+            cursor: "pointer"
+          }}
+            onClick={this.actions.closeSection}>
+            <a name={this.componentName} />
+            {heading}
+          </span>
+          <span style={{
+            display: "block",
+            // margin: "0px 4px 4px 4px",
+            padding: "6px",
+            // paddingTop: "10px",
+            border: "1px solid #C9C9C9",
+            backgroundColor: "white",
+          }}>
+           
+            {childrenToRender}
+            {checkworkComponent}
+          </span>
+    
+        </>
+        }else{
+          content = <>
           <a name={this.componentName} />
           <span style={{
             display: "block",
@@ -194,11 +240,14 @@ export default class Section extends DoenetRenderer {
             // padding: "6px",
             // border: "1px solid #C9C9C9",
             backgroundColor: "white",
+            // backgroundColor: "#c41e1e",
           }}>
             {childrenToRender}
             {checkworkComponent}
           </span>
         </>
+        }
+       
 
 
 
