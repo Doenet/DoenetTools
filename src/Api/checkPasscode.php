@@ -97,11 +97,23 @@ if ($success){
 
     foreach ($learners AS &$learner){
         $userId = $learner['userId'];
+        // $sql = "
+        // SELECT MAX(began) AS began,
+        // doenetId
+        // FROM user_assignment_attempt
+        // WHERE userId = '$userId'
+        // GROUP BY doenetId
+        // ";
         $sql = "
-        SELECT MAX(began) AS began,
-        doenetId
-        FROM user_assignment_attempt
-        WHERE userId = '$userId'
+        SELECT uaa.doenetId,
+		MAX(uaa.attemptNumber) AS maxAttempt,
+		MAX(uaa.began) AS began,
+		timeLimit,
+		(SELECT timeLimitMultiplier FROM enrollment WHERE userId = '$userId') AS multiplier
+        FROM user_assignment_attempt AS uaa
+        LEFT JOIN assignment AS a
+        ON a.doenetId = uaa.doenetId
+        WHERE uaa.userId = '$userId'
         GROUP BY doenetId
         ";
         //TODO: add proctorMakesAvailable test
@@ -113,10 +125,17 @@ if ($success){
 
         $result = $conn->query($sql);
         $exam_to_date = array();
+        $exam_to_timeLimit = array();
+        $exam_to_multiplier = array();
         while($row = $result->fetch_assoc()){
             $exam_to_date[$row['doenetId']] = $row['began'];
+            $exam_to_timeLimit[$row['doenetId']] = $row['timeLimit'];
+            $exam_to_multiplier[$row['doenetId']] = $row['multiplier'];
         }
         $learner['exam_to_date'] = $exam_to_date;
+        $learner['exam_to_timeLimit'] = $exam_to_timeLimit;
+        $learner['exam_to_multiplier'] = $exam_to_multiplier;
+        
     }
 
 }
