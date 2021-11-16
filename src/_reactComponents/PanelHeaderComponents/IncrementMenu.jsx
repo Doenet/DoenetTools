@@ -158,7 +158,7 @@ export default function Increment(props) {
       }
 
       setNumericValues(numericFlag);
-      console.log('>>> numericValues', numericFlag);
+      // console.log('>>> numericValues', numericFlag);
     }
     setValues(props.values);
   }, [props.values]);
@@ -172,19 +172,19 @@ export default function Increment(props) {
       decrementRef.current &&
       decrementRef.current.contains(e.relatedTarget)
     ) {
-      console.log('>>> clicked inside the decrement');
+      // console.log('>>> clicked inside the decrement');
     } else if (
       textFieldRef.current &&
       textFieldRef.current.contains(e.relatedTarget)
     ) {
-      console.log('>>> clicked inside the textfield');
+      // console.log('>>> clicked inside the textfield');
     } else if (
       incrementRef.current &&
       incrementRef.current.contains(e.relatedTarget)
     ) {
-      console.log('>>> clicked inside the increment');
+      // console.log('>>> clicked inside the increment');
     } else if (menuRef.current && menuRef.current.contains(e.relatedTarget)) {
-      console.log('>>> clicked inside the menu');
+      // console.log('>>> clicked inside the menu');
     } else {
       setMenuToggle(false);
       if (values && props.restricted == true && index == -1) {
@@ -210,7 +210,7 @@ export default function Increment(props) {
   };
 
   const incrementOnClick = (e) => {
-    console.log('props.max', props.max);
+    // console.log('props.max', props.max);
     if (textFieldRef.current) {
       textFieldRef.current.focus();
     }
@@ -232,7 +232,7 @@ export default function Increment(props) {
         setIndex(findClosestIndex(values, value));
         setValue(values[findClosestIndex(values, value)]);
       } else if (index < values.length - 1) {
-        console.log('increment values', values, value, index);
+        // console.log('increment values', values, value, index);
         if (props.onChange) {
           props.onChange(values[index + 1]);
         }
@@ -250,7 +250,7 @@ export default function Increment(props) {
   };
 
   const decrementOnClick = (e) => {
-    console.log('props.min', props.min);
+    // console.log('props.min', props.min);
     if (textFieldRef.current) {
       textFieldRef.current.focus();
     }
@@ -271,7 +271,7 @@ export default function Increment(props) {
         setIndex(findClosestIndex(values, value));
         setValue(values[findClosestIndex(values, value)]);
       } else if (index > 0) {
-        console.log('decrement values', values, value, index);
+        // console.log('decrement values', values, value, index);
         if (props.onChange) {
           props.onChange(values[index - 1]);
         }
@@ -298,7 +298,7 @@ export default function Increment(props) {
   const onTextFieldChange = (e) => {
     setValue(e.target.value);
     if (values) {
-      console.log('changed index', values.indexOf(e.target.value));
+      // console.log('changed index', values.indexOf(e.target.value));
       setIndex(values.indexOf(e.target.value));
     }
     if (props.onChange) {
@@ -313,7 +313,7 @@ export default function Increment(props) {
   };
 
   const onMenuClick = (e) => {
-    console.log('onMenuClick clicked');
+    // console.log('onMenuClick clicked');
     setValue(e.target.value);
     setMenuToggle(false);
     if (values) {
@@ -343,7 +343,7 @@ export default function Increment(props) {
     ));
   }
 
-  console.log('props.disabled', props.disabled);
+  // console.log('props.disabled', props.disabled);
 
   return (
     <div className="incrementcontainer" style={{ width: 'fit-content' }}>
