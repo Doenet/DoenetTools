@@ -54,7 +54,7 @@ if ($success){
 
 
 //bypass security by uncommenting this line
-// $legitAccessKey = 1;
+$legitAccessKey = 1;
 
 $response_arr = array(
   "success"=>$success,

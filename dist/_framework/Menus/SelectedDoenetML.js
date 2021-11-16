@@ -3,7 +3,11 @@ import {FontAwesomeIcon} from "../../_snowpack/pkg/@fortawesome/react-fontawesom
 import React, {useState, useEffect} from "../../_snowpack/pkg/react.js";
 import DropdownMenu from "../../_reactComponents/PanelHeaderComponents/DropdownMenu.js";
 import DateTime from "../../_reactComponents/PanelHeaderComponents/DateTime.js";
-import {DateToUTCDateString, DateToDateString} from "../../_utils/dateUtilityFunction.js";
+import {
+  DateToUTCDateString,
+  DateToDateString
+} from "../../_utils/dateUtilityFunction.js";
+import Increment from "../../_reactComponents/PanelHeaderComponents/IncrementMenu.js";
 import {
   atom,
   selector,
@@ -489,7 +493,7 @@ export function AssignmentSettings({role, doenetId}) {
       let value = null;
       if (e.currentTarget.checked) {
         valueDescription = "60 Minutes";
-        value = "60";
+        value = 60;
       }
       updateAssignment({
         doenetId,
@@ -499,43 +503,41 @@ export function AssignmentSettings({role, doenetId}) {
         valueDescription
       });
     },
-    checked: aInfo.timeLimit > 0
-  }))), aInfo.timeLimit > 0 ? /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("label", null, "Time Limit in Minutes", /* @__PURE__ */ React.createElement("input", {
-    type: "number",
+    checked: aInfo.timeLimit !== null
+  }))), aInfo.timeLimit !== null ? /* @__PURE__ */ React.createElement("div", {
+    style: {width: "fit-content"}
+  }, "Time Limit in Minutes", /* @__PURE__ */ React.createElement(Increment, {
     value: timeLimit,
-    onBlur: () => {
+    min: 0,
+    onBlur: (newValue) => {
       if (aInfo.timeLimit !== timeLimit) {
-        let valueDescription = `${timeLimit} Minutes`;
+        let timelimitlocal = null;
+        if (timeLimit < 0 || timeLimit === "" || isNaN(timeLimit)) {
+          setTimeLimit(0);
+          timelimitlocal = 0;
+        } else {
+          timelimitlocal = parseInt(timeLimit);
+          setTimeLimit(parseInt(timeLimit));
+        }
+        let valueDescription = `${timelimitlocal} Minutes`;
         updateAssignment({
           doenetId,
           keyToUpdate: "timeLimit",
-          value: timeLimit,
+          value: timelimitlocal,
           description: "Time Limit",
           valueDescription
         });
       }
     },
-    onKeyDown: (e) => {
-      if (e.key === "Enter" && aInfo.timeLimit !== timeLimit) {
-        let valueDescription = `${timeLimit} Minutes`;
-        updateAssignment({
-          doenetId,
-          keyToUpdate: "timeLimit",
-          value: timeLimit,
-          description: "Time Limit",
-          valueDescription
-        });
-      }
-    },
-    onChange: (e) => setTimeLimit(e.currentTarget.value)
-  }))) : null, /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("label", null, "Attempts Limit", /* @__PURE__ */ React.createElement(Switch, {
+    onChange: (newValue) => setTimeLimit(newValue)
+  })) : null, /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("label", null, "Attempts Limit", /* @__PURE__ */ React.createElement(Switch, {
     name: "limitAttempts",
     onChange: (e) => {
       let valueDescription = "Not Limited";
       let value = null;
       if (e.currentTarget.checked) {
         valueDescription = "1";
-        value = "1";
+        value = 1;
       }
       updateAssignment({
         doenetId,
@@ -545,32 +547,29 @@ export function AssignmentSettings({role, doenetId}) {
         valueDescription
       });
     },
-    checked: aInfo.numberOfAttemptsAllowed > 0
-  }))), aInfo.numberOfAttemptsAllowed > 0 ? /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("label", null, "Number of Attempts Allowed", /* @__PURE__ */ React.createElement("input", {
-    type: "number",
-    name: "numberOfAttemptsAllowed",
+    checked: aInfo.numberOfAttemptsAllowed !== null
+  }))), aInfo.numberOfAttemptsAllowed !== null ? /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("label", null, "Number of Attempts Allowed", /* @__PURE__ */ React.createElement(Increment, {
     value: numberOfAttemptsAllowed,
+    min: 0,
     onBlur: () => {
       if (aInfo.numberOfAttemptsAllowed !== numberOfAttemptsAllowed) {
+        let numberOfAttemptsAllowedLocal = null;
+        if (numberOfAttemptsAllowed < 0 || numberOfAttemptsAllowed === "" || isNaN(numberOfAttemptsAllowed)) {
+          setNumberOfAttemptsAllowed(0);
+          numberOfAttemptsAllowedLocal = 0;
+        } else {
+          numberOfAttemptsAllowedLocal = parseInt(numberOfAttemptsAllowed);
+          setNumberOfAttemptsAllowed(parseInt(numberOfAttemptsAllowed));
+        }
         updateAssignment({
           doenetId,
           keyToUpdate: "numberOfAttemptsAllowed",
-          value: numberOfAttemptsAllowed,
+          value: numberOfAttemptsAllowedLocal,
           description: "Attempts Allowed"
         });
       }
     },
-    onKeyDown: (e) => {
-      if (e.key === "Enter" && aInfo.numberOfAttemptsAllowed !== numberOfAttemptsAllowed) {
-        updateAssignment({
-          doenetId,
-          keyToUpdate: "numberOfAttemptsAllowed",
-          value: numberOfAttemptsAllowed,
-          description: "Attempts Allowed"
-        });
-      }
-    },
-    onChange: (e) => setNumberOfAttemptsAllowed(e.currentTarget.value)
+    onChange: (newValue) => setNumberOfAttemptsAllowed(newValue)
   }))) : null, /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("label", null, "Attempt Aggregation", /* @__PURE__ */ React.createElement(DropdownMenu, {
     width: "menu",
     valueIndex: attemptAggregation === "m" ? 1 : 2,
@@ -591,32 +590,28 @@ export function AssignmentSettings({role, doenetId}) {
         valueDescription
       });
     }
-  }))), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("label", null, "Total Points Or Percent", /* @__PURE__ */ React.createElement("input", {
-    required: true,
-    type: "number",
-    name: "totalPointsOrPercent",
+  }))), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("label", null, "Total Points Or Percent", /* @__PURE__ */ React.createElement(Increment, {
     value: totalPointsOrPercent,
+    min: 0,
     onBlur: () => {
       if (aInfo.totalPointsOrPercent !== totalPointsOrPercent) {
+        let totalPointsOrPercentLocal = null;
+        if (totalPointsOrPercent < 0 || totalPointsOrPercent === "" || isNaN(totalPointsOrPercent)) {
+          setTotalPointsOrPercent(0);
+          totalPointsOrPercentLocal = 0;
+        } else {
+          totalPointsOrPercentLocal = parseInt(totalPointsOrPercent);
+          setTotalPointsOrPercent(parseInt(totalPointsOrPercent));
+        }
         updateAssignment({
           doenetId,
           keyToUpdate: "totalPointsOrPercent",
-          value: totalPointsOrPercent,
+          value: totalPointsOrPercentLocal,
           description: "Total Points Or Percent"
         });
       }
     },
-    onKeyDown: (e) => {
-      if (e.key === "Enter" && aInfo.totalPointsOrPercent !== totalPointsOrPercent) {
-        updateAssignment({
-          doenetId,
-          keyToUpdate: "totalPointsOrPercent",
-          value: totalPointsOrPercent,
-          description: "Total Points Or Percent"
-        });
-      }
-    },
-    onChange: (e) => setTotalPointsOrPercent(e.currentTarget.value)
+    onChange: (newValue) => setTotalPointsOrPercent(newValue)
   }))), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("label", null, "Grade Category", /* @__PURE__ */ React.createElement("input", {
     required: true,
     type: "select",
