@@ -273,41 +273,55 @@ export default function attempt() {
       use: 'Allows user to pick date and time',
       props: [
         {
-          name: 'showArrowButtons',
-          propPreview: '<DateTime showArrowButtons={true}/>',
-          propCode: { showArrowButtons: 'true' },
-          description: 'arrow buttons for time - true/false only',
+          name: 'Value',
+          propPreview: '<DateTime value={new Date("09/23/2000")}/>',
+          propCode: { value: new Date('09/23/2000') },
+          description: 'Sets the value of the date-time picker',
+        },
+        {
+          name: 'DatePicker',
+          propPreview: '<DateTime datePicker={false}/>',
+          propCode: { datePicker: false },
+          description:
+            'Toggle the date picker, set it to false if only the time picker is needed',
+        },
+        {
+          name: 'Timepicker',
+          propPreview: '<DateTime timePicker={false}/>',
+          propCode: { timePicker: false },
+          description:
+            'Toggle the time picker, set it to false if only the date picker is needed',
         },
         {
           name: 'Precision',
-          propPreview: '<DateTime precision={second}/>',
-          propCode: { precision: 'second' },
-          description: 'precision of time picker - minute/second only',
-        },
-        {
-          name: 'Date',
-          propPreview: '<DateTime date=false/>',
-          propCode: { date: false },
-          description: 'want calendar or not - true/false only',
-        },
-        {
-          name: 'Time',
-          propPreview: '<DateTime time=false/>',
-          propCode: { time: false },
-          description: 'want time selector or not - true/false only',
+          propPreview: '<DateTime precision = "seconds"/>',
+          propCode: { precision: 'seconds' },
+          description: 'Change precision of the time picker.',
         },
         {
           name: 'Disabled',
-          propPreview: '<DateTime disabled=true />',
+          propPreview: '<DateTime disabled= {true} />',
           propCode: { disabled: true },
           description: 'disables component',
         },
         {
-          name: 'callBack',
+          name: 'Placeholder',
+          propPreview: '<DateTime placeholder = "enter start date" />',
+          propCode: { placeholder: 'enter start date' },
+          description: 'Set custom placeholder.',
+        },
+        {
+          name: 'onChange',
           propPreview:
-            '<DateTime callBack={(( newDate ) => console.log(">>>", newDate)} />',
-          propCode: { callBack: (newDate) => console.log('>>>', newDate) },
-          description: 'Function called when data changes',
+            '<DateTime onChange = {(value) => console.log(value)} />',
+          propCode: { onChange: (value) => console.log(value) },
+          description: 'Function called when data changes.',
+        },
+        {
+          name: 'onBlur',
+          propPreview: '<DateTime onBlur = {(value) => console.log(value)} />',
+          propCode: { onBlur: (value) => console.log(value) },
+          description: 'Function called when component blurred.',
         },
       ],
     },
@@ -975,7 +989,8 @@ export default function attempt() {
           </a>
         </p>
         <p>
-          *<i>alert</i> - if component requires user's attention, give red #C1292E border, see styling
+          *<i>alert</i> - if component requires user's attention, give red
+          #C1292E border, see styling
           <a
             href="https://docs.google.com/document/d/16YDi2lUs6CjUYHfZBwjbBBtaWgJyY1uNbSRf3cj44D8/edit#bookmark=id.tptn3i5d03g0"
             target="_blank"
@@ -988,7 +1003,8 @@ export default function attempt() {
 
         <h2>Standard Props (* denotes required)</h2>
         <p>
-          <i>width</i> = menu (235px) is the only option, otherwise the size should be a default based on input (text, icons, ...)
+          <i>width</i> = menu (235px) is the only option, otherwise the size
+          should be a default based on input (text, icons, ...)
         </p>
         <p>
           <i>value</i> = information expected to be shown on component (text on
@@ -1009,16 +1025,19 @@ export default function attempt() {
           <i>value + icon</i> = ability to have icon and value together
         </p>
         <p>
-          <i>label</i> = text before componenet telling user what it is for, 14px font size
+          <i>label</i> = text before componenet telling user what it is for,
+          14px font size
         </p>
         <p>
-          <i>vertical label</i> = ability to have label stack on top of component, label must be there for vertical label to work
+          <i>vertical label</i> = ability to have label stack on top of
+          component, label must be there for vertical label to work
         </p>
         <p>
           <i>placeholder</i> = default shown before user input
         </p>
         <p>
-          *<i>margin</i> = default is 0px, make 4px left and right margin with 2px bottom margin on label if prop margin
+          *<i>margin</i> = default is 0px, make 4px left and right margin with
+          2px bottom margin on label if prop margin
         </p>
         <p>
           *<i>aria-label</i> = built in HTML accessibility requirement
