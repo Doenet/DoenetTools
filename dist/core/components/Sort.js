@@ -16,6 +16,15 @@ export default class Sort extends CompositeComponent {
       createPrimitiveOfType: "number"
     }
 
+    attributes.sortVectorsBy = {
+      createComponentOfType: "text",
+      createStateVariable: "sortVectorsBy",
+      defaultValue: "displacement",
+      public: true,
+      toLowerCase: true,
+      validValues: ["displacement", "tail"]
+    }
+
     return attributes;
   }
 
@@ -23,7 +32,7 @@ export default class Sort extends CompositeComponent {
 
     return [{
       group: "mathNumbers",
-      componentTypes: ["number", "math", "numberList", "mathList", "point"]
+      componentTypes: ["number", "math", "numberList", "mathList", "point", "vector"]
     }]
 
   }
@@ -60,12 +69,17 @@ export default class Sort extends CompositeComponent {
     stateVariableDefinitions.sortedValues = {
       stateVariablesDeterminingDependencies: ["componentNamesForValues"],
       returnDependencies({ stateValues }) {
-        let dependencies = {};
+        let dependencies = {
+          sortVectorsBy: {
+            dependencyType: "stateVariable",
+            variableName: "sortVectorsBy"
+          }
+        };
         for (let [ind, cName] of stateValues.componentNamesForValues.entries()) {
           dependencies[`component${ind}`] = {
             dependencyType: "multipleStateVariables",
             componentName: cName,
-            variableNames: ["value", "xs"],
+            variableNames: ["value", "x", "tailX1"],
             variablesOptional: true,
           }
         }
@@ -102,13 +116,27 @@ export default class Sort extends CompositeComponent {
             inheritedComponentType: component.componentType,
             baseComponentType: "point"
           })) {
+            let numericalValue = component.stateValues.x.evaluate_to_constant();
+            if (numericalValue === null) {
+              numericalValue = NaN;
+            }
+            allValues.push({
+              componentName: component.componentName,
+              numericalValue,
+            })
+
+          } else if (componentInfoObjects.isInheritedComponentType({
+            inheritedComponentType: component.componentType,
+            baseComponentType: "vector"
+          })) {
             let numericalValue;
-            if (component.stateValues.xs.length > 0) {
-              numericalValue = component.stateValues.xs[0].evaluate_to_constant();
-              if (numericalValue === null) {
-                numericalValue = NaN;
-              }
+            if (dependencyValues.sortVectorsBy === "displacement") {
+              numericalValue = component.stateValues.x.evaluate_to_constant();
             } else {
+              numericalValue = component.stateValues.tailX1.evaluate_to_constant();
+
+            }
+            if (numericalValue === null) {
               numericalValue = NaN;
             }
             allValues.push({
