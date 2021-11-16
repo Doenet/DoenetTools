@@ -6,6 +6,9 @@ export default class Setup extends CompositeComponent {
   static returnChildGroups() {
 
     return [{
+      group: "styleDefinitions",
+      componentTypes: ["styleDefinitions"]
+    }, {
       group: "anything",
       componentTypes: ["_base"]
     }]
@@ -24,13 +27,13 @@ export default class Setup extends CompositeComponent {
       }),
       definition({ dependencyValues }) {
         let componentNameForAttributes = null;
-        if(dependencyValues.sourceCompositeIdentity) {
+        if (dependencyValues.sourceCompositeIdentity) {
           componentNameForAttributes = dependencyValues.sourceCompositeIdentity.componentName;
         }
         return { newValues: { componentNameForAttributes } }
       }
     }
-    
+
     stateVariableDefinitions.readyToExpandWhenResolved = {
       returnDependencies: () => ({}),
       definition() {
