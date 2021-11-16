@@ -1,7 +1,7 @@
-import styled, { css } from "styled-components";
-import { faAngleRight, faAngleLeft } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import React, { useState } from "react";
+import styled, { css } from 'styled-components';
+import { faAngleRight, faAngleLeft } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import React, { useState } from 'react';
 
 /*
 Text input with increment and decrement buttons. Also has dropdown menu to select given values
@@ -19,14 +19,14 @@ For given values:
 
 const Container = styled.div`
   position: relative;
-  display: ${props => props.align};
+  display: inline-flex;
   align-items: center;
-  width: auto;
+  justify-content: space-between;
 `;
 
 const Textfield = styled.input`
   border-radius: 5px;
-  border: ${props => props.alert ? '2px solid #C1292E' : '2px solid black'};
+  border: ${(props) => (props.alert ? '2px solid #C1292E' : '2px solid black')};
   z-index: 0;
   height: 24px;
   width: 46px;
@@ -34,36 +34,36 @@ const Textfield = styled.input`
   padding: 0px 36px 0px 36px;
   text-align: center;
   resize: none;
-  cursor: ${props => props.disabled ? 'not-allowed' : 'default'}
+  cursor: ${(props) => (props.disabled ? 'not-allowed' : 'default')};
 `;
 
 const IncreaseButton = styled.button`
-  background-color: ${props => props.disabled ? '#e2e2e2' : '#1a5a99'};
+  background-color: ${(props) => (props.disabled ? '#e2e2e2' : '#1a5a99')};
   border-radius: 0px 3px 3px 0px;
   border: 2px hidden;
   height: 24px;
   width: 34px;
   position: relative;
-  color: ${props => props.disabled ? 'black' : 'white'};
+  color: ${(props) => (props.disabled ? 'black' : 'white')};
   font-size: 18px;
   right: 70px;
   :hover {
-    cursor: ${props => props.disabled ? 'not-allowed' : 'pointer'};
+    cursor: ${(props) => (props.disabled ? 'not-allowed' : 'pointer')};
   }
 `;
 
 const DecreaseButton = styled.button`
-  background-color: ${props => props.disabled ? '#e2e2e2' : '#1a5a99'};
+  background-color: ${(props) => (props.disabled ? '#e2e2e2' : '#1a5a99')};
   border-radius: 3px 0px 0px 3px;
   border: 2px hidden;
   height: 24px;
   width: 34px;
   position: relative;
-  color: ${props => props.disabled ? 'black' : 'white'};
+  color: ${(props) => (props.disabled ? 'black' : 'white')};
   font-size: 18px;
   left: -120px;
   :hover {
-    cursor: ${props => props.disabled ? 'not-allowed' : 'pointer'};
+    cursor: ${(props) => (props.disabled ? 'not-allowed' : 'pointer')};
   }
 `;
 
@@ -92,21 +92,22 @@ const MenuOptions = styled.button`
 
 const Label = styled.p`
   font-size: 12px;
-  display: ${props => props.labelVisible};
+  display: ${(props) => props.labelVisible};
   margin-right: 5px;
-  margin-bottom: ${props => props.align == 'flex' ? 'none' : '0px'};
-`
-
+  margin-bottom: ${(props) => (props.align == 'flex' ? 'none' : '0px')};
+`;
 
 export default function Increment(props) {
   var values;
   var sizes;
   var menuComponents = [];
-  const [currentValue, setCurrentValue] = useState(props.value ? props.value : "");
+  const [currentValue, setCurrentValue] = useState(
+    props.value ? props.value : '',
+  );
   var align = 'flex';
   //Button icons
-  var decreaseIcon = "-";
-  var increaseIcon = "+";
+  var decreaseIcon = '-';
+  var increaseIcon = '+';
   if (props.values) {
     decreaseIcon = <FontAwesomeIcon icon={faAngleLeft} />;
     increaseIcon = <FontAwesomeIcon icon={faAngleRight} />;
@@ -132,7 +133,7 @@ export default function Increment(props) {
           }}
         >
           {i}
-        </MenuOptions>
+        </MenuOptions>,
       );
     }
   }
@@ -149,7 +150,7 @@ export default function Increment(props) {
           }}
         >
           {sizes[i]}
-        </MenuOptions>
+        </MenuOptions>,
       );
     }
   }
@@ -166,7 +167,7 @@ export default function Increment(props) {
           }}
         >
           {values[i]}
-        </MenuOptions>
+        </MenuOptions>,
       );
     }
   }
@@ -182,7 +183,7 @@ export default function Increment(props) {
       var index = values.indexOf(currentValue);
       // setCurrentIndex();
       if (index !== -1 && index !== 0 && index < values.length) {
-        valueChange(values[index-1]);
+        valueChange(values[index - 1]);
         // setCurrentValue(values[index - 1]);
         // props.onValueChange(values[index - 1]);
       } else if (index === -1) {
@@ -241,14 +242,16 @@ export default function Increment(props) {
   }
 
   function displayMenu() {
-    document.getElementById("menu").style.display = "block";
+    document.getElementById('menu').style.display = 'block';
   }
 
   function hideMenu() {
-    document.getElementById("menu").style.display = "none";
+    document.getElementById('menu').style.display = 'none';
   }
 
-  const [labelVisible, setLabelVisible] = useState(props.label ? 'static' : 'none');
+  const [labelVisible, setLabelVisible] = useState(
+    props.label ? 'static' : 'none',
+  );
   var label = '';
   if (props.label) {
     label = props.label;
@@ -256,7 +259,7 @@ export default function Increment(props) {
       align = 'static';
     }
   }
-  var alert = false; 
+  var alert = false;
   if (props.alert) {
     alert = true;
   }
@@ -268,7 +271,9 @@ export default function Increment(props) {
   return (
     <>
       <Container align={align}>
-        <Label labelVisible={labelVisible} align={align}>{label}</Label>
+        <Label labelVisible={labelVisible} align={align}>
+          {label}
+        </Label>
         <Textfield
           alert={alert}
           disabled={disabled}
@@ -278,7 +283,6 @@ export default function Increment(props) {
           }}
           onChange={(data) => {
             changeValue(data);
-            
           }}
         ></Textfield>
 

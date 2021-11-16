@@ -3,7 +3,11 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React, { useState, useEffect } from 'react';
 import DropdownMenu from '../../../_reactComponents/PanelHeaderComponents/DropdownMenu';
 import DateTime from '../../../_reactComponents/PanelHeaderComponents/DateTime';
-import { DateToUTCDateString,DateToDateString } from '../../../_utils/dateUtilityFunction';
+import {
+  DateToUTCDateString,
+  DateToDateString,
+} from '../../../_utils/dateUtilityFunction';
+import Increment from '../../../_reactComponents/PanelHeaderComponents/NewIncrementMenu';
 
 import {
   atom,
@@ -228,7 +232,7 @@ export default function SelectedDoenetML() {
           }}
         />
       </ActionButtonGroup>
-        <Textfield
+      <Textfield
         label="DoenetML Label"
         width="menu"
         vertical
@@ -262,7 +266,7 @@ export default function SelectedDoenetML() {
           }
         }}
       />
-      
+
       {/* <label>
         DoenetML Label
         <input
@@ -529,11 +533,7 @@ export function AssignmentSettings({ role, doenetId }) {
             />
             {aInfo.assignedDate !== null ? (
               <DateTime
-                value={
-                  aInfo.assignedDate
-                    ? new Date(aInfo.assignedDate)
-                    : null
-                }
+                value={aInfo.assignedDate ? new Date(aInfo.assignedDate) : null}
                 onBlur={({ valid, value }) => {
                   if (valid) {
                     try {
@@ -691,7 +691,7 @@ export function AssignmentSettings({ role, doenetId }) {
               let value = null;
               if (e.currentTarget.checked) {
                 valueDescription = '60 Minutes';
-                value = '60';
+                value = 60;
               }
 
               updateAssignment({
@@ -702,51 +702,39 @@ export function AssignmentSettings({ role, doenetId }) {
                 valueDescription,
               });
             }}
-            checked={aInfo.timeLimit > 0}
+            checked={aInfo.timeLimit !== null}
           ></Switch>
         </label>
       </div>
-      {aInfo.timeLimit > 0 ? (
-        <div>
-          <label>
-            Time Limit in Minutes
-            <input
-              type="number"
-              value={timeLimit}
-              onBlur={() => {
-                if (aInfo.timeLimit !== timeLimit) {
-                  let valueDescription = `${timeLimit} Minutes`;
-                  updateAssignment({
-                    doenetId,
-                    keyToUpdate: 'timeLimit',
-                    value: timeLimit,
-                    description: 'Time Limit',
-                    valueDescription,
-                  });
+      {aInfo.timeLimit !== null ? (
+        <div style={{ width: 'fit-content' }}>
+          Time Limit in Minutes
+          {/* <Increment restricted values={[1, 3, 6, 9, 10]} /> */}
+          <Increment
+            value={timeLimit}
+            min={0}
+            onBlur={(newValue) => {
+              if (aInfo.timeLimit !== timeLimit) {
+                let timelimitlocal = null;
+                if (timeLimit < 0 || timeLimit === '' || isNaN(timeLimit)) {
+                  setTimeLimit(0);
+                  timelimitlocal = 0;
+                } else {
+                  timelimitlocal = parseInt(timeLimit);
+                  setTimeLimit(parseInt(timeLimit));
                 }
-              }}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' && aInfo.timeLimit !== timeLimit) {
-                  let valueDescription = `${timeLimit} Minutes`;
-                  updateAssignment({
-                    doenetId,
-                    keyToUpdate: 'timeLimit',
-                    value: timeLimit,
-                    description: 'Time Limit',
-                    valueDescription,
-                  });
-                }
-              }}
-              onChange={(e) => setTimeLimit(e.currentTarget.value)}
-            />
-            {/* <Increment
-  key={`numAtt${aInfo?.doenetId}`}
-    value={aInfo ? aInfo?.timeLimit : ''} 
-    range={[0, 20]} 
-    //Would be great if we could set the minimum range={[0,]} and max range={[,10]}
-  //  onChange={handleChange}
-    />  */}
-          </label>
+                let valueDescription = `${timelimitlocal} Minutes`;
+                updateAssignment({
+                  doenetId,
+                  keyToUpdate: 'timeLimit',
+                  value: timelimitlocal,
+                  description: 'Time Limit',
+                  valueDescription,
+                });
+              }
+            }}
+            onChange={(newValue) => setTimeLimit(newValue)}
+          />
         </div>
       ) : null}
 
@@ -762,7 +750,7 @@ export function AssignmentSettings({ role, doenetId }) {
               let value = null;
               if (e.currentTarget.checked) {
                 valueDescription = '1';
-                value = '1';
+                value = 1;
               }
 
               updateAssignment({
@@ -773,52 +761,45 @@ export function AssignmentSettings({ role, doenetId }) {
                 valueDescription,
               });
             }}
-            checked={aInfo.numberOfAttemptsAllowed > 0}
+            checked={aInfo.numberOfAttemptsAllowed !== null}
           ></Switch>
         </label>
       </div>
-      {aInfo.numberOfAttemptsAllowed > 0 ? (
+      {aInfo.numberOfAttemptsAllowed !== null ? (
         <div>
           <label>
             Number of Attempts Allowed
-            <input
-              type="number"
-              name="numberOfAttemptsAllowed"
+            <Increment
               value={numberOfAttemptsAllowed}
+              min={0}
               onBlur={() => {
                 if (aInfo.numberOfAttemptsAllowed !== numberOfAttemptsAllowed) {
+                  let numberOfAttemptsAllowedLocal = null;
+                  if (
+                    numberOfAttemptsAllowed < 0 ||
+                    numberOfAttemptsAllowed === '' ||
+                    isNaN(numberOfAttemptsAllowed)
+                  ) {
+                    setNumberOfAttemptsAllowed(0);
+                    numberOfAttemptsAllowedLocal = 0;
+                  } else {
+                    numberOfAttemptsAllowedLocal = parseInt(
+                      numberOfAttemptsAllowed,
+                    );
+                    setNumberOfAttemptsAllowed(
+                      parseInt(numberOfAttemptsAllowed),
+                    );
+                  }
                   updateAssignment({
                     doenetId,
                     keyToUpdate: 'numberOfAttemptsAllowed',
-                    value: numberOfAttemptsAllowed,
+                    value: numberOfAttemptsAllowedLocal,
                     description: 'Attempts Allowed',
                   });
                 }
               }}
-              onKeyDown={(e) => {
-                if (
-                  e.key === 'Enter' &&
-                  aInfo.numberOfAttemptsAllowed !== numberOfAttemptsAllowed
-                ) {
-                  updateAssignment({
-                    doenetId,
-                    keyToUpdate: 'numberOfAttemptsAllowed',
-                    value: numberOfAttemptsAllowed,
-                    description: 'Attempts Allowed',
-                  });
-                }
-              }}
-              onChange={(e) =>
-                setNumberOfAttemptsAllowed(e.currentTarget.value)
-              }
+              onChange={(newValue) => setNumberOfAttemptsAllowed(newValue)}
             />
-            {/* <Increment
-  key={`numAtt${aInfo?.doenetId}`}
-    value={aInfo ? aInfo?.numberOfAttemptsAllowed : ''} 
-    range={[0, 20]} 
-    //Would be great if we could set the minimum range={[0,]} and max range={[,10]}
-  //  onChange={handleChange}
-    /> */}
           </label>
         </div>
       ) : null}
@@ -853,35 +834,32 @@ export function AssignmentSettings({ role, doenetId }) {
       <div>
         <label>
           Total Points Or Percent
-          <input
-            required
-            type="number"
-            name="totalPointsOrPercent"
+          <Increment
             value={totalPointsOrPercent}
+            min={0}
             onBlur={() => {
               if (aInfo.totalPointsOrPercent !== totalPointsOrPercent) {
+                let totalPointsOrPercentLocal = null;
+                if (
+                  totalPointsOrPercent < 0 ||
+                  totalPointsOrPercent === '' ||
+                  isNaN(totalPointsOrPercent)
+                ) {
+                  setTotalPointsOrPercent(0);
+                  totalPointsOrPercentLocal = 0;
+                } else {
+                  totalPointsOrPercentLocal = parseInt(totalPointsOrPercent);
+                  setTotalPointsOrPercent(parseInt(totalPointsOrPercent));
+                }
                 updateAssignment({
                   doenetId,
                   keyToUpdate: 'totalPointsOrPercent',
-                  value: totalPointsOrPercent,
+                  value: totalPointsOrPercentLocal,
                   description: 'Total Points Or Percent',
                 });
               }
             }}
-            onKeyDown={(e) => {
-              if (
-                e.key === 'Enter' &&
-                aInfo.totalPointsOrPercent !== totalPointsOrPercent
-              ) {
-                updateAssignment({
-                  doenetId,
-                  keyToUpdate: 'totalPointsOrPercent',
-                  value: totalPointsOrPercent,
-                  description: 'Total Points Or Percent',
-                });
-              }
-            }}
-            onChange={(e) => setTotalPointsOrPercent(e.currentTarget.value)}
+            onChange={(newValue) => setTotalPointsOrPercent(newValue)}
           />
         </label>
       </div>
@@ -1119,9 +1097,7 @@ export function AssignmentSettings({ role, doenetId }) {
             {aInfo.pinnedUntilDate !== null ? (
               <DateTime
                 value={
-                  aInfo.pinnedAfterDate
-                    ? new Date(aInfo.pinnedAfterDate )
-                    : null
+                  aInfo.pinnedAfterDate ? new Date(aInfo.pinnedAfterDate) : null
                 }
                 onBlur={({ valid, value }) => {
                   if (valid) {
@@ -1193,9 +1169,7 @@ export function AssignmentSettings({ role, doenetId }) {
             {aInfo.pinnedUntilDate !== null ? (
               <DateTime
                 value={
-                  aInfo.pinnedUntilDate
-                    ? new Date(aInfo.pinnedUntilDate)
-                    : null
+                  aInfo.pinnedUntilDate ? new Date(aInfo.pinnedUntilDate) : null
                 }
                 onBlur={({ valid, value }) => {
                   if (valid) {
