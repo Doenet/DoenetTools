@@ -11,6 +11,7 @@ export default class EquilibriumPoint extends Point {
       createComponentOfType: "boolean",
       createStateVariable: "stable",
       defaultValue: true,
+      public: true,
     };
 
     attributes.switchable = {
