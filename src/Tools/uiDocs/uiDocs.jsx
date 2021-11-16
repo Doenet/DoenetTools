@@ -494,11 +494,18 @@ export default function attempt() {
           description: 'Sets menu with default font values',
         },
         {
-          name: 'Range',
-          propPreview: '<Increment range={[0, 12]}/>',
-          propCode: { range: [0, 12] },
+          name: 'Min',
+          propPreview: '<Increment min={0}/>',
+          propCode: { min: 0 },
           description:
-            'Sets menu with range of numbers given - inclusive. Also restricts values to those withiin the given range',
+            'Restricts the menu to have values greater or equal to min',
+        },
+        {
+          name: 'Max',
+          propPreview: '<Increment max={5}/>',
+          propCode: { min: 5 },
+          description:
+            'Restricts the menu to have values smaller or equal to max',
         },
         {
           name: 'Value',
@@ -511,6 +518,26 @@ export default function attempt() {
           propPreview: '<Increment values={["A", "B", "C", "D", "F"]} />',
           propCode: { values: ['A', 'B', 'C', 'D', 'F'] },
           description: 'Sets menu with given values',
+        },
+        {
+          name: 'Restricted',
+          propPreview: '<Increment restricted values = {[1, 5, 9, 14]}/>',
+          propCode: {
+            values: [1, 5, 9, 14],
+            restricted: true,
+          },
+          description:
+            'Restricts the values to the ones in the menu. If all the values numeric and value entered not in the given values, the value is set to the closest one.',
+        },
+        {
+          name: 'Max Height',
+          propPreview:
+            '<Increment values = {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]} maxHeight = "80px" />',
+          propCode: {
+            values: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14],
+            maxHeight: '80px',
+          },
+          description: 'Sets the maxHeight for the dropdown menu.',
         },
         {
           name: 'Label',
@@ -537,9 +564,15 @@ export default function attempt() {
           description: 'Function called when data changes',
         },
         {
+          name: 'onBlur',
+          propPreview: '<Increment onBlur={(data) => console.log(data)} />',
+          propCode: { onBlur: (data) => console.log(data) },
+          description: 'Function called when component blurred',
+        },
+        {
           name: 'Disabled',
           propPreview: '<Increment disabled />',
-          propCode: { disabled },
+          propCode: { disabled: true },
           description: 'Makes button not able to be used.',
         },
       ],
