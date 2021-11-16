@@ -50,7 +50,11 @@ export default function Textfield(props) {
     textfield.cursor = 'not-allowed';
     disable = "disabled";
   }
-  
+  var autofocus = "";
+  if (props.autofocus) {
+    autofocus = "autoFocus";
+  }
+
 if (props.width) {
   if (props.width === "menu") {
     textfield.width = '200px';
@@ -76,7 +80,7 @@ function handleKeyDown(e) {
         <>
           <div style={container}>
                 <p style={label}>{label.value}</p>
-                <input type="text" value={textfield.value} style={textfield} onChange={(e) => { handleChange(e) }} onBlur={(e) => { handleBlur(e) }} onKeyDown={(e) => { handleKeyDown(e) }} disabled={disable}></input>
+                <input type="text" autoFocus={autofocus} value={textfield.value} style={textfield} onChange={(e) => { handleChange(e) }} onBlur={(e) => { handleBlur(e) }} onKeyDown={(e) => { handleKeyDown(e) }} disabled={disable}></input>
           </div>
         </>
     )

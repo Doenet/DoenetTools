@@ -255,7 +255,8 @@ export default function SignIn(props) {
         <p>
           <Textfield
             label="Code (9 digit code):"
-            type="text"
+            // type="text"
+            autofocus
             ref={codeRef}
             value={nineCode}
             data-cy="signinCodeInput"
@@ -325,7 +326,8 @@ export default function SignIn(props) {
           <p style={{ marginLeft: '2px' }}>
             <Textfield
               label="Email Address:"
-              type="text"
+              // type="text"
+              autofocus
               ref={emailRef}
               value={email}
               alert={sendEmailAlert}
