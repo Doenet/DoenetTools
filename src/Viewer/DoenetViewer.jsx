@@ -225,7 +225,6 @@ class DoenetViewerChild extends Component {
         itemVariantInfo: this.itemVariantInfo.map(x => JSON.stringify(x, serializedComponentsReplacer)),
       }).then(({ data }) => {
 
-        console.log(">>>>initAssignmentAttempt data",data)
         if (!data.success) {
           if (this.props.setIsInErrorState) {
             this.props.setIsInErrorState(true)
