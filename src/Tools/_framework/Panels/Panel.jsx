@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import styled from 'styled-components';
 import { animated, useSpring } from '@react-spring/web';
-import { useGesture } from 'react-use-gesture';
+import { useGesture } from '@use-gesture/react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faGripLinesVertical, faGripLines } from '@fortawesome/free-solid-svg-icons';
 import { useRecoilState, atomFamily } from 'recoil';
