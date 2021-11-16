@@ -21,11 +21,11 @@ describe('Endpoint Tag Tests', function () {
         doenetML: `
     <text>a</text>
     <graph name="g" newNamespace>
-      <endpoint name="A" open>(4,0)</endpoint>
+      <endpoint name="A" open switchAble>(4,0)</endpoint>
       <endpoint name="B">(7,0)</endpoint>
       <lineSegment endpoints="$A $B" />
       <endpoint name="C" open="$(../b1)" styleNumber="2">(-9,0)</endpoint>
-      <endpoint name="D" open="$(../b2)" styleNumber="2">(-3,0)</endpoint>
+      <endpoint name="D" open="$(../b2)" styleNumber="2" switchable>(-3,0)</endpoint>
       <lineSegment endpoints="$C $D" styleNumber="2" />
     </graph>
   
@@ -60,6 +60,7 @@ describe('Endpoint Tag Tests', function () {
       expect(components["/g2/D"].stateValues.xs.map(x => x.tree)).eqls([-3, 0]);
     })
 
+    cy.log('switch C via boolean input')
     cy.get('#\\/b1_input').click();
 
     cy.window().then((win) => {
@@ -76,6 +77,7 @@ describe('Endpoint Tag Tests', function () {
       expect(components["/g2/D"].stateValues.open).eq(false);
     })
 
+    cy.log('switch D via boolean input')
     cy.get('#\\/b2_input').click();
 
     cy.window().then((win) => {
@@ -93,21 +95,94 @@ describe('Endpoint Tag Tests', function () {
     })
 
 
-    cy.get('#\\/b1_input').click();
-
+    cy.log('switch A via first action')
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
+      components["/g/A"].actions.switchPoint();
+
+      expect(components["/g/A"].stateValues.open).eq(false);
+      expect(components["/g/B"].stateValues.open).eq(false);
+      expect(components["/g/C"].stateValues.open).eq(true);
+      expect(components["/g/D"].stateValues.open).eq(true);
+
+      expect(components["/g2/A"].stateValues.open).eq(false);
+      expect(components["/g2/B"].stateValues.open).eq(false);
+      expect(components["/g2/C"].stateValues.open).eq(true);
+      expect(components["/g2/D"].stateValues.open).eq(true);
+    })
+
+
+
+    cy.log('switch A via second action')
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      components["/g2/A"].actions.switchPoint();
 
       expect(components["/g/A"].stateValues.open).eq(true);
       expect(components["/g/B"].stateValues.open).eq(false);
-      expect(components["/g/C"].stateValues.open).eq(false);
+      expect(components["/g/C"].stateValues.open).eq(true);
       expect(components["/g/D"].stateValues.open).eq(true);
 
       expect(components["/g2/A"].stateValues.open).eq(true);
       expect(components["/g2/B"].stateValues.open).eq(false);
-      expect(components["/g2/C"].stateValues.open).eq(false);
+      expect(components["/g2/C"].stateValues.open).eq(true);
       expect(components["/g2/D"].stateValues.open).eq(true);
     })
+
+    
+    cy.log('cannot switch B via action')
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      components["/g/B"].actions.switchPoint();
+
+      expect(components["/g/A"].stateValues.open).eq(true);
+      expect(components["/g/B"].stateValues.open).eq(false);
+      expect(components["/g/C"].stateValues.open).eq(true);
+      expect(components["/g/D"].stateValues.open).eq(true);
+
+      expect(components["/g2/A"].stateValues.open).eq(true);
+      expect(components["/g2/B"].stateValues.open).eq(false);
+      expect(components["/g2/C"].stateValues.open).eq(true);
+      expect(components["/g2/D"].stateValues.open).eq(true);
+    })
+
+
+    
+    cy.log('cannot switch C via second action')
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      components["/g2/C"].actions.switchPoint();
+
+      expect(components["/g/A"].stateValues.open).eq(true);
+      expect(components["/g/B"].stateValues.open).eq(false);
+      expect(components["/g/C"].stateValues.open).eq(true);
+      expect(components["/g/D"].stateValues.open).eq(true);
+
+      expect(components["/g2/A"].stateValues.open).eq(true);
+      expect(components["/g2/B"].stateValues.open).eq(false);
+      expect(components["/g2/C"].stateValues.open).eq(true);
+      expect(components["/g2/D"].stateValues.open).eq(true);
+    })
+
+   
+    cy.log('switch D via second action')
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      components["/g2/D"].actions.switchPoint();
+
+      expect(components["/g/A"].stateValues.open).eq(true);
+      expect(components["/g/B"].stateValues.open).eq(false);
+      expect(components["/g/C"].stateValues.open).eq(true);
+      expect(components["/g/D"].stateValues.open).eq(false);
+
+      expect(components["/g2/A"].stateValues.open).eq(true);
+      expect(components["/g2/B"].stateValues.open).eq(false);
+      expect(components["/g2/C"].stateValues.open).eq(true);
+      expect(components["/g2/D"].stateValues.open).eq(false);
+    })
+
+
+
 
   });
 

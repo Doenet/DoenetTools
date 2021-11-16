@@ -68,6 +68,15 @@ export default class Point extends GraphicalComponent {
       toLowerCase: true,
       validValues: ["upperright", "upperleft", "lowerright", "lowerleft"]
     }
+
+    attributes.showCoordsWhenDragging = {
+      createComponentOfType: "boolean",
+      createStateVariable: "showCoordsWhenDragging",
+      defaultValue: true,
+      public: true,
+      forRenderer: true
+    }
+
     return attributes;
   }
 

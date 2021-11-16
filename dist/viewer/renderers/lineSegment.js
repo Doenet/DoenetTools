@@ -36,7 +36,8 @@ export default class LineSegment extends DoenetRenderer {
       strokeColor: "none",
       highlightStrokeColor: "none",
       highlightFillColor: "lightgray",
-      layer: 10 * this.doenetSvData.layer + 8
+      layer: 10 * this.doenetSvData.layer + 8,
+      showInfoBox: this.doenetSvData.showCoordsWhenDragging
     });
     if (!this.doenetSvData.draggable || this.doenetSvData.fixed) {
       jsxPointAttributes.visible = false;

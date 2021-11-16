@@ -1,6 +1,7 @@
 import BlockComponent from './BlockComponent.js';
 import { getVariantsForDescendants } from '../../utils/variants.js';
 import { numberToLetters } from '../../utils/sequence.js';
+import { returnStyleDefinitionStateVariables } from '../../utils/style.js';
 
 export default class SectioningComponent extends BlockComponent {
   static componentType = "_sectioningComponent";
@@ -46,13 +47,6 @@ export default class SectioningComponent extends BlockComponent {
       mergeArrays: true,
       public: true,
     }
-    attributes.styleDefinitions = {
-      createComponentOfType: "styleDefinitions",
-      createStateVariable: "styleDefinitions",
-      propagateToDescendants: true,
-      mergeArrays: true,
-      public: true,
-    }
     return attributes;
   }
 
@@ -64,6 +58,12 @@ export default class SectioningComponent extends BlockComponent {
     }, {
       group: "titles",
       componentTypes: ["title"]
+    }, {
+      group: "styleDefinitions",
+      componentTypes: ["styleDefinitions"]
+    }, {
+      group: "setups",
+      componentTypes: ["setup"]
     }, {
       group: "anything",
       componentTypes: ["_base"]
@@ -77,6 +77,10 @@ export default class SectioningComponent extends BlockComponent {
     let sectioningClass = this;
 
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
+
+    let styleDefinitionStateVariables = returnStyleDefinitionStateVariables();
+
+    Object.assign(stateVariableDefinitions, styleDefinitionStateVariables);
 
     stateVariableDefinitions.enumeration = {
       forRenderer: true,

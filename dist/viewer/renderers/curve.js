@@ -25,8 +25,8 @@ export default class FunctionCurve extends DoenetRenderer {
       withLabel: this.doenetSvData.showLabel && this.doenetSvData.label !== "",
       fixed: true,
       layer: 10 * this.doenetSvData.layer + 5,
-      strokeColor: this.doenetSvData.selectedStyle.markerColor,
-      highlightStrokeColor: this.doenetSvData.selectedStyle.markerColor,
+      strokeColor: this.doenetSvData.selectedStyle.lineColor,
+      highlightStrokeColor: this.doenetSvData.selectedStyle.lineColor,
       strokeWidth: this.doenetSvData.selectedStyle.lineWidth,
       dash: styleToDash(this.doenetSvData.selectedStyle.lineStyle)
     };
