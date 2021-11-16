@@ -7,7 +7,7 @@ import {
   DateToUTCDateString,
   DateToDateString,
 } from '../../../_utils/dateUtilityFunction';
-import Increment from '../../../_reactComponents/PanelHeaderComponents/NewIncrementMenu';
+import Increment from '../../../_reactComponents/PanelHeaderComponents/IncrementMenu';
 
 import {
   atom,
