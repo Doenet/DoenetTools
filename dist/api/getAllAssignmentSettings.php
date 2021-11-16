@@ -44,6 +44,7 @@ $assignment = array();
   a.showFeedback AS showFeedback,
   a.showHints AS showHints,
   a.showCorrectness AS showCorrectness,
+  a.showCreditAchievedMenu AS showCreditAchievedMenu,
   a.proctorMakesAvailable AS proctorMakesAvailable,
   a.doenetId AS doenetId
   FROM assignment AS a
@@ -70,6 +71,7 @@ $assignment = array();
           "showFeedback" => $row['showFeedback'] == '1' ? true : false,
           "showHints" => $row['showHints'] == '1' ? true : false,
           "showCorrectness" => $row['showCorrectness'] == '1' ? true : false,
+          "showCreditAchievedMenu" => $row['showCreditAchievedMenu'] == '1' ? true : false,
           "proctorMakesAvailable" => $row['proctorMakesAvailable'] == '1' ? true : false,
           "doenetId" => $row['doenetId']
     );

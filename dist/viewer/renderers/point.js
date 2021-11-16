@@ -78,6 +78,9 @@ export default class Point extends DoenetRenderer {
     return this.pointJXG;
   }
   deleteGraphicalObject() {
+    this.pointJXG.off("drag");
+    this.pointJXG.off("down");
+    this.pointJXG.off("up");
     this.props.board.removeObject(this.pointJXG);
     delete this.pointJXG;
   }
