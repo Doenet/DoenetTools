@@ -12,6 +12,7 @@
     "build:clean": "snowpack build --clean --reload --config snowpack.deploy.config.js",
     "build:docker": "docker-compose build",
     "build:core": "node package.core.js",
+    "buildx:snowpack": "docker buildx build --platform linux/arm64,linux/amd64,linux/arm/v7 -f doenet_docker/snowpack/Dockerfile -t lyanthropos/doenet_test:snowpack-dev --push .",
     "test": "cypress open",
     "test:all": "cypress run -b 'chrome' --config video=false --headless",
     "publish_db": "docker-compose up -d mysql && docker exec --privileged -w /var/lib/mysql mysql mysqldump --databases --add-drop-database --add-drop-table -u root -phelloworld doenet_local > ./volumes/db_init/db_template.sql",
