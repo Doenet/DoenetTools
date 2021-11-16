@@ -215,7 +215,6 @@ class DoenetViewerChild extends Component {
         this.props.toast("You're not connected to the internet. ", toastType.ERROR)
       }
 
-
       axios.post('/api/initAssignmentAttempt.php', {
         doenetId: this.props.doenetId,
         weights: this.core.scoredItemWeights,
@@ -226,7 +225,6 @@ class DoenetViewerChild extends Component {
         itemVariantInfo: this.itemVariantInfo.map(x => JSON.stringify(x, serializedComponentsReplacer)),
       }).then(({ data }) => {
 
-        // console.log(">>>>data",data)
         if (!data.success) {
           if (this.props.setIsInErrorState) {
             this.props.setIsInErrorState(true)

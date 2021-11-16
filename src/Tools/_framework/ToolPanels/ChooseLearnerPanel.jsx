@@ -18,13 +18,17 @@ export default function ChooseLearnerPanel(props) {
   let [exams,setExams] = useState([]);
   let [choosenLearner,setChoosenLearner] = useState(null);
   let [filter,setFilter] = useState('')
+  let [resumeAttemptFlag,setResumeAttemptFlag] = useState(false);
   const addToast = useToast();
 
-  const newAttempt = useRecoilCallback(({set,snapshot})=> async (doenetId,code,userId)=>{
+  const newAttempt = useRecoilCallback(({set,snapshot})=> async (doenetId,code,userId,resumeAttemptFlag)=>{
 
+    if (!resumeAttemptFlag){
       const { data } = await axios.get('/api/incrementAttemptNumber.php', {
         params: { doenetId, code, userId },
       })
+    }
+      
       // console.log(">>>>data 2",data)
       // console.log(">>>>",doenetId,code,userId)
    
@@ -100,7 +104,6 @@ export default function ChooseLearnerPanel(props) {
   if (stage === 'check code'){
     const checkCode = async (code)=>{
       let { data } = await axios.get('/api/checkPasscode.php',{params:{code,doenetId,driveId}})
-      // console.log(">>>>data",data)
       if (data.success){
         if (driveId === ''){
           setStage('choose learner');
@@ -173,8 +176,29 @@ export default function ChooseLearnerPanel(props) {
       let timeZoneCorrectLastExamDate = null;
       if (learner.exam_to_date[doenetId]){
 
+
         let lastExamDT = UTCDateStringToDate(learner.exam_to_date[doenetId]);
-        if (lastExamDT){
+        let exam_to_timeLimit = learner.exam_to_timeLimit[doenetId];
+        let exam_to_multiplier = learner.exam_to_multiplier[doenetId];
+        let users_timeLimit_minutes = Number(exam_to_timeLimit) * Number(exam_to_multiplier)
+        let minutes_remaining;
+        if (users_timeLimit_minutes){
+          let users_exam_end_DT = new Date(lastExamDT.getTime() + users_timeLimit_minutes * 60 * 1000)
+          let now = new Date();
+          minutes_remaining = (users_exam_end_DT.getTime() - now.getTime()) / (1000 * 60)
+          }
+
+        if (minutes_remaining && minutes_remaining > 1){
+          minutes_remaining = Math.round(minutes_remaining);
+          timeZoneCorrectLastExamDate = <ButtonGroup> 
+          <Button value='Resume' onClick={()=>{
+            setChoosenLearner(learner);
+            setStage('student final check');
+            setResumeAttemptFlag(true)
+          }}/>
+          {`${minutes_remaining} mins remain`}
+          </ButtonGroup>
+        }else if (lastExamDT){
           let time = formatAMPM(lastExamDT)
           timeZoneCorrectLastExamDate = `${lastExamDT.getMonth() + 1}/${lastExamDT.getDate()} ${time}`;
         }
@@ -185,10 +209,12 @@ export default function ChooseLearnerPanel(props) {
         <td style={{textAlign:"center"}}>{learner.lastName}</td>
         <td style={{textAlign:"center"}}>{learner.studentId}</td>
         <td style={{textAlign:"center"}}>{timeZoneCorrectLastExamDate}</td>
-        <td style={{textAlign:"center"}}><button onClick={()=>{
+        <td style={{textAlign:"center"}}><Button value='Choose'
+        onClick={()=>{
           setChoosenLearner(learner);
           setStage('student final check');
-        }}>Choose</button></td>
+          setResumeAttemptFlag(false);
+        }} /></td>
         </tr>)
     }
 
@@ -199,8 +225,8 @@ export default function ChooseLearnerPanel(props) {
           <th style={{width:"200px"}}>First Name</th>
           <th style={{width:"200px"}}>Last Name</th>
           <th style={{width:"200px"}}>Student ID</th>
-          <th style={{width:"200px"}}>Last Exam</th>
-          <th style={{width:"100px"}}>Choose</th>
+          <th style={{width:"240px"}}>Last Exam</th>
+          <th style={{width:"60px"}}>Choose</th>
         </thead>
         <tbody>
           {learnerRows}
@@ -210,6 +236,10 @@ export default function ChooseLearnerPanel(props) {
   }
 
   if (stage === 'student final check'){
+    let yesButtonText = "Yes It's me. Start Exam.";
+    if (resumeAttemptFlag){
+      yesButtonText = "Yes It's me. Resume Exam.";
+    }
     return <><div
     style={{
       fontSize:"1.5em",
@@ -234,11 +264,12 @@ export default function ChooseLearnerPanel(props) {
        setStage('request password');
        setCode('')
        setChoosenLearner(null);
-       setDoenetId(null,driveId)
+       setDoenetId(null,driveId);
+       setResumeAttemptFlag(false);
      }}/>
-     <Button value="Yes It's me. Start Exam." onClick={()=>{
-
-       newAttempt(doenetId,code,choosenLearner.userId);
+     <Button value={yesButtonText} onClick={()=>{
+     
+        newAttempt(doenetId,code,choosenLearner.userId,resumeAttemptFlag);
         
      }}/>
    </ButtonGroup>
