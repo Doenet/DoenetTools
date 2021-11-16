@@ -83,6 +83,8 @@ export default class Point extends DoenetRenderer {
     this.pointJXG.on('up', function (e) {
       if (this.dragged) {
         this.actions.finalizePointPosition();
+      } else if(this.doenetSvData.switchable) {
+        this.actions.switchPoint();
       }
     }.bind(this));
 
