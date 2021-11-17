@@ -11,6 +11,9 @@ export default class Line extends GraphicalComponent {
     ),
     finalizeLinePosition: this.finalizeLinePosition.bind(
       new Proxy(this, this.readOnlyProxyHandler)
+    ),
+    switchLine: this.switchLine.bind(
+      new Proxy(this, this.readOnlyProxyHandler)
     )
   };
 
@@ -1482,6 +1485,10 @@ export default class Line extends GraphicalComponent {
       point2coords: this.stateValues.numericalPoints[1],
       transient: false,
     });
+  }
+
+  switchLine() {
+    
   }
 
 

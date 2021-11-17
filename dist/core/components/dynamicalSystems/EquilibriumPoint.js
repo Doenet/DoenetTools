@@ -1,4 +1,4 @@
-import Point from './Point.js';
+import Point from '../Point.js';
 
 export default class EquilibriumPoint extends Point {
   static componentType = "equilibriumPoint";
