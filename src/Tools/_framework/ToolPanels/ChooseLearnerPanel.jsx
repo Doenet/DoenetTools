@@ -179,8 +179,8 @@ export default function ChooseLearnerPanel(props) {
 
         let lastExamDT = UTCDateStringToDate(learner.exam_to_date[doenetId]);
         let exam_to_timeLimit = learner.exam_to_timeLimit[doenetId];
-        let exam_to_multiplier = learner.exam_to_multiplier[doenetId];
-        let users_timeLimit_minutes = Number(exam_to_timeLimit) * Number(exam_to_multiplier)
+        let users_timeLimit_minutes = Number(exam_to_timeLimit) * Number(learner.timeLimit_multiplier)
+
         let minutes_remaining;
         if (users_timeLimit_minutes){
           let users_exam_end_DT = new Date(lastExamDT.getTime() + users_timeLimit_minutes * 60 * 1000)
