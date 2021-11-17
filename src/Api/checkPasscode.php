@@ -97,44 +97,49 @@ if ($success){
 
     foreach ($learners AS &$learner){
         $userId = $learner['userId'];
-        // $sql = "
-        // SELECT MAX(began) AS began,
-        // doenetId
-        // FROM user_assignment_attempt
-        // WHERE userId = '$userId'
-        // GROUP BY doenetId
-        // ";
+
+        $sql = "
+        SELECT timeLimitMultiplier 
+        FROM enrollment 
+        WHERE userId = '$userId'
+        ";
+        $result = $conn->query($sql);
+        $row = $result->fetch_assoc();
+        $learner['timeLimit_multiplier'] = $row['timeLimitMultiplier'];
+
         $sql = "
         SELECT uaa.doenetId,
-		MAX(uaa.attemptNumber) AS maxAttempt,
-		MAX(uaa.began) AS began,
-		timeLimit,
-		(SELECT timeLimitMultiplier FROM enrollment WHERE userId = '$userId') AS multiplier
+		MAX(uaa.began) AS began
         FROM user_assignment_attempt AS uaa
         LEFT JOIN assignment AS a
         ON a.doenetId = uaa.doenetId
         WHERE uaa.userId = '$userId'
+        AND a.proctorMakesAvailable = '1'
         GROUP BY doenetId
         ";
-        //TODO: add proctorMakesAvailable test
-    // AND a.proctorMakesAvailable = '1'
-    //
-    //     LEFT JOIN assignment AS a
-    // ON a.doenetId = dc.doenetId
-    // WHERE dc.driveId = '$driveId'
 
         $result = $conn->query($sql);
         $exam_to_date = array();
-        $exam_to_timeLimit = array();
-        $exam_to_multiplier = array();
+        $doenetIds = array();
+
         while($row = $result->fetch_assoc()){
             $exam_to_date[$row['doenetId']] = $row['began'];
-            $exam_to_timeLimit[$row['doenetId']] = $row['timeLimit'];
-            $exam_to_multiplier[$row['doenetId']] = $row['multiplier'];
+            array_push($doenetIds,$row['doenetId']);
         }
         $learner['exam_to_date'] = $exam_to_date;
+
+        $exam_to_timeLimit = array();
+        foreach ($doenetIds AS &$doenetId){
+            $sql = "
+            SELECT timeLimit
+            FROM assignment
+            WHERE doenetId = '$doenetId'
+            ";
+            $result = $conn->query($sql);
+        $row = $result->fetch_assoc();
+        $exam_to_timeLimit[$doenetId] = $row['timeLimit'];
+        }
         $learner['exam_to_timeLimit'] = $exam_to_timeLimit;
-        $learner['exam_to_multiplier'] = $exam_to_multiplier;
         
     }
 
