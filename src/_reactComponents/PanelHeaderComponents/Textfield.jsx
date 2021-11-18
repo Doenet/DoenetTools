@@ -41,10 +41,10 @@ export default function Textfield(props) {
       setText(props.value);
     }, [props]);
 
-    // useEffect(() => {
-    //   inputRef.current.selectionStart = cursorStart;
-    //   inputRef.current.selectionEnd = cursorEnd;
-    // });
+    useEffect(() => {
+      inputRef.current.selectionStart = cursorStart;
+      inputRef.current.selectionEnd = cursorEnd;
+    });
 
     if (props.alert) {
       textfield.border = '2px solid #C1292E'
@@ -74,8 +74,8 @@ if (props.width) {
 }
 function handleChange(e) {
   if (props.onChange) props.onChange(e)
-  setCursorStart(e.target.selectionStart);
-  setCursorEnd(e.target.selectionEnd);
+    setCursorStart(e.target.selectionStart);
+    setCursorEnd(e.target.selectionEnd);
 }
 
 function handleBlur(e) {

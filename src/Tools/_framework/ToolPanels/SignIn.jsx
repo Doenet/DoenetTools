@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useLayoutEffect } from 'react';
 import Cookies from 'js-cookie'; // import Textinput from "../imports/Textinput";
 import axios from 'axios';
 import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
@@ -20,13 +20,14 @@ export default function SignIn(props) {
   let [validCode, setValidCode] = useState(false);
   let [sendEmailDisabled, setSendEmailDisabled] = useState(true);
   let [signInDisabled, setSignInDisabled] = useState(true);
+  let [autofocus, setAutofocus] = useState(false);
 
   console.log(signInStage)
  
   const jwt = Cookies.get();
 
-  const emailRef = useRef(null);
-  const codeRef = useRef(null);
+  // const emailRef = useRef(null);
+  // const codeRef = useRef(null);
 
   const toast = useToast();
 
@@ -56,11 +57,16 @@ export default function SignIn(props) {
         setValidCode(false);
         setSignInAlert(true);
       }
-    if (codeRef.current !== null && !validCode) {
-      codeRef.current.focus();
-    } else if (emailRef.current !== null && !validEmail) {
-      emailRef.current.focus();
-    }
+
+    // if (codeRef.current !== null && !validCode) {
+    //   codeRef.current.focus();
+    // } else if (emailRef.current !== null && !validEmail) {
+    //   emailRef.current.focus();
+    // }
+  });
+
+  useLayoutEffect(() => {
+    setAutofocus(true);
   });
 
   //If already signed in go to course
@@ -256,8 +262,8 @@ export default function SignIn(props) {
           <Textfield
             label="Code (9 digit code):"
             // type="text"
-            autofocus
-            ref={codeRef}
+            autofocus={autofocus}
+            // ref={codeRef}
             value={nineCode}
             data-cy="signinCodeInput"
             alert={signInAlert}
@@ -327,8 +333,8 @@ export default function SignIn(props) {
             <Textfield
               label="Email Address:"
               // type="text"
-              autofocus
-              ref={emailRef}
+              autofocus={autofocus}
+              // ref={emailRef}
               value={email}
               alert={sendEmailAlert}
               data-cy="signinEmailInput"
