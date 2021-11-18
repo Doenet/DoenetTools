@@ -41,10 +41,10 @@ export default function Textfield(props) {
       setText(props.value);
     }, [props]);
 
-    useEffect(() => {
-      inputRef.current.selectionStart = cursorStart;
-      inputRef.current.selectionEnd = cursorEnd;
-    });
+    // useEffect(() => {
+    //   inputRef.current.selectionStart = cursorStart;
+    //   inputRef.current.selectionEnd = cursorEnd;
+    // });
 
     if (props.alert) {
       textfield.border = '2px solid #C1292E'
