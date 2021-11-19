@@ -1643,7 +1643,7 @@ export default class Core {
       newSerializedChild = {
         componentType:
           this.allComponentClasses[originalChild.componentType]
-            .getAdapterComponentType(n, this.publicStateVariableInfo),
+            .getAdapterComponentType(adapterIndUsed, this.publicStateVariableInfo),
         placeholderInd: originalChild.placeholderInd + "adapt"
       }
     }

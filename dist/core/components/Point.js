@@ -68,6 +68,15 @@ export default class Point extends GraphicalComponent {
       toLowerCase: true,
       validValues: ["upperright", "upperleft", "lowerright", "lowerleft"]
     }
+
+    attributes.showCoordsWhenDragging = {
+      createComponentOfType: "boolean",
+      createStateVariable: "showCoordsWhenDragging",
+      defaultValue: true,
+      public: true,
+      forRenderer: true
+    }
+
     return attributes;
   }
 
@@ -1087,11 +1096,17 @@ export default class Point extends GraphicalComponent {
     })
   }
 
+  switchPoint() {
+  }
+
   actions = {
     movePoint: this.movePoint.bind(
       new Proxy(this, this.readOnlyProxyHandler)
     ),
     finalizePointPosition: this.finalizePointPosition.bind(
+      new Proxy(this, this.readOnlyProxyHandler)
+    ),
+    switchPoint: this.switchPoint.bind(
       new Proxy(this, this.readOnlyProxyHandler)
     )
   };
