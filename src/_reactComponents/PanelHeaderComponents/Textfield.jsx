@@ -34,7 +34,7 @@ export default function Textfield(props) {
     var container = {
         display: `${align}`,
         width: 'auto',
-        alignItems: 'flex-end'
+        alignItems: 'center'
     }
 
     useEffect(() => {
@@ -58,7 +58,11 @@ export default function Textfield(props) {
     textfield.cursor = 'not-allowed';
     disable = "disabled";
   }
-  
+  var autofocus = "";
+  if (props.autofocus) {
+    autofocus = "autoFocus";
+  }
+
 if (props.width) {
   if (props.width === "menu") {
     textfield.width = '200px';
@@ -70,8 +74,8 @@ if (props.width) {
 }
 function handleChange(e) {
   if (props.onChange) props.onChange(e)
-  setCursorStart(e.target.selectionStart);
-  setCursorEnd(e.target.selectionEnd);
+    setCursorStart(e.target.selectionStart);
+    setCursorEnd(e.target.selectionEnd);
 }
 
 function handleBlur(e) {
@@ -86,7 +90,7 @@ function handleKeyDown(e) {
         <>
           <div style={container}>
                 <p style={label}>{label.value}</p>
-                <input type="text" ref={inputRef} value={textfield.value} style={textfield} onChange={(e) => { handleChange(e) }} onBlur={(e) => { handleBlur(e) }} onKeyDown={(e) => { handleKeyDown(e) }} disabled={disable}></input>
+                <input type="text" ref={inputRef} autoFocus={autofocus} value={textfield.value} style={textfield} onChange={(e) => { handleChange(e) }} onBlur={(e) => { handleBlur(e) }} onKeyDown={(e) => { handleKeyDown(e) }} disabled={disable}></input>
           </div>
         </>
     )
