@@ -20,9 +20,6 @@ RUN rm -rf /var/lib/apt/lists/* &&\
     apt-get -y autoremove && \
     apt-get clean
 
-RUN mkdir home/node/workspace/ && chown -R node:node home/node/workspace/
-RUN mkdir home/node/workspace/node_modules && chown -R node:node home/node/workspace/node_modules
-USER node
 WORKDIR /home/node/workspace
 COPY --chown=node:node package-lock.json package.json snowpack.config.js ./
 
