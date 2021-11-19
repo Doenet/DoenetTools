@@ -571,6 +571,18 @@ export default function attempt() {
           description: 'Function called when component blurred',
         },
         {
+          name: 'onKeyDown',
+          propPreview: '<Increment onKewDown={(e) => console.log(e.key)} />',
+          propCode: { onKeyDown: (e) => console.log(e.key) },
+          description: 'Function called when a key is pressed',
+        },
+        {
+          name: 'Placeholder',
+          propPreview: '<Increment placeholder = "Type a number" />',
+          propCode: { placeholder: 'Type a number' },
+          description: 'Add a placeholder for the field',
+        },
+        {
           name: 'Disabled',
           propPreview: '<Increment disabled />',
           propCode: { disabled: true },
