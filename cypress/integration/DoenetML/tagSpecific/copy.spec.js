@@ -2416,6 +2416,53 @@ describe('Copy Tag Tests', function () {
 
   });
 
+
+  it('external content inside external content cannot reach outside namespace', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <copy uri="doenet:contentId=efe76666130b9e6d61e6162f19467c9564f964cd9f5e2b63244ec279ac54a869" assignNames="greet" />
+
+    <p>Don't get this 2: <text name="hi">Leave</text></p>
+    
+    `}, "*");
+    });
+
+    // to wait for page to load
+    cy.get('#\\/_text1').should('have.text', 'a');
+
+    cy.get(cesc('#/hi')).should('have.text', 'Leave');
+
+    cy.get(cesc('#/greet/hi')).should('have.text', 'Bye');
+
+    cy.get(cesc('#/greet/greetings/hi')).should('have.text', 'Hello');
+    cy.get(cesc('#/greet/greetings/c1')).should('have.text', 'Hello');
+    cy.get(cesc('#/greet/greetings/c2')).should('have.text', 'Hello');
+    cy.get(cesc('#/greet/greetings/c3')).should('have.text', 'Hello');
+    cy.get(cesc('#/greet/greetings/c4')).should('have.text', 'Hello');
+    cy.get(cesc('#/greet/greetings/c5')).should('have.text', 'Hello');
+
+
+    cy.get(cesc('#/greet/greetings/s/hi')).should('have.text', 'Hola');
+    cy.get(cesc('#/greet/greetings/s/l1')).should('have.text', 'Hola');
+    cy.get(cesc('#/greet/greetings/s/c1')).should('have.text', 'Hello');
+    cy.get(cesc('#/greet/greetings/s/c2')).should('have.text', 'Hello');
+    cy.get(cesc('#/greet/greetings/s/c3')).should('have.text', 'Hello');
+    cy.get(cesc('#/greet/greetings/s/c4')).should('have.text', 'Hello');
+
+    cy.get(cesc('#/greet/greetings/s/s/hi')).should('have.text', 'Marhaban');
+    cy.get(cesc('#/greet/greetings/s/s/l1')).should('have.text', 'Marhaban');
+    cy.get(cesc('#/greet/greetings/s/s/m1')).should('have.text', 'Hola');
+    cy.get(cesc('#/greet/greetings/s/s/c1')).should('have.text', 'Hello');
+    cy.get(cesc('#/greet/greetings/s/s/c2')).should('have.text', 'Hello');
+    cy.get(cesc('#/greet/greetings/s/s/c3')).should('have.text', 'Hello');
+    cy.get(cesc('#/greet/greetings/s/s/c4')).should('have.text', 'Hello');
+    cy.get(cesc('#/greet/greetings/s/s/c5')).should('have.text', 'Hello');
+    cy.get(cesc('#/greet/greetings/s/s/c5')).should('have.text', 'Hello');
+
+  });
+
   it('copy of template source maintained when withheld', () => {
     cy.window().then((win) => {
       win.postMessage({
