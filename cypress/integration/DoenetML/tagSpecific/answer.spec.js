@@ -13015,4 +13015,56 @@ describe('Answer Tag Tests', function () {
 
   });
 
+  it('empty mathlists always equal', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <answer name="ans1">
+    <award>
+      <when>
+        <mathlist/> = <mathlist/>
+      </when>
+    </award>
+  </answer>
+  <answer name="ans2">
+    <award>
+      <when unorderedCompare>
+        <mathlist/> = <mathlist/>
+      </when>
+    </award>
+  </answer>
+  <answer name="ans3">
+    <award>
+      <when matchPartial>
+        <mathlist/> = <mathlist/>
+      </when>
+    </award>
+  </answer>
+  <answer name="ans4">
+    <award>
+      <when unorderedCompare matchPartial>
+        <mathlist/> = <mathlist/>
+      </when>
+    </award>
+  </answer>
+   `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.get('#\\/ans1_submit').click()
+    cy.get('#\\/ans1_correct').should('be.visible')
+
+    cy.get('#\\/ans2_submit').click()
+    cy.get('#\\/ans2_correct').should('be.visible')
+
+    cy.get('#\\/ans3_submit').click()
+    cy.get('#\\/ans3_correct').should('be.visible')
+
+    cy.get('#\\/ans4_submit').click()
+    cy.get('#\\/ans4_correct').should('be.visible')
+
+  });
+
 })
