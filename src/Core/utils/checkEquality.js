@@ -634,6 +634,7 @@ export default function checkEquality({
 
   if (nelts1 === nelts2 && nelts1 === n_matches) {
     results["fraction_equal"] = 1;
+    return results;
   }
 
   if (!partialMatches) {
