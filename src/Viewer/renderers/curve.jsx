@@ -39,7 +39,7 @@ export default class FunctionCurve extends DoenetRenderer {
       strokeColor: this.doenetSvData.selectedStyle.lineColor,
       highlightStrokeColor: this.doenetSvData.selectedStyle.lineColor,
       strokeWidth: this.doenetSvData.selectedStyle.lineWidth,
-      dash: styleToDash(this.doenetSvData.selectedStyle.lineStyle),
+      dash: styleToDash(this.doenetSvData.selectedStyle.lineStyle, this.doenetSvData.dashed),
     };
 
 
@@ -125,7 +125,12 @@ export default class FunctionCurve extends DoenetRenderer {
 
       this.props.board.on('up', this.upBoard);
       this.curveJXG.on('down', this.downOther);
-
+      this.curveJXG.on('up', function (e) {
+        if (this.doenetSvData.switchable) {
+          this.actions.switchCurve();
+        }
+      }.bind(this));
+  
       this.segmentAttributes = {
         visible: false,
         withLabel: false,
@@ -500,6 +505,19 @@ export default class FunctionCurve extends DoenetRenderer {
     this.curveJXG.visProp["visible"] = visible;
     this.curveJXG.visPropCalc["visible"] = visible;
 
+
+    if (this.curveJXG.visProp.strokecolor !== this.doenetSvData.selectedStyle.lineColor) {
+      this.curveJXG.visProp.strokecolor = this.doenetSvData.selectedStyle.lineColor;
+      this.curveJXG.visProp.highlightstrokecolor = this.doenetSvData.selectedStyle.lineColor;
+    }
+    let newDash = styleToDash(this.doenetSvData.selectedStyle.lineStyle, this.doenetSvData.dashed);
+    if (this.curveJXG.visProp.dash !== newDash) {
+      this.curveJXG.visProp.dash = newDash;
+    }
+    if (this.curveJXG.visProp.strokewidth !== this.doenetSvData.selectedStyle.lineWidth) {
+      this.curveJXG.visProp.strokewidth = this.doenetSvData.selectedStyle.lineWidth
+    }
+
     if (["parameterization", "bezier"].includes(this.doenetSvData.curveType)) {
       this.curveJXG.X = this.doenetSvData.fs[0];
       this.curveJXG.Y = this.doenetSvData.fs[1];
@@ -723,11 +741,11 @@ export default class FunctionCurve extends DoenetRenderer {
 
 }
 
-function styleToDash(style) {
-  if (style === "solid") {
-    return 0;
-  } else if (style === "dashed") {
+function styleToDash(style, dash) {
+  if (style === "dashed" || dash) {
     return 2;
+  } else if (style === "solid") {
+    return 0;
   } else if (style === "dotted") {
     return 1;
   } else {
