@@ -32,23 +32,45 @@ export default class Point extends DoenetRenderer {
     };
 
     if (this.doenetSvData.showLabel && this.doenetSvData.label !== "") {
-      let anchorx, offset;
+      let anchorx, anchory, offset;
       if (this.doenetSvData.labelPosition === "upperright") {
-        offset = [5, 10];
+        offset = [5, 5];
         anchorx = "left";
+        anchory = "bottom";
       } else if (this.doenetSvData.labelPosition === "upperleft") {
-        offset = [-5, 10];
+        offset = [-5, 5];
         anchorx = "right";
+        anchory = "bottom";
       } else if (this.doenetSvData.labelPosition === "lowerright") {
-        offset = [5, -10];
+        offset = [5, -5];
         anchorx = "left";
-      } else {
-        offset = [-5, -10];
+        anchory = "top";
+      } else if (this.doenetSvData.labelPosition === "lowerleft") {
+        offset = [-5, -5];
         anchorx = "right";
+        anchory = "top";
+      } else if (this.doenetSvData.labelPosition === "top") {
+        offset = [0, 10];
+        anchorx = "middle";
+        anchory = "bottom";
+      } else if (this.doenetSvData.labelPosition === "bottom") {
+        offset = [0, -10];
+        anchorx = "middle";
+        anchory = "top";
+      } else if (this.doenetSvData.labelPosition === "left") {
+        offset = [-10, 0];
+        anchorx = "right";
+        anchory = "middle";
+      } else {
+        // labelPosition === right
+        offset = [10, 0];
+        anchorx = "left";
+        anchory = "middle";
       }
       jsxPointAttributes.label = {
         offset,
-        anchorx
+        anchorx,
+        anchory
       }
     }
 
@@ -209,21 +231,43 @@ export default class Point extends DoenetRenderer {
       this.pointJXG.label.needsUpdate = true;
 
       if (this.doenetSvData.labelPosition !== this.previousLabelPosition) {
-        let anchorx, offset;
+        let anchorx, anchory, offset;
         if (this.doenetSvData.labelPosition === "upperright") {
-          offset = [5, 10];
+          offset = [5, 5];
           anchorx = "left";
+          anchory = "bottom";
         } else if (this.doenetSvData.labelPosition === "upperleft") {
-          offset = [-5, 10];
+          offset = [-5, 5];
           anchorx = "right";
+          anchory = "bottom";
         } else if (this.doenetSvData.labelPosition === "lowerright") {
-          offset = [5, -10];
+          offset = [5, -5];
           anchorx = "left";
-        } else {
-          offset = [-5, -10];
+          anchory = "top";
+        } else if (this.doenetSvData.labelPosition === "lowerleft") {
+          offset = [-5, -5];
           anchorx = "right";
+          anchory = "top";
+        } else if (this.doenetSvData.labelPosition === "top") {
+          offset = [0, 10];
+          anchorx = "middle";
+          anchory = "bottom";
+        } else if (this.doenetSvData.labelPosition === "bottom") {
+          offset = [0, -10];
+          anchorx = "middle";
+          anchory = "top";
+        } else if (this.doenetSvData.labelPosition === "left") {
+          offset = [-10, 0];
+          anchorx = "right";
+          anchory = "middle";
+        } else {
+          // labelPosition === right
+          offset = [10, 0];
+          anchorx = "left";
+          anchory = "middle";
         }
         this.pointJXG.label.visProp.anchorx = anchorx;
+        this.pointJXG.label.visProp.anchory = anchory;
         this.pointJXG.label.visProp.offset = offset;
         this.previousLabelPosition = this.doenetSvData.labelPosition;
         this.pointJXG.label.fullUpdate();
