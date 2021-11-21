@@ -8376,13 +8376,15 @@ export default class Core {
 
             if (compStateObj.willBeEssential) {
               compStateObj.essential = true;
-              delete compStateObj.value;
             } else {
               console.warn(`can't update state variable ${vName} of component ${cName}, as it is not an essential state variable.`);
               nFailures += 1;
               continue;
             }
           }
+
+          // remove any setter
+          delete compStateObj.value;
 
           if (compStateObj.set) {
             compStateObj.value = compStateObj.set(newComponentStateVariables[vName]);

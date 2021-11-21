@@ -56,7 +56,7 @@ export default class Line extends DoenetRenderer {
     this.lineJXG.on('up', function (e) {
       if (this.dragged) {
         this.actions.finalizeLinePosition();
-      } else if (this.doenetSvData.switchable) {
+      } else if (this.doenetSvData.switchable && !this.doenetSvData.fixed) {
         this.actions.switchLine();
       }
     }.bind(this));

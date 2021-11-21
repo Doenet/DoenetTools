@@ -14,6 +14,8 @@ export default class Point extends DoenetRenderer {
 
   createGraphicalObject() {
 
+    let fillColor = this.doenetSvData.open ? "white" : this.doenetSvData.selectedStyle.markerColor;
+
     //things to be passed to JSXGraph as attributes
     var jsxPointAttributes = {
       name: this.doenetSvData.label,
@@ -21,7 +23,7 @@ export default class Point extends DoenetRenderer {
       withLabel: this.doenetSvData.showLabel && this.doenetSvData.label !== "",
       fixed: !this.doenetSvData.draggable || this.doenetSvData.fixed,
       layer: 10 * this.doenetSvData.layer + 9,
-      fillColor: this.doenetSvData.open ? "white" : this.doenetSvData.selectedStyle.markerColor,
+      fillColor: fillColor,
       strokeColor: this.doenetSvData.selectedStyle.markerColor,
       // highlightFillColor: this.doenetSvData.selectedStyle.markerColor,
       // highlightStrokeColor: this.doenetSvData.selectedStyle.markerColor,
@@ -57,7 +59,7 @@ export default class Point extends DoenetRenderer {
       jsxPointAttributes.highlightStrokeColor = "#C3D9FF";
       jsxPointAttributes.showInfoBox = this.doenetSvData.showCoordsWhenDragging;
     } else {
-      jsxPointAttributes.highlightFillColor = this.doenetSvData.selectedStyle.markerColor;
+      jsxPointAttributes.highlightFillColor = fillColor;
       jsxPointAttributes.highlightStrokeColor = this.doenetSvData.selectedStyle.markerColor;
       jsxPointAttributes.showInfoBox = false;
     }
@@ -83,7 +85,7 @@ export default class Point extends DoenetRenderer {
     this.pointJXG.on('up', function (e) {
       if (this.dragged) {
         this.actions.finalizePointPosition();
-      } else if(this.doenetSvData.switchable) {
+      } else if(this.doenetSvData.switchable && !this.doenetSvData.fixed) {
         this.actions.switchPoint();
       }
     }.bind(this));
@@ -179,7 +181,7 @@ export default class Point extends DoenetRenderer {
       this.pointJXG.visProp.showinfobox = this.doenetSvData.showCoordsWhenDragging;
       this.pointJXG.visProp.fixed = false;
     } else {
-      this.pointJXG.visProp.highlightfillcolor = this.doenetSvData.selectedStyle.markerColor;
+      this.pointJXG.visProp.highlightfillcolor = newFillColor;
       this.pointJXG.visProp.highlightstrokecolor = this.doenetSvData.selectedStyle.markerColor;
       this.pointJXG.visProp.showinfobox = false;
       this.pointJXG.visProp.fixed = true;

@@ -45,7 +45,6 @@ export default class FunctionCurve extends DoenetRenderer {
 
     if (this.doenetSvData.showLabel && this.doenetSvData.label !== "") {
       let anchorx, offset, position;
-      console.log(`labelPosition: ${this.doenetSvData.labelPosition}`)
       if (this.doenetSvData.labelPosition === "upperright") {
         position = 'urt';
         offset = [-5, -10];
@@ -126,11 +125,13 @@ export default class FunctionCurve extends DoenetRenderer {
       this.props.board.on('up', this.upBoard);
       this.curveJXG.on('down', this.downOther);
       this.curveJXG.on('up', function (e) {
-        if (this.doenetSvData.switchable) {
+        if (!this.updateSinceDown && this.draggedControlPoint === null && this.draggedThroughPoint === null
+          && this.doenetSvData.switchable && !this.doenetSvData.fixed
+        ) {
           this.actions.switchCurve();
         }
       }.bind(this));
-  
+
       this.segmentAttributes = {
         visible: false,
         withLabel: false,
@@ -448,6 +449,8 @@ export default class FunctionCurve extends DoenetRenderer {
 
     this.hitObject = true;
 
+    this.updateSinceDown = false;
+
     this.makeThroughPointsAlwaysVisible();
     this.props.board.updateRenderer();
   }
@@ -497,6 +500,8 @@ export default class FunctionCurve extends DoenetRenderer {
     if (this.props.board.updateQuality === this.props.board.BOARD_QUALITY_LOW) {
       this.props.board.itemsRenderedLowQuality[this._key] = this.curveJXG;
     }
+
+    this.updateSinceDown = true;
 
     let visible = !this.doenetSvData.hidden;
 
