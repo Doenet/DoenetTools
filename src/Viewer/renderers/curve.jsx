@@ -120,17 +120,22 @@ export default class FunctionCurve extends DoenetRenderer {
 
     this.previousCurveType = this.doenetSvData.curveType;
 
+    this.draggedControlPoint = null;
+    this.draggedThroughPoint = null;
+
+    this.curveJXG.on('up', function (e) {
+      if (!this.updateSinceDown && this.draggedControlPoint === null && this.draggedThroughPoint === null
+        && this.doenetSvData.switchable && !this.doenetSvData.fixed
+      ) {
+        this.actions.switchCurve();
+      }
+    }.bind(this));
+
     if (this.doenetSvData.curveType === "bezier") {
 
       this.props.board.on('up', this.upBoard);
       this.curveJXG.on('down', this.downOther);
-      this.curveJXG.on('up', function (e) {
-        if (!this.updateSinceDown && this.draggedControlPoint === null && this.draggedThroughPoint === null
-          && this.doenetSvData.switchable && !this.doenetSvData.fixed
-        ) {
-          this.actions.switchCurve();
-        }
-      }.bind(this));
+
 
       this.segmentAttributes = {
         visible: false,
@@ -196,6 +201,10 @@ export default class FunctionCurve extends DoenetRenderer {
       this.previousVectorControlDirections = [...this.doenetSvData.vectorControlDirections];
 
 
+    } else {
+      this.curveJXG.on('down', function (e) {
+        this.updateSinceDown = false;
+      }.bind(this));
     }
 
     return this.curveJXG;
