@@ -215,11 +215,7 @@ export function evaluateLogic({ logicTree,
       }
       child = dependencyValues.mathListChildrenByCode[tree];
       if (child !== undefined) {
-        if (child.stateValues.maths.length === 1) {
-          child.stateValues.maths[0].tree;
-        } else {
-          return ["list", ...child.stateValues.maths.map(x => x.tree)];
-        }
+        return ["list", ...child.stateValues.maths.map(x => x.tree)];
       }
       child = dependencyValues.numberChildrenByCode[tree];
       if (child !== undefined) {
@@ -228,11 +224,7 @@ export function evaluateLogic({ logicTree,
       child = dependencyValues.numberListChildrenByCode[tree];
 
       if (child !== undefined) {
-        if (child.stateValues.numbers.length === 1) {
-          return child.stateValues.numbers[0];
-        } else {
-          return ["list", ...child.stateValues.numbers];
-        }
+        return ["list", ...child.stateValues.numbers];
       }
       return tree;
     }
@@ -524,11 +516,7 @@ export function evaluateLogic({ logicTree,
         if (child.stateValues.unordered) {
           foundUnordered = true;
         }
-        if (child.stateValues.maths.length === 1) {
-          return child.stateValues.maths[0].tree;
-        } else {
-          return ["list", ...child.stateValues.maths.map(x => x.tree)];
-        }
+        return ["list", ...child.stateValues.maths.map(x => x.tree)];
       }
       child = dependencyValues.numberChildrenByCode[tree];
       if (child !== undefined) {
@@ -539,11 +527,7 @@ export function evaluateLogic({ logicTree,
         if (child.stateValues.unordered) {
           foundUnordered = true;
         }
-        if (child.stateValues.numbers.length === 1) {
-          return child.stateValues.numbers[0];
-        } else {
-          return ["list", ...child.stateValues.numbers];
-        }
+        return ["list", ...child.stateValues.numbers];
       }
       return tree;
     }
