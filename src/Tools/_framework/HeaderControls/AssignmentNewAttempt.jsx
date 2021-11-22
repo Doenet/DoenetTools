@@ -24,8 +24,12 @@ export default function AssignmentNewAttempt() {
     let doenetId = await snapshot.getPromise(searchParamAtomFamily('doenetId'));
     let userAttemptNumber = await snapshot.getPromise((currentAttemptNumber))
     const { numberOfAttemptsAllowed } = await snapshot.getPromise((loadAssignmentSelector(doenetId)));
-    userAttemptNumber++;
-    set(currentAttemptNumber,userAttemptNumber);
+    //Only increment when infinite attempts or more attempts available
+    if (numberOfAttemptsAllowed === null || userAttemptNumber < numberOfAttemptsAllowed){
+      userAttemptNumber++;
+      set(currentAttemptNumber,userAttemptNumber);
+    }
+    
     if (numberOfAttemptsAllowed !== null && userAttemptNumber >= numberOfAttemptsAllowed){
       setButtonEnabled(false);
     }else{
