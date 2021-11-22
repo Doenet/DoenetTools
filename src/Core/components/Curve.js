@@ -19,6 +19,9 @@ export default class Curve extends GraphicalComponent {
     ),
     changeVectorControlDirection: this.changeVectorControlDirection.bind(
       new Proxy(this, this.readOnlyProxyHandler)
+    ),
+    switchCurve: this.switchCurve.bind(
+      new Proxy(this, this.readOnlyProxyHandler)
     )
   };
 
@@ -3007,6 +3010,10 @@ export default class Curve extends GraphicalComponent {
         value: { [throughPointInd]: direction },
       }]
     });
+  }
+
+  switchCurve() {
+    
   }
 
 
