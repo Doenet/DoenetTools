@@ -329,12 +329,12 @@ describe('Evaluate Tag Tests', function () {
     cy.log('initial state');
 
     cy.get('#\\/eval').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('1+＿')
+      expect(text.trim()).equal('＿')
     })
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/eval'].stateValues.value.tree).eqls(["+", 1, '＿']);
+      expect(components['/eval'].stateValues.value.tree).eq('＿');
     })
 
     cy.log('submit answer')
