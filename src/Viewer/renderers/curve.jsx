@@ -88,7 +88,7 @@ export default class FunctionCurve extends DoenetRenderer {
     }
 
 
-    if (!this.doenetSvData.draggable) {
+    if (!this.doenetSvData.draggable || this.doenetSvData.fixed) {
       curveAttributes.highlightStrokeWidth = this.doenetSvData.selectedStyle.lineWidth;
     }
 
@@ -178,7 +178,7 @@ export default class FunctionCurve extends DoenetRenderer {
         size: 2,
       };
 
-      if (!this.doenetSvData.draggable) {
+      if (!this.doenetSvData.draggable || this.doenetSvData.fixed) {
         return this.curveJXG;
       }
 
@@ -379,7 +379,7 @@ export default class FunctionCurve extends DoenetRenderer {
   }
 
   upBoard() {
-    if (!this.doenetSvData.draggable) {
+    if (!this.doenetSvData.draggable || this.doenetSvData.fixed) {
       return;
     }
     if (this.hitObject !== true && !this.doenetSvData.bezierControlsAlwaysVisible) {
@@ -392,7 +392,7 @@ export default class FunctionCurve extends DoenetRenderer {
 
   downThroughPoint(i, e) {
 
-    if (!this.doenetSvData.draggable) {
+    if (!this.doenetSvData.draggable || this.doenetSvData.fixed) {
       return;
     }
 
@@ -440,7 +440,7 @@ export default class FunctionCurve extends DoenetRenderer {
   }
 
   downOther() {
-    if (!this.doenetSvData.draggable) {
+    if (!this.doenetSvData.draggable || this.doenetSvData.fixed) {
       return;
     }
 
@@ -568,7 +568,7 @@ export default class FunctionCurve extends DoenetRenderer {
     }
 
 
-    if (!this.doenetSvData.draggable) {
+    if (!this.doenetSvData.draggable || this.doenetSvData.fixed) {
       if (this.segmentsJXG) {
         this.deleteControls();
       }
