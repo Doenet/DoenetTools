@@ -537,12 +537,17 @@ export function AssignmentSettings({ role, doenetId }) {
             }}
           >
             <CalendarToggle
-              checked={aInfo.assignedDate !== null}
+              checked={
+                aInfo.assignedDate !== null && aInfo.assignedDate !== undefined
+              }
               onClick={(e) => {
                 let valueDescription = 'None';
                 let value = null;
 
-                if (aInfo.assignedDate === null) {
+                if (
+                  aInfo.assignedDate === null ||
+                  aInfo.assignedDate === undefined
+                ) {
                   valueDescription = 'Now';
                   value = DateToDateString(new Date());
                 }
@@ -556,7 +561,7 @@ export function AssignmentSettings({ role, doenetId }) {
                 });
               }}
             />
-            {aInfo.assignedDate !== null ? (
+            {aInfo.assignedDate !== null && aInfo.assignedDate !== undefined ? (
               <DateTime
                 value={aInfo.assignedDate ? new Date(aInfo.assignedDate) : null}
                 onBlur={({ valid, value }) => {
@@ -589,7 +594,10 @@ export function AssignmentSettings({ role, doenetId }) {
                   let valueDescription = 'None';
                   let value = null;
 
-                  if (aInfo.assignedDate === null) {
+                  if (
+                    aInfo.assignedDate === null ||
+                    aInfo.assignedDate === undefined
+                  ) {
                     valueDescription = 'Now';
                     value = DateToDateString(new Date());
                   }
@@ -604,10 +612,11 @@ export function AssignmentSettings({ role, doenetId }) {
                 }}
                 // disabled
                 style={{
+                  cursor: 'not-allowed',
                   color: '#545454',
                   height: '18px',
                   width: '177px',
-                  border: '2px solid black',
+                  border: '2px solid #e2e2e2',
                   borderRadius: '5px',
                 }}
               />
@@ -625,12 +634,12 @@ export function AssignmentSettings({ role, doenetId }) {
             }}
           >
             <CalendarToggle
-              checked={aInfo.dueDate !== null}
+              checked={aInfo.dueDate !== null && aInfo.dueDate !== undefined}
               onClick={(e) => {
                 let valueDescription = 'None';
                 let value = null;
 
-                if (aInfo.dueDate === null) {
+                if (aInfo.dueDate === null || aInfo.dueDate === undefined) {
                   valueDescription = 'Next Week';
                   let nextWeek = new Date();
                   nextWeek.setDate(nextWeek.getDate() + 7);
@@ -646,7 +655,7 @@ export function AssignmentSettings({ role, doenetId }) {
                 });
               }}
             />
-            {aInfo.dueDate !== null ? (
+            {aInfo.dueDate !== null && aInfo.dueDate !== undefined ? (
               <DateTime
                 value={aInfo.dueDate ? new Date(aInfo.dueDate) : null}
                 onBlur={({ valid, value }) => {
@@ -678,7 +687,7 @@ export function AssignmentSettings({ role, doenetId }) {
                   let valueDescription = 'None';
                   let value = null;
 
-                  if (aInfo.dueDate === null) {
+                  if (aInfo.dueDate === null || aInfo.dueDate === undefined) {
                     valueDescription = 'Next Week';
                     let nextWeek = new Date();
                     nextWeek.setDate(nextWeek.getDate() + 7);
@@ -696,10 +705,11 @@ export function AssignmentSettings({ role, doenetId }) {
                 value="No Due Date"
                 // disabled
                 style={{
+                  cursor: 'not-allowed',
                   color: '#545454',
                   height: '18px',
                   width: '177px',
-                  border: '2px solid black',
+                  border: '2px solid #e2e2e2',
                   borderRadius: '5px',
                 }}
               />
@@ -1109,13 +1119,19 @@ export function AssignmentSettings({ role, doenetId }) {
             }}
           >
             <CalendarToggle
-              checked={aInfo.pinnedUntilDate !== null}
+              checked={
+                aInfo.pinnedUntilDate !== null &&
+                aInfo.pinnedUntilDate !== undefined
+              }
               onClick={(e) => {
                 let valueDescription = 'None';
                 let value = null;
                 let secondValue = null;
 
-                if (aInfo.pinnedUntilDate === null) {
+                if (
+                  aInfo.pinnedUntilDate === null ||
+                  aInfo.pinnedUntilDate === undefined
+                ) {
                   valueDescription = 'Now to Next Year';
                   let today = new Date();
                   let nextYear = new Date();
@@ -1135,7 +1151,8 @@ export function AssignmentSettings({ role, doenetId }) {
                 });
               }}
             />
-            {aInfo.pinnedUntilDate !== null ? (
+            {aInfo.pinnedUntilDate !== null &&
+            aInfo.pinnedUntilDate !== undefined ? (
               <DateTime
                 value={
                   aInfo.pinnedAfterDate ? new Date(aInfo.pinnedAfterDate) : null
@@ -1170,7 +1187,10 @@ export function AssignmentSettings({ role, doenetId }) {
                   let value = null;
                   let secondValue = null;
 
-                  if (aInfo.pinnedUntilDate === null) {
+                  if (
+                    aInfo.pinnedUntilDate === null ||
+                    aInfo.pinnedUntilDate === undefined
+                  ) {
                     valueDescription = 'Now to Next Year';
                     let today = new Date();
                     let nextYear = new Date();
@@ -1192,10 +1212,11 @@ export function AssignmentSettings({ role, doenetId }) {
                 value="No Pin After Date"
                 // disabled
                 style={{
+                  cursor: 'not-allowed',
                   color: '#545454',
                   height: '18px',
                   width: '177px',
-                  border: '2px solid black',
+                  border: '2px solid #e2e2e2',
                   borderRadius: '5px',
                 }}
               />
@@ -1207,7 +1228,8 @@ export function AssignmentSettings({ role, doenetId }) {
               e.preventDefault();
             }}
           >
-            {aInfo.pinnedUntilDate !== null ? (
+            {aInfo.pinnedUntilDate !== null &&
+            aInfo.pinnedUntilDate !== undefined ? (
               <DateTime
                 value={
                   aInfo.pinnedUntilDate ? new Date(aInfo.pinnedUntilDate) : null
@@ -1242,7 +1264,10 @@ export function AssignmentSettings({ role, doenetId }) {
                   let value = null;
                   let secondValue = null;
 
-                  if (aInfo.pinnedUntilDate === null) {
+                  if (
+                    aInfo.pinnedUntilDate === null ||
+                    aInfo.pinnedUntilDate === undefined
+                  ) {
                     valueDescription = 'Now to Next Year';
                     let today = new Date();
                     let nextYear = new Date();
@@ -1264,10 +1289,11 @@ export function AssignmentSettings({ role, doenetId }) {
                 value="No Pin Until Date"
                 // disabled
                 style={{
+                  cursor: 'not-allowed',
                   color: '#545454',
                   height: '18px',
                   width: '177px',
-                  border: '2px solid black',
+                  border: '2px solid #e2e2e2',
                   borderRadius: '5px',
                 }}
               />
