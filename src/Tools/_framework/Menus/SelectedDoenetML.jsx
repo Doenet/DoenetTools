@@ -734,7 +734,6 @@ export function AssignmentSettings({ role, doenetId }) {
       {aInfo.timeLimit !== null ? (
         <div style={{ width: 'fit-content' }}>
           Time Limit in Minutes
-          {/* <Increment restricted values={[1, 3, 6, 9, 10]} /> */}
           <Increment
             value={timeLimit}
             min={0}
@@ -792,40 +791,36 @@ export function AssignmentSettings({ role, doenetId }) {
       </div>
       {aInfo.numberOfAttemptsAllowed !== null ? (
         <div>
-          <label>
-            Number of Attempts Allowed
-            <Increment
-              value={numberOfAttemptsAllowed}
-              min={0}
-              onBlur={() => {
-                if (aInfo.numberOfAttemptsAllowed !== numberOfAttemptsAllowed) {
-                  let numberOfAttemptsAllowedLocal = null;
-                  if (
-                    numberOfAttemptsAllowed < 0 ||
-                    numberOfAttemptsAllowed === '' ||
-                    isNaN(numberOfAttemptsAllowed)
-                  ) {
-                    setNumberOfAttemptsAllowed(0);
-                    numberOfAttemptsAllowedLocal = 0;
-                  } else {
-                    numberOfAttemptsAllowedLocal = parseInt(
-                      numberOfAttemptsAllowed,
-                    );
-                    setNumberOfAttemptsAllowed(
-                      parseInt(numberOfAttemptsAllowed),
-                    );
-                  }
-                  updateAssignment({
-                    doenetId,
-                    keyToUpdate: 'numberOfAttemptsAllowed',
-                    value: numberOfAttemptsAllowedLocal,
-                    description: 'Attempts Allowed',
-                  });
+          Number of Attempts Allowed
+          <Increment
+            value={numberOfAttemptsAllowed}
+            min={0}
+            onBlur={() => {
+              if (aInfo.numberOfAttemptsAllowed !== numberOfAttemptsAllowed) {
+                let numberOfAttemptsAllowedLocal = null;
+                if (
+                  numberOfAttemptsAllowed < 0 ||
+                  numberOfAttemptsAllowed === '' ||
+                  isNaN(numberOfAttemptsAllowed)
+                ) {
+                  setNumberOfAttemptsAllowed(0);
+                  numberOfAttemptsAllowedLocal = 0;
+                } else {
+                  numberOfAttemptsAllowedLocal = parseInt(
+                    numberOfAttemptsAllowed,
+                  );
+                  setNumberOfAttemptsAllowed(parseInt(numberOfAttemptsAllowed));
                 }
-              }}
-              onChange={(newValue) => setNumberOfAttemptsAllowed(newValue)}
-            />
-          </label>
+                updateAssignment({
+                  doenetId,
+                  keyToUpdate: 'numberOfAttemptsAllowed',
+                  value: numberOfAttemptsAllowedLocal,
+                  description: 'Attempts Allowed',
+                });
+              }
+            }}
+            onChange={(newValue) => setNumberOfAttemptsAllowed(newValue)}
+          />
         </div>
       ) : null}
       <div>
@@ -857,36 +852,34 @@ export function AssignmentSettings({ role, doenetId }) {
       </div>
 
       <div>
-        <label>
-          Total Points Or Percent
-          <Increment
-            value={totalPointsOrPercent}
-            min={0}
-            onBlur={() => {
-              if (aInfo.totalPointsOrPercent !== totalPointsOrPercent) {
-                let totalPointsOrPercentLocal = null;
-                if (
-                  totalPointsOrPercent < 0 ||
-                  totalPointsOrPercent === '' ||
-                  isNaN(totalPointsOrPercent)
-                ) {
-                  setTotalPointsOrPercent(0);
-                  totalPointsOrPercentLocal = 0;
-                } else {
-                  totalPointsOrPercentLocal = parseInt(totalPointsOrPercent);
-                  setTotalPointsOrPercent(parseInt(totalPointsOrPercent));
-                }
-                updateAssignment({
-                  doenetId,
-                  keyToUpdate: 'totalPointsOrPercent',
-                  value: totalPointsOrPercentLocal,
-                  description: 'Total Points Or Percent',
-                });
+        Total Points Or Percent
+        <Increment
+          value={totalPointsOrPercent}
+          min={0}
+          onBlur={() => {
+            if (aInfo.totalPointsOrPercent !== totalPointsOrPercent) {
+              let totalPointsOrPercentLocal = null;
+              if (
+                totalPointsOrPercent < 0 ||
+                totalPointsOrPercent === '' ||
+                isNaN(totalPointsOrPercent)
+              ) {
+                setTotalPointsOrPercent(0);
+                totalPointsOrPercentLocal = 0;
+              } else {
+                totalPointsOrPercentLocal = parseInt(totalPointsOrPercent);
+                setTotalPointsOrPercent(parseInt(totalPointsOrPercent));
               }
-            }}
-            onChange={(newValue) => setTotalPointsOrPercent(newValue)}
-          />
-        </label>
+              updateAssignment({
+                doenetId,
+                keyToUpdate: 'totalPointsOrPercent',
+                value: totalPointsOrPercentLocal,
+                description: 'Total Points Or Percent',
+              });
+            }
+          }}
+          onChange={(newValue) => setTotalPointsOrPercent(newValue)}
+        />
       </div>
 
       <div>

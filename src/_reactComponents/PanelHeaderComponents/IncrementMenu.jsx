@@ -363,6 +363,7 @@ export default function Increment(props) {
           {decreaseIcon}
         </DecreaseButton>
         <TextField
+          placeholder={props.placeholder}
           value={value}
           ref={textFieldRef}
           alert={props.alert}
@@ -372,6 +373,9 @@ export default function Increment(props) {
             setMenuToggle(true);
           }}
           onKeyDown={(e) => {
+            if (props.onKeyDown) {
+              props.onKeyDown(e);
+            }
             if (e.key === 'Enter') {
               onTextFieldEnter(e);
             }
