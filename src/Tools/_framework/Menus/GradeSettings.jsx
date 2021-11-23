@@ -8,8 +8,8 @@ import { searchParamAtomFamily } from '../NewToolRoot';
 export default function GradeSettings(){
   let doenetId = useRecoilValue(searchParamAtomFamily('doenetId'))
     let userId = useRecoilValue(searchParamAtomFamily('userId'))
-    let [effectiveDueDate,seteffectiveDueDate] = useState(null)
-    //get dueDate and dueDateOverride
+    let [dueDateOverride,setDueDateOverride] = useState(null)
+    //get dueDate and dueDateOverride on init
 
 
     let dueDateJSX =  <>Due Date Override:
@@ -20,7 +20,7 @@ export default function GradeSettings(){
             }}
           >
     <CalendarButton
-              checked={effectiveDueDate !== null}
+              checked={dueDateOverride !== null}
               onClick={(e) => {
                 // let valueDescription = 'None';
                 // let value = null;
@@ -42,7 +42,7 @@ export default function GradeSettings(){
               }}
             />
     <DateTime
-    value={effectiveDueDate ? new Date(effectiveDueDate) : null}
+    value={dueDateOverride ? new Date(dueDateOverride) : null}
     onBlur={({ valid, value }) => {
       // if (valid) {
       //   try {
