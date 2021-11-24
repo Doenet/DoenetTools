@@ -5,11 +5,12 @@ import {
   useRecoilValue,
   useRecoilValueLoadable
 } from "../../_snowpack/pkg/recoil.js";
-import {pageToolViewAtom, searchParamAtomFamily} from "../NewToolRoot.js";
+import {pageToolViewAtom, searchParamAtomFamily, suppressMenusAtom} from "../NewToolRoot.js";
 import DoenetViewer from "../../viewer/DoenetViewer.js";
 import {serializedComponentsReviver} from "../../core/utils/serializedStateProcessing.js";
 import axios from "../../_snowpack/pkg/axios.js";
 import {currentAttemptNumber} from "./AssignmentViewer.js";
+import {effectiveRoleAtom} from "../../_reactComponents/PanelHeaderComponents/RoleDropdown.js";
 const getUserId = (students, name) => {
   for (let userId in students) {
     if (students[userId].firstName + " " + students[userId].lastName == name) {
@@ -18,7 +19,7 @@ const getUserId = (students, name) => {
   }
   return -1;
 };
-export default function GradebookStudentAssignmentView(props) {
+export default function GradebookStudentAssignmentView() {
   const setPageToolView = useSetRecoilState(pageToolViewAtom);
   let source = useRecoilValue(searchParamAtomFamily("source"));
   let doenetId = useRecoilValue(searchParamAtomFamily("doenetId"));
@@ -29,6 +30,8 @@ export default function GradebookStudentAssignmentView(props) {
   let students = useRecoilValueLoadable(studentData);
   const setRecoilAttemptNumber = useSetRecoilState(currentAttemptNumber);
   let assignments = useRecoilValueLoadable(assignmentData);
+  let effectiveRole = useRecoilValue(effectiveRoleAtom);
+  const setSuppressMenus = useSetRecoilState(suppressMenusAtom);
   const totalPointsOrPercent = Number(assignments.contents[doenetId]?.totalPointsOrPercent);
   const label = assignments.contents[doenetId]?.label;
   const attemptsObj = attempts?.contents?.[userId]?.attempts;
@@ -49,6 +52,13 @@ export default function GradebookStudentAssignmentView(props) {
       console.log(">>>>TODO TELL THEM YOU HAVENT TAKEN YET");
     }
   }, [attemptsObj, setAttemptNumber, setRecoilAttemptNumber, paramAttemptNumber]);
+  useEffect(() => {
+    if (effectiveRole === "student") {
+      setSuppressMenus(["GradeSettings"]);
+    } else {
+      setSuppressMenus([]);
+    }
+  }, [effectiveRole, setSuppressMenus]);
   if (!doenetId || !userId) {
     return null;
   }
