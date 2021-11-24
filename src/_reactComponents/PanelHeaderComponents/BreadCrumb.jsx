@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { panelsInfoAtom } from '../../Tools/_framework/Panels/NewContentPanel';
 import { useRecoilValue } from 'recoil';
+import { supportPanelHandleLeft } from '../../Tools/_framework/Panels/NewContentPanel';
 
 const BreadCrumbContainer = styled.ul`
   list-style: none;
@@ -109,6 +110,7 @@ export function BreadCrumb({crumbs=[],offset=0}){
   let [windowWidth,setWindowWidth] = useState(window.innerWidth);
   let [containerLeft,setContainerLeft] = useState(0);
   let panelsInfo = useRecoilValue(panelsInfoAtom);
+  let supportPanelHandleLeftValue = useRecoilValue(supportPanelHandleLeft);
 
   const containerRef = useRef(null);
 
@@ -139,33 +141,40 @@ export function BreadCrumb({crumbs=[],offset=0}){
     
     numHidden = crumbs.length - 2;
     let prevBreak = containerLeft + crumBounds[0].width + 53; //First segment right break point
-
-    prevBreak = prevBreak + crumBounds[crumBounds.length -1].width + 58; //Second segment right break point Includes elipsis segment
+    prevBreak = prevBreak + crumBounds[crumBounds.length -1].width + 58; //Assume right break point Includes elipsis segment
+    console.log(">>>>first break",prevBreak)
 
     let effectiveWidth = windowWidth;
-    if (panelsInfo?.isActive){
-      //if menu panel is closed (indirect measurement)
 
-      effectiveWidth = (windowWidth  * panelsInfo.propotion) - 10;
-      //if menu panel is open (indirect measurement)
-      if (containerLeft > 100){
-        effectiveWidth = ((windowWidth - 240) * panelsInfo.propotion) + 240 - 10;
-      }
-    }
+    // if (panelsInfo?.isActive){
+    //   //if menu panel is closed (indirect measurement)
+
+    //   effectiveWidth = (windowWidth  * panelsInfo.propotion) - 10;
+    //   //if menu panel is open (indirect measurement)
+    //   if (containerLeft > 100){
+    //     effectiveWidth = ((windowWidth - 240) * panelsInfo.propotion) + 240 - 10;
+    //   }
+    // }
   // console.log("\n\n>>>>effectiveWidth",effectiveWidth,windowWidth,containerLeft,panelsInfo.propotion)
+  if (supportPanelHandleLeftValue){
+    effectiveWidth = supportPanelHandleLeftValue;
+  }
 
     effectiveWidth -= offset;
-  // console.log(">>>>after",effectiveWidth)
+  // console.log("\n>>>>after effectiveWidth",effectiveWidth)
+  // console.log(">>>>supportPanelHandleLeftValue",supportPanelHandleLeftValue)
     
+console.log(">>>>",`prev ${prevBreak} effective ${effectiveWidth} then ${numHidden}`)
+
     //If window is wide enough to expand from minimum size
     if ( prevBreak < effectiveWidth){
 
       for (let i = crumBounds.length - 2; i >= 1; i-- ){
         let width = crumBounds[i].width;
         let rightBreak = prevBreak + width;
-        if (i == 1){ rightBreak -=  58} //no elipsis on last break
-// console.log(">>>>prevBreak rightBreak",prevBreak,rightBreak)
-        //If in this range we know the number to hide
+        if (i == 1){ rightBreak -=  58} //no elipsis on last break point
+console.log(">>>>prevBreak rightBreak",`${prevBreak} - ${rightBreak} then ${numHidden} with ${effectiveWidth}`)
+        //If in this range we have the number to hide
         if (effectiveWidth >= prevBreak && effectiveWidth < rightBreak){
           break;
         }
@@ -177,6 +186,7 @@ export function BreadCrumb({crumbs=[],offset=0}){
 
   let crumbsJSX = [];
 
+  console.log(">>>>RESULTS",`numHidden ${numHidden} `)
 
 
   for (let [i,{icon,label,onClick}] of Object.entries(crumbs) ){
