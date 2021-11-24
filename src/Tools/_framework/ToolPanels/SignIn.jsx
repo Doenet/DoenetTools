@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Cookies from 'js-cookie'; // import Textinput from "../imports/Textinput";
 import axios from 'axios';
 import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
@@ -25,8 +25,8 @@ export default function SignIn(props) {
  
   const jwt = Cookies.get();
 
-  // const emailRef = useRef(null);
-  // const codeRef = useRef(null);
+  const emailRef = useRef(null);
+  const codeRef = useRef(null);
 
   const toast = useToast();
 
@@ -57,11 +57,11 @@ export default function SignIn(props) {
         setSignInAlert(true);
       }
 
-    // if (codeRef.current !== null && !validCode) {
-    //   codeRef.current.focus();
-    // } else if (emailRef.current !== null && !validEmail) {
-    //   emailRef.current.focus();
-    // }
+    if (codeRef.current !== null && !validCode) {
+      codeRef.current.focus();
+    } else if (emailRef.current !== null && !validEmail) {
+      emailRef.current.focus();
+    }
   });
 
   //If already signed in go to course
@@ -257,7 +257,7 @@ export default function SignIn(props) {
           <Textfield
             label="Code (9 digit code):"
             // type="text"
-            // ref={codeRef}
+            ref={codeRef}
             value={nineCode}
             data-cy="signinCodeInput"
             alert={signInAlert}
@@ -327,7 +327,7 @@ export default function SignIn(props) {
             <Textfield
               label="Email Address:"
               // type="text"
-              // ref={emailRef}
+              ref={emailRef}
               value={email}
               alert={sendEmailAlert}
               data-cy="signinEmailInput"

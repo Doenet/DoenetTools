@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useLayoutEffect, useRef } from 'react';
 import { doenetComponentForegroundInactive } from "./theme"
 
 export default function Textfield(props) {
@@ -41,7 +41,7 @@ export default function Textfield(props) {
       setText(props.value);
     }, [props]);
 
-    useEffect(() => {
+    useLayoutEffect(() => {
       inputRef.current.selectionStart = cursorStart;
       inputRef.current.selectionEnd = cursorEnd;
     });
