@@ -1,9 +1,9 @@
-import React, { useState, useEffect, useRef, useLayoutEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Cookies from 'js-cookie'; // import Textinput from "../imports/Textinput";
 import axios from 'axios';
 import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
 import Textfield from '../../../_reactComponents/PanelHeaderComponents/Textfield';
-import {useToast, toastType} from "../Toast.js";
+import {useToast, toastType} from "../Toast.jsx";
 
 
 export default function SignIn(props) {
@@ -20,7 +20,6 @@ export default function SignIn(props) {
   let [validCode, setValidCode] = useState(false);
   let [sendEmailDisabled, setSendEmailDisabled] = useState(true);
   let [signInDisabled, setSignInDisabled] = useState(true);
-  let [autofocus, setAutofocus] = useState(false);
 
   console.log(signInStage)
  
@@ -63,10 +62,6 @@ export default function SignIn(props) {
     // } else if (emailRef.current !== null && !validEmail) {
     //   emailRef.current.focus();
     // }
-  });
-
-  useLayoutEffect(() => {
-    setAutofocus(true);
   });
 
   //If already signed in go to course
@@ -262,7 +257,6 @@ export default function SignIn(props) {
           <Textfield
             label="Code (9 digit code):"
             // type="text"
-            autofocus={autofocus}
             // ref={codeRef}
             value={nineCode}
             data-cy="signinCodeInput"
@@ -333,7 +327,6 @@ export default function SignIn(props) {
             <Textfield
               label="Email Address:"
               // type="text"
-              autofocus={autofocus}
               // ref={emailRef}
               value={email}
               alert={sendEmailAlert}
