@@ -31,7 +31,7 @@ export function dateUtilityFunction(date, isTimeIncluded){
   export function formatAMPM(date) {
     var hours = date.getHours();
     var minutes = date.getMinutes();
-    var ampm = hours >= 12 ? 'pm' : 'am';
+    var ampm = hours >= 12 ? 'PM' : 'AM';
     hours = hours % 12;
     hours = hours ? hours : 12; // the hour '0' should be '12'
     minutes = minutes < 10 ? '0'+minutes : minutes;
@@ -59,3 +59,12 @@ export function dateUtilityFunction(date, isTimeIncluded){
     pad(date.getMinutes())    + ':' +
     pad(date.getSeconds());
   }
+
+  export function DateToDisplayDateString(date){
+    var pad = function(num) { return ('00'+num).slice(-2) };
+    return pad(date.getMonth() + 1)        + '/' +
+    pad(date.getDate())   + '/' +
+    date.getFullYear()       + ' ' + formatAMPM(date)
+    
+  }
+

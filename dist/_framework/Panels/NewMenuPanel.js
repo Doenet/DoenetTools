@@ -156,6 +156,7 @@ export default function MenuPanel({hide, menuPanelCap = "", menusTitles = [], cu
   }).current;
   const LazyMenuObj = useRef({
     SelectedCourse: lazy(() => import("../Menus/SelectedCourse.js")),
+    GradeSettings: lazy(() => import("../Menus/GradeSettings.js")),
     SelectedDoenetML: lazy(() => import("../Menus/SelectedDoenetML.js")),
     SelectedFolder: lazy(() => import("../Menus/SelectedFolder.js")),
     SelectedCollection: lazy(() => import("../Menus/SelectedCollection.js")),

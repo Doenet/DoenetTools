@@ -309,6 +309,7 @@ export default function Increment(props) {
     disabled: props.disabled,
     onClick: decrementOnClick
   }, decreaseIcon), /* @__PURE__ */ React.createElement(TextField, {
+    placeholder: props.placeholder,
     value,
     ref: textFieldRef,
     alert: props.alert,
@@ -318,6 +319,9 @@ export default function Increment(props) {
       setMenuToggle(true);
     },
     onKeyDown: (e) => {
+      if (props.onKeyDown) {
+        props.onKeyDown(e);
+      }
       if (e.key === "Enter") {
         onTextFieldEnter(e);
       }
