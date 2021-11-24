@@ -16,7 +16,7 @@ export default class When extends BooleanComponent {
       createStateVariable: "matchPartial",
       defaultValue: false,
       public: true,
-      propagateToDescendants: true, 
+      propagateToDescendants: true,
     };
 
     for (let attrName of ["symbolicEquality", "expandOnCompare",
@@ -40,8 +40,18 @@ export default class When extends BooleanComponent {
 
     // condition satisfied is just an alias to value
     stateVariableDefinitions.value = {
+      public: true,
+      componentType: "boolean",
       additionalStateVariablesDefined: [
-        "fractionSatisfied", "conditionSatisfied"
+        {
+          variableName: "fractionSatisfied",
+          public: true,
+          componentType: "number"
+        }, {
+          variableName: "conditionSatisfied",
+          public: true,
+          componentType: "boolean"
+        }
       ],
       returnDependencies: () => ({
         matchPartial: {

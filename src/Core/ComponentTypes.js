@@ -137,7 +137,6 @@ import Setup from './components/Setup';
 import Footnote from './components/Footnote';
 import Caption from './components/Caption';
 import Endpoint from './components/Endpoint';
-import EquilibriumPoint from './components/EquilibriumPoint';
 import Sort from './components/Sort';
 import SolveEquations from './components/SolveEquations';
 import SolutionContainer from './components/SolutionContainer';
@@ -281,7 +280,6 @@ const componentTypeArray = [
   Footnote,
   Caption,
   Endpoint,
-  EquilibriumPoint,
   Sort,
   SolveEquations,
   SolutionContainer,

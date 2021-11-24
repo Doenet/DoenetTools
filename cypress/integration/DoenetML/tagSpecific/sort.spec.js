@@ -487,74 +487,338 @@ describe('Sort Tag Tests', function () {
 
   })
 
+  it('sort points by component', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <graph>
+    <point name="A">(0,5)</point>
+    <point name="B">(-2,6)</point>
+    <point name="C">(7,-3)</point>
+    <point name="D">(3,2)</point>
+    <point name="E">(5,1)</point>
+  </graph>
+
+  <sort assignNames="P1 P2 P3 P4 P5">$A$B$C$D$E</sort>
+  <sort assignNames="Px1 Px2 Px3 Px4 Px5" sortByComponent="1">$A$B$C$D$E</sort>
+  <sort assignNames="Py1 Py2 Py3 Py4 Py5" sortByComponent="2">$A$B$C$D$E</sort>
+  <sort assignNames="Pu1 Pu2 Pu3 Pu4 Pu5" sortByComponent="3">$A$B$C$D$E</sort>
+  `}, "*");
+    });
+    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
+
+    cy.get('#\\/P1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(−2,6)')
+    })
+    cy.get('#\\/P2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(0,5)')
+    })
+    cy.get('#\\/P3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(3,2)')
+    })
+    cy.get('#\\/P4').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(5,1)')
+    })
+    cy.get('#\\/P5').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(7,−3)')
+    })
+
+
+    cy.get('#\\/Px1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(−2,6)')
+    })
+    cy.get('#\\/Px2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(0,5)')
+    })
+    cy.get('#\\/Px3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(3,2)')
+    })
+    cy.get('#\\/Px4').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(5,1)')
+    })
+    cy.get('#\\/Px5').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(7,−3)')
+    })
+
+
+    cy.get('#\\/Py1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(7,−3)')
+    })
+    cy.get('#\\/Py2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(5,1)')
+    })
+    cy.get('#\\/Py3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(3,2)')
+    })
+    cy.get('#\\/Py4').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(0,5)')
+    })
+    cy.get('#\\/Py5').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(−2,6)')
+    })
+
+
+    cy.get('#\\/Pu1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(0,5)')
+    })
+    cy.get('#\\/Pu2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(−2,6)')
+    })
+    cy.get('#\\/Pu3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(7,−3)')
+    })
+    cy.get('#\\/Pu4').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(3,2)')
+    })
+    cy.get('#\\/Pu5').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(5,1)')
+    })
+
+
+
+  })
+
   it('sort vectors', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
   <graph>
-    <vector name="A" displacement="(0,1)" tail="(5,2)" />
-    <vector name="B" displacement="(-2,1)" tail="(3,7)" />
-    <vector name="C" displacement="(7,1)" tail="(-4,3)" />
-    <vector name="D" displacement="(3,1)" tail="(1,6)" />
+    <vector name="A" displacement="(0,5)" tail="(5,2)" />
+    <vector name="B" displacement="(-2,6)" tail="(3,7)" />
+    <vector name="C" displacement="(7,-2)" tail="(-4,5)" />
+    <vector name="D" displacement="(3,2)" tail="(1,6)" />
     <vector name="E" displacement="(5,1)" tail="(0,-3)" />
   </graph>
 
   <sort assignNames="V1 V2 V3 V4 V5">$A$B$C$D$E</sort>
   <sort assignNames="Vd1 Vd2 Vd3 Vd4 Vd5" sortVectorsBy="displacement">$A$B$C$D$E</sort>
   <sort assignNames="Vt1 Vt2 Vt3 Vt4 Vt5" sortVectorsBy="tail">$A$B$C$D$E</sort>
+
+  <sort assignNames="Vx1 Vx2 Vx3 Vx4 Vx5" sortByComponent="1">$A$B$C$D$E</sort>
+  <sort assignNames="Vxd1 Vxd2 Vxd3 Vxd4 Vxd5" sortVectorsBy="displacement" sortByComponent="1">$A$B$C$D$E</sort>
+  <sort assignNames="Vxt1 Vxt2 Vxt3 Vxt4 Vxt5" sortVectorsBy="tail" sortByComponent="1">$A$B$C$D$E</sort>
+
+  <sort assignNames="Vy1 Vy2 Vy3 Vy4 Vy5" sortByComponent="2">$A$B$C$D$E</sort>
+  <sort assignNames="Vyd1 Vyd2 Vyd3 Vyd4 Vyd5" sortVectorsBy="displacement" sortByComponent="2">$A$B$C$D$E</sort>
+  <sort assignNames="Vyt1 Vyt2 Vyt3 Vyt4 Vyt5" sortVectorsBy="tail" sortByComponent="2">$A$B$C$D$E</sort>
+
+  <sort assignNames="Vu1 Vu2 Vu3 Vu4 Vu5" sortByComponent="3">$A$B$C$D$E</sort>
+  <sort assignNames="Vud1 Vud2 Vud3 Vud4 Vud5" sortVectorsBy="displacement" sortByComponent="3">$A$B$C$D$E</sort>
+  <sort assignNames="Vut1 Vut2 Vut3 Vut4 Vut5" sortVectorsBy="tail" sortByComponent="3">$A$B$C$D$E</sort>
+
+
+
   `}, "*");
     });
     cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
 
     cy.get('#\\/V1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('(−2,1)')
+      expect(text.trim()).equal('(−2,6)')
     })
     cy.get('#\\/V2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('(0,1)')
+      expect(text.trim()).equal('(0,5)')
     })
     cy.get('#\\/V3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('(3,1)')
+      expect(text.trim()).equal('(3,2)')
     })
     cy.get('#\\/V4').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(5,1)')
     })
     cy.get('#\\/V5').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('(7,1)')
+      expect(text.trim()).equal('(7,−2)')
     })
 
 
     cy.get('#\\/Vd1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('(−2,1)')
+      expect(text.trim()).equal('(−2,6)')
     })
     cy.get('#\\/Vd2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('(0,1)')
+      expect(text.trim()).equal('(0,5)')
     })
     cy.get('#\\/Vd3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('(3,1)')
+      expect(text.trim()).equal('(3,2)')
     })
     cy.get('#\\/Vd4').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(5,1)')
     })
     cy.get('#\\/Vd5').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('(7,1)')
+      expect(text.trim()).equal('(7,−2)')
     })
 
 
     cy.get('#\\/Vt1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('(7,1)')
+      expect(text.trim()).equal('(7,−2)')
     })
     cy.get('#\\/Vt2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(5,1)')
     })
     cy.get('#\\/Vt3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('(3,1)')
+      expect(text.trim()).equal('(3,2)')
     })
     cy.get('#\\/Vt4').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('(−2,1)')
+      expect(text.trim()).equal('(−2,6)')
     })
     cy.get('#\\/Vt5').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('(0,1)')
+      expect(text.trim()).equal('(0,5)')
+    })
+
+
+    cy.get('#\\/Vx1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(−2,6)')
+    })
+    cy.get('#\\/Vx2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(0,5)')
+    })
+    cy.get('#\\/Vx3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(3,2)')
+    })
+    cy.get('#\\/Vx4').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(5,1)')
+    })
+    cy.get('#\\/Vx5').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(7,−2)')
+    })
+
+
+    cy.get('#\\/Vxd1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(−2,6)')
+    })
+    cy.get('#\\/Vxd2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(0,5)')
+    })
+    cy.get('#\\/Vxd3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(3,2)')
+    })
+    cy.get('#\\/Vxd4').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(5,1)')
+    })
+    cy.get('#\\/Vxd5').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(7,−2)')
+    })
+
+
+    cy.get('#\\/Vxt1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(7,−2)')
+    })
+    cy.get('#\\/Vxt2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(5,1)')
+    })
+    cy.get('#\\/Vxt3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(3,2)')
+    })
+    cy.get('#\\/Vxt4').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(−2,6)')
+    })
+    cy.get('#\\/Vxt5').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(0,5)')
+    })
+
+
+    cy.get('#\\/Vy1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(7,−2)')
+    })
+    cy.get('#\\/Vy2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(5,1)')
+    })
+    cy.get('#\\/Vy3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(3,2)')
+    })
+    cy.get('#\\/Vy4').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(0,5)')
+    })
+    cy.get('#\\/Vy5').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(−2,6)')
+    })
+
+
+    cy.get('#\\/Vyd1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(7,−2)')
+    })
+    cy.get('#\\/Vyd2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(5,1)')
+    })
+    cy.get('#\\/Vyd3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(3,2)')
+    })
+    cy.get('#\\/Vyd4').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(0,5)')
+    })
+    cy.get('#\\/Vyd5').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(−2,6)')
+    })
+
+
+    
+    cy.get('#\\/Vyt1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(5,1)')
+    })
+    cy.get('#\\/Vyt2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(0,5)')
+    })
+    cy.get('#\\/Vyt3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(7,−2)')
+    })
+    cy.get('#\\/Vyt4').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(3,2)')
+    })
+    cy.get('#\\/Vyt5').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(−2,6)')
+    })
+
+
+
+    cy.get('#\\/Vu1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(0,5)')
+    })
+    cy.get('#\\/Vu2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(−2,6)')
+    })
+    cy.get('#\\/Vu3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(7,−2)')
+    })
+    cy.get('#\\/Vu4').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(3,2)')
+    })
+    cy.get('#\\/Vu5').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(5,1)')
+    })
+
+
+
+    cy.get('#\\/Vud1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(0,5)')
+    })
+    cy.get('#\\/Vud2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(−2,6)')
+    })
+    cy.get('#\\/Vud3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(7,−2)')
+    })
+    cy.get('#\\/Vud4').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(3,2)')
+    })
+    cy.get('#\\/Vud5').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(5,1)')
+    })
+
+
+
+    cy.get('#\\/Vut1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(0,5)')
+    })
+    cy.get('#\\/Vut2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(−2,6)')
+    })
+    cy.get('#\\/Vut3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(7,−2)')
+    })
+    cy.get('#\\/Vut4').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(3,2)')
+    })
+    cy.get('#\\/Vut5').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(5,1)')
     })
 
 

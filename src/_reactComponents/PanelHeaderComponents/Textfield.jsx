@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useLayoutEffect } from 'react';
 import { doenetComponentForegroundInactive } from "./theme"
 
 export default function Textfield(props) {
@@ -34,14 +34,14 @@ export default function Textfield(props) {
     var container = {
         display: `${align}`,
         width: 'auto',
-        alignItems: 'flex-end'
+        alignItems: 'center'
     }
 
     useEffect(() => {
       setText(props.value);
     }, [props]);
 
-    useEffect(() => {
+    useLayoutEffect(() => {
       inputRef.current.selectionStart = cursorStart;
       inputRef.current.selectionEnd = cursorEnd;
     });
@@ -58,7 +58,7 @@ export default function Textfield(props) {
     textfield.cursor = 'not-allowed';
     disable = "disabled";
   }
-  
+
 if (props.width) {
   if (props.width === "menu") {
     textfield.width = '200px';
@@ -70,8 +70,8 @@ if (props.width) {
 }
 function handleChange(e) {
   if (props.onChange) props.onChange(e)
-  setCursorStart(e.target.selectionStart);
-  setCursorEnd(e.target.selectionEnd);
+    setCursorStart(e.target.selectionStart);
+    setCursorEnd(e.target.selectionEnd);
 }
 
 function handleBlur(e) {

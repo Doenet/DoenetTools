@@ -39,13 +39,12 @@ export default class FunctionCurve extends DoenetRenderer {
       strokeColor: this.doenetSvData.selectedStyle.lineColor,
       highlightStrokeColor: this.doenetSvData.selectedStyle.lineColor,
       strokeWidth: this.doenetSvData.selectedStyle.lineWidth,
-      dash: styleToDash(this.doenetSvData.selectedStyle.lineStyle),
+      dash: styleToDash(this.doenetSvData.selectedStyle.lineStyle, this.doenetSvData.dashed),
     };
 
 
     if (this.doenetSvData.showLabel && this.doenetSvData.label !== "") {
       let anchorx, offset, position;
-      console.log(`labelPosition: ${this.doenetSvData.labelPosition}`)
       if (this.doenetSvData.labelPosition === "upperright") {
         position = 'urt';
         offset = [-5, -10];
@@ -89,7 +88,7 @@ export default class FunctionCurve extends DoenetRenderer {
     }
 
 
-    if (!this.doenetSvData.draggable) {
+    if (!this.doenetSvData.draggable || this.doenetSvData.fixed) {
       curveAttributes.highlightStrokeWidth = this.doenetSvData.selectedStyle.lineWidth;
     }
 
@@ -121,10 +120,22 @@ export default class FunctionCurve extends DoenetRenderer {
 
     this.previousCurveType = this.doenetSvData.curveType;
 
+    this.draggedControlPoint = null;
+    this.draggedThroughPoint = null;
+
+    this.curveJXG.on('up', function (e) {
+      if (!this.updateSinceDown && this.draggedControlPoint === null && this.draggedThroughPoint === null
+        && this.doenetSvData.switchable && !this.doenetSvData.fixed
+      ) {
+        this.actions.switchCurve();
+      }
+    }.bind(this));
+
     if (this.doenetSvData.curveType === "bezier") {
 
       this.props.board.on('up', this.upBoard);
       this.curveJXG.on('down', this.downOther);
+
 
       this.segmentAttributes = {
         visible: false,
@@ -172,7 +183,7 @@ export default class FunctionCurve extends DoenetRenderer {
         size: 2,
       };
 
-      if (!this.doenetSvData.draggable) {
+      if (!this.doenetSvData.draggable || this.doenetSvData.fixed) {
         return this.curveJXG;
       }
 
@@ -190,6 +201,10 @@ export default class FunctionCurve extends DoenetRenderer {
       this.previousVectorControlDirections = [...this.doenetSvData.vectorControlDirections];
 
 
+    } else {
+      this.curveJXG.on('down', function (e) {
+        this.updateSinceDown = false;
+      }.bind(this));
     }
 
     return this.curveJXG;
@@ -373,7 +388,7 @@ export default class FunctionCurve extends DoenetRenderer {
   }
 
   upBoard() {
-    if (!this.doenetSvData.draggable) {
+    if (!this.doenetSvData.draggable || this.doenetSvData.fixed) {
       return;
     }
     if (this.hitObject !== true && !this.doenetSvData.bezierControlsAlwaysVisible) {
@@ -386,7 +401,7 @@ export default class FunctionCurve extends DoenetRenderer {
 
   downThroughPoint(i, e) {
 
-    if (!this.doenetSvData.draggable) {
+    if (!this.doenetSvData.draggable || this.doenetSvData.fixed) {
       return;
     }
 
@@ -434,7 +449,7 @@ export default class FunctionCurve extends DoenetRenderer {
   }
 
   downOther() {
-    if (!this.doenetSvData.draggable) {
+    if (!this.doenetSvData.draggable || this.doenetSvData.fixed) {
       return;
     }
 
@@ -442,6 +457,8 @@ export default class FunctionCurve extends DoenetRenderer {
     this.draggedControlPoint = null;
 
     this.hitObject = true;
+
+    this.updateSinceDown = false;
 
     this.makeThroughPointsAlwaysVisible();
     this.props.board.updateRenderer();
@@ -493,12 +510,27 @@ export default class FunctionCurve extends DoenetRenderer {
       this.props.board.itemsRenderedLowQuality[this._key] = this.curveJXG;
     }
 
+    this.updateSinceDown = true;
+
     let visible = !this.doenetSvData.hidden;
 
     this.curveJXG.name = this.doenetSvData.label;
 
     this.curveJXG.visProp["visible"] = visible;
     this.curveJXG.visPropCalc["visible"] = visible;
+
+
+    if (this.curveJXG.visProp.strokecolor !== this.doenetSvData.selectedStyle.lineColor) {
+      this.curveJXG.visProp.strokecolor = this.doenetSvData.selectedStyle.lineColor;
+      this.curveJXG.visProp.highlightstrokecolor = this.doenetSvData.selectedStyle.lineColor;
+    }
+    let newDash = styleToDash(this.doenetSvData.selectedStyle.lineStyle, this.doenetSvData.dashed);
+    if (this.curveJXG.visProp.dash !== newDash) {
+      this.curveJXG.visProp.dash = newDash;
+    }
+    if (this.curveJXG.visProp.strokewidth !== this.doenetSvData.selectedStyle.lineWidth) {
+      this.curveJXG.visProp.strokewidth = this.doenetSvData.selectedStyle.lineWidth
+    }
 
     if (["parameterization", "bezier"].includes(this.doenetSvData.curveType)) {
       this.curveJXG.X = this.doenetSvData.fs[0];
@@ -545,7 +577,7 @@ export default class FunctionCurve extends DoenetRenderer {
     }
 
 
-    if (!this.doenetSvData.draggable) {
+    if (!this.doenetSvData.draggable || this.doenetSvData.fixed) {
       if (this.segmentsJXG) {
         this.deleteControls();
       }
@@ -723,11 +755,11 @@ export default class FunctionCurve extends DoenetRenderer {
 
 }
 
-function styleToDash(style) {
-  if (style === "solid") {
-    return 0;
-  } else if (style === "dashed") {
+function styleToDash(style, dash) {
+  if (style === "dashed" || dash) {
     return 2;
+  } else if (style === "solid") {
+    return 0;
   } else if (style === "dotted") {
     return 1;
   } else {

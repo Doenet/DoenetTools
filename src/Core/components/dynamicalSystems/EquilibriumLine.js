@@ -1,8 +1,8 @@
-import Point from './Point';
+import Line from '../Line';
 
-export default class EquilibriumPoint extends Point {
-  static componentType = "equilibriumPoint";
-  static rendererType = "point";
+export default class EquilibriumLine extends Line {
+  static componentType = "equilibriumLine";
+  static rendererType = "line";
 
   static createAttributesObject(args) {
     let attributes = super.createAttributesObject(args);
@@ -31,7 +31,7 @@ export default class EquilibriumPoint extends Point {
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
 
-    stateVariableDefinitions.open = {
+    stateVariableDefinitions.dashed = {
       forRenderer: true,
       returnDependencies: () => ({
         stable: {
@@ -41,7 +41,7 @@ export default class EquilibriumPoint extends Point {
       }),
       definition({ dependencyValues }) {
         return {
-          newValues: { open: !dependencyValues.stable }
+          newValues: { dashed: !dependencyValues.stable }
         }
       },
       inverseDefinition({ desiredStateVariableValues }) {
@@ -49,7 +49,7 @@ export default class EquilibriumPoint extends Point {
           success: true,
           instructions: [{
             setDependency: "stable",
-            desiredValue: !desiredStateVariableValues.open
+            desiredValue: !desiredStateVariableValues.dashed
           }]
         }
       }
@@ -60,7 +60,7 @@ export default class EquilibriumPoint extends Point {
 
   };
 
-  switchPoint() {
+  switchLine() {
     if (this.stateValues.switchable) {
       return this.coreFunctions.performUpdate({
         updateInstructions: [{

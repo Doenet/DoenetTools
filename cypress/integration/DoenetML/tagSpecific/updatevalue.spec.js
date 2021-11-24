@@ -1476,5 +1476,64 @@ describe('UpdateValue Tag Tests', function () {
 
   })
 
+  it('update value set to ignore read only flag', () => {
+
+    let doenetML = `
+    <text>a</text>
+    <p>m = <number name="m" >1</number></p>
+    <p>n = <number name="n" >10</number></p>
+
+    <p><updateValue name="incm" label="increment m" tname="m" newValue="$m+1"  /></p>
+    <p><updateValue name="incn" label="increment n" tname="n" newValue="$n+10" disabledIgnoresParentReadOnly /></p>
+
+    `
+
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML
+      }, "*");
+    });
+
+    // at least right now, this turns on Allow Local Page State
+    cy.get('h3 > button').click();
+    cy.get(':nth-child(11) > label > input').click()
+    cy.get('h3 > button').click();
+
+
+    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+
+    cy.get('#\\/m').should('have.text', '1');
+    cy.get('#\\/n').should('have.text', '10');
+
+
+    cy.get('#\\/incm').click();
+    cy.get('#\\/incn').click();
+
+    cy.get('#\\/m').should('have.text', '2');
+    cy.get('#\\/n').should('have.text', '20');
+
+
+    // at least right now, this turns on Read Only
+    cy.get('h3 > button').click();
+    cy.get(':nth-child(5) > label > input').click()
+    cy.get('h3 > button').click();
+
+    cy.get('#\\/incm_button').should('be.disabled')
+    cy.get('#\\/incn_button').should('not.be.disabled')
+
+    cy.get('#\\/m').should('have.text', '2');
+    cy.get('#\\/n').should('have.text', '20');
+
+    cy.get('#\\/incm').click();
+    cy.get('#\\/incn').click();
+
+    cy.get('#\\/m').should('have.text', '2');
+    cy.get('#\\/n').should('have.text', '30');
+
+
+
+
+  })
+
 
 });

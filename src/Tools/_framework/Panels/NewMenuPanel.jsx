@@ -181,6 +181,7 @@ console.log(">>>===MenuPanel", hide)
 
   const LazyMenuObj = useRef({
     SelectedCourse:lazy(() => import('../Menus/SelectedCourse')),
+    GradeSettings:lazy(() => import('../Menus/GradeSettings')),
     SelectedDoenetML:lazy(() => import('../Menus/SelectedDoenetML')),
     SelectedFolder:lazy(() => import('../Menus/SelectedFolder')),
     SelectedCollection:lazy(() => import('../Menus/SelectedCollection')),

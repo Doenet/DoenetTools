@@ -94,7 +94,7 @@ if ($db_contentId == 'NA'){
   SET contentId = '$contentId', 
   assignedVariant = '$requestedVariant',
   generatedVariant = '$generatedVariant',
-  began = NOW()
+  began = CONVERT_TZ(NOW(), @@session.time_zone, '+00:00')
   WHERE userId = '$userId'
     AND doenetId = '$doenetId'
     AND attemptNumber = '$attemptNumber'
