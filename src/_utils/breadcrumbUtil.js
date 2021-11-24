@@ -123,6 +123,7 @@ export function useNavigationCrumbs(driveId,folderId){
           path: `${driveId}:${item.itemId}:${item.itemId}:Folder`,
         }
       }
+      console.log(">>>>nav params",params)
       crumbArray.push({
         label:item.label,
         onClick:()=>{
