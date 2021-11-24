@@ -1746,6 +1746,7 @@ export const selectedDriveItemsAtom = atomFamily({
 
 export const clearDriveAndItemSelections = selector({
   key: 'clearDriveAndItemSelections',
+  get: () => null,
   set: ({ get, set }) => {
     const globalItemsSelected = get(globalSelectedNodesAtom);
     for (let itemObj of globalItemsSelected) {
