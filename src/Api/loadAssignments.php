@@ -22,6 +22,7 @@ if (!isset($_GET["driveId"])) {
     ON a.doenetId = dc.doenetId
     WHERE a.driveId = '$driveId'
     AND dc.isReleased = '1'
+    AND dc.isDeleted = '0'
     ORDER BY a.dueDate
     ";
 
