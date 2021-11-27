@@ -138,23 +138,13 @@ export default class Function extends InlineComponent {
   static returnSugarInstructions() {
     let sugarInstructions = super.returnSugarInstructions();
 
-    let wrapStringsAndMacros = function ({ matchedChildren }) {
+    let wrapStringOrMultipleChildrenWithMath = function ({ matchedChildren }) {
 
-      // only apply if all children are strings or macros
-      if (!matchedChildren.every(child =>
-        child.componentType === "string" ||
-        child.doenetAttributes && child.doenetAttributes.createdFromMacro
-      )) {
+      // apply if have a single string or multiple children
+      if (matchedChildren.length === 1 && matchedChildren[0].componentType !== "string") {
         return { success: false }
       }
-
-      // don't apply to a single macro
-      if (matchedChildren.length === 1 &&
-        matchedChildren[0].componentType !== "string"
-      ) {
-        return { success: false }
-      }
-
+        
       return {
         success: true,
         newChildren: [{
@@ -166,7 +156,7 @@ export default class Function extends InlineComponent {
     }
 
     sugarInstructions.push({
-      replacementFunction: wrapStringsAndMacros
+      replacementFunction: wrapStringOrMultipleChildrenWithMath
     });
 
     return sugarInstructions;

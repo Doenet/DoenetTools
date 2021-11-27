@@ -1397,6 +1397,78 @@ describe('Function Tag Tests', function () {
     })
   });
 
+  it('function determined by formula via sugar, with strings and maths', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <graph>
+    <function>
+    <number>3</number>/(1+e^(-x/<math>2</math>))
+    </function>
+    </graph>
+    `}, "*");
+    });
+
+    //wait for window to load
+    cy.get('#\\/_text1').should('have.text', 'a');
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/_function1'].stateValues.nInputs).eq(1);
+
+      let f = components['/_function1'].stateValues.fs[0];
+      let numericalf = components['/_function1'].stateValues.numericalfs[0];
+      let symbolicf = components['/_function1'].stateValues.symbolicfs[0];
+
+      expect(f(-5)).closeTo(3 / (1 + Math.exp(5 / 2)), 1E-12);
+      expect(f(1)).closeTo(3 / (1 + Math.exp(-1 / 2)), 1E-12);
+      expect(numericalf(-5)).closeTo(3 / (1 + Math.exp(5 / 2)), 1E-12);
+      expect(numericalf(1)).closeTo(3 / (1 + Math.exp(-1 / 2)), 1E-12);
+      expect(symbolicf(-5).equals(me.fromText('3/(1+e^(5/2))'))).eq(true)
+      expect(symbolicf(1).equals(me.fromText('3/(1+e^(-1/2))'))).eq(true)
+      expect(symbolicf('z').equals(me.fromText('3/(1+e^(-z/2))'))).eq(true)
+
+    })
+  });
+
+  it('function determined by formula via sugar, with strings and copies', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <graph>
+    <function>
+    <copy tname="a" />/(1+e^(-x/<copy tname="b" />))
+    </function>
+    </graph>
+    <number name="a">3</number>
+    <math name="b">2</math>
+    `}, "*");
+    });
+
+    //wait for window to load
+    cy.get('#\\/_text1').should('have.text', 'a');
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/_function1'].stateValues.nInputs).eq(1);
+
+      let f = components['/_function1'].stateValues.fs[0];
+      let numericalf = components['/_function1'].stateValues.numericalfs[0];
+      let symbolicf = components['/_function1'].stateValues.symbolicfs[0];
+
+      expect(f(-5)).closeTo(3 / (1 + Math.exp(5 / 2)), 1E-12);
+      expect(f(1)).closeTo(3 / (1 + Math.exp(-1 / 2)), 1E-12);
+      expect(numericalf(-5)).closeTo(3 / (1 + Math.exp(5 / 2)), 1E-12);
+      expect(numericalf(1)).closeTo(3 / (1 + Math.exp(-1 / 2)), 1E-12);
+      expect(symbolicf(-5).equals(me.fromText('3/(1+e^(5/2))'))).eq(true)
+      expect(symbolicf(1).equals(me.fromText('3/(1+e^(-1/2))'))).eq(true)
+      expect(symbolicf('z').equals(me.fromText('3/(1+e^(-z/2))'))).eq(true)
+
+    })
+  });
+
   it('function determined by math formula', () => {
     cy.window().then((win) => {
       win.postMessage({
@@ -1711,7 +1783,9 @@ describe('Function Tag Tests', function () {
     <text>a</text>
     <function variables="q"><math>q^2 sin(pi q/2)/100</math></function>
     <graph>
-      <function>$_function1</function>
+      <function>
+        $_function1
+      </function>
     </graph>
     `}, "*");
     });
