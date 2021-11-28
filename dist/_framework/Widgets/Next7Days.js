@@ -16,11 +16,6 @@ import {
   DoenetML,
   DriveHeader
 } from "../../_reactComponents/Drive/NewDrive.js";
-import {FontAwesomeIcon} from "../../_snowpack/pkg/@fortawesome/react-fontawesome.js";
-import {
-  faLessThan,
-  faGreaterThan
-} from "../../_snowpack/pkg/@fortawesome/free-solid-svg-icons.js";
 import {selectedMenuPanelAtom} from "../Panels/NewMenuPanel.js";
 import axios from "../../_snowpack/pkg/axios.js";
 import Button from "../../_reactComponents/PanelHeaderComponents/Button.js";
@@ -29,6 +24,8 @@ import {globalSelectedNodesAtom} from "../../_reactComponents/Drive/NewDrive.js"
 import {mainPanelClickAtom} from "../Panels/NewMainPanel.js";
 import {effectiveRoleAtom} from "../../_reactComponents/PanelHeaderComponents/RoleDropdown.js";
 import {UTCDateStringToDate} from "../../_utils/dateUtilityFunction.js";
+import {FontAwesomeIcon} from "../../_snowpack/pkg/@fortawesome/react-fontawesome.js";
+import {faChevronLeft, faChevronRight, faThumbtack} from "../../_snowpack/pkg/@fortawesome/free-solid-svg-icons.js";
 export const classTimesAtom = atom({
   key: "classTimesAtom",
   default: []
@@ -152,7 +149,7 @@ function buildRows({
       let effectiveRowLabel = "";
       if (dueDate) {
         dueDate.setSeconds(0, 0);
-        effectiveRowLabel = `${dotw} ${dueDate.getMonth() + 1}/${dueDate.getDate()}`;
+        effectiveRowLabel = `${dotw} `;
         displayDueDate = formatDueDate(dueDate, classTimes);
         if (assignedDate) {
           displayAssignedDate = formatAssignedDate(assignedDate, classTimes, dueDate, weekShift == 0);
@@ -200,6 +197,12 @@ function buildRows({
             });
           }
           axios.get("/api/saveCompleted.php", {params: {doenetId: assignment.doenetId}});
+        },
+        style: {
+          height: "18px",
+          width: "177px",
+          border: "2px solid black",
+          borderRadius: "5px"
         }
       });
       if (isFirstRow) {
@@ -207,39 +210,40 @@ function buildRows({
         newRows.push(/* @__PURE__ */ React.createElement("tr", {
           key: `${effectiveRowLabel}${assignment.doenetId}`
         }, /* @__PURE__ */ React.createElement("td", {
+          style: {borderBottom: "2px solid black", padding: "8px"},
           rowSpan: numberOfVisibleRows
         }, effectiveRowLabel), /* @__PURE__ */ React.createElement("td", {
-          style: {backgroundColor: bgColor},
+          style: {backgroundColor: bgColor, padding: "8px", borderBottom: "2px solid black"},
           onClick: oneClick,
           onDoubleClick: doubleClick
         }, assignment.label), /* @__PURE__ */ React.createElement("td", {
-          style: {backgroundColor: bgColor},
+          style: {backgroundColor: bgColor, padding: "8px", borderBottom: "2px solid black"},
           onClick: oneClick,
           onDoubleClick: doubleClick
         }, displayAssignedDate), /* @__PURE__ */ React.createElement("td", {
-          style: {backgroundColor: bgColor},
+          style: {backgroundColor: bgColor, padding: "8px", borderBottom: "2px solid black"},
           onClick: oneClick,
           onDoubleClick: doubleClick
         }, displayDueDate), /* @__PURE__ */ React.createElement("td", {
-          style: {backgroundColor: bgColor, textAlign: "center"}
+          style: {backgroundColor: bgColor, padding: "8px", borderBottom: "2px solid black", textAlign: "center"}
         }, checkbox)));
       } else {
         newRows.push(/* @__PURE__ */ React.createElement("tr", {
           key: `${effectiveRowLabel}${assignment.doenetId}${i}`
         }, /* @__PURE__ */ React.createElement("td", {
-          style: {backgroundColor: bgColor},
+          style: {backgroundColor: bgColor, padding: "8px", borderBottom: "2px solid black"},
           onClick: oneClick,
           onDoubleClick: doubleClick
         }, assignment.label), /* @__PURE__ */ React.createElement("td", {
-          style: {backgroundColor: bgColor},
+          style: {backgroundColor: bgColor, padding: "8px", borderBottom: "2px solid black"},
           onClick: oneClick,
           onDoubleClick: doubleClick
         }, displayAssignedDate), /* @__PURE__ */ React.createElement("td", {
-          style: {backgroundColor: bgColor},
+          style: {backgroundColor: bgColor, padding: "8px", borderBottom: "2px solid black"},
           onClick: oneClick,
           onDoubleClick: doubleClick
         }, displayDueDate), /* @__PURE__ */ React.createElement("td", {
-          style: {backgroundColor: bgColor, textAlign: "center"}
+          style: {backgroundColor: bgColor, padding: "8px", borderBottom: "2px solid black", textAlign: "center"}
         }, checkbox)));
       }
     }
@@ -386,9 +390,12 @@ export default function Next7Days({driveId}) {
   let headerSunday = `${sunday.getMonth() + 1}/${sunday.getDate()}`;
   let pinnedRows = [];
   let overdueRows = [];
+  let pinnedName = /* @__PURE__ */ React.createElement("p", null, /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
+    icon: faThumbtack
+  }), "  Pinned");
   if (weekShift == 0) {
     pinnedRows.push(...buildRows({
-      rowLabel: "Pinned",
+      rowLabel: pinnedName,
       assignments: pinnedArray,
       clickCallback,
       doubleClickCallback,
@@ -470,29 +477,29 @@ export default function Next7Days({driveId}) {
   }, /* @__PURE__ */ React.createElement("span", null, /* @__PURE__ */ React.createElement(Button, {
     onClick: () => setWeekShift(0),
     value: "This Week"
-  }), " "), /* @__PURE__ */ React.createElement("h1", null, "Current Content"), /* @__PURE__ */ React.createElement("span", {
+  }), " "), /* @__PURE__ */ React.createElement("h1", null, "Content by Week"), /* @__PURE__ */ React.createElement("span", {
     style: {fontSize: "1.4em"}
   }, headerMonday, " - ", headerSunday), /* @__PURE__ */ React.createElement(ButtonGroup, null, /* @__PURE__ */ React.createElement("span", null, /* @__PURE__ */ React.createElement(Button, {
     onClick: () => setWeekShift((was) => was - 1),
     icon: /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
-      icon: faLessThan
+      icon: faChevronLeft
     })
   })), /* @__PURE__ */ React.createElement("span", null, /* @__PURE__ */ React.createElement(Button, {
     onClick: () => setWeekShift((was) => was + 1),
     icon: /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
-      icon: faGreaterThan
+      icon: faChevronRight
     })
   })))), /* @__PURE__ */ React.createElement("table", {
     style: {width: "850px", borderSpacing: "0em .2em"}
   }, /* @__PURE__ */ React.createElement("tr", null, /* @__PURE__ */ React.createElement("th", {
-    style: {width: "150px", textAlign: "left"}
+    style: {width: "150px", padding: "8px", textAlign: "left", borderBottom: "2px solid black"}
   }, "Day"), /* @__PURE__ */ React.createElement("th", {
-    style: {width: "200px", textAlign: "left"}
+    style: {width: "200px", padding: "8px", textAlign: "left", borderBottom: "2px solid black"}
   }, "Name"), /* @__PURE__ */ React.createElement("th", {
-    style: {width: "200px", textAlign: "left"}
+    style: {width: "200px", padding: "8px", textAlign: "left", borderBottom: "2px solid black"}
   }, "Assigned"), /* @__PURE__ */ React.createElement("th", {
-    style: {width: "200px", textAlign: "left"}
+    style: {width: "200px", padding: "8px", textAlign: "left", borderBottom: "2px solid black"}
   }, "Due"), /* @__PURE__ */ React.createElement("th", {
-    style: {width: "100px", textAlign: "center"}
+    style: {width: "100px", padding: "8px", textAlign: "center", borderBottom: "2px solid black"}
   }, "Completed")), pinnedRows, overdueRows, dayRows));
 }

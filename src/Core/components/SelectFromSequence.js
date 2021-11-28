@@ -3,7 +3,7 @@ import me from 'math-expressions';
 import { enumerateSelectionCombinations } from '../utils/enumeration';
 import { processAssignNames } from '../utils/serializedStateProcessing';
 import { textToAst } from '../utils/math';
-import { calculateSequenceParameters, numberToLetters, lettersToNumber } from '../utils/sequence';
+import { calculateSequenceParameters, numberToLetters, lettersToNumber, returnSequenceValueForIndex } from '../utils/sequence';
 import { convertAttributesForComponentType } from '../utils/copy';
 
 export default class SelectFromSequence extends Sequence {
@@ -562,65 +562,53 @@ function makeSelection({ dependencyValues }) {
       let n = dependencyValues.length;
       desiredIndices = desiredIndices.map(x => ((((x - 1) % n) + n) % n) + 1);
 
-      // assume that we have an excluded combination 
-      // until we determine that we aren't matching an excluded combination
-      let isExcludedCombination = true;
+
+      // start off assuming we matched all excluded combinations
+      // until we determine that we haven't matched them
+      let matchedExcludedCombinations = [...Array(dependencyValues.excludedCombinations.length).keys()];
 
       let selectedValues = [];
       for (let [indNumber, indexFrom1] of desiredIndices.entries()) {
-        let indexFrom0 = indexFrom1 - 1;
-        let componentValue = dependencyValues.from;
-        if (indexFrom0 > 0) {
-          if (dependencyValues.type === "math") {
-            componentValue = componentValue.add(dependencyValues.step.multiply(me.fromAst(indexFrom0))).expand().simplify();
-          } else {
-            componentValue += dependencyValues.step * indexFrom0;
-          }
-        }
 
-        if (dependencyValues.type === "letters") {
-          componentValue = numberToLetters(componentValue, dependencyValues.lowercase);
-        }
+        let componentValue = returnSequenceValueForIndex({
+          index: indexFrom1 - 1,
+          from: dependencyValues.from,
+          step: dependencyValues.step,
+          length: dependencyValues.length,
+          exclude: dependencyValues.exclude,
+          type: dependencyValues.type,
+          lowercase: dependencyValues.lowercase
+        })
 
-        // throw error if asked for an excluded value
-        if (dependencyValues.type === "math") {
-          if (dependencyValues.exclude.some(x => x.equals(componentValue))) {
-            throw Error("Specified index of selectfromsequence that was excluded")
-          }
-        } else if (dependencyValues.type === "number") {
-          if (dependencyValues.exclude.some(x => Math.abs(x - componentValue) <= 1E-14 * Math.max(Math.abs(x), Math.abs(componentValue)))) {
-            throw Error("Specified index of selectfromsequence that was excluded")
-          }
-        } else {
-          if (dependencyValues.exclude.includes(componentValue)) {
-            throw Error("Specified index of selectfromsequence that was excluded")
-          }
-        }
 
         // check if matches the corresponding component of an excluded combination
-        let matchedExcludedCombinationIndex = false
-        if (dependencyValues.type === "math") {
-          if (dependencyValues.excludedCombinations.some(x => x[indNumber].equals(componentValue))) {
-            matchedExcludedCombinationIndex = true;
-          }
-        } else if (dependencyValues.type === "number") {
-          if (dependencyValues.excludedCombinations.some(x => Math.abs(x[indNumber] - componentValue) <= 1E-14 * Math.max(Math.abs(x[indNumber]), Math.abs(componentValue)))) {
-            matchedExcludedCombinationIndex = true;
-          }
-        } else {
-          if (dependencyValues.excludedCombinations.some(x => x[indNumber] === componentValue)) {
-            matchedExcludedCombinationIndex = true;
+        let matchCombIndsToRemove = [];
+
+        for (let [matchInd, combInd] of matchedExcludedCombinations.entries()) {
+          let excludedValue = dependencyValues.excludedCombinations[combInd][indNumber];
+          if (dependencyValues.type === "math") {
+            if (!excludedValue.equals(componentValue)) {
+              matchCombIndsToRemove.push(matchInd)
+            }
+          } else if (dependencyValues.type === "number") {
+            if (Math.abs(excludedValue - componentValue) > 1E-14 * Math.max(Math.abs(excludedValue), Math.abs(componentValue))) {
+              matchCombIndsToRemove.push(matchInd)
+            }
+          } else {
+            if (excludedValue !== componentValue) {
+              matchCombIndsToRemove.push(matchInd)
+            }
           }
         }
 
-        if (!matchedExcludedCombinationIndex) {
-          isExcludedCombination = false;
+        for (let matchInd of matchCombIndsToRemove.reverse()) {
+          matchedExcludedCombinations.splice(matchInd, 1);
         }
 
         selectedValues.push(componentValue);
       }
 
-      if (isExcludedCombination) {
+      if (matchedExcludedCombinations.length > 0) {
         throw Error("Specified indices of selectfromsequence that was an excluded combination")
       }
 

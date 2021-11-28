@@ -4221,5 +4221,157 @@ describe('Specifying single variant document tests', function () {
 
   });
 
+  it('excluded sequence items, reload generated variant', () => {
+
+
+    cy.log("Test a bunch of variants")
+    for (let ind = 1; ind <= 10; ind++) {
+
+
+      cy.window().then((win) => {
+        win.postMessage({
+          doenetML: `
+        <text>${ind}</text>
+        <variantControl nvariants="100"/>
+        <selectFromSequence from="1" to="20" exclude="2 3 4 5 6 8 9 11 12 13 14 15 16 17 19" assignNames="n" />
+        `,
+          requestedVariant: { index: ind },
+        }, "*");
+      })
+
+      // to wait for page to load
+      cy.get('#\\/_text1').should('have.text', `${ind}`)
+
+      let generatedVariantInfo;
+      let indexChosen;
+      let n;
+
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
+        generatedVariantInfo = JSON.parse(JSON.stringify(components["/_document1"].stateValues.generatedVariantInfo));
+        indexChosen = components["/_selectfromsequence1"].stateValues.selectedIndices[0];
+        n = components["/n"].stateValues.value;
+
+      })
+
+
+      cy.log('repeat from generatedVariantInfo')
+
+
+      cy.window().then((win) => {
+
+        win.postMessage({
+          doenetML: `
+        <text>${ind}a</text>
+        <variantControl nvariants="100"/>
+        <selectFromSequence from="1" to="20" exclude="2 3 4 5 6 8 9 11 12 13 14 15 16 17 19" assignNames="n" />
+        `,
+          requestedVariant: generatedVariantInfo,
+        }, "*");
+      })
+
+      // to wait for page to load
+      cy.get('#\\/_text1').should('have.text', `${ind}a`)
+
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
+        expect(components["/_selectfromsequence1"].stateValues.selectedIndices[0]).eq(indexChosen);
+        expect(components["/n"].stateValues.value).eq(n);
+
+      })
+
+
+    }
+
+
+  });
+
+  it('excluded combinations of sequence items, reload generated variant', () => {
+
+
+    cy.log("Test a bunch of variants")
+    for (let ind = 1; ind <= 10; ind++) {
+
+
+      cy.window().then((win) => {
+        win.postMessage({
+          doenetML: `
+        <text>${ind}</text>
+        <variantControl nvariants="100"/>
+        <selectFromSequence from="1" to="20" exclude="2 3 4 5 6 8 9 11 12 13 14 15 16 17 19" excludeCombinations="(1 7) (1 10) (1 18) (7 10) (7 18) (7 20) (10 1) (10 7) (10 20) (18 1) (18 7) (18 20) (20 1) (20 10)" assignNames="m n" numberToSelect="2" />
+        <selectFromSequence type="math" from="x" step="h" length="7" exclude="x+h x+2h x+3h x+5h" excludeCombinations="(x x+4h) (x+4h x+6h) (x+6h x)" assignNames="x1 x2" numberToSelect="2" />
+        <selectFromSequence type="letters" from="a" to="i" exclude="b c d e f h" excludeCombinations="(a i) (g a) (i g)" assignNames="l1 l2" numberToSelect="2" />
+        `,
+          requestedVariant: { index: ind },
+        }, "*");
+      })
+
+      // to wait for page to load
+      cy.get('#\\/_text1').should('have.text', `${ind}`)
+
+      let generatedVariantInfo;
+      let indicesChosen1, indicesChosen2, indicesChosen3;
+      let m, n, x1, x2, l1, l2;
+
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
+        generatedVariantInfo = JSON.parse(JSON.stringify(components["/_document1"].stateValues.generatedVariantInfo));
+
+        indicesChosen1 = [...components["/_selectfromsequence1"].stateValues.selectedIndices];
+        m = components["/m"].stateValues.value;
+        n = components["/n"].stateValues.value;
+
+        indicesChosen2 = [...components["/_selectfromsequence2"].stateValues.selectedIndices];
+        x1 = components["/x1"].stateValues.value;
+        x2 = components["/x2"].stateValues.value;
+
+        indicesChosen3 = [...components["/_selectfromsequence3"].stateValues.selectedIndices];
+        l1 = components["/l1"].stateValues.value;
+        l2 = components["/l2"].stateValues.value;
+
+      })
+
+
+      cy.log('repeat from generatedVariantInfo')
+
+
+      cy.window().then((win) => {
+
+        win.postMessage({
+          doenetML: `
+        <text>${ind}a</text>
+        <variantControl nvariants="100"/>
+        <selectFromSequence from="1" to="20" exclude="2 3 4 5 6 8 9 11 12 13 14 15 16 17 19" excludeCombinations="(1 7) (1 10) (1 18) (7 10) (7 18) (7 20) (10 1) (10 7) (10 20) (18 1) (18 7) (18 20) (20 1) (20 10)" assignNames="m n" numberToSelect="2" />
+        <selectFromSequence type="math" from="x" step="h" length="7" exclude="x+h x+2h x+3h x+5h" excludeCombinations="(x x+4h) (x+4h x+6h) (x+6h x)" assignNames="x1 x2" numberToSelect="2" />
+        <selectFromSequence type="letters" from="a" to="i" exclude="b c d e f h" excludeCombinations="(a i) (g a) (i g)" assignNames="l1 l2" numberToSelect="2" />
+        `,
+          requestedVariant: generatedVariantInfo,
+        }, "*");
+      })
+
+      // to wait for page to load
+      cy.get('#\\/_text1').should('have.text', `${ind}a`)
+
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
+        expect(components["/_selectfromsequence1"].stateValues.selectedIndices).eqls(indicesChosen1);
+        expect(components["/m"].stateValues.value).eq(m);
+        expect(components["/n"].stateValues.value).eq(n);
+        expect(components["/_selectfromsequence2"].stateValues.selectedIndices).eqls(indicesChosen2);
+        expect(components["/x1"].stateValues.value.equals(x1)).be.true;
+        expect(components["/x2"].stateValues.value.equals(x2)).be.true;
+        expect(components["/_selectfromsequence1"].stateValues.selectedIndices).eqls(indicesChosen1);
+        expect(components["/l1"].stateValues.value).eq(l1);
+        expect(components["/l2"].stateValues.value).eq(l2);
+
+      })
+
+
+    }
+
+
+  });
+
+
 
 });

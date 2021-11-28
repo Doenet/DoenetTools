@@ -24,6 +24,8 @@ export default class Graph extends DoenetRenderer {
 
     let boundingbox = [this.doenetSvData.xmin, this.doenetSvData.ymax, this.doenetSvData.xmax, this.doenetSvData.ymin];
 
+    JXG.Options.layer.numlayers = 100;
+
     this.board = window.JXG.JSXGraph.initBoard(this.componentName,
       {
         boundingbox,
@@ -317,20 +319,9 @@ export default class Graph extends DoenetRenderer {
 
 
   componentWillUnmount() {
-    // let allRenderers = this.renderers;
-    // for(let componentName in allRenderers) {
-    //   let componentRenderer = allRenderers[componentName];
-    //   if(componentRenderer.deleteGraphicalObject !== undefined) {
-    //     componentRenderer.deleteGraphicalObject();
-    //   }
-    // }
+    this.board.off('boundingbox');
   }
 
-
-  componentDidUpdate() {
-    // this.updateGraphicalComponents();
-    //window.MathJax.Hub.Queue(["Typeset",window.MathJax.Hub, "#"+this.component.componentName]);
-  }
 
   render() {
 

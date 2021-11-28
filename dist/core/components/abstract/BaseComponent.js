@@ -250,6 +250,11 @@ export default class BaseComponent {
         defaultValue: null,//flags.readOnly ? true : false,
         // public: true,
       },
+      disabledIgnoresParentReadOnly: {
+        createComponentOfType: "boolean",
+        createStateVariable: "disabledIgnoresParentReadOnly",
+        defaultValue: false,
+      },
       modifyIndirectly: {
         createComponentOfType: "boolean",
         createStateVariable: "modifyIndirectly",
@@ -400,6 +405,11 @@ export default class BaseComponent {
           dependencyType: "flag",
           flagName: "readOnly"
         },
+        disabledIgnoresParentReadOnly: {
+          dependencyType: "stateVariable",
+          variableName: "disabledIgnoresParentReadOnly",
+          variablesOptional: true,
+        },
         parentDisabled: {
           dependencyType: "parentStateVariable",
           variableName: "disabled"
@@ -415,7 +425,7 @@ export default class BaseComponent {
       }),
       definition({ dependencyValues, usedDefault }) {
 
-        if (dependencyValues.readOnly) {
+        if (dependencyValues.readOnly && !dependencyValues.disabledIgnoresParentReadOnly) {
           return { newValues: { disabled: true } }
         }
 
@@ -432,7 +442,7 @@ export default class BaseComponent {
         let disabled = false;
         let useEssential = true;
 
-        if (dependencyValues.parentDisabled !== null && !usedDefault.parentDisabled) {
+        if (!dependencyValues.disabledIgnoresParentReadOnly && dependencyValues.parentDisabled !== null && !usedDefault.parentDisabled) {
           disabled = disabled || dependencyValues.parentDisabled;
           useEssential = false;
         }
@@ -821,21 +831,16 @@ export default class BaseComponent {
         }
       } else {
         // always copy others
-        serializedComponent.attributes[attrName] = JSON.parse(JSON.stringify(attribute));
+        // TODO: for now not copying isResponse if linked
+        // but not sure if that is the right thing to do
+        if (attrName !== "isResponse" || !parameters.forLink) {
+          serializedComponent.attributes[attrName] = JSON.parse(JSON.stringify(attribute));
+        }
       }
     }
 
 
-    if (parameters.forLink) {
-      serializedComponent.originalName = this.componentName;
-      serializedComponent.originalDoenetAttributes = deepClone(this.doenetAttributes);
-      serializedComponent.doenetAttributes = deepClone(this.doenetAttributes);
-      serializedComponent.originalAttributes = deepClone(serializedComponent.attributes);
-
-      delete serializedComponent.doenetAttributes.prescribedName;
-      delete serializedComponent.doenetAttributes.assignNames;
-
-    } else {
+    if (!parameters.forLink) {
       let additionalState = {};
       for (let item in this.state) {
         // evaluate state variable first so that 
@@ -853,15 +858,17 @@ export default class BaseComponent {
         serializedComponent.state = additionalState;
       }
 
-      serializedComponent.originalName = this.componentName;
-      serializedComponent.originalDoenetAttributes = deepClone(this.doenetAttributes);
-      serializedComponent.doenetAttributes = deepClone(this.doenetAttributes);
-      serializedComponent.originalAttributes = deepClone(serializedComponent.attributes);
-
-      delete serializedComponent.doenetAttributes.prescribedName;
-      delete serializedComponent.doenetAttributes.assignNames;
-
     }
+
+
+    serializedComponent.originalName = this.componentName;
+    serializedComponent.originalDoenetAttributes = deepClone(this.doenetAttributes);
+    serializedComponent.doenetAttributes = deepClone(this.doenetAttributes);
+    serializedComponent.originalAttributes = deepClone(serializedComponent.attributes);
+
+    delete serializedComponent.doenetAttributes.prescribedName;
+    delete serializedComponent.doenetAttributes.assignNames;
+
 
     return serializedComponent;
 

@@ -97,26 +97,50 @@ if ($success){
 
     foreach ($learners AS &$learner){
         $userId = $learner['userId'];
+
         $sql = "
-        SELECT MAX(began) AS began,
-        doenetId
-        FROM user_assignment_attempt
+        SELECT timeLimitMultiplier 
+        FROM enrollment 
         WHERE userId = '$userId'
+        ";
+        $result = $conn->query($sql);
+        $row = $result->fetch_assoc();
+        $learner['timeLimit_multiplier'] = $row['timeLimitMultiplier'];
+
+        $sql = "
+        SELECT uaa.doenetId,
+		MAX(uaa.began) AS began
+        FROM user_assignment_attempt AS uaa
+        LEFT JOIN assignment AS a
+        ON a.doenetId = uaa.doenetId
+        WHERE uaa.userId = '$userId'
+        AND a.proctorMakesAvailable = '1'
         GROUP BY doenetId
         ";
-        //TODO: add proctorMakesAvailable test
-    // AND a.proctorMakesAvailable = '1'
-    //
-    //     LEFT JOIN assignment AS a
-    // ON a.doenetId = dc.doenetId
-    // WHERE dc.driveId = '$driveId'
 
         $result = $conn->query($sql);
         $exam_to_date = array();
+        $doenetIds = array();
+
         while($row = $result->fetch_assoc()){
             $exam_to_date[$row['doenetId']] = $row['began'];
+            array_push($doenetIds,$row['doenetId']);
         }
         $learner['exam_to_date'] = $exam_to_date;
+
+        $exam_to_timeLimit = array();
+        foreach ($doenetIds AS &$doenetId){
+            $sql = "
+            SELECT timeLimit
+            FROM assignment
+            WHERE doenetId = '$doenetId'
+            ";
+            $result = $conn->query($sql);
+        $row = $result->fetch_assoc();
+        $exam_to_timeLimit[$doenetId] = $row['timeLimit'];
+        }
+        $learner['exam_to_timeLimit'] = $exam_to_timeLimit;
+        
     }
 
 }
@@ -132,10 +156,12 @@ if ($success){
     WHERE dc.driveId = '$driveId'
     AND dc.isReleased = '1'
     AND a.proctorMakesAvailable = '1'
-    AND (a.assignedDate <= CONVERT_TZ(NOW(), @@session.time_zone, '+00:00') OR a.assignedDate IS NULL)
-    AND (a.dueDate >= CONVERT_TZ(NOW(), @@session.time_zone, '+00:00') OR a.dueDate IS NULL)
+    
     ORDER BY dc.label
     ";
+    // AND (a.assignedDate <= CONVERT_TZ(NOW(), @@session.time_zone, '+00:00') OR a.assignedDate IS NULL)
+    // AND (a.dueDate >= CONVERT_TZ(NOW(), @@session.time_zone, '+00:00') OR a.dueDate IS NULL)
+
     $result = $conn->query($sql);
     $exams = array();
     while($row = $result->fetch_assoc()) {

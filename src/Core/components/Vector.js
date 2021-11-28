@@ -923,8 +923,8 @@ export default class Vector extends GraphicalComponent {
 
       },
       arrayDefinitionByKey: function ({ globalDependencyValues, dependencyValuesByKey, arrayKeys }) {
-        // console.log('array definition of vector displacement')
-        // console.log(globalDepend encyValues, dependencyValuesByKey, arrayKeys)
+        // console.log('array definition of vector displacement', componentName)
+        // console.log(globalDependencyValues, dependencyValuesByKey, arrayKeys)
 
         let displacement = {};
         let essentialDisplacement = {};
@@ -1369,7 +1369,7 @@ export default class Vector extends GraphicalComponent {
           return [["point", { componentType: "mathList", isAttribute: "xs" }]];
         }
       },
-      stateVariablesDeterminingDependencies: ["basedOnHead", "basedOnDisplacement"],
+      stateVariablesDeterminingDependencies: ["basedOnTail", "basedOnHead", "basedOnDisplacement"],
       returnArraySizeDependencies: () => ({
         nDimTail: {
           dependencyType: "stateVariable",
@@ -1584,11 +1584,11 @@ export default class Vector extends GraphicalComponent {
 
         let numericalHead, numericalTail;
         if (dependencyValues.nDimensions === 1) {
-          let numericalHead = dependencyValues.head.evaluate_to_constant();
+          let numericalHead = dependencyValues.head[0].evaluate_to_constant();
           if (!Number.isFinite(numericalHead)) {
             numericalHead = NaN;
           }
-          numericalTail = dependencyValues.tail.evaluate_to_constant();
+          numericalTail = dependencyValues.tail[0].evaluate_to_constant();
           if (!Number.isFinite(numericalTail)) {
             numericalTail = NaN;
           }
@@ -1642,6 +1642,26 @@ export default class Vector extends GraphicalComponent {
         }
 
         return { newValues: { displacementCoords: me.fromAst(coordsAst) } }
+
+      },
+      inverseDefinition({ desiredStateVariableValues }) {
+        let coordsAst = desiredStateVariableValues.displacementCoords.tree;
+        let newDisplacement;
+
+        if (Array.isArray(coordsAst) && (coordsAst[0] === "vector" || coordsAst[0] === "tuple")) {
+          newDisplacement = coordsAst.slice(1).map(x => me.fromAst(x));
+        } else {
+          newDisplacement = [desiredStateVariableValues.displacementCoords];
+        }
+
+        return {
+          success: true,
+          instructions: [{
+            setDependency: "displacement",
+            desiredValue: newDisplacement
+          }]
+        }
+
 
       }
     }

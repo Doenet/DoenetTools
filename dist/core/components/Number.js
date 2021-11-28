@@ -237,7 +237,7 @@ export default class NumberComponent extends InlineComponent {
             numberChild: {
               dependencyType: "child",
               childGroups: ["numbers"],
-              variableNames: ["value", "canBeModified"],
+              variableNames: ["value"],
             },
             stringChild: {
               dependencyType: "child",

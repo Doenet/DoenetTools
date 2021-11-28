@@ -23,7 +23,7 @@ export default class Line extends DoenetRenderer {
       strokeColor: this.doenetSvData.selectedStyle.lineColor,
       highlightStrokeColor: this.doenetSvData.selectedStyle.lineColor,
       strokeWidth: this.doenetSvData.selectedStyle.lineWidth,
-      dash: styleToDash(this.doenetSvData.selectedStyle.lineStyle)
+      dash: styleToDash(this.doenetSvData.selectedStyle.lineStyle, this.doenetSvData.dashed)
     };
     if (!this.doenetSvData.draggable || this.doenetSvData.fixed) {
       jsxLineAttributes.highlightStrokeWidth = this.doenetSvData.selectedStyle.lineWidth;
@@ -40,6 +40,8 @@ export default class Line extends DoenetRenderer {
     this.lineJXG.on("up", function(e) {
       if (this.dragged) {
         this.actions.finalizeLinePosition();
+      } else if (this.doenetSvData.switchable && !this.doenetSvData.fixed) {
+        this.actions.switchLine();
       }
     }.bind(this));
     this.lineJXG.on("down", function(e) {
@@ -54,6 +56,9 @@ export default class Line extends DoenetRenderer {
     return this.lineJXG;
   }
   deleteGraphicalObject() {
+    this.lineJXG.off("drag");
+    this.lineJXG.off("down");
+    this.lineJXG.off("up");
     this.props.board.removeObject(this.lineJXG);
     delete this.lineJXG;
   }
@@ -105,7 +110,7 @@ export default class Line extends DoenetRenderer {
       this.lineJXG.visProp.strokecolor = this.doenetSvData.selectedStyle.lineColor;
       this.lineJXG.visProp.highlightstrokecolor = this.doenetSvData.selectedStyle.lineColor;
     }
-    let newDash = styleToDash(this.doenetSvData.selectedStyle.lineStyle);
+    let newDash = styleToDash(this.doenetSvData.selectedStyle.lineStyle, this.doenetSvData.dashed);
     if (this.lineJXG.visProp.dash !== newDash) {
       this.lineJXG.visProp.dash = newDash;
     }
@@ -178,11 +183,11 @@ export default class Line extends DoenetRenderer {
     }, mathJaxify));
   }
 }
-function styleToDash(style) {
-  if (style === "solid") {
-    return 0;
-  } else if (style === "dashed") {
+function styleToDash(style, dash) {
+  if (style === "dashed" || dash) {
     return 2;
+  } else if (style === "solid") {
+    return 0;
   } else if (style === "dotted") {
     return 1;
   } else {

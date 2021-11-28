@@ -94,7 +94,7 @@ export default function AssignmentViewer() {
   let startedInitOfDoenetId = useRef(null);
   let storedAllPossibleVariants = useRef([]);
 
-  console.log(`storedAllPossibleVariants -${storedAllPossibleVariants}-`);
+  // console.log(`storedAllPossibleVariants -${storedAllPossibleVariants}-`)
 
   const initializeValues = useRecoilCallback(
     ({ snapshot, set }) =>
@@ -113,6 +113,7 @@ export default function AssignmentViewer() {
           assignedDate,
           dueDate,
           showCorrectness,
+          showCreditAchievedMenu,
           showFeedback,
           showHints,
           showSolution,
@@ -122,7 +123,8 @@ export default function AssignmentViewer() {
         if (timeLimit === null) {
           suppress.push('TimerMenu');
         }
-        if (!showCorrectness) {
+
+        if (!showCorrectness || !showCreditAchievedMenu) {
           suppress.push('CreditAchieved');
         }
 
@@ -328,15 +330,16 @@ export default function AssignmentViewer() {
   );
 
   const updateAttemptNumberAndRequestedVariant = useRecoilCallback(
-    ({ snapshot, set }) =>
+    ({ snapshot }) =>
       async (newAttemptNumber) => {
         //TODO: Exit properly if we are a collection
         const isCollection = await snapshot.getPromise(
           searchParamAtomFamily('isCollection'),
         );
+
         if (isCollection) {
           console.error('How did you get here?');
-          return;
+          // return; //Would cause an infinite loop!
         }
 
         let doenetId = await snapshot.getPromise(
@@ -347,6 +350,7 @@ export default function AssignmentViewer() {
         const versionHistory = await snapshot.getPromise(
           itemHistoryAtom(doenetId),
         );
+        // console.log(">>>>versionHistory",versionHistory)
 
         //Find Assigned ContentId
         //Use isReleased as isAssigned for now
@@ -359,7 +363,7 @@ export default function AssignmentViewer() {
             break;
           }
         }
-
+        //TESTING set contentId to null
         // console.log(">>>>updateAttemptNumberAndRequestedVariant contentId",contentId)
 
         let doenetML = null;
@@ -388,8 +392,10 @@ export default function AssignmentViewer() {
           from: storedAllPossibleVariants.current,
         });
 
+        // name: usersVariantAttempts[newAttemptNumber - 1],
+
         let newRequestedVariant = {
-          name: usersVariantAttempts[newAttemptNumber - 1],
+          name: usersVariantAttempts[usersVariantAttempts.length - 1],
         };
 
         setLoad((was) => {
@@ -429,6 +435,8 @@ export default function AssignmentViewer() {
   }
 
   // console.log(`>>>>stage -${stage}-`)
+  // console.log(`>>>>recoilAttemptNumber -${recoilAttemptNumber}-`)
+  // console.log(`>>>>attemptNumber -${attemptNumber}-`)
 
   if (stage === 'Initializing') {
     initializeValues(recoilDoenetId);

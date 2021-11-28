@@ -14,6 +14,8 @@ export default class Point extends DoenetRenderer {
 
   createGraphicalObject() {
 
+    let fillColor = this.doenetSvData.open ? "white" : this.doenetSvData.selectedStyle.markerColor;
+
     //things to be passed to JSXGraph as attributes
     var jsxPointAttributes = {
       name: this.doenetSvData.label,
@@ -21,7 +23,7 @@ export default class Point extends DoenetRenderer {
       withLabel: this.doenetSvData.showLabel && this.doenetSvData.label !== "",
       fixed: !this.doenetSvData.draggable || this.doenetSvData.fixed,
       layer: 10 * this.doenetSvData.layer + 9,
-      fillColor: this.doenetSvData.open ? "white" : this.doenetSvData.selectedStyle.markerColor,
+      fillColor: fillColor,
       strokeColor: this.doenetSvData.selectedStyle.markerColor,
       // highlightFillColor: this.doenetSvData.selectedStyle.markerColor,
       // highlightStrokeColor: this.doenetSvData.selectedStyle.markerColor,
@@ -30,23 +32,45 @@ export default class Point extends DoenetRenderer {
     };
 
     if (this.doenetSvData.showLabel && this.doenetSvData.label !== "") {
-      let anchorx, offset;
+      let anchorx, anchory, offset;
       if (this.doenetSvData.labelPosition === "upperright") {
-        offset = [5, 10];
+        offset = [5, 5];
         anchorx = "left";
+        anchory = "bottom";
       } else if (this.doenetSvData.labelPosition === "upperleft") {
-        offset = [-5, 10];
+        offset = [-5, 5];
         anchorx = "right";
+        anchory = "bottom";
       } else if (this.doenetSvData.labelPosition === "lowerright") {
-        offset = [5, -10];
+        offset = [5, -5];
         anchorx = "left";
-      } else {
-        offset = [-5, -10];
+        anchory = "top";
+      } else if (this.doenetSvData.labelPosition === "lowerleft") {
+        offset = [-5, -5];
         anchorx = "right";
+        anchory = "top";
+      } else if (this.doenetSvData.labelPosition === "top") {
+        offset = [0, 10];
+        anchorx = "middle";
+        anchory = "bottom";
+      } else if (this.doenetSvData.labelPosition === "bottom") {
+        offset = [0, -10];
+        anchorx = "middle";
+        anchory = "top";
+      } else if (this.doenetSvData.labelPosition === "left") {
+        offset = [-10, 0];
+        anchorx = "right";
+        anchory = "middle";
+      } else {
+        // labelPosition === right
+        offset = [10, 0];
+        anchorx = "left";
+        anchory = "middle";
       }
       jsxPointAttributes.label = {
         offset,
-        anchorx
+        anchorx,
+        anchory
       }
     }
 
@@ -55,9 +79,9 @@ export default class Point extends DoenetRenderer {
     if (this.doenetSvData.draggable && !this.doenetSvData.fixed) {
       jsxPointAttributes.highlightFillColor = "#EEEEEE";
       jsxPointAttributes.highlightStrokeColor = "#C3D9FF";
-      jsxPointAttributes.showInfoBox = true;
+      jsxPointAttributes.showInfoBox = this.doenetSvData.showCoordsWhenDragging;
     } else {
-      jsxPointAttributes.highlightFillColor = this.doenetSvData.selectedStyle.markerColor;
+      jsxPointAttributes.highlightFillColor = fillColor;
       jsxPointAttributes.highlightStrokeColor = this.doenetSvData.selectedStyle.markerColor;
       jsxPointAttributes.showInfoBox = false;
     }
@@ -83,6 +107,8 @@ export default class Point extends DoenetRenderer {
     this.pointJXG.on('up', function (e) {
       if (this.dragged) {
         this.actions.finalizePointPosition();
+      } else if(this.doenetSvData.switchable && !this.doenetSvData.fixed) {
+        this.actions.switchPoint();
       }
     }.bind(this));
 
@@ -102,6 +128,9 @@ export default class Point extends DoenetRenderer {
   }
 
   deleteGraphicalObject() {
+    this.pointJXG.off('drag');
+    this.pointJXG.off('down');
+    this.pointJXG.off('up');
     this.props.board.removeObject(this.pointJXG);
     delete this.pointJXG;
   }
@@ -171,10 +200,10 @@ export default class Point extends DoenetRenderer {
     if (this.doenetSvData.draggable && !this.doenetSvData.fixed) {
       this.pointJXG.visProp.highlightfillcolor = "#EEEEEE";
       this.pointJXG.visProp.highlightstrokecolor = "#C3D9FF";
-      this.pointJXG.visProp.showinfobox = true;
+      this.pointJXG.visProp.showinfobox = this.doenetSvData.showCoordsWhenDragging;
       this.pointJXG.visProp.fixed = false;
     } else {
-      this.pointJXG.visProp.highlightfillcolor = this.doenetSvData.selectedStyle.markerColor;
+      this.pointJXG.visProp.highlightfillcolor = newFillColor;
       this.pointJXG.visProp.highlightstrokecolor = this.doenetSvData.selectedStyle.markerColor;
       this.pointJXG.visProp.showinfobox = false;
       this.pointJXG.visProp.fixed = true;
@@ -202,21 +231,43 @@ export default class Point extends DoenetRenderer {
       this.pointJXG.label.needsUpdate = true;
 
       if (this.doenetSvData.labelPosition !== this.previousLabelPosition) {
-        let anchorx, offset;
+        let anchorx, anchory, offset;
         if (this.doenetSvData.labelPosition === "upperright") {
-          offset = [5, 10];
+          offset = [5, 5];
           anchorx = "left";
+          anchory = "bottom";
         } else if (this.doenetSvData.labelPosition === "upperleft") {
-          offset = [-5, 10];
+          offset = [-5, 5];
           anchorx = "right";
+          anchory = "bottom";
         } else if (this.doenetSvData.labelPosition === "lowerright") {
-          offset = [5, -10];
+          offset = [5, -5];
           anchorx = "left";
-        } else {
-          offset = [-5, -10];
+          anchory = "top";
+        } else if (this.doenetSvData.labelPosition === "lowerleft") {
+          offset = [-5, -5];
           anchorx = "right";
+          anchory = "top";
+        } else if (this.doenetSvData.labelPosition === "top") {
+          offset = [0, 10];
+          anchorx = "middle";
+          anchory = "bottom";
+        } else if (this.doenetSvData.labelPosition === "bottom") {
+          offset = [0, -10];
+          anchorx = "middle";
+          anchory = "top";
+        } else if (this.doenetSvData.labelPosition === "left") {
+          offset = [-10, 0];
+          anchorx = "right";
+          anchory = "middle";
+        } else {
+          // labelPosition === right
+          offset = [10, 0];
+          anchorx = "left";
+          anchory = "middle";
         }
         this.pointJXG.label.visProp.anchorx = anchorx;
+        this.pointJXG.label.visProp.anchory = anchory;
         this.pointJXG.label.visProp.offset = offset;
         this.previousLabelPosition = this.doenetSvData.labelPosition;
         this.pointJXG.label.fullUpdate();

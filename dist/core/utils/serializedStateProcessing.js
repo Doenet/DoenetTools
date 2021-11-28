@@ -1171,12 +1171,12 @@ export function decodeXMLEntities(serializedComponents) {
 
   function replaceEntities(s) {
     return s
-    .replace(/&apos;/g, "'")
-    .replace(/&quot;/g, '"')
-    .replace(/&gt;/g, '>')
-    .replace(/&lt;/g, '<')
-    .replace(/&dollar;/g, '$')
-    .replace(/&amp;/g, '&');
+      .replace(/&apos;/g, "'")
+      .replace(/&quot;/g, '"')
+      .replace(/&gt;/g, '>')
+      .replace(/&lt;/g, '<')
+      .replace(/&dollar;/g, '$')
+      .replace(/&amp;/g, '&');
   }
 
   for (let serializedComponent of serializedComponents) {
@@ -1191,18 +1191,18 @@ export function decodeXMLEntities(serializedComponents) {
       if (serializedComponent.attributes) {
         for (let attrName in serializedComponent.attributes) {
           let attribute = serializedComponent.attributes[attrName];
-  
+
           if (attribute.component) {
             decodeXMLEntities([attribute.component])
-          } else if(attribute.primitive) {
-            if(typeof attribute.primitive === "string") {
+          } else if (attribute.primitive) {
+            if (typeof attribute.primitive === "string") {
               attribute.primitive = replaceEntities(attribute.primitive);
             }
           } else {
-            if(attribute.childrenForComponent) {
+            if (attribute.childrenForComponent) {
               decodeXMLEntities(attribute.childrenForComponent);
             }
-            if(attribute.rawString) {
+            if (attribute.rawString) {
               attribute.rawString = replaceEntities(attribute.rawString);
             }
           }
@@ -2551,7 +2551,8 @@ export function setTNamesToAbsolute(components) {
 }
 
 
-export function restrictTNamesToNamespace(components, namespace, parentNamespace) {
+export function restrictTNamesToNamespace({ components, namespace, parentNamespace, parentIsCopy = false }) {
+
   if (parentNamespace === undefined) {
     parentNamespace = namespace;
   }
@@ -2593,19 +2594,34 @@ export function restrictTNamesToNamespace(components, namespace, parentNamespace
     }
 
     if (component.children) {
+      let adjustedNamespace = namespace;
+      if (parentIsCopy && component.componentType === "externalContent") {
+        // if have a external content inside a copy,
+        // then restrict children to the namespace of the externalContent
+        adjustedNamespace = component.componentName + "/";
+      }
       let namespaceForChildren = parentNamespace;
       if (component.attributes.newNamespace && component.attributes.newNamespace.primitive) {
         namespaceForChildren = component.componentName;
       }
-      restrictTNamesToNamespace(component.children, namespace, namespaceForChildren)
+      restrictTNamesToNamespace({
+        components: component.children,
+        namespace: adjustedNamespace,
+        parentNamespace: namespaceForChildren,
+        parentIsCopy: component.componentType === "copy"
+      })
     }
     if (component.attributes) {
       for (let attrName in component.attributes) {
         let attribute = component.attributes[attrName];
         if (attribute.component) {
-          restrictTNamesToNamespace([attribute.component], namespace, parentNamespace)
+          restrictTNamesToNamespace({
+            components: [attribute.component], namespace, parentNamespace
+          })
         } else if (attribute.childrenForComponent) {
-          restrictTNamesToNamespace(attribute.childrenForComponent, namespace, parentNamespace)
+          restrictTNamesToNamespace({
+            components: attribute.childrenForComponent, namespace, parentNamespace
+          })
         }
       }
     }

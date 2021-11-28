@@ -124,6 +124,11 @@ export default function checkEquality({
               allowed_error_is_absolute: allowedErrorIsAbsolute,
             })
           }
+          // temporary fix to keep complex numbers from crashing math-expressions
+          // TODO: handle complex numbers
+          if (expr_a.tree.im || expr_b.tree.im) {
+            return { fraction_equal: 0 }
+          }
           let equality = me.equalSpecifiedSignErrors(expr_b, expr_a, {
             equalityFunction,
             n_sign_errors: nSignErrorsMatched
@@ -134,6 +139,11 @@ export default function checkEquality({
           // temporary fix until equalsViaSyntax returns false for \uff3f
           if (expr_a.variables().includes('\uFF3F') || expr_b.variables().includes('\uFF3F')) {
             return { fraction_equal: 0 };
+          }
+          // temporary fix to keep complex numbers from crashing math-expressions
+          // TODO: handle complex numbers
+          if (expr_a.tree.im || expr_b.tree.im) {
+            return { fraction_equal: 0 }
           }
           let equality = expr_a.equalsViaSyntax(expr_b, {
             allowed_error_in_numbers: allowedErrorInNumbers,
@@ -193,6 +203,11 @@ export default function checkEquality({
               allowed_error_is_absolute: allowedErrorIsAbsolute,
             })
           }
+          // temporary fix to keep complex numbers from crashing math-expressions
+          // TODO: handle complex numbers
+          if (expr_a.tree.im || expr_b.tree.im) {
+            return { fraction_equal: 0 }
+          }
           let equality = me.equalSpecifiedSignErrors(expr_b, expr_a, {
             equalityFunction,
             n_sign_errors: nSignErrorsMatched
@@ -200,6 +215,12 @@ export default function checkEquality({
           return { fraction_equal: equality ? 1 : 0 };
 
         } else {
+
+          // temporary fix to keep complex numbers from crashing math-expressions
+          // TODO: handle complex numbers
+          if (expr_a.tree.im || expr_b.tree.im) {
+            return { fraction_equal: 0 }
+          }
           let equality = expr_a.equals(expr_b, {
             allowed_error_in_numbers: allowedErrorInNumbers,
             include_error_in_number_exponents: includeErrorInNumberExponents,
@@ -634,6 +655,7 @@ export default function checkEquality({
 
   if (nelts1 === nelts2 && nelts1 === n_matches) {
     results["fraction_equal"] = 1;
+    return results;
   }
 
   if (!partialMatches) {

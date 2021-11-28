@@ -6,7 +6,7 @@ import {useRecoilValue} from "../../_snowpack/pkg/recoil.js";
 const BreadCrumbContainer = styled.ul`
   list-style: none;
   overflow: hidden;
-  height: 22px;
+  height: 21px;
   display: flex;
   margin-left: -35px;
 `;

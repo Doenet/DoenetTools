@@ -1584,11 +1584,11 @@ export default class Vector extends GraphicalComponent {
 
         let numericalHead, numericalTail;
         if (dependencyValues.nDimensions === 1) {
-          let numericalHead = dependencyValues.head.evaluate_to_constant();
+          let numericalHead = dependencyValues.head[0].evaluate_to_constant();
           if (!Number.isFinite(numericalHead)) {
             numericalHead = NaN;
           }
-          numericalTail = dependencyValues.tail.evaluate_to_constant();
+          numericalTail = dependencyValues.tail[0].evaluate_to_constant();
           if (!Number.isFinite(numericalTail)) {
             numericalTail = NaN;
           }

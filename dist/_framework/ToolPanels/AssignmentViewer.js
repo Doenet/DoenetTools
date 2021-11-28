@@ -74,7 +74,6 @@ export default function AssignmentViewer() {
   ] = useState({});
   let startedInitOfDoenetId = useRef(null);
   let storedAllPossibleVariants = useRef([]);
-  console.log(`storedAllPossibleVariants -${storedAllPossibleVariants}-`);
   const initializeValues = useRecoilCallback(({snapshot, set}) => async (doenetId2) => {
     if (startedInitOfDoenetId.current === doenetId2) {
       return;
@@ -86,6 +85,7 @@ export default function AssignmentViewer() {
       assignedDate,
       dueDate,
       showCorrectness: showCorrectness2,
+      showCreditAchievedMenu,
       showFeedback: showFeedback2,
       showHints: showHints2,
       showSolution,
@@ -95,7 +95,7 @@ export default function AssignmentViewer() {
     if (timeLimit === null) {
       suppress.push("TimerMenu");
     }
-    if (!showCorrectness2) {
+    if (!showCorrectness2 || !showCreditAchievedMenu) {
       suppress.push("CreditAchieved");
     }
     setSuppressMenus(suppress);
@@ -228,11 +228,10 @@ export default function AssignmentViewer() {
       setStage("Ready");
     }
   }, []);
-  const updateAttemptNumberAndRequestedVariant = useRecoilCallback(({snapshot, set}) => async (newAttemptNumber) => {
+  const updateAttemptNumberAndRequestedVariant = useRecoilCallback(({snapshot}) => async (newAttemptNumber) => {
     const isCollection = await snapshot.getPromise(searchParamAtomFamily("isCollection"));
     if (isCollection) {
       console.error("How did you get here?");
-      return;
     }
     let doenetId2 = await snapshot.getPromise(searchParamAtomFamily("doenetId"));
     const versionHistory = await snapshot.getPromise(itemHistoryAtom(doenetId2));
@@ -264,7 +263,7 @@ export default function AssignmentViewer() {
       from: storedAllPossibleVariants.current
     });
     let newRequestedVariant = {
-      name: usersVariantAttempts[newAttemptNumber - 1]
+      name: usersVariantAttempts[usersVariantAttempts.length - 1]
     };
     setLoad((was) => {
       let newObj = {...was};

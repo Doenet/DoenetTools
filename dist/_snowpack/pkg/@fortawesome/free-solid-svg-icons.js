@@ -107,11 +107,6 @@ var faFolder = {
   iconName: 'folder',
   icon: [512, 512, [], "f07b", "M464 128H272l-64-64H48C21.49 64 0 85.49 0 112v288c0 26.51 21.49 48 48 48h416c26.51 0 48-21.49 48-48V176c0-26.51-21.49-48-48-48z"]
 };
-var faGreaterThan = {
-  prefix: 'fas',
-  iconName: 'greater-than',
-  icon: [384, 512, [], "f531", "M365.52 209.85L59.22 67.01c-16.06-7.49-35.15-.54-42.64 15.52L3.01 111.61c-7.49 16.06-.54 35.15 15.52 42.64L236.96 256.1 18.49 357.99C2.47 365.46-4.46 384.5 3.01 400.52l13.52 29C24 445.54 43.04 452.47 59.06 445l306.47-142.91a32.003 32.003 0 0 0 18.48-29v-34.23c-.01-12.45-7.21-23.76-18.49-29.01z"]
-};
 var faGripLines = {
   prefix: 'fas',
   iconName: 'grip-lines',
@@ -136,11 +131,6 @@ var faLayerGroup = {
   prefix: 'fas',
   iconName: 'layer-group',
   icon: [512, 512, [], "f5fd", "M12.41 148.02l232.94 105.67c6.8 3.09 14.49 3.09 21.29 0l232.94-105.67c16.55-7.51 16.55-32.52 0-40.03L266.65 2.31a25.607 25.607 0 0 0-21.29 0L12.41 107.98c-16.55 7.51-16.55 32.53 0 40.04zm487.18 88.28l-58.09-26.33-161.64 73.27c-7.56 3.43-15.59 5.17-23.86 5.17s-16.29-1.74-23.86-5.17L70.51 209.97l-58.1 26.33c-16.55 7.5-16.55 32.5 0 40l232.94 105.59c6.8 3.08 14.49 3.08 21.29 0L499.59 276.3c16.55-7.5 16.55-32.5 0-40zm0 127.8l-57.87-26.23-161.86 73.37c-7.56 3.43-15.59 5.17-23.86 5.17s-16.29-1.74-23.86-5.17L70.29 337.87 12.41 364.1c-16.55 7.5-16.55 32.5 0 40l232.94 105.59c6.8 3.08 14.49 3.08 21.29 0L499.59 404.1c16.55-7.5 16.55-32.5 0-40z"]
-};
-var faLessThan = {
-  prefix: 'fas',
-  iconName: 'less-than',
-  icon: [384, 512, [], "f536", "M365.46 357.74L147.04 255.89l218.47-101.88c16.02-7.47 22.95-26.51 15.48-42.53l-13.52-29C360 66.46 340.96 59.53 324.94 67L18.48 209.91a32.014 32.014 0 0 0-18.48 29v34.24c0 12.44 7.21 23.75 18.48 29l306.31 142.83c16.06 7.49 35.15.54 42.64-15.52l13.56-29.08c7.49-16.06.54-35.15-15.53-42.64z"]
 };
 var faLevelDownAlt = {
   prefix: 'fas',
@@ -197,6 +187,11 @@ var faTh = {
   iconName: 'th',
   icon: [512, 512, [], "f00a", "M149.333 56v80c0 13.255-10.745 24-24 24H24c-13.255 0-24-10.745-24-24V56c0-13.255 10.745-24 24-24h101.333c13.255 0 24 10.745 24 24zm181.334 240v-80c0-13.255-10.745-24-24-24H205.333c-13.255 0-24 10.745-24 24v80c0 13.255 10.745 24 24 24h101.333c13.256 0 24.001-10.745 24.001-24zm32-240v80c0 13.255 10.745 24 24 24H488c13.255 0 24-10.745 24-24V56c0-13.255-10.745-24-24-24H386.667c-13.255 0-24 10.745-24 24zm-32 80V56c0-13.255-10.745-24-24-24H205.333c-13.255 0-24 10.745-24 24v80c0 13.255 10.745 24 24 24h101.333c13.256 0 24.001-10.745 24.001-24zm-205.334 56H24c-13.255 0-24 10.745-24 24v80c0 13.255 10.745 24 24 24h101.333c13.255 0 24-10.745 24-24v-80c0-13.255-10.745-24-24-24zM0 376v80c0 13.255 10.745 24 24 24h101.333c13.255 0 24-10.745 24-24v-80c0-13.255-10.745-24-24-24H24c-13.255 0-24 10.745-24 24zm386.667-56H488c13.255 0 24-10.745 24-24v-80c0-13.255-10.745-24-24-24H386.667c-13.255 0-24 10.745-24 24v80c0 13.255 10.745 24 24 24zm0 160H488c13.255 0 24-10.745 24-24v-80c0-13.255-10.745-24-24-24H386.667c-13.255 0-24 10.745-24 24v80c0 13.255 10.745 24 24 24zM181.333 376v80c0 13.255 10.745 24 24 24h101.333c13.255 0 24-10.745 24-24v-80c0-13.255-10.745-24-24-24H205.333c-13.255 0-24 10.745-24 24z"]
 };
+var faThumbtack = {
+  prefix: 'fas',
+  iconName: 'thumbtack',
+  icon: [384, 512, [], "f08d", "M298.028 214.267L285.793 96H328c13.255 0 24-10.745 24-24V24c0-13.255-10.745-24-24-24H56C42.745 0 32 10.745 32 24v48c0 13.255 10.745 24 24 24h42.207L85.972 214.267C37.465 236.82 0 277.261 0 328c0 13.255 10.745 24 24 24h136v104.007c0 1.242.289 2.467.845 3.578l24 48c2.941 5.882 11.364 5.893 14.311 0l24-48a8.008 8.008 0 0 0 .845-3.578V352h136c13.255 0 24-10.745 24-24-.001-51.183-37.983-91.42-85.973-113.733z"]
+};
 var faTimes = {
   prefix: 'fas',
   iconName: 'times',
@@ -208,4 +203,4 @@ var faUser = {
   icon: [448, 512, [], "f007", "M224 256c70.7 0 128-57.3 128-128S294.7 0 224 0 96 57.3 96 128s57.3 128 128 128zm89.6 32h-16.7c-22.2 10.2-46.9 16-72.9 16s-50.6-5.8-72.9-16h-16.7C60.2 288 0 348.2 0 422.4V464c0 26.5 21.5 48 48 48h352c26.5 0 48-21.5 48-48v-41.6c0-74.2-60.2-134.4-134.4-134.4z"]
 };
 
-export { faAngleLeft, faAngleRight, faArrowLeft, faArrowUp, faBackspace, faBars, faBookOpen, faCalendarPlus, faCalendarTimes, faCaretDown, faCaretRight, faChalkboard, faCheck, faChevronDown, faChevronLeft, faChevronRight, faCloud, faCode, faExclamationCircle, faExternalLinkAlt, faFolder, faGreaterThan, faGripLines, faGripLinesVertical, faHandMiddleFinger, faKeyboard, faLayerGroup, faLessThan, faLevelDownAlt, faLightbulb, faMinus, faPercentage, faPlus, faPuzzlePiece, faSearch, faSort, faSortDown, faSortUp, faTh, faTimes, faUser };
+export { faAngleLeft, faAngleRight, faArrowLeft, faArrowUp, faBackspace, faBars, faBookOpen, faCalendarPlus, faCalendarTimes, faCaretDown, faCaretRight, faChalkboard, faCheck, faChevronDown, faChevronLeft, faChevronRight, faCloud, faCode, faExclamationCircle, faExternalLinkAlt, faFolder, faGripLines, faGripLinesVertical, faHandMiddleFinger, faKeyboard, faLayerGroup, faLevelDownAlt, faLightbulb, faMinus, faPercentage, faPlus, faPuzzlePiece, faSearch, faSort, faSortDown, faSortUp, faTh, faThumbtack, faTimes, faUser };

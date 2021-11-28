@@ -1495,5 +1495,23 @@ describe('MathList Tag Tests', function () {
 
   })
 
+  it('mathlist does not force composite replacement, even in boolean', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <boolean>
+      <mathlist>$nothing</mathlist> = <mathlist></mathlist>
+    </boolean>
+    ` }, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.log('Test value displayed in browser')
+    cy.get('#\\/_boolean1').should('have.text', 'true')
+
+  })
+
 
 })

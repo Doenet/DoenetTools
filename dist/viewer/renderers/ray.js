@@ -55,6 +55,9 @@ export default class Ray extends DoenetRenderer {
     return this.rayJXG;
   }
   deleteGraphicalObject() {
+    this.rayJXG.off("drag");
+    this.rayJXG.off("down");
+    this.rayJXG.off("up");
     this.props.board.removeObject(this.rayJXG);
     delete this.rayJXG;
   }
