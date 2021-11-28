@@ -311,11 +311,12 @@ let navigationObj = {
     gradebookStudentAssignment: {
       pageName: "Gradebook",
       currentMainPanel: "GradebookStudentAssignment",
-      currentMenus: ["CreditAchieved"],
       menuPanelCap: "DriveInfoCap",
-      menusTitles: ["Credit Achieved"],
-      menusInitOpen: [true],
-      headerControls: ["GradebookBreadCrumb"]
+      currentMenus: ["CreditAchieved", "GradeSettings"],
+      menusTitles: ["Credit Achieved", "Settings"],
+      menusInitOpen: [true, false],
+      headerControls: ["GradebookBreadCrumb"],
+      waitForMenuSuppression: true
     },
     navigation: {
       pageName: "Course",

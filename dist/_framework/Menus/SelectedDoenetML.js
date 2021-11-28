@@ -357,11 +357,11 @@ export function AssignmentSettings({role, doenetId}) {
       e.preventDefault();
     }
   }, /* @__PURE__ */ React.createElement(CalendarToggle, {
-    checked: aInfo.assignedDate !== null,
+    checked: aInfo.assignedDate !== null && aInfo.assignedDate !== void 0,
     onClick: (e) => {
       let valueDescription = "None";
       let value = null;
-      if (aInfo.assignedDate === null) {
+      if (aInfo.assignedDate === null || aInfo.assignedDate === void 0) {
         valueDescription = "Now";
         value = DateToDateString(new Date());
       }
@@ -373,7 +373,7 @@ export function AssignmentSettings({role, doenetId}) {
         valueDescription
       });
     }
-  }), aInfo.assignedDate !== null ? /* @__PURE__ */ React.createElement(DateTime, {
+  }), aInfo.assignedDate !== null && aInfo.assignedDate !== void 0 ? /* @__PURE__ */ React.createElement(DateTime, {
     value: aInfo.assignedDate ? new Date(aInfo.assignedDate) : null,
     onBlur: ({valid, value}) => {
       if (valid) {
@@ -398,7 +398,7 @@ export function AssignmentSettings({role, doenetId}) {
     onClick: (e) => {
       let valueDescription = "None";
       let value = null;
-      if (aInfo.assignedDate === null) {
+      if (aInfo.assignedDate === null || aInfo.assignedDate === void 0) {
         valueDescription = "Now";
         value = DateToDateString(new Date());
       }
@@ -411,10 +411,11 @@ export function AssignmentSettings({role, doenetId}) {
       });
     },
     style: {
+      cursor: "not-allowed",
       color: "#545454",
       height: "18px",
       width: "177px",
-      border: "2px solid black",
+      border: "2px solid #e2e2e2",
       borderRadius: "5px"
     }
   })))), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("label", null, "Due Date", /* @__PURE__ */ React.createElement("div", {
@@ -423,11 +424,11 @@ export function AssignmentSettings({role, doenetId}) {
       e.preventDefault();
     }
   }, /* @__PURE__ */ React.createElement(CalendarToggle, {
-    checked: aInfo.dueDate !== null,
+    checked: aInfo.dueDate !== null && aInfo.dueDate !== void 0,
     onClick: (e) => {
       let valueDescription = "None";
       let value = null;
-      if (aInfo.dueDate === null) {
+      if (aInfo.dueDate === null || aInfo.dueDate === void 0) {
         valueDescription = "Next Week";
         let nextWeek = new Date();
         nextWeek.setDate(nextWeek.getDate() + 7);
@@ -441,7 +442,7 @@ export function AssignmentSettings({role, doenetId}) {
         valueDescription
       });
     }
-  }), aInfo.dueDate !== null ? /* @__PURE__ */ React.createElement(DateTime, {
+  }), aInfo.dueDate !== null && aInfo.dueDate !== void 0 ? /* @__PURE__ */ React.createElement(DateTime, {
     value: aInfo.dueDate ? new Date(aInfo.dueDate) : null,
     onBlur: ({valid, value}) => {
       if (valid) {
@@ -465,7 +466,7 @@ export function AssignmentSettings({role, doenetId}) {
     onClick: (e) => {
       let valueDescription = "None";
       let value = null;
-      if (aInfo.dueDate === null) {
+      if (aInfo.dueDate === null || aInfo.dueDate === void 0) {
         valueDescription = "Next Week";
         let nextWeek = new Date();
         nextWeek.setDate(nextWeek.getDate() + 7);
@@ -481,10 +482,11 @@ export function AssignmentSettings({role, doenetId}) {
     },
     value: "No Due Date",
     style: {
+      cursor: "not-allowed",
       color: "#545454",
       height: "18px",
       width: "177px",
-      border: "2px solid black",
+      border: "2px solid #e2e2e2",
       borderRadius: "5px"
     }
   })))), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("label", null, "Time Limit", /* @__PURE__ */ React.createElement(Switch, {
@@ -548,7 +550,7 @@ export function AssignmentSettings({role, doenetId}) {
       });
     },
     checked: aInfo.numberOfAttemptsAllowed !== null
-  }))), aInfo.numberOfAttemptsAllowed !== null ? /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("label", null, "Number of Attempts Allowed", /* @__PURE__ */ React.createElement(Increment, {
+  }))), aInfo.numberOfAttemptsAllowed !== null ? /* @__PURE__ */ React.createElement("div", null, "Number of Attempts Allowed", /* @__PURE__ */ React.createElement(Increment, {
     value: numberOfAttemptsAllowed,
     min: 0,
     onBlur: () => {
@@ -570,7 +572,7 @@ export function AssignmentSettings({role, doenetId}) {
       }
     },
     onChange: (newValue) => setNumberOfAttemptsAllowed(newValue)
-  }))) : null, /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("label", null, "Attempt Aggregation", /* @__PURE__ */ React.createElement(DropdownMenu, {
+  })) : null, /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("label", null, "Attempt Aggregation", /* @__PURE__ */ React.createElement(DropdownMenu, {
     width: "menu",
     valueIndex: attemptAggregation === "m" ? 1 : 2,
     items: [
@@ -590,7 +592,7 @@ export function AssignmentSettings({role, doenetId}) {
         valueDescription
       });
     }
-  }))), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("label", null, "Total Points Or Percent", /* @__PURE__ */ React.createElement(Increment, {
+  }))), /* @__PURE__ */ React.createElement("div", null, "Total Points Or Percent", /* @__PURE__ */ React.createElement(Increment, {
     value: totalPointsOrPercent,
     min: 0,
     onBlur: () => {
@@ -612,7 +614,7 @@ export function AssignmentSettings({role, doenetId}) {
       }
     },
     onChange: (newValue) => setTotalPointsOrPercent(newValue)
-  }))), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("label", null, "Grade Category", /* @__PURE__ */ React.createElement("input", {
+  })), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("label", null, "Grade Category", /* @__PURE__ */ React.createElement("input", {
     required: true,
     type: "select",
     name: "gradeCategory",
@@ -772,12 +774,12 @@ export function AssignmentSettings({role, doenetId}) {
       e.preventDefault();
     }
   }, /* @__PURE__ */ React.createElement(CalendarToggle, {
-    checked: aInfo.pinnedUntilDate !== null,
+    checked: aInfo.pinnedUntilDate !== null && aInfo.pinnedUntilDate !== void 0,
     onClick: (e) => {
       let valueDescription = "None";
       let value = null;
       let secondValue = null;
-      if (aInfo.pinnedUntilDate === null) {
+      if (aInfo.pinnedUntilDate === null || aInfo.pinnedUntilDate === void 0) {
         valueDescription = "Now to Next Year";
         let today = new Date();
         let nextYear = new Date();
@@ -795,7 +797,7 @@ export function AssignmentSettings({role, doenetId}) {
         secondValue
       });
     }
-  }), aInfo.pinnedUntilDate !== null ? /* @__PURE__ */ React.createElement(DateTime, {
+  }), aInfo.pinnedUntilDate !== null && aInfo.pinnedUntilDate !== void 0 ? /* @__PURE__ */ React.createElement(DateTime, {
     value: aInfo.pinnedAfterDate ? new Date(aInfo.pinnedAfterDate) : null,
     onBlur: ({valid, value}) => {
       if (valid) {
@@ -820,7 +822,7 @@ export function AssignmentSettings({role, doenetId}) {
       let valueDescription = "None";
       let value = null;
       let secondValue = null;
-      if (aInfo.pinnedUntilDate === null) {
+      if (aInfo.pinnedUntilDate === null || aInfo.pinnedUntilDate === void 0) {
         valueDescription = "Now to Next Year";
         let today = new Date();
         let nextYear = new Date();
@@ -840,10 +842,11 @@ export function AssignmentSettings({role, doenetId}) {
     },
     value: "No Pin After Date",
     style: {
+      cursor: "not-allowed",
       color: "#545454",
       height: "18px",
       width: "177px",
-      border: "2px solid black",
+      border: "2px solid #e2e2e2",
       borderRadius: "5px"
     }
   })), /* @__PURE__ */ React.createElement("div", {
@@ -851,7 +854,7 @@ export function AssignmentSettings({role, doenetId}) {
     onClick: (e) => {
       e.preventDefault();
     }
-  }, aInfo.pinnedUntilDate !== null ? /* @__PURE__ */ React.createElement(DateTime, {
+  }, aInfo.pinnedUntilDate !== null && aInfo.pinnedUntilDate !== void 0 ? /* @__PURE__ */ React.createElement(DateTime, {
     value: aInfo.pinnedUntilDate ? new Date(aInfo.pinnedUntilDate) : null,
     onBlur: ({valid, value}) => {
       if (valid) {
@@ -876,7 +879,7 @@ export function AssignmentSettings({role, doenetId}) {
       let valueDescription = "None";
       let value = null;
       let secondValue = null;
-      if (aInfo.pinnedUntilDate === null) {
+      if (aInfo.pinnedUntilDate === null || aInfo.pinnedUntilDate === void 0) {
         valueDescription = "Now to Next Year";
         let today = new Date();
         let nextYear = new Date();
@@ -896,10 +899,11 @@ export function AssignmentSettings({role, doenetId}) {
     },
     value: "No Pin Until Date",
     style: {
+      cursor: "not-allowed",
       color: "#545454",
       height: "18px",
       width: "177px",
-      border: "2px solid black",
+      border: "2px solid #e2e2e2",
       borderRadius: "5px"
     }
   })))));

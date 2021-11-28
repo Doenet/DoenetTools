@@ -280,6 +280,18 @@ export default function attempt() {
           description: 'Sets the value of the date-time picker',
         },
         {
+          name: 'Label',
+          propPreview: '<DateTime label = "Datetime"/>',
+          propCode: { label: 'Datetime' },
+          description: 'Sets a label',
+        },
+        {
+          name: 'Vertical Label',
+          propPreview: '<DateTime label = "Datetime" vertical/>',
+          propCode: { label: 'Datetime', vertical: true },
+          description: 'Sets a vertical label',
+        },
+        {
           name: 'DatePicker',
           propPreview: '<DateTime datePicker={false}/>',
           propCode: { datePicker: false },
@@ -306,6 +318,12 @@ export default function attempt() {
           description: 'disables component',
         },
         {
+          name: 'Alert',
+          propPreview: '<DateTime alert />',
+          propCode: { alert: true },
+          description: 'alerts component',
+        },
+        {
           name: 'Placeholder',
           propPreview: '<DateTime placeholder = "enter start date" />',
           propCode: { placeholder: 'enter start date' },
@@ -323,6 +341,12 @@ export default function attempt() {
           propPreview: '<DateTime onBlur = {(value) => console.log(value)} />',
           propCode: { onBlur: (value) => console.log(value) },
           description: 'Function called when component blurred.',
+        },
+        {
+          name: 'onKeyDown',
+          propPreview: '<DateTime onKeyDown={(e) => console.log(e.key)} />',
+          propCode: { onKeyDown: (e) => console.log(e.key) },
+          description: 'Function called when component a key is pressed',
         },
       ],
     },
@@ -569,6 +593,18 @@ export default function attempt() {
           propPreview: '<Increment onBlur={(data) => console.log(data)} />',
           propCode: { onBlur: (data) => console.log(data) },
           description: 'Function called when component blurred',
+        },
+        {
+          name: 'onKeyDown',
+          propPreview: '<Increment onKewDown={(e) => console.log(e.key)} />',
+          propCode: { onKeyDown: (e) => console.log(e.key) },
+          description: 'Function called when a key is pressed',
+        },
+        {
+          name: 'Placeholder',
+          propPreview: '<Increment placeholder = "Type a number" />',
+          propCode: { placeholder: 'Type a number' },
+          description: 'Add a placeholder for the field',
         },
         {
           name: 'Disabled',

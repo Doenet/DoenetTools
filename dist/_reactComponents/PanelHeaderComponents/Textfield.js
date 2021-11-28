@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useRef} from "../../_snowpack/pkg/react.js";
+import React, {useState, useEffect, useRef, useLayoutEffect} from "../../_snowpack/pkg/react.js";
 import {doenetComponentForegroundInactive} from "./theme.js";
 export default function Textfield(props) {
   const [labelVisible, setLabelVisible] = useState(props.label ? "static" : "none");
@@ -31,12 +31,12 @@ export default function Textfield(props) {
   var container = {
     display: `${align}`,
     width: "auto",
-    alignItems: "flex-end"
+    alignItems: "center"
   };
   useEffect(() => {
     setText(props.value);
   }, [props]);
-  useEffect(() => {
+  useLayoutEffect(() => {
     inputRef.current.selectionStart = cursorStart;
     inputRef.current.selectionEnd = cursorEnd;
   });

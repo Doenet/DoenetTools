@@ -1397,6 +1397,78 @@ describe('Function Tag Tests', function () {
     })
   });
 
+  it('function determined by formula via sugar, with strings and maths', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <graph>
+    <function>
+    <number>3</number>/(1+e^(-x/<math>2</math>))
+    </function>
+    </graph>
+    `}, "*");
+    });
+
+    //wait for window to load
+    cy.get('#\\/_text1').should('have.text', 'a');
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/_function1'].stateValues.nInputs).eq(1);
+
+      let f = components['/_function1'].stateValues.fs[0];
+      let numericalf = components['/_function1'].stateValues.numericalfs[0];
+      let symbolicf = components['/_function1'].stateValues.symbolicfs[0];
+
+      expect(f(-5)).closeTo(3 / (1 + Math.exp(5 / 2)), 1E-12);
+      expect(f(1)).closeTo(3 / (1 + Math.exp(-1 / 2)), 1E-12);
+      expect(numericalf(-5)).closeTo(3 / (1 + Math.exp(5 / 2)), 1E-12);
+      expect(numericalf(1)).closeTo(3 / (1 + Math.exp(-1 / 2)), 1E-12);
+      expect(symbolicf(-5).equals(me.fromText('3/(1+e^(5/2))'))).eq(true)
+      expect(symbolicf(1).equals(me.fromText('3/(1+e^(-1/2))'))).eq(true)
+      expect(symbolicf('z').equals(me.fromText('3/(1+e^(-z/2))'))).eq(true)
+
+    })
+  });
+
+  it('function determined by formula via sugar, with strings and copies', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <graph>
+    <function>
+    <copy tname="a" />/(1+e^(-x/<copy tname="b" />))
+    </function>
+    </graph>
+    <number name="a">3</number>
+    <math name="b">2</math>
+    `}, "*");
+    });
+
+    //wait for window to load
+    cy.get('#\\/_text1').should('have.text', 'a');
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/_function1'].stateValues.nInputs).eq(1);
+
+      let f = components['/_function1'].stateValues.fs[0];
+      let numericalf = components['/_function1'].stateValues.numericalfs[0];
+      let symbolicf = components['/_function1'].stateValues.symbolicfs[0];
+
+      expect(f(-5)).closeTo(3 / (1 + Math.exp(5 / 2)), 1E-12);
+      expect(f(1)).closeTo(3 / (1 + Math.exp(-1 / 2)), 1E-12);
+      expect(numericalf(-5)).closeTo(3 / (1 + Math.exp(5 / 2)), 1E-12);
+      expect(numericalf(1)).closeTo(3 / (1 + Math.exp(-1 / 2)), 1E-12);
+      expect(symbolicf(-5).equals(me.fromText('3/(1+e^(5/2))'))).eq(true)
+      expect(symbolicf(1).equals(me.fromText('3/(1+e^(-1/2))'))).eq(true)
+      expect(symbolicf('z').equals(me.fromText('3/(1+e^(-z/2))'))).eq(true)
+
+    })
+  });
+
   it('function determined by math formula', () => {
     cy.window().then((win) => {
       win.postMessage({
@@ -1711,7 +1783,9 @@ describe('Function Tag Tests', function () {
     <text>a</text>
     <function variables="q"><math>q^2 sin(pi q/2)/100</math></function>
     <graph>
-      <function>$_function1</function>
+      <function>
+        $_function1
+      </function>
     </graph>
     `}, "*");
     });
@@ -3032,6 +3106,75 @@ describe('Function Tag Tests', function () {
 
   });
 
+  it('extrema in flat regions of functions', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <graph>
+    <function name="f1">2-(x-1.0131)^10</function>
+    <function name="f2">3+(x+pi)^20</function>
+    <function name="f3" domain="(1,5)">-8+3/(1+exp(-100sin(3x)))</function>
+
+    <copy prop="extrema" tname="f1" />
+    <copy prop="extrema" tname="f2" />
+    <copy prop="extrema" tname="f3" />
+    </graph>
+
+
+    `}, "*");
+    });
+
+    //wait for window to load
+    cy.get('#\\/_text1').should('have.text', 'a');
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+
+      let f1 = components['/f1'];
+      let f2 = components['/f2'];
+      let f3 = components['/f3'];
+      expect(f1.stateValues.numberMaxima).eq(1);
+      expect(f1.stateValues.numberMinima).eq(0);
+      expect(f1.stateValues.numberExtrema).eq(1);
+      expect(f1.stateValues.maxima[0][0]).closeTo(1.0131, 1E-6);
+      expect(f1.stateValues.maxima[0][1]).eq(2)
+      expect(f1.stateValues.extrema[0][0]).closeTo(1.0131, 1E-6);
+      expect(f1.stateValues.extrema[0][1]).eq(2)
+
+      expect(f2.stateValues.numberMaxima).eq(0);
+      expect(f2.stateValues.numberMinima).eq(1);
+      expect(f2.stateValues.numberExtrema).eq(1);
+      expect(f2.stateValues.minima[0][0]).closeTo(-Math.PI, 1E-6);
+      expect(f2.stateValues.minima[0][1]).eq(3)
+      expect(f2.stateValues.extrema[0][0]).closeTo(-Math.PI, 1E-6);
+      expect(f2.stateValues.extrema[0][1]).eq(3)
+
+      expect(f3.stateValues.numberMaxima).eq(2);
+      expect(f3.stateValues.numberMinima).eq(2);
+      expect(f3.stateValues.numberExtrema).eq(4);
+      expect(f3.stateValues.minima[0][0]).closeTo(3*Math.PI/6, 1E-6);
+      expect(f3.stateValues.minima[0][1]).eq(-8)
+      expect(f3.stateValues.minima[1][0]).closeTo(7*Math.PI/6, 1E-6);
+      expect(f3.stateValues.minima[1][1]).eq(-8)
+      expect(f3.stateValues.maxima[0][0]).closeTo(5*Math.PI/6, 1E-6);
+      expect(f3.stateValues.maxima[0][1]).eq(-5)
+      expect(f3.stateValues.maxima[1][0]).closeTo(9*Math.PI/6, 1E-6);
+      expect(f3.stateValues.maxima[1][1]).eq(-5)
+      expect(f3.stateValues.extrema[0][0]).closeTo(3*Math.PI/6, 1E-6);
+      expect(f3.stateValues.extrema[0][1]).eq(-8)
+      expect(f3.stateValues.extrema[1][0]).closeTo(5*Math.PI/6, 1E-6);
+      expect(f3.stateValues.extrema[1][1]).eq(-5)
+      expect(f3.stateValues.extrema[2][0]).closeTo(7*Math.PI/6, 1E-6);
+      expect(f3.stateValues.extrema[2][1]).eq(-8)
+      expect(f3.stateValues.extrema[3][0]).closeTo(9*Math.PI/6, 1E-6);
+      expect(f3.stateValues.extrema[3][1]).eq(-5)
+
+
+    });
+
+  });
+
   it('two functions with mutual dependence', () => {
     cy.window().then((win) => {
       win.postMessage({
@@ -3230,16 +3373,22 @@ describe('Function Tag Tests', function () {
       let components = Object.assign({}, win.state.components);
 
       expect(components["/maxima"].replacements.length).eq(1);
-      expect(components["/maxima"].replacements[0].stateValues.coords.tree).eqls(["vector", 0, 1]);
+      let max1 = components["/maxima"].replacements[0].stateValues.coords.tree;
+      expect(max1[1]).closeTo(0, 0.00001);
+      expect(max1[2]).closeTo(1, 0.00001);
       expect(components["/minima"].replacements.length).eq(2);
-      expect(components["/minima"].replacements[0].stateValues.coords.tree).eqls(["vector", -1, 0]);
-      expect(components["/minima"].replacements[1].stateValues.coords.tree).eqls(["vector", 1, 0]);
+      let min1 = components["/minima"].replacements[0].stateValues.coords.tree;
+      expect(min1[1]).closeTo(-1, 0.00001)
+      expect(min1[2]).closeTo(0, 0.00001)
+      let min2 = components["/minima"].replacements[1].stateValues.coords.tree;
+      expect(min2[1]).closeTo(1, 0.00001)
+      expect(min2[2]).closeTo(0, 0.00001)
       expect(components["/extremum1"].replacements.length).eq(1);
-      expect(components["/extremum1"].replacements[0].stateValues.coords.tree).eqls(["vector", -1, 0]);
+      expect(components["/extremum1"].replacements[0].stateValues.coords.tree).eqls(min1);
       expect(components["/extremum2"].replacements.length).eq(1);
-      expect(components["/extremum2"].replacements[0].stateValues.coords.tree).eqls(["vector", 0, 1]);
+      expect(components["/extremum2"].replacements[0].stateValues.coords.tree).eqls(max1);
       expect(components["/extremum3"].replacements.length).eq(1);
-      expect(components["/extremum3"].replacements[0].stateValues.coords.tree).eqls(["vector", 1, 0]);
+      expect(components["/extremum3"].replacements[0].stateValues.coords.tree).eqls(min2);
 
     });
 
@@ -3248,8 +3397,10 @@ describe('Function Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
 
-      expect(components["/maxima"].replacements.length).eq(1);
-      expect(components["/maxima"].replacements[0].stateValues.coords.tree).eqls(["vector", 0, 1]);
+      expect(components["/maxima"].replacements.length).eq(1)
+      let max1 = components["/maxima"].replacements[0].stateValues.coords.tree;
+      expect(max1[1]).closeTo(0, 0.00001);
+      expect(max1[2]).closeTo(1, 0.00001);
       expect(components["/minima"].replacements.length).eq(2);
       let min1 = components["/minima"].replacements[0].stateValues.coords.tree;
       expect(min1[1]).closeTo(-2, 0.00001)
@@ -3260,17 +3411,11 @@ describe('Function Tag Tests', function () {
       expect(min2[2]).closeTo(13 / 16, 0.00001)
 
       expect(components["/extremum1"].replacements.length).eq(1);
-      min1 = components["/extremum1"].replacements[0].stateValues.coords.tree;
-      expect(min1[1]).closeTo(-2, 0.00001)
-      expect(min1[2]).closeTo(-7, 0.00001)
-
+      expect(components["/extremum1"].replacements[0].stateValues.coords.tree).eqls(min1);
       expect(components["/extremum2"].replacements.length).eq(1);
-      expect(components["/extremum2"].replacements[0].stateValues.coords.tree).eqls(["vector", 0, 1]);
-
+      expect(components["/extremum2"].replacements[0].stateValues.coords.tree).eqls(max1);
       expect(components["/extremum3"].replacements.length).eq(1);
-      min2 = components["/extremum3"].replacements[0].stateValues.coords.tree;
-      expect(min2[1]).closeTo(0.5, 0.00001)
-      expect(min2[2]).closeTo(13 / 16, 0.00001)
+      expect(components["/extremum3"].replacements[0].stateValues.coords.tree).eqls(min2);
 
     });
 
@@ -3280,11 +3425,14 @@ describe('Function Tag Tests', function () {
       let components = Object.assign({}, win.state.components);
 
       expect(components["/maxima"].replacements.length).eq(1);
-      expect(components["/maxima"].replacements[0].stateValues.coords.tree).eqls(["vector", 0, 1]);
+      let max1 = components["/maxima"].replacements[0].stateValues.coords.tree;
+      expect(max1[1]).closeTo(0, 0.00001);
+      expect(max1[2]).closeTo(1, 0.00001);
+
       expect(components["/minima"].replacements.length).eq(0);
 
       expect(components["/extremum1"].replacements.length).eq(1);
-      expect(components["/extremum1"].replacements[0].stateValues.coords.tree).eqls(["vector", 0, 1]);
+      expect(components["/extremum1"].replacements[0].stateValues.coords.tree).eqls(max1);
 
       expect(components["/extremum2"].replacements.length).eq(0);
       expect(components["/extremum3"].replacements.length).eq(0);
