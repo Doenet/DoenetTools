@@ -1409,42 +1409,49 @@ function invertMath({ desiredStateVariableValues, dependencyValues,
 
     let instructions = [];
 
-    let result = finishInvertMathForStringChildren({
-      dependencyValues, stateValues
-    })
+    if (stringChildren.length > 0) {
+      // just string children.  Set first to value, the rest to empty strings
+      let stringValue;
+      if (stateValues.format === "latex") {
+        stringValue = desiredExpression.toLatex()
+      } else {
+        stringValue = desiredExpression.toString()
+      }
 
-    instructions.push(...result.instructions)
+      instructions.push({
+        setDependency: "stringChildren",
+        desiredValue: stringValue,
+        childIndex: 0,
+        variableIndex: 0,
+      });
 
+      for (let ind = 1; ind < stringChildren.length; ind++) {
+        instructions.push({
+          setDependency: "stringChildren",
+          desiredValue: "",
+          childIndex: ind,
+          variableIndex: 0,
+        })
+      }
 
-    // for (let ind = 0; ind < stringChildren.length; ind++) {
-    //   instructions.push({
-    //     deferSettingDependency: "stringChildren",
-    //     inverseDefinition: finishInvertMathForStringChildren,
-    //     childIndex: ind,
-    //     variableIndex: 0,
-    //     dependencyValues: {
-    //       mathChildren: dependencyValues.mathChildren,
-    //       stringChildren: dependencyValues.stringChildren
-    //     },
-    //   })
-    // }
+      instructions.push({
+        setDependency: "expressionWithCodes",
+        desiredValue: desiredExpression,
+      });
+  
+    } else {
+      instructions.push({
+        setDependency: "valueShadow",
+        desiredValue: desiredExpression,
+      });
+    }
 
     instructions.push({
       setStateVariable: "unnormalizedValue",
       value: desiredExpression,
     });
 
-    instructions.push({
-      setDependency: "expressionWithCodes",
-      desiredValue: desiredExpression,
-    });
 
-    if (stringChildren.length === 0) {
-      instructions.push({
-        setDependency: "valueShadow",
-        desiredValue: desiredExpression,
-      });
-    }
     return {
       success: true,
       instructions
@@ -1539,94 +1546,17 @@ function invertMath({ desiredStateVariableValues, dependencyValues,
           components, expressionPieces[piece]);
     }
 
-
     instructions.push({
       setDependency: "expressionWithCodes",
       desiredValue: newExpressionWithCodes,
     });
 
 
-    let result = finishInvertMathForStringChildren({
-      dependencyValues, stateValues
-    })
-
-    instructions.push(...result.instructions)
-
-
-    // for (let ind = 0; ind < stringChildren.length; ind++) {
-    //   instructions.push({
-    //     deferSettingDependency: "stringChildren",
-    //     inverseDefinition: finishInvertMathForStringChildren,
-    //     childIndex: ind,
-    //     variableIndex: 0,
-    //     dependencyValues: {
-    //       mathChildren: dependencyValues.mathChildren,
-    //       stringChildren: dependencyValues.stringChildren
-    //     },
-    //   });
-    // }
-  }
-
-  return {
-    success: true,
-    instructions,
-  };
-
-}
-
-
-function finishInvertMathForStringChildren({ dependencyValues, stateValues }) {
-
-  // console.log("finishInvertMathForStringChildren")
-
-  let mathChildren = dependencyValues.mathChildren;
-  let stringChildren = dependencyValues.stringChildren;
-
-  if (mathChildren.length === 0) {
-
-    // just string children.  Set first to value, the rest to empty strings
-    let stringValue;
-    if (stateValues.format === "latex") {
-      stringValue = stateValues.value.toLatex()
-    } else {
-      stringValue = stateValues.value.toString()
-    }
-    let instructions = [{
-      setDependency: "stringChildren",
-      desiredValue: stringValue,
-      childIndex: 0,
-      variableIndex: 0,
-    }];
-    for (let ind = 1; ind < stringChildren.length; ind++) {
-      instructions.push({
-        setDependency: "stringChildren",
-        desiredValue: "",
-        childIndex: ind,
-        variableIndex: 0,
-      })
-    }
-    return {
-      success: true,
-      instructions
-    }
-
-  }
-
-
-  // TODO: see TODO about string children in invertMath
-
-  let instructions = [];
-
-  // if there are any string children,
-  // need to update expressionWithCodes with new values
-  // and then update the string children based on it
-  if (stringChildren.length > 0) {
-
     let stringExpr;
     if (stateValues.format === "latex") {
-      stringExpr = stateValues.expressionWithCodes.toLatex();
+      stringExpr = newExpressionWithCodes.toLatex();
     } else {
-      stringExpr = stateValues.expressionWithCodes.toString();
+      stringExpr = newExpressionWithCodes.toString();
     }
 
     for (let [ind, stringCodes] of stateValues.codesAdjacentToStrings.entries()) {
@@ -1664,7 +1594,6 @@ function finishInvertMathForStringChildren({ dependencyValues, stateValues }) {
   };
 
 }
-
 
 
 function getExpressionPieces({ expression, stateValues }) {
