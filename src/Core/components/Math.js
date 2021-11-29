@@ -1409,22 +1409,34 @@ function invertMath({ desiredStateVariableValues, dependencyValues,
 
     let instructions = [];
 
-    for (let ind = 0; ind < stringChildren.length; ind++) {
-      instructions.push({
-        deferSettingDependency: "stringChildren",
-        inverseDefinition: finishInvertMathForStringChildren,
-        childIndex: ind,
-        variableIndex: 0,
-        dependencyValues: {
-          mathChildren: dependencyValues.mathChildren,
-          stringChildren: dependencyValues.stringChildren
-        },
-      })
-    }
+    let result = finishInvertMathForStringChildren({
+      dependencyValues, stateValues
+    })
+
+    instructions.push(...result.instructions)
+
+
+    // for (let ind = 0; ind < stringChildren.length; ind++) {
+    //   instructions.push({
+    //     deferSettingDependency: "stringChildren",
+    //     inverseDefinition: finishInvertMathForStringChildren,
+    //     childIndex: ind,
+    //     variableIndex: 0,
+    //     dependencyValues: {
+    //       mathChildren: dependencyValues.mathChildren,
+    //       stringChildren: dependencyValues.stringChildren
+    //     },
+    //   })
+    // }
 
     instructions.push({
       setStateVariable: "unnormalizedValue",
       value: desiredExpression,
+    });
+
+    instructions.push({
+      setDependency: "expressionWithCodes",
+      desiredValue: desiredExpression,
     });
 
     if (stringChildren.length === 0) {
@@ -1533,18 +1545,26 @@ function invertMath({ desiredStateVariableValues, dependencyValues,
       desiredValue: newExpressionWithCodes,
     });
 
-    for (let ind = 0; ind < stringChildren.length; ind++) {
-      instructions.push({
-        deferSettingDependency: "stringChildren",
-        inverseDefinition: finishInvertMathForStringChildren,
-        childIndex: ind,
-        variableIndex: 0,
-        dependencyValues: {
-          mathChildren: dependencyValues.mathChildren,
-          stringChildren: dependencyValues.stringChildren
-        },
-      });
-    }
+
+    let result = finishInvertMathForStringChildren({
+      dependencyValues, stateValues
+    })
+
+    instructions.push(...result.instructions)
+
+
+    // for (let ind = 0; ind < stringChildren.length; ind++) {
+    //   instructions.push({
+    //     deferSettingDependency: "stringChildren",
+    //     inverseDefinition: finishInvertMathForStringChildren,
+    //     childIndex: ind,
+    //     variableIndex: 0,
+    //     dependencyValues: {
+    //       mathChildren: dependencyValues.mathChildren,
+    //       stringChildren: dependencyValues.stringChildren
+    //     },
+    //   });
+    // }
   }
 
   return {
