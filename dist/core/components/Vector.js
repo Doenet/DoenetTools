@@ -923,8 +923,8 @@ export default class Vector extends GraphicalComponent {
 
       },
       arrayDefinitionByKey: function ({ globalDependencyValues, dependencyValuesByKey, arrayKeys }) {
-        // console.log('array definition of vector displacement')
-        // console.log(globalDepend encyValues, dependencyValuesByKey, arrayKeys)
+        // console.log('array definition of vector displacement', componentName)
+        // console.log(globalDependencyValues, dependencyValuesByKey, arrayKeys)
 
         let displacement = {};
         let essentialDisplacement = {};
@@ -1369,7 +1369,7 @@ export default class Vector extends GraphicalComponent {
           return [["point", { componentType: "mathList", isAttribute: "xs" }]];
         }
       },
-      stateVariablesDeterminingDependencies: ["basedOnHead", "basedOnDisplacement"],
+      stateVariablesDeterminingDependencies: ["basedOnTail", "basedOnHead", "basedOnDisplacement"],
       returnArraySizeDependencies: () => ({
         nDimTail: {
           dependencyType: "stateVariable",
@@ -1642,6 +1642,26 @@ export default class Vector extends GraphicalComponent {
         }
 
         return { newValues: { displacementCoords: me.fromAst(coordsAst) } }
+
+      },
+      inverseDefinition({ desiredStateVariableValues }) {
+        let coordsAst = desiredStateVariableValues.displacementCoords.tree;
+        let newDisplacement;
+
+        if (Array.isArray(coordsAst) && (coordsAst[0] === "vector" || coordsAst[0] === "tuple")) {
+          newDisplacement = coordsAst.slice(1).map(x => me.fromAst(x));
+        } else {
+          newDisplacement = [desiredStateVariableValues.displacementCoords];
+        }
+
+        return {
+          success: true,
+          instructions: [{
+            setDependency: "displacement",
+            desiredValue: newDisplacement
+          }]
+        }
+
 
       }
     }
