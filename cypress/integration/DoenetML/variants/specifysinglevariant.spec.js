@@ -4228,13 +4228,16 @@ describe('Specifying single variant document tests', function () {
     for (let ind = 1; ind <= 10; ind++) {
 
 
+      let doenetML = `
+      <text>${ind}</text>
+      <variantControl nvariants="100"/>
+      <selectFromSequence from="1" to="20000000000" exclude="20000000000 30000000000 40000000000 50000000000 60000000000 80000000000 90000000000 11000000000 12000000000 13000000000 14000000000 15000000000 16000000000 17000000000 19000000000" assignNames="m" />
+      <selectFromSequence from="1" to="20" exclude="2 3 4 5 6 8 9 11 12 13 14 15 16 17 19" assignNames="n" />
+      `
+
       cy.window().then((win) => {
         win.postMessage({
-          doenetML: `
-        <text>${ind}</text>
-        <variantControl nvariants="100"/>
-        <selectFromSequence from="1" to="20" exclude="2 3 4 5 6 8 9 11 12 13 14 15 16 17 19" assignNames="n" />
-        `,
+          doenetML,
           requestedVariant: { index: ind },
         }, "*");
       })
@@ -4243,13 +4246,15 @@ describe('Specifying single variant document tests', function () {
       cy.get('#\\/_text1').should('have.text', `${ind}`)
 
       let generatedVariantInfo;
-      let indexChosen;
-      let n;
+      let indexChosen1, indexChosen2;
+      let m,n;
 
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
         generatedVariantInfo = JSON.parse(JSON.stringify(components["/_document1"].stateValues.generatedVariantInfo));
-        indexChosen = components["/_selectfromsequence1"].stateValues.selectedIndices[0];
+        indexChosen1 = components["/_selectfromsequence1"].stateValues.selectedIndices[0];
+        indexChosen2 = components["/_selectfromsequence1"].stateValues.selectedIndices[0];
+        m = components["/m"].stateValues.value;
         n = components["/n"].stateValues.value;
 
       })
@@ -4261,11 +4266,7 @@ describe('Specifying single variant document tests', function () {
       cy.window().then((win) => {
 
         win.postMessage({
-          doenetML: `
-        <text>${ind}a</text>
-        <variantControl nvariants="100"/>
-        <selectFromSequence from="1" to="20" exclude="2 3 4 5 6 8 9 11 12 13 14 15 16 17 19" assignNames="n" />
-        `,
+          doenetML: `<text>${ind}a</text>${doenetML}`,
           requestedVariant: generatedVariantInfo,
         }, "*");
       })
@@ -4275,7 +4276,9 @@ describe('Specifying single variant document tests', function () {
 
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
-        expect(components["/_selectfromsequence1"].stateValues.selectedIndices[0]).eq(indexChosen);
+        expect(components["/_selectfromsequence1"].stateValues.selectedIndices[0]).eq(indexChosen1);
+        expect(components["/_selectfromsequence1"].stateValues.selectedIndices[0]).eq(indexChosen2);
+        expect(components["/m"].stateValues.value).eq(m);
         expect(components["/n"].stateValues.value).eq(n);
 
       })
@@ -4292,16 +4295,17 @@ describe('Specifying single variant document tests', function () {
     cy.log("Test a bunch of variants")
     for (let ind = 1; ind <= 10; ind++) {
 
+      let doenetML = `
+      <text>${ind}</text>
+      <variantControl nvariants="100"/>
+      <selectFromSequence from="1" to="20" exclude="2 3 4 5 6 8 9 11 12 13 14 15 16 17 19" excludeCombinations="(1 7) (1 10) (1 18) (7 10) (7 18) (7 20) (10 1) (10 7) (10 20) (18 1) (18 7) (18 20) (20 1) (20 10)" assignNames="m n" numberToSelect="2" />
+      <selectFromSequence type="math" from="x" step="h" length="7" exclude="x+h x+2h x+3h x+5h" excludeCombinations="(x x+4h) (x+4h x+6h) (x+6h x)" assignNames="x1 x2" numberToSelect="2" />
+      <selectFromSequence type="letters" from="a" to="i" exclude="b c d e f h" excludeCombinations="(a i) (g a) (i g)" assignNames="l1 l2" numberToSelect="2" />
+      `;
 
       cy.window().then((win) => {
         win.postMessage({
-          doenetML: `
-        <text>${ind}</text>
-        <variantControl nvariants="100"/>
-        <selectFromSequence from="1" to="20" exclude="2 3 4 5 6 8 9 11 12 13 14 15 16 17 19" excludeCombinations="(1 7) (1 10) (1 18) (7 10) (7 18) (7 20) (10 1) (10 7) (10 20) (18 1) (18 7) (18 20) (20 1) (20 10)" assignNames="m n" numberToSelect="2" />
-        <selectFromSequence type="math" from="x" step="h" length="7" exclude="x+h x+2h x+3h x+5h" excludeCombinations="(x x+4h) (x+4h x+6h) (x+6h x)" assignNames="x1 x2" numberToSelect="2" />
-        <selectFromSequence type="letters" from="a" to="i" exclude="b c d e f h" excludeCombinations="(a i) (g a) (i g)" assignNames="l1 l2" numberToSelect="2" />
-        `,
+          doenetML,
           requestedVariant: { index: ind },
         }, "*");
       })
@@ -4338,13 +4342,7 @@ describe('Specifying single variant document tests', function () {
       cy.window().then((win) => {
 
         win.postMessage({
-          doenetML: `
-        <text>${ind}a</text>
-        <variantControl nvariants="100"/>
-        <selectFromSequence from="1" to="20" exclude="2 3 4 5 6 8 9 11 12 13 14 15 16 17 19" excludeCombinations="(1 7) (1 10) (1 18) (7 10) (7 18) (7 20) (10 1) (10 7) (10 20) (18 1) (18 7) (18 20) (20 1) (20 10)" assignNames="m n" numberToSelect="2" />
-        <selectFromSequence type="math" from="x" step="h" length="7" exclude="x+h x+2h x+3h x+5h" excludeCombinations="(x x+4h) (x+4h x+6h) (x+6h x)" assignNames="x1 x2" numberToSelect="2" />
-        <selectFromSequence type="letters" from="a" to="i" exclude="b c d e f h" excludeCombinations="(a i) (g a) (i g)" assignNames="l1 l2" numberToSelect="2" />
-        `,
+          doenetML: `<text>${ind}a</text>${doenetML}`,
           requestedVariant: generatedVariantInfo,
         }, "*");
       })
