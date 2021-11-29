@@ -140,9 +140,11 @@ export function BreadCrumb({crumbs=[],offset=0}){
       crumBounds.length == crumbs.length){
     
     numHidden = crumbs.length - 2;
-    let prevBreak = containerLeft + crumBounds[0].width + 53; //First segment right break point
+    let prevBreak = crumBounds[0].right + 53; //First segment right break point
     prevBreak = prevBreak + crumBounds[crumBounds.length -1].width + 58; //Assume right break point Includes elipsis segment
-    console.log(">>>>first break",prevBreak)
+    console.log("\n>>>>>containerLeft ",containerLeft)
+    console.log("\n>>>>>crumBounds ",crumBounds)
+    console.log(">>>>>first break ",prevBreak)
 
     let effectiveWidth = windowWidth;
 
@@ -164,7 +166,7 @@ export function BreadCrumb({crumbs=[],offset=0}){
   // console.log("\n>>>>after effectiveWidth",effectiveWidth)
   // console.log(">>>>supportPanelHandleLeftValue",supportPanelHandleLeftValue)
     
-console.log(">>>>",`prev ${prevBreak} effective ${effectiveWidth} then ${numHidden}`)
+console.log(">>>>>",`prev ${prevBreak} effective ${effectiveWidth} then ${numHidden}`)
 
     //If window is wide enough to expand from minimum size
     if ( prevBreak < effectiveWidth){
@@ -173,7 +175,7 @@ console.log(">>>>",`prev ${prevBreak} effective ${effectiveWidth} then ${numHidd
         let width = crumBounds[i].width;
         let rightBreak = prevBreak + width;
         if (i == 1){ rightBreak -=  58} //no elipsis on last break point
-console.log(">>>>prevBreak rightBreak",`${prevBreak} - ${rightBreak} then ${numHidden} with ${effectiveWidth}`)
+console.log(">>>>>prevBreak rightBreak",`${prevBreak} - ${rightBreak} then ${numHidden} effectiveWidth ${effectiveWidth}`)
         //If in this range we have the number to hide
         if (effectiveWidth >= prevBreak && effectiveWidth < rightBreak){
           break;
@@ -186,7 +188,7 @@ console.log(">>>>prevBreak rightBreak",`${prevBreak} - ${rightBreak} then ${numH
 
   let crumbsJSX = [];
 
-  console.log(">>>>RESULTS",`numHidden ${numHidden} `)
+  console.log(">>>>>RESULTS",`numHidden ${numHidden} `)
 
 
   for (let [i,{icon,label,onClick}] of Object.entries(crumbs) ){

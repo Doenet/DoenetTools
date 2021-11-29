@@ -86,12 +86,14 @@ export function useCollectionCrumb(doenetId,path){
 }
 
 export function useNavigationCrumbs(driveId,folderId){
+  console.log("\n>>>>useNavigationCrumbs!!!!!!!!!!!!!!-------------")
 
   const setPageToolView = useSetRecoilState(pageToolViewAtom);
   const [crumbs,setCrumbs] = useState([])
 
   const getCrumbs = useRecoilCallback(({snapshot})=> async (driveId,itemId)=>{
     let itemInfo = await snapshot.getPromise(loadDriveInfoQuery(driveId));
+    console.log("\n>>>>useNavigationCrumbs itemInfo",itemInfo)
 
     //Build information about folders until we get to drive
     function parentFolder({folderInfo=[], itemId}){
@@ -123,7 +125,7 @@ export function useNavigationCrumbs(driveId,folderId){
           path: `${driveId}:${item.itemId}:${item.itemId}:Folder`,
         }
       }
-      console.log(">>>>nav params",params)
+      console.log(">>>>[nav params]",params)
       //WHY ARE THESE NOT SET SOMETIMES?
 
       crumbArray.push({
@@ -143,13 +145,14 @@ export function useNavigationCrumbs(driveId,folderId){
     
 
   useEffect(()=>{
+
       getCrumbs(driveId,folderId);
   },[getCrumbs,driveId,folderId])
 
   // console.log("\n>>>>navigation")
   // console.log(">>>>driveId",driveId)
   // console.log(">>>>folderId",folderId)
-  // console.log(">>>>crumbs",crumbs)
+  console.log(">>>>useNavigationCrumbs crumbs",crumbs)
 
   return crumbs
 }
