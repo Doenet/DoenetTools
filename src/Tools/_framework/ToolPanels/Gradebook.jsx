@@ -92,7 +92,7 @@ export const Styles = styled.div`
     }
     
     td {
-        user-select: none;
+        /* user-select: none; */
         text-align: center;
         max-width: 5rem;
     }
