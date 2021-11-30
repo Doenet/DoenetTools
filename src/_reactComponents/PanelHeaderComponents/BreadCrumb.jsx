@@ -170,33 +170,31 @@ export function BreadCrumb({crumbs=[],offset=0}){
   //Only update if the crumb widths change
   useLayoutEffect(()=>{
 
-    // console.log("\n>>>>>useLayoutEffect crumbs crumbRefs ",crumbs,crumbRefs)
-    // console.log(">>>>>crumbs.length",crumbs.length)
 
-    if (crumbs.length === crumbRefs.length 
-      // crumbBreaks === null &&
-      // numHidden === 0
-      // numHidden === 0 &&
-      // crumbs.length === 6  //TODO: need to recalculate when length changes
-      ){
-        let widths = []
+    //We need to delete some crumbRefs
+    if (crumbs.length < crumbRefs.length){
+      setCrumbRefs(crumbRefs.slice(0,crumbs.length))
+    }
+
+    //Wait for crumbRefs to be built
+    if (crumbs.length === crumbRefs.length){
+    let widths = []
         let rights = []
         let newWidths = false;
-        // if (crumbBreaks === null){newWidths = true }
+
         for (let [i,crumbRef] of Object.entries(crumbRefs)){
           let boundingClientRect = crumbRef.current?.getBoundingClientRect();
+
           if (boundingClientRect === undefined){
-            let prevWidth = 0;
-            let prevRight = 0;
-            if (prevWidths.current?.[i]?.width){
-              prevWidth = prevWidths.current?.[i].width;
-              prevRight = prevWidths.current?.[i].right;
-              console.log(">>>>>prevWidth",prevWidth)
-              console.log(">>>>>prevRight",prevRight)
-            }
-            boundingClientRect = {width:prevWidth,right:prevRight}
+            boundingClientRect = {width:0,right:0}
           }
           let { width, right } = boundingClientRect
+          //Try to recover width information
+          if (width === 0){
+            if (prevWidths.current?.[i]){
+              width = prevWidths.current?.[i];
+            }
+          }
           widths.push(width);
           rights.push(right);
           if (prevWidths.current?.[i] !== width &&
@@ -204,14 +202,19 @@ export function BreadCrumb({crumbs=[],offset=0}){
             ){
               newWidths = true 
             }
-          // console.log(">>>>>i width right ",i,width,right)
         }
-        console.log(">>>>>newWidths widths!!!!!!!!!!",newWidths,widths)
+
+        //Handle length change
+        if (prevWidths.current.length > widths.length){
+          newWidths = true 
+        }
 
         prevWidths.current = widths;
 
         //prevent infinite loop
         if (newWidths){
+        console.log(">>>>>width newWidths widths!!!!!!!!!!",widths)
+
           let newCrumbBreaks = [];
 
         
@@ -252,64 +255,9 @@ export function BreadCrumb({crumbs=[],offset=0}){
   //   numHidden = 1;
   // }
   console.log(">>>>>numHidden",numHidden)
-//     numHidden = crumbs.length - 2;
 
-//     let prevBreak = 481; //delete me
-
-//     // let prevBreak = crumBounds[0].right + 53; //First segment right break point
-//     // prevBreak = prevBreak + crumBounds[crumBounds.length -1].width + 58; //Assume right break point Includes elipsis segment
-//     console.log("\n>>>>>containerLeft ",containerLeft)
-//     console.log(">>>>>first break ",prevBreak)
-
-//     let effectiveWidth = windowWidth;
-
-//     // if (panelsInfo?.isActive){
-//     //   //if menu panel is closed (indirect measurement)
-
-//     //   effectiveWidth = (windowWidth  * panelsInfo.propotion) - 10;
-//     //   //if menu panel is open (indirect measurement)
-//     //   if (containerLeft > 100){
-//     //     effectiveWidth = ((windowWidth - 240) * panelsInfo.propotion) + 240 - 10;
-//     //   }
-//     // }
-//   // console.log("\n\n>>>>effectiveWidth",effectiveWidth,windowWidth,containerLeft,panelsInfo.propotion)
-//   if (supportPanelHandleLeftValue){
-//     effectiveWidth = supportPanelHandleLeftValue;
-//   }
-//     effectiveWidth -= offset;
-
-
-//   // console.log("\n>>>>after effectiveWidth",effectiveWidth)
-//   // console.log(">>>>>offset",offset)
-//   console.log(">>>>>supportPanelHandleLeftValue",supportPanelHandleLeftValue)
-    
-// console.log(">>>>>",`prev ${prevBreak} effective ${effectiveWidth} then ${numHidden}`)
-
-//     //If window is wide enough to expand from minimum size
-//     if ( prevBreak < effectiveWidth){
-
-//       for (let i = crumBounds.length - 2; i >= 1; i-- ){
-//         // let width = crumBounds[i].width;
-
-//         let width = 100; //delete me
-
-//         let rightBreak = prevBreak + width;
-//         if (i == 1){ rightBreak -=  58} //no elipsis on last break point
-// console.log(">>>>>prevBreak rightBreak",`${prevBreak} - ${rightBreak} then ${numHidden} effectiveWidth ${effectiveWidth}`)
-//         //If in this range we have the number to hide
-//         if (effectiveWidth >= prevBreak && effectiveWidth < rightBreak){
-//           break;
-//         }
-//         prevBreak = rightBreak;
-//         numHidden--;
-//       }
-//     }
-//   }
-//   numHidden = 0; //DELETE ME!!!
 
   let crumbsJSX = [];
-
-  // console.log(">>>>>RESULTS",`numHidden ${numHidden} `)
 
 
   for (let [i,{icon,label,onClick}] of Object.entries(crumbs) ){
