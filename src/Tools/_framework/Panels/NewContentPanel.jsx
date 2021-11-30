@@ -98,6 +98,18 @@ export default function ContentPanel({ main, support }) {
     setDivider(!support?.props?.hide)
   }, [support?.props?.hide]);
 
+  function onWindowResize(){
+    console.log(">>>>>HERE!!!!!!!!!!!!!!!!!!!!!!!!",dragHandleRef.current?.getBoundingClientRect()?.left)
+    setHandleLeft(dragHandleRef.current?.getBoundingClientRect()?.left)
+  }
+
+  useEffect(()=>{
+    window.onresize = onWindowResize;
+    return ()=>{
+      window.onresize = null;
+    }
+  },[])
+
 
   //Needed to update after the component is mounted
   //So we are fine with the warning
