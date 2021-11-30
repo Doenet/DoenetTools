@@ -104,9 +104,7 @@ export default class FunctionCurve extends DoenetRenderer {
         let ymax = this.doenetSvData.graphYmax;
         let minForF = Math.max(ymin - (ymax - ymin) * 0.1, this.doenetSvData.parMin);
         let maxForF = Math.min(ymax + (ymax - ymin) * 0.1, this.doenetSvData.parMax);
-        this.originalCurveJXG = this.props.board.create('functiongraph', [this.doenetSvData.fs[0], minForF, maxForF], { visible: false });
-        this.reflectLine = this.props.board.create('line', [0, 1, -1], { visible: false });
-        this.curveJXG = this.props.board.create('reflection', [this.originalCurveJXG, this.reflectLine], curveAttributes);
+        this.curveJXG = this.props.board.create('curve', [this.doenetSvData.fs[0], x => x, minForF, maxForF], curveAttributes);
       } else {
         let xmin = this.doenetSvData.graphXmin;
         let xmax = this.doenetSvData.graphXmax;
@@ -285,12 +283,6 @@ export default class FunctionCurve extends DoenetRenderer {
 
     this.props.board.removeObject(this.curveJXG);
     delete this.curveJXG;
-    if (this.reflectLine !== undefined) {
-      this.props.board.removeObject(this.reflectLine);
-      delete this.reflectLine;
-      this.props.board.removeObject(this.originalCurveJXG);
-      delete this.originalCurveJXG;
-    }
 
     this.deleteControls();
   }
@@ -496,11 +488,7 @@ export default class FunctionCurve extends DoenetRenderer {
       let result = this.createGraphicalObject();
 
       if (this.props.board.updateQuality === this.props.board.BOARD_QUALITY_LOW) {
-        if (this.doenetSvData.curveType === "function" && this.doenetSvData.flipFunction) {
-          this.props.board.itemsRenderedLowQuality[this._key] = this.originalCurveJXG;
-        } else {
-          this.props.board.itemsRenderedLowQuality[this._key] = this.curveJXG;
-        }
+        this.props.board.itemsRenderedLowQuality[this._key] = this.curveJXG;
       }
 
       return result;
@@ -539,18 +527,13 @@ export default class FunctionCurve extends DoenetRenderer {
       this.curveJXG.maxX = () => this.doenetSvData.parMax;
     } else {
       if (this.doenetSvData.flipFunction) {
-        this.originalCurveJXG.Y = this.doenetSvData.fs[0];
+        this.curveJXG.X = this.doenetSvData.fs[0];
         let ymin = this.doenetSvData.graphYmin;
         let ymax = this.doenetSvData.graphYmax;
         let minForF = Math.max(ymin - (ymax - ymin) * 0.1, this.doenetSvData.parMin);
         let maxForF = Math.min(ymax + (ymax - ymin) * 0.1, this.doenetSvData.parMax);
-        this.originalCurveJXG.minX = () => minForF;
-        this.originalCurveJXG.maxX = () => maxForF;
-        this.originalCurveJXG.needsUpdate = true;
-        this.originalCurveJXG.updateCurve();
-        if (this.props.board.updateQuality === this.props.board.BOARD_QUALITY_LOW) {
-          this.props.board.itemsRenderedLowQuality[this._key] = this.originalCurveJXG;
-        }
+        this.curveJXG.minX = () => minForF;
+        this.curveJXG.maxX = () => maxForF;
       } else {
         this.curveJXG.Y = this.doenetSvData.fs[0];
         let xmin = this.doenetSvData.graphXmin;
