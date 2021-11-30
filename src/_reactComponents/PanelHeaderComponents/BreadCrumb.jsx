@@ -108,13 +108,10 @@ export function BreadCrumb({crumbs=[],offset=0}){
   // console.log(">>>>----BREADCRUMB")
   let [crumbRefs,setCrumbRefs] = useState([])
   let [windowWidth,setWindowWidth] = useState(window.innerWidth);
-  // let [containerLeft,setContainerLeft] = useState(0);
   let [crumbBreaks,setCrumbBreaks] = useState(null);
-  let panelsInfo = useRecoilValue(panelsInfoAtom);
   let supportPanelHandleLeftValue = useRecoilValue(supportPanelHandleLeft);
   let prevWidths = useRef([]);
-  let prevRightFirstCrumb = useRef(0);
-
+  const prevRightFirstCrumb = useRef(0);
   const containerRef = useRef(null);
 
   function onWindowResize(){
@@ -201,12 +198,11 @@ export function BreadCrumb({crumbs=[],offset=0}){
           newWidths = true 
         }
 
+        //Handle menu panel open/close
         if (prevRightFirstCrumb.current !== 0 &&
           prevRightFirstCrumb.current !== rights[0]
           ){
-            // console.log(">>>>>>prevRightFirstCrumb.current = rights[0]!!!!!",prevRightFirstCrumb.current,rights[0])
             newWidths = true 
-
           }
 
         prevWidths.current = widths;
@@ -248,13 +244,6 @@ export function BreadCrumb({crumbs=[],offset=0}){
     }
     
   },[crumbs,crumbRefs,setCrumbBreaks,crumbBreaks,numHidden])
-
-  
-  //Use for testing breaks
-  // if (crumbs.length === 6 && crumbBreaks !== null){
-  //   numHidden = 1;
-  // }
-  console.log(">>>>>numHidden",numHidden)
 
 
   let crumbsJSX = [];
