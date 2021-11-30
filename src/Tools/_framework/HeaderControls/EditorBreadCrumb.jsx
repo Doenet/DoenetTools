@@ -28,7 +28,7 @@ export default function EditorBreadCrumb() {
 
   return (
     <Suspense fallback={<div>Loading Breadcrumb...</div>}>
-      <BreadCrumb crumbs={[chooserCrumb,dashboardCrumb,...navigationCrumbs,editorCrumb]} offset={62}/>
+      <BreadCrumb crumbs={[chooserCrumb,dashboardCrumb,...navigationCrumbs,editorCrumb]} offset={68}/>
     </Suspense>
   );
 }
