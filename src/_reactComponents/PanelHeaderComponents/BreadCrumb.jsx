@@ -113,6 +113,7 @@ export function BreadCrumb({crumbs=[],offset=0}){
   let panelsInfo = useRecoilValue(panelsInfoAtom);
   let supportPanelHandleLeftValue = useRecoilValue(supportPanelHandleLeft);
   let prevWidths = useRef([]);
+  let prevRightFirstCrumb = useRef(0);
 
   const containerRef = useRef(null);
 
@@ -126,15 +127,6 @@ export function BreadCrumb({crumbs=[],offset=0}){
       window.onresize = null;
     }
   },[])
-
-  //Needed to update after the component is mounted
-  //So we are fine with the warning
-  // useLayoutEffect(()=>{
-  //   if (containerRef.current?.getBoundingClientRect()?.left !== containerLeft){
-  //     setContainerLeft(containerRef.current?.getBoundingClientRect()?.left);
-  //   }
-  // })
-
 
   let numHidden = 0;
 
@@ -168,8 +160,8 @@ export function BreadCrumb({crumbs=[],offset=0}){
   }
 
   //Only update if the crumb widths change
+  //Or the menu panel collapses
   useLayoutEffect(()=>{
-
 
     //We need to delete some crumbRefs
     if (crumbs.length < crumbRefs.length){
@@ -209,11 +201,18 @@ export function BreadCrumb({crumbs=[],offset=0}){
           newWidths = true 
         }
 
-        prevWidths.current = widths;
+        if (prevRightFirstCrumb.current !== 0 &&
+          prevRightFirstCrumb.current !== rights[0]
+          ){
+            // console.log(">>>>>>prevRightFirstCrumb.current = rights[0]!!!!!",prevRightFirstCrumb.current,rights[0])
+            newWidths = true 
 
+          }
+
+        prevWidths.current = widths;
+        prevRightFirstCrumb.current = rights[0];
         //prevent infinite loop
         if (newWidths){
-        console.log(">>>>>width newWidths widths!!!!!!!!!!",widths)
 
           let newCrumbBreaks = [];
 
@@ -240,6 +239,7 @@ export function BreadCrumb({crumbs=[],offset=0}){
             if (widths.length > 2 && elipseWidth > widths[1]){
               newCrumbBreaks.pop();
             }
+            console.log(">>>>>>NEW widths and breaks!!!!!!!!!!",widths,newCrumbBreaks)
        
           setCrumbBreaks(newCrumbBreaks);
         }
