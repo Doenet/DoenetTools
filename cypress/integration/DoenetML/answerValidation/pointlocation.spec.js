@@ -181,6 +181,222 @@ describe('Point location validation tests',function() {
   
   });
 
+    
+  it('point in first quadrant, remember submitted on reload',() => {
+
+    let doenetML =  `
+    <text>a</text>
+    <p>Move point to first quadrant</p>
+    <graph><point>(-3.9,4.5)</point></graph>
+    <p><answer>
+      <award><when>
+        <copy prop="x" tname="_point1" /> > 0 and 
+        <copy prop="y" tname="_point1" /> > 0
+      </when></award>
+      <considerAsResponses>$_point1</considerAsResponses>
+    </answer></p>
+    <p>Credit for answer: <copy prop="creditAchieved" tname="_answer1" /></p>
+    `;
+
+
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: ''
+      }, "*");
+    });
+
+    cy.get('#testRunner_toggleControls').click();
+    cy.get('#testRunner_allowLocalPageState').click()
+    cy.wait(1000)
+    cy.get('#testRunner_toggleControls').click();
+
+
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML,
+      }, "*");
+    });
+
+
+    cy.get('#\\/_text1').should('have.text','a');   // to wait for page to load
+
+    cy.log("Move point to correct quadrant and move again")
+    // for some reason, have to move point twice to trigger bug
+    // that occurs when expressionWithCodes of math isn't changed
+    cy.window().then((win) => {
+      let components = Object.assign({},win.state.components);
+      components['/_point1'].movePoint({x: 5.9, y: 3.5})
+      components['/_point1'].movePoint({x: 5.9, y: 3.4})
+    });
+
+    cy.get('#\\/_answer1_submit').invoke('text').then((text) => {
+      expect(text.trim().toLowerCase()).equal('check work')
+    })
+    cy.get('#\\/_answer1_correct').should('not.exist');
+    cy.get('#\\/_answer1_incorrect').should('not.exist');
+    cy.get('#\\/_answer1_partial').should('not.exist');
+
+    cy.log("Submit answer")
+    cy.get('#\\/_answer1_submit').click();
+    cy.get('#\\/_answer1_submit').should('not.exist');
+    cy.get('#\\/_answer1_correct').invoke('text').then((text) => {
+      expect(text.trim().toLowerCase()).equal('correct')
+    });
+    cy.get('#\\/_answer1_incorrect').should('not.exist');
+    cy.get('#\\/_answer1_partial').should('not.exist');
+
+    cy.window().then((win) => {
+      let components = Object.assign({},win.state.components);
+      expect(components['/_answer1'].stateValues.creditAchieved).eq(1);
+    });
+
+
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: '<text>b</text>',
+      }, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'b') //wait for page to load
+
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML,
+      }, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+
+    cy.get('#\\/_answer1_submit').should('not.exist');
+    cy.get('#\\/_answer1_correct').invoke('text').then((text) => {
+      expect(text.trim().toLowerCase()).equal('correct')
+    });
+    cy.get('#\\/_answer1_incorrect').should('not.exist');
+    cy.get('#\\/_answer1_partial').should('not.exist');
+
+    cy.window().then((win) => {
+      let components = Object.assign({},win.state.components);
+      expect(components['/_answer1'].stateValues.creditAchieved).eq(1);
+    });
+
+
+
+    cy.log("Move point to second quadrant and submit")
+    cy.window().then((win) => {
+      let components = Object.assign({},win.state.components);
+      components['/_point1'].movePoint({x: -8.8, y: 1.3})
+      expect(components['/_answer1'].stateValues.creditAchieved).eq(1);
+    });
+
+    cy.get('#\\/_answer1_submit').invoke('text').then((text) => {
+      expect(text.trim().toLowerCase()).equal('check work')
+    })
+    cy.get('#\\/_answer1_correct').should('not.exist');
+    cy.get('#\\/_answer1_incorrect').should('not.exist');
+    cy.get('#\\/_answer1_partial').should('not.exist');
+
+
+    cy.get('#\\/_answer1_submit').click();
+    cy.get('#\\/_answer1_submit').should('not.exist');
+    cy.get('#\\/_answer1_correct').should('not.exist');
+    cy.get('#\\/_answer1_incorrect').invoke('text').then((text) => {
+      expect(text.trim().toLowerCase()).equal('incorrect')
+    });
+    cy.get('#\\/_answer1_partial').should('not.exist');
+
+    cy.window().then((win) => {
+      let components = Object.assign({},win.state.components);
+      expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
+    });
+
+
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: '<text>b</text>',
+      }, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'b') //wait for page to load
+
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML,
+      }, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+
+    cy.get('#\\/_answer1_submit').should('not.exist');
+    cy.get('#\\/_answer1_correct').should('not.exist');
+    cy.get('#\\/_answer1_incorrect').invoke('text').then((text) => {
+      expect(text.trim().toLowerCase()).equal('incorrect')
+    });
+    cy.get('#\\/_answer1_partial').should('not.exist');
+
+    cy.window().then((win) => {
+      let components = Object.assign({},win.state.components);
+      expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
+    });
+
+
+  
+    cy.log("Move point to third quadrant and submit")
+    cy.window().then((win) => {
+      let components = Object.assign({},win.state.components);
+      components['/_point1'].movePoint({x: -9.4, y: -5.1})
+      components['/_point1'].movePoint({x: -9.5, y: -5.1})
+      expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
+    });
+
+    cy.get('#\\/_answer1_submit').invoke('text').then((text) => {
+      expect(text.trim().toLowerCase()).equal('check work')
+    })
+    cy.get('#\\/_answer1_correct').should('not.exist');
+    cy.get('#\\/_answer1_incorrect').should('not.exist');
+    cy.get('#\\/_answer1_partial').should('not.exist');
+
+    cy.get('#\\/_answer1_submit').click();
+    cy.get('#\\/_answer1_submit').should('not.exist');
+    cy.get('#\\/_answer1_correct').should('not.exist');
+    cy.get('#\\/_answer1_incorrect').invoke('text').then((text) => {
+      expect(text.trim().toLowerCase()).equal('incorrect')
+    });
+    cy.get('#\\/_answer1_partial').should('not.exist');
+
+    cy.window().then((win) => {
+      let components = Object.assign({},win.state.components);
+      expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
+    });
+
+
+
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: '<text>b</text>',
+      }, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'b') //wait for page to load
+
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML,
+      }, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+
+    cy.get('#\\/_answer1_submit').should('not.exist');
+    cy.get('#\\/_answer1_correct').should('not.exist');
+    cy.get('#\\/_answer1_incorrect').invoke('text').then((text) => {
+      expect(text.trim().toLowerCase()).equal('incorrect')
+    });
+    cy.get('#\\/_answer1_partial').should('not.exist');
+
+
+  });
+
+
   it('point at precise location with attract',() => {
     cy.window().then((win) => { win.postMessage({doenetML: `
     <text>a</text>
