@@ -33,7 +33,7 @@ export function useDashboardCrumb(driveId){
       }
     }
     
-  })
+  },[])
 
   useEffect(()=>{
     getDriveLabel(driveId);
