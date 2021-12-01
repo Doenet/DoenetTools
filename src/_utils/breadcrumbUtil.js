@@ -1,6 +1,6 @@
 import { faTh } from '@fortawesome/free-solid-svg-icons';
 import { useEffect, useState } from 'react';
-import { useRecoilCallback, useRecoilValue, useSetRecoilState } from 'recoil';
+import { selectorFamily, useRecoilCallback, useRecoilValue, useSetRecoilState } from 'recoil';
 import { pageToolViewAtom } from '../Tools/_framework/NewToolRoot';
 import { fetchDrivesQuery, loadDriveInfoQuery, folderDictionary } from '../_reactComponents/Drive/NewDrive';
 import { effectiveRoleAtom } from '../_reactComponents/PanelHeaderComponents/RoleDropdown';
@@ -22,22 +22,16 @@ export function useCourseChooserCrumb(){
 export function useDashboardCrumb(driveId){
   
   const setPageToolView = useSetRecoilState(pageToolViewAtom);
-  const [label,setLabel] = useState('')
+  const drives = useRecoilValue(fetchDrivesQuery);
 
-  const getDriveLabel = useRecoilCallback(({snapshot})=> async (driveId)=>{
-    let drives = await snapshot.getPromise(fetchDrivesQuery);
-    for (let driveIdLabel of drives.driveIdsAndLabels){
-      if (driveIdLabel.driveId == driveId){
-        setLabel(driveIdLabel.label);
-        return;
-      }
+  let label;
+
+  for (let driveIdLabel of drives.driveIdsAndLabels){
+    if (driveIdLabel.driveId == driveId){
+      label = driveIdLabel.label;
+      break;
     }
-    
-  },[])
-
-  useEffect(()=>{
-    getDriveLabel(driveId);
-  },[driveId])
+  }
 
   let params = {
     path: `${driveId}:${driveId}:${driveId}:Drive`,
@@ -47,6 +41,97 @@ export function useDashboardCrumb(driveId){
         setPageToolView({
           page: 'course',
           tool: 'dashboard',
+          view: '',
+          params
+        });
+  }}
+}
+
+const navigationSelectorFamily =selectorFamily({
+  key:"navigationSelectorFamily/Default",
+  get:(driveIdFolderId)=> async ({get})=>{
+    let {driveId,folderId} = driveIdFolderId;
+
+    async function getFolder({driveId,folderId}){
+      let folderObj = await get(folderDictionary({driveId,folderId}))
+      let label = 'Content';
+      let itemType = 'Drive';
+      let parentFolderId  = driveId;
+      let itemId = folderId;
+      let results = []
+      if (driveId != folderId){
+        label = folderObj.folderInfo.label;
+        itemType = folderObj.folderInfo.itemType;
+        parentFolderId  = folderObj.folderInfo.parentFolderId;
+        results = await getFolder({driveId,folderId:parentFolderId})
+      }
+      return [{label,itemId,itemType},...results]
+    }
+    
+  
+    return await getFolder({driveId,folderId})
+
+  }
+})
+
+export function useNavigationCrumbs(driveId,folderId){
+
+  const setPageToolView = useSetRecoilState(pageToolViewAtom);
+  const folderInfoArray = useRecoilValue(navigationSelectorFamily({driveId,folderId}));
+
+  let crumbs = [];
+
+  for (let item of folderInfoArray){
+       let params = {
+        path: `${driveId}:${driveId}:${driveId}:Drive`,
+      }
+      if (item.itemType === 'Folder'){
+        params = {
+          path: `${driveId}:${item.itemId}:${item.itemId}:Folder`,
+        }
+      }
+       crumbs.unshift({
+        label:item.label,
+        onClick:()=>{
+          setPageToolView({
+            page: 'course',
+            tool: 'navigation',
+            view: '',
+            params
+          });
+      }});
+
+  }
+
+
+  return crumbs
+}
+
+export function useEditorCrumb({doenetId,driveId,folderId,itemId}){
+  
+  const setPageToolView = useSetRecoilState(pageToolViewAtom);
+  const [label,setLabel] = useState('')
+
+  const getDocumentLabel = useRecoilCallback(({snapshot})=> async ({itemId,driveId,folderId})=>{
+    let folderInfo = await snapshot.getPromise(folderDictionary({driveId,folderId}));
+    const docInfo = folderInfo.contentsDictionary[itemId]
+    setLabel(docInfo.label);
+    
+  },[])
+
+  useEffect(()=>{
+    getDocumentLabel({itemId,driveId,folderId});
+  },[doenetId,driveId,folderId,getDocumentLabel])
+
+  let params = {
+    doenetId,
+    path: `${driveId}:${folderId}:${itemId}:DoenetML`
+  }
+
+  return {label, onClick:()=>{
+        setPageToolView({
+          page: 'course',
+          tool: 'editor',
           view: '',
           params
         });
@@ -79,109 +164,6 @@ export function useCollectionCrumb(doenetId,path){
         setPageToolView({
           page: 'course',
           tool: 'collection',
-          view: '',
-          params
-        });
-  }}
-}
-
-export function useNavigationCrumbs(driveId,folderId){
-  console.log("\n>>>>useNavigationCrumbs!!!!!!!!!!!!!!-------------")
-
-  const setPageToolView = useSetRecoilState(pageToolViewAtom);
-  const [crumbs,setCrumbs] = useState([])
-
-  const getCrumbs = useRecoilCallback(({snapshot})=> async (driveId,itemId)=>{
-    let itemInfo = await snapshot.getPromise(loadDriveInfoQuery(driveId));
-    console.log("\n>>>>useNavigationCrumbs itemInfo",itemInfo)
-
-    //Build information about folders until we get to drive
-    function parentFolder({folderInfo=[], itemId}){
-
-      if (driveId == itemId){
-        return [{label:"Content"},...folderInfo];
-      }
-
-    for (let item of itemInfo.results){
-      let newFolderInfo;
-      if (item.itemId == itemId){
-        if (item.itemType !== 'Collection'){ 
-          newFolderInfo = [item,...folderInfo]
-        }
-        return parentFolder({folderInfo:newFolderInfo,itemId:item.parentFolderId});
-      }
-    }
-
-    }
-
-    let crumbArray = [];
-    for (let item of parentFolder({itemId})){
-
-      let params = {
-        path: `${driveId}:${driveId}:${driveId}:Drive`,
-      }
-      if (item.itemId){
-        params = {
-          path: `${driveId}:${item.itemId}:${item.itemId}:Folder`,
-        }
-      }
-      console.log(">>>>[nav params]",params)
-      //WHY ARE THESE NOT SET SOMETIMES?
-
-      crumbArray.push({
-        label:item.label,
-        onClick:()=>{
-          setPageToolView({
-            page: 'course',
-            tool: 'navigation',
-            view: '',
-            params
-          });
-      }});
-
-    }
-    setCrumbs(crumbArray);
-  },[setPageToolView])
-    
-
-  useEffect(()=>{
-
-      getCrumbs(driveId,folderId);
-  },[getCrumbs,driveId,folderId])
-
-  // console.log("\n>>>>navigation")
-  // console.log(">>>>driveId",driveId)
-  // console.log(">>>>folderId",folderId)
-  console.log(">>>>useNavigationCrumbs crumbs",crumbs)
-
-  return crumbs
-}
-
-export function useEditorCrumb({doenetId,driveId,folderId,itemId}){
-  
-  const setPageToolView = useSetRecoilState(pageToolViewAtom);
-  const [label,setLabel] = useState('')
-
-  const getDocumentLabel = useRecoilCallback(({snapshot})=> async ({itemId,driveId,folderId})=>{
-    let folderInfo = await snapshot.getPromise(folderDictionary({driveId,folderId}));
-    const docInfo = folderInfo.contentsDictionary[itemId]
-    setLabel(docInfo.label);
-    
-  },[])
-
-  useEffect(()=>{
-    getDocumentLabel({itemId,driveId,folderId});
-  },[doenetId,driveId,folderId,getDocumentLabel])
-
-  let params = {
-    doenetId,
-    path: `${driveId}:${folderId}:${itemId}:DoenetML`
-  }
-
-  return {label, onClick:()=>{
-        setPageToolView({
-          page: 'course',
-          tool: 'editor',
           view: '',
           params
         });

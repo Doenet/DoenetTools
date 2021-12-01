@@ -139,12 +139,9 @@ export function BreadCrumb({crumbs=[],offset=0}){
     }
       effectiveWidth -= offset;
 
-    console.log("\n>>>>> effectiveWidth",effectiveWidth)
-  // console.log("\n>>>>>supportPanelHandleLeftValue",supportPanelHandleLeftValue)
 
   //Use breaks info to set numHidden
     for (let crumbBreak of crumbBreaks){
-      console.log(">>>>>crumbBreak",crumbBreak)
       if (effectiveWidth < crumbBreak.end &&
         effectiveWidth >= crumbBreak.start
         ){
@@ -235,7 +232,6 @@ export function BreadCrumb({crumbs=[],offset=0}){
             if (widths.length > 2 && elipseWidth > widths[1]){
               newCrumbBreaks.pop();
             }
-            console.log(">>>>>>NEW widths and breaks!!!!!!!!!!",widths,newCrumbBreaks)
        
           setCrumbBreaks(newCrumbBreaks);
         }

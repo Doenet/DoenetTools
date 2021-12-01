@@ -13,11 +13,6 @@ export default function NavigationBreadCrumb() {
   const dashboardCrumb = useDashboardCrumb(driveId);
   const navigationCrumbs = useNavigationCrumbs(driveId,folderId)
 
-  console.log("\n>>>>-------NavigationBreadCrumb--------")
-  console.log(">>>>chooserCrumb",chooserCrumb)
-  console.log(">>>>dashboardCrumb",dashboardCrumb)
-  console.log(">>>>navigationCrumbs",navigationCrumbs)
-
   return (
     <Suspense fallback={<div>Loading Breadcrumb...</div>}>
       <BreadCrumb crumbs={[chooserCrumb,dashboardCrumb,...navigationCrumbs]} />

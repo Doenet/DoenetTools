@@ -99,7 +99,6 @@ export default function ContentPanel({ main, support }) {
   }, [support?.props?.hide]);
 
   function onWindowResize(){
-    console.log(">>>>>HERE!!!!!!!!!!!!!!!!!!!!!!!!",dragHandleRef.current?.getBoundingClientRect()?.left)
     setHandleLeft(dragHandleRef.current?.getBoundingClientRect()?.left)
   }
 
