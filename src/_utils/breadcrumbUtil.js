@@ -47,7 +47,7 @@ export function useDashboardCrumb(driveId){
   }}
 }
 
-const navigationSelectorFamily =selectorFamily({
+const navigationSelectorFamily = selectorFamily({
   key:"navigationSelectorFamily/Default",
   get:(driveIdFolderId)=> async ({get})=>{
     let {driveId,folderId} = driveIdFolderId;

@@ -18,14 +18,6 @@ export default function EditorBreadCrumb() {
   const doenetId = useRecoilValue(searchParamAtomFamily('doenetId')); 
   const editorCrumb = useEditorCrumb({doenetId,driveId,folderId,itemId});
 
-  console.log("\n>>>>-------EditorBreadCrumb--------")
-  console.log(">>>>path",path)
-  console.log(">>>>dashboardCrumb",dashboardCrumb)
-  console.log(">>>>navigationCrumbs",navigationCrumbs)
-  console.log(">>>>doenetId",doenetId)
-  console.log(">>>>editorCrumb",editorCrumb)
-
-
   return (
     <Suspense fallback={<div>Loading Breadcrumb...</div>}>
       <BreadCrumb crumbs={[chooserCrumb,dashboardCrumb,...navigationCrumbs,editorCrumb]} offset={68}/>
