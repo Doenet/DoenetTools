@@ -1,6 +1,6 @@
 import { faTh } from '@fortawesome/free-solid-svg-icons';
 import { useEffect, useState } from 'react';
-import { selectorFamily, useRecoilCallback, useRecoilValue, useSetRecoilState } from 'recoil';
+import { selectorFamily, useRecoilCallback, useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
 import { pageToolViewAtom } from '../Tools/_framework/NewToolRoot';
 import { fetchDrivesQuery, loadDriveInfoQuery, folderDictionary } from '../_reactComponents/Drive/NewDrive';
 import { effectiveRoleAtom } from '../_reactComponents/PanelHeaderComponents/RoleDropdown';
@@ -115,19 +115,11 @@ export function useNavigationCrumbs(driveId,folderId){
 export function useEditorCrumb({doenetId,driveId,folderId,itemId}){
   
   const setPageToolView = useSetRecoilState(pageToolViewAtom);
-  const [label,setLabel] = useState('')
-
-  const getDocumentLabel = useRecoilCallback(({snapshot})=> async ({itemId,driveId,folderId})=>{
-    let folderInfo = await snapshot.getPromise(folderDictionary({driveId,folderId}));
-    const docInfo = folderInfo.contentsDictionary[itemId]
-    setLabel(docInfo.label);
-    
-  },[])
-
-  useEffect(()=>{
-    getDocumentLabel({itemId,driveId,folderId});
-  },[doenetId,driveId,folderId,getDocumentLabel])
-
+  const folderInfo = useRecoilValue(folderDictionary({driveId,folderId}));
+  let label = folderInfo?.contentsDictionary?.[itemId]?.label;
+  if (!label){
+    label = '_';
+  }
   let params = {
     doenetId,
     path: `${driveId}:${folderId}:${itemId}:DoenetML`
@@ -146,18 +138,12 @@ export function useEditorCrumb({doenetId,driveId,folderId,itemId}){
 export function useCollectionCrumb(doenetId,path){
   
   const setPageToolView = useSetRecoilState(pageToolViewAtom);
-  const [label,setLabel] = useState('')
-
-  const getDocumentLabel = useRecoilCallback(({snapshot})=> async ({path})=>{
-    let [driveId,folderId] = path.split(':')
-    let folderInfo = await snapshot.getPromise(folderDictionary({driveId,folderId}));
-    setLabel(folderInfo.folderInfo.label);
-  },[])
-
-  useEffect(()=>{
-    getDocumentLabel({path});
-  },[path,getDocumentLabel])
-
+  let [driveId,folderId] = path.split(':')
+  const folderInfo = useRecoilValue(folderDictionary({driveId,folderId}));
+  let label = folderInfo?.folderInfo?.label;
+  if (!label){
+    label = '_';
+  }
 
   let params = {
     doenetId,
@@ -178,18 +164,11 @@ export function useCollectionCrumb(doenetId,path){
 export function useAssignmentCrumb({doenetId,driveId,folderId,itemId}){
   
   const setPageToolView = useSetRecoilState(pageToolViewAtom);
-  const [label,setLabel] = useState('test')
-
-  const getDocumentLabel = useRecoilCallback(({snapshot})=> async ({itemId,driveId,folderId})=>{
-    let folderInfo = await snapshot.getPromise(folderDictionary({driveId,folderId}));
-    const docInfo = folderInfo.contentsDictionary[itemId]
-    setLabel(docInfo.label);
-    
-  },[])
-
-  useEffect(()=>{
-    getDocumentLabel({itemId,driveId,folderId});
-  },[doenetId,driveId,folderId,getDocumentLabel])
+  const folderInfo = useRecoilValue(folderDictionary({driveId,folderId}));
+  let label = folderInfo?.contentsDictionary?.[itemId]?.label;
+  if (!label){
+    label = '_';
+  }
 
   let params = {
     doenetId,
@@ -262,27 +241,28 @@ export function useSurveyCrumb(driveId,doenetId){
 
 export function useGradebookCrumbs(){
 
-  const setPageToolView = useSetRecoilState(pageToolViewAtom);
-  const [crumbs,setCrumbs] = useState([])
+  const [pageToolView,setPageToolView] = useRecoilState(pageToolViewAtom);
+  let crumbs = [];
   const role = useRecoilValue(effectiveRoleAtom);
+  const students = useRecoilValue(studentData);
+  const assignments = useRecoilValue(assignmentData); 
 
-  const getCrumbs = useRecoilCallback(({snapshot})=> async (role)=>{
-    if (role == ''){ return; } //wait for role to be defined
-    let pageToolView = await snapshot.getPromise(pageToolViewAtom);
-    let driveId = pageToolView.params?.driveId;
-    let doenetId = pageToolView.params?.doenetId;
-    let userId = pageToolView.params?.userId;
-    let previousCrumb = pageToolView.params?.previousCrumb;
-    
-    let tool = pageToolView.tool;
-    let crumbArray = []
+
+  let driveId = pageToolView.params?.driveId;
+  let doenetId = pageToolView.params?.doenetId;
+  let userId = pageToolView.params?.userId;
+  let previousCrumb = pageToolView.params?.previousCrumb;
+  let tool = pageToolView.tool;
+
+
+
     //Define gradebook tool crumb 
     if (role == 'instructor'){
     {
       let params = {
         driveId,
       }
-      crumbArray.push({
+      crumbs.push({
         label:'Gradebook', onClick:()=>{
           setPageToolView({
             page: 'course',
@@ -295,10 +275,9 @@ export function useGradebookCrumbs(){
     }
   }
 
-    if (tool == 'gradebook'){
-      setCrumbs(crumbArray);
-      return;
-    }
+  if (tool == 'gradebook'){
+    return crumbs
+  }
 
     //Handle gradebookStudent
    if (tool == 'gradebookStudent' ||
@@ -307,7 +286,6 @@ export function useGradebookCrumbs(){
    ){
      let label = 'Gradebook';
      if (role == 'instructor'){
-        const students = await snapshot.getPromise(studentData);
         const student = students[userId];
         label = `${student.firstName} ${student.lastName}` 
      }
@@ -316,7 +294,7 @@ export function useGradebookCrumbs(){
         driveId,
         userId
       }
-      crumbArray.push({
+      crumbs.push({
         label, onClick:()=>{
           setPageToolView({
             page: 'course',
@@ -329,8 +307,7 @@ export function useGradebookCrumbs(){
     }
 
     if (tool == 'gradebookStudent'){
-      setCrumbs(crumbArray);
-      return;
+      return crumbs
     }
 
     //Only instructors see this
@@ -338,16 +315,18 @@ export function useGradebookCrumbs(){
     previousCrumb == 'assignment' && tool == 'gradebookStudentAssignment'
     ){
       if (role == 'student'){
-        crumbArray.push({label:'Not Available'})
+        crumbs.push({label:'Not Available'})
       }else{
-        const assignments = await snapshot.getPromise(assignmentData); 
-        let assignmentName = assignments[doenetId].label;
+        let assignmentName = assignments?.[doenetId]?.label;
+        if (!assignmentName){
+          assignmentName = '_';
+        }
 
         let params = {
           driveId,
           doenetId
         }
-        crumbArray.push({
+        crumbs.push({
           label:assignmentName, onClick:()=>{
             setPageToolView({
               page: 'course',
@@ -361,20 +340,21 @@ export function useGradebookCrumbs(){
     }
 
     if (tool == 'gradebookAssignment'){
-      setCrumbs(crumbArray);
-      return;
+      return crumbs
     }
 
     //tool is gradebookStudentAssignment
     if (role == 'student'){
-      const assignments = await snapshot.getPromise(assignmentData); 
-        let assignmentName = assignments[doenetId].label;
+      let assignmentName = assignments?.[doenetId]?.label;
+      if (!assignmentName){
+        assignmentName = '_';
+      }
         let params = {
           driveId,
           userId,
           doenetId
         }
-        crumbArray.push({
+        crumbs.push({
           label:assignmentName, onClick:()=>{
             setPageToolView({
               page: 'course',
@@ -388,11 +368,9 @@ export function useGradebookCrumbs(){
       let crumbLabel = '_';
       if (previousCrumb == 'student'){
         
-        const assignments = await snapshot.getPromise(assignmentData); 
         crumbLabel = assignments[doenetId].label;
       }
       if (previousCrumb == 'assignment'){
-        const students = await snapshot.getPromise(studentData);
         const student = students[userId];
         crumbLabel = `${student.firstName} ${student.lastName}` 
         
@@ -404,7 +382,7 @@ export function useGradebookCrumbs(){
         doenetId,
         previousCrumb
       }
-      crumbArray.push({
+      crumbs.push({
         label:crumbLabel, onClick:()=>{
           setPageToolView({
             page: 'course',
@@ -416,17 +394,6 @@ export function useGradebookCrumbs(){
     })
 
     }
-
-
-    setCrumbs(crumbArray);
-
-
-  },[setPageToolView])
-    
-
-  useEffect(()=>{
-      getCrumbs(role);
-  },[getCrumbs,role])
 
 
   return crumbs
