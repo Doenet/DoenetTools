@@ -65,7 +65,12 @@ const navigationSelectorFamily =selectorFamily({
         parentFolderId  = folderObj.folderInfo.parentFolderId;
         results = await getFolder({driveId,folderId:parentFolderId})
       }
-      return [{label,itemId,itemType},...results]
+      //Don't add Collections as Folders in navigation
+      if (itemType === 'Collection'){
+        return [...results]
+      }else{
+        return [{label,itemId,itemType},...results]
+      }
     }
     
   
