@@ -3,6 +3,7 @@ import {parser} from './doenet.js'
 /**
  *  takes in a string an outputs a TreeCursor
  * @param {string} inText
+ * @returns {TreeCursor}
  */
 export function parse(inText) {
     return parser.parse(inText).cursor();
@@ -33,6 +34,7 @@ export function parseAndCompile(inText){
                 if(cursor.name !== "Attribute"){
                     console.error(cursor);
                     console.error(cursor.name);
+                    // eslint-disable-next-line no-empty
                     while(cursor.parent()){}
                     throw Error("Expected an Attribute in OpenTag, got ", cursor);
                 }
@@ -118,7 +120,6 @@ export function parseAndCompile(inText){
 
             //I have no idea why attrs needs to be destructured
             // but if it isn't, it doesn't work ~50% of the time
-            //
             return {componentType :  tagName, props : {...attrs}, children : []};
 
         } else {
@@ -126,42 +127,43 @@ export function parseAndCompile(inText){
             throw Error("Non SelfClosingTag/OpenTag in Element. How did you do that?");
         }
     }
-
-    let tc = parse(inText);
-    let out = [];
-    if(!tc.firstChild()){
-        return out;
-    }
-    // the way the parser is structured is that the first row of the tree is just going to be Elements
-    // We traverse the first row, each compiled Element it all to an array, and return that
-    // We create a new cursor for each element to avoid having to worry about cursor state between elements
-    // This should only create n many pointers for n elements, which is a small amount of memory overall
-    out.push(compileElement(tc.node.cursor))
-    while(tc.nextSibling()){
+    function compileTopLevel(tc){
         if(tc.node.name === "Element"){
             out.push(compileElement(tc.node.cursor));
         } else if (tc.node.name === "Comment") {
-            continue;
+            return null;
         } else if (tc.node.name === "Macro") {
-            //add the macro to the children, ignoring the dollar sign in the name.
-            // out.push({macroName : inText.substring(tc.node.from+1,tc.node.to)});
-            out.push({componentType: "string", state: {value: inText.substring(cursor.from,cursor.to)},  props: {}});
+            return {componentType: "string", state: {value: inText.substring(tc.from,tc.to)},  props: {}};
         } else if(tc.node.name === "Text"){
             //TODO probably don't need to trim anymore?
             let txt = inText.substring(tc.node.from,tc.node.to).trimEnd();
             //why is it called state...
             if(txt !== ""){
                 out.push({componentType: "string", state: {value: txt}, props: {} });
-             }
+            }
+        }
+    }
+    let tc = parse(inText);
+    let out = [];
+    if(!tc.firstChild()){
+        return out;
+    }
+
+    out.push(compileTopLevel(tc));
+    while(tc.nextSibling()){
+        let next = compileTopLevel(tc);
+        if(next !== null){
+            out.push(next);
         }
     }
     return out;
 }
 
+
 /**
  * pretty-print the tree pointed to by a tree-cursor.
  * Intended for demonstration/debugging
- * @param {treeCursor} cursor
+ * @param {TreeCursor} cursor
  * @returns {string}
  */
 export function showCursor(cursor){

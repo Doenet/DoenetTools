@@ -3,9 +3,9 @@ import { basicSetup } from '@codemirror/basic-setup';
 import { EditorState, Transaction, StateEffect } from '@codemirror/state';
 import { selectLine, deleteLine, cursorLineUp } from '@codemirror/commands';
 import { EditorView, keymap } from '@codemirror/view';
-import { styleTags, defaultHighlightStyle, tags as t } from "@codemirror/highlight";
+import { styleTags, tags as t } from "@codemirror/highlight";
 import { lineNumbers } from "@codemirror/gutter";
-import { LezerLanguage, LanguageSupport, syntaxTree, indentNodeProp, foldNodeProp } from '@codemirror/language';
+import { LRLanguage, LanguageSupport, syntaxTree, indentNodeProp, foldNodeProp } from '@codemirror/language';
 import { completeFromSchema } from '@codemirror/lang-xml';
 import { parser } from "../../Parser/doenet";
 import { atom, useRecoilValue } from "recoil";
@@ -218,7 +218,8 @@ props : [
         //the indent wont have time to update and you're going right back to the left side of the screen.
         Element(context) {
             let closed = /^\s*<\//.test(context.textAfter)
-            return context.lineIndent(context.state.doc.lineAt(context.node.from)) + (closed ? 0 : context.unit)
+            console.log("youuuhj",context.state.doc.lineAt(context.node.from))
+            return context.lineIndent(context.node.from) + (closed ? 0 : context.unit)
         },
         "OpenTag CloseTag SelfClosingTag"(context) {
 
@@ -253,7 +254,7 @@ props : [
 ]
 });
 
-const doenetLanguage = LezerLanguage.define({
+const doenetLanguage = LRLanguage.define({
     parser: parserWithMetadata,
     languageData: {
         commentTokens: {block: {open: "<!--", close: "-->"}},

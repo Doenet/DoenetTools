@@ -12,7 +12,7 @@ entity {
 }
 
 Element {
-  OpenTag entity* CloseTag |
+  OpenTag entity* (CloseTag | MissingCloseTag) |
   SelfClosingTag
 }
 
@@ -23,7 +23,7 @@ topLevel {
   Element
 }
 
-OpenTag[closedBy=CloseTag] {
+OpenTag[closedBy="CloseTag MissingCloseTag"] {
   StartTag TagName Attribute* endTag
 }
 
@@ -53,6 +53,7 @@ Comment { "<!--" commentContent* "-->" }
 @external tokens startTag from "./tokens.js" {
   StartTag[closedBy="SelfCloseEndTag EndTag"]
   StartCloseTag
+  MissingCloseTag
   mismatchedStartCloseTag[@name=StartCloseTag]
   incompleteStartCloseTag[@name=StartCloseTag]
 }
