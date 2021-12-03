@@ -135,7 +135,7 @@
         fb = fc;
         fc = fa;
       }
-      tol_act = 2 * eps * Math.abs(b) + eps * 0.5;
+      tol_act = 0.5 * eps * (Math.abs(b) + 1);
       new_step = (c - b) * 0.5;
 
       if (Math.abs(new_step) <= tol_act && Math.abs(fb) <= eps) {

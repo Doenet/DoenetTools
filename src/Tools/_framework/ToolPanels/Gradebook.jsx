@@ -92,7 +92,7 @@ export const Styles = styled.div`
     }
     
     td {
-        user-select: none;
+        /* user-select: none; */
         text-align: center;
         max-width: 5rem;
     }
@@ -162,16 +162,27 @@ const assignmentDataQuerry = atom({
     })
 })
 
+function isIterable(obj) {
+    // checks for null and undefined
+    if (obj == null) {
+      return false;
+    }
+    return typeof obj[Symbol.iterator] === 'function';
+  }
+
 export const assignmentData = selector({
     key: "assignmentData",
     get: ({get}) => {
         let assignmentArray = {};
         let data = get(assignmentDataQuerry)
-        
-        for(let row of data){
-            let [doenetId, assignmentName] = row;
-            assignmentArray[doenetId] = assignmentName;
+
+        if (isIterable(data)){
+            for(let row of data){
+                let [doenetId, assignmentName] = row;
+                assignmentArray[doenetId] = assignmentName;
+            }
         }
+        
         return assignmentArray
     },
     set: ({set, get}, newValue)=>{

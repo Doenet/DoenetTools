@@ -40,7 +40,7 @@ import { mainPanelClickAtom } from '../Panels/NewMainPanel';
 import { effectiveRoleAtom } from '../../../_reactComponents/PanelHeaderComponents/RoleDropdown';
 import { UTCDateStringToDate } from '../../../_utils/dateUtilityFunction';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faChevronLeft, faChevronRight } from '@fortawesome/free-solid-svg-icons';
+import { faChevronLeft, faChevronRight, faThumbtack } from '@fortawesome/free-solid-svg-icons';
 
 
 //array of objects
@@ -203,7 +203,7 @@ function buildRows({
 
       if (dueDate){
         dueDate.setSeconds(0,0);
-        effectiveRowLabel = `${dotw} ${dueDate.getMonth() + 1}/${dueDate.getDate()}`
+        effectiveRowLabel = `${dotw} `
         
         displayDueDate = formatDueDate(dueDate,classTimes) 
         if (assignedDate){
@@ -483,12 +483,13 @@ export default function Next7Days({ driveId }) {
 
 let pinnedRows = [];
 let overdueRows = [];
+let pinnedName = <p><FontAwesomeIcon icon={faThumbtack}/>  Pinned</p>;
 //This content only shows when viewing the current week
 if (weekShift == 0){
 
 
   pinnedRows.push(...buildRows({
-    rowLabel:"Pinned",
+    rowLabel:pinnedName,
     assignments:pinnedArray,
     clickCallback,
     doubleClickCallback,
@@ -580,7 +581,7 @@ const dotwLabel = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'
     height:"70px"
     }}>
   <span><Button onClick={()=>setWeekShift(0)} value='This Week' /> </span>
-  <h1>Current Content</h1>
+  <h1>Content by Week</h1>
   <span style={{fontSize:"1.4em"}}>{headerMonday} - {headerSunday}</span>
   <ButtonGroup>
     <span><Button onClick={()=>setWeekShift((was)=>was-1)} icon={<FontAwesomeIcon icon={faChevronLeft} />} /></span> 

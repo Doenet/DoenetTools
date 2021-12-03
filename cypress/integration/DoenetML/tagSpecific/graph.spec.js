@@ -1,3 +1,13 @@
+import cssesc from 'cssesc';
+
+function cesc(s) {
+  s = cssesc(s, { isIdentifier: true });
+  if (s.slice(0, 2) === '\\#') {
+    s = s.slice(1);
+  }
+  return s;
+}
+
 describe('Graph Tag Tests', function () {
 
   beforeEach(() => {
@@ -855,6 +865,43 @@ describe('Graph Tag Tests', function () {
     cy.get('#\\/ti_input').clear().type('none{enter}')
     cy.get('#\\/sg7').should('have.text', 'none')
 
+
+
+  });
+
+  // check for bug in placeholder adapter
+  it('graph with label as submitted response, componentType specified', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <graph xlabel="$(x{prop='submittedResponse' componentType='math'})" ylabel="y" />
+
+    <answer name="x">x</answer>
+    
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+
+    // not sure what to test as don't know how to check renderer...
+    // but main thing is that don't have an error
+
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components["/_graph1"].stateValues.xlabel).eq('\uff3f');
+
+      let mathinputName = components['/x'].stateValues.inputChildren[0].componentName
+      let mathinputAnchor = cesc('#' + mathinputName) + " textarea";
+
+
+      cy.get(mathinputAnchor).type("x{enter}", { force: true }).then(() => {
+        expect(components["/_graph1"].stateValues.xlabel).eq('x');
+      });
+
+
+    });
 
 
   });

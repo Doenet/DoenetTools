@@ -145,6 +145,7 @@ import SubsetOfReals from './components/SubsetOfReals';
 import Split from './components/Split';
 import BestFitLine from './components/BestFitLine';
 import AreaBetweenCurveXAxis from './components/AreaBetweenCurveXAxis';
+import RegionHalfPlane from './components/RegionHalfPlane';
 
 
 //Extended
@@ -287,6 +288,7 @@ const componentTypeArray = [
   Split,
   BestFitLine,
   AreaBetweenCurveXAxis,
+  RegionHalfPlane,
 
   BaseComponent,
   InlineComponent,

@@ -1,7 +1,15 @@
 import React, { useCallback, useEffect, useState, useRef } from 'react';
 import Datetime from 'react-datetime';
 import 'react-datetime/css/react-datetime.css';
+import styled from 'styled-components';
 import './DateTime.css';
+
+const Label = styled.div`
+  font-size: 14px;
+  width: fit-content;
+  display: ${(props) => (props.vertical ? 'block' : 'inline')};
+  // margin: 4px;
+`;
 
 export default function DateTime(props) {
   //console.log('props', props);
@@ -9,6 +17,10 @@ export default function DateTime(props) {
   const inputRef = useRef(null);
   const [cursorStart, setCursorStart] = useState(0);
   const [cursorEnd, setCursorEnd] = useState(0);
+
+  let borderColor = props.alert ? '2px solid #C1292E' : '2px solid black';
+  borderColor = props.disabled ? '2px solid #e2e2e2' : borderColor;
+  let cursorStyle = props.disabled ? 'not-allowed' : 'auto';
 
   useEffect(() => {
     setValue(props.value);
@@ -42,9 +54,13 @@ export default function DateTime(props) {
   const renderInput = (propsRI, openCalendar, closeCalendar) => {
     //console.log('propRI', propsRI);
     return (
-      <div>
+      <div style={{ width: 'fit-content' }}>
+        {props.label ? (
+          <Label vertical={props.vertical}>{props.label}</Label>
+        ) : null}
         <input
           {...propsRI}
+          style={{ border: borderColor, cursor: cursorStyle }}
           ref={inputRef}
           onChange={(e) => {
             // console.log(e.target.selectionStart, e.target.selectionEnd);
@@ -57,6 +73,9 @@ export default function DateTime(props) {
             propsRI.onClick(e);
           }}
           onKeyDown={(e) => {
+            if (props.onKeyDown) {
+              props.onKeyDown(e);
+            }
             if (e.key === 'Enter') {
               closeCalendar();
             }

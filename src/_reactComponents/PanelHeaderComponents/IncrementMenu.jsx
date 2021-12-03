@@ -1,314 +1,408 @@
-import styled, { css } from "styled-components";
-import { faAngleRight, faAngleLeft } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from 'react';
+import styled from 'styled-components';
+import { faAngleRight, faAngleLeft } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
-/*
-Text input with increment and decrement buttons. Also has dropdown menu to select given values
-
-USE:
-For font:
-<IncrementMenu font />
-
-For numerical range (inclusive):
-<IncrementMenu range={[0, 15]} />
-
-For given values:
-<IncrementMenu values={["A", "B", "C", "D", "F"]} />
-*/
+const FONT_SIZES = [8, 9, 10, 11, 12, 14, 18, 24, 30, 36, 48, 60, 72, 96];
 
 const Container = styled.div`
-  position: relative;
-  display: ${props => props.align};
-  align-items: center;
-  width: auto;
-`;
-
-const Textfield = styled.input`
-  border-radius: 5px;
-  border: ${props => props.alert ? '2px solid #C1292E' : '2px solid black'};
-  z-index: 0;
-  height: 24px;
-  width: 46px;
-  bottom: 10px;
-  padding: 0px 36px 0px 36px;
-  text-align: center;
-  resize: none;
-  cursor: ${props => props.disabled ? 'not-allowed' : 'default'}
+  display: flex;
+  width: fit-content;
+  margin: 0;
 `;
 
 const IncreaseButton = styled.button`
-  background-color: ${props => props.disabled ? '#e2e2e2' : '#1a5a99'};
-  border-radius: 0px 3px 3px 0px;
-  border: 2px hidden;
+  background-color: ${(props) => (props.disabled ? '#e2e2e2' : '#1a5a99')};
+  border-radius: 0px 5px 5px 0px;
+  border: ${(props) => (props.alert ? '2px solid #C1292E' : '2px solid black')};
+  border-left: none;
   height: 24px;
   width: 34px;
-  position: relative;
-  color: ${props => props.disabled ? 'black' : 'white'};
+  color: ${(props) => (props.disabled ? 'black' : 'white')};
   font-size: 18px;
-  right: 70px;
   :hover {
-    cursor: ${props => props.disabled ? 'not-allowed' : 'pointer'};
+    cursor: ${(props) => (props.disabled ? 'not-allowed' : 'pointer')};
   }
 `;
 
 const DecreaseButton = styled.button`
-  background-color: ${props => props.disabled ? '#e2e2e2' : '#1a5a99'};
-  border-radius: 3px 0px 0px 3px;
-  border: 2px hidden;
+  background-color: ${(props) => (props.disabled ? '#e2e2e2' : '#1a5a99')};
+  border-radius: 5px 0px 0px 5px;
+  border: ${(props) => (props.alert ? '2px solid #C1292E' : '2px solid black')};
+  border-right: none;
   height: 24px;
   width: 34px;
-  position: relative;
-  color: ${props => props.disabled ? 'black' : 'white'};
+  color: ${(props) => (props.disabled ? 'black' : 'white')};
   font-size: 18px;
-  left: -120px;
   :hover {
-    cursor: ${props => props.disabled ? 'not-allowed' : 'pointer'};
+    cursor: ${(props) => (props.disabled ? 'not-allowed' : 'pointer')};
   }
 `;
 
-const Menu = styled.div`
-  display: none;
-  position: absolute;
-  background-color: #e2e2e2;
-  box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
-  z-index: 9999;
-  border: 2px black;
-  border-radius: 5px;
-  left: 38px;
-  top: 30px;
+const TextField = styled.input`
+  border: ${(props) => (props.alert ? '2px solid #C1292E' : '2px solid black')};
+  border-left: none;
+  border-right: none;
+  z-index: 0;
+  height: 18px;
+  width: 80px;
+  text-align: center;
+  resize: none;
+  cursor: ${(props) => (props.disabled ? 'not-allowed' : 'default')};
+  outline: none;
 `;
 
-const MenuOptions = styled.button`
+const Label = styled.div`
+  font-size: 12px;
+  margin: 4px;
+`;
+
+const Menu = styled.div`
+  background-color: #e2e2e2;
+  box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+  border: 2px solid black;
+  border-top: none;
+  border-radius: 5px;
+  position: relative;
+  overflow: scroll;
+  max-height: ${(props) => props.maxHeight};
+  width: fit-content;
+`;
+
+const MenuOption = styled.button`
   background-color: #e2e2e2;
   display: block;
-  width: 48px;
+  width: 146px;
   height: 24px;
-  border: 1px black solid;
+  border: none;
+  border-bottom: 1px black solid;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
   :hover {
     cursor: pointer;
   }
 `;
 
-const Label = styled.p`
-  font-size: 12px;
-  display: ${props => props.labelVisible};
-  margin-right: 5px;
-  margin-bottom: ${props => props.align == 'flex' ? 'none' : '0px'};
-`
+const findClosestIndex = (arr, value) => {
+  if (arr === null) {
+    return -1;
+  }
+  let closestIndex = 0;
+  let minDist = Math.abs(arr[0] - value);
 
+  for (let i = 1; i < arr.length; i++) {
+    if (Math.abs(arr[i] - value) < minDist) {
+      minDist = Math.abs(arr[i] - value);
+      closestIndex = i;
+    }
+  }
+
+  return closestIndex;
+};
 
 export default function Increment(props) {
-  var values;
-  var sizes;
-  var menuComponents = [];
-  const [currentValue, setCurrentValue] = useState(props.value ? props.value : "");
-  var align = 'flex';
-  //Button icons
-  var decreaseIcon = "-";
-  var increaseIcon = "+";
+  let increaseIcon = '+';
+  let decreaseIcon = '-';
+
   if (props.values) {
     decreaseIcon = <FontAwesomeIcon icon={faAngleLeft} />;
     increaseIcon = <FontAwesomeIcon icon={faAngleRight} />;
   }
 
-  function valueChange(data) {
+  const [index, setIndex] = useState(0);
+  const [value, setValue] = useState(props.value);
+  const [menuToggle, setMenuToggle] = useState(false);
+  const [values, setValues] = useState(props.values);
+  const [numericValue, setNumericValues] = useState(false);
+  const incrementRef = useRef(null);
+  const textFieldRef = useRef(null);
+  const decrementRef = useRef(null);
+  const containerRef = useRef(null);
+  const menuRef = useRef(null);
+
+  useEffect(() => {
+    if (props.value) {
+      setValue(props.value);
+      if (values) {
+        setIndex(values.indexOf(props.value));
+      }
+    } else {
+      if (props.min !== undefined) {
+        setValue(props.min);
+      } else if (props.max !== undefined) {
+        setValue(props.max);
+      } else if (props.font) {
+        setValue(FONT_SIZES[4]);
+      } else if (values) {
+        setValue(values[0]);
+        setIndex(0);
+      } else {
+        setValue(0);
+      }
+    }
+  }, [props.value]);
+
+  useEffect(() => {
+    if (props.values) {
+      setIndex(props.values.indexOf(value));
+      decreaseIcon = <FontAwesomeIcon icon={faAngleLeft} />;
+      increaseIcon = <FontAwesomeIcon icon={faAngleRight} />;
+
+      let numericFlag = true;
+      for (let i = 0; i < props.values.length; i++) {
+        if (props.values[i] === '' || isNaN(props.values[i])) {
+          numericFlag = false;
+          break;
+        }
+      }
+
+      setNumericValues(numericFlag);
+      // console.log('>>> numericValues', numericFlag);
+    }
+    setValues(props.values);
+  }, [props.values]);
+
+  let menuOptions = null;
+
+  const containerOnBlur = (e) => {
+    e.stopPropagation();
+    e.preventDefault();
+    if (
+      decrementRef.current &&
+      decrementRef.current.contains(e.relatedTarget)
+    ) {
+      // console.log('>>> clicked inside the decrement');
+    } else if (
+      textFieldRef.current &&
+      textFieldRef.current.contains(e.relatedTarget)
+    ) {
+      // console.log('>>> clicked inside the textfield');
+    } else if (
+      incrementRef.current &&
+      incrementRef.current.contains(e.relatedTarget)
+    ) {
+      // console.log('>>> clicked inside the increment');
+    } else if (menuRef.current && menuRef.current.contains(e.relatedTarget)) {
+      // console.log('>>> clicked inside the menu');
+    } else {
+      setMenuToggle(false);
+      if (values && props.restricted == true && index == -1) {
+        setIndex(findClosestIndex(values, value));
+        setValue(values[findClosestIndex(values, value)]);
+      } else if (props.font && (value === '' || isNaN(value) || value < 0)) {
+        setValue(FONT_SIZES[4]);
+      } else if (
+        props.min !== undefined &&
+        (value === '' || isNaN(value) || value < props.min)
+      ) {
+        setValue(props.min);
+      } else if (
+        props.max !== undefined &&
+        (value === '' || isNaN(value) || value > props.max)
+      ) {
+        setValue(props.max);
+      }
+      if (props.onBlur) {
+        props.onBlur(value);
+      }
+    }
+  };
+
+  const incrementOnClick = (e) => {
+    // console.log('props.max', props.max);
+    if (textFieldRef.current) {
+      textFieldRef.current.focus();
+    }
+
+    if (props.max !== undefined) {
+      if (value < props.max) {
+        if (value !== '' && !isNaN(value)) {
+          if (props.onChange) {
+            props.onChange(parseInt(value) + 1);
+          }
+          setValue(parseInt(value) + 1);
+        }
+      }
+    } else if (values) {
+      if (index === -1) {
+        if (props.onChange) {
+          props.onChange(values[findClosestIndex(values, value)]);
+        }
+        setIndex(findClosestIndex(values, value));
+        setValue(values[findClosestIndex(values, value)]);
+      } else if (index < values.length - 1) {
+        // console.log('increment values', values, value, index);
+        if (props.onChange) {
+          props.onChange(values[index + 1]);
+        }
+        setValue(values[index + 1]);
+        setIndex(index + 1);
+      }
+    } else {
+      if (value !== '' && !isNaN(value)) {
+        if (props.onChange) {
+          props.onChange(parseInt(value) + 1);
+        }
+        setValue(parseInt(value) + 1);
+      }
+    }
+  };
+
+  const decrementOnClick = (e) => {
+    // console.log('props.min', props.min);
+    if (textFieldRef.current) {
+      textFieldRef.current.focus();
+    }
+    if (props.min !== undefined) {
+      if (value > props.min) {
+        if (value !== '' && !isNaN(value)) {
+          if (props.onChange) {
+            props.onChange(parseInt(value) - 1);
+          }
+          setValue(parseInt(value) - 1);
+        }
+      }
+    } else if (values) {
+      if (index === -1) {
+        if (props.onChange) {
+          props.onChange(values[findClosestIndex(values, value)]);
+        }
+        setIndex(findClosestIndex(values, value));
+        setValue(values[findClosestIndex(values, value)]);
+      } else if (index > 0) {
+        // console.log('decrement values', values, value, index);
+        if (props.onChange) {
+          props.onChange(values[index - 1]);
+        }
+        setValue(values[index - 1]);
+        setIndex(index - 1);
+      }
+    } else if (props.font) {
+      if (value !== '' && !isNaN(value) && value > 0) {
+        if (props.onChange) {
+          props.onChange(parseInt(value) - 1);
+        }
+        setValue(parseInt(value) - 1);
+      }
+    } else {
+      if (value !== '' && !isNaN(value)) {
+        if (props.onChange) {
+          props.onChange(parseInt(value) - 1);
+        }
+        setValue(parseInt(value) - 1);
+      }
+    }
+  };
+
+  const onTextFieldChange = (e) => {
+    setValue(e.target.value);
+    if (values) {
+      // console.log('changed index', values.indexOf(e.target.value));
+      setIndex(values.indexOf(e.target.value));
+    }
     if (props.onChange) {
-      props.onChange(data);
+      props.onChange(e.target.value);
     }
-    setCurrentValue(data);
-  }
+  };
 
-  //Creation of dropdown menus
-  if (props.range) {
-    for (let i = props.range[0]; i <= props.range[1]; i++) {
-      menuComponents.push(
-        <MenuOptions
-          id={i}
-          onClick={function (e) {
-            valueChange(i);
-            // setCurrentValue(i);
-            // props.onValueChange(i);
-          }}
-        >
-          {i}
-        </MenuOptions>
-      );
+  const onTextFieldEnter = (e) => {
+    if (textFieldRef.current) {
+      textFieldRef.current.blur();
     }
-  }
+  };
+
+  const onMenuClick = (e) => {
+    // console.log('onMenuClick clicked');
+    setValue(e.target.value);
+    setMenuToggle(false);
+    if (values) {
+      setIndex(values.indexOf(e.target.value));
+    }
+    if (props.onChange) {
+      props.onChange(e.target.value);
+    }
+    if (props.onBlur) {
+      props.onBlur(e.target.value);
+    }
+  };
+
   if (props.font) {
-    sizes = [8, 9, 10, 11, 12, 14, 18, 24, 30, 36, 48, 60, 72, 96];
-    for (let i = 0; i < sizes.length; i++) {
-      menuComponents.push(
-        <MenuOptions
-          id={i}
-          onClick={function (e) {
-            // setCurrentValue(sizes[i]);
-            // props.onValueChange(sizes[i]);
-            valueChange(sizes[i]);
-          }}
-        >
-          {sizes[i]}
-        </MenuOptions>
-      );
-    }
-  }
-  if (props.values) {
-    values = props.values;
-    for (let i = 0; i < values.length; i++) {
-      menuComponents.push(
-        <MenuOptions
-          id={i}
-          onClick={function (e) {
-            valueChange(values[i]);
-            // setCurrentValue(values[i]);
-            // props.onValueChange(values[i]);
-          }}
-        >
-          {values[i]}
-        </MenuOptions>
-      );
-    }
+    menuOptions = FONT_SIZES.map((size, index) => (
+      <MenuOption key={index} value={size} onClick={onMenuClick}>
+        {size}
+      </MenuOption>
+    ));
   }
 
-  function changeValue(e) {
-    valueChange(e.target.value);
-    // setCurrentValue(e.target.value);
-    // props.onValueChange(e.target.value);
+  if (values) {
+    menuOptions = values.map((value, index) => (
+      <MenuOption key={index} value={value} onClick={onMenuClick}>
+        {value}
+      </MenuOption>
+    ));
   }
 
-  function decrement() {
-    if (props.values) {
-      var index = values.indexOf(currentValue);
-      // setCurrentIndex();
-      if (index !== -1 && index !== 0 && index < values.length) {
-        valueChange(values[index-1]);
-        // setCurrentValue(values[index - 1]);
-        // props.onValueChange(values[index - 1]);
-      } else if (index === -1) {
-        // setCurrentValue(values[0]);
-        // props.onValueChange(values[0]);
-        valueChange(values[0]);
-      } else {
-        // setCurrentValue(values[values.length - 1]);
-        // props.onValueChange(values[values.length - 1]);
-        valueChange(values[values.length - 1]);
-      }
-    } else if (props.range) {
-      if (props.range[0] <= Number(currentValue) - 1) {
-        // setCurrentValue(Number(currentValue) - 1);
-        // props.onValueChange(Number(currentValue) - 1);
-        valueChange(Number(currentValue) - 1);
-      }
-    } else {
-      // setCurrentValue(Number(currentValue) - 1);
-      // props.onValueChange(Number(currentValue) - 1);
-      valueChange(Number(currentValue) - 1);
-    }
-  }
-
-  function increment() {
-    if (props.values) {
-      // console.log(values.length);
-      var index = values.indexOf(currentValue);
-      // setCurrentIndex();
-      // console.log(currentIndex);
-      if (index !== -1 && index < values.length - 1) {
-        // console.log("are you there?");
-        // setCurrentValue(values[index + 1]);
-        // props.onValueChange(values[index + 1]);
-        valueChange(values[index + 1]);
-      } else if (index === -1) {
-        // setCurrentValue(values[values.length - 1]);
-        // props.onValueChange(values[values.length - 1]);
-        valueChange(values[values.length - 1]);
-      } else {
-        // setCurrentValue(values[0]);
-        // props.onValueChange(values[0]);
-        valueChange(values[0]);
-      }
-    } else if (props.range) {
-      if (props.range[1] >= Number(currentValue) + 1) {
-        valueChange(Number(currentValue) + 1);
-        // setCurrentValue(Number(currentValue) + 1);
-        // props.onValueChange(Number(currentValue) + 1);
-      }
-    } else {
-      valueChange(Number(currentValue) + 1);
-      // setCurrentValue(Number(currentValue) + 1);
-      // props.onValueChange(Number(currentValue) + 1);
-    }
-  }
-
-  function displayMenu() {
-    document.getElementById("menu").style.display = "block";
-  }
-
-  function hideMenu() {
-    document.getElementById("menu").style.display = "none";
-  }
-
-  const [labelVisible, setLabelVisible] = useState(props.label ? 'static' : 'none');
-  var label = '';
-  if (props.label) {
-    label = props.label;
-    if (props.vertical) {
-      align = 'static';
-    }
-  }
-  var alert = false; 
-  if (props.alert) {
-    alert = true;
-  }
-  var disabled = false;
-  if (props.disabled) {
-    disabled = true;
-  }
+  // console.log('props.disabled', props.disabled);
 
   return (
-    <>
-      <Container align={align}>
-        <Label labelVisible={labelVisible} align={align}>{label}</Label>
-        <Textfield
-          alert={alert}
-          disabled={disabled}
-          value={currentValue}
-          onClick={() => {
-            displayMenu();
-          }}
-          onChange={(data) => {
-            changeValue(data);
-            
-          }}
-        ></Textfield>
-
+    <div className="incrementcontainer" style={{ width: 'fit-content' }}>
+      {props.vertical && props.label ? <Label>{props.label}</Label> : null}
+      <Container
+        ref={containerRef}
+        className="textfieldcontainer"
+        onBlur={containerOnBlur}
+      >
+        {!props.vertical && props.label ? <Label>{props.label}</Label> : null}
         <DecreaseButton
-          disabled={disabled}
-          onClick={() => {
-            decrement();
-          }}
+          ref={decrementRef}
+          alert={props.alert}
+          disabled={props.disabled}
+          onClick={decrementOnClick}
         >
           {decreaseIcon}
         </DecreaseButton>
-
-        <IncreaseButton
-          disabled={disabled}
-          onClick={() => {
-            increment();
+        <TextField
+          placeholder={props.placeholder}
+          value={value}
+          ref={textFieldRef}
+          alert={props.alert}
+          disabled={props.disabled ? props.disabled : false}
+          onChange={onTextFieldChange}
+          onClick={(e) => {
+            setMenuToggle(true);
           }}
+          onKeyDown={(e) => {
+            if (props.onKeyDown) {
+              props.onKeyDown(e);
+            }
+            if (e.key === 'Enter') {
+              onTextFieldEnter(e);
+            }
+          }}
+        />
+        <IncreaseButton
+          ref={incrementRef}
+          alert={props.alert}
+          disabled={props.disabled}
+          onClick={incrementOnClick}
         >
           {increaseIcon}
         </IncreaseButton>
-
-        <Menu
-          id="menu"
-          onMouseLeave={() => {
-            hideMenu();
-          }}
-        >
-          {menuComponents}
-        </Menu>
       </Container>
-    </>
+      {menuOptions && menuToggle && (
+        <div style={{ display: 'flex' }}>
+          {!props.vertical && props.label ? (
+            <Label style={{ opacity: 0 }}>{props.label}</Label>
+          ) : null}
+          <Menu
+            ref={menuRef}
+            maxHeight={props.maxHeight ? props.maxHeight : '150px'}
+          >
+            {menuOptions}
+          </Menu>
+        </div>
+      )}
+    </div>
   );
 }

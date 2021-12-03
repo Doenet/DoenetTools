@@ -4,6 +4,7 @@ import { searchParamAtomFamily } from '../NewToolRoot';
 import { loadAssignmentSelector } from '../../../_reactComponents/Drive/NewDrive';
 import { currentAttemptNumber } from '../ToolPanels/AssignmentViewer';
 import axios from 'axios';
+import { UTCDateStringToDate } from '../../../_utils/dateUtilityFunction';
 
 export default function TimerMenu(){
   const doenetId = useRecoilValue(searchParamAtomFamily('doenetId'));
@@ -31,12 +32,8 @@ export default function TimerMenu(){
           if (data.starts[i] !== null){
             //This attempt was started in the past so update startDT
             //AND Convert UTC to local time
-            // Split timestamp into [ Y, M, D, h, m, s ]
-            let t = data.starts[i].split(/[- :]/);
-            // Apply each element to the Date function
-            startDT = new Date(
-              Date.UTC(t[0], t[1]-1, t[2], t[3], t[4], t[5])
-            );
+            startDT = UTCDateStringToDate(data.starts[i])
+
           }
         }
       }

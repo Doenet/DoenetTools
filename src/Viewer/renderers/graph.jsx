@@ -24,6 +24,8 @@ export default class Graph extends DoenetRenderer {
 
     let boundingbox = [this.doenetSvData.xmin, this.doenetSvData.ymax, this.doenetSvData.xmax, this.doenetSvData.ymin];
 
+    JXG.Options.layer.numlayers = 100;
+
     this.board = window.JXG.JSXGraph.initBoard(this.componentName,
       {
         boundingbox,

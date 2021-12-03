@@ -62,6 +62,10 @@ export default class Polygon extends DoenetRenderer {
       borders: this.jsxBorderAttributes,
     };
 
+    if (this.doenetSvData.selectedStyle.fillColor !== "none") {
+      this.jsxPolygonAttributes.fillColor = this.doenetSvData.selectedStyle.fillColor;
+    }
+
     let pts = [];
     this.doenetSvData.numericalVertices.forEach(z => { pts.push([z[0], z[1]]) });
 

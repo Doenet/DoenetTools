@@ -101,6 +101,8 @@ export default function ToolRoot() {
     GradebookAttempt: lazy(() => import("./ToolPanels/GradebookAttempt.js")),
     EditorViewer: lazy(() => import("./ToolPanels/EditorViewer.js")),
     AssignmentViewer: lazy(() => import("./ToolPanels/AssignmentViewer.js")),
+    SurveyListViewer: lazy(() => import("./ToolPanels/SurveyListViewer.js")),
+    SurveyDataViewer: lazy(() => import("./ToolPanels/SurveyDataViewer.js")),
     DoenetMLEditor: lazy(() => import("./ToolPanels/DoenetMLEditor.js")),
     Enrollment: lazy(() => import("./ToolPanels/Enrollment.js")),
     CollectionEditor: lazy(() => import("./ToolPanels/CollectionEditor.js")),
@@ -115,6 +117,7 @@ export default function ToolRoot() {
     ChooserBreadCrumb: lazy(() => import("./HeaderControls/ChooserBreadCrumb.js")),
     DashboardBreadCrumb: lazy(() => import("./HeaderControls/DashboardBreadCrumb.js")),
     EnrollmentBreadCrumb: lazy(() => import("./HeaderControls/EnrollmentBreadCrumb.js")),
+    SurveyBreadCrumb: lazy(() => import("./HeaderControls/SurveyBreadCrumb.js")),
     EditorBreadCrumb: lazy(() => import("./HeaderControls/EditorBreadCrumb.js")),
     GradebookBreadCrumb: lazy(() => import("./HeaderControls/GradebookBreadCrumb.js")),
     AssignmentBreadCrumb: lazy(() => import("./HeaderControls/AssignmentBreadCrumb.js")),
@@ -279,8 +282,8 @@ let navigationObj = {
     gradebook: {
       pageName: "Gradebook",
       currentMainPanel: "Gradebook",
-      currentMenus: [],
       menuPanelCap: "DriveInfoCap",
+      currentMenus: [],
       menusTitles: [],
       menusInitOpen: [],
       headerControls: ["GradebookBreadCrumb"]
@@ -308,20 +311,12 @@ let navigationObj = {
     gradebookStudentAssignment: {
       pageName: "Gradebook",
       currentMainPanel: "GradebookStudentAssignment",
-      currentMenus: ["CreditAchieved"],
       menuPanelCap: "DriveInfoCap",
-      menusTitles: ["Credit Achieved"],
-      menusInitOpen: [true],
-      headerControls: ["GradebookBreadCrumb"]
-    },
-    gradebookAttempt: {
-      pageName: "Gradebook",
-      currentMainPanel: "GradebookAttempt",
-      currentMenus: [],
-      menuPanelCap: "DriveInfoCap",
-      menusTitles: [],
-      menusInitOpen: [],
-      headerControls: ["GradebookBreadCrumb"]
+      currentMenus: ["CreditAchieved", "GradeSettings"],
+      menusTitles: ["Credit Achieved", "Settings"],
+      menusInitOpen: [true, false],
+      headerControls: ["GradebookBreadCrumb"],
+      waitForMenuSuppression: true
     },
     navigation: {
       pageName: "Course",
@@ -365,6 +360,18 @@ let navigationObj = {
       supportPanelTitles: [],
       supportPanelIndex: 0,
       headerControls: ["EnrollmentBreadCrumb"]
+    },
+    surveyList: {
+      pageName: "surveyList",
+      menuPanelCap: "DriveInfoCap",
+      currentMainPanel: "SurveyListViewer",
+      headerControls: ["SurveyBreadCrumb"]
+    },
+    surveyData: {
+      pageName: "surveyData",
+      menuPanelCap: "DriveInfoCap",
+      currentMainPanel: "SurveyDataViewer",
+      headerControls: ["SurveyBreadCrumb"]
     }
   },
   home: {

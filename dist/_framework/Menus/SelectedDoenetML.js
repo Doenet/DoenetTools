@@ -3,7 +3,11 @@ import {FontAwesomeIcon} from "../../_snowpack/pkg/@fortawesome/react-fontawesom
 import React, {useState, useEffect} from "../../_snowpack/pkg/react.js";
 import DropdownMenu from "../../_reactComponents/PanelHeaderComponents/DropdownMenu.js";
 import DateTime from "../../_reactComponents/PanelHeaderComponents/DateTime.js";
-import {DateToUTCDateString, DateToDateString} from "../../_utils/dateUtilityFunction.js";
+import {
+  DateToUTCDateString,
+  DateToDateString
+} from "../../_utils/dateUtilityFunction.js";
+import Increment from "../../_reactComponents/PanelHeaderComponents/IncrementMenu.js";
 import {
   atom,
   selector,
@@ -148,6 +152,7 @@ export default function SelectedDoenetML() {
       newLabel
     });
   }
+  let surveyButton = null;
   return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("h2", {
     "data-cy": "infoPanelItemLabel"
   }, /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
@@ -181,7 +186,7 @@ export default function SelectedDoenetML() {
         }
       });
     }
-  })), /* @__PURE__ */ React.createElement(Textfield, {
+  }), surveyButton), /* @__PURE__ */ React.createElement(Textfield, {
     label: "DoenetML Label",
     width: "menu",
     vertical: true,
@@ -257,6 +262,7 @@ export function AssignmentSettings({role, doenetId}) {
   let [showFeedback, setShowFeedback] = useState(true);
   let [showHints, setShowHints] = useState(true);
   let [showCorrectness, setShowCorrectness] = useState(true);
+  let [showCreditAchievedMenu, setShowCreditAchievedMenu] = useState(true);
   let [proctorMakesAvailable, setProctorMakesAvailable] = useState(true);
   const updateAssignment = useRecoilCallback(({set, snapshot}) => async ({
     doenetId: doenetId2,
@@ -313,6 +319,7 @@ export function AssignmentSettings({role, doenetId}) {
     setShowFeedback(aInfo?.showFeedback);
     setShowHints(aInfo?.showHints);
     setShowCorrectness(aInfo?.showCorrectness);
+    setShowCreditAchievedMenu(aInfo?.showCreditAchievedMenu);
     setProctorMakesAvailable(aInfo?.proctorMakesAvailable);
     setTimeLimit(aInfo?.timeLimit);
     setPinnedUntilDate(aInfo?.pinnedUntilDate);
@@ -350,11 +357,11 @@ export function AssignmentSettings({role, doenetId}) {
       e.preventDefault();
     }
   }, /* @__PURE__ */ React.createElement(CalendarToggle, {
-    checked: aInfo.assignedDate !== null,
+    checked: aInfo.assignedDate !== null && aInfo.assignedDate !== void 0,
     onClick: (e) => {
       let valueDescription = "None";
       let value = null;
-      if (aInfo.assignedDate === null) {
+      if (aInfo.assignedDate === null || aInfo.assignedDate === void 0) {
         valueDescription = "Now";
         value = DateToDateString(new Date());
       }
@@ -366,7 +373,7 @@ export function AssignmentSettings({role, doenetId}) {
         valueDescription
       });
     }
-  }), aInfo.assignedDate !== null ? /* @__PURE__ */ React.createElement(DateTime, {
+  }), aInfo.assignedDate !== null && aInfo.assignedDate !== void 0 ? /* @__PURE__ */ React.createElement(DateTime, {
     value: aInfo.assignedDate ? new Date(aInfo.assignedDate) : null,
     onBlur: ({valid, value}) => {
       if (valid) {
@@ -391,7 +398,7 @@ export function AssignmentSettings({role, doenetId}) {
     onClick: (e) => {
       let valueDescription = "None";
       let value = null;
-      if (aInfo.assignedDate === null) {
+      if (aInfo.assignedDate === null || aInfo.assignedDate === void 0) {
         valueDescription = "Now";
         value = DateToDateString(new Date());
       }
@@ -404,10 +411,11 @@ export function AssignmentSettings({role, doenetId}) {
       });
     },
     style: {
+      cursor: "not-allowed",
       color: "#545454",
       height: "18px",
       width: "177px",
-      border: "2px solid black",
+      border: "2px solid #e2e2e2",
       borderRadius: "5px"
     }
   })))), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("label", null, "Due Date", /* @__PURE__ */ React.createElement("div", {
@@ -416,11 +424,11 @@ export function AssignmentSettings({role, doenetId}) {
       e.preventDefault();
     }
   }, /* @__PURE__ */ React.createElement(CalendarToggle, {
-    checked: aInfo.dueDate !== null,
+    checked: aInfo.dueDate !== null && aInfo.dueDate !== void 0,
     onClick: (e) => {
       let valueDescription = "None";
       let value = null;
-      if (aInfo.dueDate === null) {
+      if (aInfo.dueDate === null || aInfo.dueDate === void 0) {
         valueDescription = "Next Week";
         let nextWeek = new Date();
         nextWeek.setDate(nextWeek.getDate() + 7);
@@ -434,7 +442,7 @@ export function AssignmentSettings({role, doenetId}) {
         valueDescription
       });
     }
-  }), aInfo.dueDate !== null ? /* @__PURE__ */ React.createElement(DateTime, {
+  }), aInfo.dueDate !== null && aInfo.dueDate !== void 0 ? /* @__PURE__ */ React.createElement(DateTime, {
     value: aInfo.dueDate ? new Date(aInfo.dueDate) : null,
     onBlur: ({valid, value}) => {
       if (valid) {
@@ -458,7 +466,7 @@ export function AssignmentSettings({role, doenetId}) {
     onClick: (e) => {
       let valueDescription = "None";
       let value = null;
-      if (aInfo.dueDate === null) {
+      if (aInfo.dueDate === null || aInfo.dueDate === void 0) {
         valueDescription = "Next Week";
         let nextWeek = new Date();
         nextWeek.setDate(nextWeek.getDate() + 7);
@@ -474,10 +482,11 @@ export function AssignmentSettings({role, doenetId}) {
     },
     value: "No Due Date",
     style: {
+      cursor: "not-allowed",
       color: "#545454",
       height: "18px",
       width: "177px",
-      border: "2px solid black",
+      border: "2px solid #e2e2e2",
       borderRadius: "5px"
     }
   })))), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("label", null, "Time Limit", /* @__PURE__ */ React.createElement(Switch, {
@@ -486,7 +495,7 @@ export function AssignmentSettings({role, doenetId}) {
       let value = null;
       if (e.currentTarget.checked) {
         valueDescription = "60 Minutes";
-        value = "60";
+        value = 60;
       }
       updateAssignment({
         doenetId,
@@ -496,43 +505,41 @@ export function AssignmentSettings({role, doenetId}) {
         valueDescription
       });
     },
-    checked: aInfo.timeLimit > 0
-  }))), aInfo.timeLimit > 0 ? /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("label", null, "Time Limit in Minutes", /* @__PURE__ */ React.createElement("input", {
-    type: "number",
+    checked: aInfo.timeLimit !== null
+  }))), aInfo.timeLimit !== null ? /* @__PURE__ */ React.createElement("div", {
+    style: {width: "fit-content"}
+  }, "Time Limit in Minutes", /* @__PURE__ */ React.createElement(Increment, {
     value: timeLimit,
-    onBlur: () => {
+    min: 0,
+    onBlur: (newValue) => {
       if (aInfo.timeLimit !== timeLimit) {
-        let valueDescription = `${timeLimit} Minutes`;
+        let timelimitlocal = null;
+        if (timeLimit < 0 || timeLimit === "" || isNaN(timeLimit)) {
+          setTimeLimit(0);
+          timelimitlocal = 0;
+        } else {
+          timelimitlocal = parseInt(timeLimit);
+          setTimeLimit(parseInt(timeLimit));
+        }
+        let valueDescription = `${timelimitlocal} Minutes`;
         updateAssignment({
           doenetId,
           keyToUpdate: "timeLimit",
-          value: timeLimit,
+          value: timelimitlocal,
           description: "Time Limit",
           valueDescription
         });
       }
     },
-    onKeyDown: (e) => {
-      if (e.key === "Enter" && aInfo.timeLimit !== timeLimit) {
-        let valueDescription = `${timeLimit} Minutes`;
-        updateAssignment({
-          doenetId,
-          keyToUpdate: "timeLimit",
-          value: timeLimit,
-          description: "Time Limit",
-          valueDescription
-        });
-      }
-    },
-    onChange: (e) => setTimeLimit(e.currentTarget.value)
-  }))) : null, /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("label", null, "Attempts Limit", /* @__PURE__ */ React.createElement(Switch, {
+    onChange: (newValue) => setTimeLimit(newValue)
+  })) : null, /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("label", null, "Attempts Limit", /* @__PURE__ */ React.createElement(Switch, {
     name: "limitAttempts",
     onChange: (e) => {
       let valueDescription = "Not Limited";
       let value = null;
       if (e.currentTarget.checked) {
         valueDescription = "1";
-        value = "1";
+        value = 1;
       }
       updateAssignment({
         doenetId,
@@ -542,33 +549,30 @@ export function AssignmentSettings({role, doenetId}) {
         valueDescription
       });
     },
-    checked: aInfo.numberOfAttemptsAllowed > 0
-  }))), aInfo.numberOfAttemptsAllowed > 0 ? /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("label", null, "Number of Attempts Allowed", /* @__PURE__ */ React.createElement("input", {
-    type: "number",
-    name: "numberOfAttemptsAllowed",
+    checked: aInfo.numberOfAttemptsAllowed !== null
+  }))), aInfo.numberOfAttemptsAllowed !== null ? /* @__PURE__ */ React.createElement("div", null, "Number of Attempts Allowed", /* @__PURE__ */ React.createElement(Increment, {
     value: numberOfAttemptsAllowed,
+    min: 0,
     onBlur: () => {
       if (aInfo.numberOfAttemptsAllowed !== numberOfAttemptsAllowed) {
+        let numberOfAttemptsAllowedLocal = null;
+        if (numberOfAttemptsAllowed < 0 || numberOfAttemptsAllowed === "" || isNaN(numberOfAttemptsAllowed)) {
+          setNumberOfAttemptsAllowed(0);
+          numberOfAttemptsAllowedLocal = 0;
+        } else {
+          numberOfAttemptsAllowedLocal = parseInt(numberOfAttemptsAllowed);
+          setNumberOfAttemptsAllowed(parseInt(numberOfAttemptsAllowed));
+        }
         updateAssignment({
           doenetId,
           keyToUpdate: "numberOfAttemptsAllowed",
-          value: numberOfAttemptsAllowed,
+          value: numberOfAttemptsAllowedLocal,
           description: "Attempts Allowed"
         });
       }
     },
-    onKeyDown: (e) => {
-      if (e.key === "Enter" && aInfo.numberOfAttemptsAllowed !== numberOfAttemptsAllowed) {
-        updateAssignment({
-          doenetId,
-          keyToUpdate: "numberOfAttemptsAllowed",
-          value: numberOfAttemptsAllowed,
-          description: "Attempts Allowed"
-        });
-      }
-    },
-    onChange: (e) => setNumberOfAttemptsAllowed(e.currentTarget.value)
-  }))) : null, /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("label", null, "Attempt Aggregation", /* @__PURE__ */ React.createElement(DropdownMenu, {
+    onChange: (newValue) => setNumberOfAttemptsAllowed(newValue)
+  })) : null, /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("label", null, "Attempt Aggregation", /* @__PURE__ */ React.createElement(DropdownMenu, {
     width: "menu",
     valueIndex: attemptAggregation === "m" ? 1 : 2,
     items: [
@@ -588,33 +592,29 @@ export function AssignmentSettings({role, doenetId}) {
         valueDescription
       });
     }
-  }))), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("label", null, "Total Points Or Percent", /* @__PURE__ */ React.createElement("input", {
-    required: true,
-    type: "number",
-    name: "totalPointsOrPercent",
+  }))), /* @__PURE__ */ React.createElement("div", null, "Total Points Or Percent", /* @__PURE__ */ React.createElement(Increment, {
     value: totalPointsOrPercent,
+    min: 0,
     onBlur: () => {
       if (aInfo.totalPointsOrPercent !== totalPointsOrPercent) {
+        let totalPointsOrPercentLocal = null;
+        if (totalPointsOrPercent < 0 || totalPointsOrPercent === "" || isNaN(totalPointsOrPercent)) {
+          setTotalPointsOrPercent(0);
+          totalPointsOrPercentLocal = 0;
+        } else {
+          totalPointsOrPercentLocal = parseInt(totalPointsOrPercent);
+          setTotalPointsOrPercent(parseInt(totalPointsOrPercent));
+        }
         updateAssignment({
           doenetId,
           keyToUpdate: "totalPointsOrPercent",
-          value: totalPointsOrPercent,
+          value: totalPointsOrPercentLocal,
           description: "Total Points Or Percent"
         });
       }
     },
-    onKeyDown: (e) => {
-      if (e.key === "Enter" && aInfo.totalPointsOrPercent !== totalPointsOrPercent) {
-        updateAssignment({
-          doenetId,
-          keyToUpdate: "totalPointsOrPercent",
-          value: totalPointsOrPercent,
-          description: "Total Points Or Percent"
-        });
-      }
-    },
-    onChange: (e) => setTotalPointsOrPercent(e.currentTarget.value)
-  }))), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("label", null, "Grade Category", /* @__PURE__ */ React.createElement("input", {
+    onChange: (newValue) => setTotalPointsOrPercent(newValue)
+  })), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("label", null, "Grade Category", /* @__PURE__ */ React.createElement("input", {
     required: true,
     type: "select",
     name: "gradeCategory",
@@ -736,6 +736,22 @@ export function AssignmentSettings({role, doenetId}) {
       });
     },
     checked: showCorrectness
+  }))), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("label", null, "Show Credit Achieved Menu", /* @__PURE__ */ React.createElement(Switch, {
+    name: "showCreditAchievedMenu",
+    onChange: (e) => {
+      let valueDescription = "False";
+      if (e.currentTarget.checked) {
+        valueDescription = "True";
+      }
+      updateAssignment({
+        doenetId,
+        keyToUpdate: "showCreditAchievedMenu",
+        value: e.currentTarget.checked,
+        description: "Show Credit Achieved Menu",
+        valueDescription
+      });
+    },
+    checked: showCreditAchievedMenu
   }))), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("label", null, "Proctor Makes Available", /* @__PURE__ */ React.createElement(Switch, {
     name: "proctorMakesAvailable",
     onChange: (e) => {
@@ -758,12 +774,12 @@ export function AssignmentSettings({role, doenetId}) {
       e.preventDefault();
     }
   }, /* @__PURE__ */ React.createElement(CalendarToggle, {
-    checked: aInfo.pinnedUntilDate !== null,
+    checked: aInfo.pinnedUntilDate !== null && aInfo.pinnedUntilDate !== void 0,
     onClick: (e) => {
       let valueDescription = "None";
       let value = null;
       let secondValue = null;
-      if (aInfo.pinnedUntilDate === null) {
+      if (aInfo.pinnedUntilDate === null || aInfo.pinnedUntilDate === void 0) {
         valueDescription = "Now to Next Year";
         let today = new Date();
         let nextYear = new Date();
@@ -781,7 +797,7 @@ export function AssignmentSettings({role, doenetId}) {
         secondValue
       });
     }
-  }), aInfo.pinnedUntilDate !== null ? /* @__PURE__ */ React.createElement(DateTime, {
+  }), aInfo.pinnedUntilDate !== null && aInfo.pinnedUntilDate !== void 0 ? /* @__PURE__ */ React.createElement(DateTime, {
     value: aInfo.pinnedAfterDate ? new Date(aInfo.pinnedAfterDate) : null,
     onBlur: ({valid, value}) => {
       if (valid) {
@@ -806,7 +822,7 @@ export function AssignmentSettings({role, doenetId}) {
       let valueDescription = "None";
       let value = null;
       let secondValue = null;
-      if (aInfo.pinnedUntilDate === null) {
+      if (aInfo.pinnedUntilDate === null || aInfo.pinnedUntilDate === void 0) {
         valueDescription = "Now to Next Year";
         let today = new Date();
         let nextYear = new Date();
@@ -826,10 +842,11 @@ export function AssignmentSettings({role, doenetId}) {
     },
     value: "No Pin After Date",
     style: {
+      cursor: "not-allowed",
       color: "#545454",
       height: "18px",
       width: "177px",
-      border: "2px solid black",
+      border: "2px solid #e2e2e2",
       borderRadius: "5px"
     }
   })), /* @__PURE__ */ React.createElement("div", {
@@ -837,7 +854,7 @@ export function AssignmentSettings({role, doenetId}) {
     onClick: (e) => {
       e.preventDefault();
     }
-  }, aInfo.pinnedUntilDate !== null ? /* @__PURE__ */ React.createElement(DateTime, {
+  }, aInfo.pinnedUntilDate !== null && aInfo.pinnedUntilDate !== void 0 ? /* @__PURE__ */ React.createElement(DateTime, {
     value: aInfo.pinnedUntilDate ? new Date(aInfo.pinnedUntilDate) : null,
     onBlur: ({valid, value}) => {
       if (valid) {
@@ -862,7 +879,7 @@ export function AssignmentSettings({role, doenetId}) {
       let valueDescription = "None";
       let value = null;
       let secondValue = null;
-      if (aInfo.pinnedUntilDate === null) {
+      if (aInfo.pinnedUntilDate === null || aInfo.pinnedUntilDate === void 0) {
         valueDescription = "Now to Next Year";
         let today = new Date();
         let nextYear = new Date();
@@ -882,10 +899,11 @@ export function AssignmentSettings({role, doenetId}) {
     },
     value: "No Pin Until Date",
     style: {
+      cursor: "not-allowed",
       color: "#545454",
       height: "18px",
       width: "177px",
-      border: "2px solid black",
+      border: "2px solid #e2e2e2",
       borderRadius: "5px"
     }
   })))));

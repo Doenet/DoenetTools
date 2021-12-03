@@ -126,6 +126,8 @@ export default function ToolRoot(){
     GradebookAttempt: lazy(() => import('./ToolPanels/GradebookAttempt')),
     EditorViewer:lazy(() => import('./ToolPanels/EditorViewer')),
     AssignmentViewer:lazy(() => import('./ToolPanels/AssignmentViewer')),
+    SurveyListViewer:lazy(() => import('./ToolPanels/SurveyListViewer')),
+    SurveyDataViewer:lazy(() => import('./ToolPanels/SurveyDataViewer')),
     DoenetMLEditor:lazy(() => import('./ToolPanels/DoenetMLEditor')),
     Enrollment:lazy(() => import('./ToolPanels/Enrollment')),
     CollectionEditor: lazy(() => import('./ToolPanels/CollectionEditor')),
@@ -142,6 +144,7 @@ export default function ToolRoot(){
     ChooserBreadCrumb: lazy(() => import('./HeaderControls/ChooserBreadCrumb')),
     DashboardBreadCrumb: lazy(() => import('./HeaderControls/DashboardBreadCrumb')),
     EnrollmentBreadCrumb: lazy(() => import('./HeaderControls/EnrollmentBreadCrumb')),
+    SurveyBreadCrumb: lazy(() => import('./HeaderControls/SurveyBreadCrumb')),
     EditorBreadCrumb: lazy(() => import('./HeaderControls/EditorBreadCrumb')),
     GradebookBreadCrumb: lazy(() => import('./HeaderControls/GradebookBreadCrumb')),
     AssignmentBreadCrumb: lazy(() => import('./HeaderControls/AssignmentBreadCrumb')),
@@ -338,8 +341,8 @@ let navigationObj = {
     gradebook: {
       pageName: "Gradebook",
       currentMainPanel: "Gradebook",
-      currentMenus:[],
       menuPanelCap:"DriveInfoCap",
+      currentMenus:[],
       menusTitles:[],
       menusInitOpen:[],
       headerControls: ["GradebookBreadCrumb"],
@@ -369,23 +372,24 @@ let navigationObj = {
     gradebookStudentAssignment: {
       pageName: "Gradebook",
       currentMainPanel: "GradebookStudentAssignment",
-      currentMenus:["CreditAchieved"],
       menuPanelCap:"DriveInfoCap",
-      menusTitles:["Credit Achieved"],
-      menusInitOpen:[true],
+      currentMenus:["CreditAchieved","GradeSettings"],
+      menusTitles:["Credit Achieved","Settings"],
+      menusInitOpen:[true,false],
       headerControls: ["GradebookBreadCrumb"],
+      waitForMenuSuppression:true,
       // onLeave:"",
     },
-    gradebookAttempt: {
-      pageName: "Gradebook",
-      currentMainPanel: "GradebookAttempt",
-      currentMenus:[],
-      menuPanelCap:"DriveInfoCap",
-      menusTitles:[],
-      menusInitOpen:[],
-      headerControls: ["GradebookBreadCrumb"],
-      // onLeave:"",
-    },
+    // gradebookAttempt: {
+    //   pageName: "Gradebook",
+    //   currentMainPanel: "GradebookAttempt",
+    //   currentMenus:[],
+    //   menuPanelCap:"DriveInfoCap",
+    //   menusTitles:[],
+    //   menusInitOpen:[],
+    //   headerControls: ["GradebookBreadCrumb"],
+    //   // onLeave:"",
+    // },
     navigation:{ //allFilesInCourse
       pageName:"Course",
       currentMainPanel:"NavigationPanel",
@@ -432,6 +436,20 @@ let navigationObj = {
       supportPanelIndex:0,
       headerControls: ["EnrollmentBreadCrumb"],
       // headerControls: ["BackButton"],
+    },
+    surveyList: {
+      pageName:"surveyList",
+      menuPanelCap:"DriveInfoCap",
+      currentMainPanel:"SurveyListViewer",
+      headerControls: ["SurveyBreadCrumb"],
+
+    },
+    surveyData: {
+      pageName:"surveyData",
+      menuPanelCap:"DriveInfoCap",
+      currentMainPanel:"SurveyDataViewer",
+      headerControls: ["SurveyBreadCrumb"],
+
     },
   },
   home:{
@@ -497,6 +515,7 @@ let navigationObj = {
       hasNoMenuPanel: true,
     }
   },
+  
   
 }
 

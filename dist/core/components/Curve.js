@@ -19,6 +19,9 @@ export default class Curve extends GraphicalComponent {
     ),
     changeVectorControlDirection: this.changeVectorControlDirection.bind(
       new Proxy(this, this.readOnlyProxyHandler)
+    ),
+    switchCurve: this.switchCurve.bind(
+      new Proxy(this, this.readOnlyProxyHandler)
     )
   };
 
@@ -67,7 +70,7 @@ export default class Curve extends GraphicalComponent {
     attributes.nDiscretizationPoints = {
       createComponentOfType: "number",
       createStateVariable: "nDiscretizationPoints",
-      defaultValue: 100,
+      defaultValue: 1000,
       public: true,
     };
     attributes.periodic = {
@@ -121,6 +124,11 @@ export default class Curve extends GraphicalComponent {
       createComponentOfType: "math"
     }
 
+    attributes.nearestPointAsCurve = {
+      createComponentOfType: "boolean",
+      createStateVariable: "nearestPointAsCurve",
+      defaultValue: false,
+    }
 
     return attributes;
   }
@@ -342,6 +350,18 @@ export default class Curve extends GraphicalComponent {
           dependencyType: "stateVariable",
           variableName: "graphXmax"
         },
+        graphYmin: {
+          dependencyType: "stateVariable",
+          variableName: "graphYmin"
+        },
+        graphYmax: {
+          dependencyType: "stateVariable",
+          variableName: "graphYmax"
+        },
+        flipFunction: {
+          dependencyType: "stateVariable",
+          variableName: "flipFunction"
+        },
       }),
       definition: function ({ dependencyValues }) {
         let parMax;
@@ -371,13 +391,19 @@ export default class Curve extends GraphicalComponent {
               }
             } catch (e) { }
           }
-          let graphXmax = dependencyValues.graphXmax;
-          let graphXmin = dependencyValues.graphXmin;
-          if (graphXmax !== null && graphXmin !== null) {
+          let graphMin, graphMax;
+          if (dependencyValues.flipFunction) {
+            graphMax = dependencyValues.graphYmax;
+            graphMin = dependencyValues.graphYmin;
+          } else {
+            graphMax = dependencyValues.graphXmax;
+            graphMin = dependencyValues.graphXmin;
+          }
+          if (graphMax !== null && graphMin !== null) {
             if (parMax === undefined) {
-              parMax = graphXmax + 0.1 * (graphXmax - graphXmin);
+              parMax = graphMax + 0.1 * (graphMax - graphMin);
             } else {
-              parMax = Math.min(parMax, graphXmax + 0.1 * (graphXmax - graphXmin))
+              parMax = Math.min(parMax, graphMax + 0.1 * (graphMax - graphMin))
             }
           }
 
@@ -440,6 +466,18 @@ export default class Curve extends GraphicalComponent {
           dependencyType: "stateVariable",
           variableName: "graphXmax"
         },
+        graphYmin: {
+          dependencyType: "stateVariable",
+          variableName: "graphYmin"
+        },
+        graphYmax: {
+          dependencyType: "stateVariable",
+          variableName: "graphYmax"
+        },
+        flipFunction: {
+          dependencyType: "stateVariable",
+          variableName: "flipFunction"
+        },
       }),
       definition: function ({ dependencyValues }) {
         let parMin;
@@ -469,13 +507,19 @@ export default class Curve extends GraphicalComponent {
               }
             } catch (e) { }
           }
-          let graphXmax = dependencyValues.graphXmax;
-          let graphXmin = dependencyValues.graphXmin;
-          if (graphXmax !== null && graphXmin !== null) {
+          let graphMin, graphMax;
+          if (dependencyValues.flipFunction) {
+            graphMax = dependencyValues.graphYmax;
+            graphMin = dependencyValues.graphYmin;
+          } else {
+            graphMax = dependencyValues.graphXmax;
+            graphMin = dependencyValues.graphXmin;
+          }
+          if (graphMax !== null && graphMin !== null) {
             if (parMin === undefined) {
-              parMin = graphXmin + 0.1 * (graphXmin - graphXmax);
+              parMin = graphMin + 0.1 * (graphMin - graphMax);
             } else {
-              parMin = Math.max(parMin, graphXmin + 0.1 * (graphXmin - graphXmax))
+              parMin = Math.max(parMin, graphMin + 0.1 * (graphMin - graphMax))
             }
           }
           if (parMin === undefined) {
@@ -1636,6 +1680,11 @@ export default class Curve extends GraphicalComponent {
 
     stateVariableDefinitions.extrapolateBackwardCoeffs = {
       stateVariablesDeterminingDependencies: ["extrapolateBackward"],
+      additionalStateVariablesDefined: [{
+        variableName: "extrapolateBackwardMode",
+        public: true,
+        componentType: "text"
+      }],
       returnDependencies({ stateValues }) {
 
         let dependencies = {
@@ -1676,7 +1725,12 @@ export default class Curve extends GraphicalComponent {
       },
       definition({ dependencyValues }) {
         if (!dependencyValues.extrapolateBackward || !dependencyValues.firstSplineCoeffs) {
-          return { newValues: { extrapolateBackwardCoeffs: null } }
+          return {
+            newValues: {
+              extrapolateBackwardCoeffs: null,
+              extrapolateBackwardMode: ""
+            }
+          }
         }
 
         // extrapolate as a parabola oriented with the coordinate axes
@@ -1719,9 +1773,9 @@ export default class Curve extends GraphicalComponent {
             let scaleSpeedToReachXEdge = xscale / tMax / Math.abs(xpEffective);
             let scaleSpeedToReachYEdge = yscale / tMax / Math.abs(ypEffective);
 
-            let minScale = Math.min(scaleSpeedToReachXEdge,scaleSpeedToReachYEdge);
+            let minScale = Math.min(scaleSpeedToReachXEdge, scaleSpeedToReachYEdge);
 
-            if(minScale > 1) {
+            if (minScale > 1) {
               xpEffective *= minScale;
               ypEffective *= minScale
             }
@@ -1733,7 +1787,12 @@ export default class Curve extends GraphicalComponent {
             [y0, ypEffective, 0]
           ];
 
-          return { newValues: { extrapolateBackwardCoeffs: c } }
+          return {
+            newValues: {
+              extrapolateBackwardCoeffs: c,
+              extrapolateBackwardMode: "line"
+            }
+          }
 
         }
 
@@ -1798,7 +1857,12 @@ export default class Curve extends GraphicalComponent {
             [y0, v, a / 2]
           ];
 
-          return { newValues: { extrapolateBackwardCoeffs: c } }
+          return {
+            newValues: {
+              extrapolateBackwardCoeffs: c,
+              extrapolateBackwardMode: "parabolaVertical"
+            }
+          }
         } else {
           // if curving toward the horizontal direction
           // orient the parabola horizontally
@@ -1858,7 +1922,12 @@ export default class Curve extends GraphicalComponent {
             [y0, ypEffective, 0]
           ];
 
-          return { newValues: { extrapolateBackwardCoeffs: c } }
+          return {
+            newValues: {
+              extrapolateBackwardCoeffs: c,
+              extrapolateBackwardMode: "parabolaHorizontal"
+            }
+          }
         }
 
       }
@@ -1867,6 +1936,11 @@ export default class Curve extends GraphicalComponent {
 
     stateVariableDefinitions.extrapolateForwardCoeffs = {
       stateVariablesDeterminingDependencies: ["nThroughPoints", "extrapolateForward"],
+      additionalStateVariablesDefined: [{
+        variableName: "extrapolateForwardMode",
+        public: true,
+        componentType: "text"
+      }],
       returnDependencies({ stateValues }) {
 
         let dependencies = {
@@ -1906,7 +1980,12 @@ export default class Curve extends GraphicalComponent {
       },
       definition({ dependencyValues }) {
         if (!dependencyValues.extrapolateForward || !dependencyValues.lastSplineCoeffs) {
-          return { newValues: { extrapolateForwardCoeffs: null } }
+          return {
+            newValues: {
+              extrapolateForwardCoeffs: null,
+              extrapolateForwardMode: ""
+            }
+          }
         }
 
         // extrapolate as a parabola oriented with the coordinate axes
@@ -1949,9 +2028,9 @@ export default class Curve extends GraphicalComponent {
             let scaleSpeedToReachXEdge = xscale / tMax / Math.abs(xpEffective);
             let scaleSpeedToReachYEdge = yscale / tMax / Math.abs(ypEffective);
 
-            let minScale = Math.min(scaleSpeedToReachXEdge,scaleSpeedToReachYEdge);
+            let minScale = Math.min(scaleSpeedToReachXEdge, scaleSpeedToReachYEdge);
 
-            if(minScale > 1) {
+            if (minScale > 1) {
               xpEffective *= minScale;
               ypEffective *= minScale
             }
@@ -1963,7 +2042,12 @@ export default class Curve extends GraphicalComponent {
             [y0, ypEffective, 0]
           ];
 
-          return { newValues: { extrapolateForwardCoeffs: c } }
+          return {
+            newValues: {
+              extrapolateForwardCoeffs: c,
+              extrapolateForwardMode: "line"
+            }
+          }
 
         }
 
@@ -2028,7 +2112,12 @@ export default class Curve extends GraphicalComponent {
             [y0, v, a / 2]
           ];
 
-          return { newValues: { extrapolateForwardCoeffs: c } }
+          return {
+            newValues: {
+              extrapolateForwardCoeffs: c,
+              extrapolateForwardMode: "parabolaVertical"
+            }
+          }
         } else {
           // if curving toward the horizontal direction
           // orient the parabola horizontally
@@ -2087,7 +2176,12 @@ export default class Curve extends GraphicalComponent {
             [y0, ypEffective, 0]
           ];
 
-          return { newValues: { extrapolateForwardCoeffs: c } }
+          return {
+            newValues: {
+              extrapolateForwardCoeffs: c,
+              extrapolateForwardMode: "parabolaHorizontal"
+            }
+          }
         }
       }
     }
@@ -2212,6 +2306,591 @@ export default class Curve extends GraphicalComponent {
     };
 
 
+
+    stateVariableDefinitions.allXCriticalPoints = {
+      returnDependencies: () => ({
+        splineCoeffs: {
+          dependencyType: "stateVariable",
+          variableName: "splineCoeffs"
+        },
+        fs: {
+          dependencyType: "stateVariable",
+          variableName: "fs"
+        },
+        curveType: {
+          dependencyType: "stateVariable",
+          variableName: "curveType"
+        }
+      }),
+      definition({ dependencyValues }) {
+        let allXCriticalPoints = [];
+
+        if (dependencyValues.curveType !== "bezier") {
+          return { newValues: { allXCriticalPoints } }
+        }
+
+        let fx = dependencyValues.fs[0];
+        let fy = dependencyValues.fs[1];
+
+        let ts = [];
+
+        let xCriticalPointAtPreviousRight = false;
+
+        for (let [ind, cs] of dependencyValues.splineCoeffs.entries()) {
+          let the_cs = cs[0];
+
+          let A = 3 * the_cs[3];
+          let B = 2 * the_cs[2];
+          let C = the_cs[1];
+
+          if (Math.abs(A) < 1E-14) {
+            let t = -C / B;
+
+            xCriticalPointAtPreviousRight = addTimePointBezier({
+              t, ind, ts, ignoreLeft: xCriticalPointAtPreviousRight
+            });
+
+          } else {
+
+            let discrim = B * B - 4 * A * C;
+
+            if (discrim == 0) {
+              let t = -B / (2 * A);
+              xCriticalPointAtPreviousRight = addTimePointBezier({
+                t, ind, ts, ignoreLeft: xCriticalPointAtPreviousRight
+              });
+            } else if (discrim > 0) {
+              let sqd = Math.sqrt(discrim);
+              let newTs = [(-B - sqd) / (2 * A), (-B + sqd) / (2 * A)];
+              if (A < 0) {
+                newTs = [newTs[1], newTs[0]];
+              }
+              let foundRight = false;
+              for (let t of newTs) {
+                let temp = addTimePointBezier({
+                  t, ind, ts, ignoreLeft: xCriticalPointAtPreviousRight
+                });
+                if (temp) {
+                  foundRight = true;
+                }
+              }
+              xCriticalPointAtPreviousRight = foundRight;
+            } else {
+              xCriticalPointAtPreviousRight = false;
+            }
+          }
+
+        }
+
+        for (let t of ts) {
+          allXCriticalPoints.push([fx(t), fy(t)])
+        }
+
+        return { newValues: { allXCriticalPoints } }
+      }
+    }
+
+    stateVariableDefinitions.nXCriticalPoints = {
+      public: true,
+      componentType: "integer",
+      returnDependencies: () => ({
+        allXCriticalPoints: {
+          dependencyType: "stateVariable",
+          variableName: "allXCriticalPoints"
+        },
+      }),
+      definition({ dependencyValues }) {
+        return {
+          newValues: {
+            nXCriticalPoints: dependencyValues.allXCriticalPoints.length
+          }
+        }
+      }
+    }
+
+    stateVariableDefinitions.xCriticalPoints = {
+      public: true,
+      componentType: "number",
+      isArray: true,
+      nDimensions: 2,
+      entryPrefixes: ["xCriticalPointX", "xCriticalPoint"],
+      returnWrappingComponents(prefix) {
+        if (prefix === "xCriticalPointX") {
+          return [];
+        } else {
+          // point or entire array
+          // wrap inner dimension by both <point> and <xs>
+          // don't wrap outer dimension (for entire array)
+          return [["point", { componentType: "mathList", isAttribute: "xs" }]];
+        }
+      },
+      getArrayKeysFromVarName({ arrayEntryPrefix, varEnding, arraySize }) {
+        if (arrayEntryPrefix === "xCriticalPointX") {
+          // xCriticalPointX1_2 is the 2nd component of the first point
+          let indices = varEnding.split('_').map(x => Number(x) - 1)
+          if (indices.length === 2 && indices.every(
+            (x, i) => Number.isInteger(x) && x >= 0
+          )) {
+            if (arraySize) {
+              if (indices.every((x, i) => x < arraySize[i])) {
+                return [String(indices)];
+              } else {
+                return [];
+              }
+            } else {
+              // if don't know array size, just guess that the entry is OK
+              // It will get corrected once array size is known.
+              // TODO: better to return empty array?
+              return [String(indices)];
+            }
+          } else {
+            return [];
+          }
+        } else {
+          // xCriticalPoint3 is all components of the third xCriticalPoint
+          if (!arraySize) {
+            return [];
+          }
+          let pointInd = Number(varEnding) - 1;
+          if (Number.isInteger(pointInd) && pointInd >= 0 && pointInd < arraySize[0]) {
+            // array of "pointInd,i", where i=0, ..., arraySize[1]-1
+            return Array.from(Array(arraySize[1]), (_, i) => pointInd + "," + i)
+          } else {
+            return [];
+          }
+        }
+
+      },
+      returnArraySizeDependencies: () => ({
+        nXCriticalPoints: {
+          dependencyType: "stateVariable",
+          variableName: "nXCriticalPoints",
+        },
+      }),
+      returnArraySize({ dependencyValues }) {
+        return [dependencyValues.nXCriticalPoints, 2];
+      },
+      returnArrayDependenciesByKey() {
+        let globalDependencies = {
+          allXCriticalPoints: {
+            dependencyType: "stateVariable",
+            variableName: "allXCriticalPoints"
+          }
+        }
+
+        return { globalDependencies }
+
+      },
+      arrayDefinitionByKey({ globalDependencyValues }) {
+        // console.log(`array definition by key of function xCriticalPoints`)
+        // console.log(globalDependencyValues)
+
+        let xCriticalPoints = {};
+
+        for (let ptInd = 0; ptInd < globalDependencyValues.__array_size[0]; ptInd++) {
+          for (let i = 0; i < 2; i++) {
+            let arrayKey = `${ptInd},${i}`;
+
+            xCriticalPoints[arrayKey] = globalDependencyValues.allXCriticalPoints[ptInd][i];
+          }
+        }
+
+        return { newValues: { xCriticalPoints } }
+      }
+    }
+
+    stateVariableDefinitions.allYCriticalPoints = {
+      returnDependencies: () => ({
+        splineCoeffs: {
+          dependencyType: "stateVariable",
+          variableName: "splineCoeffs"
+        },
+        fs: {
+          dependencyType: "stateVariable",
+          variableName: "fs"
+        },
+        curveType: {
+          dependencyType: "stateVariable",
+          variableName: "curveType"
+        }
+      }),
+      definition({ dependencyValues }) {
+        let allYCriticalPoints = [];
+
+        if (dependencyValues.curveType !== "bezier") {
+          return { newValues: { allYCriticalPoints } }
+        }
+
+        let fx = dependencyValues.fs[0];
+        let fy = dependencyValues.fs[1];
+
+        let ts = [];
+
+        let yCriticalPointAtPreviousRight = false;
+
+        for (let [ind, cs] of dependencyValues.splineCoeffs.entries()) {
+          let the_cs = cs[1];
+
+          let A = 3 * the_cs[3];
+          let B = 2 * the_cs[2];
+          let C = the_cs[1];
+
+          if (Math.abs(A) < 1E-14) {
+            let t = -C / B;
+
+            yCriticalPointAtPreviousRight = addTimePointBezier({
+              t, ind, ts, ignoreLeft: yCriticalPointAtPreviousRight
+            });
+
+          } else {
+
+            let discrim = B * B - 4 * A * C;
+
+            if (discrim == 0) {
+              let t = -B / (2 * A);
+
+              yCriticalPointAtPreviousRight = addTimePointBezier({
+                t, ind, ts, ignoreLeft: yCriticalPointAtPreviousRight
+              });
+
+            } else if (discrim > 0) {
+              let sqd = Math.sqrt(discrim);
+              let newTs = [(-B - sqd) / (2 * A), (-B + sqd) / (2 * A)];
+              if (A < 0) {
+                newTs = [newTs[1], newTs[0]];
+              }
+              let foundRight = false;
+              for (let t of newTs) {
+                let temp = addTimePointBezier({
+                  t, ind, ts, ignoreLeft: yCriticalPointAtPreviousRight
+                });
+                if (temp) {
+                  foundRight = true;
+                }
+              }
+              yCriticalPointAtPreviousRight = foundRight;
+            } else {
+              yCriticalPointAtPreviousRight = false;
+            }
+          }
+
+        }
+
+        for (let t of ts) {
+          allYCriticalPoints.push([fx(t), fy(t)])
+        }
+
+        return { newValues: { allYCriticalPoints } }
+      }
+    }
+
+    stateVariableDefinitions.nYCriticalPoints = {
+      public: true,
+      componentType: "integer",
+      returnDependencies: () => ({
+        allYCriticalPoints: {
+          dependencyType: "stateVariable",
+          variableName: "allYCriticalPoints"
+        },
+      }),
+      definition({ dependencyValues }) {
+        return {
+          newValues: {
+            nYCriticalPoints: dependencyValues.allYCriticalPoints.length
+          }
+        }
+      }
+    }
+
+    stateVariableDefinitions.yCriticalPoints = {
+      public: true,
+      componentType: "number",
+      isArray: true,
+      nDimensions: 2,
+      entryPrefixes: ["yCriticalPointX", "yCriticalPoint"],
+      returnWrappingComponents(prefix) {
+        if (prefix === "yCriticalPointX") {
+          return [];
+        } else {
+          // point or entire array
+          // wrap inner dimension by both <point> and <xs>
+          // don't wrap outer dimension (for entire array)
+          return [["point", { componentType: "mathList", isAttribute: "xs" }]];
+        }
+      },
+      getArrayKeysFromVarName({ arrayEntryPrefix, varEnding, arraySize }) {
+        if (arrayEntryPrefix === "yCriticalPointX") {
+          // yCriticalPointX1_2 is the 2nd component of the first point
+          let indices = varEnding.split('_').map(x => Number(x) - 1)
+          if (indices.length === 2 && indices.every(
+            (x, i) => Number.isInteger(x) && x >= 0
+          )) {
+            if (arraySize) {
+              if (indices.every((x, i) => x < arraySize[i])) {
+                return [String(indices)];
+              } else {
+                return [];
+              }
+            } else {
+              // if don't know array size, just guess that the entry is OK
+              // It will get corrected once array size is known.
+              // TODO: better to return empty array?
+              return [String(indices)];
+            }
+          } else {
+            return [];
+          }
+        } else {
+          // yCriticalPoint3 is all components of the third yCriticalPoint
+          if (!arraySize) {
+            return [];
+          }
+          let pointInd = Number(varEnding) - 1;
+          if (Number.isInteger(pointInd) && pointInd >= 0 && pointInd < arraySize[0]) {
+            // array of "pointInd,i", where i=0, ..., arraySize[1]-1
+            return Array.from(Array(arraySize[1]), (_, i) => pointInd + "," + i)
+          } else {
+            return [];
+          }
+        }
+
+      },
+      returnArraySizeDependencies: () => ({
+        nYCriticalPoints: {
+          dependencyType: "stateVariable",
+          variableName: "nYCriticalPoints",
+        },
+      }),
+      returnArraySize({ dependencyValues }) {
+        return [dependencyValues.nYCriticalPoints, 2];
+      },
+      returnArrayDependenciesByKey() {
+        let globalDependencies = {
+          allYCriticalPoints: {
+            dependencyType: "stateVariable",
+            variableName: "allYCriticalPoints"
+          }
+        }
+
+        return { globalDependencies }
+
+      },
+      arrayDefinitionByKey({ globalDependencyValues }) {
+        // console.log(`array definition by key of function yCriticalPoints`)
+        // console.log(globalDependencyValues)
+
+        let yCriticalPoints = {};
+
+        for (let ptInd = 0; ptInd < globalDependencyValues.__array_size[0]; ptInd++) {
+          for (let i = 0; i < 2; i++) {
+            let arrayKey = `${ptInd},${i}`;
+
+            yCriticalPoints[arrayKey] = globalDependencyValues.allYCriticalPoints[ptInd][i];
+          }
+        }
+
+        return { newValues: { yCriticalPoints } }
+      }
+    }
+
+
+
+    stateVariableDefinitions.allCurvatureChangePoints = {
+      returnDependencies: () => ({
+        splineCoeffs: {
+          dependencyType: "stateVariable",
+          variableName: "splineCoeffs"
+        },
+        fs: {
+          dependencyType: "stateVariable",
+          variableName: "fs"
+        },
+        curveType: {
+          dependencyType: "stateVariable",
+          variableName: "curveType"
+        }
+      }),
+      definition({ dependencyValues }) {
+        let allCurvatureChangePoints = [];
+
+        if (dependencyValues.curveType !== "bezier") {
+          return { newValues: { allCurvatureChangePoints } }
+        }
+
+        let fx = dependencyValues.fs[0];
+        let fy = dependencyValues.fs[1];
+
+        let ts = [];
+
+        let changePointAtPreviousRight = false;
+
+        for (let [ind, cs] of dependencyValues.splineCoeffs.entries()) {
+          let [dx, cx, bx, ax] = cs[0];
+          let [dy, cy, by, ay] = cs[1];
+
+          let A = 3 * (bx * ay - by * ax);
+          let B = 3 * (cx * ay - cy * ax);
+          let C = cx * by - cy * bx;
+
+          if (Math.abs(A) < 1E-14) {
+            let t = -C / B;
+
+            changePointAtPreviousRight = addTimePointBezier({
+              t, ind, ts, ignoreLeft: changePointAtPreviousRight
+            });
+
+          } else {
+
+            let discrim = B * B - 4 * A * C;
+
+            if (discrim == 0) {
+              let t = -B / (2 * A);
+
+              changePointAtPreviousRight = addTimePointBezier({
+                t, ind, ts, ignoreLeft: changePointAtPreviousRight
+              });
+
+            } else if (discrim > 0) {
+              let sqd = Math.sqrt(discrim);
+              let newTs = [(-B - sqd) / (2 * A), (-B + sqd) / (2 * A)];
+              if (A < 0) {
+                newTs = [newTs[1], newTs[0]];
+              }
+              let foundRight = false;
+              for (let t of newTs) {
+                let temp = addTimePointBezier({
+                  t, ind, ts, ignoreLeft: changePointAtPreviousRight
+                });
+                if (temp) {
+                  foundRight = true;
+                }
+              }
+              changePointAtPreviousRight = foundRight;
+            } else {
+              changePointAtPreviousRight = false;
+            }
+          }
+
+        }
+
+        for (let t of ts) {
+          allCurvatureChangePoints.push([fx(t), fy(t)])
+        }
+
+        return { newValues: { allCurvatureChangePoints } }
+      }
+    }
+
+    stateVariableDefinitions.nCurvatureChangePoints = {
+      public: true,
+      componentType: "integer",
+      returnDependencies: () => ({
+        allCurvatureChangePoints: {
+          dependencyType: "stateVariable",
+          variableName: "allCurvatureChangePoints"
+        },
+      }),
+      definition({ dependencyValues }) {
+        return {
+          newValues: {
+            nCurvatureChangePoints: dependencyValues.allCurvatureChangePoints.length
+          }
+        }
+      }
+    }
+
+    stateVariableDefinitions.curvatureChangePoints = {
+      public: true,
+      componentType: "number",
+      isArray: true,
+      nDimensions: 2,
+      entryPrefixes: ["curvatureChangePointX", "curvatureChangePoint"],
+      returnWrappingComponents(prefix) {
+        if (prefix === "curvatureChangePointX") {
+          return [];
+        } else {
+          // point or entire array
+          // wrap inner dimension by both <point> and <xs>
+          // don't wrap outer dimension (for entire array)
+          return [["point", { componentType: "mathList", isAttribute: "xs" }]];
+        }
+      },
+      getArrayKeysFromVarName({ arrayEntryPrefix, varEnding, arraySize }) {
+        if (arrayEntryPrefix === "curvatureChangePointX") {
+          // curvatureChangePointX1_2 is the 2nd component of the first point
+          let indices = varEnding.split('_').map(x => Number(x) - 1)
+          if (indices.length === 2 && indices.every(
+            (x, i) => Number.isInteger(x) && x >= 0
+          )) {
+            if (arraySize) {
+              if (indices.every((x, i) => x < arraySize[i])) {
+                return [String(indices)];
+              } else {
+                return [];
+              }
+            } else {
+              // if don't know array size, just guess that the entry is OK
+              // It will get corrected once array size is known.
+              // TODO: better to return empty array?
+              return [String(indices)];
+            }
+          } else {
+            return [];
+          }
+        } else {
+          // curvatureChangePoint3 is all components of the third curvatureChangePoint
+          if (!arraySize) {
+            return [];
+          }
+          let pointInd = Number(varEnding) - 1;
+          if (Number.isInteger(pointInd) && pointInd >= 0 && pointInd < arraySize[0]) {
+            // array of "pointInd,i", where i=0, ..., arraySize[1]-1
+            return Array.from(Array(arraySize[1]), (_, i) => pointInd + "," + i)
+          } else {
+            return [];
+          }
+        }
+
+      },
+      returnArraySizeDependencies: () => ({
+        nCurvatureChangePoints: {
+          dependencyType: "stateVariable",
+          variableName: "nCurvatureChangePoints",
+        },
+      }),
+      returnArraySize({ dependencyValues }) {
+        return [dependencyValues.nCurvatureChangePoints, 2];
+      },
+      returnArrayDependenciesByKey() {
+        let globalDependencies = {
+          allCurvatureChangePoints: {
+            dependencyType: "stateVariable",
+            variableName: "allCurvatureChangePoints"
+          }
+        }
+
+        return { globalDependencies }
+
+      },
+      arrayDefinitionByKey({ globalDependencyValues }) {
+        // console.log(`array definition by key of function curvatureChangePoints`)
+        // console.log(globalDependencyValues)
+
+        let curvatureChangePoints = {};
+
+        for (let ptInd = 0; ptInd < globalDependencyValues.__array_size[0]; ptInd++) {
+          for (let i = 0; i < 2; i++) {
+            let arrayKey = `${ptInd},${i}`;
+
+            curvatureChangePoints[arrayKey] = globalDependencyValues.allCurvatureChangePoints[ptInd][i];
+          }
+        }
+
+        return { newValues: { curvatureChangePoints } }
+      }
+    }
+
+
     stateVariableDefinitions.nearestPoint = {
       returnDependencies: () => ({
         curveType: {
@@ -2257,6 +2936,10 @@ export default class Curve extends GraphicalComponent {
         graphYmax: {
           dependencyType: "stateVariable",
           variableName: "graphYmax"
+        },
+        nearestPointAsCurve: {
+          dependencyType: "stateVariable",
+          variableName: "nearestPointAsCurve"
         },
       }),
       definition({ dependencyValues }) {
@@ -2374,6 +3057,10 @@ export default class Curve extends GraphicalComponent {
     });
   }
 
+  switchCurve() {
+
+  }
+
 
 }
 
@@ -2398,23 +3085,6 @@ function getNearestPointFunctionCurve({ dependencyValues, numerics }) {
 
     let x1 = variables.x1.evaluate_to_constant();
     let x2 = variables.x2.evaluate_to_constant();
-
-
-    // first find nearest point when treating a function
-    // (or an inverse function)
-    // which finds a the nearest point vertically
-    // (or horizontally)
-    // assuming the function is defined at that point
-
-    let x1AsFunction, x2AsFunction;
-    if (flipFunction) {
-      x2AsFunction = x2;
-      x1AsFunction = f(x2AsFunction);
-    } else {
-      x1AsFunction = x1;
-      x2AsFunction = f(x1AsFunction);
-    }
-
 
     // compute values at the actual endpoints, if they exist
 
@@ -2443,34 +3113,49 @@ function getNearestPointFunctionCurve({ dependencyValues, numerics }) {
       }
     }
 
+    if (!dependencyValues.nearestPointAsCurve || !(Number.isFinite(x1) && Number.isFinite(x2))) {
 
-    // if function isn't defined at current variable value, replace with
-    // value at nearest endpoint
+      // first find nearest point when treating a function
+      // (or an inverse function)
+      // which finds a the nearest point vertically
+      // (or horizontally)
+      // assuming the function is defined at that point
 
-    if (!(Number.isFinite(x1AsFunction) && Number.isFinite(x2AsFunction))) {
-      let distLeft, distRight;
+      let x1AsFunction, x2AsFunction;
       if (flipFunction) {
-        distLeft = Math.abs(parMin - x2);
-        distRight = Math.abs(parMax - x2);
+        x2AsFunction = x2;
+        x1AsFunction = f(x2AsFunction);
       } else {
-        distLeft = Math.abs(parMin - x1);
-        distRight = Math.abs(parMax - x1);
+        x1AsFunction = x1;
+        x2AsFunction = f(x1AsFunction);
       }
 
-      if (distLeft < distRight || !Number.isFinite(distRight)) {
-        x1AsFunction = x1AtLeftEndpoint;
-        x2AsFunction = x2AtLeftEndpoint;
-      } else {
-        x1AsFunction = x1AtRightEndpoint;
-        x2AsFunction = x2AtRightEndpoint;
+
+      // if function isn't defined at current variable value, replace with
+      // value at nearest endpoint
+
+      if (!(Number.isFinite(x1AsFunction) && Number.isFinite(x2AsFunction))) {
+        let distLeft, distRight;
+        if (flipFunction) {
+          distLeft = Math.abs(parMin - x2);
+          distRight = Math.abs(parMax - x2);
+        } else {
+          distLeft = Math.abs(parMin - x1);
+          distRight = Math.abs(parMax - x1);
+        }
+
+        if (distLeft < distRight || !Number.isFinite(distRight)) {
+          x1AsFunction = x1AtLeftEndpoint;
+          x2AsFunction = x2AtLeftEndpoint;
+        } else {
+          x1AsFunction = x1AtRightEndpoint;
+          x2AsFunction = x2AtRightEndpoint;
+        }
+
       }
 
-    }
 
-
-    // if the point (x1,x2) isn't finite, we can't do anything more
-    // if (!(Number.isFinite(x1) && Number.isFinite(x2))) {
-    if (true) {
+      // assuming we found a finite point, we're done
       if (Number.isFinite(x1AsFunction) && Number.isFinite(x2AsFunction)) {
         let result = {
           x1: x1AsFunction,
@@ -2480,13 +3165,20 @@ function getNearestPointFunctionCurve({ dependencyValues, numerics }) {
           result.x3 = 0;
         }
         return result;
-      } else if (!(Number.isFinite(x1) && Number.isFinite(x2))) {
+      }
+
+      // if we don't have finite values for both componentts
+      // there's nothing more we can do
+      if (!(Number.isFinite(x1) && Number.isFinite(x2))) {
         return {};
       }
 
     }
 
-    // next, find the overall nearest point from the curve to (x1,x2)
+
+    // if we are finding nearest point as a curve,
+    // or if finding nearest point as a function failed,
+    // find the overall nearest point from the curve to (x1,x2)
 
     let minfunc = function (t) {
       let x = -10 * Math.log(1 / t - 1);
@@ -2553,7 +3245,7 @@ function getNearestPointFunctionCurve({ dependencyValues, numerics }) {
 
     }
 
-    // haven't necessarily checked f at tIntermax
+    // haven't necessarily checked f at tIntervalMax
     let fAtIntervalMax = minfunc(tIntervalMax);
     if (!Number.isFinite(fAtIntervalMax)) {
       tIntervalMax -= delta;
@@ -2604,75 +3296,6 @@ function getNearestPointFunctionCurve({ dependencyValues, numerics }) {
 
     }
 
-
-    // choose the nearest point treating as a function
-    // if that point exists and isn't 10 times further
-    // that the actual nearest point
-    if (Number.isFinite(x1AsFunction) && Number.isFinite(x2AsFunction)) {
-
-      // We now have two candidates for the nearest point
-      // A: (x1AsFunction, x2AsFunction), found by treating as a function
-      // B: (x1Min, x2Min), the actual closest point
-      // We prefer A, as it is more natural for a function
-      // However, if B is fifteen times closer, we'll use B
-      // If B is between ten and fifteen times closer, we'll try to find
-      // a point interpolating between A and B (by treating as a function)
-
-
-
-      let funD2 = Math.pow((x1AsFunction - x1) / xscale, 2)
-        + Math.pow((x2AsFunction - x2) / yscale, 2);
-
-      // 100 is 10 times distance, as working with squared distance
-      if (funD2 < 100 * currentD2) {
-        result = {
-          x1: x1AsFunction,
-          x2: x2AsFunction
-        }
-        if (variables.x3 !== undefined) {
-          result.x3 = 0;
-        }
-        return result;
-      }
-      // 225 is 15 times distance, as working with squared distance
-      if (funD2 < 225 * currentD2) {
-        // can we interpolate to find a point on the function between
-        // (x1AsFunction, x2AsFunction) and (x1Min, x2Min)?
-
-        let currentRatio = Math.sqrt(funD2 / currentD2);   // between 10 and 15
-        let a = (currentRatio - 10) / 5;   // between 0 and 1;
-
-        let x1try, x2try;
-        if (flipFunction) {
-          x2try = x2AsFunction * (1 - a) + x2AtMin * a;
-          x1try = f(x2try);
-        } else {
-          x1try = x1AsFunction * (1 - a) + x1AtMin * a;
-          x2try = f(x1try);
-        }
-        if (Number.isFinite(x1try) && Number.isFinite(x2try)) {
-          result = {
-            x1: x1try,
-            x2: x2try
-          }
-          if (variables.x3 !== undefined) {
-            result.x3 = 0;
-          }
-          return result;
-        } else {
-
-          result = {
-            x1: x1AsFunction,
-            x2: x2AsFunction
-          }
-          if (variables.x3 !== undefined) {
-            result.x3 = 0;
-          }
-          return result;
-        }
-      }
-
-    }
 
     result = {
       x1: x1AtMin,
@@ -2969,4 +3592,25 @@ function returnBezierFunctions({ globalDependencyValues, arrayKeys }) {
   return fs;
 
 
+}
+
+function addTimePointBezier({ t, ind, ts, ignoreLeft = false }) {
+  const eps = 1E-14;
+  const one_plus_eps = 1 + eps;
+  const one_minus_eps = 1 - eps;
+
+  let foundRight = false;
+
+  if (t >= eps) {
+    if (t <= one_minus_eps) {
+      ts.push(ind + t);
+    } else if (t < one_plus_eps) {
+      ts.push(ind + 1);
+      foundRight = true;
+    }
+  } else if (t > -eps && !ignoreLeft) {
+    ts.push(ind);
+  }
+
+  return foundRight;
 }

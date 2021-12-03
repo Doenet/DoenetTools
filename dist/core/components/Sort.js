@@ -16,6 +16,22 @@ export default class Sort extends CompositeComponent {
       createPrimitiveOfType: "number"
     }
 
+    attributes.sortVectorsBy = {
+      createComponentOfType: "text",
+      createStateVariable: "sortVectorsBy",
+      defaultValue: "displacement",
+      public: true,
+      toLowerCase: true,
+      validValues: ["displacement", "tail"]
+    }
+
+    attributes.sortByComponent = {
+      createComponentOfType: "integer",
+      createStateVariable: "sortByComponent",
+      defaultValue: "1",
+      public: true,
+    }
+
     return attributes;
   }
 
@@ -23,7 +39,7 @@ export default class Sort extends CompositeComponent {
 
     return [{
       group: "mathNumbers",
-      componentTypes: ["number", "math", "numberList", "mathList", "point"]
+      componentTypes: ["number", "math", "numberList", "mathList", "point", "vector"]
     }]
 
   }
@@ -58,14 +74,27 @@ export default class Sort extends CompositeComponent {
 
 
     stateVariableDefinitions.sortedValues = {
-      stateVariablesDeterminingDependencies: ["componentNamesForValues"],
+      stateVariablesDeterminingDependencies: ["componentNamesForValues", "sortByComponent"],
       returnDependencies({ stateValues }) {
-        let dependencies = {};
+        let dependencies = {
+          sortVectorsBy: {
+            dependencyType: "stateVariable",
+            variableName: "sortVectorsBy"
+          },
+          sortByComponent: {
+            dependencyType: "stateVariable",
+            variableName: "sortByComponent"
+          }
+        };
         for (let [ind, cName] of stateValues.componentNamesForValues.entries()) {
           dependencies[`component${ind}`] = {
             dependencyType: "multipleStateVariables",
             componentName: cName,
-            variableNames: ["value", "xs"],
+            variableNames: [
+              "value",
+              `x${stateValues.sortByComponent}`,
+              `tailX${stateValues.sortByComponent}`
+            ],
             variablesOptional: true,
           }
         }
@@ -102,14 +131,35 @@ export default class Sort extends CompositeComponent {
             inheritedComponentType: component.componentType,
             baseComponentType: "point"
           })) {
-            let numericalValue;
-            if (component.stateValues.xs.length > 0) {
-              numericalValue = component.stateValues.xs[0].evaluate_to_constant();
+            let compValue = component.stateValues[`x${dependencyValues.sortByComponent}`];
+            let numericalValue = NaN;
+            if (compValue) {
+              numericalValue = compValue.evaluate_to_constant();
               if (numericalValue === null) {
                 numericalValue = NaN;
               }
+            }
+            allValues.push({
+              componentName: component.componentName,
+              numericalValue,
+            })
+
+          } else if (componentInfoObjects.isInheritedComponentType({
+            inheritedComponentType: component.componentType,
+            baseComponentType: "vector"
+          })) {
+            let numericalValue = NaN;
+            let compValue = component.stateValues[`x${dependencyValues.sortByComponent}`];
+            if (dependencyValues.sortVectorsBy === "displacement") {
+              compValue = component.stateValues[`x${dependencyValues.sortByComponent}`];
             } else {
-              numericalValue = NaN;
+              compValue = component.stateValues[`tailX${dependencyValues.sortByComponent}`];
+            }
+            if(compValue) {
+              numericalValue = compValue.evaluate_to_constant();
+              if (numericalValue === null) {
+                numericalValue = NaN;
+              }
             }
             allValues.push({
               componentName: component.componentName,

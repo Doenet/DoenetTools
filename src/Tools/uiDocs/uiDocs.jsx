@@ -7,6 +7,7 @@ import ActionButton from '../../_reactComponents/PanelHeaderComponents/ActionBut
 import ActionButtonGroup from '../../_reactComponents/PanelHeaderComponents/ActionButtonGroup.jsx';
 import SearchBar from '../../_reactComponents/PanelHeaderComponents/SearchBar.jsx';
 import ToggleButton from '../../_reactComponents/PanelHeaderComponents/ToggleButton.jsx';
+import ToggleButtonGroup from '../../_reactComponents/PanelHeaderComponents/ToggleButtonGroup.jsx';
 import Button from '../../_reactComponents/PanelHeaderComponents/Button.jsx';
 import ButtonGroup from '../../_reactComponents/PanelHeaderComponents/ButtonGroup.jsx';
 import Form from '../../_reactComponents/PanelHeaderComponents/Form.jsx';
@@ -273,41 +274,79 @@ export default function attempt() {
       use: 'Allows user to pick date and time',
       props: [
         {
-          name: 'showArrowButtons',
-          propPreview: '<DateTime showArrowButtons={true}/>',
-          propCode: { showArrowButtons: 'true' },
-          description: 'arrow buttons for time - true/false only',
+          name: 'Value',
+          propPreview: '<DateTime value={new Date("09/23/2000")}/>',
+          propCode: { value: new Date('09/23/2000') },
+          description: 'Sets the value of the date-time picker',
+        },
+        {
+          name: 'Label',
+          propPreview: '<DateTime label = "Datetime"/>',
+          propCode: { label: 'Datetime' },
+          description: 'Sets a label',
+        },
+        {
+          name: 'Vertical Label',
+          propPreview: '<DateTime label = "Datetime" vertical/>',
+          propCode: { label: 'Datetime', vertical: true },
+          description: 'Sets a vertical label',
+        },
+        {
+          name: 'DatePicker',
+          propPreview: '<DateTime datePicker={false}/>',
+          propCode: { datePicker: false },
+          description:
+            'Toggle the date picker, set it to false if only the time picker is needed',
+        },
+        {
+          name: 'Timepicker',
+          propPreview: '<DateTime timePicker={false}/>',
+          propCode: { timePicker: false },
+          description:
+            'Toggle the time picker, set it to false if only the date picker is needed',
         },
         {
           name: 'Precision',
-          propPreview: '<DateTime precision={second}/>',
-          propCode: { precision: 'second' },
-          description: 'precision of time picker - minute/second only',
-        },
-        {
-          name: 'Date',
-          propPreview: '<DateTime date=false/>',
-          propCode: { date: false },
-          description: 'want calendar or not - true/false only',
-        },
-        {
-          name: 'Time',
-          propPreview: '<DateTime time=false/>',
-          propCode: { time: false },
-          description: 'want time selector or not - true/false only',
+          propPreview: '<DateTime precision = "seconds"/>',
+          propCode: { precision: 'seconds' },
+          description: 'Change precision of the time picker.',
         },
         {
           name: 'Disabled',
-          propPreview: '<DateTime disabled=true />',
+          propPreview: '<DateTime disabled= {true} />',
           propCode: { disabled: true },
           description: 'disables component',
         },
         {
-          name: 'callBack',
+          name: 'Alert',
+          propPreview: '<DateTime alert />',
+          propCode: { alert: true },
+          description: 'alerts component',
+        },
+        {
+          name: 'Placeholder',
+          propPreview: '<DateTime placeholder = "enter start date" />',
+          propCode: { placeholder: 'enter start date' },
+          description: 'Set custom placeholder.',
+        },
+        {
+          name: 'onChange',
           propPreview:
-            '<DateTime callBack={(( newDate ) => console.log(">>>", newDate)} />',
-          propCode: { callBack: (newDate) => console.log('>>>', newDate) },
-          description: 'Function called when data changes',
+            '<DateTime onChange = {(value) => console.log(value)} />',
+          propCode: { onChange: (value) => console.log(value) },
+          description: 'Function called when data changes.',
+        },
+        {
+          name: 'onBlur',
+          propPreview: '<DateTime onBlur = {(value) => console.log(value)} />',
+          propCode: { onBlur: (value) => console.log(value) },
+          description: 'Function called when component blurred.',
+        },
+        {
+          name: 'onKeyDown',
+          propPreview: '<DateTime onKeyDown={(e) => console.log(e.key)} />',
+          propCode: { onKeyDown: (e) => console.log(e.key) },
+          description: 'Function called when component a key is pressed',
         },
       ],
     },
@@ -480,11 +519,18 @@ export default function attempt() {
           description: 'Sets menu with default font values',
         },
         {
-          name: 'Range',
-          propPreview: '<Increment range={[0, 12]}/>',
-          propCode: { range: [0, 12] },
+          name: 'Min',
+          propPreview: '<Increment min={0}/>',
+          propCode: { min: 0 },
           description:
-            'Sets menu with range of numbers given - inclusive. Also restricts values to those withiin the given range',
+            'Restricts the menu to have values greater or equal to min',
+        },
+        {
+          name: 'Max',
+          propPreview: '<Increment max={5}/>',
+          propCode: { min: 5 },
+          description:
+            'Restricts the menu to have values smaller or equal to max',
         },
         {
           name: 'Value',
@@ -497,6 +543,26 @@ export default function attempt() {
           propPreview: '<Increment values={["A", "B", "C", "D", "F"]} />',
           propCode: { values: ['A', 'B', 'C', 'D', 'F'] },
           description: 'Sets menu with given values',
+        },
+        {
+          name: 'Restricted',
+          propPreview: '<Increment restricted values = {[1, 5, 9, 14]}/>',
+          propCode: {
+            values: [1, 5, 9, 14],
+            restricted: true,
+          },
+          description:
+            'Restricts the values to the ones in the menu. If all the values numeric and value entered not in the given values, the value is set to the closest one.',
+        },
+        {
+          name: 'Max Height',
+          propPreview:
+            '<Increment values = {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]} maxHeight = "80px" />',
+          propCode: {
+            values: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14],
+            maxHeight: '80px',
+          },
+          description: 'Sets the maxHeight for the dropdown menu.',
         },
         {
           name: 'Label',
@@ -523,9 +589,27 @@ export default function attempt() {
           description: 'Function called when data changes',
         },
         {
+          name: 'onBlur',
+          propPreview: '<Increment onBlur={(data) => console.log(data)} />',
+          propCode: { onBlur: (data) => console.log(data) },
+          description: 'Function called when component blurred',
+        },
+        {
+          name: 'onKeyDown',
+          propPreview: '<Increment onKewDown={(e) => console.log(e.key)} />',
+          propCode: { onKeyDown: (e) => console.log(e.key) },
+          description: 'Function called when a key is pressed',
+        },
+        {
+          name: 'Placeholder',
+          propPreview: '<Increment placeholder = "Type a number" />',
+          propCode: { placeholder: 'Type a number' },
+          description: 'Add a placeholder for the field',
+        },
+        {
           name: 'Disabled',
           propPreview: '<Increment disabled />',
-          propCode: { disabled },
+          propCode: { disabled: true },
           description: 'Makes button not able to be used.',
         },
       ],
@@ -823,6 +907,36 @@ export default function attempt() {
       ],
     },
     {
+      name: 'ToggleButtonGroup',
+      id: 'togglebuttongroup',
+      code: ToggleButtonGroup,
+      codePreview:
+        '<ToggleButtonGroup> <ToggleButton/> <ToggleButton/> <ToggleButton/> </ToggleButtonGroup>',
+      req_props: null,
+      req_children: [
+        React.createElement(ToggleButton),
+        React.createElement(ToggleButton),
+        React.createElement(ToggleButton),
+      ],
+      use: 'This groups related Toggle buttons together.',
+      props: [
+        //     // {name: 'Width - Menu Panel',
+        //     // propPreview: '<ToggleButtonGroup width="menu" />',
+        //     // propCode: {width: 'menu'},
+        //     // description: 'Sets width to fill menu panel width'},
+        //     // {name: 'Width - Custom',
+        //     // propPreview: '<ToggleButtonGroup width="500px" />',
+        //     // propCode: {width: '500px'},
+        //     // description: 'Sets width to custom dimensions'},
+        {
+          name: 'Vertical',
+          propPreview: '<ToggleButtonGroup vertical />',
+          propCode: { vertical },
+          description: 'Aligns buttons vertically',
+        },
+      ],
+    },
+    {
       name: 'UnitMenu',
       id: 'unitmenu',
       code: UnitMenu,
@@ -975,7 +1089,8 @@ export default function attempt() {
           </a>
         </p>
         <p>
-          *<i>alert</i> - if component requires user's attention, give red #C1292E border, see styling
+          *<i>alert</i> - if component requires user's attention, give red
+          #C1292E border, see styling
           <a
             href="https://docs.google.com/document/d/16YDi2lUs6CjUYHfZBwjbBBtaWgJyY1uNbSRf3cj44D8/edit#bookmark=id.tptn3i5d03g0"
             target="_blank"
@@ -988,7 +1103,8 @@ export default function attempt() {
 
         <h2>Standard Props (* denotes required)</h2>
         <p>
-          <i>width</i> = menu (235px) is the only option, otherwise the size should be a default based on input (text, icons, ...)
+          <i>width</i> = menu (235px) is the only option, otherwise the size
+          should be a default based on input (text, icons, ...)
         </p>
         <p>
           <i>value</i> = information expected to be shown on component (text on
@@ -1009,16 +1125,19 @@ export default function attempt() {
           <i>value + icon</i> = ability to have icon and value together
         </p>
         <p>
-          <i>label</i> = text before componenet telling user what it is for, 14px font size
+          <i>label</i> = text before componenet telling user what it is for,
+          14px font size
         </p>
         <p>
-          <i>vertical label</i> = ability to have label stack on top of component, label must be there for vertical label to work
+          <i>vertical label</i> = ability to have label stack on top of
+          component, label must be there for vertical label to work
         </p>
         <p>
           <i>placeholder</i> = default shown before user input
         </p>
         <p>
-          *<i>margin</i> = default is 0px, make 4px left and right margin with 2px bottom margin on label if prop margin
+          *<i>margin</i> = default is 0px, make 4px left and right margin with
+          2px bottom margin on label if prop margin
         </p>
         <p>
           *<i>aria-label</i> = built in HTML accessibility requirement

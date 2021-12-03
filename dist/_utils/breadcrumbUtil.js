@@ -227,6 +227,42 @@ export function useEnrollmentCrumb(driveId){
   }}
 }
 
+export function useSurveyCrumb(driveId,doenetId){
+
+  const setPageToolView = useSetRecoilState(pageToolViewAtom);
+
+  
+  let params = {
+    driveId,
+  }
+
+  let firstCrumb = {label:'Surveys', onClick:()=>{
+    setPageToolView({
+      page: 'course',
+      tool: 'surveyList',
+      view: '',
+      params
+    });
+}}
+  if (doenetId){
+    let params2 = {
+      driveId,
+      doenetId
+    }
+    return [firstCrumb,{label:'Data', onClick:()=>{
+      setPageToolView({
+        page: 'course',
+        tool: 'surveyData',
+        view: '',
+        params:params2
+      });
+  }}]
+
+  }else{
+    return [firstCrumb]
+  }
+}
+
 export function useGradebookCrumbs(){
 
   const setPageToolView = useSetRecoilState(pageToolViewAtom);
