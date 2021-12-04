@@ -11,7 +11,6 @@ export default function NavigationBreadCrumb() {
   const path = useRecoilValue(searchParamAtomFamily('path'));
   const [driveId,folderId] = path.split(':');
   const dashboardCrumb = useDashboardCrumb(driveId);
-
   const navigationCrumbs = useNavigationCrumbs(driveId,folderId)
 
   return (

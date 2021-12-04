@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useLayoutEffect } from 'react';
 import styled from 'styled-components';
 import {
   atom,
@@ -70,12 +70,19 @@ export const useSupportDividerController = () => {
   return supportController;
 };
 
+export const supportPanelHandleLeft = atom({
+  key:"supportPanelHandleLeft",
+  default: null,
+})
+
 export default function ContentPanel({ main, support }) {
   const wrapperRef = useRef();
   // const [hasRespCont, setHasRespCont] = useState(true);
   const hasRespCont = true;
   const setDivider = useSupportDividerController();
   const panelProportion = useRecoilValue(panelPropotion);
+  const dragHandleRef = useRef();
+  const setHandleLeft = useSetRecoilState(supportPanelHandleLeft);
   // const clearDriveSelections = useSetRecoilState(clearDriveAndItemSelections);
 
   useEffect(() => {
@@ -91,7 +98,23 @@ export default function ContentPanel({ main, support }) {
     setDivider(!support?.props?.hide)
   }, [support?.props?.hide]);
 
+  function onWindowResize(){
+    setHandleLeft(dragHandleRef.current?.getBoundingClientRect()?.left)
+  }
 
+  useEffect(()=>{
+    window.onresize = onWindowResize;
+    return ()=>{
+      window.onresize = null;
+    }
+  },[])
+
+
+  //Needed to update after the component is mounted
+  //So we are fine with the warning
+  useLayoutEffect(() => {
+    setHandleLeft(dragHandleRef.current?.getBoundingClientRect()?.left)
+  })
   // useEffect(() => {
   //   setHasRespCont(
   //     (support?.props.responsiveControls || main?.props.responsiveControls) ??
@@ -153,6 +176,7 @@ export default function ContentPanel({ main, support }) {
       {main}
       {!support?.props?.hide ? (
         <DragHandle
+          ref={dragHandleRef}
           onMouseDown={onMouseDown}
           data-cy="contentPanelDragHandle"
           key={`SupportHandle`}
