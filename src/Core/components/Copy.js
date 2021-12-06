@@ -37,6 +37,9 @@ export default class Copy extends CompositeComponent {
     };
     attributes.obtainPropFromComposite = {
       createPrimitiveOfType: "boolean",
+      createStateVariable: "obtainPropFromComposite",
+      defaultValue: false,
+      public: true,
     };
     attributes.componentType = {
       createPrimitiveOfType: "string",
@@ -370,20 +373,6 @@ export default class Copy extends CompositeComponent {
         return { newValues: { propName: dependencyValues.propName } }
       }
     }
-
-    stateVariableDefinitions.obtainPropFromComposite = {
-      returnDependencies: () => ({
-        obtainPropFromComposite: {
-          dependencyType: "attributePrimitive",
-          attributeName: "obtainPropFromComposite"
-        },
-      }),
-      definition: function ({ dependencyValues }) {
-        return { newValues: { obtainPropFromComposite: dependencyValues.obtainPropFromComposite } }
-      }
-    }
-
-
 
     stateVariableDefinitions.isPlainMacro = {
       returnDependencies: () => ({
