@@ -3,7 +3,7 @@ import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
 import { useRecoilCallback } from 'recoil';
 import { fetchDrivesQuery } from '../../../_reactComponents/Drive/NewDrive';
 import { searchParamAtomFamily } from '../NewToolRoot';
-import { assignmentData, studentData } from '../ToolPanels/Gradebook';
+import { assignmentData, overViewData, studentData } from '../ToolPanels/Gradebook';
 
 
 export default function GradeDownload(){
@@ -37,19 +37,83 @@ export default function GradeDownload(){
   ];
     let assignments = await snapshot.getPromise(assignmentData);
     let students = await snapshot.getPromise(studentData); //Need more id data
+    let overview = await snapshot.getPromise(overViewData);
+
+    let studentInfo = {}
+    let headingsCSV = "Name,"
+    let possiblePointsCSV = "Possible Points,"
+    for (const userId in students){
+      if (students[userId].role !== 'Student'){ continue; }
+      studentInfo[userId] = {
+        courseTotal: 0,
+        csv:`${students[userId].firstName} ${students[userId].lastName},`
+      }
+    }
+    let courseTotalPossiblePoints = 0;
 
 
-    // console.log(">>>>students",students)
-    console.log(">>>>assignments",assignments)
-    // console.log(">>>>csvText",csvText)
+    for (let {category,scaleFactor=1,maximumNumber=Infinity} of gradeCategories){
 
+      let categoryTotalPossiblePoints = 0;
 
-    // var element = document.createElement('a');
-    // element.setAttribute('href','data:text/plain;charset=utf-8, ' + encodeURIComponent(csvText));
-    // element.setAttribute('download', filename);
-    // document.body.appendChild(element);
-    // element.click();
-    // document.body.removeChild(element);
+      for (const userId in students){
+      if (students[userId].role !== 'Student'){ continue; }
+
+        studentInfo[userId][category] = {
+          categoryTotal: 0
+        }
+      }
+            
+      
+            for(let doenetId in assignments){
+    
+                let inCategory = assignments[doenetId]?.category;
+                if (inCategory.toLowerCase() !== category.toLowerCase()){ continue;}
+    
+                let possiblepoints = assignments?.[doenetId]?.totalPointsOrPercent * 1;
+                possiblePointsCSV = `${possiblePointsCSV}${possiblepoints},`
+                categoryTotalPossiblePoints += possiblepoints;
+
+                let assignmentLabel = assignments[doenetId]?.label
+                headingsCSV += assignmentLabel + ','
+
+              for (const userId in students){
+                if (students[userId].role !== 'Student'){ continue; }
+                let credit = overview[userId]?.assignments?.[doenetId];
+                let score = possiblepoints * credit;
+                score = Math.round(score*100)/100;
+                studentInfo[userId].csv = `${studentInfo[userId].csv}${score},`
+                studentInfo[userId][category].categoryTotal += score;
+
+              }
+
+            }
+            courseTotalPossiblePoints += categoryTotalPossiblePoints;
+            headingsCSV += `${category} Total,`
+            possiblePointsCSV = `${possiblePointsCSV}${categoryTotalPossiblePoints},`
+            for (const userId in students){
+              if (students[userId].role !== 'Student'){ continue; }
+              let catTotal = studentInfo[userId][category].categoryTotal;
+              studentInfo[userId].csv = `${studentInfo[userId].csv}${catTotal},`
+              studentInfo[userId].courseTotal += catTotal
+            }
+
+    }
+    headingsCSV += 'Course Total'
+    possiblePointsCSV = `${possiblePointsCSV}${courseTotalPossiblePoints}`
+
+    csvText = `${headingsCSV}\n${possiblePointsCSV}`
+    for (const userId in students){
+      if (students[userId].role !== 'Student'){ continue; }
+      csvText = `${csvText}\n${studentInfo[userId].csv}${studentInfo[userId].courseTotal}`
+      }
+
+    var element = document.createElement('a');
+    element.setAttribute('href','data:text/plain;charset=utf-8, ' + encodeURIComponent(csvText));
+    element.setAttribute('download', filename);
+    document.body.appendChild(element);
+    element.click();
+    document.body.removeChild(element);
 })
 
   return <div>
