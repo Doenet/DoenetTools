@@ -4,11 +4,11 @@ import { useRecoilCallback } from 'recoil';
 import { fetchDrivesQuery } from '../../../_reactComponents/Drive/NewDrive';
 import { searchParamAtomFamily } from '../NewToolRoot';
 import { assignmentData, overViewData, studentData } from '../ToolPanels/Gradebook';
+import axios from 'axios';
 
 
 export default function GradeDownload(){
 
-  // function download() {
     const download = useRecoilCallback(({snapshot})=> async ()=>{
 
       const driveId = await snapshot.getPromise(searchParamAtomFamily('driveId'))
@@ -39,14 +39,26 @@ export default function GradeDownload(){
     let students = await snapshot.getPromise(studentData); //Need more id data
     let overview = await snapshot.getPromise(overViewData);
 
+    let { data } = await axios.get('/api/getEnrollment.php', { params: { driveId } })
+    let enrollmentArray = data.enrollmentArray;
+
     let studentInfo = {}
-    let headingsCSV = "Name,"
-    let possiblePointsCSV = "Possible Points,"
+    let headingsCSV = "Name,Email,Student ID,"
+    let possiblePointsCSV = "Possible Points,,,"
     for (const userId in students){
       if (students[userId].role !== 'Student'){ continue; }
+      let email = "";
+      let studentId = "";
+      for (const enrollment of enrollmentArray){
+        if (enrollment.userId === userId){
+          email = enrollment.email;
+          studentId = enrollment.empId;
+          break;
+        }
+      }
       studentInfo[userId] = {
         courseTotal: 0,
-        csv:`${students[userId].firstName} ${students[userId].lastName},`
+        csv:`${students[userId].firstName} ${students[userId].lastName},${email},${studentId},`
       }
     }
     let courseTotalPossiblePoints = 0;
