@@ -70,6 +70,7 @@ const DriveCardWrapper = (props) => {
   const columns = useMedia(
     ['(min-width: 1500px)', '(min-width: 1000px)', '(min-width: 600px)'],
     [5, 4, 3],
+    // [4, 3, 2],
     2,
   );
 
@@ -91,7 +92,7 @@ const DriveCardWrapper = (props) => {
         x,
         y,
         width: width / columns,
-        height: 250,
+        height: 230,
         drivePathSyncKey,
       };
     });
@@ -102,8 +103,8 @@ const DriveCardWrapper = (props) => {
 
   const transitions = useTransition(driveCardItems, {
     key: (item) => item.driveId,
-    from: ({ x, y, width, height }) => ({ x, y, width, height, opacity: 0 }),
-    enter: ({ x, y, width, height }) => ({ x, y, width, height, opacity: 1 }),
+    from: ({ x, y, width, height }) => ({ x, y, width, height, opacity: 1 }),
+    // enter: ({ x, y, width, height }) => ({ x, y, width, height, opacity: 1 }),
     update: ({ x, y, width, height }) => ({ x, y, width, height }),
     leave: { height: 0, opacity: 0 },
     config: { mass: 5, tension: 500, friction: 100 },
@@ -122,6 +123,13 @@ const DriveCardWrapper = (props) => {
           path: `${item.driveId}:${item.driveId}:${item.driveId}:Drive`,
         },
       });
+    }
+  };
+
+  
+    const handleOnBlur = () => {
+    if (drivecardSelectedValue.length == 1) {
+      setDrivecardSelection([]);
     }
   };
 
@@ -225,6 +233,58 @@ const DriveCardWrapper = (props) => {
     return availableCard.length > 0 ? true : false;
   };
 
+  // return (
+  //   <div className="drivecardContainer">
+  //     <div
+  //       ref={ref}
+  //       className="driveCardList"
+  //       style={{ height: Math.max(...heights) }}
+  //     >
+  //       {/* {transitions((style, item, t, index) => {
+  //         console.log('');
+  //         let isSelected = getSelectedCard(item); */}
+  //         return (
+  //           <a.div style={props.style}>
+  //             <div
+  //               role="button"
+  //               style={{ height: '100%', outline: 'none', margin: '20px' }}
+  //               tabIndex={props.index + 1}
+  //               onClick={(e) => {
+  //                 e.preventDefault();
+  //                 e.stopPropagation();
+  //                 drivecardselection(e, props.item, props);
+  //               }}
+  //               onBlur={() => handleOnBlur(props.item)}
+  //               onKeyDown={(e) => handleKeyDown(e, props.item)}
+  //               onKeyUp={(e) => handleKeyUp(e, props.item)}
+  //               onDoubleClick={(e) => {
+  //                 e.preventDefault();
+  //                 e.stopPropagation();
+  //                 setDrivecardSelection([]); //TODO: on leave instead
+  //                 setPageToolView({
+  //                   page: 'course',
+  //                   tool: 'dashboard',
+  //                   view: '',
+  //                   params: {
+  //                     path: `${props.item.driveId}:${props.item.driveId}:${props.item.driveId}:Drive`,
+  //                   },
+  //                 });
+  //               }}
+  //             >
+  //               <DriveCard
+  //                 image={props.item.image}
+  //                 color={props.item.color}
+  //                 label={props.item.label}
+  //                 isSelected={getSelectedCard(props.item)}
+  //                 role={props.item.role}
+  //               />
+  //             </div>
+  //           </a.div>
+  //         );
+  //       {/* })} */}
+  //     </div>
+  //   </div>
+  // );
   return (
     <div className="drivecardContainer">
       <div
@@ -239,13 +299,14 @@ const DriveCardWrapper = (props) => {
             <a.div style={style}>
               <div
                 role="button"
-                style={{ height: '100%', outline: 'none', padding: '10px' }}
+                style={{ height: '100%', outline: 'none', margin: '20px', flexWrap: 'wrap' }}
                 tabIndex={index + 1}
                 onClick={(e) => {
                   e.preventDefault();
                   e.stopPropagation();
                   drivecardselection(e, item, props);
                 }}
+                onBlur={() => handleOnBlur()}
                 onKeyDown={(e) => handleKeyDown(e, item)}
                 onKeyUp={(e) => handleKeyUp(e, item)}
                 onDoubleClick={(e) => {

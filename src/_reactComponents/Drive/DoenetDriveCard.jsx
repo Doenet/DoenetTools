@@ -1,7 +1,9 @@
+// import { hasProps } from '@react-spring/core/dist/declarations/src/helpers';
 import React from 'react';
 import styled from 'styled-components';
+// import './drivecard.css';
 
-const DriveCardContainer = styled.div`
+const DriveCardContainer = styled.figure`
   position: relative;
   background-size: cover;
   background-position: center center;
@@ -19,7 +21,7 @@ const DriveCardContainer = styled.div`
   border: 2px solid #040f1a;
 `;
 
-const Image = styled.div`
+const Image = styled.img`
   height: 100%;
   //width: 100%;
   color: red;
@@ -28,7 +30,7 @@ const Image = styled.div`
   background-size: cover;
   background-position: center;
 `;
-const Info = styled.div`
+const Info = styled.figcaption`
   border-radius: 0px 0px 5px 5px;
   // position: absolute;
   border-top: 2px solid #040f1a;
@@ -53,6 +55,8 @@ const DriveCard = (props) => {
   // console.log(">>> Drive Card", props)
   let imageURL = `/media/drive_pictures/${props.image}`;
 
+/* reduces the top margin on the h2, bottom on the p, and leaves a 0.5rem gap between the two */
+
   return (
     <DriveCardContainer data-cy="driveCard" url={imageURL} color={props.color}>
       <Image url={imageURL} color={props.color} />
@@ -71,5 +75,4 @@ const DriveCard = (props) => {
     </DriveCardContainer>
   );
 };
-
 export default DriveCard;

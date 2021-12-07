@@ -2,24 +2,24 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { returnAllPossibleVariants } from '../../Core/utils/returnAllPossibleVariants';
 //import DateTime from '../../_reactComponents/PanelHeaderComponents/DateTime'
-import DropdownMenu from '../../_reactComponents/PanelHeaderComponents/DropdownMenu'
+import Form from '../../_reactComponents/PanelHeaderComponents/Form'
 
-function testReturnVariants() {
-  returnAllPossibleVariants({
-    doenetML: `<variantControl nVariants='5' variantNames='hello cat dog mouse' /> <copy assignNames="problem1" uri="doenet:conTentId=a666134b719e70e8acb48d91d582d1efd90d7f11fb499ab77f9f1fa5dafdb96d&DoenEtiD=abcdefg" />`,
-    callback: gotAll,
-  })
+// function testReturnVariants() {
+//   returnAllPossibleVariants({
+//     doenetML: `<variantControl nVariants='5' variantNames='hello cat dog mouse' /> <copy assignNames="problem1" uri="doenet:conTentId=a666134b719e70e8acb48d91d582d1efd90d7f11fb499ab77f9f1fa5dafdb96d&DoenEtiD=abcdefg" />`,
+//     callback: gotAll,
+//   })
 
-}
+// }
 
-function gotAll({ allPossibleVariants }) {
-  console.log(`all possible variants`, allPossibleVariants)
-}
+// function gotAll({ allPossibleVariants }) {
+//   console.log(`all possible variants`, allPossibleVariants)
+// }
 
 
 ReactDOM.render(
   // <DropdownMenu width = "200px" defaultIndex = {'1'} title = "test" items = {[[1, "one"], [2, "two"]]} callBack = { ({ value }) => console.log(">>>", value)}/>,
-  <button onClick={testReturnVariants}>Get all variants</button>,
+  <Form width="menu"/>,
   document.getElementById('root'),
 );
 
