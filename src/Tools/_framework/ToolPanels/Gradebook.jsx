@@ -19,7 +19,6 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSort, faSortUp, faSortDown } from '@fortawesome/free-solid-svg-icons';
 
 import { pageToolViewAtom, searchParamAtomFamily } from '../NewToolRoot';
-import { use } from "chai";
 
 
 // // React Table Styling
@@ -538,17 +537,6 @@ function DefaultColumnFilter({
         />
     )
 }
-
-const getUserId = (students, name) => {
-    for(let userId in students){
-        //console.log(userId, students[userId].firstName);
-        
-        if(students[userId].firstName + " " + students[userId].lastName == name){
-          return userId;
-        }
-      }
-    return -1;
-} 
 
 function GradebookOverview() {
     //const { openOverlay, activateMenuPanel } = useToolControlHelper();

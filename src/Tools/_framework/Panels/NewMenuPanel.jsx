@@ -196,6 +196,7 @@ console.log(">>>===MenuPanel", hide)
     AutoSaves:lazy(() => import('../Menus/AutoSaves')),
     LoadEnrollment:lazy(() => import('../Menus/LoadEnrollment')),
     GradeUpload:lazy(() => import('../Menus/GradeUpload')),
+    GradeDownload:lazy(() => import('../Menus/GradeDownload')),
     ManualEnrollment:lazy(() => import('../Menus/ManualEnrollment')),
     AssignmentSettingsMenu:lazy(() => import('../Menus/AssignmentSettingsMenu')),
     GroupSettings:lazy(() => import('../Menus/GroupSettings')),
