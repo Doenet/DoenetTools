@@ -94,8 +94,9 @@ export default function GradeDownload(){
                 possiblePointsCSV = `${possiblePointsCSV}${possiblepoints},`
                 categoryTotalPossiblePoints += possiblepoints;
 
-                let assignmentLabel = assignments[doenetId]?.label
-                headingsCSV += assignmentLabel + ','
+                //Make sure label will work with commas and double quotes
+                let assignmentLabel = assignments[doenetId]?.label.replaceAll('"','""')
+                headingsCSV += `"${assignmentLabel}"` + ','
 
               for (const userId in students){
                 if (students[userId].role !== 'Student'){ continue; }

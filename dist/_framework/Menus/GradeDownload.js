@@ -86,8 +86,8 @@ export default function GradeDownload() {
         let possiblepoints = assignments?.[doenetId]?.totalPointsOrPercent * 1;
         possiblePointsCSV = `${possiblePointsCSV}${possiblepoints},`;
         categoryTotalPossiblePoints += possiblepoints;
-        let assignmentLabel = assignments[doenetId]?.label;
-        headingsCSV += assignmentLabel + ",";
+        let assignmentLabel = assignments[doenetId]?.label.replaceAll('"', '""');
+        headingsCSV += `"${assignmentLabel}",`;
         for (const userId in students) {
           if (students[userId].role !== "Student") {
             continue;
