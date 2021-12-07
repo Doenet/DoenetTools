@@ -46,7 +46,11 @@ export default class Text extends InlineComponent {
         }
         let value = "";
         for (let comp of dependencyValues.textLikeChildren) {
-          value += comp.stateValues.text;
+          if(typeof comp === "string") {
+            value += comp;
+          } else {
+            value += comp.stateValues.text;
+          }
         }
         return { newValues: { value } };
       },

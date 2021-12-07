@@ -171,7 +171,7 @@ export default class Answer extends InlineComponent {
       // wrap with award and type
 
       if (!matchedChildren.every(child =>
-        child.componentType === "string" ||
+        typeof child === "string" ||
         child.doenetAttributes && child.doenetAttributes.createdFromMacro
       )) {
         return { success: false }

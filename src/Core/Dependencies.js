@@ -218,7 +218,6 @@ export class DependencyHandler {
             upDep.removeDownstreamComponent({
               indexToRemove: upDep.downstreamComponentNames.indexOf(componentName),
             })
-            upDep.onDownstreamComponentChange();
           }
         }
       }
@@ -2633,8 +2632,6 @@ class Dependency {
       });
     }
 
-    this.onDownstreamComponentChange();
-
   }
 
   addDownstreamComponent({ downstreamComponentName, downstreamComponentType, index }) {
@@ -3224,13 +3221,10 @@ class Dependency {
     }
 
 
-    this.onDownstreamComponentChange();
-
     return { success: newDownComponents.success };
 
   }
 
-  onDownstreamComponentChange() { }
 }
 
 
@@ -4086,6 +4080,13 @@ class ChildDependency extends Dependency {
 
     // console.log(`determine downstream components of ${this.dependencyName} of ${this.representativeStateVariable} of ${this.upstreamComponentName}`)
 
+    if (this.downstreamPrimitives) {
+      this.previousDownstreamPrimitives = [...this.downstreamPrimitives];
+    } else {
+      this.previousDownstreamPrimitives = [];
+    }
+
+    this.downstreamPrimitives = [];
 
     let parent = this.dependencyHandler._components[this.parentName];
 
@@ -4299,14 +4300,81 @@ class ChildDependency extends Dependency {
 
 
     let activeChildrenMatched = activeChildrenIndices.map(x => parent.activeChildren[x]);
-    let downstreamComponentNames = activeChildrenMatched.map((x, i) => x.componentName ? x.componentName : `__placeholder_${i}`);
+
+
+    // translate parent.compositeReplacementActiveRange
+    // so that indices refer to index from activeChildrenMatched
+    // and that only first composite is included
+
+    this.compositeReplacementRange = [];
+
+    if (parent.compositeReplacementActiveRange && activeChildrenMatched.length > 0) {
+      let ind = 0;
+      while (ind < activeChildrenIndices.length) {
+        let activeInd = activeChildrenIndices[ind];
+        for (let compositeInfo of parent.compositeReplacementActiveRange) {
+          if (compositeInfo.firstInd <= activeInd && compositeInfo.lastInd >= activeInd) {
+            let firstInd = ind;
+            let lastInd = ind;
+            while (compositeInfo.lastInd > activeInd && ind < activeChildrenIndices.length - 1) {
+              ind++;
+              activeInd = activeChildrenIndices[ind];
+              if (compositeInfo.lastInd >= activeInd) {
+                lastInd = ind;
+              } else {
+                break;
+              }
+            }
+
+            this.compositeReplacementRange.push({
+              compositeName: compositeInfo.compositeName,
+              target: compositeInfo.target,
+              firstInd, lastInd
+            })
+
+            ind++;
+
+            if (ind === activeChildrenIndices.length) {
+              break;
+            }
+
+            activeInd = activeChildrenIndices[ind];
+
+          }
+        }
+
+        ind++;
+      }
+    }
+
+
+    this.activeChildrenIndices = activeChildrenIndices;
+
+    let downstreamComponentNames = [];
+    let downstreamComponentTypes = [];
+
+
+    for (let [ind, child] of activeChildrenMatched.entries()) {
+
+
+      if (typeof child !== "object") {
+        this.downstreamPrimitives.push(child);
+        continue;
+      }
+
+      this.downstreamPrimitives.push(null);
+
+      downstreamComponentNames.push(child.componentName ? child.componentName : `__placeholder_${ind}`);
+      downstreamComponentTypes.push(child.componentType);
+
+    }
 
 
 
     return {
       success: true,
       downstreamComponentNames,
-      downstreamComponentTypes: activeChildrenMatched.map(x => x.componentType),
+      downstreamComponentTypes,
     }
 
   }
@@ -4315,11 +4383,30 @@ class ChildDependency extends Dependency {
 
     let result = super.getValue({ verbose, skipProxy: true });
 
-    for (let [ind, compositeInd] of this.compositeIndices.entries()) {
-      if (compositeInd !== undefined) {
-        result.value[ind].compositeInd = compositeInd;
-        result.value[ind].compositeTname = this.compositeTnames[compositeInd];
+
+    // TODO: do we have to adjust anything else from result
+    // if we add primitives to result.value?
+
+    let resultValueWithPrimitives = [];
+    let resultInd = 0;
+
+    for (let nameOrPrimitive of this.downstreamPrimitives) {
+      if (nameOrPrimitive === null) {
+        resultValueWithPrimitives.push(result.value[resultInd]);
+        resultInd++;
+      } else {
+        resultValueWithPrimitives.push(nameOrPrimitive)
       }
+    }
+
+    resultValueWithPrimitives.compositeReplacementRange = this.compositeReplacementRange;
+
+    result.value = resultValueWithPrimitives;
+
+    if (this.downstreamPrimitives.length !== this.previousDownstreamPrimitives.length ||
+      this.downstreamPrimitives.some((v, i) => v !== this.previousDownstreamPrimitives[i])
+    ) {
+      result.changes.componentIdentitiesChanged = true;
     }
 
     if (!this.doNotProxy) {
@@ -4352,40 +4439,7 @@ class ChildDependency extends Dependency {
 
   }
 
-  onDownstreamComponentChange() {
-
-    this.compositeIndices = [];
-    this.compositeTnames = [];
-
-    if (this.downstreamComponentNames.length > 0) {
-
-      let parent = this.dependencyHandler._components[this.parentName];
-
-      for (let [definingInd, definingChild] of parent.definingChildren.entries()) {
-        if (this.dependencyHandler.componentInfoObjects.isInheritedComponentType({
-          inheritedComponentType: definingChild.componentType,
-          baseComponentType: "_composite",
-        })) {
-          this.compositeTnames[definingInd] = definingChild.stateValues.tName;
-          if (definingChild.isExpanded) {
-            let recursiveReplacementAdapterNames =
-              definingChild.stateValues.fullRecursiveReplacements
-                .map(x => this.dependencyHandler.components[x.componentName])
-                .map(x => x.adapterUsed ? x.adapterUsed : x)
-                .map(x => x.componentName);
-
-            for (let [ind, childName] of this.downstreamComponentNames.entries()) {
-              if (recursiveReplacementAdapterNames.includes(childName)) {
-                this.compositeIndices[ind] = definingInd;
-              }
-            }
-          }
-        }
-      }
-    }
-
-  }
-
+  
 }
 
 dependencyTypeArray.push(ChildDependency);
@@ -4616,14 +4670,16 @@ class DescendantDependency extends Dependency {
 
     for (let childName in component.allChildren) {
       let child = component.allChildren[childName].component;
-      let result = this.gatherUnexpandedComposites(child);
-      if (result.haveUnexpandedCompositeReady) {
-        Object.assign(unexpandedCompositesReadyByParentName, result.unexpandedCompositesReadyByParentName);
-        haveUnexpandedCompositeReady = true;
-      }
-      if (result.haveCompositesNotReady) {
-        Object.assign(unexpandedCompositesNotReadyByParentName, result.unexpandedCompositesNotReadyByParentName);
-        haveCompositesNotReady = true;
+      if (typeof child === "object") {
+        let result = this.gatherUnexpandedComposites(child);
+        if (result.haveUnexpandedCompositeReady) {
+          Object.assign(unexpandedCompositesReadyByParentName, result.unexpandedCompositesReadyByParentName);
+          haveUnexpandedCompositeReady = true;
+        }
+        if (result.haveCompositesNotReady) {
+          Object.assign(unexpandedCompositesNotReadyByParentName, result.unexpandedCompositesNotReadyByParentName);
+          haveCompositesNotReady = true;
+        }
       }
     }
 
@@ -5387,11 +5443,22 @@ class ReplacementDependency extends Dependency {
       this.componentIndex = this.definition.componentIndex;
     }
 
+    this.includeWithheldReplacements = this.definition.includeWithheldReplacements;
+
     this.expandReplacements = true;
 
   }
 
   determineDownstreamComponents() {
+
+    if (this.replacementPrimitives) {
+      this.previousReplacementPrimitives = [...this.replacementPrimitives];
+    } else {
+      this.previousReplacementPrimitives = [];
+    }
+
+    this.replacementPrimitives = [];
+
 
     let composite = this.dependencyHandler._components[this.compositeName];
 
@@ -5477,12 +5544,16 @@ class ReplacementDependency extends Dependency {
 
     this.compositesFound = [this.compositeName];
     let replacements = composite.replacements;
+    if (!this.includeWithheldReplacements && composite.replacementsToWithhold > 0) {
+      replacements = replacements.slice(0, -composite.replacementsToWithhold)
+    }
 
     if (this.recursive) {
       let result = this.dependencyHandler.core.recursivelyReplaceCompositesWithReplacements({
         replacements,
         recurseNonStandardComposites: this.recurseNonStandardComposites,
         expandComposites: false,
+        includeWithheldReplacements: this.includeWithheldReplacements
       });
 
       if (result.unexpandedCompositesNotReady.length > 0 ||
@@ -5553,13 +5624,67 @@ class ReplacementDependency extends Dependency {
       }
     }
 
+    let downstreamComponentNames = [];
+    let downstreamComponentTypes = [];
+
+
+    for (let repl of replacements) {
+
+      if (typeof repl !== "object") {
+        this.replacementPrimitives.push(repl);
+        continue;
+      }
+
+      this.replacementPrimitives.push(null);
+
+      downstreamComponentNames.push(repl.componentName);
+      downstreamComponentTypes.push(repl.componentType);
+
+    }
+
     return {
       success: true,
-      downstreamComponentNames: replacements.map(x => x.componentName),
-      downstreamComponentTypes: replacements.map(x => x.componentType),
+      downstreamComponentNames,
+      downstreamComponentTypes,
     }
 
   }
+
+  getValue({ verbose } = {}) {
+
+    let result = super.getValue({ verbose, skipProxy: true });
+
+    // TODO: do we have to adjust anything else from result
+    // if we add primitives to result.value?
+
+    let resultValueWithPrimitives = [];
+    let resultInd = 0;
+
+    for (let nameOrPrimitive of this.replacementPrimitives) {
+      if (nameOrPrimitive === null) {
+        resultValueWithPrimitives.push(result.value[resultInd]);
+        resultInd++;
+      } else {
+        resultValueWithPrimitives.push(nameOrPrimitive)
+      }
+    }
+
+    result.value = resultValueWithPrimitives;
+
+    if (this.replacementPrimitives.length !== this.previousReplacementPrimitives.length ||
+      this.replacementPrimitives.some((v, i) => v !== this.previousReplacementPrimitives[i])
+    ) {
+      result.changes.componentIdentitiesChanged = true;
+    }
+
+    if (!this.doNotProxy) {
+      result.value = new Proxy(result.value, readOnlyProxyHandler)
+    }
+
+    return result;
+
+  }
+
 
   deleteFromUpdateTriggers() {
 

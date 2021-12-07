@@ -179,7 +179,7 @@ export default class NumberComponent extends InlineComponent {
         let codePre = dependencyValues.codePre;
 
         for (let child of dependencyValues.allChildren) {
-          if (child.componentType !== "string") {
+          if (typeof child !== "string") {
             // a math, mathList, text, textList, boolean, or booleanList
             let code = codePre + subnum;
 
@@ -297,10 +297,10 @@ export default class NumberComponent extends InlineComponent {
             if (dependencyValues.stringChild.length === 0) {
               return { useEssentialOrDefaultValue: { value: { variablesToCheck: ["value"] } } }
             }
-            let number = Number(dependencyValues.stringChild[0].stateValues.value);
+            let number = Number(dependencyValues.stringChild[0]);
             if (Number.isNaN(number)) {
               try {
-                number = me.fromAst(textToAst.convert(dependencyValues.stringChild[0].stateValues.value)).evaluate_to_constant();
+                number = me.fromAst(textToAst.convert(dependencyValues.stringChild[0])).evaluate_to_constant();
 
                 if (typeof number === "boolean") {
                   if (dependencyValues.convertBoolean) {

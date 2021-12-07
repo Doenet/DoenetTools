@@ -27,7 +27,7 @@ export default class Answer extends DoenetRenderer {
     if (this.doenetSvData.inputChildren.length > 0) {
       let inputChildNames = this.doenetSvData.inputChildren.map(x => x.componentName);
       inputChildrenToRender = this.children.filter(
-        child => inputChildNames.includes(child.props.componentInstructions.componentName)
+        child => typeof child !== "string" && inputChildNames.includes(child.props.componentInstructions.componentName)
       )
     }
 

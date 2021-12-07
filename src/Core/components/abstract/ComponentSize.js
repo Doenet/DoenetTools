@@ -37,9 +37,9 @@ export class ComponentSize extends InlineComponent {
 
       // if last child is a string, extract unit if it exists
       let lastChild = matchedChildren[matchedChildren.length - 1];
-      if (lastChild.componentType === "string") {
+      if (typeof lastChild === "string") {
         let lastWordRe = /([a-zA-z]+|%)$/;
-        let lastString = lastChild.state.value.trim();
+        let lastString = lastChild.trim();
         let match = lastString.match(lastWordRe);
 
         if (match) {
@@ -51,10 +51,7 @@ export class ComponentSize extends InlineComponent {
 
             let childrenForNumber = matchedChildren.slice(0, matchedChildren.length - 1);
             if (rest.length > 0) {
-              childrenForNumber.push({
-                componentType: "string",
-                state: { value: rest }
-              })
+              childrenForNumber.push(rest)
             }
 
 
@@ -62,10 +59,8 @@ export class ComponentSize extends InlineComponent {
               componentType: "number",
               children: childrenForNumber
             },
-            {
-              componentType: "string",
-              state: { value: unit }
-            }]
+              unit
+            ]
 
             return {
               success: true,
@@ -195,7 +190,7 @@ export class ComponentSize extends InlineComponent {
             //string and number child
 
             originalSize = dependencyValues.numberChild[0].stateValues.value;
-            originalUnit = dependencyValues.stringChild[0].stateValues.value.trim();
+            originalUnit = dependencyValues.stringChild[0].trim();
           } else {
             //only string child
 
@@ -208,7 +203,7 @@ export class ComponentSize extends InlineComponent {
             // <width>100pixel</width>
             // <width>50%</width>
 
-            let result = dependencyValues.stringChild[0].stateValues.value.trim().match(/^(-?[\d.]+)\s*(.*)$/);
+            let result = dependencyValues.stringChild[0].trim().match(/^(-?[\d.]+)\s*(.*)$/);
             if (result === null) {
               // console.warn(componentType + " must begin with a number.");
               return { newValues: { componentSize: null } };
@@ -302,7 +297,7 @@ export class ComponentSize extends InlineComponent {
             // (since the number could be defined in this context)
 
 
-            let originalUnit = dependencyValues.stringChild[0].stateValues.value.trim();
+            let originalUnit = dependencyValues.stringChild[0].trim();
             let originalIsAbsolute = !(originalUnit === '%' || originalUnit === 'em');
 
             if (desiredStateVariableValues.componentSize.isAbsolute !== originalIsAbsolute) {
@@ -483,8 +478,8 @@ export class ComponentSizeList extends BaseComponent {
       }
 
       for (let child of matchedChildren) {
-        if (child.componentType === "string") {
-          let strParts = child.state.value.split(/\s+/);
+        if (typeof child === "string") {
+          let strParts = child.split(/\s+/);
 
           if (strParts[0].length === 0) {
             // string begins with a space
@@ -499,10 +494,7 @@ export class ComponentSizeList extends BaseComponent {
 
           for (let [i, s] of strParts.entries()) {
             if (s.length > 0) {
-              piece.push({
-                componentType: "string",
-                state: { value: s }
-              });
+              piece.push(s);
               if (i < strParts.length - 1) {
                 // if not last part, it means there was a space
                 // after this part

@@ -85,8 +85,8 @@ export class Extremum extends BaseComponent {
           if (locationComponent.children.length === 0 ||
             (
               locationComponent.children.length === 1 &&
-              locationComponent.children[0].componentType === "string" &&
-              locationComponent.children[0].state.value.trim() === ""
+              typeof locationComponent.children[0] === "string" &&
+              locationComponent.children[0].trim() === ""
             )
           ) {
             delete newAttributes.location;
@@ -95,8 +95,8 @@ export class Extremum extends BaseComponent {
           if (valueComponent.children.length === 0 ||
             (
               valueComponent.children.length === 1 &&
-              valueComponent.children[0].componentType === "string" &&
-              valueComponent.children[0].state.value.trim() === ""
+              typeof valueComponent.children[0] === "string" &&
+              valueComponent.children[0].trim() === ""
             )
           ) {
             delete newAttributes.value;
@@ -264,7 +264,7 @@ export class Extrema extends BaseComponent {
       return {
         success: true,
         newChildren: results.pieces.map(function (piece) {
-          if (piece.length > 1 || piece[0].componentType === "string") {
+          if (piece.length > 1 || typeof piece[0] === "string") {
             return {
               componentType: extremaClass.componentTypeSingular,
               children: piece

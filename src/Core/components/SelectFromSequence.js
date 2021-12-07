@@ -269,8 +269,8 @@ export default class SelectFromSequence extends Sequence {
         // children overwrite state
         if (child.children !== undefined) {
           for (let grandchild of child.children) {
-            if (grandchild.componentType === "string") {
-              numberToSelect = Math.round(Number(grandchild.state.value));
+            if (typeof grandchild === "string") {
+              numberToSelect = Math.round(Number(grandchild));
               foundValid = true;
               break;
             }
@@ -292,9 +292,9 @@ export default class SelectFromSequence extends Sequence {
         // children overwrite state
         if (child.children !== undefined) {
           for (let grandchild of child.children) {
-            if (grandchild.componentType === "string") {
+            if (typeof grandchild === "string") {
               foundValid = true;
-              if (grandchild.state.value.trim().toLowerCase() === "true") {
+              if (grandchild.trim().toLowerCase() === "true") {
                 withReplacement = true;
               } else {
                 withReplacement = false;
@@ -317,8 +317,8 @@ export default class SelectFromSequence extends Sequence {
         // children overwrite state
         if (child.children !== undefined) {
           for (let grandchild of child.children) {
-            if (grandchild.componentType === "string") {
-              sequencePars[componentType] = grandchild.state.value;
+            if (typeof grandchild === "string") {
+              sequencePars[componentType] = grandchild;
               foundValid = true;
               break;
             }
@@ -332,9 +332,9 @@ export default class SelectFromSequence extends Sequence {
         let foundValid = false;
         if (child.children !== undefined) {
           for (let grandchild of child.children) {
-            if (grandchild.componentType === "string") {
+            if (typeof grandchild === "string") {
               foundValid = true;
-              let stringPieces = grandchild.state.value.split(",").map(x => x.trim());
+              let stringPieces = grandchild.split(",").map(x => x.trim());
               excludes.push(...stringPieces);
               break;
             }
@@ -344,7 +344,7 @@ export default class SelectFromSequence extends Sequence {
           return { success: false }
         }
 
-      } else if (componentType === "string") {
+      } else if (typeof child === "string") {
         stringChild = child;
       }
     }
@@ -353,7 +353,7 @@ export default class SelectFromSequence extends Sequence {
       if (sequencePars.to !== undefined || sequencePars.from !== undefined) {
         return { success: false }
       }
-      let stringPieces = stringChild.state.value.split(",");
+      let stringPieces = stringChild.split(",");
       if (stringPieces.length === 1) {
         sequencePars.to = stringPieces[0].trim();
       } else if (stringPieces.length === 2) {

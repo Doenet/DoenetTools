@@ -14,6 +14,10 @@ export function postProcessCopy({ serializedComponents, componentName,
   for (let ind in serializedComponents) {
     let component = serializedComponents[ind];
 
+    if(typeof component !== "object") {
+      continue;
+    }
+
     let uniqueIdentifierBase;
     if (component.originalName) {
 
@@ -104,6 +108,9 @@ export function postProcessCopy({ serializedComponents, componentName,
 
   for (let ind in serializedComponents) {
     let component = serializedComponents[ind];
+    if(typeof component !== "object") {
+      continue;
+    }
 
     postProcessCopy({
       serializedComponents: component.children,

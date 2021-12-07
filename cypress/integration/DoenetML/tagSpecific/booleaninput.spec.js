@@ -225,8 +225,8 @@ describe('BooleanInput Tag Tests', function () {
     <text>a</text>
     <p>Original boolean: <boolean>true</boolean></p>
     <p>booleaninput based on boolean: <booleaninput bindValueTo="$_boolean1" /></p>
-    <p>Reffed boolean: <copy tname="_boolean1" /></p>
-    <p>Reffed boolean input: <copy prop="value" tname="_booleaninput1" /></p>
+    <p>Copied boolean: <copy tname="_boolean1" /></p>
+    <p>Copied boolean input: <copy prop="value" tname="_booleaninput1" /></p>
     `}, "*");
     });
 

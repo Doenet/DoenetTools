@@ -63,7 +63,7 @@ export default class Line extends GraphicalComponent {
 
       // only apply if all children are strings or macros
       if (!matchedChildren.every(child =>
-        child.componentType === "string" ||
+        typeof child === "string" ||
         child.doenetAttributes && child.doenetAttributes.createdFromMacro
       )) {
         return { success: false }

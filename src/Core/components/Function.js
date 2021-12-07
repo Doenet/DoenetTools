@@ -141,7 +141,7 @@ export default class Function extends InlineComponent {
     let wrapStringOrMultipleChildrenWithMath = function ({ matchedChildren }) {
 
       // apply if have a single string or multiple children
-      if (matchedChildren.length === 1 && matchedChildren[0].componentType !== "string") {
+      if (matchedChildren.length === 1 && typeof matchedChildren[0] !== "string") {
         return { success: false }
       }
         

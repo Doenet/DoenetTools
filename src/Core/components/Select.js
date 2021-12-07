@@ -62,7 +62,7 @@ export default class Select extends CompositeComponent {
 
       // only if all children are strings or options
       if (!matchedChildren.every(child =>
-        child.componentType === "string" ||
+        typeof child === "string" ||
         child.doenetAttributes && child.doenetAttributes.createdFromMacro
       )) {
         return { success: false }
@@ -606,8 +606,8 @@ export default class Select extends CompositeComponent {
         // children overwrite state
         if (child.children !== undefined) {
           for (let grandchild of child.children) {
-            if (grandchild.componentType === "string") {
-              numberToSelect = Math.round(Number(grandchild.state.value));
+            if (typeof grandchild === "string") {
+              numberToSelect = Math.round(Number(grandchild));
               foundValid = true;
               break;
             }
@@ -629,9 +629,9 @@ export default class Select extends CompositeComponent {
         // children overwrite state
         if (child.children !== undefined) {
           for (let grandchild of child.children) {
-            if (grandchild.componentType === "string") {
+            if (typeof grandchild === "string") {
               foundValid = true;
-              if (grandchild.state.value.trim().toLowerCase() === "true") {
+              if (grandchild.trim().toLowerCase() === "true") {
                 withReplacement = true;
               } else {
                 withReplacement = false;
@@ -649,7 +649,7 @@ export default class Select extends CompositeComponent {
         // uniqueVariants disabled if have a child with selectWeight specified
         return { succes: false }
       } else if (componentType !== "hide" && componentType !== "modifyIndirectly") {
-        if (componentType === "string") {
+        if (typeof child === "string") {
           stringChild = child;
         }
         let childvariants = 1;
@@ -669,7 +669,7 @@ export default class Select extends CompositeComponent {
     // if have one string child, it will be broken into children by spaces
     // account for number of resulting children, each with one variant
     if (stringChild !== undefined && numberOfVariantsByChild.length === 1) {
-      let numPieces = stringChild.state.value.split(/s+/).length;
+      let numPieces = stringChild.split(/s+/).length;
       numberOfVariantsByChild = Array(numPieces).fill(1);
     }
 

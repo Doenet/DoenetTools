@@ -40,25 +40,25 @@ export function returnBreakStringsSugarFunction({
 
     if (mustStripOffOuterParentheses) {
       let firstComponent = matchedChildren[0];
-      if (firstComponent.componentType !== "string" || firstComponent.state.value.trimLeft()[0] !== "(") {
+      if (typeof firstComponent !== "string" || firstComponent.trimLeft()[0] !== "(") {
         return { success: false };
       }
 
     }
 
     for (let [compInd, component] of matchedChildren.entries()) {
-      if (component.componentType !== "string") {
+      if (typeof component !== "string") {
         currentPiece.push(component);
         continue;
       }
 
-      let s = component.state.value.trim();
+      let s = component.trim();
 
       if (compInd === 0 && mustStripOffOuterParentheses && s[0] === "(") {
         // found beginning paren, now check if there is an ending parens
         let lastChild = matchedChildren[nChildren - 1];
-        if (lastChild.componentType === "string") {
-          let sLast = lastChild.state.value.trimRight();
+        if (typeof lastChild === "string") {
+          let sLast = lastChild.trimRight();
           if (sLast[sLast.length - 1] === ")") {
             // found ending paren, so we'll strip off first paren
             strippedParens = true;
@@ -91,10 +91,7 @@ export function returnBreakStringsSugarFunction({
         }
         if (char === "," && Nparens === 0) {
           if (ind > beginInd) {
-            currentPiece.push({
-              componentType: "string",
-              state: { value: s.substring(beginInd, ind) }
-            });
+            currentPiece.push(s.substring(beginInd, ind));
           }
           pieces.push(currentPiece);
           currentPiece = [];
@@ -103,10 +100,7 @@ export function returnBreakStringsSugarFunction({
       }
 
       if (s.length > beginInd) {
-        currentPiece.push({
-          componentType: "string",
-          state: { value: s.substring(beginInd, s.length) }
-        });
+        currentPiece.push(s.substring(beginInd, s.length));
       }
 
     }
@@ -146,13 +140,13 @@ export function breakEmbeddedStringByCommas({ childrenList }) {
 
   for (let component of childrenList) {
 
-    if (component.componentType !== "string") {
+    if (typeof component !== "string") {
 
       currentPiece.push(component);
       continue;
     }
 
-    let s = component.state.value.trim();
+    let s = component.trim();
     let beginInd = 0;
 
     for (let ind = 0; ind < s.length; ind++) {
@@ -170,10 +164,7 @@ export function breakEmbeddedStringByCommas({ childrenList }) {
       if (char === "," && Nparens === 0) {
         if (ind > beginInd) {
           let newString = s.substring(beginInd, ind).trim()
-          currentPiece.push({
-            componentType: "string",
-            state: { value: newString },
-          });
+          currentPiece.push(newString);
         }
 
         pieces.push(currentPiece);
@@ -184,10 +175,7 @@ export function breakEmbeddedStringByCommas({ childrenList }) {
 
     if (s.length > beginInd) {
       let newString = s.substring(beginInd, s.length).trim();
-      currentPiece.push({
-        componentType: "string",
-        state: { value: newString },
-      });
+      currentPiece.push(newString);
     }
 
   }
@@ -212,7 +200,7 @@ export function breakEmbeddedStringsIntoParensPieces({ componentList, removePare
 
   for (let component of componentList) {
 
-    if (component.componentType !== "string") {
+    if (typeof component !== "string") {
       if (Nparens === 0) {
         // if not in a parenthesis, just add as a separate piece
         pieces.push([component])
@@ -222,7 +210,7 @@ export function breakEmbeddedStringsIntoParensPieces({ componentList, removePare
       continue;
     }
 
-    let s = component.state.value.trim();
+    let s = component.trim();
 
     let beginInd = 0;
 
@@ -245,10 +233,7 @@ export function breakEmbeddedStringsIntoParensPieces({ componentList, removePare
             let lastInd = removeParens ? ind : ind + 1;
             let newString = s.substring(beginInd, lastInd).trim()
             if (newString.length > 0) {
-              currentPiece.push({
-                componentType: "string",
-                state: { value: newString },
-              });
+              currentPiece.push(newString);
             }
           }
 
@@ -267,10 +252,7 @@ export function breakEmbeddedStringsIntoParensPieces({ componentList, removePare
 
     if (s.length > beginInd) {
       let newString = s.substring(beginInd, s.length).trim();
-      currentPiece.push({
-        componentType: "string",
-        state: { value: newString },
-      });
+      currentPiece.push(newString);
     }
 
   }
@@ -309,21 +291,21 @@ export function breakIntoVectorComponents(compList) {
     return { foundVector: false };
   }
 
-  if (compList[0].componentType !== "string") {
+  if (typeof compList[0] !== "string") {
     return { foundVector: false };
   }
 
-  let sFirst = compList[0].state.value;
+  let sFirst = compList[0];
   let charFirst = sFirst.trim()[0];
   if (charFirst !== "(") {
     return { foundVector: false };
   }
 
-  if (compList[compList.length - 1].componentType !== "string") {
+  if (typeof compList[compList.length - 1] !== "string") {
     return { foundVector: false };
   }
 
-  let sLast = compList[compList.length - 1].state.value;
+  let sLast = compList[compList.length - 1];
   let charLast = sLast.trim().slice(-1);
   if (charLast !== ")") {
     return { foundVector: false };
@@ -333,28 +315,19 @@ export function breakIntoVectorComponents(compList) {
   if (compList.length === 1) {
     let snew = sFirst.trim().slice(1, -1).trim();
     if (snew.length > 0) {
-      newCompList.push({
-        componentType: "string",
-        state: { value: snew },
-      })
+      newCompList.push(snew)
     }
   } else {
     let snew = sFirst.trim().slice(1).trim();
     if (snew.length > 0) {
-      newCompList.push({
-        componentType: "string",
-        state: { value: snew },
-      })
+      newCompList.push(snew)
     }
 
     newCompList.push(...compList.slice(1, -1));
 
     snew = sLast.trim().slice(0, -1).trim();
     if (snew.length > 0) {
-      newCompList.push({
-        componentType: "string",
-        state: { value: snew },
-      });
+      newCompList.push(snew);
     }
 
   }
@@ -364,12 +337,12 @@ export function breakIntoVectorComponents(compList) {
 
   for (let comp of newCompList) {
 
-    if (comp.componentType !== "string") {
+    if (typeof comp !== "string") {
       currentPiece.push(comp);
       continue;
     }
 
-    let s = comp.state.value.trim();
+    let s = comp.trim();
 
     let beginInd = 0;
     let brokeString = false;
@@ -390,10 +363,7 @@ export function breakIntoVectorComponents(compList) {
       if (char === "," && Nparens === 0) {
         if (ind > beginInd) {
           let snew = s.substring(beginInd, ind).trim();
-          currentPiece.push({
-            componentType: "string",
-            state: { value: snew },
-          });
+          currentPiece.push(snew);
         }
 
         pieces.push(currentPiece);
@@ -407,10 +377,7 @@ export function breakIntoVectorComponents(compList) {
     if (brokeString) {
       if (s.length > beginInd) {
         let snew = s.substring(beginInd, s.length).trim();
-        currentPiece.push({
-          componentType: "string",
-          state: { value: snew },
-        });
+        currentPiece.push(snew);
       }
     } else {
       currentPiece.push(comp);
@@ -466,142 +433,142 @@ export function breakIntoVectorComponents(compList) {
 // but this code isn't currently being called anywhere
 
 
-export function breakPiecesByEquals(pieces, parseVectorEquality = false) {
+// export function breakPiecesByEquals(pieces, parseVectorEquality = false) {
 
-  let lhsByPiece = [];
-  let rhsByPiece = [];
-  let toDelete = [];
+//   let lhsByPiece = [];
+//   let rhsByPiece = [];
+//   let toDelete = [];
 
-  let foundEqualSignInAPiece;
-  let re_equal = /^([^=]*)(=([^=]*))?$/;
+//   let foundEqualSignInAPiece;
+//   let re_equal = /^([^=]*)(=([^=]*))?$/;
 
-  for (let ind = 0; ind < pieces.length; ind++) {
-    let piece = pieces[ind];
+//   for (let ind = 0; ind < pieces.length; ind++) {
+//     let piece = pieces[ind];
 
-    let lhs = [];
-    let rhs = [];
-    let foundEqualSign = false;
-    for (let comp of piece) {
+//     let lhs = [];
+//     let rhs = [];
+//     let foundEqualSign = false;
+//     for (let comp of piece) {
 
-      let s = comp._string;
-      if (s === undefined) {
-        if (foundEqualSign) {
-          rhs.push(comp);
-        } else {
-          lhs.push(comp);
-        }
-        continue;
-      }
+//       let s = comp._string;
+//       if (s === undefined) {
+//         if (foundEqualSign) {
+//           rhs.push(comp);
+//         } else {
+//           lhs.push(comp);
+//         }
+//         continue;
+//       }
 
-      // we have a string s
-      let result = s.match(re_equal);
-      if (result === null) {
-        // found more than one = sign in the single string
-        return { success: false };
-      }
-      if (result[2] === undefined) {
-        // no equal sign, so just add to lhs or rhs
-        if (foundEqualSign) {
-          rhs.push(comp);
-        } else {
-          lhs.push(comp);
-        }
-      } else {
+//       // we have a string s
+//       let result = s.match(re_equal);
+//       if (result === null) {
+//         // found more than one = sign in the single string
+//         return { success: false };
+//       }
+//       if (result[2] === undefined) {
+//         // no equal sign, so just add to lhs or rhs
+//         if (foundEqualSign) {
+//           rhs.push(comp);
+//         } else {
+//           lhs.push(comp);
+//         }
+//       } else {
 
-        // found one equal sign
-        if (foundEqualSign) {
-          // found second equal sign
-          return { succes: false };
-        }
-        foundEqualSign = true;
-        let l = result[1];
-        let r = result[3];
-        if (l.length > 0) {
-          lhs.push({
-            componentType: "string",
-            state: { value: l },
-            _string: l,
-          })
-        }
-        if (r.length > 0) {
-          rhs.push({
-            componentType: "string",
-            state: { value: r },
-            _string: r,
-          })
-        }
-        if (comp.createdComponent === true) {
-          // broke up an original string
-          // need to make original string as to be deleted
-          toDelete.push(comp.componentName);
-        }
-      }
-    }
+//         // found one equal sign
+//         if (foundEqualSign) {
+//           // found second equal sign
+//           return { succes: false };
+//         }
+//         foundEqualSign = true;
+//         let l = result[1];
+//         let r = result[3];
+//         if (l.length > 0) {
+//           lhs.push({
+//             componentType: "string",
+//             state: { value: l },
+//             _string: l,
+//           })
+//         }
+//         if (r.length > 0) {
+//           rhs.push({
+//             componentType: "string",
+//             state: { value: r },
+//             _string: r,
+//           })
+//         }
+//         if (comp.createdComponent === true) {
+//           // broke up an original string
+//           // need to make original string as to be deleted
+//           toDelete.push(comp.componentName);
+//         }
+//       }
+//     }
 
-    if (ind === 0) {
-      foundEqualSignInAPiece = foundEqualSign;
-    } else {
-      if (foundEqualSign !== foundEqualSignInAPiece) {
-        // inconsistent pieces, some with and without equal signs
-        // sugar fails
-        return { success: false };
-      }
-    }
+//     if (ind === 0) {
+//       foundEqualSignInAPiece = foundEqualSign;
+//     } else {
+//       if (foundEqualSign !== foundEqualSignInAPiece) {
+//         // inconsistent pieces, some with and without equal signs
+//         // sugar fails
+//         return { success: false };
+//       }
+//     }
 
-    if (foundEqualSign) {
+//     if (foundEqualSign) {
 
-      if (pieces.length === 1 && parseVectorEquality) {
-        // check if lhs and rhs are vectors
-        let lhsResult = breakIntoVectorComponents(lhs);
-        if (lhsResult.foundVector === true) {
-          let rhsResult = breakIntoVectorComponents(rhs);
-          if (rhsResult.foundVector !== true) {
-            // on side is vector, the other isn't
-            return { success: false }
-          }
-          if (lhsResult.vectorComponents.length !== rhsResult.vectorComponents.length) {
-            // have different vector lengths
-            return { success: false }
-          }
+//       if (pieces.length === 1 && parseVectorEquality) {
+//         // check if lhs and rhs are vectors
+//         let lhsResult = breakIntoVectorComponents(lhs);
+//         if (lhsResult.foundVector === true) {
+//           let rhsResult = breakIntoVectorComponents(rhs);
+//           if (rhsResult.foundVector !== true) {
+//             // on side is vector, the other isn't
+//             return { success: false }
+//           }
+//           if (lhsResult.vectorComponents.length !== rhsResult.vectorComponents.length) {
+//             // have different vector lengths
+//             return { success: false }
+//           }
 
-          // found two vectors of the same length
-          // should treat the same as separate equalities
-          for (let i = 0; i < lhsResult.vectorComponents.length; i++) {
-            lhsByPiece.push(lhsResult.vectorComponents[i]);
-            rhsByPiece.push(rhsResult.vectorComponents[i]);
-          }
-          // add any more strings to delete
-          toDelete = [...toDelete, ...lhsResult.toDelete, ...rhsResult.toDelete]
+//           // found two vectors of the same length
+//           // should treat the same as separate equalities
+//           for (let i = 0; i < lhsResult.vectorComponents.length; i++) {
+//             lhsByPiece.push(lhsResult.vectorComponents[i]);
+//             rhsByPiece.push(rhsResult.vectorComponents[i]);
+//           }
+//           // add any more strings to delete
+//           toDelete = [...toDelete, ...lhsResult.toDelete, ...rhsResult.toDelete]
 
-          return {
-            success: true,
-            lhsByPiece: lhsByPiece,
-            rhsByPiece: rhsByPiece,
-            toDelete: toDelete,
-          }
+//           return {
+//             success: true,
+//             lhsByPiece: lhsByPiece,
+//             rhsByPiece: rhsByPiece,
+//             toDelete: toDelete,
+//           }
 
-        } else {
-          // didn't find vector in lhs
-          // just make sure isn't a vector in rhs
-          let rhsResult = breakIntoVectorComponents(rhs, true);
-          if (rhsResult.success === true) {
-            return { success: false };
-          }
-        }
-      }
-      lhsByPiece.push(lhs);
-      rhsByPiece.push(rhs);
-    } else {
-      // no equal sign, so we just have lhs
-      lhsByPiece.push(lhs);
-    }
-  }
+//         } else {
+//           // didn't find vector in lhs
+//           // just make sure isn't a vector in rhs
+//           let rhsResult = breakIntoVectorComponents(rhs, true);
+//           if (rhsResult.success === true) {
+//             return { success: false };
+//           }
+//         }
+//       }
+//       lhsByPiece.push(lhs);
+//       rhsByPiece.push(rhs);
+//     } else {
+//       // no equal sign, so we just have lhs
+//       lhsByPiece.push(lhs);
+//     }
+//   }
 
-  return {
-    success: true,
-    lhsByPiece: lhsByPiece,
-    rhsByPiece: rhsByPiece,
-    toDelete: toDelete,
+//   return {
+//     success: true,
+//     lhsByPiece: lhsByPiece,
+//     rhsByPiece: rhsByPiece,
+//     toDelete: toDelete,
 
-  }
-}
+//   }
+// }

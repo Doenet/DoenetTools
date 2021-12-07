@@ -21,7 +21,7 @@ export function scrapeOffAllDoumentRelated(serializedComponents) {
     if (["title", "meta"].includes(component.componentType)) {
       let numberToDelete = 1;
       let followingComponent = serializedComponents[ind + 1];
-      if (followingComponent.componentType === "string" && followingComponent.state.value.trim() === "") {
+      if (typeof followingComponent === "string" && followingComponent.trim() === "") {
         numberToDelete = 2;
       }
       serializedComponents.splice(ind, numberToDelete);
@@ -31,7 +31,7 @@ export function scrapeOffAllDoumentRelated(serializedComponents) {
   // strip off any blank strings at beginning or end
   let firstNonblankInd, lastNonblankInd;
   for (let [ind, component] of serializedComponents.entries()) {
-    if (component.componentType !== "string" || component.state.value.trim() !== "") {
+    if (typeof component !== "string" || component.trim() !== "") {
       if (firstNonblankInd === undefined) {
         firstNonblankInd = ind;
       }
@@ -291,7 +291,7 @@ export function doenetMLToSerializedComponents(doenetML, init = true) {
     if (startTag === false) {
       //just text remains so return it if it has something in it
       if (doenetML.length > 0) {
-        json.push({ componentType: "string", state: { value: doenetML } });
+        json.push(doenetML);
       }
       return json;
     }
@@ -332,10 +332,10 @@ export function doenetMLToSerializedComponents(doenetML, init = true) {
 
     if (/\S/.test(stringBeforeCode)) {
       // have non-blank string before code
-      json.push({ componentType: "string", state: { value: stringBeforeCode } });
+      json.push(stringBeforeCode);
 
     } else if (stringBeforeCode.length > 0) {
-      json.push({ componentType: "string", state: { value: stringBeforeCode } });
+      json.push(stringBeforeCode);
     }
 
 
@@ -349,7 +349,7 @@ export function doenetMLToSerializedComponents(doenetML, init = true) {
 
     if (!/\S/.test(doenetML)) {
       if (doenetML.length > 0) {
-        json.push({ componentType: "string", state: { value: doenetML } });
+        json.push(doenetML);
       }
 
       if (init) {
@@ -357,7 +357,7 @@ export function doenetMLToSerializedComponents(doenetML, init = true) {
         // at beginning or end
         let firstNonblankInd, lastNonblankInd;
         for (let [ind, component] of json.entries()) {
-          if (component.componentType !== "string" || component.state.value.trim() !== "") {
+          if (typeof component !== "string" || component.trim() !== "") {
             if (firstNonblankInd === undefined) {
               firstNonblankInd = ind;
             }
@@ -383,7 +383,7 @@ export function removeBlankStringChildren(serializedComponents, componentInfoObj
       let componentClass = componentInfoObjects.allComponentClasses[component.componentType];
       if (componentClass && !componentClass.includeBlankStringChildren) {
         component.children = component.children.filter(
-          x => x.componentType !== "string" || x.state.value.trim() !== ""
+          x => typeof x !== "string" || x.trim() !== ""
         )
       }
 
@@ -452,6 +452,10 @@ export function addDocumentIfItsMissing(serializedComponents) {
 export function correctComponentTypeCapitalization(serializedComponents, componentTypeLowerCaseMapping) {
 
   for (let component of serializedComponents) {
+    if (typeof component !== "object") {
+      continue;
+    }
+
     let componentTypeFixed = componentTypeLowerCaseMapping[component.componentType.toLowerCase()];
 
     if (componentTypeFixed) {
@@ -471,6 +475,9 @@ export function correctComponentTypeCapitalization(serializedComponents, compone
 
 export function createAttributesFromProps(serializedComponents, componentInfoObjects, flags) {
   for (let component of serializedComponents) {
+    if (typeof component !== "object") {
+      continue;
+    }
 
     let componentClass = componentInfoObjects.allComponentClasses[component.componentType];
     let classAttributes = componentClass.createAttributesObject({ flags });
@@ -587,9 +594,7 @@ export function componentFromAttribute({ attrObj, value, originalComponentProps,
       if (children) {
         children = JSON.parse(JSON.stringify(children));
       } else {
-        children = [
-          { componentType: "string", state: { value: value.rawString } }
-        ]
+        children = [value.rawString]
       }
       newComponent = {
         componentType: attrObj.createComponentOfType,
@@ -637,9 +642,7 @@ export function componentFromAttribute({ attrObj, value, originalComponentProps,
     return { primitive: newPrimitive };
   } else {
     if (!value.childrenForComponent) {
-      value.childrenForComponent = [
-        { componentType: "string", state: { value: value.rawString } }
-      ]
+      value.childrenForComponent = [value.rawString]
     }
     return value;
   }
@@ -648,6 +651,9 @@ export function componentFromAttribute({ attrObj, value, originalComponentProps,
 function findPreSugarIndsAndMarkFromSugar(components) {
   let preSugarIndsFound = [];
   for (let component of components) {
+    if (typeof component !== "object") {
+      continue;
+    }
     if (component.preSugarInd !== undefined) {
       preSugarIndsFound.push(component.preSugarInd)
     } else {
@@ -698,12 +704,12 @@ function substituteMacros(serializedComponents, componentInfoObjects, flags) {
   for (let componentInd = 0; componentInd < serializedComponents.length; componentInd++) {
     let component = serializedComponents[componentInd];
 
-    if (component.componentType === "string") {
+    if (typeof component === "string") {
 
       let startInd = 0;
-      while (startInd < component.state.value.length) {
+      while (startInd < component.length) {
 
-        let str = component.state.value;
+        let str = component;
         let result = findFirstFullMacroInString(str.slice(startInd));
 
         if (!result.success) {
@@ -771,10 +777,7 @@ function substituteMacros(serializedComponents, componentInfoObjects, flags) {
 
           if (str.length > firstIndMatched + matchLengthWithOpeningParens) {
             includeFirstInRemaining = true;
-            remainingComponents.push({
-              componentType: "string",
-              state: { value: str.substring(firstIndMatched + matchLengthWithOpeningParens) }
-            })
+            remainingComponents.push(str.substring(firstIndMatched + matchLengthWithOpeningParens))
           }
 
           remainingComponents.push(...serializedComponents.slice(componentInd + 1));
@@ -810,19 +813,13 @@ function substituteMacros(serializedComponents, componentInfoObjects, flags) {
 
         // the string before the function name
         if (firstIndMatched > 0) {
-          replacements.push({
-            componentType: "string",
-            state: { value: str.substring(0, firstIndMatched) }
-          })
+          replacements.push(str.substring(0, firstIndMatched))
         }
 
         replacements.push(...componentsFromMacro);
 
         if (stringToAddAtEnd.length > 0) {
-          replacements.push({
-            componentType: "string",
-            state: { value: stringToAddAtEnd }
-          })
+          replacements.push(stringToAddAtEnd)
         }
 
         // splice new replacements into serializedComponents
@@ -1061,15 +1058,15 @@ function createEvaluateIfFindMatchedClosingParens({
 
   // if have text after closing parenthesis
   // save in stringAfterFunction
-  if (result.charInd + 1 < lastComponentOfFunction.state.value.length) {
-    stringAfterFunction = lastComponentOfFunction.state.value.substring(result.charInd + 1);
+  if (result.charInd + 1 < lastComponentOfFunction.length) {
+    stringAfterFunction = lastComponentOfFunction.substring(result.charInd + 1);
   }
 
   // remove closing parenthesis and any subsequent text
   // from the last component
   if (result.charInd > 0) {
-    lastComponentOfFunction.state.value
-      = lastComponentOfFunction.state.value.substring(0, result.charInd)
+    remainingComponents[lastComponentInd]
+      = lastComponentOfFunction.substring(0, result.charInd)
   } else {
     // remove this component altogether as there is nothing left
     remainingComponents = remainingComponents.slice(0, lastComponentInd);
@@ -1082,7 +1079,7 @@ function createEvaluateIfFindMatchedClosingParens({
   let pieces = breakResults.pieces.map(x => applyMacros(x, componentInfoObjects));
 
   let inputArray = pieces.map(x => {
-    if (x.length === 1 && x[0].componentType !== "string") {
+    if (x.length === 1 && typeof x[0] !== "string") {
       return x[0]
     } else {
       return {
@@ -1119,10 +1116,7 @@ function createEvaluateIfFindMatchedClosingParens({
   // if have text after function
   // include string component at end containing that text
   if (stringAfterFunction.length > 0) {
-    replacements.push({
-      componentType: "string",
-      state: { value: stringAfterFunction }
-    })
+    replacements.push(stringAfterFunction)
   }
 
   return {
@@ -1139,8 +1133,8 @@ function findFirstUnmatchedClosingParens(components) {
   let Nparens = 0;
 
   for (let [componentInd, component] of components.entries()) {
-    if (component.componentType === "string") {
-      let s = component.state.value;
+    if (typeof component === "string") {
+      let s = component;
 
       for (let charInd = 0; charInd < s.length; charInd++) {
         let char = s[charInd];
@@ -1179,9 +1173,9 @@ export function decodeXMLEntities(serializedComponents) {
       .replace(/&amp;/g, '&');
   }
 
-  for (let serializedComponent of serializedComponents) {
-    if (serializedComponent.componentType === "string") {
-      serializedComponent.state.value = replaceEntities(serializedComponent.state.value)
+  for (let [ind, serializedComponent] of serializedComponents.entries()) {
+    if (typeof serializedComponent === "string") {
+      serializedComponents[ind] = replaceEntities(serializedComponent);
     } else {
 
       if (serializedComponent.children) {
@@ -1220,6 +1214,10 @@ export function applySugar({ serializedComponents, parentParametersFromSugar = {
 }) {
 
   for (let [componentInd, component] of serializedComponents.entries()) {
+    if (typeof component !== "object") {
+      continue;
+    }
+
     let componentType = component.componentType;
     let componentClass = componentInfoObjects.allComponentClasses[componentType];
     if (!componentClass) {
@@ -1251,7 +1249,7 @@ export function applySugar({ serializedComponents, parentParametersFromSugar = {
           }
 
           let childTypes = component.children
-            .map(x => x.componentType === "string" ? "s" : "n")
+            .map(x => typeof x === "string" ? "s" : "n")
             .join("");
 
           if (sugarInstruction.childrenRegex) {
@@ -1271,7 +1269,7 @@ export function applySugar({ serializedComponents, parentParametersFromSugar = {
 
           let nNonStrings = 0;
           for (let child of matchedChildren) {
-            if (child.componentType !== "string") {
+            if (typeof child !== "string") {
               child.preSugarInd = nNonStrings;
               nNonStrings++;
             }
@@ -1482,6 +1480,9 @@ export function createComponentNames({ serializedComponents, namespaceStack = []
   let currentNamespace = namespaceStack[level];
 
   for (let [componentInd, serializedComponent] of serializedComponents.entries()) {
+    if (typeof serializedComponent !== "object") {
+      continue;
+    }
     let componentType = serializedComponent.componentType;
     let componentClass = componentInfoObjects.allComponentClasses[componentType];
 
@@ -1505,8 +1506,7 @@ export function createComponentNames({ serializedComponents, namespaceStack = []
     // let indexAlias = doenetAttributes.indexAlias;
 
     let mustCreateUniqueName =
-      componentType === "string"
-      || doenetAttributes.isAttributeChild
+      doenetAttributes.isAttributeChild
       || doenetAttributes.createdFromSugar
       || doenetAttributes.createdFromMacro
       || doenetAttributes.createUniqueName;
@@ -2152,9 +2152,13 @@ export function processAssignNames({
   if (originalNamesAreConsistent) {
 
     // need to use a component for original name, as parentName is the new name
-    if (nComponents > 0 && serializedComponents[0].originalName) {
-      let lastSlash = serializedComponents[0].originalName.lastIndexOf('/');
-      originalNamespace = serializedComponents[0].originalName.substring(0, lastSlash);
+    if (nComponents > 0) {
+      // find a component with an original name, i.e., not a string
+      let component = serializedComponents.filter(x => typeof x === "object")[0];
+      if (component && component.originalName) {
+        let lastSlash = component.originalName.lastIndexOf('/');
+        originalNamespace = component.originalName.substring(0, lastSlash);
+      }
     }
 
     if (originalNamespace !== null) {
@@ -2170,6 +2174,10 @@ export function processAssignNames({
     for (let ind = 0; ind < nComponents; ind++) {
 
       let component = serializedComponents[ind];
+
+      if (typeof component !== "object") {
+        continue;
+      }
 
       originalNamespace = null;
       // need to use a component for original name, as parentName is the new name
@@ -2192,8 +2200,8 @@ export function processAssignNames({
 
   let processedComponents = [];
 
-  // don't name strings
-  let numStrings = 0;
+  // don't name strings or primitive numbers
+  let numPrimitives = 0;
 
   for (let ind = 0; ind < nComponents; ind++) {
 
@@ -2201,13 +2209,13 @@ export function processAssignNames({
 
     let component = serializedComponents[ind];
 
-    if (component.componentType === "string") {
-      numStrings++;
+    if (typeof component !== "object") {
+      numPrimitives++;
       processedComponents.push(component);
       continue;
     }
 
-    let name = assignNames[indForNames - numStrings];
+    let name = assignNames[indForNames - numPrimitives];
 
 
     if (!component.doenetAttributes) {
@@ -2315,7 +2323,7 @@ export function processAssignNames({
 
 }
 
-export function createComponentNamesFromParentName({
+function createComponentNamesFromParentName({
   parentName, component,
   ind,
   parentCreatesNewNamespace, componentInfoObjects,
@@ -2409,6 +2417,10 @@ function setTNamesOutsideNamespaceToAbsoluteAndRecordAllFullTNames({ namespace, 
 
   let namespaceLength = namespace.length;
   for (let component of components) {
+    if (typeof component !== "object") {
+      continue;
+    }
+
     if (component.doenetAttributes && component.doenetAttributes.tName) {
       let fullTName = component.doenetAttributes.fullTName;
       if (fullTName !== undefined) {
@@ -2495,6 +2507,10 @@ function moveComponentNamesToOriginalNames(components) {
 
 function markToCreateAllUniqueNames(components) {
   for (let component of components) {
+    if (typeof component !== "object") {
+      continue;
+    }
+
     if (!component.doenetAttributes) {
       component.doenetAttributes = {};
     }

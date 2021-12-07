@@ -140,9 +140,13 @@ export default class BaseComponent {
     // recurse to all children
     for (let childName in this.allChildren) {
       let child = this.allChildren[childName].component;
-      for (let rendererType of child.allPotentialRendererTypes) {
-        if (!allPotentialRendererTypes.includes(rendererType)) {
-          allPotentialRendererTypes.push(rendererType);
+      if (typeof child !== "object") {
+        continue;
+      } else {
+        for (let rendererType of child.allPotentialRendererTypes) {
+          if (!allPotentialRendererTypes.includes(rendererType)) {
+            allPotentialRendererTypes.push(rendererType);
+          }
         }
       }
     }
@@ -383,7 +387,9 @@ export default class BaseComponent {
             || dependencyValues.adapterSourceHidden === true
             || dependencyValues.hide === true
         }
-      })
+      }),
+      markStale: () => ({ updateParentRenderedChildren: true }),
+
     }
 
     stateVariableDefinitions.disabled = {
@@ -798,7 +804,11 @@ export default class BaseComponent {
     if (includeDefiningChildren) {
 
       for (let child of this.definingChildren) {
-        serializedChildren.push(child.serialize(parameters));
+        if (typeof child !== "object") {
+          serializedChildren.push(child)
+        } else {
+          serializedChildren.push(child.serialize(parameters));
+        }
       }
 
       if (this.serializedChildren !== undefined) {
@@ -875,6 +885,10 @@ export default class BaseComponent {
   }
 
   copySerializedComponent({ serializedComponent, parameters }) {
+
+    if (typeof serializedComponent !== "object") {
+      return serializedComponent;
+    }
 
     let serializedChildren = [];
     if (serializedComponent.children !== undefined) {
