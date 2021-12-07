@@ -18,7 +18,8 @@ import axios from "axios";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSort, faSortUp, faSortDown } from '@fortawesome/free-solid-svg-icons';
 
-import { pageToolViewAtom, searchParamAtomFamily } from '../NewToolRoot';
+import { pageToolViewAtom, searchParamAtomFamily, suppressMenusAtom } from '../NewToolRoot';
+import { effectiveRoleAtom } from "../../../_reactComponents/PanelHeaderComponents/RoleDropdown";
 
 
 // // React Table Styling
@@ -544,8 +545,17 @@ function GradebookOverview() {
     const setPageToolView = useSetRecoilState(pageToolViewAtom);
     let students = useRecoilValueLoadable(studentData)
     let assignments = useRecoilValueLoadable(assignmentData);
-    let overView = useRecoilValueLoadable(overViewData)
+    let overView = useRecoilValueLoadable(overViewData);
+    let effectiveRole = useRecoilValue(effectiveRoleAtom);
+    const setSuppressMenus = useSetRecoilState(suppressMenusAtom);
 
+    useEffect(()=>{
+        if (effectiveRole === 'student'){
+            setSuppressMenus(["GradeDownload"])
+        }else{
+            setSuppressMenus([])
+        }
+    },[effectiveRole,setSuppressMenus])
 // console.log(">>>>students",students)
 // console.log(">>>>assignments",assignments)
 // console.log(">>>>overView",overView)
