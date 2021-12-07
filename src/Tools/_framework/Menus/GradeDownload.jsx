@@ -43,22 +43,32 @@ export default function GradeDownload(){
     let enrollmentArray = data.enrollmentArray;
 
     let studentInfo = {}
-    let headingsCSV = "Name,Email,Student ID,"
-    let possiblePointsCSV = "Possible Points,,,"
+    let headingsCSV = "Name,Email,Student ID,Section,Withdrew,"
+    let possiblePointsCSV = "Possible Points,,,,,"
     for (const userId in students){
       if (students[userId].role !== 'Student'){ continue; }
       let email = "";
       let studentId = "";
+      let section = "";
+      let withdrew = "";
       for (const enrollment of enrollmentArray){
+   
         if (enrollment.userId === userId){
           email = enrollment.email;
           studentId = enrollment.empId;
+          section = enrollment.section;
+          if (enrollment.withdrew === "1"){
+            withdrew = 'X';
+          }
           break;
         }
       }
+
+      let studentName = `${students[userId].firstName} ${students[userId].lastName}`.replaceAll('"','""')
+
       studentInfo[userId] = {
         courseTotal: 0,
-        csv:`${students[userId].firstName} ${students[userId].lastName},${email},${studentId},`
+        csv:`"${studentName}",${email},${studentId},${section},${withdrew},`
       }
     }
     let courseTotalPossiblePoints = 0;
@@ -86,8 +96,9 @@ export default function GradeDownload(){
                 possiblePointsCSV = `${possiblePointsCSV}${possiblepoints},`
                 categoryTotalPossiblePoints += possiblepoints;
 
-                let assignmentLabel = assignments[doenetId]?.label
-                headingsCSV += assignmentLabel + ','
+                //Make sure label will work with commas and double quotes
+                let assignmentLabel = assignments[doenetId]?.label.replaceAll('"','""')
+                headingsCSV += `"${assignmentLabel}"` + ','
 
               for (const userId in students){
                 if (students[userId].role !== 'Student'){ continue; }

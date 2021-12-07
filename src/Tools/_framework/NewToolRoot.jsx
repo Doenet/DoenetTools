@@ -346,6 +346,7 @@ let navigationObj = {
       menusTitles:["Download"],
       menusInitOpen:[false],
       headerControls: ["GradebookBreadCrumb"],
+      waitForMenuSuppression:true,
       // onLeave:"",
     },
     gradebookAssignment: {

@@ -28,6 +28,6 @@ export default function AssignmentBreadCrumb() {
     fallback: /* @__PURE__ */ React.createElement("div", null, "Loading Breadcrumb...")
   }, /* @__PURE__ */ React.createElement(BreadCrumb, {
     crumbs: [chooserCrumb, dashboardCrumb, ...navigationCrumbs, assignmentCrumb],
-    offset: 300
+    offset: 98
   }));
 }
