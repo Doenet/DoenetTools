@@ -13,7 +13,8 @@ import {
 import axios from "../../_snowpack/pkg/axios.js";
 import {FontAwesomeIcon} from "../../_snowpack/pkg/@fortawesome/react-fontawesome.js";
 import {faSort, faSortUp, faSortDown} from "../../_snowpack/pkg/@fortawesome/free-solid-svg-icons.js";
-import {pageToolViewAtom, searchParamAtomFamily} from "../NewToolRoot.js";
+import {pageToolViewAtom, searchParamAtomFamily, suppressMenusAtom} from "../NewToolRoot.js";
+import {effectiveRoleAtom} from "../../_reactComponents/PanelHeaderComponents/RoleDropdown.js";
 export const Styles = styled.div`
   padding: 1rem;
   table {
@@ -443,6 +444,15 @@ function GradebookOverview() {
   let students = useRecoilValueLoadable(studentData);
   let assignments = useRecoilValueLoadable(assignmentData);
   let overView = useRecoilValueLoadable(overViewData);
+  let effectiveRole = useRecoilValue(effectiveRoleAtom);
+  const setSuppressMenus = useSetRecoilState(suppressMenusAtom);
+  useEffect(() => {
+    if (effectiveRole === "student") {
+      setSuppressMenus(["GradeDownload"]);
+    } else {
+      setSuppressMenus([]);
+    }
+  }, [effectiveRole, setSuppressMenus]);
   if (assignments.state !== "hasValue" || students.state !== "hasValue" || overView.state !== "hasValue") {
     return null;
   }

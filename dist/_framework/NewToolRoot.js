@@ -286,7 +286,8 @@ let navigationObj = {
       currentMenus: ["GradeDownload"],
       menusTitles: ["Download"],
       menusInitOpen: [false],
-      headerControls: ["GradebookBreadCrumb"]
+      headerControls: ["GradebookBreadCrumb"],
+      waitForMenuSuppression: true
     },
     gradebookAssignment: {
       pageName: "Gradebook",
