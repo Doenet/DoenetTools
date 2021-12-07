@@ -14,7 +14,6 @@ import axios from "../../_snowpack/pkg/axios.js";
 import {FontAwesomeIcon} from "../../_snowpack/pkg/@fortawesome/react-fontawesome.js";
 import {faSort, faSortUp, faSortDown} from "../../_snowpack/pkg/@fortawesome/free-solid-svg-icons.js";
 import {pageToolViewAtom, searchParamAtomFamily} from "../NewToolRoot.js";
-import {use} from "../../_snowpack/pkg/chai.js";
 export const Styles = styled.div`
   padding: 1rem;
   table {
@@ -148,14 +147,22 @@ const assignmentDataQuerry = atom({
     }
   })
 });
+function isIterable(obj) {
+  if (obj == null) {
+    return false;
+  }
+  return typeof obj[Symbol.iterator] === "function";
+}
 export const assignmentData = selector({
   key: "assignmentData",
   get: ({get}) => {
     let assignmentArray = {};
     let data = get(assignmentDataQuerry);
-    for (let row of data) {
-      let [doenetId, assignmentName] = row;
-      assignmentArray[doenetId] = assignmentName;
+    if (isIterable(data)) {
+      for (let row of data) {
+        let [doenetId, assignmentName] = row;
+        assignmentArray[doenetId] = assignmentName;
+      }
     }
     return assignmentArray;
   },
@@ -430,14 +437,6 @@ function DefaultColumnFilter({
     style: {border: "2px solid black", borderRadius: "5px"}
   });
 }
-const getUserId = (students, name) => {
-  for (let userId in students) {
-    if (students[userId].firstName + " " + students[userId].lastName == name) {
-      return userId;
-    }
-  }
-  return -1;
-};
 function GradebookOverview() {
   let driveIdValue = useRecoilValue(driveId);
   const setPageToolView = useSetRecoilState(pageToolViewAtom);

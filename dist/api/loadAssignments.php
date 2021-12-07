@@ -52,8 +52,13 @@ if (!isset($_GET["driveId"])) {
         // make it json format
         echo json_encode($response_arr);
     } else {
-        http_response_code(404);
-        echo "Database Retrieval Error: No such course: '$driveId'";
+         // set response code - 200 OK
+         http_response_code(200);
+
+         // make it json format
+         echo json_encode($response_arr);
+        // http_response_code(404);
+        // echo "Database Retrieval Error: No such course: '$driveId'";
     }
 }
 
