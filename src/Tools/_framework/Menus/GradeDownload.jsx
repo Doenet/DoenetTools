@@ -9,7 +9,6 @@ import axios from 'axios';
 
 export default function GradeDownload(){
 
-  // function download() {
     const download = useRecoilCallback(({snapshot})=> async ()=>{
 
       const driveId = await snapshot.getPromise(searchParamAtomFamily('driveId'))
