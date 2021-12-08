@@ -1551,7 +1551,7 @@ export function createComponentNames({ serializedComponents, namespaceStack = []
           }
         } else if (lowercaseKey === "tname") {
           if (tName === undefined) {
-            tName = props[key];
+            tName = props[key].trim();
             delete props[key];
           } else {
             throw Error("Cannot define tName twice for a component");
@@ -1726,6 +1726,10 @@ export function createComponentNames({ serializedComponents, namespaceStack = []
     if (tName) {
       if (!componentClass.acceptTname) {
         throw Error(`Component type ${componentType} does not accept a tname attribute`);
+      }
+
+      if (tName.includes('|')) {
+        throw Error('tname cannot include |')
       }
 
       // convert tname to full name

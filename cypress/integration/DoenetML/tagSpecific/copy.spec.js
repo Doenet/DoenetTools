@@ -2592,4 +2592,21 @@ describe('Copy Tag Tests', function () {
 
   });
 
+
+  it('trim whitespace off tname', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text name="hi">Hello</text>
+    <p><copy tname=" hi  " /> there</p>
+    `}, "*");
+    });
+
+    cy.get('#\\/hi').should('have.text', 'Hello');
+    cy.get('#\\/_p1').should('have.text', 'Hello there')
+
+
+  });
+
+
 });
