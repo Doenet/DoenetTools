@@ -55,16 +55,15 @@ export default function Form(props) {
         alignItems:'center',
     }
     var tableCellContainer = {
-      display: `table-cell`,
-     
+
   }
     var cancelButton = {
         float: 'right',
         margin: '5px 0px 0px -30px',
-        position: 'absolute',
+        position: 'inline',
         zIndex: '4',
         border: '0px',
-        backgroundColor: "transparent",
+        backgroundColor: 'transparent',
         visibility: `${cancelShown}`,
         color: '#000',
         overflow: 'hidden',
@@ -154,8 +153,6 @@ export default function Form(props) {
   }
     function clearInput() {
       setText("")
-      setCancelShown('hidden')
-      console.log(text);
     }
     function changeTextTerm() {
         // setTextTerm(textfield.value)
