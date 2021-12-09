@@ -283,10 +283,11 @@ let navigationObj = {
       pageName: "Gradebook",
       currentMainPanel: "Gradebook",
       menuPanelCap: "DriveInfoCap",
-      currentMenus: [],
-      menusTitles: [],
-      menusInitOpen: [],
-      headerControls: ["GradebookBreadCrumb"]
+      currentMenus: ["GradeDownload"],
+      menusTitles: ["Download"],
+      menusInitOpen: [false],
+      headerControls: ["GradebookBreadCrumb"],
+      waitForMenuSuppression: true
     },
     gradebookAssignment: {
       pageName: "Gradebook",
