@@ -22,7 +22,7 @@ export default function Form(props) {
          setTimeout(function() { setformWidth(button.clientWidth); }, 1000);
 
         }
-        clearInput();
+        // clearInput();
         // setText(props.value);
       },[formRef,props])
 
@@ -121,11 +121,7 @@ export default function Form(props) {
       }
       
   if (props.value) {
-    if (props.value == undefined || props.value == null) {
-      textfield.value = "";
-    } else {
       textfield.value = props.value;
-    }
   }
   if (props.placeholder) {
     textfield.placeholder = props.placeholder;
@@ -153,6 +149,7 @@ export default function Form(props) {
   }
     function clearInput() {
       setText("")
+      setCancelShown('hidden')
     }
     function changeTextTerm() {
         // setTextTerm(textfield.value)
