@@ -7,7 +7,7 @@
 #
 # Host: 127.0.0.1 (MySQL 5.7.29)
 # Database: doenet_local
-# Generation Time: 2021-09-21 17:37:32 +0000
+# Generation Time: 2021-11-09 18:05:29 +0000
 # ************************************************************
 
 
@@ -47,6 +47,7 @@ CREATE TABLE `assignment` (
   `showFeedback` tinyint(1) NOT NULL DEFAULT '1',
   `showHints` tinyint(1) NOT NULL DEFAULT '1',
   `showCorrectness` tinyint(1) NOT NULL DEFAULT '1',
+  `showCreditAchievedMenu` tinyint(1) NOT NULL DEFAULT '1',
   `proctorMakesAvailable` tinyint(1) NOT NULL DEFAULT '0' COMMENT 'Released by proctor or instructor',
   `examCoverHTML` text COLLATE utf8_unicode_ci,
   PRIMARY KEY (`id`),
@@ -56,12 +57,29 @@ CREATE TABLE `assignment` (
 LOCK TABLES `assignment` WRITE;
 /*!40000 ALTER TABLE `assignment` DISABLE KEYS */;
 
-INSERT INTO `assignment` (`id`, `doenetId`, `contentId`, `driveId`, `assignedDate`, `pinnedAfterDate`, `pinnedUntilDate`, `dueDate`, `timeLimit`, `numberOfAttemptsAllowed`, `sortOrder`, `attemptAggregation`, `totalPointsOrPercent`, `gradeCategory`, `individualize`, `multipleAttempts`, `showSolution`, `showSolutionInGradebook`, `showFeedback`, `showHints`, `showCorrectness`, `proctorMakesAvailable`, `examCoverHTML`)
+INSERT INTO `assignment` (`id`, `doenetId`, `contentId`, `driveId`, `assignedDate`, `pinnedAfterDate`, `pinnedUntilDate`, `dueDate`, `timeLimit`, `numberOfAttemptsAllowed`, `sortOrder`, `attemptAggregation`, `totalPointsOrPercent`, `gradeCategory`, `individualize`, `multipleAttempts`, `showSolution`, `showSolutionInGradebook`, `showFeedback`, `showHints`, `showCorrectness`, `showCreditAchievedMenu`, `proctorMakesAvailable`, `examCoverHTML`)
 VALUES
-	(488,'doenetId',NULL,'driveId','2021-06-04 08:20:07',NULL,NULL,'2021-06-09 08:20:07',101000,2,NULL,'m',0,'l',0,0,1,1,1,1,1,0,NULL);
+	(488,'doenetId',NULL,'driveId','2021-06-04 08:20:07',NULL,NULL,'2021-06-09 08:20:07',101000,2,NULL,'m',0,'l',0,0,1,1,1,1,1,1,0,NULL);
 
 /*!40000 ALTER TABLE `assignment` ENABLE KEYS */;
 UNLOCK TABLES;
+
+
+# Dump of table class_times
+# ------------------------------------------------------------
+
+DROP TABLE IF EXISTS `class_times`;
+
+CREATE TABLE `class_times` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `driveId` char(21) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
+  `dotwIndex` int(1) NOT NULL,
+  `startTime` time NOT NULL,
+  `endTime` time NOT NULL,
+  `sortOrder` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
 
 
 # Dump of table collection
@@ -117,7 +135,8 @@ CREATE TABLE `content` (
   `removedFlag` tinyint(1) NOT NULL DEFAULT '0',
   `public` tinyint(1) NOT NULL DEFAULT '1',
   PRIMARY KEY (`id`),
-  KEY `contentId` (`contentId`)
+  KEY `contentId` (`contentId`),
+  KEY `doenetId` (`doenetId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 
@@ -138,7 +157,8 @@ CREATE TABLE `content_interactions` (
   `attemptNumber` int(11) DEFAULT NULL,
   `interactionSource` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `timestamp` timestamp NULL DEFAULT NULL,
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  KEY `should_be_unique` (`userId`,`doenetId`,`attemptNumber`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 
@@ -155,7 +175,8 @@ CREATE TABLE `course_grade_category` (
   `totalPointsOrPercent` float NOT NULL DEFAULT '0',
   `numberToDrop` int(11) NOT NULL DEFAULT '0',
   `assignmentsInPercent` bit(11) NOT NULL DEFAULT b'0',
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  KEY `course_grade_category` (`courseId`,`gradeCategory`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 
@@ -177,7 +198,8 @@ CREATE TABLE `drive` (
   `color` char(6) COLLATE utf8_unicode_ci DEFAULT NULL,
   `examPasscode` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `browserExamKeys` text COLLATE utf8_unicode_ci,
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `driveId` (`driveId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 
@@ -203,7 +225,9 @@ CREATE TABLE `drive_content` (
   `sourceDoenetId` char(21) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT 'Filled after a copy of drive, folder or doenetML',
   `sortOrder` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `folderId` (`itemId`)
+  UNIQUE KEY `folderId` (`itemId`),
+  UNIQUE KEY `doenetId` (`doenetId`),
+  KEY `driveId` (`driveId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 
@@ -255,12 +279,12 @@ CREATE TABLE `enrollment` (
   `withdrew` bit(1) DEFAULT b'0',
   `dateWithdrew` datetime DEFAULT NULL COMMENT 'UTC DateTime',
   `forTesting` bit(1) DEFAULT b'0' COMMENT 'Flags account to not to be included in course calculations',
-  `courseCredit` float DEFAULT NULL,
+  `courseCredit` double DEFAULT NULL,
   `courseGrade` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `overrideCourseGrade` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `timeLimitMultiplier` float NOT NULL DEFAULT '1',
   PRIMARY KEY (`id`),
-  UNIQUE KEY `username_courseId` (`username`,`driveId`)
+  KEY `driveId_userId` (`driveId`,`userId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 LOCK TABLES `enrollment` WRITE;
@@ -359,7 +383,9 @@ CREATE TABLE `user` (
   `roleWatchdog` tinyint(1) DEFAULT '0',
   `roleCommunityTA` tinyint(1) DEFAULT '0',
   `roleLiveDataCommunity` tinyint(1) DEFAULT '0',
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `userId` (`userId`),
+  UNIQUE KEY `email` (`email`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 LOCK TABLES `user` WRITE;
@@ -391,8 +417,8 @@ CREATE TABLE `user_assignment` (
   `groupName` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT 'NULL means no group',
   `completed` bit(1) DEFAULT NULL COMMENT 'For ToDo list',
   `completedDate` datetime DEFAULT NULL,
-  `credit` float NOT NULL DEFAULT '0' COMMENT 'Overwritten by metric used to calculate it from other tables. Always 0-1 scale.',
-  `creditOverride` float DEFAULT NULL COMMENT 'if not NULL then credit field will be set to this',
+  `credit` double NOT NULL DEFAULT '0' COMMENT 'Overwritten by metric used to calculate it from other tables. Always 0-1 scale.',
+  `creditOverride` double DEFAULT NULL COMMENT 'if not NULL then credit field will be set to this',
   PRIMARY KEY (`id`),
   UNIQUE KEY `assignment-userId` (`doenetId`,`userId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
@@ -410,8 +436,8 @@ CREATE TABLE `user_assignment_attempt` (
   `contentId` char(64) COLLATE utf8_unicode_ci NOT NULL,
   `userId` char(21) COLLATE utf8_unicode_ci NOT NULL,
   `attemptNumber` int(11) NOT NULL DEFAULT '1',
-  `credit` float DEFAULT NULL,
-  `creditOverride` float DEFAULT NULL,
+  `credit` double DEFAULT NULL,
+  `creditOverride` double DEFAULT NULL,
   `assignedVariant` text COLLATE utf8_unicode_ci COMMENT 'Like seed. Informs the selects what values to use for the content. NULL means didn''t view yet.',
   `generatedVariant` text COLLATE utf8_unicode_ci COMMENT 'Based on code',
   `began` datetime DEFAULT NULL,
@@ -434,8 +460,8 @@ CREATE TABLE `user_assignment_attempt_item` (
   `userId` char(21) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
   `attemptNumber` int(11) NOT NULL,
   `itemNumber` int(11) NOT NULL COMMENT 'The number of the scored item found in the Doenet code.',
-  `credit` float DEFAULT NULL COMMENT 'maximum credit',
-  `creditOverride` float DEFAULT NULL,
+  `credit` double DEFAULT NULL COMMENT 'maximum credit',
+  `creditOverride` double DEFAULT NULL,
   `weight` float NOT NULL DEFAULT '1' COMMENT 'Weight comes from Doenet code.',
   `generatedVariant` text COLLATE utf8_unicode_ci,
   `viewedSolution` tinyint(1) DEFAULT '0',

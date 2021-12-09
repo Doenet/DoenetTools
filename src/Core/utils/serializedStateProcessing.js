@@ -485,6 +485,8 @@ export function createAttributesFromProps(serializedComponents, componentInfoObj
 
     // if there are any props of json that match attributes for component class
     // create the specified components or primitives
+
+    let originalComponentProps = Object.assign({}, component.props)
     if (component.props) {
       for (let prop in component.props) {
         let propName = attributeLowerCaseMapping[prop.toLowerCase()]
@@ -498,6 +500,7 @@ export function createAttributesFromProps(serializedComponents, componentInfoObj
           attributes[propName] = componentFromAttribute({
             attrObj,
             value: component.props[prop],
+            originalComponentProps,
             componentInfoObjects,
             flags
           });
@@ -507,6 +510,7 @@ export function createAttributesFromProps(serializedComponents, componentInfoObj
           if (componentClass.acceptAnyAttribute) {
             attributes[prop] = componentFromAttribute({
               value: component.props[prop],
+              originalComponentProps,
               componentInfoObjects,
               flags
             });
@@ -528,6 +532,7 @@ export function createAttributesFromProps(serializedComponents, componentInfoObj
       if (attrObj.createPrimitiveOfType && ("defaultPrimitiveValue" in attrObj) && !(attrName in attributes)) {
         attributes[attrName] = componentFromAttribute({
           attrObj,
+          originalComponentProps,
           value: attrObj.defaultPrimitiveValue.toString(),
           componentInfoObjects,
           flags
@@ -544,7 +549,9 @@ export function createAttributesFromProps(serializedComponents, componentInfoObj
   }
 }
 
-export function componentFromAttribute({ attrObj, value, componentInfoObjects, flags }) {
+export function componentFromAttribute({ attrObj, value, originalComponentProps,
+  componentInfoObjects, flags
+}) {
   if (typeof value !== "object") {
     // typically this would mean value is a string.
     // However, if had an attribute with no value, would get true.
@@ -590,8 +597,22 @@ export function componentFromAttribute({ attrObj, value, componentInfoObjects, f
       };
     }
 
-    if (attrObj.attributesForCreatedComponent) {
-      newComponent.props = attrObj.attributesForCreatedComponent;
+    if (attrObj.attributesForCreatedComponent || attrObj.copyComponentAttributesForCreatedComponent) {
+      if (attrObj.attributesForCreatedComponent) {
+        newComponent.props = attrObj.attributesForCreatedComponent;
+      } else {
+        newComponent.props = {};
+      }
+
+      if (attrObj.copyComponentAttributesForCreatedComponent) {
+        for (let attrName of attrObj.copyComponentAttributesForCreatedComponent) {
+          if (originalComponentProps[attrName]) {
+            newComponent.props[attrName] = JSON.parse(JSON.stringify(originalComponentProps[attrName]))
+          }
+        }
+
+      }
+
       createAttributesFromProps([newComponent], componentInfoObjects, flags)
     }
 
@@ -1147,18 +1168,46 @@ function findFirstUnmatchedClosingParens(components) {
 }
 
 export function decodeXMLEntities(serializedComponents) {
+
+  function replaceEntities(s) {
+    return s
+      .replace(/&apos;/g, "'")
+      .replace(/&quot;/g, '"')
+      .replace(/&gt;/g, '>')
+      .replace(/&lt;/g, '<')
+      .replace(/&dollar;/g, '$')
+      .replace(/&amp;/g, '&');
+  }
+
   for (let serializedComponent of serializedComponents) {
     if (serializedComponent.componentType === "string") {
-      serializedComponent.state.value =
-        serializedComponent.state.value
-          .replace(/&apos;/g, "'")
-          .replace(/&quot;/g, '"')
-          .replace(/&gt;/g, '>')
-          .replace(/&lt;/g, '<')
-          .replace(/&dollar;/g, '$')
-          .replace(/&amp;/g, '&');
-    } else if (serializedComponent.children) {
-      decodeXMLEntities(serializedComponent.children)
+      serializedComponent.state.value = replaceEntities(serializedComponent.state.value)
+    } else {
+
+      if (serializedComponent.children) {
+        decodeXMLEntities(serializedComponent.children)
+      }
+
+      if (serializedComponent.attributes) {
+        for (let attrName in serializedComponent.attributes) {
+          let attribute = serializedComponent.attributes[attrName];
+
+          if (attribute.component) {
+            decodeXMLEntities([attribute.component])
+          } else if (attribute.primitive) {
+            if (typeof attribute.primitive === "string") {
+              attribute.primitive = replaceEntities(attribute.primitive);
+            }
+          } else {
+            if (attribute.childrenForComponent) {
+              decodeXMLEntities(attribute.childrenForComponent);
+            }
+            if (attribute.rawString) {
+              attribute.rawString = replaceEntities(attribute.rawString);
+            }
+          }
+        }
+      }
     }
   }
 }
@@ -1517,10 +1566,10 @@ export function createComponentNames({ serializedComponents, namespaceStack = []
       if (!prescribedNameFromDoenetAttributes && !doenetAttributes.createdFromSugar) {
 
         if (!(/[a-zA-Z]/.test(prescribedName.substring(0, 1)))) {
-          throw Error("Component name must begin with a letter");
+          throw Error(`Invalid component name: ${prescribedName}.  Component name must begin with a letter`);
         }
         if (!(/^[a-zA-Z0-9_\-]+$/.test(prescribedName))) {
-          throw Error("Component name can contain only letters, numbers, hyphens, and underscores");
+          throw Error(`Invalid component name: ${prescribedName}.  Component name can contain only letters, numbers, hyphens, and underscores`);
         }
       }
 
@@ -2502,7 +2551,8 @@ export function setTNamesToAbsolute(components) {
 }
 
 
-export function restrictTNamesToNamespace(components, namespace, parentNamespace) {
+export function restrictTNamesToNamespace({ components, namespace, parentNamespace, parentIsCopy = false }) {
+
   if (parentNamespace === undefined) {
     parentNamespace = namespace;
   }
@@ -2544,19 +2594,34 @@ export function restrictTNamesToNamespace(components, namespace, parentNamespace
     }
 
     if (component.children) {
+      let adjustedNamespace = namespace;
+      if (parentIsCopy && component.componentType === "externalContent") {
+        // if have a external content inside a copy,
+        // then restrict children to the namespace of the externalContent
+        adjustedNamespace = component.componentName + "/";
+      }
       let namespaceForChildren = parentNamespace;
       if (component.attributes.newNamespace && component.attributes.newNamespace.primitive) {
         namespaceForChildren = component.componentName;
       }
-      restrictTNamesToNamespace(component.children, namespace, namespaceForChildren)
+      restrictTNamesToNamespace({
+        components: component.children,
+        namespace: adjustedNamespace,
+        parentNamespace: namespaceForChildren,
+        parentIsCopy: component.componentType === "copy"
+      })
     }
     if (component.attributes) {
       for (let attrName in component.attributes) {
         let attribute = component.attributes[attrName];
         if (attribute.component) {
-          restrictTNamesToNamespace([attribute.component], namespace, parentNamespace)
+          restrictTNamesToNamespace({
+            components: [attribute.component], namespace, parentNamespace
+          })
         } else if (attribute.childrenForComponent) {
-          restrictTNamesToNamespace(attribute.childrenForComponent, namespace, parentNamespace)
+          restrictTNamesToNamespace({
+            components: attribute.childrenForComponent, namespace, parentNamespace
+          })
         }
       }
     }

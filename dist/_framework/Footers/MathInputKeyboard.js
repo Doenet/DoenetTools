@@ -1,7 +1,5 @@
 import React from "../../_snowpack/pkg/react.js";
-export default function MathInputKeyboard(props) {
+export default function MathInputKeyboard() {
   console.log(">>>===MathInputKeyboard");
-  return /* @__PURE__ */ React.createElement("div", {
-    style: props.style
-  }, /* @__PURE__ */ React.createElement("p", null, "Put keyboard here"));
+  return /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("p", null, "Put keyboard here"));
 }

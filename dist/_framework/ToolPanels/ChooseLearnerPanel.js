@@ -5,6 +5,8 @@ import {useToast, toastType} from "../Toast.js";
 import {searchParamAtomFamily, pageToolViewAtom} from "../NewToolRoot.js";
 import Button from "../../_reactComponents/PanelHeaderComponents/Button.js";
 import ButtonGroup from "../../_reactComponents/PanelHeaderComponents/ButtonGroup.js";
+import SearchBar from "../../_reactComponents/PanelHeaderComponents/SearchBar.js";
+import {formatAMPM, UTCDateStringToDate} from "../../_utils/dateUtilityFunction.js";
 export default function ChooseLearnerPanel(props) {
   const doenetId = useRecoilValue(searchParamAtomFamily("doenetId"));
   const driveId = useRecoilValue(searchParamAtomFamily("driveId"));
@@ -13,17 +15,25 @@ export default function ChooseLearnerPanel(props) {
   let [learners, setLearners] = useState([]);
   let [exams, setExams] = useState([]);
   let [choosenLearner, setChoosenLearner] = useState(null);
+  let [filter, setFilter] = useState("");
+  let [resumeAttemptFlag, setResumeAttemptFlag] = useState(false);
   const addToast = useToast();
-  const newAttempt = useRecoilCallback(({set, snapshot}) => async (doenetId2, code2, userId) => {
-    const {data} = await axios.get("/api/incrementAttemptNumber.php", {
-      params: {doenetId: doenetId2, code: code2, userId}
-    });
+  const newAttempt = useRecoilCallback(({set, snapshot}) => async (doenetId2, code2, userId, resumeAttemptFlag2) => {
+    if (!resumeAttemptFlag2) {
+      const {data} = await axios.get("/api/incrementAttemptNumber.php", {
+        params: {doenetId: doenetId2, code: code2, userId}
+      });
+    }
     location.href = `/api/examjwt.php?userId=${encodeURIComponent(choosenLearner.userId)}&doenetId=${encodeURIComponent(doenetId2)}&code=${encodeURIComponent(code2)}`;
   });
-  const setDoenetId = useRecoilCallback(({set, snapshot}) => async (doenetId2) => {
+  const setDoenetId = useRecoilCallback(({set}) => async (doenetId2, driveId2) => {
     set(pageToolViewAtom, (was) => {
       let newObj = {...was};
-      newObj.params = {doenetId: doenetId2};
+      if (doenetId2) {
+        newObj.params = {doenetId: doenetId2, driveId: driveId2};
+      } else {
+        newObj.params = {driveId: driveId2};
+      }
       return newObj;
     });
   });
@@ -84,7 +94,6 @@ export default function ChooseLearnerPanel(props) {
     checkCode(code);
   }
   if (stage === "choose exam") {
-    console.log(">>>>exams", exams);
     if (exams.length < 1) {
       return /* @__PURE__ */ React.createElement("h1", null, "No Exams Available!");
     }
@@ -96,7 +105,7 @@ export default function ChooseLearnerPanel(props) {
         style: {textAlign: "center"}
       }, /* @__PURE__ */ React.createElement("button", {
         onClick: () => {
-          setDoenetId(exam.doenetId);
+          setDoenetId(exam.doenetId, driveId);
           setStage("choose learner");
         }
       }, "Choose"))));
@@ -108,12 +117,40 @@ export default function ChooseLearnerPanel(props) {
     }, "Choose")), /* @__PURE__ */ React.createElement("tbody", null, examRows)));
   }
   if (stage === "choose learner") {
-    console.log(">>>>learners", learners);
     if (learners.length < 1) {
       return /* @__PURE__ */ React.createElement("h1", null, "No One is Enrolled!");
     }
     let learnerRows = [];
     for (let learner of learners) {
+      if (!learner.firstName.toLowerCase().includes(filter.toLowerCase()) && !learner.lastName.toLowerCase().includes(filter.toLowerCase())) {
+        continue;
+      }
+      let timeZoneCorrectLastExamDate = null;
+      if (learner.exam_to_date[doenetId]) {
+        let lastExamDT = UTCDateStringToDate(learner.exam_to_date[doenetId]);
+        let exam_to_timeLimit = learner.exam_to_timeLimit[doenetId];
+        let users_timeLimit_minutes = Number(exam_to_timeLimit) * Number(learner.timeLimit_multiplier);
+        let minutes_remaining;
+        if (users_timeLimit_minutes) {
+          let users_exam_end_DT = new Date(lastExamDT.getTime() + users_timeLimit_minutes * 60 * 1e3);
+          let now = new Date();
+          minutes_remaining = (users_exam_end_DT.getTime() - now.getTime()) / (1e3 * 60);
+        }
+        if (minutes_remaining && minutes_remaining > 1) {
+          minutes_remaining = Math.round(minutes_remaining);
+          timeZoneCorrectLastExamDate = /* @__PURE__ */ React.createElement(ButtonGroup, null, /* @__PURE__ */ React.createElement(Button, {
+            value: "Resume",
+            onClick: () => {
+              setChoosenLearner(learner);
+              setStage("student final check");
+              setResumeAttemptFlag(true);
+            }
+          }), `${minutes_remaining} mins remain`);
+        } else if (lastExamDT) {
+          let time = formatAMPM(lastExamDT);
+          timeZoneCorrectLastExamDate = `${lastExamDT.getMonth() + 1}/${lastExamDT.getDate()} ${time}`;
+        }
+      }
       learnerRows.push(/* @__PURE__ */ React.createElement("tr", null, /* @__PURE__ */ React.createElement("td", {
         style: {textAlign: "center"}
       }, learner.firstName), /* @__PURE__ */ React.createElement("td", {
@@ -122,28 +159,39 @@ export default function ChooseLearnerPanel(props) {
         style: {textAlign: "center"}
       }, learner.studentId), /* @__PURE__ */ React.createElement("td", {
         style: {textAlign: "center"}
-      }, learner.exam_to_date[doenetId]), /* @__PURE__ */ React.createElement("td", {
+      }, timeZoneCorrectLastExamDate), /* @__PURE__ */ React.createElement("td", {
         style: {textAlign: "center"}
-      }, /* @__PURE__ */ React.createElement("button", {
+      }, /* @__PURE__ */ React.createElement(Button, {
+        value: "Choose",
         onClick: () => {
           setChoosenLearner(learner);
           setStage("student final check");
+          setResumeAttemptFlag(false);
         }
-      }, "Choose"))));
+      }))));
     }
-    return /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("table", null, /* @__PURE__ */ React.createElement("thead", null, /* @__PURE__ */ React.createElement("th", {
+    return /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", {
+      style: {marginLeft: "50px", marginBottom: "15px"}
+    }, /* @__PURE__ */ React.createElement(SearchBar, {
+      autoFocus: true,
+      onChange: setFilter
+    })), /* @__PURE__ */ React.createElement("table", null, /* @__PURE__ */ React.createElement("thead", null, /* @__PURE__ */ React.createElement("th", {
       style: {width: "200px"}
     }, "First Name"), /* @__PURE__ */ React.createElement("th", {
       style: {width: "200px"}
     }, "Last Name"), /* @__PURE__ */ React.createElement("th", {
       style: {width: "200px"}
     }, "Student ID"), /* @__PURE__ */ React.createElement("th", {
-      style: {width: "200px"}
+      style: {width: "240px"}
     }, "Last Exam"), /* @__PURE__ */ React.createElement("th", {
-      style: {width: "100px"}
+      style: {width: "60px"}
     }, "Choose")), /* @__PURE__ */ React.createElement("tbody", null, learnerRows)));
   }
   if (stage === "student final check") {
+    let yesButtonText = "Yes It's me. Start Exam.";
+    if (resumeAttemptFlag) {
+      yesButtonText = "Yes It's me. Resume Exam.";
+    }
     return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("div", {
       style: {
         fontSize: "1.5em",
@@ -162,11 +210,13 @@ export default function ChooseLearnerPanel(props) {
         setStage("request password");
         setCode("");
         setChoosenLearner(null);
+        setDoenetId(null, driveId);
+        setResumeAttemptFlag(false);
       }
     }), /* @__PURE__ */ React.createElement(Button, {
-      value: "Yes It's me. Start Exam.",
+      value: yesButtonText,
       onClick: () => {
-        newAttempt(doenetId, code, choosenLearner.userId);
+        newAttempt(doenetId, code, choosenLearner.userId, resumeAttemptFlag);
       }
     }))));
   }

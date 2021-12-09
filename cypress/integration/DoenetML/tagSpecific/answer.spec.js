@@ -10555,6 +10555,200 @@ describe('Answer Tag Tests', function () {
     })
   });
 
+
+  it('isResponse is not copied', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+        <text>a</text>
+        <p><mathinput name="mi" />
+        <answer name="ans">
+          <award>
+            <when><copy prop="value" tname="mi" isResponse assignNames="v" name="cm" /> = x</when>
+          </award>
+          <award credit="0.9">
+            <when>$v = y</when>
+          </award>
+          <award credit="0.8">
+            <when>$cm = z</when>
+          </award>
+        </answer>
+        </p>
+        <p>Submitted responses of ans: <copy prop="submittedResponses" tname="ans" assignNames="sr1 sr2 sr3" /></p>
+
+
+ `}, "*");
+    });
+
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+
+    cy.get('#\\/mi textarea').type('x{enter}', {force: true});
+    cy.get('#\\/ans_submit').click();
+    cy.get('#\\/ans_correct').should('be.visible')
+    cy.get('#\\/sr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('x')
+    });
+    cy.get('#\\/sr2').should('not.exist')
+    cy.get('#\\/sr3').should('not.exist')
+
+    cy.get('#\\/mi textarea').type('{end}{backspace}y{enter}', {force: true});
+    cy.get('#\\/ans_submit').click();
+    cy.get('#\\/ans_partial').invoke('text').then((text) => {
+      expect(text.trim().toLowerCase()).equal('90% correct')
+    })
+    cy.get('#\\/sr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('y')
+    });
+    cy.get('#\\/sr2').should('not.exist')
+    cy.get('#\\/sr3').should('not.exist')
+
+
+    cy.get('#\\/mi textarea').type('{end}{backspace}z{enter}', {force: true});
+    cy.get('#\\/ans_submit').click();
+    cy.get('#\\/ans_partial').invoke('text').then((text) => {
+      expect(text.trim().toLowerCase()).equal('80% correct')
+    })
+    cy.get('#\\/sr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('z')
+    });
+    cy.get('#\\/sr2').should('not.exist')
+    cy.get('#\\/sr3').should('not.exist')
+
+
+  });
+
+
+  it('isResponse from targetsAreResponses is not copied', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+        <text>a</text>
+        <p>a1: <mathinput name="mi" />
+        <answer name="ans">
+          <award targetsAreResponses="mi">
+            <when><copy prop="value" tname="mi" assignNames="v" name="cm" /> = x</when>
+          </award>
+          <award credit="0.9">
+            <when>$v = y</when>
+          </award>
+          <award credit="0.8">
+            <when>$cm = z</when>
+          </award>
+        </answer>
+        </p>
+        <p>Submitted responses of ans: <copy prop="submittedResponses" tname="ans" assignNames="sr1 sr2 sr3" /></p>
+
+
+ `}, "*");
+    });
+
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+
+    cy.get('#\\/mi textarea').type('x{enter}', {force: true});
+    cy.get('#\\/ans_submit').click();
+    cy.get('#\\/ans_correct').should('be.visible')
+    cy.get('#\\/sr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('x')
+    });
+    cy.get('#\\/sr2').should('not.exist')
+    cy.get('#\\/sr3').should('not.exist')
+
+    cy.get('#\\/mi textarea').type('{end}{backspace}y{enter}', {force: true});
+    cy.get('#\\/ans_submit').click();
+    cy.get('#\\/ans_partial').invoke('text').then((text) => {
+      expect(text.trim().toLowerCase()).equal('90% correct')
+    })
+    cy.get('#\\/sr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('y')
+    });
+    cy.get('#\\/sr2').should('not.exist')
+    cy.get('#\\/sr3').should('not.exist')
+
+
+    cy.get('#\\/mi textarea').type('{end}{backspace}z{enter}', {force: true});
+    cy.get('#\\/ans_submit').click();
+    cy.get('#\\/ans_partial').invoke('text').then((text) => {
+      expect(text.trim().toLowerCase()).equal('80% correct')
+    })
+    cy.get('#\\/sr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('z')
+    });
+    cy.get('#\\/sr2').should('not.exist')
+    cy.get('#\\/sr3').should('not.exist')
+
+
+
+  });
+
+  it('isResponse from targetsAreResponses is not recursively copied', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+        <text>a</text>
+        <p>a1: <mathinput name="mi" />
+        <answer name="ans">
+          <award targetsAreResponses="mi">
+            <when><math name="m">$mi</math> = x</when>
+          </award>
+          <award credit="0.9">
+            <when>$m = y</when>
+          </award>
+          <award credit="0.8">
+            <when>$(m{prop='value'}) = z</when>
+          </award>
+        </answer>
+        </p>
+        <p>Submitted responses of ans: <copy prop="submittedResponses" tname="ans" assignNames="sr1 sr2 sr3" /></p>
+
+
+ `}, "*");
+    });
+
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+
+    cy.get('#\\/mi textarea').type('x{enter}', {force: true});
+    cy.get('#\\/ans_submit').click();
+    cy.get('#\\/ans_correct').should('be.visible')
+    cy.get('#\\/sr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('x')
+    });
+    cy.get('#\\/sr2').should('not.exist')
+    cy.get('#\\/sr3').should('not.exist')
+
+    cy.get('#\\/mi textarea').type('{end}{backspace}y{enter}', {force: true});
+    cy.get('#\\/ans_submit').click();
+    cy.get('#\\/ans_partial').invoke('text').then((text) => {
+      expect(text.trim().toLowerCase()).equal('90% correct')
+    })
+    cy.get('#\\/sr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('y')
+    });
+    cy.get('#\\/sr2').should('not.exist')
+    cy.get('#\\/sr3').should('not.exist')
+
+
+    cy.get('#\\/mi textarea').type('{end}{backspace}z{enter}', {force: true});
+    cy.get('#\\/ans_submit').click();
+    cy.get('#\\/ans_partial').invoke('text').then((text) => {
+      expect(text.trim().toLowerCase()).equal('80% correct')
+    })
+    cy.get('#\\/sr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('z')
+    });
+    cy.get('#\\/sr2').should('not.exist')
+    cy.get('#\\/sr3').should('not.exist')
+
+
+
+  });
+
+
   it('immediate value used for submit button', () => {
     cy.window().then((win) => {
       win.postMessage({
@@ -11006,7 +11200,7 @@ describe('Answer Tag Tests', function () {
     cy.get(partialAnchor).should('not.exist');
 
     cy.get('#\\/fb1').should('have.text', 'At least the first is a number')
-    cy.get('#\\/fb2').should('not.exist')
+    cy.get('#\\/fb2').should('have.text', 'At least the second is a number')
     cy.get('#\\/fb3').should('not.exist')
     cy.get('#\\/fb4').should('not.exist')
     cy.get('#\\/fb5').should('not.exist')
@@ -11039,8 +11233,8 @@ describe('Answer Tag Tests', function () {
     })
 
     cy.get('#\\/fb1').should('have.text', 'First is greater than 3')
-    cy.get('#\\/fb2').should('not.exist')
-    cy.get('#\\/fb3').should('not.exist')
+    cy.get('#\\/fb2').should('have.text', 'At least the first is a number')
+    cy.get('#\\/fb3').should('have.text', 'At least the second is a number')
     cy.get('#\\/fb4').should('not.exist')
     cy.get('#\\/fb5').should('not.exist')
 
@@ -11136,7 +11330,7 @@ describe('Answer Tag Tests', function () {
 
     cy.get('#\\/fb1').should('have.text', 'First is greater than 3')
     cy.get('#\\/fb2').should('have.text', 'Second is greater than 3')
-    cy.get('#\\/fb3').should('not.exist')
+    cy.get('#\\/fb3').should('have.text', 'At least the first is a number')
     cy.get('#\\/fb4').should('not.exist')
     cy.get('#\\/fb5').should('not.exist')
 
@@ -11367,8 +11561,8 @@ describe('Answer Tag Tests', function () {
     cy.get(partialAnchor).should('not.exist');
 
     cy.get('#\\/fb1').should('have.text', 'The first should be a number')
-    cy.get('#\\/fb2').should('not.exist')
-    cy.get('#\\/fb3').should('not.exist')
+    cy.get('#\\/fb2').should('have.text', 'The second should be a number')
+    cy.get('#\\/fb3').should('have.text', 'The third should be a number')
     cy.get('#\\/fb4').should('not.exist')
     cy.get('#\\/fb5').should('not.exist')
     cy.get("#\\/ca").should('have.text', '0')
@@ -11383,7 +11577,7 @@ describe('Answer Tag Tests', function () {
     cy.get(partialAnchor).should('not.exist');
 
     cy.get('#\\/fb1').should('have.text', 'The second should be a number')
-    cy.get('#\\/fb2').should('not.exist')
+    cy.get('#\\/fb2').should('have.text', 'The third should be a number')
     cy.get('#\\/fb3').should('not.exist')
     cy.get('#\\/fb4').should('not.exist')
     cy.get('#\\/fb5').should('not.exist')
@@ -11593,6 +11787,193 @@ describe('Answer Tag Tests', function () {
     cy.get('#\\/fb4').should('not.exist')
     cy.get('#\\/fb5').should('not.exist')
     cy.get("#\\/ca").should('have.text', '1')
+
+
+  });
+
+  it('number of awards credited, zero credits are triggered', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+        <text>a</text>
+        <p>
+        <mathinput name="mi1" />
+        <mathinput name="mi2" />
+        <mathinput name="mi3" />
+        <answer nAwardsCredited="3" name="a">
+          <award targetsAreResponses="mi1 mi2 mi3" matchPartial>
+            <when>$mi1=x and $mi2=y and $mi3=z</when>
+          </award>
+          <award credit="0" feedbackText="Nothing is in the right spot">
+            <when>$mi1!=x and $mi2!=y and $mi3!=z</when>
+          </award>
+          <award credit="0" feedbackText="x is in the wrong spot">
+            <when>$mi2=x or $mi3=x</when>
+          </award>
+          <award credit="0" feedbackText="y is in the wrong spot">
+            <when>$mi1=y or $mi3=y</when>
+          </award>
+          <award credit="0" feedbackText="z is in the wrong spot">
+            <when>$mi1=z or $mi2=z</when>
+          </award>
+          </answer>
+        </p>
+
+        <copy prop="feedbacks" tname="a" assignNames="fb1 fb2 fb3 fb4 fb5" />
+
+        <p>Credit: <copy assignNames="ca" prop="creditAchieved" tname="a" displayDecimals="3" /></p>
+
+ `}, "*");
+    });
+
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    let submitAnchor = cesc('#/a_submit');
+    let correctAnchor = cesc('#/a_correct');
+    let incorrectAnchor = cesc('#/a_incorrect');
+    let partialAnchor = cesc('#/a_partial');
+
+    cy.get(submitAnchor).should('be.visible');
+    cy.get(correctAnchor).should('not.exist');
+    cy.get(incorrectAnchor).should('not.exist');
+    cy.get(partialAnchor).should('not.exist');
+
+    cy.get('#\\/fb1').should('not.exist')
+    cy.get('#\\/fb2').should('not.exist')
+    cy.get('#\\/fb3').should('not.exist')
+    cy.get('#\\/fb4').should('not.exist')
+    cy.get('#\\/fb5').should('not.exist')
+
+
+    cy.get('#\\/a_submit').click();
+
+    cy.get(submitAnchor).should('not.exist');
+    cy.get(correctAnchor).should('not.exist');
+    cy.get(incorrectAnchor).should('be.visible');
+    cy.get(partialAnchor).should('not.exist');
+
+    cy.get('#\\/fb1').should('have.text', 'Nothing is in the right spot')
+    cy.get('#\\/fb2').should('not.exist')
+    cy.get('#\\/fb3').should('not.exist')
+    cy.get('#\\/fb4').should('not.exist')
+    cy.get('#\\/fb5').should('not.exist')
+    cy.get("#\\/ca").should('have.text', '0')
+
+
+    cy.get("#\\/mi1 textarea").type("z{enter}", { force: true });
+    cy.get('#\\/a_submit').click();
+
+    cy.get(submitAnchor).should('not.exist');
+    cy.get(correctAnchor).should('not.exist');
+    cy.get(incorrectAnchor).should('be.visible');
+    cy.get(partialAnchor).should('not.exist');
+
+    cy.get('#\\/fb1').should('have.text', 'Nothing is in the right spot')
+    cy.get('#\\/fb2').should('have.text', 'z is in the wrong spot')
+    cy.get('#\\/fb3').should('not.exist')
+    cy.get('#\\/fb4').should('not.exist')
+    cy.get('#\\/fb5').should('not.exist')
+    cy.get("#\\/ca").should('have.text', '0')
+
+
+    cy.get("#\\/mi2 textarea").type("y{enter}", { force: true });
+    cy.get('#\\/a_submit').click();
+
+    cy.get(submitAnchor).should('not.exist');
+    cy.get(correctAnchor).should('not.exist');
+    cy.get(incorrectAnchor).should('not.exist');
+    cy.get(partialAnchor).invoke('text').then((text) => {
+      expect(text.trim().toLowerCase()).equal('33% correct')
+    })
+    cy.get('#\\/fb1').should('have.text', 'z is in the wrong spot')
+    cy.get('#\\/fb2').should('not.exist')
+    cy.get('#\\/fb3').should('not.exist')
+    cy.get('#\\/fb4').should('not.exist')
+    cy.get('#\\/fb5').should('not.exist')
+    cy.get("#\\/ca").should('have.text', '0.333')
+
+    cy.get("#\\/mi3 textarea").type("x{enter}", { force: true });
+    cy.get('#\\/a_submit').click();
+
+    cy.get(submitAnchor).should('not.exist');
+    cy.get(correctAnchor).should('not.exist');
+    cy.get(incorrectAnchor).should('not.exist');
+    cy.get(partialAnchor).invoke('text').then((text) => {
+      expect(text.trim().toLowerCase()).equal('33% correct')
+    })
+    cy.get('#\\/fb1').should('have.text', 'x is in the wrong spot')
+    cy.get('#\\/fb2').should('have.text', 'z is in the wrong spot')
+    cy.get('#\\/fb3').should('not.exist')
+    cy.get('#\\/fb4').should('not.exist')
+    cy.get('#\\/fb5').should('not.exist')
+    cy.get("#\\/ca").should('have.text', '0.333')
+
+
+    cy.get("#\\/mi1 textarea").type("{end}{backspace}y{enter}", { force: true });
+    cy.get('#\\/a_submit').click();
+
+    cy.get(submitAnchor).should('not.exist');
+    cy.get(correctAnchor).should('not.exist');
+    cy.get(incorrectAnchor).should('not.exist');
+    cy.get(partialAnchor).invoke('text').then((text) => {
+      expect(text.trim().toLowerCase()).equal('33% correct')
+    })
+    cy.get('#\\/fb1').should('have.text', 'x is in the wrong spot')
+    cy.get('#\\/fb2').should('have.text', 'y is in the wrong spot')
+    cy.get('#\\/fb3').should('not.exist')
+    cy.get('#\\/fb4').should('not.exist')
+    cy.get('#\\/fb5').should('not.exist')
+    cy.get("#\\/ca").should('have.text', '0.333')
+
+
+    cy.get("#\\/mi2 textarea").type("{end}{backspace}z{enter}", { force: true });
+    cy.get('#\\/a_submit').click();
+
+    cy.get(submitAnchor).should('not.exist');
+    cy.get(correctAnchor).should('not.exist');
+    cy.get(incorrectAnchor).should('be.visible');
+    cy.get(partialAnchor).should('not.exist');
+
+    cy.get('#\\/fb1').should('have.text', 'Nothing is in the right spot')
+    cy.get('#\\/fb2').should('have.text', 'x is in the wrong spot')
+    cy.get('#\\/fb3').should('have.text', 'y is in the wrong spot')
+    cy.get('#\\/fb4').should('not.exist')
+    cy.get('#\\/fb5').should('not.exist')
+    cy.get("#\\/ca").should('have.text', '0')
+
+    cy.get("#\\/mi2 textarea").type("{end}{backspace}y{enter}", { force: true });
+    cy.get("#\\/mi3 textarea").type("{end}{backspace}z{enter}", { force: true });
+    cy.get('#\\/a_submit').click();
+
+    cy.get(submitAnchor).should('not.exist');
+    cy.get(correctAnchor).should('not.exist');
+    cy.get(incorrectAnchor).should('not.exist');
+    cy.get(partialAnchor).invoke('text').then((text) => {
+      expect(text.trim().toLowerCase()).equal('67% correct')
+    })
+    cy.get('#\\/fb1').should('have.text', 'y is in the wrong spot')
+    cy.get('#\\/fb2').should('not.exist')
+    cy.get('#\\/fb3').should('not.exist')
+    cy.get('#\\/fb4').should('not.exist')
+    cy.get('#\\/fb5').should('not.exist')
+    cy.get("#\\/ca").should('have.text', '0.667')
+
+
+    cy.get("#\\/mi1 textarea").type("{end}{backspace}x{enter}", { force: true });
+    cy.get('#\\/a_submit').click();
+
+    cy.get(submitAnchor).should('not.exist');
+    cy.get(correctAnchor).should('be.visible');
+    cy.get(incorrectAnchor).should('not.exist');
+    cy.get(partialAnchor).should('not.exist');
+    cy.get('#\\/fb1').should('not.exist')
+    cy.get('#\\/fb2').should('not.exist')
+    cy.get('#\\/fb3').should('not.exist')
+    cy.get('#\\/fb4').should('not.exist')
+    cy.get('#\\/fb5').should('not.exist')
+    cy.get("#\\/ca").should('have.text', '1')
+
 
 
   });
@@ -12308,6 +12689,130 @@ describe('Answer Tag Tests', function () {
     })
   });
 
+  it('disable after correct, depends on external', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+
+  <graph>
+    <point name="A" x="0" y="0">
+      <constraints>
+        <attractTo><point>(3,4)</point></attractTo>
+        <attractTo><point>(-5,6)</point></attractTo>
+      </constraints>
+    </point>
+  </graph>
+
+  <p>Move point to <m>(3,4)</m>: </p>
+  <p><answer>
+    <award targetsAreResponses="A">
+      <when>$A = (3,4)</when>
+    </award>
+  </answer></p>
+  <p><answer disableAfterCorrect>
+    <award targetsAreResponses="A">
+      <when>$A = (3,4)</when>
+    </award>
+  </answer></p>
+
+  <p>Move point to <m>(-5,6)</m>: </p>
+  <p><answer>
+    <award targetsAreResponses="A">
+      <when>$A = (-5,6)</when>
+    </award>
+  </answer></p>
+  <p><answer disableAfterCorrect>
+    <award targetsAreResponses="A">
+      <when>$A = (-5,6)</when>
+    </award>
+  </answer></p>
+
+  <p><mathinput name="mi" /></p>
+
+  <p>Enter <m>x</m> in above blank.</p>
+  <p><answer>
+    <award targetsAreResponses="mi"><when>$mi=x</when></award>
+  </answer></p>
+  <p><answer disableAfterCorrect>
+    <award targetsAreResponses="mi"><when>$mi=x</when></award>
+  </answer></p>
+
+  <p>Enter <m>y</m> in above blank.</p>
+  <p><answer>
+    <award targetsAreResponses="mi"><when>$mi=y</when></award>
+  </answer></p>
+  <p><answer disableAfterCorrect>
+    <award targetsAreResponses="mi"><when>$mi=y</when></award>
+  </answer></p>
+
+   `}, "*");
+    });
+
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+
+    cy.log('Submit incorrect answers')
+    for (let i = 1; i <= 8; i++) {
+      cy.get(`#\\/_answer${i}_submit`).click();
+      cy.get(`#\\/_answer${i}_incorrect`).should('be.visible')
+    }
+
+    cy.log('submit first correct answers')
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      components["/A"].movePoint({ x: 3, y: 4 })
+    })
+    cy.get('#\\/mi textarea').type("x{enter}", { force: true });
+
+    for (let i = 1; i <= 8; i++) {
+      cy.get(`#\\/_answer${i}_submit`).click();
+      if (i % 4 === 1 || i % 4 == 2) {
+        cy.get(`#\\/_answer${i}_correct`).should('be.visible')
+      } else {
+        cy.get(`#\\/_answer${i}_incorrect`).should('be.visible')
+      }
+    }
+
+    cy.log('submit second correct answers')
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      components["/A"].movePoint({ x: -5, y: 6 })
+    })
+    cy.get('#\\/mi textarea').type("{end}{backspace}y{enter}", { force: true });
+
+    for (let i = 1; i <= 8; i++) {
+      if (i % 4 !== 2) {
+        cy.get(`#\\/_answer${i}_submit`).click();
+      }
+      if (i % 4 === 1) {
+        cy.get(`#\\/_answer${i}_incorrect`).should('be.visible')
+      } else {
+        cy.get(`#\\/_answer${i}_correct`).should('be.visible')
+      }
+    }
+
+
+    cy.log('submit second incorrect answers')
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      components["/A"].movePoint({ x: 1, y: -1 })
+    })
+    cy.get('#\\/mi textarea').type("{end}{backspace}z{enter}", { force: true });
+
+    for (let i = 1; i <= 8; i++) {
+      if (i % 4 === 2 || i % 4 === 0) {
+        cy.get(`#\\/_answer${i}_correct`).should('be.visible')
+      } else {
+        cy.get(`#\\/_answer${i}_submit`).click();
+        cy.get(`#\\/_answer${i}_incorrect`).should('be.visible')
+      }
+    }
+
+
+  });
+
   it('award based on choice text', () => {
     cy.window().then((win) => {
       win.postMessage({
@@ -12453,6 +12958,112 @@ describe('Answer Tag Tests', function () {
 
     cy.get('#\\/mi textarea').type("x{enter}", { force: true })
     cy.get('#\\/mi_incorrect').should('be.visible')
+
+  });
+
+  it('copy justSubmitted attribute', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <answer name="ans">
+    <mathinput name="mi" />
+    <award>1</award>
+  </answer>
+  <conditionalContent condition="$(ans{prop='justSubmitted'})" assignNames="just">
+    <p>The answer was just submitted.</p>
+  </conditionalContent>
+   `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.get('#\\/mi_submit').should('be.visible')
+    cy.get('#\\/mi_correct').should('not.exist')
+    cy.get('#\\/mi_incorrect').should('not.exist')
+    cy.get('#\\/just').should('not.exist')
+
+    cy.get('#\\/mi textarea').type("x", { force: true })
+    cy.get('#\\/mi_submit').should('be.visible')
+    cy.get('#\\/mi_correct').should('not.exist')
+    cy.get('#\\/mi_incorrect').should('not.exist')
+    cy.get('#\\/just').should('not.exist')
+
+    cy.get('#\\/mi_submit').click();
+    cy.get('#\\/mi_submit').should('not.exist')
+    cy.get('#\\/mi_correct').should('not.exist')
+    cy.get('#\\/mi_incorrect').should('be.visible')
+    cy.get('#\\/just').should('have.text', 'The answer was just submitted.')
+
+    cy.get('#\\/mi textarea').type("{end}{backspace}1", { force: true })
+    cy.get('#\\/mi_submit').should('be.visible')
+    cy.get('#\\/mi_correct').should('not.exist')
+    cy.get('#\\/mi_incorrect').should('not.exist')
+    cy.get('#\\/just').should('not.exist')
+
+    cy.get('#\\/mi textarea').type("{enter}", { force: true })
+    cy.get('#\\/mi_submit').should('not.exist')
+    cy.get('#\\/mi_correct').should('be.visible')
+    cy.get('#\\/mi_incorrect').should('not.exist')
+    cy.get('#\\/just').should('have.text', 'The answer was just submitted.')
+
+    cy.get('#\\/mi textarea').type("{end}{backspace}1", { force: true })
+    cy.get('#\\/mi_submit').should('be.visible')
+    cy.get('#\\/mi_correct').should('not.exist')
+    cy.get('#\\/mi_incorrect').should('not.exist')
+    cy.get('#\\/just').should('not.exist')
+
+  });
+
+  it('empty mathlists always equal', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <answer name="ans1">
+    <award>
+      <when>
+        <mathlist/> = <mathlist/>
+      </when>
+    </award>
+  </answer>
+  <answer name="ans2">
+    <award>
+      <when unorderedCompare>
+        <mathlist/> = <mathlist/>
+      </when>
+    </award>
+  </answer>
+  <answer name="ans3">
+    <award>
+      <when matchPartial>
+        <mathlist/> = <mathlist/>
+      </when>
+    </award>
+  </answer>
+  <answer name="ans4">
+    <award>
+      <when unorderedCompare matchPartial>
+        <mathlist/> = <mathlist/>
+      </when>
+    </award>
+  </answer>
+   `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.get('#\\/ans1_submit').click()
+    cy.get('#\\/ans1_correct').should('be.visible')
+
+    cy.get('#\\/ans2_submit').click()
+    cy.get('#\\/ans2_correct').should('be.visible')
+
+    cy.get('#\\/ans3_submit').click()
+    cy.get('#\\/ans3_correct').should('be.visible')
+
+    cy.get('#\\/ans4_submit').click()
+    cy.get('#\\/ans4_correct').should('be.visible')
 
   });
 

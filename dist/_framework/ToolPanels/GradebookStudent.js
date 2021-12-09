@@ -17,25 +17,8 @@ export default function GradebookStudent() {
   overviewTable.headers = [
     {
       Header: "Assignment",
+      Footer: "Course Total",
       accessor: "assignment",
-      disableFilters: true,
-      disableSortBy: true
-    },
-    {
-      Header: "Possible Points",
-      accessor: "possiblepoints",
-      disableFilters: true,
-      disableSortBy: true
-    },
-    {
-      Header: "Score",
-      accessor: "score",
-      disableFilters: true,
-      disableSortBy: true
-    },
-    {
-      Header: "Percentage",
-      accessor: "percentage",
       disableFilters: true,
       disableSortBy: true
     }
@@ -85,9 +68,10 @@ export default function GradebookStudent() {
               page: "course",
               tool: "gradebookStudentAssignment",
               view: "",
-              params: {driveId, userId, doenetId, source: "student"}
+              params: {driveId, userId, doenetId, previousCrumb: "student"}
             });
-          }
+          },
+          style: {paddingLeft: "15px"}
         }, assignments.contents[doenetId].label);
         overviewTable.rows.push({
           assignment,
@@ -120,7 +104,7 @@ export default function GradebookStudent() {
         }, "(Based on rescaling by ", scaleFactor * 100, "%)");
       }
       overviewTable.rows.push({
-        assignment: /* @__PURE__ */ React.createElement(React.Fragment, null, `Subtotal for ${category}`, description),
+        assignment: /* @__PURE__ */ React.createElement("b", null, `Subtotal for ${category}`, description),
         score: categoryScore,
         possiblepoints: categoryPossiblePoints,
         percentage: categoryPercentage
@@ -128,16 +112,33 @@ export default function GradebookStudent() {
     }
     let totalPercentage = Math.round(totalScore / totalPossiblePoints * 1e3) / 10 + "%";
     totalScore = Math.round(totalScore * 100) / 100;
-    overviewTable.rows.push({
-      assignment: "Course Total",
-      score: totalScore,
-      possiblepoints: totalPossiblePoints,
-      percentage: totalPercentage
+    overviewTable.headers.push({
+      Header: "Possible Points",
+      Footer: totalPossiblePoints,
+      accessor: "possiblepoints",
+      disableFilters: true,
+      disableSortBy: true
+    }, {
+      Header: "Score",
+      Footer: totalScore,
+      accessor: "score",
+      disableFilters: true,
+      disableSortBy: true
+    }, {
+      Header: "Percentage",
+      Footer: totalPercentage,
+      accessor: "percentage",
+      disableFilters: true,
+      disableSortBy: true
     });
   }
-  return /* @__PURE__ */ React.createElement(Styles, null, /* @__PURE__ */ React.createElement(Table, {
+  let studentName = `${students.contents[userId]?.firstName} ${students.contents[userId]?.lastName}`;
+  console.log("rows", overviewTable.rows);
+  return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("div", {
+    style: {marginLeft: "18px"}
+  }, /* @__PURE__ */ React.createElement("b", null, "Gradebook for ", studentName)), /* @__PURE__ */ React.createElement(Styles, null, /* @__PURE__ */ React.createElement(Table, {
     disableSortBy: true,
     columns: overviewTable.headers,
     data: overviewTable.rows
-  }));
+  })));
 }

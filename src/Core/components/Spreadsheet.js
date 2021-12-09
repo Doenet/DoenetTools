@@ -24,14 +24,16 @@ export default class Spreadsheet extends BlockComponent {
     attributes.minNumRows = {
       createComponentOfType: "number",
       createStateVariable: "minNumRows",
-      defaultValue: 1,
+      // defaultValue: 1,
+      defaultValue: 4,
       public: true,
       forRenderer: true,
     };
     attributes.minNumColumns = {
       createComponentOfType: "number",
       createStateVariable: "minNumColumns",
-      defaultValue: 1,
+      // defaultValue: 1,
+      defaultValue: 4,
       public: true,
       forRenderer: true,
     };
@@ -628,7 +630,7 @@ export default class Spreadsheet extends BlockComponent {
         // console.log(`array definition of evaluatedCells`)
         // console.log(globalDependencyValues)
 
-        let hf = HyperFormula.buildFromArray(globalDependencyValues.cells, { licenseKey: "agpl-v3" });
+        let hf = HyperFormula.buildFromArray(globalDependencyValues.cells, { licenseKey: "gpl-v3" });
 
         let allEvaluated = hf.getSheetValues(0);
 

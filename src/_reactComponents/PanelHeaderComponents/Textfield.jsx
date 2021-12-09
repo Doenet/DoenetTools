@@ -8,7 +8,6 @@ export default function Textfield(props) {
   const [cursorStart, setCursorStart] = useState(0);
   const [cursorEnd, setCursorEnd] = useState(0);
   const inputRef = useRef(null);
-
   //Assume small
   var textfield = {
         margin: '0px 4px 0px 4px',
@@ -35,7 +34,7 @@ export default function Textfield(props) {
     var container = {
         display: `${align}`,
         width: 'auto',
-        alignItems: 'flex-end'
+        alignItems: 'center'
     }
 
     useEffect(() => {
@@ -59,7 +58,7 @@ export default function Textfield(props) {
     textfield.cursor = 'not-allowed';
     disable = "disabled";
   }
-  
+
 if (props.width) {
   if (props.width === "menu") {
     textfield.width = '200px';

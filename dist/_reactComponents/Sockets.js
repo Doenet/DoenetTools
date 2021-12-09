@@ -208,6 +208,9 @@ export default function useSockets(nsp) {
         newDestinationFolderObj["contentsDictionary"][gItem.itemId] = {
           ...newSourceFInfo["contentsDictionary"][gItem.itemId]
         };
+        if (!newDestinationFolderObj["contentsDictionaryByDoenetId"]) {
+          newDestinationFolderObj["contentsDictionaryByDoenetId"] = {};
+        }
         newDestinationFolderObj["contentsDictionaryByDoenetId"][newSourceFInfo["contentsDictionary"][gItem.itemId].doenetId] = {...newSourceFInfo["contentsDictionary"][gItem.itemId]};
         delete newSourceFInfo["contentsDictionaryByDoenetId"][newSourceFInfo["contentsDictionary"][gItem.itemId].doenetId];
         delete newSourceFInfo["contentsDictionary"][gItem.itemId];

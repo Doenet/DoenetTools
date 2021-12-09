@@ -155,15 +155,17 @@ export class Md extends InlineComponent {
       definition: function ({ dependencyValues }) {
         let expressionText;
         try {
-          expressionText = dependencyValues.stateValues.latex
+          expressionText = dependencyValues.latex
+            .replaceAll('\\notag', '')
+            .replaceAll('\\amp', '')
             .split('\\\\')
             .map(x => me.fromAst(latexToAst.convert(x)).toString())
-            .join('\\\\');
+            .join('\\\\\n');
         } catch (e) {
           // just return latex if can't parse with math-expressions
-          return { newValues: { text: dependencyValues.stateValues.latex } };
+          return { newValues: { text: dependencyValues.latex } };
         }
-        return { newValues: { text: expressionText } };
+        return { neswValues: { text: expressionText } };
       }
     }
 

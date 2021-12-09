@@ -17,11 +17,15 @@ import {DropTargetsProvider} from "../../_reactComponents/DropTarget/index.js";
 import {BreadcrumbProvider} from "../../_reactComponents/Breadcrumb/BreadcrumbProvider.js";
 import {selectedMenuPanelAtom} from "../Panels/NewMenuPanel.js";
 import {mainPanelClickAtom} from "../Panels/NewMainPanel.js";
+import {effectiveRoleAtom} from "../../_reactComponents/PanelHeaderComponents/RoleDropdown.js";
+import {suppressMenusAtom} from "../NewToolRoot.js";
 export default function NavigationPanel() {
-  const [{view}, setPageToolView] = useRecoilState(pageToolViewAtom);
+  const setPageToolView = useSetRecoilState(pageToolViewAtom);
+  const effectiveRole = useRecoilValue(effectiveRoleAtom);
   const setMainPanelClear = useSetRecoilState(mainPanelClickAtom);
   const path = useRecoilValue(searchParamAtomFamily("path"));
   const [columnTypes, setColumnTypes] = useState([]);
+  const setSuppressMenus = useSetRecoilState(suppressMenusAtom);
   useEffect(() => {
     setMainPanelClear((was) => [
       ...was,
@@ -31,16 +35,18 @@ export default function NavigationPanel() {
     return setMainPanelClear((was) => was.filter((obj) => obj.atom !== clearDriveAndItemSelections || obj.atom !== selectedMenuPanelAtom));
   }, [setMainPanelClear]);
   useLayoutEffect(() => {
-    switch (view) {
+    switch (effectiveRole) {
       case "instructor":
         setColumnTypes(["Released", "Assigned", "Public"]);
+        setSuppressMenus([]);
         break;
       case "student":
         setColumnTypes(["Due Date"]);
+        setSuppressMenus(["AddDriveItems"]);
         break;
       default:
     }
-  }, [view]);
+  }, [effectiveRole, setSuppressMenus]);
   const clickCallback = useRecoilCallback(({set}) => (info) => {
     switch (info.instructionType) {
       case "one item":
@@ -78,7 +84,7 @@ export default function NavigationPanel() {
         }));
         break;
       case itemType.DOENETML:
-        if (view === "student") {
+        if (effectiveRole === "student") {
           setPageToolView({
             page: "course",
             tool: "assignment",
@@ -87,7 +93,7 @@ export default function NavigationPanel() {
               doenetId: info.item.doenetId
             }
           });
-        } else if (view === "instructor") {
+        } else if (effectiveRole === "instructor") {
           setPageToolView({
             page: "course",
             tool: "editor",
@@ -100,7 +106,7 @@ export default function NavigationPanel() {
         }
         break;
       case itemType.COLLECTION:
-        if (view === "student") {
+        if (effectiveRole === "student") {
           setPageToolView({
             page: "course",
             tool: "assignment",
@@ -110,7 +116,7 @@ export default function NavigationPanel() {
               isCollection: true
             }
           });
-        } else if (view === "instructor") {
+        } else if (effectiveRole === "instructor") {
           setPageToolView({
             page: "course",
             tool: "collection",
@@ -125,9 +131,9 @@ export default function NavigationPanel() {
       default:
         throw new Error("NavigationPanel doubleClick info type not defined");
     }
-  }, [setPageToolView, view]);
+  }, [setPageToolView, effectiveRole]);
   const filterCallback = useRecoilCallback(({snapshot}) => (item) => {
-    switch (view) {
+    switch (effectiveRole) {
       case "student":
         if (item.itemType === itemType.FOLDER) {
           const folderContents = snapshot.getLoadable(folderDictionary({
@@ -149,7 +155,7 @@ export default function NavigationPanel() {
       default:
         console.warn("No view selected");
     }
-  }, [view]);
+  }, [effectiveRole]);
   return /* @__PURE__ */ React.createElement(BreadcrumbProvider, null, /* @__PURE__ */ React.createElement(DropTargetsProvider, null, /* @__PURE__ */ React.createElement(Suspense, {
     fallback: /* @__PURE__ */ React.createElement("div", null, "loading Drive...")
   }, /* @__PURE__ */ React.createElement(Container, null, /* @__PURE__ */ React.createElement(Drive, {
@@ -159,7 +165,7 @@ export default function NavigationPanel() {
     urlClickBehavior: "select",
     clickCallback,
     doubleClickCallback,
-    isViewOnly: view === "student"
+    isViewOnly: effectiveRole === "student"
   })))));
 }
 function Container(props) {

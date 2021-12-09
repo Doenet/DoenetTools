@@ -115,8 +115,13 @@ export default class CobwebPolyline extends DoenetRenderer {
     this.props.board.removeObject(this.polylineJXG);
     delete this.polylineJXG;
     for (let i = 0; i < this.doenetSvData.nPoints; i++) {
-      this.props.board.removeObject(this.pointsJXG[i]);
-      delete this.pointsJXG[i];
+      if (this.pointsJXG[i]) {
+        this.pointsJXG[i].off("drag");
+        this.pointsJXG[i].off("up");
+        this.pointsJXG[i].off("down");
+        this.props.board.removeObject(this.pointsJXG[i]);
+        delete this.pointsJXG[i];
+      }
     }
   }
   componentWillUnmount() {
@@ -132,6 +137,9 @@ export default class CobwebPolyline extends DoenetRenderer {
     if (this.polylineJXG === void 0) {
       return this.createGraphicalObject();
     }
+    this.curveJXG.Y = this.doenetSvData.f;
+    this.curveJXG.needsUpdate = true;
+    this.curveJXG.updateCurve();
     let validCoords = true;
     for (let coords of this.doenetSvData.numericalVertices) {
       if (!Number.isFinite(coords[0])) {
@@ -162,7 +170,11 @@ export default class CobwebPolyline extends DoenetRenderer {
       }
     } else if (this.doenetSvData.nPoints < this.previousNPoints) {
       for (let i = this.doenetSvData.nPoints; i < this.previousNPoints; i++) {
-        this.props.board.removeObject(this.pointsJXG.pop());
+        let pt = this.pointsJXG.pop();
+        pt.off("drag");
+        pt.off("up");
+        pt.off("down");
+        this.props.board.removeObject(pt);
       }
       this.polylineJXG.dataX.length = this.doenetSvData.nPoints;
     }

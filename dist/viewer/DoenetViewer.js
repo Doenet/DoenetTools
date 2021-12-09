@@ -3,34 +3,11 @@ import Core from "./core.js";
 import axios from "../_snowpack/pkg/axios.js";
 import sha256 from "../_snowpack/pkg/crypto-js/sha256.js";
 import CryptoJS from "../_snowpack/pkg/crypto-js.js";
-import me from "../_snowpack/pkg/math-expressions.js";
 import {nanoid} from "../_snowpack/pkg/nanoid.js";
 import {useToast, toastType} from "../_framework/Toast.js";
-export function serializedComponentsReplacer(key, value) {
-  if (value !== value) {
-    return {objectType: "special-numeric", stringValue: "NaN"};
-  } else if (value === Infinity) {
-    return {objectType: "special-numeric", stringValue: "Infinity"};
-  } else if (value === -Infinity) {
-    return {objectType: "special-numeric", stringValue: "-Infinity"};
-  }
-  return value;
-}
-let nanInfinityReviver = function(key, value) {
-  if (value && value.objectType === "special-numeric") {
-    if (value.stringValue === "NaN") {
-      return NaN;
-    } else if (value.stringValue === "Infinity") {
-      return Infinity;
-    } else if (value.stringValue === "-Infinity") {
-      return -Infinity;
-    }
-  }
-  return value;
-};
-export function serializedComponentsReviver(key, value) {
-  return me.reviver(key, nanInfinityReviver(key, value));
-}
+import {serializedComponentsReplacer, serializedComponentsReviver} from "../core/utils/serializedStateProcessing.js";
+import {FontAwesomeIcon} from "../_snowpack/pkg/@fortawesome/react-fontawesome.js";
+import {faExclamationCircle} from "../_snowpack/pkg/@fortawesome/free-solid-svg-icons.js";
 class DoenetViewerChild extends Component {
   constructor(props) {
     super(props);
@@ -64,38 +41,45 @@ class DoenetViewerChild extends Component {
       this.requestedVariantFromDatabase = true;
     }
     this.coreId = nanoid();
-    if (this.props.core) {
-      new this.props.core({
-        coreId: this.coreId,
-        coreReadyCallback: this.coreReady,
-        coreUpdatedCallback: this.update,
-        doenetML: this.doenetML,
-        externalFunctions: {
-          localStateChanged: this.localStateChanged,
-          recordSolutionView: this.recordSolutionView,
-          recordEvent: this.recordEvent,
-          contentIdsToDoenetMLs: this.contentIdsToDoenetMLs.bind(this)
-        },
-        flags: this.props.flags,
-        requestedVariant: this.requestedVariant,
-        stateVariableChanges: this.cumulativeStateVariableChanges
-      });
-    } else {
-      new Core({
-        coreId: this.coreId,
-        coreReadyCallback: this.coreReady,
-        coreUpdatedCallback: this.update,
-        doenetML: this.doenetML,
-        externalFunctions: {
-          localStateChanged: this.localStateChanged,
-          recordSolutionView: this.recordSolutionView,
-          recordEvent: this.recordEvent,
-          contentIdsToDoenetMLs: this.contentIdsToDoenetMLs.bind(this)
-        },
-        flags: this.props.flags,
-        requestedVariant: this.requestedVariant,
-        stateVariableChanges: this.cumulativeStateVariableChanges
-      });
+    try {
+      if (this.props.core) {
+        new this.props.core({
+          coreId: this.coreId,
+          coreReadyCallback: this.coreReady,
+          coreUpdatedCallback: this.update,
+          doenetML: this.doenetML,
+          externalFunctions: {
+            localStateChanged: this.localStateChanged,
+            recordSolutionView: this.recordSolutionView,
+            recordEvent: this.recordEvent,
+            contentIdsToDoenetMLs: this.contentIdsToDoenetMLs.bind(this)
+          },
+          flags: this.props.flags,
+          requestedVariant: this.requestedVariant,
+          stateVariableChanges: this.cumulativeStateVariableChanges
+        });
+      } else {
+        new Core({
+          coreId: this.coreId,
+          coreReadyCallback: this.coreReady,
+          coreUpdatedCallback: this.update,
+          doenetML: this.doenetML,
+          externalFunctions: {
+            localStateChanged: this.localStateChanged,
+            recordSolutionView: this.recordSolutionView,
+            recordEvent: this.recordEvent,
+            contentIdsToDoenetMLs: this.contentIdsToDoenetMLs.bind(this)
+          },
+          flags: this.props.flags,
+          requestedVariant: this.requestedVariant,
+          stateVariableChanges: this.cumulativeStateVariableChanges
+        });
+      }
+    } catch (e) {
+      if (this.props.setIsInErrorState) {
+        this.props.setIsInErrorState(true);
+      }
+      this.setState({errMsg: e.message});
     }
   }
   coreReady(core) {
@@ -131,6 +115,9 @@ class DoenetViewerChild extends Component {
       });
     });
     if (this.allowSavePageState && Number.isInteger(this.attemptNumber) && this.savedUserAssignmentAttemptNumber !== this.attemptNumber) {
+      if (!navigator.onLine) {
+        this.props.toast("You're not connected to the internet. ", toastType.ERROR);
+      }
       axios.post("/api/initAssignmentAttempt.php", {
         doenetId: this.props.doenetId,
         weights: this.core.scoredItemWeights,
@@ -140,8 +127,17 @@ class DoenetViewerChild extends Component {
         generatedVariant: JSON.stringify(this.generatedVariant, serializedComponentsReplacer),
         itemVariantInfo: this.itemVariantInfo.map((x) => JSON.stringify(x, serializedComponentsReplacer))
       }).then(({data}) => {
+        if (!data.success) {
+          if (this.props.setIsInErrorState) {
+            this.props.setIsInErrorState(true);
+          }
+          this.setState({errMsg: data.message});
+        }
         this.savedUserAssignmentAttemptNumber = this.attemptNumber;
       }).catch((errMsg) => {
+        if (this.props.setIsInErrorState) {
+          this.props.setIsInErrorState(true);
+        }
         this.setState({errMsg: errMsg.message});
       });
     }
@@ -195,7 +191,14 @@ class DoenetViewerChild extends Component {
     if (!this.allowSavePageState) {
       return;
     }
-    axios.post("/api/recordContentInteraction.php", data);
+    if (!navigator.onLine) {
+      this.props.toast("You're not connected to the internet. Changes are not saved. ", toastType.ERROR);
+    }
+    axios.post("/api/recordContentInteraction.php", data).then(({data: data2}) => {
+      if (!data2.success) {
+        this.props.toast(data2.message, toastType.ERROR);
+      }
+    });
     if (!this.allowSaveSubmissions) {
       return;
     }
@@ -210,7 +213,9 @@ class DoenetViewerChild extends Component {
         stateVariables: changeString
       };
       axios.post("/api/saveCreditForItem.php", payload2).then((resp) => {
-        console.log(">>>>resp", resp.data);
+        if (!resp.data.success) {
+          this.props.toast(resp.data.message, toastType.ERROR);
+        }
         this.props.updateCreditAchievedCallback(resp.data);
         if (resp.data.viewedSolution) {
           this.props.toast("No credit awarded since solution was viewed.", toastType.INFO);
@@ -252,12 +257,17 @@ class DoenetViewerChild extends Component {
       });
       return;
     }
+    let effectivePageStateSource = "pageState";
+    if (this.props.pageStateSource) {
+      effectivePageStateSource = this.props.pageStateSource;
+    }
     const payload = {
       params: {
         contentId: this.contentId,
         attemptNumber: this.attemptNumber,
         doenetId: this.props.doenetId,
-        userId: this.props.userId
+        userId: this.props.userId,
+        pageStateSource: effectivePageStateSource
       }
     };
     axios.get("/api/loadContentInteractions.php", payload).then((resp) => {
@@ -271,6 +281,9 @@ class DoenetViewerChild extends Component {
         });
       }
     }).catch((errMsg) => {
+      if (this.props.setIsInErrorState) {
+        this.props.setIsInErrorState(true);
+      }
       this.setState({errMsg: errMsg.message});
     });
   }
@@ -363,7 +376,14 @@ class DoenetViewerChild extends Component {
   }
   render() {
     if (this.state.errMsg !== null) {
-      return /* @__PURE__ */ React.createElement("div", null, this.state.errMsg);
+      let errorIcon = /* @__PURE__ */ React.createElement("span", {
+        style: {fontSize: "1em", color: "#C1292E"}
+      }, /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
+        icon: faExclamationCircle
+      }));
+      return /* @__PURE__ */ React.createElement("div", {
+        style: {fontSize: "1.3em", marginLeft: "20px", marginTop: "20px"}
+      }, errorIcon, " ", this.state.errMsg);
     }
     this.allowLoadPageState = true;
     if (this.props.allowLoadPageState === false) {

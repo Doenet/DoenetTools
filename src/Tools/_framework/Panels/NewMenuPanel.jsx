@@ -111,20 +111,20 @@ margin-top: 2px;
 `
 
 function SelectionMenu(props){
-
+  console.log("child", props.children);
   return <>
     <div style={{
-      // paddingTop: "0px", 
-      marginTop: "2px",
-      paddingBottom: "4px", 
+      // paddingTop: "4px", 
+      // marginTop: "2px",
+      paddingBottom: "8px", 
       paddingLeft: "4px",
       paddingRight: "4px",
       // backgroundColor:"hsl(209,54%,90%)"
       backgroundColor: 'white',
       borderLeft:"8px solid #1A5A99"
       }}>
-        <h3 style={{textAlign: "center", width: "240px", height: "35px",
- fontSize: "16px", marginTop: "5px", marginLeft: "-8px"}}>Current Selection</h3>
+        {/* <h3 style={{textAlign: "center", width: "240px", height: "35px",
+ fontSize: "16px", marginTop: "5px", marginLeft: "-8px"}}>Current Selection</h3> */}
         {props.children}
         </div>
   </>
@@ -181,6 +181,7 @@ console.log(">>>===MenuPanel", hide)
 
   const LazyMenuObj = useRef({
     SelectedCourse:lazy(() => import('../Menus/SelectedCourse')),
+    GradeSettings:lazy(() => import('../Menus/GradeSettings')),
     SelectedDoenetML:lazy(() => import('../Menus/SelectedDoenetML')),
     SelectedFolder:lazy(() => import('../Menus/SelectedFolder')),
     SelectedCollection:lazy(() => import('../Menus/SelectedCollection')),
@@ -194,11 +195,15 @@ console.log(">>>===MenuPanel", hide)
     Variant:lazy(() => import('../Menus/Variant')),
     AutoSaves:lazy(() => import('../Menus/AutoSaves')),
     LoadEnrollment:lazy(() => import('../Menus/LoadEnrollment')),
+    GradeUpload:lazy(() => import('../Menus/GradeUpload')),
+    GradeDownload:lazy(() => import('../Menus/GradeDownload')),
     ManualEnrollment:lazy(() => import('../Menus/ManualEnrollment')),
     AssignmentSettingsMenu:lazy(() => import('../Menus/AssignmentSettingsMenu')),
     GroupSettings:lazy(() => import('../Menus/GroupSettings')),
     TimerMenu:lazy(() => import('../Menus/TimerMenu')),
     CreditAchieved:lazy(() => import('../Menus/CreditAchieved')),
+    ClassTimes:lazy(() => import('../Menus/ClassTimes')),
+    CurrentContent:lazy(() => import('../Menus/CurrentContent')),
     
   }).current;
 

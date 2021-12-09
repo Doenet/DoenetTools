@@ -1,14 +1,14 @@
 import React, {useEffect, useRef, useState} from "../../_snowpack/pkg/react.js";
-import DoenetViewer, {
-  serializedComponentsReviver
-} from "../../viewer/DoenetViewer.js";
+import DoenetViewer from "../../viewer/DoenetViewer.js";
+import {serializedComponentsReviver} from "../../core/utils/serializedStateProcessing.js";
 import {
   useRecoilValue,
   atom,
   atomFamily,
-  useRecoilCallback
+  useRecoilCallback,
+  useSetRecoilState
 } from "../../_snowpack/pkg/recoil.js";
-import {searchParamAtomFamily, pageToolViewAtom} from "../NewToolRoot.js";
+import {searchParamAtomFamily, pageToolViewAtom, footerAtom} from "../NewToolRoot.js";
 import {
   itemHistoryAtom,
   fileByContentId
@@ -16,6 +16,7 @@ import {
 import {returnAllPossibleVariants} from "../../core/utils/returnAllPossibleVariants.js";
 import {loadAssignmentSelector} from "../../_reactComponents/Drive/NewDrive.js";
 import axios from "../../_snowpack/pkg/axios.js";
+import {suppressMenusAtom} from "../NewToolRoot.js";
 export const currentAttemptNumber = atom({
   key: "currentAttemptNumber",
   default: null
@@ -52,7 +53,9 @@ function pushRandomVariantOfRemaining({previous, from}) {
   return usersVariantAttempts;
 }
 export default function AssignmentViewer() {
+  const setFooter = useSetRecoilState(footerAtom);
   const recoilDoenetId = useRecoilValue(searchParamAtomFamily("doenetId"));
+  const setSuppressMenus = useSetRecoilState(suppressMenusAtom);
   let [stage, setStage] = useState("Initializing");
   let [message, setMessage] = useState("");
   const recoilAttemptNumber = useRecoilValue(currentAttemptNumber);
@@ -78,14 +81,24 @@ export default function AssignmentViewer() {
     const isCollection = await snapshot.getPromise(searchParamAtomFamily("isCollection"));
     startedInitOfDoenetId.current = doenetId2;
     const {
+      timeLimit,
       assignedDate,
       dueDate,
       showCorrectness: showCorrectness2,
+      showCreditAchievedMenu,
       showFeedback: showFeedback2,
       showHints: showHints2,
       showSolution,
       proctorMakesAvailable
     } = await snapshot.getPromise(loadAssignmentSelector(doenetId2));
+    let suppress = [];
+    if (timeLimit === null) {
+      suppress.push("TimerMenu");
+    }
+    if (!showCorrectness2 || !showCreditAchievedMenu) {
+      suppress.push("CreditAchieved");
+    }
+    setSuppressMenus(suppress);
     let solutionDisplayMode2 = "button";
     if (!showSolution) {
       solutionDisplayMode2 = "none";
@@ -100,7 +113,7 @@ export default function AssignmentViewer() {
         const {data} = await axios.get("/api/checkSEBheaders.php", {
           params: {doenetId: doenetId2}
         });
-        if (data.legitAccessKey !== "1") {
+        if (Number(data.legitAccessKey) !== 1) {
           setStage("Problem");
           setMessage("Browser not configured properly to take an exam.");
           return;
@@ -136,7 +149,6 @@ export default function AssignmentViewer() {
       }
     }
     let doenetML2 = null;
-    console.log(">>>>initializeValues contentId", contentId);
     if (!isAssigned) {
       setStage("Problem");
       setMessage("Assignment is not assigned.");
@@ -163,18 +175,23 @@ export default function AssignmentViewer() {
           usersVariantAttempts.push(obj.name);
         }
       }
-      let numberOfCompletedAttempts = data.attemptNumbers.length - 1;
-      if (numberOfCompletedAttempts === -1) {
-        numberOfCompletedAttempts = 0;
+      let attemptNumber2 = Math.max(...data.attemptNumbers);
+      let needNewVariant = false;
+      if (attemptNumber2 < 1) {
+        attemptNumber2 = 1;
+        needNewVariant = true;
+      } else if (!data.variants[data.variants.length - 1]) {
+        needNewVariant = true;
       }
-      let attemptNumber2 = numberOfCompletedAttempts + 1;
       set(currentAttemptNumber, attemptNumber2);
-      usersVariantAttempts = pushRandomVariantOfRemaining({
-        previous: [...usersVariantAttempts],
-        from: allPossibleVariants
-      });
+      if (needNewVariant) {
+        usersVariantAttempts = pushRandomVariantOfRemaining({
+          previous: [...usersVariantAttempts],
+          from: allPossibleVariants
+        });
+      }
       let requestedVariant2 = {
-        name: usersVariantAttempts[numberOfCompletedAttempts]
+        name: usersVariantAttempts[usersVariantAttempts.length - 1]
       };
       setLoad({
         requestedVariant: requestedVariant2,
@@ -211,11 +228,10 @@ export default function AssignmentViewer() {
       setStage("Ready");
     }
   }, []);
-  const updateAttemptNumberAndRequestedVariant = useRecoilCallback(({snapshot, set}) => async (newAttemptNumber) => {
+  const updateAttemptNumberAndRequestedVariant = useRecoilCallback(({snapshot}) => async (newAttemptNumber) => {
     const isCollection = await snapshot.getPromise(searchParamAtomFamily("isCollection"));
     if (isCollection) {
       console.error("How did you get here?");
-      return;
     }
     let doenetId2 = await snapshot.getPromise(searchParamAtomFamily("doenetId"));
     const versionHistory = await snapshot.getPromise(itemHistoryAtom(doenetId2));
@@ -226,7 +242,6 @@ export default function AssignmentViewer() {
         break;
       }
     }
-    console.log(">>>>updateAttemptNumberAndRequestedVariant contentId", contentId);
     let doenetML2 = null;
     let response = await snapshot.getPromise(fileByContentId(contentId));
     if (typeof response === "object") {
@@ -248,7 +263,7 @@ export default function AssignmentViewer() {
       from: storedAllPossibleVariants.current
     });
     let newRequestedVariant = {
-      name: usersVariantAttempts[newAttemptNumber - 1]
+      name: usersVariantAttempts[usersVariantAttempts.length - 1]
     };
     setLoad((was) => {
       let newObj = {...was};
@@ -273,7 +288,7 @@ export default function AssignmentViewer() {
     updateAttemptNumberAndRequestedVariant(recoilAttemptNumber);
     return null;
   }
-  return /* @__PURE__ */ React.createElement(DoenetViewer, {
+  return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(DoenetViewer, {
     key: `doenetviewer${doenetId}`,
     doenetML,
     doenetId,
@@ -293,5 +308,5 @@ export default function AssignmentViewer() {
     allowSaveEvents: true,
     requestedVariant,
     updateCreditAchievedCallback: updateCreditAchieved
-  });
+  }));
 }

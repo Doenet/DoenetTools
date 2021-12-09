@@ -1,9 +1,12 @@
-import React, {useState, useEffect} from "../../_snowpack/pkg/react.js";
+import React, {useState, useEffect, useRef, useLayoutEffect} from "../../_snowpack/pkg/react.js";
 import {doenetComponentForegroundInactive} from "./theme.js";
 export default function Textfield(props) {
   const [labelVisible, setLabelVisible] = useState(props.label ? "static" : "none");
   const [text, setText] = useState(props.value ? "Enter text here" : props.value);
   const [align, setAlign] = useState(props.vertical ? "static" : "flex");
+  const [cursorStart, setCursorStart] = useState(0);
+  const [cursorEnd, setCursorEnd] = useState(0);
+  const inputRef = useRef(null);
   var textfield = {
     margin: "0px 4px 0px 4px",
     height: "24px",
@@ -28,10 +31,14 @@ export default function Textfield(props) {
   var container = {
     display: `${align}`,
     width: "auto",
-    alignItems: "flex-end"
+    alignItems: "center"
   };
   useEffect(() => {
     setText(props.value);
+  }, [props]);
+  useLayoutEffect(() => {
+    inputRef.current.selectionStart = cursorStart;
+    inputRef.current.selectionEnd = cursorEnd;
   });
   if (props.alert) {
     textfield.border = "2px solid #C1292E";
@@ -56,6 +63,8 @@ export default function Textfield(props) {
   function handleChange(e) {
     if (props.onChange)
       props.onChange(e);
+    setCursorStart(e.target.selectionStart);
+    setCursorEnd(e.target.selectionEnd);
   }
   function handleBlur(e) {
     if (props.onBlur)
@@ -71,6 +80,7 @@ export default function Textfield(props) {
     style: label
   }, label.value), /* @__PURE__ */ React.createElement("input", {
     type: "text",
+    ref: inputRef,
     value: textfield.value,
     style: textfield,
     onChange: (e) => {

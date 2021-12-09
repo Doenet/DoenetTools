@@ -33,6 +33,14 @@ export default class LineSegment extends GraphicalComponent {
       createComponentOfType: "_pointListComponent"
     }
 
+    attributes.showCoordsWhenDragging = {
+      createComponentOfType: "boolean",
+      createStateVariable: "showCoordsWhenDragging",
+      defaultValue: true,
+      public: true,
+      forRenderer: true
+    }
+    
     return attributes;
   }
 

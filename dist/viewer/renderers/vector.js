@@ -25,8 +25,8 @@ export default class Vector extends DoenetRenderer {
       withLabel: this.doenetSvData.showLabel && this.doenetSvData.label !== "",
       fixed: !this.doenetSvData.draggable || this.doenetSvData.fixed,
       layer,
-      strokeColor: this.doenetSvData.selectedStyle.markerColor,
-      highlightStrokeColor: this.doenetSvData.selectedStyle.markerColor,
+      strokeColor: this.doenetSvData.selectedStyle.lineColor,
+      highlightStrokeColor: this.doenetSvData.selectedStyle.lineColor,
       strokeWidth: this.doenetSvData.selectedStyle.lineWidth,
       dash: styleToDash(this.doenetSvData.selectedStyle.lineStyle),
       lastArrow: {type: 1, size: 3, highlightSize: 3}
@@ -91,10 +91,19 @@ export default class Vector extends DoenetRenderer {
     return this.vectorJXG;
   }
   deleteGraphicalObject() {
+    this.vectorJXG.off("drag");
+    this.vectorJXG.off("down");
+    this.vectorJXG.off("up");
     this.props.board.removeObject(this.vectorJXG);
     delete this.vectorJXG;
+    this.point1JXG.off("drag");
+    this.point1JXG.off("down");
+    this.point1JXG.off("up");
     this.props.board.removeObject(this.point1JXG);
     delete this.point1JXG;
+    this.point2JXG.off("drag");
+    this.point2JXG.off("down");
+    this.point2JXG.off("up");
     this.props.board.removeObject(this.point2JXG);
     delete this.point2JXG;
   }

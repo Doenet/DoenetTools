@@ -58,14 +58,54 @@ if ($success){
         ORDER BY attemptNumber DESC
         LIMIT 1";
 
+
   $result = $conn->query($sql);
   $row = $result->fetch_assoc();
   $attemptNumber = $row['attemptNumber'] + 1;
 
-  $sql = "INSERT INTO user_assignment_attempt
-  SET doenetId='$doenetId', userId='$userId', attemptNumber='$attemptNumber'
-  ";
-  $result = $conn->query($sql);
+  //Find contentId
+  $sql = "
+  SELECT contentId
+  FROM content 
+  WHERE removedFlag = 0
+  AND doenetId = '$doenetId'
+  AND isReleased = '1'
+";
+
+$result = $conn->query($sql); 
+$versions_arr = array();         
+if ($result->num_rows > 0){
+$row = $result->fetch_assoc();
+$contentId = $row['contentId'];
+}else{
+  $success = FALSE;
+  $message = 'Internal Error: not released!'; 
+}
+  if ($success){
+    $sql = "INSERT INTO user_assignment_attempt
+    SET contentId='$contentId', doenetId='$doenetId', userId='$userId', attemptNumber='$attemptNumber'
+    ";
+    $result = $conn->query($sql);
+
+    //Add info if it's missing from user_assignment
+    $sql = "
+    SELECT userId
+    FROM user_assignment
+    WHERE userId = '$userId'
+    AND doenetId = '$doenetId'
+    ";
+    $result = $conn->query($sql); 
+
+    if ($result->num_rows == 0){
+
+      $sql = "INSERT INTO user_assignment
+      SET doenetId='$doenetId', userId='$userId'
+      ";
+      $result = $conn->query($sql);
+    }
+  }
+
+
   
 }
 

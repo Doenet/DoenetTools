@@ -771,6 +771,28 @@ describe('Function Operator Tag Tests', function () {
     })
   })
 
+  it('derivative with empty variables attribute', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+      <text>a</text>
+      <derivative name="d1" variables="">x^2</derivative>
+      `}, "*");
+    });
+
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+
+      expect(components['/d1'].stateValues.formula.equals(me.fromText("2x"))).eq(true);
+      expect(components['/d1'].stateValues.variables.map(x => x.tree)).eqls(["x"])
+      expect(components['/d1'].stateValues.derivVariables.map(x => x.tree)).eqls(["x"])
+
+    })
+  })
 
   // check to make sure fixed bug where wasn't displaying inside <m>
   it('derivative displayed inside <m>', () => {

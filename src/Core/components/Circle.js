@@ -602,8 +602,13 @@ export default class Circle extends Curve {
 
         let numericalPrescribedCenter = {};
         for (let arrayKey of arrayKeys) {
-          numericalPrescribedCenter[arrayKey] = dependencyValuesByKey[arrayKey].prescribedCenterX.evaluate_to_constant();
-          if (!Number.isFinite(numericalPrescribedCenter[arrayKey])) {
+          let prescribedX = dependencyValuesByKey[arrayKey].prescribedCenterX;
+          if (prescribedX) {
+            numericalPrescribedCenter[arrayKey] = prescribedX.evaluate_to_constant();
+            if (!Number.isFinite(numericalPrescribedCenter[arrayKey])) {
+              numericalPrescribedCenter[arrayKey] = NaN;
+            }
+          } else {
             numericalPrescribedCenter[arrayKey] = NaN;
           }
         }

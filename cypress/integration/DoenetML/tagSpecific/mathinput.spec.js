@@ -3134,17 +3134,17 @@ describe('MathInput Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/mi'].stateValues.value.tree).eqls([
-        "list", ["ldots"],"x","y","z", ["ldots"]
+        "list", ["ldots"], "x", "y", "z", ["ldots"]
       ]);
       expect(components['/m'].stateValues.value.tree).eqls([
-        "list", ["ldots"],"x","y","z", ["ldots"]
+        "list", ["ldots"], "x", "y", "z", ["ldots"]
       ]);
     })
 
     cy.log('add spaces in between some periods')
 
     cy.get('#\\/mi textarea').type("{home} {rightarrow} {rightarrow} {end} {leftarrow}{leftarrow} {enter}", { force: true })
-  
+
     cy.get('#\\/m').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('…,x,y,z,…')
     })
@@ -3152,10 +3152,10 @@ describe('MathInput Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/mi'].stateValues.value.tree).eqls([
-        "list", ["ldots"],"x","y","z", ["ldots"]
+        "list", ["ldots"], "x", "y", "z", ["ldots"]
       ]);
       expect(components['/m'].stateValues.value.tree).eqls([
-        "list", ["ldots"],"x","y","z", ["ldots"]
+        "list", ["ldots"], "x", "y", "z", ["ldots"]
       ]);
     })
 
@@ -3163,7 +3163,7 @@ describe('MathInput Tag Tests', function () {
     cy.log('add commas after first set of periods')
 
     cy.get('#\\/mi textarea').type("{home}{rightarrow}{rightarrow}{rightarrow}{rightarrow}{rightarrow}{rightarrow},{enter}", { force: true })
-  
+
     cy.get('#\\/m').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('…,x,y,z,…')
     })
@@ -3171,10 +3171,10 @@ describe('MathInput Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/mi'].stateValues.value.tree).eqls([
-        "list", ["ldots"],"x","y","z", ["ldots"]
+        "list", ["ldots"], "x", "y", "z", ["ldots"]
       ]);
       expect(components['/m'].stateValues.value.tree).eqls([
-        "list", ["ldots"],"x","y","z", ["ldots"]
+        "list", ["ldots"], "x", "y", "z", ["ldots"]
       ]);
     })
 
@@ -3182,7 +3182,7 @@ describe('MathInput Tag Tests', function () {
     cy.log('add commas before second set of periods')
 
     cy.get('#\\/mi textarea').type("{end}{leftarrow}{leftarrow}{leftarrow}{leftarrow}{leftarrow},{enter}", { force: true })
-  
+
     cy.get('#\\/m').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('…,x,y,z,…')
     })
@@ -3190,10 +3190,10 @@ describe('MathInput Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/mi'].stateValues.value.tree).eqls([
-        "list", ["ldots"],"x","y","z", ["ldots"]
+        "list", ["ldots"], "x", "y", "z", ["ldots"]
       ]);
       expect(components['/m'].stateValues.value.tree).eqls([
-        "list", ["ldots"],"x","y","z", ["ldots"]
+        "list", ["ldots"], "x", "y", "z", ["ldots"]
       ]);
     })
 
@@ -3201,7 +3201,7 @@ describe('MathInput Tag Tests', function () {
     cy.log('change second set of periods to ldots')
 
     cy.get('#\\/mi textarea').type("{end}{backspace}{backspace}{backspace}{backspace}{backspace}\\ldots {enter}", { force: true })
-  
+
     cy.get('#\\/m').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('…,x,y,z,…')
     })
@@ -3209,10 +3209,10 @@ describe('MathInput Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/mi'].stateValues.value.tree).eqls([
-        "list", ["ldots"],"x","y","z", ["ldots"]
+        "list", ["ldots"], "x", "y", "z", ["ldots"]
       ]);
       expect(components['/m'].stateValues.value.tree).eqls([
-        "list", ["ldots"],"x","y","z", ["ldots"]
+        "list", ["ldots"], "x", "y", "z", ["ldots"]
       ]);
     })
 
@@ -3220,7 +3220,7 @@ describe('MathInput Tag Tests', function () {
     cy.log('change first set of periods to ldots')
 
     cy.get('#\\/mi textarea').type("{home}{rightarrow}{rightarrow}{rightarrow}{rightarrow}{rightarrow}{rightarrow}{backspace}{backspace}{backspace}{backspace}{backspace}\\ldots  {enter}", { force: true })
-  
+
     cy.get('#\\/m').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('…,x,y,z,…')
     })
@@ -3228,10 +3228,10 @@ describe('MathInput Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/mi'].stateValues.value.tree).eqls([
-        "list", ["ldots"],"x","y","z", ["ldots"]
+        "list", ["ldots"], "x", "y", "z", ["ldots"]
       ]);
       expect(components['/m'].stateValues.value.tree).eqls([
-        "list", ["ldots"],"x","y","z", ["ldots"]
+        "list", ["ldots"], "x", "y", "z", ["ldots"]
       ]);
     })
 
@@ -3239,7 +3239,7 @@ describe('MathInput Tag Tests', function () {
     cy.log('remove first comma')
 
     cy.get('#\\/mi textarea').type("{rightarrow}{backspace}{enter}", { force: true })
-  
+
     cy.get('#\\/m').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('…,x,y,z,…')
     })
@@ -3247,10 +3247,10 @@ describe('MathInput Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/mi'].stateValues.value.tree).eqls([
-        "list", ["ldots"],"x","y","z", ["ldots"]
+        "list", ["ldots"], "x", "y", "z", ["ldots"]
       ]);
       expect(components['/m'].stateValues.value.tree).eqls([
-        "list", ["ldots"],"x","y","z", ["ldots"]
+        "list", ["ldots"], "x", "y", "z", ["ldots"]
       ]);
     })
 
@@ -3258,7 +3258,7 @@ describe('MathInput Tag Tests', function () {
     cy.log('remove last comma')
 
     cy.get('#\\/mi textarea').type("{end}{leftarrow}{backspace}{enter}", { force: true })
-  
+
     cy.get('#\\/m').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('…,x,y,z,…')
     })
@@ -3266,14 +3266,595 @@ describe('MathInput Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/mi'].stateValues.value.tree).eqls([
-        "list", ["ldots"],"x","y","z", ["ldots"]
+        "list", ["ldots"], "x", "y", "z", ["ldots"]
       ]);
       expect(components['/m'].stateValues.value.tree).eqls([
-        "list", ["ldots"],"x","y","z", ["ldots"]
+        "list", ["ldots"], "x", "y", "z", ["ldots"]
       ]);
     })
 
   })
 
+  it('mathinput eliminates multicharacter symbols', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <math name="varWithNum">x2</math>
+    <math name="noSplit" splitSymbols="false">xyz</math>
+    <mathinput name="varWithNum2" bindValueTo="$varWithNum" />
+    <mathinput name="noSplit2" splitSymbols="false" bindValueTo="$noSplit" />
+    <copy prop="value" tname="varWithNum2" assignNames="varWithNum3"/>
+    <copy prop="value" tname="noSplit2" assignNames="noSplit3"/>
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+
+    cy.get('#\\/varWithNum').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('x2')
+    })
+    cy.get(`#\\/varWithNum2 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('x2')
+    })
+    cy.get('#\\/varWithNum3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('x2')
+    })
+    cy.get('#\\/noSplit').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('xyz')
+    })
+    cy.get(`#\\/noSplit2 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('xyz')
+    })
+    cy.get('#\\/noSplit3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('xyz')
+    })
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/varWithNum'].stateValues.value.tree).eq("x2");
+      expect(components['/varWithNum2'].stateValues.value.tree).eq("x2");
+      expect(components['/varWithNum3'].stateValues.value.tree).eq("x2");
+      expect(components['/noSplit'].stateValues.value.tree).eq("xyz");
+      expect(components['/noSplit2'].stateValues.value.tree).eq("xyz");
+      expect(components['/noSplit3'].stateValues.value.tree).eq("xyz");
+    })
+
+    cy.get('#\\/varWithNum2 textarea').type("{end}{backspace}u9j{enter}", { force: true })
+    cy.get('#\\/noSplit2 textarea').type("{end}{backspace}uv{enter}", { force: true })
+
+
+    cy.get('#\\/varWithNum').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('xu9j')
+    })
+    cy.get(`#\\/varWithNum2 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('xu9j')
+    })
+    cy.get('#\\/varWithNum3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('xu9j')
+    })
+    cy.get('#\\/noSplit').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('xyuv')
+    })
+    cy.get(`#\\/noSplit2 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('xyuv')
+    })
+    cy.get('#\\/noSplit3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('xyuv')
+    })
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/varWithNum'].stateValues.value.tree).eq("xu9j");
+      expect(components['/varWithNum2'].stateValues.value.tree).eq("xu9j");
+      expect(components['/varWithNum3'].stateValues.value.tree).eq("xu9j");
+      expect(components['/noSplit'].stateValues.value.tree).eq("xyuv");
+      expect(components['/noSplit2'].stateValues.value.tree).eq("xyuv");
+      expect(components['/noSplit3'].stateValues.value.tree).eq("xyuv");
+    })
+
+
+  })
+
+  it('mathinput prefills', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <p>
+    <math format="latex" name="unionLatex">A \\cup B</math>
+    <math name="unionText">A union B</math>
+    <math splitSymbols="false" name="noSplit">xy</math>
+    <math name="split">xy</math>
+    <math functionSymbols="h" name="hFunction">h(x)</math>
+    <math name="hNoFunction">h(x)</math>
+    </p>
+
+    <p>
+    <mathinput name="union1" prefill="$unionLatex" />
+    <mathinput name="union2" prefill="$unionText" format="latex" />
+    <mathinput name="union3" prefill="A union B" />
+    <mathinput name="union4" prefill="A \\cup B" format="latex" />
+    <copy prop="value" tname="union1" assignNames="union1m" />
+    <copy prop="value" tname="union2" assignNames="union2m" />
+    <copy prop="value" tname="union3" assignNames="union3m" />
+    <copy prop="value" tname="union4" assignNames="union4m" />
+    </p>
+    
+    <p>
+    <mathinput name="splits1" prefill="$noSplit" />
+    <mathinput name="splits2" prefill="$noSplit" splitSymbols="false" />
+    <mathinput name="splits3" prefill="$split" />
+    <mathinput name="splits4" prefill="$split" splitSymbols="false" />
+    <mathinput name="splits5" prefill="xy" />
+    <mathinput name="splits6" prefill="xy" splitSymbols="false" />
+    <copy prop="value" tname="splits1" assignNames="splits1m" />
+    <copy prop="value" tname="splits2" assignNames="splits2m" />
+    <copy prop="value" tname="splits3" assignNames="splits3m" />
+    <copy prop="value" tname="splits4" assignNames="splits4m" />
+    <copy prop="value" tname="splits5" assignNames="splits5m" />
+    <copy prop="value" tname="splits6" assignNames="splits6m" />
+    </p>
+
+    <p>
+    <mathinput name="hFunction1" prefill="$hFunction" />
+    <mathinput name="hFunction2" prefill="$hFunction" functionSymbols="h" />
+    <mathinput name="hFunction3" prefill="$hNoFunction" />
+    <mathinput name="hFunction4" prefill="$hNoFunction" functionSymbols="h" />
+    <mathinput name="hFunction5" prefill="h(x)" />
+    <mathinput name="hFunction6" prefill="h(x)" functionSymbols="h" />
+    <copy prop="value" tname="hFunction1" assignNames="hFunction1m" />
+    <copy prop="value" tname="hFunction2" assignNames="hFunction2m" />
+    <copy prop="value" tname="hFunction3" assignNames="hFunction3m" />
+    <copy prop="value" tname="hFunction4" assignNames="hFunction4m" />
+    <copy prop="value" tname="hFunction5" assignNames="hFunction5m" />
+    <copy prop="value" tname="hFunction6" assignNames="hFunction6m" />
+    </p>
+
+
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.get(`#\\/union1 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('A∪B')
+    })
+    cy.get(`#\\/union2 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('A∪B')
+    })
+    cy.get(`#\\/union3 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('A∪B')
+    })
+    cy.get(`#\\/union4 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('A∪B')
+    })
+    cy.get('#\\/union1m').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('A∪B')
+    })
+    cy.get('#\\/union2m').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('A∪B')
+    })
+    cy.get('#\\/union3m').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('A∪B')
+    })
+    cy.get('#\\/union4m').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('A∪B')
+    })
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/union1'].stateValues.value.tree).eqls(["union", "A", "B"]);
+      expect(components['/union2'].stateValues.value.tree).eqls(["union", "A", "B"]);
+      expect(components['/union3'].stateValues.value.tree).eqls(["union", "A", "B"]);
+      expect(components['/union4'].stateValues.value.tree).eqls(["union", "A", "B"]);
+      expect(components['/union1m'].stateValues.value.tree).eqls(["union", "A", "B"]);
+      expect(components['/union2m'].stateValues.value.tree).eqls(["union", "A", "B"]);
+      expect(components['/union3m'].stateValues.value.tree).eqls(["union", "A", "B"]);
+      expect(components['/union4m'].stateValues.value.tree).eqls(["union", "A", "B"]);
+    })
+
+
+    cy.get(`#\\/splits1 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('xy')
+    })
+    cy.get(`#\\/splits2 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('xy')
+    })
+    cy.get(`#\\/splits3 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('xy')
+    })
+    cy.get(`#\\/splits4 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('xy')
+    })
+    cy.get(`#\\/splits5 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('xy')
+    })
+    cy.get(`#\\/splits6 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('xy')
+    })
+    cy.get('#\\/splits1m').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('xy')
+    })
+    cy.get('#\\/splits2m').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('xy')
+    })
+    cy.get('#\\/splits3m').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('xy')
+    })
+    cy.get('#\\/splits4m').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('xy')
+    })
+    cy.get('#\\/splits5m').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('xy')
+    })
+    cy.get('#\\/splits6m').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('xy')
+    })
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/splits1'].stateValues.value.tree).eqls("xy");
+      expect(components['/splits2'].stateValues.value.tree).eqls("xy");
+      expect(components['/splits3'].stateValues.value.tree).eqls(["*", "x", "y"]);
+      expect(components['/splits4'].stateValues.value.tree).eqls(["*", "x", "y"]);
+      expect(components['/splits5'].stateValues.value.tree).eqls(["*", "x", "y"]);
+      expect(components['/splits6'].stateValues.value.tree).eqls("xy");
+      expect(components['/splits1m'].stateValues.value.tree).eqls("xy");
+      expect(components['/splits2m'].stateValues.value.tree).eqls("xy");
+      expect(components['/splits3m'].stateValues.value.tree).eqls(["*", "x", "y"]);
+      expect(components['/splits4m'].stateValues.value.tree).eqls(["*", "x", "y"]);
+      expect(components['/splits5m'].stateValues.value.tree).eqls(["*", "x", "y"]);
+      expect(components['/splits6m'].stateValues.value.tree).eqls("xy");
+    })
+
+    cy.get('#\\/splits1 textarea').type("{end}z{enter}", { force: true })
+    cy.get('#\\/splits2 textarea').type("{end}z{enter}", { force: true })
+    cy.get('#\\/splits3 textarea').type("{end}z{enter}", { force: true })
+    cy.get('#\\/splits4 textarea').type("{end}z{enter}", { force: true })
+    cy.get('#\\/splits5 textarea').type("{end}z{enter}", { force: true })
+    cy.get('#\\/splits6 textarea').type("{end}z{enter}", { force: true })
+
+
+    cy.get(`#\\/splits1 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('xyz')
+    })
+    cy.get(`#\\/splits2 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('xyz')
+    })
+    cy.get(`#\\/splits3 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('xyz')
+    })
+    cy.get(`#\\/splits4 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('xyz')
+    })
+    cy.get(`#\\/splits5 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('xyz')
+    })
+    cy.get(`#\\/splits6 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('xyz')
+    })
+    cy.get('#\\/splits1m').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('xyz')
+    })
+    cy.get('#\\/splits2m').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('xyz')
+    })
+    cy.get('#\\/splits3m').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('xyz')
+    })
+    cy.get('#\\/splits4m').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('xyz')
+    })
+    cy.get('#\\/splits5m').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('xyz')
+    })
+    cy.get('#\\/splits6m').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('xyz')
+    })
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/splits1'].stateValues.value.tree).eqls(["*", "x", "y", "z"]);
+      expect(components['/splits2'].stateValues.value.tree).eqls("xyz");
+      expect(components['/splits3'].stateValues.value.tree).eqls(["*", "x", "y", "z"]);
+      expect(components['/splits4'].stateValues.value.tree).eqls("xyz");
+      expect(components['/splits5'].stateValues.value.tree).eqls(["*", "x", "y", "z"]);
+      expect(components['/splits6'].stateValues.value.tree).eqls("xyz");
+      expect(components['/splits1m'].stateValues.value.tree).eqls(["*", "x", "y", "z"]);
+      expect(components['/splits2m'].stateValues.value.tree).eqls("xyz");
+      expect(components['/splits3m'].stateValues.value.tree).eqls(["*", "x", "y", "z"]);
+      expect(components['/splits4m'].stateValues.value.tree).eqls("xyz");
+      expect(components['/splits5m'].stateValues.value.tree).eqls(["*", "x", "y", "z"]);
+      expect(components['/splits6m'].stateValues.value.tree).eqls("xyz");
+    })
+
+
+
+    cy.get(`#\\/hFunction1 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('h(x)')
+    })
+    cy.get(`#\\/hFunction2 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('h(x)')
+    })
+    cy.get(`#\\/hFunction3 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('hx')
+    })
+    cy.get(`#\\/hFunction4 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('hx')
+    })
+    cy.get(`#\\/hFunction5 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('hx')
+    })
+    cy.get(`#\\/hFunction6 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('h(x)')
+    })
+    cy.get('#\\/hFunction1m').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('h(x)')
+    })
+    cy.get('#\\/hFunction2m').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('h(x)')
+    })
+    cy.get('#\\/hFunction3m').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('hx')
+    })
+    cy.get('#\\/hFunction4m').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('hx')
+    })
+    cy.get('#\\/hFunction5m').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('hx')
+    })
+    cy.get('#\\/hFunction6m').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('h(x)')
+    })
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/hFunction1'].stateValues.value.tree).eqls(["apply", "h", "x"]);
+      expect(components['/hFunction2'].stateValues.value.tree).eqls(["apply", "h", "x"]);
+      expect(components['/hFunction3'].stateValues.value.tree).eqls(["*", "h", "x"]);
+      expect(components['/hFunction4'].stateValues.value.tree).eqls(["*", "h", "x"]);
+      expect(components['/hFunction5'].stateValues.value.tree).eqls(["*", "h", "x"]);
+      expect(components['/hFunction6'].stateValues.value.tree).eqls(["apply", "h", "x"]);
+      expect(components['/hFunction1m'].stateValues.value.tree).eqls(["apply", "h", "x"]);
+      expect(components['/hFunction2m'].stateValues.value.tree).eqls(["apply", "h", "x"]);
+      expect(components['/hFunction3m'].stateValues.value.tree).eqls(["*", "h", "x"]);
+      expect(components['/hFunction4m'].stateValues.value.tree).eqls(["*", "h", "x"]);
+      expect(components['/hFunction5m'].stateValues.value.tree).eqls(["*", "h", "x"]);
+      expect(components['/hFunction6m'].stateValues.value.tree).eqls(["apply", "h", "x"]);
+    })
+
+
+    cy.get('#\\/hFunction1 textarea').type("{end}{backspace}{backspace}{backspace}{backspace}h(y){enter}", { force: true })
+    cy.get('#\\/hFunction2 textarea').type("{end}{backspace}{backspace}{backspace}{backspace}h(y){enter}", { force: true })
+    cy.get('#\\/hFunction3 textarea').type("{end}{backspace}{backspace}{backspace}{backspace}h(y){enter}", { force: true })
+    cy.get('#\\/hFunction4 textarea').type("{end}{backspace}{backspace}{backspace}{backspace}h(y){enter}", { force: true })
+    cy.get('#\\/hFunction5 textarea').type("{end}{backspace}{backspace}{backspace}{backspace}h(y){enter}", { force: true })
+    cy.get('#\\/hFunction6 textarea').type("{end}{backspace}{backspace}{backspace}{backspace}h(y){enter}", { force: true })
+
+    cy.get(`#\\/hFunction1 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('h(y)')
+    })
+    cy.get(`#\\/hFunction2 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('h(y)')
+    })
+    cy.get(`#\\/hFunction3 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('h(y)')
+    })
+    cy.get(`#\\/hFunction4 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('h(y)')
+    })
+    cy.get(`#\\/hFunction5 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('h(y)')
+    })
+    cy.get(`#\\/hFunction6 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('h(y)')
+    })
+    cy.get('#\\/hFunction1m').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('hy')
+    })
+    cy.get('#\\/hFunction2m').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('h(y)')
+    })
+    cy.get('#\\/hFunction3m').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('hy')
+    })
+    cy.get('#\\/hFunction4m').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('h(y)')
+    })
+    cy.get('#\\/hFunction5m').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('hy')
+    })
+    cy.get('#\\/hFunction6m').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('h(y)')
+    })
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/hFunction1'].stateValues.value.tree).eqls(["*", "h", "y"]);
+      expect(components['/hFunction2'].stateValues.value.tree).eqls(["apply", "h", "y"]);
+      expect(components['/hFunction3'].stateValues.value.tree).eqls(["*", "h", "y"]);
+      expect(components['/hFunction4'].stateValues.value.tree).eqls(["apply", "h", "y"]);
+      expect(components['/hFunction5'].stateValues.value.tree).eqls(["*", "h", "y"]);
+      expect(components['/hFunction6'].stateValues.value.tree).eqls(["apply", "h", "y"]);
+      expect(components['/hFunction1m'].stateValues.value.tree).eqls(["*", "h", "y"]);
+      expect(components['/hFunction2m'].stateValues.value.tree).eqls(["apply", "h", "y"]);
+      expect(components['/hFunction3m'].stateValues.value.tree).eqls(["*", "h", "y"]);
+      expect(components['/hFunction4m'].stateValues.value.tree).eqls(["apply", "h", "y"]);
+      expect(components['/hFunction5m'].stateValues.value.tree).eqls(["*", "h", "y"]);
+      expect(components['/hFunction6m'].stateValues.value.tree).eqls(["apply", "h", "y"]);
+    })
+
+
+  })
+
+  it('convert and/or into logicals', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <mathinput name="mi" />
+
+    <p>Value: <copy prop="value" tname="mi" assignNames="m"/></p>
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.log('equalities with or')
+    cy.get('#\\/mi textarea').type("x=1 or u=x{enter}", { force: true })
+
+    cy.get('#\\/m').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(x=1)∨(u=x)')
+    })
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/mi'].stateValues.value.tree).eqls([
+        "or", ["=", "x", 1], ["=", "u", "x"]
+      ]);
+      expect(components['/m'].stateValues.value.tree).eqls([
+        "or", ["=", "x", 1], ["=", "u", "x"]
+      ]);
+    })
+
+    cy.log('inequalities with and')
+    cy.get('#\\/mi textarea').type("{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}x>3 and x <= 5{enter}", { force: true })
+
+    cy.get('#\\/m').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(x>3)∧(x≤5)')
+    })
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/mi'].stateValues.value.tree).eqls([
+        "and", [">", "x", 3], ["le", "x", 5]
+      ]);
+      expect(components['/m'].stateValues.value.tree).eqls([
+        "and", [">", "x", 3], ["le", "x", 5]
+      ]);
+    })
+
+
+    cy.log(`don't convert if not word`)
+    cy.get('#\\/mi textarea').type("{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}AandBorC{enter}", { force: true })
+
+    cy.get('#\\/m').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('AandBorC')
+    })
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/mi'].stateValues.value.tree).eqls([
+        "*", "A", "a", "n", "d", "B", "o", "r", "C"
+      ]);
+      expect(components['/m'].stateValues.value.tree).eqls([
+        "*", "A", "a", "n", "d", "B", "o", "r", "C"
+      ]);
+    })
+
+    cy.log(`add parens or spaces`)
+    cy.get('#\\/mi textarea').type("{home}({rightArrow}){rightArrow}{rightArrow}{rightArrow} {rightArrow} {rightArrow}{rightArrow}({rightArrow}){enter}", { force: true })
+
+    cy.get('#\\/m').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(A∧B)∨C')
+    })
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/mi'].stateValues.value.tree).eqls([
+        "or", ["and", "A", "B"], "C"
+      ]);
+      expect(components['/m'].stateValues.value.tree).eqls([
+        "or", ["and", "A", "B"], "C"
+      ]);
+    })
+  })
+
+  it('union from U', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <booleanInput name="ufu" />
+    <mathinput name="mi" unionFromU="$ufu" />
+
+    <p>Value: <copy prop="value" tname="mi" assignNames="m"/></p>
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.log('A U B without unionFromU')
+    cy.get('#\\/mi textarea').type("A U B{enter}", { force: true })
+
+    cy.get('#\\/m').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('AUB')
+    })
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/mi'].stateValues.value.tree).eqls([
+        "*", "A", "U", "B"
+      ]);
+      expect(components['/m'].stateValues.value.tree).eqls([
+        "*", "A", "U", "B"
+      ]);
+    })
+
+    cy.log('active unionFromU and modify text')
+    cy.get('#\\/ufu').click();
+    cy.get('#\\/mi textarea').type("{end} {enter}", { force: true })
+
+    cy.get('#\\/m').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('A∪B')
+    })
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/mi'].stateValues.value.tree).eqls([
+        "union", "A", "B"
+      ]);
+      expect(components['/m'].stateValues.value.tree).eqls([
+        "union", "A", "B"
+      ]);
+    })
+
+    cy.log('no substitution without spaces')
+    cy.get('#\\/mi textarea').type("{end}{backspace}{leftArrow}{backspace}{enter}", { force: true })
+
+    cy.get('#\\/m').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('AUB')
+    })
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/mi'].stateValues.value.tree).eqls([
+        "*", "A", "U", "B"
+      ]);
+      expect(components['/m'].stateValues.value.tree).eqls([
+        "*", "A", "U", "B"
+      ]);
+    })
+
+    cy.log('add parents')
+    cy.get('#\\/mi textarea').type("{end}){leftArrow}{leftArrow}({enter}", { force: true })
+
+    cy.get('#\\/m').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('A∪B')
+    })
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/mi'].stateValues.value.tree).eqls([
+        "union", "A", "B"
+      ]);
+      expect(components['/m'].stateValues.value.tree).eqls([
+        "union", "A", "B"
+      ]);
+    })
+
+  })
 
 });

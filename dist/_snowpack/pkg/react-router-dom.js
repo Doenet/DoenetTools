@@ -1,5 +1,5 @@
-import { c as createBrowserHistory, R as Router, b as createHashHistory, d as context, i as invariant, e as createLocation, m as matchPath } from './common/react-router-7e00dcf5.js';
-export { u as useHistory, a as useLocation } from './common/react-router-7e00dcf5.js';
+import { c as createBrowserHistory, R as Router, b as createHashHistory, d as context, i as invariant, e as createLocation, f as createPath, m as matchPath } from './common/react-router-96a90867.js';
+export { u as useHistory, a as useLocation } from './common/react-router-96a90867.js';
 import { _ as _inheritsLoose } from './common/inheritsLoose-90c3012b.js';
 import { r as react } from './common/index-61a7c514.js';
 import './common/index-01840a39.js';
@@ -12,9 +12,7 @@ import './common/hoist-non-react-statics.cjs-99a47c26.js';
  * The public API for a <Router> that uses HTML5 history.
  */
 
-var BrowserRouter =
-/*#__PURE__*/
-function (_React$Component) {
+var BrowserRouter = /*#__PURE__*/function (_React$Component) {
   _inheritsLoose(BrowserRouter, _React$Component);
 
   function BrowserRouter() {
@@ -32,7 +30,7 @@ function (_React$Component) {
   var _proto = BrowserRouter.prototype;
 
   _proto.render = function render() {
-    return react.createElement(Router, {
+    return /*#__PURE__*/react.createElement(Router, {
       history: this.history,
       children: this.props.children
     });
@@ -45,9 +43,7 @@ function (_React$Component) {
  * The public API for a <Router> that uses window.location.hash.
  */
 
-var HashRouter =
-/*#__PURE__*/
-function (_React$Component) {
+var HashRouter = /*#__PURE__*/function (_React$Component) {
   _inheritsLoose(HashRouter, _React$Component);
 
   function HashRouter() {
@@ -65,7 +61,7 @@ function (_React$Component) {
   var _proto = HashRouter.prototype;
 
   _proto.render = function render() {
-    return react.createElement(Router, {
+    return /*#__PURE__*/react.createElement(Router, {
       history: this.history,
       children: this.props.children
     });
@@ -132,7 +128,7 @@ var LinkAnchor = forwardRef(function (_ref, forwardedRef) {
   /* eslint-disable-next-line jsx-a11y/anchor-has-content */
 
 
-  return react.createElement("a", props);
+  return /*#__PURE__*/react.createElement("a", props);
 });
 /**
  * The public API for rendering a history-aware <a>.
@@ -147,7 +143,7 @@ var Link = forwardRef(function (_ref2, forwardedRef) {
       innerRef = _ref2.innerRef,
       rest = _objectWithoutPropertiesLoose(_ref2, ["component", "replace", "to", "innerRef"]);
 
-  return react.createElement(context.Consumer, null, function (context) {
+  return /*#__PURE__*/react.createElement(context.Consumer, null, function (context) {
     !context ?  invariant(false) : void 0;
     var history = context.history;
     var location = normalizeToLocation(resolveToLocation(to, context.location), context.location);
@@ -157,7 +153,8 @@ var Link = forwardRef(function (_ref2, forwardedRef) {
       href: href,
       navigate: function navigate() {
         var location = resolveToLocation(to, context.location);
-        var method = replace ? history.replace : history.push;
+        var isDuplicateNavigation = createPath(context.location) === createPath(normalizeToLocation(location));
+        var method = replace || isDuplicateNavigation ? history.replace : history.push;
         method(location);
       }
     }); // React 15 compat
@@ -169,7 +166,7 @@ var Link = forwardRef(function (_ref2, forwardedRef) {
       props.innerRef = innerRef;
     }
 
-    return react.createElement(component, props);
+    return /*#__PURE__*/react.createElement(component, props);
   });
 });
 
@@ -214,7 +211,7 @@ var NavLink = forwardRef$1(function (_ref, forwardedRef) {
       innerRef = _ref.innerRef,
       rest = _objectWithoutPropertiesLoose(_ref, ["aria-current", "activeClassName", "activeStyle", "className", "exact", "isActive", "location", "sensitive", "strict", "style", "to", "innerRef"]);
 
-  return react.createElement(context.Consumer, null, function (context) {
+  return /*#__PURE__*/react.createElement(context.Consumer, null, function (context) {
     !context ?  invariant(false) : void 0;
     var currentLocation = locationProp || context.location;
     var toLocation = normalizeToLocation(resolveToLocation(to, currentLocation), currentLocation);
@@ -228,8 +225,13 @@ var NavLink = forwardRef$1(function (_ref, forwardedRef) {
       strict: strict
     }) : null;
     var isActive = !!(isActiveProp ? isActiveProp(match, currentLocation) : match);
-    var className = isActive ? joinClassnames(classNameProp, activeClassName) : classNameProp;
-    var style = isActive ? _extends({}, styleProp, {}, activeStyle) : styleProp;
+    var className = typeof classNameProp === "function" ? classNameProp(isActive) : classNameProp;
+    var style = typeof styleProp === "function" ? styleProp(isActive) : styleProp;
+
+    if (isActive) {
+      className = joinClassnames(className, activeClassName);
+      style = _extends({}, style, activeStyle);
+    }
 
     var props = _extends({
       "aria-current": isActive && ariaCurrent || null,
@@ -245,7 +247,7 @@ var NavLink = forwardRef$1(function (_ref, forwardedRef) {
       props.innerRef = innerRef;
     }
 
-    return react.createElement(Link, props);
+    return /*#__PURE__*/react.createElement(Link, props);
   });
 });
 

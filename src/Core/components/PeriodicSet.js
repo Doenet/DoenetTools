@@ -64,6 +64,7 @@ export default class PeriodicSet extends MathComponent {
 
     delete stateVariableDefinitions.codePre;
     delete stateVariableDefinitions.expressionWithCodes;
+    delete stateVariableDefinitions.mathChildrenFunctionSymbols;
     delete stateVariableDefinitions.codesAdjacentToStrings;
     delete stateVariableDefinitions.mathChildrenByArrayComponent;
     delete stateVariableDefinitions.mathChildrenWithCanBeModified;

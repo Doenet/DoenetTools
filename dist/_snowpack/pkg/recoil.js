@@ -87,7 +87,6 @@ const loadableAccessors = {
     return other.state === this.state && other.contents === this.contents;
   },
 
-  // TODO Unit tests
   // TODO Convert Loadable to a Class to better support chaining
   //      by returning a Loadable from a map function
   map(map) {
@@ -103,7 +102,9 @@ const loadableAccessors = {
         // $FlowFixMe[object-this-reference]
         const next = map(this.contents); // TODO if next instanceof Loadable, then return next
 
-        return Recoil_isPromise(next) ? loadableWithPromise(next) : loadableWithValue(next);
+        return Recoil_isPromise(next) ? loadableWithPromise(next.then(value => ({
+          __value: value
+        }))) : loadableWithValue(next);
       } catch (e) {
         return Recoil_isPromise(e) ? // If we "suspended", then try again.
         // errors and subsequent retries will be handled in 'loading' case
@@ -116,7 +117,9 @@ const loadableAccessors = {
     if (this.state === 'loading') {
       return loadableWithPromise( // $FlowFixMe[object-this-reference]
       this.contents // TODO if map returns a loadable, then return the value or promise or throw the error
-      .then(map).catch(e => {
+      .then(value => ({
+        __value: map(value.__value)
+      })).catch(e => {
         if (Recoil_isPromise(e)) {
           // we were "suspended," try again
           // $FlowFixMe[object-this-reference]
@@ -182,7 +185,9 @@ function loadableWithError(error) {
     }
 
   });
-}
+} // TODO Probably need to clean-up this API to accept `Promise<T>`
+// with an alternative params or mechanism for internal key proxy.
+
 
 function loadableWithPromise(promise) {
   return Object.freeze({
@@ -258,7 +263,7 @@ const {
   mutableSourceExists: mutableSourceExists$1
 } = Recoil_mutableSource;
 
-const gks = new Map().set('recoil_hamt_2020', true).set('recoil_memory_managament_2020', true);
+const gks = new Map().set('recoil_hamt_2020', true).set('recoil_memory_managament_2020', true).set('recoil_suppress_rerender_in_callback', true);
 
 function Recoil_gkx(gk) {
   var _gks$get;
@@ -3201,15 +3206,6 @@ class Snapshot {
       return cloneSnapshot(mutableSnapshot.getStore_INTERNAL());
     });
 
-    _defineProperty(this, "mapBatched_UNSTABLE", mapper => {
-      this.checkRefCount_INTERNAL();
-      const mutableSnapshot = new MutableSnapshot(this, cb => cb());
-      batchUpdates$1(() => {
-        mapper(mutableSnapshot);
-      });
-      return cloneSnapshot(mutableSnapshot.getStore_INTERNAL());
-    });
-
     _defineProperty(this, "asyncMap", async mapper => {
       this.checkRefCount_INTERNAL();
       const mutableSnapshot = new MutableSnapshot(this, batchUpdates$1);
@@ -5873,6 +5869,45 @@ function selector(options) {
           __key: key
         };
       }
+      /**
+       * If this execution is stale, let's check to see if there is some in
+       * progress execution with a matching state. If we find a match, then
+       * we can take the value from that in-progress execution. Note this may
+       * sound like an edge case, but may be very common in cases where a
+       * loading dependency resolves from loading to having a value (thus
+       * possibly triggering a re-render), and React re-renders before the
+       * chained .then() functions run, thus starting a new execution as the
+       * dep has changed value. Without this check we will run the selector
+       * twice (once in the new execution and once again in this .then(), so
+       * this check is necessary to keep unnecessary re-executions to a
+       * minimum).
+       *
+       * Also note this code does not check across all executions that may be
+       * running. It only optimizes for the _latest_ execution per store as
+       * we currently do not maintain a list of all currently running executions.
+       * This means in some cases we may run selectors more than strictly
+       * necessary when there are multiple executions running for the same
+       * selector. This may be a valid tradeoff as checking for dep changes
+       * across all in-progress executions may take longer than just
+       * re-running the selector. This will be app-dependent, and maybe in the
+       * future we can make the behavior configurable. An ideal fix may be
+       * to extend the tree cache to support caching loading states.
+       */
+
+
+      if (!isLatestExecution(store, executionId)) {
+        var _executionInfo$latest;
+
+        const executionInfo = getExecutionInfoOfInProgressExecution(state);
+
+        if ((executionInfo === null || executionInfo === void 0 ? void 0 : (_executionInfo$latest = executionInfo.latestLoadable) === null || _executionInfo$latest === void 0 ? void 0 : _executionInfo$latest.state) === 'loading') {
+          /**
+           * Returning promise here without wrapping as the wrapper logic was
+           * already done upstream when this promise was generated.
+           */
+          return executionInfo.latestLoadable.contents;
+        }
+      }
 
       const [loadable, depValues] = evaluateSelectorGetter(store, state, executionId, bypassSelectorDepCacheOnReevaluation);
 
@@ -6120,7 +6155,7 @@ function selector(options) {
       return cachedVal;
     }
 
-    const inProgressExecutionInfo = getExecutionInfoOfInProgressExecution(store, state); // FIXME: this won't work with custom caching b/c it uses separate cache
+    const inProgressExecutionInfo = getExecutionInfoOfInProgressExecution(state); // FIXME: this won't work with custom caching b/c it uses separate cache
 
     if (inProgressExecutionInfo) {
       const executionInfo = inProgressExecutionInfo;
@@ -6137,10 +6172,10 @@ function selector(options) {
    */
 
 
-  function getExecutionInfoOfInProgressExecution(store, state) {
+  function getExecutionInfoOfInProgressExecution(state) {
     var _Array$from$find;
 
-    const [, executionInfo] = (_Array$from$find = Array.from(executionInfoMap.entries()).find(([, executionInfo]) => {
+    const [, executionInfo] = (_Array$from$find = Array.from(executionInfoMap.entries()).find(([store, executionInfo]) => {
       return executionInfo.latestLoadable != null && executionInfo.latestExecutionId != null && !haveAsyncDepsChanged(store, state);
     })) !== null && _Array$from$find !== void 0 ? _Array$from$find : [];
     return executionInfo;
@@ -6165,21 +6200,7 @@ function selector(options) {
     mapOfCheckedVersions.set(state.version, new Map(oldDepValues));
     return Array.from(oldDepValues).some(([nodeKey, oldVal]) => {
       const loadable = getCachedNodeLoadable(store, state, nodeKey);
-      return loadable.contents !== oldVal.contents &&
-      /**
-       * FIXME: in the condition below we're making the assumption that a
-       * dependency that goes from loading to having a value is always because
-       * the dependency resolved to that value, so we don't count it as a dep
-       * change as the normal retry loop will handle retrying in response to a
-       * resolved async dep. This is an incorrect assumption for the edge case
-       * where there is an async selector that is loading, and while it is
-       * loading one of its dependencies changes, triggering a new execution,
-       * and that new execution produces a value synchronously (we don't make
-       * that assumption for asynchronous work b/c it's guaranteed that a
-       * loadable that goes from 'loading' to 'loading' in a new loadable is
-       * a dep change).
-       */
-      !(oldVal.state === 'loading' && loadable.state !== 'loading');
+      return loadable.contents !== oldVal.contents;
     });
   }
   /**

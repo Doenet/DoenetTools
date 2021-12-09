@@ -21,10 +21,17 @@ export default class SubsetOfRealsInput extends BlockComponent {
     ),
     toggleInterval: this.toggleInterval.bind(
       new Proxy(this, this.readOnlyProxyHandler)
+    ),
+    clear: this.clear.bind(
+      new Proxy(this, this.readOnlyProxyHandler)
+    ),
+    setToR: this.setToR.bind(
+      new Proxy(this, this.readOnlyProxyHandler)
     )
   };
 
 
+  static variableForPlainMacro = "subsetValue";
 
   static createAttributesObject(args) {
     let attributes = super.createAttributesObject(args);
@@ -70,7 +77,7 @@ export default class SubsetOfRealsInput extends BlockComponent {
     attributes.dx = {
       createComponentOfType: "number",
       createStateVariable: "dx",
-      defaultValue: 0.1,
+      defaultValue: 0.5,
       public: true,
     }
 
@@ -279,7 +286,6 @@ export default class SubsetOfRealsInput extends BlockComponent {
         }
       },
       inverseDefinition({ desiredStateVariableValues }) {
-        console.log(desiredStateVariableValues)
         if (desiredStateVariableValues.additionalPoints.every(Number.isFinite)) {
           return {
             success: true,
@@ -345,20 +351,23 @@ export default class SubsetOfRealsInput extends BlockComponent {
           while (nextAdditionalPoint < point.value) {
             // add extra point.  Will be inSubset if inside an interval
 
-            points.push({
-              value: nextAdditionalPoint,
-              inSubset,
-              isAdditional: true,
-              additionalPointInd
-            });
+            // skip if point is on top of previous point
+            if (nextAdditionalPoint !== lastIntervalEnd) {
+              points.push({
+                value: nextAdditionalPoint,
+                inSubset,
+                isAdditional: true,
+                additionalPointInd
+              });
 
-            intervals.push({
-              left: lastIntervalEnd,
-              right: nextAdditionalPoint,
-              inSubset
-            });
+              intervals.push({
+                left: lastIntervalEnd,
+                right: nextAdditionalPoint,
+                inSubset
+              });
 
-            lastIntervalEnd = nextAdditionalPoint;
+              lastIntervalEnd = nextAdditionalPoint;
+            }
 
             additionalPointInd++;
             nextAdditionalPoint = additionalPoints[additionalPointInd];
@@ -397,258 +406,107 @@ export default class SubsetOfRealsInput extends BlockComponent {
       }
     }
 
-
-    stateVariableDefinitions.nPoints = {
-      public: true,
-      componentType: "integer",
-      defaultValue: 0,
-      forRenderer: true,
-      returnDependencies: () => ({}),
-      definition: () => ({
-        useEssentialOrDefaultValue: { nPoints: { variablesToCheck: ["nPoints"] } }
-      }),
-      inverseDefinition({ desiredStateVariableValues }) {
-        let nPoints = Math.round(Number(desiredStateVariableValues.nPoints));
-        if (!(nPoints >= 0)) {
-          return { success: false };
-        }
-        return {
-          success: true,
-          instructions: [{
-            setStateVariable: "nPoints",
-            value: nPoints
-          }]
-        }
-      }
-    }
-
-
-    // stateVariableDefinitions.points = {
-    //   public: true,
-    //   componentType: "math",
-    //   isArray: true,
-    //   entryPrefixes: ["point"],
-    //   returnArraySizeDependencies: () => ({
-    //     nPoints: {
-    //       dependencyType: "stateVariable",
-    //       variableName: "nPoints"
-    //     }
-    //   }),
-    //   returnArraySize({ dependencyValues }) {
-    //     return [dependencyValues.nPoints];
-    //   },
-    //   returnArrayDependenciesByKey: () => ({}),
-    //   returnDependencies: () => ({
-    //     pointChildren: {
-    //       dependencyType: "child",
-    //       childGroups: ["points"],
-    //       variableNames: ["x"],
-    //     },
-    //   }),
-    //   definition: function ({ dependencyValues }) {
-    //     if (dependencyValues.pointChildren.length === 0) {
-    //       return {
-    //         newValues: {
-    //           points: []
-    //         }
-    //       }
-    //     }
-    //     let points = [];
-    //     for (let point of dependencyValues.pointChildren) {
-    //       points.push(point.stateValues.x)
-    //     }
-    //     return { newValues: { points } };
-    //   },
-    //   inverseDefinition: function ({ desiredStateVariableValues, dependencyValues }) {
-    //     return { success: false };
-
-    //     // let numChildren = dependencyValues.stringTextChildren.length;
-    //     // if (numChildren > 1) {
-    //     //   return { success: false };
-    //     // }
-    //     // if (numChildren === 1) {
-    //     //   return {
-    //     //     success: true,
-    //     //     instructions: [{
-    //     //       setDependency: "stringTextChildren",
-    //     //       desiredValue: desiredStateVariableValues.value,
-    //     //       childIndex: 0,
-    //     //       variableIndex: 0,
-    //     //     }]
-    //     //   };
-    //     // }
-    //     // // no children, so value is essential and give it the desired value
-    //     // return {
-    //     //   success: true,
-    //     //   instructions: [{
-    //     //     setStateVariable: "value",
-    //     //     value: desiredStateVariableValues.value
-    //     //   }]
-    //     // };
-    //   }
-    // }
-
-    // stateVariableDefinitions.numericalPoints = {
-    //   // isArray: true,
-    //   entryPrefixes: ["numericalPoint"],
-    //   forRenderer: true,
-    //   returnDependencies: () => ({
-    //     points: {
-    //       dependencyType: "stateVariable",
-    //       variableName: "points"
-    //     },
-    //   }),
-    //   definition: function ({ dependencyValues }) {
-    //     let numericalPoints = [];
-    //     for (let point of dependencyValues.points) {
-    //       let val = point.evaluate_to_constant();
-    //       if (!Number.isFinite(val)) {
-    //         val = NaN;
-    //       }
-    //       numericalPoints.push(val);
-    //     }
-    //     return { newValues: { numericalPoints } }
-    //   }
-    // }
-
-
-    // stateVariableDefinitions.intervals = {
-    //   public: true,
-    //   componentType: "interval",
-    //   // forRenderer: true,
-    //   // isArray: true,
-    //   entryPrefixes: ["interval"],
-
-    //   returnDependencies: () => ({
-    //     // intervalChildren: {
-    //     //   dependencyType: "child",
-    //     //   childGroups: ["intervals"],
-    //     //   variableNames: ["value"],
-    //     // },
-    //   }),
-    //   definition: function ({ dependencyValues }) {
-
-    //     return {
-    //       newValues: {
-    //         intervals: []
-    //       }
-    //     }
-    //     if (dependencyValues.intervalChildren.length === 0) {
-    //       return {
-    //         newValues: {
-    //           intervals: []
-    //         }
-    //       }
-    //     }
-    //     // tree: Array(3)
-    //     // 0: "interval"
-    //     // 1: (3) ["tuple", 1, 2]
-    //     // 2: (3) ["tuple", true, true]
-
-    //     // [{start:3,end:4,startClosed:true,endClosed:false}]
-
-
-    //     //TODO: Use math expressions instead in the future
-    //     let intervals = [];
-    //     for (let interval of dependencyValues.intervalChildren) {
-    //       let intervalTree = interval.stateValues.value.tree;
-    //       if (intervalTree[0] !== "interval") {
-    //         intervals.push({ start: NaN, end: NaN })
-    //       } else {
-    //         let intervalObj = {
-    //           start: me.fromAst(intervalTree[1][1]),
-    //           end: me.fromAst(intervalTree[1][2]),
-    //           startClosed: intervalTree[2][1],
-    //           endClosed: intervalTree[2][2],
-    //         }
-    //         intervals.push(intervalObj)
-    //       }
-
-    //     }
-    //     return { newValues: { intervals } };
-    //   },
-
-    // }
-
-    // stateVariableDefinitions.numericalIntervals = {
-    //   // isArray: true,
-    //   entryPrefixes: ["numericalIntervals"],
-    //   forRenderer: true,
-    //   returnDependencies: () => ({
-    //     intervals: {
-    //       dependencyType: "stateVariable",
-    //       variableName: "intervals"
-    //     },
-    //   }),
-    //   definition: function ({ dependencyValues }) {
-    //     let numericalIntervals = [];
-    //     for (let interval of dependencyValues.intervals) {
-    //       let start = interval.start.evaluate_to_constant();
-    //       if (!Number.isFinite(start) && start !== Infinity && start !== -Infinity) {
-    //         start = NaN;
-    //       }
-    //       let end = interval.end.evaluate_to_constant();
-    //       if (!Number.isFinite(end) && end !== Infinity && end !== -Infinity) {
-    //         end = NaN;
-    //       }
-
-    //       // 0: {start: 1, end: 2, startClosed: true, endClosed: true}
-    //       // 1: {start: 3, end: 4, startClosed: false, endClosed: false}
-
-
-    //       numericalIntervals.push({
-    //         start,
-    //         end,
-    //         startClosed: interval.startClosed,
-    //         endClosed: interval.endClosed
-    //       });
-    //     }
-    //     return { newValues: { numericalIntervals } }
-    //   }
-    // }
-
     return stateVariableDefinitions;
   }
 
   addPoint(value) {
 
-    console.log(`addPoint at ${value}`)
-
     let dx = this.stateValues.dx;
-    let roundedValue = Math.round(value / dx) * dx;
+    let roundedValue = Math.round(
+      Math.max(this.stateValues.xmin, Math.min(this.stateValues.xmax, value))
+      / dx) * dx;
 
     // add point only if not equal to another point
     // (which could happen due to rounding)
 
 
+    let pointsFromSubset = [...this.stateValues.pointsFromSubset];
+    let intervalsFromSubset = [...this.stateValues.intervalsFromSubset];
     let additionalPoints = [...this.stateValues.additionalPoints];
 
     if (!additionalPoints.includes(roundedValue)) {
 
-      let subsetPointValues = this.stateValues.pointsFromSubset.map(x => x.value);
+      let subsetPointValues = pointsFromSubset.map(x => x.value);
 
       if (!subsetPointValues.includes(roundedValue)) {
-        additionalPoints.push(roundedValue);
 
-        return this.coreFunctions.performUpdate({
-          updateInstructions: [{
-            componentName: this.componentName,
-            updateType: "updateValue",
-            stateVariable: "additionalPoints",
-            value: additionalPoints
-          }],
-        });
+        let insideInterval = false;
+        for (let interval of intervalsFromSubset) {
+          if (interval[0] < roundedValue && interval[1] > roundedValue) {
+            insideInterval = true;
+            break;
+          }
+        }
+
+        // the new point should be in the subset
+
+        if (insideInterval) {
+          // if point is inside an interval, make it an additional point
+          additionalPoints.push(roundedValue);
+          return this.coreFunctions.performUpdate({
+            updateInstructions: [{
+              componentName: this.componentName,
+              updateType: "updateValue",
+              stateVariable: "additionalPoints",
+              value: additionalPoints
+            }],
+            event: {
+              verb: "interacted",
+              object: {
+                componentName: this.componentName,
+                componentType: this.componentType,
+              },
+              result: {
+                addedPoint: roundedValue,
+                intervalsFromSubset, pointsFromSubset, additionalPoints
+              }
+            }
+          });
+        } else {
+          // if point is not inside an interval, add a point
+          pointsFromSubset.push({
+            value: roundedValue,
+            inSubset: true,
+          })
+
+          let updateInstructions = this.createUpdateInstructions({
+            intervalsFromSubset,
+            pointsFromSubset,
+            modifiedAdditionalPoints: false,
+            additionalPoints
+          });
+
+          return this.coreFunctions.performUpdate({
+            updateInstructions,
+            event: {
+              verb: "interacted",
+              object: {
+                componentName: this.componentName,
+                componentType: this.componentType,
+              },
+              result: {
+                addedPoint: roundedValue,
+                intervalsFromSubset, pointsFromSubset, additionalPoints
+              }
+            }
+          });
+
+        }
+
+
       }
     }
+
+    return { success: true, instructions: [] }
 
   }
 
   deletePoint(pointInd) {
 
-    console.log(`delete point ${pointInd}`)
-
     let point = this.stateValues.points[pointInd];
     let additionalPoints = [...this.stateValues.additionalPoints];
+    let pointsFromSubset = [...this.stateValues.pointsFromSubset];
+    let intervalsFromSubset = [...this.stateValues.intervalsFromSubset];
 
     if (point.isAdditional) {
       additionalPoints.splice(point.additionalPointInd, 1);
@@ -659,6 +517,17 @@ export default class SubsetOfRealsInput extends BlockComponent {
           stateVariable: "additionalPoints",
           value: additionalPoints
         }],
+        event: {
+          verb: "interacted",
+          object: {
+            componentName: this.componentName,
+            componentType: this.componentType,
+          },
+          result: {
+            deletedPoint: point.value,
+            intervalsFromSubset, pointsFromSubset, additionalPoints
+          }
+        }
       });
 
     } else {
@@ -668,15 +537,10 @@ export default class SubsetOfRealsInput extends BlockComponent {
 
       let modifiedAdditionalPoints = false;
 
-      let pointsFromSubset = [...this.stateValues.pointsFromSubset];
-      let intervalsFromSubset = [...this.stateValues.intervalsFromSubset];
-
       let pointSubsetInd = pointsFromSubset.map(x => x.value).indexOf(point.value)
 
       let leftIntervalInd = intervalsFromSubset.map(x => x[1]).indexOf(point.value);
       let rightIntervalInd = intervalsFromSubset.map(x => x[0]).indexOf(point.value);
-
-      console.log(pointSubsetInd, leftIntervalInd, rightIntervalInd)
 
       if (leftIntervalInd !== -1) {
         if (rightIntervalInd !== -1) {
@@ -714,10 +578,6 @@ export default class SubsetOfRealsInput extends BlockComponent {
             // just remove the interval and the point
             intervalsFromSubset.splice(leftIntervalInd, 1);
             pointsFromSubset.splice(pointSubsetInd, 1);
-
-            console.log(`removed interval ${leftIntervalInd} and point ${pointSubsetInd}`)
-
-            console.log(leftPoint)
 
             if (leftPoint && !leftPoint.inSubset) {
               // if left point isn't in subset
@@ -790,10 +650,19 @@ export default class SubsetOfRealsInput extends BlockComponent {
         additionalPoints
       });
 
-      console.log('updateInstructions', updateInstructions);
-
       return this.coreFunctions.performUpdate({
         updateInstructions,
+        event: {
+          verb: "interacted",
+          object: {
+            componentName: this.componentName,
+            componentType: this.componentType,
+          },
+          result: {
+            deletedPoint: point.value,
+            intervalsFromSubset, pointsFromSubset, additionalPoints
+          }
+        }
       });
 
     }
@@ -845,13 +714,116 @@ export default class SubsetOfRealsInput extends BlockComponent {
     return updateInstructions;
   }
 
-  movePoint(pointInd, value) {
+  movePoint({ pointInd, value, transient }) {
+
+    let dx = this.stateValues.dx;
+
+    let roundedValue = Math.round(
+      Math.max(this.stateValues.xmin, Math.min(this.stateValues.xmax, value))
+      / dx) * dx;
+
+    let point = this.stateValues.points[pointInd];
+
+    // value cannot cross another point
+    let leftPoint = this.stateValues.points[pointInd - 1]
+    if (leftPoint) {
+      roundedValue = Math.max(roundedValue, leftPoint.value + dx)
+    }
+    let rightPoint = this.stateValues.points[pointInd + 1]
+    if (rightPoint) {
+      roundedValue = Math.min(roundedValue, rightPoint.value - dx)
+    }
+
+    let additionalPoints = [...this.stateValues.additionalPoints];
+    let pointsFromSubset = [...this.stateValues.pointsFromSubset];
+    let intervalsFromSubset = [...this.stateValues.intervalsFromSubset];
+
+
+    if (point.isAdditional) {
+      additionalPoints[point.additionalPointInd] = roundedValue;
+      if (transient) {
+        return this.coreFunctions.performUpdate({
+          updateInstructions: [{
+            componentName: this.componentName,
+            updateType: "updateValue",
+            stateVariable: "additionalPoints",
+            value: additionalPoints
+          }],
+          transient: true,
+        });
+      } else {
+        return this.coreFunctions.performUpdate({
+          updateInstructions: [{
+            componentName: this.componentName,
+            updateType: "updateValue",
+            stateVariable: "additionalPoints",
+            value: additionalPoints
+          }],
+          event: {
+            verb: "interacted",
+            object: {
+              componentName: this.componentName,
+              componentType: this.componentType,
+            },
+            result: {
+              movedPoint: roundedValue,
+              intervalsFromSubset, pointsFromSubset, additionalPoints
+            }
+          }
+        })
+      }
+
+    } else {
+
+      let pointSubsetInd = pointsFromSubset.map(x => x.value).indexOf(point.value)
+      let leftIntervalInd = intervalsFromSubset.map(x => x[1]).indexOf(point.value);
+      let rightIntervalInd = intervalsFromSubset.map(x => x[0]).indexOf(point.value);
+
+      pointsFromSubset[pointSubsetInd] = {
+        value: roundedValue,
+        inSubset: pointsFromSubset[pointSubsetInd].inSubset
+      };
+
+      if (leftIntervalInd !== -1) {
+        intervalsFromSubset[leftIntervalInd] = [intervalsFromSubset[leftIntervalInd][0], roundedValue];
+      }
+      if (rightIntervalInd !== -1) {
+        intervalsFromSubset[rightIntervalInd] = [roundedValue, intervalsFromSubset[rightIntervalInd][1]];
+      }
+
+      let updateInstructions = this.createUpdateInstructions({
+        intervalsFromSubset,
+        pointsFromSubset,
+        modifiedAdditionalPoints: false,
+      });
+
+      if (transient) {
+        return this.coreFunctions.performUpdate({
+          updateInstructions,
+          transient: true,
+        });
+      } else {
+        return this.coreFunctions.performUpdate({
+          updateInstructions,
+          event: {
+            verb: "interacted",
+            object: {
+              componentName: this.componentName,
+              componentType: this.componentType,
+            },
+            result: {
+              movedPoint: roundedValue,
+              intervalsFromSubset, pointsFromSubset, additionalPoints
+            }
+          }
+        });
+      }
+
+    }
 
   }
 
   togglePoint(pointInd) {
-
-    console.log(`toggle point ${pointInd}`)
 
     let point = this.stateValues.points[pointInd];
 
@@ -958,24 +930,29 @@ export default class SubsetOfRealsInput extends BlockComponent {
       additionalPoints
     });
 
-    console.log('updateInstructions', updateInstructions);
-
     return this.coreFunctions.performUpdate({
       updateInstructions,
+      event: {
+        verb: "interacted",
+        object: {
+          componentName: this.componentName,
+          componentType: this.componentType,
+        },
+        result: {
+          toggledPoint: point.value,
+          intervalsFromSubset, pointsFromSubset, additionalPoints
+        }
+      }
     });
 
   }
 
   toggleInterval(intervalInd) {
-    console.log(`toggle interval ${intervalInd}`)
 
     let interval = this.stateValues.intervals[intervalInd];
 
     let leftPoint = this.stateValues.points[intervalInd - 1];
     let rightPoint = this.stateValues.points[intervalInd];
-
-    console.log("leftPoint", leftPoint)
-    console.log("rightPoint", rightPoint)
 
     let pointsFromSubset = [...this.stateValues.pointsFromSubset];
     let intervalsFromSubset = [...this.stateValues.intervalsFromSubset];
@@ -1307,10 +1284,6 @@ export default class SubsetOfRealsInput extends BlockComponent {
       }
 
 
-
-
-
-
     }
 
     let updateInstructions = this.createUpdateInstructions({
@@ -1320,12 +1293,73 @@ export default class SubsetOfRealsInput extends BlockComponent {
       additionalPoints
     });
 
-    console.log('updateInstructions', updateInstructions);
+    return this.coreFunctions.performUpdate({
+      updateInstructions,
+      event: {
+        verb: "interacted",
+        object: {
+          componentName: this.componentName,
+          componentType: this.componentType,
+        },
+        result: {
+          toggledInterval: [interval.left, interval.right],
+          intervalsFromSubset, pointsFromSubset, additionalPoints
+        }
+      }
+    });
+
+  }
+
+  clear() {
+    let updateInstructions = this.createUpdateInstructions({
+      intervalsFromSubset: [],
+      pointsFromSubset: [],
+      modifiedAdditionalPoints: true,
+      additionalPoints: []
+    });
 
     return this.coreFunctions.performUpdate({
       updateInstructions,
+      event: {
+        verb: "interacted",
+        object: {
+          componentName: this.componentName,
+          componentType: this.componentType,
+        },
+        result: {
+          cleared: true,
+          intervalsFromSubset: [],
+          pointsFromSubset: [],
+          additionalPoints: []
+        }
+      }
+    });
+  }
+
+  setToR() {
+    let updateInstructions = this.createUpdateInstructions({
+      intervalsFromSubset: [[-Infinity, Infinity]],
+      pointsFromSubset: [],
+      modifiedAdditionalPoints: true,
+      additionalPoints: []
     });
 
+    return this.coreFunctions.performUpdate({
+      updateInstructions,
+      event: {
+        verb: "interacted",
+        object: {
+          componentName: this.componentName,
+          componentType: this.componentType,
+        },
+        result: {
+          setToR: true,
+          intervalsFromSubset: [[-Infinity, Infinity]],
+          pointsFromSubset: [],
+          additionalPoints: []
+        }
+      }
+    });
   }
 
 

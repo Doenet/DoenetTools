@@ -407,20 +407,12 @@ export function returnStandardSequenceStateVariableDefinitions() {
           // if from, to, and exclude are strings
           // then convert to numbers
           if (from !== null) {
-            if (typeof from === "string") {
-              from = lettersToNumber(from);
-            }
+            from = lettersToNumber(from);
           }
           if (to !== null) {
-            if (typeof to === "string") {
-              to = lettersToNumber(to);
-            }
+            to = lettersToNumber(to);
           }
-          for (let [index, value] of exclude.entries()) {
-            if (typeof value === "string") {
-              exclude[index] = lettersToNumber(value)
-            }
-          }
+          exclude = exclude.map(lettersToNumber);
         } else if (dependencyValues.type === "number") {
           // make sure to, from, and exclude are numbers
           if (to !== null) {
@@ -508,9 +500,9 @@ export function calculateSequenceParameters({ from, to, step, length, type }) {
       }
       if (length === null) {
         if (type === "math") {
-          length = Math.floor(to.subtract(1).divide(step).evaluate_to_constant() + 1);
+          length = Math.floor((to.subtract(1).divide(step).evaluate_to_constant() + 1) * (1 + 1E-14));
         } else {
-          length = Math.floor((to - 1) / step + 1)
+          length = Math.floor(((to - 1) / step + 1) * (1 + 1E-14))
         }
       }
 
@@ -523,7 +515,7 @@ export function calculateSequenceParameters({ from, to, step, length, type }) {
         if (type === "letters") {
           if (from < 1) {
             // adjust length so that have valid letters
-            length = Math.floor((to - 1) / step + 1)
+            length = Math.floor(((to - 1) / step + 1) * (1 + 1E-14))
             from = to - step * (length - 1);
 
           }
@@ -550,10 +542,10 @@ export function calculateSequenceParameters({ from, to, step, length, type }) {
         if (length === null) {
           if (type === "math") {
             step = me.fromAst(1);
-            length = Math.floor(to.subtract(from).add(1).evaluate_to_constant());
+            length = Math.floor((to.subtract(from).add(1).evaluate_to_constant()) * (1 + 1E-14));
           } else {
             step = 1;
-            length = Math.floor(to - from + 1);
+            length = Math.floor((to - from + 1) * (1 + 1E-14));
           }
         } else {
           if (type === "math") {
@@ -570,9 +562,9 @@ export function calculateSequenceParameters({ from, to, step, length, type }) {
         if (length === null) {
           // from, to, and step, no length
           if (type === "math") {
-            length = Math.floor(to.subtract(from).divide(step).add(1).evaluate_to_constant());
+            length = Math.floor(to.subtract(from).divide(step).add(1).evaluate_to_constant() * (1 + 1E-14));
           } else {
-            length = Math.floor((to - from) / step + 1);
+            length = Math.floor(((to - from) / step + 1) * (1 + 1E-14));
           }
         } else {
           // from, to, step, and length defined
@@ -592,7 +584,7 @@ export function calculateSequenceParameters({ from, to, step, length, type }) {
   }
 }
 
-export function returnSequenceValues({ from, step, length, exclude, type, lowercase, maxNum }) {
+export function returnSequenceValues({ from, step, length, exclude, type, lowercase, maxNum }, includeOriginalIndex = false) {
   let sequenceValues = [];
   let nValues = 0;
 
@@ -610,6 +602,10 @@ export function returnSequenceValues({ from, step, length, exclude, type, lowerc
       if (exclude.some(x => x && x.equals(value))) {
         continue;
       }
+    } else if (type === "number") {
+      if (exclude.some(x => Math.abs(x - value) <= 1E-14 * Math.max(Math.abs(x), Math.abs(value)))) {
+        continue;
+      }
     } else {
       if (exclude.includes(value)) {
         continue;
@@ -620,7 +616,12 @@ export function returnSequenceValues({ from, step, length, exclude, type, lowerc
       value = numberToLetters(value, lowercase);
     }
 
-    sequenceValues.push(value);
+    if (includeOriginalIndex) {
+      sequenceValues.push({ value, originalIndex: ind });
+    } else {
+      sequenceValues.push(value);
+    }
+
     nValues++;
 
     if (nValues === maxNum) {
@@ -633,17 +634,9 @@ export function returnSequenceValues({ from, step, length, exclude, type, lowerc
 }
 
 export function returnSequenceValueForIndex({ index, from, step, length, exclude, type, lowercase }) {
-  if (exclude.length > 0) {
-    // if have exclude, then calculate values up to index
-    let firstSequenceValues = returnSequenceValues({ from, step, length, exclude, type, lowercase, maxNum: index + 1 });
-    if (firstSequenceValues.length === index + 1) {
-      return firstSequenceValues[index];
-    } else {
-      return null;
-    }
-  }
 
-  // if don't have exclude, calculate directly
+  // note: if index is excluded or index is out of range, returns null
+
   if (!(index >= 0 && (length === undefined || index < length))) {
     return null;
   }
@@ -656,6 +649,21 @@ export function returnSequenceValueForIndex({ index, from, step, length, exclude
       value += step * index;
     }
   }
+
+  if (type === "math") {
+    if (exclude.some(x => x && x.equals(value))) {
+      return null;
+    }
+  } else if (type === "number") {
+    if (exclude.some(x => Math.abs(x - value) <= 1E-14 * Math.max(Math.abs(x), Math.abs(value)))) {
+      return null;
+    }
+  } else {
+    if (exclude.includes(value)) {
+      return null;
+    }
+  }
+
   if (type === "letters") {
     value = numberToLetters(value, lowercase);
   }
@@ -665,7 +673,13 @@ export function returnSequenceValueForIndex({ index, from, step, length, exclude
 }
 
 export function lettersToNumber(letters) {
-  letters = letters.toUpperCase();
+
+  try {
+    letters = letters.toUpperCase();
+  } catch (e) {
+    console.warn("Cannot convert " + letters + " to a number");
+    return undefined;
+  }
 
   let number = 0,
     len = letters.length,

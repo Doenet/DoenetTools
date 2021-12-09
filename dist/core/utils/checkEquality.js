@@ -1,7 +1,7 @@
 import me from '../../_snowpack/pkg/math-expressions.js';
 import { deepCompare } from './deepFunctions.js';
-import MathComponent from '../components/Math.js';
 import { normalizeMathExpression } from './math.js';
+import periodicSetEquality from './periodicSetEquality.js';
 
 export default function checkEquality({
   object1, object2, isUnordered = false, partialMatches = false,
@@ -12,6 +12,7 @@ export default function checkEquality({
   includeErrorInNumberExponents = false,
   allowedErrorIsAbsolute = false,
   nSignErrorsMatched = 0,
+  nPeriodicSetMatchesRequired = 3,
 }) {
 
   /*
@@ -123,6 +124,11 @@ export default function checkEquality({
               allowed_error_is_absolute: allowedErrorIsAbsolute,
             })
           }
+          // temporary fix to keep complex numbers from crashing math-expressions
+          // TODO: handle complex numbers
+          if (expr_a.tree.im || expr_b.tree.im) {
+            return { fraction_equal: 0 }
+          }
           let equality = me.equalSpecifiedSignErrors(expr_b, expr_a, {
             equalityFunction,
             n_sign_errors: nSignErrorsMatched
@@ -133,6 +139,11 @@ export default function checkEquality({
           // temporary fix until equalsViaSyntax returns false for \uff3f
           if (expr_a.variables().includes('\uFF3F') || expr_b.variables().includes('\uFF3F')) {
             return { fraction_equal: 0 };
+          }
+          // temporary fix to keep complex numbers from crashing math-expressions
+          // TODO: handle complex numbers
+          if (expr_a.tree.im || expr_b.tree.im) {
+            return { fraction_equal: 0 }
           }
           let equality = expr_a.equalsViaSyntax(expr_b, {
             allowed_error_in_numbers: allowedErrorInNumbers,
@@ -153,27 +164,30 @@ export default function checkEquality({
           expr_b = me.fromAst(b);
         }
 
-        let aIsDiscreteInfinite = Array.isArray(a) && a[0] === "discrete_infinite_set";
-        let bIsDiscreteInfinite = Array.isArray(b) && b[0] === "discrete_infinite_set";
+        // let aIsPeriodicSet = Array.isArray(a) && a[0] === "periodic_set";
+        // let bIsPeriodicSet = Array.isArray(b) && b[0] === "periodic_set";
 
-        if (aIsDiscreteInfinite || bIsDiscreteInfinite) {
-          let dis = expr_a, other = expr_b;
-          if (!aIsDiscreteInfinite) {
-            dis = expr_b;
-            other = expr_a;
-          }
+        // console.log(expr_a, expr_b)
 
-          let equality = dis.equalsDiscreteInfinite(other, { match_partial: partialMatches });
 
-          if (equality === true) {
-            return { fraction_equal: 1 };
-          } else if (equality === false) {
-            return { fraction_equal: 0 };
-          } else {
-            return { fraction_equal: equality };
-          }
+        // if (aIsPeriodicSet || bIsPeriodicSet) {
+        //   let set1 = expr_a, set2 = expr_b;
+        //   if (!aIsPeriodicSet) {
+        //     set1 = expr_b;
+        //     set2 = expr_a;
+        //   }
 
-        }
+        //   let equality = periodicSetEquality(set1, set2, { match_partial: partialMatches });
+
+        //   if (equality === true) {
+        //     return { fraction_equal: 1 };
+        //   } else if (equality === false) {
+        //     return { fraction_equal: 0 };
+        //   } else {
+        //     return { fraction_equal: equality };
+        //   }
+
+        // }
 
 
         if (nSignErrorsMatched > 0) {
@@ -189,6 +203,11 @@ export default function checkEquality({
               allowed_error_is_absolute: allowedErrorIsAbsolute,
             })
           }
+          // temporary fix to keep complex numbers from crashing math-expressions
+          // TODO: handle complex numbers
+          if (expr_a.tree.im || expr_b.tree.im) {
+            return { fraction_equal: 0 }
+          }
           let equality = me.equalSpecifiedSignErrors(expr_b, expr_a, {
             equalityFunction,
             n_sign_errors: nSignErrorsMatched
@@ -196,6 +215,12 @@ export default function checkEquality({
           return { fraction_equal: equality ? 1 : 0 };
 
         } else {
+
+          // temporary fix to keep complex numbers from crashing math-expressions
+          // TODO: handle complex numbers
+          if (expr_a.tree.im || expr_b.tree.im) {
+            return { fraction_equal: 0 }
+          }
           let equality = expr_a.equals(expr_b, {
             allowed_error_in_numbers: allowedErrorInNumbers,
             include_error_in_number_exponents: includeErrorInNumberExponents,
@@ -218,7 +243,28 @@ export default function checkEquality({
     let object1_operator = object1.tree[0];
     let object2_operator = object2.tree[0];
 
-    if (object1_operator === "list") {
+    if (object1_operator === "periodic_set" || object2_operator === "periodic_set") {
+
+      let set1 = object1, set2 = object2;
+      if (object1_operator !== "periodic_set") {
+        set1 = object2;
+        set2 = object1;
+      }
+
+      let equality = periodicSetEquality(set1, set2, {
+        match_partial: partialMatches,
+        min_elements_match: nPeriodicSetMatchesRequired,
+      });
+
+      if (equality === true) {
+        return { fraction_equal: 1 };
+      } else if (equality === false) {
+        return { fraction_equal: 0 };
+      } else {
+        return { fraction_equal: equality };
+      }
+
+    } else if (object1_operator === "list") {
       object1 = object1.tree.slice(1);
       if (object2_operator === "list") {
         object2 = object2.tree.slice(1);
@@ -506,6 +552,7 @@ export default function checkEquality({
         allowedErrorInNumbers,
         allowedErrorIsAbsolute,
         nSignErrorsMatched,
+        nPeriodicSetMatchesRequired,
       })
       n_matches += sub_results.fraction_equal;
     }
@@ -551,6 +598,7 @@ export default function checkEquality({
           allowedErrorInNumbers,
           allowedErrorIsAbsolute,
           nSignErrorsMatched,
+          nPeriodicSetMatchesRequired,
         })
         C[i + 1][j + 1] = Math.max(C[i][j] + sub_results.fraction_equal,
           C[i + 1][j], C[i][j + 1])
@@ -591,6 +639,7 @@ export default function checkEquality({
         allowedErrorInNumbers,
         allowedErrorIsAbsolute,
         nSignErrorsMatched,
+        nPeriodicSetMatchesRequired,
       })
       if (sub_results.fraction_equal > best_match) {
         best_match = sub_results.fraction_equal;
@@ -606,6 +655,7 @@ export default function checkEquality({
 
   if (nelts1 === nelts2 && nelts1 === n_matches) {
     results["fraction_equal"] = 1;
+    return results;
   }
 
   if (!partialMatches) {

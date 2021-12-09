@@ -224,7 +224,7 @@ export function mergeVectorsForInverseDefinition({ desiredVector, currentVector,
   return desiredVector;
 }
 
-export function substituteUnicodeInLatexString(latexString) {
+export function normalizeLatexString(latexString, { unionFromU = false } = {}) {
 
   let substitutions = [
     ['\u03B1', '\\alpha '], // 'α'
@@ -270,11 +270,52 @@ export function substituteUnicodeInLatexString(latexString) {
     ['\u03C8', '\\psi '], // 'ψ'
     ['\u03A9', '\\Omega '], // 'Ω'
     ['\u03C9', '\\omega '], // 'ω'
+    ['\u2212', '-'], // minus sign
+    ['\u22C5', ' \\cdot '], // dot operator
+    ['\u00B7', ' \\cdot '], // middle dot
+    ['\u222A', ' \\cup '], // ∪
+    ['\u2229', ' \\cap '], // ∩
+    ['\u221E', ' \\infty '], // ∞
+    ['\u2205', ' \\emptyset '], // ∅
+
   ]
 
   for (let sub of substitutions) {
     latexString = latexString.replaceAll(sub[0], sub[1])
   }
+
+  let startLdotsMatch = latexString.match(/^(\\ )*(\\ldots|\.(\\ )*\.(\\ )*\.)(\\ )*(.*)$/)
+
+  if (startLdotsMatch) {
+    let afterLdots = startLdotsMatch[6];
+    if (afterLdots[0] !== ",") {
+      latexString = "\\ldots," + afterLdots;
+    } else {
+      latexString = "\\ldots" + afterLdots;
+    }
+  }
+
+  let endLdotsMatch = latexString.match(/^(.*?)(\\ )*(\\ldots|\.(\\ )*\.(\\ )*\.)(\\ )*$/)
+
+  if (endLdotsMatch) {
+    let beforeLdots = endLdotsMatch[1];
+    if (beforeLdots[beforeLdots.length - 1] !== ",") {
+      latexString = beforeLdots + ",\\ldots";
+    } else {
+      latexString = beforeLdots + "\\ldots";
+    }
+  }
+
+  // replace [space]or[space]
+  // with \or
+  latexString = latexString.replaceAll(/(\b|\\ )or(\b|\\ )/g, "$1\\lor$2")
+  latexString = latexString.replaceAll(/(\b|\\ )and(\b|\\ )/g, "$1\\land$2")
+
+  if(unionFromU) {
+    latexString = latexString.replaceAll(/(\b|\\ )U(\b|\\ )/g, "$1\\cup$2")
+
+  }
+
 
   return latexString;
 

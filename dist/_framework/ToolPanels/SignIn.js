@@ -1,6 +1,9 @@
 import React, {useState, useEffect, useRef} from "../../_snowpack/pkg/react.js";
 import Cookies from "../../_snowpack/pkg/js-cookie.js";
 import axios from "../../_snowpack/pkg/axios.js";
+import Button from "../../_reactComponents/PanelHeaderComponents/Button.js";
+import Textfield from "../../_reactComponents/PanelHeaderComponents/Textfield.js";
+import {useToast, toastType} from "../Toast.js";
 export default function SignIn(props) {
   let [email, setEmail] = useState("");
   let [nineCode, setNineCode] = useState("");
@@ -8,19 +11,43 @@ export default function SignIn(props) {
   let [signInStage, setSignInStage] = useState("beginning");
   let [isSentEmail, setIsSentEmail] = useState(false);
   let [deviceName, setDeviceName] = useState("");
+  let [sendEmailAlert, setSendEmailAlert] = useState(false);
+  let [signInAlert, setSignInAlert] = useState(false);
+  let [validEmail, setValidEmail] = useState(false);
+  let [validCode, setValidCode] = useState(false);
+  let [sendEmailDisabled, setSendEmailDisabled] = useState(true);
+  let [signInDisabled, setSignInDisabled] = useState(true);
   console.log(signInStage);
   const jwt = Cookies.get();
   const emailRef = useRef(null);
   const codeRef = useRef(null);
-  let validEmail = false;
-  if (/^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(email)) {
-    validEmail = true;
+  const toast = useToast();
+  function validateEmail(inputEmail) {
+    if (/^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(inputEmail)) {
+      setSendEmailDisabled(false);
+      setValidEmail(true);
+      setSendEmailAlert(false);
+    } else {
+      setSendEmailDisabled(true);
+      setValidEmail(false);
+      setSendEmailAlert(true);
+    }
   }
-  let validCode = false;
-  if (/^\d{9}$/.test(nineCode)) {
-    validCode = true;
-  }
+  ;
   useEffect(() => {
+    if (/\d{9}/.test(nineCode)) {
+      setSignInDisabled(false);
+      setValidCode(true);
+      setSignInAlert(false);
+    } else if (nineCode === "") {
+      setSignInDisabled(true);
+      setValidCode(false);
+      setSignInAlert(false);
+    } else {
+      setSignInDisabled(true);
+      setValidCode(false);
+      setSignInAlert(true);
+    }
     if (codeRef.current !== null && !validCode) {
       codeRef.current.focus();
     } else if (emailRef.current !== null && !validEmail) {
@@ -71,12 +98,17 @@ export default function SignIn(props) {
         if (resp.data.reason === "Code expired") {
           setSignInStage("Code expired");
         } else if (resp.data.reason === "Invalid Code") {
-          setSignInStage("Invalid Code");
+          setSignInStage("enter code");
+          toast("Invalid code. Please try again.", toastType.ERROR);
         }
       }
     }).catch((error) => {
       console.error(error);
     });
+    setSignInStage("Loading");
+    return null;
+  }
+  if (signInStage === "Loading") {
     return /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", {
       style: {
         position: "absolute",
@@ -100,11 +132,12 @@ export default function SignIn(props) {
       }
     }, /* @__PURE__ */ React.createElement("h2", {
       style: {textAlign: "center"}
-    }, "Code Expired"), /* @__PURE__ */ React.createElement("button", {
+    }, "Code Expired"), /* @__PURE__ */ React.createElement(Button, {
       onClick: () => {
         location.href = "/#/signin";
-      }
-    }, "Restart Signin"));
+      },
+      value: "Restart Signin"
+    }));
   }
   if (signInStage === "enter code" || signInStage === "Invalid Code") {
     if (!isSentEmail) {
@@ -145,26 +178,40 @@ export default function SignIn(props) {
         margin: "20"
       }
     }, heading, /* @__PURE__ */ React.createElement("div", {
-      style: {weight: "bold"}
-    }, "Device Name: ", deviceName), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("p", null, "Check your email for a code to complete sign in.")), /* @__PURE__ */ React.createElement("p", null, /* @__PURE__ */ React.createElement("label", null, "Code (9 digit code):", " ", /* @__PURE__ */ React.createElement("input", {
-      type: "text",
+      style: {weight: "bold", fontSize: "14px"}
+    }, "Device Name: ", deviceName), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("p", {
+      style: {fontSize: "14px"}
+    }, "Check your email for a code to complete sign in.")), /* @__PURE__ */ React.createElement("p", null, /* @__PURE__ */ React.createElement(Textfield, {
+      label: "Code (9 digit code):",
       ref: codeRef,
       value: nineCode,
       "data-cy": "signinCodeInput",
+      alert: signInAlert,
       onKeyDown: (e) => {
         if (e.key === "Enter" && validCode) {
           setSignInStage("check code");
+        } else if (e.key === "Enter" && !validCode) {
+          toast("Invalid code format. Please enter 9 digits.", toastType.ERROR);
+        }
+      },
+      onBlur: () => {
+        if (!validCode && !signInAlert) {
+          toast("Invalid code format. Please enter 9 digits.", toastType.ERROR);
         }
       },
       onChange: (e) => {
         setNineCode(e.target.value);
       }
-    }))), /* @__PURE__ */ React.createElement("button", {
-      disabled: !validCode,
-      style: {},
-      onClick: () => setSignInStage("check code"),
-      "data-cy": "signInButton"
-    }, "Sign In")));
+    })), /* @__PURE__ */ React.createElement(Button, {
+      disabled: signInDisabled,
+      onClick: () => {
+        if (validCode) {
+          setSignInStage("check code");
+        }
+      },
+      "data-cy": "signInButton",
+      value: "Sign In"
+    })));
   }
   if (signInStage === "beginning") {
     let stay = 0;
@@ -188,21 +235,34 @@ export default function SignIn(props) {
       style: {width: "250px", height: "250px"},
       alt: "Doenet Logo",
       src: "/media/Doenet_Logo_Frontpage.png"
-    }), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("p", null, /* @__PURE__ */ React.createElement("label", null, "Email Address:", " ", /* @__PURE__ */ React.createElement("input", {
-      type: "text",
-      label: "Email Address",
+    }), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("p", {
+      style: {marginLeft: "2px"}
+    }, /* @__PURE__ */ React.createElement(Textfield, {
+      label: "Email Address:",
       ref: emailRef,
       value: email,
+      alert: sendEmailAlert,
       "data-cy": "signinEmailInput",
       onKeyDown: (e) => {
+        validateEmail(email);
         if (e.key === "Enter" && validEmail) {
           setSignInStage("enter code");
+        } else if (e.key === "Enter" && !validEmail) {
+          toast("Invalid email. Please try again.", toastType.ERROR);
+        }
+      },
+      onBlur: () => {
+        validateEmail(email);
+        if (!validEmail && !sendEmailAlert) {
+          toast("Invalid email. Please try again.", toastType.ERROR);
         }
       },
       onChange: (e) => {
         setEmail(e.target.value);
       }
-    }))), /* @__PURE__ */ React.createElement("p", null, /* @__PURE__ */ React.createElement("input", {
+    })), /* @__PURE__ */ React.createElement("p", {
+      style: {fontSize: "14px"}
+    }, /* @__PURE__ */ React.createElement("input", {
       type: "checkbox",
       checked: stay,
       onChange: (e) => {
@@ -212,12 +272,16 @@ export default function SignIn(props) {
           setMaxAge(0);
         }
       }
-    }), " ", "Stay Logged In"), /* @__PURE__ */ React.createElement("button", {
-      disabled: !validEmail,
-      style: {float: "right"},
-      onClick: () => setSignInStage("enter code"),
-      "data-cy": "sendEmailButton"
-    }, "Send Email"))));
+    }), " ", "Stay Logged In"), /* @__PURE__ */ React.createElement(Button, {
+      disabled: sendEmailDisabled,
+      onClick: () => {
+        if (validEmail) {
+          setSignInStage("enter code");
+        }
+      },
+      "data-cy": "sendEmailButton",
+      value: "Send Email"
+    }))));
   }
   return /* @__PURE__ */ React.createElement("div", {
     style: props.style

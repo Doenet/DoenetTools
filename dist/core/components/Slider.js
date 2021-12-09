@@ -15,6 +15,10 @@ export default class Slider extends BaseComponent {
 
   static variableForPlainMacro = "value";
 
+  static get stateVariablesShadowedForReference() {
+    return ["value"]
+  };
+
   static createAttributesObject(args) {
     let attributes = super.createAttributesObject(args);
     attributes.type = {
@@ -114,6 +118,10 @@ export default class Slider extends BaseComponent {
       valueForFalse: 0,
       defaultValue: 0,
       public: true,
+    };
+
+    attributes.bindValueTo = {
+      createComponentOfType: "_componentWithSelectableType",
     };
 
     return attributes;
@@ -345,20 +353,42 @@ export default class Slider extends BaseComponent {
           dependencyType: "stateVariable",
           variableName: "initialValue"
         },
+        bindValueTo: {
+          dependencyType: "attributeComponent",
+          attributeName: "bindValueTo",
+          variableNames: ["value"],
+        },
       }),
       definition({ dependencyValues }) {
-        return {
-          useEssentialOrDefaultValue: {
-            preliminaryValue: {
-              variablesToCheck: "value",
-              get defaultValue() {
-                return dependencyValues.initialValue;
+        if (!dependencyValues.bindValueTo) {
+          return {
+            useEssentialOrDefaultValue: {
+              preliminaryValue: {
+                variablesToCheck: "value",
+                get defaultValue() {
+                  return dependencyValues.initialValue;
+                }
               }
             }
           }
         }
+
+        return { newValues: { preliminaryValue: dependencyValues.bindValueTo.stateValues.value } };
+
       },
-      inverseDefinition({ desiredStateVariableValues }) {
+      inverseDefinition({ desiredStateVariableValues, dependencyValues }) {
+        if (dependencyValues.bindValueTo) {
+          return {
+            success: true,
+            instructions: [{
+              setDependency: "bindValueTo",
+              desiredValue: desiredStateVariableValues.preliminaryValue,
+              variableIndex: 0,
+            }]
+          };
+        }
+
+        // no children, so preliminaryValue is essential and give it the desired value
         return {
           success: true,
           instructions: [{

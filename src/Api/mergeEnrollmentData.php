@@ -30,9 +30,6 @@ $mergeEmail = array_map(function($doenetId) use($conn) {
 $mergeSection = array_map(function($doenetId) use($conn) {
 	return mysqli_real_escape_string($conn, $doenetId);
 }, $_POST['mergeSection']);
-$userIds = array_map(function($doenetId) use($conn) {
-	return mysqli_real_escape_string($conn, $doenetId);
-}, $_POST['userIds']);
 
 $success = TRUE;
 $message = "";
@@ -72,7 +69,7 @@ for($i = 0; $i < count($mergeEmail); $i++){
 	$lastName = "";
 	$email = "";
 	$section = "";
-	$new_userId = $userIds[$i];
+	$new_userId = include "randomId.php";
 	
 
 	if (in_array("email",$mergeHeads,false)){ $email = $mergeEmail[$i]; }
@@ -116,7 +113,6 @@ for($i = 0; $i < count($mergeEmail); $i++){
 
 	}else{
 		//No previous record so INSERT
-
 		$sql = "
 		INSERT INTO enrollment
 		(driveId,userId,firstName,lastName,email,empId,dateEnrolled,section)

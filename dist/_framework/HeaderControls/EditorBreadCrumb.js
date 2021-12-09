@@ -1,29 +1,25 @@
 import React, {Suspense} from "../../_snowpack/pkg/react.js";
 import {useRecoilValue} from "../../_snowpack/pkg/recoil.js";
-import BreadCrumb from "../../_reactComponents/Breadcrumb/BreadCrumb.js";
+import {BreadCrumb} from "../../_reactComponents/PanelHeaderComponents/BreadCrumb.js";
 import {searchParamAtomFamily} from "../NewToolRoot.js";
-import {folderDictionary} from "../../_reactComponents/Drive/NewDrive.js";
+import {
+  useCourseChooserCrumb,
+  useDashboardCrumb,
+  useNavigationCrumbs,
+  useEditorCrumb
+} from "../../_utils/breadcrumbUtil.js";
 export default function EditorBreadCrumb() {
+  const chooserCrumb = useCourseChooserCrumb();
   const path = useRecoilValue(searchParamAtomFamily("path"));
-  let [driveId, folderId, itemId] = path.split(":");
+  const [driveId, folderId, itemId] = path.split(":");
+  const dashboardCrumb = useDashboardCrumb(driveId);
+  const navigationCrumbs = useNavigationCrumbs(driveId, folderId);
   const doenetId = useRecoilValue(searchParamAtomFamily("doenetId"));
-  let folderInfo = useRecoilValue(folderDictionary({driveId, folderId}));
-  const docInfo = folderInfo.contentsDictionary[itemId];
-  if (!docInfo) {
-    return null;
-  }
+  const editorCrumb = useEditorCrumb({doenetId, driveId, folderId, itemId});
   return /* @__PURE__ */ React.createElement(Suspense, {
-    fallback: /* @__PURE__ */ React.createElement("div", null, "loading Drive...")
-  }, /* @__PURE__ */ React.createElement("div", {
-    style: {
-      margin: "-9px 0px 0px -25px",
-      maxWidth: "850px"
-    }
+    fallback: /* @__PURE__ */ React.createElement("div", null, "Loading Breadcrumb...")
   }, /* @__PURE__ */ React.createElement(BreadCrumb, {
-    tool: "Content",
-    tool2: "Editor",
-    doenetId,
-    path,
-    label: docInfo.label
-  })));
+    crumbs: [chooserCrumb, dashboardCrumb, ...navigationCrumbs, editorCrumb],
+    offset: 68
+  }));
 }

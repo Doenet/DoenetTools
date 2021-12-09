@@ -299,8 +299,7 @@ describe('Curve Tag Tests', function () {
 
   });
 
-  // TODO: determine how extrapolation should work
-  it.skip('extrapolate', () => {
+  it('extrapolate', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
@@ -379,13 +378,13 @@ describe('Curve Tag Tests', function () {
 
       let x = components['/_point5'].stateValues.xs[0].tree;
       let y = components['/_point5'].stateValues.xs[1].tree;
-      expect(x).closeTo(8.6, 0.1);
-      expect(y).closeTo(-7.7, 0.1);
+      expect(x).closeTo(9.1, 0.1);
+      expect(y).closeTo(-6.9, 0.1);
 
       x = components['/_point6'].stateValues.xs[0].tree;
       y = components['/_point6'].stateValues.xs[1].tree;
-      expect(x).closeTo(-8.6, 0.1);
-      expect(y).closeTo(-7.7, 0.1);
+      expect(x).closeTo(-9.1, 0.1);
+      expect(y).closeTo(-6.9, 0.1);
     })
 
     cy.log("activate bezier controls and move tangents")
@@ -405,13 +404,13 @@ describe('Curve Tag Tests', function () {
       })
       let x = components['/_point5'].stateValues.xs[0].tree;
       let y = components['/_point5'].stateValues.xs[1].tree;
-      expect(x).closeTo(5.7, 0.1);
-      expect(y).closeTo(-5.6, 0.1);
+      expect(x).closeTo(6.7, 0.1);
+      expect(y).closeTo(-4.3, 0.1);
 
       x = components['/_point6'].stateValues.xs[0].tree;
       y = components['/_point6'].stateValues.xs[1].tree;
-      expect(x).closeTo(-5.7, 0.1);
-      expect(y).closeTo(-5.6, 0.1);
+      expect(x).closeTo(-6.7, 0.1);
+      expect(y).closeTo(-4.3, 0.1);
     })
 
     cy.window().then((win) => {
@@ -429,15 +428,383 @@ describe('Curve Tag Tests', function () {
 
       let x = components['/_point5'].stateValues.xs[0].tree;
       let y = components['/_point5'].stateValues.xs[1].tree;
-      expect(x).closeTo(7.5, 0.1);
-      expect(y).closeTo(-2.5, 0.1);
+      expect(x).closeTo(7.2, 0.1);
+      expect(y).closeTo(-3, 0.1);
 
       components['/_point6'].movePoint({ x: -9, y: -3 })
 
       x = components['/_point6'].stateValues.xs[0].tree;
       y = components['/_point6'].stateValues.xs[1].tree;
-      expect(x).closeTo(-7.5, 0.1);
-      expect(y).closeTo(-2.5, 0.1);
+      expect(x).closeTo(-7.2, 0.1);
+      expect(y).closeTo(-3, 0.1);
+    })
+
+
+  });
+
+  it('extrapolate always reaches edge of graph', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <p>xmin = <mathinput name="xmin" prefill="-10" /></p>
+    <p>xmax = <mathinput name="xmax" prefill="10" /></p>
+    <p>ymin = <mathinput name="ymin" prefill="-10" /></p>
+    <p>ymax = <mathinput name="ymax" prefill="10" /></p>
+    
+    <graph xmin="$xmin" xmax="$xmax" ymin="$ymin" ymax="$ymax">
+    <curve extrapolatebackward extrapolateforward through="(0,0) (1,1)">
+      <beziercontrols alwaysVisible>(-0.2,-0.2) (-0.2, -0.2)</bezierControls>
+    </curve>
+    
+    <point x="8" y="-6">
+      <constraints>
+        <constrainTo><copy tname="_curve1" /></constrainTo>
+      </constraints>
+    </point>
+    <point x="-8" y="6">
+      <constraints>
+        <constrainTo><copy tname="_curve1" /></constrainTo>
+      </constraints>
+    </point>
+
+    </graph>
+
+
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  //wait for window to load
+
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+
+      let x = components['/_point1'].stateValues.xs[0].tree;
+      let y = components['/_point1'].stateValues.xs[1].tree;
+      expect(x).closeTo(1, 1E-5);
+      expect(y).closeTo(1, 1E-5);
+
+      x = components['/_point2'].stateValues.xs[0].tree;
+      y = components['/_point2'].stateValues.xs[1].tree;
+      expect(x).closeTo(-1, 1E-5);
+      expect(y).closeTo(-1, 1E-5);
+    })
+
+
+    cy.log("make tangents even smaller")
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      components['/_curve1'].moveControlVector({
+        controlVectorInds: [0, 0],
+        controlVector: [-0.01, -0.01]
+      })
+      components['/_curve1'].moveControlVector({
+        controlVectorInds: [1, 0],
+        controlVector: [-0.01, -0.01]
+      })
+      let x = components['/_point1'].stateValues.xs[0].tree;
+      let y = components['/_point1'].stateValues.xs[1].tree;
+      expect(x).closeTo(1, 1E-5);
+      expect(y).closeTo(1, 1E-5);
+
+      x = components['/_point2'].stateValues.xs[0].tree;
+      y = components['/_point2'].stateValues.xs[1].tree;
+      expect(x).closeTo(-1, 1E-5);
+      expect(y).closeTo(-1, 1E-5);
+    })
+
+    cy.log("make graph larger")
+    cy.get('#\\/xmin textarea').type("{end}00{enter}", { force: true })
+    cy.get('#\\/xmax textarea').type("{end}00{enter}", { force: true })
+    cy.get('#\\/ymin textarea').type("{end}00{enter}", { force: true })
+    cy.get('#\\/ymax textarea').type("{end}00{enter}", { force: true })
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+
+      let x = components['/_point1'].stateValues.xs[0].tree;
+      let y = components['/_point1'].stateValues.xs[1].tree;
+      expect(x).closeTo(1, 1E-5);
+      expect(y).closeTo(1, 1E-5);
+
+      x = components['/_point2'].stateValues.xs[0].tree;
+      y = components['/_point2'].stateValues.xs[1].tree;
+      expect(x).closeTo(-1, 1E-5);
+      expect(y).closeTo(-1, 1E-5);
+    })
+
+    cy.log('move points to corners');
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+
+      components["/_point1"].movePoint({ x: 1001, y: 999 })
+      components["/_point2"].movePoint({ x: -1001, y: -999 })
+
+      let x = components['/_point1'].stateValues.xs[0].tree;
+      let y = components['/_point1'].stateValues.xs[1].tree;
+      expect(x).closeTo(1000, 1E-5);
+      expect(y).closeTo(1000, 1E-5);
+
+      x = components['/_point2'].stateValues.xs[0].tree;
+      y = components['/_point2'].stateValues.xs[1].tree;
+      expect(x).closeTo(-1000, 1E-5);
+      expect(y).closeTo(-1000, 1E-5);
+    });
+
+
+    cy.log("upper right tangent slightly upward")
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      components['/_curve1'].moveControlVector({
+        controlVectorInds: [1, 0],
+        controlVector: [-0.01, -0.012]
+      })
+      let x = components['/_point1'].stateValues.xs[0].tree;
+      let y = components['/_point1'].stateValues.xs[1].tree;
+      expect(x).closeTo(10, 10);
+      expect(y).closeTo(1000, 10);
+
+      x = components['/_point2'].stateValues.xs[0].tree;
+      y = components['/_point2'].stateValues.xs[1].tree;
+      expect(x).closeTo(-10, 10);
+      expect(y).closeTo(-1000, 10);
+    })
+
+
+    cy.log("upper right tangent slightly rightward")
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      components['/_curve1'].moveControlVector({
+        controlVectorInds: [1, 0],
+        controlVector: [-0.012, -0.01]
+      })
+      let x = components['/_point1'].stateValues.xs[0].tree;
+      let y = components['/_point1'].stateValues.xs[1].tree;
+      expect(x).closeTo(1000, 10);
+      expect(y).closeTo(10, 10);
+
+      x = components['/_point2'].stateValues.xs[0].tree;
+      y = components['/_point2'].stateValues.xs[1].tree;
+      expect(x).closeTo(-1000, 10);
+      expect(y).closeTo(-10, 10);
+    })
+
+
+    cy.log("lower left tangent upward and to left")
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      components['/_curve1'].moveControlVector({
+        controlVectorInds: [0, 0],
+        controlVector: [-0.02, 0.02]
+      })
+
+      components["/_point2"].movePoint({ x: -1000, y: 1000 })
+
+      let x = components['/_point1'].stateValues.xs[0].tree;
+      let y = components['/_point1'].stateValues.xs[1].tree;
+      expect(x).closeTo(1000, 10);
+      expect(y).closeTo(10, 10);
+
+      x = components['/_point2'].stateValues.xs[0].tree;
+      y = components['/_point2'].stateValues.xs[1].tree;
+      expect(x).closeTo(-10, 10);
+      expect(y).closeTo(1000, 10);
+    })
+
+    cy.log("lower left tangent downward and to right")
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      components['/_curve1'].moveControlVector({
+        controlVectorInds: [0, 0],
+        controlVector: [0.1, -0.1]
+      })
+
+      components["/_point2"].movePoint({ x: 1000, y: -1000 })
+
+      let x = components['/_point1'].stateValues.xs[0].tree;
+      let y = components['/_point1'].stateValues.xs[1].tree;
+      expect(x).closeTo(10, 10);
+      expect(y).closeTo(1000, 10);
+
+      x = components['/_point2'].stateValues.xs[0].tree;
+      y = components['/_point2'].stateValues.xs[1].tree;
+      expect(x).closeTo(1000, 10);
+      expect(y).closeTo(-10, 10);
+    })
+
+    cy.log("upper right tangent straight right")
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      components['/_curve1'].moveControlVector({
+        controlVectorInds: [1, 0],
+        controlVector: [-0.01, 0]
+      })
+      let x = components['/_point1'].stateValues.xs[0].tree;
+      let y = components['/_point1'].stateValues.xs[1].tree;
+      expect(x).closeTo(1000, 1E-5);
+      expect(y).closeTo(1, 1E-5);
+
+      x = components['/_point2'].stateValues.xs[0].tree;
+      y = components['/_point2'].stateValues.xs[1].tree;
+      expect(x).closeTo(1000, 10);
+      expect(y).closeTo(-10, 10);
+    })
+
+
+    cy.log("upper right tangent straight up")
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      components['/_curve1'].moveControlVector({
+        controlVectorInds: [1, 0],
+        controlVector: [0, -0.01]
+      })
+      let x = components['/_point1'].stateValues.xs[0].tree;
+      let y = components['/_point1'].stateValues.xs[1].tree;
+      expect(x).closeTo(1, 1E-5);
+      expect(y).closeTo(1000, 1E-5);
+
+      x = components['/_point2'].stateValues.xs[0].tree;
+      y = components['/_point2'].stateValues.xs[1].tree;
+      expect(x).closeTo(1000, 10);
+      expect(y).closeTo(-10, 10);
+    })
+
+
+    cy.log("lower left tangent straight left")
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      components['/_curve1'].moveControlVector({
+        controlVectorInds: [0, 0],
+        controlVector: [-0.01, 0]
+      })
+      components["/_point2"].movePoint({ x: -1000, y: -1000 })
+
+
+      let x = components['/_point1'].stateValues.xs[0].tree;
+      let y = components['/_point1'].stateValues.xs[1].tree;
+      expect(x).closeTo(1, 1E-5);
+      expect(y).closeTo(1000, 1E-5);
+
+      x = components['/_point2'].stateValues.xs[0].tree;
+      y = components['/_point2'].stateValues.xs[1].tree;
+      expect(x).closeTo(-1000, 1E-5);
+      expect(y).closeTo(0, 1E-5);
+    })
+
+
+    cy.log("lower left tangent straight down")
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      components['/_curve1'].moveControlVector({
+        controlVectorInds: [0, 0],
+        controlVector: [0, -0.01]
+      })
+
+      components["/_point2"].movePoint({ x: -1000, y: -1000 })
+      
+      let x = components['/_point1'].stateValues.xs[0].tree;
+      let y = components['/_point1'].stateValues.xs[1].tree;
+      expect(x).closeTo(1, 1E-5);
+      expect(y).closeTo(1000, 1E-5);
+
+      x = components['/_point2'].stateValues.xs[0].tree;
+      y = components['/_point2'].stateValues.xs[1].tree;
+      expect(x).closeTo(0, 1E-5);
+      expect(y).closeTo(-1000, 1E-5);
+    })
+
+  });
+
+  it('extrapolate modes', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <booleaninput name="eb"/>
+    <booleaninput name="ef"/>
+    
+    <graph>
+      <curve through="(1,2) (3,4) (-5,6)" extrapolateBackward="$eb" extrapolateForward="$ef">
+        <bezierControls>(1,0) (-1,0) (0, -1)</bezierControls>
+      </curve>
+    
+    </graph>
+    
+    <p>ebm: <copy prop="extrapolateBackwardMode" tname="_curve1" assignNames="ebm" /></p>
+    <p>efm: <copy prop="extrapolateForwardMode" tname="_curve1" assignNames="efm" /></p>
+
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  //wait for window to load
+
+    cy.get('#\\/ebm').should('have.text', '')
+    cy.get('#\\/efm').should('have.text', '')
+
+    cy.log('extrapolate backward')
+    cy.get("#\\/eb_input").click();
+    cy.get('#\\/ebm').should('have.text', 'line')
+    cy.get('#\\/efm').should('have.text', '')
+
+    cy.log('move first control vector')
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      components['/_curve1'].moveControlVector({
+        controlVectorInds: [0, 0],
+        controlVector: [1, -1]
+      })
+
+      cy.get('#\\/ebm').should('have.text', 'parabolaHorizontal')
+      cy.get('#\\/efm').should('have.text', '')
+  
+    })
+
+    cy.log('move second through point')
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+
+      components['/_curve1'].moveThroughPoint({
+        throughPointInd: 1,
+        throughPoint: [-1, 4]
+      });
+
+      cy.get('#\\/ebm').should('have.text', 'parabolaVertical')
+      cy.get('#\\/efm').should('have.text', '')
+  
+    })
+
+    cy.log('extrapolate foward')
+    cy.get("#\\/ef_input").click();
+    cy.get('#\\/ebm').should('have.text', 'parabolaVertical')
+    cy.get('#\\/efm').should('have.text', 'line')
+
+    cy.log('move last control vector')
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      components['/_curve1'].moveControlVector({
+        controlVectorInds: [2, 0],
+        controlVector: [1, -1]
+      })
+
+      cy.get('#\\/ebm').should('have.text', 'parabolaVertical')
+      cy.get('#\\/efm').should('have.text', 'parabolaVertical')
+  
+    })
+
+
+    cy.log('move last control vector again')
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      components['/_curve1'].moveControlVector({
+        controlVectorInds: [2, 0],
+        controlVector: [-1, -1]
+      })
+
+      cy.get('#\\/ebm').should('have.text', 'parabolaVertical')
+      cy.get('#\\/efm').should('have.text', 'parabolaHorizontal')
+  
     })
 
 

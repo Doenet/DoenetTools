@@ -132,6 +132,7 @@ export default class Core {
       componentsTouched: [],
       compositesToExpand: new Set([]),
       compositesToUpdateReplacements: [],
+      inactiveCompositesToUpdateReplacements: [],
       componentsToUpdateActionChaining: {},
 
       unresolvedDependencies: {},
@@ -932,6 +933,8 @@ export default class Core {
     if (componentClass.descendantCompositesMustHaveAReplacement) {
       sharedParameters.compositesMustHaveAReplacement = true;
       sharedParameters.compositesDefaultReplacementType = componentClass.descendantCompositesDefaultReplacementType;
+    } else if (componentClass.descendantCompositesMustHaveAReplacement === false) {
+      sharedParameters.compositesMustHaveAReplacement = false;
     }
 
     // check if component has any attributes to propagate to descendants
@@ -1640,7 +1643,7 @@ export default class Core {
       newSerializedChild = {
         componentType:
           this.allComponentClasses[originalChild.componentType]
-            .getAdapterComponentType(n, this.publicStateVariableInfo),
+            .getAdapterComponentType(adapterIndUsed, this.publicStateVariableInfo),
         placeholderInd: originalChild.placeholderInd + "adapt"
       }
     }
@@ -2026,7 +2029,7 @@ export default class Core {
 
         } else {
           // don't use any replacements that are marked as being withheld
-          this.markWithheldReplacementInactive(child);
+          this.markWithheldReplacementsInactive(child);
 
           replacements = child.replacements;
           if (child.replacementsToWithhold > 0) {
@@ -2075,7 +2078,7 @@ export default class Core {
 
   }
 
-  markWithheldReplacementInactive(composite) {
+  markWithheldReplacementsInactive(composite) {
 
     let numActive = composite.replacements.length;
 
@@ -2096,6 +2099,19 @@ export default class Core {
         repl, true
       );
     }
+
+    // composite is newly active
+    // if updates to replacements were postponed
+    // add them back to the queue
+    if (!composite.stateValues.isInactiveCompositeReplacement) {
+      let cName = composite.componentName;
+      if (this.updateInfo.inactiveCompositesToUpdateReplacements.includes(cName)) {
+        this.updateInfo.inactiveCompositesToUpdateReplacements
+          = this.updateInfo.inactiveCompositesToUpdateReplacements.filter(x => x != cName);
+        this.updateInfo.compositesToUpdateReplacements.push(cName);
+      }
+
+    }
   }
 
   changeInactiveComponentAndDescendants(component, inactive) {
@@ -2113,8 +2129,15 @@ export default class Core {
         this.changeInactiveComponentAndDescendants(this._components[childName], inactive)
       }
 
+      for (let attrName in component.attributes) {
+        let attrComp = component.attributes[attrName].component;
+        if (attrComp) {
+          this.changeInactiveComponentAndDescendants(this._components[attrComp.componentName], inactive)
+        }
+      }
+
       if (component.replacements) {
-        this.markWithheldReplacementInactive(component);
+        this.markWithheldReplacementsInactive(component);
       }
     }
   }
@@ -2737,6 +2760,14 @@ export default class Core {
         }
       }
 
+      if ("targetAttributesToAlwaysIgnore" in compositeComponent.state) {
+        thisDependencies.targetAttributesToAlwaysIgnore = {
+          dependencyType: "stateVariable",
+          componentName: compositeComponent.componentName,
+          variableName: "targetAttributesToAlwaysIgnore",
+        };
+      }
+
       // We overwrite targetVariable here as the instructions
       // mean we should map this variable from the target
       // onto attribute of replacement
@@ -2771,9 +2802,16 @@ export default class Core {
             attributeValue = dependencyValues.attributePrimitive;
           } else {
 
+            let targetAttributesToIgnore = [];
+            if (dependencyValues.targetAttributesToIgnore) {
+              targetAttributesToIgnore.push(...dependencyValues.targetAttributesToIgnore)
+            }
+            if (dependencyValues.targetAttributesToAlwaysIgnore) {
+              targetAttributesToIgnore.push(...dependencyValues.targetAttributesToAlwaysIgnore);
+            }
+
             if (dependencyValues.targetVariable !== undefined
-              && !(dependencyValues.targetAttributesToIgnore &&
-                dependencyValues.targetAttributesToIgnore.includes(attrName))
+              && !targetAttributesToIgnore.includes(attrName)
               && !usedDefault.targetVariable) {
               // if don't have attribute component or primitive
               // and target has attribute, use that value
@@ -2826,9 +2864,16 @@ export default class Core {
               return { success: false }
             }
 
+            let targetAttributesToIgnore = [];
+            if (dependencyValues.targetAttributesToIgnore) {
+              targetAttributesToIgnore.push(...dependencyValues.targetAttributesToIgnore)
+            }
+            if (dependencyValues.targetAttributesToAlwaysIgnore) {
+              targetAttributesToIgnore.push(...dependencyValues.targetAttributesToAlwaysIgnore);
+            }
+
             if (dependencyValues.targetVariable !== undefined
-              && !(dependencyValues.targetAttributesToIgnore &&
-                dependencyValues.targetAttributesToIgnore.includes(attrName))
+              && !dependencyValues.targetAttributesToIgnore.includes(attrName)
               && !usedDefault.targetVariable) {
               //  if target has attribute, set that value
               return {
@@ -2889,9 +2934,16 @@ export default class Core {
             attributeValue = dependencyValues.attributePrimitive;
           } else {
 
+            let targetAttributesToIgnore = [];
+            if (dependencyValues.targetAttributesToIgnore) {
+              targetAttributesToIgnore.push(...dependencyValues.targetAttributesToIgnore)
+            }
+            if (dependencyValues.targetAttributesToAlwaysIgnore) {
+              targetAttributesToIgnore.push(...dependencyValues.targetAttributesToAlwaysIgnore);
+            }
+
             if (dependencyValues.targetVariable !== undefined
-              && !(dependencyValues.targetAttributesToIgnore &&
-                dependencyValues.targetAttributesToIgnore.includes(attrName))
+              && !targetAttributesToIgnore.includes(attrName)
               && !usedDefault.targetVariable) {
               // if don't have attribute component or primitive
               // and target has attribute, use that value
@@ -2931,9 +2983,16 @@ export default class Core {
               return { success: false }
             }
 
+            let targetAttributesToIgnore = [];
+            if (dependencyValues.targetAttributesToIgnore) {
+              targetAttributesToIgnore.push(...dependencyValues.targetAttributesToIgnore)
+            }
+            if (dependencyValues.targetAttributesToAlwaysIgnore) {
+              targetAttributesToIgnore.push(...dependencyValues.targetAttributesToAlwaysIgnore);
+            }
+
             if (dependencyValues.targetVariable !== undefined
-              && !(dependencyValues.targetAttributesToIgnore &&
-                dependencyValues.targetAttributesToIgnore.includes(attrName))
+              && !targetAttributesToIgnore.includes(attrName)
             ) {
               //  if target has attribute, set that value
               return {
@@ -7665,8 +7724,11 @@ export default class Core {
         // execute asynchronously any remaining processes
         // (that got added while performAction was running)
 
-        setTimeout(this.executeProcesses, 0);
-
+        if (this.processQueue.length > 0) {
+          setTimeout(this.executeProcesses, 0);
+        } else {
+          this.processing = false;
+        }
       }
     });
 
@@ -7763,7 +7825,11 @@ export default class Core {
         // execute asynchronously any remaining processes
         // (that got added while performUpdate was running)
 
-        setTimeout(this.executeProcesses, 0);
+        if (this.processQueue.length > 0) {
+          setTimeout(this.executeProcesses, 0);
+        } else {
+          this.processing = false;
+        }
 
       }
     });
@@ -7885,7 +7951,7 @@ export default class Core {
         //   });
         // }
         if (event) {
-          event.context.itemCreditAchieved[itemNumber] = this.document.stateValues.itemCreditAchieved[itemNumber]
+          event.context.itemCreditAchieved[itemNumber] = this.document.stateValues.itemCreditAchieved[itemNumber - 1]
         }
       }
     }
@@ -8100,26 +8166,30 @@ export default class Core {
         ) {
 
           if (composite.state.readyToExpandWhenResolved.initiallyResolved) {
-            let result = this.updateCompositeReplacements({
-              component: composite,
-              componentChanges,
-            });
+            if (composite.stateValues.isInactiveCompositeReplacement) {
+              this.updateInfo.inactiveCompositesToUpdateReplacements.push(cName)
+            } else {
+              let result = this.updateCompositeReplacements({
+                component: composite,
+                componentChanges,
+              });
 
-            for (let componentName in result.addedComponents) {
-              updatedComposites = true;
-              this.changedStateVariables[componentName] = {};
-              for (let varName in this._components[componentName].state) {
-                let stateVarObj = this._components[componentName].state[varName];
-                if (stateVarObj.isArray) {
-                  this.changedStateVariables[componentName][varName] =
-                    new Set(stateVarObj.getAllArrayKeys(stateVarObj.arraySize))
-                } else if (!stateVarObj.isArrayEntry) {
-                  this.changedStateVariables[componentName][varName] = true;
+              for (let componentName in result.addedComponents) {
+                updatedComposites = true;
+                this.changedStateVariables[componentName] = {};
+                for (let varName in this._components[componentName].state) {
+                  let stateVarObj = this._components[componentName].state[varName];
+                  if (stateVarObj.isArray) {
+                    this.changedStateVariables[componentName][varName] =
+                      new Set(stateVarObj.getAllArrayKeys(stateVarObj.arraySize))
+                  } else if (!stateVarObj.isArrayEntry) {
+                    this.changedStateVariables[componentName][varName] = true;
+                  }
                 }
               }
-            }
-            if (Object.keys(result.deletedComponents).length > 0) {
-              updatedComposites = true;
+              if (Object.keys(result.deletedComponents).length > 0) {
+                updatedComposites = true;
+              }
             }
           } else {
             compositesNotReady.push(cName)
@@ -8306,13 +8376,15 @@ export default class Core {
 
             if (compStateObj.willBeEssential) {
               compStateObj.essential = true;
-              delete compStateObj.value;
             } else {
               console.warn(`can't update state variable ${vName} of component ${cName}, as it is not an essential state variable.`);
               nFailures += 1;
               continue;
             }
           }
+
+          // remove any setter
+          delete compStateObj.value;
 
           if (compStateObj.set) {
             compStateObj.value = compStateObj.set(newComponentStateVariables[vName]);
@@ -8378,6 +8450,7 @@ export default class Core {
           componentName: component.componentName,
           type: "stateVariable",
           stateVariable: varName,
+          force: true,
         });
 
         if (!result.success) {
@@ -9039,6 +9112,12 @@ function validateAttributeValue({ value, attributeSpecification, attribute }) {
     value in attributeSpecification.valueTransformations
   ) {
     value = attributeSpecification.valueTransformations[value];
+  }
+
+  if (attributeSpecification.transformNonFiniteTo !== undefined &&
+    !Number.isFinite(value)
+  ) {
+    value = attributeSpecification.transformNonFiniteTo;
   }
 
   if (attributeSpecification.toLowerCase) {

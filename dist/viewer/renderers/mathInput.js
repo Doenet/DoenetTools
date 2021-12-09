@@ -6,6 +6,7 @@ import {FontAwesomeIcon} from "../../_snowpack/pkg/@fortawesome/react-fontawesom
 import {faCheck, faLevelDownAlt, faTimes, faCloud, faPercentage} from "../../_snowpack/pkg/@fortawesome/free-solid-svg-icons.js";
 import styled from "../../_snowpack/pkg/styled-components.js";
 import mathquill from "../../_snowpack/pkg/react-mathquill.js";
+import {getFromLatex, normalizeLatexString} from "../../core/utils/math.js";
 mathquill.addStyles();
 let EditableMathField = mathquill.EditableMathField;
 export default class MathInput extends DoenetRenderer {
@@ -38,7 +39,7 @@ export default class MathInput extends DoenetRenderer {
   }
   calculateMathExpressionFromLatex(text) {
     let expression;
-    text = substituteUnicodeInLatexString(text);
+    text = normalizeLatexString(text, {unionFromU: this.doenetSvData.unionFromU});
     text = text.replace(/\^(\w)/g, "^{$1}");
     let fromLatex = getFromLatex({
       functionSymbols: this.doenetSvData.functionSymbols,
@@ -267,209 +268,6 @@ export default class MathInput extends DoenetRenderer {
   }
 }
 function stripLatex(latex) {
-  let s = latex.replaceAll(`\\,`, "");
+  let s = latex.replaceAll(`\\,`, "").replaceAll(/\\var{([^{}]*)}/g, "$1");
   return s;
-}
-var appliedFunctionSymbols = [
-  "abs",
-  "exp",
-  "log",
-  "ln",
-  "log10",
-  "sign",
-  "sqrt",
-  "erf",
-  "acos",
-  "acosh",
-  "acot",
-  "acoth",
-  "acsc",
-  "acsch",
-  "asec",
-  "asech",
-  "asin",
-  "asinh",
-  "atan",
-  "atanh",
-  "cos",
-  "cosh",
-  "cot",
-  "coth",
-  "csc",
-  "csch",
-  "sec",
-  "sech",
-  "sin",
-  "sinh",
-  "tan",
-  "tanh",
-  "arcsin",
-  "arccos",
-  "arctan",
-  "arccsc",
-  "arcsec",
-  "arccot",
-  "cosec",
-  "arg",
-  "min",
-  "max",
-  "mean",
-  "median",
-  "floor",
-  "ceil",
-  "round",
-  "sum",
-  "prod",
-  "var",
-  "std",
-  "count",
-  "mod"
-];
-let allowedLatexSymbols = ["alpha", "beta", "gamma", "Gamma", "delta", "Delta", "epsilon", "zeta", "eta", "theta", "Theta", "iota", "kappa", "lambda", "Lambda", "mu", "nu", "xi", "Xi", "pi", "Pi", "rho", "sigma", "Sigma", "tau", "Tau", "upsilon", "Upsilon", "phi", "Phi", "chi", "psi", "Psi", "omega", "Omega", "partial", "varnothing", "emptyset"];
-function getFromLatex({functionSymbols, splitSymbols}) {
-  if (splitSymbols) {
-    return (x) => me.fromAst(new me.converters.latexToAstObj({
-      appliedFunctionSymbols,
-      functionSymbols,
-      splitSymbols,
-      allowedLatexSymbols
-    }).convert(wrapWordIncludingNumberWithVar(x)));
-  } else {
-    return (x) => me.fromAst(new me.converters.latexToAstObj({
-      appliedFunctionSymbols,
-      functionSymbols,
-      splitSymbols,
-      allowedLatexSymbols
-    }).convert(wrapWordWithVar(x)));
-  }
-}
-function substituteUnicodeInLatexString(latexString) {
-  let substitutions = [
-    ["α", "\\alpha "],
-    ["β", "\\beta "],
-    ["ϐ", "\\beta "],
-    ["Γ", "\\Gamma "],
-    ["γ", "\\gamma "],
-    ["Δ", "\\Delta "],
-    ["δ", "\\delta "],
-    ["ε", "\\epsilon "],
-    ["ϵ", "\\epsilon "],
-    ["ζ", "\\zeta "],
-    ["η", "\\eta "],
-    ["Θ", "\\Theta "],
-    ["ϴ", "\\Theta "],
-    ["θ", "\\theta "],
-    ["ᶿ", "\\theta "],
-    ["ϑ", "\\theta "],
-    ["ι", "\\iota "],
-    ["κ", "\\kappa "],
-    ["Λ", "\\Lambda "],
-    ["λ", "\\lambda "],
-    ["μ", "\\mu "],
-    ["µ", "\\mu "],
-    ["ν", "\\nu "],
-    ["Ξ", "\\Xi "],
-    ["ξ", "\\xi "],
-    ["Π", "\\Pi "],
-    ["π", "\\pi "],
-    ["ϖ", "\\pi "],
-    ["ρ", "\\rho "],
-    ["ϱ", "\\rho "],
-    ["Σ", "\\Sigma "],
-    ["σ", "\\sigma "],
-    ["ς", "\\sigma "],
-    ["τ", "\\tau "],
-    ["Υ", "\\Upsilon "],
-    ["υ", "\\upsilon "],
-    ["Φ", "\\Phi "],
-    ["φ", "\\phi "],
-    ["ϕ", "\\phi "],
-    ["Ψ", "\\Psi "],
-    ["ψ", "\\psi "],
-    ["Ω", "\\Omega "],
-    ["ω", "\\omega "],
-    ["−", "-"],
-    ["⋅", " \\cdot "],
-    ["·", " \\cdot "],
-    ["∪", " \\cup "],
-    ["∩", " \\cap "],
-    ["∞", " \\infty "],
-    ["∅", " \\emptyset "]
-  ];
-  for (let sub of substitutions) {
-    latexString = latexString.replaceAll(sub[0], sub[1]);
-  }
-  return latexString;
-}
-function wrapWordWithVar(string) {
-  let newString = "";
-  let regex = /\\var\s*{[^{}]*}/;
-  let match = string.match(regex);
-  while (match) {
-    let beginMatch = match.index;
-    let endMatch = beginMatch + match[0].length;
-    newString += wrapWordWithVarSub(string.substring(0, beginMatch));
-    newString += string.substring(beginMatch, endMatch);
-    string = string.substring(endMatch);
-    match = string.match(regex);
-  }
-  newString += wrapWordWithVarSub(string);
-  return newString;
-}
-function wrapWordWithVarSub(string) {
-  let newString = "";
-  let regex = /([^a-zA-Z0-9]?)([a-zA-Z][a-zA-Z0-9]+)([^a-zA-Z0-9]?)/;
-  let match = string.match(regex);
-  while (match) {
-    let beginMatch = match.index;
-    let endMatch = beginMatch + match[0].length - match[3].length;
-    if (match[1] === "\\") {
-      newString += string.substring(0, endMatch);
-      string = string.substring(endMatch);
-    } else {
-      let beginWord = beginMatch + match[1].length;
-      newString += string.substring(0, beginWord);
-      newString += `\\var{${match[2]}}`;
-      string = string.substring(endMatch);
-    }
-    match = string.match(regex);
-  }
-  newString += string;
-  return newString;
-}
-function wrapWordIncludingNumberWithVar(string) {
-  let newString = "";
-  let regex = /\\var\s*{[^{}]*}/;
-  let match = string.match(regex);
-  while (match) {
-    let beginMatch = match.index;
-    let endMatch = beginMatch + match[0].length;
-    newString += wrapWordIncludingNumberWithVarSub(string.substring(0, beginMatch));
-    newString += string.substring(beginMatch, endMatch);
-    string = string.substring(endMatch);
-    match = string.match(regex);
-  }
-  newString += wrapWordIncludingNumberWithVarSub(string);
-  return newString;
-}
-function wrapWordIncludingNumberWithVarSub(string) {
-  let newString = "";
-  let regex = /([^a-zA-Z0-9]?)([a-zA-Z][a-zA-Z0-9]*[0-9][a-zA-Z0-9]*)([^a-zA-Z0-9]?)/;
-  let match = string.match(regex);
-  while (match) {
-    let beginMatch = match.index;
-    let endMatch = beginMatch + match[0].length - match[3].length;
-    if (match[1] === "\\") {
-      newString += string.substring(0, endMatch);
-      string = string.substring(endMatch);
-    } else {
-      let beginWord = beginMatch + match[1].length;
-      newString += string.substring(0, beginWord);
-      newString += `\\var{${match[2]}}`;
-      string = string.substring(endMatch);
-    }
-    match = string.match(regex);
-  }
-  newString += string;
-  return newString;
 }

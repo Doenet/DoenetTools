@@ -17,6 +17,7 @@ services:
     volumes:
       - ./src/api:/usr/local/apache2/htdocs/api
       - ./src/media:/usr/local/apache2/htdocs/media
+      - ./doenet_docker/apache/apache.conf:/usr/local/apache2/conf/httpd.conf
     networks:
       - dev_net
     depends_on:

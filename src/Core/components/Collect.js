@@ -61,6 +61,13 @@ export default class Collect extends CompositeComponent {
       public: true,
     };
 
+    attributes.targetAttributesToAlwaysIgnore = {
+      createComponentOfType: "textList",
+      createStateVariable: "targetAttributesToAlwaysIgnore",
+      defaultValue: ["isResponse"],
+      public: true,
+    };
+
     attributes.componentTypes = {
       createComponentOfType: "textList"
     }
@@ -415,7 +422,7 @@ export default class Collect extends CompositeComponent {
         });
         Object.assign(repl.attributes, attributesFromComposite)
       }
-  
+
     }
 
     let processResult = processAssignNames({

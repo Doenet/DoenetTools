@@ -9,6 +9,8 @@ include 'db_connection.php';
 
 $jwtArray = include 'jwtArray.php';
 $userId = $jwtArray['userId'];
+$examUserId = $jwtArray['examineeUserId'];
+$examDoenetId = $jwtArray['doenetId'];
 
 // $type = mysqli_real_escape_string($conn,$_REQUEST["type"]);
 
@@ -19,21 +21,36 @@ $newRoleData = [];
 $newDriveIdArr = [];
 $finalDrivesArray = [];
 $driveIdArr = [];
+$sqlnew = "";
 
-if ($userId == '') {
-    $success = false;
-    $message = 'You need to be signed in to view drives';
+if ($userId == ""){
+	if ($examUserId == ""){
+		$success = FALSE;
+        $message = 'You need to be signed in to view drives';
+	}else{
+        $userId = $examUserId;
+        //Limit the drive info to just the drive with the doenetId
+        $sqlnew = "
+        SELECT driveId
+        FROM drive_content
+        WHERE doenetId = '$examDoenetId'
+        ";
+    }
 }
 
+
 if ($success) {
-    //Gather matching drive ids for author
-    $sqlnew = " SELECT DISTINCT 
-  d.driveId AS driveId
-   FROM drive AS d
-  LEFT JOIN drive_user AS du
-  ON d.driveId = du.driveId
-  WHERE du.userId='$userId'  AND d.isDeleted = '0'
-  ";
+    if ($sqlnew == ""){
+        //Gather matching drive ids for author
+        $sqlnew = " SELECT DISTINCT 
+        d.driveId AS driveId
+        FROM drive AS d
+        LEFT JOIN drive_user AS du
+        ON d.driveId = du.driveId
+        WHERE du.userId='$userId' AND d.isDeleted = '0'
+        ";
+    }
+    
 
     $result = $conn->query($sqlnew);
 

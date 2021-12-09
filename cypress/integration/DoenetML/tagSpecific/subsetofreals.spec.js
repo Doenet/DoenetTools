@@ -1341,7 +1341,6 @@ describe('SubsetOfReals Tag Tests', function () {
 
   })
 
-
   it("modifying copies of subsets", () => {
     cy.window().then((win) => {
       win.postMessage({
@@ -1373,7 +1372,7 @@ describe('SubsetOfReals Tag Tests', function () {
 
 
     function checkDisplay(str, str0) {
-      if(str0 === undefined) {
+      if (str0 === undefined) {
         str0 = str;
       }
 
@@ -1423,7 +1422,7 @@ describe('SubsetOfReals Tag Tests', function () {
 
     cy.get("#\\/input0 textarea").type("{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}x>=3{enter}", { force: true })
 
-    checkDisplay("[3,∞)","x≥3")
+    checkDisplay("[3,∞)", "x≥3")
 
     cy.get("#\\/input1 textarea").type("{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{{}q\\mid q=5}{enter}", { force: true })
 
@@ -1437,7 +1436,7 @@ describe('SubsetOfReals Tag Tests', function () {
     cy.get("#\\/input3 textarea").type("{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(-\\infty,\\infty){enter}", { force: true })
 
     checkDisplay("R")
-    
+
 
     cy.get("#\\/input4 textarea").type("{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}x\\in \\emptyset {enter}", { force: true })
 
@@ -1465,6 +1464,29 @@ describe('SubsetOfReals Tag Tests', function () {
 
   })
 
+  it("union of subset with numbers", () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <number name="x1">-9</number>
+  <number name="x2">-6</number>
+  <number name="x3">-1</number>
+  <number name="x4">8</number>
+  <subsetOfReals name="S">
+    ($x1,$x2) union ($x3,$x4)
+  </subsetOfReals>
+  <subsetOfReals name="Sclosed">$S union $x1 union $x2 union $x3 union $x4</subsetOfReals>
+
+
+  `}, "*");
+    });
+    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
+
+    cy.get('#\\/S .mjx-mrow').eq(0).should('have.text', "(−9,−6)∪(−1,8)")
+    cy.get('#\\/Sclosed .mjx-mrow').eq(0).should('have.text', "[−9,−6]∪[−1,8]")
+
+  })
 
 })
 

@@ -687,7 +687,7 @@ export default class CobwebPolyline extends Polyline {
     stateVariableDefinitions.iterateValues = {
       isArray: true,
       public: true,
-      componentType: "number",
+      componentType: "math",
       entryPrefixes: ["iterateValue"],
       returnArraySizeDependencies: () => ({
         nIterateValues: {

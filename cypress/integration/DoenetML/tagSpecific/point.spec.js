@@ -116,6 +116,96 @@ describe('Point Tag Tests', function () {
 
   })
 
+  it('point sugar from single macro', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <mathinput name="coords" />
+    <graph>
+      <point label="P" name="P">$coords</point>
+    </graph>
+    <graph>
+      <copy tname="P" assignNames="Q" label="Q" />
+    </graph>
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.log('initially undefined')
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/P'].stateValues.xs.map(x => x.tree)).eqls(['\uff3f'])
+      expect(components['/P'].stateValues.coords.tree).eqls('\uff3f')
+      expect(components['/Q'].stateValues.xs.map(x => x.tree)).eqls(['\uff3f'])
+      expect(components['/Q'].stateValues.coords.tree).eqls('\uff3f')
+    })
+
+    cy.log('create 2D point')
+    cy.get('#\\/coords textarea').type("(-1,-7){enter}", { force: true })
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/P'].stateValues.xs.map(x => x.tree)).eqls([-1, -7])
+      expect(components['/P'].stateValues.coords.tree).eqls(["vector", -1, -7])
+      expect(components['/Q'].stateValues.xs.map(x => x.tree)).eqls([-1, -7])
+      expect(components['/Q'].stateValues.coords.tree).eqls(["vector", -1, -7])
+    })
+
+    cy.log('move point P to (3,5)')
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      components['/P'].movePoint({ x: 3, y: 5 });
+      expect(components['/P'].stateValues.xs.map(x => x.tree)).eqls([3, 5])
+      expect(components['/P'].stateValues.coords.tree).eqls(["vector", 3, 5])
+      expect(components['/Q'].stateValues.xs.map(x => x.tree)).eqls([3, 5])
+      expect(components['/Q'].stateValues.coords.tree).eqls(["vector", 3, 5])
+    })
+
+    cy.log('move point Q to (9,1)')
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      components['/Q'].movePoint({ x: 9, y: 1 });
+      expect(components['/P'].stateValues.xs.map(x => x.tree)).eqls([9, 1])
+      expect(components['/P'].stateValues.coords.tree).eqls(["vector", 9, 1])
+      expect(components['/Q'].stateValues.xs.map(x => x.tree)).eqls([9, 1])
+      expect(components['/Q'].stateValues.coords.tree).eqls(["vector", 9, 1])
+    })
+
+    cy.log('make point undefined again')
+    cy.get('#\\/coords textarea').type("{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{enter}", { force: true })
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/P'].stateValues.xs.map(x => x.tree)).eqls(['\uff3f'])
+      expect(components['/P'].stateValues.coords.tree).eqls('\uff3f')
+      expect(components['/Q'].stateValues.xs.map(x => x.tree)).eqls(['\uff3f'])
+      expect(components['/Q'].stateValues.coords.tree).eqls('\uff3f')
+    })
+
+
+    cy.log('create 1D point')
+    cy.get('#\\/coords textarea').type("-3{enter}", { force: true })
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/P'].stateValues.xs.map(x => x.tree)).eqls([-3])
+      expect(components['/P'].stateValues.coords.tree).eqls(-3)
+      expect(components['/Q'].stateValues.xs.map(x => x.tree)).eqls([-3])
+      expect(components['/Q'].stateValues.coords.tree).eqls(-3)
+    })
+
+
+    cy.log('create 3D point')
+    cy.get('#\\/coords textarea').type("{end}{backspace}{backspace}(6,5,4){enter}", { force: true })
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/P'].stateValues.xs.map(x => x.tree)).eqls([6, 5, 4])
+      expect(components['/P'].stateValues.coords.tree).eqls(["vector", 6, 5, 4])
+      expect(components['/Q'].stateValues.xs.map(x => x.tree)).eqls([6, 5, 4])
+      expect(components['/Q'].stateValues.coords.tree).eqls(["vector", 6, 5, 4])
+    })
+
+  });
+
   it('test invertible due to modifyIndirectly', () => {
     cy.window().then((win) => {
       win.postMessage({
@@ -962,6 +1052,23 @@ describe('Point Tag Tests', function () {
       expect(text.trim()).equal('(−10,−7)')
     });
     cy.get('#\\/_boolean1').should('have.text', "true")
+
+
+    // test bug with number in scientific notation 
+    cy.log(`move point to (-1.3E-14,2.5E-12)`)
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      components['/_point1'].movePoint({ x: -1.3E-14, y: 2.5E-12 });
+      expect(components['/_point1'].stateValues.xs[0].tree).eq(0);
+      expect(components['/_point1'].stateValues.xs[1].tree).eq(0);
+      expect(components['/_point1'].stateValues.coords.tree).eqls(["vector", 0, 0]);
+      expect(components['/_point1'].stateValues.constraintUsed).eq(true);
+    })
+    cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(0,0)')
+    });
+    cy.get('#\\/_boolean1').should('have.text', "true")
+
   });
 
   it('point constrained to grid with sugared coordinates', () => {
@@ -1028,7 +1135,7 @@ describe('Point Tag Tests', function () {
 
   <graph>
   <point x="1" y="2">
-    $toGrid
+    <copy tname="toGrid" />
   </point>
   </graph>
   <math><copy prop="coords" tname="_point1" /></math>
@@ -1067,6 +1174,76 @@ describe('Point Tag Tests', function () {
     });
     cy.get('#\\/_boolean1').should('have.text', "true")
   });
+
+
+  it('point constrained to grid, 3D', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <point x="1" y="2" z="3">
+    <constraints>
+      <constrainToGrid/>
+    </constraints>
+  </point>
+
+  <math><copy prop="coords" tname="_point1" /></math>
+  <boolean><copy prop="constraintUsed" tname="_point1" /></boolean>
+  `}, "*");
+    });
+
+    // use this to wait for page to load
+    cy.get('#\\/_text1').should('have.text', 'a')
+
+    cy.log(`move point to (1.2,3.6,5.4)`)
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      components['/_point1'].movePoint({ x: 1.2, y: 3.6, z: 5.4 });
+      expect(components['/_point1'].stateValues.xs[0].tree).eq(1);
+      expect(components['/_point1'].stateValues.xs[1].tree).eq(4);
+      expect(components['/_point1'].stateValues.xs[2].tree).eq(5);
+      expect(components['/_point1'].stateValues.coords.tree).eqls(["vector", 1, 4, 5]);
+      expect(components['/_point1'].stateValues.constraintUsed).eq(true);
+    })
+    cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(1,4,5)')
+    });
+    cy.get('#\\/_boolean1').should('have.text', "true")
+
+    cy.log(`move point to (-9.8,-7.4,-4.6)`)
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      components['/_point1'].movePoint({ x: -9.8, y: -7.4, z: -4.6 });
+      expect(components['/_point1'].stateValues.xs[0].tree).eq(-10);
+      expect(components['/_point1'].stateValues.xs[1].tree).eq(-7);
+      expect(components['/_point1'].stateValues.xs[2].tree).eq(-5);
+      expect(components['/_point1'].stateValues.coords.tree).eqls(["vector", -10, -7, -5]);
+      expect(components['/_point1'].stateValues.constraintUsed).eq(true);
+    })
+    cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(−10,−7,−5)')
+    });
+    cy.get('#\\/_boolean1').should('have.text', "true")
+
+
+    // test bug with number in scientific notation 
+    cy.log(`move point to (-1.3E-14,2.5E-12,7.1E-21)`)
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      components['/_point1'].movePoint({ x: -1.3E-14, y: 2.5E-12, z: 7.1E-121 });
+      expect(components['/_point1'].stateValues.xs[0].tree).eq(0);
+      expect(components['/_point1'].stateValues.xs[1].tree).eq(0);
+      expect(components['/_point1'].stateValues.xs[2].tree).eq(0);
+      expect(components['/_point1'].stateValues.coords.tree).eqls(["vector", 0, 0, 0]);
+      expect(components['/_point1'].stateValues.constraintUsed).eq(true);
+    })
+    cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(0,0,0)')
+    });
+    cy.get('#\\/_boolean1').should('have.text', "true")
+
+  });
+
 
   it('point constrained to two contradictory grids', () => {
     cy.window().then((win) => {
@@ -1581,6 +1758,22 @@ describe('Point Tag Tests', function () {
     });
     cy.get('#\\/_boolean1').should('have.text', "true")
 
+
+    // test bug with number in scientific notation 
+    cy.log(`move point to (-1.3E-14,2.5E-12)`)
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      components['/_point1'].movePoint({ x: -1.3E-14, y: 2.5E-12 });
+      expect(components['/_point1'].stateValues.xs[0].tree).eq(0);
+      expect(components['/_point1'].stateValues.xs[1].tree).eq(0);
+      expect(components['/_point1'].stateValues.coords.tree).eqls(["vector", 0, 0]);
+      expect(components['/_point1'].stateValues.constraintUsed).eq(true);
+    })
+    cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(0,0)')
+    });
+    cy.get('#\\/_boolean1').should('have.text', "true")
+
   });
 
   it('point attracted to grid, copied from outside', () => {
@@ -1596,7 +1789,7 @@ describe('Point Tag Tests', function () {
   <graph>
 
   <point xs="-7.1 8.9">
-    $toGrid
+    <copy tname="toGrid" />
   </point>
 
   </graph>
@@ -1649,6 +1842,88 @@ describe('Point Tag Tests', function () {
     cy.get('#\\/_boolean1').should('have.text', "true")
 
   });
+
+  it('point attracted to grid, 3D', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <point xs="-7.1 8.9 2.1">
+    <constraints>
+      <attractToGrid/>
+    </constraints>
+  </point>
+
+  <math><copy prop="coords" tname="_point1" /></math>
+  <boolean><copy prop="constraintUsed" tname="_point1" /></boolean>
+  `}, "*");
+    });
+
+    // use this to wait for page to load
+    cy.get('#\\/_text1').should('have.text', 'a')
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/_point1'].stateValues.xs[0].tree).eq(-7);
+      expect(components['/_point1'].stateValues.xs[1].tree).eq(9);
+      expect(components['/_point1'].stateValues.xs[2].tree).eq(2);
+      expect(components['/_point1'].stateValues.coords.tree).eqls(["vector", -7, 9, 2]);
+      expect(components['/_point1'].stateValues.constraintUsed).eq(true);
+    })
+    cy.get('#\\/_math1 .mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(−7,9,2)')
+    });
+    cy.get('#\\/_boolean1').should('have.text', "true")
+
+    cy.log(`move point to (1.1,3.9,5.4)`)
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      components['/_point1'].movePoint({ x: 1.1, y: 3.9, z: 5.4 });
+      expect(components['/_point1'].stateValues.xs[0].tree).eq(1.1);
+      expect(components['/_point1'].stateValues.xs[1].tree).eq(3.9);
+      expect(components['/_point1'].stateValues.xs[2].tree).eq(5.4);
+      expect(components['/_point1'].stateValues.coords.tree).eqls(["vector", 1.1, 3.9, 5.4]);
+      expect(components['/_point1'].stateValues.constraintUsed).eq(false);
+    })
+    cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(1.1,3.9,5.4)')
+    });
+    cy.get('#\\/_boolean1').should('have.text', "false")
+
+    cy.log(`move point to (1.1,3.9,5.9)`)
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      components['/_point1'].movePoint({ x: 1.1, y: 3.9, z: 5.9 });
+      expect(components['/_point1'].stateValues.xs[0].tree).eq(1);
+      expect(components['/_point1'].stateValues.xs[1].tree).eq(4);
+      expect(components['/_point1'].stateValues.xs[2].tree).eq(6);
+      expect(components['/_point1'].stateValues.coords.tree).eqls(["vector", 1, 4, 6]);
+      expect(components['/_point1'].stateValues.constraintUsed).eq(true);
+    })
+    cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(1,4,6)')
+    });
+    cy.get('#\\/_boolean1').should('have.text', "true")
+
+
+    // test bug with number in scientific notation 
+    cy.log(`move point to (-1.3E-14,2.5E-12,-2.3E-19)`)
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      components['/_point1'].movePoint({ x: -1.3E-14, y: 2.5E-12, z: -2.3E-19 });
+      expect(components['/_point1'].stateValues.xs[0].tree).eq(0);
+      expect(components['/_point1'].stateValues.xs[1].tree).eq(0);
+      expect(components['/_point1'].stateValues.xs[2].tree).eq(0);
+      expect(components['/_point1'].stateValues.coords.tree).eqls(["vector", 0, 0, 0]);
+      expect(components['/_point1'].stateValues.constraintUsed).eq(true);
+    })
+    cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(0,0,0)')
+    });
+    cy.get('#\\/_boolean1').should('have.text', "true")
+
+  });
+
 
   it('point attracted to grid, including gridlines', () => {
     cy.window().then((win) => {

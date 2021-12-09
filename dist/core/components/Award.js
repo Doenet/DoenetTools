@@ -89,6 +89,13 @@ export default class Award extends BaseComponent {
       public: true,
       propagateToDescendants: true,
     };
+    attributes.nPeriodicSetMatchesRequired = {
+      createComponentOfType: "integer",
+      createStateVariable: "nPeriodicSetMatchesRequired",
+      defaultValue: 3,
+      public: true,
+      propagateToDescendants: true,
+    };
     attributes.feedbackCodes = {
       createComponentOfType: "textList",
       createStateVariable: "feedbackCodes",
@@ -315,6 +322,10 @@ export default class Award extends BaseComponent {
         nSignErrorsMatched: {
           dependencyType: "stateVariable",
           variableName: "nSignErrorsMatched",
+        },
+        nPeriodicSetMatchesRequired: {
+          dependencyType: "stateVariable",
+          variableName: "nPeriodicSetMatchesRequired",
         },
       }),
       definition: function ({ dependencyValues, usedDefault }) {

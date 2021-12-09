@@ -57,8 +57,13 @@ export const paramObjAtom = atom({
   key: "paramObjAtom",
   default: {}
 });
+export const footerAtom = atom({
+  key: "footerAtom",
+  default: null
+});
 export default function ToolRoot() {
   console.log(">>>===ToolRoot ");
+  let footerObj = useRecoilValue(footerAtom);
   const [toolRootMenusAndPanels, setToolRootMenusAndPanels] = useState({
     pageName: "init",
     menuPanelCap: "",
@@ -71,7 +76,6 @@ export default function ToolRoot() {
     supportPanelIndex: 0,
     hasNoMenuPanel: false,
     headerControls: [],
-    headerControlsPositions: [],
     displayProfile: true
   });
   let mainPanel = null;
@@ -97,6 +101,8 @@ export default function ToolRoot() {
     GradebookAttempt: lazy(() => import("./ToolPanels/GradebookAttempt.js")),
     EditorViewer: lazy(() => import("./ToolPanels/EditorViewer.js")),
     AssignmentViewer: lazy(() => import("./ToolPanels/AssignmentViewer.js")),
+    SurveyListViewer: lazy(() => import("./ToolPanels/SurveyListViewer.js")),
+    SurveyDataViewer: lazy(() => import("./ToolPanels/SurveyDataViewer.js")),
     DoenetMLEditor: lazy(() => import("./ToolPanels/DoenetMLEditor.js")),
     Enrollment: lazy(() => import("./ToolPanels/Enrollment.js")),
     CollectionEditor: lazy(() => import("./ToolPanels/CollectionEditor.js")),
@@ -107,14 +113,18 @@ export default function ToolRoot() {
     BackButton: lazy(() => import("./HeaderControls/BackButton.js")),
     ViewerUpdateButton: lazy(() => import("./HeaderControls/ViewerUpdateButton.js")),
     NavigationBreadCrumb: lazy(() => import("./HeaderControls/NavigationBreadCrumb.js")),
+    CollectionBreadCrumb: lazy(() => import("./HeaderControls/CollectionBreadCrumb.js")),
     ChooserBreadCrumb: lazy(() => import("./HeaderControls/ChooserBreadCrumb.js")),
     DashboardBreadCrumb: lazy(() => import("./HeaderControls/DashboardBreadCrumb.js")),
     EnrollmentBreadCrumb: lazy(() => import("./HeaderControls/EnrollmentBreadCrumb.js")),
+    SurveyBreadCrumb: lazy(() => import("./HeaderControls/SurveyBreadCrumb.js")),
     EditorBreadCrumb: lazy(() => import("./HeaderControls/EditorBreadCrumb.js")),
     GradebookBreadCrumb: lazy(() => import("./HeaderControls/GradebookBreadCrumb.js")),
     AssignmentBreadCrumb: lazy(() => import("./HeaderControls/AssignmentBreadCrumb.js")),
-    AssignmentNewAttempt: lazy(() => import("./HeaderControls/AssignmentNewAttempt.js")),
-    RoleDropdown: lazy(() => import("./HeaderControls/RoleDropdown.js"))
+    AssignmentNewAttempt: lazy(() => import("./HeaderControls/AssignmentNewAttempt.js"))
+  }).current;
+  const LazyFooterObj = useRef({
+    MathInputKeyboard: lazy(() => import("./Footers/MathInputKeyboard.js"))
   }).current;
   let MainPanelKey = `${toolRootMenusAndPanels.pageName}-${toolRootMenusAndPanels.currentMainPanel}`;
   mainPanel = /* @__PURE__ */ React.createElement(Suspense, {
@@ -134,15 +144,12 @@ export default function ToolRoot() {
     }, React.createElement(LazyPanelObj[spType], {SupportPanelKey})));
   }
   let headerControls = null;
-  let headerControlsPositions = null;
   if (toolRootMenusAndPanels.headerControls) {
     headerControls = [];
-    headerControlsPositions = [];
     for (const [i, controlName] of Object.entries(toolRootMenusAndPanels.headerControls)) {
       const controlObj = LazyControlObj[controlName];
       if (controlObj) {
         const key = `headerControls${MainPanelKey}`;
-        headerControlsPositions.push(toolRootMenusAndPanels.headerControlsPositions[i]);
         headerControls.push(/* @__PURE__ */ React.createElement(Suspense, {
           key,
           fallback: /* @__PURE__ */ React.createElement(LoadingFallback, null, "loading...")
@@ -171,16 +178,26 @@ export default function ToolRoot() {
   if (toolRootMenusAndPanels.hasNoMenuPanel) {
     openMenuButton = false;
   }
+  let footer = null;
+  if (footerObj) {
+    let footerKey = `footer`;
+    footer = /* @__PURE__ */ React.createElement(FooterPanel, {
+      isInitOpen: footerObj.open,
+      height: footerObj.height
+    }, /* @__PURE__ */ React.createElement(Suspense, {
+      key: footerKey,
+      fallback: /* @__PURE__ */ React.createElement(LoadingFallback, null, "loading...")
+    }, React.createElement(LazyFooterObj[footerObj.component], {key: {footerKey}})));
+  }
   return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(ToolContainer, null, menus, /* @__PURE__ */ React.createElement(ContentPanel, {
     main: /* @__PURE__ */ React.createElement(MainPanel, {
-      headerControlsPositions,
       headerControls,
       setMenusOpen,
       openMenuButton,
       displayProfile: toolRootMenusAndPanels.displayProfile
     }, mainPanel),
     support: supportPanel
-  })), /* @__PURE__ */ React.createElement(Toast, null), /* @__PURE__ */ React.createElement(MemoizedRootController, {
+  }), footer), /* @__PURE__ */ React.createElement(Toast, null), /* @__PURE__ */ React.createElement(MemoizedRootController, {
     key: "root_controller",
     setToolRootMenusAndPanels
   }), /* @__PURE__ */ React.createElement(MemoizedOnLeave, {
@@ -218,8 +235,8 @@ let navigationObj = {
       menusTitles: ["Time Remaining"],
       menusInitOpen: [true],
       headerControls: [],
-      headerControlsPositions: [],
-      displayProfile: false
+      displayProfile: false,
+      waitForMenuSuppression: true
     },
     endExam: {
       pageName: "endExam",
@@ -238,9 +255,9 @@ let navigationObj = {
       currentMainPanel: "AssignmentViewer",
       currentMenus: ["CreditAchieved", "TimerMenu"],
       menusTitles: ["Credit Achieved", "Time Remaining"],
-      menusInitOpen: [true, false],
+      menusInitOpen: [true, true],
       headerControls: ["AssignmentBreadCrumb", "AssignmentNewAttempt"],
-      headerControlsPositions: ["Left", "Right"]
+      waitForMenuSuppression: true
     },
     courseChooser: {
       pageName: "Course",
@@ -249,39 +266,39 @@ let navigationObj = {
       menusTitles: ["Create Course"],
       menusInitOpen: [true],
       headerControls: ["ChooserBreadCrumb"],
-      headerControlsPositions: ["Left"],
       onLeave: "CourseChooserLeave"
     },
     dashboard: {
       pageName: "Dashboards",
       currentMainPanel: "Dashboard",
       menuPanelCap: "DriveInfoCap",
-      currentMenus: [],
-      menusTitles: [],
-      menusInitOpen: [],
-      headerControls: ["DashboardBreadCrumb", "RoleDropdown"],
-      headerControlsPositions: ["Left", "Right"],
-      onLeave: "DashboardLeave"
+      currentMenus: ["ClassTimes", "CurrentContent"],
+      menusTitles: ["Class Times", "Current Content"],
+      menusInitOpen: [false, false],
+      headerControls: ["DashboardBreadCrumb"],
+      onLeave: "DashboardLeave",
+      waitForMenuSuppression: true
     },
     gradebook: {
       pageName: "Gradebook",
       currentMainPanel: "Gradebook",
-      currentMenus: [],
       menuPanelCap: "DriveInfoCap",
-      menusTitles: [],
-      menusInitOpen: [],
+      currentMenus: ["GradeDownload"],
+      menusTitles: ["Download"],
+      menusInitOpen: [false],
       headerControls: ["GradebookBreadCrumb"],
-      headerControlsPositions: ["Left"]
+      waitForMenuSuppression: true
     },
     gradebookAssignment: {
       pageName: "Gradebook",
       currentMainPanel: "GradebookAssignment",
-      currentMenus: [],
+      currentMenus: ["GradeUpload"],
+      menusTitles: ["Upload"],
+      menusInitOpen: [false],
       menuPanelCap: "DriveInfoCap",
-      menusTitles: [],
-      menusInitOpen: [],
       headerControls: ["GradebookBreadCrumb"],
-      headerControlsPositions: ["Left"]
+      waitForMenuSuppression: true,
+      onLeave: "GradebookAssignmentLeave"
     },
     gradebookStudent: {
       pageName: "Gradebook",
@@ -290,47 +307,28 @@ let navigationObj = {
       menuPanelCap: "DriveInfoCap",
       menusTitles: [],
       menusInitOpen: [],
-      headerControls: ["GradebookBreadCrumb"],
-      headerControlsPositions: ["Left"]
+      headerControls: ["GradebookBreadCrumb"]
     },
     gradebookStudentAssignment: {
       pageName: "Gradebook",
       currentMainPanel: "GradebookStudentAssignment",
-      currentMenus: ["CreditAchieved"],
       menuPanelCap: "DriveInfoCap",
-      menusTitles: ["Credit Achieved"],
-      menusInitOpen: [true],
+      currentMenus: ["CreditAchieved", "GradeSettings"],
+      menusTitles: ["Credit Achieved", "Settings"],
+      menusInitOpen: [true, false],
       headerControls: ["GradebookBreadCrumb"],
-      headerControlsPositions: ["Left"]
-    },
-    gradebookAttempt: {
-      pageName: "Gradebook",
-      currentMainPanel: "GradebookAttempt",
-      currentMenus: [],
-      menuPanelCap: "DriveInfoCap",
-      menusTitles: [],
-      menusInitOpen: [],
-      headerControls: ["GradebookBreadCrumb"],
-      headerControlsPositions: ["Left"]
+      waitForMenuSuppression: true
     },
     navigation: {
       pageName: "Course",
       currentMainPanel: "NavigationPanel",
       menuPanelCap: "DriveInfoCap",
-      currentMenus: [],
-      menusTitles: [],
-      menusInitOpen: [],
-      headerControls: ["NavigationBreadCrumb", "RoleDropdown"],
-      headerControlsPositions: ["Left", "Right"],
+      currentMenus: ["AddDriveItems"],
+      menusTitles: ["Add Items"],
+      menusInitOpen: [true],
+      headerControls: ["NavigationBreadCrumb"],
       onLeave: "NavigationLeave",
-      views: {
-        instructor: {
-          currentMenus: ["AddDriveItems"],
-          menusTitles: ["Add Items"],
-          menusInitOpen: [true]
-        },
-        student: {}
-      }
+      waitForMenuSuppression: true
     },
     editor: {
       pageName: "Course",
@@ -343,13 +341,11 @@ let navigationObj = {
       supportPanelTitles: ["DoenetML Editor"],
       supportPanelIndex: 0,
       headerControls: ["EditorBreadCrumb", "ViewerUpdateButton"],
-      headerControlsPositions: ["Left", "Left"],
       onLeave: "EditorLeave"
     },
     collection: {
       currentMainPanel: "CollectionEditor",
-      headerControls: ["NavigationBreadCrumb"],
-      headerControlsPositions: ["Left"],
+      headerControls: ["CollectionBreadCrumb"],
       currentMenus: ["AssignmentSettingsMenu", "GroupSettings"],
       menusTitles: ["Assignment Settings", "Group Settings"],
       menusInitOpen: [false, false]
@@ -364,8 +360,19 @@ let navigationObj = {
       supportPanelOptions: [],
       supportPanelTitles: [],
       supportPanelIndex: 0,
-      headerControls: ["EnrollmentBreadCrumb"],
-      headerControlsPositions: ["Left"]
+      headerControls: ["EnrollmentBreadCrumb"]
+    },
+    surveyList: {
+      pageName: "surveyList",
+      menuPanelCap: "DriveInfoCap",
+      currentMainPanel: "SurveyListViewer",
+      headerControls: ["SurveyBreadCrumb"]
+    },
+    surveyData: {
+      pageName: "surveyData",
+      menuPanelCap: "DriveInfoCap",
+      currentMainPanel: "SurveyDataViewer",
+      headerControls: ["SurveyBreadCrumb"]
     }
   },
   home: {
@@ -402,8 +409,7 @@ let navigationObj = {
       supportPanelTitles: [],
       supportPanelIndex: 0,
       hasNoMenuPanel: true,
-      headerControls: ["BackButton"],
-      headerControlsPositions: ["Right"]
+      headerControls: ["BackButton"]
     }
   },
   signin: {
@@ -455,7 +461,8 @@ function OnLeave() {
     NavigationLeave: lazy(() => import("./EnterLeave/NavigationLeave.js")),
     EditorLeave: lazy(() => import("./EnterLeave/EditorLeave.js")),
     CourseChooserLeave: lazy(() => import("./EnterLeave/CourseChooserLeave.js")),
-    DashboardLeave: lazy(() => import("./EnterLeave/DashboardLeave.js"))
+    DashboardLeave: lazy(() => import("./EnterLeave/DashboardLeave.js")),
+    GradebookAssignmentLeave: lazy(() => import("./EnterLeave/GradebookAssignmentLeave.js"))
   }).current;
   if (leaveComponentStr) {
     const key = `leave${leaveComponentStr}`;
@@ -466,10 +473,28 @@ function OnLeave() {
   }
   return /* @__PURE__ */ React.createElement(React.Fragment, null, leaveComponent);
 }
+export const suppressMenusAtom = atom({
+  key: "suppressMenusAtom",
+  default: null
+});
+function arraysEqual(a, b) {
+  if (a === b)
+    return true;
+  if (a == null || b == null)
+    return false;
+  if (a.length !== b.length)
+    return false;
+  for (var i = 0; i < a.length; ++i) {
+    if (a[i] !== b[i])
+      return false;
+  }
+  return true;
+}
 const MemoizedRootController = React.memo(RootController);
 function RootController(props) {
   const [recoilPageToolView, setRecoilPageToolView] = useRecoilState(pageToolViewAtom);
   const setOnLeaveStr = useSetRecoilState(onLeaveComponentStr);
+  const [suppressMenus, setSuppressMenus] = useRecoilState(suppressMenusAtom);
   let lastPageToolView = useRef({page: "init", tool: "", view: ""});
   let backPageToolView = useRef({page: "init", tool: "", view: ""});
   let backParams = useRef({});
@@ -491,9 +516,31 @@ function RootController(props) {
     }
   });
   let leaveComponentName = useRef(null);
+  let lastSuppressMenu = useRef([]);
   let locationStr = `${location.pathname}${location.search}`;
   let nextPageToolView = {page: "", tool: "", view: ""};
   let nextMenusAndPanels = null;
+  let isSuppressMenuChange = !arraysEqual(suppressMenus, lastSuppressMenu.current);
+  lastSuppressMenu.current = suppressMenus;
+  if (isSuppressMenuChange && suppressMenus !== null) {
+    nextMenusAndPanels = {...navigationObj[recoilPageToolView.page][recoilPageToolView.tool]};
+    nextMenusAndPanels.currentMenus = [...navigationObj[recoilPageToolView.page][recoilPageToolView.tool].currentMenus];
+    nextMenusAndPanels.menusTitles = [...navigationObj[recoilPageToolView.page][recoilPageToolView.tool].menusTitles];
+    nextMenusAndPanels.menusInitOpen = [...navigationObj[recoilPageToolView.page][recoilPageToolView.tool].menusInitOpen];
+    if (suppressMenus.length > 0) {
+      for (let suppressMenu of suppressMenus) {
+        for (let [i, menu] of Object.entries(nextMenusAndPanels.currentMenus)) {
+          if (menu === suppressMenu) {
+            nextMenusAndPanels.currentMenus.splice(i, 1);
+            nextMenusAndPanels.menusTitles.splice(i, 1);
+            nextMenusAndPanels.menusInitOpen.splice(i, 1);
+          }
+        }
+      }
+    }
+    props.setToolRootMenusAndPanels(nextMenusAndPanels);
+    return null;
+  }
   let isURLChange = false;
   if (locationStr !== lastLocationStr.current) {
     isURLChange = true;
@@ -508,9 +555,6 @@ function RootController(props) {
     nextPageToolView.tool = searchParamObj["tool"];
     if (!nextPageToolView.tool) {
       nextPageToolView.tool = "";
-    }
-    if (nextPageToolView.page === lastPageToolView.current.page && nextPageToolView.tool === lastPageToolView.current.tool) {
-      nextPageToolView.view = lastPageToolView.current.view;
     }
   }
   let isRecoilChange = false;
@@ -560,13 +604,6 @@ function RootController(props) {
     delete nextPageToolView["params"].tool;
     setRecoilPageToolView(nextPageToolView);
   }
-  let viewOverrides = nextMenusAndPanels?.views?.[nextPageToolView.view];
-  if (typeof viewOverrides === "object" && viewOverrides !== null) {
-    nextMenusAndPanels = {...navigationObj[nextPageToolView.page][nextPageToolView.tool]};
-    for (let key of Object.keys(viewOverrides)) {
-      nextMenusAndPanels[key] = viewOverrides[key];
-    }
-  }
   if (isPageChange || isToolChange) {
     if (leaveComponentName.current) {
       setOnLeaveStr((was) => ({str: leaveComponentName.current, updateNum: was.updateNum + 1}));
@@ -575,6 +612,7 @@ function RootController(props) {
     if (nextMenusAndPanels && nextMenusAndPanels.onLeave) {
       leaveComponentName.current = nextMenusAndPanels.onLeave;
     }
+    setSuppressMenus(null);
   }
   if (nextMenusAndPanels && nextMenusAndPanels.displayProfile === void 0) {
     nextMenusAndPanels.displayProfile = true;
@@ -589,7 +627,16 @@ function RootController(props) {
     }
     backParams.current = currentParams.current;
     currentParams.current = params;
-    props.setToolRootMenusAndPanels(nextMenusAndPanels);
+    if (nextMenusAndPanels.waitForMenuSuppression) {
+      let reducedSetMenusAndPanels = {...nextMenusAndPanels};
+      reducedSetMenusAndPanels.currentMenus = [];
+      reducedSetMenusAndPanels.menusInitOpen = [];
+      reducedSetMenusAndPanels.menusTitles = [];
+      reducedSetMenusAndPanels.headerControls = [];
+      props.setToolRootMenusAndPanels(reducedSetMenusAndPanels);
+    } else {
+      props.setToolRootMenusAndPanels(nextMenusAndPanels);
+    }
   }
   if (isRecoilChange) {
     let tool = nextPageToolView.tool;

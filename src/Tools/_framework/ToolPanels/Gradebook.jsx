@@ -18,8 +18,8 @@ import axios from "axios";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSort, faSortUp, faSortDown } from '@fortawesome/free-solid-svg-icons';
 
-import { pageToolViewAtom, searchParamAtomFamily } from '../NewToolRoot';
-import { use } from "chai";
+import { pageToolViewAtom, searchParamAtomFamily, suppressMenusAtom } from '../NewToolRoot';
+import { effectiveRoleAtom } from "../../../_reactComponents/PanelHeaderComponents/RoleDropdown";
 
 
 // // React Table Styling
@@ -28,21 +28,23 @@ export const Styles = styled.div`
   table {
     border-collapse: collapse;
     border-spacing: 0;
-    border: 1px solid gray;
     
     thead {
-        border-bottom: 1px solid gray;
+        position: sticky;
+        top: 0;
+        box-shadow: 0 2px 0 0px #000000;
     }
     
     a {
-        color: inherit;
-        text-decoration: none;
+        text-decoration: #1A5A99 underline;
     }
+
     .sortIcon {
         padding-left: 4px;
     }
-    tbody tr:nth-child(even) {background: #CCC}
-    tbody tr:nth-child(odd) {background: #FFF}
+  
+    tbody tr:not(:last-child) {border-bottom: 1px solid #e2e2e2;}
+ 
     td:first-child {
         text-align: left;
         max-width: 15rem;
@@ -50,6 +52,7 @@ export const Styles = styled.div`
         white-space: nowrap;
         overflow: hidden;
     }
+
     th {
         position: sticky;
         top: 0;
@@ -59,7 +62,11 @@ export const Styles = styled.div`
         //word-wrap: break-word;
         padding: 2px;
         max-height: 10rem;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        overflow: hidden;
     }
+    
     th:first-child {
         vertical-align: bottom;
         max-width: 15rem;
@@ -67,25 +74,43 @@ export const Styles = styled.div`
             margin: 5px;
         }
     }
+
     th > p {
         height: 100%;
     }
-    th:not(:first-child) > p{
+
+    tr:not(:first-child) th:not(:first-child) > p{
         writing-mode: vertical-rl;
         text-align: left;
         transform: rotate(180deg);
     }
+
+    thead tr:only-child th:not(:first-child) > p{
+        writing-mode: vertical-rl;
+        text-align: left;
+        transform: rotate(180deg);
+    }
+    
     td {
-        user-select: none;
+        /* user-select: none; */
         text-align: center;
         max-width: 5rem;
     }
     td, th {
-        border-right: 1px solid gray;
+        border-right: 2px solid black;
         :last-child {
             border-right: 0;
         }
     }
+
+    tfoot {
+        font-weight: bolder;
+        position: sticky;
+        bottom: 0;
+        background-color: white;
+        box-shadow: inset 0 2px 0 #000000;
+      }
+
   }
 `
 
@@ -137,16 +162,27 @@ const assignmentDataQuerry = atom({
     })
 })
 
+function isIterable(obj) {
+    // checks for null and undefined
+    if (obj == null) {
+      return false;
+    }
+    return typeof obj[Symbol.iterator] === 'function';
+  }
+
 export const assignmentData = selector({
     key: "assignmentData",
     get: ({get}) => {
         let assignmentArray = {};
         let data = get(assignmentDataQuerry)
-        
-        for(let row of data){
-            let [doenetId, assignmentName] = row;
-            assignmentArray[doenetId] = assignmentName;
+
+        if (isIterable(data)){
+            for(let row of data){
+                let [doenetId, assignmentName] = row;
+                assignmentArray[doenetId] = assignmentName;
+            }
         }
+        
         return assignmentArray
     },
     set: ({set, get}, newValue)=>{
@@ -154,7 +190,7 @@ export const assignmentData = selector({
     }
 })
 
-const studentDataQuerry = atom({
+export const studentDataQuerry = atom({
     key: "studentDataQuerry",
     default: selector({
         key: "studentDataQuerry/Default",
@@ -201,7 +237,7 @@ export const studentData = selector({
     }
 })
 
-const overViewDataQuerry = atom({
+export const overViewDataQuerry = atom({
     key:"overViewDataQuerry",
     default: selector({
         key: "overViewDataQuerry/Default",
@@ -253,7 +289,7 @@ export const overViewData = selector({
     }
 })
 
-const attemptDataQuerry = atomFamily({
+export const attemptDataQuerry = atomFamily({
     key: "attemptDataQuerry",
     default: selectorFamily({
         key:"attemptDataQuerry/Default",
@@ -281,21 +317,24 @@ export const attemptData = selectorFamily({
         for(let userId in students){
             attempts[userId] = {
                 credit: null,
+                creditOverrides: {},
                 attempts: {}
             }
         }
 
         let data = get(attemptDataQuerry(doenetId))
-
         for(let row of data){
             let [userId,
                 attemptNumber,
                 assignmentCredit,
                 attemptCredit,
+                creditOverride
                 ] = row;
-
-            attempts[userId].credit = assignmentCredit
-            attempts[userId].attempts[attemptNumber] = attemptCredit;
+                if (attempts[userId]){
+                    attempts[userId].credit = assignmentCredit
+                    attempts[userId].attempts[attemptNumber] = attemptCredit;
+                    attempts[userId].creditOverrides[attemptNumber] = creditOverride;
+                }
         }
 
         return attempts;
@@ -345,7 +384,6 @@ export const specificAttemptData = selectorFamily({
     }
 })
 
-
 const doenetMLQuerry = atomFamily({
     key: "doenetMLQuerry",
     default: selectorFamily({
@@ -394,6 +432,7 @@ export function Table({ columns, data }) {
       getTableProps,
       getTableBodyProps,
       headerGroups,
+      footerGroups,
       rows,
       prepareRow,
       state,
@@ -410,6 +449,8 @@ export function Table({ columns, data }) {
         useGlobalFilter,
         useSortBy, // useGlobalFilter
     )
+
+    // console.log("footer nonsense", footerGroups[0].headers.map(column => column.Footer));
   
     // Render the UI for your table
     return (
@@ -429,6 +470,7 @@ export function Table({ columns, data }) {
             </tr>
             ))}
         </thead>
+        
         <tbody {...getTableBodyProps()}>
           {rows.map((row, i) => {
             prepareRow(row)
@@ -441,6 +483,21 @@ export function Table({ columns, data }) {
             )
           })}
         </tbody>
+        
+        <tfoot>
+            {/* <tr>
+
+            </tr> */}
+            
+            <tr >
+                {footerGroups[0].headers.map(column => (
+                <td >
+                    <p>{column.render('Footer')}</p>
+                </td>
+                ))}
+            </tr>
+            
+        </tfoot>
       </table>
     )
   }
@@ -477,33 +534,31 @@ function DefaultColumnFilter({
             setFilter(e.target.value || undefined) // Set undefined to remove the filter entirely
         }}
         placeholder={`Search ${count} records...`}
+        style={{border: '2px solid black', borderRadius: '5px'}}
         />
     )
 }
 
-const getUserId = (students, name) => {
-    for(let userId in students){
-        //console.log(userId, students[userId].firstName);
-        
-        if(students[userId].firstName + " " + students[userId].lastName == name){
-          return userId;
-        }
-      }
-    return -1;
-} 
-
-
-function GradebookOverview(props) {
+function GradebookOverview() {
     //const { openOverlay, activateMenuPanel } = useToolControlHelper();
     let driveIdValue = useRecoilValue(driveId)
     const setPageToolView = useSetRecoilState(pageToolViewAtom);
     let students = useRecoilValueLoadable(studentData)
     let assignments = useRecoilValueLoadable(assignmentData);
-    let overView = useRecoilValueLoadable(overViewData)
+    let overView = useRecoilValueLoadable(overViewData);
+    let effectiveRole = useRecoilValue(effectiveRoleAtom);
+    const setSuppressMenus = useSetRecoilState(suppressMenusAtom);
 
-console.log(">>>>students",students)
-console.log(">>>>assignments",assignments)
-console.log(">>>>overView",overView)
+    useEffect(()=>{
+        if (effectiveRole === 'student'){
+            setSuppressMenus(["GradeDownload"])
+        }else{
+            setSuppressMenus([])
+        }
+    },[effectiveRole,setSuppressMenus])
+// console.log(">>>>students",students)
+// console.log(">>>>assignments",assignments)
+// console.log(">>>>overView",overView)
 
  //Protect from values not being loaded
  if(assignments.state !== 'hasValue' || 
@@ -534,16 +589,7 @@ let gradeCategories = [
             {
                 Header: "Name",
                 accessor: "name",
-                Cell: row  =><a onClick = {(e) =>{
-                    let name = row.cell.row.cells[0].value
-                    let userId = getUserId(students.contents, name);
-                    setPageToolView({
-                        page: 'course',
-                        tool: 'gradebookStudent',
-                        view: '',
-                        params: { driveId: driveIdValue, userId},
-                    })
-                }}> {row.cell.row.cells[0].value} </a>
+                Footer: "Possible Points",
             }
         )
         
@@ -561,34 +607,32 @@ let gradeCategories = [
     
                 let possiblepoints = assignments.contents[doenetId].totalPointsOrPercent * 1;
                 allpossiblepoints.push(possiblepoints);
+                // let c = <p>{category}</p>
 
                 overviewTable.headers.push({
-                    // Cell: row  =><a onClick = {(e) =>{
-                    //     let name = row.cell.row.cells[0].value
-                    //     let userId = getUserId(students.contents, name);
-                    //     setPageToolView({
-                    //         page: 'course',
-                    //         tool: 'gradebookStudent',
-                    //         view: '',
-                    //         params: { driveId: driveIdValue, userId},
-                    //     })
-                    // }}> {row.cell.row.cells[0].value} </a>,
-                    Header: <a onClick = {(e) =>{
+                    Header: category,
+                    columns: [
+                        {Header: <a 
+                            style={{fontWeight: 'normal'}}
+                            onClick = {(e) =>{
 
-                        setPageToolView({
-                            page: 'course',
-                            tool: 'gradebookAssignment',
-                            view: '',
-                            params: { driveId: driveIdValue , doenetId},
-                        })
-          
-                    }
-                    }>{assignments.contents[doenetId].label}</a>,
-                    accessor: doenetId,
-                    disableFilters: true,
+                                setPageToolView({
+                                    page: 'course',
+                                    tool: 'gradebookAssignment',
+                                    view: '',
+                                    params: { driveId: driveIdValue , doenetId},
+                                })
+                
+                            }
+                            }>{assignments.contents[doenetId].label}</a>,
+                            accessor: doenetId,
+                            Footer: possiblepoints,
+                            disableFilters: true},
+                    ]
+                    
 
                 })
-        possiblePointRow[doenetId] = possiblepoints;
+            possiblePointRow[doenetId] = possiblepoints;
 
     
         }
@@ -598,7 +642,7 @@ let gradeCategories = [
         let categoryPossiblePoints = allpossiblepoints.reduce((a,c)=>a+c,0) * scaleFactor;
     
         //category total
-        possiblePointRow[category] = categoryPossiblePoints;
+        // possiblePointRow[category] = categoryPossiblePoints;
         totalPossiblePoints += categoryPossiblePoints;
 
         let description = "";
@@ -613,24 +657,26 @@ let gradeCategories = [
            
             Header: <div>{`${category} Total`} {description} </div>,
             accessor: category,
+            Footer: categoryPossiblePoints,
             disableFilters: true,
 
         })
 
        
-    }
+        }
 
 
     overviewTable.headers.push({
            
         Header: <div>Course Total</div>,
         accessor: 'course total',
+        Footer: totalPossiblePoints,
         disableFilters: true,
 
     })
-    possiblePointRow['course total'] = totalPossiblePoints;
+    // possiblePointRow['course total'] = totalPossiblePoints;
 
-    overviewTable.rows.push(possiblePointRow)
+    // overviewTable.rows.push(possiblePointRow)
 
     for (let userId in students.contents) {
             
@@ -644,7 +690,17 @@ let gradeCategories = [
 
         let row = {}
 
-        row["name"] = firstName + " " + lastName
+        let name = firstName + " " + lastName;
+        row["name"] = <a 
+            style={{cursor: 'pointer'}}
+            onClick = {(e) =>{
+                setPageToolView({
+                    page: 'course',
+                    tool: 'gradebookStudent',
+                    view: '',
+                    params: { driveId: driveIdValue, userId},
+                })
+            }}> {name} </a>
         
         let totalScore = 0;
 
@@ -669,7 +725,7 @@ let gradeCategories = [
                     page: 'course',
                     tool: 'gradebookStudentAssignment',
                     view: '',
-                    params: { driveId: driveIdValue , doenetId, userId,source:'student'},
+                    params: { driveId: driveIdValue , doenetId, userId, previousCrumb:'student'},
                 })
   
             }}>{score}</a>
@@ -693,31 +749,35 @@ let gradeCategories = [
         overviewTable.rows.push(row);
     }
     
+    // getTrProps = (row) => {
+    //     if (rowInfo) {
+    //       return {
+    //         style: {
+    //           background: rowInfo.row.age > 20 ? 'red' : 'green',
+    //           color: 'white'
+    //         }
+    //       }
+    //     }
+    //     return {};
+    //   }
 
+    console.log("rows", overviewTable.rows);
     return (
         <Styles>
-            <Table columns = {overviewTable.headers} data = {overviewTable.rows}/>
+            <Table 
+                columns = {overviewTable.headers} 
+                data = {overviewTable.rows}
+                // getRowProps={row => ({
+                //     style: {
+                //       backgroundColor: overviewTable.rows[0]['name'] === "Possible Points" ? '#e2e2e2' : 'white',
+                //     },
+                //   })}
+            />
         </Styles>
     )
 
 }
 
-// function BackButton(props) {
-
-//     return(
-//         <button onClick = {() => history.go(-1)}>
-//             Courses
-//         </button>
-//     )
-// }
-
-// function CourseSelector(props){
-    
-//     return(<select onChange = {(event) => props.callback(event.target.value)}>
-//         <option value = ''>Select Course</option>
-//         {props.courseList.map((course, i) => <option key = {i} value = {course.courseId}>{course.longname}</option> )}
-//     </select>)
-// }
 
 export default function Gradebook(props){
     

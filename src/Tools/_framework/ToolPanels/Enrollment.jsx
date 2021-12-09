@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import { nanoid } from 'nanoid';
 import axios from 'axios';
 import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
 import ButtonGroup from '../../../_reactComponents/PanelHeaderComponents/ButtonGroup';
@@ -193,12 +192,10 @@ export default function Enrollment(props){
       let mergeLastName = [];
       let mergeEmail = [];
       let mergeSection = [];
-      let userIds = [];
+
       for (let [i, rowdata] of entries.entries()) {
         let rowcells = [];
-        let userId = nanoid();
-        userIds.push(userId);
-
+  
         if (
           columnToIndex.empId != null &&
           typeof rowdata[columnToIndex.empId] == 'string'
@@ -261,7 +258,6 @@ export default function Enrollment(props){
                      mergeLastName,
                      mergeEmail,
                      mergeSection,
-                     userIds,
                    };
                    console.log(">>>>payload",payload)
                    axios
@@ -299,29 +295,7 @@ export default function Enrollment(props){
     }
   }
 
-  // const enrollManual = (e) => {
-  //   e.preventDefault();
-
-  //   let payload = {
-  //     email: enrolllearner,
-  //     userId: nanoid(),
-  //     driveId: driveId,
-  //   };
-  //   axios.post('/api/manualEnrollment.php', payload).then((resp) => {
-  //     const payload = { params: { driveId } };
-  //     axios
-  //       .get('/api/getEnrollment.php', payload)
-  //       .then((resp) => {
-  //         let enrollmentArray = resp.data.enrollmentArray;
-  //         setEnrollmentTableDataAtom(enrollmentArray);
-  //         setProcess('Display Enrollment');
-  //         setEnrolllearner('');
-  //       })
-  //       .catch((error) => {
-  //         console.warn(error);
-  //       });
-  //   });
-  // };
+  
 
 const enrollLearners = (e,enrollLearner) => {
   e.preventDefault();

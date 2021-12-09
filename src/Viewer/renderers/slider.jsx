@@ -310,7 +310,7 @@ function nearestValue(refval, points, SVs) {
 
 export default function Slider(props) {
   let [name, SVs, actions] = useDoenetRender(props);
-  //   console.log("name: ", name, " value: ", SVs.value, " index: ", SVs.index);
+  // console.log("name: ", name, " value: ", SVs.value, " index: ", SVs.index);
   // console.log(SVs)
 
   const containerRef = useRef(null);
@@ -356,14 +356,14 @@ export default function Slider(props) {
   if (SVs.disabled) {
     let controls = '';
     if (SVs.showControls) {
-      controls = <ButtonGroup 
+      controls = <ButtonGroup
       >
-        <Button 
-        style={{marginTop: '-20px'}} 
-        value="Prev" onClick={(e) => handlePrevious(e)} disabled />
-        <Button 
-        style={{marginTop: '-20px'}} 
-        value="Next" onClick={(e) => handleNext(e)} disabled />
+        <Button
+          style={{ marginTop: '-20px' }}
+          value="Prev" onClick={(e) => handlePrevious(e)} disabled />
+        <Button
+          style={{ marginTop: '-20px' }}
+          value="Next" onClick={(e) => handleNext(e)} disabled />
       </ButtonGroup>
     } else {
       controls = null;
@@ -553,16 +553,16 @@ export default function Slider(props) {
   if (SVs.showControls) {
     controls = <ButtonGroup >
       <Button
-        style={{marginTop: '-20px'}} 
+        style={{ marginTop: '-20px' }}
         value="Prev"
         onClick={(e) => handlePrevious(e)}
-        data-cy="prevbutton"
+        data-cy={`${name}-prevbutton`}
       ></Button>
       <Button
-        style={{marginTop: '-20px'}} 
+        style={{ marginTop: '-20px' }}
         value="Next"
         onClick={(e) => handleNext(e)}
-        data-cy="nextbutton"
+        data-cy={`${name}-nextbutton`}
       ></Button>
     </ButtonGroup>
   } else {
@@ -583,7 +583,7 @@ export default function Slider(props) {
         <StyledSlider width={(`${SVs.width.size}px`)} data-cy="slider1">
           {/* {valueDisplay} */}
           <StyledThumb style={{ left: `${thumbXPos - 4}px` }}
-            data-cy="slider1-handle" />
+            data-cy={`${name}-handle`} />
           {ticksAndLabels}
         </StyledSlider>
       </SubContainer2>
