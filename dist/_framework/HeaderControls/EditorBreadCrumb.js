@@ -20,6 +20,6 @@ export default function EditorBreadCrumb() {
     fallback: /* @__PURE__ */ React.createElement("div", null, "Loading Breadcrumb...")
   }, /* @__PURE__ */ React.createElement(BreadCrumb, {
     crumbs: [chooserCrumb, dashboardCrumb, ...navigationCrumbs, editorCrumb],
-    offset: 62
+    offset: 68
   }));
 }

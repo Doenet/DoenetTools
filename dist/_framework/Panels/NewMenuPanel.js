@@ -156,6 +156,7 @@ export default function MenuPanel({hide, menuPanelCap = "", menusTitles = [], cu
   }).current;
   const LazyMenuObj = useRef({
     SelectedCourse: lazy(() => import("../Menus/SelectedCourse.js")),
+    GradeSettings: lazy(() => import("../Menus/GradeSettings.js")),
     SelectedDoenetML: lazy(() => import("../Menus/SelectedDoenetML.js")),
     SelectedFolder: lazy(() => import("../Menus/SelectedFolder.js")),
     SelectedCollection: lazy(() => import("../Menus/SelectedCollection.js")),
@@ -170,6 +171,7 @@ export default function MenuPanel({hide, menuPanelCap = "", menusTitles = [], cu
     AutoSaves: lazy(() => import("../Menus/AutoSaves.js")),
     LoadEnrollment: lazy(() => import("../Menus/LoadEnrollment.js")),
     GradeUpload: lazy(() => import("../Menus/GradeUpload.js")),
+    GradeDownload: lazy(() => import("../Menus/GradeDownload.js")),
     ManualEnrollment: lazy(() => import("../Menus/ManualEnrollment.js")),
     AssignmentSettingsMenu: lazy(() => import("../Menus/AssignmentSettingsMenu.js")),
     GroupSettings: lazy(() => import("../Menus/GroupSettings.js")),

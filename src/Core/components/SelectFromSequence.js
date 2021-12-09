@@ -3,7 +3,7 @@ import me from 'math-expressions';
 import { enumerateSelectionCombinations } from '../utils/enumeration';
 import { processAssignNames } from '../utils/serializedStateProcessing';
 import { textToAst } from '../utils/math';
-import { calculateSequenceParameters, numberToLetters, lettersToNumber } from '../utils/sequence';
+import { calculateSequenceParameters, lettersToNumber, returnSequenceValueForIndex, returnSequenceValues } from '../utils/sequence';
 import { convertAttributesForComponentType } from '../utils/copy';
 
 export default class SelectFromSequence extends Sequence {
@@ -562,65 +562,31 @@ function makeSelection({ dependencyValues }) {
       let n = dependencyValues.length;
       desiredIndices = desiredIndices.map(x => ((((x - 1) % n) + n) % n) + 1);
 
-      // assume that we have an excluded combination 
-      // until we determine that we aren't matching an excluded combination
-      let isExcludedCombination = true;
-
       let selectedValues = [];
-      for (let [indNumber, indexFrom1] of desiredIndices.entries()) {
-        let indexFrom0 = indexFrom1 - 1;
-        let componentValue = dependencyValues.from;
-        if (indexFrom0 > 0) {
-          if (dependencyValues.type === "math") {
-            componentValue = componentValue.add(dependencyValues.step.multiply(me.fromAst(indexFrom0))).expand().simplify();
-          } else {
-            componentValue += dependencyValues.step * indexFrom0;
-          }
-        }
+      for (let indexFrom1 of desiredIndices) {
 
-        if (dependencyValues.type === "letters") {
-          componentValue = numberToLetters(componentValue, dependencyValues.lowercase);
-        }
+        let componentValue = returnSequenceValueForIndex({
+          index: indexFrom1 - 1,
+          from: dependencyValues.from,
+          step: dependencyValues.step,
+          length: dependencyValues.length,
+          exclude: dependencyValues.exclude,
+          type: dependencyValues.type,
+          lowercase: dependencyValues.lowercase
+        })
 
-        // throw error if asked for an excluded value
-        if (dependencyValues.type === "math") {
-          if (dependencyValues.exclude.some(x => x.equals(componentValue))) {
-            throw Error("Specified index of selectfromsequence that was excluded")
-          }
-        } else if (dependencyValues.type === "number") {
-          if (dependencyValues.exclude.some(x => Math.abs(x - componentValue) <= 1E-14 * Math.max(Math.abs(x), Math.abs(componentValue)))) {
-            throw Error("Specified index of selectfromsequence that was excluded")
-          }
-        } else {
-          if (dependencyValues.exclude.includes(componentValue)) {
-            throw Error("Specified index of selectfromsequence that was excluded")
-          }
-        }
-
-        // check if matches the corresponding component of an excluded combination
-        let matchedExcludedCombinationIndex = false
-        if (dependencyValues.type === "math") {
-          if (dependencyValues.excludedCombinations.some(x => x[indNumber].equals(componentValue))) {
-            matchedExcludedCombinationIndex = true;
-          }
-        } else if (dependencyValues.type === "number") {
-          if (dependencyValues.excludedCombinations.some(x => Math.abs(x[indNumber] - componentValue) <= 1E-14 * Math.max(Math.abs(x[indNumber]), Math.abs(componentValue)))) {
-            matchedExcludedCombinationIndex = true;
-          }
-        } else {
-          if (dependencyValues.excludedCombinations.some(x => x[indNumber] === componentValue)) {
-            matchedExcludedCombinationIndex = true;
-          }
-        }
-
-        if (!matchedExcludedCombinationIndex) {
-          isExcludedCombination = false;
+        if (componentValue === null) {
+          throw Error("Specified index of selectfromsequence that was excluded")
         }
 
         selectedValues.push(componentValue);
       }
 
-      if (isExcludedCombination) {
+      if (checkForExcludedCombination({
+        type: dependencyValues.type,
+        excludedCombinations: dependencyValues.excludedCombinations,
+        values: selectedValues
+      })) {
         throw Error("Specified indices of selectfromsequence that was an excluded combination")
       }
 
@@ -666,32 +632,19 @@ function makeSelection({ dependencyValues }) {
       // to see if really have excluded that many combinations
 
       let numberPossibilities = 0;
-      for (let ind = 0; ind < dependencyValues.length; ind++) {
-        let componentValue = dependencyValues.from;
-        if (ind > 0) {
-          if (dependencyValues.type === "math") {
-            componentValue = componentValue.add(dependencyValues.step.multiply(me.fromAst(ind))).expand().simplify();
-          } else {
-            componentValue += dependencyValues.step * ind;
-          }
+      for (let index = 0; index < dependencyValues.length; index++) {
+        if (returnSequenceValueForIndex({
+          index,
+          from: dependencyValues.from,
+          step: dependencyValues.step,
+          length: dependencyValues.length,
+          exclude: dependencyValues.exclude,
+          type: dependencyValues.type
+        }) !== null) {
+
+          numberPossibilities++;
+
         }
-
-        if (dependencyValues.type === "math") {
-          if (dependencyValues.exclude.some(x => x.equals(componentValue))) {
-            continue;
-          }
-        } else if (dependencyValues.type === "number") {
-          if (dependencyValues.exclude.some(x => Math.abs(x - componentValue) <= 1E-14 * Math.max(Math.abs(x), Math.abs(componentValue)))) {
-            continue;
-          }
-        } else {
-          if (dependencyValues.exclude.includes(componentValue)) {
-            continue;
-          }
-        }
-
-        numberPossibilities++;
-
       }
 
       if (dependencyValues.withReplacement) {
@@ -727,18 +680,12 @@ function makeSelection({ dependencyValues }) {
 
 
       // try again if hit excluded combination
-      if (dependencyValues.type === "math") {
-        if (dependencyValues.excludedCombinations.some(x => x.every((v, i) => v.equals(selectedValues[i])))) {
-          continue;
-        }
-      } else if (dependencyValues.type === "number") {
-        if (dependencyValues.excludedCombinations.some(x => x.every((v, i) => Math.abs(v - selectedValues[i]) <= 1E-14 * Math.max(Math.abs(v), Math.abs(selectedValues[i]))))) {
-          continue;
-        }
-      } else {
-        if (dependencyValues.excludedCombinations.some(x => x.every((v, i) => v === selectedValues[i]))) {
-          continue;
-        }
+      if (checkForExcludedCombination({
+        type: dependencyValues.type,
+        excludedCombinations: dependencyValues.excludedCombinations,
+        values: selectedValues
+      })) {
+        continue;
       }
 
       foundValidCombination = true;
@@ -791,7 +738,8 @@ function selectValuesAndIndices({ stateValues, numberUniqueRequired = 1, numberT
   if (stateValues.exclude.length + numberUniqueRequired < 0.5 * stateValues.length) {
     // the simplest case where the likelihood of getting excluded is less than 50%
     // just randomly select from all possibilities
-    // and use rejection method to resample if an excluded is hit
+    // and use rejection method to resample if an excluded is hit 
+    // or repeat a value when withReplacement=false
 
     for (let ind = 0; ind < numberToSelect; ind++) {
 
@@ -811,28 +759,18 @@ function selectValuesAndIndices({ stateValues, numberUniqueRequired = 1, numberT
           continue;
         }
 
-        componentValue = stateValues.from;
-        if (selectedIndex > 1) {
-          if (stateValues.type === "math") {
-            componentValue = componentValue.add(stateValues.step.multiply(me.fromAst(selectedIndex - 1))).expand().simplify();
-          } else {
-            componentValue += stateValues.step * (selectedIndex - 1);
-          }
-        }
+        componentValue = returnSequenceValueForIndex({
+          index: selectedIndex - 1,
+          from: stateValues.from,
+          step: stateValues.step,
+          exclude: stateValues.exclude,
+          type: stateValues.type,
+          lowercase: stateValues.lowercase
+        })
 
         // try again if hit excluded value
-        if (stateValues.type === "math") {
-          if (stateValues.exclude.some(x => x.equals(componentValue))) {
-            continue;
-          }
-        } else if (stateValues.type === "number") {
-          if (stateValues.exclude.some(x => Math.abs(x - componentValue) <= 1E-14 * Math.max(Math.abs(x), Math.abs(componentValue)))) {
-            continue;
-          }
-        } else {
-          if (stateValues.exclude.includes(componentValue)) {
-            continue;
-          }
+        if (componentValue === null) {
+          continue;
         }
 
         foundValid = true;
@@ -844,9 +782,6 @@ function selectValuesAndIndices({ stateValues, numberUniqueRequired = 1, numberT
         throw Error("By extremely unlikely fluke, couldn't select random value");
       }
 
-      if (stateValues.type === "letters") {
-        componentValue = numberToLetters(componentValue, stateValues.lowercase);
-      }
       selectedValues.push(componentValue);
       selectedIndices.push(selectedIndex);
     }
@@ -858,41 +793,9 @@ function selectValuesAndIndices({ stateValues, numberUniqueRequired = 1, numberT
   // for cases when a large fraction might be excluded
   // we will generate the list of possible values and pick from those
 
-  let possibleValues = [];
+  let possibleValuesAndIndices = returnSequenceValues(stateValues, true);
 
-  for (let ind = 0; ind < stateValues.length; ind++) {
-    let componentValue = stateValues.from;
-    if (ind > 0) {
-      if (stateValues.type === "math") {
-        componentValue = componentValue.add(stateValues.step.multiply(me.fromAst(ind))).expand().simplify();
-      } else {
-        componentValue += stateValues.step * ind;
-      }
-    }
-
-    if (stateValues.type === "math") {
-      if (stateValues.exclude.some(x => x.equals(componentValue))) {
-        continue;
-      }
-    } else if (stateValues.type === "number") {
-      if (stateValues.exclude.some(x => Math.abs(x - componentValue) <= 1E-14 * Math.abs(Math.max(x), Math.abs(componentValue)))) {
-        continue;
-      }
-    } else {
-      if (stateValues.exclude.includes(componentValue)) {
-        continue;
-      }
-    }
-
-    if (stateValues.type === "letters") {
-      componentValue = numberToLetters(componentValue, stateValues.lowercase);
-    }
-
-    possibleValues.push(componentValue);
-
-  }
-
-  let numPossibleValues = possibleValues.length;
+  let numPossibleValues = possibleValuesAndIndices.length;
 
   if (numberUniqueRequired > numPossibleValues) {
     throw Error("Cannot select " + numberUniqueRequired +
@@ -905,11 +808,11 @@ function selectValuesAndIndices({ stateValues, numberUniqueRequired = 1, numberT
 
       // random number in [0, 1)
       let rand = rng();
-      // random integer from 1 to numPossibleValues
-      let selectedIndex = Math.floor(rand * numPossibleValues + 1);
+      // random integer from 0 to numPossibleValues-1
+      let ind = Math.floor(rand * numPossibleValues);
 
-      selectedIndices.push(selectedIndex)
-      selectedValues.push(possibleValues[selectedIndex - 1]);
+      selectedIndices.push(possibleValuesAndIndices[ind].originalIndex + 1)
+      selectedValues.push(possibleValuesAndIndices[ind].value);
     }
 
     return { selectedValues, selectedIndices };
@@ -919,16 +822,26 @@ function selectValuesAndIndices({ stateValues, numberUniqueRequired = 1, numberT
   // need to select more than one value without replacement
   // shuffle array and choose first elements
   // https://stackoverflow.com/a/12646864
-  let possibleIndices = [...Array(possibleValues.length).keys()].map(x => x + 1);
-  for (let i = possibleValues.length - 1; i > 0; i--) {
+  for (let i = possibleValuesAndIndices.length - 1; i > 0; i--) {
     const rand = rng();
     const j = Math.floor(rand * (i + 1));
-    [possibleValues[i], possibleValues[j]] = [possibleValues[j], possibleValues[i]];
-    [possibleIndices[i], possibleIndices[j]] = [possibleIndices[j], possibleIndices[i]];
+    [possibleValuesAndIndices[i], possibleValuesAndIndices[j]] = [possibleValuesAndIndices[j], possibleValuesAndIndices[i]];
   }
 
-  selectedValues = possibleValues.slice(0, numberToSelect)
-  selectedIndices = possibleIndices.slice(0, numberToSelect)
+  let selectedValuesAndIndices = possibleValuesAndIndices.slice(0, numberToSelect);
+  selectedValues = selectedValuesAndIndices.map(x => x.value);
+  selectedIndices = selectedValuesAndIndices.map(x => x.originalIndex + 1);
+
   return { selectedValues, selectedIndices };
 
+}
+
+function checkForExcludedCombination({ type, excludedCombinations, values }) {
+  if (type === "math") {
+    return excludedCombinations.some(x => x.every((v, i) => v.equals(values[i])));
+  } else if (type === "number") {
+    return excludedCombinations.some(x => x.every((v, i) => Math.abs(v - values[i]) <= 1E-14 * Math.max(Math.abs(v), Math.abs(values[i]))));
+  } else {
+    return excludedCombinations.some(x => x.every((v, i) => v === values[i]));
+  }
 }

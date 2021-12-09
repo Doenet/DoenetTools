@@ -3,10 +3,11 @@ import styled from "../../_snowpack/pkg/styled-components.js";
 import {FontAwesomeIcon} from "../../_snowpack/pkg/@fortawesome/react-fontawesome.js";
 import {panelsInfoAtom} from "../../_framework/Panels/NewContentPanel.js";
 import {useRecoilValue} from "../../_snowpack/pkg/recoil.js";
+import {supportPanelHandleLeft} from "../../_framework/Panels/NewContentPanel.js";
 const BreadCrumbContainer = styled.ul`
   list-style: none;
   overflow: hidden;
-  height: 22px;
+  height: 21px;
   display: flex;
   margin-left: -35px;
 `;
@@ -70,15 +71,15 @@ overflow: hidden;
 text-overflow: ellipsis;
 max-width: 175px;
 `;
-function Crumb({setSize, i, label = null, onClick, icon = null}) {
+function Crumb({setRef, i, label = null, onClick, icon = null}) {
   let crumbRef = useRef(null);
   useEffect(() => {
-    setSize((was) => {
+    setRef((was) => {
       let newObj = [...was];
-      newObj[i] = crumbRef.current.getBoundingClientRect();
+      newObj[i] = crumbRef;
       return newObj;
     });
-  }, [i, crumbRef, setSize]);
+  }, [i, crumbRef, setRef]);
   let iconJSX = null;
   if (icon) {
     iconJSX = /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
@@ -95,10 +96,12 @@ function Crumb({setSize, i, label = null, onClick, icon = null}) {
   }, iconJSX, /* @__PURE__ */ React.createElement(CrumbTextDiv, null, label)));
 }
 export function BreadCrumb({crumbs = [], offset = 0}) {
-  let [crumBounds, setCrumBounds] = useState([]);
+  let [crumbRefs, setCrumbRefs] = useState([]);
   let [windowWidth, setWindowWidth] = useState(window.innerWidth);
-  let [containerLeft, setContainerLeft] = useState(0);
-  let panelsInfo = useRecoilValue(panelsInfoAtom);
+  let [crumbBreaks, setCrumbBreaks] = useState(null);
+  let supportPanelHandleLeftValue = useRecoilValue(supportPanelHandleLeft);
+  let prevWidths = useRef([]);
+  const prevRightFirstCrumb = useRef(0);
   const containerRef = useRef(null);
   function onWindowResize() {
     setWindowWidth(window.innerWidth);
@@ -109,39 +112,73 @@ export function BreadCrumb({crumbs = [], offset = 0}) {
       window.onresize = null;
     };
   }, []);
-  useLayoutEffect(() => {
-    if (containerRef.current?.getBoundingClientRect()?.left !== containerLeft) {
-      setContainerLeft(containerRef.current?.getBoundingClientRect()?.left);
-    }
-  });
   let numHidden = 0;
-  if (crumbs.length > 2 && crumBounds.length == crumbs.length) {
-    numHidden = crumbs.length - 2;
-    let prevBreak = containerLeft + crumBounds[0].width + 53;
-    prevBreak = prevBreak + crumBounds[crumBounds.length - 1].width + 58;
+  if (crumbBreaks !== null && crumbs.length > 2) {
     let effectiveWidth = windowWidth;
-    if (panelsInfo?.isActive) {
-      effectiveWidth = windowWidth * panelsInfo.propotion - 10;
-      if (containerLeft > 100) {
-        effectiveWidth = (windowWidth - 240) * panelsInfo.propotion + 240 - 10;
-      }
+    if (supportPanelHandleLeftValue) {
+      effectiveWidth = supportPanelHandleLeftValue;
     }
     effectiveWidth -= offset;
-    if (prevBreak < effectiveWidth) {
-      for (let i = crumBounds.length - 2; i >= 1; i--) {
-        let width = crumBounds[i].width;
-        let rightBreak = prevBreak + width;
-        if (i == 1) {
-          rightBreak -= 58;
-        }
-        if (effectiveWidth >= prevBreak && effectiveWidth < rightBreak) {
-          break;
-        }
-        prevBreak = rightBreak;
-        numHidden--;
+    for (let crumbBreak of crumbBreaks) {
+      if (effectiveWidth < crumbBreak.end && effectiveWidth >= crumbBreak.start) {
+        numHidden = crumbBreak.numHidden;
       }
     }
   }
+  useLayoutEffect(() => {
+    if (crumbs.length < crumbRefs.length) {
+      setCrumbRefs(crumbRefs.slice(0, crumbs.length));
+    }
+    if (crumbs.length === crumbRefs.length) {
+      let widths = [];
+      let rights = [];
+      let newWidths = false;
+      for (let [i, crumbRef] of Object.entries(crumbRefs)) {
+        let boundingClientRect = crumbRef.current?.getBoundingClientRect();
+        if (boundingClientRect === void 0) {
+          boundingClientRect = {width: 0, right: 0};
+        }
+        let {width, right} = boundingClientRect;
+        if (width === 0) {
+          if (prevWidths.current?.[i]) {
+            width = prevWidths.current?.[i];
+          }
+        }
+        widths.push(width);
+        rights.push(right);
+        if (prevWidths.current?.[i] !== width && width !== 0) {
+          newWidths = true;
+        }
+      }
+      if (prevWidths.current.length > widths.length) {
+        newWidths = true;
+      }
+      if (prevRightFirstCrumb.current !== 0 && prevRightFirstCrumb.current !== rights[0]) {
+        newWidths = true;
+      }
+      prevWidths.current = widths;
+      prevRightFirstCrumb.current = rights[0];
+      if (newWidths) {
+        let newCrumbBreaks = [];
+        let elipseWidth = 52;
+        let rightPadding = 5;
+        let crumbBreak = rights[0] + elipseWidth + widths[widths.length - 2] + widths[widths.length - 1] + rightPadding;
+        newCrumbBreaks.push({start: 0, end: crumbBreak, numHidden: crumbs.length - 2});
+        for (let i = 3; i < crumbs.length; i++) {
+          let start = crumbBreak;
+          crumbBreak = crumbBreak + widths[widths.length - i];
+          if (i === crumbs.length - 1) {
+            crumbBreak = start + widths[1] - elipseWidth;
+          }
+          newCrumbBreaks.push({start, end: crumbBreak, numHidden: crumbs.length - i});
+        }
+        if (widths.length > 2 && elipseWidth > widths[1]) {
+          newCrumbBreaks.pop();
+        }
+        setCrumbBreaks(newCrumbBreaks);
+      }
+    }
+  }, [crumbs, crumbRefs, setCrumbBreaks, crumbBreaks, numHidden]);
   let crumbsJSX = [];
   for (let [i, {icon, label, onClick}] of Object.entries(crumbs)) {
     if (i < numHidden && i != 0) {
@@ -153,7 +190,7 @@ export function BreadCrumb({crumbs = [], offset = 0}) {
       label,
       onClick,
       i,
-      setSize: setCrumBounds
+      setRef: setCrumbRefs
     }));
   }
   if (numHidden > 0) {

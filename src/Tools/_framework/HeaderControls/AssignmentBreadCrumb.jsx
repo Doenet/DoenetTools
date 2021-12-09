@@ -32,7 +32,7 @@ export default function AssignmentBreadCrumb() {
 
   return (
     <Suspense fallback={<div>Loading Breadcrumb...</div>}>
-      <BreadCrumb crumbs={[chooserCrumb,dashboardCrumb,...navigationCrumbs,assignmentCrumb]}  offset={300}/>
+      <BreadCrumb crumbs={[chooserCrumb,dashboardCrumb,...navigationCrumbs,assignmentCrumb]}  offset={98}/>
       {/* <BreadCrumb crumbs={[chooserCrumb,dashboardCrumb,...navigationCrumbs,assignmentCrumb]}  offset={90}/> */}
     </Suspense>
   );

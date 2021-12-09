@@ -28,11 +28,10 @@ export default class FunctionCurve extends DoenetRenderer {
       strokeColor: this.doenetSvData.selectedStyle.lineColor,
       highlightStrokeColor: this.doenetSvData.selectedStyle.lineColor,
       strokeWidth: this.doenetSvData.selectedStyle.lineWidth,
-      dash: styleToDash(this.doenetSvData.selectedStyle.lineStyle)
+      dash: styleToDash(this.doenetSvData.selectedStyle.lineStyle, this.doenetSvData.dashed)
     };
     if (this.doenetSvData.showLabel && this.doenetSvData.label !== "") {
       let anchorx, offset, position;
-      console.log(`labelPosition: ${this.doenetSvData.labelPosition}`);
       if (this.doenetSvData.labelPosition === "upperright") {
         position = "urt";
         offset = [-5, -10];
@@ -72,7 +71,7 @@ export default class FunctionCurve extends DoenetRenderer {
         anchorx
       };
     }
-    if (!this.doenetSvData.draggable) {
+    if (!this.doenetSvData.draggable || this.doenetSvData.fixed) {
       curveAttributes.highlightStrokeWidth = this.doenetSvData.selectedStyle.lineWidth;
     }
     if (["parameterization", "bezier"].includes(this.doenetSvData.curveType)) {
@@ -88,9 +87,7 @@ export default class FunctionCurve extends DoenetRenderer {
         let ymax = this.doenetSvData.graphYmax;
         let minForF = Math.max(ymin - (ymax - ymin) * 0.1, this.doenetSvData.parMin);
         let maxForF = Math.min(ymax + (ymax - ymin) * 0.1, this.doenetSvData.parMax);
-        this.originalCurveJXG = this.props.board.create("functiongraph", [this.doenetSvData.fs[0], minForF, maxForF], {visible: false});
-        this.reflectLine = this.props.board.create("line", [0, 1, -1], {visible: false});
-        this.curveJXG = this.props.board.create("reflection", [this.originalCurveJXG, this.reflectLine], curveAttributes);
+        this.curveJXG = this.props.board.create("curve", [this.doenetSvData.fs[0], (x) => x, minForF, maxForF], curveAttributes);
       } else {
         let xmin = this.doenetSvData.graphXmin;
         let xmax = this.doenetSvData.graphXmax;
@@ -101,6 +98,13 @@ export default class FunctionCurve extends DoenetRenderer {
       this.previousFlipFunction = this.doenetSvData.flipFunction;
     }
     this.previousCurveType = this.doenetSvData.curveType;
+    this.draggedControlPoint = null;
+    this.draggedThroughPoint = null;
+    this.curveJXG.on("up", function(e) {
+      if (!this.updateSinceDown && this.draggedControlPoint === null && this.draggedThroughPoint === null && this.doenetSvData.switchable && !this.doenetSvData.fixed) {
+        this.actions.switchCurve();
+      }
+    }.bind(this));
     if (this.doenetSvData.curveType === "bezier") {
       this.props.board.on("up", this.upBoard);
       this.curveJXG.on("down", this.downOther);
@@ -148,7 +152,7 @@ export default class FunctionCurve extends DoenetRenderer {
         layer: 10 * this.doenetSvData.layer + 8,
         size: 2
       };
-      if (!this.doenetSvData.draggable) {
+      if (!this.doenetSvData.draggable || this.doenetSvData.fixed) {
         return this.curveJXG;
       }
       this.createControls();
@@ -159,6 +163,10 @@ export default class FunctionCurve extends DoenetRenderer {
       this.props.board.updateRenderer();
       this.previousNumberOfPoints = this.doenetSvData.numericalThroughPoints.length;
       this.previousVectorControlDirections = [...this.doenetSvData.vectorControlDirections];
+    } else {
+      this.curveJXG.on("down", function(e) {
+        this.updateSinceDown = false;
+      }.bind(this));
     }
     return this.curveJXG;
   }
@@ -225,12 +233,6 @@ export default class FunctionCurve extends DoenetRenderer {
     this.curveJXG.off("down");
     this.props.board.removeObject(this.curveJXG);
     delete this.curveJXG;
-    if (this.reflectLine !== void 0) {
-      this.props.board.removeObject(this.reflectLine);
-      delete this.reflectLine;
-      this.props.board.removeObject(this.originalCurveJXG);
-      delete this.originalCurveJXG;
-    }
     this.deleteControls();
   }
   componentWillUnmount() {
@@ -313,7 +315,7 @@ export default class FunctionCurve extends DoenetRenderer {
     }
   }
   upBoard() {
-    if (!this.doenetSvData.draggable) {
+    if (!this.doenetSvData.draggable || this.doenetSvData.fixed) {
       return;
     }
     if (this.hitObject !== true && !this.doenetSvData.bezierControlsAlwaysVisible) {
@@ -324,7 +326,7 @@ export default class FunctionCurve extends DoenetRenderer {
     this.hitObject = false;
   }
   downThroughPoint(i, e) {
-    if (!this.doenetSvData.draggable) {
+    if (!this.doenetSvData.draggable || this.doenetSvData.fixed) {
       return;
     }
     this.draggedThroughPoint = null;
@@ -362,12 +364,13 @@ export default class FunctionCurve extends DoenetRenderer {
     }
   }
   downOther() {
-    if (!this.doenetSvData.draggable) {
+    if (!this.doenetSvData.draggable || this.doenetSvData.fixed) {
       return;
     }
     this.draggedThroughPoint = null;
     this.draggedControlPoint = null;
     this.hitObject = true;
+    this.updateSinceDown = false;
     this.makeThroughPointsAlwaysVisible();
     this.props.board.updateRenderer();
   }
@@ -387,21 +390,29 @@ export default class FunctionCurve extends DoenetRenderer {
       this.deleteGraphicalObject();
       let result = this.createGraphicalObject();
       if (this.props.board.updateQuality === this.props.board.BOARD_QUALITY_LOW) {
-        if (this.doenetSvData.curveType === "function" && this.doenetSvData.flipFunction) {
-          this.props.board.itemsRenderedLowQuality[this._key] = this.originalCurveJXG;
-        } else {
-          this.props.board.itemsRenderedLowQuality[this._key] = this.curveJXG;
-        }
+        this.props.board.itemsRenderedLowQuality[this._key] = this.curveJXG;
       }
       return result;
     }
     if (this.props.board.updateQuality === this.props.board.BOARD_QUALITY_LOW) {
       this.props.board.itemsRenderedLowQuality[this._key] = this.curveJXG;
     }
+    this.updateSinceDown = true;
     let visible = !this.doenetSvData.hidden;
     this.curveJXG.name = this.doenetSvData.label;
     this.curveJXG.visProp["visible"] = visible;
     this.curveJXG.visPropCalc["visible"] = visible;
+    if (this.curveJXG.visProp.strokecolor !== this.doenetSvData.selectedStyle.lineColor) {
+      this.curveJXG.visProp.strokecolor = this.doenetSvData.selectedStyle.lineColor;
+      this.curveJXG.visProp.highlightstrokecolor = this.doenetSvData.selectedStyle.lineColor;
+    }
+    let newDash = styleToDash(this.doenetSvData.selectedStyle.lineStyle, this.doenetSvData.dashed);
+    if (this.curveJXG.visProp.dash !== newDash) {
+      this.curveJXG.visProp.dash = newDash;
+    }
+    if (this.curveJXG.visProp.strokewidth !== this.doenetSvData.selectedStyle.lineWidth) {
+      this.curveJXG.visProp.strokewidth = this.doenetSvData.selectedStyle.lineWidth;
+    }
     if (["parameterization", "bezier"].includes(this.doenetSvData.curveType)) {
       this.curveJXG.X = this.doenetSvData.fs[0];
       this.curveJXG.Y = this.doenetSvData.fs[1];
@@ -409,18 +420,13 @@ export default class FunctionCurve extends DoenetRenderer {
       this.curveJXG.maxX = () => this.doenetSvData.parMax;
     } else {
       if (this.doenetSvData.flipFunction) {
-        this.originalCurveJXG.Y = this.doenetSvData.fs[0];
+        this.curveJXG.X = this.doenetSvData.fs[0];
         let ymin = this.doenetSvData.graphYmin;
         let ymax = this.doenetSvData.graphYmax;
         let minForF = Math.max(ymin - (ymax - ymin) * 0.1, this.doenetSvData.parMin);
         let maxForF = Math.min(ymax + (ymax - ymin) * 0.1, this.doenetSvData.parMax);
-        this.originalCurveJXG.minX = () => minForF;
-        this.originalCurveJXG.maxX = () => maxForF;
-        this.originalCurveJXG.needsUpdate = true;
-        this.originalCurveJXG.updateCurve();
-        if (this.props.board.updateQuality === this.props.board.BOARD_QUALITY_LOW) {
-          this.props.board.itemsRenderedLowQuality[this._key] = this.originalCurveJXG;
-        }
+        this.curveJXG.minX = () => minForF;
+        this.curveJXG.maxX = () => maxForF;
       } else {
         this.curveJXG.Y = this.doenetSvData.fs[0];
         let xmin = this.doenetSvData.graphXmin;
@@ -442,7 +448,7 @@ export default class FunctionCurve extends DoenetRenderer {
       this.props.board.updateRenderer();
       return;
     }
-    if (!this.doenetSvData.draggable) {
+    if (!this.doenetSvData.draggable || this.doenetSvData.fixed) {
       if (this.segmentsJXG) {
         this.deleteControls();
       }
@@ -573,11 +579,11 @@ export default class FunctionCurve extends DoenetRenderer {
     }));
   }
 }
-function styleToDash(style) {
-  if (style === "solid") {
-    return 0;
-  } else if (style === "dashed") {
+function styleToDash(style, dash) {
+  if (style === "dashed" || dash) {
     return 2;
+  } else if (style === "solid") {
+    return 0;
   } else if (style === "dotted") {
     return 1;
   } else {

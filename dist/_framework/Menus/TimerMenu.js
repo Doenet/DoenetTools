@@ -4,6 +4,7 @@ import {searchParamAtomFamily} from "../NewToolRoot.js";
 import {loadAssignmentSelector} from "../../_reactComponents/Drive/NewDrive.js";
 import {currentAttemptNumber} from "../ToolPanels/AssignmentViewer.js";
 import axios from "../../_snowpack/pkg/axios.js";
+import {UTCDateStringToDate} from "../../_utils/dateUtilityFunction.js";
 export default function TimerMenu() {
   const doenetId = useRecoilValue(searchParamAtomFamily("doenetId"));
   const userAttemptNumber = useRecoilValue(currentAttemptNumber);
@@ -21,8 +22,7 @@ export default function TimerMenu() {
       for (let [i, attemptNumber] of Object.entries(data.attemptNumbers)) {
         if (attemptNumber == userAttemptNumber) {
           if (data.starts[i] !== null) {
-            let t = data.starts[i].split(/[- :]/);
-            startDT = new Date(Date.UTC(t[0], t[1] - 1, t[2], t[3], t[4], t[5]));
+            startDT = UTCDateStringToDate(data.starts[i]);
           }
         }
       }

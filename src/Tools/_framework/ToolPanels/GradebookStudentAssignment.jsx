@@ -7,11 +7,12 @@ import {
     useRecoilValueLoadable,
   } from "recoil";
  
-import { pageToolViewAtom, searchParamAtomFamily } from '../NewToolRoot';
+import { pageToolViewAtom, searchParamAtomFamily, suppressMenusAtom } from '../NewToolRoot';
 import DoenetViewer from '../../../Viewer/DoenetViewer';
 import { serializedComponentsReviver } from "../../../Core/utils/serializedStateProcessing";
 import  axios from 'axios';
 import { currentAttemptNumber } from '../ToolPanels/AssignmentViewer';
+import { effectiveRoleAtom } from "../../../_reactComponents/PanelHeaderComponents/RoleDropdown";
 
 // import { BreadcrumbProvider } from '../../../_reactComponents/Breadcrumb';
 // import { DropTargetsProvider } from '../../../_reactComponents/DropTarget';
@@ -26,7 +27,7 @@ const getUserId = (students, name) => {
       }
     return -1;
 } 
-export default function GradebookStudentAssignmentView(props){
+export default function GradebookStudentAssignmentView(){
     const setPageToolView = useSetRecoilState(pageToolViewAtom);
     let source = useRecoilValue(searchParamAtomFamily('source'))
     let doenetId = useRecoilValue(searchParamAtomFamily('doenetId'))
@@ -37,6 +38,9 @@ export default function GradebookStudentAssignmentView(props){
     let students = useRecoilValueLoadable(studentData)
     const setRecoilAttemptNumber = useSetRecoilState(currentAttemptNumber);
     let assignments = useRecoilValueLoadable(assignmentData);
+    let effectiveRole = useRecoilValue(effectiveRoleAtom);
+    const setSuppressMenus = useSetRecoilState(suppressMenusAtom);
+
 
   
     const totalPointsOrPercent = Number(assignments.contents[doenetId]?.totalPointsOrPercent)
@@ -65,10 +69,21 @@ export default function GradebookStudentAssignmentView(props){
         }
     },[attemptsObj,setAttemptNumber,setRecoilAttemptNumber,paramAttemptNumber])
 
+    useEffect(()=>{
+        if (effectiveRole === 'student'){
+            setSuppressMenus(["GradeSettings"])
+        }else{
+            setSuppressMenus([])
+
+        }
+    },[effectiveRole,setSuppressMenus])
+
     //Wait for doenetId and userId and attemptsInfo
     if (!doenetId || !userId){
         return null;
     }
+
+
 
     async function loadAssignmentInfo(doenetId,userId){
         

@@ -37,6 +37,9 @@ export default class Copy extends CompositeComponent {
     };
     attributes.obtainPropFromComposite = {
       createPrimitiveOfType: "boolean",
+      createStateVariable: "obtainPropFromComposite",
+      defaultValue: false,
+      public: true,
     };
     attributes.componentType = {
       createPrimitiveOfType: "string",
@@ -370,20 +373,6 @@ export default class Copy extends CompositeComponent {
         return { newValues: { propName: dependencyValues.propName } }
       }
     }
-
-    stateVariableDefinitions.obtainPropFromComposite = {
-      returnDependencies: () => ({
-        obtainPropFromComposite: {
-          dependencyType: "attributePrimitive",
-          attributeName: "obtainPropFromComposite"
-        },
-      }),
-      definition: function ({ dependencyValues }) {
-        return { newValues: { obtainPropFromComposite: dependencyValues.obtainPropFromComposite } }
-      }
-    }
-
-
 
     stateVariableDefinitions.isPlainMacro = {
       returnDependencies: () => ({
@@ -928,7 +917,12 @@ export default class Copy extends CompositeComponent {
       // when have serialized components from uri
       let replacements = [deepClone(component.stateValues.serializedComponentsForContentId)];
 
-      serializeFunctions.restrictTNamesToNamespace(replacements, replacements[0].originalName + "/")
+      if (replacements[0].children) {
+        serializeFunctions.restrictTNamesToNamespace({
+          components: replacements[0].children,
+          namespace: replacements[0].originalName + "/"
+        })
+      }
 
       // replacements[0] is externalContent
       // add any specified attributes to its children

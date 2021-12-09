@@ -1,6 +1,6 @@
 import { faTh } from '../_snowpack/pkg/@fortawesome/free-solid-svg-icons.js';
 import { useEffect, useState } from '../_snowpack/pkg/react.js';
-import { useRecoilCallback, useRecoilValue, useSetRecoilState } from '../_snowpack/pkg/recoil.js';
+import { selectorFamily, useRecoilCallback, useRecoilState, useRecoilValue, useSetRecoilState } from '../_snowpack/pkg/recoil.js';
 import { pageToolViewAtom } from '../_framework/NewToolRoot.js';
 import { fetchDrivesQuery, loadDriveInfoQuery, folderDictionary } from '../_reactComponents/Drive/NewDrive.js';
 import { effectiveRoleAtom } from '../_reactComponents/PanelHeaderComponents/RoleDropdown.js';
@@ -22,22 +22,16 @@ export function useCourseChooserCrumb(){
 export function useDashboardCrumb(driveId){
   
   const setPageToolView = useSetRecoilState(pageToolViewAtom);
-  const [label,setLabel] = useState('')
+  const drives = useRecoilValue(fetchDrivesQuery);
 
-  const getDriveLabel = useRecoilCallback(({snapshot})=> async (driveId)=>{
-    let drives = await snapshot.getPromise(fetchDrivesQuery);
-    for (let driveIdLabel of drives.driveIdsAndLabels){
-      if (driveIdLabel.driveId == driveId){
-        setLabel(driveIdLabel.label);
-        return;
-      }
+  let label;
+
+  for (let driveIdLabel of drives.driveIdsAndLabels){
+    if (driveIdLabel.driveId == driveId){
+      label = driveIdLabel.label;
+      break;
     }
-    
-  })
-
-  useEffect(()=>{
-    getDriveLabel(driveId);
-  },[driveId])
+  }
 
   let params = {
     path: `${driveId}:${driveId}:${driveId}:Drive`,
@@ -53,21 +47,103 @@ export function useDashboardCrumb(driveId){
   }}
 }
 
+const navigationSelectorFamily = selectorFamily({
+  key:"navigationSelectorFamily/Default",
+  get:(driveIdFolderId)=> async ({get})=>{
+    let {driveId,folderId} = driveIdFolderId;
+
+    async function getFolder({driveId,folderId}){
+      let folderObj = await get(folderDictionary({driveId,folderId}))
+      let label = 'Content';
+      let itemType = 'Drive';
+      let parentFolderId  = driveId;
+      let itemId = folderId;
+      let results = []
+      if (driveId != folderId){
+        label = folderObj.folderInfo.label;
+        itemType = folderObj.folderInfo.itemType;
+        parentFolderId  = folderObj.folderInfo.parentFolderId;
+        results = await getFolder({driveId,folderId:parentFolderId})
+      }
+      //Don't add Collections as Folders in navigation
+      if (itemType === 'Collection'){
+        return [...results]
+      }else{
+        return [{label,itemId,itemType},...results]
+      }
+    }
+    
+  
+    return await getFolder({driveId,folderId})
+
+  }
+})
+
+export function useNavigationCrumbs(driveId,folderId){
+
+  const setPageToolView = useSetRecoilState(pageToolViewAtom);
+  const folderInfoArray = useRecoilValue(navigationSelectorFamily({driveId,folderId}));
+
+  let crumbs = [];
+
+  for (let item of folderInfoArray){
+       let params = {
+        path: `${driveId}:${driveId}:${driveId}:Drive`,
+      }
+      if (item.itemType === 'Folder'){
+        params = {
+          path: `${driveId}:${item.itemId}:${item.itemId}:Folder`,
+        }
+      }
+       crumbs.unshift({
+        label:item.label,
+        onClick:()=>{
+          setPageToolView({
+            page: 'course',
+            tool: 'navigation',
+            view: '',
+            params
+          });
+      }});
+
+  }
+
+
+  return crumbs
+}
+
+export function useEditorCrumb({doenetId,driveId,folderId,itemId}){
+  
+  const setPageToolView = useSetRecoilState(pageToolViewAtom);
+  const folderInfo = useRecoilValue(folderDictionary({driveId,folderId}));
+  let label = folderInfo?.contentsDictionary?.[itemId]?.label;
+  if (!label){
+    label = '_';
+  }
+  let params = {
+    doenetId,
+    path: `${driveId}:${folderId}:${itemId}:DoenetML`
+  }
+
+  return {label, onClick:()=>{
+        setPageToolView({
+          page: 'course',
+          tool: 'editor',
+          view: '',
+          params
+        });
+  }}
+}
+
 export function useCollectionCrumb(doenetId,path){
   
   const setPageToolView = useSetRecoilState(pageToolViewAtom);
-  const [label,setLabel] = useState('')
-
-  const getDocumentLabel = useRecoilCallback(({snapshot})=> async ({path})=>{
-    let [driveId,folderId] = path.split(':')
-    let folderInfo = await snapshot.getPromise(folderDictionary({driveId,folderId}));
-    setLabel(folderInfo.folderInfo.label);
-  },[])
-
-  useEffect(()=>{
-    getDocumentLabel({path});
-  },[path,getDocumentLabel])
-
+  let [driveId,folderId] = path.split(':')
+  const folderInfo = useRecoilValue(folderDictionary({driveId,folderId}));
+  let label = folderInfo?.folderInfo?.label;
+  if (!label){
+    label = '_';
+  }
 
   let params = {
     doenetId,
@@ -85,114 +161,14 @@ export function useCollectionCrumb(doenetId,path){
   }}
 }
 
-export function useNavigationCrumbs(driveId,folderId){
-
-  const setPageToolView = useSetRecoilState(pageToolViewAtom);
-  const [crumbs,setCrumbs] = useState([])
-
-  const getCrumbs = useRecoilCallback(({snapshot})=> async (driveId,itemId)=>{
-    let itemInfo = await snapshot.getPromise(loadDriveInfoQuery(driveId));
-
-    //Build information about folders until we get to drive
-    function parentFolder({folderInfo=[], itemId}){
-
-      if (driveId == itemId){
-        return [{label:"Content"},...folderInfo];
-      }
-
-    for (let item of itemInfo.results){
-      let newFolderInfo;
-      if (item.itemId == itemId){
-        if (item.itemType !== 'Collection'){ 
-          newFolderInfo = [item,...folderInfo]
-        }
-        return parentFolder({folderInfo:newFolderInfo,itemId:item.parentFolderId});
-      }
-    }
-
-    }
-
-    let crumbArray = [];
-    for (let item of parentFolder({itemId})){
-
-      let params = {
-        path: `${driveId}:${driveId}:${driveId}:Drive`,
-      }
-      if (item.itemId){
-        params = {
-          path: `${driveId}:${item.itemId}:${item.itemId}:Folder`,
-        }
-      }
-      crumbArray.push({
-        label:item.label,
-        onClick:()=>{
-          setPageToolView({
-            page: 'course',
-            tool: 'navigation',
-            view: '',
-            params
-          });
-      }});
-
-    }
-    setCrumbs(crumbArray);
-  },[setPageToolView])
-    
-
-  useEffect(()=>{
-      getCrumbs(driveId,folderId);
-  },[getCrumbs,driveId,folderId])
-
-
-  return crumbs
-}
-
-export function useEditorCrumb({doenetId,driveId,folderId,itemId}){
-  
-  const setPageToolView = useSetRecoilState(pageToolViewAtom);
-  const [label,setLabel] = useState('')
-
-  const getDocumentLabel = useRecoilCallback(({snapshot})=> async ({itemId,driveId,folderId})=>{
-    let folderInfo = await snapshot.getPromise(folderDictionary({driveId,folderId}));
-    const docInfo = folderInfo.contentsDictionary[itemId]
-    setLabel(docInfo.label);
-    
-  },[])
-
-  useEffect(()=>{
-    getDocumentLabel({itemId,driveId,folderId});
-  },[doenetId,driveId,folderId,getDocumentLabel])
-
-  let params = {
-    doenetId,
-    path: `${driveId}:${folderId}:${itemId}:DoenetML`
-  }
-
-  return {label, onClick:()=>{
-        setPageToolView({
-          page: 'course',
-          tool: 'editor',
-          view: '',
-          params
-        });
-  }}
-}
-
 export function useAssignmentCrumb({doenetId,driveId,folderId,itemId}){
   
   const setPageToolView = useSetRecoilState(pageToolViewAtom);
-  const [label,setLabel] = useState('test')
-
-  const getDocumentLabel = useRecoilCallback(({snapshot})=> async ({itemId,driveId,folderId})=>{
-    let folderInfo = await snapshot.getPromise(folderDictionary({driveId,folderId}));
-    const docInfo = folderInfo.contentsDictionary[itemId]
-    setLabel(docInfo.label);
-    
-  },[])
-
-  useEffect(()=>{
-    getDocumentLabel({itemId,driveId,folderId});
-  },[doenetId,driveId,folderId,getDocumentLabel])
+  const folderInfo = useRecoilValue(folderDictionary({driveId,folderId}));
+  let label = folderInfo?.contentsDictionary?.[itemId]?.label;
+  if (!label){
+    label = '_';
+  }
 
   let params = {
     doenetId,
@@ -265,27 +241,28 @@ export function useSurveyCrumb(driveId,doenetId){
 
 export function useGradebookCrumbs(){
 
-  const setPageToolView = useSetRecoilState(pageToolViewAtom);
-  const [crumbs,setCrumbs] = useState([])
+  const [pageToolView,setPageToolView] = useRecoilState(pageToolViewAtom);
+  let crumbs = [];
   const role = useRecoilValue(effectiveRoleAtom);
+  const students = useRecoilValue(studentData);
+  const assignments = useRecoilValue(assignmentData); 
 
-  const getCrumbs = useRecoilCallback(({snapshot})=> async (role)=>{
-    if (role == ''){ return; } //wait for role to be defined
-    let pageToolView = await snapshot.getPromise(pageToolViewAtom);
-    let driveId = pageToolView.params?.driveId;
-    let doenetId = pageToolView.params?.doenetId;
-    let userId = pageToolView.params?.userId;
-    let previousCrumb = pageToolView.params?.previousCrumb;
-    
-    let tool = pageToolView.tool;
-    let crumbArray = []
+
+  let driveId = pageToolView.params?.driveId;
+  let doenetId = pageToolView.params?.doenetId;
+  let userId = pageToolView.params?.userId;
+  let previousCrumb = pageToolView.params?.previousCrumb;
+  let tool = pageToolView.tool;
+
+
+
     //Define gradebook tool crumb 
     if (role == 'instructor'){
     {
       let params = {
         driveId,
       }
-      crumbArray.push({
+      crumbs.push({
         label:'Gradebook', onClick:()=>{
           setPageToolView({
             page: 'course',
@@ -298,10 +275,9 @@ export function useGradebookCrumbs(){
     }
   }
 
-    if (tool == 'gradebook'){
-      setCrumbs(crumbArray);
-      return;
-    }
+  if (tool == 'gradebook'){
+    return crumbs
+  }
 
     //Handle gradebookStudent
    if (tool == 'gradebookStudent' ||
@@ -310,7 +286,6 @@ export function useGradebookCrumbs(){
    ){
      let label = 'Gradebook';
      if (role == 'instructor'){
-        const students = await snapshot.getPromise(studentData);
         const student = students[userId];
         label = `${student.firstName} ${student.lastName}` 
      }
@@ -319,7 +294,7 @@ export function useGradebookCrumbs(){
         driveId,
         userId
       }
-      crumbArray.push({
+      crumbs.push({
         label, onClick:()=>{
           setPageToolView({
             page: 'course',
@@ -332,8 +307,7 @@ export function useGradebookCrumbs(){
     }
 
     if (tool == 'gradebookStudent'){
-      setCrumbs(crumbArray);
-      return;
+      return crumbs
     }
 
     //Only instructors see this
@@ -341,16 +315,18 @@ export function useGradebookCrumbs(){
     previousCrumb == 'assignment' && tool == 'gradebookStudentAssignment'
     ){
       if (role == 'student'){
-        crumbArray.push({label:'Not Available'})
+        crumbs.push({label:'Not Available'})
       }else{
-        const assignments = await snapshot.getPromise(assignmentData); 
-        let assignmentName = assignments[doenetId].label;
+        let assignmentName = assignments?.[doenetId]?.label;
+        if (!assignmentName){
+          assignmentName = '_';
+        }
 
         let params = {
           driveId,
           doenetId
         }
-        crumbArray.push({
+        crumbs.push({
           label:assignmentName, onClick:()=>{
             setPageToolView({
               page: 'course',
@@ -364,20 +340,21 @@ export function useGradebookCrumbs(){
     }
 
     if (tool == 'gradebookAssignment'){
-      setCrumbs(crumbArray);
-      return;
+      return crumbs
     }
 
     //tool is gradebookStudentAssignment
     if (role == 'student'){
-      const assignments = await snapshot.getPromise(assignmentData); 
-        let assignmentName = assignments[doenetId].label;
+      let assignmentName = assignments?.[doenetId]?.label;
+      if (!assignmentName){
+        assignmentName = '_';
+      }
         let params = {
           driveId,
           userId,
           doenetId
         }
-        crumbArray.push({
+        crumbs.push({
           label:assignmentName, onClick:()=>{
             setPageToolView({
               page: 'course',
@@ -391,11 +368,9 @@ export function useGradebookCrumbs(){
       let crumbLabel = '_';
       if (previousCrumb == 'student'){
         
-        const assignments = await snapshot.getPromise(assignmentData); 
         crumbLabel = assignments[doenetId].label;
       }
       if (previousCrumb == 'assignment'){
-        const students = await snapshot.getPromise(studentData);
         const student = students[userId];
         crumbLabel = `${student.firstName} ${student.lastName}` 
         
@@ -407,7 +382,7 @@ export function useGradebookCrumbs(){
         doenetId,
         previousCrumb
       }
-      crumbArray.push({
+      crumbs.push({
         label:crumbLabel, onClick:()=>{
           setPageToolView({
             page: 'course',
@@ -419,17 +394,6 @@ export function useGradebookCrumbs(){
     })
 
     }
-
-
-    setCrumbs(crumbArray);
-
-
-  },[setPageToolView])
-    
-
-  useEffect(()=>{
-      getCrumbs(role);
-  },[getCrumbs,role])
 
 
   return crumbs

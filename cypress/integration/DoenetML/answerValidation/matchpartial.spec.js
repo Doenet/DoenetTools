@@ -4283,5 +4283,56 @@ describe('Match partial validation tests', function () {
 
   });
 
+  it('match partial does not recurse on single element lists', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+
+  <p>a</p>
+  <p>
+  <mathinput name="mi" />
+  <answer name="ans1">
+    <award targetsAreResponses="mi">
+      <when matchpartial>
+        <mathlist>$mi</mathlist> = <mathlist>(1,2)</mathlist>
+      </when>
+    </award>
+  </answer>
+  <answer name="ans2">
+    <award targetsAreResponses="mi">
+      <when matchpartial unorderedCompare>
+        <mathlist>$mi</mathlist> = <mathlist>(1,2)</mathlist>
+      </when>
+    </award>
+  </answer>
+  </p>
+  `}, "*");
+    });
+
+    cy.get('#\\/_p1').should('have.text', "a");  // to wait until loaded
+
+    cy.log("Submit correct answer")
+    cy.get('#\\/mi textarea').type("(1,2){enter}", { force: true, delay: 5 })
+    cy.get('#\\/ans1_submit').click();
+    cy.get('#\\/ans2_submit').click();
+
+    cy.get('#\\/ans1_correct').should('be.visible')
+    cy.get('#\\/ans2_correct').should('be.visible')
+
+
+    cy.log("Submit tuple with incorrect entry")
+    cy.get('#\\/mi textarea').type("{end}{leftArrow}{backSpace}3{enter}", { force: true, delay: 5 })
+    cy.get('#\\/ans1_submit').click();
+    cy.get('#\\/ans2_submit').click();
+
+    cy.get('#\\/ans1_incorrect').should('be.visible')
+    cy.get('#\\/ans2_incorrect').should('be.visible')
+
+
+
+
+  });
+
+
 
 });

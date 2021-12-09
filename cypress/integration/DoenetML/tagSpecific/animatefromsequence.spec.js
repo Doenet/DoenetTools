@@ -62,16 +62,22 @@ describe('AnimateFromSequence Tag Tests', function () {
     cy.get(`#\\/b_input`).click();
 
     cy.wait(500)
-    cy.get('#\\/a').should('have.text', '2')
-    cy.get('#\\/a2').should('have.text', '2')
+
+    // should stop at 2 or 3
+    cy.get('#\\/a').contains(/2|3/)
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/x'].stateValues.value).eq(2);
-      expect(components['/a'].stateValues.value).eq(2);
-      expect(components['/a2'].stateValues.value).eq(2);
-      expect(components['/x'].stateValues.selectedIndex).eq(2);
+      let lastValue = components['/x'].stateValues.value;
+      expect(lastValue === 2 || lastValue === 3).be.true;
+      expect(components['/a'].stateValues.value).eq(lastValue);
+      expect(components['/a2'].stateValues.value).eq(lastValue);
+      expect(components['/x'].stateValues.selectedIndex).eq(lastValue);
       expect(components['/x'].stateValues.animationOn).eq(false);
+
+      cy.get('#\\/a').should('have.text', `${lastValue}`)
+      cy.get('#\\/a2').should('have.text', `${lastValue}`)
+
     })
 
   })
@@ -172,22 +178,27 @@ describe('AnimateFromSequence Tag Tests', function () {
       expect(components['/x'].stateValues.animationOn).eq(false);
     })
 
+    cy.log('advance at most one when click twice')
     cy.get(`#\\/b_input`).click();
     cy.get(`#\\/b_input`).click();
 
+    cy.get('#\\/a').contains(/w|z/)
+
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/x'].stateValues.value).eq('z');
-      expect(components['/a'].stateValues.value).eq('z');
-      expect(components['/a2'].stateValues.value).eq('z');
-      expect(components['/x'].stateValues.selectedIndex).eq(8);
+      let lastValue = components['/x'].stateValues.value;
+      expect(lastValue === "z" || lastValue === "w").be.true;
+      expect(components['/a'].stateValues.value).eq(lastValue);
+      expect(components['/a2'].stateValues.value).eq(lastValue);
+      expect(components['/x'].stateValues.selectedIndex).eq(lastValue === "z" ? 8 : 7);
       expect(components['/x'].stateValues.animationOn).eq(false);
+      cy.get('#\\/a').should('have.text', lastValue)
+      cy.get('#\\/a2').should('have.text', lastValue)
+  
     })
 
 
     cy.get(`#\\/b_input`).click();
-    cy.get('#\\/a').should('have.text', 'w')
-    cy.get('#\\/a2').should('have.text', 'w')
     cy.get('#\\/a').should('have.text', 't')
     cy.get('#\\/a2').should('have.text', 't')
     cy.get('#\\/a').should('have.text', 'q')
@@ -212,16 +223,21 @@ describe('AnimateFromSequence Tag Tests', function () {
     cy.get(`#\\/b_input`).click();
 
     cy.wait(500)
-    cy.get('#\\/a').should('have.text', 'q')
-    cy.get('#\\/a2').should('have.text', 'q')
+    cy.get('#\\/a').contains(/q|n/)
+
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/x'].stateValues.value).eq('q');
-      expect(components['/a'].stateValues.value).eq('q');
-      expect(components['/a2'].stateValues.value).eq('q');
-      expect(components['/x'].stateValues.selectedIndex).eq(5);
+      let lastValue = components['/x'].stateValues.value;
+      expect(lastValue === "q" || lastValue === "n").be.true;
+      expect(components['/a'].stateValues.value).eq(lastValue);
+      expect(components['/a2'].stateValues.value).eq(lastValue);
+      expect(components['/x'].stateValues.selectedIndex).eq(lastValue === "q" ? 5 : 4);
       expect(components['/x'].stateValues.animationOn).eq(false);
+
+      cy.get('#\\/a').should('have.text', lastValue)
+      cy.get('#\\/a2').should('have.text', lastValue)
+  
     })
 
   })
@@ -321,21 +337,24 @@ describe('AnimateFromSequence Tag Tests', function () {
     cy.get(`#\\/b_input`).click();
     cy.get(`#\\/b_input`).click();
 
-    cy.get('#\\/a').should('have.text', '-600')
-    cy.get('#\\/a2').should('have.text', '-600')
+    
+    cy.get('#\\/a').contains(/-600|-500/)
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/x'].stateValues.value).eq(-600);
-      expect(components['/a'].stateValues.value).eq(-600);
-      expect(components['/a2'].stateValues.value).eq(-600);
-      expect(components['/x'].stateValues.selectedIndex).eq(3);
+      let lastValue = components['/x'].stateValues.value;
+      expect(lastValue === -600 || lastValue === -500).be.true;
+      expect(components['/a'].stateValues.value).eq(lastValue);
+      expect(components['/a2'].stateValues.value).eq(lastValue);
+      expect(components['/x'].stateValues.selectedIndex).eq(lastValue === -600 ? 3: 4);
       expect(components['/x'].stateValues.animationOn).eq(false);
+      cy.get('#\\/a').should('have.text', `${lastValue}`)
+      cy.get('#\\/a2').should('have.text', `${lastValue}`)
+  
+
     })
 
     cy.get(`#\\/b_input`).click();
-    cy.get('#\\/a').should('have.text', '-500')
-    cy.get('#\\/a2').should('have.text', '-500')
     cy.get('#\\/a').should('have.text', '-100')
     cy.get('#\\/a2').should('have.text', '-100')
     cy.get('#\\/a').should('have.text', '100')
@@ -378,16 +397,21 @@ describe('AnimateFromSequence Tag Tests', function () {
     cy.get(`#\\/b_input`).click();
 
     cy.wait(500)
-    cy.get('#\\/a').should('have.text', '-100')
-    cy.get('#\\/a2').should('have.text', '-100')
+
+    cy.get('#\\/a').contains(/-100|100/)
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/x'].stateValues.value).eq(-100);
-      expect(components['/a'].stateValues.value).eq(-100);
-      expect(components['/a2'].stateValues.value).eq(-100);
-      expect(components['/x'].stateValues.selectedIndex).eq(5);
+      let lastValue = components['/x'].stateValues.value;
+      expect(lastValue === -100 || lastValue === 100).be.true;
+      expect(components['/a'].stateValues.value).eq(lastValue);
+      expect(components['/a2'].stateValues.value).eq(lastValue);
+      expect(components['/x'].stateValues.selectedIndex).eq(lastValue === -100 ? 5 : 6);
       expect(components['/x'].stateValues.animationOn).eq(false);
+
+      cy.get('#\\/a').should('have.text', `${lastValue}`)
+      cy.get('#\\/a2').should('have.text', `${lastValue}`)
+  
     })
 
   })

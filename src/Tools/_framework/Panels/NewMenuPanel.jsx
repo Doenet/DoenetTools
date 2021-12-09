@@ -181,6 +181,7 @@ console.log(">>>===MenuPanel", hide)
 
   const LazyMenuObj = useRef({
     SelectedCourse:lazy(() => import('../Menus/SelectedCourse')),
+    GradeSettings:lazy(() => import('../Menus/GradeSettings')),
     SelectedDoenetML:lazy(() => import('../Menus/SelectedDoenetML')),
     SelectedFolder:lazy(() => import('../Menus/SelectedFolder')),
     SelectedCollection:lazy(() => import('../Menus/SelectedCollection')),
@@ -195,6 +196,7 @@ console.log(">>>===MenuPanel", hide)
     AutoSaves:lazy(() => import('../Menus/AutoSaves')),
     LoadEnrollment:lazy(() => import('../Menus/LoadEnrollment')),
     GradeUpload:lazy(() => import('../Menus/GradeUpload')),
+    GradeDownload:lazy(() => import('../Menus/GradeDownload')),
     ManualEnrollment:lazy(() => import('../Menus/ManualEnrollment')),
     AssignmentSettingsMenu:lazy(() => import('../Menus/AssignmentSettingsMenu')),
     GroupSettings:lazy(() => import('../Menus/GroupSettings')),
