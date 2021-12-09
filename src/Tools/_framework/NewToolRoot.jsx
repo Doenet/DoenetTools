@@ -264,7 +264,11 @@ export default function ToolRoot() {
   if (footerObj) {
     let footerKey = `footer`;
     footer = (
-      <FooterPanel isInitOpen={footerObj.open} height={footerObj.height}>
+      <FooterPanel
+        id="keyboard"
+        isInitOpen={footerObj.open}
+        height={footerObj.height}
+      >
         <Suspense
           key={footerKey}
           fallback={<LoadingFallback>loading...</LoadingFallback>}
