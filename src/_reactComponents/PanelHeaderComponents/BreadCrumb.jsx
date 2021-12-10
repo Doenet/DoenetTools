@@ -34,9 +34,13 @@ const BreadcrumbItem = styled.li`
 const CrumbMenuItem = styled.div`
   padding: 4px;
   cursor: pointer;
-  color: white;
-  background: #1a5a99;
-  border-bottom: 1px solid white;
+  color: black;
+  background: white;
+  border: 2px solid black;
+  border-radius: ${props => props.radius};
+  margin: -2px 0px -2px 0px;
+  border-left: 0px;
+  border-right: 0px;
   padding-left: 8px;
   padding-right: 8px;
   max-width: 120px;
@@ -44,7 +48,7 @@ const CrumbMenuItem = styled.div`
   text-overflow: ellipsis;
   height: 21.6px;
   &:hover {
-    background-color: #8FB8DE;
+    background-color: hsl(209,54%,82%);
     color:black;
   }
 `
@@ -283,9 +287,17 @@ export function BreadCrumb({crumbs=[],offset=0}){
       
       crumMenuItemsJSX.push(<CrumbMenuItem 
         key={`breadcrumbitem${i}`} 
+        radius={'0px'}
         onClick={onClick}>{icon}{label}</CrumbMenuItem>)
     }
 
+    if (crumMenuItemsJSX.length > 1) {
+    crumMenuItemsJSX = [React.cloneElement(crumMenuItemsJSX[0], {radius: '5px 5px 0px 0px'})]
+      .concat(crumMenuItemsJSX.slice(1,-1))
+      .concat(React.cloneElement(crumMenuItemsJSX[crumMenuItemsJSX.length - 1], {radius: '0px 0px 5px 5px'}));
+    } else if (crumMenuItemsJSX.length == 1) {
+      crumMenuItemsJSX = [React.cloneElement(crumMenuItemsJSX[0], {radius: '5px'})]
+    }
 
     const breadcrumbMenuLeft = elipseItemRef.current?.getBoundingClientRect()?.left + 25
     if (!isNaN(breadcrumbMenuLeft)){
@@ -296,6 +308,8 @@ export function BreadCrumb({crumbs=[],offset=0}){
         top:"31px",
         position:"absolute",
         backgroundColor: 'white',
+        border: '2px solid black',
+        borderRadius: '5px',
         // maxHeight: "86.4px",
         maxHeight: "121px",
         overflowY: "scroll"
