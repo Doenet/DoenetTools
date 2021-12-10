@@ -3,6 +3,7 @@ import styled, { ThemeProvider } from 'styled-components';
 
 const Container = styled.div`
   display: ${(props) => (props.vertical ? 'static' : 'flex')};
+  // height: 'fit-content';
   // margin: 2px 0px 2px 0px ;
 `;
 
@@ -59,7 +60,7 @@ const ToggleButtonGroup = (props) => {
   });
 
   return (
-    <Container vertical={props.vertical}>
+    <Container style={{ height: 'fit-content' }} vertical={props.vertical}>
       <ThemeProvider theme={props.vertical ? verticalToggleGroup : toggleGroup}>
         {modElem}
       </ThemeProvider>
