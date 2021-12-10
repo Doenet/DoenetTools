@@ -44,6 +44,8 @@ const CrumbMenuItem = styled.div`
   padding-left: 8px;
   padding-right: 8px;
   max-width: 120px;
+  white-space: nowrap;
+  display: block;
   overflow: hidden;
   text-overflow: ellipsis;
   height: 21.6px;
