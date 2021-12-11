@@ -162,7 +162,6 @@ export default class Core {
       doenetMLs: [doenetML],
       callBack: this.finishCoreConstruction,
       componentInfoObjects: this.componentInfoObjects,
-      componentTypeLowerCaseMapping: this.componentTypeLowerCaseMapping,
       flags: this.flags,
       contentIdsToDoenetMLs: this.externalFunctions.contentIdsToDoenetMLs
     })

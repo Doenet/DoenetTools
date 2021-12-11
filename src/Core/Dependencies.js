@@ -6326,6 +6326,15 @@ class TargetComponentDependency extends Dependency {
       this.targetComponentName = this.specifiedComponentName = component.doenetAttributes.fullTName;
     }
 
+    if (this.definition.variableNames) {
+      if (!Array.isArray(this.definition.variableNames)) {
+        throw Error(`Invalid state variable ${this.representativeStateVariable} of ${this.upstreamComponentName}, dependency ${this.dependencyName}: variableNames must be an array`)
+      }
+      this.originalDownstreamVariableNames = this.definition.variableNames;
+    } else {
+      this.originalDownstreamVariableNames = [];
+    }
+
     this.returnSingleComponent = true;
 
   }

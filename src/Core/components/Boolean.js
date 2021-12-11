@@ -351,7 +351,6 @@ export default class BooleanComponent extends InlineComponent {
 
       },
       inverseDefinition: function ({ desiredStateVariableValues, dependencyValues, componentInfoObjects }) {
-        console.log(desiredStateVariableValues, dependencyValues)
         if (dependencyValues.allChildren.length === 0) {
           // no children, so value is essential and give it the desired value
           return {
