@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import DoenetViewer from '../../../Viewer/DoenetViewer';
 import { 
   useRecoilValue, 
@@ -48,7 +48,9 @@ export const editorViewerErrorStateAtom = atom({
 })
 
 export default function EditorViewer(){
-  // console.log(">>>>===EditorViewer")
+  // let refreshCount = useRef(1);
+  // console.log(">>>>===EditorViewer",refreshCount.current)
+  // refreshCount.current++;
   const viewerDoenetML = useRecoilValue(viewerDoenetMLAtom);
   const paramDoenetId = useRecoilValue(searchParamAtomFamily('doenetId')) 
   const initilizedDoenetId = useRecoilValue(editorDoenetIdInitAtom);
@@ -130,8 +132,12 @@ export default function EditorViewer(){
 
 
   // console.log(`>>>>Show DoenetViewer with value -${viewerDoenetML}- -${refreshNumber}-`)
+  // console.log(`>>>> refreshNumber -${refreshNumber}-`)
+  // console.log(`>>>> attemptNumber -${attemptNumber}-`)
   // console.log('>>>DoenetViewer Read Only:',!isCurrentDraft)
-  return <DoenetViewer
+
+  return <MemoDoenetViewer
+  // return <DoenetViewer
     key={`doenetviewer${refreshNumber}`}
     doenetML={viewerDoenetML}
     flags={{
@@ -152,3 +158,10 @@ export default function EditorViewer(){
     setIsInErrorState={setIsInErrorState}
     /> 
 }
+
+const MemoDoenetViewer = React.memo(DoenetViewer,(prev,next)=>{
+  //Only refresh if doenetML changes
+  if (prev.doenetML !== next.doenetML){ return false;}
+  return true;
+});
+
