@@ -360,7 +360,6 @@ export default function SelectedDoenetML() {
 
 //For item we just need label and doenetId
 export function AssignmentSettings({ role, doenetId }) {
-
   //Use aInfo to check if values have changed
   let aInfoRef = useRef({});
   const aInfo = aInfoRef?.current;
@@ -488,12 +487,9 @@ export function AssignmentSettings({ role, doenetId }) {
     setPinnedAfterDate(aLoadable?.pinnedAfterDate);
   },[])
 
-  useLayoutEffect(() => {
-    loadRecoilAssignmentValues(doenetId);
-  },[loadRecoilAssignmentValues,doenetId]);
-
 
   if (Object.keys(aInfo).length === 0){
+    loadRecoilAssignmentValues(doenetId);
     return null;
   }
 

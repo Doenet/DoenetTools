@@ -331,14 +331,20 @@ class DoenetViewerChild extends Component {
       this.props.toast("You're not connected to the internet. Changes are not saved. ", toastType.ERROR)
     }
 
-    axios.post('/api/recordContentInteraction.php', data)
-      .then(({ data }) => {
-        if (!data.success) {
-          this.props.toast(data.message, toastType.ERROR)
-        }
-        //   console.log(">>>>recordContentInteraction data",data)
-      });
+    if (this.savePageStateTimeoutID) {
+      clearTimeout(this.savePageStateTimeoutID);
+    }
 
+    //Debounce the save to database
+    this.savePageStateTimeoutID = setTimeout(() => {
+      axios.post('/api/recordContentInteraction.php', data)
+        .then(({ data }) => {
+          if (!data.success) {
+            this.props.toast(data.message, toastType.ERROR)
+          }
+            // console.log(">>>>recordContentInteraction data",data)
+        });
+    }, 1000);
 
     if (!this.allowSaveSubmissions) {
       return;
