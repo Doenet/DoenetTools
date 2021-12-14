@@ -135,6 +135,7 @@ export default function EditorViewer(){
   // console.log(`>>>> refreshNumber -${refreshNumber}-`)
   // console.log(`>>>> attemptNumber -${attemptNumber}-`)
   // console.log('>>>DoenetViewer Read Only:',!isCurrentDraft)
+  // console.log('>>>>variantInfo.requestedVariant',variantInfo.requestedVariant)
 
   return <MemoDoenetViewer
   // return <DoenetViewer
@@ -160,8 +161,10 @@ export default function EditorViewer(){
 }
 
 const MemoDoenetViewer = React.memo(DoenetViewer,(prev,next)=>{
-  //Only refresh if doenetML changes
+  //Only refresh if doenetML or variant changes
   if (prev.doenetML !== next.doenetML){ return false;}
+  if (prev.requestedVariant?.name !== next.requestedVariant?.name){ return false;}
+  if (prev.requestedVariant?.index !== next.requestedVariant?.index){ return false;}
   return true;
 });
 
