@@ -546,6 +546,9 @@ export default class Core {
           stateValuesForRenderer[stateVariable] = value;
         }
       }
+
+      this.externalFunctions.updateRendererSVsWithRecoil({componentName,stateVariables:stateValuesForRenderer})
+
       Object.assign(this.renderedComponentInstructions[componentName].stateValues,
         stateValuesForRenderer)
 
@@ -615,6 +618,7 @@ export default class Core {
         })
       }
     }
+    this.externalFunctions.updateRendererSVsWithRecoil({componentName,stateVariables:stateValuesForRenderer})
 
     this.renderedComponentInstructions[componentName] = {
       componentName: componentName,

@@ -1,15 +1,25 @@
 import React, { useState } from 'react';
+import { atomFamily, useRecoilValue } from 'recoil';
+
+export const rendererSVs = atomFamily({
+  key:'rendererSVs',
+  default:{}
+})
 
 //Renderers will need to set doenetPropsForChildren locally and pass it along. 
 //Renderer can change it later and values will be here
 export default function useDoenetRenderer(props,initializeChildrenOnConstruction=true,doenetPropsForChildren={}){
   let [updateCount,setUpdateCount] = useState(0);
 
-  let stateValues = props.componentInstructions.stateValues;
+  // let stateValues = props.componentInstructions.stateValues;
   let actions = props.componentInstructions.actions;
   let children = [];
   let name =  props.componentInstructions.componentName;
   
+  let stateValues = useRecoilValue(rendererSVs(name));
+  // let sv = useRecoilValue(rendererSVs(name));
+  // console.log(">>>>>>>>>useDoenetRenderer sv",sv)
+  // console.log(">>>>>>>>>useDoenetRenderer stateValues",stateValues)
 
   // console.log("updateCount",updateCount)
   props.rendererUpdateMethods[name] = {
