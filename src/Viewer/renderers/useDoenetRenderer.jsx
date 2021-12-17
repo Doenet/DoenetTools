@@ -9,7 +9,7 @@ export const rendererSVs = atomFamily({
 //Renderers will need to set doenetPropsForChildren locally and pass it along. 
 //Renderer can change it later and values will be here
 export default function useDoenetRenderer(props,initializeChildrenOnConstruction=true,doenetPropsForChildren={}){
-  let [updateCount,setUpdateCount] = useState(0);
+  // let [updateCount,setUpdateCount] = useState(0);
 
   // let stateValues = props.componentInstructions.stateValues;
   let actions = props.componentInstructions.actions;
@@ -23,7 +23,7 @@ export default function useDoenetRenderer(props,initializeChildrenOnConstruction
 
   // console.log("updateCount",updateCount)
   props.rendererUpdateMethods[name] = {
-    update: ()=>{setUpdateCount(updateCount + 1)},
+    update: ()=>{},
     addChildren,
     removeChildren,
     swapChildren,
@@ -35,7 +35,7 @@ export default function useDoenetRenderer(props,initializeChildrenOnConstruction
     children.splice(instruction.indexForParent, 0, child);
     children = [...children]; // needed for React to recognize it's different
 
-    setUpdateCount(updateCount + 1);
+    // setUpdateCount(updateCount + 1);
   }
 
   function removeChildren(instruction) {
@@ -44,14 +44,14 @@ export default function useDoenetRenderer(props,initializeChildrenOnConstruction
     for (let componentName of instruction.deletedComponentNames) {
       delete props.rendererUpdateMethods[componentName];
     }
-    setUpdateCount(updateCount + 1);
+    // setUpdateCount(updateCount + 1);
   }
 
   function swapChildren(instruction) {
     [children[instruction.index1], children[instruction.index2]]
       = [children[instruction.index2], children[instruction.index1]];
     children = [...children]; // needed for React to recognize it's different
-    setUpdateCount(updateCount + 1);
+    // setUpdateCount(updateCount + 1);
   }
 
   if (initializeChildrenOnConstruction){
