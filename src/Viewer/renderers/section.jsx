@@ -4,7 +4,85 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCheck, faLevelDownAlt, faTimes, faCloud, faPercentage } from '@fortawesome/free-solid-svg-icons'
 import { faCaretRight as twirlIsClosed } from '@fortawesome/free-solid-svg-icons';
 import { faCaretDown as twirlIsOpen } from '@fortawesome/free-solid-svg-icons';
-export default class Section extends DoenetRenderer {
+
+import useDoenetRender from './useDoenetRenderer';
+
+export default function Section(props) {
+  let {name, SVs, children} = useDoenetRender(props);
+  // console.log("name: ", name, " SVs: ", SVs," Children",children);
+
+  if (SVs.hidden){
+    return null;
+  }
+
+  // BADBADBAD: need to redo how getting the title child
+  // getting it using the internal guts of componentInstructions
+  // is just asking for trouble
+  if (SVs.titleChildName) {
+    let titleChildInd;
+    for (let [ind, child] of children.entries()) {
+      if (child.props.componentInstructions.componentName === SVs.titleChildName) {
+        titleChildInd = ind;
+        break;
+      }
+    }
+    children.splice(titleChildInd, 1); // remove title
+  }
+
+  let title = SVs.title;
+  let heading = null;
+  let headingId = name + "_title";
+
+
+  if (SVs.level === 0) {
+    heading = <h1 id={headingId} style={{fontSize:'2em'}}>{title}</h1>;
+  } else if (SVs.level === 1) {
+    heading = <h2 id={headingId} style={{fontSize:'1.5em'}}>{title}</h2>;
+  } else if (SVs.level === 2) {
+    heading = <h3 id={headingId} style={{fontSize:'1.17em'}}>{title}</h3>;
+  } else if (SVs.level === 3) {
+    heading = <h4 id={headingId} style={{fontSize:'1em'}}>{title}</h4>;
+  } else if (SVs.level === 4) {
+    heading = <h5 id={headingId} style={{fontSize:'.83em'}}>{title}</h5>;
+  } else if (SVs.level === 5) {
+    heading = <h6 id={headingId} style={{fontSize:'.67em'}}>{title}</h6>;
+  }
+
+  let checkworkComponent = null;
+
+  //TODO checkwork
+
+  let content = <>
+        <a name={name} />
+        {heading}
+        {children}
+        {checkworkComponent}
+      </>;
+
+
+if (SVs.containerTag === "aside") {
+  return <aside id={name} >
+    {content}
+  </aside>
+} else if (SVs.containerTag === "div") {
+  return <div id={name} >
+    {content}
+  </div>
+} else if (SVs.containerTag === "none") {
+  return <>
+    {content}
+  </>
+} else {
+  // return <section id={name} style={{pageBreakAfter: "always"}} >
+  return <section id={name} >
+    {content}
+  </section>
+}
+
+}
+
+// export default class Section extends DoenetRenderer {
+  export  class Section_old extends DoenetRenderer {
 
   render() {
 

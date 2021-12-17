@@ -85,5 +85,5 @@ export default function useDoenetRenderer(props,initializeChildrenOnConstruction
     setDoenetPropsForChildren(props);
   }
 
-  return [name,stateValues,actions,children,initializeChildren,updatesetDoenetPropsForChildren];
+  return {name,SVs:stateValues,actions,children,initializeChildren,updatesetDoenetPropsForChildren};
 }
