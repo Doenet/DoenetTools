@@ -145,6 +145,7 @@ import Split from './components/Split';
 import BestFitLine from './components/BestFitLine';
 import AreaBetweenCurveXAxis from './components/AreaBetweenCurveXAxis';
 import RegionHalfPlane from './components/RegionHalfPlane';
+import RenderDoenetML from './components/RenderDoenetML';
 
 
 //Extended
@@ -287,6 +288,7 @@ const componentTypeArray = [
   BestFitLine,
   AreaBetweenCurveXAxis,
   RegionHalfPlane,
+  RenderDoenetML,
 
   BaseComponent,
   InlineComponent,
