@@ -5,7 +5,7 @@ import { faSearch, faTimes } from '@fortawesome/free-solid-svg-icons';
 // import TextArea 
 
 export default function Form(props) {
-    // const [textTerm, setTextTerm] = useState('')
+    // const [textTerm, setTextTerm] = useState("")
     const [text, setText] = useState("")
     const [cancelShown, setCancelShown] = useState('hidden')
     const [formwidth,setformWidth] = useState('0px')
@@ -36,10 +36,10 @@ export default function Form(props) {
         border: `2px solid black`,
         borderRadius: '5px',
         position: 'relative',
-        padding: '0px 70px 0px 5px',
+        padding: '0px 30px 0px 5px',
         color: '#000',
         overflow: 'hidden',
-        width: '215px',
+        width: '175px',
         resize:'none',
         alignItems:'center',
         // placeholder:'Enter Text here',
@@ -47,6 +47,7 @@ export default function Form(props) {
         whiteSpace: 'nowrap',
         outline:'none',
         fontFamily:"Open Sans",
+        fontSize: '14px',
         lineHeight: '20px',
        }
        var container = {
@@ -60,7 +61,7 @@ export default function Form(props) {
     var cancelButton = {
         float: 'right',
         margin: '5px 0px 0px -30px',
-        position: 'inline',
+        position: 'absolute',
         zIndex: '4',
         border: '0px',
         backgroundColor: 'transparent',
@@ -72,9 +73,9 @@ export default function Form(props) {
     var submitButton = {
         position: 'absolute',
         display: 'inline',
-        margin: `0px -6px 0px -5px`,
+        margin: `0px -5px 0px -5px`,
         zIndex: '2',
-        height: '24px',
+        height: '28px',
         border: `2px solid black`,
         backgroundColor: `${doenetComponentForegroundActive}`,
         color: '#FFFFFF',
@@ -98,12 +99,6 @@ export default function Form(props) {
         textfield.cursor = 'not-allowed';
         disable = "disabled";
     }
-
-    // var ariaLabel = "";
-    // if (props.ariaLabel) {
-    //   ariaLabel = '';
-    // }
-
 
     if (props.width) {
         if (props.width === "menu") {
@@ -147,19 +142,35 @@ export default function Form(props) {
   function handleClick(e) {
     if (props.onClick) props.onClick(e) 
   }
-    function clearInput() {
-      setText("")
+    function clearInput(e) {
+      if (props.clearInput) props.clearInput(e)
       setCancelShown('hidden')
+      setText("");
     }
     function changeTextTerm() {
         // setTextTerm(textfield.value)
         setCancelShown('visible')
+        console.log("cancelShown", cancelShown)
     }
   function handleBlur(e) {
     if (props.onBlur) props.onBlur(e)
   }
   function handleKeyDown(e) {
     if (props.onKeyDown) props.onKeyDown(e)
+    console.log("cancelShown", cancelShown)
+
+  }
+  let clearButton = null;
+  if (props.clearInput) {
+    clearButton = 
+    <button
+      style={cancelButton}
+      onClick={(e) => {
+        clearInput(e);
+      }}
+    >
+      <FontAwesomeIcon icon={faTimes} />
+    </button>
   }
 
     return (
@@ -191,14 +202,7 @@ export default function Form(props) {
             disabled={disable}
             aria-label={textfield.ariaLabel}
           />
-          <button
-            style={cancelButton}
-            onClick={() => {
-              clearInput();
-            }}
-          >
-            <FontAwesomeIcon icon={faTimes} />
-          </button>
+          {clearButton}
           <button
             id="submitButton"
             style={submitButton}
