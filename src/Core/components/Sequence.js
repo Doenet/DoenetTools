@@ -80,11 +80,11 @@ export default class Sequence extends CompositeComponent {
   }
 
 
-  static createSerializedReplacements({ component, workspace, componentInfoObjects }) {
+  static async createSerializedReplacements({ component, workspace, componentInfoObjects }) {
 
     // console.log(`create serialized replacements for ${component.componentName}`)
 
-    if (!component.stateValues.validSequence) {
+    if (!await component.stateValues.validSequence) {
       workspace.lastReplacementParameters = {
         from: null,
         length: null,
@@ -95,32 +95,39 @@ export default class Sequence extends CompositeComponent {
       return { replacements: [] };
     }
 
+    let from = await component.stateValues.from;
+    let length = await component.stateValues.length;
+    let step = await component.stateValues.step;
+    let type = await component.stateValues.type;
+    let exclude = await component.stateValues.exclude;
+
+
     workspace.lastReplacementParameters = {
-      from: component.stateValues.from,
-      length: component.stateValues.length,
-      step: component.stateValues.step,
-      type: component.stateValues.type,
-      exclude: component.stateValues.exclude,
+      from,
+      length,
+      step,
+      type,
+      exclude,
     }
 
     let newNamespace = component.attributes.newNamespace && component.attributes.newNamespace.primitive;
 
 
     let sequenceValues = returnSequenceValues({
-      from: component.stateValues.from,
-      step: component.stateValues.step,
-      length: component.stateValues.length,
-      exclude: component.stateValues.exclude,
-      type: component.stateValues.type,
-      lowercase: component.stateValues.lowercase
+      from,
+      step,
+      length,
+      exclude,
+      type,
+      lowercase: await component.stateValues.lowercase
     })
 
-    let componentType = component.stateValues.type;
-    if (component.stateValues.type === "letters") {
+    let componentType = type;
+    if (type === "letters") {
       componentType = "text"
     }
 
-    // if (component.stateValues.type === "number" || component.stateValues.type === "letters") {
+    // if (type === "number" || type === "letters") {
     //   return { replacements: sequenceValues };
     // }
 
@@ -163,7 +170,7 @@ export default class Sequence extends CompositeComponent {
     return { replacements: processResult.serializedComponents };
   }
 
-  static calculateReplacementChanges({ component, workspace, componentInfoObjects }) {
+  static async calculateReplacementChanges({ component, workspace, componentInfoObjects }) {
     // console.log(`calculate replacement changes for ${component.componentName}`);
 
 
@@ -172,7 +179,7 @@ export default class Sequence extends CompositeComponent {
     let replacementChanges = [];
 
     // if invalid, withhold any previous replacementsreplacements
-    if (!component.stateValues.validSequence) {
+    if (!await component.stateValues.validSequence) {
 
       let currentReplacementsWithheld = component.replacementsToWithhold;
       if (!currentReplacementsWithheld) {
@@ -197,18 +204,27 @@ export default class Sequence extends CompositeComponent {
       return replacementChanges;
     }
 
+
+    let from = await component.stateValues.from;
+    let length = await component.stateValues.length;
+    let step = await component.stateValues.step;
+    let type = await component.stateValues.type;
+    let exclude = await component.stateValues.exclude;
+    let lowercase = await component.stateValues.lowercase;
+
+
     // check if changed type
     // or have excluded elements
     // TODO: don't completely recreate if have excluded elements
-    if (lrp.type !== component.stateValues.type ||
+    if (lrp.type !== type ||
       lrp.exclude.length > 0 ||
-      component.stateValues.exclude.length > 0
+      exclude.length > 0
     ) {
 
       // calculate new serialized replacements
-      let newSerializedReplacements = this.createSerializedReplacements({
+      let newSerializedReplacements = (await this.createSerializedReplacements({
         component, workspace, componentInfoObjects
-      }).replacements;
+      })).replacements;
 
       let replacementInstruction = {
         changeType: "add",
@@ -224,15 +240,15 @@ export default class Sequence extends CompositeComponent {
     } else {
 
       let modifyExistingValues = false;
-      if (component.stateValues.type === "math") {
-        if (!(component.stateValues.from.equals(lrp.from) &&
-          component.stateValues.step.equals(lrp.step))) {
+      if (type === "math") {
+        if (!(from.equals(lrp.from) &&
+          step.equals(lrp.step))) {
           modifyExistingValues = true;
         }
 
       } else {
-        if (component.stateValues.from !== lrp.from ||
-          component.stateValues.step !== lrp.step) {
+        if (from !== lrp.from ||
+          step !== lrp.step) {
           modifyExistingValues = true;
         }
       }
@@ -245,9 +261,9 @@ export default class Sequence extends CompositeComponent {
 
       // if have fewer replacements than before
       // mark old replacements as hidden
-      if (component.stateValues.length < prevlength) {
+      if (length < prevlength) {
 
-        newReplacementsToWithhold = component.replacements.length - component.stateValues.length;
+        newReplacementsToWithhold = component.replacements.length - length;
 
         let replacementInstruction = {
           changeType: "changeReplacementsToWithhold",
@@ -255,8 +271,8 @@ export default class Sequence extends CompositeComponent {
         };
         replacementChanges.push(replacementInstruction);
 
-      } else if (component.stateValues.length > prevlength) {
-        numReplacementsToAdd = component.stateValues.length - prevlength;
+      } else if (length > prevlength) {
+        numReplacementsToAdd = length - prevlength;
 
         if (component.replacementsToWithhold > 0) {
 
@@ -296,11 +312,11 @@ export default class Sequence extends CompositeComponent {
         for (let ind = firstToModify; ind < firstToModify + numToModify; ind++) {
           let componentValue = returnSequenceValueForIndex({
             index: ind,
-            from: component.stateValues.from,
-            step: component.stateValues.step,
+            from,
+            step,
             exclude: [],
-            type: component.stateValues.type,
-            lowercase: component.stateValues.lowercase
+            type,
+            lowercase
           })
 
           let replacementInstruction = {
@@ -318,18 +334,18 @@ export default class Sequence extends CompositeComponent {
         let newSerializedReplacements = [];
         let newNamespace = component.attributes.newNamespace && component.attributes.newNamespace.primitive;
 
-        for (let ind = prevlength; ind < component.stateValues.length; ind++) {
+        for (let ind = prevlength; ind < await component.stateValues.length; ind++) {
           let componentValue = returnSequenceValueForIndex({
             index: ind,
-            from: component.stateValues.from,
-            step: component.stateValues.step,
+            from,
+            step,
             exclude: [],
-            type: component.stateValues.type,
-            lowercase: component.stateValues.lowercase
+            type,
+            lowercase
           })
 
-          let componentType = component.stateValues.type;
-          if (component.stateValues.type === "letters") {
+          let componentType = await component.stateValues.type;
+          if (componentType === "letters") {
             componentType = "text";
           }
 
@@ -377,13 +393,12 @@ export default class Sequence extends CompositeComponent {
       }
     }
 
-    lrp.type = component.stateValues.type;
-    lrp.from = component.stateValues.from;
-    lrp.length = component.stateValues.length;
-    lrp.step = component.stateValues.step;
-    lrp.exclude = component.stateValues.exclude;
+    lrp.type = type;
+    lrp.from = from;
+    lrp.length = length;
+    lrp.step = step;
+    lrp.exclude = exclude;
 
-    // console.log(replacementChanges);
     return replacementChanges;
 
   }
@@ -392,8 +407,13 @@ export default class Sequence extends CompositeComponent {
 
     let allPotentialRendererTypes = super.allPotentialRendererTypes;
 
+    let type = "number";
+    if (this.attributes.type && this.attributes.type.primitive) {
+      type = this.attributes.type.primitive;
+    }
+
     let rendererType = this.componentInfoObjects.allComponentClasses[
-      this.stateValues.type === "letters" ? "text" : this.stateValues.type
+      type === "letters" ? "text" : type
     ].rendererType;
     if (!allPotentialRendererTypes.includes(rendererType)) {
       allPotentialRendererTypes.push(rendererType);

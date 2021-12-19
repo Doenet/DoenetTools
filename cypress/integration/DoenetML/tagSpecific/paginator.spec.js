@@ -207,18 +207,18 @@ describe('Paginator Tag Tests', function () {
         expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('4')
       })
 
-      cy.wait(100); // wait to make sure win.state.components is populated with new components
+      // cy.wait(1000)
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         components = Object.assign({}, win.state.components);
 
-        let mathinput2Name = components["/_answer2"].stateValues.inputChildren[0].componentName;
+        let mathinput2Name = (await components["/_answer2"].stateValues.inputChildren)[0].componentName;
         let mathinput2Anchor = cesc('#' + mathinput2Name) + " textarea";
         let mathinput2DisplayAnchor = cesc('#' + mathinput2Name) + " .mq-editable-field";
         let answer2Correct = cesc('#' + mathinput2Name + "_correct");
         let answer2Incorrect = cesc('#' + mathinput2Name + "_incorrect");
 
-        let mathinput3Name = components["/_answer3"].stateValues.inputChildren[0].componentName;
+        let mathinput3Name = (await components["/_answer3"].stateValues.inputChildren)[0].componentName;
         let mathinput3Anchor = cesc('#' + mathinput3Name) + " textarea";
         let mathinput3DisplayAnchor = cesc('#' + mathinput3Name) + " .mq-editable-field";
         let answer3Correct = cesc('#' + mathinput3Name + "_correct");
@@ -837,21 +837,22 @@ describe('Paginator Tag Tests', function () {
       cy.get(cesc('#/_section2_title')).should('not.exist');
       cy.get(cesc('#/_title2')).should('have.text', 'Page 3')
 
+      cy.wait(200)
 
       cy.get(answer4Correct).should('be.visible')
       cy.get(cesc('#/ca')).should('have.text', '0.333');
 
-      cy.wait(100); // wait to make sure win.state.components is populated with new components
+      cy.wait(200)
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         components = Object.assign({}, win.state.components);
 
-        let mathinput2Name = components["/_answer2"].stateValues.inputChildren[0].componentName;
+        let mathinput2Name = (await components["/_answer2"].stateValues.inputChildren)[0].componentName;
         let mathinput2Anchor = cesc('#' + mathinput2Name) + " textarea";
         let answer2Correct = cesc('#' + mathinput2Name + "_correct");
         let answer2Incorrect = cesc('#' + mathinput2Name + "_incorrect");
 
-        let mathinput3Name = components["/_answer3"].stateValues.inputChildren[0].componentName;
+        let mathinput3Name = (await components["/_answer3"].stateValues.inputChildren)[0].componentName;
         let mathinput3Anchor = cesc('#' + mathinput3Name) + " textarea";
         let answer3Correct = cesc('#' + mathinput3Name + "_correct");
         let answer3Incorrect = cesc('#' + mathinput3Name + "_incorrect");
@@ -1068,6 +1069,8 @@ describe('Paginator Tag Tests', function () {
       cy.get(cesc('#/pcontrols_next')).click()
       cy.get(cesc('#/_problem2_title')).should('have.text', 'Problem 2')
       cy.get(cesc('#/ca')).should('have.text', '0.167');
+
+      cy.wait(200);
 
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
@@ -1986,6 +1989,7 @@ describe('Paginator Tag Tests', function () {
     cy.get(cesc('#/_title2')).should('have.text', 'Type a letter')
     cy.get(cesc('#/ca')).should('have.text', '0.5')
 
+    cy.wait(100);
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       let b = components["/b"].stateValues.value;
@@ -2468,6 +2472,7 @@ describe('Paginator Tag Tests', function () {
 
       })
 
+      cy.wait(100)
 
       cy.window().then((win) => {
         win.postMessage({

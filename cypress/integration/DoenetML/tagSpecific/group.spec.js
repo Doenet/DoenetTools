@@ -381,9 +381,9 @@ describe('Group Tag Tests', function () {
     })
 
     cy.log('move first point')
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components['/g/A'].movePoint({ x: 3, y: 4 })
+      await components['/g/A'].movePoint({ x: 3, y: 4 })
       expect(components['/g/A'].stateValues.xs.map(x => x.tree)).eqls([3, 4])
       expect(components['/g2/A'].stateValues.xs.map(x => x.tree)).eqls([3, 4])
       expect(components['/g3/A'].stateValues.xs.map(x => x.tree)).eqls([3, 4])
@@ -391,9 +391,9 @@ describe('Group Tag Tests', function () {
     })
 
     cy.log(`can't move second point as fixed`)
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components['/g2/A'].movePoint({ x: 5, y: 6 })
+      await components['/g2/A'].movePoint({ x: 5, y: 6 })
       expect(components['/g/A'].stateValues.xs.map(x => x.tree)).eqls([3, 4])
       expect(components['/g2/A'].stateValues.xs.map(x => x.tree)).eqls([3, 4])
       expect(components['/g3/A'].stateValues.xs.map(x => x.tree)).eqls([3, 4])
@@ -401,9 +401,9 @@ describe('Group Tag Tests', function () {
     })
 
     cy.log(`can't move third point as depends on fixed second point`)
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components['/g3/A'].movePoint({ x: 7, y: 8 })
+      await components['/g3/A'].movePoint({ x: 7, y: 8 })
       expect(components['/g/A'].stateValues.xs.map(x => x.tree)).eqls([3, 4])
       expect(components['/g2/A'].stateValues.xs.map(x => x.tree)).eqls([3, 4])
       expect(components['/g3/A'].stateValues.xs.map(x => x.tree)).eqls([3, 4])
@@ -411,9 +411,9 @@ describe('Group Tag Tests', function () {
     })
 
     cy.log(`can move fourth point`)
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components['/g4/A'].movePoint({ x: 9, y: 0 })
+      await components['/g4/A'].movePoint({ x: 9, y: 0 })
       expect(components['/g/A'].stateValues.xs.map(x => x.tree)).eqls([3, 4])
       expect(components['/g2/A'].stateValues.xs.map(x => x.tree)).eqls([3, 4])
       expect(components['/g3/A'].stateValues.xs.map(x => x.tree)).eqls([3, 4])

@@ -1811,7 +1811,7 @@ export default class Vector extends GraphicalComponent {
     componentType: "coords",
   }];
 
-  moveVector({ tailcoords, headcoords, transient, sourceInformation }) {
+  async moveVector({ tailcoords, headcoords, transient, sourceInformation }) {
 
     let updateInstructions = [];
 
@@ -1819,13 +1819,14 @@ export default class Vector extends GraphicalComponent {
 
       // if based on both head and displacement
       // then set displacement as head - tail
-      if (this.stateValues.basedOnHead && this.stateValues.basedOnDisplacement) {
+      if (await this.stateValues.basedOnHead && await this.stateValues.basedOnDisplacement) {
 
         let displacement;
         if (headcoords === undefined) {
           // use current value of head
           // if head isn't supposed to change
-          displacement = tailcoords.map((x, i) => this.stateValues.numericalEndpoints[1][i] - x);
+          let numericalEndpoints = await this.stateValues.numericalEndpoints;
+          displacement = tailcoords.map((x, i) => numericalEndpoints[1][i] - x);
 
         } else {
           displacement = tailcoords.map((x, i) => headcoords[i] - x);
@@ -1854,8 +1855,9 @@ export default class Vector extends GraphicalComponent {
         // if set tail but not head, the idea is that head shouldn't move
         // however, head would move if based on displacement but not head
         // so give instructions to change displacement to keep head fixed
-        if (!this.stateValues.basedOnHead && this.stateValues.basedOnDisplacement) {
-          let displacement = tailcoords.map((x, i) => this.stateValues.numericalEndpoints[1][i] - x);
+        if (!await this.stateValues.basedOnHead && await this.stateValues.basedOnDisplacement) {
+          let numericalEndpoints = await this.stateValues.numericalEndpoints;
+          let displacement = tailcoords.map((x, i) => numericalEndpoints[1][i] - x);
           updateInstructions.push({
             updateType: "updateValue",
             componentName: this.componentName,
@@ -1871,7 +1873,7 @@ export default class Vector extends GraphicalComponent {
 
       // for head, we'll set it directly if based on head
       // or not based on displacement
-      if (this.stateValues.basedOnHead || !this.stateValues.basedOnDisplacement) {
+      if (await this.stateValues.basedOnHead || !await this.stateValues.basedOnDisplacement) {
         updateInstructions.push({
           updateType: "updateValue",
           componentName: this.componentName,
@@ -1884,7 +1886,7 @@ export default class Vector extends GraphicalComponent {
         // then update displacement instead of head
 
         if (tailcoords == undefined) {
-          tailcoords = this.stateValues.numericalEndpoints[0];
+          tailcoords = (await this.stateValues.numericalEndpoints)[0];
         }
         let displacement = tailcoords.map((x, i) => headcoords[i] - x);
         updateInstructions.push({
@@ -1901,8 +1903,9 @@ export default class Vector extends GraphicalComponent {
         // if set head but not tail, the idea is that tail shouldn't move
         // however, tail would move if based on displacement and head
         // so give instructions to change displacement to keep tail fixed
-        if (this.stateValues.basedOnHead && this.stateValues.basedOnDisplacement) {
-          let displacement = headcoords.map((x, i) => x - this.stateValues.numericalEndpoints[0][i]);
+        if (await this.stateValues.basedOnHead && await this.stateValues.basedOnDisplacement) {
+          let numericalEndpoints = await this.stateValues.numericalEndpoints;
+          let displacement = headcoords.map((x, i) => x - numericalEndpoints[0][i]);
           updateInstructions.push({
             updateType: "updateValue",
             componentName: this.componentName,
@@ -1917,12 +1920,12 @@ export default class Vector extends GraphicalComponent {
 
 
     if (transient) {
-      return this.coreFunctions.performUpdate({
+      return await this.coreFunctions.performUpdate({
         updateInstructions,
         transient
       });
     } else {
-      return this.coreFunctions.performUpdate({
+      return await this.coreFunctions.performUpdate({
         updateInstructions,
         event: {
           verb: "interacted",
@@ -1940,14 +1943,16 @@ export default class Vector extends GraphicalComponent {
 
   }
 
-  finalizeVectorPosition() {
+  async finalizeVectorPosition() {
     // trigger a moveVector 
     // to send the final values with transient=false
     // so that the final position will be recorded
 
-    return this.actions.moveVector({
-      tailcoords: this.stateValues.numericalEndpoints[0],
-      headcoords: this.stateValues.numericalEndpoints[1],
+    let numericalEndpoints = await this.stateValues.numericalEndpoints;
+
+    return await this.actions.moveVector({
+      tailcoords: numericalEndpoints[0],
+      headcoords: numericalEndpoints[1],
     });
   }
 

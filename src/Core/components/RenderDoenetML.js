@@ -85,7 +85,7 @@ export default class RenderDoenetML extends CompositeComponent {
 
     let serializedComponents = [];
 
-    let doenetML = component.stateValues.doenetML.trim();
+    let doenetML = (await component.stateValues.doenetML).trim();
 
     workspace.previousDoenetML = doenetML;
 
@@ -147,7 +147,7 @@ export default class RenderDoenetML extends CompositeComponent {
   }) {
 
 
-    let doenetML = component.stateValues.doenetML.trim();
+    let doenetML = (await component.stateValues.doenetML).trim();
 
     if (workspace.previousDoenetML === doenetML) {
       return [];

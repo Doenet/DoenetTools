@@ -16,7 +16,7 @@ describe('Function Tag Tests', function () {
   })
 
   it('function with nothing', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -30,9 +30,9 @@ describe('Function Tag Tests', function () {
     //wait for window to load
     cy.get('#\\/_text1').should('have.text', 'a');
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      let f = components['/_function1'].stateValues.fs[0];
+      let f = (await components['/_function1'].stateValues.fs)[0];
       expect(f(0)).closeTo(0, 1E-12);
       expect(f(1)).closeTo(0, 1E-12);
       expect(f(2)).closeTo(0, 1E-12);
@@ -45,7 +45,7 @@ describe('Function Tag Tests', function () {
   });
 
   it('function with single minimum as number', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -58,9 +58,9 @@ describe('Function Tag Tests', function () {
     //wait for window to load
     cy.get('#\\/_text1').should('have.text', 'a');
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      let f = components['/_function1'].stateValues.fs[0];
+      let f = (await components['/_function1'].stateValues.fs)[0];
       expect(f(0)).closeTo(2, 1E-12);
       expect(f(1)).closeTo(2 + 1, 1E-12);
       expect(f(2)).closeTo(2 + 4, 1E-12);
@@ -72,7 +72,7 @@ describe('Function Tag Tests', function () {
   });
 
   it('function with single minimum as half-empty tuple', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -85,9 +85,9 @@ describe('Function Tag Tests', function () {
     //wait for window to load
     cy.get('#\\/_text1').should('have.text', 'a');
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      let f = components['/_function1'].stateValues.fs[0];
+      let f = (await components['/_function1'].stateValues.fs)[0];
       expect(f(0)).closeTo(2, 1E-12);
       expect(f(1)).closeTo(2 + 1, 1E-12);
       expect(f(2)).closeTo(2 + 4, 1E-12);
@@ -99,7 +99,7 @@ describe('Function Tag Tests', function () {
   });
 
   it('function with single minimum as half-empty tuple (no space)', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -112,9 +112,9 @@ describe('Function Tag Tests', function () {
     //wait for window to load
     cy.get('#\\/_text1').should('have.text', 'a');
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      let f = components['/_function1'].stateValues.fs[0];
+      let f = (await components['/_function1'].stateValues.fs)[0];
       expect(f(0)).closeTo(2, 1E-12);
       expect(f(1)).closeTo(2 + 1, 1E-12);
       expect(f(2)).closeTo(2 + 4, 1E-12);
@@ -126,7 +126,7 @@ describe('Function Tag Tests', function () {
   });
 
   it('function with single minimum, change x-scale', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -139,9 +139,9 @@ describe('Function Tag Tests', function () {
     //wait for window to load
     cy.get('#\\/_text1').should('have.text', 'a');
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      let f = components['/_function1'].stateValues.fs[0];
+      let f = (await components['/_function1'].stateValues.fs)[0];
       expect(f(0)).closeTo(2, 1E-12);
       expect(f(3)).closeTo(2 + 1, 1E-12);
       expect(f(6)).closeTo(2 + 4, 1E-12);
@@ -153,7 +153,7 @@ describe('Function Tag Tests', function () {
   });
 
   it('function with single minimum, change x-scale and y-scale', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -166,9 +166,9 @@ describe('Function Tag Tests', function () {
     //wait for window to load
     cy.get('#\\/_text1').should('have.text', 'a');
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      let f = components['/_function1'].stateValues.fs[0];
+      let f = (await components['/_function1'].stateValues.fs)[0];
       expect(f(0)).closeTo(2, 1E-12);
       expect(f(3)).closeTo(2 + 1 * 5, 1E-12);
       expect(f(6)).closeTo(2 + 4 * 5, 1E-12);
@@ -180,7 +180,7 @@ describe('Function Tag Tests', function () {
   });
 
   it('function with single maximum', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -193,9 +193,9 @@ describe('Function Tag Tests', function () {
     //wait for window to load
     cy.get('#\\/_text1').should('have.text', 'a');
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      let f = components['/_function1'].stateValues.fs[0];
+      let f = (await components['/_function1'].stateValues.fs)[0];
       expect(f(0)).closeTo(3, 1E-12);
       expect(f(1)).closeTo(3 - 1, 1E-12);
       expect(f(2)).closeTo(3 - 4, 1E-12);
@@ -207,7 +207,7 @@ describe('Function Tag Tests', function () {
   });
 
   it('function with single maximum, change x-scale', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -220,9 +220,9 @@ describe('Function Tag Tests', function () {
     //wait for window to load
     cy.get('#\\/_text1').should('have.text', 'a');
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      let f = components['/_function1'].stateValues.fs[0];
+      let f = (await components['/_function1'].stateValues.fs)[0];
       expect(f(0)).closeTo(3, 1E-12);
       expect(f(3)).closeTo(3 - 1, 1E-12);
       expect(f(6)).closeTo(3 - 4, 1E-12);
@@ -234,7 +234,7 @@ describe('Function Tag Tests', function () {
   });
 
   it('function with single maximum, change x-scale and y-scale', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -247,9 +247,9 @@ describe('Function Tag Tests', function () {
     //wait for window to load
     cy.get('#\\/_text1').should('have.text', 'a');
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      let f = components['/_function1'].stateValues.fs[0];
+      let f = (await components['/_function1'].stateValues.fs)[0];
       expect(f(0)).closeTo(3, 1E-12);
       expect(f(3)).closeTo(3 - 1 * 5, 1E-12);
       expect(f(6)).closeTo(3 - 4 * 5, 1E-12);
@@ -261,7 +261,7 @@ describe('Function Tag Tests', function () {
   });
 
   it('function with single minimum, specify location as half-empty tuple', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -274,9 +274,9 @@ describe('Function Tag Tests', function () {
     //wait for window to load
     cy.get('#\\/_text1').should('have.text', 'a');
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      let f = components['/_function1'].stateValues.fs[0];
+      let f = (await components['/_function1'].stateValues.fs)[0];
       expect(f(0)).closeTo(4, 1E-12);
       expect(f(1)).closeTo(1, 1E-12);
       expect(f(2)).closeTo(0, 1E-12);
@@ -286,7 +286,7 @@ describe('Function Tag Tests', function () {
   });
 
   it('function with single minimum, specify location as half-empty tuple (no space)', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -299,9 +299,9 @@ describe('Function Tag Tests', function () {
     //wait for window to load
     cy.get('#\\/_text1').should('have.text', 'a');
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      let f = components['/_function1'].stateValues.fs[0];
+      let f = (await components['/_function1'].stateValues.fs)[0];
       expect(f(0)).closeTo(4, 1E-12);
       expect(f(1)).closeTo(1, 1E-12);
       expect(f(2)).closeTo(0, 1E-12);
@@ -311,7 +311,7 @@ describe('Function Tag Tests', function () {
   });
 
   it('function with single minimum, specify location and value as tuple', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -324,9 +324,9 @@ describe('Function Tag Tests', function () {
     //wait for window to load
     cy.get('#\\/_text1').should('have.text', 'a');
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      let f = components['/_function1'].stateValues.fs[0];
+      let f = (await components['/_function1'].stateValues.fs)[0];
       expect(f(0)).closeTo(4 - 3, 1E-12);
       expect(f(1)).closeTo(1 - 3, 1E-12);
       expect(f(2)).closeTo(0 - 3, 1E-12);
@@ -336,7 +336,7 @@ describe('Function Tag Tests', function () {
   });
 
   it('function with single extremum, specify location and value as tuple', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -349,9 +349,9 @@ describe('Function Tag Tests', function () {
     //wait for window to load
     cy.get('#\\/_text1').should('have.text', 'a');
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      let f = components['/_function1'].stateValues.fs[0];
+      let f = (await components['/_function1'].stateValues.fs)[0];
       expect(f(0)).closeTo(-4 - 3, 1E-12);
       expect(f(1)).closeTo(-1 - 3, 1E-12);
       expect(f(2)).closeTo(0 - 3, 1E-12);
@@ -361,7 +361,7 @@ describe('Function Tag Tests', function () {
   });
 
   it('function with min and max', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -374,9 +374,9 @@ describe('Function Tag Tests', function () {
     //wait for window to load
     cy.get('#\\/_text1').should('have.text', 'a');
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      let f = components['/_function1'].stateValues.fs[0];
+      let f = (await components['/_function1'].stateValues.fs)[0];
       expect(f(0)).closeTo(0, 1E-12);
       expect(f(1)).closeTo(1, 1E-12);
       expect(f(0.5)).closeTo(0.5, 1E-12);
@@ -392,7 +392,7 @@ describe('Function Tag Tests', function () {
   });
 
   it('function with min and extremum', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -405,9 +405,9 @@ describe('Function Tag Tests', function () {
     //wait for window to load
     cy.get('#\\/_text1').should('have.text', 'a');
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      let f = components['/_function1'].stateValues.fs[0];
+      let f = (await components['/_function1'].stateValues.fs)[0];
       expect(f(0)).closeTo(0, 1E-12);
       expect(f(1)).closeTo(1, 1E-12);
       expect(f(0.5)).closeTo(0.5, 1E-12);
@@ -423,7 +423,7 @@ describe('Function Tag Tests', function () {
   });
 
   it('function with extremum and max', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -436,9 +436,9 @@ describe('Function Tag Tests', function () {
     //wait for window to load
     cy.get('#\\/_text1').should('have.text', 'a');
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      let f = components['/_function1'].stateValues.fs[0];
+      let f = (await components['/_function1'].stateValues.fs)[0];
       expect(f(0)).closeTo(0, 1E-12);
       expect(f(1)).closeTo(1, 1E-12);
       expect(f(0.5)).closeTo(0.5, 1E-12);
@@ -454,7 +454,7 @@ describe('Function Tag Tests', function () {
   });
 
   it('function two extrema, same height', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -467,9 +467,9 @@ describe('Function Tag Tests', function () {
     //wait for window to load
     cy.get('#\\/_text1').should('have.text', 'a');
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      let f = components['/_function1'].stateValues.fs[0];
+      let f = (await components['/_function1'].stateValues.fs)[0];
       expect(f(0)).closeTo(0, 1E-12);
       expect(f(1)).closeTo(0, 1E-12);
       expect(f(0.5)).closeTo(-1, 1E-12);
@@ -485,7 +485,7 @@ describe('Function Tag Tests', function () {
   });
 
   it('function two extrema, second higher', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -498,9 +498,9 @@ describe('Function Tag Tests', function () {
     //wait for window to load
     cy.get('#\\/_text1').should('have.text', 'a');
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      let f = components['/_function1'].stateValues.fs[0];
+      let f = (await components['/_function1'].stateValues.fs)[0];
       expect(f(0)).closeTo(0, 1E-12);
       expect(f(1)).closeTo(2, 1E-12);
       expect(f(0.5)).closeTo(1, 1E-12);
@@ -516,7 +516,7 @@ describe('Function Tag Tests', function () {
   });
 
   it('function two extrema, second lower', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -529,9 +529,9 @@ describe('Function Tag Tests', function () {
     //wait for window to load
     cy.get('#\\/_text1').should('have.text', 'a');
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      let f = components['/_function1'].stateValues.fs[0];
+      let f = (await components['/_function1'].stateValues.fs)[0];
       expect(f(0)).closeTo(0, 1E-12);
       expect(f(1)).closeTo(-2, 1E-12);
       expect(f(0.5)).closeTo(-1, 1E-12);
@@ -547,7 +547,7 @@ describe('Function Tag Tests', function () {
   });
 
   it('function with two minima', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -560,9 +560,9 @@ describe('Function Tag Tests', function () {
     //wait for window to load
     cy.get('#\\/_text1').should('have.text', 'a');
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      let f = components['/_function1'].stateValues.fs[0];
+      let f = (await components['/_function1'].stateValues.fs)[0];
       expect(f(-2)).closeTo(1, 1E-12);
       expect(f(2)).closeTo(1, 1E-12);
       expect(f(0)).closeTo(2, 1E-12);
@@ -578,7 +578,7 @@ describe('Function Tag Tests', function () {
   });
 
   it('function with two minima and maximum with specified height', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -591,9 +591,9 @@ describe('Function Tag Tests', function () {
     //wait for window to load
     cy.get('#\\/_text1').should('have.text', 'a');
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      let f = components['/_function1'].stateValues.fs[0];
+      let f = (await components['/_function1'].stateValues.fs)[0];
       expect(f(-2)).closeTo(1, 1E-12);
       expect(f(2)).closeTo(1, 1E-12);
       expect(f(0)).closeTo(5, 1E-12);
@@ -609,7 +609,7 @@ describe('Function Tag Tests', function () {
   });
 
   it('function with two minima and extremum with specified height', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -622,9 +622,9 @@ describe('Function Tag Tests', function () {
     //wait for window to load
     cy.get('#\\/_text1').should('have.text', 'a');
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      let f = components['/_function1'].stateValues.fs[0];
+      let f = (await components['/_function1'].stateValues.fs)[0];
       expect(f(-2)).closeTo(1, 1E-12);
       expect(f(2)).closeTo(1, 1E-12);
       expect(f(0)).closeTo(5, 1E-12);
@@ -640,7 +640,7 @@ describe('Function Tag Tests', function () {
   });
 
   it('function with maximum and higher minimum', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -653,9 +653,9 @@ describe('Function Tag Tests', function () {
     //wait for window to load
     cy.get('#\\/_text1').should('have.text', 'a');
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      let f = components['/_function1'].stateValues.fs[0];
+      let f = (await components['/_function1'].stateValues.fs)[0];
       expect(f(-2)).closeTo(1, 1E-12);
       expect(f(-3)).closeTo(0, 1E-12);
       expect(f(-2 + 4 / 3)).closeTo(0, 1E-12);
@@ -669,7 +669,7 @@ describe('Function Tag Tests', function () {
   });
 
   it('function with maximum and higher extremum', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -682,9 +682,9 @@ describe('Function Tag Tests', function () {
     //wait for window to load
     cy.get('#\\/_text1').should('have.text', 'a');
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      let f = components['/_function1'].stateValues.fs[0];
+      let f = (await components['/_function1'].stateValues.fs)[0];
       expect(f(-2)).closeTo(1, 1E-12);
       expect(f(-3)).closeTo(0, 1E-12);
       expect(f(0)).closeTo(0, 1E-12);
@@ -695,7 +695,7 @@ describe('Function Tag Tests', function () {
   });
 
   it('function with minimum and lower maximum', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -708,9 +708,9 @@ describe('Function Tag Tests', function () {
     //wait for window to load
     cy.get('#\\/_text1').should('have.text', 'a');
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      let f = components['/_function1'].stateValues.fs[0];
+      let f = (await components['/_function1'].stateValues.fs)[0];
       expect(f(-2)).closeTo(3, 1E-12);
       expect(f(-3)).closeTo(4, 1E-12);
       expect(f(-2 + 4 / 3)).closeTo(4, 1E-12);
@@ -724,7 +724,7 @@ describe('Function Tag Tests', function () {
   });
 
   it('function with minimum and lower extremum', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -737,9 +737,9 @@ describe('Function Tag Tests', function () {
     //wait for window to load
     cy.get('#\\/_text1').should('have.text', 'a');
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      let f = components['/_function1'].stateValues.fs[0];
+      let f = (await components['/_function1'].stateValues.fs)[0];
       expect(f(-2)).closeTo(3, 1E-12);
       expect(f(-3)).closeTo(4, 1E-12);
       expect(f(0)).closeTo(4, 1E-12);
@@ -750,7 +750,7 @@ describe('Function Tag Tests', function () {
   });
 
   it('function with extremum and lower maximum', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -763,9 +763,9 @@ describe('Function Tag Tests', function () {
     //wait for window to load
     cy.get('#\\/_text1').should('have.text', 'a');
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      let f = components['/_function1'].stateValues.fs[0];
+      let f = (await components['/_function1'].stateValues.fs)[0];
       expect(f(-2)).closeTo(3, 1E-12);
       expect(f(-3)).closeTo(2, 1E-12);
       expect(f(0)).closeTo(1, 1E-12);
@@ -776,7 +776,7 @@ describe('Function Tag Tests', function () {
   });
 
   it('function with maximum through points', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -789,9 +789,9 @@ describe('Function Tag Tests', function () {
     //wait for window to load
     cy.get('#\\/_text1').should('have.text', 'a');
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      let f = components['/_function1'].stateValues.fs[0];
+      let f = (await components['/_function1'].stateValues.fs)[0];
       expect(f(-2)).closeTo(2, 1E-12);
       expect(f(-5)).closeTo(0, 1E-12);
       expect(f(-6)).closeTo(-1, 1E-12);
@@ -811,7 +811,7 @@ describe('Function Tag Tests', function () {
   });
 
   it('function with single through point', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -824,9 +824,9 @@ describe('Function Tag Tests', function () {
     //wait for window to load
     cy.get('#\\/_text1').should('have.text', 'a');
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      let f = components['/_function1'].stateValues.fs[0];
+      let f = (await components['/_function1'].stateValues.fs)[0];
       expect(f(-6)).closeTo(-1, 1E-12);
       expect(f(-2)).closeTo(-1, 1E-12);
       expect(f(-12)).closeTo(-1, 1E-12);
@@ -835,7 +835,7 @@ describe('Function Tag Tests', function () {
   });
 
   it('function with single through point with slope', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -848,9 +848,9 @@ describe('Function Tag Tests', function () {
     //wait for window to load
     cy.get('#\\/_text1').should('have.text', 'a');
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      let f = components['/_function1'].stateValues.fs[0];
+      let f = (await components['/_function1'].stateValues.fs)[0];
       expect(f(-6)).closeTo(-1, 1E-12);
       expect(f(-2)).closeTo(-1 + 3 * (-2 + 6), 1E-12);
       expect(f(-12)).closeTo(-1 + 3 * (-12 + 6), 1E-12);
@@ -859,7 +859,7 @@ describe('Function Tag Tests', function () {
   });
 
   it('function with single through point with dynamic slope', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -873,9 +873,9 @@ describe('Function Tag Tests', function () {
     //wait for window to load
     cy.get('#\\/_text1').should('have.text', 'a');
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      let f = components['/_function1'].stateValues.fs[0];
+      let f = (await components['/_function1'].stateValues.fs)[0];
       expect(f(-6)).closeTo(-1, 1E-12);
       expect(f(-2)).closeTo(-1 + 0 * (-2 + 6), 1E-12);
       expect(f(-12)).closeTo(-1 + 0 * (-12 + 6), 1E-12);
@@ -883,9 +883,9 @@ describe('Function Tag Tests', function () {
     })
 
     cy.get('#\\/_mathinput1 textarea').type("2{enter}", { force: true });
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      let f = components['/_function1'].stateValues.fs[0];
+      let f = (await components['/_function1'].stateValues.fs)[0];
       expect(f(-6)).closeTo(-1, 1E-12);
       expect(f(-2)).closeTo(-1 + 2 * (-2 + 6), 1E-12);
       expect(f(-12)).closeTo(-1 + 2 * (-12 + 6), 1E-12);
@@ -893,9 +893,9 @@ describe('Function Tag Tests', function () {
     })
 
     cy.get('#\\/_mathinput1 textarea').type("{end}{backspace}-3{enter}", { force: true });
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      let f = components['/_function1'].stateValues.fs[0];
+      let f = (await components['/_function1'].stateValues.fs)[0];
       expect(f(-6)).closeTo(-1, 1E-12);
       expect(f(-2)).closeTo(-1 - 3 * (-2 + 6), 1E-12);
       expect(f(-12)).closeTo(-1 - 3 * (-12 + 6), 1E-12);
@@ -903,9 +903,10 @@ describe('Function Tag Tests', function () {
     })
 
     cy.get('#\\/_mathinput1 textarea').type("{end}{backspace}{backspace}", { force: true }).blur();
-    cy.window().then((win) => {
+    cy.wait(100);
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      let f = components['/_function1'].stateValues.fs[0];
+      let f = (await components['/_function1'].stateValues.fs)[0];
       expect(f(-6)).closeTo(-1, 1E-12);
       expect(f(-2)).closeTo(-1 + 0 * (-2 + 6), 1E-12);
       expect(f(-12)).closeTo(-1 + 0 * (-12 + 6), 1E-12);
@@ -916,7 +917,7 @@ describe('Function Tag Tests', function () {
   });
 
   it('function with two through points with dynamic slope', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -931,9 +932,9 @@ describe('Function Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');
 
     cy.log('with undefined slope, get line through points')
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      let f = components['/_function1'].stateValues.fs[0];
+      let f = (await components['/_function1'].stateValues.fs)[0];
       expect(f(-6)).closeTo(-1, 1E-12);
       expect(f(-2)).closeTo(-1 + 1 * (-2 + 6), 1E-12);
       expect(f(-12)).closeTo(-1 + 1 * (-12 + 6), 1E-12);
@@ -941,9 +942,9 @@ describe('Function Tag Tests', function () {
     })
 
     cy.get('#\\/_mathinput1 textarea').type("2{enter}", { force: true });
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      let f = components['/_function1'].stateValues.fs[0];
+      let f = (await components['/_function1'].stateValues.fs)[0];
       expect(f(-6 - 0.01)).closeTo(-1 - 0.01 * 2, 1E-3);
       expect(f(-6)).closeTo(-1, 1E-12);
       expect(f(-6 + 0.01)).closeTo(-1 + 0.01 * 2, 1E-3);
@@ -960,9 +961,9 @@ describe('Function Tag Tests', function () {
     })
 
     cy.get('#\\/_mathinput1 textarea').type("{end}{backspace}-3{enter}", { force: true });
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      let f = components['/_function1'].stateValues.fs[0];
+      let f = (await components['/_function1'].stateValues.fs)[0];
       expect(f(-6 - 0.01)).closeTo(-1 - 0.01 * (-3), 1E-3);
       expect(f(-6)).closeTo(-1, 1E-12);
       expect(f(-6 + 0.01)).closeTo(-1 + 0.01 * (-3), 1E-3);
@@ -978,9 +979,10 @@ describe('Function Tag Tests', function () {
     })
 
     cy.get('#\\/_mathinput1 textarea').type("{end}{backspace}{backspace}", { force: true }).blur();
-    cy.window().then((win) => {
+    cy.wait(100)
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      let f = components['/_function1'].stateValues.fs[0];
+      let f = (await components['/_function1'].stateValues.fs)[0];
       expect(f(-6)).closeTo(-1, 1E-12);
       expect(f(-2)).closeTo(-1 + 1 * (-2 + 6), 1E-12);
       expect(f(-12)).closeTo(-1 + 1 * (-12 + 6), 1E-12);
@@ -991,7 +993,7 @@ describe('Function Tag Tests', function () {
   });
 
   it('function through three points', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -1004,9 +1006,9 @@ describe('Function Tag Tests', function () {
     //wait for window to load
     cy.get('#\\/_text1').should('have.text', 'a');
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      let f = components['/_function1'].stateValues.fs[0];
+      let f = (await components['/_function1'].stateValues.fs)[0];
       expect(f(0)).closeTo(2, 1E-12);
       expect(f(2)).closeTo(1, 1E-12);
       expect(f(3)).closeTo(2, 1E-12);
@@ -1024,7 +1026,7 @@ describe('Function Tag Tests', function () {
   });
 
   it('function through three points with slopes', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -1038,9 +1040,9 @@ describe('Function Tag Tests', function () {
     //wait for window to load
     cy.get('#\\/_text1').should('have.text', 'a');
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      let f = components['/_function1'].stateValues.fs[0];
+      let f = (await components['/_function1'].stateValues.fs)[0];
       expect(f(-0.01)).closeTo(2 - 0.01 * 0.5, 1E-3)
       expect(f(0)).closeTo(2, 1E-12);
       expect(f(0.01)).closeTo(2 + 0.01 * 0.5, 1E-3)
@@ -1067,7 +1069,7 @@ describe('Function Tag Tests', function () {
   });
 
   it('function with conflicting points', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -1080,9 +1082,9 @@ describe('Function Tag Tests', function () {
     //wait for window to load
     cy.get('#\\/_text1').should('have.text', 'a');
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      let f = components['/_function1'].stateValues.fs[0];
+      let f = (await components['/_function1'].stateValues.fs)[0];
       assert.isNaN(f(0));
       assert.isNaN(f(1));
       assert.isNaN(f(2));
@@ -1090,7 +1092,7 @@ describe('Function Tag Tests', function () {
   });
 
   it('check monotonicity', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -1103,9 +1105,9 @@ describe('Function Tag Tests', function () {
     //wait for window to load
     cy.get('#\\/_text1').should('have.text', 'a');
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      let f = components['/_function1'].stateValues.fs[0];
+      let f = (await components['/_function1'].stateValues.fs)[0];
       for (let x = -5; x <= 6; x += 0.1) {
         expect(f(x - 0.1)).lessThan(f(x));
       }
@@ -1123,7 +1125,7 @@ describe('Function Tag Tests', function () {
   });
 
   it('point constrained to function', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -1142,7 +1144,7 @@ describe('Function Tag Tests', function () {
     //wait for window to load
     cy.get('#\\/_text1').should('have.text', 'a');
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
 
       let p = components['/_point1'];
@@ -1152,14 +1154,14 @@ describe('Function Tag Tests', function () {
 
       expect(6 - (x - 5) * (x - 5) / 25).closeTo(y, 1E-5);
 
-      p.movePoint({ x: -8, y: 8 });
+      await p.movePoint({ x: -8, y: 8 });
 
       x = p.stateValues.xs[0].evaluate_to_constant();
       y = p.stateValues.xs[1].evaluate_to_constant();
 
       expect(6 - (x - 5) * (x - 5) / 25).closeTo(y, 1E-5);
 
-      p.movePoint({ x: 8, y: 8 });
+      await p.movePoint({ x: 8, y: 8 });
 
       x = p.stateValues.xs[0].evaluate_to_constant();
       y = p.stateValues.xs[1].evaluate_to_constant();
@@ -1170,7 +1172,7 @@ describe('Function Tag Tests', function () {
   });
 
   it('point constrained to function, symbolic initial x', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -1190,7 +1192,7 @@ describe('Function Tag Tests', function () {
     //wait for window to load
     cy.get('#\\/_text1').should('have.text', 'a');
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
 
       let p = components['/_point1'];
@@ -1198,7 +1200,7 @@ describe('Function Tag Tests', function () {
       expect(p.stateValues.xs[0].evaluate_to_constant()).closeTo(Math.sqrt(2), 1E-6)
       expect(p.stateValues.xs[1].evaluate_to_constant()).closeTo(2, 1E-6)
 
-      p.movePoint({ x: -2, y: 2 });
+      await p.movePoint({ x: -2, y: 2 });
       expect(p.stateValues.xs[0].evaluate_to_constant()).closeTo(-2, 1E-6)
       expect(p.stateValues.xs[1].evaluate_to_constant()).closeTo(4, 1E-6)
 
@@ -1206,7 +1208,7 @@ describe('Function Tag Tests', function () {
   });
 
   it('point constrained to function, restrict domain', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -1225,7 +1227,7 @@ describe('Function Tag Tests', function () {
     //wait for window to load
     cy.get('#\\/_text1').should('have.text', 'a');
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
 
       let p = components['/_point1'];
@@ -1236,7 +1238,7 @@ describe('Function Tag Tests', function () {
       expect(x).closeTo(1, 1E-12);
       expect(6 - (x - 5) * (x - 5) / 25).closeTo(y, 1E-5);
 
-      p.movePoint({ x: -8, y: 8 });
+      await p.movePoint({ x: -8, y: 8 });
 
       x = p.stateValues.xs[0].evaluate_to_constant();
       y = p.stateValues.xs[1].evaluate_to_constant();
@@ -1244,7 +1246,7 @@ describe('Function Tag Tests', function () {
       expect(x).closeTo(-4, 1E-12);
       expect(6 - (x - 5) * (x - 5) / 25).closeTo(y, 1E-5);
 
-      p.movePoint({ x: 6, y: 8 });
+      await p.movePoint({ x: 6, y: 8 });
 
       x = p.stateValues.xs[0].evaluate_to_constant();
       y = p.stateValues.xs[1].evaluate_to_constant();
@@ -1252,7 +1254,7 @@ describe('Function Tag Tests', function () {
       expect(x).closeTo(6, 1E-12);
       expect(6 - (x - 5) * (x - 5) * (2 / 9)).closeTo(y, 1E-5);
 
-      p.movePoint({ x: 8, y: -4 });
+      await p.movePoint({ x: 8, y: -4 });
 
       x = p.stateValues.xs[0].evaluate_to_constant();
       y = p.stateValues.xs[1].evaluate_to_constant();
@@ -1264,7 +1266,7 @@ describe('Function Tag Tests', function () {
   });
 
   it('point constrained to function with restricted domain, not explicit', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -1285,7 +1287,7 @@ describe('Function Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');
     let f = x => Math.sqrt(x) * Math.sqrt(5 - x);
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
 
       let p = components['/_point1'];
@@ -1293,21 +1295,21 @@ describe('Function Tag Tests', function () {
       expect(p.stateValues.xs[1].evaluate_to_constant()).closeTo(f(1), 1E-6)
 
 
-      p.movePoint({ x: -1, y: 8 });
+      await p.movePoint({ x: -1, y: 8 });
 
       let x = p.stateValues.xs[0].evaluate_to_constant();
       let y = p.stateValues.xs[1].evaluate_to_constant();
 
       expect(y).closeTo(f(x), 1E-6)
 
-      p.movePoint({ x: 6, y: 8 });
+      await p.movePoint({ x: 6, y: 8 });
 
       x = p.stateValues.xs[0].evaluate_to_constant();
       y = p.stateValues.xs[1].evaluate_to_constant();
 
       expect(y).closeTo(f(x), 1E-6)
 
-      p.movePoint({ x: 8, y: -4 });
+      await p.movePoint({ x: 8, y: -4 });
 
       x = p.stateValues.xs[0].evaluate_to_constant();
       y = p.stateValues.xs[1].evaluate_to_constant();
@@ -1315,7 +1317,7 @@ describe('Function Tag Tests', function () {
       expect(y).closeTo(f(x), 1E-6)
 
 
-      p.movePoint({ x: -1, y: -6 });
+      await p.movePoint({ x: -1, y: -6 });
 
       x = p.stateValues.xs[0].evaluate_to_constant();
       y = p.stateValues.xs[1].evaluate_to_constant();
@@ -1326,7 +1328,7 @@ describe('Function Tag Tests', function () {
   });
 
   it('function determined by formula via sugar', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -1341,13 +1343,13 @@ describe('Function Tag Tests', function () {
     //wait for window to load
     cy.get('#\\/_text1').should('have.text', 'a');
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_function1'].stateValues.nInputs).eq(1);
+      expect(await components['/_function1'].stateValues.nInputs).eq(1);
 
-      let f = components['/_function1'].stateValues.fs[0];
-      let numericalf = components['/_function1'].stateValues.numericalfs[0];
-      let symbolicf = components['/_function1'].stateValues.symbolicfs[0];
+      let f = (await components['/_function1'].stateValues.fs)[0];
+      let numericalf = (await components['/_function1'].stateValues.numericalfs)[0];
+      let symbolicf = (await components['/_function1'].stateValues.symbolicfs)[0];
 
       expect(f(-5)).closeTo(3 / (1 + Math.exp(5 / 2)), 1E-12);
       expect(f(1)).closeTo(3 / (1 + Math.exp(-1 / 2)), 1E-12);
@@ -1361,7 +1363,7 @@ describe('Function Tag Tests', function () {
   });
 
   it('function determined by formula via sugar, with strings and macros', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -1378,13 +1380,13 @@ describe('Function Tag Tests', function () {
     //wait for window to load
     cy.get('#\\/_text1').should('have.text', 'a');
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_function1'].stateValues.nInputs).eq(1);
+      expect(await components['/_function1'].stateValues.nInputs).eq(1);
 
-      let f = components['/_function1'].stateValues.fs[0];
-      let numericalf = components['/_function1'].stateValues.numericalfs[0];
-      let symbolicf = components['/_function1'].stateValues.symbolicfs[0];
+      let f = (await components['/_function1'].stateValues.fs)[0];
+      let numericalf = (await components['/_function1'].stateValues.numericalfs)[0];
+      let symbolicf = (await components['/_function1'].stateValues.symbolicfs)[0];
 
       expect(f(-5)).closeTo(3 / (1 + Math.exp(5 / 2)), 1E-12);
       expect(f(1)).closeTo(3 / (1 + Math.exp(-1 / 2)), 1E-12);
@@ -1398,7 +1400,7 @@ describe('Function Tag Tests', function () {
   });
 
   it('function determined by formula via sugar, with strings and maths', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -1413,13 +1415,13 @@ describe('Function Tag Tests', function () {
     //wait for window to load
     cy.get('#\\/_text1').should('have.text', 'a');
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_function1'].stateValues.nInputs).eq(1);
+      expect(await components['/_function1'].stateValues.nInputs).eq(1);
 
-      let f = components['/_function1'].stateValues.fs[0];
-      let numericalf = components['/_function1'].stateValues.numericalfs[0];
-      let symbolicf = components['/_function1'].stateValues.symbolicfs[0];
+      let f = (await components['/_function1'].stateValues.fs)[0];
+      let numericalf = (await components['/_function1'].stateValues.numericalfs)[0];
+      let symbolicf = (await components['/_function1'].stateValues.symbolicfs)[0];
 
       expect(f(-5)).closeTo(3 / (1 + Math.exp(5 / 2)), 1E-12);
       expect(f(1)).closeTo(3 / (1 + Math.exp(-1 / 2)), 1E-12);
@@ -1433,7 +1435,7 @@ describe('Function Tag Tests', function () {
   });
 
   it('function determined by formula via sugar, with strings and copies', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -1450,13 +1452,13 @@ describe('Function Tag Tests', function () {
     //wait for window to load
     cy.get('#\\/_text1').should('have.text', 'a');
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_function1'].stateValues.nInputs).eq(1);
+      expect(await components['/_function1'].stateValues.nInputs).eq(1);
 
-      let f = components['/_function1'].stateValues.fs[0];
-      let numericalf = components['/_function1'].stateValues.numericalfs[0];
-      let symbolicf = components['/_function1'].stateValues.symbolicfs[0];
+      let f = (await components['/_function1'].stateValues.fs)[0];
+      let numericalf = (await components['/_function1'].stateValues.numericalfs)[0];
+      let symbolicf = (await components['/_function1'].stateValues.symbolicfs)[0];
 
       expect(f(-5)).closeTo(3 / (1 + Math.exp(5 / 2)), 1E-12);
       expect(f(1)).closeTo(3 / (1 + Math.exp(-1 / 2)), 1E-12);
@@ -1470,7 +1472,7 @@ describe('Function Tag Tests', function () {
   });
 
   it('function determined by math formula', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -1483,13 +1485,13 @@ describe('Function Tag Tests', function () {
     //wait for window to load
     cy.get('#\\/_text1').should('have.text', 'a');
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_function1'].stateValues.nInputs).eq(1);
+      expect(await components['/_function1'].stateValues.nInputs).eq(1);
 
-      let f = components['/_function1'].stateValues.fs[0];
-      let numericalf = components['/_function1'].stateValues.numericalfs[0];
-      let symbolicf = components['/_function1'].stateValues.symbolicfs[0];
+      let f = (await components['/_function1'].stateValues.fs)[0];
+      let numericalf = (await components['/_function1'].stateValues.numericalfs)[0];
+      let symbolicf = (await components['/_function1'].stateValues.symbolicfs)[0];
 
       expect(f(-5)).closeTo(3 / (1 + Math.exp(5 / 2)), 1E-12);
       expect(f(1)).closeTo(3 / (1 + Math.exp(-1 / 2)), 1E-12);
@@ -1503,7 +1505,7 @@ describe('Function Tag Tests', function () {
   });
 
   it('function determined by math formula, with explicit copy tags', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -1520,13 +1522,13 @@ describe('Function Tag Tests', function () {
     //wait for window to load
     cy.get('#\\/_text1').should('have.text', 'a');
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_function1'].stateValues.nInputs).eq(1);
+      expect(await components['/_function1'].stateValues.nInputs).eq(1);
 
-      let f = components['/_function1'].stateValues.fs[0];
-      let numericalf = components['/_function1'].stateValues.numericalfs[0];
-      let symbolicf = components['/_function1'].stateValues.symbolicfs[0];
+      let f = (await components['/_function1'].stateValues.fs)[0];
+      let numericalf = (await components['/_function1'].stateValues.numericalfs)[0];
+      let symbolicf = (await components['/_function1'].stateValues.symbolicfs)[0];
 
       expect(f(-5)).closeTo(3 / (1 + Math.exp(5 / 2)), 1E-12);
       expect(f(1)).closeTo(3 / (1 + Math.exp(-1 / 2)), 1E-12);
@@ -1541,7 +1543,7 @@ describe('Function Tag Tests', function () {
 
 
   it('symbolic function determined by formula via sugar', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -1556,11 +1558,11 @@ describe('Function Tag Tests', function () {
     //wait for window to load
     cy.get('#\\/_text1').should('have.text', 'a');
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      let f = components['/_function1'].stateValues.fs[0];
-      let numericalf = components['/_function1'].stateValues.numericalfs[0];
-      let symbolicf = components['/_function1'].stateValues.symbolicfs[0];
+      let f = (await components['/_function1'].stateValues.fs)[0];
+      let numericalf = (await components['/_function1'].stateValues.numericalfs)[0];
+      let symbolicf = (await components['/_function1'].stateValues.symbolicfs)[0];
 
       expect(f(-5).equals(me.fromText('3/(1+e^(5/2))'))).eq(true)
       expect(f(1).equals(me.fromText('3/(1+e^(-1/2))'))).eq(true)
@@ -1575,7 +1577,7 @@ describe('Function Tag Tests', function () {
   });
 
   it('symbolic function determined by formula via sugar, with strings and macro', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -1591,11 +1593,11 @@ describe('Function Tag Tests', function () {
     //wait for window to load
     cy.get('#\\/_text1').should('have.text', 'a');
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      let f = components['/_function1'].stateValues.fs[0];
-      let numericalf = components['/_function1'].stateValues.numericalfs[0];
-      let symbolicf = components['/_function1'].stateValues.symbolicfs[0];
+      let f = (await components['/_function1'].stateValues.fs)[0];
+      let numericalf = (await components['/_function1'].stateValues.numericalfs)[0];
+      let symbolicf = (await components['/_function1'].stateValues.symbolicfs)[0];
 
       expect(f(-5).equals(me.fromText('3/(1+e^(5/2))'))).eq(true)
       expect(f(1).equals(me.fromText('3/(1+e^(-1/2))'))).eq(true)
@@ -1610,7 +1612,7 @@ describe('Function Tag Tests', function () {
   });
 
   it('symbolic function determined by math formula', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -1623,11 +1625,11 @@ describe('Function Tag Tests', function () {
     //wait for window to load
     cy.get('#\\/_text1').should('have.text', 'a');
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      let f = components['/_function1'].stateValues.fs[0];
-      let numericalf = components['/_function1'].stateValues.numericalfs[0];
-      let symbolicf = components['/_function1'].stateValues.symbolicfs[0];
+      let f = (await components['/_function1'].stateValues.fs)[0];
+      let numericalf = (await components['/_function1'].stateValues.numericalfs)[0];
+      let symbolicf = (await components['/_function1'].stateValues.symbolicfs)[0];
 
       expect(f(-5).equals(me.fromText('3/(1+e^(5/2))'))).eq(true)
       expect(f(1).equals(me.fromText('3/(1+e^(-1/2))'))).eq(true)
@@ -1641,7 +1643,7 @@ describe('Function Tag Tests', function () {
   });
 
   it('function determined by sugar formula in different variable', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -1657,11 +1659,11 @@ describe('Function Tag Tests', function () {
     //wait for window to load
     cy.get('#\\/_text1').should('have.text', 'a');
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      let f = components['/_function1'].stateValues.fs[0];
-      let numericalf = components['/_function1'].stateValues.numericalfs[0];
-      let symbolicf = components['/_function1'].stateValues.symbolicfs[0];
+      let f = (await components['/_function1'].stateValues.fs)[0];
+      let numericalf = (await components['/_function1'].stateValues.numericalfs)[0];
+      let symbolicf = (await components['/_function1'].stateValues.symbolicfs)[0];
 
       expect(f(-5)).closeTo(25 * Math.sin(0.5 * Math.PI * (-5)) / 100, 1E-12);
       expect(f(3)).closeTo(9 * Math.sin(0.5 * Math.PI * (3)) / 100, 1E-12);
@@ -1675,7 +1677,7 @@ describe('Function Tag Tests', function () {
   });
 
   it('function determined by sugar formula in different variable, with strings and macros', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -1694,11 +1696,11 @@ describe('Function Tag Tests', function () {
     //wait for window to load
     cy.get('#\\/_text1').should('have.text', 'a');
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      let f = components['/_function1'].stateValues.fs[0];
-      let numericalf = components['/_function1'].stateValues.numericalfs[0];
-      let symbolicf = components['/_function1'].stateValues.symbolicfs[0];
+      let f = (await components['/_function1'].stateValues.fs)[0];
+      let numericalf = (await components['/_function1'].stateValues.numericalfs)[0];
+      let symbolicf = (await components['/_function1'].stateValues.symbolicfs)[0];
 
       expect(f(-5)).closeTo(25 * Math.sin(0.5 * Math.PI * (-5)) / 100, 1E-12);
       expect(f(3)).closeTo(9 * Math.sin(0.5 * Math.PI * (3)) / 100, 1E-12);
@@ -1712,7 +1714,7 @@ describe('Function Tag Tests', function () {
   });
 
   it('function determined by math formula in different variable', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -1725,11 +1727,11 @@ describe('Function Tag Tests', function () {
     //wait for window to load
     cy.get('#\\/_text1').should('have.text', 'a');
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      let f = components['/_function1'].stateValues.fs[0];
-      let numericalf = components['/_function1'].stateValues.numericalfs[0];
-      let symbolicf = components['/_function1'].stateValues.symbolicfs[0];
+      let f = (await components['/_function1'].stateValues.fs)[0];
+      let numericalf = (await components['/_function1'].stateValues.numericalfs)[0];
+      let symbolicf = (await components['/_function1'].stateValues.symbolicfs)[0];
 
       expect(f(-5)).closeTo(25 * Math.sin(0.5 * Math.PI * (-5)) / 100, 1E-12);
       expect(f(3)).closeTo(9 * Math.sin(0.5 * Math.PI * (3)) / 100, 1E-12);
@@ -1743,7 +1745,7 @@ describe('Function Tag Tests', function () {
   });
 
   it('function with empty variables attribute', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -1759,11 +1761,11 @@ describe('Function Tag Tests', function () {
     //wait for window to load
     cy.get('#\\/_text1').should('have.text', 'a');
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      let f = components['/_function1'].stateValues.fs[0];
-      let numericalf = components['/_function1'].stateValues.numericalfs[0];
-      let symbolicf = components['/_function1'].stateValues.symbolicfs[0];
+      let f = (await components['/_function1'].stateValues.fs)[0];
+      let numericalf = (await components['/_function1'].stateValues.numericalfs)[0];
+      let symbolicf = (await components['/_function1'].stateValues.symbolicfs)[0];
 
       expect(f(-5)).closeTo(25 * Math.sin(0.5 * Math.PI * (-5)) / 100, 1E-12);
       expect(f(3)).closeTo(9 * Math.sin(0.5 * Math.PI * (3)) / 100, 1E-12);
@@ -1777,7 +1779,7 @@ describe('Function Tag Tests', function () {
   });
 
   it('function determined by function', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -1793,11 +1795,11 @@ describe('Function Tag Tests', function () {
     //wait for window to load
     cy.get('#\\/_text1').should('have.text', 'a');
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      let f = components['/_function2'].stateValues.fs[0];
-      let numericalf = components['/_function2'].stateValues.numericalfs[0];
-      let symbolicf = components['/_function2'].stateValues.symbolicfs[0];
+      let f = (await components['/_function2'].stateValues.fs)[0];
+      let numericalf = (await components['/_function2'].stateValues.numericalfs)[0];
+      let symbolicf = (await components['/_function2'].stateValues.symbolicfs)[0];
 
       expect(f(-5)).closeTo(25 * Math.sin(0.5 * Math.PI * (-5)) / 100, 1E-12);
       expect(f(3)).closeTo(9 * Math.sin(0.5 * Math.PI * (3)) / 100, 1E-12);
@@ -1812,7 +1814,7 @@ describe('Function Tag Tests', function () {
   });
 
   it('point constrained to function in different variable', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -1833,7 +1835,7 @@ describe('Function Tag Tests', function () {
     //wait for window to load
     cy.get('#\\/_text1').should('have.text', 'a');
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
 
       let p = components['/_point1'];
@@ -1843,14 +1845,14 @@ describe('Function Tag Tests', function () {
 
       expect(Math.log(2 * x)).closeTo(y, 1E-5);
 
-      p.movePoint({ x: 8, y: 8 });
+      await p.movePoint({ x: 8, y: 8 });
 
       x = p.stateValues.xs[0].evaluate_to_constant();
       y = p.stateValues.xs[1].evaluate_to_constant();
 
       expect(Math.log(2 * x)).closeTo(y, 1E-5);
 
-      p.movePoint({ x: -8, y: -8 });
+      await p.movePoint({ x: -8, y: -8 });
 
       x = p.stateValues.xs[0].evaluate_to_constant();
       y = p.stateValues.xs[1].evaluate_to_constant();
@@ -1862,7 +1864,7 @@ describe('Function Tag Tests', function () {
   });
 
   it('point constrained to function in different variable, restrict domain', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -1883,7 +1885,7 @@ describe('Function Tag Tests', function () {
     //wait for window to load
     cy.get('#\\/_text1').should('have.text', 'a');
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
 
       let p = components['/_point1'];
@@ -1894,7 +1896,7 @@ describe('Function Tag Tests', function () {
       expect(x).eq(0.1);
       expect(Math.log(2 * x)).closeTo(y, 1E-5);
 
-      p.movePoint({ x: 4, y: 6 });
+      await p.movePoint({ x: 4, y: 6 });
 
       x = p.stateValues.xs[0].evaluate_to_constant();
       y = p.stateValues.xs[1].evaluate_to_constant();
@@ -1903,7 +1905,7 @@ describe('Function Tag Tests', function () {
       expect(Math.log(2 * x)).closeTo(y, 1E-5);
 
 
-      p.movePoint({ x: 8, y: 8 });
+      await p.movePoint({ x: 8, y: 8 });
 
       x = p.stateValues.xs[0].evaluate_to_constant();
       y = p.stateValues.xs[1].evaluate_to_constant();
@@ -1911,7 +1913,7 @@ describe('Function Tag Tests', function () {
       expect(x).closeTo(6, 1E-12);
       expect(Math.log(2 * x)).closeTo(y, 1E-5);
 
-      p.movePoint({ x: -8, y: -8 });
+      await p.movePoint({ x: -8, y: -8 });
 
       x = p.stateValues.xs[0].evaluate_to_constant();
       y = p.stateValues.xs[1].evaluate_to_constant();
@@ -1924,7 +1926,7 @@ describe('Function Tag Tests', function () {
   });
 
   it('calculated extrema from spline', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -1950,7 +1952,7 @@ describe('Function Tag Tests', function () {
     //wait for window to load
     cy.get('#\\/_text1').should('have.text', 'a');
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
 
       let numberMaximaAnchor = cesc('#' + components["/numbermaxima"].replacements[0].componentName);
@@ -1972,10 +1974,10 @@ describe('Function Tag Tests', function () {
       });
 
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let components = Object.assign({}, win.state.components);
 
-        components['/_point1'].movePoint({ x: 2, y: 2 });
+        await components['/_point1'].movePoint({ x: 2, y: 2 });
 
         cy.get(numberMaximaAnchor).should('have.text', '2');
         cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -1992,10 +1994,10 @@ describe('Function Tag Tests', function () {
 
       });
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let components = Object.assign({}, win.state.components);
 
-        components['/_point1'].movePoint({ x: 3.6, y: 5.1 });
+        await components['/_point1'].movePoint({ x: 3.6, y: 5.1 });
 
         cy.get(numberMaximaAnchor).should('have.text', '3');
         cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -2012,10 +2014,10 @@ describe('Function Tag Tests', function () {
 
       });
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let components = Object.assign({}, win.state.components);
 
-        components['/_point1'].movePoint({ x: 8, y: 9 });
+        await components['/_point1'].movePoint({ x: 8, y: 9 });
 
         cy.get(numberMaximaAnchor).should('have.text', '2');
         cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -2032,10 +2034,10 @@ describe('Function Tag Tests', function () {
 
       });
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let components = Object.assign({}, win.state.components);
 
-        components['/_point1'].movePoint({ x: 5, y: 2 });
+        await components['/_point1'].movePoint({ x: 5, y: 2 });
 
         cy.get(numberMaximaAnchor).should('have.text', '0');
         cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -2052,10 +2054,10 @@ describe('Function Tag Tests', function () {
 
       });
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let components = Object.assign({}, win.state.components);
 
-        components['/_point1'].movePoint({ x: -9, y: 0 });
+        await components['/_point1'].movePoint({ x: -9, y: 0 });
 
         cy.get(numberMaximaAnchor).should('have.text', '3');
         cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -2073,10 +2075,10 @@ describe('Function Tag Tests', function () {
       });
 
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let components = Object.assign({}, win.state.components);
 
-        components['/_point4'].movePoint({ x: 8, y: 3 });
+        await components['/_point4'].movePoint({ x: 8, y: 3 });
 
         cy.get(numberMaximaAnchor).should('have.text', '1');
         cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -2093,10 +2095,10 @@ describe('Function Tag Tests', function () {
 
       });
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let components = Object.assign({}, win.state.components);
 
-        components['/_point4'].movePoint({ x: 8, y: 6 });
+        await components['/_point4'].movePoint({ x: 8, y: 6 });
 
         cy.get(numberMaximaAnchor).should('have.text', '2');
         cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -2117,7 +2119,7 @@ describe('Function Tag Tests', function () {
   });
 
   it('calculated extrema from spline, restrict domain', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -2145,7 +2147,7 @@ describe('Function Tag Tests', function () {
     //wait for window to load
     cy.get('#\\/_text1').should('have.text', 'a');
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
 
       let numberMaximaAnchor = cesc('#' + components["/numbermaxima"].replacements[0].componentName);
@@ -2184,10 +2186,10 @@ describe('Function Tag Tests', function () {
       });
 
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let components = Object.assign({}, win.state.components);
 
-        components['/_point1'].movePoint({ x: 2, y: 2 });
+        await components['/_point1'].movePoint({ x: 2, y: 2 });
 
         cy.get(numberMaximaAnchor).should('have.text', '1');
         cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -2220,10 +2222,10 @@ describe('Function Tag Tests', function () {
 
       });
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let components = Object.assign({}, win.state.components);
 
-        components['/_point1'].movePoint({ x: 3.6, y: 5.1 });
+        await components['/_point1'].movePoint({ x: 3.6, y: 5.1 });
 
         cy.get(numberMaximaAnchor).should('have.text', '3');
         cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -2261,7 +2263,7 @@ describe('Function Tag Tests', function () {
 
 
   it('calculated extrema from spline, restrict domain, just through points', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -2288,7 +2290,7 @@ describe('Function Tag Tests', function () {
     //wait for window to load
     cy.get('#\\/_text1').should('have.text', 'a');
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
 
       let numberMaximaAnchor = cesc('#' + components["/numbermaxima"].replacements[0].componentName);
@@ -2310,16 +2312,16 @@ describe('Function Tag Tests', function () {
       });
 
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let components = Object.assign({}, win.state.components);
 
         // now move points so that the minimum of the cubic interpolating between
         // the first two points is past maximum of the domain
         // check for bug where this stopped looking for minima
 
-        components['/_point1'].movePoint({ x: 0, y: -0.35 });
-        components['/_point2'].movePoint({ x: 1.8, y: -1.36 });
-        components['/_point5'].movePoint({ x: 1, y: -0.866 });
+        await components['/_point1'].movePoint({ x: 0, y: -0.35 });
+        await components['/_point2'].movePoint({ x: 1.8, y: -1.36 });
+        await components['/_point5'].movePoint({ x: 1, y: -0.866 });
 
         cy.get(numberMaximaAnchor).should('have.text', '0');
         cy.get(numberMinimaAnchor).should('have.text', '1');
@@ -2334,17 +2336,17 @@ describe('Function Tag Tests', function () {
       });
 
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let components = Object.assign({}, win.state.components);
 
         // now move points so that maximum of quadratic interpolating between first two points
         // is past maximum of domain
         // check for bug where this stopped looking for maxima
 
-        components['/_point1'].movePoint({ x: 0, y: 0 });
-        components['/_point2'].movePoint({ x: 2, y: 1.8 });
-        components['/_point3'].movePoint({ x: 5, y: 4 });
-        components['/_point5'].movePoint({ x: 8, y: -1 });
+        await components['/_point1'].movePoint({ x: 0, y: 0 });
+        await components['/_point2'].movePoint({ x: 2, y: 1.8 });
+        await components['/_point3'].movePoint({ x: 5, y: 4 });
+        await components['/_point5'].movePoint({ x: 8, y: -1 });
 
         cy.get(numberMaximaAnchor).should('have.text', '1');
         cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -2358,16 +2360,16 @@ describe('Function Tag Tests', function () {
 
       });
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let components = Object.assign({}, win.state.components);
 
         // now move points so that the maximum of the cubic interpolating between
         // the first two points is past maximum of the domain
         // check for bug where this stopped looking for maximum
 
-        components['/_point1'].movePoint({ x: 0, y: 0.35 });
-        components['/_point2'].movePoint({ x: 1.8, y: 1.36 });
-        components['/_point5'].movePoint({ x: 1, y: 0.866 });
+        await components['/_point1'].movePoint({ x: 0, y: 0.35 });
+        await components['/_point2'].movePoint({ x: 1.8, y: 1.36 });
+        await components['/_point5'].movePoint({ x: 1, y: 0.866 });
 
         cy.get(numberMaximaAnchor).should('have.text', '1');
         cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -2386,7 +2388,7 @@ describe('Function Tag Tests', function () {
   });
 
   it('calculated extrema from gaussians', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -2420,7 +2422,7 @@ describe('Function Tag Tests', function () {
     //wait for window to load
     cy.get('#\\/_text1').should('have.text', 'a');
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
 
       let numberMaximaAnchor = cesc('#' + components["/numbermaxima"].replacements[0].componentName);
@@ -2482,10 +2484,10 @@ describe('Function Tag Tests', function () {
       });
 
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let components = Object.assign({}, win.state.components);
 
-        components['/_point2'].movePoint({ x: 3, y: -1 });
+        await components['/_point2'].movePoint({ x: 3, y: -1 });
 
 
         cy.get(numberMaximaAnchor).should('have.text', '1');
@@ -2527,10 +2529,10 @@ describe('Function Tag Tests', function () {
       });
 
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let components = Object.assign({}, win.state.components);
 
-        components['/_point1'].movePoint({ x: 0, y: -1 });
+        await components['/_point1'].movePoint({ x: 0, y: -1 });
 
         let minimumLocation2Anchor = cesc('#' + components["/minimumlocation2"].replacements[0].componentName);
         let minimumValue2Anchor = cesc('#' + components["/minimumvalue2"].replacements[0].componentName);
@@ -2594,7 +2596,7 @@ describe('Function Tag Tests', function () {
   });
 
   it('calculated extrema from sinusoid', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -2616,7 +2618,7 @@ describe('Function Tag Tests', function () {
     //wait for window to load
     cy.get('#\\/_text1').should('have.text', 'a');
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
 
       let f = components['/_function1'];
@@ -2629,7 +2631,7 @@ describe('Function Tag Tests', function () {
 
     cy.get('#\\/_mathinput1 textarea').type("10{enter}", { force: true });
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
 
       let period = 10;
@@ -2676,7 +2678,7 @@ describe('Function Tag Tests', function () {
 
     cy.get('#\\/_mathinput1 textarea').type("{end}{backspace}{backspace}5{enter}", { force: true });
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
 
       let period = 5;
@@ -2725,7 +2727,7 @@ describe('Function Tag Tests', function () {
   });
 
   it('calculated extrema from sinusoid, restrict domain', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -2749,7 +2751,7 @@ describe('Function Tag Tests', function () {
     //wait for window to load
     cy.get('#\\/_text1').should('have.text', 'a');
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
 
       let f = components['/_function1'];
@@ -2762,7 +2764,7 @@ describe('Function Tag Tests', function () {
 
     cy.get('#\\/_mathinput1 textarea').type("10{enter}", { force: true });
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
 
       let period = 10;
@@ -2810,7 +2812,7 @@ describe('Function Tag Tests', function () {
     cy.get('#\\/xmin textarea').type("{end}{backspace}{backspace}5{enter}", { force: true });
     cy.get('#\\/xmax textarea').type("{end}{backspace}{backspace}25{enter}", { force: true });
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
 
       let period = 10;
@@ -2858,7 +2860,7 @@ describe('Function Tag Tests', function () {
 
     cy.get('#\\/_mathinput1 textarea').type("{end}{backspace}{backspace}5{enter}", { force: true });
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
 
       let period = 5;
@@ -2907,7 +2909,7 @@ describe('Function Tag Tests', function () {
     cy.get('#\\/xmin textarea').type("{end}{backspace}1{enter}", { force: true });
     cy.get('#\\/xmax textarea').type("{end}{backspace}{backspace}9{enter}", { force: true });
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
 
       let period = 5;
@@ -2957,7 +2959,7 @@ describe('Function Tag Tests', function () {
   });
 
   it('no extrema with horizontal asymptote', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -2973,21 +2975,21 @@ describe('Function Tag Tests', function () {
 
     //wait for window to load
     cy.get('#\\/_text1').should('have.text', 'a');
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
 
       let f = components['/_function1'];
 
-      expect(f.stateValues.numberMaxima).eq(0);
-      expect(f.stateValues.numberMinima).eq(0);
-      expect(f.stateValues.numberExtrema).eq(0);
+      expect(await f.stateValues.numberMaxima).eq(0);
+      expect(await f.stateValues.numberMinima).eq(0);
+      expect(await f.stateValues.numberExtrema).eq(0);
 
     });
 
   });
 
   it('extrema of rational function', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -3010,7 +3012,7 @@ describe('Function Tag Tests', function () {
     //wait for window to load
     cy.get('#\\/_text1').should('have.text', 'a');
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
 
       let f = components['/_function1'];
@@ -3039,7 +3041,7 @@ describe('Function Tag Tests', function () {
   });
 
   it('intervals of extrema are not counted', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -3053,7 +3055,7 @@ describe('Function Tag Tests', function () {
     //wait for window to load
     cy.get('#\\/_text1').should('have.text', 'a');
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
 
       let f = components['/_function1'];
@@ -3066,7 +3068,7 @@ describe('Function Tag Tests', function () {
   });
 
   it('extrema of function with restricted domain, not explicit', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -3091,7 +3093,7 @@ describe('Function Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');
 
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
 
       let f = components['/_function1'];
@@ -3107,7 +3109,7 @@ describe('Function Tag Tests', function () {
   });
 
   it('extrema in flat regions of functions', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -3128,7 +3130,7 @@ describe('Function Tag Tests', function () {
     //wait for window to load
     cy.get('#\\/_text1').should('have.text', 'a');
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
 
       let f1 = components['/f1'];
@@ -3137,31 +3139,31 @@ describe('Function Tag Tests', function () {
       expect(f1.stateValues.numberMaxima).eq(1);
       expect(f1.stateValues.numberMinima).eq(0);
       expect(f1.stateValues.numberExtrema).eq(1);
-      expect(f1.stateValues.maxima[0][0]).closeTo(1.0131, 1E-6);
+      expect((await f1.stateValues.maxima)[0][0]).closeTo(1.0131, 1E-6);
       expect(f1.stateValues.maxima[0][1]).eq(2)
-      expect(f1.stateValues.extrema[0][0]).closeTo(1.0131, 1E-6);
+      expect((await f1.stateValues.extrema)[0][0]).closeTo(1.0131, 1E-6);
       expect(f1.stateValues.extrema[0][1]).eq(2)
 
       expect(f2.stateValues.numberMaxima).eq(0);
       expect(f2.stateValues.numberMinima).eq(1);
       expect(f2.stateValues.numberExtrema).eq(1);
-      expect(f2.stateValues.minima[0][0]).closeTo(-Math.PI, 1E-6);
+      expect((await f2.stateValues.minima)[0][0]).closeTo(-Math.PI, 1E-6);
       expect(f2.stateValues.minima[0][1]).eq(3)
-      expect(f2.stateValues.extrema[0][0]).closeTo(-Math.PI, 1E-6);
+      expect((await f2.stateValues.extrema)[0][0]).closeTo(-Math.PI, 1E-6);
       expect(f2.stateValues.extrema[0][1]).eq(3)
 
       expect(f3.stateValues.numberMaxima).eq(2);
       expect(f3.stateValues.numberMinima).eq(2);
       expect(f3.stateValues.numberExtrema).eq(4);
-      expect(f3.stateValues.minima[0][0]).closeTo(3*Math.PI/6, 1E-6);
+      expect((await f3.stateValues.minima)[0][0]).closeTo(3*Math.PI/6, 1E-6);
       expect(f3.stateValues.minima[0][1]).eq(-8)
       expect(f3.stateValues.minima[1][0]).closeTo(7*Math.PI/6, 1E-6);
       expect(f3.stateValues.minima[1][1]).eq(-8)
-      expect(f3.stateValues.maxima[0][0]).closeTo(5*Math.PI/6, 1E-6);
+      expect((await f3.stateValues.maxima)[0][0]).closeTo(5*Math.PI/6, 1E-6);
       expect(f3.stateValues.maxima[0][1]).eq(-5)
       expect(f3.stateValues.maxima[1][0]).closeTo(9*Math.PI/6, 1E-6);
       expect(f3.stateValues.maxima[1][1]).eq(-5)
-      expect(f3.stateValues.extrema[0][0]).closeTo(3*Math.PI/6, 1E-6);
+      expect((await f3.stateValues.extrema)[0][0]).closeTo(3*Math.PI/6, 1E-6);
       expect(f3.stateValues.extrema[0][1]).eq(-8)
       expect(f3.stateValues.extrema[1][0]).closeTo(5*Math.PI/6, 1E-6);
       expect(f3.stateValues.extrema[1][1]).eq(-5)
@@ -3176,7 +3178,7 @@ describe('Function Tag Tests', function () {
   });
 
   it('two functions with mutual dependence', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -3206,53 +3208,53 @@ describe('Function Tag Tests', function () {
     //wait for window to load
     cy.get('#\\/_text1').should('have.text', 'a');
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
 
       let numberMaximaAnchor = cesc('#' + components["/numbermaxima"].replacements[0].componentName);
       let numberMinimaAnchor = cesc('#' + components["/numberminima"].replacements[0].componentName);
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let components = Object.assign({}, win.state.components);
 
         let f1 = components['/_function1'];
         let f2 = components['/_function2'];
-        expect(f1.stateValues.numberMaxima).eq(1);
-        expect(f1.stateValues.numberMinima).eq(2);
-        expect(f1.stateValues.numberExtrema).eq(3);
-        expect(f2.stateValues.numberMaxima).eq(2);
-        expect(f2.stateValues.numberMinima).eq(1);
-        expect(f2.stateValues.numberExtrema).eq(3);
+        expect(await f1.stateValues.numberMaxima).eq(1);
+        expect(await f1.stateValues.numberMinima).eq(2);
+        expect(await f1.stateValues.numberExtrema).eq(3);
+        expect(await f2.stateValues.numberMaxima).eq(2);
+        expect(await f2.stateValues.numberMinima).eq(1);
+        expect(await f2.stateValues.numberExtrema).eq(3);
 
-        expect(f1.stateValues.maximumLocations).eq(2);
-        expect(f1.stateValues.maximumValues).eq(1);
+        expect(await f1.stateValues.maximumLocations).eq(2);
+        expect(await f1.stateValues.maximumValues).eq(1);
 
-        expect(f1.stateValues.xscale).eq(1);
-        expect(f1.stateValues.yscale).eq(5);
-        expect(f2.stateValues.xscale).eq(1);
-        expect(f2.stateValues.yscale).eq(5);
+        expect(await f1.stateValues.xscale).eq(1);
+        expect(await f1.stateValues.yscale).eq(5);
+        expect(await f2.stateValues.xscale).eq(1);
+        expect(await f2.stateValues.yscale).eq(5);
 
       });
 
       cy.get(numberMaximaAnchor).should('have.text', '2')
       cy.get(numberMinimaAnchor).should('have.text', '1')
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let components = Object.assign({}, win.state.components);
 
-        components['/_point1'].movePoint({ x: 2, y: 6 })
+        await components['/_point1'].movePoint({ x: 2, y: 6 })
 
         let f1 = components['/_function1'];
         let f2 = components['/_function2'];
-        expect(f1.stateValues.numberMaxima).eq(1);
-        expect(f1.stateValues.numberMinima).eq(2);
-        expect(f1.stateValues.numberExtrema).eq(3);
-        expect(f2.stateValues.numberMaxima).eq(1);
-        expect(f2.stateValues.numberMinima).eq(0);
-        expect(f2.stateValues.numberExtrema).eq(1);
+        expect(await f1.stateValues.numberMaxima).eq(1);
+        expect(await f1.stateValues.numberMinima).eq(2);
+        expect(await f1.stateValues.numberExtrema).eq(3);
+        expect(await f2.stateValues.numberMaxima).eq(1);
+        expect(await f2.stateValues.numberMinima).eq(0);
+        expect(await f2.stateValues.numberExtrema).eq(1);
 
-        expect(f1.stateValues.maximumLocations).eq(1);
-        expect(f1.stateValues.maximumValues).eq(0);
+        expect(await f1.stateValues.maximumLocations).eq(1);
+        expect(await f1.stateValues.maximumValues).eq(0);
 
       });
 
@@ -3260,23 +3262,23 @@ describe('Function Tag Tests', function () {
       cy.get(numberMinimaAnchor).should('have.text', '0')
 
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let components = Object.assign({}, win.state.components);
 
-        components['/_point2'].movePoint({ x: 3, y: 7 })
-        components['/_point3'].movePoint({ x: 9, y: 0 })
+        await components['/_point2'].movePoint({ x: 3, y: 7 })
+        await components['/_point3'].movePoint({ x: 9, y: 0 })
 
         let f1 = components['/_function1'];
         let f2 = components['/_function2'];
-        expect(f1.stateValues.numberMaxima).eq(1);
-        expect(f1.stateValues.numberMinima).eq(2);
-        expect(f1.stateValues.numberExtrema).eq(3);
-        expect(f2.stateValues.numberMaxima).eq(2);
-        expect(f2.stateValues.numberMinima).eq(2);
-        expect(f2.stateValues.numberExtrema).eq(4);
+        expect(await f1.stateValues.numberMaxima).eq(1);
+        expect(await f1.stateValues.numberMinima).eq(2);
+        expect(await f1.stateValues.numberExtrema).eq(3);
+        expect(await f2.stateValues.numberMaxima).eq(2);
+        expect(await f2.stateValues.numberMinima).eq(2);
+        expect(await f2.stateValues.numberExtrema).eq(4);
 
-        expect(f1.stateValues.maximumLocations).eq(2);
-        expect(f1.stateValues.maximumValues).eq(2);
+        expect(await f1.stateValues.maximumLocations).eq(2);
+        expect(await f1.stateValues.maximumValues).eq(2);
 
       });
 
@@ -3289,7 +3291,7 @@ describe('Function Tag Tests', function () {
   });
 
   it('shadowed works correctly with initially unresolved', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -3319,10 +3321,10 @@ describe('Function Tag Tests', function () {
     cy.get('#\\/_p1').should('have.text', '1')
     cy.get('#\\/_p2').should('have.text', '1')
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
 
-      expect(components["/_function1"].stateValues.fs[0](-2)).eq(2 * (-2) ** 3 + 1)
+      expect((await components["/_function1"].stateValues.fs)[0](-2)).eq(2 * (-2) ** 3 + 1)
     });
 
 
@@ -3332,16 +3334,16 @@ describe('Function Tag Tests', function () {
     cy.get('#\\/_p1').should('have.text', '3')
     cy.get('#\\/_p2').should('have.text', '3')
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
 
-      expect(components["/_function1"].stateValues.fs[0](-2)).eq(4 * (-2) ** 3 + 1)
+      expect((await components["/_function1"].stateValues.fs)[0](-2)).eq(4 * (-2) ** 3 + 1)
     });
 
   });
 
   it('extrema of quartic, copied multiple times', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -3369,7 +3371,7 @@ describe('Function Tag Tests', function () {
     //wait for window to load
     cy.get('#\\/_text1').should('have.text', 'a');
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
 
       expect(components["/maxima"].replacements.length).eq(1);
@@ -3394,7 +3396,7 @@ describe('Function Tag Tests', function () {
 
     cy.get("#\\/_mathinput2 textarea").type('{end}{backspace}2{enter}', { force: true });
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
 
       expect(components["/maxima"].replacements.length).eq(1)
@@ -3421,7 +3423,7 @@ describe('Function Tag Tests', function () {
 
     cy.get("#\\/_mathinput1 textarea").type('{end}{backspace}-1{enter}', { force: true });
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
 
       expect(components["/maxima"].replacements.length).eq(1);
@@ -3441,7 +3443,7 @@ describe('Function Tag Tests', function () {
   });
 
   it('function of function can redefine variable', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -3476,7 +3478,7 @@ describe('Function Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');
 
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
 
       let variable1Anchor = cesc('#' + components["/fv"].replacements[0].componentName);
@@ -3523,28 +3525,28 @@ describe('Function Tag Tests', function () {
         expect(text.trim()).equal('ut3')
       })
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
 
-        expect(components["/f"].stateValues.variables[0].tree).eq('t');
-        expect(components["/f2"].stateValues.variables[0].tree).eq('t');
-        expect(components["/f3"].stateValues.variables[0].tree).eq('s');
-        expect(components["/f4"].replacements[0].stateValues.variables[0].tree).eq('t');
-        expect(components["/f5"].replacements[0].stateValues.variables[0].tree).eq('t');
-        expect(components["/f6"].replacements[0].stateValues.variables[0].tree).eq('s');
+        expect((await components["/f"].stateValues.variables)[0].tree).eq('t');
+        expect((await components["/f2"].stateValues.variables)[0].tree).eq('t');
+        expect((await components["/f3"].stateValues.variables)[0].tree).eq('s');
+        expect((await components["/f4"].replacements[0].stateValues.variables)[0].tree).eq('t');
+        expect((await components["/f5"].replacements[0].stateValues.variables)[0].tree).eq('t');
+        expect((await components["/f6"].replacements[0].stateValues.variables)[0].tree).eq('s');
 
-        expect(components["/f"].stateValues.formula.tree).eqls(["*", "s", ["^", "t", 3]]);
-        expect(components["/f2"].stateValues.formula.tree).eqls(["*", "s", ["^", "t", 3]]);
-        expect(components["/f3"].stateValues.formula.tree).eqls(["*", "s", ["^", "t", 3]]);
-        expect(components["/f4"].replacements[0].stateValues.formula.tree).eqls(["*", "s", ["^", "t", 3]]);
-        expect(components["/f5"].replacements[0].stateValues.formula.tree).eqls(["*", "s", ["^", "t", 3]]);
-        expect(components["/f6"].replacements[0].stateValues.formula.tree).eqls(["*", "s", ["^", "t", 3]]);
+        expect((await components["/f"].stateValues.formula).tree).eqls(["*", "s", ["^", "t", 3]]);
+        expect((await components["/f2"].stateValues.formula).tree).eqls(["*", "s", ["^", "t", 3]]);
+        expect((await components["/f3"].stateValues.formula).tree).eqls(["*", "s", ["^", "t", 3]]);
+        expect((await components["/f4"].replacements[0].stateValues.formula).tree).eqls(["*", "s", ["^", "t", 3]]);
+        expect((await components["/f5"].replacements[0].stateValues.formula).tree).eqls(["*", "s", ["^", "t", 3]]);
+        expect((await components["/f6"].replacements[0].stateValues.formula).tree).eqls(["*", "s", ["^", "t", 3]]);
 
-        expect(components["/fOfu"].activeChildren[0].stateValues.value.tree).eqls(["*", "s", ["^", "u", 3]]);
-        expect(components["/f2Ofu"].activeChildren[0].stateValues.value.tree).eqls(["*", "s", ["^", "u", 3]]);
-        expect(components["/f3Ofu"].activeChildren[0].stateValues.value.tree).eqls(["*", "u", ["^", "t", 3]]);
-        expect(components["/f4Ofu"].activeChildren[0].stateValues.value.tree).eqls(["*", "s", ["^", "u", 3]]);
-        expect(components["/f5Ofu"].activeChildren[0].stateValues.value.tree).eqls(["*", "s", ["^", "u", 3]]);
-        expect(components["/f6Ofu"].activeChildren[0].stateValues.value.tree).eqls(["*", "u", ["^", "t", 3]]);
+        expect((await components["/fOfu"].activeChildren[0].stateValues.value).tree).eqls(["*", "s", ["^", "u", 3]]);
+        expect((await components["/f2Ofu"].activeChildren[0].stateValues.value).tree).eqls(["*", "s", ["^", "u", 3]]);
+        expect((await components["/f3Ofu"].activeChildren[0].stateValues.value).tree).eqls(["*", "u", ["^", "t", 3]]);
+        expect((await components["/f4Ofu"].activeChildren[0].stateValues.value).tree).eqls(["*", "s", ["^", "u", 3]]);
+        expect((await components["/f5Ofu"].activeChildren[0].stateValues.value).tree).eqls(["*", "s", ["^", "u", 3]]);
+        expect((await components["/f6Ofu"].activeChildren[0].stateValues.value).tree).eqls(["*", "u", ["^", "t", 3]]);
 
       })
     });
@@ -3552,7 +3554,7 @@ describe('Function Tag Tests', function () {
   });
 
   it('function of interpolated function can redefine variable without changing function', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -3599,7 +3601,7 @@ describe('Function Tag Tests', function () {
     //wait for window to load
     cy.get('#\\/_text1').should('have.text', 'a');
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
 
       let variable1Anchor = cesc('#' + components["/fv"].replacements[0].componentName);
@@ -3688,7 +3690,7 @@ describe('Function Tag Tests', function () {
 
 
   it('extrema not resolved if not requested', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -3706,7 +3708,7 @@ describe('Function Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');
 
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
 
       expect(components["/f"].state.formula.isResolved).eq(true);
@@ -3791,7 +3793,7 @@ describe('Function Tag Tests', function () {
   });
 
   it('function determined by formula, specify 1 input', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -3804,13 +3806,13 @@ describe('Function Tag Tests', function () {
     //wait for window to load
     cy.get('#\\/_text1').should('have.text', 'a');
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_function1'].stateValues.nInputs).eq(1);
+      expect(await components['/_function1'].stateValues.nInputs).eq(1);
 
-      let f = components['/_function1'].stateValues.fs[0];
-      let numericalf = components['/_function1'].stateValues.numericalfs[0];
-      let symbolicf = components['/_function1'].stateValues.symbolicfs[0];
+      let f = (await components['/_function1'].stateValues.fs)[0];
+      let numericalf = (await components['/_function1'].stateValues.numericalfs)[0];
+      let symbolicf = (await components['/_function1'].stateValues.symbolicfs)[0];
 
       expect(f(-5)).closeTo(3 / (1 + Math.exp(5 / 2)), 1E-12);
       expect(f(1)).closeTo(3 / (1 + Math.exp(-1 / 2)), 1E-12);
@@ -3824,7 +3826,7 @@ describe('Function Tag Tests', function () {
   });
 
   it('function of two variables determined by formula', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -3835,13 +3837,13 @@ describe('Function Tag Tests', function () {
     //wait for window to load
     cy.get('#\\/_text1').should('have.text', 'a');
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_function1'].stateValues.nInputs).eq(2);
+      expect(await components['/_function1'].stateValues.nInputs).eq(2);
 
-      let f = components['/_function1'].stateValues.fs[0];
-      let numericalf = components['/_function1'].stateValues.numericalfs[0];
-      let symbolicf = components['/_function1'].stateValues.symbolicfs[0];
+      let f = (await components['/_function1'].stateValues.fs)[0];
+      let numericalf = (await components['/_function1'].stateValues.numericalfs)[0];
+      let symbolicf = (await components['/_function1'].stateValues.symbolicfs)[0];
 
       expect(f(-5, 7)).closeTo(3 / (7 + Math.exp(5 / 2)), 1E-12);
       expect(f(1, 4)).closeTo(3 / (4 + Math.exp(-1 / 2)), 1E-12);
@@ -3855,7 +3857,7 @@ describe('Function Tag Tests', function () {
   });
 
   it('function of two variables determined by formula, specify variables', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -3866,13 +3868,13 @@ describe('Function Tag Tests', function () {
     //wait for window to load
     cy.get('#\\/_text1').should('have.text', 'a');
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_function1'].stateValues.nInputs).eq(2);
+      expect(await components['/_function1'].stateValues.nInputs).eq(2);
 
-      let f = components['/_function1'].stateValues.fs[0];
-      let numericalf = components['/_function1'].stateValues.numericalfs[0];
-      let symbolicf = components['/_function1'].stateValues.symbolicfs[0];
+      let f = (await components['/_function1'].stateValues.fs)[0];
+      let numericalf = (await components['/_function1'].stateValues.numericalfs)[0];
+      let symbolicf = (await components['/_function1'].stateValues.symbolicfs)[0];
 
       expect(f(-5, 7)).closeTo(3 / (7 + Math.exp(5 / 2)), 1E-12);
       expect(f(1, 4)).closeTo(3 / (4 + Math.exp(-1 / 2)), 1E-12);
@@ -3886,7 +3888,7 @@ describe('Function Tag Tests', function () {
   });
 
   it('function of two variables determined by formula, specify variables, no nInputs specified', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -3897,13 +3899,13 @@ describe('Function Tag Tests', function () {
     //wait for window to load
     cy.get('#\\/_text1').should('have.text', 'a');
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_function1'].stateValues.nInputs).eq(2);
+      expect(await components['/_function1'].stateValues.nInputs).eq(2);
 
-      let f = components['/_function1'].stateValues.fs[0];
-      let numericalf = components['/_function1'].stateValues.numericalfs[0];
-      let symbolicf = components['/_function1'].stateValues.symbolicfs[0];
+      let f = (await components['/_function1'].stateValues.fs)[0];
+      let numericalf = (await components['/_function1'].stateValues.numericalfs)[0];
+      let symbolicf = (await components['/_function1'].stateValues.symbolicfs)[0];
 
       expect(f(-5, 7)).closeTo(3 / (7 + Math.exp(5 / 2)), 1E-12);
       expect(f(1, 4)).closeTo(3 / (4 + Math.exp(-1 / 2)), 1E-12);
@@ -3917,7 +3919,7 @@ describe('Function Tag Tests', function () {
   });
 
   it('function of three variables determined by formula', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -3928,13 +3930,13 @@ describe('Function Tag Tests', function () {
     //wait for window to load
     cy.get('#\\/_text1').should('have.text', 'a');
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_function1'].stateValues.nInputs).eq(3);
+      expect(await components['/_function1'].stateValues.nInputs).eq(3);
 
-      let f = components['/_function1'].stateValues.fs[0];
-      let numericalf = components['/_function1'].stateValues.numericalfs[0];
-      let symbolicf = components['/_function1'].stateValues.symbolicfs[0];
+      let f = (await components['/_function1'].stateValues.fs)[0];
+      let numericalf = (await components['/_function1'].stateValues.numericalfs)[0];
+      let symbolicf = (await components['/_function1'].stateValues.symbolicfs)[0];
 
       expect(f(-5, 7, -2)).closeTo(-2 / (7 + Math.exp(5 / 2)), 1E-12);
       expect(f(1, 4, -9)).closeTo(-9 / (4 + Math.exp(-1 / 2)), 1E-12);
@@ -3948,7 +3950,7 @@ describe('Function Tag Tests', function () {
   });
 
   it('function of three variables determined by formula, specify variables', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -3959,13 +3961,13 @@ describe('Function Tag Tests', function () {
     //wait for window to load
     cy.get('#\\/_text1').should('have.text', 'a');
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_function1'].stateValues.nInputs).eq(3);
+      expect(await components['/_function1'].stateValues.nInputs).eq(3);
 
-      let f = components['/_function1'].stateValues.fs[0];
-      let numericalf = components['/_function1'].stateValues.numericalfs[0];
-      let symbolicf = components['/_function1'].stateValues.symbolicfs[0];
+      let f = (await components['/_function1'].stateValues.fs)[0];
+      let numericalf = (await components['/_function1'].stateValues.numericalfs)[0];
+      let symbolicf = (await components['/_function1'].stateValues.symbolicfs)[0];
 
       expect(f(-5, 7, -2)).closeTo(-2 / (7 + Math.exp(5 / 2)), 1E-12);
       expect(f(1, 4, -9)).closeTo(-9 / (4 + Math.exp(-1 / 2)), 1E-12);
@@ -3979,7 +3981,7 @@ describe('Function Tag Tests', function () {
   });
 
   it('function of four variables determined by formula', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -3990,13 +3992,13 @@ describe('Function Tag Tests', function () {
     //wait for window to load
     cy.get('#\\/_text1').should('have.text', 'a');
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_function1'].stateValues.nInputs).eq(4);
+      expect(await components['/_function1'].stateValues.nInputs).eq(4);
 
-      let f = components['/_function1'].stateValues.fs[0];
-      let numericalf = components['/_function1'].stateValues.numericalfs[0];
-      let symbolicf = components['/_function1'].stateValues.symbolicfs[0];
+      let f = (await components['/_function1'].stateValues.fs)[0];
+      let numericalf = (await components['/_function1'].stateValues.numericalfs)[0];
+      let symbolicf = (await components['/_function1'].stateValues.symbolicfs)[0];
 
       expect(f(-5, 7, -2, 6)).closeTo(-2 / (7 + Math.exp(5 / 2)) + 6, 1E-12);
       expect(f(1, 4, -9, -8)).closeTo(-9 / (4 + Math.exp(-1 / 2)) - 8, 1E-12);
@@ -4010,7 +4012,7 @@ describe('Function Tag Tests', function () {
   });
 
   it('function of four variables determined by formula, specify some variables', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -4021,13 +4023,13 @@ describe('Function Tag Tests', function () {
     //wait for window to load
     cy.get('#\\/_text1').should('have.text', 'a');
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_function1'].stateValues.nInputs).eq(4);
+      expect(await components['/_function1'].stateValues.nInputs).eq(4);
 
-      let f = components['/_function1'].stateValues.fs[0];
-      let numericalf = components['/_function1'].stateValues.numericalfs[0];
-      let symbolicf = components['/_function1'].stateValues.symbolicfs[0];
+      let f = (await components['/_function1'].stateValues.fs)[0];
+      let numericalf = (await components['/_function1'].stateValues.numericalfs)[0];
+      let symbolicf = (await components['/_function1'].stateValues.symbolicfs)[0];
 
       expect(f(-5, 7, -2, 6)).closeTo(-2 / (7 + Math.exp(5 / 2)) + 6, 1E-12);
       expect(f(1, 4, -9, -8)).closeTo(-9 / (4 + Math.exp(-1 / 2)) - 8, 1E-12);
@@ -4041,7 +4043,7 @@ describe('Function Tag Tests', function () {
   });
 
   it('2D vector-valued function of a single variable', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -4052,17 +4054,17 @@ describe('Function Tag Tests', function () {
     //wait for window to load
     cy.get('#\\/_text1').should('have.text', 'a');
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_function1'].stateValues.nInputs).eq(1);
-      expect(components['/_function1'].stateValues.nOutputs).eq(2);
+      expect(await components['/_function1'].stateValues.nInputs).eq(1);
+      expect(await components['/_function1'].stateValues.nOutputs).eq(2);
 
-      let f1 = components['/_function1'].stateValues.fs[0];
-      let f2 = components['/_function1'].stateValues.fs[1];
-      let numericalf1 = components['/_function1'].stateValues.numericalfs[0];
-      let numericalf2 = components['/_function1'].stateValues.numericalfs[1];
-      let symbolicf1 = components['/_function1'].stateValues.symbolicfs[0];
-      let symbolicf2 = components['/_function1'].stateValues.symbolicfs[1];
+      let f1 = (await components['/_function1'].stateValues.fs)[0];
+      let f2 = (await components['/_function1'].stateValues.fs)[1];
+      let numericalf1 = (await components['/_function1'].stateValues.numericalfs)[0];
+      let numericalf2 = (await components['/_function1'].stateValues.numericalfs)[1];
+      let symbolicf1 = (await components['/_function1'].stateValues.symbolicfs)[0];
+      let symbolicf2 = (await components['/_function1'].stateValues.symbolicfs)[1];
 
       expect(f1(-5)).closeTo(25, 1E-12);
       expect(f2(-5)).closeTo(-125, 1E-12);
@@ -4084,7 +4086,7 @@ describe('Function Tag Tests', function () {
   })
 
   it('2D vector-valued function of a single variable, specify variable', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -4095,17 +4097,17 @@ describe('Function Tag Tests', function () {
     //wait for window to load
     cy.get('#\\/_text1').should('have.text', 'a');
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_function1'].stateValues.nInputs).eq(1);
-      expect(components['/_function1'].stateValues.nOutputs).eq(2);
+      expect(await components['/_function1'].stateValues.nInputs).eq(1);
+      expect(await components['/_function1'].stateValues.nOutputs).eq(2);
 
-      let f1 = components['/_function1'].stateValues.fs[0];
-      let f2 = components['/_function1'].stateValues.fs[1];
-      let numericalf1 = components['/_function1'].stateValues.numericalfs[0];
-      let numericalf2 = components['/_function1'].stateValues.numericalfs[1];
-      let symbolicf1 = components['/_function1'].stateValues.symbolicfs[0];
-      let symbolicf2 = components['/_function1'].stateValues.symbolicfs[1];
+      let f1 = (await components['/_function1'].stateValues.fs)[0];
+      let f2 = (await components['/_function1'].stateValues.fs)[1];
+      let numericalf1 = (await components['/_function1'].stateValues.numericalfs)[0];
+      let numericalf2 = (await components['/_function1'].stateValues.numericalfs)[1];
+      let symbolicf1 = (await components['/_function1'].stateValues.symbolicfs)[0];
+      let symbolicf2 = (await components['/_function1'].stateValues.symbolicfs)[1];
 
       expect(f1(-5)).closeTo(25, 1E-12);
       expect(f2(-5)).closeTo(-125, 1E-12);
@@ -4127,7 +4129,7 @@ describe('Function Tag Tests', function () {
   })
 
   it('2D vector-valued function of a single variable, specify nOutputs', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -4138,17 +4140,17 @@ describe('Function Tag Tests', function () {
     //wait for window to load
     cy.get('#\\/_text1').should('have.text', 'a');
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_function1'].stateValues.nInputs).eq(1);
-      expect(components['/_function1'].stateValues.nOutputs).eq(2);
+      expect(await components['/_function1'].stateValues.nInputs).eq(1);
+      expect(await components['/_function1'].stateValues.nOutputs).eq(2);
 
-      let f1 = components['/_function1'].stateValues.fs[0];
-      let f2 = components['/_function1'].stateValues.fs[1];
-      let numericalf1 = components['/_function1'].stateValues.numericalfs[0];
-      let numericalf2 = components['/_function1'].stateValues.numericalfs[1];
-      let symbolicf1 = components['/_function1'].stateValues.symbolicfs[0];
-      let symbolicf2 = components['/_function1'].stateValues.symbolicfs[1];
+      let f1 = (await components['/_function1'].stateValues.fs)[0];
+      let f2 = (await components['/_function1'].stateValues.fs)[1];
+      let numericalf1 = (await components['/_function1'].stateValues.numericalfs)[0];
+      let numericalf2 = (await components['/_function1'].stateValues.numericalfs)[1];
+      let symbolicf1 = (await components['/_function1'].stateValues.symbolicfs)[0];
+      let symbolicf2 = (await components['/_function1'].stateValues.symbolicfs)[1];
 
       expect(f1(-5)).closeTo(25, 1E-12);
       expect(f2(-5)).closeTo(-125, 1E-12);
@@ -4170,7 +4172,7 @@ describe('Function Tag Tests', function () {
   })
 
   it('3D vector-valued function of a single variable', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -4181,20 +4183,20 @@ describe('Function Tag Tests', function () {
     //wait for window to load
     cy.get('#\\/_text1').should('have.text', 'a');
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_function1'].stateValues.nInputs).eq(1);
-      expect(components['/_function1'].stateValues.nOutputs).eq(3);
+      expect(await components['/_function1'].stateValues.nInputs).eq(1);
+      expect(await components['/_function1'].stateValues.nOutputs).eq(3);
 
-      let f1 = components['/_function1'].stateValues.fs[0];
-      let f2 = components['/_function1'].stateValues.fs[1];
-      let f3 = components['/_function1'].stateValues.fs[2];
-      let numericalf1 = components['/_function1'].stateValues.numericalfs[0];
-      let numericalf2 = components['/_function1'].stateValues.numericalfs[1];
-      let numericalf3 = components['/_function1'].stateValues.numericalfs[2];
-      let symbolicf1 = components['/_function1'].stateValues.symbolicfs[0];
-      let symbolicf2 = components['/_function1'].stateValues.symbolicfs[1];
-      let symbolicf3 = components['/_function1'].stateValues.symbolicfs[2];
+      let f1 = (await components['/_function1'].stateValues.fs)[0];
+      let f2 = (await components['/_function1'].stateValues.fs)[1];
+      let f3 = (await components['/_function1'].stateValues.fs)[2];
+      let numericalf1 = (await components['/_function1'].stateValues.numericalfs)[0];
+      let numericalf2 = (await components['/_function1'].stateValues.numericalfs)[1];
+      let numericalf3 = (await components['/_function1'].stateValues.numericalfs)[2];
+      let symbolicf1 = (await components['/_function1'].stateValues.symbolicfs)[0];
+      let symbolicf2 = (await components['/_function1'].stateValues.symbolicfs)[1];
+      let symbolicf3 = (await components['/_function1'].stateValues.symbolicfs)[2];
 
       expect(f1(-5)).closeTo(25, 1E-12);
       expect(f2(-5)).closeTo(-125, 1E-12);
@@ -4223,7 +4225,7 @@ describe('Function Tag Tests', function () {
   })
 
   it('3D vector-valued function of a single variable, specify variable', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -4234,20 +4236,20 @@ describe('Function Tag Tests', function () {
     //wait for window to load
     cy.get('#\\/_text1').should('have.text', 'a');
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_function1'].stateValues.nInputs).eq(1);
-      expect(components['/_function1'].stateValues.nOutputs).eq(3);
+      expect(await components['/_function1'].stateValues.nInputs).eq(1);
+      expect(await components['/_function1'].stateValues.nOutputs).eq(3);
 
-      let f1 = components['/_function1'].stateValues.fs[0];
-      let f2 = components['/_function1'].stateValues.fs[1];
-      let f3 = components['/_function1'].stateValues.fs[2];
-      let numericalf1 = components['/_function1'].stateValues.numericalfs[0];
-      let numericalf2 = components['/_function1'].stateValues.numericalfs[1];
-      let numericalf3 = components['/_function1'].stateValues.numericalfs[2];
-      let symbolicf1 = components['/_function1'].stateValues.symbolicfs[0];
-      let symbolicf2 = components['/_function1'].stateValues.symbolicfs[1];
-      let symbolicf3 = components['/_function1'].stateValues.symbolicfs[2];
+      let f1 = (await components['/_function1'].stateValues.fs)[0];
+      let f2 = (await components['/_function1'].stateValues.fs)[1];
+      let f3 = (await components['/_function1'].stateValues.fs)[2];
+      let numericalf1 = (await components['/_function1'].stateValues.numericalfs)[0];
+      let numericalf2 = (await components['/_function1'].stateValues.numericalfs)[1];
+      let numericalf3 = (await components['/_function1'].stateValues.numericalfs)[2];
+      let symbolicf1 = (await components['/_function1'].stateValues.symbolicfs)[0];
+      let symbolicf2 = (await components['/_function1'].stateValues.symbolicfs)[1];
+      let symbolicf3 = (await components['/_function1'].stateValues.symbolicfs)[2];
 
       expect(f1(-5)).closeTo(25, 1E-12);
       expect(f2(-5)).closeTo(-125, 1E-12);
@@ -4276,7 +4278,7 @@ describe('Function Tag Tests', function () {
   })
 
   it('2D vector-valued function of two variables', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -4287,17 +4289,17 @@ describe('Function Tag Tests', function () {
     //wait for window to load
     cy.get('#\\/_text1').should('have.text', 'a');
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_function1'].stateValues.nInputs).eq(2);
-      expect(components['/_function1'].stateValues.nOutputs).eq(2);
+      expect(await components['/_function1'].stateValues.nInputs).eq(2);
+      expect(await components['/_function1'].stateValues.nOutputs).eq(2);
 
-      let f1 = components['/_function1'].stateValues.fs[0];
-      let f2 = components['/_function1'].stateValues.fs[1];
-      let numericalf1 = components['/_function1'].stateValues.numericalfs[0];
-      let numericalf2 = components['/_function1'].stateValues.numericalfs[1];
-      let symbolicf1 = components['/_function1'].stateValues.symbolicfs[0];
-      let symbolicf2 = components['/_function1'].stateValues.symbolicfs[1];
+      let f1 = (await components['/_function1'].stateValues.fs)[0];
+      let f2 = (await components['/_function1'].stateValues.fs)[1];
+      let numericalf1 = (await components['/_function1'].stateValues.numericalfs)[0];
+      let numericalf2 = (await components['/_function1'].stateValues.numericalfs)[1];
+      let symbolicf1 = (await components['/_function1'].stateValues.symbolicfs)[0];
+      let symbolicf2 = (await components['/_function1'].stateValues.symbolicfs)[1];
 
       expect(f1(-5, 2)).closeTo(200, 1E-12);
       expect(f2(-5, 2)).closeTo(-500, 1E-12);
@@ -4319,7 +4321,7 @@ describe('Function Tag Tests', function () {
   })
 
   it('3D vector-valued function of two variables', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -4330,20 +4332,20 @@ describe('Function Tag Tests', function () {
     //wait for window to load
     cy.get('#\\/_text1').should('have.text', 'a');
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_function1'].stateValues.nInputs).eq(2);
-      expect(components['/_function1'].stateValues.nOutputs).eq(3);
+      expect(await components['/_function1'].stateValues.nInputs).eq(2);
+      expect(await components['/_function1'].stateValues.nOutputs).eq(3);
 
-      let f1 = components['/_function1'].stateValues.fs[0];
-      let f2 = components['/_function1'].stateValues.fs[1];
-      let f3 = components['/_function1'].stateValues.fs[2];
-      let numericalf1 = components['/_function1'].stateValues.numericalfs[0];
-      let numericalf2 = components['/_function1'].stateValues.numericalfs[1];
-      let numericalf3 = components['/_function1'].stateValues.numericalfs[2];
-      let symbolicf1 = components['/_function1'].stateValues.symbolicfs[0];
-      let symbolicf2 = components['/_function1'].stateValues.symbolicfs[1];
-      let symbolicf3 = components['/_function1'].stateValues.symbolicfs[2];
+      let f1 = (await components['/_function1'].stateValues.fs)[0];
+      let f2 = (await components['/_function1'].stateValues.fs)[1];
+      let f3 = (await components['/_function1'].stateValues.fs)[2];
+      let numericalf1 = (await components['/_function1'].stateValues.numericalfs)[0];
+      let numericalf2 = (await components['/_function1'].stateValues.numericalfs)[1];
+      let numericalf3 = (await components['/_function1'].stateValues.numericalfs)[2];
+      let symbolicf1 = (await components['/_function1'].stateValues.symbolicfs)[0];
+      let symbolicf2 = (await components['/_function1'].stateValues.symbolicfs)[1];
+      let symbolicf3 = (await components['/_function1'].stateValues.symbolicfs)[2];
 
       expect(f1(-5, 2)).closeTo(200, 1E-12);
       expect(f2(-5, 2)).closeTo(-500, 1E-12);

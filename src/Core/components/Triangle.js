@@ -81,7 +81,7 @@ export default class Triangle extends Polygon {
 
     }
 
-    stateVariableDefinitions.vertices.inverseArrayDefinitionByKey = function ({
+    stateVariableDefinitions.vertices.inverseArrayDefinitionByKey = async function ({
       desiredStateVariableValues,
       dependencyValuesByKey, dependencyNamesByKey,
       initialChange, stateValues,
@@ -94,7 +94,7 @@ export default class Triangle extends Polygon {
 
 
       // if not draggable, then disallow initial change 
-      if (initialChange && !stateValues.draggable) {
+      if (initialChange && !await stateValues.draggable) {
         return { success: false };
       }
 

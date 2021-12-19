@@ -184,10 +184,10 @@ export default class SelectFromSequence extends Sequence {
     return stateVariableDefinitions;
   }
 
-  static createSerializedReplacements({ component, componentInfoObjects }) {
+  static async createSerializedReplacements({ component, componentInfoObjects }) {
 
-    let componentType = component.stateValues.type;
-    if (component.stateValues.type === "letters") {
+    let componentType = await component.stateValues.type;
+    if (componentType === "letters") {
       componentType = "text"
     }
 
@@ -208,7 +208,7 @@ export default class SelectFromSequence extends Sequence {
 
     let replacements = [];
 
-    for (let value of component.stateValues.selectedValues) {
+    for (let value of await component.stateValues.selectedValues) {
 
       replacements.push({
         componentType,

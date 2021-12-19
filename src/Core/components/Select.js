@@ -494,20 +494,21 @@ export default class Select extends CompositeComponent {
   }
 
 
-  static createSerializedReplacements({ component, components, componentInfoObjects }) {
+  static async createSerializedReplacements({ component, components, componentInfoObjects }) {
 
     // console.log(`create serialized replacements for ${component.componentName}`);
 
     let replacements = [];
 
-    for (let selectedIndex of component.stateValues.selectedIndices) {
+    let optionChildren = await component.stateValues.optionChildren;
 
+    for (let selectedIndex of await component.stateValues.selectedIndices) {
 
-      let selectedChildName = component.stateValues.optionChildren[selectedIndex - 1].componentName;
+      let selectedChildName = optionChildren[selectedIndex - 1].componentName;
 
       let selectedChild = components[selectedChildName];
 
-      let serializedGrandchildren = deepClone(selectedChild.stateValues.serializedChildren);
+      let serializedGrandchildren = deepClone(await selectedChild.stateValues.serializedChildren);
       let serializedChild = {
         componentType: "option",
         state: { rendered: true },
@@ -550,7 +551,7 @@ export default class Select extends CompositeComponent {
 
     let assignNames = component.doenetAttributes.assignNames;
 
-    if (assignNames && component.stateValues.skipOptionsInAssignNames) {
+    if (assignNames && await component.stateValues.skipOptionsInAssignNames) {
       assignNames = assignNames.map(x => [x])
     }
 

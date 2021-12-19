@@ -17,7 +17,7 @@ describe('Point Tag Tests', function () {
 
 
   it('point sugar a copy', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -32,20 +32,20 @@ describe('Point Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
 
     cy.log('move point P to (-1,-7)')
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components['/_point1'].movePoint({ x: -1, y: -7 });
-      expect(components['/_point1'].stateValues.xs[0].tree).eq(-1)
-      expect(components['/_point1'].stateValues.xs[1].tree).eq(-7)
-      expect(components['/_point1'].stateValues.coords.tree).eqls(['vector', -1, -7])
-      expect(components['/_point2'].stateValues.xs[0].tree).eq(1)
-      expect(components['/_point2'].stateValues.xs[1].tree).eq(-7)
-      expect(components['/_point2'].stateValues.coords.tree).eqls(['vector', 1, -7])
+      await components['/_point1'].movePoint({ x: -1, y: -7 });
+      expect((await components['/_point1'].stateValues.xs)[0].tree).eq(-1)
+      expect((await components['/_point1'].stateValues.xs)[1].tree).eq(-7)
+      expect((await components['/_point1'].stateValues.coords).tree).eqls(['vector', -1, -7])
+      expect((await components['/_point2'].stateValues.xs)[0].tree).eq(1)
+      expect((await components['/_point2'].stateValues.xs)[1].tree).eq(-7)
+      expect((await components['/_point2'].stateValues.coords).tree).eqls(['vector', 1, -7])
     })
   });
 
   it('coords use a copy', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -60,35 +60,35 @@ describe('Point Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
 
     cy.log('move point P to (-1,-7)')
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components['/_point1'].movePoint({ x: -1, y: -7 });
-      expect(components['/_point1'].stateValues.xs[0].tree).eq(-1)
-      expect(components['/_point1'].stateValues.xs[1].tree).eq(-7)
-      expect(components['/_point1'].stateValues.coords.tree).eqls(['vector', -1, -7])
-      expect(components['/_point2'].stateValues.xs[0].tree).eq(1)
-      expect(components['/_point2'].stateValues.xs[1].tree).eq(-7)
-      expect(components['/_point2'].stateValues.coords.tree).eqls(['vector', 1, -7])
+      await components['/_point1'].movePoint({ x: -1, y: -7 });
+      expect((await components['/_point1'].stateValues.xs)[0].tree).eq(-1)
+      expect((await components['/_point1'].stateValues.xs)[1].tree).eq(-7)
+      expect((await components['/_point1'].stateValues.coords).tree).eqls(['vector', -1, -7])
+      expect((await components['/_point2'].stateValues.xs)[0].tree).eq(1)
+      expect((await components['/_point2'].stateValues.xs)[1].tree).eq(-7)
+      expect((await components['/_point2'].stateValues.coords).tree).eqls(['vector', 1, -7])
 
 
     })
 
     cy.log(`move point P to (4,6)`)
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components['/_point2'].movePoint({ x: 4, y: 6 });
-      expect(components['/_point1'].stateValues.xs[0].tree).eq(-1)
-      expect(components['/_point1'].stateValues.xs[1].tree).eq(6)
-      expect(components['/_point1'].stateValues.coords.tree).eqls(['vector', -1, 6])
-      expect(components['/_point2'].stateValues.xs[0].tree).eq(4)
-      expect(components['/_point2'].stateValues.xs[1].tree).eq(6)
-      expect(components['/_point2'].stateValues.coords.tree).eqls(['vector', 4, 6])
+      await components['/_point2'].movePoint({ x: 4, y: 6 });
+      expect((await components['/_point1'].stateValues.xs)[0].tree).eq(-1)
+      expect((await components['/_point1'].stateValues.xs)[1].tree).eq(6)
+      expect((await components['/_point1'].stateValues.coords).tree).eqls(['vector', -1, 6])
+      expect((await components['/_point2'].stateValues.xs)[0].tree).eq(4)
+      expect((await components['/_point2'].stateValues.xs)[1].tree).eq(6)
+      expect((await components['/_point2'].stateValues.coords).tree).eqls(['vector', 4, 6])
 
     })
   })
 
   it('label use a copy', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -107,7 +107,7 @@ describe('Point Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
 
     cy.log(`Labels are P and P'`)
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/_point1'].stateValues.label).eq('P')
       expect(components['/_point2'].stateValues.label).eq(`P'`)
@@ -117,7 +117,7 @@ describe('Point Tag Tests', function () {
   })
 
   it('point sugar from single macro', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -134,80 +134,80 @@ describe('Point Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
 
     cy.log('initially undefined')
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/P'].stateValues.xs.map(x => x.tree)).eqls(['\uff3f'])
-      expect(components['/P'].stateValues.coords.tree).eqls('\uff3f')
-      expect(components['/Q'].stateValues.xs.map(x => x.tree)).eqls(['\uff3f'])
-      expect(components['/Q'].stateValues.coords.tree).eqls('\uff3f')
+      expect((await components['/P'].stateValues.xs).map(x => x.tree)).eqls(['\uff3f'])
+      expect((await components['/P'].stateValues.coords).tree).eqls('\uff3f')
+      expect((await components['/Q'].stateValues.xs).map(x => x.tree)).eqls(['\uff3f'])
+      expect((await components['/Q'].stateValues.coords).tree).eqls('\uff3f')
     })
 
     cy.log('create 2D point')
     cy.get('#\\/coords textarea').type("(-1,-7){enter}", { force: true })
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/P'].stateValues.xs.map(x => x.tree)).eqls([-1, -7])
-      expect(components['/P'].stateValues.coords.tree).eqls(["vector", -1, -7])
-      expect(components['/Q'].stateValues.xs.map(x => x.tree)).eqls([-1, -7])
-      expect(components['/Q'].stateValues.coords.tree).eqls(["vector", -1, -7])
+      expect((await components['/P'].stateValues.xs).map(x => x.tree)).eqls([-1, -7])
+      expect((await components['/P'].stateValues.coords).tree).eqls(["vector", -1, -7])
+      expect((await components['/Q'].stateValues.xs).map(x => x.tree)).eqls([-1, -7])
+      expect((await components['/Q'].stateValues.coords).tree).eqls(["vector", -1, -7])
     })
 
     cy.log('move point P to (3,5)')
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components['/P'].movePoint({ x: 3, y: 5 });
-      expect(components['/P'].stateValues.xs.map(x => x.tree)).eqls([3, 5])
-      expect(components['/P'].stateValues.coords.tree).eqls(["vector", 3, 5])
-      expect(components['/Q'].stateValues.xs.map(x => x.tree)).eqls([3, 5])
-      expect(components['/Q'].stateValues.coords.tree).eqls(["vector", 3, 5])
+      await components['/P'].movePoint({ x: 3, y: 5 });
+      expect((await components['/P'].stateValues.xs).map(x => x.tree)).eqls([3, 5])
+      expect((await components['/P'].stateValues.coords).tree).eqls(["vector", 3, 5])
+      expect((await components['/Q'].stateValues.xs).map(x => x.tree)).eqls([3, 5])
+      expect((await components['/Q'].stateValues.coords).tree).eqls(["vector", 3, 5])
     })
 
     cy.log('move point Q to (9,1)')
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components['/Q'].movePoint({ x: 9, y: 1 });
-      expect(components['/P'].stateValues.xs.map(x => x.tree)).eqls([9, 1])
-      expect(components['/P'].stateValues.coords.tree).eqls(["vector", 9, 1])
-      expect(components['/Q'].stateValues.xs.map(x => x.tree)).eqls([9, 1])
-      expect(components['/Q'].stateValues.coords.tree).eqls(["vector", 9, 1])
+      await components['/Q'].movePoint({ x: 9, y: 1 });
+      expect((await components['/P'].stateValues.xs).map(x => x.tree)).eqls([9, 1])
+      expect((await components['/P'].stateValues.coords).tree).eqls(["vector", 9, 1])
+      expect((await components['/Q'].stateValues.xs).map(x => x.tree)).eqls([9, 1])
+      expect((await components['/Q'].stateValues.coords).tree).eqls(["vector", 9, 1])
     })
 
     cy.log('make point undefined again')
     cy.get('#\\/coords textarea').type("{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{enter}", { force: true })
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/P'].stateValues.xs.map(x => x.tree)).eqls(['\uff3f'])
-      expect(components['/P'].stateValues.coords.tree).eqls('\uff3f')
-      expect(components['/Q'].stateValues.xs.map(x => x.tree)).eqls(['\uff3f'])
-      expect(components['/Q'].stateValues.coords.tree).eqls('\uff3f')
+      expect((await components['/P'].stateValues.xs).map(x => x.tree)).eqls(['\uff3f'])
+      expect((await components['/P'].stateValues.coords).tree).eqls('\uff3f')
+      expect((await components['/Q'].stateValues.xs).map(x => x.tree)).eqls(['\uff3f'])
+      expect((await components['/Q'].stateValues.coords).tree).eqls('\uff3f')
     })
 
 
     cy.log('create 1D point')
     cy.get('#\\/coords textarea').type("-3{enter}", { force: true })
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/P'].stateValues.xs.map(x => x.tree)).eqls([-3])
-      expect(components['/P'].stateValues.coords.tree).eqls(-3)
-      expect(components['/Q'].stateValues.xs.map(x => x.tree)).eqls([-3])
-      expect(components['/Q'].stateValues.coords.tree).eqls(-3)
+      expect((await components['/P'].stateValues.xs).map(x => x.tree)).eqls([-3])
+      expect((await components['/P'].stateValues.coords).tree).eqls(-3)
+      expect((await components['/Q'].stateValues.xs).map(x => x.tree)).eqls([-3])
+      expect((await components['/Q'].stateValues.coords).tree).eqls(-3)
     })
 
 
     cy.log('create 3D point')
     cy.get('#\\/coords textarea').type("{end}{backspace}{backspace}(6,5,4){enter}", { force: true })
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/P'].stateValues.xs.map(x => x.tree)).eqls([6, 5, 4])
-      expect(components['/P'].stateValues.coords.tree).eqls(["vector", 6, 5, 4])
-      expect(components['/Q'].stateValues.xs.map(x => x.tree)).eqls([6, 5, 4])
-      expect(components['/Q'].stateValues.coords.tree).eqls(["vector", 6, 5, 4])
+      expect((await components['/P'].stateValues.xs).map(x => x.tree)).eqls([6, 5, 4])
+      expect((await components['/P'].stateValues.coords).tree).eqls(["vector", 6, 5, 4])
+      expect((await components['/Q'].stateValues.xs).map(x => x.tree)).eqls([6, 5, 4])
+      expect((await components['/Q'].stateValues.coords).tree).eqls(["vector", 6, 5, 4])
     })
 
   });
 
   it('test invertible due to modifyIndirectly', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -224,20 +224,20 @@ describe('Point Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
 
     cy.log(`we can move point`)
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components['/_point1'].movePoint({ x: 7, y: -5 });
-      expect(components['/_point1'].stateValues.xs[0].tree).closeTo(7, 1E-12)
-      expect(components['/_point1'].stateValues.xs[1].tree).closeTo(-5, 1E-12)
-      expect(components['/_math1'].stateValues.value.evaluate_to_constant()).closeTo(7 / 1.5, 1E-12)
-      expect(components['/_math2'].stateValues.value.tree).closeTo(3, 1E-12)
-      expect(components['/y'].stateValues.value.tree).closeTo(-5, 1E-12)
+      await components['/_point1'].movePoint({ x: 7, y: -5 });
+      expect((await components['/_point1'].stateValues.xs)[0].tree).closeTo(7, 1E-12)
+      expect((await components['/_point1'].stateValues.xs)[1].tree).closeTo(-5, 1E-12)
+      expect((await components['/_math1'].stateValues.value).evaluate_to_constant()).closeTo(7 / 1.5, 1E-12)
+      expect((await components['/_math2'].stateValues.value).tree).closeTo(3, 1E-12)
+      expect((await components['/y'].stateValues.value).tree).closeTo(-5, 1E-12)
     })
 
   })
 
   it('define 2D point from 3D point', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -257,30 +257,30 @@ describe('Point Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait to load
 
     cy.log('points are where they should be')
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
 
-      expect(components['/_point1'].stateValues.xs[0].tree).closeTo(2, 1E-12)
-      expect(components['/_point1'].stateValues.xs[1].tree).closeTo(3, 1E-12)
-      expect(components['/source'].stateValues.xs[0].tree).eq("a")
-      expect(components['/source'].stateValues.xs[1].tree).closeTo(2, 1E-12)
-      expect(components['/source'].stateValues.xs[2].tree).closeTo(3, 1E-12)
+      expect((await components['/_point1'].stateValues.xs)[0].tree).closeTo(2, 1E-12)
+      expect((await components['/_point1'].stateValues.xs)[1].tree).closeTo(3, 1E-12)
+      expect((await components['/source'].stateValues.xs)[0].tree).eq("a")
+      expect((await components['/source'].stateValues.xs)[1].tree).closeTo(2, 1E-12)
+      expect((await components['/source'].stateValues.xs)[2].tree).closeTo(3, 1E-12)
     })
 
     cy.log('move point 1')
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components['/_point1'].movePoint({ x: -4, y: -7 });
-      expect(components['/_point1'].stateValues.xs[0].tree).closeTo(-4, 1E-12)
-      expect(components['/_point1'].stateValues.xs[1].tree).closeTo(-7, 1E-12)
-      expect(components['/source'].stateValues.xs[0].tree).eq("a")
-      expect(components['/source'].stateValues.xs[1].tree).closeTo(-4, 1E-12)
-      expect(components['/source'].stateValues.xs[2].tree).closeTo(-7, 1E-12)
+      await components['/_point1'].movePoint({ x: -4, y: -7 });
+      expect((await components['/_point1'].stateValues.xs)[0].tree).closeTo(-4, 1E-12)
+      expect((await components['/_point1'].stateValues.xs)[1].tree).closeTo(-7, 1E-12)
+      expect((await components['/source'].stateValues.xs)[0].tree).eq("a")
+      expect((await components['/source'].stateValues.xs)[1].tree).closeTo(-4, 1E-12)
+      expect((await components['/source'].stateValues.xs)[2].tree).closeTo(-7, 1E-12)
     })
   })
 
   it('define 2D point from 3D point, copying xj', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -300,30 +300,30 @@ describe('Point Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait to load
 
     cy.log('points are where they should be')
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
 
-      expect(components['/_point1'].stateValues.xs[0].tree).closeTo(2, 1E-12)
-      expect(components['/_point1'].stateValues.xs[1].tree).closeTo(3, 1E-12)
-      expect(components['/source'].stateValues.xs[0].tree).eq("a")
-      expect(components['/source'].stateValues.xs[1].tree).closeTo(2, 1E-12)
-      expect(components['/source'].stateValues.xs[2].tree).closeTo(3, 1E-12)
+      expect((await components['/_point1'].stateValues.xs)[0].tree).closeTo(2, 1E-12)
+      expect((await components['/_point1'].stateValues.xs)[1].tree).closeTo(3, 1E-12)
+      expect((await components['/source'].stateValues.xs)[0].tree).eq("a")
+      expect((await components['/source'].stateValues.xs)[1].tree).closeTo(2, 1E-12)
+      expect((await components['/source'].stateValues.xs)[2].tree).closeTo(3, 1E-12)
     })
 
     cy.log('move point 1')
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components['/_point1'].movePoint({ x: -4, y: -7 });
-      expect(components['/_point1'].stateValues.xs[0].tree).closeTo(-4, 1E-12)
-      expect(components['/_point1'].stateValues.xs[1].tree).closeTo(-7, 1E-12)
-      expect(components['/source'].stateValues.xs[0].tree).eq("a")
-      expect(components['/source'].stateValues.xs[1].tree).closeTo(-4, 1E-12)
-      expect(components['/source'].stateValues.xs[2].tree).closeTo(-7, 1E-12)
+      await components['/_point1'].movePoint({ x: -4, y: -7 });
+      expect((await components['/_point1'].stateValues.xs)[0].tree).closeTo(-4, 1E-12)
+      expect((await components['/_point1'].stateValues.xs)[1].tree).closeTo(-7, 1E-12)
+      expect((await components['/source'].stateValues.xs)[0].tree).eq("a")
+      expect((await components['/source'].stateValues.xs)[1].tree).closeTo(-4, 1E-12)
+      expect((await components['/source'].stateValues.xs)[2].tree).closeTo(-7, 1E-12)
     })
   })
 
   it('define 2D point from 3D point, separate coordinates', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -340,30 +340,30 @@ describe('Point Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait to load
 
     cy.log('points are where they should be')
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
 
-      expect(components['/_point1'].stateValues.xs[0].tree).closeTo(2, 1E-12)
-      expect(components['/_point1'].stateValues.xs[1].tree).closeTo(3, 1E-12)
-      expect(components['/source'].stateValues.xs[0].tree).eq("a")
-      expect(components['/source'].stateValues.xs[1].tree).closeTo(2, 1E-12)
-      expect(components['/source'].stateValues.xs[2].tree).closeTo(3, 1E-12)
+      expect((await components['/_point1'].stateValues.xs)[0].tree).closeTo(2, 1E-12)
+      expect((await components['/_point1'].stateValues.xs)[1].tree).closeTo(3, 1E-12)
+      expect((await components['/source'].stateValues.xs)[0].tree).eq("a")
+      expect((await components['/source'].stateValues.xs)[1].tree).closeTo(2, 1E-12)
+      expect((await components['/source'].stateValues.xs)[2].tree).closeTo(3, 1E-12)
     })
 
     cy.log('move point 1')
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components['/_point1'].movePoint({ x: -4, y: -7 });
-      expect(components['/_point1'].stateValues.xs[0].tree).closeTo(-4, 1E-12)
-      expect(components['/_point1'].stateValues.xs[1].tree).closeTo(-7, 1E-12)
-      expect(components['/source'].stateValues.xs[0].tree).eq("a")
-      expect(components['/source'].stateValues.xs[1].tree).closeTo(-4, 1E-12)
-      expect(components['/source'].stateValues.xs[2].tree).closeTo(-7, 1E-12)
+      await components['/_point1'].movePoint({ x: -4, y: -7 });
+      expect((await components['/_point1'].stateValues.xs)[0].tree).closeTo(-4, 1E-12)
+      expect((await components['/_point1'].stateValues.xs)[1].tree).closeTo(-7, 1E-12)
+      expect((await components['/source'].stateValues.xs)[0].tree).eq("a")
+      expect((await components['/source'].stateValues.xs)[1].tree).closeTo(-4, 1E-12)
+      expect((await components['/source'].stateValues.xs)[2].tree).closeTo(-7, 1E-12)
     })
   })
 
   it('define 2D point from double-copied 3D point, separate coordinates', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -383,30 +383,30 @@ describe('Point Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait to load
 
     cy.log('points are where they should be')
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
 
-      expect(components['/_point1'].stateValues.xs[0].tree).closeTo(2, 1E-12)
-      expect(components['/_point1'].stateValues.xs[1].tree).closeTo(3, 1E-12)
-      expect(components['/source'].stateValues.xs[0].tree).eq("a")
-      expect(components['/source'].stateValues.xs[1].tree).closeTo(2, 1E-12)
-      expect(components['/source'].stateValues.xs[2].tree).closeTo(3, 1E-12)
+      expect((await components['/_point1'].stateValues.xs)[0].tree).closeTo(2, 1E-12)
+      expect((await components['/_point1'].stateValues.xs)[1].tree).closeTo(3, 1E-12)
+      expect((await components['/source'].stateValues.xs)[0].tree).eq("a")
+      expect((await components['/source'].stateValues.xs)[1].tree).closeTo(2, 1E-12)
+      expect((await components['/source'].stateValues.xs)[2].tree).closeTo(3, 1E-12)
     })
 
     cy.log('move point 1')
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components['/_point1'].movePoint({ x: -4, y: -7 });
-      expect(components['/_point1'].stateValues.xs[0].tree).closeTo(-4, 1E-12)
-      expect(components['/_point1'].stateValues.xs[1].tree).closeTo(-7, 1E-12)
-      expect(components['/source'].stateValues.xs[0].tree).eq("a")
-      expect(components['/source'].stateValues.xs[1].tree).closeTo(-4, 1E-12)
-      expect(components['/source'].stateValues.xs[2].tree).closeTo(-7, 1E-12)
+      await components['/_point1'].movePoint({ x: -4, y: -7 });
+      expect((await components['/_point1'].stateValues.xs)[0].tree).closeTo(-4, 1E-12)
+      expect((await components['/_point1'].stateValues.xs)[1].tree).closeTo(-7, 1E-12)
+      expect((await components['/source'].stateValues.xs)[0].tree).eq("a")
+      expect((await components['/source'].stateValues.xs)[1].tree).closeTo(-4, 1E-12)
+      expect((await components['/source'].stateValues.xs)[2].tree).closeTo(-7, 1E-12)
     })
   })
 
   it('point on graph that is copied in two ways', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -423,60 +423,60 @@ describe('Point Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait to load
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let point2 = components['/_copy1'].replacements[0].activeChildren[0];
       let point3 = components['/p3'].replacements[0];
 
 
-      cy.window().then((win) => {
-        expect(components['/_point1'].stateValues.xs[0].tree).eq(1)
-        expect(components['/_point1'].stateValues.xs[1].tree).eq(2)
-        expect(point2.stateValues.xs[0].tree).eq(1)
-        expect(point2.stateValues.xs[1].tree).eq(2)
-        expect(point3.stateValues.xs[0].tree).eq(1)
-        expect(point3.stateValues.xs[1].tree).eq(2)
+      cy.window().then(async (win) => {
+        expect((await components['/_point1'].stateValues.xs)[0].tree).eq(1)
+        expect((await components['/_point1'].stateValues.xs)[1].tree).eq(2)
+        expect((await point2.stateValues.xs)[0].tree).eq(1)
+        expect((await point2.stateValues.xs)[1].tree).eq(2)
+        expect((await point3.stateValues.xs)[0].tree).eq(1)
+        expect((await point3.stateValues.xs)[1].tree).eq(2)
 
       })
 
       cy.log(`move point1 to (4,6)`)
-      cy.window().then((win) => {
-        components['/_point1'].movePoint({ x: 4, y: 6 });
-        expect(components['/_point1'].stateValues.xs[0].tree).eq(4)
-        expect(components['/_point1'].stateValues.xs[1].tree).eq(6)
-        expect(point2.stateValues.xs[0].tree).eq(4)
-        expect(point2.stateValues.xs[1].tree).eq(6)
-        expect(point3.stateValues.xs[0].tree).eq(4)
-        expect(point3.stateValues.xs[1].tree).eq(6)
+      cy.window().then(async (win) => {
+        await components['/_point1'].movePoint({ x: 4, y: 6 });
+        expect((await components['/_point1'].stateValues.xs)[0].tree).eq(4)
+        expect((await components['/_point1'].stateValues.xs)[1].tree).eq(6)
+        expect((await point2.stateValues.xs)[0].tree).eq(4)
+        expect((await point2.stateValues.xs)[1].tree).eq(6)
+        expect((await point3.stateValues.xs)[0].tree).eq(4)
+        expect((await point3.stateValues.xs)[1].tree).eq(6)
       })
 
       cy.log(`move point2 to (-3,-7)`)
-      cy.window().then((win) => {
-        point2.movePoint({ x: -3, y: -7 });
-        expect(components['/_point1'].stateValues.xs[0].tree).eq(-3)
-        expect(components['/_point1'].stateValues.xs[1].tree).eq(-7)
-        expect(point2.stateValues.xs[0].tree).eq(-3)
-        expect(point2.stateValues.xs[1].tree).eq(-7)
-        expect(point3.stateValues.xs[0].tree).eq(-3)
-        expect(point3.stateValues.xs[1].tree).eq(-7)
+      cy.window().then(async (win) => {
+        await point2.movePoint({ x: -3, y: -7 });
+        expect((await components['/_point1'].stateValues.xs)[0].tree).eq(-3)
+        expect((await components['/_point1'].stateValues.xs)[1].tree).eq(-7)
+        expect((await point2.stateValues.xs)[0].tree).eq(-3)
+        expect((await point2.stateValues.xs)[1].tree).eq(-7)
+        expect((await point3.stateValues.xs)[0].tree).eq(-3)
+        expect((await point3.stateValues.xs)[1].tree).eq(-7)
       })
 
       cy.log(`move point3 to (9,-2)`)
-      cy.window().then((win) => {
-        point3.movePoint({ x: 9, y: -2 });
-        expect(components['/_point1'].stateValues.xs[0].tree).eq(9)
-        expect(components['/_point1'].stateValues.xs[1].tree).eq(-2)
-        expect(point2.stateValues.xs[0].tree).eq(9)
-        expect(point2.stateValues.xs[1].tree).eq(-2)
-        expect(point3.stateValues.xs[0].tree).eq(9)
-        expect(point3.stateValues.xs[1].tree).eq(-2)
+      cy.window().then(async (win) => {
+        await point3.movePoint({ x: 9, y: -2 });
+        expect((await components['/_point1'].stateValues.xs)[0].tree).eq(9)
+        expect((await components['/_point1'].stateValues.xs)[1].tree).eq(-2)
+        expect((await point2.stateValues.xs)[0].tree).eq(9)
+        expect((await point2.stateValues.xs)[1].tree).eq(-2)
+        expect((await point3.stateValues.xs)[0].tree).eq(9)
+        expect((await point3.stateValues.xs)[1].tree).eq(-2)
       })
 
     })
   });
 
   it('point draggable but constrained to x = y^2/10', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -490,34 +490,34 @@ describe('Point Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_point1'].stateValues.xs[0].tree).eqls(['/', 1, 10]);
-      expect(components['/_point1'].stateValues.xs[1].tree).eq(1)
+      expect((await components['/_point1'].stateValues.xs)[0].tree).eqls(['/', 1, 10]);
+      expect((await components['/_point1'].stateValues.xs)[1].tree).eq(1)
 
     })
 
     cy.log(`move point1 to (-9,6)`)
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components['/_point1'].movePoint({ x: -9, y: 6 });
-      expect(components['/_point1'].stateValues.xs[0].tree).eqls(['/', 18, 5])
-      expect(components['/_point1'].stateValues.xs[1].tree).eq(6)
+      await components['/_point1'].movePoint({ x: -9, y: 6 });
+      expect((await components['/_point1'].stateValues.xs)[0].tree).eqls(['/', 18, 5])
+      expect((await components['/_point1'].stateValues.xs)[1].tree).eq(6)
     })
 
     cy.log(`move point1 to (0,-3)`)
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components['/_point1'].movePoint({ x: 9, y: -3 });
-      expect(components['/_point1'].stateValues.xs[0].tree).eqls(['/', 9, 10])
-      expect(components['/_point1'].stateValues.xs[1].tree).eq(-3)
+      await components['/_point1'].movePoint({ x: 9, y: -3 });
+      expect((await components['/_point1'].stateValues.xs)[0].tree).eqls(['/', 9, 10])
+      expect((await components['/_point1'].stateValues.xs)[1].tree).eq(-3)
     })
 
 
   });
 
   it('point draggable but constrained to y = sin(x)', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -531,34 +531,34 @@ describe('Point Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_point1'].stateValues.xs[0].tree).eq(1);
-      expect(components['/_point1'].stateValues.xs[1].tree).eqls(['apply', 'sin', 1]);
+      expect((await components['/_point1'].stateValues.xs)[0].tree).eq(1);
+      expect((await components['/_point1'].stateValues.xs)[1].tree).eqls(['apply', 'sin', 1]);
 
     })
 
     cy.log(`move point1 to (-9,6)`)
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components['/_point1'].movePoint({ x: -9, y: 6 });
-      expect(components['/_point1'].stateValues.xs[0].tree).eq(-9)
-      expect(components['/_point1'].stateValues.xs[1].tree).eqls(['apply', 'sin', -9]);
+      await components['/_point1'].movePoint({ x: -9, y: 6 });
+      expect((await components['/_point1'].stateValues.xs)[0].tree).eq(-9)
+      expect((await components['/_point1'].stateValues.xs)[1].tree).eqls(['apply', 'sin', -9]);
     })
 
     cy.log(`move point1 to (9,-3)`)
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components['/_point1'].movePoint({ x: 9, y: -3 });
-      expect(components['/_point1'].stateValues.xs[0].tree).eq(9)
-      expect(components['/_point1'].stateValues.xs[1].tree).eqls(['apply', 'sin', 9])
+      await components['/_point1'].movePoint({ x: 9, y: -3 });
+      expect((await components['/_point1'].stateValues.xs)[0].tree).eq(9)
+      expect((await components['/_point1'].stateValues.xs)[1].tree).eqls(['apply', 'sin', 9])
     })
 
 
   });
 
   it('point reflected across line', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -575,39 +575,39 @@ describe('Point Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_point1'].stateValues.xs[0].tree).eq(1);
-      expect(components['/_point1'].stateValues.xs[1].tree).eq(2);
-      expect(components['/_point2'].stateValues.xs[0].tree).eq(2);
-      expect(components['/_point2'].stateValues.xs[1].tree).eq(1);
+      expect((await components['/_point1'].stateValues.xs)[0].tree).eq(1);
+      expect((await components['/_point1'].stateValues.xs)[1].tree).eq(2);
+      expect((await components['/_point2'].stateValues.xs)[0].tree).eq(2);
+      expect((await components['/_point2'].stateValues.xs)[1].tree).eq(1);
 
     })
 
     cy.log(`move point1 to (-9,6)`)
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components['/_point1'].movePoint({ x: -9, y: 6 });
-      expect(components['/_point1'].stateValues.xs[0].tree).eq(-9)
-      expect(components['/_point1'].stateValues.xs[1].tree).eq(6);
-      expect(components['/_point2'].stateValues.xs[0].tree).eq(6)
-      expect(components['/_point2'].stateValues.xs[1].tree).eq(-9);
+      await components['/_point1'].movePoint({ x: -9, y: 6 });
+      expect((await components['/_point1'].stateValues.xs)[0].tree).eq(-9)
+      expect((await components['/_point1'].stateValues.xs)[1].tree).eq(6);
+      expect((await components['/_point2'].stateValues.xs)[0].tree).eq(6)
+      expect((await components['/_point2'].stateValues.xs)[1].tree).eq(-9);
     })
 
     cy.log(`move point2 to (0,-3)`)
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components['/_point2'].movePoint({ x: 0, y: -3 });
-      expect(components['/_point1'].stateValues.xs[0].tree).eq(-3)
-      expect(components['/_point1'].stateValues.xs[1].tree).eq(0)
-      expect(components['/_point2'].stateValues.xs[0].tree).eq(0)
-      expect(components['/_point2'].stateValues.xs[1].tree).eq(-3)
+      await components['/_point2'].movePoint({ x: 0, y: -3 });
+      expect((await components['/_point1'].stateValues.xs)[0].tree).eq(-3)
+      expect((await components['/_point1'].stateValues.xs)[1].tree).eq(0)
+      expect((await components['/_point2'].stateValues.xs)[0].tree).eq(0)
+      expect((await components['/_point2'].stateValues.xs)[1].tree).eq(-3)
     })
 
   });
 
   it('point not draggable', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -620,24 +620,24 @@ describe('Point Tag Tests', function () {
     // use this to wait for page to load
     cy.get('#\\/_text1').should('have.text', 'a');
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_point1'].stateValues.xs[0].tree).eq(1);
-      expect(components['/_point1'].stateValues.xs[1].tree).eq(2);
+      expect((await components['/_point1'].stateValues.xs)[0].tree).eq(1);
+      expect((await components['/_point1'].stateValues.xs)[1].tree).eq(2);
     })
 
     cy.log(`move point1 to (-9,6)`)
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components['/_point1'].movePoint({ x: -9, y: 6 });
-      expect(components['/_point1'].stateValues.xs[0].tree).eq(1);
-      expect(components['/_point1'].stateValues.xs[1].tree).eq(2);
+      await components['/_point1'].movePoint({ x: -9, y: 6 });
+      expect((await components['/_point1'].stateValues.xs)[0].tree).eq(1);
+      expect((await components['/_point1'].stateValues.xs)[1].tree).eq(2);
     })
 
   });
 
   it('point on line', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -654,24 +654,24 @@ describe('Point Tag Tests', function () {
     // use this to wait for page to load
     cy.get('#\\/_text1').should('have.text', 'a');
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_point1'].stateValues.xs[0].tree).eq(5);
-      expect(components['/_point1'].stateValues.xs[1].tree).eq(-2);
+      expect((await components['/_point1'].stateValues.xs)[0].tree).eq(5);
+      expect((await components['/_point1'].stateValues.xs)[1].tree).eq(-2);
     })
 
     cy.log(`move point1 to (8,8)`)
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components['/_point1'].movePoint({ x: 8, y: 8 });
-      expect(components['/_point1'].stateValues.xs[0].tree).eq(8);
-      expect(components['/_point1'].stateValues.xs[1].tree).eq(-5);
+      await components['/_point1'].movePoint({ x: 8, y: 8 });
+      expect((await components['/_point1'].stateValues.xs)[0].tree).eq(8);
+      expect((await components['/_point1'].stateValues.xs)[1].tree).eq(-5);
     })
 
   });
 
   it('points draggable even with complicated dependence', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>q</text>
@@ -691,32 +691,32 @@ describe('Point Tag Tests', function () {
 
     cy.get('#\\/_text1').should("have.text", 'q');  // to wait until loaded
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_point2'].stateValues.xs[0].tree).eq(5);
-      expect(components['/_point2'].stateValues.xs[1].tree).eq(3);
-      expect(components['/_point1'].stateValues.xs[0].tree).eq(3);
-      expect(components['/_point1'].stateValues.xs[1].tree).eq(6);
+      expect((await components['/_point2'].stateValues.xs)[0].tree).eq(5);
+      expect((await components['/_point2'].stateValues.xs)[1].tree).eq(3);
+      expect((await components['/_point1'].stateValues.xs)[0].tree).eq(3);
+      expect((await components['/_point1'].stateValues.xs)[1].tree).eq(6);
     })
 
     cy.log(`move point1 to (-4,-8)`)
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components['/_point2'].movePoint({ x: -4, y: -8 });
-      expect(components['/_point2'].stateValues.xs[0].tree).eq(-4);
-      expect(components['/_point2'].stateValues.xs[1].tree).eq(-8);
-      expect(components['/_point1'].stateValues.xs[0].tree).eq(-8);
-      expect(components['/_point1'].stateValues.xs[1].tree).eq(-3);
+      await components['/_point2'].movePoint({ x: -4, y: -8 });
+      expect((await components['/_point2'].stateValues.xs)[0].tree).eq(-4);
+      expect((await components['/_point2'].stateValues.xs)[1].tree).eq(-8);
+      expect((await components['/_point1'].stateValues.xs)[0].tree).eq(-8);
+      expect((await components['/_point1'].stateValues.xs)[1].tree).eq(-3);
     })
 
     cy.log(`move point2 to (-9,10)`)
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components['/_point1'].movePoint({ x: -9, y: 10 });
-      expect(components['/_point2'].stateValues.xs[0].tree).eq(9);
-      expect(components['/_point2'].stateValues.xs[1].tree).eq(-9);
-      expect(components['/_point1'].stateValues.xs[0].tree).eq(-9);
-      expect(components['/_point1'].stateValues.xs[1].tree).eq(10);
+      await components['/_point1'].movePoint({ x: -9, y: 10 });
+      expect((await components['/_point2'].stateValues.xs)[0].tree).eq(9);
+      expect((await components['/_point2'].stateValues.xs)[1].tree).eq(-9);
+      expect((await components['/_point1'].stateValues.xs)[0].tree).eq(-9);
+      expect((await components['/_point1'].stateValues.xs)[1].tree).eq(10);
     })
 
   });
@@ -724,7 +724,7 @@ describe('Point Tag Tests', function () {
   // The behavior of this test varies widely depending on update order
   // When finalize exactly how we want the updates to occur, could resurrect this
   it.skip('points related through intermediate math', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -749,7 +749,7 @@ describe('Point Tag Tests', function () {
       expect(text.trim()).equal('5')
     })
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let d = 5;
       let point2x = d;
@@ -760,19 +760,19 @@ describe('Point Tag Tests', function () {
       let point1x = a;
       let point1y = point2x;
 
-      expect(components['/_point1'].stateValues.xs[0].tree).closeTo(point1x, 1E-12);
-      expect(components['/_point1'].stateValues.xs[1].tree).closeTo(point1y, 1E-12);
-      expect(components['/_point2'].stateValues.xs[0].tree).closeTo(point2x, 1E-12);
-      expect(components['/_point2'].stateValues.xs[1].tree).closeTo(point2y, 1E-12);
-      expect(components['/d'].stateValues.value.tree).closeTo(d, 1E-12);
-      expect(components['/c'].stateValues.value.tree).closeTo(c, 1E-12);
-      expect(components['/b'].stateValues.value.tree).closeTo(b, 1E-12);
-      expect(components['/a'].stateValues.value.tree).closeTo(a, 1E-12);
+      expect((await components['/_point1'].stateValues.xs)[0].tree).closeTo(point1x, 1E-12);
+      expect((await components['/_point1'].stateValues.xs)[1].tree).closeTo(point1y, 1E-12);
+      expect((await components['/_point2'].stateValues.xs)[0].tree).closeTo(point2x, 1E-12);
+      expect((await components['/_point2'].stateValues.xs)[1].tree).closeTo(point2y, 1E-12);
+      expect((await components['/d'].stateValues.value).tree).closeTo(d, 1E-12);
+      expect((await components['/c'].stateValues.value).tree).closeTo(c, 1E-12);
+      expect((await components['/b'].stateValues.value).tree).closeTo(b, 1E-12);
+      expect((await components['/a'].stateValues.value).tree).closeTo(a, 1E-12);
 
     })
 
     cy.log(`move point2 along constained line`)
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
 
       let d = -6;
@@ -784,19 +784,19 @@ describe('Point Tag Tests', function () {
       let point1x = a;
       let point1y = point2x;
 
-      components['/_point2'].movePoint({ x: point2x, y: point2y });
-      expect(components['/_point1'].stateValues.xs[0].tree).closeTo(point1x, 1E-12);
-      expect(components['/_point1'].stateValues.xs[1].tree).closeTo(point1y, 1E-12);
-      expect(components['/_point2'].stateValues.xs[0].tree).closeTo(point2x, 1E-12);
-      expect(components['/_point2'].stateValues.xs[1].tree).closeTo(point2y, 1E-12);
-      expect(components['/d'].stateValues.value.tree).closeTo(d, 1E-12);
-      expect(components['/c'].stateValues.value.tree).closeTo(c, 1E-12);
-      expect(components['/b'].stateValues.value.tree).closeTo(b, 1E-12);
-      expect(components['/a'].stateValues.value.tree).closeTo(a, 1E-12);
+      await components['/_point2'].movePoint({ x: point2x, y: point2y });
+      expect((await components['/_point1'].stateValues.xs)[0].tree).closeTo(point1x, 1E-12);
+      expect((await components['/_point1'].stateValues.xs)[1].tree).closeTo(point1y, 1E-12);
+      expect((await components['/_point2'].stateValues.xs)[0].tree).closeTo(point2x, 1E-12);
+      expect((await components['/_point2'].stateValues.xs)[1].tree).closeTo(point2y, 1E-12);
+      expect((await components['/d'].stateValues.value).tree).closeTo(d, 1E-12);
+      expect((await components['/c'].stateValues.value).tree).closeTo(c, 1E-12);
+      expect((await components['/b'].stateValues.value).tree).closeTo(b, 1E-12);
+      expect((await components['/a'].stateValues.value).tree).closeTo(a, 1E-12);
     })
 
     cy.log(`move point1 along constained curve`)
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
 
       let d = 7;
@@ -808,22 +808,22 @@ describe('Point Tag Tests', function () {
       let point1x = a;
       let point1y = point2x;
 
-      components['/_point1'].movePoint({ x: point1x, y: point1y });
-      expect(components['/_point1'].stateValues.xs[0].tree).closeTo(point1x, 1E-12);
-      expect(components['/_point1'].stateValues.xs[1].tree).closeTo(point1y, 1E-12);
-      expect(components['/_point2'].stateValues.xs[0].tree).closeTo(point2x, 1E-12);
-      expect(components['/_point2'].stateValues.xs[1].tree).closeTo(point2y, 1E-12);
-      expect(components['/d'].stateValues.value.tree).closeTo(d, 1E-12);
-      expect(components['/c'].stateValues.value.tree).closeTo(c, 1E-12);
-      expect(components['/b'].stateValues.value.tree).closeTo(b, 1E-12);
-      expect(components['/a'].stateValues.value.tree).closeTo(a, 1E-12);
+      await components['/_point1'].movePoint({ x: point1x, y: point1y });
+      expect((await components['/_point1'].stateValues.xs)[0].tree).closeTo(point1x, 1E-12);
+      expect((await components['/_point1'].stateValues.xs)[1].tree).closeTo(point1y, 1E-12);
+      expect((await components['/_point2'].stateValues.xs)[0].tree).closeTo(point2x, 1E-12);
+      expect((await components['/_point2'].stateValues.xs)[1].tree).closeTo(point2y, 1E-12);
+      expect((await components['/d'].stateValues.value).tree).closeTo(d, 1E-12);
+      expect((await components['/c'].stateValues.value).tree).closeTo(c, 1E-12);
+      expect((await components['/b'].stateValues.value).tree).closeTo(b, 1E-12);
+      expect((await components['/a'].stateValues.value).tree).closeTo(a, 1E-12);
     })
 
     cy.log(`move point2 to upper right`)
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
 
-      components['/_point2'].movePoint({ x: 9, y: 9 });
+      await components['/_point2'].movePoint({ x: 9, y: 9 });
 
       let d = 9;
       let point2x = d;
@@ -834,21 +834,21 @@ describe('Point Tag Tests', function () {
       let point1x = a;
       let point1y = point2x;
 
-      expect(components['/_point1'].stateValues.xs[0].tree).closeTo(point1x, 1E-12);
-      expect(components['/_point1'].stateValues.xs[1].tree).closeTo(point1y, 1E-12);
-      expect(components['/_point2'].stateValues.xs[0].tree).closeTo(point2x, 1E-12);
-      expect(components['/_point2'].stateValues.xs[1].tree).closeTo(point2y, 1E-12);
-      expect(components['/d'].stateValues.value.tree).closeTo(d, 1E-12);
-      expect(components['/c'].stateValues.value.tree).closeTo(c, 1E-12);
-      expect(components['/b'].stateValues.value.tree).closeTo(b, 1E-12);
-      expect(components['/a'].stateValues.value.tree).closeTo(a, 1E-12);
+      expect((await components['/_point1'].stateValues.xs)[0].tree).closeTo(point1x, 1E-12);
+      expect((await components['/_point1'].stateValues.xs)[1].tree).closeTo(point1y, 1E-12);
+      expect((await components['/_point2'].stateValues.xs)[0].tree).closeTo(point2x, 1E-12);
+      expect((await components['/_point2'].stateValues.xs)[1].tree).closeTo(point2y, 1E-12);
+      expect((await components['/d'].stateValues.value).tree).closeTo(d, 1E-12);
+      expect((await components['/c'].stateValues.value).tree).closeTo(c, 1E-12);
+      expect((await components['/b'].stateValues.value).tree).closeTo(b, 1E-12);
+      expect((await components['/a'].stateValues.value).tree).closeTo(a, 1E-12);
     })
 
     cy.log(`move point1 to upper left`)
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
 
-      components['/_point1'].movePoint({ x: -6, y: 4 });
+      await components['/_point1'].movePoint({ x: -6, y: 4 });
 
       let d = 4;
       let point2x = d;
@@ -859,20 +859,20 @@ describe('Point Tag Tests', function () {
       let point1x = a;
       let point1y = point2x;
 
-      expect(components['/_point1'].stateValues.xs[0].tree).closeTo(point1x, 1E-12);
-      expect(components['/_point1'].stateValues.xs[1].tree).closeTo(point1y, 1E-12);
-      expect(components['/_point2'].stateValues.xs[0].tree).closeTo(point2x, 1E-12);
-      expect(components['/_point2'].stateValues.xs[1].tree).closeTo(point2y, 1E-12);
-      expect(components['/d'].stateValues.value.tree).closeTo(d, 1E-12);
-      expect(components['/c'].stateValues.value.tree).closeTo(c, 1E-12);
-      expect(components['/b'].stateValues.value.tree).closeTo(b, 1E-12);
-      expect(components['/a'].stateValues.value.tree).closeTo(a, 1E-12);
+      expect((await components['/_point1'].stateValues.xs)[0].tree).closeTo(point1x, 1E-12);
+      expect((await components['/_point1'].stateValues.xs)[1].tree).closeTo(point1y, 1E-12);
+      expect((await components['/_point2'].stateValues.xs)[0].tree).closeTo(point2x, 1E-12);
+      expect((await components['/_point2'].stateValues.xs)[1].tree).closeTo(point2y, 1E-12);
+      expect((await components['/d'].stateValues.value).tree).closeTo(d, 1E-12);
+      expect((await components['/c'].stateValues.value).tree).closeTo(c, 1E-12);
+      expect((await components['/b'].stateValues.value).tree).closeTo(b, 1E-12);
+      expect((await components['/a'].stateValues.value).tree).closeTo(a, 1E-12);
     })
 
   });
 
   it('no dependence on downstream update order', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -892,52 +892,52 @@ describe('Point Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait to load
 
     cy.log(`point 2 is moveable, based on x component`)
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components['/_point2'].movePoint({ x: -3, y: -7 })
+      await components['/_point2'].movePoint({ x: -3, y: -7 })
 
-      expect(components['/_point1'].stateValues.xs[0].tree).closeTo(-3, 1E-12);
-      expect(components['/_point1'].stateValues.xs[1].tree).closeTo(3, 1E-12);
-      expect(components['/_point2'].stateValues.xs[0].tree).closeTo(-3, 1E-12);
-      expect(components['/_point2'].stateValues.xs[1].tree).closeTo(-3, 1E-12);
-      expect(components['/a'].stateValues.value).closeTo(-3, 1E-12);
+      expect((await components['/_point1'].stateValues.xs)[0].tree).closeTo(-3, 1E-12);
+      expect((await components['/_point1'].stateValues.xs)[1].tree).closeTo(3, 1E-12);
+      expect((await components['/_point2'].stateValues.xs)[0].tree).closeTo(-3, 1E-12);
+      expect((await components['/_point2'].stateValues.xs)[1].tree).closeTo(-3, 1E-12);
+      expect((await components['/a'].stateValues.value)).closeTo(-3, 1E-12);
 
       // test zero as had a bug affect case when zero
-      components['/_point2'].movePoint({ x: 0, y: 5 })
+      await components['/_point2'].movePoint({ x: 0, y: 5 })
 
-      expect(components['/_point1'].stateValues.xs[0].tree).closeTo(0, 1E-12);
-      expect(components['/_point1'].stateValues.xs[1].tree).closeTo(3, 1E-12);
-      expect(components['/_point2'].stateValues.xs[0].tree).closeTo(0, 1E-12);
-      expect(components['/_point2'].stateValues.xs[1].tree).closeTo(0, 1E-12);
-      expect(components['/a'].stateValues.value).closeTo(0, 1E-12);
+      expect((await components['/_point1'].stateValues.xs)[0].tree).closeTo(0, 1E-12);
+      expect((await components['/_point1'].stateValues.xs)[1].tree).closeTo(3, 1E-12);
+      expect((await components['/_point2'].stateValues.xs)[0].tree).closeTo(0, 1E-12);
+      expect((await components['/_point2'].stateValues.xs)[1].tree).closeTo(0, 1E-12);
+      expect((await components['/a'].stateValues.value)).closeTo(0, 1E-12);
 
     })
 
     cy.log(`point1 is free to move`)
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
 
-      components['/_point1'].movePoint({ x: 9, y: -6 })
+      await components['/_point1'].movePoint({ x: 9, y: -6 })
 
-      expect(components['/_point1'].stateValues.xs[0].tree).closeTo(9, 1E-12);
-      expect(components['/_point1'].stateValues.xs[1].tree).closeTo(-6, 1E-12);
-      expect(components['/_point2'].stateValues.xs[0].tree).closeTo(9, 1E-12);
-      expect(components['/_point2'].stateValues.xs[1].tree).closeTo(9, 1E-12);
-      expect(components['/a'].stateValues.value).closeTo(9, 1E-12);
+      expect((await components['/_point1'].stateValues.xs)[0].tree).closeTo(9, 1E-12);
+      expect((await components['/_point1'].stateValues.xs)[1].tree).closeTo(-6, 1E-12);
+      expect((await components['/_point2'].stateValues.xs)[0].tree).closeTo(9, 1E-12);
+      expect((await components['/_point2'].stateValues.xs)[1].tree).closeTo(9, 1E-12);
+      expect((await components['/a'].stateValues.value)).closeTo(9, 1E-12);
 
       // move to zero to make sure are testing the bug that occured at zero
-      components['/_point1'].movePoint({ x: 0, y: 0 })
+      await components['/_point1'].movePoint({ x: 0, y: 0 })
 
-      expect(components['/_point1'].stateValues.xs[0].tree).closeTo(0, 1E-12);
-      expect(components['/_point1'].stateValues.xs[1].tree).closeTo(0, 1E-12);
-      expect(components['/_point2'].stateValues.xs[0].tree).closeTo(0, 1E-12);
-      expect(components['/_point2'].stateValues.xs[1].tree).closeTo(0, 1E-12);
-      expect(components['/a'].stateValues.value).closeTo(0, 1E-12);
+      expect((await components['/_point1'].stateValues.xs)[0].tree).closeTo(0, 1E-12);
+      expect((await components['/_point1'].stateValues.xs)[1].tree).closeTo(0, 1E-12);
+      expect((await components['/_point2'].stateValues.xs)[0].tree).closeTo(0, 1E-12);
+      expect((await components['/_point2'].stateValues.xs)[1].tree).closeTo(0, 1E-12);
+      expect((await components['/a'].stateValues.value)).closeTo(0, 1E-12);
 
     })
     cy.visit('/cypressTest')
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>b</text>
@@ -957,54 +957,54 @@ describe('Point Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'b');  // to wait to load
 
     cy.log(`point 2 is moveable, based on x component`)
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components['/_point2'].movePoint({ x: -3, y: -7 })
+      await components['/_point2'].movePoint({ x: -3, y: -7 })
 
-      expect(components['/_point1'].stateValues.xs[0].tree).closeTo(-3, 1E-12);
-      expect(components['/_point1'].stateValues.xs[1].tree).closeTo(3, 1E-12);
-      expect(components['/_point2'].stateValues.xs[0].tree).closeTo(-3, 1E-12);
-      expect(components['/_point2'].stateValues.xs[1].tree).closeTo(-3, 1E-12);
-      expect(components['/a'].stateValues.value).closeTo(-3, 1E-12);
+      expect((await components['/_point1'].stateValues.xs)[0].tree).closeTo(-3, 1E-12);
+      expect((await components['/_point1'].stateValues.xs)[1].tree).closeTo(3, 1E-12);
+      expect((await components['/_point2'].stateValues.xs)[0].tree).closeTo(-3, 1E-12);
+      expect((await components['/_point2'].stateValues.xs)[1].tree).closeTo(-3, 1E-12);
+      expect((await components['/a'].stateValues.value)).closeTo(-3, 1E-12);
 
       // test zero as had a bug affect case when zero
-      components['/_point2'].movePoint({ x: 0, y: 5 })
+      await components['/_point2'].movePoint({ x: 0, y: 5 })
 
-      expect(components['/_point1'].stateValues.xs[0].tree).closeTo(0, 1E-12);
-      expect(components['/_point1'].stateValues.xs[1].tree).closeTo(3, 1E-12);
-      expect(components['/_point2'].stateValues.xs[0].tree).closeTo(0, 1E-12);
-      expect(components['/_point2'].stateValues.xs[1].tree).closeTo(0, 1E-12);
-      expect(components['/a'].stateValues.value).closeTo(0, 1E-12);
+      expect((await components['/_point1'].stateValues.xs)[0].tree).closeTo(0, 1E-12);
+      expect((await components['/_point1'].stateValues.xs)[1].tree).closeTo(3, 1E-12);
+      expect((await components['/_point2'].stateValues.xs)[0].tree).closeTo(0, 1E-12);
+      expect((await components['/_point2'].stateValues.xs)[1].tree).closeTo(0, 1E-12);
+      expect((await components['/a'].stateValues.value)).closeTo(0, 1E-12);
 
     })
 
     cy.log(`point1 is free to move`)
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
 
-      components['/_point1'].movePoint({ x: 9, y: -6 })
+      await components['/_point1'].movePoint({ x: 9, y: -6 })
 
-      expect(components['/_point1'].stateValues.xs[0].tree).closeTo(9, 1E-12);
-      expect(components['/_point1'].stateValues.xs[1].tree).closeTo(-6, 1E-12);
-      expect(components['/_point2'].stateValues.xs[0].tree).closeTo(9, 1E-12);
-      expect(components['/_point2'].stateValues.xs[1].tree).closeTo(9, 1E-12);
-      expect(components['/a'].stateValues.value).closeTo(9, 1E-12);
+      expect((await components['/_point1'].stateValues.xs)[0].tree).closeTo(9, 1E-12);
+      expect((await components['/_point1'].stateValues.xs)[1].tree).closeTo(-6, 1E-12);
+      expect((await components['/_point2'].stateValues.xs)[0].tree).closeTo(9, 1E-12);
+      expect((await components['/_point2'].stateValues.xs)[1].tree).closeTo(9, 1E-12);
+      expect((await components['/a'].stateValues.value)).closeTo(9, 1E-12);
 
       // move to zero to make sure are testing the bug that occured at zero
-      components['/_point1'].movePoint({ x: 0, y: 0 })
+      await components['/_point1'].movePoint({ x: 0, y: 0 })
 
-      expect(components['/_point1'].stateValues.xs[0].tree).closeTo(0, 1E-12);
-      expect(components['/_point1'].stateValues.xs[1].tree).closeTo(0, 1E-12);
-      expect(components['/_point2'].stateValues.xs[0].tree).closeTo(0, 1E-12);
-      expect(components['/_point2'].stateValues.xs[1].tree).closeTo(0, 1E-12);
-      expect(components['/a'].stateValues.value).closeTo(0, 1E-12);
+      expect((await components['/_point1'].stateValues.xs)[0].tree).closeTo(0, 1E-12);
+      expect((await components['/_point1'].stateValues.xs)[1].tree).closeTo(0, 1E-12);
+      expect((await components['/_point2'].stateValues.xs)[0].tree).closeTo(0, 1E-12);
+      expect((await components['/_point2'].stateValues.xs)[1].tree).closeTo(0, 1E-12);
+      expect((await components['/a'].stateValues.value)).closeTo(0, 1E-12);
 
     })
 
   });
 
   it('point constrained to grid', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -1026,12 +1026,12 @@ describe('Point Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a')
 
     cy.log(`move point to (1.2,3.6)`)
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components['/_point1'].movePoint({ x: 1.2, y: 3.6 });
-      expect(components['/_point1'].stateValues.xs[0].tree).eq(1);
-      expect(components['/_point1'].stateValues.xs[1].tree).eq(4);
-      expect(components['/_point1'].stateValues.coords.tree).eqls(["vector", 1, 4]);
+      await components['/_point1'].movePoint({ x: 1.2, y: 3.6 });
+      expect((await components['/_point1'].stateValues.xs)[0].tree).eq(1);
+      expect((await components['/_point1'].stateValues.xs)[1].tree).eq(4);
+      expect((await components['/_point1'].stateValues.coords).tree).eqls(["vector", 1, 4]);
       expect(components['/_point1'].stateValues.constraintUsed).eq(true);
     })
     cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -1040,12 +1040,12 @@ describe('Point Tag Tests', function () {
     cy.get('#\\/_boolean1').should('have.text', "true")
 
     cy.log(`move point to (-9.8,-7.4)`)
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components['/_point1'].movePoint({ x: -9.8, y: -7.4 });
-      expect(components['/_point1'].stateValues.xs[0].tree).eq(-10);
-      expect(components['/_point1'].stateValues.xs[1].tree).eq(-7);
-      expect(components['/_point1'].stateValues.coords.tree).eqls(["vector", -10, -7]);
+      await components['/_point1'].movePoint({ x: -9.8, y: -7.4 });
+      expect((await components['/_point1'].stateValues.xs)[0].tree).eq(-10);
+      expect((await components['/_point1'].stateValues.xs)[1].tree).eq(-7);
+      expect((await components['/_point1'].stateValues.coords).tree).eqls(["vector", -10, -7]);
       expect(components['/_point1'].stateValues.constraintUsed).eq(true);
     })
     cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -1056,12 +1056,12 @@ describe('Point Tag Tests', function () {
 
     // test bug with number in scientific notation 
     cy.log(`move point to (-1.3E-14,2.5E-12)`)
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components['/_point1'].movePoint({ x: -1.3E-14, y: 2.5E-12 });
-      expect(components['/_point1'].stateValues.xs[0].tree).eq(0);
-      expect(components['/_point1'].stateValues.xs[1].tree).eq(0);
-      expect(components['/_point1'].stateValues.coords.tree).eqls(["vector", 0, 0]);
+      await components['/_point1'].movePoint({ x: -1.3E-14, y: 2.5E-12 });
+      expect((await components['/_point1'].stateValues.xs)[0].tree).eq(0);
+      expect((await components['/_point1'].stateValues.xs)[1].tree).eq(0);
+      expect((await components['/_point1'].stateValues.coords).tree).eqls(["vector", 0, 0]);
       expect(components['/_point1'].stateValues.constraintUsed).eq(true);
     })
     cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -1072,7 +1072,7 @@ describe('Point Tag Tests', function () {
   });
 
   it('point constrained to grid with sugared coordinates', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -1095,12 +1095,12 @@ describe('Point Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a')
 
     cy.log(`move point to (1.2,3.6)`)
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components['/_point1'].movePoint({ x: 1.2, y: 3.6 });
-      expect(components['/_point1'].stateValues.xs[0].tree).eq(1);
-      expect(components['/_point1'].stateValues.xs[1].tree).eq(4);
-      expect(components['/_point1'].stateValues.coords.tree).eqls(["vector", 1, 4]);
+      await components['/_point1'].movePoint({ x: 1.2, y: 3.6 });
+      expect((await components['/_point1'].stateValues.xs)[0].tree).eq(1);
+      expect((await components['/_point1'].stateValues.xs)[1].tree).eq(4);
+      expect((await components['/_point1'].stateValues.coords).tree).eqls(["vector", 1, 4]);
       expect(components['/_point1'].stateValues.constraintUsed).eq(true);
     })
     cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -1109,12 +1109,12 @@ describe('Point Tag Tests', function () {
     cy.get('#\\/_boolean1').should('have.text', "true")
 
     cy.log(`move point to (-9.8,-7.4)`)
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components['/_point1'].movePoint({ x: -9.8, y: -7.4 });
-      expect(components['/_point1'].stateValues.xs[0].tree).eq(-10);
-      expect(components['/_point1'].stateValues.xs[1].tree).eq(-7);
-      expect(components['/_point1'].stateValues.coords.tree).eqls(["vector", -10, -7]);
+      await components['/_point1'].movePoint({ x: -9.8, y: -7.4 });
+      expect((await components['/_point1'].stateValues.xs)[0].tree).eq(-10);
+      expect((await components['/_point1'].stateValues.xs)[1].tree).eq(-7);
+      expect((await components['/_point1'].stateValues.coords).tree).eqls(["vector", -10, -7]);
       expect(components['/_point1'].stateValues.constraintUsed).eq(true);
     })
     cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -1124,7 +1124,7 @@ describe('Point Tag Tests', function () {
   });
 
   it('point constrained to grid, copied from outside', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -1147,12 +1147,12 @@ describe('Point Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a')
 
     cy.log(`move point to (1.2,3.6)`)
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components['/_point1'].movePoint({ x: 1.2, y: 3.6 });
-      expect(components['/_point1'].stateValues.xs[0].tree).eq(1);
-      expect(components['/_point1'].stateValues.xs[1].tree).eq(4);
-      expect(components['/_point1'].stateValues.coords.tree).eqls(["vector", 1, 4]);
+      await components['/_point1'].movePoint({ x: 1.2, y: 3.6 });
+      expect((await components['/_point1'].stateValues.xs)[0].tree).eq(1);
+      expect((await components['/_point1'].stateValues.xs)[1].tree).eq(4);
+      expect((await components['/_point1'].stateValues.coords).tree).eqls(["vector", 1, 4]);
       expect(components['/_point1'].stateValues.constraintUsed).eq(true);
     })
     cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -1161,12 +1161,12 @@ describe('Point Tag Tests', function () {
     cy.get('#\\/_boolean1').should('have.text', "true")
 
     cy.log(`move point to (-9.8,-7.4)`)
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components['/_point1'].movePoint({ x: -9.8, y: -7.4 });
-      expect(components['/_point1'].stateValues.xs[0].tree).eq(-10);
-      expect(components['/_point1'].stateValues.xs[1].tree).eq(-7);
-      expect(components['/_point1'].stateValues.coords.tree).eqls(["vector", -10, -7]);
+      await components['/_point1'].movePoint({ x: -9.8, y: -7.4 });
+      expect((await components['/_point1'].stateValues.xs)[0].tree).eq(-10);
+      expect((await components['/_point1'].stateValues.xs)[1].tree).eq(-7);
+      expect((await components['/_point1'].stateValues.coords).tree).eqls(["vector", -10, -7]);
       expect(components['/_point1'].stateValues.constraintUsed).eq(true);
     })
     cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -1177,7 +1177,7 @@ describe('Point Tag Tests', function () {
 
 
   it('point constrained to grid, 3D', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -1196,13 +1196,13 @@ describe('Point Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a')
 
     cy.log(`move point to (1.2,3.6,5.4)`)
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components['/_point1'].movePoint({ x: 1.2, y: 3.6, z: 5.4 });
-      expect(components['/_point1'].stateValues.xs[0].tree).eq(1);
-      expect(components['/_point1'].stateValues.xs[1].tree).eq(4);
-      expect(components['/_point1'].stateValues.xs[2].tree).eq(5);
-      expect(components['/_point1'].stateValues.coords.tree).eqls(["vector", 1, 4, 5]);
+      await components['/_point1'].movePoint({ x: 1.2, y: 3.6, z: 5.4 });
+      expect((await components['/_point1'].stateValues.xs)[0].tree).eq(1);
+      expect((await components['/_point1'].stateValues.xs)[1].tree).eq(4);
+      expect((await components['/_point1'].stateValues.xs)[2].tree).eq(5);
+      expect((await components['/_point1'].stateValues.coords).tree).eqls(["vector", 1, 4, 5]);
       expect(components['/_point1'].stateValues.constraintUsed).eq(true);
     })
     cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -1211,13 +1211,13 @@ describe('Point Tag Tests', function () {
     cy.get('#\\/_boolean1').should('have.text', "true")
 
     cy.log(`move point to (-9.8,-7.4,-4.6)`)
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components['/_point1'].movePoint({ x: -9.8, y: -7.4, z: -4.6 });
-      expect(components['/_point1'].stateValues.xs[0].tree).eq(-10);
-      expect(components['/_point1'].stateValues.xs[1].tree).eq(-7);
-      expect(components['/_point1'].stateValues.xs[2].tree).eq(-5);
-      expect(components['/_point1'].stateValues.coords.tree).eqls(["vector", -10, -7, -5]);
+      await components['/_point1'].movePoint({ x: -9.8, y: -7.4, z: -4.6 });
+      expect((await components['/_point1'].stateValues.xs)[0].tree).eq(-10);
+      expect((await components['/_point1'].stateValues.xs)[1].tree).eq(-7);
+      expect((await components['/_point1'].stateValues.xs)[2].tree).eq(-5);
+      expect((await components['/_point1'].stateValues.coords).tree).eqls(["vector", -10, -7, -5]);
       expect(components['/_point1'].stateValues.constraintUsed).eq(true);
     })
     cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -1228,13 +1228,13 @@ describe('Point Tag Tests', function () {
 
     // test bug with number in scientific notation 
     cy.log(`move point to (-1.3E-14,2.5E-12,7.1E-21)`)
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components['/_point1'].movePoint({ x: -1.3E-14, y: 2.5E-12, z: 7.1E-121 });
-      expect(components['/_point1'].stateValues.xs[0].tree).eq(0);
-      expect(components['/_point1'].stateValues.xs[1].tree).eq(0);
-      expect(components['/_point1'].stateValues.xs[2].tree).eq(0);
-      expect(components['/_point1'].stateValues.coords.tree).eqls(["vector", 0, 0, 0]);
+      await components['/_point1'].movePoint({ x: -1.3E-14, y: 2.5E-12, z: 7.1E-121 });
+      expect((await components['/_point1'].stateValues.xs)[0].tree).eq(0);
+      expect((await components['/_point1'].stateValues.xs)[1].tree).eq(0);
+      expect((await components['/_point1'].stateValues.xs)[2].tree).eq(0);
+      expect((await components['/_point1'].stateValues.coords).tree).eqls(["vector", 0, 0, 0]);
       expect(components['/_point1'].stateValues.constraintUsed).eq(true);
     })
     cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -1246,7 +1246,7 @@ describe('Point Tag Tests', function () {
 
 
   it('point constrained to two contradictory grids', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -1270,11 +1270,11 @@ describe('Point Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a')
 
     cy.log("second constraint wins, but first constraint affects result")
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_point1'].stateValues.xs[0].tree).eq(3);
-      expect(components['/_point1'].stateValues.xs[1].tree).eq(5);
-      expect(components['/_point1'].stateValues.coords.tree).eqls(["vector", 3, 5]);
+      expect((await components['/_point1'].stateValues.xs)[0].tree).eq(3);
+      expect((await components['/_point1'].stateValues.xs)[1].tree).eq(5);
+      expect((await components['/_point1'].stateValues.coords).tree).eqls(["vector", 3, 5]);
       expect(components['/_point1'].stateValues.constraintUsed).eq(true);
     })
     cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -1288,12 +1288,12 @@ describe('Point Tag Tests', function () {
     // again in the normal direction.
     // If one can find a way to avoid this strange behavior, we can change this test
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components['/_point1'].movePoint({ x: 3, y: 2.9 });
-      expect(components['/_point1'].stateValues.xs[0].tree).eq(7);
-      expect(components['/_point1'].stateValues.xs[1].tree).eq(5);
-      expect(components['/_point1'].stateValues.coords.tree).eqls(["vector", 7, 5]);
+      await components['/_point1'].movePoint({ x: 3, y: 2.9 });
+      expect((await components['/_point1'].stateValues.xs)[0].tree).eq(7);
+      expect((await components['/_point1'].stateValues.xs)[1].tree).eq(5);
+      expect((await components['/_point1'].stateValues.coords).tree).eqls(["vector", 7, 5]);
       expect(components['/_point1'].stateValues.constraintUsed).eq(true);
     })
     cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -1303,7 +1303,7 @@ describe('Point Tag Tests', function () {
   });
 
   it('point constrained to grid and line', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -1325,10 +1325,10 @@ describe('Point Tag Tests', function () {
     // use this to wait for page to load
     cy.get('#\\/_text1').should('have.text', 'a')
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_point1'].stateValues.xs[0].tree).eq(-1);
-      expect(components['/_point1'].stateValues.xs[1].tree).eq(0);
+      expect((await components['/_point1'].stateValues.xs)[0].tree).eq(-1);
+      expect((await components['/_point1'].stateValues.xs)[1].tree).eq(0);
       expect(components['/_point1'].stateValues.constraintUsed).eq(true);
     })
     cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -1338,11 +1338,11 @@ describe('Point Tag Tests', function () {
 
 
     cy.log(`move point`)
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components['/_point1'].movePoint({ x: 8.5, y: -6.2 });
-      expect(components['/_point1'].stateValues.xs[0].tree).eq(9);
-      expect(components['/_point1'].stateValues.xs[1].tree).eq(0);
+      await components['/_point1'].movePoint({ x: 8.5, y: -6.2 });
+      expect((await components['/_point1'].stateValues.xs)[0].tree).eq(9);
+      expect((await components['/_point1'].stateValues.xs)[1].tree).eq(0);
       expect(components['/_point1'].stateValues.constraintUsed).eq(true);
     })
     cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -1352,7 +1352,7 @@ describe('Point Tag Tests', function () {
   });
 
   it('point constrained to graph', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -1374,11 +1374,11 @@ describe('Point Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a')
 
     cy.log(`move point to (105,3)`)
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components['/_point1'].movePoint({ x: 105, y: 3 });
-      expect(components['/_point1'].stateValues.xs[0].tree).eq(9.8);
-      expect(components['/_point1'].stateValues.xs[1].tree).eq(3);
+      await components['/_point1'].movePoint({ x: 105, y: 3 });
+      expect((await components['/_point1'].stateValues.xs)[0].tree).eq(9.8);
+      expect((await components['/_point1'].stateValues.xs)[1].tree).eq(3);
       expect(components['/_point1'].stateValues.constraintUsed).eq(true);
     })
     cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -1387,11 +1387,11 @@ describe('Point Tag Tests', function () {
     cy.get('#\\/_boolean1').should('have.text', "true")
 
     cy.log(`move point to (-30,11)`)
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components['/_point1'].movePoint({ x: -9.8, y: 9.8 });
-      expect(components['/_point1'].stateValues.xs[0].tree).eq(-9.8);
-      expect(components['/_point1'].stateValues.xs[1].tree).eq(9.8);
+      await components['/_point1'].movePoint({ x: -9.8, y: 9.8 });
+      expect((await components['/_point1'].stateValues.xs)[0].tree).eq(-9.8);
+      expect((await components['/_point1'].stateValues.xs)[1].tree).eq(9.8);
       expect(components['/_point1'].stateValues.constraintUsed).eq(true);
     })
     cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -1400,11 +1400,11 @@ describe('Point Tag Tests', function () {
     cy.get('#\\/_boolean1').should('have.text', "true")
 
     cy.log(`move point to (-3,1)`)
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components['/_point1'].movePoint({ x: -3, y: 1 });
-      expect(components['/_point1'].stateValues.xs[0].tree).eq(-3);
-      expect(components['/_point1'].stateValues.xs[1].tree).eq(1);
+      await components['/_point1'].movePoint({ x: -3, y: 1 });
+      expect((await components['/_point1'].stateValues.xs)[0].tree).eq(-3);
+      expect((await components['/_point1'].stateValues.xs)[1].tree).eq(1);
       expect(components['/_point1'].stateValues.constraintUsed).eq(true);
     })
     cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -1414,7 +1414,7 @@ describe('Point Tag Tests', function () {
   });
 
   it('three points with one constrained to grid', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -1443,20 +1443,20 @@ describe('Point Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a')
 
     cy.log(`move point1 to (1.2,3.6)`)
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components['/original'].movePoint({ x: 1.2, y: 3.6 });
-      expect(components['/original'].stateValues.xs[0].tree).eq(1.2);
-      expect(components['/original'].stateValues.xs[1].tree).eq(3.6);
-      expect(components['/original'].stateValues.coords.tree).eqls(["vector", 1.2, 3.6]);
+      await components['/original'].movePoint({ x: 1.2, y: 3.6 });
+      expect((await components['/original'].stateValues.xs)[0].tree).eq(1.2);
+      expect((await components['/original'].stateValues.xs)[1].tree).eq(3.6);
+      expect((await components['/original'].stateValues.coords).tree).eqls(["vector", 1.2, 3.6]);
       expect(components['/original'].stateValues.constraintUsed).eq(false);
-      expect(components['/constrained'].stateValues.xs[0].tree).eq(2);
-      expect(components['/constrained'].stateValues.xs[1].tree).eq(5);
-      expect(components['/constrained'].stateValues.coords.tree).eqls(["vector", 2, 5]);
+      expect((await components['/constrained'].stateValues.xs)[0].tree).eq(2);
+      expect((await components['/constrained'].stateValues.xs)[1].tree).eq(5);
+      expect((await components['/constrained'].stateValues.coords).tree).eqls(["vector", 2, 5]);
       expect(components['/constrained'].stateValues.constraintUsed).eq(true);
-      expect(components['/follower'].stateValues.xs[0].tree).eq(3);
-      expect(components['/follower'].stateValues.xs[1].tree).eq(6);
-      expect(components['/follower'].stateValues.coords.tree).eqls(["vector", 3, 6]);
+      expect((await components['/follower'].stateValues.xs)[0].tree).eq(3);
+      expect((await components['/follower'].stateValues.xs)[1].tree).eq(6);
+      expect((await components['/follower'].stateValues.coords).tree).eqls(["vector", 3, 6]);
       expect(components['/follower'].stateValues.constraintUsed).eq(false);
     })
     cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -1474,20 +1474,20 @@ describe('Point Tag Tests', function () {
     cy.get('#\\/_boolean3').should('have.text', 'false')
 
     cy.log(`move point2 to (-3.4,6.7)`)
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components['/constrained'].movePoint({ x: -3.4, y: 6.7 });
-      expect(components['/original'].stateValues.xs[0].tree).eq(-4);
-      expect(components['/original'].stateValues.xs[1].tree).eq(6);
-      expect(components['/original'].stateValues.coords.tree).eqls(["vector", -4, 6]);
+      await components['/constrained'].movePoint({ x: -3.4, y: 6.7 });
+      expect((await components['/original'].stateValues.xs)[0].tree).eq(-4);
+      expect((await components['/original'].stateValues.xs)[1].tree).eq(6);
+      expect((await components['/original'].stateValues.coords).tree).eqls(["vector", -4, 6]);
       expect(components['/original'].stateValues.constraintUsed).eq(false);
-      expect(components['/constrained'].stateValues.xs[0].tree).eq(-3);
-      expect(components['/constrained'].stateValues.xs[1].tree).eq(7);
-      expect(components['/constrained'].stateValues.coords.tree).eqls(["vector", -3, 7]);
+      expect((await components['/constrained'].stateValues.xs)[0].tree).eq(-3);
+      expect((await components['/constrained'].stateValues.xs)[1].tree).eq(7);
+      expect((await components['/constrained'].stateValues.coords).tree).eqls(["vector", -3, 7]);
       expect(components['/constrained'].stateValues.constraintUsed).eq(true);
-      expect(components['/follower'].stateValues.xs[0].tree).eq(-2);
-      expect(components['/follower'].stateValues.xs[1].tree).eq(8);
-      expect(components['/follower'].stateValues.coords.tree).eqls(["vector", -2, 8]);
+      expect((await components['/follower'].stateValues.xs)[0].tree).eq(-2);
+      expect((await components['/follower'].stateValues.xs)[1].tree).eq(8);
+      expect((await components['/follower'].stateValues.coords).tree).eqls(["vector", -2, 8]);
       expect(components['/follower'].stateValues.constraintUsed).eq(false);
     })
     cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -1504,20 +1504,20 @@ describe('Point Tag Tests', function () {
     cy.get('#\\/_boolean3').should('have.text', 'false')
 
     cy.log(`move point3 to (5.3, -2.2)`)
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components['/follower'].movePoint({ x: 5.3, y: -2.2 });
-      expect(components['/original'].stateValues.xs[0].tree).eq(3);
-      expect(components['/original'].stateValues.xs[1].tree).eq(-4);
-      expect(components['/original'].stateValues.coords.tree).eqls(["vector", 3, -4]);
+      await components['/follower'].movePoint({ x: 5.3, y: -2.2 });
+      expect((await components['/original'].stateValues.xs)[0].tree).eq(3);
+      expect((await components['/original'].stateValues.xs)[1].tree).eq(-4);
+      expect((await components['/original'].stateValues.coords).tree).eqls(["vector", 3, -4]);
       expect(components['/original'].stateValues.constraintUsed).eq(false);
-      expect(components['/constrained'].stateValues.xs[0].tree).eq(4);
-      expect(components['/constrained'].stateValues.xs[1].tree).eq(-3);
-      expect(components['/constrained'].stateValues.coords.tree).eqls(["vector", 4, -3]);
+      expect((await components['/constrained'].stateValues.xs)[0].tree).eq(4);
+      expect((await components['/constrained'].stateValues.xs)[1].tree).eq(-3);
+      expect((await components['/constrained'].stateValues.coords).tree).eqls(["vector", 4, -3]);
       expect(components['/constrained'].stateValues.constraintUsed).eq(true);
-      expect(components['/follower'].stateValues.xs[0].tree).eq(5);
-      expect(components['/follower'].stateValues.xs[1].tree).eq(-2);
-      expect(components['/follower'].stateValues.coords.tree).eqls(["vector", 5, -2]);
+      expect((await components['/follower'].stateValues.xs)[0].tree).eq(5);
+      expect((await components['/follower'].stateValues.xs)[1].tree).eq(-2);
+      expect((await components['/follower'].stateValues.coords).tree).eqls(["vector", 5, -2]);
       expect(components['/follower'].stateValues.constraintUsed).eq(false);
     })
     cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -1536,7 +1536,7 @@ describe('Point Tag Tests', function () {
   });
 
   it('points constrained to grid with parameters', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -1575,17 +1575,17 @@ describe('Point Tag Tests', function () {
     });
     cy.get('#\\/_math3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(3.2,5.6)')
-    }); cy.window().then((win) => {
+    }); cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/original'].stateValues.xs[0].tree).eq(1.2);
-      expect(components['/original'].stateValues.xs[1].tree).eq(3.6);
-      expect(components['/original'].stateValues.coords.tree).eqls(["vector", 1.2, 3.6]);
-      expect(components['/constrained'].stateValues.xs[0].tree).eq(2.2);
-      expect(components['/constrained'].stateValues.xs[1].tree).eq(4.6);
-      expect(components['/constrained'].stateValues.coords.tree).eqls(["vector", 2.2, 4.6]);
-      expect(components['/follower'].stateValues.xs[0].tree).eq(3.2);
-      expect(components['/follower'].stateValues.xs[1].tree).eq(5.6);
-      expect(components['/follower'].stateValues.coords.tree).eqls(["vector", 3.2, 5.6]);
+      expect((await components['/original'].stateValues.xs)[0].tree).eq(1.2);
+      expect((await components['/original'].stateValues.xs)[1].tree).eq(3.6);
+      expect((await components['/original'].stateValues.coords).tree).eqls(["vector", 1.2, 3.6]);
+      expect((await components['/constrained'].stateValues.xs)[0].tree).eq(2.2);
+      expect((await components['/constrained'].stateValues.xs)[1].tree).eq(4.6);
+      expect((await components['/constrained'].stateValues.coords).tree).eqls(["vector", 2.2, 4.6]);
+      expect((await components['/follower'].stateValues.xs)[0].tree).eq(3.2);
+      expect((await components['/follower'].stateValues.xs)[1].tree).eq(5.6);
+      expect((await components['/follower'].stateValues.coords).tree).eqls(["vector", 3.2, 5.6]);
     })
 
 
@@ -1593,18 +1593,19 @@ describe('Point Tag Tests', function () {
     cy.get('#\\/dx textarea').type('1', { force: true });
     cy.get('#\\/dy textarea').type('1', { force: true });
     cy.get('#\\/xoffset textarea').type('0', { force: true });
-    cy.get('#\\/yoffset textarea').type('0', { force: true }).blur();
-    cy.window().then((win) => {
+    cy.get('#\\/yoffset textarea').type('0{enter}', { force: true });
+
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/original'].stateValues.xs[0].tree).eq(1.2);
-      expect(components['/original'].stateValues.xs[1].tree).eq(3.6);
-      expect(components['/original'].stateValues.coords.tree).eqls(["vector", 1.2, 3.6]);
-      expect(components['/constrained'].stateValues.xs[0].tree).eq(2);
-      expect(components['/constrained'].stateValues.xs[1].tree).eq(5);
-      expect(components['/constrained'].stateValues.coords.tree).eqls(["vector", 2, 5]);
-      expect(components['/follower'].stateValues.xs[0].tree).eq(3);
-      expect(components['/follower'].stateValues.xs[1].tree).eq(6);
-      expect(components['/follower'].stateValues.coords.tree).eqls(["vector", 3, 6]);
+      expect((await components['/original'].stateValues.xs)[0].tree).eq(1.2);
+      expect((await components['/original'].stateValues.xs)[1].tree).eq(3.6);
+      expect((await components['/original'].stateValues.coords).tree).eqls(["vector", 1.2, 3.6]);
+      expect((await components['/constrained'].stateValues.xs)[0].tree).eq(2);
+      expect((await components['/constrained'].stateValues.xs)[1].tree).eq(5);
+      expect((await components['/constrained'].stateValues.coords).tree).eqls(["vector", 2, 5]);
+      expect((await components['/follower'].stateValues.xs)[0].tree).eq(3);
+      expect((await components['/follower'].stateValues.xs)[1].tree).eq(6);
+      expect((await components['/follower'].stateValues.coords).tree).eqls(["vector", 3, 6]);
     })
     cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(1.2,3.6)')
@@ -1617,18 +1618,18 @@ describe('Point Tag Tests', function () {
     });
 
     cy.log(`move point2 to (5.3, -2.2)`)
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components['/constrained'].movePoint({ x: 5.3, y: -2.2 });
-      expect(components['/original'].stateValues.xs[0].tree).eq(4);
-      expect(components['/original'].stateValues.xs[1].tree).eq(-3);
-      expect(components['/original'].stateValues.coords.tree).eqls(["vector", 4, -3]);
-      expect(components['/constrained'].stateValues.xs[0].tree).eq(5);
-      expect(components['/constrained'].stateValues.xs[1].tree).eq(-2);
-      expect(components['/constrained'].stateValues.coords.tree).eqls(["vector", 5, -2]);
-      expect(components['/follower'].stateValues.xs[0].tree).eq(6);
-      expect(components['/follower'].stateValues.xs[1].tree).eq(-1);
-      expect(components['/follower'].stateValues.coords.tree).eqls(["vector", 6, -1]);
+      await components['/constrained'].movePoint({ x: 5.3, y: -2.2 });
+      expect((await components['/original'].stateValues.xs)[0].tree).eq(4);
+      expect((await components['/original'].stateValues.xs)[1].tree).eq(-3);
+      expect((await components['/original'].stateValues.coords).tree).eqls(["vector", 4, -3]);
+      expect((await components['/constrained'].stateValues.xs)[0].tree).eq(5);
+      expect((await components['/constrained'].stateValues.xs)[1].tree).eq(-2);
+      expect((await components['/constrained'].stateValues.coords).tree).eqls(["vector", 5, -2]);
+      expect((await components['/follower'].stateValues.xs)[0].tree).eq(6);
+      expect((await components['/follower'].stateValues.xs)[1].tree).eq(-1);
+      expect((await components['/follower'].stateValues.coords).tree).eqls(["vector", 6, -1]);
     })
     cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(4,−3)')
@@ -1645,20 +1646,19 @@ describe('Point Tag Tests', function () {
     cy.get('#\\/dx textarea').type('{end}{backspace}3', { force: true });
     cy.get('#\\/dy textarea').type('{end}{backspace}0.5', { force: true });
     cy.get('#\\/xoffset textarea').type('{end}{backspace}1', { force: true });
-    cy.get('#\\/yoffset textarea').type('{end}{backspace}0.1', { force: true }).
-      blur();
-    cy.window().then((win) => {
+    cy.get('#\\/yoffset textarea').type('{end}{backspace}0.1{enter}', { force: true });
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/original'].stateValues.xs[0].tree).eq(4);
-      expect(components['/original'].stateValues.xs[1].tree).eq(-3);
-      expect(components['/original'].stateValues.coords.tree).eqls(["vector", 4, -3]);
-      expect(components['/constrained'].stateValues.xs[0].tree).eq(4);
-      expect(components['/constrained'].stateValues.xs[1].tree).eq(-1.9);
-      expect(components['/constrained'].stateValues.coords.tree).eqls(["vector", 4, -1.9]);
-      expect(components['/follower'].stateValues.xs[0].tree).eq(5);
-      expect(components['/follower'].stateValues.xs[1].tree).to.be.approximately(-0.9, 1E-10);
-      expect(components['/follower'].stateValues.coords.tree.slice(0, 2)).eqls(["vector", 5]);
-      expect(components['/follower'].stateValues.coords.tree[2]).to.be.approximately(-0.9, 1E-10);
+      expect((await components['/original'].stateValues.xs)[0].tree).eq(4);
+      expect((await components['/original'].stateValues.xs)[1].tree).eq(-3);
+      expect((await components['/original'].stateValues.coords).tree).eqls(["vector", 4, -3]);
+      expect((await components['/constrained'].stateValues.xs)[0].tree).eq(4);
+      expect((await components['/constrained'].stateValues.xs)[1].tree).eq(-1.9);
+      expect((await components['/constrained'].stateValues.coords).tree).eqls(["vector", 4, -1.9]);
+      expect((await components['/follower'].stateValues.xs)[0].tree).eq(5);
+      expect((await components['/follower'].stateValues.xs)[1].tree).to.be.approximately(-0.9, 1E-10);
+      expect((await components['/follower'].stateValues.coords).tree.slice(0, 2)).eqls(["vector", 5]);
+      expect((await components['/follower'].stateValues.coords).tree[2]).to.be.approximately(-0.9, 1E-10);
     })
     cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(4,−3)')
@@ -1671,18 +1671,18 @@ describe('Point Tag Tests', function () {
     // });
 
     cy.log(`move point to (-2.2, -8.6)`)
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components['/constrained'].movePoint({ x: -0.6, y: -8.6 });
-      expect(components['/original'].stateValues.xs[0].tree).eq(-3);
-      expect(components['/original'].stateValues.xs[1].tree).eq(-9.4);
-      expect(components['/original'].stateValues.coords.tree).eqls(["vector", -3, -9.4]);
-      expect(components['/constrained'].stateValues.xs[0].tree).eq(-2);
-      expect(components['/constrained'].stateValues.xs[1].tree).eq(-8.4);
-      expect(components['/constrained'].stateValues.coords.tree).eqls(["vector", -2, -8.4]);
-      expect(components['/follower'].stateValues.xs[0].tree).eq(-1);
-      expect(components['/follower'].stateValues.xs[1].tree).eq(-7.4);
-      expect(components['/follower'].stateValues.coords.tree).eqls(["vector", -1, -7.4]);
+      await components['/constrained'].movePoint({ x: -0.6, y: -8.6 });
+      expect((await components['/original'].stateValues.xs)[0].tree).eq(-3);
+      expect((await components['/original'].stateValues.xs)[1].tree).eq(-9.4);
+      expect((await components['/original'].stateValues.coords).tree).eqls(["vector", -3, -9.4]);
+      expect((await components['/constrained'].stateValues.xs)[0].tree).eq(-2);
+      expect((await components['/constrained'].stateValues.xs)[1].tree).eq(-8.4);
+      expect((await components['/constrained'].stateValues.coords).tree).eqls(["vector", -2, -8.4]);
+      expect((await components['/follower'].stateValues.xs)[0].tree).eq(-1);
+      expect((await components['/follower'].stateValues.xs)[1].tree).eq(-7.4);
+      expect((await components['/follower'].stateValues.coords).tree).eqls(["vector", -1, -7.4]);
     })
     cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(−3,−9.4)')
@@ -1697,7 +1697,7 @@ describe('Point Tag Tests', function () {
   });
 
   it('point attracted to grid', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -1718,11 +1718,11 @@ describe('Point Tag Tests', function () {
     // use this to wait for page to load
     cy.get('#\\/_text1').should('have.text', 'a')
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_point1'].stateValues.xs[0].tree).eq(-7);
-      expect(components['/_point1'].stateValues.xs[1].tree).eq(9);
-      expect(components['/_point1'].stateValues.coords.tree).eqls(["vector", -7, 9]);
+      expect((await components['/_point1'].stateValues.xs)[0].tree).eq(-7);
+      expect((await components['/_point1'].stateValues.xs)[1].tree).eq(9);
+      expect((await components['/_point1'].stateValues.coords).tree).eqls(["vector", -7, 9]);
       expect(components['/_point1'].stateValues.constraintUsed).eq(true);
     })
     cy.get('#\\/_math1 .mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -1731,12 +1731,12 @@ describe('Point Tag Tests', function () {
     cy.get('#\\/_boolean1').should('have.text', "true")
 
     cy.log(`move point to (1.1,3.6)`)
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components['/_point1'].movePoint({ x: 1.1, y: 3.6 });
-      expect(components['/_point1'].stateValues.xs[0].tree).eq(1.1);
-      expect(components['/_point1'].stateValues.xs[1].tree).eq(3.6);
-      expect(components['/_point1'].stateValues.coords.tree).eqls(["vector", 1.1, 3.6]);
+      await components['/_point1'].movePoint({ x: 1.1, y: 3.6 });
+      expect((await components['/_point1'].stateValues.xs)[0].tree).eq(1.1);
+      expect((await components['/_point1'].stateValues.xs)[1].tree).eq(3.6);
+      expect((await components['/_point1'].stateValues.coords).tree).eqls(["vector", 1.1, 3.6]);
       expect(components['/_point1'].stateValues.constraintUsed).eq(false);
     })
     cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -1745,12 +1745,12 @@ describe('Point Tag Tests', function () {
     cy.get('#\\/_boolean1').should('have.text', "false")
 
     cy.log(`move point to (1.1,3.9)`)
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components['/_point1'].movePoint({ x: 1.1, y: 3.9 });
-      expect(components['/_point1'].stateValues.xs[0].tree).eq(1);
-      expect(components['/_point1'].stateValues.xs[1].tree).eq(4);
-      expect(components['/_point1'].stateValues.coords.tree).eqls(["vector", 1, 4]);
+      await components['/_point1'].movePoint({ x: 1.1, y: 3.9 });
+      expect((await components['/_point1'].stateValues.xs)[0].tree).eq(1);
+      expect((await components['/_point1'].stateValues.xs)[1].tree).eq(4);
+      expect((await components['/_point1'].stateValues.coords).tree).eqls(["vector", 1, 4]);
       expect(components['/_point1'].stateValues.constraintUsed).eq(true);
     })
     cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -1761,12 +1761,12 @@ describe('Point Tag Tests', function () {
 
     // test bug with number in scientific notation 
     cy.log(`move point to (-1.3E-14,2.5E-12)`)
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components['/_point1'].movePoint({ x: -1.3E-14, y: 2.5E-12 });
-      expect(components['/_point1'].stateValues.xs[0].tree).eq(0);
-      expect(components['/_point1'].stateValues.xs[1].tree).eq(0);
-      expect(components['/_point1'].stateValues.coords.tree).eqls(["vector", 0, 0]);
+      await components['/_point1'].movePoint({ x: -1.3E-14, y: 2.5E-12 });
+      expect((await components['/_point1'].stateValues.xs)[0].tree).eq(0);
+      expect((await components['/_point1'].stateValues.xs)[1].tree).eq(0);
+      expect((await components['/_point1'].stateValues.coords).tree).eqls(["vector", 0, 0]);
       expect(components['/_point1'].stateValues.constraintUsed).eq(true);
     })
     cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -1777,7 +1777,7 @@ describe('Point Tag Tests', function () {
   });
 
   it('point attracted to grid, copied from outside', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -1801,11 +1801,11 @@ describe('Point Tag Tests', function () {
     // use this to wait for page to load
     cy.get('#\\/_text1').should('have.text', 'a')
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_point1'].stateValues.xs[0].tree).eq(-7);
-      expect(components['/_point1'].stateValues.xs[1].tree).eq(9);
-      expect(components['/_point1'].stateValues.coords.tree).eqls(["vector", -7, 9]);
+      expect((await components['/_point1'].stateValues.xs)[0].tree).eq(-7);
+      expect((await components['/_point1'].stateValues.xs)[1].tree).eq(9);
+      expect((await components['/_point1'].stateValues.coords).tree).eqls(["vector", -7, 9]);
       expect(components['/_point1'].stateValues.constraintUsed).eq(true);
     })
     cy.get('#\\/_math1 .mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -1814,12 +1814,12 @@ describe('Point Tag Tests', function () {
     cy.get('#\\/_boolean1').should('have.text', "true")
 
     cy.log(`move point to (1.1,3.6)`)
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components['/_point1'].movePoint({ x: 1.1, y: 3.6 });
-      expect(components['/_point1'].stateValues.xs[0].tree).eq(1.1);
-      expect(components['/_point1'].stateValues.xs[1].tree).eq(3.6);
-      expect(components['/_point1'].stateValues.coords.tree).eqls(["vector", 1.1, 3.6]);
+      await components['/_point1'].movePoint({ x: 1.1, y: 3.6 });
+      expect((await components['/_point1'].stateValues.xs)[0].tree).eq(1.1);
+      expect((await components['/_point1'].stateValues.xs)[1].tree).eq(3.6);
+      expect((await components['/_point1'].stateValues.coords).tree).eqls(["vector", 1.1, 3.6]);
       expect(components['/_point1'].stateValues.constraintUsed).eq(false);
     })
     cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -1828,12 +1828,12 @@ describe('Point Tag Tests', function () {
     cy.get('#\\/_boolean1').should('have.text', "false")
 
     cy.log(`move point to (1.1,3.9)`)
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components['/_point1'].movePoint({ x: 1.1, y: 3.9 });
-      expect(components['/_point1'].stateValues.xs[0].tree).eq(1);
-      expect(components['/_point1'].stateValues.xs[1].tree).eq(4);
-      expect(components['/_point1'].stateValues.coords.tree).eqls(["vector", 1, 4]);
+      await components['/_point1'].movePoint({ x: 1.1, y: 3.9 });
+      expect((await components['/_point1'].stateValues.xs)[0].tree).eq(1);
+      expect((await components['/_point1'].stateValues.xs)[1].tree).eq(4);
+      expect((await components['/_point1'].stateValues.coords).tree).eqls(["vector", 1, 4]);
       expect(components['/_point1'].stateValues.constraintUsed).eq(true);
     })
     cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -1844,7 +1844,7 @@ describe('Point Tag Tests', function () {
   });
 
   it('point attracted to grid, 3D', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -1862,12 +1862,12 @@ describe('Point Tag Tests', function () {
     // use this to wait for page to load
     cy.get('#\\/_text1').should('have.text', 'a')
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_point1'].stateValues.xs[0].tree).eq(-7);
-      expect(components['/_point1'].stateValues.xs[1].tree).eq(9);
-      expect(components['/_point1'].stateValues.xs[2].tree).eq(2);
-      expect(components['/_point1'].stateValues.coords.tree).eqls(["vector", -7, 9, 2]);
+      expect((await components['/_point1'].stateValues.xs)[0].tree).eq(-7);
+      expect((await components['/_point1'].stateValues.xs)[1].tree).eq(9);
+      expect((await components['/_point1'].stateValues.xs)[2].tree).eq(2);
+      expect((await components['/_point1'].stateValues.coords).tree).eqls(["vector", -7, 9, 2]);
       expect(components['/_point1'].stateValues.constraintUsed).eq(true);
     })
     cy.get('#\\/_math1 .mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -1876,13 +1876,13 @@ describe('Point Tag Tests', function () {
     cy.get('#\\/_boolean1').should('have.text', "true")
 
     cy.log(`move point to (1.1,3.9,5.4)`)
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components['/_point1'].movePoint({ x: 1.1, y: 3.9, z: 5.4 });
-      expect(components['/_point1'].stateValues.xs[0].tree).eq(1.1);
-      expect(components['/_point1'].stateValues.xs[1].tree).eq(3.9);
-      expect(components['/_point1'].stateValues.xs[2].tree).eq(5.4);
-      expect(components['/_point1'].stateValues.coords.tree).eqls(["vector", 1.1, 3.9, 5.4]);
+      await components['/_point1'].movePoint({ x: 1.1, y: 3.9, z: 5.4 });
+      expect((await components['/_point1'].stateValues.xs)[0].tree).eq(1.1);
+      expect((await components['/_point1'].stateValues.xs)[1].tree).eq(3.9);
+      expect((await components['/_point1'].stateValues.xs)[2].tree).eq(5.4);
+      expect((await components['/_point1'].stateValues.coords).tree).eqls(["vector", 1.1, 3.9, 5.4]);
       expect(components['/_point1'].stateValues.constraintUsed).eq(false);
     })
     cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -1891,13 +1891,13 @@ describe('Point Tag Tests', function () {
     cy.get('#\\/_boolean1').should('have.text', "false")
 
     cy.log(`move point to (1.1,3.9,5.9)`)
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components['/_point1'].movePoint({ x: 1.1, y: 3.9, z: 5.9 });
-      expect(components['/_point1'].stateValues.xs[0].tree).eq(1);
-      expect(components['/_point1'].stateValues.xs[1].tree).eq(4);
-      expect(components['/_point1'].stateValues.xs[2].tree).eq(6);
-      expect(components['/_point1'].stateValues.coords.tree).eqls(["vector", 1, 4, 6]);
+      await components['/_point1'].movePoint({ x: 1.1, y: 3.9, z: 5.9 });
+      expect((await components['/_point1'].stateValues.xs)[0].tree).eq(1);
+      expect((await components['/_point1'].stateValues.xs)[1].tree).eq(4);
+      expect((await components['/_point1'].stateValues.xs)[2].tree).eq(6);
+      expect((await components['/_point1'].stateValues.coords).tree).eqls(["vector", 1, 4, 6]);
       expect(components['/_point1'].stateValues.constraintUsed).eq(true);
     })
     cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -1908,13 +1908,13 @@ describe('Point Tag Tests', function () {
 
     // test bug with number in scientific notation 
     cy.log(`move point to (-1.3E-14,2.5E-12,-2.3E-19)`)
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components['/_point1'].movePoint({ x: -1.3E-14, y: 2.5E-12, z: -2.3E-19 });
-      expect(components['/_point1'].stateValues.xs[0].tree).eq(0);
-      expect(components['/_point1'].stateValues.xs[1].tree).eq(0);
-      expect(components['/_point1'].stateValues.xs[2].tree).eq(0);
-      expect(components['/_point1'].stateValues.coords.tree).eqls(["vector", 0, 0, 0]);
+      await components['/_point1'].movePoint({ x: -1.3E-14, y: 2.5E-12, z: -2.3E-19 });
+      expect((await components['/_point1'].stateValues.xs)[0].tree).eq(0);
+      expect((await components['/_point1'].stateValues.xs)[1].tree).eq(0);
+      expect((await components['/_point1'].stateValues.xs)[2].tree).eq(0);
+      expect((await components['/_point1'].stateValues.coords).tree).eqls(["vector", 0, 0, 0]);
       expect(components['/_point1'].stateValues.constraintUsed).eq(true);
     })
     cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -1926,7 +1926,7 @@ describe('Point Tag Tests', function () {
 
 
   it('point attracted to grid, including gridlines', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -1954,22 +1954,22 @@ describe('Point Tag Tests', function () {
     });
     cy.get('#\\/_boolean1').should('have.text', "true");
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_point1'].stateValues.xs[0].tree).eq(3);
-      expect(components['/_point1'].stateValues.xs[1].tree).eq(-3.4);
-      expect(components['/_point1'].stateValues.coords.tree).eqls(["vector", 3, -3.4]);
+      expect((await components['/_point1'].stateValues.xs)[0].tree).eq(3);
+      expect((await components['/_point1'].stateValues.xs)[1].tree).eq(-3.4);
+      expect((await components['/_point1'].stateValues.coords).tree).eqls(["vector", 3, -3.4]);
       expect(components['/_point1'].stateValues.constraintUsed).eq(true);
     })
 
 
     cy.log(`move point to (1.3,3.9)`)
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components['/_point1'].movePoint({ x: 1.3, y: 3.9 });
-      expect(components['/_point1'].stateValues.xs[0].tree).eq(1.3);
-      expect(components['/_point1'].stateValues.xs[1].tree).eq(4);
-      expect(components['/_point1'].stateValues.coords.tree).eqls(["vector", 1.3, 4]);
+      await components['/_point1'].movePoint({ x: 1.3, y: 3.9 });
+      expect((await components['/_point1'].stateValues.xs)[0].tree).eq(1.3);
+      expect((await components['/_point1'].stateValues.xs)[1].tree).eq(4);
+      expect((await components['/_point1'].stateValues.coords).tree).eqls(["vector", 1.3, 4]);
       expect(components['/_point1'].stateValues.constraintUsed).eq(true);
     })
     cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -1978,12 +1978,12 @@ describe('Point Tag Tests', function () {
     cy.get('#\\/_boolean1').should('have.text', "true");
 
     cy.log(`move point to (1.1,3.9)`)
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components['/_point1'].movePoint({ x: 1.1, y: 3.9 });
-      expect(components['/_point1'].stateValues.xs[0].tree).eq(1);
-      expect(components['/_point1'].stateValues.xs[1].tree).eq(4);
-      expect(components['/_point1'].stateValues.coords.tree).eqls(["vector", 1, 4]);
+      await components['/_point1'].movePoint({ x: 1.1, y: 3.9 });
+      expect((await components['/_point1'].stateValues.xs)[0].tree).eq(1);
+      expect((await components['/_point1'].stateValues.xs)[1].tree).eq(4);
+      expect((await components['/_point1'].stateValues.coords).tree).eqls(["vector", 1, 4]);
       expect(components['/_point1'].stateValues.constraintUsed).eq(true);
     })
     cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -1992,12 +1992,12 @@ describe('Point Tag Tests', function () {
     cy.get('#\\/_boolean1').should('have.text', "true");
 
     cy.log(`move point to (1.3,3.7)`)
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components['/_point1'].movePoint({ x: 1.3, y: 3.7 });
-      expect(components['/_point1'].stateValues.xs[0].tree).eq(1.3);
-      expect(components['/_point1'].stateValues.xs[1].tree).eq(3.7);
-      expect(components['/_point1'].stateValues.coords.tree).eqls(["vector", 1.3, 3.7]);
+      await components['/_point1'].movePoint({ x: 1.3, y: 3.7 });
+      expect((await components['/_point1'].stateValues.xs)[0].tree).eq(1.3);
+      expect((await components['/_point1'].stateValues.xs)[1].tree).eq(3.7);
+      expect((await components['/_point1'].stateValues.coords).tree).eqls(["vector", 1.3, 3.7]);
       expect(components['/_point1'].stateValues.constraintUsed).eq(false);
     })
     cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -2008,7 +2008,7 @@ describe('Point Tag Tests', function () {
   });
 
   it('point attracted to grid with parameters', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -2039,11 +2039,11 @@ describe('Point Tag Tests', function () {
 
     cy.log(`no constraints with blanks`)
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_point1'].stateValues.xs[0].tree).eq(-7.1);
-      expect(components['/_point1'].stateValues.xs[1].tree).eq(8.9);
-      expect(components['/_point1'].stateValues.coords.tree).eqls(["vector", -7.1, 8.9]);
+      expect((await components['/_point1'].stateValues.xs)[0].tree).eq(-7.1);
+      expect((await components['/_point1'].stateValues.xs)[1].tree).eq(8.9);
+      expect((await components['/_point1'].stateValues.coords).tree).eqls(["vector", -7.1, 8.9]);
       expect(components['/_point1'].stateValues.constraintUsed).eq(false);
     })
     cy.get('#\\/_math1 .mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -2057,13 +2057,12 @@ describe('Point Tag Tests', function () {
     cy.get('#\\/xoffset textarea').type('0', { force: true });
     cy.get('#\\/yoffset textarea').type('0', { force: true });
     cy.get('#\\/xthreshold textarea').type('0.2', { force: true });
-    cy.get('#\\/ythreshold textarea').type('0.2', { force: true }).
-      blur();
-    cy.window().then((win) => {
+    cy.get('#\\/ythreshold textarea').type('0.2{enter}', { force: true });
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_point1'].stateValues.xs[0].tree).eq(-7);
-      expect(components['/_point1'].stateValues.xs[1].tree).eq(9);
-      expect(components['/_point1'].stateValues.coords.tree).eqls(["vector", -7, 9]);
+      expect((await components['/_point1'].stateValues.xs)[0].tree).eq(-7);
+      expect((await components['/_point1'].stateValues.xs)[1].tree).eq(9);
+      expect((await components['/_point1'].stateValues.coords).tree).eqls(["vector", -7, 9]);
       expect(components['/_point1'].stateValues.constraintUsed).eq(true);
     })
     cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -2075,13 +2074,12 @@ describe('Point Tag Tests', function () {
     cy.get('#\\/dx textarea').type('{end}{backspace}3', { force: true });
     cy.get('#\\/dy textarea').type('{end}{backspace}0.5', { force: true });
     cy.get('#\\/xoffset textarea').type('{end}{backspace}1', { force: true });
-    cy.get('#\\/yoffset textarea').type('{end}{backspace}0.1', { force: true }).
-      blur();
-    cy.window().then((win) => {
+    cy.get('#\\/yoffset textarea').type('{end}{backspace}0.1{enter}', { force: true });
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_point1'].stateValues.xs[0].tree).eq(-7.1);
-      expect(components['/_point1'].stateValues.xs[1].tree).eq(8.9);
-      expect(components['/_point1'].stateValues.coords.tree).eqls(["vector", -7.1, 8.9]);
+      expect((await components['/_point1'].stateValues.xs)[0].tree).eq(-7.1);
+      expect((await components['/_point1'].stateValues.xs)[1].tree).eq(8.9);
+      expect((await components['/_point1'].stateValues.coords).tree).eqls(["vector", -7.1, 8.9]);
       expect(components['/_point1'].stateValues.constraintUsed).eq(false);
     })
     cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -2090,13 +2088,12 @@ describe('Point Tag Tests', function () {
     cy.get('#\\/_boolean1').should('have.text', "false")
 
     cy.get('#\\/xthreshold textarea').type('{end}{backspace}{backspace}{backspace}1.0', { force: true });
-    cy.get('#\\/ythreshold textarea').type('{end}{backspace}{backspace}{backspace}0.3', { force: true }).
-      blur();
-    cy.window().then((win) => {
+    cy.get('#\\/ythreshold textarea').type('{end}{backspace}{backspace}{backspace}0.3{enter}', { force: true });
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_point1'].stateValues.xs[0].tree).eq(-8);
-      expect(components['/_point1'].stateValues.xs[1].tree).eq(9.1);
-      expect(components['/_point1'].stateValues.coords.tree).eqls(["vector", -8, 9.1]);
+      expect((await components['/_point1'].stateValues.xs)[0].tree).eq(-8);
+      expect((await components['/_point1'].stateValues.xs)[1].tree).eq(9.1);
+      expect((await components['/_point1'].stateValues.coords).tree).eqls(["vector", -8, 9.1]);
       expect(components['/_point1'].stateValues.constraintUsed).eq(true);
     })
     cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -2109,7 +2106,7 @@ describe('Point Tag Tests', function () {
   });
 
   it('point constrained to line', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -2130,43 +2127,43 @@ describe('Point Tag Tests', function () {
     // use this to wait for page to load
     cy.get('#\\/_text1').should('have.text', 'a');
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let constraintUsed1 = components['/constraintUsed'].replacements[0];
       let constraintUsed1Anchor = cesc('#' + constraintUsed1.componentName);
 
       cy.log(`point is on line`);
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let components = Object.assign({}, win.state.components);
-        expect(components['/A'].stateValues.xs[0].tree + components['/A'].stateValues.xs[1].tree).eq(2);
+        expect((await components['/A'].stateValues.xs)[0].tree + (await components['/A'].stateValues.xs)[1].tree).eq(2);
         expect(components['/A'].stateValues.constraintUsed).eq(true);
       })
       cy.get(constraintUsed1Anchor).should('have.text', "true")
 
 
       cy.log(`move point`);
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let components = Object.assign({}, win.state.components);
-        components['/A'].movePoint({ x: 9, y: -3 });
-        expect(components['/A'].stateValues.xs[0].tree + components['/A'].stateValues.xs[1].tree).eq(2);
+        await components['/A'].movePoint({ x: 9, y: -3 });
+        expect((await components['/A'].stateValues.xs)[0].tree + (await components['/A'].stateValues.xs)[1].tree).eq(2);
         expect(components['/A'].stateValues.constraintUsed).eq(true);
       })
       cy.get(constraintUsed1Anchor).should('have.text', "true")
 
       cy.log(`change line`);
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let components = Object.assign({}, win.state.components);
-        components['/_point1'].movePoint({ x: 3, y: 1 });
-        expect(components['/A'].stateValues.xs[0].tree - components['/A'].stateValues.xs[1].tree).eq(2);
+        await components['/_point1'].movePoint({ x: 3, y: 1 });
+        expect((await components['/A'].stateValues.xs)[0].tree - (await components['/A'].stateValues.xs)[1].tree).eq(2);
         expect(components['/A'].stateValues.constraintUsed).eq(true);
       })
       cy.get(constraintUsed1Anchor).should('have.text', "true")
 
       cy.log(`move point`);
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let components = Object.assign({}, win.state.components);
-        components['/A'].movePoint({ x: 9, y: -3 });
-        expect(components['/A'].stateValues.xs[0].tree - components['/A'].stateValues.xs[1].tree).eq(2);
+        await components['/A'].movePoint({ x: 9, y: -3 });
+        expect((await components['/A'].stateValues.xs)[0].tree - (await components['/A'].stateValues.xs)[1].tree).eq(2);
         expect(components['/A'].stateValues.constraintUsed).eq(true);
       })
       cy.get(constraintUsed1Anchor).should('have.text', "true")
@@ -2175,7 +2172,7 @@ describe('Point Tag Tests', function () {
   });
 
   it('point attracted to line', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -2196,44 +2193,44 @@ describe('Point Tag Tests', function () {
     // use this to wait for page to load
     cy.get('#\\/_text1').should('have.text', 'a')
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let constraintUsed1 = components['/constraintUsed'].replacements[0];
       let constraintUsed1Anchor = cesc('#' + constraintUsed1.componentName);
 
       cy.log(`point is not on line`);
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let components = Object.assign({}, win.state.components);
-        expect(components['/A'].stateValues.xs[0].tree).eq(-1);
-        expect(components['/A'].stateValues.xs[1].tree).eq(-5);
-        expect(components['/A'].stateValues.coords.tree).eqls(["vector", -1, -5]);
+        expect((await components['/A'].stateValues.xs)[0].tree).eq(-1);
+        expect((await components['/A'].stateValues.xs)[1].tree).eq(-5);
+        expect((await components['/A'].stateValues.coords).tree).eqls(["vector", -1, -5]);
         expect(components['/A'].stateValues.constraintUsed).eq(false)
       })
       cy.get(constraintUsed1Anchor).should('have.text', "false")
 
       cy.log(`move point near line`);
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let components = Object.assign({}, win.state.components);
-        components['/A'].movePoint({ x: 9.1, y: -6.8 });
-        expect(components['/A'].stateValues.xs[0].tree + components['/A'].stateValues.xs[1].tree).closeTo(2, 1E-14);
+        await components['/A'].movePoint({ x: 9.1, y: -6.8 });
+        expect((await components['/A'].stateValues.xs)[0].tree + (await components['/A'].stateValues.xs)[1].tree).closeTo(2, 1E-14);
         expect(components['/A'].stateValues.constraintUsed).eq(true);
       })
       cy.get(constraintUsed1Anchor).should('have.text', "true")
 
       cy.log(`change line, point not on line`);
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let components = Object.assign({}, win.state.components);
-        components['/_point1'].movePoint({ x: 3, y: 1 });
-        expect(components['/A'].stateValues.xs[0].tree + components['/A'].stateValues.xs[1].tree).closeTo(2, 1E-14);
+        await components['/_point1'].movePoint({ x: 3, y: 1 });
+        expect((await components['/A'].stateValues.xs)[0].tree + (await components['/A'].stateValues.xs)[1].tree).closeTo(2, 1E-14);
         expect(components['/A'].stateValues.constraintUsed).eq(false)
       })
       cy.get(constraintUsed1Anchor).should('have.text', "false")
 
       cy.log(`move point`);
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let components = Object.assign({}, win.state.components);
-        components['/A'].movePoint({ x: -5.1, y: -6.8 });
-        expect(components['/A'].stateValues.xs[0].tree - components['/A'].stateValues.xs[1].tree).closeTo(2, 1E-14);
+        await components['/A'].movePoint({ x: -5.1, y: -6.8 });
+        expect((await components['/A'].stateValues.xs)[0].tree - (await components['/A'].stateValues.xs)[1].tree).closeTo(2, 1E-14);
         expect(components['/A'].stateValues.constraintUsed).eq(true);
       })
       cy.get(constraintUsed1Anchor).should('have.text', "true")
@@ -2242,7 +2239,7 @@ describe('Point Tag Tests', function () {
   });
 
   it('point constrained to lines and points', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <graph>
@@ -2273,44 +2270,44 @@ describe('Point Tag Tests', function () {
     // use this to wait for page to load
     cy.get('#\\/_text1').should('have.text', 'a');
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let constraintUsed1 = components['/constraintUsed'].replacements[0];
       let constraintUsed1Anchor = cesc('#' + constraintUsed1.componentName);
 
       cy.log(`point is on line`);
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let components = Object.assign({}, win.state.components);
-        expect(components['/_point1'].stateValues.xs[1].tree - components['/_point1'].stateValues.xs[0].tree).eq(-3);
+        expect((await components['/_point1'].stateValues.xs)[1].tree - (await components['/_point1'].stateValues.xs)[0].tree).eq(-3);
         expect(components['/_point1'].stateValues.constraintUsed).eq(true)
       })
       cy.get(constraintUsed1Anchor).should('have.text', "true")
 
       cy.log(`move point to lower right`);
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let components = Object.assign({}, win.state.components);
-        components['/_point1'].movePoint({ x: 9, y: -5 });
-        expect(components['/_point1'].stateValues.xs[1].tree - components['/_point1'].stateValues.xs[0].tree).eq(-3);
+        await components['/_point1'].movePoint({ x: 9, y: -5 });
+        expect((await components['/_point1'].stateValues.xs)[1].tree - (await components['/_point1'].stateValues.xs)[0].tree).eq(-3);
         expect(components['/_point1'].stateValues.constraintUsed).eq(true)
       })
       cy.get(constraintUsed1Anchor).should('have.text', "true")
 
       cy.log(`move point near points`);
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let components = Object.assign({}, win.state.components);
-        components['/_point1'].movePoint({ x: 3.5, y: 5.5 });
-        expect(components['/_point1'].stateValues.xs[0].tree).eq(3);
-        expect(components['/_point1'].stateValues.xs[1].tree).eq(5);
-        expect(components['/_point1'].stateValues.coords.tree).eqls(["vector", 3, 5]);
+        await components['/_point1'].movePoint({ x: 3.5, y: 5.5 });
+        expect((await components['/_point1'].stateValues.xs)[0].tree).eq(3);
+        expect((await components['/_point1'].stateValues.xs)[1].tree).eq(5);
+        expect((await components['/_point1'].stateValues.coords).tree).eqls(["vector", 3, 5]);
         expect(components['/_point1'].stateValues.constraintUsed).eq(true)
       })
       cy.get(constraintUsed1Anchor).should('have.text', "true")
 
       cy.log(`move point to upper left`);
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let components = Object.assign({}, win.state.components);
-        components['/_point1'].movePoint({ x: -9, y: 8 });
-        expect(components['/_point1'].stateValues.xs[1].tree - components['/_point1'].stateValues.xs[0].tree).eq(7);
+        await components['/_point1'].movePoint({ x: -9, y: 8 });
+        expect((await components['/_point1'].stateValues.xs)[1].tree - (await components['/_point1'].stateValues.xs)[0].tree).eq(7);
         expect(components['/_point1'].stateValues.constraintUsed).eq(true);
       })
       cy.get(constraintUsed1Anchor).should('have.text', "true")
@@ -2318,7 +2315,7 @@ describe('Point Tag Tests', function () {
   });
 
   it('point attracted to lines and points', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <graph>
@@ -2349,68 +2346,68 @@ describe('Point Tag Tests', function () {
     // use this to wait for page to load
     cy.get('#\\/_text1').should('have.text', 'a');
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let constraintUsed1 = components['/constraintUsed'].replacements[0];
       let constraintUsed1Anchor = cesc('#' + constraintUsed1.componentName);
 
       cy.log(`point is in original location`);
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let components = Object.assign({}, win.state.components);
-        expect(components['/_point1'].stateValues.xs[0].tree).eq(3);
-        expect(components['/_point1'].stateValues.xs[1].tree).eq(2);
-        expect(components['/_point1'].stateValues.coords.tree).eqls(["vector", 3, 2]);
+        expect((await components['/_point1'].stateValues.xs)[0].tree).eq(3);
+        expect((await components['/_point1'].stateValues.xs)[1].tree).eq(2);
+        expect((await components['/_point1'].stateValues.coords).tree).eqls(["vector", 3, 2]);
         expect(components['/_point1'].stateValues.constraintUsed).eq(false);
       })
       cy.get(constraintUsed1Anchor).should('have.text', "false")
 
       cy.log(`point is on line`);
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let components = Object.assign({}, win.state.components);
-        components['/_point1'].movePoint({ x: 3.1, y: 0.5 });
-        expect(components['/_point1'].stateValues.xs[1].tree - components['/_point1'].stateValues.xs[0].tree).eq(-3);
+        await components['/_point1'].movePoint({ x: 3.1, y: 0.5 });
+        expect((await components['/_point1'].stateValues.xs)[1].tree - (await components['/_point1'].stateValues.xs)[0].tree).eq(-3);
         expect(components['/_point1'].stateValues.constraintUsed).eq(true)
       })
       cy.get(constraintUsed1Anchor).should('have.text', "true")
 
       cy.log(`move point to lower right`);
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let components = Object.assign({}, win.state.components);
-        components['/_point1'].movePoint({ x: 9, y: -5 });
-        expect(components['/_point1'].stateValues.xs[0].tree).eq(9);
-        expect(components['/_point1'].stateValues.xs[1].tree).eq(-5);
-        expect(components['/_point1'].stateValues.coords.tree).eqls(["vector", 9, -5]);
+        await components['/_point1'].movePoint({ x: 9, y: -5 });
+        expect((await components['/_point1'].stateValues.xs)[0].tree).eq(9);
+        expect((await components['/_point1'].stateValues.xs)[1].tree).eq(-5);
+        expect((await components['/_point1'].stateValues.coords).tree).eqls(["vector", 9, -5]);
         expect(components['/_point1'].stateValues.constraintUsed).eq(false);
       })
       cy.get(constraintUsed1Anchor).should('have.text', "false")
 
       cy.log(`move point near points`);
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let components = Object.assign({}, win.state.components);
-        components['/_point1'].movePoint({ x: 3.1, y: 5.1 });
-        expect(components['/_point1'].stateValues.xs[0].tree).eq(3);
-        expect(components['/_point1'].stateValues.xs[1].tree).eq(5);
-        expect(components['/_point1'].stateValues.coords.tree).eqls(["vector", 3, 5]);
+        await components['/_point1'].movePoint({ x: 3.1, y: 5.1 });
+        expect((await components['/_point1'].stateValues.xs)[0].tree).eq(3);
+        expect((await components['/_point1'].stateValues.xs)[1].tree).eq(5);
+        expect((await components['/_point1'].stateValues.coords).tree).eqls(["vector", 3, 5]);
         expect(components['/_point1'].stateValues.constraintUsed).eq(true)
       })
       cy.get(constraintUsed1Anchor).should('have.text', "true")
 
       cy.log(`move point to upper left`);
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let components = Object.assign({}, win.state.components);
-        components['/_point1'].movePoint({ x: -9, y: 8 });
-        expect(components['/_point1'].stateValues.xs[0].tree).eq(-9);
-        expect(components['/_point1'].stateValues.xs[1].tree).eq(8);
-        expect(components['/_point1'].stateValues.coords.tree).eqls(["vector", -9, 8]);
+        await components['/_point1'].movePoint({ x: -9, y: 8 });
+        expect((await components['/_point1'].stateValues.xs)[0].tree).eq(-9);
+        expect((await components['/_point1'].stateValues.xs)[1].tree).eq(8);
+        expect((await components['/_point1'].stateValues.coords).tree).eqls(["vector", -9, 8]);
         expect(components['/_point1'].stateValues.constraintUsed).eq(false);
       })
       cy.get(constraintUsed1Anchor).should('have.text', "false")
 
       cy.log(`move point near upper line`);
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let components = Object.assign({}, win.state.components);
-        components['/_point1'].movePoint({ x: -8.8, y: -2.3 });
-        expect(components['/_point1'].stateValues.xs[1].tree - components['/_point1'].stateValues.xs[0].tree).eq(7);
+        await components['/_point1'].movePoint({ x: -8.8, y: -2.3 });
+        expect((await components['/_point1'].stateValues.xs)[1].tree - (await components['/_point1'].stateValues.xs)[0].tree).eq(7);
         expect(components['/_point1'].stateValues.constraintUsed).eq(true);
       })
       cy.get(constraintUsed1Anchor).should('have.text', "true")
@@ -2418,7 +2415,7 @@ describe('Point Tag Tests', function () {
   });
 
   it('point constrained to union of lines and grid', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <graph>
@@ -2445,52 +2442,52 @@ describe('Point Tag Tests', function () {
     // use this to wait for page to load
     cy.get('#\\/_text1').should('have.text', 'a');
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let constraintUsed1 = components['/constraintUsed'].replacements[0];
       let constraintUsed1Anchor = cesc('#' + constraintUsed1.componentName);
 
       cy.log(`point on grid`);
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let components = Object.assign({}, win.state.components);
-        expect(components['/A'].stateValues.xs[0].tree).to.be.closeTo(8, 1E-12);
-        expect(components['/A'].stateValues.xs[1].tree).to.be.closeTo(4, 1E-12);
+        expect((await components['/A'].stateValues.xs)[0].tree).to.be.closeTo(8, 1E-12);
+        expect((await components['/A'].stateValues.xs)[1].tree).to.be.closeTo(4, 1E-12);
         expect(components['/A'].stateValues.constraintUsed).eq(true)
       })
       cy.get(constraintUsed1Anchor).should('have.text', "true")
 
       cy.log(`move near line x+y=0`);
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let components = Object.assign({}, win.state.components);
-        components['/A'].movePoint({ x: -7.1, y: 8.2 });
-        expect(components['/A'].stateValues.xs[0].tree + components['/A'].stateValues.xs[1].tree).to.be.closeTo(0, 1E-12);
+        await components['/A'].movePoint({ x: -7.1, y: 8.2 });
+        expect((await components['/A'].stateValues.xs)[0].tree + (await components['/A'].stateValues.xs)[1].tree).to.be.closeTo(0, 1E-12);
         expect(components['/A'].stateValues.constraintUsed).eq(true);
       })
       cy.get(constraintUsed1Anchor).should('have.text', "true")
 
       cy.log(`move near line x=y`);
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let components = Object.assign({}, win.state.components);
-        components['/A'].movePoint({ x: 7.1, y: 8.2 });
-        expect(components['/A'].stateValues.xs[0].tree - components['/A'].stateValues.xs[1].tree).to.be.closeTo(0, 1E-12);
+        await components['/A'].movePoint({ x: 7.1, y: 8.2 });
+        expect((await components['/A'].stateValues.xs)[0].tree - (await components['/A'].stateValues.xs)[1].tree).to.be.closeTo(0, 1E-12);
         expect(components['/A'].stateValues.constraintUsed).eq(true);
       })
       cy.get(constraintUsed1Anchor).should('have.text', "true")
 
       cy.log(`move near line x=2y+8`);
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let components = Object.assign({}, win.state.components);
-        components['/A'].movePoint({ x: 3.5, y: -2.5 });
-        expect(components['/A'].stateValues.xs[0].tree - 2 * components['/A'].stateValues.xs[1].tree).to.be.closeTo(8, 1E-12);
+        await components['/A'].movePoint({ x: 3.5, y: -2.5 });
+        expect((await components['/A'].stateValues.xs)[0].tree - 2 * (await components['/A'].stateValues.xs)[1].tree).to.be.closeTo(8, 1E-12);
         expect(components['/A'].stateValues.constraintUsed).eq(true);
       })
       cy.get(constraintUsed1Anchor).should('have.text', "true")
 
       cy.log(`move near line x=-2y-8`);
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let components = Object.assign({}, win.state.components);
-        components['/A'].movePoint({ x: -3.5, y: -2.5 });
-        expect(components['/A'].stateValues.xs[0].tree + 2 * components['/A'].stateValues.xs[1].tree).to.be.closeTo(-8, 1E-12);
+        await components['/A'].movePoint({ x: -3.5, y: -2.5 });
+        expect((await components['/A'].stateValues.xs)[0].tree + 2 * (await components['/A'].stateValues.xs)[1].tree).to.be.closeTo(-8, 1E-12);
         expect(components['/A'].stateValues.constraintUsed).eq(true);
       })
       cy.get(constraintUsed1Anchor).should('have.text', "true")
@@ -2499,7 +2496,7 @@ describe('Point Tag Tests', function () {
   });
 
   it('point attracted to union of lines and grid', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <graph>
@@ -2528,83 +2525,83 @@ describe('Point Tag Tests', function () {
     // use this to wait for page to load
     cy.get('#\\/_text1').should('have.text', 'a');
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let constraintUsed1 = components['/constraintUsed'].replacements[0];
       let constraintUsed1Anchor = cesc('#' + constraintUsed1.componentName);
 
       cy.log(`point in original location`);
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let components = Object.assign({}, win.state.components);
-        expect(components['/A'].stateValues.xs[0].tree).to.be.closeTo(7, 1E-12);
-        expect(components['/A'].stateValues.xs[1].tree).to.be.closeTo(3, 1E-12);
+        expect((await components['/A'].stateValues.xs)[0].tree).to.be.closeTo(7, 1E-12);
+        expect((await components['/A'].stateValues.xs)[1].tree).to.be.closeTo(3, 1E-12);
         expect(components['/A'].stateValues.constraintUsed).eq(false);
       })
       cy.get(constraintUsed1Anchor).should('have.text', "false")
 
       cy.log(`move point near grid`);
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let components = Object.assign({}, win.state.components);
-        components['/A'].movePoint({ x: 0.2, y: -1.8 });
-        expect(components['/A'].stateValues.xs[0].tree).to.be.closeTo(0, 1E-12);
-        expect(components['/A'].stateValues.xs[1].tree).to.be.closeTo(-2, 1E-12);
+        await components['/A'].movePoint({ x: 0.2, y: -1.8 });
+        expect((await components['/A'].stateValues.xs)[0].tree).to.be.closeTo(0, 1E-12);
+        expect((await components['/A'].stateValues.xs)[1].tree).to.be.closeTo(-2, 1E-12);
         expect(components['/A'].stateValues.constraintUsed).eq(true)
       })
       cy.get(constraintUsed1Anchor).should('have.text', "true")
 
       cy.log(`move not close enough to line x+y=0`);
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let components = Object.assign({}, win.state.components);
-        components['/A'].movePoint({ x: -7.1, y: 8.2 });
-        expect(components['/A'].stateValues.xs[0].tree).to.be.closeTo(-7.1, 1E-12);
-        expect(components['/A'].stateValues.xs[1].tree).to.be.closeTo(8.2, 1E-12);
+        await components['/A'].movePoint({ x: -7.1, y: 8.2 });
+        expect((await components['/A'].stateValues.xs)[0].tree).to.be.closeTo(-7.1, 1E-12);
+        expect((await components['/A'].stateValues.xs)[1].tree).to.be.closeTo(8.2, 1E-12);
         expect(components['/A'].stateValues.constraintUsed).eq(false);
       })
       cy.get(constraintUsed1Anchor).should('have.text', "false")
 
       cy.log(`move close enough to line x+y=0`);
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let components = Object.assign({}, win.state.components);
-        components['/A'].movePoint({ x: -7.5, y: 7.8 });
-        expect(components['/A'].stateValues.xs[0].tree + components['/A'].stateValues.xs[1].tree).to.be.closeTo(0, 1E-12);
+        await components['/A'].movePoint({ x: -7.5, y: 7.8 });
+        expect((await components['/A'].stateValues.xs)[0].tree + (await components['/A'].stateValues.xs)[1].tree).to.be.closeTo(0, 1E-12);
         expect(components['/A'].stateValues.constraintUsed).eq(true)
       })
       cy.get(constraintUsed1Anchor).should('have.text', "true")
 
       cy.log(`move not close enough to line x=y`);
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let components = Object.assign({}, win.state.components);
-        components['/A'].movePoint({ x: 7.1, y: 8.2 });
-        expect(components['/A'].stateValues.xs[0].tree).to.be.closeTo(7.1, 1E-12);
-        expect(components['/A'].stateValues.xs[1].tree).to.be.closeTo(8.2, 1E-12);
+        await components['/A'].movePoint({ x: 7.1, y: 8.2 });
+        expect((await components['/A'].stateValues.xs)[0].tree).to.be.closeTo(7.1, 1E-12);
+        expect((await components['/A'].stateValues.xs)[1].tree).to.be.closeTo(8.2, 1E-12);
         expect(components['/A'].stateValues.constraintUsed).eq(false);
       })
       cy.get(constraintUsed1Anchor).should('have.text', "false")
 
       cy.log(`move close enough to line x=y`);
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let components = Object.assign({}, win.state.components);
-        components['/A'].movePoint({ x: 7.5, y: 7.8 });
-        expect(components['/A'].stateValues.xs[0].tree - components['/A'].stateValues.xs[1].tree).to.be.closeTo(0, 1E-12);
+        await components['/A'].movePoint({ x: 7.5, y: 7.8 });
+        expect((await components['/A'].stateValues.xs)[0].tree - (await components['/A'].stateValues.xs)[1].tree).to.be.closeTo(0, 1E-12);
         expect(components['/A'].stateValues.constraintUsed).eq(true)
       })
       cy.get(constraintUsed1Anchor).should('have.text', "true")
 
       cy.log(`move near line x=2y+8`);
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let components = Object.assign({}, win.state.components);
-        components['/A'].movePoint({ x: 3.5, y: -2.5 });
-        expect(components['/A'].stateValues.xs[0].tree - 2 * components['/A'].stateValues.xs[1].tree).to.be.closeTo(8, 1E-12);
+        await components['/A'].movePoint({ x: 3.5, y: -2.5 });
+        expect((await components['/A'].stateValues.xs)[0].tree - 2 * (await components['/A'].stateValues.xs)[1].tree).to.be.closeTo(8, 1E-12);
         expect(components['/A'].stateValues.constraintUsed).eq(true)
       })
       cy.get(constraintUsed1Anchor).should('have.text', "true")
 
 
       cy.log(`move near line x=-2y-8`);
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let components = Object.assign({}, win.state.components);
-        components['/A'].movePoint({ x: -3.5, y: -2.5 });
-        expect(components['/A'].stateValues.xs[0].tree + 2 * components['/A'].stateValues.xs[1].tree).to.be.closeTo(-8, 1E-12);
+        await components['/A'].movePoint({ x: -3.5, y: -2.5 });
+        expect((await components['/A'].stateValues.xs)[0].tree + 2 * (await components['/A'].stateValues.xs)[1].tree).to.be.closeTo(-8, 1E-12);
         expect(components['/A'].stateValues.constraintUsed).eq(true)
       })
       cy.get(constraintUsed1Anchor).should('have.text', "true")
@@ -2613,7 +2610,7 @@ describe('Point Tag Tests', function () {
   });
 
   it('point attracted to union of lines and intersections', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <graph>
@@ -2648,132 +2645,132 @@ describe('Point Tag Tests', function () {
     // use this to wait for page to load
     cy.get('#\\/_text1').should('have.text', 'a');
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let constraintUsed1 = components['/constraintUsed'].replacements[0];
       let constraintUsed1Anchor = cesc('#' + constraintUsed1.componentName);
 
       cy.log(`point in original location`);
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let components = Object.assign({}, win.state.components);
-        expect(components['/A'].stateValues.xs[0].tree).to.be.closeTo(7, 1E-12);
-        expect(components['/A'].stateValues.xs[1].tree).to.be.closeTo(3, 1E-12);
+        expect((await components['/A'].stateValues.xs)[0].tree).to.be.closeTo(7, 1E-12);
+        expect((await components['/A'].stateValues.xs)[1].tree).to.be.closeTo(3, 1E-12);
         expect(components['/A'].stateValues.constraintUsed).eq(false);
       })
       cy.get(constraintUsed1Anchor).should('have.text', "false")
 
       cy.log(`move not close enough to line x+y=0`);
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let components = Object.assign({}, win.state.components);
-        components['/A'].movePoint({ x: -7.1, y: 8.2 });
-        expect(components['/A'].stateValues.xs[0].tree).to.be.closeTo(-7.1, 1E-12);
-        expect(components['/A'].stateValues.xs[1].tree).to.be.closeTo(8.2, 1E-12);
+        await components['/A'].movePoint({ x: -7.1, y: 8.2 });
+        expect((await components['/A'].stateValues.xs)[0].tree).to.be.closeTo(-7.1, 1E-12);
+        expect((await components['/A'].stateValues.xs)[1].tree).to.be.closeTo(8.2, 1E-12);
         expect(components['/A'].stateValues.constraintUsed).eq(false);
       })
       cy.get(constraintUsed1Anchor).should('have.text', "false")
 
       cy.log(`move close enough to line x+y=0`);
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let components = Object.assign({}, win.state.components);
-        components['/A'].movePoint({ x: -7.5, y: 7.8 });
-        expect(components['/A'].stateValues.xs[0].tree + components['/A'].stateValues.xs[1].tree).to.be.closeTo(0, 1E-12);
+        await components['/A'].movePoint({ x: -7.5, y: 7.8 });
+        expect((await components['/A'].stateValues.xs)[0].tree + (await components['/A'].stateValues.xs)[1].tree).to.be.closeTo(0, 1E-12);
         expect(components['/A'].stateValues.constraintUsed).eq(true);
       })
       cy.get(constraintUsed1Anchor).should('have.text', "true")
 
       cy.log(`move not close enough to line x=y`);
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let components = Object.assign({}, win.state.components);
-        components['/A'].movePoint({ x: 7.1, y: 8.2 });
-        expect(components['/A'].stateValues.xs[0].tree).to.be.closeTo(7.1, 1E-12);
-        expect(components['/A'].stateValues.xs[1].tree).to.be.closeTo(8.2, 1E-12);
+        await components['/A'].movePoint({ x: 7.1, y: 8.2 });
+        expect((await components['/A'].stateValues.xs)[0].tree).to.be.closeTo(7.1, 1E-12);
+        expect((await components['/A'].stateValues.xs)[1].tree).to.be.closeTo(8.2, 1E-12);
         expect(components['/A'].stateValues.constraintUsed).eq(false);
       })
       cy.get(constraintUsed1Anchor).should('have.text', "false")
 
       cy.log(`move close enough to line x=y`);
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let components = Object.assign({}, win.state.components);
-        components['/A'].movePoint({ x: 7.5, y: 7.8 });
-        expect(components['/A'].stateValues.xs[0].tree - components['/A'].stateValues.xs[1].tree).to.be.closeTo(0, 1E-12);
+        await components['/A'].movePoint({ x: 7.5, y: 7.8 });
+        expect((await components['/A'].stateValues.xs)[0].tree - (await components['/A'].stateValues.xs)[1].tree).to.be.closeTo(0, 1E-12);
         expect(components['/A'].stateValues.constraintUsed).eq(true)
       })
       cy.get(constraintUsed1Anchor).should('have.text', "true")
 
       cy.log(`move near line x=2y+8`);
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let components = Object.assign({}, win.state.components);
-        components['/A'].movePoint({ x: 3.5, y: -2.5 });
-        expect(components['/A'].stateValues.xs[0].tree - 2 * components['/A'].stateValues.xs[1].tree).to.be.closeTo(8, 1E-12);
+        await components['/A'].movePoint({ x: 3.5, y: -2.5 });
+        expect((await components['/A'].stateValues.xs)[0].tree - 2 * (await components['/A'].stateValues.xs)[1].tree).to.be.closeTo(8, 1E-12);
         expect(components['/A'].stateValues.constraintUsed).eq(true)
       })
       cy.get(constraintUsed1Anchor).should('have.text', "true")
 
       cy.log(`move near line x=-2y-8`);
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let components = Object.assign({}, win.state.components);
-        components['/A'].movePoint({ x: -3.5, y: -2.5 });
-        expect(components['/A'].stateValues.xs[0].tree + 2 * components['/A'].stateValues.xs[1].tree).to.be.closeTo(-8, 1E-12);
+        await components['/A'].movePoint({ x: -3.5, y: -2.5 });
+        expect((await components['/A'].stateValues.xs)[0].tree + 2 * (await components['/A'].stateValues.xs)[1].tree).to.be.closeTo(-8, 1E-12);
         expect(components['/A'].stateValues.constraintUsed).eq(true)
       })
       cy.get(constraintUsed1Anchor).should('have.text', "true")
 
       cy.log(`move near intersection of x+y=0 and x=y`);
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let components = Object.assign({}, win.state.components);
-        components['/A'].movePoint({ x: -0.2, y: 0.1 });
-        expect(components['/A'].stateValues.xs[0].tree).to.be.closeTo(0, 1E-12);
-        expect(components['/A'].stateValues.xs[1].tree).to.be.closeTo(0, 1E-12);
+        await components['/A'].movePoint({ x: -0.2, y: 0.1 });
+        expect((await components['/A'].stateValues.xs)[0].tree).to.be.closeTo(0, 1E-12);
+        expect((await components['/A'].stateValues.xs)[1].tree).to.be.closeTo(0, 1E-12);
         expect(components['/A'].stateValues.constraintUsed).eq(true)
       })
       cy.get(constraintUsed1Anchor).should('have.text', "true")
 
       cy.log(`move near intersection of x+y=0 and x=2y+8`);
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let components = Object.assign({}, win.state.components);
-        components['/A'].movePoint({ x: 2.6, y: -2.7 });
-        expect(components['/A'].stateValues.xs[0].tree).to.be.closeTo(8 / 3, 1E-12);
-        expect(components['/A'].stateValues.xs[1].tree).to.be.closeTo(-8 / 3, 1E-12);
+        await components['/A'].movePoint({ x: 2.6, y: -2.7 });
+        expect((await components['/A'].stateValues.xs)[0].tree).to.be.closeTo(8 / 3, 1E-12);
+        expect((await components['/A'].stateValues.xs)[1].tree).to.be.closeTo(-8 / 3, 1E-12);
         expect(components['/A'].stateValues.constraintUsed).eq(true)
       })
       cy.get(constraintUsed1Anchor).should('have.text', "true")
 
       cy.log(`move near intersection of x+y=0 and x=-2y-8`);
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let components = Object.assign({}, win.state.components);
-        components['/A'].movePoint({ x: 7.9, y: -8.2 });
-        expect(components['/A'].stateValues.xs[0].tree).to.be.closeTo(8, 1E-12);
-        expect(components['/A'].stateValues.xs[1].tree).to.be.closeTo(-8, 1E-12);
+        await components['/A'].movePoint({ x: 7.9, y: -8.2 });
+        expect((await components['/A'].stateValues.xs)[0].tree).to.be.closeTo(8, 1E-12);
+        expect((await components['/A'].stateValues.xs)[1].tree).to.be.closeTo(-8, 1E-12);
         expect(components['/A'].stateValues.constraintUsed).eq(true)
       })
       cy.get(constraintUsed1Anchor).should('have.text', "true")
 
       cy.log(`move near intersection of x=y and x=2y+8`);
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let components = Object.assign({}, win.state.components);
-        components['/A'].movePoint({ x: -8.1, y: -7.8 });
-        expect(components['/A'].stateValues.xs[0].tree).to.be.closeTo(-8, 1E-12);
-        expect(components['/A'].stateValues.xs[1].tree).to.be.closeTo(-8, 1E-12);
+        await components['/A'].movePoint({ x: -8.1, y: -7.8 });
+        expect((await components['/A'].stateValues.xs)[0].tree).to.be.closeTo(-8, 1E-12);
+        expect((await components['/A'].stateValues.xs)[1].tree).to.be.closeTo(-8, 1E-12);
         expect(components['/A'].stateValues.constraintUsed).eq(true)
       })
       cy.get(constraintUsed1Anchor).should('have.text', "true")
 
       cy.log(`move near intersection of x+y=0 and x=-2y-8`);
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let components = Object.assign({}, win.state.components);
-        components['/A'].movePoint({ x: -2.5, y: -2.7 });
-        expect(components['/A'].stateValues.xs[0].tree).to.be.closeTo(-8 / 3, 1E-12);
-        expect(components['/A'].stateValues.xs[1].tree).to.be.closeTo(-8 / 3, 1E-12);
+        await components['/A'].movePoint({ x: -2.5, y: -2.7 });
+        expect((await components['/A'].stateValues.xs)[0].tree).to.be.closeTo(-8 / 3, 1E-12);
+        expect((await components['/A'].stateValues.xs)[1].tree).to.be.closeTo(-8 / 3, 1E-12);
         expect(components['/A'].stateValues.constraintUsed).eq(true)
       })
       cy.get(constraintUsed1Anchor).should('have.text', "true")
 
       cy.log(`move near intersection of x=2y+8 and x=-2y-8`);
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let components = Object.assign({}, win.state.components);
-        components['/A'].movePoint({ x: 0.2, y: -3.9 });
-        expect(components['/A'].stateValues.xs[0].tree).to.be.closeTo(0, 1E-12);
-        expect(components['/A'].stateValues.xs[1].tree).to.be.closeTo(-4, 1E-12);
+        await components['/A'].movePoint({ x: 0.2, y: -3.9 });
+        expect((await components['/A'].stateValues.xs)[0].tree).to.be.closeTo(0, 1E-12);
+        expect((await components['/A'].stateValues.xs)[1].tree).to.be.closeTo(-4, 1E-12);
         expect(components['/A'].stateValues.constraintUsed).eq(true)
       })
       cy.get(constraintUsed1Anchor).should('have.text', "true")
@@ -2781,7 +2778,7 @@ describe('Point Tag Tests', function () {
   });
 
   it('point constrained to union of lines and attracted to intersections', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <graph>
@@ -2816,102 +2813,102 @@ describe('Point Tag Tests', function () {
     // use this to wait for page to load
     cy.get('#\\/_text1').should('have.text', 'a');
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let constraintUsed1 = components['/constraintUsed'].replacements[0];
       let constraintUsed1Anchor = cesc('#' + constraintUsed1.componentName);
 
       cy.log(`on x=y`);
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let components = Object.assign({}, win.state.components);
-        expect(components['/A'].stateValues.xs[0].tree - components['/A'].stateValues.xs[1].tree).to.be.closeTo(0, 1E-12);
+        expect((await components['/A'].stateValues.xs)[0].tree - (await components['/A'].stateValues.xs)[1].tree).to.be.closeTo(0, 1E-12);
         expect(components['/A'].stateValues.constraintUsed).eq(true)
       })
       cy.get(constraintUsed1Anchor).should('have.text', "true")
 
       cy.log(`attract to line x+y=0`);
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let components = Object.assign({}, win.state.components);
-        components['/A'].movePoint({ x: -7.1, y: 10 });
-        expect(components['/A'].stateValues.xs[0].tree + components['/A'].stateValues.xs[1].tree).to.be.closeTo(0, 1E-12);
+        await components['/A'].movePoint({ x: -7.1, y: 10 });
+        expect((await components['/A'].stateValues.xs)[0].tree + (await components['/A'].stateValues.xs)[1].tree).to.be.closeTo(0, 1E-12);
         expect(components['/A'].stateValues.constraintUsed).eq(true);
       })
       cy.get(constraintUsed1Anchor).should('have.text', "true")
 
       cy.log(`move near line x=2y+8`);
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let components = Object.assign({}, win.state.components);
-        components['/A'].movePoint({ x: 10, y: -3 });
-        expect(components['/A'].stateValues.xs[0].tree - 2 * components['/A'].stateValues.xs[1].tree).to.be.closeTo(8, 1E-12);
+        await components['/A'].movePoint({ x: 10, y: -3 });
+        expect((await components['/A'].stateValues.xs)[0].tree - 2 * (await components['/A'].stateValues.xs)[1].tree).to.be.closeTo(8, 1E-12);
         expect(components['/A'].stateValues.constraintUsed).eq(true);
       })
       cy.get(constraintUsed1Anchor).should('have.text', "true")
 
       cy.log(`move near line x=-2y-8`);
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let components = Object.assign({}, win.state.components);
-        components['/A'].movePoint({ x: -10, y: -3 });
-        expect(components['/A'].stateValues.xs[0].tree + 2 * components['/A'].stateValues.xs[1].tree).to.be.closeTo(-8, 1E-12);
+        await components['/A'].movePoint({ x: -10, y: -3 });
+        expect((await components['/A'].stateValues.xs)[0].tree + 2 * (await components['/A'].stateValues.xs)[1].tree).to.be.closeTo(-8, 1E-12);
         expect(components['/A'].stateValues.constraintUsed).eq(true);
       })
       cy.get(constraintUsed1Anchor).should('have.text', "true")
 
       cy.log(`move near intersection of x+y=0 and x=y`);
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let components = Object.assign({}, win.state.components);
-        components['/A'].movePoint({ x: -0.2, y: 0.1 });
-        expect(components['/A'].stateValues.xs[0].tree).to.be.closeTo(0, 1E-12);
-        expect(components['/A'].stateValues.xs[1].tree).to.be.closeTo(0, 1E-12);
+        await components['/A'].movePoint({ x: -0.2, y: 0.1 });
+        expect((await components['/A'].stateValues.xs)[0].tree).to.be.closeTo(0, 1E-12);
+        expect((await components['/A'].stateValues.xs)[1].tree).to.be.closeTo(0, 1E-12);
         expect(components['/A'].stateValues.constraintUsed).eq(true);
       })
       cy.get(constraintUsed1Anchor).should('have.text', "true")
 
       cy.log(`move near intersection of x+y=0 and x=2y+8`);
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let components = Object.assign({}, win.state.components);
-        components['/A'].movePoint({ x: 2.6, y: -2.7 });
-        expect(components['/A'].stateValues.xs[0].tree).to.be.closeTo(8 / 3, 1E-12);
-        expect(components['/A'].stateValues.xs[1].tree).to.be.closeTo(-8 / 3, 1E-12);
+        await components['/A'].movePoint({ x: 2.6, y: -2.7 });
+        expect((await components['/A'].stateValues.xs)[0].tree).to.be.closeTo(8 / 3, 1E-12);
+        expect((await components['/A'].stateValues.xs)[1].tree).to.be.closeTo(-8 / 3, 1E-12);
         expect(components['/A'].stateValues.constraintUsed).eq(true);
       })
       cy.get(constraintUsed1Anchor).should('have.text', "true")
 
       cy.log(`move near intersection of x+y=0 and x=-2y-8`);
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let components = Object.assign({}, win.state.components);
-        components['/A'].movePoint({ x: 7.9, y: -8.2 });
-        expect(components['/A'].stateValues.xs[0].tree).to.be.closeTo(8, 1E-12);
-        expect(components['/A'].stateValues.xs[1].tree).to.be.closeTo(-8, 1E-12);
+        await components['/A'].movePoint({ x: 7.9, y: -8.2 });
+        expect((await components['/A'].stateValues.xs)[0].tree).to.be.closeTo(8, 1E-12);
+        expect((await components['/A'].stateValues.xs)[1].tree).to.be.closeTo(-8, 1E-12);
         expect(components['/A'].stateValues.constraintUsed).eq(true);
       })
       cy.get(constraintUsed1Anchor).should('have.text', "true")
 
       cy.log(`move near intersection of x=y and x=2y+8`);
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let components = Object.assign({}, win.state.components);
-        components['/A'].movePoint({ x: -8.1, y: -7.8 });
-        expect(components['/A'].stateValues.xs[0].tree).to.be.closeTo(-8, 1E-12);
-        expect(components['/A'].stateValues.xs[1].tree).to.be.closeTo(-8, 1E-12);
+        await components['/A'].movePoint({ x: -8.1, y: -7.8 });
+        expect((await components['/A'].stateValues.xs)[0].tree).to.be.closeTo(-8, 1E-12);
+        expect((await components['/A'].stateValues.xs)[1].tree).to.be.closeTo(-8, 1E-12);
         expect(components['/A'].stateValues.constraintUsed).eq(true);
       })
       cy.get(constraintUsed1Anchor).should('have.text', "true")
 
       cy.log(`move near intersection of x=y and x=-2y-8`);
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let components = Object.assign({}, win.state.components);
-        components['/A'].movePoint({ x: -2.5, y: -2.7 });
-        expect(components['/A'].stateValues.xs[0].tree).to.be.closeTo(-8 / 3, 1E-12);
-        expect(components['/A'].stateValues.xs[1].tree).to.be.closeTo(-8 / 3, 1E-12);
+        await components['/A'].movePoint({ x: -2.5, y: -2.7 });
+        expect((await components['/A'].stateValues.xs)[0].tree).to.be.closeTo(-8 / 3, 1E-12);
+        expect((await components['/A'].stateValues.xs)[1].tree).to.be.closeTo(-8 / 3, 1E-12);
         expect(components['/A'].stateValues.constraintUsed).eq(true);
       })
       cy.get(constraintUsed1Anchor).should('have.text', "true")
 
       cy.log(`move near intersection of x=2y+8 and x=-2y-8`);
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let components = Object.assign({}, win.state.components);
-        components['/A'].movePoint({ x: 0.2, y: -3.9 });
-        expect(components['/A'].stateValues.xs[0].tree).to.be.closeTo(0, 1E-12);
-        expect(components['/A'].stateValues.xs[1].tree).to.be.closeTo(-4, 1E-12);
+        await components['/A'].movePoint({ x: 0.2, y: -3.9 });
+        expect((await components['/A'].stateValues.xs)[0].tree).to.be.closeTo(0, 1E-12);
+        expect((await components['/A'].stateValues.xs)[1].tree).to.be.closeTo(-4, 1E-12);
         expect(components['/A'].stateValues.constraintUsed).eq(true);
       })
       cy.get(constraintUsed1Anchor).should('have.text', "true")
@@ -2920,7 +2917,7 @@ describe('Point Tag Tests', function () {
   });
 
   it('point constrained intersection of two lines', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <graph>
@@ -2942,73 +2939,73 @@ describe('Point Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');
 
     cy.log(`intersection is a line`);
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let intersectionReplacementsArray = components['/_intersection1'].replacements;
       expect(intersectionReplacementsArray.length).eq(1);
       let replacement = intersectionReplacementsArray[0];
       expect(replacement.componentType).eq("line");
-      expect(replacement.stateValues.slope.tree).eq(0);
-      expect(replacement.stateValues.yintercept.tree).eq(2);
+      expect((await replacement.stateValues.slope).tree).eq(0);
+      expect((await replacement.stateValues.yintercept).tree).eq(2);
     })
 
     cy.log(`make first line vertical`);
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components['/_point1'].movePoint({ x: 3, y: 5 });
-      components['/_point2'].movePoint({ x: 3, y: -5 });
+      await components['/_point1'].movePoint({ x: 3, y: 5 });
+      await components['/_point2'].movePoint({ x: 3, y: -5 });
       let intersectionReplacementsArray = components['/_intersection1'].replacements;
       expect(intersectionReplacementsArray.length).eq(1);
       let replacement = intersectionReplacementsArray[0];
       expect(replacement.componentType).eq("point");
-      expect(replacement.stateValues.xs[0].tree).eq(3);
-      expect(replacement.stateValues.xs[1].tree).eq(2);
+      expect((await replacement.stateValues.xs)[0].tree).eq(3);
+      expect((await replacement.stateValues.xs)[1].tree).eq(2);
     })
 
     cy.log(`make second line vertical`);
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components['/_point3'].movePoint({ x: -4, y: 5 });
-      components['/_point4'].movePoint({ x: -4, y: -5 });
+      await components['/_point3'].movePoint({ x: -4, y: 5 });
+      await components['/_point4'].movePoint({ x: -4, y: -5 });
       let intersectionReplacementsArray = components['/_intersection1'].replacements;
       expect(intersectionReplacementsArray.length).eq(0);
     })
 
     cy.log(`make lines intersect again`);
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components['/_point1'].movePoint({ x: -8, y: -7 });
-      components['/_point2'].movePoint({ x: 8, y: 9 });
-      components['/_point3'].movePoint({ x: 4, y: 6 });
-      components['/_point4'].movePoint({ x: -4, y: -6 });
+      await components['/_point1'].movePoint({ x: -8, y: -7 });
+      await components['/_point2'].movePoint({ x: 8, y: 9 });
+      await components['/_point3'].movePoint({ x: 4, y: 6 });
+      await components['/_point4'].movePoint({ x: -4, y: -6 });
       let intersectionReplacementsArray = components['/_intersection1'].replacements;
       expect(intersectionReplacementsArray.length).eq(1);
       let replacement = intersectionReplacementsArray[0];
       expect(replacement.componentType).eq("point");
-      expect(replacement.stateValues.xs[0].tree).eq(2);
-      expect(replacement.stateValues.xs[1].tree).eq(3);
+      expect((await replacement.stateValues.xs)[0].tree).eq(2);
+      expect((await replacement.stateValues.xs)[1].tree).eq(3);
     })
 
     cy.log(`make lines equal again`);
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components['/_point1'].movePoint({ x: 6, y: 9 });
-      components['/_point2'].movePoint({ x: -6, y: -9 });
-      components['/_point3'].movePoint({ x: 4, y: 6 });
-      components['/_point4'].movePoint({ x: -4, y: -6 });
+      await components['/_point1'].movePoint({ x: 6, y: 9 });
+      await components['/_point2'].movePoint({ x: -6, y: -9 });
+      await components['/_point3'].movePoint({ x: 4, y: 6 });
+      await components['/_point4'].movePoint({ x: -4, y: -6 });
       let intersectionReplacementsArray = components['/_intersection1'].replacements;
       expect(intersectionReplacementsArray.length).eq(1);
       let replacement = intersectionReplacementsArray[0];
       expect(replacement.componentType).eq("line");
-      expect(replacement.stateValues.slope.tree).eqls(['/', 3, 2]);
-      expect(replacement.stateValues.xintercept.tree).eq(0);
-      expect(replacement.stateValues.yintercept.tree).eq(0);
+      expect((await replacement.stateValues.slope).tree).eqls(['/', 3, 2]);
+      expect((await replacement.stateValues.xintercept).tree).eq(0);
+      expect((await replacement.stateValues.yintercept).tree).eq(0);
     })
 
   });
 
   it('intersection of two lines hides dynamically', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <graph>
@@ -3047,10 +3044,10 @@ describe('Point Tag Tests', function () {
 
 
     cy.log(`make first line vertical`);
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components['/_point1'].movePoint({ x: 3, y: 5 });
-      components['/_point2'].movePoint({ x: 3, y: -5 });
+      await components['/_point1'].movePoint({ x: 3, y: 5 });
+      await components['/_point2'].movePoint({ x: 3, y: -5 });
 
       cy.get('#\\/i1').find('.mjx-mrow').should('not.exist');
       cy.get('#\\/i2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -3066,10 +3063,10 @@ describe('Point Tag Tests', function () {
     })
 
     cy.log(`make second line vertical`);
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components['/_point3'].movePoint({ x: -4, y: 5 });
-      components['/_point4'].movePoint({ x: -4, y: -5 });
+      await components['/_point3'].movePoint({ x: -4, y: 5 });
+      await components['/_point4'].movePoint({ x: -4, y: -5 });
       cy.get('#\\/i1').find('.mjx-mrow').should('not.exist');
       cy.get('#\\/i2').find('.mjx-mrow').should('not.exist');
       cy.get('#\\/h1_input').click();
@@ -3079,12 +3076,12 @@ describe('Point Tag Tests', function () {
     })
 
     cy.log(`make lines intersect again`);
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components['/_point1'].movePoint({ x: -8, y: -7 });
-      components['/_point2'].movePoint({ x: 8, y: 9 });
-      components['/_point3'].movePoint({ x: 4, y: 6 });
-      components['/_point4'].movePoint({ x: -4, y: -6 });
+      await components['/_point1'].movePoint({ x: -8, y: -7 });
+      await components['/_point2'].movePoint({ x: 8, y: 9 });
+      await components['/_point3'].movePoint({ x: 4, y: 6 });
+      await components['/_point4'].movePoint({ x: -4, y: -6 });
       cy.get('#\\/i1').find('.mjx-mrow').should('not.exist');
       cy.get('#\\/i2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(2,3)')
@@ -3099,12 +3096,12 @@ describe('Point Tag Tests', function () {
     })
 
     cy.log(`make lines equal again`);
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components['/_point1'].movePoint({ x: 6, y: 9 });
-      components['/_point2'].movePoint({ x: -6, y: -9 });
-      components['/_point3'].movePoint({ x: 4, y: 6 });
-      components['/_point4'].movePoint({ x: -4, y: -6 });
+      await components['/_point1'].movePoint({ x: 6, y: 9 });
+      await components['/_point2'].movePoint({ x: -6, y: -9 });
+      await components['/_point3'].movePoint({ x: 4, y: 6 });
+      await components['/_point4'].movePoint({ x: -4, y: -6 });
       cy.get('#\\/i1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('0=18x−12y')
       })
@@ -3122,7 +3119,7 @@ describe('Point Tag Tests', function () {
   // gap not so relevant any more with new sugar
   // but doesn't hurt to keep test
   it('sugar coords with defining gap', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <mathinput name="n"/>
@@ -3138,7 +3135,7 @@ describe('Point Tag Tests', function () {
     // use this to wait for page to load
     cy.get('#\\/_text1').should('have.text', 'a');
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let x1 = components['/_point1'].attributes.xs.component.activeChildren[0];
       let math1 = x1.definingChildren[0];
@@ -3146,34 +3143,34 @@ describe('Point Tag Tests', function () {
       let math2 = x1.definingChildren[2];
       let math2Name = math2.componentName;
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         expect(x1.definingChildren.map(x => x.componentName)).eqls(
           [math1Name, '/_sequence1', math2Name]);
         expect(x1.activeChildren.map(x => x.componentName)).eqls(
           [math1Name, math2Name]);
-        expect(components['/_point1'].stateValues.xs[0].tree).eq(5)
-        expect(components['/_point1'].stateValues.xs[1].tree).eq(4)
+        expect((await components['/_point1'].stateValues.xs)[0].tree).eq(5)
+        expect((await components['/_point1'].stateValues.xs)[1].tree).eq(4)
       })
 
       cy.get('#\\/n textarea').type("2{enter}", { force: true }).
         blur();
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let math3 = components['/_sequence1'].replacements[0].adapterUsed;
         let math3Name = math3.componentName;
         expect(x1.definingChildren.map(x => x.componentName)).eqls(
           [math1Name, '/_sequence1', math2Name]);
         expect(x1.activeChildren.map(x => x.componentName)).eqls(
           [math1Name, math3Name, math2Name]);
-        expect(components['/_point1'].stateValues.xs[0].tree).eq(10)
-        expect(components['/_point1'].stateValues.xs[1].tree).eq(4)
+        expect((await components['/_point1'].stateValues.xs)[0].tree).eq(10)
+        expect((await components['/_point1'].stateValues.xs)[1].tree).eq(4)
 
       })
     })
   })
 
   it('copying via x1 and x2', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -3188,28 +3185,28 @@ describe('Point Tag Tests', function () {
     // use this to wait for page to load
     cy.get('#\\/_text1').should('have.text', 'a');
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_point1'].stateValues.xs[0].tree).eq(1);
-      expect(components['/_point1'].stateValues.xs[1].tree).eq(2);
-      expect(components['/_point2'].stateValues.xs[0].tree).eq(2);
-      expect(components['/_point2'].stateValues.xs[1].tree).eq(1);
+      expect((await components['/_point1'].stateValues.xs)[0].tree).eq(1);
+      expect((await components['/_point1'].stateValues.xs)[1].tree).eq(2);
+      expect((await components['/_point2'].stateValues.xs)[0].tree).eq(2);
+      expect((await components['/_point2'].stateValues.xs)[1].tree).eq(1);
     })
 
     cy.log("move point 2")
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components['/_point2'].movePoint({ x: -4, y: 9 });
-      expect(components['/_point1'].stateValues.xs[0].tree).eq(9);
-      expect(components['/_point1'].stateValues.xs[1].tree).eq(-4);
-      expect(components['/_point2'].stateValues.xs[0].tree).eq(-4);
-      expect(components['/_point2'].stateValues.xs[1].tree).eq(9);
+      await components['/_point2'].movePoint({ x: -4, y: 9 });
+      expect((await components['/_point1'].stateValues.xs)[0].tree).eq(9);
+      expect((await components['/_point1'].stateValues.xs)[1].tree).eq(-4);
+      expect((await components['/_point2'].stateValues.xs)[0].tree).eq(-4);
+      expect((await components['/_point2'].stateValues.xs)[1].tree).eq(9);
     })
 
   })
 
   it('updating via adapters', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -3234,7 +3231,7 @@ describe('Point Tag Tests', function () {
     // use this to wait for page to load
     cy.get('#\\/_text1').should('have.text', 'a');
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
 
       let points = [
@@ -3247,24 +3244,24 @@ describe('Point Tag Tests', function () {
       let ys = [8, 3, -3, -2, -6, 5, -9, 0];
 
       cy.log("initial positions")
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let x = 1;
         let y = 2;
         for (let point of points) {
-          expect(components[point].stateValues.xs[0].tree).eq(x);
-          expect(components[point].stateValues.xs[1].tree).eq(y);
+          expect((await components[point].stateValues.xs)[0].tree).eq(x);
+          expect((await components[point].stateValues.xs)[1].tree).eq(y);
         }
       })
 
       cy.log("move each point in turn")
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         for (let i = 0; i < 8; i++) {
           let x = xs[i];
           let y = ys[i];
-          components[points[i]].movePoint({ x: x, y: y });
+          await components[points[i]].movePoint({ x: x, y: y });
           for (let point of points) {
-            expect(components[point].stateValues.xs[0].tree).eq(x);
-            expect(components[point].stateValues.xs[1].tree).eq(y);
+            expect((await components[point].stateValues.xs)[0].tree).eq(x);
+            expect((await components[point].stateValues.xs)[1].tree).eq(y);
           }
 
         }
@@ -3273,7 +3270,7 @@ describe('Point Tag Tests', function () {
   })
 
   it('combining different components through copies', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -3290,55 +3287,55 @@ describe('Point Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');
 
     cy.log("initial positions")
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let x = 1;
       let y = 2;
 
-      expect(components['/_point1'].stateValues.xs[0].tree).eq(x);
-      expect(components['/_point1'].stateValues.xs[1].tree).eq(y);
+      expect((await components['/_point1'].stateValues.xs)[0].tree).eq(x);
+      expect((await components['/_point1'].stateValues.xs)[1].tree).eq(y);
 
-      expect(components['/_point2'].stateValues.xs[0].tree).eq(y);
-      expect(components['/_point2'].stateValues.xs[1].tree).eq(x);
+      expect((await components['/_point2'].stateValues.xs)[0].tree).eq(y);
+      expect((await components['/_point2'].stateValues.xs)[1].tree).eq(x);
 
     });
 
     cy.log("move point 1")
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let x = -3;
       let y = 5;
 
-      components['/_point1'].movePoint({ x: x, y: y });
+      await components['/_point1'].movePoint({ x: x, y: y });
 
-      expect(components['/_point1'].stateValues.xs[0].tree).eq(x);
-      expect(components['/_point1'].stateValues.xs[1].tree).eq(y);
+      expect((await components['/_point1'].stateValues.xs)[0].tree).eq(x);
+      expect((await components['/_point1'].stateValues.xs)[1].tree).eq(y);
 
-      expect(components['/_point2'].stateValues.xs[0].tree).eq(y);
-      expect(components['/_point2'].stateValues.xs[1].tree).eq(x);
+      expect((await components['/_point2'].stateValues.xs)[0].tree).eq(y);
+      expect((await components['/_point2'].stateValues.xs)[1].tree).eq(x);
 
     });
 
 
     cy.log("move point 2")
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let x = 9;
       let y = -1;
 
-      components['/_point2'].movePoint({ x: y, y: x });
+      await components['/_point2'].movePoint({ x: y, y: x });
 
-      expect(components['/_point1'].stateValues.xs[0].tree).eq(x);
-      expect(components['/_point1'].stateValues.xs[1].tree).eq(y);
+      expect((await components['/_point1'].stateValues.xs)[0].tree).eq(x);
+      expect((await components['/_point1'].stateValues.xs)[1].tree).eq(y);
 
-      expect(components['/_point2'].stateValues.xs[0].tree).eq(y);
-      expect(components['/_point2'].stateValues.xs[1].tree).eq(x);
+      expect((await components['/_point2'].stateValues.xs)[0].tree).eq(y);
+      expect((await components['/_point2'].stateValues.xs)[1].tree).eq(x);
 
     });
   })
 
   it('combining different components through copies 2', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -3355,55 +3352,55 @@ describe('Point Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');
 
     cy.log("initial positions")
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let x = 1;
       let y = 2;
 
-      expect(components['/_point1'].stateValues.xs[0].tree).eq(x);
-      expect(components['/_point1'].stateValues.xs[1].tree).eq(y);
+      expect((await components['/_point1'].stateValues.xs)[0].tree).eq(x);
+      expect((await components['/_point1'].stateValues.xs)[1].tree).eq(y);
 
-      expect(components['/_point2'].stateValues.xs[0].tree).eq(y);
-      expect(components['/_point2'].stateValues.xs[1].tree).eq(x);
+      expect((await components['/_point2'].stateValues.xs)[0].tree).eq(y);
+      expect((await components['/_point2'].stateValues.xs)[1].tree).eq(x);
 
     });
 
     cy.log("move point 1")
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let x = -3;
       let y = 5;
 
-      components['/_point1'].movePoint({ x: x, y: y });
+      await components['/_point1'].movePoint({ x: x, y: y });
 
-      expect(components['/_point1'].stateValues.xs[0].tree).eq(x);
-      expect(components['/_point1'].stateValues.xs[1].tree).eq(y);
+      expect((await components['/_point1'].stateValues.xs)[0].tree).eq(x);
+      expect((await components['/_point1'].stateValues.xs)[1].tree).eq(y);
 
-      expect(components['/_point2'].stateValues.xs[0].tree).eq(y);
-      expect(components['/_point2'].stateValues.xs[1].tree).eq(x);
+      expect((await components['/_point2'].stateValues.xs)[0].tree).eq(y);
+      expect((await components['/_point2'].stateValues.xs)[1].tree).eq(x);
 
     });
 
 
     cy.log("move point 2")
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let x = 9;
       let y = -1;
 
-      components['/_point2'].movePoint({ x: y, y: x });
+      await components['/_point2'].movePoint({ x: y, y: x });
 
-      expect(components['/_point1'].stateValues.xs[0].tree).eq(x);
-      expect(components['/_point1'].stateValues.xs[1].tree).eq(y);
+      expect((await components['/_point1'].stateValues.xs)[0].tree).eq(x);
+      expect((await components['/_point1'].stateValues.xs)[1].tree).eq(y);
 
-      expect(components['/_point2'].stateValues.xs[0].tree).eq(y);
-      expect(components['/_point2'].stateValues.xs[1].tree).eq(x);
+      expect((await components['/_point2'].stateValues.xs)[0].tree).eq(y);
+      expect((await components['/_point2'].stateValues.xs)[1].tree).eq(x);
 
     });
   })
 
   it('copy prop of copies', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -3425,35 +3422,35 @@ describe('Point Tag Tests', function () {
 
     cy.log("initial values")
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let x = 3;
       let y = 7;
 
-      expect(components['/p1'].stateValues.xs[0].tree).eq(x);
-      expect(components['/p1'].stateValues.xs[1].tree).eq(y);
+      expect((await components['/p1'].stateValues.xs)[0].tree).eq(x);
+      expect((await components['/p1'].stateValues.xs)[1].tree).eq(y);
 
-      expect(components['/p1a'].replacements[0].stateValues.xs[0].tree).eq(x);
-      expect(components['/p1a'].replacements[0].stateValues.xs[1].tree).eq(y);
+      expect((await components['/p1a'].replacements[0].stateValues.xs)[0].tree).eq(x);
+      expect((await components['/p1a'].replacements[0].stateValues.xs)[1].tree).eq(y);
 
-      expect(components['/_copy1'].replacements[0].stateValues.value.tree).eq(y);
+      expect((await components['/_copy1'].replacements[0].stateValues.value).tree).eq(y);
 
     });
 
     cy.log("move point 1")
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let x = -3;
       let y = 5;
 
-      components['/p1'].movePoint({ x: x, y: y });
+      await components['/p1'].movePoint({ x: x, y: y });
 
-      expect(components['/p1'].stateValues.xs[0].tree).eq(x);
-      expect(components['/p1'].stateValues.xs[1].tree).eq(y);
+      expect((await components['/p1'].stateValues.xs)[0].tree).eq(x);
+      expect((await components['/p1'].stateValues.xs)[1].tree).eq(y);
 
-      expect(components['/p1a'].replacements[0].stateValues.xs[0].tree).eq(x);
-      expect(components['/p1a'].replacements[0].stateValues.xs[1].tree).eq(y);
-      expect(components['/_copy1'].replacements[0].stateValues.value.tree).eq(y);
+      expect((await components['/p1a'].replacements[0].stateValues.xs)[0].tree).eq(x);
+      expect((await components['/p1a'].replacements[0].stateValues.xs)[1].tree).eq(y);
+      expect((await components['/_copy1'].replacements[0].stateValues.value).tree).eq(y);
 
       cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal(y.toString())
@@ -3461,19 +3458,19 @@ describe('Point Tag Tests', function () {
     });
 
     cy.log("move point 2")
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let x = 7;
       let y = 9;
 
-      components['/p1a'].replacements[0].movePoint({ x: x, y: y });
+      await components['/p1a'].replacements[0].movePoint({ x: x, y: y });
 
-      expect(components['/p1'].stateValues.xs[0].tree).eq(x);
-      expect(components['/p1'].stateValues.xs[1].tree).eq(y);
+      expect((await components['/p1'].stateValues.xs)[0].tree).eq(x);
+      expect((await components['/p1'].stateValues.xs)[1].tree).eq(y);
 
-      expect(components['/p1a'].replacements[0].stateValues.xs[0].tree).eq(x);
-      expect(components['/p1a'].replacements[0].stateValues.xs[1].tree).eq(y);
-      expect(components['/_copy1'].replacements[0].stateValues.value.tree).eq(y);
+      expect((await components['/p1a'].replacements[0].stateValues.xs)[0].tree).eq(x);
+      expect((await components['/p1a'].replacements[0].stateValues.xs)[1].tree).eq(y);
+      expect((await components['/_copy1'].replacements[0].stateValues.value).tree).eq(y);
 
       cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal(y.toString())
@@ -3483,7 +3480,7 @@ describe('Point Tag Tests', function () {
   })
 
   it('nested copies', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -3507,77 +3504,77 @@ describe('Point Tag Tests', function () {
 
     cy.log("initial values")
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let x = 3;
       let y = 7;
 
-      expect(components['/p1'].stateValues.xs[0].tree).eq(x);
-      expect(components['/p1'].stateValues.xs[1].tree).eq(y);
+      expect((await components['/p1'].stateValues.xs)[0].tree).eq(x);
+      expect((await components['/p1'].stateValues.xs)[1].tree).eq(y);
 
-      expect(components['/p1a'].replacements[0].stateValues.xs[0].tree).eq(x);
-      expect(components['/p1a'].replacements[0].stateValues.xs[1].tree).eq(y);
+      expect((await components['/p1a'].replacements[0].stateValues.xs)[0].tree).eq(x);
+      expect((await components['/p1a'].replacements[0].stateValues.xs)[1].tree).eq(y);
 
-      expect(components['/p1b'].replacements[0].stateValues.xs[0].tree).eq(x);
-      expect(components['/p1b'].replacements[0].stateValues.xs[1].tree).eq(y);
+      expect((await components['/p1b'].replacements[0].stateValues.xs)[0].tree).eq(x);
+      expect((await components['/p1b'].replacements[0].stateValues.xs)[1].tree).eq(y);
 
     });
 
     cy.log("move point 1")
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let x = -3;
       let y = 5;
 
-      components['/p1'].movePoint({ x: x, y: y });
+      await components['/p1'].movePoint({ x: x, y: y });
 
-      expect(components['/p1'].stateValues.xs[0].tree).eq(x);
-      expect(components['/p1'].stateValues.xs[1].tree).eq(y);
+      expect((await components['/p1'].stateValues.xs)[0].tree).eq(x);
+      expect((await components['/p1'].stateValues.xs)[1].tree).eq(y);
 
-      expect(components['/p1a'].replacements[0].stateValues.xs[0].tree).eq(x);
-      expect(components['/p1a'].replacements[0].stateValues.xs[1].tree).eq(y);
+      expect((await components['/p1a'].replacements[0].stateValues.xs)[0].tree).eq(x);
+      expect((await components['/p1a'].replacements[0].stateValues.xs)[1].tree).eq(y);
 
-      expect(components['/p1b'].replacements[0].stateValues.xs[0].tree).eq(x);
-      expect(components['/p1b'].replacements[0].stateValues.xs[1].tree).eq(y);
+      expect((await components['/p1b'].replacements[0].stateValues.xs)[0].tree).eq(x);
+      expect((await components['/p1b'].replacements[0].stateValues.xs)[1].tree).eq(y);
 
     });
 
     cy.log("move point 2")
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let x = 7;
       let y = 9;
 
-      components['/p1a'].replacements[0].movePoint({ x: x, y: y });
+      await components['/p1a'].replacements[0].movePoint({ x: x, y: y });
 
-      expect(components['/p1'].stateValues.xs[0].tree).eq(x);
-      expect(components['/p1'].stateValues.xs[1].tree).eq(y);
+      expect((await components['/p1'].stateValues.xs)[0].tree).eq(x);
+      expect((await components['/p1'].stateValues.xs)[1].tree).eq(y);
 
-      expect(components['/p1a'].replacements[0].stateValues.xs[0].tree).eq(x);
-      expect(components['/p1a'].replacements[0].stateValues.xs[1].tree).eq(y);
+      expect((await components['/p1a'].replacements[0].stateValues.xs)[0].tree).eq(x);
+      expect((await components['/p1a'].replacements[0].stateValues.xs)[1].tree).eq(y);
 
-      expect(components['/p1b'].replacements[0].stateValues.xs[0].tree).eq(x);
-      expect(components['/p1b'].replacements[0].stateValues.xs[1].tree).eq(y);
+      expect((await components['/p1b'].replacements[0].stateValues.xs)[0].tree).eq(x);
+      expect((await components['/p1b'].replacements[0].stateValues.xs)[1].tree).eq(y);
 
     });
 
 
     cy.log("move point 3")
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let x = -4;
       let y = 0;
 
-      components['/p1b'].replacements[0].movePoint({ x: x, y: y });
+      await components['/p1b'].replacements[0].movePoint({ x: x, y: y });
 
-      expect(components['/p1'].stateValues.xs[0].tree).eq(x);
-      expect(components['/p1'].stateValues.xs[1].tree).eq(y);
+      expect((await components['/p1'].stateValues.xs)[0].tree).eq(x);
+      expect((await components['/p1'].stateValues.xs)[1].tree).eq(y);
 
-      expect(components['/p1a'].replacements[0].stateValues.xs[0].tree).eq(x);
-      expect(components['/p1a'].replacements[0].stateValues.xs[1].tree).eq(y);
+      expect((await components['/p1a'].replacements[0].stateValues.xs)[0].tree).eq(x);
+      expect((await components['/p1a'].replacements[0].stateValues.xs)[1].tree).eq(y);
 
-      expect(components['/p1b'].replacements[0].stateValues.xs[0].tree).eq(x);
-      expect(components['/p1b'].replacements[0].stateValues.xs[1].tree).eq(y);
+      expect((await components['/p1b'].replacements[0].stateValues.xs)[0].tree).eq(x);
+      expect((await components['/p1b'].replacements[0].stateValues.xs)[1].tree).eq(y);
 
     });
 
@@ -3585,7 +3582,7 @@ describe('Point Tag Tests', function () {
   })
 
   it('points depending on each other', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -3604,48 +3601,48 @@ describe('Point Tag Tests', function () {
 
     cy.log("initial values")
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let x = 9;
       let y = 7;
 
-      expect(components['/_point1'].stateValues.xs[0].tree).eq(x);
-      expect(components['/_point1'].stateValues.xs[1].tree).eq(y);
+      expect((await components['/_point1'].stateValues.xs)[0].tree).eq(x);
+      expect((await components['/_point1'].stateValues.xs)[1].tree).eq(y);
 
-      expect(components['/_point2'].stateValues.xs[0].tree).eq(y);
-      expect(components['/_point2'].stateValues.xs[1].tree).eq(x);
+      expect((await components['/_point2'].stateValues.xs)[0].tree).eq(y);
+      expect((await components['/_point2'].stateValues.xs)[1].tree).eq(x);
 
     });
 
     cy.log("move point 1")
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let x = -3;
       let y = 5;
 
-      components['/_point1'].movePoint({ x: x, y: y });
+      await components['/_point1'].movePoint({ x: x, y: y });
 
-      expect(components['/_point1'].stateValues.xs[0].tree).eq(x);
-      expect(components['/_point1'].stateValues.xs[1].tree).eq(y);
+      expect((await components['/_point1'].stateValues.xs)[0].tree).eq(x);
+      expect((await components['/_point1'].stateValues.xs)[1].tree).eq(y);
 
-      expect(components['/_point2'].stateValues.xs[0].tree).eq(y);
-      expect(components['/_point2'].stateValues.xs[1].tree).eq(x);
+      expect((await components['/_point2'].stateValues.xs)[0].tree).eq(y);
+      expect((await components['/_point2'].stateValues.xs)[1].tree).eq(x);
 
     });
 
     cy.log("move point 2")
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let x = 7;
       let y = 9;
 
-      components['/_point2'].movePoint({ x: y, y: x });
+      await components['/_point2'].movePoint({ x: y, y: x });
 
-      expect(components['/_point1'].stateValues.xs[0].tree).eq(x);
-      expect(components['/_point1'].stateValues.xs[1].tree).eq(y);
+      expect((await components['/_point1'].stateValues.xs)[0].tree).eq(x);
+      expect((await components['/_point1'].stateValues.xs)[1].tree).eq(y);
 
-      expect(components['/_point2'].stateValues.xs[0].tree).eq(y);
-      expect(components['/_point2'].stateValues.xs[1].tree).eq(x);
+      expect((await components['/_point2'].stateValues.xs)[0].tree).eq(y);
+      expect((await components['/_point2'].stateValues.xs)[1].tree).eq(x);
 
     });
 
@@ -3653,7 +3650,7 @@ describe('Point Tag Tests', function () {
   })
 
   it('points depending on each other 2', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -3671,48 +3668,48 @@ describe('Point Tag Tests', function () {
 
     cy.log("initial values")
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let x = 9;
       let y = 7;
 
-      expect(components['/_point1'].stateValues.xs[0].tree).eq(x);
-      expect(components['/_point1'].stateValues.xs[1].tree).eq(y);
+      expect((await components['/_point1'].stateValues.xs)[0].tree).eq(x);
+      expect((await components['/_point1'].stateValues.xs)[1].tree).eq(y);
 
-      expect(components['/_point2'].stateValues.xs[0].tree).eq(y);
-      expect(components['/_point2'].stateValues.xs[1].tree).eq(x);
+      expect((await components['/_point2'].stateValues.xs)[0].tree).eq(y);
+      expect((await components['/_point2'].stateValues.xs)[1].tree).eq(x);
 
     });
 
     cy.log("move point 1")
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let x = -3;
       let y = 5;
 
-      components['/_point1'].movePoint({ x: x, y: y });
+      await components['/_point1'].movePoint({ x: x, y: y });
 
-      expect(components['/_point1'].stateValues.xs[0].tree).eq(x);
-      expect(components['/_point1'].stateValues.xs[1].tree).eq(y);
+      expect((await components['/_point1'].stateValues.xs)[0].tree).eq(x);
+      expect((await components['/_point1'].stateValues.xs)[1].tree).eq(y);
 
-      expect(components['/_point2'].stateValues.xs[0].tree).eq(y);
-      expect(components['/_point2'].stateValues.xs[1].tree).eq(x);
+      expect((await components['/_point2'].stateValues.xs)[0].tree).eq(y);
+      expect((await components['/_point2'].stateValues.xs)[1].tree).eq(x);
 
     });
 
     cy.log("move point 2")
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let x = 7;
       let y = 9;
 
-      components['/_point2'].movePoint({ x: y, y: x });
+      await components['/_point2'].movePoint({ x: y, y: x });
 
-      expect(components['/_point1'].stateValues.xs[0].tree).eq(x);
-      expect(components['/_point1'].stateValues.xs[1].tree).eq(y);
+      expect((await components['/_point1'].stateValues.xs)[0].tree).eq(x);
+      expect((await components['/_point1'].stateValues.xs)[1].tree).eq(y);
 
-      expect(components['/_point2'].stateValues.xs[0].tree).eq(y);
-      expect(components['/_point2'].stateValues.xs[1].tree).eq(x);
+      expect((await components['/_point2'].stateValues.xs)[0].tree).eq(y);
+      expect((await components['/_point2'].stateValues.xs)[1].tree).eq(x);
 
     });
 
@@ -3720,7 +3717,7 @@ describe('Point Tag Tests', function () {
   })
 
   it('points depending on each other through intermediaries', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -3741,112 +3738,112 @@ describe('Point Tag Tests', function () {
 
     cy.log("initial values")
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let x = 9;
       let y = 7;
 
-      expect(components['/_point1'].stateValues.xs[0].tree).eq(x);
-      expect(components['/_point1'].stateValues.xs[1].tree).eq(y);
+      expect((await components['/_point1'].stateValues.xs)[0].tree).eq(x);
+      expect((await components['/_point1'].stateValues.xs)[1].tree).eq(y);
 
-      expect(components['/_point2'].stateValues.xs[0].tree).eq(y);
-      expect(components['/_point2'].stateValues.xs[1].tree).eq(x);
+      expect((await components['/_point2'].stateValues.xs)[0].tree).eq(y);
+      expect((await components['/_point2'].stateValues.xs)[1].tree).eq(x);
 
-      expect(components['/P1a'].replacements[0].stateValues.xs[0].tree).eq(x);
-      expect(components['/P1a'].replacements[0].stateValues.xs[1].tree).eq(y);
+      expect((await components['/P1a'].replacements[0].stateValues.xs)[0].tree).eq(x);
+      expect((await components['/P1a'].replacements[0].stateValues.xs)[1].tree).eq(y);
 
-      expect(components['/P2a'].replacements[0].stateValues.xs[0].tree).eq(y);
-      expect(components['/P2a'].replacements[0].stateValues.xs[1].tree).eq(x);
+      expect((await components['/P2a'].replacements[0].stateValues.xs)[0].tree).eq(y);
+      expect((await components['/P2a'].replacements[0].stateValues.xs)[1].tree).eq(x);
 
     });
 
     cy.log("move point 1")
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let x = -3;
       let y = 5;
 
-      components['/_point1'].movePoint({ x: x, y: y });
+      await components['/_point1'].movePoint({ x: x, y: y });
 
-      expect(components['/_point1'].stateValues.xs[0].tree).eq(x);
-      expect(components['/_point1'].stateValues.xs[1].tree).eq(y);
+      expect((await components['/_point1'].stateValues.xs)[0].tree).eq(x);
+      expect((await components['/_point1'].stateValues.xs)[1].tree).eq(y);
 
-      expect(components['/_point2'].stateValues.xs[0].tree).eq(y);
-      expect(components['/_point2'].stateValues.xs[1].tree).eq(x);
+      expect((await components['/_point2'].stateValues.xs)[0].tree).eq(y);
+      expect((await components['/_point2'].stateValues.xs)[1].tree).eq(x);
 
-      expect(components['/P1a'].replacements[0].stateValues.xs[0].tree).eq(x);
-      expect(components['/P1a'].replacements[0].stateValues.xs[1].tree).eq(y);
+      expect((await components['/P1a'].replacements[0].stateValues.xs)[0].tree).eq(x);
+      expect((await components['/P1a'].replacements[0].stateValues.xs)[1].tree).eq(y);
 
-      expect(components['/P2a'].replacements[0].stateValues.xs[0].tree).eq(y);
-      expect(components['/P2a'].replacements[0].stateValues.xs[1].tree).eq(x);
+      expect((await components['/P2a'].replacements[0].stateValues.xs)[0].tree).eq(y);
+      expect((await components['/P2a'].replacements[0].stateValues.xs)[1].tree).eq(x);
 
     });
 
     cy.log("move point 2")
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let x = 7;
       let y = 9;
 
-      components['/_point2'].movePoint({ x: y, y: x });
+      await components['/_point2'].movePoint({ x: y, y: x });
 
-      expect(components['/_point1'].stateValues.xs[0].tree).eq(x);
-      expect(components['/_point1'].stateValues.xs[1].tree).eq(y);
+      expect((await components['/_point1'].stateValues.xs)[0].tree).eq(x);
+      expect((await components['/_point1'].stateValues.xs)[1].tree).eq(y);
 
-      expect(components['/_point2'].stateValues.xs[0].tree).eq(y);
-      expect(components['/_point2'].stateValues.xs[1].tree).eq(x);
+      expect((await components['/_point2'].stateValues.xs)[0].tree).eq(y);
+      expect((await components['/_point2'].stateValues.xs)[1].tree).eq(x);
 
-      expect(components['/P1a'].replacements[0].stateValues.xs[0].tree).eq(x);
-      expect(components['/P1a'].replacements[0].stateValues.xs[1].tree).eq(y);
+      expect((await components['/P1a'].replacements[0].stateValues.xs)[0].tree).eq(x);
+      expect((await components['/P1a'].replacements[0].stateValues.xs)[1].tree).eq(y);
 
-      expect(components['/P2a'].replacements[0].stateValues.xs[0].tree).eq(y);
-      expect(components['/P2a'].replacements[0].stateValues.xs[1].tree).eq(x);
+      expect((await components['/P2a'].replacements[0].stateValues.xs)[0].tree).eq(y);
+      expect((await components['/P2a'].replacements[0].stateValues.xs)[1].tree).eq(x);
 
     });
 
 
     cy.log("move point 3")
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let x = 6;
       let y = -1;
 
-      components['/P1a'].replacements[0].movePoint({ x: x, y: y });
+      await components['/P1a'].replacements[0].movePoint({ x: x, y: y });
 
-      expect(components['/_point1'].stateValues.xs[0].tree).eq(x);
-      expect(components['/_point1'].stateValues.xs[1].tree).eq(y);
+      expect((await components['/_point1'].stateValues.xs)[0].tree).eq(x);
+      expect((await components['/_point1'].stateValues.xs)[1].tree).eq(y);
 
-      expect(components['/_point2'].stateValues.xs[0].tree).eq(y);
-      expect(components['/_point2'].stateValues.xs[1].tree).eq(x);
+      expect((await components['/_point2'].stateValues.xs)[0].tree).eq(y);
+      expect((await components['/_point2'].stateValues.xs)[1].tree).eq(x);
 
-      expect(components['/P1a'].replacements[0].stateValues.xs[0].tree).eq(x);
-      expect(components['/P1a'].replacements[0].stateValues.xs[1].tree).eq(y);
+      expect((await components['/P1a'].replacements[0].stateValues.xs)[0].tree).eq(x);
+      expect((await components['/P1a'].replacements[0].stateValues.xs)[1].tree).eq(y);
 
-      expect(components['/P2a'].replacements[0].stateValues.xs[0].tree).eq(y);
-      expect(components['/P2a'].replacements[0].stateValues.xs[1].tree).eq(x);
+      expect((await components['/P2a'].replacements[0].stateValues.xs)[0].tree).eq(y);
+      expect((await components['/P2a'].replacements[0].stateValues.xs)[1].tree).eq(x);
 
     });
 
 
     cy.log("move point 4")
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let x = -3;
       let y = 2;
 
-      components['/P2a'].replacements[0].movePoint({ x: y, y: x });
+      await components['/P2a'].replacements[0].movePoint({ x: y, y: x });
 
-      expect(components['/_point1'].stateValues.xs[0].tree).eq(x);
-      expect(components['/_point1'].stateValues.xs[1].tree).eq(y);
+      expect((await components['/_point1'].stateValues.xs)[0].tree).eq(x);
+      expect((await components['/_point1'].stateValues.xs)[1].tree).eq(y);
 
-      expect(components['/_point2'].stateValues.xs[0].tree).eq(y);
-      expect(components['/_point2'].stateValues.xs[1].tree).eq(x);
+      expect((await components['/_point2'].stateValues.xs)[0].tree).eq(y);
+      expect((await components['/_point2'].stateValues.xs)[1].tree).eq(x);
 
-      expect(components['/P1a'].replacements[0].stateValues.xs[0].tree).eq(x);
-      expect(components['/P1a'].replacements[0].stateValues.xs[1].tree).eq(y);
+      expect((await components['/P1a'].replacements[0].stateValues.xs)[0].tree).eq(x);
+      expect((await components['/P1a'].replacements[0].stateValues.xs)[1].tree).eq(y);
 
-      expect(components['/P2a'].replacements[0].stateValues.xs[0].tree).eq(y);
-      expect(components['/P2a'].replacements[0].stateValues.xs[1].tree).eq(x);
+      expect((await components['/P2a'].replacements[0].stateValues.xs)[0].tree).eq(y);
+      expect((await components['/P2a'].replacements[0].stateValues.xs)[1].tree).eq(x);
 
     });
 
@@ -3854,7 +3851,7 @@ describe('Point Tag Tests', function () {
   })
 
   it('points depending on each other through intermediaries 2', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -3875,112 +3872,112 @@ describe('Point Tag Tests', function () {
 
     cy.log("initial values")
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let x = 9;
       let y = 7;
 
-      expect(components['/_point1'].stateValues.xs[0].tree).eq(x);
-      expect(components['/_point1'].stateValues.xs[1].tree).eq(y);
+      expect((await components['/_point1'].stateValues.xs)[0].tree).eq(x);
+      expect((await components['/_point1'].stateValues.xs)[1].tree).eq(y);
 
-      expect(components['/_point2'].stateValues.xs[0].tree).eq(y);
-      expect(components['/_point2'].stateValues.xs[1].tree).eq(x);
+      expect((await components['/_point2'].stateValues.xs)[0].tree).eq(y);
+      expect((await components['/_point2'].stateValues.xs)[1].tree).eq(x);
 
-      expect(components['/P1a'].replacements[0].stateValues.xs[0].tree).eq(x);
-      expect(components['/P1a'].replacements[0].stateValues.xs[1].tree).eq(y);
+      expect((await components['/P1a'].replacements[0].stateValues.xs)[0].tree).eq(x);
+      expect((await components['/P1a'].replacements[0].stateValues.xs)[1].tree).eq(y);
 
-      expect(components['/P2a'].replacements[0].stateValues.xs[0].tree).eq(y);
-      expect(components['/P2a'].replacements[0].stateValues.xs[1].tree).eq(x);
+      expect((await components['/P2a'].replacements[0].stateValues.xs)[0].tree).eq(y);
+      expect((await components['/P2a'].replacements[0].stateValues.xs)[1].tree).eq(x);
 
     });
 
     cy.log("move point 1")
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let x = -3;
       let y = 5;
 
-      components['/_point1'].movePoint({ x: x, y: y });
+      await components['/_point1'].movePoint({ x: x, y: y });
 
-      expect(components['/_point1'].stateValues.xs[0].tree).eq(x);
-      expect(components['/_point1'].stateValues.xs[1].tree).eq(y);
+      expect((await components['/_point1'].stateValues.xs)[0].tree).eq(x);
+      expect((await components['/_point1'].stateValues.xs)[1].tree).eq(y);
 
-      expect(components['/_point2'].stateValues.xs[0].tree).eq(y);
-      expect(components['/_point2'].stateValues.xs[1].tree).eq(x);
+      expect((await components['/_point2'].stateValues.xs)[0].tree).eq(y);
+      expect((await components['/_point2'].stateValues.xs)[1].tree).eq(x);
 
-      expect(components['/P1a'].replacements[0].stateValues.xs[0].tree).eq(x);
-      expect(components['/P1a'].replacements[0].stateValues.xs[1].tree).eq(y);
+      expect((await components['/P1a'].replacements[0].stateValues.xs)[0].tree).eq(x);
+      expect((await components['/P1a'].replacements[0].stateValues.xs)[1].tree).eq(y);
 
-      expect(components['/P2a'].replacements[0].stateValues.xs[0].tree).eq(y);
-      expect(components['/P2a'].replacements[0].stateValues.xs[1].tree).eq(x);
+      expect((await components['/P2a'].replacements[0].stateValues.xs)[0].tree).eq(y);
+      expect((await components['/P2a'].replacements[0].stateValues.xs)[1].tree).eq(x);
 
     });
 
     cy.log("move point 2")
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let x = 7;
       let y = 9;
 
-      components['/_point2'].movePoint({ x: y, y: x });
+      await components['/_point2'].movePoint({ x: y, y: x });
 
-      expect(components['/_point1'].stateValues.xs[0].tree).eq(x);
-      expect(components['/_point1'].stateValues.xs[1].tree).eq(y);
+      expect((await components['/_point1'].stateValues.xs)[0].tree).eq(x);
+      expect((await components['/_point1'].stateValues.xs)[1].tree).eq(y);
 
-      expect(components['/_point2'].stateValues.xs[0].tree).eq(y);
-      expect(components['/_point2'].stateValues.xs[1].tree).eq(x);
+      expect((await components['/_point2'].stateValues.xs)[0].tree).eq(y);
+      expect((await components['/_point2'].stateValues.xs)[1].tree).eq(x);
 
-      expect(components['/P1a'].replacements[0].stateValues.xs[0].tree).eq(x);
-      expect(components['/P1a'].replacements[0].stateValues.xs[1].tree).eq(y);
+      expect((await components['/P1a'].replacements[0].stateValues.xs)[0].tree).eq(x);
+      expect((await components['/P1a'].replacements[0].stateValues.xs)[1].tree).eq(y);
 
-      expect(components['/P2a'].replacements[0].stateValues.xs[0].tree).eq(y);
-      expect(components['/P2a'].replacements[0].stateValues.xs[1].tree).eq(x);
+      expect((await components['/P2a'].replacements[0].stateValues.xs)[0].tree).eq(y);
+      expect((await components['/P2a'].replacements[0].stateValues.xs)[1].tree).eq(x);
 
     });
 
 
     cy.log("move point 3")
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let x = 6;
       let y = -1;
 
-      components['/P1a'].replacements[0].movePoint({ x: x, y: y });
+      await components['/P1a'].replacements[0].movePoint({ x: x, y: y });
 
-      expect(components['/_point1'].stateValues.xs[0].tree).eq(x);
-      expect(components['/_point1'].stateValues.xs[1].tree).eq(y);
+      expect((await components['/_point1'].stateValues.xs)[0].tree).eq(x);
+      expect((await components['/_point1'].stateValues.xs)[1].tree).eq(y);
 
-      expect(components['/_point2'].stateValues.xs[0].tree).eq(y);
-      expect(components['/_point2'].stateValues.xs[1].tree).eq(x);
+      expect((await components['/_point2'].stateValues.xs)[0].tree).eq(y);
+      expect((await components['/_point2'].stateValues.xs)[1].tree).eq(x);
 
-      expect(components['/P1a'].replacements[0].stateValues.xs[0].tree).eq(x);
-      expect(components['/P1a'].replacements[0].stateValues.xs[1].tree).eq(y);
+      expect((await components['/P1a'].replacements[0].stateValues.xs)[0].tree).eq(x);
+      expect((await components['/P1a'].replacements[0].stateValues.xs)[1].tree).eq(y);
 
-      expect(components['/P2a'].replacements[0].stateValues.xs[0].tree).eq(y);
-      expect(components['/P2a'].replacements[0].stateValues.xs[1].tree).eq(x);
+      expect((await components['/P2a'].replacements[0].stateValues.xs)[0].tree).eq(y);
+      expect((await components['/P2a'].replacements[0].stateValues.xs)[1].tree).eq(x);
 
     });
 
 
     cy.log("move point 4")
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let x = -3;
       let y = 2;
 
-      components['/P2a'].replacements[0].movePoint({ x: y, y: x });
+      await components['/P2a'].replacements[0].movePoint({ x: y, y: x });
 
-      expect(components['/_point1'].stateValues.xs[0].tree).eq(x);
-      expect(components['/_point1'].stateValues.xs[1].tree).eq(y);
+      expect((await components['/_point1'].stateValues.xs)[0].tree).eq(x);
+      expect((await components['/_point1'].stateValues.xs)[1].tree).eq(y);
 
-      expect(components['/_point2'].stateValues.xs[0].tree).eq(y);
-      expect(components['/_point2'].stateValues.xs[1].tree).eq(x);
+      expect((await components['/_point2'].stateValues.xs)[0].tree).eq(y);
+      expect((await components['/_point2'].stateValues.xs)[1].tree).eq(x);
 
-      expect(components['/P1a'].replacements[0].stateValues.xs[0].tree).eq(x);
-      expect(components['/P1a'].replacements[0].stateValues.xs[1].tree).eq(y);
+      expect((await components['/P1a'].replacements[0].stateValues.xs)[0].tree).eq(x);
+      expect((await components['/P1a'].replacements[0].stateValues.xs)[1].tree).eq(y);
 
-      expect(components['/P2a'].replacements[0].stateValues.xs[0].tree).eq(y);
-      expect(components['/P2a'].replacements[0].stateValues.xs[1].tree).eq(x);
+      expect((await components['/P2a'].replacements[0].stateValues.xs)[0].tree).eq(y);
+      expect((await components['/P2a'].replacements[0].stateValues.xs)[1].tree).eq(x);
 
     });
 
@@ -3988,7 +3985,7 @@ describe('Point Tag Tests', function () {
   })
 
   it('points depending on each other, one using coords', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -4006,48 +4003,48 @@ describe('Point Tag Tests', function () {
 
     cy.log("initial values")
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let x = 9;
       let y = 7;
 
-      expect(components['/_point1'].stateValues.xs[0].tree).eq(x);
-      expect(components['/_point1'].stateValues.xs[1].tree).eq(y);
+      expect((await components['/_point1'].stateValues.xs)[0].tree).eq(x);
+      expect((await components['/_point1'].stateValues.xs)[1].tree).eq(y);
 
-      expect(components['/_point2'].stateValues.xs[0].tree).eq(y);
-      expect(components['/_point2'].stateValues.xs[1].tree).eq(x);
+      expect((await components['/_point2'].stateValues.xs)[0].tree).eq(y);
+      expect((await components['/_point2'].stateValues.xs)[1].tree).eq(x);
 
     });
 
     cy.log("move point 1")
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let x = -3;
       let y = 5;
 
-      components['/_point1'].movePoint({ x: x, y: y });
+      await components['/_point1'].movePoint({ x: x, y: y });
 
-      expect(components['/_point1'].stateValues.xs[0].tree).eq(x);
-      expect(components['/_point1'].stateValues.xs[1].tree).eq(y);
+      expect((await components['/_point1'].stateValues.xs)[0].tree).eq(x);
+      expect((await components['/_point1'].stateValues.xs)[1].tree).eq(y);
 
-      expect(components['/_point2'].stateValues.xs[0].tree).eq(y);
-      expect(components['/_point2'].stateValues.xs[1].tree).eq(x);
+      expect((await components['/_point2'].stateValues.xs)[0].tree).eq(y);
+      expect((await components['/_point2'].stateValues.xs)[1].tree).eq(x);
 
     });
 
     cy.log("move point 2")
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let x = 7;
       let y = 9;
 
-      components['/_point2'].movePoint({ x: y, y: x });
+      await components['/_point2'].movePoint({ x: y, y: x });
 
-      expect(components['/_point1'].stateValues.xs[0].tree).eq(x);
-      expect(components['/_point1'].stateValues.xs[1].tree).eq(y);
+      expect((await components['/_point1'].stateValues.xs)[0].tree).eq(x);
+      expect((await components['/_point1'].stateValues.xs)[1].tree).eq(y);
 
-      expect(components['/_point2'].stateValues.xs[0].tree).eq(y);
-      expect(components['/_point2'].stateValues.xs[1].tree).eq(x);
+      expect((await components['/_point2'].stateValues.xs)[0].tree).eq(y);
+      expect((await components['/_point2'].stateValues.xs)[1].tree).eq(x);
 
     });
 
@@ -4055,7 +4052,7 @@ describe('Point Tag Tests', function () {
   })
 
   it('points depending on themselves', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -4073,7 +4070,7 @@ describe('Point Tag Tests', function () {
 
     cy.log("initial values")
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let x1 = 3;
       let y1 = 2 * x1 + 1;
@@ -4081,16 +4078,16 @@ describe('Point Tag Tests', function () {
       let y2 = 3;
       let x2 = 2 * y2 + 1;
 
-      expect(components['/_point1'].stateValues.xs[0].tree).eq(x1);
-      expect(components['/_point1'].stateValues.xs[1].tree).eq(y1);
+      expect((await components['/_point1'].stateValues.xs)[0].tree).eq(x1);
+      expect((await components['/_point1'].stateValues.xs)[1].tree).eq(y1);
 
-      expect(components['/_point2'].stateValues.xs[0].tree).eq(x2);
-      expect(components['/_point2'].stateValues.xs[1].tree).eq(y2);
+      expect((await components['/_point2'].stateValues.xs)[0].tree).eq(x2);
+      expect((await components['/_point2'].stateValues.xs)[1].tree).eq(y2);
 
     });
 
     cy.log("move points")
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let x1 = -3;
       let y1try = 5;
@@ -4101,14 +4098,14 @@ describe('Point Tag Tests', function () {
       let y1 = 2 * x1 + 1;
       let y2 = (x2 - 1) / 2;
 
-      components['/_point1'].movePoint({ x: x1, y: y1try });
-      components['/_point2'].movePoint({ x: x2, y: y2try });
+      await components['/_point1'].movePoint({ x: x1, y: y1try });
+      await components['/_point2'].movePoint({ x: x2, y: y2try });
 
-      expect(components['/_point1'].stateValues.xs[0].tree).eq(x1);
-      expect(components['/_point1'].stateValues.xs[1].tree).eq(y1);
+      expect((await components['/_point1'].stateValues.xs)[0].tree).eq(x1);
+      expect((await components['/_point1'].stateValues.xs)[1].tree).eq(y1);
 
-      expect(components['/_point2'].stateValues.xs[0].tree).eq(x2);
-      expect(components['/_point2'].stateValues.xs[1].tree).eq(y2);
+      expect((await components['/_point2'].stateValues.xs)[0].tree).eq(x2);
+      expect((await components['/_point2'].stateValues.xs)[1].tree).eq(y2);
 
     });
 
@@ -4116,7 +4113,7 @@ describe('Point Tag Tests', function () {
   })
 
   it('points depending original graph axis limit', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -4135,37 +4132,37 @@ describe('Point Tag Tests', function () {
 
     cy.log("initial values")
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let x1 = 3;
       let y1 = 10;
       let x2 = -10
       let y2 = 5;
 
-      expect(components['/_point1'].stateValues.xs[0].tree).eq(x1);
-      expect(components['/_point1'].stateValues.xs[1].tree).eq(y1);
+      expect((await components['/_point1'].stateValues.xs)[0].tree).eq(x1);
+      expect((await components['/_point1'].stateValues.xs)[1].tree).eq(y1);
 
-      expect(components['/_point2'].stateValues.xs[0].tree).eq(x2);
-      expect(components['/_point2'].stateValues.xs[1].tree).eq(y2);
+      expect((await components['/_point2'].stateValues.xs)[0].tree).eq(x2);
+      expect((await components['/_point2'].stateValues.xs)[1].tree).eq(y2);
 
     });
 
     cy.log("move points")
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let x1 = 1;
       let y1 = 5;
       let x2 = 8
       let y2 = -3;
 
-      components['/_point1'].movePoint({ x: x1, y: y1 });
-      components['/_point2'].movePoint({ x: x2, y: y2 });
+      await components['/_point1'].movePoint({ x: x1, y: y1 });
+      await components['/_point2'].movePoint({ x: x2, y: y2 });
 
-      expect(components['/_point1'].stateValues.xs[0].tree).eq(x1);
-      expect(components['/_point1'].stateValues.xs[1].tree).eq(10);
+      expect((await components['/_point1'].stateValues.xs)[0].tree).eq(x1);
+      expect((await components['/_point1'].stateValues.xs)[1].tree).eq(10);
 
-      expect(components['/_point2'].stateValues.xs[0].tree).eq(-10);
-      expect(components['/_point2'].stateValues.xs[1].tree).eq(y2);
+      expect((await components['/_point2'].stateValues.xs)[0].tree).eq(-10);
+      expect((await components['/_point2'].stateValues.xs)[1].tree).eq(y2);
 
     });
 
@@ -4173,7 +4170,7 @@ describe('Point Tag Tests', function () {
   })
 
   it('label points by combining coordinates with other point', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -4201,7 +4198,7 @@ describe('Point Tag Tests', function () {
     cy.get('#\\/_p1').should('have.text', 'Label 1: 1, 3')
     cy.get('#\\/_p2').should('have.text', 'Label 2: 2, 4')
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let x1 = 1;
       let y1 = 2;
@@ -4211,11 +4208,11 @@ describe('Point Tag Tests', function () {
       let label1 = `${x1}, ${x2}`;
       let label2 = `${y1}, ${y2}`;
 
-      expect(components['/_point1'].stateValues.xs[0].tree).eq(x1);
-      expect(components['/_point1'].stateValues.xs[1].tree).eq(y1);
+      expect((await components['/_point1'].stateValues.xs)[0].tree).eq(x1);
+      expect((await components['/_point1'].stateValues.xs)[1].tree).eq(y1);
 
-      expect(components['/_point2'].stateValues.xs[0].tree).eq(x2);
-      expect(components['/_point2'].stateValues.xs[1].tree).eq(y2);
+      expect((await components['/_point2'].stateValues.xs)[0].tree).eq(x2);
+      expect((await components['/_point2'].stateValues.xs)[1].tree).eq(y2);
 
       expect(components['/_point1'].stateValues.label).eq(label1);
       expect(components['/_point2'].stateValues.label).eq(label2);
@@ -4223,24 +4220,24 @@ describe('Point Tag Tests', function () {
     });
 
     cy.log("move points")
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let x1 = 1;
       let y1 = 5;
       let x2 = 8
       let y2 = -3;
 
-      components['/_point1'].movePoint({ x: x1, y: y1 });
-      components['/_point2'].movePoint({ x: x2, y: y2 });
+      await components['/_point1'].movePoint({ x: x1, y: y1 });
+      await components['/_point2'].movePoint({ x: x2, y: y2 });
 
       let label1 = `${x1}, ${x2}`;
       let label2 = `${y1}, ${y2}`;
 
-      expect(components['/_point1'].stateValues.xs[0].tree).eq(x1);
-      expect(components['/_point1'].stateValues.xs[1].tree).eq(y1);
+      expect((await components['/_point1'].stateValues.xs)[0].tree).eq(x1);
+      expect((await components['/_point1'].stateValues.xs)[1].tree).eq(y1);
 
-      expect(components['/_point2'].stateValues.xs[0].tree).eq(x2);
-      expect(components['/_point2'].stateValues.xs[1].tree).eq(y2);
+      expect((await components['/_point2'].stateValues.xs)[0].tree).eq(x2);
+      expect((await components['/_point2'].stateValues.xs)[1].tree).eq(y2);
 
       expect(components['/_point1'].stateValues.label).eq(label1);
       expect(components['/_point2'].stateValues.label).eq(label2);
@@ -4252,15 +4249,15 @@ describe('Point Tag Tests', function () {
 
 
     cy.log("move points to fractional coordinates")
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let x1 = 3.12552502;
       let y1 = -3.4815436398;
       let x2 = 0.36193540738
       let y2 = 7.813395519475;
 
-      components['/_point1'].movePoint({ x: x1, y: y1 });
-      components['/_point2'].movePoint({ x: x2, y: y2 });
+      await components['/_point1'].movePoint({ x: x1, y: y1 });
+      await components['/_point2'].movePoint({ x: x2, y: y2 });
 
       let x1round = me.fromAst(x1).round_numbers_to_precision(3).tree;
       let y1round = me.fromAst(y1).round_numbers_to_precision(3).tree;
@@ -4270,11 +4267,11 @@ describe('Point Tag Tests', function () {
       let label1 = `${x1round}, ${x2round}`;
       let label2 = `${y1round}, ${y2round}`;
 
-      expect(components['/_point1'].stateValues.xs[0].tree).eq(x1);
-      expect(components['/_point1'].stateValues.xs[1].tree).eq(y1);
+      expect((await components['/_point1'].stateValues.xs)[0].tree).eq(x1);
+      expect((await components['/_point1'].stateValues.xs)[1].tree).eq(y1);
 
-      expect(components['/_point2'].stateValues.xs[0].tree).eq(x2);
-      expect(components['/_point2'].stateValues.xs[1].tree).eq(y2);
+      expect((await components['/_point2'].stateValues.xs)[0].tree).eq(x2);
+      expect((await components['/_point2'].stateValues.xs)[1].tree).eq(y2);
 
       expect(components['/_point1'].stateValues.label).eq(label1);
       expect(components['/_point2'].stateValues.label).eq(label2);
@@ -4287,7 +4284,7 @@ describe('Point Tag Tests', function () {
   })
 
   it('update point with constraints', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -4306,108 +4303,108 @@ describe('Point Tag Tests', function () {
 
     cy.get("#\\/_text1").should('have.text', 'a'); // to wait for page to load
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let x = -4;
       let y = 1;
 
-      expect(components['/_point1'].stateValues.xs[0].tree).eq(x);
-      expect(components['/_point1'].stateValues.xs[1].tree).eq(y);
-      expect(components['/_point3'].stateValues.xs[0].tree).eq(x);
-      expect(components['/_point3'].stateValues.xs[1].tree).eq(0);
-      expect(components['/_point4'].stateValues.xs[0].tree).eq(0);
-      expect(components['/_point4'].stateValues.xs[1].tree).eq(y);
+      expect((await components['/_point1'].stateValues.xs)[0].tree).eq(x);
+      expect((await components['/_point1'].stateValues.xs)[1].tree).eq(y);
+      expect((await components['/_point3'].stateValues.xs)[0].tree).eq(x);
+      expect((await components['/_point3'].stateValues.xs)[1].tree).eq(0);
+      expect((await components['/_point4'].stateValues.xs)[0].tree).eq(0);
+      expect((await components['/_point4'].stateValues.xs)[1].tree).eq(y);
 
     });
 
     cy.log("move first point")
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let x = 3;
       let y = -2;
 
-      components['/_point1'].movePoint({ x: x, y: y });
+      await components['/_point1'].movePoint({ x: x, y: y });
 
-      expect(components['/_point1'].stateValues.xs[0].tree).eq(x);
-      expect(components['/_point1'].stateValues.xs[1].tree).eq(y);
-      expect(components['/_point3'].stateValues.xs[0].tree).eq(x);
-      expect(components['/_point3'].stateValues.xs[1].tree).eq(0);
-      expect(components['/_point4'].stateValues.xs[0].tree).eq(0);
-      expect(components['/_point4'].stateValues.xs[1].tree).eq(y);
+      expect((await components['/_point1'].stateValues.xs)[0].tree).eq(x);
+      expect((await components['/_point1'].stateValues.xs)[1].tree).eq(y);
+      expect((await components['/_point3'].stateValues.xs)[0].tree).eq(x);
+      expect((await components['/_point3'].stateValues.xs)[1].tree).eq(0);
+      expect((await components['/_point4'].stateValues.xs)[0].tree).eq(0);
+      expect((await components['/_point4'].stateValues.xs)[1].tree).eq(y);
 
     });
 
     cy.log("move x-axis point")
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let x = 9;
       let y = -2;
 
-      components['/_point3'].movePoint({ x: x, y: -3 });
+      await components['/_point3'].movePoint({ x: x, y: -3 });
 
-      expect(components['/_point1'].stateValues.xs[0].tree).eq(x);
-      expect(components['/_point1'].stateValues.xs[1].tree).eq(y);
-      expect(components['/_point3'].stateValues.xs[0].tree).eq(x);
-      expect(components['/_point3'].stateValues.xs[1].tree).eq(0);
-      expect(components['/_point4'].stateValues.xs[0].tree).eq(0);
-      expect(components['/_point4'].stateValues.xs[1].tree).eq(y);
+      expect((await components['/_point1'].stateValues.xs)[0].tree).eq(x);
+      expect((await components['/_point1'].stateValues.xs)[1].tree).eq(y);
+      expect((await components['/_point3'].stateValues.xs)[0].tree).eq(x);
+      expect((await components['/_point3'].stateValues.xs)[1].tree).eq(0);
+      expect((await components['/_point4'].stateValues.xs)[0].tree).eq(0);
+      expect((await components['/_point4'].stateValues.xs)[1].tree).eq(y);
 
     });
 
     cy.log("move y-axis point")
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let x = 9;
       let y = -7.1;
 
-      components['/_point4'].movePoint({ x: -10, y: y });
+      await components['/_point4'].movePoint({ x: -10, y: y });
 
-      expect(components['/_point1'].stateValues.xs[0].tree).eq(x);
-      expect(components['/_point1'].stateValues.xs[1].tree).eq(y);
-      expect(components['/_point3'].stateValues.xs[0].tree).eq(x);
-      expect(components['/_point3'].stateValues.xs[1].tree).eq(0);
-      expect(components['/_point4'].stateValues.xs[0].tree).eq(0);
-      expect(components['/_point4'].stateValues.xs[1].tree).eq(y);
+      expect((await components['/_point1'].stateValues.xs)[0].tree).eq(x);
+      expect((await components['/_point1'].stateValues.xs)[1].tree).eq(y);
+      expect((await components['/_point3'].stateValues.xs)[0].tree).eq(x);
+      expect((await components['/_point3'].stateValues.xs)[1].tree).eq(0);
+      expect((await components['/_point4'].stateValues.xs)[0].tree).eq(0);
+      expect((await components['/_point4'].stateValues.xs)[1].tree).eq(y);
 
     });
 
     cy.log("move near attractor")
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let x = 1;
       let y = -7;
 
-      components['/_point3'].movePoint({ x: 0.9, y: 6 });
+      await components['/_point3'].movePoint({ x: 0.9, y: 6 });
 
-      expect(components['/_point1'].stateValues.xs[0].tree).eq(x);
-      expect(components['/_point1'].stateValues.xs[1].tree).eq(y);
-      expect(components['/_point3'].stateValues.xs[0].tree).eq(x);
-      expect(components['/_point3'].stateValues.xs[1].tree).eq(0);
-      expect(components['/_point4'].stateValues.xs[0].tree).eq(0);
-      expect(components['/_point4'].stateValues.xs[1].tree).eq(y);
+      expect((await components['/_point1'].stateValues.xs)[0].tree).eq(x);
+      expect((await components['/_point1'].stateValues.xs)[1].tree).eq(y);
+      expect((await components['/_point3'].stateValues.xs)[0].tree).eq(x);
+      expect((await components['/_point3'].stateValues.xs)[1].tree).eq(0);
+      expect((await components['/_point4'].stateValues.xs)[0].tree).eq(0);
+      expect((await components['/_point4'].stateValues.xs)[1].tree).eq(y);
 
     });
 
     cy.log("move again near attract to make sure doesn't change")
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let x = 1;
       let y = -7;
 
-      components['/_point3'].movePoint({ x: 1.1, y: 6 });
+      await components['/_point3'].movePoint({ x: 1.1, y: 6 });
 
-      expect(components['/_point1'].stateValues.xs[0].tree).eq(x);
-      expect(components['/_point1'].stateValues.xs[1].tree).eq(y);
-      expect(components['/_point3'].stateValues.xs[0].tree).eq(x);
-      expect(components['/_point3'].stateValues.xs[1].tree).eq(0);
-      expect(components['/_point4'].stateValues.xs[0].tree).eq(0);
-      expect(components['/_point4'].stateValues.xs[1].tree).eq(y);
+      expect((await components['/_point1'].stateValues.xs)[0].tree).eq(x);
+      expect((await components['/_point1'].stateValues.xs)[1].tree).eq(y);
+      expect((await components['/_point3'].stateValues.xs)[0].tree).eq(x);
+      expect((await components['/_point3'].stateValues.xs)[1].tree).eq(0);
+      expect((await components['/_point4'].stateValues.xs)[0].tree).eq(0);
+      expect((await components['/_point4'].stateValues.xs)[1].tree).eq(y);
 
     });
   })
 
   it('change point dimensions', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -4488,7 +4485,7 @@ describe('Point Tag Tests', function () {
 
     cy.get("#\\/_text1").should('have.text', 'a'); // to wait for page to load
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
 
       let point1Anchor = cesc('#' + components["/_point1"].adapterUsed.componentName);
@@ -4605,23 +4602,23 @@ describe('Point Tag Tests', function () {
       })
 
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
 
         expect(components['/_point1'].stateValues.nDimensions).eq(1);
-        expect(components['/_point1'].stateValues.xs.length).eq(1);
-        expect(components['/_point1'].stateValues.xs[0].tree).eq('＿');
+        expect((await components['/_point1'].stateValues.xs).length).eq(1);
+        expect((await components['/_point1'].stateValues.xs)[0].tree).eq('＿');
         expect(components['/_point1'].stateValues.x1.tree).eq('＿');
         expect(components['/_point1'].stateValues.x2).eq(undefined);
         expect(components['/_point1'].stateValues.x3).eq(undefined);
         expect(point2.stateValues.nDimensions).eq(1);
-        expect(point2.stateValues.xs.length).eq(1);
-        expect(point2.stateValues.xs[0].tree).eq('＿');
+        expect((await point2.stateValues.xs).length).eq(1);
+        expect((await point2.stateValues.xs)[0].tree).eq('＿');
         expect(point2.stateValues.x1.tree).eq('＿');
         expect(point2.stateValues.x2).eq(undefined);
         expect(point2.stateValues.x3).eq(undefined);
         expect(point3.stateValues.nDimensions).eq(1);
-        expect(point3.stateValues.xs.length).eq(1);
-        expect(point3.stateValues.xs[0].tree).eq('＿');
+        expect((await point3.stateValues.xs).length).eq(1);
+        expect((await point3.stateValues.xs)[0].tree).eq('＿');
         expect(point3.stateValues.x1.tree).eq('＿');
         expect(point3.stateValues.x2).eq(undefined);
         expect(point3.stateValues.x3).eq(undefined);
@@ -4631,7 +4628,7 @@ describe('Point Tag Tests', function () {
       cy.log('Create 2D point')
       cy.get('#\\/originalCoords textarea').type('{end}{backspace}(a,b){enter}', { force: true });
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
 
         let point1x2Anchor = cesc("#" + components["/point1x2"].replacements[0].componentName);
         let point2x2Anchor = cesc("#" + components["/point2x2"].replacements[0].componentName);
@@ -4775,26 +4772,26 @@ describe('Point Tag Tests', function () {
           expect(text.trim()).equal('(a,b)')
         })
 
-        cy.window().then((win) => {
+        cy.window().then(async (win) => {
 
           expect(components['/_point1'].stateValues.nDimensions).eq(2);
-          expect(components['/_point1'].stateValues.xs.length).eq(2);
-          expect(components['/_point1'].stateValues.xs[0].tree).eq('a');
-          expect(components['/_point1'].stateValues.xs[1].tree).eq('b');
+          expect((await components['/_point1'].stateValues.xs).length).eq(2);
+          expect((await components['/_point1'].stateValues.xs)[0].tree).eq('a');
+          expect((await components['/_point1'].stateValues.xs)[1].tree).eq('b');
           expect(components['/_point1'].stateValues.x1.tree).eq('a');
           expect(components['/_point1'].stateValues.x2.tree).eq('b');
           expect(components['/_point1'].stateValues.x3).eq(undefined);
           expect(point2.stateValues.nDimensions).eq(2);
-          expect(point2.stateValues.xs.length).eq(2);
-          expect(point2.stateValues.xs[0].tree).eq('a');
-          expect(point2.stateValues.xs[1].tree).eq('b');
+          expect((await point2.stateValues.xs).length).eq(2);
+          expect((await point2.stateValues.xs)[0].tree).eq('a');
+          expect((await point2.stateValues.xs)[1].tree).eq('b');
           expect(point2.stateValues.x1.tree).eq('a');
           expect(point2.stateValues.x2.tree).eq('b');
           expect(point2.stateValues.x3).eq(undefined);
           expect(point3.stateValues.nDimensions).eq(2);
-          expect(point3.stateValues.xs.length).eq(2);
-          expect(point3.stateValues.xs[0].tree).eq('a');
-          expect(point3.stateValues.xs[1].tree).eq('b');
+          expect((await point3.stateValues.xs).length).eq(2);
+          expect((await point3.stateValues.xs)[0].tree).eq('a');
+          expect((await point3.stateValues.xs)[1].tree).eq('b');
           expect(point3.stateValues.x1.tree).eq('a');
           expect(point3.stateValues.x2.tree).eq('b');
           expect(point3.stateValues.x3).eq(undefined);
@@ -4807,7 +4804,7 @@ describe('Point Tag Tests', function () {
       cy.log('Back to 1D point')
       cy.get('#\\/originalCoords textarea').type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}q{enter}', { force: true });
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
 
         cy.get(point1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('q')
@@ -4917,23 +4914,23 @@ describe('Point Tag Tests', function () {
           expect(text.trim()).equal('q')
         })
 
-        cy.window().then((win) => {
+        cy.window().then(async (win) => {
 
           expect(components['/_point1'].stateValues.nDimensions).eq(1);
-          expect(components['/_point1'].stateValues.xs.length).eq(1);
-          expect(components['/_point1'].stateValues.xs[0].tree).eq('q');
+          expect((await components['/_point1'].stateValues.xs).length).eq(1);
+          expect((await components['/_point1'].stateValues.xs)[0].tree).eq('q');
           expect(components['/_point1'].stateValues.x1.tree).eq('q');
           expect(components['/_point1'].stateValues.x2).eq(undefined);
           expect(components['/_point1'].stateValues.x3).eq(undefined);
           expect(point2.stateValues.nDimensions).eq(1);
-          expect(point2.stateValues.xs.length).eq(1);
-          expect(point2.stateValues.xs[0].tree).eq('q');
+          expect((await point2.stateValues.xs).length).eq(1);
+          expect((await point2.stateValues.xs)[0].tree).eq('q');
           expect(point2.stateValues.x1.tree).eq('q');
           expect(point2.stateValues.x2).eq(undefined);
           expect(point2.stateValues.x3).eq(undefined);
           expect(point3.stateValues.nDimensions).eq(1);
-          expect(point3.stateValues.xs.length).eq(1);
-          expect(point3.stateValues.xs[0].tree).eq('q');
+          expect((await point3.stateValues.xs).length).eq(1);
+          expect((await point3.stateValues.xs)[0].tree).eq('q');
           expect(point3.stateValues.x1.tree).eq('q');
           expect(point3.stateValues.x2).eq(undefined);
           expect(point3.stateValues.x3).eq(undefined);
@@ -4946,7 +4943,7 @@ describe('Point Tag Tests', function () {
       cy.log('Create 3D point')
       cy.get('#\\/originalCoords textarea').type('{end}{backspace}(2x,u/v{rightarrow},w^2{rightarrow}){enter}', { force: true });
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
 
         let point1x2Anchor = cesc("#" + components["/point1x2"].replacements[0].componentName);
         let point2x2Anchor = cesc("#" + components["/point2x2"].replacements[0].componentName);
@@ -5122,29 +5119,29 @@ describe('Point Tag Tests', function () {
           expect(text.trim()).equal('(2x,uv,w2)')
         })
 
-        cy.window().then((win) => {
+        cy.window().then(async (win) => {
 
           expect(components['/_point1'].stateValues.nDimensions).eq(3);
-          expect(components['/_point1'].stateValues.xs.length).eq(3);
-          expect(components['/_point1'].stateValues.xs[0].tree).eqls(["*", 2, "x"]);
-          expect(components['/_point1'].stateValues.xs[1].tree).eqls(["/", "u", "v"]);
-          expect(components['/_point1'].stateValues.xs[2].tree).eqls(["^", "w", 2]);
+          expect((await components['/_point1'].stateValues.xs).length).eq(3);
+          expect((await components['/_point1'].stateValues.xs)[0].tree).eqls(["*", 2, "x"]);
+          expect((await components['/_point1'].stateValues.xs)[1].tree).eqls(["/", "u", "v"]);
+          expect((await components['/_point1'].stateValues.xs)[2].tree).eqls(["^", "w", 2]);
           expect(components['/_point1'].stateValues.x1.tree).eqls(["*", 2, "x"]);;
           expect(components['/_point1'].stateValues.x2.tree).eqls(["/", "u", "v"]);
           expect(components['/_point1'].stateValues.x3.tree).eqls(["^", "w", 2]);
           expect(point2.stateValues.nDimensions).eq(3);
-          expect(point2.stateValues.xs.length).eq(3);
-          expect(point2.stateValues.xs[0].tree).eqls(["*", 2, "x"]);
-          expect(point2.stateValues.xs[1].tree).eqls(["/", "u", "v"]);
-          expect(point2.stateValues.xs[2].tree).eqls(["^", "w", 2]);
+          expect((await point2.stateValues.xs).length).eq(3);
+          expect((await point2.stateValues.xs)[0].tree).eqls(["*", 2, "x"]);
+          expect((await point2.stateValues.xs)[1].tree).eqls(["/", "u", "v"]);
+          expect((await point2.stateValues.xs)[2].tree).eqls(["^", "w", 2]);
           expect(point2.stateValues.x1.tree).eqls(["*", 2, "x"]);
           expect(point2.stateValues.x2.tree).eqls(["/", "u", "v"]);
           expect(point2.stateValues.x3.tree).eqls(["^", "w", 2]);
           expect(point3.stateValues.nDimensions).eq(3);
-          expect(point3.stateValues.xs.length).eq(3);
-          expect(point3.stateValues.xs[0].tree).eqls(["*", 2, "x"]);
-          expect(point3.stateValues.xs[1].tree).eqls(["/", "u", "v"]);
-          expect(point3.stateValues.xs[2].tree).eqls(["^", "w", 2]);
+          expect((await point3.stateValues.xs).length).eq(3);
+          expect((await point3.stateValues.xs)[0].tree).eqls(["*", 2, "x"]);
+          expect((await point3.stateValues.xs)[1].tree).eqls(["/", "u", "v"]);
+          expect((await point3.stateValues.xs)[2].tree).eqls(["^", "w", 2]);
           expect(point3.stateValues.x1.tree).eqls(["*", 2, "x"]);
           expect(point3.stateValues.x2.tree).eqls(["/", "u", "v"]);
           expect(point3.stateValues.x3.tree).eqls(["^", "w", 2]);
@@ -5318,29 +5315,29 @@ describe('Point Tag Tests', function () {
           expect(text.trim()).equal('(7,8,9)')
         })
 
-        cy.window().then((win) => {
+        cy.window().then(async (win) => {
 
           expect(components['/_point1'].stateValues.nDimensions).eq(3);
-          expect(components['/_point1'].stateValues.xs.length).eq(3);
-          expect(components['/_point1'].stateValues.xs[0].tree).eq(7);
-          expect(components['/_point1'].stateValues.xs[1].tree).eq(8);
-          expect(components['/_point1'].stateValues.xs[2].tree).eq(9);
+          expect((await components['/_point1'].stateValues.xs).length).eq(3);
+          expect((await components['/_point1'].stateValues.xs)[0].tree).eq(7);
+          expect((await components['/_point1'].stateValues.xs)[1].tree).eq(8);
+          expect((await components['/_point1'].stateValues.xs)[2].tree).eq(9);
           expect(components['/_point1'].stateValues.x1.tree).eq(7);;
           expect(components['/_point1'].stateValues.x2.tree).eq(8);
           expect(components['/_point1'].stateValues.x3.tree).eq(9);
           expect(point2.stateValues.nDimensions).eq(3);
-          expect(point2.stateValues.xs.length).eq(3);
-          expect(point2.stateValues.xs[0].tree).eq(7);
-          expect(point2.stateValues.xs[1].tree).eq(8);
-          expect(point2.stateValues.xs[2].tree).eq(9);
+          expect((await point2.stateValues.xs).length).eq(3);
+          expect((await point2.stateValues.xs)[0].tree).eq(7);
+          expect((await point2.stateValues.xs)[1].tree).eq(8);
+          expect((await point2.stateValues.xs)[2].tree).eq(9);
           expect(point2.stateValues.x1.tree).eq(7);
           expect(point2.stateValues.x2.tree).eq(8);
           expect(point2.stateValues.x3.tree).eq(9);
           expect(point3.stateValues.nDimensions).eq(3);
-          expect(point3.stateValues.xs.length).eq(3);
-          expect(point3.stateValues.xs[0].tree).eq(7);
-          expect(point3.stateValues.xs[1].tree).eq(8);
-          expect(point3.stateValues.xs[2].tree).eq(9);
+          expect((await point3.stateValues.xs).length).eq(3);
+          expect((await point3.stateValues.xs)[0].tree).eq(7);
+          expect((await point3.stateValues.xs)[1].tree).eq(8);
+          expect((await point3.stateValues.xs)[2].tree).eq(9);
           expect(point3.stateValues.x1.tree).eq(7);
           expect(point3.stateValues.x2.tree).eq(8);
           expect(point3.stateValues.x3.tree).eq(9);
@@ -5514,29 +5511,29 @@ describe('Point Tag Tests', function () {
           expect(text.trim()).equal('(i,j,k)')
         })
 
-        cy.window().then((win) => {
+        cy.window().then(async (win) => {
 
           expect(components['/_point1'].stateValues.nDimensions).eq(3);
-          expect(components['/_point1'].stateValues.xs.length).eq(3);
-          expect(components['/_point1'].stateValues.xs[0].tree).eq('i');
-          expect(components['/_point1'].stateValues.xs[1].tree).eq('j');
-          expect(components['/_point1'].stateValues.xs[2].tree).eq('k');
+          expect((await components['/_point1'].stateValues.xs).length).eq(3);
+          expect((await components['/_point1'].stateValues.xs)[0].tree).eq('i');
+          expect((await components['/_point1'].stateValues.xs)[1].tree).eq('j');
+          expect((await components['/_point1'].stateValues.xs)[2].tree).eq('k');
           expect(components['/_point1'].stateValues.x1.tree).eq('i');;
           expect(components['/_point1'].stateValues.x2.tree).eq('j');
           expect(components['/_point1'].stateValues.x3.tree).eq('k');
           expect(point2.stateValues.nDimensions).eq(3);
-          expect(point2.stateValues.xs.length).eq(3);
-          expect(point2.stateValues.xs[0].tree).eq('i');
-          expect(point2.stateValues.xs[1].tree).eq('j');
-          expect(point2.stateValues.xs[2].tree).eq('k');
+          expect((await point2.stateValues.xs).length).eq(3);
+          expect((await point2.stateValues.xs)[0].tree).eq('i');
+          expect((await point2.stateValues.xs)[1].tree).eq('j');
+          expect((await point2.stateValues.xs)[2].tree).eq('k');
           expect(point2.stateValues.x1.tree).eq('i');
           expect(point2.stateValues.x2.tree).eq('j');
           expect(point2.stateValues.x3.tree).eq('k');
           expect(point3.stateValues.nDimensions).eq(3);
-          expect(point3.stateValues.xs.length).eq(3);
-          expect(point3.stateValues.xs[0].tree).eq('i');
-          expect(point3.stateValues.xs[1].tree).eq('j');
-          expect(point3.stateValues.xs[2].tree).eq('k');
+          expect((await point3.stateValues.xs).length).eq(3);
+          expect((await point3.stateValues.xs)[0].tree).eq('i');
+          expect((await point3.stateValues.xs)[1].tree).eq('j');
+          expect((await point3.stateValues.xs)[2].tree).eq('k');
           expect(point3.stateValues.x1.tree).eq('i');
           expect(point3.stateValues.x2.tree).eq('j');
           expect(point3.stateValues.x3.tree).eq('k');
@@ -5711,29 +5708,29 @@ describe('Point Tag Tests', function () {
           expect(text.trim()).equal('(l,m,n)')
         })
 
-        cy.window().then((win) => {
+        cy.window().then(async (win) => {
 
           expect(components['/_point1'].stateValues.nDimensions).eq(3);
-          expect(components['/_point1'].stateValues.xs.length).eq(3);
-          expect(components['/_point1'].stateValues.xs[0].tree).eq('l');
-          expect(components['/_point1'].stateValues.xs[1].tree).eq('m');
-          expect(components['/_point1'].stateValues.xs[2].tree).eq('n');
+          expect((await components['/_point1'].stateValues.xs).length).eq(3);
+          expect((await components['/_point1'].stateValues.xs)[0].tree).eq('l');
+          expect((await components['/_point1'].stateValues.xs)[1].tree).eq('m');
+          expect((await components['/_point1'].stateValues.xs)[2].tree).eq('n');
           expect(components['/_point1'].stateValues.x1.tree).eq('l');;
           expect(components['/_point1'].stateValues.x2.tree).eq('m');
           expect(components['/_point1'].stateValues.x3.tree).eq('n');
           expect(point2.stateValues.nDimensions).eq(3);
-          expect(point2.stateValues.xs.length).eq(3);
-          expect(point2.stateValues.xs[0].tree).eq('l');
-          expect(point2.stateValues.xs[1].tree).eq('m');
-          expect(point2.stateValues.xs[2].tree).eq('n');
+          expect((await point2.stateValues.xs).length).eq(3);
+          expect((await point2.stateValues.xs)[0].tree).eq('l');
+          expect((await point2.stateValues.xs)[1].tree).eq('m');
+          expect((await point2.stateValues.xs)[2].tree).eq('n');
           expect(point2.stateValues.x1.tree).eq('l');
           expect(point2.stateValues.x2.tree).eq('m');
           expect(point2.stateValues.x3.tree).eq('n');
           expect(point3.stateValues.nDimensions).eq(3);
-          expect(point3.stateValues.xs.length).eq(3);
-          expect(point3.stateValues.xs[0].tree).eq('l');
-          expect(point3.stateValues.xs[1].tree).eq('m');
-          expect(point3.stateValues.xs[2].tree).eq('n');
+          expect((await point3.stateValues.xs).length).eq(3);
+          expect((await point3.stateValues.xs)[0].tree).eq('l');
+          expect((await point3.stateValues.xs)[1].tree).eq('m');
+          expect((await point3.stateValues.xs)[2].tree).eq('n');
           expect(point3.stateValues.x1.tree).eq('l');
           expect(point3.stateValues.x2.tree).eq('m');
           expect(point3.stateValues.x3.tree).eq('n');
@@ -5910,29 +5907,29 @@ describe('Point Tag Tests', function () {
           expect(text.trim()).equal('(r,s,t)')
         })
 
-        cy.window().then((win) => {
+        cy.window().then(async (win) => {
 
           expect(components['/_point1'].stateValues.nDimensions).eq(3);
-          expect(components['/_point1'].stateValues.xs.length).eq(3);
-          expect(components['/_point1'].stateValues.xs[0].tree).eq('r');
-          expect(components['/_point1'].stateValues.xs[1].tree).eq('s');
-          expect(components['/_point1'].stateValues.xs[2].tree).eq('t');
+          expect((await components['/_point1'].stateValues.xs).length).eq(3);
+          expect((await components['/_point1'].stateValues.xs)[0].tree).eq('r');
+          expect((await components['/_point1'].stateValues.xs)[1].tree).eq('s');
+          expect((await components['/_point1'].stateValues.xs)[2].tree).eq('t');
           expect(components['/_point1'].stateValues.x1.tree).eq('r');;
           expect(components['/_point1'].stateValues.x2.tree).eq('s');
           expect(components['/_point1'].stateValues.x3.tree).eq('t');
           expect(point2.stateValues.nDimensions).eq(3);
-          expect(point2.stateValues.xs.length).eq(3);
-          expect(point2.stateValues.xs[0].tree).eq('r');
-          expect(point2.stateValues.xs[1].tree).eq('s');
-          expect(point2.stateValues.xs[2].tree).eq('t');
+          expect((await point2.stateValues.xs).length).eq(3);
+          expect((await point2.stateValues.xs)[0].tree).eq('r');
+          expect((await point2.stateValues.xs)[1].tree).eq('s');
+          expect((await point2.stateValues.xs)[2].tree).eq('t');
           expect(point2.stateValues.x1.tree).eq('r');
           expect(point2.stateValues.x2.tree).eq('s');
           expect(point2.stateValues.x3.tree).eq('t');
           expect(point3.stateValues.nDimensions).eq(3);
-          expect(point3.stateValues.xs.length).eq(3);
-          expect(point3.stateValues.xs[0].tree).eq('r');
-          expect(point3.stateValues.xs[1].tree).eq('s');
-          expect(point3.stateValues.xs[2].tree).eq('t');
+          expect((await point3.stateValues.xs).length).eq(3);
+          expect((await point3.stateValues.xs)[0].tree).eq('r');
+          expect((await point3.stateValues.xs)[1].tree).eq('s');
+          expect((await point3.stateValues.xs)[2].tree).eq('t');
           expect(point3.stateValues.x1.tree).eq('r');
           expect(point3.stateValues.x2.tree).eq('s');
           expect(point3.stateValues.x3.tree).eq('t');
@@ -6112,29 +6109,29 @@ describe('Point Tag Tests', function () {
           expect(text.trim()).equal('(f,g,h)')
         })
 
-        cy.window().then((win) => {
+        cy.window().then(async (win) => {
 
           expect(components['/_point1'].stateValues.nDimensions).eq(3);
-          expect(components['/_point1'].stateValues.xs.length).eq(3);
-          expect(components['/_point1'].stateValues.xs[0].tree).eq('f');
-          expect(components['/_point1'].stateValues.xs[1].tree).eq('g');
-          expect(components['/_point1'].stateValues.xs[2].tree).eq('h');
+          expect((await components['/_point1'].stateValues.xs).length).eq(3);
+          expect((await components['/_point1'].stateValues.xs)[0].tree).eq('f');
+          expect((await components['/_point1'].stateValues.xs)[1].tree).eq('g');
+          expect((await components['/_point1'].stateValues.xs)[2].tree).eq('h');
           expect(components['/_point1'].stateValues.x1.tree).eq('f');;
           expect(components['/_point1'].stateValues.x2.tree).eq('g');
           expect(components['/_point1'].stateValues.x3.tree).eq('h');
           expect(point2.stateValues.nDimensions).eq(3);
-          expect(point2.stateValues.xs.length).eq(3);
-          expect(point2.stateValues.xs[0].tree).eq('f');
-          expect(point2.stateValues.xs[1].tree).eq('g');
-          expect(point2.stateValues.xs[2].tree).eq('h');
+          expect((await point2.stateValues.xs).length).eq(3);
+          expect((await point2.stateValues.xs)[0].tree).eq('f');
+          expect((await point2.stateValues.xs)[1].tree).eq('g');
+          expect((await point2.stateValues.xs)[2].tree).eq('h');
           expect(point2.stateValues.x1.tree).eq('f');
           expect(point2.stateValues.x2.tree).eq('g');
           expect(point2.stateValues.x3.tree).eq('h');
           expect(point3.stateValues.nDimensions).eq(3);
-          expect(point3.stateValues.xs.length).eq(3);
-          expect(point3.stateValues.xs[0].tree).eq('f');
-          expect(point3.stateValues.xs[1].tree).eq('g');
-          expect(point3.stateValues.xs[2].tree).eq('h');
+          expect((await point3.stateValues.xs).length).eq(3);
+          expect((await point3.stateValues.xs)[0].tree).eq('f');
+          expect((await point3.stateValues.xs)[1].tree).eq('g');
+          expect((await point3.stateValues.xs)[2].tree).eq('h');
           expect(point3.stateValues.x1.tree).eq('f');
           expect(point3.stateValues.x2.tree).eq('g');
           expect(point3.stateValues.x3.tree).eq('h');
@@ -6311,29 +6308,29 @@ describe('Point Tag Tests', function () {
           expect(text.trim()).equal('(x,y,z)')
         })
 
-        cy.window().then((win) => {
+        cy.window().then(async (win) => {
 
           expect(components['/_point1'].stateValues.nDimensions).eq(3);
-          expect(components['/_point1'].stateValues.xs.length).eq(3);
-          expect(components['/_point1'].stateValues.xs[0].tree).eq('x');
-          expect(components['/_point1'].stateValues.xs[1].tree).eq('y');
-          expect(components['/_point1'].stateValues.xs[2].tree).eq('z');
+          expect((await components['/_point1'].stateValues.xs).length).eq(3);
+          expect((await components['/_point1'].stateValues.xs)[0].tree).eq('x');
+          expect((await components['/_point1'].stateValues.xs)[1].tree).eq('y');
+          expect((await components['/_point1'].stateValues.xs)[2].tree).eq('z');
           expect(components['/_point1'].stateValues.x1.tree).eq('x');;
           expect(components['/_point1'].stateValues.x2.tree).eq('y');
           expect(components['/_point1'].stateValues.x3.tree).eq('z');
           expect(point2.stateValues.nDimensions).eq(3);
-          expect(point2.stateValues.xs.length).eq(3);
-          expect(point2.stateValues.xs[0].tree).eq('x');
-          expect(point2.stateValues.xs[1].tree).eq('y');
-          expect(point2.stateValues.xs[2].tree).eq('z');
+          expect((await point2.stateValues.xs).length).eq(3);
+          expect((await point2.stateValues.xs)[0].tree).eq('x');
+          expect((await point2.stateValues.xs)[1].tree).eq('y');
+          expect((await point2.stateValues.xs)[2].tree).eq('z');
           expect(point2.stateValues.x1.tree).eq('x');
           expect(point2.stateValues.x2.tree).eq('y');
           expect(point2.stateValues.x3.tree).eq('z');
           expect(point3.stateValues.nDimensions).eq(3);
-          expect(point3.stateValues.xs.length).eq(3);
-          expect(point3.stateValues.xs[0].tree).eq('x');
-          expect(point3.stateValues.xs[1].tree).eq('y');
-          expect(point3.stateValues.xs[2].tree).eq('z');
+          expect((await point3.stateValues.xs).length).eq(3);
+          expect((await point3.stateValues.xs)[0].tree).eq('x');
+          expect((await point3.stateValues.xs)[1].tree).eq('y');
+          expect((await point3.stateValues.xs)[2].tree).eq('z');
           expect(point3.stateValues.x1.tree).eq('x');
           expect(point3.stateValues.x2.tree).eq('y');
           expect(point3.stateValues.x3.tree).eq('z');
@@ -6509,29 +6506,29 @@ describe('Point Tag Tests', function () {
           expect(text.trim()).equal('(u,v,z)')
         })
 
-        cy.window().then((win) => {
+        cy.window().then(async (win) => {
 
           expect(components['/_point1'].stateValues.nDimensions).eq(3);
-          expect(components['/_point1'].stateValues.xs.length).eq(3);
-          expect(components['/_point1'].stateValues.xs[0].tree).eq('u');
-          expect(components['/_point1'].stateValues.xs[1].tree).eq('v');
-          expect(components['/_point1'].stateValues.xs[2].tree).eq('z');
+          expect((await components['/_point1'].stateValues.xs).length).eq(3);
+          expect((await components['/_point1'].stateValues.xs)[0].tree).eq('u');
+          expect((await components['/_point1'].stateValues.xs)[1].tree).eq('v');
+          expect((await components['/_point1'].stateValues.xs)[2].tree).eq('z');
           expect(components['/_point1'].stateValues.x1.tree).eq('u');;
           expect(components['/_point1'].stateValues.x2.tree).eq('v');
           expect(components['/_point1'].stateValues.x3.tree).eq('z');
           expect(point2.stateValues.nDimensions).eq(3);
-          expect(point2.stateValues.xs.length).eq(3);
-          expect(point2.stateValues.xs[0].tree).eq('u');
-          expect(point2.stateValues.xs[1].tree).eq('v');
-          expect(point2.stateValues.xs[2].tree).eq('z');
+          expect((await point2.stateValues.xs).length).eq(3);
+          expect((await point2.stateValues.xs)[0].tree).eq('u');
+          expect((await point2.stateValues.xs)[1].tree).eq('v');
+          expect((await point2.stateValues.xs)[2].tree).eq('z');
           expect(point2.stateValues.x1.tree).eq('u');
           expect(point2.stateValues.x2.tree).eq('v');
           expect(point2.stateValues.x3.tree).eq('z');
           expect(point3.stateValues.nDimensions).eq(3);
-          expect(point3.stateValues.xs.length).eq(3);
-          expect(point3.stateValues.xs[0].tree).eq('u');
-          expect(point3.stateValues.xs[1].tree).eq('v');
-          expect(point3.stateValues.xs[2].tree).eq('z');
+          expect((await point3.stateValues.xs).length).eq(3);
+          expect((await point3.stateValues.xs)[0].tree).eq('u');
+          expect((await point3.stateValues.xs)[1].tree).eq('v');
+          expect((await point3.stateValues.xs)[2].tree).eq('z');
           expect(point3.stateValues.x1.tree).eq('u');
           expect(point3.stateValues.x2.tree).eq('v');
           expect(point3.stateValues.x3.tree).eq('z');
@@ -6707,29 +6704,29 @@ describe('Point Tag Tests', function () {
           expect(text.trim()).equal('(s,t,z)')
         })
 
-        cy.window().then((win) => {
+        cy.window().then(async (win) => {
 
           expect(components['/_point1'].stateValues.nDimensions).eq(3);
-          expect(components['/_point1'].stateValues.xs.length).eq(3);
-          expect(components['/_point1'].stateValues.xs[0].tree).eq('s');
-          expect(components['/_point1'].stateValues.xs[1].tree).eq('t');
-          expect(components['/_point1'].stateValues.xs[2].tree).eq('z');
+          expect((await components['/_point1'].stateValues.xs).length).eq(3);
+          expect((await components['/_point1'].stateValues.xs)[0].tree).eq('s');
+          expect((await components['/_point1'].stateValues.xs)[1].tree).eq('t');
+          expect((await components['/_point1'].stateValues.xs)[2].tree).eq('z');
           expect(components['/_point1'].stateValues.x1.tree).eq('s');;
           expect(components['/_point1'].stateValues.x2.tree).eq('t');
           expect(components['/_point1'].stateValues.x3.tree).eq('z');
           expect(point2.stateValues.nDimensions).eq(3);
-          expect(point2.stateValues.xs.length).eq(3);
-          expect(point2.stateValues.xs[0].tree).eq('s');
-          expect(point2.stateValues.xs[1].tree).eq('t');
-          expect(point2.stateValues.xs[2].tree).eq('z');
+          expect((await point2.stateValues.xs).length).eq(3);
+          expect((await point2.stateValues.xs)[0].tree).eq('s');
+          expect((await point2.stateValues.xs)[1].tree).eq('t');
+          expect((await point2.stateValues.xs)[2].tree).eq('z');
           expect(point2.stateValues.x1.tree).eq('s');
           expect(point2.stateValues.x2.tree).eq('t');
           expect(point2.stateValues.x3.tree).eq('z');
           expect(point3.stateValues.nDimensions).eq(3);
-          expect(point3.stateValues.xs.length).eq(3);
-          expect(point3.stateValues.xs[0].tree).eq('s');
-          expect(point3.stateValues.xs[1].tree).eq('t');
-          expect(point3.stateValues.xs[2].tree).eq('z');
+          expect((await point3.stateValues.xs).length).eq(3);
+          expect((await point3.stateValues.xs)[0].tree).eq('s');
+          expect((await point3.stateValues.xs)[1].tree).eq('t');
+          expect((await point3.stateValues.xs)[2].tree).eq('z');
           expect(point3.stateValues.x1.tree).eq('s');
           expect(point3.stateValues.x2.tree).eq('t');
           expect(point3.stateValues.x3.tree).eq('z');
@@ -6903,29 +6900,29 @@ describe('Point Tag Tests', function () {
           expect(text.trim()).equal('(q,r,z)')
         })
 
-        cy.window().then((win) => {
+        cy.window().then(async (win) => {
 
           expect(components['/_point1'].stateValues.nDimensions).eq(3);
-          expect(components['/_point1'].stateValues.xs.length).eq(3);
-          expect(components['/_point1'].stateValues.xs[0].tree).eq('q');
-          expect(components['/_point1'].stateValues.xs[1].tree).eq('r');
-          expect(components['/_point1'].stateValues.xs[2].tree).eq('z');
+          expect((await components['/_point1'].stateValues.xs).length).eq(3);
+          expect((await components['/_point1'].stateValues.xs)[0].tree).eq('q');
+          expect((await components['/_point1'].stateValues.xs)[1].tree).eq('r');
+          expect((await components['/_point1'].stateValues.xs)[2].tree).eq('z');
           expect(components['/_point1'].stateValues.x1.tree).eq('q');;
           expect(components['/_point1'].stateValues.x2.tree).eq('r');
           expect(components['/_point1'].stateValues.x3.tree).eq('z');
           expect(point2.stateValues.nDimensions).eq(3);
-          expect(point2.stateValues.xs.length).eq(3);
-          expect(point2.stateValues.xs[0].tree).eq('q');
-          expect(point2.stateValues.xs[1].tree).eq('r');
-          expect(point2.stateValues.xs[2].tree).eq('z');
+          expect((await point2.stateValues.xs).length).eq(3);
+          expect((await point2.stateValues.xs)[0].tree).eq('q');
+          expect((await point2.stateValues.xs)[1].tree).eq('r');
+          expect((await point2.stateValues.xs)[2].tree).eq('z');
           expect(point2.stateValues.x1.tree).eq('q');
           expect(point2.stateValues.x2.tree).eq('r');
           expect(point2.stateValues.x3.tree).eq('z');
           expect(point3.stateValues.nDimensions).eq(3);
-          expect(point3.stateValues.xs.length).eq(3);
-          expect(point3.stateValues.xs[0].tree).eq('q');
-          expect(point3.stateValues.xs[1].tree).eq('r');
-          expect(point3.stateValues.xs[2].tree).eq('z');
+          expect((await point3.stateValues.xs).length).eq(3);
+          expect((await point3.stateValues.xs)[0].tree).eq('q');
+          expect((await point3.stateValues.xs)[1].tree).eq('r');
+          expect((await point3.stateValues.xs)[2].tree).eq('z');
           expect(point3.stateValues.x1.tree).eq('q');
           expect(point3.stateValues.x2.tree).eq('r');
           expect(point3.stateValues.x3.tree).eq('z');
@@ -6941,7 +6938,7 @@ describe('Point Tag Tests', function () {
       cy.log('Back to 2D point')
       cy.get('#\\/originalCoords textarea').type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(p,q){enter}', { force: true });
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
 
         let point1x2Anchor = cesc("#" + components["/point1x2"].replacements[0].componentName);
         let point2x2Anchor = cesc("#" + components["/point2x2"].replacements[0].componentName);
@@ -7085,26 +7082,26 @@ describe('Point Tag Tests', function () {
           expect(text.trim()).equal('(p,q)')
         })
 
-        cy.window().then((win) => {
+        cy.window().then(async (win) => {
 
           expect(components['/_point1'].stateValues.nDimensions).eq(2);
-          expect(components['/_point1'].stateValues.xs.length).eq(2);
-          expect(components['/_point1'].stateValues.xs[0].tree).eq('p');
-          expect(components['/_point1'].stateValues.xs[1].tree).eq('q');
+          expect((await components['/_point1'].stateValues.xs).length).eq(2);
+          expect((await components['/_point1'].stateValues.xs)[0].tree).eq('p');
+          expect((await components['/_point1'].stateValues.xs)[1].tree).eq('q');
           expect(components['/_point1'].stateValues.x1.tree).eq('p');
           expect(components['/_point1'].stateValues.x2.tree).eq('q');
           expect(components['/_point1'].stateValues.x3).eq(undefined);
           expect(point2.stateValues.nDimensions).eq(2);
-          expect(point2.stateValues.xs.length).eq(2);
-          expect(point2.stateValues.xs[0].tree).eq('p');
-          expect(point2.stateValues.xs[1].tree).eq('q');
+          expect((await point2.stateValues.xs).length).eq(2);
+          expect((await point2.stateValues.xs)[0].tree).eq('p');
+          expect((await point2.stateValues.xs)[1].tree).eq('q');
           expect(point2.stateValues.x1.tree).eq('p');
           expect(point2.stateValues.x2.tree).eq('q');
           expect(point2.stateValues.x3).eq(undefined);
           expect(point3.stateValues.nDimensions).eq(2);
-          expect(point3.stateValues.xs.length).eq(2);
-          expect(point3.stateValues.xs[0].tree).eq('p');
-          expect(point3.stateValues.xs[1].tree).eq('q');
+          expect((await point3.stateValues.xs).length).eq(2);
+          expect((await point3.stateValues.xs)[0].tree).eq('p');
+          expect((await point3.stateValues.xs)[1].tree).eq('q');
           expect(point3.stateValues.x1.tree).eq('p');
           expect(point3.stateValues.x2.tree).eq('q');
           expect(point3.stateValues.x3).eq(undefined);
@@ -7251,26 +7248,26 @@ describe('Point Tag Tests', function () {
           expect(text.trim()).equal('(a,b)')
         })
 
-        cy.window().then((win) => {
+        cy.window().then(async (win) => {
 
           expect(components['/_point1'].stateValues.nDimensions).eq(2);
-          expect(components['/_point1'].stateValues.xs.length).eq(2);
-          expect(components['/_point1'].stateValues.xs[0].tree).eq('a');
-          expect(components['/_point1'].stateValues.xs[1].tree).eq('b');
+          expect((await components['/_point1'].stateValues.xs).length).eq(2);
+          expect((await components['/_point1'].stateValues.xs)[0].tree).eq('a');
+          expect((await components['/_point1'].stateValues.xs)[1].tree).eq('b');
           expect(components['/_point1'].stateValues.x1.tree).eq('a');
           expect(components['/_point1'].stateValues.x2.tree).eq('b');
           expect(components['/_point1'].stateValues.x3).eq(undefined);
           expect(point2.stateValues.nDimensions).eq(2);
-          expect(point2.stateValues.xs.length).eq(2);
-          expect(point2.stateValues.xs[0].tree).eq('a');
-          expect(point2.stateValues.xs[1].tree).eq('b');
+          expect((await point2.stateValues.xs).length).eq(2);
+          expect((await point2.stateValues.xs)[0].tree).eq('a');
+          expect((await point2.stateValues.xs)[1].tree).eq('b');
           expect(point2.stateValues.x1.tree).eq('a');
           expect(point2.stateValues.x2.tree).eq('b');
           expect(point2.stateValues.x3).eq(undefined);
           expect(point3.stateValues.nDimensions).eq(2);
-          expect(point3.stateValues.xs.length).eq(2);
-          expect(point3.stateValues.xs[0].tree).eq('a');
-          expect(point3.stateValues.xs[1].tree).eq('b');
+          expect((await point3.stateValues.xs).length).eq(2);
+          expect((await point3.stateValues.xs)[0].tree).eq('a');
+          expect((await point3.stateValues.xs)[1].tree).eq('b');
           expect(point3.stateValues.x1.tree).eq('a');
           expect(point3.stateValues.x2.tree).eq('b');
           expect(point3.stateValues.x3).eq(undefined);
@@ -7418,26 +7415,26 @@ describe('Point Tag Tests', function () {
           expect(text.trim()).equal('(d,e)')
         })
 
-        cy.window().then((win) => {
+        cy.window().then(async (win) => {
 
           expect(components['/_point1'].stateValues.nDimensions).eq(2);
-          expect(components['/_point1'].stateValues.xs.length).eq(2);
-          expect(components['/_point1'].stateValues.xs[0].tree).eq('d');
-          expect(components['/_point1'].stateValues.xs[1].tree).eq('e');
+          expect((await components['/_point1'].stateValues.xs).length).eq(2);
+          expect((await components['/_point1'].stateValues.xs)[0].tree).eq('d');
+          expect((await components['/_point1'].stateValues.xs)[1].tree).eq('e');
           expect(components['/_point1'].stateValues.x1.tree).eq('d');
           expect(components['/_point1'].stateValues.x2.tree).eq('e');
           expect(components['/_point1'].stateValues.x3).eq(undefined);
           expect(point2.stateValues.nDimensions).eq(2);
-          expect(point2.stateValues.xs.length).eq(2);
-          expect(point2.stateValues.xs[0].tree).eq('d');
-          expect(point2.stateValues.xs[1].tree).eq('e');
+          expect((await point2.stateValues.xs).length).eq(2);
+          expect((await point2.stateValues.xs)[0].tree).eq('d');
+          expect((await point2.stateValues.xs)[1].tree).eq('e');
           expect(point2.stateValues.x1.tree).eq('d');
           expect(point2.stateValues.x2.tree).eq('e');
           expect(point2.stateValues.x3).eq(undefined);
           expect(point3.stateValues.nDimensions).eq(2);
-          expect(point3.stateValues.xs.length).eq(2);
-          expect(point3.stateValues.xs[0].tree).eq('d');
-          expect(point3.stateValues.xs[1].tree).eq('e');
+          expect((await point3.stateValues.xs).length).eq(2);
+          expect((await point3.stateValues.xs)[0].tree).eq('d');
+          expect((await point3.stateValues.xs)[1].tree).eq('e');
           expect(point3.stateValues.x1.tree).eq('d');
           expect(point3.stateValues.x2.tree).eq('e');
           expect(point3.stateValues.x3).eq(undefined);
@@ -7584,26 +7581,26 @@ describe('Point Tag Tests', function () {
           expect(text.trim()).equal('(g,h)')
         })
 
-        cy.window().then((win) => {
+        cy.window().then(async (win) => {
 
           expect(components['/_point1'].stateValues.nDimensions).eq(2);
-          expect(components['/_point1'].stateValues.xs.length).eq(2);
-          expect(components['/_point1'].stateValues.xs[0].tree).eq('g');
-          expect(components['/_point1'].stateValues.xs[1].tree).eq('h');
+          expect((await components['/_point1'].stateValues.xs).length).eq(2);
+          expect((await components['/_point1'].stateValues.xs)[0].tree).eq('g');
+          expect((await components['/_point1'].stateValues.xs)[1].tree).eq('h');
           expect(components['/_point1'].stateValues.x1.tree).eq('g');
           expect(components['/_point1'].stateValues.x2.tree).eq('h');
           expect(components['/_point1'].stateValues.x3).eq(undefined);
           expect(point2.stateValues.nDimensions).eq(2);
-          expect(point2.stateValues.xs.length).eq(2);
-          expect(point2.stateValues.xs[0].tree).eq('g');
-          expect(point2.stateValues.xs[1].tree).eq('h');
+          expect((await point2.stateValues.xs).length).eq(2);
+          expect((await point2.stateValues.xs)[0].tree).eq('g');
+          expect((await point2.stateValues.xs)[1].tree).eq('h');
           expect(point2.stateValues.x1.tree).eq('g');
           expect(point2.stateValues.x2.tree).eq('h');
           expect(point2.stateValues.x3).eq(undefined);
           expect(point3.stateValues.nDimensions).eq(2);
-          expect(point3.stateValues.xs.length).eq(2);
-          expect(point3.stateValues.xs[0].tree).eq('g');
-          expect(point3.stateValues.xs[1].tree).eq('h');
+          expect((await point3.stateValues.xs).length).eq(2);
+          expect((await point3.stateValues.xs)[0].tree).eq('g');
+          expect((await point3.stateValues.xs)[1].tree).eq('h');
           expect(point3.stateValues.x1.tree).eq('g');
           expect(point3.stateValues.x2.tree).eq('h');
           expect(point3.stateValues.x3).eq(undefined);
@@ -7623,7 +7620,7 @@ describe('Point Tag Tests', function () {
   // have this abbreviated test, at it was triggering an error
   // that wasn't caught with full test
   it('change point dimensions, abbreviated', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -7640,7 +7637,7 @@ describe('Point Tag Tests', function () {
 
     cy.get("#\\/_text1").should('have.text', 'a'); // to wait for page to load
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
 
       let point1Anchor = cesc('#' + components["/_point1"].adapterUsed.componentName);
@@ -7659,24 +7656,24 @@ describe('Point Tag Tests', function () {
         expect(text.trim()).equal('＿')
       })
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
 
         expect(components['/_point1'].stateValues.nDimensions).eq(1);
-        expect(components['/_point1'].stateValues.xs.length).eq(1);
-        expect(components['/_point1'].stateValues.xs[0].tree).eq('＿');
+        expect((await components['/_point1'].stateValues.xs).length).eq(1);
+        expect((await components['/_point1'].stateValues.xs)[0].tree).eq('＿');
         expect(point2.stateValues.nDimensions).eq(1);
-        expect(point2.stateValues.xs.length).eq(1);
-        expect(point2.stateValues.xs[0].tree).eq('＿');
+        expect((await point2.stateValues.xs).length).eq(1);
+        expect((await point2.stateValues.xs)[0].tree).eq('＿');
         expect(point3.stateValues.nDimensions).eq(1);
-        expect(point3.stateValues.xs.length).eq(1);
-        expect(point3.stateValues.xs[0].tree).eq('＿');
+        expect((await point3.stateValues.xs).length).eq(1);
+        expect((await point3.stateValues.xs)[0].tree).eq('＿');
 
       });
 
       cy.log('Create 2D point 2')
       cy.get('#\\/originalCoords textarea').type('(a,b){enter}', { force: true });
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
 
         cy.get(point1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('(a,b)')
@@ -7688,20 +7685,20 @@ describe('Point Tag Tests', function () {
           expect(text.trim()).equal('(a,b)')
         })
 
-        cy.window().then((win) => {
+        cy.window().then(async (win) => {
 
           expect(components['/_point1'].stateValues.nDimensions).eq(2);
-          expect(components['/_point1'].stateValues.xs.length).eq(2);
-          expect(components['/_point1'].stateValues.xs[0].tree).eq('a');
-          expect(components['/_point1'].stateValues.xs[1].tree).eq('b');
+          expect((await components['/_point1'].stateValues.xs).length).eq(2);
+          expect((await components['/_point1'].stateValues.xs)[0].tree).eq('a');
+          expect((await components['/_point1'].stateValues.xs)[1].tree).eq('b');
           expect(point2.stateValues.nDimensions).eq(2);
-          expect(point2.stateValues.xs.length).eq(2);
-          expect(point2.stateValues.xs[0].tree).eq('a');
-          expect(point2.stateValues.xs[1].tree).eq('b');
+          expect((await point2.stateValues.xs).length).eq(2);
+          expect((await point2.stateValues.xs)[0].tree).eq('a');
+          expect((await point2.stateValues.xs)[1].tree).eq('b');
           expect(point3.stateValues.nDimensions).eq(2);
-          expect(point3.stateValues.xs.length).eq(2);
-          expect(point3.stateValues.xs[0].tree).eq('a');
-          expect(point3.stateValues.xs[1].tree).eq('b');
+          expect((await point3.stateValues.xs).length).eq(2);
+          expect((await point3.stateValues.xs)[0].tree).eq('a');
+          expect((await point3.stateValues.xs)[1].tree).eq('b');
 
         });
 
@@ -7711,7 +7708,7 @@ describe('Point Tag Tests', function () {
       cy.log('Back to 1D point')
       cy.get('#\\/originalCoords textarea').type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}q{enter}', { force: true });
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
 
         cy.get(point1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('q')
@@ -7723,17 +7720,17 @@ describe('Point Tag Tests', function () {
           expect(text.trim()).equal('q')
         })
 
-        cy.window().then((win) => {
+        cy.window().then(async (win) => {
 
           expect(components['/_point1'].stateValues.nDimensions).eq(1);
-          expect(components['/_point1'].stateValues.xs.length).eq(1);
-          expect(components['/_point1'].stateValues.xs[0].tree).eq('q');
+          expect((await components['/_point1'].stateValues.xs).length).eq(1);
+          expect((await components['/_point1'].stateValues.xs)[0].tree).eq('q');
           expect(point2.stateValues.nDimensions).eq(1);
-          expect(point2.stateValues.xs.length).eq(1);
-          expect(point2.stateValues.xs[0].tree).eq('q');
+          expect((await point2.stateValues.xs).length).eq(1);
+          expect((await point2.stateValues.xs)[0].tree).eq('q');
           expect(point3.stateValues.nDimensions).eq(1);
-          expect(point3.stateValues.xs.length).eq(1);
-          expect(point3.stateValues.xs[0].tree).eq('q');
+          expect((await point3.stateValues.xs).length).eq(1);
+          expect((await point3.stateValues.xs)[0].tree).eq('q');
 
         });
 
@@ -7743,7 +7740,7 @@ describe('Point Tag Tests', function () {
       cy.log('Create 3D point')
       cy.get('#\\/originalCoords textarea').type('{end}{backspace}(2x,u/v{rightarrow},w^2{rightarrow}){enter}', { force: true });
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
 
         cy.get(point1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('(2x,uv,w2)')
@@ -7754,23 +7751,23 @@ describe('Point Tag Tests', function () {
         cy.get(point3Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('(2x,uv,w2)')
         })
-        cy.window().then((win) => {
+        cy.window().then(async (win) => {
 
           expect(components['/_point1'].stateValues.nDimensions).eq(3);
-          expect(components['/_point1'].stateValues.xs.length).eq(3);
-          expect(components['/_point1'].stateValues.xs[0].tree).eqls(["*", 2, "x"]);
-          expect(components['/_point1'].stateValues.xs[1].tree).eqls(["/", "u", "v"]);
-          expect(components['/_point1'].stateValues.xs[2].tree).eqls(["^", "w", 2]);
+          expect((await components['/_point1'].stateValues.xs).length).eq(3);
+          expect((await components['/_point1'].stateValues.xs)[0].tree).eqls(["*", 2, "x"]);
+          expect((await components['/_point1'].stateValues.xs)[1].tree).eqls(["/", "u", "v"]);
+          expect((await components['/_point1'].stateValues.xs)[2].tree).eqls(["^", "w", 2]);
           expect(point2.stateValues.nDimensions).eq(3);
-          expect(point2.stateValues.xs.length).eq(3);
-          expect(point2.stateValues.xs[0].tree).eqls(["*", 2, "x"]);
-          expect(point2.stateValues.xs[1].tree).eqls(["/", "u", "v"]);
-          expect(point2.stateValues.xs[2].tree).eqls(["^", "w", 2]);
+          expect((await point2.stateValues.xs).length).eq(3);
+          expect((await point2.stateValues.xs)[0].tree).eqls(["*", 2, "x"]);
+          expect((await point2.stateValues.xs)[1].tree).eqls(["/", "u", "v"]);
+          expect((await point2.stateValues.xs)[2].tree).eqls(["^", "w", 2]);
           expect(point3.stateValues.nDimensions).eq(3);
-          expect(point3.stateValues.xs.length).eq(3);
-          expect(point3.stateValues.xs[0].tree).eqls(["*", 2, "x"]);
-          expect(point3.stateValues.xs[1].tree).eqls(["/", "u", "v"]);
-          expect(point3.stateValues.xs[2].tree).eqls(["^", "w", 2]);
+          expect((await point3.stateValues.xs).length).eq(3);
+          expect((await point3.stateValues.xs)[0].tree).eqls(["*", 2, "x"]);
+          expect((await point3.stateValues.xs)[1].tree).eqls(["/", "u", "v"]);
+          expect((await point3.stateValues.xs)[2].tree).eqls(["^", "w", 2]);
 
         });
 
@@ -7782,7 +7779,7 @@ describe('Point Tag Tests', function () {
       cy.log('Back to 2D point 2')
       cy.get('#\\/originalCoords textarea').type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(p,q){enter}', { force: true });
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
 
         cy.get(point1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('(p,q)')
@@ -7794,20 +7791,20 @@ describe('Point Tag Tests', function () {
           expect(text.trim()).equal('(p,q)')
         })
 
-        cy.window().then((win) => {
+        cy.window().then(async (win) => {
 
           expect(components['/_point1'].stateValues.nDimensions).eq(2);
-          expect(components['/_point1'].stateValues.xs.length).eq(2);
-          expect(components['/_point1'].stateValues.xs[0].tree).eq('p');
-          expect(components['/_point1'].stateValues.xs[1].tree).eq('q');
+          expect((await components['/_point1'].stateValues.xs).length).eq(2);
+          expect((await components['/_point1'].stateValues.xs)[0].tree).eq('p');
+          expect((await components['/_point1'].stateValues.xs)[1].tree).eq('q');
           expect(point2.stateValues.nDimensions).eq(2);
-          expect(point2.stateValues.xs.length).eq(2);
-          expect(point2.stateValues.xs[0].tree).eq('p');
-          expect(point2.stateValues.xs[1].tree).eq('q');
+          expect((await point2.stateValues.xs).length).eq(2);
+          expect((await point2.stateValues.xs)[0].tree).eq('p');
+          expect((await point2.stateValues.xs)[1].tree).eq('q');
           expect(point3.stateValues.nDimensions).eq(2);
-          expect(point3.stateValues.xs.length).eq(2);
-          expect(point3.stateValues.xs[0].tree).eq('p');
-          expect(point3.stateValues.xs[1].tree).eq('q');
+          expect((await point3.stateValues.xs).length).eq(2);
+          expect((await point3.stateValues.xs)[0].tree).eq('p');
+          expect((await point3.stateValues.xs)[1].tree).eq('q');
 
         });
 
@@ -7817,7 +7814,7 @@ describe('Point Tag Tests', function () {
   })
 
   it('label positioning', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>

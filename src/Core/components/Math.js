@@ -537,10 +537,10 @@ export default class MathComponent extends InlineComponent {
       definition: function ({ dependencyValues }) {
         return { newValues: { text: dependencyValues.valueForDisplay.toString() } };
       },
-      inverseDefinition({ desiredStateVariableValues, stateValues }) {
+      async inverseDefinition({ desiredStateVariableValues, stateValues }) {
         let fromText = getFromText({
-          functionSymbols: stateValues.functionSymbols,
-          splitSymbols: stateValues.splitSymbols
+          functionSymbols: await stateValues.functionSymbols,
+          splitSymbols: await stateValues.splitSymbols
         });
 
         let expr;
@@ -739,7 +739,7 @@ export default class MathComponent extends InlineComponent {
 
         return { newValues: { xs } }
       },
-      inverseArrayDefinitionByKey({ desiredStateVariableValues,
+      async inverseArrayDefinitionByKey({ desiredStateVariableValues,
         stateValues, workspace, arraySize
       }) {
 
@@ -752,14 +752,14 @@ export default class MathComponent extends InlineComponent {
           if (desiredStateVariableValues.xs[ind] !== undefined) {
             workspace.desiredXs[ind] = convertValueToMathExpression(desiredStateVariableValues.xs[ind]);
           } else if (workspace.desiredXs[ind] === undefined) {
-            workspace.desiredXs[ind] = stateValues.xs[ind];
+            workspace.desiredXs[ind] = (await stateValues.xs)[ind];
           }
         }
 
 
         let desiredValue;
         if (arraySize[0] > 1) {
-          let operator = stateValues.value.tree[0]
+          let operator = (await stateValues.value).tree[0]
           desiredValue = me.fromAst([operator, ...workspace.desiredXs.map(x => x.tree)])
         } else {
           desiredValue = workspace.desiredXs[0];
@@ -1376,16 +1376,16 @@ function checkForScalarLinearExpression(tree, variables, inverseTree, components
 
 }
 
-function invertMath({ desiredStateVariableValues, dependencyValues,
+async function invertMath({ desiredStateVariableValues, dependencyValues,
   stateValues, workspace, overrideFixed
 }) {
 
-  if (!stateValues.canBeModified && !overrideFixed) {
+  if (!await stateValues.canBeModified && !overrideFixed) {
     return { success: false };
   }
 
   let desiredExpression = convertValueToMathExpression(desiredStateVariableValues.unnormalizedValue);
-  let currentValue = stateValues.value;
+  let currentValue = await stateValues.value;
 
   let arrayEntriesNotAffected;
 
@@ -1449,7 +1449,7 @@ function invertMath({ desiredStateVariableValues, dependencyValues,
     if (stringChildren.length > 0) {
       // just string children.  Set first to value, the rest to empty strings
       let stringValue;
-      if (stateValues.format === "latex") {
+      if (await stateValues.format === "latex") {
         stringValue = desiredExpression.toLatex()
       } else {
         stringValue = desiredExpression.toString()
@@ -1509,7 +1509,7 @@ function invertMath({ desiredStateVariableValues, dependencyValues,
   }
 
   // first calculate expression pieces to make sure really can update
-  let expressionPieces = getExpressionPieces({ expression: desiredExpression, stateValues });
+  let expressionPieces = await getExpressionPieces({ expression: desiredExpression, stateValues });
   if (!expressionPieces) {
     return { success: false };
   }
@@ -1517,26 +1517,29 @@ function invertMath({ desiredStateVariableValues, dependencyValues,
   let instructions = [];
 
   let childrenToSkip = [];
-  if (arrayEntriesNotAffected && stateValues.mathChildrenByArrayComponent) {
+  if (arrayEntriesNotAffected && await stateValues.mathChildrenByArrayComponent) {
+    let mathChildrenByArrayComponent = await stateValues.mathChildrenByArrayComponent;
     for (let ind of arrayEntriesNotAffected) {
-      if (stateValues.mathChildrenByArrayComponent[ind]) {
-        childrenToSkip.push(...stateValues.mathChildrenByArrayComponent[ind])
+      if (mathChildrenByArrayComponent[ind]) {
+        childrenToSkip.push(...mathChildrenByArrayComponent[ind])
       }
     }
   }
 
   // update math children where have inversemap and canBeModified is true
+  let mathChildrenWithCanBeModified = await stateValues.mathChildrenWithCanBeModified;
   for (let [childInd, mathChild] of mathChildren.entries()) {
     if (stateValues.mathChildrenMapped.has(childInd) &&
-      stateValues.mathChildrenWithCanBeModified[childInd].stateValues.canBeModified
+      mathChildrenWithCanBeModified[childInd].stateValues.canBeModified
     ) {
 
       if (!childrenToSkip.includes(childInd)) {
         let childValue = expressionPieces[childInd];
         let subsMap = {};
         let foundConst = false;
-        for (let code in stateValues.constantChildIndices) {
-          let constInd = stateValues.constantChildIndices[code]
+        let constantChildIndices = await stateValues.constantChildIndices;
+        for (let code in constantChildIndices) {
+          let constInd = constantChildIndices[code]
           subsMap[code] = mathChildren[constInd].stateValues.value;
           foundConst = true;
         }
@@ -1569,10 +1572,11 @@ function invertMath({ desiredStateVariableValues, dependencyValues,
   // string children and expression with codes if it is not the case?
 
   if (stringChildren.length > 0) {
-    let newExpressionWithCodes = stateValues.expressionWithCodes;
+    let newExpressionWithCodes = await stateValues.expressionWithCodes;
 
+    let inverseMaps = await stateValues.inverseMaps;
     for (let piece in expressionPieces) {
-      let inverseMap = stateValues.inverseMaps[piece];
+      let inverseMap = inverseMaps[piece];
       // skip math children
       if (inverseMap.mathChildInd !== undefined) {
         continue;
@@ -1590,13 +1594,13 @@ function invertMath({ desiredStateVariableValues, dependencyValues,
 
 
     let stringExpr;
-    if (stateValues.format === "latex") {
+    if (await stateValues.format === "latex") {
       stringExpr = newExpressionWithCodes.toLatex();
     } else {
       stringExpr = newExpressionWithCodes.toString();
     }
 
-    for (let [ind, stringCodes] of stateValues.codesAdjacentToStrings.entries()) {
+    for (let [ind, stringCodes] of (await stateValues.codesAdjacentToStrings).entries()) {
       let thisString = stringExpr;
       if (Object.keys(stringCodes).length === 0) {
         // string was skipped, so set it to an empty string
@@ -1633,17 +1637,19 @@ function invertMath({ desiredStateVariableValues, dependencyValues,
 }
 
 
-function getExpressionPieces({ expression, stateValues }) {
+async function getExpressionPieces({ expression, stateValues }) {
 
-  let matching = me.utils.match(expression.tree, stateValues.template);
+  let template = await stateValues.template;
+
+  let matching = me.utils.match(expression.tree, template);
 
   // if doesn't match, trying matching, by converting vectors, intervals, or both
   if (!matching) {
-    matching = me.utils.match(expression.tuples_to_vectors().tree, me.fromAst(stateValues.template).tuples_to_vectors().tree);
+    matching = me.utils.match(expression.tuples_to_vectors().tree, me.fromAst(template).tuples_to_vectors().tree);
     if (!matching) {
-      matching = me.utils.match(expression.to_intervals().tree, me.fromAst(stateValues.template).to_intervals().tree);
+      matching = me.utils.match(expression.to_intervals().tree, me.fromAst(template).to_intervals().tree);
       if (!matching) {
-        matching = me.utils.match(expression.tuples_to_vectors().to_intervals().tree, me.fromAst(stateValues.template).tuples_to_vectors().to_intervals().tree);
+        matching = me.utils.match(expression.tuples_to_vectors().to_intervals().tree, me.fromAst(template).tuples_to_vectors().to_intervals().tree);
         if (!matching) {
           return false;
         }
@@ -1654,8 +1660,8 @@ function getExpressionPieces({ expression, stateValues }) {
   let pieces = {};
   for (let x in matching) {
     let subMap = {};
-    subMap[stateValues.codeForExpression] = matching[x];
-    let inverseMap = stateValues.inverseMaps[x];
+    subMap[await stateValues.codeForExpression] = matching[x];
+    let inverseMap = (await stateValues.inverseMaps)[x];
     if (inverseMap !== undefined) {
       let id = x;
       if (inverseMap.mathChildInd !== undefined) {
@@ -1665,10 +1671,10 @@ function getExpressionPieces({ expression, stateValues }) {
 
       pieces[id] = normalizeMathExpression({
         value: pieces[id],
-        simplify: stateValues.simplify,
-        expand: stateValues.expand,
-        createvectors: stateValues.createvectors,
-        createintervals: stateValues.createintervals,
+        simplify: await stateValues.simplify,
+        expand: await stateValues.expand,
+        createvectors: await stateValues.createvectors,
+        createintervals: await stateValues.createintervals,
       })
     }
   }

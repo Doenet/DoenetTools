@@ -156,9 +156,9 @@ describe('Collection assignName Tests', function () {
     })
 
     cy.log('Move point a');
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components['/a'].movePoint({ x: 5, y: -5 });
+      await components['/a'].movePoint({ x: 5, y: -5 });
 
       cy.get('#\\/a').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(5,−5)')
@@ -243,9 +243,9 @@ describe('Collection assignName Tests', function () {
     })
 
     cy.log('Move point b');
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components['/b'].movePoint({ x: 9, y: 8 });
+      await components['/b'].movePoint({ x: 9, y: 8 });
 
       cy.get('#\\/a').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(5,−5)')
@@ -330,9 +330,9 @@ describe('Collection assignName Tests', function () {
 
 
     cy.log('Move point a1');
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components['/a1'].movePoint({ x: 7, y: 0 });
+      await components['/a1'].movePoint({ x: 7, y: 0 });
 
       cy.get('#\\/a').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(7,0)')
@@ -417,9 +417,9 @@ describe('Collection assignName Tests', function () {
 
 
     cy.log('Move point b1');
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components['/b1'].movePoint({ x: 4, y: 1 });
+      await components['/b1'].movePoint({ x: 4, y: 1 });
 
       cy.get('#\\/a').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(7,0)')
@@ -661,9 +661,9 @@ describe('Collection assignName Tests', function () {
     })
 
     cy.log('Move point a');
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components['/a'].movePoint({ x: 5, y: -5 });
+      await components['/a'].movePoint({ x: 5, y: -5 });
 
       cy.get('#\\/a').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(5,−5)')
@@ -756,9 +756,9 @@ describe('Collection assignName Tests', function () {
     })
 
     cy.log('Move point b');
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components['/b'].movePoint({ x: 9, y: 8 });
+      await components['/b'].movePoint({ x: 9, y: 8 });
 
       cy.get('#\\/a').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(5,−5)')
@@ -852,9 +852,9 @@ describe('Collection assignName Tests', function () {
 
 
     cy.log('Move point a1');
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components['/a1'].movePoint({ x: 7, y: 0 });
+      await components['/a1'].movePoint({ x: 7, y: 0 });
 
       cy.get('#\\/a').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(7,0)')
@@ -948,9 +948,9 @@ describe('Collection assignName Tests', function () {
 
 
     cy.log('Move point b1');
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components['/b1'].movePoint({ x: 4, y: 1 });
+      await components['/b1'].movePoint({ x: 4, y: 1 });
 
       cy.get('#\\/a').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(7,0)')
@@ -1270,9 +1270,9 @@ describe('Collection assignName Tests', function () {
     })
 
     cy.log('Move point a');
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components['/a'].movePoint({ x: 5, y: -5 });
+      await components['/a'].movePoint({ x: 5, y: -5 });
 
       cy.get('#\\/ashadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(5,−5)')
@@ -1434,9 +1434,9 @@ describe('Collection assignName Tests', function () {
     })
 
     cy.log('Move point b');
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components['/b'].movePoint({ x: 7, y: 8 });
+      await components['/b'].movePoint({ x: 7, y: 8 });
 
       cy.get('#\\/ashadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(5,−5)')
@@ -1598,9 +1598,9 @@ describe('Collection assignName Tests', function () {
     })
 
     cy.log('Move point c');
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components['/c'].movePoint({ x: -3, y: -6 });
+      await components['/c'].movePoint({ x: -3, y: -6 });
 
       cy.get('#\\/ashadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(5,−5)')
@@ -1762,9 +1762,9 @@ describe('Collection assignName Tests', function () {
     })
 
     cy.log('Move point d');
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components['/d'].movePoint({ x: -9, y: 4 });
+      await components['/d'].movePoint({ x: -9, y: 4 });
 
       cy.get('#\\/ashadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(5,−5)')
@@ -2279,11 +2279,11 @@ describe('Collection assignName Tests', function () {
     })
 
     cy.log('Move point all three points');
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components['/p1'].movePoint({ x: 1, y: 2 });
-      components['/p2'].movePoint({ x: 3, y: 4 });
-      components['/p3'].movePoint({ x: 5, y: 6 });
+      await components['/p1'].movePoint({ x: 1, y: 2 });
+      await components['/p2'].movePoint({ x: 3, y: 4 });
+      await components['/p3'].movePoint({ x: 5, y: 6 });
 
 
       cy.get('#\\/p1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -2684,14 +2684,14 @@ describe('Collection assignName Tests', function () {
     })
 
     cy.log('Move point all six points');
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components['/q1'].movePoint({ x: -1, y: -9 });
-      components['/q2'].movePoint({ x: -2, y: -8 });
-      components['/q3'].movePoint({ x: -3, y: -7 });
-      components['/q4'].movePoint({ x: -4, y: -6 });
-      components['/q5'].movePoint({ x: -5, y: -5 });
-      components['/q6'].movePoint({ x: -6, y: -4 });
+      await components['/q1'].movePoint({ x: -1, y: -9 });
+      await components['/q2'].movePoint({ x: -2, y: -8 });
+      await components['/q3'].movePoint({ x: -3, y: -7 });
+      await components['/q4'].movePoint({ x: -4, y: -6 });
+      await components['/q5'].movePoint({ x: -5, y: -5 });
+      await components['/q6'].movePoint({ x: -6, y: -4 });
 
 
       cy.get('#\\/p1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -3127,13 +3127,13 @@ describe('Collection assignName Tests', function () {
 
     cy.log('Move point all four points');
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
 
       let components = Object.assign({}, win.state.components);
-      components['/p1'].movePoint({ x: 4, y: -5 });
-      components['/p2'].movePoint({ x: 3, y: -6 });
-      components['/p3'].movePoint({ x: 2, y: -7 });
-      components['/p4'].movePoint({ x: 1, y: -8 });
+      await components['/p1'].movePoint({ x: 4, y: -5 });
+      await components['/p2'].movePoint({ x: 3, y: -6 });
+      await components['/p3'].movePoint({ x: 2, y: -7 });
+      await components['/p4'].movePoint({ x: 1, y: -8 });
 
 
       cy.get('#\\/p1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -3602,14 +3602,14 @@ describe('Collection assignName Tests', function () {
 
     cy.log('Move point all six points again');
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components['/q1'].movePoint({ x: -4, y: 6 });
-      components['/q2'].movePoint({ x: -5, y: 5 });
-      components['/q3'].movePoint({ x: -6, y: 4 });
-      components['/q4'].movePoint({ x: -7, y: 3 });
-      components['/q5'].movePoint({ x: -8, y: 2 });
-      components['/q6'].movePoint({ x: -9, y: 1 });
+      await components['/q1'].movePoint({ x: -4, y: 6 });
+      await components['/q2'].movePoint({ x: -5, y: 5 });
+      await components['/q3'].movePoint({ x: -6, y: 4 });
+      await components['/q4'].movePoint({ x: -7, y: 3 });
+      await components['/q5'].movePoint({ x: -8, y: 2 });
+      await components['/q6'].movePoint({ x: -9, y: 1 });
 
 
       cy.get('#\\/p1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -4516,11 +4516,11 @@ describe('Collection assignName Tests', function () {
 
     // move points
     cy.log('Move points');
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components['/pa1/_point1'].movePoint({ x: 3, y: 9 });
-      components['/pb1/_point1'].movePoint({ x: -6, y: -5, z: 4 });
-      components['/pb2/_point1'].movePoint({ x: 8, y: 0, z: 7 });
+      await components['/pa1/_point1'].movePoint({ x: 3, y: 9 });
+      await components['/pb1/_point1'].movePoint({ x: -6, y: -5, z: 4 });
+      await components['/pb2/_point1'].movePoint({ x: 8, y: 0, z: 7 });
 
       points1 = [[3, 9]];
       points2 = [[-6, -5, 4], [8, 0, 7]];
@@ -4540,11 +4540,11 @@ describe('Collection assignName Tests', function () {
     checkValues(points1, points2)
 
     cy.log('Move points');
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components['/pa1/_point1'].movePoint({ x: -1, y: 7, z: -9 });
-      components['/pb1/_point1'].movePoint({ x: 5, y: 4 });
-      components['/pb2/_point1'].movePoint({ x: 3, y: 2 });
+      await components['/pa1/_point1'].movePoint({ x: -1, y: 7, z: -9 });
+      await components['/pb1/_point1'].movePoint({ x: 5, y: 4 });
+      await components['/pb2/_point1'].movePoint({ x: 3, y: 2 });
 
       points1 = [[-1, 7, -9]];
       points2 = [[5, 4], [3, 2]];
@@ -4565,11 +4565,11 @@ describe('Collection assignName Tests', function () {
 
 
     cy.log('Move points');
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components['/pa1/_point1'].movePoint({ x: 9, y: -8, z: 7 });
-      components['/pa2/_point1'].movePoint({ x: -6, y: 5, z: -4 });
-      components['/pb1/_point1'].movePoint({ x: 3, y: -2 });
+      await components['/pa1/_point1'].movePoint({ x: 9, y: -8, z: 7 });
+      await components['/pa2/_point1'].movePoint({ x: -6, y: 5, z: -4 });
+      await components['/pb1/_point1'].movePoint({ x: 3, y: -2 });
 
       points1 = [[9, -8, 7], [-6, 5, -4]];
       points2 = [[3, -2]];

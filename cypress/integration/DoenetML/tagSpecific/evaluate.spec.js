@@ -1231,11 +1231,11 @@ describe('Evaluate Tag Tests', function () {
     cy.get('#\\/input4a textarea').type('{end}{backspace}-3', { force: true })
     cy.get('#\\/input4b textarea').type('{end}{backspace}5', { force: true }).blur()
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
 
-      components["/A"].movePoint({ x: -3, y: 7 })
-      components["/B"].movePoint({ x: 5, y: -9 })
+      await components["/A"].movePoint({ x: -3, y: 7 })
+      await components["/B"].movePoint({ x: 5, y: -9 })
 
       cy.get('#\\/result1a').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('9125')

@@ -132,8 +132,8 @@ function findNextTag(text) {
   return { tagString: tagString, tagType: tagType, tagIndex: tagIndex, tagProps: tagProps };
 }
 
-export function expandDoenetMLsToFullSerializedComponents({
-  contentIds, doenetMLs, callBack,
+export async function expandDoenetMLsToFullSerializedComponents({
+  contentIds, doenetMLs,
   componentInfoObjects, flags, contentIdsToDoenetMLs
 }) {
 
@@ -176,92 +176,63 @@ export function expandDoenetMLsToFullSerializedComponents({
     // so look up those contentIds
     // convert to doenetMLs, and recurse on those doenetMLs
 
-    let mergeContentIdNameSerializedComponentsIntoCopy = function ({
-      fullSerializedComponents
-    }) {
+    let { newDoenetMLs, newContentIds } = await contentIdsToDoenetMLs(contentIdList);
 
-      for (let [ind, contentId] of contentIdList.entries()) {
-        let serializedComponentsForContentId = fullSerializedComponents[ind];
-
-        for (let originalCopyWithUri of contentIdComponents[contentId]) {
-          if (originalCopyWithUri.children === undefined) {
-            originalCopyWithUri.children = [];
-          }
-          originalCopyWithUri.children.push({
-            componentType: "externalContent",
-            children: JSON.parse(JSON.stringify(serializedComponentsForContentId)),
-            attributes: { newNamespace: { primitive: true } },
-            doenetAttributes: { createUniqueName: true }
-          });
-        }
+    // check to see if got the contentIds requested
+    for (let [ind, contentId] of contentIdList.entries()) {
+      if (newContentIds[ind] && newContentIds[ind].substring(0, contentId.length) !== contentId) {
+        return Promise.reject(new Error(`Requested contentId ${contentId} but got back ${newContentIds[ind]}!`));
       }
-
-
-      // Note: this is the callback from the enclosing expandDoenetMLsToFullSerializedComponents
-      // so we call it with the contentIds and serializedComponents from that context
-      // This callBack will either be finishCoreConstruction
-      // or mergeContentIdNameSerializedComponentsIntoCopy
-      callBack({
-        contentIds,
-        fullSerializedComponents: arrayOfSerializedComponents,
-        calledAsynchronously: true,
-      })
-    };
-
-    let recurseToAdditionalDoenetMLs = function ({ newDoenetMLs, newContentIds, success, message }) {
-
-      if (!success) {
-        console.warn(message);
-      }
-
-      // check to see if got the contentIds requested
-      for (let [ind, contentId] of contentIdList.entries()) {
-        if (newContentIds[ind] && newContentIds[ind].substring(0, contentId.length) !== contentId) {
-          throw Error(`Requested contentId ${contentId} but got back ${newContentIds[ind]}!`)
-        }
-      }
-
-      // check to see if the doenetMLs hash to the contentIds
-      let expectedN = contentIdList.length;
-      for (let ind = 0; ind < expectedN; ind++) {
-        let contentId = newContentIds[ind];
-        if (contentId) {
-          let doenetML = newDoenetMLs[ind];
-          let calculatedContentId = Hex.stringify(sha256(doenetML));
-          if (contentId !== calculatedContentId) {
-            throw Error(`Incorrect DoenetML returned for contentId: ${contentId}`)
-          }
-        } else {
-          // wasn't able to retrieve content
-          console.warn(`Unable to retrieve content with contentId = ${contentIdList[ind]}`)
-          newDoenetMLs[ind] = "";
-        }
-      }
-
-      expandDoenetMLsToFullSerializedComponents({
-        doenetMLs: newDoenetMLs,
-        contentIds: newContentIds,
-        callBack: mergeContentIdNameSerializedComponentsIntoCopy,
-        componentInfoObjects, flags,
-        contentIdsToDoenetMLs
-      });
     }
 
-    contentIdsToDoenetMLs({
-      contentIds: contentIdList,
-      callBack: recurseToAdditionalDoenetMLs
+    // check to see if the doenetMLs hash to the contentIds
+    let expectedN = contentIdList.length;
+    for (let ind = 0; ind < expectedN; ind++) {
+      let contentId = newContentIds[ind];
+      if (contentId) {
+        let doenetML = newDoenetMLs[ind];
+        let calculatedContentId = Hex.stringify(sha256(doenetML));
+        if (contentId !== calculatedContentId) {
+          return Promise.reject(new Error(`Incorrect DoenetML returned for contentId: ${contentId}`));
+        }
+      } else {
+        // wasn't able to retrieve content
+        console.warn(`Unable to retrieve content with contentId = ${contentIdList[ind]}`)
+        newDoenetMLs[ind] = "";
+      }
+    }
+
+    // recurse to additional doenetMLs
+    let { fullSerializedComponents } = await expandDoenetMLsToFullSerializedComponents({
+      doenetMLs: newDoenetMLs,
+      contentIds: newContentIds,
+      componentInfoObjects, flags,
+      contentIdsToDoenetMLs
     });
 
-  } else {
-    // end recursion when don't find additional refs with contentIds
-    // Note: this callBack will either be this.finishCoreConstruction
-    // or mergeContentIdNameSerializedComponentsIntoCopy
-    callBack({
-      contentIds,
-      fullSerializedComponents: arrayOfSerializedComponents,
-      calledAsynchronously: false,
-    });
+    for (let [ind, contentId] of contentIdList.entries()) {
+      let serializedComponentsForContentId = fullSerializedComponents[ind];
+
+      for (let originalCopyWithUri of contentIdComponents[contentId]) {
+        if (originalCopyWithUri.children === undefined) {
+          originalCopyWithUri.children = [];
+        }
+        originalCopyWithUri.children.push({
+          componentType: "externalContent",
+          children: JSON.parse(JSON.stringify(serializedComponentsForContentId)),
+          attributes: { newNamespace: { primitive: true } },
+          doenetAttributes: { createUniqueName: true }
+        });
+      }
+    }
+
   }
+
+
+  return Promise.resolve({
+    contentIds,
+    fullSerializedComponents: arrayOfSerializedComponents,
+  });
 
 }
 
@@ -1350,6 +1321,10 @@ export function applySugar({ serializedComponents, parentParametersFromSugar = {
           }
 
         }
+      }
+
+      if (componentClass.removeBlankStringChildrenPostSugar) {
+        component.children = component.children.filter(x => typeof x !== "string" || /\S/.test(x))
       }
 
       // Note: don't pass in isAttributeComponent

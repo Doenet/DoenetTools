@@ -19,10 +19,11 @@ export default class Textinput extends Input {
     //Complex because the stateValues isn't defined until later
     Object.defineProperty(this.externalActions, 'submitAnswer', {
       enumerable: true,
-      get: function () {
-        if (this.stateValues.answerAncestor !== null) {
+      get: async function () {
+        let answerAncestor = await this.stateValues.answerAncestor;
+        if (answerAncestor !== null) {
           return {
-            componentName: this.stateValues.answerAncestor.componentName,
+            componentName: answerAncestor.componentName,
             actionName: "submitAnswer"
           }
         } else {
@@ -225,9 +226,9 @@ export default class Textinput extends Input {
   }
 
 
-  updateImmediateValue({ text }) {
-    if (!this.stateValues.disabled) {
-      return this.coreFunctions.performUpdate({
+  async updateImmediateValue({ text }) {
+    if (!await this.stateValues.disabled) {
+      return await this.coreFunctions.performUpdate({
         updateInstructions: [{
           updateType: "updateValue",
           componentName: this.componentName,
@@ -238,13 +239,14 @@ export default class Textinput extends Input {
     }
   }
 
-  updateValue() {
-    if (!this.stateValues.disabled) {
+  async updateValue() {
+    if (!await this.stateValues.disabled) {
+      let immediateValue = await this.stateValues.immediateValue;
       let updateInstructions = [{
         updateType: "updateValue",
         componentName: this.componentName,
         stateVariable: "value",
-        value: this.stateValues.immediateValue,
+        value: immediateValue,
       },
       // in case value ended up being a different value than requested
       // we set immediate value to whatever was the result
@@ -268,23 +270,26 @@ export default class Textinput extends Input {
           componentType: this.componentType,
         },
         result: {
-          response: this.stateValues.immediateValue,
-          responseText: this.stateValues.immediateValue,
+          response: immediateValue,
+          responseText: immediateValue,
         }
       }
 
-      if (this.stateValues.answerAncestor) {
+      let answerAncestor = await this.stateValues.answerAncestor;
+      if (answerAncestor) {
         event.context = {
-          answerAncestor: this.stateValues.answerAncestor.componentName
+          answerAncestor: answerAncestor.componentName
         }
       }
 
-      return this.coreFunctions.performUpdate({
+      await this.coreFunctions.performUpdate({
         updateInstructions,
         event
-      }).then(() => this.coreFunctions.triggerChainedActions({
+      });
+
+      return await this.coreFunctions.triggerChainedActions({
         componentName: this.componentName,
-      }));
+      });
 
     }
   }

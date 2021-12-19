@@ -6,7 +6,7 @@ describe('Graph Reference Test 2', function () {
   })
 
   it('graph referenced multiple ways 2', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -60,7 +60,7 @@ describe('Graph Reference Test 2', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
 
       // let originalVectors = [0, 2, 6]
@@ -205,7 +205,7 @@ describe('Graph Reference Test 2', function () {
       ]
 
       cy.log(`check original configuration`);
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let components = Object.assign({}, win.state.components);
 
         let ov_t = [3, 5];
@@ -253,7 +253,7 @@ describe('Graph Reference Test 2', function () {
       })
 
       cy.log(`move an original vector`);
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let components = Object.assign({}, win.state.components);
 
         let ov_t = [-1, 7];
@@ -266,7 +266,7 @@ describe('Graph Reference Test 2', function () {
         let d3_t = [0, 0];
         let d3_h = d3_t.map((x, i) => x + d[i]);
 
-        vectors[8].moveVector({
+        await vectors[8].moveVector({
           tailcoords: ov_t,
           headcoords: ov_h
         })
@@ -306,7 +306,7 @@ describe('Graph Reference Test 2', function () {
       })
 
       cy.log(`move displacementA vector`);
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let components = Object.assign({}, win.state.components);
 
         let d1_t = [2, 5];
@@ -320,7 +320,7 @@ describe('Graph Reference Test 2', function () {
         let d3_t = [0, 0];
         let d3_h = d3_t.map((x, i) => x + d[i]);
 
-        displacementsA[1].moveVector({
+        await displacementsA[1].moveVector({
           tailcoords: d1_t,
           headcoords: d1_h
         })
@@ -360,7 +360,7 @@ describe('Graph Reference Test 2', function () {
       })
 
       cy.log(`move displacementB vector`);
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let components = Object.assign({}, win.state.components);
 
         let d2_t = [-2, 3];
@@ -374,7 +374,7 @@ describe('Graph Reference Test 2', function () {
         let d3_t = [0, 0];
         let d3_h = d3_t.map((x, i) => x + d[i]);
 
-        displacementsB[2].moveVector({
+        await displacementsB[2].moveVector({
           tailcoords: d2_t,
           headcoords: d2_h
         })
@@ -414,7 +414,7 @@ describe('Graph Reference Test 2', function () {
       })
 
       cy.log(`move displacementC vector`);
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let components = Object.assign({}, win.state.components);
 
         let d3_t = [9, 8];
@@ -428,7 +428,7 @@ describe('Graph Reference Test 2', function () {
         let d2_t = [-2, 3]
         let d2_h = d2_t.map((x, i) => x + d[i]);
 
-        displacementsC[5].moveVector({
+        await displacementsC[5].moveVector({
           tailcoords: d3_t,
           headcoords: d3_h
         })

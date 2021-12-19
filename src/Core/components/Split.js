@@ -177,13 +177,13 @@ export default class Split extends CompositeComponent {
   }
 
 
-  static createSerializedReplacements({ component, componentInfoObjects }) {
+  static async createSerializedReplacements({ component, componentInfoObjects }) {
 
     let newNamespace = component.attributes.newNamespace && component.attributes.newNamespace.primitive;
 
     let serializedReplacement = {
       componentType: "textList",
-      state: { textsShadow: component.stateValues.splitValues },
+      state: { textsShadow: await component.stateValues.splitValues },
       downstreamDependencies: {
         [component.componentName]: [{
           dependencyType: "referenceShadow",

@@ -139,9 +139,9 @@ describe('Equilibriumline Tag Tests', function () {
 
 
     cy.log('switch A via first action')
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components["/g/A"].actions.switchLine();
+      await components["/g/A"].actions.switchLine();
 
       expect(components["/g/A"].stateValues.stable).eq(false);
       expect(components["/g/B"].stateValues.stable).eq(false);
@@ -167,9 +167,9 @@ describe('Equilibriumline Tag Tests', function () {
 
 
     cy.log('switch A via second action')
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components["/g2/A"].actions.switchLine();
+      await components["/g2/A"].actions.switchLine();
 
       expect(components["/g/A"].stateValues.stable).eq(true);
       expect(components["/g/B"].stateValues.stable).eq(false);
@@ -194,9 +194,9 @@ describe('Equilibriumline Tag Tests', function () {
 
 
     cy.log('cannot switch B via action')
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components["/g/B"].actions.switchLine();
+      await components["/g/B"].actions.switchLine();
 
       expect(components["/g/A"].stateValues.stable).eq(true);
       expect(components["/g/B"].stateValues.stable).eq(false);
@@ -221,9 +221,9 @@ describe('Equilibriumline Tag Tests', function () {
 
 
     cy.log('cannot switch C via second action')
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components["/g2/C"].actions.switchLine();
+      await components["/g2/C"].actions.switchLine();
 
       expect(components["/g/A"].stateValues.stable).eq(true);
       expect(components["/g/B"].stateValues.stable).eq(false);
@@ -247,9 +247,9 @@ describe('Equilibriumline Tag Tests', function () {
 
 
     cy.log('switch D via second action')
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components["/g2/D"].actions.switchLine();
+      await components["/g2/D"].actions.switchLine();
 
       expect(components["/g/A"].stateValues.stable).eq(true);
       expect(components["/g/B"].stateValues.stable).eq(false);

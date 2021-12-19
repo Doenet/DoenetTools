@@ -635,7 +635,7 @@ export default class Line extends GraphicalComponent {
           return result;
         }
       },
-      inverseArrayDefinitionByKey({ desiredStateVariableValues, globalDependencyValues,
+      async inverseArrayDefinitionByKey({ desiredStateVariableValues, globalDependencyValues,
         dependencyValuesByKey, dependencyNamesByKey, initialChange, stateValues, workspace
       }) {
 
@@ -647,7 +647,7 @@ export default class Line extends GraphicalComponent {
 
 
         // if not draggable, then disallow initial change 
-        if (initialChange && !stateValues.draggable) {
+        if (initialChange && !await stateValues.draggable) {
           return { success: false };
         }
 
@@ -662,26 +662,28 @@ export default class Line extends GraphicalComponent {
 
           Object.assign(workspace.desiredPoints, desiredStateVariableValues.points)
 
+          let points = await stateValues.points;
+
           let point1x, point1y, point2x, point2y;
           if (workspace.desiredPoints["0,0"]) {
             point1x = workspace.desiredPoints["0,0"]
           } else {
-            point1x = stateValues.points[0][0];
+            point1x = points[0][0];
           }
           if (workspace.desiredPoints["0,1"]) {
             point1y = workspace.desiredPoints["0,1"]
           } else {
-            point1y = stateValues.points[0][1];
+            point1y = points[0][1];
           }
           if (workspace.desiredPoints["1,0"]) {
             point2x = workspace.desiredPoints["1,0"]
           } else {
-            point2x = stateValues.points[1][0];
+            point2x = points[1][0];
           }
           if (workspace.desiredPoints["1,1"]) {
             point2y = workspace.desiredPoints["1,1"]
           } else {
-            point2y = stateValues.points[1][1];
+            point2y = points[1][1];
           }
 
 
@@ -697,26 +699,29 @@ export default class Line extends GraphicalComponent {
             let coeffvar2 = numericalPoint2[0] - numericalPoint1[0];
             let coeff0 = numericalPoint1[0] * numericalPoint2[1] - numericalPoint1[1] * numericalPoint2[0];
 
-            let prodDiff = Math.abs(coeffvar1 * stateValues.coeffvar2 - stateValues.coeffvar1 * coeffvar2);
+            let sVCoeffVar1 = await stateValues.coeffvar1;
+            let sVCoeffVar2 = await stateValues.coeffvar2;
+
+            let prodDiff = Math.abs(coeffvar1 * sVCoeffVar2 - sVCoeffVar1 * coeffvar2);
 
             let instructions = [];
 
-            if (prodDiff < Math.abs(coeffvar1 * stateValues.coeffvar2) * 1E-12) {
+            if (prodDiff < Math.abs(coeffvar1 * sVCoeffVar2) * 1E-12) {
               // the slope didn't change, so line was translated
               // don't change coeffvar1 or coeffvar2, but just coeff0
 
               if (coeffvar1 !== 0) {
-                coeff0 *= stateValues.coeffvar1 / coeffvar1;
+                coeff0 *= sVCoeffVar1 / coeffvar1;
               } else {
-                coeff0 *= stateValues.coeffvar2 / coeffvar2
+                coeff0 *= sVCoeffVar2 / coeffvar2
               }
 
               instructions.push({
                 setDependency: "coeff0",
                 desiredValue: coeff0,
                 additionalDependencyValues: {
-                  coeffvar1: stateValues.coeffvar1,
-                  coeffvar2: stateValues.coeffvar2
+                  coeffvar1: sVCoeffVar1,
+                  coeffvar2: sVCoeffVar2
                 }
               })
             } else {
@@ -806,7 +811,7 @@ export default class Line extends GraphicalComponent {
 
                 let oDim = dim === "0" ? "1" : "0";
                 if (workspace.desiredPoint1[oDim] === undefined) {
-                  let oVal = stateValues.points[1][oDim].evaluate_to_constant();
+                  let oVal = (await stateValues.points)[1][oDim].evaluate_to_constant();
                   if (oVal === null) {
                     oVal = NaN;
                   }
@@ -819,8 +824,8 @@ export default class Line extends GraphicalComponent {
                     xOther = dependencyValuesByKey[arrayKey].point1.stateValues.point1[0].evaluate_to_constant();
                     yOther = dependencyValuesByKey[arrayKey].point1.stateValues.point1[1].evaluate_to_constant();
                   } else {
-                    xOther = stateValues.essentialPoint1x;
-                    yOther = stateValues.essentialPoint1y;
+                    xOther = await stateValues.essentialPoint1x;
+                    yOther = await stateValues.essentialPoint1y;
                   }
                   if (Number.isFinite(xOther) && Number.isFinite(yOther)) {
                     let dx = workspace.desiredPoint1[0] - xOther;
@@ -1430,19 +1435,19 @@ export default class Line extends GraphicalComponent {
 
   static adapters = ["equation"];
 
-  moveLine({ point1coords, point2coords, transient }) {
+  async moveLine({ point1coords, point2coords, transient }) {
 
     let desiredPoints = {
       "0,0": me.fromAst(point1coords[0]),
       "0,1": me.fromAst(point1coords[1]),
     }
-    if (!this.stateValues.basedOnSlope) {
+    if (!await this.stateValues.basedOnSlope) {
       desiredPoints["1,0"] = me.fromAst(point2coords[0]);
       desiredPoints["1,1"] = me.fromAst(point2coords[1]);
     }
 
     if (transient) {
-      return this.coreFunctions.performUpdate({
+      return await this.coreFunctions.performUpdate({
         updateInstructions: [{
           updateType: "updateValue",
           componentName: this.componentName,
@@ -1452,7 +1457,7 @@ export default class Line extends GraphicalComponent {
         transient: true,
       });
     } else {
-      return this.coreFunctions.performUpdate({
+      return await this.coreFunctions.performUpdate({
         updateInstructions: [{
           updateType: "updateValue",
           componentName: this.componentName,
@@ -1475,14 +1480,14 @@ export default class Line extends GraphicalComponent {
   }
 
 
-  finalizeLinePosition() {
+  async finalizeLinePosition() {
     // trigger a moveLine 
     // to send the final values with transient=false
     // so that the final position will be recorded
 
-    return this.actions.moveLine({
-      point1coords: this.stateValues.numericalPoints[0],
-      point2coords: this.stateValues.numericalPoints[1],
+    return await this.actions.moveLine({
+      point1coords: await this.stateValues.numericalPoints[0],
+      point2coords: await this.stateValues.numericalPoints[1],
       transient: false,
     });
   }

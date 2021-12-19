@@ -87,15 +87,15 @@ export default class Template extends CompositeComponent {
     return stateVariableDefinitions;
   }
 
-  static createSerializedReplacements({ component, componentInfoObjects, alwaysCreateReplacements }) {
+  static async createSerializedReplacements({ component, componentInfoObjects, alwaysCreateReplacements }) {
     // console.log(`create serialized replacements for ${component.componentName}`)
-    // console.log(component.stateValues.rendered);
+    // console.log(await component.stateValues.rendered);
 
-    if (!(component.stateValues.rendered || alwaysCreateReplacements)) {
+    if (!(await component.stateValues.rendered || alwaysCreateReplacements)) {
       return { replacements: [] };
     } else {
 
-      let replacements = deepClone(component.state.serializedChildren.value);
+      let replacements = deepClone(await component.state.serializedChildren.value);
 
       let newNamespace = component.attributes.newNamespace && component.attributes.newNamespace.primitive;
 
@@ -162,7 +162,7 @@ export default class Template extends CompositeComponent {
     let allPotentialRendererTypes = super.allPotentialRendererTypes;
 
     let additionalRendererTypes = this.potentialRendererTypesFromSerializedComponents(
-      this.stateValues.serializedChildren
+      this.serializedChildren
     );
     for (let rendererType of additionalRendererTypes) {
       if (!allPotentialRendererTypes.includes(rendererType)) {

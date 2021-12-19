@@ -223,10 +223,25 @@ describe('Point location validation tests',function() {
     cy.log("Move point to correct quadrant and move again")
     // for some reason, have to move point twice to trigger bug
     // that occurs when expressionWithCodes of math isn't changed
+    
     cy.window().then((win) => {
-      let components = Object.assign({},win.state.components);
-      components['/_point1'].movePoint({x: 5.9, y: 3.5})
-      components['/_point1'].movePoint({x: 5.9, y: 3.4})
+      let core = win.state.core;
+      // Note: have to use requestAction here
+      // rather than call movePoint twice directly
+      // to make sure the second action is queued and waits for first to complete
+      core.requestAction({
+        componentName: "/_point1",
+        actionName: "movePoint",
+        args: {x: 5.9, y: 3.5},
+      })
+      core.requestAction({
+        componentName: "/_point1",
+        actionName: "movePoint",
+        args: {x: 5.9, y: 3.4},
+      })
+      // let components = Object.assign({},win.state.components);
+      // components['/_point1'].movePoint({x: 5.9, y: 3.5})
+      // components['/_point1'].movePoint({x: 5.9, y: 3.4})
     });
 
     cy.get('#\\/_answer1_submit').invoke('text').then((text) => {
@@ -342,9 +357,23 @@ describe('Point location validation tests',function() {
   
     cy.log("Move point to third quadrant and submit")
     cy.window().then((win) => {
+      let core = win.state.core;
+      // Note: have to use requestAction here
+      // rather than call movePoint twice directly
+      // to make sure the second action is queued and waits for first to complete
+      core.requestAction({
+        componentName: "/_point1",
+        actionName: "movePoint",
+        args: {x: -9.4, y: -5.1},
+      })
+      core.requestAction({
+        componentName: "/_point1",
+        actionName: "movePoint",
+        args: {x: -9.5, y: -5.1},
+      })
       let components = Object.assign({},win.state.components);
-      components['/_point1'].movePoint({x: -9.4, y: -5.1})
-      components['/_point1'].movePoint({x: -9.5, y: -5.1})
+      // components['/_point1'].movePoint({x: -9.4, y: -5.1})
+      // components['/_point1'].movePoint({x: -9.5, y: -5.1})
       expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
     });
 

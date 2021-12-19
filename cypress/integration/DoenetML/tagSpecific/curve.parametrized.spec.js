@@ -5,7 +5,7 @@ describe('Parameterized Curve Tag Tests', function () {
   })
 
   it('sugar a parameterization in terms of x', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -19,7 +19,7 @@ describe('Parameterized Curve Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a');  //wait for window to load
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/_curve1'].stateValues.curveType).eq("parameterization");
       expect(components['/_curve1'].stateValues.variableForChild.tree).eq("x");
@@ -34,7 +34,7 @@ describe('Parameterized Curve Tag Tests', function () {
   });
 
   it('sugar a parameterization in terms of x, with strings and macros', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -50,7 +50,7 @@ describe('Parameterized Curve Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a');  //wait for window to load
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/_curve1'].stateValues.curveType).eq("parameterization");
       expect(components['/_curve1'].stateValues.variableForChild.tree).eq("x");
@@ -65,7 +65,7 @@ describe('Parameterized Curve Tag Tests', function () {
   });
 
   it('sugar a parameterization in terms of t', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -79,7 +79,7 @@ describe('Parameterized Curve Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a');  //wait for window to load
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/_curve1'].stateValues.curveType).eq("parameterization");
       expect(components['/_curve1'].stateValues.variableForChild.tree).eq("t");
@@ -94,7 +94,7 @@ describe('Parameterized Curve Tag Tests', function () {
   });
 
   it('sugar a parameterization in terms of t, with strings and macro', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -109,7 +109,7 @@ describe('Parameterized Curve Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a');  //wait for window to load
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/_curve1'].stateValues.curveType).eq("parameterization");
       expect(components['/_curve1'].stateValues.variableForChild.tree).eq("t");
@@ -124,7 +124,7 @@ describe('Parameterized Curve Tag Tests', function () {
   });
 
   it.skip('x, y = a parameterization in terms of t', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -139,7 +139,7 @@ describe('Parameterized Curve Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');  //wait for window to load
 
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let parametrizedCurve = components[components['/_curve1'].stateValues.curveChild];
       // expect(components['/_curve1'].stateValues.curveType).eq("parameterization");
@@ -162,7 +162,7 @@ describe('Parameterized Curve Tag Tests', function () {
   });
 
   it.skip('x, y = a parameterization in terms of t, swapped variables', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -176,7 +176,7 @@ describe('Parameterized Curve Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');  //wait for window to load
 
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let parametrizedCurve = components[components['/_curve1'].stateValues.curveChild];
       // expect(components['/_curve1'].stateValues.curveType).eq("parameterization");
@@ -199,7 +199,7 @@ describe('Parameterized Curve Tag Tests', function () {
   });
 
   it.skip('u, v = a parameterization in terms of s', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -213,7 +213,7 @@ describe('Parameterized Curve Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a');  //wait for window to load
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let parametrizedCurve = components[components['/_curve1'].stateValues.curveChild];
       // expect(components['/_curve1'].stateValues.curveType).eq("parameterization");
@@ -236,7 +236,7 @@ describe('Parameterized Curve Tag Tests', function () {
   });
 
   it.skip('x, y = a parameterization in terms of t, vector form', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -250,7 +250,7 @@ describe('Parameterized Curve Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a');  //wait for window to load
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let parametrizedCurve = components[components['/_curve1'].stateValues.curveChild];
       // expect(components['/_curve1'].stateValues.curveType).eq("parameterization");
@@ -273,7 +273,7 @@ describe('Parameterized Curve Tag Tests', function () {
   });
 
   it.skip('x, y = a parameterization in terms of t, vector form, switched', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -287,7 +287,7 @@ describe('Parameterized Curve Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a');  //wait for window to load
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let parametrizedCurve = components[components['/_curve1'].stateValues.curveChild];
       // expect(components['/_curve1'].stateValues.curveType).eq("parameterization");
@@ -310,7 +310,7 @@ describe('Parameterized Curve Tag Tests', function () {
   });
 
   it.skip('x, y = a parameterization in terms of t, change par limits', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -324,7 +324,7 @@ describe('Parameterized Curve Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a');  //wait for window to load
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let parametrizedCurve = components[components['/_curve1'].stateValues.curveChild];
       // expect(components['/_curve1'].stateValues.curveType).eq("parameterization");
@@ -347,7 +347,7 @@ describe('Parameterized Curve Tag Tests', function () {
   });
 
   it('a parameterization, no sugar', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -363,7 +363,7 @@ describe('Parameterized Curve Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');  //wait for window to load
 
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/_curve1'].stateValues.curveType).eq("parameterization");
       expect(components['/_curve1'].stateValues.parMin).eq(-10);
@@ -377,7 +377,7 @@ describe('Parameterized Curve Tag Tests', function () {
   });
 
   it('a parameterization, change par limits', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -392,7 +392,7 @@ describe('Parameterized Curve Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a');  //wait for window to load
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/_curve1'].stateValues.curveType).eq("parameterization");
       expect(components['/_curve1'].stateValues.parMin).eq(-1);
@@ -407,7 +407,7 @@ describe('Parameterized Curve Tag Tests', function () {
 
 
   it.skip('a parameterization with parens', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -421,7 +421,7 @@ describe('Parameterized Curve Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a');  //wait for window to load
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let parametrizedCurve = components[components['/_curve1'].stateValues.curveChild];
       // expect(components['/_curve1'].stateValues.curveType).eq("parameterization");
@@ -444,7 +444,7 @@ describe('Parameterized Curve Tag Tests', function () {
   });
 
   it('a parameterization with copy', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -460,7 +460,7 @@ describe('Parameterized Curve Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a');  //wait for window to load
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       expect(components["/_curve1"].stateValues.parMin).eq(-10);
       expect(components["/_curve1"].stateValues.parMax).eq(10);
@@ -471,7 +471,7 @@ describe('Parameterized Curve Tag Tests', function () {
     })
 
     cy.get("#\\/_mathinput1 textarea").type("{end}{backspace}-3{enter}", { force: true });
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       expect(components["/_curve1"].stateValues.parMin).eq(-10);
       expect(components["/_curve1"].stateValues.parMax).eq(10);
@@ -483,7 +483,7 @@ describe('Parameterized Curve Tag Tests', function () {
   });
 
   it('constrain to parametrize curve', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -508,7 +508,7 @@ describe('Parameterized Curve Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');  //wait for window to load
 
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let x = components['/_point1'].stateValues.xs[0].tree;
       let y = components['/_point1'].stateValues.xs[1].tree;
@@ -516,18 +516,18 @@ describe('Parameterized Curve Tag Tests', function () {
       expect(y).closeTo(Math.sin(2 * Math.pow(x, 1 / 3)), 1E-5);
     })
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components['/_point1'].movePoint({ x: -2, y: 10 })
+      await components['/_point1'].movePoint({ x: -2, y: 10 })
       let x = components['/_point1'].stateValues.xs[0].tree;
       let y = components['/_point1'].stateValues.xs[1].tree;
       expect(x).closeTo(0.3, 0.1);
       expect(y).closeTo(Math.sin(2 * Math.pow(x, 1 / 3)), 1E-5);
     })
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components['/_point1'].movePoint({ x: -10, y: 2 })
+      await components['/_point1'].movePoint({ x: -10, y: 2 })
       let x = components['/_point1'].stateValues.xs[0].tree;
       let y = components['/_point1'].stateValues.xs[1].tree;
       expect(x).closeTo(-8, 1E-3);
@@ -535,7 +535,7 @@ describe('Parameterized Curve Tag Tests', function () {
     })
 
     cy.get("#\\/_mathinput1 textarea").type("{end}{backspace}{backspace}-1{enter}", { force: true })
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let x = components['/_point1'].stateValues.xs[0].tree;
       let y = components['/_point1'].stateValues.xs[1].tree;
@@ -543,9 +543,9 @@ describe('Parameterized Curve Tag Tests', function () {
       expect(y).closeTo(Math.sin(-2), 1E-3);
     })
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components['/_point1'].movePoint({ x: 10, y: 2 })
+      await components['/_point1'].movePoint({ x: 10, y: 2 })
       let x = components['/_point1'].stateValues.xs[0].tree;
       let y = components['/_point1'].stateValues.xs[1].tree;
       expect(x).closeTo(8, 1E-3);
@@ -553,7 +553,7 @@ describe('Parameterized Curve Tag Tests', function () {
     })
 
     cy.get("#\\/_mathinput2 textarea").type("{end}{backspace}1{enter}", { force: true })
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let x = components['/_point1'].stateValues.xs[0].tree;
       let y = components['/_point1'].stateValues.xs[1].tree;
@@ -564,7 +564,7 @@ describe('Parameterized Curve Tag Tests', function () {
   });
 
   it('constrain to parametrize curve, different scales from graph', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -590,7 +590,7 @@ describe('Parameterized Curve Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');  //wait for window to load
 
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let x = components['/P'].stateValues.xs[0].tree;
       let y = components['/P'].stateValues.xs[1].tree;
@@ -598,18 +598,18 @@ describe('Parameterized Curve Tag Tests', function () {
       expect(y).closeTo(0.1 / Math.sqrt(2), 1E-4);
     })
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components['/P'].movePoint({ x: -200, y: 0.8 })
+      await components['/P'].movePoint({ x: -200, y: 0.8 })
       let x = components['/P'].stateValues.xs[0].tree;
       let y = components['/P'].stateValues.xs[1].tree;
       expect(x).closeTo(-100 / Math.sqrt(17), 1E-4);
       expect(y).closeTo(0.1 * 4 / Math.sqrt(17), 1E-4);
     })
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components['/P'].movePoint({ x: -2, y: -0.001 })
+      await components['/P'].movePoint({ x: -2, y: -0.001 })
       let x = components['/P'].stateValues.xs[0].tree;
       let y = components['/P'].stateValues.xs[1].tree;
       expect(x).closeTo(-100 * 2 / Math.sqrt(5), 1E-4);

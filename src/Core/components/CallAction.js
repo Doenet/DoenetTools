@@ -234,25 +234,27 @@ export default class CallAction extends InlineComponent {
   }
 
 
-  callAction() {
+  async callAction() {
 
-    if (this.stateValues.targetName !== null && this.stateValues.actionName !== null) {
+    let targetName = await this.stateValues.targetName;
+    let actionName = await this.stateValues.actionName;
+    if (targetName !== null && actionName !== null) {
 
       let args = {};
       if (this.serializedChildren.length > 0) {
         args.serializedComponents = deepClone(this.serializedChildren);
       }
       if (this.attributes.number) {
-        args.number = this.attributes.number.component.stateValues.value;
+        args.number = await this.attributes.number.component.stateValues.value;
       }
       if (this.attributes.numbers) {
-        args.numbers = this.attributes.numbers.component.stateValues.numbers;
+        args.numbers = await this.attributes.numbers.component.stateValues.numbers;
       }
 
 
-      return this.coreFunctions.performAction({
-        componentName: this.stateValues.targetName,
-        actionName: this.stateValues.actionName,
+      await this.coreFunctions.performAction({
+        componentName: targetName,
+        actionName,
         args,
         event: {
           verb: "selected",
@@ -261,22 +263,24 @@ export default class CallAction extends InlineComponent {
             componentType: this.componentType,
           },
         },
-      }).then(() => this.coreFunctions.triggerChainedActions({
+      })
+
+      await this.coreFunctions.triggerChainedActions({
         componentName: this.componentName,
-      }));
+      });
 
 
     }
 
   }
 
-  callActionIfTriggerNewlyTrue({ stateValues, previousValues }) {
+  async callActionIfTriggerNewlyTrue({ stateValues, previousValues }) {
     // Note: explicitly test if previous value is false
     // so don't trigger on initialization when it is undefined
     if (stateValues.triggerWhen && previousValues.triggerWhen === false &&
-      !this.stateValues.insideTriggerSet
+      !await this.stateValues.insideTriggerSet
     ) {
-      return this.callAction();
+      return await this.callAction();
     }
   }
 

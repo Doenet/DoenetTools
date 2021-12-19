@@ -15,7 +15,7 @@ describe('Map Tag Tests', function () {
   })
 
   it('single map of maths', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -33,7 +33,7 @@ describe('Map Tag Tests', function () {
 
     cy.get(cesc('#/_text1')).should('have.text', 'a');   // to wait for page to load
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let replacements = components['/_map1'].replacements;
       let mathr1 = replacements[0].replacements[0];
@@ -58,7 +58,7 @@ describe('Map Tag Tests', function () {
   });
 
   it('single map of texts', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -70,7 +70,7 @@ describe('Map Tag Tests', function () {
     });
 
     cy.get(cesc('#/_text1')).should('have.text', 'a');   // to wait for page to load
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let replacements = components['/_map1'].replacements;
       let textr1 = replacements[0].replacements[0];
@@ -91,7 +91,7 @@ describe('Map Tag Tests', function () {
   });
 
   it('single map of sequence', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -104,7 +104,7 @@ describe('Map Tag Tests', function () {
 
     cy.get(cesc('#/_text1')).should('have.text', 'a');   // to wait for page to load
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let replacements = components['/_map1'].replacements;
       let mathrs = replacements.map(x => x.replacements[0]);
@@ -139,7 +139,7 @@ describe('Map Tag Tests', function () {
   });
 
   it('triple parallel map', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -157,7 +157,7 @@ describe('Map Tag Tests', function () {
     cy.get(cesc('#/_text1')).should('have.text', 'a');   // to wait for page to load
 
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let replacements = components['/_map1'].replacements;
       let mathrs = replacements.reduce((a, c) => [...a, ...c.replacements], []);
@@ -196,7 +196,7 @@ describe('Map Tag Tests', function () {
   });
 
   it('triple combination map', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -211,7 +211,7 @@ describe('Map Tag Tests', function () {
 
     cy.get(cesc('#/_text1')).should('have.text', 'a');   // to wait for page to load
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let replacements = components['/_map1'].replacements;
       let mathrs = replacements.reduce((a, c) => [...a, ...c.replacements], []);
@@ -322,7 +322,7 @@ describe('Map Tag Tests', function () {
   });
 
   it('two nested maps', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -339,7 +339,7 @@ describe('Map Tag Tests', function () {
     });
 
     cy.get(cesc('#/_text1')).should('have.text', 'a');   // to wait for page to load
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let replacements = components['/_map1'].replacements;
       let mathrs = replacements.reduce(
@@ -391,7 +391,7 @@ describe('Map Tag Tests', function () {
   });
 
   it('three nested maps with graphs and copied', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -414,7 +414,7 @@ describe('Map Tag Tests', function () {
     cy.get(cesc('#/_text1')).should('have.text', 'a');   // to wait for page to load
 
     cy.log('Test internal values are set to the correct values')
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let graphs = components['/_map1'].replacements.map(x => x.replacements[0]);
       let graphsChildren = graphs.map(x => x.activeChildren);
@@ -498,7 +498,7 @@ describe('Map Tag Tests', function () {
   });
 
   it('three nested maps with graphs and assignnames', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -532,7 +532,7 @@ describe('Map Tag Tests', function () {
     });
 
     cy.get(cesc('#/_text1')).should('have.text', 'a');   // to wait for page to load
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let coords1 = components['/c1'].replacements[0];
       let coords1Anchor = cesc('#' + coords1.componentName);
@@ -578,7 +578,7 @@ describe('Map Tag Tests', function () {
       });
 
       cy.log('Test internal values are set to the correct values')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let components = Object.assign({}, win.state.components);
 
         expect(components['/u/_graph1'].stateValues.graphicalDescendants.length).eq(4);
@@ -604,7 +604,7 @@ describe('Map Tag Tests', function () {
   });
 
   it('combination map nested inside map with graphs', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -623,7 +623,7 @@ describe('Map Tag Tests', function () {
 
     cy.get(cesc('#/_text1')).should('have.text', 'a');  //wait for window to load
     cy.log('Test internal values are set to the correct values')
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let graphs = components['/_map1'].replacements.map(x => x.replacements[0]);
       let graphsChildren = graphs.map(x => x.activeChildren);
@@ -652,7 +652,7 @@ describe('Map Tag Tests', function () {
   });
 
   it('map with copies', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -669,7 +669,7 @@ describe('Map Tag Tests', function () {
     });
 
     cy.get(cesc('#/_text1')).should('have.text', 'a');  //wait for window to load
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let replacements = components['/_map1'].replacements.reduce((a, c) => [...a, ...c.replacements], []);
       let replacementAnchors = replacements.map(x => '#' + x.componentName)
@@ -711,7 +711,7 @@ describe('Map Tag Tests', function () {
   });
 
   it('map with copies, extended dynamically', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -731,7 +731,7 @@ describe('Map Tag Tests', function () {
     });
 
     cy.get(cesc('#/_text1')).should('have.text', 'a');  //wait for window to load
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let replacements = components['/_map1'].replacements.reduce((a, c) => [...a, ...c.replacements], []);
       let replacementAnchors = replacements.map(x => '#' + x.componentName)
@@ -760,7 +760,7 @@ describe('Map Tag Tests', function () {
     cy.log('Double the length then test again')
     cy.get(cesc('#/_updatevalue1_button')).click(); //Update Button
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       console.log('hello')
       let components = Object.assign({}, win.state.components);
       console.log(components["/_map1"].replacements)
@@ -804,7 +804,7 @@ describe('Map Tag Tests', function () {
     cy.log('Double the length again then test one more time')
     cy.get(cesc('#/_updatevalue1_button')).click(); //Update Button
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let replacements = components['/_map1'].replacements.reduce((a, c) => [...a, ...c.replacements], []);
       let replacementAnchors = replacements.map(x => '#' + x.componentName)
@@ -867,7 +867,7 @@ describe('Map Tag Tests', function () {
   });
 
   it('map with copied template', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -886,7 +886,7 @@ describe('Map Tag Tests', function () {
     });
 
     cy.get(cesc('#/_text1')).should('have.text', 'a');  //wait for window to load
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let replacements = components['/_map1'].replacements.map(x => x.replacements[0]);
       let replacementAnchors = replacements.map(x => '#' + x.componentName)
@@ -918,7 +918,7 @@ describe('Map Tag Tests', function () {
   });
 
   it('map with new namespace but no new namespace on template', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -932,7 +932,7 @@ describe('Map Tag Tests', function () {
     });
 
     cy.get(cesc('#/_text1')).should('have.text', 'a');  //wait for window to load
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let replacements = components['/_map1'].replacements.map(x => x.replacements[0]);
       let replacementAnchors = replacements.map(x => '#' + x.componentName)
@@ -956,7 +956,7 @@ describe('Map Tag Tests', function () {
   });
 
   it('graph with new namespace and assignnames', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -976,7 +976,7 @@ describe('Map Tag Tests', function () {
 
     cy.get(cesc('#/_text1')).should('have.text', 'a');  //wait for window to load
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let coords1 = components['/_copy1'].replacements[0];
       let coords1Anchor = cesc('#' + coords1.componentName);
@@ -1000,7 +1000,7 @@ describe('Map Tag Tests', function () {
       });
 
       cy.log('Test internal values are set to the correct values')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let components = Object.assign({}, win.state.components);
 
         expect(components['/hi'].stateValues.graphicalDescendants.length).eq(4);
@@ -1017,7 +1017,7 @@ describe('Map Tag Tests', function () {
   });
 
   it('map copying source of other map', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -1056,7 +1056,7 @@ describe('Map Tag Tests', function () {
   });
 
   it('map length depending on other map', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -1071,7 +1071,7 @@ describe('Map Tag Tests', function () {
     });
 
     cy.get(cesc('#/_text1')).should('have.text', 'a');  //wait for window to load
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let replacements = components['/_map1'].replacements.map(x => x.replacements[0]);
       let replacementAnchors = replacements.map(x => x.replacements.map(y => '#' + y.replacements[0].componentName))
@@ -1100,7 +1100,7 @@ describe('Map Tag Tests', function () {
   });
 
   it('map begins zero length, copied multiple times', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -1128,7 +1128,7 @@ describe('Map Tag Tests', function () {
     });
 
     cy.get(cesc('#/_text1')).should('have.text', 'a');  //wait for window to load
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let p4 = components['/copymapthroughp'].replacements[0];
       let p4Anchor = cesc('#' + p4.componentName);
@@ -1434,7 +1434,7 @@ describe('Map Tag Tests', function () {
   });
 
   it('map with circular dependence in template', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -1466,7 +1466,7 @@ describe('Map Tag Tests', function () {
     cy.get(cesc('#/_text1')).should('have.text', 'a');  //wait for window to load
 
     cy.log('Test values displayed in browser')
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let coords1 = components['/c1'].replacements[0];
       let coords1Anchor = '#' + coords1.componentName;
@@ -1509,7 +1509,7 @@ describe('Map Tag Tests', function () {
     })
 
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let r = 1;
       let q = 1;
       let s = [2, 3, 4];
@@ -1528,7 +1528,7 @@ describe('Map Tag Tests', function () {
     });
 
     cy.log("move point a1");
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let r = 1.3;
       let q = -2.1;
       let s = [2, 3, 4];
@@ -1537,7 +1537,7 @@ describe('Map Tag Tests', function () {
       let ns = ["a", "b", "c"];
       let components = Object.assign({}, win.state.components);
 
-      components['/a/_point1'].movePoint({ x: xs1[0], y: xs2[0] })
+      await components['/a/_point1'].movePoint({ x: xs1[0], y: xs2[0] })
       for (let ind = 0; ind < 3; ind++) {
         let namespace = ns[ind];
         expect(components[`/${namespace}/_point1`].stateValues.xs[0].tree).closeTo(xs1[ind], 1E-14);
@@ -1548,7 +1548,7 @@ describe('Map Tag Tests', function () {
     });
 
     cy.log("move point a2");
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let r = 0.7;
       let q = 1.8;
       let s = [2, 3, 4];
@@ -1557,7 +1557,7 @@ describe('Map Tag Tests', function () {
       let ns = ["a", "b", "c"];
       let components = Object.assign({}, win.state.components);
 
-      components['/a/_point2'].movePoint({ x: xs2[0], y: xs1[0] })
+      await components['/a/_point2'].movePoint({ x: xs2[0], y: xs1[0] })
       for (let ind = 0; ind < 3; ind++) {
         let namespace = ns[ind];
         expect(components[`/${namespace}/_point1`].stateValues.xs[0].tree).closeTo(xs1[ind], 1E-14);
@@ -1568,7 +1568,7 @@ describe('Map Tag Tests', function () {
     });
 
     cy.log("move point b1");
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let r = -0.2;
       let q = 0.3;
       let s = [2, 3, 4];
@@ -1577,7 +1577,7 @@ describe('Map Tag Tests', function () {
       let ns = ["a", "b", "c"];
       let components = Object.assign({}, win.state.components);
 
-      components['/b/_point1'].movePoint({ x: xs1[1], y: xs2[1] })
+      await components['/b/_point1'].movePoint({ x: xs1[1], y: xs2[1] })
       for (let ind = 0; ind < 3; ind++) {
         let namespace = ns[ind];
         expect(components[`/${namespace}/_point1`].stateValues.xs[0].tree).closeTo(xs1[ind], 1E-14);
@@ -1588,7 +1588,7 @@ describe('Map Tag Tests', function () {
     });
 
     cy.log("move point b2");
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let r = 0.6;
       let q = 0.35;
       let s = [2, 3, 4];
@@ -1597,7 +1597,7 @@ describe('Map Tag Tests', function () {
       let ns = ["a", "b", "c"];
       let components = Object.assign({}, win.state.components);
 
-      components['/b/_point2'].movePoint({ x: xs2[1], y: xs1[1] })
+      await components['/b/_point2'].movePoint({ x: xs2[1], y: xs1[1] })
       for (let ind = 0; ind < 3; ind++) {
         let namespace = ns[ind];
         expect(components[`/${namespace}/_point1`].stateValues.xs[0].tree).closeTo(xs1[ind], 1E-14);
@@ -1608,7 +1608,7 @@ describe('Map Tag Tests', function () {
     });
 
     cy.log("move point c1");
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let r = -0.21;
       let q = -0.46;
       let s = [2, 3, 4];
@@ -1617,7 +1617,7 @@ describe('Map Tag Tests', function () {
       let ns = ["a", "b", "c"];
       let components = Object.assign({}, win.state.components);
 
-      components['/c/_point1'].movePoint({ x: xs1[2], y: xs2[2] })
+      await components['/c/_point1'].movePoint({ x: xs1[2], y: xs2[2] })
       for (let ind = 0; ind < 3; ind++) {
         let namespace = ns[ind];
         expect(components[`/${namespace}/_point1`].stateValues.xs[0].tree).closeTo(xs1[ind], 1E-14);
@@ -1628,7 +1628,7 @@ describe('Map Tag Tests', function () {
     });
 
     cy.log("move point c2");
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let r = 0.37;
       let q = -0.73;
       let s = [2, 3, 4];
@@ -1637,7 +1637,7 @@ describe('Map Tag Tests', function () {
       let ns = ["a", "b", "c"];
       let components = Object.assign({}, win.state.components);
 
-      components['/c/_point2'].movePoint({ x: xs2[2], y: xs1[2] })
+      await components['/c/_point2'].movePoint({ x: xs2[2], y: xs1[2] })
       for (let ind = 0; ind < 3; ind++) {
         let namespace = ns[ind];
         expect(components[`/${namespace}/_point1`].stateValues.xs[0].tree).closeTo(xs1[ind], 1E-14);
@@ -1650,7 +1650,7 @@ describe('Map Tag Tests', function () {
   });
 
   it('two maps with mutual copies, begin zero length, copied multiple times', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -1698,7 +1698,7 @@ describe('Map Tag Tests', function () {
       expect(text.trim()).equal('');
     });
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/_graph1'].stateValues.graphicalDescendants.length).eq(0);
       expect(components['/_graph2'].stateValues.graphicalDescendants.length).eq(0);
@@ -1709,7 +1709,7 @@ describe('Map Tag Tests', function () {
     cy.log('make sequence length 1');
     cy.get(cesc('#/sequenceCount') + " textarea").type('{end}{backspace}1{enter}', { force: true });
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let coords1Anchor = cesc('#' + components["/_collect1"].replacements[0].adapterUsed.componentName);
       let coords2Anchor = cesc('#' + components["/_collect1"].replacements[1].adapterUsed.componentName);
@@ -1721,7 +1721,7 @@ describe('Map Tag Tests', function () {
         expect(text.trim()).equal('(1,−1)');
       });
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let components = Object.assign({}, win.state.components);
         expect(components['/_graph1'].stateValues.graphicalDescendants.length).eq(2);
         expect(components['/_graph2'].stateValues.graphicalDescendants.length).eq(2);
@@ -1745,7 +1745,7 @@ describe('Map Tag Tests', function () {
       expect(text.trim()).equal('');
     });
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/_graph1'].stateValues.graphicalDescendants.length).eq(0);
       expect(components['/_graph2'].stateValues.graphicalDescendants.length).eq(0);
@@ -1757,7 +1757,7 @@ describe('Map Tag Tests', function () {
     cy.log('make sequence length 2');
     cy.get(cesc('#/sequenceCount') + " textarea").type('{end}{backspace}2{enter}', { force: true });
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let coords1Anchor = cesc('#' + components["/_collect1"].replacements[0].adapterUsed.componentName);
       let coords2Anchor = cesc('#' + components["/_collect1"].replacements[1].adapterUsed.componentName);
@@ -1777,7 +1777,7 @@ describe('Map Tag Tests', function () {
         expect(text.trim()).equal('(2,−2)');
       });
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let components = Object.assign({}, win.state.components);
         expect(components['/_graph1'].stateValues.graphicalDescendants.length).eq(4);
         expect(components['/_graph2'].stateValues.graphicalDescendants.length).eq(4);
@@ -1807,7 +1807,7 @@ describe('Map Tag Tests', function () {
     cy.get(cesc('#/sequenceFrom') + " textarea").type('{end}{backspace}3{enter}', { force: true });
     cy.get(cesc('#/sequenceTo') + " textarea").type('{end}{backspace}5{enter}', { force: true });
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let coords1Anchor = cesc('#' + components["/_collect1"].replacements[0].adapterUsed.componentName);
       let coords2Anchor = cesc('#' + components["/_collect1"].replacements[1].adapterUsed.componentName);
@@ -1827,7 +1827,7 @@ describe('Map Tag Tests', function () {
         expect(text.trim()).equal('(5,−15)');
       });
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let components = Object.assign({}, win.state.components);
         expect(components['/_graph1'].stateValues.graphicalDescendants.length).eq(4);
         expect(components['/_graph2'].stateValues.graphicalDescendants.length).eq(4);
@@ -1859,7 +1859,7 @@ describe('Map Tag Tests', function () {
       expect(text.trim()).equal('');
     });
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/_graph1'].stateValues.graphicalDescendants.length).eq(0);
       expect(components['/_graph2'].stateValues.graphicalDescendants.length).eq(0);
@@ -1870,7 +1870,7 @@ describe('Map Tag Tests', function () {
     cy.log('make sequence length 3');
     cy.get(cesc('#/sequenceCount') + " textarea").type('{end}{backspace}3{enter}', { force: true });
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let coords1Anchor = cesc('#' + components["/_collect1"].replacements[0].adapterUsed.componentName);
       let coords2Anchor = cesc('#' + components["/_collect1"].replacements[1].adapterUsed.componentName);
@@ -1900,7 +1900,7 @@ describe('Map Tag Tests', function () {
       });
 
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let components = Object.assign({}, win.state.components);
         expect(components['/_graph1'].stateValues.graphicalDescendants.length).eq(6);
         expect(components['/_graph2'].stateValues.graphicalDescendants.length).eq(6);
@@ -1937,7 +1937,7 @@ describe('Map Tag Tests', function () {
   });
 
   it('map points to adapt to math', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -1957,19 +1957,19 @@ describe('Map Tag Tests', function () {
 
     cy.get(cesc('#/_text1')).should('have.text', 'a');  //wait for window to load
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/_math1'].activeChildren.length).eq(0);
     })
 
     cy.get(cesc("#/number") + " textarea").type("10{enter}", { force: true });
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/_math1'].activeChildren.length).eq(0);
     })
 
     cy.get(cesc("#/step") + " textarea").type("1{enter}", { force: true });
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/_math1'].activeChildren.length).eq(10);
       for (let i = 0; i < 10; i++) {
@@ -1980,7 +1980,7 @@ describe('Map Tag Tests', function () {
 
     cy.get(cesc("#/number") + " textarea").type("{end}{backspace}{backspace}20{enter}", { force: true });
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/_math1'].activeChildren.length).eq(20);
       for (let i = 0; i < 20; i++) {
@@ -1990,7 +1990,7 @@ describe('Map Tag Tests', function () {
     })
 
     cy.get(cesc("#/step") + " textarea").type("{end}{backspace}0.5{enter}", { force: true });
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/_math1'].activeChildren.length).eq(20);
       for (let i = 0; i < 20; i++) {
@@ -2000,7 +2000,7 @@ describe('Map Tag Tests', function () {
     })
 
     cy.get(cesc("#/number") + " textarea").type("{end}{backspace}{backspace}10{enter}", { force: true });
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/_math1'].activeChildren.length).eq(10);
       for (let i = 0; i < 10; i++) {
@@ -2010,19 +2010,19 @@ describe('Map Tag Tests', function () {
     })
 
     cy.get(cesc("#/step") + " textarea").type("{end}{backspace}{backspace}{backspace}{enter}", { force: true });
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/_math1'].activeChildren.length).eq(0);
     })
 
     cy.get(cesc("#/number") + " textarea").type("{end}{backspace}{backspace}5{enter}", { force: true });
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/_math1'].activeChildren.length).eq(0);
     })
 
     cy.get(cesc("#/step") + " textarea").type("-3{enter}", { force: true });
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/_math1'].activeChildren.length).eq(5);
       for (let i = 0; i < 5; i++) {
@@ -2034,7 +2034,7 @@ describe('Map Tag Tests', function () {
   });
 
   it('map inside sources of map', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -2319,7 +2319,7 @@ describe('Map Tag Tests', function () {
   });
 
   it('can override fixed of source index', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -2383,7 +2383,7 @@ describe('Map Tag Tests', function () {
   });
 
   it('maps hide dynamically', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
