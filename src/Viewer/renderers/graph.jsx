@@ -1,8 +1,10 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, createContext } from 'react';
 import DoenetRenderer from './DoenetRenderer';
 import { sizeToCSS } from './utils/css';
 import useDoenetRender from './useDoenetRenderer';
 
+
+export const BoardContext = createContext();
 
 export default function Graph(props){
 let {name, SVs, children, actions} = useDoenetRender(props);
@@ -157,6 +159,8 @@ useEffect(()=>{
 
 },[])
 
+
+
 const divStyle = {
   width: sizeToCSS(SVs.width),
   height: sizeToCSS(SVs.height),
@@ -166,10 +170,20 @@ if (SVs.hidden) {
   divStyle.display = "none";
 }
 
+if (Object.keys(board).length === 0){
+  return <>
+  <a name={name} />
+  <div id={name} className="jxgbox" style={divStyle} />
+  </>;
+}
+
+
 return <>
 <a name={name} />
 <div id={name} className="jxgbox" style={divStyle} />
+<BoardContext.Provider value={board}> 
 {children}
+</BoardContext.Provider>
 </>;
 }
 

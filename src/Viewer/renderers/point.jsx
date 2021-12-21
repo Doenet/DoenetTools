@@ -1,7 +1,216 @@
-import React from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import DoenetRenderer from './DoenetRenderer';
+import useDoenetRender from './useDoenetRenderer';
+import { BoardContext } from './graph';
 
-export default class Point extends DoenetRenderer {
+export default function Point(props){
+  let {name, SVs, children, actions} = useDoenetRender(props);
+
+  const board = useContext(BoardContext);
+  const [pointJXG,setPointJXG] = useState({})
+  const [pointerAtDown,setPointerAtDown] = useState([])
+  const [pointAtDown,setPointAtDown] = useState([])
+
+  useEffect(()=>{
+    if (board){
+
+    let fillColor = SVs.open ? "white" : SVs.selectedStyle.markerColor;
+
+    //things to be passed to JSXGraph as attributes
+    let jsxPointAttributes = {
+      name: SVs.label,
+      visible: !SVs.hidden,
+      withLabel: SVs.showLabel && SVs.label !== "",
+      fixed: !SVs.draggable || SVs.fixed,
+      layer: 10 * SVs.layer + 9,
+      fillColor: fillColor,
+      strokeColor: SVs.selectedStyle.markerColor,
+      // highlightFillColor: SVs.selectedStyle.markerColor,
+      // highlightStrokeColor: SVs.selectedStyle.markerColor,
+      size: SVs.selectedStyle.markerSize,
+      face: normalizeStyle(SVs.selectedStyle.markerStyle),
+    };
+
+    if (SVs.showLabel && SVs.label !== "") {
+      let anchorx, anchory, offset;
+      if (SVs.labelPosition === "upperright") {
+        offset = [5, 5];
+        anchorx = "left";
+        anchory = "bottom";
+      } else if (SVs.labelPosition === "upperleft") {
+        offset = [-5, 5];
+        anchorx = "right";
+        anchory = "bottom";
+      } else if (SVs.labelPosition === "lowerright") {
+        offset = [5, -5];
+        anchorx = "left";
+        anchory = "top";
+      } else if (SVs.labelPosition === "lowerleft") {
+        offset = [-5, -5];
+        anchorx = "right";
+        anchory = "top";
+      } else if (SVs.labelPosition === "top") {
+        offset = [0, 10];
+        anchorx = "middle";
+        anchory = "bottom";
+      } else if (SVs.labelPosition === "bottom") {
+        offset = [0, -10];
+        anchorx = "middle";
+        anchory = "top";
+      } else if (SVs.labelPosition === "left") {
+        offset = [-10, 0];
+        anchorx = "right";
+        anchory = "middle";
+      } else {
+        // labelPosition === right
+        offset = [10, 0];
+        anchorx = "left";
+        anchory = "middle";
+      }
+      jsxPointAttributes.label = {
+        offset,
+        anchorx,
+        anchory
+      }
+    }
+
+
+    if (SVs.draggable && !SVs.fixed) {
+      jsxPointAttributes.highlightFillColor = "#EEEEEE";
+      jsxPointAttributes.highlightStrokeColor = "#C3D9FF";
+      jsxPointAttributes.showInfoBox = SVs.showCoordsWhenDragging;
+    } else {
+      jsxPointAttributes.highlightFillColor = fillColor;
+      jsxPointAttributes.highlightStrokeColor = SVs.selectedStyle.markerColor;
+      jsxPointAttributes.showInfoBox = false;
+    }
+
+    let coords = [SVs.numericalXs[0], SVs.numericalXs[1]];
+
+    if (!Number.isFinite(coords[0])) {
+      coords[0] = 0;
+      jsxPointAttributes['visible'] = false;
+    }
+    if (!Number.isFinite(coords[1])) {
+      coords[1] = 0;
+      jsxPointAttributes['visible'] = false;
+    }
+
+    let newPointJXG = board.create('point', coords, jsxPointAttributes);
+
+    // this.previousWithLabel = SVs.showLabel && SVs.label !== "";
+    // this.previousLabelPosition = SVs.labelPosition;
+
+    setPointJXG(newPointJXG)
+    }else{
+      //Not on a board (Not agraph component child)
+      if (window.MathJax) {
+        window.MathJax.Hub.Config({ showProcessingMessages: false, "fast-preview": { disabled: true } });
+        window.MathJax.Hub.processSectionDelay = 0;
+        window.MathJax.Hub.Queue(["Typeset", window.MathJax.Hub, "#" + name]);
+      }
+    }
+    //On unmount
+    return ()=>{
+      // if point is defined
+    //   this.pointJXG.off('drag');
+    // this.pointJXG.off('down');
+    // this.pointJXG.off('up');
+    // this.props.board.removeObject(this.pointJXG);
+    // delete this.pointJXG;
+    }
+  },[])
+
+
+  useEffect(()=>{
+    //Only create handlers after pointJXG is defined
+    if (Object.keys(pointJXG).length !== 0 ){
+
+    pointJXG.on('down', function (e) {
+      setPointerAtDown([e.x, e.y]);
+      setPointAtDown([...pointJXG.coords.scrCoords])
+      // this.dragged = false; TODO: Do we need dragged?
+    });
+
+
+
+    pointJXG.on('up', function (e) {
+      console.log('up')
+    //   if (this.dragged) {
+    //     this.actions.finalizePointPosition();
+    //   } else if(SVs.switchable && !SVs.fixed) {
+    //     this.actions.switchPoint();
+    //   }
+    })
+  }
+
+  },[pointJXG])
+
+  useEffect(()=>{
+    //Only create handlers after pointJXG is defined
+    //pointAtDown and pointerAtDown can be undefined so skip those
+    if (Object.keys(pointJXG).length !== 0 &&
+    pointerAtDown.length > 0 &&
+    pointAtDown.length > 0
+    ){
+    pointJXG.on('drag', function (e) {
+
+      // the reason we calculate point position with this algorithm,
+    // rather than using .X() and .Y() directly
+    // is that attributes .X() and .Y() are affected by the
+    // .setCoordinates function called in update().
+    // Due to this dependence, the location of .X() and .Y()
+    // can be affected by constraints of objects that the points depends on,
+    // leading to a different location on up than on drag
+    // (as dragging uses the mouse location)
+
+    // TODO: find an example where need this this additional complexity
+
+    var o = board.origin.scrCoords;
+
+    let [xmin, ymax, xmax, ymin] = board.getBoundingBox();
+
+
+    let calculatedX = (pointAtDown[1] + e.x - pointerAtDown[0]
+      - o[1]) / board.unitX;
+    calculatedX = Math.min(xmax, Math.max(xmin, calculatedX));
+
+    let calculatedY = (o[2] -
+      (pointAtDown[2] + e.y - pointerAtDown[1]))
+      / board.unitY;
+    calculatedY = Math.min(ymax, Math.max(ymin, calculatedY))
+
+    actions.movePoint({
+        x: calculatedX,
+        y: calculatedY,
+        transient: true,
+        skippable: true,
+      });
+
+      // this.dragged = true; TODO: Do we need dragged?
+
+
+    });
+  }
+  },[pointJXG,pointerAtDown,pointAtDown])
+
+  if (SVs.hidden) {
+    return null;
+  }
+
+  if (board) {
+
+    return <a name={name} />
+  }
+
+
+
+  let mathJaxify = "\\(" + SVs.coordsForDisplay.toLatex() + "\\)";
+  return <><a name={name} /><span id={name}>{mathJaxify}</span></>
+}
+
+export class Point2 extends DoenetRenderer {
+  // export default class Point extends DoenetRenderer {
   constructor(props) {
     super(props)
 
@@ -10,9 +219,11 @@ export default class Point extends DoenetRenderer {
     }
   }
 
+  //TODO: Do we still need this?
   static initializeChildrenOnConstruction = false;
 
   createGraphicalObject() {
+
 
     let fillColor = this.doenetSvData.open ? "white" : this.doenetSvData.selectedStyle.markerColor;
 
