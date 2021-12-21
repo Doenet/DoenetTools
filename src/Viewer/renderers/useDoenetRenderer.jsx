@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { atomFamily, useRecoilValue } from 'recoil';
+import { serializedComponentsReviver } from '../../Core/utils/serializedStateProcessing';
 
 export const rendererSVs = atomFamily({
   key:'rendererSVs',
@@ -17,6 +18,8 @@ export default function useDoenetRenderer(props,initializeChildrenOnConstruction
   let name =  props.componentInstructions.componentName;
   
   let stateValues = useRecoilValue(rendererSVs(name));
+  stateValues = JSON.parse(stateValues, serializedComponentsReviver)
+
   // let sv = useRecoilValue(rendererSVs(name));
   // console.log(">>>>>>>>>useDoenetRenderer sv",sv)
   // console.log(">>>>>>>>>useDoenetRenderer stateValues",stateValues)
