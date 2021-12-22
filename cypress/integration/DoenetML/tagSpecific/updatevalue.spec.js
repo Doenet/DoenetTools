@@ -8,7 +8,7 @@ describe('UpdateValue Tag Tests', function () {
 
   it('incrementing graph of line segments', () => {
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -33,7 +33,7 @@ describe('UpdateValue Tag Tests', function () {
     let left = -10;
 
     cy.log(`check internal values`);
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
 
       let count = 2;
@@ -43,20 +43,20 @@ describe('UpdateValue Tag Tests', function () {
       expect(components['/step'].stateValues.value).eq(step);
 
       for (let ind = 1; ind <= count; ind++) {
-        expect(components['/l' + ind + '/_linesegment1'].stateValues.endpoints[0][0]
+        expect((await components['/l' + ind + '/_linesegment1'].stateValues.endpoints)[0][0]
           .evaluate_to_constant()).closeTo(left + (ind - 1) * step, 1E-12);
-        expect(components['/l' + ind + '/_linesegment1'].stateValues.endpoints[0][1]
+        expect((await components['/l' + ind + '/_linesegment1'].stateValues.endpoints)[0][1]
           .evaluate_to_constant()).closeTo(Math.sin(left + (ind - 1) * step), 1E-12);
-        expect(components['/l' + ind + '/_linesegment1'].stateValues.endpoints[1][0]
+        expect((await components['/l' + ind + '/_linesegment1'].stateValues.endpoints)[1][0]
           .evaluate_to_constant()).closeTo(left + ind * step, 1E-12);
-        expect(components['/l' + ind + '/_linesegment1'].stateValues.endpoints[1][1]
+        expect((await components['/l' + ind + '/_linesegment1'].stateValues.endpoints)[1][1]
           .evaluate_to_constant()).closeTo(Math.sin(left + ind * step), 1E-12);
       }
     });
 
     cy.log('double number');
     cy.get('#\\/_updatevalue1').click();
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
 
       let count = 4;
@@ -67,20 +67,20 @@ describe('UpdateValue Tag Tests', function () {
       expect(components['/step'].stateValues.value).eq(step);
 
       for (let ind = 1; ind <= count; ind++) {
-        expect(components['/l' + ind + '/_linesegment1'].stateValues.endpoints[0][0]
+        expect((await components['/l' + ind + '/_linesegment1'].stateValues.endpoints)[0][0]
           .evaluate_to_constant()).closeTo(left + (ind - 1) * step, 1E-12);
-        expect(components['/l' + ind + '/_linesegment1'].stateValues.endpoints[0][1]
+        expect((await components['/l' + ind + '/_linesegment1'].stateValues.endpoints)[0][1]
           .evaluate_to_constant()).closeTo(Math.sin(left + (ind - 1) * step), 1E-12);
-        expect(components['/l' + ind + '/_linesegment1'].stateValues.endpoints[1][0]
+        expect((await components['/l' + ind + '/_linesegment1'].stateValues.endpoints)[1][0]
           .evaluate_to_constant()).closeTo(left + ind * step, 1E-12);
-        expect(components['/l' + ind + '/_linesegment1'].stateValues.endpoints[1][1]
+        expect((await components['/l' + ind + '/_linesegment1'].stateValues.endpoints)[1][1]
           .evaluate_to_constant()).closeTo(Math.sin(left + ind * step), 1E-12);
       }
     });
 
     cy.log('double number a second time');
     cy.get('#\\/_updatevalue1').click();
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
 
       let count = 8;
@@ -91,20 +91,20 @@ describe('UpdateValue Tag Tests', function () {
       expect(components['/step'].stateValues.value).eq(step);
 
       for (let ind = 1; ind <= count; ind++) {
-        expect(components['/l' + ind + '/_linesegment1'].stateValues.endpoints[0][0]
+        expect((await components['/l' + ind + '/_linesegment1'].stateValues.endpoints)[0][0]
           .evaluate_to_constant()).closeTo(left + (ind - 1) * step, 1E-12);
-        expect(components['/l' + ind + '/_linesegment1'].stateValues.endpoints[0][1]
+        expect((await components['/l' + ind + '/_linesegment1'].stateValues.endpoints)[0][1]
           .evaluate_to_constant()).closeTo(Math.sin(left + (ind - 1) * step), 1E-12);
-        expect(components['/l' + ind + '/_linesegment1'].stateValues.endpoints[1][0]
+        expect((await components['/l' + ind + '/_linesegment1'].stateValues.endpoints)[1][0]
           .evaluate_to_constant()).closeTo(left + ind * step, 1E-12);
-        expect(components['/l' + ind + '/_linesegment1'].stateValues.endpoints[1][1]
+        expect((await components['/l' + ind + '/_linesegment1'].stateValues.endpoints)[1][1]
           .evaluate_to_constant()).closeTo(Math.sin(left + ind * step), 1E-12);
       }
     });
 
     cy.log('double number a third time');
     cy.get('#\\/_updatevalue1').click();
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
 
       let count = 16;
@@ -115,13 +115,13 @@ describe('UpdateValue Tag Tests', function () {
       expect(components['/step'].stateValues.value).eq(step);
 
       for (let ind = 1; ind <= count; ind++) {
-        expect(components['/l' + ind + '/_linesegment1'].stateValues.endpoints[0][0]
+        expect((await components['/l' + ind + '/_linesegment1'].stateValues.endpoints)[0][0]
           .evaluate_to_constant()).closeTo(left + (ind - 1) * step, 1E-12);
-        expect(components['/l' + ind + '/_linesegment1'].stateValues.endpoints[0][1]
+        expect((await components['/l' + ind + '/_linesegment1'].stateValues.endpoints)[0][1]
           .evaluate_to_constant()).closeTo(Math.sin(left + (ind - 1) * step), 1E-12);
-        expect(components['/l' + ind + '/_linesegment1'].stateValues.endpoints[1][0]
+        expect((await components['/l' + ind + '/_linesegment1'].stateValues.endpoints)[1][0]
           .evaluate_to_constant()).closeTo(left + ind * step, 1E-12);
-        expect(components['/l' + ind + '/_linesegment1'].stateValues.endpoints[1][1]
+        expect((await components['/l' + ind + '/_linesegment1'].stateValues.endpoints)[1][1]
           .evaluate_to_constant()).closeTo(Math.sin(left + ind * step), 1E-12);
       }
     });
@@ -130,7 +130,7 @@ describe('UpdateValue Tag Tests', function () {
 
   it('update boolean', () => {
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -155,7 +155,7 @@ describe('UpdateValue Tag Tests', function () {
   // converting strings to booleans correctly
   it('update boolean using string value', () => {
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -187,7 +187,7 @@ describe('UpdateValue Tag Tests', function () {
 
   it('update number using string value with operator', () => {
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -205,7 +205,7 @@ describe('UpdateValue Tag Tests', function () {
 
   it('update property', () => {
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -233,7 +233,7 @@ describe('UpdateValue Tag Tests', function () {
 
   it('update componentIndex', () => {
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -286,7 +286,7 @@ describe('UpdateValue Tag Tests', function () {
 
   it('update multiple components', () => {
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -339,7 +339,7 @@ describe('UpdateValue Tag Tests', function () {
 
   it('chained updates', () => {
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -387,7 +387,7 @@ describe('UpdateValue Tag Tests', function () {
 
   it('chained updates on multiple sources', () => {
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -459,7 +459,7 @@ describe('UpdateValue Tag Tests', function () {
 
   it('update based on trigger', () => {
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -479,65 +479,65 @@ describe('UpdateValue Tag Tests', function () {
 
     cy.get('#\\/trip').should('not.exist');
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components['/P'].movePoint({ x: -1, y: -7 });
+      await components['/P'].movePoint({ x: -1, y: -7 });
       cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x')
       });
     })
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components['/P'].movePoint({ x: 3, y: -4 });
+      await components['/P'].movePoint({ x: 3, y: -4 });
       cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x')
       });
     })
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components['/P'].movePoint({ x: 1, y: 7 });
+      await components['/P'].movePoint({ x: 1, y: 7 });
       cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('3x')
       });
     })
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components['/P'].movePoint({ x: 5, y: 9 });
+      await components['/P'].movePoint({ x: 5, y: 9 });
       cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('3x')
       });
     })
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components['/P'].movePoint({ x: -3, y: 4 });
+      await components['/P'].movePoint({ x: -3, y: 4 });
       cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('3x')
       });
     })
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components['/P'].movePoint({ x: -6, y: 5 });
+      await components['/P'].movePoint({ x: -6, y: 5 });
       cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('3x')
       });
     })
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components['/P'].movePoint({ x: 4, y: 2 });
+      await components['/P'].movePoint({ x: 4, y: 2 });
       cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('9x')
       });
     })
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components['/P'].movePoint({ x: 9, y: 7 });
+      await components['/P'].movePoint({ x: 9, y: 7 });
       cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('9x')
       });
@@ -548,7 +548,7 @@ describe('UpdateValue Tag Tests', function () {
 
   it('chained updates based on trigger', () => {
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -574,9 +574,9 @@ describe('UpdateValue Tag Tests', function () {
     cy.get('#\\/trip').should('not.exist');
     cy.get('#\\/quad').should('not.exist');
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components['/P'].movePoint({ x: -1, y: -7 });
+      await components['/P'].movePoint({ x: -1, y: -7 });
       cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x')
       });
@@ -585,9 +585,9 @@ describe('UpdateValue Tag Tests', function () {
       });
     })
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components['/P'].movePoint({ x: 3, y: -4 });
+      await components['/P'].movePoint({ x: 3, y: -4 });
       cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x')
       });
@@ -596,9 +596,9 @@ describe('UpdateValue Tag Tests', function () {
       });
     })
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components['/P'].movePoint({ x: 1, y: 7 });
+      await components['/P'].movePoint({ x: 1, y: 7 });
       cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('3x')
       });
@@ -609,9 +609,9 @@ describe('UpdateValue Tag Tests', function () {
       });
     })
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components['/P'].movePoint({ x: 5, y: 9 });
+      await components['/P'].movePoint({ x: 5, y: 9 });
       cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('3x')
       });
@@ -620,9 +620,9 @@ describe('UpdateValue Tag Tests', function () {
       });
     })
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components['/P'].movePoint({ x: -3, y: 4 });
+      await components['/P'].movePoint({ x: -3, y: 4 });
       cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('3x')
       });
@@ -631,9 +631,9 @@ describe('UpdateValue Tag Tests', function () {
       });
     })
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components['/P'].movePoint({ x: -6, y: 5 });
+      await components['/P'].movePoint({ x: -6, y: 5 });
       cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('3x')
       });
@@ -642,9 +642,9 @@ describe('UpdateValue Tag Tests', function () {
       });
     })
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components['/P'].movePoint({ x: 4, y: 2 });
+      await components['/P'].movePoint({ x: 4, y: 2 });
       cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('9x')
       });
@@ -656,9 +656,9 @@ describe('UpdateValue Tag Tests', function () {
       });
     })
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components['/P'].movePoint({ x: 9, y: 7 });
+      await components['/P'].movePoint({ x: 9, y: 7 });
       cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('9x')
       });
@@ -672,7 +672,7 @@ describe('UpdateValue Tag Tests', function () {
 
   it('chained updates based on trigger on same object', () => {
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -694,25 +694,25 @@ describe('UpdateValue Tag Tests', function () {
     cy.get('#\\/trip').should('not.exist');
     cy.get('#\\/quad').should('not.exist');
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components['/P'].movePoint({ x: -1, y: -7 });
+      await components['/P'].movePoint({ x: -1, y: -7 });
       cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x')
       });
     })
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components['/P'].movePoint({ x: 3, y: -4 });
+      await components['/P'].movePoint({ x: 3, y: -4 });
       cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x')
       });
     })
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components['/P'].movePoint({ x: 1, y: 7 });
+      await components['/P'].movePoint({ x: 1, y: 7 });
       // since second change could be asynchronous, use other form so that cypress will wait
       cy.get('#\\/x').find('.mjx-mrow').should('have.text', '12x')
       cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -720,33 +720,33 @@ describe('UpdateValue Tag Tests', function () {
       });
     })
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components['/P'].movePoint({ x: 5, y: 9 });
+      await components['/P'].movePoint({ x: 5, y: 9 });
       cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('12x')
       });
     })
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components['/P'].movePoint({ x: -3, y: 4 });
+      await components['/P'].movePoint({ x: -3, y: 4 });
       cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('12x')
       });
     })
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components['/P'].movePoint({ x: -6, y: 5 });
+      await components['/P'].movePoint({ x: -6, y: 5 });
       cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('12x')
       });
     })
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components['/P'].movePoint({ x: 4, y: 2 });
+      await components['/P'].movePoint({ x: 4, y: 2 });
       // since second change could be asynchronous, use other form so that cypress will wait
       // (keep other form of test to make it clear we aren't actually changing anything)
       cy.get('#\\/x').find('.mjx-mrow').should('have.text', '144x')
@@ -755,9 +755,9 @@ describe('UpdateValue Tag Tests', function () {
       });
     })
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components['/P'].movePoint({ x: 9, y: 7 });
+      await components['/P'].movePoint({ x: 9, y: 7 });
       cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('144x')
       });
@@ -768,7 +768,7 @@ describe('UpdateValue Tag Tests', function () {
 
   it('triggerWhen supercedes chaining', () => {
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -794,9 +794,9 @@ describe('UpdateValue Tag Tests', function () {
     cy.get('#\\/trip').should('not.exist');
     cy.get('#\\/quad').should('not.exist');
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components['/P'].movePoint({ x: -1, y: -7 });
+      await components['/P'].movePoint({ x: -1, y: -7 });
       cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x')
       });
@@ -805,9 +805,9 @@ describe('UpdateValue Tag Tests', function () {
       });
     })
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components['/P'].movePoint({ x: 3, y: -4 });
+      await components['/P'].movePoint({ x: 3, y: -4 });
       cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x')
       });
@@ -816,9 +816,9 @@ describe('UpdateValue Tag Tests', function () {
       });
     })
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components['/P'].movePoint({ x: 1, y: 7 });
+      await components['/P'].movePoint({ x: 1, y: 7 });
       cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('3x')
       });
@@ -827,9 +827,9 @@ describe('UpdateValue Tag Tests', function () {
       });
     })
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components['/P'].movePoint({ x: 5, y: 9 });
+      await components['/P'].movePoint({ x: 5, y: 9 });
       cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('3x')
       });
@@ -838,9 +838,9 @@ describe('UpdateValue Tag Tests', function () {
       });
     })
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components['/P'].movePoint({ x: -3, y: -4 });
+      await components['/P'].movePoint({ x: -3, y: -4 });
       cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('3x')
       });
@@ -849,9 +849,9 @@ describe('UpdateValue Tag Tests', function () {
       });
     })
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components['/P'].movePoint({ x: -6, y: -5 });
+      await components['/P'].movePoint({ x: -6, y: -5 });
       cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('3x')
       });
@@ -860,9 +860,9 @@ describe('UpdateValue Tag Tests', function () {
       });
     })
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components['/P'].movePoint({ x: 4, y: 2 });
+      await components['/P'].movePoint({ x: 4, y: 2 });
       cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('9x')
       });
@@ -871,9 +871,9 @@ describe('UpdateValue Tag Tests', function () {
       });
     })
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components['/P'].movePoint({ x: 9, y: 7 });
+      await components['/P'].movePoint({ x: 9, y: 7 });
       cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('9x')
       });
@@ -888,7 +888,7 @@ describe('UpdateValue Tag Tests', function () {
 
   it('triggerSet', () => {
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -928,7 +928,7 @@ describe('UpdateValue Tag Tests', function () {
 
   it('triggerSet and chain to updatevalue', () => {
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -970,7 +970,7 @@ describe('UpdateValue Tag Tests', function () {
 
   it('triggerSet and chain to triggerset', () => {
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -1020,7 +1020,7 @@ describe('UpdateValue Tag Tests', function () {
 
   it('triggerSet based on trigger', () => {
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -1048,9 +1048,9 @@ describe('UpdateValue Tag Tests', function () {
     cy.get('#\\/trip').should('not.exist');
     cy.get('#\\/quad').should('not.exist');
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components['/P'].movePoint({ x: -1, y: -7 });
+      await components['/P'].movePoint({ x: -1, y: -7 });
       cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x')
       });
@@ -1059,9 +1059,9 @@ describe('UpdateValue Tag Tests', function () {
       });
     })
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components['/P'].movePoint({ x: 3, y: -4 });
+      await components['/P'].movePoint({ x: 3, y: -4 });
       cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x')
       });
@@ -1070,9 +1070,9 @@ describe('UpdateValue Tag Tests', function () {
       });
     })
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components['/P'].movePoint({ x: 1, y: 7 });
+      await components['/P'].movePoint({ x: 1, y: 7 });
       cy.wait(10);
       cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('3x')
@@ -1082,9 +1082,9 @@ describe('UpdateValue Tag Tests', function () {
       });
     })
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components['/P'].movePoint({ x: 5, y: 9 });
+      await components['/P'].movePoint({ x: 5, y: 9 });
       cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('3x')
       });
@@ -1093,9 +1093,9 @@ describe('UpdateValue Tag Tests', function () {
       });
     })
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components['/P'].movePoint({ x: -3, y: 4 });
+      await components['/P'].movePoint({ x: -3, y: 4 });
       cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('3x')
       });
@@ -1104,9 +1104,9 @@ describe('UpdateValue Tag Tests', function () {
       });
     })
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components['/P'].movePoint({ x: -6, y: 5 });
+      await components['/P'].movePoint({ x: -6, y: 5 });
       cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('3x')
       });
@@ -1115,9 +1115,9 @@ describe('UpdateValue Tag Tests', function () {
       });
     })
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components['/P'].movePoint({ x: 4, y: 2 });
+      await components['/P'].movePoint({ x: 4, y: 2 });
       cy.wait(10);
       cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('9x')
@@ -1127,9 +1127,9 @@ describe('UpdateValue Tag Tests', function () {
       });
     })
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components['/P'].movePoint({ x: 9, y: 7 });
+      await components['/P'].movePoint({ x: 9, y: 7 });
       cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('9x')
       });
@@ -1143,7 +1143,7 @@ describe('UpdateValue Tag Tests', function () {
 
   it('triggerWhen supercedes chaining for triggerset', () => {
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -1177,27 +1177,27 @@ describe('UpdateValue Tag Tests', function () {
     cy.get('#\\/_triggerset1').should('not.exist');
     cy.get('#\\/_triggerset2').should('not.exist');
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components['/P'].movePoint({ x: -1, y: -7 });
+      await components['/P'].movePoint({ x: -1, y: -7 });
       cy.get('#\\/b').should('have.text', "false");
       cy.get('#\\/hello').should('have.text', "");
       cy.get('#\\/n').should('have.text', "2");
       cy.get('#\\/m').should('have.text', "4");
     })
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components['/P'].movePoint({ x: 3, y: -4 });
+      await components['/P'].movePoint({ x: 3, y: -4 });
       cy.get('#\\/b').should('have.text', "false");
       cy.get('#\\/hello').should('have.text', "");
       cy.get('#\\/n').should('have.text', "2");
       cy.get('#\\/m').should('have.text', "4");
     })
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components['/P'].movePoint({ x: 1, y: 7 });
+      await components['/P'].movePoint({ x: 1, y: 7 });
       cy.get('#\\/b').should('have.text', "true");
       cy.get('#\\/hello').should('have.text', " hello");
       cy.get('#\\/n').should('have.text', "2");
@@ -1205,45 +1205,45 @@ describe('UpdateValue Tag Tests', function () {
   
     })
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components['/P'].movePoint({ x: 5, y: 9 });
+      await components['/P'].movePoint({ x: 5, y: 9 });
       cy.get('#\\/b').should('have.text', "true");
       cy.get('#\\/hello').should('have.text', " hello");
       cy.get('#\\/n').should('have.text', "2");
       cy.get('#\\/m').should('have.text', "4");
     })
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components['/P'].movePoint({ x: -3, y: -4 });
+      await components['/P'].movePoint({ x: -3, y: -4 });
       cy.get('#\\/b').should('have.text', "true");
       cy.get('#\\/hello').should('have.text', " hello");
       cy.get('#\\/n').should('have.text', "3");
       cy.get('#\\/m').should('have.text', "3");
     })
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components['/P'].movePoint({ x: -6, y: -5 });
+      await components['/P'].movePoint({ x: -6, y: -5 });
       cy.get('#\\/b').should('have.text', "true");
       cy.get('#\\/hello').should('have.text', " hello");
       cy.get('#\\/n').should('have.text', "3");
       cy.get('#\\/m').should('have.text', "3");
     })
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components['/P'].movePoint({ x: 4, y: 2 });
+      await components['/P'].movePoint({ x: 4, y: 2 });
       cy.get('#\\/b').should('have.text', "false");
       cy.get('#\\/hello').should('have.text', " hello hello");
       cy.get('#\\/n').should('have.text', "3");
       cy.get('#\\/m').should('have.text', "3");
     })
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components['/P'].movePoint({ x: 9, y: 7 });
+      await components['/P'].movePoint({ x: 9, y: 7 });
       cy.get('#\\/b').should('have.text', "false");
       cy.get('#\\/hello').should('have.text', " hello hello");
       cy.get('#\\/n').should('have.text', "3");
@@ -1254,7 +1254,7 @@ describe('UpdateValue Tag Tests', function () {
 
   it('triggerset supercedes triggerWhen for updateValue children', () => {
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -1280,66 +1280,66 @@ describe('UpdateValue Tag Tests', function () {
     cy.get('#\\/hello').should('have.text', "");
     cy.get('#\\/n').should('have.text', "1");
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components['/P'].movePoint({ x: -1, y: -7 });
+      await components['/P'].movePoint({ x: -1, y: -7 });
       cy.get('#\\/b').should('have.text', "false");
       cy.get('#\\/hello').should('have.text', "");
       cy.get('#\\/n').should('have.text', "1");
     })
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components['/P'].movePoint({ x: 3, y: -4 });
+      await components['/P'].movePoint({ x: 3, y: -4 });
       cy.get('#\\/b').should('have.text', "false");
       cy.get('#\\/hello').should('have.text', "");
       cy.get('#\\/n').should('have.text', "1");
     })
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components['/P'].movePoint({ x: 1, y: 7 });
+      await components['/P'].movePoint({ x: 1, y: 7 });
       cy.get('#\\/b').should('have.text', "true");
       cy.get('#\\/hello').should('have.text', " hello");
       cy.get('#\\/n').should('have.text', "2");
   
     })
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components['/P'].movePoint({ x: 5, y: 9 });
+      await components['/P'].movePoint({ x: 5, y: 9 });
       cy.get('#\\/b').should('have.text', "true");
       cy.get('#\\/hello').should('have.text', " hello");
       cy.get('#\\/n').should('have.text', "2");
     })
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components['/P'].movePoint({ x: -3, y: -4 });
+      await components['/P'].movePoint({ x: -3, y: -4 });
       cy.get('#\\/b').should('have.text', "true");
       cy.get('#\\/hello').should('have.text', " hello");
       cy.get('#\\/n').should('have.text', "2");
     })
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components['/P'].movePoint({ x: -6, y: -5 });
+      await components['/P'].movePoint({ x: -6, y: -5 });
       cy.get('#\\/b').should('have.text', "true");
       cy.get('#\\/hello').should('have.text', " hello");
       cy.get('#\\/n').should('have.text', "2");
     })
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components['/P'].movePoint({ x: 4, y: 2 });
+      await components['/P'].movePoint({ x: 4, y: 2 });
       cy.get('#\\/b').should('have.text', "false");
       cy.get('#\\/hello').should('have.text', " hello hello");
       cy.get('#\\/n').should('have.text', "3");
     })
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components['/P'].movePoint({ x: 9, y: 7 });
+      await components['/P'].movePoint({ x: 9, y: 7 });
       cy.get('#\\/b').should('have.text', "false");
       cy.get('#\\/hello').should('have.text', " hello hello");
       cy.get('#\\/n').should('have.text', "3");
@@ -1349,7 +1349,7 @@ describe('UpdateValue Tag Tests', function () {
 
   it('triggerset supercedes chaining for updateValue children', () => {
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -1381,27 +1381,27 @@ describe('UpdateValue Tag Tests', function () {
     cy.get('#\\/_triggerset1').should('not.exist');
     cy.get('#\\/uv').should('not.exist');
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components['/P'].movePoint({ x: -1, y: -7 });
+      await components['/P'].movePoint({ x: -1, y: -7 });
       cy.get('#\\/b').should('have.text', "false");
       cy.get('#\\/hello').should('have.text', "");
       cy.get('#\\/n').should('have.text', "1");
       cy.get('#\\/m').should('have.text', "4");
     })
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components['/P'].movePoint({ x: 3, y: -4 });
+      await components['/P'].movePoint({ x: 3, y: -4 });
       cy.get('#\\/b').should('have.text', "false");
       cy.get('#\\/hello').should('have.text', "");
       cy.get('#\\/n').should('have.text', "1");
       cy.get('#\\/m').should('have.text', "4");
     })
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components['/P'].movePoint({ x: 1, y: 7 });
+      await components['/P'].movePoint({ x: 1, y: 7 });
       cy.get('#\\/b').should('have.text', "true");
       cy.get('#\\/hello').should('have.text', " hello");
       cy.get('#\\/n').should('have.text', "2");
@@ -1409,45 +1409,45 @@ describe('UpdateValue Tag Tests', function () {
   
     })
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components['/P'].movePoint({ x: 5, y: 9 });
+      await components['/P'].movePoint({ x: 5, y: 9 });
       cy.get('#\\/b').should('have.text', "true");
       cy.get('#\\/hello').should('have.text', " hello");
       cy.get('#\\/n').should('have.text', "2");
       cy.get('#\\/m').should('have.text', "4");
     })
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components['/P'].movePoint({ x: -3, y: -4 });
+      await components['/P'].movePoint({ x: -3, y: -4 });
       cy.get('#\\/b').should('have.text', "true");
       cy.get('#\\/hello').should('have.text', " hello");
       cy.get('#\\/n').should('have.text', "2");
       cy.get('#\\/m').should('have.text', "3");
     })
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components['/P'].movePoint({ x: -6, y: -5 });
+      await components['/P'].movePoint({ x: -6, y: -5 });
       cy.get('#\\/b').should('have.text', "true");
       cy.get('#\\/hello').should('have.text', " hello");
       cy.get('#\\/n').should('have.text', "2");
       cy.get('#\\/m').should('have.text', "3");
     })
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components['/P'].movePoint({ x: 4, y: 2 });
+      await components['/P'].movePoint({ x: 4, y: 2 });
       cy.get('#\\/b').should('have.text', "false");
       cy.get('#\\/hello').should('have.text', " hello hello");
       cy.get('#\\/n').should('have.text', "3");
       cy.get('#\\/m').should('have.text', "3");
     })
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components['/P'].movePoint({ x: 9, y: 7 });
+      await components['/P'].movePoint({ x: 9, y: 7 });
       cy.get('#\\/b').should('have.text', "false");
       cy.get('#\\/hello').should('have.text', " hello hello");
       cy.get('#\\/n').should('have.text', "3");
@@ -1458,7 +1458,7 @@ describe('UpdateValue Tag Tests', function () {
 
   it('update value to blank string', () => {
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -1488,7 +1488,7 @@ describe('UpdateValue Tag Tests', function () {
 
     `
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML
       }, "*");

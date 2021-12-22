@@ -439,12 +439,12 @@ export default class NumberComponent extends InlineComponent {
         }
         return number;
       },
-      inverseDefinition: function ({ desiredStateVariableValues,
+      inverseDefinition: async function ({ desiredStateVariableValues,
         dependencyValues, stateValues, overrideFixed,
       }) {
 
 
-        if (!stateValues.canBeModified && !overrideFixed) {
+        if (!await stateValues.canBeModified && !overrideFixed) {
           return { success: false };
         }
 
@@ -568,7 +568,7 @@ export default class NumberComponent extends InlineComponent {
       definition: function ({ dependencyValues }) {
         return { newValues: { text: dependencyValues.valueForDisplay.toString() } };
       },
-      inverseDefinition({ desiredStateVariableValues, stateValues }) {
+      async inverseDefinition({ desiredStateVariableValues, stateValues }) {
         let desiredNumber = Number(desiredStateVariableValues.text);
         if (Number.isFinite(desiredNumber)) {
           return {
@@ -580,8 +580,8 @@ export default class NumberComponent extends InlineComponent {
           }
         } else {
           let fromText = getFromText({
-            functionSymbols: stateValues.functionSymbols,
-            splitSymbols: stateValues.splitSymbols
+            functionSymbols: await stateValues.functionSymbols,
+            splitSymbols: await stateValues.splitSymbols
           });
 
           let expr;

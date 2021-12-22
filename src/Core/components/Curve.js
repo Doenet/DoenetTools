@@ -693,7 +693,7 @@ export default class Curve extends GraphicalComponent {
 
         return { newValues: { throughPoints } }
       },
-      inverseArrayDefinitionByKey({ desiredStateVariableValues,
+      async inverseArrayDefinitionByKey({ desiredStateVariableValues,
         dependencyValuesByKey, dependencyNamesByKey,
         initialChange, stateValues,
       }) {
@@ -705,7 +705,7 @@ export default class Curve extends GraphicalComponent {
 
 
         // if not draggable, then disallow initial change 
-        if (initialChange && !stateValues.draggable) {
+        if (initialChange && !await stateValues.draggable) {
           return { success: false };
         }
 
@@ -2964,7 +2964,7 @@ export default class Curve extends GraphicalComponent {
 
 
 
-  moveControlVector({ controlVector, controlVectorInds, transient }) {
+  async moveControlVector({ controlVector, controlVectorInds, transient }) {
 
     let desiredVector = {
       [controlVectorInds + ",0"]: me.fromAst(controlVector[0]),
@@ -2972,7 +2972,7 @@ export default class Curve extends GraphicalComponent {
     }
 
     if (transient) {
-      return this.coreFunctions.performUpdate({
+      return await this.coreFunctions.performUpdate({
         updateInstructions: [{
           updateType: "updateValue",
           componentName: this.componentName,
@@ -2983,7 +2983,7 @@ export default class Curve extends GraphicalComponent {
         transient
       });
     } else {
-      return this.coreFunctions.performUpdate({
+      return await this.coreFunctions.performUpdate({
         updateInstructions: [{
           updateType: "updateValue",
           componentName: this.componentName,
@@ -3005,7 +3005,7 @@ export default class Curve extends GraphicalComponent {
 
   }
 
-  moveThroughPoint({ throughPoint, throughPointInd, transient }) {
+  async moveThroughPoint({ throughPoint, throughPointInd, transient }) {
 
     let desiredPoint = {
       [throughPointInd + ",0"]: me.fromAst(throughPoint[0]),
@@ -3013,7 +3013,7 @@ export default class Curve extends GraphicalComponent {
     }
 
     if (transient) {
-      this.coreFunctions.performUpdate({
+      return await this.coreFunctions.performUpdate({
         updateInstructions: [{
           updateType: "updateValue",
           componentName: this.componentName,
@@ -3024,7 +3024,7 @@ export default class Curve extends GraphicalComponent {
         transient
       });
     } else {
-      this.coreFunctions.performUpdate({
+      return await this.coreFunctions.performUpdate({
         updateInstructions: [{
           updateType: "updateValue",
           componentName: this.componentName,
@@ -3046,8 +3046,8 @@ export default class Curve extends GraphicalComponent {
 
   }
 
-  changeVectorControlDirection({ direction, throughPointInd }) {
-    this.coreFunctions.performUpdate({
+  async changeVectorControlDirection({ direction, throughPointInd }) {
+    return await this.coreFunctions.performUpdate({
       updateInstructions: [{
         updateType: "updateValue",
         componentName: this.componentName,

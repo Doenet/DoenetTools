@@ -244,7 +244,7 @@ export class ComponentSize extends InlineComponent {
         }
 
       },
-      inverseDefinition({ desiredStateVariableValues, dependencyValues, stateValues }) {
+      inverseDefinition({ desiredStateVariableValues, dependencyValues }) {
         if (dependencyValues.stringChild.length === 0) {
           if (dependencyValues.numberChild.length === 0) {
             if (dependencyValues.componentSizeChild.length === 0) {

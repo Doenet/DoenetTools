@@ -388,20 +388,22 @@ export default class UpdateValue extends InlineComponent {
   }
 
 
-  updateValue() {
+  async updateValue() {
 
-    if (this.stateValues.targets === null || this.stateValues.newValue === null) {
+    let targets = await this.stateValues.targets;
+    let newValue = await this.stateValues.newValue;
+    if (targets === null || newValue === null) {
       return;
     }
 
     let updateInstructions = [];
 
-    for (let target of this.stateValues.targets) {
+    for (let target of targets) {
       let stateVariable = "value";
       if (target.stateValues) {
         stateVariable = Object.keys(target.stateValues)[0];
         if (stateVariable === undefined) {
-          console.warn(`Cannot update prop="${this.stateValues.propName}" of ${this.stateValues.tName} as could not find prop ${this.stateValues.propName} on a component of type ${target.componentType}`)
+          console.warn(`Cannot update prop="${await this.stateValues.propName}" of ${await this.stateValues.tName} as could not find prop ${await this.stateValues.propName} on a component of type ${target.componentType}`)
           continue;
         }
       }
@@ -410,13 +412,13 @@ export default class UpdateValue extends InlineComponent {
         updateType: "updateValue",
         componentName: target.componentName,
         stateVariable,
-        value: this.stateValues.newValue,
+        value: newValue,
       })
 
     }
 
 
-    return this.coreFunctions.performUpdate({
+    await this.coreFunctions.performUpdate({
       updateInstructions,
       event: {
         verb: "selected",
@@ -425,26 +427,28 @@ export default class UpdateValue extends InlineComponent {
           componentType: this.componentType,
         },
         result: {
-          response: this.stateValues.newValue,
-          responseText: this.stateValues.newValue.toString(),
+          response: newValue,
+          responseText: newValue.toString(),
         }
       },
-    }).then(() => this.coreFunctions.triggerChainedActions({
+    });
+
+    return await this.coreFunctions.triggerChainedActions({
       componentName: this.componentName,
-    }));
+    });
 
 
 
 
   }
 
-  updateValueIfTriggerNewlyTrue({ stateValues, previousValues }) {
+  async updateValueIfTriggerNewlyTrue({ stateValues, previousValues }) {
     // Note: explicitly test if previous value is false
     // so don't trigger on initialization when it is undefined
-    if (stateValues.triggerWhen && previousValues.triggerWhen === false &&
-      !this.stateValues.insideTriggerSet
+    if (await stateValues.triggerWhen && previousValues.triggerWhen === false &&
+      !await this.stateValues.insideTriggerSet
     ) {
-      return this.updateValue();
+      return await this.updateValue();
     }
   }
 

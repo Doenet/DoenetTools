@@ -264,11 +264,11 @@ export default class Point extends GraphicalComponent {
           coordsShadow: { variablesToCheck: ["coords", "coordsShadow"] }
         }
       }),
-      inverseDefinition: function ({ desiredStateVariableValues, stateValues, workspace }) {
+      inverseDefinition: async function ({ desiredStateVariableValues, stateValues, workspace }) {
 
         let desiredCoords = mergeVectorsForInverseDefinition({
           desiredVector: desiredStateVariableValues.coordsShadow,
-          currentVector: stateValues.coordsShadow,
+          currentVector: await stateValues.coordsShadow,
           workspace,
           workspaceKey: "desiredCoords"
         });
@@ -725,7 +725,7 @@ export default class Point extends GraphicalComponent {
           return {};
         }
       },
-      inverseArrayDefinitionByKey({ desiredStateVariableValues,
+      async inverseArrayDefinitionByKey({ desiredStateVariableValues,
         dependencyValuesByKey, dependencyNamesByKey,
         initialChange, stateValues,
       }) {
@@ -736,7 +736,7 @@ export default class Point extends GraphicalComponent {
         // console.log(dependencyNamesByKey);
 
         // if not draggable, then disallow initial change 
-        if (initialChange && !stateValues.draggable) {
+        if (initialChange && !await stateValues.draggable) {
           return { success: false };
         }
 
@@ -816,13 +816,13 @@ export default class Point extends GraphicalComponent {
         return { newValues: { coords: me.fromAst(coordsAst) } }
       },
 
-      inverseDefinition: function ({ desiredStateVariableValues, stateValues, initialChange }) {
+      inverseDefinition: async function ({ desiredStateVariableValues, stateValues, initialChange }) {
         // console.log("invertCoords");
         // console.log(desiredStateVariableValues)
         // console.log(stateValues);
 
         // if not draggable, then disallow initial change 
-        if (initialChange && !stateValues.draggable) {
+        if (initialChange && !await stateValues.draggable) {
           return { success: false };
         }
 
@@ -971,13 +971,13 @@ export default class Point extends GraphicalComponent {
         return { newValues: { numericalXs } }
       },
 
-      inverseArrayDefinitionByKey({ desiredStateVariableValues,
+      async inverseArrayDefinitionByKey({ desiredStateVariableValues,
         dependencyNamesByKey,
         initialChange, stateValues,
       }) {
 
         // if not draggable, then disallow initial change 
-        if (initialChange && !stateValues.draggable) {
+        if (initialChange && !await stateValues.draggable) {
           return { success: false };
         }
 
@@ -1039,7 +1039,7 @@ export default class Point extends GraphicalComponent {
 
   static adapters = ["coords"];
 
-  movePoint({ x, y, z, transient }) {
+  async movePoint({ x, y, z, transient }) {
     let components = {};
     if (x !== undefined) {
       components[0] = me.fromAst(x);
@@ -1051,7 +1051,7 @@ export default class Point extends GraphicalComponent {
       components[2] = me.fromAst(z);
     }
     if (transient) {
-      return this.coreFunctions.performUpdate({
+      return await this.coreFunctions.performUpdate({
         updateInstructions: [{
           updateType: "updateValue",
           componentName: this.componentName,
@@ -1061,7 +1061,7 @@ export default class Point extends GraphicalComponent {
         transient
       });
     } else {
-      return this.coreFunctions.performUpdate({
+      return await this.coreFunctions.performUpdate({
         updateInstructions: [{
           updateType: "updateValue",
           componentName: this.componentName,
@@ -1083,15 +1083,17 @@ export default class Point extends GraphicalComponent {
 
   }
 
-  finalizePointPosition() {
+  async finalizePointPosition() {
     // trigger a movePointe 
     // to send the final values with transient=false
     // so that the final position will be recorded
 
-    return this.actions.movePoint({
-      x: this.stateValues.numericalXs[0],
-      y: this.stateValues.numericalXs[1],
-      z: this.stateValues.numericalXs[2],
+    let numericalXs = await this.stateValues.numericalXs;
+
+    return await this.actions.movePoint({
+      x: numericalXs[0],
+      y: numericalXs[1],
+      z: numericalXs[2],
       transient: false,
     })
   }

@@ -195,7 +195,7 @@ export default class Sort extends CompositeComponent {
   }
 
 
-  static createSerializedReplacements({ component, components,
+  static async createSerializedReplacements({ component, components,
     componentInfoObjects, workspace
   }) {
 
@@ -203,7 +203,7 @@ export default class Sort extends CompositeComponent {
 
     let componentsCopied = [];
 
-    for (let valueObj of component.stateValues.sortedValues) {
+    for (let valueObj of await component.stateValues.sortedValues) {
       let replacementSource;
 
       if (valueObj.listInd === undefined) {
@@ -217,7 +217,7 @@ export default class Sort extends CompositeComponent {
 
         componentsCopied.push(replacementSource.componentName);
 
-        replacements.push(replacementSource.serialize({ forLink: true }))
+        replacements.push(await replacementSource.serialize())
       }
     }
 
@@ -232,7 +232,7 @@ export default class Sort extends CompositeComponent {
       assignNames: component.doenetAttributes.assignNames,
       serializedComponents: replacements,
       parentName: component.componentName,
-      parentCreatesNewNamespace: component.stateValues.newNamespace,
+      parentCreatesNewNamespace: await component.stateValues.newNamespace,
       componentInfoObjects,
     });
 
@@ -243,13 +243,13 @@ export default class Sort extends CompositeComponent {
 
   }
 
-  static calculateReplacementChanges({ component, components,
+  static async calculateReplacementChanges({ component, components,
     componentInfoObjects, workspace
   }) {
 
     let componentsToCopy = [];
 
-    for (let valueObj of component.stateValues.sortedValues) {
+    for (let valueObj of await component.stateValues.sortedValues) {
       let replacementSource;
 
       if (valueObj.listInd === undefined) {
@@ -271,10 +271,10 @@ export default class Sort extends CompositeComponent {
     }
 
     // for now, just recreated
-    let replacements = this.createSerializedReplacements({
+    let replacements = (await this.createSerializedReplacements({
       component, components,
       componentInfoObjects, workspace
-    }).replacements;
+    })).replacements;
 
     let replacementChanges = [{
       changeType: "add",

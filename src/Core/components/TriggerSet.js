@@ -150,7 +150,7 @@ export default class triggerSet extends InlineComponent {
 
   async triggerActions() {
 
-    for (let child of this.stateValues.updateValueAndActionsToTrigger) {
+    for (let child of await this.stateValues.updateValueAndActionsToTrigger) {
 
       if (this.componentInfoObjects.isInheritedComponentType({
         inheritedComponentType: child.componentType,
@@ -171,17 +171,17 @@ export default class triggerSet extends InlineComponent {
       }
     }
 
-    return this.coreFunctions.triggerChainedActions({
+    return await this.coreFunctions.triggerChainedActions({
       componentName: this.componentName,
     })
 
   }
 
-  triggerActionsIfTriggerNewlyTrue({ stateValues, previousValues }) {
+  async triggerActionsIfTriggerNewlyTrue({ stateValues, previousValues }) {
     // Note: explicitly test if previous value is false
     // so don't trigger on initialization when it is undefined
     if (stateValues.triggerWhen && previousValues.triggerWhen === false) {
-      return this.triggerActions();
+      return await this.triggerActions();
     }
   }
 

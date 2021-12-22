@@ -269,6 +269,7 @@ describe('MathInput Tag Tests', function () {
       cy.get('#\\/_mathinput1 textarea').focus();
 
       cy.log('Test values displayed in browser')
+      cy.get(`#\\/_mathinput1 .mq-editable-field`).should('contain.text', 'x+y')
       cy.get(`#\\/_mathinput1 .mq-editable-field`).invoke('text').then((text) => {
         expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('x+y')
       })
@@ -645,6 +646,7 @@ describe('MathInput Tag Tests', function () {
       cy.get('#\\/_mathinput2 textarea').focus();
 
       cy.log('Test values displayed in browser')
+      cy.get(`#\\/_mathinput1 .mq-editable-field`).should('not.contain.text', 'abcd')
       cy.get(`#\\/_mathinput1 .mq-editable-field`).invoke('text').then((text) => {
         expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('')
       })
@@ -1271,6 +1273,7 @@ describe('MathInput Tag Tests', function () {
     // cy.get('#\\/_mathinput1_input').should('have.value', 'x + 123');
     // cy.get('#\\/_mathinput2_input').should('have.value', 'x + 123');
 
+    cy.get('#\\/originalimmediate .mjx-mrow').should('contain.text', 'x+123')
     cy.get('#\\/originalimmediate').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('x+123')
     });
@@ -1421,6 +1424,7 @@ describe('MathInput Tag Tests', function () {
     // cy.get('#\\/_mathinput1_input').should('have.value', 'x + 123');
     // cy.get('#\\/_mathinput2_input').should('have.value', 'x + 123');
 
+    cy.get('#\\/originalimmediate .mjx-mrow').should('contain.text', 'x+123')
     cy.get('#\\/originalimmediate').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('x+123')
     });
@@ -1713,6 +1717,7 @@ describe('MathInput Tag Tests', function () {
     cy.get('#\\/a .mq-editable-field').invoke('text').then((text) => {
       expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('sin(345.14x)')
     })
+    cy.get('#\\/a2 .mjx-mrow').should('contain.text', 'sin(345.14x)')
     cy.get('#\\/a2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('sin(345.14x)')
     })
@@ -1758,6 +1763,7 @@ describe('MathInput Tag Tests', function () {
 
     cy.get('#\\/b2 textarea').blur();
 
+    cy.get('#\\/b .mjx-mrow').should('contain.text', '6.05e0.0000073y')
     cy.get('#\\/b').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('6.05e0.0000073y')
     })
@@ -1938,6 +1944,7 @@ describe('MathInput Tag Tests', function () {
     cy.get('#\\/a .mq-editable-field').invoke('text').then((text) => {
       expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('sin(345.14x)')
     })
+    cy.get('#\\/a2 .mjx-mrow').should('contain.text', 'sin(345.14x)')
     cy.get('#\\/a2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('sin(345.14x)')
     })
@@ -1985,6 +1992,7 @@ describe('MathInput Tag Tests', function () {
 
     cy.get('#\\/b2 textarea').blur();
 
+    cy.get('#\\/b .mjx-mrow').should('contain.text', '6.04752934e0.0000073y')
     cy.get('#\\/b').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('6.04752934e0.0000073y')
     })
@@ -2926,6 +2934,7 @@ describe('MathInput Tag Tests', function () {
 
     });
 
+    cy.get('#\\/Ax .mjx-mrow').should('contain.text', '4')
     cy.get('#\\/Ax').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('4')
     })
@@ -2961,6 +2970,8 @@ describe('MathInput Tag Tests', function () {
       components["/B"].movePoint({ x: 5.1, y: 1.3 })
 
     });
+
+    cy.get('#\\/Ax .mjx-mrow').should('contain.text', '5')
 
     cy.get('#\\/Ax').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('5')

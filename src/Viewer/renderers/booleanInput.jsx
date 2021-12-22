@@ -29,8 +29,8 @@ export default class BooleanInput extends DoenetRenderer {
     }
   }
 
-  onChangeHandler(e) {
-    this.actions.updateBoolean({
+  async onChangeHandler(e) {
+    await this.actions.updateBoolean({
       boolean: e.target.checked
     });
     this.forceUpdate();

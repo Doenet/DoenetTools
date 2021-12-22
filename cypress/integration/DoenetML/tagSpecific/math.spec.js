@@ -93,14 +93,14 @@ describe('Math Tag Tests', function () {
     })
 
     cy.log('Test internal values are set to the correct values')
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let replacement = components['/_copy1'].replacements[0];
       expect(components['/_math1'].stateValues.value.tree).eqls(['+', 'x', 1])
       expect(replacement.stateValues.value.tree).eqls(['+', 'x', 1])
       expect(components['/_math2'].stateValues.value.tree).eqls(["+", ["*", 3, ["+", "x", 1]], 5])
       expect(components['/_math1'].stateValues.hide).eq(true)
-      expect(replacement.stateValues.hide).eq(true);
+      expect(await replacement.stateValues.hide).eq(true);
       expect(components['/_math2'].stateValues.hide).eq(false)
     })
   })
@@ -289,10 +289,10 @@ describe('Math Tag Tests', function () {
     });
 
     cy.log("Move point to (7,9)");
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       console.log(`move point1`)
-      components['/_point1'].movePoint({ x: 7, y: 9 });
+      await components['/_point1'].movePoint({ x: 7, y: 9 });
       console.log(`point moved`)
       // second child takes value, third is blank
       expect(components['/_math1'].activeChildren[0]).eq("7");
@@ -1390,12 +1390,12 @@ describe('Math Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components["/unordered1"].stateValues.unordered).eq(true);
-      expect(components["/unordered2"].stateValues.unordered).eq(true);
-      expect(components["/ordered1"].stateValues.unordered).eq(false);
-      expect(components["/ordered2"].stateValues.unordered).eq(false);
+      expect(await components["/unordered1"].stateValues.unordered).eq(true);
+      expect(await components["/unordered2"].stateValues.unordered).eq(true);
+      expect(await components["/ordered1"].stateValues.unordered).eq(false);
+      expect(await components["/ordered2"].stateValues.unordered).eq(false);
 
 
     });
@@ -1421,6 +1421,7 @@ describe('Math Tag Tests', function () {
 
     cy.get('#\\/mi textarea').type("{end}{leftArrow}{backspace}{backspace}", { force: true }).blur();
 
+    cy.get('#\\/m .mjx-mrow').should('contain.text', '(x,y)')
     cy.get('#\\/m').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(x,y)');
     })

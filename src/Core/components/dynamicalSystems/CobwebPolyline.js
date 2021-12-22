@@ -509,7 +509,7 @@ export default class CobwebPolyline extends Polyline {
 
       return { newValues: { vertices, prelimCorrectVertices } }
     }
-    stateVariableDefinitions.vertices.inverseArrayDefinitionByKey = function ({
+    stateVariableDefinitions.vertices.inverseArrayDefinitionByKey = async function ({
       desiredStateVariableValues,
       dependencyNamesByKey,
       initialChange, stateValues,
@@ -521,7 +521,7 @@ export default class CobwebPolyline extends Polyline {
 
 
       // if not draggable, then disallow initial change 
-      if (initialChange && !stateValues.draggable) {
+      if (initialChange && !await stateValues.draggable) {
         return { success: false };
       }
 

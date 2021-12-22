@@ -19,7 +19,7 @@ describe('MathInput Graph Tests', function () {
     // two mathinputs specifying the x and y coordinate of a single point
     // demonstrates two-way data binding
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -34,7 +34,7 @@ describe('MathInput Graph Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let coordsAnchor = cesc('#' + components["/coords"].replacements[0].componentName);
 
@@ -44,7 +44,7 @@ describe('MathInput Graph Tests', function () {
       });
 
       cy.log('Test internal values are set to the correct values')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let components = Object.assign({}, win.state.components);
         expect(components['/x'].stateValues.value.tree).is.eq(1);
         expect(components['/y'].stateValues.value.tree).is.eq(2);
@@ -62,7 +62,7 @@ describe('MathInput Graph Tests', function () {
       });
 
       cy.log('Test internal values are set to the correct values')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let components = Object.assign({}, win.state.components);
         expect(components['/x'].stateValues.value.evaluate_to_constant()).to.eq(-3);
         expect(components['/y'].stateValues.value.tree).is.eq(2);
@@ -80,7 +80,7 @@ describe('MathInput Graph Tests', function () {
       });
 
       cy.log('Test internal values are set to the correct values')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let components = Object.assign({}, win.state.components);
         expect(components['/x'].stateValues.value.evaluate_to_constant()).to.eq(-3);
         expect(components['/y'].stateValues.value.evaluate_to_constant()).to.eq(-4);
@@ -89,9 +89,9 @@ describe('MathInput Graph Tests', function () {
       });
 
       cy.log(`move point to (5,-6)`)
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let components = Object.assign({}, win.state.components);
-        components['/_point1'].movePoint({ x: 5, y: -6 });
+        await components['/_point1'].movePoint({ x: 5, y: -6 });
         expect(components['/x'].stateValues.value.evaluate_to_constant()).to.eq(5);
         expect(components['/y'].stateValues.value.evaluate_to_constant()).to.eq(-6);
         expect(components['/_point1'].stateValues.xs[0].tree).eq(5);
@@ -113,7 +113,7 @@ describe('MathInput Graph Tests', function () {
     // therefore, cannot invert from x-coordinate to mathinput
     // so that cannot change x-coordinate directly by dragging point
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -128,7 +128,7 @@ describe('MathInput Graph Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let coordsAnchor = cesc('#' + components["/coords"].replacements[0].componentName);
 
@@ -138,7 +138,7 @@ describe('MathInput Graph Tests', function () {
       });
 
       cy.log('Test internal values are set to the correct values')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let components = Object.assign({}, win.state.components);
         expect(components['/x'].stateValues.value.tree).is.eq(3);
         expect(components['/y'].stateValues.value.tree).is.eq(2);
@@ -156,7 +156,7 @@ describe('MathInput Graph Tests', function () {
       });
 
       cy.log('Test internal values are set to the correct values')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let components = Object.assign({}, win.state.components);
         expect(components['/x'].stateValues.value.evaluate_to_constant()).to.eq(-1.2);
         expect(components['/y'].stateValues.value.tree).is.eq(2);
@@ -166,9 +166,9 @@ describe('MathInput Graph Tests', function () {
 
 
       cy.log(`try to move point to (5,6)`)
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let components = Object.assign({}, win.state.components);
-        components['/_point1'].movePoint({ x: 5, y: 6 });
+        await components['/_point1'].movePoint({ x: 5, y: 6 });
         expect(components['/x'].stateValues.value.evaluate_to_constant()).to.eq(-1.2);
         expect(components['/y'].stateValues.value.evaluate_to_constant()).to.eq(6);
         expect(components['/_point1'].stateValues.xs[0].tree).eq(1.44);
@@ -190,7 +190,7 @@ describe('MathInput Graph Tests', function () {
     // the transformation is non-invertible
     // and cannot directly change the x-coordinate of point by dragging
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -204,7 +204,7 @@ describe('MathInput Graph Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let coordsAnchor = cesc('#' + components["/coords"].replacements[0].componentName);
 
@@ -214,7 +214,7 @@ describe('MathInput Graph Tests', function () {
       });
 
       cy.log('Test internal values are set to the correct values')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let components = Object.assign({}, win.state.components);
         expect(components['/a'].stateValues.value.evaluate_to_constant()).is.eq(-3);
         expect(components['/b'].stateValues.value.evaluate_to_constant()).is.eq(2);
@@ -232,7 +232,7 @@ describe('MathInput Graph Tests', function () {
       });
 
       cy.log('Test internal values are set to the correct values')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let components = Object.assign({}, win.state.components);
         expect(components['/a'].stateValues.value.evaluate_to_constant()).is.eq(-1.5);
         expect(components['/b'].stateValues.value.evaluate_to_constant()).is.eq(2);
@@ -242,9 +242,9 @@ describe('MathInput Graph Tests', function () {
 
 
       cy.log(`try to move point to (5,6)`)
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let components = Object.assign({}, win.state.components);
-        components['/_point1'].movePoint({ x: 5, y: 6 });
+        await components['/_point1'].movePoint({ x: 5, y: 6 });
         expect(components['/a'].stateValues.value.evaluate_to_constant()).is.eq(-1.5);
         expect(components['/b'].stateValues.value.evaluate_to_constant()).is.eq(2);
         expect(components['/_point1'].stateValues.xs[0].evaluate_to_constant()).is.eq(-3);
@@ -266,7 +266,7 @@ describe('MathInput Graph Tests', function () {
     // we leave that factor constant when changing the x-coordinate by dragging
     // and modify the other factor to match the new x-coordinate
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -280,7 +280,7 @@ describe('MathInput Graph Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let coordsAnchor = cesc('#' + components["/coords"].replacements[0].componentName);
 
@@ -290,7 +290,7 @@ describe('MathInput Graph Tests', function () {
       });
 
       cy.log('Test internal values are set to the correct values')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let components = Object.assign({}, win.state.components);
         expect(components['/a'].stateValues.value.evaluate_to_constant()).is.eq(-3);
         expect(components['/b'].stateValues.value.evaluate_to_constant()).is.eq(2);
@@ -308,7 +308,7 @@ describe('MathInput Graph Tests', function () {
       });
 
       cy.log('Test internal values are set to the correct values')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let components = Object.assign({}, win.state.components);
         expect(components['/a'].stateValues.value.evaluate_to_constant()).is.eq(-1.5);
         expect(components['/b'].stateValues.value.evaluate_to_constant()).is.eq(2);
@@ -318,9 +318,9 @@ describe('MathInput Graph Tests', function () {
 
 
       cy.log(`move point to (5,6)`)
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let components = Object.assign({}, win.state.components);
-        components['/_point1'].movePoint({ x: 5, y: 6 });
+        await components['/_point1'].movePoint({ x: 5, y: 6 });
         expect(components['/a'].stateValues.value.evaluate_to_constant()).is.eq(2.5);
         expect(components['/b'].stateValues.value.evaluate_to_constant()).is.eq(2);
         expect(components['/_point1'].stateValues.xs[0].evaluate_to_constant()).is.eq(5);

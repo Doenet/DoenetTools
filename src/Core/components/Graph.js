@@ -286,8 +286,8 @@ export default class Graph extends BlockComponent {
         }
 
       },
-      inverseDefinition({ desiredStateVariableValues, stateValues }) {
-        if (stateValues.fixAxes) {
+      async inverseDefinition({ desiredStateVariableValues, stateValues }) {
+        if (await stateValues.fixAxes) {
           return { success: false }
         }
         return {
@@ -390,8 +390,8 @@ export default class Graph extends BlockComponent {
         }
 
       },
-      inverseDefinition({ desiredStateVariableValues, stateValues }) {
-        if (stateValues.fixAxes) {
+      async inverseDefinition({ desiredStateVariableValues, stateValues }) {
+        if (await stateValues.fixAxes) {
           return { success: false }
         }
         return {
@@ -484,8 +484,8 @@ export default class Graph extends BlockComponent {
         }
 
       },
-      inverseDefinition({ desiredStateVariableValues, stateValues }) {
-        if (stateValues.fixAxes) {
+      async inverseDefinition({ desiredStateVariableValues, stateValues }) {
+        if (await stateValues.fixAxes) {
           return { success: false }
         }
         return {
@@ -591,8 +591,8 @@ export default class Graph extends BlockComponent {
 
 
       },
-      inverseDefinition({ desiredStateVariableValues, stateValues }) {
-        if (stateValues.fixAxes) {
+      async inverseDefinition({ desiredStateVariableValues, stateValues }) {
+        if (await stateValues.fixAxes) {
           return { success: false }
         }
         return {
@@ -652,7 +652,7 @@ export default class Graph extends BlockComponent {
     return stateVariableDefinitions;
   }
 
-  changeAxisLimits({ xmin, xmax, ymin, ymax }) {
+  async changeAxisLimits({ xmin, xmax, ymin, ymax }) {
 
     let updateInstructions = [];
 
@@ -689,7 +689,7 @@ export default class Graph extends BlockComponent {
       })
     }
 
-    return this.coreFunctions.performUpdate({
+    return await this.coreFunctions.performUpdate({
       updateInstructions,
       event: {
         verb: "interacted",
@@ -705,7 +705,7 @@ export default class Graph extends BlockComponent {
 
   }
 
-  addChildren({ serializedComponents }) {
+  async addChildren({ serializedComponents }) {
 
     if (serializedComponents && serializedComponents.length > 0) {
 
@@ -714,28 +714,28 @@ export default class Graph extends BlockComponent {
         parentName: this.componentName,
         parentCreatesNewNamespace: this.attributes.newNamespace && this.attributes.newNamespace.primitive,
         componentInfoObjects: this.componentInfoObjects,
-        indOffset: this.stateValues.nChildrenAdded
+        indOffset: await this.stateValues.nChildrenAdded
       });
 
-      return this.coreFunctions.performUpdate({
+      return await this.coreFunctions.performUpdate({
         updateInstructions: [{
           updateType: "addComponents",
           serializedComponents: processResult.serializedComponents,
           parentName: this.componentName,
-          assignNamesOffset: this.stateValues.nChildrenAdded,
+          assignNamesOffset: await this.stateValues.nChildrenAdded,
         }, {
           updateType: "updateValue",
           componentName: this.componentName,
           stateVariable: "nChildrenAdded",
-          value: this.stateValues.nChildrenAdded + processResult.serializedComponents.length,
+          value: await this.stateValues.nChildrenAdded + processResult.serializedComponents.length,
         }],
       });
     }
   }
 
-  deleteChildren({ number }) {
+  async deleteChildren({ number }) {
 
-    let numberToDelete = Math.min(number, this.stateValues.nChildrenAdded);
+    let numberToDelete = Math.min(number, await this.stateValues.nChildrenAdded);
 
     if (numberToDelete > 0) {
       let nChildren = this.definingChildren.length;
@@ -743,7 +743,7 @@ export default class Graph extends BlockComponent {
         .slice(nChildren - numberToDelete, nChildren)
         .map(x => x.componentName);
 
-      return this.coreFunctions.performUpdate({
+      return await this.coreFunctions.performUpdate({
         updateInstructions: [{
           updateType: "deleteComponents",
           componentNames: componentNamesToDelete
@@ -751,7 +751,7 @@ export default class Graph extends BlockComponent {
           updateType: "updateValue",
           componentName: this.componentName,
           stateVariable: "nChildrenAdded",
-          value: this.stateValues.nChildrenAdded - numberToDelete,
+          value: await this.stateValues.nChildrenAdded - numberToDelete,
         }],
       });
 

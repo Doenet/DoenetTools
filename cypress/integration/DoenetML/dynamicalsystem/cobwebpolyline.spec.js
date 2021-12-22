@@ -96,10 +96,10 @@ describe('CobwebPolyline Tag Tests', function () {
     })
     cy.get('#\\/psr').find('.mjx-mrow').eq(2).should('not.exist');
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
 
-      components["/graph1/cobweb"].movePolyline({
+      await components["/graph1/cobweb"].movePolyline({
         pointCoords: { 0: [1, 0] },
         sourceInformation: { vertex: 0 }
       })
@@ -114,8 +114,8 @@ describe('CobwebPolyline Tag Tests', function () {
       })
       cy.get('#\\/psr').find('.mjx-mrow').eq(2).should('not.exist');
 
-      cy.get('#\\/addline').click().then((_) => {
-        components["/graph1/cobweb"].movePolyline({
+      cy.get('#\\/addline').click().then(async () => {
+        await components["/graph1/cobweb"].movePolyline({
           pointCoords: { 1: [3, 4] },
           sourceInformation: { vertex: 1 }
         })
@@ -139,8 +139,8 @@ describe('CobwebPolyline Tag Tests', function () {
       cy.get('#\\/psr').find('.mjx-mrow').eq(4).should('not.exist');
 
       // Note: move to second wrong point to make sure submit button reappears
-      cy.window().then(() => {
-        components["/graph1/cobweb"].movePolyline({
+      cy.window().then(async () => {
+        await components["/graph1/cobweb"].movePolyline({
           pointCoords: { 1: [1, 1] },
           sourceInformation: { vertex: 1 }
         })
@@ -162,8 +162,8 @@ describe('CobwebPolyline Tag Tests', function () {
       })
       cy.get('#\\/psr').find('.mjx-mrow').eq(4).should('not.exist');
 
-      cy.window().then(() => {
-        components["/graph1/cobweb"].movePolyline({
+      cy.window().then(async () => {
+        await components["/graph1/cobweb"].movePolyline({
           pointCoords: { 1: [1, 1.6] },
           sourceInformation: { vertex: 1 }
         })
@@ -215,8 +215,8 @@ describe('CobwebPolyline Tag Tests', function () {
       cy.get('#\\/psr').find('.mjx-mrow').eq(6).should('not.exist');
 
 
-      cy.window().then(() => {
-        components["/graph1/cobweb"].movePolyline({
+      cy.window().then(async () => {
+        await components["/graph1/cobweb"].movePolyline({
           pointCoords: { 2: [1.6, 1.6] },
           sourceInformation: { vertex: 2 }
         })
@@ -244,8 +244,8 @@ describe('CobwebPolyline Tag Tests', function () {
       cy.get('#\\/psr').find('.mjx-mrow').eq(6).should('not.exist');
 
 
-      cy.get('#\\/addline').click().then((_) => {
-        components["/graph1/cobweb"].movePolyline({
+      cy.get('#\\/addline').click().then(async () => {
+        await components["/graph1/cobweb"].movePolyline({
           pointCoords: { 3: [1, 2] },
           sourceInformation: { vertex: 3 }
         })
@@ -279,8 +279,8 @@ describe('CobwebPolyline Tag Tests', function () {
       cy.get('#\\/psr').find('.mjx-mrow').eq(8).should('not.exist');
 
 
-      cy.window().then(() => {
-        components["/graph1/cobweb"].movePolyline({
+      cy.window().then(async () => {
+        await components["/graph1/cobweb"].movePolyline({
           pointCoords: { 3: [1.6, 2.4] },
           sourceInformation: { vertex: 3 }
         })
@@ -368,8 +368,8 @@ describe('CobwebPolyline Tag Tests', function () {
       cy.get('#\\/psr').find('.mjx-mrow').eq(8).should('not.exist');
 
 
-      cy.get('#\\/addline').click().then((_) => {
-        components["/graph1/cobweb"].movePolyline({
+      cy.get('#\\/addline').click().then(async () => {
+        await components["/graph1/cobweb"].movePolyline({
           pointCoords: { 4: [2.4, 2.4] },
           sourceInformation: { vertex: 4 }
         })
@@ -406,8 +406,8 @@ describe('CobwebPolyline Tag Tests', function () {
       cy.get('#\\/psr').find('.mjx-mrow').eq(10).should('not.exist');
 
 
-      cy.get('#\\/addline').click().then((_) => {
-        components["/graph1/cobweb"].movePolyline({
+      cy.get('#\\/addline').click().then(async () => {
+        await components["/graph1/cobweb"].movePolyline({
           pointCoords: { 5: [-1, 3] },
           sourceInformation: { vertex: 5 }
         })
@@ -451,8 +451,8 @@ describe('CobwebPolyline Tag Tests', function () {
 
 
 
-      cy.window().then(() => {
-        components["/graph1/cobweb"].movePolyline({
+      cy.window().then(async () => {
+        await components["/graph1/cobweb"].movePolyline({
           pointCoords: { 5: [2.4, 3] },
           sourceInformation: { vertex: 5 }
         })
@@ -493,8 +493,8 @@ describe('CobwebPolyline Tag Tests', function () {
       cy.get('#\\/psr').find('.mjx-mrow').eq(12).should('not.exist');
 
 
-      cy.get('#\\/addline').click().then((_) => {
-        components["/graph1/cobweb"].movePolyline({
+      cy.get('#\\/addline').click().then(async () => {
+        await components["/graph1/cobweb"].movePolyline({
           pointCoords: { 6: [3, 1] },
           sourceInformation: { vertex: 6 }
         })
@@ -541,8 +541,8 @@ describe('CobwebPolyline Tag Tests', function () {
 
 
 
-      cy.window().then(() => {
-        components["/graph1/cobweb"].movePolyline({
+      cy.window().then(async () => {
+        await components["/graph1/cobweb"].movePolyline({
           pointCoords: { 6: [3, 3] },
           sourceInformation: { vertex: 6 }
         })
@@ -587,8 +587,8 @@ describe('CobwebPolyline Tag Tests', function () {
 
 
 
-      cy.get('#\\/addline').click().then((_) => {
-        components["/graph1/cobweb"].movePolyline({
+      cy.get('#\\/addline').click().then(async () => {
+        await components["/graph1/cobweb"].movePolyline({
           pointCoords: { 7: [3, 3] },
           sourceInformation: { vertex: 7 }
         })
@@ -668,9 +668,9 @@ describe('CobwebPolyline Tag Tests', function () {
 
     cy.get(cesc('#/gradedApplet/startFeedback')).should('be.visible')
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components["/gradedApplet/cobwebApplet/cobwebPolyline"].movePolyline({
+      await components["/gradedApplet/cobwebApplet/cobwebPolyline"].movePolyline({
         pointCoords: { 0: [1, 0] },
       })
     });
@@ -696,9 +696,9 @@ describe('CobwebPolyline Tag Tests', function () {
     cy.get(cesc('#/gradedApplet/incorrectFeedback')).should('be.visible')
 
     let x1 = f(1);
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components["/gradedApplet/cobwebApplet/cobwebPolyline"].movePolyline({ pointCoords: { 1: [1, x1] } })
+      await components["/gradedApplet/cobwebApplet/cobwebPolyline"].movePolyline({ pointCoords: { 1: [1, x1] } })
     });
     cy.get(cesc('#/gradedApplet/correctCobwebbing_submit')).click();
     cy.get(cesc('#/gradedApplet/initialCorrect_correct')).should('be.visible')
@@ -751,9 +751,9 @@ describe('CobwebPolyline Tag Tests', function () {
     })
     cy.get(cesc('#/gradedApplet/incorrectFeedback')).should('be.visible')
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components["/gradedApplet/cobwebApplet/cobwebPolyline"].movePolyline({ pointCoords: { 2: [x1, x1] } })
+      await components["/gradedApplet/cobwebApplet/cobwebPolyline"].movePolyline({ pointCoords: { 2: [x1, x1] } })
     });
     cy.get(cesc('#/gradedApplet/correctCobwebbing_submit')).click();
     cy.get(cesc('#/gradedApplet/correctCobwebbing_partial')).invoke('text').then((text) => {
@@ -772,9 +772,9 @@ describe('CobwebPolyline Tag Tests', function () {
 
     cy.get(cesc('#/gradedApplet/cobwebApplet/addLine')).click();
     let x2 = f(x1);
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components["/gradedApplet/cobwebApplet/cobwebPolyline"].movePolyline({ pointCoords: { 3: [x1, x2] } })
+      await components["/gradedApplet/cobwebApplet/cobwebPolyline"].movePolyline({ pointCoords: { 3: [x1, x2] } })
     });
 
     cy.get(cesc('#/gradedApplet/cobwebApplet/calculatedValue')).find('.mjx-mtr').eq(0).invoke('text').then((text) => {
@@ -790,9 +790,9 @@ describe('CobwebPolyline Tag Tests', function () {
 
 
     cy.get(cesc('#/gradedApplet/cobwebApplet/addLine')).click();
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components["/gradedApplet/cobwebApplet/cobwebPolyline"].movePolyline({ pointCoords: { 4: [x2, x2] } })
+      await components["/gradedApplet/cobwebApplet/cobwebPolyline"].movePolyline({ pointCoords: { 4: [x2, x2] } })
     });
 
     cy.get(cesc('#/gradedApplet/cobwebApplet/calculatedValue')).find('.mjx-mtr').eq(0).invoke('text').then((text) => {
@@ -809,9 +809,9 @@ describe('CobwebPolyline Tag Tests', function () {
 
     cy.get(cesc('#/gradedApplet/cobwebApplet/addLine')).click();
     let x3 = f(x2);
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components["/gradedApplet/cobwebApplet/cobwebPolyline"].movePolyline({ pointCoords: { 5: [x2, x3] } })
+      await components["/gradedApplet/cobwebApplet/cobwebPolyline"].movePolyline({ pointCoords: { 5: [x2, x3] } })
     });
 
     cy.get(cesc('#/gradedApplet/correctCobwebbing_submit')).click();
@@ -841,9 +841,9 @@ describe('CobwebPolyline Tag Tests', function () {
     })
     cy.get(cesc('#/gradedApplet/incorrectFeedback')).should('be.visible')
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components["/gradedApplet/cobwebApplet/cobwebPolyline"].movePolyline({ pointCoords: { 6: [x3, x3] } })
+      await components["/gradedApplet/cobwebApplet/cobwebPolyline"].movePolyline({ pointCoords: { 6: [x3, x3] } })
     });
     cy.get(cesc('#/gradedApplet/correctCobwebbing_submit')).click();
     cy.get(cesc('#/gradedApplet/correctCobwebbing_correct')).should('be.visible')
@@ -873,9 +873,9 @@ describe('CobwebPolyline Tag Tests', function () {
     cy.get(cesc('#/gradedApplet/incorrectFeedback')).should('be.visible')
 
     let x4 = f(x3);
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components["/gradedApplet/cobwebApplet/cobwebPolyline"].movePolyline({ pointCoords: { 7: [x3, x4] } })
+      await components["/gradedApplet/cobwebApplet/cobwebPolyline"].movePolyline({ pointCoords: { 7: [x3, x4] } })
     });
     cy.get(cesc('#/gradedApplet/correctCobwebbing_submit')).click();
     cy.get(cesc('#/gradedApplet/correctCobwebbing_correct')).should('be.visible')

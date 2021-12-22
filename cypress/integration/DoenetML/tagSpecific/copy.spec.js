@@ -16,7 +16,7 @@ describe('Copy Tag Tests', function () {
   })
 
   it('copy copies properties', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -35,24 +35,24 @@ describe('Copy Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
 
     cy.log(`check properties`);
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_math1'].stateValues.modifyIndirectly).eq(false);
-      expect(components['/a'].replacements[0].stateValues.modifyIndirectly).eq(false);
-      expect(components['/b'].replacements[0].stateValues.modifyIndirectly).eq(false);
-      expect(components['/_math2'].stateValues.modifyIndirectly).eq(true);
-      expect(components['/c'].replacements[0].stateValues.modifyIndirectly).eq(true);
-      expect(components['/d'].replacements[0].stateValues.modifyIndirectly).eq(true);
-      expect(components['/_point1'].stateValues.label).eq("A");
-      expect(components['/e'].replacements[0].stateValues.label).eq("A");
-      expect(components['/f'].replacements[0].stateValues.label).eq("A");
+      expect(await components['/_math1'].stateValues.modifyIndirectly).eq(false);
+      expect(await components['/a'].replacements[0].stateValues.modifyIndirectly).eq(false);
+      expect(await components['/b'].replacements[0].stateValues.modifyIndirectly).eq(false);
+      expect(await components['/_math2'].stateValues.modifyIndirectly).eq(true);
+      expect(await components['/c'].replacements[0].stateValues.modifyIndirectly).eq(true);
+      expect(await components['/d'].replacements[0].stateValues.modifyIndirectly).eq(true);
+      expect(await components['/_point1'].stateValues.label).eq("A");
+      expect(await components['/e'].replacements[0].stateValues.label).eq("A");
+      expect(await components['/f'].replacements[0].stateValues.label).eq("A");
 
     })
 
   });
 
   it('copy overwrites properties', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -76,28 +76,28 @@ describe('Copy Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
 
     cy.log(`check properties`);
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_math1'].stateValues.modifyIndirectly).eq(false);
-      expect(components['/r1'].replacements[0].stateValues.modifyIndirectly).eq(false);
-      expect(components['/r2'].replacements[0].stateValues.modifyIndirectly).eq(true);
-      expect(components['/r3'].replacements[0].stateValues.modifyIndirectly).eq(true);
-      expect(components['/r4'].replacements[0].stateValues.modifyIndirectly).eq(true);
-      expect(components['/r5'].replacements[0].stateValues.modifyIndirectly).eq(true);
-      expect(components['/r6'].replacements[0].stateValues.modifyIndirectly).eq(false);
-      expect(components['/r7'].replacements[0].stateValues.modifyIndirectly).eq(false);
+      expect(await components['/_math1'].stateValues.modifyIndirectly).eq(false);
+      expect(await components['/r1'].replacements[0].stateValues.modifyIndirectly).eq(false);
+      expect(await components['/r2'].replacements[0].stateValues.modifyIndirectly).eq(true);
+      expect(await components['/r3'].replacements[0].stateValues.modifyIndirectly).eq(true);
+      expect(await components['/r4'].replacements[0].stateValues.modifyIndirectly).eq(true);
+      expect(await components['/r5'].replacements[0].stateValues.modifyIndirectly).eq(true);
+      expect(await components['/r6'].replacements[0].stateValues.modifyIndirectly).eq(false);
+      expect(await components['/r7'].replacements[0].stateValues.modifyIndirectly).eq(false);
 
-      expect(components['/A'].stateValues.label).eq("A");
-      expect(components['/A2'].replacements[0].stateValues.label).eq("A");
-      expect(components['/B'].replacements[0].stateValues.label).eq("B");
-      expect(components['/C'].replacements[0].stateValues.label).eq("C");
-      expect(components['/C2'].replacements[0].stateValues.label).eq("C");
+      expect(await components['/A'].stateValues.label).eq("A");
+      expect(await components['/A2'].replacements[0].stateValues.label).eq("A");
+      expect(await components['/B'].replacements[0].stateValues.label).eq("B");
+      expect(await components['/C'].replacements[0].stateValues.label).eq("C");
+      expect(await components['/C2'].replacements[0].stateValues.label).eq("C");
 
     })
   });
 
   it('copy overwrites properties, decode XML entities', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -121,28 +121,28 @@ describe('Copy Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
 
     cy.log(`check properties`);
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_math1'].stateValues.modifyIndirectly).eq(false);
-      expect(components['/r1'].replacements[0].stateValues.modifyIndirectly).eq(false);
-      expect(components['/r2'].replacements[0].stateValues.modifyIndirectly).eq(true);
-      expect(components['/r3'].replacements[0].stateValues.modifyIndirectly).eq(true);
-      expect(components['/r4'].replacements[0].stateValues.modifyIndirectly).eq(true);
-      expect(components['/r5'].replacements[0].stateValues.modifyIndirectly).eq(true);
-      expect(components['/r6'].replacements[0].stateValues.modifyIndirectly).eq(false);
-      expect(components['/r7'].replacements[0].stateValues.modifyIndirectly).eq(false);
+      expect(await components['/_math1'].stateValues.modifyIndirectly).eq(false);
+      expect(await components['/r1'].replacements[0].stateValues.modifyIndirectly).eq(false);
+      expect(await components['/r2'].replacements[0].stateValues.modifyIndirectly).eq(true);
+      expect(await components['/r3'].replacements[0].stateValues.modifyIndirectly).eq(true);
+      expect(await components['/r4'].replacements[0].stateValues.modifyIndirectly).eq(true);
+      expect(await components['/r5'].replacements[0].stateValues.modifyIndirectly).eq(true);
+      expect(await components['/r6'].replacements[0].stateValues.modifyIndirectly).eq(false);
+      expect(await components['/r7'].replacements[0].stateValues.modifyIndirectly).eq(false);
 
-      expect(components['/A'].stateValues.label).eq("A");
-      expect(components['/A2'].replacements[0].stateValues.label).eq("A");
-      expect(components['/B'].replacements[0].stateValues.label).eq("B");
-      expect(components['/C'].replacements[0].stateValues.label).eq("C");
-      expect(components['/C2'].replacements[0].stateValues.label).eq("C");
+      expect(await components['/A'].stateValues.label).eq("A");
+      expect(await components['/A2'].replacements[0].stateValues.label).eq("A");
+      expect(await components['/B'].replacements[0].stateValues.label).eq("B");
+      expect(await components['/C'].replacements[0].stateValues.label).eq("C");
+      expect(await components['/C2'].replacements[0].stateValues.label).eq("C");
 
     })
   });
 
   it('copy props', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -167,51 +167,51 @@ describe('Copy Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
 
     cy.log(`check properties`);
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/x'].stateValues.modifyIndirectly).eq(false);
-      expect(components['/x'].stateValues.hide).eq(true);
+      expect(await components['/x'].stateValues.modifyIndirectly).eq(false);
+      expect(await components['/x'].stateValues.hide).eq(true);
       // modifyIndirectly attribute is copied (as it has propagateToProps=true)
-      expect(components['/mr'].replacements[0].stateValues.modifyIndirectly).eq(false);
+      expect(await components['/mr'].replacements[0].stateValues.modifyIndirectly).eq(false);
       // hide attribute is not copied (default behavior)
-      expect(components['/mr'].replacements[0].stateValues.hide).eq(false);
-      expect(components['/mr'].replacements[0].stateValues.value).eq(false);
+      expect(await components['/mr'].replacements[0].stateValues.hide).eq(false);
+      expect(await components['/mr'].replacements[0].stateValues.value).eq(false);
 
       // modifyIndirectly is overwritten
-      expect(components['/mr2'].replacements[0].stateValues.modifyIndirectly).eq(true);
-      expect(components['/mr2'].replacements[0].stateValues.hide).eq(false);
-      expect(components['/mr2'].replacements[0].stateValues.value).eq(false);
+      expect(await components['/mr2'].replacements[0].stateValues.modifyIndirectly).eq(true);
+      expect(await components['/mr2'].replacements[0].stateValues.hide).eq(false);
+      expect(await components['/mr2'].replacements[0].stateValues.value).eq(false);
 
       // modifyIndirectly attribute is copied (as it has propagateToProps=true)
-      expect(components['/frmt'].replacements[0].stateValues.modifyIndirectly).eq(false);
+      expect(await components['/frmt'].replacements[0].stateValues.modifyIndirectly).eq(false);
       // hide attribute is not copied (default behavior)
-      expect(components['/frmt'].replacements[0].stateValues.hide).eq(false);
-      expect(components['/frmt'].replacements[0].stateValues.value).eq("text");
+      expect(await components['/frmt'].replacements[0].stateValues.hide).eq(false);
+      expect(await components['/frmt'].replacements[0].stateValues.value).eq("text");
 
-      expect(components['/frmt2'].replacements[0].stateValues.modifyIndirectly).eq(false);
-      expect(components['/frmt2'].replacements[0].stateValues.hidden).eq(true);
-      expect(components['/frmt2'].replacements[0].stateValues.value).eq("text");
+      expect(await components['/frmt2'].replacements[0].stateValues.modifyIndirectly).eq(false);
+      expect(await components['/frmt2'].replacements[0].stateValues.hidden).eq(true);
+      expect(await components['/frmt2'].replacements[0].stateValues.value).eq("text");
 
       // all attributes copied when don't use prop
-      expect(components['/frmt3'].replacements[0].stateValues.modifyIndirectly).eq(false);
-      expect(components['/frmt3'].replacements[0].stateValues.value).eq("text");
-      expect(components['/frmt3'].replacements[0].stateValues.hidden).eq(true);
+      expect(await components['/frmt3'].replacements[0].stateValues.modifyIndirectly).eq(false);
+      expect(await components['/frmt3'].replacements[0].stateValues.value).eq("text");
+      expect(await components['/frmt3'].replacements[0].stateValues.hidden).eq(true);
 
-      expect(components['/A'].stateValues.label).eq("A");
-      expect(components['/cA'].replacements[0].stateValues.value.tree).eqls(["vector", 1, 2]);
-      expect(components['/l'].replacements[0].stateValues.value).eq("\\left( 1, 2 \\right)");
-      expect(components['/l'].replacements[0].stateValues.modifyIndirectly).eq(true);
-      expect(components['/lmr'].replacements[0].stateValues.value).eq("\\left( 1, 2 \\right)");
-      expect(components['/lmr'].replacements[0].stateValues.modifyIndirectly).eq(false);
-      expect(components['/A2'].replacements[0].stateValues.label).eq("A");
-      expect(components['/cA2'].replacements[0].stateValues.value.tree).eqls(["vector", 1, 2]);
-      expect(components['/l2'].replacements[0].stateValues.value).eq("\\left( 1, 2 \\right)");
+      expect(await components['/A'].stateValues.label).eq("A");
+      expect((await components['/cA'].replacements[0].stateValues.value).tree).eqls(["vector", 1, 2]);
+      expect(await components['/l'].replacements[0].stateValues.value).eq("\\left( 1, 2 \\right)");
+      expect(await components['/l'].replacements[0].stateValues.modifyIndirectly).eq(true);
+      expect(await components['/lmr'].replacements[0].stateValues.value).eq("\\left( 1, 2 \\right)");
+      expect(await components['/lmr'].replacements[0].stateValues.modifyIndirectly).eq(false);
+      expect(await components['/A2'].replacements[0].stateValues.label).eq("A");
+      expect((await components['/cA2'].replacements[0].stateValues.value).tree).eqls(["vector", 1, 2]);
+      expect(await components['/l2'].replacements[0].stateValues.value).eq("\\left( 1, 2 \\right)");
 
     })
   });
 
   it('copy props of copy still updatable', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -232,7 +232,7 @@ describe('Copy Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
 
     cy.log(`initial position`);
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/_point1'].stateValues.xs[0].tree).eq(1);
       expect(components['/_point1'].stateValues.xs[1].tree).eq(2);
@@ -243,9 +243,9 @@ describe('Copy Tag Tests', function () {
     })
 
     cy.log(`move point 1`);
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components['/_point1'].movePoint({ x: -3, y: 5 });
+      await components['/_point1'].movePoint({ x: -3, y: 5 });
       expect(components['/_point1'].stateValues.xs[0].tree).eq(-3);
       expect(components['/_point1'].stateValues.xs[1].tree).eq(5);
       expect(components["/p2"].replacements[0].stateValues.xs[0].tree).eq(-3);
@@ -255,9 +255,9 @@ describe('Copy Tag Tests', function () {
     })
 
     cy.log(`move point 2`);
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components["/p2"].replacements[0].movePoint({ x: 6, y: -9 });
+      await components["/p2"].replacements[0].movePoint({ x: 6, y: -9 });
       expect(components['/_point1'].stateValues.xs[0].tree).eq(6);
       expect(components['/_point1'].stateValues.xs[1].tree).eq(-9);
       expect(components["/p2"].replacements[0].stateValues.xs[0].tree).eq(6);
@@ -267,9 +267,9 @@ describe('Copy Tag Tests', function () {
     })
 
     cy.log(`move point 3`);
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components['/_point2'].movePoint({ x: -1, y: -7 });
+      await components['/_point2'].movePoint({ x: -1, y: -7 });
       expect(components['/_point1'].stateValues.xs[0].tree).eq(-7);
       expect(components['/_point1'].stateValues.xs[1].tree).eq(-1);
       expect(components["/p2"].replacements[0].stateValues.xs[0].tree).eq(-7);
@@ -281,7 +281,7 @@ describe('Copy Tag Tests', function () {
   });
 
   it.skip('copy invalid prop', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <math>x</math>
@@ -307,7 +307,7 @@ describe('Copy Tag Tests', function () {
   });
 
   it('copy of prop copy shadows target', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -327,14 +327,14 @@ describe('Copy Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
 
       let vector2 = components["/d1"].replacements[0];
       let vector3 = components["/d2"].replacements[0];
 
       cy.log(`initial positions`);
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let displacement = [-4, 2];
         let v_tail = [1, 1];
         let d_tail = [0, 0];
@@ -353,7 +353,7 @@ describe('Copy Tag Tests', function () {
       })
 
       cy.log(`move vector 1`);
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let displacement = [3, 1];
         let v_tail = [-1, 4];
         let d_tail = [0, 0];
@@ -361,7 +361,7 @@ describe('Copy Tag Tests', function () {
         let d_head = displacement.map((x, i) => x + d_tail[i]);
 
         let components = Object.assign({}, win.state.components);
-        components['/_vector1'].moveVector({
+        await components['/_vector1'].moveVector({
           tailcoords: v_tail,
           headcoords: v_head,
         })
@@ -377,7 +377,7 @@ describe('Copy Tag Tests', function () {
       })
 
       cy.log(`move vector 2`);
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let displacement = [5, -2];
         let v_tail = [-1, 4];
         let d_tail = [3, -7];
@@ -385,7 +385,7 @@ describe('Copy Tag Tests', function () {
         let d_head = displacement.map((x, i) => x + d_tail[i]);
 
         let components = Object.assign({}, win.state.components);
-        vector2.moveVector({
+        await vector2.moveVector({
           tailcoords: d_tail,
           headcoords: d_head,
         })
@@ -401,7 +401,7 @@ describe('Copy Tag Tests', function () {
       })
 
       cy.log(`move vector 3`);
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let displacement = [-3, 6];
         let v_tail = [-1, 4];
         let d_tail = [4, -2];
@@ -409,7 +409,7 @@ describe('Copy Tag Tests', function () {
         let d_head = displacement.map((x, i) => x + d_tail[i]);
 
         let components = Object.assign({}, win.state.components);
-        vector3.moveVector({
+        await vector3.moveVector({
           tailcoords: d_tail,
           headcoords: d_head,
         })
@@ -425,7 +425,7 @@ describe('Copy Tag Tests', function () {
       })
 
       cy.log(`move vector 1`);
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let displacement = [5, 0];
         let v_tail = [-8, 6];
         let d_tail = [4, -2];
@@ -433,7 +433,7 @@ describe('Copy Tag Tests', function () {
         let d_head = displacement.map((x, i) => x + d_tail[i]);
 
         let components = Object.assign({}, win.state.components);
-        components['/_vector1'].moveVector({
+        await components['/_vector1'].moveVector({
           tailcoords: v_tail,
           headcoords: v_head,
         })
@@ -452,7 +452,7 @@ describe('Copy Tag Tests', function () {
   });
 
   it('property children account for replacement changes', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -476,7 +476,7 @@ describe('Copy Tag Tests', function () {
     // to wait for page to load
     cy.get('#\\/_text1').should('have.text', 'a');
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
 
       let p2Anchor = cesc("#" + components["/p2"].replacements[0].componentName);
@@ -570,7 +570,7 @@ describe('Copy Tag Tests', function () {
   });
 
   it('copy macros', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -638,7 +638,7 @@ describe('Copy Tag Tests', function () {
   });
 
   it('macros after failed double macro', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -661,7 +661,7 @@ describe('Copy Tag Tests', function () {
   })
 
   it('copy ignores hide by default', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -683,7 +683,7 @@ describe('Copy Tag Tests', function () {
   });
 
   it('copy keeps hidden children hidden', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -708,7 +708,7 @@ describe('Copy Tag Tests', function () {
   });
 
   it('copies hide dynamically', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -743,7 +743,7 @@ describe('Copy Tag Tests', function () {
   })
 
   it('copy uri two problems', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <title>Two problems</title>
@@ -763,7 +763,7 @@ describe('Copy Tag Tests', function () {
       let titleOptions = animalOptions.map(x => `What does the ${x} say?`)
       problem1Version = titleOptions.indexOf(text);
       expect(problem1Version).not.eq(-1)
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let components = Object.assign({}, win.state.components);
         expect(components["/_copy1"].stateValues.contentId).eq("a666134b719e70e8acb48d91d582d1efd90d7f11fb499ab77f9f1fa5dafdb96d")
         expect(components["/_copy1"].stateValues.doenetId).eq("abcdefg")
@@ -800,7 +800,7 @@ describe('Copy Tag Tests', function () {
     cy.get(cesc('#/problem2/derivativeProblem/_title1')).should('have.text', 'Derivative problem')
 
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let mathinputName = components['/problem2/derivativeProblem/_answer1'].stateValues.inputChildren[0].componentName
       let mathinputAnchor = cesc('#' + mathinputName) + ' textarea';
@@ -826,7 +826,7 @@ describe('Copy Tag Tests', function () {
   })
 
   it('copy uri containing copy uri of two problems', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <title>Four problems</title>
@@ -877,7 +877,7 @@ describe('Copy Tag Tests', function () {
     cy.get(cesc('#/problem12/problem2/derivativeProblem/_title1')).should('have.text', 'Derivative problem')
 
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let mathinputName = components['/problem12/problem2/derivativeProblem/_answer1'].stateValues.inputChildren[0].componentName
       let mathinputAnchor = cesc('#' + mathinputName) + ' textarea';
@@ -935,7 +935,7 @@ describe('Copy Tag Tests', function () {
     cy.get(cesc('#/set2/problem34/problem2/derivativeProblem/_title1')).should('have.text', 'Derivative problem')
 
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let mathinputName = components['/set2/problem34/problem2/derivativeProblem/_answer1'].stateValues.inputChildren[0].componentName
       let mathinputAnchor = cesc('#' + mathinputName) + ' textarea';
@@ -963,7 +963,7 @@ describe('Copy Tag Tests', function () {
 
   // this triggered an error not caught with the other order
   it('copy uri containing copy uri of two problems, newNamespace first', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <title>Four problems</title>
@@ -1014,7 +1014,7 @@ describe('Copy Tag Tests', function () {
     cy.get(cesc('#/set1/problem12/problem2/derivativeProblem/_title1')).should('have.text', 'Derivative problem')
 
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let mathinputName = components['/set1/problem12/problem2/derivativeProblem/_answer1'].stateValues.inputChildren[0].componentName
       let mathinputAnchor = cesc('#' + mathinputName) + ' textarea';
@@ -1072,7 +1072,7 @@ describe('Copy Tag Tests', function () {
     cy.get(cesc('#/problem34/problem2/derivativeProblem/_title1')).should('have.text', 'Derivative problem')
 
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let mathinputName = components['/problem34/problem2/derivativeProblem/_answer1'].stateValues.inputChildren[0].componentName
       let mathinputAnchor = cesc('#' + mathinputName) + ' textarea';
@@ -1099,7 +1099,7 @@ describe('Copy Tag Tests', function () {
   })
 
   it('copy of component that changes away from a copy', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -1131,7 +1131,7 @@ describe('Copy Tag Tests', function () {
   });
 
   it('copy of invalid target gives math in boolean and math', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -1162,7 +1162,7 @@ describe('Copy Tag Tests', function () {
   });
 
   it('copy no link, base test', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -1196,7 +1196,7 @@ describe('Copy Tag Tests', function () {
     })
 
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       expect(components["/_copy1"].stateValues.link).eq(false)
       expect(components["/_copy2"].stateValues.link).eq(true)
@@ -1218,7 +1218,7 @@ describe('Copy Tag Tests', function () {
       expect(text.trim().replace(/−/g, '-')).equal('2x')
     })
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       expect(components["/m"].stateValues.value.tree).eqls(["*", 2, "x"])
       expect(components["/m2"].stateValues.value.tree).eqls(["*", 2, "x"])
@@ -1239,7 +1239,7 @@ describe('Copy Tag Tests', function () {
       expect(text.trim().replace(/−/g, '-')).equal('2x')
     })
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       expect(components["/m"].stateValues.value.tree).eqls(["+", "x", "x"])
       expect(components["/m2"].stateValues.value.tree).eqls(["*", 2, "x"])
@@ -1260,7 +1260,7 @@ describe('Copy Tag Tests', function () {
       expect(text.trim().replace(/−/g, '-')).equal('4x')
     })
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       expect(components["/m"].stateValues.value.tree).eqls(["*", 2, ["+", "x", "x"]])
       expect(components["/m2"].stateValues.value.tree).eqls(["*", 2, "x"])
@@ -1281,7 +1281,7 @@ describe('Copy Tag Tests', function () {
       expect(text.trim().replace(/−/g, '-')).equal('4x')
     })
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       expect(components["/m"].stateValues.value.tree).eqls(["*", 2, ["+", "x", "x"]])
       expect(components["/m2"].stateValues.value.tree).eqls(["*", 4, "x"])
@@ -1302,7 +1302,7 @@ describe('Copy Tag Tests', function () {
       expect(text.trim().replace(/−/g, '-')).equal('8x')
     })
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       expect(components["/m"].stateValues.value.tree).eqls(["*", 2, 4, "x"])
       expect(components["/m2"].stateValues.value.tree).eqls(["*", 4, "x"])
@@ -1323,7 +1323,7 @@ describe('Copy Tag Tests', function () {
       expect(text.trim().replace(/−/g, '-')).equal('2⋅4x')
     })
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       expect(components["/m"].stateValues.value.tree).eqls(["*", 2, 4, "x"])
       expect(components["/m2"].stateValues.value.tree).eqls(["*", 2, 2, "x"])
@@ -1333,7 +1333,7 @@ describe('Copy Tag Tests', function () {
   });
 
   it('copy points and lines with no link', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -1371,7 +1371,7 @@ describe('Copy Tag Tests', function () {
     })
 
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let A5 = components["/g2"].activeChildren[0];
       let B5 = components["/g2"].activeChildren[1];
@@ -1401,8 +1401,8 @@ describe('Copy Tag Tests', function () {
       expect(components["/Ax"].stateValues.value.tree).eqls(1)
 
 
-      cy.log('move A').then(() => {
-        components["/A"].movePoint({ x: -9, y: -3 })
+      cy.log('move A').then(async () => {
+        await components["/A"].movePoint({ x: -9, y: -3 })
 
         expect(components["/A"].stateValues.xs.map(x => x.tree)).eqls([-9, -3])
         expect(components["/B"].stateValues.xs.map(x => x.tree)).eqls([3, 4])
@@ -1422,8 +1422,8 @@ describe('Copy Tag Tests', function () {
 
       });
 
-      cy.log('move B').then(() => {
-        components["/B"].movePoint({ x: -2, y: 6 })
+      cy.log('move B').then(async () => {
+        await components["/B"].movePoint({ x: -2, y: 6 })
 
         expect(components["/A"].stateValues.xs.map(x => x.tree)).eqls([-9, -3])
         expect(components["/B"].stateValues.xs.map(x => x.tree)).eqls([-2, 6])
@@ -1445,9 +1445,9 @@ describe('Copy Tag Tests', function () {
 
       });
 
-      cy.log('move l').then(() => {
+      cy.log('move l').then(async () => {
         let components = Object.assign({}, win.state.components);
-        components["/l"].moveLine({
+        await components["/l"].moveLine({
           point1coords: [-7, -6],
           point2coords: [8, 0]
         });
@@ -1470,9 +1470,9 @@ describe('Copy Tag Tests', function () {
 
       });
 
-      cy.log('move A2').then(() => {
+      cy.log('move A2').then(async () => {
         let components = Object.assign({}, win.state.components);
-        components["/A2"].movePoint({ x: 5, y: 4 })
+        await components["/A2"].movePoint({ x: 5, y: 4 })
 
         expect(components["/A"].stateValues.xs.map(x => x.tree)).eqls([-7, -6])
         expect(components["/B"].stateValues.xs.map(x => x.tree)).eqls([8, 0])
@@ -1493,9 +1493,9 @@ describe('Copy Tag Tests', function () {
       });
 
 
-      cy.log('move l2').then(() => {
+      cy.log('move l2').then(async () => {
         let components = Object.assign({}, win.state.components);
-        components["/l2"].moveLine({
+        await components["/l2"].moveLine({
           point1coords: [-5, 9],
           point2coords: [-4, -1]
         });
@@ -1519,8 +1519,8 @@ describe('Copy Tag Tests', function () {
       });
 
 
-      cy.log('move A3').then(() => {
-        components["/A3"].movePoint({ x: 6, y: -3 })
+      cy.log('move A3').then(async () => {
+        await components["/A3"].movePoint({ x: 6, y: -3 })
 
         expect(components["/A"].stateValues.xs.map(x => x.tree)).eqls([-7, -6])
         expect(components["/B"].stateValues.xs.map(x => x.tree)).eqls([8, 0])
@@ -1539,8 +1539,8 @@ describe('Copy Tag Tests', function () {
         expect(components["/Ax"].stateValues.value.tree).eqls(1)
       });
 
-      cy.log('move A4').then(() => {
-        components["/A4"].movePoint({ x: -2, y: 7 })
+      cy.log('move A4').then(async () => {
+        await components["/A4"].movePoint({ x: -2, y: 7 })
 
         expect(components["/A"].stateValues.xs.map(x => x.tree)).eqls([-7, -6])
         expect(components["/B"].stateValues.xs.map(x => x.tree)).eqls([8, 0])
@@ -1559,8 +1559,8 @@ describe('Copy Tag Tests', function () {
         expect(components["/Ax"].stateValues.value.tree).eqls(1)
       });
 
-      cy.log('move B4').then(() => {
-        components["/B4"].movePoint({ x: -9, y: -8 })
+      cy.log('move B4').then(async () => {
+        await components["/B4"].movePoint({ x: -9, y: -8 })
 
         expect(components["/A"].stateValues.xs.map(x => x.tree)).eqls([-7, -6])
         expect(components["/B"].stateValues.xs.map(x => x.tree)).eqls([8, 0])
@@ -1579,8 +1579,8 @@ describe('Copy Tag Tests', function () {
         expect(components["/Ax"].stateValues.value.tree).eqls(1)
       });
 
-      cy.log('move A5').then(() => {
-        A5.movePoint({ x: -10, y: -9 })
+      cy.log('move A5').then(async () => {
+        await A5.movePoint({ x: -10, y: -9 })
 
         expect(components["/A"].stateValues.xs.map(x => x.tree)).eqls([-7, -6])
         expect(components["/B"].stateValues.xs.map(x => x.tree)).eqls([8, 0])
@@ -1599,8 +1599,8 @@ describe('Copy Tag Tests', function () {
         expect(components["/Ax"].stateValues.value.tree).eqls(1)
       });
 
-      cy.log('move B5').then(() => {
-        B5.movePoint({ x: -8, y: -7 })
+      cy.log('move B5').then(async () => {
+        await B5.movePoint({ x: -8, y: -7 })
 
         expect(components["/A"].stateValues.xs.map(x => x.tree)).eqls([-7, -6])
         expect(components["/B"].stateValues.xs.map(x => x.tree)).eqls([8, 0])
@@ -1619,8 +1619,8 @@ describe('Copy Tag Tests', function () {
         expect(components["/Ax"].stateValues.value.tree).eqls(1)
       });
 
-      cy.log('move l3').then(() => {
-        l3.moveLine({
+      cy.log('move l3').then(async () => {
+        await l3.moveLine({
           point1coords: [6, 5],
           point2coords: [4, -3]
         });
@@ -1647,7 +1647,7 @@ describe('Copy Tag Tests', function () {
   });
 
   it('copy string with no link', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -1666,7 +1666,7 @@ describe('Copy Tag Tests', function () {
 
   // This was causing a duplicate componentName error
   it('copy group with assignNames inside with no link', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -1684,7 +1684,7 @@ describe('Copy Tag Tests', function () {
   });
 
   it('copy group with copies with no link', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -1758,7 +1758,7 @@ describe('Copy Tag Tests', function () {
   });
 
   it('copy group with copy overwriting attribute, no link', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -1779,7 +1779,7 @@ describe('Copy Tag Tests', function () {
     // to wait for page to load
     cy.get('#\\/_text1').should('have.text', 'a');
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
 
       let sima = cesc('#' + components["/g2"].replacements[1].componentName + '_input');
@@ -1932,7 +1932,7 @@ describe('Copy Tag Tests', function () {
   });
 
   it('copy group with link through assignNames of external, no link', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -1948,7 +1948,7 @@ describe('Copy Tag Tests', function () {
     // to wait for page to load
     cy.get('#\\/_text1').should('have.text', 'a');
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let mathinput1Anchor = cesc('#' + components["/g/p/derivativeProblem/_answer1"].stateValues.inputChildren[0].componentName) + " textarea";
       let mathinput2Anchor = cesc('#' + components["/g2/p/derivativeProblem/_answer1"].stateValues.inputChildren[0].componentName) + " textarea";
@@ -1970,7 +1970,7 @@ describe('Copy Tag Tests', function () {
   });
 
   it('copy group, no link, with function adapted to curve', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -1991,7 +1991,7 @@ describe('Copy Tag Tests', function () {
   });
 
   it('copy group, no link, copy to external inside attribute', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -2015,7 +2015,7 @@ describe('Copy Tag Tests', function () {
     cy.get(cesc('#/g2/w')).should('have.text', 'bye')
     cy.get(cesc('#/g2/Plabel')).should('have.text', 'bye')
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       expect(components["/g/P"].stateValues.label).eq('bye')
       expect(components["/g2/P"].stateValues.label).eq('bye')
@@ -2029,7 +2029,7 @@ describe('Copy Tag Tests', function () {
     cy.get(cesc('#/g2/w')).should('have.text', 'bye')
     cy.get(cesc('#/g2/Plabel')).should('have.text', 'bye')
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       expect(components["/g/P"].stateValues.label).eq('hi')
       expect(components["/g2/P"].stateValues.label).eq('bye')
@@ -2038,7 +2038,7 @@ describe('Copy Tag Tests', function () {
   });
 
   it('copy group, no link, internal copy to source alias is linked', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -2071,7 +2071,7 @@ describe('Copy Tag Tests', function () {
     cy.get(cesc('#/g2/a/w')).should('have.text', 'hello')
     cy.get(cesc('#/g2/a/Plabel')).should('have.text', 'hello')
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       expect(components["/g/a/P"].stateValues.label).eq('hello')
       expect(components["/g2/a/P"].stateValues.label).eq('hello')
@@ -2086,7 +2086,7 @@ describe('Copy Tag Tests', function () {
     cy.get(cesc('#/g2/a/w')).should('have.text', 'two')
     cy.get(cesc('#/g2/a/Plabel')).should('have.text', 'two')
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       expect(components["/g/a/P"].stateValues.label).eq('one')
       expect(components["/g2/a/P"].stateValues.label).eq('two')
@@ -2096,7 +2096,7 @@ describe('Copy Tag Tests', function () {
 
 
   it('copy no link containing external copies use absolute tName', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -2130,7 +2130,7 @@ describe('Copy Tag Tests', function () {
 
 
   it('copy dynamic map no link, check aliases', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -2373,7 +2373,7 @@ describe('Copy Tag Tests', function () {
 
 
   it('external content cannot reach outside namespace', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -2418,7 +2418,7 @@ describe('Copy Tag Tests', function () {
 
 
   it('external content inside external content cannot reach outside namespace', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -2464,7 +2464,7 @@ describe('Copy Tag Tests', function () {
   });
 
   it('copy of template source maintained when withheld', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -2507,9 +2507,9 @@ describe('Copy Tag Tests', function () {
 
 
     cy.log('Move point')
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components["/t1/A"].movePoint({ x: -3, y: 7 })
+      await components["/t1/A"].movePoint({ x: -3, y: 7 })
     })
 
     cy.get('#\\/m1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -2535,6 +2535,7 @@ describe('Copy Tag Tests', function () {
 
     cy.get('#\\/n textarea').type("{end}{backspace}1{enter}", { force: true })
 
+    cy.get('#\\/m1 .mjx-mrow').should('contain.text', 'A1=(−3,7)')
     cy.get('#\\/m1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('A1=(−3,7)')
     })
@@ -2555,9 +2556,9 @@ describe('Copy Tag Tests', function () {
 
 
     cy.log('Move second point')
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components["/t2/A"].movePoint({ x: 5, y: -4 })
+      await components["/t2/A"].movePoint({ x: 5, y: -4 })
     })
 
     cy.get('#\\/m1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -2594,7 +2595,7 @@ describe('Copy Tag Tests', function () {
 
 
   it('trim whitespace off tname', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text name="hi">Hello</text>

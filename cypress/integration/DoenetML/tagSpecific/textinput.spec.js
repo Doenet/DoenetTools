@@ -852,4 +852,41 @@ describe('TextInput Tag Tests', function () {
 
   })
 
+  it('expanded textinput', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <textinput name="ti" expanded />
+
+    <p>$ti</p>
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.get('#\\/ti_input').type("hello")
+    cy.get('#\\/ti_input').should('have.value', 'hello')
+    cy.get('#\\/_p1').should('have.text', '')
+
+
+    cy.get('#\\/ti_input').blur();
+    cy.get('#\\/ti_input').should('have.value', 'hello')
+    cy.get('#\\/_p1').should('have.text', 'hello')
+
+    cy.get('#\\/ti_input').type("{enter}bye{enter}")
+    cy.get('#\\/ti_input').should('have.value', 'hello\nbye\n')
+    cy.get('#\\/_p1').should('have.text', 'hello\nbye')
+
+    // cy.get('#\\/ti_input').blur();
+    // cy.get('#\\/ti_input').should('have.value', 'hello\nbye\n')
+    // cy.get('#\\/_p1').should('have.text', 'hello\nbye\n')
+
+
+    cy.get('#\\/ti_input').type("{ctrl+home}new{enter}old{enter}")
+    cy.get('#\\/_p1').should('have.text', 'new\nold\nhello\nbye')
+
+
+  })
+
 });

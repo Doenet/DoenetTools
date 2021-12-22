@@ -5,7 +5,7 @@ describe('Collect Tag Tests', function () {
   })
 
   it('collect points from graphs', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -120,16 +120,16 @@ describe('Collect Tag Tests', function () {
     })
 
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let xs = [x1, x2, x1, x3, y2];
       let ys = [y1, y2, y1, y3, x2];
       let components = Object.assign({}, win.state.components);
       for (let i = 0; i < 5; i++) {
-        expect(components['/points'].replacements[i].stateValues.xs[0].tree).eq(xs[i]);
-        expect(components['/points'].replacements[i].stateValues.xs[1].tree).eq(ys[i]);
-        expect(components['/points2'].replacements[i].stateValues.xs[0].tree).eq(xs[i]);
-        expect(components['/points2'].replacements[i].stateValues.xs[1].tree).eq(ys[i]);
-        expect(components['/coords'].replacements[i].stateValues.value.tree).eqls(["vector", xs[i], ys[i]]);
+        expect((await components['/points'].replacements[i].stateValues.xs)[0].tree).eq(xs[i]);
+        expect((await components['/points'].replacements[i].stateValues.xs)[1].tree).eq(ys[i]);
+        expect((await components['/points2'].replacements[i].stateValues.xs)[0].tree).eq(xs[i]);
+        expect((await components['/points2'].replacements[i].stateValues.xs)[1].tree).eq(ys[i]);
+        expect((await components['/coords'].replacements[i].stateValues.value).tree).eqls(["vector", xs[i], ys[i]]);
         expect(components['/xs'].replacements[i].stateValues.value.tree).eq(xs[i]);
         expect(components['/xs2'].replacements[i].stateValues.value.tree).eq(xs[i]);
         expect(components['/xs3'].replacements[i].stateValues.value.tree).eq(xs[i]);
@@ -140,7 +140,7 @@ describe('Collect Tag Tests', function () {
     })
 
     cy.log("move point 1")
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       x1 = -8;
       y1 = 6;
       let xs = [x1, x2, x1, x3, y2];
@@ -148,14 +148,14 @@ describe('Collect Tag Tests', function () {
       meany = (y1 + y2 + y1 + y3 + x2) / 5
 
       let components = Object.assign({}, win.state.components);
-      components['/_point1'].movePoint({ x: x1, y: y1 });
+      await components['/_point1'].movePoint({ x: x1, y: y1 });
 
       for (let i = 0; i < 5; i++) {
-        expect(components['/points'].replacements[i].stateValues.xs[0].tree).eq(xs[i]);
-        expect(components['/points'].replacements[i].stateValues.xs[1].tree).eq(ys[i]);
-        expect(components['/points2'].replacements[i].stateValues.xs[0].tree).eq(xs[i]);
-        expect(components['/points2'].replacements[i].stateValues.xs[1].tree).eq(ys[i]);
-        expect(components['/coords'].replacements[i].stateValues.value.tree).eqls(["vector", xs[i], ys[i]]);
+        expect((await components['/points'].replacements[i].stateValues.xs)[0].tree).eq(xs[i]);
+        expect((await components['/points'].replacements[i].stateValues.xs)[1].tree).eq(ys[i]);
+        expect((await components['/points2'].replacements[i].stateValues.xs)[0].tree).eq(xs[i]);
+        expect((await components['/points2'].replacements[i].stateValues.xs)[1].tree).eq(ys[i]);
+        expect((await components['/coords'].replacements[i].stateValues.value).tree).eqls(["vector", xs[i], ys[i]]);
         expect(components['/xs'].replacements[i].stateValues.value.tree).eq(xs[i]);
         expect(components['/xs2'].replacements[i].stateValues.value.tree).eq(xs[i]);
         expect(components['/xs3'].replacements[i].stateValues.value.tree).eq(xs[i]);
@@ -166,7 +166,7 @@ describe('Collect Tag Tests', function () {
     })
 
     cy.log("move point 1 via copy")
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       x1 = 2;
       y1 = 0;
       let xs = [x1, x2, x1, x3, y2];
@@ -174,14 +174,14 @@ describe('Collect Tag Tests', function () {
       meany = (y1 + y2 + y1 + y3 + x2) / 5
 
       let components = Object.assign({}, win.state.components);
-      components['/_copy1'].replacements[0].movePoint({ x: x1, y: y1 });
+      await components['/_copy1'].replacements[0].movePoint({ x: x1, y: y1 });
 
       for (let i = 0; i < 5; i++) {
-        expect(components['/points'].replacements[i].stateValues.xs[0].tree).eq(xs[i]);
-        expect(components['/points'].replacements[i].stateValues.xs[1].tree).eq(ys[i]);
-        expect(components['/points2'].replacements[i].stateValues.xs[0].tree).eq(xs[i]);
-        expect(components['/points2'].replacements[i].stateValues.xs[1].tree).eq(ys[i]);
-        expect(components['/coords'].replacements[i].stateValues.value.tree).eqls(["vector", xs[i], ys[i]]);
+        expect((await components['/points'].replacements[i].stateValues.xs)[0].tree).eq(xs[i]);
+        expect((await components['/points'].replacements[i].stateValues.xs)[1].tree).eq(ys[i]);
+        expect((await components['/points2'].replacements[i].stateValues.xs)[0].tree).eq(xs[i]);
+        expect((await components['/points2'].replacements[i].stateValues.xs)[1].tree).eq(ys[i]);
+        expect((await components['/coords'].replacements[i].stateValues.value).tree).eqls(["vector", xs[i], ys[i]]);
         expect(components['/xs'].replacements[i].stateValues.value.tree).eq(xs[i]);
         expect(components['/xs2'].replacements[i].stateValues.value.tree).eq(xs[i]);
         expect(components['/xs3'].replacements[i].stateValues.value.tree).eq(xs[i]);
@@ -193,7 +193,7 @@ describe('Collect Tag Tests', function () {
 
 
     cy.log("move point 2")
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       x2 = 4;
       y2 = 8;
       let xs = [x1, x2, x1, x3, y2];
@@ -201,14 +201,14 @@ describe('Collect Tag Tests', function () {
       meany = (y1 + y2 + y1 + y3 + x2) / 5
 
       let components = Object.assign({}, win.state.components);
-      components['/_point2'].movePoint({ x: x2, y: y2 });
+      await components['/_point2'].movePoint({ x: x2, y: y2 });
 
       for (let i = 0; i < 5; i++) {
-        expect(components['/points'].replacements[i].stateValues.xs[0].tree).eq(xs[i]);
-        expect(components['/points'].replacements[i].stateValues.xs[1].tree).eq(ys[i]);
-        expect(components['/points2'].replacements[i].stateValues.xs[0].tree).eq(xs[i]);
-        expect(components['/points2'].replacements[i].stateValues.xs[1].tree).eq(ys[i]);
-        expect(components['/coords'].replacements[i].stateValues.value.tree).eqls(["vector", xs[i], ys[i]]);
+        expect((await components['/points'].replacements[i].stateValues.xs)[0].tree).eq(xs[i]);
+        expect((await components['/points'].replacements[i].stateValues.xs)[1].tree).eq(ys[i]);
+        expect((await components['/points2'].replacements[i].stateValues.xs)[0].tree).eq(xs[i]);
+        expect((await components['/points2'].replacements[i].stateValues.xs)[1].tree).eq(ys[i]);
+        expect((await components['/coords'].replacements[i].stateValues.value).tree).eqls(["vector", xs[i], ys[i]]);
         expect(components['/xs'].replacements[i].stateValues.value.tree).eq(xs[i]);
         expect(components['/xs2'].replacements[i].stateValues.value.tree).eq(xs[i]);
         expect(components['/xs3'].replacements[i].stateValues.value.tree).eq(xs[i]);
@@ -220,7 +220,7 @@ describe('Collect Tag Tests', function () {
 
 
     cy.log("move flipped point 2")
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       x2 = -1;
       y2 = -3;
       let xs = [x1, x2, x1, x3, y2];
@@ -228,14 +228,14 @@ describe('Collect Tag Tests', function () {
       meany = (y1 + y2 + y1 + y3 + x2) / 5
 
       let components = Object.assign({}, win.state.components);
-      components['/_point4'].movePoint({ x: y2, y: x2 });
+      await components['/_point4'].movePoint({ x: y2, y: x2 });
 
       for (let i = 0; i < 5; i++) {
-        expect(components['/points'].replacements[i].stateValues.xs[0].tree).eq(xs[i]);
-        expect(components['/points'].replacements[i].stateValues.xs[1].tree).eq(ys[i]);
-        expect(components['/points2'].replacements[i].stateValues.xs[0].tree).eq(xs[i]);
-        expect(components['/points2'].replacements[i].stateValues.xs[1].tree).eq(ys[i]);
-        expect(components['/coords'].replacements[i].stateValues.value.tree).eqls(["vector", xs[i], ys[i]]);
+        expect((await components['/points'].replacements[i].stateValues.xs)[0].tree).eq(xs[i]);
+        expect((await components['/points'].replacements[i].stateValues.xs)[1].tree).eq(ys[i]);
+        expect((await components['/points2'].replacements[i].stateValues.xs)[0].tree).eq(xs[i]);
+        expect((await components['/points2'].replacements[i].stateValues.xs)[1].tree).eq(ys[i]);
+        expect((await components['/coords'].replacements[i].stateValues.value).tree).eqls(["vector", xs[i], ys[i]]);
         expect(components['/xs'].replacements[i].stateValues.value.tree).eq(xs[i]);
         expect(components['/xs2'].replacements[i].stateValues.value.tree).eq(xs[i]);
         expect(components['/xs3'].replacements[i].stateValues.value.tree).eq(xs[i]);
@@ -246,7 +246,7 @@ describe('Collect Tag Tests', function () {
     })
 
     cy.log("move point 3")
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       x3 = -5;
       y3 = 9;
       let xs = [x1, x2, x1, x3, y2];
@@ -254,14 +254,14 @@ describe('Collect Tag Tests', function () {
       meany = (y1 + y2 + y1 + y3 + x2) / 5
 
       let components = Object.assign({}, win.state.components);
-      components['/_point3'].movePoint({ x: x3, y: y3 });
+      await components['/_point3'].movePoint({ x: x3, y: y3 });
 
       for (let i = 0; i < 5; i++) {
-        expect(components['/points'].replacements[i].stateValues.xs[0].tree).eq(xs[i]);
-        expect(components['/points'].replacements[i].stateValues.xs[1].tree).eq(ys[i]);
-        expect(components['/points2'].replacements[i].stateValues.xs[0].tree).eq(xs[i]);
-        expect(components['/points2'].replacements[i].stateValues.xs[1].tree).eq(ys[i]);
-        expect(components['/coords'].replacements[i].stateValues.value.tree).eqls(["vector", xs[i], ys[i]]);
+        expect((await components['/points'].replacements[i].stateValues.xs)[0].tree).eq(xs[i]);
+        expect((await components['/points'].replacements[i].stateValues.xs)[1].tree).eq(ys[i]);
+        expect((await components['/points2'].replacements[i].stateValues.xs)[0].tree).eq(xs[i]);
+        expect((await components['/points2'].replacements[i].stateValues.xs)[1].tree).eq(ys[i]);
+        expect((await components['/coords'].replacements[i].stateValues.value).tree).eqls(["vector", xs[i], ys[i]]);
         expect(components['/xs'].replacements[i].stateValues.value.tree).eq(xs[i]);
         expect(components['/xs2'].replacements[i].stateValues.value.tree).eq(xs[i]);
         expect(components['/xs3'].replacements[i].stateValues.value.tree).eq(xs[i]);
@@ -273,7 +273,7 @@ describe('Collect Tag Tests', function () {
   });
 
   it('collect dynamic points from graphs', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -309,7 +309,7 @@ describe('Collect Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/_map1'].replacements.length).eq(3);
       expect(components['/_collect1'].replacements.length).eq(3);
@@ -321,12 +321,12 @@ describe('Collect Tag Tests', function () {
         let x = i + 1;
         expect(components['/_map1'].replacements[i].replacements[0].stateValues.xs[0].tree).eq(x);
         expect(components['/_map1'].replacements[i].replacements[0].stateValues.xs[1].tree).eq(2 * x);
-        expect(components['/_collect1'].replacements[i].stateValues.xs[0].tree).eq(x);
-        expect(components['/_collect1'].replacements[i].stateValues.xs[1].tree).eq(2 * x);
+        expect((await components['/_collect1'].replacements[i].stateValues.xs)[0].tree).eq(x);
+        expect((await components['/_collect1'].replacements[i].stateValues.xs)[1].tree).eq(2 * x);
         expect(components['/_map2'].replacements[i].replacements[0].stateValues.xs[0].tree).eq(x + 1);
         expect(components['/_map2'].replacements[i].replacements[0].stateValues.xs[1].tree).eq(3 * x);
-        expect(components['/_collect2'].replacements[i].stateValues.xs[0].tree).eq(x);
-        expect(components['/_collect2'].replacements[i].stateValues.xs[1].tree).eq(2 * x);
+        expect((await components['/_collect2'].replacements[i].stateValues.xs)[0].tree).eq(x);
+        expect((await components['/_collect2'].replacements[i].stateValues.xs)[1].tree).eq(2 * x);
         expect(components['/_collect2'].replacements[i + 3].stateValues.xs[0].tree).eq(x + 1);
         expect(components['/_collect2'].replacements[i + 3].stateValues.xs[1].tree).eq(3 * x);
         expect(components['/_collect3'].replacements[i].stateValues.value.tree).eq(2 * x);
@@ -338,7 +338,7 @@ describe('Collect Tag Tests', function () {
     cy.log("increase number of points")
     cy.get('#\\/length textarea').type(`{end}{backspace}5{enter}`, { force: true });
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/_map1'].replacements.length).eq(5);
       expect(components['/_collect1'].replacements.length).eq(5);
@@ -350,12 +350,12 @@ describe('Collect Tag Tests', function () {
         let x = i + 1;
         expect(components['/_map1'].replacements[i].replacements[0].stateValues.xs[0].tree).eq(x);
         expect(components['/_map1'].replacements[i].replacements[0].stateValues.xs[1].tree).eq(2 * x);
-        expect(components['/_collect1'].replacements[i].stateValues.xs[0].tree).eq(x);
-        expect(components['/_collect1'].replacements[i].stateValues.xs[1].tree).eq(2 * x);
+        expect((await components['/_collect1'].replacements[i].stateValues.xs)[0].tree).eq(x);
+        expect((await components['/_collect1'].replacements[i].stateValues.xs)[1].tree).eq(2 * x);
         expect(components['/_map2'].replacements[i].replacements[0].stateValues.xs[0].tree).eq(x + 1);
         expect(components['/_map2'].replacements[i].replacements[0].stateValues.xs[1].tree).eq(3 * x);
-        expect(components['/_collect2'].replacements[i].stateValues.xs[0].tree).eq(x);
-        expect(components['/_collect2'].replacements[i].stateValues.xs[1].tree).eq(2 * x);
+        expect((await components['/_collect2'].replacements[i].stateValues.xs)[0].tree).eq(x);
+        expect((await components['/_collect2'].replacements[i].stateValues.xs)[1].tree).eq(2 * x);
         expect(components['/_collect2'].replacements[i + 5].stateValues.xs[0].tree).eq(x + 1);
         expect(components['/_collect2'].replacements[i + 5].stateValues.xs[1].tree).eq(3 * x);
         expect(components['/_collect3'].replacements[i].stateValues.value.tree).eq(2 * x);
@@ -368,7 +368,7 @@ describe('Collect Tag Tests', function () {
     cy.log("change multiple")
     cy.get('#\\/mult textarea').type(`{end}{backspace}0.5{enter}`, { force: true });
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/_map1'].replacements.length).eq(5);
       expect(components['/_collect1'].replacements.length).eq(5);
@@ -380,12 +380,12 @@ describe('Collect Tag Tests', function () {
         let x = i + 1;
         expect(components['/_map1'].replacements[i].replacements[0].stateValues.xs[0].tree).eq(x);
         expect(components['/_map1'].replacements[i].replacements[0].stateValues.xs[1].tree).eq(0.5 * x);
-        expect(components['/_collect1'].replacements[i].stateValues.xs[0].tree).eq(x);
-        expect(components['/_collect1'].replacements[i].stateValues.xs[1].tree).eq(0.5 * x);
+        expect((await components['/_collect1'].replacements[i].stateValues.xs)[0].tree).eq(x);
+        expect((await components['/_collect1'].replacements[i].stateValues.xs)[1].tree).eq(0.5 * x);
         expect(components['/_map2'].replacements[i].replacements[0].stateValues.xs[0].tree).eq(x + 1);
         expect(components['/_map2'].replacements[i].replacements[0].stateValues.xs[1].tree).eq(0.75 * x);
-        expect(components['/_collect2'].replacements[i].stateValues.xs[0].tree).eq(x);
-        expect(components['/_collect2'].replacements[i].stateValues.xs[1].tree).eq(0.5 * x);
+        expect((await components['/_collect2'].replacements[i].stateValues.xs)[0].tree).eq(x);
+        expect((await components['/_collect2'].replacements[i].stateValues.xs)[1].tree).eq(0.5 * x);
         expect(components['/_collect2'].replacements[i + 5].stateValues.xs[0].tree).eq(x + 1);
         expect(components['/_collect2'].replacements[i + 5].stateValues.xs[1].tree).eq(0.75 * x);
         expect(components['/_collect3'].replacements[i].stateValues.value.tree).eq(0.5 * x);
@@ -398,7 +398,7 @@ describe('Collect Tag Tests', function () {
     cy.log("decrease number of points")
     cy.get('#\\/length textarea').type(`{end}{backspace}1{enter}`, { force: true });
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/_map1'].replacements.length - components['/_map1'].replacementsToWithhold).eq(1);
       expect(components['/_collect1'].replacements.length).eq(1);
@@ -410,12 +410,12 @@ describe('Collect Tag Tests', function () {
         let x = i + 1;
         expect(components['/_map1'].replacements[i].replacements[0].stateValues.xs[0].tree).eq(x);
         expect(components['/_map1'].replacements[i].replacements[0].stateValues.xs[1].tree).eq(0.5 * x);
-        expect(components['/_collect1'].replacements[i].stateValues.xs[0].tree).eq(x);
-        expect(components['/_collect1'].replacements[i].stateValues.xs[1].tree).eq(0.5 * x);
+        expect((await components['/_collect1'].replacements[i].stateValues.xs)[0].tree).eq(x);
+        expect((await components['/_collect1'].replacements[i].stateValues.xs)[1].tree).eq(0.5 * x);
         expect(components['/_map2'].replacements[i].replacements[0].stateValues.xs[0].tree).eq(x + 1);
         expect(components['/_map2'].replacements[i].replacements[0].stateValues.xs[1].tree).eq(0.75 * x);
-        expect(components['/_collect2'].replacements[i].stateValues.xs[0].tree).eq(x);
-        expect(components['/_collect2'].replacements[i].stateValues.xs[1].tree).eq(0.5 * x);
+        expect((await components['/_collect2'].replacements[i].stateValues.xs)[0].tree).eq(x);
+        expect((await components['/_collect2'].replacements[i].stateValues.xs)[1].tree).eq(0.5 * x);
         expect(components['/_collect2'].replacements[i + 1].stateValues.xs[0].tree).eq(x + 1);
         expect(components['/_collect2'].replacements[i + 1].stateValues.xs[1].tree).eq(0.75 * x);
         expect(components['/_collect3'].replacements[i].stateValues.value.tree).eq(0.5 * x);
@@ -428,7 +428,7 @@ describe('Collect Tag Tests', function () {
     cy.log("increase number of points back to 4")
     cy.get('#\\/length textarea').type(`{end}{backspace}4{enter}`, { force: true });
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/_map1'].replacements.length - components['/_map1'].replacementsToWithhold).eq(4);
       expect(components['/_collect1'].replacements.length).eq(4);
@@ -440,12 +440,12 @@ describe('Collect Tag Tests', function () {
         let x = i + 1;
         expect(components['/_map1'].replacements[i].replacements[0].stateValues.xs[0].tree).eq(x);
         expect(components['/_map1'].replacements[i].replacements[0].stateValues.xs[1].tree).eq(0.5 * x);
-        expect(components['/_collect1'].replacements[i].stateValues.xs[0].tree).eq(x);
-        expect(components['/_collect1'].replacements[i].stateValues.xs[1].tree).eq(0.5 * x);
+        expect((await components['/_collect1'].replacements[i].stateValues.xs)[0].tree).eq(x);
+        expect((await components['/_collect1'].replacements[i].stateValues.xs)[1].tree).eq(0.5 * x);
         expect(components['/_map2'].replacements[i].replacements[0].stateValues.xs[0].tree).eq(x + 1);
         expect(components['/_map2'].replacements[i].replacements[0].stateValues.xs[1].tree).eq(0.75 * x);
-        expect(components['/_collect2'].replacements[i].stateValues.xs[0].tree).eq(x);
-        expect(components['/_collect2'].replacements[i].stateValues.xs[1].tree).eq(0.5 * x);
+        expect((await components['/_collect2'].replacements[i].stateValues.xs)[0].tree).eq(x);
+        expect((await components['/_collect2'].replacements[i].stateValues.xs)[1].tree).eq(0.5 * x);
         expect(components['/_collect2'].replacements[i + 4].stateValues.xs[0].tree).eq(x + 1);
         expect(components['/_collect2'].replacements[i + 4].stateValues.xs[1].tree).eq(0.75 * x);
         expect(components['/_collect3'].replacements[i].stateValues.value.tree).eq(0.5 * x);
@@ -457,7 +457,7 @@ describe('Collect Tag Tests', function () {
     cy.log("increase number of points to 6")
     cy.get('#\\/length textarea').type(`{end}{backspace}6{enter}`, { force: true });
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/_map1'].replacements.length - components['/_map1'].replacementsToWithhold).eq(6);
       expect(components['/_collect1'].replacements.length).eq(6);
@@ -469,12 +469,12 @@ describe('Collect Tag Tests', function () {
         let x = i + 1;
         expect(components['/_map1'].replacements[i].replacements[0].stateValues.xs[0].tree).eq(x);
         expect(components['/_map1'].replacements[i].replacements[0].stateValues.xs[1].tree).eq(0.5 * x);
-        expect(components['/_collect1'].replacements[i].stateValues.xs[0].tree).eq(x);
-        expect(components['/_collect1'].replacements[i].stateValues.xs[1].tree).eq(0.5 * x);
+        expect((await components['/_collect1'].replacements[i].stateValues.xs)[0].tree).eq(x);
+        expect((await components['/_collect1'].replacements[i].stateValues.xs)[1].tree).eq(0.5 * x);
         expect(components['/_map2'].replacements[i].replacements[0].stateValues.xs[0].tree).eq(x + 1);
         expect(components['/_map2'].replacements[i].replacements[0].stateValues.xs[1].tree).eq(0.75 * x);
-        expect(components['/_collect2'].replacements[i].stateValues.xs[0].tree).eq(x);
-        expect(components['/_collect2'].replacements[i].stateValues.xs[1].tree).eq(0.5 * x);
+        expect((await components['/_collect2'].replacements[i].stateValues.xs)[0].tree).eq(x);
+        expect((await components['/_collect2'].replacements[i].stateValues.xs)[1].tree).eq(0.5 * x);
         expect(components['/_collect2'].replacements[i + 6].stateValues.xs[0].tree).eq(x + 1);
         expect(components['/_collect2'].replacements[i + 6].stateValues.xs[1].tree).eq(0.75 * x);
         expect(components['/_collect3'].replacements[i].stateValues.value.tree).eq(0.5 * x);
@@ -484,9 +484,8 @@ describe('Collect Tag Tests', function () {
     })
   });
 
-
   it('collect dynamic points from groups', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -522,7 +521,7 @@ describe('Collect Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/_map1'].replacements.length).eq(3);
       expect(components['/_collect1'].replacements.length).eq(3);
@@ -534,12 +533,12 @@ describe('Collect Tag Tests', function () {
         let x = i + 1;
         expect(components['/_map1'].replacements[i].replacements[0].stateValues.xs[0].tree).eq(x);
         expect(components['/_map1'].replacements[i].replacements[0].stateValues.xs[1].tree).eq(2 * x);
-        expect(components['/_collect1'].replacements[i].stateValues.xs[0].tree).eq(x);
-        expect(components['/_collect1'].replacements[i].stateValues.xs[1].tree).eq(2 * x);
+        expect((await components['/_collect1'].replacements[i].stateValues.xs)[0].tree).eq(x);
+        expect((await components['/_collect1'].replacements[i].stateValues.xs)[1].tree).eq(2 * x);
         expect(components['/_map2'].replacements[i].replacements[0].stateValues.xs[0].tree).eq(x + 1);
         expect(components['/_map2'].replacements[i].replacements[0].stateValues.xs[1].tree).eq(3 * x);
-        expect(components['/_collect2'].replacements[i].stateValues.xs[0].tree).eq(x);
-        expect(components['/_collect2'].replacements[i].stateValues.xs[1].tree).eq(2 * x);
+        expect((await components['/_collect2'].replacements[i].stateValues.xs)[0].tree).eq(x);
+        expect((await components['/_collect2'].replacements[i].stateValues.xs)[1].tree).eq(2 * x);
         expect(components['/_collect2'].replacements[i + 3].stateValues.xs[0].tree).eq(x + 1);
         expect(components['/_collect2'].replacements[i + 3].stateValues.xs[1].tree).eq(3 * x);
         expect(components['/_collect3'].replacements[i].stateValues.value.tree).eq(2 * x);
@@ -551,7 +550,7 @@ describe('Collect Tag Tests', function () {
     cy.log("increase number of points")
     cy.get('#\\/length textarea').type(`{end}{backspace}5{enter}`, { force: true });
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/_map1'].replacements.length).eq(5);
       expect(components['/_collect1'].replacements.length).eq(5);
@@ -563,12 +562,12 @@ describe('Collect Tag Tests', function () {
         let x = i + 1;
         expect(components['/_map1'].replacements[i].replacements[0].stateValues.xs[0].tree).eq(x);
         expect(components['/_map1'].replacements[i].replacements[0].stateValues.xs[1].tree).eq(2 * x);
-        expect(components['/_collect1'].replacements[i].stateValues.xs[0].tree).eq(x);
-        expect(components['/_collect1'].replacements[i].stateValues.xs[1].tree).eq(2 * x);
+        expect((await components['/_collect1'].replacements[i].stateValues.xs)[0].tree).eq(x);
+        expect((await components['/_collect1'].replacements[i].stateValues.xs)[1].tree).eq(2 * x);
         expect(components['/_map2'].replacements[i].replacements[0].stateValues.xs[0].tree).eq(x + 1);
         expect(components['/_map2'].replacements[i].replacements[0].stateValues.xs[1].tree).eq(3 * x);
-        expect(components['/_collect2'].replacements[i].stateValues.xs[0].tree).eq(x);
-        expect(components['/_collect2'].replacements[i].stateValues.xs[1].tree).eq(2 * x);
+        expect((await components['/_collect2'].replacements[i].stateValues.xs)[0].tree).eq(x);
+        expect((await components['/_collect2'].replacements[i].stateValues.xs)[1].tree).eq(2 * x);
         expect(components['/_collect2'].replacements[i + 5].stateValues.xs[0].tree).eq(x + 1);
         expect(components['/_collect2'].replacements[i + 5].stateValues.xs[1].tree).eq(3 * x);
         expect(components['/_collect3'].replacements[i].stateValues.value.tree).eq(2 * x);
@@ -581,7 +580,7 @@ describe('Collect Tag Tests', function () {
     cy.log("change multiple")
     cy.get('#\\/mult textarea').type(`{end}{backspace}0.5{enter}`, { force: true });
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/_map1'].replacements.length).eq(5);
       expect(components['/_collect1'].replacements.length).eq(5);
@@ -593,12 +592,12 @@ describe('Collect Tag Tests', function () {
         let x = i + 1;
         expect(components['/_map1'].replacements[i].replacements[0].stateValues.xs[0].tree).eq(x);
         expect(components['/_map1'].replacements[i].replacements[0].stateValues.xs[1].tree).eq(0.5 * x);
-        expect(components['/_collect1'].replacements[i].stateValues.xs[0].tree).eq(x);
-        expect(components['/_collect1'].replacements[i].stateValues.xs[1].tree).eq(0.5 * x);
+        expect((await components['/_collect1'].replacements[i].stateValues.xs)[0].tree).eq(x);
+        expect((await components['/_collect1'].replacements[i].stateValues.xs)[1].tree).eq(0.5 * x);
         expect(components['/_map2'].replacements[i].replacements[0].stateValues.xs[0].tree).eq(x + 1);
         expect(components['/_map2'].replacements[i].replacements[0].stateValues.xs[1].tree).eq(0.75 * x);
-        expect(components['/_collect2'].replacements[i].stateValues.xs[0].tree).eq(x);
-        expect(components['/_collect2'].replacements[i].stateValues.xs[1].tree).eq(0.5 * x);
+        expect((await components['/_collect2'].replacements[i].stateValues.xs)[0].tree).eq(x);
+        expect((await components['/_collect2'].replacements[i].stateValues.xs)[1].tree).eq(0.5 * x);
         expect(components['/_collect2'].replacements[i + 5].stateValues.xs[0].tree).eq(x + 1);
         expect(components['/_collect2'].replacements[i + 5].stateValues.xs[1].tree).eq(0.75 * x);
         expect(components['/_collect3'].replacements[i].stateValues.value.tree).eq(0.5 * x);
@@ -611,7 +610,7 @@ describe('Collect Tag Tests', function () {
     cy.log("decrease number of points")
     cy.get('#\\/length textarea').type(`{end}{backspace}1{enter}`, { force: true });
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/_map1'].replacements.length - components['/_map1'].replacementsToWithhold).eq(1);
       expect(components['/_collect1'].replacements.length).eq(1);
@@ -623,12 +622,12 @@ describe('Collect Tag Tests', function () {
         let x = i + 1;
         expect(components['/_map1'].replacements[i].replacements[0].stateValues.xs[0].tree).eq(x);
         expect(components['/_map1'].replacements[i].replacements[0].stateValues.xs[1].tree).eq(0.5 * x);
-        expect(components['/_collect1'].replacements[i].stateValues.xs[0].tree).eq(x);
-        expect(components['/_collect1'].replacements[i].stateValues.xs[1].tree).eq(0.5 * x);
+        expect((await components['/_collect1'].replacements[i].stateValues.xs)[0].tree).eq(x);
+        expect((await components['/_collect1'].replacements[i].stateValues.xs)[1].tree).eq(0.5 * x);
         expect(components['/_map2'].replacements[i].replacements[0].stateValues.xs[0].tree).eq(x + 1);
         expect(components['/_map2'].replacements[i].replacements[0].stateValues.xs[1].tree).eq(0.75 * x);
-        expect(components['/_collect2'].replacements[i].stateValues.xs[0].tree).eq(x);
-        expect(components['/_collect2'].replacements[i].stateValues.xs[1].tree).eq(0.5 * x);
+        expect((await components['/_collect2'].replacements[i].stateValues.xs)[0].tree).eq(x);
+        expect((await components['/_collect2'].replacements[i].stateValues.xs)[1].tree).eq(0.5 * x);
         expect(components['/_collect2'].replacements[i + 1].stateValues.xs[0].tree).eq(x + 1);
         expect(components['/_collect2'].replacements[i + 1].stateValues.xs[1].tree).eq(0.75 * x);
         expect(components['/_collect3'].replacements[i].stateValues.value.tree).eq(0.5 * x);
@@ -641,7 +640,7 @@ describe('Collect Tag Tests', function () {
     cy.log("increase number of points back to 4")
     cy.get('#\\/length textarea').type(`{end}{backspace}4{enter}`, { force: true });
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/_map1'].replacements.length - components['/_map1'].replacementsToWithhold).eq(4);
       expect(components['/_collect1'].replacements.length).eq(4);
@@ -653,12 +652,12 @@ describe('Collect Tag Tests', function () {
         let x = i + 1;
         expect(components['/_map1'].replacements[i].replacements[0].stateValues.xs[0].tree).eq(x);
         expect(components['/_map1'].replacements[i].replacements[0].stateValues.xs[1].tree).eq(0.5 * x);
-        expect(components['/_collect1'].replacements[i].stateValues.xs[0].tree).eq(x);
-        expect(components['/_collect1'].replacements[i].stateValues.xs[1].tree).eq(0.5 * x);
+        expect((await components['/_collect1'].replacements[i].stateValues.xs)[0].tree).eq(x);
+        expect((await components['/_collect1'].replacements[i].stateValues.xs)[1].tree).eq(0.5 * x);
         expect(components['/_map2'].replacements[i].replacements[0].stateValues.xs[0].tree).eq(x + 1);
         expect(components['/_map2'].replacements[i].replacements[0].stateValues.xs[1].tree).eq(0.75 * x);
-        expect(components['/_collect2'].replacements[i].stateValues.xs[0].tree).eq(x);
-        expect(components['/_collect2'].replacements[i].stateValues.xs[1].tree).eq(0.5 * x);
+        expect((await components['/_collect2'].replacements[i].stateValues.xs)[0].tree).eq(x);
+        expect((await components['/_collect2'].replacements[i].stateValues.xs)[1].tree).eq(0.5 * x);
         expect(components['/_collect2'].replacements[i + 4].stateValues.xs[0].tree).eq(x + 1);
         expect(components['/_collect2'].replacements[i + 4].stateValues.xs[1].tree).eq(0.75 * x);
         expect(components['/_collect3'].replacements[i].stateValues.value.tree).eq(0.5 * x);
@@ -670,7 +669,7 @@ describe('Collect Tag Tests', function () {
     cy.log("increase number of points to 6")
     cy.get('#\\/length textarea').type(`{end}{backspace}6{enter}`, { force: true });
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/_map1'].replacements.length - components['/_map1'].replacementsToWithhold).eq(6);
       expect(components['/_collect1'].replacements.length).eq(6);
@@ -682,12 +681,12 @@ describe('Collect Tag Tests', function () {
         let x = i + 1;
         expect(components['/_map1'].replacements[i].replacements[0].stateValues.xs[0].tree).eq(x);
         expect(components['/_map1'].replacements[i].replacements[0].stateValues.xs[1].tree).eq(0.5 * x);
-        expect(components['/_collect1'].replacements[i].stateValues.xs[0].tree).eq(x);
-        expect(components['/_collect1'].replacements[i].stateValues.xs[1].tree).eq(0.5 * x);
+        expect((await components['/_collect1'].replacements[i].stateValues.xs)[0].tree).eq(x);
+        expect((await components['/_collect1'].replacements[i].stateValues.xs)[1].tree).eq(0.5 * x);
         expect(components['/_map2'].replacements[i].replacements[0].stateValues.xs[0].tree).eq(x + 1);
         expect(components['/_map2'].replacements[i].replacements[0].stateValues.xs[1].tree).eq(0.75 * x);
-        expect(components['/_collect2'].replacements[i].stateValues.xs[0].tree).eq(x);
-        expect(components['/_collect2'].replacements[i].stateValues.xs[1].tree).eq(0.5 * x);
+        expect((await components['/_collect2'].replacements[i].stateValues.xs)[0].tree).eq(x);
+        expect((await components['/_collect2'].replacements[i].stateValues.xs)[1].tree).eq(0.5 * x);
         expect(components['/_collect2'].replacements[i + 6].stateValues.xs[0].tree).eq(x + 1);
         expect(components['/_collect2'].replacements[i + 6].stateValues.xs[1].tree).eq(0.75 * x);
         expect(components['/_collect3'].replacements[i].stateValues.value.tree).eq(0.5 * x);
@@ -700,7 +699,7 @@ describe('Collect Tag Tests', function () {
   // got rid of include hidden and always include hidden
   // rationale: if component becomes unhidden, it's not communicated to collect so it can't grab it after the fact
   it.skip(`default don't include hidden`, () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -724,7 +723,7 @@ describe('Collect Tag Tests', function () {
       expect(text.trim()).equal('1')
     })
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/_collect1'].replacements.length).eq(0);
       expect(components['/_collect2'].replacements.length).eq(0);
@@ -733,7 +732,7 @@ describe('Collect Tag Tests', function () {
   })
 
   it.skip(`dynamically change if include hidden`, () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -764,7 +763,7 @@ describe('Collect Tag Tests', function () {
       expect(text.trim()).equal('1')
     })
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/_collect1'].replacements.length).eq(0);
       expect(components['/_collect2'].replacements.length).eq(0);
@@ -774,7 +773,7 @@ describe('Collect Tag Tests', function () {
 
     cy.log('include hidden')
     cy.get('#\\/_booleaninput1_input').click();
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/_collect1'].replacements.length).eq(2);
       expect(components['/_collect1'].replacements[0].stateValues.xs[0].tree).eq(1);
@@ -790,10 +789,10 @@ describe('Collect Tag Tests', function () {
     })
 
     cy.log('move points')
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components['/_collect1'].replacements[0].movePoint({ x: 3, y: 9 })
-      components['/_collect1'].replacements[1].movePoint({ x: -7, y: -6 })
+      await components['/_collect1'].replacements[0].movePoint({ x: 3, y: 9 })
+      await components['/_collect1'].replacements[1].movePoint({ x: -7, y: -6 })
       expect(components['/_collect1'].replacements.length).eq(2);
       expect(components['/_collect1'].replacements[0].stateValues.xs[0].tree).eq(3);
       expect(components['/_collect1'].replacements[0].stateValues.xs[1].tree).eq(9);
@@ -809,7 +808,7 @@ describe('Collect Tag Tests', function () {
 
     cy.log(`don't include hidden`)
     cy.get('#\\/_booleaninput1_input').click();
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/_collect1'].replacements.length).eq(0);
       expect(components['/_collect2'].replacements.length).eq(0);
@@ -819,9 +818,9 @@ describe('Collect Tag Tests', function () {
 
 
     cy.log('move line segment point')
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components['/_linesegment1'].moveLineSegment({ point1coords: [0, -8] })
+      await components['/_linesegment1'].moveLineSegment({ point1coords: [0, -8] })
       expect(components['/_collect1'].replacements.length).eq(0);
       expect(components['/_collect2'].replacements.length).eq(0);
       expect(components['/_linesegment1'].stateValues.endpoints[0].tree).eqls(["vector", 0, -8]);
@@ -831,7 +830,7 @@ describe('Collect Tag Tests', function () {
 
     cy.log('include hidden again')
     cy.get('#\\/_booleaninput1_input').click();
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/_collect1'].replacements.length).eq(2);
       expect(components['/_collect1'].replacements[0].stateValues.xs[0].tree).eq(0);
@@ -847,9 +846,9 @@ describe('Collect Tag Tests', function () {
     })
 
     cy.log('move other line segment point')
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components['/_linesegment1'].moveLineSegment({ point2coords: [3, 4] })
+      await components['/_linesegment1'].moveLineSegment({ point2coords: [3, 4] })
       expect(components['/_collect1'].replacements.length).eq(2);
       expect(components['/_collect1'].replacements[0].stateValues.xs[0].tree).eq(0);
       expect(components['/_collect1'].replacements[0].stateValues.xs[1].tree).eq(-8);
@@ -865,7 +864,7 @@ describe('Collect Tag Tests', function () {
   })
 
   it('collect points and vectors from graphs', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -901,7 +900,7 @@ describe('Collect Tag Tests', function () {
     let x2 = -7, y2 = 4;
 
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/_point1'].stateValues.coords.tree).eqls(["vector", x1, y1]);
       expect(components['/_point2'].stateValues.coords.tree).eqls(["vector", x2, y2]);
@@ -924,14 +923,14 @@ describe('Collect Tag Tests', function () {
     })
 
     cy.log("move vector 1 via copy")
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       x1 = -8;
       y1 = 6;
       x2 = 3;
       y2 = 2;
 
       let components = Object.assign({}, win.state.components);
-      components['/_collect1'].replacements[2].moveVector({ tailcoords: [x1, y1], headcoords: [x2, y2] });
+      await components['/_collect1'].replacements[2].moveVector({ tailcoords: [x1, y1], headcoords: [x2, y2] });
       expect(components['/_point1'].stateValues.coords.tree).eqls(["vector", x1, y1]);
       expect(components['/_point2'].stateValues.coords.tree).eqls(["vector", x2, y2]);
       expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([x1, y1]);
@@ -953,14 +952,14 @@ describe('Collect Tag Tests', function () {
     })
 
     cy.log("move vector 2 via copy")
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       x1 = 9;
       y1 = 0;
       x2 = -7;
       y2 = 5;
 
       let components = Object.assign({}, win.state.components);
-      components['/_collect1'].replacements[5].moveVector({ tailcoords: [y1, x1], headcoords: [y2, x2] });
+      await components['/_collect1'].replacements[5].moveVector({ tailcoords: [y1, x1], headcoords: [y2, x2] });
       expect(components['/_point1'].stateValues.coords.tree).eqls(["vector", x1, y1]);
       expect(components['/_point2'].stateValues.coords.tree).eqls(["vector", x2, y2]);
       expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([x1, y1]);
@@ -983,7 +982,7 @@ describe('Collect Tag Tests', function () {
   });
 
   it('maximum number', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -1020,7 +1019,7 @@ describe('Collect Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/_map1'].replacements.length).eq(5);
       expect(components['/_collect1'].replacements.length).eq(2);
@@ -1035,15 +1034,15 @@ describe('Collect Tag Tests', function () {
       }
       for (let i = 0; i < 2; i++) {
         let x = i + 1;
-        expect(components['/_collect1'].replacements[i].stateValues.xs[0].tree).eq(x);
-        expect(components['/_collect1'].replacements[i].stateValues.xs[1].tree).eq(2 * x);
+        expect((await components['/_collect1'].replacements[i].stateValues.xs)[0].tree).eq(x);
+        expect((await components['/_collect1'].replacements[i].stateValues.xs)[1].tree).eq(2 * x);
         expect(components['/_map2'].replacements[i].replacements[0].stateValues.xs[0].tree).eq(x + 1);
         expect(components['/_map2'].replacements[i].replacements[0].stateValues.xs[1].tree).eq(3 * x);
       }
       for (let i = 0; i < 4; i++) {
         let x = i + 1;
-        expect(components['/_collect2'].replacements[i].stateValues.xs[0].tree).eq(x);
-        expect(components['/_collect2'].replacements[i].stateValues.xs[1].tree).eq(2 * x);
+        expect((await components['/_collect2'].replacements[i].stateValues.xs)[0].tree).eq(x);
+        expect((await components['/_collect2'].replacements[i].stateValues.xs)[1].tree).eq(2 * x);
       }
       for (let i = 0; i < 2; i++) {
         let x = i + 1;
@@ -1056,7 +1055,7 @@ describe('Collect Tag Tests', function () {
     cy.log("increase maxnumber")
     cy.get('#\\/maxnumber textarea').type(`{end}{backspace}5{enter}`, { force: true });
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/_map1'].replacements.length).eq(5);
       expect(components['/_collect1'].replacements.length).eq(5);
@@ -1068,12 +1067,12 @@ describe('Collect Tag Tests', function () {
         let x = i + 1;
         expect(components['/_map1'].replacements[i].replacements[0].stateValues.xs[0].tree).eq(x);
         expect(components['/_map1'].replacements[i].replacements[0].stateValues.xs[1].tree).eq(2 * x);
-        expect(components['/_collect1'].replacements[i].stateValues.xs[0].tree).eq(x);
-        expect(components['/_collect1'].replacements[i].stateValues.xs[1].tree).eq(2 * x);
+        expect((await components['/_collect1'].replacements[i].stateValues.xs)[0].tree).eq(x);
+        expect((await components['/_collect1'].replacements[i].stateValues.xs)[1].tree).eq(2 * x);
         expect(components['/_map2'].replacements[i].replacements[0].stateValues.xs[0].tree).eq(x + 1);
         expect(components['/_map2'].replacements[i].replacements[0].stateValues.xs[1].tree).eq(3 * x);
-        expect(components['/_collect2'].replacements[i].stateValues.xs[0].tree).eq(x);
-        expect(components['/_collect2'].replacements[i].stateValues.xs[1].tree).eq(2 * x);
+        expect((await components['/_collect2'].replacements[i].stateValues.xs)[0].tree).eq(x);
+        expect((await components['/_collect2'].replacements[i].stateValues.xs)[1].tree).eq(2 * x);
         expect(components['/_collect2'].replacements[i + 5].stateValues.xs[0].tree).eq(x + 1);
         expect(components['/_collect2'].replacements[i + 5].stateValues.xs[1].tree).eq(3 * x);
         expect(components['/_collect3'].replacements[i].stateValues.value.tree).eq(2 * x);
@@ -1087,7 +1086,7 @@ describe('Collect Tag Tests', function () {
     cy.log("increase maxnumber further")
     cy.get('#\\/maxnumber textarea').type(`{end}{backspace}10{enter}`, { force: true });
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/_map1'].replacements.length).eq(5);
       expect(components['/_collect1'].replacements.length).eq(5);
@@ -1099,12 +1098,12 @@ describe('Collect Tag Tests', function () {
         let x = i + 1;
         expect(components['/_map1'].replacements[i].replacements[0].stateValues.xs[0].tree).eq(x);
         expect(components['/_map1'].replacements[i].replacements[0].stateValues.xs[1].tree).eq(2 * x);
-        expect(components['/_collect1'].replacements[i].stateValues.xs[0].tree).eq(x);
-        expect(components['/_collect1'].replacements[i].stateValues.xs[1].tree).eq(2 * x);
+        expect((await components['/_collect1'].replacements[i].stateValues.xs)[0].tree).eq(x);
+        expect((await components['/_collect1'].replacements[i].stateValues.xs)[1].tree).eq(2 * x);
         expect(components['/_map2'].replacements[i].replacements[0].stateValues.xs[0].tree).eq(x + 1);
         expect(components['/_map2'].replacements[i].replacements[0].stateValues.xs[1].tree).eq(3 * x);
-        expect(components['/_collect2'].replacements[i].stateValues.xs[0].tree).eq(x);
-        expect(components['/_collect2'].replacements[i].stateValues.xs[1].tree).eq(2 * x);
+        expect((await components['/_collect2'].replacements[i].stateValues.xs)[0].tree).eq(x);
+        expect((await components['/_collect2'].replacements[i].stateValues.xs)[1].tree).eq(2 * x);
         expect(components['/_collect2'].replacements[i + 5].stateValues.xs[0].tree).eq(x + 1);
         expect(components['/_collect2'].replacements[i + 5].stateValues.xs[1].tree).eq(3 * x);
         expect(components['/_collect3'].replacements[i].stateValues.value.tree).eq(2 * x);
@@ -1118,7 +1117,7 @@ describe('Collect Tag Tests', function () {
     cy.log("change multiple")
     cy.get('#\\/mult textarea').type(`{end}{backspace}0.5{enter}`, { force: true });
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/_map1'].replacements.length).eq(5);
       expect(components['/_collect1'].replacements.length).eq(5);
@@ -1130,12 +1129,12 @@ describe('Collect Tag Tests', function () {
         let x = i + 1;
         expect(components['/_map1'].replacements[i].replacements[0].stateValues.xs[0].tree).eq(x);
         expect(components['/_map1'].replacements[i].replacements[0].stateValues.xs[1].tree).eq(0.5 * x);
-        expect(components['/_collect1'].replacements[i].stateValues.xs[0].tree).eq(x);
-        expect(components['/_collect1'].replacements[i].stateValues.xs[1].tree).eq(0.5 * x);
+        expect((await components['/_collect1'].replacements[i].stateValues.xs)[0].tree).eq(x);
+        expect((await components['/_collect1'].replacements[i].stateValues.xs)[1].tree).eq(0.5 * x);
         expect(components['/_map2'].replacements[i].replacements[0].stateValues.xs[0].tree).eq(x + 1);
         expect(components['/_map2'].replacements[i].replacements[0].stateValues.xs[1].tree).eq(0.75 * x);
-        expect(components['/_collect2'].replacements[i].stateValues.xs[0].tree).eq(x);
-        expect(components['/_collect2'].replacements[i].stateValues.xs[1].tree).eq(0.5 * x);
+        expect((await components['/_collect2'].replacements[i].stateValues.xs)[0].tree).eq(x);
+        expect((await components['/_collect2'].replacements[i].stateValues.xs)[1].tree).eq(0.5 * x);
         expect(components['/_collect2'].replacements[i + 5].stateValues.xs[0].tree).eq(x + 1);
         expect(components['/_collect2'].replacements[i + 5].stateValues.xs[1].tree).eq(0.75 * x);
         expect(components['/_collect3'].replacements[i].stateValues.value.tree).eq(0.5 * x);
@@ -1148,7 +1147,7 @@ describe('Collect Tag Tests', function () {
     cy.log("decrease number of points")
     cy.get('#\\/length textarea').type(`{end}{backspace}1{enter}`, { force: true });
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/_map1'].replacements.length - components['/_map1'].replacementsToWithhold).eq(1);
       expect(components['/_collect1'].replacements.length).eq(1);
@@ -1160,12 +1159,12 @@ describe('Collect Tag Tests', function () {
         let x = i + 1;
         expect(components['/_map1'].replacements[i].replacements[0].stateValues.xs[0].tree).eq(x);
         expect(components['/_map1'].replacements[i].replacements[0].stateValues.xs[1].tree).eq(0.5 * x);
-        expect(components['/_collect1'].replacements[i].stateValues.xs[0].tree).eq(x);
-        expect(components['/_collect1'].replacements[i].stateValues.xs[1].tree).eq(0.5 * x);
+        expect((await components['/_collect1'].replacements[i].stateValues.xs)[0].tree).eq(x);
+        expect((await components['/_collect1'].replacements[i].stateValues.xs)[1].tree).eq(0.5 * x);
         expect(components['/_map2'].replacements[i].replacements[0].stateValues.xs[0].tree).eq(x + 1);
         expect(components['/_map2'].replacements[i].replacements[0].stateValues.xs[1].tree).eq(0.75 * x);
-        expect(components['/_collect2'].replacements[i].stateValues.xs[0].tree).eq(x);
-        expect(components['/_collect2'].replacements[i].stateValues.xs[1].tree).eq(0.5 * x);
+        expect((await components['/_collect2'].replacements[i].stateValues.xs)[0].tree).eq(x);
+        expect((await components['/_collect2'].replacements[i].stateValues.xs)[1].tree).eq(0.5 * x);
         expect(components['/_collect2'].replacements[i + 1].stateValues.xs[0].tree).eq(x + 1);
         expect(components['/_collect2'].replacements[i + 1].stateValues.xs[1].tree).eq(0.75 * x);
         expect(components['/_collect3'].replacements[i].stateValues.value.tree).eq(0.5 * x);
@@ -1178,7 +1177,7 @@ describe('Collect Tag Tests', function () {
     cy.log("increase number of points back to 4")
     cy.get('#\\/length textarea').type(`{end}{backspace}4{enter}`, { force: true });
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/_map1'].replacements.length - components['/_map1'].replacementsToWithhold).eq(4);
       expect(components['/_collect1'].replacements.length).eq(4);
@@ -1190,12 +1189,12 @@ describe('Collect Tag Tests', function () {
         let x = i + 1;
         expect(components['/_map1'].replacements[i].replacements[0].stateValues.xs[0].tree).eq(x);
         expect(components['/_map1'].replacements[i].replacements[0].stateValues.xs[1].tree).eq(0.5 * x);
-        expect(components['/_collect1'].replacements[i].stateValues.xs[0].tree).eq(x);
-        expect(components['/_collect1'].replacements[i].stateValues.xs[1].tree).eq(0.5 * x);
+        expect((await components['/_collect1'].replacements[i].stateValues.xs)[0].tree).eq(x);
+        expect((await components['/_collect1'].replacements[i].stateValues.xs)[1].tree).eq(0.5 * x);
         expect(components['/_map2'].replacements[i].replacements[0].stateValues.xs[0].tree).eq(x + 1);
         expect(components['/_map2'].replacements[i].replacements[0].stateValues.xs[1].tree).eq(0.75 * x);
-        expect(components['/_collect2'].replacements[i].stateValues.xs[0].tree).eq(x);
-        expect(components['/_collect2'].replacements[i].stateValues.xs[1].tree).eq(0.5 * x);
+        expect((await components['/_collect2'].replacements[i].stateValues.xs)[0].tree).eq(x);
+        expect((await components['/_collect2'].replacements[i].stateValues.xs)[1].tree).eq(0.5 * x);
         expect(components['/_collect2'].replacements[i + 4].stateValues.xs[0].tree).eq(x + 1);
         expect(components['/_collect2'].replacements[i + 4].stateValues.xs[1].tree).eq(0.75 * x);
         expect(components['/_collect3'].replacements[i].stateValues.value.tree).eq(0.5 * x);
@@ -1208,7 +1207,7 @@ describe('Collect Tag Tests', function () {
     cy.get('#\\/maxnumber textarea').type(`{end}{backspace}{backspace}3{enter}`, { force: true });
 
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/_map1'].replacements.length - components['/_map1'].replacementsToWithhold).eq(4);
       expect(components['/_collect1'].replacements.length).eq(3);
@@ -1223,8 +1222,8 @@ describe('Collect Tag Tests', function () {
       }
       for (let i = 0; i < 3; i++) {
         let x = i + 1;
-        expect(components['/_collect1'].replacements[i].stateValues.xs[0].tree).eq(x);
-        expect(components['/_collect1'].replacements[i].stateValues.xs[1].tree).eq(0.5 * x);
+        expect((await components['/_collect1'].replacements[i].stateValues.xs)[0].tree).eq(x);
+        expect((await components['/_collect1'].replacements[i].stateValues.xs)[1].tree).eq(0.5 * x);
         expect(components['/_map2'].replacements[i].replacements[0].stateValues.xs[0].tree).eq(x + 1);
         expect(components['/_map2'].replacements[i].replacements[0].stateValues.xs[1].tree).eq(0.75 * x);
       }
@@ -1232,8 +1231,8 @@ describe('Collect Tag Tests', function () {
         let x = i + 1;
         expect(components['/_map1'].replacements[i].replacements[0].stateValues.xs[0].tree).eq(x);
         expect(components['/_map1'].replacements[i].replacements[0].stateValues.xs[1].tree).eq(0.5 * x);
-        expect(components['/_collect2'].replacements[i].stateValues.xs[0].tree).eq(x);
-        expect(components['/_collect2'].replacements[i].stateValues.xs[1].tree).eq(0.5 * x);
+        expect((await components['/_collect2'].replacements[i].stateValues.xs)[0].tree).eq(x);
+        expect((await components['/_collect2'].replacements[i].stateValues.xs)[1].tree).eq(0.5 * x);
       }
       for (let i = 0; i < 2; i++) {
         let x = i + 1;
@@ -1250,7 +1249,7 @@ describe('Collect Tag Tests', function () {
 
   // removed functionality of collecting child numbers, at least for now
   it.skip('collect child numbers', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -1280,7 +1279,7 @@ describe('Collect Tag Tests', function () {
       expect(text.trim()).equal('3')
     })
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/_collect1'].replacements[0].stateValues.number).eq(1);
       expect(components['/_collect1'].replacements[1].stateValues.number).eq(2);
@@ -1308,7 +1307,7 @@ describe('Collect Tag Tests', function () {
       expect(text.trim()).equal('6')
     })
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/_collect1'].replacements[0].stateValues.number).eq(1);
       expect(components['/_collect1'].replacements[1].stateValues.number).eq(2);
@@ -1333,7 +1332,7 @@ describe('Collect Tag Tests', function () {
       expect(text.trim()).equal('4')
     })
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/_collect1'].replacements[0].stateValues.number).eq(1);
       expect(components['/_collect1'].replacements[1].stateValues.number).eq(2);
@@ -1344,7 +1343,7 @@ describe('Collect Tag Tests', function () {
   });
 
   it('collect, extract, copy multiple ways', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -1529,6 +1528,7 @@ describe('Collect Tag Tests', function () {
 
     // cy.get('#\\/p_original > span:nth-of-type(5) input').should('have.value', 'v');
 
+    cy.get('#\\/p_1 > span:nth-of-type(5) .mjx-mrow').should('contain.text', 'v')
     cy.get('#\\/p_1 > span:nth-of-type(5)').find('.mjx-mrow').eq(0).invoke('text').then((text) => { expect(text.trim()).equal('v') })
     cy.get('#\\/p_1a > span:nth-of-type(5)').find('.mjx-mrow').eq(0).invoke('text').then((text) => { expect(text.trim()).equal('v') })
     cy.get('#\\/p_1b > span:nth-of-type(5)').find('.mjx-mrow').eq(0).invoke('text').then((text) => { expect(text.trim()).equal('v') })
@@ -1915,7 +1915,7 @@ describe('Collect Tag Tests', function () {
   // main point: when use macro on collection (but not group)
   // inputs turn into their values
   it('test macros by collecting inputs and others', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -1936,12 +1936,12 @@ describe('Collect Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let collect2 = components["/_p2"].definingChildren[0];
       let group2 = components["/_p3"].definingChildren[0];
 
-      let group2reps = group2.stateValues.fullRecursiveReplacements
+      let group2reps = (await group2.stateValues.fullRecursiveReplacements)
         .map(x => components[x.componentName]);
 
       expect(components['/_group1'].replacements.length).eq(13);
@@ -2009,7 +2009,7 @@ describe('Collect Tag Tests', function () {
   });
 
   it('collect does not ignore hide by default', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -2035,7 +2035,7 @@ describe('Collect Tag Tests', function () {
   });
 
   it('collect keeps hidden children hidden', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -2068,7 +2068,7 @@ describe('Collect Tag Tests', function () {
   });
 
   it('collecting from within a hidden section', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -2101,7 +2101,7 @@ describe('Collect Tag Tests', function () {
   });
 
   it('copies hide dynamically', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -2169,7 +2169,7 @@ describe('Collect Tag Tests', function () {
   })
 
   it('allChildrenOrdered consistent with dynamic collect and adapters', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -2231,32 +2231,32 @@ describe('Collect Tag Tests', function () {
 
     }
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       checkAllChildren(components);
     });
 
     cy.get('#\\/n textarea').type('{end}{backspace}4{enter}', { force: true })
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       checkAllChildren(components);
     });
 
 
     cy.get('#\\/n textarea').type('{end}{backspace}0{enter}', { force: true })
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       checkAllChildren(components);
     });
 
     cy.get('#\\/n textarea').type('{end}{backspace}3{enter}', { force: true })
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       checkAllChildren(components);
     });
 
     cy.get('#\\/n textarea').type('{end}{backspace}1{enter}', { force: true })
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       checkAllChildren(components);
     });
@@ -2264,7 +2264,7 @@ describe('Collect Tag Tests', function () {
   })
 
   it('overwrite attributes using collect', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -2291,7 +2291,7 @@ describe('Collect Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
 
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
 
       let A3 = components["/g3"].activeChildren[0];

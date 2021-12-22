@@ -15,7 +15,7 @@ describe('Answer Tag Tests', function () {
   })
 
   it('answer sugar from one string', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -28,7 +28,7 @@ describe('Answer Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let mathinputName = components['/_answer1'].stateValues.inputChildren[0].componentName
       let mathinputAnchor = cesc('#' + mathinputName) + " textarea";
@@ -51,10 +51,10 @@ describe('Answer Tag Tests', function () {
       cy.get(number1Anchor).should('have.text', '0')
 
       cy.log('Test internal values')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
-        expect(components['/_answer1'].stateValues.currentResponses.map(x => x.tree)).eqls(['\uFF3F']);
-        expect(components['/_answer1'].stateValues.submittedResponses).eqls([]);
+        expect((await components['/_answer1'].stateValues.currentResponses).map(x => x.tree)).eqls(['\uFF3F']);
+        expect(await components['/_answer1'].stateValues.submittedResponses).eqls([]);
         expect(components[mathinputName].stateValues.value.tree).eq('\uFF3F');
         // expect(components[mathinputName].stateValues.submittedValue.tree).eq('\uFF3F');
       });
@@ -65,6 +65,7 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
       // cy.get(mathinputAnchor).should('have.value', 'x+y');
+      cy.get(math1Anchor + ' .mjx-mrow').should('have.text', 'x+y')
       cy.get(math1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x+y')
       });
@@ -75,10 +76,10 @@ describe('Answer Tag Tests', function () {
 
 
       cy.log('Test internal values')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
-        expect(components['/_answer1'].stateValues.currentResponses.map(x => x.tree)).eqls([['+', 'x', 'y']]);
-        expect(components['/_answer1'].stateValues.submittedResponses).eqls([]);
+        expect((await components['/_answer1'].stateValues.currentResponses).map(x => x.tree)).eqls([['+', 'x', 'y']]);
+        expect(await components['/_answer1'].stateValues.submittedResponses).eqls([]);
         expect(components[mathinputName].stateValues.value.tree).eqls(['+', 'x', 'y']);
         // expect(components[mathinputName].stateValues.submittedValue.tree).eq('\uFF3F');
       });
@@ -88,7 +89,7 @@ describe('Answer Tag Tests', function () {
       cy.get(mathinputAnchor).type(`{enter}`, { force: true });
 
       // wrap to change value of math2Anchor
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         math2 = components['/_copy2'].replacements[0];
         math2Anchor = cesc('#' + math2.componentName);
 
@@ -104,10 +105,10 @@ describe('Answer Tag Tests', function () {
         cy.get(number1Anchor).should('have.text', '1')
 
         cy.log('Test internal values')
-        cy.window().then((win) => {
+        cy.window().then(async (win) => {
           expect(components['/_answer1'].stateValues.creditAchieved).eq(1);
-          expect(components['/_answer1'].stateValues.currentResponses.map(x => x.tree)).eqls([['+', 'x', 'y']]);
-          expect(components['/_answer1'].stateValues.submittedResponses.map(x => x.tree)).eqls([['+', 'x', 'y']]);
+          expect((await components['/_answer1'].stateValues.currentResponses).map(x => x.tree)).eqls([['+', 'x', 'y']]);
+          expect((await components['/_answer1'].stateValues.submittedResponses).map(x => x.tree)).eqls([['+', 'x', 'y']]);
           expect(components[mathinputName].stateValues.value.tree).eqls(['+', 'x', 'y']);
           // expect(components[mathinputName].stateValues.submittedValue.tree).eqls(['+', 'x', 'y']);
         });
@@ -118,6 +119,7 @@ describe('Answer Tag Tests', function () {
 
         cy.log('Test value displayed in browser')
         // cy.get(mathinputAnchor).should('have.value', 'x');
+        cy.get(math1Anchor + ' .mjx-mrow').should('have.text', 'x')
         cy.get(math1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('x')
         });
@@ -127,10 +129,10 @@ describe('Answer Tag Tests', function () {
         cy.get(number1Anchor).should('have.text', '1')
 
         cy.log('Test internal values')
-        cy.window().then((win) => {
+        cy.window().then(async (win) => {
           expect(components['/_answer1'].stateValues.creditAchieved).eq(1);
-          expect(components['/_answer1'].stateValues.currentResponses.map(x => x.tree)).eqls(['x']);
-          expect(components['/_answer1'].stateValues.submittedResponses.map(x => x.tree)).eqls([['+', 'x', 'y']]);
+          expect((await components['/_answer1'].stateValues.currentResponses).map(x => x.tree)).eqls(['x']);
+          expect((await components['/_answer1'].stateValues.submittedResponses).map(x => x.tree)).eqls([['+', 'x', 'y']]);
           expect(components[mathinputName].stateValues.value.tree).eqls('x');
           // expect(components[mathinputName].stateValues.submittedValue.tree).eqls(['+', 'x', 'y']);
         });
@@ -150,10 +152,10 @@ describe('Answer Tag Tests', function () {
 
 
         cy.log('Test internal values')
-        cy.window().then((win) => {
+        cy.window().then(async (win) => {
           expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
-          expect(components['/_answer1'].stateValues.currentResponses.map(x => x.tree)).eqls(['x']);
-          expect(components['/_answer1'].stateValues.submittedResponses.map(x => x.tree)).eqls(['x']);
+          expect((await components['/_answer1'].stateValues.currentResponses).map(x => x.tree)).eqls(['x']);
+          expect((await components['/_answer1'].stateValues.submittedResponses).map(x => x.tree)).eqls(['x']);
           expect(components[mathinputName].stateValues.value.tree).eqls('x');
           // expect(components[mathinputName].stateValues.submittedValue.tree).eqls('x');
         });
@@ -164,7 +166,7 @@ describe('Answer Tag Tests', function () {
   });
 
   it('answer sugar from one macro', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -178,7 +180,7 @@ describe('Answer Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let mathinputName = components['/_answer1'].stateValues.inputChildren[0].componentName
       let mathinputAnchor = cesc('#' + mathinputName) + " textarea";
@@ -201,10 +203,10 @@ describe('Answer Tag Tests', function () {
       cy.get(number1Anchor).should('have.text', '0')
 
       cy.log('Test internal values')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
-        expect(components['/_answer1'].stateValues.currentResponses.map(x => x.tree)).eqls(['\uFF3F']);
-        expect(components['/_answer1'].stateValues.submittedResponses).eqls([]);
+        expect((await components['/_answer1'].stateValues.currentResponses).map(x => x.tree)).eqls(['\uFF3F']);
+        expect(await components['/_answer1'].stateValues.submittedResponses).eqls([]);
         expect(components[mathinputName].stateValues.value.tree).eq('\uFF3F');
         // expect(components[mathinputName].stateValues.submittedValue.tree).eq('\uFF3F');
       });
@@ -215,6 +217,7 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
       // cy.get(mathinputAnchor).should('have.value', 'x+y');
+      cy.get(math1Anchor + ' .mjx-mrow').should('have.text', 'x+y')
       cy.get(math1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x+y')
       });
@@ -225,10 +228,10 @@ describe('Answer Tag Tests', function () {
 
 
       cy.log('Test internal values')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
-        expect(components['/_answer1'].stateValues.currentResponses.map(x => x.tree)).eqls([['+', 'x', 'y']]);
-        expect(components['/_answer1'].stateValues.submittedResponses).eqls([]);
+        expect((await components['/_answer1'].stateValues.currentResponses).map(x => x.tree)).eqls([['+', 'x', 'y']]);
+        expect(await components['/_answer1'].stateValues.submittedResponses).eqls([]);
         expect(components[mathinputName].stateValues.value.tree).eqls(['+', 'x', 'y']);
         // expect(components[mathinputName].stateValues.submittedValue.tree).eq('\uFF3F');
       });
@@ -238,7 +241,7 @@ describe('Answer Tag Tests', function () {
       cy.get(mathinputAnchor).type(`{enter}`, { force: true });
 
       // wrap to change value of math2Anchor
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         math2 = components['/_copy2'].replacements[0];
         math2Anchor = cesc('#' + math2.componentName);
 
@@ -254,10 +257,10 @@ describe('Answer Tag Tests', function () {
         cy.get(number1Anchor).should('have.text', '1')
 
         cy.log('Test internal values')
-        cy.window().then((win) => {
+        cy.window().then(async (win) => {
           expect(components['/_answer1'].stateValues.creditAchieved).eq(1);
-          expect(components['/_answer1'].stateValues.currentResponses.map(x => x.tree)).eqls([['+', 'x', 'y']]);
-          expect(components['/_answer1'].stateValues.submittedResponses.map(x => x.tree)).eqls([['+', 'x', 'y']]);
+          expect((await components['/_answer1'].stateValues.currentResponses).map(x => x.tree)).eqls([['+', 'x', 'y']]);
+          expect((await components['/_answer1'].stateValues.submittedResponses).map(x => x.tree)).eqls([['+', 'x', 'y']]);
           expect(components[mathinputName].stateValues.value.tree).eqls(['+', 'x', 'y']);
           // expect(components[mathinputName].stateValues.submittedValue.tree).eqls(['+', 'x', 'y']);
         });
@@ -268,6 +271,7 @@ describe('Answer Tag Tests', function () {
 
         cy.log('Test value displayed in browser')
         // cy.get(mathinputAnchor).should('have.value', 'x');
+        cy.get(math1Anchor + ' .mjx-mrow').should('have.text', 'x')
         cy.get(math1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('x')
         });
@@ -277,10 +281,10 @@ describe('Answer Tag Tests', function () {
         cy.get(number1Anchor).should('have.text', '1')
 
         cy.log('Test internal values')
-        cy.window().then((win) => {
+        cy.window().then(async (win) => {
           expect(components['/_answer1'].stateValues.creditAchieved).eq(1);
-          expect(components['/_answer1'].stateValues.currentResponses.map(x => x.tree)).eqls(['x']);
-          expect(components['/_answer1'].stateValues.submittedResponses.map(x => x.tree)).eqls([['+', 'x', 'y']]);
+          expect((await components['/_answer1'].stateValues.currentResponses).map(x => x.tree)).eqls(['x']);
+          expect((await components['/_answer1'].stateValues.submittedResponses).map(x => x.tree)).eqls([['+', 'x', 'y']]);
           expect(components[mathinputName].stateValues.value.tree).eqls('x');
           // expect(components[mathinputName].stateValues.submittedValue.tree).eqls(['+', 'x', 'y']);
         });
@@ -300,10 +304,10 @@ describe('Answer Tag Tests', function () {
 
 
         cy.log('Test internal values')
-        cy.window().then((win) => {
+        cy.window().then(async (win) => {
           expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
-          expect(components['/_answer1'].stateValues.currentResponses.map(x => x.tree)).eqls(['x']);
-          expect(components['/_answer1'].stateValues.submittedResponses.map(x => x.tree)).eqls(['x']);
+          expect((await components['/_answer1'].stateValues.currentResponses).map(x => x.tree)).eqls(['x']);
+          expect((await components['/_answer1'].stateValues.submittedResponses).map(x => x.tree)).eqls(['x']);
           expect(components[mathinputName].stateValues.value.tree).eqls('x');
           // expect(components[mathinputName].stateValues.submittedValue.tree).eqls('x');
         });
@@ -314,7 +318,7 @@ describe('Answer Tag Tests', function () {
   });
 
   it('answer sugar from macros and string', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -328,7 +332,7 @@ describe('Answer Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let mathinputName = components['/_answer1'].stateValues.inputChildren[0].componentName
       let mathinputAnchor = cesc('#' + mathinputName) + " textarea";
@@ -351,10 +355,10 @@ describe('Answer Tag Tests', function () {
       cy.get(number1Anchor).should('have.text', '0')
 
       cy.log('Test internal values')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
-        expect(components['/_answer1'].stateValues.currentResponses.map(x => x.tree)).eqls(['\uFF3F']);
-        expect(components['/_answer1'].stateValues.submittedResponses).eqls([]);
+        expect((await components['/_answer1'].stateValues.currentResponses).map(x => x.tree)).eqls(['\uFF3F']);
+        expect(await components['/_answer1'].stateValues.submittedResponses).eqls([]);
         expect(components[mathinputName].stateValues.value.tree).eq('\uFF3F');
         // expect(components[mathinputName].stateValues.submittedValue.tree).eq('\uFF3F');
       });
@@ -365,6 +369,7 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
       // cy.get(mathinputAnchor).should('have.value', 'x+y');
+      cy.get(math1Anchor + ' .mjx-mrow').should('have.text', 'x+y')
       cy.get(math1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x+y')
       });
@@ -375,10 +380,10 @@ describe('Answer Tag Tests', function () {
 
 
       cy.log('Test internal values')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
-        expect(components['/_answer1'].stateValues.currentResponses.map(x => x.tree)).eqls([['+', 'x', 'y']]);
-        expect(components['/_answer1'].stateValues.submittedResponses).eqls([]);
+        expect((await components['/_answer1'].stateValues.currentResponses).map(x => x.tree)).eqls([['+', 'x', 'y']]);
+        expect(await components['/_answer1'].stateValues.submittedResponses).eqls([]);
         expect(components[mathinputName].stateValues.value.tree).eqls(['+', 'x', 'y']);
         // expect(components[mathinputName].stateValues.submittedValue.tree).eq('\uFF3F');
       });
@@ -388,7 +393,7 @@ describe('Answer Tag Tests', function () {
       cy.get(mathinputAnchor).type(`{enter}`, { force: true });
 
       // wrap to change value of math2Anchor
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         math2 = components['/_copy2'].replacements[0];
         math2Anchor = cesc('#' + math2.componentName);
 
@@ -404,10 +409,10 @@ describe('Answer Tag Tests', function () {
         cy.get(number1Anchor).should('have.text', '1')
 
         cy.log('Test internal values')
-        cy.window().then((win) => {
+        cy.window().then(async (win) => {
           expect(components['/_answer1'].stateValues.creditAchieved).eq(1);
-          expect(components['/_answer1'].stateValues.currentResponses.map(x => x.tree)).eqls([['+', 'x', 'y']]);
-          expect(components['/_answer1'].stateValues.submittedResponses.map(x => x.tree)).eqls([['+', 'x', 'y']]);
+          expect((await components['/_answer1'].stateValues.currentResponses).map(x => x.tree)).eqls([['+', 'x', 'y']]);
+          expect((await components['/_answer1'].stateValues.submittedResponses).map(x => x.tree)).eqls([['+', 'x', 'y']]);
           expect(components[mathinputName].stateValues.value.tree).eqls(['+', 'x', 'y']);
           // expect(components[mathinputName].stateValues.submittedValue.tree).eqls(['+', 'x', 'y']);
         });
@@ -418,6 +423,7 @@ describe('Answer Tag Tests', function () {
 
         cy.log('Test value displayed in browser')
         // cy.get(mathinputAnchor).should('have.value', 'x');
+        cy.get(math1Anchor + ' .mjx-mrow').should('have.text', 'x')
         cy.get(math1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('x')
         });
@@ -427,10 +433,10 @@ describe('Answer Tag Tests', function () {
         cy.get(number1Anchor).should('have.text', '1')
 
         cy.log('Test internal values')
-        cy.window().then((win) => {
+        cy.window().then(async (win) => {
           expect(components['/_answer1'].stateValues.creditAchieved).eq(1);
-          expect(components['/_answer1'].stateValues.currentResponses.map(x => x.tree)).eqls(['x']);
-          expect(components['/_answer1'].stateValues.submittedResponses.map(x => x.tree)).eqls([['+', 'x', 'y']]);
+          expect((await components['/_answer1'].stateValues.currentResponses).map(x => x.tree)).eqls(['x']);
+          expect((await components['/_answer1'].stateValues.submittedResponses).map(x => x.tree)).eqls([['+', 'x', 'y']]);
           expect(components[mathinputName].stateValues.value.tree).eqls('x');
           // expect(components[mathinputName].stateValues.submittedValue.tree).eqls(['+', 'x', 'y']);
         });
@@ -450,10 +456,10 @@ describe('Answer Tag Tests', function () {
 
 
         cy.log('Test internal values')
-        cy.window().then((win) => {
+        cy.window().then(async (win) => {
           expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
-          expect(components['/_answer1'].stateValues.currentResponses.map(x => x.tree)).eqls(['x']);
-          expect(components['/_answer1'].stateValues.submittedResponses.map(x => x.tree)).eqls(['x']);
+          expect((await components['/_answer1'].stateValues.currentResponses).map(x => x.tree)).eqls(['x']);
+          expect((await components['/_answer1'].stateValues.submittedResponses).map(x => x.tree)).eqls(['x']);
           expect(components[mathinputName].stateValues.value.tree).eqls('x');
           // expect(components[mathinputName].stateValues.submittedValue.tree).eqls('x');
         });
@@ -464,7 +470,7 @@ describe('Answer Tag Tests', function () {
   });
 
   it('answer sugar from one string, set to text', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -478,7 +484,7 @@ describe('Answer Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let textinputName = components['/_answer1'].stateValues.inputChildren[0].componentName
       let textinputAnchor = cesc('#' + textinputName + '_input');
@@ -497,10 +503,10 @@ describe('Answer Tag Tests', function () {
       cy.get(number1Anchor).should('have.text', '0')
 
       cy.log('Test internal values')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
-        expect(components['/_answer1'].stateValues.currentResponses).eqls(['']);
-        expect(components['/_answer1'].stateValues.submittedResponses).eqls([]);
+        expect((await components['/_answer1'].stateValues.currentResponses)).eqls(['']);
+        expect(await components['/_answer1'].stateValues.submittedResponses).eqls([]);
         expect(components[textinputName].stateValues.value).eq('');
         // expect(components[textinputName].stateValues.submittedValue).eq('＿');
       });
@@ -515,10 +521,10 @@ describe('Answer Tag Tests', function () {
       cy.get(number1Anchor).should('have.text', '0')
 
       cy.log('Test internal values')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
-        expect(components['/_answer1'].stateValues.currentResponses).eqls([' hello there ']);
-        expect(components['/_answer1'].stateValues.submittedResponses).eqls([]);
+        expect((await components['/_answer1'].stateValues.currentResponses)).eqls([' hello there ']);
+        expect(await components['/_answer1'].stateValues.submittedResponses).eqls([]);
         expect(components[textinputName].stateValues.value).eq(' hello there ');
         // expect(components[textinputName].stateValues.submittedValue).eq('＿');
       });
@@ -528,7 +534,7 @@ describe('Answer Tag Tests', function () {
       cy.get(textinputAnchor).type(`{enter}`);
 
       // wrap to change value of text2Anchor
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         text2 = components['/_copy2'].replacements[0];
         text2Anchor = cesc('#' + text2.componentName);
 
@@ -539,10 +545,10 @@ describe('Answer Tag Tests', function () {
         cy.get(number1Anchor).should('have.text', '1')
 
         cy.log('Test internal values')
-        cy.window().then((win) => {
+        cy.window().then(async (win) => {
           expect(components['/_answer1'].stateValues.creditAchieved).eq(1);
-          expect(components['/_answer1'].stateValues.currentResponses).eqls([' hello there ']);
-          expect(components['/_answer1'].stateValues.submittedResponses).eqls([' hello there ']);
+          expect((await components['/_answer1'].stateValues.currentResponses)).eqls([' hello there ']);
+          expect(await components['/_answer1'].stateValues.submittedResponses).eqls([' hello there ']);
           expect(components[textinputName].stateValues.value).eq(' hello there ');
           // expect(components[textinputName].stateValues.submittedValue).eq(' hello there ');
         });
@@ -558,10 +564,10 @@ describe('Answer Tag Tests', function () {
         cy.get(number1Anchor).should('have.text', '1')
 
         cy.log('Test internal values')
-        cy.window().then((win) => {
+        cy.window().then(async (win) => {
           expect(components['/_answer1'].stateValues.creditAchieved).eq(1);
-          expect(components['/_answer1'].stateValues.currentResponses).eqls(['hello  there']);
-          expect(components['/_answer1'].stateValues.submittedResponses).eqls([' hello there ']);
+          expect((await components['/_answer1'].stateValues.currentResponses)).eqls(['hello  there']);
+          expect(await components['/_answer1'].stateValues.submittedResponses).eqls([' hello there ']);
           expect(components[textinputName].stateValues.value).eq('hello  there');
           // expect(components[textinputName].stateValues.submittedValue).eq(' hello there ');
         });
@@ -576,10 +582,10 @@ describe('Answer Tag Tests', function () {
         cy.get(number1Anchor).should('have.text', '0')
 
         cy.log('Test internal values')
-        cy.window().then((win) => {
+        cy.window().then(async (win) => {
           expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
-          expect(components['/_answer1'].stateValues.currentResponses).eqls(['hello  there']);
-          expect(components['/_answer1'].stateValues.submittedResponses).eqls(['hello  there']);
+          expect((await components['/_answer1'].stateValues.currentResponses)).eqls(['hello  there']);
+          expect(await components['/_answer1'].stateValues.submittedResponses).eqls(['hello  there']);
           expect(components[textinputName].stateValues.value).eq('hello  there');
           // expect(components[textinputName].stateValues.submittedValue).eq('hello  there');
         });
@@ -588,7 +594,7 @@ describe('Answer Tag Tests', function () {
   });
 
   it('answer sugar from one macro, set to text', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -603,7 +609,7 @@ describe('Answer Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let textinputName = components['/_answer1'].stateValues.inputChildren[0].componentName
       let textinputAnchor = cesc('#' + textinputName + '_input');
@@ -622,10 +628,10 @@ describe('Answer Tag Tests', function () {
       cy.get(number1Anchor).should('have.text', '0')
 
       cy.log('Test internal values')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
-        expect(components['/_answer1'].stateValues.currentResponses).eqls(['']);
-        expect(components['/_answer1'].stateValues.submittedResponses).eqls([]);
+        expect((await components['/_answer1'].stateValues.currentResponses)).eqls(['']);
+        expect(await components['/_answer1'].stateValues.submittedResponses).eqls([]);
         expect(components[textinputName].stateValues.value).eq('');
         // expect(components[textinputName].stateValues.submittedValue).eq('＿');
       });
@@ -640,10 +646,10 @@ describe('Answer Tag Tests', function () {
       cy.get(number1Anchor).should('have.text', '0')
 
       cy.log('Test internal values')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
-        expect(components['/_answer1'].stateValues.currentResponses).eqls([' hello there ']);
-        expect(components['/_answer1'].stateValues.submittedResponses).eqls([]);
+        expect((await components['/_answer1'].stateValues.currentResponses)).eqls([' hello there ']);
+        expect(await components['/_answer1'].stateValues.submittedResponses).eqls([]);
         expect(components[textinputName].stateValues.value).eq(' hello there ');
         // expect(components[textinputName].stateValues.submittedValue).eq('＿');
       });
@@ -653,7 +659,7 @@ describe('Answer Tag Tests', function () {
       cy.get(textinputAnchor).type(`{enter}`);
 
       // wrap to change value of text2Anchor
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         text2 = components['/_copy2'].replacements[0];
         text2Anchor = cesc('#' + text2.componentName);
 
@@ -664,10 +670,10 @@ describe('Answer Tag Tests', function () {
         cy.get(number1Anchor).should('have.text', '1')
 
         cy.log('Test internal values')
-        cy.window().then((win) => {
+        cy.window().then(async (win) => {
           expect(components['/_answer1'].stateValues.creditAchieved).eq(1);
-          expect(components['/_answer1'].stateValues.currentResponses).eqls([' hello there ']);
-          expect(components['/_answer1'].stateValues.submittedResponses).eqls([' hello there ']);
+          expect((await components['/_answer1'].stateValues.currentResponses)).eqls([' hello there ']);
+          expect(await components['/_answer1'].stateValues.submittedResponses).eqls([' hello there ']);
           expect(components[textinputName].stateValues.value).eq(' hello there ');
           // expect(components[textinputName].stateValues.submittedValue).eq(' hello there ');
         });
@@ -683,10 +689,10 @@ describe('Answer Tag Tests', function () {
         cy.get(number1Anchor).should('have.text', '1')
 
         cy.log('Test internal values')
-        cy.window().then((win) => {
+        cy.window().then(async (win) => {
           expect(components['/_answer1'].stateValues.creditAchieved).eq(1);
-          expect(components['/_answer1'].stateValues.currentResponses).eqls(['hello  there']);
-          expect(components['/_answer1'].stateValues.submittedResponses).eqls([' hello there ']);
+          expect((await components['/_answer1'].stateValues.currentResponses)).eqls(['hello  there']);
+          expect(await components['/_answer1'].stateValues.submittedResponses).eqls([' hello there ']);
           expect(components[textinputName].stateValues.value).eq('hello  there');
           // expect(components[textinputName].stateValues.submittedValue).eq(' hello there ');
         });
@@ -701,10 +707,10 @@ describe('Answer Tag Tests', function () {
         cy.get(number1Anchor).should('have.text', '0')
 
         cy.log('Test internal values')
-        cy.window().then((win) => {
+        cy.window().then(async (win) => {
           expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
-          expect(components['/_answer1'].stateValues.currentResponses).eqls(['hello  there']);
-          expect(components['/_answer1'].stateValues.submittedResponses).eqls(['hello  there']);
+          expect((await components['/_answer1'].stateValues.currentResponses)).eqls(['hello  there']);
+          expect(await components['/_answer1'].stateValues.submittedResponses).eqls(['hello  there']);
           expect(components[textinputName].stateValues.value).eq('hello  there');
           // expect(components[textinputName].stateValues.submittedValue).eq('hello  there');
         });
@@ -713,7 +719,7 @@ describe('Answer Tag Tests', function () {
   });
 
   it('answer sugar from macro and string, set to text', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -728,7 +734,7 @@ describe('Answer Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let textinputName = components['/_answer1'].stateValues.inputChildren[0].componentName
       let textinputAnchor = cesc('#' + textinputName + '_input');
@@ -747,10 +753,10 @@ describe('Answer Tag Tests', function () {
       cy.get(number1Anchor).should('have.text', '0')
 
       cy.log('Test internal values')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
-        expect(components['/_answer1'].stateValues.currentResponses).eqls(['']);
-        expect(components['/_answer1'].stateValues.submittedResponses).eqls([]);
+        expect((await components['/_answer1'].stateValues.currentResponses)).eqls(['']);
+        expect(await components['/_answer1'].stateValues.submittedResponses).eqls([]);
         expect(components[textinputName].stateValues.value).eq('');
         // expect(components[textinputName].stateValues.submittedValue).eq('＿');
       });
@@ -765,10 +771,10 @@ describe('Answer Tag Tests', function () {
       cy.get(number1Anchor).should('have.text', '0')
 
       cy.log('Test internal values')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
-        expect(components['/_answer1'].stateValues.currentResponses).eqls([' hello there ']);
-        expect(components['/_answer1'].stateValues.submittedResponses).eqls([]);
+        expect((await components['/_answer1'].stateValues.currentResponses)).eqls([' hello there ']);
+        expect(await components['/_answer1'].stateValues.submittedResponses).eqls([]);
         expect(components[textinputName].stateValues.value).eq(' hello there ');
         // expect(components[textinputName].stateValues.submittedValue).eq('＿');
       });
@@ -778,7 +784,7 @@ describe('Answer Tag Tests', function () {
       cy.get(textinputAnchor).type(`{enter}`);
 
       // wrap to change value of text2Anchor
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         text2 = components['/_copy2'].replacements[0];
         text2Anchor = cesc('#' + text2.componentName);
 
@@ -789,10 +795,10 @@ describe('Answer Tag Tests', function () {
         cy.get(number1Anchor).should('have.text', '1')
 
         cy.log('Test internal values')
-        cy.window().then((win) => {
+        cy.window().then(async (win) => {
           expect(components['/_answer1'].stateValues.creditAchieved).eq(1);
-          expect(components['/_answer1'].stateValues.currentResponses).eqls([' hello there ']);
-          expect(components['/_answer1'].stateValues.submittedResponses).eqls([' hello there ']);
+          expect((await components['/_answer1'].stateValues.currentResponses)).eqls([' hello there ']);
+          expect(await components['/_answer1'].stateValues.submittedResponses).eqls([' hello there ']);
           expect(components[textinputName].stateValues.value).eq(' hello there ');
           // expect(components[textinputName].stateValues.submittedValue).eq(' hello there ');
         });
@@ -808,10 +814,10 @@ describe('Answer Tag Tests', function () {
         cy.get(number1Anchor).should('have.text', '1')
 
         cy.log('Test internal values')
-        cy.window().then((win) => {
+        cy.window().then(async (win) => {
           expect(components['/_answer1'].stateValues.creditAchieved).eq(1);
-          expect(components['/_answer1'].stateValues.currentResponses).eqls(['hello  there']);
-          expect(components['/_answer1'].stateValues.submittedResponses).eqls([' hello there ']);
+          expect((await components['/_answer1'].stateValues.currentResponses)).eqls(['hello  there']);
+          expect(await components['/_answer1'].stateValues.submittedResponses).eqls([' hello there ']);
           expect(components[textinputName].stateValues.value).eq('hello  there');
           // expect(components[textinputName].stateValues.submittedValue).eq(' hello there ');
         });
@@ -826,10 +832,10 @@ describe('Answer Tag Tests', function () {
         cy.get(number1Anchor).should('have.text', '0')
 
         cy.log('Test internal values')
-        cy.window().then((win) => {
+        cy.window().then(async (win) => {
           expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
-          expect(components['/_answer1'].stateValues.currentResponses).eqls(['hello  there']);
-          expect(components['/_answer1'].stateValues.submittedResponses).eqls(['hello  there']);
+          expect((await components['/_answer1'].stateValues.currentResponses)).eqls(['hello  there']);
+          expect(await components['/_answer1'].stateValues.submittedResponses).eqls(['hello  there']);
           expect(components[textinputName].stateValues.value).eq('hello  there');
           // expect(components[textinputName].stateValues.submittedValue).eq('hello  there');
         });
@@ -838,7 +844,7 @@ describe('Answer Tag Tests', function () {
   });
 
   it('answer sugar from macros and string, ignores blank string, set to text', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -853,7 +859,7 @@ describe('Answer Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let textinputName = components['/_answer1'].stateValues.inputChildren[0].componentName
       let textinputAnchor = cesc('#' + textinputName + '_input');
@@ -872,10 +878,10 @@ describe('Answer Tag Tests', function () {
       cy.get(number1Anchor).should('have.text', '0')
 
       cy.log('Test internal values')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
-        expect(components['/_answer1'].stateValues.currentResponses).eqls(['']);
-        expect(components['/_answer1'].stateValues.submittedResponses).eqls([]);
+        expect((await components['/_answer1'].stateValues.currentResponses)).eqls(['']);
+        expect(await components['/_answer1'].stateValues.submittedResponses).eqls([]);
         expect(components[textinputName].stateValues.value).eq('');
         // expect(components[textinputName].stateValues.submittedValue).eq('＿');
       });
@@ -890,10 +896,10 @@ describe('Answer Tag Tests', function () {
       cy.get(number1Anchor).should('have.text', '0')
 
       cy.log('Test internal values')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
-        expect(components['/_answer1'].stateValues.currentResponses).eqls([' hellothere ']);
-        expect(components['/_answer1'].stateValues.submittedResponses).eqls([]);
+        expect((await components['/_answer1'].stateValues.currentResponses)).eqls([' hellothere ']);
+        expect(await components['/_answer1'].stateValues.submittedResponses).eqls([]);
         expect(components[textinputName].stateValues.value).eq(' hellothere ');
         // expect(components[textinputName].stateValues.submittedValue).eq('＿');
       });
@@ -903,7 +909,7 @@ describe('Answer Tag Tests', function () {
       cy.get(textinputAnchor).type(`{enter}`);
 
       // wrap to change value of text2Anchor
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         text2 = components['/_copy2'].replacements[0];
         text2Anchor = cesc('#' + text2.componentName);
 
@@ -914,10 +920,10 @@ describe('Answer Tag Tests', function () {
         cy.get(number1Anchor).should('have.text', '1')
 
         cy.log('Test internal values')
-        cy.window().then((win) => {
+        cy.window().then(async (win) => {
           expect(components['/_answer1'].stateValues.creditAchieved).eq(1);
-          expect(components['/_answer1'].stateValues.currentResponses).eqls([' hellothere ']);
-          expect(components['/_answer1'].stateValues.submittedResponses).eqls([' hellothere ']);
+          expect((await components['/_answer1'].stateValues.currentResponses)).eqls([' hellothere ']);
+          expect(await components['/_answer1'].stateValues.submittedResponses).eqls([' hellothere ']);
           expect(components[textinputName].stateValues.value).eq(' hellothere ');
           // expect(components[textinputName].stateValues.submittedValue).eq(' hellothere ');
         });
@@ -933,10 +939,10 @@ describe('Answer Tag Tests', function () {
         cy.get(number1Anchor).should('have.text', '1')
 
         cy.log('Test internal values')
-        cy.window().then((win) => {
+        cy.window().then(async (win) => {
           expect(components['/_answer1'].stateValues.creditAchieved).eq(1);
-          expect(components['/_answer1'].stateValues.currentResponses).eqls(['hello there']);
-          expect(components['/_answer1'].stateValues.submittedResponses).eqls([' hellothere ']);
+          expect((await components['/_answer1'].stateValues.currentResponses)).eqls(['hello there']);
+          expect(await components['/_answer1'].stateValues.submittedResponses).eqls([' hellothere ']);
           expect(components[textinputName].stateValues.value).eq('hello there');
           // expect(components[textinputName].stateValues.submittedValue).eq(' hellothere ');
         });
@@ -951,10 +957,10 @@ describe('Answer Tag Tests', function () {
         cy.get(number1Anchor).should('have.text', '0')
 
         cy.log('Test internal values')
-        cy.window().then((win) => {
+        cy.window().then(async (win) => {
           expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
-          expect(components['/_answer1'].stateValues.currentResponses).eqls(['hello there']);
-          expect(components['/_answer1'].stateValues.submittedResponses).eqls(['hello there']);
+          expect((await components['/_answer1'].stateValues.currentResponses)).eqls(['hello there']);
+          expect(await components['/_answer1'].stateValues.submittedResponses).eqls(['hello there']);
           expect(components[textinputName].stateValues.value).eq('hello there');
           // expect(components[textinputName].stateValues.submittedValue).eq('hello there');
         });
@@ -965,7 +971,7 @@ describe('Answer Tag Tests', function () {
   // test for bug where submitted response was not initially text
   // when had only one copy of referring to all submitted responses
   it('answer sugar from one string, set to text, copy all responses', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -977,7 +983,7 @@ describe('Answer Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let textinputName = components['/_answer1'].stateValues.inputChildren[0].componentName
       let textinputAnchor = cesc('#' + textinputName + '_input');
@@ -990,16 +996,16 @@ describe('Answer Tag Tests', function () {
 
       cy.get('#\\/_p2').should('have.text', 'Submitted responses:  hello there ')
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let text1 = components['/_copy1'].replacements[0];
         let text1Anchor = cesc('#' + text1.componentName);
         cy.get(textinputAnchor).should('have.value', ' hello there ');
         cy.get(text1Anchor).should('have.text', ' hello there ')
 
-        cy.window().then((win) => {
+        cy.window().then(async (win) => {
           expect(components['/_answer1'].stateValues.creditAchieved).eq(1);
-          expect(components['/_answer1'].stateValues.currentResponses).eqls([' hello there ']);
-          expect(components['/_answer1'].stateValues.submittedResponses).eqls([' hello there ']);
+          expect((await components['/_answer1'].stateValues.currentResponses)).eqls([' hello there ']);
+          expect(await components['/_answer1'].stateValues.submittedResponses).eqls([' hello there ']);
           expect(components[textinputName].stateValues.value).eq(' hello there ');
         });
 
@@ -1012,10 +1018,11 @@ describe('Answer Tag Tests', function () {
         cy.get(text1Anchor).should('have.text', ' hello there ')
 
         cy.log('Test internal values')
-        cy.window().then((win) => {
+        cy.wait(10)
+        cy.window().then(async (win) => {
           expect(components['/_answer1'].stateValues.creditAchieved).eq(1);
-          expect(components['/_answer1'].stateValues.currentResponses).eqls(['hello  there']);
-          expect(components['/_answer1'].stateValues.submittedResponses).eqls([' hello there ']);
+          expect((await components['/_answer1'].stateValues.currentResponses)).eqls(['hello  there']);
+          expect(await components['/_answer1'].stateValues.submittedResponses).eqls([' hello there ']);
           expect(components[textinputName].stateValues.value).eq('hello  there');
           // expect(components[textinputName].stateValues.submittedValue).eq(' hello there ');
         });
@@ -1028,10 +1035,10 @@ describe('Answer Tag Tests', function () {
         cy.get(text1Anchor).should('have.text', 'hello  there')
 
         cy.log('Test internal values')
-        cy.window().then((win) => {
+        cy.window().then(async (win) => {
           expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
-          expect(components['/_answer1'].stateValues.currentResponses).eqls(['hello  there']);
-          expect(components['/_answer1'].stateValues.submittedResponses).eqls(['hello  there']);
+          expect((await components['/_answer1'].stateValues.currentResponses)).eqls(['hello  there']);
+          expect(await components['/_answer1'].stateValues.submittedResponses).eqls(['hello  there']);
           expect(components[textinputName].stateValues.value).eq('hello  there');
           // expect(components[textinputName].stateValues.submittedValue).eq('hello  there');
         });
@@ -1041,7 +1048,7 @@ describe('Answer Tag Tests', function () {
 
 
   it('answer sugar from one string, set to boolean', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -1055,7 +1062,7 @@ describe('Answer Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let booleaninputName = components['/_answer1'].stateValues.inputChildren[0].componentName
       let booleaninputAnchor = cesc('#' + booleaninputName + '_input');
@@ -1071,10 +1078,10 @@ describe('Answer Tag Tests', function () {
       cy.get(number1Anchor).should('have.text', '0')
 
       cy.log('Test internal values')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
-        expect(components['/_answer1'].stateValues.currentResponses).eqls([false]);
-        expect(components['/_answer1'].stateValues.submittedResponses).eqls([]);
+        expect((await components['/_answer1'].stateValues.currentResponses)).eqls([false]);
+        expect(await components['/_answer1'].stateValues.submittedResponses).eqls([]);
         expect(components[booleaninputName].stateValues.value).eq(false);
       });
 
@@ -1086,10 +1093,10 @@ describe('Answer Tag Tests', function () {
       cy.get(number1Anchor).should('have.text', '0')
 
       cy.log('Test internal values')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
-        expect(components['/_answer1'].stateValues.currentResponses).eqls([true]);
-        expect(components['/_answer1'].stateValues.submittedResponses).eqls([]);
+        expect((await components['/_answer1'].stateValues.currentResponses)).eqls([true]);
+        expect(await components['/_answer1'].stateValues.submittedResponses).eqls([]);
         expect(components[booleaninputName].stateValues.value).eq(true);
       });
 
@@ -1098,7 +1105,7 @@ describe('Answer Tag Tests', function () {
       cy.get(booleaninputSubmitAnchor).type(`{enter}`, { force: true });
 
       // wrap to set value of boolean2Anchor
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let boolean2 = components['/_copy2'].replacements[0];
         let boolean2Anchor = cesc('#' + boolean2.componentName);
 
@@ -1108,10 +1115,10 @@ describe('Answer Tag Tests', function () {
         cy.get(number1Anchor).should('have.text', '1')
 
         cy.log('Test internal values')
-        cy.window().then((win) => {
+        cy.window().then(async (win) => {
           expect(components['/_answer1'].stateValues.creditAchieved).eq(1);
-          expect(components['/_answer1'].stateValues.currentResponses).eqls([true]);
-          expect(components['/_answer1'].stateValues.submittedResponses).eqls([true]);
+          expect((await components['/_answer1'].stateValues.currentResponses)).eqls([true]);
+          expect(await components['/_answer1'].stateValues.submittedResponses).eqls([true]);
           expect(components[booleaninputName].stateValues.value).eq(true);
         });
 
@@ -1125,10 +1132,10 @@ describe('Answer Tag Tests', function () {
         cy.get(number1Anchor).should('have.text', '1')
 
         cy.log('Test internal values')
-        cy.window().then((win) => {
+        cy.window().then(async (win) => {
           expect(components['/_answer1'].stateValues.creditAchieved).eq(1);
-          expect(components['/_answer1'].stateValues.currentResponses).eqls([false]);
-          expect(components['/_answer1'].stateValues.submittedResponses).eqls([true]);
+          expect((await components['/_answer1'].stateValues.currentResponses)).eqls([false]);
+          expect(await components['/_answer1'].stateValues.submittedResponses).eqls([true]);
           expect(components[booleaninputName].stateValues.value).eq(false);
         });
 
@@ -1141,10 +1148,10 @@ describe('Answer Tag Tests', function () {
         cy.get(number1Anchor).should('have.text', '0')
 
         cy.log('Test internal values')
-        cy.window().then((win) => {
+        cy.window().then(async (win) => {
           expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
-          expect(components['/_answer1'].stateValues.currentResponses).eqls([false]);
-          expect(components['/_answer1'].stateValues.submittedResponses).eqls([false]);
+          expect((await components['/_answer1'].stateValues.currentResponses)).eqls([false]);
+          expect(await components['/_answer1'].stateValues.submittedResponses).eqls([false]);
           expect(components[booleaninputName].stateValues.value).eq(false);
         });
       })
@@ -1152,7 +1159,7 @@ describe('Answer Tag Tests', function () {
   });
 
   it('answer sugar from macro and string, set to boolean', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -1167,7 +1174,7 @@ describe('Answer Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let booleaninputName = components['/_answer1'].stateValues.inputChildren[0].componentName
       let booleaninputAnchor = cesc('#' + booleaninputName + '_input');
@@ -1183,10 +1190,10 @@ describe('Answer Tag Tests', function () {
       cy.get(number1Anchor).should('have.text', '0')
 
       cy.log('Test internal values')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
-        expect(components['/_answer1'].stateValues.currentResponses).eqls([false]);
-        expect(components['/_answer1'].stateValues.submittedResponses).eqls([]);
+        expect((await components['/_answer1'].stateValues.currentResponses)).eqls([false]);
+        expect(await components['/_answer1'].stateValues.submittedResponses).eqls([]);
         expect(components[booleaninputName].stateValues.value).eq(false);
       });
 
@@ -1198,10 +1205,10 @@ describe('Answer Tag Tests', function () {
       cy.get(number1Anchor).should('have.text', '0')
 
       cy.log('Test internal values')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
-        expect(components['/_answer1'].stateValues.currentResponses).eqls([true]);
-        expect(components['/_answer1'].stateValues.submittedResponses).eqls([]);
+        expect((await components['/_answer1'].stateValues.currentResponses)).eqls([true]);
+        expect(await components['/_answer1'].stateValues.submittedResponses).eqls([]);
         expect(components[booleaninputName].stateValues.value).eq(true);
       });
 
@@ -1210,7 +1217,7 @@ describe('Answer Tag Tests', function () {
       cy.get(booleaninputSubmitAnchor).type(`{enter}`, { force: true });
 
       // wrap to set value of boolean2Anchor
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let boolean2 = components['/_copy2'].replacements[0];
         let boolean2Anchor = cesc('#' + boolean2.componentName);
 
@@ -1220,10 +1227,10 @@ describe('Answer Tag Tests', function () {
         cy.get(number1Anchor).should('have.text', '1')
 
         cy.log('Test internal values')
-        cy.window().then((win) => {
+        cy.window().then(async (win) => {
           expect(components['/_answer1'].stateValues.creditAchieved).eq(1);
-          expect(components['/_answer1'].stateValues.currentResponses).eqls([true]);
-          expect(components['/_answer1'].stateValues.submittedResponses).eqls([true]);
+          expect((await components['/_answer1'].stateValues.currentResponses)).eqls([true]);
+          expect(await components['/_answer1'].stateValues.submittedResponses).eqls([true]);
           expect(components[booleaninputName].stateValues.value).eq(true);
         });
 
@@ -1237,10 +1244,10 @@ describe('Answer Tag Tests', function () {
         cy.get(number1Anchor).should('have.text', '1')
 
         cy.log('Test internal values')
-        cy.window().then((win) => {
+        cy.window().then(async (win) => {
           expect(components['/_answer1'].stateValues.creditAchieved).eq(1);
-          expect(components['/_answer1'].stateValues.currentResponses).eqls([false]);
-          expect(components['/_answer1'].stateValues.submittedResponses).eqls([true]);
+          expect((await components['/_answer1'].stateValues.currentResponses)).eqls([false]);
+          expect(await components['/_answer1'].stateValues.submittedResponses).eqls([true]);
           expect(components[booleaninputName].stateValues.value).eq(false);
         });
 
@@ -1253,10 +1260,10 @@ describe('Answer Tag Tests', function () {
         cy.get(number1Anchor).should('have.text', '0')
 
         cy.log('Test internal values')
-        cy.window().then((win) => {
+        cy.window().then(async (win) => {
           expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
-          expect(components['/_answer1'].stateValues.currentResponses).eqls([false]);
-          expect(components['/_answer1'].stateValues.submittedResponses).eqls([false]);
+          expect((await components['/_answer1'].stateValues.currentResponses)).eqls([false]);
+          expect(await components['/_answer1'].stateValues.submittedResponses).eqls([false]);
           expect(components[booleaninputName].stateValues.value).eq(false);
         });
       })
@@ -1264,7 +1271,7 @@ describe('Answer Tag Tests', function () {
   });
 
   it('answer award with math', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -1277,7 +1284,7 @@ describe('Answer Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let mathinputName = components['/_answer1'].stateValues.inputChildren[0].componentName
       let mathinputAnchor = cesc('#' + mathinputName) + " textarea";
@@ -1300,10 +1307,10 @@ describe('Answer Tag Tests', function () {
       cy.get(number1Anchor).should('have.text', '0')
 
       cy.log('Test internal values')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
-        expect(components['/_answer1'].stateValues.currentResponses.map(x => x.tree)).eqls(['\uFF3F']);
-        expect(components['/_answer1'].stateValues.submittedResponses).eqls([]);
+        expect((await components['/_answer1'].stateValues.currentResponses).map(x => x.tree)).eqls(['\uFF3F']);
+        expect(await components['/_answer1'].stateValues.submittedResponses).eqls([]);
         expect(components[mathinputName].stateValues.value.tree).eq('\uFF3F');
         // expect(components[mathinputName].stateValues.submittedValue.tree).eq('\uFF3F');
       });
@@ -1313,6 +1320,7 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
       // cy.get(mathinputAnchor).should('have.value', 'x+y');
+      cy.get(math1Anchor + ' .mjx-mrow').should('have.text', 'x+y')
       cy.get(math1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x+y')
       });
@@ -1323,10 +1331,10 @@ describe('Answer Tag Tests', function () {
 
 
       cy.log('Test internal values')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
-        expect(components['/_answer1'].stateValues.currentResponses.map(x => x.tree)).eqls([['+', 'x', 'y']]);
-        expect(components['/_answer1'].stateValues.submittedResponses).eqls([]);
+        expect((await components['/_answer1'].stateValues.currentResponses).map(x => x.tree)).eqls([['+', 'x', 'y']]);
+        expect(await components['/_answer1'].stateValues.submittedResponses).eqls([]);
         expect(components[mathinputName].stateValues.value.tree).eqls(['+', 'x', 'y']);
         // expect(components[mathinputName].stateValues.submittedValue.tree).eq('\uFF3F');
       });
@@ -1336,7 +1344,7 @@ describe('Answer Tag Tests', function () {
       cy.get(mathinputAnchor).type(`{enter}`, { force: true });
 
       // wrap to change value of math2Anchor
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         math2 = components['/_copy2'].replacements[0];
         math2Anchor = cesc('#' + math2.componentName);
 
@@ -1351,10 +1359,10 @@ describe('Answer Tag Tests', function () {
         cy.get(number1Anchor).should('have.text', '1')
 
         cy.log('Test internal values')
-        cy.window().then((win) => {
+        cy.window().then(async (win) => {
           expect(components['/_answer1'].stateValues.creditAchieved).eq(1);
-          expect(components['/_answer1'].stateValues.currentResponses.map(x => x.tree)).eqls([['+', 'x', 'y']]);
-          expect(components['/_answer1'].stateValues.submittedResponses.map(x => x.tree)).eqls([['+', 'x', 'y']]);
+          expect((await components['/_answer1'].stateValues.currentResponses).map(x => x.tree)).eqls([['+', 'x', 'y']]);
+          expect((await components['/_answer1'].stateValues.submittedResponses).map(x => x.tree)).eqls([['+', 'x', 'y']]);
           expect(components[mathinputName].stateValues.value.tree).eqls(['+', 'x', 'y']);
           // expect(components[mathinputName].stateValues.submittedValue.tree).eqls(['+', 'x', 'y']);
         });
@@ -1365,6 +1373,7 @@ describe('Answer Tag Tests', function () {
 
         cy.log('Test value displayed in browser')
         // cy.get(mathinputAnchor).should('have.value', 'x');
+        cy.get(math1Anchor + ' .mjx-mrow').should('have.text', 'x')
         cy.get(math1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('x')
         });
@@ -1374,10 +1383,10 @@ describe('Answer Tag Tests', function () {
         cy.get(number1Anchor).should('have.text', '1')
 
         cy.log('Test internal values')
-        cy.window().then((win) => {
+        cy.window().then(async (win) => {
           expect(components['/_answer1'].stateValues.creditAchieved).eq(1);
-          expect(components['/_answer1'].stateValues.currentResponses.map(x => x.tree)).eqls(['x']);
-          expect(components['/_answer1'].stateValues.submittedResponses.map(x => x.tree)).eqls([['+', 'x', 'y']]);
+          expect((await components['/_answer1'].stateValues.currentResponses).map(x => x.tree)).eqls(['x']);
+          expect((await components['/_answer1'].stateValues.submittedResponses).map(x => x.tree)).eqls([['+', 'x', 'y']]);
           expect(components[mathinputName].stateValues.value.tree).eqls('x');
           // expect(components[mathinputName].stateValues.submittedValue.tree).eqls(['+', 'x', 'y']);
         });
@@ -1397,10 +1406,10 @@ describe('Answer Tag Tests', function () {
 
 
         cy.log('Test internal values')
-        cy.window().then((win) => {
+        cy.window().then(async (win) => {
           expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
-          expect(components['/_answer1'].stateValues.currentResponses.map(x => x.tree)).eqls(['x']);
-          expect(components['/_answer1'].stateValues.submittedResponses.map(x => x.tree)).eqls(['x']);
+          expect((await components['/_answer1'].stateValues.currentResponses).map(x => x.tree)).eqls(['x']);
+          expect((await components['/_answer1'].stateValues.submittedResponses).map(x => x.tree)).eqls(['x']);
           expect(components[mathinputName].stateValues.value.tree).eqls('x');
           // expect(components[mathinputName].stateValues.submittedValue.tree).eqls('x');
         });
@@ -1410,7 +1419,7 @@ describe('Answer Tag Tests', function () {
   });
 
   it('answer award with sugared string', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -1423,7 +1432,7 @@ describe('Answer Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let mathinputName = components['/_answer1'].stateValues.inputChildren[0].componentName
       let mathinputAnchor = cesc('#' + mathinputName) + " textarea";
@@ -1446,10 +1455,10 @@ describe('Answer Tag Tests', function () {
       cy.get(number1Anchor).should('have.text', '0')
 
       cy.log('Test internal values')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
-        expect(components['/_answer1'].stateValues.currentResponses.map(x => x.tree)).eqls(['\uFF3F']);
-        expect(components['/_answer1'].stateValues.submittedResponses).eqls([]);
+        expect((await components['/_answer1'].stateValues.currentResponses).map(x => x.tree)).eqls(['\uFF3F']);
+        expect(await components['/_answer1'].stateValues.submittedResponses).eqls([]);
         expect(components[mathinputName].stateValues.value.tree).eq('\uFF3F');
         // expect(components[mathinputName].stateValues.submittedValue.tree).eq('\uFF3F');
       });
@@ -1459,6 +1468,7 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
       // cy.get(mathinputAnchor).should('have.value', 'x+y');
+      cy.get(math1Anchor + ' .mjx-mrow').should('have.text', 'x+y')
       cy.get(math1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x+y')
       });
@@ -1469,10 +1479,10 @@ describe('Answer Tag Tests', function () {
 
 
       cy.log('Test internal values')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
-        expect(components['/_answer1'].stateValues.currentResponses.map(x => x.tree)).eqls([['+', 'x', 'y']]);
-        expect(components['/_answer1'].stateValues.submittedResponses).eqls([]);
+        expect((await components['/_answer1'].stateValues.currentResponses).map(x => x.tree)).eqls([['+', 'x', 'y']]);
+        expect(await components['/_answer1'].stateValues.submittedResponses).eqls([]);
         expect(components[mathinputName].stateValues.value.tree).eqls(['+', 'x', 'y']);
         // expect(components[mathinputName].stateValues.submittedValue.tree).eq('\uFF3F');
       });
@@ -1482,7 +1492,7 @@ describe('Answer Tag Tests', function () {
       cy.get(mathinputAnchor).type(`{enter}`, { force: true });
 
       // wrap to change value of math2Anchor
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         math2 = components['/_copy2'].replacements[0];
         math2Anchor = cesc('#' + math2.componentName);
 
@@ -1497,10 +1507,10 @@ describe('Answer Tag Tests', function () {
         cy.get(number1Anchor).should('have.text', '1')
 
         cy.log('Test internal values')
-        cy.window().then((win) => {
+        cy.window().then(async (win) => {
           expect(components['/_answer1'].stateValues.creditAchieved).eq(1);
-          expect(components['/_answer1'].stateValues.currentResponses.map(x => x.tree)).eqls([['+', 'x', 'y']]);
-          expect(components['/_answer1'].stateValues.submittedResponses.map(x => x.tree)).eqls([['+', 'x', 'y']]);
+          expect((await components['/_answer1'].stateValues.currentResponses).map(x => x.tree)).eqls([['+', 'x', 'y']]);
+          expect((await components['/_answer1'].stateValues.submittedResponses).map(x => x.tree)).eqls([['+', 'x', 'y']]);
           expect(components[mathinputName].stateValues.value.tree).eqls(['+', 'x', 'y']);
           // expect(components[mathinputName].stateValues.submittedValue.tree).eqls(['+', 'x', 'y']);
         });
@@ -1511,6 +1521,7 @@ describe('Answer Tag Tests', function () {
 
         cy.log('Test value displayed in browser')
         // cy.get(mathinputAnchor).should('have.value', 'x');
+        cy.get(math1Anchor + ' .mjx-mrow').should('have.text', 'x')
         cy.get(math1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('x')
         });
@@ -1520,10 +1531,10 @@ describe('Answer Tag Tests', function () {
         cy.get(number1Anchor).should('have.text', '1')
 
         cy.log('Test internal values')
-        cy.window().then((win) => {
+        cy.window().then(async (win) => {
           expect(components['/_answer1'].stateValues.creditAchieved).eq(1);
-          expect(components['/_answer1'].stateValues.currentResponses.map(x => x.tree)).eqls(['x']);
-          expect(components['/_answer1'].stateValues.submittedResponses.map(x => x.tree)).eqls([['+', 'x', 'y']]);
+          expect((await components['/_answer1'].stateValues.currentResponses).map(x => x.tree)).eqls(['x']);
+          expect((await components['/_answer1'].stateValues.submittedResponses).map(x => x.tree)).eqls([['+', 'x', 'y']]);
           expect(components[mathinputName].stateValues.value.tree).eqls('x');
           // expect(components[mathinputName].stateValues.submittedValue.tree).eqls(['+', 'x', 'y']);
         });
@@ -1543,10 +1554,10 @@ describe('Answer Tag Tests', function () {
 
 
         cy.log('Test internal values')
-        cy.window().then((win) => {
+        cy.window().then(async (win) => {
           expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
-          expect(components['/_answer1'].stateValues.currentResponses.map(x => x.tree)).eqls(['x']);
-          expect(components['/_answer1'].stateValues.submittedResponses.map(x => x.tree)).eqls(['x']);
+          expect((await components['/_answer1'].stateValues.currentResponses).map(x => x.tree)).eqls(['x']);
+          expect((await components['/_answer1'].stateValues.submittedResponses).map(x => x.tree)).eqls(['x']);
           expect(components[mathinputName].stateValues.value.tree).eqls('x');
           // expect(components[mathinputName].stateValues.submittedValue.tree).eqls('x');
         });
@@ -1556,7 +1567,7 @@ describe('Answer Tag Tests', function () {
   });
 
   it('answer award with sugared macro', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -1570,7 +1581,7 @@ describe('Answer Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let mathinputName = components['/_answer1'].stateValues.inputChildren[0].componentName
       let mathinputAnchor = cesc('#' + mathinputName) + " textarea";
@@ -1593,10 +1604,10 @@ describe('Answer Tag Tests', function () {
       cy.get(number1Anchor).should('have.text', '0')
 
       cy.log('Test internal values')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
-        expect(components['/_answer1'].stateValues.currentResponses.map(x => x.tree)).eqls(['\uFF3F']);
-        expect(components['/_answer1'].stateValues.submittedResponses).eqls([]);
+        expect((await components['/_answer1'].stateValues.currentResponses).map(x => x.tree)).eqls(['\uFF3F']);
+        expect(await components['/_answer1'].stateValues.submittedResponses).eqls([]);
         expect(components[mathinputName].stateValues.value.tree).eq('\uFF3F');
         // expect(components[mathinputName].stateValues.submittedValue.tree).eq('\uFF3F');
       });
@@ -1606,6 +1617,7 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
       // cy.get(mathinputAnchor).should('have.value', 'x+y');
+      cy.get(math1Anchor + ' .mjx-mrow').should('have.text', 'x+y')
       cy.get(math1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x+y')
       });
@@ -1616,10 +1628,10 @@ describe('Answer Tag Tests', function () {
 
 
       cy.log('Test internal values')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
-        expect(components['/_answer1'].stateValues.currentResponses.map(x => x.tree)).eqls([['+', 'x', 'y']]);
-        expect(components['/_answer1'].stateValues.submittedResponses).eqls([]);
+        expect((await components['/_answer1'].stateValues.currentResponses).map(x => x.tree)).eqls([['+', 'x', 'y']]);
+        expect(await components['/_answer1'].stateValues.submittedResponses).eqls([]);
         expect(components[mathinputName].stateValues.value.tree).eqls(['+', 'x', 'y']);
         // expect(components[mathinputName].stateValues.submittedValue.tree).eq('\uFF3F');
       });
@@ -1629,7 +1641,7 @@ describe('Answer Tag Tests', function () {
       cy.get(mathinputAnchor).type(`{enter}`, { force: true });
 
       // wrap to change value of math2Anchor
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         math2 = components['/_copy2'].replacements[0];
         math2Anchor = cesc('#' + math2.componentName);
 
@@ -1644,10 +1656,10 @@ describe('Answer Tag Tests', function () {
         cy.get(number1Anchor).should('have.text', '1')
 
         cy.log('Test internal values')
-        cy.window().then((win) => {
+        cy.window().then(async (win) => {
           expect(components['/_answer1'].stateValues.creditAchieved).eq(1);
-          expect(components['/_answer1'].stateValues.currentResponses.map(x => x.tree)).eqls([['+', 'x', 'y']]);
-          expect(components['/_answer1'].stateValues.submittedResponses.map(x => x.tree)).eqls([['+', 'x', 'y']]);
+          expect((await components['/_answer1'].stateValues.currentResponses).map(x => x.tree)).eqls([['+', 'x', 'y']]);
+          expect((await components['/_answer1'].stateValues.submittedResponses).map(x => x.tree)).eqls([['+', 'x', 'y']]);
           expect(components[mathinputName].stateValues.value.tree).eqls(['+', 'x', 'y']);
           // expect(components[mathinputName].stateValues.submittedValue.tree).eqls(['+', 'x', 'y']);
         });
@@ -1658,6 +1670,7 @@ describe('Answer Tag Tests', function () {
 
         cy.log('Test value displayed in browser')
         // cy.get(mathinputAnchor).should('have.value', 'x');
+        cy.get(math1Anchor + ' .mjx-mrow').should('have.text', 'x')
         cy.get(math1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('x')
         });
@@ -1667,10 +1680,10 @@ describe('Answer Tag Tests', function () {
         cy.get(number1Anchor).should('have.text', '1')
 
         cy.log('Test internal values')
-        cy.window().then((win) => {
+        cy.window().then(async (win) => {
           expect(components['/_answer1'].stateValues.creditAchieved).eq(1);
-          expect(components['/_answer1'].stateValues.currentResponses.map(x => x.tree)).eqls(['x']);
-          expect(components['/_answer1'].stateValues.submittedResponses.map(x => x.tree)).eqls([['+', 'x', 'y']]);
+          expect((await components['/_answer1'].stateValues.currentResponses).map(x => x.tree)).eqls(['x']);
+          expect((await components['/_answer1'].stateValues.submittedResponses).map(x => x.tree)).eqls([['+', 'x', 'y']]);
           expect(components[mathinputName].stateValues.value.tree).eqls('x');
           // expect(components[mathinputName].stateValues.submittedValue.tree).eqls(['+', 'x', 'y']);
         });
@@ -1690,10 +1703,10 @@ describe('Answer Tag Tests', function () {
 
 
         cy.log('Test internal values')
-        cy.window().then((win) => {
+        cy.window().then(async (win) => {
           expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
-          expect(components['/_answer1'].stateValues.currentResponses.map(x => x.tree)).eqls(['x']);
-          expect(components['/_answer1'].stateValues.submittedResponses.map(x => x.tree)).eqls(['x']);
+          expect((await components['/_answer1'].stateValues.currentResponses).map(x => x.tree)).eqls(['x']);
+          expect((await components['/_answer1'].stateValues.submittedResponses).map(x => x.tree)).eqls(['x']);
           expect(components[mathinputName].stateValues.value.tree).eqls('x');
           // expect(components[mathinputName].stateValues.submittedValue.tree).eqls('x');
         });
@@ -1703,7 +1716,7 @@ describe('Answer Tag Tests', function () {
   });
 
   it('answer award with sugared macros and string', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -1717,7 +1730,7 @@ describe('Answer Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let mathinputName = components['/_answer1'].stateValues.inputChildren[0].componentName
       let mathinputAnchor = cesc('#' + mathinputName) + " textarea";
@@ -1740,10 +1753,10 @@ describe('Answer Tag Tests', function () {
       cy.get(number1Anchor).should('have.text', '0')
 
       cy.log('Test internal values')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
-        expect(components['/_answer1'].stateValues.currentResponses.map(x => x.tree)).eqls(['\uFF3F']);
-        expect(components['/_answer1'].stateValues.submittedResponses).eqls([]);
+        expect((await components['/_answer1'].stateValues.currentResponses).map(x => x.tree)).eqls(['\uFF3F']);
+        expect(await components['/_answer1'].stateValues.submittedResponses).eqls([]);
         expect(components[mathinputName].stateValues.value.tree).eq('\uFF3F');
         // expect(components[mathinputName].stateValues.submittedValue.tree).eq('\uFF3F');
       });
@@ -1753,6 +1766,7 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
       // cy.get(mathinputAnchor).should('have.value', 'x+y');
+      cy.get(math1Anchor + ' .mjx-mrow').should('have.text', 'x+y')
       cy.get(math1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x+y')
       });
@@ -1763,10 +1777,10 @@ describe('Answer Tag Tests', function () {
 
 
       cy.log('Test internal values')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
-        expect(components['/_answer1'].stateValues.currentResponses.map(x => x.tree)).eqls([['+', 'x', 'y']]);
-        expect(components['/_answer1'].stateValues.submittedResponses).eqls([]);
+        expect((await components['/_answer1'].stateValues.currentResponses).map(x => x.tree)).eqls([['+', 'x', 'y']]);
+        expect(await components['/_answer1'].stateValues.submittedResponses).eqls([]);
         expect(components[mathinputName].stateValues.value.tree).eqls(['+', 'x', 'y']);
         // expect(components[mathinputName].stateValues.submittedValue.tree).eq('\uFF3F');
       });
@@ -1776,7 +1790,7 @@ describe('Answer Tag Tests', function () {
       cy.get(mathinputAnchor).type(`{enter}`, { force: true });
 
       // wrap to change value of math2Anchor
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         math2 = components['/_copy2'].replacements[0];
         math2Anchor = cesc('#' + math2.componentName);
 
@@ -1791,10 +1805,10 @@ describe('Answer Tag Tests', function () {
         cy.get(number1Anchor).should('have.text', '1')
 
         cy.log('Test internal values')
-        cy.window().then((win) => {
+        cy.window().then(async (win) => {
           expect(components['/_answer1'].stateValues.creditAchieved).eq(1);
-          expect(components['/_answer1'].stateValues.currentResponses.map(x => x.tree)).eqls([['+', 'x', 'y']]);
-          expect(components['/_answer1'].stateValues.submittedResponses.map(x => x.tree)).eqls([['+', 'x', 'y']]);
+          expect((await components['/_answer1'].stateValues.currentResponses).map(x => x.tree)).eqls([['+', 'x', 'y']]);
+          expect((await components['/_answer1'].stateValues.submittedResponses).map(x => x.tree)).eqls([['+', 'x', 'y']]);
           expect(components[mathinputName].stateValues.value.tree).eqls(['+', 'x', 'y']);
           // expect(components[mathinputName].stateValues.submittedValue.tree).eqls(['+', 'x', 'y']);
         });
@@ -1805,6 +1819,7 @@ describe('Answer Tag Tests', function () {
 
         cy.log('Test value displayed in browser')
         // cy.get(mathinputAnchor).should('have.value', 'x');
+        cy.get(math1Anchor + ' .mjx-mrow').should('have.text', 'x')
         cy.get(math1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('x')
         });
@@ -1814,10 +1829,10 @@ describe('Answer Tag Tests', function () {
         cy.get(number1Anchor).should('have.text', '1')
 
         cy.log('Test internal values')
-        cy.window().then((win) => {
+        cy.window().then(async (win) => {
           expect(components['/_answer1'].stateValues.creditAchieved).eq(1);
-          expect(components['/_answer1'].stateValues.currentResponses.map(x => x.tree)).eqls(['x']);
-          expect(components['/_answer1'].stateValues.submittedResponses.map(x => x.tree)).eqls([['+', 'x', 'y']]);
+          expect((await components['/_answer1'].stateValues.currentResponses).map(x => x.tree)).eqls(['x']);
+          expect((await components['/_answer1'].stateValues.submittedResponses).map(x => x.tree)).eqls([['+', 'x', 'y']]);
           expect(components[mathinputName].stateValues.value.tree).eqls('x');
           // expect(components[mathinputName].stateValues.submittedValue.tree).eqls(['+', 'x', 'y']);
         });
@@ -1837,10 +1852,10 @@ describe('Answer Tag Tests', function () {
 
 
         cy.log('Test internal values')
-        cy.window().then((win) => {
+        cy.window().then(async (win) => {
           expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
-          expect(components['/_answer1'].stateValues.currentResponses.map(x => x.tree)).eqls(['x']);
-          expect(components['/_answer1'].stateValues.submittedResponses.map(x => x.tree)).eqls(['x']);
+          expect((await components['/_answer1'].stateValues.currentResponses).map(x => x.tree)).eqls(['x']);
+          expect((await components['/_answer1'].stateValues.submittedResponses).map(x => x.tree)).eqls(['x']);
           expect(components[mathinputName].stateValues.value.tree).eqls('x');
           // expect(components[mathinputName].stateValues.submittedValue.tree).eqls('x');
         });
@@ -1850,7 +1865,7 @@ describe('Answer Tag Tests', function () {
   });
 
   it('answer award with math, initally unresolved', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -1870,7 +1885,7 @@ describe('Answer Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let mathinputName = components['/_answer1'].stateValues.inputChildren[0].componentName
       let mathinputAnchor = cesc('#' + mathinputName) + " textarea";
@@ -1893,10 +1908,10 @@ describe('Answer Tag Tests', function () {
       cy.get(number1Anchor).should('have.text', '0')
 
       cy.log('Test internal values')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
-        expect(components['/_answer1'].stateValues.currentResponses.map(x => x.tree)).eqls(['\uFF3F']);
-        expect(components['/_answer1'].stateValues.submittedResponses).eqls([]);
+        expect((await components['/_answer1'].stateValues.currentResponses).map(x => x.tree)).eqls(['\uFF3F']);
+        expect(await components['/_answer1'].stateValues.submittedResponses).eqls([]);
         expect(components[mathinputName].stateValues.value.tree).eq('\uFF3F');
         // expect(components[mathinputName].stateValues.submittedValue.tree).eq('\uFF3F');
       });
@@ -1906,6 +1921,7 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
       // cy.get(mathinputAnchor).should('have.value', 'x+y');
+      cy.get(math1Anchor + ' .mjx-mrow').should('have.text', 'x+y')
       cy.get(math1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x+y')
       });
@@ -1916,10 +1932,10 @@ describe('Answer Tag Tests', function () {
 
 
       cy.log('Test internal values')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
-        expect(components['/_answer1'].stateValues.currentResponses.map(x => x.tree)).eqls([['+', 'x', 'y']]);
-        expect(components['/_answer1'].stateValues.submittedResponses).eqls([]);
+        expect((await components['/_answer1'].stateValues.currentResponses).map(x => x.tree)).eqls([['+', 'x', 'y']]);
+        expect(await components['/_answer1'].stateValues.submittedResponses).eqls([]);
         expect(components[mathinputName].stateValues.value.tree).eqls(['+', 'x', 'y']);
         // expect(components[mathinputName].stateValues.submittedValue.tree).eq('\uFF3F');
       });
@@ -1929,7 +1945,7 @@ describe('Answer Tag Tests', function () {
       cy.get(mathinputAnchor).type(`{enter}`, { force: true });
 
       // wrap to change value of math2Anchor
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         math2 = components['/_copy3'].replacements[0];
         math2Anchor = cesc('#' + math2.componentName);
 
@@ -1944,10 +1960,10 @@ describe('Answer Tag Tests', function () {
         cy.get(number1Anchor).should('have.text', '1')
 
         cy.log('Test internal values')
-        cy.window().then((win) => {
+        cy.window().then(async (win) => {
           expect(components['/_answer1'].stateValues.creditAchieved).eq(1);
-          expect(components['/_answer1'].stateValues.currentResponses.map(x => x.tree)).eqls([['+', 'x', 'y']]);
-          expect(components['/_answer1'].stateValues.submittedResponses.map(x => x.tree)).eqls([['+', 'x', 'y']]);
+          expect((await components['/_answer1'].stateValues.currentResponses).map(x => x.tree)).eqls([['+', 'x', 'y']]);
+          expect((await components['/_answer1'].stateValues.submittedResponses).map(x => x.tree)).eqls([['+', 'x', 'y']]);
           expect(components[mathinputName].stateValues.value.tree).eqls(['+', 'x', 'y']);
           // expect(components[mathinputName].stateValues.submittedValue.tree).eqls(['+', 'x', 'y']);
         });
@@ -1958,6 +1974,7 @@ describe('Answer Tag Tests', function () {
 
         cy.log('Test value displayed in browser')
         // cy.get(mathinputAnchor).should('have.value', 'x');
+        cy.get(math1Anchor + ' .mjx-mrow').should('have.text', 'x')
         cy.get(math1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('x')
         });
@@ -1967,10 +1984,10 @@ describe('Answer Tag Tests', function () {
         cy.get(number1Anchor).should('have.text', '1')
 
         cy.log('Test internal values')
-        cy.window().then((win) => {
+        cy.window().then(async (win) => {
           expect(components['/_answer1'].stateValues.creditAchieved).eq(1);
-          expect(components['/_answer1'].stateValues.currentResponses.map(x => x.tree)).eqls(['x']);
-          expect(components['/_answer1'].stateValues.submittedResponses.map(x => x.tree)).eqls([['+', 'x', 'y']]);
+          expect((await components['/_answer1'].stateValues.currentResponses).map(x => x.tree)).eqls(['x']);
+          expect((await components['/_answer1'].stateValues.submittedResponses).map(x => x.tree)).eqls([['+', 'x', 'y']]);
           expect(components[mathinputName].stateValues.value.tree).eqls('x');
           // expect(components[mathinputName].stateValues.submittedValue.tree).eqls(['+', 'x', 'y']);
         });
@@ -1990,10 +2007,10 @@ describe('Answer Tag Tests', function () {
 
 
         cy.log('Test internal values')
-        cy.window().then((win) => {
+        cy.window().then(async (win) => {
           expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
-          expect(components['/_answer1'].stateValues.currentResponses.map(x => x.tree)).eqls(['x']);
-          expect(components['/_answer1'].stateValues.submittedResponses.map(x => x.tree)).eqls(['x']);
+          expect((await components['/_answer1'].stateValues.currentResponses).map(x => x.tree)).eqls(['x']);
+          expect((await components['/_answer1'].stateValues.submittedResponses).map(x => x.tree)).eqls(['x']);
           expect(components[mathinputName].stateValues.value.tree).eqls('x');
           // expect(components[mathinputName].stateValues.submittedValue.tree).eqls('x');
         });
@@ -2003,7 +2020,7 @@ describe('Answer Tag Tests', function () {
   });
 
   it('answer award with mathList', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -2016,7 +2033,7 @@ describe('Answer Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let mathinputName = components['/_answer1'].stateValues.inputChildren[0].componentName
       let mathinputAnchor = cesc('#' + mathinputName) + " textarea";
@@ -2039,10 +2056,10 @@ describe('Answer Tag Tests', function () {
       cy.get(number1Anchor).should('have.text', '0')
 
       cy.log('Test internal values')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
-        expect(components['/_answer1'].stateValues.currentResponses.map(x => x.tree)).eqls(['\uFF3F']);
-        expect(components['/_answer1'].stateValues.submittedResponses).eqls([]);
+        expect((await components['/_answer1'].stateValues.currentResponses).map(x => x.tree)).eqls(['\uFF3F']);
+        expect(await components['/_answer1'].stateValues.submittedResponses).eqls([]);
         expect(components[mathinputName].stateValues.value.tree).eq('\uFF3F');
         // expect(components[mathinputName].stateValues.submittedValue.tree).eq('\uFF3F');
       });
@@ -2051,6 +2068,7 @@ describe('Answer Tag Tests', function () {
       cy.get(mathinputAnchor).type(`x+y, z`, { force: true }).blur();
 
       cy.log('Test value displayed in browser')
+      cy.get(math1Anchor + ' .mjx-mrow').should('have.text', 'x+y,z')
       cy.get(math1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x+y,z')
       });
@@ -2061,10 +2079,10 @@ describe('Answer Tag Tests', function () {
 
 
       cy.log('Test internal values')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
-        expect(components['/_answer1'].stateValues.currentResponses.map(x => x.tree)).eqls([["list", ['+', 'x', 'y'], "z"]]);
-        expect(components['/_answer1'].stateValues.submittedResponses).eqls([]);
+        expect((await components['/_answer1'].stateValues.currentResponses).map(x => x.tree)).eqls([["list", ['+', 'x', 'y'], "z"]]);
+        expect(await components['/_answer1'].stateValues.submittedResponses).eqls([]);
         expect(components[mathinputName].stateValues.value.tree).eqls(["list", ['+', 'x', 'y'], "z"]);
       });
 
@@ -2073,7 +2091,7 @@ describe('Answer Tag Tests', function () {
       cy.get(mathinputAnchor).type(`{enter}`, { force: true });
 
       // wrap to change value of math2Anchor
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         math2 = components['/_copy2'].replacements[0];
         math2Anchor = cesc('#' + math2.componentName);
 
@@ -2087,10 +2105,10 @@ describe('Answer Tag Tests', function () {
         cy.get(number1Anchor).should('have.text', '1')
 
         cy.log('Test internal values')
-        cy.window().then((win) => {
+        cy.window().then(async (win) => {
           expect(components['/_answer1'].stateValues.creditAchieved).eq(1);
-          expect(components['/_answer1'].stateValues.currentResponses.map(x => x.tree)).eqls([["list", ['+', 'x', 'y'], "z"]]);
-          expect(components['/_answer1'].stateValues.submittedResponses.map(x => x.tree)).eqls([["list", ['+', 'x', 'y'], "z"]]);
+          expect((await components['/_answer1'].stateValues.currentResponses).map(x => x.tree)).eqls([["list", ['+', 'x', 'y'], "z"]]);
+          expect((await components['/_answer1'].stateValues.submittedResponses).map(x => x.tree)).eqls([["list", ['+', 'x', 'y'], "z"]]);
           expect(components[mathinputName].stateValues.value.tree).eqls(["list", ['+', 'x', 'y'], "z"]);
         });
 
@@ -2099,6 +2117,7 @@ describe('Answer Tag Tests', function () {
         cy.get(mathinputAnchor).type(`{end}{leftArrow}{leftArrow}{leftArrow}{backspace}{backspace}`, { force: true }).blur();
 
         cy.log('Test value displayed in browser')
+        cy.get(math1Anchor + ' .mjx-mrow').should('have.text', 'x,z')
         cy.get(math1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('x,z')
         });
@@ -2108,10 +2127,10 @@ describe('Answer Tag Tests', function () {
         cy.get(number1Anchor).should('have.text', '1')
 
         cy.log('Test internal values')
-        cy.window().then((win) => {
+        cy.window().then(async (win) => {
           expect(components['/_answer1'].stateValues.creditAchieved).eq(1);
-          expect(components['/_answer1'].stateValues.currentResponses.map(x => x.tree)).eqls([["list", 'x', "z"]]);
-          expect(components['/_answer1'].stateValues.submittedResponses.map(x => x.tree)).eqls([["list", ['+', 'x', 'y'], "z"]]);
+          expect((await components['/_answer1'].stateValues.currentResponses).map(x => x.tree)).eqls([["list", 'x', "z"]]);
+          expect((await components['/_answer1'].stateValues.submittedResponses).map(x => x.tree)).eqls([["list", ['+', 'x', 'y'], "z"]]);
           expect(components[mathinputName].stateValues.value.tree).eqls(["list", 'x', "z"]);
         });
 
@@ -2129,18 +2148,19 @@ describe('Answer Tag Tests', function () {
 
 
         cy.log('Test internal values')
-        cy.window().then((win) => {
+        cy.window().then(async (win) => {
           expect(components['/_answer1'].stateValues.creditAchieved).eq(0.5);
-          expect(components['/_answer1'].stateValues.currentResponses.map(x => x.tree)).eqls([["list", 'x', "z"]]);
-          expect(components['/_answer1'].stateValues.submittedResponses.map(x => x.tree)).eqls([["list", 'x', "z"]]);
+          expect((await components['/_answer1'].stateValues.currentResponses).map(x => x.tree)).eqls([["list", 'x', "z"]]);
+          expect((await components['/_answer1'].stateValues.submittedResponses).map(x => x.tree)).eqls([["list", 'x', "z"]]);
           expect(components[mathinputName].stateValues.value.tree).eqls(["list", 'x', "z"]);
         });
 
-        cy.log('Submit incoorect answer');
+        cy.log('Submit incorrect answer');
         cy.get(mathinputAnchor).type(`{end}{backspace}{backspace}{backspace}{enter}`, { force: true });
 
 
         cy.log('Test value displayed in browser')
+        cy.get(math1Anchor + ' .mjx-mrow').should('have.text', 'x')
         cy.get(math1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('x')
         });
@@ -2151,10 +2171,10 @@ describe('Answer Tag Tests', function () {
 
 
         cy.log('Test internal values')
-        cy.window().then((win) => {
+        cy.window().then(async (win) => {
           expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
-          expect(components['/_answer1'].stateValues.currentResponses.map(x => x.tree)).eqls(['x']);
-          expect(components['/_answer1'].stateValues.submittedResponses.map(x => x.tree)).eqls(['x']);
+          expect((await components['/_answer1'].stateValues.currentResponses).map(x => x.tree)).eqls(['x']);
+          expect((await components['/_answer1'].stateValues.submittedResponses).map(x => x.tree)).eqls(['x']);
           expect(components[mathinputName].stateValues.value.tree).eqls('x');
         });
 
@@ -2164,6 +2184,7 @@ describe('Answer Tag Tests', function () {
         cy.get(mathinputAnchor).type(`{end}{backspace}{backspace}z{enter}`, { force: true });
 
         cy.log('Test value displayed in browser')
+        cy.get(math1Anchor + ' .mjx-mrow').should('have.text', 'z')
         cy.get(math1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('z')
         });
@@ -2174,10 +2195,10 @@ describe('Answer Tag Tests', function () {
 
 
         cy.log('Test internal values')
-        cy.window().then((win) => {
+        cy.window().then(async (win) => {
           expect(components['/_answer1'].stateValues.creditAchieved).eq(0.5);
-          expect(components['/_answer1'].stateValues.currentResponses.map(x => x.tree)).eqls(['z']);
-          expect(components['/_answer1'].stateValues.submittedResponses.map(x => x.tree)).eqls(['z']);
+          expect((await components['/_answer1'].stateValues.currentResponses).map(x => x.tree)).eqls(['z']);
+          expect((await components['/_answer1'].stateValues.submittedResponses).map(x => x.tree)).eqls(['z']);
           expect(components[mathinputName].stateValues.value.tree).eqls('z');
         });
 
@@ -2188,7 +2209,7 @@ describe('Answer Tag Tests', function () {
   });
 
   it('answer set to text, award with text', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -2201,7 +2222,7 @@ describe('Answer Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let textinputName = components['/_answer1'].stateValues.inputChildren[0].componentName
       let textinputAnchor = cesc('#' + textinputName + '_input');
@@ -2220,10 +2241,10 @@ describe('Answer Tag Tests', function () {
       cy.get(number1Anchor).should('have.text', '0')
 
       cy.log('Test internal values')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
-        expect(components['/_answer1'].stateValues.currentResponses).eqls(['']);
-        expect(components['/_answer1'].stateValues.submittedResponses).eqls([]);
+        expect((await components['/_answer1'].stateValues.currentResponses)).eqls(['']);
+        expect(await components['/_answer1'].stateValues.submittedResponses).eqls([]);
         expect(components[textinputName].stateValues.value).eq('');
         // expect(components[textinputName].stateValues.submittedValue).eq('＿');
       });
@@ -2238,10 +2259,10 @@ describe('Answer Tag Tests', function () {
       cy.get(number1Anchor).should('have.text', '0')
 
       cy.log('Test internal values')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
-        expect(components['/_answer1'].stateValues.currentResponses).eqls([' hello there ']);
-        expect(components['/_answer1'].stateValues.submittedResponses).eqls([]);
+        expect((await components['/_answer1'].stateValues.currentResponses)).eqls([' hello there ']);
+        expect(await components['/_answer1'].stateValues.submittedResponses).eqls([]);
         expect(components[textinputName].stateValues.value).eq(' hello there ');
         // expect(components[textinputName].stateValues.submittedValue).eq('＿');
       });
@@ -2251,7 +2272,7 @@ describe('Answer Tag Tests', function () {
       cy.get(textinputAnchor).type(`{enter}`);
 
       // wrap to change value of text2Anchor
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         text2 = components['/_copy2'].replacements[0];
         text2Anchor = cesc('#' + text2.componentName);
 
@@ -2262,10 +2283,10 @@ describe('Answer Tag Tests', function () {
         cy.get(number1Anchor).should('have.text', '1')
 
         cy.log('Test internal values')
-        cy.window().then((win) => {
+        cy.window().then(async (win) => {
           expect(components['/_answer1'].stateValues.creditAchieved).eq(1);
-          expect(components['/_answer1'].stateValues.currentResponses).eqls([' hello there ']);
-          expect(components['/_answer1'].stateValues.submittedResponses).eqls([' hello there ']);
+          expect((await components['/_answer1'].stateValues.currentResponses)).eqls([' hello there ']);
+          expect(await components['/_answer1'].stateValues.submittedResponses).eqls([' hello there ']);
           expect(components[textinputName].stateValues.value).eq(' hello there ');
           // expect(components[textinputName].stateValues.submittedValue).eq(' hello there ');
         });
@@ -2281,10 +2302,10 @@ describe('Answer Tag Tests', function () {
         cy.get(number1Anchor).should('have.text', '1')
 
         cy.log('Test internal values')
-        cy.window().then((win) => {
+        cy.window().then(async (win) => {
           expect(components['/_answer1'].stateValues.creditAchieved).eq(1);
-          expect(components['/_answer1'].stateValues.currentResponses).eqls(['hello  there']);
-          expect(components['/_answer1'].stateValues.submittedResponses).eqls([' hello there ']);
+          expect((await components['/_answer1'].stateValues.currentResponses)).eqls(['hello  there']);
+          expect(await components['/_answer1'].stateValues.submittedResponses).eqls([' hello there ']);
           expect(components[textinputName].stateValues.value).eq('hello  there');
           // expect(components[textinputName].stateValues.submittedValue).eq(' hello there ');
         });
@@ -2299,10 +2320,10 @@ describe('Answer Tag Tests', function () {
         cy.get(number1Anchor).should('have.text', '0')
 
         cy.log('Test internal values')
-        cy.window().then((win) => {
+        cy.window().then(async (win) => {
           expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
-          expect(components['/_answer1'].stateValues.currentResponses).eqls(['hello  there']);
-          expect(components['/_answer1'].stateValues.submittedResponses).eqls(['hello  there']);
+          expect((await components['/_answer1'].stateValues.currentResponses)).eqls(['hello  there']);
+          expect(await components['/_answer1'].stateValues.submittedResponses).eqls(['hello  there']);
           expect(components[textinputName].stateValues.value).eq('hello  there');
           // expect(components[textinputName].stateValues.submittedValue).eq('hello  there');
         });
@@ -2311,7 +2332,7 @@ describe('Answer Tag Tests', function () {
   });
 
   it('answer set to text, award with sugared string', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -2324,7 +2345,7 @@ describe('Answer Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let textinputName = components['/_answer1'].stateValues.inputChildren[0].componentName
       let textinputAnchor = cesc('#' + textinputName + '_input');
@@ -2343,10 +2364,10 @@ describe('Answer Tag Tests', function () {
       cy.get(number1Anchor).should('have.text', '0')
 
       cy.log('Test internal values')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
-        expect(components['/_answer1'].stateValues.currentResponses).eqls(['']);
-        expect(components['/_answer1'].stateValues.submittedResponses).eqls([]);
+        expect((await components['/_answer1'].stateValues.currentResponses)).eqls(['']);
+        expect(await components['/_answer1'].stateValues.submittedResponses).eqls([]);
         expect(components[textinputName].stateValues.value).eq('');
         // expect(components[textinputName].stateValues.submittedValue).eq('＿');
       });
@@ -2361,10 +2382,10 @@ describe('Answer Tag Tests', function () {
       cy.get(number1Anchor).should('have.text', '0')
 
       cy.log('Test internal values')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
-        expect(components['/_answer1'].stateValues.currentResponses).eqls([' hello there ']);
-        expect(components['/_answer1'].stateValues.submittedResponses).eqls([]);
+        expect((await components['/_answer1'].stateValues.currentResponses)).eqls([' hello there ']);
+        expect(await components['/_answer1'].stateValues.submittedResponses).eqls([]);
         expect(components[textinputName].stateValues.value).eq(' hello there ');
         // expect(components[textinputName].stateValues.submittedValue).eq('＿');
       });
@@ -2374,7 +2395,7 @@ describe('Answer Tag Tests', function () {
       cy.get(textinputAnchor).type(`{enter}`);
 
       // wrap to change value of text2Anchor
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         text2 = components['/_copy2'].replacements[0];
         text2Anchor = cesc('#' + text2.componentName);
 
@@ -2385,10 +2406,10 @@ describe('Answer Tag Tests', function () {
         cy.get(number1Anchor).should('have.text', '1')
 
         cy.log('Test internal values')
-        cy.window().then((win) => {
+        cy.window().then(async (win) => {
           expect(components['/_answer1'].stateValues.creditAchieved).eq(1);
-          expect(components['/_answer1'].stateValues.currentResponses).eqls([' hello there ']);
-          expect(components['/_answer1'].stateValues.submittedResponses).eqls([' hello there ']);
+          expect((await components['/_answer1'].stateValues.currentResponses)).eqls([' hello there ']);
+          expect(await components['/_answer1'].stateValues.submittedResponses).eqls([' hello there ']);
           expect(components[textinputName].stateValues.value).eq(' hello there ');
           // expect(components[textinputName].stateValues.submittedValue).eq(' hello there ');
         });
@@ -2404,10 +2425,10 @@ describe('Answer Tag Tests', function () {
         cy.get(number1Anchor).should('have.text', '1')
 
         cy.log('Test internal values')
-        cy.window().then((win) => {
+        cy.window().then(async (win) => {
           expect(components['/_answer1'].stateValues.creditAchieved).eq(1);
-          expect(components['/_answer1'].stateValues.currentResponses).eqls(['hello  there']);
-          expect(components['/_answer1'].stateValues.submittedResponses).eqls([' hello there ']);
+          expect((await components['/_answer1'].stateValues.currentResponses)).eqls(['hello  there']);
+          expect(await components['/_answer1'].stateValues.submittedResponses).eqls([' hello there ']);
           expect(components[textinputName].stateValues.value).eq('hello  there');
           // expect(components[textinputName].stateValues.submittedValue).eq(' hello there ');
         });
@@ -2422,10 +2443,10 @@ describe('Answer Tag Tests', function () {
         cy.get(number1Anchor).should('have.text', '0')
 
         cy.log('Test internal values')
-        cy.window().then((win) => {
+        cy.window().then(async (win) => {
           expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
-          expect(components['/_answer1'].stateValues.currentResponses).eqls(['hello  there']);
-          expect(components['/_answer1'].stateValues.submittedResponses).eqls(['hello  there']);
+          expect((await components['/_answer1'].stateValues.currentResponses)).eqls(['hello  there']);
+          expect(await components['/_answer1'].stateValues.submittedResponses).eqls(['hello  there']);
           expect(components[textinputName].stateValues.value).eq('hello  there');
           // expect(components[textinputName].stateValues.submittedValue).eq('hello  there');
         });
@@ -2434,7 +2455,7 @@ describe('Answer Tag Tests', function () {
   });
 
   it('answer set to text, award with sugared macro and string', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -2448,7 +2469,7 @@ describe('Answer Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let textinputName = components['/_answer1'].stateValues.inputChildren[0].componentName
       let textinputAnchor = cesc('#' + textinputName + '_input');
@@ -2467,10 +2488,10 @@ describe('Answer Tag Tests', function () {
       cy.get(number1Anchor).should('have.text', '0')
 
       cy.log('Test internal values')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
-        expect(components['/_answer1'].stateValues.currentResponses).eqls(['']);
-        expect(components['/_answer1'].stateValues.submittedResponses).eqls([]);
+        expect((await components['/_answer1'].stateValues.currentResponses)).eqls(['']);
+        expect(await components['/_answer1'].stateValues.submittedResponses).eqls([]);
         expect(components[textinputName].stateValues.value).eq('');
         // expect(components[textinputName].stateValues.submittedValue).eq('＿');
       });
@@ -2485,10 +2506,10 @@ describe('Answer Tag Tests', function () {
       cy.get(number1Anchor).should('have.text', '0')
 
       cy.log('Test internal values')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
-        expect(components['/_answer1'].stateValues.currentResponses).eqls([' hello there ']);
-        expect(components['/_answer1'].stateValues.submittedResponses).eqls([]);
+        expect((await components['/_answer1'].stateValues.currentResponses)).eqls([' hello there ']);
+        expect(await components['/_answer1'].stateValues.submittedResponses).eqls([]);
         expect(components[textinputName].stateValues.value).eq(' hello there ');
         // expect(components[textinputName].stateValues.submittedValue).eq('＿');
       });
@@ -2498,7 +2519,7 @@ describe('Answer Tag Tests', function () {
       cy.get(textinputAnchor).type(`{enter}`);
 
       // wrap to change value of text2Anchor
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         text2 = components['/_copy2'].replacements[0];
         text2Anchor = cesc('#' + text2.componentName);
 
@@ -2509,10 +2530,10 @@ describe('Answer Tag Tests', function () {
         cy.get(number1Anchor).should('have.text', '1')
 
         cy.log('Test internal values')
-        cy.window().then((win) => {
+        cy.window().then(async (win) => {
           expect(components['/_answer1'].stateValues.creditAchieved).eq(1);
-          expect(components['/_answer1'].stateValues.currentResponses).eqls([' hello there ']);
-          expect(components['/_answer1'].stateValues.submittedResponses).eqls([' hello there ']);
+          expect((await components['/_answer1'].stateValues.currentResponses)).eqls([' hello there ']);
+          expect(await components['/_answer1'].stateValues.submittedResponses).eqls([' hello there ']);
           expect(components[textinputName].stateValues.value).eq(' hello there ');
           // expect(components[textinputName].stateValues.submittedValue).eq(' hello there ');
         });
@@ -2528,10 +2549,10 @@ describe('Answer Tag Tests', function () {
         cy.get(number1Anchor).should('have.text', '1')
 
         cy.log('Test internal values')
-        cy.window().then((win) => {
+        cy.window().then(async (win) => {
           expect(components['/_answer1'].stateValues.creditAchieved).eq(1);
-          expect(components['/_answer1'].stateValues.currentResponses).eqls(['hello  there']);
-          expect(components['/_answer1'].stateValues.submittedResponses).eqls([' hello there ']);
+          expect((await components['/_answer1'].stateValues.currentResponses)).eqls(['hello  there']);
+          expect(await components['/_answer1'].stateValues.submittedResponses).eqls([' hello there ']);
           expect(components[textinputName].stateValues.value).eq('hello  there');
           // expect(components[textinputName].stateValues.submittedValue).eq(' hello there ');
         });
@@ -2546,10 +2567,10 @@ describe('Answer Tag Tests', function () {
         cy.get(number1Anchor).should('have.text', '0')
 
         cy.log('Test internal values')
-        cy.window().then((win) => {
+        cy.window().then(async (win) => {
           expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
-          expect(components['/_answer1'].stateValues.currentResponses).eqls(['hello  there']);
-          expect(components['/_answer1'].stateValues.submittedResponses).eqls(['hello  there']);
+          expect((await components['/_answer1'].stateValues.currentResponses)).eqls(['hello  there']);
+          expect(await components['/_answer1'].stateValues.submittedResponses).eqls(['hello  there']);
           expect(components[textinputName].stateValues.value).eq('hello  there');
           // expect(components[textinputName].stateValues.submittedValue).eq('hello  there');
         });
@@ -2558,7 +2579,7 @@ describe('Answer Tag Tests', function () {
   });
 
   it('answer set to text, award with text, initally unresolved', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -2581,7 +2602,7 @@ describe('Answer Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let textinputName = components['/_answer1'].stateValues.inputChildren[0].componentName
       let textinputAnchor = cesc('#' + textinputName + '_input');
@@ -2600,10 +2621,10 @@ describe('Answer Tag Tests', function () {
       cy.get(number1Anchor).should('have.text', '0')
 
       cy.log('Test internal values')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
-        expect(components['/_answer1'].stateValues.currentResponses).eqls(['']);
-        expect(components['/_answer1'].stateValues.submittedResponses).eqls([]);
+        expect((await components['/_answer1'].stateValues.currentResponses)).eqls(['']);
+        expect(await components['/_answer1'].stateValues.submittedResponses).eqls([]);
         expect(components[textinputName].stateValues.value).eq('');
         // expect(components[textinputName].stateValues.submittedValue).eq('＿');
       });
@@ -2618,10 +2639,10 @@ describe('Answer Tag Tests', function () {
       cy.get(number1Anchor).should('have.text', '0')
 
       cy.log('Test internal values')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
-        expect(components['/_answer1'].stateValues.currentResponses).eqls([' hello there ']);
-        expect(components['/_answer1'].stateValues.submittedResponses).eqls([]);
+        expect((await components['/_answer1'].stateValues.currentResponses)).eqls([' hello there ']);
+        expect(await components['/_answer1'].stateValues.submittedResponses).eqls([]);
         expect(components[textinputName].stateValues.value).eq(' hello there ');
         // expect(components[textinputName].stateValues.submittedValue).eq('＿');
       });
@@ -2631,7 +2652,7 @@ describe('Answer Tag Tests', function () {
       cy.get(textinputAnchor).type(`{enter}`);
 
       // wrap to change value of text2Anchor
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         text2 = components['/_copy3'].replacements[0];
         text2Anchor = cesc('#' + text2.componentName);
 
@@ -2642,10 +2663,10 @@ describe('Answer Tag Tests', function () {
         cy.get(number1Anchor).should('have.text', '1')
 
         cy.log('Test internal values')
-        cy.window().then((win) => {
+        cy.window().then(async (win) => {
           expect(components['/_answer1'].stateValues.creditAchieved).eq(1);
-          expect(components['/_answer1'].stateValues.currentResponses).eqls([' hello there ']);
-          expect(components['/_answer1'].stateValues.submittedResponses).eqls([' hello there ']);
+          expect((await components['/_answer1'].stateValues.currentResponses)).eqls([' hello there ']);
+          expect(await components['/_answer1'].stateValues.submittedResponses).eqls([' hello there ']);
           expect(components[textinputName].stateValues.value).eq(' hello there ');
           // expect(components[textinputName].stateValues.submittedValue).eq(' hello there ');
         });
@@ -2661,10 +2682,10 @@ describe('Answer Tag Tests', function () {
         cy.get(number1Anchor).should('have.text', '1')
 
         cy.log('Test internal values')
-        cy.window().then((win) => {
+        cy.window().then(async (win) => {
           expect(components['/_answer1'].stateValues.creditAchieved).eq(1);
-          expect(components['/_answer1'].stateValues.currentResponses).eqls(['hello  there']);
-          expect(components['/_answer1'].stateValues.submittedResponses).eqls([' hello there ']);
+          expect((await components['/_answer1'].stateValues.currentResponses)).eqls(['hello  there']);
+          expect(await components['/_answer1'].stateValues.submittedResponses).eqls([' hello there ']);
           expect(components[textinputName].stateValues.value).eq('hello  there');
           // expect(components[textinputName].stateValues.submittedValue).eq(' hello there ');
         });
@@ -2679,10 +2700,10 @@ describe('Answer Tag Tests', function () {
         cy.get(number1Anchor).should('have.text', '0')
 
         cy.log('Test internal values')
-        cy.window().then((win) => {
+        cy.window().then(async (win) => {
           expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
-          expect(components['/_answer1'].stateValues.currentResponses).eqls(['hello  there']);
-          expect(components['/_answer1'].stateValues.submittedResponses).eqls(['hello  there']);
+          expect((await components['/_answer1'].stateValues.currentResponses)).eqls(['hello  there']);
+          expect(await components['/_answer1'].stateValues.submittedResponses).eqls(['hello  there']);
           expect(components[textinputName].stateValues.value).eq('hello  there');
           // expect(components[textinputName].stateValues.submittedValue).eq('hello  there');
         });
@@ -2691,7 +2712,7 @@ describe('Answer Tag Tests', function () {
   });
 
   it('answer set to text, award with textlist', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -2704,7 +2725,7 @@ describe('Answer Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let textinputName = components['/_answer1'].stateValues.inputChildren[0].componentName
       let textinputAnchor = cesc('#' + textinputName + '_input');
@@ -2723,10 +2744,10 @@ describe('Answer Tag Tests', function () {
       cy.get(number1Anchor).should('have.text', '0')
 
       cy.log('Test internal values')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
-        expect(components['/_answer1'].stateValues.currentResponses).eqls(['']);
-        expect(components['/_answer1'].stateValues.submittedResponses).eqls([]);
+        expect((await components['/_answer1'].stateValues.currentResponses)).eqls(['']);
+        expect(await components['/_answer1'].stateValues.submittedResponses).eqls([]);
         expect(components[textinputName].stateValues.value).eq('');
       });
 
@@ -2740,10 +2761,10 @@ describe('Answer Tag Tests', function () {
       cy.get(number1Anchor).should('have.text', '0')
 
       cy.log('Test internal values')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
-        expect(components['/_answer1'].stateValues.currentResponses).eqls([' hello  , there ']);
-        expect(components['/_answer1'].stateValues.submittedResponses).eqls([]);
+        expect((await components['/_answer1'].stateValues.currentResponses)).eqls([' hello  , there ']);
+        expect(await components['/_answer1'].stateValues.submittedResponses).eqls([]);
         expect(components[textinputName].stateValues.value).eq(' hello  , there ');
       });
 
@@ -2752,7 +2773,7 @@ describe('Answer Tag Tests', function () {
       cy.get(textinputAnchor).type(`{enter}`);
 
       // wrap to change value of text2Anchor
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         text2 = components['/_copy2'].replacements[0];
         text2Anchor = cesc('#' + text2.componentName);
 
@@ -2763,10 +2784,10 @@ describe('Answer Tag Tests', function () {
         cy.get(number1Anchor).should('have.text', '1')
 
         cy.log('Test internal values')
-        cy.window().then((win) => {
+        cy.window().then(async (win) => {
           expect(components['/_answer1'].stateValues.creditAchieved).eq(1);
-          expect(components['/_answer1'].stateValues.currentResponses).eqls([' hello  , there ']);
-          expect(components['/_answer1'].stateValues.submittedResponses).eqls([' hello  , there ']);
+          expect((await components['/_answer1'].stateValues.currentResponses)).eqls([' hello  , there ']);
+          expect(await components['/_answer1'].stateValues.submittedResponses).eqls([' hello  , there ']);
           expect(components[textinputName].stateValues.value).eq(' hello  , there ');
         });
 
@@ -2781,10 +2802,10 @@ describe('Answer Tag Tests', function () {
         cy.get(number1Anchor).should('have.text', '1')
 
         cy.log('Test internal values')
-        cy.window().then((win) => {
+        cy.window().then(async (win) => {
           expect(components['/_answer1'].stateValues.creditAchieved).eq(1);
-          expect(components['/_answer1'].stateValues.currentResponses).eqls(['hello,then']);
-          expect(components['/_answer1'].stateValues.submittedResponses).eqls([' hello  , there ']);
+          expect((await components['/_answer1'].stateValues.currentResponses)).eqls(['hello,then']);
+          expect(await components['/_answer1'].stateValues.submittedResponses).eqls([' hello  , there ']);
           expect(components[textinputName].stateValues.value).eq('hello,then');
         });
 
@@ -2798,10 +2819,10 @@ describe('Answer Tag Tests', function () {
         cy.get(number1Anchor).should('have.text', '0.5')
 
         cy.log('Test internal values')
-        cy.window().then((win) => {
+        cy.window().then(async (win) => {
           expect(components['/_answer1'].stateValues.creditAchieved).eq(0.5);
-          expect(components['/_answer1'].stateValues.currentResponses).eqls(['hello,then']);
-          expect(components['/_answer1'].stateValues.submittedResponses).eqls(['hello,then']);
+          expect((await components['/_answer1'].stateValues.currentResponses)).eqls(['hello,then']);
+          expect(await components['/_answer1'].stateValues.submittedResponses).eqls(['hello,then']);
           expect(components[textinputName].stateValues.value).eq('hello,then');
         });
 
@@ -2816,10 +2837,10 @@ describe('Answer Tag Tests', function () {
         cy.get(number1Anchor).should('have.text', '0')
 
         cy.log('Test internal values')
-        cy.window().then((win) => {
+        cy.window().then(async (win) => {
           expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
-          expect(components['/_answer1'].stateValues.currentResponses).eqls(['hello there']);
-          expect(components['/_answer1'].stateValues.submittedResponses).eqls(['hello there']);
+          expect((await components['/_answer1'].stateValues.currentResponses)).eqls(['hello there']);
+          expect(await components['/_answer1'].stateValues.submittedResponses).eqls(['hello there']);
           expect(components[textinputName].stateValues.value).eq('hello there');
         });
 
@@ -2834,10 +2855,10 @@ describe('Answer Tag Tests', function () {
         cy.get(number1Anchor).should('have.text', '0.5')
 
         cy.log('Test internal values')
-        cy.window().then((win) => {
+        cy.window().then(async (win) => {
           expect(components['/_answer1'].stateValues.creditAchieved).eq(0.5);
-          expect(components['/_answer1'].stateValues.currentResponses).eqls(['there']);
-          expect(components['/_answer1'].stateValues.submittedResponses).eqls(['there']);
+          expect((await components['/_answer1'].stateValues.currentResponses)).eqls(['there']);
+          expect(await components['/_answer1'].stateValues.submittedResponses).eqls(['there']);
           expect(components[textinputName].stateValues.value).eq('there');
         });
 
@@ -2847,7 +2868,7 @@ describe('Answer Tag Tests', function () {
   });
 
   it('answer set to boolean, award with boolean', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -2861,7 +2882,7 @@ describe('Answer Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let booleaninputName = components['/_answer1'].stateValues.inputChildren[0].componentName
       let booleaninputAnchor = cesc('#' + booleaninputName + '_input');
@@ -2877,10 +2898,10 @@ describe('Answer Tag Tests', function () {
       cy.get(number1Anchor).should('have.text', '0')
 
       cy.log('Test internal values')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
-        expect(components['/_answer1'].stateValues.currentResponses).eqls([false]);
-        expect(components['/_answer1'].stateValues.submittedResponses).eqls([]);
+        expect((await components['/_answer1'].stateValues.currentResponses)).eqls([false]);
+        expect(await components['/_answer1'].stateValues.submittedResponses).eqls([]);
         expect(components[booleaninputName].stateValues.value).eq(false);
       });
 
@@ -2892,10 +2913,10 @@ describe('Answer Tag Tests', function () {
       cy.get(number1Anchor).should('have.text', '0')
 
       cy.log('Test internal values')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
-        expect(components['/_answer1'].stateValues.currentResponses).eqls([true]);
-        expect(components['/_answer1'].stateValues.submittedResponses).eqls([]);
+        expect((await components['/_answer1'].stateValues.currentResponses)).eqls([true]);
+        expect(await components['/_answer1'].stateValues.submittedResponses).eqls([]);
         expect(components[booleaninputName].stateValues.value).eq(true);
       });
 
@@ -2904,7 +2925,7 @@ describe('Answer Tag Tests', function () {
       cy.get(booleaninputSubmitAnchor).type(`{enter}`, { force: true });
 
       // wrap to set value of boolean2Anchor
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let boolean2 = components['/_copy2'].replacements[0];
         let boolean2Anchor = cesc('#' + boolean2.componentName);
 
@@ -2914,10 +2935,10 @@ describe('Answer Tag Tests', function () {
         cy.get(number1Anchor).should('have.text', '1')
 
         cy.log('Test internal values')
-        cy.window().then((win) => {
+        cy.window().then(async (win) => {
           expect(components['/_answer1'].stateValues.creditAchieved).eq(1);
-          expect(components['/_answer1'].stateValues.currentResponses).eqls([true]);
-          expect(components['/_answer1'].stateValues.submittedResponses).eqls([true]);
+          expect((await components['/_answer1'].stateValues.currentResponses)).eqls([true]);
+          expect(await components['/_answer1'].stateValues.submittedResponses).eqls([true]);
           expect(components[booleaninputName].stateValues.value).eq(true);
         });
 
@@ -2931,10 +2952,10 @@ describe('Answer Tag Tests', function () {
         cy.get(number1Anchor).should('have.text', '1')
 
         cy.log('Test internal values')
-        cy.window().then((win) => {
+        cy.window().then(async (win) => {
           expect(components['/_answer1'].stateValues.creditAchieved).eq(1);
-          expect(components['/_answer1'].stateValues.currentResponses).eqls([false]);
-          expect(components['/_answer1'].stateValues.submittedResponses).eqls([true]);
+          expect((await components['/_answer1'].stateValues.currentResponses)).eqls([false]);
+          expect(await components['/_answer1'].stateValues.submittedResponses).eqls([true]);
           expect(components[booleaninputName].stateValues.value).eq(false);
         });
 
@@ -2947,10 +2968,10 @@ describe('Answer Tag Tests', function () {
         cy.get(number1Anchor).should('have.text', '0')
 
         cy.log('Test internal values')
-        cy.window().then((win) => {
+        cy.window().then(async (win) => {
           expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
-          expect(components['/_answer1'].stateValues.currentResponses).eqls([false]);
-          expect(components['/_answer1'].stateValues.submittedResponses).eqls([false]);
+          expect((await components['/_answer1'].stateValues.currentResponses)).eqls([false]);
+          expect(await components['/_answer1'].stateValues.submittedResponses).eqls([false]);
           expect(components[booleaninputName].stateValues.value).eq(false);
         });
       })
@@ -2958,7 +2979,7 @@ describe('Answer Tag Tests', function () {
   });
 
   it('answer set to boolean, award with sugared macro and string', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -2973,7 +2994,7 @@ describe('Answer Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let booleaninputName = components['/_answer1'].stateValues.inputChildren[0].componentName
       let booleaninputAnchor = cesc('#' + booleaninputName + '_input');
@@ -2989,10 +3010,10 @@ describe('Answer Tag Tests', function () {
       cy.get(number1Anchor).should('have.text', '0')
 
       cy.log('Test internal values')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
-        expect(components['/_answer1'].stateValues.currentResponses).eqls([false]);
-        expect(components['/_answer1'].stateValues.submittedResponses).eqls([]);
+        expect((await components['/_answer1'].stateValues.currentResponses)).eqls([false]);
+        expect(await components['/_answer1'].stateValues.submittedResponses).eqls([]);
         expect(components[booleaninputName].stateValues.value).eq(false);
       });
 
@@ -3004,10 +3025,10 @@ describe('Answer Tag Tests', function () {
       cy.get(number1Anchor).should('have.text', '0')
 
       cy.log('Test internal values')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
-        expect(components['/_answer1'].stateValues.currentResponses).eqls([true]);
-        expect(components['/_answer1'].stateValues.submittedResponses).eqls([]);
+        expect((await components['/_answer1'].stateValues.currentResponses)).eqls([true]);
+        expect(await components['/_answer1'].stateValues.submittedResponses).eqls([]);
         expect(components[booleaninputName].stateValues.value).eq(true);
       });
 
@@ -3016,7 +3037,7 @@ describe('Answer Tag Tests', function () {
       cy.get(booleaninputSubmitAnchor).type(`{enter}`, { force: true });
 
       // wrap to set value of boolean2Anchor
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let boolean2 = components['/_copy2'].replacements[0];
         let boolean2Anchor = cesc('#' + boolean2.componentName);
 
@@ -3026,10 +3047,10 @@ describe('Answer Tag Tests', function () {
         cy.get(number1Anchor).should('have.text', '1')
 
         cy.log('Test internal values')
-        cy.window().then((win) => {
+        cy.window().then(async (win) => {
           expect(components['/_answer1'].stateValues.creditAchieved).eq(1);
-          expect(components['/_answer1'].stateValues.currentResponses).eqls([true]);
-          expect(components['/_answer1'].stateValues.submittedResponses).eqls([true]);
+          expect((await components['/_answer1'].stateValues.currentResponses)).eqls([true]);
+          expect(await components['/_answer1'].stateValues.submittedResponses).eqls([true]);
           expect(components[booleaninputName].stateValues.value).eq(true);
         });
 
@@ -3043,10 +3064,10 @@ describe('Answer Tag Tests', function () {
         cy.get(number1Anchor).should('have.text', '1')
 
         cy.log('Test internal values')
-        cy.window().then((win) => {
+        cy.window().then(async (win) => {
           expect(components['/_answer1'].stateValues.creditAchieved).eq(1);
-          expect(components['/_answer1'].stateValues.currentResponses).eqls([false]);
-          expect(components['/_answer1'].stateValues.submittedResponses).eqls([true]);
+          expect((await components['/_answer1'].stateValues.currentResponses)).eqls([false]);
+          expect(await components['/_answer1'].stateValues.submittedResponses).eqls([true]);
           expect(components[booleaninputName].stateValues.value).eq(false);
         });
 
@@ -3059,10 +3080,10 @@ describe('Answer Tag Tests', function () {
         cy.get(number1Anchor).should('have.text', '0')
 
         cy.log('Test internal values')
-        cy.window().then((win) => {
+        cy.window().then(async (win) => {
           expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
-          expect(components['/_answer1'].stateValues.currentResponses).eqls([false]);
-          expect(components['/_answer1'].stateValues.submittedResponses).eqls([false]);
+          expect((await components['/_answer1'].stateValues.currentResponses)).eqls([false]);
+          expect(await components['/_answer1'].stateValues.submittedResponses).eqls([false]);
           expect(components[booleaninputName].stateValues.value).eq(false);
         });
       })
@@ -3070,7 +3091,7 @@ describe('Answer Tag Tests', function () {
   });
 
   it('answer multiple shortcut awards', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -3084,7 +3105,7 @@ describe('Answer Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let mathinputName = components['/_answer1'].stateValues.inputChildren[0].componentName
       let mathinputAnchor = cesc('#' + mathinputName) + " textarea";
@@ -3107,10 +3128,10 @@ describe('Answer Tag Tests', function () {
       cy.get(number1Anchor).should('have.text', '0')
 
       cy.log('Test internal values')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
-        expect(components['/_answer1'].stateValues.currentResponses.map(x => x.tree)).eqls(['\uFF3F']);
-        expect(components['/_answer1'].stateValues.submittedResponses).eqls([]);
+        expect((await components['/_answer1'].stateValues.currentResponses).map(x => x.tree)).eqls(['\uFF3F']);
+        expect(await components['/_answer1'].stateValues.submittedResponses).eqls([]);
         expect(components[mathinputName].stateValues.value.tree).eq('\uFF3F');
         // expect(components[mathinputName].stateValues.submittedValue.tree).eq('\uFF3F');
       });
@@ -3121,6 +3142,7 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
       // cy.get(mathinputAnchor).should('have.value', 'x+y');
+      cy.get(math1Anchor + ' .mjx-mrow').should('have.text', 'x+y')
       cy.get(math1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x+y')
       });
@@ -3131,10 +3153,10 @@ describe('Answer Tag Tests', function () {
 
 
       cy.log('Test internal values')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
-        expect(components['/_answer1'].stateValues.currentResponses.map(x => x.tree)).eqls([['+', 'x', 'y']]);
-        expect(components['/_answer1'].stateValues.submittedResponses).eqls([]);
+        expect((await components['/_answer1'].stateValues.currentResponses).map(x => x.tree)).eqls([['+', 'x', 'y']]);
+        expect(await components['/_answer1'].stateValues.submittedResponses).eqls([]);
         expect(components[mathinputName].stateValues.value.tree).eqls(['+', 'x', 'y']);
         // expect(components[mathinputName].stateValues.submittedValue.tree).eq('\uFF3F');
       });
@@ -3144,7 +3166,7 @@ describe('Answer Tag Tests', function () {
       cy.get(mathinputAnchor).type(`{enter}`, { force: true });
 
       // wrap to change value of math2Anchor
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         math2 = components['/_copy2'].replacements[0];
         math2Anchor = cesc('#' + math2.componentName);
 
@@ -3159,10 +3181,10 @@ describe('Answer Tag Tests', function () {
         cy.get(number1Anchor).should('have.text', '1')
 
         cy.log('Test internal values')
-        cy.window().then((win) => {
+        cy.window().then(async (win) => {
           expect(components['/_answer1'].stateValues.creditAchieved).eq(1);
-          expect(components['/_answer1'].stateValues.currentResponses.map(x => x.tree)).eqls([['+', 'x', 'y']]);
-          expect(components['/_answer1'].stateValues.submittedResponses.map(x => x.tree)).eqls([['+', 'x', 'y']]);
+          expect((await components['/_answer1'].stateValues.currentResponses).map(x => x.tree)).eqls([['+', 'x', 'y']]);
+          expect((await components['/_answer1'].stateValues.submittedResponses).map(x => x.tree)).eqls([['+', 'x', 'y']]);
           expect(components[mathinputName].stateValues.value.tree).eqls(['+', 'x', 'y']);
           // expect(components[mathinputName].stateValues.submittedValue.tree).eqls(['+', 'x', 'y']);
         });
@@ -3173,6 +3195,7 @@ describe('Answer Tag Tests', function () {
 
         cy.log('Test value displayed in browser')
         // cy.get(mathinputAnchor).should('have.value', 'x');
+        cy.get(math1Anchor + ' .mjx-mrow').should('have.text', 'x')
         cy.get(math1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('x')
         });
@@ -3182,10 +3205,10 @@ describe('Answer Tag Tests', function () {
         cy.get(number1Anchor).should('have.text', '1')
 
         cy.log('Test internal values')
-        cy.window().then((win) => {
+        cy.window().then(async (win) => {
           expect(components['/_answer1'].stateValues.creditAchieved).eq(1);
-          expect(components['/_answer1'].stateValues.currentResponses.map(x => x.tree)).eqls(['x']);
-          expect(components['/_answer1'].stateValues.submittedResponses.map(x => x.tree)).eqls([['+', 'x', 'y']]);
+          expect((await components['/_answer1'].stateValues.currentResponses).map(x => x.tree)).eqls(['x']);
+          expect((await components['/_answer1'].stateValues.submittedResponses).map(x => x.tree)).eqls([['+', 'x', 'y']]);
           expect(components[mathinputName].stateValues.value.tree).eqls('x');
           // expect(components[mathinputName].stateValues.submittedValue.tree).eqls(['+', 'x', 'y']);
         });
@@ -3206,10 +3229,10 @@ describe('Answer Tag Tests', function () {
 
 
         cy.log('Test internal values')
-        cy.window().then((win) => {
+        cy.window().then(async (win) => {
           expect(components['/_answer1'].stateValues.creditAchieved).eq(0.5);
-          expect(components['/_answer1'].stateValues.currentResponses.map(x => x.tree)).eqls(['x']);
-          expect(components['/_answer1'].stateValues.submittedResponses.map(x => x.tree)).eqls(['x']);
+          expect((await components['/_answer1'].stateValues.currentResponses).map(x => x.tree)).eqls(['x']);
+          expect((await components['/_answer1'].stateValues.submittedResponses).map(x => x.tree)).eqls(['x']);
           expect(components[mathinputName].stateValues.value.tree).eqls('x');
           // expect(components[mathinputName].stateValues.submittedValue.tree).eqls('x');
         });
@@ -3221,6 +3244,7 @@ describe('Answer Tag Tests', function () {
 
         cy.log('Test value displayed in browser')
         // cy.get(mathinputAnchor).should('have.value', 'y');
+        cy.get(math1Anchor + ' .mjx-mrow').should('have.text', 'y')
         cy.get(math1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('y')
         });
@@ -3230,10 +3254,10 @@ describe('Answer Tag Tests', function () {
         cy.get(number1Anchor).should('have.text', '0.5')
 
         cy.log('Test internal values')
-        cy.window().then((win) => {
+        cy.window().then(async (win) => {
           expect(components['/_answer1'].stateValues.creditAchieved).eq(0.5);
-          expect(components['/_answer1'].stateValues.currentResponses.map(x => x.tree)).eqls(['y']);
-          expect(components['/_answer1'].stateValues.submittedResponses.map(x => x.tree)).eqls(['x']);
+          expect((await components['/_answer1'].stateValues.currentResponses).map(x => x.tree)).eqls(['y']);
+          expect((await components['/_answer1'].stateValues.submittedResponses).map(x => x.tree)).eqls(['x']);
           expect(components[mathinputName].stateValues.value.tree).eqls('y');
           // expect(components[mathinputName].stateValues.submittedValue.tree).eqls('x');
         });
@@ -3253,10 +3277,10 @@ describe('Answer Tag Tests', function () {
         cy.get(number1Anchor).should('have.text', '0')
 
         cy.log('Test internal values')
-        cy.window().then((win) => {
+        cy.window().then(async (win) => {
           expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
-          expect(components['/_answer1'].stateValues.currentResponses.map(x => x.tree)).eqls(['y']);
-          expect(components['/_answer1'].stateValues.submittedResponses.map(x => x.tree)).eqls(['y']);
+          expect((await components['/_answer1'].stateValues.currentResponses).map(x => x.tree)).eqls(['y']);
+          expect((await components['/_answer1'].stateValues.submittedResponses).map(x => x.tree)).eqls(['y']);
           expect(components[mathinputName].stateValues.value.tree).eqls('y');
           // expect(components[mathinputName].stateValues.submittedValue.tree).eqls('y');
         });
@@ -3266,7 +3290,7 @@ describe('Answer Tag Tests', function () {
   });
 
   it('answer multiple shortcut awards, initially unresolved', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -3288,7 +3312,7 @@ describe('Answer Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let mathinputName = components['/_answer1'].stateValues.inputChildren[0].componentName
       let mathinputAnchor = cesc('#' + mathinputName) + " textarea";
@@ -3311,10 +3335,10 @@ describe('Answer Tag Tests', function () {
       cy.get(number1Anchor).should('have.text', '0')
 
       cy.log('Test internal values')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
-        expect(components['/_answer1'].stateValues.currentResponses.map(x => x.tree)).eqls(['\uFF3F']);
-        expect(components['/_answer1'].stateValues.submittedResponses).eqls([]);
+        expect((await components['/_answer1'].stateValues.currentResponses).map(x => x.tree)).eqls(['\uFF3F']);
+        expect(await components['/_answer1'].stateValues.submittedResponses).eqls([]);
         expect(components[mathinputName].stateValues.value.tree).eq('\uFF3F');
         // expect(components[mathinputName].stateValues.submittedValue.tree).eq('\uFF3F');
       });
@@ -3325,6 +3349,7 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
       // cy.get(mathinputAnchor).should('have.value', 'x+y');
+      cy.get(math1Anchor + ' .mjx-mrow').should('have.text', 'x+y')
       cy.get(math1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x+y')
       });
@@ -3335,10 +3360,10 @@ describe('Answer Tag Tests', function () {
 
 
       cy.log('Test internal values')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
-        expect(components['/_answer1'].stateValues.currentResponses.map(x => x.tree)).eqls([['+', 'x', 'y']]);
-        expect(components['/_answer1'].stateValues.submittedResponses).eqls([]);
+        expect((await components['/_answer1'].stateValues.currentResponses).map(x => x.tree)).eqls([['+', 'x', 'y']]);
+        expect(await components['/_answer1'].stateValues.submittedResponses).eqls([]);
         expect(components[mathinputName].stateValues.value.tree).eqls(['+', 'x', 'y']);
         // expect(components[mathinputName].stateValues.submittedValue.tree).eq('\uFF3F');
       });
@@ -3348,7 +3373,7 @@ describe('Answer Tag Tests', function () {
       cy.get(mathinputAnchor).type(`{enter}`, { force: true });
 
       // wrap to change value of math2Anchor
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         math2 = components['/_copy4'].replacements[0];
         math2Anchor = cesc('#' + math2.componentName);
 
@@ -3363,10 +3388,10 @@ describe('Answer Tag Tests', function () {
         cy.get(number1Anchor).should('have.text', '1')
 
         cy.log('Test internal values')
-        cy.window().then((win) => {
+        cy.window().then(async (win) => {
           expect(components['/_answer1'].stateValues.creditAchieved).eq(1);
-          expect(components['/_answer1'].stateValues.currentResponses.map(x => x.tree)).eqls([['+', 'x', 'y']]);
-          expect(components['/_answer1'].stateValues.submittedResponses.map(x => x.tree)).eqls([['+', 'x', 'y']]);
+          expect((await components['/_answer1'].stateValues.currentResponses).map(x => x.tree)).eqls([['+', 'x', 'y']]);
+          expect((await components['/_answer1'].stateValues.submittedResponses).map(x => x.tree)).eqls([['+', 'x', 'y']]);
           expect(components[mathinputName].stateValues.value.tree).eqls(['+', 'x', 'y']);
           // expect(components[mathinputName].stateValues.submittedValue.tree).eqls(['+', 'x', 'y']);
         });
@@ -3377,6 +3402,7 @@ describe('Answer Tag Tests', function () {
 
         cy.log('Test value displayed in browser')
         // cy.get(mathinputAnchor).should('have.value', 'x');
+        cy.get(math1Anchor + ' .mjx-mrow').should('have.text', 'x')
         cy.get(math1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('x')
         });
@@ -3386,10 +3412,10 @@ describe('Answer Tag Tests', function () {
         cy.get(number1Anchor).should('have.text', '1')
 
         cy.log('Test internal values')
-        cy.window().then((win) => {
+        cy.window().then(async (win) => {
           expect(components['/_answer1'].stateValues.creditAchieved).eq(1);
-          expect(components['/_answer1'].stateValues.currentResponses.map(x => x.tree)).eqls(['x']);
-          expect(components['/_answer1'].stateValues.submittedResponses.map(x => x.tree)).eqls([['+', 'x', 'y']]);
+          expect((await components['/_answer1'].stateValues.currentResponses).map(x => x.tree)).eqls(['x']);
+          expect((await components['/_answer1'].stateValues.submittedResponses).map(x => x.tree)).eqls([['+', 'x', 'y']]);
           expect(components[mathinputName].stateValues.value.tree).eqls('x');
           // expect(components[mathinputName].stateValues.submittedValue.tree).eqls(['+', 'x', 'y']);
         });
@@ -3410,10 +3436,10 @@ describe('Answer Tag Tests', function () {
 
 
         cy.log('Test internal values')
-        cy.window().then((win) => {
+        cy.window().then(async (win) => {
           expect(components['/_answer1'].stateValues.creditAchieved).eq(0.5);
-          expect(components['/_answer1'].stateValues.currentResponses.map(x => x.tree)).eqls(['x']);
-          expect(components['/_answer1'].stateValues.submittedResponses.map(x => x.tree)).eqls(['x']);
+          expect((await components['/_answer1'].stateValues.currentResponses).map(x => x.tree)).eqls(['x']);
+          expect((await components['/_answer1'].stateValues.submittedResponses).map(x => x.tree)).eqls(['x']);
           expect(components[mathinputName].stateValues.value.tree).eqls('x');
           // expect(components[mathinputName].stateValues.submittedValue.tree).eqls('x');
         });
@@ -3424,6 +3450,7 @@ describe('Answer Tag Tests', function () {
 
         cy.log('Test value displayed in browser')
         // cy.get(mathinputAnchor).should('have.value', 'y');
+        cy.get(math1Anchor + ' .mjx-mrow').should('have.text', 'y')
         cy.get(math1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('y')
         });
@@ -3433,10 +3460,10 @@ describe('Answer Tag Tests', function () {
         cy.get(number1Anchor).should('have.text', '0.5')
 
         cy.log('Test internal values')
-        cy.window().then((win) => {
+        cy.window().then(async (win) => {
           expect(components['/_answer1'].stateValues.creditAchieved).eq(0.5);
-          expect(components['/_answer1'].stateValues.currentResponses.map(x => x.tree)).eqls(['y']);
-          expect(components['/_answer1'].stateValues.submittedResponses.map(x => x.tree)).eqls(['x']);
+          expect((await components['/_answer1'].stateValues.currentResponses).map(x => x.tree)).eqls(['y']);
+          expect((await components['/_answer1'].stateValues.submittedResponses).map(x => x.tree)).eqls(['x']);
           expect(components[mathinputName].stateValues.value.tree).eqls('y');
           // expect(components[mathinputName].stateValues.submittedValue.tree).eqls('x');
         });
@@ -3456,10 +3483,10 @@ describe('Answer Tag Tests', function () {
         cy.get(number1Anchor).should('have.text', '0')
 
         cy.log('Test internal values')
-        cy.window().then((win) => {
+        cy.window().then(async (win) => {
           expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
-          expect(components['/_answer1'].stateValues.currentResponses.map(x => x.tree)).eqls(['y']);
-          expect(components['/_answer1'].stateValues.submittedResponses.map(x => x.tree)).eqls(['y']);
+          expect((await components['/_answer1'].stateValues.currentResponses).map(x => x.tree)).eqls(['y']);
+          expect((await components['/_answer1'].stateValues.submittedResponses).map(x => x.tree)).eqls(['y']);
           expect(components[mathinputName].stateValues.value.tree).eqls('y');
           // expect(components[mathinputName].stateValues.submittedValue.tree).eqls('y');
         });
@@ -3469,7 +3496,7 @@ describe('Answer Tag Tests', function () {
   });
 
   it('answer multiple awards, set to text', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -3483,7 +3510,7 @@ describe('Answer Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let textinputName = components['/_answer1'].stateValues.inputChildren[0].componentName
       let textinputAnchor = cesc('#' + textinputName + '_input');
@@ -3502,10 +3529,10 @@ describe('Answer Tag Tests', function () {
       cy.get(number1Anchor).should('have.text', '0')
 
       cy.log('Test internal values')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
-        expect(components['/_answer1'].stateValues.currentResponses).eqls(['']);
-        expect(components['/_answer1'].stateValues.submittedResponses).eqls([]);
+        expect((await components['/_answer1'].stateValues.currentResponses)).eqls(['']);
+        expect(await components['/_answer1'].stateValues.submittedResponses).eqls([]);
         expect(components[textinputName].stateValues.value).eq('');
         // expect(components[textinputName].stateValues.submittedValue).eq('＿');
       });
@@ -3520,10 +3547,10 @@ describe('Answer Tag Tests', function () {
       cy.get(number1Anchor).should('have.text', '0')
 
       cy.log('Test internal values')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
-        expect(components['/_answer1'].stateValues.currentResponses).eqls([' hello there ']);
-        expect(components['/_answer1'].stateValues.submittedResponses).eqls([]);
+        expect((await components['/_answer1'].stateValues.currentResponses)).eqls([' hello there ']);
+        expect(await components['/_answer1'].stateValues.submittedResponses).eqls([]);
         expect(components[textinputName].stateValues.value).eq(' hello there ');
         // expect(components[textinputName].stateValues.submittedValue).eq('＿');
       });
@@ -3533,7 +3560,7 @@ describe('Answer Tag Tests', function () {
       cy.get(textinputAnchor).type(`{enter}`);
 
       // wrap to change value of text2Anchor
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         text2 = components['/_copy2'].replacements[0];
         text2Anchor = cesc('#' + text2.componentName);
 
@@ -3544,10 +3571,10 @@ describe('Answer Tag Tests', function () {
         cy.get(number1Anchor).should('have.text', '1')
 
         cy.log('Test internal values')
-        cy.window().then((win) => {
+        cy.window().then(async (win) => {
           expect(components['/_answer1'].stateValues.creditAchieved).eq(1);
-          expect(components['/_answer1'].stateValues.currentResponses).eqls([' hello there ']);
-          expect(components['/_answer1'].stateValues.submittedResponses).eqls([' hello there ']);
+          expect((await components['/_answer1'].stateValues.currentResponses)).eqls([' hello there ']);
+          expect(await components['/_answer1'].stateValues.submittedResponses).eqls([' hello there ']);
           expect(components[textinputName].stateValues.value).eq(' hello there ');
           // expect(components[textinputName].stateValues.submittedValue).eq(' hello there ');
         });
@@ -3563,10 +3590,10 @@ describe('Answer Tag Tests', function () {
         cy.get(number1Anchor).should('have.text', '1')
 
         cy.log('Test internal values')
-        cy.window().then((win) => {
+        cy.window().then(async (win) => {
           expect(components['/_answer1'].stateValues.creditAchieved).eq(1);
-          expect(components['/_answer1'].stateValues.currentResponses).eqls(['bye']);
-          expect(components['/_answer1'].stateValues.submittedResponses).eqls([' hello there ']);
+          expect((await components['/_answer1'].stateValues.currentResponses)).eqls(['bye']);
+          expect(await components['/_answer1'].stateValues.submittedResponses).eqls([' hello there ']);
           expect(components[textinputName].stateValues.value).eq('bye');
           // expect(components[textinputName].stateValues.submittedValue).eq(' hello there ');
         });
@@ -3581,10 +3608,10 @@ describe('Answer Tag Tests', function () {
         cy.get(number1Anchor).should('have.text', '0.5')
 
         cy.log('Test internal values')
-        cy.window().then((win) => {
+        cy.window().then(async (win) => {
           expect(components['/_answer1'].stateValues.creditAchieved).eq(0.5);
-          expect(components['/_answer1'].stateValues.currentResponses).eqls(['bye']);
-          expect(components['/_answer1'].stateValues.submittedResponses).eqls(['bye']);
+          expect((await components['/_answer1'].stateValues.currentResponses)).eqls(['bye']);
+          expect(await components['/_answer1'].stateValues.submittedResponses).eqls(['bye']);
           expect(components[textinputName].stateValues.value).eq('bye');
           // expect(components[textinputName].stateValues.submittedValue).eq('bye');
         });
@@ -3600,10 +3627,10 @@ describe('Answer Tag Tests', function () {
         cy.get(number1Anchor).should('have.text', '0.5')
 
         cy.log('Test internal values')
-        cy.window().then((win) => {
+        cy.window().then(async (win) => {
           expect(components['/_answer1'].stateValues.creditAchieved).eq(0.5);
-          expect(components['/_answer1'].stateValues.currentResponses).eqls(['y']);
-          expect(components['/_answer1'].stateValues.submittedResponses).eqls(['bye']);
+          expect((await components['/_answer1'].stateValues.currentResponses)).eqls(['y']);
+          expect(await components['/_answer1'].stateValues.submittedResponses).eqls(['bye']);
           expect(components[textinputName].stateValues.value).eq('y');
           // expect(components[textinputName].stateValues.submittedValue).eq('bye');
         });
@@ -3618,10 +3645,10 @@ describe('Answer Tag Tests', function () {
         cy.get(number1Anchor).should('have.text', '0')
 
         cy.log('Test internal values')
-        cy.window().then((win) => {
+        cy.window().then(async (win) => {
           expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
-          expect(components['/_answer1'].stateValues.currentResponses).eqls(['y']);
-          expect(components['/_answer1'].stateValues.submittedResponses).eqls(['y']);
+          expect((await components['/_answer1'].stateValues.currentResponses)).eqls(['y']);
+          expect(await components['/_answer1'].stateValues.submittedResponses).eqls(['y']);
           expect(components[textinputName].stateValues.value).eq('y');
           // expect(components[textinputName].stateValues.submittedValue).eq('y');
         });
@@ -3630,7 +3657,7 @@ describe('Answer Tag Tests', function () {
   });
 
   it('answer multiple awards, namespaces', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -3650,7 +3677,7 @@ describe('Answer Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let mathinputName = components['/s/_answer1'].stateValues.inputChildren[0].componentName
       let mathinputAnchor = cesc('#' + mathinputName) + " textarea";
@@ -3673,10 +3700,10 @@ describe('Answer Tag Tests', function () {
       cy.get(number1Anchor).should('have.text', '0')
 
       cy.log('Test internal values')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         expect(components['/s/_answer1'].stateValues.creditAchieved).eq(0);
-        expect(components['/s/_answer1'].stateValues.currentResponses.map(x => x.tree)).eqls(['\uFF3F']);
-        expect(components['/s/_answer1'].stateValues.submittedResponses).eqls([]);
+        expect((await components['/s/_answer1'].stateValues.currentResponses).map(x => x.tree)).eqls(['\uFF3F']);
+        expect(await components['/s/_answer1'].stateValues.submittedResponses).eqls([]);
         expect(components[mathinputName].stateValues.value.tree).eq('\uFF3F');
         // expect(components[mathinputName].stateValues.submittedValue.tree).eq('\uFF3F');
       });
@@ -3687,6 +3714,7 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
       // cy.get(mathinputAnchor).should('have.value', 'x+y');
+      cy.get(math1Anchor + ' .mjx-mrow').should('have.text', 'x+y')
       cy.get(math1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x+y')
       });
@@ -3697,10 +3725,10 @@ describe('Answer Tag Tests', function () {
 
 
       cy.log('Test internal values')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         expect(components['/s/_answer1'].stateValues.creditAchieved).eq(0);
-        expect(components['/s/_answer1'].stateValues.currentResponses.map(x => x.tree)).eqls([['+', 'x', 'y']]);
-        expect(components['/s/_answer1'].stateValues.submittedResponses).eqls([]);
+        expect((await components['/s/_answer1'].stateValues.currentResponses).map(x => x.tree)).eqls([['+', 'x', 'y']]);
+        expect(await components['/s/_answer1'].stateValues.submittedResponses).eqls([]);
         expect(components[mathinputName].stateValues.value.tree).eqls(['+', 'x', 'y']);
         // expect(components[mathinputName].stateValues.submittedValue.tree).eq('\uFF3F');
       });
@@ -3710,7 +3738,7 @@ describe('Answer Tag Tests', function () {
       cy.get(mathinputAnchor).type(`{enter}`, { force: true });
 
       // wrap to change value of math2Anchor
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         math2 = components['/s/_copy2'].replacements[0];
         math2Anchor = cesc('#' + math2.componentName);
 
@@ -3725,10 +3753,10 @@ describe('Answer Tag Tests', function () {
         cy.get(number1Anchor).should('have.text', '1')
 
         cy.log('Test internal values')
-        cy.window().then((win) => {
+        cy.window().then(async (win) => {
           expect(components['/s/_answer1'].stateValues.creditAchieved).eq(1);
-          expect(components['/s/_answer1'].stateValues.currentResponses.map(x => x.tree)).eqls([['+', 'x', 'y']]);
-          expect(components['/s/_answer1'].stateValues.submittedResponses.map(x => x.tree)).eqls([['+', 'x', 'y']]);
+          expect((await components['/s/_answer1'].stateValues.currentResponses).map(x => x.tree)).eqls([['+', 'x', 'y']]);
+          expect((await components['/s/_answer1'].stateValues.submittedResponses).map(x => x.tree)).eqls([['+', 'x', 'y']]);
           expect(components[mathinputName].stateValues.value.tree).eqls(['+', 'x', 'y']);
           // expect(components[mathinputName].stateValues.submittedValue.tree).eqls(['+', 'x', 'y']);
         });
@@ -3739,6 +3767,7 @@ describe('Answer Tag Tests', function () {
 
         cy.log('Test value displayed in browser')
         // cy.get(mathinputAnchor).should('have.value', 'x');
+        cy.get(math1Anchor + ' .mjx-mrow').should('have.text', 'x')
         cy.get(math1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('x')
         });
@@ -3748,10 +3777,10 @@ describe('Answer Tag Tests', function () {
         cy.get(number1Anchor).should('have.text', '1')
 
         cy.log('Test internal values')
-        cy.window().then((win) => {
+        cy.window().then(async (win) => {
           expect(components['/s/_answer1'].stateValues.creditAchieved).eq(1);
-          expect(components['/s/_answer1'].stateValues.currentResponses.map(x => x.tree)).eqls(['x']);
-          expect(components['/s/_answer1'].stateValues.submittedResponses.map(x => x.tree)).eqls([['+', 'x', 'y']]);
+          expect((await components['/s/_answer1'].stateValues.currentResponses).map(x => x.tree)).eqls(['x']);
+          expect((await components['/s/_answer1'].stateValues.submittedResponses).map(x => x.tree)).eqls([['+', 'x', 'y']]);
           expect(components[mathinputName].stateValues.value.tree).eqls('x');
           // expect(components[mathinputName].stateValues.submittedValue.tree).eqls(['+', 'x', 'y']);
         });
@@ -3772,10 +3801,10 @@ describe('Answer Tag Tests', function () {
 
 
         cy.log('Test internal values')
-        cy.window().then((win) => {
+        cy.window().then(async (win) => {
           expect(components['/s/_answer1'].stateValues.creditAchieved).eq(0.5);
-          expect(components['/s/_answer1'].stateValues.currentResponses.map(x => x.tree)).eqls(['x']);
-          expect(components['/s/_answer1'].stateValues.submittedResponses.map(x => x.tree)).eqls(['x']);
+          expect((await components['/s/_answer1'].stateValues.currentResponses).map(x => x.tree)).eqls(['x']);
+          expect((await components['/s/_answer1'].stateValues.submittedResponses).map(x => x.tree)).eqls(['x']);
           expect(components[mathinputName].stateValues.value.tree).eqls('x');
           // expect(components[mathinputName].stateValues.submittedValue.tree).eqls('x');
         });
@@ -3786,6 +3815,7 @@ describe('Answer Tag Tests', function () {
 
         cy.log('Test value displayed in browser')
         // cy.get(mathinputAnchor).should('have.value', 'y');
+        cy.get(math1Anchor + ' .mjx-mrow').should('have.text', 'y')
         cy.get(math1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('y')
         });
@@ -3795,10 +3825,10 @@ describe('Answer Tag Tests', function () {
         cy.get(number1Anchor).should('have.text', '0.5')
 
         cy.log('Test internal values')
-        cy.window().then((win) => {
+        cy.window().then(async (win) => {
           expect(components['/s/_answer1'].stateValues.creditAchieved).eq(0.5);
-          expect(components['/s/_answer1'].stateValues.currentResponses.map(x => x.tree)).eqls(['y']);
-          expect(components['/s/_answer1'].stateValues.submittedResponses.map(x => x.tree)).eqls(['x']);
+          expect((await components['/s/_answer1'].stateValues.currentResponses).map(x => x.tree)).eqls(['y']);
+          expect((await components['/s/_answer1'].stateValues.submittedResponses).map(x => x.tree)).eqls(['x']);
           expect(components[mathinputName].stateValues.value.tree).eqls('y');
           // expect(components[mathinputName].stateValues.submittedValue.tree).eqls('x');
         });
@@ -3818,10 +3848,10 @@ describe('Answer Tag Tests', function () {
         cy.get(number1Anchor).should('have.text', '0')
 
         cy.log('Test internal values')
-        cy.window().then((win) => {
+        cy.window().then(async (win) => {
           expect(components['/s/_answer1'].stateValues.creditAchieved).eq(0);
-          expect(components['/s/_answer1'].stateValues.currentResponses.map(x => x.tree)).eqls(['y']);
-          expect(components['/s/_answer1'].stateValues.submittedResponses.map(x => x.tree)).eqls(['y']);
+          expect((await components['/s/_answer1'].stateValues.currentResponses).map(x => x.tree)).eqls(['y']);
+          expect((await components['/s/_answer1'].stateValues.submittedResponses).map(x => x.tree)).eqls(['y']);
           expect(components[mathinputName].stateValues.value.tree).eqls('y');
           // expect(components[mathinputName].stateValues.submittedValue.tree).eqls('y');
         });
@@ -3831,7 +3861,7 @@ describe('Answer Tag Tests', function () {
   });
 
   it('full answer tag', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -3854,7 +3884,7 @@ describe('Answer Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let cr = components['/cr'].replacements[0];
       let crAnchor = cesc('#' + cr.componentName);
@@ -3916,26 +3946,26 @@ describe('Answer Tag Tests', function () {
       cy.get(caAnchor).should('have.text', '0')
 
       cy.log('Test internal values')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
-        expect(components['/_answer1'].stateValues.currentResponses.map(x => x.tree)).eqls(['\uFF3F', '\uFF3F']);
-        expect(components['/_answer1'].stateValues.currentResponse1.tree).eqls('\uFF3F')
-        expect(components['/_answer1'].stateValues.currentResponse2.tree).eqls('\uFF3F')
-        expect(components['/_answer1'].stateValues.submittedResponses).eqls([])
-        expect(components['/_answer1'].stateValues.submittedResponse1).eqls(undefined)
-        expect(components['/_answer1'].stateValues.submittedResponse2).eqls(undefined)
+        expect((await components['/_answer1'].stateValues.currentResponses).map(x => x.tree)).eqls(['\uFF3F', '\uFF3F']);
+        expect((await components['/_answer1'].stateValues.currentResponse1).tree).eqls('\uFF3F')
+        expect((await components['/_answer1'].stateValues.currentResponse2).tree).eqls('\uFF3F')
+        expect(await components['/_answer1'].stateValues.submittedResponses).eqls([])
+        expect(await components['/_answer1'].stateValues.submittedResponse1).eqls(undefined)
+        expect(await components['/_answer1'].stateValues.submittedResponse2).eqls(undefined)
         expect(components['/_mathinput1'].stateValues.value.tree).eq('\uFF3F');
         // expect(components['/_mathinput1'].stateValues.submittedValue.tree).eq('\uFF3F');
         expect(components['/_mathinput2'].stateValues.value.tree).eq('\uFF3F');
         // expect(components['/_mathinput2'].stateValues.submittedValue.tree).eq('\uFF3F');
-        expect(cr.stateValues.value.tree).eq('\uFF3F')
-        expect(cr1.stateValues.value.tree).eq('\uFF3F')
-        expect(cr2.stateValues.value.tree).eq('\uFF3F')
-        expect(crsa.stateValues.value.tree).eq('\uFF3F')
-        expect(crsb.stateValues.value.tree).eq('\uFF3F')
-        expect(sr.stateValues.value.tree).eq('\uFF3F')
-        expect(sr1.stateValues.value.tree).eq('\uFF3F')
-        expect(sr2.stateValues.value.tree).eq('\uFF3F')
+        expect((await cr.stateValues.value).tree).eq('\uFF3F')
+        expect((await cr1.stateValues.value).tree).eq('\uFF3F')
+        expect((await cr2.stateValues.value).tree).eq('\uFF3F')
+        expect((await crsa.stateValues.value).tree).eq('\uFF3F')
+        expect((await crsb.stateValues.value).tree).eq('\uFF3F')
+        expect((await sr.stateValues.value).tree).eq('\uFF3F')
+        expect((await sr1.stateValues.value).tree).eq('\uFF3F')
+        expect((await sr2.stateValues.value).tree).eq('\uFF3F')
         // expect(srsa.stateValues.value.tree).eq('\uFF3F')
         // expect(srsb.stateValues.value.tree).eq('\uFF3F')
         expect(ca.stateValues.value).eq(0)
@@ -3981,38 +4011,42 @@ describe('Answer Tag Tests', function () {
       // });
       cy.get(caAnchor).should('have.text', '0')
 
+      // TODO: eliminate need for this wait
+      cy.wait(100);
+
       cy.log('Test internal values')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
-        expect(components['/_answer1'].stateValues.currentResponses.map(x => x.tree)).eqls([["+", 'x', 'y'], ["+", ['*', 2, 'x'], ['-', 'y']]]);
-        expect(components['/_answer1'].stateValues.currentResponse1.tree).eqls(["+", 'x', 'y']);
-        expect(components['/_answer1'].stateValues.currentResponse2.tree).eqls(["+", ['*', 2, 'x'], ['-', 'y']]);
-        expect(components['/_answer1'].stateValues.submittedResponses).eqls([])
-        expect(components['/_answer1'].stateValues.submittedResponse1).eqls(undefined)
-        expect(components['/_answer1'].stateValues.submittedResponse2).eqls(undefined)
+        expect((await components['/_answer1'].stateValues.currentResponses).map(x => x.tree)).eqls([["+", 'x', 'y'], ["+", ['*', 2, 'x'], ['-', 'y']]]);
+        expect((await components['/_answer1'].stateValues.currentResponse1).tree).eqls(["+", 'x', 'y']);
+        expect((await components['/_answer1'].stateValues.currentResponse2).tree).eqls(["+", ['*', 2, 'x'], ['-', 'y']]);
+        expect(await components['/_answer1'].stateValues.submittedResponses).eqls([])
+        expect(await components['/_answer1'].stateValues.submittedResponse1).eqls(undefined)
+        expect(await components['/_answer1'].stateValues.submittedResponse2).eqls(undefined)
         expect(components['/_mathinput1'].stateValues.value.tree).eqls(["+", 'x', 'y']);
         // expect(components['/_mathinput1'].stateValues.submittedValue.tree).eq('\uFF3F');
         expect(components['/_mathinput2'].stateValues.value.tree).eqls(["+", ['*', 2, 'x'], ['-', 'y']]);
         // expect(components['/_mathinput2'].stateValues.submittedValue.tree).eq('\uFF3F');
-        expect(cr.stateValues.value.tree).eqls(["+", 'x', 'y'])
-        expect(cr1.stateValues.value.tree).eqls(["+", 'x', 'y'])
-        expect(cr2.stateValues.value.tree).eqls(["+", ['*', 2, 'x'], ['-', 'y']])
-        expect(crsa.stateValues.value.tree).eqls(["+", 'x', 'y'])
-        expect(crsb.stateValues.value.tree).eqls(["+", ['*', 2, 'x'], ['-', 'y']])
-        expect(sr.stateValues.value.tree).eq('\uFF3F')
-        expect(sr1.stateValues.value.tree).eq('\uFF3F')
-        expect(sr2.stateValues.value.tree).eq('\uFF3F')
+        expect((await cr.stateValues.value).tree).eqls(["+", 'x', 'y'])
+        expect((await cr1.stateValues.value).tree).eqls(["+", 'x', 'y'])
+        expect((await cr2.stateValues.value).tree).eqls(["+", ['*', 2, 'x'], ['-', 'y']])
+        expect((await crsa.stateValues.value).tree).eqls(["+", 'x', 'y'])
+        expect((await crsb.stateValues.value).tree).eqls(["+", ['*', 2, 'x'], ['-', 'y']])
+        expect((await sr.stateValues.value).tree).eq('\uFF3F')
+        expect((await sr1.stateValues.value).tree).eq('\uFF3F')
+        expect((await sr2.stateValues.value).tree).eq('\uFF3F')
         // expect(srsa.stateValues.value.tree).eq('\uFF3F')
         // expect(srsb.stateValues.value.tree).eq('\uFF3F')
         expect(ca.stateValues.value).eq(0)
       });
 
+      cy.wait(100)
 
       cy.log("Submit answer")
       cy.get('#\\/_answer1_submit').click();
 
       // wrap to get submitted response anchors
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         sr = components['/sr'].replacements[0];
         srAnchor = cesc('#' + sr.componentName);
         sr1 = components['/sr1'].replacements[0];
@@ -4061,26 +4095,26 @@ describe('Answer Tag Tests', function () {
         cy.get(caAnchor).should('have.text', '1')
 
         cy.log('Test internal values')
-        cy.window().then((win) => {
+        cy.window().then(async (win) => {
           expect(components['/_answer1'].stateValues.creditAchieved).eq(1);
-          expect(components['/_answer1'].stateValues.currentResponses.map(x => x.tree)).eqls([["+", 'x', 'y'], ["+", ['*', 2, 'x'], ['-', 'y']]]);
-          expect(components['/_answer1'].stateValues.currentResponse1.tree).eqls(["+", 'x', 'y']);
-          expect(components['/_answer1'].stateValues.currentResponse2.tree).eqls(["+", ['*', 2, 'x'], ['-', 'y']]);
-          expect(components['/_answer1'].stateValues.submittedResponses.map(x => x.tree)).eqls([["+", 'x', 'y'], ["+", ['*', 2, 'x'], ['-', 'y']]]);
-          expect(components['/_answer1'].stateValues.submittedResponse1.tree).eqls(["+", 'x', 'y']);
-          expect(components['/_answer1'].stateValues.submittedResponse2.tree).eqls(["+", ['*', 2, 'x'], ['-', 'y']]);
+          expect((await components['/_answer1'].stateValues.currentResponses).map(x => x.tree)).eqls([["+", 'x', 'y'], ["+", ['*', 2, 'x'], ['-', 'y']]]);
+          expect((await components['/_answer1'].stateValues.currentResponse1).tree).eqls(["+", 'x', 'y']);
+          expect((await components['/_answer1'].stateValues.currentResponse2).tree).eqls(["+", ['*', 2, 'x'], ['-', 'y']]);
+          expect((await components['/_answer1'].stateValues.submittedResponses).map(x => x.tree)).eqls([["+", 'x', 'y'], ["+", ['*', 2, 'x'], ['-', 'y']]]);
+          expect((await components['/_answer1'].stateValues.submittedResponse1).tree).eqls(["+", 'x', 'y']);
+          expect((await components['/_answer1'].stateValues.submittedResponse2).tree).eqls(["+", ['*', 2, 'x'], ['-', 'y']]);
           expect(components['/_mathinput1'].stateValues.value.tree).eqls(["+", 'x', 'y']);
           // expect(components['/_mathinput1'].stateValues.submittedValue.tree).eqls(["+", 'x', 'y']);
           expect(components['/_mathinput2'].stateValues.value.tree).eqls(["+", ['*', 2, 'x'], ['-', 'y']]);
           // expect(components['/_mathinput2'].stateValues.submittedValue.tree).eqls(["+", ['*', 2, 'x'], ['-', 'y']]);
-          expect(cr.stateValues.value.tree).eqls(["+", 'x', 'y'])
-          expect(cr1.stateValues.value.tree).eqls(["+", 'x', 'y'])
-          expect(cr2.stateValues.value.tree).eqls(["+", ['*', 2, 'x'], ['-', 'y']])
-          expect(crsa.stateValues.value.tree).eqls(["+", 'x', 'y'])
-          expect(crsb.stateValues.value.tree).eqls(["+", ['*', 2, 'x'], ['-', 'y']])
-          expect(sr.stateValues.value.tree).eqls(["+", 'x', 'y'])
-          expect(sr1.stateValues.value.tree).eqls(["+", 'x', 'y'])
-          expect(sr2.stateValues.value.tree).eqls(["+", ['*', 2, 'x'], ['-', 'y']])
+          expect((await cr.stateValues.value).tree).eqls(["+", 'x', 'y'])
+          expect((await cr1.stateValues.value).tree).eqls(["+", 'x', 'y'])
+          expect((await cr2.stateValues.value).tree).eqls(["+", ['*', 2, 'x'], ['-', 'y']])
+          expect((await crsa.stateValues.value).tree).eqls(["+", 'x', 'y'])
+          expect((await crsb.stateValues.value).tree).eqls(["+", ['*', 2, 'x'], ['-', 'y']])
+          expect((await sr.stateValues.value).tree).eqls(["+", 'x', 'y'])
+          expect((await sr1.stateValues.value).tree).eqls(["+", 'x', 'y'])
+          expect((await sr2.stateValues.value).tree).eqls(["+", ['*', 2, 'x'], ['-', 'y']])
           expect(srsa.stateValues.value.tree).eqls(["+", 'x', 'y'])
           expect(srsb.stateValues.value.tree).eqls(["+", ['*', 2, 'x'], ['-', 'y']])
           expect(ca.stateValues.value).eq(1)
@@ -4128,26 +4162,26 @@ describe('Answer Tag Tests', function () {
         cy.get(caAnchor).should('have.text', '1')
 
         cy.log('Test internal values')
-        cy.window().then((win) => {
+        cy.window().then(async (win) => {
           expect(components['/_answer1'].stateValues.creditAchieved).eq(1);
-          expect(components['/_answer1'].stateValues.currentResponses.map(x => x.tree)).eqls(['x', ["+", 3, ['-', 'x']]]);
-          expect(components['/_answer1'].stateValues.currentResponse1.tree).eqls('x');
-          expect(components['/_answer1'].stateValues.currentResponse2.tree).eqls(["+", 3, ['-', 'x']]);
-          expect(components['/_answer1'].stateValues.submittedResponses.map(x => x.tree)).eqls([["+", 'x', 'y'], ["+", ['*', 2, 'x'], ['-', 'y']]]);
-          expect(components['/_answer1'].stateValues.submittedResponse1.tree).eqls(["+", 'x', 'y']);
-          expect(components['/_answer1'].stateValues.submittedResponse2.tree).eqls(["+", ['*', 2, 'x'], ['-', 'y']]);
+          expect((await components['/_answer1'].stateValues.currentResponses).map(x => x.tree)).eqls(['x', ["+", 3, ['-', 'x']]]);
+          expect((await components['/_answer1'].stateValues.currentResponse1).tree).eqls('x');
+          expect((await components['/_answer1'].stateValues.currentResponse2).tree).eqls(["+", 3, ['-', 'x']]);
+          expect((await components['/_answer1'].stateValues.submittedResponses).map(x => x.tree)).eqls([["+", 'x', 'y'], ["+", ['*', 2, 'x'], ['-', 'y']]]);
+          expect((await components['/_answer1'].stateValues.submittedResponse1).tree).eqls(["+", 'x', 'y']);
+          expect((await components['/_answer1'].stateValues.submittedResponse2).tree).eqls(["+", ['*', 2, 'x'], ['-', 'y']]);
           expect(components['/_mathinput1'].stateValues.value.tree).eqls('x');
           // expect(components['/_mathinput1'].stateValues.submittedValue.tree).eqls(["+", 'x', 'y']);
           expect(components['/_mathinput2'].stateValues.value.tree).eqls(["+", 3, ['-', 'x']]);
           // expect(components['/_mathinput2'].stateValues.submittedValue.tree).eqls(["+", ['*', 2, 'x'], ['-', 'y']]);
-          expect(cr.stateValues.value.tree).eqls('x')
-          expect(cr1.stateValues.value.tree).eqls('x')
-          expect(cr2.stateValues.value.tree).eqls(["+", 3, ['-', 'x']])
-          expect(crsa.stateValues.value.tree).eqls('x')
-          expect(crsb.stateValues.value.tree).eqls(["+", 3, ['-', 'x']])
-          expect(sr.stateValues.value.tree).eqls(["+", 'x', 'y'])
-          expect(sr1.stateValues.value.tree).eqls(["+", 'x', 'y'])
-          expect(sr2.stateValues.value.tree).eqls(["+", ['*', 2, 'x'], ['-', 'y']])
+          expect((await cr.stateValues.value).tree).eqls('x')
+          expect((await cr1.stateValues.value).tree).eqls('x')
+          expect((await cr2.stateValues.value).tree).eqls(["+", 3, ['-', 'x']])
+          expect((await crsa.stateValues.value).tree).eqls('x')
+          expect((await crsb.stateValues.value).tree).eqls(["+", 3, ['-', 'x']])
+          expect((await sr.stateValues.value).tree).eqls(["+", 'x', 'y'])
+          expect((await sr1.stateValues.value).tree).eqls(["+", 'x', 'y'])
+          expect((await sr2.stateValues.value).tree).eqls(["+", ['*', 2, 'x'], ['-', 'y']])
           expect(srsa.stateValues.value.tree).eqls(["+", 'x', 'y'])
           expect(srsb.stateValues.value.tree).eqls(["+", ['*', 2, 'x'], ['-', 'y']])
           expect(ca.stateValues.value).eq(1)
@@ -4195,26 +4229,26 @@ describe('Answer Tag Tests', function () {
 
 
         cy.log('Test internal values')
-        cy.window().then((win) => {
+        cy.window().then(async (win) => {
           expect(components['/_answer1'].stateValues.creditAchieved).eq(0.5);
-          expect(components['/_answer1'].stateValues.currentResponses.map(x => x.tree)).eqls(['x', ["+", 3, ['-', 'x']]]);
-          expect(components['/_answer1'].stateValues.currentResponse1.tree).eqls('x');
-          expect(components['/_answer1'].stateValues.currentResponse2.tree).eqls(["+", 3, ['-', 'x']]);
-          expect(components['/_answer1'].stateValues.submittedResponses.map(x => x.tree)).eqls(['x', ["+", 3, ['-', 'x']]]);
-          expect(components['/_answer1'].stateValues.submittedResponse1.tree).eqls('x');
-          expect(components['/_answer1'].stateValues.submittedResponse2.tree).eqls(["+", 3, ['-', 'x']]);
+          expect((await components['/_answer1'].stateValues.currentResponses).map(x => x.tree)).eqls(['x', ["+", 3, ['-', 'x']]]);
+          expect((await components['/_answer1'].stateValues.currentResponse1).tree).eqls('x');
+          expect((await components['/_answer1'].stateValues.currentResponse2).tree).eqls(["+", 3, ['-', 'x']]);
+          expect((await components['/_answer1'].stateValues.submittedResponses).map(x => x.tree)).eqls(['x', ["+", 3, ['-', 'x']]]);
+          expect((await components['/_answer1'].stateValues.submittedResponse1).tree).eqls('x');
+          expect((await components['/_answer1'].stateValues.submittedResponse2).tree).eqls(["+", 3, ['-', 'x']]);
           expect(components['/_mathinput1'].stateValues.value.tree).eqls('x');
           // expect(components['/_mathinput1'].stateValues.submittedValue.tree).eqls('x');
           expect(components['/_mathinput2'].stateValues.value.tree).eqls(["+", 3, ['-', 'x']]);
           // expect(components['/_mathinput2'].stateValues.submittedValue.tree).eqls(["+", 3, ['-', 'x']]);
-          expect(cr.stateValues.value.tree).eqls('x')
-          expect(cr1.stateValues.value.tree).eqls('x')
-          expect(cr2.stateValues.value.tree).eqls(["+", 3, ['-', 'x']])
-          expect(crsa.stateValues.value.tree).eqls('x')
-          expect(crsb.stateValues.value.tree).eqls(["+", 3, ['-', 'x']])
-          expect(sr.stateValues.value.tree).eqls('x')
-          expect(sr1.stateValues.value.tree).eqls('x')
-          expect(sr2.stateValues.value.tree).eqls(["+", 3, ['-', 'x']])
+          expect((await cr.stateValues.value).tree).eqls('x')
+          expect((await cr1.stateValues.value).tree).eqls('x')
+          expect((await cr2.stateValues.value).tree).eqls(["+", 3, ['-', 'x']])
+          expect((await crsa.stateValues.value).tree).eqls('x')
+          expect((await crsb.stateValues.value).tree).eqls(["+", 3, ['-', 'x']])
+          expect((await sr.stateValues.value).tree).eqls('x')
+          expect((await sr1.stateValues.value).tree).eqls('x')
+          expect((await sr2.stateValues.value).tree).eqls(["+", 3, ['-', 'x']])
           expect(srsa.stateValues.value.tree).eqls('x')
           expect(srsb.stateValues.value.tree).eqls(["+", 3, ['-', 'x']])
           expect(ca.stateValues.value).eq(0.5)
@@ -4261,26 +4295,26 @@ describe('Answer Tag Tests', function () {
 
 
         cy.log('Test internal values')
-        cy.window().then((win) => {
+        cy.window().then(async (win) => {
           expect(components['/_answer1'].stateValues.creditAchieved).eq(0.5);
-          expect(components['/_answer1'].stateValues.currentResponses.map(x => x.tree)).eqls(['y', ["+", 3, ['-', 'x']]]);
-          expect(components['/_answer1'].stateValues.currentResponse1.tree).eqls('y');
-          expect(components['/_answer1'].stateValues.currentResponse2.tree).eqls(["+", 3, ['-', 'x']]);
-          expect(components['/_answer1'].stateValues.submittedResponses.map(x => x.tree)).eqls(['x', ["+", 3, ['-', 'x']]]);
-          expect(components['/_answer1'].stateValues.submittedResponse1.tree).eqls('x');
-          expect(components['/_answer1'].stateValues.submittedResponse2.tree).eqls(["+", 3, ['-', 'x']]);
+          expect((await components['/_answer1'].stateValues.currentResponses).map(x => x.tree)).eqls(['y', ["+", 3, ['-', 'x']]]);
+          expect((await components['/_answer1'].stateValues.currentResponse1).tree).eqls('y');
+          expect((await components['/_answer1'].stateValues.currentResponse2).tree).eqls(["+", 3, ['-', 'x']]);
+          expect((await components['/_answer1'].stateValues.submittedResponses).map(x => x.tree)).eqls(['x', ["+", 3, ['-', 'x']]]);
+          expect((await components['/_answer1'].stateValues.submittedResponse1).tree).eqls('x');
+          expect((await components['/_answer1'].stateValues.submittedResponse2).tree).eqls(["+", 3, ['-', 'x']]);
           expect(components['/_mathinput1'].stateValues.value.tree).eqls('y');
           // expect(components['/_mathinput1'].stateValues.submittedValue.tree).eqls('x');
           expect(components['/_mathinput2'].stateValues.value.tree).eqls(["+", 3, ['-', 'x']]);
           // expect(components['/_mathinput2'].stateValues.submittedValue.tree).eqls(["+", 3, ['-', 'x']]);
-          expect(cr.stateValues.value.tree).eqls('y')
-          expect(cr1.stateValues.value.tree).eqls('y')
-          expect(cr2.stateValues.value.tree).eqls(["+", 3, ['-', 'x']])
-          expect(crsa.stateValues.value.tree).eqls('y')
-          expect(crsb.stateValues.value.tree).eqls(["+", 3, ['-', 'x']])
-          expect(sr.stateValues.value.tree).eqls('x')
-          expect(sr1.stateValues.value.tree).eqls('x')
-          expect(sr2.stateValues.value.tree).eqls(["+", 3, ['-', 'x']])
+          expect((await cr.stateValues.value).tree).eqls('y')
+          expect((await cr1.stateValues.value).tree).eqls('y')
+          expect((await cr2.stateValues.value).tree).eqls(["+", 3, ['-', 'x']])
+          expect((await crsa.stateValues.value).tree).eqls('y')
+          expect((await crsb.stateValues.value).tree).eqls(["+", 3, ['-', 'x']])
+          expect((await sr.stateValues.value).tree).eqls('x')
+          expect((await sr1.stateValues.value).tree).eqls('x')
+          expect((await sr2.stateValues.value).tree).eqls(["+", 3, ['-', 'x']])
           expect(srsa.stateValues.value.tree).eqls('x')
           expect(srsb.stateValues.value.tree).eqls(["+", 3, ['-', 'x']])
           expect(ca.stateValues.value).eq(0.5)
@@ -4326,26 +4360,26 @@ describe('Answer Tag Tests', function () {
         cy.get(caAnchor).should('have.text', '0')
 
         cy.log('Test internal values')
-        cy.window().then((win) => {
+        cy.window().then(async (win) => {
           expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
-          expect(components['/_answer1'].stateValues.currentResponses.map(x => x.tree)).eqls(['y', ["+", 3, ['-', 'x']]]);
-          expect(components['/_answer1'].stateValues.currentResponse1.tree).eqls('y');
-          expect(components['/_answer1'].stateValues.currentResponse2.tree).eqls(["+", 3, ['-', 'x']]);
-          expect(components['/_answer1'].stateValues.submittedResponses.map(x => x.tree)).eqls(['y', ["+", 3, ['-', 'x']]]);
-          expect(components['/_answer1'].stateValues.submittedResponse1.tree).eqls('y');
-          expect(components['/_answer1'].stateValues.submittedResponse2.tree).eqls(["+", 3, ['-', 'x']]);
+          expect((await components['/_answer1'].stateValues.currentResponses).map(x => x.tree)).eqls(['y', ["+", 3, ['-', 'x']]]);
+          expect((await components['/_answer1'].stateValues.currentResponse1).tree).eqls('y');
+          expect((await components['/_answer1'].stateValues.currentResponse2).tree).eqls(["+", 3, ['-', 'x']]);
+          expect((await components['/_answer1'].stateValues.submittedResponses).map(x => x.tree)).eqls(['y', ["+", 3, ['-', 'x']]]);
+          expect((await components['/_answer1'].stateValues.submittedResponse1).tree).eqls('y');
+          expect((await components['/_answer1'].stateValues.submittedResponse2).tree).eqls(["+", 3, ['-', 'x']]);
           expect(components['/_mathinput1'].stateValues.value.tree).eqls('y');
           // expect(components['/_mathinput1'].stateValues.submittedValue.tree).eqls('y');
           expect(components['/_mathinput2'].stateValues.value.tree).eqls(["+", 3, ['-', 'x']]);
           // expect(components['/_mathinput2'].stateValues.submittedValue.tree).eqls(["+", 3, ['-', 'x']]);
-          expect(cr.stateValues.value.tree).eqls('y')
-          expect(cr1.stateValues.value.tree).eqls('y')
-          expect(cr2.stateValues.value.tree).eqls(["+", 3, ['-', 'x']])
-          expect(crsa.stateValues.value.tree).eqls('y')
-          expect(crsb.stateValues.value.tree).eqls(["+", 3, ['-', 'x']])
-          expect(sr.stateValues.value.tree).eqls('y')
-          expect(sr1.stateValues.value.tree).eqls('y')
-          expect(sr2.stateValues.value.tree).eqls(["+", 3, ['-', 'x']])
+          expect((await cr.stateValues.value).tree).eqls('y')
+          expect((await cr1.stateValues.value).tree).eqls('y')
+          expect((await cr2.stateValues.value).tree).eqls(["+", 3, ['-', 'x']])
+          expect((await crsa.stateValues.value).tree).eqls('y')
+          expect((await crsb.stateValues.value).tree).eqls(["+", 3, ['-', 'x']])
+          expect((await sr.stateValues.value).tree).eqls('y')
+          expect((await sr1.stateValues.value).tree).eqls('y')
+          expect((await sr2.stateValues.value).tree).eqls(["+", 3, ['-', 'x']])
           expect(srsa.stateValues.value.tree).eqls('y')
           expect(srsb.stateValues.value.tree).eqls(["+", 3, ['-', 'x']])
           expect(ca.stateValues.value).eq(0)
@@ -4357,7 +4391,7 @@ describe('Answer Tag Tests', function () {
   });
 
   it('full answer tag, two inputs inside answer, shorter form', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -4381,7 +4415,7 @@ describe('Answer Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let cr = components['/cr'].replacements[0];
       let crAnchor = cesc('#' + cr.componentName);
@@ -4443,26 +4477,26 @@ describe('Answer Tag Tests', function () {
       cy.get(caAnchor).should('have.text', '0')
 
       cy.log('Test internal values')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
-        expect(components['/_answer1'].stateValues.currentResponses.map(x => x.tree)).eqls(['\uFF3F', '\uFF3F']);
-        expect(components['/_answer1'].stateValues.currentResponse1.tree).eqls('\uFF3F')
-        expect(components['/_answer1'].stateValues.currentResponse2.tree).eqls('\uFF3F')
-        expect(components['/_answer1'].stateValues.submittedResponses).eqls([])
-        expect(components['/_answer1'].stateValues.submittedResponse1).eqls(undefined)
-        expect(components['/_answer1'].stateValues.submittedResponse2).eqls(undefined)
+        expect((await components['/_answer1'].stateValues.currentResponses).map(x => x.tree)).eqls(['\uFF3F', '\uFF3F']);
+        expect((await components['/_answer1'].stateValues.currentResponse1).tree).eqls('\uFF3F')
+        expect((await components['/_answer1'].stateValues.currentResponse2).tree).eqls('\uFF3F')
+        expect(await components['/_answer1'].stateValues.submittedResponses).eqls([])
+        expect(await components['/_answer1'].stateValues.submittedResponse1).eqls(undefined)
+        expect(await components['/_answer1'].stateValues.submittedResponse2).eqls(undefined)
         expect(components['/_mathinput1'].stateValues.value.tree).eq('\uFF3F');
         // expect(components['/_mathinput1'].stateValues.submittedValue.tree).eq('\uFF3F');
         expect(components['/_mathinput2'].stateValues.value.tree).eq('\uFF3F');
         // expect(components['/_mathinput2'].stateValues.submittedValue.tree).eq('\uFF3F');
-        expect(cr.stateValues.value.tree).eq('\uFF3F')
-        expect(cr1.stateValues.value.tree).eq('\uFF3F')
-        expect(cr2.stateValues.value.tree).eq('\uFF3F')
-        expect(crsa.stateValues.value.tree).eq('\uFF3F')
-        expect(crsb.stateValues.value.tree).eq('\uFF3F')
-        expect(sr.stateValues.value.tree).eq('\uFF3F')
-        expect(sr1.stateValues.value.tree).eq('\uFF3F')
-        expect(sr2.stateValues.value.tree).eq('\uFF3F')
+        expect((await cr.stateValues.value).tree).eq('\uFF3F')
+        expect((await cr1.stateValues.value).tree).eq('\uFF3F')
+        expect((await cr2.stateValues.value).tree).eq('\uFF3F')
+        expect((await crsa.stateValues.value).tree).eq('\uFF3F')
+        expect((await crsb.stateValues.value).tree).eq('\uFF3F')
+        expect((await sr.stateValues.value).tree).eq('\uFF3F')
+        expect((await sr1.stateValues.value).tree).eq('\uFF3F')
+        expect((await sr2.stateValues.value).tree).eq('\uFF3F')
         // expect(srsa.stateValues.value.tree).eq('\uFF3F')
         // expect(srsb.stateValues.value.tree).eq('\uFF3F')
         expect(ca.stateValues.value).eq(0)
@@ -4476,12 +4510,14 @@ describe('Answer Tag Tests', function () {
       // cy.get('#\\/_mathinput1_input').should('have.value', 'x+y');
       // cy.get('#\\/_mathinput2_input').should('have.value', '2x-y');
 
+      cy.get(crAnchor + ' .mjx-mrow').should('have.text', 'x+y');
       cy.get(crAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x+y')
       });
       cy.get(cr1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x+y')
       });
+      cy.get(cr2Anchor + ' .mjx-mrow').should('have.text', '2x−y');
       cy.get(cr2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('2x−y')
       });
@@ -4509,26 +4545,26 @@ describe('Answer Tag Tests', function () {
       cy.get(caAnchor).should('have.text', '0')
 
       cy.log('Test internal values')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
-        expect(components['/_answer1'].stateValues.currentResponses.map(x => x.tree)).eqls([["+", 'x', 'y'], ["+", ['*', 2, 'x'], ['-', 'y']]]);
-        expect(components['/_answer1'].stateValues.currentResponse1.tree).eqls(["+", 'x', 'y']);
-        expect(components['/_answer1'].stateValues.currentResponse2.tree).eqls(["+", ['*', 2, 'x'], ['-', 'y']]);
-        expect(components['/_answer1'].stateValues.submittedResponses).eqls([])
-        expect(components['/_answer1'].stateValues.submittedResponse1).eqls(undefined)
-        expect(components['/_answer1'].stateValues.submittedResponse2).eqls(undefined)
+        expect((await components['/_answer1'].stateValues.currentResponses).map(x => x.tree)).eqls([["+", 'x', 'y'], ["+", ['*', 2, 'x'], ['-', 'y']]]);
+        expect((await components['/_answer1'].stateValues.currentResponse1).tree).eqls(["+", 'x', 'y']);
+        expect((await components['/_answer1'].stateValues.currentResponse2).tree).eqls(["+", ['*', 2, 'x'], ['-', 'y']]);
+        expect(await components['/_answer1'].stateValues.submittedResponses).eqls([])
+        expect(await components['/_answer1'].stateValues.submittedResponse1).eqls(undefined)
+        expect(await components['/_answer1'].stateValues.submittedResponse2).eqls(undefined)
         expect(components['/_mathinput1'].stateValues.value.tree).eqls(["+", 'x', 'y']);
         // expect(components['/_mathinput1'].stateValues.submittedValue.tree).eq('\uFF3F');
         expect(components['/_mathinput2'].stateValues.value.tree).eqls(["+", ['*', 2, 'x'], ['-', 'y']]);
         // expect(components['/_mathinput2'].stateValues.submittedValue.tree).eq('\uFF3F');
-        expect(cr.stateValues.value.tree).eqls(["+", 'x', 'y'])
-        expect(cr1.stateValues.value.tree).eqls(["+", 'x', 'y'])
-        expect(cr2.stateValues.value.tree).eqls(["+", ['*', 2, 'x'], ['-', 'y']])
-        expect(crsa.stateValues.value.tree).eqls(["+", 'x', 'y'])
-        expect(crsb.stateValues.value.tree).eqls(["+", ['*', 2, 'x'], ['-', 'y']])
-        expect(sr.stateValues.value.tree).eq('\uFF3F')
-        expect(sr1.stateValues.value.tree).eq('\uFF3F')
-        expect(sr2.stateValues.value.tree).eq('\uFF3F')
+        expect((await cr.stateValues.value).tree).eqls(["+", 'x', 'y'])
+        expect((await cr1.stateValues.value).tree).eqls(["+", 'x', 'y'])
+        expect((await cr2.stateValues.value).tree).eqls(["+", ['*', 2, 'x'], ['-', 'y']])
+        expect((await crsa.stateValues.value).tree).eqls(["+", 'x', 'y'])
+        expect((await crsb.stateValues.value).tree).eqls(["+", ['*', 2, 'x'], ['-', 'y']])
+        expect((await sr.stateValues.value).tree).eq('\uFF3F')
+        expect((await sr1.stateValues.value).tree).eq('\uFF3F')
+        expect((await sr2.stateValues.value).tree).eq('\uFF3F')
         // expect(srsa.stateValues.value.tree).eq('\uFF3F')
         // expect(srsb.stateValues.value.tree).eq('\uFF3F')
         expect(ca.stateValues.value).eq(0)
@@ -4539,7 +4575,7 @@ describe('Answer Tag Tests', function () {
       cy.get('#\\/_answer1_submit').click();
 
       // wrap to get submitted response anchors
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         sr = components['/sr'].replacements[0];
         srAnchor = cesc('#' + sr.componentName);
         sr1 = components['/sr1'].replacements[0];
@@ -4588,26 +4624,26 @@ describe('Answer Tag Tests', function () {
         cy.get(caAnchor).should('have.text', '1')
 
         cy.log('Test internal values')
-        cy.window().then((win) => {
+        cy.window().then(async (win) => {
           expect(components['/_answer1'].stateValues.creditAchieved).eq(1);
-          expect(components['/_answer1'].stateValues.currentResponses.map(x => x.tree)).eqls([["+", 'x', 'y'], ["+", ['*', 2, 'x'], ['-', 'y']]]);
-          expect(components['/_answer1'].stateValues.currentResponse1.tree).eqls(["+", 'x', 'y']);
-          expect(components['/_answer1'].stateValues.currentResponse2.tree).eqls(["+", ['*', 2, 'x'], ['-', 'y']]);
-          expect(components['/_answer1'].stateValues.submittedResponses.map(x => x.tree)).eqls([["+", 'x', 'y'], ["+", ['*', 2, 'x'], ['-', 'y']]]);
-          expect(components['/_answer1'].stateValues.submittedResponse1.tree).eqls(["+", 'x', 'y']);
-          expect(components['/_answer1'].stateValues.submittedResponse2.tree).eqls(["+", ['*', 2, 'x'], ['-', 'y']]);
+          expect((await components['/_answer1'].stateValues.currentResponses).map(x => x.tree)).eqls([["+", 'x', 'y'], ["+", ['*', 2, 'x'], ['-', 'y']]]);
+          expect((await components['/_answer1'].stateValues.currentResponse1).tree).eqls(["+", 'x', 'y']);
+          expect((await components['/_answer1'].stateValues.currentResponse2).tree).eqls(["+", ['*', 2, 'x'], ['-', 'y']]);
+          expect((await components['/_answer1'].stateValues.submittedResponses).map(x => x.tree)).eqls([["+", 'x', 'y'], ["+", ['*', 2, 'x'], ['-', 'y']]]);
+          expect((await components['/_answer1'].stateValues.submittedResponse1).tree).eqls(["+", 'x', 'y']);
+          expect((await components['/_answer1'].stateValues.submittedResponse2).tree).eqls(["+", ['*', 2, 'x'], ['-', 'y']]);
           expect(components['/_mathinput1'].stateValues.value.tree).eqls(["+", 'x', 'y']);
           // expect(components['/_mathinput1'].stateValues.submittedValue.tree).eqls(["+", 'x', 'y']);
           expect(components['/_mathinput2'].stateValues.value.tree).eqls(["+", ['*', 2, 'x'], ['-', 'y']]);
           // expect(components['/_mathinput2'].stateValues.submittedValue.tree).eqls(["+", ['*', 2, 'x'], ['-', 'y']]);
-          expect(cr.stateValues.value.tree).eqls(["+", 'x', 'y'])
-          expect(cr1.stateValues.value.tree).eqls(["+", 'x', 'y'])
-          expect(cr2.stateValues.value.tree).eqls(["+", ['*', 2, 'x'], ['-', 'y']])
-          expect(crsa.stateValues.value.tree).eqls(["+", 'x', 'y'])
-          expect(crsb.stateValues.value.tree).eqls(["+", ['*', 2, 'x'], ['-', 'y']])
-          expect(sr.stateValues.value.tree).eqls(["+", 'x', 'y'])
-          expect(sr1.stateValues.value.tree).eqls(["+", 'x', 'y'])
-          expect(sr2.stateValues.value.tree).eqls(["+", ['*', 2, 'x'], ['-', 'y']])
+          expect((await cr.stateValues.value).tree).eqls(["+", 'x', 'y'])
+          expect((await cr1.stateValues.value).tree).eqls(["+", 'x', 'y'])
+          expect((await cr2.stateValues.value).tree).eqls(["+", ['*', 2, 'x'], ['-', 'y']])
+          expect((await crsa.stateValues.value).tree).eqls(["+", 'x', 'y'])
+          expect((await crsb.stateValues.value).tree).eqls(["+", ['*', 2, 'x'], ['-', 'y']])
+          expect((await sr.stateValues.value).tree).eqls(["+", 'x', 'y'])
+          expect((await sr1.stateValues.value).tree).eqls(["+", 'x', 'y'])
+          expect((await sr2.stateValues.value).tree).eqls(["+", ['*', 2, 'x'], ['-', 'y']])
           expect(srsa.stateValues.value.tree).eqls(["+", 'x', 'y'])
           expect(srsb.stateValues.value.tree).eqls(["+", ['*', 2, 'x'], ['-', 'y']])
           expect(ca.stateValues.value).eq(1)
@@ -4628,6 +4664,7 @@ describe('Answer Tag Tests', function () {
         cy.get(cr1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('x')
         });
+        cy.get(cr2Anchor + ' .mjx-mrow').should('have.text', '3−x');
         cy.get(cr2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('3−x')
         });
@@ -4655,26 +4692,26 @@ describe('Answer Tag Tests', function () {
         cy.get(caAnchor).should('have.text', '1')
 
         cy.log('Test internal values')
-        cy.window().then((win) => {
+        cy.window().then(async (win) => {
           expect(components['/_answer1'].stateValues.creditAchieved).eq(1);
-          expect(components['/_answer1'].stateValues.currentResponses.map(x => x.tree)).eqls(['x', ["+", 3, ['-', 'x']]]);
-          expect(components['/_answer1'].stateValues.currentResponse1.tree).eqls('x');
-          expect(components['/_answer1'].stateValues.currentResponse2.tree).eqls(["+", 3, ['-', 'x']]);
-          expect(components['/_answer1'].stateValues.submittedResponses.map(x => x.tree)).eqls([["+", 'x', 'y'], ["+", ['*', 2, 'x'], ['-', 'y']]]);
-          expect(components['/_answer1'].stateValues.submittedResponse1.tree).eqls(["+", 'x', 'y']);
-          expect(components['/_answer1'].stateValues.submittedResponse2.tree).eqls(["+", ['*', 2, 'x'], ['-', 'y']]);
+          expect((await components['/_answer1'].stateValues.currentResponses).map(x => x.tree)).eqls(['x', ["+", 3, ['-', 'x']]]);
+          expect((await components['/_answer1'].stateValues.currentResponse1).tree).eqls('x');
+          expect((await components['/_answer1'].stateValues.currentResponse2).tree).eqls(["+", 3, ['-', 'x']]);
+          expect((await components['/_answer1'].stateValues.submittedResponses).map(x => x.tree)).eqls([["+", 'x', 'y'], ["+", ['*', 2, 'x'], ['-', 'y']]]);
+          expect((await components['/_answer1'].stateValues.submittedResponse1).tree).eqls(["+", 'x', 'y']);
+          expect((await components['/_answer1'].stateValues.submittedResponse2).tree).eqls(["+", ['*', 2, 'x'], ['-', 'y']]);
           expect(components['/_mathinput1'].stateValues.value.tree).eqls('x');
           // expect(components['/_mathinput1'].stateValues.submittedValue.tree).eqls(["+", 'x', 'y']);
           expect(components['/_mathinput2'].stateValues.value.tree).eqls(["+", 3, ['-', 'x']]);
           // expect(components['/_mathinput2'].stateValues.submittedValue.tree).eqls(["+", ['*', 2, 'x'], ['-', 'y']]);
-          expect(cr.stateValues.value.tree).eqls('x')
-          expect(cr1.stateValues.value.tree).eqls('x')
-          expect(cr2.stateValues.value.tree).eqls(["+", 3, ['-', 'x']])
-          expect(crsa.stateValues.value.tree).eqls('x')
-          expect(crsb.stateValues.value.tree).eqls(["+", 3, ['-', 'x']])
-          expect(sr.stateValues.value.tree).eqls(["+", 'x', 'y'])
-          expect(sr1.stateValues.value.tree).eqls(["+", 'x', 'y'])
-          expect(sr2.stateValues.value.tree).eqls(["+", ['*', 2, 'x'], ['-', 'y']])
+          expect((await cr.stateValues.value).tree).eqls('x')
+          expect((await cr1.stateValues.value).tree).eqls('x')
+          expect((await cr2.stateValues.value).tree).eqls(["+", 3, ['-', 'x']])
+          expect((await crsa.stateValues.value).tree).eqls('x')
+          expect((await crsb.stateValues.value).tree).eqls(["+", 3, ['-', 'x']])
+          expect((await sr.stateValues.value).tree).eqls(["+", 'x', 'y'])
+          expect((await sr1.stateValues.value).tree).eqls(["+", 'x', 'y'])
+          expect((await sr2.stateValues.value).tree).eqls(["+", ['*', 2, 'x'], ['-', 'y']])
           expect(srsa.stateValues.value.tree).eqls(["+", 'x', 'y'])
           expect(srsb.stateValues.value.tree).eqls(["+", ['*', 2, 'x'], ['-', 'y']])
           expect(ca.stateValues.value).eq(1)
@@ -4722,26 +4759,26 @@ describe('Answer Tag Tests', function () {
 
 
         cy.log('Test internal values')
-        cy.window().then((win) => {
+        cy.window().then(async (win) => {
           expect(components['/_answer1'].stateValues.creditAchieved).eq(0.5);
-          expect(components['/_answer1'].stateValues.currentResponses.map(x => x.tree)).eqls(['x', ["+", 3, ['-', 'x']]]);
-          expect(components['/_answer1'].stateValues.currentResponse1.tree).eqls('x');
-          expect(components['/_answer1'].stateValues.currentResponse2.tree).eqls(["+", 3, ['-', 'x']]);
-          expect(components['/_answer1'].stateValues.submittedResponses.map(x => x.tree)).eqls(['x', ["+", 3, ['-', 'x']]]);
-          expect(components['/_answer1'].stateValues.submittedResponse1.tree).eqls('x');
-          expect(components['/_answer1'].stateValues.submittedResponse2.tree).eqls(["+", 3, ['-', 'x']]);
+          expect((await components['/_answer1'].stateValues.currentResponses).map(x => x.tree)).eqls(['x', ["+", 3, ['-', 'x']]]);
+          expect((await components['/_answer1'].stateValues.currentResponse1).tree).eqls('x');
+          expect((await components['/_answer1'].stateValues.currentResponse2).tree).eqls(["+", 3, ['-', 'x']]);
+          expect((await components['/_answer1'].stateValues.submittedResponses).map(x => x.tree)).eqls(['x', ["+", 3, ['-', 'x']]]);
+          expect((await components['/_answer1'].stateValues.submittedResponse1).tree).eqls('x');
+          expect((await components['/_answer1'].stateValues.submittedResponse2).tree).eqls(["+", 3, ['-', 'x']]);
           expect(components['/_mathinput1'].stateValues.value.tree).eqls('x');
           // expect(components['/_mathinput1'].stateValues.submittedValue.tree).eqls('x');
           expect(components['/_mathinput2'].stateValues.value.tree).eqls(["+", 3, ['-', 'x']]);
           // expect(components['/_mathinput2'].stateValues.submittedValue.tree).eqls(["+", 3, ['-', 'x']]);
-          expect(cr.stateValues.value.tree).eqls('x')
-          expect(cr1.stateValues.value.tree).eqls('x')
-          expect(cr2.stateValues.value.tree).eqls(["+", 3, ['-', 'x']])
-          expect(crsa.stateValues.value.tree).eqls('x')
-          expect(crsb.stateValues.value.tree).eqls(["+", 3, ['-', 'x']])
-          expect(sr.stateValues.value.tree).eqls('x')
-          expect(sr1.stateValues.value.tree).eqls('x')
-          expect(sr2.stateValues.value.tree).eqls(["+", 3, ['-', 'x']])
+          expect((await cr.stateValues.value).tree).eqls('x')
+          expect((await cr1.stateValues.value).tree).eqls('x')
+          expect((await cr2.stateValues.value).tree).eqls(["+", 3, ['-', 'x']])
+          expect((await crsa.stateValues.value).tree).eqls('x')
+          expect((await crsb.stateValues.value).tree).eqls(["+", 3, ['-', 'x']])
+          expect((await sr.stateValues.value).tree).eqls('x')
+          expect((await sr1.stateValues.value).tree).eqls('x')
+          expect((await sr2.stateValues.value).tree).eqls(["+", 3, ['-', 'x']])
           expect(srsa.stateValues.value.tree).eqls('x')
           expect(srsb.stateValues.value.tree).eqls(["+", 3, ['-', 'x']])
           expect(ca.stateValues.value).eq(0.5)
@@ -4754,6 +4791,7 @@ describe('Answer Tag Tests', function () {
         // cy.get('#\\/_mathinput1_input').should('have.value', 'y');
         // cy.get('#\\/_mathinput2_input').should('have.value', '3-x');
 
+        cy.get(crAnchor + ' .mjx-mrow').should('have.text','y')
         cy.get(crAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('y')
         });
@@ -4788,26 +4826,26 @@ describe('Answer Tag Tests', function () {
 
 
         cy.log('Test internal values')
-        cy.window().then((win) => {
+        cy.window().then(async (win) => {
           expect(components['/_answer1'].stateValues.creditAchieved).eq(0.5);
-          expect(components['/_answer1'].stateValues.currentResponses.map(x => x.tree)).eqls(['y', ["+", 3, ['-', 'x']]]);
-          expect(components['/_answer1'].stateValues.currentResponse1.tree).eqls('y');
-          expect(components['/_answer1'].stateValues.currentResponse2.tree).eqls(["+", 3, ['-', 'x']]);
-          expect(components['/_answer1'].stateValues.submittedResponses.map(x => x.tree)).eqls(['x', ["+", 3, ['-', 'x']]]);
-          expect(components['/_answer1'].stateValues.submittedResponse1.tree).eqls('x');
-          expect(components['/_answer1'].stateValues.submittedResponse2.tree).eqls(["+", 3, ['-', 'x']]);
+          expect((await components['/_answer1'].stateValues.currentResponses).map(x => x.tree)).eqls(['y', ["+", 3, ['-', 'x']]]);
+          expect((await components['/_answer1'].stateValues.currentResponse1).tree).eqls('y');
+          expect((await components['/_answer1'].stateValues.currentResponse2).tree).eqls(["+", 3, ['-', 'x']]);
+          expect((await components['/_answer1'].stateValues.submittedResponses).map(x => x.tree)).eqls(['x', ["+", 3, ['-', 'x']]]);
+          expect((await components['/_answer1'].stateValues.submittedResponse1).tree).eqls('x');
+          expect((await components['/_answer1'].stateValues.submittedResponse2).tree).eqls(["+", 3, ['-', 'x']]);
           expect(components['/_mathinput1'].stateValues.value.tree).eqls('y');
           // expect(components['/_mathinput1'].stateValues.submittedValue.tree).eqls('x');
           expect(components['/_mathinput2'].stateValues.value.tree).eqls(["+", 3, ['-', 'x']]);
           // expect(components['/_mathinput2'].stateValues.submittedValue.tree).eqls(["+", 3, ['-', 'x']]);
-          expect(cr.stateValues.value.tree).eqls('y')
-          expect(cr1.stateValues.value.tree).eqls('y')
-          expect(cr2.stateValues.value.tree).eqls(["+", 3, ['-', 'x']])
-          expect(crsa.stateValues.value.tree).eqls('y')
-          expect(crsb.stateValues.value.tree).eqls(["+", 3, ['-', 'x']])
-          expect(sr.stateValues.value.tree).eqls('x')
-          expect(sr1.stateValues.value.tree).eqls('x')
-          expect(sr2.stateValues.value.tree).eqls(["+", 3, ['-', 'x']])
+          expect((await cr.stateValues.value).tree).eqls('y')
+          expect((await cr1.stateValues.value).tree).eqls('y')
+          expect((await cr2.stateValues.value).tree).eqls(["+", 3, ['-', 'x']])
+          expect((await crsa.stateValues.value).tree).eqls('y')
+          expect((await crsb.stateValues.value).tree).eqls(["+", 3, ['-', 'x']])
+          expect((await sr.stateValues.value).tree).eqls('x')
+          expect((await sr1.stateValues.value).tree).eqls('x')
+          expect((await sr2.stateValues.value).tree).eqls(["+", 3, ['-', 'x']])
           expect(srsa.stateValues.value.tree).eqls('x')
           expect(srsb.stateValues.value.tree).eqls(["+", 3, ['-', 'x']])
           expect(ca.stateValues.value).eq(0.5)
@@ -4853,26 +4891,26 @@ describe('Answer Tag Tests', function () {
         cy.get(caAnchor).should('have.text', '0')
 
         cy.log('Test internal values')
-        cy.window().then((win) => {
+        cy.window().then(async (win) => {
           expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
-          expect(components['/_answer1'].stateValues.currentResponses.map(x => x.tree)).eqls(['y', ["+", 3, ['-', 'x']]]);
-          expect(components['/_answer1'].stateValues.currentResponse1.tree).eqls('y');
-          expect(components['/_answer1'].stateValues.currentResponse2.tree).eqls(["+", 3, ['-', 'x']]);
-          expect(components['/_answer1'].stateValues.submittedResponses.map(x => x.tree)).eqls(['y', ["+", 3, ['-', 'x']]]);
-          expect(components['/_answer1'].stateValues.submittedResponse1.tree).eqls('y');
-          expect(components['/_answer1'].stateValues.submittedResponse2.tree).eqls(["+", 3, ['-', 'x']]);
+          expect((await components['/_answer1'].stateValues.currentResponses).map(x => x.tree)).eqls(['y', ["+", 3, ['-', 'x']]]);
+          expect((await components['/_answer1'].stateValues.currentResponse1).tree).eqls('y');
+          expect((await components['/_answer1'].stateValues.currentResponse2).tree).eqls(["+", 3, ['-', 'x']]);
+          expect((await components['/_answer1'].stateValues.submittedResponses).map(x => x.tree)).eqls(['y', ["+", 3, ['-', 'x']]]);
+          expect((await components['/_answer1'].stateValues.submittedResponse1).tree).eqls('y');
+          expect((await components['/_answer1'].stateValues.submittedResponse2).tree).eqls(["+", 3, ['-', 'x']]);
           expect(components['/_mathinput1'].stateValues.value.tree).eqls('y');
           // expect(components['/_mathinput1'].stateValues.submittedValue.tree).eqls('y');
           expect(components['/_mathinput2'].stateValues.value.tree).eqls(["+", 3, ['-', 'x']]);
           // expect(components['/_mathinput2'].stateValues.submittedValue.tree).eqls(["+", 3, ['-', 'x']]);
-          expect(cr.stateValues.value.tree).eqls('y')
-          expect(cr1.stateValues.value.tree).eqls('y')
-          expect(cr2.stateValues.value.tree).eqls(["+", 3, ['-', 'x']])
-          expect(crsa.stateValues.value.tree).eqls('y')
-          expect(crsb.stateValues.value.tree).eqls(["+", 3, ['-', 'x']])
-          expect(sr.stateValues.value.tree).eqls('y')
-          expect(sr1.stateValues.value.tree).eqls('y')
-          expect(sr2.stateValues.value.tree).eqls(["+", 3, ['-', 'x']])
+          expect((await cr.stateValues.value).tree).eqls('y')
+          expect((await cr1.stateValues.value).tree).eqls('y')
+          expect((await cr2.stateValues.value).tree).eqls(["+", 3, ['-', 'x']])
+          expect((await crsa.stateValues.value).tree).eqls('y')
+          expect((await crsb.stateValues.value).tree).eqls(["+", 3, ['-', 'x']])
+          expect((await sr.stateValues.value).tree).eqls('y')
+          expect((await sr1.stateValues.value).tree).eqls('y')
+          expect((await sr2.stateValues.value).tree).eqls(["+", 3, ['-', 'x']])
           expect(srsa.stateValues.value.tree).eqls('y')
           expect(srsb.stateValues.value.tree).eqls(["+", 3, ['-', 'x']])
           expect(ca.stateValues.value).eq(0)
@@ -4884,7 +4922,7 @@ describe('Answer Tag Tests', function () {
   });
 
   it('full answer tag, text inputs', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -4911,7 +4949,7 @@ describe('Answer Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let cr = components['/cr'].replacements[0];
       let crAnchor = cesc('#' + cr.componentName);
@@ -4953,26 +4991,26 @@ describe('Answer Tag Tests', function () {
       cy.get(caAnchor).should('have.text', '0')
 
       cy.log('Test internal values')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
-        expect(components['/_answer1'].stateValues.currentResponses).eqls(['', '']);
-        expect(components['/_answer1'].stateValues.currentResponse1).eqls('')
-        expect(components['/_answer1'].stateValues.currentResponse2).eqls('')
-        expect(components['/_answer1'].stateValues.submittedResponses).eqls([])
-        expect(components['/_answer1'].stateValues.submittedResponse1).eqls(undefined)
-        expect(components['/_answer1'].stateValues.submittedResponse2).eqls(undefined)
+        expect((await components['/_answer1'].stateValues.currentResponses)).eqls(['', '']);
+        expect((await components['/_answer1'].stateValues.currentResponse1)).eqls('')
+        expect(await components['/_answer1'].stateValues.currentResponse2).eqls('')
+        expect(await components['/_answer1'].stateValues.submittedResponses).eqls([])
+        expect(await components['/_answer1'].stateValues.submittedResponse1).eqls(undefined)
+        expect(await components['/_answer1'].stateValues.submittedResponse2).eqls(undefined)
         expect(components['/_textinput1'].stateValues.value).eq('');
         // expect(components['/_textinput1'].stateValues.submittedValue).eq('\uFF3F');
         expect(components['/_textinput2'].stateValues.value).eq('');
         // expect(components['/_textinput2'].stateValues.submittedValue).eq('\uFF3F');
-        expect(cr.stateValues.value).eq('')
-        expect(cr1.stateValues.value).eq('')
-        expect(cr2.stateValues.value).eq('')
-        expect(crsa.stateValues.value).eq('')
-        expect(crsb.stateValues.value).eq('')
-        expect(sr.stateValues.value).eq('')
-        expect(sr1.stateValues.value).eq('')
-        expect(sr2.stateValues.value).eq('')
+        expect(await cr.stateValues.value).eq('')
+        expect(await cr1.stateValues.value).eq('')
+        expect(await cr2.stateValues.value).eq('')
+        expect(await crsa.stateValues.value).eq('')
+        expect(await crsb.stateValues.value).eq('')
+        expect(await sr.stateValues.value).eq('')
+        expect(await sr1.stateValues.value).eq('')
+        expect(await sr2.stateValues.value).eq('')
         // expect(srsa.stateValues.value).eq('\uFF3F')
         // expect(srsb.stateValues.value).eq('\uFF3F')
         expect(ca.stateValues.value).eq(0)
@@ -4980,7 +5018,7 @@ describe('Answer Tag Tests', function () {
 
       cy.log("Enter a correct answer in")
       cy.get('#\\/_textinput1_input').type(`rain`).blur();
-      cy.get('#\\/_textinput2_input').type(`snow`).blur();
+      cy.get('#\\/_textinput2_input').type(`snow{enter}`).blur();
 
       cy.log('Test value displayed in browser')
       cy.get('#\\/_textinput1_input').should('have.value', 'rain');
@@ -4999,26 +5037,26 @@ describe('Answer Tag Tests', function () {
       cy.get(caAnchor).should('have.text', '0')
 
       cy.log('Test internal values')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
-        expect(components['/_answer1'].stateValues.currentResponses).eqls(['rain', 'snow']);
-        expect(components['/_answer1'].stateValues.currentResponse1).eqls('rain')
-        expect(components['/_answer1'].stateValues.currentResponse2).eqls('snow')
-        expect(components['/_answer1'].stateValues.submittedResponses).eqls([])
-        expect(components['/_answer1'].stateValues.submittedResponse1).eqls(undefined)
-        expect(components['/_answer1'].stateValues.submittedResponse2).eqls(undefined)
-        expect(components['/_textinput1'].stateValues.value).eq('rain');
+        expect((await components['/_answer1'].stateValues.currentResponses)).eqls(['rain', 'snow']);
+        expect((await components['/_answer1'].stateValues.currentResponse1)).eqls('rain')
+        expect(await components['/_answer1'].stateValues.currentResponse2).eqls('snow')
+        expect(await components['/_answer1'].stateValues.submittedResponses).eqls([])
+        expect(await components['/_answer1'].stateValues.submittedResponse1).eqls(undefined)
+        expect(await components['/_answer1'].stateValues.submittedResponse2).eqls(undefined)
+        expect(await components['/_textinput1'].stateValues.value).eq('rain');
         // expect(components['/_textinput1'].stateValues.submittedValue).eq('\uFF3F');
-        expect(components['/_textinput2'].stateValues.value).eq('snow');
+        expect(await components['/_textinput2'].stateValues.value).eq('snow');
         // expect(components['/_textinput2'].stateValues.submittedValue).eq('\uFF3F');
-        expect(cr.stateValues.value).eq('rain')
-        expect(cr1.stateValues.value).eq('rain')
-        expect(cr2.stateValues.value).eq('snow')
-        expect(crsa.stateValues.value).eq('rain')
-        expect(crsb.stateValues.value).eq('snow')
-        expect(sr.stateValues.value).eq('')
-        expect(sr1.stateValues.value).eq('')
-        expect(sr2.stateValues.value).eq('')
+        expect(await cr.stateValues.value).eq('rain')
+        expect(await cr1.stateValues.value).eq('rain')
+        expect(await cr2.stateValues.value).eq('snow')
+        expect(await crsa.stateValues.value).eq('rain')
+        expect(await crsb.stateValues.value).eq('snow')
+        expect(await sr.stateValues.value).eq('')
+        expect(await sr1.stateValues.value).eq('')
+        expect(await sr2.stateValues.value).eq('')
         // expect(srsa.stateValues.value).eq('\uFF3F')
         // expect(srsb.stateValues.value).eq('\uFF3F')
         expect(ca.stateValues.value).eq(0)
@@ -5028,7 +5066,7 @@ describe('Answer Tag Tests', function () {
       cy.log("Submit answer")
       cy.get('#\\/_answer1_submit').click();
       // wrap to get submitted response anchors
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         sr = components['/sr'].replacements[0];
         srAnchor = cesc('#' + sr.componentName);
         sr1 = components['/sr1'].replacements[0];
@@ -5057,26 +5095,26 @@ describe('Answer Tag Tests', function () {
         cy.get(caAnchor).should('have.text', '1')
 
         cy.log('Test internal values')
-        cy.window().then((win) => {
+        cy.window().then(async (win) => {
           expect(components['/_answer1'].stateValues.creditAchieved).eq(1);
-          expect(components['/_answer1'].stateValues.currentResponses).eqls(['rain', 'snow']);
-          expect(components['/_answer1'].stateValues.currentResponse1).eqls('rain')
-          expect(components['/_answer1'].stateValues.currentResponse2).eqls('snow')
-          expect(components['/_answer1'].stateValues.submittedResponses).eqls(['rain', 'snow'])
-          expect(components['/_answer1'].stateValues.submittedResponse1).eqls('rain')
-          expect(components['/_answer1'].stateValues.submittedResponse2).eqls('snow')
+          expect((await components['/_answer1'].stateValues.currentResponses)).eqls(['rain', 'snow']);
+          expect((await components['/_answer1'].stateValues.currentResponse1)).eqls('rain')
+          expect(await components['/_answer1'].stateValues.currentResponse2).eqls('snow')
+          expect(await components['/_answer1'].stateValues.submittedResponses).eqls(['rain', 'snow'])
+          expect(await components['/_answer1'].stateValues.submittedResponse1).eqls('rain')
+          expect(await components['/_answer1'].stateValues.submittedResponse2).eqls('snow')
           expect(components['/_textinput1'].stateValues.value).eq('rain');
           // expect(components['/_textinput1'].stateValues.submittedValue).eq('rain');
           expect(components['/_textinput2'].stateValues.value).eq('snow');
           // expect(components['/_textinput2'].stateValues.submittedValue).eq('snow');
-          expect(cr.stateValues.value).eq('rain')
-          expect(cr1.stateValues.value).eq('rain')
-          expect(cr2.stateValues.value).eq('snow')
-          expect(crsa.stateValues.value).eq('rain')
-          expect(crsb.stateValues.value).eq('snow')
-          expect(sr.stateValues.value).eq('rain')
-          expect(sr1.stateValues.value).eq('rain')
-          expect(sr2.stateValues.value).eq('snow')
+          expect(await cr.stateValues.value).eq('rain')
+          expect(await cr1.stateValues.value).eq('rain')
+          expect(await cr2.stateValues.value).eq('snow')
+          expect(await crsa.stateValues.value).eq('rain')
+          expect(await crsb.stateValues.value).eq('snow')
+          expect(await sr.stateValues.value).eq('rain')
+          expect(await sr1.stateValues.value).eq('rain')
+          expect(await sr2.stateValues.value).eq('snow')
           expect(srsa.stateValues.value).eq('rain')
           expect(srsb.stateValues.value).eq('snow')
           expect(ca.stateValues.value).eq(1)
@@ -5102,27 +5140,29 @@ describe('Answer Tag Tests', function () {
         cy.get(srsbAnchor).should('have.text', 'snow')
         cy.get(caAnchor).should('have.text', '1')
 
+        cy.wait(100)
+
         cy.log('Test internal values')
-        cy.window().then((win) => {
+        cy.window().then(async (win) => {
           expect(components['/_answer1'].stateValues.creditAchieved).eq(1);
-          expect(components['/_answer1'].stateValues.currentResponses).eqls(['rain', 'rain']);
-          expect(components['/_answer1'].stateValues.currentResponse1).eqls('rain')
-          expect(components['/_answer1'].stateValues.currentResponse2).eqls('rain')
-          expect(components['/_answer1'].stateValues.submittedResponses).eqls(['rain', 'snow'])
-          expect(components['/_answer1'].stateValues.submittedResponse1).eqls('rain')
-          expect(components['/_answer1'].stateValues.submittedResponse2).eqls('snow')
+          expect((await components['/_answer1'].stateValues.currentResponses)).eqls(['rain', 'rain']);
+          expect((await components['/_answer1'].stateValues.currentResponse1)).eqls('rain')
+          expect(await components['/_answer1'].stateValues.currentResponse2).eqls('rain')
+          expect(await components['/_answer1'].stateValues.submittedResponses).eqls(['rain', 'snow'])
+          expect(await components['/_answer1'].stateValues.submittedResponse1).eqls('rain')
+          expect(await components['/_answer1'].stateValues.submittedResponse2).eqls('snow')
           expect(components['/_textinput1'].stateValues.value).eq('rain');
           // expect(components['/_textinput1'].stateValues.submittedValue).eq('rain');
           expect(components['/_textinput2'].stateValues.value).eq('rain');
           // expect(components['/_textinput2'].stateValues.submittedValue).eq('snow');
-          expect(cr.stateValues.value).eq('rain')
-          expect(cr1.stateValues.value).eq('rain')
-          expect(cr2.stateValues.value).eq('rain')
-          expect(crsa.stateValues.value).eq('rain')
-          expect(crsb.stateValues.value).eq('rain')
-          expect(sr.stateValues.value).eq('rain')
-          expect(sr1.stateValues.value).eq('rain')
-          expect(sr2.stateValues.value).eq('snow')
+          expect(await cr.stateValues.value).eq('rain')
+          expect(await cr1.stateValues.value).eq('rain')
+          expect(await cr2.stateValues.value).eq('rain')
+          expect(await crsa.stateValues.value).eq('rain')
+          expect(await crsb.stateValues.value).eq('rain')
+          expect(await sr.stateValues.value).eq('rain')
+          expect(await sr1.stateValues.value).eq('rain')
+          expect(await sr2.stateValues.value).eq('snow')
           expect(srsa.stateValues.value).eq('rain')
           expect(srsb.stateValues.value).eq('snow')
           expect(ca.stateValues.value).eq(1)
@@ -5148,26 +5188,26 @@ describe('Answer Tag Tests', function () {
         cy.get(caAnchor).should('have.text', '0.5')
 
         cy.log('Test internal values')
-        cy.window().then((win) => {
+        cy.window().then(async (win) => {
           expect(components['/_answer1'].stateValues.creditAchieved).eq(0.5);
-          expect(components['/_answer1'].stateValues.currentResponses).eqls(['rain', 'rain']);
-          expect(components['/_answer1'].stateValues.currentResponse1).eqls('rain')
-          expect(components['/_answer1'].stateValues.currentResponse2).eqls('rain')
-          expect(components['/_answer1'].stateValues.submittedResponses).eqls(['rain', 'rain'])
-          expect(components['/_answer1'].stateValues.submittedResponse1).eqls('rain')
-          expect(components['/_answer1'].stateValues.submittedResponse2).eqls('rain')
+          expect((await components['/_answer1'].stateValues.currentResponses)).eqls(['rain', 'rain']);
+          expect((await components['/_answer1'].stateValues.currentResponse1)).eqls('rain')
+          expect(await components['/_answer1'].stateValues.currentResponse2).eqls('rain')
+          expect(await components['/_answer1'].stateValues.submittedResponses).eqls(['rain', 'rain'])
+          expect(await components['/_answer1'].stateValues.submittedResponse1).eqls('rain')
+          expect(await components['/_answer1'].stateValues.submittedResponse2).eqls('rain')
           expect(components['/_textinput1'].stateValues.value).eq('rain');
           // expect(components['/_textinput1'].stateValues.submittedValue).eq('rain');
           expect(components['/_textinput2'].stateValues.value).eq('rain');
           // expect(components['/_textinput2'].stateValues.submittedValue).eq('rain');
-          expect(cr.stateValues.value).eq('rain')
-          expect(cr1.stateValues.value).eq('rain')
-          expect(cr2.stateValues.value).eq('rain')
-          expect(crsa.stateValues.value).eq('rain')
-          expect(crsb.stateValues.value).eq('rain')
-          expect(sr.stateValues.value).eq('rain')
-          expect(sr1.stateValues.value).eq('rain')
-          expect(sr2.stateValues.value).eq('rain')
+          expect(await cr.stateValues.value).eq('rain')
+          expect(await cr1.stateValues.value).eq('rain')
+          expect(await cr2.stateValues.value).eq('rain')
+          expect(await crsa.stateValues.value).eq('rain')
+          expect(await crsb.stateValues.value).eq('rain')
+          expect(await sr.stateValues.value).eq('rain')
+          expect(await sr1.stateValues.value).eq('rain')
+          expect(await sr2.stateValues.value).eq('rain')
           expect(srsa.stateValues.value).eq('rain')
           expect(srsb.stateValues.value).eq('rain')
           expect(ca.stateValues.value).eq(0.5)
@@ -5192,27 +5232,29 @@ describe('Answer Tag Tests', function () {
         cy.get(srsbAnchor).should('have.text', 'rain')
         cy.get(caAnchor).should('have.text', '0.5')
 
+        cy.wait(100)
+
         cy.log('Test internal values')
-        cy.window().then((win) => {
+        cy.window().then(async (win) => {
           expect(components['/_answer1'].stateValues.creditAchieved).eq(0.5);
-          expect(components['/_answer1'].stateValues.currentResponses).eqls(['snow', 'rain']);
-          expect(components['/_answer1'].stateValues.currentResponse1).eqls('snow')
-          expect(components['/_answer1'].stateValues.currentResponse2).eqls('rain')
-          expect(components['/_answer1'].stateValues.submittedResponses).eqls(['rain', 'rain'])
-          expect(components['/_answer1'].stateValues.submittedResponse1).eqls('rain')
-          expect(components['/_answer1'].stateValues.submittedResponse2).eqls('rain')
+          expect((await components['/_answer1'].stateValues.currentResponses)).eqls(['snow', 'rain']);
+          expect((await components['/_answer1'].stateValues.currentResponse1)).eqls('snow')
+          expect(await components['/_answer1'].stateValues.currentResponse2).eqls('rain')
+          expect(await components['/_answer1'].stateValues.submittedResponses).eqls(['rain', 'rain'])
+          expect(await components['/_answer1'].stateValues.submittedResponse1).eqls('rain')
+          expect(await components['/_answer1'].stateValues.submittedResponse2).eqls('rain')
           expect(components['/_textinput1'].stateValues.value).eq('snow');
           // expect(components['/_textinput1'].stateValues.submittedValue).eq('rain');
           expect(components['/_textinput2'].stateValues.value).eq('rain');
           // expect(components['/_textinput2'].stateValues.submittedValue).eq('rain');
-          expect(cr.stateValues.value).eq('snow')
-          expect(cr1.stateValues.value).eq('snow')
-          expect(cr2.stateValues.value).eq('rain')
-          expect(crsa.stateValues.value).eq('snow')
-          expect(crsb.stateValues.value).eq('rain')
-          expect(sr.stateValues.value).eq('rain')
-          expect(sr1.stateValues.value).eq('rain')
-          expect(sr2.stateValues.value).eq('rain')
+          expect(await cr.stateValues.value).eq('snow')
+          expect(await cr1.stateValues.value).eq('snow')
+          expect(await cr2.stateValues.value).eq('rain')
+          expect(await crsa.stateValues.value).eq('snow')
+          expect(await crsb.stateValues.value).eq('rain')
+          expect(await sr.stateValues.value).eq('rain')
+          expect(await sr1.stateValues.value).eq('rain')
+          expect(await sr2.stateValues.value).eq('rain')
           expect(srsa.stateValues.value).eq('rain')
           expect(srsb.stateValues.value).eq('rain')
           expect(ca.stateValues.value).eq(0.5)
@@ -5238,26 +5280,26 @@ describe('Answer Tag Tests', function () {
         cy.get(caAnchor).should('have.text', '1')
 
         cy.log('Test internal values')
-        cy.window().then((win) => {
+        cy.window().then(async (win) => {
           expect(components['/_answer1'].stateValues.creditAchieved).eq(1);
-          expect(components['/_answer1'].stateValues.currentResponses).eqls(['snow', 'rain']);
-          expect(components['/_answer1'].stateValues.currentResponse1).eqls('snow')
-          expect(components['/_answer1'].stateValues.currentResponse2).eqls('rain')
-          expect(components['/_answer1'].stateValues.submittedResponses).eqls(['snow', 'rain'])
-          expect(components['/_answer1'].stateValues.submittedResponse1).eqls('snow')
-          expect(components['/_answer1'].stateValues.submittedResponse2).eqls('rain')
+          expect((await components['/_answer1'].stateValues.currentResponses)).eqls(['snow', 'rain']);
+          expect((await components['/_answer1'].stateValues.currentResponse1)).eqls('snow')
+          expect(await components['/_answer1'].stateValues.currentResponse2).eqls('rain')
+          expect(await components['/_answer1'].stateValues.submittedResponses).eqls(['snow', 'rain'])
+          expect(await components['/_answer1'].stateValues.submittedResponse1).eqls('snow')
+          expect(await components['/_answer1'].stateValues.submittedResponse2).eqls('rain')
           expect(components['/_textinput1'].stateValues.value).eq('snow');
           // expect(components['/_textinput1'].stateValues.submittedValue).eq('snow');
           expect(components['/_textinput2'].stateValues.value).eq('rain');
           // expect(components['/_textinput2'].stateValues.submittedValue).eq('rain');
-          expect(cr.stateValues.value).eq('snow')
-          expect(cr1.stateValues.value).eq('snow')
-          expect(cr2.stateValues.value).eq('rain')
-          expect(crsa.stateValues.value).eq('snow')
-          expect(crsb.stateValues.value).eq('rain')
-          expect(sr.stateValues.value).eq('snow')
-          expect(sr1.stateValues.value).eq('snow')
-          expect(sr2.stateValues.value).eq('rain')
+          expect(await cr.stateValues.value).eq('snow')
+          expect(await cr1.stateValues.value).eq('snow')
+          expect(await cr2.stateValues.value).eq('rain')
+          expect(await crsa.stateValues.value).eq('snow')
+          expect(await crsb.stateValues.value).eq('rain')
+          expect(await sr.stateValues.value).eq('snow')
+          expect(await sr1.stateValues.value).eq('snow')
+          expect(await sr2.stateValues.value).eq('rain')
           expect(srsa.stateValues.value).eq('snow')
           expect(srsb.stateValues.value).eq('rain')
           expect(ca.stateValues.value).eq(1)
@@ -5282,27 +5324,29 @@ describe('Answer Tag Tests', function () {
         cy.get(srsbAnchor).should('have.text', 'rain')
         cy.get(caAnchor).should('have.text', '1')
 
+        cy.wait(100)
+
         cy.log('Test internal values')
-        cy.window().then((win) => {
+        cy.window().then(async (win) => {
           expect(components['/_answer1'].stateValues.creditAchieved).eq(1);
-          expect(components['/_answer1'].stateValues.currentResponses).eqls(['snow', 'snow']);
-          expect(components['/_answer1'].stateValues.currentResponse1).eqls('snow')
-          expect(components['/_answer1'].stateValues.currentResponse2).eqls('snow')
-          expect(components['/_answer1'].stateValues.submittedResponses).eqls(['snow', 'rain'])
-          expect(components['/_answer1'].stateValues.submittedResponse1).eqls('snow')
-          expect(components['/_answer1'].stateValues.submittedResponse2).eqls('rain')
+          expect((await components['/_answer1'].stateValues.currentResponses)).eqls(['snow', 'snow']);
+          expect((await components['/_answer1'].stateValues.currentResponse1)).eqls('snow')
+          expect(await components['/_answer1'].stateValues.currentResponse2).eqls('snow')
+          expect(await components['/_answer1'].stateValues.submittedResponses).eqls(['snow', 'rain'])
+          expect(await components['/_answer1'].stateValues.submittedResponse1).eqls('snow')
+          expect(await components['/_answer1'].stateValues.submittedResponse2).eqls('rain')
           expect(components['/_textinput1'].stateValues.value).eq('snow');
           // expect(components['/_textinput1'].stateValues.submittedValue).eq('snow');
           expect(components['/_textinput2'].stateValues.value).eq('snow');
           // expect(components['/_textinput2'].stateValues.submittedValue).eq('rain');
-          expect(cr.stateValues.value).eq('snow')
-          expect(cr1.stateValues.value).eq('snow')
-          expect(cr2.stateValues.value).eq('snow')
-          expect(crsa.stateValues.value).eq('snow')
-          expect(crsb.stateValues.value).eq('snow')
-          expect(sr.stateValues.value).eq('snow')
-          expect(sr1.stateValues.value).eq('snow')
-          expect(sr2.stateValues.value).eq('rain')
+          expect(await cr.stateValues.value).eq('snow')
+          expect(await cr1.stateValues.value).eq('snow')
+          expect(await cr2.stateValues.value).eq('snow')
+          expect(await crsa.stateValues.value).eq('snow')
+          expect(await crsb.stateValues.value).eq('snow')
+          expect(await sr.stateValues.value).eq('snow')
+          expect(await sr1.stateValues.value).eq('snow')
+          expect(await sr2.stateValues.value).eq('rain')
           expect(srsa.stateValues.value).eq('snow')
           expect(srsb.stateValues.value).eq('rain')
           expect(ca.stateValues.value).eq(1)
@@ -5329,26 +5373,26 @@ describe('Answer Tag Tests', function () {
         cy.get(caAnchor).should('have.text', '0.5')
 
         cy.log('Test internal values')
-        cy.window().then((win) => {
+        cy.window().then(async (win) => {
           expect(components['/_answer1'].stateValues.creditAchieved).eq(0.5);
-          expect(components['/_answer1'].stateValues.currentResponses).eqls(['snow', 'snow']);
-          expect(components['/_answer1'].stateValues.currentResponse1).eqls('snow')
-          expect(components['/_answer1'].stateValues.currentResponse2).eqls('snow')
-          expect(components['/_answer1'].stateValues.submittedResponses).eqls(['snow', 'snow'])
-          expect(components['/_answer1'].stateValues.submittedResponse1).eqls('snow')
-          expect(components['/_answer1'].stateValues.submittedResponse2).eqls('snow')
+          expect((await components['/_answer1'].stateValues.currentResponses)).eqls(['snow', 'snow']);
+          expect((await components['/_answer1'].stateValues.currentResponse1)).eqls('snow')
+          expect(await components['/_answer1'].stateValues.currentResponse2).eqls('snow')
+          expect(await components['/_answer1'].stateValues.submittedResponses).eqls(['snow', 'snow'])
+          expect(await components['/_answer1'].stateValues.submittedResponse1).eqls('snow')
+          expect(await components['/_answer1'].stateValues.submittedResponse2).eqls('snow')
           expect(components['/_textinput1'].stateValues.value).eq('snow');
           // expect(components['/_textinput1'].stateValues.submittedValue).eq('snow');
           expect(components['/_textinput2'].stateValues.value).eq('snow');
           // expect(components['/_textinput2'].stateValues.submittedValue).eq('snow');
-          expect(cr.stateValues.value).eq('snow')
-          expect(cr1.stateValues.value).eq('snow')
-          expect(cr2.stateValues.value).eq('snow')
-          expect(crsa.stateValues.value).eq('snow')
-          expect(crsb.stateValues.value).eq('snow')
-          expect(sr.stateValues.value).eq('snow')
-          expect(sr1.stateValues.value).eq('snow')
-          expect(sr2.stateValues.value).eq('snow')
+          expect(await cr.stateValues.value).eq('snow')
+          expect(await cr1.stateValues.value).eq('snow')
+          expect(await cr2.stateValues.value).eq('snow')
+          expect(await crsa.stateValues.value).eq('snow')
+          expect(await crsb.stateValues.value).eq('snow')
+          expect(await sr.stateValues.value).eq('snow')
+          expect(await sr1.stateValues.value).eq('snow')
+          expect(await sr2.stateValues.value).eq('snow')
           expect(srsa.stateValues.value).eq('snow')
           expect(srsb.stateValues.value).eq('snow')
           expect(ca.stateValues.value).eq(0.5)
@@ -5375,27 +5419,29 @@ describe('Answer Tag Tests', function () {
         cy.get(srsbAnchor).should('have.text', 'snow')
         cy.get(caAnchor).should('have.text', '0.5')
 
+        cy.wait(100)
+
         cy.log('Test internal values')
-        cy.window().then((win) => {
+        cy.window().then(async (win) => {
           expect(components['/_answer1'].stateValues.creditAchieved).eq(0.5);
-          expect(components['/_answer1'].stateValues.currentResponses).eqls(['fog', 'hail']);
-          expect(components['/_answer1'].stateValues.currentResponse1).eqls('fog')
-          expect(components['/_answer1'].stateValues.currentResponse2).eqls('hail')
-          expect(components['/_answer1'].stateValues.submittedResponses).eqls(['snow', 'snow'])
-          expect(components['/_answer1'].stateValues.submittedResponse1).eqls('snow')
-          expect(components['/_answer1'].stateValues.submittedResponse2).eqls('snow')
+          expect((await components['/_answer1'].stateValues.currentResponses)).eqls(['fog', 'hail']);
+          expect((await components['/_answer1'].stateValues.currentResponse1)).eqls('fog')
+          expect(await components['/_answer1'].stateValues.currentResponse2).eqls('hail')
+          expect(await components['/_answer1'].stateValues.submittedResponses).eqls(['snow', 'snow'])
+          expect(await components['/_answer1'].stateValues.submittedResponse1).eqls('snow')
+          expect(await components['/_answer1'].stateValues.submittedResponse2).eqls('snow')
           expect(components['/_textinput1'].stateValues.value).eq('fog');
           // expect(components['/_textinput1'].stateValues.submittedValue).eq('snow');
           expect(components['/_textinput2'].stateValues.value).eq('hail');
           // expect(components['/_textinput2'].stateValues.submittedValue).eq('snow');
-          expect(cr.stateValues.value).eq('fog')
-          expect(cr1.stateValues.value).eq('fog')
-          expect(cr2.stateValues.value).eq('hail')
-          expect(crsa.stateValues.value).eq('fog')
-          expect(crsb.stateValues.value).eq('hail')
-          expect(sr.stateValues.value).eq('snow')
-          expect(sr1.stateValues.value).eq('snow')
-          expect(sr2.stateValues.value).eq('snow')
+          expect(await cr.stateValues.value).eq('fog')
+          expect(await cr1.stateValues.value).eq('fog')
+          expect(await cr2.stateValues.value).eq('hail')
+          expect(await crsa.stateValues.value).eq('fog')
+          expect(await crsb.stateValues.value).eq('hail')
+          expect(await sr.stateValues.value).eq('snow')
+          expect(await sr1.stateValues.value).eq('snow')
+          expect(await sr2.stateValues.value).eq('snow')
           expect(srsa.stateValues.value).eq('snow')
           expect(srsb.stateValues.value).eq('snow')
           expect(ca.stateValues.value).eq(0.5)
@@ -5422,26 +5468,26 @@ describe('Answer Tag Tests', function () {
         cy.get(caAnchor).should('have.text', '0')
 
         cy.log('Test internal values')
-        cy.window().then((win) => {
+        cy.window().then(async (win) => {
           expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
-          expect(components['/_answer1'].stateValues.currentResponses).eqls(['fog', 'hail']);
-          expect(components['/_answer1'].stateValues.currentResponse1).eqls('fog')
-          expect(components['/_answer1'].stateValues.currentResponse2).eqls('hail')
-          expect(components['/_answer1'].stateValues.submittedResponses).eqls(['fog', 'hail'])
-          expect(components['/_answer1'].stateValues.submittedResponse1).eqls('fog')
-          expect(components['/_answer1'].stateValues.submittedResponse2).eqls('hail')
+          expect((await components['/_answer1'].stateValues.currentResponses)).eqls(['fog', 'hail']);
+          expect((await components['/_answer1'].stateValues.currentResponse1)).eqls('fog')
+          expect(await components['/_answer1'].stateValues.currentResponse2).eqls('hail')
+          expect(await components['/_answer1'].stateValues.submittedResponses).eqls(['fog', 'hail'])
+          expect(await components['/_answer1'].stateValues.submittedResponse1).eqls('fog')
+          expect(await components['/_answer1'].stateValues.submittedResponse2).eqls('hail')
           expect(components['/_textinput1'].stateValues.value).eq('fog');
           // expect(components['/_textinput1'].stateValues.submittedValue).eq('fog');
           expect(components['/_textinput2'].stateValues.value).eq('hail');
           // expect(components['/_textinput2'].stateValues.submittedValue).eq('hail');
-          expect(cr.stateValues.value).eq('fog')
-          expect(cr1.stateValues.value).eq('fog')
-          expect(cr2.stateValues.value).eq('hail')
-          expect(crsa.stateValues.value).eq('fog')
-          expect(crsb.stateValues.value).eq('hail')
-          expect(sr.stateValues.value).eq('fog')
-          expect(sr1.stateValues.value).eq('fog')
-          expect(sr2.stateValues.value).eq('hail')
+          expect(await cr.stateValues.value).eq('fog')
+          expect(await cr1.stateValues.value).eq('fog')
+          expect(await cr2.stateValues.value).eq('hail')
+          expect(await crsa.stateValues.value).eq('fog')
+          expect(await crsb.stateValues.value).eq('hail')
+          expect(await sr.stateValues.value).eq('fog')
+          expect(await sr1.stateValues.value).eq('fog')
+          expect(await sr2.stateValues.value).eq('hail')
           expect(srsa.stateValues.value).eq('fog')
           expect(srsb.stateValues.value).eq('hail')
           expect(ca.stateValues.value).eq(0)
@@ -5452,15 +5498,15 @@ describe('Answer Tag Tests', function () {
   });
 
   it('answer inequalities', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
   Enter enter number larger than 5 or less than 2: 
   <answer>
-  <mathinput/>
-  <award><when><copy prop="immediatevalue" tname="_mathinput1" isResponse /> > 5</when></award>
-  <award><when><copy prop="immediatevalue" tname="_mathinput1" /> < <math>2</math></when></award>
+  <mathinput name="m" />
+  <award targetsAreResponses="m"><when>$m > 5</when></award>
+  <award><when>$m < <math>2</math></when></award>
   </answer>
   `}, "*");
 
@@ -5468,54 +5514,53 @@ describe('Answer Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
 
-    // cy.get('#\\/_mathinput1_input').should('have.value', '');
-
     cy.log('Test initial values')
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
+      expect(await components['/_answer1'].stateValues.creditAchieved).eq(0);
     });
 
     cy.log("Submit a correct answer")
-    cy.get('#\\/_mathinput1 textarea').type(`6`, { force: true });
-    cy.get('#\\/_mathinput1_submit').click();
-    cy.window().then((win) => {
+    cy.get('#\\/m textarea').type(`6`, { force: true });
+    cy.get('#\\/m_submit').click();
+
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].stateValues.creditAchieved).eq(1);
+      expect(await components['/_answer1'].stateValues.creditAchieved).eq(1);
     });
 
 
     cy.log("Submit an incorrect answer")
-    cy.get('#\\/_mathinput1 textarea').type(`{rightarrow}{backspace}5`, { force: true });
-    cy.get('#\\/_mathinput1_submit').click();
-    cy.window().then((win) => {
+    cy.get('#\\/m textarea').type(`{rightarrow}{backspace}5`, { force: true });
+    cy.get('#\\/m_submit').click();
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
+      expect(await components['/_answer1'].stateValues.creditAchieved).eq(0);
     });
 
 
     cy.log("Submit a different correct answer")
-    cy.get('#\\/_mathinput1 textarea').type(`{rightarrow}{backspace}-3`, { force: true });
-    cy.get('#\\/_mathinput1_submit').click();
-    cy.window().then((win) => {
+    cy.get('#\\/m textarea').type(`{rightarrow}{backspace}-3`, { force: true });
+    cy.get('#\\/m_submit').click();
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/_answer1'].stateValues.creditAchieved).eq(1);
     });
 
 
     cy.log("Submit a correct answer that must be simplified")
-    cy.get('#\\/_mathinput1 textarea').type(`{end}{backspace}{backspace}5xy-5xy+9`, { force: true });
-    cy.get('#\\/_mathinput1_submit').click();
-    cy.window().then((win) => {
+    cy.get('#\\/m textarea').type(`{end}{backspace}{backspace}5xy-5xy+9`, { force: true });
+    cy.get('#\\/m_submit').click();
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/_answer1'].stateValues.creditAchieved).eq(1);
     });
 
 
     cy.log("Submit a non-numerical answer")
-    cy.get('#\\/_mathinput1 textarea').type(`{end}{leftarrow}{leftarrow}z`, { force: true });
-    cy.get('#\\/_mathinput1_submit').click();
-    cy.window().then((win) => {
+    cy.get('#\\/m textarea').type(`{end}{leftarrow}{leftarrow}z`, { force: true });
+    cy.get('#\\/m_submit').click();
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
     });
@@ -5525,7 +5570,7 @@ describe('Answer Tag Tests', function () {
 
   it('answer extended inequalities', () => {
     cy.log("Number between -1 and 1, inclusive");
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -5544,14 +5589,14 @@ describe('Answer Tag Tests', function () {
     for (let answerString in answers1) {
       cy.get('#\\/_mathinput1 textarea').type("{end}{backspace}{backspace}{backspace}" + answerString, { delay: 5, force: true });
       cy.get('#\\/_mathinput1_submit').click();
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let components = Object.assign({}, win.state.components);
         expect(components['/_answer1'].stateValues.creditAchieved).eq(answers1[answerString]);
       });
     }
 
     cy.log("Number between -1 and 1, exclusive");
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <answer><mathinput/>
@@ -5566,14 +5611,14 @@ describe('Answer Tag Tests', function () {
     for (let answerString in answers2) {
       cy.get('#\\/_mathinput1 textarea').type("{end}{backspace}{backspace}{backspace}" + answerString, { delay: 5, force: true });
       cy.get('#\\/_mathinput1_submit').click();
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let components = Object.assign({}, win.state.components);
         expect(components['/_answer1'].stateValues.creditAchieved).eq(answers2[answerString]);
       });
     }
 
     cy.log("Number between -1 and 1, as greater than");
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <answer><mathinput/>
@@ -5589,7 +5634,7 @@ describe('Answer Tag Tests', function () {
     for (let answerString in answers3) {
       cy.get('#\\/_mathinput1 textarea').type("{end}{backspace}{backspace}{backspace}" + answerString, { delay: 5, force: true });
       cy.get('#\\/_mathinput1_submit').click();
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let components = Object.assign({}, win.state.components);
         expect(components['/_answer1'].stateValues.creditAchieved).eq(answers3[answerString]);
       });
@@ -5598,7 +5643,7 @@ describe('Answer Tag Tests', function () {
 
   it('compound logic', () => {
     cy.log("Number between -1 and 1, inclusive");
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -5630,7 +5675,7 @@ describe('Answer Tag Tests', function () {
       cy.get('#\\/_mathinput2 textarea').type("{end}{backspace}{backspace}{backspace}" + answer[2], { delay: 5, force: true }).blur();
       cy.get('#\\/_mathinput3 textarea').type("{end}{backspace}{backspace}{backspace}" + answer[3], { delay: 5, force: true }).blur();
       cy.get('#\\/_answer1_submit').click();
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let components = Object.assign({}, win.state.components);
         expect(components['/_answer1'].stateValues.creditAchieved).eq(answer[0]);
       });
@@ -5639,7 +5684,7 @@ describe('Answer Tag Tests', function () {
   });
 
   it('answer inside map', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -5657,7 +5702,7 @@ describe('Answer Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
 
       let answer1 = components['/_map1'].replacements[0].replacements[1].activeChildren[3];
@@ -5724,20 +5769,20 @@ describe('Answer Tag Tests', function () {
       });
 
       cy.log('Test internal values')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         expect(answer1.stateValues.creditAchieved).eq(0);
-        expect(answer1.stateValues.currentResponses.map(x => x.tree)).eqls(['\uFF3F']);
-        expect(answer1.stateValues.submittedResponses).eqls([]);
+        expect((await answer1.stateValues.currentResponses).map(x => x.tree)).eqls(['\uFF3F']);
+        expect(await answer1.stateValues.submittedResponses).eqls([]);
         expect(mathinput1.stateValues.value.tree).eq('\uFF3F');
         // expect(mathinput1.stateValues.submittedValue.tree).eq('\uFF3F');
         expect(answer2.stateValues.creditAchieved).eq(0);
-        expect(answer2.stateValues.currentResponses.map(x => x.tree)).eqls(['\uFF3F']);
-        expect(answer2.stateValues.submittedResponses).eqls([]);
+        expect((await answer2.stateValues.currentResponses).map(x => x.tree)).eqls(['\uFF3F']);
+        expect(await answer2.stateValues.submittedResponses).eqls([]);
         expect(mathinput2.stateValues.value.tree).eq('\uFF3F');
         // expect(mathinput2.stateValues.submittedValue.tree).eq('\uFF3F');
         expect(answer3.stateValues.creditAchieved).eq(0);
-        expect(answer3.stateValues.currentResponses.map(x => x.tree)).eqls(['\uFF3F']);
-        expect(answer3.stateValues.submittedResponses).eqls([]);
+        expect((await answer3.stateValues.currentResponses).map(x => x.tree)).eqls(['\uFF3F']);
+        expect(await answer3.stateValues.submittedResponses).eqls([]);
         expect(mathinput3.stateValues.value.tree).eq('\uFF3F');
         // expect(mathinput3.stateValues.submittedValue.tree).eq('\uFF3F');
       });
@@ -5755,12 +5800,15 @@ describe('Answer Tag Tests', function () {
       cy.get(ca1Anchor).should('have.text', '0');
       cy.get(ca2Anchor).should('have.text', '0');
       cy.get(ca3Anchor).should('have.text', '0');
+      cy.get(cr1Anchor + ' .mjx-mrow').should('have.text', 'x')
       cy.get(cr1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x')
       });
+      cy.get(cr2Anchor + ' .mjx-mrow').eq(0).should('have.text', 'x2')
       cy.get(cr2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x2')
       });
+      cy.get(cr3Anchor + ' .mjx-mrow').should('contain.text', 'x3')
       cy.get(cr3Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x3')
       });
@@ -5775,20 +5823,20 @@ describe('Answer Tag Tests', function () {
       });
 
       cy.log('Test internal values')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         expect(answer1.stateValues.creditAchieved).eq(0);
-        expect(answer1.stateValues.currentResponses.map(x => x.tree)).eqls(['x']);
-        expect(answer1.stateValues.submittedResponses).eqls([]);
+        expect((await answer1.stateValues.currentResponses).map(x => x.tree)).eqls(['x']);
+        expect(await answer1.stateValues.submittedResponses).eqls([]);
         expect(mathinput1.stateValues.value.tree).eq('x');
         // expect(mathinput1.stateValues.submittedValue.tree).eq('\uFF3F');
         expect(answer2.stateValues.creditAchieved).eq(0);
-        expect(answer2.stateValues.currentResponses.map(x => x.tree)).eqls([['^', 'x', 2]]);
-        expect(answer2.stateValues.submittedResponses).eqls([]);
+        expect((await answer2.stateValues.currentResponses).map(x => x.tree)).eqls([['^', 'x', 2]]);
+        expect(await answer2.stateValues.submittedResponses).eqls([]);
         expect(mathinput2.stateValues.value.tree).eqls(['^', 'x', 2]);
         // expect(mathinput2.stateValues.submittedValue.tree).eq('\uFF3F');
         expect(answer3.stateValues.creditAchieved).eq(0);
-        expect(answer3.stateValues.currentResponses.map(x => x.tree)).eqls([['^', 'x', 3]]);
-        expect(answer3.stateValues.submittedResponses).eqls([]);
+        expect((await answer3.stateValues.currentResponses).map(x => x.tree)).eqls([['^', 'x', 3]]);
+        expect(await answer3.stateValues.submittedResponses).eqls([]);
         expect(mathinput3.stateValues.value.tree).eqls(['^', 'x', 3]);
         // expect(mathinput3.stateValues.submittedValue.tree).eq('\uFF3F');
       });
@@ -5800,7 +5848,7 @@ describe('Answer Tag Tests', function () {
 
 
       // wrap to change value of sr anchors
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         sr1 = components['/_map1'].replacements[0].replacements[7].activeChildren[1];
         sr1Anchor = cesc('#' + sr1.componentName);
         sr2 = components['/_map1'].replacements[1].replacements[7].activeChildren[1];
@@ -5837,20 +5885,20 @@ describe('Answer Tag Tests', function () {
 
 
         cy.log('Test internal values')
-        cy.window().then((win) => {
+        cy.window().then(async (win) => {
           expect(answer1.stateValues.creditAchieved).eq(1);
-          expect(answer1.stateValues.currentResponses.map(x => x.tree)).eqls(['x']);
-          expect(answer1.stateValues.submittedResponses.map(x => x.tree)).eqls(['x']);
+          expect((await answer1.stateValues.currentResponses).map(x => x.tree)).eqls(['x']);
+          expect((await answer1.stateValues.submittedResponses).map(x => x.tree)).eqls(['x']);
           expect(mathinput1.stateValues.value.tree).eq('x');
           // expect(mathinput1.stateValues.submittedValue.tree).eq('x');
           expect(answer2.stateValues.creditAchieved).eq(1);
-          expect(answer2.stateValues.currentResponses.map(x => x.tree)).eqls([['^', 'x', 2]]);
-          expect(answer2.stateValues.submittedResponses.map(x => x.tree)).eqls([['^', 'x', 2]]);
+          expect((await answer2.stateValues.currentResponses).map(x => x.tree)).eqls([['^', 'x', 2]]);
+          expect((await answer2.stateValues.submittedResponses).map(x => x.tree)).eqls([['^', 'x', 2]]);
           expect(mathinput2.stateValues.value.tree).eqls(['^', 'x', 2]);
           // expect(mathinput2.stateValues.submittedValue.tree).eqls(['^', 'x', 2]);
           expect(answer3.stateValues.creditAchieved).eq(1);
-          expect(answer3.stateValues.currentResponses.map(x => x.tree)).eqls([['^', 'x', 3]]);
-          expect(answer3.stateValues.submittedResponses.map(x => x.tree)).eqls([['^', 'x', 3]]);
+          expect((await answer3.stateValues.currentResponses).map(x => x.tree)).eqls([['^', 'x', 3]]);
+          expect((await answer3.stateValues.submittedResponses).map(x => x.tree)).eqls([['^', 'x', 3]]);
           expect(mathinput3.stateValues.value.tree).eqls(['^', 'x', 3]);
           // expect(mathinput3.stateValues.submittedValue.tree).eqls(['^', 'x', 3]);
         });
@@ -5875,6 +5923,7 @@ describe('Answer Tag Tests', function () {
         cy.get(cr2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('v')
         });
+        cy.get(cr3Anchor + ' .mjx-mrow').should('have.text','w')
         cy.get(cr3Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('w')
         });
@@ -5890,20 +5939,20 @@ describe('Answer Tag Tests', function () {
 
 
         cy.log('Test internal values')
-        cy.window().then((win) => {
+        cy.window().then(async (win) => {
           expect(answer1.stateValues.creditAchieved).eq(1);
-          expect(answer1.stateValues.currentResponses.map(x => x.tree)).eqls(['u']);
-          expect(answer1.stateValues.submittedResponses.map(x => x.tree)).eqls(['x']);
+          expect((await answer1.stateValues.currentResponses).map(x => x.tree)).eqls(['u']);
+          expect((await answer1.stateValues.submittedResponses).map(x => x.tree)).eqls(['x']);
           expect(mathinput1.stateValues.value.tree).eq('u');
           // expect(mathinput1.stateValues.submittedValue.tree).eq('x');
           expect(answer2.stateValues.creditAchieved).eq(1);
-          expect(answer2.stateValues.currentResponses.map(x => x.tree)).eqls(['v']);
-          expect(answer2.stateValues.submittedResponses.map(x => x.tree)).eqls([['^', 'x', 2]]);
+          expect((await answer2.stateValues.currentResponses).map(x => x.tree)).eqls(['v']);
+          expect((await answer2.stateValues.submittedResponses).map(x => x.tree)).eqls([['^', 'x', 2]]);
           expect(mathinput2.stateValues.value.tree).eq('v');
           // expect(mathinput2.stateValues.submittedValue.tree).eqls(['^', 'x', 2]);
           expect(answer3.stateValues.creditAchieved).eq(1);
-          expect(answer3.stateValues.currentResponses.map(x => x.tree)).eqls(['w']);
-          expect(answer3.stateValues.submittedResponses.map(x => x.tree)).eqls([['^', 'x', 3]]);
+          expect((await answer3.stateValues.currentResponses).map(x => x.tree)).eqls(['w']);
+          expect((await answer3.stateValues.submittedResponses).map(x => x.tree)).eqls([['^', 'x', 3]]);
           expect(mathinput3.stateValues.value.tree).eq('w');
           // expect(mathinput3.stateValues.submittedValue.tree).eqls(['^', 'x', 3]);
         });
@@ -5943,20 +5992,20 @@ describe('Answer Tag Tests', function () {
         });
 
         cy.log('Test internal values')
-        cy.window().then((win) => {
+        cy.window().then(async (win) => {
           expect(answer1.stateValues.creditAchieved).eq(0);
-          expect(answer1.stateValues.currentResponses.map(x => x.tree)).eqls(['u']);
-          expect(answer1.stateValues.submittedResponses.map(x => x.tree)).eqls(['u']);
+          expect((await answer1.stateValues.currentResponses).map(x => x.tree)).eqls(['u']);
+          expect((await answer1.stateValues.submittedResponses).map(x => x.tree)).eqls(['u']);
           expect(mathinput1.stateValues.value.tree).eq('u');
           // expect(mathinput1.stateValues.submittedValue.tree).eq('u');
           expect(answer2.stateValues.creditAchieved).eq(0);
-          expect(answer2.stateValues.currentResponses.map(x => x.tree)).eqls(['v']);
-          expect(answer2.stateValues.submittedResponses.map(x => x.tree)).eqls(['v']);
+          expect((await answer2.stateValues.currentResponses).map(x => x.tree)).eqls(['v']);
+          expect((await answer2.stateValues.submittedResponses).map(x => x.tree)).eqls(['v']);
           expect(mathinput2.stateValues.value.tree).eq('v');
           // expect(mathinput2.stateValues.submittedValue.tree).eq('v');
           expect(answer3.stateValues.creditAchieved).eq(0);
-          expect(answer3.stateValues.currentResponses.map(x => x.tree)).eqls(['w']);
-          expect(answer3.stateValues.submittedResponses.map(x => x.tree)).eqls(['w']);
+          expect((await answer3.stateValues.currentResponses).map(x => x.tree)).eqls(['w']);
+          expect((await answer3.stateValues.submittedResponses).map(x => x.tree)).eqls(['w']);
           expect(mathinput3.stateValues.value.tree).eq('w');
           // expect(mathinput3.stateValues.submittedValue.tree).eq('w');
         });
@@ -5966,7 +6015,7 @@ describe('Answer Tag Tests', function () {
   });
 
   it('answer inside map with namespaces and assignNames', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -5984,7 +6033,7 @@ describe('Answer Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
 
       let answer1 = components['/a/_answer1'];
@@ -6051,20 +6100,20 @@ describe('Answer Tag Tests', function () {
       });
 
       cy.log('Test internal values')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         expect(answer1.stateValues.creditAchieved).eq(0);
-        expect(answer1.stateValues.currentResponses.map(x => x.tree)).eqls(['\uFF3F']);
-        expect(answer1.stateValues.submittedResponses).eqls([]);
+        expect((await answer1.stateValues.currentResponses).map(x => x.tree)).eqls(['\uFF3F']);
+        expect(await answer1.stateValues.submittedResponses).eqls([]);
         expect(mathinput1.stateValues.value.tree).eq('\uFF3F');
         // expect(mathinput1.stateValues.submittedValue.tree).eq('\uFF3F');
         expect(answer2.stateValues.creditAchieved).eq(0);
-        expect(answer2.stateValues.currentResponses.map(x => x.tree)).eqls(['\uFF3F']);
-        expect(answer2.stateValues.submittedResponses).eqls([]);
+        expect((await answer2.stateValues.currentResponses).map(x => x.tree)).eqls(['\uFF3F']);
+        expect(await answer2.stateValues.submittedResponses).eqls([]);
         expect(mathinput2.stateValues.value.tree).eq('\uFF3F');
         // expect(mathinput2.stateValues.submittedValue.tree).eq('\uFF3F');
         expect(answer3.stateValues.creditAchieved).eq(0);
-        expect(answer3.stateValues.currentResponses.map(x => x.tree)).eqls(['\uFF3F']);
-        expect(answer3.stateValues.submittedResponses).eqls([]);
+        expect((await answer3.stateValues.currentResponses).map(x => x.tree)).eqls(['\uFF3F']);
+        expect(await answer3.stateValues.submittedResponses).eqls([]);
         expect(mathinput3.stateValues.value.tree).eq('\uFF3F');
         // expect(mathinput3.stateValues.submittedValue.tree).eq('\uFF3F');
       });
@@ -6088,6 +6137,7 @@ describe('Answer Tag Tests', function () {
       cy.get(cr2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x2')
       });
+      cy.get(cr3Anchor + ' .mjx-mrow').should('contain.text', 'x3')
       cy.get(cr3Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x3')
       });
@@ -6102,20 +6152,20 @@ describe('Answer Tag Tests', function () {
       });
 
       cy.log('Test internal values')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         expect(answer1.stateValues.creditAchieved).eq(0);
-        expect(answer1.stateValues.currentResponses.map(x => x.tree)).eqls(['x']);
-        expect(answer1.stateValues.submittedResponses).eqls([]);
+        expect((await answer1.stateValues.currentResponses).map(x => x.tree)).eqls(['x']);
+        expect(await answer1.stateValues.submittedResponses).eqls([]);
         expect(mathinput1.stateValues.value.tree).eq('x');
         // expect(mathinput1.stateValues.submittedValue.tree).eq('\uFF3F');
         expect(answer2.stateValues.creditAchieved).eq(0);
-        expect(answer2.stateValues.currentResponses.map(x => x.tree)).eqls([['^', 'x', 2]]);
-        expect(answer2.stateValues.submittedResponses).eqls([]);
+        expect((await answer2.stateValues.currentResponses).map(x => x.tree)).eqls([['^', 'x', 2]]);
+        expect(await answer2.stateValues.submittedResponses).eqls([]);
         expect(mathinput2.stateValues.value.tree).eqls(['^', 'x', 2]);
         // expect(mathinput2.stateValues.submittedValue.tree).eq('\uFF3F');
         expect(answer3.stateValues.creditAchieved).eq(0);
-        expect(answer3.stateValues.currentResponses.map(x => x.tree)).eqls([['^', 'x', 3]]);
-        expect(answer3.stateValues.submittedResponses).eqls([]);
+        expect((await answer3.stateValues.currentResponses).map(x => x.tree)).eqls([['^', 'x', 3]]);
+        expect(await answer3.stateValues.submittedResponses).eqls([]);
         expect(mathinput3.stateValues.value.tree).eqls(['^', 'x', 3]);
         // expect(mathinput3.stateValues.submittedValue.tree).eq('\uFF3F');
       });
@@ -6127,7 +6177,7 @@ describe('Answer Tag Tests', function () {
 
 
       // wrap to change value of sr anchors
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         sr1 = components['/a/sr'];
         sr1Anchor = cesc('#' + sr1.componentName);
         sr2 = components['/b/sr'];
@@ -6164,20 +6214,20 @@ describe('Answer Tag Tests', function () {
 
 
         cy.log('Test internal values')
-        cy.window().then((win) => {
+        cy.window().then(async (win) => {
           expect(answer1.stateValues.creditAchieved).eq(1);
-          expect(answer1.stateValues.currentResponses.map(x => x.tree)).eqls(['x']);
-          expect(answer1.stateValues.submittedResponses.map(x => x.tree)).eqls(['x']);
+          expect((await answer1.stateValues.currentResponses).map(x => x.tree)).eqls(['x']);
+          expect((await answer1.stateValues.submittedResponses).map(x => x.tree)).eqls(['x']);
           expect(mathinput1.stateValues.value.tree).eq('x');
           // expect(mathinput1.stateValues.submittedValue.tree).eq('x');
           expect(answer2.stateValues.creditAchieved).eq(1);
-          expect(answer2.stateValues.currentResponses.map(x => x.tree)).eqls([['^', 'x', 2]]);
-          expect(answer2.stateValues.submittedResponses.map(x => x.tree)).eqls([['^', 'x', 2]]);
+          expect((await answer2.stateValues.currentResponses).map(x => x.tree)).eqls([['^', 'x', 2]]);
+          expect((await answer2.stateValues.submittedResponses).map(x => x.tree)).eqls([['^', 'x', 2]]);
           expect(mathinput2.stateValues.value.tree).eqls(['^', 'x', 2]);
           // expect(mathinput2.stateValues.submittedValue.tree).eqls(['^', 'x', 2]);
           expect(answer3.stateValues.creditAchieved).eq(1);
-          expect(answer3.stateValues.currentResponses.map(x => x.tree)).eqls([['^', 'x', 3]]);
-          expect(answer3.stateValues.submittedResponses.map(x => x.tree)).eqls([['^', 'x', 3]]);
+          expect((await answer3.stateValues.currentResponses).map(x => x.tree)).eqls([['^', 'x', 3]]);
+          expect((await answer3.stateValues.submittedResponses).map(x => x.tree)).eqls([['^', 'x', 3]]);
           expect(mathinput3.stateValues.value.tree).eqls(['^', 'x', 3]);
           // expect(mathinput3.stateValues.submittedValue.tree).eqls(['^', 'x', 3]);
         });
@@ -6202,6 +6252,7 @@ describe('Answer Tag Tests', function () {
         cy.get(cr2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('v')
         });
+        cy.get(cr3Anchor + ' .mjx-mrow').should('contain.text', 'w')
         cy.get(cr3Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('w')
         });
@@ -6217,20 +6268,20 @@ describe('Answer Tag Tests', function () {
 
 
         cy.log('Test internal values')
-        cy.window().then((win) => {
+        cy.window().then(async (win) => {
           expect(answer1.stateValues.creditAchieved).eq(1);
-          expect(answer1.stateValues.currentResponses.map(x => x.tree)).eqls(['u']);
-          expect(answer1.stateValues.submittedResponses.map(x => x.tree)).eqls(['x']);
+          expect((await answer1.stateValues.currentResponses).map(x => x.tree)).eqls(['u']);
+          expect((await answer1.stateValues.submittedResponses).map(x => x.tree)).eqls(['x']);
           expect(mathinput1.stateValues.value.tree).eq('u');
           // expect(mathinput1.stateValues.submittedValue.tree).eq('x');
           expect(answer2.stateValues.creditAchieved).eq(1);
-          expect(answer2.stateValues.currentResponses.map(x => x.tree)).eqls(['v']);
-          expect(answer2.stateValues.submittedResponses.map(x => x.tree)).eqls([['^', 'x', 2]]);
+          expect((await answer2.stateValues.currentResponses).map(x => x.tree)).eqls(['v']);
+          expect((await answer2.stateValues.submittedResponses).map(x => x.tree)).eqls([['^', 'x', 2]]);
           expect(mathinput2.stateValues.value.tree).eq('v');
           // expect(mathinput2.stateValues.submittedValue.tree).eqls(['^', 'x', 2]);
           expect(answer3.stateValues.creditAchieved).eq(1);
-          expect(answer3.stateValues.currentResponses.map(x => x.tree)).eqls(['w']);
-          expect(answer3.stateValues.submittedResponses.map(x => x.tree)).eqls([['^', 'x', 3]]);
+          expect((await answer3.stateValues.currentResponses).map(x => x.tree)).eqls(['w']);
+          expect((await answer3.stateValues.submittedResponses).map(x => x.tree)).eqls([['^', 'x', 3]]);
           expect(mathinput3.stateValues.value.tree).eq('w');
           // expect(mathinput3.stateValues.submittedValue.tree).eqls(['^', 'x', 3]);
         });
@@ -6270,20 +6321,20 @@ describe('Answer Tag Tests', function () {
         });
 
         cy.log('Test internal values')
-        cy.window().then((win) => {
+        cy.window().then(async (win) => {
           expect(answer1.stateValues.creditAchieved).eq(0);
-          expect(answer1.stateValues.currentResponses.map(x => x.tree)).eqls(['u']);
-          expect(answer1.stateValues.submittedResponses.map(x => x.tree)).eqls(['u']);
+          expect((await answer1.stateValues.currentResponses).map(x => x.tree)).eqls(['u']);
+          expect((await answer1.stateValues.submittedResponses).map(x => x.tree)).eqls(['u']);
           expect(mathinput1.stateValues.value.tree).eq('u');
           // expect(mathinput1.stateValues.submittedValue.tree).eq('u');
           expect(answer2.stateValues.creditAchieved).eq(0);
-          expect(answer2.stateValues.currentResponses.map(x => x.tree)).eqls(['v']);
-          expect(answer2.stateValues.submittedResponses.map(x => x.tree)).eqls(['v']);
+          expect((await answer2.stateValues.currentResponses).map(x => x.tree)).eqls(['v']);
+          expect((await answer2.stateValues.submittedResponses).map(x => x.tree)).eqls(['v']);
           expect(mathinput2.stateValues.value.tree).eq('v');
           // expect(mathinput2.stateValues.submittedValue.tree).eq('v');
           expect(answer3.stateValues.creditAchieved).eq(0);
-          expect(answer3.stateValues.currentResponses.map(x => x.tree)).eqls(['w']);
-          expect(answer3.stateValues.submittedResponses.map(x => x.tree)).eqls(['w']);
+          expect((await answer3.stateValues.currentResponses).map(x => x.tree)).eqls(['w']);
+          expect((await answer3.stateValues.submittedResponses).map(x => x.tree)).eqls(['w']);
           expect(mathinput3.stateValues.value.tree).eq('w');
           // expect(mathinput3.stateValues.submittedValue.tree).eq('w');
         });
@@ -6293,7 +6344,7 @@ describe('Answer Tag Tests', function () {
   });
 
   it('integrated submit buttons', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -6307,7 +6358,7 @@ describe('Answer Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let mathinputName = components['/_answer1'].stateValues.inputChildren[0].componentName
       let mathinputAnchor = cesc('#' + mathinputName) + " textarea";
@@ -6559,7 +6610,7 @@ describe('Answer Tag Tests', function () {
   });
 
   it('integrated submit buttons, text', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -6572,7 +6623,7 @@ describe('Answer Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let textinputName = components['/_answer1'].stateValues.inputChildren[0].componentName
       let textinputAnchor = cesc('#' + textinputName + '_input');
@@ -6774,7 +6825,7 @@ describe('Answer Tag Tests', function () {
   });
 
   it('submit buttons with two answer blanks', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -7014,7 +7065,7 @@ describe('Answer Tag Tests', function () {
   });
 
   it('submit buttons with two text answer blanks', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
         <text>a</text>
@@ -7285,7 +7336,7 @@ describe('Answer Tag Tests', function () {
   });
 
   it('submit button with external inputs', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -7435,7 +7486,7 @@ describe('Answer Tag Tests', function () {
   });
 
   it('answer with inline choiceinput', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -7465,7 +7516,7 @@ describe('Answer Tag Tests', function () {
     cy.get("#\\/credit").should('have.text', '0')
 
     let indexByName = {};
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
 
       for (let [ind, val] of components['/_choiceinput1'].stateValues.choiceTexts.entries()) {
@@ -7473,8 +7524,8 @@ describe('Answer Tag Tests', function () {
       }
 
       expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
-      expect(components['/_answer1'].stateValues.currentResponses).eqls([]);
-      expect(components['/_answer1'].stateValues.submittedResponses).eqls([]);
+      expect((await components['/_answer1'].stateValues.currentResponses)).eqls([]);
+      expect(await components['/_answer1'].stateValues.submittedResponses).eqls([]);
       expect(components['/_choiceinput1'].stateValues.selectedValues).eqls([]);
       expect(components['/_choiceinput1'].stateValues.selectedIndices).eqls([]);
       // expect(components['/_choiceinput1'].stateValues.submittedValues).eqls([]);
@@ -7493,11 +7544,11 @@ describe('Answer Tag Tests', function () {
     cy.get("#\\/sr").should('have.text', '')
     cy.get("#\\/credit").should('have.text', '0')
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
-      expect(components['/_answer1'].stateValues.currentResponses).eqls(['dog']);
-      expect(components['/_answer1'].stateValues.submittedResponses).eqls([]);
+      expect((await components['/_answer1'].stateValues.currentResponses)).eqls(['dog']);
+      expect(await components['/_answer1'].stateValues.submittedResponses).eqls([]);
       expect(components['/_choiceinput1'].stateValues.selectedValues).eqls(["dog"]);
       expect(components['/_choiceinput1'].stateValues.selectedIndices).eqls([indexByName["dog"]]);
       // expect(components['/_choiceinput1'].stateValues.submittedValues).eqls([]);
@@ -7515,11 +7566,11 @@ describe('Answer Tag Tests', function () {
     cy.get("#\\/sr").should('have.text', 'dog')
     cy.get("#\\/credit").should('have.text', '1')
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/_answer1'].stateValues.creditAchieved).eq(1);
-      expect(components['/_answer1'].stateValues.currentResponses).eqls(['dog']);
-      expect(components['/_answer1'].stateValues.submittedResponses).eqls(['dog']);
+      expect((await components['/_answer1'].stateValues.currentResponses)).eqls(['dog']);
+      expect(await components['/_answer1'].stateValues.submittedResponses).eqls(['dog']);
       expect(components['/_choiceinput1'].stateValues.selectedValues).eqls(["dog"]);
       expect(components['/_choiceinput1'].stateValues.selectedIndices).eqls([indexByName["dog"]]);
       // expect(components['/_choiceinput1'].stateValues.submittedValues).eqls(["dog"]);
@@ -7537,11 +7588,11 @@ describe('Answer Tag Tests', function () {
     cy.get("#\\/sr").should('have.text', 'dog')
     cy.get("#\\/credit").should('have.text', '1')
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/_answer1'].stateValues.creditAchieved).eq(1);
-      expect(components['/_answer1'].stateValues.currentResponses).eqls(['monkey']);
-      expect(components['/_answer1'].stateValues.submittedResponses).eqls(['dog']);
+      expect((await components['/_answer1'].stateValues.currentResponses)).eqls(['monkey']);
+      expect(await components['/_answer1'].stateValues.submittedResponses).eqls(['dog']);
       expect(components['/_choiceinput1'].stateValues.selectedValues).eqls(["monkey"]);
       expect(components['/_choiceinput1'].stateValues.selectedIndices).eqls([indexByName["monkey"]]);
       // expect(components['/_choiceinput1'].stateValues.submittedValues).eqls(["dog"]);
@@ -7559,11 +7610,11 @@ describe('Answer Tag Tests', function () {
     cy.get("#\\/sr").should('have.text', 'monkey')
     cy.get("#\\/credit").should('have.text', '0')
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
-      expect(components['/_answer1'].stateValues.currentResponses).eqls(['monkey']);
-      expect(components['/_answer1'].stateValues.submittedResponses).eqls(['monkey']);
+      expect((await components['/_answer1'].stateValues.currentResponses)).eqls(['monkey']);
+      expect(await components['/_answer1'].stateValues.submittedResponses).eqls(['monkey']);
       expect(components['/_choiceinput1'].stateValues.selectedValues).eqls(["monkey"]);
       expect(components['/_choiceinput1'].stateValues.selectedIndices).eqls([indexByName["monkey"]]);
       // expect(components['/_choiceinput1'].stateValues.submittedValues).eqls(["monkey"]);
@@ -7581,11 +7632,11 @@ describe('Answer Tag Tests', function () {
     cy.get("#\\/sr").should('have.text', 'monkey')
     cy.get("#\\/credit").should('have.text', '0')
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
-      expect(components['/_answer1'].stateValues.currentResponses).eqls(['cat']);
-      expect(components['/_answer1'].stateValues.submittedResponses).eqls(['monkey']);
+      expect((await components['/_answer1'].stateValues.currentResponses)).eqls(['cat']);
+      expect(await components['/_answer1'].stateValues.submittedResponses).eqls(['monkey']);
       expect(components['/_choiceinput1'].stateValues.selectedValues).eqls(["cat"]);
       expect(components['/_choiceinput1'].stateValues.selectedIndices).eqls([indexByName["cat"]]);
       // expect(components['/_choiceinput1'].stateValues.submittedValues).eqls(["monkey"]);
@@ -7603,11 +7654,11 @@ describe('Answer Tag Tests', function () {
     cy.get("#\\/sr").should('have.text', 'cat')
     cy.get("#\\/credit").should('have.text', '0.5')
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/_answer1'].stateValues.creditAchieved).eq(0.5);
-      expect(components['/_answer1'].stateValues.currentResponses).eqls(['cat']);
-      expect(components['/_answer1'].stateValues.submittedResponses).eqls(['cat']);
+      expect((await components['/_answer1'].stateValues.currentResponses)).eqls(['cat']);
+      expect(await components['/_answer1'].stateValues.submittedResponses).eqls(['cat']);
       expect(components['/_choiceinput1'].stateValues.selectedValues).eqls(["cat"]);
       expect(components['/_choiceinput1'].stateValues.selectedIndices).eqls([indexByName["cat"]]);
       // expect(components['/_choiceinput1'].stateValues.submittedValues).eqls(["cat"]);
@@ -7626,11 +7677,11 @@ describe('Answer Tag Tests', function () {
     cy.get("#\\/sr").should('have.text', 'cat')
     cy.get("#\\/credit").should('have.text', '0.5')
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/_answer1'].stateValues.creditAchieved).eq(0.5);
-      expect(components['/_answer1'].stateValues.currentResponses).eqls(['monkey']);
-      expect(components['/_answer1'].stateValues.submittedResponses).eqls(['cat']);
+      expect((await components['/_answer1'].stateValues.currentResponses)).eqls(['monkey']);
+      expect(await components['/_answer1'].stateValues.submittedResponses).eqls(['cat']);
       expect(components['/_choiceinput1'].stateValues.selectedValues).eqls(["monkey"]);
       expect(components['/_choiceinput1'].stateValues.selectedIndices).eqls([indexByName["monkey"]]);
       // expect(components['/_choiceinput1'].stateValues.submittedValues).eqls(["dog"]);
@@ -7649,11 +7700,11 @@ describe('Answer Tag Tests', function () {
     cy.get("#\\/sr").should('have.text', 'cat')
     cy.get("#\\/credit").should('have.text', '0.5')
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/_answer1'].stateValues.creditAchieved).eq(0.5);
-      expect(components['/_answer1'].stateValues.currentResponses).eqls(['cat']);
-      expect(components['/_answer1'].stateValues.submittedResponses).eqls(['cat']);
+      expect((await components['/_answer1'].stateValues.currentResponses)).eqls(['cat']);
+      expect(await components['/_answer1'].stateValues.submittedResponses).eqls(['cat']);
       expect(components['/_choiceinput1'].stateValues.selectedValues).eqls(["cat"]);
       expect(components['/_choiceinput1'].stateValues.selectedIndices).eqls([indexByName["cat"]]);
       // expect(components['/_choiceinput1'].stateValues.submittedValues).eqls(["cat"]);
@@ -7671,11 +7722,11 @@ describe('Answer Tag Tests', function () {
     cy.get("#\\/sr").should('have.text', 'cat')
     cy.get("#\\/credit").should('have.text', '0.5')
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/_answer1'].stateValues.creditAchieved).eq(0.5);
-      expect(components['/_answer1'].stateValues.currentResponses).eqls(['cat']);
-      expect(components['/_answer1'].stateValues.submittedResponses).eqls(['cat']);
+      expect((await components['/_answer1'].stateValues.currentResponses)).eqls(['cat']);
+      expect(await components['/_answer1'].stateValues.submittedResponses).eqls(['cat']);
       expect(components['/_choiceinput1'].stateValues.selectedValues).eqls(["cat"]);
       expect(components['/_choiceinput1'].stateValues.selectedIndices).eqls([indexByName["cat"]]);
       // expect(components['/_choiceinput1'].stateValues.submittedValues).eqls(["cat"]);
@@ -7685,7 +7736,7 @@ describe('Answer Tag Tests', function () {
   });
 
   it('answer with inline choiceinput, specify component type for submitted', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -7715,7 +7766,7 @@ describe('Answer Tag Tests', function () {
     cy.get("#\\/credit").should('have.text', '0')
 
     let indexByName = {};
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
 
       for (let [ind, val] of components['/_choiceinput1'].stateValues.choiceTexts.entries()) {
@@ -7723,8 +7774,8 @@ describe('Answer Tag Tests', function () {
       }
 
       expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
-      expect(components['/_answer1'].stateValues.currentResponses).eqls([]);
-      expect(components['/_answer1'].stateValues.submittedResponses).eqls([]);
+      expect((await components['/_answer1'].stateValues.currentResponses)).eqls([]);
+      expect(await components['/_answer1'].stateValues.submittedResponses).eqls([]);
       expect(components['/_choiceinput1'].stateValues.selectedValues).eqls([]);
       expect(components['/_choiceinput1'].stateValues.selectedIndices).eqls([]);
       // expect(components['/_choiceinput1'].stateValues.submittedValues).eqls([]);
@@ -7743,11 +7794,11 @@ describe('Answer Tag Tests', function () {
     cy.get("#\\/sr").should('have.text', '')
     cy.get("#\\/credit").should('have.text', '0')
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
-      expect(components['/_answer1'].stateValues.currentResponses).eqls(['dog']);
-      expect(components['/_answer1'].stateValues.submittedResponses).eqls([]);
+      expect((await components['/_answer1'].stateValues.currentResponses)).eqls(['dog']);
+      expect(await components['/_answer1'].stateValues.submittedResponses).eqls([]);
       expect(components['/_choiceinput1'].stateValues.selectedValues).eqls(["dog"]);
       expect(components['/_choiceinput1'].stateValues.selectedIndices).eqls([indexByName["dog"]]);
       // expect(components['/_choiceinput1'].stateValues.submittedValues).eqls([]);
@@ -7765,11 +7816,11 @@ describe('Answer Tag Tests', function () {
     cy.get("#\\/sr").should('have.text', 'dog')
     cy.get("#\\/credit").should('have.text', '1')
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/_answer1'].stateValues.creditAchieved).eq(1);
-      expect(components['/_answer1'].stateValues.currentResponses).eqls(['dog']);
-      expect(components['/_answer1'].stateValues.submittedResponses).eqls(['dog']);
+      expect((await components['/_answer1'].stateValues.currentResponses)).eqls(['dog']);
+      expect(await components['/_answer1'].stateValues.submittedResponses).eqls(['dog']);
       expect(components['/_choiceinput1'].stateValues.selectedValues).eqls(["dog"]);
       expect(components['/_choiceinput1'].stateValues.selectedIndices).eqls([indexByName["dog"]]);
       // expect(components['/_choiceinput1'].stateValues.submittedValues).eqls(["dog"]);
@@ -7787,11 +7838,11 @@ describe('Answer Tag Tests', function () {
     cy.get("#\\/sr").should('have.text', 'dog')
     cy.get("#\\/credit").should('have.text', '1')
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/_answer1'].stateValues.creditAchieved).eq(1);
-      expect(components['/_answer1'].stateValues.currentResponses).eqls(['monkey']);
-      expect(components['/_answer1'].stateValues.submittedResponses).eqls(['dog']);
+      expect((await components['/_answer1'].stateValues.currentResponses)).eqls(['monkey']);
+      expect(await components['/_answer1'].stateValues.submittedResponses).eqls(['dog']);
       expect(components['/_choiceinput1'].stateValues.selectedValues).eqls(["monkey"]);
       expect(components['/_choiceinput1'].stateValues.selectedIndices).eqls([indexByName["monkey"]]);
       // expect(components['/_choiceinput1'].stateValues.submittedValues).eqls(["dog"]);
@@ -7809,11 +7860,11 @@ describe('Answer Tag Tests', function () {
     cy.get("#\\/sr").should('have.text', 'monkey')
     cy.get("#\\/credit").should('have.text', '0')
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
-      expect(components['/_answer1'].stateValues.currentResponses).eqls(['monkey']);
-      expect(components['/_answer1'].stateValues.submittedResponses).eqls(['monkey']);
+      expect((await components['/_answer1'].stateValues.currentResponses)).eqls(['monkey']);
+      expect(await components['/_answer1'].stateValues.submittedResponses).eqls(['monkey']);
       expect(components['/_choiceinput1'].stateValues.selectedValues).eqls(["monkey"]);
       expect(components['/_choiceinput1'].stateValues.selectedIndices).eqls([indexByName["monkey"]]);
       // expect(components['/_choiceinput1'].stateValues.submittedValues).eqls(["monkey"]);
@@ -7831,11 +7882,11 @@ describe('Answer Tag Tests', function () {
     cy.get("#\\/sr").should('have.text', 'monkey')
     cy.get("#\\/credit").should('have.text', '0')
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
-      expect(components['/_answer1'].stateValues.currentResponses).eqls(['cat']);
-      expect(components['/_answer1'].stateValues.submittedResponses).eqls(['monkey']);
+      expect((await components['/_answer1'].stateValues.currentResponses)).eqls(['cat']);
+      expect(await components['/_answer1'].stateValues.submittedResponses).eqls(['monkey']);
       expect(components['/_choiceinput1'].stateValues.selectedValues).eqls(["cat"]);
       expect(components['/_choiceinput1'].stateValues.selectedIndices).eqls([indexByName["cat"]]);
       // expect(components['/_choiceinput1'].stateValues.submittedValues).eqls(["monkey"]);
@@ -7853,11 +7904,11 @@ describe('Answer Tag Tests', function () {
     cy.get("#\\/sr").should('have.text', 'cat')
     cy.get("#\\/credit").should('have.text', '0.5')
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/_answer1'].stateValues.creditAchieved).eq(0.5);
-      expect(components['/_answer1'].stateValues.currentResponses).eqls(['cat']);
-      expect(components['/_answer1'].stateValues.submittedResponses).eqls(['cat']);
+      expect((await components['/_answer1'].stateValues.currentResponses)).eqls(['cat']);
+      expect(await components['/_answer1'].stateValues.submittedResponses).eqls(['cat']);
       expect(components['/_choiceinput1'].stateValues.selectedValues).eqls(["cat"]);
       expect(components['/_choiceinput1'].stateValues.selectedIndices).eqls([indexByName["cat"]]);
       // expect(components['/_choiceinput1'].stateValues.submittedValues).eqls(["cat"]);
@@ -7876,11 +7927,11 @@ describe('Answer Tag Tests', function () {
     cy.get("#\\/sr").should('have.text', 'cat')
     cy.get("#\\/credit").should('have.text', '0.5')
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/_answer1'].stateValues.creditAchieved).eq(0.5);
-      expect(components['/_answer1'].stateValues.currentResponses).eqls(['monkey']);
-      expect(components['/_answer1'].stateValues.submittedResponses).eqls(['cat']);
+      expect((await components['/_answer1'].stateValues.currentResponses)).eqls(['monkey']);
+      expect(await components['/_answer1'].stateValues.submittedResponses).eqls(['cat']);
       expect(components['/_choiceinput1'].stateValues.selectedValues).eqls(["monkey"]);
       expect(components['/_choiceinput1'].stateValues.selectedIndices).eqls([indexByName["monkey"]]);
       // expect(components['/_choiceinput1'].stateValues.submittedValues).eqls(["dog"]);
@@ -7899,11 +7950,11 @@ describe('Answer Tag Tests', function () {
     cy.get("#\\/sr").should('have.text', 'cat')
     cy.get("#\\/credit").should('have.text', '0.5')
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/_answer1'].stateValues.creditAchieved).eq(0.5);
-      expect(components['/_answer1'].stateValues.currentResponses).eqls(['cat']);
-      expect(components['/_answer1'].stateValues.submittedResponses).eqls(['cat']);
+      expect((await components['/_answer1'].stateValues.currentResponses)).eqls(['cat']);
+      expect(await components['/_answer1'].stateValues.submittedResponses).eqls(['cat']);
       expect(components['/_choiceinput1'].stateValues.selectedValues).eqls(["cat"]);
       expect(components['/_choiceinput1'].stateValues.selectedIndices).eqls([indexByName["cat"]]);
       // expect(components['/_choiceinput1'].stateValues.submittedValues).eqls(["cat"]);
@@ -7921,11 +7972,11 @@ describe('Answer Tag Tests', function () {
     cy.get("#\\/sr").should('have.text', 'cat')
     cy.get("#\\/credit").should('have.text', '0.5')
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/_answer1'].stateValues.creditAchieved).eq(0.5);
-      expect(components['/_answer1'].stateValues.currentResponses).eqls(['cat']);
-      expect(components['/_answer1'].stateValues.submittedResponses).eqls(['cat']);
+      expect((await components['/_answer1'].stateValues.currentResponses)).eqls(['cat']);
+      expect(await components['/_answer1'].stateValues.submittedResponses).eqls(['cat']);
       expect(components['/_choiceinput1'].stateValues.selectedValues).eqls(["cat"]);
       expect(components['/_choiceinput1'].stateValues.selectedIndices).eqls([indexByName["cat"]]);
       // expect(components['/_choiceinput1'].stateValues.submittedValues).eqls(["cat"]);
@@ -7935,7 +7986,7 @@ describe('Answer Tag Tests', function () {
   });
 
   it('answer with inline choiceinput, fixedorder', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -7967,7 +8018,7 @@ describe('Answer Tag Tests', function () {
     cy.get("#\\/credit").should('have.text', '0')
 
     let indexByName = { cat: 1, dog: 2, monkey: 3 };
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
 
       for (let [ind, val] of components['/_choiceinput1'].stateValues.choiceTexts.entries()) {
@@ -7975,8 +8026,8 @@ describe('Answer Tag Tests', function () {
       }
 
       expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
-      expect(components['/_answer1'].stateValues.currentResponses).eqls([]);
-      expect(components['/_answer1'].stateValues.submittedResponses).eqls([]);
+      expect((await components['/_answer1'].stateValues.currentResponses)).eqls([]);
+      expect(await components['/_answer1'].stateValues.submittedResponses).eqls([]);
       expect(components['/_choiceinput1'].stateValues.selectedValues).eqls([]);
       expect(components['/_choiceinput1'].stateValues.selectedIndices).eqls([]);
       // expect(components['/_choiceinput1'].stateValues.submittedValues).eqls([]);
@@ -7995,11 +8046,11 @@ describe('Answer Tag Tests', function () {
     cy.get("#\\/sr").should('have.text', '')
     cy.get("#\\/credit").should('have.text', '0')
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
-      expect(components['/_answer1'].stateValues.currentResponses).eqls(['dog']);
-      expect(components['/_answer1'].stateValues.submittedResponses).eqls([]);
+      expect((await components['/_answer1'].stateValues.currentResponses)).eqls(['dog']);
+      expect(await components['/_answer1'].stateValues.submittedResponses).eqls([]);
       expect(components['/_choiceinput1'].stateValues.selectedValues).eqls(["dog"]);
       expect(components['/_choiceinput1'].stateValues.selectedIndices).eqls([indexByName["dog"]]);
       // expect(components['/_choiceinput1'].stateValues.submittedValues).eqls([]);
@@ -8017,11 +8068,11 @@ describe('Answer Tag Tests', function () {
     cy.get("#\\/sr").should('have.text', 'dog')
     cy.get("#\\/credit").should('have.text', '1')
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/_answer1'].stateValues.creditAchieved).eq(1);
-      expect(components['/_answer1'].stateValues.currentResponses).eqls(['dog']);
-      expect(components['/_answer1'].stateValues.submittedResponses).eqls(['dog']);
+      expect((await components['/_answer1'].stateValues.currentResponses)).eqls(['dog']);
+      expect(await components['/_answer1'].stateValues.submittedResponses).eqls(['dog']);
       expect(components['/_choiceinput1'].stateValues.selectedValues).eqls(["dog"]);
       expect(components['/_choiceinput1'].stateValues.selectedIndices).eqls([indexByName["dog"]]);
       // expect(components['/_choiceinput1'].stateValues.submittedValues).eqls(["dog"]);
@@ -8039,11 +8090,11 @@ describe('Answer Tag Tests', function () {
     cy.get("#\\/sr").should('have.text', 'dog')
     cy.get("#\\/credit").should('have.text', '1')
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/_answer1'].stateValues.creditAchieved).eq(1);
-      expect(components['/_answer1'].stateValues.currentResponses).eqls(['monkey']);
-      expect(components['/_answer1'].stateValues.submittedResponses).eqls(['dog']);
+      expect((await components['/_answer1'].stateValues.currentResponses)).eqls(['monkey']);
+      expect(await components['/_answer1'].stateValues.submittedResponses).eqls(['dog']);
       expect(components['/_choiceinput1'].stateValues.selectedValues).eqls(["monkey"]);
       expect(components['/_choiceinput1'].stateValues.selectedIndices).eqls([indexByName["monkey"]]);
       // expect(components['/_choiceinput1'].stateValues.submittedValues).eqls(["dog"]);
@@ -8061,11 +8112,11 @@ describe('Answer Tag Tests', function () {
     cy.get("#\\/sr").should('have.text', 'monkey')
     cy.get("#\\/credit").should('have.text', '0')
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
-      expect(components['/_answer1'].stateValues.currentResponses).eqls(['monkey']);
-      expect(components['/_answer1'].stateValues.submittedResponses).eqls(['monkey']);
+      expect((await components['/_answer1'].stateValues.currentResponses)).eqls(['monkey']);
+      expect(await components['/_answer1'].stateValues.submittedResponses).eqls(['monkey']);
       expect(components['/_choiceinput1'].stateValues.selectedValues).eqls(["monkey"]);
       expect(components['/_choiceinput1'].stateValues.selectedIndices).eqls([indexByName["monkey"]]);
       // expect(components['/_choiceinput1'].stateValues.submittedValues).eqls(["monkey"]);
@@ -8083,11 +8134,11 @@ describe('Answer Tag Tests', function () {
     cy.get("#\\/sr").should('have.text', 'monkey')
     cy.get("#\\/credit").should('have.text', '0')
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
-      expect(components['/_answer1'].stateValues.currentResponses).eqls(['cat']);
-      expect(components['/_answer1'].stateValues.submittedResponses).eqls(['monkey']);
+      expect((await components['/_answer1'].stateValues.currentResponses)).eqls(['cat']);
+      expect(await components['/_answer1'].stateValues.submittedResponses).eqls(['monkey']);
       expect(components['/_choiceinput1'].stateValues.selectedValues).eqls(["cat"]);
       expect(components['/_choiceinput1'].stateValues.selectedIndices).eqls([indexByName["cat"]]);
       // expect(components['/_choiceinput1'].stateValues.submittedValues).eqls(["monkey"]);
@@ -8105,11 +8156,11 @@ describe('Answer Tag Tests', function () {
     cy.get("#\\/sr").should('have.text', 'cat')
     cy.get("#\\/credit").should('have.text', '0.5')
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/_answer1'].stateValues.creditAchieved).eq(0.5);
-      expect(components['/_answer1'].stateValues.currentResponses).eqls(['cat']);
-      expect(components['/_answer1'].stateValues.submittedResponses).eqls(['cat']);
+      expect((await components['/_answer1'].stateValues.currentResponses)).eqls(['cat']);
+      expect(await components['/_answer1'].stateValues.submittedResponses).eqls(['cat']);
       expect(components['/_choiceinput1'].stateValues.selectedValues).eqls(["cat"]);
       expect(components['/_choiceinput1'].stateValues.selectedIndices).eqls([indexByName["cat"]]);
       // expect(components['/_choiceinput1'].stateValues.submittedValues).eqls(["cat"]);
@@ -8128,11 +8179,11 @@ describe('Answer Tag Tests', function () {
     cy.get("#\\/sr").should('have.text', 'cat')
     cy.get("#\\/credit").should('have.text', '0.5')
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/_answer1'].stateValues.creditAchieved).eq(0.5);
-      expect(components['/_answer1'].stateValues.currentResponses).eqls(['monkey']);
-      expect(components['/_answer1'].stateValues.submittedResponses).eqls(['cat']);
+      expect((await components['/_answer1'].stateValues.currentResponses)).eqls(['monkey']);
+      expect(await components['/_answer1'].stateValues.submittedResponses).eqls(['cat']);
       expect(components['/_choiceinput1'].stateValues.selectedValues).eqls(["monkey"]);
       expect(components['/_choiceinput1'].stateValues.selectedIndices).eqls([indexByName["monkey"]]);
       // expect(components['/_choiceinput1'].stateValues.submittedValues).eqls(["dog"]);
@@ -8151,11 +8202,11 @@ describe('Answer Tag Tests', function () {
     cy.get("#\\/sr").should('have.text', 'cat')
     cy.get("#\\/credit").should('have.text', '0.5')
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/_answer1'].stateValues.creditAchieved).eq(0.5);
-      expect(components['/_answer1'].stateValues.currentResponses).eqls(['cat']);
-      expect(components['/_answer1'].stateValues.submittedResponses).eqls(['cat']);
+      expect((await components['/_answer1'].stateValues.currentResponses)).eqls(['cat']);
+      expect(await components['/_answer1'].stateValues.submittedResponses).eqls(['cat']);
       expect(components['/_choiceinput1'].stateValues.selectedValues).eqls(["cat"]);
       expect(components['/_choiceinput1'].stateValues.selectedIndices).eqls([indexByName["cat"]]);
       // expect(components['/_choiceinput1'].stateValues.submittedValues).eqls(["cat"]);
@@ -8174,11 +8225,11 @@ describe('Answer Tag Tests', function () {
     cy.get("#\\/sr").should('have.text', 'cat')
     cy.get("#\\/credit").should('have.text', '0.5')
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/_answer1'].stateValues.creditAchieved).eq(0.5);
-      expect(components['/_answer1'].stateValues.currentResponses).eqls(['cat']);
-      expect(components['/_answer1'].stateValues.submittedResponses).eqls(['cat']);
+      expect((await components['/_answer1'].stateValues.currentResponses)).eqls(['cat']);
+      expect(await components['/_answer1'].stateValues.submittedResponses).eqls(['cat']);
       expect(components['/_choiceinput1'].stateValues.selectedValues).eqls(["cat"]);
       expect(components['/_choiceinput1'].stateValues.selectedIndices).eqls([indexByName["cat"]]);
       // expect(components['/_choiceinput1'].stateValues.submittedValues).eqls(["cat"]);
@@ -8190,7 +8241,7 @@ describe('Answer Tag Tests', function () {
   });
 
   it('answer with select-multiple inline choiceinput, fixedorder', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -8222,7 +8273,7 @@ describe('Answer Tag Tests', function () {
     cy.get("#\\/credit").should('have.text', '0')
 
     let indexByName = { cat: 1, dog: 2, monkey: 3 };
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
 
       for (let [ind, val] of components['/_choiceinput1'].stateValues.choiceTexts.entries()) {
@@ -8230,8 +8281,8 @@ describe('Answer Tag Tests', function () {
       }
 
       expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
-      expect(components['/_answer1'].stateValues.currentResponses).eqls([]);
-      expect(components['/_answer1'].stateValues.submittedResponses).eqls([]);
+      expect((await components['/_answer1'].stateValues.currentResponses)).eqls([]);
+      expect(await components['/_answer1'].stateValues.submittedResponses).eqls([]);
       expect(components['/_choiceinput1'].stateValues.selectedValues).eqls([]);
       expect(components['/_choiceinput1'].stateValues.selectedIndices).eqls([]);
 
@@ -8248,11 +8299,11 @@ describe('Answer Tag Tests', function () {
     cy.get("#\\/sr").should('have.text', 'Submitted response: ')
     cy.get("#\\/credit").should('have.text', '0')
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
-      expect(components['/_answer1'].stateValues.currentResponses).eqls(['dog']);
-      expect(components['/_answer1'].stateValues.submittedResponses).eqls([]);
+      expect((await components['/_answer1'].stateValues.currentResponses)).eqls(['dog']);
+      expect(await components['/_answer1'].stateValues.submittedResponses).eqls([]);
       expect(components['/_choiceinput1'].stateValues.selectedValues).eqls(["dog"]);
       expect(components['/_choiceinput1'].stateValues.selectedIndices).eqls([indexByName["dog"]]);
     });
@@ -8268,11 +8319,11 @@ describe('Answer Tag Tests', function () {
     cy.get("#\\/sr").should('have.text', 'Submitted response: dog')
     cy.get("#\\/credit").should('have.text', '0.5')
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/_answer1'].stateValues.creditAchieved).eq(0.5);
-      expect(components['/_answer1'].stateValues.currentResponses).eqls(['dog']);
-      expect(components['/_answer1'].stateValues.submittedResponses).eqls(['dog']);
+      expect((await components['/_answer1'].stateValues.currentResponses)).eqls(['dog']);
+      expect(await components['/_answer1'].stateValues.submittedResponses).eqls(['dog']);
       expect(components['/_choiceinput1'].stateValues.selectedValues).eqls(["dog"]);
       expect(components['/_choiceinput1'].stateValues.selectedIndices).eqls([indexByName["dog"]]);
     });
@@ -8289,11 +8340,11 @@ describe('Answer Tag Tests', function () {
     cy.get("#\\/sr").should('have.text', 'Submitted response: dog')
     cy.get("#\\/credit").should('have.text', '0.5')
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/_answer1'].stateValues.creditAchieved).eq(0.5);
-      expect(components['/_answer1'].stateValues.currentResponses).eqls(['cat', 'dog']);
-      expect(components['/_answer1'].stateValues.submittedResponses).eqls(['dog']);
+      expect((await components['/_answer1'].stateValues.currentResponses)).eqls(['cat', 'dog']);
+      expect(await components['/_answer1'].stateValues.submittedResponses).eqls(['dog']);
       expect(components['/_choiceinput1'].stateValues.selectedValues).eqls(["cat", "dog"]);
       expect(components['/_choiceinput1'].stateValues.selectedIndices).eqls([indexByName["cat"], indexByName["dog"]]);
     });
@@ -8310,11 +8361,11 @@ describe('Answer Tag Tests', function () {
     cy.get("#\\/sr").should('have.text', 'Submitted response: cat, dog')
     cy.get("#\\/credit").should('have.text', '1')
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/_answer1'].stateValues.creditAchieved).eq(1);
-      expect(components['/_answer1'].stateValues.currentResponses).eqls(['cat', 'dog']);
-      expect(components['/_answer1'].stateValues.submittedResponses).eqls(['cat', 'dog']);
+      expect((await components['/_answer1'].stateValues.currentResponses)).eqls(['cat', 'dog']);
+      expect(await components['/_answer1'].stateValues.submittedResponses).eqls(['cat', 'dog']);
       expect(components['/_choiceinput1'].stateValues.selectedValues).eqls(["cat", "dog"]);
       expect(components['/_choiceinput1'].stateValues.selectedIndices).eqls([indexByName["cat"], indexByName["dog"]]);
     });
@@ -8331,11 +8382,11 @@ describe('Answer Tag Tests', function () {
     cy.get("#\\/sr").should('have.text', 'Submitted response: cat, dog')
     cy.get("#\\/credit").should('have.text', '1')
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/_answer1'].stateValues.creditAchieved).eq(1);
-      expect(components['/_answer1'].stateValues.currentResponses).eqls(['monkey']);
-      expect(components['/_answer1'].stateValues.submittedResponses).eqls(['cat', 'dog']);
+      expect((await components['/_answer1'].stateValues.currentResponses)).eqls(['monkey']);
+      expect(await components['/_answer1'].stateValues.submittedResponses).eqls(['cat', 'dog']);
       expect(components['/_choiceinput1'].stateValues.selectedValues).eqls(["monkey"]);
       expect(components['/_choiceinput1'].stateValues.selectedIndices).eqls([indexByName["monkey"]]);
     });
@@ -8351,11 +8402,11 @@ describe('Answer Tag Tests', function () {
     cy.get("#\\/sr").should('have.text', 'Submitted response: monkey')
     cy.get("#\\/credit").should('have.text', '0')
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
-      expect(components['/_answer1'].stateValues.currentResponses).eqls(['monkey']);
-      expect(components['/_answer1'].stateValues.submittedResponses).eqls(['monkey']);
+      expect((await components['/_answer1'].stateValues.currentResponses)).eqls(['monkey']);
+      expect(await components['/_answer1'].stateValues.submittedResponses).eqls(['monkey']);
       expect(components['/_choiceinput1'].stateValues.selectedValues).eqls(["monkey"]);
       expect(components['/_choiceinput1'].stateValues.selectedIndices).eqls([indexByName["monkey"]]);
     });
@@ -8371,11 +8422,11 @@ describe('Answer Tag Tests', function () {
     cy.get("#\\/sr").should('have.text', 'Submitted response: monkey')
     cy.get("#\\/credit").should('have.text', '0')
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
-      expect(components['/_answer1'].stateValues.currentResponses).eqls(['cat', 'dog', 'monkey']);
-      expect(components['/_answer1'].stateValues.submittedResponses).eqls(['monkey']);
+      expect((await components['/_answer1'].stateValues.currentResponses)).eqls(['cat', 'dog', 'monkey']);
+      expect(await components['/_answer1'].stateValues.submittedResponses).eqls(['monkey']);
       expect(components['/_choiceinput1'].stateValues.selectedValues).eqls(["cat", "dog", "monkey"]);
       expect(components['/_choiceinput1'].stateValues.selectedIndices).eqls([indexByName["cat"], indexByName["dog"], indexByName["monkey"]]);
     });
@@ -8391,11 +8442,11 @@ describe('Answer Tag Tests', function () {
     cy.get("#\\/sr").should('have.text', 'Submitted response: cat, dog, monkey')
     cy.get("#\\/credit").should('have.text', '0.6666666667')
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/_answer1'].stateValues.creditAchieved).eq(2 / 3);
-      expect(components['/_answer1'].stateValues.currentResponses).eqls(['cat', 'dog', 'monkey']);
-      expect(components['/_answer1'].stateValues.submittedResponses).eqls(['cat', 'dog', 'monkey']);
+      expect((await components['/_answer1'].stateValues.currentResponses)).eqls(['cat', 'dog', 'monkey']);
+      expect(await components['/_answer1'].stateValues.submittedResponses).eqls(['cat', 'dog', 'monkey']);
       expect(components['/_choiceinput1'].stateValues.selectedValues).eqls(["cat", "dog", "monkey"]);
       expect(components['/_choiceinput1'].stateValues.selectedIndices).eqls([indexByName["cat"], indexByName["dog"], indexByName["monkey"]]);
     });
@@ -8412,11 +8463,11 @@ describe('Answer Tag Tests', function () {
     cy.get("#\\/sr").should('have.text', 'Submitted response: cat, dog, monkey')
     cy.get("#\\/credit").should('have.text', '0.6666666667')
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/_answer1'].stateValues.creditAchieved).eq(2 / 3);
-      expect(components['/_answer1'].stateValues.currentResponses).eqls(['dog', 'monkey']);
-      expect(components['/_answer1'].stateValues.submittedResponses).eqls(['cat', 'dog', 'monkey']);
+      expect((await components['/_answer1'].stateValues.currentResponses)).eqls(['dog', 'monkey']);
+      expect(await components['/_answer1'].stateValues.submittedResponses).eqls(['cat', 'dog', 'monkey']);
       expect(components['/_choiceinput1'].stateValues.selectedValues).eqls(["dog", "monkey"]);
       expect(components['/_choiceinput1'].stateValues.selectedIndices).eqls([indexByName["dog"], indexByName["monkey"]]);
     });
@@ -8432,11 +8483,11 @@ describe('Answer Tag Tests', function () {
     cy.get("#\\/sr").should('have.text', 'Submitted response: dog, monkey')
     cy.get("#\\/credit").should('have.text', '0.3333333333')
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/_answer1'].stateValues.creditAchieved).eq(1 / 3);
-      expect(components['/_answer1'].stateValues.currentResponses).eqls(['dog', 'monkey']);
-      expect(components['/_answer1'].stateValues.submittedResponses).eqls(['dog', 'monkey']);
+      expect((await components['/_answer1'].stateValues.currentResponses)).eqls(['dog', 'monkey']);
+      expect(await components['/_answer1'].stateValues.submittedResponses).eqls(['dog', 'monkey']);
       expect(components['/_choiceinput1'].stateValues.selectedValues).eqls(["dog", "monkey"]);
       expect(components['/_choiceinput1'].stateValues.selectedIndices).eqls([indexByName["dog"], indexByName["monkey"]]);
     });
@@ -8445,7 +8496,7 @@ describe('Answer Tag Tests', function () {
   });
 
   it('answer with block choiceinput', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -8478,7 +8529,7 @@ describe('Answer Tag Tests', function () {
     cy.get("#\\/credit").should('have.text', '0')
 
     let indexByName = {};
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
 
       for (let [ind, val] of components['/_choiceinput1'].stateValues.choiceTexts.entries()) {
@@ -8486,8 +8537,8 @@ describe('Answer Tag Tests', function () {
       }
 
       expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
-      expect(components['/_answer1'].stateValues.currentResponses).eqls([]);
-      expect(components['/_answer1'].stateValues.submittedResponses).eqls([]);
+      expect((await components['/_answer1'].stateValues.currentResponses)).eqls([]);
+      expect(await components['/_answer1'].stateValues.submittedResponses).eqls([]);
       expect(components['/_choiceinput1'].stateValues.selectedValues).eqls([]);
       expect(components['/_choiceinput1'].stateValues.selectedIndices).eqls([]);
       // expect(components['/_choiceinput1'].stateValues.submittedValues).eqls([]);
@@ -8508,11 +8559,11 @@ describe('Answer Tag Tests', function () {
     cy.get("#\\/sr").should('have.text', '')
     cy.get("#\\/credit").should('have.text', '0')
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
-      expect(components['/_answer1'].stateValues.currentResponses).eqls(['dog']);
-      expect(components['/_answer1'].stateValues.submittedResponses).eqls([]);
+      expect((await components['/_answer1'].stateValues.currentResponses)).eqls(['dog']);
+      expect(await components['/_answer1'].stateValues.submittedResponses).eqls([]);
       expect(components['/_choiceinput1'].stateValues.selectedValues).eqls(["dog"]);
       expect(components['/_choiceinput1'].stateValues.selectedIndices).eqls([indexByName["dog"]]);
       // expect(components['/_choiceinput1'].stateValues.submittedValues).eqls([]);
@@ -8532,11 +8583,11 @@ describe('Answer Tag Tests', function () {
     cy.get("#\\/sr").should('have.text', 'dog')
     cy.get("#\\/credit").should('have.text', '1')
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/_answer1'].stateValues.creditAchieved).eq(1);
-      expect(components['/_answer1'].stateValues.currentResponses).eqls(['dog']);
-      expect(components['/_answer1'].stateValues.submittedResponses).eqls(['dog']);
+      expect((await components['/_answer1'].stateValues.currentResponses)).eqls(['dog']);
+      expect(await components['/_answer1'].stateValues.submittedResponses).eqls(['dog']);
       expect(components['/_choiceinput1'].stateValues.selectedValues).eqls(["dog"]);
       expect(components['/_choiceinput1'].stateValues.selectedIndices).eqls([indexByName["dog"]]);
       // expect(components['/_choiceinput1'].stateValues.submittedValues).eqls(["dog"]);
@@ -8556,11 +8607,11 @@ describe('Answer Tag Tests', function () {
     cy.get("#\\/sr").should('have.text', 'dog')
     cy.get("#\\/credit").should('have.text', '1')
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/_answer1'].stateValues.creditAchieved).eq(1);
-      expect(components['/_answer1'].stateValues.currentResponses).eqls(['monkey']);
-      expect(components['/_answer1'].stateValues.submittedResponses).eqls(['dog']);
+      expect((await components['/_answer1'].stateValues.currentResponses)).eqls(['monkey']);
+      expect(await components['/_answer1'].stateValues.submittedResponses).eqls(['dog']);
       expect(components['/_choiceinput1'].stateValues.selectedValues).eqls(["monkey"]);
       expect(components['/_choiceinput1'].stateValues.selectedIndices).eqls([indexByName["monkey"]]);
       // expect(components['/_choiceinput1'].stateValues.submittedValues).eqls(["dog"]);
@@ -8580,11 +8631,11 @@ describe('Answer Tag Tests', function () {
     cy.get("#\\/sr").should('have.text', 'monkey')
     cy.get("#\\/credit").should('have.text', '0')
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
-      expect(components['/_answer1'].stateValues.currentResponses).eqls(['monkey']);
-      expect(components['/_answer1'].stateValues.submittedResponses).eqls(['monkey']);
+      expect((await components['/_answer1'].stateValues.currentResponses)).eqls(['monkey']);
+      expect(await components['/_answer1'].stateValues.submittedResponses).eqls(['monkey']);
       expect(components['/_choiceinput1'].stateValues.selectedValues).eqls(["monkey"]);
       expect(components['/_choiceinput1'].stateValues.selectedIndices).eqls([indexByName["monkey"]]);
       // expect(components['/_choiceinput1'].stateValues.submittedValues).eqls(["monkey"]);
@@ -8604,11 +8655,11 @@ describe('Answer Tag Tests', function () {
     cy.get("#\\/sr").should('have.text', 'monkey')
     cy.get("#\\/credit").should('have.text', '0')
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
-      expect(components['/_answer1'].stateValues.currentResponses).eqls(['cat']);
-      expect(components['/_answer1'].stateValues.submittedResponses).eqls(['monkey']);
+      expect((await components['/_answer1'].stateValues.currentResponses)).eqls(['cat']);
+      expect(await components['/_answer1'].stateValues.submittedResponses).eqls(['monkey']);
       expect(components['/_choiceinput1'].stateValues.selectedValues).eqls(["cat"]);
       expect(components['/_choiceinput1'].stateValues.selectedIndices).eqls([indexByName["cat"]]);
       // expect(components['/_choiceinput1'].stateValues.submittedValues).eqls(["monkey"]);
@@ -8628,11 +8679,11 @@ describe('Answer Tag Tests', function () {
     cy.get("#\\/sr").should('have.text', 'cat')
     cy.get("#\\/credit").should('have.text', '0.5')
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/_answer1'].stateValues.creditAchieved).eq(0.5);
-      expect(components['/_answer1'].stateValues.currentResponses).eqls(['cat']);
-      expect(components['/_answer1'].stateValues.submittedResponses).eqls(['cat']);
+      expect((await components['/_answer1'].stateValues.currentResponses)).eqls(['cat']);
+      expect(await components['/_answer1'].stateValues.submittedResponses).eqls(['cat']);
       expect(components['/_choiceinput1'].stateValues.selectedValues).eqls(["cat"]);
       expect(components['/_choiceinput1'].stateValues.selectedIndices).eqls([indexByName["cat"]]);
       // expect(components['/_choiceinput1'].stateValues.submittedValues).eqls(["cat"]);
@@ -8653,11 +8704,11 @@ describe('Answer Tag Tests', function () {
     cy.get("#\\/sr").should('have.text', 'cat')
     cy.get("#\\/credit").should('have.text', '0.5')
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/_answer1'].stateValues.creditAchieved).eq(0.5);
-      expect(components['/_answer1'].stateValues.currentResponses).eqls(['monkey']);
-      expect(components['/_answer1'].stateValues.submittedResponses).eqls(['cat']);
+      expect((await components['/_answer1'].stateValues.currentResponses)).eqls(['monkey']);
+      expect(await components['/_answer1'].stateValues.submittedResponses).eqls(['cat']);
       expect(components['/_choiceinput1'].stateValues.selectedValues).eqls(["monkey"]);
       expect(components['/_choiceinput1'].stateValues.selectedIndices).eqls([indexByName["monkey"]]);
       // expect(components['/_choiceinput1'].stateValues.submittedValues).eqls(["dog"]);
@@ -8678,11 +8729,11 @@ describe('Answer Tag Tests', function () {
     cy.get("#\\/sr").should('have.text', 'cat')
     cy.get("#\\/credit").should('have.text', '0.5')
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/_answer1'].stateValues.creditAchieved).eq(0.5);
-      expect(components['/_answer1'].stateValues.currentResponses).eqls(['cat']);
-      expect(components['/_answer1'].stateValues.submittedResponses).eqls(['cat']);
+      expect((await components['/_answer1'].stateValues.currentResponses)).eqls(['cat']);
+      expect(await components['/_answer1'].stateValues.submittedResponses).eqls(['cat']);
       expect(components['/_choiceinput1'].stateValues.selectedValues).eqls(["cat"]);
       expect(components['/_choiceinput1'].stateValues.selectedIndices).eqls([indexByName["cat"]]);
       // expect(components['/_choiceinput1'].stateValues.submittedValues).eqls(["cat"]);
@@ -8703,11 +8754,11 @@ describe('Answer Tag Tests', function () {
     cy.get("#\\/sr").should('have.text', 'cat')
     cy.get("#\\/credit").should('have.text', '0.5')
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/_answer1'].stateValues.creditAchieved).eq(0.5);
-      expect(components['/_answer1'].stateValues.currentResponses).eqls(['cat']);
-      expect(components['/_answer1'].stateValues.submittedResponses).eqls(['cat']);
+      expect((await components['/_answer1'].stateValues.currentResponses)).eqls(['cat']);
+      expect(await components['/_answer1'].stateValues.submittedResponses).eqls(['cat']);
       expect(components['/_choiceinput1'].stateValues.selectedValues).eqls(["cat"]);
       expect(components['/_choiceinput1'].stateValues.selectedIndices).eqls([indexByName["cat"]]);
       // expect(components['/_choiceinput1'].stateValues.submittedValues).eqls(["cat"]);
@@ -8718,7 +8769,7 @@ describe('Answer Tag Tests', function () {
   });
 
   it('answer with select-multiple block choiceinput, fixedorder', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -8747,7 +8798,7 @@ describe('Answer Tag Tests', function () {
     cy.get("#\\/credit").should('have.text', '0')
 
     let indexByName = { cat: 1, dog: 2, monkey: 3 };
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
 
       for (let [ind, val] of components['/_choiceinput1'].stateValues.choiceTexts.entries()) {
@@ -8755,8 +8806,8 @@ describe('Answer Tag Tests', function () {
       }
 
       expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
-      expect(components['/_answer1'].stateValues.currentResponses).eqls([]);
-      expect(components['/_answer1'].stateValues.submittedResponses).eqls([]);
+      expect((await components['/_answer1'].stateValues.currentResponses)).eqls([]);
+      expect(await components['/_answer1'].stateValues.submittedResponses).eqls([]);
       expect(components['/_choiceinput1'].stateValues.selectedValues).eqls([]);
       expect(components['/_choiceinput1'].stateValues.selectedIndices).eqls([]);
 
@@ -8773,11 +8824,11 @@ describe('Answer Tag Tests', function () {
     cy.get("#\\/sr").should('have.text', 'Submitted response: ')
     cy.get("#\\/credit").should('have.text', '0')
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
-      expect(components['/_answer1'].stateValues.currentResponses).eqls(['dog']);
-      expect(components['/_answer1'].stateValues.submittedResponses).eqls([]);
+      expect((await components['/_answer1'].stateValues.currentResponses)).eqls(['dog']);
+      expect(await components['/_answer1'].stateValues.submittedResponses).eqls([]);
       expect(components['/_choiceinput1'].stateValues.selectedValues).eqls(["dog"]);
       expect(components['/_choiceinput1'].stateValues.selectedIndices).eqls([indexByName["dog"]]);
     });
@@ -8793,11 +8844,11 @@ describe('Answer Tag Tests', function () {
     cy.get("#\\/sr").should('have.text', 'Submitted response: dog')
     cy.get("#\\/credit").should('have.text', '0')
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
-      expect(components['/_answer1'].stateValues.currentResponses).eqls(['dog']);
-      expect(components['/_answer1'].stateValues.submittedResponses).eqls(['dog']);
+      expect((await components['/_answer1'].stateValues.currentResponses)).eqls(['dog']);
+      expect(await components['/_answer1'].stateValues.submittedResponses).eqls(['dog']);
       expect(components['/_choiceinput1'].stateValues.selectedValues).eqls(["dog"]);
       expect(components['/_choiceinput1'].stateValues.selectedIndices).eqls([indexByName["dog"]]);
     });
@@ -8814,11 +8865,11 @@ describe('Answer Tag Tests', function () {
     cy.get("#\\/sr").should('have.text', 'Submitted response: dog')
     cy.get("#\\/credit").should('have.text', '0')
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
-      expect(components['/_answer1'].stateValues.currentResponses).eqls(['cat', 'dog']);
-      expect(components['/_answer1'].stateValues.submittedResponses).eqls(['dog']);
+      expect((await components['/_answer1'].stateValues.currentResponses)).eqls(['cat', 'dog']);
+      expect(await components['/_answer1'].stateValues.submittedResponses).eqls(['dog']);
       expect(components['/_choiceinput1'].stateValues.selectedValues).eqls(["cat", "dog"]);
       expect(components['/_choiceinput1'].stateValues.selectedIndices).eqls([indexByName["cat"], indexByName["dog"]]);
     });
@@ -8835,11 +8886,11 @@ describe('Answer Tag Tests', function () {
     cy.get("#\\/sr").should('have.text', 'Submitted response: cat, dog')
     cy.get("#\\/credit").should('have.text', '1')
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/_answer1'].stateValues.creditAchieved).eq(1);
-      expect(components['/_answer1'].stateValues.currentResponses).eqls(['cat', 'dog']);
-      expect(components['/_answer1'].stateValues.submittedResponses).eqls(['cat', 'dog']);
+      expect((await components['/_answer1'].stateValues.currentResponses)).eqls(['cat', 'dog']);
+      expect(await components['/_answer1'].stateValues.submittedResponses).eqls(['cat', 'dog']);
       expect(components['/_choiceinput1'].stateValues.selectedValues).eqls(["cat", "dog"]);
       expect(components['/_choiceinput1'].stateValues.selectedIndices).eqls([indexByName["cat"], indexByName["dog"]]);
     });
@@ -8858,11 +8909,11 @@ describe('Answer Tag Tests', function () {
     cy.get("#\\/sr").should('have.text', 'Submitted response: cat, dog')
     cy.get("#\\/credit").should('have.text', '1')
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/_answer1'].stateValues.creditAchieved).eq(1);
-      expect(components['/_answer1'].stateValues.currentResponses).eqls(['monkey']);
-      expect(components['/_answer1'].stateValues.submittedResponses).eqls(['cat', 'dog']);
+      expect((await components['/_answer1'].stateValues.currentResponses)).eqls(['monkey']);
+      expect(await components['/_answer1'].stateValues.submittedResponses).eqls(['cat', 'dog']);
       expect(components['/_choiceinput1'].stateValues.selectedValues).eqls(["monkey"]);
       expect(components['/_choiceinput1'].stateValues.selectedIndices).eqls([indexByName["monkey"]]);
     });
@@ -8878,11 +8929,11 @@ describe('Answer Tag Tests', function () {
     cy.get("#\\/sr").should('have.text', 'Submitted response: monkey')
     cy.get("#\\/credit").should('have.text', '0')
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
-      expect(components['/_answer1'].stateValues.currentResponses).eqls(['monkey']);
-      expect(components['/_answer1'].stateValues.submittedResponses).eqls(['monkey']);
+      expect((await components['/_answer1'].stateValues.currentResponses)).eqls(['monkey']);
+      expect(await components['/_answer1'].stateValues.submittedResponses).eqls(['monkey']);
       expect(components['/_choiceinput1'].stateValues.selectedValues).eqls(["monkey"]);
       expect(components['/_choiceinput1'].stateValues.selectedIndices).eqls([indexByName["monkey"]]);
     });
@@ -8899,11 +8950,11 @@ describe('Answer Tag Tests', function () {
     cy.get("#\\/sr").should('have.text', 'Submitted response: monkey')
     cy.get("#\\/credit").should('have.text', '0')
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
-      expect(components['/_answer1'].stateValues.currentResponses).eqls(['cat', 'dog', 'monkey']);
-      expect(components['/_answer1'].stateValues.submittedResponses).eqls(['monkey']);
+      expect((await components['/_answer1'].stateValues.currentResponses)).eqls(['cat', 'dog', 'monkey']);
+      expect(await components['/_answer1'].stateValues.submittedResponses).eqls(['monkey']);
       expect(components['/_choiceinput1'].stateValues.selectedValues).eqls(["cat", "dog", "monkey"]);
       expect(components['/_choiceinput1'].stateValues.selectedIndices).eqls([indexByName["cat"], indexByName["dog"], indexByName["monkey"]]);
     });
@@ -8919,11 +8970,11 @@ describe('Answer Tag Tests', function () {
     cy.get("#\\/sr").should('have.text', 'Submitted response: cat, dog, monkey')
     cy.get("#\\/credit").should('have.text', '0')
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
-      expect(components['/_answer1'].stateValues.currentResponses).eqls(['cat', 'dog', 'monkey']);
-      expect(components['/_answer1'].stateValues.submittedResponses).eqls(['cat', 'dog', 'monkey']);
+      expect((await components['/_answer1'].stateValues.currentResponses)).eqls(['cat', 'dog', 'monkey']);
+      expect(await components['/_answer1'].stateValues.submittedResponses).eqls(['cat', 'dog', 'monkey']);
       expect(components['/_choiceinput1'].stateValues.selectedValues).eqls(["cat", "dog", "monkey"]);
       expect(components['/_choiceinput1'].stateValues.selectedIndices).eqls([indexByName["cat"], indexByName["dog"], indexByName["monkey"]]);
     });
@@ -8940,11 +8991,11 @@ describe('Answer Tag Tests', function () {
     cy.get("#\\/sr").should('have.text', 'Submitted response: cat, dog, monkey')
     cy.get("#\\/credit").should('have.text', '0')
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
-      expect(components['/_answer1'].stateValues.currentResponses).eqls(['dog', 'monkey']);
-      expect(components['/_answer1'].stateValues.submittedResponses).eqls(['cat', 'dog', 'monkey']);
+      expect((await components['/_answer1'].stateValues.currentResponses)).eqls(['dog', 'monkey']);
+      expect(await components['/_answer1'].stateValues.submittedResponses).eqls(['cat', 'dog', 'monkey']);
       expect(components['/_choiceinput1'].stateValues.selectedValues).eqls(["dog", "monkey"]);
       expect(components['/_choiceinput1'].stateValues.selectedIndices).eqls([indexByName["dog"], indexByName["monkey"]]);
     });
@@ -8960,11 +9011,11 @@ describe('Answer Tag Tests', function () {
     cy.get("#\\/sr").should('have.text', 'Submitted response: dog, monkey')
     cy.get("#\\/credit").should('have.text', '0')
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
-      expect(components['/_answer1'].stateValues.currentResponses).eqls(['dog', 'monkey']);
-      expect(components['/_answer1'].stateValues.submittedResponses).eqls(['dog', 'monkey']);
+      expect((await components['/_answer1'].stateValues.currentResponses)).eqls(['dog', 'monkey']);
+      expect(await components['/_answer1'].stateValues.submittedResponses).eqls(['dog', 'monkey']);
       expect(components['/_choiceinput1'].stateValues.selectedValues).eqls(["dog", "monkey"]);
       expect(components['/_choiceinput1'].stateValues.selectedIndices).eqls([indexByName["dog"], indexByName["monkey"]]);
     });
@@ -8973,7 +9024,7 @@ describe('Answer Tag Tests', function () {
   });
 
   it('answer with select-multiple block choiceinput, fixedorder, match partial', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -9002,7 +9053,7 @@ describe('Answer Tag Tests', function () {
     cy.get("#\\/credit").should('have.text', '0')
 
     let indexByName = { cat: 1, dog: 2, monkey: 3 };
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
 
       for (let [ind, val] of components['/_choiceinput1'].stateValues.choiceTexts.entries()) {
@@ -9010,8 +9061,8 @@ describe('Answer Tag Tests', function () {
       }
 
       expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
-      expect(components['/_answer1'].stateValues.currentResponses).eqls([]);
-      expect(components['/_answer1'].stateValues.submittedResponses).eqls([]);
+      expect((await components['/_answer1'].stateValues.currentResponses)).eqls([]);
+      expect(await components['/_answer1'].stateValues.submittedResponses).eqls([]);
       expect(components['/_choiceinput1'].stateValues.selectedValues).eqls([]);
       expect(components['/_choiceinput1'].stateValues.selectedIndices).eqls([]);
 
@@ -9028,11 +9079,11 @@ describe('Answer Tag Tests', function () {
     cy.get("#\\/sr").should('have.text', 'Submitted response: ')
     cy.get("#\\/credit").should('have.text', '0')
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
-      expect(components['/_answer1'].stateValues.currentResponses).eqls(['dog']);
-      expect(components['/_answer1'].stateValues.submittedResponses).eqls([]);
+      expect((await components['/_answer1'].stateValues.currentResponses)).eqls(['dog']);
+      expect(await components['/_answer1'].stateValues.submittedResponses).eqls([]);
       expect(components['/_choiceinput1'].stateValues.selectedValues).eqls(["dog"]);
       expect(components['/_choiceinput1'].stateValues.selectedIndices).eqls([indexByName["dog"]]);
     });
@@ -9048,11 +9099,11 @@ describe('Answer Tag Tests', function () {
     cy.get("#\\/sr").should('have.text', 'Submitted response: dog')
     cy.get("#\\/credit").should('have.text', '0.5')
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/_answer1'].stateValues.creditAchieved).eq(0.5);
-      expect(components['/_answer1'].stateValues.currentResponses).eqls(['dog']);
-      expect(components['/_answer1'].stateValues.submittedResponses).eqls(['dog']);
+      expect((await components['/_answer1'].stateValues.currentResponses)).eqls(['dog']);
+      expect(await components['/_answer1'].stateValues.submittedResponses).eqls(['dog']);
       expect(components['/_choiceinput1'].stateValues.selectedValues).eqls(["dog"]);
       expect(components['/_choiceinput1'].stateValues.selectedIndices).eqls([indexByName["dog"]]);
     });
@@ -9069,11 +9120,11 @@ describe('Answer Tag Tests', function () {
     cy.get("#\\/sr").should('have.text', 'Submitted response: dog')
     cy.get("#\\/credit").should('have.text', '0.5')
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/_answer1'].stateValues.creditAchieved).eq(0.5);
-      expect(components['/_answer1'].stateValues.currentResponses).eqls(['cat', 'dog']);
-      expect(components['/_answer1'].stateValues.submittedResponses).eqls(['dog']);
+      expect((await components['/_answer1'].stateValues.currentResponses)).eqls(['cat', 'dog']);
+      expect(await components['/_answer1'].stateValues.submittedResponses).eqls(['dog']);
       expect(components['/_choiceinput1'].stateValues.selectedValues).eqls(["cat", "dog"]);
       expect(components['/_choiceinput1'].stateValues.selectedIndices).eqls([indexByName["cat"], indexByName["dog"]]);
     });
@@ -9090,11 +9141,11 @@ describe('Answer Tag Tests', function () {
     cy.get("#\\/sr").should('have.text', 'Submitted response: cat, dog')
     cy.get("#\\/credit").should('have.text', '1')
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/_answer1'].stateValues.creditAchieved).eq(1);
-      expect(components['/_answer1'].stateValues.currentResponses).eqls(['cat', 'dog']);
-      expect(components['/_answer1'].stateValues.submittedResponses).eqls(['cat', 'dog']);
+      expect((await components['/_answer1'].stateValues.currentResponses)).eqls(['cat', 'dog']);
+      expect(await components['/_answer1'].stateValues.submittedResponses).eqls(['cat', 'dog']);
       expect(components['/_choiceinput1'].stateValues.selectedValues).eqls(["cat", "dog"]);
       expect(components['/_choiceinput1'].stateValues.selectedIndices).eqls([indexByName["cat"], indexByName["dog"]]);
     });
@@ -9113,11 +9164,11 @@ describe('Answer Tag Tests', function () {
     cy.get("#\\/sr").should('have.text', 'Submitted response: cat, dog')
     cy.get("#\\/credit").should('have.text', '1')
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/_answer1'].stateValues.creditAchieved).eq(1);
-      expect(components['/_answer1'].stateValues.currentResponses).eqls(['monkey']);
-      expect(components['/_answer1'].stateValues.submittedResponses).eqls(['cat', 'dog']);
+      expect((await components['/_answer1'].stateValues.currentResponses)).eqls(['monkey']);
+      expect(await components['/_answer1'].stateValues.submittedResponses).eqls(['cat', 'dog']);
       expect(components['/_choiceinput1'].stateValues.selectedValues).eqls(["monkey"]);
       expect(components['/_choiceinput1'].stateValues.selectedIndices).eqls([indexByName["monkey"]]);
     });
@@ -9133,11 +9184,11 @@ describe('Answer Tag Tests', function () {
     cy.get("#\\/sr").should('have.text', 'Submitted response: monkey')
     cy.get("#\\/credit").should('have.text', '0')
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
-      expect(components['/_answer1'].stateValues.currentResponses).eqls(['monkey']);
-      expect(components['/_answer1'].stateValues.submittedResponses).eqls(['monkey']);
+      expect((await components['/_answer1'].stateValues.currentResponses)).eqls(['monkey']);
+      expect(await components['/_answer1'].stateValues.submittedResponses).eqls(['monkey']);
       expect(components['/_choiceinput1'].stateValues.selectedValues).eqls(["monkey"]);
       expect(components['/_choiceinput1'].stateValues.selectedIndices).eqls([indexByName["monkey"]]);
     });
@@ -9154,11 +9205,11 @@ describe('Answer Tag Tests', function () {
     cy.get("#\\/sr").should('have.text', 'Submitted response: monkey')
     cy.get("#\\/credit").should('have.text', '0')
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
-      expect(components['/_answer1'].stateValues.currentResponses).eqls(['cat', 'dog', 'monkey']);
-      expect(components['/_answer1'].stateValues.submittedResponses).eqls(['monkey']);
+      expect((await components['/_answer1'].stateValues.currentResponses)).eqls(['cat', 'dog', 'monkey']);
+      expect(await components['/_answer1'].stateValues.submittedResponses).eqls(['monkey']);
       expect(components['/_choiceinput1'].stateValues.selectedValues).eqls(["cat", "dog", "monkey"]);
       expect(components['/_choiceinput1'].stateValues.selectedIndices).eqls([indexByName["cat"], indexByName["dog"], indexByName["monkey"]]);
     });
@@ -9174,11 +9225,11 @@ describe('Answer Tag Tests', function () {
     cy.get("#\\/sr").should('have.text', 'Submitted response: cat, dog, monkey')
     cy.get("#\\/credit").should('have.text', '0.6666666667')
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/_answer1'].stateValues.creditAchieved).eq(2 / 3);
-      expect(components['/_answer1'].stateValues.currentResponses).eqls(['cat', 'dog', 'monkey']);
-      expect(components['/_answer1'].stateValues.submittedResponses).eqls(['cat', 'dog', 'monkey']);
+      expect((await components['/_answer1'].stateValues.currentResponses)).eqls(['cat', 'dog', 'monkey']);
+      expect(await components['/_answer1'].stateValues.submittedResponses).eqls(['cat', 'dog', 'monkey']);
       expect(components['/_choiceinput1'].stateValues.selectedValues).eqls(["cat", "dog", "monkey"]);
       expect(components['/_choiceinput1'].stateValues.selectedIndices).eqls([indexByName["cat"], indexByName["dog"], indexByName["monkey"]]);
     });
@@ -9195,11 +9246,11 @@ describe('Answer Tag Tests', function () {
     cy.get("#\\/sr").should('have.text', 'Submitted response: cat, dog, monkey')
     cy.get("#\\/credit").should('have.text', '0.6666666667')
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/_answer1'].stateValues.creditAchieved).eq(2 / 3);
-      expect(components['/_answer1'].stateValues.currentResponses).eqls(['dog', 'monkey']);
-      expect(components['/_answer1'].stateValues.submittedResponses).eqls(['cat', 'dog', 'monkey']);
+      expect((await components['/_answer1'].stateValues.currentResponses)).eqls(['dog', 'monkey']);
+      expect(await components['/_answer1'].stateValues.submittedResponses).eqls(['cat', 'dog', 'monkey']);
       expect(components['/_choiceinput1'].stateValues.selectedValues).eqls(["dog", "monkey"]);
       expect(components['/_choiceinput1'].stateValues.selectedIndices).eqls([indexByName["dog"], indexByName["monkey"]]);
     });
@@ -9215,11 +9266,11 @@ describe('Answer Tag Tests', function () {
     cy.get("#\\/sr").should('have.text', 'Submitted response: dog, monkey')
     cy.get("#\\/credit").should('have.text', '0.3333333333')
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/_answer1'].stateValues.creditAchieved).eq(1 / 3);
-      expect(components['/_answer1'].stateValues.currentResponses).eqls(['dog', 'monkey']);
-      expect(components['/_answer1'].stateValues.submittedResponses).eqls(['dog', 'monkey']);
+      expect((await components['/_answer1'].stateValues.currentResponses)).eqls(['dog', 'monkey']);
+      expect(await components['/_answer1'].stateValues.submittedResponses).eqls(['dog', 'monkey']);
       expect(components['/_choiceinput1'].stateValues.selectedValues).eqls(["dog", "monkey"]);
       expect(components['/_choiceinput1'].stateValues.selectedIndices).eqls([indexByName["dog"], indexByName["monkey"]]);
     });
@@ -9229,7 +9280,7 @@ describe('Answer Tag Tests', function () {
 
 
   it('answer with choiceinput, no bug when submit first', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -9286,7 +9337,7 @@ describe('Answer Tag Tests', function () {
   });
 
   it('answer with variable number of choices', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -9318,7 +9369,7 @@ describe('Answer Tag Tests', function () {
     cy.get('#\\/_choiceinput1_incorrect').should('not.exist');
     cy.get('#\\/_choiceinput1_partial').should('not.exist');
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/_choiceinput1'].stateValues.choiceTexts.length).eq(3);
     })
@@ -9380,7 +9431,7 @@ describe('Answer Tag Tests', function () {
     cy.log("add another choice");
     cy.get("#\\/num textarea").type("{end}{backspace}4{enter}", { force: true });
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/_choiceinput1'].stateValues.choiceTexts.length).eq(4);
     })
@@ -9469,7 +9520,7 @@ describe('Answer Tag Tests', function () {
     cy.log("go back to 3 choices")
     cy.get("#\\/num textarea").type("{end}{backspace}3{enter}", { force: true });
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/_choiceinput1'].stateValues.choiceTexts.length).eq(3);
     })
@@ -9540,7 +9591,7 @@ describe('Answer Tag Tests', function () {
     cy.log("create 6 choices");
     cy.get("#\\/num textarea").type("{end}{backspace}6{enter}", { force: true });
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/_choiceinput1'].stateValues.choiceTexts.length).eq(6);
     })
@@ -9665,7 +9716,7 @@ describe('Answer Tag Tests', function () {
   });
 
   it('answer with user-defined choice and credit', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
       <text>a</text>
@@ -9684,7 +9735,7 @@ describe('Answer Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let choiceinputName = cesc(components['/_answer1'].stateValues.inputChildren[0].componentName);
       let choiceinputAnchor = '#' + choiceinputName;
@@ -9832,7 +9883,7 @@ describe('Answer Tag Tests', function () {
   });
 
   it('switch answer between inline and block', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
       <text>a</text>
@@ -9849,7 +9900,7 @@ describe('Answer Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let choiceinputName = cesc(components['/_answer1'].stateValues.inputChildren[0].componentName);
       let choiceinputAnchor = '#' + choiceinputName;
@@ -9926,7 +9977,7 @@ describe('Answer Tag Tests', function () {
   });
 
   it('answer, any letter', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -9966,7 +10017,7 @@ describe('Answer Tag Tests', function () {
   });
 
   it('answer element of user defined set', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -10035,7 +10086,7 @@ describe('Answer Tag Tests', function () {
   });
 
   it('answer based on math and text', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
         <text>a</text>
@@ -10059,7 +10110,7 @@ describe('Answer Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let sr1Anchor = cesc('#' + components['/sr1'].replacements[0].componentName);
       let sr2Anchor = cesc('#' + components['/sr2'].replacements[0].componentName);
@@ -10081,7 +10132,7 @@ describe('Answer Tag Tests', function () {
       cy.get('#\\/a_submit').click();
 
       // wrap to change value of sr anchors
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         sr1Anchor = cesc('#' + components['/sr1'].replacements[0].componentName);
         sr2Anchor = cesc('#' + components['/sr2'].replacements[0].componentName);
 
@@ -10125,7 +10176,7 @@ describe('Answer Tag Tests', function () {
   });
 
   it('answer based on math and text, match partial in answer', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
         <text>a</text>
@@ -10149,7 +10200,7 @@ describe('Answer Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let sr1Anchor = cesc('#' + components['/sr1'].replacements[0].componentName);
       let sr2Anchor = cesc('#' + components['/sr2'].replacements[0].componentName);
@@ -10171,7 +10222,7 @@ describe('Answer Tag Tests', function () {
       cy.get('#\\/a_submit').click();
 
       // wrap to change value of sr anchors
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         sr1Anchor = cesc('#' + components['/sr1'].replacements[0].componentName);
         sr2Anchor = cesc('#' + components['/sr2'].replacements[0].componentName);
 
@@ -10215,7 +10266,7 @@ describe('Answer Tag Tests', function () {
   });
 
   it('answer with submitted response based on point', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
         <text>a</text>
@@ -10239,7 +10290,7 @@ describe('Answer Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let srAnchor = cesc('#' + components['/sr'].replacements[0].componentName);
       let caAnchor = cesc('#' + components['/ca'].replacements[0].componentName);
@@ -10253,7 +10304,7 @@ describe('Answer Tag Tests', function () {
       cy.get('#\\/a_submit').click();
 
       // wrap to change value of srAnchor
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         srAnchor = cesc('#' + components['/sr'].replacements[0].componentName);
 
         cy.get(srAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -10261,7 +10312,7 @@ describe('Answer Tag Tests', function () {
         });
         cy.get(caAnchor).should('have.text', '0');
 
-        cy.window().then((win) => {
+        cy.window().then(async (win) => {
           point.movePoint({ x: 3, y: -3 });
 
           cy.get(srAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -10291,7 +10342,7 @@ describe('Answer Tag Tests', function () {
         });
 
 
-        cy.window().then((win) => {
+        cy.window().then(async (win) => {
           point.movePoint({ x: 8, y: 9 });
 
           cy.get(srAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -10313,7 +10364,7 @@ describe('Answer Tag Tests', function () {
   });
 
   it('answer with unicode', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -10323,7 +10374,7 @@ describe('Answer Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let mathinputName = components['/_answer1'].stateValues.inputChildren[0].componentName
       let mathinputAnchor = cesc('#' + mathinputName) + " textarea";
@@ -10359,7 +10410,7 @@ describe('Answer Tag Tests', function () {
   });
 
   it('mark targets as responses', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
         <text>a</text>
@@ -10379,7 +10430,7 @@ describe('Answer Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let crAnchor = cesc('#' + components['/cr'].replacements[0].componentName);
       let srAnchor = cesc('#' + components['/sr'].replacements[0].componentName);
@@ -10393,7 +10444,7 @@ describe('Answer Tag Tests', function () {
       });
       cy.get(caAnchor).should('have.text', '0')
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         expect(components["/a"].stateValues.nResponses).eq(1)
       });
 
@@ -10433,7 +10484,7 @@ describe('Answer Tag Tests', function () {
   });
 
   it('consider as responses', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
         <text>a</text>
@@ -10459,7 +10510,7 @@ describe('Answer Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let cr1Anchor = cesc('#' + components['/cr'].replacements[0].componentName);
       let cr2Anchor = cesc('#' + components['/cr'].replacements[1].componentName);
@@ -10481,7 +10532,7 @@ describe('Answer Tag Tests', function () {
       });
       cy.get(caAnchor).should('have.text', '0')
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         expect(components["/a"].stateValues.nResponses).eq(2)
       });
 
@@ -10557,7 +10608,7 @@ describe('Answer Tag Tests', function () {
 
 
   it('isResponse is not copied', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
         <text>a</text>
@@ -10584,7 +10635,7 @@ describe('Answer Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
 
 
-    cy.get('#\\/mi textarea').type('x{enter}', {force: true});
+    cy.get('#\\/mi textarea').type('x{enter}', { force: true });
     cy.get('#\\/ans_submit').click();
     cy.get('#\\/ans_correct').should('be.visible')
     cy.get('#\\/sr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -10593,7 +10644,7 @@ describe('Answer Tag Tests', function () {
     cy.get('#\\/sr2').should('not.exist')
     cy.get('#\\/sr3').should('not.exist')
 
-    cy.get('#\\/mi textarea').type('{end}{backspace}y{enter}', {force: true});
+    cy.get('#\\/mi textarea').type('{end}{backspace}y{enter}', { force: true });
     cy.get('#\\/ans_submit').click();
     cy.get('#\\/ans_partial').invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('90% correct')
@@ -10605,7 +10656,7 @@ describe('Answer Tag Tests', function () {
     cy.get('#\\/sr3').should('not.exist')
 
 
-    cy.get('#\\/mi textarea').type('{end}{backspace}z{enter}', {force: true});
+    cy.get('#\\/mi textarea').type('{end}{backspace}z{enter}', { force: true });
     cy.get('#\\/ans_submit').click();
     cy.get('#\\/ans_partial').invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('80% correct')
@@ -10621,7 +10672,7 @@ describe('Answer Tag Tests', function () {
 
 
   it('isResponse from targetsAreResponses is not copied', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
         <text>a</text>
@@ -10648,7 +10699,7 @@ describe('Answer Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
 
 
-    cy.get('#\\/mi textarea').type('x{enter}', {force: true});
+    cy.get('#\\/mi textarea').type('x{enter}', { force: true });
     cy.get('#\\/ans_submit').click();
     cy.get('#\\/ans_correct').should('be.visible')
     cy.get('#\\/sr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -10657,7 +10708,7 @@ describe('Answer Tag Tests', function () {
     cy.get('#\\/sr2').should('not.exist')
     cy.get('#\\/sr3').should('not.exist')
 
-    cy.get('#\\/mi textarea').type('{end}{backspace}y{enter}', {force: true});
+    cy.get('#\\/mi textarea').type('{end}{backspace}y{enter}', { force: true });
     cy.get('#\\/ans_submit').click();
     cy.get('#\\/ans_partial').invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('90% correct')
@@ -10669,7 +10720,7 @@ describe('Answer Tag Tests', function () {
     cy.get('#\\/sr3').should('not.exist')
 
 
-    cy.get('#\\/mi textarea').type('{end}{backspace}z{enter}', {force: true});
+    cy.get('#\\/mi textarea').type('{end}{backspace}z{enter}', { force: true });
     cy.get('#\\/ans_submit').click();
     cy.get('#\\/ans_partial').invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('80% correct')
@@ -10685,7 +10736,7 @@ describe('Answer Tag Tests', function () {
   });
 
   it('isResponse from targetsAreResponses is not recursively copied', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
         <text>a</text>
@@ -10712,7 +10763,7 @@ describe('Answer Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
 
 
-    cy.get('#\\/mi textarea').type('x{enter}', {force: true});
+    cy.get('#\\/mi textarea').type('x{enter}', { force: true });
     cy.get('#\\/ans_submit').click();
     cy.get('#\\/ans_correct').should('be.visible')
     cy.get('#\\/sr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -10721,7 +10772,7 @@ describe('Answer Tag Tests', function () {
     cy.get('#\\/sr2').should('not.exist')
     cy.get('#\\/sr3').should('not.exist')
 
-    cy.get('#\\/mi textarea').type('{end}{backspace}y{enter}', {force: true});
+    cy.get('#\\/mi textarea').type('{end}{backspace}y{enter}', { force: true });
     cy.get('#\\/ans_submit').click();
     cy.get('#\\/ans_partial').invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('90% correct')
@@ -10733,7 +10784,7 @@ describe('Answer Tag Tests', function () {
     cy.get('#\\/sr3').should('not.exist')
 
 
-    cy.get('#\\/mi textarea').type('{end}{backspace}z{enter}', {force: true});
+    cy.get('#\\/mi textarea').type('{end}{backspace}z{enter}', { force: true });
     cy.get('#\\/ans_submit').click();
     cy.get('#\\/ans_partial').invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('80% correct')
@@ -10750,7 +10801,7 @@ describe('Answer Tag Tests', function () {
 
 
   it('immediate value used for submit button', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
         <text>a</text>
@@ -10769,7 +10820,7 @@ describe('Answer Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let crAnchor = cesc('#' + components['/cr'].replacements[0].componentName);
       let srAnchor = cesc('#' + components['/sr'].replacements[0].componentName);
@@ -10885,6 +10936,7 @@ describe('Answer Tag Tests', function () {
       cy.get(correctAnchor).should('not.exist');
       cy.get(incorrectAnchor).should('not.exist');
 
+      cy.get(crAnchor + ' .mjx-mrow').should('have.text', '5')
       cy.get(crAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('5')
       });
@@ -10915,7 +10967,7 @@ describe('Answer Tag Tests', function () {
     let options = ["meow", "woof", "squeak", "blub"]
     for (let ind = 1; ind <= 4; ind++) {
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         win.postMessage({
           doenetML: `
         <text>${ind}</text>
@@ -10977,7 +11029,7 @@ describe('Answer Tag Tests', function () {
     let options = ["meow", "woof", "squeak", "blub"]
     for (let ind = 1; ind <= 4; ind++) {
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         win.postMessage({
           doenetML: `
         <text>${ind}</text>
@@ -11014,7 +11066,7 @@ describe('Answer Tag Tests', function () {
 
       cy.get('#\\/_text1').should('have.text', `${ind}`);  // to wait until loaded
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let components = Object.assign({}, win.state.components);
 
         let textinputName = components['/ans'].stateValues.inputChildren[0].componentName
@@ -11044,7 +11096,7 @@ describe('Answer Tag Tests', function () {
   });
 
   it('number of awards credited', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
         <text>a</text>
@@ -11502,7 +11554,7 @@ describe('Answer Tag Tests', function () {
   });
 
   it('number of awards credited 2', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
         <text>a</text>
@@ -11792,7 +11844,7 @@ describe('Answer Tag Tests', function () {
   });
 
   it('number of awards credited, zero credits are triggered', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
         <text>a</text>
@@ -11979,7 +12031,7 @@ describe('Answer Tag Tests', function () {
   });
 
   it('nSubmissions', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -11999,7 +12051,7 @@ describe('Answer Tag Tests', function () {
     cy.get('#\\/nsubs1').should('have.text', 0);
     cy.get('#\\/nsubs2').should('have.text', 0);
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       expect(components["/_answer1"].stateValues.nSubmissions).eq(0);
       expect(components["/nsubs1"].stateValues.value).eq(0);
@@ -12101,7 +12153,7 @@ describe('Answer Tag Tests', function () {
   });
 
   it('answer with choiceinput inside invalid child logic', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -12155,7 +12207,7 @@ describe('Answer Tag Tests', function () {
   });
 
   it('maximum number of attempts', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -12230,7 +12282,7 @@ describe('Answer Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
 
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
 
       let inputNames = [...Array(20).keys()].map(n => components[`/_answer${n + 1}`].stateValues.inputChildren[0].componentName);
@@ -12423,7 +12475,7 @@ describe('Answer Tag Tests', function () {
   });
 
   it('disable after correct', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -12498,7 +12550,7 @@ describe('Answer Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
 
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
 
       let inputNames = [...Array(20).keys()].map(n => components[`/_answer${n + 1}`].stateValues.inputChildren[0].componentName);
@@ -12690,7 +12742,7 @@ describe('Answer Tag Tests', function () {
   });
 
   it('disable after correct, depends on external', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -12760,7 +12812,7 @@ describe('Answer Tag Tests', function () {
     }
 
     cy.log('submit first correct answers')
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       components["/A"].movePoint({ x: 3, y: 4 })
     })
@@ -12776,7 +12828,7 @@ describe('Answer Tag Tests', function () {
     }
 
     cy.log('submit second correct answers')
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       components["/A"].movePoint({ x: -5, y: 6 })
     })
@@ -12795,7 +12847,7 @@ describe('Answer Tag Tests', function () {
 
 
     cy.log('submit second incorrect answers')
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       components["/A"].movePoint({ x: 1, y: -1 })
     })
@@ -12814,7 +12866,7 @@ describe('Answer Tag Tests', function () {
   });
 
   it('award based on choice text', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -12846,7 +12898,7 @@ describe('Answer Tag Tests', function () {
   });
 
   it('error expressions are not matched', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -12857,7 +12909,7 @@ describe('Answer Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let mathinput1Name = components['/_answer1'].stateValues.inputChildren[0].componentName
       let mathinput1Anchor = cesc('#' + mathinput1Name) + " textarea";
@@ -12892,7 +12944,7 @@ describe('Answer Tag Tests', function () {
   });
 
   it('with split symbols', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -12910,7 +12962,7 @@ describe('Answer Tag Tests', function () {
     cy.get('#\\/mi textarea').type("xyz{enter}", { force: true })
     cy.get('#\\/mi_correct').should('be.visible')
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       expect(components["/ans"].stateValues.value.tree).eqls("xyz");
       expect(components["/mi"].stateValues.value.tree).eqls("xyz");
@@ -12923,7 +12975,7 @@ describe('Answer Tag Tests', function () {
 
     cy.get('#\\/mi_correct').should('be.visible')
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       expect(components["/ans"].stateValues.value.tree).eqls(["*", "x", "y", "z"]);
       expect(components["/mi"].stateValues.value.tree).eqls(["*", "x", "y", "z"]);
@@ -12937,7 +12989,7 @@ describe('Answer Tag Tests', function () {
 
     cy.get('#\\/mi_correct').should('be.visible')
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       expect(components["/ans"].stateValues.value.tree).eqls("xyz");
       expect(components["/mi"].stateValues.value.tree).eqls("xyz");
@@ -12946,7 +12998,7 @@ describe('Answer Tag Tests', function () {
   });
 
   it('justSubmitted with expression containing NaN', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -12962,7 +13014,7 @@ describe('Answer Tag Tests', function () {
   });
 
   it('copy justSubmitted attribute', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -13016,7 +13068,7 @@ describe('Answer Tag Tests', function () {
   });
 
   it('empty mathlists always equal', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>

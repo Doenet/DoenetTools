@@ -230,7 +230,7 @@ export default class Constraints extends BaseComponent {
 
       },
 
-      inverseArrayDefinitionByKey: function ({
+      inverseArrayDefinitionByKey: async function ({
         desiredStateVariableValues, globalDependencyValues,
         dependencyValuesByKey, dependencyNamesByKey, stateValues, workspace }) {
 
@@ -296,12 +296,13 @@ export default class Constraints extends BaseComponent {
           }
           Object.assign(workspace.desiredConstraintResults, desiredStateVariableValues.constraintResults);
 
-          for (let arrayKey in stateValues.constraintResults) {
+          let SVconstraintResults = await stateValues.constraintResults;
+          for (let arrayKey in SVconstraintResults) {
             let varEnding = Number(arrayKey) + 1;
             if (arrayKey in workspace.desiredConstraintResults) {
               variables['x' + varEnding] = convertValueToMathExpression(workspace.desiredConstraintResults[arrayKey]);
             } else {
-              variables['x' + varEnding] = convertValueToMathExpression(stateValues.constraintResults[arrayKey]);
+              variables['x' + varEnding] = convertValueToMathExpression(SVconstraintResults[arrayKey]);
             }
           }
 

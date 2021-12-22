@@ -73,7 +73,7 @@ export default class CustomAttribute extends CompositeComponent {
   }
 
 
-  static createSerializedReplacements({ component, components, workspace,
+  static async createSerializedReplacements({ component, components, workspace,
     componentInfoObjects, flags,
   }) {
 
@@ -93,13 +93,15 @@ export default class CustomAttribute extends CompositeComponent {
       return { replacements: [] };
     }
 
-    let componentForAttribute = components[component.stateValues.componentNameForAttributes];
+    let componentForAttribute = components[await component.stateValues.componentNameForAttributes];
     let attributeLowerCaseMapping = {};
 
     for (let attrName in componentForAttribute.attributes) {
       attributeLowerCaseMapping[attrName.toLowerCase()] = attrName;
     }
-    let attributeName = attributeLowerCaseMapping[component.stateValues.attributeName.toLowerCase()];
+
+    let SVattributeName = await component.stateValues.attributeName;
+    let attributeName = attributeLowerCaseMapping[SVattributeName.toLowerCase()];
 
     let attributeValue = componentForAttribute.attributes[attributeName];
 
@@ -118,8 +120,8 @@ export default class CustomAttribute extends CompositeComponent {
     let containerClass = componentForAttribute.constructor;
     let containerAttrNames = Object.keys(containerClass.createAttributesObject({ flags })).map(x => x.toLowerCase());
     containerAttrNames.push("name", "tname", "assignnames")
-    if (containerAttrNames.includes(component.stateValues.attributeName.toLowerCase())) {
-      console.warn(`Cannot add attribute ${component.stateValues.attributeName} of a ${containerClass.componentType} as it already exists in ${containerClass.componentType} class`)
+    if (containerAttrNames.includes(SVattributeName.toLowerCase())) {
+      console.warn(`Cannot add attribute ${SVattributeName} of a ${containerClass.componentType} as it already exists in ${containerClass.componentType} class`)
       return { replacements: [] }
     }
 

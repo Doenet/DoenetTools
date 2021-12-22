@@ -543,7 +543,7 @@ export default class Document extends BaseComponent {
           if (!subvar.subvariants && previousValues.generatedVariantInfo) {
             // check if previously had subvariants
             let previousSubvariants = previousValues.generatedVariantInfo.subvariants;
-            if (previousSubvariants[ind].subvariants) {
+            if (previousSubvariants[ind]?.subvariants) {
               subvariants[ind] = Object.assign({}, subvariants[ind]);
               subvariants[ind].subvariants = previousSubvariants[ind].subvariants;
             }
@@ -599,8 +599,8 @@ export default class Document extends BaseComponent {
     });
 
 
-    for (let answer of this.stateValues.answerDescendants) {
-      if (!answer.stateValues.justSubmitted) {
+    for (let answer of await this.stateValues.answerDescendants) {
+      if (!await answer.stateValues.justSubmitted) {
         await this.coreFunctions.performAction({
           componentName: answer.componentName,
           actionName: "submitAnswer"
@@ -609,7 +609,7 @@ export default class Document extends BaseComponent {
     }
   }
 
-  static setUpVariant({ serializedComponent, sharedParameters, definingChildrenSoFar,
+  static async setUpVariant({ serializedComponent, sharedParameters, definingChildrenSoFar,
     descendantVariantComponents,
     allComponentClasses }) {
 
@@ -684,11 +684,11 @@ export default class Document extends BaseComponent {
 
     } else {
       // get parameters from variant control child
-      sharedParameters.variantSeed = variantControlChild.state.selectedSeed.value;
-      sharedParameters.variantName = variantControlChild.state.selectedVariantName.value;
-      sharedParameters.variantIndex = variantControlChild.state.selectedVariantIndex.value;
-      sharedParameters.selectRng = variantControlChild.state.selectRng.value;
-      sharedParameters.allPossibleVariants = variantControlChild.state.variantNames.value;
+      sharedParameters.variantSeed = await variantControlChild.state.selectedSeed.value;
+      sharedParameters.variantName = await variantControlChild.state.selectedVariantName.value;
+      sharedParameters.variantIndex = await variantControlChild.state.selectedVariantIndex.value;
+      sharedParameters.selectRng = await variantControlChild.state.selectRng.value;
+      sharedParameters.allPossibleVariants = await variantControlChild.state.variantNames.value;
     }
 
     // seed rng for random numbers predictably from variant using selectRng

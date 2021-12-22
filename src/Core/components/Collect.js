@@ -291,16 +291,16 @@ export default class Collect extends CompositeComponent {
 
 
 
-  static createSerializedReplacements({ component, components, workspace,
+  static async createSerializedReplacements({ component, components, workspace,
     componentInfoObjects,
     nComponentsForSource,
     publicCaseInsensitiveAliasSubstitutions
   }) {
 
     // console.log(`create serialized replacements for ${component.componentName}`)
-    // console.log(component.stateValues.collectedComponents)
+    // console.log(await component.stateValues.collectedComponents)
 
-    if (!component.stateValues.targetComponent) {
+    if (!await component.stateValues.targetComponent) {
       return { replacements: [] };
     }
 
@@ -316,10 +316,11 @@ export default class Collect extends CompositeComponent {
 
     let compositeAttributesObj = this.createAttributesObject({});
 
-    for (let collectedNum = 0; collectedNum < component.stateValues.collectedComponents.length; collectedNum++) {
-      if (component.stateValues.collectedComponents[collectedNum]) {
+    let collectedComponents = await component.stateValues.collectedComponents;
+    for (let collectedNum = 0; collectedNum < collectedComponents.length; collectedNum++) {
+      if (collectedComponents[collectedNum]) {
         let uniqueIdentifiersUsed = workspace.uniqueIdentifiersUsedByCollected[collectedNum] = [];
-        let results = this.createReplacementForCollected({
+        let results = await this.createReplacementForCollected({
           component,
           collectedNum,
           components,
@@ -347,7 +348,7 @@ export default class Collect extends CompositeComponent {
     }
 
     workspace.numReplacementsByCollected = numReplacementsByCollected;
-    workspace.collectedNames = component.stateValues.collectedComponents.map(x => x.componentName)
+    workspace.collectedNames = collectedComponents.map(x => x.componentName)
     workspace.replacementNamesByCollected = replacementNamesByCollected;
     return { replacements };
 
@@ -355,7 +356,7 @@ export default class Collect extends CompositeComponent {
 
 
 
-  static createReplacementForCollected({ component, components, collectedNum,
+  static async createReplacementForCollected({ component, components, collectedNum,
     numReplacementsSoFar, uniqueIdentifiersUsed, componentInfoObjects,
     compositeAttributesObj,
     nComponentsForSource,
@@ -365,7 +366,7 @@ export default class Collect extends CompositeComponent {
     // console.log(`create replacement for collected ${collectedNum}, ${numReplacementsSoFar}`)
 
 
-    let collectedObj = component.stateValues.collectedComponents[collectedNum];
+    let collectedObj = (await component.stateValues.collectedComponents)[collectedNum];
     let collectedName = collectedObj.componentName;
     let collectedComponent = components[collectedName];
 
@@ -382,12 +383,13 @@ export default class Collect extends CompositeComponent {
 
     let newNamespace = component.attributes.newNamespace && component.attributes.newNamespace.primitive;
 
-    if (component.stateValues.propName) {
+    let propName = await component.stateValues.propName;
+    if (propName) {
 
-      let results = replacementFromProp({
+      let results = await replacementFromProp({
         component, components,
         replacementSource: collectedObj,
-        propName: component.stateValues.propName,
+        propName,
         // numReplacementsSoFar,
         uniqueIdentifiersUsed,
         compositeAttributesObj,
@@ -401,7 +403,7 @@ export default class Collect extends CompositeComponent {
 
     } else {
 
-      let serializedCopy = [collectedComponent.serialize({ forLink: true })];
+      let serializedCopy = [await collectedComponent.serialize()];
 
       serializedReplacements = postProcessCopy({
         serializedComponents: serializedCopy,
@@ -441,14 +443,14 @@ export default class Collect extends CompositeComponent {
   }
 
 
-  static calculateReplacementChanges({ component, componentChanges, components, workspace,
+  static async calculateReplacementChanges({ component, componentChanges, components, workspace,
     componentInfoObjects,
     nComponentsForSource,
     publicCaseInsensitiveAliasSubstitutions
   }) {
 
     // console.log("Calculating replacement changes for " + component.componentName);
-    // console.log(component.stateValues.collectedComponents.map(x => x.componentName))
+    // console.log((await component.stateValues.collectedComponents).map(x => x.componentName))
     // console.log(deepClone(workspace));
     // console.log(component.replacements.map(x => x.componentName))
 
@@ -483,14 +485,15 @@ export default class Collect extends CompositeComponent {
     let propVariablesCopiedByCollected = [];
     let replacementNamesByCollected = [];
 
-    let maxCollectedLength = Math.max(component.stateValues.collectedComponents.length, workspace.numReplacementsByCollected.length);
+    let collectedComponents = await component.stateValues.collectedComponents;
+    let maxCollectedLength = Math.max(collectedComponents.length, workspace.numReplacementsByCollected.length);
 
     let recreateRemaining = false;
 
     let compositeAttributesObj = this.createAttributesObject({});
 
     for (let collectedNum = 0; collectedNum < maxCollectedLength; collectedNum++) {
-      let collected = component.stateValues.collectedComponents[collectedNum];
+      let collected = collectedComponents[collectedNum];
       if (collected === undefined) {
         if (workspace.numReplacementsByCollected[collectedNum] > 0) {
 
@@ -551,7 +554,7 @@ export default class Collect extends CompositeComponent {
         }
 
         let uniqueIdentifiersUsed = workspace.uniqueIdentifiersUsedByCollected[collectedNum] = [];
-        let results = this.recreateReplacements({
+        let results = await this.recreateReplacements({
           component,
           collectedNum,
           numReplacementsSoFar,
@@ -600,7 +603,7 @@ export default class Collect extends CompositeComponent {
         continue;
       }
 
-      if (!component.stateValues.propName) {
+      if (!await component.stateValues.propName) {
         numReplacementsSoFar += workspace.numReplacementsByCollected[collectedNum];
         numReplacementsByCollected[collectedNum] = workspace.numReplacementsByCollected[collectedNum];
         replacementNamesByCollected[collectedNum] = workspace.replacementNamesByCollected[collectedNum];
@@ -613,7 +616,7 @@ export default class Collect extends CompositeComponent {
       // use new uniqueIdentifiersUsed
       // so will get the same names for pieces that match
       let uniqueIdentifiersUsed = workspace.uniqueIdentifiersUsedByCollected[collectedNum] = [];
-      let results = this.createReplacementForCollected({
+      let results = await this.createReplacementForCollected({
         component,
         collectedNum,
         components,
@@ -692,7 +695,7 @@ export default class Collect extends CompositeComponent {
 
 
     workspace.numReplacementsByCollected = numReplacementsByCollected;
-    workspace.collectedNames = component.stateValues.collectedComponents.map(x => x.componentName)
+    workspace.collectedNames = collectedComponents.map(x => x.componentName)
     workspace.propVariablesCopiedByCollected = propVariablesCopiedByCollected;
     workspace.replacementNamesByCollected = replacementNamesByCollected;
 
@@ -700,14 +703,14 @@ export default class Collect extends CompositeComponent {
 
   }
 
-  static recreateReplacements({ component, collectedNum, numReplacementsSoFar,
+  static async recreateReplacements({ component, collectedNum, numReplacementsSoFar,
     numReplacementsToDelete,
     uniqueIdentifiersUsed, components, componentInfoObjects, compositeAttributesObj,
     nComponentsForSource,
     publicCaseInsensitiveAliasSubstitutions
   }) {
 
-    let results = this.createReplacementForCollected({
+    let results = await this.createReplacementForCollected({
       component, collectedNum, components, numReplacementsSoFar, uniqueIdentifiersUsed,
       componentInfoObjects, compositeAttributesObj,
       nComponentsForSource,

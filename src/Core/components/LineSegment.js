@@ -224,7 +224,7 @@ export default class LineSegment extends GraphicalComponent {
         return result;
 
       },
-      inverseArrayDefinitionByKey({ desiredStateVariableValues,
+      async inverseArrayDefinitionByKey({ desiredStateVariableValues,
         dependencyValuesByKey, dependencyNamesByKey, initialChange, stateValues,
       }) {
 
@@ -235,7 +235,7 @@ export default class LineSegment extends GraphicalComponent {
 
 
         // if not draggable, then disallow initial change 
-        if (initialChange && !stateValues.draggable) {
+        if (initialChange && !await stateValues.draggable) {
           return { success: false };
         }
 
@@ -475,7 +475,7 @@ export default class LineSegment extends GraphicalComponent {
   }
 
 
-  moveLineSegment({ point1coords, point2coords, transient }) {
+  async moveLineSegment({ point1coords, point2coords, transient }) {
 
     let newComponents = {};
 
@@ -490,7 +490,7 @@ export default class LineSegment extends GraphicalComponent {
 
     if (transient) {
 
-      return this.coreFunctions.performUpdate({
+      return await this.coreFunctions.performUpdate({
         updateInstructions: [{
           componentName: this.componentName,
           updateType: "updateValue",
@@ -500,7 +500,7 @@ export default class LineSegment extends GraphicalComponent {
         transient: true,
       });
     } else {
-      return this.coreFunctions.performUpdate({
+      return await this.coreFunctions.performUpdate({
         updateInstructions: [{
           componentName: this.componentName,
           updateType: "updateValue",
@@ -523,14 +523,15 @@ export default class LineSegment extends GraphicalComponent {
 
   }
 
-  finalizeLineSegmentPosition() {
+  async finalizeLineSegmentPosition() {
     // trigger a moveLine 
     // to send the final values with transient=false
     // so that the final position will be recorded
 
-    return this.actions.moveLineSegment({
-      point1coords: this.stateValues.numericalEndpoints[0],
-      point2coords: this.stateValues.numericalEndpoints[1],
+    let numericalEndpoints = await this.stateValues.numericalEndpoints;
+    return await this.actions.moveLineSegment({
+      point1coords: numericalEndpoints[0],
+      point2coords: numericalEndpoints[1],
       transient: false,
     });
   }
