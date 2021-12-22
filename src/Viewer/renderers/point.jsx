@@ -1,21 +1,22 @@
-import React, {useContext, useEffect, useState} from 'react';
+import React, {useContext, useEffect, useState, useRef} from 'react';
 import DoenetRenderer from './DoenetRenderer';
 import useDoenetRender from './useDoenetRenderer';
 import { BoardContext } from './graph';
 
-export default function Point(props){
-  let {name, SVs, children, actions} = useDoenetRender(props);
+//TODO: handle change of label position (from SVs)
+// export  function Point2(props){
+  export default function Point(props){
+  let {name, SVs, actions} = useDoenetRender(props);
 
   const board = useContext(BoardContext);
   const [pointJXG,setPointJXG] = useState({})
-  const [pointerAtDown,setPointerAtDown] = useState([])
-  const [pointAtDown,setPointAtDown] = useState([])
-  const [dragged,setDragged] = useState(false)
-  
+
+  let pointerAtDown = useRef(false);
+  let pointAtDown = useRef(false);
+  let dragged = useRef(false);
 
   useEffect(()=>{
     if (board){
-
     let fillColor = SVs.open ? "white" : SVs.selectedStyle.markerColor;
 
     //things to be passed to JSXGraph as attributes
@@ -76,7 +77,6 @@ export default function Point(props){
       }
     }
 
-
     if (SVs.draggable && !SVs.fixed) {
       jsxPointAttributes.highlightFillColor = "#EEEEEE";
       jsxPointAttributes.highlightStrokeColor = "#C3D9FF";
@@ -100,53 +100,22 @@ export default function Point(props){
 
     let newPointJXG = board.create('point', coords, jsxPointAttributes);
 
-    // this.previousWithLabel = SVs.showLabel && SVs.label !== "";
-    // this.previousLabelPosition = SVs.labelPosition;
-
-    setPointJXG(newPointJXG)
-    }else{
-      //Not on a board (Not agraph component child)
-      if (window.MathJax) {
-        window.MathJax.Hub.Config({ showProcessingMessages: false, "fast-preview": { disabled: true } });
-        window.MathJax.Hub.processSectionDelay = 0;
-        window.MathJax.Hub.Queue(["Typeset", window.MathJax.Hub, "#" + name]);
-      }
-    }
-    //On unmount
-    return ()=>{
-      // if point is defined
-    //   this.pointJXG.off('drag');
-    // this.pointJXG.off('down');
-    // this.pointJXG.off('up');
-    // this.props.board.removeObject(this.pointJXG);
-    // delete this.pointJXG;
-    }
-  },[])
-
-
-  useEffect(()=>{
-    //Only create handlers after pointJXG is defined
-    if (Object.keys(pointJXG).length !== 0 ){
-
-    pointJXG.on('down', function (e) {
-      setPointerAtDown([e.x, e.y]);
-      setPointAtDown([...pointJXG.coords.scrCoords])
-      setDragged(false);
+    newPointJXG.on('down', function (e) {
+      pointerAtDown.current =[e.x, e.y];
+      pointAtDown.current = [...newPointJXG.coords.scrCoords]
+      dragged.current = false;
     });
 
-  }
+    newPointJXG.on('up', function (e) {
 
-  },[pointJXG])
+      if (dragged.current) {
+        actions.finalizePointPosition();
+      } else if(SVs.switchable && !SVs.fixed) {
+        actions.switchPoint();
+      }
+    })
 
-  useEffect(()=>{
-    //Only create handlers after pointJXG is defined
-    //pointAtDown and pointerAtDown can be undefined so skip those
-    if (Object.keys(pointJXG).length !== 0 &&
-    pointerAtDown.length > 0 &&
-    pointAtDown.length > 0
-    ){
-    pointJXG.on('drag', function (e) {
-
+    newPointJXG.on('drag', function (e) {
       // the reason we calculate point position with this algorithm,
     // rather than using .X() and .Y() directly
     // is that attributes .X() and .Y() are affected by the
@@ -162,13 +131,12 @@ export default function Point(props){
 
     let [xmin, ymax, xmax, ymin] = board.getBoundingBox();
 
-
-    let calculatedX = (pointAtDown[1] + e.x - pointerAtDown[0]
+    let calculatedX = (pointAtDown.current[1] + e.x - pointerAtDown.current[0]
       - o[1]) / board.unitX;
     calculatedX = Math.min(xmax, Math.max(xmin, calculatedX));
 
     let calculatedY = (o[2] -
-      (pointAtDown[2] + e.y - pointerAtDown[1]))
+      (pointAtDown.current[2] + e.y - pointerAtDown.current[1]))
       / board.unitY;
     calculatedY = Math.min(ymax, Math.max(ymin, calculatedY))
 
@@ -178,54 +146,72 @@ export default function Point(props){
         transient: true,
         skippable: true,
       });
-      setDragged(true);
+
+      //Protect against very small unintended drags
+      if (
+        Math.abs(e.x - pointerAtDown.current[0]) > .1 ||
+        Math.abs(e.y - pointerAtDown.current[1]) > .1 
+      ){
+        dragged.current = true
+      }
 
     });
 
+    setPointJXG(newPointJXG)
+    }else{
+      //Not on a board (Not a graph component child)
+      if (window.MathJax) {
+        window.MathJax.Hub.Config({ showProcessingMessages: false, "fast-preview": { disabled: true } });
+        window.MathJax.Hub.processSectionDelay = 0;
+        window.MathJax.Hub.Queue(["Typeset", window.MathJax.Hub, "#" + name]);
+      }
+    }
+    //On unmount
+    return ()=>{
+      // if point is defined
+      if (Object.keys(pointJXG).length !== 0){
+        pointJXG.off('drag');
+        pointJXG.off('down');
+        pointJXG.off('up');
+        board.removeObject(pointJXG);
+        setPointJXG({})
+      }
     
-
-  }
-  },[pointerAtDown,pointAtDown])
-
-
-  //makes it slow. WHY?
-  // useEffect(()=>{
-    // console.log(">>>>dragged",dragged)
-    // if (Object.keys(pointJXG).length !== 0){
-
-    //   pointJXG.on('up', function (e) {
-    //     console.log('up dragged',dragged)
-    //     if (dragged) {
-    //       console.log("finalizePointPosition")
-        
-    //       actions.finalizePointPosition();
-    //     } else if(SVs.switchable && !SVs.fixed) {
-    //       actions.switchPoint();
-    //     console.log("switchPoint")
-
-    //     }
-    //   })
-    // }
-  // },[dragged])
+    }
+  },[])
 
   if (SVs.hidden) {
     return null;
   }
 
+  if (Object.keys(pointJXG).length !== 0){
+    //if values update
+    let newFillColor = SVs.open ? "white" : SVs.selectedStyle.markerColor;
+    if (pointJXG.visProp.fillcolor !== newFillColor) {
+      pointJXG.visProp.fillcolor = newFillColor;
+    }
+
+    pointJXG.needsUpdate = true;
+    pointJXG.update();
+    board.updateRenderer();
+  }
+
   if (board) {
+
+    
+
 
     return <a name={name} />
   }
 
-
-
+  //Render text coordinates when outside of graph
+  if (window.MathJax) {
+    window.MathJax.Hub.Queue(["Typeset", window.MathJax.Hub, "#" + this.componentName]);
+  }
+  
   let mathJaxify = "\\(" + SVs.coordsForDisplay.toLatex() + "\\)";
   return <><a name={name} /><span id={name}>{mathJaxify}</span></>
 }
-
-
-
-
 
 
 
@@ -345,6 +331,7 @@ export class Point2 extends DoenetRenderer {
     }.bind(this));
 
     this.pointJXG.on('down', function (e) {
+
       this.dragged = false;
       this.pointerAtDown = [e.x, e.y];
       this.pointAtDown =
@@ -416,10 +403,10 @@ export class Point2 extends DoenetRenderer {
     if (this.pointJXG.visProp.strokecolor !== this.doenetSvData.selectedStyle.markerColor) {
       this.pointJXG.visProp.strokecolor = this.doenetSvData.selectedStyle.markerColor;
     }
-    let newFillColor = this.doenetSvData.open ? "white" : this.doenetSvData.selectedStyle.markerColor;
-    if (this.pointJXG.visProp.fillcolor !== newFillColor) {
-      this.pointJXG.visProp.fillcolor = newFillColor;
-    }
+    // let newFillColor = this.doenetSvData.open ? "white" : this.doenetSvData.selectedStyle.markerColor;
+    // if (this.pointJXG.visProp.fillcolor !== newFillColor) {
+    //   this.pointJXG.visProp.fillcolor = newFillColor;
+    // }
 
     let newFace = normalizeStyle(this.doenetSvData.selectedStyle.markerStyle);
     if (this.pointJXG.visProp.face !== newFace) {
@@ -441,7 +428,7 @@ export class Point2 extends DoenetRenderer {
       this.pointJXG.visProp.fixed = true;
     }
 
-
+    //Update only when the change was initiated with this point
     if (sourceOfUpdate && sourceOfUpdate.sourceInformation &&
       this.componentName in sourceOfUpdate.sourceInformation
     ) {
@@ -574,6 +561,7 @@ export class Point2 extends DoenetRenderer {
   }
 
   render() {
+
 
     if (this.props.board) {
       return <a name={this.componentName} />
