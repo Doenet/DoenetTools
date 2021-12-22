@@ -105,7 +105,6 @@ export default class Sequence extends CompositeComponent {
 
     let newNamespace = component.attributes.newNamespace && component.attributes.newNamespace.primitive;
 
-    let replacements = [];
 
     let sequenceValues = returnSequenceValues({
       from: component.stateValues.from,
@@ -120,6 +119,12 @@ export default class Sequence extends CompositeComponent {
     if (component.stateValues.type === "letters") {
       componentType = "text"
     }
+
+    // if (component.stateValues.type === "number" || component.stateValues.type === "letters") {
+    //   return { replacements: sequenceValues };
+    // }
+
+    let replacements = [];
 
     for (let componentValue of sequenceValues) {
 

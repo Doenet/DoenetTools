@@ -100,6 +100,10 @@ export default class Template extends CompositeComponent {
       let newNamespace = component.attributes.newNamespace && component.attributes.newNamespace.primitive;
 
       for (let repl of replacements) {
+        if (typeof repl !== "object") {
+          continue;
+        }
+
         // pass isResponse to replacements
         let attributesFromComposite = {};
 

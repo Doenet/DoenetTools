@@ -20,7 +20,7 @@ export default class Table extends DoenetRenderer {
     if (this.doenetSvData.titleChildName) {
       let titleChildInd;
       for (let [ind, child] of this.children.entries()) {
-        if (child.props.componentInstructions.componentName === this.doenetSvData.titleChildName) {
+        if (typeof child !== "string" && child.props.componentInstructions.componentName === this.doenetSvData.titleChildName) {
           titleChildInd = ind;
           break;
         }

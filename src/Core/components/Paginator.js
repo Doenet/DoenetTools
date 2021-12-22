@@ -81,8 +81,8 @@ export class Paginator extends Template {
                   if (ntsComp.children) {
                     // look for a string child
                     for (let child of ntsComp.children) {
-                      if (child.componentType === "string") {
-                        let n = Number(child.state.value);
+                      if (typeof child === "string") {
+                        let n = Number(child);
                         if (Number.isFinite(n)) {
                           numberToSelect = Math.round(n);
                           break;
@@ -196,6 +196,7 @@ export class Paginator extends Template {
             variableNames: ["creditAchieved", "percentCreditAchieved"],
             recursive: true,
             recurseNonStandardComposites: true,
+            includeWithheldReplacements: true,
           }
         }
         return dependencies;
@@ -773,7 +774,8 @@ export class PaginatorPage extends Template {
       returnDependencies: ({ stateValues }) => ({
         mirrorPageReplacements: {
           dependencyType: "replacement",
-          compositeName: stateValues.mirrorPage.componentName
+          compositeName: stateValues.mirrorPage.componentName,
+          includeWithheldReplacements: true,
         }
       }),
       definition({ dependencyValues }) {

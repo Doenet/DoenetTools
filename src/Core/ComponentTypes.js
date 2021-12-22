@@ -22,7 +22,6 @@ import * as Verbatim from './components/Verbatim';
 import * as Paginator from './components/Paginator';
 
 import Document from './components/Document';
-import StringComponent from './components/StringComponent';
 import Text from './components/Text';
 import TextList from './components/TextList';
 import RandomizedTextList from './components/RandomizedTextList';
@@ -191,7 +190,6 @@ const componentTypeArray = [
   ...Object.values(Verbatim),
   ...Object.values(Paginator),
   Document,
-  StringComponent,
   Text, TextList,
   RandomizedTextList,
   P,

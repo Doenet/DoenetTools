@@ -23,7 +23,7 @@ export default class PointListComponent extends BaseComponent {
       return {
         success: true,
         newChildren: results.pieces.map(function (piece) {
-          if (piece.length > 1 || piece[0].componentType === "string") {
+          if (piece.length > 1 || typeof piece[0] === "string") {
             return {
               componentType: "point",
               children: piece

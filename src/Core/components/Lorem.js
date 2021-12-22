@@ -136,10 +136,7 @@ export default class Lorem extends CompositeComponent {
 
         replacements = paragraphs.map(x => ({
           componentType: "p",
-          children: [{
-            componentType: "string",
-            state: { value: x }
-          }]
+          children: [x]
         }))
       }
 
@@ -153,23 +150,14 @@ export default class Lorem extends CompositeComponent {
         for (let sent of sentences.slice(0, sentences.length - 1)) {
           replacements.push({
             componentType: "text",
-            children: [{
-              componentType: "string",
-              state: { value: sent + "." }
-            }]
+            children: [sent + "."]
           })
-          replacements.push({
-            componentType: "string",
-            state: { value: " " }
-          })
+          replacements.push(" ")
         }
 
         replacements.push({
           componentType: "text",
-          children: [{
-            componentType: "string",
-            state: { value: sentences[sentences.length - 1] }
-          }]
+          children: [sentences[sentences.length - 1]]
         })
       }
 
@@ -181,19 +169,13 @@ export default class Lorem extends CompositeComponent {
 
         let words = lorem.generateWords(numWords).split(" ").map(w => ({
           componentType: "text",
-          children: [{
-            componentType: "string",
-            state: { value: w }
-          }]
+          children: [w]
         }));
 
         replacements.push(words[0]);
 
         for (let w of words.slice(1)) {
-          replacements.push({
-            componentType: "string",
-            state: { value: " " }
-          })
+          replacements.push(" ")
           replacements.push(w)
         }
 

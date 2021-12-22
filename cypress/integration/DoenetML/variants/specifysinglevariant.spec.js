@@ -2682,7 +2682,7 @@ describe('Specifying single variant document tests', function () {
             subvariants: []
           }
 
-          let variantInd = firstStringsToInd[p.activeChildren[0].stateValues.value.trim()];
+          let variantInd = firstStringsToInd[p.activeChildren[0].trim()];
           expect(variantInd).not.eq(undefined);
 
           let secondChild = p.activeChildren[1];
@@ -2825,7 +2825,7 @@ describe('Specifying single variant document tests', function () {
         subvariants: []
       }
 
-      let variantInd = firstStringsToInd[p.activeChildren[0].stateValues.value.trim()];
+      let variantInd = firstStringsToInd[p.activeChildren[0].trim()];
       expect(variantInd).not.eq(undefined);
 
       let secondChild = p.activeChildren[1];
@@ -3001,7 +3001,7 @@ describe('Specifying single variant document tests', function () {
             let p = problem.activeChildren[4];
 
             if (variantInd === 1) {
-              expect(p.activeChildren[0].stateValues.value.trim()).eq("Word:")
+              expect(p.activeChildren[0].trim()).eq("Word:")
               let problemVariantInd = ["angry", "bad", "churlish", "drab", "excoriated"].indexOf(p.activeChildren[1].stateValues.value) + 1;
               expect(problemVariantInd).not.eq(0)
               if (!variantOfProblemsFound[0].includes(problemVariantInd)) {
@@ -3027,7 +3027,7 @@ describe('Specifying single variant document tests', function () {
                 }]
               })
             } else {
-              expect(p.activeChildren[0].stateValues.value.trim()).eq("Number:");
+              expect(p.activeChildren[0].trim()).eq("Number:");
               let num = p.activeChildren[1].stateValues.value;
               expect(Number.isInteger(num)).eq(true);
               expect(num >= 1 && num <= 10).eq(true);
@@ -3147,7 +3147,7 @@ describe('Specifying single variant document tests', function () {
         let p = problem.activeChildren[4];
 
         if (variantInd === 1) {
-          expect(p.activeChildren[0].stateValues.value.trim()).eq("Word:")
+          expect(p.activeChildren[0].trim()).eq("Word:")
           let problemVariantInd = ["angry", "bad", "churlish", "drab", "excoriated"].indexOf(p.activeChildren[1].stateValues.value) + 1;
           expect(problemVariantInd).not.eq(0)
           if (!variantOfProblemsFound[0].includes(problemVariantInd)) {
@@ -3173,7 +3173,7 @@ describe('Specifying single variant document tests', function () {
             }]
           })
         } else {
-          expect(p.activeChildren[0].stateValues.value.trim()).eq("Number:");
+          expect(p.activeChildren[0].trim()).eq("Number:");
           let num = p.activeChildren[1].stateValues.value;
           expect(Number.isInteger(num)).eq(true);
           expect(num >= 1 && num <= 10).eq(true);
@@ -3321,7 +3321,7 @@ describe('Specifying single variant document tests', function () {
             let p = problem.activeChildren[4];
 
             if (variantInd === 1) {
-              expect(p.activeChildren[0].stateValues.value.trim()).eq("Word:")
+              expect(p.activeChildren[0].trim()).eq("Word:")
               let problemVariantInd = ["angry", "bad", "churlish", "drab", "excoriated"].indexOf(p.activeChildren[1].stateValues.value) + 1;
               expect(problemVariantInd).not.eq(0)
               if (!variantOfProblemsFound[0].includes(problemVariantInd)) {
@@ -3354,7 +3354,7 @@ describe('Specifying single variant document tests', function () {
               );
 
             } else {
-              expect(p.activeChildren[0].stateValues.value.trim()).eq("Number:");
+              expect(p.activeChildren[0].trim()).eq("Number:");
               let num = p.activeChildren[1].stateValues.value;
               expect(Number.isInteger(num)).eq(true);
               expect(num >= 1 && num <= 10).eq(true);
@@ -3489,7 +3489,7 @@ describe('Specifying single variant document tests', function () {
         let p = problem.activeChildren[4];
 
         if (variantInd === 1) {
-          expect(p.activeChildren[0].stateValues.value.trim()).eq("Word:")
+          expect(p.activeChildren[0].trim()).eq("Word:")
           let problemVariantInd = ["angry", "bad", "churlish", "drab", "excoriated"].indexOf(p.activeChildren[1].stateValues.value) + 1;
           expect(problemVariantInd).not.eq(0)
           if (!variantOfProblemsFound[0].includes(problemVariantInd)) {
@@ -3521,7 +3521,7 @@ describe('Specifying single variant document tests', function () {
             problemVariantInfo
           );
         } else {
-          expect(p.activeChildren[0].stateValues.value.trim()).eq("Number:");
+          expect(p.activeChildren[0].trim()).eq("Number:");
           let num = p.activeChildren[1].stateValues.value;
           expect(Number.isInteger(num)).eq(true);
           expect(num >= 1 && num <= 10).eq(true);
@@ -3669,7 +3669,7 @@ describe('Specifying single variant document tests', function () {
             let p = problem.activeChildren[4];
 
             if (variantInd === 1) {
-              expect(p.activeChildren[0].stateValues.value.trim()).eq("Word:")
+              expect(p.activeChildren[0].trim()).eq("Word:")
               let problemVariantInd = ["angry", "bad", "churlish", "drab", "excoriated"].indexOf(p.activeChildren[1].stateValues.value) + 1;
               expect(problemVariantInd).not.eq(0)
               if (!variantOfProblemsFound[0].includes(problemVariantInd)) {
@@ -3695,7 +3695,7 @@ describe('Specifying single variant document tests', function () {
                 }]
               })
             } else {
-              expect(p.activeChildren[0].stateValues.value.trim()).eq("Number:");
+              expect(p.activeChildren[0].trim()).eq("Number:");
               let num = p.activeChildren[1].stateValues.value;
               expect(Number.isInteger(num)).eq(true);
               expect(num >= 1 && num <= 10).eq(true);
@@ -3815,7 +3815,7 @@ describe('Specifying single variant document tests', function () {
         let p = problem.activeChildren[4];
 
         if (variantInd === 1) {
-          expect(p.activeChildren[0].stateValues.value.trim()).eq("Word:")
+          expect(p.activeChildren[0].trim()).eq("Word:")
           let problemVariantInd = ["angry", "bad", "churlish", "drab", "excoriated"].indexOf(p.activeChildren[1].stateValues.value) + 1;
           expect(problemVariantInd).not.eq(0)
           if (!variantOfProblemsFound[0].includes(problemVariantInd)) {
@@ -3841,7 +3841,7 @@ describe('Specifying single variant document tests', function () {
             }]
           })
         } else {
-          expect(p.activeChildren[0].stateValues.value.trim()).eq("Number:");
+          expect(p.activeChildren[0].trim()).eq("Number:");
           let num = p.activeChildren[1].stateValues.value;
           expect(Number.isInteger(num)).eq(true);
           expect(num >= 1 && num <= 10).eq(true);

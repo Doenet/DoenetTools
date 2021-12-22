@@ -57,6 +57,10 @@ export default function useDoenetRenderer(props,initializeChildrenOnConstruction
   }
 
   function createChildFromInstructions(childInstructions) {
+
+    if(typeof childInstructions === "string") {
+      return childInstructions;
+    }
     
     let propsForChild = {
       key: childInstructions.componentName,

@@ -1199,27 +1199,27 @@ describe('Select Tag Tests', function () {
       let components = Object.assign({}, win.state.components);
 
       let q2 = components['/q2'].replacements[0].replacements[0].activeChildren;
-      let q2string = q2[0].stateValues.value;
+      let q2string = q2[0];
       let q2math = q2[1].stateValues.value;
       expect(q2math.equals(option[q2string])).eq(true);
 
       let r2 = components['/r2'].replacements[0].replacements[0].activeChildren;
-      let r2string = r2[0].stateValues.value;
+      let r2string = r2[0];
       let r2math = r2[1].stateValues.value;
       expect(r2math.equals(option[r2string])).eq(true);
 
       let s2 = components['/s2'].replacements[0].replacements[0].activeChildren;
-      let s2string = s2[0].stateValues.value;
+      let s2string = s2[0];
       let s2math = s2[1].stateValues.value;
       expect(s2math.equals(option[s2string])).eq(true);
 
       let t2 = components['/t2'].replacements[0].replacements[0].activeChildren;
-      let t2string = t2[0].stateValues.value;
+      let t2string = t2[0];
       let t2math = t2[1].stateValues.value;
       expect(t2math.equals(option[t2string])).eq(true);
 
       let u2 = components['/u2'].replacements[0].replacements[0].activeChildren;
-      let u2string = u2[0].stateValues.value;
+      let u2string = u2[0];
       let u2math = u2[1].stateValues.value;
       expect(u2math.equals(option[u2string])).eq(true);
 
@@ -1270,27 +1270,27 @@ describe('Select Tag Tests', function () {
       let components = Object.assign({}, win.state.components);
 
       let q2 = components['/q2'].replacements[0].replacements[0].activeChildren;
-      let q2string = q2[0].stateValues.value;
+      let q2string = q2[0];
       let q2math = q2[1].stateValues.value;
       expect(q2math.equals(option[q2string])).eq(true);
 
       let r2 = components['/r2'].replacements[0].replacements[0].activeChildren;
-      let r2string = r2[0].stateValues.value;
+      let r2string = r2[0];
       let r2math = r2[1].stateValues.value;
       expect(r2math.equals(option[r2string])).eq(true);
 
       let s2 = components['/s2'].replacements[0].replacements[0].activeChildren;
-      let s2string = s2[0].stateValues.value;
+      let s2string = s2[0];
       let s2math = s2[1].stateValues.value;
       expect(s2math.equals(option[s2string])).eq(true);
 
       let t2 = components['/t2'].replacements[0].replacements[0].activeChildren;
-      let t2string = t2[0].stateValues.value;
+      let t2string = t2[0];
       let t2math = t2[1].stateValues.value;
       expect(t2math.equals(option[t2string])).eq(true);
 
       let u2 = components['/u2'].replacements[0].replacements[0].activeChildren;
-      let u2string = u2[0].stateValues.value;
+      let u2string = u2[0];
       let u2math = u2[1].stateValues.value;
       expect(u2math.equals(option[u2string])).eq(true);
 
@@ -1349,7 +1349,7 @@ describe('Select Tag Tests', function () {
       let components = Object.assign({}, win.state.components);
 
       let q2 = components['/q2'].replacements[0].replacements[0].activeChildren;
-      let q2string = q2[0].stateValues.value;
+      let q2string = q2[0];
       let q2math = q2[1].stateValues.value;
       expect(q2math.equals(option[q2string])).eq(true);
       let qx = components['/qx'].replacements[0].stateValues.value.tree;
@@ -1358,7 +1358,7 @@ describe('Select Tag Tests', function () {
       expect(repeatqmath.equals(option[q2string])).eq(true);
 
       let r2 = components['/r2'].replacements[0].replacements[0].activeChildren;
-      let r2string = r2[0].stateValues.value;
+      let r2string = r2[0];
       let r2math = r2[1].stateValues.value;
       expect(r2math.equals(option[r2string])).eq(true);
       let rx = components['/rx'].replacements[0].stateValues.value.tree;
@@ -1367,7 +1367,7 @@ describe('Select Tag Tests', function () {
       expect(repeatrmath.equals(option[r2string])).eq(true);
 
       let s2 = components['/s2'].replacements[0].replacements[0].activeChildren;
-      let s2string = s2[0].stateValues.value;
+      let s2string = s2[0];
       let s2math = s2[1].stateValues.value;
       expect(s2math.equals(option[s2string])).eq(true);
       let sx = components['/sx'].replacements[0].stateValues.value.tree;
@@ -1376,7 +1376,7 @@ describe('Select Tag Tests', function () {
       expect(repeatsmath.equals(option[s2string])).eq(true);
 
       let t2 = components['/t2'].replacements[0].replacements[0].activeChildren;
-      let t2string = t2[0].stateValues.value;
+      let t2string = t2[0];
       let t2math = t2[1].stateValues.value;
       expect(t2math.equals(option[t2string])).eq(true);
       let tx = components['/tx'].replacements[0].stateValues.value.tree;
@@ -1385,7 +1385,7 @@ describe('Select Tag Tests', function () {
       expect(repeattmath.equals(option[t2string])).eq(true);
 
       let u2 = components['/u2'].replacements[0].replacements[0].activeChildren;
-      let u2string = u2[0].stateValues.value;
+      let u2string = u2[0];
       let u2math = u2[1].stateValues.value;
       expect(u2math.equals(option[u2string])).eq(true);
       let ux = components['/ux'].replacements[0].stateValues.value.tree;
@@ -1441,35 +1441,35 @@ describe('Select Tag Tests', function () {
       let components = Object.assign({}, win.state.components);
 
       let q2 = components['/q2'].replacements[0].replacements[0].activeChildren;
-      let q2string = q2[0].stateValues.value;
+      let q2string = q2[0];
       let q2math = q2[1].stateValues.value;
       expect(q2math.equals(option[q2string])).eq(true);
       let repeatqmath = components["/repeat"].activeChildren[0].activeChildren[1].stateValues.value;
       expect(repeatqmath.equals(option[q2string])).eq(true);
 
       let r2 = components['/r2'].replacements[0].replacements[0].activeChildren;
-      let r2string = r2[0].stateValues.value;
+      let r2string = r2[0];
       let r2math = r2[1].stateValues.value;
       expect(r2math.equals(option[r2string])).eq(true);
       let repeatrmath = components["/repeat"].activeChildren[1].activeChildren[1].stateValues.value;
       expect(repeatrmath.equals(option[r2string])).eq(true);
 
       let s2 = components['/s2'].replacements[0].replacements[0].activeChildren;
-      let s2string = s2[0].stateValues.value;
+      let s2string = s2[0];
       let s2math = s2[1].stateValues.value;
       expect(s2math.equals(option[s2string])).eq(true);
       let repeatsmath = components["/repeat"].activeChildren[2].activeChildren[1].stateValues.value;
       expect(repeatsmath.equals(option[s2string])).eq(true);
 
       let t2 = components['/t2'].replacements[0].replacements[0].activeChildren;
-      let t2string = t2[0].stateValues.value;
+      let t2string = t2[0];
       let t2math = t2[1].stateValues.value;
       expect(t2math.equals(option[t2string])).eq(true);
       let repeattmath = components["/repeat"].activeChildren[3].activeChildren[1].stateValues.value;
       expect(repeattmath.equals(option[t2string])).eq(true);
 
       let u2 = components['/u2'].replacements[0].replacements[0].activeChildren;
-      let u2string = u2[0].stateValues.value;
+      let u2string = u2[0];
       let u2math = u2[1].stateValues.value;
       expect(u2math.equals(option[u2string])).eq(true);
       let repeatumath = components["/repeat"].activeChildren[4].activeChildren[1].stateValues.value;
@@ -2825,7 +2825,7 @@ describe('Select Tag Tests', function () {
       let components = Object.assign({}, win.state.components);
 
       let chosenChildren = components['/_select1'].replacements[0].replacements
-        .filter(x => x.componentType !== "string")
+        .filter(x => typeof x !== "string")
         .map((v, i) => i < 2 ? v : v.replacements[0])
       let option = options[components['/_select1'].stateValues.selectedIndices[0] - 1];
 

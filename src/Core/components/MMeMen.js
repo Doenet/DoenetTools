@@ -50,7 +50,9 @@ export class M extends InlineComponent {
         let latex = "";
 
         for (let child of dependencyValues.stringTextMathChildren) {
-          if (child.stateValues.latex) {
+          if(typeof child === "string") {
+            latex += child;
+          } else if (child.stateValues.latex) {
             latex += child.stateValues.latex
           } else if (child.stateValues.text) {
             latex += child.stateValues.text
@@ -91,7 +93,9 @@ export class M extends InlineComponent {
         let lastLatex = "";
         let inputInd = 0;
         for (let child of dependencyValues.stringTextMathChildren) {
-          if (componentInfoObjects.isInheritedComponentType({
+          if(typeof child === "string") {
+            lastLatex += child;
+          } else if (componentInfoObjects.isInheritedComponentType({
             inheritedComponentType: child.componentType,
             baseComponentType: "mathInput"
           })) {

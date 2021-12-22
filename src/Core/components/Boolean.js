@@ -167,7 +167,7 @@ export default class BooleanComponent extends InlineComponent {
         let codePre = dependencyValues.codePre;
 
         for (let child of dependencyValues.allChildren) {
-          if (child.componentType !== "string") {
+          if (typeof child !== "string") {
             // a math, mathList, text, textList, boolean, or booleanList
             let code = codePre + subnum;
 
@@ -351,6 +351,7 @@ export default class BooleanComponent extends InlineComponent {
 
       },
       inverseDefinition: function ({ desiredStateVariableValues, dependencyValues, componentInfoObjects }) {
+        console.log(desiredStateVariableValues, dependencyValues)
         if (dependencyValues.allChildren.length === 0) {
           // no children, so value is essential and give it the desired value
           return {
@@ -363,12 +364,12 @@ export default class BooleanComponent extends InlineComponent {
         } else if (dependencyValues.allChildren.length === 1) {
 
           let child = dependencyValues.allChildren[0];
-          if (child.componentType === "string") {
+          if (typeof child === "string") {
             return {
               success: true,
               instructions: [{
                 setDependency: "allChildren",
-                desiredValue: desiredStateVariableValues.value,
+                desiredValue: desiredStateVariableValues.value.toString(),
                 childIndex: 0,
                 variableIndex: 0,
               }]

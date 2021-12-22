@@ -38,7 +38,9 @@ export default class Caption extends BlockComponent {
 
         let text = ""
         for (let child of dependencyValues.inlineChildren) {
-          if (typeof child.stateValues.text === "string") {
+          if (typeof child !== "object") {
+            text += child.toString();
+          } else if (typeof child.stateValues.text === "string") {
             text += child.stateValues.text;
           } else {
             text += " ";

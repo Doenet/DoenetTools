@@ -12,7 +12,7 @@ export default class Cell extends BaseComponent {
   static primaryStateVariableForDefinition = "text";
 
   static get stateVariablesShadowedForReference() {
-    return ["halign", "bottom", "right"]
+    return ["halign", "bottom", "right", "text"]
   };
 
   static createAttributesObject(args) {
@@ -250,8 +250,12 @@ export default class Cell extends BaseComponent {
         }
         let text = "";
         for (let child of dependencyValues.children) {
-          if (child.stateValues.text) {
-            text += child.stateValues.text;
+          if (typeof child === "object") {
+            if (child.stateValues.text) {
+              text += child.stateValues.text;
+            }
+          } else {
+            text += child.toString();
           }
         }
 
@@ -268,7 +272,9 @@ export default class Cell extends BaseComponent {
             }]
           }
         } else if (dependencyValues.children.length === 1) {
-          if (dependencyValues.children[0].stateValues.text === undefined) {
+          if (typeof dependencyValues.children[0] === "object" &&
+            dependencyValues.children[0].stateValues.text === undefined
+          ) {
             return { success: false }
           } else {
             return {

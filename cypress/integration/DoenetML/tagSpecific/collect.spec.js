@@ -2193,12 +2193,9 @@ describe('Collect Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
 
     function checkAllChildren(components) {
-      let p1 = components["/_p1"];
       let p1AllChildren = [];
-      p1AllChildren.push(p1.definingChildren[0].componentName); // string
       p1AllChildren.push("/A");
       p1AllChildren.push(components["/A"].adapterUsed.componentName);
-      p1AllChildren.push(p1.definingChildren[2].componentName); // string
       p1AllChildren.push("/_map1");
 
       let map = components['/_map1'];
@@ -2213,16 +2210,12 @@ describe('Collect Tag Tests', function () {
         p1AllChildren.push(point.componentName);
         p1AllChildren.push(point.adapterUsed.componentName);
       }
-      p1AllChildren.push(p1.definingChildren[4].componentName); // string
       p1AllChildren.push("/B");
       p1AllChildren.push(components["/B"].adapterUsed.componentName);
-      p1AllChildren.push(p1.definingChildren[6].componentName); // string
 
       expect(components['/_p1'].allChildrenOrdered).eqls(p1AllChildren)
 
-      let p2 = components["/_p2"];
       let p2AllChildren = [];
-      p2AllChildren.push(p2.definingChildren[0].componentName); // string
       p2AllChildren.push("/_collect1");
       let collect = components['/_collect1'];
       nActiveReps = collect.replacements.length;
@@ -2233,7 +2226,6 @@ describe('Collect Tag Tests', function () {
         p2AllChildren.push(rep.componentName);
         p2AllChildren.push(rep.adapterUsed.componentName);
       }
-      p2AllChildren.push(p2.definingChildren[2].componentName); // string
 
       expect(components['/_p2'].allChildrenOrdered).eqls(p2AllChildren)
 

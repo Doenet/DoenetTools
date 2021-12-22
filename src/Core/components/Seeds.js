@@ -12,15 +12,11 @@ export default class Seeds extends InlineComponent {
       // break any string by white space
 
       let newChildren = matchedChildren.reduce(function (a, c) {
-        if (c.componentType === "string") {
+        if (typeof c === "string") {
           return [
             ...a,
-            ...c.state.value.split(/\s+/)
+            ...c.split(/\s+/)
               .filter(s => s)
-              .map(s => ({
-                componentType: "string",
-                state: { value: s }
-              }))
           ]
         } else {
           return [...a, c]
@@ -102,7 +98,6 @@ export default class Seeds extends InlineComponent {
         for (let arrayKey of arrayKeys) {
           if (dependencyValuesByKey[arrayKey].stringChild.length === 1) {
             seeds[arrayKey] = dependencyValuesByKey[arrayKey].stringChild[0]
-              .stateValues.value
           }
         }
         return { newValues: { seeds } }

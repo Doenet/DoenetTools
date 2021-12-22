@@ -157,7 +157,7 @@ export default class Ref extends InlineComponent {
       stateVariablesDeterminingDependencies: ["targetName"],
       returnDependencies({ stateValues }) {
         let dependencies = {
-          inlineChildren: {
+          allChildren: {
             dependencyType: "child",
             childGroups: ["anything"],
             variableNames: ["text"],
@@ -193,7 +193,7 @@ export default class Ref extends InlineComponent {
       },
       definition: function ({ dependencyValues }) {
         let linkText = "";
-        if (dependencyValues.inlineChildren.length === 0) {
+        if (dependencyValues.allChildren.length === 0) {
           if (dependencyValues.uri !== null) {
             linkText = dependencyValues.uri;
           } else if (!dependencyValues.targetInactive) {
@@ -204,8 +204,10 @@ export default class Ref extends InlineComponent {
             }
           }
         } else {
-          for (let child of dependencyValues.inlineChildren) {
-            if (typeof child.stateValues.text === "string") {
+          for (let child of dependencyValues.allChildren) {
+            if(typeof child !== "object") {
+              linkText += child.toString();
+            } else if (typeof child.stateValues.text === "string") {
               linkText += child.stateValues.text;
             }
           }

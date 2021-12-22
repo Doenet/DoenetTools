@@ -354,6 +354,9 @@ describe('Math Operator Tag Tests', function () {
       <math name="group">
         sum($nums)
       </math>
+      <math name="groupPlusGroup">
+        sum($nums) + sum($nums)
+      </math>
       <math name="groupSimplify" simplify>
         sum($nums)
       </math>
@@ -419,6 +422,9 @@ describe('Math Operator Tag Tests', function () {
     cy.get('#\\/group').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('sum(3,17,1)')
     });
+    cy.get('#\\/groupPlusGroup').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('sum(3,17,1)+sum(3,17,1)')
+    });
     cy.get('#\\/groupSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('21')
     });
@@ -474,6 +480,8 @@ describe('Math Operator Tag Tests', function () {
 
         expect(components['/group'].stateValues.value.tree).eqls(['apply', 'sum', ["tuple", 3, 17, 1]]);
         expect(components['/group'].stateValues.isNumber).eq(false);
+        expect(components['/groupPlusGroup'].stateValues.value.tree).eqls(["+", ['apply', 'sum', ["tuple", 3, 17, 1]], ['apply', 'sum', ["tuple", 3, 17, 1]]]);
+        expect(components['/groupPlusGroup'].stateValues.isNumber).eq(false);
         expect(components['/groupSimplify'].stateValues.value.tree).eq(21);
         expect(components['/groupSimplify'].stateValues.isNumber).eq(true);
 

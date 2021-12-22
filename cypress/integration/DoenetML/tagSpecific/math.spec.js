@@ -281,8 +281,8 @@ describe('Math Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       // string children are originally 1 and 3
-      expect(components['/_math1'].activeChildren[0].stateValues.value).eq("2");
-      expect(components['/_math1'].activeChildren[1].stateValues.value).eq("3");
+      expect(components['/_math1'].activeChildren[0]).eq("2");
+      expect(components['/_math1'].activeChildren[1]).eq("3");
       expect(components['/_math1'].stateValues.value.tree).eq(6);
       expect(components['/_point1'].stateValues.xs[0].tree).eq(6);
       expect(components['/_point1'].stateValues.xs[1].tree).eq(3);
@@ -295,8 +295,8 @@ describe('Math Tag Tests', function () {
       components['/_point1'].movePoint({ x: 7, y: 9 });
       console.log(`point moved`)
       // second child takes value, third is blank
-      expect(components['/_math1'].activeChildren[0].stateValues.value).eq("7");
-      expect(components['/_math1'].activeChildren[1].stateValues.value).eq("");
+      expect(components['/_math1'].activeChildren[0]).eq("7");
+      expect(components['/_math1'].activeChildren[1]).eq("");
       expect(components['/_math1'].stateValues.value.tree).eq(7);
       expect(components['/_point1'].stateValues.xs[0].tree).eq(7);
       expect(components['/_point1'].stateValues.xs[1].tree).eq(9);

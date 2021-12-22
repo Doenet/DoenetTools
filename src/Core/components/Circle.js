@@ -1941,7 +1941,6 @@ export default class Circle extends Curve {
         // console.log('inverse definition of center of circle')
         // console.log(desiredStateVariableValues)
         // console.log(globalDependencyValues)
-        // console.log(dependencyValuesByKey)
 
 
         if (globalDependencyValues.havePrescribedCenter) {

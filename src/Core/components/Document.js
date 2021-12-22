@@ -162,7 +162,7 @@ export default class Document extends BaseComponent {
       returnDependencies: () => ({
         scoredDescendants: {
           dependencyType: "descendant",
-          componentTypes: ["_sectioningComponent", "answer"],
+          componentTypes: ["_sectioningComponent", "answer", "setup"],
           variableNames: [
             "scoredDescendants",
             "aggregateScores",
@@ -175,6 +175,10 @@ export default class Document extends BaseComponent {
       definition({ dependencyValues }) {
         let scoredDescendants = [];
         for (let descendant of dependencyValues.scoredDescendants) {
+          // added setup just so that can skip them
+          if (descendant.componentType === "setup") {
+            continue;
+          }
           if (descendant.stateValues.aggregateScores ||
             descendant.stateValues.scoredDescendants === undefined
           ) {
@@ -760,7 +764,7 @@ export default class Document extends BaseComponent {
       }
       // children overwrite state
       if (nVariantsComp.children !== undefined && nVariantsComp.children.length === 1 &&
-        nVariantsComp.children[0].componentType === "string") {
+        typeof nVariantsComp.children[0] === "string") {
         numberOfVariants = Math.round(Number(nVariantsComp.children[0].state.value));
         foundValid = true;
       }

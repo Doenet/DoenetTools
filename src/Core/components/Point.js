@@ -94,7 +94,7 @@ export default class Point extends GraphicalComponent {
       })
 
       // find index of first and last string
-      let cTypes = matchedChildren.map(x => x.componentType)
+      let cTypes = matchedChildren.map(x => typeof x)
       let beginInd = cTypes.indexOf("string");
       let lastInd = cTypes.lastIndexOf("string");
 

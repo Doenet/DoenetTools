@@ -197,7 +197,6 @@ export default class MathComponent extends InlineComponent {
         stringChildren: {
           dependencyType: "child",
           childGroups: ["strings"],
-          variableNames: ["value"],
         },
       }),
       definition: calculateCodePre,
@@ -217,9 +216,13 @@ export default class MathComponent extends InlineComponent {
       }),
       definition({ dependencyValues }) {
         let mathChildrenFunctionSymbols = [];
-        for (let [ind, child] of dependencyValues.mathChildren.entries()) {
-          if (dependencyValues.targetsAreFunctionSymbols.includes(child.compositeTname)) {
-            mathChildrenFunctionSymbols.push(ind)
+        if (dependencyValues.mathChildren.compositeReplacementRange) {
+          for (let compositeInfo of dependencyValues.mathChildren.compositeReplacementRange) {
+            if (dependencyValues.targetsAreFunctionSymbols.includes(compositeInfo.target)) {
+              for (let ind = compositeInfo.firstInd; ind <= compositeInfo.lastInd; ind++) {
+                mathChildrenFunctionSymbols.push(ind)
+              }
+            }
           }
         }
 
@@ -825,8 +828,7 @@ function calculateCodePre({ dependencyValues }) {
     foundInString = false;
 
     for (let child of dependencyValues.stringChildren) {
-      if (child.componentType === "string" &&
-        child.stateValues.value.includes(codePre) === true) {
+      if (child.includes(codePre) === true) {
         // found codePre in a string, so extend codePre and try again
         foundInString = true;
         codePre += "m";
@@ -860,66 +862,59 @@ function calculateExpressionWithCodes({ dependencyValues, changes }) {
 
   let inputString = "";
   let mathInd = 0;
-  let lastCompositeInd;
   let compositeGroupString = "";
-  let nComponentsInGroup = 0;
-  let noGroupingForCompositeInd;
 
-  for (let child of dependencyValues.stringMathChildren) {
-    if (nComponentsInGroup > 0 && child.compositeInd !== lastCompositeInd) {
-      // found end of composite group
-      if (nComponentsInGroup > 1) {
-        // compositeGroupString contains components separated by commas
-        // will wrap in parenthesis unless already contains
-        // delimeters before and after
-        // TODO: \rangle and \langle?
-        let iString = inputString.trimEnd();
-        let wrap = false;
-        if (iString.length === 0) {
-          wrap = true;
-        } else {
-          let lastChar = iString[iString.length - 1];
-          if (!["{", "[", "(", "|", ","].includes(lastChar)) {
-            wrap = true;
-          } else if (child.componentType !== "string") {
-            wrap = true;
-          } else {
-            let nextString = child.stateValues.value.trimStart();
-            if (nextString.length === 0) {
-              wrap = true;
-            } else {
-              let nextChar = nextString[0];
-              if (dependencyValues.format === 'latex' && nextChar === "\\"
-                && nextString.length > 1
-              ) {
-                nextChar = nextString[1];
-              }
-              if (!["}", "]", ")", "|", ","].includes(nextChar)) {
-                wrap = true;
-              }
-            }
+  let compositeReplacementRange = dependencyValues.stringMathChildren.compositeReplacementRange;
+  let currentCompositeInd = undefined;
+  let currentCompositeLastChildInd = undefined;
+  let nextCompositeInd = undefined;
+  let nextCompositeChildInd = undefined;
+  if (dependencyValues.groupCompositeReplacements && compositeReplacementRange.length > 0) {
+    nextCompositeInd = 0;
+    nextCompositeChildInd = compositeReplacementRange[nextCompositeInd].firstInd;
+  }
+
+
+  for (let [childInd, child] of dependencyValues.stringMathChildren.entries()) {
+
+
+    if (currentCompositeInd === undefined && childInd === nextCompositeChildInd) {
+      // we are grouping composite replacements
+      // and we found the beginning of children that are composite replacements
+
+      currentCompositeInd = nextCompositeInd;
+      currentCompositeLastChildInd = compositeReplacementRange[nextCompositeInd].lastInd;
+      compositeGroupString = "";
+
+      // if composite has only one replacement or has a string replacement,
+      // then we don't group
+
+      let dontGroup = currentCompositeLastChildInd === childInd;
+      if (!dontGroup) {
+        for (let ind = childInd; ind <= currentCompositeLastChildInd; ind++) {
+          if (typeof dependencyValues.stringMathChildren[ind] === "string") {
+            dontGroup = true;
+            break;
           }
         }
-
-        if (wrap) {
-          compositeGroupString = "(" + compositeGroupString + ")";
-        }
-
       }
 
-      inputString += compositeGroupString;
-      compositeGroupString = "";
-      nComponentsInGroup = 0;
+      if (dontGroup) {
+        if (compositeReplacementRange.length > currentCompositeInd + 1) {
+          nextCompositeInd = currentCompositeInd + 1;
+          nextCompositeChildInd = compositeReplacementRange[nextCompositeInd].firstInd;
+        } else {
+          nextCompositeInd = undefined;
+          nextCompositeChildInd = undefined;
+        }
+        currentCompositeInd = undefined;
+        currentCompositeLastChildInd = undefined;
+      }
+
     }
 
-    if (child.componentType === "string") {
-      // if have a string in the composite group, then don't group into tuple
-      inputString += compositeGroupString + " " + child.stateValues.value + " ";
-      compositeGroupString = "";
-      nComponentsInGroup = 0;
-      if (child.compositeInd !== undefined) {
-        noGroupingForCompositeInd = child.compositeInd;
-      }
+    if (typeof child === "string") {
+      inputString += " " + child + " ";
     } else { // a math
       let code = dependencyValues.codePre + mathInd;
       mathInd++;
@@ -937,35 +932,77 @@ function calculateExpressionWithCodes({ dependencyValues, changes }) {
         nextString = " " + code + " ";
       }
 
-      if (dependencyValues.groupCompositeReplacements &&
-        child.compositeInd !== undefined
-        && child.compositeInd !== noGroupingForCompositeInd
-      ) {
-        if (child.compositeInd === lastCompositeInd) {
+      if (currentCompositeInd !== undefined) {
+        if (compositeGroupString) {
           // continuing a composite group
           compositeGroupString += ",";
         }
         compositeGroupString += nextString;
-        nComponentsInGroup++;
       } else {
         inputString += nextString;
-        compositeGroupString = "";
-        nComponentsInGroup = 0;
       }
 
 
     }
 
-    lastCompositeInd = child.compositeInd;
+    if (childInd === currentCompositeLastChildInd) {
+      // compositeGroupString contains components separated by commas
+      // will wrap in parenthesis unless already contains
+      // delimeters before and after
+      // TODO: \rangle and \langle?
+      let iString = inputString.trimEnd();
+      let wrap = false;
+      if (iString.length === 0) {
+        wrap = true;
+      } else {
+        let lastChar = iString[iString.length - 1];
+        if (!["{", "[", "(", "|", ","].includes(lastChar)) {
+          wrap = true;
+        } else {
+          let nextChild = dependencyValues.stringMathChildren[childInd + 1]
+          if (typeof nextChild !== "string") {
+            wrap = true;
+          } else {
+            let nextString = nextChild.trimStart();
+            if (nextString.length === 0) {
+              wrap = true;
+            } else {
+              let nextChar = nextString[0];
+              if (dependencyValues.format === 'latex' && nextChar === "\\"
+                && nextString.length > 1
+              ) {
+                nextChar = nextString[1];
+              }
+              if (!["}", "]", ")", "|", ","].includes(nextChar)) {
+                wrap = true;
+              }
+            }
+          }
+        }
+      }
+
+      if (wrap) {
+        compositeGroupString = "(" + compositeGroupString + ")";
+      }
+
+      inputString += compositeGroupString;
+      compositeGroupString = "";
+
+      if (compositeReplacementRange.length > currentCompositeInd + 1) {
+        nextCompositeInd = currentCompositeInd + 1;
+        nextCompositeChildInd = compositeReplacementRange[nextCompositeInd].firstInd;
+      } else {
+        nextCompositeInd = undefined;
+        nextCompositeChildInd = undefined;
+      }
+      currentCompositeInd = undefined;
+      currentCompositeLastChildInd = undefined;
+
+
+    }
+
   }
 
-  // if ended with a composite, wrap in parens and append
-  if (nComponentsInGroup > 0) {
-    if (nComponentsInGroup > 1) {
-      compositeGroupString = "(" + compositeGroupString + ")";
-    }
-    inputString += compositeGroupString;
-  }
 
   let expressionWithCodes = null;
 
@@ -1050,9 +1087,9 @@ function calculateCodesAdjacentToStrings({ dependencyValues }) {
   let codesAdjacentToStrings = [];
   let mathInd;
   for (let [ind, child] of dependencyValues.stringMathChildren.entries()) {
-    if (child.componentType === "string") {
+    if (typeof child === "string") {
       let nextChild = dependencyValues.stringMathChildren[ind + 1];
-      if (nextChild !== undefined && nextChild.componentType === "string") {
+      if (nextChild !== undefined && typeof nextChild === "string") {
         // if following child is also a string, we'll skip the first string
         // which means, when inverting, the first string will just be set to blank
         continue;
@@ -1438,7 +1475,7 @@ function invertMath({ desiredStateVariableValues, dependencyValues,
         setDependency: "expressionWithCodes",
         desiredValue: desiredExpression,
       });
-  
+
     } else {
       instructions.push({
         setDependency: "valueShadow",
