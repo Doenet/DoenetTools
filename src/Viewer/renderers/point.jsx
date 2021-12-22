@@ -10,6 +10,8 @@ export default function Point(props){
   const [pointJXG,setPointJXG] = useState({})
   const [pointerAtDown,setPointerAtDown] = useState([])
   const [pointAtDown,setPointAtDown] = useState([])
+  const [dragged,setDragged] = useState(false)
+  
 
   useEffect(()=>{
     if (board){
@@ -129,19 +131,9 @@ export default function Point(props){
     pointJXG.on('down', function (e) {
       setPointerAtDown([e.x, e.y]);
       setPointAtDown([...pointJXG.coords.scrCoords])
-      // this.dragged = false; TODO: Do we need dragged?
+      setDragged(false);
     });
 
-
-
-    pointJXG.on('up', function (e) {
-      console.log('up')
-    //   if (this.dragged) {
-    //     this.actions.finalizePointPosition();
-    //   } else if(SVs.switchable && !SVs.fixed) {
-    //     this.actions.switchPoint();
-    //   }
-    })
   }
 
   },[pointJXG])
@@ -186,13 +178,35 @@ export default function Point(props){
         transient: true,
         skippable: true,
       });
-
-      // this.dragged = true; TODO: Do we need dragged?
-
+      setDragged(true);
 
     });
+
+    
+
   }
-  },[pointJXG,pointerAtDown,pointAtDown])
+  },[pointerAtDown,pointAtDown])
+
+
+  //makes it slow. WHY?
+  // useEffect(()=>{
+    // console.log(">>>>dragged",dragged)
+    // if (Object.keys(pointJXG).length !== 0){
+
+    //   pointJXG.on('up', function (e) {
+    //     console.log('up dragged',dragged)
+    //     if (dragged) {
+    //       console.log("finalizePointPosition")
+        
+    //       actions.finalizePointPosition();
+    //     } else if(SVs.switchable && !SVs.fixed) {
+    //       actions.switchPoint();
+    //     console.log("switchPoint")
+
+    //     }
+    //   })
+    // }
+  // },[dragged])
 
   if (SVs.hidden) {
     return null;
@@ -208,6 +222,13 @@ export default function Point(props){
   let mathJaxify = "\\(" + SVs.coordsForDisplay.toLatex() + "\\)";
   return <><a name={name} /><span id={name}>{mathJaxify}</span></>
 }
+
+
+
+
+
+
+
 
 export class Point2 extends DoenetRenderer {
   // export default class Point extends DoenetRenderer {

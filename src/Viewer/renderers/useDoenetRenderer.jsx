@@ -4,7 +4,8 @@ import { serializedComponentsReviver } from '../../Core/utils/serializedStatePro
 
 export const rendererSVs = atomFamily({
   key:'rendererSVs',
-  default:{}
+  default:{},
+  dangerouslyAllowMutability: true,
 })
 
 //Renderers will need to set doenetPropsForChildren locally and pass it along. 
@@ -18,7 +19,7 @@ export default function useDoenetRenderer(props,initializeChildrenOnConstruction
   let name =  props.componentInstructions.componentName;
   
   let stateValues = useRecoilValue(rendererSVs(name));
-  stateValues = JSON.parse(stateValues, serializedComponentsReviver)
+  // stateValues = JSON.parse(stateValues, serializedComponentsReviver)
 
   // let sv = useRecoilValue(rendererSVs(name));
   // console.log(">>>>>>>>>useDoenetRenderer sv",sv)
