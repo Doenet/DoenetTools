@@ -8,4 +8,12 @@ module.exports = (on) => {
       return true;
     }
   })
+
+  on('task', {
+    log(message) {
+      console.log(message)
+
+      return null
+    },
+  })
 }

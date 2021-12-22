@@ -196,21 +196,21 @@ function setupScene({ rectangleProperties, rectangleChildren }) {
   </graph>
 
   <graph>
-  <copy name="centerPoint" tname="_rectangle1" prop="center"/>
-  <copy name="v1" tname="_rectangle1" prop="vertex1"/>
-  <copy name="v2" tname="_rectangle1" prop="vertex2"/>
-  <copy name="v3" tname="_rectangle1" prop="vertex3"/>
-  <copy name="v4" tname="_rectangle1" prop="vertex4"/>
+  <copy name="centerPoint" target="_rectangle1" prop="center"/>
+  <copy name="v1" target="_rectangle1" prop="vertex1"/>
+  <copy name="v2" target="_rectangle1" prop="vertex2"/>
+  <copy name="v3" target="_rectangle1" prop="vertex3"/>
+  <copy name="v4" target="_rectangle1" prop="vertex4"/>
   </graph>
 
   <mathinput bindValueTo="$(_rectangle1{prop='width'})" />
   <mathinput bindValueTo="$(_rectangle1{prop='height'})" />
 
   <graph name="graph3">
-    <copy name="rectangleCopy" tname="_rectangle1"/>
+    <copy name="rectangleCopy" target="_rectangle1"/>
   </graph>
   
-  <copy name="graph4" tname="graph3" />
+  <copy name="graph4" target="graph3" />
   `}, "*");
   });
 }

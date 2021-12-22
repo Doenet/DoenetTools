@@ -19,7 +19,7 @@ describe('ODEsystem Tag Tests', function () {
     </odesystem>
 
     <graph>
-    <copy prop="numericalsolution" tname="ode" />
+    <copy prop="numericalsolution" target="ode" />
     <point x='$zeroFixed' y='$ic' />
     </graph>
 
@@ -329,7 +329,7 @@ describe('ODEsystem Tag Tests', function () {
   </odesystem>
 
   <graph>
-  <copy prop="numericalsolution" tname="ode"/>
+  <copy prop="numericalsolution" target="ode"/>
   </graph>
   `}, "*");
     });
@@ -582,7 +582,7 @@ describe('ODEsystem Tag Tests', function () {
   </odesystem>
 
   <p>We started with 
-  <m>x(<copy prop="initialindependentvariablevalue" tname="ode"/>) = 1</m>.</p>
+  <m>x(<copy prop="initialindependentvariablevalue" target="ode"/>) = 1</m>.</p>
 
   <p>We end with
   <m>x($tf) = $$(ode{prop='numericalSolution'})($tf)</m></p>
@@ -687,7 +687,7 @@ describe('ODEsystem Tag Tests', function () {
 
   <graph>
     <curve parmin="0" parmax="10">
-      <copy prop="numericalsolutions" tname="ode" />
+      <copy prop="numericalsolutions" target="ode" />
     </curve>
     <point x="$ic1" y="$ic2" />
   </graph>
@@ -890,25 +890,25 @@ describe('ODEsystem Tag Tests', function () {
   <righthandside>x/y</righthandside>
   </odesystem>
 
-  <p>RHS1: <copy name="rhs1a" prop="rhs1" tname="ode" /></p>
-  <p>RHS2: <copy name="rhs2a" prop="rhs2" tname="ode" /></p>
-  <p>RHS1: <copy name="rhs1b" prop="rhs" tname="ode" /></p>
-  <p>Both RHSs: <aslist><copy name="rhssa" prop="rhss" tname="ode" /></aslist></p>
-  <p>RHS1: <copy name="rhs1c" prop="righthandside1" tname="ode" /></p>
-  <p>RHS2: <copy name="rhs2b" prop="righthandside2" tname="ode" /></p>
-  <p>RHS1: <copy name="rhs1d" prop="righthandside" tname="ode" /></p>
-  <p>Both RHSs: <aslist><copy name="rhssb" prop="righthandsides" tname="ode" /></aslist></p>
+  <p>RHS1: <copy name="rhs1a" prop="rhs1" target="ode" /></p>
+  <p>RHS2: <copy name="rhs2a" prop="rhs2" target="ode" /></p>
+  <p>RHS1: <copy name="rhs1b" prop="rhs" target="ode" /></p>
+  <p>Both RHSs: <aslist><copy name="rhssa" prop="rhss" target="ode" /></aslist></p>
+  <p>RHS1: <copy name="rhs1c" prop="righthandside1" target="ode" /></p>
+  <p>RHS2: <copy name="rhs2b" prop="righthandside2" target="ode" /></p>
+  <p>RHS1: <copy name="rhs1d" prop="righthandside" target="ode" /></p>
+  <p>Both RHSs: <aslist><copy name="rhssb" prop="righthandsides" target="ode" /></aslist></p>
   
-  <p>IC1: <copy name="ic1a" prop="initialcondition1" tname="ode" /></p>
-  <p>IC2: <copy name="ic2a" prop="initialcondition2" tname="ode" /></p>
-  <p>IC1: <copy name="ic1b" prop="initialcondition" tname="ode" /></p>
-  <p>Both ICs: <aslist><copy name="icsa" prop="initialconditions" tname="ode" /></aslist></p>
+  <p>IC1: <copy name="ic1a" prop="initialcondition1" target="ode" /></p>
+  <p>IC2: <copy name="ic2a" prop="initialcondition2" target="ode" /></p>
+  <p>IC1: <copy name="ic1b" prop="initialcondition" target="ode" /></p>
+  <p>Both ICs: <aslist><copy name="icsa" prop="initialconditions" target="ode" /></aslist></p>
 
   <p>Swap right hand sides and keep initial conditions</p>
 
   <odesystem name="odeswap" initialconditions="$(ode{prop='initialconditions'})">
-    <righthandside><copy prop="rhs2" tname="ode" /></righthandside>
-    <righthandside><copy prop="rhs1" tname="ode" /></righthandside>
+    <righthandside><copy prop="rhs2" target="ode" /></righthandside>
+    <righthandside><copy prop="rhs1" target="ode" /></righthandside>
   </odesystem>
   `}, "*");
     });

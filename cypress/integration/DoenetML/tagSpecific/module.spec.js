@@ -33,11 +33,11 @@ describe('Module Tag Tests', function () {
 
     <p name="p2">Hello $item!</p>
 
-    <p name="p3"><copy tname="m" item="plant" /></p>
+    <p name="p3"><copy target="m" item="plant" /></p>
 
     <p><textinput name="item2" prefill="animal" /></p>
-    <p name="p4"><copy tname="m" item="$item2" /></p>
-    <p name="p5"><copy tname="m" /></p>
+    <p name="p4"><copy target="m" item="$item2" /></p>
+    <p name="p5"><copy target="m" /></p>
 
     `}, "*");
     });
@@ -73,10 +73,10 @@ describe('Module Tag Tests', function () {
 
     <p name="p2">Hello $(m/item)!</p>
 
-    <copy tname="m" item="plant" assignNames="m2" />
+    <copy target="m" item="plant" assignNames="m2" />
     <p><textinput name="item" prefill="animal" /></p>
-    <copy tname="m" item="$item" assignNames="m3" />
-    <copy tname="m" assignNames="m4" />
+    <copy target="m" item="$item" assignNames="m3" />
+    <copy target="m" assignNames="m4" />
     `}, "*");
     });
     cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
@@ -111,10 +111,10 @@ describe('Module Tag Tests', function () {
 
     <p name="p2">Hello $(m/mads/item)!</p>
 
-    <copy tname="m" item="plant" assignNames="m2" />
+    <copy target="m" item="plant" assignNames="m2" />
     <p><textinput name="item" prefill="animal" /></p>
-    <copy tname="m" item="$item" assignNames="m3" />
-    <copy tname="m" assignNames="m4" />
+    <copy target="m" item="$item" assignNames="m3" />
+    <copy target="m" assignNames="m4" />
     `}, "*");
     });
     cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
@@ -149,10 +149,10 @@ describe('Module Tag Tests', function () {
 
     <p name="p2">Hello $(m/mads/ma/item)!</p>
 
-    <copy tname="m" item="plant" assignNames="m2" />
+    <copy target="m" item="plant" assignNames="m2" />
     <p><textinput name="item" prefill="animal" /></p>
-    <copy tname="m" item="$item" assignNames="m3" />
-    <copy tname="m" assignNames="m4" />
+    <copy target="m" item="$item" assignNames="m3" />
+    <copy target="m" assignNames="m4" />
     `}, "*");
     });
     cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
@@ -197,7 +197,7 @@ describe('Module Tag Tests', function () {
     <p>Point coords: <mathinput name="x" prefill="7" /> <mathinput name="y" prefill='-7' /></p>
     <p>Graph size: <mathinput name="w" prefill="200" /> <mathinput name="h" prefill="100" /></p>
     
-    <copy tname="m" x="$x" y="$y" width="$w" height="$h" assignNames="m2" />
+    <copy target="m" x="$x" y="$y" width="$w" height="$h" assignNames="m2" />
     `}, "*");
     });
     cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
@@ -307,12 +307,12 @@ describe('Module Tag Tests', function () {
         <point name="p" x="$u" y="$v" />
       </graph>
       <math name="vfixed" modifyIndirectly="false" hide>$v</math>
-      <copy tname="../m" x="$u+$vfixed" y="9" assignNames="m" />
+      <copy target="../m" x="$u+$vfixed" y="9" assignNames="m" />
       
     </module>
 
     <p>Point coords: <mathinput name="x" prefill="7" /> <mathinput name="y" prefill='-7' /></p>
-    <copy tname="n" u="$x" v="$y" assignNames="n2" />
+    <copy target="n" u="$x" v="$y" assignNames="n2" />
     `}, "*");
     });
     cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
@@ -400,8 +400,8 @@ describe('Module Tag Tests', function () {
     <section><title>First one</title>
     <copy uri='doenet:contentId=77c2bfe094c83bccb442e19a576441522593f2439e311c298b2377e1ff8b1f25' assignNames="m1" />
 
-    <p>Submitted response for problem 1: <math name="sr1"><copy prop="submittedResponse" tname="m1/ans" /></math></p>
-    <p>Credit for problem 1: <copy prop="creditAchieved" tname="m1/prob" assignNames="ca1" /></p>
+    <p>Submitted response for problem 1: <math name="sr1"><copy prop="submittedResponse" target="m1/ans" /></math></p>
+    <p>Credit for problem 1: <copy prop="creditAchieved" target="m1/prob" assignNames="ca1" /></p>
     </section>
 
     <section><title>Second one</title>
@@ -410,8 +410,8 @@ describe('Module Tag Tests', function () {
 
     <copy uri='doenet:contentId=77c2bfe094c83bccb442e19a576441522593f2439e311c298b2377e1ff8b1f25' title="Find point again" goalX="$xb" GoaLy="$yb" initialX="$xa" initialy="$ya" width="200px" height="200px" assignNames="m2" />
 
-    <p>Submitted response for problem 2: <math name="sr2"><copy prop="submittedResponse" tname="m2/ans" /></math></p>
-    <p>Credit for problem 2: <copy prop="creditAchieved" tname="m2/prob" assignNames="ca2" /></p>
+    <p>Submitted response for problem 2: <math name="sr2"><copy prop="submittedResponse" target="m2/ans" /></math></p>
+    <p>Credit for problem 2: <copy prop="creditAchieved" target="m2/prob" assignNames="ca2" /></p>
     </section>
 
     `}, "*");
@@ -517,13 +517,13 @@ describe('Module Tag Tests', function () {
       <p>Make the <m>x</m> value of the initial point be <m>$c</m>.</p>
       <copy width="$width" height="$height" goalx="$a" goaly="$b" iniTialX="$c" title="Embedded find point" uri="doenet:contentId=77c2bfe094c83bccb442e19a576441522593f2439e311c298b2377e1ff8b1f25" assignNames="extMod" />
     
-      <p>Submitted response for problem: <math name="sr"><copy prop="submittedResponse" tname="extMod/ans" /></math></p>
-      <p>Credit for problem: <copy prop="creditAchieved" tname="extMod/prob" assignNames="ca" /></p>
+      <p>Submitted response for problem: <math name="sr"><copy prop="submittedResponse" target="extMod/ans" /></math></p>
+      <p>Credit for problem: <copy prop="creditAchieved" target="extMod/prob" assignNames="ca" /></p>
 
     </module>
     
-    <copy tname="g" b="-5" c="9" width="200px" height="250px" assignNames="g2" />
-    <copy tname="g" a="7" c="-3" width="350x" height="325px" assignNames="g3" />
+    <copy target="g" b="-5" c="9" width="200px" height="250px" assignNames="g2" />
+    <copy target="g" a="7" c="-3" width="350x" height="325px" assignNames="g3" />
 
     `}, "*");
     });
@@ -708,8 +708,8 @@ describe('Module Tag Tests', function () {
 
     </module>
     
-    <copy tname="g" b="-5" c="9" width="200px" height="250px" assignNames="g2" />
-    <copy tname="g" a="7" c="-3" width="350x" height="325px" assignNames="g3" />
+    <copy target="g" b="-5" c="9" width="200px" height="250px" assignNames="g2" />
+    <copy target="g" a="7" c="-3" width="350x" height="325px" assignNames="g3" />
 
     `}, "*");
     });
@@ -857,12 +857,12 @@ describe('Module Tag Tests', function () {
       <p>Point: $P</p>
     </module>
     
-    <copy tname="m" P="(3,4)" assignNames="m2" />
+    <copy target="m" P="(3,4)" assignNames="m2" />
 
     <graph>
       <point name="Q">(5,6)</point>
     </graph>
-    <copy tname="m" P="$Q" assignNames="m3" />
+    <copy target="m" P="$Q" assignNames="m3" />
     
 
     `}, "*");
@@ -905,9 +905,9 @@ describe('Module Tag Tests', function () {
       <p>Disabled? $disabled</p>
     </module>
     
-    <copy tname="m" assignNames="m1" />
-    <copy tname="m" disabled="true" assignNames="m2" />
-    <copy tname="m" disabled="false" assignNames="m3" />
+    <copy target="m" assignNames="m1" />
+    <copy target="m" disabled="true" assignNames="m2" />
+    <copy target="m" disabled="false" assignNames="m3" />
     `}, "*");
     });
     cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load

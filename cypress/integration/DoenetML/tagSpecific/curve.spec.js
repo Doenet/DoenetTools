@@ -54,8 +54,8 @@ describe('Curve Tag Tests', function () {
     <mathinput prefill="-2"/>
     <graph>
     <point>(-1,2)</point>
-    <point>(2, <copy prop="value" tname="_mathinput1" />)</point>
-    <point>(2<copy prop="value" tname="_mathinput1" />, -4)</point>
+    <point>(2, <copy prop="value" target="_mathinput1" />)</point>
+    <point>(2<copy prop="value" target="_mathinput1" />, -4)</point>
     <point>(5,6)</point>
     <curve through="$_point1 $_point2 $_point3 $_point4" />
     </graph>
@@ -113,8 +113,8 @@ describe('Curve Tag Tests', function () {
     <mathinput prefill="-2"/>
     <graph>
     <point>(-1,2)</point>
-    <point>(2, <copy prop="value" tname="_mathinput1" />)</point>
-    <point>(2<copy prop="value" tname="_mathinput1" />, -4)</point>
+    <point>(2, <copy prop="value" target="_mathinput1" />)</point>
+    <point>(2<copy prop="value" target="_mathinput1" />, -4)</point>
     <point>(5,6)</point>
     <curve splineForm="uniform" splineTension="0.4" through="$_point1 $_point2 $_point3 $_point4" />
     </graph>
@@ -180,7 +180,7 @@ describe('Curve Tag Tests', function () {
     
     <point x="5" y="10">
       <constraints>
-        <constrainTo><copy tname="_curve1" /></constrainTo>
+        <constrainTo><copy target="_curve1" /></constrainTo>
       </constraints>
     </point>
     
@@ -322,12 +322,12 @@ describe('Curve Tag Tests', function () {
     
     <point x="8" y="-8">
       <constraints>
-        <constrainTo><copy tname="_curve1" /></constrainTo>
+        <constrainTo><copy target="_curve1" /></constrainTo>
       </constraints>
     </point>
     <point x="-8" y="-8">
       <constraints>
-        <constrainTo><copy tname="_curve1" /></constrainTo>
+        <constrainTo><copy target="_curve1" /></constrainTo>
       </constraints>
     </point>
     
@@ -464,12 +464,12 @@ describe('Curve Tag Tests', function () {
     
     <point x="8" y="-6">
       <constraints>
-        <constrainTo><copy tname="_curve1" /></constrainTo>
+        <constrainTo><copy target="_curve1" /></constrainTo>
       </constraints>
     </point>
     <point x="-8" y="6">
       <constraints>
-        <constrainTo><copy tname="_curve1" /></constrainTo>
+        <constrainTo><copy target="_curve1" /></constrainTo>
       </constraints>
     </point>
 
@@ -737,8 +737,8 @@ describe('Curve Tag Tests', function () {
     
     </graph>
     
-    <p>ebm: <copy prop="extrapolateBackwardMode" tname="_curve1" assignNames="ebm" /></p>
-    <p>efm: <copy prop="extrapolateForwardMode" tname="_curve1" assignNames="efm" /></p>
+    <p>ebm: <copy prop="extrapolateBackwardMode" target="_curve1" assignNames="ebm" /></p>
+    <p>efm: <copy prop="extrapolateForwardMode" target="_curve1" assignNames="efm" /></p>
 
     `}, "*");
     });

@@ -17,43 +17,43 @@ describe('Graph Reference Test 2', function () {
     </graph>
   
     <graph width="150px" height="150px" name="graph2">
-    <copy prop="tail" tname="_vector1" />
-    <copy prop="head" tname="_vector1" />
-    <copy prop="displacement" name="d1" tname="_vector1" />
-    <copy name="rv1" tname="_vector1" />
+    <copy prop="tail" target="_vector1" />
+    <copy prop="head" target="_vector1" />
+    <copy prop="displacement" name="d1" target="_vector1" />
+    <copy name="rv1" target="_vector1" />
     </graph>
 
     <graph width="150px" height="150px" name="graph3">
-    <copy prop="tail" tname="d1" />
-    <copy prop="head" tname="d1" />
-    <copy prop="displacement" tname="d1" />
-    <copy tname="d1" />
+    <copy prop="tail" target="d1" />
+    <copy prop="head" target="d1" />
+    <copy prop="displacement" target="d1" />
+    <copy target="d1" />
     </graph>
   
     <graph width="150px" height="150px" name="graph4">
-    <copy prop="tail" tname="rv1" />
-    <copy prop="head" tname="rv1" />
-    <copy prop="displacement" tname="rv1" />
-    <copy name="rv2" tname="rv1" />
+    <copy prop="tail" target="rv1" />
+    <copy prop="head" target="rv1" />
+    <copy prop="displacement" target="rv1" />
+    <copy name="rv2" target="rv1" />
     </graph>
     </sidebyside>
 
     <sidebyside>
-    <copy width="150px" height="150px" name="graph5" tname="graph1" />
-    <copy width="150px" height="150px" name="graph6" tname="graph2" />
-    <copy width="150px" height="150px" name="graph7" tname="graph3" />
-    <copy width="150px" height="150px" name="graph8" tname="graph4" />
+    <copy width="150px" height="150px" name="graph5" target="graph1" />
+    <copy width="150px" height="150px" name="graph6" target="graph2" />
+    <copy width="150px" height="150px" name="graph7" target="graph3" />
+    <copy width="150px" height="150px" name="graph8" target="graph4" />
     </sidebyside>
 
     <sidebyside>
-    <copy width="150px" height="150px" name="graph9" tname="graph5" />
-    <copy width="150px" height="150px" name="graph10" tname="graph6" />
-    <copy width="150px" height="150px" name="graph11" tname="graph7" />
-    <copy width="150px" height="150px" name="graph12" tname="graph8" />
+    <copy width="150px" height="150px" name="graph9" target="graph5" />
+    <copy width="150px" height="150px" name="graph10" target="graph6" />
+    <copy width="150px" height="150px" name="graph11" target="graph7" />
+    <copy width="150px" height="150px" name="graph12" target="graph8" />
     </sideBySide>
     </sbsgroup>
 
-    <copy name="sbsgroup2" tname="_sbsgroup1" />
+    <copy name="sbsgroup2" target="_sbsgroup1" />
   
     `}, "*");
     });

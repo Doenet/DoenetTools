@@ -22,8 +22,8 @@ describe('Function Operator Tag Tests', function () {
         doenetML: `
     <text>a</text>
     <function name="original">x^3</function>
-    <clampfunction name="clamp01"><copy tname="original" /></clampfunction>
-    <clampfunction name="clampn35" lowervalue="-3" uppervalue="5"><copy tname="original" /></clampfunction>
+    <clampfunction name="clamp01"><copy target="original" /></clampfunction>
+    <clampfunction name="clampn35" lowervalue="-3" uppervalue="5"><copy target="original" /></clampfunction>
 
     <p><aslist>
     <map>
@@ -44,10 +44,10 @@ describe('Function Operator Tag Tests', function () {
     </map>
     </aslist></p>
     <p><aslist>
-      <copy tname="_map2" name="m4" />
+      <copy target="_map2" name="m4" />
     </aslist></p>
     <p><aslist>
-      <copy tname="_map3" name="m5" />
+      <copy target="_map3" name="m5" />
     </aslist></p>
     `}, "*");
     });
@@ -112,8 +112,8 @@ describe('Function Operator Tag Tests', function () {
         doenetML: `
     <text>a</text>
     <function name="original">x^3</function>
-    <wrapfunctionperiodic name="wrap01"><copy tname="original" /></wrapfunctionperiodic>
-    <wrapfunctionperiodic name="wrapn23" lowervalue="-2" uppervalue="3"><copy tname="original" /></wrapfunctionperiodic>
+    <wrapfunctionperiodic name="wrap01"><copy target="original" /></wrapfunctionperiodic>
+    <wrapfunctionperiodic name="wrapn23" lowervalue="-2" uppervalue="3"><copy target="original" /></wrapfunctionperiodic>
 
     <p><aslist>
     <map>
@@ -134,10 +134,10 @@ describe('Function Operator Tag Tests', function () {
     </map>
     </aslist></p>
     <p><aslist>
-      <copy tname="_map2" name="m4" />
+      <copy target="_map2" name="m4" />
     </aslist></p>
     <p><aslist>
-      <copy tname="_map3" name="m5" />
+      <copy target="_map3" name="m5" />
     </aslist></p>
     `}, "*");
     });
@@ -341,25 +341,25 @@ describe('Function Operator Tag Tests', function () {
       <derivative name="d1"><function>x^2</function></derivative>
       <derivative name="d2"><math name="x2">x^2</math></derivative>
       <derivative name="d2b">$x2</derivative>
-      <derivative name="d2c"><copy tname="x2" /></derivative>
+      <derivative name="d2c"><copy target="x2" /></derivative>
       <derivative name="d3"><function>x^2sin(z)</function></derivative>
       <derivative name="d4" variables="z">x^2sin(z)</derivative>
       <math name='var'>z</math><number name="a">2</number>
       <derivative name="d4b" variables="$var">x^$a sin($var)</derivative>
-      <derivative name="d5"><copy tname="f1" /></derivative>
+      <derivative name="d5"><copy target="f1" /></derivative>
       <derivative name="d5b">$f1</derivative>
-      <derivative name="d6"><copy tname="f2" /></derivative>
+      <derivative name="d6"><copy target="f2" /></derivative>
       <derivative name="d6b">$f2</derivative>
-      <derivative name="d7"><copy tname="f3" /></derivative>
+      <derivative name="d7"><copy target="f3" /></derivative>
       <derivative name="d7b">$f3</derivative>
-      <derivative name="d8"><copy tname="f4" /></derivative>
+      <derivative name="d8"><copy target="f4" /></derivative>
       <derivative name="d8b">$f4</derivative>
-      <derivative variables="q" name="d9"><copy tname="f1" /></derivative>
-      <derivative variables="q" name="d10"><copy tname="f2" /></derivative>
-      <derivative variables="q" name="d11"><copy tname="f3" /></derivative>
-      <derivative variables="q" name="d12"><copy tname="f4" /></derivative>
-      <derivative variables="y" name="d13"><copy tname="f3" /></derivative>
-      <derivative variables="y" name="d14"><copy tname="f4" /></derivative>
+      <derivative variables="q" name="d9"><copy target="f1" /></derivative>
+      <derivative variables="q" name="d10"><copy target="f2" /></derivative>
+      <derivative variables="q" name="d11"><copy target="f3" /></derivative>
+      <derivative variables="q" name="d12"><copy target="f4" /></derivative>
+      <derivative variables="y" name="d13"><copy target="f3" /></derivative>
+      <derivative variables="y" name="d14"><copy target="f4" /></derivative>
       `}, "*");
     });
 
@@ -802,7 +802,7 @@ describe('Function Operator Tag Tests', function () {
         doenetML: `
       <text>a</text>
       <p>Let <m>f(x) = <function name="f">sin(x)</function></m>.  
-      Then <m>f'(x) = <derivative><copy tname="f" /></derivative></m>.</p>
+      Then <m>f'(x) = <derivative><copy target="f" /></derivative></m>.</p>
       `}, "*");
     });
 
@@ -826,12 +826,12 @@ describe('Function Operator Tag Tests', function () {
       <text>a</text>
       <graph>
         <function minima='(3,4)' />
-        <derivative><copy tname="_function1"/></derivative>
-        <derivative><copy tname="_derivative1"/></derivative>
-        <derivative><copy tname="_derivative2"/></derivative>
-        <derivative><copy tname="_derivative3"/></derivative>
-        <derivative><copy tname="_derivative4"/></derivative>
-        <derivative><copy tname="_derivative5"/></derivative>
+        <derivative><copy target="_function1"/></derivative>
+        <derivative><copy target="_derivative1"/></derivative>
+        <derivative><copy target="_derivative2"/></derivative>
+        <derivative><copy target="_derivative3"/></derivative>
+        <derivative><copy target="_derivative4"/></derivative>
+        <derivative><copy target="_derivative5"/></derivative>
       </graph>
       `}, "*");
     });
@@ -864,10 +864,10 @@ describe('Function Operator Tag Tests', function () {
       <text>a</text>
       <graph>
         <function minima="(3,4)" through="(-1,5)(4,2)" maxima="(1,0)" />
-        <derivative stylenumber="2"><copy tname="_function1"/></derivative>
-        <derivative stylenumber="3"><copy tname="_derivative1"/></derivative>
-        <derivative stylenumber="4"><copy tname="_derivative2"/></derivative>
-        <derivative stylenumber="5"><copy tname="_derivative3"/></derivative>
+        <derivative stylenumber="2"><copy target="_function1"/></derivative>
+        <derivative stylenumber="3"><copy target="_derivative1"/></derivative>
+        <derivative stylenumber="4"><copy target="_derivative2"/></derivative>
+        <derivative stylenumber="5"><copy target="_derivative3"/></derivative>
       </graph>
       `}, "*");
     });
@@ -1227,22 +1227,22 @@ describe('Function Operator Tag Tests', function () {
     <derivative name="fp">$f</derivative>
     </m></p>
 
-    <p>again, <m>f'($x) = <copy tname="fp" name="fp2" />
+    <p>again, <m>f'($x) = <copy target="fp" name="fp2" />
     </m></p>
 
 
-    <p>Number of minima of f': <copy prop="numberminima" assignNames="nMinima" tname="fp" /></p>
-    <p>Minima of f': <extract prop="coords" displayDecimals="5" assignNames="min1 min2"><copy prop="minima" tname="fp" /></extract></p> 
+    <p>Number of minima of f': <copy prop="numberminima" assignNames="nMinima" target="fp" /></p>
+    <p>Minima of f': <extract prop="coords" displayDecimals="5" assignNames="min1 min2"><copy prop="minima" target="fp" /></extract></p> 
 
-    <p>Number of maxima of f': <copy prop="numbermaxima" assignNames="nMaxima" tname="fp" /></p>
-    <p>Maxima of f': <extract prop="coords" displayDecimals="5" assignNames="max1 max2"><copy prop="maxima" tname="fp" /></extract></p> 
+    <p>Number of maxima of f': <copy prop="numbermaxima" assignNames="nMaxima" target="fp" /></p>
+    <p>Maxima of f': <extract prop="coords" displayDecimals="5" assignNames="max1 max2"><copy prop="maxima" target="fp" /></extract></p> 
 
     <p>To repeat:</p>
-    <p>Number of minima of f': <copy prop="numberminima" assignNames="nMinima2" tname="fp2" /></p>
-    <p>Minima of f': <extract prop="coords" displayDecimals="5" assignNames="min12 min22"><copy prop="minima" tname="fp2" /></extract></p> 
+    <p>Number of minima of f': <copy prop="numberminima" assignNames="nMinima2" target="fp2" /></p>
+    <p>Minima of f': <extract prop="coords" displayDecimals="5" assignNames="min12 min22"><copy prop="minima" target="fp2" /></extract></p> 
 
-    <p>Number of maxima of f': <copy prop="numbermaxima" assignNames="nMaxima2" tname="fp2" /></p>
-    <p>Maxima of f': <extract prop="coords" displayDecimals="5" assignNames="max12 max22"><copy prop="maxima" tname="fp2" /></extract></p> 
+    <p>Number of maxima of f': <copy prop="numbermaxima" assignNames="nMaxima2" target="fp2" /></p>
+    <p>Maxima of f': <extract prop="coords" displayDecimals="5" assignNames="max12 max22"><copy prop="maxima" target="fp2" /></extract></p> 
 
 
     `}, "*");
@@ -1413,23 +1413,23 @@ describe('Function Operator Tag Tests', function () {
       <text>a</text>
       <graph>
         <function name="f" minima="(-5,-3) (0,-5)" maxima="(-3,0) (6,8)" />
-        <derivative name="fp" stylenumber="2"><copy tname="f"/></derivative>
+        <derivative name="fp" stylenumber="2"><copy target="f"/></derivative>
       </graph>
 
-      <copy tname="fp" name="fp2" />
+      <copy target="fp" name="fp2" />
 
-      <p>Number of minima of f': <copy prop="numberminima" assignNames="nMinima" tname="fp" /></p>
-      <p>Minima of f': <extract prop="coords" displayDecimals="5" assignNames="min1 min2"><copy prop="minima" tname="fp" /></extract></p> 
+      <p>Number of minima of f': <copy prop="numberminima" assignNames="nMinima" target="fp" /></p>
+      <p>Minima of f': <extract prop="coords" displayDecimals="5" assignNames="min1 min2"><copy prop="minima" target="fp" /></extract></p> 
   
-      <p>Number of maxima of f': <copy prop="numbermaxima" assignNames="nMaxima" tname="fp" /></p>
-      <p>Maxima of f': <extract prop="coords" displayDecimals="5" assignNames="max1 max2"><copy prop="maxima" tname="fp" /></extract></p> 
+      <p>Number of maxima of f': <copy prop="numbermaxima" assignNames="nMaxima" target="fp" /></p>
+      <p>Maxima of f': <extract prop="coords" displayDecimals="5" assignNames="max1 max2"><copy prop="maxima" target="fp" /></extract></p> 
   
       <p>To repeat:</p>
-      <p>Number of minima of f': <copy prop="numberminima" assignNames="nMinima2" tname="fp2" /></p>
-      <p>Minima of f': <extract prop="coords" displayDecimals="5" assignNames="min12 min22"><copy prop="minima" tname="fp2" /></extract></p> 
+      <p>Number of minima of f': <copy prop="numberminima" assignNames="nMinima2" target="fp2" /></p>
+      <p>Minima of f': <extract prop="coords" displayDecimals="5" assignNames="min12 min22"><copy prop="minima" target="fp2" /></extract></p> 
   
-      <p>Number of maxima of f': <copy prop="numbermaxima" assignNames="nMaxima2" tname="fp2" /></p>
-      <p>Maxima of f': <extract prop="coords" displayDecimals="5" assignNames="max12 max22"><copy prop="maxima" tname="fp2" /></extract></p> 
+      <p>Number of maxima of f': <copy prop="numbermaxima" assignNames="nMaxima2" target="fp2" /></p>
+      <p>Maxima of f': <extract prop="coords" displayDecimals="5" assignNames="max12 max22"><copy prop="maxima" target="fp2" /></extract></p> 
   
       `}, "*");
     });

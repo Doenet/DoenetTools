@@ -36,20 +36,20 @@ describe('Paginator Tag Tests', function () {
       <section>
         <title>Page 3</title>
         <math hide name="twox">2x</math>
-        <p>What is <m>x+x</m>? <answer>$twox</answer></p>
-        <p>What is <m>y+y</m>? <answer>2y</answer></p>
+        <p>What is <m name="mxx">x+x</m>? <answer>$twox</answer></p>
+        <p>What is <m name="myy">y+y</m>? <answer>2y</answer></p>
       </section>
     </paginator>
     <p>
-    <callAction name="prevPage" label="prev" disabled="$pageNum = 1" actionName="setPage" tName="pgn" number="$pageNum -1" />
-    Page <copy prop="currentPage" tname="pgn" assignNames="pageNum" />
-    of <copy prop="nPages" tname="pgn" assignNames="nPages" />
-    <callAction name="nextPage" label="next" disabled="$pageNum = $nPages" actionName="setPage" tName="pgn" number="$pageNum +1" />
+    <callAction name="prevPage" label="prev" disabled="$pageNum = 1" actionName="setPage" target="pgn" number="$pageNum -1" />
+    Page <copy prop="currentPage" target="pgn" assignNames="pageNum" />
+    of <copy prop="nPages" target="pgn" assignNames="nPages" />
+    <callAction name="nextPage" label="next" disabled="$pageNum = $nPages" actionName="setPage" target="pgn" number="$pageNum +1" />
     
     </p>
     <p>What is 2+2? <answer>4</answer></p>
   
-    <p>Credit achieved: <copy prop="creditAchieved" tname="_document1" assignNames="ca" /></p>
+    <p>Credit achieved: <copy prop="creditAchieved" target="_document1" assignNames="ca" /></p>
   
     `
 
@@ -207,10 +207,28 @@ describe('Paginator Tag Tests', function () {
         expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('4')
       })
 
-      // cy.wait(1000)
+      // cy.get('#\\/mxx .mjx-mrow').should('contain.text', 'x+x')
+      // cy.get('#\\/myy .mjx-mrow').should('contain.text', 'y+y')
 
       cy.window().then(async (win) => {
         components = Object.assign({}, win.state.components);
+        // cy.task('log', JSON.stringify(Object.keys(components)))
+        // console.log(JSON.stringify(Object.keys(components)))
+        // for (let i = 0; i < 10; i++) {
+        //   if (components["/_answer2"] === undefined) {
+        //     cy.task('log', 'undefined')
+        //     cy.window().then((w) => {
+        //       components = Object.assign({}, w.state.components);
+        //     })
+        //     cy.task('log', JSON.stringify(Object.keys(components)))
+        //     console.log(JSON.stringify(Object.keys(components)))
+
+        //     cy.wait(100)
+        //   } else {
+        //     break;
+        //   }
+        // }
+        // expect(components["/_answer2"]).not.eq(undefined);
 
         let mathinput2Name = (await components["/_answer2"].stateValues.inputChildren)[0].componentName;
         let mathinput2Anchor = cesc('#' + mathinput2Name) + " textarea";
@@ -706,20 +724,20 @@ describe('Paginator Tag Tests', function () {
       <section>
         <title>Page 3</title>
         <math hide name="twox">2x</math>
-        <p>What is <m>x+x</m>? <answer>$twox</answer></p>
-        <p>What is <m>y+y</m>? <answer>2y</answer></p>
+        <p>What is <m name="mxx">x+x</m>? <answer>$twox</answer></p>
+        <p>What is <m name="myy">y+y</m>? <answer>2y</answer></p>
       </section>
     </paginator>
     <p>
-    <callAction name="prevPage" label="prev" disabled="$pageNum = 1" actionName="setPage" tName="pgn" number="$pageNum -1" />
-    Page <copy prop="currentPage" tname="pgn" assignNames="pageNum" />
-    of <copy prop="nPages" tname="pgn" assignNames="nPages" />
-    <callAction name="nextPage" label="next" disabled="$pageNum = $nPages" actionName="setPage" tName="pgn" number="$pageNum +1" />
+    <callAction name="prevPage" label="prev" disabled="$pageNum = 1" actionName="setPage" target="pgn" number="$pageNum -1" />
+    Page <copy prop="currentPage" target="pgn" assignNames="pageNum" />
+    of <copy prop="nPages" target="pgn" assignNames="nPages" />
+    <callAction name="nextPage" label="next" disabled="$pageNum = $nPages" actionName="setPage" target="pgn" number="$pageNum +1" />
     
     </p>
     <p>What is 2+2? <answer>4</answer></p>
   
-    <p>Credit achieved: <copy prop="creditAchieved" tname="_document1" assignNames="ca" /></p>
+    <p>Credit achieved: <copy prop="creditAchieved" target="_document1" assignNames="ca" /></p>
   
     `
     cy.window().then((win) => {
@@ -837,12 +855,11 @@ describe('Paginator Tag Tests', function () {
       cy.get(cesc('#/_section2_title')).should('not.exist');
       cy.get(cesc('#/_title2')).should('have.text', 'Page 3')
 
-      cy.wait(200)
-
       cy.get(answer4Correct).should('be.visible')
       cy.get(cesc('#/ca')).should('have.text', '0.333');
 
-      cy.wait(200)
+      // cy.get('#\\/mxx .mjx-mrow').should('contain.text', 'x+x')
+      // cy.get('#\\/myy .mjx-mrow').should('contain.text', 'y+y')
 
       cy.window().then(async (win) => {
         components = Object.assign({}, win.state.components);
@@ -1029,7 +1046,7 @@ describe('Paginator Tag Tests', function () {
       </problem>
     </paginator>
   
-    <p>Credit achieved: <copy prop="creditAchieved" tname="_document1" assignNames="ca" /></p>
+    <p>Credit achieved: <copy prop="creditAchieved" target="_document1" assignNames="ca" /></p>
   
     `
 
@@ -1332,7 +1349,7 @@ describe('Paginator Tag Tests', function () {
         </p>
       </problem>
     </paginator>
-    <p>Credit achieved: <copy prop="creditAchieved" tname="_document1" assignNames="ca" /></p>
+    <p>Credit achieved: <copy prop="creditAchieved" target="_document1" assignNames="ca" /></p>
     `
 
     cy.window().then((win) => {
@@ -1606,10 +1623,10 @@ describe('Paginator Tag Tests', function () {
     <paginator name="pgn">
       <copy assignNames="problem1" uri="doenet:contentId=a666134b719e70e8acb48d91d582d1efd90d7f11fb499ab77f9f1fa5dafdb96d" componentType="problem" />
       <copy assignNames="problem2" uri="doenet:contentId=64e31126079d65ea41e90129fa96a7fd54f1faa73fb7b2ef99d8bbed1d13f69a" componentType="problem" />
-      <copy assignNames="problem3" tname="problema" componentType="problem" link="false" />
+      <copy assignNames="problem3" target="problema" componentType="problem" link="false" />
   
     </paginator>
-    <p>Credit achieved: <copy prop="creditAchieved" tname="_document1" assignNames="ca" /></p>
+    <p>Credit achieved: <copy prop="creditAchieved" target="_document1" assignNames="ca" /></p>
     `
 
     cy.window().then((win) => {
@@ -1776,10 +1793,10 @@ describe('Paginator Tag Tests', function () {
     <paginator name="pgn">
       <copy assignNames="problem1" uri="doenet:contentId=a666134b719e70e8acb48d91d582d1efd90d7f11fb499ab77f9f1fa5dafdb96d" componentType="problem" />
       <copy assignNames="problem2" uri="doenet:contentId=64e31126079d65ea41e90129fa96a7fd54f1faa73fb7b2ef99d8bbed1d13f69a" componentType="problem" />
-      <copy assignNames="problem3" tname="problema" componentType="problem" link="false" />
+      <copy assignNames="problem3" target="problema" componentType="problem" link="false" />
   
     </paginator>
-    <p>Credit achieved: <copy prop="creditAchieved" tname="_document1" assignNames="ca" /></p>
+    <p>Credit achieved: <copy prop="creditAchieved" target="_document1" assignNames="ca" /></p>
     `
 
     cy.window().then((win) => {
@@ -1951,7 +1968,7 @@ describe('Paginator Tag Tests', function () {
       </problem>  
      
     </paginator>
-    <p>Credit achieved: <copy prop="creditAchieved" tname="_document1" assignNames="ca" /></p>
+    <p>Credit achieved: <copy prop="creditAchieved" target="_document1" assignNames="ca" /></p>
     `
 
     cy.window().then((win) => {
@@ -2073,7 +2090,7 @@ describe('Paginator Tag Tests', function () {
         <p>6: <answer><mathinput name="mi6"/><award>6</award></answer></p>
       </problem>
     </paginator>
-    <p>Credit achieved: <copy prop="creditAchieved" tname="_document1" assignNames="ca" /></p>
+    <p>Credit achieved: <copy prop="creditAchieved" target="_document1" assignNames="ca" /></p>
     `
 
     cy.window().then((win) => {
@@ -2200,7 +2217,7 @@ describe('Paginator Tag Tests', function () {
         <p>2: <answer type="text"><textinput name="ti2"/><award>2</award></answer></p>
       </problem>
     </paginator>
-    <p>Credit achieved: <copy prop="creditAchieved" tname="_document1" assignNames="ca" /></p>
+    <p>Credit achieved: <copy prop="creditAchieved" target="_document1" assignNames="ca" /></p>
     `
 
     cy.window().then((win) => {
@@ -2280,7 +2297,7 @@ describe('Paginator Tag Tests', function () {
       </select>    
     </paginator>
     
-    <p>Credit achieved: <copy prop="creditAchieved" tname="_document1" assignNames="ca" /></p>
+    <p>Credit achieved: <copy prop="creditAchieved" target="_document1" assignNames="ca" /></p>
     `
 
     let doenetMLorder1 = `
@@ -2291,7 +2308,7 @@ describe('Paginator Tag Tests', function () {
       <copy uri="doenet:contentId=a666134b719e70e8acb48d91d582d1efd90d7f11fb499ab77f9f1fa5dafdb96d" componentType="problem" assignNames="problem2" />
     </paginator>
     
-    <p>Credit achieved: <copy prop="creditAchieved" tname="_document1" assignNames="ca" /></p>
+    <p>Credit achieved: <copy prop="creditAchieved" target="_document1" assignNames="ca" /></p>
     `
 
     let doenetMLorder2 = `
@@ -2302,7 +2319,7 @@ describe('Paginator Tag Tests', function () {
       <copy uri="doenet:contentId=bb4ca2c44eba4f691b4591a7e20ef8007e5a825dd45f48bc4758d3a43f5af2fa" componentType="problem" assignNames="problem2" />
     </paginator>
     
-    <p>Credit achieved: <copy prop="creditAchieved" tname="_document1" assignNames="ca" /></p>
+    <p>Credit achieved: <copy prop="creditAchieved" target="_document1" assignNames="ca" /></p>
     `
 
     let allDoenetMLs = [
@@ -2720,7 +2737,7 @@ describe('Paginator Tag Tests', function () {
     </problem>
     </paginator>
     
-    <p>Credit achieved: <copy prop="creditAchieved" tname="_document1" assignNames="ca" /></p>
+    <p>Credit achieved: <copy prop="creditAchieved" target="_document1" assignNames="ca" /></p>
   
     `
 

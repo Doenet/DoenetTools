@@ -25,9 +25,9 @@ describe('Vector Tag Tests', function () {
   </graph>
 
   <graph>
-  <copy prop="tail" tname="_vector1" />
-  <copy prop="head" tname="_vector1" />
-  <copy prop="displacement" tname="_vector1" />
+  <copy prop="tail" target="_vector1" />
+  <copy prop="head" target="_vector1" />
+  <copy prop="displacement" target="_vector1" />
   </graph>
   `}, "*");
     });
@@ -205,9 +205,9 @@ describe('Vector Tag Tests', function () {
   </graph>
 
   <graph>
-  <copy prop="tail" tname="_vector1" />
-  <copy prop="head" tname="_vector1" />
-  <copy prop="displacement" tname="_vector1" />
+  <copy prop="tail" target="_vector1" />
+  <copy prop="head" target="_vector1" />
+  <copy prop="displacement" target="_vector1" />
   </graph>
   `}, "*");
     });
@@ -379,9 +379,9 @@ describe('Vector Tag Tests', function () {
   </graph>
 
   <graph>
-  <copy prop="tail" tname="_vector1" />
-  <copy prop="head" tname="_vector1" />
-  <copy prop="displacement" tname="_vector1" />
+  <copy prop="tail" target="_vector1" />
+  <copy prop="head" target="_vector1" />
+  <copy prop="displacement" target="_vector1" />
   </graph>
   `}, "*");
     });
@@ -553,9 +553,9 @@ describe('Vector Tag Tests', function () {
   </graph>
 
   <graph>
-  <copy prop="tail" tname="_vector1" />
-  <copy prop="head" tname="_vector1" />
-  <copy prop="displacement" tname="_vector1" />
+  <copy prop="tail" target="_vector1" />
+  <copy prop="head" target="_vector1" />
+  <copy prop="displacement" target="_vector1" />
   </graph>
   `}, "*");
     });
@@ -727,9 +727,9 @@ describe('Vector Tag Tests', function () {
   </graph>
 
   <graph>
-  <copy prop="tail" tname="_vector1" />
-  <copy prop="head" tname="_vector1" />
-  <copy prop="displacement" tname="_vector1" />
+  <copy prop="tail" target="_vector1" />
+  <copy prop="head" target="_vector1" />
+  <copy prop="displacement" target="_vector1" />
   </graph>
   `}, "*");
     });
@@ -901,9 +901,9 @@ describe('Vector Tag Tests', function () {
   </graph>
 
   <graph>
-  <copy prop="tail" tname="_vector1" />
-  <copy prop="head" tname="_vector1" />
-  <copy prop="displacement" tname="_vector1" />
+  <copy prop="tail" target="_vector1" />
+  <copy prop="head" target="_vector1" />
+  <copy prop="displacement" target="_vector1" />
   </graph>
   `}, "*");
     });
@@ -1075,9 +1075,9 @@ describe('Vector Tag Tests', function () {
   </graph>
 
   <graph>
-  <copy prop="tail" tname="_vector1" />
-  <copy prop="head" tname="_vector1" />
-  <copy prop="displacement" tname="_vector1" />
+  <copy prop="tail" target="_vector1" />
+  <copy prop="head" target="_vector1" />
+  <copy prop="displacement" target="_vector1" />
   </graph>
   `}, "*");
     });
@@ -1250,9 +1250,9 @@ describe('Vector Tag Tests', function () {
   </graph>
 
   <graph>
-  <copy prop="tail" tname="_vector1" />
-  <copy prop="head" tname="_vector1" />
-  <copy prop="displacement" tname="_vector1" />
+  <copy prop="tail" target="_vector1" />
+  <copy prop="head" target="_vector1" />
+  <copy prop="displacement" target="_vector1" />
   </graph>
   `}, "*");
     });
@@ -1426,9 +1426,9 @@ describe('Vector Tag Tests', function () {
   </graph>
 
   <graph>
-  <copy prop="tail" tname="_vector1" />
-  <copy prop="head" tname="_vector1" />
-  <copy prop="displacement" tname="_vector1" />
+  <copy prop="tail" target="_vector1" />
+  <copy prop="head" target="_vector1" />
+  <copy prop="displacement" target="_vector1" />
   </graph>
   `}, "*");
     });
@@ -1602,9 +1602,9 @@ describe('Vector Tag Tests', function () {
   </graph>
 
   <graph>
-  <copy prop="tail" tname="_vector1" />
-  <copy prop="head" tname="_vector1" />
-  <copy prop="displacement" tname="_vector1" />
+  <copy prop="tail" target="_vector1" />
+  <copy prop="head" target="_vector1" />
+  <copy prop="displacement" target="_vector1" />
   </graph>
   `}, "*");
     });
@@ -1778,9 +1778,9 @@ describe('Vector Tag Tests', function () {
   </graph>
 
   <graph>
-  <copy prop="tail" tname="_vector1" />
-  <copy prop="head" tname="_vector1" />
-  <copy prop="displacement" tname="_vector1" />
+  <copy prop="tail" target="_vector1" />
+  <copy prop="head" target="_vector1" />
+  <copy prop="displacement" target="_vector1" />
   </graph>
   `}, "*");
     });
@@ -1954,9 +1954,9 @@ describe('Vector Tag Tests', function () {
   </graph>
 
   <graph>
-  <copy prop="tail" tname="_vector1" />
-  <copy prop="head" tname="_vector1" />
-  <copy prop="displacement" tname="_vector1" />
+  <copy prop="tail" target="_vector1" />
+  <copy prop="head" target="_vector1" />
+  <copy prop="displacement" target="_vector1" />
   </graph>
   `}, "*");
     });
@@ -2130,9 +2130,9 @@ describe('Vector Tag Tests', function () {
   </graph>
 
   <graph>
-  <copy prop="tail" tname="_vector1" />
-  <copy prop="head" tname="_vector1" />
-  <copy prop="displacement" tname="_vector1" />
+  <copy prop="tail" target="_vector1" />
+  <copy prop="head" target="_vector1" />
+  <copy prop="displacement" target="_vector1" />
   </graph>
   `}, "*");
     });
@@ -2306,9 +2306,9 @@ describe('Vector Tag Tests', function () {
   </graph>
 
   <graph>
-  <copy prop="tail" tname="_vector1" />
-  <copy prop="head" tname="_vector1" />
-  <copy prop="displacement" tname="_vector1" />
+  <copy prop="tail" target="_vector1" />
+  <copy prop="head" target="_vector1" />
+  <copy prop="displacement" target="_vector1" />
   </graph>
   `}, "*");
     });
@@ -2482,9 +2482,9 @@ describe('Vector Tag Tests', function () {
   </graph>
 
   <graph>
-  <copy prop="tail" tname="_vector1" />
-  <copy prop="head" tname="_vector1" />
-  <copy prop="displacement" tname="_vector1" />
+  <copy prop="tail" target="_vector1" />
+  <copy prop="head" target="_vector1" />
+  <copy prop="displacement" target="_vector1" />
   </graph>
   `}, "*");
     });
@@ -2660,9 +2660,9 @@ describe('Vector Tag Tests', function () {
   </graph>
 
   <graph>
-  <copy prop="tail" tname="_vector1" />
-  <copy prop="head" tname="_vector1" />
-  <copy prop="displacement" tname="_vector1" />
+  <copy prop="tail" target="_vector1" />
+  <copy prop="head" target="_vector1" />
+  <copy prop="displacement" target="_vector1" />
   </graph>
   `}, "*");
     });
@@ -2838,9 +2838,9 @@ describe('Vector Tag Tests', function () {
   </graph>
 
   <graph>
-  <copy prop="tail" tname="_vector1" />
-  <copy prop="head" tname="_vector1" />
-  <copy prop="displacement" tname="_vector1" />
+  <copy prop="tail" target="_vector1" />
+  <copy prop="head" target="_vector1" />
+  <copy prop="displacement" target="_vector1" />
   </graph>
   `}, "*");
     });
@@ -3016,9 +3016,9 @@ describe('Vector Tag Tests', function () {
   </graph>
 
   <graph>
-  <copy prop="tail" tname="_vector1" />
-  <copy prop="head" tname="_vector1" />
-  <copy prop="displacement" tname="_vector1" />
+  <copy prop="tail" target="_vector1" />
+  <copy prop="head" target="_vector1" />
+  <copy prop="displacement" target="_vector1" />
   </graph>
   `}, "*");
     });
@@ -3194,9 +3194,9 @@ describe('Vector Tag Tests', function () {
   </graph>
 
   <graph>
-  <copy prop="tail" tname="_vector1" />
-  <copy prop="head" tname="_vector1" />
-  <copy prop="displacement" tname="_vector1" />
+  <copy prop="tail" target="_vector1" />
+  <copy prop="head" target="_vector1" />
+  <copy prop="displacement" target="_vector1" />
   </graph>
   `}, "*");
     });
@@ -3372,9 +3372,9 @@ describe('Vector Tag Tests', function () {
   </graph>
 
   <graph>
-  <copy prop="tail" tname="_vector1" />
-  <copy prop="head" tname="_vector1" />
-  <copy prop="displacement" tname="_vector1" />
+  <copy prop="tail" target="_vector1" />
+  <copy prop="head" target="_vector1" />
+  <copy prop="displacement" target="_vector1" />
   </graph>
   `}, "*");
     });
@@ -3550,9 +3550,9 @@ describe('Vector Tag Tests', function () {
   </graph>
 
   <graph>
-  <copy prop="tail" tname="_vector1" />
-  <copy prop="head" tname="_vector1" />
-  <copy prop="displacement" tname="_vector1" />
+  <copy prop="tail" target="_vector1" />
+  <copy prop="head" target="_vector1" />
+  <copy prop="displacement" target="_vector1" />
   </graph>
   `}, "*");
     });
@@ -3728,9 +3728,9 @@ describe('Vector Tag Tests', function () {
   </graph>
 
   <graph>
-  <copy prop="tail" tname="_vector1" />
-  <copy prop="head" tname="_vector1" />
-  <copy prop="displacement" tname="_vector1" />
+  <copy prop="tail" target="_vector1" />
+  <copy prop="head" target="_vector1" />
+  <copy prop="displacement" target="_vector1" />
   </graph>
   `}, "*");
     });
@@ -3907,9 +3907,9 @@ describe('Vector Tag Tests', function () {
   </graph>
 
   <graph>
-  <copy prop="tail" tname="_vector1" />
-  <copy prop="head" tname="_vector1" />
-  <copy prop="displacement" tname="_vector1" />
+  <copy prop="tail" target="_vector1" />
+  <copy prop="head" target="_vector1" />
+  <copy prop="displacement" target="_vector1" />
   </graph>
   `}, "*");
     });
@@ -4082,9 +4082,9 @@ describe('Vector Tag Tests', function () {
   </graph>
 
   <graph>
-  <copy prop="tail" tname="_vector1" />
-  <copy prop="head" tname="_vector1" />
-  <copy prop="displacement" tname="_vector1" />
+  <copy prop="tail" target="_vector1" />
+  <copy prop="head" target="_vector1" />
+  <copy prop="displacement" target="_vector1" />
   </graph>
   `}, "*");
     });
@@ -4257,9 +4257,9 @@ describe('Vector Tag Tests', function () {
   </graph>
 
   <graph>
-  <copy prop="tail" tname="_vector1" />
-  <copy prop="head" tname="_vector1" />
-  <copy prop="displacement" tname="_vector1" />
+  <copy prop="tail" target="_vector1" />
+  <copy prop="head" target="_vector1" />
+  <copy prop="displacement" target="_vector1" />
   </graph>
   `}, "*");
     });
@@ -4442,12 +4442,12 @@ describe('Vector Tag Tests', function () {
   </graph>
 
   <graph>
-    <copy tname="_vector1" />
-    <copy tname="_vector2" />
-    <copy tname="_vector3" />
+    <copy target="_vector1" />
+    <copy target="_vector2" />
+    <copy target="_vector3" />
   </graph>
 
-  <copy tname="_graph2" />
+  <copy target="_graph2" />
   `}, "*");
     });
 
@@ -4828,15 +4828,15 @@ describe('Vector Tag Tests', function () {
   </graph>
   
   <graph>
-  <copy tname="_vector1" />
+  <copy target="_vector1" />
   </graph>
   
   <graph>
-  <copy tname="_vector2" />
+  <copy target="_vector2" />
   </graph>
 
   <graph>
-  <copy prop="displacement" tname="_vector1" />
+  <copy prop="displacement" target="_vector1" />
   </graph>
   `}, "*");
     });
@@ -4981,7 +4981,7 @@ describe('Vector Tag Tests', function () {
 
   <point x="-5" y="2">
     <constraints>
-      <constrainTo><copy tname="_vector1" /></constrainTo>
+      <constrainTo><copy target="_vector1" /></constrainTo>
     </constraints>
   </point>
   </graph>
@@ -5103,7 +5103,7 @@ describe('Vector Tag Tests', function () {
 
   <point x="-5" y="2">
     <constraints>
-      <attractTo><copy tname="_vector1" /></attractTo>
+      <attractTo><copy target="_vector1" /></attractTo>
     </constraints>
   </point>
   </graph>
@@ -5223,7 +5223,7 @@ describe('Vector Tag Tests', function () {
     <vector head="(-1,-0.05)" tail="(1,0.05)" name="l" />
     <point x="100" y="0" name="P">
       <constraints>
-        <constrainTo><copy tname="l" /></constrainTo>
+        <constrainTo><copy target="l" /></constrainTo>
       </constraints>
     </point>
   </graph>
@@ -5273,7 +5273,7 @@ describe('Vector Tag Tests', function () {
       win.postMessage({
         doenetML: `
   <text>a</text>
-  <extract prop="y"><copy prop="head" tname="original" /></extract>
+  <extract prop="y"><copy prop="head" target="original" /></extract>
   <point name="zeroFixed" fixed>(0,0)</point>
   <mathinput name="a" prefill="2" modifyIndirectly="false" />
   <graph>
@@ -5542,18 +5542,18 @@ describe('Vector Tag Tests', function () {
   <graph>
   <vector name="u" tail="(1,5)" head="(7,3)" />
   </graph>
-  <p>x coordinate of u is <copy name="ux" prop="x" tname="u" /></p>
-  <p>y coordinate of u is <copy name="uy" prop="y" tname="u" /></p>
-  <p>x1 coordinate of u is <copy name="ux1" prop="x1" tname="u" /></p>
-  <p>x2 coordinate of u is <copy name="ux2" prop="x2" tname="u" /></p>
+  <p>x coordinate of u is <copy name="ux" prop="x" target="u" /></p>
+  <p>y coordinate of u is <copy name="uy" prop="y" target="u" /></p>
+  <p>x1 coordinate of u is <copy name="ux1" prop="x1" target="u" /></p>
+  <p>x2 coordinate of u is <copy name="ux2" prop="x2" target="u" /></p>
 
   <vector name="v" tail="(9,1,-3)" head="(-3,10,8)" />
-  <p>x coordinate of v is <copy name="vx" prop="x" tname="v" /></p>
-  <p>y coordinate of v is <copy name="vy" prop="y" tname="v" /></p>
-  <p>z coordinate of v is <copy name="vz" prop="z" tname="v" /></p>
-  <p>x1 coordinate of v is <copy name="vx1" prop="x1" tname="v" /></p>
-  <p>x2 coordinate of v is <copy name="vx2" prop="x2" tname="v" /></p>
-  <p>x3 coordinate of v is <copy name="vx3" prop="x3" tname="v" /></p>
+  <p>x coordinate of v is <copy name="vx" prop="x" target="v" /></p>
+  <p>y coordinate of v is <copy name="vy" prop="y" target="v" /></p>
+  <p>z coordinate of v is <copy name="vz" prop="z" target="v" /></p>
+  <p>x1 coordinate of v is <copy name="vx1" prop="x1" target="v" /></p>
+  <p>x2 coordinate of v is <copy name="vx2" prop="x2" target="v" /></p>
+  <p>x3 coordinate of v is <copy name="vx3" prop="x3" target="v" /></p>
   `}, "*");
     });
 
@@ -5599,8 +5599,8 @@ describe('Vector Tag Tests', function () {
   <text>a</text>
   <graph>
     <vector name="v1" tail="(1,2)" head="(3,5)" />
-    <copy name="v2" tname="v1" />
-    <copy name="v3" prop="displacement" tname="v1" />
+    <copy name="v2" target="v1" />
+    <copy name="v3" prop="displacement" target="v1" />
     <vector name="v4" displacement="($(v2{prop='y'}), $(v3{prop='x'}))" />
   </graph>
   `}, "*");
@@ -5879,17 +5879,17 @@ describe('Vector Tag Tests', function () {
   <text>a</text>
   <graph>
     <vector name="v1" tail="(1,2)" head="(3,5)" />
-    <copy name="v2" tname="v1" />
-    <copy name="v3" prop="displacement" tname="v1" />
+    <copy name="v2" target="v1" />
+    <copy name="v3" prop="displacement" target="v1" />
     <point name="v4displacementhead" hide>(
       <extract prop="y">
         <extract prop="head">
-          <copy prop="displacement" tname="v2" />
+          <copy prop="displacement" target="v2" />
         </extract>
       </extract>,
       <extract prop="x">
         <extract prop="head">
-          <copy prop="displacement" tname="v3" />
+          <copy prop="displacement" target="v3" />
         </extract>
       </extract>
     )</point>
@@ -6172,8 +6172,8 @@ describe('Vector Tag Tests', function () {
   <text>a</text>
   <graph>
   <vector name="v" tail="(1,2)" head="(-2,3)" />
-  <copy prop="head" name="vh" tname="v" />
-  <copy prop="tail" name="vt" tname="v" />
+  <copy prop="head" name="vh" target="v" />
+  <copy prop="tail" name="vt" target="v" />
   <point name="c" x="$(vh{prop='x'})" y="$(vt{prop='y'})"/>
   </graph>
   `}, "*");
@@ -6304,65 +6304,65 @@ describe('Vector Tag Tests', function () {
   </graph>
 
   <graph>
-  <copy prop="tail" name="tfvt" tname="vt" />
-  <copy prop="head" name="hfvt" tname="vt" />
-  <copy prop="displacement" name="dfvt" tname="vt" />
+  <copy prop="tail" name="tfvt" target="vt" />
+  <copy prop="head" name="hfvt" target="vt" />
+  <copy prop="displacement" name="dfvt" target="vt" />
 
-  <copy prop="tail" name="tfvh" tname="vh" />
-  <copy prop="head" name="hfvh" tname="vh" />
-  <copy prop="displacement" name="dfvh" tname="vh" />
+  <copy prop="tail" name="tfvh" target="vh" />
+  <copy prop="head" name="hfvh" target="vh" />
+  <copy prop="displacement" name="dfvh" target="vh" />
 
-  <copy prop="tail" name="tfvd" tname="vd" />
-  <copy prop="head" name="hfvd" tname="vd" />
-  <copy prop="displacement" name="dfvd" tname="vd" />
+  <copy prop="tail" name="tfvd" target="vd" />
+  <copy prop="head" name="hfvd" target="vd" />
+  <copy prop="displacement" name="dfvd" target="vd" />
 
-  <copy prop="tail" name="tfvth" tname="vth" />
-  <copy prop="head" name="hfvth" tname="vth" />
-  <copy prop="displacement" name="dfvth" tname="vth" />
+  <copy prop="tail" name="tfvth" target="vth" />
+  <copy prop="head" name="hfvth" target="vth" />
+  <copy prop="displacement" name="dfvth" target="vth" />
 
-  <copy prop="tail" name="tfvtd" tname="vtd" />
-  <copy prop="head" name="hfvtd" tname="vtd" />
-  <copy prop="displacement" name="dfvtd" tname="vtd" />
+  <copy prop="tail" name="tfvtd" target="vtd" />
+  <copy prop="head" name="hfvtd" target="vtd" />
+  <copy prop="displacement" name="dfvtd" target="vtd" />
 
-  <copy prop="tail" name="tfvhd" tname="vhd" />
-  <copy prop="head" name="hfvhd" tname="vhd" />
-  <copy prop="displacement" name="dfvhd" tname="vhd" />
+  <copy prop="tail" name="tfvhd" target="vhd" />
+  <copy prop="head" name="hfvhd" target="vhd" />
+  <copy prop="displacement" name="dfvhd" target="vhd" />
 
   </graph>
 
   <graph>
-  <copy name="vt2" tname="vt" />
-  <copy name="vh2" tname="vh" />
-  <copy name="vd2" tname="vd" />
-  <copy name="vth2" tname="vth" />
-  <copy name="vtd2" tname="vtd" />
-  <copy name="vhd2" tname="vhd" />
+  <copy name="vt2" target="vt" />
+  <copy name="vh2" target="vh" />
+  <copy name="vd2" target="vd" />
+  <copy name="vth2" target="vth" />
+  <copy name="vtd2" target="vtd" />
+  <copy name="vhd2" target="vhd" />
   </graph>
 
   <graph>
-  <copy prop="tail" name="tfvt2" tname="vt2" />
-  <copy prop="head" name="hfvt2" tname="vt2" />
-  <copy prop="displacement" name="dfvt2" tname="vt2" />
+  <copy prop="tail" name="tfvt2" target="vt2" />
+  <copy prop="head" name="hfvt2" target="vt2" />
+  <copy prop="displacement" name="dfvt2" target="vt2" />
 
-  <copy prop="tail" name="tfvh2" tname="vh2" />
-  <copy prop="head" name="hfvh2" tname="vh2" />
-  <copy prop="displacement" name="dfvh2" tname="vh2" />
+  <copy prop="tail" name="tfvh2" target="vh2" />
+  <copy prop="head" name="hfvh2" target="vh2" />
+  <copy prop="displacement" name="dfvh2" target="vh2" />
 
-  <copy prop="tail" name="tfvd2" tname="vd2" />
-  <copy prop="head" name="hfvd2" tname="vd2" />
-  <copy prop="displacement" name="dfvd2" tname="vd2" />
+  <copy prop="tail" name="tfvd2" target="vd2" />
+  <copy prop="head" name="hfvd2" target="vd2" />
+  <copy prop="displacement" name="dfvd2" target="vd2" />
 
-  <copy prop="tail" name="tfvth2" tname="vth2" />
-  <copy prop="head" name="hfvth2" tname="vth2" />
-  <copy prop="displacement" name="dfvth2" tname="vth2" />
+  <copy prop="tail" name="tfvth2" target="vth2" />
+  <copy prop="head" name="hfvth2" target="vth2" />
+  <copy prop="displacement" name="dfvth2" target="vth2" />
 
-  <copy prop="tail" name="tfvtd2" tname="vtd2" />
-  <copy prop="head" name="hfvtd2" tname="vtd2" />
-  <copy prop="displacement" name="dfvtd2" tname="vtd2" />
+  <copy prop="tail" name="tfvtd2" target="vtd2" />
+  <copy prop="head" name="hfvtd2" target="vtd2" />
+  <copy prop="displacement" name="dfvtd2" target="vtd2" />
 
-  <copy prop="tail" name="tfvhd2" tname="vhd2" />
-  <copy prop="head" name="hfvhd2" tname="vhd2" />
-  <copy prop="displacement" name="dfvhd2" tname="vhd2" />
+  <copy prop="tail" name="tfvhd2" target="vhd2" />
+  <copy prop="head" name="hfvhd2" target="vhd2" />
+  <copy prop="displacement" name="dfvhd2" target="vhd2" />
 
   </graph>
 
@@ -8091,7 +8091,7 @@ describe('Vector Tag Tests', function () {
       win.postMessage({
         doenetML: `
   <text>a</text>
-  <math><copy tname="_vector1" /></math>
+  <math><copy target="_vector1" /></math>
   <graph>
     <vector tail="(1,2)" head="(3,5)" />
   </graph>
@@ -8282,8 +8282,8 @@ describe('Vector Tag Tests', function () {
   <text>a</text>
   <vector tail="(3, $b)" head="($a,4)" />
 
-  <copy prop="x" tname="_vector1" />
-  <copy prop="y" tname="_vector1" />
+  <copy prop="x" target="_vector1" />
+  <copy prop="y" target="_vector1" />
   
   <p><mathinput name="a" prefill="1"></mathinput></p>
   <p><mathinput name="b" prefill="2"></mathinput></p>
@@ -8533,9 +8533,9 @@ describe('Vector Tag Tests', function () {
   </graph>
 
   <graph>
-  <copy prop="tail" tname="_vector1" />
-  <copy prop="head" tname="_vector1" />
-  <copy prop="displacement" tname="_vector1" />
+  <copy prop="tail" target="_vector1" />
+  <copy prop="head" target="_vector1" />
+  <copy prop="displacement" target="_vector1" />
   </graph>
   `}, "*");
     });
@@ -8707,9 +8707,9 @@ describe('Vector Tag Tests', function () {
   </graph>
 
   <graph>
-  <copy prop="tail" tname="_vector1" />
-  <copy prop="head" tname="_vector1" />
-  <copy prop="displacement" tname="_vector1" />
+  <copy prop="tail" target="_vector1" />
+  <copy prop="head" target="_vector1" />
+  <copy prop="displacement" target="_vector1" />
   </graph>
   `}, "*");
     });
@@ -8881,9 +8881,9 @@ describe('Vector Tag Tests', function () {
   </graph>
 
   <graph>
-  <copy prop="tail" tname="_vector1" />
-  <copy prop="head" tname="_vector1" />
-  <copy prop="displacement" tname="_vector1" />
+  <copy prop="tail" target="_vector1" />
+  <copy prop="head" target="_vector1" />
+  <copy prop="displacement" target="_vector1" />
   </graph>
   `}, "*");
     });
@@ -9055,9 +9055,9 @@ describe('Vector Tag Tests', function () {
   </graph>
 
   <graph>
-  <copy prop="tail" tname="_vector1" />
-  <copy prop="head" tname="_vector1" />
-  <copy prop="displacement" tname="_vector1" />
+  <copy prop="tail" target="_vector1" />
+  <copy prop="head" target="_vector1" />
+  <copy prop="displacement" target="_vector1" />
   </graph>
   `}, "*");
     });
@@ -9229,9 +9229,9 @@ describe('Vector Tag Tests', function () {
   </graph>
 
   <graph>
-  <copy prop="tail" tname="_vector1" />
-  <copy prop="head" tname="_vector1" />
-  <copy prop="displacement" tname="_vector1" />
+  <copy prop="tail" target="_vector1" />
+  <copy prop="head" target="_vector1" />
+  <copy prop="displacement" target="_vector1" />
   </graph>
   `}, "*");
     });
@@ -9403,9 +9403,9 @@ describe('Vector Tag Tests', function () {
   </graph>
 
   <graph>
-  <copy prop="tail" tname="_vector1" />
-  <copy prop="head" tname="_vector1" />
-  <copy prop="displacement" tname="_vector1" />
+  <copy prop="tail" target="_vector1" />
+  <copy prop="head" target="_vector1" />
+  <copy prop="displacement" target="_vector1" />
   </graph>
   `}, "*");
     });
@@ -9577,9 +9577,9 @@ describe('Vector Tag Tests', function () {
   </graph>
 
   <graph>
-  <copy prop="tail" tname="_vector1" />
-  <copy prop="head" tname="_vector1" />
-  <copy prop="displacement" tname="_vector1" />
+  <copy prop="tail" target="_vector1" />
+  <copy prop="head" target="_vector1" />
+  <copy prop="displacement" target="_vector1" />
   </graph>
   `}, "*");
     });
@@ -9751,9 +9751,9 @@ describe('Vector Tag Tests', function () {
   </graph>
 
   <graph>
-  <copy prop="tail" tname="_vector1" />
-  <copy prop="head" tname="_vector1" />
-  <copy prop="displacement" tname="_vector1" />
+  <copy prop="tail" target="_vector1" />
+  <copy prop="head" target="_vector1" />
+  <copy prop="displacement" target="_vector1" />
   </graph>
   `}, "*");
     });
@@ -9925,9 +9925,9 @@ describe('Vector Tag Tests', function () {
   </graph>
 
   <graph>
-  <copy prop="tail" tname="_vector1" />
-  <copy prop="head" tname="_vector1" />
-  <copy prop="displacement" tname="_vector1" />
+  <copy prop="tail" target="_vector1" />
+  <copy prop="head" target="_vector1" />
+  <copy prop="displacement" target="_vector1" />
   </graph>
   `}, "*");
     });
@@ -10097,9 +10097,9 @@ describe('Vector Tag Tests', function () {
 
   <vector>1</vector>
 
-  <copy prop="tail" tname="_vector1" assignNames="t" />
-  <copy prop="head" tname="_vector1" assignNames="h"/>
-  <copy prop="displacement" tname="_vector1" assignNames="d" />
+  <copy prop="tail" target="_vector1" assignNames="t" />
+  <copy prop="head" target="_vector1" assignNames="h"/>
+  <copy prop="displacement" target="_vector1" assignNames="d" />
   `}, "*");
     });
 

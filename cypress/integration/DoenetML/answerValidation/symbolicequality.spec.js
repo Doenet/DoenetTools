@@ -22,23 +22,23 @@ describe('Symbolic equality tests', function () {
     <p>
     <math>1+3</math>: 
     <answer>
-      <award symbolicEquality="true"><copy tname="_math1" /></award>
+      <award symbolicEquality="true"><copy target="_math1" /></award>
     </answer>
 
     </p>
     
     <p><math>3+1</math>: 
     <answer>
-      <award symbolicEquality="true"><copy tname="_math2" /></award>
+      <award symbolicEquality="true"><copy target="_math2" /></award>
     </answer>
     </p>
 
     <p>Numeric versions</p>
     <p><answer>
-      <award><copy tname="_math1" /></award>
+      <award><copy target="_math1" /></award>
     </answer></p>
     <p><answer>
-      <award><copy tname="_math2" /></award>
+      <award><copy target="_math2" /></award>
     </answer></p>
     `}, "*");
     });
@@ -182,13 +182,13 @@ describe('Symbolic equality tests', function () {
     <p>
     <math>1x-0y+-3s</math>: 
     <answer>
-      <award symbolicEquality="true"><copy tname="_math1" /></award>
+      <award symbolicEquality="true"><copy target="_math1" /></award>
     </answer>
     </p>
 
     <p>Numeric version</p>
     <p><answer>
-      <award><copy tname="_math1" /></award>
+      <award><copy target="_math1" /></award>
     </answer></p>
     `}, "*");
     });
@@ -311,7 +311,7 @@ describe('Symbolic equality tests', function () {
     
     <p>Numeric versions</p>
     <p><answer size="20">
-      <award><copy tname="_math1" /></award>
+      <award><copy target="_math1" /></award>
     </answer></p>
     `}, "*");
     });
@@ -434,7 +434,7 @@ describe('Symbolic equality tests', function () {
     
     <p>Numeric versions</p>
     <p><answer size="20">
-      <award><copy tname="_math1" /></award>
+      <award><copy target="_math1" /></award>
     </answer></p>
     `}, "*");
     });
@@ -546,7 +546,7 @@ describe('Symbolic equality tests', function () {
     
     <p>Numeric versions</p>
     <p><answer size="20">
-      <award><copy tname="_math1" /></award>
+      <award><copy target="_math1" /></award>
     </answer></p>
     `}, "*");
     });
@@ -657,7 +657,7 @@ describe('Symbolic equality tests', function () {
     
     <p>Numeric versions</p>
     <p><answer size="20">
-      <award><copy tname="_math1" /></award>
+      <award><copy target="_math1" /></award>
     </answer></p>
     `}, "*");
     });

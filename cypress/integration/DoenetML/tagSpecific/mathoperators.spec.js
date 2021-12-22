@@ -35,8 +35,8 @@ describe('Math Operator Tag Tests', function () {
       <sum name="vars"><math>x</math><math>x+y</math><math>x+y+z</math></sum>
       <sum name="varsSimplify" simplify><math>x</math><math>x+y</math><math>x+y+z</math></sum>
       <sum name="varsForcedNumeric" forceNumeric><math>x</math><math>x+y</math><math>x+y+z</math></sum>
-      <copy tname="numbers" />
-      <copy tname="vars" />
+      <copy target="numbers" />
+      <copy target="vars" />
       `}, "*");
     });
 
@@ -523,8 +523,8 @@ describe('Math Operator Tag Tests', function () {
       <product name="vars"><math>x</math><math>x+y</math><math>x+y+z</math></product>
       <product name="varsExpand" expand><math>x</math><math>x+y</math><math>x+y+z</math></product>
       <product name="varsForcedNumeric" forceNumeric><math>x</math><math>x+y</math><math>x+y+z</math></product>
-      <copy tname="numbers" />
-      <copy tname="vars" />
+      <copy target="numbers" />
+      <copy target="vars" />
       `}, "*");
     });
 
@@ -1015,10 +1015,10 @@ describe('Math Operator Tag Tests', function () {
       <clampNumber lowervalue="10" uppervalue="40">-12$a</clampNumber>
       <clampNumber lowervalue="10" uppervalue="40">3$a</clampNumber>
 
-      <copy tname="_clampnumber1" />
-      <copy tname="_clampnumber5" />
-      <copy tname="_clampnumber9" />
-      <copy tname="_clampnumber14" />
+      <copy target="_clampnumber1" />
+      <copy target="_clampnumber5" />
+      <copy target="_clampnumber9" />
+      <copy target="_clampnumber14" />
 
       `}, "*");
     });
@@ -1179,10 +1179,10 @@ describe('Math Operator Tag Tests', function () {
       <wrapnumberperiodic lowervalue="10" uppervalue="40">-12$a</wrapnumberperiodic>
       <wrapnumberperiodic lowervalue="10" uppervalue="40">3$a</wrapnumberperiodic>
 
-      <copy tname="_wrapnumberperiodic1" />
-      <copy tname="_wrapnumberperiodic5" />
-      <copy tname="_wrapnumberperiodic9" />
-      <copy tname="_wrapnumberperiodic14" />
+      <copy target="_wrapnumberperiodic1" />
+      <copy target="_wrapnumberperiodic5" />
+      <copy target="_wrapnumberperiodic9" />
+      <copy target="_wrapnumberperiodic14" />
 
       `}, "*");
     });
@@ -1325,17 +1325,17 @@ describe('Math Operator Tag Tests', function () {
         <point layer="1">(6,7)</point>
         <point>
           (<clampnumber lowervalue="-2" uppervalue="5">
-            <copy prop="x" tname="_point1" />
+            <copy prop="x" target="_point1" />
           </clampnumber>,
           <wrapnumberperiodic lowervalue="-2" uppervalue="5">
-            <copy prop="y" tname="_point1" />
+            <copy prop="y" target="_point1" />
           </wrapnumberperiodic>
           )
         </point>
-        <point>(<copy prop="y" tname="_point2" />, <copy prop="x" tname="_point2" />)</point>
+        <point>(<copy prop="y" target="_point2" />, <copy prop="x" target="_point2" />)</point>
       </graph>
 
-      <copy name="g2" tname="_graph1" />
+      <copy name="g2" target="_graph1" />
       `}, "*");
     });
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
@@ -1527,9 +1527,9 @@ describe('Math Operator Tag Tests', function () {
 
       <round numberdecimals="-6"><math>exp(20) pi</math></round>
 
-      <copy tname="_round1" />
-      <copy tname="_round5" />
-      <copy tname="_round11" />
+      <copy target="_round1" />
+      <copy target="_round5" />
+      <copy target="_round11" />
   
       `}, "*");
     });
@@ -1622,13 +1622,13 @@ describe('Math Operator Tag Tests', function () {
       <p><math>(1,2,3,2,1)</math></p>
       <p><math>1,2,3,2,1</math></p>
 
-      <p><convertSetToList><copy tname="_math1" /></convertSetToList></p>
-      <p><convertSetToList><copy tname="_math2" /></convertSetToList></p>
-      <p><convertSetToList><copy tname="_math3" /></convertSetToList></p>
+      <p><convertSetToList><copy target="_math1" /></convertSetToList></p>
+      <p><convertSetToList><copy target="_math2" /></convertSetToList></p>
+      <p><convertSetToList><copy target="_math3" /></convertSetToList></p>
 
-      <p><copy name="r1" tname="_convertsettolist1" /></p>
-      <p><copy name="r2" tname="_convertsettolist2" /></p>
-      <p><copy name="r3" tname="_convertsettolist3" /></p>
+      <p><copy name="r1" target="_convertsettolist1" /></p>
+      <p><copy name="r2" target="_convertsettolist2" /></p>
+      <p><copy name="r3" target="_convertsettolist3" /></p>
 
 
       `}, "*");
@@ -1706,14 +1706,14 @@ describe('Math Operator Tag Tests', function () {
       <selectFromSequence assignNames='p' hide='true' exclude="$m, $n" from="-10" to="10" />
       </p>
 
-      <p><convertSetToList><math>{<copy tname="m" />,<copy tname="n" />,<copy tname="p" />, <copy tname="m" />}</math></convertSetToList></p>
-      <p><copy name="csl2" tname="_convertsettolist1" /></p>
+      <p><convertSetToList><math>{<copy target="m" />,<copy target="n" />,<copy target="p" />, <copy target="m" />}</math></convertSetToList></p>
+      <p><copy name="csl2" target="_convertsettolist1" /></p>
 
-      <p><copy name="n2" tname="n3" />
-      <copy name="n" tname="num1" />
-      <math name="num1" simplify><copy tname="n2" />+<copy tname="num2" /></math>
-      <math name="num2" simplify><copy tname="n3" />+<copy tname="num3" /></math>
-      <copy name="n3" tname="num3" />
+      <p><copy name="n2" target="n3" />
+      <copy name="n" target="num1" />
+      <math name="num1" simplify><copy target="n2" />+<copy target="num2" /></math>
+      <math name="num2" simplify><copy target="n3" />+<copy target="num3" /></math>
+      <copy name="n3" target="num3" />
       <number name="num3">1</number></p>
       `}, "*");
     });
@@ -1739,16 +1739,16 @@ describe('Math Operator Tag Tests', function () {
       <floor>55.3252326</floor>
       <ceil>log(31)</ceil>
 
-      <floor><copy tname="_floor1" />/<copy tname="_ceil1" /></floor>
-      <ceil><copy tname="_ceil1" />/<copy tname="_floor1" /></ceil>
+      <floor><copy target="_floor1" />/<copy target="_ceil1" /></floor>
+      <ceil><copy target="_ceil1" />/<copy target="_floor1" /></ceil>
 
       <p>Allow for slight roundoff error:
       <floor>3.999999999999999</floor>
       <ceil>-6999.999999999999</ceil>
       </p>
 
-      <copy name="f2a" tname="_floor2" />
-      <copy name="c2a" tname="_ceil2" />
+      <copy name="f2a" target="_floor2" />
+      <copy name="c2a" target="_ceil2" />
 
       <floor>2.1x</floor>
       <ceil>-3.2y</ceil>
@@ -1846,7 +1846,7 @@ describe('Math Operator Tag Tests', function () {
       <text>a</text>
       <abs name="a1">-9</abs>
       <mathinput bindValueTo="$a1" name="a2" />
-      <copy prop="value" tname="a2" assignNames="a3" />
+      <copy prop="value" target="a2" assignNames="a3" />
       `}, "*");
     });
 
@@ -1962,17 +1962,17 @@ describe('Math Operator Tag Tests', function () {
         <point>
           (
           <floor>
-            <copy prop="x" tname="_point1" />
+            <copy prop="x" target="_point1" />
           </floor>,
           <ceil>
-            <copy prop="y" tname="_point1" />
+            <copy prop="y" target="_point1" />
           </ceil>
           )
         </point>
-        <point>(<abs><copy prop="y" tname="_point2" /></abs>, <round><copy prop="x" tname="_point1" /></round>)</point>
+        <point>(<abs><copy prop="y" target="_point2" /></abs>, <round><copy prop="x" target="_point1" /></round>)</point>
       </graph>
 
-      <copy name="g2" tname="_graph1" />
+      <copy name="g2" target="_graph1" />
       `}, "*");
     });
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
@@ -2141,8 +2141,8 @@ describe('Math Operator Tag Tests', function () {
       <mean name="vars"><math>x</math><math>x+y</math><math>x+y+z</math></mean>
       <mean name="varsSimplify" simplify><math>x</math><math>x+y</math><math>x+y+z</math></mean>
       <mean name="varsForcedNumeric" forceNumeric><math>x</math><math>x+y</math><math>x+y+z</math></mean>
-      <copy tname="numbers" />
-      <copy tname="vars" />
+      <copy target="numbers" />
+      <copy target="vars" />
       `}, "*");
     });
 
@@ -2609,12 +2609,12 @@ describe('Math Operator Tag Tests', function () {
         doenetML: `
     <text>a</text>
     <p name="pPrime">Mean of first primes: <mean name="meanPrime">2 3 5 7</mean></p>
-    <p>Copying that mean: <copy tname="meanPrime" /></p>
-    <copy tname="pPrime" />
+    <p>Copying that mean: <copy target="meanPrime" /></p>
+    <copy target="pPrime" />
 
     <p name="p100">Mean of numbers from 1 to 100: <mean name="mean100"><sequence to="100" /></mean></p>
-    <p>Copying that mean: <copy tname="mean100" /></p>
-    <copy tname="p100" />
+    <p>Copying that mean: <copy target="mean100" /></p>
+    <copy target="p100" />
     `}, "*");
     });
 
@@ -2679,8 +2679,8 @@ describe('Math Operator Tag Tests', function () {
       <variance name="vars"><math>x</math><math>x+y</math><math>x+y+z</math></variance>
       <variance name="varsSimplify" simplify><math>x</math><math>x+y</math><math>x+y+z</math></variance>
       <variance name="varsForcedNumeric" forceNumeric><math>x</math><math>x+y</math><math>x+y+z</math></variance>
-      <copy tname="numbers" />
-      <copy tname="vars" />
+      <copy target="numbers" />
+      <copy target="vars" />
       `}, "*");
     });
 
@@ -3157,12 +3157,12 @@ describe('Math Operator Tag Tests', function () {
         doenetML: `
     <text>a</text>
     <p name="pPrime">Variance of first primes: <variance name="variancePrime">2 3 5 7</variance></p>
-    <p>Copying that variance: <copy tname="variancePrime" /></p>
-    <copy tname="pPrime" />
+    <p>Copying that variance: <copy target="variancePrime" /></p>
+    <copy target="pPrime" />
 
     <p name="p100">Variance of numbers from 1 to 100: <variance name="variance100"><sequence to="100" /></variance></p>
-    <p>Copying that variance: <copy tname="variance100" /></p>
-    <copy tname="p100" />
+    <p>Copying that variance: <copy target="variance100" /></p>
+    <copy target="p100" />
     `}, "*");
     });
 
@@ -3231,8 +3231,8 @@ describe('Math Operator Tag Tests', function () {
         <variance population name="vars"><math>x</math><math>x+y</math><math>x+y+z</math></variance>
         <variance population name="varsSimplify" simplify><math>x</math><math>x+y</math><math>x+y+z</math></variance>
         <variance population name="varsForcedNumeric" forceNumeric><math>x</math><math>x+y</math><math>x+y+z</math></variance>
-        <copy tname="numbers" />
-        <copy tname="vars" />
+        <copy target="numbers" />
+        <copy target="vars" />
         `}, "*");
     });
 
@@ -3348,12 +3348,12 @@ describe('Math Operator Tag Tests', function () {
         doenetML: `
     <text>a</text>
     <p name="pPrime">Variance of first primes: <variance population name="variancePrime">2 3 5 7</variance></p>
-    <p>Copying that variance: <copy tname="variancePrime" /></p>
-    <copy tname="pPrime" />
+    <p>Copying that variance: <copy target="variancePrime" /></p>
+    <copy target="pPrime" />
 
     <p name="p100">Variance of numbers from 1 to 100: <variance population name="variance100"><sequence to="100" /></variance></p>
-    <p>Copying that variance: <copy tname="variance100" /></p>
-    <copy tname="p100" />
+    <p>Copying that variance: <copy target="variance100" /></p>
+    <copy target="p100" />
     `}, "*");
     });
 
@@ -3422,8 +3422,8 @@ describe('Math Operator Tag Tests', function () {
       <standarddeviation name="vars"><math>x</math><math>x+y</math><math>x+y+z</math></standarddeviation>
       <standarddeviation name="varsSimplify" simplify><math>x</math><math>x+y</math><math>x+y+z</math></standarddeviation>
       <standarddeviation name="varsForcedNumeric" forceNumeric><math>x</math><math>x+y</math><math>x+y+z</math></standarddeviation>
-      <copy tname="numbers" />
-      <copy tname="vars" />
+      <copy target="numbers" />
+      <copy target="vars" />
       `}, "*");
     });
 
@@ -3675,12 +3675,12 @@ describe('Math Operator Tag Tests', function () {
         doenetML: `
     <text>a</text>
     <p name="pPrime">Standard deviation of first primes: <standarddeviation name="standarddeviationPrime">2 3 5 7</standarddeviation></p>
-    <p>Copying that standard deviation: <copy tname="standarddeviationPrime" /></p>
-    <copy tname="pPrime" />
+    <p>Copying that standard deviation: <copy target="standarddeviationPrime" /></p>
+    <copy target="pPrime" />
 
     <p name="p100">Standard deviation of numbers from 1 to 100: <standarddeviation name="standarddeviation100"><sequence to="100" /></standarddeviation></p>
-    <p>Copying that standard deviation: <copy tname="standarddeviation100" /></p>
-    <copy tname="p100" />
+    <p>Copying that standard deviation: <copy target="standarddeviation100" /></p>
+    <copy target="p100" />
     `}, "*");
     });
 
@@ -3749,8 +3749,8 @@ describe('Math Operator Tag Tests', function () {
       <standarddeviation population name="vars"><math>x</math><math>x+y</math><math>x+y+z</math></standarddeviation>
       <standarddeviation population name="varsSimplify" simplify><math>x</math><math>x+y</math><math>x+y+z</math></standarddeviation>
       <standarddeviation population name="varsForcedNumeric" forceNumeric><math>x</math><math>x+y</math><math>x+y+z</math></standarddeviation>
-      <copy tname="numbers" />
-      <copy tname="vars" />
+      <copy target="numbers" />
+      <copy target="vars" />
       `}, "*");
     });
 
@@ -3865,12 +3865,12 @@ describe('Math Operator Tag Tests', function () {
         doenetML: `
     <text>a</text>
     <p name="pPrime">Standard deviation of first primes: <standarddeviation population name="standarddeviationPrime">2 3 5 7</standarddeviation></p>
-    <p>Copying that standard deviation: <copy tname="standarddeviationPrime" /></p>
-    <copy tname="pPrime" />
+    <p>Copying that standard deviation: <copy target="standarddeviationPrime" /></p>
+    <copy target="pPrime" />
 
     <p name="p100">Standard deviation of numbers from 1 to 100: <standarddeviation population name="standarddeviation100"><sequence to="100" /></standarddeviation></p>
-    <p>Copying that standard deviation: <copy tname="standarddeviation100" /></p>
-    <copy tname="p100" />
+    <p>Copying that standard deviation: <copy target="standarddeviation100" /></p>
+    <copy target="p100" />
     `}, "*");
     });
 
@@ -3938,8 +3938,8 @@ describe('Math Operator Tag Tests', function () {
       <count name="vars"><math>x</math><math>x+y</math><math>x+y+z</math></count>
       <count name="varsSimplify" simplify><math>x</math><math>x+y</math><math>x+y+z</math></count>
       <count name="varsForcedNumeric" forceNumeric><math>x</math><math>x+y</math><math>x+y+z</math></count>
-      <copy tname="numbers" />
-      <copy tname="vars" />
+      <copy target="numbers" />
+      <copy target="vars" />
       `}, "*");
     });
 
@@ -4407,12 +4407,12 @@ describe('Math Operator Tag Tests', function () {
         doenetML: `
     <text>a</text>
     <p name="pPrime">Count of first primes: <count name="countPrime">2 3 5 7</count></p>
-    <p>Copying that count: <copy tname="countPrime" /></p>
-    <copy tname="pPrime" />
+    <p>Copying that count: <copy target="countPrime" /></p>
+    <copy target="pPrime" />
 
     <p name="p100">Count of numbers from 1 to 100: <count name="count100"><sequence to="100" /></count></p>
-    <p>Copying that count: <copy tname="count100" /></p>
-    <copy tname="p100" />
+    <p>Copying that count: <copy target="count100" /></p>
+    <copy target="p100" />
     `}, "*");
     });
 
@@ -4478,8 +4478,8 @@ describe('Math Operator Tag Tests', function () {
       <min name="vars"><math>x</math><math>x+y</math><math>x+y+z</math></min>
       <min name="varsSimplify" simplify><math>x</math><math>x+y</math><math>x+y+z</math></min>
       <min name="varsForcedNumeric" forceNumeric><math>x</math><math>x+y</math><math>x+y+z</math></min>
-      <copy tname="numbers" />
-      <copy tname="vars" />
+      <copy target="numbers" />
+      <copy target="vars" />
       `}, "*");
     });
 
@@ -4958,8 +4958,8 @@ describe('Math Operator Tag Tests', function () {
       <max name="vars"><math>x</math><math>x+y</math><math>x+y+z</math></max>
       <max name="varsSimplify" simplify><math>x</math><math>x+y</math><math>x+y+z</math></max>
       <max name="varsForcedNumeric" forceNumeric><math>x</math><math>x+y</math><math>x+y+z</math></max>
-      <copy tname="numbers" />
-      <copy tname="vars" />
+      <copy target="numbers" />
+      <copy target="vars" />
       `}, "*");
     });
 
@@ -5435,7 +5435,7 @@ describe('Math Operator Tag Tests', function () {
       <mod name="numbersWithNumericMathSimplify" simplify><number>17</number><math>6/2</math></mod>
       <mod name="numbersWithNumericMathForceNumeric" forceNumeric><number>17</number><math>6/2</math></mod>
       <mod name="withNumberMod"><math>17</math><mod><number>16</number><number>9</number></mod></mod>
-      <copy tname="numbers" />
+      <copy target="numbers" />
       `}, "*");
     });
 

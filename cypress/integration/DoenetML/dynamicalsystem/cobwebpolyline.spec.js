@@ -33,13 +33,13 @@ describe('CobwebPolyline Tag Tests', function () {
   <p>Initial condition is <m>x_0 = 1</m>:
   <answer name="check_initial">
     <award><when>
-    <copy prop="coords" tname="P1"/> = <math>(1,0)</math>
+    <copy prop="coords" target="P1"/> = <math>(1,0)</math>
     </when></award>
   </answer>
   </p>
 
-  <updateValue label="Add line" name="addline" tName="nPoints" newValue="$nPoints+1" />
-  <updateValue label="Delete line" name="deleteline" hide="$nPoints=1" tName='nPoints' newValue="$nPoints-1" />
+  <updateValue label="Add line" name="addline" target="nPoints" newValue="$nPoints+1" />
+  <updateValue label="Delete line" name="deleteline" hide="$nPoints=1" target='nPoints' newValue="$nPoints-1" />
   
   <graph xmin="-2" xmax="5" ymin="-2.2" ymax="4.5" width="500px" height="300px" name="graph1" xlabel="x_n" ylabel="x_{n+1}" newnamespace="true">
     <cobwebpolyline name="cobweb" stylenumber="4" attractThreshold="0.2" nPoints="$(../nPoints)" function="$(../f)" initialPoint="$(../P1)" nIterationsRequired='3' />
@@ -57,7 +57,7 @@ describe('CobwebPolyline Tag Tests', function () {
         </mrow>
       </template>
       <sources alias="x" indexAlias="i">
-        <copy prop="iterateValues" tname="graph1/cobweb" />
+        <copy prop="iterateValues" target="graph1/cobweb" />
       </sources>
     </map>
     </md>
@@ -68,12 +68,12 @@ describe('CobwebPolyline Tag Tests', function () {
   <p><answer name="check_cobweb">
   <award credit="$(graph1/cobweb{prop='fractionCorrectVerticesAdjusted'})"><when>true</when></award>
     <considerAsResponses>
-      <copy prop="vertices" tname="graph1/cobweb" />
+      <copy prop="vertices" target="graph1/cobweb" />
     </considerAsResponses>
   </answer>
   </p>
 
-  <p name="psr">Submitted responses are the vertices of the polyline: <aslist><copy tname="check_cobweb" prop="submittedResponses" displaydigits="5" /></aslist></p>
+  <p name="psr">Submitted responses are the vertices of the polyline: <aslist><copy target="check_cobweb" prop="submittedResponses" displaydigits="5" /></aslist></p>
 
   `}, "*");
     });
@@ -912,7 +912,7 @@ describe('CobwebPolyline Tag Tests', function () {
   
   <copy uri="doenet:contentId=6d72350e798b3c98ad5f78b47c3ed1dee7526cc219c0265a4114314b2aa9e708" assignNames="cobwebTutorial" function="$f" xmin="-0.8" xmax="7" ymin="-1" ymax="4" width="320px" height="200px" attractThreshold="0.2" showNavigation="false" nIterationsRequired="3" initialValueDx="0.2" x0="1" />
  
-  <p>Credit achieved: <copy tname="_document1" prop="creditAchieved" assignNames="ca" /></p>
+  <p>Credit achieved: <copy target="_document1" prop="creditAchieved" assignNames="ca" /></p>
   `}, "*");
     });
 

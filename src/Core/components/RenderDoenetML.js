@@ -11,7 +11,7 @@ export default class RenderDoenetML extends CompositeComponent {
 
   static assignNamesToReplacements = true;
 
-  static acceptTname = true;
+  static acceptTarget = true;
 
   static stateVariableToEvaluateAfterReplacements = "readyToExpandWhenResolved";
 

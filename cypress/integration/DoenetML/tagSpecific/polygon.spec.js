@@ -164,7 +164,7 @@ describe('Polygon Tag Tests', function () {
   </graph>
   
   <graph>
-  <copy name="polygon2" tname="_polygon1" />
+  <copy name="polygon2" target="_polygon1" />
   </graph>
   `}, "*");
     });
@@ -288,7 +288,7 @@ describe('Polygon Tag Tests', function () {
   </graph>
   
   <graph>
-  <copy name="polygon2" tname="_polygon1" />
+  <copy name="polygon2" target="_polygon1" />
   </graph>
   `}, "*");
     });
@@ -349,7 +349,7 @@ describe('Polygon Tag Tests', function () {
   </graph>
   
   <graph>
-  <copy name="polygon2" tname="_polygon1" />
+  <copy name="polygon2" target="_polygon1" />
   </graph>  
   `}, "*");
     });
@@ -410,7 +410,7 @@ describe('Polygon Tag Tests', function () {
   </graph>
   
   <graph>
-  <copy name="polygon2" tname="_polygon1" />
+  <copy name="polygon2" target="_polygon1" />
   </graph>
   `}, "*");
     });
@@ -539,7 +539,7 @@ describe('Polygon Tag Tests', function () {
   </graph>
   
   <graph>
-  <copy name="polygon2" tname="_polygon1" />
+  <copy name="polygon2" target="_polygon1" />
   </graph>
   `}, "*");
     });
@@ -679,13 +679,13 @@ describe('Polygon Tag Tests', function () {
   <polygon vertices="(-3,-1)(1,2)(3,4)(6,-2)" />
   </graph>
   <graph>
-  <copy name="v1" prop="vertex1" tname="_polygon1" />
-  <copy name="v2" prop="vertex2" tname="_polygon1" />
-  <copy name="v3" prop="vertex3" tname="_polygon1" />
-  <copy name="v4" prop="vertex4" tname="_polygon1" />
+  <copy name="v1" prop="vertex1" target="_polygon1" />
+  <copy name="v2" prop="vertex2" target="_polygon1" />
+  <copy name="v3" prop="vertex3" target="_polygon1" />
+  <copy name="v4" prop="vertex4" target="_polygon1" />
   </graph>
   <graph>
-  <copy name="vs" prop="vertices" tname="_polygon1" />
+  <copy name="vs" prop="vertices" target="_polygon1" />
   </graph>
   `}, "*");
     });
@@ -890,14 +890,14 @@ describe('Polygon Tag Tests', function () {
     <polygon vertices=" (0,0) (3,-4) (1,-6) (-5,-6) " />
     <map hide>
       <template newNamespace>
-        <point>(<extract prop="x"><copy tname="x" fixed="false"/></extract>+
-          <copy prop="value" modifyIndirectly="false" tname="../transx" />,
-        <extract prop="y"><copy tname="x" fixed="false" /></extract>+
-        <copy prop="value" modifyIndirectly="false" tname="../transy" />)
+        <point>(<extract prop="x"><copy target="x" fixed="false"/></extract>+
+          <copy prop="value" modifyIndirectly="false" target="../transx" />,
+        <extract prop="y"><copy target="x" fixed="false" /></extract>+
+        <copy prop="value" modifyIndirectly="false" target="../transy" />)
         </point>
       </template>
       <sources alias="x">
-        <copy prop="vertices" name="vs" tname="_polygon1" />
+        <copy prop="vertices" name="vs" target="_polygon1" />
       </sources>
     </map>
     <polygon vertices="$_map1" />
@@ -1933,7 +1933,7 @@ describe('Polygon Tag Tests', function () {
     <polygon vertices=" (3,5) (-4,-1)(5,2)" />
     <point x="7" y="8">
       <constraints>
-        <attractTo><copy tname="_polygon1" /></attractTo>
+        <attractTo><copy target="_polygon1" /></attractTo>
       </constraints>
     </point>
   </graph>
@@ -2166,7 +2166,7 @@ describe('Polygon Tag Tests', function () {
     <polygon vertices=" (3,5) (-4,-1)(5,2)" />
     <point x="7" y="8">
       <constraints>
-        <constrainTo><copy tname="_polygon1" /></constrainTo>
+        <constrainTo><copy target="_polygon1" /></constrainTo>
       </constraints>
     </point>
   </graph>
@@ -2398,7 +2398,7 @@ describe('Polygon Tag Tests', function () {
     <polygon vertices="(-50,-0.02) (-40,0.07) (70,0.06) (10,-0.01)" name="p" />
     <point x="0" y="0.01" name="A">
       <constraints>
-        <constrainTo><copy tname="p" /></constrainTo>
+        <constrainTo><copy target="p" /></constrainTo>
       </constraints>
     </point>
   </graph>

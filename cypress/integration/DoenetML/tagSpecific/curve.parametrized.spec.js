@@ -497,7 +497,7 @@ describe('Parameterized Curve Tag Tests', function () {
     
     <point x='7' y='1'>
       <constraints>
-        <constrainTo><copy tname="_curve1" /></constrainTo>
+        <constrainTo><copy target="_curve1" /></constrainTo>
       </constraints>
     </point>
     
@@ -575,12 +575,12 @@ describe('Parameterized Curve Tag Tests', function () {
 
     <graph xmin="-110" xmax="110" ymin="-0.11" ymax="0.11">
       <curve name="c">
-        <copy tname="f" />
-        <copy tname="g" />
+        <copy target="f" />
+        <copy target="g" />
       </curve>
       <point x="1" y="0.001" name="P">
         <constraints>
-          <constrainTo><copy tname="c" /></constrainTo>
+          <constrainTo><copy target="c" /></constrainTo>
         </constraints>
       </point>
     </graph>

@@ -398,17 +398,17 @@ describe('LineSegment Tag Tests', function () {
   <text>a</text>
   <point>(2,1)</point>
   <point>(-2,-5)</point>
-  <copy tname="_point1" />
-  <copy tname="_point2" />
-  <copy tname="_copy1" />
-  <copy tname="_copy2" />
-  <copy tname="_copy3" />
-  <copy tname="_copy4" />
+  <copy target="_point1" />
+  <copy target="_point2" />
+  <copy target="_copy1" />
+  <copy target="_copy2" />
+  <copy target="_copy3" />
+  <copy target="_copy4" />
   
   <graph>
     <lineSegment endpoints="$_copy5 $_copy6" />
   </graph>
-  <copy prop="y" tname="_point1" />
+  <copy prop="y" target="_point1" />
   `}, "*");
     });
 
@@ -489,12 +489,12 @@ describe('LineSegment Tag Tests', function () {
   </graph>
 
   <graph>
-    <copy name="ls1a" tname="_linesegment1" />
-    <copy name="ls2a" tname="_linesegment2" />
-    <copy name="ls3a" tname="_linesegment3" />
+    <copy name="ls1a" target="_linesegment1" />
+    <copy name="ls2a" target="_linesegment2" />
+    <copy name="ls3a" target="_linesegment3" />
   </graph>
 
-  <copy name="g3" tname="_graph2" />
+  <copy name="g3" target="_graph2" />
   `}, "*");
     });
 
@@ -904,7 +904,7 @@ describe('LineSegment Tag Tests', function () {
 
   <point x="-5" y="2">
     <constraints>
-      <constrainTo><copy tname="_linesegment1" /></constrainTo>
+      <constrainTo><copy target="_linesegment1" /></constrainTo>
     </constraints>
   </point>
   </graph>
@@ -1025,7 +1025,7 @@ describe('LineSegment Tag Tests', function () {
 
   <point x="-5" y="2">
     <constraints>
-      <attractTo><copy tname="_linesegment1" /></attractTo>
+      <attractTo><copy target="_linesegment1" /></attractTo>
     </constraints>
   </point>
   </graph>
@@ -1143,7 +1143,7 @@ describe('LineSegment Tag Tests', function () {
     <linesegment endpoints="(-1,-0.05) (1,0.05)" name="l" />
     <point x="100" y="0" name="P">
       <constraints>
-        <constrainTo><copy tname="l" /></constrainTo>
+        <constrainTo><copy target="l" /></constrainTo>
       </constraints>
     </point>
   </graph>
@@ -1197,11 +1197,11 @@ describe('LineSegment Tag Tests', function () {
   <linesegment endpoints="(1,2)(3,4)"/>
   </graph>
   <graph>
-  <copy prop="endpoint1" name="point3" tname="_linesegment1" />
-  <copy prop="endpoint2" name="point4" tname="_linesegment1" />
+  <copy prop="endpoint1" name="point3" target="_linesegment1" />
+  <copy prop="endpoint2" name="point4" target="_linesegment1" />
   </graph>
   <graph>
-  <copy prop="endpoints" name="points56" tname="_linesegment1" />
+  <copy prop="endpoints" name="points56" target="_linesegment1" />
   </graph>
   `}, "*");
     });
@@ -1521,20 +1521,20 @@ describe('LineSegment Tag Tests', function () {
   <graph>
   <linesegment endpoints="(1,2) ($(_linesegment1{prop='endpointX1_2'}), $(_linesegment1{prop='endpointX1_1'}))" />
   <point name="x1">
-    (<extract prop="x"><copy prop="endpoint1" tname="_linesegment1" /></extract>,
+    (<extract prop="x"><copy prop="endpoint1" target="_linesegment1" /></extract>,
     <math fixed>3</math>)
   </point>
   <point name="x2">
-    (<extract prop="x"><copy prop="endpoint2" tname="_linesegment1" /></extract>,
+    (<extract prop="x"><copy prop="endpoint2" target="_linesegment1" /></extract>,
     <math fixed>4</math>)
   </point>
   <point name="y1">
     (<math fixed>3</math>,
-    <extract prop="y"><copy prop="endpoint1" tname="_linesegment1" /></extract>)
+    <extract prop="y"><copy prop="endpoint1" target="_linesegment1" /></extract>)
   </point>
   <point name="y2">
     (<math fixed>4</math>,
-    <extract prop="y"><copy prop="endpoint2" tname="_linesegment1" /></extract>)
+    <extract prop="y"><copy prop="endpoint2" target="_linesegment1" /></extract>)
   </point>
 </graph>
   `}, "*");

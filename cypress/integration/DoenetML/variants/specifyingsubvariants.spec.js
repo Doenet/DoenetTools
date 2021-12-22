@@ -2005,8 +2005,8 @@ describe('Specifying subvariants tests', function () {
         <p>$(o2/t): <answer name="ans5" type="text">$(o2/t)</answer></p>
 
       </problem>
-      <copy tname="problem1" assignNames="problem2" />
-      <copy tname="problem1" assignNames="problem3" />
+      <copy target="problem1" assignNames="problem2" />
+      <copy target="problem1" assignNames="problem3" />
     `
 
     let problemRepeatedAsExternalCopiesInPaginator = `

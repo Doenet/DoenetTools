@@ -15,24 +15,24 @@ describe('Graph Reference Test', function () {
       <point name="pointB">(-2,4)</point>
       <line name="lineA">y=x+1</line>
       <line name="lineB" through="$pointA $pointB" />
-      <copy name="pointC" tname="pointA" />
+      <copy name="pointC" target="pointA" />
       <point name="pointD" x="$(pointA{prop='x'})" y="$(pointB{prop='y'})" />
-      <copy name="lineC" tname="lineA" />
-      <copy name="lineD" tname="lineB" />
-      <intersection name="pointE"><copy tname="lineA" /><copy tname="lineB" /></intersection>
+      <copy name="lineC" target="lineA" />
+      <copy name="lineD" target="lineB" />
+      <intersection name="pointE"><copy target="lineA" /><copy target="lineB" /></intersection>
     </graph>
 
     <graph name="graphB">
       $pointA$pointB$lineA$lineB$pointC$pointD$lineC$lineD$pointE
     </graph>
 
-    <copy name="graphC" tname="graphA" />
+    <copy name="graphC" target="graphA" />
 
-    <copy name="graphD" tname="graphB" />
+    <copy name="graphD" target="graphB" />
 
-    <copy name="graphE" tname="graphC" />
+    <copy name="graphE" target="graphC" />
 
-    <copy name="graphF" tname="graphD" />
+    <copy name="graphF" target="graphD" />
 
     `}, "*");
     });

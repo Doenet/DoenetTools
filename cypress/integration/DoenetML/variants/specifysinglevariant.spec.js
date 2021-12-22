@@ -883,8 +883,8 @@ describe('Specifying single variant document tests', function () {
       <option selectForVariantNames="broccoli"><math>b</math></option>
     </select>
     </p>
-    <p>Selected variable repeated: <copy name="x2" tname="x" /></p>
-    <p>Selected variable repeated again: <copy name="x3" tname="_select1" /></p>
+    <p>Selected variable repeated: <copy name="x2" target="x" /></p>
+    <p>Selected variable repeated again: <copy name="x3" target="_select1" /></p>
     `,
         requestedVariant: { index: 1 },
       }, "*");
@@ -938,8 +938,8 @@ describe('Specifying single variant document tests', function () {
       <option selectForVariantNames="broccoli"><math>b</math></option>
     </select>
     </p>
-    <p>Selected variable repeated: <copy name="x2" tname="x" /></p>
-    <p>Selected variable repeated again: <copy name="x3" tname="_select1" /></p>
+    <p>Selected variable repeated: <copy name="x2" target="x" /></p>
+    <p>Selected variable repeated again: <copy name="x3" target="_select1" /></p>
     `,
         requestedVariant: { index: 3 },
       }, "*");
@@ -994,8 +994,8 @@ describe('Specifying single variant document tests', function () {
       <option selectForVariantNames="broccoli"><math>b</math></option>
     </select>
     </p>
-    <p>Selected variable repeated: <copy name="x2" tname="x" /></p>
-    <p>Selected variable repeated again: <copy name="x3" tname="_select1" /></p>
+    <p>Selected variable repeated: <copy name="x2" target="x" /></p>
+    <p>Selected variable repeated again: <copy name="x3" target="_select1" /></p>
     `,
         requestedVariant: { name: 'bRoccoli' },
       }, "*");
@@ -1050,8 +1050,8 @@ describe('Specifying single variant document tests', function () {
       <option selectForVariantNames="broccoli"><math>b</math></option>
     </select>
     </p>
-    <p>Selected variable repeated: <copy name="x2" tname="x" /></p>
-    <p>Selected variable repeated again: <copy name="x3" tname="_select1" /></p>
+    <p>Selected variable repeated: <copy name="x2" target="x" /></p>
+    <p>Selected variable repeated again: <copy name="x3" target="_select1" /></p>
     `,
         requestedVariant: generatedVariantInfo,
       }, "*");
@@ -1104,8 +1104,8 @@ describe('Specifying single variant document tests', function () {
       <option selectForVariantNames="broccoli"><math>b</math></option>
     </select>
     </p>
-    <p>Selected variable repeated: <copy name="x2" tname="x" /></p>
-    <p>Selected variable repeated again: <copy name="x3" tname="_select1" /></p>
+    <p>Selected variable repeated: <copy name="x2" target="x" /></p>
+    <p>Selected variable repeated again: <copy name="x3" target="_select1" /></p>
     `,
         requestedVariant: { name: 'dill' },
       }, "*");
@@ -1159,8 +1159,8 @@ describe('Specifying single variant document tests', function () {
       <option selectForVariantNames="broccoli"><math>b</math></option>
     </select>
     </p>
-    <p>Selected variable repeated: <copy name="x2" tname="x" /></p>
-    <p>Selected variable repeated again: <copy name="x3" tname="_select1" /></p>
+    <p>Selected variable repeated: <copy name="x2" target="x" /></p>
+    <p>Selected variable repeated again: <copy name="x3" target="_select1" /></p>
     `,
         requestedVariant: { index: 20582310 },
       }, "*");
@@ -1214,8 +1214,8 @@ describe('Specifying single variant document tests', function () {
       <option selectForVariantNames="broccoli"><math>b</math></option>
     </select>
     </p>
-    <p>Selected variable repeated: <copy name="x2" tname="x" /></p>
-    <p>Selected variable repeated again: <copy name="x3" tname="_select1" /></p>
+    <p>Selected variable repeated: <copy name="x2" target="x" /></p>
+    <p>Selected variable repeated again: <copy name="x3" target="_select1" /></p>
     `,
         requestedVariant: { index: '-20582308' },
       }, "*");
@@ -1269,8 +1269,8 @@ describe('Specifying single variant document tests', function () {
       <option selectForVariantNames="broccoli"><math>b</math></option>
     </select>
     </p>
-    <p>Selected variable repeated: <copy name="x2" tname="x" /></p>
-    <p>Selected variable repeated again: <copy name="x3" tname="_select1" /></p>
+    <p>Selected variable repeated: <copy name="x2" target="x" /></p>
+    <p>Selected variable repeated again: <copy name="x3" target="_select1" /></p>
     `,
         requestedVariant: { index: 'wrong' },
       }, "*");
@@ -1324,8 +1324,8 @@ describe('Specifying single variant document tests', function () {
       <option selectForVariantNames="broccoli"><math>b</math></option>
     </select>
     </p>
-    <p>Selected variable repeated: <copy name="x2" tname="x" /></p>
-    <p>Selected variable repeated again: <copy name="x3" tname="_select1" /></p>
+    <p>Selected variable repeated: <copy name="x2" target="x" /></p>
+    <p>Selected variable repeated again: <copy name="x3" target="_select1" /></p>
     `,
         requestedVariant: { name: 'rotten' },
       }, "*");
@@ -1379,8 +1379,8 @@ describe('Specifying single variant document tests', function () {
       <option selectForVariantNames="broccoli"><math>b</math></option>
     </select>
     </p>
-    <p>Selected variable repeated: <copy name="x2" tname="x" /></p>
-    <p>Selected variable repeated again: <copy name="x3" tname="_select1" /></p>
+    <p>Selected variable repeated: <copy name="x2" target="x" /></p>
+    <p>Selected variable repeated again: <copy name="x3" target="_select1" /></p>
     `,
         requestedVariant: { index: 4.5 },
       }, "*");

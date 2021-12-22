@@ -22,13 +22,13 @@ describe('Allow error in numbers validation tests', function () {
     <p><math>log(32x+c)</math> 
     <answer size="30">
       <award allowederrorinnumbers="0.00001">
-        <copy tname="_math1" />
+        <copy target="_math1" />
       </award>
       <award credit="0.8" allowederrorinnumbers="0.0001">
-        <copy tname="_math1" />
+        <copy target="_math1" />
       </award>
       <award credit="0.6" allowederrorinnumbers="0.001">
-        <copy tname="_math1" />
+        <copy target="_math1" />
       </award>
     </answer>
     </p>
@@ -136,13 +136,13 @@ describe('Allow error in numbers validation tests', function () {
     <p><math>log(32x+c)</math> 
     <answer size="30">
       <award allowederrorinnumbers="0.00001" allowederrorisabsolute="true">
-        <copy tname="_math1" />
+        <copy target="_math1" />
       </award>
       <award credit="0.8" allowederrorinnumbers="0.0001" allowederrorisabsolute="true">
-        <copy tname="_math1" />
+        <copy target="_math1" />
       </award>
       <award credit="0.6" allowederrorinnumbers="0.001" allowederrorisabsolute="true">
-        <copy tname="_math1" />
+        <copy target="_math1" />
       </award>
     </answer>
     </p>
@@ -248,10 +248,10 @@ describe('Allow error in numbers validation tests', function () {
     <p><math simplify>10 exp(7x^2/(3-sqrt(y)))</math> 
     <answer size="30">
       <award allowederrorinnumbers="0.0000001">
-        <copy tname="_math1" />
+        <copy target="_math1" />
       </award>
       <award credit="0.6" allowederrorinnumbers="0.0001">
-        <copy tname="_math1" />
+        <copy target="_math1" />
       </award>
     </answer>
     </p>
@@ -317,7 +317,7 @@ describe('Allow error in numbers validation tests', function () {
     <p><math>10x^2-4</math> 
     <answer size="30">
       <award allowederrorinnumbers="0.0001">
-        <copy tname="_math1" />
+        <copy target="_math1" />
       </award>
     </answer>
     </p>
@@ -325,7 +325,7 @@ describe('Allow error in numbers validation tests', function () {
     <p>Allow for error in exponents
     <answer size="30">
       <award allowederrorinnumbers="0.0001" includeerrorinnumberexponents>
-        <copy tname="_math1" />
+        <copy target="_math1" />
       </award>
     </answer>
     </p>
@@ -410,13 +410,13 @@ describe('Allow error in numbers validation tests', function () {
     <p><math>log(32x+c)</math> 
     <answer size="30">
       <award symbolicequality="true" allowederrorinnumbers="0.00001" simplifyOnCompare>
-        <copy tname="_math1" />
+        <copy target="_math1" />
       </award>
       <award credit="0.8" symbolicequality="true" allowederrorinnumbers="0.0001" simplifyOnCompare>
-        <copy tname="_math1" />
+        <copy target="_math1" />
       </award>
       <award credit="0.6" symbolicequality="true" allowederrorinnumbers="0.001" simplifyOnCompare>
-        <copy tname="_math1" />
+        <copy target="_math1" />
       </award>
     </answer>
     </p>
@@ -626,13 +626,13 @@ describe('Allow error in numbers validation tests', function () {
     <p><math>10000 exp(7x^2/(0.00003-sqrt(y)))</math> 
     <answer size="40" symbolicequality simplifyOnCompare>
       <award allowederrorinnumbers="0.0000001" >
-        <copy tname="_math1" />
+        <copy target="_math1" />
       </award>
       <award credit="0.8" allowederrorinnumbers="0.000001">
-        <copy tname="_math1" />
+        <copy target="_math1" />
       </award>
       <award credit="0.6" allowederrorinnumbers="0.00001">
-        <copy tname="_math1" />
+        <copy target="_math1" />
       </award>
     </answer>
     </p>
@@ -725,13 +725,13 @@ describe('Allow error in numbers validation tests', function () {
     <p><math simplify>10000 exp(7x^2/(0.00003-sqrt(y)))</math> 
     <answer size="40">
       <award symbolicequality="true" allowederrorinnumbers="0.0000001" allowederrorisabsolute simplifyOnCompare>
-        <copy tname="_math1" />
+        <copy target="_math1" />
       </award>
       <award symbolicequality="true" credit="0.8" allowederrorinnumbers="0.000001" allowederrorisabsolute simplifyOnCompare>
-        <copy tname="_math1" />
+        <copy target="_math1" />
       </award>
       <award symbolicequality="true" credit="0.6" allowederrorinnumbers="0.00001" allowederrorisabsolute simplifyOnCompare>
-        <copy tname="_math1" />
+        <copy target="_math1" />
       </award>
     </answer>
     </p>
@@ -823,7 +823,7 @@ describe('Allow error in numbers validation tests', function () {
     <p><math simplify>10x^2-4</math> 
     <answer size="30">
       <award symbolicequality="true" allowederrorinnumbers="0.0001" simplifyOnCompare>
-        <copy tname="_math1" />
+        <copy target="_math1" />
       </award>
     </answer>
     </p>
@@ -831,7 +831,7 @@ describe('Allow error in numbers validation tests', function () {
     <p>Allow for error in exponents
     <answer size="30">
       <award symbolicequality="true" allowederrorinnumbers="0.0001" includeerrorinnumberexponents simplifyOnCompare>
-        <copy tname="_math1" />
+        <copy target="_math1" />
       </award>
     </answer>
     </p>
@@ -916,7 +916,7 @@ describe('Allow error in numbers validation tests', function () {
     <p><math>2.15234262pi+e*25.602348230</math> 
     <answer size="30">
       <award symbolicequality="true" allowederrorinnumbers="0.001">
-        <copy tname="_math1" />
+        <copy target="_math1" />
       </award>
     </answer>
     </p>
@@ -1006,7 +1006,7 @@ describe('Allow error in numbers validation tests', function () {
     <p><math>sin(2pi+1x+4x+pi+6)</math> 
     <answer size="30">
       <award symbolicequality="true" allowederrorinnumbers="0.001" simplifyOnCompare="numbersPreserveOrder">
-        <copy tname="_math1" />
+        <copy target="_math1" />
       </award>
     </answer>
     </p>
@@ -1088,7 +1088,7 @@ describe('Allow error in numbers validation tests', function () {
     <p><math>sin(2pi+1x+4x+pi+6)</math> 
     <answer size="30">
       <award symbolicequality="true" allowederrorinnumbers="0.001" simplifyOnCompare="numbers">
-        <copy tname="_math1" />
+        <copy target="_math1" />
       </award>
     </answer>
     </p>
@@ -1171,7 +1171,7 @@ describe('Allow error in numbers validation tests', function () {
     <p><math>sin(2pi+1x+4x+pi+6)</math> 
     <answer size="30">
       <award symbolicequality="true" allowederrorinnumbers="0.001" simplifyOnCompare="full">
-        <copy tname="_math1" />
+        <copy target="_math1" />
       </award>
     </answer>
     </p>
@@ -1254,7 +1254,7 @@ describe('Allow error in numbers validation tests', function () {
     <p><math>(log(32x+c), 42)</math> 
     <answer size="30" matchPartial>
       <award allowederrorinnumbers="0.001">
-        <copy tname="_math1" />
+        <copy target="_math1" />
       </award>
     </answer>
     </p>
@@ -1330,7 +1330,7 @@ describe('Allow error in numbers validation tests', function () {
     <p><math unordered>(42, log(32x+c))</math> 
     <answer size="30" matchPartial>
       <award allowederrorinnumbers="0.001">
-        <copy tname="_math1" />
+        <copy target="_math1" />
       </award>
     </answer>
     </p>

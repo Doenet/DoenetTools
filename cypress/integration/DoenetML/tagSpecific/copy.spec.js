@@ -21,14 +21,14 @@ describe('Copy Tag Tests', function () {
         doenetML: `
     <text>a</text>
     <math modifyIndirectly="false">x</math>
-    <copy name="a" tname="_math1"/>
-    <copy name="b" tname="a"/>
+    <copy name="a" target="_math1"/>
+    <copy name="b" target="a"/>
     <math modifyIndirectly="true">x</math>
-    <copy name="c" tname="_math2"/>
-    <copy name="d" tname="c"/>
+    <copy name="c" target="_math2"/>
+    <copy name="d" target="c"/>
     <point label="A">(1,2)</point>
-    <copy name="e" tname="_point1"/>
-    <copy name="f" tname="e"/>
+    <copy name="e" target="_point1"/>
+    <copy name="f" target="e"/>
     `}, "*");
     });
 
@@ -57,19 +57,19 @@ describe('Copy Tag Tests', function () {
         doenetML: `
     <text>a</text>
     <math modifyIndirectly="false">x</math>
-    <copy name="r1" tname="_math1"/>
-    <copy name="r2" modifyIndirectly="true" tname="_math1"/>
-    <copy name="r3" modifyIndirectly="true" tname="r1"/>
-    <copy name="r4" tname="r2"/>
-    <copy name="r5" tname="r3"/>
-    <copy name="r6" tname="r2" modifyIndirectly="false" />
-    <copy name="r7" tname="r3" modifyIndirectly="false" />
+    <copy name="r1" target="_math1"/>
+    <copy name="r2" modifyIndirectly="true" target="_math1"/>
+    <copy name="r3" modifyIndirectly="true" target="r1"/>
+    <copy name="r4" target="r2"/>
+    <copy name="r5" target="r3"/>
+    <copy name="r6" target="r2" modifyIndirectly="false" />
+    <copy name="r7" target="r3" modifyIndirectly="false" />
 
     <point label="A" name="A">(1,2)</point>
-    <copy name="A2" tname="A"/>
-    <copy label="B" name="B" tname="A"/>
-    <copy label="C" name="C" tname="B"/>
-    <copy name="C2" tname="C"/>
+    <copy name="A2" target="A"/>
+    <copy label="B" name="B" target="A"/>
+    <copy label="C" name="C" target="B"/>
+    <copy name="C2" target="C"/>
     `}, "*");
     });
 
@@ -102,19 +102,19 @@ describe('Copy Tag Tests', function () {
         doenetML: `
     <text>a</text>
     <math modifyIndirectly="3 &gt; 4">x</math>
-    <copy name="r1" tname="_math1"/>
-    <copy name="r2" modifyIndirectly="3&lt;4" tname="_math1"/>
-    <copy name="r3" modifyIndirectly="3&lt;4" tname="r1"/>
-    <copy name="r4" tname="r2"/>
-    <copy name="r5" tname="r3"/>
-    <copy name="r6" tname="r2" modifyIndirectly="3&gt;4" />
-    <copy name="r7" tname="r3" modifyIndirectly="3&gt;4" />
+    <copy name="r1" target="_math1"/>
+    <copy name="r2" modifyIndirectly="3&lt;4" target="_math1"/>
+    <copy name="r3" modifyIndirectly="3&lt;4" target="r1"/>
+    <copy name="r4" target="r2"/>
+    <copy name="r5" target="r3"/>
+    <copy name="r6" target="r2" modifyIndirectly="3&gt;4" />
+    <copy name="r7" target="r3" modifyIndirectly="3&gt;4" />
 
     <point label="A" name="A">(1,2)</point>
-    <copy name="A2" tname="A"/>
-    <copy label="B" name="B" tname="A"/>
-    <copy label="C" name="C" tname="B"/>
-    <copy name="C2" tname="C"/>
+    <copy name="A2" target="A"/>
+    <copy label="B" name="B" target="A"/>
+    <copy label="C" name="C" target="B"/>
+    <copy name="C2" target="C"/>
     `}, "*");
     });
 
@@ -147,20 +147,20 @@ describe('Copy Tag Tests', function () {
         doenetML: `
     <text>a</text>
     <math name="x" modifyIndirectly="false" hide>x</math>
-    <copy name="mr" prop="modifyIndirectly" tname="x"/>
-    <copy name="mr2" prop="modifyIndirectly" modifyIndirectly="true" tname="x"/>
+    <copy name="mr" prop="modifyIndirectly" target="x"/>
+    <copy name="mr2" prop="modifyIndirectly" modifyIndirectly="true" target="x"/>
 
-    <copy name="frmt" prop="format" tname="x"/>
-    <copy name="frmt2" prop="format" tname="x" hide />
-    <copy name="frmt3" hide tname="frmt"/>
+    <copy name="frmt" prop="format" target="x"/>
+    <copy name="frmt2" prop="format" target="x" hide />
+    <copy name="frmt3" hide target="frmt"/>
 
     <point name="A" label="A">(1,2)</point>
-    <copy name="cA" prop="coords" tname="A"/>
-    <copy name="l" prop="latex" tname="cA"/>
-    <copy name="lmr" prop="latex" modifyIndirectly="false" tname="cA"/>
-    <copy name="A2" tname="A"/>
-    <copy name="cA2" prop="coords" tname="A2"/>
-    <copy name="l2" prop="latex" tname="cA2"/>
+    <copy name="cA" prop="coords" target="A"/>
+    <copy name="l" prop="latex" target="cA"/>
+    <copy name="lmr" prop="latex" modifyIndirectly="false" target="cA"/>
+    <copy name="A2" target="A"/>
+    <copy name="cA2" prop="coords" target="A2"/>
+    <copy name="l2" prop="latex" target="cA2"/>
     `}, "*");
     });
 
@@ -220,10 +220,10 @@ describe('Copy Tag Tests', function () {
     </graph>
     
     <graph>
-      <copy name="p2" tname="_point1"/>
+      <copy name="p2" target="_point1"/>
       <point>
-        (<copy prop="y" tname="p2"/>,
-        <copy prop="x1" tname="p2"/>)
+        (<copy prop="y" target="p2"/>,
+        <copy prop="x1" target="p2"/>)
       </point>
     </graph>
     `}, "*");
@@ -285,16 +285,16 @@ describe('Copy Tag Tests', function () {
       win.postMessage({
         doenetML: `
     <math>x</math>
-    <copy prop="label" tname="_math1"/>
+    <copy prop="label" target="_math1"/>
 
-    <point label="A" tname="x</point>
-    <copy tname="_point1"/>
-    <copy prop="format" tname="_ref1"/>
+    <point label="A" target="x</point>
+    <copy target="_point1"/>
+    <copy prop="format" target="_ref1"/>
 
-    <copy name="A2" tname="A"/>
-    <copy name="cA2" prop="coords" tname="A2"/>
-    <copy name="lcA2" prop="label" tname="cA2"/>
-    <copy name="llcA2" label="B" tname="cA2"/>
+    <copy name="A2" target="A"/>
+    <copy name="cA2" prop="coords" target="A2"/>
+    <copy name="lcA2" prop="label" target="cA2"/>
+    <copy name="llcA2" label="B" target="cA2"/>
 
     `}, "*");
     });
@@ -316,11 +316,11 @@ describe('Copy Tag Tests', function () {
     </graph>
   
     <graph>
-    <copy prop="displacement" name="d1" tname="_vector1"/>
+    <copy prop="displacement" name="d1" target="_vector1"/>
     </graph>
   
     <graph>
-    <copy tname="d1" name="d2" />
+    <copy target="d1" name="d2" />
     </graph>
     `}, "*");
     });
@@ -464,11 +464,11 @@ describe('Copy Tag Tests', function () {
       </aslist>
     </p>
     
-    <p><copy name="al2" tname="_aslist1"/></p>
-    <copy name="p2" tname="_p1"/>
+    <p><copy name="al2" target="_aslist1"/></p>
+    <copy name="p2" target="_p1"/>
     
-    <p><copy tname="al2"/></p>
-    <copy tname="p2" name="p3"/>
+    <p><copy target="al2"/></p>
+    <copy target="p2" name="p3"/>
 
     `}, "*");
     });
@@ -667,7 +667,7 @@ describe('Copy Tag Tests', function () {
     <text>a</text>
     <p>Hidden text: <text name="hidden" hide>secret</text></p>
     <p>Revealed by default: $hidden</p>
-    <p>Force to stay hidden: <copy tname="hidden" targetAttributesToIgnore="" /></p>
+    <p>Force to stay hidden: <copy target="hidden" targetAttributesToIgnore="" /></p>
 
     `}, "*");
     });
@@ -689,7 +689,7 @@ describe('Copy Tag Tests', function () {
     <text>a</text>
     <p name="theP" newNamespace>Hidden text: <text name="hidden" hide>secret</text></p>
     <p name="pReveal">Revealed: $(theP/hidden)</p>
-    <copy tname="theP" assignNames="theP2" />
+    <copy target="theP" assignNames="theP2" />
     <p name="pReveal2">Revealed 2: $(theP2/hidden)</p>
 
 
@@ -718,8 +718,8 @@ describe('Copy Tag Tests', function () {
     <booleaninput name='h1' prefill="false" label="Hide first copy" />
     <booleaninput name='h2' prefill="true" label="Hide second copy" />
 
-    <p name="c1">copy 1: <copy hide="$h1" tname="target" /></p>
-    <p name="c2">copy 2: <copy hide="$h2" tname="target" /></p>
+    <p name="c1">copy 1: <copy hide="$h1" target="target" /></p>
+    <p name="c2">copy 2: <copy hide="$h2" target="target" /></p>
     `}, "*");
     });
 
@@ -1112,7 +1112,7 @@ describe('Copy Tag Tests', function () {
       <else>$jump</else>
     </conditionalContent></p>
 
-    <copy tname="verb" assignNames="verb2" />
+    <copy target="verb" assignNames="verb2" />
     `}, "*");
     });
 
@@ -1171,13 +1171,13 @@ describe('Copy Tag Tests', function () {
 
     <p>Original: <math name="m" simplify="$s1">x +x</math></p>
     
-    <p>Unlinked copy: <copy link="false" tname="m" simplify="$s2" assignNames="m2" /></p>
+    <p>Unlinked copy: <copy link="false" target="m" simplify="$s2" assignNames="m2" /></p>
 
-    <p>Linked copy: <copy tname="m" simplify="$s2" assignNames="m3" /></p>
+    <p>Linked copy: <copy target="m" simplify="$s2" assignNames="m3" /></p>
     
-    <p>Double value of original: <updateValue tname="m" newValue="2$m" name="doubleOriginal" label="double original" /></p>
-    <p>Double value of copy 1: <updateValue tname="m2" newValue="2$m2" name="doubleCopy1" label="double copy 1" /></p>
-    <p>Double value of copy 2: <updateValue tname="m3" newValue="2$m3" name="doubleCopy2" label="double copy 2" /></p>
+    <p>Double value of original: <updateValue target="m" newValue="2$m" name="doubleOriginal" label="double original" /></p>
+    <p>Double value of copy 1: <updateValue target="m2" newValue="2$m2" name="doubleCopy1" label="double copy 1" /></p>
+    <p>Double value of copy 2: <updateValue target="m3" newValue="2$m3" name="doubleCopy2" label="double copy 2" /></p>
 
     `}, "*");
     });
@@ -1345,20 +1345,20 @@ describe('Copy Tag Tests', function () {
     </graph>
     
     <graph>
-      <copy tname="A" link="false" name="Anolink" assignNames="A2" />
-      <copy tname="l" link="false" name="lnolink" assignNames="l2" />
+      <copy target="A" link="false" name="Anolink" assignNames="A2" />
+      <copy target="l" link="false" name="lnolink" assignNames="l2" />
     </graph>
     
     <graph>
-      <copy tname="l" prop="point1" link="false" name="plnolink" assignNames="A3" />
+      <copy target="l" prop="point1" link="false" name="plnolink" assignNames="A3" />
     </graph>
     <graph>
-      <copy tname="l" prop="points" link="false" name="plsnolink" assignNames="A4 B4"  />
+      <copy target="l" prop="points" link="false" name="plsnolink" assignNames="A4 B4"  />
     </graph>
 
-    <copy tname="g" link="false" name="gnolink" assignNames="g2" />
+    <copy target="g" link="false" name="gnolink" assignNames="g2" />
     
-    <copy tname="A" prop="x" link="false" assignNames="Ax" name="pxnolink" />
+    <copy target="A" prop="x" link="false" assignNames="Ax" name="pxnolink" />
   
     `}, "*");
     });
@@ -1652,7 +1652,7 @@ describe('Copy Tag Tests', function () {
         doenetML: `
     <text>a</text>
     <p>Hello</p>
-    <copy tname="_p1" assignNames="p2" link="false" />
+    <copy target="_p1" assignNames="p2" link="false" />
     `}, "*");
     });
 
@@ -1670,8 +1670,8 @@ describe('Copy Tag Tests', function () {
       win.postMessage({
         doenetML: `
     <text>a</text>
-    <p><group name="g"><text name="m">hello</text> <copy tname="m" assignNames="q" /></group></p>
-    <p><copy tname="g" link="false" /></p>
+    <p><group name="g"><text name="m">hello</text> <copy target="m" assignNames="q" /></group></p>
+    <p><copy target="g" link="false" /></p>
     `}, "*");
     });
 
@@ -1690,24 +1690,24 @@ describe('Copy Tag Tests', function () {
     <text>a</text>
     <group>
       <p><math name="twox">x+x</math></p>
-      <copy tname="twox" name="ctwox" assignNames="twoxa" />
-      <copy tname="twox" name="c2twox" assignNames="twoxb" />
+      <copy target="twox" name="ctwox" assignNames="twoxa" />
+      <copy target="twox" name="c2twox" assignNames="twoxb" />
     </group>
     
-    <copy tname="twox" assignNames="twoxc" />
-    <copy tname="twox" link="false" assignNames="twoxd" />
+    <copy target="twox" assignNames="twoxc" />
+    <copy target="twox" link="false" assignNames="twoxd" />
     
-    <copy tname="twoxa" assignNames="twoxe" />
-    <copy tname="twoxa" link="false" assignNames="twoxf" />
+    <copy target="twoxa" assignNames="twoxe" />
+    <copy target="twoxa" link="false" assignNames="twoxf" />
     
-    <copy tname="ctwox" assignNames="twoxg" />
-    <copy tname="ctwox" link="false" assignNames="twoxh" />
+    <copy target="ctwox" assignNames="twoxg" />
+    <copy target="ctwox" link="false" assignNames="twoxh" />
 
-    <copy tname="twoxb" assignNames="twoxi" />
-    <copy tname="twoxb" link="false" assignNames="twoxj" />
+    <copy target="twoxb" assignNames="twoxi" />
+    <copy target="twoxb" link="false" assignNames="twoxj" />
     
-    <copy tname="c2twox" assignNames="twoxk" />
-    <copy tname="c2twox" link="false" assignNames="twoxl" />
+    <copy target="c2twox" assignNames="twoxk" />
+    <copy target="c2twox" link="false" assignNames="twoxl" />
   
     `}, "*");
     });
@@ -1766,13 +1766,13 @@ describe('Copy Tag Tests', function () {
       <textinput name="sim" prefill="full" />
     
       <p><math name="twox">x+x</math>
-      <copy tname="twox" simplify="$sim" name="ctwox" assignNames="twoxa" />
+      <copy target="twox" simplify="$sim" name="ctwox" assignNames="twoxa" />
       <math name="threex" simplify="$sim">x+x+x</math>
       </p>
     </group>
     
-    <copy tname="g" link="false" assignNames="g2" />
-    <copy tname="g2" link="false" assignNames="g3" />
+    <copy target="g" link="false" assignNames="g2" />
+    <copy target="g2" link="false" assignNames="g3" />
     `}, "*");
     });
 
@@ -1938,10 +1938,10 @@ describe('Copy Tag Tests', function () {
     <text>a</text>
     <group name="g" newNamespace>
     <copy uri="doenet:contentId=64e31126079d65ea41e90129fa96a7fd54f1faa73fb7b2ef99d8bbed1d13f69a" assignNames="p" />
-    <p>Credit achieved: <copy prop="creditAchieved" tname="p/derivativeProblem/_answer1" assignNames="ca" /></p>
+    <p>Credit achieved: <copy prop="creditAchieved" target="p/derivativeProblem/_answer1" assignNames="ca" /></p>
     </group>
     
-    <copy tname="g" link="false" assignNames="g2" />
+    <copy target="g" link="false" assignNames="g2" />
     `}, "*");
     });
 
@@ -1980,7 +1980,7 @@ describe('Copy Tag Tests', function () {
       </graph>
     </group>
     
-    <copy tname='g' link="false" />
+    <copy target='g' link="false" />
     `}, "*");
     });
 
@@ -1998,12 +1998,12 @@ describe('Copy Tag Tests', function () {
     <textinput name="external" prefill="bye" />
 
     <group name="g" newNamespace>
-      <copy tname="/external" prop="value" assignNames="w" />
+      <copy target="/external" prop="value" assignNames="w" />
       <point label="$(/external)" name="P">(a,b)</point>
-      <copy prop="label" tname="P" assignNames="Plabel" />
+      <copy prop="label" target="P" assignNames="Plabel" />
     </group>
     
-    <copy tname="g" assignNames="g2" link="false" />
+    <copy target="g" assignNames="g2" link="false" />
     `}, "*");
     });
 
@@ -2047,9 +2047,9 @@ describe('Copy Tag Tests', function () {
       <textinput name="ti" prefill="hello" />
       <map assignNames="a">
         <template newNamespace>
-          <copy tname="x" assignNames="w" />
+          <copy target="x" assignNames="w" />
           <point label="$x" name="P">(a,b)</point>
-          <copy prop="label" tname="P" assignNames="Plabel" />
+          <copy prop="label" target="P" assignNames="Plabel" />
 
 
         </template>
@@ -2059,7 +2059,7 @@ describe('Copy Tag Tests', function () {
       </map>
     </group>
     
-    <copy tname="g" assignNames="g2" link="false" />
+    <copy target="g" assignNames="g2" link="false" />
     `}, "*");
     });
 
@@ -2095,7 +2095,7 @@ describe('Copy Tag Tests', function () {
   });
 
 
-  it('copy no link containing external copies use absolute tName', () => {
+  it('copy no link containing external copies use absolute target', () => {
     cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
@@ -2105,12 +2105,12 @@ describe('Copy Tag Tests', function () {
     <number name="m">2$n</number>
     
     <group newNamespace name="g">
-      <p>m = <copy tname="../m" assignNames="m1" /></p>
-      <p>m = <copy tname="../m" assignNames="m2" link="false" /></p>
+      <p>m = <copy target="../m" assignNames="m1" /></p>
+      <p>m = <copy target="../m" assignNames="m2" link="false" /></p>
     </group>
     
-    <copy tname="g" assignNames="g2" />
-    <copy tname="g" link="false" assignNames="g3" />
+    <copy target="g" assignNames="g2" />
+    <copy target="g" link="false" assignNames="g3" />
     `}, "*");
     });
 
@@ -2140,8 +2140,8 @@ describe('Copy Tag Tests', function () {
         <number name="n">2</number>
       </setup>
 
-      <updateValue name="addP" label="Add p" tName="n" newValue="$n+1" />
-      <updateValue name="removeP" label="Remove p" tName="n" newValue="$n-1" />
+      <updateValue name="addP" label="Add p" target="n" newValue="$n+1" />
+      <updateValue name="removeP" label="Remove p" target="n" newValue="$n-1" />
       <map assignNames="(p1) (p2) (p3) (p4)">
         <template><p>i=$i, v=$v</p></template>
         <sources indexAlias="i" alias="v"><sequence length="$n" from="11" /></sources>
@@ -2149,24 +2149,24 @@ describe('Copy Tag Tests', function () {
     </section>
     
     <section name="section2" newNamespace>
-      <copy tname='../section1/_map1' link='false' assignNames='(p1) (p2) (p3) (p4)' />
+      <copy target='../section1/_map1' link='false' assignNames='(p1) (p2) (p3) (p4)' />
     </section>
 
     <section name="section3">
-      <copy tname='section1/_map1' link='false' assignNames='(p1) (p2) (p3) (p4)' />
+      <copy target='section1/_map1' link='false' assignNames='(p1) (p2) (p3) (p4)' />
     </section>
 
-    <copy tname='section1' link='false' assignNames="section4" />
+    <copy target='section1' link='false' assignNames="section4" />
     
     <section name="section5" newNamespace>
-      <copy tname='../section1/_map1' assignNames='(p1) (p2) (p3) (p4)' />
+      <copy target='../section1/_map1' assignNames='(p1) (p2) (p3) (p4)' />
     </section>
 
     <section name="section6">
-      <copy tname='section1/_map1' assignNames='(p1a) (p2a) (p3a) (p4a)' />
+      <copy target='section1/_map1' assignNames='(p1a) (p2a) (p3a) (p4a)' />
     </section>
 
-    <copy tname='section1' assignNames="section7" />
+    <copy target='section1' assignNames="section7" />
   
     `}, "*");
     });
@@ -2479,8 +2479,8 @@ describe('Copy Tag Tests', function () {
       </map>
     </graph>
     
-    <p><m name="m1">A_1 = <copy tname="t1/A" displayDigits="3" /></m></p>
-    <p><m name="m2">A_2 = <copy tname="t2/A" displayDigits="3" /></m></p>
+    <p><m name="m1">A_1 = <copy target="t1/A" displayDigits="3" /></m></p>
+    <p><m name="m2">A_2 = <copy target="t2/A" displayDigits="3" /></m></p>
     
     `}, "*");
     });
@@ -2594,12 +2594,12 @@ describe('Copy Tag Tests', function () {
   });
 
 
-  it('trim whitespace off tname', () => {
+  it('trim whitespace off target', () => {
     cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text name="hi">Hello</text>
-    <p><copy tname=" hi  " /> there</p>
+    <p><copy target=" hi  " /> there</p>
     `}, "*");
     });
 

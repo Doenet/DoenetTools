@@ -16,24 +16,24 @@ describe('Collect Tag Tests', function () {
     </graph>
 
     <graph>
-      <copy tname="_point1" />
+      <copy target="_point1" />
       <point>(4,2)</point>
       <point>
-        (<copy prop="y" tname="_point2" />,
-        <copy prop="x" tname="_point2" />)
+        (<copy prop="y" target="_point2" />,
+        <copy prop="x" target="_point2" />)
       </point>
     </graph>
     </panel>
 
     <graph>
-      <collect componentTypes="point" name="points" tname="_panel1"/>
+      <collect componentTypes="point" name="points" target="_panel1"/>
     </graph>
 
-    <p>Coordinates of points: <collect componentTypes="point" prop="coords" name="coords" tname="_panel1"/></p>
-    <p><m>x</m>-coordinates of points: <aslist><collect componentTypes="point" prop="x" name="xs" tname="_graph3"/></aslist></p>
-    <p><m>x</m>-coordinates of points via a copy: <aslist><copy name="xs2" tname="xs" /></aslist></p>
-    <p><m>x</m>-coordinates of points via extract: <aslist><extract prop="x" name="xs3"><copy name="points2" tname="points" /></extract></aslist></p>
-    <p>Average of <m>y</m>-coordinates of points: <mean name="mean"><collect componentTypes="point" prop="y" name="ys" tname="_graph3"/></mean></p>
+    <p>Coordinates of points: <collect componentTypes="point" prop="coords" name="coords" target="_panel1"/></p>
+    <p><m>x</m>-coordinates of points: <aslist><collect componentTypes="point" prop="x" name="xs" target="_graph3"/></aslist></p>
+    <p><m>x</m>-coordinates of points via a copy: <aslist><copy name="xs2" target="xs" /></aslist></p>
+    <p><m>x</m>-coordinates of points via extract: <aslist><extract prop="x" name="xs3"><copy name="points2" target="points" /></extract></aslist></p>
+    <p>Average of <m>y</m>-coordinates of points: <mean name="mean"><collect componentTypes="point" prop="y" name="ys" target="_graph3"/></mean></p>
     `}, "*");
     });
 
@@ -282,7 +282,7 @@ describe('Collect Tag Tests', function () {
     <panel>
     <graph>
       <map>
-        <template newNamespace><point>($x, <copy prop="value" tname="../mult" />$x)</point></template>
+        <template newNamespace><point>($x, <copy prop="value" target="../mult" />$x)</point></template>
         <sources alias="x"><sequence to="$length" /></sources>
       </map>
       <line>y=x/3</line>
@@ -291,18 +291,18 @@ describe('Collect Tag Tests', function () {
     <graph>
       <map>
       <template newNamespace><point>(<extract prop="x">$p</extract>+1, 1.5*<extract prop="y">$p</extract>)</point></template>
-      <sources alias="p"><collect componentTypes="point" tname="_map1"/></sources>
+      <sources alias="p"><collect componentTypes="point" target="_map1"/></sources>
     </map>
 
     </graph>
     </panel>
 
     <graph>
-      <collect componentTypes="point" tname="_panel1"/>
+      <collect componentTypes="point" target="_panel1"/>
     </graph>
 
     <p>y-coordinates of points: <aslist>
-      <collect componentTypes="point" prop="y" tname="_graph3" />
+      <collect componentTypes="point" prop="y" target="_graph3" />
     </aslist></p>
     `}, "*");
     });
@@ -494,7 +494,7 @@ describe('Collect Tag Tests', function () {
     <section>
     <group>
       <map>
-        <template newNamespace><point>($x, <copy prop="value" tname="../mult" />$x)</point></template>
+        <template newNamespace><point>($x, <copy prop="value" target="../mult" />$x)</point></template>
         <sources alias="x"><sequence to="$length" /></sources>
       </map>
       <line>y=x/3</line>
@@ -503,18 +503,18 @@ describe('Collect Tag Tests', function () {
     <group>
       <map>
       <template newNamespace><point>(<extract prop="x">$p</extract>+1, 1.5*<extract prop="y">$p</extract>)</point></template>
-      <sources alias="p"><collect componentTypes="point" tname="_map1"/></sources>
+      <sources alias="p"><collect componentTypes="point" target="_map1"/></sources>
     </map>
 
     </group>
     </section>
 
     <group>
-      <collect componentTypes="point" tname="_section1"/>
+      <collect componentTypes="point" target="_section1"/>
     </group>
 
     <p>y-coordinates of points: <aslist>
-      <collect componentTypes="point" prop="y" tname="_group3" />
+      <collect componentTypes="point" prop="y" target="_group3" />
     </aslist></p>
     `}, "*");
     });
@@ -703,16 +703,16 @@ describe('Collect Tag Tests', function () {
       win.postMessage({
         doenetML: `
     <text>a</text>
-    <extract prop="x"><copy prop="endpoint1" tname="_linesegment1" /></extract>
+    <extract prop="x"><copy prop="endpoint1" target="_linesegment1" /></extract>
     <graph>
       <linesegment>(1,2),(-3,5)</linesegment>
     </graph>
 
     <graph>
-      <collect componentTypes="point" tname="_graph1"/>
+      <collect componentTypes="point" target="_graph1"/>
     </graph>
 
-    <collect componentTypes="point" prop="x" tname="_graph1"/>
+    <collect componentTypes="point" prop="x" target="_graph1"/>
 
     `}, "*");
     });
@@ -736,21 +736,21 @@ describe('Collect Tag Tests', function () {
       win.postMessage({
         doenetML: `
     <text>a</text>
-    <extract prop="x"><copy prop="endpoint1" tname="_linesegment1" /></extract>
+    <extract prop="x"><copy prop="endpoint1" target="_linesegment1" /></extract>
     <p>Include hidden: <booleaninput /></p>
     <graph>
       <linesegment>(1,2),(-3,5)</linesegment>
     </graph>
 
     <graph>
-      <collect componentTypes="point" tname="_graph1">
-        <includehidden><copy prop="value" tname="_booleaninput1" /></includehidden>
+      <collect componentTypes="point" target="_graph1">
+        <includehidden><copy prop="value" target="_booleaninput1" /></includehidden>
       </collect>
     </graph>
 
     <p>x-coordinates of points: <aslist>
       <collect componentTypes="point" prop="x">
-        <includehidden><copy prop="value" tname="_booleaninput1" /></includehidden>
+        <includehidden><copy prop="value" target="_booleaninput1" /></includehidden>
         _graph1
       </collect>
     </aslist></p>
@@ -877,19 +877,19 @@ describe('Collect Tag Tests', function () {
 
     <graph>
       <point>
-        (<copy prop="y" tname="_point1" />,
-        <copy prop="x" tname="_point1" />)
+        (<copy prop="y" target="_point1" />,
+        <copy prop="x" target="_point1" />)
       </point>
       <point>
-        (<copy prop="y" tname="_point2" />,
-        <copy prop="x" tname="_point2" />)
+        (<copy prop="y" target="_point2" />,
+        <copy prop="x" target="_point2" />)
       </point>
       <vector tail="$_point3" head="$_point4" />
     </graph>
     </panel>
 
     <graph>
-      <collect componentTypes="point vector" tname="_panel1"/>
+      <collect componentTypes="point vector" target="_panel1"/>
     </graph>
     `}, "*");
     });
@@ -992,7 +992,7 @@ describe('Collect Tag Tests', function () {
     <panel>
     <graph>
       <map>
-        <template newNamespace><point>($x, <copy prop="value" tname="../mult" />$x)</point></template>
+        <template newNamespace><point>($x, <copy prop="value" target="../mult" />$x)</point></template>
         <sources alias="x"><sequence to="$length" /></sources>
       </map>
       <line>y=x/3</line>
@@ -1001,18 +1001,18 @@ describe('Collect Tag Tests', function () {
     <graph>
       <map>
       <template newNamespace><point>(<extract prop="x">$p</extract>+1, 1.5*<extract prop="y">$p</extract>)</point></template>
-      <sources alias="p"><collect componentTypes="point" tname="_map1" maximumnumber="$maxnumber" /></sources>
+      <sources alias="p"><collect componentTypes="point" target="_map1" maximumnumber="$maxnumber" /></sources>
     </map>
 
     </graph>
     </panel>
 
     <graph>
-      <collect componentTypes="point" tname="_panel1" maximumnumber="2$maxnumber" />
+      <collect componentTypes="point" target="_panel1" maximumnumber="2$maxnumber" />
     </graph>
 
     <p>y-coordinates of points: <aslist>
-      <collect componentTypes="point" prop="y" tname="_graph3" maximumnumber="$maxnumber" />
+      <collect componentTypes="point" prop="y" target="_graph3" maximumnumber="$maxnumber" />
     </aslist></p>
     `}, "*");
     });
@@ -1262,7 +1262,7 @@ describe('Collect Tag Tests', function () {
       <math>c</math>
     </math>
     
-    <collect prop="childnumber" componentTypes="math" tname="_math1"/>
+    <collect prop="childnumber" componentTypes="math" target="_math1"/>
     `}, "*");
     });
 
@@ -1364,30 +1364,30 @@ describe('Collect Tag Tests', function () {
   </p>
   
   <p name="p_1">Inputs collected then, values extracted: 
-  <aslist name="al1"><extract prop="value" name="values1"><collect componentTypes="mathinput" tname="p_original"/></extract></aslist></p>
+  <aslist name="al1"><extract prop="value" name="values1"><collect componentTypes="mathinput" target="p_original"/></extract></aslist></p>
 
-  <p name="p_1a">Copied: <aslist name="al1a"><copy name="values1a" tname="values1" /></aslist></p>
-  <p name="p_1b">Copy aslist: <copy name="al1b" tname="al1" /></p>
-  <p name="p_1c">Copy copied: <aslist><copy tname="values1a" /></aslist></p>
-  <p name="p_1d">Copy aslist containing copy: <copy tname="al1a" /></p>
-  <p name="p_1e">Copy copied aslist: <copy tname="al1b" /></p>
+  <p name="p_1a">Copied: <aslist name="al1a"><copy name="values1a" target="values1" /></aslist></p>
+  <p name="p_1b">Copy aslist: <copy name="al1b" target="al1" /></p>
+  <p name="p_1c">Copy copied: <aslist><copy target="values1a" /></aslist></p>
+  <p name="p_1d">Copy aslist containing copy: <copy target="al1a" /></p>
+  <p name="p_1e">Copy copied aslist: <copy target="al1b" /></p>
 
   <p name="p_2">Values collected: 
-    <aslist name="al2"><collect prop="value" name="values2" componentTypes="mathinput" tname="p_original"/></aslist></p>
+    <aslist name="al2"><collect prop="value" name="values2" componentTypes="mathinput" target="p_original"/></aslist></p>
     
-  <p name="p_2a">Copied: <aslist name="al2a"><copy name="values2a" tname="values2" /></aslist></p>
-  <p name="p_2b">Copy aslist: <copy name="al2b" tname="al2" /></p>
-  <p name="p_2c">Copy copied: <aslist><copy tname="values2a" /></aslist></p>
-  <p name="p_2d">Copy aslist containing copy: <copy tname="al2a" /></p>
-  <p name="p_2e">Copy copied aslist: <copy tname="al2b" /></p>
+  <p name="p_2a">Copied: <aslist name="al2a"><copy name="values2a" target="values2" /></aslist></p>
+  <p name="p_2b">Copy aslist: <copy name="al2b" target="al2" /></p>
+  <p name="p_2c">Copy copied: <aslist><copy target="values2a" /></aslist></p>
+  <p name="p_2d">Copy aslist containing copy: <copy target="al2a" /></p>
+  <p name="p_2e">Copy copied aslist: <copy target="al2b" /></p>
 
-  <p name="p_3">Inputs collected: <aslist name="al3"><collect name="col" componentTypes="mathinput" tname="p_original"/></aslist></p>
+  <p name="p_3">Inputs collected: <aslist name="al3"><collect name="col" componentTypes="mathinput" target="p_original"/></aslist></p>
   
-  <p name="p_3a">Copied: <aslist name="al3a"><copy name="cola" tname="col" /></aslist></p>
-  <p name="p_3b">Copy aslist: <copy name="al3b" tname="al3" /></p>
-  <p name="p_3c">Copy copied: <aslist><copy tname="cola" /></aslist></p>
-  <p name="p_3d">Copy aslist containing copy: <copy tname="al3a" /></p>
-  <p name="p_3e">Copy copied aslist: <copy tname="al3b" /></p>
+  <p name="p_3a">Copied: <aslist name="al3a"><copy name="cola" target="col" /></aslist></p>
+  <p name="p_3b">Copy aslist: <copy name="al3b" target="al3" /></p>
+  <p name="p_3c">Copy copied: <aslist><copy target="cola" /></aslist></p>
+  <p name="p_3d">Copy aslist containing copy: <copy target="al3a" /></p>
+  <p name="p_3e">Copy copied aslist: <copy target="al3b" /></p>
   
     `}, "*");
     });
@@ -1928,7 +1928,7 @@ describe('Collect Tag Tests', function () {
       <boolean>not $c</boolean>
     </group>
 
-    <p><collect tname="_group1" componentTypes="_input math text boolean" /></p>
+    <p><collect target="_group1" componentTypes="_input math text boolean" /></p>
     <p>$_collect1</p>
     <p>$_group1</p>
     `}, "*");
@@ -2017,8 +2017,8 @@ describe('Collect Tag Tests', function () {
       <text hide>secret</text>
       <text>public</text>
     </section>
-    <p>Hidden by default: <collect componentTypes="text" tname="_section1" /></p>
-    <p>Force to reveal: <collect componentTypes="text" tname="_section1" targetAttributesToIgnore="hide" /></p>
+    <p>Hidden by default: <collect componentTypes="text" target="_section1" /></p>
+    <p>Force to reveal: <collect componentTypes="text" target="_section1" targetAttributesToIgnore="hide" /></p>
 
     `}, "*");
     });
@@ -2041,12 +2041,12 @@ describe('Collect Tag Tests', function () {
     <text>a</text>
     <section>
       <p name="theP1" newNamespace>Hidden text: <text name="hidden" hide>secret</text></p>
-      <copy tname="theP1" assignNames="theP2" />
+      <copy target="theP1" assignNames="theP2" />
       <p hide name="theP3" newNamespace>Hidden paragraph with hidden text: <text name="hidden" hide>top secret</text></p>
-      <copy tname="theP3" assignNames="theP4" />
+      <copy target="theP3" assignNames="theP4" />
     </section>
-    <collect componentTypes="p" tname="_section1" assignNames="cp1 cp2 cp3 cp4" />
-    <collect componentTypes="p" tname="_section1" targetAttributesToIgnore="hide" assignNames="cp5 cp6 cp7 cp8" />
+    <collect componentTypes="p" target="_section1" assignNames="cp1 cp2 cp3 cp4" />
+    <collect componentTypes="p" target="_section1" targetAttributesToIgnore="hide" assignNames="cp5 cp6 cp7 cp8" />
     `}, "*");
     });
 
@@ -2074,12 +2074,12 @@ describe('Collect Tag Tests', function () {
     <text>a</text>
     <section hide>
       <p name="theP1" newNamespace>Hidden text: <text name="hidden" hide>secret</text></p>
-      <copy tname="theP1" assignNames="theP2" />
+      <copy target="theP1" assignNames="theP2" />
       <p hide name="theP3" newNamespace>Hidden paragraph with hidden text: <text name="hidden" hide>top secret</text></p>
-      <copy tname="theP3" assignNames="theP4" />
+      <copy target="theP3" assignNames="theP4" />
     </section>
-    <collect componentTypes="p" tname="_section1" assignNames="cp1 cp2 cp3 cp4" />
-    <collect componentTypes="p" tname="_section1" targetAttributesToIgnore="hide" assignNames="cp5 cp6 cp7 cp8" />
+    <collect componentTypes="p" target="_section1" assignNames="cp1 cp2 cp3 cp4" />
+    <collect componentTypes="p" target="_section1" targetAttributesToIgnore="hide" assignNames="cp5 cp6 cp7 cp8" />
     `}, "*");
     });
 
@@ -2117,8 +2117,8 @@ describe('Collect Tag Tests', function () {
     <booleaninput name='h2' prefill="true" label="Hide second collect" />
     <p>Number of points <mathinput name="n" prefill="4" /></p>
 
-    <p name="c1">collect 1: <collect hide="$h1" componentTypes="text" tname="_p1" /></p>
-    <p name="c2">collect 2: <collect hide="$h2" componentTypes="text" prop="value" tname="_p1" /></p>
+    <p name="c1">collect 1: <collect hide="$h1" componentTypes="text" target="_p1" /></p>
+    <p name="c2">collect 2: <collect hide="$h2" componentTypes="text" prop="value" target="_p1" /></p>
     `}, "*");
     });
 
@@ -2186,7 +2186,7 @@ describe('Collect Tag Tests', function () {
       end
     </p>
     
-    <p>Hello <collect componentTypes="point" tname="_p1" /> there</p>
+    <p>Hello <collect componentTypes="point" target="_p1" /> there</p>
     `}, "*");
     });
 
@@ -2277,14 +2277,14 @@ describe('Collect Tag Tests', function () {
     </graph>
     
     <graph name="g2">
-      <collect componentTypes="point" tname="g1" fixed="$fixed" assignNames="A2 B2" />
+      <collect componentTypes="point" target="g1" fixed="$fixed" assignNames="A2 B2" />
     </graph>
     
-    <copy tname="g2" assignNames="g3" />
+    <copy target="g2" assignNames="g3" />
 
-    <aslist name="al"><collect componentTypes="point" prop="x" tname="g1" fixed="$fixed" assignNames="Ax Bx" /></aslist>
+    <aslist name="al"><collect componentTypes="point" prop="x" target="g1" fixed="$fixed" assignNames="Ax Bx" /></aslist>
 
-    <copy tname="al" assignNames="al2" />
+    <copy target="al" assignNames="al2" />
     `}, "*");
     });
 

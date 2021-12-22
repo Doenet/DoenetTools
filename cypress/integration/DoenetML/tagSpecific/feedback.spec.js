@@ -187,13 +187,13 @@ describe('Feedback Tag Tests', function () {
   <text>a</text>
   <p><answer>
     <mathinput />
-    <award credit="0.1"><when><copy prop="immediateValue" tname="_mathinput1" /> > 1</when></award>
-    <award><when><copy prop="immediateValue" tname="_mathinput1" /> > 10</when></award>
-    <award credit="0.2"><when><copy prop="immediateValue" tname="_mathinput1" /> > 2</when></award>
-    <award credit="0.1"><when><copy prop="immediateValue" tname="_mathinput1" /> > 0.9</when></award>
-    <award credit="0"><when><copy prop="immediateValue" tname="_mathinput1" /> < 0</when></award>
+    <award credit="0.1"><when><copy prop="immediateValue" target="_mathinput1" /> > 1</when></award>
+    <award><when><copy prop="immediateValue" target="_mathinput1" /> > 10</when></award>
+    <award credit="0.2"><when><copy prop="immediateValue" target="_mathinput1" /> > 2</when></award>
+    <award credit="0.1"><when><copy prop="immediateValue" target="_mathinput1" /> > 0.9</when></award>
+    <award credit="0"><when><copy prop="immediateValue" target="_mathinput1" /> < 0</when></award>
   </answer></p>
-  <p>Credit achieved: <copy name="ca" prop="creditAchieved" tname="_answer1" /></p>
+  <p>Credit achieved: <copy name="ca" prop="creditAchieved" target="_answer1" /></p>
   <section>
   <feedback condition="$_award1">
     <p>Larger than 1</p>
@@ -324,7 +324,7 @@ describe('Feedback Tag Tests', function () {
     <choice>banana</choice>
     </choiceinput>
   </answer></p>
-  <p>Credit achieved: <copy name="ca" prop="creditAchieved" tname="_answer1" /></p>
+  <p>Credit achieved: <copy name="ca" prop="creditAchieved" target="_answer1" /></p>
   <section>
   <feedback condition="$_choice1">
     <p>Meow</p>
@@ -418,7 +418,7 @@ describe('Feedback Tag Tests', function () {
   <p><answer type="text">hello there</answer></p>
   <section>
   <feedback condition="$(_answer1{prop='creditAchieved'}) != 1 and $(_answer1{prop='responseHasBeenSubmitted'}) ">
-    <p>Your response <em><copy prop="submittedresponse" tname="_answer1" /></em> is incorrect.</p>
+    <p>Your response <em><copy prop="submittedresponse" target="_answer1" /></em> is incorrect.</p>
   </feedback>
   </section>
   `}, "*");
@@ -470,16 +470,16 @@ describe('Feedback Tag Tests', function () {
   </answer></p>
 
   <p>Award 1 feedback:</p>
-  <subsection name="feedback1"><title/><copy prop="feedback" tname="_award1" /></subsection>
+  <subsection name="feedback1"><title/><copy prop="feedback" target="_award1" /></subsection>
   
   <p>Award 2 feedback:</p>
-  <subsection name="feedback2"><title/><copy prop="feedback" tname="_award2" /></subsection>
+  <subsection name="feedback2"><title/><copy prop="feedback" target="_award2" /></subsection>
 
   <p>Award 3 feedback:</p>
-  <subsection name="feedback3"><title/><copy prop="feedback" tname="_award3" /></subsection>
+  <subsection name="feedback3"><title/><copy prop="feedback" target="_award3" /></subsection>
 
   <p>Answer feedbacks:</p>
-  <subsection name="feedback4"><title/><copy prop="feedbacks" tname="_answer1" /></subsection>
+  <subsection name="feedback4"><title/><copy prop="feedbacks" target="_answer1" /></subsection>
   `}, "*");
     });
 
@@ -603,7 +603,7 @@ describe('Feedback Tag Tests', function () {
   </p>
 
   <p>Answer feedbacks:</p>
-  <subsection name="feedbacks"><title/><copy prop="feedbacks" tname="_answer1" /></subsection>
+  <subsection name="feedbacks"><title/><copy prop="feedbacks" target="_answer1" /></subsection>
   `}, "*");
     });
 
@@ -658,7 +658,7 @@ describe('Feedback Tag Tests', function () {
     })
   });
 
-  it('feedback updated with tname', () => {
+  it('feedback updated with target', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
@@ -670,7 +670,7 @@ describe('Feedback Tag Tests', function () {
     </award>
   </answer>
   
-  <feedback condition="$mi=y" updateWithTname="ans" name="fback"><p>You typed y!</p></feedback>
+  <feedback condition="$mi=y" updateWithTarget="ans" name="fback"><p>You typed y!</p></feedback>
   `}, "*");
     });
 
@@ -694,7 +694,7 @@ describe('Feedback Tag Tests', function () {
 
   });
 
-  it('feedback based on booleans, updated with tname', () => {
+  it('feedback based on booleans, updated with target', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
@@ -710,12 +710,12 @@ describe('Feedback Tag Tests', function () {
     <considerAsResponses>$m1 $m2</considerAsResponses>
   </answer>
 
-  <p>Submitted responses: <copy prop="submittedResponses" tname="ans" assignNames="r1 r2" /></p>
+  <p>Submitted responses: <copy prop="submittedResponses" target="ans" assignNames="r1 r2" /></p>
   
   <subsection>
     <title>Desired feedback behavior</title>
-    <feedback condition="$got1 and not $got2" updateWithTname="ans" name="fback1"><p>You got the first; what about the second?</p></feedback>
-    <feedback condition="$got2 and not $got1" updateWithTname="ans" name="fback2"><p>You got the second; what about the first?</p></feedback>
+    <feedback condition="$got1 and not $got2" updateWithTarget="ans" name="fback1"><p>You got the first; what about the second?</p></feedback>
+    <feedback condition="$got2 and not $got1" updateWithTarget="ans" name="fback2"><p>You got the second; what about the first?</p></feedback>
   </subsection>
   <subsection>
     <title>Default feedback behavior</title>
@@ -810,22 +810,22 @@ describe('Feedback Tag Tests', function () {
     <award name="large" credit="0"><when>$mi1 < 3 and $mi2 < 3</when></award>
   </answer></p>
   <section>
-  <feedback name="close" condition="$(medium{prop='creditAchieved'}) > $(small{prop='creditAchieved'})" updateWithTname='ans'>
+  <feedback name="close" condition="$(medium{prop='creditAchieved'}) > $(small{prop='creditAchieved'})" updateWithTarget='ans'>
   <p>A number or two is close but not quite.</p>
   </feedback>
-  <feedback name="goodAndClose" condition="$(medium{prop='fractionSatisfied'}) > $(small{prop='fractionSatisfied'}) > 0" updateWithTname='ans'>
+  <feedback name="goodAndClose" condition="$(medium{prop='fractionSatisfied'}) > $(small{prop='fractionSatisfied'}) > 0" updateWithTarget='ans'>
   <p>One number is good, the other number is close but not quite.</p>
   </feedback>
-  <feedback name="startingClose" condition="$(large{prop='fractionSatisfied'}) > 0 and $(medium{prop='fractionSatisfied'}) = 0" updateWithTname='ans'>
+  <feedback name="startingClose" condition="$(large{prop='fractionSatisfied'}) > 0 and $(medium{prop='fractionSatisfied'}) = 0" updateWithTarget='ans'>
   <p>A number or two is starting to get close.</p>
   </feedback>
-  <feedback name="closeStartingClose" condition="$(large{prop='fractionSatisfied'}) >  $(medium{prop='fractionSatisfied'}) > $(small{prop='fractionSatisfied'})" updateWithTname='ans'>
+  <feedback name="closeStartingClose" condition="$(large{prop='fractionSatisfied'}) >  $(medium{prop='fractionSatisfied'}) > $(small{prop='fractionSatisfied'})" updateWithTarget='ans'>
   <p>A number is close but not quite; the other number is starting to get close.</p>
   </feedback>
-  <feedback name="goodStartingClose" condition="$(large{prop='fractionSatisfied'}) > $(small{prop='fractionSatisfied'}) > 0 and  $(small{prop='fractionSatisfied'}) =  $(medium{prop='fractionSatisfied'})" updateWithTname='ans'>
+  <feedback name="goodStartingClose" condition="$(large{prop='fractionSatisfied'}) > $(small{prop='fractionSatisfied'}) > 0 and  $(small{prop='fractionSatisfied'}) =  $(medium{prop='fractionSatisfied'})" updateWithTarget='ans'>
   <p>One number is good, the other number is starting to get close.</p>
   </feedback>
-  <feedback name="good" condition="1 > $(small{prop='fractionSatisfied'}) > 0 and $(small{prop='fractionSatisfied'}) = $(medium{prop='fractionSatisfied'}) = $(large{prop='fractionSatisfied'})" updateWithTname='ans'>
+  <feedback name="good" condition="1 > $(small{prop='fractionSatisfied'}) > 0 and $(small{prop='fractionSatisfied'}) = $(medium{prop='fractionSatisfied'}) = $(large{prop='fractionSatisfied'})" updateWithTarget='ans'>
   <p>One number is good.</p>
   </feedback>
   </section>

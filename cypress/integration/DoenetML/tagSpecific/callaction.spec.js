@@ -24,7 +24,7 @@ describe('CallAction Tag Tests', function () {
         doenetML: `
     <text>a</text>
     <p name="nums"><aslist><sampleRandomNumbers name="s" numberOfSamples="5" type="discreteUniform" from="1" to="6" /></aslist></p>
-    <p><callAction tName="s" actionName="resample" label="roll dice" name="rs" /></p>
+    <p><callAction target="s" actionName="resample" label="roll dice" name="rs" /></p>
     `}, "*");
     });
     cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
@@ -69,15 +69,15 @@ describe('CallAction Tag Tests', function () {
         <point name="P">(1,2)</point>
       </graph>
       
-      <copy tname="g" assignNames="g2" />
+      <copy target="g" assignNames="g2" />
     </section>
 
-    <copy tname="theGraphs" assignNames="theGraphs2" />
+    <copy target="theGraphs" assignNames="theGraphs2" />
 
-    <callAction name="addPoint" tName="theGraphs/g" actionName="addChildren" label="add point">
+    <callAction name="addPoint" target="theGraphs/g" actionName="addChildren" label="add point">
       <point>(3,4)</point>
     </callAction>
-    <callAction name="deletePoint" tName="theGraphs/g" actionName="deleteChildren" label="delete point" number="1" />
+    <callAction name="deletePoint" target="theGraphs/g" actionName="deleteChildren" label="delete point" number="1" />
     `}, "*");
     });
     cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
@@ -170,13 +170,13 @@ describe('CallAction Tag Tests', function () {
     <text>a</text>
 
     <p name="nums"><aslist><sampleRandomNumbers name="s" numberOfSamples="5" type="discreteUniform" from="1" to="6" /></aslist></p>
-    <p><callAction tName="s" actionName="resample" label="roll dice and add point" name="rs" /></p>
+    <p><callAction target="s" actionName="resample" label="roll dice and add point" name="rs" /></p>
 
     <graph name="g">
       <point name="P">(1,2)</point>
     </graph>
     
-    <callAction name="addPoint" tName="g" actionName="addChildren" label="add point" triggerWithTnames="rs">
+    <callAction name="addPoint" target="g" actionName="addChildren" label="add point" triggerWithTargets="rs">
     <point>(3,4)</point>
     </callAction>
 
@@ -238,16 +238,16 @@ describe('CallAction Tag Tests', function () {
     <text>a</text>
 
     <p name="nums"><aslist><sampleRandomNumbers name="s" numberOfSamples="5" type="discreteUniform" from="1" to="6" /></aslist></p>
-    <p><callAction tName="s" actionName="resample" label="roll dice and add point" name="rs" /></p>
+    <p><callAction target="s" actionName="resample" label="roll dice and add point" name="rs" /></p>
 
     <p><number name="n">1</number></p>
-    <p><updateValue label="increment number and add point" name="in" tname="n" newValue="$n+1" type="number" /></p>
+    <p><updateValue label="increment number and add point" name="in" target="n" newValue="$n+1" type="number" /></p>
 
     <graph name="g">
       <point name="P">(1,2)</point>
     </graph>
     
-    <callAction name="addPoint" tName="g" actionName="addChildren" label="add point" triggerWithTnames="rs in">
+    <callAction name="addPoint" target="g" actionName="addChildren" label="add point" triggerWithTargets="rs in">
     <point>(3,4)</point>
     </callAction>
 
@@ -327,7 +327,7 @@ describe('CallAction Tag Tests', function () {
     </graph>
 
     <p name="nums"><aslist><sampleRandomNumbers name="s" numberOfSamples="5" type="discreteUniform" from="1" to="6" /></aslist></p>
-    <p><callAction tName="s" actionName="resample" label="roll dice" name="rs" triggerWhen="$(P{prop='x'})>0 and $(P{prop='y'})>0" /></p>
+    <p><callAction target="s" actionName="resample" label="roll dice" name="rs" triggerWhen="$(P{prop='x'})>0 and $(P{prop='y'})>0" /></p>
 
     `}, "*");
     });
@@ -449,9 +449,9 @@ describe('CallAction Tag Tests', function () {
     </graph>
 
     <p name="nums"><aslist><sampleRandomNumbers name="s" numberOfSamples="5" type="discreteUniform" from="1" to="6" /></aslist></p>
-    <p><callAction tName="s" actionName="resample" label="roll dice and add point" name="rs"  triggerWithTnames="addPoint" /></p>
+    <p><callAction target="s" actionName="resample" label="roll dice and add point" name="rs"  triggerWithTargets="addPoint" /></p>
 
-    <callAction name="addPoint" tName="g" actionName="addChildren" label="add point" triggerWhen="$(P{prop='x'})>0 and $(P{prop='y'})>0" >
+    <callAction name="addPoint" target="g" actionName="addChildren" label="add point" triggerWhen="$(P{prop='x'})>0 and $(P{prop='y'})>0" >
     <point>(3,4)</point>
     </callAction>
 
@@ -591,9 +591,9 @@ describe('CallAction Tag Tests', function () {
     </graph>
 
     <p name="nums"><aslist><sampleRandomNumbers name="s" numberOfSamples="5" type="discreteUniform" from="1" to="6" /></aslist></p>
-    <p><callAction tName="s" actionName="resample" label="roll dice and add point" name="rs"  triggerWithTnames="addPoint" triggerWhen="$(P{prop='x'})<0 and $(P{prop='y'})<0" /></p>
+    <p><callAction target="s" actionName="resample" label="roll dice and add point" name="rs"  triggerWithTargets="addPoint" triggerWhen="$(P{prop='x'})<0 and $(P{prop='y'})<0" /></p>
 
-    <callAction name="addPoint" tName="g" actionName="addChildren" label="add point" triggerWhen="$(P{prop='x'})>0 and $(P{prop='y'})>0" >
+    <callAction name="addPoint" target="g" actionName="addChildren" label="add point" triggerWhen="$(P{prop='x'})>0 and $(P{prop='y'})>0" >
     <point>(3,4)</point>
     </callAction>
     `}, "*");
@@ -735,8 +735,8 @@ describe('CallAction Tag Tests', function () {
     <p name="nums"><aslist><sampleRandomNumbers name="s" numberOfSamples="5" type="discreteUniform" from="1" to="6" /></aslist></p>
 
     <triggerSet label="perform actions" name="tset" >
-      <callAction tName="s" actionName="resample" label="roll dice and add point" name="rs" />
-      <callAction name="addPoint" tName="g" actionName="addChildren" label="add point" >
+      <callAction target="s" actionName="resample" label="roll dice and add point" name="rs" />
+      <callAction name="addPoint" target="g" actionName="addChildren" label="add point" >
         <point>(3,4)</point>
       </callAction>
     </triggerSet>
@@ -807,13 +807,13 @@ describe('CallAction Tag Tests', function () {
     <p>Enter x: <answer name="ans">x</answer></p>
 
     <triggerSet label="perform actions" name="tset" >
-      <callAction tName="s" actionName="resample" label="roll dice and add point" name="rs" />
-      <callAction name="addPoint" tName="g" actionName="addChildren" label="add point" >
+      <callAction target="s" actionName="resample" label="roll dice and add point" name="rs" />
+      <callAction name="addPoint" target="g" actionName="addChildren" label="add point" >
         <point>(3,4)</point>
       </callAction>
     </triggerSet>
 
-    <callAction name="sub" tName="ans" actionName="submitAnswer" triggerWithTnames="tset" />
+    <callAction name="sub" target="ans" actionName="submitAnswer" triggerWithTargets="tset" />
 
     `}, "*");
     });
@@ -897,19 +897,19 @@ describe('CallAction Tag Tests', function () {
     <text>a</text>
 
     <p name="nums"><aslist><sampleRandomNumbers name="s" numberOfSamples="5" type="discreteUniform" from="1" to="6" /></aslist></p>
-    <p><callAction tName="s" actionName="resample" label="roll dice and more" name="rs" /></p>
+    <p><callAction target="s" actionName="resample" label="roll dice and more" name="rs" /></p>
 
     <graph name="g">
       <point name="P">(1,2)</point>
     </graph>
     
 
-    <callAction name="addPoint" tName="g" actionName="addChildren" label="add point" triggerWithTnames="addOne">
+    <callAction name="addPoint" target="g" actionName="addChildren" label="add point" triggerWithTargets="addOne">
     <point>(3,4)</point>
     </callAction>
 
     <p>Count: <number name="n">1</number></p>
-    <updateValue name="addOne" tName="n" newValue="$n+1" type="number" triggerWithTnames="rs" />
+    <updateValue name="addOne" target="n" newValue="$n+1" type="number" triggerWithTargets="rs" />
 
 
     `}, "*");

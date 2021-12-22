@@ -942,10 +942,10 @@ export class PaginatorControls extends BlockComponent {
     Object.defineProperty(this.externalActions, 'setPage', {
       enumerable: true,
       get: async function () {
-        let paginatorFullTname = await this.stateValues.paginatorFullTname;
-        if (paginatorFullTname) {
+        let paginatorComponentName = await this.stateValues.paginatorComponentName;
+        if (paginatorComponentName) {
           return {
-            componentName: paginatorFullTname,
+            componentName: paginatorComponentName,
             actionName: "setPage",
           }
         } else {
@@ -982,7 +982,7 @@ export class PaginatorControls extends BlockComponent {
       forRenderer: true,
       public: true,
     }
-    attributes.paginatorTname = {
+    attributes.paginator = {
       createPrimitiveOfType: "string"
     }
 
@@ -998,26 +998,26 @@ export class PaginatorControls extends BlockComponent {
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
 
-    stateVariableDefinitions.paginatorTname = {
+    stateVariableDefinitions.paginator = {
       returnDependencies: () => ({
-        paginatorTname: {
+        paginator: {
           dependencyType: "attributePrimitive",
-          attributeName: "paginatorTname"
+          attributeName: "paginator"
         },
       }),
       definition({ dependencyValues }) {
-        return { newValues: { paginatorTname: dependencyValues.paginatorTname } }
+        return { newValues: { paginator: dependencyValues.paginator } }
       }
     }
 
-    stateVariableDefinitions.paginatorFullTname = {
-      stateVariablesDeterminingDependencies: ["paginatorTname"],
+    stateVariableDefinitions.paginatorComponentName = {
+      stateVariablesDeterminingDependencies: ["paginator"],
       returnDependencies({ stateValues }) {
-        if (stateValues.paginatorTname) {
+        if (stateValues.paginator) {
           return {
-            paginatorFullTname: {
+            paginatorComponentName: {
               dependencyType: "expandTargetName",
-              tName: stateValues.paginatorTname
+              target: stateValues.paginator
             }
           }
         } else {
@@ -1025,21 +1025,21 @@ export class PaginatorControls extends BlockComponent {
         }
       },
       definition({ dependencyValues }) {
-        return { newValues: { paginatorFullTname: dependencyValues.paginatorFullTname } }
+        return { newValues: { paginatorComponentName: dependencyValues.paginatorComponentName } }
       }
     }
 
     stateVariableDefinitions.currentPage = {
       forRenderer: true,
-      stateVariablesDeterminingDependencies: ["paginatorFullTname"],
+      stateVariablesDeterminingDependencies: ["paginatorComponentName"],
       returnDependencies({ stateValues }) {
-        if (!stateValues.paginatorFullTname) {
+        if (!stateValues.paginatorComponentName) {
           return {}
         } else {
           return {
             paginatorPage: {
               dependencyType: "stateVariable",
-              componentName: stateValues.paginatorFullTname,
+              componentName: stateValues.paginatorComponentName,
               variableName: "currentPage"
             }
           }
@@ -1058,15 +1058,15 @@ export class PaginatorControls extends BlockComponent {
 
     stateVariableDefinitions.nPages = {
       forRenderer: true,
-      stateVariablesDeterminingDependencies: ["paginatorFullTname"],
+      stateVariablesDeterminingDependencies: ["paginatorComponentName"],
       returnDependencies({ stateValues }) {
-        if (!stateValues.paginatorFullTname) {
+        if (!stateValues.paginatorComponentName) {
           return {}
         } else {
           return {
             paginatorNPages: {
               dependencyType: "stateVariable",
-              componentName: stateValues.paginatorFullTname,
+              componentName: stateValues.paginatorComponentName,
               variableName: "nPages"
             }
           }
