@@ -134,7 +134,7 @@ function findNextTag(text) {
 
 export function expandDoenetMLsToFullSerializedComponents({
   contentIds, doenetMLs, callBack,
-  componentInfoObjects, componentTypeLowerCaseMapping, flags, contentIdsToDoenetMLs
+  componentInfoObjects, flags, contentIdsToDoenetMLs
 }) {
 
   let arrayOfSerializedComponents = [];
@@ -144,7 +144,7 @@ export function expandDoenetMLsToFullSerializedComponents({
 
     let serializedComponents = doenetMLToSerializedComponents(doenetML);
 
-    correctComponentTypeCapitalization(serializedComponents, componentTypeLowerCaseMapping);
+    correctComponentTypeCapitalization(serializedComponents, componentInfoObjects.componentTypeLowerCaseMapping);
 
     createAttributesFromProps(serializedComponents, componentInfoObjects, flags);
 
@@ -242,7 +242,7 @@ export function expandDoenetMLsToFullSerializedComponents({
         doenetMLs: newDoenetMLs,
         contentIds: newContentIds,
         callBack: mergeContentIdNameSerializedComponentsIntoCopy,
-        componentInfoObjects, componentTypeLowerCaseMapping, flags,
+        componentInfoObjects, flags,
         contentIdsToDoenetMLs
       });
     }
@@ -2621,7 +2621,7 @@ export function restrictTNamesToNamespace({ components, namespace, parentNamespa
         adjustedNamespace = component.componentName + "/";
       }
       let namespaceForChildren = parentNamespace;
-      if (component.attributes.newNamespace && component.attributes.newNamespace.primitive) {
+      if (component.attributes && component.attributes.newNamespace && component.attributes.newNamespace.primitive) {
         namespaceForChildren = component.componentName;
       }
       restrictTNamesToNamespace({
