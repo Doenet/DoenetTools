@@ -36,8 +36,8 @@ describe('Paginator Tag Tests', function () {
       <section>
         <title>Page 3</title>
         <math hide name="twox">2x</math>
-        <p>What is <m>x+x</m>? <answer>$twox</answer></p>
-        <p>What is <m>y+y</m>? <answer>2y</answer></p>
+        <p>What is <m name="mxx">x+x</m>? <answer>$twox</answer></p>
+        <p>What is <m name="myy">y+y</m>? <answer>2y</answer></p>
       </section>
     </paginator>
     <p>
@@ -207,10 +207,28 @@ describe('Paginator Tag Tests', function () {
         expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('4')
       })
 
-      // cy.wait(1000)
+      // cy.get('#\\/mxx .mjx-mrow').should('contain.text', 'x+x')
+      // cy.get('#\\/myy .mjx-mrow').should('contain.text', 'y+y')
 
       cy.window().then(async (win) => {
         components = Object.assign({}, win.state.components);
+        // cy.task('log', JSON.stringify(Object.keys(components)))
+        // console.log(JSON.stringify(Object.keys(components)))
+        // for (let i = 0; i < 10; i++) {
+        //   if (components["/_answer2"] === undefined) {
+        //     cy.task('log', 'undefined')
+        //     cy.window().then((w) => {
+        //       components = Object.assign({}, w.state.components);
+        //     })
+        //     cy.task('log', JSON.stringify(Object.keys(components)))
+        //     console.log(JSON.stringify(Object.keys(components)))
+
+        //     cy.wait(100)
+        //   } else {
+        //     break;
+        //   }
+        // }
+        // expect(components["/_answer2"]).not.eq(undefined);
 
         let mathinput2Name = (await components["/_answer2"].stateValues.inputChildren)[0].componentName;
         let mathinput2Anchor = cesc('#' + mathinput2Name) + " textarea";
@@ -706,8 +724,8 @@ describe('Paginator Tag Tests', function () {
       <section>
         <title>Page 3</title>
         <math hide name="twox">2x</math>
-        <p>What is <m>x+x</m>? <answer>$twox</answer></p>
-        <p>What is <m>y+y</m>? <answer>2y</answer></p>
+        <p>What is <m name="mxx">x+x</m>? <answer>$twox</answer></p>
+        <p>What is <m name="myy">y+y</m>? <answer>2y</answer></p>
       </section>
     </paginator>
     <p>
@@ -837,12 +855,11 @@ describe('Paginator Tag Tests', function () {
       cy.get(cesc('#/_section2_title')).should('not.exist');
       cy.get(cesc('#/_title2')).should('have.text', 'Page 3')
 
-      cy.wait(200)
-
       cy.get(answer4Correct).should('be.visible')
       cy.get(cesc('#/ca')).should('have.text', '0.333');
 
-      cy.wait(200)
+      // cy.get('#\\/mxx .mjx-mrow').should('contain.text', 'x+x')
+      // cy.get('#\\/myy .mjx-mrow').should('contain.text', 'y+y')
 
       cy.window().then(async (win) => {
         components = Object.assign({}, win.state.components);
