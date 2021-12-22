@@ -357,7 +357,7 @@ describe('Function curve Tag Tests', function () {
     
     <point x='3' y='5'>
     <constraints>
-      <constrainTo><copy tname="_curve1" /></constrainTo>
+      <constrainTo><copy target="_curve1" /></constrainTo>
     </constraints>
     </point>
     
@@ -420,7 +420,7 @@ describe('Function curve Tag Tests', function () {
     
     <point x='3' y='5'>
     <constraints>
-      <constrainTo><copy tname="_curve1" /></constrainTo>
+      <constrainTo><copy target="_curve1" /></constrainTo>
     </constraints>
     </point>
     
@@ -619,7 +619,7 @@ describe('Function curve Tag Tests', function () {
     
     <point x='5' y='3'>
     <constraints>
-      <constrainTo><copy tname="_curve1" /></constrainTo>
+      <constrainTo><copy target="_curve1" /></constrainTo>
     </constraints>
     </point>
     
@@ -682,7 +682,7 @@ describe('Function curve Tag Tests', function () {
     
     <point x='5' y='3'>
     <constraints>
-      <constrainTo><copy tname="_curve1" /></constrainTo>
+      <constrainTo><copy target="_curve1" /></constrainTo>
     </constraints>
     </point>
     

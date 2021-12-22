@@ -1134,7 +1134,7 @@ describe('Function Tag Tests', function () {
 
     <point x="1" y="2">
       <constraints>
-        <constrainTo><copy tname="_function1" /></constrainTo>
+        <constrainTo><copy target="_function1" /></constrainTo>
       </constraints>
     </point>
     </graph>
@@ -1217,7 +1217,7 @@ describe('Function Tag Tests', function () {
 
     <point x="1" y="2">
       <constraints>
-        <constrainTo><copy tname="_function1" /></constrainTo>
+        <constrainTo><copy target="_function1" /></constrainTo>
       </constraints>
     </point>
     </graph>
@@ -1441,7 +1441,7 @@ describe('Function Tag Tests', function () {
     <text>a</text>
     <graph>
     <function>
-    <copy tname="a" />/(1+e^(-x/<copy tname="b" />))
+    <copy target="a" />/(1+e^(-x/<copy target="b" />))
     </function>
     </graph>
     <number name="a">3</number>
@@ -1511,7 +1511,7 @@ describe('Function Tag Tests', function () {
     <text>a</text>
     <graph>
     <function>
-    <math><copy tname="a"/>/(1+e^(-x/<copy tname="b"/>))</math>
+    <math><copy target="a"/>/(1+e^(-x/<copy target="b"/>))</math>
     </function>
     </graph>
     <number name="a">3</number>
@@ -1824,7 +1824,7 @@ describe('Function Tag Tests', function () {
     </function>
     <point x="-3" y="5">
       <constraints>
-        <constrainTo><copy tname="_function1" /></constrainTo>
+        <constrainTo><copy target="_function1" /></constrainTo>
       </constraints>
     </point>
 
@@ -1874,7 +1874,7 @@ describe('Function Tag Tests', function () {
     </function>
     <point x="-3" y="5">
       <constraints>
-        <constrainTo><copy tname="_function1" /></constrainTo>
+        <constrainTo><copy target="_function1" /></constrainTo>
       </constraints>
     </point>
 
@@ -1936,16 +1936,16 @@ describe('Function Tag Tests', function () {
     <point>(5,6)</point>
     <point>(-5,6)</point>
     <function through="$_point1 $_point2" maxima="$_point3" minima="$_point4" />
-    <copy prop="maxima" tname="_function1" />
-    <copy prop="minima" tname="_function1" />
+    <copy prop="maxima" target="_function1" />
+    <copy prop="minima" target="_function1" />
     </graph>
 
-    <p>Number of maxima: <copy prop="numbermaxima" name="numbermaxima" tname="_function1" /></p>
-    <p>Maxima: <math simplify="none"><copy prop="maxima" tname="_function1" /></math></p>
-    <p>Number of minima: <copy prop="numberminima" name="numberminima" tname="_function1" /></p>
-    <p>Minima: <math simplify="none"><copy prop="minima" tname="_function1" /></math></p>
-    <p>Number of extrema: <copy prop="numberextrema" name="numberextrema" tname="_function1" /></p>
-    <p>Extrema: <math simplify="none"><copy prop="extrema" tname="_function1" /></math></p>
+    <p>Number of maxima: <copy prop="numbermaxima" name="numbermaxima" target="_function1" /></p>
+    <p>Maxima: <math simplify="none"><copy prop="maxima" target="_function1" /></math></p>
+    <p>Number of minima: <copy prop="numberminima" name="numberminima" target="_function1" /></p>
+    <p>Minima: <math simplify="none"><copy prop="minima" target="_function1" /></math></p>
+    <p>Number of extrema: <copy prop="numberextrema" name="numberextrema" target="_function1" /></p>
+    <p>Extrema: <math simplify="none"><copy prop="extrema" target="_function1" /></math></p>
     `}, "*");
     });
 
@@ -2131,16 +2131,16 @@ describe('Function Tag Tests', function () {
     <point>(5,6)</point>
     <point>(-5,6)</point>
     <function through="$_point1 $_point2" maxima="$_point3" minima="$_point4" domain="($xmin, $xmax)" />
-    <copy prop="maxima" tname="_function1" />
-    <copy prop="minima" tname="_function1" />
+    <copy prop="maxima" target="_function1" />
+    <copy prop="minima" target="_function1" />
     </graph>
 
-    <p>Number of maxima: <copy prop="numbermaxima" name="numbermaxima" tname="_function1" /></p>
-    <p>Maxima: <math simplify="none"><copy prop="maxima" tname="_function1" /></math></p>
-    <p>Number of minima: <copy prop="numberminima" name="numberminima" tname="_function1" /></p>
-    <p>Minima: <math simplify="none"><copy prop="minima" tname="_function1" /></math></p>
-    <p>Number of extrema: <copy prop="numberextrema" name="numberextrema" tname="_function1" /></p>
-    <p>Extrema: <math simplify="none"><copy prop="extrema" tname="_function1" /></math></p>
+    <p>Number of maxima: <copy prop="numbermaxima" name="numbermaxima" target="_function1" /></p>
+    <p>Maxima: <math simplify="none"><copy prop="maxima" target="_function1" /></math></p>
+    <p>Number of minima: <copy prop="numberminima" name="numberminima" target="_function1" /></p>
+    <p>Minima: <math simplify="none"><copy prop="minima" target="_function1" /></math></p>
+    <p>Number of extrema: <copy prop="numberextrema" name="numberextrema" target="_function1" /></p>
+    <p>Extrema: <math simplify="none"><copy prop="extrema" target="_function1" /></math></p>
     `}, "*");
     });
 
@@ -2274,16 +2274,16 @@ describe('Function Tag Tests', function () {
     <point>(7,0)</point>
     <point>(8,1)</point>
     <function through="$_point1 $_point2 $_point3 $_point4 $_point5" domain="(0,10)" />
-    <copy prop="maxima" tname="_function1" />
-    <copy prop="minima" tname="_function1" />
+    <copy prop="maxima" target="_function1" />
+    <copy prop="minima" target="_function1" />
     </graph>
 
-    <p>Number of maxima: <copy prop="numbermaxima" name="numbermaxima" tname="_function1" /></p>
-    <p>Maxima: <math simplify="none"><copy prop="maxima" tname="_function1" /></math></p>
-    <p>Number of minima: <copy prop="numberminima" name="numberminima" tname="_function1" /></p>
-    <p>Minima: <math simplify="none"><copy prop="minima" tname="_function1" /></math></p>
-    <p>Number of extrema: <copy prop="numberextrema" name="numberextrema" tname="_function1" /></p>
-    <p>Extrema: <math simplify="none"><copy prop="extrema" tname="_function1" /></math></p>
+    <p>Number of maxima: <copy prop="numbermaxima" name="numbermaxima" target="_function1" /></p>
+    <p>Maxima: <math simplify="none"><copy prop="maxima" target="_function1" /></math></p>
+    <p>Number of minima: <copy prop="numberminima" name="numberminima" target="_function1" /></p>
+    <p>Minima: <math simplify="none"><copy prop="minima" target="_function1" /></math></p>
+    <p>Number of extrema: <copy prop="numberextrema" name="numberextrema" target="_function1" /></p>
+    <p>Extrema: <math simplify="none"><copy prop="extrema" target="_function1" /></math></p>
     `}, "*");
     });
 
@@ -2396,26 +2396,26 @@ describe('Function Tag Tests', function () {
     <point layer="2">(0,1)</point>
     <point layer="2">(3,1)</point>
     <function>$(_point1{prop='y'}) exp(-(x-$(_point1{prop='x'}))^2)+$(_point2{prop='y'}) exp(-(x-$(_point2{prop='x'}))^2)</function>
-    <copy prop="extrema" tname="_function1" />
+    <copy prop="extrema" target="_function1" />
     </graph>
     
-    <p>Number of maxima: <copy prop="numbermaxima" name="numbermaxima" tname="_function1" /></p>
-    <p>Maximum locations: <copy prop="maximumlocation1" name="maximumlocation1" tname="_function1" />,
-    <copy prop="maximumlocation2" name="maximumlocation2" tname="_function1" /></p>
-    <p>Maximum values: <copy prop="maximumvalue1" name="maximumvalue1" tname="_function1" />,
-    <copy prop="maximumvalue2" name="maximumvalue2" tname="_function1" /></p>
-    <p>Number of minima: <copy prop="numberminima" name="numberminima" tname="_function1" /></p>
-    <p>Minimum locations: <copy prop="minimumlocation1" name="minimumlocation1" tname="_function1" />,
-    <copy prop="minimumlocation2" name="minimumlocation2" tname="_function1" /></p>
-    <p>Minimum values: <copy prop="minimumvalue1" name="minimumvalue1" tname="_function1" />,
-    <copy prop="minimumvalue2" name="minimumvalue2" tname="_function1" /></p>
-    <p>Number of extrema: <copy prop="numberextrema" name="numberextrema" tname="_function1" /></p>
-    <p>Extremum locations: <copy prop="extremumlocation1" name="extremumlocation1" tname="_function1" />,
-    <copy prop="extremumlocation2" name="extremumlocation2" tname="_function1" />,
-    <copy prop="extremumlocation3" name="extremumlocation3" tname="_function1" /></p>
-    <p>Extremum values: <copy prop="extremumvalue1" name="extremumvalue1" tname="_function1" />,
-    <copy prop="extremumvalue2" name="extremumvalue2" tname="_function1" />,
-    <copy prop="extremumvalue3" name="extremumvalue3" tname="_function1" /></p>
+    <p>Number of maxima: <copy prop="numbermaxima" name="numbermaxima" target="_function1" /></p>
+    <p>Maximum locations: <copy prop="maximumlocation1" name="maximumlocation1" target="_function1" />,
+    <copy prop="maximumlocation2" name="maximumlocation2" target="_function1" /></p>
+    <p>Maximum values: <copy prop="maximumvalue1" name="maximumvalue1" target="_function1" />,
+    <copy prop="maximumvalue2" name="maximumvalue2" target="_function1" /></p>
+    <p>Number of minima: <copy prop="numberminima" name="numberminima" target="_function1" /></p>
+    <p>Minimum locations: <copy prop="minimumlocation1" name="minimumlocation1" target="_function1" />,
+    <copy prop="minimumlocation2" name="minimumlocation2" target="_function1" /></p>
+    <p>Minimum values: <copy prop="minimumvalue1" name="minimumvalue1" target="_function1" />,
+    <copy prop="minimumvalue2" name="minimumvalue2" target="_function1" /></p>
+    <p>Number of extrema: <copy prop="numberextrema" name="numberextrema" target="_function1" /></p>
+    <p>Extremum locations: <copy prop="extremumlocation1" name="extremumlocation1" target="_function1" />,
+    <copy prop="extremumlocation2" name="extremumlocation2" target="_function1" />,
+    <copy prop="extremumlocation3" name="extremumlocation3" target="_function1" /></p>
+    <p>Extremum values: <copy prop="extremumvalue1" name="extremumvalue1" target="_function1" />,
+    <copy prop="extremumvalue2" name="extremumvalue2" target="_function1" />,
+    <copy prop="extremumvalue3" name="extremumvalue3" target="_function1" /></p>
     `}, "*");
     });
 
@@ -2603,14 +2603,14 @@ describe('Function Tag Tests', function () {
     Period: <mathinput />
     <graph>
     <function>sin(2*pi*x/$_mathinput1)</function>
-    <copy prop="extrema" tname="_function1" />
+    <copy prop="extrema" target="_function1" />
     </graph>
-    <p><aslist><copy prop="maximumLocations" tname="_function1" /></aslist></p>
-    <p><aslist><copy prop="maximumValues" tname="_function1" /></aslist></p>
-    <p><aslist><copy prop="minimumLocations" tname="_function1" /></aslist></p>
-    <p><aslist><copy prop="minimumValues" tname="_function1" /></aslist></p>
-    <p><aslist><copy prop="extremumLocations" tname="_function1" /></aslist></p>
-    <p><aslist><copy prop="extremumValues" tname="_function1" /></aslist></p>
+    <p><aslist><copy prop="maximumLocations" target="_function1" /></aslist></p>
+    <p><aslist><copy prop="maximumValues" target="_function1" /></aslist></p>
+    <p><aslist><copy prop="minimumLocations" target="_function1" /></aslist></p>
+    <p><aslist><copy prop="minimumValues" target="_function1" /></aslist></p>
+    <p><aslist><copy prop="extremumLocations" target="_function1" /></aslist></p>
+    <p><aslist><copy prop="extremumValues" target="_function1" /></aslist></p>
 
     `}, "*");
     });
@@ -2736,14 +2736,14 @@ describe('Function Tag Tests', function () {
     xmax = <mathinput name="xmax" prefill="10" /></p>
     <graph>
     <function domain="($xmin, $xmax)">sin(2*pi*x/$_mathinput1)</function>
-    <copy prop="extrema" tname="_function1" />
+    <copy prop="extrema" target="_function1" />
     </graph>
-    <p><aslist><copy prop="maximumLocations" tname="_function1" /></aslist></p>
-    <p><aslist><copy prop="maximumValues" tname="_function1" /></aslist></p>
-    <p><aslist><copy prop="minimumLocations" tname="_function1" /></aslist></p>
-    <p><aslist><copy prop="minimumValues" tname="_function1" /></aslist></p>
-    <p><aslist><copy prop="extremumLocations" tname="_function1" /></aslist></p>
-    <p><aslist><copy prop="extremumValues" tname="_function1" /></aslist></p>
+    <p><aslist><copy prop="maximumLocations" target="_function1" /></aslist></p>
+    <p><aslist><copy prop="maximumValues" target="_function1" /></aslist></p>
+    <p><aslist><copy prop="minimumLocations" target="_function1" /></aslist></p>
+    <p><aslist><copy prop="minimumValues" target="_function1" /></aslist></p>
+    <p><aslist><copy prop="extremumLocations" target="_function1" /></aslist></p>
+    <p><aslist><copy prop="extremumValues" target="_function1" /></aslist></p>
 
     `}, "*");
     });
@@ -2967,8 +2967,8 @@ describe('Function Tag Tests', function () {
     <function>
       1/(1+exp(-10*x))
     </function>
-    <copy prop="minima" tname="_function1" />
-    <copy prop="maxima" tname="_function1" />
+    <copy prop="minima" target="_function1" />
+    <copy prop="maxima" target="_function1" />
     </graph>
     `}, "*");
     });
@@ -2997,14 +2997,14 @@ describe('Function Tag Tests', function () {
     <function>
       (x+8)(x-8)/((x-2)(x+4)(x-5)^2)
     </function>
-    <copy prop="extrema" tname="_function1" />
+    <copy prop="extrema" target="_function1" />
     </graph>
-    <p><aslist><copy prop="maximumLocations" tname="_function1" /></aslist></p>
-    <p><aslist><copy prop="maximumValues" tname="_function1" /></aslist></p>
-    <p><aslist><copy prop="minimumLocations" tname="_function1" /></aslist></p>
-    <p><aslist><copy prop="minimumValues" tname="_function1" /></aslist></p>
-    <p><aslist><copy prop="extremumLocations" tname="_function1" /></aslist></p>
-    <p><aslist><copy prop="extremumValues" tname="_function1" /></aslist></p>
+    <p><aslist><copy prop="maximumLocations" target="_function1" /></aslist></p>
+    <p><aslist><copy prop="maximumValues" target="_function1" /></aslist></p>
+    <p><aslist><copy prop="minimumLocations" target="_function1" /></aslist></p>
+    <p><aslist><copy prop="minimumValues" target="_function1" /></aslist></p>
+    <p><aslist><copy prop="extremumLocations" target="_function1" /></aslist></p>
+    <p><aslist><copy prop="extremumValues" target="_function1" /></aslist></p>
 
     `}, "*");
     });
@@ -3047,7 +3047,7 @@ describe('Function Tag Tests', function () {
     <text>a</text>
     <graph>
     <function through="(-8,7) (-7,2) (-6,2) (-4,3) (-2,5) (8,5) (10,4)" />
-    <copy prop="extrema" tname="_function1" />
+    <copy prop="extrema" target="_function1" />
     </graph>
     `}, "*");
     });
@@ -3076,15 +3076,15 @@ describe('Function Tag Tests', function () {
     <function>
       log(x^2-1)*sqrt((x-5)^2-1)
     </function>
-    <copy prop="extrema" tname="_function1" />
+    <copy prop="extrema" target="_function1" />
     </graph>
 
-    <p><aslist><copy prop="maximumLocations" tname="_function1" /></aslist></p>
-    <p><aslist><copy prop="maximumValues" tname="_function1" /></aslist></p>
-    <p><aslist><copy prop="minimumLocations" tname="_function1" /></aslist></p>
-    <p><aslist><copy prop="minimumValues" tname="_function1" /></aslist></p>
-    <p><aslist><copy prop="extremumLocations" tname="_function1" /></aslist></p>
-    <p><aslist><copy prop="extremumValues" tname="_function1" /></aslist></p>
+    <p><aslist><copy prop="maximumLocations" target="_function1" /></aslist></p>
+    <p><aslist><copy prop="maximumValues" target="_function1" /></aslist></p>
+    <p><aslist><copy prop="minimumLocations" target="_function1" /></aslist></p>
+    <p><aslist><copy prop="minimumValues" target="_function1" /></aslist></p>
+    <p><aslist><copy prop="extremumLocations" target="_function1" /></aslist></p>
+    <p><aslist><copy prop="extremumValues" target="_function1" /></aslist></p>
 
     `}, "*");
     });
@@ -3118,9 +3118,9 @@ describe('Function Tag Tests', function () {
     <function name="f2">3+(x+pi)^20</function>
     <function name="f3" domain="(1,5)">-8+3/(1+exp(-100sin(3x)))</function>
 
-    <copy prop="extrema" tname="f1" />
-    <copy prop="extrema" tname="f2" />
-    <copy prop="extrema" tname="f3" />
+    <copy prop="extrema" target="f1" />
+    <copy prop="extrema" target="f2" />
+    <copy prop="extrema" target="f3" />
     </graph>
 
 
@@ -3192,15 +3192,15 @@ describe('Function Tag Tests', function () {
     <function yscale="$(_function1{prop='yscale'})" through="$_point1 $_point2 $_point3 $_point4 " maxima="(0, )" />
     </graph>
     
-    <p>Number of maxima: <copy prop="numbermaxima" name="numbermaxima" tname="_function2" /></p>
-    <p>Number of minima: <copy prop="numberminima" name="numberminima" tname="_function2" /></p>
+    <p>Number of maxima: <copy prop="numbermaxima" name="numbermaxima" target="_function2" /></p>
+    <p>Number of minima: <copy prop="numberminima" name="numberminima" target="_function2" /></p>
     
-    <p><aslist><copy prop="maximumLocations" tname="_function1" /></aslist></p>
-    <p><aslist><copy prop="maximumValues" tname="_function1" /></aslist></p>
-    <p><aslist><copy prop="minimumLocations" tname="_function1" /></aslist></p>
-    <p><aslist><copy prop="minimumValues" tname="_function1" /></aslist></p>
-    <p><aslist><copy prop="extremumLocations" tname="_function1" /></aslist></p>
-    <p><aslist><copy prop="extremumValues" tname="_function1" /></aslist></p>
+    <p><aslist><copy prop="maximumLocations" target="_function1" /></aslist></p>
+    <p><aslist><copy prop="maximumValues" target="_function1" /></aslist></p>
+    <p><aslist><copy prop="minimumLocations" target="_function1" /></aslist></p>
+    <p><aslist><copy prop="minimumValues" target="_function1" /></aslist></p>
+    <p><aslist><copy prop="extremumLocations" target="_function1" /></aslist></p>
+    <p><aslist><copy prop="extremumValues" target="_function1" /></aslist></p>
 
     `}, "*");
     });
@@ -3301,10 +3301,10 @@ describe('Function Tag Tests', function () {
     <function xscale="$_mathinput1">$_mathinput2 x^3+1</function>
     
     <graph>
-      <copy name="f1a" tname="_function1" />
+      <copy name="f1a" target="_function1" />
     </graph>
-    <p><copy prop="xscale" tname="f1a" /></p>
-    <p><copy prop="xscale" tname="_function1" /></p>
+    <p><copy prop="xscale" target="f1a" /></p>
+    <p><copy prop="xscale" target="_function1" /></p>
     
     `}, "*");
     });
@@ -3354,15 +3354,15 @@ describe('Function Tag Tests', function () {
     <function>$_mathinput1 x^4 + $_mathinput2 x^3 +$_mathinput3 x^2 +1</function>
     
     <graph>
-      <copy name="f1a" tname="_function1" />
-      <copy name="maxima" prop="maxima" tname="_function1" />
-      <copy name="minima" prop="minima" tname="f1a" />
+      <copy name="f1a" target="_function1" />
+      <copy name="maxima" prop="maxima" target="_function1" />
+      <copy name="minima" prop="minima" target="f1a" />
     </graph>
     <graph>
-      <copy name="f1b" tname="f1a" />
-      <copy name="extremum1" prop="extremum1" tname="f1b" />
-      <copy name="extremum2" prop="extremum2" tname="f1b" />
-      <copy name="extremum3" prop="extremum3" tname="f1b" />
+      <copy name="f1b" target="f1a" />
+      <copy name="extremum1" prop="extremum1" target="f1b" />
+      <copy name="extremum2" prop="extremum2" target="f1b" />
+      <copy name="extremum3" prop="extremum3" target="f1b" />
     </graph>
     
     `}, "*");
@@ -3450,19 +3450,19 @@ describe('Function Tag Tests', function () {
 
     <function variables="t" name="f" symbolic>st^3</function>
 
-    <function name="f2" symbolic><copy tname="f"/></function>
-    <function name="f3" variables="s" symbolic><copy tname="f"/></function>
+    <function name="f2" symbolic><copy target="f"/></function>
+    <function name="f3" variables="s" symbolic><copy target="f"/></function>
 
-    <copy name="f4" tname="f"/>
-    <copy name="f5" tname="f2"/>
-    <copy name="f6" tname="f3"/>
+    <copy name="f4" target="f"/>
+    <copy name="f5" target="f2"/>
+    <copy name="f6" target="f3"/>
 
-    <copy prop="variable" tname="f" name="fv" />
-    <copy prop="variable" tname="f2" name="f2v" />
-    <copy prop="variable" tname="f3" name="f3v" />
-    <copy prop="variable" tname="f4" name="f4v" />
-    <copy prop="variable" tname="f5" name="f5v" />
-    <copy prop="variable" tname="f6" name="f6v" />
+    <copy prop="variable" target="f" name="fv" />
+    <copy prop="variable" target="f2" name="f2v" />
+    <copy prop="variable" target="f3" name="f3v" />
+    <copy prop="variable" target="f4" name="f4v" />
+    <copy prop="variable" target="f5" name="f5v" />
+    <copy prop="variable" target="f6" name="f6v" />
 
     <p name="fOfu">$$f(u)</p>
     <p name="f2Ofu">$$f2(u)</p>
@@ -3560,19 +3560,19 @@ describe('Function Tag Tests', function () {
     <text>a</text>
     <function minima="(2)" name="f" />
 
-    <function name="f2"><copy tname="f"/></function>
-    <function name="f3" variables="s"><copy tname="f"/></function>
+    <function name="f2"><copy target="f"/></function>
+    <function name="f3" variables="s"><copy target="f"/></function>
 
-    <copy name="f4" tname="f"/>
-    <copy name="f5" tname="f2"/>
-    <copy name="f6" tname="f3"/>
+    <copy name="f4" target="f"/>
+    <copy name="f5" target="f2"/>
+    <copy name="f6" target="f3"/>
 
-    <copy prop="variable" tname="f" name="fv" />
-    <copy prop="variable" tname="f2" name="f2v" />
-    <copy prop="variable" tname="f3" name="f3v" />
-    <copy prop="variable" tname="f4" name="f4v" />
-    <copy prop="variable" tname="f5" name="f5v" />
-    <copy prop="variable" tname="f6" name="f6v" />
+    <copy prop="variable" target="f" name="fv" />
+    <copy prop="variable" target="f2" name="f2v" />
+    <copy prop="variable" target="f3" name="f3v" />
+    <copy prop="variable" target="f4" name="f4v" />
+    <copy prop="variable" target="f5" name="f5v" />
+    <copy prop="variable" target="f6" name="f6v" />
 
     <p name="fOf0">$$f(0)</p>
     <p name="f2Of0">$$f2(0)</p>
@@ -3696,10 +3696,10 @@ describe('Function Tag Tests', function () {
     <text>a</text>
 
     <function name="f">sin(x)</function>
-    <copy assignNames="f2" tname="f" />
+    <copy assignNames="f2" target="f" />
     <function name="f3">$f</function>
     <function name="g" maxima="(1,2) (4,3)" />
-    <copy assignNames="g2" tname="g" />
+    <copy assignNames="g2" target="g" />
     <function name="g3">$g</function>
     `}, "*");
     });

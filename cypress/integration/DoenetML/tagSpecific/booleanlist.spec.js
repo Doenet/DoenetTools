@@ -11,17 +11,17 @@ describe('BooleanList Tag Tests', function () {
         doenetML: `
     <p><booleanlist hide="true">false true false</booleanlist></p>
 
-    <p><copy hide="false" tname="_booleanlist1" /></p>
+    <p><copy hide="false" target="_booleanlist1" /></p>
 
     <p><booleanlist>
       <boolean>true</boolean>
       <boolean hide>false</boolean>
-      <copy tname="_booleanlist1" />
+      <copy target="_booleanlist1" />
       <boolean>false</boolean>
-      <copy tname="_copy1" />
+      <copy target="_copy1" />
     </booleanlist></p>
 
-    <p><copy maximumnumber="6" tname="_booleanlist2" /></p>
+    <p><copy maximumnumber="6" target="_booleanlist2" /></p>
     `}, "*");
     });
 

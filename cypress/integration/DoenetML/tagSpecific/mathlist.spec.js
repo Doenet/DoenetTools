@@ -120,7 +120,7 @@ describe('MathList Tag Tests', function () {
     <number name="n1">7</number>
     <number name="n2">11</number></p>
     <p><point xs="$m1 $m2/$n1 $n1 $n1-$n2 $n1 -$n2 $n1 - $n2 $n1$m1$m2 ($n1+$m1)/($n2$m2)" /></p>
-    <p><aslist><copy prop="xs" tname="_point1" /></aslist></p>
+    <p><aslist><copy prop="xs" target="_point1" /></aslist></p>
     ` }, "*");
     });
 
@@ -725,18 +725,18 @@ describe('MathList Tag Tests', function () {
     <mathlist>
       <math>a</math>
       <mathlist>q r</mathlist>
-      <copy prop="math3" tname="_mathlist1" assignNames="m4" componentType="math" />
+      <copy prop="math3" target="_mathlist1" assignNames="m4" componentType="math" />
       <mathlist>
         <mathlist name="mid">
-          <math><copy prop="math1" tname="_mathlist1" componentType="math" /></math>
+          <math><copy prop="math1" target="_mathlist1" componentType="math" /></math>
           <mathlist>u v</mathlist>
         </mathlist>
         <mathlist>
-          <copy prop="math2" tname="_mathlist1" assignNames="m8" componentType="math" />
-          <copy prop="math5" tname="_mathlist1" assignNames="m9" componentType="math" />
+          <copy prop="math2" target="_mathlist1" assignNames="m8" componentType="math" />
+          <copy prop="math5" target="_mathlist1" assignNames="m9" componentType="math" />
         </mathlist>
       </mathlist>
-      <copy tname="mid" assignNames="mid2" />
+      <copy target="mid" assignNames="mid2" />
     </mathlist>
 
     <mathinput bindValueTo="$(_mathlist1{prop='math1'})" />
@@ -968,15 +968,15 @@ describe('MathList Tag Tests', function () {
       <math>a+a</math>
       <math simplify="none">b+b</math>
       <math simplify="full">c+c</math>
-      <copy tname="dd" />
-      <copy simplify="none" tname="dd" />
-      <copy simplify="full" tname="dd" />
-      <copy tname="ee" />
-      <copy simplify="none" tname="ee" />
-      <copy simplify="full" tname="ee" />
-      <copy tname="ff" />
-      <copy simplify="none" tname="ff" />
-      <copy simplify="full" tname="ff" />
+      <copy target="dd" />
+      <copy simplify="none" target="dd" />
+      <copy simplify="full" target="dd" />
+      <copy target="ee" />
+      <copy simplify="none" target="ee" />
+      <copy simplify="full" target="ee" />
+      <copy target="ff" />
+      <copy simplify="none" target="ff" />
+      <copy simplify="full" target="ff" />
     </mathlist>
     <p>
       <math name="dd">d+d</math>
@@ -1224,8 +1224,8 @@ describe('MathList Tag Tests', function () {
     </mathlist>
     <p>Merge math lists: <booleaninput /></p>
 
-    <p>Third math: <copy prop="math3" tname="_mathlist1" /></p>
-    <p>Fifth math: <copy prop="math5" tname="_mathlist1" /></p>
+    <p>Third math: <copy prop="math3" target="_mathlist1" /></p>
+    <p>Fifth math: <copy prop="math5" target="_mathlist1" /></p>
     ` }, "*");
     });
 
@@ -1347,8 +1347,8 @@ describe('MathList Tag Tests', function () {
       <math>a,b,c,d,e</math>
     </mathlist>
 
-    <p>Third math: <copy prop="math3" tname="_mathlist1" /></p>
-    <p>Fifth math: <copy prop="math5" tname="_mathlist1" /></p>
+    <p>Third math: <copy prop="math3" target="_mathlist1" /></p>
+    <p>Fifth math: <copy prop="math5" target="_mathlist1" /></p>
     ` }, "*");
     });
 
@@ -1389,16 +1389,16 @@ describe('MathList Tag Tests', function () {
     <text>a</text>
     <p><mathlist hide="true">a b c</mathlist></p>
 
-    <p><copy name="mathlist1a" hide="false" tname="_mathlist1" /></p>
+    <p><copy name="mathlist1a" hide="false" target="_mathlist1" /></p>
 
     <p><mathlist>
       <math>x</math>
-      <copy tname="_mathlist1" />
+      <copy target="_mathlist1" />
       <math hide>y</math>
-      <copy tname="mathlist1a" />
+      <copy target="mathlist1a" />
     </mathlist></p>
 
-    <p><copy name="mathlist3" maximumnumber="6" tname="_mathlist2" /></p>
+    <p><copy name="mathlist3" maximumnumber="6" target="_mathlist2" /></p>
 
     `}, "*");
     });

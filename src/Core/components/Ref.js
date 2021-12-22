@@ -4,7 +4,7 @@ export default class Ref extends InlineComponent {
   static componentType = "ref";
   static renderChildren = true;
 
-  static acceptTname = true;
+  static acceptTarget = true;
 
   static createAttributesObject(args) {
     let attributes = super.createAttributesObject(args);
@@ -106,7 +106,7 @@ export default class Ref extends InlineComponent {
           return { newValues: { targetName: "" } }
         } else {
           if (dependencyValues.uri !== null) {
-            console.warn("Haven't implemented ref with uri and tname, ignoring tname.");
+            console.warn("Haven't implemented ref with uri and target, ignoring target.");
             return { newValues: { targetName: "" } }
           }
           return { newValues: { targetName: dependencyValues.targetComponent.componentName } }

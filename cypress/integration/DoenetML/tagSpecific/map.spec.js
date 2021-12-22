@@ -407,7 +407,7 @@ describe('Map Tag Tests', function () {
       </graph></template>
     <sources alias="n" indexalias="k"><sequence from="-10" to="5" step="15"/></sources>
     </map>
-    <copy name="mapcopy" tname="_map1" />
+    <copy name="mapcopy" target="_map1" />
     `}, "*");
     });
 
@@ -520,14 +520,14 @@ describe('Map Tag Tests', function () {
     </template>
     <sources alias="n"><sequence from="-10" to="5" step="15"/></sources>
     </map>
-    <copy name="c1" prop="coords" tname="/u/u/u/A" />
-    <copy name="c2" prop="coords" tname="/u/u/v/A" />
-    <copy name="c3" prop="coords" tname="/u/v/u/A" />
-    <copy name="c4" prop="coords" tname="/u/v/v/A" />
-    <copy name="c5" prop="coords" tname="/v/u/u/A" />
-    <copy name="c6" prop="coords" tname="/v/u/v/A" />
-    <copy name="c7" prop="coords" tname="/v/v/u/A" />
-    <copy name="c8" prop="coords" tname="/v/v/v/A" />
+    <copy name="c1" prop="coords" target="/u/u/u/A" />
+    <copy name="c2" prop="coords" target="/u/u/v/A" />
+    <copy name="c3" prop="coords" target="/u/v/u/A" />
+    <copy name="c4" prop="coords" target="/u/v/v/A" />
+    <copy name="c5" prop="coords" target="/v/u/u/A" />
+    <copy name="c6" prop="coords" target="/v/u/v/A" />
+    <copy name="c7" prop="coords" target="/v/v/u/A" />
+    <copy name="c8" prop="coords" target="/v/v/v/A" />
     `}, "*");
     });
 
@@ -658,13 +658,13 @@ describe('Map Tag Tests', function () {
     <text>a</text>
     <map>
     <template newNamespace><math simplify>
-        <copy tname="n" name="b"/> + <copy tname="j" name="i"/> + <copy tname="../a" /> 
-        + <math name="q">z</math> + <copy tname="q" /> + <copy tname="b" /> +<copy tname="i" />
+        <copy target="n" name="b"/> + <copy target="j" name="i"/> + <copy target="../a" /> 
+        + <math name="q">z</math> + <copy target="q" /> + <copy target="b" /> +<copy target="i" />
       </math><math>x</math></template>
     <sources alias="n" indexalias="j"><sequence from="1" to="2"/></sources>
     </map>
     <math name="a">x</math>
-    <copy name="mapcopy" tname="_map1" />
+    <copy name="mapcopy" target="_map1" />
     `}, "*");
     });
 
@@ -718,15 +718,15 @@ describe('Map Tag Tests', function () {
     <number name="length" hide>1</number>
     <map>
     <template newnamespace><math simplify>
-        <copy tname="n" name="b"/> + <copy tname="j" name="i"/> + <copy tname="../a" /> 
-        + <math name="q">z</math> + <copy tname="q" /> + <copy tname="b" /> +<copy tname="i" />
+        <copy target="n" name="b"/> + <copy target="j" name="i"/> + <copy target="../a" /> 
+        + <math name="q">z</math> + <copy target="q" /> + <copy target="b" /> +<copy target="i" />
       </math><math>x</math></template>
     <sources alias="n" indexalias="j"><sequence from="1" length="$length"/></sources>
     </map>
     <math name="a">x</math>
-    <copy name="mapcopy" tname="_map1" />
+    <copy name="mapcopy" target="_map1" />
 
-    <updatevalue label="double" tName="length" newValue="2$length" />
+    <updatevalue label="double" target="length" newValue="2$length" />
     `}, "*");
     });
 
@@ -872,16 +872,16 @@ describe('Map Tag Tests', function () {
         doenetML: `
     <text>a</text>
     <map>
-    <template><math simplify="full">sin(<copy tname="i"/><copy tname="x"/>)</math></template>
+    <template><math simplify="full">sin(<copy target="i"/><copy target="x"/>)</math></template>
     <sources alias="x" indexalias="i"><math>x</math><math>y</math></sources>
     </map>
   
     <map>
-    <copy tname="_template1" />
+    <copy target="_template1" />
     <sources alias="x" indexalias="i"><math>q</math><math>p</math></sources>
     </map>
 
-    <copy name="mapcopy" tname="_map2" />
+    <copy name="mapcopy" target="_map2" />
     `}, "*");
     });
 
@@ -927,7 +927,7 @@ describe('Map Tag Tests', function () {
     <sources alias="x" indexalias="i"><math>x</math><math>y</math></sources>
     </map>
   
-    <copy name="mapcopy" tname="_map1" />
+    <copy name="mapcopy" target="_map1" />
     `}, "*");
     });
 
@@ -960,9 +960,9 @@ describe('Map Tag Tests', function () {
       win.postMessage({
         doenetML: `
     <text>a</text>
-    <copy tname="/hi/c/_point1" prop="coords" />
-    <copy tname="/hi/s/_point1" prop="coords" />
-    <copy tname="/hi/q/_point1" prop="coords" />
+    <copy target="/hi/c/_point1" prop="coords" />
+    <copy target="/hi/s/_point1" prop="coords" />
+    <copy target="/hi/q/_point1" prop="coords" />
     
     <grapH Name="hi" newNamespace >
     <map assignnames="q  c s">
@@ -1022,11 +1022,11 @@ describe('Map Tag Tests', function () {
         doenetML: `
     <text>a</text>
     <map assignnames="u v w">
-      <template newNamespace><math>(<copy tname="n"/>, <copy tname="../e/_copy1" />)</math></template>
+      <template newNamespace><math>(<copy target="n"/>, <copy target="../e/_copy1" />)</math></template>
       <sources alias="n"><sequence from="1" to="3"/></sources>
     </map>
     <map assignnames="c d e">
-      <template newNamespace><math>sin(<copy tname="n"/>)</math></template>
+      <template newNamespace><math>sin(<copy target="n"/>)</math></template>
       <sources alias="n"><sequence from="4" to="6"/></sources>
     </map>
     `}, "*");
@@ -1118,12 +1118,12 @@ describe('Map Tag Tests', function () {
     <mathinput name="sequenceTo" prefill="2"/>
     <mathinput name="sequenceCount" prefill="0"/>
     
-    <p><copy name="copymap2" tname="_map1" /></p>
-    <p><copy name="copymap3" tname="copymap2" /></p>
+    <p><copy name="copymap2" target="_map1" /></p>
+    <p><copy name="copymap3" target="copymap2" /></p>
 
-    <copy name="copymapthroughp" tname="_p1" />
-    <copy name="copymapthroughp2" tname="copymapthroughp" />
-    <copy name="copymapthroughp3" tname="copymapthroughp2" />
+    <copy name="copymapthroughp" target="_p1" />
+    <copy name="copymapthroughp2" target="copymapthroughp" />
+    <copy name="copymapthroughp3" target="copymapthroughp2" />
     `}, "*");
     });
 
@@ -1441,11 +1441,11 @@ describe('Map Tag Tests', function () {
     <graph>
       <map assignnames="a b c">
         <template newNamespace><point>
-            (<copy tname="../q" />$n^2,
-            <copy prop="x" tname="_point2" />)
+            (<copy target="../q" />$n^2,
+            <copy prop="x" target="_point2" />)
           </point><point>
-            (<copy tname="../r" />$n,
-            <copy prop="x" tname="_point1" />)
+            (<copy target="../r" />$n,
+            <copy prop="x" target="_point1" />)
           </point></template>
       <sources alias='n'>
         <sequence from="2" to="4" />
@@ -1454,12 +1454,12 @@ describe('Map Tag Tests', function () {
     </graph>
     <math name="q">1</math>
     <math name="r">1</math>
-    <copy name="c1" prop="coords" tname="a/_point1" />
-    <copy name="c2" prop="coords" tname="a/_point2" />
-    <copy name="c3" prop="coords" tname="b/_point1" />
-    <copy name="c4" prop="coords" tname="b/_point2" />
-    <copy name="c5" prop="coords" tname="c/_point1" />
-    <copy name="c6" prop="coords" tname="c/_point2" />
+    <copy name="c1" prop="coords" target="a/_point1" />
+    <copy name="c2" prop="coords" target="a/_point2" />
+    <copy name="c3" prop="coords" target="b/_point1" />
+    <copy name="c4" prop="coords" target="b/_point2" />
+    <copy name="c5" prop="coords" target="c/_point1" />
+    <copy name="c6" prop="coords" target="c/_point2" />
     `}, "*");
     });
 
@@ -1657,7 +1657,7 @@ describe('Map Tag Tests', function () {
     <graph>
       <map assignnames="a b c">
         <template newNamespace><point>
-            (-$n, $n<copy prop="x" tname="../q/_point1" />)
+            (-$n, $n<copy prop="x" target="../q/_point1" />)
           </point></template>
       <sources alias="n">
         <sequence from="$sequenceFrom" to="$sequenceTo" length="$sequenceCount" />
@@ -1665,7 +1665,7 @@ describe('Map Tag Tests', function () {
       </map>
       <map assignnames="q r s">
         <template newNamespace><point>
-            ($n, $n<copy prop="x" tname="../a/_point1" />)
+            ($n, $n<copy prop="x" target="../a/_point1" />)
           </point></template>
       <sources alias="n">
         <sequence from="$sequenceFrom" to="$sequenceTo" length="$sequenceCount" />
@@ -1678,16 +1678,16 @@ describe('Map Tag Tests', function () {
     <mathinput name="sequenceCount" prefill="0"/>
     
     <graph>
-    <copy name="copymap1" tname="_map1" />
-    <copy name="copymap2" tname="_map2" />
+    <copy name="copymap1" target="_map1" />
+    <copy name="copymap2" target="_map2" />
     </graph>
     <graph>
-    <copy name="copymap1b" tname="copymap1" />
-    <copy name="copymap2b" tname="copymap2" />
+    <copy name="copymap1b" target="copymap1" />
+    <copy name="copymap2b" target="copymap2" />
     </graph>
     
-    <copy name="graph4" tname="_graph1" />
-    <p><collect componentTypes="point" tname="_graph1"/></p>
+    <copy name="graph4" target="_graph1" />
+    <p><collect componentTypes="point" target="_graph1"/></p>
     `}, "*");
     });
 
@@ -2049,26 +2049,26 @@ describe('Map Tag Tests', function () {
 
     <map name="m2" assignNames="q1 q2 q3">
       <template newNamespace>
-        <point name="pt">(<copy tname="p" prop="x" />^2, <copy tname="p" prop="y" />^2)</point>
+        <point name="pt">(<copy target="p" prop="x" />^2, <copy target="p" prop="y" />^2)</point>
       </template>
       <sources alias="p">
-        <copy tname="m1" />
+        <copy target="m1" />
       </sources>
     </map>
 
-    p1a: <copy tname="p1" assignNames="p1a" />,
-    p1b: <copy tname="p1/pt" assignNames="p1b" />,
-    p2a: <copy tname="p2" assignNames="p2a" />,
-    p2b: <copy tname="p2/pt" assignNames="p2b" />,
-    p3a: <copy tname="p3" assignNames="p3a" />,
-    p3b: <copy tname="p3/pt" assignNames="p3b" />,
+    p1a: <copy target="p1" assignNames="p1a" />,
+    p1b: <copy target="p1/pt" assignNames="p1b" />,
+    p2a: <copy target="p2" assignNames="p2a" />,
+    p2b: <copy target="p2/pt" assignNames="p2b" />,
+    p3a: <copy target="p3" assignNames="p3a" />,
+    p3b: <copy target="p3/pt" assignNames="p3b" />,
 
-    q1a: <copy tname="q1" assignNames="q1a" />,
-    q1b: <copy tname="q1/pt" assignNames="q1b" />,
-    q2a: <copy tname="q2" assignNames="q2a" />,
-    q2b: <copy tname="q2/pt" assignNames="q2b" />,
-    q3a: <copy tname="q3" assignNames="q3a" />,
-    q3b: <copy tname="q3/pt" assignNames="q3b" />,
+    q1a: <copy target="q1" assignNames="q1a" />,
+    q1b: <copy target="q1/pt" assignNames="q1b" />,
+    q2a: <copy target="q2" assignNames="q2a" />,
+    q2b: <copy target="q2/pt" assignNames="q2b" />,
+    q3a: <copy target="q3" assignNames="q3a" />,
+    q3b: <copy target="q3/pt" assignNames="q3b" />,
 
     `}, "*");
     });
@@ -2325,14 +2325,14 @@ describe('Map Tag Tests', function () {
     <text>a</text>
     <map assignNames="a b">
       <template newNamespace>
-      <copy tname="i" assignNames="ind" />
+      <copy target="i" assignNames="ind" />
       <mathinput bindValueTo="$ind" />
       </template>
       <sources indexAlias="i"><text>red</text><text>yellow</text></sources>
     </map>
     <map assignNames="c d">
       <template newNamespace>
-      <copy tname="i" assignNames="ind" fixed="false"  />
+      <copy target="i" assignNames="ind" fixed="false"  />
       <mathinput bindValueTo="$ind" />
       </template>
       <sources indexAlias="i"><text>red</text><text>yellow</text></sources>

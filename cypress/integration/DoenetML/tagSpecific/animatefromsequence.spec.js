@@ -12,11 +12,11 @@ describe('AnimateFromSequence Tag Tests', function () {
 
   <p>value: <number name="a">1</number></p>
 
-  <animateFromSequence name="x" animationMode='increase' animationOn='$b' tName='a' animationInterval='100' />
+  <animateFromSequence name="x" animationMode='increase' animationOn='$b' target='a' animationInterval='100' />
 
   <booleaninput name="b" />
   
-  <p>copy: <copy tname="a" assignNames="a2" /></p>
+  <p>copy: <copy target="a" assignNames="a2" /></p>
 
   `}, "*");
     });
@@ -90,11 +90,11 @@ describe('AnimateFromSequence Tag Tests', function () {
 
   <p>value: <number name="a">1</number></p>
 
-  <animateFromSequence name="x" animationMode='increase once' animationOn='$b' tName='a' animationInterval='100' />
+  <animateFromSequence name="x" animationMode='increase once' animationOn='$b' target='a' animationInterval='100' />
 
   <booleaninput name="b" />
   
-  <p>copy: <copy tname="a" assignNames="a2" /></p>
+  <p>copy: <copy target="a" assignNames="a2" /></p>
 
   `}, "*");
     });
@@ -156,10 +156,10 @@ describe('AnimateFromSequence Tag Tests', function () {
 
   <p>value: <text name="a">z</text></p>
 
-  <animateFromSequence type="letters" name="x" animationMode='decrease' animationOn='$b' tName='a' animationInterval='100' from="e" to="z" step="3" />
+  <animateFromSequence type="letters" name="x" animationMode='decrease' animationOn='$b' target='a' animationInterval='100' from="e" to="z" step="3" />
   <booleaninput name="b" />
   
-  <p>copy: <copy tname="a" assignNames="a2" /></p>
+  <p>copy: <copy target="a" assignNames="a2" /></p>
 
   `}, "*");
     });
@@ -250,10 +250,10 @@ describe('AnimateFromSequence Tag Tests', function () {
 
   <p>value: <text name="a">z</text></p>
 
-  <animateFromSequence type="letters" name="x" animationMode='decrease once' animationOn='$b' tName='a' animationInterval='100' from="e" to="z" step="3" />
+  <animateFromSequence type="letters" name="x" animationMode='decrease once' animationOn='$b' target='a' animationInterval='100' from="e" to="z" step="3" />
   <booleaninput name="b" />
   
-  <p>copy: <copy tname="a" assignNames="a2" /></p>
+  <p>copy: <copy target="a" assignNames="a2" /></p>
 
   `}, "*");
     });
@@ -312,10 +312,10 @@ describe('AnimateFromSequence Tag Tests', function () {
 
   <p>value: <number name="a">-600</number></p>
 
-  <animateFromSequence name="x" animationMode='oscillate' animationOn='$b' tName='a' animationInterval='100' from="-1000" to="1000" step="100" exclude="0 200 -200 300 -300 400 -400 700 -700 800 -800" />
+  <animateFromSequence name="x" animationMode='oscillate' animationOn='$b' target='a' animationInterval='100' from="-1000" to="1000" step="100" exclude="0 200 -200 300 -300 400 -400 700 -700 800 -800" />
   <booleaninput name="b" />
   
-  <p>copy: <copy tname="a" assignNames="a2" /></p>
+  <p>copy: <copy target="a" assignNames="a2" /></p>
 
   `}, "*");
     });
@@ -425,12 +425,12 @@ describe('AnimateFromSequence Tag Tests', function () {
   <p name="pa">value: $a</p> 
   <slider name="a" initialValue="89.8" from="1" to="100" step="0.1" />
 
-  <animateFromSequence name="x" animationMode='increase' animationOn='$b' tName='a' animationInterval='400' from="1" to="100" step="0.1" />
+  <animateFromSequence name="x" animationMode='increase' animationOn='$b' target='a' animationInterval='400' from="1" to="100" step="0.1" />
 
   <booleaninput name="b" />
   
   <p name="pa2">value: $a2</p>
-  <copy tname="a" assignNames="a2" />
+  <copy target="a" assignNames="a2" />
 
   `}, "*");
     });

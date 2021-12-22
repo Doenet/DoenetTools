@@ -2174,7 +2174,7 @@ export default class Core {
 
         parent.compositeReplacementActiveRange.push({
           compositeName: child.componentName,
-          target: await child.stateValues.tName,
+          target: await child.stateValues.target,
           firstInd: childInd,
           lastInd: childInd + replacements.length - 1
         });
@@ -3696,15 +3696,15 @@ export default class Core {
 
         if (Array.isArray(targetNames)) {
           newNames = [...new Set(targetNames)];
-          for (let tName of newNames) {
+          for (let target of newNames) {
 
-            let indPrev = previousNames.indexOf(tName);
+            let indPrev = previousNames.indexOf(target);
 
             if (indPrev === -1) {
               // found a component that wasn't previously chained
-              let componentActionsChained = this.actionsChangedToActions[tName];
+              let componentActionsChained = this.actionsChangedToActions[target];
               if (!componentActionsChained) {
-                componentActionsChained = this.actionsChangedToActions[tName] = [];
+                componentActionsChained = this.actionsChangedToActions[target] = [];
               }
 
               componentActionsChained.push({
@@ -3713,7 +3713,7 @@ export default class Core {
                 stateVariableDefiningChain: varName,
               });
             } else {
-              // tName was already chained
+              // target was already chained
               // remove from previous names to indicate it should still be chained
               previousNames.splice(indPrev, 1);
             }

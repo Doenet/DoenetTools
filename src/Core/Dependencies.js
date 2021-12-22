@@ -6327,10 +6327,10 @@ class TargetComponentDependency extends Dependency {
   setUpParameters() {
     let component = this.dependencyHandler._components[this.upstreamComponentName];
 
-    this.tName = component.doenetAttributes.tName;
+    this.target = component.doenetAttributes.target;
 
-    if (this.tName) {
-      this.targetComponentName = this.specifiedComponentName = component.doenetAttributes.fullTName;
+    if (this.target) {
+      this.targetComponentName = this.specifiedComponentName = component.doenetAttributes.targetComponentName;
     }
 
     if (this.definition.variableNames) {
@@ -6348,7 +6348,7 @@ class TargetComponentDependency extends Dependency {
 
   async determineDownstreamComponents() {
 
-    if (!this.tName) {
+    if (!this.target) {
       return {
         downstreamComponentNames: [],
         downstreamComponentTypes: []
@@ -6426,7 +6426,7 @@ class ExpandTargetNameDependency extends Dependency {
 
     this.parentName = this.upstreamComponentName;
 
-    this.tName = this.definition.tName;
+    this.target = this.definition.target;
 
   }
 
@@ -6441,19 +6441,19 @@ class ExpandTargetNameDependency extends Dependency {
       namespaceStack = namespaceStack.slice(0, namespaceStack.length - 1)
     }
 
-    let fullTname;
+    let targetComponentName;
 
     try {
-      fullTname = convertComponentTarget({
-        tName: this.tName,
+      targetComponentName = convertComponentTarget({
+        target: this.target,
         namespaceStack,
       })
     } catch (e) {
-      fullTname = null;
+      targetComponentName = null;
     }
 
     return {
-      value: fullTname,
+      value: targetComponentName,
       changes: {}
     }
   }

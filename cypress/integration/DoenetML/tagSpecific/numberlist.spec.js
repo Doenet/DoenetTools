@@ -383,18 +383,18 @@ describe('Numberlist Tag Tests', function () {
     <p><numberlist>
       <number>1</number>
       <numberlist>2 3</numberlist>
-      <copy prop="number3" tname="_numberlist1" componentType="number" />
+      <copy prop="number3" target="_numberlist1" componentType="number" />
       <numberlist>
         <numberlist name="mid">
-          <number><copy prop="number1" tname="_numberlist1" componentType="number" /></number>
+          <number><copy prop="number1" target="_numberlist1" componentType="number" /></number>
           <numberlist>4 5</numberlist>
         </numberlist>
         <numberlist>
-          <copy prop="number2" tname="_numberlist1" componentType="number" />
-          <copy prop="number5" tname="_numberlist1" componentType="number" />
+          <copy prop="number2" target="_numberlist1" componentType="number" />
+          <copy prop="number5" target="_numberlist1" componentType="number" />
         </numberlist>
       </numberlist>
-      <copy tname="mid" />
+      <copy target="mid" />
     </numberlist></p>
 
     <mathinput bindValueTo="$(_numberlist1{prop='number1'})"/>
@@ -526,16 +526,16 @@ describe('Numberlist Tag Tests', function () {
     <text>a</text>
     <p><numberlist hide="true">1 2 3</numberlist></p>
 
-    <p><copy name="numberlist1a" hide="false" tname="_numberlist1" /></p>
+    <p><copy name="numberlist1a" hide="false" target="_numberlist1" /></p>
 
     <p><numberlist>
       <number>4</number>
-      <copy tname="_numberlist1" />
+      <copy target="_numberlist1" />
       <number hide>5</number>
-      <copy tname="numberlist1a" />
+      <copy target="numberlist1a" />
     </numberlist></p>
 
-    <p><copy name="numberlist3" maximumnumber="6" tname="_numberlist2" /></p>
+    <p><copy name="numberlist3" maximumnumber="6" target="_numberlist2" /></p>
 
     `}, "*");
     });

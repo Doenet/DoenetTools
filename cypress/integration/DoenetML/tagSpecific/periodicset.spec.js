@@ -21,7 +21,7 @@ describe('PeriodicSet Tag Tests', function () {
         </when>
       </award>
     </answer>
-    <p>Credit achieved: <copy prop="creditAchieved" tname="_answer1" assignNames="ca" /></p>
+    <p>Credit achieved: <copy prop="creditAchieved" target="_answer1" assignNames="ca" /></p>
     `}, "*");
     });
 
@@ -225,13 +225,13 @@ describe('PeriodicSet Tag Tests', function () {
     
     <answer>
       <award>
-        <when><copy name="a2" tname="a" /> = <copy name="b2" tname="b" /></when>
+        <when><copy name="a2" target="a" /> = <copy name="b2" target="b" /></when>
       </award>
     </answer>
     
-    <p>Credit achieved: <copy prop="creditAchieved" tname="_answer1" assignNames="ca" /></p>
+    <p>Credit achieved: <copy prop="creditAchieved" target="_answer1" assignNames="ca" /></p>
     
-    <p>Redundancies: <copy prop="redundantOffsets" tname="a" />, <copy prop="redundantOffsets" tname="b" />, <copy prop="redundantOffsets" tname="a2" />, <copy prop="redundantOffsets" tname="b2" /></p>
+    <p>Redundancies: <copy prop="redundantOffsets" target="a" />, <copy prop="redundantOffsets" target="b" />, <copy prop="redundantOffsets" target="a2" />, <copy prop="redundantOffsets" target="b2" /></p>
     `}, "*");
     });
 
@@ -574,7 +574,7 @@ describe('PeriodicSet Tag Tests', function () {
         doenetML: `
     <setup>
       <mathlist name="correct_offsets" mergemathlists="true">30,150</mathlist>
-      <copy prop="nComponents" tname="correct_offsets" assignNames="n_correct_offsets" />
+      <copy prop="nComponents" target="correct_offsets" assignNames="n_correct_offsets" />
       <math name="correct_period">180</math>
       <periodicSet name="correct"  offsets="$correct_offsets" period="$correct_period" />
     </setup>
@@ -610,7 +610,7 @@ describe('PeriodicSet Tag Tests', function () {
     </p>
 
     <mathlist name="collected_offsets" hide>
-      <collect componentTypes="mathinput" prop="value" tname="offset_p" />
+      <collect componentTypes="mathinput" prop="value" target="offset_p" />
     </mathlist>
 
     <setup>
@@ -642,7 +642,7 @@ describe('PeriodicSet Tag Tests', function () {
           </when>
         </award>
         <award name="redund" credit="0">
-          <when><copy prop="redundantOffsets" tname="userPeriodicSet" /></when>
+          <when><copy prop="redundantOffsets" target="userPeriodicSet" /></when>
         </award>
         <considerAsResponses>
           $p$o
@@ -840,13 +840,13 @@ describe('PeriodicSet Tag Tests', function () {
 
     <periodicSet period="$period" offsets="$offsets" name="pset" />
   
-    <p>As list: <copy prop="asList" tname="pset" assignNames="l1" /></p>
+    <p>As list: <copy prop="asList" target="pset" assignNames="l1" /></p>
 
     <p>Min index: <mathinput name="minIndex" />, <mathinput name="maxIndex" /></p>
 
     <periodicSet period="$period" offsets="$offsets" name="pset2" minIndexAsList="$minIndex" maxIndexAsList="$maxIndex" />
 
-    <p>As list with specified min/max: <copy prop="asList" tname="pset2" assignNames="l2" /></p>
+    <p>As list with specified min/max: <copy prop="asList" target="pset2" assignNames="l2" /></p>
 
 
 

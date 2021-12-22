@@ -1348,12 +1348,12 @@ describe('SubsetOfReals Tag Tests', function () {
   <text>a</text>
   <p>Enter subset: <mathinput name="input0" prefill="(0,1)" /></p>
   <p>Subset 1: <subsetOfReals name="s1">$input0</subsetOfReals></p>
-  <p>Subset 2: <copy tname="s1" assignNames="s2" /></p>
-  <p>Subset 3: <copy prop="value" tname="s1" assignNames="s3" /></p>
-  <p>Subset 4: <copy tname="s2" assignNames="s4" /></p>
-  <p>Subset 5: <copy prop="value" tname="s2" assignNames="s5" /></p>
-  <p>Subset 6: <copy tname="s3" assignNames="s6" /></p>
-  <p>Subset 7: <copy prop="value" tname="s3" assignNames="s7" /></p>
+  <p>Subset 2: <copy target="s1" assignNames="s2" /></p>
+  <p>Subset 3: <copy prop="value" target="s1" assignNames="s3" /></p>
+  <p>Subset 4: <copy target="s2" assignNames="s4" /></p>
+  <p>Subset 5: <copy prop="value" target="s2" assignNames="s5" /></p>
+  <p>Subset 6: <copy target="s3" assignNames="s6" /></p>
+  <p>Subset 7: <copy prop="value" target="s3" assignNames="s7" /></p>
   <p>Subset 8: <subsetOfReals name="s8">$s1</subsetOfReals></p>
   <p>Subset 9: <subsetOfReals name="s9">$(s1{prop='value'})</subsetOfReals></p>
   <p>Modify subset 1: <mathinput name="input1" bindValueTo="$s1" /></p>

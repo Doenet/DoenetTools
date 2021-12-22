@@ -12,7 +12,7 @@ describe('BestFitLine Tag Tests', function () {
       win.postMessage({
         doenetML: `
       <setup>
-        <collect name="ps" componentTypes="point" tname="g" />
+        <collect name="ps" componentTypes="point" target="g" />
       </setup>
       
       <text>a</text>
@@ -27,7 +27,7 @@ describe('BestFitLine Tag Tests', function () {
       
       </graph>
       
-      <copy prop="equation" tname="l" assignNames="eq" />
+      <copy prop="equation" target="l" assignNames="eq" />
     `}, "*");
     });
 
@@ -81,7 +81,7 @@ describe('BestFitLine Tag Tests', function () {
       
       </graph>
       
-      <copy prop="equation" tname="l" assignNames="eq" />
+      <copy prop="equation" target="l" assignNames="eq" />
     `}, "*");
     });
 
@@ -105,7 +105,7 @@ describe('BestFitLine Tag Tests', function () {
       win.postMessage({
         doenetML: `
       <setup>
-        <collect name="ps" componentTypes="point" tname="g" />
+        <collect name="ps" componentTypes="point" target="g" />
       </setup>
       
       <text>a</text>
@@ -115,7 +115,7 @@ describe('BestFitLine Tag Tests', function () {
       
       </graph>
       
-      <copy prop="equation" tname="l" assignNames="eq" />
+      <copy prop="equation" target="l" assignNames="eq" />
     `}, "*");
     });
 
@@ -138,7 +138,7 @@ describe('BestFitLine Tag Tests', function () {
       win.postMessage({
         doenetML: `
       <setup>
-        <collect name="ps" componentTypes="point" tname="g" />
+        <collect name="ps" componentTypes="point" target="g" />
       </setup>
       
       <text>a</text>
@@ -149,7 +149,7 @@ describe('BestFitLine Tag Tests', function () {
       
       </graph>
       
-      <copy prop="equation" tname="l" assignNames="eq" />
+      <copy prop="equation" target="l" assignNames="eq" />
     `}, "*");
     });
 
@@ -189,7 +189,7 @@ describe('BestFitLine Tag Tests', function () {
       win.postMessage({
         doenetML: `
       <setup>
-        <collect name="ps" componentTypes="point" tname="g" />
+        <collect name="ps" componentTypes="point" target="g" />
       </setup>
       
       <text>a</text>
@@ -201,7 +201,7 @@ describe('BestFitLine Tag Tests', function () {
       
       </graph>
       
-      <copy prop="equation" tname="l" assignNames="eq" />
+      <copy prop="equation" target="l" assignNames="eq" />
     `}, "*");
     });
 
@@ -261,7 +261,7 @@ describe('BestFitLine Tag Tests', function () {
       win.postMessage({
         doenetML: `
       <setup>
-        <collect name="ps" componentTypes="point" tname="g" />
+        <collect name="ps" componentTypes="point" target="g" />
       </setup>
       
       <text>a</text>
@@ -276,7 +276,7 @@ describe('BestFitLine Tag Tests', function () {
       
       </graph>
       
-      <copy prop="equation" tname="l" assignNames="eq" />
+      <copy prop="equation" target="l" assignNames="eq" />
 
     `}, "*");
     });
@@ -325,7 +325,7 @@ describe('BestFitLine Tag Tests', function () {
       win.postMessage({
         doenetML: `
       <setup>
-        <collect name="ps" componentTypes="point" tname="g" />
+        <collect name="ps" componentTypes="point" target="g" />
       </setup>
       
       <text>a</text>
@@ -345,7 +345,7 @@ describe('BestFitLine Tag Tests', function () {
       
       </graph>
       
-      <copy prop="equation" tname="l" assignNames="eq" />
+      <copy prop="equation" target="l" assignNames="eq" />
     `}, "*");
     });
 

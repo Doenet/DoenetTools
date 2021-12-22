@@ -32,7 +32,7 @@ describe('Endpoint Tag Tests', function () {
     <booleaninput name="b1" />
     <booleaninput name="b2" />
 
-    <copy tname="g" assignNames="g2" />
+    <copy target="g" assignNames="g2" />
     `}, "*");
     });
 

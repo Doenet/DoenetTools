@@ -111,17 +111,17 @@ describe('Extract Tag Tests', function () {
         doenetML: `
     <text>a</text>
     <graph>
-      <copy name="copy" tname="original" />
+      <copy name="copy" target="original" />
       <point name="transformed">
-        (<copy prop="y" tname="copy2" />,
-        <extract prop="x1"><copy name="copy2" tname="copy" /></extract>)
+        (<copy prop="y" target="copy2" />,
+        <extract prop="x1"><copy name="copy2" target="copy" /></extract>)
       </point>
     </graph>
 
     <graph>
     <point name="original">(1,2)</point>
     </graph>
-    <copy prop="x" tname="original" />
+    <copy prop="x" target="original" />
     `}, "*");
     });
 
@@ -187,17 +187,17 @@ describe('Extract Tag Tests', function () {
     <circle through="$_point1 $_point2" />
     </extract>
     
-    <copy name="x1" prop="x" tname="_extract1" />,
-    <copy name="y1" prop="y" tname="_extract1" />
+    <copy name="x1" prop="x" target="_extract1" />,
+    <copy name="y1" prop="y" target="_extract1" />
     
     <graph>
     <point>(1,2)</point>
     <point>(5,6)</point>
-    <copy name="copiedextract" tname="_extract1" />
+    <copy name="copiedextract" target="_extract1" />
     </graph>
 
-    <copy name="x2" prop="x" tname="copiedextract" />,
-    <copy name="y2" prop="y" tname="copiedextract" />
+    <copy name="x2" prop="x" target="copiedextract" />,
+    <copy name="y2" prop="y" target="copiedextract" />
     `}, "*");
     });
 
@@ -252,9 +252,9 @@ describe('Extract Tag Tests', function () {
     </extract>
     </aslist></p>
     
-    <p><aslist><copy tname="_extract1" /></aslist></p>
+    <p><aslist><copy target="_extract1" /></aslist></p>
     
-    <p><copy tname="_aslist2" /></p>
+    <p><copy target="_aslist2" /></p>
     `}, "*");
     });
 
@@ -354,7 +354,7 @@ describe('Extract Tag Tests', function () {
     <p><aslist>
     <extract prop="x">
       <map>
-        <template newnamespace><point>($a+<copy prop="value" tname="../m" />,0)</point></template>
+        <template newnamespace><point>($a+<copy prop="value" target="../m" />,0)</point></template>
         <sources alias="a">
           <sequence length="$n" />
         </sources>
@@ -362,9 +362,9 @@ describe('Extract Tag Tests', function () {
     </extract>
     </aslist></p>
     
-    <p><aslist><copy tname="_extract1" /></aslist></p>
+    <p><aslist><copy target="_extract1" /></aslist></p>
     
-    <p><copy tname="_aslist2" /></p>
+    <p><copy target="_aslist2" /></p>
     `}, "*");
     });
 

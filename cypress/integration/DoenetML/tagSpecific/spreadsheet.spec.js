@@ -71,9 +71,9 @@ describe('Spreadsheet Tag Tests', function () {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
-  <extract prop="text" assignNames="t1"><copy prop="cellA1" tname="_spreadsheet1" /></extract>
-  <extract prop="text" assignNames="t2"><copy prop="cellC1" tname="_spreadsheet1" /></extract>
-  <extract prop="text" assignNames="t3"><copy prop="cellC3" tname="_spreadsheet1" /></extract>
+  <extract prop="text" assignNames="t1"><copy prop="cellA1" target="_spreadsheet1" /></extract>
+  <extract prop="text" assignNames="t2"><copy prop="cellC1" target="_spreadsheet1" /></extract>
+  <extract prop="text" assignNames="t3"><copy prop="cellC3" target="_spreadsheet1" /></extract>
   <spreadsheet>
   <cell>first</cell>
   <cell colnum="C" rownum="3">hello</cell>
@@ -170,11 +170,11 @@ describe('Spreadsheet Tag Tests', function () {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
-  <extract prop="text" assignNames="t1"><copy prop="cellA1" tname="_spreadsheet1" /></extract>
-  <extract prop="text" assignNames="t2"><copy prop="cellA3" tname="_spreadsheet2" /></extract>
-  <extract prop="text" assignNames="t3"><copy prop="cellD3" tname="C1" /></extract>
-  <extract prop="text" assignNames="t4"><copy prop="cellD4" tname="C2" /></extract>
-  <extract prop="text" assignNames="t5"><copy prop="cellB1" tname="C1a" /></extract>
+  <extract prop="text" assignNames="t1"><copy prop="cellA1" target="_spreadsheet1" /></extract>
+  <extract prop="text" assignNames="t2"><copy prop="cellA3" target="_spreadsheet2" /></extract>
+  <extract prop="text" assignNames="t3"><copy prop="cellD3" target="C1" /></extract>
+  <extract prop="text" assignNames="t4"><copy prop="cellD4" target="C2" /></extract>
+  <extract prop="text" assignNames="t5"><copy prop="cellB1" target="C1a" /></extract>
 
   <spreadsheet>
   <cell>first</cell>
@@ -185,17 +185,17 @@ describe('Spreadsheet Tag Tests', function () {
   </spreadsheet>
 
   <spreadsheet>
-  <copy tname="_cell4" assignNames="c4a" />
-  <copy colnum="A" tname="_cell2" assignNames="c2a" />
-  <copy tname="_cell3" assignNames="c3a" />
-  <copy colnum="2" rownum="4" tname="_cell1" assignNames="c1a" />
-  <copy rownum="2" tname="_cell5" assignNames="c5a" />
+  <copy target="_cell4" assignNames="c4a" />
+  <copy colnum="A" target="_cell2" assignNames="c2a" />
+  <copy target="_cell3" assignNames="c3a" />
+  <copy colnum="2" rownum="4" target="_cell1" assignNames="c1a" />
+  <copy rownum="2" target="_cell5" assignNames="c5a" />
   </spreadsheet>
 
-  <copy name="C1" tname="_spreadsheet1" assignNames="ss1a" />
-  <copy name="C2" tname="_spreadsheet2" assignNames="ss2a" />
-  <copy name="C1a" tname="C1" assignNames="ss1b" />
-  <copy name="C2a" tname="C2" assignNames="ss2b" />
+  <copy name="C1" target="_spreadsheet1" assignNames="ss1a" />
+  <copy name="C2" target="_spreadsheet2" assignNames="ss2a" />
+  <copy name="C1a" target="C1" assignNames="ss1b" />
+  <copy name="C2a" target="C2" assignNames="ss2b" />
   `}, "*");
     });
     cy.get('#\\/_spreadsheet1')//wait for window to load
@@ -329,11 +329,11 @@ describe('Spreadsheet Tag Tests', function () {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
-  <extract prop="text" assignNames="t1"><copy prop="cellA1" tname="_spreadsheet1" /></extract>
-  <extract prop="text" assignNames="t2"><copy prop="cellA3" tname="_spreadsheet2" /></extract>
-  <extract prop="text" assignNames="t3"><copy prop="cellD3" tname="C1" /></extract>
-  <extract prop="text" assignNames="t4"><copy prop="cellD4" tname="C2" /></extract>
-  <extract prop="text" assignNames="t5"><copy prop="cellB1" tname="C1a" /></extract>
+  <extract prop="text" assignNames="t1"><copy prop="cellA1" target="_spreadsheet1" /></extract>
+  <extract prop="text" assignNames="t2"><copy prop="cellA3" target="_spreadsheet2" /></extract>
+  <extract prop="text" assignNames="t3"><copy prop="cellD3" target="C1" /></extract>
+  <extract prop="text" assignNames="t4"><copy prop="cellD4" target="C2" /></extract>
+  <extract prop="text" assignNames="t5"><copy prop="cellB1" target="C1a" /></extract>
 
   <spreadsheet>
   <cell>first</cell>
@@ -344,17 +344,17 @@ describe('Spreadsheet Tag Tests', function () {
   </spreadsheet>
 
   <spreadsheet>
-  <copy prop="cellD4" colnum="D" rownum="4" tname="_spreadsheet1" assignNames="c4a" />
-  <copy prop="cellC3" colnum="A" rownum="3" tname="_spreadsheet1" assignNames="c2a" />
-  <copy prop="cellD3" tname="_spreadsheet1" assignNames="c3a" />
-  <copy prop="cellA1" colnum="2" rownum="4" tname="_spreadsheet1" assignNames="c1a" />
-  <copy prop="cellb1" rownum="2" colnum="b" tname="_spreadsheet1" assignNames="c5a" />
+  <copy prop="cellD4" colnum="D" rownum="4" target="_spreadsheet1" assignNames="c4a" />
+  <copy prop="cellC3" colnum="A" rownum="3" target="_spreadsheet1" assignNames="c2a" />
+  <copy prop="cellD3" target="_spreadsheet1" assignNames="c3a" />
+  <copy prop="cellA1" colnum="2" rownum="4" target="_spreadsheet1" assignNames="c1a" />
+  <copy prop="cellb1" rownum="2" colnum="b" target="_spreadsheet1" assignNames="c5a" />
   </spreadsheet>
 
-  <copy name="C1" tname="_spreadsheet1" assignNames="ss1a" />
-  <copy name="C2" tname="_spreadsheet2" assignNames="ss2a" />
-  <copy name="C1a" tname="C1" assignNames="ss1b" />
-  <copy name="C2a" tname="C2" assignNames="ss2b" />
+  <copy name="C1" target="_spreadsheet1" assignNames="ss1a" />
+  <copy name="C2" target="_spreadsheet2" assignNames="ss2a" />
+  <copy name="C1a" target="C1" assignNames="ss1b" />
+  <copy name="C2a" target="C2" assignNames="ss2b" />
   `}, "*");
     });
 
@@ -488,7 +488,7 @@ describe('Spreadsheet Tag Tests', function () {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
-  <extract prop="text" assignNames="t1"><copy prop="cellA1" tname="_spreadsheet1" /></extract>
+  <extract prop="text" assignNames="t1"><copy prop="cellA1" target="_spreadsheet1" /></extract>
   <spreadsheet>
   <row><cell>A1</cell><cell>B1</cell><cell colnum="D">D1</cell></row>
   <row><cell colnum="2">B2</cell><cell>C2</cell></row>
@@ -551,7 +551,7 @@ describe('Spreadsheet Tag Tests', function () {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
-  <extract prop="text" assignNames="t1"><copy prop="cellA1" tname="_spreadsheet1" /></extract>
+  <extract prop="text" assignNames="t1"><copy prop="cellA1" target="_spreadsheet1" /></extract>
   <spreadsheet>
   <column><cell>A1</cell><cell>A2</cell><cell rownum="D">A4</cell></column>
   <column><cell rownum="2">B2</cell><cell>B3</cell></column>
@@ -614,7 +614,7 @@ describe('Spreadsheet Tag Tests', function () {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
-  <extract prop="text" assignNames="t1"><copy prop="cellC3" tname="_spreadsheet1" /></extract>
+  <extract prop="text" assignNames="t1"><copy prop="cellC3" target="_spreadsheet1" /></extract>
   <spreadsheet>
   <cellblock rownum="2" colnum="3">
     <row rownum="2"><cell>C3</cell><cell>D3</cell></row>
@@ -694,7 +694,7 @@ describe('Spreadsheet Tag Tests', function () {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
-  <extract prop="text" assignNames="t1"><copy prop="cellA1" tname="_spreadsheet1" /></extract>
+  <extract prop="text" assignNames="t1"><copy prop="cellA1" target="_spreadsheet1" /></extract>
   <spreadsheet>
   <row><cell>A1</cell><cell>B1</cell><cell>C1</cell></row>
   <column><cell rownum="2">A2</cell><cell>A3</cell><cell>A4</cell></column>
@@ -707,9 +707,9 @@ describe('Spreadsheet Tag Tests', function () {
   </spreadsheet>
 
   <spreadsheet>
-  <copy prop="rangeC3D4" tname="_spreadsheet1" />
-  <copy prop="range((1,1),(4,2))" tname="_spreadsheet1" />
-  <copy prop="rangeD2C1" rownum="3" colnum="1" tname="_spreadsheet1" />
+  <copy prop="rangeC3D4" target="_spreadsheet1" />
+  <copy prop="range((1,1),(4,2))" target="_spreadsheet1" />
+  <copy prop="rangeD2C1" rownum="3" colnum="1" target="_spreadsheet1" />
   </spreadsheet>
   `}, "*");
     });
@@ -785,7 +785,7 @@ describe('Spreadsheet Tag Tests', function () {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
-  <extract prop="text" assignNames="t1"><copy prop="cellA1" tname="_spreadsheet1" /></extract>
+  <extract prop="text" assignNames="t1"><copy prop="cellA1" target="_spreadsheet1" /></extract>
   <spreadsheet>
   <row><cell>A1</cell><cell>B1</cell><cell>C1</cell></row>
   <column><cell rownum="2">A2</cell><cell>A3</cell><cell>A4</cell></column>
@@ -798,10 +798,10 @@ describe('Spreadsheet Tag Tests', function () {
   </spreadsheet>
 
   <spreadsheet>
-  <copy prop="row2" rownum="3" tname="_spreadsheet1" />
-  <copy prop="column3" colnum="5" tname="_spreadsheet1" />
-  <copy prop="rowA" tname="_spreadsheet1" />
-  <copy prop="columnB" tname="_spreadsheet1" />
+  <copy prop="row2" rownum="3" target="_spreadsheet1" />
+  <copy prop="column3" colnum="5" target="_spreadsheet1" />
+  <copy prop="rowA" target="_spreadsheet1" />
+  <copy prop="columnB" target="_spreadsheet1" />
   </spreadsheet>
   `}, "*");
     });
@@ -889,7 +889,7 @@ describe('Spreadsheet Tag Tests', function () {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
-  <extract prop="text" assignNames="t1"><copy prop="cellA1" tname="_spreadsheet1" /></extract>
+  <extract prop="text" assignNames="t1"><copy prop="cellA1" target="_spreadsheet1" /></extract>
   <spreadsheet minNumRows="3" minNumColumns="3">
   <cell>A1</cell><cell>B1</cell><cell>C1</cell>
   <cell rownum="2" colnum="1">A2</cell><cell>B2</cell><cell>C2</cell>
@@ -897,7 +897,7 @@ describe('Spreadsheet Tag Tests', function () {
   </spreadsheet>
 
   <spreadsheet>
-  <copy prop="cells" rownum="3" colnum="2" tname="_spreadsheet1" />
+  <copy prop="cells" rownum="3" colnum="2" target="_spreadsheet1" />
   </spreadsheet>
   `}, "*");
     });
@@ -962,7 +962,7 @@ describe('Spreadsheet Tag Tests', function () {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
-  <extract prop="text" assignNames="t1"><copy prop="cellE1" tname="_spreadsheet1" /></extract>
+  <extract prop="text" assignNames="t1"><copy prop="cellE1" target="_spreadsheet1" /></extract>
   <spreadsheet>
   <cell colnum="5">alpha</cell>
   <cell>beta</cell>
@@ -970,9 +970,9 @@ describe('Spreadsheet Tag Tests', function () {
   </spreadsheet>
   
   <spreadsheet>
-  <copy prop="rangeE1F2" tname="_spreadsheet1" />
-  <copy prop="rangeE1F2" colnum="4" tname="_spreadsheet1" />
-  <copy prop="rangeE1F2" rownum="3" tname="_spreadsheet1" />
+  <copy prop="rangeE1F2" target="_spreadsheet1" />
+  <copy prop="rangeE1F2" colnum="4" target="_spreadsheet1" />
+  <copy prop="rangeE1F2" rownum="3" target="_spreadsheet1" />
   </spreadsheet>  
   `}, "*");
     });
@@ -1050,7 +1050,7 @@ describe('Spreadsheet Tag Tests', function () {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
-  <extract prop="text" assignNames="t1"><copy prop="cellA1" tname="_spreadsheet1" /></extract>
+  <extract prop="text" assignNames="t1"><copy prop="cellA1" target="_spreadsheet1" /></extract>
   <spreadsheet minNumRows="4" minNumColumns="4">
   <cell>(1,2)</cell>
   <cell>hello</cell>
@@ -1058,23 +1058,23 @@ describe('Spreadsheet Tag Tests', function () {
   </spreadsheet>
   
   <graph name="inAllCells">
-    <copy prop="pointsInCells" tname="_spreadsheet1" removeEmptyArrayEntries />
+    <copy prop="pointsInCells" target="_spreadsheet1" removeEmptyArrayEntries />
   </graph>
 
   <graph name="inCellB3">
-    <copy prop="pointsInCellB3" tname="_spreadsheet1" removeEmptyArrayEntries />
+    <copy prop="pointsInCellB3" target="_spreadsheet1" removeEmptyArrayEntries />
   </graph>
 
   <graph name="inRow2">
-    <copy prop="pointsInRow2" tname="_spreadsheet1" removeEmptyArrayEntries />
+    <copy prop="pointsInRow2" target="_spreadsheet1" removeEmptyArrayEntries />
   </graph>
 
   <graph name="inColumn1">
-    <copy prop="pointsInColumn1" tname="_spreadsheet1" removeEmptyArrayEntries />
+    <copy prop="pointsInColumn1" target="_spreadsheet1" removeEmptyArrayEntries />
   </graph>
 
   <graph name="inRangeA2B4">
-    <copy prop="pointsInRangeA2B4" tname="_spreadsheet1" removeEmptyArrayEntries />
+    <copy prop="pointsInRangeA2B4" target="_spreadsheet1" removeEmptyArrayEntries />
   </graph>
 
   `}, "*");
@@ -1397,24 +1397,24 @@ describe('Spreadsheet Tag Tests', function () {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
-  <extract prop="text" assignNames="t1"><copy prop="cellA1" tname="_spreadsheet1" /></extract>
+  <extract prop="text" assignNames="t1"><copy prop="cellA1" target="_spreadsheet1" /></extract>
   <spreadsheet>
-    <copy prop="cellC1" tname="_spreadsheet1" componentType="cell" />
-    <copy prop="cellE1" tname="_spreadsheet1" componentType="cell" />
+    <copy prop="cellC1" target="_spreadsheet1" componentType="cell" />
+    <copy prop="cellE1" target="_spreadsheet1" componentType="cell" />
     <cell>first</cell>
-    <copy prop="cellB1" tname="_spreadsheet1" componentType="cell" />
-    <copy prop="cellC1" tname="_spreadsheet1" componentType="cell" />
+    <copy prop="cellB1" target="_spreadsheet1" componentType="cell" />
+    <copy prop="cellC1" target="_spreadsheet1" componentType="cell" />
 
     <row rownum="2">
-      <copy colnum="2" prop="cellC2" tname="_spreadsheet1" />
-      <copy prop="cellD2" tname="_spreadsheet1" />
-      <copy prop="cellE2" tname="_spreadsheet1" />
-      <copy prop="cellF2" tname="_spreadsheet1" />
-      <copy prop="cellA3" tname="_spreadsheet1" />
+      <copy colnum="2" prop="cellC2" target="_spreadsheet1" />
+      <copy prop="cellD2" target="_spreadsheet1" />
+      <copy prop="cellE2" target="_spreadsheet1" />
+      <copy prop="cellF2" target="_spreadsheet1" />
+      <copy prop="cellA3" target="_spreadsheet1" />
     </row>
   </spreadsheet>
  
-  <copy assignNames"s2" tname="_spreadsheet1" />
+  <copy assignNames"s2" target="_spreadsheet1" />
 
   `}, "*");
     });
@@ -1519,17 +1519,17 @@ describe('Spreadsheet Tag Tests', function () {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
-  <extract prop="text"><copy prop="cellA1" tname="_spreadsheet1" /></extract>
+  <extract prop="text"><copy prop="cellA1" target="_spreadsheet1" /></extract>
   <spreadsheet>
-    <copy rownum="2" prop="cellC3" tname="_spreadsheet1" />
+    <copy rownum="2" prop="cellC3" target="_spreadsheet1" />
     <cell rownum="3" colnum="B">first</cell>
-    <copy prop="cellB3" tname="_spreadsheet1" />
-    <copy prop="cellA1" tname="_spreadsheet1" />
-    <copy rownum="5" colnum="2" prop="rangeA1C3" tname="_spreadsheet1" />
-    <copy prop="column2" colnum="5" tname="_spreadsheet1" />
+    <copy prop="cellB3" target="_spreadsheet1" />
+    <copy prop="cellA1" target="_spreadsheet1" />
+    <copy rownum="5" colnum="2" prop="rangeA1C3" target="_spreadsheet1" />
+    <copy prop="column2" colnum="5" target="_spreadsheet1" />
   </spreadsheet>
 
-  <copy name="s2" tname="_spreadsheet1" />
+  <copy name="s2" target="_spreadsheet1" />
   `}, "*");
     });
 
@@ -1717,16 +1717,16 @@ describe('Spreadsheet Tag Tests', function () {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
-  <extract prop="text"><copy prop="cellA1" tname="_spreadsheet1" /></extract>
+  <extract prop="text"><copy prop="cellA1" target="_spreadsheet1" /></extract>
   <spreadsheet>
-    <copy prop="rowC" tname="_spreadsheet1" />
-    <copy prop="rowE" tname="_spreadsheet1" />
+    <copy prop="rowC" target="_spreadsheet1" />
+    <copy prop="rowE" target="_spreadsheet1" />
     <row><cell>first</cell><cell>second</cell><cell colnum="6">sixth</cell></row>
-    <copy prop="rowB" tname="_spreadsheet1" />
-    <copy prop="rowC" tname="_spreadsheet1" />
+    <copy prop="rowB" target="_spreadsheet1" />
+    <copy prop="rowC" target="_spreadsheet1" />
   </spreadsheet>
 
-  <copy name="s2" tname="_spreadsheet1" />
+  <copy name="s2" target="_spreadsheet1" />
   `}, "*");
     });
 
@@ -1804,16 +1804,16 @@ describe('Spreadsheet Tag Tests', function () {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
-  <extract prop="text"><copy prop="cellA1" tname="_spreadsheet1" /></extract>
+  <extract prop="text"><copy prop="cellA1" target="_spreadsheet1" /></extract>
   <spreadsheet>
-    <copy prop="columnC" tname="_spreadsheet1" />
-    <copy prop="columnE" tname="_spreadsheet1" />
+    <copy prop="columnC" target="_spreadsheet1" />
+    <copy prop="columnE" target="_spreadsheet1" />
     <column><cell>first</cell><cell>second</cell><cell rownum="6">sixth</cell></column>
-    <copy prop="columnB" tname="_spreadsheet1" />
-    <copy prop="columnC" tname="_spreadsheet1" />
+    <copy prop="columnB" target="_spreadsheet1" />
+    <copy prop="columnC" target="_spreadsheet1" />
   </spreadsheet>
 
-  <copy name="s2" tname="_spreadsheet1" />
+  <copy name="s2" target="_spreadsheet1" />
   `}, "*");
     });
 
@@ -1892,19 +1892,19 @@ describe('Spreadsheet Tag Tests', function () {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
-  <extract prop="text"><copy prop="cellF1" tname="_spreadsheet1" /></extract>
+  <extract prop="text"><copy prop="cellF1" target="_spreadsheet1" /></extract>
   <spreadsheet>
-    <copy prop="rangeE1F2" tname="_spreadsheet1" />
+    <copy prop="rangeE1F2" target="_spreadsheet1" />
     <cellblock>
       <row><cell>a</cell><cell>b</cell></row>
       <row><cell>c</cell><cell>d</cell></row>
       <row><cell>e</cell><cell>f</cell></row>
       <row><cell>g</cell><cell>h</cell></row>
     </cellblock>
-    <copy prop="rangeC1D3" tname="_spreadsheet1" />
+    <copy prop="rangeC1D3" target="_spreadsheet1" />
   </spreadsheet>
 
-  <copy name="s2" tname="_spreadsheet1" />
+  <copy name="s2" target="_spreadsheet1" />
   `}, "*");
     });
 
@@ -2059,26 +2059,26 @@ describe('Spreadsheet Tag Tests', function () {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
-  <extract prop="text"><copy prop="cellA1" tname="_spreadsheet1" /></extract>
+  <extract prop="text"><copy prop="cellA1" target="_spreadsheet1" /></extract>
   <spreadsheet>
-    <copy rownum="2" colnum="1" prop="cellC3" tname="_spreadsheet2" />
-    <copy prop="cellA2" tname="_spreadsheet2" />
-    <copy prop="cellB2" tname="_spreadsheet2" />
-    <copy prop="cellC2" tname="_spreadsheet2" />
-    <copy prop="cellD2" tname="_spreadsheet2" />
-    <copy prop="row2" rownum="4" tname="_spreadsheet2" />
-    <copy prop="rangeB2D4" rownum="5" colnum="4" tname="_spreadsheet2" />
+    <copy rownum="2" colnum="1" prop="cellC3" target="_spreadsheet2" />
+    <copy prop="cellA2" target="_spreadsheet2" />
+    <copy prop="cellB2" target="_spreadsheet2" />
+    <copy prop="cellC2" target="_spreadsheet2" />
+    <copy prop="cellD2" target="_spreadsheet2" />
+    <copy prop="row2" rownum="4" target="_spreadsheet2" />
+    <copy prop="rangeB2D4" rownum="5" colnum="4" target="_spreadsheet2" />
     <cell rownum="3" colnum="C">first</cell>
   </spreadsheet>
 
   <spreadsheet>
-    <copy rownum="2" colnum="1" prop="cellC3" tname="_spreadsheet1" />
-    <copy prop="cellA2" tname="_spreadsheet1" />
-    <copy prop="cellB2" tname="_spreadsheet1" />
-    <copy prop="cellC2" tname="_spreadsheet1" />
-    <copy prop="cellD2" tname="_spreadsheet1" />
-    <copy prop="row2" rownum="4" tname="_spreadsheet1" />
-    <copy prop="rangeB2D4" rownum="5" colnum="4" tname="_spreadsheet1" />
+    <copy rownum="2" colnum="1" prop="cellC3" target="_spreadsheet1" />
+    <copy prop="cellA2" target="_spreadsheet1" />
+    <copy prop="cellB2" target="_spreadsheet1" />
+    <copy prop="cellC2" target="_spreadsheet1" />
+    <copy prop="cellD2" target="_spreadsheet1" />
+    <copy prop="row2" rownum="4" target="_spreadsheet1" />
+    <copy prop="rangeB2D4" rownum="5" colnum="4" target="_spreadsheet1" />
   </spreadsheet>
   `}, "*");
     });
@@ -2269,13 +2269,13 @@ describe('Spreadsheet Tag Tests', function () {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
-  <extract prop="text"><copy prop="cellA1" tname="_spreadsheet1" /></extract>
+  <extract prop="text"><copy prop="cellA1" target="_spreadsheet1" /></extract>
   <spreadsheet>
-    <copy prop="cellQ1" tname="_spreadsheet1" />
-    <copy prop="rangeE6F8" tname="_spreadsheet1" />
-    <copy rownum="4" prop="row10" tname="_spreadsheet1" />
-    <copy rownum="5" prop="row8" tname="_spreadsheet2" />
-    <copy rownum="2" colnum="4" prop="cellG2" tname="_spreadsheet2" />
+    <copy prop="cellQ1" target="_spreadsheet1" />
+    <copy prop="rangeE6F8" target="_spreadsheet1" />
+    <copy rownum="4" prop="row10" target="_spreadsheet1" />
+    <copy rownum="5" prop="row8" target="_spreadsheet2" />
+    <copy rownum="2" colnum="4" prop="cellG2" target="_spreadsheet2" />
   </spreadsheet>
  
   <spreadsheet></spreadsheet>
@@ -2375,13 +2375,13 @@ describe('Spreadsheet Tag Tests', function () {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
-  <extract prop="text" assignNames="t1"><copy prop="cellA1" tname="_spreadsheet1" /></extract>
+  <extract prop="text" assignNames="t1"><copy prop="cellA1" target="_spreadsheet1" /></extract>
   <spreadsheet minNumRows="4" minNumColumns="4">
-    <cell><copy prop="numRows" tname="_spreadsheet1" /></cell>
-    <cell><copy prop="numColumns" tname="_spreadsheet1" /></cell>
+    <cell><copy prop="numRows" target="_spreadsheet1" /></cell>
+    <cell><copy prop="numColumns" target="_spreadsheet1" /></cell>
   </spreadsheet>
 
-  <copy name="s2" tname="_spreadsheet1" />
+  <copy name="s2" target="_spreadsheet1" />
   `}, "*");
     });
 
@@ -2471,13 +2471,13 @@ describe('Spreadsheet Tag Tests', function () {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
-  <extract prop="text"><copy prop="cellA1" tname="_spreadsheet1" /></extract>
+  <extract prop="text"><copy prop="cellA1" target="_spreadsheet1" /></extract>
   <spreadsheet>
-    <numRows><copy prop="cellA1" tname="_spreadsheet1" /></numRows>
-    <numColumns><copy prop="cellB1" tname="_spreadsheet1" /></numColumns>
+    <numRows><copy prop="cellA1" target="_spreadsheet1" /></numRows>
+    <numColumns><copy prop="cellB1" target="_spreadsheet1" /></numColumns>
   </spreadsheet>
 
-  <copy name="s2" tname="_spreadsheet1" />
+  <copy name="s2" target="_spreadsheet1" />
   `}, "*");
     });
 
@@ -2571,18 +2571,18 @@ describe('Spreadsheet Tag Tests', function () {
   <cell>1</cell>
 </spreadsheet>
 
-<p><copy prop="cellA1" tname="_spreadsheet1" /> A</p>
+<p><copy prop="cellA1" target="_spreadsheet1" /> A</p>
 
 <p><aslist>
-  <math simplify><copy prop="cellA1" tname="_spreadsheet1" />+1</math>
-  <number><copy prop="cellA1" tname="_spreadsheet1" />+1</number>
-  <text><copy prop="cellA1" tname="_spreadsheet1" /> B</text>
+  <math simplify><copy prop="cellA1" target="_spreadsheet1" />+1</math>
+  <number><copy prop="cellA1" target="_spreadsheet1" />+1</number>
+  <text><copy prop="cellA1" target="_spreadsheet1" /> B</text>
 </aslist></p>
 
 <p><aslist>
-  <math simplify><copy prop="cellA1" tname="_spreadsheet1" />+<copy prop="cellA2" tname="_spreadsheet1" /></math>
-  <number><copy prop="cellA1" tname="_spreadsheet1" />+<copy prop="cellA2" tname="_spreadsheet1" /></number>
-  <text><copy prop="cellA1" tname="_spreadsheet1" /> + <copy prop="cellA2" tname="_spreadsheet1" /></text>
+  <math simplify><copy prop="cellA1" target="_spreadsheet1" />+<copy prop="cellA2" target="_spreadsheet1" /></math>
+  <number><copy prop="cellA1" target="_spreadsheet1" />+<copy prop="cellA2" target="_spreadsheet1" /></number>
+  <text><copy prop="cellA1" target="_spreadsheet1" /> + <copy prop="cellA2" target="_spreadsheet1" /></text>
 </aslist></p>
   `}, "*");
     });
@@ -2695,18 +2695,18 @@ describe('Spreadsheet Tag Tests', function () {
   <cell>1</cell><cell>2</cell>
 </spreadsheet>
 
-<copy prop="cellB1" tname="s" assignNames="c1" />
-<copy prop="cellA1" tname="s" assignNames="c2" />
+<copy prop="cellB1" target="s" assignNames="c1" />
+<copy prop="cellA1" target="s" assignNames="c2" />
 
 <tabular>
   <row>
-    <copy prop="cellB1" tname="s" />
+    <copy prop="cellB1" target="s" />
     <cell>Hello</cell>
-    <copy prop="cellB2" tname="s" />
+    <copy prop="cellB2" target="s" />
   </row>
   <row>
     <cell>Bye</cell>
-    <copy tname="s" prop="cellA1" />
+    <copy target="s" prop="cellA1" />
   </row>
 </tabular>
 
@@ -2737,13 +2737,13 @@ describe('Spreadsheet Tag Tests', function () {
       win.postMessage({
         doenetML: `
   <spreadsheet>
-  <cell>1</cell><cell><math simplify><copy fixed tname="x" />+<copy prop="cellA2" tname="_spreadsheet1" /></math></cell>
+  <cell>1</cell><cell><math simplify><copy fixed target="x" />+<copy prop="cellA2" target="_spreadsheet1" /></math></cell>
   <cell rownum="2" colnum="1">3</cell>
-  <cell><math simplify><copy prop="cellA1" fixed tname="_spreadsheet1" /> + <copy prop="cellC2" tname="_spreadsheet1" /></math></cell>
+  <cell><math simplify><copy prop="cellA1" fixed target="_spreadsheet1" /> + <copy prop="cellC2" target="_spreadsheet1" /></math></cell>
   <cell>5</cell>
 </spreadsheet>
 
-<math name="x" simplify><copy prop="cellA1" tname="_spreadsheet1" />+1</math>
+<math name="x" simplify><copy prop="cellA1" target="_spreadsheet1" />+1</math>
   `}, "*");
     });
     cy.get('#\\/_spreadsheet1')//wait for window to load

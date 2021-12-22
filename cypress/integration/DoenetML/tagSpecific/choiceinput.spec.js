@@ -27,8 +27,8 @@ describe('ChoiceInput Tag Tests', function () {
       <choice>mouse</choice>
     </choiceinput>
 
-    <p>Selected value: <copy prop='selectedvalue' tname="_choiceinput1" /></p>
-    <p>Selected index: <copy prop='selectedindex' tname="_choiceinput1" /></p>
+    <p>Selected value: <copy prop='selectedvalue' target="_choiceinput1" /></p>
+    <p>Selected index: <copy prop='selectedindex' target="_choiceinput1" /></p>
     `}, "*");
     });
 
@@ -106,8 +106,8 @@ describe('ChoiceInput Tag Tests', function () {
       <choice>mouse</choice>
     </choiceinput>
 
-    <p>Selected value: <copy prop='selectedvalue' tname="_choiceinput1" /></p>
-    <p>Selected index: <copy prop='selectedindex' tname="_choiceinput1" /></p>
+    <p>Selected value: <copy prop='selectedvalue' target="_choiceinput1" /></p>
+    <p>Selected index: <copy prop='selectedindex' target="_choiceinput1" /></p>
     `}, "*");
     });
 
@@ -189,8 +189,8 @@ describe('ChoiceInput Tag Tests', function () {
       <choice>mouse</choice>
     </choiceinput>
 
-    <p>Selected value: <copy prop='selectedvalue' tname="_choiceinput1" /></p>
-    <p>Selected index: <copy prop='selectedindex' tname="_choiceinput1" /></p>
+    <p>Selected value: <copy prop='selectedvalue' target="_choiceinput1" /></p>
+    <p>Selected index: <copy prop='selectedindex' target="_choiceinput1" /></p>
     `}, "*");
     });
 
@@ -261,21 +261,21 @@ describe('ChoiceInput Tag Tests', function () {
         <choice>e</choice>
         <choice>f</choice>
       </choiceinput>
-      <copy name="copy" tname="_choiceinput1" />
-      <copy name="copy2" inline="false" tname="_choiceinput1" />
-      <copy name="copy3" inline="false" tname="copy" />
+      <copy name="copy" target="_choiceinput1" />
+      <copy name="copy2" inline="false" target="_choiceinput1" />
+      <copy name="copy3" inline="false" target="copy" />
   
       <p>Selected values: <aslist>
-      <copy prop='selectedvalue' tname="_choiceinput1" />
-      <copy prop='selectedvalue' tname="copy" />
-      <copy prop='selectedvalue' tname="copy2" />
-      <copy prop='selectedvalue' tname="copy3" />
+      <copy prop='selectedvalue' target="_choiceinput1" />
+      <copy prop='selectedvalue' target="copy" />
+      <copy prop='selectedvalue' target="copy2" />
+      <copy prop='selectedvalue' target="copy3" />
       </aslist></p>
       <p>Selected indices: <aslist>
-      <copy prop='selectedindex' tname="_choiceinput1" />
-      <copy prop='selectedindex' tname="copy" />
-      <copy prop='selectedindex' tname="copy2" />
-      <copy prop='selectedindex' tname="copy3" />
+      <copy prop='selectedindex' target="_choiceinput1" />
+      <copy prop='selectedindex' target="copy" />
+      <copy prop='selectedindex' target="copy2" />
+      <copy prop='selectedindex' target="copy3" />
       </aslist></p>
 
     `}, "*");
@@ -503,20 +503,20 @@ describe('ChoiceInput Tag Tests', function () {
     <text>a</text>
     <choiceinput randomizeOrder>
       <choice>The function is <m>f(\\xi)=\\sin(\\xi)</m>.</choice>
-      <choice>The sum of <math name="lambda2">lambda^2</math> and <math name="twice">2 lambda^2</math> is <math simplify><copy tname="lambda2" />+<copy tname="twice" /></math>.</choice>
+      <choice>The sum of <math name="lambda2">lambda^2</math> and <math name="twice">2 lambda^2</math> is <math simplify><copy target="lambda2" />+<copy target="twice" /></math>.</choice>
       <choice>The sequence is <aslist><sequence from="1" to="5" /></aslist>.</choice>
       <choice>Can't convert this latex: <m>\\int_a^b q(t) \\, dt</m>.</choice>
     </choiceinput>
 
-    <copy name="copy" inline tname="_choiceinput1" />
+    <copy name="copy" inline target="_choiceinput1" />
 
     <p>Selected values: <aslist>
-    <copy prop='selectedvalue' tname="_choiceinput1" />
-    <copy prop='selectedvalue' tname="copy" />
+    <copy prop='selectedvalue' target="_choiceinput1" />
+    <copy prop='selectedvalue' target="copy" />
     </aslist></p>
     <p>Selected indices: <aslist>
-    <copy prop='selectedindex' tname="_choiceinput1" />
-    <copy prop='selectedindex' tname="copy" />
+    <copy prop='selectedindex' target="_choiceinput1" />
+    <copy prop='selectedindex' target="copy" />
     </aslist></p>
 
     `}, "*");
@@ -647,15 +647,15 @@ describe('ChoiceInput Tag Tests', function () {
 
     <p>Select by typing: <textinput prefill="monkey" /></p>
 
-    <copy name="copy" inline tname="_choiceinput1" />
+    <copy name="copy" inline target="_choiceinput1" />
 
     <p>Selected values: <aslist>
-    <copy prop='selectedvalue' tname="_choiceinput1" />
-    <copy prop='selectedvalue' tname="copy" />
+    <copy prop='selectedvalue' target="_choiceinput1" />
+    <copy prop='selectedvalue' target="copy" />
     </aslist></p>
     <p>Selected indices: <aslist>
-    <copy prop='selectedindex' tname="_choiceinput1" />
-    <copy prop='selectedindex' tname="copy" />
+    <copy prop='selectedindex' target="_choiceinput1" />
+    <copy prop='selectedindex' target="copy" />
     </aslist></p>
 
     `}, "*");
@@ -794,15 +794,15 @@ describe('ChoiceInput Tag Tests', function () {
 
     <p>Select by typing: <textinput prefill="monkey" /></p>
 
-    <copy name="copy" inline tname="_choiceinput1" />
+    <copy name="copy" inline target="_choiceinput1" />
 
     <p>Selected values: <aslist>
-    <copy prop='selectedvalues' tname="_choiceinput1" />
-    <copy prop='selectedvalues' tname="copy" />
+    <copy prop='selectedvalues' target="_choiceinput1" />
+    <copy prop='selectedvalues' target="copy" />
     </aslist></p>
     <p>Selected indices: <aslist>
-    <copy prop='selectedindices' tname="_choiceinput1" />
-    <copy prop='selectedindices' tname="copy" />
+    <copy prop='selectedindices' target="_choiceinput1" />
+    <copy prop='selectedindices' target="copy" />
     </aslist></p>
 
     `}, "*");
@@ -1085,8 +1085,8 @@ describe('ChoiceInput Tag Tests', function () {
       <choice>mouse</choice>
     </choiceinput>
 
-    <p>Selected value: <copy prop='selectedvalue' tname="_choiceinput1" /></p>
-    <p>Selected index: <copy prop='selectedindex' tname="_choiceinput1" /></p>
+    <p>Selected value: <copy prop='selectedvalue' target="_choiceinput1" /></p>
+    <p>Selected index: <copy prop='selectedindex' target="_choiceinput1" /></p>
     `}, "*");
     });
 
@@ -1176,8 +1176,8 @@ describe('ChoiceInput Tag Tests', function () {
       <choice>mouse</choice>
     </choiceinput>
 
-    <p>Selected value: <copy prop='selectedvalue' tname="_choiceinput1" /></p>
-    <p>Selected index: <copy prop='selectedindex' tname="_choiceinput1" /></p>
+    <p>Selected value: <copy prop='selectedvalue' target="_choiceinput1" /></p>
+    <p>Selected index: <copy prop='selectedindex' target="_choiceinput1" /></p>
     `}, "*");
     });
 
@@ -1267,8 +1267,8 @@ describe('ChoiceInput Tag Tests', function () {
       <choice>mouse</choice>
     </choiceinput>
 
-    <p>Selected value: <copy prop='selectedvalue' tname="_choiceinput1" /></p>
-    <p>Selected index: <copy prop='selectedindex' tname="_choiceinput1" /></p>
+    <p>Selected value: <copy prop='selectedvalue' target="_choiceinput1" /></p>
+    <p>Selected index: <copy prop='selectedindex' target="_choiceinput1" /></p>
     `}, "*");
     });
 
@@ -1344,8 +1344,8 @@ describe('ChoiceInput Tag Tests', function () {
       <choice>mouse</choice>
     </choiceinput>
 
-    <p>Selected value: <copy prop='selectedvalue' tname="_choiceinput1" /></p>
-    <p>Selected index: <copy prop='selectedindex' tname="_choiceinput1" /></p>
+    <p>Selected value: <copy prop='selectedvalue' target="_choiceinput1" /></p>
+    <p>Selected index: <copy prop='selectedindex' target="_choiceinput1" /></p>
     `}, "*");
     });
 
@@ -1421,8 +1421,8 @@ describe('ChoiceInput Tag Tests', function () {
       <choice>mouse</choice>
     </choiceinput>
 
-    <p>Selected values: <aslist><copy prop='selectedvalues' tname="_choiceinput1" /></aslist></p>
-    <p>Selected indices: <aslist><copy prop='selectedindices' tname="_choiceinput1" /></aslist></p>
+    <p>Selected values: <aslist><copy prop='selectedvalues' target="_choiceinput1" /></aslist></p>
+    <p>Selected indices: <aslist><copy prop='selectedindices' target="_choiceinput1" /></aslist></p>
     `}, "*");
     });
 
@@ -1542,8 +1542,8 @@ describe('ChoiceInput Tag Tests', function () {
       <choice>mouse</choice>
     </choiceinput>
 
-    <p>Selected values: <aslist><copy prop='selectedvalues' tname="_choiceinput1" /></aslist></p>
-    <p>Selected indices: <aslist><copy prop='selectedindices' tname="_choiceinput1" /></aslist></p>
+    <p>Selected values: <aslist><copy prop='selectedvalues' target="_choiceinput1" /></aslist></p>
+    <p>Selected indices: <aslist><copy prop='selectedindices' target="_choiceinput1" /></aslist></p>
     `}, "*");
     });
 
@@ -1690,7 +1690,7 @@ describe('ChoiceInput Tag Tests', function () {
     </choiceinput>
 
     <text name="t"></text>
-    <updateValue triggerWithTnames="ci" tname="t" newValue="$t $ci" type="text" />
+    <updateValue triggerWithTargets="ci" target="t" newValue="$t $ci" type="text" />
     `}, "*");
     });
 

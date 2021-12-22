@@ -23,9 +23,9 @@ describe('Point Tag Tests', function () {
     <text>a</text>
     <graph>
       <point label="P">(5,6)</point>
-      <point label="Q">(1, <copy prop="y" tname="_point1" />)</point>
+      <point label="Q">(1, <copy prop="y" target="_point1" />)</point>
     </graph>
-    <copy prop="x2" tname="_point2" />
+    <copy prop="x2" target="_point2" />
     `}, "*");
     });
 
@@ -53,7 +53,7 @@ describe('Point Tag Tests', function () {
     <point label="P">(5,6)</point>
     <point label="Q" coords="(1, $(_point1{prop='y'}))" />
   </graph>
-  <copy prop="x2" tname="_point2" />
+  <copy prop="x2" target="_point2" />
     `}, "*");
     });
 
@@ -98,8 +98,8 @@ describe('Point Tag Tests', function () {
       (1,3)
     </point>
   </graph>
-  <copy prop="label" tname="_point1" name="l" hide />
-  <copy prop="x2" tname="_point2" />
+  <copy prop="label" target="_point1" name="l" hide />
+  <copy prop="x2" target="_point2" />
     `}, "*");
     });
 
@@ -126,7 +126,7 @@ describe('Point Tag Tests', function () {
       <point label="P" name="P">$coords</point>
     </graph>
     <graph>
-      <copy tname="P" assignNames="Q" label="Q" />
+      <copy target="P" assignNames="Q" label="Q" />
     </graph>
     `}, "*");
     });
@@ -216,7 +216,7 @@ describe('Point Tag Tests', function () {
     (0.5<math>2</math><math modifyIndirectly="false">3</math>, <math name="y">1</math>)
   </point>
   </graph>
-  <copy prop="y" tname="_point1" />
+  <copy prop="y" target="_point1" />
   `}, "*");
     });
 
@@ -243,14 +243,14 @@ describe('Point Tag Tests', function () {
   <text>a</text>
   <graph>
   <point>
-    (<copy prop="y" tname="source" />,<copy prop="z" tname="source" />)
+    (<copy prop="y" target="source" />,<copy prop="z" target="source" />)
   </point>
   </graph>
 
   <point name="source">
     (<math modifyIndirectly="false">a</math>,2,3)
   </point>
-  <copy prop="x" tname="_point1" />
+  <copy prop="x" target="_point1" />
   `}, "*");
     });
 
@@ -286,14 +286,14 @@ describe('Point Tag Tests', function () {
   <text>a</text>
   <graph>
   <point>
-    (<copy prop="x2" tname="source" />,<copy prop="x3" tname="source" />)
+    (<copy prop="x2" target="source" />,<copy prop="x3" target="source" />)
   </point>
   </graph>
 
   <point name="source">
     (<math modifyIndirectly="false">a</math>,2,3)
   </point>
-  <copy prop="x" tname="_point1" />
+  <copy prop="x" target="_point1" />
   `}, "*");
     });
 
@@ -333,7 +333,7 @@ describe('Point Tag Tests', function () {
 
   <math name="a" modifyIndirectly="false">a</math>
   <point name="source" x="$a" y="2" z="3" />
-  <copy prop="x" tname="_point1" />
+  <copy prop="x" target="_point1" />
   `}, "*");
     });
 
@@ -371,11 +371,11 @@ describe('Point Tag Tests', function () {
   <point x="$(source3{prop='y'})" y = "$(source3{prop='z'})" />
   </graph>
 
-  <copy name="source2" tname="source" />
+  <copy name="source2" target="source" />
   <math name="a" modifyIndirectly="false">a</math>
   <point name="source" x="$a" y="2" z="3" />
-  <copy name="source3" tname="source2" />
-  <copy prop="x" tname="_point1" />
+  <copy name="source3" target="source2" />
+  <copy prop="x" target="_point1" />
 
   `}, "*");
     });
@@ -414,9 +414,9 @@ describe('Point Tag Tests', function () {
   <point>(1,2)
   </point>
   </graph>
-  <copy tname="_graph1" />
+  <copy target="_graph1" />
   <graph>
-  <copy name="p3" tname="_point1" />
+  <copy name="p3" target="_point1" />
   </graph>
   `}, "*");
     });
@@ -482,7 +482,7 @@ describe('Point Tag Tests', function () {
   <text>a</text>
   <graph>
   <point>
-    (<copy tname="y" />^2/10, <math name="y">1</math>)
+    (<copy target="y" />^2/10, <math name="y">1</math>)
   </point>
   </graph>
   `}, "*");
@@ -565,11 +565,11 @@ describe('Point Tag Tests', function () {
   <graph>
   <point>(1,2)</point>
   <point>
-    (<copy prop="y" tname="_point1" />, <copy prop="x" tname="_point1" />)
+    (<copy prop="y" target="_point1" />, <copy prop="x" target="_point1" />)
   </point>
   <line draggable="false">x=y</line>
   </graph>
-  <copy prop="x" tname="_point2" />
+  <copy prop="x" target="_point2" />
   `}, "*");
     });
 
@@ -647,7 +647,7 @@ describe('Point Tag Tests', function () {
   </point>
   </graph>
   <math name="d">5</math>
-  <copy prop="x" tname="_point1" />
+  <copy prop="x" target="_point1" />
   `}, "*");
     });
 
@@ -678,14 +678,14 @@ describe('Point Tag Tests', function () {
   <graph>
 
   <point>
-  (<copy prop="y" tname="_point2" />,
-  <copy tname="a" />)
+  (<copy prop="y" target="_point2" />,
+  <copy target="a" />)
   </point>
   <point>(5,3)</point>
 
   </graph>
 
-  <math name="a"><copy prop="x" tname="_point2" />+1</math>
+  <math name="a"><copy prop="x" target="_point2" />+1</math>
   `}, "*");
     });
 
@@ -730,15 +730,15 @@ describe('Point Tag Tests', function () {
   <text>a</text>
   <graph>
   <point>
-  (<copy tname="a" />,
-  <copy prop="x" tname="_point2" />)
+  (<copy target="a" />,
+  <copy prop="x" target="_point2" />)
   </point>
-  <point>(<copy tname="d" />,3-<copy tname="d" />)</point>
+  <point>(<copy target="d" />,3-<copy target="d" />)</point>
   </graph>
 
-  <math name="a" simplify modifyIndirectly="true"><copy tname="b" />+1</math>,
-  <math name="b" simplify modifyIndirectly="true"><copy prop="y" tname="_point2" /><copy tname="c" /></math>,
-  <math name="c" simplify modifyIndirectly="false"><copy prop="x" tname="_point2" /><copy tname="d" />*0.01</math>,
+  <math name="a" simplify modifyIndirectly="true"><copy target="b" />+1</math>,
+  <math name="b" simplify modifyIndirectly="true"><copy prop="y" target="_point2" /><copy target="c" /></math>,
+  <math name="c" simplify modifyIndirectly="false"><copy prop="x" target="_point2" /><copy target="d" />*0.01</math>,
   <math name="d" simplify modifyIndirectly="true">5</math>
   `}, "*");
     });
@@ -878,10 +878,10 @@ describe('Point Tag Tests', function () {
   <text>a</text>
   <graph>
   <point>
-    (<copy prop="y" tname="_point2" />, 3)
+    (<copy prop="y" target="_point2" />, 3)
   </point>
   <point>
-    (<copy tname="a" />,<copy tname="a" />)
+    (<copy target="a" />,<copy target="a" />)
   </point>
   </graph>
 
@@ -943,10 +943,10 @@ describe('Point Tag Tests', function () {
   <text>b</text>
   <graph>
   <point>
-    (<copy prop="x" tname="_point2" />, 3)
+    (<copy prop="x" target="_point2" />, 3)
   </point>
   <point>
-    (<copy tname="a" />,<copy tname="a" />)
+    (<copy target="a" />,<copy target="a" />)
   </point>
   </graph>
 
@@ -1017,8 +1017,8 @@ describe('Point Tag Tests', function () {
   </point>
 
   </graph>
-  <math><copy prop="coords" tname="_point1" /></math>
-  <boolean><copy prop="constraintUsed" tname="_point1" /></boolean>
+  <math><copy prop="coords" target="_point1" /></math>
+  <boolean><copy prop="constraintUsed" target="_point1" /></boolean>
   `}, "*");
     });
 
@@ -1086,8 +1086,8 @@ describe('Point Tag Tests', function () {
   </point>
 
   </graph>
-  <math><copy prop="coords" tname="_point1" /></math>
-  <boolean><copy prop="constraintUsed" tname="_point1" /></boolean>
+  <math><copy prop="coords" target="_point1" /></math>
+  <boolean><copy prop="constraintUsed" target="_point1" /></boolean>
   `}, "*");
     });
 
@@ -1135,11 +1135,11 @@ describe('Point Tag Tests', function () {
 
   <graph>
   <point x="1" y="2">
-    <copy tname="toGrid" />
+    <copy target="toGrid" />
   </point>
   </graph>
-  <math><copy prop="coords" tname="_point1" /></math>
-  <boolean><copy prop="constraintUsed" tname="_point1" /></boolean>
+  <math><copy prop="coords" target="_point1" /></math>
+  <boolean><copy prop="constraintUsed" target="_point1" /></boolean>
   `}, "*");
     });
 
@@ -1187,8 +1187,8 @@ describe('Point Tag Tests', function () {
     </constraints>
   </point>
 
-  <math><copy prop="coords" tname="_point1" /></math>
-  <boolean><copy prop="constraintUsed" tname="_point1" /></boolean>
+  <math><copy prop="coords" target="_point1" /></math>
+  <boolean><copy prop="constraintUsed" target="_point1" /></boolean>
   `}, "*");
     });
 
@@ -1260,8 +1260,8 @@ describe('Point Tag Tests', function () {
   </point>
 
   </graph>
-  <math><copy prop="coords" tname="_point1" /></math>
-  <boolean><copy prop="constraintUsed" tname="_point1" /></boolean>
+  <math><copy prop="coords" target="_point1" /></math>
+  <boolean><copy prop="constraintUsed" target="_point1" /></boolean>
 
   `}, "*");
     });
@@ -1316,8 +1316,8 @@ describe('Point Tag Tests', function () {
       </constraints>
     </point>
   </graph>
-  <math><copy prop="coords" tname="_point1" /></math>
-  <boolean><copy prop="constraintUsed" tname="_point1" /></boolean>
+  <math><copy prop="coords" target="_point1" /></math>
+  <boolean><copy prop="constraintUsed" target="_point1" /></boolean>
 
   `}, "*");
     });
@@ -1365,8 +1365,8 @@ describe('Point Tag Tests', function () {
   </point>
 
   </graph>
-  <math><copy prop="coords" tname="_point1" /></math>
-  <boolean><copy prop="constraintUsed" tname="_point1" /></boolean>
+  <math><copy prop="coords" target="_point1" /></math>
+  <boolean><copy prop="constraintUsed" target="_point1" /></boolean>
   `}, "*");
     });
 
@@ -1426,16 +1426,16 @@ describe('Point Tag Tests', function () {
       </constraints>
     </point>
     <point name="follower">
-        (<copy prop="x" tname="constrained" />+1,
-          <copy prop="y" tname="constrained" />+1)
+        (<copy prop="x" target="constrained" />+1,
+          <copy prop="y" target="constrained" />+1)
     </point>
   </graph>
-  <math><copy prop="coords" tname="original" /></math>
-  <math><copy prop="coords" tname="constrained" /></math>
-  <math><copy prop="coords" tname="follower" /></math>
-  <boolean><copy prop="constraintUsed" tname="original" /></boolean>
-  <boolean><copy prop="constraintUsed" tname="constrained" /></boolean>
-  <boolean><copy prop="constraintUsed" tname="follower" /></boolean>
+  <math><copy prop="coords" target="original" /></math>
+  <math><copy prop="coords" target="constrained" /></math>
+  <math><copy prop="coords" target="follower" /></math>
+  <boolean><copy prop="constraintUsed" target="original" /></boolean>
+  <boolean><copy prop="constraintUsed" target="constrained" /></boolean>
+  <boolean><copy prop="constraintUsed" target="follower" /></boolean>
   `}, "*");
     });
 
@@ -1553,13 +1553,13 @@ describe('Point Tag Tests', function () {
       </constraints>
     </point>
     <point name="follower">
-        (<copy prop="x" tname="constrained" />+1,
-          <copy prop="y" tname="constrained" />+1)
+        (<copy prop="x" target="constrained" />+1,
+          <copy prop="y" target="constrained" />+1)
     </point>
   </graph>
-  <math><copy prop="coords" tname="original" /></math>
-  <math><copy prop="coords" tname="constrained" /></math>
-  <math><copy prop="coords" tname="follower" /></math>
+  <math><copy prop="coords" target="original" /></math>
+  <math><copy prop="coords" target="constrained" /></math>
+  <math><copy prop="coords" target="follower" /></math>
   `}, "*");
     });
 
@@ -1710,8 +1710,8 @@ describe('Point Tag Tests', function () {
   </point>
 
   </graph>
-  <math><copy prop="coords" tname="_point1" /></math>
-  <boolean><copy prop="constraintUsed" tname="_point1" /></boolean>
+  <math><copy prop="coords" target="_point1" /></math>
+  <boolean><copy prop="constraintUsed" target="_point1" /></boolean>
   `}, "*");
     });
 
@@ -1789,12 +1789,12 @@ describe('Point Tag Tests', function () {
   <graph>
 
   <point xs="-7.1 8.9">
-    <copy tname="toGrid" />
+    <copy target="toGrid" />
   </point>
 
   </graph>
-  <math><copy prop="coords" tname="_point1" /></math>
-  <boolean><copy prop="constraintUsed" tname="_point1" /></boolean>
+  <math><copy prop="coords" target="_point1" /></math>
+  <boolean><copy prop="constraintUsed" target="_point1" /></boolean>
   `}, "*");
     });
 
@@ -1854,8 +1854,8 @@ describe('Point Tag Tests', function () {
     </constraints>
   </point>
 
-  <math><copy prop="coords" tname="_point1" /></math>
-  <boolean><copy prop="constraintUsed" tname="_point1" /></boolean>
+  <math><copy prop="coords" target="_point1" /></math>
+  <boolean><copy prop="constraintUsed" target="_point1" /></boolean>
   `}, "*");
     });
 
@@ -1939,8 +1939,8 @@ describe('Point Tag Tests', function () {
   </point>
 
   </graph>
-  <math><copy prop="coords" tname="_point1" /></math>
-  <boolean><copy prop="constraintUsed" tname="_point1" /></boolean>
+  <math><copy prop="coords" target="_point1" /></math>
+  <boolean><copy prop="constraintUsed" target="_point1" /></boolean>
   
 
   `}, "*");
@@ -2028,8 +2028,8 @@ describe('Point Tag Tests', function () {
   </point>
 
   </graph>
-  <math><copy prop="coords" tname="_point1" /></math>
-  <boolean><copy prop="constraintUsed" tname="_point1" /></boolean>
+  <math><copy prop="coords" target="_point1" /></math>
+  <boolean><copy prop="constraintUsed" target="_point1" /></boolean>
 
   `}, "*");
     });
@@ -2116,11 +2116,11 @@ describe('Point Tag Tests', function () {
   <line through="$_point1 $_point2"/>
   <point name="A" xs="-1 -5">
     <constraints>
-      <constrainTo><copy tname="_line1" /></constrainTo>
+      <constrainTo><copy target="_line1" /></constrainTo>
     </constraints>
   </point>
   </graph>
-  <copy prop="constraintUsed" name="constraintUsed" tname="A" />
+  <copy prop="constraintUsed" name="constraintUsed" target="A" />
   `}, "*");
     });
 
@@ -2182,11 +2182,11 @@ describe('Point Tag Tests', function () {
   <line through="$_point1 $_point2"/>
   <point name="A" xs="-1 -5">
     <constraints>
-      <attractTo><copy tname="_line1" /></attractTo>
+      <attractTo><copy target="_line1" /></attractTo>
     </constraints>
   </point>
   </graph>
-  <copy prop="constraintUsed" name="constraintUsed" tname="A" />
+  <copy prop="constraintUsed" name="constraintUsed" target="A" />
   `}, "*");
     });
 
@@ -2255,14 +2255,14 @@ describe('Point Tag Tests', function () {
   <point xs="3 2">
     <constraints>
     <constrainTo>
-      <copy tname="_line1" />
-      <copy tname="_line2" />
-      <copy tname="_map1" />
+      <copy target="_line1" />
+      <copy target="_line2" />
+      <copy target="_map1" />
     </constrainTo>
     </constraints>
   </point>
   </graph>
-  <copy prop="constraintUsed" name="constraintUsed" tname="_point1" />
+  <copy prop="constraintUsed" name="constraintUsed" target="_point1" />
   <text>a</text>
   `}, "*");
     });
@@ -2331,14 +2331,14 @@ describe('Point Tag Tests', function () {
   <point xs="3 2">
     <constraints>
       <attractTo threshold="1">
-        <copy tname="_line1" />
-        <copy tname="_line2" />
-        <copy tname="_map1" />
+        <copy target="_line1" />
+        <copy target="_line2" />
+        <copy target="_map1" />
       </attractTo>
     </constraints>
   </point>
   </graph>
-  <copy prop="constraintUsed" name="constraintUsed" tname="_point1" />
+  <copy prop="constraintUsed" name="constraintUsed" target="_point1" />
   <text>a</text>
   `}, "*");
     });
@@ -2426,15 +2426,15 @@ describe('Point Tag Tests', function () {
   <point name="A" xs="7 3">
     <constraints>
     <constraintUnion>
-      <constrainTo><copy tname="_line1" /></constrainTo>
-      <constrainTo><copy tname="_line2" /><copy tname="_line3" /></constrainTo>
-      <constrainTo><copy tname="_line4" /></constrainTo>
+      <constrainTo><copy target="_line1" /></constrainTo>
+      <constrainTo><copy target="_line2" /><copy target="_line3" /></constrainTo>
+      <constrainTo><copy target="_line4" /></constrainTo>
       <constrainToGrid dx="2" dy="2"/>
     </constraintUnion>
     </constraints>
   </point>
   </graph>
-  <copy prop="constraintUsed" name="constraintUsed" tname="A" />
+  <copy prop="constraintUsed" name="constraintUsed" target="A" />
   <text>a</text>
   `}, "*");
     });
@@ -2508,16 +2508,16 @@ describe('Point Tag Tests', function () {
     <constraints>
     <attractToConstraint>
       <constraintUnion>
-        <constrainTo><copy tname="_line1" /></constrainTo>
-        <constrainTo><copy tname="_line2" /><copy tname="_line3" /></constrainTo>
-        <constrainTo><copy tname="_line4" /></constrainTo>
+        <constrainTo><copy target="_line1" /></constrainTo>
+        <constrainTo><copy target="_line2" /><copy target="_line3" /></constrainTo>
+        <constrainTo><copy target="_line4" /></constrainTo>
         <constrainToGrid dx="2" dy="2"/>
       </constraintUnion>
     </attractToConstraint>
     </constraints>
   </point>
   </graph>
-  <copy prop="constraintUsed" name="constraintUsed" tname="A" />
+  <copy prop="constraintUsed" name="constraintUsed" target="A" />
   <text>a</text>
   `}, "*");
     });
@@ -2621,23 +2621,23 @@ describe('Point Tag Tests', function () {
   <point name="A" xs="7 3">
     <constraints>
     <attractTo>
-      <copy tname="_line1" />
-      <copy tname="_line2" />
-      <copy tname="_line3" />
-      <copy tname="_line4" />
+      <copy target="_line1" />
+      <copy target="_line2" />
+      <copy target="_line3" />
+      <copy target="_line4" />
     </attractTo>
     <attractTo>
-      <intersection><copy tname="_line1" /><copy tname="_line2" /></intersection>
-      <intersection><copy tname="_line1" /><copy tname="_line3" /></intersection>
-      <intersection><copy tname="_line1" /><copy tname="_line4" /></intersection>
-      <intersection><copy tname="_line2" /><copy tname="_line3" /></intersection>
-      <intersection><copy tname="_line2" /><copy tname="_line4" /></intersection>
-      <intersection><copy tname="_line3" /><copy tname="_line4" /></intersection>
+      <intersection><copy target="_line1" /><copy target="_line2" /></intersection>
+      <intersection><copy target="_line1" /><copy target="_line3" /></intersection>
+      <intersection><copy target="_line1" /><copy target="_line4" /></intersection>
+      <intersection><copy target="_line2" /><copy target="_line3" /></intersection>
+      <intersection><copy target="_line2" /><copy target="_line4" /></intersection>
+      <intersection><copy target="_line3" /><copy target="_line4" /></intersection>
     </attractTo>
     </constraints>
   </point>
   </graph>
-  <copy prop="constraintUsed" name="constraintUsed" tname="A" />
+  <copy prop="constraintUsed" name="constraintUsed" target="A" />
   <text>a</text>
   `}, "*");
     });
@@ -2789,23 +2789,23 @@ describe('Point Tag Tests', function () {
   <point name="A" xs="7 3">
     <constraints>
     <constrainTo>
-      <copy tname="_line1" />
-      <copy tname="_line2" />
-      <copy tname="_line3" />
-      <copy tname="_line4" />
+      <copy target="_line1" />
+      <copy target="_line2" />
+      <copy target="_line3" />
+      <copy target="_line4" />
     </constrainTo>
     <attractTo>
-      <intersection><copy tname="_line1" /><copy tname="_line2" /></intersection>
-      <intersection><copy tname="_line1" /><copy tname="_line3" /></intersection>
-      <intersection><copy tname="_line1" /><copy tname="_line4" /></intersection>
-      <intersection><copy tname="_line2" /><copy tname="_line3" /></intersection>
-      <intersection><copy tname="_line2" /><copy tname="_line4" /></intersection>
-      <intersection><copy tname="_line3" /><copy tname="_line4" /></intersection>
+      <intersection><copy target="_line1" /><copy target="_line2" /></intersection>
+      <intersection><copy target="_line1" /><copy target="_line3" /></intersection>
+      <intersection><copy target="_line1" /><copy target="_line4" /></intersection>
+      <intersection><copy target="_line2" /><copy target="_line3" /></intersection>
+      <intersection><copy target="_line2" /><copy target="_line4" /></intersection>
+      <intersection><copy target="_line3" /><copy target="_line4" /></intersection>
     </attractTo>
     </constraints>
   </point>
   </graph>
-  <copy prop="constraintUsed" name="constraintUsed" tname="A" />
+  <copy prop="constraintUsed" name="constraintUsed" target="A" />
   <text>a</text>
   `}, "*");
     });
@@ -2928,7 +2928,7 @@ describe('Point Tag Tests', function () {
   
   <line through="$_point1 $_point2" />
   <line through="$_point3 $_point4" />
-  <intersection><copy tname="_line1" /><copy tname="_line2" /></intersection>
+  <intersection><copy target="_line1" /><copy target="_line2" /></intersection>
   
   </graph>
   <text>a</text>
@@ -3020,8 +3020,8 @@ describe('Point Tag Tests', function () {
   <booleaninput name='h1' prefill="false" label="Hide first intersection" />
   <booleaninput name='h2' prefill="true" label="Hide second intersection" />
   
-  <p name="i1">Intersection 1: <intersection hide="$h1"><copy tname="_line1" /><copy tname="_line2" /></intersection></p>
-  <p name="i2">Intersection 2: <intersection hide="$h2"><copy tname="_line1" /><copy tname="_line2" /></intersection></p>
+  <p name="i1">Intersection 1: <intersection hide="$h1"><copy target="_line1" /><copy target="_line2" /></intersection></p>
+  <p name="i2">Intersection 2: <intersection hide="$h2"><copy target="_line1" /><copy target="_line2" /></intersection></p>
   
   <text>a</text>
   `}, "*");
@@ -3176,7 +3176,7 @@ describe('Point Tag Tests', function () {
   <text>a</text>
   <graph>
     <point>(1,2)</point>
-    <point>(<copy prop="x2" tname="_point1" />, <copy prop="x1" tname="_point1" />)</point>
+    <point>(<copy prop="x2" target="_point1" />, <copy prop="x1" target="_point1" />)</point>
   </graph>
     `}, "*");
     });
@@ -3215,15 +3215,15 @@ describe('Point Tag Tests', function () {
   </graph>
   
   <graph>
-  <point><copy tname="_point1" /></point>
+  <point><copy target="_point1" /></point>
   </graph>
   
   <graph>
-  <point><copy tname="_point2" /></point>
+  <point><copy target="_point2" /></point>
   </graph>
   
   <graph>
-  <point><copy tname="_copy1" /></point>
+  <point><copy target="_copy1" /></point>
   </graph>
   `}, "*");
     });
@@ -3276,8 +3276,8 @@ describe('Point Tag Tests', function () {
   <text>a</text>
   <graph>
     <point>(1,2)</point>
-    <copy tname="_point1" />
-    <copy tname="_point1" />
+    <copy target="_point1" />
+    <copy target="_point1" />
     <point x = "$(_copy1{prop='y'})" y="$(_copy2{prop='x'})" />
   </graph>
   `}, "*");
@@ -3341,8 +3341,8 @@ describe('Point Tag Tests', function () {
   <text>a</text>
   <graph>
     <point>(1,2)</point>
-    <copy tname="_point1" />
-    <copy tname="_point1" />
+    <copy target="_point1" />
+    <copy target="_point1" />
     <point x = "$(_copy1{prop='y'})" y="$(_copy2{prop='x'})" />
   </graph>
   `}, "*");
@@ -3404,10 +3404,10 @@ describe('Point Tag Tests', function () {
       win.postMessage({
         doenetML: `
     <text>a</text>
-    <math><copy prop="y" tname="p1a" /></math>
+    <math><copy prop="y" target="p1a" /></math>
 
     <graph>
-      <copy name="p1a" tname="p1" />
+      <copy name="p1a" target="p1" />
     </graph>
     
     <graph>
@@ -3485,11 +3485,11 @@ describe('Point Tag Tests', function () {
         doenetML: `
   <text>a</text>
   <graph>
-    <copy name="p1b" tname="p1a" />
+    <copy name="p1b" target="p1a" />
   </graph>
   
   <graph>
-    <copy name="p1a" tname="p1" />
+    <copy name="p1a" target="p1" />
   </graph>
   
   <graph>
@@ -3655,8 +3655,8 @@ describe('Point Tag Tests', function () {
         doenetML: `
   <text>a</text>
   <graph>
-    <point>(<copy prop="y" tname="_point2" />, 7)</point>
-    <point>(<copy prop="y" tname="_point1" />, 9)</point>
+    <point>(<copy prop="y" target="_point2" />, 7)</point>
+    <point>(<copy prop="y" target="_point1" />, 9)</point>
   </graph>
       
   `}, "*");
@@ -3727,8 +3727,8 @@ describe('Point Tag Tests', function () {
   </graph>
   
   <graph>
-    <copy name="P1a" tname="_point1" />
-    <copy name="P2a" tname="_point2" />
+    <copy name="P1a" target="_point1" />
+    <copy name="P2a" target="_point2" />
   </graph>
   `}, "*");
     });
@@ -3856,13 +3856,13 @@ describe('Point Tag Tests', function () {
         doenetML: `
   <text>a</text>
   <graph>
-    <point>(<copy prop="y" tname="P2a" />, 7)</point>
-    <point>(<copy prop="y" tname="P1a" />, 9)</point>
+    <point>(<copy prop="y" target="P2a" />, 7)</point>
+    <point>(<copy prop="y" target="P1a" />, 9)</point>
   </graph>
   
   <graph>
-    <copy name="P1a" tname="_point1" />
-    <copy name="P2a" tname="_point2" />
+    <copy name="P1a" target="_point1" />
+    <copy name="P2a" target="_point2" />
   </graph>
   `}, "*");
     });
@@ -4057,8 +4057,8 @@ describe('Point Tag Tests', function () {
         doenetML: `
   <text>a</text>
   <graph>
-    <point>(3, 2<copy prop="x" tname="_point1"/>+1)</point>
-    <point>(2<copy prop="y" tname="_point2"/>+1, 3)</point>
+    <point>(3, 2<copy prop="x" target="_point1"/>+1)</point>
+    <point>(2<copy prop="y" target="_point2"/>+1, 3)</point>
   </graph>
       
   `}, "*");
@@ -4120,7 +4120,7 @@ describe('Point Tag Tests', function () {
   <graph>
     <point x="3" y="$(_graph1{prop='ymax' fixed='true'})" />
     <point>
-      (<copy prop="xmin" fixed="true" tname="_graph1" />,5)
+      (<copy prop="xmin" fixed="true" target="_graph1" />,5)
     </point>
   </graph>
   `}, "*");
@@ -4174,8 +4174,8 @@ describe('Point Tag Tests', function () {
       win.postMessage({
         doenetML: `
   <text>a</text>
-  <text name="l1" hide><copy prop="x" displaydigits="3" tname="_point1" />, <copy prop="x" displaydigits="3" tname="_point2" /></text>
-  <text name="l2" hide><copy prop="y" displaydigits="3" tname="_point1" />, <copy prop="y" displaydigits="3" tname="_point2" /></text>
+  <text name="l1" hide><copy prop="x" displaydigits="3" target="_point1" />, <copy prop="x" displaydigits="3" target="_point2" /></text>
+  <text name="l2" hide><copy prop="y" displaydigits="3" target="_point1" />, <copy prop="y" displaydigits="3" target="_point2" /></text>
   <graph>
     <point label="$l1">
       (1,2)
@@ -4185,8 +4185,8 @@ describe('Point Tag Tests', function () {
     </point>
   </graph>
 
-  <p>Label 1: <copy prop="label" tname="_point1" /></p>
-  <p>Label 2: <copy prop="label" tname="_point2" /></p>
+  <p>Label 1: <copy prop="label" target="_point1" /></p>
+  <p>Label 2: <copy prop="label" target="_point2" /></p>
   `}, "*");
     });
 
@@ -4412,35 +4412,35 @@ describe('Point Tag Tests', function () {
 
     <section name="thePoints"><title>The points</title>
     <p>The point: <point coords="$originalCoords"/></p>
-    <p>The point copied: <copy name="point2" tname="_point1"/></p>
-    <p>The point copied again: <copy name="point3" tname="point2"/></p>
+    <p>The point copied: <copy name="point2" target="_point1"/></p>
+    <p>The point copied again: <copy name="point3" target="point2"/></p>
     </section>
 
     <section><title>From point 1</title>
-    <p>Number of dimensions: <copy name="nDimensions1" prop="nDimensions" tname="_point1" /></p>
-    <p name="p1x">x-coordinate: <copy name="point1x1" prop="x1" tname="_point1"/></p>
-    <p name="p1y">y-coordinate: <copy name="point1x2" prop="x2" tname="_point1"/></p>
-    <p name="p1z">z-coordinate: <copy name="point1x3" prop="x3" tname="_point1"/></p>
-    <p name="p1all">All individual coordinates: <aslist><copy name="point1xs" prop="xs" tname="_point1"/></aslist></p>
-    <p>Coordinates: <copy name="coords1" prop="coords" tname="_point1"/></p>
+    <p>Number of dimensions: <copy name="nDimensions1" prop="nDimensions" target="_point1" /></p>
+    <p name="p1x">x-coordinate: <copy name="point1x1" prop="x1" target="_point1"/></p>
+    <p name="p1y">y-coordinate: <copy name="point1x2" prop="x2" target="_point1"/></p>
+    <p name="p1z">z-coordinate: <copy name="point1x3" prop="x3" target="_point1"/></p>
+    <p name="p1all">All individual coordinates: <aslist><copy name="point1xs" prop="xs" target="_point1"/></aslist></p>
+    <p>Coordinates: <copy name="coords1" prop="coords" target="_point1"/></p>
     </section>
 
     <section><title>From point 2</title>
-    <p>Number of dimensions: <copy name="nDimensions2" prop="nDimensions" tname="point2" /></p>
-    <p name="p2x">x-coordinate: <copy name="point2x1" prop="x1" tname="point2"/></p>
-    <p name="p2y">y-coordinate: <copy name="point2x2" prop="x2" tname="point2"/></p>
-    <p name="p2z">z-coordinate: <copy name="point2x3" prop="x3" tname="point2"/></p>
-    <p name="p2all">All individual coordinates: <aslist><copy name="point2xs" prop="xs" tname="point2"/></aslist></p>
-    <p>Coordinates: <copy name="coords2" prop="coords" tname="point2"/></p>
+    <p>Number of dimensions: <copy name="nDimensions2" prop="nDimensions" target="point2" /></p>
+    <p name="p2x">x-coordinate: <copy name="point2x1" prop="x1" target="point2"/></p>
+    <p name="p2y">y-coordinate: <copy name="point2x2" prop="x2" target="point2"/></p>
+    <p name="p2z">z-coordinate: <copy name="point2x3" prop="x3" target="point2"/></p>
+    <p name="p2all">All individual coordinates: <aslist><copy name="point2xs" prop="xs" target="point2"/></aslist></p>
+    <p>Coordinates: <copy name="coords2" prop="coords" target="point2"/></p>
     </section>
 
     <section><title>From point 3</title>
-    <p>Number of dimensions: <copy name="nDimensions3" prop="nDimensions" tname="point3" /></p>
-    <p name="p3x">x-coordinate: <copy name="point3x1" prop="x1" tname="point3"/></p>
-    <p name="p3y">y-coordinate: <copy name="point3x2" prop="x2" tname="point3"/></p>
-    <p name="p3z">z-coordinate: <copy name="point3x3" prop="x3" tname="point3"/></p>
-    <p name="p3all">All individual coordinates: <aslist><copy name="point3xs" prop="xs" tname="point3"/></aslist></p>
-    <p>Coordinates: <copy name="coords3" prop="coords" tname="point3"/></p>
+    <p>Number of dimensions: <copy name="nDimensions3" prop="nDimensions" target="point3" /></p>
+    <p name="p3x">x-coordinate: <copy name="point3x1" prop="x1" target="point3"/></p>
+    <p name="p3y">y-coordinate: <copy name="point3x2" prop="x2" target="point3"/></p>
+    <p name="p3z">z-coordinate: <copy name="point3x3" prop="x3" target="point3"/></p>
+    <p name="p3all">All individual coordinates: <aslist><copy name="point3xs" prop="xs" target="point3"/></aslist></p>
+    <p>Coordinates: <copy name="coords3" prop="coords" target="point3"/></p>
     </section>
 
     <section><title>For point 1</title>
@@ -4465,19 +4465,19 @@ describe('Point Tag Tests', function () {
     </section>
 
     <section><title>collecting</title>
-    <p name="pallx">x-coordinates: <aslist><collect name="pointallx1" componentTypes="point" prop="x1" tname="thePoints"/></aslist></p>
-    <p name="pally">y-coordinates: <aslist><collect name="pointallx2" componentTypes="point" prop="x2" tname="thePoints"/></aslist></p>
-    <p name="pallz">z-coordinates: <aslist><collect name="pointallx3" componentTypes="point" prop="x3" tname="thePoints"/></aslist></p>
-    <p name="pallall">All individual coordinates: <aslist><collect name="pointallxs" componentTypes="point" prop="xs" tname="thePoints"/></aslist></p>
-    <p>Coordinates: <aslist><collect name="coordsall" componentTypes="point" prop="coords" tname="thePoints"/></aslist></p>
+    <p name="pallx">x-coordinates: <aslist><collect name="pointallx1" componentTypes="point" prop="x1" target="thePoints"/></aslist></p>
+    <p name="pally">y-coordinates: <aslist><collect name="pointallx2" componentTypes="point" prop="x2" target="thePoints"/></aslist></p>
+    <p name="pallz">z-coordinates: <aslist><collect name="pointallx3" componentTypes="point" prop="x3" target="thePoints"/></aslist></p>
+    <p name="pallall">All individual coordinates: <aslist><collect name="pointallxs" componentTypes="point" prop="xs" target="thePoints"/></aslist></p>
+    <p>Coordinates: <aslist><collect name="coordsall" componentTypes="point" prop="coords" target="thePoints"/></aslist></p>
     </section>
 
     <section><title>Extracting from point 3</title>
-    <p name="p3xe">x-coordinate: <extract name="point3x1e" prop="x1"><copy tname="point3"/></extract></p>
-    <p name="p3ye">y-coordinate: <extract name="point3x2e" prop="x2"><copy tname="point3"/></extract></p>
-    <p name="p3ze">z-coordinate: <extract name="point3x3e" prop="x3"><copy tname="point3"/></extract></p>
-    <p name="p3alle">All individual coordinates: <aslist><extract name="point3xse" prop="xs"><copy tname="point3"/></extract></aslist></p>
-    <p>Coordinates: <extract name="coords3e" prop="coords"><copy tname="point3"/></extract></p>
+    <p name="p3xe">x-coordinate: <extract name="point3x1e" prop="x1"><copy target="point3"/></extract></p>
+    <p name="p3ye">y-coordinate: <extract name="point3x2e" prop="x2"><copy target="point3"/></extract></p>
+    <p name="p3ze">z-coordinate: <extract name="point3x3e" prop="x3"><copy target="point3"/></extract></p>
+    <p name="p3alle">All individual coordinates: <aslist><extract name="point3xse" prop="xs"><copy target="point3"/></extract></aslist></p>
+    <p>Coordinates: <extract name="coords3e" prop="coords"><copy target="point3"/></extract></p>
     </section>
  
   `}, "*");
@@ -7628,8 +7628,8 @@ describe('Point Tag Tests', function () {
 
     <section name="thePoints"><title>The points</title>
     <p>The point: <point coords="$originalCoords" /></p>
-    <p>The point copied: <copy name="point2" tname="_point1"/></p>
-    <p>The point copied again: <copy name="point3" tname="point2"/></p>
+    <p>The point copied: <copy name="point2" target="_point1"/></p>
+    <p>The point copied again: <copy name="point3" target="point2"/></p>
     </section>
 
   `}, "*");

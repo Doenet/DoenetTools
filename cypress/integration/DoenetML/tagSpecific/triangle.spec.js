@@ -13,9 +13,9 @@ describe('Triangle Tag Tests', function () {
   <text>a</text>
   <graph>
     <triangle/>
-    <copy name="vertex1" prop="vertex1" tname="_triangle1" />
-    <copy name="vertex2" prop="vertex2" tname="_triangle1" />
-    <copy name="vertex3" prop="vertex3" tname="_triangle1" />
+    <copy name="vertex1" prop="vertex1" target="_triangle1" />
+    <copy name="vertex2" prop="vertex2" target="_triangle1" />
+    <copy name="vertex3" prop="vertex3" target="_triangle1" />
   </graph>
   `}, "*");
     });
@@ -109,9 +109,9 @@ describe('Triangle Tag Tests', function () {
   <text>a</text>
   <graph>
     <triangle vertices="" />
-    <copy name="vertex1" prop="vertex1" tname="_triangle1" />
-    <copy name="vertex2" prop="vertex2" tname="_triangle1" />
-    <copy name="vertex3" prop="vertex3" tname="_triangle1" />
+    <copy name="vertex1" prop="vertex1" target="_triangle1" />
+    <copy name="vertex2" prop="vertex2" target="_triangle1" />
+    <copy name="vertex3" prop="vertex3" target="_triangle1" />
   </graph>
   `}, "*");
     });
@@ -205,9 +205,9 @@ describe('Triangle Tag Tests', function () {
   <text>a</text>
   <graph>
     <triangle vertices="(-8,5)" />
-    <copy name="vertex1" prop="vertex1" tname="_triangle1" />
-    <copy name="vertex2" prop="vertex2" tname="_triangle1" />
-    <copy name="vertex3" prop="vertex3" tname="_triangle1" />
+    <copy name="vertex1" prop="vertex1" target="_triangle1" />
+    <copy name="vertex2" prop="vertex2" target="_triangle1" />
+    <copy name="vertex3" prop="vertex3" target="_triangle1" />
   </graph>
   `}, "*");
     });
@@ -301,9 +301,9 @@ describe('Triangle Tag Tests', function () {
   <text>a</text>
   <graph>
     <triangle vertices="(-8,5) (6,2)" />
-    <copy name="vertex1" prop="vertex1" tname="_triangle1" />
-    <copy name="vertex2" prop="vertex2" tname="_triangle1" />
-    <copy name="vertex3" prop="vertex3" tname="_triangle1" />
+    <copy name="vertex1" prop="vertex1" target="_triangle1" />
+    <copy name="vertex2" prop="vertex2" target="_triangle1" />
+    <copy name="vertex3" prop="vertex3" target="_triangle1" />
   </graph>
   `}, "*");
     });
@@ -397,9 +397,9 @@ describe('Triangle Tag Tests', function () {
   <text>a</text>
   <graph>
     <triangle vertices="(-8,5) (6,2) (5,-4)" />
-    <copy name="vertex1" prop="vertex1" tname="_triangle1" />
-    <copy name="vertex2" prop="vertex2" tname="_triangle1" />
-    <copy name="vertex3" prop="vertex3" tname="_triangle1" />
+    <copy name="vertex1" prop="vertex1" target="_triangle1" />
+    <copy name="vertex2" prop="vertex2" target="_triangle1" />
+    <copy name="vertex3" prop="vertex3" target="_triangle1" />
   </graph>
   `}, "*");
     });
@@ -495,7 +495,7 @@ describe('Triangle Tag Tests', function () {
     <triangle vertices="(0,0) (6,0) (0,6)" />
     <point x="10" y="10">
       <constraints>
-      <constrainTo><copy tname="_triangle1" /></constrainTo>
+      <constrainTo><copy target="_triangle1" /></constrainTo>
       </constraints>
     </point>
   </graph>
@@ -585,8 +585,8 @@ describe('Triangle Tag Tests', function () {
   </graph>
 
   <point name="flip3">
-    (<extract prop="y"><copy prop="vertex3" tname="_triangle1" /></extract>,
-    <extract prop="x"><copy prop="vertex3" tname="_triangle1" /></extract>)
+    (<extract prop="y"><copy prop="vertex3" target="_triangle1" /></extract>,
+    <extract prop="x"><copy prop="vertex3" target="_triangle1" /></extract>)
   </point>
 
   `}, "*");
@@ -667,8 +667,8 @@ describe('Triangle Tag Tests', function () {
   </graph>
 
   <point name="flip3">
-    (<extract prop="y"><copy prop="vertex3" tname="_triangle1" /></extract>,
-    <extract prop="x"><copy prop="vertex3" tname="_triangle1" /></extract>)
+    (<extract prop="y"><copy prop="vertex3" target="_triangle1" /></extract>,
+    <extract prop="x"><copy prop="vertex3" target="_triangle1" /></extract>)
   </point>
 
   `}, "*");
@@ -744,8 +744,8 @@ describe('Triangle Tag Tests', function () {
   <text>a</text>
   <graph>
   <point name="A" hide>
-    (<copy prop="y" tname="B" />,
-    <copy prop="x" tname="B" />)
+    (<copy prop="y" target="B" />,
+    <copy prop="x" target="B" />)
   </point>
   <point name="B" hide>(3,5)</point>
   <point name="C" hide>(-5,2)</point>

@@ -165,7 +165,7 @@ describe('Polyline Tag Tests', function () {
   </graph>
   
   <graph>
-  <copy name="polyline2" tname="_polyline1" />
+  <copy name="polyline2" target="_polyline1" />
   </graph>
   `}, "*");
     });
@@ -289,7 +289,7 @@ describe('Polyline Tag Tests', function () {
   </graph>
   
   <graph>
-  <copy name="polyline2" tname="_polyline1" />
+  <copy name="polyline2" target="_polyline1" />
   </graph>
   `}, "*");
     });
@@ -350,7 +350,7 @@ describe('Polyline Tag Tests', function () {
   </graph>
   
   <graph>
-  <copy name="polyline2" tname="_polyline1" />
+  <copy name="polyline2" target="_polyline1" />
   </graph>  
   `}, "*");
     });
@@ -411,7 +411,7 @@ describe('Polyline Tag Tests', function () {
   </graph>
   
   <graph>
-  <copy name="polyline2" tname="_polyline1" />
+  <copy name="polyline2" target="_polyline1" />
   </graph>
   `}, "*");
     });
@@ -540,7 +540,7 @@ describe('Polyline Tag Tests', function () {
   </graph>
   
   <graph>
-  <copy name="polyline2" tname="_polyline1" />
+  <copy name="polyline2" target="_polyline1" />
   </graph>
   `}, "*");
     });
@@ -680,13 +680,13 @@ describe('Polyline Tag Tests', function () {
   <polyline vertices="(-3,-1)(1,2)(3,4)(6,-2)" />
   </graph>
   <graph>
-  <copy name="v1" prop="vertex1" tname="_polyline1" />
-  <copy name="v2" prop="vertex2" tname="_polyline1" />
-  <copy name="v3" prop="vertex3" tname="_polyline1" />
-  <copy name="v4" prop="vertex4" tname="_polyline1" />
+  <copy name="v1" prop="vertex1" target="_polyline1" />
+  <copy name="v2" prop="vertex2" target="_polyline1" />
+  <copy name="v3" prop="vertex3" target="_polyline1" />
+  <copy name="v4" prop="vertex4" target="_polyline1" />
   </graph>
   <graph>
-  <copy name="vs" prop="vertices" tname="_polyline1" />
+  <copy name="vs" prop="vertices" target="_polyline1" />
   </graph>
   `}, "*");
     });
@@ -1712,7 +1712,7 @@ describe('Polyline Tag Tests', function () {
     <polyline vertices=" (3,5) (-4,-1)(5,2)" />
     <point x="7" y="8">
       <constraints>
-        <attractTo><copy tname="_polyline1" /></attractTo>
+        <attractTo><copy target="_polyline1" /></attractTo>
       </constraints>
     </point>
   </graph>
@@ -1946,7 +1946,7 @@ describe('Polyline Tag Tests', function () {
     <polyline vertices=" (3,5) (-4,-1)(5,2)" />
     <point x="7" y="8">
       <constraints>
-        <constrainTo><copy tname="_polyline1" /></constrainTo>
+        <constrainTo><copy target="_polyline1" /></constrainTo>
       </constraints>
     </point>
   </graph>
@@ -2179,7 +2179,7 @@ describe('Polyline Tag Tests', function () {
     <polyline vertices="(-50,-0.02) (-40,0.07) (70,0.06) (10,-0.01)" name="p" />
     <point x="0" y="0.01" name="A">
       <constraints>
-        <constrainTo><copy tname="p" /></constrainTo>
+        <constrainTo><copy target="p" /></constrainTo>
       </constraints>
     </point>
   </graph>

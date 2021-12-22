@@ -20,7 +20,7 @@ describe('Number Tag Tests', function () {
       win.postMessage({
         doenetML: `
       <text>a</text>
-      <copy tname="_number1" />
+      <copy target="_number1" />
       <number>1+1</number>
     ` }, "*");
     })
@@ -50,7 +50,7 @@ describe('Number Tag Tests', function () {
       win.postMessage({
         doenetML: `
       <text>a</text>
-      <copy tname="_number1" />
+      <copy target="_number1" />
       <number>x+1</number>
       ` }, "*");
     })
@@ -151,7 +151,7 @@ describe('Number Tag Tests', function () {
         doenetML: `
       <text>a</text>
       <number>log(0.5/0.3)</number>, 
-      <math><copy tname="_number1" /></math>
+      <math><copy target="_number1" /></math>
       ` }, "*");
     })
 
@@ -182,15 +182,15 @@ describe('Number Tag Tests', function () {
       <number name="n1">234234823.34235235324</number>
       <number name="n2">5.4285023408250342</number>
       <number name="n3">0.000000000000005023481340324</number>
-      <copy tname="n1" displayDigits='3' assignNames="n1a" />
-      <copy tname="n1" displayDecimals='3' assignNames="n1b" />
-      <copy tname="n1" displayDigits='3' displaySmallAsZero assignNames="n1c" />
-      <copy tname="n2" displayDigits='3' assignNames="n2a" />
-      <copy tname="n2" displayDecimals='3' assignNames="n2b" />
-      <copy tname="n2" displayDigits='3' displaySmallAsZero assignNames="n2c" />
-      <copy tname="n3" displayDigits='3' assignNames="n3a" />
-      <copy tname="n3" displayDecimals='3' assignNames="n3b" />
-      <copy tname="n3" displayDigits='3' displaySmallAsZero assignNames="n3c" />
+      <copy target="n1" displayDigits='3' assignNames="n1a" />
+      <copy target="n1" displayDecimals='3' assignNames="n1b" />
+      <copy target="n1" displayDigits='3' displaySmallAsZero assignNames="n1c" />
+      <copy target="n2" displayDigits='3' assignNames="n2a" />
+      <copy target="n2" displayDecimals='3' assignNames="n2b" />
+      <copy target="n2" displayDigits='3' displaySmallAsZero assignNames="n2c" />
+      <copy target="n3" displayDigits='3' assignNames="n3a" />
+      <copy target="n3" displayDecimals='3' assignNames="n3b" />
+      <copy target="n3" displayDigits='3' displaySmallAsZero assignNames="n3c" />
       <m name="n1am">$n1a</m>
       <m name="n1bm">$n1b</m>
       <m name="n1cm">$n1c</m>
@@ -263,8 +263,8 @@ describe('Number Tag Tests', function () {
       <p>Number: <number name="n">35203423.02352343201</number></p>
       <p>Number of digits: <mathinput name="ndigits" prefill="3" /></p>
       <p>Number of decimals: <mathinput name="ndecimals" prefill="3" /></p>
-      <p><copy tname="n" displayDigits='$ndigits' assignNames="na" /></p>
-      <p><copy tname="n" displayDecimals='$ndecimals' assignNames="nb" /></p>
+      <p><copy target="n" displayDigits='$ndigits' assignNames="na" /></p>
+      <p><copy target="n" displayDecimals='$ndecimals' assignNames="nb" /></p>
     ` }, "*");
     })
 

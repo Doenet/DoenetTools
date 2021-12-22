@@ -23,15 +23,15 @@ describe('Parabola Tag Tests', function () {
     <text>a</text>
     <graph>
     <parabola />
-    <copy prop="vertex" name="v" tname="_parabola1" />
+    <copy prop="vertex" name="v" target="_parabola1" />
     </graph>
     <graph name="g2">
-    <copy name="p2" tname="_parabola1" />
-    <copy name="v2" tname="v" />
+    <copy name="p2" target="_parabola1" />
+    <copy name="v2" target="v" />
     </graph>
-    <copy name="g3" tname="g2"/>
+    <copy name="g3" target="g2"/>
 
-    <copy prop="equation" name="e2" tname="p2" />
+    <copy prop="equation" name="e2" target="p2" />
 
     <p>a = <mathinput name="a" bindValueTo="$(_parabola1{prop='a'})"/></p>
     <p>b = <mathinput name="b" bindValueTo="$(_parabola1{prop='b'})"/></p>
@@ -536,15 +536,15 @@ describe('Parabola Tag Tests', function () {
     <text>a</text>
     <graph>
     <parabola through="" />
-    <copy prop="vertex" name="v" tname="_parabola1" />
+    <copy prop="vertex" name="v" target="_parabola1" />
     </graph>
     <graph name="g2">
-    <copy name="p2" tname="_parabola1" />
-    <copy name="v2" tname="v" />
+    <copy name="p2" target="_parabola1" />
+    <copy name="v2" target="v" />
     </graph>
-    <copy name="g3" tname="g2"/>
+    <copy name="g3" target="g2"/>
 
-    <copy prop="equation" name="e2" tname="p2" />
+    <copy prop="equation" name="e2" target="p2" />
 
     <p>a = <mathinput name="a" bindValueTo="$(_parabola1{prop='a'})"/></p>
     <p>b = <mathinput name="b" bindValueTo="$(_parabola1{prop='b'})"/></p>
@@ -1052,15 +1052,15 @@ describe('Parabola Tag Tests', function () {
     <graph>
     <point>(1,2)</point>
     <parabola through="$_point1"/>
-    <copy prop="vertex" name="v" tname="_parabola1" />
+    <copy prop="vertex" name="v" target="_parabola1" />
     </graph>
     <graph name="g2">
-    <copy name="p2" tname="_parabola1" />
-    <copy name="v2" tname="v" />
+    <copy name="p2" target="_parabola1" />
+    <copy name="v2" target="v" />
     </graph>
-    <copy name="g3" tname="g2"/>
+    <copy name="g3" target="g2"/>
 
-    <copy prop="equation" name="e2" tname="p2" />
+    <copy prop="equation" name="e2" target="p2" />
 
     <p>a = <mathinput name="a" bindValueTo="$(_parabola1{prop='a'})"/></p>
     <p>b = <mathinput name="b" bindValueTo="$(_parabola1{prop='b'})"/></p>
@@ -1564,15 +1564,15 @@ describe('Parabola Tag Tests', function () {
     <point>(1,2)</point>
     <point>(3,4)</point>
     <parabola through="$_point1 $_point2"/>
-    <copy prop="vertex" name="v" tname="_parabola1" />
+    <copy prop="vertex" name="v" target="_parabola1" />
     </graph>
     <graph name="g2">
-    <copy name="p2" tname="_parabola1" />
-    <copy name="v2" tname="v" />
+    <copy name="p2" target="_parabola1" />
+    <copy name="v2" target="v" />
     </graph>
-    <copy name="g3" tname="g2"/>
+    <copy name="g3" target="g2"/>
 
-    <copy prop="equation" name="e2" tname="p2" />
+    <copy prop="equation" name="e2" target="p2" />
 
     <p>a = <mathinput name="a" bindValueTo="$(_parabola1{prop='a'})"/></p>
     <p>b = <mathinput name="b" bindValueTo="$(_parabola1{prop='b'})"/></p>
@@ -2314,15 +2314,15 @@ describe('Parabola Tag Tests', function () {
     <point>(3,4)</point>
     <point>(5,6)</point>
     <parabola through="$_point1 $_point2 $_point3"/>
-    <copy prop="vertex" name="v" tname="_parabola1" />
+    <copy prop="vertex" name="v" target="_parabola1" />
     </graph>
     <graph name="g2">
-    <copy name="p2" tname="_parabola1" />
-    <copy name="v2" tname="v" />
+    <copy name="p2" target="_parabola1" />
+    <copy name="v2" target="v" />
     </graph>
-    <copy name="g3" tname="g2"/>
+    <copy name="g3" target="g2"/>
 
-    <copy prop="equation" name="e2" tname="p2" />
+    <copy prop="equation" name="e2" target="p2" />
 
     <p>a = <mathinput name="a" bindValueTo="$(_parabola1{prop='a'})"/></p>
     <p>b = <mathinput name="b" bindValueTo="$(_parabola1{prop='b'})"/></p>
@@ -3344,17 +3344,17 @@ describe('Parabola Tag Tests', function () {
           <point>($i+<math>0</math>, $m+<math>0</math>)</point>
         </template>
         <sources alias="m" indexAlias="i">
-          <sequence step="2"><count><copy prop="value" tname="n" /></count></sequence>
+          <sequence step="2"><count><copy prop="value" target="n" /></count></sequence>
         </sources>
       </map>
     </through></parabola>
-    <copy prop="vertex" name="v" tname="_parabola1" />
+    <copy prop="vertex" name="v" target="_parabola1" />
     </graph>
     <graph name="g2">
-    <copy name="p2" tname="_parabola1" />
-    <copy name="v2" tname="v" />
+    <copy name="p2" target="_parabola1" />
+    <copy name="v2" target="v" />
     </graph>
-    <copy name="g3" tname="g2"/>
+    <copy name="g3" target="g2"/>
 
     <p>a = <mathinput name="a" bindValueTo="$(_parabola1{prop='a'})"/></p>
     <p>b = <mathinput name="b" bindValueTo="$(_parabola1{prop='b'})"/></p>
@@ -4508,10 +4508,10 @@ describe('Parabola Tag Tests', function () {
     </point>
     </graph>
     <graph name="g2">
-      <copy assignNames="p2" tname="p" />
-      <copy assignNames="A2" tname="A" />
+      <copy assignNames="p2" target="p" />
+      <copy assignNames="A2" target="A" />
     </graph>
-    <copy assignNames="g3" tname="g2"/>
+    <copy assignNames="g3" target="g2"/>
     `}, "*");
     });
 
@@ -4601,10 +4601,10 @@ describe('Parabola Tag Tests', function () {
     </point>
     </graph>
     <graph name="g2">
-      <copy assignNames="p2" tname="p" />
-      <copy assignNames="A2" tname="A" />
+      <copy assignNames="p2" target="p" />
+      <copy assignNames="A2" target="A" />
     </graph>
-    <copy assignNames="g3" tname="g2"/>
+    <copy assignNames="g3" target="g2"/>
     `}, "*");
     });
 
@@ -4694,10 +4694,10 @@ describe('Parabola Tag Tests', function () {
     </point>
     </graph>
     <graph name="g2">
-      <copy assignNames="p2" tname="p" />
-      <copy assignNames="A2" tname="A" />
+      <copy assignNames="p2" target="p" />
+      <copy assignNames="A2" target="A" />
     </graph>
-    <copy assignNames="g3" tname="g2"/>
+    <copy assignNames="g3" target="g2"/>
     `}, "*");
     });
 
@@ -4772,10 +4772,10 @@ describe('Parabola Tag Tests', function () {
     </point>
     </graph>
     <graph name="g2">
-      <copy assignNames="p2" tname="p" />
-      <copy assignNames="A2" tname="A" />
+      <copy assignNames="p2" target="p" />
+      <copy assignNames="A2" target="A" />
     </graph>
-    <copy assignNames="g3" tname="g2"/>
+    <copy assignNames="g3" target="g2"/>
     `}, "*");
     });
 

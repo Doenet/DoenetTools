@@ -11,7 +11,7 @@ export default class Copy extends CompositeComponent {
 
   static assignNamesToReplacements = true;
 
-  static acceptTname = true;
+  static acceptTarget = true;
   static acceptAnyAttribute = true;
 
   static get stateVariablesShadowedForReference() { return ["targetComponent", "propName"] };
@@ -103,21 +103,21 @@ export default class Copy extends CompositeComponent {
 
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
-    stateVariableDefinitions.tName = {
+    stateVariableDefinitions.target = {
       returnDependencies: () => ({
-        tName: {
+        target: {
           dependencyType: "doenetAttribute",
-          attributeName: "tName"
+          attributeName: "target"
         }
       }),
       definition: ({ dependencyValues }) => ({
-        newValues: { tName: dependencyValues.tName }
+        newValues: { target: dependencyValues.target }
       })
     }
 
     stateVariableDefinitions.targetSourcesName = {
       additionalStateVariablesDefined: ["sourcesChildNumber"],
-      stateVariablesDeterminingDependencies: ["tName"],
+      stateVariablesDeterminingDependencies: ["target"],
       determineDependenciesImmediately: true,
       returnDependencies: function ({ stateValues, sharedParameters }) {
 
@@ -126,7 +126,7 @@ export default class Copy extends CompositeComponent {
           return {};
         }
 
-        let theMapping = sourceNameMappings[stateValues.tName];
+        let theMapping = sourceNameMappings[stateValues.target];
         if (!theMapping) {
           return {};
         }
@@ -181,7 +181,7 @@ export default class Copy extends CompositeComponent {
 
 
     stateVariableDefinitions.sourceIndex = {
-      stateVariablesDeterminingDependencies: ["tName"],
+      stateVariablesDeterminingDependencies: ["target"],
       determineDependenciesImmediately: true,
       returnDependencies: function ({ stateValues, sharedParameters }) {
 
@@ -190,7 +190,7 @@ export default class Copy extends CompositeComponent {
           return {};
         }
 
-        let theMapping = sourceIndexMappings[stateValues.tName];
+        let theMapping = sourceIndexMappings[stateValues.target];
         if (theMapping === undefined) {
           return {};
         }

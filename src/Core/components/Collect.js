@@ -10,7 +10,7 @@ export default class Collect extends CompositeComponent {
 
   static assignNamesToReplacements = true;
 
-  static acceptTname = true;
+  static acceptTarget = true;
   static acceptAnyAttribute = true;
 
   static get stateVariablesShadowedForReference() { return ["targetComponent", "propName", "componentTypesToCollect"] };

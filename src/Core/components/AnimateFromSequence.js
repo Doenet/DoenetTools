@@ -10,7 +10,7 @@ export default class AnimateFromSequence extends BaseComponent {
   static componentType = "animateFromSequence";
   static rendererType = undefined;
 
-  static acceptTname = true;
+  static acceptTarget = true;
 
   static get stateVariablesShadowedForReference() {
     return returnStandardSequenceStateVariablesShadowedForReference();
@@ -256,15 +256,15 @@ export default class AnimateFromSequence extends BaseComponent {
     }
 
 
-    stateVariableDefinitions.tName = {
+    stateVariableDefinitions.target = {
       returnDependencies: () => ({
-        tName: {
+        target: {
           dependencyType: "doenetAttribute",
-          attributeName: "tName"
+          attributeName: "target"
         }
       }),
       definition: ({ dependencyValues }) => ({
-        newValues: { tName: dependencyValues.tName }
+        newValues: { target: dependencyValues.target }
       })
     }
 
@@ -707,9 +707,9 @@ export default class AnimateFromSequence extends BaseComponent {
       let stateVariable = Object.keys(target.stateValues)[0];
       if (stateVariable === undefined) {
         if (await this.stateValues.propName) {
-          console.warn(`Cannot animate prop="${await this.stateValues.propName}" of ${await this.stateValues.tName} as could not find prop ${await this.stateValues.propName} on a component of type ${target.componentType}`)
+          console.warn(`Cannot animate prop="${await this.stateValues.propName}" of ${await this.stateValues.target} as could not find prop ${await this.stateValues.propName} on a component of type ${target.componentType}`)
         } else {
-          console.warn(`Cannot animate ${await this.stateValues.tName} as could not find a value state variable on a component of type ${target.componentType}`)
+          console.warn(`Cannot animate ${await this.stateValues.target} as could not find a value state variable on a component of type ${target.componentType}`)
         }
         continue;
       }
