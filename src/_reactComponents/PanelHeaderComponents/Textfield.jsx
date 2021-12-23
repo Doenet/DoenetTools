@@ -3,7 +3,7 @@ import { doenetComponentForegroundInactive } from "./theme"
 
 export default function Textfield(props) {
   const [labelVisible, setLabelVisible] = useState(props.label ? 'static' : 'none')
-  const [text, setText] = useState(props.value ? 'Enter text here' : props.value);
+  const [text, setText] = useState("");
   const [align, setAlign] = useState(props.vertical ? 'static' : 'flex');
   const [cursorStart, setCursorStart] = useState(0);
   const [cursorEnd, setCursorEnd] = useState(0);
@@ -37,9 +37,9 @@ export default function Textfield(props) {
         alignItems: 'center'
     }
 
-    useEffect(() => {
-      setText(props.value);
-    }, [props]);
+    // useEffect(() => {
+    //   setText(props.value);
+    // }, [props]);
 
     useLayoutEffect(() => {
       inputRef.current.selectionStart = cursorStart;
@@ -51,7 +51,10 @@ export default function Textfield(props) {
     }
     if (props.label) {
       label.value = props.label;
-  }
+    }
+    if (props.value) {
+      textfield.value = props.value;
+    }
   var disable = "";
   if (props.disabled) {
     textfield.border = '2px solid #e2e2e2';
