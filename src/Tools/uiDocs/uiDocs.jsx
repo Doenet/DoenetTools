@@ -716,6 +716,12 @@ export default function attempt() {
           description: 'Changes the text',
         },
         {
+          name: 'Placeholder',
+          propPreview: '<Textfield placeholder="Enter cat names"/>',
+          propCode: { placeholder: 'Enter cat names' },
+          description: 'Adds placeholder to component',
+        },
+        {
           name: 'Label',
           propPreview: '<Textfield label="What: "/>',
           propCode: { label: 'What: ' },

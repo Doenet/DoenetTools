@@ -21,13 +21,14 @@ export default function Textfield(props) {
         whiteSpace: 'nowrap',
         padding:"0px 5px 0px 5px",
         lineHeight:"24px",
-        fontSize: "12px"
+        fontSize: "14px"
       }
       var label ={
         value: 'Label:',
         fontSize: '14px',
         display: `${labelVisible}`,
         marginRight: '5px',
+        marginLeft: '5px',
         marginBottom: `${align == 'flex' ? 'none' : '2px'}`
     }
     
@@ -54,6 +55,9 @@ export default function Textfield(props) {
     }
     if (props.value) {
       textfield.value = props.value;
+    }
+    if (props.placeholder) {
+      textfield.placeholder = props.placeholder
     }
   var disable = "";
   if (props.disabled) {
@@ -89,7 +93,7 @@ function handleKeyDown(e) {
         <>
           <div style={container}>
                 <p style={label}>{label.value}</p>
-                <input type="text" ref={inputRef} value={textfield.value} style={textfield} onChange={(e) => { handleChange(e) }} onBlur={(e) => { handleBlur(e) }} onKeyDown={(e) => { handleKeyDown(e) }} disabled={disable}></input>
+                <input type="text" ref={inputRef} placeholder={textfield.placeholder} defaultValue={textfield.value} style={textfield} onChange={(e) => { handleChange(e) }} onBlur={(e) => { handleBlur(e) }} onKeyDown={(e) => { handleKeyDown(e) }} disabled={disable}></input>
           </div>
         </>
     )
