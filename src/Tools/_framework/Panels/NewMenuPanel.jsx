@@ -3,7 +3,6 @@ import { atom,  useRecoilValue } from 'recoil';
 import styled from 'styled-components';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronLeft } from "@fortawesome/free-solid-svg-icons";
-// import Profile from '../Profile';
 import Logo from '../Logo';
 
 export const selectedMenuPanelAtom = atom({
@@ -23,19 +22,6 @@ const MenuPanelsWrapper = styled.div`
   width: ${({hide})=>hide ? '0px' : '240px'};
 `;
 
-const MenuPanelsCap = styled.div`
-width: 240px;
-height: 35px;
-background: white;
-display: flex;
-justify-content: space-between;
-align-items: center;
-position: ${(props) => props.fix ? 'static' : 'sticky'};
-border-bottom: 2px solid #e2e2e2;
-margin-bottom: -2px;
-top: 0;
-z-index: 2;
-`;
 const MenuPanelsCapComponent = styled.div`
 width: 240px;
 background: white;
@@ -44,8 +30,8 @@ border-top: 1px solid #e2e2e2;
 border-bottom: 2px solid #e2e2e2;
 margin-bottom: -2px;
 position: sticky;
-
-
+top: 0;
+z-index: 2;
 `;
 
 const MenuHeaderButton = styled.button`
@@ -243,22 +229,6 @@ console.log(">>>===MenuPanel", hide)
 
   return (
     <MenuPanelsWrapper hide={hide}>
-     {/* <MenuPanelsCap fix={hide}>
-        <span >
-          <Logo/>
-        </span>
-        <span style={{marginBottom: '1px'}}>Doenet</span>
-        <span >
-          {displayProfile ? 
-            <Profile 
-            margin={hide}
-            />
-          : null }
-        </span>
-        <span >
-        </span>
-        
-      </MenuPanelsCap> */}
 
       {menuPanelCapComponent}
       <CloseButton onClick={()=>setMenusOpen(false)} fix={hide}><FontAwesomeIcon icon={faChevronLeft}/></CloseButton>
