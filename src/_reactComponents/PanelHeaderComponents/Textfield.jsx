@@ -57,7 +57,10 @@ export default function Textfield(props) {
       textfield.value = props.value;
     }
     if (props.placeholder) {
-      textfield.placeholder = props.placeholder
+      textfield.placeholder = props.placeholder;
+    }
+    if (props.ariaLabel) {
+      textfield.ariaLabel = props.ariaLabel;
     }
   var disable = "";
   if (props.disabled) {
@@ -93,7 +96,7 @@ function handleKeyDown(e) {
         <>
           <div style={container}>
                 <p style={label}>{label.value}</p>
-                <input type="text" ref={inputRef} placeholder={textfield.placeholder} defaultValue={textfield.value} style={textfield} onChange={(e) => { handleChange(e) }} onBlur={(e) => { handleBlur(e) }} onKeyDown={(e) => { handleKeyDown(e) }} disabled={disable}></input>
+                <input type="text" ref={inputRef} placeholder={textfield.placeholder} defaultValue={textfield.value} aria-label={textfield.ariaLabel} style={textfield} onChange={(e) => { handleChange(e) }} onBlur={(e) => { handleBlur(e) }} onKeyDown={(e) => { handleKeyDown(e) }} disabled={disable}></input>
           </div>
         </>
     )

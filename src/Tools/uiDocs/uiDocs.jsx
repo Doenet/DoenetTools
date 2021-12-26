@@ -734,6 +734,12 @@ export default function attempt() {
           description: 'Adds label to component on top',
         },
         {
+          name: 'Aria Label',
+          propPreview: '<Textfield ariaLabel="Text"/>',
+          propCode: { ariaLabel: 'Text' },
+          description: 'Adds aria label to component',
+        },
+        {
           name: 'Alert',
           propPreview: '<Textfield alert/>',
           propCode: { alert },
