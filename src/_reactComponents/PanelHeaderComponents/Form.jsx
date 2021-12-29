@@ -145,7 +145,7 @@ export default function Form(props) {
     function clearInput(e) {
       if (props.clearInput) props.clearInput(e)
       setCancelShown('hidden')
-      setText("");
+      setText("")
     }
     function changeTextTerm() {
         // setTextTerm(textfield.value)
@@ -164,6 +164,7 @@ export default function Form(props) {
   if (props.clearInput) {
     clearButton = 
     <button
+      id="clearButton"
       style={cancelButton}
       onClick={(e) => {
         clearInput(e);

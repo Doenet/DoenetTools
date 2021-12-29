@@ -825,7 +825,7 @@ export default function attempt() {
         description: 'Makes Form not able to be used.'},
         {name: 'clearInput',
         propPreview: '<Form clearInput={(e) => e.target.value=null} />',
-        propCode: {value: words, clearInput: () => setWords(""), onChange: (e) => setWords(e.target.value)},
+        propCode: {value: words, clearInput: () => setWords("")},
         description: 'Makes clear button available. Need to pass a function that clears the input'},
         ]
       },
