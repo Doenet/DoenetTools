@@ -120,7 +120,7 @@ export default class MathOperator extends MathComponent {
     delete stateVariableDefinitions.expressionWithCodes;
     delete stateVariableDefinitions.mathChildrenFunctionSymbols;
     delete stateVariableDefinitions.codesAdjacentToStrings;
-    delete stateVariableDefinitions.mathChildrenByArrayComponent;
+    delete stateVariableDefinitions.mathChildrenByVectorComponent;
 
     stateVariableDefinitions.mathOperator = {
       returnDependencies: () => ({}),

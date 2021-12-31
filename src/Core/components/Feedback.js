@@ -6,10 +6,6 @@ export default class Feedback extends BlockComponent {
 
   static primaryStateVariableForDefinition = "feedbackText";
 
-  static get stateVariablesShadowedForReference() {
-    return ["hide"]
-  }
-
   static createAttributesObject(args) {
     let attributes = super.createAttributesObject(args);
     delete attributes.hide;

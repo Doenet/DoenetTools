@@ -4791,7 +4791,7 @@ describe('Answer Tag Tests', function () {
         // cy.get('#\\/_mathinput1_input').should('have.value', 'y');
         // cy.get('#\\/_mathinput2_input').should('have.value', '3-x');
 
-        cy.get(crAnchor + ' .mjx-mrow').should('have.text','y')
+        cy.get(crAnchor + ' .mjx-mrow').should('have.text', 'y')
         cy.get(crAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('y')
         });
@@ -5923,7 +5923,7 @@ describe('Answer Tag Tests', function () {
         cy.get(cr2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('v')
         });
-        cy.get(cr3Anchor + ' .mjx-mrow').should('have.text','w')
+        cy.get(cr3Anchor + ' .mjx-mrow').should('have.text', 'w')
         cy.get(cr3Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('w')
         });
@@ -13116,6 +13116,62 @@ describe('Answer Tag Tests', function () {
 
     cy.get('#\\/ans4_submit').click()
     cy.get('#\\/ans4_correct').should('be.visible')
+
+  });
+
+  it('cannot change submitted or changed response', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <answer name="a"><mathinput name="mia" />x</answer>
+
+  <p>Current Response: <copy target="a" prop="currentResponse" assignNames="cr" /></p>
+  <p>Submitted Response: <copy target="a" prop="submittedResponse" assignNames="sr" /></p>
+  
+  <p>Change curent response: <mathinput bindValueTo="$(a{prop='currentResponse'})" name="micr" /></p>
+  <p>Change submitted response: <mathinput bindValueTo="$(a{prop='submittedResponse'})" name="misr"  /></p>
+   `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.get('#\\/cr .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq('\uff3f')
+    })
+    cy.get('#\\/sr').should('not.exist');
+
+    cy.log('cannot change from mathinputs')
+    cy.get('#\\/micr textarea').type("y{enter}", { force: true })
+    cy.get('#\\/misr textarea').type("z{enter}", { force: true })
+
+    cy.get('#\\/cr .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq('\uff3f')
+    })
+    cy.get('#\\/sr').should('not.exist');
+
+
+    cy.log('submit response')
+    cy.get('#\\/mia textarea').type("x{enter}", {force:true})
+
+    cy.get('#\\/cr .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq('x')
+    })
+    cy.get('#\\/sr .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq('x')
+    })
+
+
+    cy.log('cannot change from mathinputs')
+    cy.get('#\\/micr textarea').type("{end}{backspace}y{enter}", { force: true })
+    cy.get('#\\/misr textarea').type("{end}{backspace}z{enter}", { force: true })
+
+    cy.get('#\\/cr .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq('x')
+    })
+    cy.get('#\\/sr .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq('x')
+    })
 
   });
 

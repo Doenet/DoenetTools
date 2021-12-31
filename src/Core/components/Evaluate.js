@@ -73,7 +73,7 @@ export default class Evaluate extends MathComponent {
     delete stateVariableDefinitions.expressionWithCodes;
     delete stateVariableDefinitions.mathChildrenFunctionSymbols;
     delete stateVariableDefinitions.codesAdjacentToStrings;
-    delete stateVariableDefinitions.mathChildrenByArrayComponent;
+    delete stateVariableDefinitions.mathChildrenByVectorComponent;
     delete stateVariableDefinitions.mathChildrenWithCanBeModified;
     delete stateVariableDefinitions.unordered;
 

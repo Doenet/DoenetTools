@@ -1428,4 +1428,157 @@ describe('Math Tag Tests', function () {
 
   });
 
+  it('change one vector component in inverse direction does not affect other', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+  <p><text>a</text></p>
+  <number name="n">1</number>
+  <graph>
+    <point name="P" coords="(2$n+1,1)" />
+    <copy target="P" assignNames="Q" x="2$n-1" />
+  </graph>
+  `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.get('#\\/n').should('have.text', '1');
+
+    cy.window().then(async (win) => {
+      let components = Object.assign({}, win.state.components);
+      expect((await components['/P'].stateValues.xs).map(x => x.tree)).eqls([3, 1])
+      expect((await components['/Q'].stateValues.xs).map(x => x.tree)).eqls([1, 1])
+    })
+
+    cy.log('move dependent point')
+    cy.window().then(async (win) => {
+      let components = Object.assign({}, win.state.components);
+      await components["/Q"].movePoint({ x: -2, y: 3 })
+    })
+
+    cy.get('#\\/n').should('have.text', '-0.5');
+
+    cy.window().then(async (win) => {
+      let components = Object.assign({}, win.state.components);
+      expect((await components['/P'].stateValues.xs).map(x => x.tree)).eqls([0, 3])
+      expect((await components['/Q'].stateValues.xs).map(x => x.tree)).eqls([-2, 3])
+    })
+
+
+  });
+
+  it('change one vector component in inverse direction does not affect other, original in math', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+  <p><text>a</text></p>
+  <number name="n">1</number>
+  <math name="coords" simplify>(2$n+1,1)</math>
+  <graph>
+    <point name="P" coords="$coords" />
+    <copy target="P" assignNames="Q" x="2$n-1" />
+  </graph>
+  `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.get('#\\/n').should('have.text', '1');
+
+    cy.get('#\\/coords').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(3,1)');
+    })
+
+    cy.window().then(async (win) => {
+      let components = Object.assign({}, win.state.components);
+      expect((await components['/P'].stateValues.xs).map(x => x.tree)).eqls([3, 1])
+      expect((await components['/Q'].stateValues.xs).map(x => x.tree)).eqls([1, 1])
+    })
+
+    cy.log('move dependent point')
+    cy.window().then(async (win) => {
+      let components = Object.assign({}, win.state.components);
+      await components["/Q"].movePoint({ x: -2, y: 3 })
+    })
+
+    cy.get('#\\/n').should('have.text', '-0.5');
+    cy.get('#\\/coords').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(0,3)');
+    })
+
+    cy.window().then(async (win) => {
+      let components = Object.assign({}, win.state.components);
+      expect((await components['/P'].stateValues.xs).map(x => x.tree)).eqls([0, 3])
+      expect((await components['/Q'].stateValues.xs).map(x => x.tree)).eqls([-2, 3])
+    })
+
+
+  });
+
+  it('change one vector component in inverse direction does not affect other, through mathinput', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+  <p><text>a</text></p>
+  <number name="n">1</number>
+  <math name="coords1" simplify>(2$n+1,1)</math>
+  <mathinput name="coords2" bindValueTo="$coords1" />
+  <graph>
+    <point name="P" coords="$coords2" />
+    <copy target="P" assignNames="Q" x="2$n-1" />
+  </graph>
+  `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.get('#\\/n').should('have.text', '1');
+
+    cy.get('#\\/coords1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(3,1)');
+    })
+
+    cy.window().then(async (win) => {
+      let components = Object.assign({}, win.state.components);
+      expect((await components['/P'].stateValues.xs).map(x => x.tree)).eqls([3, 1])
+      expect((await components['/Q'].stateValues.xs).map(x => x.tree)).eqls([1, 1])
+    })
+
+    cy.log('move dependent point')
+    cy.window().then(async (win) => {
+      let components = Object.assign({}, win.state.components);
+      await components["/Q"].movePoint({ x: -2, y: 3 })
+    })
+
+    cy.get('#\\/n').should('have.text', '-0.5');
+    cy.get('#\\/coords1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(0,3)');
+    })
+
+    cy.window().then(async (win) => {
+      let components = Object.assign({}, win.state.components);
+      expect((await components['/P'].stateValues.xs).map(x => x.tree)).eqls([0, 3])
+      expect((await components['/Q'].stateValues.xs).map(x => x.tree)).eqls([-2, 3])
+    })
+
+    cy.log('enter value in mathinput')
+    cy.get('#\\/coords2 textarea').type("{end}{leftArrow}{backspace}{backspace}{backspace}6,9{enter}", { force: true })
+
+    cy.get('#\\/n').should('have.text', '2.5');
+    cy.get('#\\/coords1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(6,9)');
+    })
+
+    cy.window().then(async (win) => {
+      let components = Object.assign({}, win.state.components);
+      expect((await components['/P'].stateValues.xs).map(x => x.tree)).eqls([6, 9])
+      expect((await components['/Q'].stateValues.xs).map(x => x.tree)).eqls([4, 9])
+    })
+
+
+  });
+
+
 })
+

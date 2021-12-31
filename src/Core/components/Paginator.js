@@ -983,7 +983,9 @@ export class PaginatorControls extends BlockComponent {
       public: true,
     }
     attributes.paginator = {
-      createPrimitiveOfType: "string"
+      createPrimitiveOfType: "string",
+      createStateVariable: "paginator",
+      defaultValue: null,
     }
 
     attributes.disabledIgnoresParentReadOnly.defaultValue = true;
@@ -997,18 +999,6 @@ export class PaginatorControls extends BlockComponent {
 
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
-
-    stateVariableDefinitions.paginator = {
-      returnDependencies: () => ({
-        paginator: {
-          dependencyType: "attributePrimitive",
-          attributeName: "paginator"
-        },
-      }),
-      definition({ dependencyValues }) {
-        return { newValues: { paginator: dependencyValues.paginator } }
-      }
-    }
 
     stateVariableDefinitions.paginatorComponentName = {
       stateVariablesDeterminingDependencies: ["paginator"],

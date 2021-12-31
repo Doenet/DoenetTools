@@ -89,8 +89,12 @@ export default class MathList extends InlineComponent {
         matchedChildren, isAttributeComponent = false, createdFromMacro = false,
       }) {
         if (isAttributeComponent && !createdFromMacro) {
+          // if in attribute not created by a macros,
+          // then group expressions like 3$x+3 into a single match by wrapping with a math
           return groupIntoMathsSeparatedBySpaces({ matchedChildren });
         } else {
+          // otherwise, just break strings into pieces and wrap each piece with a math,
+          // leaving all othe components alone
           return breakStringsIntoMathsBySpaces({ matchedChildren })
         }
       }

@@ -7,17 +7,6 @@ export default class Function extends InlineComponent {
   static componentType = "function";
   static rendererType = "math";
 
-  static get stateVariablesShadowedForReference() {
-    return [
-      "variables", "numericalfs", "symbolicfs", "symbolic",
-      "domain",
-      "nInputs", "nOutputs",
-      "symbolic", "isInterpolatedFunction", "formula",
-      "prescribedPoints", "prescribedMinima", "prescribedMaxima", "prescribedExtrema",
-      "displayDigits", "displayDecimals", "displaySmallAsZero",
-      "nPrescribedPoints"
-    ]
-  };
 
   static primaryStateVariableForDefinition = "numericalfShadow";
 

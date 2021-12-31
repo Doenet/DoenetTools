@@ -281,7 +281,7 @@ export default class BaseComponent {
         propagateToDescendants: true
       },
       isResponse: {
-        createComponentOfType: "boolean",
+        createPrimitiveOfType: "boolean",
         createStateVariable: "isResponse",
         defaultValue: false,
         public: true,
@@ -839,7 +839,7 @@ export default class BaseComponent {
       let additionalState = {};
       for (let item in this.state) {
         // evaluate state variable first so that 
-        // essential and usedDefault attribute are populated
+        // essential and usedDefault attributes are populated
         let value = await this.state[item].value;
 
         if (this.state[item].essential || this.state[item].alwaysShadow) {// || stateVariablesToInclude.includes(item)) {

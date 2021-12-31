@@ -8,7 +8,7 @@ export default class DiscreteSimulationResultList extends BlockComponent {
 
   // used when referencing this component without prop
   static useChildrenForReference = false;
-  static get stateVariablesShadowedForReference() { return ["cells", "height"] };
+  static get stateVariablesShadowedForReference() { return ["cells"] };
 
   static createAttributesObject(args) {
     let attributes = super.createAttributesObject(args);

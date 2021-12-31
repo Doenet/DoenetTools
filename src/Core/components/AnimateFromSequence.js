@@ -1,5 +1,5 @@
 import BaseComponent from './abstract/BaseComponent';
-import { returnSequenceValues, returnStandardSequenceAttributes, returnStandardSequenceStateVariableDefinitions, returnStandardSequenceStateVariablesShadowedForReference } from '../utils/sequence';
+import { returnSequenceValues, returnStandardSequenceAttributes, returnStandardSequenceStateVariableDefinitions } from '../utils/sequence';
 import me from 'math-expressions';
 
 export default class AnimateFromSequence extends BaseComponent {
@@ -11,10 +11,6 @@ export default class AnimateFromSequence extends BaseComponent {
   static rendererType = undefined;
 
   static acceptTarget = true;
-
-  static get stateVariablesShadowedForReference() {
-    return returnStandardSequenceStateVariablesShadowedForReference();
-  };
 
   static createAttributesObject(args) {
     let attributes = super.createAttributesObject(args);

@@ -53,6 +53,7 @@ export default class MathInput extends Input {
       defaultValue: me.fromAst("\uff3f"),
       public: true,
       copyComponentAttributesForCreatedComponent: ["format", "functionSymbols", "splitSymbols"],
+      noInverse: true,
     };
     attributes.format = {
       createComponentOfType: "text",

@@ -2397,7 +2397,7 @@ describe('Polygon Tag Tests', function () {
   <graph xmin="-110" xmax="110" ymin="-0.11" ymax="0.11">
     <polygon vertices="(-50,-0.02) (-40,0.07) (70,0.06) (10,-0.01)" name="p" />
     <point x="0" y="0.01" name="A">
-      <constraints>
+      <constraints scalesFromGraph="_graph1">
         <constrainTo><copy target="p" /></constrainTo>
       </constraints>
     </point>
@@ -2466,7 +2466,7 @@ describe('Polygon Tag Tests', function () {
 
   })
 
-  it('constrain to polygon, different scales from graph', () => {
+  it('fixed polygon', () => {
     cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `

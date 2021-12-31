@@ -408,7 +408,7 @@ export default class SampleRandomNumbers extends CompositeComponent {
 
 
 
-  static async createSerializedReplacements({ component, componentInfoObjects, startNum = 0 }) {
+  static async createSerializedReplacements({ component, componentInfoObjects, startNum = 0, flags }) {
 
     let newNamespace = component.attributes.newNamespace && component.attributes.newNamespace.primitive;
 
@@ -430,7 +430,8 @@ export default class SampleRandomNumbers extends CompositeComponent {
           attributes: attributesToConvert,
           componentType: "number",
           componentInfoObjects,
-          compositeCreatesNewNamespace: newNamespace
+          compositeCreatesNewNamespace: newNamespace,
+          flags
         })
       }
 
@@ -454,7 +455,7 @@ export default class SampleRandomNumbers extends CompositeComponent {
 
   }
 
-  static async calculateReplacementChanges({ component, componentInfoObjects }) {
+  static async calculateReplacementChanges({ component, componentInfoObjects, flags }) {
 
     let replacementChanges = [];
 
@@ -485,7 +486,8 @@ export default class SampleRandomNumbers extends CompositeComponent {
 
         let result = await this.createSerializedReplacements({
           component, componentInfoObjects,
-          startNum: component.replacements.length
+          startNum: component.replacements.length,
+          flags
         })
 
         let replacementInstruction = {

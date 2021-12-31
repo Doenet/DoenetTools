@@ -1,20 +1,12 @@
 import CompositeComponent from './abstract/CompositeComponent';
 import { processAssignNames } from '../utils/serializedStateProcessing';
 import { convertAttributesForComponentType } from '../utils/copy';
-import { returnSequenceValues, returnSequenceValueForIndex, returnStandardSequenceAttributes, returnStandardSequenceStateVariableDefinitions, returnStandardSequenceStateVariablesShadowedForReference } from '../utils/sequence';
+import { returnSequenceValues, returnSequenceValueForIndex, returnStandardSequenceAttributes, returnStandardSequenceStateVariableDefinitions } from '../utils/sequence';
 
 export default class Sequence extends CompositeComponent {
   static componentType = "sequence";
 
   static assignNamesToReplacements = true;
-
-  // don't actually need to shadow these, as replacements for shadows
-  // ignore state variables
-  // but, shadow them so that state variables are consistent
-  // since attributeComponents aren't copied
-  static get stateVariablesShadowedForReference() {
-    return returnStandardSequenceStateVariablesShadowedForReference();
-  };
 
   static stateVariableToEvaluateAfterReplacements = "readyToExpandWhenResolved";
 
@@ -80,7 +72,7 @@ export default class Sequence extends CompositeComponent {
   }
 
 
-  static async createSerializedReplacements({ component, workspace, componentInfoObjects }) {
+  static async createSerializedReplacements({ component, workspace, componentInfoObjects, flags }) {
 
     // console.log(`create serialized replacements for ${component.componentName}`)
 
@@ -144,7 +136,8 @@ export default class Sequence extends CompositeComponent {
           attributes: { fixed: component.attributes.fixed },
           componentType,
           componentInfoObjects,
-          compositeCreatesNewNamespace: newNamespace
+          compositeCreatesNewNamespace: newNamespace,
+          flags
         })
       }
 
@@ -170,7 +163,7 @@ export default class Sequence extends CompositeComponent {
     return { replacements: processResult.serializedComponents };
   }
 
-  static async calculateReplacementChanges({ component, workspace, componentInfoObjects }) {
+  static async calculateReplacementChanges({ component, workspace, componentInfoObjects, flags }) {
     // console.log(`calculate replacement changes for ${component.componentName}`);
 
 
@@ -223,7 +216,7 @@ export default class Sequence extends CompositeComponent {
 
       // calculate new serialized replacements
       let newSerializedReplacements = (await this.createSerializedReplacements({
-        component, workspace, componentInfoObjects
+        component, workspace, componentInfoObjects, flags
       })).replacements;
 
       let replacementInstruction = {
@@ -358,7 +351,8 @@ export default class Sequence extends CompositeComponent {
               attributes: { fixed: component.attributes.fixed },
               componentType,
               componentInfoObjects,
-              compositeCreatesNewNamespace: newNamespace
+              compositeCreatesNewNamespace: newNamespace,
+              flags
             })
           }
 

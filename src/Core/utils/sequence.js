@@ -1,13 +1,6 @@
 import { findFiniteNumericalValue } from '../utils/math';
 import me from 'math-expressions';
 
-// Need to shadow these state variables as created from attribute components
-export function returnStandardSequenceStateVariablesShadowedForReference() {
-  return [
-    "specifiedFrom", "specifiedTo",
-    "specifiedLength", "specifiedStep", "specifiedExclude"
-  ]
-}
 
 export function returnStandardSequenceAttributes() {
   return {

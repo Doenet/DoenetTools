@@ -1666,46 +1666,6 @@ export default class Vector extends GraphicalComponent {
       }
     }
 
-    stateVariableDefinitions.graphXmin = {
-      forRenderer: true,
-      additionalStateVariablesDefined: [{
-        variableName: "graphXmax",
-        forRenderer: true,
-      }, {
-        variableName: "graphYmin",
-        forRenderer: true,
-      }, {
-        variableName: "graphYmax",
-        forRenderer: true,
-      }],
-      returnDependencies: () => ({
-        graphAncestor: {
-          dependencyType: "ancestor",
-          componentType: "graph",
-          variableNames: ["xmin", "xmax", "ymin", "ymax"]
-        }
-      }),
-      definition({ dependencyValues }) {
-        if (dependencyValues.graphAncestor) {
-          return {
-            newValues: {
-              graphXmin: dependencyValues.graphAncestor.stateValues.xmin,
-              graphXmax: dependencyValues.graphAncestor.stateValues.xmax,
-              graphYmin: dependencyValues.graphAncestor.stateValues.ymin,
-              graphYmax: dependencyValues.graphAncestor.stateValues.ymax,
-            }
-          }
-        } else {
-          return {
-            newValues: {
-              graphXmin: null, graphXmax: null,
-              graphYmin: null, graphYmax: null
-            }
-          }
-        }
-      }
-    }
-
     stateVariableDefinitions.nearestPoint = {
       returnDependencies: () => ({
         nDimensions: {
@@ -1716,33 +1676,8 @@ export default class Vector extends GraphicalComponent {
           dependencyType: "stateVariable",
           variableName: "numericalEndpoints"
         },
-        graphXmin: {
-          dependencyType: "stateVariable",
-          variableName: "graphXmin"
-        },
-        graphXmax: {
-          dependencyType: "stateVariable",
-          variableName: "graphXmax"
-        },
-        graphYmin: {
-          dependencyType: "stateVariable",
-          variableName: "graphYmin"
-        },
-        graphYmax: {
-          dependencyType: "stateVariable",
-          variableName: "graphYmax"
-        },
       }),
       definition({ dependencyValues }) {
-        let xscale = 1, yscale = 1;
-        if (dependencyValues.graphXmin !== null &&
-          dependencyValues.graphXmax !== null &&
-          dependencyValues.graphYmin !== null &&
-          dependencyValues.graphYmax !== null
-        ) {
-          xscale = dependencyValues.graphXmax - dependencyValues.graphXmin;
-          yscale = dependencyValues.graphYmax - dependencyValues.graphYmin;
-        }
 
         let A1 = dependencyValues.numericalEndpoints[0][0];
         let A2 = dependencyValues.numericalEndpoints[0][1];
@@ -1752,9 +1687,6 @@ export default class Vector extends GraphicalComponent {
         let haveConstants = Number.isFinite(A1) && Number.isFinite(A2) &&
           Number.isFinite(B1) && Number.isFinite(B2);
 
-        let BA1 = (B1 - A1) / xscale;
-        let BA2 = (B2 - A2) / yscale;
-        let denom = (BA1 * BA1 + BA2 * BA2);
 
         // only implement for 
         // - 2D
@@ -1762,17 +1694,23 @@ export default class Vector extends GraphicalComponent {
         // - non-degenerate parameters
         let skip = dependencyValues.nDimensions !== 2
           || !haveConstants
-          || denom === 0;
+          || (B1 === A1 && B2 === A2);
 
 
         return {
           newValues: {
-            nearestPoint: function (variables) {
+            nearestPoint: function ({ variables, scales }) {
 
               if (skip) {
                 return {};
               }
 
+              let xscale = scales[0];
+              let yscale = scales[1];
+
+              let BA1 = (B1 - A1) / xscale;
+              let BA2 = (B2 - A2) / yscale;
+              let denom = (BA1 * BA1 + BA2 * BA2);
 
               let t = ((variables.x1 - A1) / xscale * BA1 + (variables.x2 - A2) / yscale * BA2) / denom;
 

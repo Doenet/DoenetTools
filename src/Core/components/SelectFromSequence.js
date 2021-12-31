@@ -184,7 +184,7 @@ export default class SelectFromSequence extends Sequence {
     return stateVariableDefinitions;
   }
 
-  static async createSerializedReplacements({ component, componentInfoObjects }) {
+  static async createSerializedReplacements({ component, componentInfoObjects, flags }) {
 
     let componentType = await component.stateValues.type;
     if (componentType === "letters") {
@@ -202,7 +202,8 @@ export default class SelectFromSequence extends Sequence {
         attributes: { fixed: component.attributes.fixed },
         componentType,
         componentInfoObjects,
-        compositeCreatesNewNamespace: newNamespace
+        compositeCreatesNewNamespace: newNamespace,
+        flags
       })
     }
 

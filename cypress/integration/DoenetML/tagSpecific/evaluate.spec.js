@@ -1545,10 +1545,10 @@ describe('Evaluate Tag Tests', function () {
     cy.get('#\\/result3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(0,0)')
     })
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components["/f"].stateValues.nInputs).eq(2);
-      expect(components["/f"].stateValues.nOutputs).eq(2);
+      expect(await components["/f"].stateValues.nInputs).eq(2);
+      expect(await components["/f"].stateValues.nOutputs).eq(2);
       expect(components['/result1'].stateValues.value.tree).eqls(["vector", 0, 0]);
       expect(components['/result2'].activeChildren[0].stateValues.value.tree).eqls(["vector", 0, 0]);
       expect(components['/result3'].stateValues.value.tree).eqls(["vector", 0, 0]);
@@ -1566,10 +1566,10 @@ describe('Evaluate Tag Tests', function () {
     cy.get('#\\/result3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(10,4)')
     })
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components["/f"].stateValues.nInputs).eq(2);
-      expect(components["/f"].stateValues.nOutputs).eq(2);
+      expect(await components["/f"].stateValues.nInputs).eq(2);
+      expect(await components["/f"].stateValues.nOutputs).eq(2);
       expect(components['/result1'].stateValues.value.tree).eqls(["vector", 10, 4]);
       expect(components['/result2'].activeChildren[0].stateValues.value.tree).eqls(["vector", 10, 4]);
       expect(components['/result3'].stateValues.value.tree).eqls(["vector", 10, 4]);
@@ -1587,10 +1587,10 @@ describe('Evaluate Tag Tests', function () {
     cy.get('#\\/result3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('＿')
     })
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components["/f"].stateValues.nInputs).eq(3);
-      expect(components["/f"].stateValues.nOutputs).eq(2);
+      expect(await components["/f"].stateValues.nInputs).eq(3);
+      expect(await components["/f"].stateValues.nOutputs).eq(2);
       expect(components['/result1'].stateValues.value.tree).eqls('＿');
       expect(components['/result2'].activeChildren[0].stateValues.value.tree).eqls('＿');
       expect(components['/result3'].stateValues.value.tree).eqls('＿');
@@ -1609,10 +1609,10 @@ describe('Evaluate Tag Tests', function () {
     cy.get('#\\/result3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(10,4)')
     })
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components["/f"].stateValues.nInputs).eq(3);
-      expect(components["/f"].stateValues.nOutputs).eq(2);
+      expect(await components["/f"].stateValues.nInputs).eq(3);
+      expect(await components["/f"].stateValues.nOutputs).eq(2);
       expect(components['/result1'].stateValues.value.tree).eqls(["vector", 10, 4]);
       expect(components['/result2'].activeChildren[0].stateValues.value.tree).eqls(["vector", 10, 4]);
       expect(components['/result3'].stateValues.value.tree).eqls(["vector", 10, 4]);
@@ -1630,10 +1630,10 @@ describe('Evaluate Tag Tests', function () {
     cy.get('#\\/result3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(17,1)')
     })
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components["/f"].stateValues.nInputs).eq(3);
-      expect(components["/f"].stateValues.nOutputs).eq(2);
+      expect(await components["/f"].stateValues.nInputs).eq(3);
+      expect(await components["/f"].stateValues.nOutputs).eq(2);
       expect(components['/result1'].stateValues.value.tree).eqls(["vector", 17, 1]);
       expect(components['/result2'].activeChildren[0].stateValues.value.tree).eqls(["vector", 17, 1]);
       expect(components['/result3'].stateValues.value.tree).eqls(["vector", 17, 1]);
@@ -1652,10 +1652,10 @@ describe('Evaluate Tag Tests', function () {
     cy.get('#\\/result3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(17,1,42)')
     })
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components["/f"].stateValues.nInputs).eq(3);
-      expect(components["/f"].stateValues.nOutputs).eq(3);
+      expect(await components["/f"].stateValues.nInputs).eq(3);
+      expect(await components["/f"].stateValues.nOutputs).eq(3);
       expect(components['/result1'].stateValues.value.tree).eqls(["vector", 17, 1, 42]);
       expect(components['/result2'].activeChildren[0].stateValues.value.tree).eqls(["vector", 17, 1, 42]);
       expect(components['/result3'].stateValues.value.tree).eqls(["vector", 17, 1, 42]);
@@ -1673,10 +1673,10 @@ describe('Evaluate Tag Tests', function () {
     cy.get('#\\/result3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(17,1,42w,w)')
     })
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components["/f"].stateValues.nInputs).eq(3);
-      expect(components["/f"].stateValues.nOutputs).eq(4);
+      expect(await components["/f"].stateValues.nInputs).eq(3);
+      expect(await components["/f"].stateValues.nOutputs).eq(4);
       expect(components['/result1'].stateValues.value.tree).eqls(["vector", 17, 1, ['*', 42, 'w'], 'w']);
       expect(components['/result2'].activeChildren[0].stateValues.value.tree).eqls(["vector", 17, 1, ['*', 42, 'w'], 'w']);
       expect(components['/result3'].stateValues.value.tree).eqls(["vector", 17, 1, ['*', 42, 'w'], 'w']);

@@ -3,9 +3,6 @@ import GraphicalComponent from './abstract/GraphicalComponent';
 export default class AreaBetweenCurveXAxis extends GraphicalComponent {
   static componentType = "areaBetweenCurveXAxis";
 
-  // used when referencing this component without prop
-  static get stateVariablesShadowedForReference() { return ["endpoint"] };
-
   static createAttributesObject(args) {
     let attributes = super.createAttributesObject(args);
 

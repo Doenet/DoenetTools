@@ -11,9 +11,6 @@ export default class ConditionalContent extends CompositeComponent {
   static assignNamesToReplacements = true;
   static originalNamesAreConsistent = true;
 
-  static get stateVariablesShadowedForReference() {
-    return ["baseConditionSatisfied"]
-  }
 
   static stateVariableToEvaluateAfterReplacements = "readyToExpandWhenResolved";
 

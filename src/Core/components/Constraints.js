@@ -6,6 +6,24 @@ export default class Constraints extends BaseComponent {
   static componentType = "constraints";
   static rendererType = undefined;
 
+  static createAttributesObject(args) {
+    let attributes = super.createAttributesObject(args);
+
+    attributes.scales = {
+      createComponentOfType: "numberList",
+      createStateVariable: "preliminaryScales",
+      defaultValue: null,
+    };
+
+    attributes.scalesFromGraph = {
+      createPrimitiveOfType: "string",
+      createStateVariable: "scalesFromGraph",
+      defaultValue: null,
+    }
+
+    return attributes
+  }
+
   static returnChildGroups() {
 
     return [{
@@ -79,6 +97,73 @@ export default class Constraints extends BaseComponent {
       }
     }
 
+    stateVariableDefinitions.graphComponentName = {
+      stateVariablesDeterminingDependencies: ["scalesFromGraph"],
+      returnDependencies({ stateValues }) {
+        if (stateValues.scalesFromGraph) {
+          return {
+            graphComponentName: {
+              dependencyType: "expandTargetName",
+              target: stateValues.scalesFromGraph
+            }
+          }
+        } else {
+          return {}
+        }
+      },
+      definition({ dependencyValues }) {
+        return { newValues: { graphComponentName: dependencyValues.graphComponentName } }
+      }
+    }
+
+    stateVariableDefinitions.scales = {
+      public: true,
+      componentType: "number",
+      stateVariablesDeterminingDependencies: ["graphComponentName"],
+      returnDependencies({ stateValues }) {
+        let dependencies = {
+          preliminaryScales: {
+            dependencyType: "stateVariable",
+            variableName: "preliminaryScales"
+          }
+        }
+        if (stateValues.graphComponentName) {
+          dependencies.graph = {
+            dependencyType: "multipleStateVariables",
+            componentName: stateValues.graphComponentName,
+            variableNames: ["xmin", "xmax", "ymin", "ymax"],
+            variablesOptional: true,
+          }
+
+        }
+
+        return dependencies;
+      },
+      definition({ dependencyValues }) {
+
+        if (dependencyValues.preliminaryScales &&
+          dependencyValues.preliminaryScales.every(x => Number.isFinite(x) && x > 0)
+        ) {
+          let scales = [...dependencyValues.preliminaryScales];
+          if (scales.length < 3) {
+            scales.push(...Array(3 - scales.length).fill(1))
+          }
+          return { newValues: { scales } }
+        }
+
+        if (dependencyValues.graph) {
+          let SVs = dependencyValues.graph.stateValues;
+          let scales = [SVs.xmax - SVs.xmin, SVs.ymax - SVs.ymin, 1];
+
+          if (scales.every(x => Number.isFinite(x) && x > 0)) {
+            return { newValues: { scales } }
+          }
+        }
+
+        return { newValues: { scales: [1, 1, 1] } }
+      }
+    }
+
     stateVariableDefinitions.constraintResults = {
       additionalStateVariablesDefined: [{
         variableName: "constraintUsedByComponent",
@@ -116,7 +201,12 @@ export default class Constraints extends BaseComponent {
           independentComponentConstraints: {
             dependencyType: "stateVariable",
             variableName: "independentComponentConstraints"
-          }
+          },
+          scales: {
+            dependencyType: "stateVariable",
+            variableName: "scales"
+          },
+
         }
 
         let arrayEntryPrefix = stateValues.arrayEntryPrefixForConstraints;
@@ -165,7 +255,10 @@ export default class Constraints extends BaseComponent {
             let constraintUsed = false;
 
             for (let constraintChild of globalDependencyValues.constraintChildren) {
-              let result = constraintChild.stateValues.applyComponentConstraint(variables);
+              let result = constraintChild.stateValues.applyComponentConstraint({
+                variables,
+                scales: globalDependencyValues.scales
+              });
 
               if (result.constrained) {
                 variables['x' + varEnding] = convertValueToMathExpression(result.variables['x' + varEnding]);
@@ -199,11 +292,15 @@ export default class Constraints extends BaseComponent {
           for (let constraintChild of globalDependencyValues.constraintChildren) {
             let constraintResult;
             if (constraintChild.stateValues.applyConstraint) {
-              constraintResult = constraintChild.stateValues.applyConstraint(variables);
+              constraintResult = constraintChild.stateValues.applyConstraint({
+                variables,
+                scales: globalDependencyValues.scales
+              });
             } else {
               constraintResult = applyConstraintFromComponentConstraints({
                 variables,
-                applyComponentConstraint: constraintChild.stateValues.applyComponentConstraint
+                applyComponentConstraint: constraintChild.stateValues.applyComponentConstraint,
+                scales: globalDependencyValues.scales,
               })
             }
 
@@ -261,7 +358,10 @@ export default class Constraints extends BaseComponent {
 
 
             for (let constraintChild of globalDependencyValues.constraintChildren) {
-              let result = constraintChild.stateValues.applyComponentConstraint(variables);
+              let result = constraintChild.stateValues.applyComponentConstraint({
+                variables,
+                scales: globalDependencyValues.scales
+              });
 
               if (result.constrained) {
                 variables['x' + varEnding] = convertValueToMathExpression(result.variables['x' + varEnding]);
@@ -309,11 +409,15 @@ export default class Constraints extends BaseComponent {
           for (let constraintChild of globalDependencyValues.constraintChildren) {
             let constraintResult;
             if (constraintChild.stateValues.applyConstraint) {
-              constraintResult = constraintChild.stateValues.applyConstraint(variables);
+              constraintResult = constraintChild.stateValues.applyConstraint({
+                variables,
+                scales: globalDependencyValues.scales
+              });
             } else {
               constraintResult = applyConstraintFromComponentConstraints({
                 variables,
-                applyComponentConstraint: constraintChild.stateValues.applyComponentConstraint
+                applyComponentConstraint: constraintChild.stateValues.applyComponentConstraint,
+                scales: globalDependencyValues.scales
               })
             }
 

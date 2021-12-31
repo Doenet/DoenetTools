@@ -827,7 +827,11 @@ export default class Answer extends InlineComponent {
           // makeEssential: ["submittedResponses"]
         }
       },
-      inverseArrayDefinitionByKey: function ({ desiredStateVariableValues }) {
+      inverseArrayDefinitionByKey: function ({ desiredStateVariableValues, initialChange }) {
+        if (!initialChange) {
+          return { success: false };
+        }
+
         return {
           success: true,
           instructions: [{

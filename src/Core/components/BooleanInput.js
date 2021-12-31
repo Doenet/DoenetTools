@@ -33,10 +33,6 @@ export default class BooleanInput extends Input {
 
   static variableForPlainMacro = "value";
 
-  static get stateVariablesShadowedForReference() {
-    return ["value"]
-  };
-
   static createAttributesObject(args) {
     let attributes = super.createAttributesObject(args);
     attributes.prefill = {

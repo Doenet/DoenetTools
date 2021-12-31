@@ -864,9 +864,8 @@ function substituteMacros(serializedComponents, componentInfoObjects, flags) {
     }
 
     if (component.componentType === "award" && component.children) {
-      let targetsAreResponses = component.attributes.targetsAreResponses;
-      if (targetsAreResponses) {
-        let targetNames = targetsAreResponses.primitive.split(/\s+/).filter(s => s);
+      if (component.attributes.targetsAreResponses) {
+        let targetNames = component.attributes.targetsAreResponses.primitive.split(/\s+/).filter(s => s);
         for (let target of targetNames) {
           addResponsesToDescendantsWithTarget(component.children, target);
         }

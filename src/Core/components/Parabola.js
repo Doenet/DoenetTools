@@ -1208,49 +1208,24 @@ export default class Parabola extends Curve {
           dependencyType: "stateVariable",
           variableName: "c"
         },
-        graphXmin: {
-          dependencyType: "stateVariable",
-          variableName: "graphXmin"
-        },
-        graphXmax: {
-          dependencyType: "stateVariable",
-          variableName: "graphXmax"
-        },
-        graphYmin: {
-          dependencyType: "stateVariable",
-          variableName: "graphYmin"
-        },
-        graphYmax: {
-          dependencyType: "stateVariable",
-          variableName: "graphYmax"
-        }
       }),
-      definition({ dependencyValues }) {
-
-        let xscale = 1, yscale = 1;
-        if (dependencyValues.graphXmin !== null &&
-          dependencyValues.graphXmax !== null &&
-          dependencyValues.graphYmin !== null &&
-          dependencyValues.graphYmax !== null
-        ) {
-          xscale = dependencyValues.graphXmax - dependencyValues.graphXmin;
-          yscale = dependencyValues.graphYmax - dependencyValues.graphYmin;
-        }
+      definition({ dependencyValues, componentName }) {
 
 
-        let a0 = dependencyValues.a * xscale * xscale / yscale;
-        let b0 = dependencyValues.b * xscale / yscale;
-        let c0 = dependencyValues.c / yscale;
-
-        let skip = !(Number.isFinite(a0) && Number.isFinite(b0) && Number.isFinite(c0))
+        let skip = !(Number.isFinite(dependencyValues.a)
+          && Number.isFinite(dependencyValues.b)
+          && Number.isFinite(dependencyValues.c))
 
         return {
           newValues: {
-            nearestPoint: function (variables) {
+            nearestPoint: function ({ variables, scales }) {
 
               if (skip) {
                 return {};
               }
+
+              let xscale = scales[0];
+              let yscale = scales[1];
 
               let x1 = variables.x1.evaluate_to_constant();
               let x2 = variables.x2.evaluate_to_constant();
@@ -1261,6 +1236,10 @@ export default class Parabola extends Curve {
 
               x1 /= xscale;
               x2 /= yscale;
+
+              let a0 = dependencyValues.a * xscale * xscale / yscale;
+              let b0 = dependencyValues.b * xscale / yscale;
+              let c0 = dependencyValues.c / yscale;
 
               if (a0 === 0) {
                 // have line y = b0*x+c0
@@ -1286,7 +1265,7 @@ export default class Parabola extends Curve {
               let d = (b0 * d2 - x1) / a;
 
 
-              let resultCardano = cardano(b, c, d);
+              let resultCardano = cardano(b, c, d, 1E-14);
 
               let x1AtMin = resultCardano[0];
               let x2AtMin = dependencyValues.f(x1AtMin * xscale) / yscale;
@@ -1331,34 +1310,6 @@ export default class Parabola extends Curve {
 }
 
 
-function getNumericalCoords(coords) {
-  if (!coords || coords.tree.length !== 3) {
-    return {
-      numericEntries: false,
-      coordsNumeric: me.fromAst(["vector", NaN, NaN])
-    }
-  }
-
-  let coordsNumeric = ["vector"];
-  let numericEntries = true;
-  for (let j = 0; j < 2; j++) {
-    let comp = coords.get_component(j).evaluate_to_constant();
-    if (Number.isFinite(comp)) {
-      coordsNumeric.push(comp);
-    } else {
-      coordsNumeric.push(NaN);
-      numericEntries = false;
-    }
-  }
-
-  coordsNumeric = me.fromAst(coordsNumeric);
-
-  return {
-    numericEntries,
-    coordsNumeric,
-  }
-
-}
 
 // function cardano is from linalg.js:
 

@@ -2822,6 +2822,63 @@ describe('Spreadsheet Tag Tests', function () {
 
   })
 
+  it('spreadsheet can merge coordinates', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+  <p><text>a</text></p>
+  <extract prop="text" assignNames="t1"><copy prop="cellA1" target="_spreadsheet1" /></extract>
+  <spreadsheet>
+  <cell name="coords" prefill="(1,2)" />
+  </spreadsheet>
+  <graph>
+    <point name="P" coords="$(coords{prop='math'})" />
+  </graph>
+  <p>Change x-coordinate: <mathinput name="x1" bindValueTo="$(P{prop='x1'})" /></p>
+  <p>Change y-coordinate: <mathinput name="x2" bindValueTo="$(P{prop='x2'})" /></p>
+  `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.get('#\\/x1 textarea').type("{end}{backspace}3{enter}", { force: true })
+
+    cy.get('#\\/t1').should('have.text', '( 3, 2 )')
+
+    cy.get('#\\/x2 textarea').type("{end}{backspace}4{enter}", { force: true })
+
+    cy.get('#\\/t1').should('have.text', '( 3, 4 )')
+
+  });
+
+  it('spreadsheet can merge coordinates, with math child', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+  <p><text>a</text></p>
+  <extract prop="text" assignNames="t1"><copy prop="cellA1" target="_spreadsheet1" /></extract>
+  <spreadsheet>
+  <cell name="coords" ><math>(1,2)</math></cell>
+  </spreadsheet>
+  <graph>
+    <point name="P" coords="$(coords{prop='math'})" />
+  </graph>
+  <p>Change x-coordinate: <mathinput name="x1" bindValueTo="$(P{prop='x1'})" /></p>
+  <p>Change y-coordinate: <mathinput name="x2" bindValueTo="$(P{prop='x2'})" /></p>
+  `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.get('#\\/x1 textarea').type("{end}{backspace}3{enter}", { force: true })
+
+    cy.get('#\\/t1').should('have.text', '( 3, 2 )')
+
+    cy.get('#\\/x2 textarea').type("{end}{backspace}4{enter}", { force: true })
+
+    cy.get('#\\/t1').should('have.text', '( 3, 4 )')
+
+  });
 
 });
 

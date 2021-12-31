@@ -13,6 +13,7 @@ import { flattenDeep, mapDeep } from './utils/array';
 import { DependencyHandler } from './Dependencies';
 import sha256 from 'crypto-js/sha256';
 import Hex from 'crypto-js/enc-hex'
+import { preprocessMathInverseDefinition } from './utils/math';
 
 // string to componentClass: this.allComponentClasses["string"]
 // componentClass to string: componentClass.componentType
@@ -1909,6 +1910,8 @@ export default class Core {
 
   async expandShadowingComposite(component) {
 
+    // console.log(`expand shadowing composite, ${component.componentName}`)
+
     if (this.updateInfo.compositesBeingExpanded.includes(component.shadows.componentName)) {
       // found a circular reference,
       // as we are in the middle of expanding a composite
@@ -1947,6 +1950,9 @@ export default class Core {
       }
     }
 
+    // console.log(`serialized replacements of ${shadowedComposite.componentName}`)
+    // console.log(JSON.parse(JSON.stringify(serializedReplacements)))
+
     // Have three composites involved:
     // 1. the shadowing composite (component, the one we're trying to expand)
     // 2. the shadowed composite
@@ -1963,27 +1969,30 @@ export default class Core {
 
     let newNamespace = component.attributes.newNamespace && component.attributes.newNamespace.primitive;
 
-    let compositeAttributesObj = component.constructor.createAttributesObject({ flags: this.flags });
+    // TODO: is isResponse the only attribute to convert?
+    if (component.attributes.isResponse) {
 
-    for (let repl of serializedReplacements) {
-      if (typeof repl !== "object") {
-        continue;
-      }
+      let compositeAttributesObj = component.constructor.createAttributesObject({ flags: this.flags });
 
-      // add attributes
-      if (!repl.attributes) {
-        repl.attributes = {};
+      for (let repl of serializedReplacements) {
+        if (typeof repl !== "object") {
+          continue;
+        }
+
+        // add attributes
+        if (!repl.attributes) {
+          repl.attributes = {};
+        }
+        let attributesFromComposite = convertAttributesForComponentType({
+          attributes: { isResponse: component.attributes.isResponse },
+          componentType: repl.componentType,
+          componentInfoObjects: this.componentInfoObjects,
+          compositeAttributesObj,
+          compositeCreatesNewNamespace: newNamespace
+        });
+        Object.assign(repl.attributes, attributesFromComposite)
       }
-      let attributesFromComposite = convertAttributesForComponentType({
-        attributes: component.attributes,
-        componentType: repl.componentType,
-        componentInfoObjects: this.componentInfoObjects,
-        compositeAttributesObj,
-        compositeCreatesNewNamespace: newNamespace
-      });
-      Object.assign(repl.attributes, attributesFromComposite)
     }
-
 
     // console.log(`name of composite mediating shadow: ${nameOfCompositeMediatingTheShadow}`)
     if (component.constructor.assignNamesToReplacements) {
@@ -2502,52 +2511,54 @@ export default class Core {
 
         };
 
-        stateVarDef.inverseDefinition = function ({ desiredStateVariableValues, dependencyValues, usedDefault }) {
-          if (!dependencyValues.attributeComponent) {
-            if (dependencyValues.attributePrimitive !== undefined && dependencyValues.attributePrimitive !== null) {
-              // can't invert if have primitive
+        if (!attributeSpecification.noInverse) {
+          stateVarDef.inverseDefinition = async function ({ desiredStateVariableValues, dependencyValues, usedDefault }) {
+            if (!dependencyValues.attributeComponent) {
+              if (dependencyValues.attributePrimitive !== undefined && dependencyValues.attributePrimitive !== null) {
+                // can't invert if have primitive
+                return { success: false }
+              }
+
+              if (usedDefault.ancestorProp) {
+                // no component or primitive, so value is essential and give it the desired value
+                return {
+                  success: true,
+                  instructions: [{
+                    setStateVariable: varName,
+                    value: desiredStateVariableValues[varName]
+                  }]
+                };
+              }
+              else {
+                // ancestor prop was used, so propagate back to ancestor
+                return {
+                  success: true,
+                  instructions: [{
+                    setDependency: "ancestorProp",
+                    desiredValue: desiredStateVariableValues[varName],
+                  }]
+                };
+              }
+            }
+
+            // attribute based on component
+
+            if (attributeSpecification.mergeArrays) {
+              // can't invert if we merged arrays to get the value
               return { success: false }
-            }
+            } else {
 
-            if (usedDefault.ancestorProp) {
-              // no component or primitive, so value is essential and give it the desired value
               return {
                 success: true,
                 instructions: [{
-                  setStateVariable: varName,
-                  value: desiredStateVariableValues[varName]
-                }]
-              };
-            }
-            else {
-              // ancestor prop was used, so propagate back to ancestor
-              return {
-                success: true,
-                instructions: [{
-                  setDependency: "ancestorProp",
+                  setDependency: "attributeComponent",
                   desiredValue: desiredStateVariableValues[varName],
+                  variableIndex: 0,
                 }]
               };
             }
-          }
-
-          // attribute based on component
-
-          if (attributeSpecification.mergeArrays) {
-            // can't invert if we merged arrays to get the value
-            return { success: false }
-          } else {
-
-            return {
-              success: true,
-              instructions: [{
-                setDependency: "attributeComponent",
-                desiredValue: desiredStateVariableValues[varName],
-                variableIndex: 0,
-              }]
-            };
-          }
-        };
+          };
+        }
       }
       else {
 
@@ -2605,41 +2616,43 @@ export default class Core {
           return { newValues: { [varName]: attributeValue } };
         };
 
-        stateVarDef.inverseDefinition = function ({ desiredStateVariableValues, dependencyValues }) {
+        if (!attributeSpecification.noInverse) {
+          stateVarDef.inverseDefinition = async function ({ desiredStateVariableValues, dependencyValues }) {
 
-          if (!dependencyValues.attributeComponent) {
-            if (dependencyValues.attributePrimitive !== undefined && dependencyValues.attributePrimitive !== null) {
-              // can't invert if have primitive
-              return { success: false }
+            if (!dependencyValues.attributeComponent) {
+              if (dependencyValues.attributePrimitive !== undefined && dependencyValues.attributePrimitive !== null) {
+                // can't invert if have primitive
+                return { success: false }
+              }
+              // no attribute component or primitive, so value is essential and give it the desired value
+              return {
+                success: true,
+                instructions: [{
+                  setStateVariable: varName,
+                  value: desiredStateVariableValues[varName]
+                }]
+              };
             }
-            // no attribute component or primitive, so value is essential and give it the desired value
-            return {
-              success: true,
-              instructions: [{
-                setStateVariable: varName,
-                value: desiredStateVariableValues[varName]
-              }]
-            };
-          }
 
-          // attribute based on component
+            // attribute based on component
 
-          if (attributeSpecification.mergeArrays) {
-            // can't invert if we merged arrays to get the value
-            return { success: false }
-          } else {
+            if (attributeSpecification.mergeArrays) {
+              // can't invert if we merged arrays to get the value
+              return { success: false }
+            } else {
 
-            return {
-              success: true,
-              instructions: [{
-                setDependency: "attributeComponent",
-                desiredValue: desiredStateVariableValues[varName],
-                variableIndex: 0,
-              }]
-            };
-          }
+              return {
+                success: true,
+                instructions: [{
+                  setDependency: "attributeComponent",
+                  desiredValue: desiredStateVariableValues[varName],
+                  variableIndex: 0,
+                }]
+              };
+            }
 
-        };
+          };
+        }
       }
 
 
@@ -2723,24 +2736,27 @@ export default class Core {
           return { newValues: { [varName]: dependencyValues.adapterTargetVariable } };
         }
       };
-      stateVarDef.inverseDefinition = function ({ desiredStateVariableValues, dependencyValues }) {
-        if (dependencyValues.adapterTargetVariable === undefined) {
-          return {
-            success: true,
-            instructions: [{
-              setStateVariable: varName,
-              value: desiredStateVariableValues[varName],
-            }]
-          };
-        }
-        else {
-          return {
-            success: true,
-            instructions: [{
-              setDependency: "adapterTargetVariable",
-              desiredValue: desiredStateVariableValues[varName],
-            }]
-          };
+
+      if (!attributeSpecification.noInverse) {
+        stateVarDef.inverseDefinition = async function ({ desiredStateVariableValues, dependencyValues }) {
+          if (dependencyValues.adapterTargetVariable === undefined) {
+            return {
+              success: true,
+              instructions: [{
+                setStateVariable: varName,
+                value: desiredStateVariableValues[varName],
+              }]
+            };
+          }
+          else {
+            return {
+              success: true,
+              instructions: [{
+                setDependency: "adapterTargetVariable",
+                desiredValue: desiredStateVariableValues[varName],
+              }]
+            };
+          }
         }
       }
 
@@ -2885,6 +2901,7 @@ export default class Core {
           dependencyType: "attributeComponent",
           attributeName: attrName,
           variableNames: [stateVariableForAttributeValue],
+          fallBackToAttributeFromShadow: false,
         }
       }
 
@@ -3005,71 +3022,73 @@ export default class Core {
 
         };
 
-        stateVarDef.inverseDefinition = function ({ desiredStateVariableValues, dependencyValues, usedDefault }) {
-          if (!dependencyValues.attributeComponent) {
-            if (dependencyValues.attributePrimitive !== undefined && dependencyValues.attributePrimitive !== null) {
-              // can't invert if have primitive
+        if (!attributeSpecification.noInverse) {
+          stateVarDef.inverseDefinition = async function ({ desiredStateVariableValues, dependencyValues, usedDefault, stateValues, workspace }) {
+            if (!dependencyValues.attributeComponent) {
+              if (dependencyValues.attributePrimitive !== undefined && dependencyValues.attributePrimitive !== null) {
+                // can't invert if have primitive
+                return { success: false }
+              }
+
+              let targetAttributesToIgnore = [];
+              if (dependencyValues.targetAttributesToIgnore) {
+                targetAttributesToIgnore.push(...dependencyValues.targetAttributesToIgnore)
+              }
+              if (dependencyValues.targetAttributesToAlwaysIgnore) {
+                targetAttributesToIgnore.push(...dependencyValues.targetAttributesToAlwaysIgnore);
+              }
+
+              if (dependencyValues.targetVariable !== undefined
+                && !dependencyValues.targetAttributesToIgnore.includes(attrName)
+                && !usedDefault.targetVariable) {
+                //  if target has attribute, set that value
+                return {
+                  success: true,
+                  instructions: [{
+                    setDependency: "targetVariable",
+                    desiredValue: desiredStateVariableValues[varName],
+                  }]
+                };
+              } else if (usedDefault.ancestorProp) {
+                // no children, so value is essential and give it the desired value
+                return {
+                  success: true,
+                  instructions: [{
+                    setStateVariable: varName,
+                    value: desiredStateVariableValues[varName]
+                  }]
+                };
+              }
+              else {
+                // ancestor prop was used, so propagate back to ancestor
+                return {
+                  success: true,
+                  instructions: [{
+                    setDependency: "ancestorProp",
+                    desiredValue: desiredStateVariableValues[varName],
+                  }]
+                };
+              }
+            }
+
+            // attribute based on component
+
+            if (attributeSpecification.mergeArrays) {
+              // can't invert if we merged arrays to get the value
               return { success: false }
-            }
+            } else {
 
-            let targetAttributesToIgnore = [];
-            if (dependencyValues.targetAttributesToIgnore) {
-              targetAttributesToIgnore.push(...dependencyValues.targetAttributesToIgnore)
-            }
-            if (dependencyValues.targetAttributesToAlwaysIgnore) {
-              targetAttributesToIgnore.push(...dependencyValues.targetAttributesToAlwaysIgnore);
-            }
-
-            if (dependencyValues.targetVariable !== undefined
-              && !dependencyValues.targetAttributesToIgnore.includes(attrName)
-              && !usedDefault.targetVariable) {
-              //  if target has attribute, set that value
               return {
                 success: true,
                 instructions: [{
-                  setDependency: "targetVariable",
+                  setDependency: "attributeComponent",
                   desiredValue: desiredStateVariableValues[varName],
-                }]
-              };
-            } else if (usedDefault.ancestorProp) {
-              // no children, so value is essential and give it the desired value
-              return {
-                success: true,
-                instructions: [{
-                  setStateVariable: varName,
-                  value: desiredStateVariableValues[varName]
+                  variableIndex: 0,
                 }]
               };
             }
-            else {
-              // ancestor prop was used, so propagate back to ancestor
-              return {
-                success: true,
-                instructions: [{
-                  setDependency: "ancestorProp",
-                  desiredValue: desiredStateVariableValues[varName],
-                }]
-              };
-            }
-          }
-
-          // attribute based on component
-
-          if (attributeSpecification.mergeArrays) {
-            // can't invert if we merged arrays to get the value
-            return { success: false }
-          } else {
-
-            return {
-              success: true,
-              instructions: [{
-                setDependency: "attributeComponent",
-                desiredValue: desiredStateVariableValues[varName],
-                variableIndex: 0,
-              }]
-            };
-          }
-        };
+          };
+        }
       } else {
 
         // usual case of attribute with no ancestor attribute being propagated
@@ -3121,64 +3140,67 @@ export default class Core {
           return { newValues: { [varName]: attributeValue } };
         };
 
-        stateVarDef.inverseDefinition = function ({ desiredStateVariableValues,
-          dependencyValues,
-        }) {
+        if (!attributeSpecification.noInverse) {
+          stateVarDef.inverseDefinition = async function ({ desiredStateVariableValues,
+            dependencyValues, stateValues, workspace
+          }) {
 
-          if (!dependencyValues.attributeComponent) {
-            if (dependencyValues.attributePrimitive !== undefined && dependencyValues.attributePrimitive !== null) {
-              // can't invert if have primitive
+            if (!dependencyValues.attributeComponent) {
+              if (dependencyValues.attributePrimitive !== undefined && dependencyValues.attributePrimitive !== null) {
+                // can't invert if have primitive
+                return { success: false }
+              }
+
+              let targetAttributesToIgnore = [];
+              if (dependencyValues.targetAttributesToIgnore) {
+                targetAttributesToIgnore.push(...dependencyValues.targetAttributesToIgnore)
+              }
+              if (dependencyValues.targetAttributesToAlwaysIgnore) {
+                targetAttributesToIgnore.push(...dependencyValues.targetAttributesToAlwaysIgnore);
+              }
+
+              if (dependencyValues.targetVariable !== undefined
+                && !targetAttributesToIgnore.includes(attrName)
+              ) {
+                //  if target has attribute, set that value
+                return {
+                  success: true,
+                  instructions: [{
+                    setDependency: "targetVariable",
+                    desiredValue: desiredStateVariableValues[varName],
+                  }]
+                };
+              } else {
+                // no attribute component, so value is essential and give it the desired value
+                return {
+                  success: true,
+                  instructions: [{
+                    setStateVariable: varName,
+                    value: desiredStateVariableValues[varName]
+                  }]
+                };
+              }
+            }
+            // attribute based on child
+
+
+            if (attributeSpecification.mergeArrays) {
+              // can't invert if we merged arrays to get the value
               return { success: false }
-            }
+            } else {
 
-            let targetAttributesToIgnore = [];
-            if (dependencyValues.targetAttributesToIgnore) {
-              targetAttributesToIgnore.push(...dependencyValues.targetAttributesToIgnore)
-            }
-            if (dependencyValues.targetAttributesToAlwaysIgnore) {
-              targetAttributesToIgnore.push(...dependencyValues.targetAttributesToAlwaysIgnore);
-            }
-
-            if (dependencyValues.targetVariable !== undefined
-              && !targetAttributesToIgnore.includes(attrName)
-            ) {
-              //  if target has attribute, set that value
               return {
                 success: true,
                 instructions: [{
-                  setDependency: "targetVariable",
+                  setDependency: "attributeComponent",
                   desiredValue: desiredStateVariableValues[varName],
+                  variableIndex: 0,
                 }]
               };
-            } else
-              // no attribute component, so value is essential and give it the desired value
-              return {
-                success: true,
-                instructions: [{
-                  setStateVariable: varName,
-                  value: desiredStateVariableValues[varName]
-                }]
-              };
-          }
-          // attribute based on child
+            }
 
-
-          if (attributeSpecification.mergeArrays) {
-            // can't invert if we merged arrays to get the value
-            return { success: false }
-          } else {
-
-            return {
-              success: true,
-              instructions: [{
-                setDependency: "attributeComponent",
-                desiredValue: desiredStateVariableValues[varName],
-                variableIndex: 0,
-              }]
-            };
-          }
-
-        };
+          };
+        }
 
       }
 
@@ -4351,6 +4373,8 @@ export default class Core {
     // for array, keep track if each arrayKey is essential
     stateVarObj.essentialByArrayKey = {};
 
+    stateVarObj.usedDefaultByArrayKey = {};
+
 
     stateVarObj.arrayEntryNames = [];
     stateVarObj.varNamesIncludingArrayKeys = {};
@@ -4602,25 +4626,30 @@ export default class Core {
       }
     }
 
-    function extractArrayDependencies(dependencyValues, arrayKeys) {
-      // console.log(`extract array dependencies`, dependencyValues, arrayKeys)
+    function extractArrayDependencies(dependencyValues, arrayKeys, usedDefault) {
+      // console.log(`extract array dependencies`, dependencyValues, arrayKeys, usedDefault)
       // console.log(JSON.parse(JSON.stringify(arrayKeys)))
 
       let globalDependencyValues = {};
+      let globalUsedDefault = {};
       for (let dependencyName of stateVarObj.dependencyNames.global) {
         globalDependencyValues[dependencyName] = dependencyValues[dependencyName];
+        globalUsedDefault[dependencyName] = usedDefault[dependencyName];
       }
 
       let dependencyValuesByKey = {};
+      let usedDefaultByKey = {};
       let foundAllDependencyValuesForKey = {};
       for (let arrayKey of arrayKeys) {
         dependencyValuesByKey[arrayKey] = {};
+        usedDefaultByKey[arrayKey] = {};
         if (arrayKey in stateVarObj.dependencyNames.namesByKey) {
           foundAllDependencyValuesForKey[arrayKey] = true;
           for (let dependencyName in stateVarObj.dependencyNames.namesByKey[arrayKey]) {
             let extendedDepName = stateVarObj.dependencyNames.namesByKey[arrayKey][dependencyName];
             if (extendedDepName in dependencyValues) {
               dependencyValuesByKey[arrayKey][dependencyName] = dependencyValues[extendedDepName];
+              usedDefaultByKey[arrayKey][dependencyName] = usedDefault[extendedDepName];
             } else {
               foundAllDependencyValuesForKey[arrayKey] = false;
             }
@@ -4629,7 +4658,11 @@ export default class Core {
         }
       }
 
-      return { globalDependencyValues, dependencyValuesByKey, foundAllDependencyValuesForKey };
+      return {
+        globalDependencyValues, globalUsedDefault,
+        dependencyValuesByKey, usedDefaultByKey,
+        foundAllDependencyValuesForKey
+      };
 
     }
 
@@ -4654,14 +4687,18 @@ export default class Core {
         return {};
       } else {
 
-        let extractedDeps = extractArrayDependencies(args.dependencyValues, args.arrayKeys);
+        let extractedDeps = extractArrayDependencies(args.dependencyValues, args.arrayKeys, args.usedDefault);
         let globalDependencyValues = extractedDeps.globalDependencyValues;
+        let globalUsedDefault = extractedDeps.globalUsedDefault;
         let dependencyValuesByKey = extractedDeps.dependencyValuesByKey;
+        let usedDefaultByKey = extractedDeps.usedDefaultByKey;
         let foundAllDependencyValuesForKey = extractedDeps.foundAllDependencyValuesForKey;
 
         delete args.dependencyValues;
         args.globalDependencyValues = globalDependencyValues;
+        args.globalUsedDefault = globalUsedDefault;
         args.dependencyValuesByKey = dependencyValuesByKey;
+        args.usedDefaultByKey = usedDefaultByKey;
 
         let arrayKeysToRecalculate = [];
         let freshByKey = args.freshnessInfo.freshByKey;
@@ -4764,14 +4801,18 @@ export default class Core {
       } else {
 
 
-        let extractedDeps = extractArrayDependencies(args.dependencyValues, args.arrayKeys);
+        let extractedDeps = extractArrayDependencies(args.dependencyValues, args.arrayKeys, args.usedDefault);
         let globalDependencyValues = extractedDeps.globalDependencyValues;
+        let globalUsedDefault = extractedDeps.globalUsedDefault;
         let dependencyValuesByKey = extractedDeps.dependencyValuesByKey;
+        let usedDefaultByKey = extractedDeps.usedDefaultByKey;
         // let foundAllDependencyValuesForKey = extractedDeps.foundAllDependencyValuesForKey;
 
         delete args.dependencyValues;
         args.globalDependencyValues = globalDependencyValues;
+        args.globalUsedDefault = globalUsedDefault;
         args.dependencyValuesByKey = dependencyValuesByKey;
+        args.usedDefaultByKey = usedDefaultByKey;
 
         args.dependencyNamesByKey = stateVarObj.dependencyNames.namesByKey;
         // args.arraySize = stateVarObj.arraySize;
@@ -5140,6 +5181,7 @@ export default class Core {
                 arrayKey,
                 arraySize,
               });
+              component.state[varName].usedDefaultByArrayKey[arrayKey] = false;
               valuesChanged[varName].arrayKeysChanged[arrayKey] = true;
             }
           } else {
@@ -5148,6 +5190,7 @@ export default class Core {
               arrayKey,
               arraySize,
             });
+            component.state[varName].usedDefaultByArrayKey[arrayKey] = false;
             valuesChanged[varName].arrayKeysChanged[arrayKey] = true;
           }
         }
@@ -5236,6 +5279,7 @@ export default class Core {
                 arrayKey,
                 arraySize,
               });
+              component.state[varName].usedDefaultByArrayKey[arrayKey] = true;
               component.state[varName].essentialByArrayKey[arrayKey] = true;
             } else if ("defaultEntryValue" in component.state[varName]) {
               component.state[varName].setArrayValue({
@@ -5243,6 +5287,7 @@ export default class Core {
                 arrayKey,
                 arraySize,
               });
+              component.state[varName].usedDefaultByArrayKey[arrayKey] = true;
               component.state[varName].essentialByArrayKey[arrayKey] = true;
             }
           }
@@ -7561,30 +7606,41 @@ export default class Core {
         // is this a problem?
         let newSerializedReplacements = [];
         for (let repl of replacementsToShadow) {
-          newSerializedReplacements.push(await repl.serialize());
+          if (typeof repl === "object") {
+            newSerializedReplacements.push(await repl.serialize());
+          } else {
+            newSerializedReplacements.push(repl);
+          }
         }
         newSerializedReplacements = postProcessCopy({
           serializedComponents: newSerializedReplacements,
           componentName: shadowingComponent.shadows.compositeName
         });
 
-        let shadowingNewNamespace = shadowingComponent.attributes.newNamespace && shadowingComponnet.attributes.newNamespace.primitive;
+        let shadowingNewNamespace = shadowingComponent.attributes.newNamespace?.primitive;
 
-        let compositeAttributesObj = shadowingComponent.constructor.createAttributesObject({ flags: this.flags });
+        // TODO: is isResponse the only attribute to convert?
+        if (shadowingComponent.attributes.isResponse) {
+          let compositeAttributesObj = shadowingComponent.constructor.createAttributesObject({ flags: this.flags });
 
-        for (let repl of newSerializedReplacements) {
-          // add attributes
-          if (!repl.attributes) {
-            repl.attributes = {};
+          for (let repl of newSerializedReplacements) {
+            if (typeof repl !== "object") {
+              continue;
+            }
+
+            // add attributes
+            if (!repl.attributes) {
+              repl.attributes = {};
+            }
+            let attributesFromComposite = convertAttributesForComponentType({
+              attributes: { isResponse: shadowingComponent.attributes.isResponse },
+              componentType: repl.componentType,
+              componentInfoObjects: this.componentInfoObjects,
+              compositeAttributesObj,
+              compositeCreatesNewNamespace: shadowingNewNamespace
+            });
+            Object.assign(repl.attributes, attributesFromComposite)
           }
-          let attributesFromComposite = convertAttributesForComponentType({
-            attributes: shadowingComponent.attributes,
-            componentType: repl.componentType,
-            componentInfoObjects: this.componentInfoObjects,
-            compositeAttributesObj,
-            compositeCreatesNewNamespace: shadowingNewNamespace
-          });
-          Object.assign(repl.attributes, attributesFromComposite)
         }
 
         if (shadowingComponent.constructor.assignNamesToReplacements) {
@@ -8588,6 +8644,8 @@ export default class Core {
                 arraySize: await compStateObj.arraySize
               });
 
+              compStateObj.usedDefaultByArrayKey[arrayKey] = false;
+
               nFailures += setResult.nFailures;
 
               // mark any array entry state variables containing arrayKey
@@ -8959,6 +9017,19 @@ export default class Core {
           newStateVariableValues[component.componentName] = {};
         }
 
+        let value = newInstruction.value;
+
+        if (value instanceof me.class) {
+          let result = await preprocessMathInverseDefinition({
+            desiredValue: value,
+            stateValues: component.stateValues,
+            variableName: newInstruction.setStateVariable,
+            workspace: stateVariableWorkspace,
+          })
+          value = result.desiredValue
+        }
+
+
         if (component.state[newInstruction.setStateVariable].isArray) {
           if (!newStateVariableValues[component.componentName][newInstruction.setStateVariable]) {
             // include key mergeObject to let external functions
@@ -8971,11 +9042,11 @@ export default class Core {
 
           Object.assign(
             newStateVariableValues[component.componentName][newInstruction.setStateVariable],
-            newInstruction.value
+            value
           )
 
         } else {
-          newStateVariableValues[component.componentName][newInstruction.setStateVariable] = newInstruction.value;
+          newStateVariableValues[component.componentName][newInstruction.setStateVariable] = value;
         }
 
       } else if (newInstruction.setDependency) {
@@ -9012,9 +9083,6 @@ export default class Core {
                 }
               }
 
-              if (!newStateVariableValues[dep.parentName]) {
-                newStateVariableValues[dep.parentName] = {};
-              }
 
               let definingInd = activeChildInd;
               if (parent.compositeReplacementActiveRange) {
@@ -9025,7 +9093,18 @@ export default class Core {
                 }
               }
 
-              newStateVariableValues[dep.parentName][`__def_primitive_${definingInd}`] = newInstruction.desiredValue;
+
+              let baseParent = parent;
+              while (baseParent.shadows && baseParent.shadows.propVariable === undefined) {
+                baseParent = this._components[baseParent.shadows.componentName]
+              }
+
+              this.calculatePrimitiveChildChanges({
+                parent: baseParent,
+                definingInd,
+                newValue: newInstruction.desiredValue,
+                newStateVariableValues
+              });
             }
 
           } else {
@@ -9196,6 +9275,35 @@ export default class Core {
     }
 
     return;
+  }
+
+  calculatePrimitiveChildChanges
+    ({
+      parent,
+      definingInd,
+      newValue,
+      newStateVariableValues,
+    }) {
+
+    if (!newStateVariableValues[parent.componentName]) {
+      newStateVariableValues[parent.componentName] = {};
+    }
+    newStateVariableValues[parent.componentName][`__def_primitive_${definingInd}`] = newValue;
+
+    if (parent.shadowedBy) {
+      for (let shadow of parent.shadowedBy) {
+        if (shadow.shadows.propVariable === undefined) {
+          this.calculatePrimitiveChildChanges({
+            parent: shadow,
+            definingInd,
+            newValue,
+            newStateVariableValues,
+          })
+
+        }
+      }
+    }
+
   }
 
   // submitResponseCallBack(results) {

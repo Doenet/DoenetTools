@@ -33,38 +33,11 @@ export default class Polygon extends Polyline {
           dependencyType: "stateVariable",
           variableName: "nVertices"
         },
-        graphXmin: {
-          dependencyType: "stateVariable",
-          variableName: "graphXmin"
-        },
-        graphXmax: {
-          dependencyType: "stateVariable",
-          variableName: "graphXmax"
-        },
-        graphYmin: {
-          dependencyType: "stateVariable",
-          variableName: "graphYmin"
-        },
-        graphYmax: {
-          dependencyType: "stateVariable",
-          variableName: "graphYmax"
-        },
       }),
       definition({ dependencyValues }) {
         let nDimensions = dependencyValues.nDimensions;
         let nVertices = dependencyValues.nVertices;
         let numericalVertices = dependencyValues.numericalVertices;
-
-        let xscale = 1, yscale = 1;
-        if (dependencyValues.graphXmin !== null &&
-          dependencyValues.graphXmax !== null &&
-          dependencyValues.graphYmin !== null &&
-          dependencyValues.graphYmax !== null
-        ) {
-          xscale = dependencyValues.graphXmax - dependencyValues.graphXmin;
-          yscale = dependencyValues.graphYmax - dependencyValues.graphYmin;
-        }
-
 
         let vals = [];
         let prPtx, prPty;
@@ -84,14 +57,13 @@ export default class Polygon extends Polyline {
             vals.push(null);
           } else {
 
-            let BA1 = (nxPtx - prPtx) / xscale;
-            let BA2 = (nxPty - prPty) / yscale;
-            let denom = (BA1 * BA1 + BA2 * BA2);
+            let BA1sub = (nxPtx - prPtx);
+            let BA2sub = (nxPty - prPty);
 
-            if (denom === 0) {
+            if (BA1sub === 0 && BA2sub === 0) {
               vals.push(null);
             } else {
-              vals.push([BA1, BA2, denom]);
+              vals.push([BA1sub, BA2sub]);
             }
           }
         }
@@ -99,7 +71,10 @@ export default class Polygon extends Polyline {
 
         return {
           newValues: {
-            nearestPoint: function (variables) {
+            nearestPoint: function ({ variables, scales }) {
+
+              let xscale = scales[0];
+              let yscale = scales[1];
 
               // only implemented in 2D for now
               if (nDimensions !== 2 || nVertices === 0) {
@@ -128,8 +103,9 @@ export default class Polygon extends Polyline {
                   continue;
                 }
 
-                let [BA1, BA2, denom] = val;
-
+                let BA1 = val[0] / xscale;
+                let BA2 = val[1] / yscale;
+                let denom = (BA1 * BA1 + BA2 * BA2);
 
                 let t = ((x1 - prevPtx) / xscale * BA1 + (x2 - prevPty) / yscale * BA2) / denom;
 
