@@ -4,19 +4,21 @@ import { doenetComponentForegroundInactive } from "./theme"
 export default function TextArea(props) {
   const [labelVisible, setLabelVisible] = useState(props.label ? 'static' : 'none')
   const [align, setAlign] = useState(props.vertical ? 'static' : 'flex');
+  const [text, setText] = useState("");
   //Assume small
   var textarea = {
         margin: '0px 4px 0px 4px',
         height: '24px',
         border: `2px solid ${doenetComponentForegroundInactive}`,
         fontFamily: 'Arial',
+        // fontSize: '14px',
         borderRadius: '5px',
         color: '#000',
-        value: 'Enter text here'
+        value: `${text}`
       }
       var label ={
         value: 'Label:',
-        fontSize: '12px',
+        fontSize: '14px',
         display: `${labelVisible}`,
         marginRight: '5px',
         marginBottom: `${align == 'flex' ? 'none' : '2px'}`
