@@ -19,7 +19,7 @@ describe('Angle Tag Tests', function () {
       win.postMessage({
         doenetML: `
   <text>a</text>
-  <copy prop="angle" tname="_angle1" />
+  <copy prop="angle" target="_angle1" />
   <p>Angle again: $_angle1</p>
   
   <mathinput prefill="2"/>
@@ -107,7 +107,7 @@ describe('Angle Tag Tests', function () {
       win.postMessage({
         doenetML: `
   <text>a</text>
-  <copy prop="angle" tname="_angle1" />
+  <copy prop="angle" target="_angle1" />
   <p>Angle again: $_angle1</p>
   <mathinput prefill="2"/>
   <mathinput prefill="2"/>
@@ -205,7 +205,7 @@ describe('Angle Tag Tests', function () {
   <text>a</text>
   <mathinput prefill="3"/>
   <mathinput prefill="4"/>
-  <copy prop="angle" tname="_angle1" />
+  <copy prop="angle" target="_angle1" />
   <p>Angle again: $_angle1</p>
 
   <graph>
@@ -280,7 +280,7 @@ describe('Angle Tag Tests', function () {
     <point x="7cos(1)" y="7sin(1)" />
     <angle radius="$_mathinput1" through="$_point1 $_point2 $_point3" />
   </graph>
-  <copy name="alpha" prop="angle" tname="_angle1" />
+  <copy name="alpha" prop="angle" target="_angle1" />
   `}, "*");
     });
 
@@ -345,8 +345,8 @@ describe('Angle Tag Tests', function () {
     <point x="8cos($_mathinput1)" y="8sin($_mathinput1)" />
     <angle through="$_point1 $_point2 $_point3" />
   </graph>
-  <p><copy name="alpha" prop="angle" tname="_angle1" /></p>
-  <p><copy name="alphadeg" prop="degrees" tname="_angle1" /></p>
+  <p><copy name="alpha" prop="angle" target="_angle1" /></p>
+  <p><copy name="alphadeg" prop="degrees" target="_angle1" /></p>
   <p>Angle again: $_angle1</p>
   `}, "*");
     });
@@ -553,9 +553,9 @@ describe('Angle Tag Tests', function () {
         doenetML: `
   <text>a</text>
   <angle>pi/2</angle>
-  <math simplify>2<copy tname="_angle1" /></math>
-  <math simplify>2<copy prop="angle" tname="_angle1" /></math>
-  <math simplify>2<copy prop="degrees" tname="_angle1" /></math>
+  <math simplify>2<copy target="_angle1" /></math>
+  <math simplify>2<copy prop="angle" target="_angle1" /></math>
+  <math simplify>2<copy prop="degrees" target="_angle1" /></math>
 
   `}, "*");
     });
@@ -589,9 +589,9 @@ describe('Angle Tag Tests', function () {
         doenetML: `
   <text>a</text>
   <angle radians="pi/2" />
-  <math simplify>2<copy tname="_angle1" /></math>
-  <math simplify>2<copy prop="angle" tname="_angle1" /></math>
-  <math simplify>2<copy prop="degrees" tname="_angle1" /></math>
+  <math simplify>2<copy target="_angle1" /></math>
+  <math simplify>2<copy prop="angle" target="_angle1" /></math>
+  <math simplify>2<copy prop="degrees" target="_angle1" /></math>
 
   `}, "*");
     });
@@ -625,9 +625,9 @@ describe('Angle Tag Tests', function () {
         doenetML: `
   <text>a</text>
   <angle degrees="90" />
-  <math simplify>2<copy tname="_angle1" /></math>
-  <math simplify>2<copy prop="angle" tname="_angle1" /></math>
-  <math simplify>2<copy prop="degrees" tname="_angle1" /></math>
+  <math simplify>2<copy target="_angle1" /></math>
+  <math simplify>2<copy prop="angle" target="_angle1" /></math>
+  <math simplify>2<copy prop="degrees" target="_angle1" /></math>
 
   `}, "*");
     });
@@ -662,9 +662,9 @@ describe('Angle Tag Tests', function () {
         doenetML: `
   <text>a</text>
   <angle>alpha</angle>
-  <math simplify>2<copy tname="_angle1" /></math>
-  <math simplify>2<copy prop="angle" tname="_angle1" /></math>
-  <math simplify>2<copy prop="degrees" tname="_angle1" /></math>
+  <math simplify>2<copy target="_angle1" /></math>
+  <math simplify>2<copy prop="angle" target="_angle1" /></math>
+  <math simplify>2<copy prop="degrees" target="_angle1" /></math>
 
   `}, "*");
     });
@@ -699,9 +699,9 @@ describe('Angle Tag Tests', function () {
         doenetML: `
   <text>a</text>
   <angle radians="alpha" />
-  <math simplify>2<copy tname="_angle1" /></math>
-  <math simplify>2<copy prop="angle" tname="_angle1" /></math>
-  <math simplify>2<copy prop="degrees" tname="_angle1" /></math>
+  <math simplify>2<copy target="_angle1" /></math>
+  <math simplify>2<copy prop="angle" target="_angle1" /></math>
+  <math simplify>2<copy prop="degrees" target="_angle1" /></math>
 
   `}, "*");
     });
@@ -735,9 +735,9 @@ describe('Angle Tag Tests', function () {
         doenetML: `
   <text>a</text>
   <angle>$pi/2</angle>
-  <math simplify>2<copy tname="_angle1" /></math>
-  <math simplify>2<copy prop="angle" tname="_angle1" /></math>
-  <math simplify>2<copy prop="degrees" tname="_angle1" /></math>
+  <math simplify>2<copy target="_angle1" /></math>
+  <math simplify>2<copy prop="angle" target="_angle1" /></math>
+  <math simplify>2<copy prop="degrees" target="_angle1" /></math>
   <math name="pi">pi</math>
 
   `}, "*");

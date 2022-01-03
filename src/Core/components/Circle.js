@@ -223,7 +223,7 @@ export default class Circle extends Curve {
 
       },
 
-      inverseArrayDefinitionByKey({ desiredStateVariableValues,
+      async inverseArrayDefinitionByKey({ desiredStateVariableValues,
         dependencyValuesByKey, dependencyNamesByKey,
         initialChange, stateValues,
       }) {
@@ -234,7 +234,7 @@ export default class Circle extends Curve {
         // console.log(dependencyValuesByKey);
 
         // if not draggable, then disallow initial change 
-        if (initialChange && !stateValues.draggable) {
+        if (initialChange && !await stateValues.draggable) {
           return { success: false };
         }
 
@@ -540,14 +540,14 @@ export default class Circle extends Curve {
           checkForActualChange: { haveNonNumericalEntriesNumericalRadius: true }
         }
       },
-      inverseDefinition: function ({ desiredStateVariableValues, dependencyValues, stateValues }) {
+      inverseDefinition: async function ({ desiredStateVariableValues, dependencyValues, stateValues }) {
 
         // console.log('inverse definition of numerical prescribed radius of circle')
         // console.log(desiredStateVariableValues)
         // console.log(dependencyValues)
 
 
-        if (stateValues.haveNonNumericalPrescribedRadius) {
+        if (await stateValues.haveNonNumericalPrescribedRadius) {
           return { success: false }
         }
 
@@ -708,13 +708,13 @@ export default class Circle extends Curve {
           checkForActualChange: { haveNonNumericalThroughPoints: true }
         }
       },
-      inverseDefinition: function ({ desiredStateVariableValues, dependencyValues, stateValues }) {
+      inverseDefinition: async function ({ desiredStateVariableValues, dependencyValues, stateValues }) {
 
         // console.log('inverse definition of numerical throughpoints of circle')
         // console.log(desiredStateVariableValues)
         // console.log(dependencyValues)
 
-        if (stateValues.haveNonNumericalThroughPoints) {
+        if (await stateValues.haveNonNumericalThroughPoints) {
           return { success: false }
         }
 
@@ -1049,7 +1049,7 @@ export default class Circle extends Curve {
 
 
       },
-      inverseDefinition: function ({ desiredStateVariableValues, dependencyValues, stateValues }) {
+      inverseDefinition: async function ({ desiredStateVariableValues, dependencyValues, stateValues }) {
 
         // console.log('inverse definition of numericalRadius of circle')
         // console.log(desiredStateVariableValues)
@@ -1078,13 +1078,14 @@ export default class Circle extends Curve {
 
             let numericalRadius = Math.max(0, desiredStateVariableValues.numericalRadius);
 
-            let theta = stateValues.throughAngles[0];
+            let theta = (await stateValues.throughAngles)[0];
             if (!Number.isFinite(theta)) {
               return { success: false }
             }
+            let numericalCenter = await stateValues.numericalCenter;
             let pt = [
-              stateValues.numericalCenter[0] + numericalRadius * Math.cos(theta),
-              stateValues.numericalCenter[1] + numericalRadius * Math.sin(theta)
+              numericalCenter[0] + numericalRadius * Math.cos(theta),
+              numericalCenter[1] + numericalRadius * Math.sin(theta)
             ]
 
             return {
@@ -1116,13 +1117,14 @@ export default class Circle extends Curve {
           let numericalRadius = Math.max(0, desiredStateVariableValues.numericalRadius);
 
           for (let i = 0; i < dependencyValues.nThroughPoints; i++) {
-            let theta = stateValues.throughAngles[i];
+            let theta = (await stateValues.throughAngles)[i];
             if (!Number.isFinite(theta)) {
               return { success: false }
             }
+            let numericalCenter = await stateValues.numericalCenter;
             let pt = [
-              stateValues.numericalCenter[0] + numericalRadius * Math.cos(theta),
-              stateValues.numericalCenter[1] + numericalRadius * Math.sin(theta)
+              numericalCenter[0] + numericalRadius * Math.cos(theta),
+              numericalCenter[1] + numericalRadius * Math.sin(theta)
             ]
 
             newThroughPoints.push(pt);
@@ -1365,7 +1367,7 @@ export default class Circle extends Curve {
 
 
       },
-      inverseArrayDefinitionByKey({ desiredStateVariableValues,
+      async inverseArrayDefinitionByKey({ desiredStateVariableValues,
         globalDependencyValues, dependencyValuesByKey, dependencyNamesByKey,
         stateValues, workspace
       }) {
@@ -1421,14 +1423,17 @@ export default class Circle extends Curve {
 
           let newThroughPoints = [];
 
+          let throughAngles = await stateValues.throughAngles;
+          let numericalRadius = await stateValues.numericalRadius;
+
           for (let i = 0; i < globalDependencyValues.nThroughPoints; i++) {
-            let theta = stateValues.throughAngles[i];
+            let theta = throughAngles[i];
             if (!Number.isFinite(theta)) {
               return { success: false }
             }
             let pt = [
-              workspace.desiredCenter[0] + stateValues.numericalRadius * Math.cos(theta),
-              workspace.desiredCenter[1] + stateValues.numericalRadius * Math.sin(theta)
+              workspace.desiredCenter[0] + numericalRadius * Math.cos(theta),
+              workspace.desiredCenter[1] + numericalRadius * Math.sin(theta)
             ]
 
             newThroughPoints.push(pt);
@@ -1634,7 +1639,7 @@ export default class Circle extends Curve {
         }
 
       },
-      inverseDefinition: function ({ desiredStateVariableValues, dependencyValues, stateValues }) {
+      inverseDefinition: function ({ desiredStateVariableValues, dependencyValues }) {
 
         // console.log('inverse definition of radius of circle')
         // console.log(desiredStateVariableValues)
@@ -1708,7 +1713,7 @@ export default class Circle extends Curve {
           }
         }
       },
-      inverseDefinition: function ({ desiredStateVariableValues, dependencyValues, stateValues }) {
+      inverseDefinition: function ({ desiredStateVariableValues, dependencyValues }) {
         return {
           success: true,
           instructions: [{
@@ -1934,14 +1939,13 @@ export default class Circle extends Curve {
 
       },
 
-      inverseArrayDefinitionByKey({ desiredStateVariableValues,
+      async inverseArrayDefinitionByKey({ desiredStateVariableValues,
         globalDependencyValues, stateValues, dependencyNamesByKey, workspace
       }) {
 
         // console.log('inverse definition of center of circle')
         // console.log(desiredStateVariableValues)
         // console.log(globalDependencyValues)
-        // console.log(dependencyValuesByKey)
 
 
         if (globalDependencyValues.havePrescribedCenter) {
@@ -1978,7 +1982,7 @@ export default class Circle extends Curve {
           if (desiredStateVariableValues.center[key] !== undefined) {
             workspace.desiredCenter[key] = desiredStateVariableValues.center[key];
           } else if (workspace.desiredCenter[key] === undefined) {
-            workspace.desiredCenter[key] = stateValues.center[key];
+            workspace.desiredCenter[key] = (await stateValues.center)[key];
           }
         }
 
@@ -2096,11 +2100,14 @@ export default class Circle extends Curve {
   }
 
 
-  moveCircle({ center, radius, throughAngles, transient }) {
+  async moveCircle({ center, radius, throughAngles, transient }) {
 
     let instructions = [];
 
-    if (this.stateValues.nThroughPoints <= 1 || this.stateValues.numericalPrescribedCenter !== null) {
+    let nThroughPoints = await this.stateValues.nThroughPoints;
+    let numericalPrescribedCenter = await this.stateValues.numericalPrescribedCenter;
+
+    if (nThroughPoints <= 1 || numericalPrescribedCenter !== null) {
       instructions.push({
         updateType: "updateValue",
         componentName: this.componentName,
@@ -2109,7 +2116,7 @@ export default class Circle extends Curve {
       })
     }
 
-    if (this.stateValues.nThroughPoints >= 1) {
+    if (nThroughPoints >= 1) {
       // set numerical through points for two reasons
       // 1. if have cricle prescribed by center and one point
       //    need to move the point to preserve the radius
@@ -2120,13 +2127,13 @@ export default class Circle extends Curve {
       let numericalThroughPoints = [];
 
       if (throughAngles === undefined) {
-        throughAngles = this.stateValues.throughAngles
+        throughAngles = await this.stateValues.throughAngles
       }
       if (radius === undefined) {
-        radius = this.stateValues.numericalRadius
+        radius = await this.stateValues.numericalRadius
       }
 
-      for (let i = 0; i < this.stateValues.nThroughPoints; i++) {
+      for (let i = 0; i < nThroughPoints; i++) {
         let theta = throughAngles[i]
         let pt = [
           center[0] + radius * Math.cos(theta),
@@ -2146,12 +2153,12 @@ export default class Circle extends Curve {
     }
 
     if (transient) {
-      return this.coreFunctions.performUpdate({
+      return await this.coreFunctions.performUpdate({
         updateInstructions: instructions,
         transient
       });
     } else {
-      return this.coreFunctions.performUpdate({
+      return await this.coreFunctions.performUpdate({
         updateInstructions: instructions,
         event: {
           verb: "interacted",
@@ -2168,12 +2175,12 @@ export default class Circle extends Curve {
 
   }
 
-  finalizeCirclePosition() {
+  async finalizeCirclePosition() {
     // trigger a moveCircle 
     // to send the final values with transient=false
     // so that the final position will be recorded
-    return this.actions.moveCircle({
-      center: this.stateValues.numericalCenter,
+    return await this.actions.moveCircle({
+      center: await this.stateValues.numericalCenter,
       transient: false
     });
   }

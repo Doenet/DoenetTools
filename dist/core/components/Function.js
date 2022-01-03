@@ -138,23 +138,13 @@ export default class Function extends InlineComponent {
   static returnSugarInstructions() {
     let sugarInstructions = super.returnSugarInstructions();
 
-    let wrapStringsAndMacros = function ({ matchedChildren }) {
+    let wrapStringOrMultipleChildrenWithMath = function ({ matchedChildren }) {
 
-      // only apply if all children are strings or macros
-      if (!matchedChildren.every(child =>
-        child.componentType === "string" ||
-        child.doenetAttributes && child.doenetAttributes.createdFromMacro
-      )) {
+      // apply if have a single string or multiple children
+      if (matchedChildren.length === 1 && matchedChildren[0].componentType !== "string") {
         return { success: false }
       }
-
-      // don't apply to a single macro
-      if (matchedChildren.length === 1 &&
-        matchedChildren[0].componentType !== "string"
-      ) {
-        return { success: false }
-      }
-
+        
       return {
         success: true,
         newChildren: [{
@@ -166,7 +156,7 @@ export default class Function extends InlineComponent {
     }
 
     sugarInstructions.push({
-      replacementFunction: wrapStringsAndMacros
+      replacementFunction: wrapStringOrMultipleChildrenWithMath
     });
 
     return sugarInstructions;
@@ -1434,6 +1424,14 @@ export default class Function extends InlineComponent {
               dependencyType: "stateVariable",
               variableName: "numericalf",
             },
+            formula: {
+              dependencyType: "stateVariable",
+              variableName: "formula",
+            },
+            variables: {
+              dependencyType: "stateVariable",
+              variableName: "variables",
+            },
             xscale: {
               dependencyType: "stateVariable",
               variableName: "xscale"
@@ -1654,6 +1652,31 @@ export default class Function extends InlineComponent {
             }
           }
 
+          let varString = dependencyValues.variables[0].subscripts_to_strings().tree;
+
+          let derivative_formula = dependencyValues.formula.subscripts_to_strings().derivative(varString)
+
+          let derivative_f;
+          let haveDerivative = true;
+          let derivative;
+
+          try {
+            derivative_f = derivative_formula.subscripts_to_strings().f();
+          } catch (e) {
+            haveDerivative = false;
+            derivative = () => NaN;
+          }
+
+          if (haveDerivative) {
+            derivative = function (x) {
+              try {
+                return derivative_f({ [varString]: x });
+              } catch (e) {
+                return NaN;
+              }
+            }
+          }
+
           let f = dependencyValues.numericalf;
 
           // for now, look for minima in interval -100*xscale to 100*xscale,
@@ -1684,40 +1707,62 @@ export default class Function extends InlineComponent {
           let minimaList = [];
           let minimumAtPreviousRight = false;
           let fright = f(minx);
+          let dright = derivative(minx);
           for (let i = 0; i < nIntervals; i++) {
             let xleft = minx + i * dx;
             let xright = minx + (i + 1) * dx;
             let fleft = fright;
             fright = f(xright);
+            let dleft = dright;
+            dright = derivative(xright);
 
             if (Number.isNaN(fleft) || Number.isNaN(fright)) {
               continue;
             }
 
-            let result = numerics.fminbr(f, [xleft, xright]);
-            if (result.success !== true) {
-              continue;
-            }
-            let x = result.x;
-            let fx = result.fx;
+            let foundFromDeriv = false;
 
-            if (fleft < fx) {
-              if (minimumAtPreviousRight) {
-                if (Number.isFinite(fleft)) {
-                  minimaList.push([xleft, fleft]);
-                }
+            if (haveDerivative && dleft * dright <= 0) {
+              let x = numerics.fzero(derivative, [xleft, xright]);
+
+              // calculate tolerance used in fzero:
+              let eps = 1E-6;
+              let tol_act = 0.5 * eps * (Math.abs(x) + 1);
+
+              if (derivative(x - tol_act) < 0 && derivative(x + tol_act) > 0 && x !== xright) {
+                foundFromDeriv = true;
+                minimaList.push([x, f(x)]);
+                minimumAtPreviousRight = false;
               }
-              minimumAtPreviousRight = false;
-            } else if (fright < fx) {
-              minimumAtPreviousRight = true;
-            } else {
-              minimumAtPreviousRight = false;
+            }
 
-              // make sure it actually looks like a strict minimum of f(x)
-              if (fx < fright && fx < fleft &&
-                fx < f(x + result.tol) && fx < f(x - result.tol) &&
-                Number.isFinite(fx)) {
-                minimaList.push([x, fx]);
+            if (!foundFromDeriv) {
+
+              let result = numerics.fminbr(f, [xleft, xright]);
+              if (result.success !== true) {
+                continue;
+              }
+              let x = result.x;
+              let fx = result.fx;
+
+              if (fleft < fx) {
+                if (minimumAtPreviousRight) {
+                  if (Number.isFinite(fleft)) {
+                    minimaList.push([xleft, fleft]);
+                  }
+                }
+                minimumAtPreviousRight = false;
+              } else if (fright < fx) {
+                minimumAtPreviousRight = true;
+              } else {
+                minimumAtPreviousRight = false;
+
+                // make sure it actually looks like a strict minimum of f(x)
+                if (fx < fright && fx < fleft &&
+                  fx < f(x + result.tol) && fx < f(x - result.tol) &&
+                  Number.isFinite(fx)) {
+                  minimaList.push([x, fx]);
+                }
               }
             }
           }
@@ -1882,6 +1927,14 @@ export default class Function extends InlineComponent {
             numericalf: {
               dependencyType: "stateVariable",
               variableName: "numericalf",
+            },
+            formula: {
+              dependencyType: "stateVariable",
+              variableName: "formula",
+            },
+            variables: {
+              dependencyType: "stateVariable",
+              variableName: "variables",
             },
             xscale: {
               dependencyType: "stateVariable",
@@ -2101,6 +2154,33 @@ export default class Function extends InlineComponent {
             }
           }
 
+
+          let varString = dependencyValues.variables[0].subscripts_to_strings().tree;
+
+          let derivative_formula = dependencyValues.formula.subscripts_to_strings().derivative(varString)
+
+          let derivative_f;
+          let haveDerivative = true;
+          let derivative;
+
+          try {
+            derivative_f = derivative_formula.subscripts_to_strings().f();
+          } catch (e) {
+            haveDerivative = false;
+            derivative = () => NaN;
+          }
+
+          if (haveDerivative) {
+            derivative = function (x) {
+              try {
+                return derivative_f({ [varString]: x });
+              } catch (e) {
+                return NaN;
+              }
+            }
+          }
+
+
           let f = (x) => -dependencyValues.numericalf(x);
 
           // for now, look for maxima in interval -100*xscale to 100*xscale,
@@ -2131,40 +2211,65 @@ export default class Function extends InlineComponent {
           let maximaList = [];
           let maximumAtPreviousRight = false;
           let fright = f(minx);
+          let dright = derivative(minx);
+
           for (let i = 0; i < nIntervals; i++) {
             let xleft = minx + i * dx;
             let xright = minx + (i + 1) * dx;
             let fleft = fright;
             fright = f(xright);
+            let dleft = dright;
+            dright = derivative(xright);
 
             if (Number.isNaN(fleft) || Number.isNaN(fright)) {
               continue;
             }
 
-            let result = numerics.fminbr(f, [xleft, xright]);
-            if (result.success !== true) {
-              continue;
-            }
-            let x = result.x;
-            let fx = result.fx;
+            let foundFromDeriv = false;
 
-            if (fleft < fx) {
-              if (maximumAtPreviousRight) {
-                if (Number.isFinite(fleft)) {
-                  maximaList.push([xleft, -fleft]);
-                }
+            if (haveDerivative && dleft * dright <= 0) {
+              let x = numerics.fzero(derivative, [xleft, xright]);
+
+              // calculate tolerance used in fzero:
+              let eps = 1E-6;
+              let tol_act = 0.5 * eps * (Math.abs(x) + 1);
+
+              if (derivative(x - tol_act) > 0 && derivative(x + tol_act) < 0 && x !== xright) {
+                foundFromDeriv = true;
+                maximaList.push([x, -f(x)]);
+                maximumAtPreviousRight = false;
               }
-              maximumAtPreviousRight = false;
-            } else if (fright < fx) {
-              maximumAtPreviousRight = true;
-            } else {
-              maximumAtPreviousRight = false;
+            }
 
-              // make sure it actually looks like a strict maximum of f(x)
-              if (fx < fright && fx < fleft &&
-                fx < f(x + result.tol) && fx < f(x - result.tol) &&
-                Number.isFinite(fx)) {
-                maximaList.push([x, -fx]);
+            if (!foundFromDeriv) {
+
+              let result = numerics.fminbr(f, [xleft, xright], undefined, 0.000001);
+              if (result.success !== true) {
+                continue;
+              }
+              let x = result.x;
+              let fx = result.fx;
+
+              if (fleft < fx) {
+                if (maximumAtPreviousRight) {
+                  if (Number.isFinite(fleft)) {
+                    maximaList.push([xleft, -fleft]);
+                  }
+                }
+                maximumAtPreviousRight = false;
+              } else if (fright < fx) {
+                maximumAtPreviousRight = true;
+              } else {
+                maximumAtPreviousRight = false;
+
+                // make sure it actually looks like a strict maximum of f(x)
+                if (fx < fright && fx < fleft &&
+                  fx < f(x + result.tol) && fx < f(x - result.tol) &&
+                  Number.isFinite(fx)
+                ) {
+                  maximaList.push([x, -fx]);
+                }
+
               }
             }
           }

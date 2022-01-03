@@ -22,7 +22,6 @@ import * as Verbatim from './components/Verbatim';
 import * as Paginator from './components/Paginator';
 
 import Document from './components/Document';
-import StringComponent from './components/StringComponent';
 import Text from './components/Text';
 import TextList from './components/TextList';
 import RandomizedTextList from './components/RandomizedTextList';
@@ -146,6 +145,7 @@ import Split from './components/Split';
 import BestFitLine from './components/BestFitLine';
 import AreaBetweenCurveXAxis from './components/AreaBetweenCurveXAxis';
 import RegionHalfPlane from './components/RegionHalfPlane';
+import RenderDoenetML from './components/RenderDoenetML';
 
 
 //Extended
@@ -191,7 +191,6 @@ const componentTypeArray = [
   ...Object.values(Verbatim),
   ...Object.values(Paginator),
   Document,
-  StringComponent,
   Text, TextList,
   RandomizedTextList,
   P,
@@ -289,6 +288,7 @@ const componentTypeArray = [
   BestFitLine,
   AreaBetweenCurveXAxis,
   RegionHalfPlane,
+  RenderDoenetML,
 
   BaseComponent,
   InlineComponent,

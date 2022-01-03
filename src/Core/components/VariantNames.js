@@ -15,15 +15,11 @@ export default class VariantNames extends BaseComponent {
       // break any string by white space
 
       let newChildren = matchedChildren.reduce(function (a, c) {
-        if (c.componentType === "string") {
+        if (typeof c === "string") {
           return [
             ...a,
-            ...c.state.value.split(/\s+/)
+            ...c.split(/\s+/)
               .filter(s => s)
-              .map(s => ({
-                componentType: "string",
-                state: { value: s }
-              }))
           ]
         } else {
           return [...a, c]
@@ -105,7 +101,7 @@ export default class VariantNames extends BaseComponent {
         for (let arrayKey of arrayKeys) {
           if (dependencyValuesByKey[arrayKey].stringChild.length === 1) {
             variantNames[arrayKey] = dependencyValuesByKey[arrayKey].stringChild[0]
-              .stateValues.value.toLowerCase().substring(0, 1000);
+              .toLowerCase().substring(0, 1000);
           }
         }
         return { newValues: { variantNames } }

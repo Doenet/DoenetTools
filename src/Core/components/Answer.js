@@ -171,7 +171,7 @@ export default class Answer extends InlineComponent {
       // wrap with award and type
 
       if (!matchedChildren.every(child =>
-        child.componentType === "string" ||
+        typeof child === "string" ||
         child.doenetAttributes && child.doenetAttributes.createdFromMacro
       )) {
         return { success: false }
@@ -957,7 +957,7 @@ export default class Answer extends InlineComponent {
           let minimumFromAwardCredits = 0;
           for (let child of dependencyValues.awardChildren) {
             let creditFromChild = child.stateValues.creditAchieved;
-            if (creditFromChild > minimumFromAwardCredits || awardsUsed[n-1] === null) {
+            if (creditFromChild > minimumFromAwardCredits || awardsUsed[n - 1] === null) {
               if (child.stateValues.fractionSatisfied > 0) {
                 if (awardsUsed[0] === null) {
                   awardsUsed[0] = child.componentName;
@@ -1399,20 +1399,23 @@ export default class Answer extends InlineComponent {
 
   actions = {
     submitAnswer: this.submitAnswer.bind(
-      new Proxy(this, this.readOnlyProxyHandler)
-    ),
+      this)
+    //   new Proxy(this, this.readOnlyProxyHandler)
+    // ),
   };
 
-  submitAnswer() {
 
-    if (this.stateValues.numberOfAttemptsLeft < 1) {
-      console.warn(`Cannot submit answer for ${this.componentName} as number of attempts left is ${this.stateValues.numberOfAttemptsLeft}`);
+  async submitAnswer() {
+
+    let numberOfAttemptsLeft = await this.stateValues.numberOfAttemptsLeft;
+    if (numberOfAttemptsLeft < 1) {
+      console.warn(`Cannot submit answer for ${this.componentName} as number of attempts left is ${numberOfAttemptsLeft}`);
       return;
     }
 
-    let creditAchieved = this.stateValues.creditAchievedIfSubmit;
-    let awardsUsed = this.stateValues.awardsUsedIfSubmit;
-    let inputUsed = this.stateValues.inputUsedIfSubmit;
+    let creditAchieved = await this.stateValues.creditAchievedIfSubmit;
+    let awardsUsed = await this.stateValues.awardsUsedIfSubmit;
+    let inputUsed = await this.stateValues.inputUsedIfSubmit;
 
     // request to update credit
     let instructions = [{
@@ -1427,12 +1430,13 @@ export default class Answer extends InlineComponent {
       value: true
     }];
 
+    let inputChildrenWithValues = await this.stateValues.inputChildrenWithValues;
 
-    if (this.stateValues.inputChildrenWithValues.length === 1) {
+    if (inputChildrenWithValues.length === 1) {
       // if have a single input descendant,
       // then will record the current value
 
-      let inputChild = this.stateValues.inputChildrenWithValues[0];
+      let inputChild = inputChildrenWithValues[0];
 
       if (inputUsed === inputChild.componentName
         && "valueToRecordOnSubmit" in inputChild.stateValues
@@ -1448,11 +1452,14 @@ export default class Answer extends InlineComponent {
     }
 
     // add submitted responses to instruction for answer
+    let currentResponses = await this.stateValues.currentResponses;
+    // let currentResponses = await this.state.currentResponses.value;
+
     instructions.push({
       updateType: "updateValue",
       componentName: this.componentName,
       stateVariable: "submittedResponses",
-      value: this.stateValues.currentResponses
+      value: currentResponses
     })
 
     instructions.push({
@@ -1473,17 +1480,17 @@ export default class Answer extends InlineComponent {
       updateType: "updateValue",
       componentName: this.componentName,
       stateVariable: "creditAchievedDependenciesAtSubmit",
-      value: this.stateValues.creditAchievedDependencies
+      value: await this.stateValues.creditAchievedDependencies
     })
 
     instructions.push({
       updateType: "updateValue",
       componentName: this.componentName,
       stateVariable: "nSubmissions",
-      value: this.stateValues.nSubmissions + 1,
+      value: await this.stateValues.nSubmissions + 1,
     })
 
-    for (let child of this.stateValues.awardChildren) {
+    for (let child of await this.stateValues.awardChildren) {
       let awarded = awardsUsed.includes(child.componentName);
       instructions.push({
         updateType: "updateValue",
@@ -1496,12 +1503,12 @@ export default class Answer extends InlineComponent {
 
     instructions.push({
       updateType: "recordItemSubmission",
-      itemNumber: this.stateValues.inItemNumber
+      itemNumber: await this.stateValues.inItemNumber
     })
 
 
     let responseText = [];
-    for (let response of this.stateValues.currentResponses) {
+    for (let response of currentResponses) {
       if (response.toString) {
         responseText.push(response.toString())
       } else {
@@ -1512,7 +1519,7 @@ export default class Answer extends InlineComponent {
     // console.log(`submit instructions`)
     // console.log(instructions);
 
-    return this.coreFunctions.performUpdate({
+    await this.coreFunctions.performUpdate({
       updateInstructions: instructions,
       event: {
         verb: "submitted",
@@ -1521,15 +1528,17 @@ export default class Answer extends InlineComponent {
           componentType: this.componentType,
         },
         result: {
-          response: this.stateValues.currentResponses,
+          response: currentResponses,
           responseText,
           creditAchieved
         }
 
       },
-    }).then(() => this.coreFunctions.triggerChainedActions({
+    });
+
+    return await this.coreFunctions.triggerChainedActions({
       componentName: this.componentName,
-    }));
+    });
 
 
   }

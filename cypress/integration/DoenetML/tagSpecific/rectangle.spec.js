@@ -184,7 +184,7 @@ describe('Rectangle Tag Tests', function () {
 });
 
 function setupScene({ rectangleProperties, rectangleChildren }) {
-  cy.window().then((win) => {
+  cy.window().then(async (win) => {
     win.postMessage({
       doenetML: `
   <text>a</text>
@@ -196,21 +196,21 @@ function setupScene({ rectangleProperties, rectangleChildren }) {
   </graph>
 
   <graph>
-  <copy name="centerPoint" tname="_rectangle1" prop="center"/>
-  <copy name="v1" tname="_rectangle1" prop="vertex1"/>
-  <copy name="v2" tname="_rectangle1" prop="vertex2"/>
-  <copy name="v3" tname="_rectangle1" prop="vertex3"/>
-  <copy name="v4" tname="_rectangle1" prop="vertex4"/>
+  <copy name="centerPoint" target="_rectangle1" prop="center"/>
+  <copy name="v1" target="_rectangle1" prop="vertex1"/>
+  <copy name="v2" target="_rectangle1" prop="vertex2"/>
+  <copy name="v3" target="_rectangle1" prop="vertex3"/>
+  <copy name="v4" target="_rectangle1" prop="vertex4"/>
   </graph>
 
   <mathinput bindValueTo="$(_rectangle1{prop='width'})" />
   <mathinput bindValueTo="$(_rectangle1{prop='height'})" />
 
   <graph name="graph3">
-    <copy name="rectangleCopy" tname="_rectangle1"/>
+    <copy name="rectangleCopy" target="_rectangle1"/>
   </graph>
   
-  <copy name="graph4" tname="graph3" />
+  <copy name="graph4" target="graph3" />
   `}, "*");
   });
 }
@@ -218,7 +218,7 @@ function setupScene({ rectangleProperties, rectangleChildren }) {
 function runTests({ v0x, v0y, v2x, v2y, cornerDependencyState }) {
   cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
 
-  cy.window().then((win) => {
+  cy.window().then(async (win) => {
     let components = Object.assign({}, win.state.components);
 
     let rectangle = components["/_rectangle1"];
@@ -240,8 +240,8 @@ function runTests({ v0x, v0y, v2x, v2y, cornerDependencyState }) {
       centerPoint
     }
 
-    cy.window().then((win) => {
-      checkRectangleValues(
+    cy.window().then(async (win) => {
+      await checkRectangleValues(
         inputs,
         {
           v0x,
@@ -253,9 +253,9 @@ function runTests({ v0x, v0y, v2x, v2y, cornerDependencyState }) {
     })
 
     cy.log("move rectangle points individually");
-    cy.window().then((win) => {
-      rectangle.movePolygon({ pointCoords: { 0: [2, -1] } })
-      checkRectangleValues(
+    cy.window().then(async (win) => {
+      await rectangle.movePolygon({ pointCoords: { 0: [2, -1] } })
+      await checkRectangleValues(
         inputs,
         {
           v0x: 2,
@@ -265,8 +265,8 @@ function runTests({ v0x, v0y, v2x, v2y, cornerDependencyState }) {
         }
       );
 
-      rectangle.movePolygon({ pointCoords: { 1: [0, 2] } })
-      checkRectangleValues(
+      await rectangle.movePolygon({ pointCoords: { 1: [0, 2] } })
+      await checkRectangleValues(
         inputs,
         {
           v0x: 2,
@@ -276,8 +276,8 @@ function runTests({ v0x, v0y, v2x, v2y, cornerDependencyState }) {
         }
       );
 
-      rectangle.movePolygon({ pointCoords: { 2: [-4, -5] } })
-      checkRectangleValues(
+      await rectangle.movePolygon({ pointCoords: { 2: [-4, -5] } })
+      await checkRectangleValues(
         inputs,
         {
           v0x: 2,
@@ -287,8 +287,8 @@ function runTests({ v0x, v0y, v2x, v2y, cornerDependencyState }) {
         }
       );
 
-      rectangle.movePolygon({ pointCoords: { 3: [3, 4] } })
-      checkRectangleValues(
+      await rectangle.movePolygon({ pointCoords: { 3: [3, 4] } })
+      await checkRectangleValues(
         inputs,
         {
           v0x: 3,
@@ -300,8 +300,8 @@ function runTests({ v0x, v0y, v2x, v2y, cornerDependencyState }) {
     })
 
     cy.log("move rectangle points together");
-    cy.window().then((win) => {
-      rectangle.movePolygon({
+    cy.window().then(async (win) => {
+      await rectangle.movePolygon({
         pointCoords: {
           0: [4, 3],
           1: [-3, 3],
@@ -309,7 +309,7 @@ function runTests({ v0x, v0y, v2x, v2y, cornerDependencyState }) {
           3: [4, 5]
         }
       })
-      checkRectangleValues(
+      await checkRectangleValues(
         inputs,
         {
           v0x: 4,
@@ -321,9 +321,9 @@ function runTests({ v0x, v0y, v2x, v2y, cornerDependencyState }) {
     })
 
     cy.log("move center point");
-    cy.window().then((win) => {
-      centerPoint.movePoint({ x: 0, y: 0 });
-      checkRectangleValues(
+    cy.window().then(async (win) => {
+      await centerPoint.movePoint({ x: 0, y: 0 });
+      await checkRectangleValues(
         inputs,
         {
           v0x: 3.5,
@@ -335,12 +335,12 @@ function runTests({ v0x, v0y, v2x, v2y, cornerDependencyState }) {
     })
 
     cy.log("move copied vertices");
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       if (cornerDependencyState === 0) {
         // natural behaviour
 
-        v0.movePoint({ x: 0, y: 0 });
-        checkRectangleValues(
+        await v0.movePoint({ x: 0, y: 0 });
+        await checkRectangleValues(
           inputs,
           {
             v0x: 0,
@@ -350,8 +350,8 @@ function runTests({ v0x, v0y, v2x, v2y, cornerDependencyState }) {
           }
         );
 
-        v1.movePoint({ x: 1, y: -1 });
-        checkRectangleValues(
+        await v1.movePoint({ x: 1, y: -1 });
+        await checkRectangleValues(
           inputs,
           {
             v0x: 0,
@@ -361,8 +361,8 @@ function runTests({ v0x, v0y, v2x, v2y, cornerDependencyState }) {
           }
         );
 
-        v2.movePoint({ x: 2.25, y: 2.25 });
-        checkRectangleValues(
+        await v2.movePoint({ x: 2.25, y: 2.25 });
+        await checkRectangleValues(
           inputs,
           {
             v0x: 0,
@@ -372,8 +372,8 @@ function runTests({ v0x, v0y, v2x, v2y, cornerDependencyState }) {
           }
         );
 
-        v3.movePoint({ x: -1, y: -5 });
-        checkRectangleValues(
+        await v3.movePoint({ x: -1, y: -5 });
+        await checkRectangleValues(
           inputs,
           {
             v0x: -1,
@@ -385,8 +385,8 @@ function runTests({ v0x, v0y, v2x, v2y, cornerDependencyState }) {
       } else if (cornerDependencyState === 1) {
         // corner, width and height
 
-        v0.movePoint({ x: 0, y: 0 });
-        checkRectangleValues(
+        await v0.movePoint({ x: 0, y: 0 });
+        await checkRectangleValues(
           inputs,
           {
             v0x: 0,
@@ -396,8 +396,8 @@ function runTests({ v0x, v0y, v2x, v2y, cornerDependencyState }) {
           }
         );
 
-        v1.movePoint({ x: 1, y: -1 });
-        checkRectangleValues(
+        await v1.movePoint({ x: 1, y: -1 });
+        await checkRectangleValues(
           inputs,
           {
             v0x: 0,
@@ -407,8 +407,8 @@ function runTests({ v0x, v0y, v2x, v2y, cornerDependencyState }) {
           }
         );
 
-        v2.movePoint({ x: 2.25, y: 2.25 });
-        checkRectangleValues(
+        await v2.movePoint({ x: 2.25, y: 2.25 });
+        await checkRectangleValues(
           inputs,
           {
             v0x: 0,
@@ -418,8 +418,8 @@ function runTests({ v0x, v0y, v2x, v2y, cornerDependencyState }) {
           }
         );
 
-        v3.movePoint({ x: -1, y: -5 });
-        checkRectangleValues(
+        await v3.movePoint({ x: -1, y: -5 });
+        await checkRectangleValues(
           inputs,
           {
             v0x: -1,
@@ -431,8 +431,8 @@ function runTests({ v0x, v0y, v2x, v2y, cornerDependencyState }) {
       } else if (cornerDependencyState === 2) {
         //TODO: corner and center
 
-        v0.movePoint({ x: 0, y: 0 });
-        checkRectangleValues(
+        await v0.movePoint({ x: 0, y: 0 });
+        await checkRectangleValues(
           inputs,
           {
             v0x: 0,
@@ -442,8 +442,8 @@ function runTests({ v0x, v0y, v2x, v2y, cornerDependencyState }) {
           }
         );
 
-        v1.movePoint({ x: 1, y: -1 });
-        checkRectangleValues(
+        await v1.movePoint({ x: 1, y: -1 });
+        await checkRectangleValues(
           inputs,
           {
             v0x: 0,
@@ -453,8 +453,8 @@ function runTests({ v0x, v0y, v2x, v2y, cornerDependencyState }) {
           }
         );
 
-        v2.movePoint({ x: 2.25, y: 2.25 });
-        checkRectangleValues(
+        await v2.movePoint({ x: 2.25, y: 2.25 });
+        await checkRectangleValues(
           inputs,
           {
             v0x: 0,
@@ -464,8 +464,8 @@ function runTests({ v0x, v0y, v2x, v2y, cornerDependencyState }) {
           }
         );
 
-        v3.movePoint({ x: -1, y: -5 });
-        checkRectangleValues(
+        await v3.movePoint({ x: -1, y: -5 });
+        await checkRectangleValues(
           inputs,
           {
             v0x: -1,
@@ -478,8 +478,8 @@ function runTests({ v0x, v0y, v2x, v2y, cornerDependencyState }) {
     })
 
     cy.log("rectangleCopy together");
-    cy.window().then((win) => {
-      rectangleCopy.movePolygon({
+    cy.window().then(async (win) => {
+      await rectangleCopy.movePolygon({
         pointCoords: {
           0: [0, 0],
           1: [1, 0],
@@ -487,7 +487,7 @@ function runTests({ v0x, v0y, v2x, v2y, cornerDependencyState }) {
           3: [0, 1]
         }
       })
-      checkRectangleValues(
+      await checkRectangleValues(
         inputs,
         {
           v0x: 0,
@@ -499,9 +499,9 @@ function runTests({ v0x, v0y, v2x, v2y, cornerDependencyState }) {
     })
 
     cy.log("rectangleCopy individually");
-    cy.window().then((win) => {
-      rectangleCopy.movePolygon({ pointCoords: { 0: [2, -1] } })
-      checkRectangleValues(
+    cy.window().then(async (win) => {
+      await rectangleCopy.movePolygon({ pointCoords: { 0: [2, -1] } })
+      await checkRectangleValues(
         inputs,
         {
           v0x: 2,
@@ -511,8 +511,8 @@ function runTests({ v0x, v0y, v2x, v2y, cornerDependencyState }) {
         }
       );
 
-      rectangleCopy.movePolygon({ pointCoords: { 1: [0, 2] } })
-      checkRectangleValues(
+      await rectangleCopy.movePolygon({ pointCoords: { 1: [0, 2] } })
+      await checkRectangleValues(
         inputs,
         {
           v0x: 2,
@@ -522,8 +522,8 @@ function runTests({ v0x, v0y, v2x, v2y, cornerDependencyState }) {
         }
       );
 
-      rectangleCopy.movePolygon({ pointCoords: { 2: [-4, -5] } })
-      checkRectangleValues(
+      await rectangleCopy.movePolygon({ pointCoords: { 2: [-4, -5] } })
+      await checkRectangleValues(
         inputs,
         {
           v0x: 2,
@@ -533,8 +533,8 @@ function runTests({ v0x, v0y, v2x, v2y, cornerDependencyState }) {
         }
       );
 
-      rectangleCopy.movePolygon({ pointCoords: { 3: [3, 4] } })
-      checkRectangleValues(
+      await rectangleCopy.movePolygon({ pointCoords: { 3: [3, 4] } })
+      await checkRectangleValues(
         inputs,
         {
           v0x: 3,
@@ -546,8 +546,8 @@ function runTests({ v0x, v0y, v2x, v2y, cornerDependencyState }) {
     })
 
     cy.log("rectangleCopy2 together");
-    cy.window().then((win) => {
-      rectangleCopy2.movePolygon({
+    cy.window().then(async (win) => {
+      await rectangleCopy2.movePolygon({
         pointCoords: {
           0: [0, 0],
           1: [1, 0],
@@ -555,7 +555,7 @@ function runTests({ v0x, v0y, v2x, v2y, cornerDependencyState }) {
           3: [0, 1]
         }
       })
-      checkRectangleValues(
+      await checkRectangleValues(
         inputs,
         {
           v0x: 0,
@@ -567,9 +567,9 @@ function runTests({ v0x, v0y, v2x, v2y, cornerDependencyState }) {
     })
 
     cy.log("rectangleCopy2 individually");
-    cy.window().then((win) => {
-      rectangleCopy2.movePolygon({ pointCoords: { 0: [2, -1] } })
-      checkRectangleValues(
+    cy.window().then(async (win) => {
+      await rectangleCopy2.movePolygon({ pointCoords: { 0: [2, -1] } })
+      await checkRectangleValues(
         inputs,
         {
           v0x: 2,
@@ -579,8 +579,8 @@ function runTests({ v0x, v0y, v2x, v2y, cornerDependencyState }) {
         }
       );
 
-      rectangleCopy2.movePolygon({ pointCoords: { 1: [0, 2] } })
-      checkRectangleValues(
+      await rectangleCopy2.movePolygon({ pointCoords: { 1: [0, 2] } })
+      await checkRectangleValues(
         inputs,
         {
           v0x: 2,
@@ -590,8 +590,8 @@ function runTests({ v0x, v0y, v2x, v2y, cornerDependencyState }) {
         }
       );
 
-      rectangleCopy2.movePolygon({ pointCoords: { 2: [-4, -5] } })
-      checkRectangleValues(
+      await rectangleCopy2.movePolygon({ pointCoords: { 2: [-4, -5] } })
+      await checkRectangleValues(
         inputs,
         {
           v0x: 2,
@@ -601,8 +601,8 @@ function runTests({ v0x, v0y, v2x, v2y, cornerDependencyState }) {
         }
       );
 
-      rectangleCopy2.movePolygon({ pointCoords: { 3: [3, 4] } })
-      checkRectangleValues(
+      await rectangleCopy2.movePolygon({ pointCoords: { 3: [3, 4] } })
+      await checkRectangleValues(
         inputs,
         {
           v0x: 3,
@@ -613,7 +613,7 @@ function runTests({ v0x, v0y, v2x, v2y, cornerDependencyState }) {
       );
 
       // reset polygon
-      rectangle.movePolygon({
+      await rectangle.movePolygon({
         pointCoords: {
           0: [0, 0],
           1: [1, 0],
@@ -626,7 +626,7 @@ function runTests({ v0x, v0y, v2x, v2y, cornerDependencyState }) {
   })
 }
 
-function checkRectangleValues({
+async function checkRectangleValues({
   rectangles,
   vertices,
   widthInput,
@@ -645,17 +645,17 @@ function checkRectangleValues({
   let heightValue = Math.abs(v2y - v0y);
 
   for (let rectangle of rectangles) {
-    expect(rectangle.stateValues.vertices.map(x => x.map(y => y.evaluate_to_constant()))).eqls(vertexCoords);
-    expect(rectangle.stateValues.center.map(x => x.evaluate_to_constant())).eqls(centerCoords);
-    expect(rectangle.stateValues.width).eq(widthValue);
-    expect(rectangle.stateValues.height).eq(heightValue);
+    expect((await rectangle.stateValues.vertices).map(x => x.map(y => y.evaluate_to_constant()))).eqls(vertexCoords);
+    expect((await rectangle.stateValues.center).map(x => x.evaluate_to_constant())).eqls(centerCoords);
+    expect((await rectangle.stateValues.width)).eq(widthValue);
+    expect((await rectangle.stateValues.height)).eq(heightValue);
   }
 
   for (let [index, vertex] of vertices.entries()) {
-    expect(vertex.stateValues.xs.map(x => x.evaluate_to_constant())).eqls(vertexCoords[index]);
+    expect((await vertex.stateValues.xs).map(x => x.evaluate_to_constant())).eqls(vertexCoords[index]);
   }
 
-  expect(centerPoint.stateValues.xs.map(x => x.evaluate_to_constant())).eqls(centerCoords);
+  expect((await centerPoint.stateValues.xs).map(x => x.evaluate_to_constant())).eqls(centerCoords);
   // expect(widthInput.stateValues.value.tree).eq(widthValue);
   // expect(heightInput.stateValues.value.tree).eq(heightValue);
 }

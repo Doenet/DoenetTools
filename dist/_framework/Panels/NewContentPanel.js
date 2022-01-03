@@ -1,4 +1,4 @@
-import React, {useState, useRef, useEffect} from "../../_snowpack/pkg/react.js";
+import React, {useState, useRef, useEffect, useLayoutEffect} from "../../_snowpack/pkg/react.js";
 import styled from "../../_snowpack/pkg/styled-components.js";
 import {
   atom,
@@ -54,11 +54,17 @@ export const useSupportDividerController = () => {
   }, []);
   return supportController;
 };
+export const supportPanelHandleLeft = atom({
+  key: "supportPanelHandleLeft",
+  default: null
+});
 export default function ContentPanel({main, support}) {
   const wrapperRef = useRef();
   const hasRespCont = true;
   const setDivider = useSupportDividerController();
   const panelProportion = useRecoilValue(panelPropotion);
+  const dragHandleRef = useRef();
+  const setHandleLeft = useSetRecoilState(supportPanelHandleLeft);
   useEffect(() => {
     setDivider(support?.props.isInitOpen ?? false);
   }, [support?.props.isInitOpen, setDivider]);
@@ -68,6 +74,18 @@ export default function ContentPanel({main, support}) {
   useEffect(() => {
     setDivider(!support?.props?.hide);
   }, [support?.props?.hide]);
+  function onWindowResize() {
+    setHandleLeft(dragHandleRef.current?.getBoundingClientRect()?.left);
+  }
+  useEffect(() => {
+    window.onresize = onWindowResize;
+    return () => {
+      window.onresize = null;
+    };
+  }, []);
+  useLayoutEffect(() => {
+    setHandleLeft(dragHandleRef.current?.getBoundingClientRect()?.left);
+  });
   useEffect(() => {
     wrapperRef.current.handleClicked = false;
     wrapperRef.current.handleDragged = false;
@@ -104,6 +122,7 @@ export default function ContentPanel({main, support}) {
     $hasRespCont: hasRespCont,
     $proportion: panelProportion
   }, main, !support?.props?.hide ? /* @__PURE__ */ React.createElement(DragHandle, {
+    ref: dragHandleRef,
     onMouseDown,
     "data-cy": "contentPanelDragHandle",
     key: `SupportHandle`

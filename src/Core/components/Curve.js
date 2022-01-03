@@ -70,7 +70,7 @@ export default class Curve extends GraphicalComponent {
     attributes.nDiscretizationPoints = {
       createComponentOfType: "number",
       createStateVariable: "nDiscretizationPoints",
-      defaultValue: 100,
+      defaultValue: 1000,
       public: true,
     };
     attributes.periodic = {
@@ -124,6 +124,11 @@ export default class Curve extends GraphicalComponent {
       createComponentOfType: "math"
     }
 
+    attributes.nearestPointAsCurve = {
+      createComponentOfType: "boolean",
+      createStateVariable: "nearestPointAsCurve",
+      defaultValue: false,
+    }
 
     return attributes;
   }
@@ -135,7 +140,7 @@ export default class Curve extends GraphicalComponent {
 
       // only apply if all children are strings or macros
       if (!matchedChildren.every(child =>
-        child.componentType === "string" ||
+        typeof child === "string" ||
         child.doenetAttributes && child.doenetAttributes.createdFromMacro
       )) {
         return { success: false }
@@ -345,6 +350,18 @@ export default class Curve extends GraphicalComponent {
           dependencyType: "stateVariable",
           variableName: "graphXmax"
         },
+        graphYmin: {
+          dependencyType: "stateVariable",
+          variableName: "graphYmin"
+        },
+        graphYmax: {
+          dependencyType: "stateVariable",
+          variableName: "graphYmax"
+        },
+        flipFunction: {
+          dependencyType: "stateVariable",
+          variableName: "flipFunction"
+        },
       }),
       definition: function ({ dependencyValues }) {
         let parMax;
@@ -374,13 +391,19 @@ export default class Curve extends GraphicalComponent {
               }
             } catch (e) { }
           }
-          let graphXmax = dependencyValues.graphXmax;
-          let graphXmin = dependencyValues.graphXmin;
-          if (graphXmax !== null && graphXmin !== null) {
+          let graphMin, graphMax;
+          if (dependencyValues.flipFunction) {
+            graphMax = dependencyValues.graphYmax;
+            graphMin = dependencyValues.graphYmin;
+          } else {
+            graphMax = dependencyValues.graphXmax;
+            graphMin = dependencyValues.graphXmin;
+          }
+          if (graphMax !== null && graphMin !== null) {
             if (parMax === undefined) {
-              parMax = graphXmax + 0.1 * (graphXmax - graphXmin);
+              parMax = graphMax + 0.1 * (graphMax - graphMin);
             } else {
-              parMax = Math.min(parMax, graphXmax + 0.1 * (graphXmax - graphXmin))
+              parMax = Math.min(parMax, graphMax + 0.1 * (graphMax - graphMin))
             }
           }
 
@@ -443,6 +466,18 @@ export default class Curve extends GraphicalComponent {
           dependencyType: "stateVariable",
           variableName: "graphXmax"
         },
+        graphYmin: {
+          dependencyType: "stateVariable",
+          variableName: "graphYmin"
+        },
+        graphYmax: {
+          dependencyType: "stateVariable",
+          variableName: "graphYmax"
+        },
+        flipFunction: {
+          dependencyType: "stateVariable",
+          variableName: "flipFunction"
+        },
       }),
       definition: function ({ dependencyValues }) {
         let parMin;
@@ -472,13 +507,19 @@ export default class Curve extends GraphicalComponent {
               }
             } catch (e) { }
           }
-          let graphXmax = dependencyValues.graphXmax;
-          let graphXmin = dependencyValues.graphXmin;
-          if (graphXmax !== null && graphXmin !== null) {
+          let graphMin, graphMax;
+          if (dependencyValues.flipFunction) {
+            graphMax = dependencyValues.graphYmax;
+            graphMin = dependencyValues.graphYmin;
+          } else {
+            graphMax = dependencyValues.graphXmax;
+            graphMin = dependencyValues.graphXmin;
+          }
+          if (graphMax !== null && graphMin !== null) {
             if (parMin === undefined) {
-              parMin = graphXmin + 0.1 * (graphXmin - graphXmax);
+              parMin = graphMin + 0.1 * (graphMin - graphMax);
             } else {
-              parMin = Math.max(parMin, graphXmin + 0.1 * (graphXmin - graphXmax))
+              parMin = Math.max(parMin, graphMin + 0.1 * (graphMin - graphMax))
             }
           }
           if (parMin === undefined) {
@@ -652,7 +693,7 @@ export default class Curve extends GraphicalComponent {
 
         return { newValues: { throughPoints } }
       },
-      inverseArrayDefinitionByKey({ desiredStateVariableValues,
+      async inverseArrayDefinitionByKey({ desiredStateVariableValues,
         dependencyValuesByKey, dependencyNamesByKey,
         initialChange, stateValues,
       }) {
@@ -664,7 +705,7 @@ export default class Curve extends GraphicalComponent {
 
 
         // if not draggable, then disallow initial change 
-        if (initialChange && !stateValues.draggable) {
+        if (initialChange && !await stateValues.draggable) {
           return { success: false };
         }
 
@@ -2896,6 +2937,10 @@ export default class Curve extends GraphicalComponent {
           dependencyType: "stateVariable",
           variableName: "graphYmax"
         },
+        nearestPointAsCurve: {
+          dependencyType: "stateVariable",
+          variableName: "nearestPointAsCurve"
+        },
       }),
       definition({ dependencyValues }) {
         let nearestPointFunction = null;
@@ -2919,7 +2964,7 @@ export default class Curve extends GraphicalComponent {
 
 
 
-  moveControlVector({ controlVector, controlVectorInds, transient }) {
+  async moveControlVector({ controlVector, controlVectorInds, transient }) {
 
     let desiredVector = {
       [controlVectorInds + ",0"]: me.fromAst(controlVector[0]),
@@ -2927,7 +2972,7 @@ export default class Curve extends GraphicalComponent {
     }
 
     if (transient) {
-      return this.coreFunctions.performUpdate({
+      return await this.coreFunctions.performUpdate({
         updateInstructions: [{
           updateType: "updateValue",
           componentName: this.componentName,
@@ -2938,7 +2983,7 @@ export default class Curve extends GraphicalComponent {
         transient
       });
     } else {
-      return this.coreFunctions.performUpdate({
+      return await this.coreFunctions.performUpdate({
         updateInstructions: [{
           updateType: "updateValue",
           componentName: this.componentName,
@@ -2960,7 +3005,7 @@ export default class Curve extends GraphicalComponent {
 
   }
 
-  moveThroughPoint({ throughPoint, throughPointInd, transient }) {
+  async moveThroughPoint({ throughPoint, throughPointInd, transient }) {
 
     let desiredPoint = {
       [throughPointInd + ",0"]: me.fromAst(throughPoint[0]),
@@ -2968,7 +3013,7 @@ export default class Curve extends GraphicalComponent {
     }
 
     if (transient) {
-      this.coreFunctions.performUpdate({
+      return await this.coreFunctions.performUpdate({
         updateInstructions: [{
           updateType: "updateValue",
           componentName: this.componentName,
@@ -2979,7 +3024,7 @@ export default class Curve extends GraphicalComponent {
         transient
       });
     } else {
-      this.coreFunctions.performUpdate({
+      return await this.coreFunctions.performUpdate({
         updateInstructions: [{
           updateType: "updateValue",
           componentName: this.componentName,
@@ -3001,8 +3046,8 @@ export default class Curve extends GraphicalComponent {
 
   }
 
-  changeVectorControlDirection({ direction, throughPointInd }) {
-    this.coreFunctions.performUpdate({
+  async changeVectorControlDirection({ direction, throughPointInd }) {
+    return await this.coreFunctions.performUpdate({
       updateInstructions: [{
         updateType: "updateValue",
         componentName: this.componentName,
@@ -3013,7 +3058,7 @@ export default class Curve extends GraphicalComponent {
   }
 
   switchCurve() {
-    
+
   }
 
 
@@ -3040,23 +3085,6 @@ function getNearestPointFunctionCurve({ dependencyValues, numerics }) {
 
     let x1 = variables.x1.evaluate_to_constant();
     let x2 = variables.x2.evaluate_to_constant();
-
-
-    // first find nearest point when treating a function
-    // (or an inverse function)
-    // which finds a the nearest point vertically
-    // (or horizontally)
-    // assuming the function is defined at that point
-
-    let x1AsFunction, x2AsFunction;
-    if (flipFunction) {
-      x2AsFunction = x2;
-      x1AsFunction = f(x2AsFunction);
-    } else {
-      x1AsFunction = x1;
-      x2AsFunction = f(x1AsFunction);
-    }
-
 
     // compute values at the actual endpoints, if they exist
 
@@ -3085,34 +3113,49 @@ function getNearestPointFunctionCurve({ dependencyValues, numerics }) {
       }
     }
 
+    if (!dependencyValues.nearestPointAsCurve || !(Number.isFinite(x1) && Number.isFinite(x2))) {
 
-    // if function isn't defined at current variable value, replace with
-    // value at nearest endpoint
+      // first find nearest point when treating a function
+      // (or an inverse function)
+      // which finds a the nearest point vertically
+      // (or horizontally)
+      // assuming the function is defined at that point
 
-    if (!(Number.isFinite(x1AsFunction) && Number.isFinite(x2AsFunction))) {
-      let distLeft, distRight;
+      let x1AsFunction, x2AsFunction;
       if (flipFunction) {
-        distLeft = Math.abs(parMin - x2);
-        distRight = Math.abs(parMax - x2);
+        x2AsFunction = x2;
+        x1AsFunction = f(x2AsFunction);
       } else {
-        distLeft = Math.abs(parMin - x1);
-        distRight = Math.abs(parMax - x1);
+        x1AsFunction = x1;
+        x2AsFunction = f(x1AsFunction);
       }
 
-      if (distLeft < distRight || !Number.isFinite(distRight)) {
-        x1AsFunction = x1AtLeftEndpoint;
-        x2AsFunction = x2AtLeftEndpoint;
-      } else {
-        x1AsFunction = x1AtRightEndpoint;
-        x2AsFunction = x2AtRightEndpoint;
+
+      // if function isn't defined at current variable value, replace with
+      // value at nearest endpoint
+
+      if (!(Number.isFinite(x1AsFunction) && Number.isFinite(x2AsFunction))) {
+        let distLeft, distRight;
+        if (flipFunction) {
+          distLeft = Math.abs(parMin - x2);
+          distRight = Math.abs(parMax - x2);
+        } else {
+          distLeft = Math.abs(parMin - x1);
+          distRight = Math.abs(parMax - x1);
+        }
+
+        if (distLeft < distRight || !Number.isFinite(distRight)) {
+          x1AsFunction = x1AtLeftEndpoint;
+          x2AsFunction = x2AtLeftEndpoint;
+        } else {
+          x1AsFunction = x1AtRightEndpoint;
+          x2AsFunction = x2AtRightEndpoint;
+        }
+
       }
 
-    }
 
-
-    // if the point (x1,x2) isn't finite, we can't do anything more
-    // if (!(Number.isFinite(x1) && Number.isFinite(x2))) {
-    if (true) {
+      // assuming we found a finite point, we're done
       if (Number.isFinite(x1AsFunction) && Number.isFinite(x2AsFunction)) {
         let result = {
           x1: x1AsFunction,
@@ -3122,13 +3165,20 @@ function getNearestPointFunctionCurve({ dependencyValues, numerics }) {
           result.x3 = 0;
         }
         return result;
-      } else if (!(Number.isFinite(x1) && Number.isFinite(x2))) {
+      }
+
+      // if we don't have finite values for both componentts
+      // there's nothing more we can do
+      if (!(Number.isFinite(x1) && Number.isFinite(x2))) {
         return {};
       }
 
     }
 
-    // next, find the overall nearest point from the curve to (x1,x2)
+
+    // if we are finding nearest point as a curve,
+    // or if finding nearest point as a function failed,
+    // find the overall nearest point from the curve to (x1,x2)
 
     let minfunc = function (t) {
       let x = -10 * Math.log(1 / t - 1);
@@ -3195,7 +3245,7 @@ function getNearestPointFunctionCurve({ dependencyValues, numerics }) {
 
     }
 
-    // haven't necessarily checked f at tIntermax
+    // haven't necessarily checked f at tIntervalMax
     let fAtIntervalMax = minfunc(tIntervalMax);
     if (!Number.isFinite(fAtIntervalMax)) {
       tIntervalMax -= delta;
@@ -3246,75 +3296,6 @@ function getNearestPointFunctionCurve({ dependencyValues, numerics }) {
 
     }
 
-
-    // choose the nearest point treating as a function
-    // if that point exists and isn't 10 times further
-    // that the actual nearest point
-    if (Number.isFinite(x1AsFunction) && Number.isFinite(x2AsFunction)) {
-
-      // We now have two candidates for the nearest point
-      // A: (x1AsFunction, x2AsFunction), found by treating as a function
-      // B: (x1Min, x2Min), the actual closest point
-      // We prefer A, as it is more natural for a function
-      // However, if B is fifteen times closer, we'll use B
-      // If B is between ten and fifteen times closer, we'll try to find
-      // a point interpolating between A and B (by treating as a function)
-
-
-
-      let funD2 = Math.pow((x1AsFunction - x1) / xscale, 2)
-        + Math.pow((x2AsFunction - x2) / yscale, 2);
-
-      // 100 is 10 times distance, as working with squared distance
-      if (funD2 < 100 * currentD2) {
-        result = {
-          x1: x1AsFunction,
-          x2: x2AsFunction
-        }
-        if (variables.x3 !== undefined) {
-          result.x3 = 0;
-        }
-        return result;
-      }
-      // 225 is 15 times distance, as working with squared distance
-      if (funD2 < 225 * currentD2) {
-        // can we interpolate to find a point on the function between
-        // (x1AsFunction, x2AsFunction) and (x1Min, x2Min)?
-
-        let currentRatio = Math.sqrt(funD2 / currentD2);   // between 10 and 15
-        let a = (currentRatio - 10) / 5;   // between 0 and 1;
-
-        let x1try, x2try;
-        if (flipFunction) {
-          x2try = x2AsFunction * (1 - a) + x2AtMin * a;
-          x1try = f(x2try);
-        } else {
-          x1try = x1AsFunction * (1 - a) + x1AtMin * a;
-          x2try = f(x1try);
-        }
-        if (Number.isFinite(x1try) && Number.isFinite(x2try)) {
-          result = {
-            x1: x1try,
-            x2: x2try
-          }
-          if (variables.x3 !== undefined) {
-            result.x3 = 0;
-          }
-          return result;
-        } else {
-
-          result = {
-            x1: x1AsFunction,
-            x2: x2AsFunction
-          }
-          if (variables.x3 !== undefined) {
-            result.x3 = 0;
-          }
-          return result;
-        }
-      }
-
-    }
 
     result = {
       x1: x1AtMin,

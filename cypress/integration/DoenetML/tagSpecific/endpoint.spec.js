@@ -16,7 +16,7 @@ describe('Endpoint Tag Tests', function () {
   })
 
   it('endpoint change open', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -32,13 +32,13 @@ describe('Endpoint Tag Tests', function () {
     <booleaninput name="b1" />
     <booleaninput name="b2" />
 
-    <copy tname="g" assignNames="g2" />
+    <copy target="g" assignNames="g2" />
     `}, "*");
     });
 
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
 
       expect(components["/g/A"].stateValues.open).eq(true);
@@ -63,7 +63,7 @@ describe('Endpoint Tag Tests', function () {
     cy.log('switch C via boolean input')
     cy.get('#\\/b1_input').click();
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
 
       expect(components["/g/A"].stateValues.open).eq(true);
@@ -80,7 +80,7 @@ describe('Endpoint Tag Tests', function () {
     cy.log('switch D via boolean input')
     cy.get('#\\/b2_input').click();
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
 
       expect(components["/g/A"].stateValues.open).eq(true);
@@ -96,9 +96,9 @@ describe('Endpoint Tag Tests', function () {
 
 
     cy.log('switch A via first action')
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components["/g/A"].actions.switchPoint();
+      await components["/g/A"].actions.switchPoint();
 
       expect(components["/g/A"].stateValues.open).eq(false);
       expect(components["/g/B"].stateValues.open).eq(false);
@@ -114,9 +114,9 @@ describe('Endpoint Tag Tests', function () {
 
 
     cy.log('switch A via second action')
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components["/g2/A"].actions.switchPoint();
+      await components["/g2/A"].actions.switchPoint();
 
       expect(components["/g/A"].stateValues.open).eq(true);
       expect(components["/g/B"].stateValues.open).eq(false);
@@ -131,9 +131,9 @@ describe('Endpoint Tag Tests', function () {
 
     
     cy.log('cannot switch B via action')
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components["/g/B"].actions.switchPoint();
+      await components["/g/B"].actions.switchPoint();
 
       expect(components["/g/A"].stateValues.open).eq(true);
       expect(components["/g/B"].stateValues.open).eq(false);
@@ -149,9 +149,9 @@ describe('Endpoint Tag Tests', function () {
 
     
     cy.log('cannot switch C via second action')
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components["/g2/C"].actions.switchPoint();
+      await components["/g2/C"].actions.switchPoint();
 
       expect(components["/g/A"].stateValues.open).eq(true);
       expect(components["/g/B"].stateValues.open).eq(false);
@@ -166,9 +166,9 @@ describe('Endpoint Tag Tests', function () {
 
    
     cy.log('switch D via second action')
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components["/g2/D"].actions.switchPoint();
+      await components["/g2/D"].actions.switchPoint();
 
       expect(components["/g/A"].stateValues.open).eq(true);
       expect(components["/g/B"].stateValues.open).eq(false);

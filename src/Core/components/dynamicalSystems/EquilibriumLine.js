@@ -60,9 +60,9 @@ export default class EquilibriumLine extends Line {
 
   };
 
-  switchLine() {
-    if (this.stateValues.switchable) {
-      return this.coreFunctions.performUpdate({
+  async switchLine() {
+    if (await this.stateValues.switchable) {
+      return await this.coreFunctions.performUpdate({
         updateInstructions: [{
           updateType: "updateValue",
           componentName: this.componentName,

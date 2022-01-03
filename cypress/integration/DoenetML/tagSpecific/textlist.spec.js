@@ -21,18 +21,18 @@ describe('TextList Tag Tests', function () {
         doenetML: `
     <p><textlist hide="true">a b c</textlist></p>
 
-    <p><copy hide="false" tname="_textlist1" /></p>
+    <p><copy hide="false" target="_textlist1" /></p>
 
     <p><textlist>
       <text>hello</text>
-      <copy tname="_textlist1" />
+      <copy target="_textlist1" />
       <text>bye</text>
-      <copy tname="_copy1" />
+      <copy target="_copy1" />
     </textlist></p>
 
-    <p><copy maximumnumber="6" tname="_textlist2" /></p>
+    <p><copy maximumnumber="6" target="_textlist2" /></p>
 
-    <p><copy prop="text" tname="_textlist2" /></p>
+    <p><copy prop="text" target="_textlist2" /></p>
 
     `}, "*");
     });

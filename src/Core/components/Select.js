@@ -62,7 +62,7 @@ export default class Select extends CompositeComponent {
 
       // only if all children are strings or options
       if (!matchedChildren.every(child =>
-        child.componentType === "string" ||
+        typeof child === "string" ||
         child.doenetAttributes && child.doenetAttributes.createdFromMacro
       )) {
         return { success: false }
@@ -494,20 +494,21 @@ export default class Select extends CompositeComponent {
   }
 
 
-  static createSerializedReplacements({ component, components, componentInfoObjects }) {
+  static async createSerializedReplacements({ component, components, componentInfoObjects }) {
 
     // console.log(`create serialized replacements for ${component.componentName}`);
 
     let replacements = [];
 
-    for (let selectedIndex of component.stateValues.selectedIndices) {
+    let optionChildren = await component.stateValues.optionChildren;
 
+    for (let selectedIndex of await component.stateValues.selectedIndices) {
 
-      let selectedChildName = component.stateValues.optionChildren[selectedIndex - 1].componentName;
+      let selectedChildName = optionChildren[selectedIndex - 1].componentName;
 
       let selectedChild = components[selectedChildName];
 
-      let serializedGrandchildren = deepClone(selectedChild.stateValues.serializedChildren);
+      let serializedGrandchildren = deepClone(await selectedChild.stateValues.serializedChildren);
       let serializedChild = {
         componentType: "option",
         state: { rendered: true },
@@ -550,7 +551,7 @@ export default class Select extends CompositeComponent {
 
     let assignNames = component.doenetAttributes.assignNames;
 
-    if (assignNames && component.stateValues.skipOptionsInAssignNames) {
+    if (assignNames && await component.stateValues.skipOptionsInAssignNames) {
       assignNames = assignNames.map(x => [x])
     }
 
@@ -606,8 +607,8 @@ export default class Select extends CompositeComponent {
         // children overwrite state
         if (child.children !== undefined) {
           for (let grandchild of child.children) {
-            if (grandchild.componentType === "string") {
-              numberToSelect = Math.round(Number(grandchild.state.value));
+            if (typeof grandchild === "string") {
+              numberToSelect = Math.round(Number(grandchild));
               foundValid = true;
               break;
             }
@@ -629,9 +630,9 @@ export default class Select extends CompositeComponent {
         // children overwrite state
         if (child.children !== undefined) {
           for (let grandchild of child.children) {
-            if (grandchild.componentType === "string") {
+            if (typeof grandchild === "string") {
               foundValid = true;
-              if (grandchild.state.value.trim().toLowerCase() === "true") {
+              if (grandchild.trim().toLowerCase() === "true") {
                 withReplacement = true;
               } else {
                 withReplacement = false;
@@ -649,7 +650,7 @@ export default class Select extends CompositeComponent {
         // uniqueVariants disabled if have a child with selectWeight specified
         return { succes: false }
       } else if (componentType !== "hide" && componentType !== "modifyIndirectly") {
-        if (componentType === "string") {
+        if (typeof child === "string") {
           stringChild = child;
         }
         let childvariants = 1;
@@ -669,7 +670,7 @@ export default class Select extends CompositeComponent {
     // if have one string child, it will be broken into children by spaces
     // account for number of resulting children, each with one variant
     if (stringChild !== undefined && numberOfVariantsByChild.length === 1) {
-      let numPieces = stringChild.state.value.split(/s+/).length;
+      let numPieces = stringChild.split(/s+/).length;
       numberOfVariantsByChild = Array(numPieces).fill(1);
     }
 

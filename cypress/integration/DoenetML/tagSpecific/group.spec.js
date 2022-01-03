@@ -13,18 +13,18 @@ describe('Group Tag Tests', function () {
     <p>Plant: <textinput name="plant" prefill="tree"/></p>
     
     <group name="g1">
-      <p name="animalp">The animal is a <copy prop="value" tname="animal" />.</p>
+      <p name="animalp">The animal is a <copy prop="value" target="animal" />.</p>
       <group name="g2">
-        <p name="plantp">The plant is a <copy prop="value" tname="plant" />.</p>
-        <copy tname="animalp" assignNames="animalp2" />
+        <p name="plantp">The plant is a <copy prop="value" target="plant" />.</p>
+        <copy target="animalp" assignNames="animalp2" />
         <group name="g3">
-          <copy tname="plantp" assignNames="plantp2" />
+          <copy target="plantp" assignNames="plantp2" />
         </group>
-        <copy tname="g3" assignNames="((plantp3))" />
+        <copy target="g3" assignNames="((plantp3))" />
       </group>
-      <copy tname="g2" assignNames="(plantp4 (animalp3) ((plantp5)) (((plantp6))))" />
+      <copy target="g2" assignNames="(plantp4 (animalp3) ((plantp5)) (((plantp6))))" />
     </group>
-    <copy tname="g1" assignNames="(animalp4 (plantp7 (animalp5) ((plantp8)) (((plantp9)))) ((plantp10 (animalp6) ((plantp11)) (((plantp12)))  )) )" />
+    <copy target="g1" assignNames="(animalp4 (plantp7 (animalp5) ((plantp8)) (((plantp9)))) ((plantp10 (animalp6) ((plantp11)) (((plantp12)))  )) )" />
     `}, "*");
     });
 
@@ -88,33 +88,33 @@ describe('Group Tag Tests', function () {
       win.postMessage({
         doenetML: `
 
-    <copy tname="g1" />
+    <copy target="g1" />
     <group name="g1">
-      <p name="animalp">The animal <copy tname="animalphrase" />.</p>
+      <p name="animalp">The animal <copy target="animalphrase" />.</p>
       <group name="g2">
-        <p name="plantp">The plant <copy tname="plantphrase" />.</p>
-        <copy tname="animalp" assignNames="animalp2" />
+        <p name="plantp">The plant <copy target="plantphrase" />.</p>
+        <copy target="animalp" assignNames="animalp2" />
         <group name="g3">
-          <copy tname="plantp" assignNames="plantp2" />
+          <copy target="plantp" assignNames="plantp2" />
         </group>
-        <copy tname="g3" assignNames="((plantp3))" />
+        <copy target="g3" assignNames="((plantp3))" />
       </group>
-      <copy tname="g2" assignNames="(plantp4 (animalp3) ((plantp5)) (((plantp6))))" />
+      <copy target="g2" assignNames="(plantp4 (animalp3) ((plantp5)) (((plantp6))))" />
     </group>
-    <copy tname="g1" assignNames="(animalp4 (plantp7 (animalp5) ((plantp8)) (((plantp9)))) ((plantp10 (animalp6) ((plantp11)) (((plantp12)))  )) )" />
+    <copy target="g1" assignNames="(animalp4 (plantp7 (animalp5) ((plantp8)) (((plantp9)))) ((plantp10 (animalp6) ((plantp11)) (((plantp12)))  )) )" />
 
-    <copy name="verb" tname="verb1" />
-    <copy name="animalphrase" tname="animalphrase1" />
-    <text name="animalphrase1"><copy tname="verb" /> <copy tname="animal1" /></text>
-    <text name="animal1"><copy tname="article" /> <copy prop="value" tname="animal" /></text>
-    <copy name="verb1" tname="verb2" />
+    <copy name="verb" target="verb1" />
+    <copy name="animalphrase" target="animalphrase1" />
+    <text name="animalphrase1"><copy target="verb" /> <copy target="animal1" /></text>
+    <text name="animal1"><copy target="article" /> <copy prop="value" target="animal" /></text>
+    <copy name="verb1" target="verb2" />
     <text name="verb2">is</text>
-    <text name="article"><copy tname="article1" /></text>
-    <copy name="article1" tname="article2" />
+    <text name="article"><copy target="article1" /></text>
+    <copy name="article1" target="article2" />
     <text name="article2">a</text>
-    <copy name="plantphrase" tname="plantphrase1" />
-    <text name="plantphrase1"><copy tname="verb" /> <copy tname="plant1" /></text>
-    <text name="plant1"><copy tname="article" /> <copy prop="value" tname="plant" /></text>
+    <copy name="plantphrase" target="plantphrase1" />
+    <text name="plantphrase1"><copy target="verb" /> <copy target="plant1" /></text>
+    <text name="plant1"><copy target="article" /> <copy prop="value" target="plant" /></text>
 
     <p>Animal: <textinput name="animal" prefill="fox"/></p>
     <p>Plant: <textinput name="plant" prefill="tree"/></p>
@@ -190,12 +190,12 @@ describe('Group Tag Tests', function () {
     <mathinput name="to" prefill="2"/>
     <mathinput name="count" prefill="0"/>
     
-    <p name="p2"><aslist><copy name="copygroup2" tname="_group1" /></aslist></p>
-    <p name="p3"><aslist><copy name="copygroup3" tname="copygroup2" /></aslist></p>
+    <p name="p2"><aslist><copy name="copygroup2" target="_group1" /></aslist></p>
+    <p name="p3"><aslist><copy name="copygroup3" target="copygroup2" /></aslist></p>
 
-    <copy name="copygroupthroughp" tname="p1" assignNames="p4" />
-    <copy name="copygroupthroughp2" tname="copygroupthroughp" assignNames="p5" />
-    <copy name="copygroupthroughp3" tname="copygroupthroughp2" assignNames="p6" />
+    <copy name="copygroupthroughp" target="p1" assignNames="p4" />
+    <copy name="copygroupthroughp2" target="copygroupthroughp" assignNames="p5" />
+    <copy name="copygroupthroughp3" target="copygroupthroughp2" assignNames="p6" />
     `}, "*");
     });
 
@@ -286,24 +286,24 @@ describe('Group Tag Tests', function () {
     <text>a</text>
     <p name="p1">
     <aslist>
-    <group><math simplify><math name="x"><copy prop="value" tname="var1" /></math> + <copy tname="y" /></math></group>
-    <group><math simplify><math name="y"><copy prop="value" tname="var2" /></math> + <copy tname="x" /></math></group>
+    <group><math simplify><math name="x"><copy prop="value" target="var1" /></math> + <copy target="y" /></math></group>
+    <group><math simplify><math name="y"><copy prop="value" target="var2" /></math> + <copy target="x" /></math></group>
     </aslist>
     </p>
     
     <mathinput prefill="x" name="var1"/>
     <mathinput prefill="y" name="var2"/>
     
-    <p name="p2"><aslist><copy tname="_group1" /><copy tname="_group2" /></aslist></p>
-    <p name="p3"><copy tname="_aslist1" /></p>
+    <p name="p2"><aslist><copy target="_group1" /><copy target="_group2" /></aslist></p>
+    <p name="p3"><copy target="_aslist1" /></p>
     
-    <copy name="c4" assignNames="p4" tname="p1" />
-    <copy name="c5" assignNames="p5" tname="p2" />
-    <copy name="c6" assignNames="p6" tname="p3" />
+    <copy name="c4" assignNames="p4" target="p1" />
+    <copy name="c5" assignNames="p5" target="p2" />
+    <copy name="c6" assignNames="p6" target="p3" />
     
-    <copy name="c7" assignNames="p7" tname="c4" />
-    <copy name="c8" assignNames="p8" tname="c5" />
-    <copy name="c9" assignNames="p9" tname="c6" />
+    <copy name="c7" assignNames="p7" target="c4" />
+    <copy name="c8" assignNames="p8" target="c5" />
+    <copy name="c9" assignNames="p9" target="c6" />
     `}, "*");
     });
 
@@ -347,15 +347,15 @@ describe('Group Tag Tests', function () {
     </graph>
 
     <graph>
-      <copy tname="g" fixed assignNames="g2" />
+      <copy target="g" fixed assignNames="g2" />
     </graph>
 
     <graph>
-      <copy tname="g2" fixed="false" assignNames="g3" />
+      <copy target="g2" fixed="false" assignNames="g3" />
     </graph>
 
     <graph>
-      <copy tname="g2" fixed="false" link="false" assignNames="g4" />
+      <copy target="g2" fixed="false" link="false" assignNames="g4" />
     </graph>
 
     `}, "*");
@@ -381,9 +381,9 @@ describe('Group Tag Tests', function () {
     })
 
     cy.log('move first point')
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components['/g/A'].movePoint({ x: 3, y: 4 })
+      await components['/g/A'].movePoint({ x: 3, y: 4 })
       expect(components['/g/A'].stateValues.xs.map(x => x.tree)).eqls([3, 4])
       expect(components['/g2/A'].stateValues.xs.map(x => x.tree)).eqls([3, 4])
       expect(components['/g3/A'].stateValues.xs.map(x => x.tree)).eqls([3, 4])
@@ -391,9 +391,9 @@ describe('Group Tag Tests', function () {
     })
 
     cy.log(`can't move second point as fixed`)
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components['/g2/A'].movePoint({ x: 5, y: 6 })
+      await components['/g2/A'].movePoint({ x: 5, y: 6 })
       expect(components['/g/A'].stateValues.xs.map(x => x.tree)).eqls([3, 4])
       expect(components['/g2/A'].stateValues.xs.map(x => x.tree)).eqls([3, 4])
       expect(components['/g3/A'].stateValues.xs.map(x => x.tree)).eqls([3, 4])
@@ -401,9 +401,9 @@ describe('Group Tag Tests', function () {
     })
 
     cy.log(`can't move third point as depends on fixed second point`)
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components['/g3/A'].movePoint({ x: 7, y: 8 })
+      await components['/g3/A'].movePoint({ x: 7, y: 8 })
       expect(components['/g/A'].stateValues.xs.map(x => x.tree)).eqls([3, 4])
       expect(components['/g2/A'].stateValues.xs.map(x => x.tree)).eqls([3, 4])
       expect(components['/g3/A'].stateValues.xs.map(x => x.tree)).eqls([3, 4])
@@ -411,9 +411,9 @@ describe('Group Tag Tests', function () {
     })
 
     cy.log(`can move fourth point`)
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components['/g4/A'].movePoint({ x: 9, y: 0 })
+      await components['/g4/A'].movePoint({ x: 9, y: 0 })
       expect(components['/g/A'].stateValues.xs.map(x => x.tree)).eqls([3, 4])
       expect(components['/g2/A'].stateValues.xs.map(x => x.tree)).eqls([3, 4])
       expect(components['/g3/A'].stateValues.xs.map(x => x.tree)).eqls([3, 4])
@@ -433,11 +433,11 @@ describe('Group Tag Tests', function () {
         <textinput name="ti" prefill="hello" />
       </group>
 
-      <copy tname="g" disabled assignNames="g2" />
+      <copy target="g" disabled assignNames="g2" />
 
-      <copy tname="g2" disabled="false" assignNames="g3" />
+      <copy target="g2" disabled="false" assignNames="g3" />
 
-      <copy tname="g2" disabled="false" link="false" assignNames="g4" />
+      <copy target="g2" disabled="false" link="false" assignNames="g4" />
 
     `}, "*");
     });

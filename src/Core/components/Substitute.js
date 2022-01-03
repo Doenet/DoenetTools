@@ -387,13 +387,14 @@ export default class Substitute extends CompositeComponent {
 
 
 
-  static createSerializedReplacements({ component, componentInfoObjects }) {
+  static async createSerializedReplacements({ component, componentInfoObjects }) {
 
     let newNamespace = component.attributes.newNamespace && component.attributes.newNamespace.primitive;
 
+    let type = await component.stateValues.type;
     let serializedReplacement = {
-      componentType: component.stateValues.type,
-      state: { value: component.stateValues.value },
+      componentType: type,
+      state: { value: await component.stateValues.value },
       downstreamDependencies: {
         [component.componentName]: [{
           dependencyType: "referenceShadow",
@@ -405,7 +406,7 @@ export default class Substitute extends CompositeComponent {
 
     // for math type, if specified attributes in the substitute tag
     // give those attributes to serialized replacement
-    if (component.stateValues.type === "math") {
+    if (type === "math") {
 
       let attributes = {};
       let foundAttribute = false;

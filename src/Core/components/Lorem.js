@@ -111,41 +111,38 @@ export default class Lorem extends CompositeComponent {
   }
 
 
-  static createSerializedReplacements({ component, componentInfoObjects }) {
+  static async createSerializedReplacements({ component, componentInfoObjects }) {
 
     const lorem = new LoremIpsum({
       sentencesPerParagraph: {
-        max: component.stateValues.maxSentencesPerParagraph,
-        min: component.stateValues.minSentencesPerParagraph
+        max: await component.stateValues.maxSentencesPerParagraph,
+        min: await component.stateValues.minSentencesPerParagraph
       },
       wordsPerSentence: {
-        max: component.stateValues.maxWordsPerSentence,
-        min: component.stateValues.minWordsPerSentence
+        max: await component.stateValues.maxWordsPerSentence,
+        min: await component.stateValues.minWordsPerSentence
       },
       random: component.sharedParameters.rng
     });
 
     let replacements = [];
 
-    if (component.stateValues.generateParagraphs !== null) {
+    if (await component.stateValues.generateParagraphs !== null) {
 
-      let numParagraphs = component.stateValues.generateParagraphs;
+      let numParagraphs = await component.stateValues.generateParagraphs;
       if (Number.isInteger(numParagraphs) && numParagraphs > 0) {
 
         let paragraphs = lorem.generateParagraphs(numParagraphs).split("\n");
 
         replacements = paragraphs.map(x => ({
           componentType: "p",
-          children: [{
-            componentType: "string",
-            state: { value: x }
-          }]
+          children: [x]
         }))
       }
 
-    } else if (component.stateValues.generateSentences !== null) {
+    } else if (await component.stateValues.generateSentences !== null) {
 
-      let numSentences = component.stateValues.generateSentences;
+      let numSentences = await component.stateValues.generateSentences;
       if (Number.isInteger(numSentences) && numSentences > 0) {
 
         let sentences = lorem.generateSentences(numSentences).split(". ");
@@ -153,47 +150,32 @@ export default class Lorem extends CompositeComponent {
         for (let sent of sentences.slice(0, sentences.length - 1)) {
           replacements.push({
             componentType: "text",
-            children: [{
-              componentType: "string",
-              state: { value: sent + "." }
-            }]
+            children: [sent + "."]
           })
-          replacements.push({
-            componentType: "string",
-            state: { value: " " }
-          })
+          replacements.push(" ")
         }
 
         replacements.push({
           componentType: "text",
-          children: [{
-            componentType: "string",
-            state: { value: sentences[sentences.length - 1] }
-          }]
+          children: [sentences[sentences.length - 1]]
         })
       }
 
-    } else if (component.stateValues.generateWords !== null) {
+    } else if (await component.stateValues.generateWords !== null) {
 
-      let numWords = component.stateValues.generateWords;
+      let numWords = await component.stateValues.generateWords;
 
       if (Number.isInteger(numWords) && numWords > 0) {
 
         let words = lorem.generateWords(numWords).split(" ").map(w => ({
           componentType: "text",
-          children: [{
-            componentType: "string",
-            state: { value: w }
-          }]
+          children: [w]
         }));
 
         replacements.push(words[0]);
 
         for (let w of words.slice(1)) {
-          replacements.push({
-            componentType: "string",
-            state: { value: " " }
-          })
+          replacements.push(" ")
           replacements.push(w)
         }
 
@@ -216,9 +198,9 @@ export default class Lorem extends CompositeComponent {
   }
 
 
-  static calculateReplacementChanges({ component, componentInfoObjects }) {
+  static async calculateReplacementChanges({ component, componentInfoObjects }) {
 
-    let replacements = this.createSerializedReplacements({ component, componentInfoObjects })
+    let replacements = (await this.createSerializedReplacements({ component, componentInfoObjects }))
 
     let replacementInstruction = {
       changeType: "add",

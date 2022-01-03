@@ -78,7 +78,7 @@ describe('Math Tag Tests', function () {
         doenetML: `
     <text>a</text>
     <math hide>x+1</math>
-    <math>3<copy tname="_math1" targetAttributesToIgnore="" /> + 5</math>
+    <math>3<copy target="_math1" targetAttributesToIgnore="" /> + 5</math>
     `}, "*");
     });
 
@@ -93,14 +93,14 @@ describe('Math Tag Tests', function () {
     })
 
     cy.log('Test internal values are set to the correct values')
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let replacement = components['/_copy1'].replacements[0];
       expect(components['/_math1'].stateValues.value.tree).eqls(['+', 'x', 1])
       expect(replacement.stateValues.value.tree).eqls(['+', 'x', 1])
       expect(components['/_math2'].stateValues.value.tree).eqls(["+", ["*", 3, ["+", "x", 1]], 5])
       expect(components['/_math1'].stateValues.hide).eq(true)
-      expect(replacement.stateValues.hide).eq(true);
+      expect(await replacement.stateValues.hide).eq(true);
       expect(components['/_math2'].stateValues.hide).eq(false)
     })
   })
@@ -179,7 +179,7 @@ describe('Math Tag Tests', function () {
         doenetML: `
   <text>a</text>
   <math>x/y</math>
-  <copy prop="latex" tname="_math1" />
+  <copy prop="latex" target="_math1" />
   `}, "*");
     });
 
@@ -206,9 +206,9 @@ describe('Math Tag Tests', function () {
       win.postMessage({
         doenetML: `
   <text>a</text>
-  <math name="a" simplify><math name="x">x</math> + <copy tname="x" /> + <copy tname="z" /></math>
+  <math name="a" simplify><math name="x">x</math> + <copy target="x" /> + <copy target="z" /></math>
   <math name="z">z</math>
-  <copy name="a2" tname="a" />
+  <copy name="a2" target="a" />
   `}, "*");
     });
 
@@ -235,7 +235,7 @@ describe('Math Tag Tests', function () {
         doenetML: `
   <text>a</text>
   <point>3</point>
-  <math simplify>2 + <copy tname="_point1" /></math>
+  <math simplify>2 + <copy target="_point1" /></math>
   `}, "*");
     });
 
@@ -265,7 +265,7 @@ describe('Math Tag Tests', function () {
   <text>a</text>
   <math simplify>2<sequence length="0"/>3</math>
   <graph>
-  <point>(<copy tname="_math1" />, 3)</point>
+  <point>(<copy target="_math1" />, 3)</point>
   </graph>
   `}, "*");
     });
@@ -281,22 +281,22 @@ describe('Math Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       // string children are originally 1 and 3
-      expect(components['/_math1'].activeChildren[0].stateValues.value).eq("2");
-      expect(components['/_math1'].activeChildren[1].stateValues.value).eq("3");
+      expect(components['/_math1'].activeChildren[0]).eq("2");
+      expect(components['/_math1'].activeChildren[1]).eq("3");
       expect(components['/_math1'].stateValues.value.tree).eq(6);
       expect(components['/_point1'].stateValues.xs[0].tree).eq(6);
       expect(components['/_point1'].stateValues.xs[1].tree).eq(3);
     });
 
     cy.log("Move point to (7,9)");
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       console.log(`move point1`)
-      components['/_point1'].movePoint({ x: 7, y: 9 });
+      await components['/_point1'].movePoint({ x: 7, y: 9 });
       console.log(`point moved`)
       // second child takes value, third is blank
-      expect(components['/_math1'].activeChildren[0].stateValues.value).eq("7");
-      expect(components['/_math1'].activeChildren[1].stateValues.value).eq("");
+      expect(components['/_math1'].activeChildren[0]).eq("7");
+      expect(components['/_math1'].activeChildren[1]).eq("");
       expect(components['/_math1'].stateValues.value.tree).eq(7);
       expect(components['/_point1'].stateValues.xs[0].tree).eq(7);
       expect(components['/_point1'].stateValues.xs[1].tree).eq(9);
@@ -350,13 +350,13 @@ describe('Math Tag Tests', function () {
     </math>
   </math></p>
 
-  <copy prop="format" tname="a" name="caf" hide />
-  <copy prop="format" tname="b" name="cbf" hide />
+  <copy prop="format" target="a" name="caf" hide />
+  <copy prop="format" target="b" name="cbf" hide />
   
-  <p name="formata"><copy prop="format" tname="a" /></p>
-  <p name="formatb"><copy prop="format" tname="b" /></p>
-  <p name="formatc"><copy prop="format" tname="c" /></p>
-  <p name="formatd"><copy prop="format" tname="d" /></p>
+  <p name="formata"><copy prop="format" target="a" /></p>
+  <p name="formatb"><copy prop="format" target="b" /></p>
+  <p name="formatc"><copy prop="format" target="c" /></p>
+  <p name="formatd"><copy prop="format" target="d" /></p>
   
   <textinput prefill="latex"/>
   <textinput prefill="text"/>
@@ -659,12 +659,12 @@ describe('Math Tag Tests', function () {
   <p><text>a</text></p>
   <p><math>621802.3520303639164826281</math></p>
   <p><math>31.3835205397397634 x + 4pi</math></p>
-  <p><copy tname="_math1" assignNames="dig5a" displayDigits="5" /></p>
-  <p><copy tname="_math2" assignNames="dig5b" displayDigits="5" /></p>
-  <p><copy tname="_math1" assignNames="dec5a" displayDecimals="5" /></p>
-  <p><copy tname="_math2" assignNames="dec5b" displayDecimals="5" /></p>
-  <p><copy tname="_math1" assignNames="dig5dec1a" displayDigits="5" displayDecimals="1" /></p>
-  <p><copy tname="_math2" assignNames="dig5dec1b" displayDigits="5" displayDecimals="1" /></p>
+  <p><copy target="_math1" assignNames="dig5a" displayDigits="5" /></p>
+  <p><copy target="_math2" assignNames="dig5b" displayDigits="5" /></p>
+  <p><copy target="_math1" assignNames="dec5a" displayDecimals="5" /></p>
+  <p><copy target="_math2" assignNames="dec5b" displayDecimals="5" /></p>
+  <p><copy target="_math1" assignNames="dig5dec1a" displayDigits="5" displayDecimals="1" /></p>
+  <p><copy target="_math2" assignNames="dig5dec1b" displayDigits="5" displayDecimals="1" /></p>
   `}, "*");
     });
 
@@ -736,8 +736,8 @@ describe('Math Tag Tests', function () {
       <p>Number: <math name="n">35203423.02352343201</math></p>
       <p>Number of digits: <mathinput name="ndigits" prefill="3" /></p>
       <p>Number of decimals: <mathinput name="ndecimals" prefill="3" /></p>
-      <p><copy tname="n" displayDigits='$ndigits' assignNames="na" /></p>
-      <p><copy tname="n" displayDecimals='$ndecimals' assignNames="nb" /></p>
+      <p><copy target="n" displayDigits='$ndigits' assignNames="na" /></p>
+      <p><copy target="n" displayDecimals='$ndecimals' assignNames="nb" /></p>
     ` }, "*");
     })
 
@@ -1189,14 +1189,14 @@ describe('Math Tag Tests', function () {
   <p><mathinput name="m" prefill="(a,b,c)" /></p>
   <p><math name="m2">$m</math></p>
   <p><math name="m3" createVectors>$m</math></p>
-  <p>Ndimensions: <extract prop="nDimensions" assignNames="nDim1">$m</extract> <copy prop="nDimensions" tname="m2" assignNames="nDim2" /> <copy prop="nDimensions" tname="m3" assignNames="nDim3" /></p>
-  <p>x: <extract prop="x" assignNames="x">$m</extract> <copy prop="x" tname="m2" assignNames="x_2" /> <copy prop="x" tname="m3" assignNames="x_3" /></p>
-  <p>y: <extract prop="y" assignNames="y">$m</extract> <copy prop="y" tname="m2" assignNames="y_2" /> <copy prop="y" tname="m3" assignNames="y_3" /></p>
-  <p>z: <extract prop="z" assignNames="z">$m</extract> <copy prop="z" tname="m2" assignNames="z_2" /> <copy prop="z" tname="m3" assignNames="z_3" /></p>
-  <p>x1: <extract prop="x1" assignNames="x1">$m</extract> <copy prop="x1" tname="m2" assignNames="x1_2" /> <copy prop="x1" tname="m3" assignNames="x1_3" /></p>
-  <p>x2: <extract prop="x2" assignNames="x2">$m</extract> <copy prop="x2" tname="m2" assignNames="x2_2" /> <copy prop="x2" tname="m3" assignNames="x2_3" /></p>
-  <p>x3: <extract prop="x3" assignNames="x3">$m</extract> <copy prop="x3" tname="m2" assignNames="x3_2" /> <copy prop="x3" tname="m3" assignNames="x3_3" /></p>
-  <p>x4: <extract prop="x4" assignNames="x4">$m</extract> <copy prop="x4" tname="m2" assignNames="x4_2" /> <copy prop="x4" tname="m3" assignNames="x4_3" /></p>
+  <p>Ndimensions: <extract prop="nDimensions" assignNames="nDim1">$m</extract> <copy prop="nDimensions" target="m2" assignNames="nDim2" /> <copy prop="nDimensions" target="m3" assignNames="nDim3" /></p>
+  <p>x: <extract prop="x" assignNames="x">$m</extract> <copy prop="x" target="m2" assignNames="x_2" /> <copy prop="x" target="m3" assignNames="x_3" /></p>
+  <p>y: <extract prop="y" assignNames="y">$m</extract> <copy prop="y" target="m2" assignNames="y_2" /> <copy prop="y" target="m3" assignNames="y_3" /></p>
+  <p>z: <extract prop="z" assignNames="z">$m</extract> <copy prop="z" target="m2" assignNames="z_2" /> <copy prop="z" target="m3" assignNames="z_3" /></p>
+  <p>x1: <extract prop="x1" assignNames="x1">$m</extract> <copy prop="x1" target="m2" assignNames="x1_2" /> <copy prop="x1" target="m3" assignNames="x1_3" /></p>
+  <p>x2: <extract prop="x2" assignNames="x2">$m</extract> <copy prop="x2" target="m2" assignNames="x2_2" /> <copy prop="x2" target="m3" assignNames="x2_3" /></p>
+  <p>x3: <extract prop="x3" assignNames="x3">$m</extract> <copy prop="x3" target="m2" assignNames="x3_2" /> <copy prop="x3" target="m3" assignNames="x3_3" /></p>
+  <p>x4: <extract prop="x4" assignNames="x4">$m</extract> <copy prop="x4" target="m2" assignNames="x4_2" /> <copy prop="x4" target="m3" assignNames="x4_3" /></p>
   <p>x: <mathinput bindValueTo="$x" name="mx" /> <mathinput bindValueTo="$(m2{prop='x'})" name="mx_2" /> <mathinput bindValueTo="$(m3{prop='x'})" name="mx_3" /></p>
   <p>y: <mathinput bindValueTo="$y" name="my" /> <mathinput bindValueTo="$(m2{prop='y'})" name="my_2" /> <mathinput bindValueTo="$(m3{prop='y'})" name="my_3" /></p>
   <p>z: <mathinput bindValueTo="$z" name="mz" /> <mathinput bindValueTo="$(m2{prop='z'})" name="mz_2" /> <mathinput bindValueTo="$(m3{prop='z'})" name="mz_3" /></p>
@@ -1390,12 +1390,12 @@ describe('Math Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components["/unordered1"].stateValues.unordered).eq(true);
-      expect(components["/unordered2"].stateValues.unordered).eq(true);
-      expect(components["/ordered1"].stateValues.unordered).eq(false);
-      expect(components["/ordered2"].stateValues.unordered).eq(false);
+      expect(await components["/unordered1"].stateValues.unordered).eq(true);
+      expect(await components["/unordered2"].stateValues.unordered).eq(true);
+      expect(await components["/ordered1"].stateValues.unordered).eq(false);
+      expect(await components["/ordered2"].stateValues.unordered).eq(false);
 
 
     });
@@ -1421,6 +1421,7 @@ describe('Math Tag Tests', function () {
 
     cy.get('#\\/mi textarea').type("{end}{leftArrow}{backspace}{backspace}", { force: true }).blur();
 
+    cy.get('#\\/m .mjx-mrow').should('contain.text', '(x,y)')
     cy.get('#\\/m').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(x,y)');
     })

@@ -883,7 +883,7 @@ export default class Spreadsheet extends BlockComponent {
   }
 
 
-  onChange({ changes, source }) {
+  async onChange({ changes, source }) {
 
     if (source !== "loadData") {
       let cellChanges = {};
@@ -892,7 +892,7 @@ export default class Spreadsheet extends BlockComponent {
         cellChanges[[row, col]] = value === null ? "" : value;
       }
 
-      return this.coreFunctions.performUpdate({
+      return await this.coreFunctions.performUpdate({
         updateInstructions: [{
           updateType: "updateValue",
           componentName: this.componentName,

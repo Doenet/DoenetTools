@@ -81,8 +81,8 @@ export class Paginator extends Template {
                   if (ntsComp.children) {
                     // look for a string child
                     for (let child of ntsComp.children) {
-                      if (child.componentType === "string") {
-                        let n = Number(child.state.value);
+                      if (typeof child === "string") {
+                        let n = Number(child);
                         if (Number.isFinite(n)) {
                           numberToSelect = Math.round(n);
                           break;
@@ -122,22 +122,25 @@ export class Paginator extends Template {
           variableName: "nPages"
         }
       }),
-      definition: ({ dependencyValues }) => ({
-        useEssentialOrDefaultValue: {
-          currentPage: {
-            variablesToCheck: ["currentPage"],
-            get defaultValue() {
-              let initialPageNumber = dependencyValues.initialPage;
-              if (!Number.isInteger(initialPageNumber)) {
-                return 1;
-              } else {
-                return Math.max(1, Math.min(dependencyValues.nPages, initialPageNumber));
+      definition({ dependencyValues }) {
+
+        return {
+          useEssentialOrDefaultValue: {
+            currentPage: {
+              variablesToCheck: ["currentPage"],
+              get defaultValue() {
+                let initialPageNumber = dependencyValues.initialPage;
+                if (!Number.isInteger(initialPageNumber)) {
+                  return 1;
+                } else {
+                  return Math.max(1, Math.min(dependencyValues.nPages, initialPageNumber));
+                }
               }
             }
           }
         }
-      }),
-      inverseDefinition({ desiredStateVariableValues, stateValues, sourceInformation = {} }) {
+      },
+      async inverseDefinition({ desiredStateVariableValues, stateValues, sourceInformation = {} }) {
 
         // allow change only from setPage action
         if (!sourceInformation.fromSetPage) {
@@ -149,7 +152,7 @@ export class Paginator extends Template {
           return { success: false }
         }
 
-        desiredPageNumber = Math.max(1, Math.min(stateValues.nPages, desiredPageNumber))
+        desiredPageNumber = Math.max(1, Math.min(await stateValues.nPages, desiredPageNumber))
 
         return {
           success: true,
@@ -196,6 +199,7 @@ export class Paginator extends Template {
             variableNames: ["creditAchieved", "percentCreditAchieved"],
             recursive: true,
             recurseNonStandardComposites: true,
+            includeWithheldReplacements: true,
           }
         }
         return dependencies;
@@ -238,11 +242,11 @@ export class Paginator extends Template {
   }
 
 
-  static createSerializedReplacements({ component, componentInfoObjects }) {
-    let sectionReplacements = super.createSerializedReplacements({ component, componentInfoObjects }).replacements;
+  static async createSerializedReplacements({ component, componentInfoObjects }) {
+    let sectionReplacements = (await super.createSerializedReplacements({ component, componentInfoObjects })).replacements;
 
 
-    let insertPageSets = function (serializedReplacements) {
+    let insertPageSets = async function (serializedReplacements) {
       let newReplacements = [];
       for (let replacement of serializedReplacements) {
         if (
@@ -258,7 +262,7 @@ export class Paginator extends Template {
           })
         ) {
 
-          if (component.stateValues.preserveScores) {
+          if (await component.stateValues.preserveScores) {
             if (!replacement.state) {
               replacement.state = {};
             }
@@ -280,7 +284,7 @@ export class Paginator extends Template {
               if (child.componentType === "option") {
                 if (child.children) {
 
-                  child.children = insertPageSets(child.children);
+                  child.children = await insertPageSets(child.children);
 
                 }
               }
@@ -295,7 +299,7 @@ export class Paginator extends Template {
       return newReplacements;
     }
 
-    let replacements = insertPageSets(sectionReplacements);
+    let replacements = await insertPageSets(sectionReplacements);
 
 
     return { replacements };
@@ -304,22 +308,22 @@ export class Paginator extends Template {
 
   async setPage({ number }) {
 
-    if (this.stateValues.submitAllOnPageChange && !this.flags.readOnly) {
+    if (await this.stateValues.submitAllOnPageChange && !this.flags.readOnly) {
       await this.coreFunctions.performAction({
-        componentName: this.stateValues.documentName,
+        componentName: await this.stateValues.documentName,
         actionName: "submitAllAnswers"
       })
     }
 
 
-    let currentPageNumber = this.stateValues.currentPage;
+    let currentPageNumber = await this.stateValues.currentPage;
 
 
     if (!Number.isInteger(number)) {
       return;
     }
 
-    let pageNumber = Math.max(1, Math.min(this.stateValues.nPages, number));
+    let pageNumber = Math.max(1, Math.min(await this.stateValues.nPages, number));
 
     let updateInstructions = [{
       updateType: "updateValue",
@@ -331,9 +335,9 @@ export class Paginator extends Template {
 
     let postponeUpdatingPlaceholderCreditAchieved = false;
 
-    if (this.stateValues.preserveScores) {
+    if (await this.stateValues.preserveScores) {
 
-      let sections = this.stateValues.sectionsByPageSet[currentPageNumber - 1];
+      let sections = (await this.stateValues.sectionsByPageSet)[currentPageNumber - 1];
       if (sections.length === 2) {
         let sectionToBeWithheld = sections[0];
         let sectionCreditAchieved = sectionToBeWithheld.stateValues.creditAchieved;
@@ -384,19 +388,19 @@ export class Paginator extends Template {
   }
 
 
-  setPlaceholderCredit({ number }) {
+  async setPlaceholderCredit({ number }) {
 
     if (!Number.isInteger(number)) {
       return;
     }
 
-    let pageNumber = Math.max(1, Math.min(this.stateValues.nPages, number));
+    let pageNumber = Math.max(1, Math.min(await this.stateValues.nPages, number));
 
     let updateInstructions = [];
 
-    if (this.stateValues.preserveScores) {
+    if (await this.stateValues.preserveScores) {
 
-      let sections = this.stateValues.sectionsByPageSet[pageNumber - 1];
+      let sections = (await this.stateValues.sectionsByPageSet)[pageNumber - 1];
       if (sections.length === 2) {
         let sectionThatWasWithheld = sections[0];
         let sectionCreditAchieved = sectionThatWasWithheld.stateValues.creditAchieved;
@@ -420,7 +424,7 @@ export class Paginator extends Template {
 
     }
 
-    return this.coreFunctions.performUpdate({
+    return await this.coreFunctions.performUpdate({
       updateInstructions,
     });
 
@@ -564,11 +568,11 @@ export class PaginatorPageSet extends Template {
     return stateVariableDefinitions;
   }
 
-  static createSerializedReplacements({ component, componentInfoObjects, workspace }) {
+  static async createSerializedReplacements({ component, componentInfoObjects, workspace }) {
 
-    workspace.renderPage = component.stateValues.renderPage;
+    workspace.renderPage = await component.stateValues.renderPage;
 
-    let result = super.createSerializedReplacements({ component, componentInfoObjects });
+    let result = await super.createSerializedReplacements({ component, componentInfoObjects });
 
     if (!result.replacements.length === 1) {
       return { replacements: [] };
@@ -644,7 +648,7 @@ export class PaginatorPageSet extends Template {
         variants: placeholderVariants,
         state: {
           hide: true,
-          aggregateScores: component.stateValues.preserveScores,
+          aggregateScores: await component.stateValues.preserveScores,
           sectionPlaceholder: true,
         },
         children: placeholderChildren,
@@ -773,7 +777,8 @@ export class PaginatorPage extends Template {
       returnDependencies: ({ stateValues }) => ({
         mirrorPageReplacements: {
           dependencyType: "replacement",
-          compositeName: stateValues.mirrorPage.componentName
+          compositeName: stateValues.mirrorPage.componentName,
+          includeWithheldReplacements: true,
         }
       }),
       definition({ dependencyValues }) {
@@ -802,14 +807,14 @@ export class PaginatorPage extends Template {
     return stateVariableDefinitions;
   }
 
-  static createSerializedReplacements({ component, componentInfoObjects, workspace }) {
+  static async createSerializedReplacements({ component, componentInfoObjects, workspace }) {
 
-    workspace.rendered = component.stateValues.rendered;
+    workspace.rendered = await component.stateValues.rendered;
 
     // let alwaysCreateReplacements = component.stateValues.sectionPlaceholder;
 
     // let result = super.createSerializedReplacements({ component, componentInfoObjects, alwaysCreateReplacements });
-    let result = super.createSerializedReplacements({ component, componentInfoObjects });
+    let result = await super.createSerializedReplacements({ component, componentInfoObjects });
 
     // if (!component.stateValues.rendered && component.stateValues.sectionPlaceholder) {
     //   result.withholdReplacements = true;
@@ -820,12 +825,12 @@ export class PaginatorPage extends Template {
   }
 
 
-  static calculateReplacementChanges({ component, components, workspace, componentInfoObjects }) {
+  static async calculateReplacementChanges({ component, components, workspace, componentInfoObjects }) {
     // console.log(`calculate replacement changes for ${component.componentName}`);
 
     let replacementChanges = [];
 
-    if (!component.stateValues.rendered) {
+    if (!await component.stateValues.rendered) {
       if (workspace.rendered) {
         workspace.rendered = false;
 
@@ -850,7 +855,7 @@ export class PaginatorPage extends Template {
         replacementChanges.push(replacementInstruction);
 
       } else {
-        let replacements = this.createSerializedReplacements({ component, componentInfoObjects, workspace }).replacements;
+        let replacements = (await this.createSerializedReplacements({ component, componentInfoObjects, workspace })).replacements;
 
         let sectionReplacement = replacements[0];
 
@@ -878,7 +883,7 @@ export class PaginatorPage extends Template {
           effectiveSectionReplacement.variants = {}
         }
 
-        let mirrorPageReplacement = components[component.stateValues.mirrorPageReplacements[0].componentName]
+        let mirrorPageReplacement = components[(await component.stateValues.mirrorPageReplacements)[0].componentName]
 
         let effectiveMirrorReplacement = mirrorPageReplacement;
         if (mirrorPageReplacement.componentType === "copy") {
@@ -936,10 +941,11 @@ export class PaginatorControls extends BlockComponent {
     //Complex because the stateValues isn't defined until later
     Object.defineProperty(this.externalActions, 'setPage', {
       enumerable: true,
-      get: function () {
-        if (this.stateValues.paginatorFullTname) {
+      get: async function () {
+        let paginatorComponentName = await this.stateValues.paginatorComponentName;
+        if (paginatorComponentName) {
           return {
-            componentName: this.stateValues.paginatorFullTname,
+            componentName: paginatorComponentName,
             actionName: "setPage",
           }
         } else {
@@ -976,7 +982,7 @@ export class PaginatorControls extends BlockComponent {
       forRenderer: true,
       public: true,
     }
-    attributes.paginatorTname = {
+    attributes.paginator = {
       createPrimitiveOfType: "string"
     }
 
@@ -992,26 +998,26 @@ export class PaginatorControls extends BlockComponent {
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
 
-    stateVariableDefinitions.paginatorTname = {
+    stateVariableDefinitions.paginator = {
       returnDependencies: () => ({
-        paginatorTname: {
+        paginator: {
           dependencyType: "attributePrimitive",
-          attributeName: "paginatorTname"
+          attributeName: "paginator"
         },
       }),
       definition({ dependencyValues }) {
-        return { newValues: { paginatorTname: dependencyValues.paginatorTname } }
+        return { newValues: { paginator: dependencyValues.paginator } }
       }
     }
 
-    stateVariableDefinitions.paginatorFullTname = {
-      stateVariablesDeterminingDependencies: ["paginatorTname"],
+    stateVariableDefinitions.paginatorComponentName = {
+      stateVariablesDeterminingDependencies: ["paginator"],
       returnDependencies({ stateValues }) {
-        if (stateValues.paginatorTname) {
+        if (stateValues.paginator) {
           return {
-            paginatorFullTname: {
+            paginatorComponentName: {
               dependencyType: "expandTargetName",
-              tName: stateValues.paginatorTname
+              target: stateValues.paginator
             }
           }
         } else {
@@ -1019,21 +1025,21 @@ export class PaginatorControls extends BlockComponent {
         }
       },
       definition({ dependencyValues }) {
-        return { newValues: { paginatorFullTname: dependencyValues.paginatorFullTname } }
+        return { newValues: { paginatorComponentName: dependencyValues.paginatorComponentName } }
       }
     }
 
     stateVariableDefinitions.currentPage = {
       forRenderer: true,
-      stateVariablesDeterminingDependencies: ["paginatorFullTname"],
+      stateVariablesDeterminingDependencies: ["paginatorComponentName"],
       returnDependencies({ stateValues }) {
-        if (!stateValues.paginatorFullTname) {
+        if (!stateValues.paginatorComponentName) {
           return {}
         } else {
           return {
             paginatorPage: {
               dependencyType: "stateVariable",
-              componentName: stateValues.paginatorFullTname,
+              componentName: stateValues.paginatorComponentName,
               variableName: "currentPage"
             }
           }
@@ -1052,15 +1058,15 @@ export class PaginatorControls extends BlockComponent {
 
     stateVariableDefinitions.nPages = {
       forRenderer: true,
-      stateVariablesDeterminingDependencies: ["paginatorFullTname"],
+      stateVariablesDeterminingDependencies: ["paginatorComponentName"],
       returnDependencies({ stateValues }) {
-        if (!stateValues.paginatorFullTname) {
+        if (!stateValues.paginatorComponentName) {
           return {}
         } else {
           return {
             paginatorNPages: {
               dependencyType: "stateVariable",
-              componentName: stateValues.paginatorFullTname,
+              componentName: stateValues.paginatorComponentName,
               variableName: "nPages"
             }
           }

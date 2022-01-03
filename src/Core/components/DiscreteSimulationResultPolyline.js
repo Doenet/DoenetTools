@@ -480,7 +480,7 @@ export default class DiscreteSimulationResultPolyline extends GraphicalComponent
   }
 
 
-  movePolyline({ pointCoords, transient, sourceInformation }) {
+  async movePolyline({ pointCoords, transient, sourceInformation }) {
 
     let vertexComponents = {};
     for (let ind in pointCoords) {
@@ -489,7 +489,7 @@ export default class DiscreteSimulationResultPolyline extends GraphicalComponent
     }
 
     if (transient) {
-      return this.coreFunctions.performUpdate({
+      return await this.coreFunctions.performUpdate({
         updateInstructions: [{
           updateType: "updateValue",
           componentName: this.componentName,
@@ -501,7 +501,7 @@ export default class DiscreteSimulationResultPolyline extends GraphicalComponent
       });
     } else {
 
-      return this.coreFunctions.performUpdate({
+      return await this.coreFunctions.performUpdate({
         updateInstructions: [{
           updateType: "updateValue",
           componentName: this.componentName,
@@ -524,13 +524,13 @@ export default class DiscreteSimulationResultPolyline extends GraphicalComponent
 
   }
 
-  finalizePolylinePosition() {
+  async finalizePolylinePosition() {
     // trigger a movePolyline 
     // to send the final values with transient=false
     // so that the final position will be recorded
 
-    return this.actions.movePolyline({
-      pointCoords: this.stateValues.numericalVertices,
+    return await this.actions.movePolyline({
+      pointCoords: await this.stateValues.numericalVertices,
       transient: false
     });
   }

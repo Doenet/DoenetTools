@@ -141,7 +141,7 @@ export default class Extract extends CompositeComponent {
   }
 
 
-  static createSerializedReplacements({ component, components, workspace,
+  static async createSerializedReplacements({ component, components, workspace,
     componentInfoObjects, flags,
     publicCaseInsensitiveAliasSubstitutions
   }) {
@@ -159,10 +159,12 @@ export default class Extract extends CompositeComponent {
 
     let compositeAttributesObj = this.createAttributesObject({ flags });
 
-    for (let sourceNum = 0; sourceNum < component.stateValues.sourceComponents.length; sourceNum++) {
-      if (component.stateValues.sourceComponents[sourceNum] !== undefined) {
+    let sourceComponents = await component.stateValues.sourceComponents;
+
+    for (let sourceNum = 0; sourceNum < sourceComponents.length; sourceNum++) {
+      if (sourceComponents[sourceNum] !== undefined) {
         let uniqueIdentifiersUsed = workspace.uniqueIdentifiersUsedBySource[sourceNum] = [];
-        let results = this.createReplacementForSource({
+        let results = await this.createReplacementForSource({
           component,
           sourceNum,
           components,
@@ -185,14 +187,14 @@ export default class Extract extends CompositeComponent {
     }
 
     workspace.numReplacementsBySource = numReplacementsBySource;
-    workspace.sourceNames = component.stateValues.sourceComponents.map(x => x.componentName)
+    workspace.sourceNames = sourceComponents.map(x => x.componentName)
 
     return { replacements };
 
   }
 
 
-  static createReplacementForSource({ component, components, sourceNum,
+  static async createReplacementForSource({ component, components, sourceNum,
     numReplacementsSoFar, uniqueIdentifiersUsed, componentInfoObjects,
     compositeAttributesObj,
     publicCaseInsensitiveAliasSubstitutions
@@ -200,10 +202,10 @@ export default class Extract extends CompositeComponent {
 
     // console.log(`create replacement for source ${sourceNum}, ${numReplacementsSoFar} of ${component.componentName}`)
 
-    let results = replacementFromProp({
+    let results = await replacementFromProp({
       component, components,
-      replacementSource: component.stateValues.sourceComponents[sourceNum],
-      propName: component.stateValues.propName,
+      replacementSource: (await component.stateValues.sourceComponents)[sourceNum],
+      propName: await component.stateValues.propName,
       // numReplacementsSoFar,
       uniqueIdentifiersUsed,
       compositeAttributesObj,
@@ -232,7 +234,7 @@ export default class Extract extends CompositeComponent {
 
   }
 
-  static calculateReplacementChanges({ component, components, workspace,
+  static async calculateReplacementChanges({ component, components, workspace,
     componentInfoObjects, flags,
     publicCaseInsensitiveAliasSubstitutions
   }) {
@@ -251,12 +253,14 @@ export default class Extract extends CompositeComponent {
 
     let compositeAttributesObj = this.createAttributesObject({ flags });
 
-    let maxSourceLength = Math.max(component.stateValues.sourceComponents.length, workspace.numReplacementsBySource.length);
+    let sourceComponents = await component.stateValues.sourceComponents;
+
+    let maxSourceLength = Math.max(sourceComponents.length, workspace.numReplacementsBySource.length);
 
     let recreateRemaining = false;
 
     for (let sourceNum = 0; sourceNum < maxSourceLength; sourceNum++) {
-      let source = component.stateValues.sourceComponents[sourceNum];
+      let source = sourceComponents[sourceNum];
       if (source === undefined) {
         if (workspace.numReplacementsBySource[sourceNum] > 0) {
 
@@ -330,7 +334,7 @@ export default class Extract extends CompositeComponent {
         }
 
         let uniqueIdentifiersUsed = workspace.uniqueIdentifiersUsedBySource[sourceNum] = [];
-        let results = this.recreateReplacements({
+        let results = await this.recreateReplacements({
           component,
           sourceNum,
           numReplacementsSoFar,
@@ -381,7 +385,7 @@ export default class Extract extends CompositeComponent {
       // so will get the same names for pieces that match
       let uniqueIdentifiersUsed = workspace.uniqueIdentifiersUsedBySource[sourceNum] = [];
 
-      let results = this.createReplacementForSource({
+      let results = await this.createReplacementForSource({
         component,
         sourceNum,
         components,
@@ -458,7 +462,7 @@ export default class Extract extends CompositeComponent {
 
 
     workspace.numReplacementsBySource = numReplacementsBySource;
-    workspace.sourceNames = component.stateValues.sourceComponents.map(x => x.componentName)
+    workspace.sourceNames = sourceComponents.map(x => x.componentName)
     workspace.propVariablesCopiedBySource = propVariablesCopiedBySource;
 
     // console.log("replacementChanges");
@@ -469,13 +473,13 @@ export default class Extract extends CompositeComponent {
 
   }
 
-  static recreateReplacements({ component, sourceNum, numReplacementsSoFar,
+  static async recreateReplacements({ component, sourceNum, numReplacementsSoFar,
     numReplacementsToDelete,
     uniqueIdentifiersUsed, components, componentInfoObjects, compositeAttributesObj,
     publicCaseInsensitiveAliasSubstitutions
   }) {
 
-    let results = this.createReplacementForSource({
+    let results = await this.createReplacementForSource({
       component, sourceNum, numReplacementsSoFar, components, uniqueIdentifiersUsed,
       componentInfoObjects, compositeAttributesObj,
       publicCaseInsensitiveAliasSubstitutions

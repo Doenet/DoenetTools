@@ -6,7 +6,7 @@ describe('Graph Reference Test', function () {
   })
 
   it('(slow)graph referenced multiple ways', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -15,31 +15,31 @@ describe('Graph Reference Test', function () {
       <point name="pointB">(-2,4)</point>
       <line name="lineA">y=x+1</line>
       <line name="lineB" through="$pointA $pointB" />
-      <copy name="pointC" tname="pointA" />
+      <copy name="pointC" target="pointA" />
       <point name="pointD" x="$(pointA{prop='x'})" y="$(pointB{prop='y'})" />
-      <copy name="lineC" tname="lineA" />
-      <copy name="lineD" tname="lineB" />
-      <intersection name="pointE"><copy tname="lineA" /><copy tname="lineB" /></intersection>
+      <copy name="lineC" target="lineA" />
+      <copy name="lineD" target="lineB" />
+      <intersection name="pointE"><copy target="lineA" /><copy target="lineB" /></intersection>
     </graph>
 
     <graph name="graphB">
       $pointA$pointB$lineA$lineB$pointC$pointD$lineC$lineD$pointE
     </graph>
 
-    <copy name="graphC" tname="graphA" />
+    <copy name="graphC" target="graphA" />
 
-    <copy name="graphD" tname="graphB" />
+    <copy name="graphD" target="graphB" />
 
-    <copy name="graphE" tname="graphC" />
+    <copy name="graphE" target="graphC" />
 
-    <copy name="graphF" tname="graphD" />
+    <copy name="graphF" target="graphD" />
 
     `}, "*");
     });
 
     cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let graphB = components["/graphB"];
       let graphC = components["/graphC"].replacements[0];
@@ -134,7 +134,7 @@ describe('Graph Reference Test', function () {
 
 
       cy.log(`check original configuration`);
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let components = Object.assign({}, win.state.components);
         for (let point of pointsA) {
           expect(components[point].stateValues.xs[0].tree).closeTo(pointAx, 1E-12);
@@ -153,27 +153,27 @@ describe('Graph Reference Test', function () {
           expect(components[point].stateValues.xs[1].tree).closeTo(pointEy, 1E-12);
         }
         for (let line of linesA) {
-          expect(components[line].stateValues.slope.evaluate_to_constant()).closeTo(slopeA, 1E-12);
-          expect(components[line].stateValues.xintercept.evaluate_to_constant()).closeTo(xinterceptA, 1E-12);
-          expect(components[line].stateValues.yintercept.evaluate_to_constant()).closeTo(yinterceptA, 1E-12);
+          expect((await components[line].stateValues.slope).evaluate_to_constant()).closeTo(slopeA, 1E-12);
+          expect((await components[line].stateValues.xintercept).evaluate_to_constant()).closeTo(xinterceptA, 1E-12);
+          expect((await components[line].stateValues.yintercept).evaluate_to_constant()).closeTo(yinterceptA, 1E-12);
         }
         for (let line of linesB) {
-          expect(components[line].stateValues.slope.evaluate_to_constant()).closeTo(slopeB, 1E-12);
-          expect(components[line].stateValues.xintercept.evaluate_to_constant()).closeTo(xinterceptB, 1E-12);
-          expect(components[line].stateValues.yintercept.evaluate_to_constant()).closeTo(yinterceptB, 1E-12);
+          expect((await components[line].stateValues.slope).evaluate_to_constant()).closeTo(slopeB, 1E-12);
+          expect((await components[line].stateValues.xintercept).evaluate_to_constant()).closeTo(xinterceptB, 1E-12);
+          expect((await components[line].stateValues.yintercept).evaluate_to_constant()).closeTo(yinterceptB, 1E-12);
         }
       })
 
       cy.log(`move points and line in first graph`);
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let components = Object.assign({}, win.state.components);
 
         pointAx = -3;
         pointAy = 6;
         pointBx = 4;
         pointBy = -2;
-        components['/pointA'].movePoint({ x: pointAx, y: pointAy });
-        components['/pointB'].movePoint({ x: pointBx, y: pointBy });
+        await components['/pointA'].movePoint({ x: pointAx, y: pointAy });
+        await components['/pointB'].movePoint({ x: pointBx, y: pointBy });
 
         let moveUp = -3;
         let point1coords = [
@@ -186,7 +186,7 @@ describe('Graph Reference Test', function () {
         ];
         point1coords[1] = point1coords[1].add(moveUp);
         point2coords[1] = point2coords[1].add(moveUp);
-        components['/lineA'].moveLine({
+        await components['/lineA'].moveLine({
           point1coords: point1coords,
           point2coords: point2coords
         });
@@ -216,45 +216,46 @@ describe('Graph Reference Test', function () {
           expect(components[point].stateValues.xs[1].tree).closeTo(pointEy, 1E-12);
         }
         for (let line of linesA) {
-          expect(components[line].stateValues.slope.evaluate_to_constant()).closeTo(slopeA, 1E-12);
-          expect(components[line].stateValues.xintercept.evaluate_to_constant()).closeTo(xinterceptA, 1E-12);
-          expect(components[line].stateValues.yintercept.evaluate_to_constant()).closeTo(yinterceptA, 1E-12);
+          expect((await components[line].stateValues.slope).evaluate_to_constant()).closeTo(slopeA, 1E-12);
+          expect((await components[line].stateValues.xintercept).evaluate_to_constant()).closeTo(xinterceptA, 1E-12);
+          expect((await components[line].stateValues.yintercept).evaluate_to_constant()).closeTo(yinterceptA, 1E-12);
         }
         for (let line of linesB) {
-          expect(components[line].stateValues.slope.evaluate_to_constant()).closeTo(slopeB, 1E-12);
-          expect(components[line].stateValues.xintercept.evaluate_to_constant()).closeTo(xinterceptB, 1E-12);
-          expect(components[line].stateValues.yintercept.evaluate_to_constant()).closeTo(yinterceptB, 1E-12);
+          expect((await components[line].stateValues.slope).evaluate_to_constant()).closeTo(slopeB, 1E-12);
+          expect((await components[line].stateValues.xintercept).evaluate_to_constant()).closeTo(xinterceptB, 1E-12);
+          expect((await components[line].stateValues.yintercept).evaluate_to_constant()).closeTo(yinterceptB, 1E-12);
         }
       })
 
 
       cy.log(`move shadow points and line in second graph`);
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let components = Object.assign({}, win.state.components);
 
         let pointDx = 3;
         let pointDy = 2;
         let pointCy = -9;
 
-        components[pointsD[1]].movePoint({ x: pointDx, y: pointDy });
-        components[pointsA[3]].movePoint({ x: pointDx, y: pointCy });
+        await components[pointsD[1]].movePoint({ x: pointDx, y: pointDy });
+        await components[pointsA[3]].movePoint({ x: pointDx, y: pointCy });
 
         pointAx = pointDx;
         pointAy = pointCy;
         pointBy = pointDy;
 
         let moveUp = 8;
+        let lineA3Points = await components[linesA[3]].stateValues.points;
         let point1coords = [
-          components[linesA[3]].stateValues.points[0][0],
-          components[linesA[3]].stateValues.points[0][1],
+          lineA3Points[0][0],
+          lineA3Points[0][1],
         ];
         let point2coords = [
-          components[linesA[3]].stateValues.points[1][0],
-          components[linesA[3]].stateValues.points[1][1],
+          lineA3Points[1][0],
+          lineA3Points[1][1],
         ];
         point1coords[1] = point1coords[1].add(moveUp);
         point2coords[1] = point2coords[1].add(moveUp);
-        components[linesA[3]].moveLine({
+        await components[linesA[3]].moveLine({
           point1coords: point1coords,
           point2coords: point2coords
         });
@@ -285,34 +286,35 @@ describe('Graph Reference Test', function () {
           expect(components[point].stateValues.xs[1].tree).closeTo(pointEy, 1E-12);
         }
         for (let line of linesA) {
-          expect(components[line].stateValues.slope.evaluate_to_constant()).closeTo(slopeA, 1E-12);
-          expect(components[line].stateValues.xintercept.evaluate_to_constant()).closeTo(xinterceptA, 1E-12);
-          expect(components[line].stateValues.yintercept.evaluate_to_constant()).closeTo(yinterceptA, 1E-12);
+          expect((await components[line].stateValues.slope).evaluate_to_constant()).closeTo(slopeA, 1E-12);
+          expect((await components[line].stateValues.xintercept).evaluate_to_constant()).closeTo(xinterceptA, 1E-12);
+          expect((await components[line].stateValues.yintercept).evaluate_to_constant()).closeTo(yinterceptA, 1E-12);
         }
         for (let line of linesB) {
-          expect(components[line].stateValues.slope.evaluate_to_constant()).closeTo(slopeB, 1E-12);
-          expect(components[line].stateValues.xintercept.evaluate_to_constant()).closeTo(xinterceptB, 1E-12);
-          expect(components[line].stateValues.yintercept.evaluate_to_constant()).closeTo(yinterceptB, 1E-12);
+          expect((await components[line].stateValues.slope).evaluate_to_constant()).closeTo(slopeB, 1E-12);
+          expect((await components[line].stateValues.xintercept).evaluate_to_constant()).closeTo(xinterceptB, 1E-12);
+          expect((await components[line].stateValues.yintercept).evaluate_to_constant()).closeTo(yinterceptB, 1E-12);
         }
       })
 
 
       cy.log(`move both shadow lines in third graph`);
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let components = Object.assign({}, win.state.components);
 
         let moveUp = -4;
+        let lineA5points = await components[linesA[5]].stateValues.points;
         let point1coords = [
-          components[linesA[5]].stateValues.points[0][0],
-          components[linesA[5]].stateValues.points[0][1],
+          lineA5points[0][0],
+          lineA5points[0][1],
         ];
         let point2coords = [
-          components[linesA[5]].stateValues.points[1][0],
-          components[linesA[5]].stateValues.points[1][1],
+          lineA5points[1][0],
+          lineA5points[1][1],
         ];
         point1coords[1] = point1coords[1].add(moveUp);
         point2coords[1] = point2coords[1].add(moveUp);
-        components[linesA[5]].moveLine({
+        await components[linesA[5]].moveLine({
           point1coords: point1coords,
           point2coords: point2coords
         });
@@ -323,19 +325,20 @@ describe('Graph Reference Test', function () {
 
         let moveX = 3;
         let moveY = 2;
+        let lineB5points = await components[linesB[5]].stateValues.points;
         point1coords = [
-          components[linesB[5]].stateValues.points[0][0],
-          components[linesB[5]].stateValues.points[0][1],
+          lineB5points[0][0],
+          lineB5points[0][1],
         ];
         point2coords = [
-          components[linesB[5]].stateValues.points[1][0],
-          components[linesB[5]].stateValues.points[1][1],
+          lineB5points[1][0],
+          lineB5points[1][1],
         ];
         point1coords[0] = point1coords[0].add(moveX);
         point1coords[1] = point1coords[1].add(moveY);
         point2coords[0] = point2coords[0].add(moveX);
         point2coords[1] = point2coords[1].add(moveY);
-        components[linesB[5]].moveLine({
+        await components[linesB[5]].moveLine({
           point1coords: point1coords,
           point2coords: point2coords
         });
@@ -369,45 +372,46 @@ describe('Graph Reference Test', function () {
           expect(components[point].stateValues.xs[1].tree).closeTo(pointEy, 1E-12);
         }
         for (let line of linesA) {
-          expect(components[line].stateValues.slope.evaluate_to_constant()).closeTo(slopeA, 1E-12);
-          expect(components[line].stateValues.xintercept.evaluate_to_constant()).closeTo(xinterceptA, 1E-12);
-          expect(components[line].stateValues.yintercept.evaluate_to_constant()).closeTo(yinterceptA, 1E-12);
+          expect((await components[line].stateValues.slope).evaluate_to_constant()).closeTo(slopeA, 1E-12);
+          expect((await components[line].stateValues.xintercept).evaluate_to_constant()).closeTo(xinterceptA, 1E-12);
+          expect((await components[line].stateValues.yintercept).evaluate_to_constant()).closeTo(yinterceptA, 1E-12);
         }
         for (let line of linesB) {
-          expect(components[line].stateValues.slope.evaluate_to_constant()).closeTo(slopeB, 1E-12);
-          expect(components[line].stateValues.xintercept.evaluate_to_constant()).closeTo(xinterceptB, 1E-12);
-          expect(components[line].stateValues.yintercept.evaluate_to_constant()).closeTo(yinterceptB, 1E-12);
+          expect((await components[line].stateValues.slope).evaluate_to_constant()).closeTo(slopeB, 1E-12);
+          expect((await components[line].stateValues.xintercept).evaluate_to_constant()).closeTo(xinterceptB, 1E-12);
+          expect((await components[line].stateValues.yintercept).evaluate_to_constant()).closeTo(yinterceptB, 1E-12);
         }
       })
 
 
       cy.log(`move shadow points and line in fourth graph`);
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let components = Object.assign({}, win.state.components);
 
         let pointDx = -5;
         let pointDy = -1;
         let pointCy = 5;
 
-        components[pointsA[7]].movePoint({ x: pointDx, y: pointCy });
-        components[pointsD[3]].movePoint({ x: pointDx, y: pointDy });
+        await components[pointsA[7]].movePoint({ x: pointDx, y: pointCy });
+        await components[pointsD[3]].movePoint({ x: pointDx, y: pointDy });
 
         pointAx = pointDx;
         pointAy = pointCy;
         pointBy = pointDy;
 
         let moveUp = 1;
+        let lineA7points = await components[linesA[7]].stateValues.points;
         let point1coords = [
-          components[linesA[7]].stateValues.points[0][0],
-          components[linesA[7]].stateValues.points[0][1],
+          lineA7points[0][0],
+          lineA7points[0][1],
         ];
         let point2coords = [
-          components[linesA[7]].stateValues.points[1][0],
-          components[linesA[7]].stateValues.points[1][1],
+          lineA7points[1][0],
+          lineA7points[1][1],
         ];
         point1coords[1] = point1coords[1].add(moveUp);
         point2coords[1] = point2coords[1].add(moveUp);
-        components[linesA[7]].moveLine({
+        await components[linesA[7]].moveLine({
           point1coords: point1coords,
           point2coords: point2coords
         });
@@ -438,41 +442,42 @@ describe('Graph Reference Test', function () {
           expect(components[point].stateValues.xs[1].tree).closeTo(pointEy, 1E-12);
         }
         for (let line of linesA) {
-          expect(components[line].stateValues.slope.evaluate_to_constant()).closeTo(slopeA, 1E-12);
-          expect(components[line].stateValues.xintercept.evaluate_to_constant()).closeTo(xinterceptA, 1E-12);
-          expect(components[line].stateValues.yintercept.evaluate_to_constant()).closeTo(yinterceptA, 1E-12);
+          expect((await components[line].stateValues.slope).evaluate_to_constant()).closeTo(slopeA, 1E-12);
+          expect((await components[line].stateValues.xintercept).evaluate_to_constant()).closeTo(xinterceptA, 1E-12);
+          expect((await components[line].stateValues.yintercept).evaluate_to_constant()).closeTo(yinterceptA, 1E-12);
         }
         for (let line of linesB) {
-          expect(components[line].stateValues.slope.evaluate_to_constant()).closeTo(slopeB, 1E-12);
-          expect(components[line].stateValues.xintercept.evaluate_to_constant()).closeTo(xinterceptB, 1E-12);
-          expect(components[line].stateValues.yintercept.evaluate_to_constant()).closeTo(yinterceptB, 1E-12);
+          expect((await components[line].stateValues.slope).evaluate_to_constant()).closeTo(slopeB, 1E-12);
+          expect((await components[line].stateValues.xintercept).evaluate_to_constant()).closeTo(xinterceptB, 1E-12);
+          expect((await components[line].stateValues.yintercept).evaluate_to_constant()).closeTo(yinterceptB, 1E-12);
         }
       })
 
 
       cy.log(`move points and line in fifth graph`);
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let components = Object.assign({}, win.state.components);
 
         pointAx = 7;
         pointAy = -7;
         pointBx = -8;
         pointBy = 9;
-        components[pointsA[8]].movePoint({ x: pointAx, y: pointAy });
-        components[pointsB[4]].movePoint({ x: pointBx, y: pointBy });
+        await components[pointsA[8]].movePoint({ x: pointAx, y: pointAy });
+        await components[pointsB[4]].movePoint({ x: pointBx, y: pointBy });
 
         let moveUp = -3;
+        let lineA8points = await components[linesA[8]].stateValues.points;
         let point1coords = [
-          components[linesA[8]].stateValues.points[0][0],
-          components[linesA[8]].stateValues.points[0][1],
+          lineA8points[0][0],
+          lineA8points[0][1],
         ];
         let point2coords = [
-          components[linesA[8]].stateValues.points[1][0],
-          components[linesA[8]].stateValues.points[1][1],
+          lineA8points[1][0],
+          lineA8points[1][1],
         ];
         point1coords[1] = point1coords[1].add(moveUp);
         point2coords[1] = point2coords[1].add(moveUp);
-        components[linesA[8]].moveLine({
+        await components[linesA[8]].moveLine({
           point1coords: point1coords,
           point2coords: point2coords
         });
@@ -502,34 +507,35 @@ describe('Graph Reference Test', function () {
           expect(components[point].stateValues.xs[1].tree).closeTo(pointEy, 1E-12);
         }
         for (let line of linesA) {
-          expect(components[line].stateValues.slope.evaluate_to_constant()).closeTo(slopeA, 1E-12);
-          expect(components[line].stateValues.xintercept.evaluate_to_constant()).closeTo(xinterceptA, 1E-12);
-          expect(components[line].stateValues.yintercept.evaluate_to_constant()).closeTo(yinterceptA, 1E-12);
+          expect((await components[line].stateValues.slope).evaluate_to_constant()).closeTo(slopeA, 1E-12);
+          expect((await components[line].stateValues.xintercept).evaluate_to_constant()).closeTo(xinterceptA, 1E-12);
+          expect((await components[line].stateValues.yintercept).evaluate_to_constant()).closeTo(yinterceptA, 1E-12);
         }
         for (let line of linesB) {
-          expect(components[line].stateValues.slope.evaluate_to_constant()).closeTo(slopeB, 1E-12);
-          expect(components[line].stateValues.xintercept.evaluate_to_constant()).closeTo(xinterceptB, 1E-12);
-          expect(components[line].stateValues.yintercept.evaluate_to_constant()).closeTo(yinterceptB, 1E-12);
+          expect((await components[line].stateValues.slope).evaluate_to_constant()).closeTo(slopeB, 1E-12);
+          expect((await components[line].stateValues.xintercept).evaluate_to_constant()).closeTo(xinterceptB, 1E-12);
+          expect((await components[line].stateValues.yintercept).evaluate_to_constant()).closeTo(yinterceptB, 1E-12);
         }
       })
 
 
       cy.log(`move both shadow lines in sixth graph`);
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let components = Object.assign({}, win.state.components);
 
         let moveUp = -2;
+        let lineA11points = await components[linesA[11]].stateValues.points;
         let point1coords = [
-          components[linesA[11]].stateValues.points[0][0],
-          components[linesA[11]].stateValues.points[0][1],
+          lineA11points[0][0],
+          lineA11points[0][1],
         ];
         let point2coords = [
-          components[linesA[11]].stateValues.points[1][0],
-          components[linesA[11]].stateValues.points[1][1],
+          lineA11points[1][0],
+          lineA11points[1][1],
         ];
         point1coords[1] = point1coords[1].add(moveUp);
         point2coords[1] = point2coords[1].add(moveUp);
-        components[linesA[11]].moveLine({
+        await components[linesA[11]].moveLine({
           point1coords: point1coords,
           point2coords: point2coords
         });
@@ -540,19 +546,20 @@ describe('Graph Reference Test', function () {
 
         let moveX = -1;
         let moveY = 3;
+        let lineB11points = await components[linesB[11]].stateValues.points;
         point1coords = [
-          components[linesB[11]].stateValues.points[0][0],
-          components[linesB[11]].stateValues.points[0][1],
+          lineB11points[0][0],
+          lineB11points[0][1],
         ];
         point2coords = [
-          components[linesB[11]].stateValues.points[1][0],
-          components[linesB[11]].stateValues.points[1][1],
+          lineB11points[1][0],
+          lineB11points[1][1],
         ];
         point1coords[0] = point1coords[0].add(moveX);
         point1coords[1] = point1coords[1].add(moveY);
         point2coords[0] = point2coords[0].add(moveX);
         point2coords[1] = point2coords[1].add(moveY);
-        components[linesB[11]].moveLine({
+        await components[linesB[11]].moveLine({
           point1coords: point1coords,
           point2coords: point2coords
         });
@@ -586,14 +593,14 @@ describe('Graph Reference Test', function () {
           expect(components[point].stateValues.xs[1].tree).closeTo(pointEy, 1E-12);
         }
         for (let line of linesA) {
-          expect(components[line].stateValues.slope.evaluate_to_constant()).closeTo(slopeA, 1E-12);
-          expect(components[line].stateValues.xintercept.evaluate_to_constant()).closeTo(xinterceptA, 1E-12);
-          expect(components[line].stateValues.yintercept.evaluate_to_constant()).closeTo(yinterceptA, 1E-12);
+          expect((await components[line].stateValues.slope).evaluate_to_constant()).closeTo(slopeA, 1E-12);
+          expect((await components[line].stateValues.xintercept).evaluate_to_constant()).closeTo(xinterceptA, 1E-12);
+          expect((await components[line].stateValues.yintercept).evaluate_to_constant()).closeTo(yinterceptA, 1E-12);
         }
         for (let line of linesB) {
-          expect(components[line].stateValues.slope.evaluate_to_constant()).closeTo(slopeB, 1E-12);
-          expect(components[line].stateValues.xintercept.evaluate_to_constant()).closeTo(xinterceptB, 1E-12);
-          expect(components[line].stateValues.yintercept.evaluate_to_constant()).closeTo(yinterceptB, 1E-12);
+          expect((await components[line].stateValues.slope).evaluate_to_constant()).closeTo(slopeB, 1E-12);
+          expect((await components[line].stateValues.xintercept).evaluate_to_constant()).closeTo(xinterceptB, 1E-12);
+          expect((await components[line].stateValues.yintercept).evaluate_to_constant()).closeTo(yinterceptB, 1E-12);
         }
       })
 

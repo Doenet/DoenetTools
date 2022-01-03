@@ -42,7 +42,7 @@ export class ComponentWithSelectableType extends BaseComponent {
       // remove blank string if componentType isn't text
       if (componentType !== "text") {
         matchedChildren = matchedChildren.filter(x =>
-          x.componentType !== "string" || x.state.value.trim() !== ""
+          typeof x !== "string" || x.trim() !== ""
         )
       }
 

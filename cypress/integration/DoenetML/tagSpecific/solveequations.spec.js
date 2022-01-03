@@ -15,8 +15,8 @@ describe('SolveEquations Tag Tests', function () {
   <p>variable: <mathinput name="var" prefill="x" /></p>
   <p>equation: <mathinput name="equation" prefill="x^2+1=0" /></p>
   <solveEquations name="solve" variables="$var">$equation</solveEquations>
-  <p>Number of solutions: <copy prop="numberSolutions" tname="solve" assignNames="num" /></p>
-  <p name="sols">Solutions: <aslist><copy prop="solutions" tname="solve" displayDigits="6" /></aslist></p>
+  <p>Number of solutions: <copy prop="numberSolutions" target="solve" assignNames="num" /></p>
+  <p name="sols">Solutions: <aslist><copy prop="solutions" target="solve" displayDigits="6" /></aslist></p>
   `}, "*");
     });
     cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
@@ -232,8 +232,8 @@ describe('SolveEquations Tag Tests', function () {
   <p>maxvar: <mathinput name="maxvar" prefill="1" /></p>
   <p>equation: <mathinput name="equation" prefill="x^2+1=0" /></p>
   <solveEquations name="solve" variables="$var" minVar="$minvar" maxVar="$maxvar">$equation</solveEquations>
-  <p>Number of solutions: <copy prop="numberSolutions" tname="solve" assignNames="num" /></p>
-  <p name="sols">Solutions: <aslist><copy prop="solutions" tname="solve" displayDigits="6" /></aslist></p>
+  <p>Number of solutions: <copy prop="numberSolutions" target="solve" assignNames="num" /></p>
+  <p name="sols">Solutions: <aslist><copy prop="solutions" target="solve" displayDigits="6" /></aslist></p>
   `}, "*");
     });
     cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load

@@ -1379,7 +1379,7 @@ export class SbsGroup extends BlockComponent {
         return result;
 
       },
-      inverseArrayDefinitionByKey({ desiredStateVariableValues,
+      async inverseArrayDefinitionByKey({ desiredStateVariableValues,
         globalDependencyValues, stateValues,
       }) {
 
@@ -1402,7 +1402,7 @@ export class SbsGroup extends BlockComponent {
               setDependency: "marginsAttr",
               desiredValue: {
                 size: desiredStateVariableValues.specifiedMargins[0],
-                isAbsolute: stateValues.marginsAbsolute
+                isAbsolute: await stateValues.marginsAbsolute
               },
               variableIndex: 0,
             });
@@ -1415,7 +1415,7 @@ export class SbsGroup extends BlockComponent {
               setDependency: "marginsAttr",
               desiredValue: {
                 size: desiredStateVariableValues.specifiedMargins[1],
-                isAbsolute: stateValues.marginsAbsolute
+                isAbsolute: await stateValues.marginsAbsolute
               },
               variableIndex: 0,
             });
@@ -1428,7 +1428,7 @@ export class SbsGroup extends BlockComponent {
                 setDependency: "marginsAttr",
                 desiredValue: {
                   size: desiredStateVariableValues.specifiedMargins[1],
-                  isAbsolute: stateValues.marginsAbsolute
+                  isAbsolute: await stateValues.marginsAbsolute
                 },
                 variableIndex: 1,
               });
@@ -1449,7 +1449,7 @@ export class SbsGroup extends BlockComponent {
                 setDependency: "marginsAttr",
                 desiredValue: {
                   size: desiredStateVariableValues.specifiedMargins[arrayKey],
-                  isAbsolute: stateValues.marginsAbsolute
+                  isAbsolute: await stateValues.marginsAbsolute
                 },
                 variableIndex: 0,
               });
@@ -1458,7 +1458,7 @@ export class SbsGroup extends BlockComponent {
                 setDependency: "marginsAttr",
                 desiredValue: {
                   size: desiredStateVariableValues.specifiedMargins[arrayKey],
-                  isAbsolute: stateValues.marginsAbsolute
+                  isAbsolute: await stateValues.marginsAbsolute
                 },
                 variableIndex: arrayKey,
               });

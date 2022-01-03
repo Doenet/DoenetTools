@@ -209,7 +209,7 @@ export default class Solution extends BlockComponent {
   }
 
 
-  finishRevealSolution({ allowView, message, scoredComponent }) {
+  async finishRevealSolution({ allowView, message, scoredComponent }) {
 
     let updateInstructions = [{
       updateType: "updateValue",
@@ -242,7 +242,7 @@ export default class Solution extends BlockComponent {
       }
     }
 
-    return this.coreFunctions.requestUpdate({
+    return await this.coreFunctions.requestUpdate({
       updateInstructions,
       event,
       overrideReadOnly: true,
@@ -251,19 +251,21 @@ export default class Solution extends BlockComponent {
   }
 
 
-  revealSolution() {
-    let { scoredItemNumber, scoredComponent } = this.coreFunctions.calculateScoredItemNumberOfContainer(this.componentName);
+  async revealSolution() {
+    let { scoredItemNumber, scoredComponent } = await this.coreFunctions.calculateScoredItemNumberOfContainer(this.componentName);
 
-    return this.coreFunctions.recordSolutionView({
+    await this.coreFunctions.recordSolutionView({
       itemNumber: scoredItemNumber,
       scoredComponent: scoredComponent,
-    }).then(this.finishRevealSolution);
+    });
+    
+    return await this.finishRevealSolution()
 
   }
 
-  closeSolution() {
+  async closeSolution() {
 
-    return this.coreFunctions.performUpdate({
+    return await this.coreFunctions.performUpdate({
       updateInstructions: [{
         updateType: "updateValue",
         componentName: this.componentName,

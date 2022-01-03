@@ -251,11 +251,11 @@ describe('Select Tag Tests', function () {
     </select>
     </aslist>
 
-    <copy name="n2" tname="n3" />
-    <copy name="n" tname="num1" />
-    <math name="num1" simplify><copy tname="n2" />+<copy tname="num2" /></math>
-    <math name="num2" simplify><copy tname="n3" />+<copy tname="num3" /></math>
-    <copy name="n3" tname="num3" />
+    <copy name="n2" target="n3" />
+    <copy name="n" target="num1" />
+    <math name="num1" simplify><copy target="n2" />+<copy target="num2" /></math>
+    <math name="num2" simplify><copy target="n3" />+<copy target="num3" /></math>
+    <copy name="n3" target="num3" />
     <number name="num3">1</number>
     `}, "*");
     });
@@ -438,23 +438,23 @@ describe('Select Tag Tests', function () {
 
     <p>
     <aslist>
-    <copy name="noresample1" tname="s1" />
-    <copy name="noresample2" tname="s2" />
-    <copy name="noreresample1" tname="noresample1" />
-    <copy name="noreresample2" tname="noresample2" />
+    <copy name="noresample1" target="s1" />
+    <copy name="noresample2" target="s2" />
+    <copy name="noreresample1" target="noresample1" />
+    <copy name="noreresample2" target="noresample2" />
     </aslist>
     </p>
 
     <p>
-    <copy name="noresamplelist" tname="_aslist1" />
+    <copy name="noresamplelist" target="_aslist1" />
     </p>
 
     <p>
-    <copy name="noreresamplelist" tname="noresamplelist" />
+    <copy name="noreresamplelist" target="noresamplelist" />
     </p>
 
-    <copy name="noresamplep" tname="_p1" />
-    <copy name="noreresamplep" tname="noresamplep" />
+    <copy name="noresamplep" target="_p1" />
+    <copy name="noreresamplep" target="noresamplep" />
     
     `}, "*");
     });
@@ -498,16 +498,16 @@ describe('Select Tag Tests', function () {
     <p name="pchoices">
     Selected choices: <aslist>
     <select name="sample1" withReplacement numbertoselect="$numbertoselect">
-      <option><copy prop="value" tname="x" /></option>
-      <option><copy prop="value" tname="y" /></option>
-      <option><copy prop="value" tname="z" /></option>
+      <option><copy prop="value" target="x" /></option>
+      <option><copy prop="value" target="y" /></option>
+      <option><copy prop="value" target="z" /></option>
     </select>
     </aslist>
     </p>
 
-    <p name="pchoices2">Selected choices: <aslist><copy name="noresample" tname="sample1" /></aslist></p>
+    <p name="pchoices2">Selected choices: <aslist><copy name="noresample" target="sample1" /></aslist></p>
 
-    <copy name="pchoices3" tname="pchoices" />
+    <copy name="pchoices3" target="pchoices" />
 
     `}, "*");
     });
@@ -630,16 +630,16 @@ describe('Select Tag Tests', function () {
     </map>
     </aslist></p>
     
-    <p name="p2"><aslist><copy tname="_map1" /></aslist></p>
-    <p name="p3"><copy tname="_aslist1" /></p>
+    <p name="p2"><aslist><copy target="_map1" /></aslist></p>
+    <p name="p3"><copy target="_aslist1" /></p>
 
-    <copy name="p4" tname="p1" />
-    <copy name="p5" tname="p2" />
-    <copy name="p6" tname="p3" />
+    <copy name="p4" target="p1" />
+    <copy name="p5" target="p2" />
+    <copy name="p6" target="p3" />
 
-    <copy name="p7" tname="p4" />
-    <copy name="p8" tname="p5" />
-    <copy name="p9" tname="p6" />
+    <copy name="p7" target="p4" />
+    <copy name="p8" target="p5" />
+    <copy name="p9" target="p6" />
     `}, "*");
     });
 
@@ -929,9 +929,9 @@ describe('Select Tag Tests', function () {
       <option><math>a</math><math>b</math><math>c</math></option>
       <option><math>q</math><math>r</math><math>s</math></option>
     </select></aslist></p>
-    <p name="q1"><aslist><copy tname="x1" /><copy tname="y1" /><copy tname="z1" /></aslist></p>
-    <p name="q2"><aslist><copy tname="x2" /><copy tname="y2" /><copy tname="z2" /></aslist></p>
-    <p name="q3"><aslist><copy tname="x3" /><copy tname="y3" /><copy tname="z3" /></aslist></p>
+    <p name="q1"><aslist><copy target="x1" /><copy target="y1" /><copy target="z1" /></aslist></p>
+    <p name="q2"><aslist><copy target="x2" /><copy target="y2" /><copy target="z2" /></aslist></p>
+    <p name="q3"><aslist><copy target="x3" /><copy target="y3" /><copy target="z3" /></aslist></p>
     `}, "*");
     });
 
@@ -1016,9 +1016,9 @@ describe('Select Tag Tests', function () {
     <option><math>a</math><math>b</math><math>c</math></option>
     <option><math>q</math><math>r</math><math>s</math></option>
     </select></aslist></p>
-    <p name="q1"><aslist><copy tname="s1/x" /><copy tname="s1/y" /><copy tname="s1/z" /></aslist></p>
-    <p name="q2"><aslist><copy tname="s2/x" /><copy tname="s2/y" /><copy tname="s2/z" /></aslist></p>
-    <p name="q3"><aslist><copy tname="s3/x" /><copy tname="s3/y" /><copy tname="s3/z" /></aslist></p>
+    <p name="q1"><aslist><copy target="s1/x" /><copy target="s1/y" /><copy target="s1/z" /></aslist></p>
+    <p name="q2"><aslist><copy target="s2/x" /><copy target="s2/y" /><copy target="s2/z" /></aslist></p>
+    <p name="q3"><aslist><copy target="s3/x" /><copy target="s3/y" /><copy target="s3/z" /></aslist></p>
 
     `}, "*");
     });
@@ -1095,9 +1095,9 @@ describe('Select Tag Tests', function () {
       </select>
     </aslist></p>
     <p name="q1"><aslist>
-      <copy tname="x1" /><copy tname="y1" /><copy tname="z1" />
-      <copy tname="x2" /><copy tname="y2" /><copy tname="z2" />
-      <copy tname="x3" /><copy tname="y3" /><copy tname="z3" />
+      <copy target="x1" /><copy target="y1" /><copy target="z1" />
+      <copy target="x2" /><copy target="y2" /><copy target="z2" />
+      <copy target="x3" /><copy target="y3" /><copy target="z3" />
     </aslist></p>
     `}, "*");
     });
@@ -1165,9 +1165,9 @@ describe('Select Tag Tests', function () {
     <math hide name="x3">z</math>
 
     <select assignnames="q r s t u" numbertoselect="5" withreplacement>
-      <option newNamespace><p>Option 1: <math>3<copy tname="../x1" /><copy tname="../y1" /></math></p></option>
-      <option><p name="h" newnamespace>Option 2: <math>4<copy tname="../x2" /><copy tname="../y2" /></math></p></option>
-      <option newNamespace><p name="l">Option 3: <math>5<copy tname="../x3" /><copy tname="../y3" /></math></p></option>
+      <option newNamespace><p>Option 1: <math>3<copy target="../x1" /><copy target="../y1" /></math></p></option>
+      <option><p name="h" newnamespace>Option 2: <math>4<copy target="../x2" /><copy target="../y2" /></math></p></option>
+      <option newNamespace><p name="l">Option 3: <math>5<copy target="../x3" /><copy target="../y3" /></math></p></option>
     </select>
 
     <math hide name="y1">a</math>
@@ -1175,11 +1175,11 @@ describe('Select Tag Tests', function () {
     <math hide name="y3">c</math>
 
     <p>Selected options repeated</p>
-    <copy name="q2" tname="q" />
-    <copy name="r2" tname="r" />
-    <copy name="s2" tname="s" />
-    <copy name="t2" tname="t" />
-    <copy name="u2" tname="u" />
+    <copy name="q2" target="q" />
+    <copy name="r2" target="r" />
+    <copy name="s2" target="s" />
+    <copy name="t2" target="t" />
+    <copy name="u2" target="u" />
 
     `}, "*");
     });
@@ -1199,27 +1199,27 @@ describe('Select Tag Tests', function () {
       let components = Object.assign({}, win.state.components);
 
       let q2 = components['/q2'].replacements[0].replacements[0].activeChildren;
-      let q2string = q2[0].stateValues.value;
+      let q2string = q2[0];
       let q2math = q2[1].stateValues.value;
       expect(q2math.equals(option[q2string])).eq(true);
 
       let r2 = components['/r2'].replacements[0].replacements[0].activeChildren;
-      let r2string = r2[0].stateValues.value;
+      let r2string = r2[0];
       let r2math = r2[1].stateValues.value;
       expect(r2math.equals(option[r2string])).eq(true);
 
       let s2 = components['/s2'].replacements[0].replacements[0].activeChildren;
-      let s2string = s2[0].stateValues.value;
+      let s2string = s2[0];
       let s2math = s2[1].stateValues.value;
       expect(s2math.equals(option[s2string])).eq(true);
 
       let t2 = components['/t2'].replacements[0].replacements[0].activeChildren;
-      let t2string = t2[0].stateValues.value;
+      let t2string = t2[0];
       let t2math = t2[1].stateValues.value;
       expect(t2math.equals(option[t2string])).eq(true);
 
       let u2 = components['/u2'].replacements[0].replacements[0].activeChildren;
-      let u2string = u2[0].stateValues.value;
+      let u2string = u2[0];
       let u2math = u2[1].stateValues.value;
       expect(u2math.equals(option[u2string])).eq(true);
 
@@ -1236,9 +1236,9 @@ describe('Select Tag Tests', function () {
     <math hide name="x3">z</math>
 
     <select assignnames="q r s t u" numbertoselect="5" withreplacement>
-      <option><p>Option 1: <math>3<copy tname="x1" /><copy tname="y1" /></math></p></option>
-      <option><p name="h">Option 2: <math>4<copy tname="x2" /><copy tname="y2" /></math></p></option>
-      <option><p name="l">Option 3: <math>5<copy tname="x3" /><copy tname="y3" /></math></p></option>
+      <option><p>Option 1: <math>3<copy target="x1" /><copy target="y1" /></math></p></option>
+      <option><p name="h">Option 2: <math>4<copy target="x2" /><copy target="y2" /></math></p></option>
+      <option><p name="l">Option 3: <math>5<copy target="x3" /><copy target="y3" /></math></p></option>
     </select>
 
     <math hide name="y1">a</math>
@@ -1246,11 +1246,11 @@ describe('Select Tag Tests', function () {
     <math hide name="y3">c</math>
 
     <p>Selected options repeated</p>
-    <copy name="q2" tname="q" />
-    <copy name="r2" tname="r" />
-    <copy name="s2" tname="s" />
-    <copy name="t2" tname="t" />
-    <copy name="u2" tname="u" />
+    <copy name="q2" target="q" />
+    <copy name="r2" target="r" />
+    <copy name="s2" target="s" />
+    <copy name="t2" target="t" />
+    <copy name="u2" target="u" />
 
     `}, "*");
     });
@@ -1270,27 +1270,27 @@ describe('Select Tag Tests', function () {
       let components = Object.assign({}, win.state.components);
 
       let q2 = components['/q2'].replacements[0].replacements[0].activeChildren;
-      let q2string = q2[0].stateValues.value;
+      let q2string = q2[0];
       let q2math = q2[1].stateValues.value;
       expect(q2math.equals(option[q2string])).eq(true);
 
       let r2 = components['/r2'].replacements[0].replacements[0].activeChildren;
-      let r2string = r2[0].stateValues.value;
+      let r2string = r2[0];
       let r2math = r2[1].stateValues.value;
       expect(r2math.equals(option[r2string])).eq(true);
 
       let s2 = components['/s2'].replacements[0].replacements[0].activeChildren;
-      let s2string = s2[0].stateValues.value;
+      let s2string = s2[0];
       let s2math = s2[1].stateValues.value;
       expect(s2math.equals(option[s2string])).eq(true);
 
       let t2 = components['/t2'].replacements[0].replacements[0].activeChildren;
-      let t2string = t2[0].stateValues.value;
+      let t2string = t2[0];
       let t2math = t2[1].stateValues.value;
       expect(t2math.equals(option[t2string])).eq(true);
 
       let u2 = components['/u2'].replacements[0].replacements[0].activeChildren;
-      let u2string = u2[0].stateValues.value;
+      let u2string = u2[0];
       let u2math = u2[1].stateValues.value;
       expect(u2math.equals(option[u2string])).eq(true);
 
@@ -1304,27 +1304,27 @@ describe('Select Tag Tests', function () {
     <text>a</text>
 
     <select assignnames="q r s t u" numbertoselect="5" withreplacement>
-      <option newNamespace><p>Option 1: <math>3<math name="x">x</math> + <math name="z1">a</math> + <copy tname="x" />^2<copy tname="z1" />^3</math></p></option>
-      <option newNamespace><p>Option 2: <math>4<math name="x">y</math> + <math name="z2">b</math> + <copy tname="x" />^2<copy tname="z2" />^3</math></p></option>
-      <option newNamespace><p>Option 3: <math>5<math name="x">z</math> + <math name="z3">c</math> + <copy tname="x" />^2<copy tname="z3" />^3</math></p></option>
+      <option newNamespace><p>Option 1: <math>3<math name="x">x</math> + <math name="z1">a</math> + <copy target="x" />^2<copy target="z1" />^3</math></p></option>
+      <option newNamespace><p>Option 2: <math>4<math name="x">y</math> + <math name="z2">b</math> + <copy target="x" />^2<copy target="z2" />^3</math></p></option>
+      <option newNamespace><p>Option 3: <math>5<math name="x">z</math> + <math name="z3">c</math> + <copy target="x" />^2<copy target="z3" />^3</math></p></option>
     </select>
 
     <p>Selected options repeated</p>
-    <copy name="q2" tname="q" />
-    <copy name="r2" tname="r" />
-    <copy name="s2" tname="s" />
-    <copy name="t2" tname="t" />
-    <copy name="u2" tname="u" />
+    <copy name="q2" target="q" />
+    <copy name="r2" target="r" />
+    <copy name="s2" target="s" />
+    <copy name="t2" target="t" />
+    <copy name="u2" target="u" />
 
     <p>Copy x from within selection options</p>
-    <p><copy name="qx" tname="q/x" /></p>
-    <p><copy name="rx" tname="r/x" /></p>
-    <p><copy name="sx" tname="s/x" /></p>
-    <p><copy name="tx" tname="t/x" /></p>
-    <p><copy name="ux" tname="u/x" /></p>
+    <p><copy name="qx" target="q/x" /></p>
+    <p><copy name="rx" target="r/x" /></p>
+    <p><copy name="sx" target="s/x" /></p>
+    <p><copy name="tx" target="t/x" /></p>
+    <p><copy name="ux" target="u/x" /></p>
 
     <p>Copy select itself</p>
-    <section name="repeat"><copy tname="_select1" /></section>
+    <section name="repeat"><copy target="_select1" /></section>
 
     `}, "*");
     });
@@ -1349,7 +1349,7 @@ describe('Select Tag Tests', function () {
       let components = Object.assign({}, win.state.components);
 
       let q2 = components['/q2'].replacements[0].replacements[0].activeChildren;
-      let q2string = q2[0].stateValues.value;
+      let q2string = q2[0];
       let q2math = q2[1].stateValues.value;
       expect(q2math.equals(option[q2string])).eq(true);
       let qx = components['/qx'].replacements[0].stateValues.value.tree;
@@ -1358,7 +1358,7 @@ describe('Select Tag Tests', function () {
       expect(repeatqmath.equals(option[q2string])).eq(true);
 
       let r2 = components['/r2'].replacements[0].replacements[0].activeChildren;
-      let r2string = r2[0].stateValues.value;
+      let r2string = r2[0];
       let r2math = r2[1].stateValues.value;
       expect(r2math.equals(option[r2string])).eq(true);
       let rx = components['/rx'].replacements[0].stateValues.value.tree;
@@ -1367,7 +1367,7 @@ describe('Select Tag Tests', function () {
       expect(repeatrmath.equals(option[r2string])).eq(true);
 
       let s2 = components['/s2'].replacements[0].replacements[0].activeChildren;
-      let s2string = s2[0].stateValues.value;
+      let s2string = s2[0];
       let s2math = s2[1].stateValues.value;
       expect(s2math.equals(option[s2string])).eq(true);
       let sx = components['/sx'].replacements[0].stateValues.value.tree;
@@ -1376,7 +1376,7 @@ describe('Select Tag Tests', function () {
       expect(repeatsmath.equals(option[s2string])).eq(true);
 
       let t2 = components['/t2'].replacements[0].replacements[0].activeChildren;
-      let t2string = t2[0].stateValues.value;
+      let t2string = t2[0];
       let t2math = t2[1].stateValues.value;
       expect(t2math.equals(option[t2string])).eq(true);
       let tx = components['/tx'].replacements[0].stateValues.value.tree;
@@ -1385,7 +1385,7 @@ describe('Select Tag Tests', function () {
       expect(repeattmath.equals(option[t2string])).eq(true);
 
       let u2 = components['/u2'].replacements[0].replacements[0].activeChildren;
-      let u2string = u2[0].stateValues.value;
+      let u2string = u2[0];
       let u2math = u2[1].stateValues.value;
       expect(u2math.equals(option[u2string])).eq(true);
       let ux = components['/ux'].replacements[0].stateValues.value.tree;
@@ -1403,20 +1403,20 @@ describe('Select Tag Tests', function () {
     <text>a</text>
 
     <select assignnames="q r s t u" numbertoselect="5" withreplacement>
-      <option><p>Option 1: <math>3<math name="x">x</math> + <math name="z1">a</math> + <copy tname="x" />^2<copy tname="z1" />^3</math></p></option>
-      <option><p>Option 2: <math>4<math name="y">y</math> + <math name="z2">b</math> + <copy tname="y" />^2<copy tname="z2" />^3</math></p></option>
-      <option><p>Option 3: <math>5<math name="z">z</math> + <math name="z3">c</math> + <copy tname="z" />^2<copy tname="z3" />^3</math></p></option>
+      <option><p>Option 1: <math>3<math name="x">x</math> + <math name="z1">a</math> + <copy target="x" />^2<copy target="z1" />^3</math></p></option>
+      <option><p>Option 2: <math>4<math name="y">y</math> + <math name="z2">b</math> + <copy target="y" />^2<copy target="z2" />^3</math></p></option>
+      <option><p>Option 3: <math>5<math name="z">z</math> + <math name="z3">c</math> + <copy target="z" />^2<copy target="z3" />^3</math></p></option>
     </select>
 
     <p>Selected options repeated</p>
-    <copy name="q2" tname="q" />
-    <copy name="r2" tname="r" />
-    <copy name="s2" tname="s" />
-    <copy name="t2" tname="t" />
-    <copy name="u2" tname="u" />
+    <copy name="q2" target="q" />
+    <copy name="r2" target="r" />
+    <copy name="s2" target="s" />
+    <copy name="t2" target="t" />
+    <copy name="u2" target="u" />
 
     <p>Copy select itself</p>
-    <section name="repeat"><copy tname="_select1" /></section>
+    <section name="repeat"><copy target="_select1" /></section>
 
     `}, "*");
     });
@@ -1441,35 +1441,35 @@ describe('Select Tag Tests', function () {
       let components = Object.assign({}, win.state.components);
 
       let q2 = components['/q2'].replacements[0].replacements[0].activeChildren;
-      let q2string = q2[0].stateValues.value;
+      let q2string = q2[0];
       let q2math = q2[1].stateValues.value;
       expect(q2math.equals(option[q2string])).eq(true);
       let repeatqmath = components["/repeat"].activeChildren[0].activeChildren[1].stateValues.value;
       expect(repeatqmath.equals(option[q2string])).eq(true);
 
       let r2 = components['/r2'].replacements[0].replacements[0].activeChildren;
-      let r2string = r2[0].stateValues.value;
+      let r2string = r2[0];
       let r2math = r2[1].stateValues.value;
       expect(r2math.equals(option[r2string])).eq(true);
       let repeatrmath = components["/repeat"].activeChildren[1].activeChildren[1].stateValues.value;
       expect(repeatrmath.equals(option[r2string])).eq(true);
 
       let s2 = components['/s2'].replacements[0].replacements[0].activeChildren;
-      let s2string = s2[0].stateValues.value;
+      let s2string = s2[0];
       let s2math = s2[1].stateValues.value;
       expect(s2math.equals(option[s2string])).eq(true);
       let repeatsmath = components["/repeat"].activeChildren[2].activeChildren[1].stateValues.value;
       expect(repeatsmath.equals(option[s2string])).eq(true);
 
       let t2 = components['/t2'].replacements[0].replacements[0].activeChildren;
-      let t2string = t2[0].stateValues.value;
+      let t2string = t2[0];
       let t2math = t2[1].stateValues.value;
       expect(t2math.equals(option[t2string])).eq(true);
       let repeattmath = components["/repeat"].activeChildren[3].activeChildren[1].stateValues.value;
       expect(repeattmath.equals(option[t2string])).eq(true);
 
       let u2 = components['/u2'].replacements[0].replacements[0].activeChildren;
-      let u2string = u2[0].stateValues.value;
+      let u2string = u2[0];
       let u2math = u2[1].stateValues.value;
       expect(u2math.equals(option[u2string])).eq(true);
       let repeatumath = components["/repeat"].activeChildren[4].activeChildren[1].stateValues.value;
@@ -1495,8 +1495,8 @@ describe('Select Tag Tests', function () {
     </select>
     </p>
 
-    <p>Selected variable repeated: <copy name="x2" tname="x" /></p>
-    <p>Selected variable repeated again: <copy name="x3" tname="_select1" /></p>
+    <p>Selected variable repeated: <copy name="x2" target="x" /></p>
+    <p>Selected variable repeated again: <copy name="x3" target="_select1" /></p>
     `}, "*");
     });
 
@@ -1544,10 +1544,10 @@ describe('Select Tag Tests', function () {
     </aslist>
     </p>
 
-    <p>Selected first variable: <copy name="x2" tname="x" /></p>
-    <p>Selected second variable: <copy name="y2" tname="y" /></p>
-    <p>Selected third variable: <copy name="z2" tname="z" /></p>
-    <p>Selected variables repeated: <aslist><copy name="s2" tname="_select1" /></aslist></p>
+    <p>Selected first variable: <copy name="x2" target="x" /></p>
+    <p>Selected second variable: <copy name="y2" target="y" /></p>
+    <p>Selected third variable: <copy name="z2" target="z" /></p>
+    <p>Selected variables repeated: <aslist><copy name="s2" target="_select1" /></aslist></p>
 
     `}, "*");
     });
@@ -2088,29 +2088,29 @@ describe('Select Tag Tests', function () {
     <text>a</text>
 
     <select name="original" assignnames="(q) (r) (s) (t) (u) (v) (w)" numbertoselect="7" withreplacement>
-      <option><p newNamespace><select assignnames="q r" numbertoselect="2">a e i o u</select><copy name="q2" tname="q" /><copy name="r2" tname="r" /></p></option>
-      <option><p newNamespace><selectfromsequence type="letters" assignnames="q r" numbertoselect="2" from="a" to="z" /><copy name="q2" tname="q" /><copy name="r2" tname="r" /></p></option>
-      <option><p newNamespace><text name="q">z</text><selectfromsequence type="letters" assignnames="r" numbertoselect="1" from="u" to="z" /><copy name="q2" tname="q" /><copy name="r2" tname="r" /></p></option>
-      <option><p newNamespace><text name="q">q</text><text name="r">r</text><copy name="q2" tname="q" /><copy name="r2" tname="r" /></p></option>
+      <option><p newNamespace><select assignnames="q r" numbertoselect="2">a e i o u</select><copy name="q2" target="q" /><copy name="r2" target="r" /></p></option>
+      <option><p newNamespace><selectfromsequence type="letters" assignnames="q r" numbertoselect="2" from="a" to="z" /><copy name="q2" target="q" /><copy name="r2" target="r" /></p></option>
+      <option><p newNamespace><text name="q">z</text><selectfromsequence type="letters" assignnames="r" numbertoselect="1" from="u" to="z" /><copy name="q2" target="q" /><copy name="r2" target="r" /></p></option>
+      <option><p newNamespace><text name="q">q</text><text name="r">r</text><copy name="q2" target="q" /><copy name="r2" target="r" /></p></option>
     </select>
 
     <p>Selected options repeated</p>
-    <copy name="q2" tname="q" />
-    <copy name="r2" tname="r" />
-    <copy name="s2" tname="s" />
-    <copy name="t2" tname="t" />
-    <copy name="u2" tname="u" />
-    <copy name="v2" tname="v" />
-    <copy name="w2" tname="w" />
+    <copy name="q2" target="q" />
+    <copy name="r2" target="r" />
+    <copy name="s2" target="s" />
+    <copy name="t2" target="t" />
+    <copy name="u2" target="u" />
+    <copy name="v2" target="v" />
+    <copy name="w2" target="w" />
 
     <p>Copy q and r and their copies from within selected options</p>
-    <p><copy name="qq" tname="q/q" /><copy name="qr" tname="q/r" /><copy name="qq2" tname="q/q2" /><copy name="qr2" tname="q/r2" /></p>
-    <p><copy name="rq" tname="r/q" /><copy name="rr" tname="r/r" /><copy name="rq2" tname="r/q2" /><copy name="rr2" tname="r/r2" /></p>
-    <p><copy name="sq" tname="s/q" /><copy name="sr" tname="s/r" /><copy name="sq2" tname="s/q2" /><copy name="sr2" tname="s/r2" /></p>
-    <p><copy name="tq" tname="t/q" /><copy name="tr" tname="t/r" /><copy name="tq2" tname="t/q2" /><copy name="tr2" tname="t/r2" /></p>
-    <p><copy name="uq" tname="u/q" /><copy name="ur" tname="u/r" /><copy name="uq2" tname="u/q2" /><copy name="ur2" tname="u/r2" /></p>
-    <p><copy name="vq" tname="v/q" /><copy name="vr" tname="v/r" /><copy name="vq2" tname="v/q2" /><copy name="vr2" tname="v/r2" /></p>
-    <p><copy name="wq" tname="w/q" /><copy name="wr" tname="w/r" /><copy name="wq2" tname="w/q2" /><copy name="wr2" tname="w/r2" /></p>
+    <p><copy name="qq" target="q/q" /><copy name="qr" target="q/r" /><copy name="qq2" target="q/q2" /><copy name="qr2" target="q/r2" /></p>
+    <p><copy name="rq" target="r/q" /><copy name="rr" target="r/r" /><copy name="rq2" target="r/q2" /><copy name="rr2" target="r/r2" /></p>
+    <p><copy name="sq" target="s/q" /><copy name="sr" target="s/r" /><copy name="sq2" target="s/q2" /><copy name="sr2" target="s/r2" /></p>
+    <p><copy name="tq" target="t/q" /><copy name="tr" target="t/r" /><copy name="tq2" target="t/q2" /><copy name="tr2" target="t/r2" /></p>
+    <p><copy name="uq" target="u/q" /><copy name="ur" target="u/r" /><copy name="uq2" target="u/q2" /><copy name="ur2" target="u/r2" /></p>
+    <p><copy name="vq" target="v/q" /><copy name="vr" target="v/r" /><copy name="vq2" target="v/q2" /><copy name="vr2" target="v/r2" /></p>
+    <p><copy name="wq" target="w/q" /><copy name="wr" target="w/r" /><copy name="wq2" target="w/q2" /><copy name="wr2" target="w/r2" /></p>
 
     `}, "*");
     });
@@ -2204,37 +2204,37 @@ describe('Select Tag Tests', function () {
         doenetML: `
     <text>a</text>
     <select name="original" assignnames="(q) (r) (s) (t) (u) (v) (w)" numbertoselect="7" withreplacement>
-      <option><p newNamespace><select name="s" newnamespace assignnames="q r" numbertoselect="2">a e i o u</select><copy name="q2" tname="s/q" /><copy name="r2" tname="s/r" /></p></option>
-      <option><p newNamespace><selectfromsequence type="letters" name="s" newnamespace assignnames="q r" numbertoselect="2" from="a" to="z" /><copy name="q2" tname="s/q" /><copy name="r2" tname="s/r" /></p></option>
-      <option><p newNamespace><selectfromsequence type="letters" name="s" newnamespace assignnames="q r" numbertoselect="2" withreplacement from="u" to="z" /><copy name="q2" tname="s/q" /><copy name="r2" tname="s/r" /></p></option>
+      <option><p newNamespace><select name="s" newnamespace assignnames="q r" numbertoselect="2">a e i o u</select><copy name="q2" target="s/q" /><copy name="r2" target="s/r" /></p></option>
+      <option><p newNamespace><selectfromsequence type="letters" name="s" newnamespace assignnames="q r" numbertoselect="2" from="a" to="z" /><copy name="q2" target="s/q" /><copy name="r2" target="s/r" /></p></option>
+      <option><p newNamespace><selectfromsequence type="letters" name="s" newnamespace assignnames="q r" numbertoselect="2" withreplacement from="u" to="z" /><copy name="q2" target="s/q" /><copy name="r2" target="s/r" /></p></option>
     </select>
 
     <p>Selected options repeated</p>
-    <copy name="q2" tname="q" />
-    <copy name="r2" tname="r" />
-    <copy name="s2" tname="s" />
-    <copy name="t2" tname="t" />
-    <copy name="u2" tname="u" />
-    <copy name="v2" tname="v" />
-    <copy name="w2" tname="w" />
+    <copy name="q2" target="q" />
+    <copy name="r2" target="r" />
+    <copy name="s2" target="s" />
+    <copy name="t2" target="t" />
+    <copy name="u2" target="u" />
+    <copy name="v2" target="v" />
+    <copy name="w2" target="w" />
 
     <p>Selected options repeated, no p</p>
-    <p><copy name="q3" tname="q/s" /></p>
-    <p><copy name="r3" tname="r/s" /></p>
-    <p><copy name="s3" tname="s/s" /></p>
-    <p><copy name="t3" tname="t/s" /></p>
-    <p><copy name="u3" tname="u/s" /></p>
-    <p><copy name="v3" tname="v/s" /></p>
-    <p><copy name="w3" tname="w/s" /></p>
+    <p><copy name="q3" target="q/s" /></p>
+    <p><copy name="r3" target="r/s" /></p>
+    <p><copy name="s3" target="s/s" /></p>
+    <p><copy name="t3" target="t/s" /></p>
+    <p><copy name="u3" target="u/s" /></p>
+    <p><copy name="v3" target="v/s" /></p>
+    <p><copy name="w3" target="w/s" /></p>
 
     <p>Copy q and r from within selected options</p>
-    <p><copy name="qq" tname="q/s/q" /><copy name="qr" tname="q/s/r" /><copy name="qq2" tname="q/q2" /><copy name="qr2" tname="q/r2" /></p>
-    <p><copy name="rq" tname="r/s/q" /><copy name="rr" tname="r/s/r" /><copy name="rq2" tname="r/q2" /><copy name="rr2" tname="r/r2" /></p>
-    <p><copy name="sq" tname="s/s/q" /><copy name="sr" tname="s/s/r" /><copy name="sq2" tname="s/q2" /><copy name="sr2" tname="s/r2" /></p>
-    <p><copy name="tq" tname="t/s/q" /><copy name="tr" tname="t/s/r" /><copy name="tq2" tname="t/q2" /><copy name="tr2" tname="t/r2" /></p>
-    <p><copy name="uq" tname="u/s/q" /><copy name="ur" tname="u/s/r" /><copy name="uq2" tname="u/q2" /><copy name="ur2" tname="u/r2" /></p>
-    <p><copy name="vq" tname="v/s/q" /><copy name="vr" tname="v/s/r" /><copy name="vq2" tname="v/q2" /><copy name="vr2" tname="v/r2" /></p>
-    <p><copy name="wq" tname="w/s/q" /><copy name="wr" tname="w/s/r" /><copy name="wq2" tname="w/q2" /><copy name="wr2" tname="w/r2" /></p>
+    <p><copy name="qq" target="q/s/q" /><copy name="qr" target="q/s/r" /><copy name="qq2" target="q/q2" /><copy name="qr2" target="q/r2" /></p>
+    <p><copy name="rq" target="r/s/q" /><copy name="rr" target="r/s/r" /><copy name="rq2" target="r/q2" /><copy name="rr2" target="r/r2" /></p>
+    <p><copy name="sq" target="s/s/q" /><copy name="sr" target="s/s/r" /><copy name="sq2" target="s/q2" /><copy name="sr2" target="s/r2" /></p>
+    <p><copy name="tq" target="t/s/q" /><copy name="tr" target="t/s/r" /><copy name="tq2" target="t/q2" /><copy name="tr2" target="t/r2" /></p>
+    <p><copy name="uq" target="u/s/q" /><copy name="ur" target="u/s/r" /><copy name="uq2" target="u/q2" /><copy name="ur2" target="u/r2" /></p>
+    <p><copy name="vq" target="v/s/q" /><copy name="vr" target="v/s/r" /><copy name="vq2" target="v/q2" /><copy name="vr2" target="v/r2" /></p>
+    <p><copy name="wq" target="w/s/q" /><copy name="wr" target="w/s/r" /><copy name="wq2" target="w/q2" /><copy name="wr2" target="w/r2" /></p>
 
     `}, "*");
     });
@@ -2345,23 +2345,23 @@ describe('Select Tag Tests', function () {
         doenetML: `
     <math>1</math>
     <select name="original" assignnames="(q qq  qr) (r  rq rr) (s  sq  sr) (t  tq  tr) (u uq ur)" numbertoselect="5" withreplacement>
-      <p><select assignnames="q r" numbertoselect="2">a e i o u</select><copy name="q2" tname="q" /><copy name="r2" tname="r" /></p>
-      <p><selectfromsequence type="letters" assignnames="q r" numbertoselect="2">a z</selectfromsequence><copy name="q2" tname="q" /><copy name="r2" tname="r" /></p>
+      <p><select assignnames="q r" numbertoselect="2">a e i o u</select><copy name="q2" target="q" /><copy name="r2" target="r" /></p>
+      <p><selectfromsequence type="letters" assignnames="q r" numbertoselect="2">a z</selectfromsequence><copy name="q2" target="q" /><copy name="r2" target="r" /></p>
     </select>
 
     <p>Selected options repeated</p>
-    <p><copy name="q2" tname="q" /></p>
-    <p><copy name="r2" tname="r" /></p>
-    <p><copy name="s2" tname="s" /></p>
-    <p><copy name="t2" tname="t" /></p>
-    <p><copy name="u2" tname="u" /></p>
+    <p><copy name="q2" target="q" /></p>
+    <p><copy name="r2" target="r" /></p>
+    <p><copy name="s2" target="s" /></p>
+    <p><copy name="t2" target="t" /></p>
+    <p><copy name="u2" target="u" /></p>
 
     <p>Copy x/q and x/r and their copies from within selected options</p>
-    <p><copy name="qq2" tname="q/q" /><copy name="qr2" tname="q/r" /><copy name="qq3" tname="qq" /><copy name="qr3" tname="qr" /></p>
-    <p><copy name="rq2" tname="r/q" /><copy name="rr2" tname="r/r" /><copy name="rq3" tname="rq" /><copy name="rr3" tname="rr" /></p>
-    <p><copy name="sq2" tname="s/q" /><copy name="sr2" tname="s/r" /><copy name="sq3" tname="sq" /><copy name="sr3" tname="sr" /></p>
-    <p><copy name="tq2" tname="t/q" /><copy name="tr2" tname="t/r" /><copy name="tq3" tname="tq" /><copy name="tr3" tname="tr" /></p>
-    <p><copy name="uq2" tname="u/q" /><copy name="ur2" tname="u/r" /><copy name="uq3" tname="uq" /><copy name="ur3" tname="ur" /></p>
+    <p><copy name="qq2" target="q/q" /><copy name="qr2" target="q/r" /><copy name="qq3" target="qq" /><copy name="qr3" target="qr" /></p>
+    <p><copy name="rq2" target="r/q" /><copy name="rr2" target="r/r" /><copy name="rq3" target="rq" /><copy name="rr3" target="rr" /></p>
+    <p><copy name="sq2" target="s/q" /><copy name="sr2" target="s/r" /><copy name="sq3" target="sq" /><copy name="sr3" target="sr" /></p>
+    <p><copy name="tq2" target="t/q" /><copy name="tr2" target="t/r" /><copy name="tq3" target="tq" /><copy name="tr3" target="tr" /></p>
+    <p><copy name="uq2" target="u/q" /><copy name="ur2" target="u/r" /><copy name="uq3" target="uq" /><copy name="ur3" target="ur" /></p>
 
     `}, "*");
     });
@@ -2458,23 +2458,23 @@ describe('Select Tag Tests', function () {
         doenetML: `
     <math>1</math>
         <select name="original" assignnames="(q qq  qr) (r  rq rr) (s  sq  sr) (t  tq  tr) (u uq ur)" numbertoselect="5" withreplacement>
-      <p><select name="a" assignnames="q r" numbertoselect="2" newnamespace>a e i o u</select><copy name="q2" tname="a/q" /><copy name="r2" tname="a/r" /></p>
-      <p><selectfromsequence type="letters" name="b" assignnames="q r" numbertoselect="2" newnamespace>a z</selectfromsequence><copy name="q2" tname="b/q" /><copy name="r2" tname="b/r" /></p>
+      <p><select name="a" assignnames="q r" numbertoselect="2" newnamespace>a e i o u</select><copy name="q2" target="a/q" /><copy name="r2" target="a/r" /></p>
+      <p><selectfromsequence type="letters" name="b" assignnames="q r" numbertoselect="2" newnamespace>a z</selectfromsequence><copy name="q2" target="b/q" /><copy name="r2" target="b/r" /></p>
     </select>
 
     <p>Selected options repeated</p>
-    <p><copy name="q2" tname="q" /></p>
-    <p><copy name="r2" tname="r" /></p>
-    <p><copy name="s2" tname="s" /></p>
-    <p><copy name="t2" tname="t" /></p>
-    <p><copy name="u2" tname="u" /></p>
+    <p><copy name="q2" target="q" /></p>
+    <p><copy name="r2" target="r" /></p>
+    <p><copy name="s2" target="s" /></p>
+    <p><copy name="t2" target="t" /></p>
+    <p><copy name="u2" target="u" /></p>
 
     <p>Copy x/q and x/r and their copies from within selected options</p>
-    <p><copy name="qq2" tname="q/q" /><copy name="qr2" tname="q/r" /><copy name="qq3" tname="qq" /><copy name="qr3" tname="qr" /></p>
-    <p><copy name="rq2" tname="r/q" /><copy name="rr2" tname="r/r" /><copy name="rq3" tname="rq" /><copy name="rr3" tname="rr" /></p>
-    <p><copy name="sq2" tname="s/q" /><copy name="sr2" tname="s/r" /><copy name="sq3" tname="sq" /><copy name="sr3" tname="sr" /></p>
-    <p><copy name="tq2" tname="t/q" /><copy name="tr2" tname="t/r" /><copy name="tq3" tname="tq" /><copy name="tr3" tname="tr" /></p>
-    <p><copy name="uq2" tname="u/q" /><copy name="ur2" tname="u/r" /><copy name="uq3" tname="uq" /><copy name="ur3" tname="ur" /></p>
+    <p><copy name="qq2" target="q/q" /><copy name="qr2" target="q/r" /><copy name="qq3" target="qq" /><copy name="qr3" target="qr" /></p>
+    <p><copy name="rq2" target="r/q" /><copy name="rr2" target="r/r" /><copy name="rq3" target="rq" /><copy name="rr3" target="rr" /></p>
+    <p><copy name="sq2" target="s/q" /><copy name="sr2" target="s/r" /><copy name="sq3" target="sq" /><copy name="sr3" target="sr" /></p>
+    <p><copy name="tq2" target="t/q" /><copy name="tr2" target="t/r" /><copy name="tq3" target="tq" /><copy name="tr3" target="tr" /></p>
+    <p><copy name="uq2" target="u/q" /><copy name="ur2" target="u/r" /><copy name="uq3" target="uq" /><copy name="ur3" target="ur" /></p>
 
 
     `}, "*");
@@ -2576,18 +2576,18 @@ describe('Select Tag Tests', function () {
     </select>
 
     <p>Selected options repeated</p>
-    <p><copy name="q2" tname="q" /></p>
-    <p><copy name="r2" tname="r" /></p>
-    <p><copy name="s2" tname="s" /></p>
-    <p><copy name="t2" tname="t" /></p>
-    <p><copy name="u2" tname="u" /></p>
+    <p><copy name="q2" target="q" /></p>
+    <p><copy name="r2" target="r" /></p>
+    <p><copy name="s2" target="s" /></p>
+    <p><copy name="t2" target="t" /></p>
+    <p><copy name="u2" target="u" /></p>
 
     <p>Copy x/q and x/r</p>
-    <p><copy name="qq" tname="q/q" /><copy name="qr" tname="q/r" /></p>
-    <p><copy name="rq" tname="r/q" /><copy name="rr" tname="r/r" /></p>
-    <p><copy name="sq" tname="s/q" /><copy name="sr" tname="s/r" /></p>
-    <p><copy name="tq" tname="t/q" /><copy name="tr" tname="t/r" /></p>
-    <p><copy name="uq" tname="u/q" /><copy name="ur" tname="u/r" /></p>
+    <p><copy name="qq" target="q/q" /><copy name="qr" target="q/r" /></p>
+    <p><copy name="rq" target="r/q" /><copy name="rr" target="r/r" /></p>
+    <p><copy name="sq" target="s/q" /><copy name="sr" target="s/r" /></p>
+    <p><copy name="tq" target="t/q" /><copy name="tr" target="t/r" /></p>
+    <p><copy name="uq" target="u/q" /><copy name="ur" target="u/r" /></p>
 
     `}, "*");
     });
@@ -2665,19 +2665,19 @@ describe('Select Tag Tests', function () {
     </select>
 
     <p>Selected options repeated</p>
-    <p name="pq2"><copy name="q2" tname="q" /></p>
-    <p name="pr2"><copy name="r2" tname="r" /></p>
-    <p name="ps2"><copy name="s2" tname="s" /></p>
+    <p name="pq2"><copy name="q2" target="q" /></p>
+    <p name="pr2"><copy name="r2" target="r" /></p>
+    <p name="ps2"><copy name="s2" target="s" /></p>
 
     <p>Copy x/q, x/r, x/s</p>
-    <p name="pq3"><copy name="qq" tname="q/q" /><copy name="qr" tname="q/r" /><copy name="qs" tname="q/s" /></p>
-    <p name="pr3"><copy name="rq" tname="r/q" /><copy name="rr" tname="r/r" /><copy name="rs" tname="r/s" /></p>
-    <p name="ps3"><copy name="sq" tname="s/q" /><copy name="sr" tname="s/r" /><copy name="ss" tname="s/s" /></p>
+    <p name="pq3"><copy name="qq" target="q/q" /><copy name="qr" target="q/r" /><copy name="qs" target="q/s" /></p>
+    <p name="pr3"><copy name="rq" target="r/q" /><copy name="rr" target="r/r" /><copy name="rs" target="r/s" /></p>
+    <p name="ps3"><copy name="sq" target="s/q" /><copy name="sr" target="s/r" /><copy name="ss" target="s/s" /></p>
 
     <p>Copy x/x/q, x/x/r</p>
-    <p name="pq4"><copy name="qqq" tname="q/q/q" /><copy name="qqr" tname="q/q/r" /><copy name="qrq" tname="q/r/q" /><copy name="qrr" tname="q/r/r" /><copy name="qsq" tname="q/s/q" /><copy name="qsr" tname="q/s/r" /></p>
-    <p name="pr4"><copy name="rqq" tname="r/q/q" /><copy name="rqr" tname="r/q/r" /><copy name="rrq" tname="r/r/q" /><copy name="rrr" tname="r/r/r" /><copy name="rsq" tname="r/s/q" /><copy name="rsr" tname="r/s/r" /></p>
-    <p name="ps4"><copy name="sqq" tname="s/q/q" /><copy name="sqr" tname="s/q/r" /><copy name="srq" tname="s/r/q" /><copy name="srr" tname="s/r/r" /><copy name="ssq" tname="s/s/q" /><copy name="ssr" tname="s/s/r" /></p>
+    <p name="pq4"><copy name="qqq" target="q/q/q" /><copy name="qqr" target="q/q/r" /><copy name="qrq" target="q/r/q" /><copy name="qrr" target="q/r/r" /><copy name="qsq" target="q/s/q" /><copy name="qsr" target="q/s/r" /></p>
+    <p name="pr4"><copy name="rqq" target="r/q/q" /><copy name="rqr" target="r/q/r" /><copy name="rrq" target="r/r/q" /><copy name="rrr" target="r/r/r" /><copy name="rsq" target="r/s/q" /><copy name="rsr" target="r/s/r" /></p>
+    <p name="ps4"><copy name="sqq" target="s/q/q" /><copy name="sqr" target="s/q/r" /><copy name="srq" target="s/r/q" /><copy name="srr" target="s/r/r" /><copy name="ssq" target="s/s/q" /><copy name="ssr" target="s/s/r" /></p>
 
     `}, "*");
     });
@@ -2726,19 +2726,19 @@ describe('Select Tag Tests', function () {
     </select>
 
     <p>Selected options repeated</p>
-    <p name="pq2"><copy name="q2" tname="a/q" /></p>
-    <p name="pr2"><copy name="r2" tname="a/r" /></p>
-    <p name="ps2"><copy name="s2" tname="a/s" /></p>
+    <p name="pq2"><copy name="q2" target="a/q" /></p>
+    <p name="pr2"><copy name="r2" target="a/r" /></p>
+    <p name="ps2"><copy name="s2" target="a/s" /></p>
 
     <p>Copy x/q, x/r, x/s</p>
-    <p name="pq3"><copy name="qq" tname="a/q/q" /><copy name="qr" tname="a/q/r" /><copy name="qs" tname="a/q/s" /></p>
-    <p name="pr3"><copy name="rq" tname="a/r/q" /><copy name="rr" tname="a/r/r" /><copy name="rs" tname="a/r/s" /></p>
-    <p name="ps3"><copy name="sq" tname="a/s/q" /><copy name="sr" tname="a/s/r" /><copy name="ss" tname="a/s/s" /></p>
+    <p name="pq3"><copy name="qq" target="a/q/q" /><copy name="qr" target="a/q/r" /><copy name="qs" target="a/q/s" /></p>
+    <p name="pr3"><copy name="rq" target="a/r/q" /><copy name="rr" target="a/r/r" /><copy name="rs" target="a/r/s" /></p>
+    <p name="ps3"><copy name="sq" target="a/s/q" /><copy name="sr" target="a/s/r" /><copy name="ss" target="a/s/s" /></p>
 
     <p>Copy x/x/q, x/x/r</p>
-    <p name="pq4"><copy name="qqq" tname="a/q/q/q" /><copy name="qqr" tname="a/q/q/r" /><copy name="qrq" tname="a/q/r/q" /><copy name="qrr" tname="a/q/r/r" /><copy name="qsq" tname="a/q/s/q" /><copy name="qsr" tname="a/q/s/r" /></p>
-    <p name="pr4"><copy name="rqq" tname="a/r/q/q" /><copy name="rqr" tname="a/r/q/r" /><copy name="rrq" tname="a/r/r/q" /><copy name="rrr" tname="a/r/r/r" /><copy name="rsq" tname="a/r/s/q" /><copy name="rsr" tname="a/r/s/r" /></p>
-    <p name="ps4"><copy name="sqq" tname="a/s/q/q" /><copy name="sqr" tname="a/s/q/r" /><copy name="srq" tname="a/s/r/q" /><copy name="srr" tname="a/s/r/r" /><copy name="ssq" tname="a/s/s/q" /><copy name="ssr" tname="a/s/s/r" /></p>
+    <p name="pq4"><copy name="qqq" target="a/q/q/q" /><copy name="qqr" target="a/q/q/r" /><copy name="qrq" target="a/q/r/q" /><copy name="qrr" target="a/q/r/r" /><copy name="qsq" target="a/q/s/q" /><copy name="qsr" target="a/q/s/r" /></p>
+    <p name="pr4"><copy name="rqq" target="a/r/q/q" /><copy name="rqr" target="a/r/q/r" /><copy name="rrq" target="a/r/r/q" /><copy name="rrr" target="a/r/r/r" /><copy name="rsq" target="a/r/s/q" /><copy name="rsr" target="a/r/s/r" /></p>
+    <p name="ps4"><copy name="sqq" target="a/s/q/q" /><copy name="sqr" target="a/s/q/r" /><copy name="srq" target="a/s/r/q" /><copy name="srr" target="a/s/r/r" /><copy name="ssq" target="a/s/s/q" /><copy name="ssr" target="a/s/s/r" /></p>
 
     `}, "*");
     });
@@ -2776,27 +2776,27 @@ describe('Select Tag Tests', function () {
     <select assignnames="(a b c d)">
     <option>
       <math name="h1" newNamespace><math name="w">x</math><math>y</math></math>
-      <math simplify newNamespace><math name="q">z</math> + 2<copy name="v" tname="q" /></math>
-      <copy tname="a/w" />
-      <copy tname="b/q" />
+      <math simplify newNamespace><math name="q">z</math> + 2<copy name="v" target="q" /></math>
+      <copy target="a/w" />
+      <copy target="b/q" />
     </option>
     <option>
       <math name="h2" newNamespace><math name="w">u</math><math>v</math></math>
-      <math simplify newNamespace><math name="q">t</math> + 2<copy name="v" tname="q" /></math>
-      <copy tname="a/w" />
-      <copy tname="b/q" />
+      <math simplify newNamespace><math name="q">t</math> + 2<copy name="v" target="q" /></math>
+      <copy target="a/w" />
+      <copy target="b/q" />
     </option>
     </select>
     
     <p>Copy grandchidren</p>
-    <p><copy name="a2" tname="a" /></p>
-    <p><copy name="b2" tname="b" /></p>
-    <p><copy name="c2" tname="c" /></p>
-    <p><copy name="d2" tname="d" /></p>
+    <p><copy name="a2" target="a" /></p>
+    <p><copy name="b2" target="b" /></p>
+    <p><copy name="c2" target="c" /></p>
+    <p><copy name="d2" target="d" /></p>
     
     <p>Copy named children of grandchild</p>
-    <p><copy name="w2" tname="a/w" /></p>
-    <p><copy name="v2" tname="b/v" /></p>
+    <p><copy name="w2" target="a/w" /></p>
+    <p><copy name="v2" target="b/v" /></p>
     
     `}, "*");
     });
@@ -2825,7 +2825,7 @@ describe('Select Tag Tests', function () {
       let components = Object.assign({}, win.state.components);
 
       let chosenChildren = components['/_select1'].replacements[0].replacements
-        .filter(x => x.componentType !== "string")
+        .filter(x => typeof x !== "string")
         .map((v, i) => i < 2 ? v : v.replacements[0])
       let option = options[components['/_select1'].stateValues.selectedIndices[0] - 1];
 
@@ -2889,20 +2889,20 @@ describe('Select Tag Tests', function () {
     </aslist></p>
 
     <p>Copy whole select again</p>
-    <p><aslist name="list2"><copy name="s2" tname="_select1" /></aslist></p>
+    <p><aslist name="list2"><copy name="s2" target="_select1" /></aslist></p>
 
     <p>Copy individual selections</p>
     <p><aslist name="list3">
-    <copy name="j2" tname="j" />
-    <copy name="k2" tname="k" />
-    <copy name="l2" tname="l" />
+    <copy name="j2" target="j" />
+    <copy name="k2" target="k" />
+    <copy name="l2" target="l" />
     </aslist></p>
 
     <p>Copy individual pieces</p>
     <p><aslist name="list4">
-    <copy name="p1" tname="j/a/p" /><copy name="p2" tname="j/a/q" /><copy name="p3" tname="j/a/r" /><copy name="p4" tname="j/a/s" /><copy name="p5" tname="j/b/p" /><copy name="p6" tname="j/b/q" /><copy name="p7" tname="j/b/r" /><copy name="p8" tname="j/b/s" />
-    <copy name="p9" tname="k/a/p" /><copy name="p10" tname="k/a/q" /><copy name="p11" tname="k/a/r" /><copy name="p12" tname="k/a/s" /><copy name="p13" tname="k/b/p" /><copy name="p14" tname="k/b/q" /><copy name="p15" tname="k/b/r" /><copy name="p16" tname="k/b/s" />
-    <copy name="p17" tname="l/a/p" /><copy name="p18" tname="l/a/q" /><copy name="p19" tname="l/a/r" /><copy name="p20" tname="l/a/s" /><copy name="p21" tname="l/b/p" /><copy name="p22" tname="l/b/q" /><copy name="p23" tname="l/b/r" /><copy name="p24" tname="l/b/s" />
+    <copy name="p1" target="j/a/p" /><copy name="p2" target="j/a/q" /><copy name="p3" target="j/a/r" /><copy name="p4" target="j/a/s" /><copy name="p5" target="j/b/p" /><copy name="p6" target="j/b/q" /><copy name="p7" target="j/b/r" /><copy name="p8" target="j/b/s" />
+    <copy name="p9" target="k/a/p" /><copy name="p10" target="k/a/q" /><copy name="p11" target="k/a/r" /><copy name="p12" target="k/a/s" /><copy name="p13" target="k/b/p" /><copy name="p14" target="k/b/q" /><copy name="p15" target="k/b/r" /><copy name="p16" target="k/b/s" />
+    <copy name="p17" target="l/a/p" /><copy name="p18" target="l/a/q" /><copy name="p19" target="l/a/r" /><copy name="p20" target="l/a/s" /><copy name="p21" target="l/b/p" /><copy name="p22" target="l/b/q" /><copy name="p23" target="l/b/r" /><copy name="p24" target="l/b/s" />
     </aslist></p>
     `}, "*");
     });
@@ -2964,20 +2964,20 @@ describe('Select Tag Tests', function () {
     </aslist></p>
 
     <p>Copy whole select again</p>
-    <p><aslist name="list2"><copy name="s2" tname="s" /></aslist></p>
+    <p><aslist name="list2"><copy name="s2" target="s" /></aslist></p>
 
     <p>Copy individual selections</p>
     <p><aslist name="list3">
-    <copy name="j2" tname="s/j" />
-    <copy name="k2" tname="s/k" />
-    <copy name="l2" tname="s/l" />
+    <copy name="j2" target="s/j" />
+    <copy name="k2" target="s/k" />
+    <copy name="l2" target="s/l" />
     </aslist></p>
 
     <p>Copy individual pieces</p>
     <p><aslist name="list4">
-    <copy name="p1" tname="s/j/a/v/p" /><copy name="p2" tname="s/j/a/v/q" /><copy name="p3" tname="s/j/a/v/r" /><copy name="p4" tname="s/j/a/v/s" /><copy name="p5" tname="s/j/b/v/p" /><copy name="p6" tname="s/j/b/v/q" /><copy name="p7" tname="s/j/b/v/r" /><copy name="p8" tname="s/j/b/v/s" />
-    <copy name="p9" tname="s/k/a/v/p" /><copy name="p10" tname="s/k/a/v/q" /><copy name="p11" tname="s/k/a/v/r" /><copy name="p12" tname="s/k/a/v/s" /><copy name="p13" tname="s/k/b/v/p" /><copy name="p14" tname="s/k/b/v/q" /><copy name="p15" tname="s/k/b/v/r" /><copy name="p16" tname="s/k/b/v/s" />
-    <copy name="p17" tname="s/l/a/v/p" /><copy name="p18" tname="s/l/a/v/q" /><copy name="p19" tname="s/l/a/v/r" /><copy name="p20" tname="s/l/a/v/s" /><copy name="p21" tname="s/l/b/v/p" /><copy name="p22" tname="s/l/b/v/q" /><copy name="p23" tname="s/l/b/v/r" /><copy name="p24" tname="s/l/b/v/s" />
+    <copy name="p1" target="s/j/a/v/p" /><copy name="p2" target="s/j/a/v/q" /><copy name="p3" target="s/j/a/v/r" /><copy name="p4" target="s/j/a/v/s" /><copy name="p5" target="s/j/b/v/p" /><copy name="p6" target="s/j/b/v/q" /><copy name="p7" target="s/j/b/v/r" /><copy name="p8" target="s/j/b/v/s" />
+    <copy name="p9" target="s/k/a/v/p" /><copy name="p10" target="s/k/a/v/q" /><copy name="p11" target="s/k/a/v/r" /><copy name="p12" target="s/k/a/v/s" /><copy name="p13" target="s/k/b/v/p" /><copy name="p14" target="s/k/b/v/q" /><copy name="p15" target="s/k/b/v/r" /><copy name="p16" target="s/k/b/v/s" />
+    <copy name="p17" target="s/l/a/v/p" /><copy name="p18" target="s/l/a/v/q" /><copy name="p19" target="s/l/a/v/r" /><copy name="p20" target="s/l/a/v/s" /><copy name="p21" target="s/l/b/v/p" /><copy name="p22" target="s/l/b/v/q" /><copy name="p23" target="s/l/b/v/r" /><copy name="p24" target="s/l/b/v/s" />
     </aslist></p>
     `}, "*");
     });
@@ -3020,7 +3020,7 @@ describe('Select Tag Tests', function () {
         <option><text>d</text></option>
         <option><text>e</text></option>
       </select></p>
-      <p><copy tname="c" />, <copy tname="d" /></p>
+      <p><copy target="c" />, <copy target="d" /></p>
     `}, "*");
     });
 
@@ -3070,7 +3070,7 @@ describe('Select Tag Tests', function () {
           <text>f</text>
         </option>
       </select></aslist></p>
-      <p><copy tname="a" />, <copy hide="true" tname="b" />, <copy tname="c" />, <copy hide="false" tname="d" />, <copy tname="e" /></p>
+      <p><copy target="a" />, <copy hide="true" target="b" />, <copy target="c" />, <copy hide="false" target="d" />, <copy target="e" /></p>
     `}, "*");
     });
 
@@ -3117,7 +3117,7 @@ describe('Select Tag Tests', function () {
       <option><text>d</text></option>
       <option><text>e</text></option>
     </select></p>
-    <p><copy tname="c" />, <copy tname="d" /></p>
+    <p><copy target="c" />, <copy target="d" /></p>
     `}, "*");
     });
 
@@ -3162,12 +3162,12 @@ describe('Select Tag Tests', function () {
       <option>The $animal2 $verb2.</option>
     </select></p>
 
-    <p name="pa1">a1: <copy tname="a" assignNames="((a11) (a12))" /></p>
+    <p name="pa1">a1: <copy target="a" assignNames="((a11) (a12))" /></p>
 
-    <p name="ppieces" >pieces: <copy tname="_select1" assignNames="(b c)" /></p>
+    <p name="ppieces" >pieces: <copy target="_select1" assignNames="(b c)" /></p>
   
-    <p name="pb1">b1: <copy tname="b" assignNames="b1" /></p>
-    <p name="pc1">c1: <copy tname="c" assignNames="c1" /></p>
+    <p name="pb1">b1: <copy target="b" assignNames="b1" /></p>
+    <p name="pc1">c1: <copy target="c" assignNames="c1" /></p>
   
     
     `}, "*");

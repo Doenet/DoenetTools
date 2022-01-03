@@ -16,7 +16,7 @@ export default class Feedback extends BlockComponent {
     attributes.condition = {
       createComponentOfType: "boolean"
     }
-    attributes.updateWithTname = {
+    attributes.updateWithTarget = {
       createPrimitiveOfType: "string"
     }
 
@@ -36,31 +36,31 @@ export default class Feedback extends BlockComponent {
 
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
-    stateVariableDefinitions.updateWithTname = {
+    stateVariableDefinitions.updateWithTarget = {
       returnDependencies: () => ({
-        updateWithTnameAttr: {
+        updateWithTargetAttr: {
           dependencyType: "attributePrimitive",
-          attributeName: "updateWithTname"
+          attributeName: "updateWithTarget"
         }
       }),
       definition({ dependencyValues }) {
         return {
-          newValues: { updateWithTname: dependencyValues.updateWithTnameAttr }
+          newValues: { updateWithTarget: dependencyValues.updateWithTargetAttr }
         }
       }
     }
 
-    stateVariableDefinitions.updateWithFullTnames = {
+    stateVariableDefinitions.updateWithTargetComponentNames = {
       chainActionOnActionOfStateVariableTargets: {
         triggeredAction: "updateHide"
       },
-      stateVariablesDeterminingDependencies: ["updateWithTname"],
+      stateVariablesDeterminingDependencies: ["updateWithTarget"],
       returnDependencies({ stateValues }) {
-        if (stateValues.updateWithTname) {
+        if (stateValues.updateWithTarget) {
           return {
-            updateWithFullTname: {
+            updateWithTargetComponentName: {
               dependencyType: "expandTargetName",
-              tName: stateValues.updateWithTname
+              target: stateValues.updateWithTarget
             }
           }
         } else {
@@ -68,10 +68,10 @@ export default class Feedback extends BlockComponent {
         }
       },
       definition({ dependencyValues }) {
-        if (dependencyValues.updateWithFullTname) {
-          return { newValues: { updateWithFullTnames: [dependencyValues.updateWithFullTname] } }
+        if (dependencyValues.updateWithTargetComponentName) {
+          return { newValues: { updateWithTargetComponentNames: [dependencyValues.updateWithTargetComponentName] } }
         } else {
-          return { newValues: { updateWithFullTnames: [] } }
+          return { newValues: { updateWithTargetComponentNames: [] } }
         }
       }
     }
@@ -104,9 +104,9 @@ export default class Feedback extends BlockComponent {
     stateVariableDefinitions.hide = {
       forRenderer: true,
       defaultValue: true,
-      stateVariablesDeterminingDependencies: ["updateWithTname"],
+      stateVariablesDeterminingDependencies: ["updateWithTarget"],
       returnDependencies({ stateValues }) {
-        if (stateValues.updateWithTname) {
+        if (stateValues.updateWithTarget) {
           return {};
         } else {
           return {
@@ -170,15 +170,15 @@ export default class Feedback extends BlockComponent {
     return stateVariableDefinitions;
   }
 
-  updateHide() {
+  async updateHide() {
     let updateInstructions = [{
       updateType: "updateValue",
       componentName: this.componentName,
       stateVariable: "hide",
-      value: this.stateValues.hideWhenUpdated,
+      value: await this.stateValues.hideWhenUpdated,
     }]
 
-    return this.coreFunctions.performUpdate({ updateInstructions });
+    return await this.coreFunctions.performUpdate({ updateInstructions });
   }
 
   actions = {

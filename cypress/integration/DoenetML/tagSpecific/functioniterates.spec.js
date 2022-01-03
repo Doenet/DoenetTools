@@ -31,12 +31,12 @@ describe('FunctionIterates Tag Tests', function () {
   Then</p>
   <ul>
   <map assignNames="(l1) (l2) (l3) (l4) (l5) (l6) (l7)">
-    <template><li newnamespace><m>f^{$i}(u) = <copy componentIndex="$i" tname="../iterates" assignNames="iter" /></m></li></template>
+    <template><li newnamespace><m>f^{$i}(u) = <copy componentIndex="$i" target="../iterates" assignNames="iter" /></m></li></template>
     <sources indexAlias="i"><sequence length="$n" /></sources>
   </map>
   </ul>
 
-  <p hide><function name="f" variables="$x" symbolic simplify expand>$fformula</function><functioniterates function="$f" initialValue="$u" nIterates="$n" name="fis" /><copy prop="iterates" tname="fis"  name="iterates" /></p>
+  <p hide><function name="f" variables="$x" symbolic simplify expand>$fformula</function><functioniterates function="$f" initialValue="$u" nIterates="$n" name="fis" /><copy prop="iterates" target="fis"  name="iterates" /></p>
   
 
   `}, "*");
@@ -155,12 +155,12 @@ describe('FunctionIterates Tag Tests', function () {
   Then</p>
   <ul>
   <map assignNames="(l1) (l2) (l3) (l4) (l5) (l6) (l7)">
-    <template><li newnamespace><m>f^{$i}(u) = <copy componentIndex="$i" tname="../iterates" assignNames="iter" /></m></li></template>
+    <template><li newnamespace><m>f^{$i}(u) = <copy componentIndex="$i" target="../iterates" assignNames="iter" /></m></li></template>
     <sources indexAlias="i"><sequence length="$n" /></sources>
   </map>
   </ul>
 
-  <p hide><function name="f" variables="$x">$fformula</function><functioniterates function="$f" initialValue="$u" nIterates="$n" name="fis" /><copy prop="iterates" tname="fis"  name="iterates" /></p>
+  <p hide><function name="f" variables="$x">$fformula</function><functioniterates function="$f" initialValue="$u" nIterates="$n" name="fis" /><copy prop="iterates" target="fis"  name="iterates" /></p>
   
 
   `}, "*");
@@ -278,7 +278,7 @@ describe('FunctionIterates Tag Tests', function () {
   <m>u = </m> <mathinput name="u" prefill="(2,1)" /> <m>n=</m> <mathinput name="n" prefill="3" /></p>
 
   <functionIterates function="$f" initialValue="$u" nIterates="$n" name="fis" />
-  <p>Iterates: <aslist><copy prop="iterates" tname="fis" name="iterates" /></aslist></p>
+  <p>Iterates: <aslist><copy prop="iterates" target="fis" name="iterates" /></aslist></p>
 
   `}, "*");
     });
@@ -338,7 +338,7 @@ describe('FunctionIterates Tag Tests', function () {
   <m>f($vars) =</m> <mathinput name="fformula" prefill="(xy, x+y)" />.
   <m>u = </m> <mathinput name="u" prefill="(2,1)" /></p>
 
-  <p>Iterates: <aslist><copy prop="iterates" tname="fis" name="iterates" /></aslist></p>
+  <p>Iterates: <aslist><copy prop="iterates" target="fis" name="iterates" /></aslist></p>
 
 
   <p hide><mathlist mergeMathLists name="varList">$vars</mathlist><function name="f" variables="$varList" symbolic simplify expand>$fformula</function><functioniterates function="$f" initialValue="$u" nIterates="3" name="fis" /></p>
@@ -467,7 +467,7 @@ describe('FunctionIterates Tag Tests', function () {
   <m>f($vars) =</m> <mathinput name="fformula" prefill="(xy, x+y)" />.
   <m>u = </m> <mathinput name="u" prefill="(2,1)" /></p>
 
-  <p>Iterates: <aslist><copy prop="iterates" tname="fis" name="iterates" /></aslist></p>
+  <p>Iterates: <aslist><copy prop="iterates" target="fis" name="iterates" /></aslist></p>
 
 
   <p hide><mathlist mergeMathLists name="varList">$vars</mathlist><function name="f" variables="$varList">$fformula</function><functioniterates function="$f" initialValue="$u" nIterates="3" name="fis" /></p>

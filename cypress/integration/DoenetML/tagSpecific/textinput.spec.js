@@ -27,9 +27,9 @@ describe('TextInput Tag Tests', function () {
         doenetML: `
     <text>a</text>
     <textinput prefill='hello'/>
-    <copy tname="_textinput1" />
-    <copy prop='value' tname="_textinput1" />
-    <copy prop='immediateValue' tname="_textinput1" />
+    <copy target="_textinput1" />
+    <copy prop='value' target="_textinput1" />
+    <copy prop='immediateValue' target="_textinput1" />
     <textinput/>
     `}, "*");
     });
@@ -507,7 +507,7 @@ describe('TextInput Tag Tests', function () {
         doenetML: `
     <p>Original text: <text>hello there</text></p>
     <p>textinput based on text: <textinput bindValueTo="$_text1" /></p>
-    <p>Copied textinput: <copy tname="_textinput1" name="textinput2" /></p>
+    <p>Copied textinput: <copy target="_textinput1" name="textinput2" /></p>
     `}, "*");
     });
 
@@ -606,10 +606,10 @@ describe('TextInput Tag Tests', function () {
         doenetML: `
     <p>Original textinput: <textinput prefill="hello there"/></p>
     <p>textinput based on textinput: <textinput bindValueTo="$_textinput1" /></p>
-    <p>Immediate value of original: <text name="originalimmediate"><copy prop="immediateValue" tname="_textinput1"/></text></p>
-    <p>Value of original: <text name="originalvalue"><copy prop="value" tname="_textinput1"/></text></p>
-    <p>Immediate value of second: <text name="secondimmediate"><copy prop="immediateValue" tname="_textinput2"/></text></p>
-    <p>Value of second: <text name="secondvalue"><copy prop="value" tname="_textinput2"/></text></p>
+    <p>Immediate value of original: <text name="originalimmediate"><copy prop="immediateValue" target="_textinput1"/></text></p>
+    <p>Value of original: <text name="originalvalue"><copy prop="value" target="_textinput1"/></text></p>
+    <p>Immediate value of second: <text name="secondimmediate"><copy prop="immediateValue" target="_textinput2"/></text></p>
+    <p>Value of second: <text name="secondvalue"><copy prop="value" target="_textinput2"/></text></p>
     `}, "*");
     });
 
@@ -717,10 +717,10 @@ describe('TextInput Tag Tests', function () {
         doenetML: `
     <p>Original textinput: <textinput prefill="hello there"/></p>
     <p>textinput based on textinput: <textinput bindValueTo="$(_textinput1{prop='immediateValue'})" /></p>
-    <p>Immediate value of original: <text name="originalimmediate"><copy prop="immediateValue" tname="_textinput1"/></text></p>
-    <p>Value of original: <text name="originalvalue"><copy prop="value" tname="_textinput1"/></text></p>
-    <p>Immediate value of second: <text name="secondimmediate"><copy prop="immediateValue" tname="_textinput2"/></text></p>
-    <p>Value of second: <text name="secondvalue"><copy prop="value" tname="_textinput2"/></text></p>
+    <p>Immediate value of original: <text name="originalimmediate"><copy prop="immediateValue" target="_textinput1"/></text></p>
+    <p>Value of original: <text name="originalvalue"><copy prop="value" target="_textinput1"/></text></p>
+    <p>Immediate value of second: <text name="secondimmediate"><copy prop="immediateValue" target="_textinput2"/></text></p>
+    <p>Value of second: <text name="secondvalue"><copy prop="value" target="_textinput2"/></text></p>
 
     `}, "*");
     });
@@ -824,7 +824,7 @@ describe('TextInput Tag Tests', function () {
     <textinput name="ti" />
 
     <text name="h">hello</text>
-    <updateValue triggerWithTnames="ti" tname="h" newValue="$h$ti" type="text" />
+    <updateValue triggerWithTargets="ti" target="h" newValue="$h$ti" type="text" />
     `}, "*");
     });
 
@@ -849,6 +849,43 @@ describe('TextInput Tag Tests', function () {
 
     cy.get('#\\/ti_input').type("{enter}")
     cy.get('#\\/h').should('have.text', 'hello there!')
+
+  })
+
+  it('expanded textinput', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <textinput name="ti" expanded />
+
+    <p>$ti</p>
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.get('#\\/ti_input').type("hello")
+    cy.get('#\\/ti_input').should('have.value', 'hello')
+    cy.get('#\\/_p1').should('have.text', '')
+
+
+    cy.get('#\\/ti_input').blur();
+    cy.get('#\\/ti_input').should('have.value', 'hello')
+    cy.get('#\\/_p1').should('have.text', 'hello')
+
+    cy.get('#\\/ti_input').type("{enter}bye{enter}")
+    cy.get('#\\/ti_input').should('have.value', 'hello\nbye\n')
+    cy.get('#\\/_p1').should('have.text', 'hello\nbye')
+
+    // cy.get('#\\/ti_input').blur();
+    // cy.get('#\\/ti_input').should('have.value', 'hello\nbye\n')
+    // cy.get('#\\/_p1').should('have.text', 'hello\nbye\n')
+
+
+    cy.get('#\\/ti_input').type("{ctrl+home}new{enter}old{enter}")
+    cy.get('#\\/_p1').should('have.text', 'new\nold\nhello\nbye')
+
 
   })
 

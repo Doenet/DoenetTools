@@ -226,7 +226,7 @@ export default class Parabola extends Curve {
         return { newValues: { throughPoints } }
 
       },
-      inverseArrayDefinitionByKey({ desiredStateVariableValues,
+      async inverseArrayDefinitionByKey({ desiredStateVariableValues,
         dependencyValuesByKey, dependencyNamesByKey,
         initialChange, stateValues,
       }) {
@@ -236,7 +236,7 @@ export default class Parabola extends Curve {
         // console.log(dependencyValuesByKey)
 
         // if not draggable, then disallow initial change 
-        if (initialChange && !stateValues.draggable) {
+        if (initialChange && !await stateValues.draggable) {
           return { success: false };
         }
 
@@ -672,7 +672,7 @@ export default class Parabola extends Curve {
 
         }
       },
-      inverseDefinition: function ({ desiredStateVariableValues, dependencyValues, stateValues, workspace }) {
+      inverseDefinition: async function ({ desiredStateVariableValues, dependencyValues, stateValues, workspace }) {
         // console.log('inverse definition of a, b, c, realValued of parabola')
         // console.log(desiredStateVariableValues)
         // console.log(dependencyValues);
@@ -723,11 +723,11 @@ export default class Parabola extends Curve {
 
         Object.assign(workspace, desiredNumericalValues);
 
-        let getWorkingParameterValue = function (parName) {
+        let getWorkingParameterValue = async function (parName) {
           if (workspace[parName] !== undefined) {
             return workspace[parName]
           } else {
-            return stateValues[parName];
+            return await stateValues[parName];
           }
         }
 
@@ -761,9 +761,9 @@ export default class Parabola extends Curve {
           // move point to be at vertex
           // modify a if changed
 
-          let a = getWorkingParameterValue("a")
-          let b = getWorkingParameterValue("b")
-          let c = getWorkingParameterValue("c")
+          let a = await getWorkingParameterValue("a")
+          let b = await getWorkingParameterValue("b")
+          let c = await getWorkingParameterValue("c")
 
           let x1 = -b / (2 * a);
           let y1 = c - b * b / (4 * a);
@@ -791,9 +791,9 @@ export default class Parabola extends Curve {
           // modify a if changed
           // Exception, if points are identical, make them be at vertex
 
-          let a = getWorkingParameterValue("a")
-          let b = getWorkingParameterValue("b")
-          let c = getWorkingParameterValue("c")
+          let a = await getWorkingParameterValue("a")
+          let b = await getWorkingParameterValue("b")
+          let c = await getWorkingParameterValue("c")
 
           let p1 = dependencyValues.numericalThroughPoints[0];
           let x1 = p1[0];
@@ -854,9 +854,9 @@ export default class Parabola extends Curve {
           // Exceptions if some points are identical
 
 
-          let a = getWorkingParameterValue("a")
-          let b = getWorkingParameterValue("b");
-          let c = getWorkingParameterValue("c");
+          let a = await getWorkingParameterValue("a")
+          let b = await getWorkingParameterValue("b");
+          let c = await getWorkingParameterValue("c");
 
           let p1 = dependencyValues.numericalThroughPoints[0];
           let x1 = p1[0];
@@ -1057,7 +1057,7 @@ export default class Parabola extends Curve {
         }
         return { newValues: { vertex } }
       },
-      inverseArrayDefinitionByKey: function ({ desiredStateVariableValues, globalDependencyValues,
+      inverseArrayDefinitionByKey: async function ({ desiredStateVariableValues, globalDependencyValues,
         workspace, stateValues
       }) {
         // console.log(`inverse definition of parabola vertex`)
@@ -1072,7 +1072,7 @@ export default class Parabola extends Curve {
         } else if (workspace.x !== undefined) {
           x = workspace.x
         } else {
-          x = stateValues.vertex[0].tree
+          x = (await stateValues.vertex)[0].tree
         }
         if (Number.isFinite(x)) {
           workspace.x = x;
@@ -1086,7 +1086,7 @@ export default class Parabola extends Curve {
         } else if (workspace.y !== undefined) {
           y = workspace.y
         } else {
-          y = stateValues.vertex[1].tree
+          y = (await stateValues.vertex)[1].tree
         }
         if (Number.isFinite(y)) {
           workspace.y = y;

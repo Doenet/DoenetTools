@@ -15,7 +15,7 @@ describe('Numberlist Tag Tests', function () {
   })
 
   it('numberlist from string', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -29,19 +29,19 @@ describe('Numberlist Tag Tests', function () {
     cy.get('#\\/_p1').should('have.text', '5, 2, 3.141592654')
 
     cy.log('Test internal values are set to the correct values')
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/_numberlist1'].activeChildren[0].stateValues.value).eq(5);
       expect(components['/_numberlist1'].activeChildren[1].stateValues.value).eq(2);
       expect(components['/_numberlist1'].activeChildren[2].stateValues.value).closeTo(Math.PI, 14);
-      expect(components['/_numberlist1'].stateValues.numbers[0]).eq(5);
-      expect(components['/_numberlist1'].stateValues.numbers[1]).eq(2);
-      expect(components['/_numberlist1'].stateValues.numbers[2]).closeTo(Math.PI, 14);
+      expect((await components['/_numberlist1'].stateValues.numbers)[0]).eq(5);
+      expect((await components['/_numberlist1'].stateValues.numbers)[1]).eq(2);
+      expect((await components['/_numberlist1'].stateValues.numbers)[2]).closeTo(Math.PI, 14);
     })
   })
 
   it('numberlist with error in string', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -55,19 +55,19 @@ describe('Numberlist Tag Tests', function () {
     cy.get('#\\/_p1').should('have.text', '5, NaN, 2')
 
     cy.log('Test internal values are set to the correct values')
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/_numberlist1'].activeChildren[0].stateValues.value).eq(5);
       assert.isNaN(components['/_numberlist1'].activeChildren[1].stateValues.value);
       expect(components['/_numberlist1'].activeChildren[2].stateValues.value).eq(2);
-      expect(components['/_numberlist1'].stateValues.numbers[0]).eq(5);
-      assert.isNaN(components['/_numberlist1'].stateValues.numbers[1]);
-      expect(components['/_numberlist1'].stateValues.numbers[2]).eq(2);
+      expect((await components['/_numberlist1'].stateValues.numbers)[0]).eq(5);
+      assert.isNaN((await components['/_numberlist1'].stateValues.numbers)[1]);
+      expect((await components['/_numberlist1'].stateValues.numbers)[2]).eq(2);
     })
   })
 
   it('numberlist with number children', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -84,17 +84,17 @@ describe('Numberlist Tag Tests', function () {
     cy.get('#\\/_p1').should('have.text', '5, 2')
 
     cy.log('Test internal values are set to the correct values')
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/_numberlist1'].activeChildren[0].stateValues.value).eq(5);
       expect(components['/_numberlist1'].activeChildren[1].stateValues.value).eq(2);
-      expect(components['/_numberlist1'].stateValues.numbers[0]).eq(5);
-      expect(components['/_numberlist1'].stateValues.numbers[1]).eq(2);
+      expect((await components['/_numberlist1'].stateValues.numbers)[0]).eq(5);
+      expect((await components['/_numberlist1'].stateValues.numbers)[1]).eq(2);
     })
   })
 
   it('numberlist with number and string children', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -112,23 +112,23 @@ describe('Numberlist Tag Tests', function () {
     cy.get('#\\/_p1').should('have.text', '-1, 4, 5, 9, 2')
 
     cy.log('Test internal values are set to the correct values')
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/_numberlist1'].activeChildren[0].stateValues.value).eq(-1);
       expect(components['/_numberlist1'].activeChildren[1].stateValues.value).eq(4);
       expect(components['/_numberlist1'].activeChildren[2].stateValues.value).eq(5);
       expect(components['/_numberlist1'].activeChildren[3].stateValues.value).eq(9);
       expect(components['/_numberlist1'].activeChildren[4].stateValues.value).eq(2);
-      expect(components['/_numberlist1'].stateValues.numbers[0]).eq(-1);
-      expect(components['/_numberlist1'].stateValues.numbers[1]).eq(4);
-      expect(components['/_numberlist1'].stateValues.numbers[2]).eq(5);
-      expect(components['/_numberlist1'].stateValues.numbers[3]).eq(9);
-      expect(components['/_numberlist1'].stateValues.numbers[4]).eq(2);
+      expect((await components['/_numberlist1'].stateValues.numbers)[0]).eq(-1);
+      expect((await components['/_numberlist1'].stateValues.numbers)[1]).eq(4);
+      expect((await components['/_numberlist1'].stateValues.numbers)[2]).eq(5);
+      expect((await components['/_numberlist1'].stateValues.numbers)[3]).eq(9);
+      expect((await components['/_numberlist1'].stateValues.numbers)[4]).eq(2);
     })
   })
 
   it('numberlist with math and number children', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -145,17 +145,17 @@ describe('Numberlist Tag Tests', function () {
     cy.get('#\\/_p1').should('have.text', '5, 2')
 
     cy.log('Test internal values are set to the correct values')
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/_numberlist1'].activeChildren[0].stateValues.value).eq(5);
       expect(components['/_numberlist1'].activeChildren[1].stateValues.value).eq(2);
-      expect(components['/_numberlist1'].stateValues.numbers[0]).eq(5);
-      expect(components['/_numberlist1'].stateValues.numbers[1]).eq(2);
+      expect((await components['/_numberlist1'].stateValues.numbers)[0]).eq(5);
+      expect((await components['/_numberlist1'].stateValues.numbers)[1]).eq(2);
     })
   })
 
   it('numberlist with numberlist children, test inverse', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -191,31 +191,31 @@ describe('Numberlist Tag Tests', function () {
     cy.get('#\\/_p1').should('have.text', '1, 2, 3, 4, 5, 6, 7, 8, 9')
 
     cy.log('Test internal values are set to the correct values')
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_numberlist1'].stateValues.numbers[0]).eq(1);
-      expect(components['/_numberlist1'].stateValues.numbers[1]).eq(2);
-      expect(components['/_numberlist1'].stateValues.numbers[2]).eq(3);
-      expect(components['/_numberlist1'].stateValues.numbers[3]).eq(4);
-      expect(components['/_numberlist1'].stateValues.numbers[4]).eq(5);
-      expect(components['/_numberlist1'].stateValues.numbers[5]).eq(6);
-      expect(components['/_numberlist1'].stateValues.numbers[6]).eq(7);
-      expect(components['/_numberlist1'].stateValues.numbers[7]).eq(8);
-      expect(components['/_numberlist1'].stateValues.numbers[8]).eq(9);
-      expect(components['/_numberlist2'].stateValues.numbers[0]).eq(2);
-      expect(components['/_numberlist2'].stateValues.numbers[1]).eq(3);
-      expect(components['/_numberlist3'].stateValues.numbers[0]).eq(5);
-      expect(components['/_numberlist3'].stateValues.numbers[1]).eq(6);
-      expect(components['/_numberlist3'].stateValues.numbers[2]).eq(7);
-      expect(components['/_numberlist3'].stateValues.numbers[3]).eq(8);
-      expect(components['/_numberlist3'].stateValues.numbers[4]).eq(9);
-      expect(components['/_numberlist4'].stateValues.numbers[0]).eq(5);
-      expect(components['/_numberlist4'].stateValues.numbers[1]).eq(6);
-      expect(components['/_numberlist4'].stateValues.numbers[2]).eq(7);
-      expect(components['/_numberlist5'].stateValues.numbers[0]).eq(6);
-      expect(components['/_numberlist5'].stateValues.numbers[1]).eq(7);
-      expect(components['/_numberlist6'].stateValues.numbers[0]).eq(8);
-      expect(components['/_numberlist6'].stateValues.numbers[1]).eq(9);
+      expect((await components['/_numberlist1'].stateValues.numbers)[0]).eq(1);
+      expect((await components['/_numberlist1'].stateValues.numbers)[1]).eq(2);
+      expect((await components['/_numberlist1'].stateValues.numbers)[2]).eq(3);
+      expect((await components['/_numberlist1'].stateValues.numbers)[3]).eq(4);
+      expect((await components['/_numberlist1'].stateValues.numbers)[4]).eq(5);
+      expect((await components['/_numberlist1'].stateValues.numbers)[5]).eq(6);
+      expect((await components['/_numberlist1'].stateValues.numbers)[6]).eq(7);
+      expect((await components['/_numberlist1'].stateValues.numbers)[7]).eq(8);
+      expect((await components['/_numberlist1'].stateValues.numbers)[8]).eq(9);
+      expect((await components['/_numberlist2'].stateValues.numbers)[0]).eq(2);
+      expect((await components['/_numberlist2'].stateValues.numbers)[1]).eq(3);
+      expect((await components['/_numberlist3'].stateValues.numbers)[0]).eq(5);
+      expect((await components['/_numberlist3'].stateValues.numbers)[1]).eq(6);
+      expect((await components['/_numberlist3'].stateValues.numbers)[2]).eq(7);
+      expect((await components['/_numberlist3'].stateValues.numbers)[3]).eq(8);
+      expect((await components['/_numberlist3'].stateValues.numbers)[4]).eq(9);
+      expect((await components['/_numberlist4'].stateValues.numbers)[0]).eq(5);
+      expect((await components['/_numberlist4'].stateValues.numbers)[1]).eq(6);
+      expect((await components['/_numberlist4'].stateValues.numbers)[2]).eq(7);
+      expect((await components['/_numberlist5'].stateValues.numbers)[0]).eq(6);
+      expect((await components['/_numberlist5'].stateValues.numbers)[1]).eq(7);
+      expect((await components['/_numberlist6'].stateValues.numbers)[0]).eq(8);
+      expect((await components['/_numberlist6'].stateValues.numbers)[1]).eq(9);
     })
 
     cy.log('change values')
@@ -235,38 +235,38 @@ describe('Numberlist Tag Tests', function () {
     cy.get('#\\/_p1').should('have.text', '-11, -12, -13, -14, -15, -16, -17, -18, -19')
 
     cy.log('Test internal values are set to the correct values')
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_numberlist1'].stateValues.numbers[0]).eq(-11);
-      expect(components['/_numberlist1'].stateValues.numbers[1]).eq(-12);
-      expect(components['/_numberlist1'].stateValues.numbers[2]).eq(-13);
-      expect(components['/_numberlist1'].stateValues.numbers[3]).eq(-14);
-      expect(components['/_numberlist1'].stateValues.numbers[4]).eq(-15);
-      expect(components['/_numberlist1'].stateValues.numbers[5]).eq(-16);
-      expect(components['/_numberlist1'].stateValues.numbers[6]).eq(-17);
-      expect(components['/_numberlist1'].stateValues.numbers[7]).eq(-18);
-      expect(components['/_numberlist1'].stateValues.numbers[8]).eq(-19);
-      expect(components['/_numberlist2'].stateValues.numbers[0]).eq(-12);
-      expect(components['/_numberlist2'].stateValues.numbers[1]).eq(-13);
-      expect(components['/_numberlist3'].stateValues.numbers[0]).eq(-15);
-      expect(components['/_numberlist3'].stateValues.numbers[1]).eq(-16);
-      expect(components['/_numberlist3'].stateValues.numbers[2]).eq(-17);
-      expect(components['/_numberlist3'].stateValues.numbers[3]).eq(-18);
-      expect(components['/_numberlist3'].stateValues.numbers[4]).eq(-19);
-      expect(components['/_numberlist4'].stateValues.numbers[0]).eq(-15);
-      expect(components['/_numberlist4'].stateValues.numbers[1]).eq(-16);
-      expect(components['/_numberlist4'].stateValues.numbers[2]).eq(-17);
-      expect(components['/_numberlist5'].stateValues.numbers[0]).eq(-16);
-      expect(components['/_numberlist5'].stateValues.numbers[1]).eq(-17);
-      expect(components['/_numberlist6'].stateValues.numbers[0]).eq(-18);
-      expect(components['/_numberlist6'].stateValues.numbers[1]).eq(-19);
+      expect((await components['/_numberlist1'].stateValues.numbers)[0]).eq(-11);
+      expect((await components['/_numberlist1'].stateValues.numbers)[1]).eq(-12);
+      expect((await components['/_numberlist1'].stateValues.numbers)[2]).eq(-13);
+      expect((await components['/_numberlist1'].stateValues.numbers)[3]).eq(-14);
+      expect((await components['/_numberlist1'].stateValues.numbers)[4]).eq(-15);
+      expect((await components['/_numberlist1'].stateValues.numbers)[5]).eq(-16);
+      expect((await components['/_numberlist1'].stateValues.numbers)[6]).eq(-17);
+      expect((await components['/_numberlist1'].stateValues.numbers)[7]).eq(-18);
+      expect((await components['/_numberlist1'].stateValues.numbers)[8]).eq(-19);
+      expect((await components['/_numberlist2'].stateValues.numbers)[0]).eq(-12);
+      expect((await components['/_numberlist2'].stateValues.numbers)[1]).eq(-13);
+      expect((await components['/_numberlist3'].stateValues.numbers)[0]).eq(-15);
+      expect((await components['/_numberlist3'].stateValues.numbers)[1]).eq(-16);
+      expect((await components['/_numberlist3'].stateValues.numbers)[2]).eq(-17);
+      expect((await components['/_numberlist3'].stateValues.numbers)[3]).eq(-18);
+      expect((await components['/_numberlist3'].stateValues.numbers)[4]).eq(-19);
+      expect((await components['/_numberlist4'].stateValues.numbers)[0]).eq(-15);
+      expect((await components['/_numberlist4'].stateValues.numbers)[1]).eq(-16);
+      expect((await components['/_numberlist4'].stateValues.numbers)[2]).eq(-17);
+      expect((await components['/_numberlist5'].stateValues.numbers)[0]).eq(-16);
+      expect((await components['/_numberlist5'].stateValues.numbers)[1]).eq(-17);
+      expect((await components['/_numberlist6'].stateValues.numbers)[0]).eq(-18);
+      expect((await components['/_numberlist6'].stateValues.numbers)[1]).eq(-19);
     })
 
 
   })
 
   it('numberlist with numberlist children and sugar, test inverse', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -302,31 +302,31 @@ describe('Numberlist Tag Tests', function () {
     cy.get('#\\/_p1').should('have.text', '1, 2, 3, 4, 5, 6, 7, 8, 9')
 
     cy.log('Test internal values are set to the correct values')
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_numberlist1'].stateValues.numbers[0]).eq(1);
-      expect(components['/_numberlist1'].stateValues.numbers[1]).eq(2);
-      expect(components['/_numberlist1'].stateValues.numbers[2]).eq(3);
-      expect(components['/_numberlist1'].stateValues.numbers[3]).eq(4);
-      expect(components['/_numberlist1'].stateValues.numbers[4]).eq(5);
-      expect(components['/_numberlist1'].stateValues.numbers[5]).eq(6);
-      expect(components['/_numberlist1'].stateValues.numbers[6]).eq(7);
-      expect(components['/_numberlist1'].stateValues.numbers[7]).eq(8);
-      expect(components['/_numberlist1'].stateValues.numbers[8]).eq(9);
-      expect(components['/_numberlist2'].stateValues.numbers[0]).eq(2);
-      expect(components['/_numberlist2'].stateValues.numbers[1]).eq(3);
-      expect(components['/_numberlist3'].stateValues.numbers[0]).eq(5);
-      expect(components['/_numberlist3'].stateValues.numbers[1]).eq(6);
-      expect(components['/_numberlist3'].stateValues.numbers[2]).eq(7);
-      expect(components['/_numberlist3'].stateValues.numbers[3]).eq(8);
-      expect(components['/_numberlist3'].stateValues.numbers[4]).eq(9);
-      expect(components['/_numberlist4'].stateValues.numbers[0]).eq(5);
-      expect(components['/_numberlist4'].stateValues.numbers[1]).eq(6);
-      expect(components['/_numberlist4'].stateValues.numbers[2]).eq(7);
-      expect(components['/_numberlist5'].stateValues.numbers[0]).eq(6);
-      expect(components['/_numberlist5'].stateValues.numbers[1]).eq(7);
-      expect(components['/_numberlist6'].stateValues.numbers[0]).eq(8);
-      expect(components['/_numberlist6'].stateValues.numbers[1]).eq(9);
+      expect((await components['/_numberlist1'].stateValues.numbers)[0]).eq(1);
+      expect((await components['/_numberlist1'].stateValues.numbers)[1]).eq(2);
+      expect((await components['/_numberlist1'].stateValues.numbers)[2]).eq(3);
+      expect((await components['/_numberlist1'].stateValues.numbers)[3]).eq(4);
+      expect((await components['/_numberlist1'].stateValues.numbers)[4]).eq(5);
+      expect((await components['/_numberlist1'].stateValues.numbers)[5]).eq(6);
+      expect((await components['/_numberlist1'].stateValues.numbers)[6]).eq(7);
+      expect((await components['/_numberlist1'].stateValues.numbers)[7]).eq(8);
+      expect((await components['/_numberlist1'].stateValues.numbers)[8]).eq(9);
+      expect((await components['/_numberlist2'].stateValues.numbers)[0]).eq(2);
+      expect((await components['/_numberlist2'].stateValues.numbers)[1]).eq(3);
+      expect((await components['/_numberlist3'].stateValues.numbers)[0]).eq(5);
+      expect((await components['/_numberlist3'].stateValues.numbers)[1]).eq(6);
+      expect((await components['/_numberlist3'].stateValues.numbers)[2]).eq(7);
+      expect((await components['/_numberlist3'].stateValues.numbers)[3]).eq(8);
+      expect((await components['/_numberlist3'].stateValues.numbers)[4]).eq(9);
+      expect((await components['/_numberlist4'].stateValues.numbers)[0]).eq(5);
+      expect((await components['/_numberlist4'].stateValues.numbers)[1]).eq(6);
+      expect((await components['/_numberlist4'].stateValues.numbers)[2]).eq(7);
+      expect((await components['/_numberlist5'].stateValues.numbers)[0]).eq(6);
+      expect((await components['/_numberlist5'].stateValues.numbers)[1]).eq(7);
+      expect((await components['/_numberlist6'].stateValues.numbers)[0]).eq(8);
+      expect((await components['/_numberlist6'].stateValues.numbers)[1]).eq(9);
     })
 
     cy.log('change values')
@@ -346,55 +346,55 @@ describe('Numberlist Tag Tests', function () {
     cy.get('#\\/_p1').should('have.text', '-11, -12, -13, -14, -15, -16, -17, -18, -19')
 
     cy.log('Test internal values are set to the correct values')
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_numberlist1'].stateValues.numbers[0]).eq(-11);
-      expect(components['/_numberlist1'].stateValues.numbers[1]).eq(-12);
-      expect(components['/_numberlist1'].stateValues.numbers[2]).eq(-13);
-      expect(components['/_numberlist1'].stateValues.numbers[3]).eq(-14);
-      expect(components['/_numberlist1'].stateValues.numbers[4]).eq(-15);
-      expect(components['/_numberlist1'].stateValues.numbers[5]).eq(-16);
-      expect(components['/_numberlist1'].stateValues.numbers[6]).eq(-17);
-      expect(components['/_numberlist1'].stateValues.numbers[7]).eq(-18);
-      expect(components['/_numberlist1'].stateValues.numbers[8]).eq(-19);
-      expect(components['/_numberlist2'].stateValues.numbers[0]).eq(-12);
-      expect(components['/_numberlist2'].stateValues.numbers[1]).eq(-13);
-      expect(components['/_numberlist3'].stateValues.numbers[0]).eq(-15);
-      expect(components['/_numberlist3'].stateValues.numbers[1]).eq(-16);
-      expect(components['/_numberlist3'].stateValues.numbers[2]).eq(-17);
-      expect(components['/_numberlist3'].stateValues.numbers[3]).eq(-18);
-      expect(components['/_numberlist3'].stateValues.numbers[4]).eq(-19);
-      expect(components['/_numberlist4'].stateValues.numbers[0]).eq(-15);
-      expect(components['/_numberlist4'].stateValues.numbers[1]).eq(-16);
-      expect(components['/_numberlist4'].stateValues.numbers[2]).eq(-17);
-      expect(components['/_numberlist5'].stateValues.numbers[0]).eq(-16);
-      expect(components['/_numberlist5'].stateValues.numbers[1]).eq(-17);
-      expect(components['/_numberlist6'].stateValues.numbers[0]).eq(-18);
-      expect(components['/_numberlist6'].stateValues.numbers[1]).eq(-19);
+      expect((await components['/_numberlist1'].stateValues.numbers)[0]).eq(-11);
+      expect((await components['/_numberlist1'].stateValues.numbers)[1]).eq(-12);
+      expect((await components['/_numberlist1'].stateValues.numbers)[2]).eq(-13);
+      expect((await components['/_numberlist1'].stateValues.numbers)[3]).eq(-14);
+      expect((await components['/_numberlist1'].stateValues.numbers)[4]).eq(-15);
+      expect((await components['/_numberlist1'].stateValues.numbers)[5]).eq(-16);
+      expect((await components['/_numberlist1'].stateValues.numbers)[6]).eq(-17);
+      expect((await components['/_numberlist1'].stateValues.numbers)[7]).eq(-18);
+      expect((await components['/_numberlist1'].stateValues.numbers)[8]).eq(-19);
+      expect((await components['/_numberlist2'].stateValues.numbers)[0]).eq(-12);
+      expect((await components['/_numberlist2'].stateValues.numbers)[1]).eq(-13);
+      expect((await components['/_numberlist3'].stateValues.numbers)[0]).eq(-15);
+      expect((await components['/_numberlist3'].stateValues.numbers)[1]).eq(-16);
+      expect((await components['/_numberlist3'].stateValues.numbers)[2]).eq(-17);
+      expect((await components['/_numberlist3'].stateValues.numbers)[3]).eq(-18);
+      expect((await components['/_numberlist3'].stateValues.numbers)[4]).eq(-19);
+      expect((await components['/_numberlist4'].stateValues.numbers)[0]).eq(-15);
+      expect((await components['/_numberlist4'].stateValues.numbers)[1]).eq(-16);
+      expect((await components['/_numberlist4'].stateValues.numbers)[2]).eq(-17);
+      expect((await components['/_numberlist5'].stateValues.numbers)[0]).eq(-16);
+      expect((await components['/_numberlist5'].stateValues.numbers)[1]).eq(-17);
+      expect((await components['/_numberlist6'].stateValues.numbers)[0]).eq(-18);
+      expect((await components['/_numberlist6'].stateValues.numbers)[1]).eq(-19);
     })
 
   })
 
   it('numberlist with self references', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
     <p><numberlist>
       <number>1</number>
       <numberlist>2 3</numberlist>
-      <copy prop="number3" tname="_numberlist1" componentType="number" />
+      <copy prop="number3" target="_numberlist1" componentType="number" />
       <numberlist>
         <numberlist name="mid">
-          <number><copy prop="number1" tname="_numberlist1" componentType="number" /></number>
+          <number><copy prop="number1" target="_numberlist1" componentType="number" /></number>
           <numberlist>4 5</numberlist>
         </numberlist>
         <numberlist>
-          <copy prop="number2" tname="_numberlist1" componentType="number" />
-          <copy prop="number5" tname="_numberlist1" componentType="number" />
+          <copy prop="number2" target="_numberlist1" componentType="number" />
+          <copy prop="number5" target="_numberlist1" componentType="number" />
         </numberlist>
       </numberlist>
-      <copy tname="mid" />
+      <copy target="mid" />
     </numberlist></p>
 
     <mathinput bindValueTo="$(_numberlist1{prop='number1'})"/>
@@ -414,14 +414,14 @@ describe('Numberlist Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
 
       let vals = [1, 2, 3, 4, 5]
       let mapping = [0, 1, 2, 2, 0, 3, 4, 1, 0, 0, 3, 4];
       let mv = i => vals[mapping[i]];
 
-      let numbers = components['/_numberlist1'].stateValues.numbers;
+      let numbers = (await components['/_numberlist1'].stateValues.numbers);
 
       let mathinputAnchors = []
       for (let i in mapping) {
@@ -432,7 +432,7 @@ describe('Numberlist Tag Tests', function () {
       cy.get('#\\/_p1').should('have.text', mapping.map(x => vals[x]).join(", "))
 
       cy.log('Test internal values are set to the correct values')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         for (let i in mapping) {
           expect(numbers[i]).eq(mv(i));
         }
@@ -441,7 +441,7 @@ describe('Numberlist Tag Tests', function () {
       cy.log('change values')
 
       for (let changeInd in mapping) {
-        cy.window().then((win) => {
+        cy.window().then(async (win) => {
           vals[mapping[changeInd]] = 100 + Number(changeInd);
           cy.get(mathinputAnchors[changeInd]).type("{end}{backspace}{backspace}{backspace}" + (100 + Number(changeInd)) + "{enter}", { force: true });
 
@@ -449,7 +449,7 @@ describe('Numberlist Tag Tests', function () {
           cy.get('#\\/_p1').should('have.text', mapping.map(x => vals[x]).join(", "))
 
           cy.log('Test internal values are set to the correct values')
-          cy.window().then((win) => {
+          cy.window().then(async (win) => {
             for (let i in mapping) {
               expect(numbers[i]).eq(mv(i));
             }
@@ -463,7 +463,7 @@ describe('Numberlist Tag Tests', function () {
   })
 
   it('numberlist with maximum number', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -488,54 +488,54 @@ describe('Numberlist Tag Tests', function () {
     cy.get('#\\/_p1').should('have.text', '1, 2, 3, 6, 7, 8, 10')
 
     cy.log('Test internal values are set to the correct values')
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_numberlist1'].stateValues.numbers.length).eq(7);
-      expect(components['/_numberlist1'].stateValues.numbers[0]).eq(1);
-      expect(components['/_numberlist1'].stateValues.numbers[1]).eq(2);
-      expect(components['/_numberlist1'].stateValues.numbers[2]).eq(3);
-      expect(components['/_numberlist1'].stateValues.numbers[3]).eq(6);
-      expect(components['/_numberlist1'].stateValues.numbers[4]).eq(7);
-      expect(components['/_numberlist1'].stateValues.numbers[5]).eq(8);
-      expect(components['/_numberlist1'].stateValues.numbers[6]).eq(10);
-      expect(components['/_numberlist2'].stateValues.numbers.length).eq(2);
-      expect(components['/_numberlist2'].stateValues.numbers[0]).eq(2);
-      expect(components['/_numberlist2'].stateValues.numbers[1]).eq(3);
-      expect(components['/_numberlist3'].stateValues.numbers.length).eq(4);
-      expect(components['/_numberlist3'].stateValues.numbers[0]).eq(7);
-      expect(components['/_numberlist3'].stateValues.numbers[1]).eq(8);
-      expect(components['/_numberlist3'].stateValues.numbers[2]).eq(10);
-      expect(components['/_numberlist3'].stateValues.numbers[3]).eq(11);
-      expect(components['/_numberlist4'].stateValues.numbers.length).eq(2);
-      expect(components['/_numberlist4'].stateValues.numbers[0]).eq(7);
-      expect(components['/_numberlist4'].stateValues.numbers[1]).eq(8);
-      expect(components['/_numberlist5'].stateValues.numbers.length).eq(2);
-      expect(components['/_numberlist5'].stateValues.numbers[0]).eq(8);
-      expect(components['/_numberlist5'].stateValues.numbers[1]).eq(9);
-      expect(components['/_numberlist6'].stateValues.numbers.length).eq(3);
-      expect(components['/_numberlist6'].stateValues.numbers[0]).eq(10);
-      expect(components['/_numberlist6'].stateValues.numbers[1]).eq(11);
-      expect(components['/_numberlist6'].stateValues.numbers[2]).eq(12);
+      expect((await components['/_numberlist1'].stateValues.numbers).length).eq(7);
+      expect((await components['/_numberlist1'].stateValues.numbers)[0]).eq(1);
+      expect((await components['/_numberlist1'].stateValues.numbers)[1]).eq(2);
+      expect((await components['/_numberlist1'].stateValues.numbers)[2]).eq(3);
+      expect((await components['/_numberlist1'].stateValues.numbers)[3]).eq(6);
+      expect((await components['/_numberlist1'].stateValues.numbers)[4]).eq(7);
+      expect((await components['/_numberlist1'].stateValues.numbers)[5]).eq(8);
+      expect((await components['/_numberlist1'].stateValues.numbers)[6]).eq(10);
+      expect((await components['/_numberlist2'].stateValues.numbers).length).eq(2);
+      expect((await components['/_numberlist2'].stateValues.numbers)[0]).eq(2);
+      expect((await components['/_numberlist2'].stateValues.numbers)[1]).eq(3);
+      expect((await components['/_numberlist3'].stateValues.numbers).length).eq(4);
+      expect((await components['/_numberlist3'].stateValues.numbers)[0]).eq(7);
+      expect((await components['/_numberlist3'].stateValues.numbers)[1]).eq(8);
+      expect((await components['/_numberlist3'].stateValues.numbers)[2]).eq(10);
+      expect((await components['/_numberlist3'].stateValues.numbers)[3]).eq(11);
+      expect((await components['/_numberlist4'].stateValues.numbers).length).eq(2);
+      expect((await components['/_numberlist4'].stateValues.numbers)[0]).eq(7);
+      expect((await components['/_numberlist4'].stateValues.numbers)[1]).eq(8);
+      expect((await components['/_numberlist5'].stateValues.numbers).length).eq(2);
+      expect((await components['/_numberlist5'].stateValues.numbers)[0]).eq(8);
+      expect((await components['/_numberlist5'].stateValues.numbers)[1]).eq(9);
+      expect((await components['/_numberlist6'].stateValues.numbers).length).eq(3);
+      expect((await components['/_numberlist6'].stateValues.numbers)[0]).eq(10);
+      expect((await components['/_numberlist6'].stateValues.numbers)[1]).eq(11);
+      expect((await components['/_numberlist6'].stateValues.numbers)[2]).eq(12);
     })
   })
 
   it('numberlist within numberlists, with child hide', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
     <p><numberlist hide="true">1 2 3</numberlist></p>
 
-    <p><copy name="numberlist1a" hide="false" tname="_numberlist1" /></p>
+    <p><copy name="numberlist1a" hide="false" target="_numberlist1" /></p>
 
     <p><numberlist>
       <number>4</number>
-      <copy tname="_numberlist1" />
+      <copy target="_numberlist1" />
       <number hide>5</number>
-      <copy tname="numberlist1a" />
+      <copy target="numberlist1a" />
     </numberlist></p>
 
-    <p><copy name="numberlist3" maximumnumber="6" tname="_numberlist2" /></p>
+    <p><copy name="numberlist3" maximumnumber="6" target="_numberlist2" /></p>
 
     `}, "*");
     });
@@ -554,34 +554,34 @@ describe('Numberlist Tag Tests', function () {
 
 
     cy.log('Test internal values are set to the correct values')
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let numberlist1a = components["/numberlist1a"].replacements[0];
       let numberlist3 = components["/numberlist3"].replacements[0];
-      expect(components['/_numberlist1'].stateValues.numbers.length).eq(3);
-      expect(components['/_numberlist1'].stateValues.numbers[0]).eq(1);
-      expect(components['/_numberlist1'].stateValues.numbers[1]).eq(2);
-      expect(components['/_numberlist1'].stateValues.numbers[2]).eq(3);
-      expect(numberlist1a.stateValues.numbers.length).eq(3);
-      expect(numberlist1a.stateValues.numbers[0]).eq(1);
-      expect(numberlist1a.stateValues.numbers[1]).eq(2);
-      expect(numberlist1a.stateValues.numbers[2]).eq(3);
-      expect(components['/_numberlist2'].stateValues.numbers.length).eq(8);
-      expect(components['/_numberlist2'].stateValues.numbers[0]).eq(4);
-      expect(components['/_numberlist2'].stateValues.numbers[1]).eq(1);
-      expect(components['/_numberlist2'].stateValues.numbers[2]).eq(2);
-      expect(components['/_numberlist2'].stateValues.numbers[3]).eq(3);
-      expect(components['/_numberlist2'].stateValues.numbers[4]).eq(5);
-      expect(components['/_numberlist2'].stateValues.numbers[5]).eq(1);
-      expect(components['/_numberlist2'].stateValues.numbers[6]).eq(2);
-      expect(components['/_numberlist2'].stateValues.numbers[7]).eq(3);
-      expect(numberlist3.stateValues.numbers.length).eq(6);
-      expect(numberlist3.stateValues.numbers[0]).eq(4);
-      expect(numberlist3.stateValues.numbers[1]).eq(1);
-      expect(numberlist3.stateValues.numbers[2]).eq(2);
-      expect(numberlist3.stateValues.numbers[3]).eq(3);
-      expect(numberlist3.stateValues.numbers[4]).eq(5);
-      expect(numberlist3.stateValues.numbers[5]).eq(1);
+      expect((await components['/_numberlist1'].stateValues.numbers).length).eq(3);
+      expect((await components['/_numberlist1'].stateValues.numbers)[0]).eq(1);
+      expect((await components['/_numberlist1'].stateValues.numbers)[1]).eq(2);
+      expect((await components['/_numberlist1'].stateValues.numbers)[2]).eq(3);
+      expect((await numberlist1a.stateValues.numbers).length).eq(3);
+      expect((await numberlist1a.stateValues.numbers)[0]).eq(1);
+      expect((await numberlist1a.stateValues.numbers)[1]).eq(2);
+      expect((await numberlist1a.stateValues.numbers)[2]).eq(3);
+      expect((await components['/_numberlist2'].stateValues.numbers).length).eq(8);
+      expect((await components['/_numberlist2'].stateValues.numbers)[0]).eq(4);
+      expect((await components['/_numberlist2'].stateValues.numbers)[1]).eq(1);
+      expect((await components['/_numberlist2'].stateValues.numbers)[2]).eq(2);
+      expect((await components['/_numberlist2'].stateValues.numbers)[3]).eq(3);
+      expect((await components['/_numberlist2'].stateValues.numbers)[4]).eq(5);
+      expect((await components['/_numberlist2'].stateValues.numbers)[5]).eq(1);
+      expect((await components['/_numberlist2'].stateValues.numbers)[6]).eq(2);
+      expect((await components['/_numberlist2'].stateValues.numbers)[7]).eq(3);
+      expect((await numberlist3.stateValues.numbers).length).eq(6);
+      expect((await numberlist3.stateValues.numbers)[0]).eq(4);
+      expect((await numberlist3.stateValues.numbers)[1]).eq(1);
+      expect((await numberlist3.stateValues.numbers)[2]).eq(2);
+      expect((await numberlist3.stateValues.numbers)[3]).eq(3);
+      expect((await numberlist3.stateValues.numbers)[4]).eq(5);
+      expect((await numberlist3.stateValues.numbers)[5]).eq(1);
 
     })
 

@@ -12,7 +12,7 @@ export default class FunctionOperator extends Function {
 
       // only apply if all children are strings or macros
       if (!matchedChildren.every(child =>
-        child.componentType === "string" ||
+        typeof child === "string" ||
         child.doenetAttributes && child.doenetAttributes.createdFromMacro
       )) {
         return { success: false }
@@ -20,7 +20,7 @@ export default class FunctionOperator extends Function {
 
       // don't apply to a single macro
       if (matchedChildren.length === 1 &&
-        matchedChildren[0].componentType !== "string"
+        typeof matchedChildren[0] !== "string"
       ) {
         return { success: false }
       }
@@ -444,53 +444,21 @@ export default class FunctionOperator extends Function {
 
 
     // remove function child dependency from minima
-    stateVariableDefinitions.allMinima.returnDependencies = () => ({
-      numericalf: {
-        dependencyType: "stateVariable",
-        variableName: "numericalf",
-      },
-      xscale: {
-        dependencyType: "stateVariable",
-        variableName: "xscale"
-      },
-      nInputs: {
-        dependencyType: "stateVariable",
-        variableName: "nInputs"
-      },
-      nOutputs: {
-        dependencyType: "stateVariable",
-        variableName: "nOutputs"
-      },
-      domain: {
-        dependencyType: "stateVariable",
-        variableName: "domain"
-      },
-    })
+    let originalAllMinimaReturnDeps = stateVariableDefinitions.allMinima.returnDependencies;
+    stateVariableDefinitions.allMinima.returnDependencies = function (args) {
+      let dependencies = originalAllMinimaReturnDeps(args);
+      delete dependencies.functionChild;
+      return dependencies;
+    }
 
 
     // remove function child dependency from maxima
-    stateVariableDefinitions.allMaxima.returnDependencies = () => ({
-      numericalf: {
-        dependencyType: "stateVariable",
-        variableName: "numericalf",
-      },
-      xscale: {
-        dependencyType: "stateVariable",
-        variableName: "xscale"
-      },
-      nInputs: {
-        dependencyType: "stateVariable",
-        variableName: "nInputs"
-      },
-      nOutputs: {
-        dependencyType: "stateVariable",
-        variableName: "nOutputs"
-      },
-      domain: {
-        dependencyType: "stateVariable",
-        variableName: "domain"
-      },
-    })
+    let originalAllMaximaReturnDeps = stateVariableDefinitions.allMaxima.returnDependencies;
+    stateVariableDefinitions.allMaxima.returnDependencies = function (args) {
+      let dependencies = originalAllMaximaReturnDeps(args);
+      delete dependencies.functionChild;
+      return dependencies;
+    }
 
     return stateVariableDefinitions;
 

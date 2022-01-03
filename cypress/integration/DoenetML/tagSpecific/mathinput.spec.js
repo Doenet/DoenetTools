@@ -26,9 +26,9 @@ describe('MathInput Tag Tests', function () {
         doenetML: `
     <text>a</text>
     <mathinput prefill='x+1'/>
-    <copy tname="_mathinput1" />
-    <copy prop='value' tname="_mathinput1" />
-    <copy prop='immediatevalue' tname="_mathinput1" />
+    <copy target="_mathinput1" />
+    <copy prop='value' target="_mathinput1" />
+    <copy prop='immediatevalue' target="_mathinput1" />
     <mathinput/>
     `}, "*");
     });
@@ -269,6 +269,7 @@ describe('MathInput Tag Tests', function () {
       cy.get('#\\/_mathinput1 textarea').focus();
 
       cy.log('Test values displayed in browser')
+      cy.get(`#\\/_mathinput1 .mq-editable-field`).should('contain.text', 'x+y')
       cy.get(`#\\/_mathinput1 .mq-editable-field`).invoke('text').then((text) => {
         expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('x+y')
       })
@@ -645,6 +646,7 @@ describe('MathInput Tag Tests', function () {
       cy.get('#\\/_mathinput2 textarea').focus();
 
       cy.log('Test values displayed in browser')
+      cy.get(`#\\/_mathinput1 .mq-editable-field`).should('not.contain.text', 'abcd')
       cy.get(`#\\/_mathinput1 .mq-editable-field`).invoke('text').then((text) => {
         expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('')
       })
@@ -685,11 +687,11 @@ describe('MathInput Tag Tests', function () {
     <text>a</text>
     <p>Original math: <math>1+2x</math></p>
     <p>MathInput based on math: <mathinput bindValueTo="$_math1" /></p>
-    <p>Copied mathinput: <copy tname="_mathinput1" name="mathinput2" /></p>
-    <p>Value of original mathinput: <copy tname="_mathinput1" prop="value" name="value1" /></p>
-    <p>Immediate value of original mathinput: <copy tname="_mathinput1" prop="immediateValue" name="immediate1" /></p>
-    <p>Value of copied mathinput: <copy tname="mathinput2" prop="value" name="value2" /></p>
-    <p>Immediate value of copied mathinput: <copy tname="mathinput2" prop="immediateValue" name="immediate2" /></p>
+    <p>Copied mathinput: <copy target="_mathinput1" name="mathinput2" /></p>
+    <p>Value of original mathinput: <copy target="_mathinput1" prop="value" name="value1" /></p>
+    <p>Immediate value of original mathinput: <copy target="_mathinput1" prop="immediateValue" name="immediate1" /></p>
+    <p>Value of copied mathinput: <copy target="mathinput2" prop="value" name="value2" /></p>
+    <p>Immediate value of copied mathinput: <copy target="mathinput2" prop="immediateValue" name="immediate2" /></p>
     `}, "*");
     });
 
@@ -839,11 +841,11 @@ describe('MathInput Tag Tests', function () {
     <text>b</text>
     <p>Original math: <math>1+2x</math></p>
     <p>MathInput based on math: <mathinput prefill="x^2/9" bindValueTo="$_math1" /></p>
-    <p>Copied mathinput: <copy tname="_mathinput1" name="mathinput2" /></p>
-    <p>Value of original mathinput: <copy tname="_mathinput1" prop="value" name="value1" /></p>
-    <p>Immediate value of original mathinput: <copy tname="_mathinput1" prop="immediateValue" name="immediate1" /></p>
-    <p>Value of copied mathinput: <copy tname="mathinput2" prop="value" name="value2" /></p>
-    <p>Immediate value of copied mathinput: <copy tname="mathinput2" prop="immediateValue" name="immediate2" /></p>
+    <p>Copied mathinput: <copy target="_mathinput1" name="mathinput2" /></p>
+    <p>Value of original mathinput: <copy target="_mathinput1" prop="value" name="value1" /></p>
+    <p>Immediate value of original mathinput: <copy target="_mathinput1" prop="immediateValue" name="immediate1" /></p>
+    <p>Value of copied mathinput: <copy target="mathinput2" prop="value" name="value2" /></p>
+    <p>Immediate value of copied mathinput: <copy target="mathinput2" prop="immediateValue" name="immediate2" /></p>
 
     `}, "*");
     });
@@ -899,11 +901,11 @@ describe('MathInput Tag Tests', function () {
     <text>c</text>
     <p>Original math: <math simplify>1+<math>3x</math></math></p>
     <p>MathInput based on math: <mathinput bindValueTo="$_math1" /></p>
-    <p>Copied mathinput: <copy tname="_mathinput1" name="mathinput2" /></p>
-    <p>Value of original mathinput: <copy tname="_mathinput1" prop="value" name="value1" /></p>
-    <p>Immediate value of original mathinput: <copy tname="_mathinput1" prop="immediateValue" name="immediate1" /></p>
-    <p>Value of copied mathinput: <copy tname="mathinput2" prop="value" name="value2" /></p>
-    <p>Immediate value of copied mathinput: <copy tname="mathinput2" prop="immediateValue" name="immediate2" /></p>
+    <p>Copied mathinput: <copy target="_mathinput1" name="mathinput2" /></p>
+    <p>Value of original mathinput: <copy target="_mathinput1" prop="value" name="value1" /></p>
+    <p>Immediate value of original mathinput: <copy target="_mathinput1" prop="immediateValue" name="immediate1" /></p>
+    <p>Value of copied mathinput: <copy target="mathinput2" prop="value" name="value2" /></p>
+    <p>Immediate value of copied mathinput: <copy target="mathinput2" prop="immediateValue" name="immediate2" /></p>
 
     `}, "*");
     });
@@ -1025,11 +1027,11 @@ describe('MathInput Tag Tests', function () {
     <text>d</text>
     <p>Original math: <math>1+<math>2x</math><math>z</math></math></p>
     <p>MathInput based on math: <mathinput bindValueTo="$_math1" /></p>
-    <p>Copied mathinput: <copy tname="_mathinput1" name="mathinput2" /></p>
-    <p>Value of original mathinput: <copy tname="_mathinput1" prop="value" name="value1" /></p>
-    <p>Immediate value of original mathinput: <copy tname="_mathinput1" prop="immediateValue" name="immediate1" /></p>
-    <p>Value of copied mathinput: <copy tname="mathinput2" prop="value" name="value2" /></p>
-    <p>Immediate value of copied mathinput: <copy tname="mathinput2" prop="immediateValue" name="immediate2" /></p>
+    <p>Copied mathinput: <copy target="_mathinput1" name="mathinput2" /></p>
+    <p>Value of original mathinput: <copy target="_mathinput1" prop="value" name="value1" /></p>
+    <p>Immediate value of original mathinput: <copy target="_mathinput1" prop="immediateValue" name="immediate1" /></p>
+    <p>Value of copied mathinput: <copy target="mathinput2" prop="value" name="value2" /></p>
+    <p>Immediate value of copied mathinput: <copy target="mathinput2" prop="immediateValue" name="immediate2" /></p>
 
     `}, "*");
     });
@@ -1149,10 +1151,10 @@ describe('MathInput Tag Tests', function () {
         doenetML: `
     <p>Original mathinput: <mathinput prefill="x+1"/></p>
     <p>mathinput based on mathinput: <mathinput bindValueTo="$_mathinput1" /></p>
-    <p>Immediate value of original: <math name="originalimmediate"><copy prop="immediateValue" tname="_mathinput1"/></math></p>
-    <p>Value of original: <math name="originalvalue"><copy prop="value" tname="_mathinput1"/></math></p>
-    <p>Immediate value of second: <math name="secondimmediate"><copy prop="immediateValue" tname="_mathinput2"/></math></p>
-    <p>Value of second: <math name="secondvalue"><copy prop="value" tname="_mathinput2"/></math></p>
+    <p>Immediate value of original: <math name="originalimmediate"><copy prop="immediateValue" target="_mathinput1"/></math></p>
+    <p>Value of original: <math name="originalvalue"><copy prop="value" target="_mathinput1"/></math></p>
+    <p>Immediate value of second: <math name="secondimmediate"><copy prop="immediateValue" target="_mathinput2"/></math></p>
+    <p>Value of second: <math name="secondvalue"><copy prop="value" target="_mathinput2"/></math></p>
   `}, "*");
     });
 
@@ -1271,6 +1273,7 @@ describe('MathInput Tag Tests', function () {
     // cy.get('#\\/_mathinput1_input').should('have.value', 'x + 123');
     // cy.get('#\\/_mathinput2_input').should('have.value', 'x + 123');
 
+    cy.get('#\\/originalimmediate .mjx-mrow').should('contain.text', 'x+123')
     cy.get('#\\/originalimmediate').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('x+123')
     });
@@ -1299,10 +1302,10 @@ describe('MathInput Tag Tests', function () {
         doenetML: `
     <p>Original mathinput: <mathinput prefill="x+1"/></p>
     <p>mathinput based on mathinput: <mathinput bindValueTo="$(_mathinput1{prop='immediateValue'})" /></p>
-    <p>Immediate value of original: <math name="originalimmediate"><copy prop="immediateValue" tname="_mathinput1"/></math></p>
-    <p>Value of original: <math name="originalvalue"><copy prop="value" tname="_mathinput1"/></math></p>
-    <p>Immediate value of second: <math name="secondimmediate"><copy prop="immediateValue" tname="_mathinput2"/></math></p>
-    <p>Value of second: <math name="secondvalue"><copy prop="value" tname="_mathinput2"/></math></p>
+    <p>Immediate value of original: <math name="originalimmediate"><copy prop="immediateValue" target="_mathinput1"/></math></p>
+    <p>Value of original: <math name="originalvalue"><copy prop="value" target="_mathinput1"/></math></p>
+    <p>Immediate value of second: <math name="secondimmediate"><copy prop="immediateValue" target="_mathinput2"/></math></p>
+    <p>Value of second: <math name="secondvalue"><copy prop="value" target="_mathinput2"/></math></p>
   `}, "*");
     });
 
@@ -1421,6 +1424,7 @@ describe('MathInput Tag Tests', function () {
     // cy.get('#\\/_mathinput1_input').should('have.value', 'x + 123');
     // cy.get('#\\/_mathinput2_input').should('have.value', 'x + 123');
 
+    cy.get('#\\/originalimmediate .mjx-mrow').should('contain.text', 'x+123')
     cy.get('#\\/originalimmediate').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('x+123')
     });
@@ -1449,7 +1453,7 @@ describe('MathInput Tag Tests', function () {
         doenetML: `
     <text>Enter vector</text>
     <mathinput name="a"/>
-    <copy tname="a" prop="value" assignNames="b" />
+    <copy target="a" prop="value" assignNames="b" />
     `}, "*");
     });
 
@@ -1473,10 +1477,10 @@ describe('MathInput Tag Tests', function () {
         doenetML: `
     <text>a</text>
     <p>f, g: <mathinput name="a"/></p>
-    <p><copy tname="a" prop="value" assignNames="a2" /></p>
+    <p><copy target="a" prop="value" assignNames="a2" /></p>
 
     <p>h, q: <mathinput name="b" functionSymbols="h q" /></p>
-    <p><copy tname="b" prop="value" assignNames="b2" /></p>
+    <p><copy target="b" prop="value" assignNames="b2" /></p>
     `}, "*");
     });
 
@@ -1564,15 +1568,15 @@ describe('MathInput Tag Tests', function () {
         doenetML: `
     <text>a</text>
     <p>a: <mathinput name="a" displayDigits="5" prefill="sin(2x)"/></p>
-    <p>a2: <copy tname="a" prop="value" assignNames="a2" /></p>
-    <p>a3: <copy tname="a" prop="immediateValue" assignNames="a3" /></p>
-    <p>a4: <copy tname="a" prop="value" assignNames="a4" displayDigits="16" /></p>
-    <p>a5: <copy tname="a" prop="immediateValue" assignNames="a5" displayDigits="16" /></p>
+    <p>a2: <copy target="a" prop="value" assignNames="a2" /></p>
+    <p>a3: <copy target="a" prop="immediateValue" assignNames="a3" /></p>
+    <p>a4: <copy target="a" prop="value" assignNames="a4" displayDigits="16" /></p>
+    <p>a5: <copy target="a" prop="immediateValue" assignNames="a5" displayDigits="16" /></p>
 
     <p>b: <math name="b">10e^(3y)</math></p>
     <p>b2: <mathinput name="b2" bindValueTo="$b"  displayDigits="3" /></p>
-    <p>b3: <copy tname="b2" prop="value" assignNames="b3" /></p>
-    <p>b4: <copy tname="b2" prop="immediateValue" assignNames="b4" /></p>
+    <p>b3: <copy target="b2" prop="value" assignNames="b3" /></p>
+    <p>b4: <copy target="b2" prop="immediateValue" assignNames="b4" /></p>
     `}, "*");
     });
 
@@ -1713,6 +1717,7 @@ describe('MathInput Tag Tests', function () {
     cy.get('#\\/a .mq-editable-field').invoke('text').then((text) => {
       expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('sin(345.14x)')
     })
+    cy.get('#\\/a2 .mjx-mrow').should('contain.text', 'sin(345.14x)')
     cy.get('#\\/a2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('sin(345.14x)')
     })
@@ -1758,6 +1763,7 @@ describe('MathInput Tag Tests', function () {
 
     cy.get('#\\/b2 textarea').blur();
 
+    cy.get('#\\/b .mjx-mrow').should('contain.text', '6.05e0.0000073y')
     cy.get('#\\/b').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('6.05e0.0000073y')
     })
@@ -1790,13 +1796,13 @@ describe('MathInput Tag Tests', function () {
         doenetML: `
     <text>a</text>
     <p>a: <mathinput name="a" displayDecimals="2" prefill="sin(2x)"/></p>
-    <p>a2: <copy tname="a" prop="value" assignNames="a2" /></p>
-    <p>a3: <copy tname="a" prop="immediateValue" assignNames="a3" /></p>
+    <p>a2: <copy target="a" prop="value" assignNames="a2" /></p>
+    <p>a3: <copy target="a" prop="immediateValue" assignNames="a3" /></p>
 
     <p>b: <math name="b">10e^(3y)</math></p>
     <p>b2: <mathinput name="b2" bindValueTo="$b"  displayDecimals="8" /></p>
-    <p>b3: <copy tname="b2" prop="value" assignNames="b3" /></p>
-    <p>b4: <copy tname="b2" prop="immediateValue" assignNames="b4" /></p>
+    <p>b3: <copy target="b2" prop="value" assignNames="b3" /></p>
+    <p>b4: <copy target="b2" prop="immediateValue" assignNames="b4" /></p>
     `}, "*");
     });
 
@@ -1938,6 +1944,7 @@ describe('MathInput Tag Tests', function () {
     cy.get('#\\/a .mq-editable-field').invoke('text').then((text) => {
       expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('sin(345.14x)')
     })
+    cy.get('#\\/a2 .mjx-mrow').should('contain.text', 'sin(345.14x)')
     cy.get('#\\/a2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('sin(345.14x)')
     })
@@ -1985,6 +1992,7 @@ describe('MathInput Tag Tests', function () {
 
     cy.get('#\\/b2 textarea').blur();
 
+    cy.get('#\\/b .mjx-mrow').should('contain.text', '6.04752934e0.0000073y')
     cy.get('#\\/b').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('6.04752934e0.0000073y')
     })
@@ -2017,24 +2025,24 @@ describe('MathInput Tag Tests', function () {
         doenetML: `
     <text>a</text>
     <p>a: <mathinput name="a" displayDigits="5" prefill="sin(2x)"/></p>
-    <p>a2: <copy tname="a" prop="value" assignNames="a2" /></p>
-    <p>a3: <copy tname="a" prop="immediatevalue" assignNames="a3" /></p>
-    <p>a4: <copy tname="a" prop="value" assignNames="a4" displayDigits="16" /></p>
-    <p>a5: <copy tname="a" prop="immediatevalue" assignNames="a5" displayDigits="16" /></p>
+    <p>a2: <copy target="a" prop="value" assignNames="a2" /></p>
+    <p>a3: <copy target="a" prop="immediatevalue" assignNames="a3" /></p>
+    <p>a4: <copy target="a" prop="value" assignNames="a4" displayDigits="16" /></p>
+    <p>a5: <copy target="a" prop="immediatevalue" assignNames="a5" displayDigits="16" /></p>
   
     <p>b: <math name="b">10e^(3y)</math></p>
     <p>b2: <mathinput name="b2" bindValueTo="$b"  displayDigits="3" /></p>
-    <p>b3: <copy tname="b2" prop="value" assignNames="b3" /></p>
-    <p>b4: <copy tname="b2" prop="immediatevalue" assignNames="b4" /></p>
+    <p>b3: <copy target="b2" prop="value" assignNames="b3" /></p>
+    <p>b4: <copy target="b2" prop="immediatevalue" assignNames="b4" /></p>
 
     <p>c: <mathinput name="c" displayDigits="5" prefill="sin(2x)" displaySmallAsZero /></p>
-    <p>c2: <copy tname="c" prop="value" assignNames="c2" /></p>
-    <p>c3: <copy tname="c" prop="immediatevalue" assignNames="c3" /></p>
+    <p>c2: <copy target="c" prop="value" assignNames="c2" /></p>
+    <p>c3: <copy target="c" prop="immediatevalue" assignNames="c3" /></p>
 
     <p>d: <math name="d">10e^(3y)</math></p>
     <p>d2: <mathinput name="d2" bindValueTo="$d"  displayDigits="3" displaySmallAsZero /></p>
-    <p>d3: <copy tname="d2" prop="value" assignNames="d3" /></p>
-    <p>d4: <copy tname="d2" prop="immediatevalue" assignNames="d4" /></p>
+    <p>d3: <copy target="d2" prop="value" assignNames="d3" /></p>
+    <p>d4: <copy target="d2" prop="immediatevalue" assignNames="d4" /></p>
     `}, "*");
     });
 
@@ -2471,8 +2479,8 @@ describe('MathInput Tag Tests', function () {
         doenetML: `
     <text>a</text>
     <p>a: <mathinput name="a" /></p>
-    <p>a2: <copy prop="value" tname="a" assignNames="a2" /></p>
-    <p>a3: <copy prop="value" tname="a" simplify assignNames="a3" /></p>
+    <p>a2: <copy prop="value" target="a" assignNames="a2" /></p>
+    <p>a3: <copy prop="value" target="a" simplify assignNames="a3" /></p>
     `}, "*");
     });
 
@@ -2499,8 +2507,8 @@ describe('MathInput Tag Tests', function () {
         doenetML: `
     <text>a</text>
     <p>a: <mathinput name="a" /></p>
-    <p>a2: <copy prop="value" tname="a" assignNames="a2" /></p>
-    <p>a3: <copy prop="value" tname="a" simplify assignNames="a3" /></p>
+    <p>a2: <copy prop="value" target="a" assignNames="a2" /></p>
+    <p>a3: <copy prop="value" target="a" simplify assignNames="a3" /></p>
     `}, "*");
     });
 
@@ -2779,8 +2787,8 @@ describe('MathInput Tag Tests', function () {
         doenetML: `
     <text>a</text>
     <p>a: <mathinput name="a" /></p>
-    <p>a2: <copy prop="value" tname="a" assignNames="a2" /></p>
-    <p>a3: <copy prop="value" tname="a" simplify assignNames="a3" /></p>
+    <p>a2: <copy prop="value" target="a" assignNames="a2" /></p>
+    <p>a3: <copy prop="value" target="a" simplify assignNames="a3" /></p>
     `}, "*");
     });
 
@@ -2864,8 +2872,8 @@ describe('MathInput Tag Tests', function () {
     
     <mathinput name="mi" bindValueTo="$(A{prop='x'})" />
     
-    <copy prop='x' tname="A" assignNames="Ax" />
-    <copy prop='value' tname='mi' assignNames="mi2" />
+    <copy prop='x' target="A" assignNames="Ax" />
+    <copy prop='value' target='mi' assignNames="mi2" />
 
     <graph>
       <point x="$mi" y="3" name="B" />
@@ -2926,6 +2934,7 @@ describe('MathInput Tag Tests', function () {
 
     });
 
+    cy.get('#\\/Ax .mjx-mrow').should('contain.text', '4')
     cy.get('#\\/Ax').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('4')
     })
@@ -2961,6 +2970,8 @@ describe('MathInput Tag Tests', function () {
       components["/B"].movePoint({ x: 5.1, y: 1.3 })
 
     });
+
+    cy.get('#\\/Ax .mjx-mrow').should('contain.text', '5')
 
     cy.get('#\\/Ax').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('5')
@@ -2999,7 +3010,7 @@ describe('MathInput Tag Tests', function () {
     <mathinput name="mi" />
 
     <math simplify name="x">x</math>
-    <updateValue triggerWithTnames="mi" tname="x" newValue="$x+$mi" />
+    <updateValue triggerWithTargets="mi" target="x" newValue="$x+$mi" />
     `}, "*");
     });
 
@@ -3051,8 +3062,8 @@ describe('MathInput Tag Tests', function () {
     <mathinput name="mins" splitSymbols="false" />
     <mathinput name="mis" />
 
-    <p>No split: <copy prop="value" tname="mins" assignNames="mns"/></p>
-    <p>Split: <copy prop="value" tname="mis" assignNames="ms"/></p>
+    <p>No split: <copy prop="value" target="mins" assignNames="mns"/></p>
+    <p>Split: <copy prop="value" target="mis" assignNames="ms"/></p>
     `}, "*");
     });
 
@@ -3118,7 +3129,7 @@ describe('MathInput Tag Tests', function () {
     <text>a</text>
     <mathinput name="mi" />
 
-    <p>Value: <copy prop="value" tname="mi" assignNames="m"/></p>
+    <p>Value: <copy prop="value" target="mi" assignNames="m"/></p>
     `}, "*");
     });
 
@@ -3284,8 +3295,8 @@ describe('MathInput Tag Tests', function () {
     <math name="noSplit" splitSymbols="false">xyz</math>
     <mathinput name="varWithNum2" bindValueTo="$varWithNum" />
     <mathinput name="noSplit2" splitSymbols="false" bindValueTo="$noSplit" />
-    <copy prop="value" tname="varWithNum2" assignNames="varWithNum3"/>
-    <copy prop="value" tname="noSplit2" assignNames="noSplit3"/>
+    <copy prop="value" target="varWithNum2" assignNames="varWithNum3"/>
+    <copy prop="value" target="noSplit2" assignNames="noSplit3"/>
     `}, "*");
     });
 
@@ -3376,10 +3387,10 @@ describe('MathInput Tag Tests', function () {
     <mathinput name="union2" prefill="$unionText" format="latex" />
     <mathinput name="union3" prefill="A union B" />
     <mathinput name="union4" prefill="A \\cup B" format="latex" />
-    <copy prop="value" tname="union1" assignNames="union1m" />
-    <copy prop="value" tname="union2" assignNames="union2m" />
-    <copy prop="value" tname="union3" assignNames="union3m" />
-    <copy prop="value" tname="union4" assignNames="union4m" />
+    <copy prop="value" target="union1" assignNames="union1m" />
+    <copy prop="value" target="union2" assignNames="union2m" />
+    <copy prop="value" target="union3" assignNames="union3m" />
+    <copy prop="value" target="union4" assignNames="union4m" />
     </p>
     
     <p>
@@ -3389,12 +3400,12 @@ describe('MathInput Tag Tests', function () {
     <mathinput name="splits4" prefill="$split" splitSymbols="false" />
     <mathinput name="splits5" prefill="xy" />
     <mathinput name="splits6" prefill="xy" splitSymbols="false" />
-    <copy prop="value" tname="splits1" assignNames="splits1m" />
-    <copy prop="value" tname="splits2" assignNames="splits2m" />
-    <copy prop="value" tname="splits3" assignNames="splits3m" />
-    <copy prop="value" tname="splits4" assignNames="splits4m" />
-    <copy prop="value" tname="splits5" assignNames="splits5m" />
-    <copy prop="value" tname="splits6" assignNames="splits6m" />
+    <copy prop="value" target="splits1" assignNames="splits1m" />
+    <copy prop="value" target="splits2" assignNames="splits2m" />
+    <copy prop="value" target="splits3" assignNames="splits3m" />
+    <copy prop="value" target="splits4" assignNames="splits4m" />
+    <copy prop="value" target="splits5" assignNames="splits5m" />
+    <copy prop="value" target="splits6" assignNames="splits6m" />
     </p>
 
     <p>
@@ -3404,12 +3415,12 @@ describe('MathInput Tag Tests', function () {
     <mathinput name="hFunction4" prefill="$hNoFunction" functionSymbols="h" />
     <mathinput name="hFunction5" prefill="h(x)" />
     <mathinput name="hFunction6" prefill="h(x)" functionSymbols="h" />
-    <copy prop="value" tname="hFunction1" assignNames="hFunction1m" />
-    <copy prop="value" tname="hFunction2" assignNames="hFunction2m" />
-    <copy prop="value" tname="hFunction3" assignNames="hFunction3m" />
-    <copy prop="value" tname="hFunction4" assignNames="hFunction4m" />
-    <copy prop="value" tname="hFunction5" assignNames="hFunction5m" />
-    <copy prop="value" tname="hFunction6" assignNames="hFunction6m" />
+    <copy prop="value" target="hFunction1" assignNames="hFunction1m" />
+    <copy prop="value" target="hFunction2" assignNames="hFunction2m" />
+    <copy prop="value" target="hFunction3" assignNames="hFunction3m" />
+    <copy prop="value" target="hFunction4" assignNames="hFunction4m" />
+    <copy prop="value" target="hFunction5" assignNames="hFunction5m" />
+    <copy prop="value" target="hFunction6" assignNames="hFunction6m" />
     </p>
 
 
@@ -3696,7 +3707,7 @@ describe('MathInput Tag Tests', function () {
     <text>a</text>
     <mathinput name="mi" />
 
-    <p>Value: <copy prop="value" tname="mi" assignNames="m"/></p>
+    <p>Value: <copy prop="value" target="mi" assignNames="m"/></p>
     `}, "*");
     });
 
@@ -3780,7 +3791,7 @@ describe('MathInput Tag Tests', function () {
     <booleanInput name="ufu" />
     <mathinput name="mi" unionFromU="$ufu" />
 
-    <p>Value: <copy prop="value" tname="mi" assignNames="m"/></p>
+    <p>Value: <copy prop="value" target="mi" assignNames="m"/></p>
     `}, "*");
     });
 

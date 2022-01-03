@@ -10,7 +10,7 @@ describe('Boolean Operator Tag Tests', function () {
       win.postMessage({
         doenetML: `
     <booleaninput />
-    <not><copy prop="value" tname="_booleaninput1" /></not>
+    <not><copy prop="value" target="_booleaninput1" /></not>
     <not>true</not>
     <not>false</not>
     `}, "*");
@@ -53,7 +53,7 @@ describe('Boolean Operator Tag Tests', function () {
       win.postMessage({
         doenetML: `
     <mathinput />
-    <not><when><copy prop="value" tname="_mathinput1" /> > 1</when></not>
+    <not><when><copy prop="value" target="_mathinput1" /> > 1</when></not>
     `}, "*");
     });
 
@@ -107,20 +107,20 @@ describe('Boolean Operator Tag Tests', function () {
     <booleaninput />
     <booleaninput />
     <and>
-      <copy prop="value" tname="_booleaninput1" />
-      <copy prop="value" tname="_booleaninput2" />
-      <copy prop="value" tname="_booleaninput3" />
+      <copy prop="value" target="_booleaninput1" />
+      <copy prop="value" target="_booleaninput2" />
+      <copy prop="value" target="_booleaninput3" />
     </and>
     <and>
-      <copy prop="value" tname="_booleaninput1" />
-      <copy prop="value" tname="_booleaninput2" />
-      <copy prop="value" tname="_booleaninput3" />
+      <copy prop="value" target="_booleaninput1" />
+      <copy prop="value" target="_booleaninput2" />
+      <copy prop="value" target="_booleaninput3" />
       true
     </and>
     <and>
-      <copy prop="value" tname="_booleaninput1" />
-      <copy prop="value" tname="_booleaninput2" />
-      <copy prop="value" tname="_booleaninput3" />
+      <copy prop="value" target="_booleaninput1" />
+      <copy prop="value" target="_booleaninput2" />
+      <copy prop="value" target="_booleaninput3" />
       false
     </and>
     `}, "*");
@@ -207,20 +207,20 @@ describe('Boolean Operator Tag Tests', function () {
     <booleaninput />
     <booleaninput />
     <or>
-      <copy prop="value" tname="_booleaninput1" />
-      <copy prop="value" tname="_booleaninput2" />
-      <copy prop="value" tname="_booleaninput3" />
+      <copy prop="value" target="_booleaninput1" />
+      <copy prop="value" target="_booleaninput2" />
+      <copy prop="value" target="_booleaninput3" />
     </or>
     <or>
-      <copy prop="value" tname="_booleaninput1" />
-      <copy prop="value" tname="_booleaninput2" />
-      <copy prop="value" tname="_booleaninput3" />
+      <copy prop="value" target="_booleaninput1" />
+      <copy prop="value" target="_booleaninput2" />
+      <copy prop="value" target="_booleaninput3" />
       true
     </or>
     <or>
-      <copy prop="value" tname="_booleaninput1" />
-      <copy prop="value" tname="_booleaninput2" />
-      <copy prop="value" tname="_booleaninput3" />
+      <copy prop="value" target="_booleaninput1" />
+      <copy prop="value" target="_booleaninput2" />
+      <copy prop="value" target="_booleaninput3" />
       false
     </or>
     `}, "*");
@@ -362,20 +362,20 @@ describe('Boolean Operator Tag Tests', function () {
     <booleaninput />
     <booleaninput />
     <xor>
-      <copy prop="value" tname="_booleaninput1" />
-      <copy prop="value" tname="_booleaninput2" />
-      <copy prop="value" tname="_booleaninput3" />
+      <copy prop="value" target="_booleaninput1" />
+      <copy prop="value" target="_booleaninput2" />
+      <copy prop="value" target="_booleaninput3" />
     </xor>
     <xor>
-      <copy prop="value" tname="_booleaninput1" />
-      <copy prop="value" tname="_booleaninput2" />
-      <copy prop="value" tname="_booleaninput3" />
+      <copy prop="value" target="_booleaninput1" />
+      <copy prop="value" target="_booleaninput2" />
+      <copy prop="value" target="_booleaninput3" />
       true
     </xor>
     <xor>
-      <copy prop="value" tname="_booleaninput1" />
-      <copy prop="value" tname="_booleaninput2" />
-      <copy prop="value" tname="_booleaninput3" />
+      <copy prop="value" target="_booleaninput1" />
+      <copy prop="value" target="_booleaninput2" />
+      <copy prop="value" target="_booleaninput3" />
       false
     </xor>
     `}, "*");

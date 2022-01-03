@@ -12,7 +12,7 @@ export default class BooleanBaseOperatorOfMath extends BooleanComponent {
 
       // only apply if all children are strings or macros
       if (!matchedChildren.every(child =>
-        child.componentType === "string" ||
+        typeof child === "string" ||
         child.doenetAttributes && child.doenetAttributes.createdFromMacro
       )) {
         return { success: false }
@@ -20,7 +20,7 @@ export default class BooleanBaseOperatorOfMath extends BooleanComponent {
 
       // don't apply to a single macro
       if (matchedChildren.length === 1 &&
-        matchedChildren[0].componentType !== "string"
+        typeof matchedChildren[0] !== "string"
       ) {
         return { success: false }
       }

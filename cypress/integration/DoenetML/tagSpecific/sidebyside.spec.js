@@ -16,7 +16,7 @@ describe('SideBySide Tag Tests', function () {
   })
 
 
-  let checkSingleColumnSbs = function ({
+  let checkSingleColumnSbs = async function ({
     specifiedWidth, specifiedMargins = [undefined, undefined], specifiedValign,
     sbsWidth,
     sbsName = "/sbs",
@@ -90,16 +90,16 @@ describe('SideBySide Tag Tests', function () {
     let specifiedWidthName = isSbsGroup ? "specifiedWidths" : "allWidthsSpecified";
     let specifiedMarginName = isSbsGroup ? "specifiedMargins" : "allMarginsSpecified";
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components[sbsName].stateValues.widths.length).eq(1);
-      expect(components[sbsName].stateValues[specifiedWidthName]).eqls([specifiedWidth]);
+      expect((await components[sbsName].stateValues.widths).length).eq(1);
+      expect(await components[sbsName].stateValues[specifiedWidthName]).eqls([specifiedWidth]);
       expect(components[sbsName].stateValues.widths[0]).closeTo(actualWidth, 1E-5);
-      expect(components[sbsName].stateValues[specifiedMarginName]).eqls(specifiedMargins);
-      expect(components[sbsName].stateValues.margins.length).eq(2)
+      expect(await components[sbsName].stateValues[specifiedMarginName]).eqls(specifiedMargins);
+      expect((await components[sbsName].stateValues.margins).length).eq(2)
       expect(components[sbsName].stateValues.margins[0]).closeTo(actualLeftMargin, 1E-5);
       expect(components[sbsName].stateValues.margins[1]).closeTo(actualRightMargin, 1E-5);
-      expect(components[sbsName].stateValues.valigns).eqls([valign]);
+      expect(await components[sbsName].stateValues.valigns).eqls([valign]);
     })
 
   }
@@ -234,18 +234,18 @@ describe('SideBySide Tag Tests', function () {
     let specifiedWidthName = isSbsGroup ? "specifiedWidths" : "allWidthsSpecified";
     let specifiedMarginName = isSbsGroup ? "specifiedMargins" : "allMarginsSpecified";
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components[sbsName].stateValues[specifiedWidthName]).eqls(specifiedWidths);
-      expect(components[sbsName].stateValues.widths.length).eq(2);
+      expect(await components[sbsName].stateValues[specifiedWidthName]).eqls(specifiedWidths);
+      expect((await components[sbsName].stateValues.widths).length).eq(2);
       expect(components[sbsName].stateValues.widths[0]).closeTo(actualWidth1, 1E-5);
       expect(components[sbsName].stateValues.widths[1]).closeTo(actualWidth2, 1E-5);
-      expect(components[sbsName].stateValues[specifiedMarginName]).eqls(specifiedMargins);
-      expect(components[sbsName].stateValues.margins.length).eq(2)
+      expect(await components[sbsName].stateValues[specifiedMarginName]).eqls(specifiedMargins);
+      expect((await components[sbsName].stateValues.margins).length).eq(2)
       expect(components[sbsName].stateValues.margins[0]).closeTo(actualLeftMargin, 1E-5);
       expect(components[sbsName].stateValues.margins[1]).closeTo(actualRightMargin, 1E-5);
-      expect(components[sbsName].stateValues.gapWidth).closeTo(actualGap, 1E-5);
-      expect(components[sbsName].stateValues.valigns).eqls(valigns);
+      expect(await components[sbsName].stateValues.gapWidth).closeTo(actualGap, 1E-5);
+      expect(await components[sbsName].stateValues.valigns).eqls(valigns);
 
     })
 
@@ -387,20 +387,20 @@ describe('SideBySide Tag Tests', function () {
     let specifiedWidthName = isSbsGroup ? "specifiedWidths" : "allWidthsSpecified";
     let specifiedMarginName = isSbsGroup ? "specifiedMargins" : "allMarginsSpecified";
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components[sbsName].stateValues[specifiedWidthName]).eqls(specifiedWidths);
-      expect(components[sbsName].stateValues.widths.length).eq(4);
+      expect(await components[sbsName].stateValues[specifiedWidthName]).eqls(specifiedWidths);
+      expect((await components[sbsName].stateValues.widths).length).eq(4);
       expect(components[sbsName].stateValues.widths[0]).closeTo(actualWidths[0], 1E-5);
       expect(components[sbsName].stateValues.widths[1]).closeTo(actualWidths[1], 1E-5);
       expect(components[sbsName].stateValues.widths[2]).closeTo(actualWidths[2], 1E-5);
       expect(components[sbsName].stateValues.widths[3]).closeTo(actualWidths[3], 1E-5);
-      expect(components[sbsName].stateValues[specifiedMarginName]).eqls(specifiedMargins);
-      expect(components[sbsName].stateValues.margins.length).eq(2)
+      expect(await components[sbsName].stateValues[specifiedMarginName]).eqls(specifiedMargins);
+      expect((await components[sbsName].stateValues.margins).length).eq(2)
       expect(components[sbsName].stateValues.margins[0]).closeTo(actualLeftMargin, 1E-5);
       expect(components[sbsName].stateValues.margins[1]).closeTo(actualRightMargin, 1E-5);
-      expect(components[sbsName].stateValues.gapWidth).closeTo(actualGap, 1E-5);
-      expect(components[sbsName].stateValues.valigns).eqls(valigns);
+      expect(await components[sbsName].stateValues.gapWidth).closeTo(actualGap, 1E-5);
+      expect(await components[sbsName].stateValues.valigns).eqls(valigns);
 
     })
 
