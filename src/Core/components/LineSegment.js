@@ -104,6 +104,93 @@ export default class LineSegment extends GraphicalComponent {
       }
     }
 
+    stateVariableDefinitions.essentialPoints = {
+      isArray: true,
+      nDimensions: "2",
+      entryPrefixes: ["essentialPointX", "essentialPoint"],
+      getArrayKeysFromVarName({ arrayEntryPrefix, varEnding, arraySize }) {
+        if (arrayEntryPrefix === "essentialPointX") {
+          // essentialPointX1_2 is the 2nd component of the first point
+          let indices = varEnding.split('_').map(x => Number(x) - 1)
+          if (indices.length === 2 && indices.every(
+            (x, i) => Number.isInteger(x) && x >= 0
+          )) {
+            if (arraySize) {
+              if (indices.every((x, i) => x < arraySize[i])) {
+                return [String(indices)];
+              } else {
+                return [];
+              }
+            } else {
+              // if don't know array size, just guess that the entry is OK
+              // It will get corrected once array size is known.
+              // TODO: better to return empty array?
+              return [String(indices)];
+            }
+          } else {
+            return [];
+          }
+        } else {
+          // essentialPoint3 is all components of the third point
+          if (!arraySize) {
+            return [];
+          }
+          let pointInd = Number(varEnding) - 1;
+          if (Number.isInteger(pointInd) && pointInd >= 0 && pointInd < arraySize[0]) {
+            // array of "pointInd,i", where i=0, ..., arraySize[1]-1
+            return Array.from(Array(arraySize[1]), (_, i) => pointInd + "," + i)
+          } else {
+            return [];
+          }
+        }
+
+      },
+      returnArraySizeDependencies: () => ({
+        nDimensions: {
+          dependencyType: "stateVariable",
+          variableName: "nDimensions"
+        }
+      }),
+      returnArraySize({ dependencyValues }) {
+        return [2, dependencyValues.nDimensions];
+      },
+      returnArrayDependenciesByKey: () => ({}),
+      arrayDefinitionByKey({ arrayKeys }) {
+        let essentialPoints = {};
+        for (let arrayKey of arrayKeys) {
+          if (arrayKey === "0,0") {
+            essentialPoints[arrayKey] = { defaultValue: me.fromAst(1) }
+          } else {
+            essentialPoints[arrayKey] = { defaultValue: me.fromAst(0) }
+          }
+        }
+
+        return { useEssentialOrDefaultValue: { essentialPoints } }
+
+      },
+      inverseArrayDefinitionByKey({ desiredStateVariableValues }) {
+
+        let instructions = [];
+
+        for (let arrayKey in desiredStateVariableValues.essentialPoints) {
+          instructions.push({
+            setStateVariable: "essentialPoints",
+            value: { [arrayKey]: convertValueToMathExpression(desiredStateVariableValues.essentialPoints[arrayKey]) }
+          })
+        }
+
+        return {
+          success: true,
+          instructions
+        }
+
+      }
+
+
+    }
+
+
+
     stateVariableDefinitions.endpoints = {
       public: true,
       componentType: "math",
@@ -176,6 +263,10 @@ export default class LineSegment extends GraphicalComponent {
               dependencyType: "attributeComponent",
               attributeName: "endpoints",
               variableNames: ["pointX" + varEnding]
+            },
+            essentialPoint: {
+              dependencyType: "stateVariable",
+              variableName: "essentialPointX" + varEnding
             }
           }
         }
@@ -189,7 +280,6 @@ export default class LineSegment extends GraphicalComponent {
         // console.log(arrayKeys);
 
         let endpoints = {};
-        let essentialPoints = {};
 
         for (let arrayKey of arrayKeys) {
 
@@ -201,23 +291,12 @@ export default class LineSegment extends GraphicalComponent {
           ) {
             endpoints[arrayKey] = dependencyValuesByKey[arrayKey].endpointsAttr.stateValues["pointX" + varEnding];
           } else {
-            if (arrayKey === "0,0") {
-              essentialPoints[arrayKey] = { defaultValue: me.fromAst(1) }
-            } else {
-              essentialPoints[arrayKey] = { defaultValue: me.fromAst(0) }
-            }
+            endpoints[arrayKey] = dependencyValuesByKey[arrayKey].essentialPoint
           }
         }
 
-        let result = {};
+        return { newValues: { endpoints } };
 
-        if (Object.keys(endpoints).length > 0) {
-          result.newValues = { endpoints }
-        }
-        if (Object.keys(essentialPoints).length > 0) {
-          result.useEssentialOrDefaultValue = { endpoints: essentialPoints }
-        }
-        return result;
 
       },
       async inverseArrayDefinitionByKey({ desiredStateVariableValues,
@@ -254,11 +333,11 @@ export default class LineSegment extends GraphicalComponent {
             })
 
           } else {
-
             instructions.push({
-              setStateVariable: "endpoints",
-              value: { [arrayKey]: convertValueToMathExpression(desiredStateVariableValues.endpoints[arrayKey]) },
+              setDependency: dependencyNamesByKey[arrayKey].essentialPoint,
+              desiredValue: desiredStateVariableValues.endpoints[arrayKey]
             })
+
           }
         }
 

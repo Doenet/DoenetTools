@@ -90,7 +90,7 @@ export default class AttractToGrid extends ConstraintComponent {
     }
 
 
-    // Since state variable independentComponentConstraints maybe true,
+    // Since state variable independentComponentConstraints may be true,
     // expect function applyComponentConstraint to be called with 
     // a single component value as the object, for example,  {x1: 13}
 
@@ -274,14 +274,15 @@ export default class AttractToGrid extends ConstraintComponent {
       }),
       definition: ({ dependencyValues }) => ({
         newValues: {
-          applyConstraint: function (variables) {
+          applyConstraint: function ({ variables, scales }) {
 
             let newVariables = {};
             let constrained = false;
 
             for (let varName in variables) {
               let result = dependencyValues.applyComponentConstraint({
-                [varName]: variables[varName]
+                variables: { [varName]: variables[varName] },
+                scales
               })
               if (result.constrained) {
                 constrained = true;

@@ -108,14 +108,14 @@ describe('Vector Tag Tests', function () {
         expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
       })
 
-      cy.log('move copied tail')
+      cy.log('move copied tail moves vector')
       cy.window().then(async (win) => {
         let components = Object.assign({}, win.state.components);
 
         let tailx = -7;
         let taily = 5;
-        let headx = 4;
-        let heady = 2;
+        let headx = -6;
+        let heady = 5;
         let displacementx = headx - tailx;
         let displacementy = heady - taily;
 
@@ -4340,14 +4340,14 @@ describe('Vector Tag Tests', function () {
         expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
       })
 
-      cy.log('move copied tail')
+      cy.log('move copied tail, moves whole vector')
       cy.window().then(async (win) => {
         let components = Object.assign({}, win.state.components);
 
         let tailx = -7;
         let taily = 5;
-        let headx = 7;
-        let heady = 6;
+        let headx = -6;
+        let heady = 5;
 
         let displacementx = headx - tailx;
         let displacementy = heady - taily;
@@ -6789,11 +6789,11 @@ describe('Vector Tag Tests', function () {
       await components['/tvth'].movePoint({ x: tvth[0], y: tvth[1] })
       await components['/tvtd'].movePoint({ x: tvtd[0], y: tvtd[1] })
 
-      // defined by tail only or tail/head, head stays fixed and displacement changes
-      dvt = [hvt[0] - tvt[0], hvt[1] - tvt[1]];
+      // defined by tail/head, head stays fixed and displacement changes
       dvth = [hvth[0] - tvth[0], hvth[1] - tvth[1]];
 
-      // defined by tail and displacement, displacement stays fixed and head changes
+      // defined by tail or tail and displacement, displacement stays fixed and head changes
+      hvt = [tvt[0] + dvt[0], tvt[1] + dvt[1]];
       hvtd = [tvtd[0] + dvtd[0], tvtd[1] + dvtd[1]];
 
       expect(components['/tvt'].stateValues.coords.simplify().tree).eqls(["vector", ...tvt]);
@@ -7014,14 +7014,14 @@ describe('Vector Tag Tests', function () {
       await components['/tfvtd'].replacements[0].movePoint({ x: tvtd[0], y: tvtd[1] })
       await components['/tfvhd'].replacements[0].movePoint({ x: tvhd[0], y: tvhd[1] })
 
-      // for most vectors, heads stay fixed and displacement changes
-      dvt = [hvt[0] - tvt[0], hvt[1] - tvt[1]];
+      // if defined by head, head stays fixed and displacement changes
       dvh = [hvh[0] - tvh[0], hvh[1] - tvh[1]];
       dvth = [hvth[0] - tvth[0], hvth[1] - tvth[1]];
       dvhd = [hvhd[0] - tvhd[0], hvhd[1] - tvhd[1]];
 
-      // defined by displacement only or tail/displacement, 
+      // if not defined by head,
       // displacement stays fixed and head changes
+      hvt = [tvt[0] + dvt[0], tvt[1] + dvt[1]];
       hvd = [tvd[0] + dvd[0], tvd[1] + dvd[1]];
       hvtd = [tvtd[0] + dvtd[0], tvtd[1] + dvtd[1]];
 
@@ -7691,14 +7691,14 @@ describe('Vector Tag Tests', function () {
       await components['/tfvtd2'].replacements[0].movePoint({ x: tvtd[0], y: tvtd[1] })
       await components['/tfvhd2'].replacements[0].movePoint({ x: tvhd[0], y: tvhd[1] })
 
-      // for most vectors, heads stay fixed and displacement changes
-      dvt = [hvt[0] - tvt[0], hvt[1] - tvt[1]];
+      // if defined by head, head stays fixed and displacement changes
       dvh = [hvh[0] - tvh[0], hvh[1] - tvh[1]];
       dvth = [hvth[0] - tvth[0], hvth[1] - tvth[1]];
       dvhd = [hvhd[0] - tvhd[0], hvhd[1] - tvhd[1]];
 
-      // defined by displacement only or tail/displacement, 
+      // if not defined by head, 
       // displacement stays fixed and head changes
+      hvt = [tvt[0] + dvt[0], tvt[1] + dvt[1]];
       hvd = [tvd[0] + dvd[0], tvd[1] + dvd[1]];
       hvtd = [tvtd[0] + dvtd[0], tvtd[1] + dvtd[1]];
 
@@ -10273,5 +10273,401 @@ describe('Vector Tag Tests', function () {
     });
 
   })
+
+  it('vector with no arguments, copy and specify attributes', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <graph name="g0" newNamespace>
+    <vector name="v0" />
+    <copy target="v0" head="(3,4)" assignNames="v1" />
+    <copy target="v1" tail="(-1,0)" assignNames="v2" />
+    <copy target="v0" tail="(2,-6)" assignNames="v3" />
+    <copy target="v3" displacement="(-3,4)" assignNames="v4" />
+    <copy target="v0" displacement="(5,-1)" assignNames="v5" />
+    <copy target="v5" head="(6,2)" assignNames="v6" />
+  </graph>
+
+  <copy tname="g0" assignNames="g1" />
+
+  `}, "*");
+    });
+
+    // to wait for page to load
+    cy.get('#\\/_text1').should('have.text', 'a');
+
+    let tails = [
+      [0, 0],
+      [0, 0],
+      [-1, 0],
+      [2, -6],
+      [2, -6],
+      [0, 0],
+      [1, 3],
+    ]
+
+    let heads = [
+      [1, 0],
+      [3, 4],
+      [3, 4],
+      [3, -6],
+      [-1, -2],
+      [5, -1],
+      [6, 2],
+    ]
+
+    let displacements = heads.map((v, i) => [v[0] - tails[i][0], v[1] - tails[i][1]])
+
+    cy.window().then(async (win) => {
+      let components = Object.assign({}, win.state.components);
+
+      for (let i = 0; i < 7; i++) {
+        for (let j = 0; j < 2; j++) {
+          expect(components[`/g${j}/v${i}`].stateValues.tail.map(x => x.tree)).eqls(tails[i]);
+          expect(components[`/g${j}/v${i}`].stateValues.head.map(x => x.tree)).eqls(heads[i]);
+          expect(components[`/g${j}/v${i}`].stateValues.displacement.map(x => x.tree)).eqls(displacements[i]);
+        }
+      }
+
+    })
+
+
+    cy.log('move tail of g0/v0');
+
+    cy.window().then(async (win) => {
+      let components = Object.assign({}, win.state.components);
+
+      tails[0] = tails[1] = tails[5] = [3, 5];
+      heads[5] = [tails[5][0] + displacements[5][0], tails[5][1] + displacements[5][1]]
+      displacements = heads.map((v, i) => [v[0] - tails[i][0], v[1] - tails[i][1]])
+      heads[3] = [tails[3][0] + displacements[0][0], tails[3][1] + displacements[0][1]]
+      displacements = heads.map((v, i) => [v[0] - tails[i][0], v[1] - tails[i][1]])
+
+      await components["/g0/v0"].moveVector({ tailcoords: tails[0] })
+
+      for (let i = 0; i < 7; i++) {
+        for (let j = 0; j < 2; j++) {
+          expect(components[`/g${j}/v${i}`].stateValues.tail.map(x => x.tree)).eqls(tails[i]);
+          expect(components[`/g${j}/v${i}`].stateValues.head.map(x => x.tree)).eqls(heads[i]);
+          expect(components[`/g${j}/v${i}`].stateValues.displacement.map(x => x.tree)).eqls(displacements[i]);
+        }
+      }
+
+    })
+
+
+    cy.log('move head of g1/v0');
+
+    cy.window().then(async (win) => {
+      let components = Object.assign({}, win.state.components);
+
+      heads[0] = [-2, 8]
+
+      displacements = heads.map((v, i) => [v[0] - tails[i][0], v[1] - tails[i][1]])
+      heads[3] = [tails[3][0] + displacements[0][0], tails[3][1] + displacements[0][1]]
+      displacements = heads.map((v, i) => [v[0] - tails[i][0], v[1] - tails[i][1]])
+
+      await components["/g1/v0"].moveVector({ headcoords: heads[0] })
+
+      for (let i = 0; i < 7; i++) {
+        for (let j = 0; j < 2; j++) {
+          expect(components[`/g${j}/v${i}`].stateValues.tail.map(x => x.tree)).eqls(tails[i]);
+          expect(components[`/g${j}/v${i}`].stateValues.head.map(x => x.tree)).eqls(heads[i]);
+          expect(components[`/g${j}/v${i}`].stateValues.displacement.map(x => x.tree)).eqls(displacements[i]);
+        }
+      }
+
+    })
+
+
+    cy.log('move head of g0/v1');
+
+    cy.window().then(async (win) => {
+      let components = Object.assign({}, win.state.components);
+
+      heads[1] = heads[2] = [-9, -1]
+
+      displacements = heads.map((v, i) => [v[0] - tails[i][0], v[1] - tails[i][1]])
+
+      await components["/g0/v1"].moveVector({ headcoords: heads[1] })
+
+      for (let i = 0; i < 7; i++) {
+        for (let j = 0; j < 2; j++) {
+          expect(components[`/g${j}/v${i}`].stateValues.tail.map(x => x.tree)).eqls(tails[i]);
+          expect(components[`/g${j}/v${i}`].stateValues.head.map(x => x.tree)).eqls(heads[i]);
+          expect(components[`/g${j}/v${i}`].stateValues.displacement.map(x => x.tree)).eqls(displacements[i]);
+        }
+      }
+
+    })
+
+
+
+    cy.log('move tail of g1/v1');
+
+    cy.window().then(async (win) => {
+      let components = Object.assign({}, win.state.components);
+
+      tails[0] = tails[1] = tails[5] = [5, -3];
+      heads[0] = [tails[0][0] + displacements[0][0], tails[0][1] + displacements[0][1]]
+      heads[5] = [tails[5][0] + displacements[5][0], tails[5][1] + displacements[5][1]]
+      displacements = heads.map((v, i) => [v[0] - tails[i][0], v[1] - tails[i][1]])
+
+      await components["/g1/v1"].moveVector({ tailcoords: tails[1] })
+
+      for (let i = 0; i < 7; i++) {
+        for (let j = 0; j < 2; j++) {
+          expect(components[`/g${j}/v${i}`].stateValues.tail.map(x => x.tree)).eqls(tails[i]);
+          expect(components[`/g${j}/v${i}`].stateValues.head.map(x => x.tree)).eqls(heads[i]);
+          expect(components[`/g${j}/v${i}`].stateValues.displacement.map(x => x.tree)).eqls(displacements[i]);
+        }
+      }
+
+    })
+
+    
+    cy.log('move tail of g0/v2');
+
+    cy.window().then(async (win) => {
+      let components = Object.assign({}, win.state.components);
+
+      tails[2] = [7, 9];
+
+      displacements = heads.map((v, i) => [v[0] - tails[i][0], v[1] - tails[i][1]])
+
+      await components["/g0/v2"].moveVector({ tailcoords: tails[2] })
+
+      for (let i = 0; i < 7; i++) {
+        for (let j = 0; j < 2; j++) {
+          expect(components[`/g${j}/v${i}`].stateValues.tail.map(x => x.tree)).eqls(tails[i]);
+          expect(components[`/g${j}/v${i}`].stateValues.head.map(x => x.tree)).eqls(heads[i]);
+          expect(components[`/g${j}/v${i}`].stateValues.displacement.map(x => x.tree)).eqls(displacements[i]);
+        }
+      }
+
+    })
+
+    
+    cy.log('move head of g1/v2');
+
+    cy.window().then(async (win) => {
+      let components = Object.assign({}, win.state.components);
+
+      heads[1] = heads[2] = [8, 4];
+
+      displacements = heads.map((v, i) => [v[0] - tails[i][0], v[1] - tails[i][1]])
+
+      await components["/g1/v2"].moveVector({ headcoords: heads[2] })
+
+      for (let i = 0; i < 7; i++) {
+        for (let j = 0; j < 2; j++) {
+          expect(components[`/g${j}/v${i}`].stateValues.tail.map(x => x.tree)).eqls(tails[i]);
+          expect(components[`/g${j}/v${i}`].stateValues.head.map(x => x.tree)).eqls(heads[i]);
+          expect(components[`/g${j}/v${i}`].stateValues.displacement.map(x => x.tree)).eqls(displacements[i]);
+        }
+      }
+
+    })
+
+
+
+    cy.log('move head of g0/v3');
+
+    cy.window().then(async (win) => {
+      let components = Object.assign({}, win.state.components);
+
+      heads[3] = [-4, -7];
+      displacements = heads.map((v, i) => [v[0] - tails[i][0], v[1] - tails[i][1]])
+      heads[0] = [tails[0][0] + displacements[3][0], tails[0][1] + displacements[3][1]]
+      displacements = heads.map((v, i) => [v[0] - tails[i][0], v[1] - tails[i][1]])
+
+      await components["/g0/v3"].moveVector({ headcoords: heads[3] })
+
+      for (let i = 0; i < 7; i++) {
+        for (let j = 0; j < 2; j++) {
+          expect(components[`/g${j}/v${i}`].stateValues.tail.map(x => x.tree)).eqls(tails[i]);
+          expect(components[`/g${j}/v${i}`].stateValues.head.map(x => x.tree)).eqls(heads[i]);
+          expect(components[`/g${j}/v${i}`].stateValues.displacement.map(x => x.tree)).eqls(displacements[i]);
+        }
+      }
+
+    })
+
+
+    cy.log('move tail of g1/v3');
+
+    cy.window().then(async (win) => {
+      let components = Object.assign({}, win.state.components);
+
+      tails[3] = tails[4] = [-6,2]
+      heads[4] = [tails[4][0] + displacements[4][0], tails[4][1] + displacements[4][1]]
+
+      displacements = heads.map((v, i) => [v[0] - tails[i][0], v[1] - tails[i][1]])
+      heads[0] = [tails[0][0] + displacements[3][0], tails[0][1] + displacements[3][1]]
+      displacements = heads.map((v, i) => [v[0] - tails[i][0], v[1] - tails[i][1]])
+
+      await components["/g1/v3"].moveVector({ tailcoords: tails[3] })
+
+      for (let i = 0; i < 7; i++) {
+        for (let j = 0; j < 2; j++) {
+          expect(components[`/g${j}/v${i}`].stateValues.tail.map(x => x.tree)).eqls(tails[i]);
+          expect(components[`/g${j}/v${i}`].stateValues.head.map(x => x.tree)).eqls(heads[i]);
+          expect(components[`/g${j}/v${i}`].stateValues.displacement.map(x => x.tree)).eqls(displacements[i]);
+        }
+      }
+
+    })
+
+
+
+    cy.log('move tail of g0/v4');
+
+    cy.window().then(async (win) => {
+      let components = Object.assign({}, win.state.components);
+
+      tails[3] = tails[4] = [-2,3]
+      heads[3] = [tails[3][0] + displacements[3][0], tails[3][1] + displacements[3][1]]
+
+      displacements = heads.map((v, i) => [v[0] - tails[i][0], v[1] - tails[i][1]])
+
+      await components["/g0/v4"].moveVector({ tailcoords: tails[4] })
+
+      for (let i = 0; i < 7; i++) {
+        for (let j = 0; j < 2; j++) {
+          expect(components[`/g${j}/v${i}`].stateValues.tail.map(x => x.tree)).eqls(tails[i]);
+          expect(components[`/g${j}/v${i}`].stateValues.head.map(x => x.tree)).eqls(heads[i]);
+          expect(components[`/g${j}/v${i}`].stateValues.displacement.map(x => x.tree)).eqls(displacements[i]);
+        }
+      }
+
+    })
+
+
+
+    cy.log('move head of g1/v4');
+
+    cy.window().then(async (win) => {
+      let components = Object.assign({}, win.state.components);
+
+      heads[4] = [2,0]
+
+      displacements = heads.map((v, i) => [v[0] - tails[i][0], v[1] - tails[i][1]])
+
+      await components["/g1/v4"].moveVector({ headcoords: heads[4] })
+
+      for (let i = 0; i < 7; i++) {
+        for (let j = 0; j < 2; j++) {
+          expect(components[`/g${j}/v${i}`].stateValues.tail.map(x => x.tree)).eqls(tails[i]);
+          expect(components[`/g${j}/v${i}`].stateValues.head.map(x => x.tree)).eqls(heads[i]);
+          expect(components[`/g${j}/v${i}`].stateValues.displacement.map(x => x.tree)).eqls(displacements[i]);
+        }
+      }
+
+    })
+
+
+    cy.log('move head of g0/v5');
+
+    cy.window().then(async (win) => {
+      let components = Object.assign({}, win.state.components);
+
+      heads[5] = [-9,-8]
+
+      displacements = heads.map((v, i) => [v[0] - tails[i][0], v[1] - tails[i][1]])
+      tails[6] = [heads[6][0] - displacements[5][0], heads[6][1] - displacements[5][1]]
+      displacements = heads.map((v, i) => [v[0] - tails[i][0], v[1] - tails[i][1]])
+
+      await components["/g0/v5"].moveVector({ headcoords: heads[5] })
+
+      for (let i = 0; i < 7; i++) {
+        for (let j = 0; j < 2; j++) {
+          expect(components[`/g${j}/v${i}`].stateValues.tail.map(x => x.tree)).eqls(tails[i]);
+          expect(components[`/g${j}/v${i}`].stateValues.head.map(x => x.tree)).eqls(heads[i]);
+          expect(components[`/g${j}/v${i}`].stateValues.displacement.map(x => x.tree)).eqls(displacements[i]);
+        }
+      }
+
+    })
+
+
+
+    cy.log('move tail of g1/v5');
+
+    cy.window().then(async (win) => {
+      let components = Object.assign({}, win.state.components);
+
+      tails[0] = tails[1] = tails[5] = [3,7]
+
+      heads[0] = [tails[0][0] + displacements[0][0], tails[0][1] + displacements[0][1]]
+
+      displacements = heads.map((v, i) => [v[0] - tails[i][0], v[1] - tails[i][1]])
+      tails[6] = [heads[6][0] - displacements[5][0], heads[6][1] - displacements[5][1]]
+      displacements = heads.map((v, i) => [v[0] - tails[i][0], v[1] - tails[i][1]])
+
+      await components["/g1/v5"].moveVector({ tailcoords: tails[5] })
+
+      for (let i = 0; i < 7; i++) {
+        for (let j = 0; j < 2; j++) {
+          expect(components[`/g${j}/v${i}`].stateValues.tail.map(x => x.tree)).eqls(tails[i]);
+          expect(components[`/g${j}/v${i}`].stateValues.head.map(x => x.tree)).eqls(heads[i]);
+          expect(components[`/g${j}/v${i}`].stateValues.displacement.map(x => x.tree)).eqls(displacements[i]);
+        }
+      }
+
+    })
+
+
+
+    cy.log('move tail of g0/v6');
+
+    cy.window().then(async (win) => {
+      let components = Object.assign({}, win.state.components);
+
+      tails[6] = [8,-7]
+
+      displacements = heads.map((v, i) => [v[0] - tails[i][0], v[1] - tails[i][1]])
+      heads[5] = [tails[5][0] + displacements[6][0], tails[5][1] + displacements[6][1]]
+      displacements = heads.map((v, i) => [v[0] - tails[i][0], v[1] - tails[i][1]])
+
+      await components["/g0/v6"].moveVector({ tailcoords: tails[6] })
+
+      for (let i = 0; i < 7; i++) {
+        for (let j = 0; j < 2; j++) {
+          expect(components[`/g${j}/v${i}`].stateValues.tail.map(x => x.tree)).eqls(tails[i]);
+          expect(components[`/g${j}/v${i}`].stateValues.head.map(x => x.tree)).eqls(heads[i]);
+          expect(components[`/g${j}/v${i}`].stateValues.displacement.map(x => x.tree)).eqls(displacements[i]);
+        }
+      }
+
+    })
+
+
+
+    cy.log('move head of g1/v6');
+
+    cy.window().then(async (win) => {
+      let components = Object.assign({}, win.state.components);
+
+      heads[6] = [9,-5]
+
+      displacements = heads.map((v, i) => [v[0] - tails[i][0], v[1] - tails[i][1]])
+      heads[5] = [tails[5][0] + displacements[6][0], tails[5][1] + displacements[6][1]]
+      displacements = heads.map((v, i) => [v[0] - tails[i][0], v[1] - tails[i][1]])
+
+      await components["/g1/v6"].moveVector({ headcoords: heads[6] })
+
+      for (let i = 0; i < 7; i++) {
+        for (let j = 0; j < 2; j++) {
+          expect(components[`/g${j}/v${i}`].stateValues.tail.map(x => x.tree)).eqls(tails[i]);
+          expect(components[`/g${j}/v${i}`].stateValues.head.map(x => x.tree)).eqls(heads[i]);
+          expect(components[`/g${j}/v${i}`].stateValues.displacement.map(x => x.tree)).eqls(displacements[i]);
+        }
+      }
+
+    })
+
+  })
+
 
 });

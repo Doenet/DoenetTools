@@ -10,9 +10,11 @@ export default class MathComponent extends InlineComponent {
   // used when creating new component via adapter or copy prop
   static primaryStateVariableForDefinition = "unnormalizedValue";
 
+  static variableForPlainMacro = "value";
+
   // used when referencing this component without prop
-  static useChildrenForReference = false;
-  static get stateVariablesShadowedForReference() { return ["unnormalizedValue", "unordered"] };
+  // static useChildrenForReference = false;
+  static get stateVariablesShadowedForReference() { return ["unnormalizedValue"] };
 
   static descendantCompositesMustHaveAReplacement = true;
   static descendantCompositesDefaultReplacementType = "math";
@@ -158,6 +160,7 @@ export default class MathComponent extends InlineComponent {
     stateVariableDefinitions.unordered = {
       defaultValue: false,
       public: true,
+      componentType: "boolean",
       returnDependencies: () => ({
         unorderedAttr: {
           dependencyType: "attributeComponent",
@@ -178,8 +181,8 @@ export default class MathComponent extends InlineComponent {
             return { newValues: { unordered } }
           } else {
             return {
-              useEssentialOrDefaultValue: {
-                unordered: { variablesToCheck: ["unordered"] }
+              useDefaultValue: {
+                unordered: {}
               }
             }
           }
@@ -231,7 +234,7 @@ export default class MathComponent extends InlineComponent {
     }
 
     stateVariableDefinitions.expressionWithCodes = {
-      // deferCalculation: false,
+      neverShadow: true,
       returnDependencies: () => ({
         stringMathChildren: {
           dependencyType: "child",
@@ -855,7 +858,7 @@ function calculateExpressionWithCodes({ dependencyValues, changes }) {
 
   // if don't have any string or math children,
   // set expressionWithCodes to be null,
-  // which will indicate that value should use its essential or default value
+  // which will indicate that value should use valueShadow
   if (dependencyValues.stringMathChildren.length === 0) {
     return { newValues: { expressionWithCodes: null } }
   }
@@ -1057,7 +1060,6 @@ function calculateMathValue({ dependencyValues } = {}) {
   if (dependencyValues.expressionWithCodes === null) {
     return {
       newValues: { unnormalizedValue: dependencyValues.valueShadow },
-      makeEssential: { unnormalizedValue: true }  // make essential since inverseDef sets it
     }
   }
 
@@ -1076,7 +1078,6 @@ function calculateMathValue({ dependencyValues } = {}) {
 
   return {
     newValues: { unnormalizedValue: value },
-    makeEssential: { unnormalizedValue: true }  // make essential since inverseDef sets it
   };
 }
 
@@ -1456,10 +1457,6 @@ async function invertMath({ desiredStateVariableValues, dependencyValues,
       });
     }
 
-    instructions.push({
-      setStateVariable: "unnormalizedValue",
-      value: desiredExpression,
-    });
 
 
     return {

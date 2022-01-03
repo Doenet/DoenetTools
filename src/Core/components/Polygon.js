@@ -6,6 +6,9 @@ export default class Polygon extends Polyline {
   actions = {
     movePolygon: this.movePolygon.bind(
       new Proxy(this, this.readOnlyProxyHandler)
+    ),
+    finalizePolygonPosition: this.finalizePolygonPosition.bind(
+      new Proxy(this, this.readOnlyProxyHandler)
     )
   };
 
@@ -145,5 +148,17 @@ export default class Polygon extends Polyline {
     }
     return stateVariableDefinitions;
   }
+
+  async finalizePolygonPosition() {
+    // trigger a movePolygon 
+    // to send the final values with transient=false
+    // so that the final position will be recorded
+
+    return await this.actions.movePolygon({
+      pointCoords: await this.stateValues.numericalVertices,
+      transient: false
+    });
+  }
+
 
 }

@@ -222,26 +222,26 @@ describe('MathList Tag Tests', function () {
 
       let math3aAnchor = cesc('#' + components['/_mathlist2'].activeChildren[0].componentName)
 
-    cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('a')
-    })
-    cy.get('#\\/_math2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('1+1')
-    })
+      cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('a')
+      })
+      cy.get('#\\/_math2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('1+1')
+      })
       cy.get('#\\/_math3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('a')
       })
       cy.get('#\\/_math4').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('1+1')
       })
-    cy.log('Test internal values are set to the correct values')
-    cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
+      cy.log('Test internal values are set to the correct values')
+      cy.window().then(async (win) => {
+        let components = Object.assign({}, win.state.components);
         expect(components['/_mathlist1'].activeChildren.length).eq(2);
-      expect(components['/_mathlist1'].activeChildren[0].stateValues.value.tree).eq('a');
-      expect(components['/_mathlist1'].activeChildren[1].stateValues.value.tree).eqls(['+', 1, 1]);
-      expect((await components['/_mathlist1'].stateValues.maths)[0].tree).eq('a');
-      expect((await components['/_mathlist1'].stateValues.maths)[1].tree).eqls(['+', 1, 1]);
+        expect(components['/_mathlist1'].activeChildren[0].stateValues.value.tree).eq('a');
+        expect(components['/_mathlist1'].activeChildren[1].stateValues.value.tree).eqls(['+', 1, 1]);
+        expect((await components['/_mathlist1'].stateValues.maths)[0].tree).eq('a');
+        expect((await components['/_mathlist1'].stateValues.maths)[1].tree).eqls(['+', 1, 1]);
         expect(components['/_mathlist2'].activeChildren.length).eq(2);
         expect(components['/_mathlist2'].activeChildren[0].stateValues.value.tree).eq('a');
         expect(components['/_mathlist2'].activeChildren[1].stateValues.value.tree).eqls(['+', 1, 1]);
@@ -958,6 +958,136 @@ describe('MathList Tag Tests', function () {
       })
     })
   })
+
+  it('copy mathlist and overwrite maximum number', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+      <text>a</text>
+      <p><mathlist name="ml1">a b c d e</mathlist></p>
+      <p><copy target="ml1" maximumNumber="3" assignNames="ml2" /></p>
+      <p><copy target="ml2" maximumNumber="" assignNames="ml3" /></p>
+
+      <p><mathlist name="ml4" maximumNumber="3">a b c d e</mathlist></p>
+      <p><copy target="ml4" maximumNumber="4" assignNames="ml5" /></p>
+      <p><copy target="ml5" maximumNumber="" assignNames="ml6" /></p>
+
+      ` }, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+
+    cy.window().then(async (win) => {
+
+
+      cy.get('#\\/_p1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('a')
+      });
+      cy.get('#\\/_p1').find('.mjx-mrow').eq(1).invoke('text').then((text) => {
+        expect(text.trim()).equal('b')
+      });
+      cy.get('#\\/_p1').find('.mjx-mrow').eq(2).invoke('text').then((text) => {
+        expect(text.trim()).equal('c')
+      });
+      cy.get('#\\/_p1').find('.mjx-mrow').eq(3).invoke('text').then((text) => {
+        expect(text.trim()).equal('d')
+      });
+      cy.get('#\\/_p1').find('.mjx-mrow').eq(4).invoke('text').then((text) => {
+        expect(text.trim()).equal('e')
+      });
+      cy.get('#\\/_p1').find('.mjx-mrow').eq(5).should('not.exist')
+
+
+      cy.get('#\\/_p2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('a')
+      });
+      cy.get('#\\/_p2').find('.mjx-mrow').eq(1).invoke('text').then((text) => {
+        expect(text.trim()).equal('b')
+      });
+      cy.get('#\\/_p2').find('.mjx-mrow').eq(2).invoke('text').then((text) => {
+        expect(text.trim()).equal('c')
+      });
+      cy.get('#\\/_p2').find('.mjx-mrow').eq(3).should('not.exist')
+
+
+      cy.get('#\\/_p3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('a')
+      });
+      cy.get('#\\/_p3').find('.mjx-mrow').eq(1).invoke('text').then((text) => {
+        expect(text.trim()).equal('b')
+      });
+      cy.get('#\\/_p3').find('.mjx-mrow').eq(2).invoke('text').then((text) => {
+        expect(text.trim()).equal('c')
+      });
+      cy.get('#\\/_p3').find('.mjx-mrow').eq(3).invoke('text').then((text) => {
+        expect(text.trim()).equal('d')
+      });
+      cy.get('#\\/_p3').find('.mjx-mrow').eq(4).invoke('text').then((text) => {
+        expect(text.trim()).equal('e')
+      });
+      cy.get('#\\/_p3').find('.mjx-mrow').eq(5).should('not.exist')
+
+
+      cy.get('#\\/_p4').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('a')
+      });
+      cy.get('#\\/_p4').find('.mjx-mrow').eq(1).invoke('text').then((text) => {
+        expect(text.trim()).equal('b')
+      });
+      cy.get('#\\/_p4').find('.mjx-mrow').eq(2).invoke('text').then((text) => {
+        expect(text.trim()).equal('c')
+      });
+      cy.get('#\\/_p4').find('.mjx-mrow').eq(3).should('not.exist')
+
+
+      cy.get('#\\/_p5').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('a')
+      });
+      cy.get('#\\/_p5').find('.mjx-mrow').eq(1).invoke('text').then((text) => {
+        expect(text.trim()).equal('b')
+      });
+      cy.get('#\\/_p5').find('.mjx-mrow').eq(2).invoke('text').then((text) => {
+        expect(text.trim()).equal('c')
+      });
+      cy.get('#\\/_p5').find('.mjx-mrow').eq(3).invoke('text').then((text) => {
+        expect(text.trim()).equal('d')
+      });
+      cy.get('#\\/_p5').find('.mjx-mrow').eq(4).should('not.exist')
+
+
+      cy.get('#\\/_p6').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('a')
+      });
+      cy.get('#\\/_p6').find('.mjx-mrow').eq(1).invoke('text').then((text) => {
+        expect(text.trim()).equal('b')
+      });
+      cy.get('#\\/_p6').find('.mjx-mrow').eq(2).invoke('text').then((text) => {
+        expect(text.trim()).equal('c')
+      });
+      cy.get('#\\/_p6').find('.mjx-mrow').eq(3).invoke('text').then((text) => {
+        expect(text.trim()).equal('d')
+      });
+      cy.get('#\\/_p6').find('.mjx-mrow').eq(4).invoke('text').then((text) => {
+        expect(text.trim()).equal('e')
+      });
+      cy.get('#\\/_p6').find('.mjx-mrow').eq(5).should('not.exist')
+
+
+      cy.log('Test internal values are set to the correct values')
+      cy.window().then(async (win) => {
+        let components = Object.assign({}, win.state.components);
+        expect((await components['/ml1'].stateValues.maths).map(x => x.tree)).eqls(['a', 'b', 'c', 'd', 'e']);
+        expect((await components['/ml2'].stateValues.maths).map(x => x.tree)).eqls(['a', 'b', 'c']);
+        expect((await components['/ml3'].stateValues.maths).map(x => x.tree)).eqls(['a', 'b', 'c', 'd', 'e']);
+        expect((await components['/ml4'].stateValues.maths).map(x => x.tree)).eqls(['a', 'b', 'c']);
+        expect((await components['/ml5'].stateValues.maths).map(x => x.tree)).eqls(['a', 'b', 'c', 'd']);
+        expect((await components['/ml6'].stateValues.maths).map(x => x.tree)).eqls(['a', 'b', 'c', 'd', 'e']);
+
+      })
+    })
+  })
+
 
   it.skip('mathlist ancestor prop simplify', () => {
     cy.window().then(async (win) => {

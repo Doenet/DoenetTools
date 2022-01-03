@@ -3459,6 +3459,15 @@ export default class Core {
               variableName: varName,
             }
           }
+
+          if (stateDef.inverseShadowToSetEntireArray) {
+            globalDependencies.targetArray = {
+              dependencyType: "stateVariable",
+              componentName: targetComponent.componentName,
+              variableName: varName,
+            }
+          }
+
           return { globalDependencies, dependenciesByKey }
         }
 
@@ -3500,8 +3509,19 @@ export default class Core {
 
 
         stateDef.inverseArrayDefinitionByKey = function ({ desiredStateVariableValues,
-          dependencyValuesByKey, dependencyNamesByKey, arraySize
+          dependencyValuesByKey, dependencyNamesByKey, arraySize, initialChange
         }) {
+
+          if (stateDef.inverseShadowToSetEntireArray) {
+            return {
+              success: true,
+              instructions: [{
+                setDependency: "targetArray",
+                desiredValue: desiredStateVariableValues[varName],
+                treatAsInitialChange: initialChange
+              }]
+            }
+          }
 
           let instructions = [];
           for (let key in desiredStateVariableValues[varName]) {
@@ -5318,6 +5338,82 @@ export default class Core {
           } else {
             throw Error(`Neither value nor default value specified; state variable: ${varName}, component: ${component.componentName}.`);
           }
+        }
+      }
+    }
+
+
+    for (let varName in result.useDefaultValue) {
+
+      if (!(varName in component.state)) {
+        throw Error(`Definition of state variable ${stateVariable} of ${component.componentName} requested default value of ${varName}, which isn't a state variable.`);
+      }
+
+      let matchingArrayEntry;
+
+      if (!(varName in receivedValue)) {
+        if (component.state[varName].isArray && component.state[varName].arrayEntryNames) {
+          for (let arrayEntryName of component.state[varName].arrayEntryNames) {
+            if (arrayEntryName in receivedValue) {
+              matchingArrayEntry = arrayEntryName;
+              receivedValue[arrayEntryName] = true;
+              break;
+            }
+          }
+        }
+        if (!matchingArrayEntry) {
+          throw Error(`Attempting to set value of stateVariable ${varName} in definition of ${stateVariable} of ${component.componentName}, but it's not listed as an additional state variable defined.`)
+        }
+      } else {
+        receivedValue[varName] = true;
+      }
+
+      if (!component.state[varName].isResolved) {
+        if (!matchingArrayEntry || !component.state[matchingArrayEntry].isResolved) {
+          throw Error(`Attempting to set value of stateVariable ${varName} of ${component.componentName} while it is still unresolved!`)
+        }
+      }
+
+
+      if (component.state[varName].isArray) {
+
+        let arraySize = await component.state[varName].arraySize;
+
+        for (let arrayKey in result.useDefaultValue[varName]) {
+          if ("defaultValue" in result.useDefaultValue[varName][arrayKey]) {
+            component.state[varName].setArrayValue({
+              value: result.useDefaultValue[varName][arrayKey].defaultValue,
+              arrayKey,
+              arraySize,
+            });
+            component.state[varName].usedDefaultByArrayKey[arrayKey] = true;
+          } else if ("defaultEntryValue" in component.state[varName]) {
+            component.state[varName].setArrayValue({
+              value: component.state[varName].defaultEntryValue,
+              arrayKey,
+              arraySize,
+            });
+            component.state[varName].usedDefaultByArrayKey[arrayKey] = true;
+          }
+          if (valuesChanged[varName] === undefined) {
+            valuesChanged[varName] = { arrayKeysChanged: {} }
+          }
+          valuesChanged[varName].arrayKeysChanged[arrayKey] = true;
+        }
+      } else {
+        valuesChanged[varName] = true;
+        if ("defaultValue" in result.useDefaultValue[varName]) {
+          // delete before assigning value to remove any getter for the property
+          delete component.state[varName].value;
+          component.state[varName].value = result.useDefaultValue[varName].defaultValue;
+          component.state[varName].usedDefault = true;
+        } else if ("defaultValue" in component.state[varName]) {
+          // delete before assigning value to remove any getter for the property
+          delete component.state[varName].value;
+          component.state[varName].value = component.state[varName].defaultValue;
+          component.state[varName].usedDefault = true;
+        } else {
+          throw Error(`Neither value nor default value specified; state variable: ${varName}, component: ${component.componentName}.`);
         }
       }
     }
@@ -8914,7 +9010,9 @@ export default class Core {
 
           let depStateVarObj = this._components[dComponentName].state[dVarName]
 
-          if (depStateVarObj.isArrayEntry || depStateVarObj.isArray) {
+          if ((depStateVarObj.isArrayEntry || depStateVarObj.isArray)
+            && !depStateVarObj.doNotCombineInverseArrayInstructions
+          ) {
 
             let arrayStateVariable = depStateVarObj.isArrayEntry ? depStateVarObj.arrayStateVariable : dVarName;
 

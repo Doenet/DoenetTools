@@ -821,7 +821,7 @@ export default class BaseComponent {
         // only copy attribute components if attributes object specifies
         // or if copy all
         let attrInfo = attributesObject[attrName];
-        if (attrInfo.copyComponentOnReference || parameters.copyAll) {
+        if (parameters.copyAll) {
           serializedComponent.attributes[attrName] = { component: await attribute.component.serialize(parameters) };
         }
       } else {

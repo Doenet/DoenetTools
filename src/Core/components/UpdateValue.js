@@ -6,10 +6,6 @@ export default class UpdateValue extends InlineComponent {
 
   static acceptTarget = true;
 
-  static get stateVariablesShadowedForReference() {
-    return ["newValue"]
-  }
-
   static createAttributesObject(args) {
     let attributes = super.createAttributesObject(args);
     // attributes.width = {default: 300};

@@ -131,7 +131,7 @@ export default class Constraints extends BaseComponent {
           dependencies.graph = {
             dependencyType: "multipleStateVariables",
             componentName: stateValues.graphComponentName,
-            variableNames: ["xmin", "xmax", "ymin", "ymax"],
+            variableNames: ["xscale", "yscale"],
             variablesOptional: true,
           }
 
@@ -153,7 +153,7 @@ export default class Constraints extends BaseComponent {
 
         if (dependencyValues.graph) {
           let SVs = dependencyValues.graph.stateValues;
-          let scales = [SVs.xmax - SVs.xmin, SVs.ymax - SVs.ymin, 1];
+          let scales = [SVs.xscale, SVs.yscale, 1];
 
           if (scales.every(x => Number.isFinite(x) && x > 0)) {
             return { newValues: { scales } }

@@ -6,12 +6,6 @@ export default class Parabola extends Curve {
   static componentType = "parabola";
   static rendererType = "curve";
 
-  static get stateVariablesShadowedForReference() {
-    return [
-      "nThroughPoints", "throughPoints", "prescribedVertex"
-    ]
-  };
-
   static createAttributesObject(args) {
     let attributes = super.createAttributesObject(args);
     attributes.through = {
@@ -91,6 +85,49 @@ export default class Parabola extends Curve {
       }
     }
 
+    stateVariableDefinitions.bShadow = {
+      defaultValue: 0,
+      returnDependencies: () => ({}),
+      definition: () => ({
+        useEssentialOrDefaultValue: {
+          bShadow: { variablesToCheck: ["bShadow", "b"] }
+        }
+      }),
+      inverseDefinition: function ({ desiredStateVariableValues }) {
+        // console.log('inverse definition of bShadow')
+        // console.log(desiredStateVariableValues)
+        return {
+          success: true,
+          instructions: [{
+            setStateVariable: "bShadow",
+            value: desiredStateVariableValues.bShadow
+          }]
+        }
+      }
+    }
+
+    stateVariableDefinitions.cShadow = {
+      defaultValue: 0,
+      returnDependencies: () => ({}),
+      definition: () => ({
+        useEssentialOrDefaultValue: {
+          cShadow: { variablesToCheck: ["cShadow", "c"] }
+        }
+      }),
+      inverseDefinition: function ({ desiredStateVariableValues }) {
+        // console.log('inverse definition of cShadow')
+        // console.log(desiredStateVariableValues)
+        return {
+          success: true,
+          instructions: [{
+            setStateVariable: "cShadow",
+            value: desiredStateVariableValues.cShadow
+          }]
+        }
+      }
+    }
+
+
     stateVariableDefinitions.nThroughPoints = {
       returnDependencies: () => ({
         throughAttr: {
@@ -117,7 +154,7 @@ export default class Parabola extends Curve {
 
     stateVariableDefinitions.throughPoints = {
       public: true,
-      componentType: "point",
+      componentType: "math",
       isArray: true,
       nDimensions: 2,
       entryPrefixes: ["throughPointX", "throughPoint"],
@@ -423,6 +460,14 @@ export default class Parabola extends Curve {
         aShadow: {
           dependencyType: "stateVariable",
           variableName: "aShadow",
+        },
+        bShadow: {
+          dependencyType: "stateVariable",
+          variableName: "bShadow",
+        },
+        cShadow: {
+          dependencyType: "stateVariable",
+          variableName: "cShadow",
         }
       }),
       definition: function ({ dependencyValues }) {
@@ -496,18 +541,10 @@ export default class Parabola extends Curve {
 
           // nothing specified.  Create parabola y=a*x^2, by default
           return {
-            useEssentialOrDefaultValue: {
-              b: {
-                variablesToCheck: ["b"],
-                defaultValue: 0,
-              },
-              c: {
-                variablesToCheck: ["c"],
-                defaultValue: 0,
-              }
-            },
             newValues: {
               a: dependencyValues.aShadow,
+              b: dependencyValues.bShadow,
+              c: dependencyValues.cShadow,
               realValued: true,
             }
           }
@@ -742,14 +779,14 @@ export default class Parabola extends Curve {
           }
           if (desiredNumericalValues.b !== undefined) {
             instructions.push({
-              setStateVariable: "b",
-              value: desiredNumericalValues.b
+              setDependency: "bShadow",
+              desiredValue: desiredNumericalValues.b
             })
           }
           if (desiredNumericalValues.c !== undefined) {
             instructions.push({
-              setStateVariable: "c",
-              value: desiredNumericalValues.c
+              setDependency: "cShadow",
+              desiredValue: desiredNumericalValues.c
             })
           }
           return {

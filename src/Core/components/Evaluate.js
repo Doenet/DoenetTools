@@ -5,14 +5,6 @@ export default class Evaluate extends MathComponent {
   static componentType = "evaluate";
   static rendererType = "math";
 
-  static get stateVariablesShadowedForReference() {
-    return [
-      ...super.stateVariablesShadowedForReference,
-      "displayDigits", "displayDecimals", "displaySmallAsZero"
-    ]
-  };
-
-
   static createAttributesObject(args) {
     let attributes = super.createAttributesObject(args);
     attributes.forceSymbolic = {
@@ -87,7 +79,7 @@ export default class Evaluate extends MathComponent {
       componentType: "integer",
       defaultValue: 10,
       returnDependencies: () => ({
-        displayDecimalsAttr: {
+        displayDigitsAttr: {
           dependencyType: "attributeComponent",
           attributeName: "displayDigits",
           variableNames: ["value"]
@@ -99,10 +91,10 @@ export default class Evaluate extends MathComponent {
         },
       }),
       definition({ dependencyValues, usedDefault }) {
-        if (dependencyValues.displayDecimalsAttr !== null) {
+        if (dependencyValues.displayDigitsAttr !== null) {
           return {
             newValues: {
-              displayDigits: dependencyValues.displayDecimalsAttr.stateValues.value
+              displayDigits: dependencyValues.displayDigitsAttr.stateValues.value
             }
           }
         } else if (dependencyValues.functionAttr && !usedDefault.functionAttr) {
@@ -113,7 +105,7 @@ export default class Evaluate extends MathComponent {
           }
         } else {
           return {
-            useEssentialOrDefaultValue: { displayDigits: { variablesToCheck: ["displayDigits"] } }
+            useDefaultValue: { displayDigits: {} }
           }
         }
       }
@@ -150,7 +142,7 @@ export default class Evaluate extends MathComponent {
           }
         } else {
           return {
-            useEssentialOrDefaultValue: { displayDecimals: { variablesToCheck: ["displayDecimals"] } }
+            useDefaultValue: { displayDecimals: {} }
           }
         }
       }
@@ -187,7 +179,7 @@ export default class Evaluate extends MathComponent {
           }
         } else {
           return {
-            useEssentialOrDefaultValue: { displaySmallAsZero: { variablesToCheck: ["displaySmallAsZero"] } }
+            useDefaultValue: { displaySmallAsZero: {} }
           }
         }
       }

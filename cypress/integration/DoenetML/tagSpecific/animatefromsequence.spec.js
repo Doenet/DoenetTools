@@ -582,5 +582,58 @@ describe('AnimateFromSequence Tag Tests', function () {
 
   })
 
+  it('check that calculated default value does not change on reload', () => {
+    let doenetML = `
+    <text>a</text>
+    <p>Animation mode: <textinput name="anmode" prefill="increase" /></p>
+    <animatefromsequence name="an" animationmode="$anmode" />
+    <p>Animation direction: <copy prop="currentAnimationDirection" target="an" assignNames="cad" /></p>
+    `;
+
+
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML }, "*");
+    });
+
+    cy.get('#testRunner_toggleControls').click();
+    cy.get('#testRunner_allowLocalPageState').click()
+    cy.get('#testRunner_toggleControls').click();
+
+    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
+
+    cy.get('#\\/cad').should('have.text', 'increase')
+    cy.get('#\\/anmode_input').should('have.value', 'increase')
+
+
+    cy.get('#\\/anmode_input').clear().type('decrease{enter}')
+
+    cy.get('#\\/cad').should('have.text', 'increase')
+    cy.get('#\\/anmode_input').should('have.value', 'decrease')
+
+
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: '<text>b</text>',
+      }, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'b') //wait for page to load
+
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML,
+      }, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+
+    cy.get('#\\/cad').should('have.text', 'increase')
+    cy.get('#\\/anmode_input').should('have.value', 'decrease')
+
+
+  })
+
+
 
 });

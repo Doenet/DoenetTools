@@ -8188,5 +8188,132 @@ describe('Point Tag Tests', function () {
   });
 
 
+  it('copy and overwrite each coordinate in sequence, initial sugar', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+
+    <graph name="g1" newNamespace>
+      <point name="P">(3,2)</point>
+    </graph>
+    
+    <graph name="g2" newNamespace>
+      <copy target="../g1/P" x="-1" assignNames="P" />
+    </graph>
+    
+    <copy target="g2" assignNames="g3" />
+    
+    <graph name="g4" newNamespace>
+      <copy target="../g3/P" y="-5" assignNames="P" />
+    </graph>
+
+    <copy target="g1/P" assignNames="P1" />
+    <copy target="g2/P" assignNames="P2" />
+    <copy target="g3/P" assignNames="P3" />
+    <copy target="g4/P" assignNames="P4" />
+
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+
+    cy.log('initial values')
+
+    cy.get('#\\/P1 .mjx-mrow').should('contain.text', '(3,2)')
+    cy.get('#\\/P2 .mjx-mrow').should('contain.text', '(−1,2)')
+    cy.get('#\\/P3 .mjx-mrow').should('contain.text', '(−1,2)')
+    cy.get('#\\/P4 .mjx-mrow').should('contain.text', '(−1,−5)')
+
+    cy.window().then(async (win) => {
+      let components = Object.assign({}, win.state.components);
+      expect((await components['/g1/P'].stateValues.xs).map(x => x.tree)).eqls([3, 2])
+      expect((await components['/g2/P'].stateValues.xs).map(x => x.tree)).eqls([-1, 2])
+      expect((await components['/g3/P'].stateValues.xs).map(x => x.tree)).eqls([-1, 2])
+      expect((await components['/g4/P'].stateValues.xs).map(x => x.tree)).eqls([-1, -5])
+    })
+
+    cy.log('move first point')
+    cy.window().then(async (win) => {
+      let components = Object.assign({}, win.state.components);
+      await components['/g1/P'].movePoint({ x: -2, y: -7 });
+    })
+
+    cy.get('#\\/P1 .mjx-mrow').should('contain.text', '(−2,−7)')
+    cy.get('#\\/P2 .mjx-mrow').should('contain.text', '(−1,−7)')
+    cy.get('#\\/P3 .mjx-mrow').should('contain.text', '(−1,−7)')
+    cy.get('#\\/P4 .mjx-mrow').should('contain.text', '(−1,−5)')
+
+    cy.window().then(async (win) => {
+      let components = Object.assign({}, win.state.components);
+      expect((await components['/g1/P'].stateValues.xs).map(x => x.tree)).eqls([-2, -7])
+      expect((await components['/g2/P'].stateValues.xs).map(x => x.tree)).eqls([-1, -7])
+      expect((await components['/g3/P'].stateValues.xs).map(x => x.tree)).eqls([-1, -7])
+      expect((await components['/g4/P'].stateValues.xs).map(x => x.tree)).eqls([-1, -5])
+    })
+
+
+    cy.log('move second point')
+    cy.window().then(async (win) => {
+      let components = Object.assign({}, win.state.components);
+      await components['/g2/P'].movePoint({ x: 8, y: -6 });
+    })
+
+    cy.get('#\\/P1 .mjx-mrow').should('contain.text', '(−2,−6)')
+    cy.get('#\\/P2 .mjx-mrow').should('contain.text', '(8,−6)')
+    cy.get('#\\/P3 .mjx-mrow').should('contain.text', '(8,−6)')
+    cy.get('#\\/P4 .mjx-mrow').should('contain.text', '(8,−5)')
+
+    cy.window().then(async (win) => {
+      let components = Object.assign({}, win.state.components);
+      expect((await components['/g1/P'].stateValues.xs).map(x => x.tree)).eqls([-2, -6])
+      expect((await components['/g2/P'].stateValues.xs).map(x => x.tree)).eqls([8, -6])
+      expect((await components['/g3/P'].stateValues.xs).map(x => x.tree)).eqls([8, -6])
+      expect((await components['/g4/P'].stateValues.xs).map(x => x.tree)).eqls([8, -5])
+    })
+
+
+
+    cy.log('move third point')
+    cy.window().then(async (win) => {
+      let components = Object.assign({}, win.state.components);
+      await components['/g3/P'].movePoint({ x: 1, y: 0 });
+    })
+
+    cy.get('#\\/P1 .mjx-mrow').should('contain.text', '(−2,0)')
+    cy.get('#\\/P2 .mjx-mrow').should('contain.text', '(1,0)')
+    cy.get('#\\/P3 .mjx-mrow').should('contain.text', '(1,0)')
+    cy.get('#\\/P4 .mjx-mrow').should('contain.text', '(1,−5)')
+
+    cy.window().then(async (win) => {
+      let components = Object.assign({}, win.state.components);
+      expect((await components['/g1/P'].stateValues.xs).map(x => x.tree)).eqls([-2, 0])
+      expect((await components['/g2/P'].stateValues.xs).map(x => x.tree)).eqls([1, 0])
+      expect((await components['/g3/P'].stateValues.xs).map(x => x.tree)).eqls([1, 0])
+      expect((await components['/g4/P'].stateValues.xs).map(x => x.tree)).eqls([1, -5])
+    })
+
+    cy.log('move fourth point')
+    cy.window().then(async (win) => {
+      let components = Object.assign({}, win.state.components);
+      await components['/g4/P'].movePoint({ x: 3, y: 4 });
+    })
+
+    cy.get('#\\/P1 .mjx-mrow').should('contain.text', '(−2,0)')
+    cy.get('#\\/P2 .mjx-mrow').should('contain.text', '(3,0)')
+    cy.get('#\\/P3 .mjx-mrow').should('contain.text', '(3,0)')
+    cy.get('#\\/P4 .mjx-mrow').should('contain.text', '(3,4)')
+
+    cy.window().then(async (win) => {
+      let components = Object.assign({}, win.state.components);
+      expect((await components['/g1/P'].stateValues.xs).map(x => x.tree)).eqls([-2, 0])
+      expect((await components['/g2/P'].stateValues.xs).map(x => x.tree)).eqls([3, 0])
+      expect((await components['/g3/P'].stateValues.xs).map(x => x.tree)).eqls([3, 0])
+      expect((await components['/g4/P'].stateValues.xs).map(x => x.tree)).eqls([3, 4])
+    })
+
+  });
+
+
 
 })

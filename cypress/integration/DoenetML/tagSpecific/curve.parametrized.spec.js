@@ -406,6 +406,48 @@ describe('Parameterized Curve Tag Tests', function () {
   });
 
 
+  it('a parameterization, copy and overwrite par limits', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <graph>
+    <curve name="c1" parMin="-1" parMax="0.5">
+      <function variables="t">5t^3</function>
+      <function variables="t">3t^5</function>
+    </curve>
+    </graph>
+    <graph>
+      <copy target="c1" parMin="-4" parMax="0" assignNames="c2" />
+    </graph>
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  //wait for window to load
+
+    cy.window().then(async (win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/c1'].stateValues.curveType).eq("parameterization");
+      expect(components['/c1'].stateValues.parMin).eq(-1);
+      expect(components['/c1'].stateValues.parMax).eq(0.5);
+      expect(components['/c1'].stateValues.fs[0](-2)).eq(-5 * 8);
+      expect(components['/c1'].stateValues.fs[0](3)).eq(5 * 27);
+      expect(components['/c1'].stateValues.fs[1](-2)).eq(-3 * 32);
+      expect(components['/c1'].stateValues.fs[1](3)).eq(3 * 243);
+
+
+      expect(components['/c2'].stateValues.curveType).eq("parameterization");
+      expect(components['/c2'].stateValues.parMin).eq(-4);
+      expect(components['/c2'].stateValues.parMax).eq(0);
+      expect(components['/c2'].stateValues.fs[0](-2)).eq(-5 * 8);
+      expect(components['/c2'].stateValues.fs[0](3)).eq(5 * 27);
+      expect(components['/c2'].stateValues.fs[1](-2)).eq(-3 * 32);
+      expect(components['/c2'].stateValues.fs[1](3)).eq(3 * 243);
+    })
+
+  });
+
+
   it.skip('a parameterization with parens', () => {
     cy.window().then(async (win) => {
       win.postMessage({

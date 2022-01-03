@@ -250,6 +250,48 @@ describe('BooleanList Tag Tests', function () {
     })
   })
 
+  it('copy booleanlist and overwrite maximum number', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+      <text>a</text>
+      <p><booleanlist name="bl1">true true false true false</booleanlist></p>
+      <p><copy target="bl1" maximumNumber="3" assignNames="bl2" /></p>
+      <p><copy target="bl2" maximumNumber="" assignNames="bl3" /></p>
+
+      <p><booleanlist name="bl4" maximumNumber="3">true true false true false</booleanlist></p>
+      <p><copy target="bl4" maximumNumber="4" assignNames="bl5" /></p>
+      <p><copy target="bl5" maximumNumber="" assignNames="bl6" /></p>
+
+      ` }, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+
+    cy.window().then(async (win) => {
+
+      cy.get('#\\/_p1').should('have.text', 'true, true, false, true, false')
+      cy.get('#\\/_p2').should('have.text', 'true, true, false')
+      cy.get('#\\/_p3').should('have.text', 'true, true, false, true, false')
+
+      cy.get('#\\/_p4').should('have.text', 'true, true, false')
+      cy.get('#\\/_p5').should('have.text', 'true, true, false, true')
+      cy.get('#\\/_p6').should('have.text', 'true, true, false, true, false')
+
+      cy.log('Test internal values are set to the correct values')
+      cy.window().then(async (win) => {
+        let components = Object.assign({}, win.state.components);
+        expect(await components['/bl1'].stateValues.booleans).eqls([true, true, false, true, false]);
+        expect(await components['/bl2'].stateValues.booleans).eqls([true, true, false]);
+        expect(await components['/bl3'].stateValues.booleans).eqls([true, true, false, true, false]);
+        expect(await components['/bl4'].stateValues.booleans).eqls([true, true, false]);
+        expect(await components['/bl5'].stateValues.booleans).eqls([true, true, false, true]);
+        expect(await components['/bl6'].stateValues.booleans).eqls([true, true, false, true, false]);
+
+      })
+    })
+  })
 
 })
 

@@ -718,20 +718,20 @@ describe('Module Tag Tests', function () {
     cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
 
-      let g2m1Anchor = cesc('#' + components["/g2"].replacements[3].activeChildren[1].componentName);
-      let g2m3Anchor = cesc('#' + components["/g2"].replacements[5].activeChildren[3].componentName);
+      let g2m1Anchor = cesc('#' + components["/g2"].replacements[3].activeChildren[1].componentarget);
+      let g2m3Anchor = cesc('#' + components["/g2"].replacements[5].activeChildren[3].componentarget);
       let g2extProblem = components["/g2"].replacements[7].replacements[0].replacements[0].replacements[3];
-      let g2extm1Anchor = cesc('#' + g2extProblem.activeChildren[2].activeChildren[1].componentName);
+      let g2extm1Anchor = cesc('#' + g2extProblem.activeChildren[2].activeChildren[1].componentarget);
       let g2extGraph = g2extProblem.activeChildren[4];
       let g2extP = g2extGraph.activeChildren[0];
-      let g2extAnswerSubmitAnchor = cesc('#' + g2extProblem.activeChildren[6].componentName + "_submit");
-      let g3m1Anchor = cesc('#' + components["/g3"].replacements[3].activeChildren[1].componentName);
-      let g3m3Anchor = cesc('#' + components["/g3"].replacements[5].activeChildren[3].componentName);
+      let g2extAnswerSubmitAnchor = cesc('#' + g2extProblem.activeChildren[6].componentarget + "_submit");
+      let g3m1Anchor = cesc('#' + components["/g3"].replacements[3].activeChildren[1].componentarget);
+      let g3m3Anchor = cesc('#' + components["/g3"].replacements[5].activeChildren[3].componentarget);
       let g3extProblem = components["/g3"].replacements[7].replacements[0].replacements[0].replacements[3];
-      let g3extm1Anchor = cesc('#' + g3extProblem.activeChildren[2].activeChildren[1].componentName);
+      let g3extm1Anchor = cesc('#' + g3extProblem.activeChildren[2].activeChildren[1].componentarget);
       let g3extGraph = g3extProblem.activeChildren[4];
       let g3extP = g3extGraph.activeChildren[0];
-      let g3extAnswerSubmitAnchor = cesc('#' + g3extProblem.activeChildren[6].componentName + "_submit");
+      let g3extAnswerSubmitAnchor = cesc('#' + g3extProblem.activeChildren[6].componentarget + "_submit");
 
       cy.get(cesc('#/_m1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim().replace(/−/g, '-')).equal('(1,2)')
@@ -916,6 +916,106 @@ describe('Module Tag Tests', function () {
     cy.get(cesc('#/m1/_p1')).should('have.text', "Disabled? ");
     cy.get(cesc('#/m2/_p1')).should('have.text', "Disabled? ");
     cy.get(cesc('#/m3/_p1')).should('have.text', "Disabled? ");
+
+  })
+
+  it('copy module and overwrite attribute values', () => {
+
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <module name="md" newNamespace>
+      <setup>
+        <customAttribute attribute="n" componentType="number" defaultValue="2" assignNames="n" />
+        <customAttribute attribute="m" componentType="number" defaultValue="1" assignNames="m" />
+      </setup>
+      <p>The first number is $m; the second number is $n.</p>
+      <p>Next value? <mathinput name="q" />  OK $q it is.</p>
+    </module>
+    
+    <copy target="md" assignNames="md1" />
+    <copy target="md1" n="10" assignNames="md2" />
+    <copy target="md2" m="100" assignNames="md3" />
+    <copy target="md3" n="0" assignNames="md4" />
+
+    <copy target="md" m="13" n="17" assignNames="md5" />
+    <copy target="md5" m="" n="a" assignNames="md6" />
+    <copy target="md6" m="3" n="4" assignNames="md7" />
+
+    `}, "*");
+    });
+    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+
+    cy.get('#\\/md\\/_p1').should('have.text', 'The first number is 1; the second number is 2.')
+    cy.get('#\\/md1\\/_p1').should('have.text', 'The first number is 1; the second number is 2.')
+    cy.get('#\\/md2\\/_p1').should('have.text', 'The first number is 1; the second number is 10.')
+    cy.get('#\\/md3\\/_p1').should('have.text', 'The first number is 100; the second number is 10.')
+    cy.get('#\\/md4\\/_p1').should('have.text', 'The first number is 100; the second number is 0.')
+    cy.get('#\\/md5\\/_p1').should('have.text', 'The first number is 13; the second number is 17.')
+    cy.get('#\\/md6\\/_p1').should('have.text', 'The first number is NaN; the second number is NaN.')
+    cy.get('#\\/md7\\/_p1').should('have.text', 'The first number is 3; the second number is 4.')
+
+    cy.get('#\\/md\\/_p2 .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq('\uff3f')
+    })
+    cy.get('#\\/md1\\/_p2 .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq('\uff3f')
+    })
+    cy.get('#\\/md2\\/_p2 .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq('\uff3f')
+    })
+    cy.get('#\\/md3\\/_p2 .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq('\uff3f')
+    })
+    cy.get('#\\/md4\\/_p2 .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq('\uff3f')
+    })
+    cy.get('#\\/md5\\/_p2 .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq('\uff3f')
+    })
+    cy.get('#\\/md6\\/_p2 .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq('\uff3f')
+    })
+    cy.get('#\\/md7\\/_p2 .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq('\uff3f')
+    })
+
+
+    cy.get('#\\/md\\/q textarea').type('x{enter}', { force: true })
+    cy.get('#\\/md1\\/q textarea').type('y{enter}', { force: true })
+    cy.get('#\\/md2\\/q textarea').type('z{enter}', { force: true })
+    cy.get('#\\/md3\\/q textarea').type('u{enter}', { force: true })
+    cy.get('#\\/md4\\/q textarea').type('v{enter}', { force: true })
+    cy.get('#\\/md5\\/q textarea').type('w{enter}', { force: true })
+    cy.get('#\\/md6\\/q textarea').type('s{enter}', { force: true })
+    cy.get('#\\/md7\\/q textarea').type('t{enter}', { force: true })
+
+
+    cy.get('#\\/md\\/_p2 .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq('x')
+    })
+    cy.get('#\\/md1\\/_p2 .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq('y')
+    })
+    cy.get('#\\/md2\\/_p2 .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq('z')
+    })
+    cy.get('#\\/md3\\/_p2 .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq('u')
+    })
+    cy.get('#\\/md4\\/_p2 .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq('v')
+    })
+    cy.get('#\\/md5\\/_p2 .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq('w')
+    })
+    cy.get('#\\/md6\\/_p2 .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq('s')
+    })
+    cy.get('#\\/md7\\/_p2 .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq('t')
+    })
 
   })
 

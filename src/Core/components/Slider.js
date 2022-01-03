@@ -47,6 +47,7 @@ export default class Slider extends BaseComponent {
       createComponentOfType: "_componentWithSelectableType",
       createStateVariable: "initialValue",
       defaultValue: undefined,
+      noInverse: true,
     }
     attributes.label = {
       createComponentOfType: "text",

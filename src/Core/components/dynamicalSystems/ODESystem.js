@@ -6,10 +6,6 @@ export default class ODESystem extends InlineComponent {
   static componentType = "odesystem";
   static rendererType = "math";
 
-  static get stateVariablesShadowedForReference() {
-    return ["variables", "validVariable", "validIndependentVariable", "initialConditions"]
-  };
-
   static createAttributesObject(args) {
     let attributes = super.createAttributesObject(args);
 

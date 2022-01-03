@@ -139,12 +139,26 @@ export default class Intersection extends CompositeComponent {
     // two intersecting lines, return point
     let x = (c2 * b1 - c1 * b2) / d;
     let y = (c1 * a2 - c2 * a1) / d;
-    let coords = me.fromAst(["vector", x, y]);
+    // let coords = me.fromAst(["vector", x, y]);
 
     return {
       replacements: [{
         componentType: "point",
-        state: { coords, draggable: false, fixed: true },
+        attributes: {
+          xs: {
+            component: {
+              componentType: "mathList",
+              children: [{
+                componentType: "math",
+                state: { value: me.fromAst(x) }
+              }, {
+                componentType: "math",
+                state: { value: me.fromAst(y) }
+              }]
+            }
+          }
+        },
+        state: { draggable: false, fixed: true },
       }]
     };
 

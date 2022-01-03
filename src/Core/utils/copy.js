@@ -1,5 +1,5 @@
 import { getUniqueIdentifierFromBase } from "./naming";
-import { applyMacros, applySugar, componentFromAttribute } from "./serializedStateProcessing";
+import { applyMacros, applySugar, componentFromAttribute, removeBlankStringChildren } from "./serializedStateProcessing";
 
 export function postProcessCopy({ serializedComponents, componentName,
   addShadowDependencies = true, uniqueIdentifiersUsed = [], identifierPrefix = "",
@@ -218,10 +218,15 @@ export function convertAttributesForComponentType({
       });
 
       if (newAttributes[propName].component?.children) {
-        newAttributes[propName].component.children = applyMacros(newAttributes[propName].component.children, componentInfoObjects);
+
+        let serializedComponents = [newAttributes[propName].component];
+
+        applyMacros(serializedComponents, componentInfoObjects);
+
+        removeBlankStringChildren(serializedComponents, componentInfoObjects)
 
         applySugar({
-          serializedComponents: [newAttributes[propName].component],
+          serializedComponents,
           componentInfoObjects,
           isAttributeComponent: true,
         });

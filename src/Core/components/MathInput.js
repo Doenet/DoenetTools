@@ -41,10 +41,6 @@ export default class MathInput extends Input {
 
   static variableForPlainMacro = "value";
 
-  static get stateVariablesShadowedForReference() {
-    return ["value"]
-  };
-
   static createAttributesObject(args) {
     let attributes = super.createAttributesObject(args);
     attributes.prefill = {
@@ -125,6 +121,7 @@ export default class MathInput extends Input {
       public: true,
       componentType: "math",
       forRenderer: true,
+      alwaysShadow: true,
       stateVariablesPrescribingAdditionalAttributes: {
         displayDigits: "displayDigits",
         displayDecimals: "displayDecimals",

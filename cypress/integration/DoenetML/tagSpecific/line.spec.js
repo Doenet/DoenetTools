@@ -3043,7 +3043,7 @@ describe('Line Tag Tests', function () {
       x11 = 1, y11 = 2;
       x12 = 4, y12 = -2;
       x2 = 0, y2 = 0;
-  
+
       await checkLines({ x11, y11, x12, y12, x2, y2, components });
 
     })
@@ -8824,6 +8824,441 @@ describe('Line Tag Tests', function () {
       });
 
       await checkLines({ x1, y1, x21, y21, x22, y22, slope1, slope2, components })
+
+    })
+
+
+
+  })
+
+  it('line with just given slope, copy and add through point', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <p>slope: <mathinput name="slope" prefill="1" /></p>
+  
+  <graph name="g1" newNamespace>
+    <line slope="$(../slope)" name="l" />
+    <copy prop="point1" target="l" assignNames="A" />
+    <copy prop="point2" target="l" assignNames="B"/>
+  </graph>
+
+  <graph name="g2" newNamespace>
+    <copy target="../g1/l" through="(-5,9)" assignNames="l" />
+    <copy prop="point1" target="../g2/l" assignNames="A" />
+    <copy prop="point2" target="../g2/l" assignNames="B" />
+  </graph>
+
+  <graph newNamespace name="g3">
+    <copy target="../g2/l" assignNames="l" />
+    <copy prop="point1" target="l" assignNames="A" />
+    <copy prop="point2" target="l" assignNames="B" />  
+  </graph>
+
+  <graph newNamespace name="g4">
+    <copy target="../g2/_copy1" assignNames="l" />
+    <copy prop="point1" target="l" assignNames="A" />
+    <copy prop="point2" target="l" assignNames="B" />  
+  </graph>
+
+  <copy target="g2" assignNames="g5" />
+  
+  `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
+
+
+    async function checkLines({ x11, y11, x12, y12, x21, y21, x22, y22, slope, components }) {
+
+      expect((await components['/g1/l'].stateValues.points)[0][0].evaluate_to_constant()).closeTo(x11, 1E-12);
+      expect((await components['/g1/l'].stateValues.points)[0][1].evaluate_to_constant()).closeTo(y11, 1E-12);
+      expect((await components['/g1/l'].stateValues.points)[1][0].evaluate_to_constant()).closeTo(x21, 1E-12);
+      expect((await components['/g1/l'].stateValues.points)[1][1].evaluate_to_constant()).closeTo(y21, 1E-12);
+      if (Number.isFinite(slope)) {
+        expect((await components['/g1/l'].stateValues.slope).evaluate_to_constant()).closeTo(slope, 1E-12);
+      } else {
+        expect((await components['/g1/l'].stateValues.slope).evaluate_to_constant()).eq(slope);
+      }
+
+      expect((await components['/g2/l'].stateValues.points)[0][0].evaluate_to_constant()).closeTo(x12, 1E-12);
+      expect((await components['/g2/l'].stateValues.points)[0][1].evaluate_to_constant()).closeTo(y12, 1E-12);
+      expect((await components['/g2/l'].stateValues.points)[1][0].evaluate_to_constant()).closeTo(x22, 1E-12);
+      expect((await components['/g2/l'].stateValues.points)[1][1].evaluate_to_constant()).closeTo(y22, 1E-12);
+      if (Number.isFinite(slope)) {
+        expect((await components['/g2/l'].stateValues.slope).evaluate_to_constant()).closeTo(slope, 1E-12);
+      } else {
+        expect((await components['/g2/l'].stateValues.slope).evaluate_to_constant()).eq(slope);
+      }
+
+      expect((await components['/g3/l'].stateValues.points)[0][0].evaluate_to_constant()).closeTo(x12, 1E-12);
+      expect((await components['/g3/l'].stateValues.points)[0][1].evaluate_to_constant()).closeTo(y12, 1E-12);
+      expect((await components['/g3/l'].stateValues.points)[1][0].evaluate_to_constant()).closeTo(x22, 1E-12);
+      expect((await components['/g3/l'].stateValues.points)[1][1].evaluate_to_constant()).closeTo(y22, 1E-12);
+      if (Number.isFinite(slope)) {
+        expect((await components['/g3/l'].stateValues.slope).evaluate_to_constant()).closeTo(slope, 1E-12);
+      } else {
+        expect((await components['/g3/l'].stateValues.slope).evaluate_to_constant()).eq(slope);
+      }
+
+      expect((await components['/g4/l'].stateValues.points)[0][0].evaluate_to_constant()).closeTo(x12, 1E-12);
+      expect((await components['/g4/l'].stateValues.points)[0][1].evaluate_to_constant()).closeTo(y12, 1E-12);
+      expect((await components['/g4/l'].stateValues.points)[1][0].evaluate_to_constant()).closeTo(x22, 1E-12);
+      expect((await components['/g4/l'].stateValues.points)[1][1].evaluate_to_constant()).closeTo(y22, 1E-12);
+      if (Number.isFinite(slope)) {
+        expect((await components['/g4/l'].stateValues.slope).evaluate_to_constant()).closeTo(slope, 1E-12);
+      } else {
+        expect((await components['/g4/l'].stateValues.slope).evaluate_to_constant()).eq(slope);
+      }
+
+      expect((await components['/g5/l'].stateValues.points)[0][0].evaluate_to_constant()).closeTo(x12, 1E-12);
+      expect((await components['/g5/l'].stateValues.points)[0][1].evaluate_to_constant()).closeTo(y12, 1E-12);
+      expect((await components['/g5/l'].stateValues.points)[1][0].evaluate_to_constant()).closeTo(x22, 1E-12);
+      expect((await components['/g5/l'].stateValues.points)[1][1].evaluate_to_constant()).closeTo(y22, 1E-12);
+      if (Number.isFinite(slope)) {
+        expect((await components['/g5/l'].stateValues.slope).evaluate_to_constant()).closeTo(slope, 1E-12);
+      } else {
+        expect((await components['/g5/l'].stateValues.slope).evaluate_to_constant()).eq(slope);
+      }
+
+      expect((await components['/g1/A'].stateValues.xs)[0].tree).closeTo(x11, 1E-12);
+      expect((await components['/g1/A'].stateValues.xs)[1].tree).closeTo(y11, 1E-12);
+      expect((await components['/g1/B'].stateValues.xs)[0].tree).closeTo(x21, 1E-12);
+      expect((await components['/g1/B'].stateValues.xs)[1].tree).closeTo(y21, 1E-12);
+
+      expect((await components['/g2/A'].stateValues.xs)[0].tree).closeTo(x12, 1E-12);
+      expect((await components['/g2/A'].stateValues.xs)[1].tree).closeTo(y12, 1E-12);
+      expect((await components['/g2/B'].stateValues.xs)[0].tree).closeTo(x22, 1E-12);
+      expect((await components['/g2/B'].stateValues.xs)[1].tree).closeTo(y22, 1E-12);
+
+      expect((await components['/g3/A'].stateValues.xs)[0].tree).closeTo(x12, 1E-12);
+      expect((await components['/g3/A'].stateValues.xs)[1].tree).closeTo(y12, 1E-12);
+      expect((await components['/g3/B'].stateValues.xs)[0].tree).closeTo(x22, 1E-12);
+      expect((await components['/g3/B'].stateValues.xs)[1].tree).closeTo(y22, 1E-12);
+
+      expect((await components['/g4/A'].stateValues.xs)[0].tree).closeTo(x12, 1E-12);
+      expect((await components['/g4/A'].stateValues.xs)[1].tree).closeTo(y12, 1E-12);
+      expect((await components['/g4/B'].stateValues.xs)[0].tree).closeTo(x22, 1E-12);
+      expect((await components['/g4/B'].stateValues.xs)[1].tree).closeTo(y22, 1E-12);
+
+      expect((await components['/g5/A'].stateValues.xs)[0].tree).closeTo(x12, 1E-12);
+      expect((await components['/g5/A'].stateValues.xs)[1].tree).closeTo(y12, 1E-12);
+      expect((await components['/g5/B'].stateValues.xs)[0].tree).closeTo(x22, 1E-12);
+      expect((await components['/g5/B'].stateValues.xs)[1].tree).closeTo(y22, 1E-12);
+
+    }
+
+    let x11 = 0, y11 = 0;
+    let x12 = -5, y12 = 9;
+
+    let slope = 1;
+
+    let d = 1;
+    let theta = Math.atan(slope)
+    let x21 = x11 + d * Math.cos(theta);
+    let y21 = y11 + d * Math.sin(theta);
+    let x22 = x12 + d * Math.cos(theta);
+    let y22 = y12 + d * Math.sin(theta);
+
+    cy.window().then(async (win) => {
+      let components = Object.assign({}, win.state.components);
+
+      await checkLines({ x11, y11, x12, y12, x21, y21, x22, y22, slope, components })
+    })
+
+    cy.log("move point A")
+    cy.window().then(async (win) => {
+      let components = Object.assign({}, win.state.components);
+      let dx = 4, dy = -4;
+      x11 += dx;
+      y11 += dy;
+
+      x21 += dx;
+      y21 += dy;
+      await components['/g1/A'].movePoint({ x: x11, y: y11 });
+      await checkLines({ x11, y11, x12, y12, x21, y21, x22, y22, slope, components })
+
+
+    })
+
+    cy.log("move point B")
+    cy.window().then(async (win) => {
+      let components = Object.assign({}, win.state.components);
+      let dx = -d * Math.cos(theta);
+      let dy = 4;
+      x21 += dx;
+      y21 += dy;
+      x22 += dx;
+      y22 += dy;
+
+      slope = (y21-y11)/(x21-x11);
+
+      await components['/g1/B'].movePoint({ x: x21, y: y21 });
+      await checkLines({ x11, y11, x12, y12, x21, y21, x22, y22, slope, components })
+
+    })
+
+    cy.log("move line 1, ignore point2 coords")
+    cy.window().then(async (win) => {
+      let components = Object.assign({}, win.state.components);
+
+      let dx = -1, dy = 3;
+      x11 += dx;
+      y11 += dy;
+
+      x21 += dx;
+      y21 += dy;
+
+      await components['/g1/l'].moveLine({
+        point1coords: [x11, y11],
+        point2coords: [93, -92]
+      });
+      await checkLines({ x11, y11, x12, y12, x21, y21, x22, y22, slope, components })
+
+
+    })
+
+    cy.log("move point A2")
+    cy.window().then(async (win) => {
+      let components = Object.assign({}, win.state.components);
+      let dx = -6, dy = -9;
+      x12 += dx;
+      y12 += dy;
+
+      x22 += dx;
+      y22 += dy;
+
+      await components['/g2/A'].movePoint({ x: x12, y: y12 });
+      await checkLines({ x11, y11, x12, y12, x21, y21, x22, y22, slope, components })
+
+
+    })
+
+    cy.log("move point B2")
+    cy.window().then(async (win) => {
+      let components = Object.assign({}, win.state.components);
+      x22 = 6;
+      y22 = -6;
+      slope = (y22 - y12) / (x22 - x12);
+
+      theta = Math.atan(slope)
+      x21 = x11 + x22 - x12;
+      y21 = y11 + y22 - y12;
+
+      await components['/g2/B'].movePoint({ x: x22, y: y22 });
+      await checkLines({ x11, y11, x12, y12, x21, y21, x22, y22, slope, components })
+
+
+    })
+
+    cy.log("move line 2, ignores point2 coords")
+    cy.window().then(async (win) => {
+      let components = Object.assign({}, win.state.components);
+
+      let dx = 3, dy = 6;
+      x12 += dx;
+      y12 += dy;
+      x22 += dx;
+      y22 += dy;
+
+
+      await components['/g2/l'].moveLine({
+        point1coords: [x12, y12],
+        point2coords: [-73, 58]
+      });
+      await checkLines({ x11, y11, x12, y12, x21, y21, x22, y22, slope, components })
+
+
+    })
+
+    cy.log("move point A3")
+    cy.window().then(async (win) => {
+      let components = Object.assign({}, win.state.components);
+      let dx = 4, dy = -11;
+      x12 += dx;
+      y12 += dy;
+      x22 += dx;
+      y22 += dy;
+
+
+      await components['/g3/A'].movePoint({ x: x12, y: y12 });
+      await checkLines({ x11, y11, x12, y12, x21, y21, x22, y22, slope, components })
+
+
+    })
+
+    cy.log("move point B3")
+    cy.window().then(async (win) => {
+      let components = Object.assign({}, win.state.components);
+      x22 = 6;
+      y22 = -3;
+      slope = (y22 - y12) / (x22 - x12);
+
+      theta = Math.atan(slope)
+      x21 = x11 + x22 - x12;
+      y21 = y11 + y22 - y12;
+
+      await components['/g3/B'].movePoint({ x: x22, y: y22 });
+      await checkLines({ x11, y11, x12, y12, x21, y21, x22, y22, slope, components })
+
+
+    })
+
+
+    cy.log("change slope")
+    cy.window().then(async (win) => {
+      let components = Object.assign({}, win.state.components);
+
+      slope = -3;
+
+      let dx = x22 - x12;
+      let dy = y22 - y12;
+      d = Math.sqrt(dx * dx + dy * dy);
+      theta = Math.atan(slope)
+      x22 = x12 + d * Math.cos(theta);
+      y22 = y12 + d * Math.sin(theta);
+      x21 = x11 + d * Math.cos(theta);
+      y21 = y11 + d * Math.sin(theta);
+
+      cy.get('#\\/slope textarea').type("{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}-3{enter}", { force: true }).then(async () => {
+
+        await checkLines({ x11, y11, x12, y12, x21, y21, x22, y22, slope, components })
+
+
+      })
+    })
+
+    cy.log("move line 3, ignores point2 coords")
+    cy.window().then(async (win) => {
+      let components = Object.assign({}, win.state.components);
+
+      let dx = -8, dy = 14;
+      x12 += dx;
+      y12 += dy;
+      x22 += dx;
+      y22 += dy;
+
+
+      await components['/g3/l'].moveLine({
+        point1coords: [x12, y12],
+        point2coords: [18, 91]
+      });
+
+      await checkLines({ x11, y11, x12, y12, x21, y21, x22, y22, slope, components })
+
+
+    })
+
+
+
+    cy.log("move point A4")
+    cy.window().then(async (win) => {
+      let components = Object.assign({}, win.state.components);
+      let dx = 5, dy = -8;
+      x12 += dx;
+      y12 += dy;
+      x22 += dx;
+      y22 += dy;
+
+      await components['/g4/A'].movePoint({ x: x12, y: y12 });
+      await checkLines({ x11, y11, x12, y12, x21, y21, x22, y22, slope, components })
+
+
+    })
+
+    cy.log("move point B4")
+    cy.window().then(async (win) => {
+      let components = Object.assign({}, win.state.components);
+      x22 = -4;
+      y22 = 4;
+      slope = (y22 - y12) / (x22 - x12);
+
+      theta = Math.atan(slope)
+      x21 = x11 + x22 - x12;
+      y21 = y11 + y22 - y12;
+
+      await components['/g4/B'].movePoint({ x: x22, y: y22 });
+      await checkLines({ x11, y11, x12, y12, x21, y21, x22, y22, slope, components })
+
+
+    })
+
+
+    cy.log("move line 4, ignores point2 coords")
+    cy.window().then(async (win) => {
+      let components = Object.assign({}, win.state.components);
+
+      let dx = -1, dy = 2;
+      x12 += dx;
+      y12 += dy;
+      x22 += dx;
+      y22 += dy;
+
+
+      await components['/g4/l'].moveLine({
+        point1coords: [x12, y12],
+        point2coords: [18, 91]
+      });
+
+      await checkLines({ x11, y11, x12, y12, x21, y21, x22, y22, slope, components })
+
+
+    })
+
+
+
+    cy.log("move point A5")
+    cy.window().then(async (win) => {
+      let components = Object.assign({}, win.state.components);
+      let dx = 6, dy = -6;
+      x12 += dx;
+      y12 += dy;
+      x22 += dx;
+      y22 += dy;
+
+      await components['/g5/A'].movePoint({ x: x12, y: y12 });
+      await checkLines({ x11, y11, x12, y12, x21, y21, x22, y22, slope, components })
+
+
+    })
+
+    cy.log("move point B5")
+    cy.window().then(async (win) => {
+      let components = Object.assign({}, win.state.components);
+      x22 = -8;
+      y22 = -7;
+      slope = (y22 - y12) / (x22 - x12);
+
+      theta = Math.atan(slope)
+      x21 = x11 + x22 - x12;
+      y21 = y11 + y22 - y12;
+
+
+      await components['/g5/B'].movePoint({ x: x22, y: y22 });
+      await checkLines({ x11, y11, x12, y12, x21, y21, x22, y22, slope, components })
+
+
+    })
+
+
+    cy.log("move line 5, ignores point2 coords")
+    cy.window().then(async (win) => {
+      let components = Object.assign({}, win.state.components);
+
+      let dx = 6, dy = 3;
+      x12 += dx;
+      y12 += dy;
+      x22 += dx;
+      y22 += dy;
+
+      await components['/g5/l'].moveLine({
+        point1coords: [x12, y12],
+        point2coords: [18, 91]
+      });
+
+      await checkLines({ x11, y11, x12, y12, x21, y21, x22, y22, slope, components })
+
 
     })
 
