@@ -35,7 +35,13 @@ export default function TextArea(props) {
     }
     if (props.label) {
       label.value = props.label;
-  }
+    }
+    if (props.placeholder) {
+      textarea.placeholder = props.placeholder;
+    }
+    if (props.ariaLabel) {
+      textarea.ariaLabel = props.ariaLabel;
+    }
   var disable = "";
   if (props.disabled) {
     textarea.border = '2px solid #e2e2e2';
