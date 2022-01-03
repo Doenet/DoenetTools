@@ -13,8 +13,8 @@ const DriveCardContainer = styled.figure`
   font-size: 10px;
   line-height: 12px;
   border-radius: 5px;
-  display: flex; /*added*/
-  flex-direction: column; /*added*/
+  display: flex; // added
+  flex-direction: column; // added
   justify-content: space-between;
   background-image: url(${(props) => props.url});
   background-color: ${(props) => `#${props.color}`};
