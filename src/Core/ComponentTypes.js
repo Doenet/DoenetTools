@@ -146,6 +146,7 @@ import Split from './components/Split';
 import BestFitLine from './components/BestFitLine';
 import AreaBetweenCurveXAxis from './components/AreaBetweenCurveXAxis';
 import RegionHalfPlane from './components/RegionHalfPlane';
+import CodeEditor from './components/CodeEditor';
 
 
 //Extended
@@ -289,6 +290,7 @@ const componentTypeArray = [
   BestFitLine,
   AreaBetweenCurveXAxis,
   RegionHalfPlane,
+  CodeEditor,
 
   BaseComponent,
   InlineComponent,

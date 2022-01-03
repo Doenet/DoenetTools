@@ -1,1 +1,5 @@
-<p>Use this to test DoenetML</p>
+
+
+<codeeditor name='ce' />
+<p>immediate value <copy tname='ce' prop='immediateValue' /></p>
+<p>value <copy tname='ce' prop='Value' /></p>
