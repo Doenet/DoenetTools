@@ -191,6 +191,8 @@ import { BoardContext } from './graph';
       pointJXG.visProp.fillcolor = newFillColor;
     }
 
+    //Note label update in jsxGraph maybe slow (so check previous value)
+
     pointJXG.needsUpdate = true;
     pointJXG.update();
     board.updateRenderer();
