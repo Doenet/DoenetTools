@@ -464,6 +464,7 @@ let navigationObj = {
       supportPanelTitles:[],
       supportPanelIndex:0,
       hasNoMenuPanel: true,
+      displaySettings:false
     }
   },
   notfound:{
