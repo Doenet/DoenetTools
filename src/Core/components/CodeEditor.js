@@ -208,7 +208,10 @@ export default class CodeEditor extends Input {
   }
 
   updateValue() {
-    if (!this.stateValues.disabled) {
+    //Only update when value is out of date
+    if (!this.stateValues.disabled &&
+      this.stateValues.immediateValue !== this.stateValues.value
+      ) {
       let updateInstructions = [{
         updateType: "updateValue",
         componentName: this.componentName,
