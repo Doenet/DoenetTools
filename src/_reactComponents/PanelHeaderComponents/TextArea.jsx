@@ -68,7 +68,7 @@ function handleChange(e) {
         <>
           <div style={container}>
                 <p style={label}>{label.value}</p>
-                <textarea defaultValue={textarea.value} style={textarea} onChange={(e) => { handleChange(e) }} disabled={disable}></textarea>
+                <textarea defaultValue={textarea.value} style={textarea} aria-label={textarea.ariaLabel} placeholder={textarea.placeholder} onChange={(e) => { handleChange(e) }} disabled={disable}></textarea>
           </div>
         </>
     )
