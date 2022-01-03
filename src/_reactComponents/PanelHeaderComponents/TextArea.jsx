@@ -63,12 +63,19 @@ if (props.width) {
 function handleChange(e) {
   if (props.onChange) props.onChange(e.target.value)
 }
+function handleBlur(e) {
+  if (props.onBlur) props.onBlur(e)
+}
+
+function handleKeyDown(e) {
+  if (props.onKeyDown) props.onKeyDown(e)
+}
 
     return (
         <>
           <div style={container}>
                 <p style={label}>{label.value}</p>
-                <textarea defaultValue={textarea.value} style={textarea} aria-label={textarea.ariaLabel} placeholder={textarea.placeholder} onChange={(e) => { handleChange(e) }} disabled={disable}></textarea>
+                <textarea defaultValue={textarea.value} style={textarea} aria-label={textarea.ariaLabel} placeholder={textarea.placeholder} onChange={(e) => { handleChange(e) }} onKeyDown={(e) => {handleKeyDown(e) }} onBlur={(e) => { handleBlur(e) }} disabled={disable}></textarea>
           </div>
         </>
     )

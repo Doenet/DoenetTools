@@ -699,6 +699,18 @@ export default function attempt() {
           description: 'Function called when data changes',
         },
         {
+          name: 'onBlur',
+          propPreview: '<Textfield onBlur={(e) => console.log(e.target.value)} />',
+          propCode: { onBlur: (e) => console.log(e.target.value) },
+          description: 'Function called when component blurs',
+        },
+        {
+          name: 'onKeyDown',
+          propPreview: '<Textfield onKeyDown={(e) => console.log(e.key)} />',
+          propCode: { onKeyDown: (e) => console.log(e.key) },
+          description: 'Function called when key hit with focus on component',
+        },
+        {
           name: 'Disabled',
           propPreview: '<TextArea disabled />',
           propCode: { disabled },
