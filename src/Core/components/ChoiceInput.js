@@ -17,10 +17,11 @@ export default class Choiceinput extends Input {
     //Complex because the stateValues isn't defined until later
     Object.defineProperty(this.externalActions, 'submitAnswer', {
       enumerable: true,
-      get: function () {
-        if (this.stateValues.answerAncestor !== null) {
+      get: async function () {
+        let answerAncestor = await this.stateValues.answerAncestor;
+        if (answerAncestor !== null) {
           return {
-            componentName: this.stateValues.answerAncestor.componentName,
+            componentName: answerAncestor.componentName,
             actionName: "submitAnswer"
           }
         } else {
@@ -42,7 +43,7 @@ export default class Choiceinput extends Input {
   // used when referencing this component without prop
   static get stateVariablesShadowedForReference() {
     return [
-      "choiceOrder", "allSelectedIndices", "indicesMatchedByBoundValue"
+      "choiceOrder"
     ]
   };
 
@@ -973,8 +974,8 @@ export default class Choiceinput extends Input {
 
   }
 
-  updateSelectedIndices({ selectedIndices }) {
-    if (!this.stateValues.disabled) {
+  async updateSelectedIndices({ selectedIndices }) {
+    if (!await this.stateValues.disabled) {
       let updateInstructions = [{
         updateType: "updateValue",
         componentName: this.componentName,
@@ -982,6 +983,7 @@ export default class Choiceinput extends Input {
         value: selectedIndices
       }];
 
+      let choiceTexts = await this.stateValues.choiceTexts;
       let event = {
         verb: "selected",
         object: {
@@ -991,23 +993,26 @@ export default class Choiceinput extends Input {
         result: {
           response: selectedIndices,
           responseText: selectedIndices
-            .map(i => this.stateValues.choiceTexts[i - 1])
+            .map(i => choiceTexts[i - 1])
         }
       }
 
-      if (this.stateValues.answerAncestor) {
+      let answerAncestor = await this.stateValues.answerAncestor;
+      if (answerAncestor) {
         event.context = {
-          answerAncestor: this.stateValues.answerAncestor.componentName
+          answerAncestor: answerAncestor.componentName
         }
       }
 
 
-      return this.coreFunctions.performUpdate({
+      await this.coreFunctions.performUpdate({
         updateInstructions,
         event,
-      }).then(() => this.coreFunctions.triggerChainedActions({
+      });
+
+      return await this.coreFunctions.triggerChainedActions({
         componentName: this.componentName,
-      }));
+      });
 
     }
   }

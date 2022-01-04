@@ -5,8 +5,6 @@ export default class CobwebPolyline extends Polyline {
   static componentType = "cobwebPolyline";
   static rendererType = "cobwebPolyline";
 
-  static get stateVariablesShadowedForReference() { return ["initialPoint", "f"] };
-
   static createAttributesObject(args) {
     let attributes = super.createAttributesObject(args);
 
@@ -509,7 +507,7 @@ export default class CobwebPolyline extends Polyline {
 
       return { newValues: { vertices, prelimCorrectVertices } }
     }
-    stateVariableDefinitions.vertices.inverseArrayDefinitionByKey = function ({
+    stateVariableDefinitions.vertices.inverseArrayDefinitionByKey = async function ({
       desiredStateVariableValues,
       dependencyNamesByKey,
       initialChange, stateValues,
@@ -521,7 +519,7 @@ export default class CobwebPolyline extends Polyline {
 
 
       // if not draggable, then disallow initial change 
-      if (initialChange && !stateValues.draggable) {
+      if (initialChange && !await stateValues.draggable) {
         return { success: false };
       }
 

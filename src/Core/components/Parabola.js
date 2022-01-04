@@ -6,12 +6,6 @@ export default class Parabola extends Curve {
   static componentType = "parabola";
   static rendererType = "curve";
 
-  static get stateVariablesShadowedForReference() {
-    return [
-      "nThroughPoints", "throughPoints", "prescribedVertex"
-    ]
-  };
-
   static createAttributesObject(args) {
     let attributes = super.createAttributesObject(args);
     attributes.through = {
@@ -91,6 +85,49 @@ export default class Parabola extends Curve {
       }
     }
 
+    stateVariableDefinitions.bShadow = {
+      defaultValue: 0,
+      returnDependencies: () => ({}),
+      definition: () => ({
+        useEssentialOrDefaultValue: {
+          bShadow: { variablesToCheck: ["bShadow", "b"] }
+        }
+      }),
+      inverseDefinition: function ({ desiredStateVariableValues }) {
+        // console.log('inverse definition of bShadow')
+        // console.log(desiredStateVariableValues)
+        return {
+          success: true,
+          instructions: [{
+            setStateVariable: "bShadow",
+            value: desiredStateVariableValues.bShadow
+          }]
+        }
+      }
+    }
+
+    stateVariableDefinitions.cShadow = {
+      defaultValue: 0,
+      returnDependencies: () => ({}),
+      definition: () => ({
+        useEssentialOrDefaultValue: {
+          cShadow: { variablesToCheck: ["cShadow", "c"] }
+        }
+      }),
+      inverseDefinition: function ({ desiredStateVariableValues }) {
+        // console.log('inverse definition of cShadow')
+        // console.log(desiredStateVariableValues)
+        return {
+          success: true,
+          instructions: [{
+            setStateVariable: "cShadow",
+            value: desiredStateVariableValues.cShadow
+          }]
+        }
+      }
+    }
+
+
     stateVariableDefinitions.nThroughPoints = {
       returnDependencies: () => ({
         throughAttr: {
@@ -117,7 +154,7 @@ export default class Parabola extends Curve {
 
     stateVariableDefinitions.throughPoints = {
       public: true,
-      componentType: "point",
+      componentType: "math",
       isArray: true,
       nDimensions: 2,
       entryPrefixes: ["throughPointX", "throughPoint"],
@@ -226,7 +263,7 @@ export default class Parabola extends Curve {
         return { newValues: { throughPoints } }
 
       },
-      inverseArrayDefinitionByKey({ desiredStateVariableValues,
+      async inverseArrayDefinitionByKey({ desiredStateVariableValues,
         dependencyValuesByKey, dependencyNamesByKey,
         initialChange, stateValues,
       }) {
@@ -236,7 +273,7 @@ export default class Parabola extends Curve {
         // console.log(dependencyValuesByKey)
 
         // if not draggable, then disallow initial change 
-        if (initialChange && !stateValues.draggable) {
+        if (initialChange && !await stateValues.draggable) {
           return { success: false };
         }
 
@@ -423,6 +460,14 @@ export default class Parabola extends Curve {
         aShadow: {
           dependencyType: "stateVariable",
           variableName: "aShadow",
+        },
+        bShadow: {
+          dependencyType: "stateVariable",
+          variableName: "bShadow",
+        },
+        cShadow: {
+          dependencyType: "stateVariable",
+          variableName: "cShadow",
         }
       }),
       definition: function ({ dependencyValues }) {
@@ -496,18 +541,10 @@ export default class Parabola extends Curve {
 
           // nothing specified.  Create parabola y=a*x^2, by default
           return {
-            useEssentialOrDefaultValue: {
-              b: {
-                variablesToCheck: ["b"],
-                defaultValue: 0,
-              },
-              c: {
-                variablesToCheck: ["c"],
-                defaultValue: 0,
-              }
-            },
             newValues: {
               a: dependencyValues.aShadow,
+              b: dependencyValues.bShadow,
+              c: dependencyValues.cShadow,
               realValued: true,
             }
           }
@@ -672,7 +709,7 @@ export default class Parabola extends Curve {
 
         }
       },
-      inverseDefinition: function ({ desiredStateVariableValues, dependencyValues, stateValues, workspace }) {
+      inverseDefinition: async function ({ desiredStateVariableValues, dependencyValues, stateValues, workspace }) {
         // console.log('inverse definition of a, b, c, realValued of parabola')
         // console.log(desiredStateVariableValues)
         // console.log(dependencyValues);
@@ -723,11 +760,11 @@ export default class Parabola extends Curve {
 
         Object.assign(workspace, desiredNumericalValues);
 
-        let getWorkingParameterValue = function (parName) {
+        let getWorkingParameterValue = async function (parName) {
           if (workspace[parName] !== undefined) {
             return workspace[parName]
           } else {
-            return stateValues[parName];
+            return await stateValues[parName];
           }
         }
 
@@ -742,14 +779,14 @@ export default class Parabola extends Curve {
           }
           if (desiredNumericalValues.b !== undefined) {
             instructions.push({
-              setStateVariable: "b",
-              value: desiredNumericalValues.b
+              setDependency: "bShadow",
+              desiredValue: desiredNumericalValues.b
             })
           }
           if (desiredNumericalValues.c !== undefined) {
             instructions.push({
-              setStateVariable: "c",
-              value: desiredNumericalValues.c
+              setDependency: "cShadow",
+              desiredValue: desiredNumericalValues.c
             })
           }
           return {
@@ -761,9 +798,9 @@ export default class Parabola extends Curve {
           // move point to be at vertex
           // modify a if changed
 
-          let a = getWorkingParameterValue("a")
-          let b = getWorkingParameterValue("b")
-          let c = getWorkingParameterValue("c")
+          let a = await getWorkingParameterValue("a")
+          let b = await getWorkingParameterValue("b")
+          let c = await getWorkingParameterValue("c")
 
           let x1 = -b / (2 * a);
           let y1 = c - b * b / (4 * a);
@@ -791,9 +828,9 @@ export default class Parabola extends Curve {
           // modify a if changed
           // Exception, if points are identical, make them be at vertex
 
-          let a = getWorkingParameterValue("a")
-          let b = getWorkingParameterValue("b")
-          let c = getWorkingParameterValue("c")
+          let a = await getWorkingParameterValue("a")
+          let b = await getWorkingParameterValue("b")
+          let c = await getWorkingParameterValue("c")
 
           let p1 = dependencyValues.numericalThroughPoints[0];
           let x1 = p1[0];
@@ -854,9 +891,9 @@ export default class Parabola extends Curve {
           // Exceptions if some points are identical
 
 
-          let a = getWorkingParameterValue("a")
-          let b = getWorkingParameterValue("b");
-          let c = getWorkingParameterValue("c");
+          let a = await getWorkingParameterValue("a")
+          let b = await getWorkingParameterValue("b");
+          let c = await getWorkingParameterValue("c");
 
           let p1 = dependencyValues.numericalThroughPoints[0];
           let x1 = p1[0];
@@ -1057,7 +1094,7 @@ export default class Parabola extends Curve {
         }
         return { newValues: { vertex } }
       },
-      inverseArrayDefinitionByKey: function ({ desiredStateVariableValues, globalDependencyValues,
+      inverseArrayDefinitionByKey: async function ({ desiredStateVariableValues, globalDependencyValues,
         workspace, stateValues
       }) {
         // console.log(`inverse definition of parabola vertex`)
@@ -1072,7 +1109,7 @@ export default class Parabola extends Curve {
         } else if (workspace.x !== undefined) {
           x = workspace.x
         } else {
-          x = stateValues.vertex[0].tree
+          x = (await stateValues.vertex)[0].tree
         }
         if (Number.isFinite(x)) {
           workspace.x = x;
@@ -1086,7 +1123,7 @@ export default class Parabola extends Curve {
         } else if (workspace.y !== undefined) {
           y = workspace.y
         } else {
-          y = stateValues.vertex[1].tree
+          y = (await stateValues.vertex)[1].tree
         }
         if (Number.isFinite(y)) {
           workspace.y = y;
@@ -1208,49 +1245,24 @@ export default class Parabola extends Curve {
           dependencyType: "stateVariable",
           variableName: "c"
         },
-        graphXmin: {
-          dependencyType: "stateVariable",
-          variableName: "graphXmin"
-        },
-        graphXmax: {
-          dependencyType: "stateVariable",
-          variableName: "graphXmax"
-        },
-        graphYmin: {
-          dependencyType: "stateVariable",
-          variableName: "graphYmin"
-        },
-        graphYmax: {
-          dependencyType: "stateVariable",
-          variableName: "graphYmax"
-        }
       }),
-      definition({ dependencyValues }) {
-
-        let xscale = 1, yscale = 1;
-        if (dependencyValues.graphXmin !== null &&
-          dependencyValues.graphXmax !== null &&
-          dependencyValues.graphYmin !== null &&
-          dependencyValues.graphYmax !== null
-        ) {
-          xscale = dependencyValues.graphXmax - dependencyValues.graphXmin;
-          yscale = dependencyValues.graphYmax - dependencyValues.graphYmin;
-        }
+      definition({ dependencyValues, componentName }) {
 
 
-        let a0 = dependencyValues.a * xscale * xscale / yscale;
-        let b0 = dependencyValues.b * xscale / yscale;
-        let c0 = dependencyValues.c / yscale;
-
-        let skip = !(Number.isFinite(a0) && Number.isFinite(b0) && Number.isFinite(c0))
+        let skip = !(Number.isFinite(dependencyValues.a)
+          && Number.isFinite(dependencyValues.b)
+          && Number.isFinite(dependencyValues.c))
 
         return {
           newValues: {
-            nearestPoint: function (variables) {
+            nearestPoint: function ({ variables, scales }) {
 
               if (skip) {
                 return {};
               }
+
+              let xscale = scales[0];
+              let yscale = scales[1];
 
               let x1 = variables.x1.evaluate_to_constant();
               let x2 = variables.x2.evaluate_to_constant();
@@ -1261,6 +1273,10 @@ export default class Parabola extends Curve {
 
               x1 /= xscale;
               x2 /= yscale;
+
+              let a0 = dependencyValues.a * xscale * xscale / yscale;
+              let b0 = dependencyValues.b * xscale / yscale;
+              let c0 = dependencyValues.c / yscale;
 
               if (a0 === 0) {
                 // have line y = b0*x+c0
@@ -1286,7 +1302,7 @@ export default class Parabola extends Curve {
               let d = (b0 * d2 - x1) / a;
 
 
-              let resultCardano = cardano(b, c, d);
+              let resultCardano = cardano(b, c, d, 1E-14);
 
               let x1AtMin = resultCardano[0];
               let x2AtMin = dependencyValues.f(x1AtMin * xscale) / yscale;
@@ -1331,34 +1347,6 @@ export default class Parabola extends Curve {
 }
 
 
-function getNumericalCoords(coords) {
-  if (!coords || coords.tree.length !== 3) {
-    return {
-      numericEntries: false,
-      coordsNumeric: me.fromAst(["vector", NaN, NaN])
-    }
-  }
-
-  let coordsNumeric = ["vector"];
-  let numericEntries = true;
-  for (let j = 0; j < 2; j++) {
-    let comp = coords.get_component(j).evaluate_to_constant();
-    if (Number.isFinite(comp)) {
-      coordsNumeric.push(comp);
-    } else {
-      coordsNumeric.push(NaN);
-      numericEntries = false;
-    }
-  }
-
-  coordsNumeric = me.fromAst(coordsNumeric);
-
-  return {
-    numericEntries,
-    coordsNumeric,
-  }
-
-}
 
 // function cardano is from linalg.js:
 

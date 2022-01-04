@@ -30,10 +30,10 @@ describe('ref Tag Tests', function () {
       <p>Paragraph seven</p>
       <p>Paragraph eight</p>
       <p>Goto:
-      <ref name="toTwo" tname="/section2">Section 2</ref>,
-      <ref name="toThree" tname="/section3">Section 3</ref>
-      <ref name="toFour" tname="/section4">Section 4</ref>
-      <ref name="toThreeii" tname="/section3/_p2">Second paragraph of Section 3</ref>
+      <ref name="toTwo" target="/section2">Section 2</ref>,
+      <ref name="toThree" target="/section3">Section 3</ref>
+      <ref name="toFour" target="/section4">Section 4</ref>
+      <ref name="toThreeii" target="/section3/_p2">Second paragraph of Section 3</ref>
       </p>
 
     </section>
@@ -49,9 +49,9 @@ describe('ref Tag Tests', function () {
       <p>Paragraph g</p>
       <p>Paragraph h</p>
       <p>Goto:
-      <ref name="toOne" tname="/section1">Section 1</ref>,
-      <ref name="toThree" tname="/section3">Section 3</ref>
-      <ref name="toFour" tname="/section4">Section 4</ref>
+      <ref name="toOne" target="/section1">Section 1</ref>,
+      <ref name="toThree" target="/section3">Section 3</ref>
+      <ref name="toFour" target="/section4">Section 4</ref>
       </p>
     </section>
 
@@ -66,9 +66,9 @@ describe('ref Tag Tests', function () {
       <p>Paragraph vii</p>
       <p>Paragraph viii</p>
       <p>Goto:
-      <ref name="toOne" tname="/section1">Section 1</ref>
-      <ref name="toTwo" tname="/section2">Section 2</ref>,
-      <ref name="toFour" tname="/section4">Section 4</ref>
+      <ref name="toOne" target="/section1">Section 1</ref>
+      <ref name="toTwo" target="/section2">Section 2</ref>,
+      <ref name="toFour" target="/section4">Section 4</ref>
       </p>
     </section>
 
@@ -83,11 +83,11 @@ describe('ref Tag Tests', function () {
       <p>Paragraph G</p>
       <p>Paragraph H</p>
       <p>Goto:
-      <ref tname="/section1">Section 1</ref>,
-      <ref name="toOne" tname="/section1">Section 1</ref>,
-      <ref name="toTwo" tname="/section2">Section 2</ref>,
-      <ref name="toThree" tname="/section3">Section 3</ref>
-      <ref name="toTwoe" tname="/section2/_p5">Fifth paragraph of Section 3</ref>
+      <ref target="/section1">Section 1</ref>,
+      <ref name="toOne" target="/section1">Section 1</ref>,
+      <ref name="toTwo" target="/section2">Section 2</ref>,
+      <ref name="toThree" target="/section3">Section 3</ref>
+      <ref name="toTwoe" target="/section2/_p5">Fifth paragraph of Section 3</ref>
       </p>
     </section>
 
@@ -102,11 +102,11 @@ describe('ref Tag Tests', function () {
     <p>Paragraph VII</p>
     <p>Paragraph VII</p>
     <p>Goto:
-    <ref tname="/section1">Section 1</ref>,
-    <ref name="toOne" tname="/section1">Section 1</ref>,
-    <ref name="toTwo" tname="/section2">Section 2</ref>,
-    <ref name="toThree" tname="/section3">Section 3</ref>
-    <ref name="toTwoe" tname="/section2/_p5">Fifth paragarph of Section 3</ref>
+    <ref target="/section1">Section 1</ref>,
+    <ref name="toOne" target="/section1">Section 1</ref>,
+    <ref name="toTwo" target="/section2">Section 2</ref>,
+    <ref name="toThree" target="/section3">Section 3</ref>
+    <ref name="toTwoe" target="/section2/_p5">Fifth paragarph of Section 3</ref>
     </p>
   </section>
 
@@ -197,12 +197,12 @@ describe('ref Tag Tests', function () {
       win.postMessage({
         doenetML: `
   <p>A link to <ref uri="http://doenet.org">Doenet</ref>.</p>
-  <p>Repeat url: <copy tname="_ref1" />.</p>
-  <p>The link address is: <copy prop="uri" tname="_ref1" />.</p>
-  <p>The text linked is: <copy prop="linktext" tname="_ref1" />.</p>
+  <p>Repeat url: <copy target="_ref1" />.</p>
+  <p>The link address is: <copy prop="uri" target="_ref1" />.</p>
+  <p>The text linked is: <copy prop="linktext" target="_ref1" />.</p>
   <!--<p>Recreate from pieces: <ref uri="$uri" >
-     <copy prop="linktext" tname="_ref1" /></ref>.</p>
-  <text name="uri" hide><copy prop="uri" tname="_ref1" /></text>-->
+     <copy prop="linktext" target="_ref1" /></ref>.</p>
+  <text name="uri" hide><copy prop="uri" target="_ref1" /></text>-->
   `}, "*");
     });
 

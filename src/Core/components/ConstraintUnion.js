@@ -29,18 +29,19 @@ export default class ConstraintUnion extends ConstraintComponent {
       }),
       definition: ({ dependencyValues }) => ({
         newValues: {
-          applyConstraint: function (variables) {
+          applyConstraint: function ({ variables, scales }) {
 
             let constraintResult;
 
             if (dependencyValues.constraintChildren.length === 1) {
               let constraintChild = dependencyValues.constraintChildren[0];
               if (constraintChild.stateValues.applyConstraint) {
-                constraintResult = constraintChild.stateValues.applyConstraint(variables);
+                constraintResult = constraintChild.stateValues.applyConstraint({ variables, scales });
               } else {
                 constraintResult = applyConstraintFromComponentConstraints({
                   variables,
-                  applyComponentConstraint: constraintChild.stateValues.applyComponentConstraint
+                  applyComponentConstraint: constraintChild.stateValues.applyComponentConstraint,
+                  scales
                 })
               }
               return constraintResult;
@@ -54,11 +55,12 @@ export default class ConstraintUnion extends ConstraintComponent {
             for (let [ind, constraintChild] of dependencyValues.constraintChildren.entries()) {
 
               if (constraintChild.stateValues.applyConstraint) {
-                constraintResult = constraintChild.stateValues.applyConstraint(variables);
+                constraintResult = constraintChild.stateValues.applyConstraint({ variables, scales });
               } else {
                 constraintResult = applyConstraintFromComponentConstraints({
                   variables,
-                  applyComponentConstraint: constraintChild.stateValues.applyComponentConstraint
+                  applyComponentConstraint: constraintChild.stateValues.applyComponentConstraint,
+                  scales
                 })
               }
 

@@ -54,12 +54,12 @@ export function renameStateVariable({ stateVariableDefinitions, oldName, newName
   let originalInverseDefinition = stateVarDef.inverseDefinition;
 
   if (originalInverseDefinition) {
-    stateVarDef.inverseDefinition = function (args) {
+    stateVarDef.inverseDefinition = async function (args) {
       let desiredStateVariableValues = args.desiredStateVariableValues;
       desiredStateVariableValues[oldName] = desiredStateVariableValues[newName];
       delete desiredStateVariableValues[newName];
 
-      let results = originalInverseDefinition(args);
+      let results = await originalInverseDefinition(args);
 
       if (results.success) {
         for (let instruction of results.instructions) {

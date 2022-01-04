@@ -26,12 +26,6 @@ export default class Curve extends GraphicalComponent {
   };
 
   static primaryStateVariableForDefinition = "fShadow";
-  static get stateVariablesShadowedForReference() {
-    return [
-      "variableForChild", "parMin", "parMax",
-      "curveType", "nThroughPoints", "nDimensions", "throughPoints"
-    ]
-  };
 
 
   static createAttributesObject(args) {
@@ -140,7 +134,7 @@ export default class Curve extends GraphicalComponent {
 
       // only apply if all children are strings or macros
       if (!matchedChildren.every(child =>
-        child.componentType === "string" ||
+        typeof child === "string" ||
         child.doenetAttributes && child.doenetAttributes.createdFromMacro
       )) {
         return { success: false }
@@ -693,7 +687,7 @@ export default class Curve extends GraphicalComponent {
 
         return { newValues: { throughPoints } }
       },
-      inverseArrayDefinitionByKey({ desiredStateVariableValues,
+      async inverseArrayDefinitionByKey({ desiredStateVariableValues,
         dependencyValuesByKey, dependencyNamesByKey,
         initialChange, stateValues,
       }) {
@@ -705,7 +699,7 @@ export default class Curve extends GraphicalComponent {
 
 
         // if not draggable, then disallow initial change 
-        if (initialChange && !stateValues.draggable) {
+        if (initialChange && !await stateValues.draggable) {
           return { success: false };
         }
 
@@ -2964,7 +2958,7 @@ export default class Curve extends GraphicalComponent {
 
 
 
-  moveControlVector({ controlVector, controlVectorInds, transient }) {
+  async moveControlVector({ controlVector, controlVectorInds, transient }) {
 
     let desiredVector = {
       [controlVectorInds + ",0"]: me.fromAst(controlVector[0]),
@@ -2972,7 +2966,7 @@ export default class Curve extends GraphicalComponent {
     }
 
     if (transient) {
-      return this.coreFunctions.performUpdate({
+      return await this.coreFunctions.performUpdate({
         updateInstructions: [{
           updateType: "updateValue",
           componentName: this.componentName,
@@ -2983,7 +2977,7 @@ export default class Curve extends GraphicalComponent {
         transient
       });
     } else {
-      return this.coreFunctions.performUpdate({
+      return await this.coreFunctions.performUpdate({
         updateInstructions: [{
           updateType: "updateValue",
           componentName: this.componentName,
@@ -3005,7 +2999,7 @@ export default class Curve extends GraphicalComponent {
 
   }
 
-  moveThroughPoint({ throughPoint, throughPointInd, transient }) {
+  async moveThroughPoint({ throughPoint, throughPointInd, transient }) {
 
     let desiredPoint = {
       [throughPointInd + ",0"]: me.fromAst(throughPoint[0]),
@@ -3013,7 +3007,7 @@ export default class Curve extends GraphicalComponent {
     }
 
     if (transient) {
-      this.coreFunctions.performUpdate({
+      return await this.coreFunctions.performUpdate({
         updateInstructions: [{
           updateType: "updateValue",
           componentName: this.componentName,
@@ -3024,7 +3018,7 @@ export default class Curve extends GraphicalComponent {
         transient
       });
     } else {
-      this.coreFunctions.performUpdate({
+      return await this.coreFunctions.performUpdate({
         updateInstructions: [{
           updateType: "updateValue",
           componentName: this.componentName,
@@ -3046,8 +3040,8 @@ export default class Curve extends GraphicalComponent {
 
   }
 
-  changeVectorControlDirection({ direction, throughPointInd }) {
-    this.coreFunctions.performUpdate({
+  async changeVectorControlDirection({ direction, throughPointInd }) {
+    return await this.coreFunctions.performUpdate({
       updateInstructions: [{
         updateType: "updateValue",
         componentName: this.componentName,
@@ -3070,21 +3064,15 @@ function getNearestPointFunctionCurve({ dependencyValues, numerics }) {
   let nDiscretizationPoints = dependencyValues.nDiscretizationPoints;
   let parMax = dependencyValues.parMax;
   let parMin = dependencyValues.parMin;
-  let xscale = 1, yscale = 1;
-  if (dependencyValues.graphXmin !== null &&
-    dependencyValues.graphXmax !== null &&
-    dependencyValues.graphYmin !== null &&
-    dependencyValues.graphYmax !== null
-  ) {
-    xscale = dependencyValues.graphXmax - dependencyValues.graphXmin;
-    yscale = dependencyValues.graphYmax - dependencyValues.graphYmin;
-  }
 
 
-  return function (variables) {
+  return function ({ variables, scales }) {
 
     let x1 = variables.x1.evaluate_to_constant();
     let x2 = variables.x2.evaluate_to_constant();
+
+    let xscale = scales[0];
+    let yscale = scales[1];
 
     // compute values at the actual endpoints, if they exist
 
@@ -3317,17 +3305,11 @@ function getNearestPointParametrizedCurve({ dependencyValues, numerics }) {
   let parMax = dependencyValues.parMax;
   let nDiscretizationPoints = dependencyValues.nDiscretizationPoints;
   let periodic = dependencyValues.periodic;
-  let xscale = 1, yscale = 1;
-  if (dependencyValues.graphXmin !== null &&
-    dependencyValues.graphXmax !== null &&
-    dependencyValues.graphYmin !== null &&
-    dependencyValues.graphYmax !== null
-  ) {
-    xscale = dependencyValues.graphXmax - dependencyValues.graphXmin;
-    yscale = dependencyValues.graphYmax - dependencyValues.graphYmin;
-  }
 
-  return function (variables) {
+  return function ({ variables, scales }) {
+
+    let xscale = scales[0];
+    let yscale = scales[1];
 
     // TODO: extend to dimensions other than N=2
 

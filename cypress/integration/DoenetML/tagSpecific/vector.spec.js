@@ -16,7 +16,7 @@ describe('Vector Tag Tests', function () {
   })
 
   it('vector with no arguments, head/tail/displacement copied', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -25,9 +25,9 @@ describe('Vector Tag Tests', function () {
   </graph>
 
   <graph>
-  <copy prop="tail" tname="_vector1" />
-  <copy prop="head" tname="_vector1" />
-  <copy prop="displacement" tname="_vector1" />
+  <copy prop="tail" target="_vector1" />
+  <copy prop="head" target="_vector1" />
+  <copy prop="displacement" target="_vector1" />
   </graph>
   `}, "*");
     });
@@ -35,13 +35,13 @@ describe('Vector Tag Tests', function () {
     // to wait for page to load
     cy.get('#\\/_text1').should('have.text', 'a');
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let tail = components['/_copy1'].replacements[0];
       let head = components['/_copy2'].replacements[0];
       let displacement = components['/_copy3'].replacements[0];
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let components = Object.assign({}, win.state.components);
         let tailx = 0;
         let taily = 0;
@@ -64,7 +64,7 @@ describe('Vector Tag Tests', function () {
       })
 
       cy.log('move vector up and to the right')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let components = Object.assign({}, win.state.components);
 
         let tailcoords = [
@@ -84,7 +84,7 @@ describe('Vector Tag Tests', function () {
         headcoords[0] = headcoords[0].add(moveX).simplify();
         headcoords[1] = headcoords[1].add(moveY).simplify();
 
-        components['/_vector1'].moveVector({
+        await components['/_vector1'].moveVector({
           tailcoords: tailcoords,
           headcoords: headcoords
         });
@@ -108,18 +108,18 @@ describe('Vector Tag Tests', function () {
         expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
       })
 
-      cy.log('move copied tail')
-      cy.window().then((win) => {
+      cy.log('move copied tail moves vector')
+      cy.window().then(async (win) => {
         let components = Object.assign({}, win.state.components);
 
         let tailx = -7;
         let taily = 5;
-        let headx = 4;
-        let heady = 2;
+        let headx = -6;
+        let heady = 5;
         let displacementx = headx - tailx;
         let displacementy = heady - taily;
 
-        tail.movePoint({ x: tailx, y: taily });
+        await tail.movePoint({ x: tailx, y: taily });
 
         expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
         expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
@@ -134,7 +134,7 @@ describe('Vector Tag Tests', function () {
       })
 
       cy.log('move copied head and tail')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let components = Object.assign({}, win.state.components);
 
         let tailx = -7;
@@ -144,7 +144,7 @@ describe('Vector Tag Tests', function () {
         let displacementx = headx - tailx;
         let displacementy = heady - taily;
 
-        head.movePoint({ x: headx, y: heady });
+        await head.movePoint({ x: headx, y: heady });
 
         expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
         expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
@@ -159,7 +159,7 @@ describe('Vector Tag Tests', function () {
       })
 
       cy.log('move displacement')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let components = Object.assign({}, win.state.components);
 
         let tailx = -7;
@@ -174,7 +174,7 @@ describe('Vector Tag Tests', function () {
         let headx = tailx + displacementx;
         let heady = taily + displacementy;
 
-        displacement.moveVector({
+        await displacement.moveVector({
           tailcoords: [displacementtailx, displacementtaily],
           headcoords: [displacementheadx, displacementheady]
         });
@@ -196,7 +196,7 @@ describe('Vector Tag Tests', function () {
 
 
   it('vector with sugared tuple giving xs, head/tail/displacement copied', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -205,9 +205,9 @@ describe('Vector Tag Tests', function () {
   </graph>
 
   <graph>
-  <copy prop="tail" tname="_vector1" />
-  <copy prop="head" tname="_vector1" />
-  <copy prop="displacement" tname="_vector1" />
+  <copy prop="tail" target="_vector1" />
+  <copy prop="head" target="_vector1" />
+  <copy prop="displacement" target="_vector1" />
   </graph>
   `}, "*");
     });
@@ -215,13 +215,13 @@ describe('Vector Tag Tests', function () {
     // to wait for page to load
     cy.get('#\\/_text1').should('have.text', 'a');
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let tail = components['/_copy1'].replacements[0];
       let head = components['/_copy2'].replacements[0];
       let displacement = components['/_copy3'].replacements[0];
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let tailx = 0;
         let taily = 0;
         let headx = -4;
@@ -243,7 +243,7 @@ describe('Vector Tag Tests', function () {
       })
 
       cy.log('move vector up and to the right')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
 
         let tailcoords = [
           components['/_vector1'].stateValues.tail[0],
@@ -262,7 +262,7 @@ describe('Vector Tag Tests', function () {
         headcoords[0] = headcoords[0].add(moveX).simplify();
         headcoords[1] = headcoords[1].add(moveY).simplify();
 
-        components['/_vector1'].moveVector({
+        await components['/_vector1'].moveVector({
           tailcoords: tailcoords,
           headcoords: headcoords
         });
@@ -287,7 +287,7 @@ describe('Vector Tag Tests', function () {
       })
 
       cy.log('move copied tail moves vector')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
 
         let tailx = 1;
         let taily = 6;
@@ -296,7 +296,7 @@ describe('Vector Tag Tests', function () {
         let displacementx = headx - tailx;
         let displacementy = heady - taily;
 
-        tail.movePoint({ x: tailx, y: taily });
+        await tail.movePoint({ x: tailx, y: taily });
 
         expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
         expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
@@ -311,7 +311,7 @@ describe('Vector Tag Tests', function () {
       })
 
       cy.log('move copied head')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
 
 
         let tailx = 1;
@@ -321,7 +321,7 @@ describe('Vector Tag Tests', function () {
         let displacementx = headx - tailx;
         let displacementy = heady - taily;
 
-        head.movePoint({ x: headx, y: heady });
+        await head.movePoint({ x: headx, y: heady });
 
         expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
         expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
@@ -336,7 +336,7 @@ describe('Vector Tag Tests', function () {
       })
 
       cy.log('move displacement')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
 
         let tailx = 1;
         let taily = 6;
@@ -350,7 +350,7 @@ describe('Vector Tag Tests', function () {
         let headx = tailx + displacementx;
         let heady = taily + displacementy;
 
-        displacement.moveVector({
+        await displacement.moveVector({
           tailcoords: [displacementtailx, displacementtaily],
           headcoords: [displacementheadx, displacementheady]
         });
@@ -370,7 +370,7 @@ describe('Vector Tag Tests', function () {
   })
 
   it('vector with point giving displacement, head/tail/displacement copied', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -379,9 +379,9 @@ describe('Vector Tag Tests', function () {
   </graph>
 
   <graph>
-  <copy prop="tail" tname="_vector1" />
-  <copy prop="head" tname="_vector1" />
-  <copy prop="displacement" tname="_vector1" />
+  <copy prop="tail" target="_vector1" />
+  <copy prop="head" target="_vector1" />
+  <copy prop="displacement" target="_vector1" />
   </graph>
   `}, "*");
     });
@@ -389,13 +389,13 @@ describe('Vector Tag Tests', function () {
     // to wait for page to load
     cy.get('#\\/_text1').should('have.text', 'a');
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let tail = components['/_copy1'].replacements[0];
       let head = components['/_copy2'].replacements[0];
       let displacement = components['/_copy3'].replacements[0];
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let tailx = 0;
         let taily = 0;
         let headx = -4;
@@ -417,7 +417,7 @@ describe('Vector Tag Tests', function () {
       })
 
       cy.log('move vector up and to the right')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
 
         let tailcoords = [
           components['/_vector1'].stateValues.tail[0],
@@ -436,7 +436,7 @@ describe('Vector Tag Tests', function () {
         headcoords[0] = headcoords[0].add(moveX).simplify();
         headcoords[1] = headcoords[1].add(moveY).simplify();
 
-        components['/_vector1'].moveVector({
+        await components['/_vector1'].moveVector({
           tailcoords: tailcoords,
           headcoords: headcoords
         });
@@ -461,7 +461,7 @@ describe('Vector Tag Tests', function () {
       })
 
       cy.log('move copied tail moves vector')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
 
         let tailx = 1;
         let taily = 6;
@@ -470,7 +470,7 @@ describe('Vector Tag Tests', function () {
         let displacementx = headx - tailx;
         let displacementy = heady - taily;
 
-        tail.movePoint({ x: tailx, y: taily });
+        await tail.movePoint({ x: tailx, y: taily });
 
         expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
         expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
@@ -485,7 +485,7 @@ describe('Vector Tag Tests', function () {
       })
 
       cy.log('move copied head')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
 
 
         let tailx = 1;
@@ -495,7 +495,7 @@ describe('Vector Tag Tests', function () {
         let displacementx = headx - tailx;
         let displacementy = heady - taily;
 
-        head.movePoint({ x: headx, y: heady });
+        await head.movePoint({ x: headx, y: heady });
 
         expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
         expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
@@ -510,7 +510,7 @@ describe('Vector Tag Tests', function () {
       })
 
       cy.log('move displacement')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
 
         let tailx = 1;
         let taily = 6;
@@ -524,7 +524,7 @@ describe('Vector Tag Tests', function () {
         let headx = tailx + displacementx;
         let heady = taily + displacementy;
 
-        displacement.moveVector({
+        await displacement.moveVector({
           tailcoords: [displacementtailx, displacementtaily],
           headcoords: [displacementheadx, displacementheady]
         });
@@ -544,7 +544,7 @@ describe('Vector Tag Tests', function () {
   })
 
   it('vector from vector giving displacement, head/tail/displacement copied', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -553,9 +553,9 @@ describe('Vector Tag Tests', function () {
   </graph>
 
   <graph>
-  <copy prop="tail" tname="_vector1" />
-  <copy prop="head" tname="_vector1" />
-  <copy prop="displacement" tname="_vector1" />
+  <copy prop="tail" target="_vector1" />
+  <copy prop="head" target="_vector1" />
+  <copy prop="displacement" target="_vector1" />
   </graph>
   `}, "*");
     });
@@ -563,13 +563,13 @@ describe('Vector Tag Tests', function () {
     // to wait for page to load
     cy.get('#\\/_text1').should('have.text', 'a');
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let tail = components['/_copy1'].replacements[0];
       let head = components['/_copy2'].replacements[0];
       let displacement = components['/_copy3'].replacements[0];
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let tailx = 0;
         let taily = 0;
         let headx = -4;
@@ -591,7 +591,7 @@ describe('Vector Tag Tests', function () {
       })
 
       cy.log('move vector up and to the right')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
 
         let tailcoords = [
           components['/_vector1'].stateValues.tail[0],
@@ -610,7 +610,7 @@ describe('Vector Tag Tests', function () {
         headcoords[0] = headcoords[0].add(moveX).simplify();
         headcoords[1] = headcoords[1].add(moveY).simplify();
 
-        components['/_vector1'].moveVector({
+        await components['/_vector1'].moveVector({
           tailcoords: tailcoords,
           headcoords: headcoords
         });
@@ -635,7 +635,7 @@ describe('Vector Tag Tests', function () {
       })
 
       cy.log('move copied tail moves vector')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
 
         let tailx = 1;
         let taily = 6;
@@ -644,7 +644,7 @@ describe('Vector Tag Tests', function () {
         let displacementx = headx - tailx;
         let displacementy = heady - taily;
 
-        tail.movePoint({ x: tailx, y: taily });
+        await tail.movePoint({ x: tailx, y: taily });
 
         expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
         expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
@@ -659,7 +659,7 @@ describe('Vector Tag Tests', function () {
       })
 
       cy.log('move copied head')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
 
 
         let tailx = 1;
@@ -669,7 +669,7 @@ describe('Vector Tag Tests', function () {
         let displacementx = headx - tailx;
         let displacementy = heady - taily;
 
-        head.movePoint({ x: headx, y: heady });
+        await head.movePoint({ x: headx, y: heady });
 
         expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
         expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
@@ -684,7 +684,7 @@ describe('Vector Tag Tests', function () {
       })
 
       cy.log('move displacement')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
 
         let tailx = 1;
         let taily = 6;
@@ -698,7 +698,7 @@ describe('Vector Tag Tests', function () {
         let headx = tailx + displacementx;
         let heady = taily + displacementy;
 
-        displacement.moveVector({
+        await displacement.moveVector({
           tailcoords: [displacementtailx, displacementtaily],
           headcoords: [displacementheadx, displacementheady]
         });
@@ -718,7 +718,7 @@ describe('Vector Tag Tests', function () {
   })
 
   it('vector with just displacement, head/tail/displacement copied', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -727,9 +727,9 @@ describe('Vector Tag Tests', function () {
   </graph>
 
   <graph>
-  <copy prop="tail" tname="_vector1" />
-  <copy prop="head" tname="_vector1" />
-  <copy prop="displacement" tname="_vector1" />
+  <copy prop="tail" target="_vector1" />
+  <copy prop="head" target="_vector1" />
+  <copy prop="displacement" target="_vector1" />
   </graph>
   `}, "*");
     });
@@ -737,13 +737,13 @@ describe('Vector Tag Tests', function () {
     // to wait for page to load
     cy.get('#\\/_text1').should('have.text', 'a');
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let tail = components['/_copy1'].replacements[0];
       let head = components['/_copy2'].replacements[0];
       let displacement = components['/_copy3'].replacements[0];
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let tailx = 0;
         let taily = 0;
         let headx = -4;
@@ -765,7 +765,7 @@ describe('Vector Tag Tests', function () {
       })
 
       cy.log('move vector up and to the right')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
 
         let tailcoords = [
           components['/_vector1'].stateValues.tail[0],
@@ -784,7 +784,7 @@ describe('Vector Tag Tests', function () {
         headcoords[0] = headcoords[0].add(moveX).simplify();
         headcoords[1] = headcoords[1].add(moveY).simplify();
 
-        components['/_vector1'].moveVector({
+        await components['/_vector1'].moveVector({
           tailcoords: tailcoords,
           headcoords: headcoords
         });
@@ -809,7 +809,7 @@ describe('Vector Tag Tests', function () {
       })
 
       cy.log('move copied tail moves vector')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
 
         let tailx = 1;
         let taily = 6;
@@ -818,7 +818,7 @@ describe('Vector Tag Tests', function () {
         let displacementx = headx - tailx;
         let displacementy = heady - taily;
 
-        tail.movePoint({ x: tailx, y: taily });
+        await tail.movePoint({ x: tailx, y: taily });
 
         expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
         expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
@@ -833,7 +833,7 @@ describe('Vector Tag Tests', function () {
       })
 
       cy.log('move copied head')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
 
 
         let tailx = 1;
@@ -843,7 +843,7 @@ describe('Vector Tag Tests', function () {
         let displacementx = headx - tailx;
         let displacementy = heady - taily;
 
-        head.movePoint({ x: headx, y: heady });
+        await head.movePoint({ x: headx, y: heady });
 
         expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
         expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
@@ -858,7 +858,7 @@ describe('Vector Tag Tests', function () {
       })
 
       cy.log('move displacement')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
 
         let tailx = 1;
         let taily = 6;
@@ -872,7 +872,7 @@ describe('Vector Tag Tests', function () {
         let headx = tailx + displacementx;
         let heady = taily + displacementy;
 
-        displacement.moveVector({
+        await displacement.moveVector({
           tailcoords: [displacementtailx, displacementtaily],
           headcoords: [displacementheadx, displacementheady]
         });
@@ -892,7 +892,7 @@ describe('Vector Tag Tests', function () {
   })
 
   it('vector with xs, head/tail/displacement copied', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -901,9 +901,9 @@ describe('Vector Tag Tests', function () {
   </graph>
 
   <graph>
-  <copy prop="tail" tname="_vector1" />
-  <copy prop="head" tname="_vector1" />
-  <copy prop="displacement" tname="_vector1" />
+  <copy prop="tail" target="_vector1" />
+  <copy prop="head" target="_vector1" />
+  <copy prop="displacement" target="_vector1" />
   </graph>
   `}, "*");
     });
@@ -911,13 +911,13 @@ describe('Vector Tag Tests', function () {
     // to wait for page to load
     cy.get('#\\/_text1').should('have.text', 'a');
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let tail = components['/_copy1'].replacements[0];
       let head = components['/_copy2'].replacements[0];
       let displacement = components['/_copy3'].replacements[0];
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let tailx = 0;
         let taily = 0;
         let headx = -4;
@@ -939,7 +939,7 @@ describe('Vector Tag Tests', function () {
       })
 
       cy.log('move vector up and to the right')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
 
         let tailcoords = [
           components['/_vector1'].stateValues.tail[0],
@@ -958,7 +958,7 @@ describe('Vector Tag Tests', function () {
         headcoords[0] = headcoords[0].add(moveX).simplify();
         headcoords[1] = headcoords[1].add(moveY).simplify();
 
-        components['/_vector1'].moveVector({
+        await components['/_vector1'].moveVector({
           tailcoords: tailcoords,
           headcoords: headcoords
         });
@@ -983,7 +983,7 @@ describe('Vector Tag Tests', function () {
       })
 
       cy.log('move copied tail moves vector')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
 
         let tailx = 1;
         let taily = 6;
@@ -992,7 +992,7 @@ describe('Vector Tag Tests', function () {
         let displacementx = headx - tailx;
         let displacementy = heady - taily;
 
-        tail.movePoint({ x: tailx, y: taily });
+        await tail.movePoint({ x: tailx, y: taily });
 
         expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
         expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
@@ -1007,7 +1007,7 @@ describe('Vector Tag Tests', function () {
       })
 
       cy.log('move copied head')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
 
 
         let tailx = 1;
@@ -1017,7 +1017,7 @@ describe('Vector Tag Tests', function () {
         let displacementx = headx - tailx;
         let displacementy = heady - taily;
 
-        head.movePoint({ x: headx, y: heady });
+        await head.movePoint({ x: headx, y: heady });
 
         expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
         expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
@@ -1032,7 +1032,7 @@ describe('Vector Tag Tests', function () {
       })
 
       cy.log('move displacement')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
 
         let tailx = 1;
         let taily = 6;
@@ -1046,7 +1046,7 @@ describe('Vector Tag Tests', function () {
         let headx = tailx + displacementx;
         let heady = taily + displacementy;
 
-        displacement.moveVector({
+        await displacement.moveVector({
           tailcoords: [displacementtailx, displacementtaily],
           headcoords: [displacementheadx, displacementheady]
         });
@@ -1066,7 +1066,7 @@ describe('Vector Tag Tests', function () {
   })
 
   it('vector with x and y, head/tail/displacement copied', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -1075,9 +1075,9 @@ describe('Vector Tag Tests', function () {
   </graph>
 
   <graph>
-  <copy prop="tail" tname="_vector1" />
-  <copy prop="head" tname="_vector1" />
-  <copy prop="displacement" tname="_vector1" />
+  <copy prop="tail" target="_vector1" />
+  <copy prop="head" target="_vector1" />
+  <copy prop="displacement" target="_vector1" />
   </graph>
   `}, "*");
     });
@@ -1085,13 +1085,13 @@ describe('Vector Tag Tests', function () {
     // to wait for page to load
     cy.get('#\\/_text1').should('have.text', 'a');
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let tail = components['/_copy1'].replacements[0];
       let head = components['/_copy2'].replacements[0];
       let displacement = components['/_copy3'].replacements[0];
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let tailx = 0;
         let taily = 0;
         let headx = -4;
@@ -1113,7 +1113,7 @@ describe('Vector Tag Tests', function () {
       })
 
       cy.log('move vector up and to the right')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
 
         let tailcoords = [
           components['/_vector1'].stateValues.tail[0],
@@ -1132,7 +1132,7 @@ describe('Vector Tag Tests', function () {
         headcoords[0] = headcoords[0].add(moveX).simplify();
         headcoords[1] = headcoords[1].add(moveY).simplify();
 
-        components['/_vector1'].moveVector({
+        await components['/_vector1'].moveVector({
           tailcoords: tailcoords,
           headcoords: headcoords
         });
@@ -1157,7 +1157,7 @@ describe('Vector Tag Tests', function () {
       })
 
       cy.log('move copied tail moves vector')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
 
         let tailx = 1;
         let taily = 6;
@@ -1166,7 +1166,7 @@ describe('Vector Tag Tests', function () {
         let displacementx = headx - tailx;
         let displacementy = heady - taily;
 
-        tail.movePoint({ x: tailx, y: taily });
+        await tail.movePoint({ x: tailx, y: taily });
 
         expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
         expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
@@ -1181,7 +1181,7 @@ describe('Vector Tag Tests', function () {
       })
 
       cy.log('move copied head')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
 
 
         let tailx = 1;
@@ -1191,7 +1191,7 @@ describe('Vector Tag Tests', function () {
         let displacementx = headx - tailx;
         let displacementy = heady - taily;
 
-        head.movePoint({ x: headx, y: heady });
+        await head.movePoint({ x: headx, y: heady });
 
         expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
         expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
@@ -1206,7 +1206,7 @@ describe('Vector Tag Tests', function () {
       })
 
       cy.log('move displacement')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
 
         let tailx = 1;
         let taily = 6;
@@ -1220,7 +1220,7 @@ describe('Vector Tag Tests', function () {
         let headx = tailx + displacementx;
         let heady = taily + displacementy;
 
-        displacement.moveVector({
+        await displacement.moveVector({
           tailcoords: [displacementtailx, displacementtaily],
           headcoords: [displacementheadx, displacementheady]
         });
@@ -1241,7 +1241,7 @@ describe('Vector Tag Tests', function () {
   })
 
   it('vector with y, head/tail/displacement copied', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -1250,9 +1250,9 @@ describe('Vector Tag Tests', function () {
   </graph>
 
   <graph>
-  <copy prop="tail" tname="_vector1" />
-  <copy prop="head" tname="_vector1" />
-  <copy prop="displacement" tname="_vector1" />
+  <copy prop="tail" target="_vector1" />
+  <copy prop="head" target="_vector1" />
+  <copy prop="displacement" target="_vector1" />
   </graph>
   `}, "*");
     });
@@ -1260,13 +1260,13 @@ describe('Vector Tag Tests', function () {
     // to wait for page to load
     cy.get('#\\/_text1').should('have.text', 'a');
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let tail = components['/_copy1'].replacements[0];
       let head = components['/_copy2'].replacements[0];
       let displacement = components['/_copy3'].replacements[0];
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let tailx = 0;
         let taily = 0;
         let headx = 0;
@@ -1288,7 +1288,7 @@ describe('Vector Tag Tests', function () {
       })
 
       cy.log('move vector up and to the right')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
 
         let tailcoords = [
           components['/_vector1'].stateValues.tail[0],
@@ -1307,7 +1307,7 @@ describe('Vector Tag Tests', function () {
         headcoords[0] = headcoords[0].add(moveX).simplify();
         headcoords[1] = headcoords[1].add(moveY).simplify();
 
-        components['/_vector1'].moveVector({
+        await components['/_vector1'].moveVector({
           tailcoords: tailcoords,
           headcoords: headcoords
         });
@@ -1332,7 +1332,7 @@ describe('Vector Tag Tests', function () {
       })
 
       cy.log('move copied tail moves vector')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
 
         let tailx = 1;
         let taily = 6;
@@ -1341,7 +1341,7 @@ describe('Vector Tag Tests', function () {
         let displacementx = headx - tailx;
         let displacementy = heady - taily;
 
-        tail.movePoint({ x: tailx, y: taily });
+        await tail.movePoint({ x: tailx, y: taily });
 
         expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
         expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
@@ -1356,7 +1356,7 @@ describe('Vector Tag Tests', function () {
       })
 
       cy.log('move copied head')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
 
 
         let tailx = 1;
@@ -1366,7 +1366,7 @@ describe('Vector Tag Tests', function () {
         let displacementx = headx - tailx;
         let displacementy = heady - taily;
 
-        head.movePoint({ x: headx, y: heady });
+        await head.movePoint({ x: headx, y: heady });
 
         expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
         expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
@@ -1381,7 +1381,7 @@ describe('Vector Tag Tests', function () {
       })
 
       cy.log('move displacement')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
 
         let tailx = 1;
         let taily = 6;
@@ -1395,7 +1395,7 @@ describe('Vector Tag Tests', function () {
         let headx = tailx + displacementx;
         let heady = taily + displacementy;
 
-        displacement.moveVector({
+        await displacement.moveVector({
           tailcoords: [displacementtailx, displacementtaily],
           headcoords: [displacementheadx, displacementheady]
         });
@@ -1417,7 +1417,7 @@ describe('Vector Tag Tests', function () {
 
 
   it('vector with sugared tuple giving xs and tail, head/tail/displacement copied', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -1426,9 +1426,9 @@ describe('Vector Tag Tests', function () {
   </graph>
 
   <graph>
-  <copy prop="tail" tname="_vector1" />
-  <copy prop="head" tname="_vector1" />
-  <copy prop="displacement" tname="_vector1" />
+  <copy prop="tail" target="_vector1" />
+  <copy prop="head" target="_vector1" />
+  <copy prop="displacement" target="_vector1" />
   </graph>
   `}, "*");
     });
@@ -1436,13 +1436,13 @@ describe('Vector Tag Tests', function () {
     // to wait for page to load
     cy.get('#\\/_text1').should('have.text', 'a');
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let tail = components['/_copy1'].replacements[0];
       let head = components['/_copy2'].replacements[0];
       let displacement = components['/_copy3'].replacements[0];
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let tailx = 4;
         let taily = 1;
         let headx = -4;
@@ -1464,7 +1464,7 @@ describe('Vector Tag Tests', function () {
       })
 
       cy.log('move vector up and to the right')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
 
         let tailcoords = [
           components['/_vector1'].stateValues.tail[0],
@@ -1483,7 +1483,7 @@ describe('Vector Tag Tests', function () {
         headcoords[0] = headcoords[0].add(moveX).simplify();
         headcoords[1] = headcoords[1].add(moveY).simplify();
 
-        components['/_vector1'].moveVector({
+        await components['/_vector1'].moveVector({
           tailcoords: tailcoords,
           headcoords: headcoords
         });
@@ -1508,7 +1508,7 @@ describe('Vector Tag Tests', function () {
       })
 
       cy.log('move copied tail moves vector')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
 
         let tailx = 1;
         let taily = 6;
@@ -1518,7 +1518,7 @@ describe('Vector Tag Tests', function () {
         let displacementx = headx - tailx;
         let displacementy = heady - taily;
 
-        tail.movePoint({ x: tailx, y: taily });
+        await tail.movePoint({ x: tailx, y: taily });
 
         expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
         expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
@@ -1533,7 +1533,7 @@ describe('Vector Tag Tests', function () {
       })
 
       cy.log('move copied head')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
 
 
         let tailx = 1;
@@ -1543,7 +1543,7 @@ describe('Vector Tag Tests', function () {
         let displacementx = headx - tailx;
         let displacementy = heady - taily;
 
-        head.movePoint({ x: headx, y: heady });
+        await head.movePoint({ x: headx, y: heady });
 
         expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
         expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
@@ -1558,7 +1558,7 @@ describe('Vector Tag Tests', function () {
       })
 
       cy.log('move displacement')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
 
         let tailx = 1;
         let taily = 6;
@@ -1572,7 +1572,7 @@ describe('Vector Tag Tests', function () {
         let headx = tailx + displacementx;
         let heady = taily + displacementy;
 
-        displacement.moveVector({
+        await displacement.moveVector({
           tailcoords: [displacementtailx, displacementtaily],
           headcoords: [displacementheadx, displacementheady]
         });
@@ -1593,7 +1593,7 @@ describe('Vector Tag Tests', function () {
   })
 
   it('vector with displacement point child and tail, head/tail/displacement copied', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -1602,9 +1602,9 @@ describe('Vector Tag Tests', function () {
   </graph>
 
   <graph>
-  <copy prop="tail" tname="_vector1" />
-  <copy prop="head" tname="_vector1" />
-  <copy prop="displacement" tname="_vector1" />
+  <copy prop="tail" target="_vector1" />
+  <copy prop="head" target="_vector1" />
+  <copy prop="displacement" target="_vector1" />
   </graph>
   `}, "*");
     });
@@ -1612,13 +1612,13 @@ describe('Vector Tag Tests', function () {
     // to wait for page to load
     cy.get('#\\/_text1').should('have.text', 'a');
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let tail = components['/_copy1'].replacements[0];
       let head = components['/_copy2'].replacements[0];
       let displacement = components['/_copy3'].replacements[0];
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let tailx = 4;
         let taily = 1;
         let headx = -4;
@@ -1640,7 +1640,7 @@ describe('Vector Tag Tests', function () {
       })
 
       cy.log('move vector up and to the right')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
 
         let tailcoords = [
           components['/_vector1'].stateValues.tail[0],
@@ -1659,7 +1659,7 @@ describe('Vector Tag Tests', function () {
         headcoords[0] = headcoords[0].add(moveX).simplify();
         headcoords[1] = headcoords[1].add(moveY).simplify();
 
-        components['/_vector1'].moveVector({
+        await components['/_vector1'].moveVector({
           tailcoords: tailcoords,
           headcoords: headcoords
         });
@@ -1684,7 +1684,7 @@ describe('Vector Tag Tests', function () {
       })
 
       cy.log('move copied tail moves vector')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
 
         let tailx = 1;
         let taily = 6;
@@ -1694,7 +1694,7 @@ describe('Vector Tag Tests', function () {
         let displacementx = headx - tailx;
         let displacementy = heady - taily;
 
-        tail.movePoint({ x: tailx, y: taily });
+        await tail.movePoint({ x: tailx, y: taily });
 
         expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
         expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
@@ -1709,7 +1709,7 @@ describe('Vector Tag Tests', function () {
       })
 
       cy.log('move copied head')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
 
 
         let tailx = 1;
@@ -1719,7 +1719,7 @@ describe('Vector Tag Tests', function () {
         let displacementx = headx - tailx;
         let displacementy = heady - taily;
 
-        head.movePoint({ x: headx, y: heady });
+        await head.movePoint({ x: headx, y: heady });
 
         expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
         expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
@@ -1734,7 +1734,7 @@ describe('Vector Tag Tests', function () {
       })
 
       cy.log('move displacement')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
 
         let tailx = 1;
         let taily = 6;
@@ -1748,7 +1748,7 @@ describe('Vector Tag Tests', function () {
         let headx = tailx + displacementx;
         let heady = taily + displacementy;
 
-        displacement.moveVector({
+        await displacement.moveVector({
           tailcoords: [displacementtailx, displacementtaily],
           headcoords: [displacementheadx, displacementheady]
         });
@@ -1769,7 +1769,7 @@ describe('Vector Tag Tests', function () {
   })
 
   it('vector with displacement vector child and tail, head/tail/displacement copied', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -1778,9 +1778,9 @@ describe('Vector Tag Tests', function () {
   </graph>
 
   <graph>
-  <copy prop="tail" tname="_vector1" />
-  <copy prop="head" tname="_vector1" />
-  <copy prop="displacement" tname="_vector1" />
+  <copy prop="tail" target="_vector1" />
+  <copy prop="head" target="_vector1" />
+  <copy prop="displacement" target="_vector1" />
   </graph>
   `}, "*");
     });
@@ -1788,13 +1788,13 @@ describe('Vector Tag Tests', function () {
     // to wait for page to load
     cy.get('#\\/_text1').should('have.text', 'a');
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let tail = components['/_copy1'].replacements[0];
       let head = components['/_copy2'].replacements[0];
       let displacement = components['/_copy3'].replacements[0];
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let tailx = 4;
         let taily = 1;
         let headx = -4;
@@ -1816,7 +1816,7 @@ describe('Vector Tag Tests', function () {
       })
 
       cy.log('move vector up and to the right')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
 
         let tailcoords = [
           components['/_vector1'].stateValues.tail[0],
@@ -1835,7 +1835,7 @@ describe('Vector Tag Tests', function () {
         headcoords[0] = headcoords[0].add(moveX).simplify();
         headcoords[1] = headcoords[1].add(moveY).simplify();
 
-        components['/_vector1'].moveVector({
+        await components['/_vector1'].moveVector({
           tailcoords: tailcoords,
           headcoords: headcoords
         });
@@ -1860,7 +1860,7 @@ describe('Vector Tag Tests', function () {
       })
 
       cy.log('move copied tail moves vector')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
 
         let tailx = 1;
         let taily = 6;
@@ -1870,7 +1870,7 @@ describe('Vector Tag Tests', function () {
         let displacementx = headx - tailx;
         let displacementy = heady - taily;
 
-        tail.movePoint({ x: tailx, y: taily });
+        await tail.movePoint({ x: tailx, y: taily });
 
         expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
         expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
@@ -1885,7 +1885,7 @@ describe('Vector Tag Tests', function () {
       })
 
       cy.log('move copied head')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
 
 
         let tailx = 1;
@@ -1895,7 +1895,7 @@ describe('Vector Tag Tests', function () {
         let displacementx = headx - tailx;
         let displacementy = heady - taily;
 
-        head.movePoint({ x: headx, y: heady });
+        await head.movePoint({ x: headx, y: heady });
 
         expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
         expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
@@ -1910,7 +1910,7 @@ describe('Vector Tag Tests', function () {
       })
 
       cy.log('move displacement')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
 
         let tailx = 1;
         let taily = 6;
@@ -1924,7 +1924,7 @@ describe('Vector Tag Tests', function () {
         let headx = tailx + displacementx;
         let heady = taily + displacementy;
 
-        displacement.moveVector({
+        await displacement.moveVector({
           tailcoords: [displacementtailx, displacementtaily],
           headcoords: [displacementheadx, displacementheady]
         });
@@ -1945,7 +1945,7 @@ describe('Vector Tag Tests', function () {
   })
 
   it('vector with displacement and tail, head/tail/displacement copied', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -1954,9 +1954,9 @@ describe('Vector Tag Tests', function () {
   </graph>
 
   <graph>
-  <copy prop="tail" tname="_vector1" />
-  <copy prop="head" tname="_vector1" />
-  <copy prop="displacement" tname="_vector1" />
+  <copy prop="tail" target="_vector1" />
+  <copy prop="head" target="_vector1" />
+  <copy prop="displacement" target="_vector1" />
   </graph>
   `}, "*");
     });
@@ -1964,13 +1964,13 @@ describe('Vector Tag Tests', function () {
     // to wait for page to load
     cy.get('#\\/_text1').should('have.text', 'a');
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let tail = components['/_copy1'].replacements[0];
       let head = components['/_copy2'].replacements[0];
       let displacement = components['/_copy3'].replacements[0];
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let tailx = 4;
         let taily = 1;
         let headx = -4;
@@ -1992,7 +1992,7 @@ describe('Vector Tag Tests', function () {
       })
 
       cy.log('move vector up and to the right')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
 
         let tailcoords = [
           components['/_vector1'].stateValues.tail[0],
@@ -2011,7 +2011,7 @@ describe('Vector Tag Tests', function () {
         headcoords[0] = headcoords[0].add(moveX).simplify();
         headcoords[1] = headcoords[1].add(moveY).simplify();
 
-        components['/_vector1'].moveVector({
+        await components['/_vector1'].moveVector({
           tailcoords: tailcoords,
           headcoords: headcoords
         });
@@ -2036,7 +2036,7 @@ describe('Vector Tag Tests', function () {
       })
 
       cy.log('move copied tail moves vector')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
 
         let tailx = 1;
         let taily = 6;
@@ -2046,7 +2046,7 @@ describe('Vector Tag Tests', function () {
         let displacementx = headx - tailx;
         let displacementy = heady - taily;
 
-        tail.movePoint({ x: tailx, y: taily });
+        await tail.movePoint({ x: tailx, y: taily });
 
         expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
         expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
@@ -2061,7 +2061,7 @@ describe('Vector Tag Tests', function () {
       })
 
       cy.log('move copied head')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
 
 
         let tailx = 1;
@@ -2071,7 +2071,7 @@ describe('Vector Tag Tests', function () {
         let displacementx = headx - tailx;
         let displacementy = heady - taily;
 
-        head.movePoint({ x: headx, y: heady });
+        await head.movePoint({ x: headx, y: heady });
 
         expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
         expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
@@ -2086,7 +2086,7 @@ describe('Vector Tag Tests', function () {
       })
 
       cy.log('move displacement')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
 
         let tailx = 1;
         let taily = 6;
@@ -2100,7 +2100,7 @@ describe('Vector Tag Tests', function () {
         let headx = tailx + displacementx;
         let heady = taily + displacementy;
 
-        displacement.moveVector({
+        await displacement.moveVector({
           tailcoords: [displacementtailx, displacementtaily],
           headcoords: [displacementheadx, displacementheady]
         });
@@ -2121,7 +2121,7 @@ describe('Vector Tag Tests', function () {
   })
 
   it('vector with xs and tail, head/tail/displacement copied', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -2130,9 +2130,9 @@ describe('Vector Tag Tests', function () {
   </graph>
 
   <graph>
-  <copy prop="tail" tname="_vector1" />
-  <copy prop="head" tname="_vector1" />
-  <copy prop="displacement" tname="_vector1" />
+  <copy prop="tail" target="_vector1" />
+  <copy prop="head" target="_vector1" />
+  <copy prop="displacement" target="_vector1" />
   </graph>
   `}, "*");
     });
@@ -2140,13 +2140,13 @@ describe('Vector Tag Tests', function () {
     // to wait for page to load
     cy.get('#\\/_text1').should('have.text', 'a');
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let tail = components['/_copy1'].replacements[0];
       let head = components['/_copy2'].replacements[0];
       let displacement = components['/_copy3'].replacements[0];
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let tailx = 4;
         let taily = 1;
         let headx = -4;
@@ -2168,7 +2168,7 @@ describe('Vector Tag Tests', function () {
       })
 
       cy.log('move vector up and to the right')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
 
         let tailcoords = [
           components['/_vector1'].stateValues.tail[0],
@@ -2187,7 +2187,7 @@ describe('Vector Tag Tests', function () {
         headcoords[0] = headcoords[0].add(moveX).simplify();
         headcoords[1] = headcoords[1].add(moveY).simplify();
 
-        components['/_vector1'].moveVector({
+        await components['/_vector1'].moveVector({
           tailcoords: tailcoords,
           headcoords: headcoords
         });
@@ -2212,7 +2212,7 @@ describe('Vector Tag Tests', function () {
       })
 
       cy.log('move copied tail moves vector')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
 
         let tailx = 1;
         let taily = 6;
@@ -2222,7 +2222,7 @@ describe('Vector Tag Tests', function () {
         let displacementx = headx - tailx;
         let displacementy = heady - taily;
 
-        tail.movePoint({ x: tailx, y: taily });
+        await tail.movePoint({ x: tailx, y: taily });
 
         expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
         expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
@@ -2237,7 +2237,7 @@ describe('Vector Tag Tests', function () {
       })
 
       cy.log('move copied head')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
 
 
         let tailx = 1;
@@ -2247,7 +2247,7 @@ describe('Vector Tag Tests', function () {
         let displacementx = headx - tailx;
         let displacementy = heady - taily;
 
-        head.movePoint({ x: headx, y: heady });
+        await head.movePoint({ x: headx, y: heady });
 
         expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
         expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
@@ -2262,7 +2262,7 @@ describe('Vector Tag Tests', function () {
       })
 
       cy.log('move displacement')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
 
         let tailx = 1;
         let taily = 6;
@@ -2276,7 +2276,7 @@ describe('Vector Tag Tests', function () {
         let headx = tailx + displacementx;
         let heady = taily + displacementy;
 
-        displacement.moveVector({
+        await displacement.moveVector({
           tailcoords: [displacementtailx, displacementtaily],
           headcoords: [displacementheadx, displacementheady]
         });
@@ -2297,7 +2297,7 @@ describe('Vector Tag Tests', function () {
   })
 
   it('vector with x, y and tail, head/tail/displacement copied', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -2306,9 +2306,9 @@ describe('Vector Tag Tests', function () {
   </graph>
 
   <graph>
-  <copy prop="tail" tname="_vector1" />
-  <copy prop="head" tname="_vector1" />
-  <copy prop="displacement" tname="_vector1" />
+  <copy prop="tail" target="_vector1" />
+  <copy prop="head" target="_vector1" />
+  <copy prop="displacement" target="_vector1" />
   </graph>
   `}, "*");
     });
@@ -2316,13 +2316,13 @@ describe('Vector Tag Tests', function () {
     // to wait for page to load
     cy.get('#\\/_text1').should('have.text', 'a');
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let tail = components['/_copy1'].replacements[0];
       let head = components['/_copy2'].replacements[0];
       let displacement = components['/_copy3'].replacements[0];
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let tailx = 4;
         let taily = 1;
         let headx = -4;
@@ -2344,7 +2344,7 @@ describe('Vector Tag Tests', function () {
       })
 
       cy.log('move vector up and to the right')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
 
         let tailcoords = [
           components['/_vector1'].stateValues.tail[0],
@@ -2363,7 +2363,7 @@ describe('Vector Tag Tests', function () {
         headcoords[0] = headcoords[0].add(moveX).simplify();
         headcoords[1] = headcoords[1].add(moveY).simplify();
 
-        components['/_vector1'].moveVector({
+        await components['/_vector1'].moveVector({
           tailcoords: tailcoords,
           headcoords: headcoords
         });
@@ -2388,7 +2388,7 @@ describe('Vector Tag Tests', function () {
       })
 
       cy.log('move copied tail moves vector')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
 
         let tailx = 1;
         let taily = 6;
@@ -2398,7 +2398,7 @@ describe('Vector Tag Tests', function () {
         let displacementx = headx - tailx;
         let displacementy = heady - taily;
 
-        tail.movePoint({ x: tailx, y: taily });
+        await tail.movePoint({ x: tailx, y: taily });
 
         expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
         expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
@@ -2413,7 +2413,7 @@ describe('Vector Tag Tests', function () {
       })
 
       cy.log('move copied head')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
 
 
         let tailx = 1;
@@ -2423,7 +2423,7 @@ describe('Vector Tag Tests', function () {
         let displacementx = headx - tailx;
         let displacementy = heady - taily;
 
-        head.movePoint({ x: headx, y: heady });
+        await head.movePoint({ x: headx, y: heady });
 
         expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
         expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
@@ -2438,7 +2438,7 @@ describe('Vector Tag Tests', function () {
       })
 
       cy.log('move displacement')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
 
         let tailx = 1;
         let taily = 6;
@@ -2452,7 +2452,7 @@ describe('Vector Tag Tests', function () {
         let headx = tailx + displacementx;
         let heady = taily + displacementy;
 
-        displacement.moveVector({
+        await displacement.moveVector({
           tailcoords: [displacementtailx, displacementtaily],
           headcoords: [displacementheadx, displacementheady]
         });
@@ -2473,7 +2473,7 @@ describe('Vector Tag Tests', function () {
   })
 
   it('vector with y and tail, head/tail/displacement copied', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -2482,9 +2482,9 @@ describe('Vector Tag Tests', function () {
   </graph>
 
   <graph>
-  <copy prop="tail" tname="_vector1" />
-  <copy prop="head" tname="_vector1" />
-  <copy prop="displacement" tname="_vector1" />
+  <copy prop="tail" target="_vector1" />
+  <copy prop="head" target="_vector1" />
+  <copy prop="displacement" target="_vector1" />
   </graph>
   `}, "*");
     });
@@ -2492,13 +2492,13 @@ describe('Vector Tag Tests', function () {
     // to wait for page to load
     cy.get('#\\/_text1').should('have.text', 'a');
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let tail = components['/_copy1'].replacements[0];
       let head = components['/_copy2'].replacements[0];
       let displacement = components['/_copy3'].replacements[0];
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let tailx = 4;
         let taily = 1;
         let headx = 4;
@@ -2520,7 +2520,7 @@ describe('Vector Tag Tests', function () {
       })
 
       cy.log('move vector up and to the right')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
 
         let tailcoords = [
           components['/_vector1'].stateValues.tail[0],
@@ -2539,7 +2539,7 @@ describe('Vector Tag Tests', function () {
         headcoords[0] = headcoords[0].add(moveX).simplify();
         headcoords[1] = headcoords[1].add(moveY).simplify();
 
-        components['/_vector1'].moveVector({
+        await components['/_vector1'].moveVector({
           tailcoords: tailcoords,
           headcoords: headcoords
         });
@@ -2564,7 +2564,7 @@ describe('Vector Tag Tests', function () {
       })
 
       cy.log('move copied tail moves vector')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
 
         let tailx = 1;
         let taily = 6;
@@ -2574,7 +2574,7 @@ describe('Vector Tag Tests', function () {
         let displacementx = headx - tailx;
         let displacementy = heady - taily;
 
-        tail.movePoint({ x: tailx, y: taily });
+        await tail.movePoint({ x: tailx, y: taily });
 
         expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
         expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
@@ -2589,7 +2589,7 @@ describe('Vector Tag Tests', function () {
       })
 
       cy.log('move copied head')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
 
 
         let tailx = 1;
@@ -2599,7 +2599,7 @@ describe('Vector Tag Tests', function () {
         let displacementx = headx - tailx;
         let displacementy = heady - taily;
 
-        head.movePoint({ x: headx, y: heady });
+        await head.movePoint({ x: headx, y: heady });
 
         expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
         expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
@@ -2614,7 +2614,7 @@ describe('Vector Tag Tests', function () {
       })
 
       cy.log('move displacement')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
 
         let tailx = 1;
         let taily = 6;
@@ -2628,7 +2628,7 @@ describe('Vector Tag Tests', function () {
         let headx = tailx + displacementx;
         let heady = taily + displacementy;
 
-        displacement.moveVector({
+        await displacement.moveVector({
           tailcoords: [displacementtailx, displacementtaily],
           headcoords: [displacementheadx, displacementheady]
         });
@@ -2651,7 +2651,7 @@ describe('Vector Tag Tests', function () {
 
 
   it('vector with sugared tuple giving xs and head, head/tail/displacement copied', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -2660,9 +2660,9 @@ describe('Vector Tag Tests', function () {
   </graph>
 
   <graph>
-  <copy prop="tail" tname="_vector1" />
-  <copy prop="head" tname="_vector1" />
-  <copy prop="displacement" tname="_vector1" />
+  <copy prop="tail" target="_vector1" />
+  <copy prop="head" target="_vector1" />
+  <copy prop="displacement" target="_vector1" />
   </graph>
   `}, "*");
     });
@@ -2670,13 +2670,13 @@ describe('Vector Tag Tests', function () {
     // to wait for page to load
     cy.get('#\\/_text1').should('have.text', 'a');
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let tail = components['/_copy1'].replacements[0];
       let head = components['/_copy2'].replacements[0];
       let displacement = components['/_copy3'].replacements[0];
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let components = Object.assign({}, win.state.components);
         let tailx = 4;
         let taily = 1;
@@ -2699,7 +2699,7 @@ describe('Vector Tag Tests', function () {
       })
 
       cy.log('move vector up and to the right')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let components = Object.assign({}, win.state.components);
 
         let tailcoords = [
@@ -2719,7 +2719,7 @@ describe('Vector Tag Tests', function () {
         headcoords[0] = headcoords[0].add(moveX).simplify();
         headcoords[1] = headcoords[1].add(moveY).simplify();
 
-        components['/_vector1'].moveVector({
+        await components['/_vector1'].moveVector({
           tailcoords: tailcoords,
           headcoords: headcoords
         });
@@ -2744,7 +2744,7 @@ describe('Vector Tag Tests', function () {
       })
 
       cy.log('move copied head moves vector')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let components = Object.assign({}, win.state.components);
 
         let tailx = 5;
@@ -2754,7 +2754,7 @@ describe('Vector Tag Tests', function () {
         let displacementx = headx - tailx;
         let displacementy = heady - taily;
 
-        head.movePoint({ x: headx, y: heady });
+        await head.movePoint({ x: headx, y: heady });
 
         expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
         expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
@@ -2769,7 +2769,7 @@ describe('Vector Tag Tests', function () {
       })
 
       cy.log('move copied tail')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let components = Object.assign({}, win.state.components);
 
         let tailx = -7;
@@ -2779,7 +2779,7 @@ describe('Vector Tag Tests', function () {
         let displacementx = headx - tailx;
         let displacementy = heady - taily;
 
-        tail.movePoint({ x: tailx, y: taily });
+        await tail.movePoint({ x: tailx, y: taily });
 
         expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
         expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
@@ -2794,7 +2794,7 @@ describe('Vector Tag Tests', function () {
       })
 
       cy.log('move displacement')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let components = Object.assign({}, win.state.components);
 
         let headx = -3;
@@ -2809,7 +2809,7 @@ describe('Vector Tag Tests', function () {
         let tailx = headx - displacementx;
         let taily = heady - displacementy;
 
-        displacement.moveVector({
+        await displacement.moveVector({
           tailcoords: [displacementtailx, displacementtaily],
           headcoords: [displacementheadx, displacementheady]
         });
@@ -2829,7 +2829,7 @@ describe('Vector Tag Tests', function () {
   })
 
   it('vector with displacement point child and head, head/tail/displacement copied', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -2838,9 +2838,9 @@ describe('Vector Tag Tests', function () {
   </graph>
 
   <graph>
-  <copy prop="tail" tname="_vector1" />
-  <copy prop="head" tname="_vector1" />
-  <copy prop="displacement" tname="_vector1" />
+  <copy prop="tail" target="_vector1" />
+  <copy prop="head" target="_vector1" />
+  <copy prop="displacement" target="_vector1" />
   </graph>
   `}, "*");
     });
@@ -2848,13 +2848,13 @@ describe('Vector Tag Tests', function () {
     // to wait for page to load
     cy.get('#\\/_text1').should('have.text', 'a');
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let tail = components['/_copy1'].replacements[0];
       let head = components['/_copy2'].replacements[0];
       let displacement = components['/_copy3'].replacements[0];
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let components = Object.assign({}, win.state.components);
         let tailx = 4;
         let taily = 1;
@@ -2877,7 +2877,7 @@ describe('Vector Tag Tests', function () {
       })
 
       cy.log('move vector up and to the right')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let components = Object.assign({}, win.state.components);
 
         let tailcoords = [
@@ -2897,7 +2897,7 @@ describe('Vector Tag Tests', function () {
         headcoords[0] = headcoords[0].add(moveX).simplify();
         headcoords[1] = headcoords[1].add(moveY).simplify();
 
-        components['/_vector1'].moveVector({
+        await components['/_vector1'].moveVector({
           tailcoords: tailcoords,
           headcoords: headcoords
         });
@@ -2922,7 +2922,7 @@ describe('Vector Tag Tests', function () {
       })
 
       cy.log('move copied head moves vector')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let components = Object.assign({}, win.state.components);
 
         let tailx = 5;
@@ -2932,7 +2932,7 @@ describe('Vector Tag Tests', function () {
         let displacementx = headx - tailx;
         let displacementy = heady - taily;
 
-        head.movePoint({ x: headx, y: heady });
+        await head.movePoint({ x: headx, y: heady });
 
         expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
         expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
@@ -2947,7 +2947,7 @@ describe('Vector Tag Tests', function () {
       })
 
       cy.log('move copied tail')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let components = Object.assign({}, win.state.components);
 
         let tailx = -7;
@@ -2957,7 +2957,7 @@ describe('Vector Tag Tests', function () {
         let displacementx = headx - tailx;
         let displacementy = heady - taily;
 
-        tail.movePoint({ x: tailx, y: taily });
+        await tail.movePoint({ x: tailx, y: taily });
 
         expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
         expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
@@ -2972,7 +2972,7 @@ describe('Vector Tag Tests', function () {
       })
 
       cy.log('move displacement')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let components = Object.assign({}, win.state.components);
 
         let headx = -3;
@@ -2987,7 +2987,7 @@ describe('Vector Tag Tests', function () {
         let tailx = headx - displacementx;
         let taily = heady - displacementy;
 
-        displacement.moveVector({
+        await displacement.moveVector({
           tailcoords: [displacementtailx, displacementtaily],
           headcoords: [displacementheadx, displacementheady]
         });
@@ -3007,7 +3007,7 @@ describe('Vector Tag Tests', function () {
   })
 
   it('vector with displacement vector child and head, head/tail/displacement copied', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -3016,9 +3016,9 @@ describe('Vector Tag Tests', function () {
   </graph>
 
   <graph>
-  <copy prop="tail" tname="_vector1" />
-  <copy prop="head" tname="_vector1" />
-  <copy prop="displacement" tname="_vector1" />
+  <copy prop="tail" target="_vector1" />
+  <copy prop="head" target="_vector1" />
+  <copy prop="displacement" target="_vector1" />
   </graph>
   `}, "*");
     });
@@ -3026,13 +3026,13 @@ describe('Vector Tag Tests', function () {
     // to wait for page to load
     cy.get('#\\/_text1').should('have.text', 'a');
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let tail = components['/_copy1'].replacements[0];
       let head = components['/_copy2'].replacements[0];
       let displacement = components['/_copy3'].replacements[0];
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let components = Object.assign({}, win.state.components);
         let tailx = 4;
         let taily = 1;
@@ -3055,7 +3055,7 @@ describe('Vector Tag Tests', function () {
       })
 
       cy.log('move vector up and to the right')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let components = Object.assign({}, win.state.components);
 
         let tailcoords = [
@@ -3075,7 +3075,7 @@ describe('Vector Tag Tests', function () {
         headcoords[0] = headcoords[0].add(moveX).simplify();
         headcoords[1] = headcoords[1].add(moveY).simplify();
 
-        components['/_vector1'].moveVector({
+        await components['/_vector1'].moveVector({
           tailcoords: tailcoords,
           headcoords: headcoords
         });
@@ -3100,7 +3100,7 @@ describe('Vector Tag Tests', function () {
       })
 
       cy.log('move copied head moves vector')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let components = Object.assign({}, win.state.components);
 
         let tailx = 5;
@@ -3110,7 +3110,7 @@ describe('Vector Tag Tests', function () {
         let displacementx = headx - tailx;
         let displacementy = heady - taily;
 
-        head.movePoint({ x: headx, y: heady });
+        await head.movePoint({ x: headx, y: heady });
 
         expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
         expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
@@ -3125,7 +3125,7 @@ describe('Vector Tag Tests', function () {
       })
 
       cy.log('move copied tail')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let components = Object.assign({}, win.state.components);
 
         let tailx = -7;
@@ -3135,7 +3135,7 @@ describe('Vector Tag Tests', function () {
         let displacementx = headx - tailx;
         let displacementy = heady - taily;
 
-        tail.movePoint({ x: tailx, y: taily });
+        await tail.movePoint({ x: tailx, y: taily });
 
         expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
         expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
@@ -3150,7 +3150,7 @@ describe('Vector Tag Tests', function () {
       })
 
       cy.log('move displacement')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let components = Object.assign({}, win.state.components);
 
         let headx = -3;
@@ -3165,7 +3165,7 @@ describe('Vector Tag Tests', function () {
         let tailx = headx - displacementx;
         let taily = heady - displacementy;
 
-        displacement.moveVector({
+        await displacement.moveVector({
           tailcoords: [displacementtailx, displacementtaily],
           headcoords: [displacementheadx, displacementheady]
         });
@@ -3185,7 +3185,7 @@ describe('Vector Tag Tests', function () {
   })
 
   it('vector with displacement and head, head/tail/displacement copied', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -3194,9 +3194,9 @@ describe('Vector Tag Tests', function () {
   </graph>
 
   <graph>
-  <copy prop="tail" tname="_vector1" />
-  <copy prop="head" tname="_vector1" />
-  <copy prop="displacement" tname="_vector1" />
+  <copy prop="tail" target="_vector1" />
+  <copy prop="head" target="_vector1" />
+  <copy prop="displacement" target="_vector1" />
   </graph>
   `}, "*");
     });
@@ -3204,13 +3204,13 @@ describe('Vector Tag Tests', function () {
     // to wait for page to load
     cy.get('#\\/_text1').should('have.text', 'a');
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let tail = components['/_copy1'].replacements[0];
       let head = components['/_copy2'].replacements[0];
       let displacement = components['/_copy3'].replacements[0];
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let components = Object.assign({}, win.state.components);
         let tailx = 4;
         let taily = 1;
@@ -3233,7 +3233,7 @@ describe('Vector Tag Tests', function () {
       })
 
       cy.log('move vector up and to the right')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let components = Object.assign({}, win.state.components);
 
         let tailcoords = [
@@ -3253,7 +3253,7 @@ describe('Vector Tag Tests', function () {
         headcoords[0] = headcoords[0].add(moveX).simplify();
         headcoords[1] = headcoords[1].add(moveY).simplify();
 
-        components['/_vector1'].moveVector({
+        await components['/_vector1'].moveVector({
           tailcoords: tailcoords,
           headcoords: headcoords
         });
@@ -3278,7 +3278,7 @@ describe('Vector Tag Tests', function () {
       })
 
       cy.log('move copied head moves vector')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let components = Object.assign({}, win.state.components);
 
         let tailx = 5;
@@ -3288,7 +3288,7 @@ describe('Vector Tag Tests', function () {
         let displacementx = headx - tailx;
         let displacementy = heady - taily;
 
-        head.movePoint({ x: headx, y: heady });
+        await head.movePoint({ x: headx, y: heady });
 
         expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
         expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
@@ -3303,7 +3303,7 @@ describe('Vector Tag Tests', function () {
       })
 
       cy.log('move copied tail')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let components = Object.assign({}, win.state.components);
 
         let tailx = -7;
@@ -3313,7 +3313,7 @@ describe('Vector Tag Tests', function () {
         let displacementx = headx - tailx;
         let displacementy = heady - taily;
 
-        tail.movePoint({ x: tailx, y: taily });
+        await tail.movePoint({ x: tailx, y: taily });
 
         expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
         expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
@@ -3328,7 +3328,7 @@ describe('Vector Tag Tests', function () {
       })
 
       cy.log('move displacement')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let components = Object.assign({}, win.state.components);
 
         let headx = -3;
@@ -3343,7 +3343,7 @@ describe('Vector Tag Tests', function () {
         let tailx = headx - displacementx;
         let taily = heady - displacementy;
 
-        displacement.moveVector({
+        await displacement.moveVector({
           tailcoords: [displacementtailx, displacementtaily],
           headcoords: [displacementheadx, displacementheady]
         });
@@ -3363,7 +3363,7 @@ describe('Vector Tag Tests', function () {
   })
 
   it('vector with xs and head, head/tail/displacement copied', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -3372,9 +3372,9 @@ describe('Vector Tag Tests', function () {
   </graph>
 
   <graph>
-  <copy prop="tail" tname="_vector1" />
-  <copy prop="head" tname="_vector1" />
-  <copy prop="displacement" tname="_vector1" />
+  <copy prop="tail" target="_vector1" />
+  <copy prop="head" target="_vector1" />
+  <copy prop="displacement" target="_vector1" />
   </graph>
   `}, "*");
     });
@@ -3382,13 +3382,13 @@ describe('Vector Tag Tests', function () {
     // to wait for page to load
     cy.get('#\\/_text1').should('have.text', 'a');
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let tail = components['/_copy1'].replacements[0];
       let head = components['/_copy2'].replacements[0];
       let displacement = components['/_copy3'].replacements[0];
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let components = Object.assign({}, win.state.components);
         let tailx = 4;
         let taily = 1;
@@ -3411,7 +3411,7 @@ describe('Vector Tag Tests', function () {
       })
 
       cy.log('move vector up and to the right')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let components = Object.assign({}, win.state.components);
 
         let tailcoords = [
@@ -3431,7 +3431,7 @@ describe('Vector Tag Tests', function () {
         headcoords[0] = headcoords[0].add(moveX).simplify();
         headcoords[1] = headcoords[1].add(moveY).simplify();
 
-        components['/_vector1'].moveVector({
+        await components['/_vector1'].moveVector({
           tailcoords: tailcoords,
           headcoords: headcoords
         });
@@ -3456,7 +3456,7 @@ describe('Vector Tag Tests', function () {
       })
 
       cy.log('move copied head moves vector')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let components = Object.assign({}, win.state.components);
 
         let tailx = 5;
@@ -3466,7 +3466,7 @@ describe('Vector Tag Tests', function () {
         let displacementx = headx - tailx;
         let displacementy = heady - taily;
 
-        head.movePoint({ x: headx, y: heady });
+        await head.movePoint({ x: headx, y: heady });
 
         expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
         expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
@@ -3481,7 +3481,7 @@ describe('Vector Tag Tests', function () {
       })
 
       cy.log('move copied tail')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let components = Object.assign({}, win.state.components);
 
         let tailx = -7;
@@ -3491,7 +3491,7 @@ describe('Vector Tag Tests', function () {
         let displacementx = headx - tailx;
         let displacementy = heady - taily;
 
-        tail.movePoint({ x: tailx, y: taily });
+        await tail.movePoint({ x: tailx, y: taily });
 
         expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
         expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
@@ -3506,7 +3506,7 @@ describe('Vector Tag Tests', function () {
       })
 
       cy.log('move displacement')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let components = Object.assign({}, win.state.components);
 
         let headx = -3;
@@ -3521,7 +3521,7 @@ describe('Vector Tag Tests', function () {
         let tailx = headx - displacementx;
         let taily = heady - displacementy;
 
-        displacement.moveVector({
+        await displacement.moveVector({
           tailcoords: [displacementtailx, displacementtaily],
           headcoords: [displacementheadx, displacementheady]
         });
@@ -3541,7 +3541,7 @@ describe('Vector Tag Tests', function () {
   })
 
   it('vector with x, y and head, head/tail/displacement copied', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -3550,9 +3550,9 @@ describe('Vector Tag Tests', function () {
   </graph>
 
   <graph>
-  <copy prop="tail" tname="_vector1" />
-  <copy prop="head" tname="_vector1" />
-  <copy prop="displacement" tname="_vector1" />
+  <copy prop="tail" target="_vector1" />
+  <copy prop="head" target="_vector1" />
+  <copy prop="displacement" target="_vector1" />
   </graph>
   `}, "*");
     });
@@ -3560,13 +3560,13 @@ describe('Vector Tag Tests', function () {
     // to wait for page to load
     cy.get('#\\/_text1').should('have.text', 'a');
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let tail = components['/_copy1'].replacements[0];
       let head = components['/_copy2'].replacements[0];
       let displacement = components['/_copy3'].replacements[0];
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let components = Object.assign({}, win.state.components);
         let tailx = 4;
         let taily = 1;
@@ -3589,7 +3589,7 @@ describe('Vector Tag Tests', function () {
       })
 
       cy.log('move vector up and to the right')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let components = Object.assign({}, win.state.components);
 
         let tailcoords = [
@@ -3609,7 +3609,7 @@ describe('Vector Tag Tests', function () {
         headcoords[0] = headcoords[0].add(moveX).simplify();
         headcoords[1] = headcoords[1].add(moveY).simplify();
 
-        components['/_vector1'].moveVector({
+        await components['/_vector1'].moveVector({
           tailcoords: tailcoords,
           headcoords: headcoords
         });
@@ -3634,7 +3634,7 @@ describe('Vector Tag Tests', function () {
       })
 
       cy.log('move copied head moves vector')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let components = Object.assign({}, win.state.components);
 
         let tailx = 5;
@@ -3644,7 +3644,7 @@ describe('Vector Tag Tests', function () {
         let displacementx = headx - tailx;
         let displacementy = heady - taily;
 
-        head.movePoint({ x: headx, y: heady });
+        await head.movePoint({ x: headx, y: heady });
 
         expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
         expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
@@ -3659,7 +3659,7 @@ describe('Vector Tag Tests', function () {
       })
 
       cy.log('move copied tail')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let components = Object.assign({}, win.state.components);
 
         let tailx = -7;
@@ -3669,7 +3669,7 @@ describe('Vector Tag Tests', function () {
         let displacementx = headx - tailx;
         let displacementy = heady - taily;
 
-        tail.movePoint({ x: tailx, y: taily });
+        await tail.movePoint({ x: tailx, y: taily });
 
         expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
         expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
@@ -3684,7 +3684,7 @@ describe('Vector Tag Tests', function () {
       })
 
       cy.log('move displacement')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let components = Object.assign({}, win.state.components);
 
         let headx = -3;
@@ -3699,7 +3699,7 @@ describe('Vector Tag Tests', function () {
         let tailx = headx - displacementx;
         let taily = heady - displacementy;
 
-        displacement.moveVector({
+        await displacement.moveVector({
           tailcoords: [displacementtailx, displacementtaily],
           headcoords: [displacementheadx, displacementheady]
         });
@@ -3719,7 +3719,7 @@ describe('Vector Tag Tests', function () {
   })
 
   it('vector with y and head, head/tail/displacement copied', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -3728,9 +3728,9 @@ describe('Vector Tag Tests', function () {
   </graph>
 
   <graph>
-  <copy prop="tail" tname="_vector1" />
-  <copy prop="head" tname="_vector1" />
-  <copy prop="displacement" tname="_vector1" />
+  <copy prop="tail" target="_vector1" />
+  <copy prop="head" target="_vector1" />
+  <copy prop="displacement" target="_vector1" />
   </graph>
   `}, "*");
     });
@@ -3738,13 +3738,13 @@ describe('Vector Tag Tests', function () {
     // to wait for page to load
     cy.get('#\\/_text1').should('have.text', 'a');
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let tail = components['/_copy1'].replacements[0];
       let head = components['/_copy2'].replacements[0];
       let displacement = components['/_copy3'].replacements[0];
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let components = Object.assign({}, win.state.components);
         let tailx = -4;
         let taily = 1;
@@ -3767,7 +3767,7 @@ describe('Vector Tag Tests', function () {
       })
 
       cy.log('move vector up and to the right')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let components = Object.assign({}, win.state.components);
 
         let tailcoords = [
@@ -3787,7 +3787,7 @@ describe('Vector Tag Tests', function () {
         headcoords[0] = headcoords[0].add(moveX).simplify();
         headcoords[1] = headcoords[1].add(moveY).simplify();
 
-        components['/_vector1'].moveVector({
+        await components['/_vector1'].moveVector({
           tailcoords: tailcoords,
           headcoords: headcoords
         });
@@ -3812,7 +3812,7 @@ describe('Vector Tag Tests', function () {
       })
 
       cy.log('move copied head moves vector')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let components = Object.assign({}, win.state.components);
 
         let tailx = -3;
@@ -3822,7 +3822,7 @@ describe('Vector Tag Tests', function () {
         let displacementx = headx - tailx;
         let displacementy = heady - taily;
 
-        head.movePoint({ x: headx, y: heady });
+        await head.movePoint({ x: headx, y: heady });
 
         expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
         expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
@@ -3837,7 +3837,7 @@ describe('Vector Tag Tests', function () {
       })
 
       cy.log('move copied tail')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let components = Object.assign({}, win.state.components);
 
         let tailx = -7;
@@ -3847,7 +3847,7 @@ describe('Vector Tag Tests', function () {
         let displacementx = headx - tailx;
         let displacementy = heady - taily;
 
-        tail.movePoint({ x: tailx, y: taily });
+        await tail.movePoint({ x: tailx, y: taily });
 
         expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
         expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
@@ -3862,7 +3862,7 @@ describe('Vector Tag Tests', function () {
       })
 
       cy.log('move displacement')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let components = Object.assign({}, win.state.components);
 
         let headx = -3;
@@ -3877,7 +3877,7 @@ describe('Vector Tag Tests', function () {
         let tailx = headx - displacementx;
         let taily = heady - displacementy;
 
-        displacement.moveVector({
+        await displacement.moveVector({
           tailcoords: [displacementtailx, displacementtaily],
           headcoords: [displacementheadx, displacementheady]
         });
@@ -3898,7 +3898,7 @@ describe('Vector Tag Tests', function () {
 
 
   it('vector with just head, head/tail/displacement copied', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -3907,9 +3907,9 @@ describe('Vector Tag Tests', function () {
   </graph>
 
   <graph>
-  <copy prop="tail" tname="_vector1" />
-  <copy prop="head" tname="_vector1" />
-  <copy prop="displacement" tname="_vector1" />
+  <copy prop="tail" target="_vector1" />
+  <copy prop="head" target="_vector1" />
+  <copy prop="displacement" target="_vector1" />
   </graph>
   `}, "*");
     });
@@ -3917,13 +3917,13 @@ describe('Vector Tag Tests', function () {
     // to wait for page to load
     cy.get('#\\/_text1').should('have.text', 'a');
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let tail = components['/_copy1'].replacements[0];
       let head = components['/_copy2'].replacements[0];
       let displacement = components['/_copy3'].replacements[0];
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let tailx = 0;
         let taily = 0;
         let headx = -4;
@@ -3945,7 +3945,7 @@ describe('Vector Tag Tests', function () {
       })
 
       cy.log('move vector up and to the right')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
 
         let tailcoords = [
           components['/_vector1'].stateValues.tail[0],
@@ -3964,7 +3964,7 @@ describe('Vector Tag Tests', function () {
         headcoords[0] = headcoords[0].add(moveX).simplify();
         headcoords[1] = headcoords[1].add(moveY).simplify();
 
-        components['/_vector1'].moveVector({
+        await components['/_vector1'].moveVector({
           tailcoords: tailcoords,
           headcoords: headcoords
         });
@@ -3989,7 +3989,7 @@ describe('Vector Tag Tests', function () {
       })
 
       cy.log('move copied tail keeps head fixed')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
 
         let tailx = -7;
         let taily = 5;
@@ -3999,7 +3999,7 @@ describe('Vector Tag Tests', function () {
         let displacementx = headx - tailx;
         let displacementy = heady - taily;
 
-        tail.movePoint({ x: tailx, y: taily });
+        await tail.movePoint({ x: tailx, y: taily });
 
         expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
         expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
@@ -4014,7 +4014,7 @@ describe('Vector Tag Tests', function () {
       })
 
       cy.log('move copied head')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
 
         let tailx = -7;
         let taily = 5;
@@ -4023,7 +4023,7 @@ describe('Vector Tag Tests', function () {
         let displacementx = headx - tailx;
         let displacementy = heady - taily;
 
-        head.movePoint({ x: headx, y: heady });
+        await head.movePoint({ x: headx, y: heady });
 
         expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
         expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
@@ -4039,7 +4039,7 @@ describe('Vector Tag Tests', function () {
 
 
       cy.log('move displacement')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
 
         let tailx = -7;
         let taily = 5;
@@ -4053,7 +4053,7 @@ describe('Vector Tag Tests', function () {
         let headx = tailx + displacementx;
         let heady = taily + displacementy;
 
-        displacement.moveVector({
+        await displacement.moveVector({
           tailcoords: [displacementtailx, displacementtaily],
           headcoords: [displacementheadx, displacementheady]
         });
@@ -4073,7 +4073,7 @@ describe('Vector Tag Tests', function () {
   })
 
   it('vector with head and tail, head/tail/displacement copied', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -4082,9 +4082,9 @@ describe('Vector Tag Tests', function () {
   </graph>
 
   <graph>
-  <copy prop="tail" tname="_vector1" />
-  <copy prop="head" tname="_vector1" />
-  <copy prop="displacement" tname="_vector1" />
+  <copy prop="tail" target="_vector1" />
+  <copy prop="head" target="_vector1" />
+  <copy prop="displacement" target="_vector1" />
   </graph>
   `}, "*");
     });
@@ -4092,13 +4092,13 @@ describe('Vector Tag Tests', function () {
     // to wait for page to load
     cy.get('#\\/_text1').should('have.text', 'a');
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let tail = components['/_copy1'].replacements[0];
       let head = components['/_copy2'].replacements[0];
       let displacement = components['/_copy3'].replacements[0];
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let tailx = 4;
         let taily = 1;
         let headx = -4;
@@ -4120,7 +4120,7 @@ describe('Vector Tag Tests', function () {
       })
 
       cy.log('move vector up and to the right')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
 
         let tailcoords = [
           components['/_vector1'].stateValues.tail[0],
@@ -4139,7 +4139,7 @@ describe('Vector Tag Tests', function () {
         headcoords[0] = headcoords[0].add(moveX).simplify();
         headcoords[1] = headcoords[1].add(moveY).simplify();
 
-        components['/_vector1'].moveVector({
+        await components['/_vector1'].moveVector({
           tailcoords: tailcoords,
           headcoords: headcoords
         });
@@ -4164,7 +4164,7 @@ describe('Vector Tag Tests', function () {
       })
 
       cy.log('move copied tail keeps head fixed')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
 
         let tailx = -7;
         let taily = 5;
@@ -4174,7 +4174,7 @@ describe('Vector Tag Tests', function () {
         let displacementx = headx - tailx;
         let displacementy = heady - taily;
 
-        tail.movePoint({ x: tailx, y: taily });
+        await tail.movePoint({ x: tailx, y: taily });
 
         expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
         expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
@@ -4189,7 +4189,7 @@ describe('Vector Tag Tests', function () {
       })
 
       cy.log('move copied head')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
 
         let tailx = -7;
         let taily = 5;
@@ -4198,7 +4198,7 @@ describe('Vector Tag Tests', function () {
         let displacementx = headx - tailx;
         let displacementy = heady - taily;
 
-        head.movePoint({ x: headx, y: heady });
+        await head.movePoint({ x: headx, y: heady });
 
         expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
         expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
@@ -4214,7 +4214,7 @@ describe('Vector Tag Tests', function () {
 
 
       cy.log('move displacement')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
 
         let tailx = -7;
         let taily = 5;
@@ -4228,7 +4228,7 @@ describe('Vector Tag Tests', function () {
         let headx = tailx + displacementx;
         let heady = taily + displacementy;
 
-        displacement.moveVector({
+        await displacement.moveVector({
           tailcoords: [displacementtailx, displacementtaily],
           headcoords: [displacementheadx, displacementheady]
         });
@@ -4248,7 +4248,7 @@ describe('Vector Tag Tests', function () {
   })
 
   it('vector with just tail, head/tail/displacement copied', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -4257,9 +4257,9 @@ describe('Vector Tag Tests', function () {
   </graph>
 
   <graph>
-  <copy prop="tail" tname="_vector1" />
-  <copy prop="head" tname="_vector1" />
-  <copy prop="displacement" tname="_vector1" />
+  <copy prop="tail" target="_vector1" />
+  <copy prop="head" target="_vector1" />
+  <copy prop="displacement" target="_vector1" />
   </graph>
   `}, "*");
     });
@@ -4267,13 +4267,13 @@ describe('Vector Tag Tests', function () {
     // to wait for page to load
     cy.get('#\\/_text1').should('have.text', 'a');
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let tail = components['/_copy1'].replacements[0];
       let head = components['/_copy2'].replacements[0];
       let displacement = components['/_copy3'].replacements[0];
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let components = Object.assign({}, win.state.components);
         let tailx = 3;
         let taily = 4;
@@ -4296,7 +4296,7 @@ describe('Vector Tag Tests', function () {
       })
 
       cy.log('move vector up and to the right')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let components = Object.assign({}, win.state.components);
 
         let tailcoords = [
@@ -4316,7 +4316,7 @@ describe('Vector Tag Tests', function () {
         headcoords[0] = headcoords[0].add(moveX).simplify();
         headcoords[1] = headcoords[1].add(moveY).simplify();
 
-        components['/_vector1'].moveVector({
+        await components['/_vector1'].moveVector({
           tailcoords: tailcoords,
           headcoords: headcoords
         });
@@ -4340,19 +4340,19 @@ describe('Vector Tag Tests', function () {
         expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
       })
 
-      cy.log('move copied tail')
-      cy.window().then((win) => {
+      cy.log('move copied tail, moves whole vector')
+      cy.window().then(async (win) => {
         let components = Object.assign({}, win.state.components);
 
         let tailx = -7;
         let taily = 5;
-        let headx = 7;
-        let heady = 6;
+        let headx = -6;
+        let heady = 5;
 
         let displacementx = headx - tailx;
         let displacementy = heady - taily;
 
-        tail.movePoint({ x: tailx, y: taily });
+        await tail.movePoint({ x: tailx, y: taily });
 
         expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
         expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
@@ -4367,7 +4367,7 @@ describe('Vector Tag Tests', function () {
       })
 
       cy.log('move copied head')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let components = Object.assign({}, win.state.components);
 
         let tailx = -7;
@@ -4377,7 +4377,7 @@ describe('Vector Tag Tests', function () {
         let displacementx = headx - tailx;
         let displacementy = heady - taily;
 
-        head.movePoint({ x: headx, y: heady });
+        await head.movePoint({ x: headx, y: heady });
 
         expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
         expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
@@ -4392,7 +4392,7 @@ describe('Vector Tag Tests', function () {
       })
 
       cy.log('move displacement')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let components = Object.assign({}, win.state.components);
 
         let tailx = -7;
@@ -4407,7 +4407,7 @@ describe('Vector Tag Tests', function () {
         let headx = tailx + displacementx;
         let heady = taily + displacementy;
 
-        displacement.moveVector({
+        await displacement.moveVector({
           tailcoords: [displacementtailx, displacementtaily],
           headcoords: [displacementheadx, displacementheady]
         });
@@ -4429,7 +4429,7 @@ describe('Vector Tag Tests', function () {
 
 
   it('copied vectors', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -4442,19 +4442,19 @@ describe('Vector Tag Tests', function () {
   </graph>
 
   <graph>
-    <copy tname="_vector1" />
-    <copy tname="_vector2" />
-    <copy tname="_vector3" />
+    <copy target="_vector1" />
+    <copy target="_vector2" />
+    <copy target="_vector3" />
   </graph>
 
-  <copy tname="_graph2" />
+  <copy target="_graph2" />
   `}, "*");
     });
 
     // to wait for page to load
     cy.get('#\\/_text1').should('have.text', 'a');
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let vector4 = components['/_copy1'].replacements[0];
       let vector5 = components['/_copy2'].replacements[0];
@@ -4472,7 +4472,7 @@ describe('Vector Tag Tests', function () {
       cy.log("initial state")
 
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let components = Object.assign({}, win.state.components);
         let v1tx = -1;
         let v1ty = 2;
@@ -4503,14 +4503,14 @@ describe('Vector Tag Tests', function () {
       })
 
       cy.log('move vector1')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let components = Object.assign({}, win.state.components);
 
         let v1tx = 5;
         let v1ty = -8;
         let v1hx = 4;
         let v1hy = -9;
-        components['/_vector1'].moveVector({
+        await components['/_vector1'].moveVector({
           tailcoords: [v1tx, v1ty],
           headcoords: [v1hx, v1hy]
         });
@@ -4537,14 +4537,14 @@ describe('Vector Tag Tests', function () {
       })
 
       cy.log('move vector4')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let components = Object.assign({}, win.state.components);
 
         let v1tx = 2;
         let v1ty = 6;
         let v1hx = -2;
         let v1hy = -4;
-        vector4.moveVector({
+        await vector4.moveVector({
           tailcoords: [v1tx, v1ty],
           headcoords: [v1hx, v1hy]
         });
@@ -4571,14 +4571,14 @@ describe('Vector Tag Tests', function () {
       })
 
       cy.log('move vector7')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let components = Object.assign({}, win.state.components);
 
         let v1tx = -3;
         let v1ty = 9;
         let v1hx = 6;
         let v1hy = -8;
-        vector7.moveVector({
+        await vector7.moveVector({
           tailcoords: [v1tx, v1ty],
           headcoords: [v1hx, v1hy]
         });
@@ -4605,7 +4605,7 @@ describe('Vector Tag Tests', function () {
       })
 
       cy.log('move vector2')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let components = Object.assign({}, win.state.components);
 
         let v2tx = -4;
@@ -4613,7 +4613,7 @@ describe('Vector Tag Tests', function () {
         let v2hx = 3;
         let v2hy = 5;
 
-        components['/_vector2'].moveVector({
+        await components['/_vector2'].moveVector({
           tailcoords: [v2tx, v2ty],
           headcoords: [v2hx, v2hy]
         });
@@ -4640,7 +4640,7 @@ describe('Vector Tag Tests', function () {
       })
 
       cy.log('move vector5')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let components = Object.assign({}, win.state.components);
 
         let v2tx = 6;
@@ -4648,7 +4648,7 @@ describe('Vector Tag Tests', function () {
         let v2hx = 1;
         let v2hy = -7;
 
-        vector5.moveVector({
+        await vector5.moveVector({
           tailcoords: [v2tx, v2ty],
           headcoords: [v2hx, v2hy]
         });
@@ -4675,7 +4675,7 @@ describe('Vector Tag Tests', function () {
       })
 
       cy.log('move vector8')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let components = Object.assign({}, win.state.components);
 
         let v2tx = -3;
@@ -4683,7 +4683,7 @@ describe('Vector Tag Tests', function () {
         let v2hx = 5;
         let v2hy = -9;
 
-        vector8.moveVector({
+        await vector8.moveVector({
           tailcoords: [v2tx, v2ty],
           headcoords: [v2hx, v2hy]
         });
@@ -4710,7 +4710,7 @@ describe('Vector Tag Tests', function () {
       })
 
       cy.log('move vector3')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let components = Object.assign({}, win.state.components);
 
         let v3tx = 6;
@@ -4718,7 +4718,7 @@ describe('Vector Tag Tests', function () {
         let v3hx = -1;
         let v3hy = 0;
 
-        components['/_vector3'].moveVector({
+        await components['/_vector3'].moveVector({
           tailcoords: [v3tx, v3ty],
           headcoords: [v3hx, v3hy]
         });
@@ -4745,7 +4745,7 @@ describe('Vector Tag Tests', function () {
       })
 
       cy.log('move vector6')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let components = Object.assign({}, win.state.components);
 
         let v3tx = 3;
@@ -4753,7 +4753,7 @@ describe('Vector Tag Tests', function () {
         let v3hx = -7;
         let v3hy = -2;
 
-        vector6.moveVector({
+        await vector6.moveVector({
           tailcoords: [v3tx, v3ty],
           headcoords: [v3hx, v3hy]
         });
@@ -4780,7 +4780,7 @@ describe('Vector Tag Tests', function () {
       })
 
       cy.log('move vector9')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let components = Object.assign({}, win.state.components);
 
         let v3tx = -2;
@@ -4788,7 +4788,7 @@ describe('Vector Tag Tests', function () {
         let v3hx = 5;
         let v3hy = -6;
 
-        vector9.moveVector({
+        await vector9.moveVector({
           tailcoords: [v3tx, v3ty],
           headcoords: [v3hx, v3hy]
         });
@@ -4819,7 +4819,7 @@ describe('Vector Tag Tests', function () {
   })
 
   it('copied vectors and displacements', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -4828,15 +4828,15 @@ describe('Vector Tag Tests', function () {
   </graph>
   
   <graph>
-  <copy tname="_vector1" />
+  <copy target="_vector1" />
   </graph>
   
   <graph>
-  <copy tname="_vector2" />
+  <copy target="_vector2" />
   </graph>
 
   <graph>
-  <copy prop="displacement" tname="_vector1" />
+  <copy prop="displacement" target="_vector1" />
   </graph>
   `}, "*");
     });
@@ -4845,7 +4845,7 @@ describe('Vector Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');
 
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let vector3 = components['/_copy1'].replacements[0];
       let vector4 = components['/_copy2'].replacements[0];
@@ -4855,7 +4855,7 @@ describe('Vector Tag Tests', function () {
       let displacements = [vector4.componentName, vector5.componentName];
 
       cy.log("initial state")
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let components = Object.assign({}, win.state.components);
         let vector_tx = 0;
         let vector_ty = 0;
@@ -4883,7 +4883,7 @@ describe('Vector Tag Tests', function () {
       })
 
       cy.log("move vectors")
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let components = Object.assign({}, win.state.components);
         let txs = [-4, 7]
         let tys = [9, 3];
@@ -4897,7 +4897,7 @@ describe('Vector Tag Tests', function () {
           let vector_hx = hxs[i];
           let vector_hy = hys[i];
 
-          components[vectors[i]].moveVector({
+          await components[vectors[i]].moveVector({
             tailcoords: [vector_tx, vector_ty],
             headcoords: [vector_hx, vector_hy]
           });
@@ -4924,7 +4924,7 @@ describe('Vector Tag Tests', function () {
       })
 
       cy.log("move displacements")
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let components = Object.assign({}, win.state.components);
 
         let vector_tx = 7;
@@ -4948,7 +4948,7 @@ describe('Vector Tag Tests', function () {
           let vector_hx = vector_tx + displacement_x;
           let vector_hy = vector_ty + displacement_y;
 
-          components[displacements[i]].moveVector({
+          await components[displacements[i]].moveVector({
             tailcoords: [dtail_xs[i], dtail_ys[i]],
             headcoords: [dhead_xs[i], dhead_ys[i]]
           });
@@ -4970,7 +4970,7 @@ describe('Vector Tag Tests', function () {
   })
 
   it('constrain to vector', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -4981,7 +4981,7 @@ describe('Vector Tag Tests', function () {
 
   <point x="-5" y="2">
     <constraints>
-      <constrainTo><copy tname="_vector1" /></constrainTo>
+      <constrainTo><copy target="_vector1" /></constrainTo>
     </constraints>
   </point>
   </graph>
@@ -4992,7 +4992,7 @@ describe('Vector Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');
 
     cy.log('check initial values')
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([1, 2]);
       expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([3, 4]);
@@ -5001,9 +5001,9 @@ describe('Vector Tag Tests', function () {
     });
 
     cy.log('move vector to 45 degrees')
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components['/_vector1'].moveVector({
+      await components['/_vector1'].moveVector({
         tailcoords: [-4, 4],
         headcoords: [4, -4],
       })
@@ -5026,12 +5026,12 @@ describe('Vector Tag Tests', function () {
     });
 
     cy.log('move point')
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let xorig = 10;
       let yorig = 1;
 
-      components['/_point3'].movePoint({ x: xorig, y: yorig });
+      await components['/_point3'].movePoint({ x: xorig, y: yorig });
 
       let temp = (xorig - yorig) / 2;
       if (temp > 4) {
@@ -5047,12 +5047,12 @@ describe('Vector Tag Tests', function () {
     });
 
     cy.log('move point')
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let xorig = 9;
       let yorig = 7;
 
-      components['/_point3'].movePoint({ x: xorig, y: yorig });
+      await components['/_point3'].movePoint({ x: xorig, y: yorig });
 
       let temp = (xorig - yorig) / 2;
       if (temp > 4) {
@@ -5068,12 +5068,12 @@ describe('Vector Tag Tests', function () {
     });
 
     cy.log('move point')
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let xorig = -9;
       let yorig = 7;
 
-      components['/_point3'].movePoint({ x: xorig, y: yorig });
+      await components['/_point3'].movePoint({ x: xorig, y: yorig });
 
       let temp = (xorig - yorig) / 2;
       if (temp > 4) {
@@ -5092,7 +5092,7 @@ describe('Vector Tag Tests', function () {
   })
 
   it('attract to vector', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -5103,7 +5103,7 @@ describe('Vector Tag Tests', function () {
 
   <point x="-5" y="2">
     <constraints>
-      <attractTo><copy tname="_vector1" /></attractTo>
+      <attractTo><copy target="_vector1" /></attractTo>
     </constraints>
   </point>
   </graph>
@@ -5114,7 +5114,7 @@ describe('Vector Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');
 
     cy.log('check initial values')
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([1, 2]);
       expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([3, 4]);
@@ -5123,9 +5123,9 @@ describe('Vector Tag Tests', function () {
     });
 
     cy.log('move vector to 45 degrees')
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components['/_vector1'].moveVector({
+      await components['/_vector1'].moveVector({
         tailcoords: [-4, 4],
         headcoords: [4, -4],
       })
@@ -5136,12 +5136,12 @@ describe('Vector Tag Tests', function () {
     });
 
     cy.log('move point')
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let xorig = 3.3;
       let yorig = -3.6;
 
-      components['/_point3'].movePoint({ x: xorig, y: yorig });
+      await components['/_point3'].movePoint({ x: xorig, y: yorig });
 
       let temp = (xorig - yorig) / 2;
       if (temp > 4) {
@@ -5157,24 +5157,24 @@ describe('Vector Tag Tests', function () {
     });
 
     cy.log('move point')
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let xorig = 4.3;
       let yorig = -4.6;
 
-      components['/_point3'].movePoint({ x: xorig, y: yorig });
+      await components['/_point3'].movePoint({ x: xorig, y: yorig });
 
       expect(components['/_point3'].stateValues.xs[0].tree).closeTo(4.3, 1E-12);
       expect(components['/_point3'].stateValues.xs[1].tree).closeTo(-4.6, 1E-12);
     });
 
     cy.log('move point')
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let xorig = -2.4;
       let yorig = 2.8;
 
-      components['/_point3'].movePoint({ x: xorig, y: yorig });
+      await components['/_point3'].movePoint({ x: xorig, y: yorig });
 
       let temp = (xorig - yorig) / 2;
       if (temp > 4) {
@@ -5190,12 +5190,12 @@ describe('Vector Tag Tests', function () {
     });
 
     cy.log('move point')
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let xorig = -4.2;
       let yorig = 4.3;
 
-      components['/_point3'].movePoint({ x: xorig, y: yorig });
+      await components['/_point3'].movePoint({ x: xorig, y: yorig });
 
       let temp = (xorig - yorig) / 2;
       if (temp > 4) {
@@ -5213,17 +5213,16 @@ describe('Vector Tag Tests', function () {
 
   })
 
-
   it('constrain to vector, different scales from graph', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
   <graph xmin="-110" xmax="110" ymin="-0.11" ymax="0.11">
     <vector head="(-1,-0.05)" tail="(1,0.05)" name="l" />
     <point x="100" y="0" name="P">
-      <constraints>
-        <constrainTo><copy tname="l" /></constrainTo>
+      <constraints scalesFromGraph="_graph1">
+        <constrainTo><copy target="l" /></constrainTo>
       </constraints>
     </point>
   </graph>
@@ -5234,7 +5233,7 @@ describe('Vector Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');
 
     cy.log(`point on vector, close to origin`);
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let x = components['/P'].stateValues.xs[0].tree;
       let y = components['/P'].stateValues.xs[1].tree;
@@ -5246,9 +5245,9 @@ describe('Vector Tag Tests', function () {
     })
 
     cy.log(`move point`);
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components['/P'].movePoint({ x: -100, y: 0.05 });
+      await components['/P'].movePoint({ x: -100, y: 0.05 });
       let x = components['/P'].stateValues.xs[0].tree;
       let y = components['/P'].stateValues.xs[1].tree;
       expect(y).lessThan(0.05);
@@ -5257,9 +5256,9 @@ describe('Vector Tag Tests', function () {
     })
 
     cy.log(`move point past end`);
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components['/P'].movePoint({ x: -100, y: 0.1 });
+      await components['/P'].movePoint({ x: -100, y: 0.1 });
       let x = components['/P'].stateValues.xs[0].tree;
       let y = components['/P'].stateValues.xs[1].tree;
       expect(y).eq(0.05);
@@ -5269,11 +5268,11 @@ describe('Vector Tag Tests', function () {
   });
 
   it('two update paths through vectors', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
-  <extract prop="y"><copy prop="head" tname="original" /></extract>
+  <extract prop="y"><copy prop="head" target="original" /></extract>
   <point name="zeroFixed" fixed>(0,0)</point>
   <mathinput name="a" prefill="2" modifyIndirectly="false" />
   <graph>
@@ -5289,7 +5288,7 @@ describe('Vector Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');
 
     cy.log('check initial values')
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/original'].stateValues.tail.map(x => x.tree)).eqls([0, 0]);
       expect(components['/original'].stateValues.head.map(x => x.tree)).eqls([1, 3]);
@@ -5298,10 +5297,10 @@ describe('Vector Tag Tests', function () {
     });
 
     cy.log('move original vector')
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
 
-      components['/original'].moveVector({ headcoords: [-5, 1] })
+      await components['/original'].moveVector({ headcoords: [-5, 1] })
       expect(components['/original'].stateValues.tail.map(x => x.tree)).eqls([0, 0]);
       expect(components['/original'].stateValues.head.map(x => x.tree)).eqls([-5, 1]);
       expect(components['/multiplied'].stateValues.tail.map(x => x.tree)).eqls([0, 0]);
@@ -5309,10 +5308,10 @@ describe('Vector Tag Tests', function () {
     });
 
     cy.log('move multiplied vector')
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
 
-      components['/multiplied'].moveVector({ headcoords: [6, -8] })
+      await components['/multiplied'].moveVector({ headcoords: [6, -8] })
       expect(components['/original'].stateValues.tail.map(x => x.tree)).eqls([0, 0]);
       expect(components['/original'].stateValues.head.map(x => x.tree)).eqls([3, -4]);
       expect(components['/multiplied'].stateValues.tail.map(x => x.tree)).eqls([0, 0]);
@@ -5321,7 +5320,7 @@ describe('Vector Tag Tests', function () {
 
     cy.log("Change factor");
     cy.get('#\\/a textarea').type(`{end}{backspace}-3{enter}`, { force: true });
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
 
       expect(components['/original'].stateValues.tail.map(x => x.tree)).eqls([0, 0]);
@@ -5331,10 +5330,10 @@ describe('Vector Tag Tests', function () {
     });
 
     cy.log('move multiplied vector again')
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
 
-      components['/multiplied'].moveVector({ headcoords: [-6, -3] })
+      await components['/multiplied'].moveVector({ headcoords: [-6, -3] })
       expect(components['/original'].stateValues.tail.map(x => x.tree)).eqls([0, 0]);
       expect(components['/original'].stateValues.head.map(x => x.tree)).eqls([2, 1]);
       expect(components['/multiplied'].stateValues.tail.map(x => x.tree)).eqls([0, 0]);
@@ -5345,7 +5344,7 @@ describe('Vector Tag Tests', function () {
   })
 
   it('display vector sum triangle', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -5371,7 +5370,7 @@ describe('Vector Tag Tests', function () {
     let wHead = w.map((x, i) => x + wTail[i]);
 
     cy.log('check initial values')
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
 
       expect(components['/u'].stateValues.tail.map(x => x.tree)).eqls([...uTail]);
@@ -5386,12 +5385,12 @@ describe('Vector Tag Tests', function () {
     });
 
     cy.log('moving tail of v just moves head of u')
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       vTail = [-3, 2];
       uHead = vTail;
 
-      components['/v'].moveVector({ tailcoords: vTail })
+      await components['/v'].moveVector({ tailcoords: vTail })
 
       u = uHead.map((x, i) => x - uTail[i]);
 
@@ -5409,13 +5408,13 @@ describe('Vector Tag Tests', function () {
     });
 
     cy.log('moving head of u keeps v displacement fixed')
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
 
       uHead = [7, 1];
       vTail = uHead;
 
-      components['/u'].moveVector({ headcoords: uHead })
+      await components['/u'].moveVector({ headcoords: uHead })
 
       u = uHead.map((x, i) => x - uTail[i]);
 
@@ -5437,12 +5436,12 @@ describe('Vector Tag Tests', function () {
     });
 
     cy.log('moving tail of u moves tail of w')
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
 
       uTail = [3, 4];
 
-      components['/u'].moveVector({ tailcoords: uTail })
+      await components['/u'].moveVector({ tailcoords: uTail })
 
       u = uHead.map((x, i) => x - uTail[i]);
 
@@ -5461,12 +5460,12 @@ describe('Vector Tag Tests', function () {
     });
 
     cy.log('moving tail of w moves tail of u')
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
 
       wTail = [-1, 7];
 
-      components['/w'].moveVector({ tailcoords: wTail })
+      await components['/w'].moveVector({ tailcoords: wTail })
 
       uTail = wTail;
 
@@ -5485,12 +5484,12 @@ describe('Vector Tag Tests', function () {
     });
 
     cy.log('moving head of w moves head of v')
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
 
       wHead = [-5, -4];
 
-      components['/w'].moveVector({ headcoords: wHead })
+      await components['/w'].moveVector({ headcoords: wHead })
 
       vHead = wHead;
       v = vHead.map((x, i) => x - vTail[i]);
@@ -5509,12 +5508,12 @@ describe('Vector Tag Tests', function () {
     });
 
     cy.log('moving head of v moves head of w')
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
 
       vHead = [4, -7];
 
-      components['/v'].moveVector({ headcoords: vHead })
+      await components['/v'].moveVector({ headcoords: vHead })
 
       wHead = vHead;
       v = vHead.map((x, i) => x - vTail[i]);
@@ -5535,25 +5534,25 @@ describe('Vector Tag Tests', function () {
   });
 
   it('copy coordinates off vectors', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
   <graph>
   <vector name="u" tail="(1,5)" head="(7,3)" />
   </graph>
-  <p>x coordinate of u is <copy name="ux" prop="x" tname="u" /></p>
-  <p>y coordinate of u is <copy name="uy" prop="y" tname="u" /></p>
-  <p>x1 coordinate of u is <copy name="ux1" prop="x1" tname="u" /></p>
-  <p>x2 coordinate of u is <copy name="ux2" prop="x2" tname="u" /></p>
+  <p>x coordinate of u is <copy name="ux" prop="x" target="u" /></p>
+  <p>y coordinate of u is <copy name="uy" prop="y" target="u" /></p>
+  <p>x1 coordinate of u is <copy name="ux1" prop="x1" target="u" /></p>
+  <p>x2 coordinate of u is <copy name="ux2" prop="x2" target="u" /></p>
 
   <vector name="v" tail="(9,1,-3)" head="(-3,10,8)" />
-  <p>x coordinate of v is <copy name="vx" prop="x" tname="v" /></p>
-  <p>y coordinate of v is <copy name="vy" prop="y" tname="v" /></p>
-  <p>z coordinate of v is <copy name="vz" prop="z" tname="v" /></p>
-  <p>x1 coordinate of v is <copy name="vx1" prop="x1" tname="v" /></p>
-  <p>x2 coordinate of v is <copy name="vx2" prop="x2" tname="v" /></p>
-  <p>x3 coordinate of v is <copy name="vx3" prop="x3" tname="v" /></p>
+  <p>x coordinate of v is <copy name="vx" prop="x" target="v" /></p>
+  <p>y coordinate of v is <copy name="vy" prop="y" target="v" /></p>
+  <p>z coordinate of v is <copy name="vz" prop="z" target="v" /></p>
+  <p>x1 coordinate of v is <copy name="vx1" prop="x1" target="v" /></p>
+  <p>x2 coordinate of v is <copy name="vx2" prop="x2" target="v" /></p>
+  <p>x3 coordinate of v is <copy name="vx3" prop="x3" target="v" /></p>
   `}, "*");
     });
 
@@ -5567,7 +5566,7 @@ describe('Vector Tag Tests', function () {
     let vHead = [-3, 10, 8];
     let v = [vHead[0] - vTail[0], vHead[1] - vTail[1], vHead[2] - vTail[2]];
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
 
       expect(components['/u'].stateValues.tail.map(x => x.tree)).eqls([...uTail]);
@@ -5593,14 +5592,14 @@ describe('Vector Tag Tests', function () {
   });
 
   it('combining displacement components through copies', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
   <graph>
     <vector name="v1" tail="(1,2)" head="(3,5)" />
-    <copy name="v2" tname="v1" />
-    <copy name="v3" prop="displacement" tname="v1" />
+    <copy name="v2" target="v1" />
+    <copy name="v3" prop="displacement" target="v1" />
     <vector name="v4" displacement="($(v2{prop='y'}), $(v3{prop='x'}))" />
   </graph>
   `}, "*");
@@ -5616,7 +5615,7 @@ describe('Vector Tag Tests', function () {
     let t4x = 0, t4y = 0;
 
     cy.log("initial positions")
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
 
       expect(components['/v1'].stateValues.tail.map(x => x.tree)).eqls([t1x, t1y]);
@@ -5638,11 +5637,11 @@ describe('Vector Tag Tests', function () {
     });
 
     cy.log("move head of vector 1")
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
 
       let hx = 3, hy = 7;
-      components['/v1'].moveVector({ headcoords: [hx, hy] });
+      await components['/v1'].moveVector({ headcoords: [hx, hy] });
 
       x = hx - t1x;
       y = hy - t1y;
@@ -5666,11 +5665,11 @@ describe('Vector Tag Tests', function () {
     });
 
     cy.log("move tail of vector 1")
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
 
       let tx = -2, ty = -1;
-      components['/v1'].moveVector({ tailcoords: [tx, ty] });
+      await components['/v1'].moveVector({ tailcoords: [tx, ty] });
 
       x += t1x - tx;
       y += t1y - ty;
@@ -5696,11 +5695,11 @@ describe('Vector Tag Tests', function () {
     });
 
     cy.log("move head of vector 2")
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
 
       let hx = 4, hy = 1;
-      components['/v2'].replacements[0].moveVector({ headcoords: [hx, hy] });
+      await components['/v2'].replacements[0].moveVector({ headcoords: [hx, hy] });
 
       x = hx - t1x;
       y = hy - t1y;
@@ -5724,11 +5723,11 @@ describe('Vector Tag Tests', function () {
     });
 
     cy.log("move tail of vector 2")
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
 
       let tx = 5, ty = 7;
-      components['/v2'].replacements[0].moveVector({ tailcoords: [tx, ty] });
+      await components['/v2'].replacements[0].moveVector({ tailcoords: [tx, ty] });
 
       x += t1x - tx;
       y += t1y - ty;
@@ -5754,11 +5753,11 @@ describe('Vector Tag Tests', function () {
     });
 
     cy.log("move head of vector 3")
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
 
       let hx = -6, hy = 3;
-      components['/v3'].replacements[0].moveVector({ headcoords: [hx, hy] });
+      await components['/v3'].replacements[0].moveVector({ headcoords: [hx, hy] });
 
       x = hx - t3x;
       y = hy - t3y;
@@ -5782,11 +5781,11 @@ describe('Vector Tag Tests', function () {
     });
 
     cy.log("move tail of vector 3")
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
 
       let tx = -1, ty = 4;
-      components['/v3'].replacements[0].moveVector({ tailcoords: [tx, ty] });
+      await components['/v3'].replacements[0].moveVector({ tailcoords: [tx, ty] });
 
       x += t3x - tx;
       y += t3y - ty;
@@ -5812,11 +5811,11 @@ describe('Vector Tag Tests', function () {
     });
 
     cy.log("move head of vector 4")
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
 
       let hx = 6, hy = -2;
-      components['/v4'].moveVector({ headcoords: [hx, hy] });
+      await components['/v4'].moveVector({ headcoords: [hx, hy] });
 
       x = hy - t4y;
       y = hx - t4x;
@@ -5840,11 +5839,11 @@ describe('Vector Tag Tests', function () {
     });
 
     cy.log("move tail of vector 4")
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
 
       let tx = 7, ty = 2;
-      components['/v4'].moveVector({ tailcoords: [tx, ty] });
+      await components['/v4'].moveVector({ tailcoords: [tx, ty] });
 
       x += t4y - ty;
       y += t4x - tx;
@@ -5873,23 +5872,23 @@ describe('Vector Tag Tests', function () {
   })
 
   it('combining displacement components through copies 2', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
   <graph>
     <vector name="v1" tail="(1,2)" head="(3,5)" />
-    <copy name="v2" tname="v1" />
-    <copy name="v3" prop="displacement" tname="v1" />
+    <copy name="v2" target="v1" />
+    <copy name="v3" prop="displacement" target="v1" />
     <point name="v4displacementhead" hide>(
       <extract prop="y">
         <extract prop="head">
-          <copy prop="displacement" tname="v2" />
+          <copy prop="displacement" target="v2" />
         </extract>
       </extract>,
       <extract prop="x">
         <extract prop="head">
-          <copy prop="displacement" tname="v3" />
+          <copy prop="displacement" target="v3" />
         </extract>
       </extract>
     )</point>
@@ -5909,7 +5908,7 @@ describe('Vector Tag Tests', function () {
     let t4x = 0, t4y = 0;
 
     cy.log("initial positions")
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
 
       expect(components['/v1'].stateValues.tail.map(x => x.tree)).eqls([t1x, t1y]);
@@ -5931,11 +5930,11 @@ describe('Vector Tag Tests', function () {
     });
 
     cy.log("move head of vector 1")
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
 
       let hx = 3, hy = 7;
-      components['/v1'].moveVector({ headcoords: [hx, hy] });
+      await components['/v1'].moveVector({ headcoords: [hx, hy] });
 
       x = hx - t1x;
       y = hy - t1y;
@@ -5959,11 +5958,11 @@ describe('Vector Tag Tests', function () {
     });
 
     cy.log("move tail of vector 1")
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
 
       let tx = -2, ty = -1;
-      components['/v1'].moveVector({ tailcoords: [tx, ty] });
+      await components['/v1'].moveVector({ tailcoords: [tx, ty] });
 
       x += t1x - tx;
       y += t1y - ty;
@@ -5989,11 +5988,11 @@ describe('Vector Tag Tests', function () {
     });
 
     cy.log("move head of vector 2")
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
 
       let hx = 4, hy = 1;
-      components['/v2'].replacements[0].moveVector({ headcoords: [hx, hy] });
+      await components['/v2'].replacements[0].moveVector({ headcoords: [hx, hy] });
 
       x = hx - t1x;
       y = hy - t1y;
@@ -6017,11 +6016,11 @@ describe('Vector Tag Tests', function () {
     });
 
     cy.log("move tail of vector 2")
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
 
       let tx = 5, ty = 7;
-      components['/v2'].replacements[0].moveVector({ tailcoords: [tx, ty] });
+      await components['/v2'].replacements[0].moveVector({ tailcoords: [tx, ty] });
 
       x += t1x - tx;
       y += t1y - ty;
@@ -6047,11 +6046,11 @@ describe('Vector Tag Tests', function () {
     });
 
     cy.log("move head of vector 3")
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
 
       let hx = -6, hy = 3;
-      components['/v3'].replacements[0].moveVector({ headcoords: [hx, hy] });
+      await components['/v3'].replacements[0].moveVector({ headcoords: [hx, hy] });
 
       x = hx - t3x;
       y = hy - t3y;
@@ -6075,11 +6074,11 @@ describe('Vector Tag Tests', function () {
     });
 
     cy.log("move tail of vector 3")
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
 
       let tx = -1, ty = 4;
-      components['/v3'].replacements[0].moveVector({ tailcoords: [tx, ty] });
+      await components['/v3'].replacements[0].moveVector({ tailcoords: [tx, ty] });
 
       x += t3x - tx;
       y += t3y - ty;
@@ -6105,11 +6104,11 @@ describe('Vector Tag Tests', function () {
     });
 
     cy.log("move head of vector 4")
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
 
       let hx = 6, hy = -2;
-      components['/v4'].moveVector({ headcoords: [hx, hy] });
+      await components['/v4'].moveVector({ headcoords: [hx, hy] });
 
       x = hy - t4y;
       y = hx - t4x;
@@ -6133,11 +6132,11 @@ describe('Vector Tag Tests', function () {
     });
 
     cy.log("move tail of vector 4")
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
 
       let tx = 7, ty = 2;
-      components['/v4'].moveVector({ tailcoords: [tx, ty] });
+      await components['/v4'].moveVector({ tailcoords: [tx, ty] });
 
       x += t4y - ty;
       y += t4x - tx;
@@ -6166,14 +6165,14 @@ describe('Vector Tag Tests', function () {
   })
 
   it('combining components of head and tail through copies', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
   <graph>
   <vector name="v" tail="(1,2)" head="(-2,3)" />
-  <copy prop="head" name="vh" tname="v" />
-  <copy prop="tail" name="vt" tname="v" />
+  <copy prop="head" name="vh" target="v" />
+  <copy prop="tail" name="vt" target="v" />
   <point name="c" x="$(vh{prop='x'})" y="$(vt{prop='y'})"/>
   </graph>
   `}, "*");
@@ -6185,7 +6184,7 @@ describe('Vector Tag Tests', function () {
     let tx = 1, ty = 2, hx = -2, hy = 3;
 
     cy.log("initial positions")
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
 
       expect(components['/v'].stateValues.tail.map(x => x.tree)).eqls([tx, ty]);
@@ -6199,12 +6198,12 @@ describe('Vector Tag Tests', function () {
     });
 
     cy.log("move vector 1")
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
 
       tx = 3, ty = -1, hx = -4, hy = 7;
 
-      components['/v'].moveVector({ headcoords: [hx, hy], tailcoords: [tx, ty] });
+      await components['/v'].moveVector({ headcoords: [hx, hy], tailcoords: [tx, ty] });
 
       expect(components['/v'].stateValues.tail.map(x => x.tree)).eqls([tx, ty]);
       expect(components['/v'].stateValues.head.map(x => x.tree)).eqls([hx, hy]);
@@ -6218,12 +6217,12 @@ describe('Vector Tag Tests', function () {
 
 
     cy.log("move head point")
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
 
       hx = 2, hy = 9;
 
-      components['/vh'].replacements[0].movePoint({ x: hx, y: hy });
+      await components['/vh'].replacements[0].movePoint({ x: hx, y: hy });
 
       expect(components['/v'].stateValues.tail.map(x => x.tree)).eqls([tx, ty]);
       expect(components['/v'].stateValues.head.map(x => x.tree)).eqls([hx, hy]);
@@ -6237,12 +6236,12 @@ describe('Vector Tag Tests', function () {
 
 
     cy.log("move tail point")
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
 
       tx = -3, ty = 10;
 
-      components['/vt'].replacements[0].movePoint({ x: tx, y: ty });
+      await components['/vt'].replacements[0].movePoint({ x: tx, y: ty });
 
       expect(components['/v'].stateValues.tail.map(x => x.tree)).eqls([tx, ty]);
       expect(components['/v'].stateValues.head.map(x => x.tree)).eqls([hx, hy]);
@@ -6256,12 +6255,12 @@ describe('Vector Tag Tests', function () {
 
 
     cy.log("move combined point")
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
 
       hx = -6, ty = 0;
 
-      components['/c'].movePoint({ x: hx, y: ty });
+      await components['/c'].movePoint({ x: hx, y: ty });
 
       expect(components['/v'].stateValues.tail.map(x => x.tree)).eqls([tx, ty]);
       expect(components['/v'].stateValues.head.map(x => x.tree)).eqls([hx, hy]);
@@ -6278,7 +6277,7 @@ describe('Vector Tag Tests', function () {
   })
 
   it('updates depending on vector definition', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -6304,65 +6303,65 @@ describe('Vector Tag Tests', function () {
   </graph>
 
   <graph>
-  <copy prop="tail" name="tfvt" tname="vt" />
-  <copy prop="head" name="hfvt" tname="vt" />
-  <copy prop="displacement" name="dfvt" tname="vt" />
+  <copy prop="tail" name="tfvt" target="vt" />
+  <copy prop="head" name="hfvt" target="vt" />
+  <copy prop="displacement" name="dfvt" target="vt" />
 
-  <copy prop="tail" name="tfvh" tname="vh" />
-  <copy prop="head" name="hfvh" tname="vh" />
-  <copy prop="displacement" name="dfvh" tname="vh" />
+  <copy prop="tail" name="tfvh" target="vh" />
+  <copy prop="head" name="hfvh" target="vh" />
+  <copy prop="displacement" name="dfvh" target="vh" />
 
-  <copy prop="tail" name="tfvd" tname="vd" />
-  <copy prop="head" name="hfvd" tname="vd" />
-  <copy prop="displacement" name="dfvd" tname="vd" />
+  <copy prop="tail" name="tfvd" target="vd" />
+  <copy prop="head" name="hfvd" target="vd" />
+  <copy prop="displacement" name="dfvd" target="vd" />
 
-  <copy prop="tail" name="tfvth" tname="vth" />
-  <copy prop="head" name="hfvth" tname="vth" />
-  <copy prop="displacement" name="dfvth" tname="vth" />
+  <copy prop="tail" name="tfvth" target="vth" />
+  <copy prop="head" name="hfvth" target="vth" />
+  <copy prop="displacement" name="dfvth" target="vth" />
 
-  <copy prop="tail" name="tfvtd" tname="vtd" />
-  <copy prop="head" name="hfvtd" tname="vtd" />
-  <copy prop="displacement" name="dfvtd" tname="vtd" />
+  <copy prop="tail" name="tfvtd" target="vtd" />
+  <copy prop="head" name="hfvtd" target="vtd" />
+  <copy prop="displacement" name="dfvtd" target="vtd" />
 
-  <copy prop="tail" name="tfvhd" tname="vhd" />
-  <copy prop="head" name="hfvhd" tname="vhd" />
-  <copy prop="displacement" name="dfvhd" tname="vhd" />
+  <copy prop="tail" name="tfvhd" target="vhd" />
+  <copy prop="head" name="hfvhd" target="vhd" />
+  <copy prop="displacement" name="dfvhd" target="vhd" />
 
   </graph>
 
   <graph>
-  <copy name="vt2" tname="vt" />
-  <copy name="vh2" tname="vh" />
-  <copy name="vd2" tname="vd" />
-  <copy name="vth2" tname="vth" />
-  <copy name="vtd2" tname="vtd" />
-  <copy name="vhd2" tname="vhd" />
+  <copy name="vt2" target="vt" />
+  <copy name="vh2" target="vh" />
+  <copy name="vd2" target="vd" />
+  <copy name="vth2" target="vth" />
+  <copy name="vtd2" target="vtd" />
+  <copy name="vhd2" target="vhd" />
   </graph>
 
   <graph>
-  <copy prop="tail" name="tfvt2" tname="vt2" />
-  <copy prop="head" name="hfvt2" tname="vt2" />
-  <copy prop="displacement" name="dfvt2" tname="vt2" />
+  <copy prop="tail" name="tfvt2" target="vt2" />
+  <copy prop="head" name="hfvt2" target="vt2" />
+  <copy prop="displacement" name="dfvt2" target="vt2" />
 
-  <copy prop="tail" name="tfvh2" tname="vh2" />
-  <copy prop="head" name="hfvh2" tname="vh2" />
-  <copy prop="displacement" name="dfvh2" tname="vh2" />
+  <copy prop="tail" name="tfvh2" target="vh2" />
+  <copy prop="head" name="hfvh2" target="vh2" />
+  <copy prop="displacement" name="dfvh2" target="vh2" />
 
-  <copy prop="tail" name="tfvd2" tname="vd2" />
-  <copy prop="head" name="hfvd2" tname="vd2" />
-  <copy prop="displacement" name="dfvd2" tname="vd2" />
+  <copy prop="tail" name="tfvd2" target="vd2" />
+  <copy prop="head" name="hfvd2" target="vd2" />
+  <copy prop="displacement" name="dfvd2" target="vd2" />
 
-  <copy prop="tail" name="tfvth2" tname="vth2" />
-  <copy prop="head" name="hfvth2" tname="vth2" />
-  <copy prop="displacement" name="dfvth2" tname="vth2" />
+  <copy prop="tail" name="tfvth2" target="vth2" />
+  <copy prop="head" name="hfvth2" target="vth2" />
+  <copy prop="displacement" name="dfvth2" target="vth2" />
 
-  <copy prop="tail" name="tfvtd2" tname="vtd2" />
-  <copy prop="head" name="hfvtd2" tname="vtd2" />
-  <copy prop="displacement" name="dfvtd2" tname="vtd2" />
+  <copy prop="tail" name="tfvtd2" target="vtd2" />
+  <copy prop="head" name="hfvtd2" target="vtd2" />
+  <copy prop="displacement" name="dfvtd2" target="vtd2" />
 
-  <copy prop="tail" name="tfvhd2" tname="vhd2" />
-  <copy prop="head" name="hfvhd2" tname="vhd2" />
-  <copy prop="displacement" name="dfvhd2" tname="vhd2" />
+  <copy prop="tail" name="tfvhd2" target="vhd2" />
+  <copy prop="head" name="hfvhd2" target="vhd2" />
+  <copy prop="displacement" name="dfvhd2" target="vhd2" />
 
   </graph>
 
@@ -6399,7 +6398,7 @@ describe('Vector Tag Tests', function () {
     let tvhd = [hvhd[0] - dvhd[0], hvhd[1] - dvhd[1]];
 
     cy.log("Initial configuration")
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
 
       expect(components['/tvt'].stateValues.coords.simplify().tree).eqls(["vector", ...tvt]);
@@ -6511,7 +6510,7 @@ describe('Vector Tag Tests', function () {
     });
 
     cy.log("move tail of each vector directly")
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
 
       tvt = [-3, 5];
@@ -6521,12 +6520,12 @@ describe('Vector Tag Tests', function () {
       tvtd = [5, -9];
       tvhd = [-1, -6];
 
-      components['/vt'].moveVector({ tailcoords: tvt })
-      components['/vh'].moveVector({ tailcoords: tvh })
-      components['/vd'].moveVector({ tailcoords: tvd })
-      components['/vth'].moveVector({ tailcoords: tvth })
-      components['/vtd'].moveVector({ tailcoords: tvtd })
-      components['/vhd'].moveVector({ tailcoords: tvhd })
+      await components['/vt'].moveVector({ tailcoords: tvt })
+      await components['/vh'].moveVector({ tailcoords: tvh })
+      await components['/vd'].moveVector({ tailcoords: tvd })
+      await components['/vth'].moveVector({ tailcoords: tvth })
+      await components['/vtd'].moveVector({ tailcoords: tvtd })
+      await components['/vhd'].moveVector({ tailcoords: tvhd })
 
       // since moved tails directly, heads stay fixed and displacement changes
       dvt = [hvt[0] - tvt[0], hvt[1] - tvt[1]];
@@ -6645,7 +6644,7 @@ describe('Vector Tag Tests', function () {
     });
 
     cy.log("move head of each vector directly")
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
 
       hvt = [5, -1];
@@ -6655,12 +6654,12 @@ describe('Vector Tag Tests', function () {
       hvtd = [-6, -4];
       hvhd = [-4, 8];
 
-      components['/vt'].moveVector({ headcoords: hvt })
-      components['/vh'].moveVector({ headcoords: hvh })
-      components['/vd'].moveVector({ headcoords: hvd })
-      components['/vth'].moveVector({ headcoords: hvth })
-      components['/vtd'].moveVector({ headcoords: hvtd })
-      components['/vhd'].moveVector({ headcoords: hvhd })
+      await components['/vt'].moveVector({ headcoords: hvt })
+      await components['/vh'].moveVector({ headcoords: hvh })
+      await components['/vd'].moveVector({ headcoords: hvd })
+      await components['/vth'].moveVector({ headcoords: hvth })
+      await components['/vtd'].moveVector({ headcoords: hvtd })
+      await components['/vhd'].moveVector({ headcoords: hvhd })
 
       // since moved heads directly, tails stay fixed and displacement changes
       dvt = [hvt[0] - tvt[0], hvt[1] - tvt[1]];
@@ -6779,22 +6778,22 @@ describe('Vector Tag Tests', function () {
     });
 
     cy.log("move tail through defining point, if exists")
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
 
       tvt = [9, -1];
       tvth = [3, -2];
       tvtd = [-1, 5];
 
-      components['/tvt'].movePoint({ x: tvt[0], y: tvt[1] })
-      components['/tvth'].movePoint({ x: tvth[0], y: tvth[1] })
-      components['/tvtd'].movePoint({ x: tvtd[0], y: tvtd[1] })
+      await components['/tvt'].movePoint({ x: tvt[0], y: tvt[1] })
+      await components['/tvth'].movePoint({ x: tvth[0], y: tvth[1] })
+      await components['/tvtd'].movePoint({ x: tvtd[0], y: tvtd[1] })
 
-      // defined by tail only or tail/head, head stays fixed and displacement changes
-      dvt = [hvt[0] - tvt[0], hvt[1] - tvt[1]];
+      // defined by tail/head, head stays fixed and displacement changes
       dvth = [hvth[0] - tvth[0], hvth[1] - tvth[1]];
 
-      // defined by tail and displacement, displacement stays fixed and head changes
+      // defined by tail or tail and displacement, displacement stays fixed and head changes
+      hvt = [tvt[0] + dvt[0], tvt[1] + dvt[1]];
       hvtd = [tvtd[0] + dvtd[0], tvtd[1] + dvtd[1]];
 
       expect(components['/tvt'].stateValues.coords.simplify().tree).eqls(["vector", ...tvt]);
@@ -6852,16 +6851,16 @@ describe('Vector Tag Tests', function () {
     });
 
     cy.log("move head through defining point, if exists")
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
 
       hvh = [5, 3];
       hvth = [-8, -3];
       hvhd = [7, -6];
 
-      components['/hvh'].movePoint({ x: hvh[0], y: hvh[1] })
-      components['/hvth'].movePoint({ x: hvth[0], y: hvth[1] })
-      components['/hvhd'].movePoint({ x: hvhd[0], y: hvhd[1] })
+      await components['/hvh'].movePoint({ x: hvh[0], y: hvh[1] })
+      await components['/hvth'].movePoint({ x: hvth[0], y: hvth[1] })
+      await components['/hvhd'].movePoint({ x: hvhd[0], y: hvhd[1] })
 
       // defined by head only or tail/head, tail stays fixed and displacement changes
       dvh = [hvh[0] - tvh[0], hvh[1] - tvh[1]];
@@ -6925,16 +6924,16 @@ describe('Vector Tag Tests', function () {
     });
 
     cy.log("change displacement through defining point, if exists")
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
 
       dvd = [-1, -2];
       dvtd = [-6, 8];
       dvhd = [3, -7];
 
-      components['/dvd'].movePoint({ x: dvd[0], y: dvd[1] })
-      components['/dvtd'].movePoint({ x: dvtd[0], y: dvtd[1] })
-      components['/dvhd'].movePoint({ x: dvhd[0], y: dvhd[1] })
+      await components['/dvd'].movePoint({ x: dvd[0], y: dvd[1] })
+      await components['/dvtd'].movePoint({ x: dvtd[0], y: dvtd[1] })
+      await components['/dvhd'].movePoint({ x: dvhd[0], y: dvhd[1] })
 
       // defined by displacement only or tail/displacement, tail stays fixed and head changes
       hvd = [tvd[0] + dvd[0], tvd[1] + dvd[1]];
@@ -6998,7 +6997,7 @@ describe('Vector Tag Tests', function () {
     });
 
     cy.log("move tail of each vector through copied point")
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
 
       tvt = [-5, 3];
@@ -7008,21 +7007,21 @@ describe('Vector Tag Tests', function () {
       tvtd = [6, 5];
       tvhd = [-3, 4];
 
-      components['/tfvt'].replacements[0].movePoint({ x: tvt[0], y: tvt[1] })
-      components['/tfvh'].replacements[0].movePoint({ x: tvh[0], y: tvh[1] })
-      components['/tfvd'].replacements[0].movePoint({ x: tvd[0], y: tvd[1] })
-      components['/tfvth'].replacements[0].movePoint({ x: tvth[0], y: tvth[1] })
-      components['/tfvtd'].replacements[0].movePoint({ x: tvtd[0], y: tvtd[1] })
-      components['/tfvhd'].replacements[0].movePoint({ x: tvhd[0], y: tvhd[1] })
+      await components['/tfvt'].replacements[0].movePoint({ x: tvt[0], y: tvt[1] })
+      await components['/tfvh'].replacements[0].movePoint({ x: tvh[0], y: tvh[1] })
+      await components['/tfvd'].replacements[0].movePoint({ x: tvd[0], y: tvd[1] })
+      await components['/tfvth'].replacements[0].movePoint({ x: tvth[0], y: tvth[1] })
+      await components['/tfvtd'].replacements[0].movePoint({ x: tvtd[0], y: tvtd[1] })
+      await components['/tfvhd'].replacements[0].movePoint({ x: tvhd[0], y: tvhd[1] })
 
-      // for most vectors, heads stay fixed and displacement changes
-      dvt = [hvt[0] - tvt[0], hvt[1] - tvt[1]];
+      // if defined by head, head stays fixed and displacement changes
       dvh = [hvh[0] - tvh[0], hvh[1] - tvh[1]];
       dvth = [hvth[0] - tvth[0], hvth[1] - tvth[1]];
       dvhd = [hvhd[0] - tvhd[0], hvhd[1] - tvhd[1]];
 
-      // defined by displacement only or tail/displacement, 
+      // if not defined by head,
       // displacement stays fixed and head changes
+      hvt = [tvt[0] + dvt[0], tvt[1] + dvt[1]];
       hvd = [tvd[0] + dvd[0], tvd[1] + dvd[1]];
       hvtd = [tvtd[0] + dvtd[0], tvtd[1] + dvtd[1]];
 
@@ -7135,7 +7134,7 @@ describe('Vector Tag Tests', function () {
     });
 
     cy.log("move head of each vector through copied point")
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
 
       hvt = [-1, -3];
@@ -7145,12 +7144,12 @@ describe('Vector Tag Tests', function () {
       hvtd = [9, 1];
       hvhd = [-4, 4];
 
-      components['/hfvt'].replacements[0].movePoint({ x: hvt[0], y: hvt[1] })
-      components['/hfvh'].replacements[0].movePoint({ x: hvh[0], y: hvh[1] })
-      components['/hfvd'].replacements[0].movePoint({ x: hvd[0], y: hvd[1] })
-      components['/hfvth'].replacements[0].movePoint({ x: hvth[0], y: hvth[1] })
-      components['/hfvtd'].replacements[0].movePoint({ x: hvtd[0], y: hvtd[1] })
-      components['/hfvhd'].replacements[0].movePoint({ x: hvhd[0], y: hvhd[1] })
+      await components['/hfvt'].replacements[0].movePoint({ x: hvt[0], y: hvt[1] })
+      await components['/hfvh'].replacements[0].movePoint({ x: hvh[0], y: hvh[1] })
+      await components['/hfvd'].replacements[0].movePoint({ x: hvd[0], y: hvd[1] })
+      await components['/hfvth'].replacements[0].movePoint({ x: hvth[0], y: hvth[1] })
+      await components['/hfvtd'].replacements[0].movePoint({ x: hvtd[0], y: hvtd[1] })
+      await components['/hfvhd'].replacements[0].movePoint({ x: hvhd[0], y: hvhd[1] })
 
       // for most vectors, tails stay fixed and displacement changes
       dvt = [hvt[0] - tvt[0], hvt[1] - tvt[1]];
@@ -7271,7 +7270,7 @@ describe('Vector Tag Tests', function () {
     });
 
     cy.log("change displacement of each vector through copied vectors")
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
 
       dvt = [-9, 0];
@@ -7281,12 +7280,12 @@ describe('Vector Tag Tests', function () {
       dvtd = [9, -8];
       dvhd = [1, 2];
 
-      components['/dfvt'].replacements[0].moveVector({ headcoords: dvt });
-      components['/dfvh'].replacements[0].moveVector({ headcoords: dvh });
-      components['/dfvd'].replacements[0].moveVector({ headcoords: dvd });
-      components['/dfvth'].replacements[0].moveVector({ headcoords: dvth });
-      components['/dfvtd'].replacements[0].moveVector({ headcoords: dvtd });
-      components['/dfvhd'].replacements[0].moveVector({ headcoords: dvhd });
+      await components['/dfvt'].replacements[0].moveVector({ headcoords: dvt });
+      await components['/dfvh'].replacements[0].moveVector({ headcoords: dvh });
+      await components['/dfvd'].replacements[0].moveVector({ headcoords: dvd });
+      await components['/dfvth'].replacements[0].moveVector({ headcoords: dvth });
+      await components['/dfvtd'].replacements[0].moveVector({ headcoords: dvtd });
+      await components['/dfvhd'].replacements[0].moveVector({ headcoords: dvhd });
 
       // for most vectors, tails stay fixed and head changes
       hvt = [tvt[0] + dvt[0], tvt[1] + dvt[1]];
@@ -7407,7 +7406,7 @@ describe('Vector Tag Tests', function () {
     });
 
     cy.log("move tail of each copied vector directly")
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
 
       tvt = [1, 8];
@@ -7417,12 +7416,12 @@ describe('Vector Tag Tests', function () {
       tvtd = [-4, -8];
       tvhd = [-1, 6];
 
-      components['/vt2'].replacements[0].moveVector({ tailcoords: tvt })
-      components['/vh2'].replacements[0].moveVector({ tailcoords: tvh })
-      components['/vd2'].replacements[0].moveVector({ tailcoords: tvd })
-      components['/vth2'].replacements[0].moveVector({ tailcoords: tvth })
-      components['/vtd2'].replacements[0].moveVector({ tailcoords: tvtd })
-      components['/vhd2'].replacements[0].moveVector({ tailcoords: tvhd })
+      await components['/vt2'].replacements[0].moveVector({ tailcoords: tvt })
+      await components['/vh2'].replacements[0].moveVector({ tailcoords: tvh })
+      await components['/vd2'].replacements[0].moveVector({ tailcoords: tvd })
+      await components['/vth2'].replacements[0].moveVector({ tailcoords: tvth })
+      await components['/vtd2'].replacements[0].moveVector({ tailcoords: tvtd })
+      await components['/vhd2'].replacements[0].moveVector({ tailcoords: tvhd })
 
       // since moved tails directly, heads stay fixed and displacement changes
       dvt = [hvt[0] - tvt[0], hvt[1] - tvt[1]];
@@ -7541,7 +7540,7 @@ describe('Vector Tag Tests', function () {
     });
 
     cy.log("move head of each copied vector directly")
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
 
       hvt = [-7, 2];
@@ -7551,12 +7550,12 @@ describe('Vector Tag Tests', function () {
       hvtd = [7, 0];
       hvhd = [-8, -4];
 
-      components['/vt2'].replacements[0].moveVector({ headcoords: hvt })
-      components['/vh2'].replacements[0].moveVector({ headcoords: hvh })
-      components['/vd2'].replacements[0].moveVector({ headcoords: hvd })
-      components['/vth2'].replacements[0].moveVector({ headcoords: hvth })
-      components['/vtd2'].replacements[0].moveVector({ headcoords: hvtd })
-      components['/vhd2'].replacements[0].moveVector({ headcoords: hvhd })
+      await components['/vt2'].replacements[0].moveVector({ headcoords: hvt })
+      await components['/vh2'].replacements[0].moveVector({ headcoords: hvh })
+      await components['/vd2'].replacements[0].moveVector({ headcoords: hvd })
+      await components['/vth2'].replacements[0].moveVector({ headcoords: hvth })
+      await components['/vtd2'].replacements[0].moveVector({ headcoords: hvtd })
+      await components['/vhd2'].replacements[0].moveVector({ headcoords: hvhd })
 
       // since moved heads directly, tails stay fixed and displacement changes
       dvt = [hvt[0] - tvt[0], hvt[1] - tvt[1]];
@@ -7675,7 +7674,7 @@ describe('Vector Tag Tests', function () {
     });
 
     cy.log("move tail of each copied vector through copied point")
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
 
       tvt = [1, -1];
@@ -7685,21 +7684,21 @@ describe('Vector Tag Tests', function () {
       tvtd = [-1, 7];
       tvhd = [-6, 6];
 
-      components['/tfvt2'].replacements[0].movePoint({ x: tvt[0], y: tvt[1] })
-      components['/tfvh2'].replacements[0].movePoint({ x: tvh[0], y: tvh[1] })
-      components['/tfvd2'].replacements[0].movePoint({ x: tvd[0], y: tvd[1] })
-      components['/tfvth2'].replacements[0].movePoint({ x: tvth[0], y: tvth[1] })
-      components['/tfvtd2'].replacements[0].movePoint({ x: tvtd[0], y: tvtd[1] })
-      components['/tfvhd2'].replacements[0].movePoint({ x: tvhd[0], y: tvhd[1] })
+      await components['/tfvt2'].replacements[0].movePoint({ x: tvt[0], y: tvt[1] })
+      await components['/tfvh2'].replacements[0].movePoint({ x: tvh[0], y: tvh[1] })
+      await components['/tfvd2'].replacements[0].movePoint({ x: tvd[0], y: tvd[1] })
+      await components['/tfvth2'].replacements[0].movePoint({ x: tvth[0], y: tvth[1] })
+      await components['/tfvtd2'].replacements[0].movePoint({ x: tvtd[0], y: tvtd[1] })
+      await components['/tfvhd2'].replacements[0].movePoint({ x: tvhd[0], y: tvhd[1] })
 
-      // for most vectors, heads stay fixed and displacement changes
-      dvt = [hvt[0] - tvt[0], hvt[1] - tvt[1]];
+      // if defined by head, head stays fixed and displacement changes
       dvh = [hvh[0] - tvh[0], hvh[1] - tvh[1]];
       dvth = [hvth[0] - tvth[0], hvth[1] - tvth[1]];
       dvhd = [hvhd[0] - tvhd[0], hvhd[1] - tvhd[1]];
 
-      // defined by displacement only or tail/displacement, 
+      // if not defined by head, 
       // displacement stays fixed and head changes
+      hvt = [tvt[0] + dvt[0], tvt[1] + dvt[1]];
       hvd = [tvd[0] + dvd[0], tvd[1] + dvd[1]];
       hvtd = [tvtd[0] + dvtd[0], tvtd[1] + dvtd[1]];
 
@@ -7812,7 +7811,7 @@ describe('Vector Tag Tests', function () {
     });
 
     cy.log("move head of each copied vector through copied point")
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
 
       hvt = [-6, -8];
@@ -7822,12 +7821,12 @@ describe('Vector Tag Tests', function () {
       hvtd = [3, 8];
       hvhd = [-1, 5];
 
-      components['/hfvt2'].replacements[0].movePoint({ x: hvt[0], y: hvt[1] })
-      components['/hfvh2'].replacements[0].movePoint({ x: hvh[0], y: hvh[1] })
-      components['/hfvd2'].replacements[0].movePoint({ x: hvd[0], y: hvd[1] })
-      components['/hfvth2'].replacements[0].movePoint({ x: hvth[0], y: hvth[1] })
-      components['/hfvtd2'].replacements[0].movePoint({ x: hvtd[0], y: hvtd[1] })
-      components['/hfvhd2'].replacements[0].movePoint({ x: hvhd[0], y: hvhd[1] })
+      await components['/hfvt2'].replacements[0].movePoint({ x: hvt[0], y: hvt[1] })
+      await components['/hfvh2'].replacements[0].movePoint({ x: hvh[0], y: hvh[1] })
+      await components['/hfvd2'].replacements[0].movePoint({ x: hvd[0], y: hvd[1] })
+      await components['/hfvth2'].replacements[0].movePoint({ x: hvth[0], y: hvth[1] })
+      await components['/hfvtd2'].replacements[0].movePoint({ x: hvtd[0], y: hvtd[1] })
+      await components['/hfvhd2'].replacements[0].movePoint({ x: hvhd[0], y: hvhd[1] })
 
       // for most vectors, tails stay fixed and displacement changes
       dvt = [hvt[0] - tvt[0], hvt[1] - tvt[1]];
@@ -7948,7 +7947,7 @@ describe('Vector Tag Tests', function () {
     });
 
     cy.log("change displacement of each copied vector through copied vectors")
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
 
       dvt = [-1, 7];
@@ -7958,12 +7957,12 @@ describe('Vector Tag Tests', function () {
       dvtd = [9, -4];
       dvhd = [-5, 3];
 
-      components['/dfvt2'].replacements[0].moveVector({ headcoords: dvt });
-      components['/dfvh2'].replacements[0].moveVector({ headcoords: dvh });
-      components['/dfvd2'].replacements[0].moveVector({ headcoords: dvd });
-      components['/dfvth2'].replacements[0].moveVector({ headcoords: dvth });
-      components['/dfvtd2'].replacements[0].moveVector({ headcoords: dvtd });
-      components['/dfvhd2'].replacements[0].moveVector({ headcoords: dvhd });
+      await components['/dfvt2'].replacements[0].moveVector({ headcoords: dvt });
+      await components['/dfvh2'].replacements[0].moveVector({ headcoords: dvh });
+      await components['/dfvd2'].replacements[0].moveVector({ headcoords: dvd });
+      await components['/dfvth2'].replacements[0].moveVector({ headcoords: dvth });
+      await components['/dfvtd2'].replacements[0].moveVector({ headcoords: dvtd });
+      await components['/dfvhd2'].replacements[0].moveVector({ headcoords: dvhd });
 
       // for most vectors, tails stay fixed and head changes
       hvt = [tvt[0] + dvt[0], tvt[1] + dvt[1]];
@@ -8087,11 +8086,11 @@ describe('Vector Tag Tests', function () {
   })
 
   it('vector adapts to coords of displacement', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
-  <math><copy tname="_vector1" /></math>
+  <math><copy target="_vector1" /></math>
   <graph>
     <vector tail="(1,2)" head="(3,5)" />
   </graph>
@@ -8105,16 +8104,16 @@ describe('Vector Tag Tests', function () {
       expect(text.trim()).equal('(2,3)')
     })
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([2, 3]);
       expect(components['/_math1'].stateValues.value.tree).eqls(["vector", 2, 3]);
     })
 
     cy.log("move vector head");
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components['/_vector1'].moveVector({ headcoords: [9, 7] })
+      await components['/_vector1'].moveVector({ headcoords: [9, 7] })
       expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([8, 5]);
       expect(components['/_math1'].stateValues.value.tree).eqls(["vector", 8, 5]);
     })
@@ -8125,9 +8124,9 @@ describe('Vector Tag Tests', function () {
 
 
     cy.log("move vector head");
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components['/_vector1'].moveVector({ tailcoords: [-2, 6] })
+      await components['/_vector1'].moveVector({ tailcoords: [-2, 6] })
       expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([11, 1]);
       expect(components['/_math1'].stateValues.value.tree).eqls(["vector", 11, 1]);
     })
@@ -8140,7 +8139,7 @@ describe('Vector Tag Tests', function () {
   });
 
   it('three vectors with mutual references', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -8159,7 +8158,7 @@ describe('Vector Tag Tests', function () {
     let x2 = 3, y2 = 2;
     let x3 = -1, y3 = 4;
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([x1, y1]);
       expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([x2, y2]);
@@ -8171,13 +8170,13 @@ describe('Vector Tag Tests', function () {
     })
 
     cy.log("move head of vector 1")
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
 
       x2 = 7;
       y2 = -3;
       let head1 = components["/_vector1"].attributes.head.component;
-      head1.movePoint({ x: x2, y: y2 });
+      await head1.movePoint({ x: x2, y: y2 });
       expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([x1, y1]);
       expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([x2, y2]);
       expect(components['/_vector2'].stateValues.tail.map(x => x.tree)).eqls([x3, y3]);
@@ -8188,13 +8187,13 @@ describe('Vector Tag Tests', function () {
     })
 
     cy.log("move tail of vector 1")
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
 
       x1 = -1;
       y1 = -4;
       let tail1 = components["/_vector1"].attributes.tail.component;
-      tail1.movePoint({ x: x1, y: y1 });
+      await tail1.movePoint({ x: x1, y: y1 });
       expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([x1, y1]);
       expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([x2, y2]);
       expect(components['/_vector2'].stateValues.tail.map(x => x.tree)).eqls([x3, y3]);
@@ -8205,13 +8204,13 @@ describe('Vector Tag Tests', function () {
     })
 
     cy.log("move tail of vector 2")
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
 
       x3 = 9;
       y3 = -8;
       let tail2 = components["/_vector2"].attributes.tail.component;
-      tail2.movePoint({ x: x3, y: y3 });
+      await tail2.movePoint({ x: x3, y: y3 });
       expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([x1, y1]);
       expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([x2, y2]);
       expect(components['/_vector2'].stateValues.tail.map(x => x.tree)).eqls([x3, y3]);
@@ -8222,13 +8221,13 @@ describe('Vector Tag Tests', function () {
     })
 
     cy.log("move head of vector 2")
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
 
       x2 = 3;
       y2 = 2;
       let head2 = components["/_vector2"].attributes.head.component;
-      head2.movePoint({ x: x2, y: y2 });
+      await head2.movePoint({ x: x2, y: y2 });
       expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([x1, y1]);
       expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([x2, y2]);
       expect(components['/_vector2'].stateValues.tail.map(x => x.tree)).eqls([x3, y3]);
@@ -8239,13 +8238,13 @@ describe('Vector Tag Tests', function () {
     })
 
     cy.log("move head of vector 3")
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
 
       x1 = -5;
       y1 = 8;
       let head3 = components["/_vector3"].attributes.head.component;
-      head3.movePoint({ x: x1, y: y1 });
+      await head3.movePoint({ x: x1, y: y1 });
       expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([x1, y1]);
       expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([x2, y2]);
       expect(components['/_vector2'].stateValues.tail.map(x => x.tree)).eqls([x3, y3]);
@@ -8256,13 +8255,13 @@ describe('Vector Tag Tests', function () {
     })
 
     cy.log("move tail of vector 3")
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
 
       x3 = 0;
       y3 = -5;
       let tail3 = components["/_vector3"].attributes.tail.component;
-      tail3.movePoint({ x: x3, y: y3 });
+      await tail3.movePoint({ x: x3, y: y3 });
       expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([x1, y1]);
       expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([x2, y2]);
       expect(components['/_vector2'].stateValues.tail.map(x => x.tree)).eqls([x3, y3]);
@@ -8276,14 +8275,14 @@ describe('Vector Tag Tests', function () {
 
   it('copy two components of vector', () => {
     // checking bug where second component wasn't updating
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
   <vector tail="(3, $b)" head="($a,4)" />
 
-  <copy prop="x" tname="_vector1" />
-  <copy prop="y" tname="_vector1" />
+  <copy prop="x" target="_vector1" />
+  <copy prop="y" target="_vector1" />
   
   <p><mathinput name="a" prefill="1"></mathinput></p>
   <p><mathinput name="b" prefill="2"></mathinput></p>
@@ -8294,7 +8293,7 @@ describe('Vector Tag Tests', function () {
     // to wait for page to load
     cy.get('#\\/_text1').should('have.text', 'a');
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let x = components['/_copy1'].replacements[0];
       let xAnchor = cesc('#' + x.componentName);
@@ -8321,7 +8320,7 @@ describe('Vector Tag Tests', function () {
       });
 
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let components = Object.assign({}, win.state.components);
         expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([3, b]);
         expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([a, 4]);
@@ -8344,6 +8343,7 @@ describe('Vector Tag Tests', function () {
         expect(text.trim().replace(/−/g, '-')).equal(`${dx2}`)
       });
 
+      cy.get(yAnchor + ' .mjx-mrow').should('contain.text', `${dy2}`.replace(/-/g, '−'))
       cy.get(yAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim().replace(/−/g, '-')).equal(`${dy2}`)
       });
@@ -8353,7 +8353,7 @@ describe('Vector Tag Tests', function () {
       });
 
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let components = Object.assign({}, win.state.components);
         expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([3, b2]);
         expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([a2, 4]);
@@ -8367,7 +8367,7 @@ describe('Vector Tag Tests', function () {
   })
 
   it('vector with displacement and tail, move just tail', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -8380,7 +8380,7 @@ describe('Vector Tag Tests', function () {
     // to wait for page to load
     cy.get('#\\/_text1').should('have.text', 'a');
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let tailx = 4;
       let taily = 1;
@@ -8396,7 +8396,7 @@ describe('Vector Tag Tests', function () {
     })
 
     cy.log(`move tail, make sure head doesn't move`)
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
 
       let tailx = -3;
@@ -8406,7 +8406,7 @@ describe('Vector Tag Tests', function () {
       let displacementx = headx - tailx;
       let displacementy = heady - taily;
 
-      components['/_vector1'].moveVector({
+      await components['/_vector1'].moveVector({
         tailcoords: [tailx, taily],
       });
 
@@ -8419,7 +8419,7 @@ describe('Vector Tag Tests', function () {
   })
 
   it('vector with displacement and head, move just head', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -8432,7 +8432,7 @@ describe('Vector Tag Tests', function () {
     // to wait for page to load
     cy.get('#\\/_text1').should('have.text', 'a');
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let tailx = 4;
       let taily = 1;
@@ -8448,7 +8448,7 @@ describe('Vector Tag Tests', function () {
     })
 
     cy.log(`move tail, make sure head doesn't move`)
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
 
       let tailx = 4;
@@ -8458,7 +8458,7 @@ describe('Vector Tag Tests', function () {
       let displacementx = headx - tailx;
       let displacementy = heady - taily;
 
-      components['/_vector1'].moveVector({
+      await components['/_vector1'].moveVector({
         headcoords: [headx, heady],
       });
 
@@ -8471,7 +8471,7 @@ describe('Vector Tag Tests', function () {
   })
 
   it('vector with displacement, move just tail', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -8484,7 +8484,7 @@ describe('Vector Tag Tests', function () {
     // to wait for page to load
     cy.get('#\\/_text1').should('have.text', 'a');
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let tailx = 0;
       let taily = 0;
@@ -8500,7 +8500,7 @@ describe('Vector Tag Tests', function () {
     })
 
     cy.log(`move tail, make sure head doesn't move`)
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
 
       let tailx = -3;
@@ -8510,7 +8510,7 @@ describe('Vector Tag Tests', function () {
       let displacementx = headx - tailx;
       let displacementy = heady - taily;
 
-      components['/_vector1'].moveVector({
+      await components['/_vector1'].moveVector({
         tailcoords: [tailx, taily],
       });
 
@@ -8523,7 +8523,7 @@ describe('Vector Tag Tests', function () {
   })
 
   it('point inside vector overrides displacement', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -8532,9 +8532,9 @@ describe('Vector Tag Tests', function () {
   </graph>
 
   <graph>
-  <copy prop="tail" tname="_vector1" />
-  <copy prop="head" tname="_vector1" />
-  <copy prop="displacement" tname="_vector1" />
+  <copy prop="tail" target="_vector1" />
+  <copy prop="head" target="_vector1" />
+  <copy prop="displacement" target="_vector1" />
   </graph>
   `}, "*");
     });
@@ -8542,13 +8542,13 @@ describe('Vector Tag Tests', function () {
     // to wait for page to load
     cy.get('#\\/_text1').should('have.text', 'a');
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let tail = components['/_copy1'].replacements[0];
       let head = components['/_copy2'].replacements[0];
       let displacement = components['/_copy3'].replacements[0];
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let tailx = 0;
         let taily = 0;
         let headx = -4;
@@ -8570,7 +8570,7 @@ describe('Vector Tag Tests', function () {
       })
 
       cy.log('move vector up and to the right')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
 
         let tailcoords = [
           components['/_vector1'].stateValues.tail[0],
@@ -8589,7 +8589,7 @@ describe('Vector Tag Tests', function () {
         headcoords[0] = headcoords[0].add(moveX).simplify();
         headcoords[1] = headcoords[1].add(moveY).simplify();
 
-        components['/_vector1'].moveVector({
+        await components['/_vector1'].moveVector({
           tailcoords: tailcoords,
           headcoords: headcoords
         });
@@ -8614,7 +8614,7 @@ describe('Vector Tag Tests', function () {
       })
 
       cy.log('move copied tail moves vector')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
 
         let tailx = 1;
         let taily = 6;
@@ -8623,7 +8623,7 @@ describe('Vector Tag Tests', function () {
         let displacementx = headx - tailx;
         let displacementy = heady - taily;
 
-        tail.movePoint({ x: tailx, y: taily });
+        await tail.movePoint({ x: tailx, y: taily });
 
         expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
         expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
@@ -8638,7 +8638,7 @@ describe('Vector Tag Tests', function () {
       })
 
       cy.log('move copied head')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
 
 
         let tailx = 1;
@@ -8648,7 +8648,7 @@ describe('Vector Tag Tests', function () {
         let displacementx = headx - tailx;
         let displacementy = heady - taily;
 
-        head.movePoint({ x: headx, y: heady });
+        await head.movePoint({ x: headx, y: heady });
 
         expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
         expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
@@ -8663,7 +8663,7 @@ describe('Vector Tag Tests', function () {
       })
 
       cy.log('move displacement')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
 
         let tailx = 1;
         let taily = 6;
@@ -8677,7 +8677,7 @@ describe('Vector Tag Tests', function () {
         let headx = tailx + displacementx;
         let heady = taily + displacementy;
 
-        displacement.moveVector({
+        await displacement.moveVector({
           tailcoords: [displacementtailx, displacementtaily],
           headcoords: [displacementheadx, displacementheady]
         });
@@ -8697,7 +8697,7 @@ describe('Vector Tag Tests', function () {
   })
 
   it('vector inside vector overrides displacement', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -8706,9 +8706,9 @@ describe('Vector Tag Tests', function () {
   </graph>
 
   <graph>
-  <copy prop="tail" tname="_vector1" />
-  <copy prop="head" tname="_vector1" />
-  <copy prop="displacement" tname="_vector1" />
+  <copy prop="tail" target="_vector1" />
+  <copy prop="head" target="_vector1" />
+  <copy prop="displacement" target="_vector1" />
   </graph>
   `}, "*");
     });
@@ -8716,13 +8716,13 @@ describe('Vector Tag Tests', function () {
     // to wait for page to load
     cy.get('#\\/_text1').should('have.text', 'a');
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let tail = components['/_copy1'].replacements[0];
       let head = components['/_copy2'].replacements[0];
       let displacement = components['/_copy3'].replacements[0];
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let tailx = 0;
         let taily = 0;
         let headx = -4;
@@ -8744,7 +8744,7 @@ describe('Vector Tag Tests', function () {
       })
 
       cy.log('move vector up and to the right')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
 
         let tailcoords = [
           components['/_vector1'].stateValues.tail[0],
@@ -8763,7 +8763,7 @@ describe('Vector Tag Tests', function () {
         headcoords[0] = headcoords[0].add(moveX).simplify();
         headcoords[1] = headcoords[1].add(moveY).simplify();
 
-        components['/_vector1'].moveVector({
+        await components['/_vector1'].moveVector({
           tailcoords: tailcoords,
           headcoords: headcoords
         });
@@ -8788,7 +8788,7 @@ describe('Vector Tag Tests', function () {
       })
 
       cy.log('move copied tail moves vector')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
 
         let tailx = 1;
         let taily = 6;
@@ -8797,7 +8797,7 @@ describe('Vector Tag Tests', function () {
         let displacementx = headx - tailx;
         let displacementy = heady - taily;
 
-        tail.movePoint({ x: tailx, y: taily });
+        await tail.movePoint({ x: tailx, y: taily });
 
         expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
         expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
@@ -8812,7 +8812,7 @@ describe('Vector Tag Tests', function () {
       })
 
       cy.log('move copied head')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
 
 
         let tailx = 1;
@@ -8822,7 +8822,7 @@ describe('Vector Tag Tests', function () {
         let displacementx = headx - tailx;
         let displacementy = heady - taily;
 
-        head.movePoint({ x: headx, y: heady });
+        await head.movePoint({ x: headx, y: heady });
 
         expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
         expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
@@ -8837,7 +8837,7 @@ describe('Vector Tag Tests', function () {
       })
 
       cy.log('move displacement')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
 
         let tailx = 1;
         let taily = 6;
@@ -8851,7 +8851,7 @@ describe('Vector Tag Tests', function () {
         let headx = tailx + displacementx;
         let heady = taily + displacementy;
 
-        displacement.moveVector({
+        await displacement.moveVector({
           tailcoords: [displacementtailx, displacementtaily],
           headcoords: [displacementheadx, displacementheady]
         });
@@ -8871,7 +8871,7 @@ describe('Vector Tag Tests', function () {
   })
 
   it('point inside vector overrides xs', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -8880,9 +8880,9 @@ describe('Vector Tag Tests', function () {
   </graph>
 
   <graph>
-  <copy prop="tail" tname="_vector1" />
-  <copy prop="head" tname="_vector1" />
-  <copy prop="displacement" tname="_vector1" />
+  <copy prop="tail" target="_vector1" />
+  <copy prop="head" target="_vector1" />
+  <copy prop="displacement" target="_vector1" />
   </graph>
   `}, "*");
     });
@@ -8890,13 +8890,13 @@ describe('Vector Tag Tests', function () {
     // to wait for page to load
     cy.get('#\\/_text1').should('have.text', 'a');
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let tail = components['/_copy1'].replacements[0];
       let head = components['/_copy2'].replacements[0];
       let displacement = components['/_copy3'].replacements[0];
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let tailx = 0;
         let taily = 0;
         let headx = -4;
@@ -8918,7 +8918,7 @@ describe('Vector Tag Tests', function () {
       })
 
       cy.log('move vector up and to the right')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
 
         let tailcoords = [
           components['/_vector1'].stateValues.tail[0],
@@ -8937,7 +8937,7 @@ describe('Vector Tag Tests', function () {
         headcoords[0] = headcoords[0].add(moveX).simplify();
         headcoords[1] = headcoords[1].add(moveY).simplify();
 
-        components['/_vector1'].moveVector({
+        await components['/_vector1'].moveVector({
           tailcoords: tailcoords,
           headcoords: headcoords
         });
@@ -8962,7 +8962,7 @@ describe('Vector Tag Tests', function () {
       })
 
       cy.log('move copied tail moves vector')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
 
         let tailx = 1;
         let taily = 6;
@@ -8971,7 +8971,7 @@ describe('Vector Tag Tests', function () {
         let displacementx = headx - tailx;
         let displacementy = heady - taily;
 
-        tail.movePoint({ x: tailx, y: taily });
+        await tail.movePoint({ x: tailx, y: taily });
 
         expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
         expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
@@ -8986,7 +8986,7 @@ describe('Vector Tag Tests', function () {
       })
 
       cy.log('move copied head')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
 
 
         let tailx = 1;
@@ -8996,7 +8996,7 @@ describe('Vector Tag Tests', function () {
         let displacementx = headx - tailx;
         let displacementy = heady - taily;
 
-        head.movePoint({ x: headx, y: heady });
+        await head.movePoint({ x: headx, y: heady });
 
         expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
         expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
@@ -9011,7 +9011,7 @@ describe('Vector Tag Tests', function () {
       })
 
       cy.log('move displacement')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
 
         let tailx = 1;
         let taily = 6;
@@ -9025,7 +9025,7 @@ describe('Vector Tag Tests', function () {
         let headx = tailx + displacementx;
         let heady = taily + displacementy;
 
-        displacement.moveVector({
+        await displacement.moveVector({
           tailcoords: [displacementtailx, displacementtaily],
           headcoords: [displacementheadx, displacementheady]
         });
@@ -9045,7 +9045,7 @@ describe('Vector Tag Tests', function () {
   })
 
   it('vector inside vector overrides xs', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -9054,9 +9054,9 @@ describe('Vector Tag Tests', function () {
   </graph>
 
   <graph>
-  <copy prop="tail" tname="_vector1" />
-  <copy prop="head" tname="_vector1" />
-  <copy prop="displacement" tname="_vector1" />
+  <copy prop="tail" target="_vector1" />
+  <copy prop="head" target="_vector1" />
+  <copy prop="displacement" target="_vector1" />
   </graph>
   `}, "*");
     });
@@ -9064,13 +9064,13 @@ describe('Vector Tag Tests', function () {
     // to wait for page to load
     cy.get('#\\/_text1').should('have.text', 'a');
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let tail = components['/_copy1'].replacements[0];
       let head = components['/_copy2'].replacements[0];
       let displacement = components['/_copy3'].replacements[0];
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let tailx = 0;
         let taily = 0;
         let headx = -4;
@@ -9092,7 +9092,7 @@ describe('Vector Tag Tests', function () {
       })
 
       cy.log('move vector up and to the right')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
 
         let tailcoords = [
           components['/_vector1'].stateValues.tail[0],
@@ -9111,7 +9111,7 @@ describe('Vector Tag Tests', function () {
         headcoords[0] = headcoords[0].add(moveX).simplify();
         headcoords[1] = headcoords[1].add(moveY).simplify();
 
-        components['/_vector1'].moveVector({
+        await components['/_vector1'].moveVector({
           tailcoords: tailcoords,
           headcoords: headcoords
         });
@@ -9136,7 +9136,7 @@ describe('Vector Tag Tests', function () {
       })
 
       cy.log('move copied tail moves vector')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
 
         let tailx = 1;
         let taily = 6;
@@ -9145,7 +9145,7 @@ describe('Vector Tag Tests', function () {
         let displacementx = headx - tailx;
         let displacementy = heady - taily;
 
-        tail.movePoint({ x: tailx, y: taily });
+        await tail.movePoint({ x: tailx, y: taily });
 
         expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
         expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
@@ -9160,7 +9160,7 @@ describe('Vector Tag Tests', function () {
       })
 
       cy.log('move copied head')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
 
 
         let tailx = 1;
@@ -9170,7 +9170,7 @@ describe('Vector Tag Tests', function () {
         let displacementx = headx - tailx;
         let displacementy = heady - taily;
 
-        head.movePoint({ x: headx, y: heady });
+        await head.movePoint({ x: headx, y: heady });
 
         expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
         expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
@@ -9185,7 +9185,7 @@ describe('Vector Tag Tests', function () {
       })
 
       cy.log('move displacement')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
 
         let tailx = 1;
         let taily = 6;
@@ -9199,7 +9199,7 @@ describe('Vector Tag Tests', function () {
         let headx = tailx + displacementx;
         let heady = taily + displacementy;
 
-        displacement.moveVector({
+        await displacement.moveVector({
           tailcoords: [displacementtailx, displacementtaily],
           headcoords: [displacementheadx, displacementheady]
         });
@@ -9219,7 +9219,7 @@ describe('Vector Tag Tests', function () {
   })
 
   it('displacement overrides xs', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -9228,9 +9228,9 @@ describe('Vector Tag Tests', function () {
   </graph>
 
   <graph>
-  <copy prop="tail" tname="_vector1" />
-  <copy prop="head" tname="_vector1" />
-  <copy prop="displacement" tname="_vector1" />
+  <copy prop="tail" target="_vector1" />
+  <copy prop="head" target="_vector1" />
+  <copy prop="displacement" target="_vector1" />
   </graph>
   `}, "*");
     });
@@ -9238,13 +9238,13 @@ describe('Vector Tag Tests', function () {
     // to wait for page to load
     cy.get('#\\/_text1').should('have.text', 'a');
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let tail = components['/_copy1'].replacements[0];
       let head = components['/_copy2'].replacements[0];
       let displacement = components['/_copy3'].replacements[0];
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let tailx = 0;
         let taily = 0;
         let headx = -4;
@@ -9266,7 +9266,7 @@ describe('Vector Tag Tests', function () {
       })
 
       cy.log('move vector up and to the right')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
 
         let tailcoords = [
           components['/_vector1'].stateValues.tail[0],
@@ -9285,7 +9285,7 @@ describe('Vector Tag Tests', function () {
         headcoords[0] = headcoords[0].add(moveX).simplify();
         headcoords[1] = headcoords[1].add(moveY).simplify();
 
-        components['/_vector1'].moveVector({
+        await components['/_vector1'].moveVector({
           tailcoords: tailcoords,
           headcoords: headcoords
         });
@@ -9310,7 +9310,7 @@ describe('Vector Tag Tests', function () {
       })
 
       cy.log('move copied tail moves vector')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
 
         let tailx = 1;
         let taily = 6;
@@ -9319,7 +9319,7 @@ describe('Vector Tag Tests', function () {
         let displacementx = headx - tailx;
         let displacementy = heady - taily;
 
-        tail.movePoint({ x: tailx, y: taily });
+        await tail.movePoint({ x: tailx, y: taily });
 
         expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
         expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
@@ -9334,7 +9334,7 @@ describe('Vector Tag Tests', function () {
       })
 
       cy.log('move copied head')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
 
 
         let tailx = 1;
@@ -9344,7 +9344,7 @@ describe('Vector Tag Tests', function () {
         let displacementx = headx - tailx;
         let displacementy = heady - taily;
 
-        head.movePoint({ x: headx, y: heady });
+        await head.movePoint({ x: headx, y: heady });
 
         expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
         expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
@@ -9359,7 +9359,7 @@ describe('Vector Tag Tests', function () {
       })
 
       cy.log('move displacement')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
 
         let tailx = 1;
         let taily = 6;
@@ -9373,7 +9373,7 @@ describe('Vector Tag Tests', function () {
         let headx = tailx + displacementx;
         let heady = taily + displacementy;
 
-        displacement.moveVector({
+        await displacement.moveVector({
           tailcoords: [displacementtailx, displacementtaily],
           headcoords: [displacementheadx, displacementheady]
         });
@@ -9393,7 +9393,7 @@ describe('Vector Tag Tests', function () {
   })
 
   it('point inside vector overrides x and y', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -9402,9 +9402,9 @@ describe('Vector Tag Tests', function () {
   </graph>
 
   <graph>
-  <copy prop="tail" tname="_vector1" />
-  <copy prop="head" tname="_vector1" />
-  <copy prop="displacement" tname="_vector1" />
+  <copy prop="tail" target="_vector1" />
+  <copy prop="head" target="_vector1" />
+  <copy prop="displacement" target="_vector1" />
   </graph>
   `}, "*");
     });
@@ -9412,13 +9412,13 @@ describe('Vector Tag Tests', function () {
     // to wait for page to load
     cy.get('#\\/_text1').should('have.text', 'a');
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let tail = components['/_copy1'].replacements[0];
       let head = components['/_copy2'].replacements[0];
       let displacement = components['/_copy3'].replacements[0];
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let tailx = 0;
         let taily = 0;
         let headx = -4;
@@ -9440,7 +9440,7 @@ describe('Vector Tag Tests', function () {
       })
 
       cy.log('move vector up and to the right')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
 
         let tailcoords = [
           components['/_vector1'].stateValues.tail[0],
@@ -9459,7 +9459,7 @@ describe('Vector Tag Tests', function () {
         headcoords[0] = headcoords[0].add(moveX).simplify();
         headcoords[1] = headcoords[1].add(moveY).simplify();
 
-        components['/_vector1'].moveVector({
+        await components['/_vector1'].moveVector({
           tailcoords: tailcoords,
           headcoords: headcoords
         });
@@ -9484,7 +9484,7 @@ describe('Vector Tag Tests', function () {
       })
 
       cy.log('move copied tail moves vector')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
 
         let tailx = 1;
         let taily = 6;
@@ -9493,7 +9493,7 @@ describe('Vector Tag Tests', function () {
         let displacementx = headx - tailx;
         let displacementy = heady - taily;
 
-        tail.movePoint({ x: tailx, y: taily });
+        await tail.movePoint({ x: tailx, y: taily });
 
         expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
         expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
@@ -9508,7 +9508,7 @@ describe('Vector Tag Tests', function () {
       })
 
       cy.log('move copied head')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
 
 
         let tailx = 1;
@@ -9518,7 +9518,7 @@ describe('Vector Tag Tests', function () {
         let displacementx = headx - tailx;
         let displacementy = heady - taily;
 
-        head.movePoint({ x: headx, y: heady });
+        await head.movePoint({ x: headx, y: heady });
 
         expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
         expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
@@ -9533,7 +9533,7 @@ describe('Vector Tag Tests', function () {
       })
 
       cy.log('move displacement')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
 
         let tailx = 1;
         let taily = 6;
@@ -9547,7 +9547,7 @@ describe('Vector Tag Tests', function () {
         let headx = tailx + displacementx;
         let heady = taily + displacementy;
 
-        displacement.moveVector({
+        await displacement.moveVector({
           tailcoords: [displacementtailx, displacementtaily],
           headcoords: [displacementheadx, displacementheady]
         });
@@ -9567,7 +9567,7 @@ describe('Vector Tag Tests', function () {
   })
 
   it('vector inside vector overrides x and y', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -9576,9 +9576,9 @@ describe('Vector Tag Tests', function () {
   </graph>
 
   <graph>
-  <copy prop="tail" tname="_vector1" />
-  <copy prop="head" tname="_vector1" />
-  <copy prop="displacement" tname="_vector1" />
+  <copy prop="tail" target="_vector1" />
+  <copy prop="head" target="_vector1" />
+  <copy prop="displacement" target="_vector1" />
   </graph>
   `}, "*");
     });
@@ -9586,13 +9586,13 @@ describe('Vector Tag Tests', function () {
     // to wait for page to load
     cy.get('#\\/_text1').should('have.text', 'a');
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let tail = components['/_copy1'].replacements[0];
       let head = components['/_copy2'].replacements[0];
       let displacement = components['/_copy3'].replacements[0];
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let tailx = 0;
         let taily = 0;
         let headx = -4;
@@ -9614,7 +9614,7 @@ describe('Vector Tag Tests', function () {
       })
 
       cy.log('move vector up and to the right')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
 
         let tailcoords = [
           components['/_vector1'].stateValues.tail[0],
@@ -9633,7 +9633,7 @@ describe('Vector Tag Tests', function () {
         headcoords[0] = headcoords[0].add(moveX).simplify();
         headcoords[1] = headcoords[1].add(moveY).simplify();
 
-        components['/_vector1'].moveVector({
+        await components['/_vector1'].moveVector({
           tailcoords: tailcoords,
           headcoords: headcoords
         });
@@ -9658,7 +9658,7 @@ describe('Vector Tag Tests', function () {
       })
 
       cy.log('move copied tail moves vector')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
 
         let tailx = 1;
         let taily = 6;
@@ -9667,7 +9667,7 @@ describe('Vector Tag Tests', function () {
         let displacementx = headx - tailx;
         let displacementy = heady - taily;
 
-        tail.movePoint({ x: tailx, y: taily });
+        await tail.movePoint({ x: tailx, y: taily });
 
         expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
         expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
@@ -9682,7 +9682,7 @@ describe('Vector Tag Tests', function () {
       })
 
       cy.log('move copied head')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
 
 
         let tailx = 1;
@@ -9692,7 +9692,7 @@ describe('Vector Tag Tests', function () {
         let displacementx = headx - tailx;
         let displacementy = heady - taily;
 
-        head.movePoint({ x: headx, y: heady });
+        await head.movePoint({ x: headx, y: heady });
 
         expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
         expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
@@ -9707,7 +9707,7 @@ describe('Vector Tag Tests', function () {
       })
 
       cy.log('move displacement')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
 
         let tailx = 1;
         let taily = 6;
@@ -9721,7 +9721,7 @@ describe('Vector Tag Tests', function () {
         let headx = tailx + displacementx;
         let heady = taily + displacementy;
 
-        displacement.moveVector({
+        await displacement.moveVector({
           tailcoords: [displacementtailx, displacementtaily],
           headcoords: [displacementheadx, displacementheady]
         });
@@ -9741,7 +9741,7 @@ describe('Vector Tag Tests', function () {
   })
 
   it('displacement overrides x and y', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -9750,9 +9750,9 @@ describe('Vector Tag Tests', function () {
   </graph>
 
   <graph>
-  <copy prop="tail" tname="_vector1" />
-  <copy prop="head" tname="_vector1" />
-  <copy prop="displacement" tname="_vector1" />
+  <copy prop="tail" target="_vector1" />
+  <copy prop="head" target="_vector1" />
+  <copy prop="displacement" target="_vector1" />
   </graph>
   `}, "*");
     });
@@ -9760,13 +9760,13 @@ describe('Vector Tag Tests', function () {
     // to wait for page to load
     cy.get('#\\/_text1').should('have.text', 'a');
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let tail = components['/_copy1'].replacements[0];
       let head = components['/_copy2'].replacements[0];
       let displacement = components['/_copy3'].replacements[0];
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let tailx = 0;
         let taily = 0;
         let headx = -4;
@@ -9788,7 +9788,7 @@ describe('Vector Tag Tests', function () {
       })
 
       cy.log('move vector up and to the right')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
 
         let tailcoords = [
           components['/_vector1'].stateValues.tail[0],
@@ -9807,7 +9807,7 @@ describe('Vector Tag Tests', function () {
         headcoords[0] = headcoords[0].add(moveX).simplify();
         headcoords[1] = headcoords[1].add(moveY).simplify();
 
-        components['/_vector1'].moveVector({
+        await components['/_vector1'].moveVector({
           tailcoords: tailcoords,
           headcoords: headcoords
         });
@@ -9832,7 +9832,7 @@ describe('Vector Tag Tests', function () {
       })
 
       cy.log('move copied tail moves vector')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
 
         let tailx = 1;
         let taily = 6;
@@ -9841,7 +9841,7 @@ describe('Vector Tag Tests', function () {
         let displacementx = headx - tailx;
         let displacementy = heady - taily;
 
-        tail.movePoint({ x: tailx, y: taily });
+        await tail.movePoint({ x: tailx, y: taily });
 
         expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
         expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
@@ -9856,7 +9856,7 @@ describe('Vector Tag Tests', function () {
       })
 
       cy.log('move copied head')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
 
 
         let tailx = 1;
@@ -9866,7 +9866,7 @@ describe('Vector Tag Tests', function () {
         let displacementx = headx - tailx;
         let displacementy = heady - taily;
 
-        head.movePoint({ x: headx, y: heady });
+        await head.movePoint({ x: headx, y: heady });
 
         expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
         expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
@@ -9881,7 +9881,7 @@ describe('Vector Tag Tests', function () {
       })
 
       cy.log('move displacement')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
 
         let tailx = 1;
         let taily = 6;
@@ -9895,7 +9895,7 @@ describe('Vector Tag Tests', function () {
         let headx = tailx + displacementx;
         let heady = taily + displacementy;
 
-        displacement.moveVector({
+        await displacement.moveVector({
           tailcoords: [displacementtailx, displacementtaily],
           headcoords: [displacementheadx, displacementheady]
         });
@@ -9915,7 +9915,7 @@ describe('Vector Tag Tests', function () {
   })
 
   it('xs overrides x and y', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -9924,9 +9924,9 @@ describe('Vector Tag Tests', function () {
   </graph>
 
   <graph>
-  <copy prop="tail" tname="_vector1" />
-  <copy prop="head" tname="_vector1" />
-  <copy prop="displacement" tname="_vector1" />
+  <copy prop="tail" target="_vector1" />
+  <copy prop="head" target="_vector1" />
+  <copy prop="displacement" target="_vector1" />
   </graph>
   `}, "*");
     });
@@ -9934,13 +9934,13 @@ describe('Vector Tag Tests', function () {
     // to wait for page to load
     cy.get('#\\/_text1').should('have.text', 'a');
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let tail = components['/_copy1'].replacements[0];
       let head = components['/_copy2'].replacements[0];
       let displacement = components['/_copy3'].replacements[0];
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let tailx = 0;
         let taily = 0;
         let headx = -4;
@@ -9962,7 +9962,7 @@ describe('Vector Tag Tests', function () {
       })
 
       cy.log('move vector up and to the right')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
 
         let tailcoords = [
           components['/_vector1'].stateValues.tail[0],
@@ -9981,7 +9981,7 @@ describe('Vector Tag Tests', function () {
         headcoords[0] = headcoords[0].add(moveX).simplify();
         headcoords[1] = headcoords[1].add(moveY).simplify();
 
-        components['/_vector1'].moveVector({
+        await components['/_vector1'].moveVector({
           tailcoords: tailcoords,
           headcoords: headcoords
         });
@@ -10006,7 +10006,7 @@ describe('Vector Tag Tests', function () {
       })
 
       cy.log('move copied tail moves vector')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
 
         let tailx = 1;
         let taily = 6;
@@ -10015,7 +10015,7 @@ describe('Vector Tag Tests', function () {
         let displacementx = headx - tailx;
         let displacementy = heady - taily;
 
-        tail.movePoint({ x: tailx, y: taily });
+        await tail.movePoint({ x: tailx, y: taily });
 
         expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
         expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
@@ -10030,7 +10030,7 @@ describe('Vector Tag Tests', function () {
       })
 
       cy.log('move copied head')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
 
 
         let tailx = 1;
@@ -10040,7 +10040,7 @@ describe('Vector Tag Tests', function () {
         let displacementx = headx - tailx;
         let displacementy = heady - taily;
 
-        head.movePoint({ x: headx, y: heady });
+        await head.movePoint({ x: headx, y: heady });
 
         expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
         expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
@@ -10055,7 +10055,7 @@ describe('Vector Tag Tests', function () {
       })
 
       cy.log('move displacement')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
 
         let tailx = 1;
         let taily = 6;
@@ -10069,7 +10069,7 @@ describe('Vector Tag Tests', function () {
         let headx = tailx + displacementx;
         let heady = taily + displacementy;
 
-        displacement.moveVector({
+        await displacement.moveVector({
           tailcoords: [displacementtailx, displacementtaily],
           headcoords: [displacementheadx, displacementheady]
         });
@@ -10089,16 +10089,16 @@ describe('Vector Tag Tests', function () {
   })
 
   it('1D vector', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
 
   <vector>1</vector>
 
-  <copy prop="tail" tname="_vector1" assignNames="t" />
-  <copy prop="head" tname="_vector1" assignNames="h"/>
-  <copy prop="displacement" tname="_vector1" assignNames="d" />
+  <copy prop="tail" target="_vector1" assignNames="t" />
+  <copy prop="head" target="_vector1" assignNames="h"/>
+  <copy prop="displacement" target="_vector1" assignNames="d" />
   `}, "*");
     });
 
@@ -10118,7 +10118,7 @@ describe('Vector Tag Tests', function () {
       expect(text.trim()).equal('1')
     })
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       expect(components["/_vector1"].stateValues.head.map(x => x.tree)).eqls([1])
       expect(components["/_vector1"].stateValues.tail.map(x => x.tree)).eqls([0])
@@ -10133,7 +10133,7 @@ describe('Vector Tag Tests', function () {
 
   it('mutual dependence among entire head, tail, displacement', () => {
     // this could be made more interesting once have operations on vectors
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -10166,7 +10166,7 @@ describe('Vector Tag Tests', function () {
     // to wait for page to load
     cy.get('#\\/_text1').should('have.text', 'a');
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       expect(components["/v1"].stateValues.head.map(x => x.tree)).eqls([3, 4])
       expect(components["/v1"].stateValues.tail.map(x => x.tree)).eqls([3, 4])
@@ -10194,24 +10194,24 @@ describe('Vector Tag Tests', function () {
 
     })
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components["/v1"].moveVector({ headcoords: [1, 2] })
+      await components["/v1"].moveVector({ headcoords: [1, 2] })
       expect(components["/v1"].stateValues.head.map(x => x.tree)).eqls([1, 2])
       expect(components["/v1"].stateValues.tail.map(x => x.tree)).eqls([1, 2])
       expect(components["/v1"].stateValues.displacement.map(x => x.tree)).eqls([0, 0])
 
-      components["/v1"].moveVector({ tailcoords: [-4, 5] })
+      await components["/v1"].moveVector({ tailcoords: [-4, 5] })
       expect(components["/v1"].stateValues.head.map(x => x.tree)).eqls([-4, 5])
       expect(components["/v1"].stateValues.tail.map(x => x.tree)).eqls([-4, 5])
       expect(components["/v1"].stateValues.displacement.map(x => x.tree)).eqls([0, 0])
 
-      components["/v3"].moveVector({ headcoords: [1, 2] })
+      await components["/v3"].moveVector({ headcoords: [1, 2] })
       expect(components["/v3"].stateValues.head.map(x => x.tree)).eqls([1, 2])
       expect(components["/v3"].stateValues.tail.map(x => x.tree)).eqls([1, 2])
       expect(components["/v3"].stateValues.displacement.map(x => x.tree)).eqls([0, 0])
 
-      components["/v3"].moveVector({ tailcoords: [-4, 5] })
+      await components["/v3"].moveVector({ tailcoords: [-4, 5] })
       expect(components["/v3"].stateValues.head.map(x => x.tree)).eqls([-4, 5])
       expect(components["/v3"].stateValues.tail.map(x => x.tree)).eqls([-4, 5])
       expect(components["/v3"].stateValues.displacement.map(x => x.tree)).eqls([0, 0])
@@ -10219,24 +10219,24 @@ describe('Vector Tag Tests', function () {
     });
 
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components["/v2"].moveVector({ headcoords: [1, 2] })
+      await components["/v2"].moveVector({ headcoords: [1, 2] })
       expect(components["/v2"].stateValues.head.map(x => x.tree)).eqls([1, 2])
       expect(components["/v2"].stateValues.tail.map(x => x.tree)).eqls([0, 0])
       expect(components["/v2"].stateValues.displacement.map(x => x.tree)).eqls([1, 2])
 
-      components["/v2"].moveVector({ tailcoords: [5, 7] })
+      await components["/v2"].moveVector({ tailcoords: [5, 7] })
       expect(components["/v2"].stateValues.head.map(x => x.tree)).eqls([-4, -5])
       expect(components["/v2"].stateValues.tail.map(x => x.tree)).eqls([0, 0])
       expect(components["/v2"].stateValues.displacement.map(x => x.tree)).eqls([-4, -5])
 
-      components["/v5"].moveVector({ headcoords: [1, 2] })
+      await components["/v5"].moveVector({ headcoords: [1, 2] })
       expect(components["/v5"].stateValues.head.map(x => x.tree)).eqls([1, 2])
       expect(components["/v5"].stateValues.tail.map(x => x.tree)).eqls([0, 0])
       expect(components["/v5"].stateValues.displacement.map(x => x.tree)).eqls([1, 2])
 
-      components["/v5"].moveVector({ tailcoords: [5, 7] })
+      await components["/v5"].moveVector({ tailcoords: [5, 7] })
       expect(components["/v5"].stateValues.head.map(x => x.tree)).eqls([-4, -5])
       expect(components["/v5"].stateValues.tail.map(x => x.tree)).eqls([0, 0])
       expect(components["/v5"].stateValues.displacement.map(x => x.tree)).eqls([-4, -5])
@@ -10244,26 +10244,26 @@ describe('Vector Tag Tests', function () {
     });
 
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components["/v4"].moveVector({ headcoords: [-1, 1] })
+      await components["/v4"].moveVector({ headcoords: [-1, 1] })
       expect(components["/v4"].stateValues.head.map(x => x.tree)).eqls([-8, -6])
       expect(components["/v4"].stateValues.tail.map(x => x.tree)).eqls([-4, -3])
       expect(components["/v4"].stateValues.displacement.map(x => x.tree)).eqls([-4, -3])
 
-      components["/v4"].moveVector({ tailcoords: [-10, -2] })
+      await components["/v4"].moveVector({ tailcoords: [-10, -2] })
       // since based on tail and displacement
       // Vector sets displacement to try to keep head in the same place
       expect(components["/v4"].stateValues.head.map(x => x.tree)).eqls([4, -8])
       expect(components["/v4"].stateValues.tail.map(x => x.tree)).eqls([2, -4])
       expect(components["/v4"].stateValues.displacement.map(x => x.tree)).eqls([2, -4])
 
-      components["/v6"].moveVector({ headcoords: [-1, 1] })
+      await components["/v6"].moveVector({ headcoords: [-1, 1] })
       expect(components["/v6"].stateValues.head.map(x => x.tree)).eqls([-8, -6])
       expect(components["/v6"].stateValues.tail.map(x => x.tree)).eqls([-4, -3])
       expect(components["/v6"].stateValues.displacement.map(x => x.tree)).eqls([-4, -3])
 
-      components["/v6"].moveVector({ tailcoords: [-10, -2] })
+      await components["/v6"].moveVector({ tailcoords: [-10, -2] })
       // since based on tail and displacement
       // Vector sets displacement to try to keep head in the same place
       expect(components["/v6"].stateValues.head.map(x => x.tree)).eqls([4, -8])
@@ -10273,5 +10273,401 @@ describe('Vector Tag Tests', function () {
     });
 
   })
+
+  it('vector with no arguments, copy and specify attributes', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <graph name="g0" newNamespace>
+    <vector name="v0" />
+    <copy target="v0" head="(3,4)" assignNames="v1" />
+    <copy target="v1" tail="(-1,0)" assignNames="v2" />
+    <copy target="v0" tail="(2,-6)" assignNames="v3" />
+    <copy target="v3" displacement="(-3,4)" assignNames="v4" />
+    <copy target="v0" displacement="(5,-1)" assignNames="v5" />
+    <copy target="v5" head="(6,2)" assignNames="v6" />
+  </graph>
+
+  <copy tname="g0" assignNames="g1" />
+
+  `}, "*");
+    });
+
+    // to wait for page to load
+    cy.get('#\\/_text1').should('have.text', 'a');
+
+    let tails = [
+      [0, 0],
+      [0, 0],
+      [-1, 0],
+      [2, -6],
+      [2, -6],
+      [0, 0],
+      [1, 3],
+    ]
+
+    let heads = [
+      [1, 0],
+      [3, 4],
+      [3, 4],
+      [3, -6],
+      [-1, -2],
+      [5, -1],
+      [6, 2],
+    ]
+
+    let displacements = heads.map((v, i) => [v[0] - tails[i][0], v[1] - tails[i][1]])
+
+    cy.window().then(async (win) => {
+      let components = Object.assign({}, win.state.components);
+
+      for (let i = 0; i < 7; i++) {
+        for (let j = 0; j < 2; j++) {
+          expect(components[`/g${j}/v${i}`].stateValues.tail.map(x => x.tree)).eqls(tails[i]);
+          expect(components[`/g${j}/v${i}`].stateValues.head.map(x => x.tree)).eqls(heads[i]);
+          expect(components[`/g${j}/v${i}`].stateValues.displacement.map(x => x.tree)).eqls(displacements[i]);
+        }
+      }
+
+    })
+
+
+    cy.log('move tail of g0/v0');
+
+    cy.window().then(async (win) => {
+      let components = Object.assign({}, win.state.components);
+
+      tails[0] = tails[1] = tails[5] = [3, 5];
+      heads[5] = [tails[5][0] + displacements[5][0], tails[5][1] + displacements[5][1]]
+      displacements = heads.map((v, i) => [v[0] - tails[i][0], v[1] - tails[i][1]])
+      heads[3] = [tails[3][0] + displacements[0][0], tails[3][1] + displacements[0][1]]
+      displacements = heads.map((v, i) => [v[0] - tails[i][0], v[1] - tails[i][1]])
+
+      await components["/g0/v0"].moveVector({ tailcoords: tails[0] })
+
+      for (let i = 0; i < 7; i++) {
+        for (let j = 0; j < 2; j++) {
+          expect(components[`/g${j}/v${i}`].stateValues.tail.map(x => x.tree)).eqls(tails[i]);
+          expect(components[`/g${j}/v${i}`].stateValues.head.map(x => x.tree)).eqls(heads[i]);
+          expect(components[`/g${j}/v${i}`].stateValues.displacement.map(x => x.tree)).eqls(displacements[i]);
+        }
+      }
+
+    })
+
+
+    cy.log('move head of g1/v0');
+
+    cy.window().then(async (win) => {
+      let components = Object.assign({}, win.state.components);
+
+      heads[0] = [-2, 8]
+
+      displacements = heads.map((v, i) => [v[0] - tails[i][0], v[1] - tails[i][1]])
+      heads[3] = [tails[3][0] + displacements[0][0], tails[3][1] + displacements[0][1]]
+      displacements = heads.map((v, i) => [v[0] - tails[i][0], v[1] - tails[i][1]])
+
+      await components["/g1/v0"].moveVector({ headcoords: heads[0] })
+
+      for (let i = 0; i < 7; i++) {
+        for (let j = 0; j < 2; j++) {
+          expect(components[`/g${j}/v${i}`].stateValues.tail.map(x => x.tree)).eqls(tails[i]);
+          expect(components[`/g${j}/v${i}`].stateValues.head.map(x => x.tree)).eqls(heads[i]);
+          expect(components[`/g${j}/v${i}`].stateValues.displacement.map(x => x.tree)).eqls(displacements[i]);
+        }
+      }
+
+    })
+
+
+    cy.log('move head of g0/v1');
+
+    cy.window().then(async (win) => {
+      let components = Object.assign({}, win.state.components);
+
+      heads[1] = heads[2] = [-9, -1]
+
+      displacements = heads.map((v, i) => [v[0] - tails[i][0], v[1] - tails[i][1]])
+
+      await components["/g0/v1"].moveVector({ headcoords: heads[1] })
+
+      for (let i = 0; i < 7; i++) {
+        for (let j = 0; j < 2; j++) {
+          expect(components[`/g${j}/v${i}`].stateValues.tail.map(x => x.tree)).eqls(tails[i]);
+          expect(components[`/g${j}/v${i}`].stateValues.head.map(x => x.tree)).eqls(heads[i]);
+          expect(components[`/g${j}/v${i}`].stateValues.displacement.map(x => x.tree)).eqls(displacements[i]);
+        }
+      }
+
+    })
+
+
+
+    cy.log('move tail of g1/v1');
+
+    cy.window().then(async (win) => {
+      let components = Object.assign({}, win.state.components);
+
+      tails[0] = tails[1] = tails[5] = [5, -3];
+      heads[0] = [tails[0][0] + displacements[0][0], tails[0][1] + displacements[0][1]]
+      heads[5] = [tails[5][0] + displacements[5][0], tails[5][1] + displacements[5][1]]
+      displacements = heads.map((v, i) => [v[0] - tails[i][0], v[1] - tails[i][1]])
+
+      await components["/g1/v1"].moveVector({ tailcoords: tails[1] })
+
+      for (let i = 0; i < 7; i++) {
+        for (let j = 0; j < 2; j++) {
+          expect(components[`/g${j}/v${i}`].stateValues.tail.map(x => x.tree)).eqls(tails[i]);
+          expect(components[`/g${j}/v${i}`].stateValues.head.map(x => x.tree)).eqls(heads[i]);
+          expect(components[`/g${j}/v${i}`].stateValues.displacement.map(x => x.tree)).eqls(displacements[i]);
+        }
+      }
+
+    })
+
+    
+    cy.log('move tail of g0/v2');
+
+    cy.window().then(async (win) => {
+      let components = Object.assign({}, win.state.components);
+
+      tails[2] = [7, 9];
+
+      displacements = heads.map((v, i) => [v[0] - tails[i][0], v[1] - tails[i][1]])
+
+      await components["/g0/v2"].moveVector({ tailcoords: tails[2] })
+
+      for (let i = 0; i < 7; i++) {
+        for (let j = 0; j < 2; j++) {
+          expect(components[`/g${j}/v${i}`].stateValues.tail.map(x => x.tree)).eqls(tails[i]);
+          expect(components[`/g${j}/v${i}`].stateValues.head.map(x => x.tree)).eqls(heads[i]);
+          expect(components[`/g${j}/v${i}`].stateValues.displacement.map(x => x.tree)).eqls(displacements[i]);
+        }
+      }
+
+    })
+
+    
+    cy.log('move head of g1/v2');
+
+    cy.window().then(async (win) => {
+      let components = Object.assign({}, win.state.components);
+
+      heads[1] = heads[2] = [8, 4];
+
+      displacements = heads.map((v, i) => [v[0] - tails[i][0], v[1] - tails[i][1]])
+
+      await components["/g1/v2"].moveVector({ headcoords: heads[2] })
+
+      for (let i = 0; i < 7; i++) {
+        for (let j = 0; j < 2; j++) {
+          expect(components[`/g${j}/v${i}`].stateValues.tail.map(x => x.tree)).eqls(tails[i]);
+          expect(components[`/g${j}/v${i}`].stateValues.head.map(x => x.tree)).eqls(heads[i]);
+          expect(components[`/g${j}/v${i}`].stateValues.displacement.map(x => x.tree)).eqls(displacements[i]);
+        }
+      }
+
+    })
+
+
+
+    cy.log('move head of g0/v3');
+
+    cy.window().then(async (win) => {
+      let components = Object.assign({}, win.state.components);
+
+      heads[3] = [-4, -7];
+      displacements = heads.map((v, i) => [v[0] - tails[i][0], v[1] - tails[i][1]])
+      heads[0] = [tails[0][0] + displacements[3][0], tails[0][1] + displacements[3][1]]
+      displacements = heads.map((v, i) => [v[0] - tails[i][0], v[1] - tails[i][1]])
+
+      await components["/g0/v3"].moveVector({ headcoords: heads[3] })
+
+      for (let i = 0; i < 7; i++) {
+        for (let j = 0; j < 2; j++) {
+          expect(components[`/g${j}/v${i}`].stateValues.tail.map(x => x.tree)).eqls(tails[i]);
+          expect(components[`/g${j}/v${i}`].stateValues.head.map(x => x.tree)).eqls(heads[i]);
+          expect(components[`/g${j}/v${i}`].stateValues.displacement.map(x => x.tree)).eqls(displacements[i]);
+        }
+      }
+
+    })
+
+
+    cy.log('move tail of g1/v3');
+
+    cy.window().then(async (win) => {
+      let components = Object.assign({}, win.state.components);
+
+      tails[3] = tails[4] = [-6,2]
+      heads[4] = [tails[4][0] + displacements[4][0], tails[4][1] + displacements[4][1]]
+
+      displacements = heads.map((v, i) => [v[0] - tails[i][0], v[1] - tails[i][1]])
+      heads[0] = [tails[0][0] + displacements[3][0], tails[0][1] + displacements[3][1]]
+      displacements = heads.map((v, i) => [v[0] - tails[i][0], v[1] - tails[i][1]])
+
+      await components["/g1/v3"].moveVector({ tailcoords: tails[3] })
+
+      for (let i = 0; i < 7; i++) {
+        for (let j = 0; j < 2; j++) {
+          expect(components[`/g${j}/v${i}`].stateValues.tail.map(x => x.tree)).eqls(tails[i]);
+          expect(components[`/g${j}/v${i}`].stateValues.head.map(x => x.tree)).eqls(heads[i]);
+          expect(components[`/g${j}/v${i}`].stateValues.displacement.map(x => x.tree)).eqls(displacements[i]);
+        }
+      }
+
+    })
+
+
+
+    cy.log('move tail of g0/v4');
+
+    cy.window().then(async (win) => {
+      let components = Object.assign({}, win.state.components);
+
+      tails[3] = tails[4] = [-2,3]
+      heads[3] = [tails[3][0] + displacements[3][0], tails[3][1] + displacements[3][1]]
+
+      displacements = heads.map((v, i) => [v[0] - tails[i][0], v[1] - tails[i][1]])
+
+      await components["/g0/v4"].moveVector({ tailcoords: tails[4] })
+
+      for (let i = 0; i < 7; i++) {
+        for (let j = 0; j < 2; j++) {
+          expect(components[`/g${j}/v${i}`].stateValues.tail.map(x => x.tree)).eqls(tails[i]);
+          expect(components[`/g${j}/v${i}`].stateValues.head.map(x => x.tree)).eqls(heads[i]);
+          expect(components[`/g${j}/v${i}`].stateValues.displacement.map(x => x.tree)).eqls(displacements[i]);
+        }
+      }
+
+    })
+
+
+
+    cy.log('move head of g1/v4');
+
+    cy.window().then(async (win) => {
+      let components = Object.assign({}, win.state.components);
+
+      heads[4] = [2,0]
+
+      displacements = heads.map((v, i) => [v[0] - tails[i][0], v[1] - tails[i][1]])
+
+      await components["/g1/v4"].moveVector({ headcoords: heads[4] })
+
+      for (let i = 0; i < 7; i++) {
+        for (let j = 0; j < 2; j++) {
+          expect(components[`/g${j}/v${i}`].stateValues.tail.map(x => x.tree)).eqls(tails[i]);
+          expect(components[`/g${j}/v${i}`].stateValues.head.map(x => x.tree)).eqls(heads[i]);
+          expect(components[`/g${j}/v${i}`].stateValues.displacement.map(x => x.tree)).eqls(displacements[i]);
+        }
+      }
+
+    })
+
+
+    cy.log('move head of g0/v5');
+
+    cy.window().then(async (win) => {
+      let components = Object.assign({}, win.state.components);
+
+      heads[5] = [-9,-8]
+
+      displacements = heads.map((v, i) => [v[0] - tails[i][0], v[1] - tails[i][1]])
+      tails[6] = [heads[6][0] - displacements[5][0], heads[6][1] - displacements[5][1]]
+      displacements = heads.map((v, i) => [v[0] - tails[i][0], v[1] - tails[i][1]])
+
+      await components["/g0/v5"].moveVector({ headcoords: heads[5] })
+
+      for (let i = 0; i < 7; i++) {
+        for (let j = 0; j < 2; j++) {
+          expect(components[`/g${j}/v${i}`].stateValues.tail.map(x => x.tree)).eqls(tails[i]);
+          expect(components[`/g${j}/v${i}`].stateValues.head.map(x => x.tree)).eqls(heads[i]);
+          expect(components[`/g${j}/v${i}`].stateValues.displacement.map(x => x.tree)).eqls(displacements[i]);
+        }
+      }
+
+    })
+
+
+
+    cy.log('move tail of g1/v5');
+
+    cy.window().then(async (win) => {
+      let components = Object.assign({}, win.state.components);
+
+      tails[0] = tails[1] = tails[5] = [3,7]
+
+      heads[0] = [tails[0][0] + displacements[0][0], tails[0][1] + displacements[0][1]]
+
+      displacements = heads.map((v, i) => [v[0] - tails[i][0], v[1] - tails[i][1]])
+      tails[6] = [heads[6][0] - displacements[5][0], heads[6][1] - displacements[5][1]]
+      displacements = heads.map((v, i) => [v[0] - tails[i][0], v[1] - tails[i][1]])
+
+      await components["/g1/v5"].moveVector({ tailcoords: tails[5] })
+
+      for (let i = 0; i < 7; i++) {
+        for (let j = 0; j < 2; j++) {
+          expect(components[`/g${j}/v${i}`].stateValues.tail.map(x => x.tree)).eqls(tails[i]);
+          expect(components[`/g${j}/v${i}`].stateValues.head.map(x => x.tree)).eqls(heads[i]);
+          expect(components[`/g${j}/v${i}`].stateValues.displacement.map(x => x.tree)).eqls(displacements[i]);
+        }
+      }
+
+    })
+
+
+
+    cy.log('move tail of g0/v6');
+
+    cy.window().then(async (win) => {
+      let components = Object.assign({}, win.state.components);
+
+      tails[6] = [8,-7]
+
+      displacements = heads.map((v, i) => [v[0] - tails[i][0], v[1] - tails[i][1]])
+      heads[5] = [tails[5][0] + displacements[6][0], tails[5][1] + displacements[6][1]]
+      displacements = heads.map((v, i) => [v[0] - tails[i][0], v[1] - tails[i][1]])
+
+      await components["/g0/v6"].moveVector({ tailcoords: tails[6] })
+
+      for (let i = 0; i < 7; i++) {
+        for (let j = 0; j < 2; j++) {
+          expect(components[`/g${j}/v${i}`].stateValues.tail.map(x => x.tree)).eqls(tails[i]);
+          expect(components[`/g${j}/v${i}`].stateValues.head.map(x => x.tree)).eqls(heads[i]);
+          expect(components[`/g${j}/v${i}`].stateValues.displacement.map(x => x.tree)).eqls(displacements[i]);
+        }
+      }
+
+    })
+
+
+
+    cy.log('move head of g1/v6');
+
+    cy.window().then(async (win) => {
+      let components = Object.assign({}, win.state.components);
+
+      heads[6] = [9,-5]
+
+      displacements = heads.map((v, i) => [v[0] - tails[i][0], v[1] - tails[i][1]])
+      heads[5] = [tails[5][0] + displacements[6][0], tails[5][1] + displacements[6][1]]
+      displacements = heads.map((v, i) => [v[0] - tails[i][0], v[1] - tails[i][1]])
+
+      await components["/g1/v6"].moveVector({ headcoords: heads[6] })
+
+      for (let i = 0; i < 7; i++) {
+        for (let j = 0; j < 2; j++) {
+          expect(components[`/g${j}/v${i}`].stateValues.tail.map(x => x.tree)).eqls(tails[i]);
+          expect(components[`/g${j}/v${i}`].stateValues.head.map(x => x.tree)).eqls(heads[i]);
+          expect(components[`/g${j}/v${i}`].stateValues.displacement.map(x => x.tree)).eqls(displacements[i]);
+        }
+      }
+
+    })
+
+  })
+
 
 });

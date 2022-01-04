@@ -13,10 +13,6 @@ export default class Polyline extends GraphicalComponent {
     )
   };
 
-  // used when referencing this component without prop
-  static useChildrenForReference = false;
-  static get stateVariablesShadowedForReference() { return ["vertices", "nVertices"] };
-
   static createAttributesObject(args) {
     let attributes = super.createAttributesObject(args);
 
@@ -264,7 +260,7 @@ export default class Polyline extends GraphicalComponent {
 
         return { newValues: { vertices } }
       },
-      inverseArrayDefinitionByKey({ desiredStateVariableValues,
+      async inverseArrayDefinitionByKey({ desiredStateVariableValues,
         dependencyValuesByKey, dependencyNamesByKey,
         initialChange, stateValues,
       }) {
@@ -276,7 +272,7 @@ export default class Polyline extends GraphicalComponent {
 
 
         // if not draggable, then disallow initial change 
-        if (initialChange && !stateValues.draggable) {
+        if (initialChange && !await stateValues.draggable) {
           return { success: false };
         }
 
@@ -353,46 +349,6 @@ export default class Polyline extends GraphicalComponent {
       }
     }
 
-    stateVariableDefinitions.graphXmin = {
-      forRenderer: true,
-      additionalStateVariablesDefined: [{
-        variableName: "graphXmax",
-        forRenderer: true,
-      }, {
-        variableName: "graphYmin",
-        forRenderer: true,
-      }, {
-        variableName: "graphYmax",
-        forRenderer: true,
-      }],
-      returnDependencies: () => ({
-        graphAncestor: {
-          dependencyType: "ancestor",
-          componentType: "graph",
-          variableNames: ["xmin", "xmax", "ymin", "ymax"]
-        }
-      }),
-      definition({ dependencyValues }) {
-        if (dependencyValues.graphAncestor) {
-          return {
-            newValues: {
-              graphXmin: dependencyValues.graphAncestor.stateValues.xmin,
-              graphXmax: dependencyValues.graphAncestor.stateValues.xmax,
-              graphYmin: dependencyValues.graphAncestor.stateValues.ymin,
-              graphYmax: dependencyValues.graphAncestor.stateValues.ymax,
-            }
-          }
-        } else {
-          return {
-            newValues: {
-              graphXmin: null, graphXmax: null,
-              graphYmin: null, graphYmax: null
-            }
-          }
-        }
-      }
-    }
-
     stateVariableDefinitions.nearestPoint = {
       returnDependencies: () => ({
         nDimensions: {
@@ -407,38 +363,11 @@ export default class Polyline extends GraphicalComponent {
           dependencyType: "stateVariable",
           variableName: "nVertices"
         },
-        graphXmin: {
-          dependencyType: "stateVariable",
-          variableName: "graphXmin"
-        },
-        graphXmax: {
-          dependencyType: "stateVariable",
-          variableName: "graphXmax"
-        },
-        graphYmin: {
-          dependencyType: "stateVariable",
-          variableName: "graphYmin"
-        },
-        graphYmax: {
-          dependencyType: "stateVariable",
-          variableName: "graphYmax"
-        },
       }),
       definition({ dependencyValues }) {
         let nDimensions = dependencyValues.nDimensions;
         let nVertices = dependencyValues.nVertices;
         let numericalVertices = dependencyValues.numericalVertices;
-
-        let xscale = 1, yscale = 1;
-        if (dependencyValues.graphXmin !== null &&
-          dependencyValues.graphXmax !== null &&
-          dependencyValues.graphYmin !== null &&
-          dependencyValues.graphYmax !== null
-        ) {
-          xscale = dependencyValues.graphXmax - dependencyValues.graphXmin;
-          yscale = dependencyValues.graphYmax - dependencyValues.graphYmin;
-        }
-
 
         let vals = [];
         let prPtx, prPty;
@@ -458,14 +387,13 @@ export default class Polyline extends GraphicalComponent {
             vals.push(null);
           } else {
 
-            let BA1 = (nxPtx - prPtx) / xscale;
-            let BA2 = (nxPty - prPty) / yscale;
-            let denom = (BA1 * BA1 + BA2 * BA2);
+            let BA1sub = (nxPtx - prPtx);
+            let BA2sub = (nxPty - prPty);
 
-            if (denom === 0) {
+            if (BA1sub === 0 && BA2sub === 0) {
               vals.push(null);
             } else {
-              vals.push([BA1, BA2, denom]);
+              vals.push([BA1sub, BA2sub]);
             }
           }
         }
@@ -473,7 +401,10 @@ export default class Polyline extends GraphicalComponent {
 
         return {
           newValues: {
-            nearestPoint: function (variables) {
+            nearestPoint: function ({ variables, scales }) {
+
+              let xscale = scales[0];
+              let yscale = scales[1];
 
               // only implemented in 2D for now
               if (nDimensions !== 2 || nVertices === 0) {
@@ -502,7 +433,9 @@ export default class Polyline extends GraphicalComponent {
                   continue;
                 }
 
-                let [BA1, BA2, denom] = val;
+                let BA1 = val[0] / xscale;
+                let BA2 = val[1] / yscale;
+                let denom = (BA1 * BA1 + BA2 * BA2);
 
 
                 let t = ((x1 - prevPtx) / xscale * BA1 + (x2 - prevPty) / yscale * BA2) / denom;
@@ -547,7 +480,7 @@ export default class Polyline extends GraphicalComponent {
   }
 
 
-  movePolyline({ pointCoords, transient, sourceInformation }) {
+  async movePolyline({ pointCoords, transient, sourceInformation }) {
 
     let vertexComponents = {};
     for (let ind in pointCoords) {
@@ -556,7 +489,7 @@ export default class Polyline extends GraphicalComponent {
     }
 
     if (transient) {
-      return this.coreFunctions.performUpdate({
+      return await this.coreFunctions.performUpdate({
         updateInstructions: [{
           updateType: "updateValue",
           componentName: this.componentName,
@@ -568,7 +501,7 @@ export default class Polyline extends GraphicalComponent {
       });
     } else {
 
-      return this.coreFunctions.performUpdate({
+      return await this.coreFunctions.performUpdate({
         updateInstructions: [{
           updateType: "updateValue",
           componentName: this.componentName,
@@ -591,13 +524,13 @@ export default class Polyline extends GraphicalComponent {
 
   }
 
-  finalizePolylinePosition() {
+  async finalizePolylinePosition() {
     // trigger a movePolyline 
     // to send the final values with transient=false
     // so that the final position will be recorded
 
-    return this.actions.movePolyline({
-      pointCoords: this.stateValues.numericalVertices,
+    return await this.actions.movePolyline({
+      pointCoords: await this.stateValues.numericalVertices,
       transient: false
     });
   }

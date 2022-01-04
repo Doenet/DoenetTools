@@ -1,6 +1,6 @@
 import BaseComponent from './abstract/BaseComponent';
 import me from 'math-expressions';
-import { textToAst } from '../utils/math';
+import { preprocessMathInverseDefinition, textToAst } from '../utils/math';
 
 export default class Cell extends BaseComponent {
   static componentType = "cell";
@@ -10,10 +10,6 @@ export default class Cell extends BaseComponent {
   static includeBlankStringChildren = true;
 
   static primaryStateVariableForDefinition = "text";
-
-  static get stateVariablesShadowedForReference() {
-    return ["halign", "bottom", "right"]
-  };
 
   static createAttributesObject(args) {
     let attributes = super.createAttributesObject(args);
@@ -250,8 +246,12 @@ export default class Cell extends BaseComponent {
         }
         let text = "";
         for (let child of dependencyValues.children) {
-          if (child.stateValues.text) {
-            text += child.stateValues.text;
+          if (typeof child === "object") {
+            if (child.stateValues.text) {
+              text += child.stateValues.text;
+            }
+          } else {
+            text += child.toString();
           }
         }
 
@@ -268,7 +268,9 @@ export default class Cell extends BaseComponent {
             }]
           }
         } else if (dependencyValues.children.length === 1) {
-          if (dependencyValues.children[0].stateValues.text === undefined) {
+          if (typeof dependencyValues.children[0] === "object" &&
+            dependencyValues.children[0].stateValues.text === undefined
+          ) {
             return { success: false }
           } else {
             return {
@@ -324,7 +326,7 @@ export default class Cell extends BaseComponent {
           return { newValues: { math } }
         }
       },
-      inverseDefinition({ desiredStateVariableValues, dependencyValues }) {
+      async inverseDefinition({ desiredStateVariableValues, dependencyValues, stateValues, workspace }) {
         if (dependencyValues.mathChild) {
           return {
             success: true,
@@ -336,11 +338,19 @@ export default class Cell extends BaseComponent {
             }]
           }
         } else {
+
+          let result = await preprocessMathInverseDefinition({
+            desiredValue: desiredStateVariableValues.math,
+            stateValues,
+            variableName: "math",
+            workspace,
+          })
+  
           return {
             success: true,
             instructions: [{
               setDependency: "text",
-              desiredValue: desiredStateVariableValues.math.toString(),
+              desiredValue: result.desiredValue.toString(),
             }]
           }
         }

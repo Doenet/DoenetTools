@@ -30,14 +30,14 @@ export default class MathOperator extends MathComponent {
       // break any string by white space and wrap pieces with math or number
 
       let newChildren = matchedChildren.reduce(function (a, c) {
-        if (c.componentType === "string") {
+        if (typeof c === "string") {
           return [
             ...a,
-            ...c.state.value.split(/\s+/)
+            ...c.split(/\s+/)
               .filter(s => s)
               .map(s => ({
                 componentType: Number.isFinite(Number(s)) ? "number" : "math",
-                children: [{ componentType: "string", state: { value: s } }]
+                children: [s]
               }))
           ]
         } else {
@@ -120,7 +120,7 @@ export default class MathOperator extends MathComponent {
     delete stateVariableDefinitions.expressionWithCodes;
     delete stateVariableDefinitions.mathChildrenFunctionSymbols;
     delete stateVariableDefinitions.codesAdjacentToStrings;
-    delete stateVariableDefinitions.mathChildrenByArrayComponent;
+    delete stateVariableDefinitions.mathChildrenByVectorComponent;
 
     stateVariableDefinitions.mathOperator = {
       returnDependencies: () => ({}),

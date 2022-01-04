@@ -6,9 +6,7 @@ import { buildParsedExpression, evaluateLogic } from '../utils/booleanLogic';
 export default class NumberComponent extends InlineComponent {
   static componentType = "number";
 
-  // used when referencing this component without prop
-  static useChildrenForReference = false;
-  static get stateVariablesShadowedForReference() { return ["value", "convertBoolean"] };
+  static variableForPlainMacro = "value";
 
   static createAttributesObject(args) {
     let attributes = super.createAttributesObject(args);
@@ -179,7 +177,7 @@ export default class NumberComponent extends InlineComponent {
         let codePre = dependencyValues.codePre;
 
         for (let child of dependencyValues.allChildren) {
-          if (child.componentType !== "string") {
+          if (typeof child !== "string") {
             // a math, mathList, text, textList, boolean, or booleanList
             let code = codePre + subnum;
 
@@ -222,6 +220,12 @@ export default class NumberComponent extends InlineComponent {
     stateVariableDefinitions.value = {
       public: true,
       componentType: "number",
+      stateVariablesPrescribingAdditionalAttributes: {
+        fixed: "fixed",
+        displayDigits: "displayDigits",
+        displayDecimals: "displayDecimals",
+        displaySmallAsZero: "displaySmallAsZero",
+      },
       stateVariablesDeterminingDependencies: ["singleNumberOrStringChild"],
       returnDependencies({ stateValues }) {
         if (stateValues.singleNumberOrStringChild) {
@@ -297,10 +301,10 @@ export default class NumberComponent extends InlineComponent {
             if (dependencyValues.stringChild.length === 0) {
               return { useEssentialOrDefaultValue: { value: { variablesToCheck: ["value"] } } }
             }
-            let number = Number(dependencyValues.stringChild[0].stateValues.value);
+            let number = Number(dependencyValues.stringChild[0]);
             if (Number.isNaN(number)) {
               try {
-                number = me.fromAst(textToAst.convert(dependencyValues.stringChild[0].stateValues.value)).evaluate_to_constant();
+                number = me.fromAst(textToAst.convert(dependencyValues.stringChild[0])).evaluate_to_constant();
 
                 if (typeof number === "boolean") {
                   if (dependencyValues.convertBoolean) {
@@ -439,12 +443,12 @@ export default class NumberComponent extends InlineComponent {
         }
         return number;
       },
-      inverseDefinition: function ({ desiredStateVariableValues,
+      inverseDefinition: async function ({ desiredStateVariableValues,
         dependencyValues, stateValues, overrideFixed,
       }) {
 
 
-        if (!stateValues.canBeModified && !overrideFixed) {
+        if (!await stateValues.canBeModified && !overrideFixed) {
           return { success: false };
         }
 
@@ -568,7 +572,7 @@ export default class NumberComponent extends InlineComponent {
       definition: function ({ dependencyValues }) {
         return { newValues: { text: dependencyValues.valueForDisplay.toString() } };
       },
-      inverseDefinition({ desiredStateVariableValues, stateValues }) {
+      async inverseDefinition({ desiredStateVariableValues, stateValues }) {
         let desiredNumber = Number(desiredStateVariableValues.text);
         if (Number.isFinite(desiredNumber)) {
           return {
@@ -580,8 +584,8 @@ export default class NumberComponent extends InlineComponent {
           }
         } else {
           let fromText = getFromText({
-            functionSymbols: stateValues.functionSymbols,
-            splitSymbols: stateValues.splitSymbols
+            functionSymbols: await stateValues.functionSymbols,
+            splitSymbols: await stateValues.splitSymbols
           });
 
           let expr;

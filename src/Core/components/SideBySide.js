@@ -5,8 +5,6 @@ export class SideBySide extends BlockComponent {
   static componentType = "sideBySide";
   static renderChildren = true;
 
-  static get stateVariablesShadowedForReference() { return ["widths", "margins", "valigns"] };
-
 
   static createAttributesObject(args) {
     let attributes = super.createAttributesObject(args);
@@ -1038,9 +1036,6 @@ export class SbsGroup extends BlockComponent {
   static rendererType = "container";
   static renderChildren = true;
 
-  static get stateVariablesShadowedForReference() { return ["widths", "margins", "valigns"] };
-
-
   static createAttributesObject(args) {
     let attributes = super.createAttributesObject(args);
 
@@ -1102,15 +1097,55 @@ export class SbsGroup extends BlockComponent {
     }
 
 
+    stateVariableDefinitions.essentialWidths = {
+      isArray: true,
+      entryPrefixes: ["essentialWidth"],
+      defaultEntryValue: undefined,
+      returnArraySizeDependencies: () => ({
+        maxNPanelsPerRow: {
+          dependencyType: "stateVariable",
+          variableName: "maxNPanelsPerRow",
+        },
+      }),
+      returnArraySize({ dependencyValues }) {
+        return [dependencyValues.maxNPanelsPerRow];
+      },
+      returnArrayDependenciesByKey: () => ({}),
+      arrayDefinitionByKey({ arrayKeys }) {
+
+        let essentialWidths = {};
+        for (let arrayKey of arrayKeys) {
+          essentialWidths[arrayKey] = {};
+        }
+
+        return { useEssentialOrDefaultValue: { essentialWidths } }
+      },
+      inverseArrayDefinitionByKey({ desiredStateVariableValues }) {
+
+        let value = {};
+        for (let arrayKey in desiredStateVariableValues.essentialWidths) {
+          value[arrayKey] = desiredStateVariableValues.essentialWidths[arrayKey];
+        }
+
+        return {
+          success: true,
+          instructions: [{
+            setStateVariable: "essentialWidths",
+            value
+          }]
+        }
+      }
+
+    }
+
+
     stateVariableDefinitions.specifiedWidths = {
       additionalStateVariablesDefined: [{
         variableName: "widthsAbsoluteArray",
         isArray: true,
-        defaultEntryValue: false,
       }],
       isArray: true,
       entryPrefixes: ["specifiedWidth"],
-      defaultEntryValue: undefined,
       returnArraySizeDependencies: () => ({
         maxNPanelsPerRow: {
           dependencyType: "stateVariable",
@@ -1141,6 +1176,10 @@ export class SbsGroup extends BlockComponent {
               dependencyType: "attributeComponent",
               attributeName: "widths",
               variableNames: [`componentSize${varEnding}`],
+            },
+            essentialWidth: {
+              dependencyType: "stateVariable",
+              variableName: `essentialWidth${varEnding}`
             }
           }
         }
@@ -1149,7 +1188,6 @@ export class SbsGroup extends BlockComponent {
       arrayDefinitionByKey({ globalDependencyValues, dependencyValuesByKey, arrayKeys, arraySize }) {
         let specifiedWidths = {};
         let widthsAbsoluteArray = {};
-        let essentialWidths = {};
 
         let nWidthsSpecifiedFromAttrs;
         let usingSingleWidth = false;
@@ -1183,23 +1221,12 @@ export class SbsGroup extends BlockComponent {
               }
             }
           } else {
-            essentialWidths[arrayKey] = {};
+            specifiedWidths[arrayKey] = dependencyValuesByKey[arrayKey].essentialWidth;
             widthsAbsoluteArray[arrayKey] = undefined;
           }
         }
 
-        let result = { newValues: { widthsAbsoluteArray } };
-
-        if (Object.keys(specifiedWidths).length > 0) {
-          result.newValues.specifiedWidths = specifiedWidths;
-        }
-        if (Object.keys(essentialWidths).length > 0) {
-          result.useEssentialOrDefaultValue = {
-            specifiedWidths: essentialWidths,
-          }
-        }
-
-        return result;
+        return { newValues: { widthsAbsoluteArray, specifiedWidths } };
 
       },
       inverseArrayDefinitionByKey({ desiredStateVariableValues,
@@ -1247,8 +1274,8 @@ export class SbsGroup extends BlockComponent {
             }
           } else {
             instructions.push({
-              setStateVariable: "specifiedWidths",
-              value: { [arrayKey]: desiredStateVariableValues.specifiedWidths[arrayKey] },
+              setDependency: dependencyNamesByKey[arrayKey].essentialWidth,
+              desiredValue: desiredStateVariableValues.specifiedWidths[arrayKey],
             })
           }
 
@@ -1295,21 +1322,56 @@ export class SbsGroup extends BlockComponent {
     }
 
 
-    stateVariableDefinitions.specifiedMargins = {
-      additionalStateVariablesDefined: [{
-        variableName: "marginsAbsoluteArray",
-        isArray: true,
-        entryPrefixes: ["marginAbsolute"],
-        defaultEntryValue: false,
-      }],
+
+    stateVariableDefinitions.essentialMargins = {
       isArray: true,
-      entryPrefixes: ["specifiedMargin"],
+      entryPrefixes: ["essentialMargin"],
       defaultEntryValue: undefined,
       returnArraySizeDependencies: () => ({}),
       returnArraySize() {
         return [2];
       },
-      returnArrayDependenciesByKey() {
+      returnArrayDependenciesByKey: () => ({}),
+      arrayDefinitionByKey({ arrayKeys }) {
+
+        let essentialMargins = {};
+        for (let arrayKey of arrayKeys) {
+          essentialMargins[arrayKey] = {};
+        }
+
+        return { useEssentialOrDefaultValue: { essentialMargins } }
+      },
+      inverseArrayDefinitionByKey({ desiredStateVariableValues }) {
+
+        let value = {};
+        for (let arrayKey in desiredStateVariableValues.essentialMargins) {
+          value[arrayKey] = desiredStateVariableValues.essentialMargins[arrayKey];
+        }
+
+        return {
+          success: true,
+          instructions: [{
+            setStateVariable: "essentialMargins",
+            value
+          }]
+        }
+      }
+
+    }
+
+    stateVariableDefinitions.specifiedMargins = {
+      additionalStateVariablesDefined: [{
+        variableName: "marginsAbsoluteArray",
+        isArray: true,
+        entryPrefixes: ["marginAbsolute"],
+      }],
+      isArray: true,
+      entryPrefixes: ["specifiedMargin"],
+      returnArraySizeDependencies: () => ({}),
+      returnArraySize() {
+        return [2];
+      },
+      returnArrayDependenciesByKey({ arrayKeys }) {
         let globalDependencies = {
           marginsAttr: {
             dependencyType: "attributeComponent",
@@ -1320,20 +1382,28 @@ export class SbsGroup extends BlockComponent {
             ]
           },
         }
-        return { globalDependencies };
+        let dependenciesByKey = {};
+        for (let arrayKey of arrayKeys) {
+          let varEnding = Number(arrayKey) + 1;
+          dependenciesByKey[arrayKey] = {
+            essentialMargin: {
+              dependencyType: "stateVariable",
+              variableName: `essentialMargin${varEnding}`
+            }
+          }
+        }
+        return { globalDependencies, dependenciesByKey };
       },
-      arrayDefinitionByKey({ globalDependencyValues, arrayKeys }) {
+      arrayDefinitionByKey({ dependencyValuesByKey, globalDependencyValues, arrayKeys }) {
 
         let specifiedMargins = {};
         let marginsAbsoluteArray = {};
-        let essentialMargins = {};
-
 
         if (globalDependencyValues.marginsAttr === null ||
           globalDependencyValues.marginsAttr.stateValues.nComponents === 0
         ) {
           for (let arrayKey of arrayKeys) {
-            essentialMargins[arrayKey] = {};
+            specifiedMargins[arrayKey] = dependencyValuesByKey[arrayKey].essentialMargin;
             marginsAbsoluteArray[arrayKey] = undefined;
           }
         } else if (globalDependencyValues.marginsAttr.stateValues.nComponents === 1) {
@@ -1365,22 +1435,11 @@ export class SbsGroup extends BlockComponent {
           }
         }
 
-        let result = { newValues: { marginsAbsoluteArray } };
-
-        if (Object.keys(specifiedMargins).length > 0) {
-          result.newValues.specifiedMargins = specifiedMargins;
-        }
-        if (Object.keys(essentialMargins).length > 0) {
-          result.useEssentialOrDefaultValue = {
-            specifiedMargins: essentialMargins,
-          }
-        }
-
-        return result;
+        return { newValues: { marginsAbsoluteArray, specifiedMargins } };
 
       },
-      inverseArrayDefinitionByKey({ desiredStateVariableValues,
-        globalDependencyValues, stateValues,
+      async inverseArrayDefinitionByKey({ desiredStateVariableValues,
+        dependencyNamesByKey, globalDependencyValues, stateValues,
       }) {
 
         let instructions = [];
@@ -1388,8 +1447,8 @@ export class SbsGroup extends BlockComponent {
         if (globalDependencyValues.marginsAttr === null) {
           for (let arrayKey in desiredStateVariableValues.specifiedMargins) {
             instructions.push({
-              setStateVariable: "specifiedMargins",
-              value: { [arrayKey]: desiredStateVariableValues.specifiedMargins[arrayKey] },
+              setDependency: dependencyNamesByKey[arrayKey].essentialMargin,
+              desiredValue: desiredStateVariableValues.specifiedMargins[arrayKey],
             })
           }
         } else if (!(
@@ -1402,7 +1461,7 @@ export class SbsGroup extends BlockComponent {
               setDependency: "marginsAttr",
               desiredValue: {
                 size: desiredStateVariableValues.specifiedMargins[0],
-                isAbsolute: stateValues.marginsAbsolute
+                isAbsolute: await stateValues.marginsAbsolute
               },
               variableIndex: 0,
             });
@@ -1415,7 +1474,7 @@ export class SbsGroup extends BlockComponent {
               setDependency: "marginsAttr",
               desiredValue: {
                 size: desiredStateVariableValues.specifiedMargins[1],
-                isAbsolute: stateValues.marginsAbsolute
+                isAbsolute: await stateValues.marginsAbsolute
               },
               variableIndex: 0,
             });
@@ -1428,7 +1487,7 @@ export class SbsGroup extends BlockComponent {
                 setDependency: "marginsAttr",
                 desiredValue: {
                   size: desiredStateVariableValues.specifiedMargins[1],
-                  isAbsolute: stateValues.marginsAbsolute
+                  isAbsolute: await stateValues.marginsAbsolute
                 },
                 variableIndex: 1,
               });
@@ -1449,7 +1508,7 @@ export class SbsGroup extends BlockComponent {
                 setDependency: "marginsAttr",
                 desiredValue: {
                   size: desiredStateVariableValues.specifiedMargins[arrayKey],
-                  isAbsolute: stateValues.marginsAbsolute
+                  isAbsolute: await stateValues.marginsAbsolute
                 },
                 variableIndex: 0,
               });
@@ -1458,7 +1517,7 @@ export class SbsGroup extends BlockComponent {
                 setDependency: "marginsAttr",
                 desiredValue: {
                   size: desiredStateVariableValues.specifiedMargins[arrayKey],
-                  isAbsolute: stateValues.marginsAbsolute
+                  isAbsolute: await stateValues.marginsAbsolute
                 },
                 variableIndex: arrayKey,
               });
@@ -1826,12 +1885,53 @@ export class SbsGroup extends BlockComponent {
     }
 
 
+    stateVariableDefinitions.essentialValigns = {
+      isArray: true,
+      entryPrefixes: ["essentialValign"],
+      defaultEntryValue: "top",
+      returnArraySizeDependencies: () => ({
+        maxNPanelsPerRow: {
+          dependencyType: "stateVariable",
+          variableName: "maxNPanelsPerRow",
+        },
+      }),
+      returnArraySize({ dependencyValues }) {
+        return [dependencyValues.maxNPanelsPerRow];
+      },
+      returnArrayDependenciesByKey: () => ({}),
+      arrayDefinitionByKey({ arrayKeys }) {
+
+        let essentialValigns = {};
+        for (let arrayKey of arrayKeys) {
+          essentialValigns[arrayKey] = {};
+        }
+
+        return { useEssentialOrDefaultValue: { essentialValigns } }
+      },
+      inverseArrayDefinitionByKey({ desiredStateVariableValues }) {
+
+        let value = {};
+        for (let arrayKey in desiredStateVariableValues.essentialValigns) {
+          value[arrayKey] = desiredStateVariableValues.essentialValigns[arrayKey];
+        }
+
+        return {
+          success: true,
+          instructions: [{
+            setStateVariable: "essentialValigns",
+            value
+          }]
+        }
+      }
+
+    }
+
+
     stateVariableDefinitions.valigns = {
       public: true,
       isArray: true,
       componentType: "text",
       entryPrefixes: ["valign"],
-      defaultEntryValue: "top",
       // forRenderer: true,
       returnArraySizeDependencies: () => ({
         maxNPanelsPerRow: {
@@ -1863,6 +1963,10 @@ export class SbsGroup extends BlockComponent {
               dependencyType: "attributeComponent",
               attributeName: "valigns",
               variableNames: [`text${varEnding}`],
+            },
+            essentialValign: {
+              dependencyType: "stateVariable",
+              variableName: `essentialValign${varEnding}`
             }
           }
         }
@@ -1870,7 +1974,6 @@ export class SbsGroup extends BlockComponent {
       },
       arrayDefinitionByKey({ globalDependencyValues, dependencyValuesByKey, arrayKeys, arraySize }) {
         let valigns = {};
-        let essentialValigns = {};
 
         let nValignsSpecified;
         let usingSingleValign = false;
@@ -1899,22 +2002,11 @@ export class SbsGroup extends BlockComponent {
               valigns[arrayKey] = "top";
             }
           } else {
-            essentialValigns[arrayKey] = {};
+            valigns[arrayKey] = dependencyValuesByKey[arrayKey].essentialValign;
           }
         }
 
-        let result = {};
-
-        if (Object.keys(valigns).length > 0) {
-          result.newValues = { valigns };
-        }
-        if (Object.keys(essentialValigns).length > 0) {
-          result.useEssentialOrDefaultValue = {
-            valigns: essentialValigns,
-          }
-        }
-
-        return result;
+        return { newValues: { valigns } };
 
       },
       inverseArrayDefinitionByKey({ desiredStateVariableValues,
@@ -1961,8 +2053,8 @@ export class SbsGroup extends BlockComponent {
             }
           } else {
             instructions.push({
-              setStateVariable: "valigns",
-              value: { [arrayKey]: desiredValue },
+              setDependency: dependencyNamesByKey[arrayKey].essentialValign,
+              desiredValue,
             })
           }
 

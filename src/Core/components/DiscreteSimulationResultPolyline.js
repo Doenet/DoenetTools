@@ -286,46 +286,6 @@ export default class DiscreteSimulationResultPolyline extends GraphicalComponent
       }
     }
 
-    stateVariableDefinitions.graphXmin = {
-      forRenderer: true,
-      additionalStateVariablesDefined: [{
-        variableName: "graphXmax",
-        forRenderer: true,
-      }, {
-        variableName: "graphYmin",
-        forRenderer: true,
-      }, {
-        variableName: "graphYmax",
-        forRenderer: true,
-      }],
-      returnDependencies: () => ({
-        graphAncestor: {
-          dependencyType: "ancestor",
-          componentType: "graph",
-          variableNames: ["xmin", "xmax", "ymin", "ymax"]
-        }
-      }),
-      definition({ dependencyValues }) {
-        if (dependencyValues.graphAncestor) {
-          return {
-            newValues: {
-              graphXmin: dependencyValues.graphAncestor.stateValues.xmin,
-              graphXmax: dependencyValues.graphAncestor.stateValues.xmax,
-              graphYmin: dependencyValues.graphAncestor.stateValues.ymin,
-              graphYmax: dependencyValues.graphAncestor.stateValues.ymax,
-            }
-          }
-        } else {
-          return {
-            newValues: {
-              graphXmin: null, graphXmax: null,
-              graphYmin: null, graphYmax: null
-            }
-          }
-        }
-      }
-    }
-
     stateVariableDefinitions.nearestPoint = {
       returnDependencies: () => ({
         nDimensions: {
@@ -340,38 +300,11 @@ export default class DiscreteSimulationResultPolyline extends GraphicalComponent
           dependencyType: "stateVariable",
           variableName: "nVertices"
         },
-        graphXmin: {
-          dependencyType: "stateVariable",
-          variableName: "graphXmin"
-        },
-        graphXmax: {
-          dependencyType: "stateVariable",
-          variableName: "graphXmax"
-        },
-        graphYmin: {
-          dependencyType: "stateVariable",
-          variableName: "graphYmin"
-        },
-        graphYmax: {
-          dependencyType: "stateVariable",
-          variableName: "graphYmax"
-        },
       }),
       definition({ dependencyValues }) {
         let nDimensions = dependencyValues.nDimensions;
         let nVertices = dependencyValues.nVertices;
         let numericalVertices = dependencyValues.numericalVertices;
-
-        let xscale = 1, yscale = 1;
-        if (dependencyValues.graphXmin !== null &&
-          dependencyValues.graphXmax !== null &&
-          dependencyValues.graphYmin !== null &&
-          dependencyValues.graphYmax !== null
-        ) {
-          xscale = dependencyValues.graphXmax - dependencyValues.graphXmin;
-          yscale = dependencyValues.graphYmax - dependencyValues.graphYmin;
-        }
-
 
         let vals = [];
         let prPtx, prPty;
@@ -406,7 +339,10 @@ export default class DiscreteSimulationResultPolyline extends GraphicalComponent
 
         return {
           newValues: {
-            nearestPoint: function (variables) {
+            nearestPoint: function ({ variables, scales }) {
+
+              let xscale = scales[0];
+              let yscale = scales[1];
 
               // only implemented in 2D for now
               if (nDimensions !== 2 || nVertices === 0) {
@@ -480,7 +416,7 @@ export default class DiscreteSimulationResultPolyline extends GraphicalComponent
   }
 
 
-  movePolyline({ pointCoords, transient, sourceInformation }) {
+  async movePolyline({ pointCoords, transient, sourceInformation }) {
 
     let vertexComponents = {};
     for (let ind in pointCoords) {
@@ -489,7 +425,7 @@ export default class DiscreteSimulationResultPolyline extends GraphicalComponent
     }
 
     if (transient) {
-      return this.coreFunctions.performUpdate({
+      return await this.coreFunctions.performUpdate({
         updateInstructions: [{
           updateType: "updateValue",
           componentName: this.componentName,
@@ -501,7 +437,7 @@ export default class DiscreteSimulationResultPolyline extends GraphicalComponent
       });
     } else {
 
-      return this.coreFunctions.performUpdate({
+      return await this.coreFunctions.performUpdate({
         updateInstructions: [{
           updateType: "updateValue",
           componentName: this.componentName,
@@ -524,13 +460,13 @@ export default class DiscreteSimulationResultPolyline extends GraphicalComponent
 
   }
 
-  finalizePolylinePosition() {
+  async finalizePolylinePosition() {
     // trigger a movePolyline 
     // to send the final values with transient=false
     // so that the final position will be recorded
 
-    return this.actions.movePolyline({
-      pointCoords: this.stateValues.numericalVertices,
+    return await this.actions.movePolyline({
+      pointCoords: await this.stateValues.numericalVertices,
       transient: false
     });
   }

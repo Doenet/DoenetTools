@@ -5,13 +5,6 @@ export default class Rectangle extends Polygon {
   static componentType = "rectangle";
   static rendererType = "polygon";
 
-  // used when referencing this component without prop
-  static get stateVariablesShadowedForReference() {
-    return [
-      "vertices", "nVertices", "nVerticesSpecified", "haveSpecifiedCenter",
-      "specifiedWidth", "specifiedHeight", "specifiedCenter"
-    ]
-  };
 
   static createAttributesObject(args) {
     let attributes = super.createAttributesObject(args);
@@ -201,6 +194,23 @@ export default class Rectangle extends Polygon {
       }
     }
 
+    stateVariableDefinitions.essentialWidth = {
+      defaultValue: 1,
+      returnDependencies: () => ({}),
+      definition: () => ({
+        useEssentialOrDefaultValue: {
+          essentialWidth: { variablesToCheck: ["width", "essentialWidth"] }
+        }
+      }),
+      inverseDefinition: ({ desiredStateVariableValues }) => ({
+        success: true,
+        instructions: [{
+          setStateVariable: "essentialWidth",
+          value: desiredStateVariableValues.essentialWidth
+        }]
+      })
+    }
+
     stateVariableDefinitions.specifiedWidth = {
       defaultValue: 1,
 
@@ -218,6 +228,10 @@ export default class Rectangle extends Polygon {
           haveSpecifiedCenter: {
             dependencyType: "stateVariable",
             variableName: "haveSpecifiedCenter"
+          },
+          essentialWidth: {
+            dependencyType: "stateVariable",
+            variableName: "essentialWidth"
           }
         }
       },
@@ -227,7 +241,7 @@ export default class Rectangle extends Polygon {
           return { newValues: { specifiedWidth: dependencyValues.widthAttr.stateValues.value } };
 
         } else if ((dependencyValues.haveSpecifiedCenter ? 1 : 0) + dependencyValues.nVerticesSpecified <= 1) {
-          return { useEssentialOrDefaultValue: { specifiedWidth: { variablesToCheck: ["specifiedWidth"] } } };
+          return { newValues: { specifiedWidth: dependencyValues.essentialWidth } };
         }
         return { newValues: { specifiedWidth: null } }
       },
@@ -247,13 +261,31 @@ export default class Rectangle extends Polygon {
           return {
             success: true,
             instructions: [{
-              setStateVariable: "specifiedWidth",
-              value: desiredStateVariableValues.specifiedWidth
+              setDependency: "essentialWidth",
+              desiredValue: desiredStateVariableValues.specifiedWidth
             }]
           }
         }
       }
     }
+
+    stateVariableDefinitions.essentialHeight = {
+      defaultValue: 1,
+      returnDependencies: () => ({}),
+      definition: () => ({
+        useEssentialOrDefaultValue: {
+          essentialHeight: { variablesToCheck: ["height", "essentialHeight"] }
+        }
+      }),
+      inverseDefinition: ({ desiredStateVariableValues }) => ({
+        success: true,
+        instructions: [{
+          setStateVariable: "essentialHeight",
+          value: desiredStateVariableValues.essentialHeight
+        }]
+      })
+    }
+
 
     stateVariableDefinitions.specifiedHeight = {
       defaultValue: 1,
@@ -272,6 +304,10 @@ export default class Rectangle extends Polygon {
           haveSpecifiedCenter: {
             dependencyType: "stateVariable",
             variableName: "haveSpecifiedCenter"
+          },
+          essentialHeight: {
+            dependencyType: "stateVariable",
+            variableName: "essentialHeight"
           }
         }
       },
@@ -281,7 +317,7 @@ export default class Rectangle extends Polygon {
           return { newValues: { specifiedHeight: dependencyValues.heightAttr.stateValues.value } };
 
         } else if ((dependencyValues.haveSpecifiedCenter ? 1 : 0) + dependencyValues.nVerticesSpecified <= 1) {
-          return { useEssentialOrDefaultValue: { specifiedHeight: { variablesToCheck: ["specifiedHeight"] } } };
+          return { newValues: { specifiedHeight: dependencyValues.essentialHeight } };
         }
         return { newValues: { specifiedHeight: null } }
       },
@@ -300,8 +336,8 @@ export default class Rectangle extends Polygon {
           return {
             success: true,
             instructions: [{
-              setStateVariable: "specifiedHeight",
-              value: desiredStateVariableValues.specifiedHeight
+              setDependency: "essentialHeight",
+              desiredValue: desiredStateVariableValues.specifiedHeight
             }]
           }
         }
@@ -362,19 +398,20 @@ export default class Rectangle extends Polygon {
         return { newValues: { center } };
       },
 
-      inverseArrayDefinitionByKey({ desiredStateVariableValues, dependencyValuesByKey,
+      async inverseArrayDefinitionByKey({ desiredStateVariableValues, dependencyValuesByKey,
         dependencyNamesByKey, stateValues }) {
         // console.log("center inverse", desiredStateVariableValues, dependencyValuesByKey, stateValues);
 
         let instructions = [];
 
+        let center = await stateValues.center;
         for (let arrayKey in desiredStateVariableValues.center) {
           let dim = Number(arrayKey);
 
           let v0 = dependencyValuesByKey[arrayKey].vertex0;
           let v2 = dependencyValuesByKey[arrayKey].vertex2;
 
-          let offset = desiredStateVariableValues.center[dim].subtract(stateValues.center[dim]);
+          let offset = desiredStateVariableValues.center[dim].subtract(center[dim]);
 
           let desiredV0 = v0.add(offset).simplify();
           let desiredV2 = v2.add(offset).simplify();
@@ -421,7 +458,7 @@ export default class Rectangle extends Polygon {
         return { newValues: { width } };
       },
 
-      inverseDefinition({ desiredStateVariableValues, dependencyValues, stateValues }) {
+      inverseDefinition({ desiredStateVariableValues, dependencyValues }) {
 
         let v0 = dependencyValues.vertex0.evaluate_to_constant();
         let v2 = dependencyValues.vertex2.evaluate_to_constant();
@@ -499,7 +536,7 @@ export default class Rectangle extends Polygon {
 
     stateVariableDefinitions.vertices = {
       public: true,
-      componentType: "point",
+      componentType: "math",
       isArray: true,
       nDimensions: 2,
       entryPrefixes: ["vertexX", "vertex"],
@@ -862,7 +899,7 @@ export default class Rectangle extends Polygon {
         return { newValues: { vertices } };
       },
 
-      inverseArrayDefinitionByKey({
+      async inverseArrayDefinitionByKey({
         desiredStateVariableValues, dependencyValuesByKey, globalDependencyValues,
         stateValues, workspace, initialChange, dependencyNamesByKey
       }) {
@@ -872,13 +909,14 @@ export default class Rectangle extends Polygon {
 
         // if not draggable, then disallow initial change 
 
-        if (initialChange && !stateValues.draggable) {
+        if (initialChange && !await stateValues.draggable) {
           return { success: false };
         }
 
         if (!workspace.v0) {
-          workspace.v0 = [...stateValues.vertices[0]];
-          workspace.v2 = [...stateValues.vertices[2]];
+          let vertices = await stateValues.vertices;
+          workspace.v0 = [...vertices[0]];
+          workspace.v2 = [...vertices[2]];
         }
 
         let keyX, keyY, keyV0X, keyV0Y, keyV2X, keyV2Y;
@@ -1121,7 +1159,7 @@ export default class Rectangle extends Polygon {
     return stateVariableDefinitions;
   }
 
-  movePolygon({ pointCoords, transient, sourceInformation }) {
+  async movePolygon({ pointCoords, transient, sourceInformation }) {
     let updateInstructions = [];
 
     let vertexComponents = {};
@@ -1146,11 +1184,12 @@ export default class Rectangle extends Polygon {
       let vertexY = me.fromAst(pointCoords[ind][1]);
 
       let oppositeInd = (ind + 2) % 4;
-      let oppositeX = this.stateValues.vertices[oppositeInd][0];
-      let oppositeY = this.stateValues.vertices[oppositeInd][1];
+      let vertices = await this.stateValues.vertices;
+      let oppositeX = vertices[oppositeInd][0];
+      let oppositeY = vertices[oppositeInd][1];
 
-      if (this.stateValues.nVerticesSpecified < 2) {
-        if (this.stateValues.haveSpecifiedCenter) {
+      if (await this.stateValues.nVerticesSpecified < 2) {
+        if (await this.stateValues.haveSpecifiedCenter) {
           // 1 vertex (or essential vertex) and center
 
           let centerX, centerY;
@@ -1216,12 +1255,12 @@ export default class Rectangle extends Polygon {
 
 
     if (transient) {
-      return this.coreFunctions.performUpdate({
+      return await this.coreFunctions.performUpdate({
         updateInstructions,
         transient
       });
     } else {
-      return this.coreFunctions.performUpdate({
+      return await this.coreFunctions.performUpdate({
         updateInstructions,
         event: {
           verb: "interacted",
@@ -1235,7 +1274,7 @@ export default class Rectangle extends Polygon {
         },
       });
 
-      
+
     }
   }
 }

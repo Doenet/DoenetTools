@@ -192,7 +192,7 @@ export default class Ray extends GraphicalComponent {
         return result;
 
       },
-      inverseArrayDefinitionByKey({ desiredStateVariableValues,
+      async inverseArrayDefinitionByKey({ desiredStateVariableValues,
         dependencyValuesByKey, dependencyNamesByKey,
         initialChange, stateValues,
       }) {
@@ -203,7 +203,7 @@ export default class Ray extends GraphicalComponent {
         // console.log(dependencyNamesByKey);
 
         // if not draggable, then disallow initial change 
-        if (initialChange && !stateValues.draggable) {
+        if (initialChange && !await stateValues.draggable) {
           return { success: false };
         }
 
@@ -503,7 +503,7 @@ export default class Ray extends GraphicalComponent {
   }
 
 
-  moveRay({ point1coords, point2coords, transient }) {
+  async moveRay({ point1coords, point2coords, transient }) {
 
     let newEndpoint = {};
     let newThroughpoint = {};
@@ -520,7 +520,7 @@ export default class Ray extends GraphicalComponent {
 
     if (transient) {
 
-      return this.coreFunctions.performUpdate({
+      return await this.coreFunctions.performUpdate({
         updateInstructions: [{
           componentName: this.componentName,
           updateType: "updateValue",
@@ -536,7 +536,7 @@ export default class Ray extends GraphicalComponent {
         transient
       });
     } else {
-      return this.coreFunctions.performUpdate({
+      return await this.coreFunctions.performUpdate({
         updateInstructions: [{
           componentName: this.componentName,
           updateType: "updateValue",
@@ -565,14 +565,14 @@ export default class Ray extends GraphicalComponent {
 
   }
 
-  finalizeRayPosition() {
+  async finalizeRayPosition() {
     // trigger a moveLine 
     // to send the final values with transient=false
     // so that the final position will be recorded
 
-    return this.actions.moveRay({
-      point1coords: this.stateValues.numericalEndpoint,
-      point2coords: this.stateValues.numericalThroughpoint,
+    return await this.actions.moveRay({
+      point1coords: await this.stateValues.numericalEndpoint,
+      point2coords: await this.stateValues.numericalThroughpoint,
       transient: false,
     });
   }

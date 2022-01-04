@@ -181,7 +181,7 @@ export default class SelectRandomNumbers extends SampleRandomNumbers {
   }
 
 
-  static createSerializedReplacements({ component, componentInfoObjects }) {
+  static async createSerializedReplacements({ component, componentInfoObjects, flags }) {
 
     let newNamespace = component.attributes.newNamespace && component.attributes.newNamespace.primitive;
 
@@ -195,7 +195,7 @@ export default class SelectRandomNumbers extends SampleRandomNumbers {
 
     let replacements = [];
 
-    for (let value of component.stateValues.selectedValues) {
+    for (let value of await component.stateValues.selectedValues) {
       let attributesFromComposite = {};
 
       if (Object.keys(attributesToConvert).length > 0) {
@@ -203,7 +203,8 @@ export default class SelectRandomNumbers extends SampleRandomNumbers {
           attributes: attributesToConvert,
           componentType: "number",
           componentInfoObjects,
-          compositeCreatesNewNamespace: newNamespace
+          compositeCreatesNewNamespace: newNamespace,
+          flags
         })
       }
 

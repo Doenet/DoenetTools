@@ -24,7 +24,7 @@ describe('CallAction Tag Tests', function () {
         doenetML: `
     <text>a</text>
     <p name="nums"><aslist><sampleRandomNumbers name="s" numberOfSamples="5" type="discreteUniform" from="1" to="6" /></aslist></p>
-    <p><callAction tName="s" actionName="resample" label="roll dice" name="rs" /></p>
+    <p><callAction target="s" actionName="resample" label="roll dice" name="rs" /></p>
     `}, "*");
     });
     cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
@@ -69,20 +69,20 @@ describe('CallAction Tag Tests', function () {
         <point name="P">(1,2)</point>
       </graph>
       
-      <copy tname="g" assignNames="g2" />
+      <copy target="g" assignNames="g2" />
     </section>
 
-    <copy tname="theGraphs" assignNames="theGraphs2" />
+    <copy target="theGraphs" assignNames="theGraphs2" />
 
-    <callAction name="addPoint" tName="theGraphs/g" actionName="addChildren" label="add point">
+    <callAction name="addPoint" target="theGraphs/g" actionName="addChildren" label="add point">
       <point>(3,4)</point>
     </callAction>
-    <callAction name="deletePoint" tName="theGraphs/g" actionName="deleteChildren" label="delete point" number="1" />
+    <callAction name="deletePoint" target="theGraphs/g" actionName="deleteChildren" label="delete point" number="1" />
     `}, "*");
     });
     cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = win.state.components;
 
       let g1 = components["/theGraphs/g"];
@@ -96,63 +96,63 @@ describe('CallAction Tag Tests', function () {
         expect(g.activeChildren.length).eq(1);
       }
 
-      cy.get('#\\/addPoint').click().then(() => {
+      cy.get('#\\/addPoint').click().then(async () => {
         for (let g of gs) {
           expect(g.activeChildren.length).eq(2);
           expect(g.activeChildren[0].stateValues.xs.map(x => x.tree)).eqls([1, 2])
           expect(g.activeChildren[1].stateValues.xs.map(x => x.tree)).eqls([3, 4])
         }
-        g1.activeChildren[1].movePoint({ x: -2, y: 5 })
+        await g1.activeChildren[1].movePoint({ x: -2, y: 5 })
         for (let g of gs) {
           expect(g.activeChildren[1].stateValues.xs.map(x => x.tree)).eqls([-2, 5])
         }
       })
-      cy.get('#\\/addPoint').click().then(() => {
+      cy.get('#\\/addPoint').click().then(async () => {
         for (let g of gs) {
           expect(g.activeChildren.length).eq(3);
           expect(g.activeChildren[0].stateValues.xs.map(x => x.tree)).eqls([1, 2])
           expect(g.activeChildren[1].stateValues.xs.map(x => x.tree)).eqls([-2, 5])
           expect(g.activeChildren[2].stateValues.xs.map(x => x.tree)).eqls([3, 4])
         }
-        g2.activeChildren[2].movePoint({ x: 7, y: -9 })
+        await g2.activeChildren[2].movePoint({ x: 7, y: -9 })
         for (let g of gs) {
           expect(g.activeChildren[2].stateValues.xs.map(x => x.tree)).eqls([7, -9])
         }
       })
 
-      cy.get('#\\/deletePoint').click().then(() => {
+      cy.get('#\\/deletePoint').click().then(async () => {
         for (let g of gs) {
           expect(g.activeChildren.length).eq(2);
           expect(g.activeChildren[0].stateValues.xs.map(x => x.tree)).eqls([1, 2])
           expect(g.activeChildren[1].stateValues.xs.map(x => x.tree)).eqls([-2, 5])
         }
-        g3.activeChildren[1].movePoint({ x: 1, y: 0 })
+        await g3.activeChildren[1].movePoint({ x: 1, y: 0 })
         for (let g of gs) {
           expect(g.activeChildren[1].stateValues.xs.map(x => x.tree)).eqls([1, 0])
         }
       })
 
-      cy.get('#\\/deletePoint').click().then(() => {
+      cy.get('#\\/deletePoint').click().then(async () => {
         for (let g of gs) {
           expect(g.activeChildren.length).eq(1);
           expect(g.activeChildren[0].stateValues.xs.map(x => x.tree)).eqls([1, 2])
         }
       })
 
-      cy.get('#\\/deletePoint').click().then(() => {
+      cy.get('#\\/deletePoint').click().then(async () => {
         for (let g of gs) {
           expect(g.activeChildren.length).eq(1);
           expect(g.activeChildren[0].stateValues.xs.map(x => x.tree)).eqls([1, 2])
         }
       })
 
-      cy.get('#\\/addPoint').click().then(() => {
+      cy.get('#\\/addPoint').click().then(async () => {
         for (let g of gs) {
           expect(g.activeChildren.length).eq(2);
           expect(g.activeChildren[0].stateValues.xs.map(x => x.tree)).eqls([1, 2])
           expect(g.activeChildren[1].stateValues.xs.map(x => x.tree)).eqls([3, 4])
         }
-        g4.activeChildren[1].movePoint({ x: 4, y: 8 })
+        await g4.activeChildren[1].movePoint({ x: 4, y: 8 })
         for (let g of gs) {
           expect(g.activeChildren[1].stateValues.xs.map(x => x.tree)).eqls([4, 8])
         }
@@ -170,13 +170,13 @@ describe('CallAction Tag Tests', function () {
     <text>a</text>
 
     <p name="nums"><aslist><sampleRandomNumbers name="s" numberOfSamples="5" type="discreteUniform" from="1" to="6" /></aslist></p>
-    <p><callAction tName="s" actionName="resample" label="roll dice and add point" name="rs" /></p>
+    <p><callAction target="s" actionName="resample" label="roll dice and add point" name="rs" /></p>
 
     <graph name="g">
       <point name="P">(1,2)</point>
     </graph>
     
-    <callAction name="addPoint" tName="g" actionName="addChildren" label="add point" triggerWithTnames="rs">
+    <callAction name="addPoint" target="g" actionName="addChildren" label="add point" triggerWithTargets="rs">
     <point>(3,4)</point>
     </callAction>
 
@@ -206,11 +206,11 @@ describe('CallAction Tag Tests', function () {
         }
       })
 
-      cy.get('#\\/rs').click().then(() => {
+      cy.get('#\\/rs').click().then(async () => {
         expect(g.activeChildren.length).eq(2);
         expect(g.activeChildren[0].stateValues.xs.map(x => x.tree)).eqls([1, 2])
         expect(g.activeChildren[1].stateValues.xs.map(x => x.tree)).eqls([3, 4])
-        g.activeChildren[1].movePoint({ x: -2, y: 5 })
+        await g.activeChildren[1].movePoint({ x: -2, y: 5 })
         expect(g.activeChildren[1].stateValues.xs.map(x => x.tree)).eqls([-2, 5])
 
         cy.get('#\\/nums').invoke('text').then(text => {
@@ -238,16 +238,16 @@ describe('CallAction Tag Tests', function () {
     <text>a</text>
 
     <p name="nums"><aslist><sampleRandomNumbers name="s" numberOfSamples="5" type="discreteUniform" from="1" to="6" /></aslist></p>
-    <p><callAction tName="s" actionName="resample" label="roll dice and add point" name="rs" /></p>
+    <p><callAction target="s" actionName="resample" label="roll dice and add point" name="rs" /></p>
 
     <p><number name="n">1</number></p>
-    <p><updateValue label="increment number and add point" name="in" tname="n" newValue="$n+1" type="number" /></p>
+    <p><updateValue label="increment number and add point" name="in" target="n" newValue="$n+1" type="number" /></p>
 
     <graph name="g">
       <point name="P">(1,2)</point>
     </graph>
     
-    <callAction name="addPoint" tName="g" actionName="addChildren" label="add point" triggerWithTnames="rs in">
+    <callAction name="addPoint" target="g" actionName="addChildren" label="add point" triggerWithTargets="rs in">
     <point>(3,4)</point>
     </callAction>
 
@@ -278,11 +278,11 @@ describe('CallAction Tag Tests', function () {
       })
       cy.get('#\\/n').should('have.text', '1');
 
-      cy.get('#\\/rs').click().then(() => {
+      cy.get('#\\/rs').click().then(async () => {
         expect(g.activeChildren.length).eq(2);
         expect(g.activeChildren[0].stateValues.xs.map(x => x.tree)).eqls([1, 2])
         expect(g.activeChildren[1].stateValues.xs.map(x => x.tree)).eqls([3, 4])
-        g.activeChildren[1].movePoint({ x: -2, y: 5 })
+        await g.activeChildren[1].movePoint({ x: -2, y: 5 })
         expect(g.activeChildren[1].stateValues.xs.map(x => x.tree)).eqls([-2, 5])
 
         cy.get('#\\/nums').invoke('text').then(text => {
@@ -300,12 +300,12 @@ describe('CallAction Tag Tests', function () {
 
       })
 
-      cy.get('#\\/in').click().then(() => {
+      cy.get('#\\/in').click().then(async () => {
         expect(g.activeChildren.length).eq(3);
         expect(g.activeChildren[0].stateValues.xs.map(x => x.tree)).eqls([1, 2])
         expect(g.activeChildren[1].stateValues.xs.map(x => x.tree)).eqls([-2, 5])
         expect(g.activeChildren[2].stateValues.xs.map(x => x.tree)).eqls([3, 4])
-        g.activeChildren[2].movePoint({ x: 7, y: -9 })
+        await g.activeChildren[2].movePoint({ x: 7, y: -9 })
         expect(g.activeChildren[2].stateValues.xs.map(x => x.tree)).eqls([7, -9])
 
         cy.get('#\\/n').should('have.text', '2');
@@ -327,7 +327,7 @@ describe('CallAction Tag Tests', function () {
     </graph>
 
     <p name="nums"><aslist><sampleRandomNumbers name="s" numberOfSamples="5" type="discreteUniform" from="1" to="6" /></aslist></p>
-    <p><callAction tName="s" actionName="resample" label="roll dice" name="rs" triggerWhen="$(P{prop='x'})>0 and $(P{prop='y'})>0" /></p>
+    <p><callAction target="s" actionName="resample" label="roll dice" name="rs" triggerWhen="$(P{prop='x'})>0 and $(P{prop='y'})>0" /></p>
 
     `}, "*");
     });
@@ -347,9 +347,9 @@ describe('CallAction Tag Tests', function () {
     })
     cy.get('#\\/rs').should('not.exist');
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components['/P'].movePoint({ x: -1, y: -7 });
+      await components['/P'].movePoint({ x: -1, y: -7 });
 
       cy.get('#\\/nums').invoke('text').then(text => {
         let numbers2 = text.split(',').map(Number);
@@ -357,18 +357,18 @@ describe('CallAction Tag Tests', function () {
       });
     })
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components['/P'].movePoint({ x: 3, y: -4 });
+      await components['/P'].movePoint({ x: 3, y: -4 });
       cy.get('#\\/nums').invoke('text').then(text => {
         let numbers2 = text.split(',').map(Number);
         expect(numbers2).eqls(numbers)
       });
     })
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components['/P'].movePoint({ x: 1, y: 7 });
+      await components['/P'].movePoint({ x: 1, y: 7 });
       cy.wait(10);  // to make sure all actions have chance to complete
       cy.get('#\\/nums').invoke('text').then(text => {
         let numbers2 = text.split(',').map(Number);
@@ -383,36 +383,36 @@ describe('CallAction Tag Tests', function () {
       })
     })
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components['/P'].movePoint({ x: 5, y: 9 });
+      await components['/P'].movePoint({ x: 5, y: 9 });
       cy.get('#\\/nums').invoke('text').then(text => {
         let numbers2 = text.split(',').map(Number);
         expect(numbers2).eqls(numbers)
       });
     })
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components['/P'].movePoint({ x: -3, y: 4 });
+      await components['/P'].movePoint({ x: -3, y: 4 });
       cy.get('#\\/nums').invoke('text').then(text => {
         let numbers2 = text.split(',').map(Number);
         expect(numbers2).eqls(numbers)
       });
     })
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components['/P'].movePoint({ x: -6, y: 5 });
+      await components['/P'].movePoint({ x: -6, y: 5 });
       cy.get('#\\/nums').invoke('text').then(text => {
         let numbers2 = text.split(',').map(Number);
         expect(numbers2).eqls(numbers)
       });
     })
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components['/P'].movePoint({ x: 4, y: 2 });
+      await components['/P'].movePoint({ x: 4, y: 2 });
       cy.wait(10);  // to make sure all actions have chance to complete
       cy.get('#\\/nums').invoke('text').then(text => {
         let numbers2 = text.split(',').map(Number);
@@ -427,9 +427,9 @@ describe('CallAction Tag Tests', function () {
       })
     })
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components['/P'].movePoint({ x: 9, y: 7 });
+      await components['/P'].movePoint({ x: 9, y: 7 });
       cy.get('#\\/nums').invoke('text').then(text => {
         let numbers2 = text.split(',').map(Number);
         expect(numbers2).eqls(numbers)
@@ -449,9 +449,9 @@ describe('CallAction Tag Tests', function () {
     </graph>
 
     <p name="nums"><aslist><sampleRandomNumbers name="s" numberOfSamples="5" type="discreteUniform" from="1" to="6" /></aslist></p>
-    <p><callAction tName="s" actionName="resample" label="roll dice and add point" name="rs"  triggerWithTnames="addPoint" /></p>
+    <p><callAction target="s" actionName="resample" label="roll dice and add point" name="rs"  triggerWithTargets="addPoint" /></p>
 
-    <callAction name="addPoint" tName="g" actionName="addChildren" label="add point" triggerWhen="$(P{prop='x'})>0 and $(P{prop='y'})>0" >
+    <callAction name="addPoint" target="g" actionName="addChildren" label="add point" triggerWhen="$(P{prop='x'})>0 and $(P{prop='y'})>0" >
     <point>(3,4)</point>
     </callAction>
 
@@ -482,8 +482,8 @@ describe('CallAction Tag Tests', function () {
       })
 
 
-      cy.window().then((win) => {
-        components['/P'].movePoint({ x: -1, y: -7 });
+      cy.window().then(async (win) => {
+        await components['/P'].movePoint({ x: -1, y: -7 });
         expect(g.activeChildren.length).eq(1);
         cy.get('#\\/nums').invoke('text').then(text => {
           let numbers2 = text.split(',').map(Number);
@@ -491,9 +491,9 @@ describe('CallAction Tag Tests', function () {
         });
       })
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let components = Object.assign({}, win.state.components);
-        components['/P'].movePoint({ x: 3, y: -4 });
+        await components['/P'].movePoint({ x: 3, y: -4 });
         expect(g.activeChildren.length).eq(1);
         cy.get('#\\/nums').invoke('text').then(text => {
           let numbers2 = text.split(',').map(Number);
@@ -501,9 +501,9 @@ describe('CallAction Tag Tests', function () {
         });
       })
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let components = Object.assign({}, win.state.components);
-        components['/P'].movePoint({ x: 1, y: 7 });
+        await components['/P'].movePoint({ x: 1, y: 7 });
         cy.wait(10);  // to make sure all actions have chance to complete
         expect(g.activeChildren.length).eq(2);
         cy.get('#\\/nums').invoke('text').then(text => {
@@ -519,9 +519,9 @@ describe('CallAction Tag Tests', function () {
         })
       })
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let components = Object.assign({}, win.state.components);
-        components['/P'].movePoint({ x: 5, y: 9 });
+        await components['/P'].movePoint({ x: 5, y: 9 });
         expect(g.activeChildren.length).eq(2);
         cy.get('#\\/nums').invoke('text').then(text => {
           let numbers2 = text.split(',').map(Number);
@@ -529,9 +529,9 @@ describe('CallAction Tag Tests', function () {
         });
       })
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let components = Object.assign({}, win.state.components);
-        components['/P'].movePoint({ x: -3, y: 4 });
+        await components['/P'].movePoint({ x: -3, y: 4 });
         expect(g.activeChildren.length).eq(2);
         cy.get('#\\/nums').invoke('text').then(text => {
           let numbers2 = text.split(',').map(Number);
@@ -539,9 +539,9 @@ describe('CallAction Tag Tests', function () {
         });
       })
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let components = Object.assign({}, win.state.components);
-        components['/P'].movePoint({ x: -6, y: 5 });
+        await components['/P'].movePoint({ x: -6, y: 5 });
         expect(g.activeChildren.length).eq(2);
         cy.get('#\\/nums').invoke('text').then(text => {
           let numbers2 = text.split(',').map(Number);
@@ -549,9 +549,9 @@ describe('CallAction Tag Tests', function () {
         });
       })
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let components = Object.assign({}, win.state.components);
-        components['/P'].movePoint({ x: 4, y: 2 });
+        await components['/P'].movePoint({ x: 4, y: 2 });
         cy.wait(10);  // to make sure all actions have chance to complete
         expect(g.activeChildren.length).eq(3);
         cy.get('#\\/nums').invoke('text').then(text => {
@@ -567,9 +567,9 @@ describe('CallAction Tag Tests', function () {
         })
       })
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let components = Object.assign({}, win.state.components);
-        components['/P'].movePoint({ x: 9, y: 7 });
+        await components['/P'].movePoint({ x: 9, y: 7 });
         expect(g.activeChildren.length).eq(3);
         cy.get('#\\/nums').invoke('text').then(text => {
           let numbers2 = text.split(',').map(Number);
@@ -591,9 +591,9 @@ describe('CallAction Tag Tests', function () {
     </graph>
 
     <p name="nums"><aslist><sampleRandomNumbers name="s" numberOfSamples="5" type="discreteUniform" from="1" to="6" /></aslist></p>
-    <p><callAction tName="s" actionName="resample" label="roll dice and add point" name="rs"  triggerWithTnames="addPoint" triggerWhen="$(P{prop='x'})<0 and $(P{prop='y'})<0" /></p>
+    <p><callAction target="s" actionName="resample" label="roll dice and add point" name="rs"  triggerWithTargets="addPoint" triggerWhen="$(P{prop='x'})<0 and $(P{prop='y'})<0" /></p>
 
-    <callAction name="addPoint" tName="g" actionName="addChildren" label="add point" triggerWhen="$(P{prop='x'})>0 and $(P{prop='y'})>0" >
+    <callAction name="addPoint" target="g" actionName="addChildren" label="add point" triggerWhen="$(P{prop='x'})>0 and $(P{prop='y'})>0" >
     <point>(3,4)</point>
     </callAction>
     `}, "*");
@@ -623,9 +623,9 @@ describe('CallAction Tag Tests', function () {
       })
 
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let components = Object.assign({}, win.state.components);
-        components['/P'].movePoint({ x: -1, y: -7 });
+        await components['/P'].movePoint({ x: -1, y: -7 });
         cy.wait(10);  // to make sure all actions have chance to complete
         expect(g.activeChildren.length).eq(1);
         cy.get('#\\/nums').invoke('text').then(text => {
@@ -641,9 +641,9 @@ describe('CallAction Tag Tests', function () {
         })
       })
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let components = Object.assign({}, win.state.components);
-        components['/P'].movePoint({ x: 3, y: -4 });
+        await components['/P'].movePoint({ x: 3, y: -4 });
         expect(g.activeChildren.length).eq(1);
         cy.get('#\\/nums').invoke('text').then(text => {
           let numbers2 = text.split(',').map(Number);
@@ -651,9 +651,9 @@ describe('CallAction Tag Tests', function () {
         });
       })
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let components = Object.assign({}, win.state.components);
-        components['/P'].movePoint({ x: 1, y: 7 });
+        await components['/P'].movePoint({ x: 1, y: 7 });
         expect(g.activeChildren.length).eq(2);
         cy.get('#\\/nums').invoke('text').then(text => {
           let numbers2 = text.split(',').map(Number);
@@ -661,9 +661,9 @@ describe('CallAction Tag Tests', function () {
         });
       })
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let components = Object.assign({}, win.state.components);
-        components['/P'].movePoint({ x: 5, y: 9 });
+        await components['/P'].movePoint({ x: 5, y: 9 });
         expect(g.activeChildren.length).eq(2);
         cy.get('#\\/nums').invoke('text').then(text => {
           let numbers2 = text.split(',').map(Number);
@@ -671,9 +671,9 @@ describe('CallAction Tag Tests', function () {
         });
       })
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let components = Object.assign({}, win.state.components);
-        components['/P'].movePoint({ x: -3, y: -4 });
+        await components['/P'].movePoint({ x: -3, y: -4 });
         cy.wait(10);  // to make sure all actions have chance to complete
         expect(g.activeChildren.length).eq(2);
         cy.get('#\\/nums').invoke('text').then(text => {
@@ -689,9 +689,9 @@ describe('CallAction Tag Tests', function () {
         })
       })
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let components = Object.assign({}, win.state.components);
-        components['/P'].movePoint({ x: -6, y: -5 });
+        await components['/P'].movePoint({ x: -6, y: -5 });
         expect(g.activeChildren.length).eq(2);
         cy.get('#\\/nums').invoke('text').then(text => {
           let numbers2 = text.split(',').map(Number);
@@ -699,9 +699,9 @@ describe('CallAction Tag Tests', function () {
         });
       })
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let components = Object.assign({}, win.state.components);
-        components['/P'].movePoint({ x: 4, y: 2 });
+        await components['/P'].movePoint({ x: 4, y: 2 });
         expect(g.activeChildren.length).eq(3);
         cy.get('#\\/nums').invoke('text').then(text => {
           let numbers2 = text.split(',').map(Number);
@@ -709,9 +709,9 @@ describe('CallAction Tag Tests', function () {
         });
       })
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let components = Object.assign({}, win.state.components);
-        components['/P'].movePoint({ x: 9, y: 7 });
+        await components['/P'].movePoint({ x: 9, y: 7 });
         expect(g.activeChildren.length).eq(3);
         cy.get('#\\/nums').invoke('text').then(text => {
           let numbers2 = text.split(',').map(Number);
@@ -735,8 +735,8 @@ describe('CallAction Tag Tests', function () {
     <p name="nums"><aslist><sampleRandomNumbers name="s" numberOfSamples="5" type="discreteUniform" from="1" to="6" /></aslist></p>
 
     <triggerSet label="perform actions" name="tset" >
-      <callAction tName="s" actionName="resample" label="roll dice and add point" name="rs" />
-      <callAction name="addPoint" tName="g" actionName="addChildren" label="add point" >
+      <callAction target="s" actionName="resample" label="roll dice and add point" name="rs" />
+      <callAction name="addPoint" target="g" actionName="addChildren" label="add point" >
         <point>(3,4)</point>
       </callAction>
     </triggerSet>
@@ -767,11 +767,11 @@ describe('CallAction Tag Tests', function () {
         }
       })
 
-      cy.get('#\\/tset').click().then(() => {
+      cy.get('#\\/tset').click().then(async () => {
         expect(g.activeChildren.length).eq(2);
         expect(g.activeChildren[0].stateValues.xs.map(x => x.tree)).eqls([1, 2])
         expect(g.activeChildren[1].stateValues.xs.map(x => x.tree)).eqls([3, 4])
-        g.activeChildren[1].movePoint({ x: -2, y: 5 })
+        await g.activeChildren[1].movePoint({ x: -2, y: 5 })
         expect(g.activeChildren[1].stateValues.xs.map(x => x.tree)).eqls([-2, 5])
 
         cy.get('#\\/nums').invoke('text').then(text => {
@@ -807,13 +807,13 @@ describe('CallAction Tag Tests', function () {
     <p>Enter x: <answer name="ans">x</answer></p>
 
     <triggerSet label="perform actions" name="tset" >
-      <callAction tName="s" actionName="resample" label="roll dice and add point" name="rs" />
-      <callAction name="addPoint" tName="g" actionName="addChildren" label="add point" >
+      <callAction target="s" actionName="resample" label="roll dice and add point" name="rs" />
+      <callAction name="addPoint" target="g" actionName="addChildren" label="add point" >
         <point>(3,4)</point>
       </callAction>
     </triggerSet>
 
-    <callAction name="sub" tName="ans" actionName="submitAnswer" triggerWithTnames="tset" />
+    <callAction name="sub" target="ans" actionName="submitAnswer" triggerWithTargets="tset" />
 
     `}, "*");
     });
@@ -858,11 +858,11 @@ describe('CallAction Tag Tests', function () {
         }
       });
 
-      cy.get('#\\/tset').click().then(() => {
+      cy.get('#\\/tset').click().then(async () => {
         expect(g.activeChildren.length).eq(2);
         expect(g.activeChildren[0].stateValues.xs.map(x => x.tree)).eqls([1, 2])
         expect(g.activeChildren[1].stateValues.xs.map(x => x.tree)).eqls([3, 4])
-        g.activeChildren[1].movePoint({ x: -2, y: 5 })
+        await g.activeChildren[1].movePoint({ x: -2, y: 5 })
         expect(g.activeChildren[1].stateValues.xs.map(x => x.tree)).eqls([-2, 5])
 
         cy.get('#\\/nums').invoke('text').then(text => {
@@ -897,19 +897,19 @@ describe('CallAction Tag Tests', function () {
     <text>a</text>
 
     <p name="nums"><aslist><sampleRandomNumbers name="s" numberOfSamples="5" type="discreteUniform" from="1" to="6" /></aslist></p>
-    <p><callAction tName="s" actionName="resample" label="roll dice and more" name="rs" /></p>
+    <p><callAction target="s" actionName="resample" label="roll dice and more" name="rs" /></p>
 
     <graph name="g">
       <point name="P">(1,2)</point>
     </graph>
     
 
-    <callAction name="addPoint" tName="g" actionName="addChildren" label="add point" triggerWithTnames="addOne">
+    <callAction name="addPoint" target="g" actionName="addChildren" label="add point" triggerWithTargets="addOne">
     <point>(3,4)</point>
     </callAction>
 
     <p>Count: <number name="n">1</number></p>
-    <updateValue name="addOne" tName="n" newValue="$n+1" type="number" triggerWithTnames="rs" />
+    <updateValue name="addOne" target="n" newValue="$n+1" type="number" triggerWithTargets="rs" />
 
 
     `}, "*");
@@ -939,11 +939,11 @@ describe('CallAction Tag Tests', function () {
       })
       cy.get('#\\/n').should('have.text', "1");
 
-      cy.get('#\\/rs').click().then(() => {
+      cy.get('#\\/rs').click().then(async () => {
         expect(g.activeChildren.length).eq(2);
         expect(g.activeChildren[0].stateValues.xs.map(x => x.tree)).eqls([1, 2])
         expect(g.activeChildren[1].stateValues.xs.map(x => x.tree)).eqls([3, 4])
-        g.activeChildren[1].movePoint({ x: -2, y: 5 })
+        await g.activeChildren[1].movePoint({ x: -2, y: 5 })
         expect(g.activeChildren[1].stateValues.xs.map(x => x.tree)).eqls([-2, 5])
 
         cy.get('#\\/nums').invoke('text').then(text => {

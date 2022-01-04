@@ -110,6 +110,7 @@ class DoenetViewerChild extends Component {
         });
       }
     } catch (e) {
+      throw (e);
       if (this.props.setIsInErrorState) {
         this.props.setIsInErrorState(true)
       }
@@ -257,6 +258,7 @@ class DoenetViewerChild extends Component {
     newStateVariableValues,
     contentId, sourceOfUpdate, transient = false,
     itemsWithCreditAchieved,
+    currentVariant,
   }) {
 
     // TODO: think through what the different flags do
@@ -295,9 +297,9 @@ class DoenetViewerChild extends Component {
 
     // check if generated variant changed
     // (which could happen, at least for now, when paginator changes pages)
-    let currentVariantString = JSON.stringify(this.core.document.stateValues.generatedVariantInfo, serializedComponentsReplacer);
+    let currentVariantString = JSON.stringify(currentVariant, serializedComponentsReplacer);
     if (currentVariantString !== variantString) {
-      this.generatedVariant = this.core.document.stateValues.generatedVariantInfo;
+      this.generatedVariant = currentVariant;
       variantString = currentVariantString;
       if (this.props.generatedVariantCallback) {
         this.props.generatedVariantCallback(this.generatedVariant, this.allPossibleVariants);
@@ -587,7 +589,7 @@ class DoenetViewerChild extends Component {
 
   }
 
-  contentIdsToDoenetMLs({ contentIds, callBack }) {
+  contentIdsToDoenetMLs(contentIds) {
     let promises = [];
     let newDoenetMLs = {};
     let newContentIds = contentIds;
@@ -597,29 +599,14 @@ class DoenetViewerChild extends Component {
 
     }
 
-    function ErrorFromWithinCallback(originalError) {
-      this.name = 'ErrorFromWithinCallback';
-      this.originalError = originalError;
-    }
-
-    Promise.all(promises).then((resps) => {
+    return Promise.all(promises).then((resps) => {
       // contentIds.forEach((x, i) => newDoenetMLs[x] = resps[i].data)
       newDoenetMLs = resps.map(x => x.data);
 
-      try {
-        callBack({
-          newDoenetMLs,
-          newContentIds,
-          success: true
-        })
-      } catch (e) {
-        throw new ErrorFromWithinCallback(e);
-      }
-    }).catch(err => {
+      // console.log({ newDoenetMLs, newContentIds })
+      return Promise.resolve({ newDoenetMLs, newContentIds });
 
-      if (err.name === 'ErrorFromWithinCallback') {
-        throw err.originalError;
-      }
+    }).catch(err => {
 
       let message;
       if (newContentIds.length === 1) {
@@ -630,12 +617,10 @@ class DoenetViewerChild extends Component {
 
       message += ": " + err.message;
 
-      callBack({
-        success: false,
-        message,
-        newDoenetMLs: [],
-        newContentIds: []
-      })
+      console.error(message)
+
+      return Promise.reject(new Error(message));
+
     })
 
   }
@@ -645,8 +630,8 @@ class DoenetViewerChild extends Component {
   render() {
 
     if (this.state.errMsg !== null) {
-      let errorIcon = <span style={{fontSize:"1em",color:"#C1292E"}}><FontAwesomeIcon icon={faExclamationCircle}/></span>
-      return <div style={{fontSize:"1.3em",marginLeft:"20px",marginTop:"20px"}}>{errorIcon} {this.state.errMsg}</div>
+      let errorIcon = <span style={{ fontSize: "1em", color: "#C1292E" }}><FontAwesomeIcon icon={faExclamationCircle} /></span>
+      return <div style={{ fontSize: "1.3em", marginLeft: "20px", marginTop: "20px" }}>{errorIcon} {this.state.errMsg}</div>
     }
 
     this.allowLoadPageState = true;

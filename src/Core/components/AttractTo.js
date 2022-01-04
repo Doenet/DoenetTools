@@ -104,20 +104,20 @@ export default class AttractTo extends ConstraintComponent {
 
         return {
           newValues: {
-            applyConstraint: function (variables) {
+            applyConstraint: function ({ variables, scales }) {
 
 
               let closestDistance2 = Infinity;
               let closestPoint = {}
 
               let numericalVariables = {};
-              for(let varName in variables) {
+              for (let varName in variables) {
                 numericalVariables[varName] = findFiniteNumericalValue(variables[varName]);
               }
 
               for (let nearestPointFunction of dependencyValues.nearestPointFunctions) {
 
-                let nearestPoint = nearestPointFunction(variables);
+                let nearestPoint = nearestPointFunction({ variables, scales });
 
                 if (nearestPoint === undefined) {
                   continue;

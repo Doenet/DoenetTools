@@ -89,8 +89,12 @@ export default class MathList extends InlineComponent {
         matchedChildren, isAttributeComponent = false, createdFromMacro = false,
       }) {
         if (isAttributeComponent && !createdFromMacro) {
+          // if in attribute not created by a macros,
+          // then group expressions like 3$x+3 into a single match by wrapping with a math
           return groupIntoMathsSeparatedBySpaces({ matchedChildren });
         } else {
+          // otherwise, just break strings into pieces and wrap each piece with a math,
+          // leaving all othe components alone
           return breakStringsIntoMathsBySpaces({ matchedChildren })
         }
       }
@@ -617,10 +621,7 @@ export default class MathList extends InlineComponent {
     }
 
     stateVariableDefinitions.nComponentsToDisplayByChild = {
-      additionalStateVariablesDefined: [{
-        variableName: "nChildrenToDisplay",
-        forRenderer: true,
-      }],
+      additionalStateVariablesDefined: ["nChildrenToRender"],
       returnDependencies: () => ({
         nComponents: {
           dependencyType: "stateVariable",
@@ -655,13 +656,13 @@ export default class MathList extends InlineComponent {
         let nComponentsToDisplayByChild = {};
 
         let nComponentsSoFar = 0;
-        let nChildrenToDisplay = 0;
+        let nChildrenToRender = 0;
 
         let nMathLists = 0;
         for (let child of dependencyValues.mathAndMathListChildren) {
           let nComponentsLeft = Math.max(0, nComponentsToDisplay - nComponentsSoFar);
           if (nComponentsLeft > 0) {
-            nChildrenToDisplay++;
+            nChildrenToRender++;
           }
           if (componentInfoObjects.isInheritedComponentType({
             inheritedComponentType: child.componentType,
@@ -684,7 +685,7 @@ export default class MathList extends InlineComponent {
         }
 
         return {
-          newValues: { nComponentsToDisplayByChild, nChildrenToDisplay },
+          newValues: { nComponentsToDisplayByChild, nChildrenToRender },
         }
       }
     }

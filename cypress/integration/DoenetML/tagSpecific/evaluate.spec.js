@@ -28,7 +28,7 @@ describe('Evaluate Tag Tests', function () {
 
   <p name="p_symbolic2">Evaluate symbolic using macro:  <m name="result_symbolic2">$$f_symbolic($input)</m></p>
 
-  <p>Evaluated symbolic result again: <copy tname="result_symbolic" assignNames="result_symbolic3" /></p>
+  <p>Evaluated symbolic result again: <copy target="result_symbolic" assignNames="result_symbolic3" /></p>
 
 
   <p>Evaluate numeric: 
@@ -38,7 +38,7 @@ describe('Evaluate Tag Tests', function () {
   <p>Evaluate numeric using macro:  <m name="result_numeric2">$$f_numeric($input)</m></p>
 
 
-  <p>Evaluated numeric result again: <copy tname="result_numeric" assignNames="result_numeric3" /></p>
+  <p>Evaluated numeric result again: <copy target="result_numeric" assignNames="result_numeric3" /></p>
 
 
   <p>Force evaluate symbolic: 
@@ -367,10 +367,10 @@ describe('Evaluate Tag Tests', function () {
   <evaluate function="$f2" input="$input" name="ef2" />
   <evaluate function="$f3" input="$input" name="ef3" />
   <evaluate function="$f4" input="$input" name="ef4" />
-  <copy tname="ef1" assignNames="ef1a" />
-  <copy tname="ef2" assignNames="ef2a" />
-  <copy tname="ef3" assignNames="ef3a" />
-  <copy tname="ef4" assignNames="ef4a" />
+  <copy target="ef1" assignNames="ef1a" />
+  <copy target="ef2" assignNames="ef2a" />
+  <copy target="ef3" assignNames="ef3a" />
+  <copy target="ef4" assignNames="ef4a" />
   </p>
 
   <p>
@@ -378,10 +378,10 @@ describe('Evaluate Tag Tests', function () {
   <evaluate function="$f2" input="$input" name="ef2dg6" displayDigits="6" />
   <evaluate function="$f3" input="$input" name="ef3dg6" displayDigits="6" />
   <evaluate function="$f4" input="$input" name="ef4dg6" displayDigits="6" />
-  <copy tname="ef1dg6" assignNames="ef1dg6a" />
-  <copy tname="ef2dg6" assignNames="ef2dg6a" />
-  <copy tname="ef3dg6" assignNames="ef3dg6a" />
-  <copy tname="ef4dg6" assignNames="ef4dg6a" />
+  <copy target="ef1dg6" assignNames="ef1dg6a" />
+  <copy target="ef2dg6" assignNames="ef2dg6a" />
+  <copy target="ef3dg6" assignNames="ef3dg6a" />
+  <copy target="ef4dg6" assignNames="ef4dg6a" />
   </p>
 
   <p>
@@ -389,10 +389,10 @@ describe('Evaluate Tag Tests', function () {
   <evaluate function="$f2" input="$input" name="ef2dc6" displayDecimals="6" />
   <evaluate function="$f3" input="$input" name="ef3dc6" displayDecimals="6" />
   <evaluate function="$f4" input="$input" name="ef4dc6" displayDecimals="6" />
-  <copy tname="ef1dc6" assignNames="ef1dc6a" />
-  <copy tname="ef2dc6" assignNames="ef2dc6a" />
-  <copy tname="ef3dc6" assignNames="ef3dc6a" />
-  <copy tname="ef4dc6" assignNames="ef4dc6a" />
+  <copy target="ef1dc6" assignNames="ef1dc6a" />
+  <copy target="ef2dc6" assignNames="ef2dc6a" />
+  <copy target="ef3dc6" assignNames="ef3dc6a" />
+  <copy target="ef4dc6" assignNames="ef4dc6a" />
   </p>
 
   <p>
@@ -400,10 +400,10 @@ describe('Evaluate Tag Tests', function () {
   <evaluate function="$f2" input="$input" name="ef2dsz" displaySmallAsZero="1E-13" />
   <evaluate function="$f3" input="$input" name="ef3dsz" displaySmallAsZero="1E-13" />
   <evaluate function="$f4" input="$input" name="ef4dsz" displaySmallAsZero="1E-13" />
-  <copy tname="ef1dsz" assignNames="ef1dsza" />
-  <copy tname="ef2dsz" assignNames="ef2dsza" />
-  <copy tname="ef3dsz" assignNames="ef3dsza" />
-  <copy tname="ef4dsz" assignNames="ef4dsza" />
+  <copy target="ef1dsz" assignNames="ef1dsza" />
+  <copy target="ef2dsz" assignNames="ef2dsza" />
+  <copy target="ef3dsz" assignNames="ef3dsza" />
+  <copy target="ef4dsz" assignNames="ef4dsza" />
   </p>
 
   <p>
@@ -411,10 +411,10 @@ describe('Evaluate Tag Tests', function () {
   <m name="ef2m">$$f2($input)</m>
   <m name="ef3m">$$f3($input)</m>
   <m name="ef4m">$$f4($input)</m>
-  <copy tname="ef1m" assignNames="ef1ma" />
-  <copy tname="ef2m" assignNames="ef2ma" />
-  <copy tname="ef3m" assignNames="ef3ma" />
-  <copy tname="ef4m" assignNames="ef4ma" />
+  <copy target="ef1m" assignNames="ef1ma" />
+  <copy target="ef2m" assignNames="ef2ma" />
+  <copy target="ef3m" assignNames="ef3ma" />
+  <copy target="ef4m" assignNames="ef4ma" />
   </p>
   `}, "*");
     });
@@ -681,6 +681,674 @@ describe('Evaluate Tag Tests', function () {
 
   })
 
+  it('rounding on display, overwrite on copy', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <function displayDigits="3" name="f1">100sin(x)</function>
+  <function displayDecimals="3" name="f2">100sin(x)</function>
+  <function displaySmallAsZero="1E-13" name="f3">100sin(x)</function>
+  <function name="f4">100sin(x)</function>
+
+  <p>Input: <mathinput name="input" prefill="1" /></p>
+
+  <p>
+  <evaluate function="$f1" input="$input" name="ef1" />
+  <evaluate function="$f2" input="$input" name="ef2" />
+  <evaluate function="$f3" input="$input" name="ef3" />
+  <evaluate function="$f4" input="$input" name="ef4" />
+  <copy target="ef1" assignNames="ef1Cdg6" displayDigits="6" />
+  <copy target="ef2" assignNames="ef2Cdg6" displayDigits="6" />
+  <copy target="ef3" assignNames="ef3Cdg6" displayDigits="6" />
+  <copy target="ef4" assignNames="ef4Cdg6" displayDigits="6" />
+  <copy target="ef1" assignNames="ef1Cdc6" displayDecimals="6" />
+  <copy target="ef2" assignNames="ef2Cdc6" displayDecimals="6" />
+  <copy target="ef3" assignNames="ef3Cdc6" displayDecimals="6" />
+  <copy target="ef4" assignNames="ef4Cdc6" displayDecimals="6" />
+  <copy target="ef1" assignNames="ef1Cdsz" displaySmallAsZero="1E-13" />
+  <copy target="ef2" assignNames="ef2Cdsz" displaySmallAsZero="1E-13" />
+  <copy target="ef3" assignNames="ef3Cdsz" displaySmallAsZero="1E-13" />
+  <copy target="ef4" assignNames="ef4Cdsz" displaySmallAsZero="1E-13" />
+  </p>
+
+  <p>
+  <evaluate function="$f1" input="$input" name="ef1dg6" displayDigits="6" />
+  <evaluate function="$f2" input="$input" name="ef2dg6" displayDigits="6" />
+  <evaluate function="$f3" input="$input" name="ef3dg6" displayDigits="6" />
+  <evaluate function="$f4" input="$input" name="ef4dg6" displayDigits="6" />
+  <copy target="ef1dg6" assignNames="ef1dg8a" displayDigits="8" />
+  <copy target="ef2dg6" assignNames="ef2dg8a" displayDigits="8" />
+  <copy target="ef3dg6" assignNames="ef3dg8a" displayDigits="8" />
+  <copy target="ef4dg6" assignNames="ef4dg8a" displayDigits="8" />
+  </p>
+
+  <p>
+  <evaluate function="$f1" input="$input" name="ef1dc6" displayDecimals="6" />
+  <evaluate function="$f2" input="$input" name="ef2dc6" displayDecimals="6" />
+  <evaluate function="$f3" input="$input" name="ef3dc6" displayDecimals="6" />
+  <evaluate function="$f4" input="$input" name="ef4dc6" displayDecimals="6" />
+  <copy target="ef1dc6" assignNames="ef1dc7a" displayDecimals="7" />
+  <copy target="ef2dc6" assignNames="ef2dc7a" displayDecimals="7" />
+  <copy target="ef3dc6" assignNames="ef3dc7a" displayDecimals="7" />
+  <copy target="ef4dc6" assignNames="ef4dc7a" displayDecimals="7" />
+  </p>
+
+  <p>
+  <evaluate function="$f1" input="$input" name="ef1dsz" displaySmallAsZero="1E-13" />
+  <evaluate function="$f2" input="$input" name="ef2dsz" displaySmallAsZero="1E-13" />
+  <evaluate function="$f3" input="$input" name="ef3dsz" displaySmallAsZero="1E-13" />
+  <evaluate function="$f4" input="$input" name="ef4dsz" displaySmallAsZero="1E-13" />
+  <copy target="ef1dsz" assignNames="ef1dsz0a" displaySmallAsZero="0" />
+  <copy target="ef2dsz" assignNames="ef2dsz0a" displaySmallAsZero="0" />
+  <copy target="ef3dsz" assignNames="ef3dsz0a" displaySmallAsZero="0" />
+  <copy target="ef4dsz" assignNames="ef4dsz0a" displaySmallAsZero="0" />
+  </p>
+
+
+  `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+
+    cy.get('#\\/ef1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('84.1')
+    })
+    cy.get('#\\/ef2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('84.147')
+    })
+    cy.get('#\\/ef3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('84.14709848')
+    })
+    cy.get('#\\/ef4').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('84.14709848')
+    })
+
+    cy.get('#\\/ef1Cdg6').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('84.1471')
+    })
+    cy.get('#\\/ef2Cdg6').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('84.1471')
+    })
+    cy.get('#\\/ef3Cdg6').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('84.1471')
+    })
+    cy.get('#\\/ef4Cdg6').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('84.1471')
+    })
+
+    cy.get('#\\/ef1Cdc6').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('84.1')
+    })
+    cy.get('#\\/ef2Cdc6').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('84.147098')
+    })
+    cy.get('#\\/ef3Cdc6').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('84.147098')
+    })
+    cy.get('#\\/ef4Cdc6').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('84.147098')
+    })
+
+    cy.get('#\\/ef1Cdsz').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('84.1')
+    })
+    cy.get('#\\/ef2Cdsz').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('84.147')
+    })
+    cy.get('#\\/ef3Cdsz').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('84.14709848')
+    })
+    cy.get('#\\/ef4Cdsz').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('84.14709848')
+    })
+
+    cy.get('#\\/ef1dg6').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('84.1471')
+    })
+    cy.get('#\\/ef2dg6').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('84.1471')
+    })
+    cy.get('#\\/ef3dg6').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('84.1471')
+    })
+    cy.get('#\\/ef4dg6').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('84.1471')
+    })
+    cy.get('#\\/ef1dg8a').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('84.147098')
+    })
+    cy.get('#\\/ef2dg8a').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('84.147098')
+    })
+    cy.get('#\\/ef3dg8a').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('84.147098')
+    })
+    cy.get('#\\/ef4dg8a').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('84.147098')
+    })
+
+
+    cy.get('#\\/ef1dc6').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('84.1')
+    })
+    cy.get('#\\/ef2dc6').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('84.147098')
+    })
+    cy.get('#\\/ef3dc6').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('84.147098')
+    })
+    cy.get('#\\/ef4dc6').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('84.147098')
+    })
+    cy.get('#\\/ef1dc7a').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('84.1')
+    })
+    cy.get('#\\/ef2dc7a').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('84.1470985')
+    })
+    cy.get('#\\/ef3dc7a').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('84.1470985')
+    })
+    cy.get('#\\/ef4dc7a').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('84.1470985')
+    })
+
+    cy.get('#\\/ef1dsz').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('84.1')
+    })
+    cy.get('#\\/ef2dsz').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('84.147')
+    })
+    cy.get('#\\/ef3dsz').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('84.14709848')
+    })
+    cy.get('#\\/ef4dsz').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('84.14709848')
+    })
+    cy.get('#\\/ef1dsz0a').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('84.1')
+    })
+    cy.get('#\\/ef2dsz0a').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('84.147')
+    })
+    cy.get('#\\/ef3dsz0a').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('84.14709848')
+    })
+    cy.get('#\\/ef4dsz0a').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('84.14709848')
+    })
+
+
+    cy.get('#\\/input textarea').type("{end}{backspace}pi{enter}", { force: true });
+
+
+    cy.get('#\\/ef1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim().slice(0, 3)).eq(Math.sin(Math.PI).toString().slice(0, 3))
+    })
+    cy.get('#\\/ef2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('0')
+    })
+    cy.get('#\\/ef3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('0')
+    })
+    cy.get('#\\/ef4').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim().slice(0, 9)).eq(Math.sin(Math.PI).toString().slice(0, 9))
+    })
+
+
+    cy.get('#\\/ef1Cdg6').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim().slice(0, 6)).eq(Math.sin(Math.PI).toString().slice(0, 6))
+    })
+    cy.get('#\\/ef2Cdg6').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim().slice(0, 6)).eq(Math.sin(Math.PI).toString().slice(0, 6))
+    })
+    cy.get('#\\/ef3Cdg6').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('0')
+    })
+    cy.get('#\\/ef4Cdg6').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim().slice(0, 6)).eq(Math.sin(Math.PI).toString().slice(0, 6))
+    })
+
+
+    cy.get('#\\/ef1Cdc6').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim().slice(0, 3)).eq(Math.sin(Math.PI).toString().slice(0, 3))
+    })
+    cy.get('#\\/ef2Cdc6').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('0')
+    })
+    cy.get('#\\/ef3Cdc6').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('0')
+    })
+    cy.get('#\\/ef4Cdc6').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('0')
+    })
+
+    cy.get('#\\/ef1Cdsz').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('0')
+    })
+    cy.get('#\\/ef2Cdsz').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('0')
+    })
+    cy.get('#\\/ef3Cdsz').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('0')
+    })
+    cy.get('#\\/ef4Cdsz').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('0')
+    })
+
+
+    cy.get('#\\/ef1dg6').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim().slice(0, 6)).eq(Math.sin(Math.PI).toString().slice(0, 6))
+    })
+    cy.get('#\\/ef2dg6').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim().slice(0, 6)).eq(Math.sin(Math.PI).toString().slice(0, 6))
+    })
+    cy.get('#\\/ef3dg6').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('0')
+    })
+    cy.get('#\\/ef4dg6').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim().slice(0, 6)).eq(Math.sin(Math.PI).toString().slice(0, 6))
+    })
+    cy.get('#\\/ef1dg8a').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim().slice(0, 8)).eq(Math.sin(Math.PI).toString().slice(0, 8))
+    })
+    cy.get('#\\/ef2dg8a').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim().slice(0, 8)).eq(Math.sin(Math.PI).toString().slice(0, 8))
+    })
+    cy.get('#\\/ef3dg8a').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('0')
+    })
+    cy.get('#\\/ef4dg8a').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim().slice(0, 8)).eq(Math.sin(Math.PI).toString().slice(0, 8))
+    })
+
+
+    cy.get('#\\/ef1dc6').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim().slice(0, 3)).eq(Math.sin(Math.PI).toString().slice(0, 3))
+    })
+    cy.get('#\\/ef2dc6').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('0')
+    })
+    cy.get('#\\/ef3dc6').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('0')
+    })
+    cy.get('#\\/ef4dc6').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('0')
+    })
+    cy.get('#\\/ef1dc7a').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim().slice(0, 3)).eq(Math.sin(Math.PI).toString().slice(0, 3))
+    })
+    cy.get('#\\/ef2dc7a').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('0')
+    })
+    cy.get('#\\/ef3dc7a').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('0')
+    })
+    cy.get('#\\/ef4dc7a').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('0')
+    })
+
+    cy.get('#\\/ef1dsz').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('0')
+    })
+    cy.get('#\\/ef2dsz').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('0')
+    })
+    cy.get('#\\/ef3dsz').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('0')
+    })
+    cy.get('#\\/ef4dsz').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('0')
+    })
+    cy.get('#\\/ef1dsz0a').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim().slice(0, 3)).eq(Math.sin(Math.PI).toString().slice(0, 3))
+    })
+    cy.get('#\\/ef2dsz0a').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('0')
+    })
+    cy.get('#\\/ef3dsz0a').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim().slice(0, 9)).eq(Math.sin(Math.PI).toString().slice(0, 9))
+    })
+    cy.get('#\\/ef4dsz0a').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim().slice(0, 9)).eq(Math.sin(Math.PI).toString().slice(0, 9))
+    })
+
+  })
+
+
+  it('rounding on display, ovewrite on copy functions', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <copy target="f2" displayDigits="3" assignNames="f1" />
+  <copy target="f4" displayDecimals="3" assignNames="f2" />
+  <function displaySmallAsZero="1E-13" name="f3">100sin(x)</function>
+  <copy target="f3" displaySmallAsZero="0" assignNames="f4" />
+
+  <p>Input: <mathinput name="input" prefill="1" /></p>
+
+  <p>
+  <evaluate function="$f1" input="$input" name="ef1" />
+  <evaluate function="$f2" input="$input" name="ef2" />
+  <evaluate function="$f3" input="$input" name="ef3" />
+  <evaluate function="$f4" input="$input" name="ef4" />
+  <copy target="ef1" assignNames="ef1a" />
+  <copy target="ef2" assignNames="ef2a" />
+  <copy target="ef3" assignNames="ef3a" />
+  <copy target="ef4" assignNames="ef4a" />
+  </p>
+
+  <p>
+  <evaluate function="$f1" input="$input" name="ef1dg6" displayDigits="6" />
+  <evaluate function="$f2" input="$input" name="ef2dg6" displayDigits="6" />
+  <evaluate function="$f3" input="$input" name="ef3dg6" displayDigits="6" />
+  <evaluate function="$f4" input="$input" name="ef4dg6" displayDigits="6" />
+  <copy target="ef1dg6" assignNames="ef1dg6a" />
+  <copy target="ef2dg6" assignNames="ef2dg6a" />
+  <copy target="ef3dg6" assignNames="ef3dg6a" />
+  <copy target="ef4dg6" assignNames="ef4dg6a" />
+  </p>
+
+  <p>
+  <evaluate function="$f1" input="$input" name="ef1dc6" displayDecimals="6" />
+  <evaluate function="$f2" input="$input" name="ef2dc6" displayDecimals="6" />
+  <evaluate function="$f3" input="$input" name="ef3dc6" displayDecimals="6" />
+  <evaluate function="$f4" input="$input" name="ef4dc6" displayDecimals="6" />
+  <copy target="ef1dc6" assignNames="ef1dc6a" />
+  <copy target="ef2dc6" assignNames="ef2dc6a" />
+  <copy target="ef3dc6" assignNames="ef3dc6a" />
+  <copy target="ef4dc6" assignNames="ef4dc6a" />
+  </p>
+
+  <p>
+  <evaluate function="$f1" input="$input" name="ef1dsz" displaySmallAsZero="1E-13" />
+  <evaluate function="$f2" input="$input" name="ef2dsz" displaySmallAsZero="1E-13" />
+  <evaluate function="$f3" input="$input" name="ef3dsz" displaySmallAsZero="1E-13" />
+  <evaluate function="$f4" input="$input" name="ef4dsz" displaySmallAsZero="1E-13" />
+  <copy target="ef1dsz" assignNames="ef1dsza" />
+  <copy target="ef2dsz" assignNames="ef2dsza" />
+  <copy target="ef3dsz" assignNames="ef3dsza" />
+  <copy target="ef4dsz" assignNames="ef4dsza" />
+  </p>
+
+  <p>
+  <m name="ef1m">$$f1($input)</m>
+  <m name="ef2m">$$f2($input)</m>
+  <m name="ef3m">$$f3($input)</m>
+  <m name="ef4m">$$f4($input)</m>
+  <copy target="ef1m" assignNames="ef1ma" />
+  <copy target="ef2m" assignNames="ef2ma" />
+  <copy target="ef3m" assignNames="ef3ma" />
+  <copy target="ef4m" assignNames="ef4ma" />
+  </p>
+  `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+
+    cy.get('#\\/ef1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('84.1')
+    })
+    cy.get('#\\/ef2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('84.147')
+    })
+    cy.get('#\\/ef3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('84.14709848')
+    })
+    cy.get('#\\/ef4').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('84.14709848')
+    })
+    cy.get('#\\/ef1a').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('84.1')
+    })
+    cy.get('#\\/ef2a').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('84.147')
+    })
+    cy.get('#\\/ef3a').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('84.14709848')
+    })
+    cy.get('#\\/ef4a').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('84.14709848')
+    })
+
+    cy.get('#\\/ef1dg6').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('84.1471')
+    })
+    cy.get('#\\/ef2dg6').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('84.1471')
+    })
+    cy.get('#\\/ef3dg6').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('84.1471')
+    })
+    cy.get('#\\/ef4dg6').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('84.1471')
+    })
+    cy.get('#\\/ef1dg6a').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('84.1471')
+    })
+    cy.get('#\\/ef2dg6a').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('84.1471')
+    })
+    cy.get('#\\/ef3dg6a').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('84.1471')
+    })
+    cy.get('#\\/ef4dg6a').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('84.1471')
+    })
+
+
+    cy.get('#\\/ef1dc6').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('84.1')
+    })
+    cy.get('#\\/ef2dc6').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('84.147098')
+    })
+    cy.get('#\\/ef3dc6').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('84.147098')
+    })
+    cy.get('#\\/ef4dc6').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('84.147098')
+    })
+    cy.get('#\\/ef1dc6a').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('84.1')
+    })
+    cy.get('#\\/ef2dc6a').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('84.147098')
+    })
+    cy.get('#\\/ef3dc6a').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('84.147098')
+    })
+    cy.get('#\\/ef4dc6a').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('84.147098')
+    })
+
+    cy.get('#\\/ef1dsz').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('84.1')
+    })
+    cy.get('#\\/ef2dsz').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('84.147')
+    })
+    cy.get('#\\/ef3dsz').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('84.14709848')
+    })
+    cy.get('#\\/ef4dsz').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('84.14709848')
+    })
+    cy.get('#\\/ef1dsza').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('84.1')
+    })
+    cy.get('#\\/ef2dsza').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('84.147')
+    })
+    cy.get('#\\/ef3dsza').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('84.14709848')
+    })
+    cy.get('#\\/ef4dsza').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('84.14709848')
+    })
+
+    cy.get('#\\/ef1m').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('84.1')
+    })
+    cy.get('#\\/ef2m').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('84.147')
+    })
+    cy.get('#\\/ef3m').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('84.14709848')
+    })
+    cy.get('#\\/ef4m').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('84.14709848')
+    })
+    cy.get('#\\/ef1ma').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('84.1')
+    })
+    cy.get('#\\/ef2ma').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('84.147')
+    })
+    cy.get('#\\/ef3ma').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('84.14709848')
+    })
+    cy.get('#\\/ef4ma').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('84.14709848')
+    })
+
+    cy.get('#\\/input textarea').type("{end}{backspace}pi{enter}", { force: true });
+
+
+    cy.get('#\\/ef1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim().slice(0, 3)).eq(Math.sin(Math.PI).toString().slice(0, 3))
+    })
+    cy.get('#\\/ef2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('0')
+    })
+    cy.get('#\\/ef3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('0')
+    })
+    cy.get('#\\/ef4').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim().slice(0, 9)).eq(Math.sin(Math.PI).toString().slice(0, 9))
+    })
+    cy.get('#\\/ef1a').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim().slice(0, 3)).eq(Math.sin(Math.PI).toString().slice(0, 3))
+    })
+    cy.get('#\\/ef2a').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('0')
+    })
+    cy.get('#\\/ef3a').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('0')
+    })
+    cy.get('#\\/ef4a').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim().slice(0, 9)).eq(Math.sin(Math.PI).toString().slice(0, 9))
+    })
+
+    cy.get('#\\/ef1dg6').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim().slice(0, 6)).eq(Math.sin(Math.PI).toString().slice(0, 6))
+    })
+    cy.get('#\\/ef2dg6').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim().slice(0, 6)).eq(Math.sin(Math.PI).toString().slice(0, 6))
+    })
+    cy.get('#\\/ef3dg6').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('0')
+    })
+    cy.get('#\\/ef4dg6').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim().slice(0, 6)).eq(Math.sin(Math.PI).toString().slice(0, 6))
+    })
+    cy.get('#\\/ef1dg6a').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim().slice(0, 6)).eq(Math.sin(Math.PI).toString().slice(0, 6))
+    })
+    cy.get('#\\/ef2dg6a').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim().slice(0, 6)).eq(Math.sin(Math.PI).toString().slice(0, 6))
+    })
+    cy.get('#\\/ef3dg6a').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('0')
+    })
+    cy.get('#\\/ef4dg6a').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim().slice(0, 6)).eq(Math.sin(Math.PI).toString().slice(0, 6))
+    })
+
+
+    cy.get('#\\/ef1dc6').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim().slice(0, 3)).eq(Math.sin(Math.PI).toString().slice(0, 3))
+    })
+    cy.get('#\\/ef2dc6').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('0')
+    })
+    cy.get('#\\/ef3dc6').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('0')
+    })
+    cy.get('#\\/ef4dc6').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('0')
+    })
+    cy.get('#\\/ef1dc6a').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim().slice(0, 3)).eq(Math.sin(Math.PI).toString().slice(0, 3))
+    })
+    cy.get('#\\/ef2dc6a').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('0')
+    })
+    cy.get('#\\/ef3dc6a').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('0')
+    })
+    cy.get('#\\/ef4dc6a').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('0')
+    })
+
+    cy.get('#\\/ef1dsz').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('0')
+    })
+    cy.get('#\\/ef2dsz').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('0')
+    })
+    cy.get('#\\/ef3dsz').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('0')
+    })
+    cy.get('#\\/ef4dsz').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('0')
+    })
+    cy.get('#\\/ef1dsza').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('0')
+    })
+    cy.get('#\\/ef2dsza').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('0')
+    })
+    cy.get('#\\/ef3dsza').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('0')
+    })
+    cy.get('#\\/ef4dsza').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('0')
+    })
+
+    cy.get('#\\/ef1m').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim().slice(0, 3)).eq(Math.sin(Math.PI).toString().slice(0, 3))
+    })
+    cy.get('#\\/ef2m').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('0')
+    })
+    cy.get('#\\/ef3m').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('0')
+    })
+    cy.get('#\\/ef4m').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim().slice(0, 9)).eq(Math.sin(Math.PI).toString().slice(0, 9))
+    })
+    cy.get('#\\/ef1ma').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim().slice(0, 3)).eq(Math.sin(Math.PI).toString().slice(0, 3))
+    })
+    cy.get('#\\/ef2ma').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('0')
+    })
+    cy.get('#\\/ef3ma').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('0')
+    })
+    cy.get('#\\/ef4ma').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim().slice(0, 9)).eq(Math.sin(Math.PI).toString().slice(0, 9))
+    })
+
+
+
+
+  })
+
+
   it('evaluate numeric and symbolic for function of two variables', () => {
     cy.window().then((win) => {
       win.postMessage({
@@ -702,7 +1370,7 @@ describe('Evaluate Tag Tests', function () {
 
   <p name="p_symbolic2">Evaluate symbolic using macro:  <m name="result_symbolic2">$$f_symbolic($input1, $input2)</m></p>
 
-  <p>Evaluated symbolic result again: <copy tname="result_symbolic" assignNames="result_symbolic3" /></p>
+  <p>Evaluated symbolic result again: <copy target="result_symbolic" assignNames="result_symbolic3" /></p>
 
 
   <p>Evaluate numeric: 
@@ -711,7 +1379,7 @@ describe('Evaluate Tag Tests', function () {
 
   <p>Evaluate numeric using macro:  <m name="result_numeric2">$$f_numeric($input1, $input2)</m></p>
 
-  <p>Evaluated numeric result again: <copy tname="result_numeric" assignNames="result_numeric3" /></p>
+  <p>Evaluated numeric result again: <copy target="result_numeric" assignNames="result_numeric3" /></p>
 
   <p>Force evaluate symbolic numeric function: 
   <evaluate forceSymbolic name="result_force_symbolic_numeric" function="$f_numeric" input="$input1 $input2" />
@@ -909,7 +1577,7 @@ describe('Evaluate Tag Tests', function () {
 
   <p>Evaluate 2:  <m name="result2">$$f($input)</m></p>
 
-  <p>Evaluate 3: <copy tname="result1" assignNames="result3" /></p>
+  <p>Evaluate 3: <copy target="result1" assignNames="result3" /></p>
   `}, "*");
     });
 
@@ -1084,7 +1752,7 @@ describe('Evaluate Tag Tests', function () {
     <point name="A" x="2" y="5" />
     <point name="B" x="3" y="6" />
   </graph>
-  <collect name="input3" componentTypes="point" prop="x" tname="_graph1" />
+  <collect name="input3" componentTypes="point" prop="x" target="_graph1" />
 
   <p>Separate inputs: <mathinput name="input4a" prefill="2" /> 
   <mathinput name="input4b" prefill="3" /></p>
@@ -1231,11 +1899,11 @@ describe('Evaluate Tag Tests', function () {
     cy.get('#\\/input4a textarea').type('{end}{backspace}-3', { force: true })
     cy.get('#\\/input4b textarea').type('{end}{backspace}5', { force: true }).blur()
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
 
-      components["/A"].movePoint({ x: -3, y: 7 })
-      components["/B"].movePoint({ x: 5, y: -9 })
+      await components["/A"].movePoint({ x: -3, y: 7 })
+      await components["/B"].movePoint({ x: 5, y: -9 })
 
       cy.get('#\\/result1a').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('9125')
@@ -1317,7 +1985,7 @@ describe('Evaluate Tag Tests', function () {
 
   <p name="p_symbolic2">Evaluate symbolic using macro:  <m name="result_symbolic2">$$f_symbolic($input1, $input2)</m></p>
 
-  <p>Evaluated symbolic result again: <copy tname="result_symbolic" assignNames="result_symbolic3" /></p>
+  <p>Evaluated symbolic result again: <copy target="result_symbolic" assignNames="result_symbolic3" /></p>
 
 
   <p>Evaluate numeric: 
@@ -1326,7 +1994,7 @@ describe('Evaluate Tag Tests', function () {
 
   <p>Evaluate numeric using macro:  <m name="result_numeric2">$$f_numeric($input1, $input2)</m></p>
 
-  <p>Evaluated numeric result again: <copy tname="result_numeric" assignNames="result_numeric3" /></p>
+  <p>Evaluated numeric result again: <copy target="result_numeric" assignNames="result_numeric3" /></p>
 
   <p>Force evaluate symbolic numeric function: 
   <evaluate forceSymbolic name="result_force_symbolic_numeric" function="$f_numeric" input="$input1 $input2" />
@@ -1529,7 +2197,7 @@ describe('Evaluate Tag Tests', function () {
 
   <p>Evaluate 2:  <m name="result2">$$f($input)</m></p>
 
-  <p>Evaluate 3: <copy tname="result1" assignNames="result3" /></p>
+  <p>Evaluate 3: <copy target="result1" assignNames="result3" /></p>
   `}, "*");
     });
 
@@ -1545,10 +2213,10 @@ describe('Evaluate Tag Tests', function () {
     cy.get('#\\/result3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(0,0)')
     })
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components["/f"].stateValues.nInputs).eq(2);
-      expect(components["/f"].stateValues.nOutputs).eq(2);
+      expect(await components["/f"].stateValues.nInputs).eq(2);
+      expect(await components["/f"].stateValues.nOutputs).eq(2);
       expect(components['/result1'].stateValues.value.tree).eqls(["vector", 0, 0]);
       expect(components['/result2'].activeChildren[0].stateValues.value.tree).eqls(["vector", 0, 0]);
       expect(components['/result3'].stateValues.value.tree).eqls(["vector", 0, 0]);
@@ -1566,10 +2234,10 @@ describe('Evaluate Tag Tests', function () {
     cy.get('#\\/result3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(10,4)')
     })
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components["/f"].stateValues.nInputs).eq(2);
-      expect(components["/f"].stateValues.nOutputs).eq(2);
+      expect(await components["/f"].stateValues.nInputs).eq(2);
+      expect(await components["/f"].stateValues.nOutputs).eq(2);
       expect(components['/result1'].stateValues.value.tree).eqls(["vector", 10, 4]);
       expect(components['/result2'].activeChildren[0].stateValues.value.tree).eqls(["vector", 10, 4]);
       expect(components['/result3'].stateValues.value.tree).eqls(["vector", 10, 4]);
@@ -1587,10 +2255,10 @@ describe('Evaluate Tag Tests', function () {
     cy.get('#\\/result3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('＿')
     })
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components["/f"].stateValues.nInputs).eq(3);
-      expect(components["/f"].stateValues.nOutputs).eq(2);
+      expect(await components["/f"].stateValues.nInputs).eq(3);
+      expect(await components["/f"].stateValues.nOutputs).eq(2);
       expect(components['/result1'].stateValues.value.tree).eqls('＿');
       expect(components['/result2'].activeChildren[0].stateValues.value.tree).eqls('＿');
       expect(components['/result3'].stateValues.value.tree).eqls('＿');
@@ -1609,10 +2277,10 @@ describe('Evaluate Tag Tests', function () {
     cy.get('#\\/result3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(10,4)')
     })
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components["/f"].stateValues.nInputs).eq(3);
-      expect(components["/f"].stateValues.nOutputs).eq(2);
+      expect(await components["/f"].stateValues.nInputs).eq(3);
+      expect(await components["/f"].stateValues.nOutputs).eq(2);
       expect(components['/result1'].stateValues.value.tree).eqls(["vector", 10, 4]);
       expect(components['/result2'].activeChildren[0].stateValues.value.tree).eqls(["vector", 10, 4]);
       expect(components['/result3'].stateValues.value.tree).eqls(["vector", 10, 4]);
@@ -1630,10 +2298,10 @@ describe('Evaluate Tag Tests', function () {
     cy.get('#\\/result3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(17,1)')
     })
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components["/f"].stateValues.nInputs).eq(3);
-      expect(components["/f"].stateValues.nOutputs).eq(2);
+      expect(await components["/f"].stateValues.nInputs).eq(3);
+      expect(await components["/f"].stateValues.nOutputs).eq(2);
       expect(components['/result1'].stateValues.value.tree).eqls(["vector", 17, 1]);
       expect(components['/result2'].activeChildren[0].stateValues.value.tree).eqls(["vector", 17, 1]);
       expect(components['/result3'].stateValues.value.tree).eqls(["vector", 17, 1]);
@@ -1652,10 +2320,10 @@ describe('Evaluate Tag Tests', function () {
     cy.get('#\\/result3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(17,1,42)')
     })
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components["/f"].stateValues.nInputs).eq(3);
-      expect(components["/f"].stateValues.nOutputs).eq(3);
+      expect(await components["/f"].stateValues.nInputs).eq(3);
+      expect(await components["/f"].stateValues.nOutputs).eq(3);
       expect(components['/result1'].stateValues.value.tree).eqls(["vector", 17, 1, 42]);
       expect(components['/result2'].activeChildren[0].stateValues.value.tree).eqls(["vector", 17, 1, 42]);
       expect(components['/result3'].stateValues.value.tree).eqls(["vector", 17, 1, 42]);
@@ -1673,10 +2341,10 @@ describe('Evaluate Tag Tests', function () {
     cy.get('#\\/result3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(17,1,42w,w)')
     })
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components["/f"].stateValues.nInputs).eq(3);
-      expect(components["/f"].stateValues.nOutputs).eq(4);
+      expect(await components["/f"].stateValues.nInputs).eq(3);
+      expect(await components["/f"].stateValues.nOutputs).eq(4);
       expect(components['/result1'].stateValues.value.tree).eqls(["vector", 17, 1, ['*', 42, 'w'], 'w']);
       expect(components['/result2'].activeChildren[0].stateValues.value.tree).eqls(["vector", 17, 1, ['*', 42, 'w'], 'w']);
       expect(components['/result3'].stateValues.value.tree).eqls(["vector", 17, 1, ['*', 42, 'w'], 'w']);

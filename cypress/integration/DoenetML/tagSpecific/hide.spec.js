@@ -17,10 +17,10 @@ describe('Hide Tag Tests', function () {
   <p name="p1" hide="$bib">
   This paragraph should be hidden when box is checked.
   </p>
-  <p name="p2"><copy prop="hide" tname="p1" />
+  <p name="p2"><copy prop="hide" target="p1" />
   This paragraph should not be hidden, but should include boolean text.
   </p>
-  <p name="p3"><hide><copy prop="hide" tname="p1" /></hide>
+  <p name="p3"><hide><copy prop="hide" target="p1" /></hide>
   This paragraph should also be hidden when boxed is checked.
   </p>
   `}, "*");

@@ -347,10 +347,7 @@ export default class NumberList extends InlineComponent {
     }
 
     stateVariableDefinitions.nComponentsToDisplayByChild = {
-      additionalStateVariablesDefined: [{
-        variableName: "nChildrenToDisplay",
-        forRenderer: true,
-      }],
+      additionalStateVariablesDefined: ["nChildrenToRender"],
       returnDependencies: () => ({
         nComponents: {
           dependencyType: "stateVariable",
@@ -385,13 +382,13 @@ export default class NumberList extends InlineComponent {
         let nComponentsToDisplayByChild = {};
 
         let nComponentsSoFar = 0;
-        let nChildrenToDisplay = 0;
+        let nChildrenToRender = 0;
 
         let nNumberLists = 0;
         for (let child of dependencyValues.numberAndNumberListChildren) {
           let nComponentsLeft = Math.max(0, nComponentsToDisplay - nComponentsSoFar);
           if(nComponentsLeft > 0) {
-            nChildrenToDisplay++;
+            nChildrenToRender++;
           }
           if (componentInfoObjects.isInheritedComponentType({
             inheritedComponentType: child.componentType,
@@ -414,7 +411,7 @@ export default class NumberList extends InlineComponent {
         }
 
         return {
-          newValues: { nComponentsToDisplayByChild, nChildrenToDisplay },
+          newValues: { nComponentsToDisplayByChild, nChildrenToRender },
         }
       }
     }

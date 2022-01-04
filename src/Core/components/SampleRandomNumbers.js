@@ -408,7 +408,7 @@ export default class SampleRandomNumbers extends CompositeComponent {
 
 
 
-  static createSerializedReplacements({ component, componentInfoObjects, startNum = 0 }) {
+  static async createSerializedReplacements({ component, componentInfoObjects, startNum = 0, flags }) {
 
     let newNamespace = component.attributes.newNamespace && component.attributes.newNamespace.primitive;
 
@@ -422,7 +422,7 @@ export default class SampleRandomNumbers extends CompositeComponent {
 
     let replacements = [];
 
-    for (let value of component.stateValues.sampledValues.slice(startNum)) {
+    for (let value of (await component.stateValues.sampledValues).slice(startNum)) {
       let attributesFromComposite = {};
 
       if (Object.keys(attributesToConvert).length > 0) {
@@ -430,7 +430,8 @@ export default class SampleRandomNumbers extends CompositeComponent {
           attributes: attributesToConvert,
           componentType: "number",
           componentInfoObjects,
-          compositeCreatesNewNamespace: newNamespace
+          compositeCreatesNewNamespace: newNamespace,
+          flags
         })
       }
 
@@ -454,14 +455,15 @@ export default class SampleRandomNumbers extends CompositeComponent {
 
   }
 
-  static calculateReplacementChanges({ component, componentInfoObjects }) {
+  static async calculateReplacementChanges({ component, componentInfoObjects, flags }) {
 
     let replacementChanges = [];
 
+    let sampledValues = await component.stateValues.sampledValues;
 
     // if have fewer result than samples, adjust replacementsToWithhold
-    if (component.stateValues.sampledValues.length < component.replacements.length) {
-      let numberToWithhold = component.replacements.length - component.stateValues.sampledValues.length;
+    if (sampledValues.length < component.replacements.length) {
+      let numberToWithhold = component.replacements.length - sampledValues.length;
 
       if (numberToWithhold !== component.replacementsToWithhold) {
         let replacementInstruction = {
@@ -480,11 +482,12 @@ export default class SampleRandomNumbers extends CompositeComponent {
         replacementChanges.push(replacementInstruction);
       }
 
-      if (component.stateValues.sampledValues.length > component.replacements.length) {
+      if (sampledValues.length > component.replacements.length) {
 
-        let result = this.createSerializedReplacements({
+        let result = await this.createSerializedReplacements({
           component, componentInfoObjects,
-          startNum: component.replacements.length
+          startNum: component.replacements.length,
+          flags
         })
 
         let replacementInstruction = {
@@ -501,13 +504,13 @@ export default class SampleRandomNumbers extends CompositeComponent {
 
 
     // update values of the remainder of the replacements
-    let numUpdate = Math.min(component.replacements.length, component.stateValues.sampledValues.length);
+    let numUpdate = Math.min(component.replacements.length, sampledValues.length);
 
     for (let ind = 0; ind < numUpdate; ind++) {
       let replacementInstruction = {
         changeType: "updateStateVariables",
         component: component.replacements[ind],
-        stateChanges: { value: component.stateValues.sampledValues[ind] }
+        stateChanges: { value: sampledValues[ind] }
       }
       replacementChanges.push(replacementInstruction);
     }
@@ -516,22 +519,22 @@ export default class SampleRandomNumbers extends CompositeComponent {
   }
 
 
-  resample() {
+  async resample() {
 
     let sampledValues = sampleFromRandomNumbers({
-      type: this.stateValues.type,
-      numberOfSamples: this.stateValues.numberOfSamples,
-      standardDeviation: this.stateValues.standardDeviation,
-      mean: this.stateValues.mean,
-      to: this.stateValues.to,
-      from: this.stateValues.from,
-      step: this.stateValues.step,
-      nDiscreteValues: this.stateValues.nDiscreteValues,
+      type: await this.stateValues.type,
+      numberOfSamples: await this.stateValues.numberOfSamples,
+      standardDeviation: await this.stateValues.standardDeviation,
+      mean: await this.stateValues.mean,
+      to: await this.stateValues.to,
+      from: await this.stateValues.from,
+      step: await this.stateValues.step,
+      nDiscreteValues: await this.stateValues.nDiscreteValues,
       rng: this.sharedParameters.rng
     });
 
 
-    return this.coreFunctions.performUpdate({
+    return await this.coreFunctions.performUpdate({
       updateInstructions: [{
         updateType: "updateValue",
         componentName: this.componentName,

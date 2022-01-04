@@ -47,6 +47,7 @@ export default class Slider extends BaseComponent {
       createComponentOfType: "_componentWithSelectableType",
       createStateVariable: "initialValue",
       defaultValue: undefined,
+      noInverse: true,
     }
     attributes.label = {
       createComponentOfType: "text",
@@ -637,10 +638,10 @@ export default class Slider extends BaseComponent {
   }
 
 
-  changeValue({ value, transient }) {
-    if (!this.stateValues.disabled) {
+  async changeValue({ value, transient }) {
+    if (!await this.stateValues.disabled) {
       if (transient) {
-        return this.coreFunctions.performUpdate({
+        return await this.coreFunctions.performUpdate({
           updateInstructions: [{
             updateType: "updateValue",
             componentName: this.componentName,
@@ -650,7 +651,7 @@ export default class Slider extends BaseComponent {
           transient
         });
       } else {
-        return this.coreFunctions.performUpdate({
+        return await this.coreFunctions.performUpdate({
           updateInstructions: [{
             updateType: "updateValue",
             componentName: this.componentName,
@@ -745,14 +746,14 @@ function findIndexOfClosestValidValue({ preliminaryValue, valueToIndex,
   return closeIndex;
 }
 
-function invertSliderValue({ desiredStateVariableValues, stateValues }) {
+async function invertSliderValue({ desiredStateVariableValues, stateValues }) {
 
   // console.log(`invert slider value`)
   // console.log(desiredStateVariableValues)
   // console.log(stateValues);
 
   let preliminaryValue = desiredStateVariableValues.value;
-  if (stateValues.type === "text") {
+  if (await stateValues.type === "text") {
     preliminaryValue = preliminaryValue.toString();
   } else {
     if (preliminaryValue instanceof me.class) {
@@ -767,12 +768,12 @@ function invertSliderValue({ desiredStateVariableValues, stateValues }) {
 
   let newIndex = findIndexOfClosestValidValue({
     preliminaryValue,
-    valueToIndex: stateValues.valueToIndex,
-    type: stateValues.type,
-    items: stateValues.items,
-    from: stateValues.from,
-    step: stateValues.step,
-    nItems: stateValues.nItems
+    valueToIndex: await stateValues.valueToIndex,
+    type: await stateValues.type,
+    items: await stateValues.items,
+    from: await stateValues.from,
+    step: await stateValues.step,
+    nItems: await stateValues.nItems
   });
 
   // Text value requested didn't match so can't update

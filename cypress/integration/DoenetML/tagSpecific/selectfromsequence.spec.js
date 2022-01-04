@@ -594,11 +594,11 @@ describe('SelectFromSequence Tag Tests', function () {
     <selectfromsequence step="2" exclude="0" withReplacement name="sample19" numbertoselect="$n" from="-4" to="4" />
     <selectfromsequence step="2" exclude="0" withReplacement name="sample20" numbertoselect="$n" from="-4" to="4" />
     </aslist>
-    <copy name="n2" tname="n3" />
-    <copy name="n" tname="num1" />
-    <math name="num1"><copy tname="n2" />+<copy tname="num2" />+2</math>
-    <math name="num2"><copy tname="n3" />+<copy tname="num3" /></math>
-    <copy name="n3" tname="num3" />
+    <copy name="n2" target="n3" />
+    <copy name="n" target="num1" />
+    <math name="num1"><copy target="n2" />+<copy target="num2" />+2</math>
+    <math name="num2"><copy target="n3" />+<copy target="num3" /></math>
+    <copy name="n3" target="num3" />
     <number name="num3">1</number>
     `}, "*");
     });
@@ -633,18 +633,18 @@ describe('SelectFromSequence Tag Tests', function () {
     </aslist></p>
 
     <p><aslist>
-    <copy name="noresample1" tname="sample1" />
-    <copy name="noresample2" tname="sample2" />
-    <copy name="noreresample1" tname="noresample1" />
-    <copy name="noreresample2" tname="noresample2" />
+    <copy name="noresample1" target="sample1" />
+    <copy name="noresample2" target="sample2" />
+    <copy name="noreresample1" target="noresample1" />
+    <copy name="noreresample2" target="noresample2" />
     </aslist></p>
 
-    <p><copy name="noresamplelist" tname="_aslist1" /></p>
+    <p><copy name="noresamplelist" target="_aslist1" /></p>
 
-    <p><copy name="noreresamplelist" tname="noresamplelist" /></p>
+    <p><copy name="noreresamplelist" target="noresamplelist" /></p>
 
-    <copy name="noresamplep" tname="_p1" />
-    <copy name="noreresamplep" tname="noresamplep" />
+    <copy name="noresamplep" target="_p1" />
+    <copy name="noreresamplep" target="noresamplep" />
     `}, "*");
     });
 
@@ -756,16 +756,16 @@ describe('SelectFromSequence Tag Tests', function () {
     </map>
     </aslist></p>
     
-    <p name="p2"><aslist><copy tname="_map1" /></aslist></p>
-    <p name="p3"><copy tname="_aslist1" /></p>
+    <p name="p2"><aslist><copy target="_map1" /></aslist></p>
+    <p name="p3"><copy target="_aslist1" /></p>
 
-    <copy name="p4" tname="p1" />
-    <copy name="p5" tname="p2" />
-    <copy name="p6" tname="p3" />
+    <copy name="p4" target="p1" />
+    <copy name="p5" target="p2" />
+    <copy name="p6" target="p3" />
 
-    <copy name="p7" tname="p4" />
-    <copy name="p8" tname="p5" />
-    <copy name="p9" tname="p6" />
+    <copy name="p7" target="p4" />
+    <copy name="p8" target="p5" />
+    <copy name="p9" target="p6" />
     `}, "*");
     });
 
@@ -1041,9 +1041,9 @@ describe('SelectFromSequence Tag Tests', function () {
     <p><selectfromsequence type="math" from="x" step="y" length="3" assignnames="u"/></p>
     <p><selectfromsequence type="math" from="x" step="y" length="3" assignnames="v"/></p>
     <p><selectfromsequence type="math" from="x" step="y" length="3" assignnames="w"/></p>
-    <p><copy name="u2" tname="u" /></p>
-    <p><copy name="v2" tname="v" /></p>
-    <p><copy name="w2" tname="w" /></p>
+    <p><copy name="u2" target="u" /></p>
+    <p><copy name="v2" target="v" /></p>
+    <p><copy name="w2" target="w" /></p>
     `}, "*");
     });
 
@@ -1089,9 +1089,9 @@ describe('SelectFromSequence Tag Tests', function () {
     <p><aslist>
       <selectfromsequence name="s" type="math" from="x" step="y" length="3" assignnames="u v w" numbertoselect="6" withReplacement />
     </aslist></p>
-    <p><copy name="u2" tname="u" /></p>
-    <p><copy name="v2" tname="v" /></p>
-    <p><copy name="w2" tname="w" /></p>
+    <p><copy name="u2" target="u" /></p>
+    <p><copy name="v2" target="v" /></p>
+    <p><copy name="w2" target="w" /></p>
     `}, "*");
     });
 
@@ -1145,9 +1145,9 @@ describe('SelectFromSequence Tag Tests', function () {
     <p><aslist>
       <selectfromsequence name="s" newnamespace type="math" from="x" step="y" length="3" assignnames="u v w" numbertoselect="6" withReplacement />
     </aslist></p>
-    <p><copy name="u2" tname="s/u" /></p>
-    <p><copy name="v2" tname="s/v" /></p>
-    <p><copy name="w2" tname="s/w" /></p>
+    <p><copy name="u2" target="s/u" /></p>
+    <p><copy name="v2" target="s/v" /></p>
+    <p><copy name="w2" target="s/w" /></p>
     `}, "*");
     });
 
@@ -1199,7 +1199,7 @@ describe('SelectFromSequence Tag Tests', function () {
         doenetML: `
       <p>Selectfromsequences and hide</p>
       <p><selectfromsequence type="letters" assignnames="c" from="a" to="e" />, <selectfromsequence type="letters" assignnames="d" from="a" to="e" hide /></p>
-      <p><copy tname="c" />, <copy hide="false" tname="d" /></p>
+      <p><copy target="c" />, <copy hide="false" target="d" /></p>
     `}, "*");
     });
 
@@ -1614,8 +1614,8 @@ describe('SelectFromSequence Tag Tests', function () {
     <text>a</text>
     <p><aslist><selectfromsequence numbertoselect="20" sortresults="true" withreplacement="true" from="-20" to="20" /></aslist></p>
 
-    <p><copy tname="_aslist1" /></p>
-    <copy tname="_p1" />
+    <p><copy target="_aslist1" /></p>
+    <copy target="_p1" />
     `}, "*");
     });
 
@@ -1648,8 +1648,8 @@ describe('SelectFromSequence Tag Tests', function () {
     <text>a</text>
     <p><aslist><selectfromsequence type="letters" numbertoselect="40" sortresults="true" withreplacement="true" from="a" to="bz" /></aslist></p>
 
-    <p><copy tname="_aslist1" /></p>
-    <copy tname="_p1" />
+    <p><copy target="_aslist1" /></p>
+    <copy target="_p1" />
     `}, "*");
     });
 
@@ -1685,7 +1685,7 @@ describe('SelectFromSequence Tag Tests', function () {
     <booleaninput name='h1' prefill="false" label="Hide first select" />
     <booleaninput name='h2' prefill="true" label="Hide second select" />
     <p><selectfromsequence assignnames="c" hide="$h1" type="letters" from="a" to="e"/>, <selectfromsequence assignnames="d" hide="$h2" type="letters" from="a" to="e"/></p>
-    <p><copy tname="c" />, <copy tname="d" /></p>
+    <p><copy target="c" />, <copy target="d" /></p>
     `}, "*");
     });
 
@@ -1730,9 +1730,9 @@ describe('SelectFromSequence Tag Tests', function () {
       <selectfromsequence assignnames="c" fixed="$f2" type="letters" from="a" to="e"/>
     </p>
     <p>
-      <copy tname="a" assignNames="a2" /> 
-      <copy tname="b" assignNames="b2" />
-      <copy tname="c" assignNames="c2" />
+      <copy target="a" assignNames="a2" /> 
+      <copy target="b" assignNames="b2" />
+      <copy target="c" assignNames="c2" />
     </p>
     <p>
       <textinput name="a3" bindValueTo="$a" />
@@ -1745,14 +1745,14 @@ describe('SelectFromSequence Tag Tests', function () {
       <textinput name="c4" bindValueTo="$c2" />
     </p>
     <p>
-      <copy prop="fixed" tname="a" assignNames="af" />
-      <copy prop="fixed" tname="b" assignNames="bf" />
-      <copy prop="fixed" tname="c" assignNames="cf" />
+      <copy prop="fixed" target="a" assignNames="af" />
+      <copy prop="fixed" target="b" assignNames="bf" />
+      <copy prop="fixed" target="c" assignNames="cf" />
     </p>
     <p>
-      <copy prop="fixed" tname="a2" assignNames="a2f" />
-      <copy prop="fixed" tname="b2" assignNames="b2f" />
-      <copy prop="fixed" tname="c2" assignNames="c2f" />
+      <copy prop="fixed" target="a2" assignNames="a2f" />
+      <copy prop="fixed" target="b2" assignNames="b2f" />
+      <copy prop="fixed" target="c2" assignNames="c2f" />
     </p>
     `}, "*");
     });

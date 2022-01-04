@@ -140,9 +140,13 @@ export default class BaseComponent {
     // recurse to all children
     for (let childName in this.allChildren) {
       let child = this.allChildren[childName].component;
-      for (let rendererType of child.allPotentialRendererTypes) {
-        if (!allPotentialRendererTypes.includes(rendererType)) {
-          allPotentialRendererTypes.push(rendererType);
+      if (typeof child !== "object") {
+        continue;
+      } else {
+        for (let rendererType of child.allPotentialRendererTypes) {
+          if (!allPotentialRendererTypes.includes(rendererType)) {
+            allPotentialRendererTypes.push(rendererType);
+          }
         }
       }
     }
@@ -277,7 +281,7 @@ export default class BaseComponent {
         propagateToDescendants: true
       },
       isResponse: {
-        createComponentOfType: "boolean",
+        createPrimitiveOfType: "boolean",
         createStateVariable: "isResponse",
         defaultValue: false,
         public: true,
@@ -383,7 +387,9 @@ export default class BaseComponent {
             || dependencyValues.adapterSourceHidden === true
             || dependencyValues.hide === true
         }
-      })
+      }),
+      markStale: () => ({ updateParentRenderedChildren: true }),
+
     }
 
     stateVariableDefinitions.disabled = {
@@ -767,7 +773,7 @@ export default class BaseComponent {
   //   return {};
   // }
 
-  serialize(parameters = {}) {
+  async serialize(parameters = {}) {
     // TODO: this function is converted only for the case with the parameter
     // forLink set
 
@@ -776,18 +782,6 @@ export default class BaseComponent {
     let includeDefiningChildren = true;
     // let stateVariablesToInclude = [];
 
-    if (parameters.forLink) {
-      includeDefiningChildren = true;//this.constructor.useChildrenForReference;
-    } else {
-      // let instructions = this.returnSerializeInstructions();
-      // if (instructions.skipChildren) {
-      //   includeDefiningChildren = false;
-      // }
-      // if (instructions.stateVariables) {
-      //   stateVariablesToInclude = instructions.stateVariables;
-      // }
-
-    }
 
     let serializedComponent = {
       componentType: this.componentType,
@@ -798,15 +792,16 @@ export default class BaseComponent {
     if (includeDefiningChildren) {
 
       for (let child of this.definingChildren) {
-        serializedChildren.push(child.serialize(parameters));
+        if (typeof child !== "object") {
+          serializedChildren.push(child)
+        } else {
+          serializedChildren.push(await child.serialize(parameters));
+        }
       }
 
       if (this.serializedChildren !== undefined) {
         for (let child of this.serializedChildren) {
-          serializedChildren.push(this.copySerializedComponent({
-            serializedComponent: child,
-            parameters: parameters
-          }));
+          serializedChildren.push(this.copySerializedComponent(child));
         }
       }
 
@@ -824,28 +819,28 @@ export default class BaseComponent {
       let attribute = this.attributes[attrName];
       if (attribute.component) {
         // only copy attribute components if attributes object specifies
-        // or if not linked
+        // or if copy all
         let attrInfo = attributesObject[attrName];
-        if (attrInfo.copyComponentOnReference || !parameters.forLink) {
-          serializedComponent.attributes[attrName] = { component: attribute.component.serialize(parameters) };
+        if (parameters.copyAll) {
+          serializedComponent.attributes[attrName] = { component: await attribute.component.serialize(parameters) };
         }
       } else {
         // always copy others
-        // TODO: for now not copying isResponse if linked
+        // TODO: for now not copying isResponse if not copy all
         // but not sure if that is the right thing to do
-        if (attrName !== "isResponse" || !parameters.forLink) {
+        if (attrName !== "isResponse" || parameters.copyAll) {
           serializedComponent.attributes[attrName] = JSON.parse(JSON.stringify(attribute));
         }
       }
     }
 
 
-    if (!parameters.forLink) {
+    if (parameters.copyAll) {
       let additionalState = {};
       for (let item in this.state) {
         // evaluate state variable first so that 
-        // essential and usedDefault attribute are populated
-        let value = this.state[item].value;
+        // essential and usedDefault attributes are populated
+        let value = await this.state[item].value;
 
         if (this.state[item].essential || this.state[item].alwaysShadow) {// || stateVariablesToInclude.includes(item)) {
           if (!this.state[item].usedDefault) {
@@ -874,15 +869,16 @@ export default class BaseComponent {
 
   }
 
-  copySerializedComponent({ serializedComponent, parameters }) {
+  copySerializedComponent(serializedComponent) {
+
+    if (typeof serializedComponent !== "object") {
+      return serializedComponent;
+    }
 
     let serializedChildren = [];
     if (serializedComponent.children !== undefined) {
       for (let child of serializedComponent.children) {
-        serializedChildren.push(this.copySerializedComponent({
-          serializedComponent: child,
-          parameters: parameters
-        }));
+        serializedChildren.push(this.copySerializedComponent(child));
       }
     }
 
@@ -895,8 +891,7 @@ export default class BaseComponent {
       doenetAttributes: {},
     }
 
-    if (//parameters.forLink !== true &&
-      serializedComponent.doenetAttributes !== undefined) {
+    if (serializedComponent.doenetAttributes !== undefined) {
       serializedCopy.originalDoenetAttributes = deepClone(serializedComponent.doenetAttributes);
       serializedCopy.doenetAttributes = deepClone(serializedComponent.doenetAttributes);
       serializedCopy.originalAttributes = deepClone(serializedComponent.attributes);

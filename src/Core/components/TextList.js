@@ -353,10 +353,7 @@ export default class TextList extends InlineComponent {
     }
 
     stateVariableDefinitions.nComponentsToDisplayByChild = {
-      additionalStateVariablesDefined: [{
-        variableName: "nChildrenToDisplay",
-        forRenderer: true,
-      }],
+      additionalStateVariablesDefined: ["nChildrenToRender"],
       returnDependencies: () => ({
         nComponents: {
           dependencyType: "stateVariable",
@@ -391,13 +388,13 @@ export default class TextList extends InlineComponent {
         let nComponentsToDisplayByChild = {};
 
         let nComponentsSoFar = 0;
-        let nChildrenToDisplay = 0;
+        let nChildrenToRender = 0;
 
         let nTextLists = 0;
         for (let child of dependencyValues.textAndTextListChildren) {
           let nComponentsLeft = Math.max(0, nComponentsToDisplay - nComponentsSoFar);
           if (nComponentsLeft > 0) {
-            nChildrenToDisplay++;
+            nChildrenToRender++;
           }
           if (componentInfoObjects.isInheritedComponentType({
             inheritedComponentType: child.componentType,
@@ -420,7 +417,7 @@ export default class TextList extends InlineComponent {
         }
 
         return {
-          newValues: { nComponentsToDisplayByChild, nChildrenToDisplay },
+          newValues: { nComponentsToDisplayByChild, nChildrenToRender },
         }
       }
     }

@@ -203,7 +203,7 @@ export default class SectioningComponent extends BlockComponent {
       returnDependencies: () => ({
         scoredDescendants: {
           dependencyType: "descendant",
-          componentTypes: ["_sectioningComponent", "answer"],
+          componentTypes: ["_sectioningComponent", "answer", "setup"],
           variableNames: [
             "scoredDescendants",
             "aggregateScores",
@@ -216,6 +216,10 @@ export default class SectioningComponent extends BlockComponent {
       definition({ dependencyValues }) {
         let scoredDescendants = [];
         for (let descendant of dependencyValues.scoredDescendants) {
+          // added setup just so that can skip them
+          if (descendant.componentType === "setup") {
+            continue;
+          }
           if (descendant.stateValues.aggregateScores ||
             descendant.stateValues.scoredDescendants === undefined
           ) {
@@ -666,12 +670,12 @@ export default class SectioningComponent extends BlockComponent {
         componentType: this.componentType,
       },
       result: {
-        creditAchieved: this.stateValues.creditAchievedIfSubmit
+        creditAchieved: await this.stateValues.creditAchievedIfSubmit
       }
 
     })
-    for (let answer of this.stateValues.answerDescendants) {
-      if (!answer.stateValues.justSubmitted) {
+    for (let answer of await this.stateValues.answerDescendants) {
+      if (!await answer.stateValues.justSubmitted) {
         await this.coreFunctions.performAction({
           componentName: answer.componentName,
           actionName: "submitAnswer"
@@ -680,9 +684,9 @@ export default class SectioningComponent extends BlockComponent {
     }
   }
 
-  revealSection() {
+  async revealSection() {
 
-    return this.coreFunctions.performUpdate({
+    return await this.coreFunctions.performUpdate({
       updateInstructions: [{
         updateType: "updateValue",
         componentName: this.componentName,
@@ -699,9 +703,9 @@ export default class SectioningComponent extends BlockComponent {
     })
   }
 
-  closeSection() {
+  async closeSection() {
 
-    return this.coreFunctions.performUpdate({
+    return await this.coreFunctions.performUpdate({
       updateInstructions: [{
         updateType: "updateValue",
         componentName: this.componentName,
@@ -718,7 +722,7 @@ export default class SectioningComponent extends BlockComponent {
     })
   }
 
-  static setUpVariant({
+  static async setUpVariant({
     serializedComponent, sharedParameters, definingChildrenSoFar,
     descendantVariantComponents,
     allComponentClasses
@@ -806,11 +810,11 @@ export default class SectioningComponent extends BlockComponent {
 
 
     } else {
-      sharedParameters.variantSeed = variantControlChild.state.selectedSeed.value;
-      sharedParameters.variantName = variantControlChild.state.selectedVariantName.value;
-      sharedParameters.variantIndex = variantControlChild.state.selectedVariantIndex.value;
-      sharedParameters.selectRng = variantControlChild.state.selectRng.value;
-      sharedParameters.allPossibleVariants = variantControlChild.state.variantNames.value;
+      sharedParameters.variantSeed = await variantControlChild.state.selectedSeed.value;
+      sharedParameters.variantName = await variantControlChild.state.selectedVariantName.value;
+      sharedParameters.variantIndex = await variantControlChild.state.selectedVariantIndex.value;
+      sharedParameters.selectRng = await variantControlChild.state.selectRng.value;
+      sharedParameters.allPossibleVariants = await variantControlChild.state.variantNames.value;
     }
 
     // seed rng for random numbers predictably from variant using selectRng
@@ -893,7 +897,7 @@ export default class SectioningComponent extends BlockComponent {
       }
       // children overwrite state
       if (nVariantsComp.children !== undefined && nVariantsComp.children.length === 1 &&
-        nVariantsComp.children[0].componentType === "string") {
+        typeof nVariantsComp.children[0] === "string") {
         numberOfVariants = Math.round(Number(nVariantsComp.children[0].state.value));
         foundValid = true;
       }

@@ -103,9 +103,11 @@ export default class CompositeComponent extends BaseComponent {
 
     if (this.replacements) {
       for (let replacement of this.replacements) {
-        for (let rendererType of replacement.allPotentialRendererTypes) {
-          if (!allPotentialRendererTypes.includes(rendererType)) {
-            allPotentialRendererTypes.push(rendererType);
+        if (typeof replacement === "object") {
+          for (let rendererType of replacement.allPotentialRendererTypes) {
+            if (!allPotentialRendererTypes.includes(rendererType)) {
+              allPotentialRendererTypes.push(rendererType);
+            }
           }
         }
       }

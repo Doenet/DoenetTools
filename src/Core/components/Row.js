@@ -6,10 +6,6 @@ export default class Row extends BaseComponent {
   static rendererType = "row";
   static renderChildren = true;
 
-  static get stateVariablesShadowedForReference() {
-    return ["halign", "valign", "left", "bottom"]
-  };
-
   static createAttributesObject(args) {
     let attributes = super.createAttributesObject(args);
     attributes.rowNum = {

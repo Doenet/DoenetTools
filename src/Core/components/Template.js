@@ -87,37 +87,42 @@ export default class Template extends CompositeComponent {
     return stateVariableDefinitions;
   }
 
-  static createSerializedReplacements({ component, componentInfoObjects, alwaysCreateReplacements }) {
+  static async createSerializedReplacements({ component, componentInfoObjects,
+    alwaysCreateReplacements, flags
+  }) {
     // console.log(`create serialized replacements for ${component.componentName}`)
-    // console.log(component.stateValues.rendered);
+    // console.log(await component.stateValues.rendered);
 
-    if (!(component.stateValues.rendered || alwaysCreateReplacements)) {
+    if (!(await component.stateValues.rendered || alwaysCreateReplacements)) {
       return { replacements: [] };
     } else {
 
-      let replacements = deepClone(component.state.serializedChildren.value);
+      let replacements = deepClone(await component.state.serializedChildren.value);
 
       let newNamespace = component.attributes.newNamespace && component.attributes.newNamespace.primitive;
 
-      for (let repl of replacements) {
+      if ("isResponse" in component.attributes) {
         // pass isResponse to replacements
-        let attributesFromComposite = {};
 
-        if ("isResponse" in component.attributes) {
-          attributesFromComposite = convertAttributesForComponentType({
+        for (let repl of replacements) {
+          if (typeof repl !== "object") {
+            continue;
+          }
+
+          let attributesFromComposite = convertAttributesForComponentType({
             attributes: { isResponse: component.attributes.isResponse },
             componentType: repl.componentType,
             componentInfoObjects,
-            compositeCreatesNewNamespace: newNamespace
+            compositeCreatesNewNamespace: newNamespace,
+            flags
           })
+          if (!repl.attributes) {
+            repl.attributes = {};
+          }
+
+          Object.assign(repl.attributes, attributesFromComposite)
+
         }
-
-        if (!repl.attributes) {
-          repl.attributes = {};
-        }
-
-        Object.assign(repl.attributes, attributesFromComposite)
-
       }
 
 
@@ -158,7 +163,7 @@ export default class Template extends CompositeComponent {
     let allPotentialRendererTypes = super.allPotentialRendererTypes;
 
     let additionalRendererTypes = this.potentialRendererTypesFromSerializedComponents(
-      this.stateValues.serializedChildren
+      this.serializedChildren
     );
     for (let rendererType of additionalRendererTypes) {
       if (!allPotentialRendererTypes.includes(rendererType)) {

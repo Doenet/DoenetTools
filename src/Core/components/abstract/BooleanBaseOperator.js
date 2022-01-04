@@ -14,14 +14,14 @@ export default class BooleanOperator extends BooleanComponent {
       // break any string by white space and wrap pieces with boolean
 
       let newChildren = matchedChildren.reduce(function (a, c) {
-        if (c.componentType === "string") {
+        if (typeof c === "string") {
           return [
             ...a,
-            ...c.state.value.split(/\s+/)
+            ...c.split(/\s+/)
               .filter(s => s)
               .map(s => ({
                 componentType: "boolean",
-                children: [{ componentType: "string", state: { value: s } }]
+                children: [s]
               }))
           ]
         } else {
