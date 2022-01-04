@@ -27,7 +27,7 @@ export default function TextArea(props) {
     var container = {
         display: `${align}`,
         width: 'auto',
-        alignItems: 'flex-end'
+        alignItems: 'center'
     }
 
     if (props.alert) {
