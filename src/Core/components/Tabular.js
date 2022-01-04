@@ -5,8 +5,6 @@ export default class Tabular extends BlockComponent {
   static rendererType = "tabular";
   static renderChildren = true;
 
-  static get stateVariablesShadowedForReference() { return ["height"] };
-
   static createAttributesObject(args) {
     let attributes = super.createAttributesObject(args);
     attributes.width = {

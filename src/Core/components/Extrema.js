@@ -7,8 +7,6 @@ export class Extremum extends BaseComponent {
   static componentType = "extremum";
   static rendererType = undefined;
 
-  static get stateVariablesShadowedForReference() { return ["location", "value"] };
-
 
   static createAttributesObject(args) {
     let attributes = super.createAttributesObject(args);

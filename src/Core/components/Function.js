@@ -7,17 +7,6 @@ export default class Function extends InlineComponent {
   static componentType = "function";
   static rendererType = "math";
 
-  static get stateVariablesShadowedForReference() {
-    return [
-      "variables", "numericalfs", "symbolicfs", "symbolic",
-      "domain",
-      "nInputs", "nOutputs",
-      "symbolic", "isInterpolatedFunction", "formula",
-      "prescribedPoints", "prescribedMinima", "prescribedMaxima", "prescribedExtrema",
-      "displayDigits", "displayDecimals", "displaySmallAsZero",
-      "nPrescribedPoints"
-    ]
-  };
 
   static primaryStateVariableForDefinition = "numericalfShadow";
 
@@ -144,7 +133,7 @@ export default class Function extends InlineComponent {
       if (matchedChildren.length === 1 && typeof matchedChildren[0] !== "string") {
         return { success: false }
       }
-        
+
       return {
         success: true,
         newChildren: [{
@@ -245,7 +234,7 @@ export default class Function extends InlineComponent {
           }
         } else {
           return {
-            useEssentialOrDefaultValue: { displayDigits: { variablesToCheck: ["displayDigits"] } }
+            useDefaultValue: { displayDigits: {} }
           }
         }
       }
@@ -282,7 +271,7 @@ export default class Function extends InlineComponent {
           }
         } else {
           return {
-            useEssentialOrDefaultValue: { displayDecimals: { variablesToCheck: ["displayDecimals"] } }
+            useDefaultValue: { displayDecimals: {} }
           }
         }
       }
@@ -319,7 +308,7 @@ export default class Function extends InlineComponent {
           }
         } else {
           return {
-            useEssentialOrDefaultValue: { displaySmallAsZero: { variablesToCheck: ["displaySmallAsZero"] } }
+            useDefaultValue: { displaySmallAsZero: {} }
           }
         }
       }
@@ -398,7 +387,7 @@ export default class Function extends InlineComponent {
             }
           }
         } else {
-          return { useEssentialOrDefaultValue: { nInputs: { variablesToCheck: ["nInputs"] } } }
+          return { useDefaultValue: { nInputs: {} } }
         }
       }
     }
@@ -448,7 +437,7 @@ export default class Function extends InlineComponent {
           }
           return { newValues: { nOutputs } }
         } else {
-          return { useEssentialOrDefaultValue: { nOutputs: { variablesToCheck: ["nOutputs"] } } }
+          return { useDefaultValue: { nOutputs: {} } }
         }
       }
     }
@@ -477,7 +466,7 @@ export default class Function extends InlineComponent {
             }
           }
         } else {
-          return { useEssentialOrDefaultValue: { domain: { variablesToCheck: ["domain"] } } }
+          return { useDefaultValue: { domain: {} } }
         }
       }
     }
@@ -633,7 +622,7 @@ export default class Function extends InlineComponent {
         } else if (dependencyValues.symbolicfShadow) {
           return { newValues: { symbolic: true } }
         } else {
-          return { useEssentialOrDefaultValue: { symbolic: { variablesToCheck: ["symbolic"] } } }
+          return { useDefaultValue: { symbolic: {} } }
         }
       }
     }
@@ -754,9 +743,7 @@ export default class Function extends InlineComponent {
           }
         } else {
           return {
-            useEssentialOrDefaultValue: {
-              formula: { variablesToCheck: ["formula"] }
-            }
+            useDefaultValue: { formula: {} }
           }
         }
       }

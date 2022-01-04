@@ -43,7 +43,7 @@ export default class Choiceinput extends Input {
   // used when referencing this component without prop
   static get stateVariablesShadowedForReference() {
     return [
-      "choiceOrder", "allSelectedIndices", "indicesMatchedByBoundValue"
+      "choiceOrder"
     ]
   };
 

@@ -4125,6 +4125,9 @@ describe('Answer Tag Tests', function () {
         cy.get('#\\/_mathinput1 textarea').type(`{rightarrow}{rightarrow}{rightarrow}{backspace}{backspace}{backspace}x`, { force: true }).blur();
         cy.get('#\\/_mathinput2 textarea').type(`{rightarrow}{rightarrow}{rightarrow}{rightarrow}{backspace}{backspace}{backspace}{backspace}3-x`, { force: true }).blur();
 
+        // TOOD: figure out why we need this wait after blur a mathinput
+        cy.wait(100);
+
         cy.log('Test value displayed in browser')
         // cy.get('#\\/_mathinput1_input').should('have.value', 'x');
         // cy.get('#\\/_mathinput2_input').should('have.value', '3-x');
@@ -4256,6 +4259,9 @@ describe('Answer Tag Tests', function () {
 
         cy.log("Enter incorrect answer")
         cy.get('#\\/_mathinput1 textarea').type(`{rightarrow}{backspace}y`, { force: true }).blur();
+
+        // TOOD: figure out why we need this wait after blur a mathinput
+        cy.wait(100);
 
         cy.log('Test value displayed in browser')
         // cy.get('#\\/_mathinput1_input').should('have.value', 'y');
@@ -4791,7 +4797,7 @@ describe('Answer Tag Tests', function () {
         // cy.get('#\\/_mathinput1_input').should('have.value', 'y');
         // cy.get('#\\/_mathinput2_input').should('have.value', '3-x');
 
-        cy.get(crAnchor + ' .mjx-mrow').should('have.text','y')
+        cy.get(crAnchor + ' .mjx-mrow').should('have.text', 'y')
         cy.get(crAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('y')
         });
@@ -5923,7 +5929,7 @@ describe('Answer Tag Tests', function () {
         cy.get(cr2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('v')
         });
-        cy.get(cr3Anchor + ' .mjx-mrow').should('have.text','w')
+        cy.get(cr3Anchor + ' .mjx-mrow').should('have.text', 'w')
         cy.get(cr3Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('w')
         });
@@ -13118,5 +13124,642 @@ describe('Answer Tag Tests', function () {
     cy.get('#\\/ans4_correct').should('be.visible')
 
   });
+
+  it('cannot change submitted or changed response', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <answer name="a"><mathinput name="mia" />x</answer>
+
+  <p>Current Response: <copy target="a" prop="currentResponse" assignNames="cr" /></p>
+  <p>Submitted Response: <copy target="a" prop="submittedResponse" assignNames="sr" /></p>
+  
+  <p>Change curent response: <mathinput bindValueTo="$(a{prop='currentResponse'})" name="micr" /></p>
+  <p>Change submitted response: <mathinput bindValueTo="$(a{prop='submittedResponse'})" name="misr"  /></p>
+   `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.get('#\\/cr .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq('\uff3f')
+    })
+    cy.get('#\\/sr').should('not.exist');
+
+    cy.log('cannot change from mathinputs')
+    cy.get('#\\/micr textarea').type("y{enter}", { force: true })
+    cy.get('#\\/misr textarea').type("z{enter}", { force: true })
+
+    cy.get('#\\/cr .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq('\uff3f')
+    })
+    cy.get('#\\/sr').should('not.exist');
+
+
+    cy.log('submit response')
+    cy.get('#\\/mia textarea').type("x{enter}", { force: true })
+
+    cy.get('#\\/cr .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq('x')
+    })
+    cy.get('#\\/sr .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq('x')
+    })
+
+
+    cy.log('cannot change from mathinputs')
+    cy.get('#\\/micr textarea').type("{end}{backspace}y{enter}", { force: true })
+    cy.get('#\\/misr textarea').type("{end}{backspace}z{enter}", { force: true })
+
+    cy.get('#\\/cr .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq('x')
+    })
+    cy.get('#\\/sr .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq('x')
+    })
+
+  });
+
+  it('answer award with sugared string, copy award and overwrite properties', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <p><answer name="an">
+    <award name="aw">1.1</award>
+    <copy target="aw" credit="0.5" allowedErrorInNumbers="0.001" />
+  </answer></p>
+  <p>Number of responses: <copy prop="nResponses" target="an" assignNames="nr" /></p>
+  <p>Submitted response: <copy prop="submittedResponses" target="an" assignNames="sr" /></p>
+
+
+  `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.get('#\\/nr').should('have.text', '1')
+
+    cy.window().then(async (win) => {
+      let components = Object.assign({}, win.state.components);
+      let mathinputName = components['/an'].stateValues.inputChildren[0].componentName
+      let mathinputAnchor = cesc('#' + mathinputName) + " textarea";
+      let mathinputSubmitAnchor = cesc('#' + mathinputName + '_submit');
+      let mathinputCorrectAnchor = cesc('#' + mathinputName + '_correct');
+      let mathinputIncorrectAnchor = cesc('#' + mathinputName + '_incorrect');
+      let mathinputPartialAnchor = cesc('#' + mathinputName + '_partial');
+
+
+      cy.get(mathinputAnchor).type("1.1{enter}", { force: true })
+      cy.get(mathinputCorrectAnchor).should('be.visible');
+      cy.get(mathinputIncorrectAnchor).should('not.exist');
+      cy.get(mathinputPartialAnchor).should('not.exist');
+      cy.get('#\\/sr .mjx-mrow').eq(0).invoke('text').then(text => {
+        expect(text).eq('1.1')
+      })
+
+      cy.get(mathinputAnchor).type("{end}1{enter}", { force: true })
+      cy.get(mathinputCorrectAnchor).should('not.exist');
+      cy.get(mathinputIncorrectAnchor).should('be.visible');
+      cy.get(mathinputPartialAnchor).should('not.exist');
+      cy.get('#\\/sr .mjx-mrow').eq(0).invoke('text').then(text => {
+        expect(text).eq('1.11')
+      })
+      cy.get(mathinputAnchor).type("{end}{leftArrow}0{enter}", { force: true })
+      cy.get(mathinputCorrectAnchor).should('not.exist');
+      cy.get(mathinputIncorrectAnchor).should('not.exist');
+      cy.get(mathinputPartialAnchor).should('have.text', '50 %');
+      cy.get('#\\/sr .mjx-mrow').eq(0).invoke('text').then(text => {
+        expect(text).eq('1.101')
+      })
+    })
+  });
+
+  it('answer award with full award, copy award and overwrite properties', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <p><answer name="an">
+    <mathinput name="mi" />
+    <award name="aw"><when>$mi=1.1</when></award>
+    <copy target="aw" credit="0.5" allowedErrorInNumbers="0.001" />
+  </answer></p>
+  <p>Number of responses: <copy prop="nResponses" target="an" assignNames="nr" /></p>
+  <p>Submitted response: <copy prop="submittedResponses" target="an" assignNames="sr" /></p>
+
+  `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.get('#\\/nr').should('have.text', '1')
+
+    cy.window().then(async (win) => {
+      let components = Object.assign({}, win.state.components);
+      let mathinputName = components['/an'].stateValues.inputChildren[0].componentName
+      let mathinputAnchor = cesc('#' + mathinputName) + " textarea";
+      let mathinputSubmitAnchor = cesc('#' + mathinputName + '_submit');
+      let mathinputCorrectAnchor = cesc('#' + mathinputName + '_correct');
+      let mathinputIncorrectAnchor = cesc('#' + mathinputName + '_incorrect');
+      let mathinputPartialAnchor = cesc('#' + mathinputName + '_partial');
+
+
+      cy.get(mathinputAnchor).type("1.1{enter}", { force: true })
+      cy.get(mathinputCorrectAnchor).should('be.visible');
+      cy.get(mathinputIncorrectAnchor).should('not.exist');
+      cy.get(mathinputPartialAnchor).should('not.exist');
+      cy.get('#\\/sr .mjx-mrow').eq(0).invoke('text').then(text => {
+        expect(text).eq('1.1')
+      })
+
+      cy.get(mathinputAnchor).type("{end}1{enter}", { force: true })
+      cy.get(mathinputCorrectAnchor).should('not.exist');
+      cy.get(mathinputIncorrectAnchor).should('be.visible');
+      cy.get(mathinputPartialAnchor).should('not.exist');
+      cy.get('#\\/sr .mjx-mrow').eq(0).invoke('text').then(text => {
+        expect(text).eq('1.11')
+      })
+
+      cy.get(mathinputAnchor).type("{end}{leftArrow}0{enter}", { force: true })
+      cy.get(mathinputCorrectAnchor).should('not.exist');
+      cy.get(mathinputIncorrectAnchor).should('not.exist');
+      cy.get(mathinputPartialAnchor).should('have.text', '50 %');
+      cy.get('#\\/sr .mjx-mrow').eq(0).invoke('text').then(text => {
+        expect(text).eq('1.101')
+      })
+
+    })
+  });
+
+  it('answer award with full award and outside input, copy award and overwrite properties', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <p>
+  <mathinput name="mi" />
+  <answer name="an">
+    <award name="aw" targetsAreResponses="mi"><when>$mi=1.1</when></award>
+    <copy target="aw" credit="0.5" allowedErrorInNumbers="0.001" />
+  </answer></p>
+  <p>Number of responses: <copy prop="nResponses" target="an" assignNames="nr" /></p>
+  <p>Submitted response: <copy prop="submittedResponses" target="an" assignNames="sr" /></p>
+
+  `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.get('#\\/nr').should('have.text', '1')
+
+
+    cy.get("#\\/mi textarea").type("1.1{enter}", { force: true })
+    cy.get("#\\/an_submit").click();
+    cy.get("#\\/an_correct").should('be.visible');
+    cy.get("#\\/an_incorrect").should('not.exist');
+    cy.get("#\\/an_partial").should('not.exist');
+    cy.get('#\\/sr .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq('1.1')
+    })
+
+    cy.get("#\\/mi textarea").type("{end}1{enter}", { force: true })
+    cy.get("#\\/an_submit").click();
+    cy.get("#\\/an_correct").should('not.exist');
+    cy.get("#\\/an_incorrect").should('be.visible');
+    cy.get("#\\/an_partial").should('not.exist');
+    cy.get('#\\/sr .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq('1.11')
+    })
+
+    cy.get("#\\/mi textarea").type("{end}{leftArrow}0{enter}", { force: true })
+    cy.get("#\\/an_submit").click();
+    cy.get("#\\/an_correct").should('not.exist');
+    cy.get("#\\/an_incorrect").should('not.exist');
+    cy.get("#\\/an_partial").should('have.text', '50% Correct');
+    cy.get('#\\/sr .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq('1.101')
+    })
+
+  });
+
+  it('copied answer mirrors original', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <p><answer name="ans1">x+y</answer></p>
+  <p>Current response: <copy prop="currentResponse" target="ans1" assignNames="cr1" /></p>
+  <p>Submitted response: <copy prop="submittedResponse" target="ans1" componentType='math' assignNames="sr1" /></p>
+  <p>Credit for submitted response: <copy prop="creditAchieved" target="ans1" assignNames="ca1" /></p>
+
+  <p><copy target="ans1" assignNames="ans2" /></p>
+  <p>Current response: <copy prop="currentResponse" target="ans2" assignNames="cr2" /></p>
+  <p>Submitted response: <copy prop="submittedResponse" target="ans2" componentType='math' assignNames="sr2" /></p>
+  <p>Credit for submitted response: <copy prop="creditAchieved" target="ans2" assignNames="ca2" /></p>
+
+
+  `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.window().then(async (win) => {
+      let components = Object.assign({}, win.state.components);
+
+      let mathinput1Name = components['/ans1'].stateValues.inputChildren[0].componentName
+      let mathinput1Anchor = cesc('#' + mathinput1Name) + " textarea";
+      let mathinput1SubmitAnchor = cesc('#' + mathinput1Name + '_submit');
+      let mathinput1CorrectAnchor = cesc('#' + mathinput1Name + '_correct');
+      let mathinput1IncorrectAnchor = cesc('#' + mathinput1Name + '_incorrect');
+
+      let mathinput2Name = components['/ans2'].stateValues.inputChildren[0].componentName
+      let mathinput2Anchor = cesc('#' + mathinput2Name) + " textarea";
+      let mathinput2SubmitAnchor = cesc('#' + mathinput2Name + '_submit');
+      let mathinput2CorrectAnchor = cesc('#' + mathinput2Name + '_correct');
+      let mathinput2IncorrectAnchor = cesc('#' + mathinput2Name + '_incorrect');
+
+
+      cy.get(mathinput1SubmitAnchor).should('be.visible')
+      cy.get(mathinput2SubmitAnchor).should('be.visible')
+
+      cy.get('#\\/cr1 .mjx-mrow').eq(0).invoke('text').then(text => {
+        expect(text).eq('\uff3f')
+      })
+      cy.get('#\\/sr1 .mjx-mrow').eq(0).invoke('text').then(text => {
+        expect(text).eq('\uff3f')
+      })
+      cy.get('#\\/ca1').should('have.text', '0')
+
+      cy.get('#\\/cr2 .mjx-mrow').eq(0).invoke('text').then(text => {
+        expect(text).eq('\uff3f')
+      })
+      cy.get('#\\/sr2 .mjx-mrow').eq(0).invoke('text').then(text => {
+        expect(text).eq('\uff3f')
+      })
+      cy.get('#\\/ca2').should('have.text', '0')
+
+
+      cy.log('Type correct answer in first blank')
+
+      cy.get(mathinput1Anchor).type('x+y', { force: true }).blur();
+      cy.wait(100)
+
+      cy.get(mathinput1SubmitAnchor).should('be.visible')
+      cy.get(mathinput2SubmitAnchor).should('be.visible')
+
+      cy.get('#\\/cr1 .mjx-mrow').eq(0).invoke('text').then(text => {
+        expect(text).eq('x+y')
+      })
+      cy.get('#\\/sr1 .mjx-mrow').eq(0).invoke('text').then(text => {
+        expect(text).eq('\uff3f')
+      })
+      cy.get('#\\/ca1').should('have.text', '0')
+
+      cy.get('#\\/cr2 .mjx-mrow').eq(0).invoke('text').then(text => {
+        expect(text).eq('x+y')
+      })
+      cy.get('#\\/sr2 .mjx-mrow').eq(0).invoke('text').then(text => {
+        expect(text).eq('\uff3f')
+      })
+      cy.get('#\\/ca2').should('have.text', '0')
+
+
+      cy.log('Click second submit button')
+
+      cy.get(mathinput2SubmitAnchor).click();
+
+      cy.get(mathinput1CorrectAnchor).should('be.visible')
+      cy.get(mathinput2CorrectAnchor).should('be.visible')
+
+      cy.get('#\\/cr1 .mjx-mrow').eq(0).invoke('text').then(text => {
+        expect(text).eq('x+y')
+      })
+      cy.get('#\\/sr1 .mjx-mrow').eq(0).invoke('text').then(text => {
+        expect(text).eq('x+y')
+      })
+      cy.get('#\\/ca1').should('have.text', '1')
+
+      cy.get('#\\/cr2 .mjx-mrow').eq(0).invoke('text').then(text => {
+        expect(text).eq('x+y')
+      })
+      cy.get('#\\/sr2 .mjx-mrow').eq(0).invoke('text').then(text => {
+        expect(text).eq('x+y')
+      })
+      cy.get('#\\/ca2').should('have.text', '1')
+
+
+      cy.log('type incorrect answer into second blank')
+
+      cy.get(mathinput2Anchor).type('{end}{backspace}{backspace}', { force: true }).blur();
+      cy.wait(100)
+
+      cy.get(mathinput1SubmitAnchor).should('be.visible')
+      cy.get(mathinput2SubmitAnchor).should('be.visible')
+
+      cy.get('#\\/cr1 .mjx-mrow').eq(0).invoke('text').then(text => {
+        expect(text).eq('x')
+      })
+      cy.get('#\\/sr1 .mjx-mrow').eq(0).invoke('text').then(text => {
+        expect(text).eq('x+y')
+      })
+      cy.get('#\\/ca1').should('have.text', '1')
+
+      cy.get('#\\/cr2 .mjx-mrow').eq(0).invoke('text').then(text => {
+        expect(text).eq('x')
+      })
+      cy.get('#\\/sr2 .mjx-mrow').eq(0).invoke('text').then(text => {
+        expect(text).eq('x+y')
+      })
+      cy.get('#\\/ca2').should('have.text', '1')
+
+
+      cy.log('Click first submit button')
+
+      cy.get(mathinput1SubmitAnchor).click();
+
+      cy.get(mathinput1IncorrectAnchor).should('be.visible')
+      cy.get(mathinput2IncorrectAnchor).should('be.visible')
+
+      cy.get('#\\/cr1 .mjx-mrow').eq(0).invoke('text').then(text => {
+        expect(text).eq('x')
+      })
+      cy.get('#\\/sr1 .mjx-mrow').eq(0).invoke('text').then(text => {
+        expect(text).eq('x')
+      })
+      cy.get('#\\/ca1').should('have.text', '0')
+
+      cy.get('#\\/cr2 .mjx-mrow').eq(0).invoke('text').then(text => {
+        expect(text).eq('x')
+      })
+      cy.get('#\\/sr2 .mjx-mrow').eq(0).invoke('text').then(text => {
+        expect(text).eq('x')
+      })
+      cy.get('#\\/ca2').should('have.text', '0')
+
+
+    })
+  });
+
+  it('copy answer with no link', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <p><answer name="ans1">x+y</answer></p>
+  <p>Current response: <copy prop="currentResponse" target="ans1" assignNames="cr1" /></p>
+  <p>Submitted response: <copy prop="submittedResponse" target="ans1" componentType='math' assignNames="sr1" /></p>
+  <p>Credit for submitted response: <copy prop="creditAchieved" target="ans1" assignNames="ca1" /></p>
+
+  <p><copy target="ans1" assignNames="ans2" link='false' /></p>
+  <p>Current response: <copy prop="currentResponse" target="ans2" assignNames="cr2" /></p>
+  <p>Submitted response: <copy prop="submittedResponse" target="ans2" componentType='math' assignNames="sr2" /></p>
+  <p>Credit for submitted response: <copy prop="creditAchieved" target="ans2" assignNames="ca2" /></p>
+
+
+  `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.window().then(async (win) => {
+      let components = Object.assign({}, win.state.components);
+
+      let mathinput1Name = components['/ans1'].stateValues.inputChildren[0].componentName
+      let mathinput1Anchor = cesc('#' + mathinput1Name) + " textarea";
+      let mathinput1SubmitAnchor = cesc('#' + mathinput1Name + '_submit');
+      let mathinput1CorrectAnchor = cesc('#' + mathinput1Name + '_correct');
+      let mathinput1IncorrectAnchor = cesc('#' + mathinput1Name + '_incorrect');
+
+      let mathinput2Name = components['/ans2'].stateValues.inputChildren[0].componentName
+      let mathinput2Anchor = cesc('#' + mathinput2Name) + " textarea";
+      let mathinput2SubmitAnchor = cesc('#' + mathinput2Name + '_submit');
+      let mathinput2CorrectAnchor = cesc('#' + mathinput2Name + '_correct');
+      let mathinput2IncorrectAnchor = cesc('#' + mathinput2Name + '_incorrect');
+
+
+      cy.get(mathinput1SubmitAnchor).should('be.visible')
+      cy.get(mathinput2SubmitAnchor).should('be.visible')
+
+      cy.get('#\\/cr1 .mjx-mrow').eq(0).invoke('text').then(text => {
+        expect(text).eq('\uff3f')
+      })
+      cy.get('#\\/sr1 .mjx-mrow').eq(0).invoke('text').then(text => {
+        expect(text).eq('\uff3f')
+      })
+      cy.get('#\\/ca1').should('have.text', '0')
+
+      cy.get('#\\/cr2 .mjx-mrow').eq(0).invoke('text').then(text => {
+        expect(text).eq('\uff3f')
+      })
+      cy.get('#\\/sr2 .mjx-mrow').eq(0).invoke('text').then(text => {
+        expect(text).eq('\uff3f')
+      })
+      cy.get('#\\/ca2').should('have.text', '0')
+
+
+      cy.log('Type correct answer in first blank')
+
+      cy.get(mathinput1Anchor).type('x+y', { force: true }).blur();
+      cy.wait(100)
+
+      cy.get(mathinput1SubmitAnchor).should('be.visible')
+      cy.get(mathinput2SubmitAnchor).should('be.visible')
+
+      cy.get('#\\/cr1 .mjx-mrow').eq(0).invoke('text').then(text => {
+        expect(text).eq('x+y')
+      })
+      cy.get('#\\/sr1 .mjx-mrow').eq(0).invoke('text').then(text => {
+        expect(text).eq('\uff3f')
+      })
+      cy.get('#\\/ca1').should('have.text', '0')
+
+      cy.get('#\\/cr2 .mjx-mrow').eq(0).invoke('text').then(text => {
+        expect(text).eq('\uff3f')
+      })
+      cy.get('#\\/sr2 .mjx-mrow').eq(0).invoke('text').then(text => {
+        expect(text).eq('\uff3f')
+      })
+      cy.get('#\\/ca2').should('have.text', '0')
+
+
+      cy.log('Click first submit button')
+
+      cy.get(mathinput1SubmitAnchor).click();
+
+      cy.get(mathinput1CorrectAnchor).should('be.visible')
+      cy.get(mathinput2SubmitAnchor).should('be.visible')
+
+      cy.get('#\\/cr1 .mjx-mrow').eq(0).invoke('text').then(text => {
+        expect(text).eq('x+y')
+      })
+      cy.get('#\\/sr1 .mjx-mrow').eq(0).invoke('text').then(text => {
+        expect(text).eq('x+y')
+      })
+      cy.get('#\\/ca1').should('have.text', '1')
+
+      cy.get('#\\/cr2 .mjx-mrow').eq(0).invoke('text').then(text => {
+        expect(text).eq('\uff3f')
+      })
+      cy.get('#\\/sr2 .mjx-mrow').eq(0).invoke('text').then(text => {
+        expect(text).eq('\uff3f')
+      })
+      cy.get('#\\/ca2').should('have.text', '0')
+
+
+      cy.log('type correct answer into second blank')
+
+      cy.get(mathinput2Anchor).type('x+y', { force: true }).blur();
+      cy.wait(100)
+
+      cy.get(mathinput1CorrectAnchor).should('be.visible')
+      cy.get(mathinput2SubmitAnchor).should('be.visible')
+
+      cy.get('#\\/cr1 .mjx-mrow').eq(0).invoke('text').then(text => {
+        expect(text).eq('x+y')
+      })
+      cy.get('#\\/sr1 .mjx-mrow').eq(0).invoke('text').then(text => {
+        expect(text).eq('x+y')
+      })
+      cy.get('#\\/ca1').should('have.text', '1')
+
+      cy.get('#\\/cr2 .mjx-mrow').eq(0).invoke('text').then(text => {
+        expect(text).eq('x+y')
+      })
+      cy.get('#\\/sr2 .mjx-mrow').eq(0).invoke('text').then(text => {
+        expect(text).eq('\uff3f')
+      })
+      cy.get('#\\/ca2').should('have.text', '0')
+
+
+      cy.log('Click second submit button')
+
+      cy.get(mathinput2SubmitAnchor).click();
+
+      cy.get(mathinput1CorrectAnchor).should('be.visible')
+      cy.get(mathinput2CorrectAnchor).should('be.visible')
+
+      cy.get('#\\/cr1 .mjx-mrow').eq(0).invoke('text').then(text => {
+        expect(text).eq('x+y')
+      })
+      cy.get('#\\/sr1 .mjx-mrow').eq(0).invoke('text').then(text => {
+        expect(text).eq('x+y')
+      })
+      cy.get('#\\/ca1').should('have.text', '1')
+
+      cy.get('#\\/cr2 .mjx-mrow').eq(0).invoke('text').then(text => {
+        expect(text).eq('x+y')
+      })
+      cy.get('#\\/sr2 .mjx-mrow').eq(0).invoke('text').then(text => {
+        expect(text).eq('x+y')
+      })
+      cy.get('#\\/ca2').should('have.text', '1')
+
+
+      cy.log('type incorrect answer into second blank')
+
+      cy.get(mathinput2Anchor).type('{end}{backspace}{backspace}', { force: true }).blur();
+      cy.wait(100)
+
+      cy.get(mathinput1CorrectAnchor).should('be.visible')
+      cy.get(mathinput2SubmitAnchor).should('be.visible')
+
+      cy.get('#\\/cr1 .mjx-mrow').eq(0).invoke('text').then(text => {
+        expect(text).eq('x+y')
+      })
+      cy.get('#\\/sr1 .mjx-mrow').eq(0).invoke('text').then(text => {
+        expect(text).eq('x+y')
+      })
+      cy.get('#\\/ca1').should('have.text', '1')
+
+      cy.get('#\\/cr2 .mjx-mrow').eq(0).invoke('text').then(text => {
+        expect(text).eq('x')
+      })
+      cy.get('#\\/sr2 .mjx-mrow').eq(0).invoke('text').then(text => {
+        expect(text).eq('x+y')
+      })
+      cy.get('#\\/ca2').should('have.text', '1')
+
+
+
+      cy.log('press enter in second blank')
+
+      cy.get(mathinput2Anchor).type('{enter}', { force: true });
+
+      cy.get(mathinput1CorrectAnchor).should('be.visible')
+      cy.get(mathinput2IncorrectAnchor).should('be.visible')
+
+      cy.get('#\\/cr1 .mjx-mrow').eq(0).invoke('text').then(text => {
+        expect(text).eq('x+y')
+      })
+      cy.get('#\\/sr1 .mjx-mrow').eq(0).invoke('text').then(text => {
+        expect(text).eq('x+y')
+      })
+      cy.get('#\\/ca1').should('have.text', '1')
+
+      cy.get('#\\/cr2 .mjx-mrow').eq(0).invoke('text').then(text => {
+        expect(text).eq('x')
+      })
+      cy.get('#\\/sr2 .mjx-mrow').eq(0).invoke('text').then(text => {
+        expect(text).eq('x')
+      })
+      cy.get('#\\/ca2').should('have.text', '0')
+
+
+      cy.log('type incorrect answer into first blank')
+
+
+      cy.get(mathinput1Anchor).type('{end}{backspace}{backspace}', { force: true }).blur();
+      cy.wait(100)
+
+      cy.get(mathinput1SubmitAnchor).should('be.visible')
+      cy.get(mathinput2IncorrectAnchor).should('be.visible')
+
+      cy.get('#\\/cr1 .mjx-mrow').eq(0).invoke('text').then(text => {
+        expect(text).eq('x')
+      })
+      cy.get('#\\/sr1 .mjx-mrow').eq(0).invoke('text').then(text => {
+        expect(text).eq('x+y')
+      })
+      cy.get('#\\/ca1').should('have.text', '1')
+
+      cy.get('#\\/cr2 .mjx-mrow').eq(0).invoke('text').then(text => {
+        expect(text).eq('x')
+      })
+      cy.get('#\\/sr2 .mjx-mrow').eq(0).invoke('text').then(text => {
+        expect(text).eq('x')
+      })
+      cy.get('#\\/ca2').should('have.text', '0')
+
+
+      cy.log('press enter in second blank')
+
+      cy.get(mathinput1Anchor).type('{enter}', { force: true });
+
+      cy.get(mathinput1IncorrectAnchor).should('be.visible')
+      cy.get(mathinput2IncorrectAnchor).should('be.visible')
+
+      cy.get('#\\/cr1 .mjx-mrow').eq(0).invoke('text').then(text => {
+        expect(text).eq('x')
+      })
+      cy.get('#\\/sr1 .mjx-mrow').eq(0).invoke('text').then(text => {
+        expect(text).eq('x')
+      })
+      cy.get('#\\/ca1').should('have.text', '0')
+
+      cy.get('#\\/cr2 .mjx-mrow').eq(0).invoke('text').then(text => {
+        expect(text).eq('x')
+      })
+      cy.get('#\\/sr2 .mjx-mrow').eq(0).invoke('text').then(text => {
+        expect(text).eq('x')
+      })
+      cy.get('#\\/ca2').should('have.text', '0')
+
+
+    })
+  });
+
+
 
 })

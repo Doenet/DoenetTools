@@ -2125,6 +2125,55 @@ describe('SideBySide Tag Tests', function () {
 
   })
 
+  it('copy sideBySide and overwrite parameters', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <sideBySide name="sbs" widths="5% 10% 15% 20%" margins="5% 2%" valigns="middle">
+      <lorem generateParagraphs="4" />
+    </sideBySide>
+
+    <copy target="sbs" widths="30% 10%" margins="1% 3%" valigns="bottom middle top bottom" assignNames="sbs2" />
+
+    <copy target="sbs2" widths="7% 8% 11% 12%" valigns="top bottom" assignNames="sbs3" />
+
+    `}, "*");
+    });
+
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+
+
+    cy.get('#\\/sbs').invoke('width').then(sbsWidth => {
+
+      checkFourColumnSbs({
+        specifiedWidths: [5, 10, 15, 20],
+        specifiedMargins: [5, 2],
+        specifiedValigns: ["middle", undefined, undefined, undefined],
+        sbsWidth, sbsName: "/sbs"
+      })
+
+      checkFourColumnSbs({
+        specifiedWidths: [30, 10, undefined, undefined],
+        specifiedMargins: [1, 3],
+        specifiedValigns: ["bottom", "middle", "top", "bottom"],
+        sbsWidth, sbsName: "/sbs2"
+      })
+
+      checkFourColumnSbs({
+        specifiedWidths: [7, 8, 11, 12],
+        specifiedMargins: [1, 3],
+        specifiedValigns: ["top", "bottom", undefined, undefined],
+        sbsWidth, sbsName: "/sbs3"
+      })
+
+
+
+    })
+
+  })
+
   it('sbsGroup with no arguments, one panel', () => {
     cy.window().then((win) => {
       win.postMessage({
@@ -4229,6 +4278,101 @@ describe('SideBySide Tag Tests', function () {
     })
 
   })
+
+  it('copy sbsGroup and overwrite parameters', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <sbsgroup name="sbsg" widths="25% 15%" margins="5% 10%" valigns="middle top" newNamespace>
+      <sideBySide name="sbs1" width="20%" valign="top">
+        <lorem generateParagraphs="2" />
+      </sideBySide>
+      <sideBySide name="sbs2" margins="8%">
+        <lorem generateParagraphs="2" />
+      </sideBySide>
+    </sbsgroup>
+
+    <copy target="sbsg" widths="30% 10%" margins="1% 3%" valigns="bottom middle" assignNames="sbsg2" />
+
+    <copy target="sbsg2" widths="7%" valigns="top bottom" assignNames="sbsg3" />
+
+    `}, "*");
+    });
+
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+
+
+    cy.get('#\\/sbsg\\/sbs1').invoke('width').then(sbsWidth => {
+
+      checkTwoColumnSbs({
+        specifiedWidths: [25, 15],
+        specifiedMargins: [5, 10],
+        specifiedValigns: ["middle", "top"],
+        sbsWidth, sbsName: "/sbsg", isSbsGroup: true
+      })
+
+
+      checkTwoColumnSbs({
+        specifiedWidths: [20, 20],
+        specifiedMargins: [5, 10],
+        specifiedValigns: ["top", "top"],
+        sbsWidth, sbsName: "/sbsg/sbs1"
+      })
+      checkTwoColumnSbs({
+        specifiedWidths: [25, 15],
+        specifiedMargins: [8, 8],
+        specifiedValigns: ["middle", "top"],
+        sbsWidth, sbsName: "/sbsg/sbs2"
+      })
+
+
+      checkTwoColumnSbs({
+        specifiedWidths: [30, 10],
+        specifiedMargins: [1, 3],
+        specifiedValigns: ["bottom", "middle"],
+        sbsWidth, sbsName: "/sbsg2", isSbsGroup: true
+      })
+
+      checkTwoColumnSbs({
+        specifiedWidths: [20, 20],
+        specifiedMargins: [1, 3],
+        specifiedValigns: ["top", "top"],
+        sbsWidth, sbsName: "/sbsg2/sbs1"
+      })
+      checkTwoColumnSbs({
+        specifiedWidths: [30, 10],
+        specifiedMargins: [8, 8],
+        specifiedValigns: ["bottom", "middle"],
+        sbsWidth, sbsName: "/sbsg2/sbs2"
+      })
+
+
+      checkTwoColumnSbs({
+        specifiedWidths: [7, undefined],
+        specifiedMargins: [1, 3],
+        specifiedValigns: ["top", "bottom"],
+        sbsWidth, sbsName: "/sbsg3", isSbsGroup: true
+      })
+
+      checkTwoColumnSbs({
+        specifiedWidths: [20, 20],
+        specifiedMargins: [1, 3],
+        specifiedValigns: ["top", "top"],
+        sbsWidth, sbsName: "/sbsg3/sbs1"
+      })
+      checkTwoColumnSbs({
+        specifiedWidths: [7, undefined],
+        specifiedMargins: [8, 8],
+        specifiedValigns: ["top", "bottom"],
+        sbsWidth, sbsName: "/sbsg3/sbs2"
+      })
+
+    })
+
+  })
+
 
   it('sideBySide with a stack', () => {
     cy.window().then((win) => {

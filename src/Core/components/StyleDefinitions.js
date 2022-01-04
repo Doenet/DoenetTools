@@ -6,8 +6,6 @@ export class StyleDefinition extends BaseComponent {
   static componentType = "styleDefinition";
   static rendererType = undefined;
 
-  static get stateVariablesShadowedForReference() { return ["value"] };
-
   static createAttributesObject(args) {
     let attributes = super.createAttributesObject(args);
 
@@ -20,7 +18,6 @@ export class StyleDefinition extends BaseComponent {
     for (let styleAttr in styleAttributes) {
       attributes[styleAttr] = {
         createComponentOfType: styleAttributes[styleAttr].componentType,
-        // copyComponentOnReference: true
       }
     }
 

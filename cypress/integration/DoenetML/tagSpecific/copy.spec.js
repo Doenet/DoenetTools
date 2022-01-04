@@ -2473,7 +2473,7 @@ describe('Copy Tag Tests', function () {
     <graph name='g1'>
       <map name="map1" assignNames="t1 t2">
         <template newNamespace>
-          <point name="A" x="$(i{prop='value' link='false'})" y='1'/>
+          <point name="A" x="$(i{link='false' fixed='false'})" y='1'/>
         </template>
         <sources alias="i"><sequence from="1" to="$n" /></sources>
       </map>

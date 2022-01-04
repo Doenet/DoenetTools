@@ -181,6 +181,355 @@ describe('Rectangle Tag Tests', function () {
       cornerDependencyState: 0
     });
   });
+
+  it('copy rectangle and overwrite attributes', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+
+    <group newNamespace name="g1" >
+      <sideBySide widths="25% 25% 25% 25%" >
+      <graph width="180" height="180">
+        <rectangle name="r1" />
+      </graph>
+      <graph width="180" height="180">
+        <copy target="r1" vertices="(3,4)" assignNames="r2" styleNumber="2" />
+      </graph>
+      <graph width="180" height="180">
+        <copy target="r2" width="5" assignNames="r3" styleNumber="3" />
+      </graph>
+      <graph width="180" height="180">
+        <copy target="r3" center="(4,5)" assignNames="r4" styleNumber="4" />
+      </graph>
+      </sideBySide>
+    </group>
+
+    <copy target="g1" assignNames="g2" />
+
+
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
+
+    async function checkTransformedRectangleValues({ components, v0x1, v0y1, v2x1, v2y1, v0x2, v0y2, v2x2, v2y2, v2x3, v2x4, v2y4 }) {
+
+      await checkRectangleValues({
+        rectangles: [components["/g1/r1"], components["/g2/r1"]]
+      }, {
+        v0x: v0x1,
+        v0y: v0y1,
+        v2x: v2x1,
+        v2y: v2y1
+      })
+
+      await checkRectangleValues({
+        rectangles: [components["/g1/r2"], components["/g2/r2"]]
+      }, {
+        v0x: v0x2,
+        v0y: v0y2,
+        v2x: v2x2,
+        v2y: v2y2
+      })
+
+      await checkRectangleValues({
+        rectangles: [components["/g1/r3"], components["/g2/r3"]]
+      }, {
+        v0x: v0x2,
+        v0y: v0y2,
+        v2x: v2x3,
+        v2y: v2y2
+      })
+
+      await checkRectangleValues({
+        rectangles: [components["/g1/r4"], components["/g2/r4"]]
+      }, {
+        v0x: v0x2,
+        v0y: v0y2,
+        v2x: v2x4,
+        v2y: v2y4
+      })
+    }
+
+    let v0x1 = 0, v0y1 = 0, v2x1 = 1, v2y1 = 1, v0x2 = 3, v0y2 = 4, v2x2 = 4, v2y2 = 5, v2x3 = 8, v2x4 = 5, v2y4 = 6;
+    cy.window().then(async (win) => {
+      let components = Object.assign({}, win.state.components);
+
+      await checkTransformedRectangleValues({
+        components,
+        v0x1, v0y1, v2x1, v2y1, v0x2, v0y2, v2x2, v2y2, v2x3, v2x4, v2y4
+      })
+
+    })
+
+    cy.log('shift g1/r1')
+
+    cy.window().then(async (win) => {
+      let components = Object.assign({}, win.state.components);
+      let dx = -2;
+      let dy = 4;
+
+      v0x1 += dx;
+      v0y1 += dy;
+      v2x1 += dx;
+      v2y1 += dy;
+
+      await components["/g1/r1"].movePolygon({ pointCoords: { 0: [v0x1, v0y1], 2: [v2x1, v2y1] } })
+
+      await checkTransformedRectangleValues({
+        components,
+        v0x1, v0y1, v2x1, v2y1, v0x2, v0y2, v2x2, v2y2, v2x3, v2x4, v2y4
+      })
+    })
+
+    cy.log('move vertex 0 of g2/r1')
+
+    cy.window().then(async (win) => {
+      let components = Object.assign({}, win.state.components);
+
+      v0x1 = 1;
+      v0y1 = 8;
+
+      let width = v2x1 - v0x1;
+      let height = v2y1 - v0y1;
+
+      v2x2 = v0x2 + width;
+      v2y2 = v0y2 + height;
+
+
+      await components["/g2/r1"].movePolygon({ pointCoords: { 0: [v0x1, v0y1] } })
+
+      await checkTransformedRectangleValues({
+        components,
+        v0x1, v0y1, v2x1, v2y1, v0x2, v0y2, v2x2, v2y2, v2x3, v2x4, v2y4
+      })
+
+    })
+
+    cy.log('move vertex 1 of g1/r2')
+
+    cy.window().then(async (win) => {
+      let components = Object.assign({}, win.state.components);
+
+      let center4x = (v2x4 + v0x2) / 2;
+      let center4y = (v2y4 + v0y2) / 2;
+
+      let width3 = v2x3 - v0x2;
+
+      v0x2 = -5;
+      v0y2 = -2;
+
+      let width = v2x2 - v0x2;
+      let height = v2y2 - v0y2;
+
+      v2x1 = v0x1 + width;
+      v2y1 = v0y1 + height;
+
+      v2x3 = v0x2 + width3;
+
+      v2x4 = 2 * center4x - v0x2;
+      v2y4 = 2 * center4y - v0y2;
+
+
+      await components["/g1/r2"].movePolygon({ pointCoords: { 0: [v0x2, v0y2] } })
+
+      await checkTransformedRectangleValues({
+        components,
+        v0x1, v0y1, v2x1, v2y1, v0x2, v0y2, v2x2, v2y2, v2x3, v2x4, v2y4
+      })
+
+    })
+
+
+    cy.log('move vertex 2 of g2/r2')
+
+    cy.window().then(async (win) => {
+      let components = Object.assign({}, win.state.components);
+
+      let center4x = (v2x4 + v0x2) / 2;
+      let center4y = (v2y4 + v0y2) / 2;
+
+      let width3 = v2x3 - v0x2;
+
+      v2x2 = -3;
+      v0y2 = 3;
+
+      let width = v2x2 - v0x2;
+      let height = v2y2 - v0y2;
+
+      v2x1 = v0x1 + width;
+      v2y1 = v0y1 + height;
+
+      // v2x3 = v0x2 + width3;
+
+      // v2x4 = 2 * center4x - v0x2;
+      v2y4 = 2 * center4y - v0y2;
+
+
+      await components["/g2/r2"].movePolygon({ pointCoords: { 1: [v2x2, v0y2] } })
+
+      await checkTransformedRectangleValues({
+        components,
+        v0x1, v0y1, v2x1, v2y1, v0x2, v0y2, v2x2, v2y2, v2x3, v2x4, v2y4
+      })
+
+    })
+
+
+    cy.log('move vertex 3 of g1/r3')
+
+    cy.window().then(async (win) => {
+      let components = Object.assign({}, win.state.components);
+
+      let center4x = (v2x4 + v0x2) / 2;
+      let center4y = (v2y4 + v0y2) / 2;
+
+      let width3 = v2x3 - v0x2;
+
+      v2x3 = -8;
+      v2y2 = -6;
+
+      let width = v2x2 - v0x2;
+      let height = v2y2 - v0y2;
+
+      // v2x1 = v0x1 + width;
+      v2y1 = v0y1 + height;
+
+      // v2x3 = v0x2 + width3;
+
+      // v2x4 = 2 * center4x - v0x2;
+      // v2y4 = 2 * center4y - v0y2;
+
+
+      await components["/g1/r3"].movePolygon({ pointCoords: { 2: [v2x3, v2y2] } })
+
+      await checkTransformedRectangleValues({
+        components,
+        v0x1, v0y1, v2x1, v2y1, v0x2, v0y2, v2x2, v2y2, v2x3, v2x4, v2y4
+      })
+
+    })
+
+
+
+    cy.log('move vertex 4 of g2/r3')
+
+    cy.window().then(async (win) => {
+      let components = Object.assign({}, win.state.components);
+
+      let center4x = (v2x4 + v0x2) / 2;
+      let center4y = (v2y4 + v0y2) / 2;
+
+      // let width3 = v2x3 - v0x2;
+
+      let width = v2x2 - v0x2;
+
+      v0x2 = 7;
+      v2y2 = -5;
+
+      let height = v2y2 - v0y2;
+
+      v2x2 = v0x2 + width;
+
+      v2x1 = v0x1 + width;
+      v2y1 = v0y1 + height;
+
+      // v2x3 = v0x2 + width3;
+
+      v2x4 = 2 * center4x - v0x2;
+      // v2y4 = 2 * center4y - v0y2;
+
+
+      await components["/g2/r3"].movePolygon({ pointCoords: { 3: [v0x2, v2y2] } })
+
+      await checkTransformedRectangleValues({
+        components,
+        v0x1, v0y1, v2x1, v2y1, v0x2, v0y2, v2x2, v2y2, v2x3, v2x4, v2y4
+      })
+
+    })
+
+
+
+    cy.log('move vertex 2 of g1/r4')
+
+    cy.window().then(async (win) => {
+      let components = Object.assign({}, win.state.components);
+
+      let center4x = (v2x4 + v0x2) / 2;
+      let center4y = (v2y4 + v0y2) / 2;
+
+      // let width3 = v2x3 - v0x2;
+
+      let width = v2x2 - v0x2;
+      let height = v2y2 - v0y2;
+
+      v2x4 = -9;
+      v0y2 = 8;
+
+
+      v2y2 = v0y2 + height;
+
+      // v2x1 = v0x1 + width;
+      // v2y1 = v0y1 + height;
+
+      // v2x3 = v0x2 + width3;
+
+      // v2x4 = 2 * center4x - v0x2;
+      // v2y4 = 2 * center4y - v0y2;
+
+
+      await components["/g1/r4"].movePolygon({ pointCoords: { 1: [v2x4, v0y2] } })
+
+      await checkTransformedRectangleValues({
+        components,
+        v0x1, v0y1, v2x1, v2y1, v0x2, v0y2, v2x2, v2y2, v2x3, v2x4, v2y4
+      })
+
+    })
+
+
+
+    cy.log('move vertex 3 of g2/r4')
+
+    cy.window().then(async (win) => {
+      let components = Object.assign({}, win.state.components);
+
+      let center4x = (v2x4 + v0x2) / 2;
+      let center4y = (v2y4 + v0y2) / 2;
+
+      // let width3 = v2x3 - v0x2;
+
+      let width = v2x2 - v0x2;
+      let height = v2y2 - v0y2;
+
+      v2x4 = 2;
+      v2y4 = -5;
+
+
+      // v2y2 = v0y2 + height;
+
+      // v2x1 = v0x1 + width;
+      // v2y1 = v0y1 + height;
+
+      // v2x3 = v0x2 + width3;
+
+      // v2x4 = 2 * center4x - v0x2;
+      // v2y4 = 2 * center4y - v0y2;
+
+
+      await components["/g1/r4"].movePolygon({ pointCoords: { 2: [v2x4, v2y4] } })
+
+      await checkTransformedRectangleValues({
+        components,
+        v0x1, v0y1, v2x1, v2y1, v0x2, v0y2, v2x2, v2y2, v2x3, v2x4, v2y4
+      })
+
+    })
+
+  })
+
 });
 
 function setupScene({ rectangleProperties, rectangleChildren }) {
@@ -651,11 +1000,15 @@ async function checkRectangleValues({
     expect((await rectangle.stateValues.height)).eq(heightValue);
   }
 
-  for (let [index, vertex] of vertices.entries()) {
-    expect((await vertex.stateValues.xs).map(x => x.evaluate_to_constant())).eqls(vertexCoords[index]);
+  if (vertices) {
+    for (let [index, vertex] of vertices.entries()) {
+      expect((await vertex.stateValues.xs).map(x => x.evaluate_to_constant())).eqls(vertexCoords[index]);
+    }
   }
 
-  expect((await centerPoint.stateValues.xs).map(x => x.evaluate_to_constant())).eqls(centerCoords);
+  if (centerPoint) {
+    expect((await centerPoint.stateValues.xs).map(x => x.evaluate_to_constant())).eqls(centerCoords);
+  }
   // expect(widthInput.stateValues.value.tree).eq(widthValue);
   // expect(heightInput.stateValues.value.tree).eq(heightValue);
 }

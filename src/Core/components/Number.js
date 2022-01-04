@@ -6,9 +6,7 @@ import { buildParsedExpression, evaluateLogic } from '../utils/booleanLogic';
 export default class NumberComponent extends InlineComponent {
   static componentType = "number";
 
-  // used when referencing this component without prop
-  static useChildrenForReference = false;
-  static get stateVariablesShadowedForReference() { return ["value", "convertBoolean"] };
+  static variableForPlainMacro = "value";
 
   static createAttributesObject(args) {
     let attributes = super.createAttributesObject(args);
@@ -222,6 +220,12 @@ export default class NumberComponent extends InlineComponent {
     stateVariableDefinitions.value = {
       public: true,
       componentType: "number",
+      stateVariablesPrescribingAdditionalAttributes: {
+        fixed: "fixed",
+        displayDigits: "displayDigits",
+        displayDecimals: "displayDecimals",
+        displaySmallAsZero: "displaySmallAsZero",
+      },
       stateVariablesDeterminingDependencies: ["singleNumberOrStringChild"],
       returnDependencies({ stateValues }) {
         if (stateValues.singleNumberOrStringChild) {

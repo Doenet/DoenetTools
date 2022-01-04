@@ -148,6 +148,31 @@ export default class Intersection extends CompositeComponent {
       }]
     };
 
+    // TODO: would it be preferable to send an xs attribute
+    // rather than a coords state variable?
+    // If so, need to change state variable change is update replacements
+
+    // return {
+    //   replacements: [{
+    //     componentType: "point",
+    //     attributes: {
+    //       xs: {
+    //         component: {
+    //           componentType: "mathList",
+    //           children: [{
+    //             componentType: "math",
+    //             state: { value: me.fromAst(x) }
+    //           }, {
+    //             componentType: "math",
+    //             state: { value: me.fromAst(y) }
+    //           }]
+    //         }
+    //       }
+    //     },
+    //     state: { draggable: false, fixed: true },
+    //   }]
+    // };
+
   }
 
   static async calculateReplacementChanges({ component, components }) {
@@ -178,11 +203,16 @@ export default class Intersection extends CompositeComponent {
           recreateReplacements = true;
           break;
         }
+        if (serializedIntersections[ind].componentType !== "point") {
+          console.warn(`Have not implemented state changes for an intersection that results in a  ${serializedIntersections[ind].componentType}, so recreating`);
+          recreateReplacements = true;
+          break;
+        }
 
         let replacementInstruction = {
           changeType: "updateStateVariables",
           component: component.replacements[ind],
-          stateChanges: serializedIntersections[ind].state,
+          stateChanges: { coords: serializedIntersections[ind].state.coords },
         }
         replacementChanges.push(replacementInstruction);
       }

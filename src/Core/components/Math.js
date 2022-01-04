@@ -1,6 +1,6 @@
 import InlineComponent from './abstract/InlineComponent';
 import me from 'math-expressions';
-import { getFromText, getFromLatex, convertValueToMathExpression, normalizeMathExpression, roundForDisplay, mergeListsWithOtherContainers } from '../utils/math';
+import { getFromText, getFromLatex, convertValueToMathExpression, normalizeMathExpression, roundForDisplay, mergeListsWithOtherContainers, preprocessMathInverseDefinition } from '../utils/math';
 import { flattenDeep } from '../utils/array';
 
 
@@ -8,11 +8,9 @@ export default class MathComponent extends InlineComponent {
   static componentType = "math";
 
   // used when creating new component via adapter or copy prop
-  static primaryStateVariableForDefinition = "unnormalizedValue";
+  static primaryStateVariableForDefinition = "value";
 
-  // used when referencing this component without prop
-  static useChildrenForReference = false;
-  static get stateVariablesShadowedForReference() { return ["unnormalizedValue", "unordered"] };
+  static variableForPlainMacro = "value";
 
   static descendantCompositesMustHaveAReplacement = true;
   static descendantCompositesDefaultReplacementType = "math";
@@ -158,6 +156,7 @@ export default class MathComponent extends InlineComponent {
     stateVariableDefinitions.unordered = {
       defaultValue: false,
       public: true,
+      componentType: "boolean",
       returnDependencies: () => ({
         unorderedAttr: {
           dependencyType: "attributeComponent",
@@ -178,8 +177,8 @@ export default class MathComponent extends InlineComponent {
             return { newValues: { unordered } }
           } else {
             return {
-              useEssentialOrDefaultValue: {
-                unordered: { variablesToCheck: ["unordered"] }
+              useDefaultValue: {
+                unordered: {}
               }
             }
           }
@@ -231,7 +230,7 @@ export default class MathComponent extends InlineComponent {
     }
 
     stateVariableDefinitions.expressionWithCodes = {
-      // deferCalculation: false,
+      neverShadow: true,
       returnDependencies: () => ({
         stringMathChildren: {
           dependencyType: "child",
@@ -331,6 +330,15 @@ export default class MathComponent extends InlineComponent {
     stateVariableDefinitions.value = {
       public: true,
       componentType: this.componentType,
+      additionalAttributeComponentsToShadow: ["unordered"],
+      stateVariablesPrescribingAdditionalAttributes: {
+        fixed: "fixed",
+        displayDigits: "displayDigits",
+        displayDecimals: "displayDecimals",
+        displaySmallAsZero: "displaySmallAsZero",
+        simplify: "simplify",
+        expand: "expand",
+      },
       returnDependencies: () => ({
         unnormalizedValue: {
           dependencyType: "stateVariable",
@@ -610,7 +618,7 @@ export default class MathComponent extends InlineComponent {
       definition: determineCanBeModified,
     }
 
-    stateVariableDefinitions.mathChildrenByArrayComponent = {
+    stateVariableDefinitions.mathChildrenByVectorComponent = {
       returnDependencies: () => ({
         codePre: {
           dependencyType: "stateVariable",
@@ -628,7 +636,7 @@ export default class MathComponent extends InlineComponent {
       definition: function ({ dependencyValues }) {
 
         if (dependencyValues.expressionWithCodes === null) {
-          return { newValues: { mathChildrenByArrayComponent: null } };
+          return { newValues: { mathChildrenByVectorComponent: null } };
         }
         let expressionWithCodesTree = dependencyValues.expressionWithCodes.tree;
         let nMathChildren = dependencyValues.mathChildren.length;
@@ -637,21 +645,21 @@ export default class MathComponent extends InlineComponent {
           !Array.isArray(expressionWithCodesTree) ||
           !["tuple", "vector"].includes(expressionWithCodesTree[0])
         ) {
-          return { newValues: { mathChildrenByArrayComponent: null } };
+          return { newValues: { mathChildrenByVectorComponent: null } };
         }
 
-        let mathChildrenByArrayComponent = {};
+        let mathChildrenByVectorComponent = {};
 
         let childInd = 0;
         let childCode = dependencyValues.codePre + childInd;
 
         for (let ind = 1; ind < expressionWithCodesTree.length; ind++) {
           let exprComp = expressionWithCodesTree[ind];
-          let mc = mathChildrenByArrayComponent[ind] = [];
+          let mc = mathChildrenByVectorComponent[ind] = [];
 
           if (Array.isArray(exprComp)) {
             let flattenedComp = flattenDeep(exprComp);
-            while (childCode in flattenedComp) {
+            while (flattenedComp.includes(childCode)) {
               mc.push(childInd);
               childInd++;
               childCode = dependencyValues.codePre + childInd;
@@ -669,7 +677,7 @@ export default class MathComponent extends InlineComponent {
           }
         }
 
-        return { newValues: { mathChildrenByArrayComponent } };
+        return { newValues: { mathChildrenByVectorComponent } };
 
       }
     }
@@ -855,7 +863,7 @@ function calculateExpressionWithCodes({ dependencyValues, changes }) {
 
   // if don't have any string or math children,
   // set expressionWithCodes to be null,
-  // which will indicate that value should use its essential or default value
+  // which will indicate that value should use valueShadow
   if (dependencyValues.stringMathChildren.length === 0) {
     return { newValues: { expressionWithCodes: null } }
   }
@@ -1057,7 +1065,6 @@ function calculateMathValue({ dependencyValues } = {}) {
   if (dependencyValues.expressionWithCodes === null) {
     return {
       newValues: { unnormalizedValue: dependencyValues.valueShadow },
-      makeEssential: { unnormalizedValue: true }  // make essential since inverseDef sets it
     }
   }
 
@@ -1076,7 +1083,6 @@ function calculateMathValue({ dependencyValues } = {}) {
 
   return {
     newValues: { unnormalizedValue: value },
-    makeEssential: { unnormalizedValue: true }  // make essential since inverseDef sets it
   };
 }
 
@@ -1377,70 +1383,43 @@ function checkForScalarLinearExpression(tree, variables, inverseTree, components
 }
 
 async function invertMath({ desiredStateVariableValues, dependencyValues,
-  stateValues, workspace, overrideFixed
+  stateValues, workspace, overrideFixed, componentName
 }) {
 
   if (!await stateValues.canBeModified && !overrideFixed) {
     return { success: false };
   }
 
-  let desiredExpression = convertValueToMathExpression(desiredStateVariableValues.unnormalizedValue);
-  let currentValue = await stateValues.value;
-
-  let arrayEntriesNotAffected;
-
-  if (desiredExpression.tree[0] === "tuple" || desiredExpression.tree[0] === "vector") {
-    if (currentValue && (currentValue.tree[0] === "tuple" || currentValue.tree[0] === "vector")) {
-      // have vectors
-      // merge desiredExpression into current expression
-      let expressionAst;
-
-      if (workspace.desiredExpressionAst) {
-        // if have desired expresson from workspace, use that instead of currentValue
-        expressionAst = workspace.desiredExpressionAst.slice(0, desiredExpression.tree.length);
-      } else {
-        expressionAst = currentValue.tree.slice(0, desiredExpression.tree.length);
-      }
-
-      let notAffected = [];
-      let foundNotAffected = false;
-      for (let [ind, value] of desiredExpression.tree.entries()) {
-        if (value === undefined) {
-          foundNotAffected = true;
-          notAffected.push(ind);
-        } else {
-          expressionAst[ind] = value;
-        }
-      }
-      desiredExpression = me.fromAst(expressionAst);
-      workspace.desiredExpressionAst = expressionAst;
-
-      if (foundNotAffected) {
-        arrayEntriesNotAffected = notAffected;
-      }
-    } else {
-      // desired expression could have undefined entries
-      // fill in with \uff3f
-      let desiredOperands = [];
-      let foundUndefined = false;
-      for (let val of desiredExpression.tree.slice(1)) {
-        if (val === undefined) {
-          desiredOperands.push('\uff3f');
-          foundUndefined = true;
-        } else {
-          desiredOperands.push(val)
-        }
-      }
-
-      if (foundUndefined) {
-        desiredExpression = me.fromAst([desiredExpression.tree[0], ...desiredOperands])
-      }
-    }
-
-  }
-
   let mathChildren = dependencyValues.mathChildren;
   let stringChildren = dependencyValues.stringChildren;
+
+
+  if (mathChildren.length === 1 && stringChildren.length === 0) {
+    // if only child is a math, just send instructions to change it to desired value
+    return {
+      success: true,
+      instructions: [{
+        setDependency: "mathChildren",
+        desiredValue: desiredStateVariableValues.unnormalizedValue,
+        childIndex: 0,
+        variableIndex: 0,
+      }]
+    }
+  }
+
+
+  let desiredExpression = convertValueToMathExpression(desiredStateVariableValues.unnormalizedValue);
+
+  let result = await preprocessMathInverseDefinition({
+    desiredValue: desiredExpression,
+    stateValues,
+    variableName: "value",
+    workspace,
+  })
+
+
+  let vectorComponentsNotAffected = result.vectorComponentsNotAffected;
+  desiredExpression = result.desiredValue;
 
   if (mathChildren.length === 0) {
 
@@ -1483,10 +1462,6 @@ async function invertMath({ desiredStateVariableValues, dependencyValues,
       });
     }
 
-    instructions.push({
-      setStateVariable: "unnormalizedValue",
-      value: desiredExpression,
-    });
 
 
     return {
@@ -1496,17 +1471,6 @@ async function invertMath({ desiredStateVariableValues, dependencyValues,
 
   }
 
-  if (mathChildren.length === 1 && stringChildren.length === 0) {
-    return {
-      success: true,
-      instructions: [{
-        setDependency: "mathChildren",
-        desiredValue: desiredExpression,
-        childIndex: 0,
-        variableIndex: 0,
-      }]
-    }
-  }
 
   // first calculate expression pieces to make sure really can update
   let expressionPieces = await getExpressionPieces({ expression: desiredExpression, stateValues });
@@ -1517,11 +1481,11 @@ async function invertMath({ desiredStateVariableValues, dependencyValues,
   let instructions = [];
 
   let childrenToSkip = [];
-  if (arrayEntriesNotAffected && await stateValues.mathChildrenByArrayComponent) {
-    let mathChildrenByArrayComponent = await stateValues.mathChildrenByArrayComponent;
-    for (let ind of arrayEntriesNotAffected) {
-      if (mathChildrenByArrayComponent[ind]) {
-        childrenToSkip.push(...mathChildrenByArrayComponent[ind])
+  if (vectorComponentsNotAffected && await stateValues.mathChildrenByVectorComponent) {
+    let mathChildrenByVectorComponent = await stateValues.mathChildrenByVectorComponent;
+    for (let ind of vectorComponentsNotAffected) {
+      if (mathChildrenByVectorComponent[ind]) {
+        childrenToSkip.push(...mathChildrenByVectorComponent[ind])
       }
     }
   }

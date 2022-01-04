@@ -350,7 +350,7 @@ export default class Answer extends InlineComponent {
 
     stateVariableDefinitions.inputChildren = {
       stateVariablesDeterminingDependencies: ["allInputChildrenIncludingSugared"],
-      additionalStateVariablesDefined: ["inputChildIndices"],
+      additionalStateVariablesDefined: ["inputChildIndices", "skippedFirstInput"],
       forRenderer: true,
       returnDependencies({ stateValues }) {
         let dependencies = {
@@ -364,10 +364,10 @@ export default class Answer extends InlineComponent {
           }
         };
 
-        for (let [ind, child] of stateValues.allInputChildrenIncludingSugared.entries()) {
-          dependencies[`child${ind}FromSugar`] = {
+        if (stateValues.allInputChildrenIncludingSugared.length > 0) {
+          dependencies.firstInputFromSugar = {
             dependencyType: "doenetAttribute",
-            componentName: child.componentName,
+            componentName: stateValues.allInputChildrenIncludingSugared[0].componentName,
             attributeName: "createdFromSugar"
           }
         }
@@ -380,20 +380,24 @@ export default class Answer extends InlineComponent {
         // if have award the requires input,
         // use the input child from sugar if none other exists
 
-        let skipSugarChild = !dependencyValues.haveAwardThatRequiresInput
+
+        let inputChildren = [...dependencyValues.allInputChildrenIncludingSugared];
+        let inputChildIndices = [...dependencyValues.allInputChildrenIncludingSugared.keys()];
+        let skippedFirstInput = false;
+
+
+        let skipFirstSugaredInput = !dependencyValues.haveAwardThatRequiresInput
           || dependencyValues.allInputChildrenIncludingSugared.length > 1;
 
-        let inputChildren = [];
-        let inputChildIndices = []
 
-        for (let [ind, child] of dependencyValues.allInputChildrenIncludingSugared.entries()) {
-          if (!(skipSugarChild && dependencyValues[`child${ind}FromSugar`])) {
-            inputChildren.push(child);
-            inputChildIndices.push(ind);
-          }
+        if (skipFirstSugaredInput && dependencyValues.firstInputFromSugar) {
+          skippedFirstInput = true;
+          inputChildren = inputChildren.slice(1);
+          inputChildIndices = inputChildIndices.slice(1);
         }
 
-        return { newValues: { inputChildren, inputChildIndices } };
+
+        return { newValues: { inputChildren, inputChildIndices, skippedFirstInput } };
       }
     }
 
@@ -441,14 +445,26 @@ export default class Answer extends InlineComponent {
         awardInputResponseChildren: {
           dependencyType: "child",
           childGroups: ["awards", "inputs", "responses"],
+        },
+        skippedFirstInput: {
+          dependencyType: "stateVariable",
+          variableName: "skippedFirstInput"
         }
       }),
-      definition: ({ dependencyValues }) => ({
-        newValues: { awardInputResponseChildren: dependencyValues.awardInputResponseChildren }
-      })
+      definition({ dependencyValues }) {
+        let awardInputResponseChildren = [...dependencyValues.awardInputResponseChildren];
+        if (dependencyValues.skippedFirstInput) {
+          awardInputResponseChildren = awardInputResponseChildren.slice(1);
+        }
+        return {
+          newValues: { awardInputResponseChildren }
+        }
+      }
     }
 
     stateVariableDefinitions.nResponses = {
+      public: true,
+      componentType: "number",
       stateVariablesDeterminingDependencies: ["awardInputResponseChildren"],
       returnDependencies({ stateValues, componentInfoObjects }) {
         let dependencies = {
@@ -770,6 +786,8 @@ export default class Answer extends InlineComponent {
       essential: true,
       componentType: "math",
       hasVariableComponentType: true,
+      inverseShadowToSetEntireArray: true,
+      doNotCombineInverseArrayInstructions: true,
       returnArraySizeDependencies: () => ({
         nSubmittedResponses: {
           dependencyType: "stateVariable",
@@ -827,7 +845,11 @@ export default class Answer extends InlineComponent {
           // makeEssential: ["submittedResponses"]
         }
       },
-      inverseArrayDefinitionByKey: function ({ desiredStateVariableValues }) {
+      inverseArrayDefinitionByKey: function ({ desiredStateVariableValues, initialChange }) {
+        if (!initialChange) {
+          return { success: false };
+        }
+
         return {
           success: true,
           instructions: [{
@@ -1042,6 +1064,7 @@ export default class Answer extends InlineComponent {
 
 
     stateVariableDefinitions.creditAchievedDependencies = {
+      alwaysShadow: true,
       additionalStateVariablesDefined: ["creditAchievedDependenciesOld"],
       returnDependencies: () => ({
         currentCreditAchievedDependencies: {
@@ -1163,7 +1186,7 @@ export default class Answer extends InlineComponent {
         }
 
       },
-      inverseDefinition({ desiredStateVariableValues }) {
+      inverseDefinition({ desiredStateVariableValues, componentName }) {
         return {
           success: true,
           instructions: [{

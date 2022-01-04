@@ -5,8 +5,6 @@ export default class CobwebPolyline extends Polyline {
   static componentType = "cobwebPolyline";
   static rendererType = "cobwebPolyline";
 
-  static get stateVariablesShadowedForReference() { return ["initialPoint", "f"] };
-
   static createAttributesObject(args) {
     let attributes = super.createAttributesObject(args);
 

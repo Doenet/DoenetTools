@@ -26,12 +26,6 @@ export default class Curve extends GraphicalComponent {
   };
 
   static primaryStateVariableForDefinition = "fShadow";
-  static get stateVariablesShadowedForReference() {
-    return [
-      "variableForChild", "parMin", "parMax",
-      "curveType", "nThroughPoints", "nDimensions", "throughPoints"
-    ]
-  };
 
 
   static createAttributesObject(args) {
@@ -3070,21 +3064,15 @@ function getNearestPointFunctionCurve({ dependencyValues, numerics }) {
   let nDiscretizationPoints = dependencyValues.nDiscretizationPoints;
   let parMax = dependencyValues.parMax;
   let parMin = dependencyValues.parMin;
-  let xscale = 1, yscale = 1;
-  if (dependencyValues.graphXmin !== null &&
-    dependencyValues.graphXmax !== null &&
-    dependencyValues.graphYmin !== null &&
-    dependencyValues.graphYmax !== null
-  ) {
-    xscale = dependencyValues.graphXmax - dependencyValues.graphXmin;
-    yscale = dependencyValues.graphYmax - dependencyValues.graphYmin;
-  }
 
 
-  return function (variables) {
+  return function ({ variables, scales }) {
 
     let x1 = variables.x1.evaluate_to_constant();
     let x2 = variables.x2.evaluate_to_constant();
+
+    let xscale = scales[0];
+    let yscale = scales[1];
 
     // compute values at the actual endpoints, if they exist
 
@@ -3317,17 +3305,11 @@ function getNearestPointParametrizedCurve({ dependencyValues, numerics }) {
   let parMax = dependencyValues.parMax;
   let nDiscretizationPoints = dependencyValues.nDiscretizationPoints;
   let periodic = dependencyValues.periodic;
-  let xscale = 1, yscale = 1;
-  if (dependencyValues.graphXmin !== null &&
-    dependencyValues.graphXmax !== null &&
-    dependencyValues.graphYmin !== null &&
-    dependencyValues.graphYmax !== null
-  ) {
-    xscale = dependencyValues.graphXmax - dependencyValues.graphXmin;
-    yscale = dependencyValues.graphYmax - dependencyValues.graphYmin;
-  }
 
-  return function (variables) {
+  return function ({ variables, scales }) {
+
+    let xscale = scales[0];
+    let yscale = scales[1];
 
     // TODO: extend to dimensions other than N=2
 

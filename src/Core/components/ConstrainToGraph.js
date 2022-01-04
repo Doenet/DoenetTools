@@ -49,7 +49,7 @@ export default class ConstrainToGraph extends ConstraintComponent {
       }),
       definition: ({ dependencyValues }) => ({
         newValues: {
-          applyComponentConstraint: function (variables) {
+          applyComponentConstraint: function ({ variables, scales }) {
 
             if (!dependencyValues.graphAncestor) {
               return {};
@@ -75,7 +75,7 @@ export default class ConstrainToGraph extends ConstraintComponent {
               let lowerBound = xmin;
               let upperBound = xmax;
               let buffer = dependencyValues.buffer;
-              if(buffer > 0) {
+              if (buffer > 0) {
                 let bufferAdjust = buffer * (xmax - xmin);
                 lowerBound += bufferAdjust;
                 upperBound -= bufferAdjust;
@@ -108,7 +108,7 @@ export default class ConstrainToGraph extends ConstraintComponent {
               let lowerBound = ymin;
               let upperBound = ymax;
               let buffer = dependencyValues.buffer;
-              if(buffer > 0) {
+              if (buffer > 0) {
                 let bufferAdjust = buffer * (ymax - ymin);
                 lowerBound += bufferAdjust;
                 upperBound -= bufferAdjust;

@@ -1,15 +1,12 @@
 import GraphicalComponent from './abstract/GraphicalComponent';
 import me from 'math-expressions';
-import { convertValueToMathExpression, mergeVectorsForInverseDefinition, roundForDisplay } from '../utils/math';
+import { convertValueToMathExpression, roundForDisplay } from '../utils/math';
 import { returnBreakStringsSugarFunction } from './commonsugar/breakstrings';
 import { deepClone } from '../utils/deepFunctions';
 
 export default class Point extends GraphicalComponent {
   static componentType = "point";
 
-  // used when referencing this component without prop
-  static useChildrenForReference = false;
-  static get stateVariablesShadowedForReference() { return ["xs", "nDimensions"] };
 
   // Note: for other components with public point state variables,
   // the recommended course of action is not to have
@@ -251,11 +248,11 @@ export default class Point extends GraphicalComponent {
     }
 
     // coordsShadow will be null unless point was created
-    // via an adapter or ref prop or from serialized state with coords value
-    // In case of adapter or ref prop,
+    // via an adapter or copy prop or from serialized state with coords value
+    // In case of adapter or copy prop,
     // given the primaryStateVariableForDefinition static variable,
     // the definition of coordsShadow will be changed to be the value
-    // that shadows the component adapted or reffed
+    // that shadows the component adapted or copied
     stateVariableDefinitions.coordsShadow = {
       defaultValue: null,
       returnDependencies: () => ({}),
@@ -266,18 +263,11 @@ export default class Point extends GraphicalComponent {
       }),
       inverseDefinition: async function ({ desiredStateVariableValues, stateValues, workspace }) {
 
-        let desiredCoords = mergeVectorsForInverseDefinition({
-          desiredVector: desiredStateVariableValues.coordsShadow,
-          currentVector: await stateValues.coordsShadow,
-          workspace,
-          workspaceKey: "desiredCoords"
-        });
-
         return {
           success: true,
           instructions: [{
             setStateVariable: "coordsShadow",
-            value: desiredCoords
+            value: desiredStateVariableValues.coordsShadow
           }]
         };
       }
@@ -331,7 +321,17 @@ export default class Point extends GraphicalComponent {
         let coords;
         let nDimensions;
 
-
+        // if have a component child, they will overwrite any other component values
+        // so is a minimum for nDimensions
+        if (dependencyValues.z !== null) {
+          nDimensions = 3;
+        } else if (dependencyValues.y !== null) {
+          nDimensions = 2;
+        } else if (dependencyValues.x !== null) {
+          nDimensions = 1;
+        } else {
+          nDimensions = 0;
+        }
 
         if (dependencyValues.coords !== null) {
           basedOnCoords = true;
@@ -345,9 +345,9 @@ export default class Point extends GraphicalComponent {
 
           let coordsTree = coords.tree;
           if (Array.isArray(coordsTree) && ["tuple", "vector"].includes(coordsTree[0])) {
-            nDimensions = coordsTree.length - 1;
+            nDimensions = Math.max(coordsTree.length - 1, nDimensions);
           } else {
-            nDimensions = 1;
+            nDimensions = Math.max(1, nDimensions);
           }
 
           // if based on coords, should check for actual change
@@ -360,32 +360,27 @@ export default class Point extends GraphicalComponent {
           if (dependencyValues.xs !== null) {
             return {
               newValues: {
-                nDimensions: dependencyValues.xs.stateValues.nComponents
+                nDimensions: Math.max(dependencyValues.xs.stateValues.nComponents, nDimensions)
               }
             }
           }
           if (dependencyValues.pointChild.length > 0) {
             return {
               newValues: {
-                nDimensions: dependencyValues.pointChild[0].stateValues.nDimensions
+                nDimensions: Math.max(dependencyValues.pointChild[0].stateValues.nDimensions, nDimensions)
               }
             }
           }
 
-          // determine from which component children have
-
-          if (dependencyValues.z !== null) {
-            nDimensions = 3;
-          } else if (dependencyValues.y !== null) {
+          if (nDimensions === 0) {
+            // if nothing specified, make it a 2D point
             nDimensions = 2;
-          } else if (dependencyValues.x !== null) {
-            nDimensions = 1;
-          } else {
-            nDimensions = 0;
           }
+
+          return { newValues: { nDimensions }, checkForActualChange: { nDimensions: true } };
+
         }
 
-        return { newValues: { nDimensions }, checkForActualChange: { nDimensions: true } };
 
       }
     }
@@ -474,7 +469,7 @@ export default class Point extends GraphicalComponent {
         globalDependencyValues, dependencyValuesByKey, arrayKeys,
       }) {
 
-        // console.log('unconstrained xs definition by key')
+        // console.log(`unconstrained xs definition by key for ${componentName}`)
         // console.log(deepClone(globalDependencyValues))
         // console.log(deepClone(dependencyValuesByKey))
         // console.log(deepClone(arrayKeys));
@@ -519,25 +514,32 @@ export default class Point extends GraphicalComponent {
             let varEnding = Number(arrayKey) + 1;
             let xs = dependencyValuesByKey[arrayKey].xs;
             if (xs !== null) {
-              newXs[arrayKey] = xs.stateValues["math" + varEnding].simplify();
+              let val = xs.stateValues["math" + varEnding];
+              if(val !== undefined) {
+                newXs[arrayKey] = val.simplify();
+              }
             } else {
               let pointChild = dependencyValuesByKey[arrayKey].pointChild;
               if (pointChild.length > 0) {
                 newXs[arrayKey] = pointChild[0].stateValues["x" + varEnding]
-              } else {
-                let component = dependencyValuesByKey[arrayKey].component;
-                if (component !== null) {
-                  newXs[arrayKey] = component.stateValues.value.simplify();
-                } else {
-                  essentialXs[arrayKey] = {
-                    variablesToCheck: [
-                      { variableName: "xs", arrayIndex: arrayKey },
-                      { variableName: "coords", mathComponentIndex: arrayKey }
-                    ]
-                  };
-                }
               }
             }
+          }
+        }
+
+
+        // if have a component, that supercedes other values
+        for (let arrayKey of arrayKeys) {
+          let component = dependencyValuesByKey[arrayKey].component;
+          if (component) {
+            newXs[arrayKey] = component.stateValues.value.simplify();
+          } else if (newXs[arrayKey] === undefined) {
+            essentialXs[arrayKey] = {
+              variablesToCheck: [
+                { variableName: "xs", arrayIndex: arrayKey },
+                { variableName: "coords", mathComponentIndex: arrayKey }
+              ]
+            };
           }
         }
 
@@ -559,7 +561,7 @@ export default class Point extends GraphicalComponent {
         dependencyValuesByKey, dependencyNamesByKey, arraySize
       }) {
 
-        // console.log("invertUnconstrainedXs");
+        // console.log(`invertUnconstrainedXs, ${componentName}`);
         // console.log(desiredStateVariableValues)
         // console.log(globalDependencyValues);
         // console.log(dependencyValuesByKey);
@@ -567,33 +569,73 @@ export default class Point extends GraphicalComponent {
         let instructions = [];
         let basedOnCoords = false;
         let coordsDependency;
+        let coordsTree;
+        let setCoords = false;
 
         if (globalDependencyValues.coords !== null) {
           basedOnCoords = true;
           coordsDependency = "coords";
+          coordsTree = Array(arraySize[0] + 1);
         } else if (globalDependencyValues.coordsShadow !== null) {
           basedOnCoords = true;
           coordsDependency = "coordsShadow"
+          coordsTree = Array(arraySize[0] + 1);
         }
 
-        if (basedOnCoords) {
-          let desiredCoords;
-          if (arraySize[0] === 1) {
-            desiredCoords = convertValueToMathExpression(desiredStateVariableValues.unconstrainedXs[0])
+
+        for (let arrayKey of Object.keys(desiredStateVariableValues.unconstrainedXs).reverse()) {
+          let desiredValue = convertValueToMathExpression(desiredStateVariableValues.unconstrainedXs[arrayKey])
+
+          let component = dependencyValuesByKey[arrayKey].component;
+          if (component !== null) {
+            instructions.push({
+              setDependency: dependencyNamesByKey[arrayKey].component,
+              desiredValue,
+              childIndex: 0,
+              variableIndex: 0,
+            });
+          } else if (basedOnCoords) {
+            coordsTree[Number(arrayKey) + 1] = desiredValue.tree;
+            setCoords = true;
+
           } else {
 
-            // coordsTree could have undefined components,
-            // which will indicate not to change those components
-            let coordsTree = Array(arraySize[0] + 1);
-            coordsTree[0] = "vector";
-            for (let arrayKey in desiredStateVariableValues.unconstrainedXs) {
-              let value = desiredStateVariableValues.unconstrainedXs[arrayKey]
-              coordsTree[Number(arrayKey) + 1] = value instanceof me.class ? value.tree : value;
+            let xs = dependencyValuesByKey[arrayKey].xs;
+            if (xs !== null) {
+              instructions.push({
+                setDependency: dependencyNamesByKey[arrayKey].xs,
+                desiredValue,
+                childIndex: 0,
+                variableIndex: 0,
+              });
+            } else {
+
+              let pointChild = dependencyValuesByKey[arrayKey].pointChild;
+              if (pointChild.length > 0) {
+                instructions.push({
+                  setDependency: dependencyNamesByKey[arrayKey].pointChild,
+                  desiredValue,
+                  childIndex: 0,
+                  variableIndex: 0,
+                });
+              } else {
+                instructions.push({
+                  setStateVariable: "unconstrainedXs",
+                  value: { [arrayKey]: desiredValue },
+                });
+              }
             }
-            desiredCoords = me.fromAst(coordsTree);
-
           }
+        }
 
+        if (setCoords) {
+          let desiredCoords;
+          if (arraySize[0] === 1) {
+            desiredCoords = me.fromAst(coordsTree[1])
+          } else {
+            coordsTree[0] = "vector";
+            desiredCoords = me.fromAst(coordsTree)
+          };
           let instruction = {
             setDependency: coordsDependency,
             desiredValue: desiredCoords
@@ -605,62 +647,13 @@ export default class Point extends GraphicalComponent {
 
           instructions.push(instruction);
 
-          return {
-            success: true,
-            instructions,
-          }
-        } else {
-
-          for (let arrayKey of Object.keys(desiredStateVariableValues.unconstrainedXs).reverse()) {
-
-            if (!dependencyValuesByKey[arrayKey]) {
-              continue;
-            }
-
-            let xs = dependencyValuesByKey[arrayKey].xs;
-            if (xs !== null) {
-              instructions.push({
-                setDependency: dependencyNamesByKey[arrayKey].xs,
-                desiredValue: convertValueToMathExpression(desiredStateVariableValues.unconstrainedXs[arrayKey]),
-                childIndex: 0,
-                variableIndex: 0,
-              });
-            } else {
-
-              let pointChild = dependencyValuesByKey[arrayKey].pointChild;
-              if (pointChild.length > 0) {
-                instructions.push({
-                  setDependency: dependencyNamesByKey[arrayKey].pointChild,
-                  desiredValue: convertValueToMathExpression(desiredStateVariableValues.unconstrainedXs[arrayKey]),
-                  childIndex: 0,
-                  variableIndex: 0,
-                });
-              } else {
-
-                let component = dependencyValuesByKey[arrayKey].component;
-                if (component !== null) {
-                  instructions.push({
-                    setDependency: dependencyNamesByKey[arrayKey].component,
-                    // since going through Math component, don't need to manually convert to math expression
-                    desiredValue: desiredStateVariableValues.unconstrainedXs[arrayKey],
-                    childIndex: 0,
-                    variableIndex: 0,
-                  });
-                } else {
-                  instructions.push({
-                    setStateVariable: "unconstrainedXs",
-                    value: { [arrayKey]: convertValueToMathExpression(desiredStateVariableValues.unconstrainedXs[arrayKey]) },
-                  });
-                }
-              }
-            }
-          }
-
-          return {
-            success: true,
-            instructions,
-          }
         }
+
+        return {
+          success: true,
+          instructions,
+        }
+
       },
     }
 

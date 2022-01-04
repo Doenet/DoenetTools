@@ -5,9 +5,7 @@ import { evaluateLogic, buildParsedExpression } from '../utils/booleanLogic';
 export default class BooleanComponent extends InlineComponent {
   static componentType = "boolean";
 
-  // used when referencing this component without prop
-  static useChildrenForReference = false;
-  static get stateVariablesShadowedForReference() { return ["value"] };
+  static variableForPlainMacro = "value";
 
   static descendantCompositesMustHaveAReplacement = true;
   static descendantCompositesDefaultReplacementType = "math";
@@ -233,6 +231,9 @@ export default class BooleanComponent extends InlineComponent {
       forRenderer: true,
       defaultValue: false,
       set: Boolean,
+      stateVariablesPrescribingAdditionalAttributes: {
+        fixed: "fixed",
+      },
       returnDependencies: () => ({
         symbolicEquality: {
           dependencyType: "stateVariable",

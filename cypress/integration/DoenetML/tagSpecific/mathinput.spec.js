@@ -2781,14 +2781,14 @@ describe('MathInput Tag Tests', function () {
 
   })
 
-  it('substitute exponent with numbers', () => {
+  it('exponent with numbers', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
     <p>a: <mathinput name="a" /></p>
     <p>a2: <copy prop="value" target="a" assignNames="a2" /></p>
-    <p>a3: <copy prop="value" target="a" simplify assignNames="a3" /></p>
+    <p>a3: <math simplify name="a3">$a</math></p>
     `}, "*");
     });
 
@@ -3867,5 +3867,102 @@ describe('MathInput Tag Tests', function () {
     })
 
   })
+
+  it('mathinput can merge coordinates', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+  <p><text>a</text></p>
+  <mathinput name="coords" prefill="(1,2)" />
+  <graph>
+    <point name="P" coords="$coords" />
+  </graph>
+  <p>Change x-coordinate: <mathinput name="x1" bindValueTo="$(P{prop='x1'})" /></p>
+  <p>Change y-coordinate: <mathinput name="x2" bindValueTo="$(P{prop='x2'})" /></p>
+  `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.get('#\\/x1 textarea').type("{end}{backspace}3{enter}", { force: true })
+
+    cy.get('#\\/coords .mq-editable-field').should('have.text', '(3,2)')
+
+    cy.get('#\\/x2 textarea').type("{end}{backspace}4{enter}", { force: true })
+
+    cy.get('#\\/coords .mq-editable-field').should('have.text', '(3,4)')
+
+
+  });
+
+  it('mathinput can merge coordinates, immediateValue', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+  <p><text>a</text></p>
+  <mathinput name="coords" prefill="(1,2)" />
+  <graph>
+    <point name="P" coords="$(coords{prop='immediateValue'})" />
+  </graph>
+  <p>Change x-coordinate: <mathinput name="x1" bindValueTo="$(P{prop='x1'})" /></p>
+  <p>Change y-coordinate: <mathinput name="x2" bindValueTo="$(P{prop='x2'})" /></p>
+  `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.get('#\\/x1 textarea').type("{end}{backspace}3{enter}", { force: true })
+
+    cy.get('#\\/coords .mq-editable-field').should('have.text', '(3,2)')
+
+    cy.get('#\\/x2 textarea').type("{end}{backspace}4{enter}", { force: true })
+
+    cy.get('#\\/coords .mq-editable-field').should('have.text', '(3,4)')
+
+
+  });
+
+  it('prefill is fixed', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+  <p><text>a</text></p>
+  <mathinput name="mi" prefill="(1,2)" />
+  <p>Prefill: <copy target="mi" prop="prefill" assignNames="pf" /></p>
+  <p>Change prefill: <mathinput name="mipf" bindValueTo="$(mi{prop='prefill'})" /></p>
+  `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.get('#\\/pf .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq("(1,2)");
+    })
+
+    cy.get('#\\/mi .mq-editable-field').should('have.text', '(1,2)')
+    cy.get('#\\/mipf .mq-editable-field').should('have.text', '(1,2)')
+
+    cy.window().then((win) => {
+      let components = win.state.components;
+      expect(components["/mi"].stateValues.prefill.tree).eqls(["tuple", 1, 2])
+    });
+
+    cy.log('cannot change prefill')
+
+    cy.get('#\\/mipf textarea').type("{end}{backspace}5{enter}", { force: true });
+
+    cy.get('#\\/mi .mq-editable-field').should('have.text', '(1,2)')
+    cy.get('#\\/mipf .mq-editable-field').should('contain.text', '(1,2)')
+    cy.get('#\\/pf .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq("(1,2)");
+    })
+
+    cy.window().then((win) => {
+      let components = win.state.components;
+      expect(components["/mi"].stateValues.prefill.tree).eqls(["tuple", 1, 2])
+    });
+
+  });
+
 
 });

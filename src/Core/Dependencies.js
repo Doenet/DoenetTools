@@ -3045,8 +3045,9 @@ class Dependency {
             let nameForOutput = this.useMappedVariableNames ? mappedVarName : originalVarName;
 
             if (!this.variablesOptional || mappedVarName in depComponent.state) {
-              if (!depComponent.state[mappedVarName].deferred) {
-                componentObj.stateValues[nameForOutput] = await depComponent.state[mappedVarName].value;
+              let mappedStateVarObj = depComponent.state[mappedVarName];
+              if (!mappedStateVarObj.deferred) {
+                componentObj.stateValues[nameForOutput] = await mappedStateVarObj.value;
                 if (this.valuesChanged[componentInd][mappedVarName].changed) {
                   if (!changes.valuesChanged) {
                     changes.valuesChanged = {};
@@ -3058,9 +3059,18 @@ class Dependency {
                 }
                 this.valuesChanged[componentInd][mappedVarName] = {};
 
-                if (depComponent.state[mappedVarName].usedDefault) {
+                if (mappedStateVarObj.usedDefault) {
                   usedDefaultObj[nameForOutput] = true;
                   foundOneUsedDefault = true;
+                } else if (mappedStateVarObj.isArrayEntry && mappedStateVarObj.arrayKeys.length === 1) {
+                  // if have an array entry with just one arrayKey,
+                  // check if used default for that arrayKey
+                  let arrayStateVarObj = depComponent.state[mappedStateVarObj.arrayStateVariable];
+                  if (arrayStateVarObj.usedDefaultByArrayKey[mappedStateVarObj.arrayKeys[0]]) {
+                    usedDefaultObj[nameForOutput] = true;
+                    foundOneUsedDefault = true;
+                  }
+
                 }
 
               }
@@ -3967,6 +3977,11 @@ class AttributeComponentDependency extends Dependency {
 
     this.attributeName = this.definition.attributeName;
 
+    this.fallBackToAttributeFromShadow = true;
+    if (this.definition.fallBackToAttributeFromShadow !== undefined) {
+      this.fallBackToAttributeFromShadow = this.definition.fallBackToAttributeFromShadow;
+    }
+
     this.returnSingleComponent = true;
 
   }
@@ -4012,22 +4027,58 @@ class AttributeComponentDependency extends Dependency {
       }
     }
 
-
     let attribute = parent.attributes[this.attributeName];
 
-    if (attribute && attribute.component) {
+    if (attribute?.component) {
       // have an attribute that is a component
       return {
         success: true,
         downstreamComponentNames: [attribute.component.componentName],
         downstreamComponentTypes: [attribute.component.componentType],
       }
-    } else {
-      return {
-        success: true,
-        downstreamComponentNames: [],
-        downstreamComponentTypes: []
+    }
+
+    if (this.fallBackToAttributeFromShadow) {
+      // if don't have an attribute component, i
+      // check if shadows a component with that attribute component
+
+      let comp = parent;
+
+      while (comp.shadows) {
+
+        let propVariable = comp.shadows.propVariable;
+
+        comp = this.dependencyHandler._components[comp.shadows.componentName];
+        if (!comp) {
+          break;
+        }
+
+        if (propVariable) {
+          if (!(
+            comp.state[propVariable]?.additionalAttributeComponentsToShadow
+            && comp.state[propVariable].additionalAttributeComponentsToShadow.includes(this.attributeName)
+          )) {
+            break;
+          }
+        }
+
+        attribute = comp.attributes[this.attributeName];
+
+        if (attribute?.component) {
+          return {
+            success: true,
+            downstreamComponentNames: [attribute.component.componentName],
+            downstreamComponentTypes: [attribute.component.componentType],
+          }
+        }
       }
+
+    }
+
+    return {
+      success: true,
+      downstreamComponentNames: [],
+      downstreamComponentTypes: [],
     }
 
   }

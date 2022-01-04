@@ -138,7 +138,7 @@ export default class CustomAttribute extends CompositeComponent {
 
 
     if (serializedComponent.children) {
-      serializedComponent.children = serializeFunctions.applyMacros(serializedComponent.children, componentInfoObjects);
+      serializeFunctions.applyMacros(serializedComponent.children, componentInfoObjects);
       if (newNamespace) {
         // modify targets to go back one namespace
         for (let child of serializedComponent.children) {

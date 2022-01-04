@@ -4,12 +4,6 @@ import me from 'math-expressions';
 export default class Angle extends GraphicalComponent {
   static componentType = "angle";
 
-  static get stateVariablesShadowedForReference() {
-    return [
-      "nPointsSpecified", "points", "radians", "degrees", "numericalPoints"
-    ]
-  };
-
   static createAttributesObject(args) {
     let attributes = super.createAttributesObject(args);
     attributes.draggable = {

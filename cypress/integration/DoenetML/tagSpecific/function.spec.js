@@ -775,6 +775,91 @@ describe('Function Tag Tests', function () {
     })
   });
 
+  it('functions with copied extrema that overwrite attributes', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <extremum name="ex1" location="3" value="-2" />
+    <copy target="ex1" location="5" assignNames="ex2" />
+    <copy target="ex1" value="2" assignNames="ex3" />
+    
+    <graph>
+      <function extrema="$ex1 $ex2" />
+      <function extrema="$ex2 $ex3" />
+    </graph>
+    `}, "*");
+    });
+
+    //wait for window to load
+    cy.get('#\\/_text1').should('have.text', 'a');
+
+    cy.window().then(async (win) => {
+      let components = Object.assign({}, win.state.components);
+      let f = (await components['/_function1'].stateValues.fs)[0];
+      expect(f(3)).closeTo(-2, 1E-12);
+      expect(f(5)).closeTo(-2, 1E-12);
+
+      expect(f(2)).closeTo(-3, 1E-12);
+      expect(f(4)).closeTo(-3, 1E-12);
+      expect(f(6)).closeTo(-3, 1E-12);
+
+      let g = (await components['/_function2'].stateValues.fs)[0];
+      expect(g(3)).closeTo(2, 1E-12);
+      expect(g(5)).closeTo(-2, 1E-12);
+
+      expect(g(2)).closeTo(1, 1E-12);
+      expect(g(4)).closeTo(0, 1E-12);
+      expect(g(6)).closeTo(-1, 1E-12);
+
+    })
+  });
+
+  it('copy function and overwrite extrema', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <graph>
+      <function minima="(2,3)" maxima="(4,4)" name="f" />
+      <copy target="f" maxima="(0,4)" assignNames="g" styleNumber="2" />
+      <copy target="f" minima="(6,3)" assignNames="h" styleNumber="3" />
+    </graph>
+    `}, "*");
+    });
+
+    //wait for window to load
+    cy.get('#\\/_text1').should('have.text', 'a');
+
+    cy.window().then(async (win) => {
+      let components = Object.assign({}, win.state.components);
+      let f = (await components['/f'].stateValues.fs)[0];
+      expect(f(2)).closeTo(3, 1E-12);
+      expect(f(4)).closeTo(4, 1E-12);
+
+      expect(f(1)).closeTo(4, 1E-12);
+      expect(f(3)).closeTo(3.5, 1E-12);
+      expect(f(5)).closeTo(3, 1E-12);
+
+      let g = (await components['/g'].stateValues.fs)[0];
+      expect(g(0)).closeTo(4, 1E-12);
+      expect(g(2)).closeTo(3, 1E-12);
+
+      expect(g(-1)).closeTo(3, 1E-12);
+      expect(g(1)).closeTo(3.5, 1E-12);
+      expect(g(3)).closeTo(4, 1E-12);
+
+      let h = (await components['/h'].stateValues.fs)[0];
+      expect(h(4)).closeTo(4, 1E-12);
+      expect(h(6)).closeTo(3, 1E-12);
+
+      expect(h(3)).closeTo(3, 1E-12);
+      expect(h(5)).closeTo(3.5, 1E-12);
+      expect(h(7)).closeTo(4, 1E-12);
+
+    })
+  });
+
   it('function with maximum through points', () => {
     cy.window().then(async (win) => {
       win.postMessage({
@@ -1088,6 +1173,71 @@ describe('Function Tag Tests', function () {
       assert.isNaN(f(0));
       assert.isNaN(f(1));
       assert.isNaN(f(2));
+    })
+  });
+
+  it('copy function and overwrite through points and slopes', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <graph>
+    <function through="(0,2) (2,1) (3,2)" name="f" styleNumber="1" />
+    <copy target="f" through="(1,5) (4,2)" assignNames="g" styleNumber="2" />
+    <copy target="f" throughslopes="1 2 -3" assignNames="h" styleNumber="3" />
+    </graph>
+    `}, "*");
+    });
+
+    //wait for window to load
+    cy.get('#\\/_text1').should('have.text', 'a');
+
+    cy.window().then(async (win) => {
+      let components = Object.assign({}, win.state.components);
+      let f = (await components['/f'].stateValues.fs)[0];
+      expect(f(0)).closeTo(2, 1E-12);
+      expect(f(2)).closeTo(1, 1E-12);
+      expect(f(3)).closeTo(2, 1E-12);
+      // extrapolate linearly
+      let slope = f(4) - f(3)
+      expect(f(5)).closeTo(2 + slope * 2, 1E-12);
+      expect(f(6)).closeTo(2 + slope * 3, 1E-12);
+      expect(f(7)).closeTo(2 + slope * 4, 1E-12);
+      slope = f(0) - f(-1)
+      expect(f(-2)).closeTo(2 - slope * 2, 1E-12);
+      expect(f(-3)).closeTo(2 - slope * 3, 1E-12);
+      expect(f(-4)).closeTo(2 - slope * 4, 1E-12);
+
+      let g = (await components['/g'].stateValues.fs)[0];
+      expect(g(1)).closeTo(5, 1E-12);
+      expect(g(4)).closeTo(2, 1E-12);
+      // linear function
+      slope = g(1) - g(0)
+      expect(g(2)).closeTo(5 + slope * 1, 1E-12);
+      expect(g(3)).closeTo(5 + slope * 2, 1E-12);
+      expect(g(4)).closeTo(5 + slope * 3, 1E-12);
+      expect(g(0)).closeTo(5 + slope * -1, 1E-12);
+      expect(g(-1)).closeTo(5 + slope * -2, 1E-12);
+      expect(g(-2)).closeTo(5 + slope * -3, 1E-12);
+
+      let h = (await components['/h'].stateValues.fs)[0];
+      expect(h(0)).closeTo(2, 1E-12);
+      expect(h(2)).closeTo(1, 1E-12);
+      expect(h(3)).closeTo(2, 1E-12);
+      // extrapolate linearly at given slopes
+      slope = -3
+      expect(h(5)).closeTo(2 + slope * 2, 1E-12);
+      expect(h(6)).closeTo(2 + slope * 3, 1E-12);
+      expect(h(7)).closeTo(2 + slope * 4, 1E-12);
+      slope = 1
+      expect(h(-2)).closeTo(2 - slope * 2, 1E-12);
+      expect(h(-3)).closeTo(2 - slope * 3, 1E-12);
+      expect(h(-4)).closeTo(2 - slope * 4, 1E-12);
+      // close to given slope near middle point
+      slope = 2;
+      expect(h(2.0001)).closeTo(1 + slope * 0.0001, 1E-7)
+      expect(h(1.9999)).closeTo(1 + slope * -0.0001, 1E-7)
+
     })
   });
 
@@ -3155,21 +3305,21 @@ describe('Function Tag Tests', function () {
       expect(f3.stateValues.numberMaxima).eq(2);
       expect(f3.stateValues.numberMinima).eq(2);
       expect(f3.stateValues.numberExtrema).eq(4);
-      expect((await f3.stateValues.minima)[0][0]).closeTo(3*Math.PI/6, 1E-6);
+      expect((await f3.stateValues.minima)[0][0]).closeTo(3 * Math.PI / 6, 1E-6);
       expect(f3.stateValues.minima[0][1]).eq(-8)
-      expect(f3.stateValues.minima[1][0]).closeTo(7*Math.PI/6, 1E-6);
+      expect(f3.stateValues.minima[1][0]).closeTo(7 * Math.PI / 6, 1E-6);
       expect(f3.stateValues.minima[1][1]).eq(-8)
-      expect((await f3.stateValues.maxima)[0][0]).closeTo(5*Math.PI/6, 1E-6);
+      expect((await f3.stateValues.maxima)[0][0]).closeTo(5 * Math.PI / 6, 1E-6);
       expect(f3.stateValues.maxima[0][1]).eq(-5)
-      expect(f3.stateValues.maxima[1][0]).closeTo(9*Math.PI/6, 1E-6);
+      expect(f3.stateValues.maxima[1][0]).closeTo(9 * Math.PI / 6, 1E-6);
       expect(f3.stateValues.maxima[1][1]).eq(-5)
-      expect((await f3.stateValues.extrema)[0][0]).closeTo(3*Math.PI/6, 1E-6);
+      expect((await f3.stateValues.extrema)[0][0]).closeTo(3 * Math.PI / 6, 1E-6);
       expect(f3.stateValues.extrema[0][1]).eq(-8)
-      expect(f3.stateValues.extrema[1][0]).closeTo(5*Math.PI/6, 1E-6);
+      expect(f3.stateValues.extrema[1][0]).closeTo(5 * Math.PI / 6, 1E-6);
       expect(f3.stateValues.extrema[1][1]).eq(-5)
-      expect(f3.stateValues.extrema[2][0]).closeTo(7*Math.PI/6, 1E-6);
+      expect(f3.stateValues.extrema[2][0]).closeTo(7 * Math.PI / 6, 1E-6);
       expect(f3.stateValues.extrema[2][1]).eq(-8)
-      expect(f3.stateValues.extrema[3][0]).closeTo(9*Math.PI/6, 1E-6);
+      expect(f3.stateValues.extrema[3][0]).closeTo(9 * Math.PI / 6, 1E-6);
       expect(f3.stateValues.extrema[3][1]).eq(-5)
 
 
@@ -4373,5 +4523,131 @@ describe('Function Tag Tests', function () {
     })
   })
 
+  it('copy function and overwrite symbolic attribute', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <function name="f1">x^2</function>
+    <copy target="f1" symbolic assignNames="f2" />
+    <copy target="f2" symbolic="false" assignNames="f3" />
+    <function name="g1" symbolic>x^2</function>
+    <copy target="g1" symbolic="false" assignNames="g2" />
+    <copy target="g2" symbolic assignNames="g3" />
+
+    `}, "*");
+    });
+
+    //wait for window to load
+    cy.get('#\\/_text1').should('have.text', 'a');
+
+    cy.window().then(async (win) => {
+      let components = Object.assign({}, win.state.components);
+
+      expect(await components["/f1"].stateValues.symbolic).eq(false)
+      expect(await components["/f2"].stateValues.symbolic).eq(true)
+      expect(await components["/f3"].stateValues.symbolic).eq(false)
+      expect(await components["/g1"].stateValues.symbolic).eq(true)
+      expect(await components["/g2"].stateValues.symbolic).eq(false)
+      expect(await components["/g3"].stateValues.symbolic).eq(true)
+
+    })
+  });
+
+  it('copy function and overwrite nInputs', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <function name="f1" symbolic>xyz</function>
+    <copy target="f1" nInputs="2" assignNames="f2" />
+    <copy target="f2" nInputs="3" assignNames="f3" />
+    
+    <p name="p1">$$f1(a)</p>
+    <p name="p2">$$f2(a,b)</p>
+    <p name="p3">$$f3(a,b,c)</p>
+    `}, "*");
+    });
+
+    //wait for window to load
+    cy.get('#\\/_text1').should('have.text', 'a');
+
+    cy.get("#\\/p1 .mjx-mrow").eq(0).invoke("text").then(text => {
+      expect(text).eq("ayz")
+    })
+    cy.get("#\\/p2 .mjx-mrow").eq(0).invoke("text").then(text => {
+      expect(text).eq("abz")
+    })
+    cy.get("#\\/p3 .mjx-mrow").eq(0).invoke("text").then(text => {
+      expect(text).eq("abc")
+    })
+
+    cy.window().then(async (win) => {
+      let components = Object.assign({}, win.state.components);
+
+      expect(await components["/f1"].stateValues.nInputs).eq(1)
+      expect(await components["/f2"].stateValues.nInputs).eq(2)
+      expect(await components["/f3"].stateValues.nInputs).eq(3)
+      expect((await components["/f1"].stateValues.variables).map(x => x.tree)).eqls(["x"])
+      expect((await components["/f2"].stateValues.variables).map(x => x.tree)).eqls(["x", "y"])
+      expect((await components["/f3"].stateValues.variables).map(x => x.tree)).eqls(["x", "y", "z"])
+
+    })
+  });
+
+  it('copy function and overwrite variables', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <function name="f1" symbolic>xyz</function>
+    <copy target="f1" variables="x y" assignNames="f2" />
+    <copy target="f2" variables="x y z" assignNames="f3" />
+    <copy target="f3" variables="z y" assignNames="f4" />
+    <copy target="f4" variables="y" assignNames="f5" />
+    
+    <p name="p1">$$f1(a)</p>
+    <p name="p2">$$f2(a,b)</p>
+    <p name="p3">$$f3(a,b,c)</p>
+    <p name="p4">$$f4(a,b)</p>
+    <p name="p5">$$f5(a)</p>
+    `}, "*");
+    });
+
+    //wait for window to load
+    cy.get('#\\/_text1').should('have.text', 'a');
+
+    cy.get("#\\/p1 .mjx-mrow").eq(0).invoke("text").then(text => {
+      expect(text).eq("ayz")
+    })
+    cy.get("#\\/p2 .mjx-mrow").eq(0).invoke("text").then(text => {
+      expect(text).eq("abz")
+    })
+    cy.get("#\\/p3 .mjx-mrow").eq(0).invoke("text").then(text => {
+      expect(text).eq("abc")
+    })
+    cy.get("#\\/p4 .mjx-mrow").eq(0).invoke("text").then(text => {
+      expect(text).eq("xba")
+    })
+    cy.get("#\\/p5 .mjx-mrow").eq(0).invoke("text").then(text => {
+      expect(text).eq("xaz")
+    })
+
+    cy.window().then(async (win) => {
+      let components = Object.assign({}, win.state.components);
+
+      expect(await components["/f1"].stateValues.nInputs).eq(1)
+      expect(await components["/f2"].stateValues.nInputs).eq(2)
+      expect(await components["/f3"].stateValues.nInputs).eq(3)
+      expect(await components["/f4"].stateValues.nInputs).eq(2)
+      expect(await components["/f5"].stateValues.nInputs).eq(1)
+      expect((await components["/f1"].stateValues.variables).map(x => x.tree)).eqls(["x"])
+      expect((await components["/f2"].stateValues.variables).map(x => x.tree)).eqls(["x", "y"])
+      expect((await components["/f3"].stateValues.variables).map(x => x.tree)).eqls(["x", "y", "z"])
+      expect((await components["/f4"].stateValues.variables).map(x => x.tree)).eqls(["z", "y"])
+      expect((await components["/f5"].stateValues.variables).map(x => x.tree)).eqls(["y"])
+
+    })
+  });
 
 });

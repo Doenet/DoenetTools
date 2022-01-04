@@ -1,9 +1,5 @@
 import CompositeComponent from './abstract/CompositeComponent';
 import * as serializeFunctions from '../utils/serializedStateProcessing';
-import { convertAttributesForComponentType, postProcessCopy } from '../utils/copy';
-import { flattenDeep, flattenLevels } from '../utils/array';
-import { getUniqueIdentifierFromBase } from '../utils/naming';
-import { deepClone } from '../utils/deepFunctions';
 
 
 export default class RenderDoenetML extends CompositeComponent {

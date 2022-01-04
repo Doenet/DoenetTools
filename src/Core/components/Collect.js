@@ -294,7 +294,8 @@ export default class Collect extends CompositeComponent {
   static async createSerializedReplacements({ component, components, workspace,
     componentInfoObjects,
     nComponentsForSource,
-    publicCaseInsensitiveAliasSubstitutions
+    publicCaseInsensitiveAliasSubstitutions,
+    flags
   }) {
 
     // console.log(`create serialized replacements for ${component.componentName}`)
@@ -330,6 +331,7 @@ export default class Collect extends CompositeComponent {
           compositeAttributesObj,
           nComponentsForSource,
           publicCaseInsensitiveAliasSubstitutions,
+          flags
         });
 
         workspace.propVariablesCopiedByCollected[collectedNum] = results.propVariablesCopiedByReplacement;
@@ -361,6 +363,7 @@ export default class Collect extends CompositeComponent {
     compositeAttributesObj,
     nComponentsForSource,
     publicCaseInsensitiveAliasSubstitutions,
+    flags
   }) {
 
     // console.log(`create replacement for collected ${collectedNum}, ${numReplacementsSoFar}`)
@@ -419,8 +422,10 @@ export default class Collect extends CompositeComponent {
         let attributesFromComposite = convertAttributesForComponentType({
           attributes: component.attributes,
           componentType: repl.componentType,
-          componentInfoObjects, compositeAttributesObj,
-          compositeCreatesNewNamespace: newNamespace
+          componentInfoObjects,
+          compositeAttributesObj,
+          compositeCreatesNewNamespace: newNamespace,
+          flags
         });
         Object.assign(repl.attributes, attributesFromComposite)
       }
@@ -446,7 +451,8 @@ export default class Collect extends CompositeComponent {
   static async calculateReplacementChanges({ component, componentChanges, components, workspace,
     componentInfoObjects,
     nComponentsForSource,
-    publicCaseInsensitiveAliasSubstitutions
+    publicCaseInsensitiveAliasSubstitutions,
+    flags
   }) {
 
     // console.log("Calculating replacement changes for " + component.componentName);
@@ -564,7 +570,8 @@ export default class Collect extends CompositeComponent {
           componentInfoObjects,
           compositeAttributesObj,
           nComponentsForSource,
-          publicCaseInsensitiveAliasSubstitutions
+          publicCaseInsensitiveAliasSubstitutions,
+          flags
         });
 
         numReplacementsSoFar += results.numReplacements;
@@ -626,6 +633,7 @@ export default class Collect extends CompositeComponent {
         compositeAttributesObj,
         nComponentsForSource,
         publicCaseInsensitiveAliasSubstitutions,
+        flags
       });
 
       let propVariablesCopiedByReplacement = results.propVariablesCopiedByReplacement;
@@ -707,7 +715,8 @@ export default class Collect extends CompositeComponent {
     numReplacementsToDelete,
     uniqueIdentifiersUsed, components, componentInfoObjects, compositeAttributesObj,
     nComponentsForSource,
-    publicCaseInsensitiveAliasSubstitutions
+    publicCaseInsensitiveAliasSubstitutions,
+    flags
   }) {
 
     let results = await this.createReplacementForCollected({
@@ -715,6 +724,7 @@ export default class Collect extends CompositeComponent {
       componentInfoObjects, compositeAttributesObj,
       nComponentsForSource,
       publicCaseInsensitiveAliasSubstitutions,
+      flags
     });
 
     let propVariablesCopiedByReplacement = results.propVariablesCopiedByReplacement;

@@ -5,9 +5,8 @@ export default class Text extends InlineComponent {
 
   static includeBlankStringChildren = true;
 
-  // used when referencing this component without prop
-  static useChildrenForReference = false;
-  static get stateVariablesShadowedForReference() { return ["value"] };
+  static variableForPlainMacro = "value";
+
 
   static returnChildGroups() {
 
@@ -26,7 +25,9 @@ export default class Text extends InlineComponent {
     stateVariableDefinitions.value = {
       public: true,
       componentType: this.componentType,
-      // deferCalculation: false,
+      stateVariablesPrescribingAdditionalAttributes: {
+        fixed: "fixed",
+      },
       returnDependencies: () => ({
         textLikeChildren: {
           dependencyType: "child",

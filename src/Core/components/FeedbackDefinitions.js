@@ -3,8 +3,6 @@ import BaseComponent from './abstract/BaseComponent';
 export class FeedbackDefinition extends BaseComponent {
   static componentType = "feedbackDefinition";
 
-  static get stateVariablesShadowedForReference() { return ["value"] };
-
   static createAttributesObject(args) {
     let attributes = super.createAttributesObject(args);
     attributes.code = {

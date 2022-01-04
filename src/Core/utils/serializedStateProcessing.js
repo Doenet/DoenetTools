@@ -150,7 +150,7 @@ export async function expandDoenetMLsToFullSerializedComponents({
 
     createAttributesFromProps(serializedComponents, componentInfoObjects, flags);
 
-    serializedComponents = applyMacros(serializedComponents, componentInfoObjects, flags);
+    applyMacros(serializedComponents, componentInfoObjects, flags);
 
     // remove blank string children after applying macros,
     // as applying macros could create additional blank string children
@@ -586,6 +586,9 @@ export function componentFromAttribute({ attrObj, value, originalComponentProps,
     // Also, when get stateVariablesPrescribingAdditionalAttributes,
     // it is possible their values are not strings
     value = { rawString: value.toString() }
+  } else if (value === null) {
+    // could get null from stateVariablesPrescribingAdditionalAttributes
+    value = { rawString: "" }
   }
 
   if (attrObj && attrObj.createComponentOfType) {
@@ -621,6 +624,9 @@ export function componentFromAttribute({ attrObj, value, originalComponentProps,
         componentType: attrObj.createComponentOfType,
         children
       };
+
+      removeBlankStringChildren([newComponent], componentInfoObjects)
+
     }
 
     if (attrObj.attributesForCreatedComponent || attrObj.copyComponentAttributesForCreatedComponent) {
@@ -697,7 +703,7 @@ export function applyMacros(serializedComponents, componentInfoObjects, flags) {
 
   for (let component of serializedComponents) {
     if (component.children) {
-      component.children = applyMacros(component.children, componentInfoObjects, flags);
+      applyMacros(component.children, componentInfoObjects, flags);
     }
     if (component.attributes) {
       for (let attrName in component.attributes) {
@@ -705,18 +711,16 @@ export function applyMacros(serializedComponents, componentInfoObjects, flags) {
         if (attribute.component) {
           let comp = attribute.component;
           if (comp.children) {
-            comp.children = applyMacros(comp.children, componentInfoObjects, flags);
+            applyMacros(comp.children, componentInfoObjects, flags);
           }
         } else if (attribute.childrenForComponent) {
-          attribute.childrenForComponent = applyMacros(attribute.childrenForComponent, componentInfoObjects, flags);
+          applyMacros(attribute.childrenForComponent, componentInfoObjects, flags);
         }
       }
     }
   }
 
-  serializedComponents = substituteMacros(serializedComponents, componentInfoObjects, flags);
-
-  return serializedComponents;
+  substituteMacros(serializedComponents, componentInfoObjects, flags);
 
 }
 
@@ -751,7 +755,7 @@ function substituteMacros(serializedComponents, componentInfoObjects, flags) {
           markCreatedFromMacro(newComponents);
 
           // recurse in case there were more macros in the additionalAttributes
-          newComponents = applyMacros(newComponents, componentInfoObjects)
+          applyMacros(newComponents, componentInfoObjects)
 
           componentsFromMacro = newComponents;
 
@@ -864,9 +868,8 @@ function substituteMacros(serializedComponents, componentInfoObjects, flags) {
     }
 
     if (component.componentType === "award" && component.children) {
-      let targetsAreResponses = component.attributes.targetsAreResponses;
-      if (targetsAreResponses) {
-        let targetNames = targetsAreResponses.primitive.split(/\s+/).filter(s => s);
+      if (component.attributes.targetsAreResponses) {
+        let targetNames = component.attributes.targetsAreResponses.primitive.split(/\s+/).filter(s => s);
         for (let target of targetNames) {
           addResponsesToDescendantsWithTarget(component.children, target);
         }
@@ -876,8 +879,6 @@ function substituteMacros(serializedComponents, componentInfoObjects, flags) {
     }
 
   }
-
-  return serializedComponents;
 
 }
 
@@ -1097,9 +1098,9 @@ function createEvaluateIfFindMatchedClosingParens({
   let breakResults = breakEmbeddedStringByCommas({ childrenList: remainingComponents });
 
   // recurse on pieces
-  let pieces = breakResults.pieces.map(x => applyMacros(x, componentInfoObjects));
+  breakResults.pieces.forEach(x => applyMacros(x, componentInfoObjects));
 
-  let inputArray = pieces.map(x => {
+  let inputArray = breakResults.pieces.map(x => {
     if (x.length === 1 && typeof x[0] !== "string") {
       return x[0]
     } else {
@@ -1415,6 +1416,11 @@ export function applySugar({ serializedComponents, parentParametersFromSugar = {
 
 
 function breakStringInPiecesBySpacesOrParens(string) {
+
+  if (typeof string !== "string") {
+    return { success: false }
+  }
+
   let Nparens = 0;
   let pieces = [];
 
@@ -1576,6 +1582,9 @@ export function createComponentNames({ serializedComponents, namespaceStack = []
           }
         } else if (lowercaseKey === "target") {
           if (target === undefined) {
+            if (typeof props[key] !== "string") {
+              throw Error("Must specify value for target");
+            }
             target = props[key].trim();
             delete props[key];
           } else {

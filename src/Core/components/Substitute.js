@@ -387,7 +387,7 @@ export default class Substitute extends CompositeComponent {
 
 
 
-  static async createSerializedReplacements({ component, componentInfoObjects }) {
+  static async createSerializedReplacements({ component, componentInfoObjects, flags }) {
 
     let newNamespace = component.attributes.newNamespace && component.attributes.newNamespace.primitive;
 
@@ -423,7 +423,8 @@ export default class Substitute extends CompositeComponent {
           attributes,
           componentType: "math",
           componentInfoObjects,
-          compositeCreatesNewNamespace: newNamespace
+          compositeCreatesNewNamespace: newNamespace,
+          flags
         })
 
 
