@@ -2781,14 +2781,14 @@ describe('MathInput Tag Tests', function () {
 
   })
 
-  it('substitute exponent with numbers', () => {
+  it('exponent with numbers', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
     <p>a: <mathinput name="a" /></p>
     <p>a2: <copy prop="value" target="a" assignNames="a2" /></p>
-    <p>a3: <copy prop="value" target="a" simplify assignNames="a3" /></p>
+    <p>a3: <math simplify name="a3">$a</math></p>
     `}, "*");
     });
 

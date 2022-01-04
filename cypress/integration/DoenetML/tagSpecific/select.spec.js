@@ -2120,21 +2120,21 @@ describe('Select Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let qs = components['/q'].activeChildren.map(x => x.stateValues.value)
-      let rs = components['/r'].activeChildren.map(x => x.stateValues.value)
-      let ss = components['/s'].activeChildren.map(x => x.stateValues.value)
-      let ts = components['/t'].activeChildren.map(x => x.stateValues.value)
-      let us = components['/u'].activeChildren.map(x => x.stateValues.value)
-      let vs = components['/v'].activeChildren.map(x => x.stateValues.value)
-      let ws = components['/w'].activeChildren.map(x => x.stateValues.value)
+      let qs = components['/q'].activeChildren.map(x => x.stateValues.value).map(x => x.tree ? x.tree : x)
+      let rs = components['/r'].activeChildren.map(x => x.stateValues.value).map(x => x.tree ? x.tree : x)
+      let ss = components['/s'].activeChildren.map(x => x.stateValues.value).map(x => x.tree ? x.tree : x)
+      let ts = components['/t'].activeChildren.map(x => x.stateValues.value).map(x => x.tree ? x.tree : x)
+      let us = components['/u'].activeChildren.map(x => x.stateValues.value).map(x => x.tree ? x.tree : x)
+      let vs = components['/v'].activeChildren.map(x => x.stateValues.value).map(x => x.tree ? x.tree : x)
+      let ws = components['/w'].activeChildren.map(x => x.stateValues.value).map(x => x.tree ? x.tree : x)
 
-      let q2s = components['/q2'].replacements[0].activeChildren.map(x => x.stateValues.value);
-      let r2s = components['/r2'].replacements[0].activeChildren.map(x => x.stateValues.value);
-      let s2s = components['/s2'].replacements[0].activeChildren.map(x => x.stateValues.value);
-      let t2s = components['/t2'].replacements[0].activeChildren.map(x => x.stateValues.value);
-      let u2s = components['/u2'].replacements[0].activeChildren.map(x => x.stateValues.value);
-      let v2s = components['/v2'].replacements[0].activeChildren.map(x => x.stateValues.value);
-      let w2s = components['/w2'].replacements[0].activeChildren.map(x => x.stateValues.value);
+      let q2s = components['/q2'].replacements[0].activeChildren.map(x => x.stateValues.value).map(x => x.tree ? x.tree : x);
+      let r2s = components['/r2'].replacements[0].activeChildren.map(x => x.stateValues.value).map(x => x.tree ? x.tree : x);
+      let s2s = components['/s2'].replacements[0].activeChildren.map(x => x.stateValues.value).map(x => x.tree ? x.tree : x);
+      let t2s = components['/t2'].replacements[0].activeChildren.map(x => x.stateValues.value).map(x => x.tree ? x.tree : x);
+      let u2s = components['/u2'].replacements[0].activeChildren.map(x => x.stateValues.value).map(x => x.tree ? x.tree : x);
+      let v2s = components['/v2'].replacements[0].activeChildren.map(x => x.stateValues.value).map(x => x.tree ? x.tree : x);
+      let w2s = components['/w2'].replacements[0].activeChildren.map(x => x.stateValues.value).map(x => x.tree ? x.tree : x);
 
       expect(q2s).eqls(qs);
       expect(r2s).eqls(rs);
@@ -2186,6 +2186,14 @@ describe('Select Tag Tests', function () {
         components['/wq2'].replacements[0].stateValues.value,
         components['/wr2'].replacements[0].stateValues.value,
       ]
+
+      q3s = q3s.map(x => x.tree ? x.tree : x)
+      r3s = r3s.map(x => x.tree ? x.tree : x)
+      s3s = s3s.map(x => x.tree ? x.tree : x)
+      t3s = t3s.map(x => x.tree ? x.tree : x)
+      u3s = u3s.map(x => x.tree ? x.tree : x)
+      v3s = v3s.map(x => x.tree ? x.tree : x)
+      w3s = w3s.map(x => x.tree ? x.tree : x)
 
       expect(q3s).eqls(qs);
       expect(r3s).eqls(rs);
@@ -2244,21 +2252,21 @@ describe('Select Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let qs = components['/q'].activeChildren.map(x => x.stateValues.value)
-      let rs = components['/r'].activeChildren.map(x => x.stateValues.value)
-      let ss = components['/s'].activeChildren.map(x => x.stateValues.value)
-      let ts = components['/t'].activeChildren.map(x => x.stateValues.value)
-      let us = components['/u'].activeChildren.map(x => x.stateValues.value)
-      let vs = components['/v'].activeChildren.map(x => x.stateValues.value)
-      let ws = components['/w'].activeChildren.map(x => x.stateValues.value)
+      let qs = components['/q'].activeChildren.map(x => x.stateValues.value).map(x => x.tree ? x.tree : x)
+      let rs = components['/r'].activeChildren.map(x => x.stateValues.value).map(x => x.tree ? x.tree : x)
+      let ss = components['/s'].activeChildren.map(x => x.stateValues.value).map(x => x.tree ? x.tree : x)
+      let ts = components['/t'].activeChildren.map(x => x.stateValues.value).map(x => x.tree ? x.tree : x)
+      let us = components['/u'].activeChildren.map(x => x.stateValues.value).map(x => x.tree ? x.tree : x)
+      let vs = components['/v'].activeChildren.map(x => x.stateValues.value).map(x => x.tree ? x.tree : x)
+      let ws = components['/w'].activeChildren.map(x => x.stateValues.value).map(x => x.tree ? x.tree : x)
 
-      let q2s = components['/q2'].replacements[0].activeChildren.map(x => x.stateValues.value);
-      let r2s = components['/r2'].replacements[0].activeChildren.map(x => x.stateValues.value);
-      let s2s = components['/s2'].replacements[0].activeChildren.map(x => x.stateValues.value);
-      let t2s = components['/t2'].replacements[0].activeChildren.map(x => x.stateValues.value);
-      let u2s = components['/u2'].replacements[0].activeChildren.map(x => x.stateValues.value);
-      let v2s = components['/v2'].replacements[0].activeChildren.map(x => x.stateValues.value);
-      let w2s = components['/w2'].replacements[0].activeChildren.map(x => x.stateValues.value);
+      let q2s = components['/q2'].replacements[0].activeChildren.map(x => x.stateValues.value).map(x => x.tree ? x.tree : x);
+      let r2s = components['/r2'].replacements[0].activeChildren.map(x => x.stateValues.value).map(x => x.tree ? x.tree : x);
+      let s2s = components['/s2'].replacements[0].activeChildren.map(x => x.stateValues.value).map(x => x.tree ? x.tree : x);
+      let t2s = components['/t2'].replacements[0].activeChildren.map(x => x.stateValues.value).map(x => x.tree ? x.tree : x);
+      let u2s = components['/u2'].replacements[0].activeChildren.map(x => x.stateValues.value).map(x => x.tree ? x.tree : x);
+      let v2s = components['/v2'].replacements[0].activeChildren.map(x => x.stateValues.value).map(x => x.tree ? x.tree : x);
+      let w2s = components['/w2'].replacements[0].activeChildren.map(x => x.stateValues.value).map(x => x.tree ? x.tree : x);
 
       expect(q2s).eqls(qs);
       expect(r2s).eqls(rs);
@@ -2268,13 +2276,13 @@ describe('Select Tag Tests', function () {
       expect(v2s).eqls(vs);
       expect(w2s).eqls(ws);
 
-      let q3s = components['/q3'].replacements.map(x => x.replacements ? x.replacements[0].stateValues.value : x.stateValues.value);
-      let r3s = components['/r3'].replacements.map(x => x.replacements ? x.replacements[0].stateValues.value : x.stateValues.value);
-      let s3s = components['/s3'].replacements.map(x => x.replacements ? x.replacements[0].stateValues.value : x.stateValues.value);
-      let t3s = components['/t3'].replacements.map(x => x.replacements ? x.replacements[0].stateValues.value : x.stateValues.value);
-      let u3s = components['/u3'].replacements.map(x => x.replacements ? x.replacements[0].stateValues.value : x.stateValues.value);
-      let v3s = components['/v3'].replacements.map(x => x.replacements ? x.replacements[0].stateValues.value : x.stateValues.value);
-      let w3s = components['/w3'].replacements.map(x => x.replacements ? x.replacements[0].stateValues.value : x.stateValues.value);
+      let q3s = components['/q3'].replacements.map(x => x.replacements ? x.replacements[0].stateValues.value : x.stateValues.value).map(x => x.tree ? x.tree : x);
+      let r3s = components['/r3'].replacements.map(x => x.replacements ? x.replacements[0].stateValues.value : x.stateValues.value).map(x => x.tree ? x.tree : x);
+      let s3s = components['/s3'].replacements.map(x => x.replacements ? x.replacements[0].stateValues.value : x.stateValues.value).map(x => x.tree ? x.tree : x);
+      let t3s = components['/t3'].replacements.map(x => x.replacements ? x.replacements[0].stateValues.value : x.stateValues.value).map(x => x.tree ? x.tree : x);
+      let u3s = components['/u3'].replacements.map(x => x.replacements ? x.replacements[0].stateValues.value : x.stateValues.value).map(x => x.tree ? x.tree : x);
+      let v3s = components['/v3'].replacements.map(x => x.replacements ? x.replacements[0].stateValues.value : x.stateValues.value).map(x => x.tree ? x.tree : x);
+      let w3s = components['/w3'].replacements.map(x => x.replacements ? x.replacements[0].stateValues.value : x.stateValues.value).map(x => x.tree ? x.tree : x);
 
       expect(q3s).eqls(qs.slice(0, 2));
       expect(r3s).eqls(rs.slice(0, 2));
@@ -2326,6 +2334,13 @@ describe('Select Tag Tests', function () {
         components['/wq2'].replacements[0].stateValues.value,
         components['/wr2'].replacements[0].stateValues.value,
       ]
+      q4s = q4s.map(x => x.tree ? x.tree : x)
+      r4s = r4s.map(x => x.tree ? x.tree : x)
+      s4s = s4s.map(x => x.tree ? x.tree : x)
+      t4s = t4s.map(x => x.tree ? x.tree : x)
+      u4s = u4s.map(x => x.tree ? x.tree : x)
+      v4s = v4s.map(x => x.tree ? x.tree : x)
+      w4s = w4s.map(x => x.tree ? x.tree : x)
 
       expect(q4s).eqls(qs);
       expect(r4s).eqls(rs);
@@ -2597,17 +2612,17 @@ describe('Select Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let qs = components['/q'].replacements.map(x => x.replacements ? x.replacements[0].stateValues.value : x.stateValues.value)
-      let rs = components['/r'].replacements.map(x => x.replacements ? x.replacements[0].stateValues.value : x.stateValues.value)
-      let ss = components['/s'].replacements.map(x => x.replacements ? x.replacements[0].stateValues.value : x.stateValues.value)
-      let ts = components['/t'].replacements.map(x => x.replacements ? x.replacements[0].stateValues.value : x.stateValues.value)
-      let us = components['/u'].replacements.map(x => x.replacements ? x.replacements[0].stateValues.value : x.stateValues.value)
+      let qs = components['/q'].replacements.map(x => x.replacements ? x.replacements[0].stateValues.value : x.stateValues.value).map(x => x.tree ? x.tree : x)
+      let rs = components['/r'].replacements.map(x => x.replacements ? x.replacements[0].stateValues.value : x.stateValues.value).map(x => x.tree ? x.tree : x)
+      let ss = components['/s'].replacements.map(x => x.replacements ? x.replacements[0].stateValues.value : x.stateValues.value).map(x => x.tree ? x.tree : x)
+      let ts = components['/t'].replacements.map(x => x.replacements ? x.replacements[0].stateValues.value : x.stateValues.value).map(x => x.tree ? x.tree : x)
+      let us = components['/u'].replacements.map(x => x.replacements ? x.replacements[0].stateValues.value : x.stateValues.value).map(x => x.tree ? x.tree : x)
 
-      let q2s = components['/q2'].replacements.map(x => x.replacements ? x.replacements[0].stateValues.value : x.stateValues.value);
-      let r2s = components['/r2'].replacements.map(x => x.replacements ? x.replacements[0].stateValues.value : x.stateValues.value);
-      let s2s = components['/s2'].replacements.map(x => x.replacements ? x.replacements[0].stateValues.value : x.stateValues.value);
-      let t2s = components['/t2'].replacements.map(x => x.replacements ? x.replacements[0].stateValues.value : x.stateValues.value);
-      let u2s = components['/u2'].replacements.map(x => x.replacements ? x.replacements[0].stateValues.value : x.stateValues.value);
+      let q2s = components['/q2'].replacements.map(x => x.replacements ? x.replacements[0].stateValues.value : x.stateValues.value).map(x => x.tree ? x.tree : x);
+      let r2s = components['/r2'].replacements.map(x => x.replacements ? x.replacements[0].stateValues.value : x.stateValues.value).map(x => x.tree ? x.tree : x);
+      let s2s = components['/s2'].replacements.map(x => x.replacements ? x.replacements[0].stateValues.value : x.stateValues.value).map(x => x.tree ? x.tree : x);
+      let t2s = components['/t2'].replacements.map(x => x.replacements ? x.replacements[0].stateValues.value : x.stateValues.value).map(x => x.tree ? x.tree : x);
+      let u2s = components['/u2'].replacements.map(x => x.replacements ? x.replacements[0].stateValues.value : x.stateValues.value).map(x => x.tree ? x.tree : x);
 
       expect(q2s).eqls(qs);
       expect(r2s).eqls(rs);
@@ -2635,6 +2650,12 @@ describe('Select Tag Tests', function () {
         components['/uq'].replacements[0].stateValues.value,
         components['/ur'].replacements[0].stateValues.value,
       ]
+
+      q3s = q3s.map(x => x.tree ? x.tree : x)
+      r3s = r3s.map(x => x.tree ? x.tree : x)
+      s3s = s3s.map(x => x.tree ? x.tree : x)
+      t3s = t3s.map(x => x.tree ? x.tree : x)
+      u3s = u3s.map(x => x.tree ? x.tree : x)
 
       expect(q3s).eqls(qs);
       expect(r3s).eqls(rs);

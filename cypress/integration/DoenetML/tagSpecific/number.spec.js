@@ -399,4 +399,56 @@ describe('Number Tag Tests', function () {
     })
   })
 
+  it('copy value prop copies attributes', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+  <p><text>a</text></p>
+  <p><number name="n1" displayDigits="3">8.5203845251</number>
+  <copy target="n1" prop="value" assignNames="n1a" />
+  <copy target="n1" prop="value" displayDigits="5" assignNames="n1b" />
+  <copy target="n1" prop="value" link="false" assignNames="n1c" />
+  <copy target="n1" prop="value" link="false" displayDigits="5" assignNames="n1d" />
+  </p>
+
+  <p><number name="n2" displayDecimals="4">8.5203845251</number>
+  <copy target="n2" prop="value" assignNames="n2a" />
+  <copy target="n2" prop="value" displayDecimals="6" assignNames="n2b" />
+  <copy target="n2" prop="value" link="false" assignNames="n2c" />
+  <copy target="n2" prop="value" link="false" displayDecimals="6" assignNames="n2d" />
+  </p>
+
+  <p><number name="n3" displaySmallAsZero>0.000000000000000015382487</number>
+  <copy target="n3" prop="value" assignNames="n3a" />
+  <copy target="n3" prop="value" displaySmallAsZero="false" assignNames="n3b" />
+  <copy target="n3" prop="value" link="false" assignNames="n3c" />
+  <copy target="n3" prop="value" link="false" displaySmallAsZero="false" assignNames="n3d" />
+  </p>
+
+  `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.get('#\\/n1').should('have.text', '8.52');
+    cy.get('#\\/n1a').should('have.text', '8.52');
+    cy.get('#\\/n1b').should('have.text', '8.5204');
+    cy.get('#\\/n1c').should('have.text', '8.52');
+    cy.get('#\\/n1d').should('have.text', '8.5204');
+
+    cy.get('#\\/n2').should('have.text', '8.5204');
+    cy.get('#\\/n2a').should('have.text', '8.5204');
+    cy.get('#\\/n2b').should('have.text', '8.520385');
+    cy.get('#\\/n2c').should('have.text', '8.5204');
+    cy.get('#\\/n2d').should('have.text', '8.520385');
+
+    cy.get('#\\/n3').should('have.text', '0');
+    cy.get('#\\/n3a').should('have.text', '0');
+    cy.get('#\\/n3b').should('have.text', '1.5382487e-17');
+    cy.get('#\\/n3c').should('have.text', '0');
+    cy.get('#\\/n3d').should('have.text', '1.5382487e-17');
+
+
+  });
+
 });

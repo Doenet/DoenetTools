@@ -2139,6 +2139,34 @@ export async function replacementFromProp({ component, components,
               uniqueIdentifier,
             })
           } else {
+
+
+            let attributesForReplacement = {};
+
+            if (stateVarObj.stateVariablesPrescribingAdditionalAttributes) {
+              let additionalAttributes = {};
+              for (let attrName in stateVarObj.stateVariablesPrescribingAdditionalAttributes) {
+                let vName = stateVarObj.stateVariablesPrescribingAdditionalAttributes[attrName]
+                let attributeValue = await target.state[vName].value;
+                if (!target.state[vName].usedDefault) {
+                  additionalAttributes[attrName] = attributeValue;
+                }
+              }
+
+              let attributesFromComponent = convertAttributesForComponentType({
+                attributes: additionalAttributes,
+                componentType: stateVarObj.componentType,
+                componentInfoObjects,
+                flags
+              });
+
+              Object.assign(attributesForReplacement, attributesFromComponent)
+
+            }
+
+            Object.assign(attributesForReplacement, attributesFromComposite)
+
+
             let primaryStateVariableForDefinition = "value";
             let componentClass = componentInfoObjects.allComponentClasses[componentType];
             if (componentClass.primaryStateVariableForDefinition) {
@@ -2157,30 +2185,11 @@ export async function replacementFromProp({ component, components,
 
             let serializedComponent = {
               componentType: componentType,
-              attributes: attributesFromComposite,
+              attributes: attributesForReplacement,
               state: {
                 [primaryStateVariableForDefinition]: propStateValue
               },
               uniqueIdentifier,
-            }
-
-
-            if (arrayStateVarObj.stateVariablesPrescribingAdditionalAttributes) {
-              let additionalAttributes = {};
-              for (let attrName in arrayStateVarObj.stateVariablesPrescribingAdditionalAttributes) {
-                let vName = arrayStateVarObj.stateVariablesPrescribingAdditionalAttributes[attrName]
-                additionalAttributes[attrName] = await target.state[vName].value;
-              }
-
-              let attributesFromComponent = convertAttributesForComponentType({
-                attributes: additionalAttributes,
-                componentType,
-                componentInfoObjects,
-                flags,
-              });
-
-              Object.assign(serializedComponent.attributes, attributesFromComponent)
-
             }
 
             serializedReplacements.push(serializedComponent);
@@ -2244,6 +2253,31 @@ export async function replacementFromProp({ component, components,
               })
             } else {
 
+
+              let attributesForReplacement = {};
+
+              if (stateVarObj.stateVariablesPrescribingAdditionalAttributes) {
+                let additionalAttributes = {};
+                for (let attrName in stateVarObj.stateVariablesPrescribingAdditionalAttributes) {
+                  let vName = stateVarObj.stateVariablesPrescribingAdditionalAttributes[attrName]
+                  let attributeValue = await target.state[vName].value;
+                  if (!target.state[vName].usedDefault) {
+                    additionalAttributes[attrName] = attributeValue;
+                  }
+                }
+
+                let attributesFromComponent = convertAttributesForComponentType({
+                  attributes: additionalAttributes,
+                  componentType: stateVarObj.componentType,
+                  componentInfoObjects,
+                  flags
+                });
+
+                Object.assign(attributesForReplacement, attributesFromComponent)
+
+              }
+
+
               let primaryStateVariableForDefinition = "value";
               let componentClass = componentInfoObjects.allComponentClasses[componentType];
               if (componentClass.primaryStateVariableForDefinition) {
@@ -2264,36 +2298,16 @@ export async function replacementFromProp({ component, components,
 
               let serializedComponent = {
                 componentType: componentType,
+                attributes: attributesForReplacement,
                 state: {
                   [primaryStateVariableForDefinition]: propStateValue
                 },
                 uniqueIdentifier,
               }
 
-
-              if (arrayStateVarObj.stateVariablesPrescribingAdditionalAttributes) {
-                let additionalAttributes = {};
-                for (let attrName in arrayStateVarObj.stateVariablesPrescribingAdditionalAttributes) {
-                  let vName = arrayStateVarObj.stateVariablesPrescribingAdditionalAttributes[attrName]
-                  additionalAttributes[attrName] = await target.state[vName].value;
-                }
-
-                let attributesFromComponent = convertAttributesForComponentType({
-                  attributes: additionalAttributes,
-                  componentType,
-                  componentInfoObjects,
-                  flags
-                });
-
-                serializedComponent.attributes, attributesFromComponent;
-
-              }
-
               pieces.push(serializedComponent);
 
             }
-
-
 
             propVariablesCopiedByPiece.push(propVariablesCopiedForThisPiece);
           }
@@ -2497,28 +2511,16 @@ export async function replacementFromProp({ component, components,
 
       } else {
 
-        let primaryStateVariableForDefinition = "value";
-        let componentClass = componentInfoObjects.allComponentClasses[stateVarObj.componentType];
-        if (componentClass.primaryStateVariableForDefinition) {
-          primaryStateVariableForDefinition = componentClass.primaryStateVariableForDefinition;
-        }
-
-
-        let serializedComponent = {
-          componentType: stateVarObj.componentType,
-          attributes: attributesFromComposite,
-          state: {
-            [primaryStateVariableForDefinition]: stateVarValue
-          },
-          uniqueIdentifier,
-        }
-
+        let attributesForReplacement = {};
 
         if (stateVarObj.stateVariablesPrescribingAdditionalAttributes) {
           let additionalAttributes = {};
           for (let attrName in stateVarObj.stateVariablesPrescribingAdditionalAttributes) {
             let vName = stateVarObj.stateVariablesPrescribingAdditionalAttributes[attrName]
-            additionalAttributes[attrName] = await target.state[vName].value;
+            let attributeValue = await target.state[vName].value;
+            if (!target.state[vName].usedDefault) {
+              additionalAttributes[attrName] = attributeValue;
+            }
           }
 
           let attributesFromComponent = convertAttributesForComponentType({
@@ -2528,8 +2530,27 @@ export async function replacementFromProp({ component, components,
             flags
           });
 
-          Object.assign(serializedComponent.attributes, attributesFromComponent)
+          Object.assign(attributesForReplacement, attributesFromComponent)
 
+        }
+
+        Object.assign(attributesForReplacement, attributesFromComposite)
+
+
+        let primaryStateVariableForDefinition = "value";
+        let componentClass = componentInfoObjects.allComponentClasses[stateVarObj.componentType];
+        if (componentClass.primaryStateVariableForDefinition) {
+          primaryStateVariableForDefinition = componentClass.primaryStateVariableForDefinition;
+        }
+
+
+        let serializedComponent = {
+          componentType: stateVarObj.componentType,
+          attributes: attributesForReplacement,
+          state: {
+            [primaryStateVariableForDefinition]: stateVarValue
+          },
+          uniqueIdentifier,
         }
 
         serializedReplacements.push(serializedComponent);

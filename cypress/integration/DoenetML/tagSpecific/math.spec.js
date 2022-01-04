@@ -847,7 +847,7 @@ describe('Math Tag Tests', function () {
 
   });
 
-  it.skip('copy and overwrite function symbols', () => {
+  it('copy and overwrite function symbols', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
@@ -948,7 +948,7 @@ describe('Math Tag Tests', function () {
 
   });
 
-  it.skip('copy and overwrite targetsAreFunctionSymbols', () => {
+  it('copy and overwrite targetsAreFunctionSymbols', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
@@ -1252,7 +1252,7 @@ describe('Math Tag Tests', function () {
 
   });
 
-  it.skip('copy and overwrite split symbols', () => {
+  it('copy and overwrite split symbols', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
@@ -1861,6 +1861,59 @@ describe('Math Tag Tests', function () {
 
 
   });
+
+  it('copy value prop copies attributes', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+  <p><text>a</text></p>
+  <p><math name="m1" displayDigits="3">8.5203845251</math>
+  <copy target="m1" prop="value" assignNames="m1a" />
+  <copy target="m1" prop="value" displayDigits="5" assignNames="m1b" />
+  <copy target="m1" prop="value" link="false" assignNames="m1c" />
+  <copy target="m1" prop="value" link="false" displayDigits="5" assignNames="m1d" />
+  </p>
+
+  <p><math name="m2" displayDecimals="4">8.5203845251</math>
+  <copy target="m2" prop="value" assignNames="m2a" />
+  <copy target="m2" prop="value" displayDecimals="6" assignNames="m2b" />
+  <copy target="m2" prop="value" link="false" assignNames="m2c" />
+  <copy target="m2" prop="value" link="false" displayDecimals="6" assignNames="m2d" />
+  </p>
+
+  <p><math name="m3" displaySmallAsZero>0.000000000000000015382487</math>
+  <copy target="m3" prop="value" assignNames="m3a" />
+  <copy target="m3" prop="value" displaySmallAsZero="false" assignNames="m3b" />
+  <copy target="m3" prop="value" link="false" assignNames="m3c" />
+  <copy target="m3" prop="value" link="false" displaySmallAsZero="false" assignNames="m3d" />
+  </p>
+
+  `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.get('#\\/m1 .mjx-mrow').eq(0).should('have.text', '8.52');
+    cy.get('#\\/m1a .mjx-mrow').eq(0).should('have.text', '8.52');
+    cy.get('#\\/m1b .mjx-mrow').eq(0).should('have.text', '8.5204');
+    cy.get('#\\/m1c .mjx-mrow').eq(0).should('have.text', '8.52');
+    cy.get('#\\/m1d .mjx-mrow').eq(0).should('have.text', '8.5204');
+
+    cy.get('#\\/m2 .mjx-mrow').eq(0).should('have.text', '8.5204');
+    cy.get('#\\/m2a .mjx-mrow').eq(0).should('have.text', '8.5204');
+    cy.get('#\\/m2b .mjx-mrow').eq(0).should('have.text', '8.520385');
+    cy.get('#\\/m2c .mjx-mrow').eq(0).should('have.text', '8.5204');
+    cy.get('#\\/m2d .mjx-mrow').eq(0).should('have.text', '8.520385');
+
+    cy.get('#\\/m3 .mjx-mrow').eq(0).should('have.text', '0');
+    cy.get('#\\/m3a .mjx-mrow').eq(0).should('have.text', '0');
+    cy.get('#\\/m3b .mjx-mrow').eq(0).should('have.text', '1.5382487⋅10−17');
+    cy.get('#\\/m3c .mjx-mrow').eq(0).should('have.text', '0');
+    cy.get('#\\/m3d .mjx-mrow').eq(0).should('have.text', '1.5382487⋅10−17');
+
+
+  });
+
 
 
 })

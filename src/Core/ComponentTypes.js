@@ -143,7 +143,7 @@ import SubsetOfRealsInput from './components/SubsetOfRealsInput';
 import SubsetOfReals from './components/SubsetOfReals';
 import Split from './components/Split';
 import BestFitLine from './components/BestFitLine';
-import AreaBetweenCurveXAxis from './components/AreaBetweenCurveXAxis';
+import RegionBetweenCurveXAxis from './components/RegionBetweenCurveXAxis';
 import RegionHalfPlane from './components/RegionHalfPlane';
 import RenderDoenetML from './components/RenderDoenetML';
 
@@ -286,7 +286,7 @@ const componentTypeArray = [
   SubsetOfReals,
   Split,
   BestFitLine,
-  AreaBetweenCurveXAxis,
+  RegionBetweenCurveXAxis,
   RegionHalfPlane,
   RenderDoenetML,
 

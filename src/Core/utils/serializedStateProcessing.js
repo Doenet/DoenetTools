@@ -586,6 +586,9 @@ export function componentFromAttribute({ attrObj, value, originalComponentProps,
     // Also, when get stateVariablesPrescribingAdditionalAttributes,
     // it is possible their values are not strings
     value = { rawString: value.toString() }
+  } else if (value === null) {
+    // could get null from stateVariablesPrescribingAdditionalAttributes
+    value = { rawString: "" }
   }
 
   if (attrObj && attrObj.createComponentOfType) {

@@ -8,13 +8,9 @@ export default class MathComponent extends InlineComponent {
   static componentType = "math";
 
   // used when creating new component via adapter or copy prop
-  static primaryStateVariableForDefinition = "unnormalizedValue";
+  static primaryStateVariableForDefinition = "value";
 
   static variableForPlainMacro = "value";
-
-  // used when referencing this component without prop
-  // static useChildrenForReference = false;
-  static get stateVariablesShadowedForReference() { return ["unnormalizedValue"] };
 
   static descendantCompositesMustHaveAReplacement = true;
   static descendantCompositesDefaultReplacementType = "math";
@@ -334,6 +330,15 @@ export default class MathComponent extends InlineComponent {
     stateVariableDefinitions.value = {
       public: true,
       componentType: this.componentType,
+      additionalAttributeComponentsToShadow: ["unordered"],
+      stateVariablesPrescribingAdditionalAttributes: {
+        fixed: "fixed",
+        displayDigits: "displayDigits",
+        displayDecimals: "displayDecimals",
+        displaySmallAsZero: "displaySmallAsZero",
+        simplify: "simplify",
+        expand: "expand",
+      },
       returnDependencies: () => ({
         unnormalizedValue: {
           dependencyType: "stateVariable",

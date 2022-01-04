@@ -2907,12 +2907,12 @@ export default class Core {
 
 
       if ((!redefineDependencies.propVariable || attributeSpecification.propagateToProps)
-        && (attrName in targetComponent.state)
+        && (varName in targetComponent.state)
       ) {
         thisDependencies.targetVariable = {
           dependencyType: "stateVariable",
           componentName: targetComponent.componentName,
-          variableName: attrName,
+          variableName: varName,
         };
         if ("targetAttributesToIgnore" in compositeComponent.state &&
           redefineDependencies.firstLevelReplacement

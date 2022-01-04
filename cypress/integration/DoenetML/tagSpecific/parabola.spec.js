@@ -4703,7 +4703,7 @@ describe('Parabola Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
 
-    let f_p = x => 0.5*x + 1.5;
+    let f_p = x => 0.5 * x + 1.5;
 
     cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
@@ -4712,7 +4712,7 @@ describe('Parabola Tag Tests', function () {
       let [x1, x2] = components["/A"].stateValues.xs.map(x => x.tree);
       let [x12, x22] = components["/A2"].stateValues.xs.map(x => x.tree);
       let [x13, x23] = A3.stateValues.xs.map(x => x.tree);
-      expect(x1).closeTo(1.5/-2.5, 1E-14)
+      expect(x1).closeTo(1.5 / -2.5, 1E-14)
       expect(x2).closeTo(f_p(x1), 1E-14);
       expect(x12).eq(x1)
       expect(x13).eq(x1)
@@ -4723,7 +4723,7 @@ describe('Parabola Tag Tests', function () {
       [x1, x2] = components["/A"].stateValues.xs.map(x => x.tree);
       [x12, x22] = components["/A2"].stateValues.xs.map(x => x.tree);
       [x13, x23] = A3.stateValues.xs.map(x => x.tree);
-      expect(x1).closeTo((1.5-2*9+2)/-2.5, 1E-14)
+      expect(x1).closeTo((1.5 - 2 * 9 + 2) / -2.5, 1E-14)
       expect(x2).closeTo(f_p(x1), 1E-14);
       expect(x12).eq(x1)
       expect(x13).eq(x1)
@@ -4734,7 +4734,7 @@ describe('Parabola Tag Tests', function () {
       [x1, x2] = components["/A"].stateValues.xs.map(x => x.tree);
       [x12, x22] = components["/A2"].stateValues.xs.map(x => x.tree);
       [x13, x23] = A3.stateValues.xs.map(x => x.tree);
-      expect(x1).closeTo((1.5+2*9-4)/-2.5, 1E-14)
+      expect(x1).closeTo((1.5 + 2 * 9 - 4) / -2.5, 1E-14)
       expect(x2).closeTo(f_p(x1), 1E-14);
       expect(x12).eq(x1)
       expect(x13).eq(x1)
@@ -4745,7 +4745,7 @@ describe('Parabola Tag Tests', function () {
       [x1, x2] = components["/A"].stateValues.xs.map(x => x.tree);
       [x12, x22] = components["/A2"].stateValues.xs.map(x => x.tree);
       [x13, x23] = A3.stateValues.xs.map(x => x.tree);
-      expect(x1).closeTo((1.5-2*0.9-9)/-2.5, 1E-14)
+      expect(x1).closeTo((1.5 - 2 * 0.9 - 9) / -2.5, 1E-14)
       expect(x2).closeTo(f_p(x1), 1E-14);
       expect(x12).eq(x1)
       expect(x13).eq(x1)
@@ -4781,7 +4781,7 @@ describe('Parabola Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
 
-    let f_p = x => -100*((x - 1) ** 2 + 2);
+    let f_p = x => -100 * ((x - 1) ** 2 + 2);
 
     cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
@@ -4872,5 +4872,70 @@ describe('Parabola Tag Tests', function () {
 
 
   });
+
+
+  it('copy parabola and overwrite parameters', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <graph name="g1" newNamespace>
+    <parabola name="p0" />
+    <copy target="p0" vertex="(3,4)" assignNames="p1" />
+    <copy target="p1" through="(5,-4)" assignNames="p2" />
+    <copy target="p0" through="(-5,-2)" assignNames="p3" />
+    <copy target="p3" vertex="(-6,6)" assignNames="p4" />
+    </graph>
+
+    <copy target="g1" assignNames="g2" />
+
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
+
+    cy.window().then(async (win) => {
+      let components = Object.assign({}, win.state.components);
+
+      expect(components['/g1/p0'].stateValues.a).closeTo(1, 1E-12);
+      expect(components['/g1/p0'].stateValues.b).closeTo(0, 1E-12);
+      expect(components['/g1/p0'].stateValues.c).closeTo(0, 1E-12);
+      expect(components['/g2/p0'].stateValues.a).closeTo(1, 1E-12);
+      expect(components['/g2/p0'].stateValues.b).closeTo(0, 1E-12);
+      expect(components['/g2/p0'].stateValues.c).closeTo(0, 1E-12);
+
+      expect(components['/g1/p1'].stateValues.a).closeTo(1, 1E-12);
+      expect(components['/g1/p1'].stateValues.b).closeTo(-6, 1E-12);
+      expect(components['/g1/p1'].stateValues.c).closeTo(13, 1E-12);
+      expect(components['/g2/p1'].stateValues.a).closeTo(1, 1E-12);
+      expect(components['/g2/p1'].stateValues.b).closeTo(-6, 1E-12);
+      expect(components['/g2/p1'].stateValues.c).closeTo(13, 1E-12);
+
+      expect(components['/g1/p2'].stateValues.a).closeTo(-2, 1E-12);
+      expect(components['/g1/p2'].stateValues.b).closeTo(12, 1E-12);
+      expect(components['/g1/p2'].stateValues.c).closeTo(-14, 1E-12);
+      expect(components['/g2/p2'].stateValues.a).closeTo(-2, 1E-12);
+      expect(components['/g2/p2'].stateValues.b).closeTo(12, 1E-12);
+      expect(components['/g2/p2'].stateValues.c).closeTo(-14, 1E-12);
+
+      expect(components['/g1/p3'].stateValues.a).closeTo(1, 1E-12);
+      expect(components['/g1/p3'].stateValues.b).closeTo(10, 1E-12);
+      expect(components['/g1/p3'].stateValues.c).closeTo(23, 1E-12);
+      expect(components['/g2/p3'].stateValues.a).closeTo(1, 1E-12);
+      expect(components['/g2/p3'].stateValues.b).closeTo(10, 1E-12);
+      expect(components['/g2/p3'].stateValues.c).closeTo(23, 1E-12);
+
+      expect(components['/g1/p4'].stateValues.a).closeTo(-8, 1E-12);
+      expect(components['/g1/p4'].stateValues.b).closeTo(-96, 1E-12);
+      expect(components['/g1/p4'].stateValues.c).closeTo(-282, 1E-12);
+      expect(components['/g2/p4'].stateValues.a).closeTo(-8, 1E-12);
+      expect(components['/g2/p4'].stateValues.b).closeTo(-96, 1E-12);
+      expect(components['/g2/p4'].stateValues.c).closeTo(-282, 1E-12);
+
+    })
+
+
+
+  })
 
 });

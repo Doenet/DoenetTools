@@ -718,20 +718,20 @@ describe('Module Tag Tests', function () {
     cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
 
-      let g2m1Anchor = cesc('#' + components["/g2"].replacements[3].activeChildren[1].componentarget);
-      let g2m3Anchor = cesc('#' + components["/g2"].replacements[5].activeChildren[3].componentarget);
+      let g2m1Anchor = cesc('#' + components["/g2"].replacements[3].activeChildren[1].componentName);
+      let g2m3Anchor = cesc('#' + components["/g2"].replacements[5].activeChildren[3].componentName);
       let g2extProblem = components["/g2"].replacements[7].replacements[0].replacements[0].replacements[3];
-      let g2extm1Anchor = cesc('#' + g2extProblem.activeChildren[2].activeChildren[1].componentarget);
+      let g2extm1Anchor = cesc('#' + g2extProblem.activeChildren[2].activeChildren[1].componentName);
       let g2extGraph = g2extProblem.activeChildren[4];
       let g2extP = g2extGraph.activeChildren[0];
-      let g2extAnswerSubmitAnchor = cesc('#' + g2extProblem.activeChildren[6].componentarget + "_submit");
-      let g3m1Anchor = cesc('#' + components["/g3"].replacements[3].activeChildren[1].componentarget);
-      let g3m3Anchor = cesc('#' + components["/g3"].replacements[5].activeChildren[3].componentarget);
+      let g2extAnswerSubmitAnchor = cesc('#' + g2extProblem.activeChildren[6].componentName + "_submit");
+      let g3m1Anchor = cesc('#' + components["/g3"].replacements[3].activeChildren[1].componentName);
+      let g3m3Anchor = cesc('#' + components["/g3"].replacements[5].activeChildren[3].componentName);
       let g3extProblem = components["/g3"].replacements[7].replacements[0].replacements[0].replacements[3];
-      let g3extm1Anchor = cesc('#' + g3extProblem.activeChildren[2].activeChildren[1].componentarget);
+      let g3extm1Anchor = cesc('#' + g3extProblem.activeChildren[2].activeChildren[1].componentName);
       let g3extGraph = g3extProblem.activeChildren[4];
       let g3extP = g3extGraph.activeChildren[0];
-      let g3extAnswerSubmitAnchor = cesc('#' + g3extProblem.activeChildren[6].componentarget + "_submit");
+      let g3extAnswerSubmitAnchor = cesc('#' + g3extProblem.activeChildren[6].componentName + "_submit");
 
       cy.get(cesc('#/_m1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim().replace(/−/g, '-')).equal('(1,2)')

@@ -1,7 +1,7 @@
 import GraphicalComponent from './abstract/GraphicalComponent';
 
-export default class AreaBetweenCurveXAxis extends GraphicalComponent {
-  static componentType = "areaBetweenCurveXAxis";
+export default class RegionBetweenCurveXAxis extends GraphicalComponent {
+  static componentType = "regionBetweenCurveXAxis";
 
   static createAttributesObject(args) {
     let attributes = super.createAttributesObject(args);

@@ -3062,11 +3062,11 @@ class Dependency {
                 if (mappedStateVarObj.usedDefault) {
                   usedDefaultObj[nameForOutput] = true;
                   foundOneUsedDefault = true;
-                } else if(mappedStateVarObj.isArrayEntry && mappedStateVarObj.arrayKeys.length === 1) {
+                } else if (mappedStateVarObj.isArrayEntry && mappedStateVarObj.arrayKeys.length === 1) {
                   // if have an array entry with just one arrayKey,
                   // check if used default for that arrayKey
                   let arrayStateVarObj = depComponent.state[mappedStateVarObj.arrayStateVariable];
-                  if(arrayStateVarObj.usedDefaultByArrayKey[mappedStateVarObj.arrayKeys[0]]) {
+                  if (arrayStateVarObj.usedDefaultByArrayKey[mappedStateVarObj.arrayKeys[0]]) {
                     usedDefaultObj[nameForOutput] = true;
                     foundOneUsedDefault = true;
                   }
@@ -4044,10 +4044,22 @@ class AttributeComponentDependency extends Dependency {
 
       let comp = parent;
 
-      while (comp.shadows && !comp.shadows.propVariable) {
+      while (comp.shadows) {
+
+        let propVariable = comp.shadows.propVariable;
+
         comp = this.dependencyHandler._components[comp.shadows.componentName];
         if (!comp) {
           break;
+        }
+
+        if (propVariable) {
+          if (!(
+            comp.state[propVariable]?.additionalAttributeComponentsToShadow
+            && comp.state[propVariable].additionalAttributeComponentsToShadow.includes(this.attributeName)
+          )) {
+            break;
+          }
         }
 
         attribute = comp.attributes[this.attributeName];
