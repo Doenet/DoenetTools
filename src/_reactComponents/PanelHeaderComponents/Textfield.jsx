@@ -10,7 +10,7 @@ export default function Textfield(props) {
   const inputRef = useRef(null);
   //Assume small
   var textfield = {
-        margin: '0px 4px 0px 4px',
+        margin: '0px 4px 0px 0px',
         height: '24px',
         border: `2px solid ${doenetComponentForegroundInactive}`,
         fontFamily: 'Arial',
@@ -28,7 +28,6 @@ export default function Textfield(props) {
         fontSize: '14px',
         display: `${labelVisible}`,
         marginRight: '5px',
-        marginLeft: '5px',
         marginBottom: `${align == 'flex' ? 'none' : '2px'}`
     }
     
