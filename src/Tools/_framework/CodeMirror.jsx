@@ -18,7 +18,7 @@ const editorConfigStateAtom = atom({
 });
 
 let view;
-export default function CodeMirror({setInternalValue,onBeforeChange,readOnly}){
+export default function CodeMirror({setInternalValue,onBeforeChange,readOnly,key}){
     if(readOnly === undefined){
         readOnly = false;
     }
@@ -138,7 +138,7 @@ export default function CodeMirror({setInternalValue,onBeforeChange,readOnly}){
     //should rewrite using compartments once a more formal config component is established
     return (
         <>
-        <div ref={parent} ></div>
+        <div key={key} ref={parent} ></div>
         </>
     )
 }
