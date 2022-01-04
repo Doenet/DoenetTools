@@ -7,11 +7,11 @@ export default function TextArea(props) {
   const [text, setText] = useState("");
   //Assume small
   var textarea = {
-        margin: '0px 4px 0px 4px',
+        margin: '0px 4px 0px 0px',
         height: '24px',
         border: `2px solid ${doenetComponentForegroundInactive}`,
         fontFamily: 'Arial',
-        // fontSize: '14px',
+        fontSize: '14px',
         borderRadius: '5px',
         color: '#000',
         value: `${text}`
