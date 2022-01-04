@@ -2697,8 +2697,18 @@ class Dependency {
               .sort((a, b) => b.length - a.length);
             for (let arrayEntryPrefix of arrayEntryPrefixesLongestToShortest) {
               if (vName.substring(0, arrayEntryPrefix.length) === arrayEntryPrefix) {
-                let arrayVarName = downComponent.arrayEntryPrefixes[arrayEntryPrefix];
-                return downComponent.state[arrayVarName].arraySizeStateVariable
+
+                let arrayVariableName = downComponent.arrayEntryPrefixes[arrayEntryPrefix];
+                let arrayStateVarObj = downComponent.state[arrayVariableName];
+                let arrayKeys = arrayStateVarObj.getArrayKeysFromVarName({
+                  arrayEntryPrefix,
+                  varEnding: vName.substring(arrayEntryPrefix.length),
+                  nDimensions: arrayStateVarObj.nDimensions,
+                });
+
+                if (arrayKeys.length > 0) {
+                  return downComponent.state[arrayVariableName].arraySizeStateVariable
+                }
               }
             }
           }

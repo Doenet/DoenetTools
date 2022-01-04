@@ -54,7 +54,7 @@ export default class Angle extends GraphicalComponent {
   static returnSugarInstructions() {
     let sugarInstructions = super.returnSugarInstructions();
 
-    let stringAndMacrosToRadiansAttribute = function({matchedChildren}) {
+    let stringAndMacrosToRadiansAttribute = function ({ matchedChildren }) {
 
       // only apply if all children are strings or macros
       if (!matchedChildren.every(child =>
@@ -190,9 +190,9 @@ export default class Angle extends GraphicalComponent {
                 return [];
               }
             } else {
-              // if don't know array size, just guess that the entry is OK
-              // It will get corrected once array size is known.
-              // TODO: better to return empty array?
+              // If not given the array size,
+              // then return the array keys assuming the array is large enough.
+              // Must do this as it is used to determine potential array entries.
               return [String(indices)];
             }
           } else {
@@ -200,11 +200,18 @@ export default class Angle extends GraphicalComponent {
           }
         } else {
           // point3 is all components of the third point
-          if (!arraySize) {
-            return [];
-          }
+
           let pointInd = Number(varEnding) - 1;
-          if (Number.isInteger(pointInd) && pointInd >= 0 && pointInd < arraySize[0]) {
+          if (!(Number.isInteger(pointInd) && pointInd >= 0)) {
+            return [];
+          } 
+          
+          if (!arraySize) {
+            // If don't have array size, we just need to determine if it is a potential entry.
+            // Return the first entry assuming array is large enough
+            return [pointInd + ",0"];
+          }
+          if(pointInd < arraySize[0]) {
             // array of "pointInd,i", where i=0, ..., arraySize[1]-1
             return Array.from(Array(arraySize[1]), (_, i) => pointInd + "," + i)
           } else {

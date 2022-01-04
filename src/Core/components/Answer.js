@@ -27,7 +27,6 @@ export default class Answer extends InlineComponent {
       createStateVariable: "inline",
       defaultValue: false,
       public: true,
-      propagateToDescendants: true
     };
     attributes.size = {
       createComponentOfType: "number",
@@ -134,15 +133,6 @@ export default class Answer extends InlineComponent {
       public: true,
       propagateToDescendants: true,
     };
-    attributes.feedbackDefinitions = {
-      createComponentOfType: "feedbackDefinitions",
-      createStateVariable: "feedbackDefinitions",
-      public: true,
-      propagateToDescendants: true,
-      mergeArrays: true
-    };
-
-
     attributes.showCorrectness = {
       createComponentOfType: "boolean",
       createStateVariable: "showCorrectness",

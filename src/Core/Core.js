@@ -14,6 +14,7 @@ import { DependencyHandler } from './Dependencies';
 import sha256 from 'crypto-js/sha256';
 import Hex from 'crypto-js/enc-hex'
 import { preprocessMathInverseDefinition } from './utils/math';
+import { returnDefaultGetArrayKeysFromVarName } from './utils/stateVariables';
 
 // string to componentClass: this.allComponentClasses["string"]
 // componentClass to string: componentClass.componentType
@@ -2497,17 +2498,7 @@ export default class Core {
             attribute: attrName
           })
 
-          // if mergeArrays specified and both ancetor prop and child value
-          // are arrays, then attribute value will combine those arrays
-          if (attributeSpecification.mergeArrays
-            && Array.isArray(dependencyValues.ancestorProp)
-            && Array.isArray(attributeValue)
-          ) {
-            let mergedArray = [...attributeValue, ...dependencyValues.ancestorProp];
-            return { newValues: { [varName]: mergedArray } }
-          } else {
-            return { newValues: { [varName]: attributeValue } };
-          }
+          return { newValues: { [varName]: attributeValue } };
 
         };
 
@@ -2543,20 +2534,14 @@ export default class Core {
 
             // attribute based on component
 
-            if (attributeSpecification.mergeArrays) {
-              // can't invert if we merged arrays to get the value
-              return { success: false }
-            } else {
-
-              return {
-                success: true,
-                instructions: [{
-                  setDependency: "attributeComponent",
-                  desiredValue: desiredStateVariableValues[varName],
-                  variableIndex: 0,
-                }]
-              };
-            }
+            return {
+              success: true,
+              instructions: [{
+                setDependency: "attributeComponent",
+                desiredValue: desiredStateVariableValues[varName],
+                variableIndex: 0,
+              }]
+            };
           };
         }
       }
@@ -2636,20 +2621,14 @@ export default class Core {
 
             // attribute based on component
 
-            if (attributeSpecification.mergeArrays) {
-              // can't invert if we merged arrays to get the value
-              return { success: false }
-            } else {
-
-              return {
-                success: true,
-                instructions: [{
-                  setDependency: "attributeComponent",
-                  desiredValue: desiredStateVariableValues[varName],
-                  variableIndex: 0,
-                }]
-              };
-            }
+            return {
+              success: true,
+              instructions: [{
+                setDependency: "attributeComponent",
+                desiredValue: desiredStateVariableValues[varName],
+                variableIndex: 0,
+              }]
+            };
 
           };
         }
@@ -3008,17 +2987,7 @@ export default class Core {
             attributeSpecification, attribute: attrName
           })
 
-          // if mergeArrays specified and both ancetor prop and child value
-          // are arrays, then attribute value will combine those arrays
-          if (attributeSpecification.mergeArrays
-            && Array.isArray(dependencyValues.ancestorProp)
-            && Array.isArray(attributeValue)
-          ) {
-            let mergedArray = [...attributeValue, ...dependencyValues.ancestorProp];
-            return { newValues: { [varName]: mergedArray } }
-          } else {
-            return { newValues: { [varName]: attributeValue } };
-          }
+          return { newValues: { [varName]: attributeValue } };
 
         };
 
@@ -3073,20 +3042,14 @@ export default class Core {
 
             // attribute based on component
 
-            if (attributeSpecification.mergeArrays) {
-              // can't invert if we merged arrays to get the value
-              return { success: false }
-            } else {
-
-              return {
-                success: true,
-                instructions: [{
-                  setDependency: "attributeComponent",
-                  desiredValue: desiredStateVariableValues[varName],
-                  variableIndex: 0,
-                }]
-              };
-            }
+            return {
+              success: true,
+              instructions: [{
+                setDependency: "attributeComponent",
+                desiredValue: desiredStateVariableValues[varName],
+                variableIndex: 0,
+              }]
+            };
           };
         }
       } else {
@@ -3183,21 +3146,14 @@ export default class Core {
             }
             // attribute based on child
 
-
-            if (attributeSpecification.mergeArrays) {
-              // can't invert if we merged arrays to get the value
-              return { success: false }
-            } else {
-
-              return {
-                success: true,
-                instructions: [{
-                  setDependency: "attributeComponent",
-                  desiredValue: desiredStateVariableValues[varName],
-                  variableIndex: 0,
-                }]
-              };
-            }
+            return {
+              success: true,
+              instructions: [{
+                setDependency: "attributeComponent",
+                desiredValue: desiredStateVariableValues[varName],
+                variableIndex: 0,
+              }]
+            };
 
           };
         }
@@ -4174,35 +4130,6 @@ export default class Core {
         }
         return aVals[index[index.length - 1]];
       };
-      if (!stateVarObj.getArrayKeysFromVarName) {
-        // the default function for getArrayKeysFromVarName ignores the
-        // array entry prefix, but is just based on the variable ending.
-        // A component class's function could use arrayEntryPrefix
-        stateVarObj.getArrayKeysFromVarName = function ({
-          arrayEntryPrefix, varEnding, arraySize, nDimensions,
-        }) {
-          let indices = varEnding.split('_').map(x => Number(x) - 1)
-          if (indices.length === nDimensions && indices.every(
-            (x, i) => Number.isInteger(x) && x >= 0
-          )) {
-
-            if (arraySize) {
-              if (indices.every((x, i) => x < arraySize[i])) {
-                return [String(indices)];
-              } else {
-                return [];
-              }
-            } else {
-              // if don't know array size, just guess that the entry is OK
-              // It will get corrected once array size is known.
-              // TODO: better to return empty array?
-              return [String(indices)];
-            }
-          } else {
-            return [];
-          }
-        };
-      }
 
       if (!stateVarObj.getAllArrayKeys) {
         stateVarObj.getAllArrayKeys = function (arraySize, flatten = true, desiredSize) {
@@ -4295,33 +4222,6 @@ export default class Core {
         return arrayValues[arrayKey];
       };
 
-      if (!stateVarObj.getArrayKeysFromVarName) {
-        // the default function for getArrayKeysFromVarName ignores the
-        // array entry prefix, but is just based on the variable ending.
-        // A component class's function could use arrayEntryPrefix
-        stateVarObj.getArrayKeysFromVarName = function ({
-          arrayEntryPrefix, varEnding, arraySize
-        }) {
-          let index = Number(varEnding) - 1;
-          if (Number.isInteger(index) && index >= 0) {
-            if (arraySize) {
-              if (index < arraySize[0]) {
-                return [String(index)];
-              } else {
-                return [];
-              }
-            } else {
-              // if don't know array size, just guess that the entry is OK
-              // It will get corrected once array size is known.
-              // TODO: better to return empty array?
-              return [String(index)];
-            }
-          } else {
-            return [];
-          }
-        };
-      }
-
       if (!stateVarObj.getAllArrayKeys) {
         stateVarObj.getAllArrayKeys = function (arraySize, flatten, desiredSize) {
           if (desiredSize) {
@@ -4359,6 +4259,11 @@ export default class Core {
           }
         }
       }
+    }
+
+
+    if (!stateVarObj.getArrayKeysFromVarName) {
+      stateVarObj.getArrayKeysFromVarName = returnDefaultGetArrayKeysFromVarName(stateVarObj.nDimensions)
     }
 
     // converting from index to key is the same for single and multiple
@@ -5918,10 +5823,22 @@ export default class Core {
       let arrayEntryPrefixesLongestToShortest = Object.keys(stateVarInfo.arrayEntryPrefixes).sort((a, b) => b.length - a.length)
       for (let prefix of arrayEntryPrefixesLongestToShortest) {
         if (lowerCaseVarName.substring(0, prefix.length) === prefix.toLowerCase()) {
-          let newVarName = prefix + lowerCaseVarName.substring(prefix.length);
-          foundMatch = true;
-          newVariables.push(newVarName);
-          break;
+          // TODO: the varEnding is still a case-senstitive match
+          // Should we require that getArrayKeysFromVarName have 
+          // a case-insensitive mode?
+          let arrayVariableName = stateVarInfo.arrayEntryPrefixes[prefix].arrayVariableName;
+          let arrayStateVarDescription = stateVarInfo.stateVariableDescriptions[arrayVariableName];
+          let arrayKeys = arrayStateVarDescription.getArrayKeysFromVarName({
+            arrayEntryPrefix: prefix,
+            varEnding: stateVariable.substring(prefix.length),
+            nDimensions: arrayStateVarDescription.nDimensions,
+          });
+          if (arrayKeys.length > 0) {
+            let newVarName = prefix + lowerCaseVarName.substring(prefix.length);
+            foundMatch = true;
+            newVariables.push(newVarName);
+            break;
+          }
         }
       }
 
@@ -5970,8 +5887,17 @@ export default class Core {
       let arrayEntryPrefixesLongestToShortest = Object.keys(stateVarInfo.arrayEntryPrefixes).sort((a, b) => b.length - a.length)
       for (let prefix of arrayEntryPrefixesLongestToShortest) {
         if (varName.substring(0, prefix.length) === prefix) {
-          foundMatch = true;
-          break;
+          let arrayVariableName = stateVarInfo.arrayEntryPrefixes[prefix].arrayVariableName;
+          let arrayStateVarDescription = stateVarInfo.stateVariableDescriptions[arrayVariableName];
+          let arrayKeys = arrayStateVarDescription.getArrayKeysFromVarName({
+            arrayEntryPrefix: prefix,
+            varEnding: varName.substring(prefix.length),
+            nDimensions: arrayStateVarDescription.nDimensions,
+          });
+          if (arrayKeys.length > 0) {
+            foundMatch = true;
+            break;
+          }
         }
       }
 
@@ -6038,7 +5964,16 @@ export default class Core {
     // check if stateVariable begins when an arrayEntry
     for (let arrayEntryPrefix in component.arrayEntryPrefixes) {
       if (stateVariable.substring(0, arrayEntryPrefix.length) === arrayEntryPrefix) {
-        return true
+        let arrayVariableName = component.arrayEntryPrefixes[arrayEntryPrefix];
+        let arrayStateVarObj = component.state[arrayVariableName];
+        let arrayKeys = arrayStateVarObj.getArrayKeysFromVarName({
+          arrayEntryPrefix,
+          varEnding: stateVariable.substring(arrayEntryPrefix.length),
+          nDimensions: arrayStateVarObj.nDimensions,
+        });
+        if (arrayKeys.length > 0) {
+          return true
+        }
       }
     }
 
@@ -6060,66 +5995,78 @@ export default class Core {
       if (stateVariable.substring(0, arrayEntryPrefix.length) === arrayEntryPrefix
         // && stateVariable.length > arrayEntryPrefix.length
       ) {
-        // found a reference to an arrayEntry that hasn't been created yet
-        // create this arrayEntry
 
-        let arrayStateVariable = component.arrayEntryPrefixes[arrayEntryPrefix];
-
-        await this.initializeStateVariable({
-          component, stateVariable,
-          arrayStateVariable, arrayEntryPrefix,
+        let arrayVariableName = component.arrayEntryPrefixes[arrayEntryPrefix];
+        let arrayStateVarObj = component.state[arrayVariableName];
+        let arrayKeys = arrayStateVarObj.getArrayKeysFromVarName({
+          arrayEntryPrefix,
+          varEnding: stateVariable.substring(arrayEntryPrefix.length),
+          nDimensions: arrayStateVarObj.nDimensions,
         });
 
-        if (initializeOnly) {
-          return;
-        }
+        if (arrayKeys.length > 0) {
 
-        let allStateVariablesAffected = [stateVariable];
-        // create an additional array entry state variables
-        // specified as additional state variables defined
-        if (component.state[stateVariable].additionalStateVariablesDefined) {
-          allStateVariablesAffected.push(...component.state[stateVariable].additionalStateVariablesDefined);
-          for (let additionalVar of component.state[stateVariable].additionalStateVariablesDefined) {
-            if (!component.state[additionalVar]) {
-              await this.createFromArrayEntry({
-                stateVariable: additionalVar,
-                component,
-                initializeOnly: true
-              });
-            }
-          }
-        }
+          // found a reference to an arrayEntry that hasn't been created yet
+          // create this arrayEntry
 
+          let arrayStateVariable = component.arrayEntryPrefixes[arrayEntryPrefix];
 
-        await this.dependencies.setUpStateVariableDependencies({
-          component, stateVariable,
-          allStateVariablesAffected,
-          core: this,
-        });
-
-        let newStateVariablesToResolve = [];
-
-        for (let varName of allStateVariablesAffected) {
-
-          this.dependencies.checkForCircularDependency({
-            componentName: component.componentName,
-            varName
+          await this.initializeStateVariable({
+            component, stateVariable,
+            arrayStateVariable, arrayEntryPrefix,
           });
 
-          newStateVariablesToResolve.push(varName);
-
-          if (component.state[varName].determineDependenciesStateVariable) {
-            newStateVariablesToResolve.push(component.state[varName].determineDependenciesStateVariable)
+          if (initializeOnly) {
+            return;
           }
 
+          let allStateVariablesAffected = [stateVariable];
+          // create an additional array entry state variables
+          // specified as additional state variables defined
+          if (component.state[stateVariable].additionalStateVariablesDefined) {
+            allStateVariablesAffected.push(...component.state[stateVariable].additionalStateVariablesDefined);
+            for (let additionalVar of component.state[stateVariable].additionalStateVariablesDefined) {
+              if (!component.state[additionalVar]) {
+                await this.createFromArrayEntry({
+                  stateVariable: additionalVar,
+                  component,
+                  initializeOnly: true
+                });
+              }
+            }
+          }
+
+
+          await this.dependencies.setUpStateVariableDependencies({
+            component, stateVariable,
+            allStateVariablesAffected,
+            core: this,
+          });
+
+          let newStateVariablesToResolve = [];
+
+          for (let varName of allStateVariablesAffected) {
+
+            this.dependencies.checkForCircularDependency({
+              componentName: component.componentName,
+              varName
+            });
+
+            newStateVariablesToResolve.push(varName);
+
+            if (component.state[varName].determineDependenciesStateVariable) {
+              newStateVariablesToResolve.push(component.state[varName].determineDependenciesStateVariable)
+            }
+
+          }
+
+          await this.dependencies.resolveStateVariablesIfReady({
+            component,
+            stateVariables: newStateVariablesToResolve,
+          });
+
+          return
         }
-
-        await this.dependencies.resolveStateVariablesIfReady({
-          component,
-          stateVariables: newStateVariablesToResolve,
-        });
-
-        return
       }
     }
 

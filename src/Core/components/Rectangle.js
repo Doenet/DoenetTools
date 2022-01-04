@@ -564,9 +564,9 @@ export default class Rectangle extends Polygon {
                 return [];
               }
             } else {
-              // if don't know array size, just guess that the entry is OK
-              // It will get corrected once array size is known.
-              // TODO: better to return empty array?
+              // If not given the array size,
+              // then return the array keys assuming the array is large enough.
+              // Must do this as it is used to determine potential array entries.
               return [String(indices)];
             }
           } else {
@@ -574,13 +574,20 @@ export default class Rectangle extends Polygon {
           }
         } else {
           // vertex3 is all components of the third vertex
-          if (!arraySize) {
+
+          let pointInd = Number(varEnding) - 1;
+          if (!(Number.isInteger(pointInd) && pointInd >= 0)) {
             return [];
           }
-          let vertexInd = Number(varEnding) - 1;
-          if (Number.isInteger(vertexInd) && vertexInd >= 0 && vertexInd < arraySize[0]) {
-            // array of "vertexInd,i", where i=0, ..., arraySize[1]-1
-            return Array.from(Array(arraySize[1]), (_, i) => vertexInd + "," + i)
+
+          if (!arraySize) {
+            // If don't have array size, we just need to determine if it is a potential entry.
+            // Return the first entry assuming array is large enough
+            return [pointInd + ",0"];
+          }
+          if (pointInd < arraySize[0]) {
+            // array of "pointInd,i", where i=0, ..., arraySize[1]-1
+            return Array.from(Array(arraySize[1]), (_, i) => pointInd + "," + i)
           } else {
             return [];
           }

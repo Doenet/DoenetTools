@@ -2,6 +2,7 @@ import BlockComponent from './BlockComponent';
 import { getVariantsForDescendants } from '../../utils/variants';
 import { numberToLetters } from '../../utils/sequence';
 import { returnStyleDefinitionStateVariables } from '../../utils/style';
+import { returnFeedbackDefinitionStateVariables } from '../../utils/feedback';
 
 export default class SectioningComponent extends BlockComponent {
   static componentType = "_sectioningComponent";
@@ -40,13 +41,6 @@ export default class SectioningComponent extends BlockComponent {
       public: true,
       forRenderer: true,
     };
-    attributes.feedbackDefinitions = {
-      createComponentOfType: "feedbackDefinitions",
-      createStateVariable: "feedbackDefinitions",
-      propagateToDescendants: true,
-      mergeArrays: true,
-      public: true,
-    }
     return attributes;
   }
 
@@ -61,6 +55,9 @@ export default class SectioningComponent extends BlockComponent {
     }, {
       group: "styleDefinitions",
       componentTypes: ["styleDefinitions"]
+    }, {
+      group: "feedbackDefinitions",
+      componentTypes: ["feedbackDefinitions"]
     }, {
       group: "setups",
       componentTypes: ["setup"]
@@ -79,8 +76,10 @@ export default class SectioningComponent extends BlockComponent {
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
     let styleDefinitionStateVariables = returnStyleDefinitionStateVariables();
-
     Object.assign(stateVariableDefinitions, styleDefinitionStateVariables);
+
+    let feedbackDefinitionStateVariables = returnFeedbackDefinitionStateVariables();
+    Object.assign(stateVariableDefinitions, feedbackDefinitionStateVariables);
 
     stateVariableDefinitions.enumeration = {
       forRenderer: true,

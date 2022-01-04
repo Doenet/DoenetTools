@@ -2,6 +2,7 @@ import readOnlyProxyHandler from '../../ReadOnlyProxyHandler';
 import createStateProxyHandler from '../../StateProxyHandler';
 import { flattenDeep, mapDeep } from '../../utils/array';
 import { deepClone } from '../../utils/deepFunctions';
+import { returnDefaultGetArrayKeysFromVarName } from '../../utils/stateVariables';
 
 export default class BaseComponent {
   constructor({
@@ -715,6 +716,11 @@ export default class BaseComponent {
                 wrappingComponents: theStateDef.returnWrappingComponents ? theStateDef.returnWrappingComponents(prefix) : []
               }
             }
+          }
+          if (theStateDef.getArrayKeysFromVarName) {
+            stateVariableDescriptions[varName].getArrayKeysFromVarName = theStateDef.getArrayKeysFromVarName;
+          } else {
+            stateVariableDescriptions[varName].getArrayKeysFromVarName = returnDefaultGetArrayKeysFromVarName(stateVariableDescriptions[varName].nDimensions)
           }
         }
       }

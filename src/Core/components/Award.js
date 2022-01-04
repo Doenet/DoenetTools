@@ -404,9 +404,9 @@ export default class Award extends BaseComponent {
           dependencyType: "stateVariable",
           variableName: "feedbackCodes",
         },
-        feedbackDefinitions: {
-          dependencyType: "parentStateVariable",
-          variableName: "feedbackDefinitions"
+        feedbackDefinitionAncestor: {
+          dependencyType: "ancestor",
+          variableNames: ["feedbackDefinitions"]
         },
         awarded: {
           dependencyType: "stateVariable",
@@ -421,13 +421,13 @@ export default class Award extends BaseComponent {
 
         let allFeedbacks = [];
 
+        let feedbackDefinitions = dependencyValues.feedbackDefinitionAncestor.stateValues.feedbackDefinitions;
+
         for (let feedbackCode of dependencyValues.feedbackCodes) {
           let code = feedbackCode.toLowerCase();
-          for (let feedbackDefinition of dependencyValues.feedbackDefinitions) {
-            if (code === feedbackDefinition.feedbackCode) {
-              allFeedbacks.push(feedbackDefinition.feedbackText);
-              break;  // just take first match
-            }
+          let feedbackText = feedbackDefinitions[code];
+          if(feedbackText) {
+            allFeedbacks.push(feedbackText);
           }
         }
 
