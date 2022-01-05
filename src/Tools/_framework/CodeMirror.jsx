@@ -126,15 +126,6 @@ export default function CodeMirror({setInternalValue,onBeforeChange,readOnly,onB
             if(readOnly && view.current.state.facet(EditorView.editable)){
                 //Force a refresh
                 setCount((old)=>{return old+1})
-                // console.log(">>>read only has been set, changing!!!!!!!");
-                // //NOTE: WHY DOESN'T THIS WORK?
-                // const disabledExtensions = [
-                //     EditorView.editable.of(false),
-                //     lineNumbers(),
-                // ]
-                // view.current.dispatch({
-                //     effects: StateEffect.reconfigure.of(disabledExtensions)
-                // });
             }
         }
     });
@@ -143,7 +134,7 @@ export default function CodeMirror({setInternalValue,onBeforeChange,readOnly,onB
         if(view.current !== null && parent.current !== null){
      
             if(readOnly && view.current.state.facet(EditorView.editable)){
-                console.log(">>>read only has been set, changing");
+                // console.log(">>>read only has been set, changing");
                 //NOTE: WHY DOESN'T THIS WORK?
                 const disabledExtensions = [
                     EditorView.editable.of(false),
@@ -167,23 +158,6 @@ export default function CodeMirror({setInternalValue,onBeforeChange,readOnly,onB
         }
         //annoying that editorConfig is a dependency, but no real way around it
     },[doenetExtensions,setInternalValue,matchTag,readOnly,editorConfig.matchTag])
-
-    // useEffect(() => {
-    //         if(view.current !== null && parent.current !== null){
-         
-    //             if(readOnly && view.current.state.facet(EditorView.editable)){
-    //                 console.log(">>>read only has been set, changing");
-    //                 //NOTE: WHY DOESN'T THIS WORK?
-    //                 const disabledExtensions = [
-    //                     EditorView.editable.of(false),
-    //                     lineNumbers(),
-    //                 ]
-    //                 view.current.dispatch({
-    //                     effects: StateEffect.reconfigure.of(disabledExtensions)
-    //                 });
-    //             } 
-    //         }
-    //     },[readOnly])
 
     //TODO any updates would force an update of each part of the config.
     //Doesn't matter since there's only one toggle at the moment, but could cause unneccesary work later
