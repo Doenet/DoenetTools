@@ -65,23 +65,12 @@ export default class Choiceinput extends Input {
     };
     attributes.inline = {
       createComponentOfType: "boolean",
-      createStateVariable: "inline",
-      defaultValue: false,
-      public: true,
-      forRenderer: true,
     };
     attributes.randomizeOrder = {
       createComponentOfType: "boolean",
       createStateVariable: "randomizeOrder",
       defaultValue: false,
       public: true,
-    };
-    attributes.feedbackDefinitions = {
-      createComponentOfType: "feedbackDefinitions",
-      createStateVariable: "feedbackDefinitions",
-      public: true,
-      propagateToDescendants: true,
-      mergeArrays: true
     };
 
     attributes.preselectChoice = {
@@ -118,6 +107,32 @@ export default class Choiceinput extends Input {
 
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
+    stateVariableDefinitions.inline = {
+      public: true,
+      componentType: "boolean",
+      forRenderer: true,
+      defaultValue: false,
+      returnDependencies: () => ({
+        inlineAttr: {
+          dependencyType: "attributeComponent",
+          attributeName: "inline",
+          variableNames: ["value"]
+        },
+        parentInline: {
+          dependencyType: "parentStateVariable",
+          variableName: "inline"
+        }
+      }),
+      definition({ dependencyValues }) {
+        if (dependencyValues.inlineAttr) {
+          return { newValues: { inline: dependencyValues.inlineAttr.stateValues.value } }
+        } else if (dependencyValues.parentInline !== null) {
+          return { newValues: { inline: dependencyValues.parentInline } }
+        } else {
+          return { useDefaultValue: { inline: {} } }
+        }
+      }
+    }
 
     stateVariableDefinitions.numberChoices = {
       public: true,

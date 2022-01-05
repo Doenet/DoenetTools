@@ -1,6 +1,7 @@
 import BaseComponent from './abstract/BaseComponent';
 import { getVariantsForDescendants } from '../utils/variants';
 import { returnStyleDefinitionStateVariables } from '../utils/style';
+import { returnFeedbackDefinitionStateVariables } from '../utils/feedback';
 import { numberToLetters } from '../utils/sequence';
 
 export default class Document extends BaseComponent {
@@ -28,14 +29,6 @@ export default class Document extends BaseComponent {
       defaultValue: false,
       public: true,
     };
-    attributes.feedbackDefinitions = {
-      createComponentOfType: "feedbackDefinitions",
-      createStateVariable: "feedbackDefinitions",
-      get defaultValue() { return returnDefaultFeedbackDefinitions() },
-      propagateToDescendants: true,
-      mergeArrayWithDefault: true,
-      public: true,
-    };
     return attributes;
   }
 
@@ -52,10 +45,7 @@ export default class Document extends BaseComponent {
       componentTypes: ["description"]
     }, {
       group: "setups",
-      componentTypes: ["setup"]
-    }, {
-      group: "styleDefinitions",
-      componentTypes: ["styleDefinitions"]
+      componentTypes: ["setup"],
     }, {
       group: "anything",
       componentTypes: ["_base"]
@@ -69,8 +59,11 @@ export default class Document extends BaseComponent {
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
     let styleDefinitionStateVariables = returnStyleDefinitionStateVariables();
-
     Object.assign(stateVariableDefinitions, styleDefinitionStateVariables);
+
+    let feedbackDefinitionStateVariables = returnFeedbackDefinitionStateVariables();
+    Object.assign(stateVariableDefinitions, feedbackDefinitionStateVariables);
+
 
     stateVariableDefinitions.titleChildName = {
       forRenderer: true,
@@ -836,24 +829,4 @@ function indexToLowercaseLetters(index) {
 }
 
 
-function returnDefaultFeedbackDefinitions() {
-  return [
-    {
-      feedbackCode: 'numericalerror',
-      feedbackText: `Credit reduced because numbers in your answer weren't quite right.  Did you round too much?`
-    },
-    {
-      feedbackCode: 'goodjob',
-      feedbackText: `Good job!`
-    },
-    {
-      feedbackCode: 'onesignerror',
-      feedbackText: `Credit reduced because it appears that you made a sign error.`
-    },
-    {
-      feedbackCode: 'twosignerrors',
-      feedbackText: `Credit reduced because it appears that you made two sign errors.`
-    },
-  ]
-}
 

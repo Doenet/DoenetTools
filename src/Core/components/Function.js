@@ -32,14 +32,12 @@ export default class Function extends InlineComponent {
       createStateVariable: "xscale",
       defaultValue: 1,
       public: true,
-      propagateToDescendants: true,
     };
     attributes.yscale = {
       createComponentOfType: "number",
       createStateVariable: "yscale",
       defaultValue: 1,
       public: true,
-      propagateToDescendants: true,
     };
     attributes.nInputs = {
       createComponentOfType: "integer",
@@ -1800,9 +1798,9 @@ export default class Function extends InlineComponent {
         if (["minimum", "minimumLocation", "minimumValue"].includes(arrayEntryPrefix)) {
           let pointInd = Number(varEnding) - 1;
           if (Number.isInteger(pointInd) && pointInd >= 0) {
-            // if don't know array size, just guess that the entry is OK
-            // It will get corrected once array size is known.
-            // TODO: better to return empty array?
+            // If not given the array size,
+            // then return the array keys assuming the array is large enough.
+            // Must do this as it is used to determine potential array entries.
             if (!arraySize || pointInd < arraySize[0]) {
               if (arrayEntryPrefix === "minimum") {
                 return [pointInd + ",0", pointInd + ",1"];
@@ -1818,18 +1816,27 @@ export default class Function extends InlineComponent {
             return [];
           }
         } else if (arrayEntryPrefix === "minimumLocations") {
-          // can't guess at arrayKeys if don't have arraySize
-          if (!arraySize || varEnding !== "") {
+          if (varEnding !== "") {
             return [];
           }
+
+          if (!arraySize) {
+            // if don't have arraySize, just use first point assuming array size is large enough
+            return ["0,0"]
+          }
+
           // array of "i,0"", where i=0, ..., arraySize[0]-1
           return Array.from(Array(arraySize[0]), (_, i) => i + ",0")
         } else if (arrayEntryPrefix === "minimumValues") {
-
-          // can't guess at arrayKeys if don't have arraySize
-          if (!arraySize || varEnding !== "") {
+          if (varEnding !== "") {
             return [];
           }
+
+          if (!arraySize) {
+            // if don't have arraySize, just use first point assuming array size is large enough
+            return ["0,1"]
+          }
+
           // array of "i,1"", where i=0, ..., arraySize[0]-1
           return Array.from(Array(arraySize[0]), (_, i) => i + ",1")
         } else {
@@ -2307,9 +2314,9 @@ export default class Function extends InlineComponent {
         if (["maximum", "maximumLocation", "maximumValue"].includes(arrayEntryPrefix)) {
           let pointInd = Number(varEnding) - 1;
           if (Number.isInteger(pointInd) && pointInd >= 0) {
-            // if don't know array size, just guess that the entry is OK
-            // It will get corrected once array size is known.
-            // TODO: better to return empty array?
+            // If not given the array size,
+            // then return the array keys assuming the array is large enough.
+            // Must do this as it is used to determine potential array entries.
             if (!arraySize || pointInd < arraySize[0]) {
               if (arrayEntryPrefix === "maximum") {
                 return [pointInd + ",0", pointInd + ",1"];
@@ -2325,18 +2332,27 @@ export default class Function extends InlineComponent {
             return [];
           }
         } else if (arrayEntryPrefix === "maximumLocations") {
-          // can't guess at arrayKeys if don't have arraySize
-          if (!arraySize || varEnding !== "") {
+          if (varEnding !== "") {
             return [];
           }
+
+          if (!arraySize) {
+            // if don't have arraySize, just use first point assuming array size is large enough
+            return ["0,0"]
+          }
+
           // array of "i,0"", where i=0, ..., arraySize[0]-1
           return Array.from(Array(arraySize[0]), (_, i) => i + ",0")
         } else if (arrayEntryPrefix === "maximumValues") {
-
-          // can't guess at arrayKeys if don't have arraySize
-          if (!arraySize || varEnding !== "") {
+          if (varEnding !== "") {
             return [];
           }
+
+          if (!arraySize) {
+            // if don't have arraySize, just use first point assuming array size is large enough
+            return ["0,1"]
+          }
+
           // array of "i,1"", where i=0, ..., arraySize[0]-1
           return Array.from(Array(arraySize[0]), (_, i) => i + ",1")
         } else {
@@ -2458,9 +2474,9 @@ export default class Function extends InlineComponent {
         if (["extremum", "extremumLocation", "extremumValue"].includes(arrayEntryPrefix)) {
           let pointInd = Number(varEnding) - 1;
           if (Number.isInteger(pointInd) && pointInd >= 0) {
-            // if don't know array size, just guess that the entry is OK
-            // It will get corrected once array size is known.
-            // TODO: better to return empty array?
+            // If not given the array size,
+            // then return the array keys assuming the array is large enough.
+            // Must do this as it is used to determine potential array entries.
             if (!arraySize || pointInd < arraySize[0]) {
               if (arrayEntryPrefix === "extremum") {
                 return [pointInd + ",0", pointInd + ",1"];
@@ -2476,18 +2492,27 @@ export default class Function extends InlineComponent {
             return [];
           }
         } else if (arrayEntryPrefix === "extremumLocations") {
-          // can't guess at arrayKeys if don't have arraySize
-          if (!arraySize || varEnding !== "") {
+          if (varEnding !== "") {
             return [];
           }
+
+          if (!arraySize) {
+            // if don't have arraySize, just use first point assuming array size is large enough
+            return ["0,0"]
+          }
+
           // array of "i,0"", where i=0, ..., arraySize[0]-1
           return Array.from(Array(arraySize[0]), (_, i) => i + ",0")
         } else if (arrayEntryPrefix === "extremumValues") {
-
-          // can't guess at arrayKeys if don't have arraySize
-          if (!arraySize || varEnding !== "") {
+          if (varEnding !== "") {
             return [];
           }
+
+          if (!arraySize) {
+            // if don't have arraySize, just use first point assuming array size is large enough
+            return ["0,1"]
+          }
+
           // array of "i,1"", where i=0, ..., arraySize[0]-1
           return Array.from(Array(arraySize[0]), (_, i) => i + ",1")
         } else {

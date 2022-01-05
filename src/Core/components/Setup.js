@@ -9,6 +9,9 @@ export default class Setup extends CompositeComponent {
       group: "styleDefinitions",
       componentTypes: ["styleDefinitions"]
     }, {
+      group: "feedbackDefinitions",
+      componentTypes: ["feedbackDefinitions"]
+    }, {
       group: "anything",
       componentTypes: ["_base"]
     }]

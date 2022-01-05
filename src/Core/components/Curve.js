@@ -39,10 +39,6 @@ export default class Curve extends GraphicalComponent {
       forRenderer: true,
     };
 
-    attributes.label.propagateToDescendants = true;
-    attributes.showLabel.propagateToDescendants = true;
-    attributes.layer.propagateToDescendants = true;
-
     attributes.labelPosition = {
       createComponentOfType: "text",
       createStateVariable: "labelPosition",
@@ -51,7 +47,6 @@ export default class Curve extends GraphicalComponent {
       forRenderer: true,
       toLowerCase: true,
       validValues: ["upperright", "upperleft", "lowerright", "lowerleft", "top", "bottom", "left", "right"],
-      propagateToDescendants: true,
     }
 
     attributes.flipFunction = {
@@ -610,9 +605,9 @@ export default class Curve extends GraphicalComponent {
                 return [];
               }
             } else {
-              // if don't know array size, just guess that the entry is OK
-              // It will get corrected once array size is known.
-              // TODO: better to return empty array?
+              // If not given the array size,
+              // then return the array keys assuming the array is large enough.
+              // Must do this as it is used to determine potential array entries.
               return [String(indices)];
             }
           } else {
@@ -620,13 +615,20 @@ export default class Curve extends GraphicalComponent {
           }
         } else {
           // throughPoint3 is all components of the third throughPoint
-          if (!arraySize) {
+
+          let pointInd = Number(varEnding) - 1;
+          if (!(Number.isInteger(pointInd) && pointInd >= 0)) {
             return [];
           }
-          let throughPointInd = Number(varEnding) - 1;
-          if (Number.isInteger(throughPointInd) && throughPointInd >= 0 && throughPointInd < arraySize[0]) {
-            // array of "throughPointInd,i", where i=0, ..., arraySize[1]-1
-            return Array.from(Array(arraySize[1]), (_, i) => throughPointInd + "," + i)
+
+          if (!arraySize) {
+            // If don't have array size, we just need to determine if it is a potential entry.
+            // Return the first entry assuming array is large enough
+            return [pointInd + ",0"];
+          }
+          if (pointInd < arraySize[0]) {
+            // array of "pointInd,i", where i=0, ..., arraySize[1]-1
+            return Array.from(Array(arraySize[1]), (_, i) => pointInd + "," + i)
           } else {
             return [];
           }
@@ -1044,9 +1046,9 @@ export default class Curve extends GraphicalComponent {
                 return [];
               }
             } else {
-              // if don't know array size, just guess that the entry is OK
-              // It will get corrected once array size is known.
-              // TODO: better to return empty array?
+              // If not given the array size,
+              // then return the array keys assuming the array is large enough.
+              // Must do this as it is used to determine potential array entries.
               return [String(indices)];
             }
           } else {
@@ -1055,13 +1057,19 @@ export default class Curve extends GraphicalComponent {
         } else {
           // controlVector3_2 is all components of the second control vector
           // controling the third point
-          if (!arraySize) {
+
+          let indices = varEnding.split('_').map(x => Number(x) - 1)
+          if (!(indices.length === 2 && indices.every(
+            x => Number.isInteger(x) && x >= 0
+          ))) {
             return [];
           }
-          let indices = varEnding.split('_').map(x => Number(x) - 1)
-          if (indices.length === 2 && indices.every(
-            (x, i) => Number.isInteger(x) && x >= 0 && x < arraySize[i]
-          )) {
+
+          if (!arraySize) {
+            // if don't' have array size, just return first entry assuming large enough size
+            return [String(indices) + ",0"];
+          }
+          if (indices.every((x, i) => x < arraySize[i])) {
             return Array.from(Array(arraySize[2]), (_, i) => String(indices) + "," + i)
           } else {
             return [];
@@ -1398,9 +1406,9 @@ export default class Curve extends GraphicalComponent {
                 return [];
               }
             } else {
-              // if don't know array size, just guess that the entry is OK
-              // It will get corrected once array size is known.
-              // TODO: better to return empty array?
+              // If not given the array size,
+              // then return the array keys assuming the array is large enough.
+              // Must do this as it is used to determine potential array entries.
               return [String(indices)];
             }
           } else {
@@ -1409,13 +1417,19 @@ export default class Curve extends GraphicalComponent {
         } else {
           // controlPoint3_2 is all components of the second control point
           // controling the third point
-          if (!arraySize) {
+
+          let indices = varEnding.split('_').map(x => Number(x) - 1)
+          if (!(indices.length === 2 && indices.every(
+            x => Number.isInteger(x) && x >= 0
+          ))) {
             return [];
           }
-          let indices = varEnding.split('_').map(x => Number(x) - 1)
-          if (indices.length === 2 && indices.every(
-            (x, i) => Number.isInteger(x) && x >= 0 && x < arraySize[i]
-          )) {
+
+          if (!arraySize) {
+            // if don't' have array size, just return first entry assuming large enough size
+            return [String(indices) + ",0"];
+          }
+          if (indices.every((x, i) => x < arraySize[i])) {
             return Array.from(Array(arraySize[2]), (_, i) => String(indices) + "," + i)
           } else {
             return [];
@@ -2432,9 +2446,9 @@ export default class Curve extends GraphicalComponent {
                 return [];
               }
             } else {
-              // if don't know array size, just guess that the entry is OK
-              // It will get corrected once array size is known.
-              // TODO: better to return empty array?
+              // If not given the array size,
+              // then return the array keys assuming the array is large enough.
+              // Must do this as it is used to determine potential array entries.
               return [String(indices)];
             }
           } else {
@@ -2442,11 +2456,18 @@ export default class Curve extends GraphicalComponent {
           }
         } else {
           // xCriticalPoint3 is all components of the third xCriticalPoint
-          if (!arraySize) {
+
+          let pointInd = Number(varEnding) - 1;
+          if (!(Number.isInteger(pointInd) && pointInd >= 0)) {
             return [];
           }
-          let pointInd = Number(varEnding) - 1;
-          if (Number.isInteger(pointInd) && pointInd >= 0 && pointInd < arraySize[0]) {
+
+          if (!arraySize) {
+            // If don't have array size, we just need to determine if it is a potential entry.
+            // Return the first entry assuming array is large enough
+            return [pointInd + ",0"];
+          }
+          if (pointInd < arraySize[0]) {
             // array of "pointInd,i", where i=0, ..., arraySize[1]-1
             return Array.from(Array(arraySize[1]), (_, i) => pointInd + "," + i)
           } else {
@@ -2626,9 +2647,9 @@ export default class Curve extends GraphicalComponent {
                 return [];
               }
             } else {
-              // if don't know array size, just guess that the entry is OK
-              // It will get corrected once array size is known.
-              // TODO: better to return empty array?
+              // If not given the array size,
+              // then return the array keys assuming the array is large enough.
+              // Must do this as it is used to determine potential array entries.
               return [String(indices)];
             }
           } else {
@@ -2636,11 +2657,18 @@ export default class Curve extends GraphicalComponent {
           }
         } else {
           // yCriticalPoint3 is all components of the third yCriticalPoint
-          if (!arraySize) {
+
+          let pointInd = Number(varEnding) - 1;
+          if (!(Number.isInteger(pointInd) && pointInd >= 0)) {
             return [];
           }
-          let pointInd = Number(varEnding) - 1;
-          if (Number.isInteger(pointInd) && pointInd >= 0 && pointInd < arraySize[0]) {
+
+          if (!arraySize) {
+            // If don't have array size, we just need to determine if it is a potential entry.
+            // Return the first entry assuming array is large enough
+            return [pointInd + ",0"];
+          }
+          if (pointInd < arraySize[0]) {
             // array of "pointInd,i", where i=0, ..., arraySize[1]-1
             return Array.from(Array(arraySize[1]), (_, i) => pointInd + "," + i)
           } else {
@@ -2823,9 +2851,9 @@ export default class Curve extends GraphicalComponent {
                 return [];
               }
             } else {
-              // if don't know array size, just guess that the entry is OK
-              // It will get corrected once array size is known.
-              // TODO: better to return empty array?
+              // If not given the array size,
+              // then return the array keys assuming the array is large enough.
+              // Must do this as it is used to determine potential array entries.
               return [String(indices)];
             }
           } else {
@@ -2833,11 +2861,18 @@ export default class Curve extends GraphicalComponent {
           }
         } else {
           // curvatureChangePoint3 is all components of the third curvatureChangePoint
-          if (!arraySize) {
+
+          let pointInd = Number(varEnding) - 1;
+          if (!(Number.isInteger(pointInd) && pointInd >= 0)) {
             return [];
           }
-          let pointInd = Number(varEnding) - 1;
-          if (Number.isInteger(pointInd) && pointInd >= 0 && pointInd < arraySize[0]) {
+
+          if (!arraySize) {
+            // If don't have array size, we just need to determine if it is a potential entry.
+            // Return the first entry assuming array is large enough
+            return [pointInd + ",0"];
+          }
+          if (pointInd < arraySize[0]) {
             // array of "pointInd,i", where i=0, ..., arraySize[1]-1
             return Array.from(Array(arraySize[1]), (_, i) => pointInd + "," + i)
           } else {
