@@ -50,7 +50,6 @@ let input = <div
   setInternalValue = {updateInternalValue.current}
   //TODO: read only isn't working <codeeditor disabled />
   readOnly = {SVs.disabled}
-   //TODO: wire up onBlur in codemirror
 
   onBlur={(e)=>{
     actions.updateValue();

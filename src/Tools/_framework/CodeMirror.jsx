@@ -43,6 +43,13 @@ export default function CodeMirror({setInternalValue,onBeforeChange,readOnly,onB
         blur(){
             if (onBlur){
                 onBlur();
+                // const disabledExtensions = [
+                //     EditorView.editable.of(false),
+                //     lineNumbers(),
+                // ]
+                // view.current.dispatch({
+                //     effects: StateEffect.reconfigure.of(disabledExtensions)
+                // });
             }
         }
     })
@@ -114,8 +121,10 @@ export default function CodeMirror({setInternalValue,onBeforeChange,readOnly,onB
     
     useEffect(() => {
         if(view.current !== null && parent.current !== null){
+     
             if(readOnly && view.current.state.facet(EditorView.editable)){
-                // console.log(">>>read only has been set, changing");
+                console.log(">>>read only has been set, changing");
+                //NOTE: WHY DOESN'T THIS WORK?
                 const disabledExtensions = [
                     EditorView.editable.of(false),
                     lineNumbers(),
