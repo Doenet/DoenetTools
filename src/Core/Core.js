@@ -3353,7 +3353,8 @@ export default class Core {
     }
   }
 
-  async initializeStateVariable({ component, stateVariable,
+  async initializeStateVariable({
+    component, stateVariable,
     arrayStateVariable, arrayEntryPrefix
   }) {
 
@@ -3496,8 +3497,10 @@ export default class Core {
     }
   }
 
-  async initializeArrayEntryStateVariable({ stateVarObj, arrayStateVariable,
-    arrayEntryPrefix, component, stateVariable }) {
+  async initializeArrayEntryStateVariable({
+    stateVarObj, arrayStateVariable,
+    arrayEntryPrefix, component, stateVariable
+  }) {
     // This function used for initializing array entry variables
     // (not the original array variable)
     // It adds many attributes to state variables corresponding to
@@ -5717,7 +5720,8 @@ export default class Core {
     return false
   }
 
-  async createFromArrayEntry({ stateVariable, component, initializeOnly = false,
+  async createFromArrayEntry({
+    stateVariable, component, initializeOnly = false,
   }) {
 
     if (!component.arrayEntryPrefixes) {
@@ -6450,7 +6454,8 @@ export default class Core {
     }
   }
 
-  async addChildrenAndRecurseToShadows({ parent, indexOfDefiningChildren,
+  async addChildrenAndRecurseToShadows({
+    parent, indexOfDefiningChildren,
     newChildren, assignNamesOffset
   }) {
 
@@ -6613,7 +6618,8 @@ export default class Core {
     // }
   }
 
-  async deleteComponents({ components, deleteUpstreamDependencies = true,
+  async deleteComponents({
+    components, deleteUpstreamDependencies = true,
     skipProcessingChildrenOfParents = []
   }) {
 
@@ -7838,7 +7844,8 @@ export default class Core {
   }
 
 
-  async requestUpdate({ updateInstructions, transient = false, event, skippable = false,
+  async requestUpdate({
+    updateInstructions, transient = false, event, skippable = false,
     overrideReadOnly = false
   }) {
 

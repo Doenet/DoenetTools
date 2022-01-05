@@ -940,6 +940,9 @@ export default class Circle extends Curve {
             return {
               newValues: { numericalRadius: r }
             }
+            return {
+              newValues: { numericalRadius: r }
+            }
           } else if (dependencyValues.nThroughPoints === 1) {
             // center and one point specified.
             // Radius is distance from center to point.
@@ -974,6 +977,9 @@ export default class Circle extends Curve {
             if (!Number.isFinite(r)) {
               r = NaN;
             }
+          }
+          return {
+            newValues: { numericalRadius: r }
           }
           return {
             newValues: { numericalRadius: r }
