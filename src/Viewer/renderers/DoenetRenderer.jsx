@@ -140,13 +140,6 @@ export default class DoenetRenderer extends Component {
       //If we don't have the component then attempt to load it
       let renderPromises = [import(`./${childInstructions.rendererType}.js`)];
       let rendererClassNames = [childInstructions.rendererType];
-    // console.log('rendererTypesInDocument');
-    // console.log(">>>core.rendererTypesInDocument",core.rendererTypesInDocument);  
-
-    // rendererClassNames.push(childInstructions.rendererType);
-    // renderPromises.push(import(`./renderers/${childInstructions.rendererType}.js`));
-
-
 
       let newRendererClasses = await renderersloadComponent(renderPromises, rendererClassNames);
       Object.assign(this.props.rendererClasses,newRendererClasses)
