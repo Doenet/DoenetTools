@@ -18,14 +18,12 @@ export default class BooleanComponent extends InlineComponent {
       createStateVariable: "symbolicEquality",
       defaultValue: false,
       public: true,
-      ignorePropagationFromAncestors: true,
     };
     attributes.expandOnCompare = {
       createComponentOfType: "boolean",
       createStateVariable: "expandOnCompare",
       defaultValue: false,
       public: true,
-      ignorePropagationFromAncestors: true,
     };
     attributes.simplifyOnCompare = {
       createComponentOfType: "text",
@@ -35,56 +33,48 @@ export default class BooleanComponent extends InlineComponent {
       valueTransformations: { "": "full", "true": "full" },
       validValues: ["none", "full", "numbers", "numbersepreserveorder"],
       public: true,
-      ignorePropagationFromAncestors: true,
     };
     attributes.unorderedCompare = {
       createComponentOfType: "boolean",
       createStateVariable: "unorderedCompare",
       defaultValue: false,
       public: true,
-      ignorePropagationFromAncestors: true,
     };
     attributes.matchByExactPositions = {
       createComponentOfType: "boolean",
       createStateVariable: "matchByExactPositions",
       defaultValue: false,
       public: true,
-      ignorePropagationFromAncestors: true,
     }
     attributes.allowedErrorInNumbers = {
       createComponentOfType: "number",
       createStateVariable: "allowedErrorInNumbers",
       defaultValue: 0,
       public: true,
-      ignorePropagationFromAncestors: true,
     };
     attributes.includeErrorInNumberExponents = {
       createComponentOfType: "boolean",
       createStateVariable: "includeErrorInNumberExponents",
       defaultValue: false,
       public: true,
-      ignorePropagationFromAncestors: true,
     };
     attributes.allowedErrorIsAbsolute = {
       createComponentOfType: "boolean",
       createStateVariable: "allowedErrorIsAbsolute",
       defaultValue: false,
       public: true,
-      ignorePropagationFromAncestors: true,
     };
     attributes.nSignErrorsMatched = {
       createComponentOfType: "number",
       createStateVariable: "nSignErrorsMatched",
       defaultValue: 0,
       public: true,
-      ignorePropagationFromAncestors: true,
     };
     attributes.nPeriodicSetMatchesRequired = {
       createComponentOfType: "integer",
       createStateVariable: "nPeriodicSetMatchesRequired",
       defaultValue: 3,
       public: true,
-      ignorePropagationFromAncestors: true,
     };
     return attributes;
   }

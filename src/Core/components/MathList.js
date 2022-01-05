@@ -22,7 +22,6 @@ export default class MathList extends InlineComponent {
   static createAttributesObject(args) {
     let attributes = super.createAttributesObject(args);
     attributes.simplify = {
-      propagateToDescendants: true,
       createComponentOfType: "text",
       createStateVariable: "simplify",
       defaultValue: "none",

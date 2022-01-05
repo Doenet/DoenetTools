@@ -279,7 +279,7 @@ export default class BaseComponent {
         createStateVariable: "styleNumber",
         defaultValue: 1,
         public: true,
-        propagateToDescendants: true
+        fallBackToParentStateVariable: "styleNumber",
       },
       isResponse: {
         createPrimitiveOfType: "boolean",

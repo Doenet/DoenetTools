@@ -32,14 +32,12 @@ export default class Function extends InlineComponent {
       createStateVariable: "xscale",
       defaultValue: 1,
       public: true,
-      propagateToDescendants: true,
     };
     attributes.yscale = {
       createComponentOfType: "number",
       createStateVariable: "yscale",
       defaultValue: 1,
       public: true,
-      propagateToDescendants: true,
     };
     attributes.nInputs = {
       createComponentOfType: "integer",

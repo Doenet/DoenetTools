@@ -19,7 +19,8 @@ export function returnFeedbackDefinitionStateVariables() {
     returnDependencies: () => ({
       setupChildren: {
         dependencyType: "child",
-        childGroups: ["setups"]
+        childGroups: ["setups"],
+        proceedIfAllChildrenNotMatched: true,
       }
     }),
     definition({ dependencyValues }) {
@@ -31,18 +32,14 @@ export function returnFeedbackDefinitionStateVariables() {
     stateVariablesDeterminingDependencies: ["setupChildren"],
     returnDependencies({ stateValues }) {
       let dependencies = {
-        feedbackDefinitionsChildren: {
-          dependencyType: "child",
-          childGroups: ["feedbackDefinitions"],
-          variableNames: ["value"]
-        },
         ancestorWithFeedback: {
           dependencyType: "ancestor",
           variableNames: ["feedbackDefinitions"]
         },
-        feedbackDefinitionsAndSetupChildren: {
+        setupChildren: {
           dependencyType: "child",
-          childGroups: ["feedbackDefinitions", "setups"]
+          childGroups: ["setups"],
+          proceedIfAllChildrenNotMatched: true,
         }
       }
 
@@ -75,16 +72,9 @@ export function returnFeedbackDefinitionStateVariables() {
 
       Object.assign(feedbackDefinitions, startingFeedbackDefinitions)
 
-      let feedbackDefChildNum = 0;
-
       let feedbackDefinitionChildren = [];
-      for (let child of dependencyValues.feedbackDefinitionsAndSetupChildren) {
-        if (child.componentType === "setup") {
-          feedbackDefinitionChildren.push(...dependencyValues[`feedbackDefinitionsOf${child.componentName}`]);
-        } else {
-          feedbackDefinitionChildren.push(dependencyValues.feedbackDefinitionsChildren[feedbackDefChildNum]);
-          feedbackDefChildNum++;
-        }
+      for (let child of dependencyValues.setupChildren) {
+        feedbackDefinitionChildren.push(...dependencyValues[`feedbackDefinitionsOf${child.componentName}`]);
       }
 
 

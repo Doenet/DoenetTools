@@ -4143,6 +4143,8 @@ class ChildDependency extends Dependency {
     this.skipComponentNames = this.definition.skipComponentNames;
     this.skipPlaceholders = this.definition.skipPlaceholders;
 
+    this.proceedIfAllChildrenNotMatched = this.definition.proceedIfAllChildrenNotMatched;
+
   }
 
   async determineDownstreamComponents() {
@@ -4218,7 +4220,9 @@ class ChildDependency extends Dependency {
         .filter((x, i) => this.childIndices.includes(i));
     }
 
-    if (!parent.childrenMatched) {
+
+
+    if (!parent.childrenMatched && !this.proceedIfAllChildrenNotMatched) {
 
       let canProceedWithPlaceholders = false;
 

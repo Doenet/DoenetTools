@@ -20,7 +20,7 @@ describe('Allow error in numbers validation tests', function () {
         doenetML: `
     <p>a</p>
     <p><math>log(32x+c)</math> 
-    <answer size="30">
+    <answer>
       <award allowederrorinnumbers="0.00001">
         <copy target="_math1" />
       </award>
@@ -134,7 +134,7 @@ describe('Allow error in numbers validation tests', function () {
         doenetML: `
     <p>a</p>
     <p><math>log(32x+c)</math> 
-    <answer size="30">
+    <answer>
       <award allowederrorinnumbers="0.00001" allowederrorisabsolute="true">
         <copy target="_math1" />
       </award>
@@ -246,7 +246,7 @@ describe('Allow error in numbers validation tests', function () {
         doenetML: `
     <p>a</p>
     <p><math simplify>10 exp(7x^2/(3-sqrt(y)))</math> 
-    <answer size="30">
+    <answer>
       <award allowederrorinnumbers="0.0000001">
         <copy target="_math1" />
       </award>
@@ -315,7 +315,7 @@ describe('Allow error in numbers validation tests', function () {
         doenetML: `
     <p>a</p>
     <p><math>10x^2-4</math> 
-    <answer size="30">
+    <answer>
       <award allowederrorinnumbers="0.0001">
         <copy target="_math1" />
       </award>
@@ -323,7 +323,7 @@ describe('Allow error in numbers validation tests', function () {
     </p>
 
     <p>Allow for error in exponents
-    <answer size="30">
+    <answer>
       <award allowederrorinnumbers="0.0001" includeerrorinnumberexponents>
         <copy target="_math1" />
       </award>
@@ -408,7 +408,7 @@ describe('Allow error in numbers validation tests', function () {
         doenetML: `
     <p>a</p>
     <p><math>log(32x+c)</math> 
-    <answer size="30">
+    <answer>
       <award symbolicequality="true" allowederrorinnumbers="0.00001" simplifyOnCompare>
         <copy target="_math1" />
       </award>
@@ -519,7 +519,7 @@ describe('Allow error in numbers validation tests', function () {
         doenetML: `
     <p>a</p>
     <p><math>log(32x+c)</math> 
-    <answer size="30" symbolicequality allowederrorinnumbers="0.00001" allowederrorisabsolute simplifyOnCompare>
+    <answer symbolicequality allowederrorinnumbers="0.00001" allowederrorisabsolute simplifyOnCompare>
       <award>$_math1</award>
       <award credit="0.8" allowederrorinnumbers="0.0001">$_math1</award>
       <award credit="0.6" allowederrorinnumbers="0.001">$_math1</award>
@@ -624,7 +624,7 @@ describe('Allow error in numbers validation tests', function () {
         doenetML: `
     <p>a</p>
     <p><math>10000 exp(7x^2/(0.00003-sqrt(y)))</math> 
-    <answer size="40" symbolicequality simplifyOnCompare>
+    <answer symbolicequality simplifyOnCompare>
       <award allowederrorinnumbers="0.0000001" >
         <copy target="_math1" />
       </award>
@@ -723,7 +723,7 @@ describe('Allow error in numbers validation tests', function () {
         doenetML: `
     <p>a</p>
     <p><math simplify>10000 exp(7x^2/(0.00003-sqrt(y)))</math> 
-    <answer size="40">
+    <answer>
       <award symbolicequality="true" allowederrorinnumbers="0.0000001" allowederrorisabsolute simplifyOnCompare>
         <copy target="_math1" />
       </award>
@@ -821,7 +821,7 @@ describe('Allow error in numbers validation tests', function () {
         doenetML: `
     <p>a</p>
     <p><math simplify>10x^2-4</math> 
-    <answer size="30">
+    <answer>
       <award symbolicequality="true" allowederrorinnumbers="0.0001" simplifyOnCompare>
         <copy target="_math1" />
       </award>
@@ -829,7 +829,7 @@ describe('Allow error in numbers validation tests', function () {
     </p>
 
     <p>Allow for error in exponents
-    <answer size="30">
+    <answer>
       <award symbolicequality="true" allowederrorinnumbers="0.0001" includeerrorinnumberexponents simplifyOnCompare>
         <copy target="_math1" />
       </award>
@@ -914,7 +914,7 @@ describe('Allow error in numbers validation tests', function () {
         doenetML: `
     <p>a</p>
     <p><math>2.15234262pi+e*25.602348230</math> 
-    <answer size="30">
+    <answer>
       <award symbolicequality="true" allowederrorinnumbers="0.001">
         <copy target="_math1" />
       </award>
@@ -1004,7 +1004,7 @@ describe('Allow error in numbers validation tests', function () {
         doenetML: `
     <p>a</p>
     <p><math>sin(2pi+1x+4x+pi+6)</math> 
-    <answer size="30">
+    <answer>
       <award symbolicequality="true" allowederrorinnumbers="0.001" simplifyOnCompare="numbersPreserveOrder">
         <copy target="_math1" />
       </award>
@@ -1086,7 +1086,7 @@ describe('Allow error in numbers validation tests', function () {
         doenetML: `
     <p>a</p>
     <p><math>sin(2pi+1x+4x+pi+6)</math> 
-    <answer size="30">
+    <answer>
       <award symbolicequality="true" allowederrorinnumbers="0.001" simplifyOnCompare="numbers">
         <copy target="_math1" />
       </award>
@@ -1169,7 +1169,7 @@ describe('Allow error in numbers validation tests', function () {
         doenetML: `
     <p>a</p>
     <p><math>sin(2pi+1x+4x+pi+6)</math> 
-    <answer size="30">
+    <answer>
       <award symbolicequality="true" allowederrorinnumbers="0.001" simplifyOnCompare="full">
         <copy target="_math1" />
       </award>
@@ -1252,7 +1252,7 @@ describe('Allow error in numbers validation tests', function () {
         doenetML: `
     <p>a</p>
     <p><math>(log(32x+c), 42)</math> 
-    <answer size="30" matchPartial>
+    <answer matchPartial>
       <award allowederrorinnumbers="0.001">
         <copy target="_math1" />
       </award>
@@ -1328,7 +1328,7 @@ describe('Allow error in numbers validation tests', function () {
         doenetML: `
     <p>a</p>
     <p><math unordered>(42, log(32x+c))</math> 
-    <answer size="30" matchPartial>
+    <answer matchPartial>
       <award allowederrorinnumbers="0.001">
         <copy target="_math1" />
       </award>
@@ -1404,7 +1404,7 @@ describe('Allow error in numbers validation tests', function () {
         doenetML: `
     <p>a</p>
     <p><mathlist name="ml">log(32x+c) 42</mathlist> 
-    <answer name="ans" size="30" matchPartial allowederrorinnumbers="0.001">
+    <answer name="ans" matchPartial allowederrorinnumbers="0.001">
       <mathinput name="mi1" />
       <mathinput name="mi2" />
       <award>
@@ -1484,7 +1484,7 @@ describe('Allow error in numbers validation tests', function () {
         doenetML: `
     <p>a</p>
     <p><mathlist name="ml" unordered>42 log(32x+c)</mathlist> 
-    <answer name="ans" size="30" matchPartial allowederrorinnumbers="0.001">
+    <answer name="ans" matchPartial allowederrorinnumbers="0.001">
       <mathinput name="mi1" />
       <mathinput name="mi2" />
       <award>

@@ -53,14 +53,8 @@ export default class SectioningComponent extends BlockComponent {
       group: "titles",
       componentTypes: ["title"]
     }, {
-      group: "styleDefinitions",
-      componentTypes: ["styleDefinitions"]
-    }, {
-      group: "feedbackDefinitions",
-      componentTypes: ["feedbackDefinitions"]
-    }, {
       group: "setups",
-      componentTypes: ["setup"]
+      componentTypes: ["setup"],
     }, {
       group: "anything",
       componentTypes: ["_base"]

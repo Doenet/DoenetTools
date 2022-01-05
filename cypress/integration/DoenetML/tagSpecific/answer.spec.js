@@ -9988,7 +9988,7 @@ describe('Answer Tag Tests', function () {
         doenetML: `
   <text>a</text>
   <p>Enter any letter:
-  <answer size='3' name='userx'>
+  <answer name='userx'>
   <mathinput name="userx_input"/>
   <award><when>
     <copy prop="immediatevalue" target="userx_input" /> elementof {a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,t,u,v,w,x,y,z,A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V,W,X,Y,Z}
@@ -10028,7 +10028,7 @@ describe('Answer Tag Tests', function () {
         doenetML: `
   <text>a</text>
 
-  <p>Enter a set <mathinput name="set" prefill="{1,2,3}" size="20"/></p>
+  <p>Enter a set <mathinput name="set" prefill="{1,2,3}" /></p>
   <p>Enter an element of that set: 
   <answer>
   <mathinput name="element" />
