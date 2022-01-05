@@ -21,15 +21,6 @@ export default class MathList extends InlineComponent {
 
   static createAttributesObject(args) {
     let attributes = super.createAttributesObject(args);
-    attributes.simplify = {
-      createComponentOfType: "text",
-      createStateVariable: "simplify",
-      defaultValue: "none",
-      public: true,
-      toLowerCase: true,
-      valueTransformations: { "true": "full" },
-      validValues: ["none", "full", "numbers", "numberspreserveorder"]
-    };
 
     attributes.unordered = {
       createComponentOfType: "boolean",

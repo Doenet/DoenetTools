@@ -301,12 +301,12 @@ export default class Spreadsheet extends BlockComponent {
           let colIndex = normalizeIndex(colNum);
 
           if (!(rowIndex >= 0 && colIndex >= 0)) {
-            // invalid index or index of out range
+            // invalid index or index out of range
             return [];
           }
 
           if (arraySize && !(rowIndex < arraySize[0] && colIndex < arraySize[1])) {
-            // invalid index or index of out range
+            // invalid index or index out of range
             // Note: if don't have array size, assume it is OK,
             // as it corresponds to checking if it is a potential array entry
             return [];
@@ -330,7 +330,7 @@ export default class Spreadsheet extends BlockComponent {
           }
 
           if (!(rowIndex < arraySize[0])) {
-            // index of out range
+            // index out of range
             return [];
           }
 
@@ -358,7 +358,7 @@ export default class Spreadsheet extends BlockComponent {
           }
 
           if (!(colIndex < arraySize[1])) {
-            // index of out range
+            // index out of range
             return [];
           }
 
@@ -563,8 +563,13 @@ export default class Spreadsheet extends BlockComponent {
           let rowIndex = normalizeIndex(rowNum);
           let colIndex = normalizeIndex(colNum);
 
-          if (!(rowIndex >= 0 && rowIndex < arraySize[0] && colIndex >= 0 && colIndex < arraySize[1])) {
-            // invalid index or index of out range
+          if (!(rowIndex >= 0 && colIndex >= 0)) {
+            // invalid index
+            return [];
+          }
+
+          if (arraySize && !(rowIndex < arraySize[0] && colIndex < arraySize[1])) {
+            // index out of range
             return [];
           }
 
@@ -574,8 +579,18 @@ export default class Spreadsheet extends BlockComponent {
           // evaluatedRow2 or evaluatedRowB
 
           let rowIndex = normalizeIndex(varEnding);
-          if (!(rowIndex >= 0 && rowIndex < arraySize[0])) {
-            // invalid index or index of out range
+          if (!(rowIndex >= 0)) {
+            // invalid index
+            return [];
+          }
+
+          if (!arraySize) {
+            // just give the first cell from the row
+            return [String(rowIndex) + ",0"]
+          }
+
+          if (!(rowIndex < arraySize[0])) {
+            // index out of range
             return [];
           }
 
@@ -591,8 +606,18 @@ export default class Spreadsheet extends BlockComponent {
           // evaluatedColumn2 or evaluatedColumnB
 
           let colIndex = normalizeIndex(varEnding);
-          if (!(colIndex >= 0 && colIndex < arraySize[1])) {
-            // invalid index or index of out range
+          if (!(colIndex >= 0)) {
+            // invalid index
+            return [];
+          }
+
+          if (!arraySize) {
+            // just give the first cell of the column
+            return ["0," + String(colIndex)]
+          }
+
+          if (!(colIndex < arraySize[1])) {
+            // index out of range
             return [];
           }
 
@@ -634,6 +659,11 @@ export default class Spreadsheet extends BlockComponent {
           if (!(fromRow >= 0 && toRow >= 0 && fromCol >= 0 && toCol >= 0)) {
             // invalid range
             return [];
+          }
+
+          if (!arraySize) {
+            // just pick one of the cells
+            return [String(fromRow) + "," + String(fromCol)];
           }
 
           let row1 = Math.min(Math.min(fromRow, toRow), arraySize[0] - 1);
@@ -749,8 +779,14 @@ export default class Spreadsheet extends BlockComponent {
           let rowIndex = normalizeIndex(rowNum);
           let colIndex = normalizeIndex(colNum);
 
-          if (!(rowIndex >= 0 && rowIndex < arraySize[0] && colIndex >= 0 && colIndex < arraySize[1])) {
-            // invalid index or index of out range
+          if (!(rowIndex >= 0 && colIndex >= 0)) {
+            // invalid index
+            return [];
+          }
+
+
+          if (arraySize && !(rowIndex < arraySize[0] && colIndex < arraySize[1])) {
+            // index out of range
             return [];
           }
 
@@ -760,8 +796,17 @@ export default class Spreadsheet extends BlockComponent {
           // pointsInRow2 or pointsInRowB
 
           let rowIndex = normalizeIndex(varEnding);
+          if (!(rowIndex >= 0)) {
+            // invalid index 
+            return [];
+          }
+
+          if (!arraySize) {
+            return [String(rowIndex), ",0"];
+          }
+
           if (!(rowIndex >= 0 && rowIndex < arraySize[0])) {
-            // invalid index or index of out range
+            // index out of range
             return [];
           }
 
@@ -777,8 +822,17 @@ export default class Spreadsheet extends BlockComponent {
           // pointsInColumn2 or pointsInColumnB
 
           let colIndex = normalizeIndex(varEnding);
-          if (!(colIndex >= 0 && colIndex < arraySize[1])) {
-            // invalid index or index of out range
+          if (!(colIndex >= 0)) {
+            // invalid index
+            return [];
+          }
+
+          if (!arraySize) {
+            return ["0," + String(colIndex)];
+          }
+
+          if (!(colIndex < arraySize[1])) {
+            // index out of range
             return [];
           }
 
@@ -820,6 +874,11 @@ export default class Spreadsheet extends BlockComponent {
           if (!(fromRow >= 0 && toRow >= 0 && fromCol >= 0 && toCol >= 0)) {
             // invalid range
             return [];
+          }
+
+          if (!arraySize) {
+            // just return on value
+            return [String(fromRow) + "," + String(fromCol)]
           }
 
           let row1 = Math.min(Math.min(fromRow, toRow), arraySize[0] - 1);
