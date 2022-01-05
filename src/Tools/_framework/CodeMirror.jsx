@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useRef } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { basicSetup } from '@codemirror/basic-setup';
 import { EditorState, Transaction, StateEffect } from '@codemirror/state';
 import { selectLine, deleteLine, cursorLineUp } from '@codemirror/commands';
@@ -27,6 +27,7 @@ export default function CodeMirror({setInternalValue,onBeforeChange,readOnly,onB
     let editorConfig = useRecoilValue(editorConfigStateAtom);
     view = useRef(null);
     let parent = useRef(null);
+    const [count,setCount] = useState(0)
 
     const changeFunc = useCallback((tr) => {
         if(tr.docChanged){
@@ -38,18 +39,23 @@ export default function CodeMirror({setInternalValue,onBeforeChange,readOnly,onB
         //eslint-disable-next-line
     },[]);
 
+    //Make sure readOnly takes affect
+    //TODO: Do this is a smarter way - async await?
+    if (readOnly && view.current?.state?.facet(EditorView.editable)){
+        const disabledExtensions = [
+            EditorView.editable.of(false),
+            lineNumbers(),
+        ]
+        view.current.dispatch({
+            effects: StateEffect.reconfigure.of(disabledExtensions)
+        });
+    }
+
     //Fires when the editor losses focus
     const onBlurExtension = EditorView.domEventHandlers({
         blur(){
             if (onBlur){
                 onBlur();
-                // const disabledExtensions = [
-                //     EditorView.editable.of(false),
-                //     lineNumbers(),
-                // ]
-                // view.current.dispatch({
-                //     effects: StateEffect.reconfigure.of(disabledExtensions)
-                // });
             }
         }
     })
@@ -116,6 +122,20 @@ export default function CodeMirror({setInternalValue,onBeforeChange,readOnly,onB
     useEffect(() => {
         if(view.current === null && parent.current !== null){
             view.current = new EditorView({state, parent: parent.current});
+
+            if(readOnly && view.current.state.facet(EditorView.editable)){
+                //Force a refresh
+                setCount((old)=>{return old+1})
+                // console.log(">>>read only has been set, changing!!!!!!!");
+                // //NOTE: WHY DOESN'T THIS WORK?
+                // const disabledExtensions = [
+                //     EditorView.editable.of(false),
+                //     lineNumbers(),
+                // ]
+                // view.current.dispatch({
+                //     effects: StateEffect.reconfigure.of(disabledExtensions)
+                // });
+            }
         }
     });
     
@@ -147,6 +167,23 @@ export default function CodeMirror({setInternalValue,onBeforeChange,readOnly,onB
         }
         //annoying that editorConfig is a dependency, but no real way around it
     },[doenetExtensions,setInternalValue,matchTag,readOnly,editorConfig.matchTag])
+
+    // useEffect(() => {
+    //         if(view.current !== null && parent.current !== null){
+         
+    //             if(readOnly && view.current.state.facet(EditorView.editable)){
+    //                 console.log(">>>read only has been set, changing");
+    //                 //NOTE: WHY DOESN'T THIS WORK?
+    //                 const disabledExtensions = [
+    //                     EditorView.editable.of(false),
+    //                     lineNumbers(),
+    //                 ]
+    //                 view.current.dispatch({
+    //                     effects: StateEffect.reconfigure.of(disabledExtensions)
+    //                 });
+    //             } 
+    //         }
+    //     },[readOnly])
 
     //TODO any updates would force an update of each part of the config.
     //Doesn't matter since there's only one toggle at the moment, but could cause unneccesary work later
