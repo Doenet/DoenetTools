@@ -610,7 +610,7 @@ export default class Core {
 
     }
 
-    this.coreUpdatedCallback(instructions)
+    this.coreUpdatedCallback(instructions) //This is async
 
   }
 

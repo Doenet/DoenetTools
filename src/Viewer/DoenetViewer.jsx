@@ -249,6 +249,7 @@ class DoenetViewerChild extends Component {
 
     //Let the calling tool know we are ready
     //TODO: Move this to renderer
+    //TODO: THIS ISN'T TRUE AS IT'S HASN'T FINISHED YET
     if (this.props.onCoreReady) {
       this.props.onCoreReady();
     }
@@ -469,26 +470,27 @@ class DoenetViewerChild extends Component {
   }
 
   //offscreen then postpone that one
-  update(instructions) {
+  async update(instructions) {
     for (let instruction of instructions) {
 
       if (instruction.instructionType === "updateStateVariable") {
         for (let componentName of instruction.renderersToUpdate
           .filter(x => x in this.rendererUpdateMethods)
         ) {
+          //TODO: await ????
           this.rendererUpdateMethods[componentName].update({
             sourceOfUpdate: instruction.sourceOfUpdate
           });
         }
       } else if (instruction.instructionType === "addRenderer") {
         if (instruction.parentName in this.rendererUpdateMethods)
-          this.rendererUpdateMethods[instruction.parentName].addChildren(instruction)
+          await this.rendererUpdateMethods[instruction.parentName].addChildren(instruction)
       } else if (instruction.instructionType === "deleteRenderers") {
         if (instruction.parentName in this.rendererUpdateMethods)
-          this.rendererUpdateMethods[instruction.parentName].removeChildren(instruction)
+          await this.rendererUpdateMethods[instruction.parentName].removeChildren(instruction)
       } else if (instruction.instructionType === "swapChildRenderers") {
         if (instruction.parentName in this.rendererUpdateMethods)
-          this.rendererUpdateMethods[instruction.parentName].swapChildren(instruction)
+          await this.rendererUpdateMethods[instruction.parentName].swapChildren(instruction)
       }
     }
 
@@ -801,7 +803,7 @@ export default DoenetViewer;
 
 
 
-async function renderersloadComponent(promises, rendererClassNames) {
+export async function renderersloadComponent(promises, rendererClassNames) {
 
   var rendererClasses = {};
   for (let [index, promise] of promises.entries()) {

@@ -1,5 +1,6 @@
 import { nanoid } from 'nanoid';
 import React, { Component } from 'react';
+import { renderersloadComponent } from '../DoenetViewer';
 
 
 export default class DoenetRenderer extends Component {
@@ -45,9 +46,9 @@ export default class DoenetRenderer extends Component {
     this.forceUpdate();
   }
 
-  addChildren(instruction) {
+  async addChildren(instruction) {
     let childInstructions = this.childrenToCreate[instruction.indexForParent];
-    let child = this.createChildFromInstructions(childInstructions);
+    let child = await this.createChildFromInstructionsAsync(childInstructions);
     this.children.splice(instruction.indexForParent, 0, child);
     this.children = [...this.children]; // needed for React to recognize it's different
 
@@ -73,14 +74,15 @@ export default class DoenetRenderer extends Component {
 
   initializeChildren() {
     this.children = [];
+
     for (let childInstructions of this.childrenToCreate) {
       let child = this.createChildFromInstructions(childInstructions);
+
       this.children.push(child);
     }
 
     return this.children;
   }
-
 
   createChildFromInstructions(childInstructions) {
     // add nanoid to key so that will have unique key if recreate
@@ -106,6 +108,53 @@ export default class DoenetRenderer extends Component {
 
     if (!rendererClass) {
       throw Error(`Cannot render component ${childInstructions.componentName} as have not loaded renderer type ${childInstructions.rendererType}`)
+    }
+
+    let child = React.createElement(rendererClass, propsForChild);
+    return child;
+  }
+
+  async createChildFromInstructionsAsync(childInstructions) {
+    // add nanoid to key so that will have unique key if recreate
+    // renderer for a component with the same name as an old one
+    // TODO: is this the best way to do it?
+
+
+    if(typeof childInstructions === "string") {
+      return childInstructions;
+    }
+
+    let propsForChild = {
+      key: childInstructions.componentName + nanoid(10),
+      componentInstructions: childInstructions,
+      rendererClasses: this.props.rendererClasses,
+      rendererUpdateMethods: this.props.rendererUpdateMethods,
+      flags: this.props.flags,
+    };
+    if (this.doenetPropsForChildren) {
+      Object.assign(propsForChild, this.doenetPropsForChildren);
+    }
+    let rendererClass = this.props.rendererClasses[childInstructions.rendererType];
+
+    if (!rendererClass) {
+      //If we don't have the component then attempt to load it
+      let renderPromises = [import(`./${childInstructions.rendererType}.js`)];
+      let rendererClassNames = [childInstructions.rendererType];
+    // console.log('rendererTypesInDocument');
+    // console.log(">>>core.rendererTypesInDocument",core.rendererTypesInDocument);  
+
+    // rendererClassNames.push(childInstructions.rendererType);
+    // renderPromises.push(import(`./renderers/${childInstructions.rendererType}.js`));
+
+
+
+      let newRendererClasses = await renderersloadComponent(renderPromises, rendererClassNames);
+      Object.assign(this.props.rendererClasses,newRendererClasses)
+      
+      rendererClass = this.props.rendererClasses[childInstructions.rendererType];
+      if (!rendererClass) {
+        throw Error(`Cannot render component ${childInstructions.componentName} as have not loaded renderer type ${childInstructions.rendererType}`)
+      }
     }
 
     let child = React.createElement(rendererClass, propsForChild);
