@@ -145,7 +145,8 @@ export default function Form(props) {
     function clearInput(e) {
       if (props.clearInput) props.clearInput(e)
       setCancelShown('hidden')
-      setText("")
+      document.getElementById('textarea').value = ""
+      // setText("")
     }
     function changeTextTerm() {
         // setTextTerm(textfield.value)
