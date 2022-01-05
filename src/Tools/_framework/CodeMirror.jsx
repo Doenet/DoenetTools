@@ -18,7 +18,8 @@ const editorConfigStateAtom = atom({
 });
 
 let view;
-export default function CodeMirror({setInternalValue,onBeforeChange,readOnly,key}){
+
+export default function CodeMirror({setInternalValue,onBeforeChange,readOnly,onBlur,onFocus}){
     if(readOnly === undefined){
         readOnly = false;
     }
@@ -37,6 +38,24 @@ export default function CodeMirror({setInternalValue,onBeforeChange,readOnly,key
         //eslint-disable-next-line
     },[]);
 
+    //Fires when the editor losses focus
+    const onBlurExtension = EditorView.domEventHandlers({
+        blur(){
+            if (onBlur){
+                onBlur();
+            }
+        }
+    })
+
+    //Fires when the editor receives focus
+    const onFocusExtension = EditorView.domEventHandlers({
+        focus(){
+            if (onFocus){
+                onFocus();
+            }
+        }
+    })
+
 
     const doenetExtensions = useMemo(() => [
         basicSetup,
@@ -45,6 +64,8 @@ export default function CodeMirror({setInternalValue,onBeforeChange,readOnly,key
         tabExtension,
         cutExtension,
         copyExtension,
+        onBlurExtension,
+        onFocusExtension,
         EditorState.changeFilter.of(changeFunc)
     ],[changeFunc]); 
 
@@ -138,7 +159,7 @@ export default function CodeMirror({setInternalValue,onBeforeChange,readOnly,key
     //should rewrite using compartments once a more formal config component is established
     return (
         <>
-        <div key={key} ref={parent} ></div>
+        <div ref={parent} ></div>
         </>
     )
 }

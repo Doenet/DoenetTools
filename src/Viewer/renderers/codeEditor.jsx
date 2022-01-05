@@ -45,7 +45,7 @@ let input = <div
               // display: "inline"
             }}>
   <CodeMirror
-  key = {codemirrorKey}
+  // key = {codemirrorKey}
   editorRef = {editorRef}
   setInternalValue = {updateInternalValue.current}
   //TODO: read only isn't working <codeeditor disabled />
@@ -53,8 +53,10 @@ let input = <div
    //TODO: wire up onBlur in codemirror
 
   onBlur={(e)=>{
-    console.log("BLUR!!!!!")
     actions.updateValue();
+  }}
+  onFocus={()=>{
+    // console.log(">>codeEditor FOCUS!!!!!")
   }}
   onBeforeChange={(value) => {
     currentValue.current = value;

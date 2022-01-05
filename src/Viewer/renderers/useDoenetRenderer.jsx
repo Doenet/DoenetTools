@@ -34,7 +34,7 @@ export default function useDoenetRenderer(props,initializeChildrenOnConstruction
   }
 
   function addChildren(instruction) {
-    let childInstructions = childrenToCreate[instruction.indexForParent];
+    let childInstructions = props.componentInstructions.children[instruction.indexForParent];
     let child = createChildFromInstructions(childInstructions);
     children.splice(instruction.indexForParent, 0, child);
     children = [...children]; // needed for React to recognize it's different
