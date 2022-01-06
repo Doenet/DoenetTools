@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { BrowserRouter as Router, Link, Route } from 'react-router-dom';
 import styled from 'styled-components';
 
@@ -65,6 +65,7 @@ export default function attempt() {
   const disabled = () => {};
   const absolute = () => {};
   const left = () => {};
+  const [words, setWords] = useState("");
 
   //=== DATA STRUCTURE SECTION ===
   let dataStructure = [
@@ -663,6 +664,12 @@ export default function attempt() {
           description: 'Changes the text',
         },
         {
+          name: 'Placeholder',
+          propPreview: '<TextArea placeholder="Enter cat names"/>',
+          propCode: { placeholder: 'Enter cat names' },
+          description: 'Adds placeholder to component',
+        },
+        {
           name: 'Label',
           propPreview: '<TextArea label="What: "/>',
           propCode: { label: 'What: ' },
@@ -675,6 +682,12 @@ export default function attempt() {
           description: 'Adds label to component on top',
         },
         {
+          name: 'Aria Label',
+          propPreview: '<TextArea ariaLabel="Text"/>',
+          propCode: { ariaLabel: 'Text' },
+          description: 'Adds aria label to component',
+        },
+        {
           name: 'Alert',
           propPreview: '<TextArea alert/>',
           propCode: { alert },
@@ -685,6 +698,18 @@ export default function attempt() {
           propPreview: '<TextArea onChange={(data) => console.log(data)} />',
           propCode: { onChange: (data) => console.log(data) },
           description: 'Function called when data changes',
+        },
+        {
+          name: 'onBlur',
+          propPreview: '<Textfield onBlur={(e) => console.log(e.target.value)} />',
+          propCode: { onBlur: (e) => console.log(e.target.value) },
+          description: 'Function called when component blurs',
+        },
+        {
+          name: 'onKeyDown',
+          propPreview: '<Textfield onKeyDown={(e) => console.log(e.key)} />',
+          propCode: { onKeyDown: (e) => console.log(e.key) },
+          description: 'Function called when key hit with focus on component',
         },
         {
           name: 'Disabled',
@@ -716,6 +741,12 @@ export default function attempt() {
           description: 'Changes the text',
         },
         {
+          name: 'Placeholder',
+          propPreview: '<Textfield placeholder="Enter cat names"/>',
+          propCode: { placeholder: 'Enter cat names' },
+          description: 'Adds placeholder to component',
+        },
+        {
           name: 'Label',
           propPreview: '<Textfield label="What: "/>',
           propCode: { label: 'What: ' },
@@ -726,6 +757,12 @@ export default function attempt() {
           propPreview: '<Textfield label="What: " vertical/>',
           propCode: { label: 'What: ', vertical },
           description: 'Adds label to component on top',
+        },
+        {
+          name: 'Aria Label',
+          propPreview: '<Textfield ariaLabel="Text"/>',
+          propCode: { ariaLabel: 'Text' },
+          description: 'Adds aria label to component',
         },
         {
           name: 'Alert',
@@ -770,62 +807,64 @@ export default function attempt() {
       req_children: null,
       use: 'This is where you can enter text.',
       props: [
-        {
-          name: 'Width - Menu Panel',
-          propPreview: '<Form width="menu" />',
-          propCode: { width: 'menu' },
-          description: 'Sets width to fill menu panel width',
-        },
-        {
-          name: 'Submit Button Text',
-          propPreview: '<Form submitButton="add Text" />',
-          propCode: { submitButton: 'add Text' },
-          description: 'Changes the button text',
-        },
-        {
-          name: 'Value',
-          propPreview: '<Form value="Enter cat names"/>',
-          propCode: { value: 'Enter cat names' },
-          description: 'Changes the text',
-        },
-        {
-          name: 'Label',
-          propPreview: '<Form label="What: "/>',
-          propCode: { label: 'What: ' },
-          description: 'Adds label to componenet',
-        },
-        {
-          name: 'Vertical Label',
-          propPreview: '<Form label="What: " vertical/>',
-          propCode: { label: 'What: ', vertical },
-          description: 'Adds label to component on top',
-        },
-        {
-          name: 'Alert',
-          propPreview: '<Form alert/>',
-          propCode: { alert },
-          description: 'Changes to alert mode (border is red)',
-        },
-        {
-          name: 'onChange',
-          propPreview: '<Form onChange={(data) => console.log(data)} />',
-          propCode: { onChange: (data) => console.log(data) },
-          description: 'Function called when data changes',
-        },
-        {
-          name: 'onClick',
-          propPreview: '<Form onClick={() => console.log("clicked")} />',
-          propCode: { onClick: () => console.log('clicked') },
-          description: 'Function called when form button is clicked',
-        },
-        {
-          name: 'Disabled',
-          propPreview: '<Form disabled />',
-          propCode: { disabled },
-          description: 'Makes Form not able to be used.',
-        },
-      ],
-    },
+        {name: 'Width - Menu Panel',
+        propPreview: '<Form width="menu" />',
+        propCode: {width: 'menu'},
+        description: 'Sets width to fill menu panel width'},
+        {name: 'Submit Button Text',
+        propPreview: '<Form submitButton="add Text" />',
+        propCode: {submitButton:"add Text"},
+        description: 'Changes the button text'},
+        {name: 'Value',
+        propPreview: '<Form value="Sprinkles"/>',
+        propCode: {value: 'Sprinkles'},
+        description: 'Changes the text'},
+        {name: 'Placeholder',
+        propPreview: '<Form placeholder="Enter cat names"/>',
+        propCode: {placeholder: 'Enter cat names'},
+        description: 'Adds placeholder to component'},
+        {name: 'Label',
+            propPreview: '<Form label="What: "/>',
+            propCode: {label: 'What: '},
+            description: 'Adds label to component'},
+            {name: 'Vertical Label',
+            propPreview: '<Form label="What: " vertical/>',
+            propCode: {label: 'What: ', vertical},
+            description: 'Adds label to component on top'},
+            {name: 'Aria Label',
+            propPreview: '<Form ariaLabel="Text"/>',
+            propCode: {ariaLabel: 'Text'},
+            description: 'Adds aria label to component'},
+        {name: 'Alert',
+        propPreview: '<Form alert/>',
+        propCode: {alert},
+        description: 'Changes to alert mode (border is red)'},
+        {name: 'onChange',
+        propPreview: '<Form onChange={(data) => console.log(data)} />',
+        propCode: {onChange: (data) => console.log(data)},
+        description: 'Function called when data changes'},
+        {name: 'onClick',
+        propPreview: '<Form onClick={() => console.log("clicked")} />',
+        propCode: {onClick: () => console.log("clicked")},
+        description: 'Function called when form button is clicked'},
+        {name: 'onBlur',
+        propPreview: '<Form onBlur={(e) => console.log(e.target.value)} />',
+        propCode: {onBlur: (e) => console.log(e.target.value)},
+        description: 'Function called when component blurs'},
+        {name: 'onKeyDown',
+        propPreview: '<Form onKeyDown={(e) => console.log(e.key)} />',
+        propCode: {onKeyDown: (e) => console.log(e.key)},
+        description: 'Function called when key hit with focus on component'},
+        {name: 'Disabled',
+        propPreview: '<Form disabled />',
+        propCode: {disabled},
+        description: 'Makes component not able to be used'},
+        {name: 'clearInput',
+        propPreview: '<Form clearInput={(e) => {console.log(e.target.value)} />',
+        propCode: {clearInput: (e) => console.log("clear")},
+        description: 'Makes clear button available'},
+        ]
+      },
     {
       name: 'ToggleButton',
       id: 'togglebutton',

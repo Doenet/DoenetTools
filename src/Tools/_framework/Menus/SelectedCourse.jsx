@@ -20,6 +20,7 @@ import { driveColors } from '../../../_reactComponents/Drive/util';
 import { useToast } from '../../_framework/Toast';
 import ButtonGroup from '../../../_reactComponents/PanelHeaderComponents/ButtonGroup';
 import Textfield from '../../../_reactComponents/PanelHeaderComponents/Textfield';
+// import Form from '../../../_reactComponents/PanelHeaderComponents/Form';
 
 
 export default function SelectedCourse() {
@@ -452,7 +453,7 @@ const DriveInfoPanel = function (props) {
 };
 
 function NewUser(props) {
-  const [email, setEmail] = useState('');
+  const [email, setEmail] = useState("");
   const addToast = useToast();
 
   function addUser() {
@@ -487,7 +488,7 @@ function NewUser(props) {
    
 
   }
-
+  console.log("Email"+email);
   return (
     <>
       <div>
@@ -513,6 +514,30 @@ function NewUser(props) {
       </div>
       <Button value={`${props.type}`} onClick={() => addUser()} />
     </>
+
+    // <Form submitButton={`${props.type}`}
+    //   type="text"
+    //   label="Add user:" vertical
+    //   height="24px"
+    //   width="menu"
+    //   value={email}
+    //   onChange={(e) => {
+    //     setEmail(e);
+    //   }}
+    //   clearInput={() => {
+    //     setEmail("");
+    //   }}
+    //   onKeyDown={(e) => {
+    //     if (e.keyCode === 13) {
+    //       addUser();
+    //     }
+    //   }}
+    //   onBlur={() => {
+    //     addUser();
+    //   }}
+    // >
+    // </Form>
+
   );
 }
 

@@ -2697,8 +2697,18 @@ class Dependency {
               .sort((a, b) => b.length - a.length);
             for (let arrayEntryPrefix of arrayEntryPrefixesLongestToShortest) {
               if (vName.substring(0, arrayEntryPrefix.length) === arrayEntryPrefix) {
-                let arrayVarName = downComponent.arrayEntryPrefixes[arrayEntryPrefix];
-                return downComponent.state[arrayVarName].arraySizeStateVariable
+
+                let arrayVariableName = downComponent.arrayEntryPrefixes[arrayEntryPrefix];
+                let arrayStateVarObj = downComponent.state[arrayVariableName];
+                let arrayKeys = arrayStateVarObj.getArrayKeysFromVarName({
+                  arrayEntryPrefix,
+                  varEnding: vName.substring(arrayEntryPrefix.length),
+                  nDimensions: arrayStateVarObj.nDimensions,
+                });
+
+                if (arrayKeys.length > 0) {
+                  return downComponent.state[arrayVariableName].arraySizeStateVariable
+                }
               }
             }
           }
@@ -4133,6 +4143,8 @@ class ChildDependency extends Dependency {
     this.skipComponentNames = this.definition.skipComponentNames;
     this.skipPlaceholders = this.definition.skipPlaceholders;
 
+    this.proceedIfAllChildrenNotMatched = this.definition.proceedIfAllChildrenNotMatched;
+
   }
 
   async determineDownstreamComponents() {
@@ -4208,7 +4220,9 @@ class ChildDependency extends Dependency {
         .filter((x, i) => this.childIndices.includes(i));
     }
 
-    if (!parent.childrenMatched) {
+
+
+    if (!parent.childrenMatched && !this.proceedIfAllChildrenNotMatched) {
 
       let canProceedWithPlaceholders = false;
 

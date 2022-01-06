@@ -315,7 +315,7 @@ describe('Evaluate Tag Tests', function () {
         doenetML: `
   <text>a</text>
   <function variables="u" symbolic name="f">1+u</function>
-  <answer size="5">
+  <answer>
     <mathinput />
     <award><math>1</math></award>
   </answer>

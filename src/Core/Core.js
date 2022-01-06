@@ -14,6 +14,7 @@ import { DependencyHandler } from './Dependencies';
 import sha256 from 'crypto-js/sha256';
 import Hex from 'crypto-js/enc-hex'
 import { preprocessMathInverseDefinition } from './utils/math';
+import { returnDefaultGetArrayKeysFromVarName } from './utils/stateVariables';
 
 // string to componentClass: this.allComponentClasses["string"]
 // componentClass to string: componentClass.componentType
@@ -1015,10 +1016,6 @@ export default class Core {
       sharedParameters.compositesMustHaveAReplacement = false;
     }
 
-    // check if component has any attributes to propagate to descendants
-    let attributesPropagated = this.propagateAncestorProps({
-      componentClass, componentName, sharedParameters
-    });
 
     if (componentClass.modifySharedParameters) {
       componentClass.modifySharedParameters({ sharedParameters, serializedComponent });
@@ -1231,21 +1228,6 @@ export default class Core {
       Object.assign(prescribedDependencies, serializedComponent.downstreamDependencies);
     }
 
-    // attributesPropagated contains those attributes for which this component
-    // has received a propagated value from its ancestors
-    for (let attribute in attributesPropagated) {
-      let ancestorIdentity = attributesPropagated[attribute];
-      let ancestorName = ancestorIdentity.componentName;
-      if (prescribedDependencies[ancestorName] === undefined) {
-        prescribedDependencies[ancestorName] = [];
-      }
-      prescribedDependencies[ancestorName].push({
-        dependencyType: "ancestorProp",
-        attribute,
-        ancestorIdentity
-      })
-    }
-
     let stateVariableDefinitions = await this.createStateVariableDefinitions({
       componentClass,
       prescribedDependencies,
@@ -1355,57 +1337,6 @@ export default class Core {
       delete this.updateInfo.stateVariableUpdatesForMissingComponents[componentName]
     }
 
-  }
-
-  propagateAncestorProps({ componentClass, componentName, sharedParameters }) {
-
-    let attributeObject = componentClass.createAttributesObject({
-      flags: this.flags
-    });
-
-    // check if this component class has attributes to propagate to its descendants
-    let attributesToPropagate = {};
-    for (let attribute in attributeObject) {
-      if (attributeObject[attribute].propagateToDescendants) {
-        attributesToPropagate[attribute] = {
-          componentName,
-          componentType: componentClass.componentType
-        };
-      }
-    }
-
-    // check if ancestors had attributes to propagate to descendants
-    // for which this component has a attribute
-    // in which case indicate that the attribute is propagated to this component
-    // Exception if the attribute is marked to ignore
-    // attributes propagated from ancestors then skip this step
-    // (Attribute will still propagate onto this component's descendants)
-    let attributesPropagated = {};
-    let attributesToStopPropagation = {};
-    for (let attribute in sharedParameters.attributesToPropagate) {
-      if (attribute in attributeObject) {
-        attributesToStopPropagation[attribute] = true;
-        if (!attributeObject[attribute].ignorePropagationFromAncestors) {
-          attributesPropagated[attribute] = sharedParameters.attributesToPropagate[attribute];
-        }
-      }
-    }
-
-    if (Object.keys(attributesToPropagate).length > 0 || Object.keys(attributesToStopPropagation).length > 0) {
-      if (sharedParameters.attributesToPropagate) {
-        // shallow copy so that changes won't affect ancestors or siblings
-        sharedParameters.attributesToPropagate = Object.assign({}, sharedParameters.attributesToPropagate);
-        for (let attribute in attributesToStopPropagation) {
-          delete sharedParameters.attributesToPropagate[attribute];
-        }
-      }
-      else {
-        sharedParameters.attributesToPropagate = {};
-      }
-      Object.assign(sharedParameters.attributesToPropagate, attributesToPropagate);
-    }
-
-    return attributesPropagated;
   }
 
   async deriveChildResultsFromDefiningChildren({ parent, expandComposites = true,
@@ -2329,7 +2260,6 @@ export default class Core {
   }) {
 
     let redefineDependencies;
-    let ancestorProps = {};
 
     if (prescribedDependencies) {
       for (let name in prescribedDependencies) {
@@ -2354,8 +2284,6 @@ export default class Core {
               adapterVariable: dep.adapterVariable,
               substituteForPrimaryStateVariable: dep.substituteForPrimaryStateVariable,
             }
-          } else if (dep.dependencyType === "ancestorProp") {
-            ancestorProps[dep.attribute] = dep.ancestorIdentity;
           }
         }
       }
@@ -2365,7 +2293,7 @@ export default class Core {
 
     if (!redefineDependencies) {
       this.createAttributeStateVariableDefinitions({
-        ancestorProps, stateVariableDefinitions, componentClass
+        stateVariableDefinitions, componentClass
       });
     }
 
@@ -2386,7 +2314,6 @@ export default class Core {
       } else {
         await this.createReferenceShadowStateVariableDefinitions({
           redefineDependencies, stateVariableDefinitions, componentClass,
-          ancestorProps
         });
       }
     }
@@ -2395,7 +2322,7 @@ export default class Core {
     return stateVariableDefinitions;
   }
 
-  createAttributeStateVariableDefinitions({ componentClass, ancestorProps, stateVariableDefinitions }) {
+  createAttributeStateVariableDefinitions({ componentClass, stateVariableDefinitions }) {
 
     let attributes = componentClass.createAttributesObject({ flags: this.flags });
 
@@ -2443,194 +2370,92 @@ export default class Core {
         }
       }
 
-      if (attrName in ancestorProps) {
-        stateVarDef.returnDependencies = function () {
-          let dependencies = {
-            ancestorProp: {
-              dependencyType: "stateVariable",
-              componentName: ancestorProps[attrName].componentName,
-              variableName: attrName,
-            }
-          }
-          if (attributeFromPrimitive) {
-            dependencies.attributePrimitive = {
-              dependencyType: "attributePrimitive",
-              attributeName: attrName
-            }
-          } else {
-            dependencies.attributeComponent = {
-              dependencyType: "attributeComponent",
-              attributeName: attrName,
-              variableNames: [stateVariableForAttributeValue],
-            }
-          }
-          return dependencies;
-        };
 
-        let typeConverter = x => x;
-        if (stateVarDef.componentType === "boolean") {
-          typeConverter = Boolean
-        } else if (stateVarDef.componentType === "text") {
-          typeConverter = String
+      stateVarDef.returnDependencies = function () {
+        let dependencies = {};
+        if (attributeSpecification.fallBackToParentStateVariable) {
+          dependencies.parentValue = {
+            dependencyType: "parentStateVariable",
+            variableName: attributeSpecification.fallBackToParentStateVariable
+          }
+        }
+        if (attributeFromPrimitive) {
+          dependencies.attributePrimitive = {
+            dependencyType: "attributePrimitive",
+            attributeName: attrName
+          }
+        } else {
+          dependencies.attributeComponent = {
+            dependencyType: "attributeComponent",
+            attributeName: attrName,
+            variableNames: [stateVariableForAttributeValue],
+          }
         }
 
-        stateVarDef.definition = function ({ dependencyValues, usedDefault }) {
+        return dependencies;
+      };
 
-          let attributeValue;
-          if (dependencyValues.attributeComponent) {
-            attributeValue = dependencyValues.attributeComponent.stateValues[stateVariableForAttributeValue];
-          } else if (dependencyValues.attributePrimitive !== undefined && dependencyValues.attributePrimitive !== null) {
-            attributeValue = dependencyValues.attributePrimitive;
+
+      stateVarDef.definition = function ({ dependencyValues, usedDefault }) {
+
+        let attributeValue;
+        if (dependencyValues.attributeComponent) {
+          attributeValue = dependencyValues.attributeComponent.stateValues[stateVariableForAttributeValue];
+        } else if (dependencyValues.attributePrimitive !== undefined
+          && dependencyValues.attributePrimitive !== null
+        ) {
+          attributeValue = dependencyValues.attributePrimitive;
+        } else {
+
+          // parentValue would be undefined if fallBackToParentStateVariable wasn't specified
+          // parentValue would be null if the parentValue state variables
+          // did not exist or its value was null 
+          let haveParentValue = dependencyValues.parentValue !== undefined
+            && dependencyValues.parentValue !== null;
+          if (haveParentValue && !usedDefault.parentValue) {
+            return { newValues: { [varName]: dependencyValues.parentValue } }
           } else {
-            if (!usedDefault.ancestorProp) {
-              return { newValues: { [varName]: typeConverter(dependencyValues.ancestorProp) } }
-            } else {
-              return {
-                useEssentialOrDefaultValue: {
-                  [varName]: {
-                    variablesToCheck: [varName, attrName],
-                    defaultValue: typeConverter(dependencyValues.ancestorProp),
-                  }
+            return {
+              useEssentialOrDefaultValue: {
+                [varName]: {
+                  variablesToCheck: [varName, attrName],
                 }
               }
             }
           }
+        }
 
+        attributeValue = validateAttributeValue({
+          value: attributeValue,
+          attributeSpecification,
+          attribute: attrName
+        })
 
-          attributeValue = validateAttributeValue({
-            value: attributeValue,
-            attributeSpecification,
-            attribute: attrName
-          })
+        return { newValues: { [varName]: attributeValue } };
+      };
 
-          // if mergeArrays specified and both ancetor prop and child value
-          // are arrays, then attribute value will combine those arrays
-          if (attributeSpecification.mergeArrays
-            && Array.isArray(dependencyValues.ancestorProp)
-            && Array.isArray(attributeValue)
-          ) {
-            let mergedArray = [...attributeValue, ...dependencyValues.ancestorProp];
-            return { newValues: { [varName]: mergedArray } }
-          } else {
-            return { newValues: { [varName]: attributeValue } };
-          }
+      if (!attributeSpecification.noInverse) {
+        stateVarDef.inverseDefinition = async function ({ desiredStateVariableValues, dependencyValues, usedDefault }) {
 
-        };
-
-        if (!attributeSpecification.noInverse) {
-          stateVarDef.inverseDefinition = async function ({ desiredStateVariableValues, dependencyValues, usedDefault }) {
-            if (!dependencyValues.attributeComponent) {
-              if (dependencyValues.attributePrimitive !== undefined && dependencyValues.attributePrimitive !== null) {
-                // can't invert if have primitive
-                return { success: false }
-              }
-
-              if (usedDefault.ancestorProp) {
-                // no component or primitive, so value is essential and give it the desired value
-                return {
-                  success: true,
-                  instructions: [{
-                    setStateVariable: varName,
-                    value: desiredStateVariableValues[varName]
-                  }]
-                };
-              }
-              else {
-                // ancestor prop was used, so propagate back to ancestor
-                return {
-                  success: true,
-                  instructions: [{
-                    setDependency: "ancestorProp",
-                    desiredValue: desiredStateVariableValues[varName],
-                  }]
-                };
-              }
+          if (!dependencyValues.attributeComponent) {
+            if (dependencyValues.attributePrimitive !== undefined && dependencyValues.attributePrimitive !== null) {
+              // can't invert if have primitive
+              return { success: false }
             }
 
-            // attribute based on component
-
-            if (attributeSpecification.mergeArrays) {
-              // can't invert if we merged arrays to get the value
-              return { success: false }
-            } else {
-
+            let haveParentValue = dependencyValues.parentValue !== undefined
+              && dependencyValues.parentValue !== null;
+            if (haveParentValue && !usedDefault.parentValue) {
+              // value from parent was used, so propagate back to parent
               return {
                 success: true,
                 instructions: [{
-                  setDependency: "attributeComponent",
+                  setDependency: "parentValue",
                   desiredValue: desiredStateVariableValues[varName],
-                  variableIndex: 0,
                 }]
               };
-            }
-          };
-        }
-      }
-      else {
-
-        // usual case of attribute with no ancestor attribute being propagated
-
-        stateVarDef.returnDependencies = function () {
-          if (attributeFromPrimitive) {
-            return {
-              attributePrimitive: {
-                dependencyType: "attributePrimitive",
-                attributeName: attrName
-              }
-            }
-          } else {
-            return {
-              attributeComponent: {
-                dependencyType: "attributeComponent",
-                attributeName: attrName,
-                variableNames: [stateVariableForAttributeValue],
-              }
-            }
-          }
-        };
-
-
-        stateVarDef.definition = function ({ dependencyValues }) {
-
-          let attributeValue;
-          if (dependencyValues.attributeComponent) {
-            attributeValue = dependencyValues.attributeComponent.stateValues[stateVariableForAttributeValue];
-          } else if (dependencyValues.attributePrimitive !== undefined && dependencyValues.attributePrimitive !== null) {
-            attributeValue = dependencyValues.attributePrimitive;
-          } else {
-            return {
-              useEssentialOrDefaultValue: {
-                [varName]: { variablesToCheck: [varName, attrName] }
-              }
-            }
-          }
-
-          attributeValue = validateAttributeValue({
-            value: attributeValue,
-            attributeSpecification,
-            attribute: attrName
-          })
-
-          if (attributeSpecification.mergeArrayWithDefault && Array.isArray(attributeValue)) {
-            let defaultValue = attributeSpecification.defaultValue;
-            if (Array.isArray(defaultValue)) {
-              let mergedArray = [...attributeValue, ...defaultValue];
-              return { newValues: { [varName]: mergedArray } }
-            }
-          }
-
-          return { newValues: { [varName]: attributeValue } };
-        };
-
-        if (!attributeSpecification.noInverse) {
-          stateVarDef.inverseDefinition = async function ({ desiredStateVariableValues, dependencyValues }) {
-
-            if (!dependencyValues.attributeComponent) {
-              if (dependencyValues.attributePrimitive !== undefined && dependencyValues.attributePrimitive !== null) {
-                // can't invert if have primitive
-                return { success: false }
-              }
-              // no attribute component or primitive, so value is essential and give it the desired value
+            } else {
+              // no component or primitive, so value is essential and give it the desired value
               return {
                 success: true,
                 instructions: [{
@@ -2639,26 +2464,20 @@ export default class Core {
                 }]
               };
             }
+          }
 
-            // attribute based on component
+          // attribute based on component
 
-            if (attributeSpecification.mergeArrays) {
-              // can't invert if we merged arrays to get the value
-              return { success: false }
-            } else {
-
-              return {
-                success: true,
-                instructions: [{
-                  setDependency: "attributeComponent",
-                  desiredValue: desiredStateVariableValues[varName],
-                  variableIndex: 0,
-                }]
-              };
-            }
-
+          return {
+            success: true,
+            instructions: [{
+              setDependency: "attributeComponent",
+              desiredValue: desiredStateVariableValues[varName],
+              variableIndex: 0,
+            }]
           };
-        }
+
+        };
       }
 
 
@@ -2827,7 +2646,7 @@ export default class Core {
 
   }
 
-  async createReferenceShadowStateVariableDefinitions({ redefineDependencies, stateVariableDefinitions, componentClass, ancestorProps }) {
+  async createReferenceShadowStateVariableDefinitions({ redefineDependencies, stateVariableDefinitions, componentClass }) {
 
     let compositeComponent = this._components[redefineDependencies.compositeName];
     let targetComponent = this._components[redefineDependencies.targetName];
@@ -2952,160 +2771,77 @@ export default class Core {
         }
       }
 
-      if (attrName in ancestorProps) {
-        thisDependencies.ancestorProp = {
-          dependencyType: "stateVariable",
-          componentName: ancestorProps[attrName].componentName,
-          variableName: attrName,
+      if (attributeSpecification.fallBackToParentStateVariable) {
+        thisDependencies.parentValue = {
+          dependencyType: "parentStateVariable",
+          variableName: attributeSpecification.fallBackToParentStateVariable
         }
       }
 
       stateVarDef.returnDependencies = () => thisDependencies;
 
-      if (attrName in ancestorProps) {
 
-        stateVarDef.definition = function ({ dependencyValues, usedDefault }) {
+      stateVarDef.definition = function ({ dependencyValues, usedDefault }) {
+        let attributeValue;
+        if (dependencyValues.attributeComponent) {
+          attributeValue = dependencyValues.attributeComponent.stateValues[stateVariableForAttributeValue];
+        } else if (dependencyValues.attributePrimitive !== undefined && dependencyValues.attributePrimitive !== null) {
+          attributeValue = dependencyValues.attributePrimitive;
+        } else {
 
-          let attributeValue;
-          if (dependencyValues.attributeComponent) {
-            attributeValue = dependencyValues.attributeComponent.stateValues[stateVariableForAttributeValue];
-          } else if (dependencyValues.attributePrimitive !== undefined && dependencyValues.attributePrimitive !== null) {
-            attributeValue = dependencyValues.attributePrimitive;
+          let targetAttributesToIgnore = [];
+          if (dependencyValues.targetAttributesToIgnore) {
+            targetAttributesToIgnore.push(...dependencyValues.targetAttributesToIgnore)
+          }
+          if (dependencyValues.targetAttributesToAlwaysIgnore) {
+            targetAttributesToIgnore.push(...dependencyValues.targetAttributesToAlwaysIgnore);
+          }
+
+          if (dependencyValues.targetVariable !== undefined
+            && !targetAttributesToIgnore.includes(attrName)
+            && !usedDefault.targetVariable) {
+            // if don't have attribute component or primitive
+            // and target has attribute, use that value
+            return { newValues: { [varName]: dependencyValues.targetVariable } };
           } else {
 
-            let targetAttributesToIgnore = [];
-            if (dependencyValues.targetAttributesToIgnore) {
-              targetAttributesToIgnore.push(...dependencyValues.targetAttributesToIgnore)
-            }
-            if (dependencyValues.targetAttributesToAlwaysIgnore) {
-              targetAttributesToIgnore.push(...dependencyValues.targetAttributesToAlwaysIgnore);
-            }
-
-            if (dependencyValues.targetVariable !== undefined
-              && !targetAttributesToIgnore.includes(attrName)
-              && !usedDefault.targetVariable) {
-              // if don't have attribute component or primitive
-              // and target has attribute, use that value
-              return { newValues: { [attrName]: dependencyValues.targetVariable } };
-            } else if (!usedDefault.ancestorProp) {
-              // need to validate it, since ancestor
-              // may not have had the validation logic
-              let ancestorAttributeValue = validateAttributeValue({
-                value: dependencyValues.ancestorProp,
-                attributeSpecification, attribute: attrName
-              })
-              return { newValues: { [varName]: ancestorAttributeValue } }
+            // parentValue would be undefined if fallBackToParentStateVariable wasn't specified
+            // parentValue would be null if the parentValue state variables
+            // did not exist or its value was null 
+            let haveParentValue = dependencyValues.parentValue !== undefined
+              && dependencyValues.parentValue !== null;
+            if (haveParentValue && !usedDefault.parentValue) {
+              return { newValues: { [varName]: dependencyValues.parentValue } }
             } else {
               return {
                 useEssentialOrDefaultValue: {
                   [varName]: {
                     variablesToCheck: [varName, attrName],
-                    defaultValue: dependencyValues.ancestorProp,
                   }
                 }
               }
             }
           }
-
-          // attribute based on component or primitive
-
-          attributeValue = validateAttributeValue({
-            value: attributeValue,
-            attributeSpecification, attribute: attrName
-          })
-
-          // if mergeArrays specified and both ancetor prop and child value
-          // are arrays, then attribute value will combine those arrays
-          if (attributeSpecification.mergeArrays
-            && Array.isArray(dependencyValues.ancestorProp)
-            && Array.isArray(attributeValue)
-          ) {
-            let mergedArray = [...attributeValue, ...dependencyValues.ancestorProp];
-            return { newValues: { [varName]: mergedArray } }
-          } else {
-            return { newValues: { [varName]: attributeValue } };
-          }
-
-        };
-
-        if (!attributeSpecification.noInverse) {
-          stateVarDef.inverseDefinition = async function ({ desiredStateVariableValues, dependencyValues, usedDefault, stateValues, workspace }) {
-            if (!dependencyValues.attributeComponent) {
-              if (dependencyValues.attributePrimitive !== undefined && dependencyValues.attributePrimitive !== null) {
-                // can't invert if have primitive
-                return { success: false }
-              }
-
-              let targetAttributesToIgnore = [];
-              if (dependencyValues.targetAttributesToIgnore) {
-                targetAttributesToIgnore.push(...dependencyValues.targetAttributesToIgnore)
-              }
-              if (dependencyValues.targetAttributesToAlwaysIgnore) {
-                targetAttributesToIgnore.push(...dependencyValues.targetAttributesToAlwaysIgnore);
-              }
-
-              if (dependencyValues.targetVariable !== undefined
-                && !dependencyValues.targetAttributesToIgnore.includes(attrName)
-                && !usedDefault.targetVariable) {
-                //  if target has attribute, set that value
-                return {
-                  success: true,
-                  instructions: [{
-                    setDependency: "targetVariable",
-                    desiredValue: desiredStateVariableValues[varName],
-                  }]
-                };
-              } else if (usedDefault.ancestorProp) {
-                // no children, so value is essential and give it the desired value
-                return {
-                  success: true,
-                  instructions: [{
-                    setStateVariable: varName,
-                    value: desiredStateVariableValues[varName]
-                  }]
-                };
-              }
-              else {
-                // ancestor prop was used, so propagate back to ancestor
-                return {
-                  success: true,
-                  instructions: [{
-                    setDependency: "ancestorProp",
-                    desiredValue: desiredStateVariableValues[varName],
-                  }]
-                };
-              }
-            }
-
-            // attribute based on component
-
-            if (attributeSpecification.mergeArrays) {
-              // can't invert if we merged arrays to get the value
-              return { success: false }
-            } else {
-
-              return {
-                success: true,
-                instructions: [{
-                  setDependency: "attributeComponent",
-                  desiredValue: desiredStateVariableValues[varName],
-                  variableIndex: 0,
-                }]
-              };
-            }
-          };
         }
-      } else {
 
-        // usual case of attribute with no ancestor attribute being propagated
+        attributeValue = validateAttributeValue({
+          value: attributeValue,
+          attributeSpecification, attribute: attrName
+        })
 
-        stateVarDef.definition = function ({ dependencyValues, usedDefault }) {
-          let attributeValue;
-          if (dependencyValues.attributeComponent) {
-            attributeValue = dependencyValues.attributeComponent.stateValues[stateVariableForAttributeValue];
-          } else if (dependencyValues.attributePrimitive !== undefined && dependencyValues.attributePrimitive !== null) {
-            attributeValue = dependencyValues.attributePrimitive;
-          } else {
+        return { newValues: { [varName]: attributeValue } };
+      };
+
+      if (!attributeSpecification.noInverse) {
+        stateVarDef.inverseDefinition = async function ({ desiredStateVariableValues,
+          dependencyValues, stateValues, workspace
+        }) {
+
+          if (!dependencyValues.attributeComponent) {
+            if (dependencyValues.attributePrimitive !== undefined && dependencyValues.attributePrimitive !== null) {
+              // can't invert if have primitive
+              return { success: false }
+            }
 
             let targetAttributesToIgnore = [];
             if (dependencyValues.targetAttributesToIgnore) {
@@ -3117,67 +2853,30 @@ export default class Core {
 
             if (dependencyValues.targetVariable !== undefined
               && !targetAttributesToIgnore.includes(attrName)
-              && !usedDefault.targetVariable) {
-              // if don't have attribute component or primitive
-              // and target has attribute, use that value
-              return { newValues: { [varName]: dependencyValues.targetVariable } };
-            } else {
+            ) {
+              //  if target has attribute, set that value
               return {
-                useEssentialOrDefaultValue: {
-                  [varName]: { variablesToCheck: [varName, attrName] }
-                }
-              }
-            }
-          }
+                success: true,
+                instructions: [{
+                  setDependency: "targetVariable",
+                  desiredValue: desiredStateVariableValues[varName],
+                }]
+              };
+            } else {
 
-          attributeValue = validateAttributeValue({
-            value: attributeValue,
-            attributeSpecification, attribute: attrName
-          })
-
-          if (attributeSpecification.mergeArrayWithDefault && Array.isArray(attributeValue)) {
-            let defaultValue = attributeSpecification.defaultValue;
-            if (Array.isArray(defaultValue)) {
-              let mergedArray = [...attributeValue, ...defaultValue];
-              return { newValues: { [varName]: mergedArray } }
-            }
-          }
-
-          return { newValues: { [varName]: attributeValue } };
-        };
-
-        if (!attributeSpecification.noInverse) {
-          stateVarDef.inverseDefinition = async function ({ desiredStateVariableValues,
-            dependencyValues, stateValues, workspace
-          }) {
-
-            if (!dependencyValues.attributeComponent) {
-              if (dependencyValues.attributePrimitive !== undefined && dependencyValues.attributePrimitive !== null) {
-                // can't invert if have primitive
-                return { success: false }
-              }
-
-              let targetAttributesToIgnore = [];
-              if (dependencyValues.targetAttributesToIgnore) {
-                targetAttributesToIgnore.push(...dependencyValues.targetAttributesToIgnore)
-              }
-              if (dependencyValues.targetAttributesToAlwaysIgnore) {
-                targetAttributesToIgnore.push(...dependencyValues.targetAttributesToAlwaysIgnore);
-              }
-
-              if (dependencyValues.targetVariable !== undefined
-                && !targetAttributesToIgnore.includes(attrName)
-              ) {
-                //  if target has attribute, set that value
+              let haveParentValue = dependencyValues.parentValue !== undefined
+                && dependencyValues.parentValue !== null;
+              if (haveParentValue && !usedDefault.parentValue) {
+                // value from parent was used, so propagate back to parent
                 return {
                   success: true,
                   instructions: [{
-                    setDependency: "targetVariable",
+                    setDependency: "parentValue",
                     desiredValue: desiredStateVariableValues[varName],
                   }]
                 };
               } else {
-                // no attribute component, so value is essential and give it the desired value
+                // no component or primitive, so value is essential and give it the desired value
                 return {
                   success: true,
                   instructions: [{
@@ -3186,29 +2885,23 @@ export default class Core {
                   }]
                 };
               }
+
             }
-            // attribute based on child
+          }
+          // attribute based on child
 
-
-            if (attributeSpecification.mergeArrays) {
-              // can't invert if we merged arrays to get the value
-              return { success: false }
-            } else {
-
-              return {
-                success: true,
-                instructions: [{
-                  setDependency: "attributeComponent",
-                  desiredValue: desiredStateVariableValues[varName],
-                  variableIndex: 0,
-                }]
-              };
-            }
-
+          return {
+            success: true,
+            instructions: [{
+              setDependency: "attributeComponent",
+              desiredValue: desiredStateVariableValues[varName],
+              variableIndex: 0,
+            }]
           };
-        }
 
+        };
       }
+
 
 
 
@@ -3666,7 +3359,8 @@ export default class Core {
     }
   }
 
-  async initializeStateVariable({ component, stateVariable,
+  async initializeStateVariable({
+    component, stateVariable,
     arrayStateVariable, arrayEntryPrefix
   }) {
 
@@ -3809,8 +3503,10 @@ export default class Core {
     }
   }
 
-  async initializeArrayEntryStateVariable({ stateVarObj, arrayStateVariable,
-    arrayEntryPrefix, component, stateVariable }) {
+  async initializeArrayEntryStateVariable({
+    stateVarObj, arrayStateVariable,
+    arrayEntryPrefix, component, stateVariable
+  }) {
     // This function used for initializing array entry variables
     // (not the original array variable)
     // It adds many attributes to state variables corresponding to
@@ -4180,35 +3876,6 @@ export default class Core {
         }
         return aVals[index[index.length - 1]];
       };
-      if (!stateVarObj.getArrayKeysFromVarName) {
-        // the default function for getArrayKeysFromVarName ignores the
-        // array entry prefix, but is just based on the variable ending.
-        // A component class's function could use arrayEntryPrefix
-        stateVarObj.getArrayKeysFromVarName = function ({
-          arrayEntryPrefix, varEnding, arraySize, nDimensions,
-        }) {
-          let indices = varEnding.split('_').map(x => Number(x) - 1)
-          if (indices.length === nDimensions && indices.every(
-            (x, i) => Number.isInteger(x) && x >= 0
-          )) {
-
-            if (arraySize) {
-              if (indices.every((x, i) => x < arraySize[i])) {
-                return [String(indices)];
-              } else {
-                return [];
-              }
-            } else {
-              // if don't know array size, just guess that the entry is OK
-              // It will get corrected once array size is known.
-              // TODO: better to return empty array?
-              return [String(indices)];
-            }
-          } else {
-            return [];
-          }
-        };
-      }
 
       if (!stateVarObj.getAllArrayKeys) {
         stateVarObj.getAllArrayKeys = function (arraySize, flatten = true, desiredSize) {
@@ -4301,33 +3968,6 @@ export default class Core {
         return arrayValues[arrayKey];
       };
 
-      if (!stateVarObj.getArrayKeysFromVarName) {
-        // the default function for getArrayKeysFromVarName ignores the
-        // array entry prefix, but is just based on the variable ending.
-        // A component class's function could use arrayEntryPrefix
-        stateVarObj.getArrayKeysFromVarName = function ({
-          arrayEntryPrefix, varEnding, arraySize
-        }) {
-          let index = Number(varEnding) - 1;
-          if (Number.isInteger(index) && index >= 0) {
-            if (arraySize) {
-              if (index < arraySize[0]) {
-                return [String(index)];
-              } else {
-                return [];
-              }
-            } else {
-              // if don't know array size, just guess that the entry is OK
-              // It will get corrected once array size is known.
-              // TODO: better to return empty array?
-              return [String(index)];
-            }
-          } else {
-            return [];
-          }
-        };
-      }
-
       if (!stateVarObj.getAllArrayKeys) {
         stateVarObj.getAllArrayKeys = function (arraySize, flatten, desiredSize) {
           if (desiredSize) {
@@ -4365,6 +4005,11 @@ export default class Core {
           }
         }
       }
+    }
+
+
+    if (!stateVarObj.getArrayKeysFromVarName) {
+      stateVarObj.getArrayKeysFromVarName = returnDefaultGetArrayKeysFromVarName(stateVarObj.nDimensions)
     }
 
     // converting from index to key is the same for single and multiple
@@ -5924,10 +5569,22 @@ export default class Core {
       let arrayEntryPrefixesLongestToShortest = Object.keys(stateVarInfo.arrayEntryPrefixes).sort((a, b) => b.length - a.length)
       for (let prefix of arrayEntryPrefixesLongestToShortest) {
         if (lowerCaseVarName.substring(0, prefix.length) === prefix.toLowerCase()) {
-          let newVarName = prefix + lowerCaseVarName.substring(prefix.length);
-          foundMatch = true;
-          newVariables.push(newVarName);
-          break;
+          // TODO: the varEnding is still a case-senstitive match
+          // Should we require that getArrayKeysFromVarName have 
+          // a case-insensitive mode?
+          let arrayVariableName = stateVarInfo.arrayEntryPrefixes[prefix].arrayVariableName;
+          let arrayStateVarDescription = stateVarInfo.stateVariableDescriptions[arrayVariableName];
+          let arrayKeys = arrayStateVarDescription.getArrayKeysFromVarName({
+            arrayEntryPrefix: prefix,
+            varEnding: stateVariable.substring(prefix.length),
+            nDimensions: arrayStateVarDescription.nDimensions,
+          });
+          if (arrayKeys.length > 0) {
+            let newVarName = prefix + lowerCaseVarName.substring(prefix.length);
+            foundMatch = true;
+            newVariables.push(newVarName);
+            break;
+          }
         }
       }
 
@@ -5976,8 +5633,17 @@ export default class Core {
       let arrayEntryPrefixesLongestToShortest = Object.keys(stateVarInfo.arrayEntryPrefixes).sort((a, b) => b.length - a.length)
       for (let prefix of arrayEntryPrefixesLongestToShortest) {
         if (varName.substring(0, prefix.length) === prefix) {
-          foundMatch = true;
-          break;
+          let arrayVariableName = stateVarInfo.arrayEntryPrefixes[prefix].arrayVariableName;
+          let arrayStateVarDescription = stateVarInfo.stateVariableDescriptions[arrayVariableName];
+          let arrayKeys = arrayStateVarDescription.getArrayKeysFromVarName({
+            arrayEntryPrefix: prefix,
+            varEnding: varName.substring(prefix.length),
+            nDimensions: arrayStateVarDescription.nDimensions,
+          });
+          if (arrayKeys.length > 0) {
+            foundMatch = true;
+            break;
+          }
         }
       }
 
@@ -6044,14 +5710,24 @@ export default class Core {
     // check if stateVariable begins when an arrayEntry
     for (let arrayEntryPrefix in component.arrayEntryPrefixes) {
       if (stateVariable.substring(0, arrayEntryPrefix.length) === arrayEntryPrefix) {
-        return true
+        let arrayVariableName = component.arrayEntryPrefixes[arrayEntryPrefix];
+        let arrayStateVarObj = component.state[arrayVariableName];
+        let arrayKeys = arrayStateVarObj.getArrayKeysFromVarName({
+          arrayEntryPrefix,
+          varEnding: stateVariable.substring(arrayEntryPrefix.length),
+          nDimensions: arrayStateVarObj.nDimensions,
+        });
+        if (arrayKeys.length > 0) {
+          return true
+        }
       }
     }
 
     return false
   }
 
-  async createFromArrayEntry({ stateVariable, component, initializeOnly = false,
+  async createFromArrayEntry({
+    stateVariable, component, initializeOnly = false,
   }) {
 
     if (!component.arrayEntryPrefixes) {
@@ -6066,66 +5742,78 @@ export default class Core {
       if (stateVariable.substring(0, arrayEntryPrefix.length) === arrayEntryPrefix
         // && stateVariable.length > arrayEntryPrefix.length
       ) {
-        // found a reference to an arrayEntry that hasn't been created yet
-        // create this arrayEntry
 
-        let arrayStateVariable = component.arrayEntryPrefixes[arrayEntryPrefix];
-
-        await this.initializeStateVariable({
-          component, stateVariable,
-          arrayStateVariable, arrayEntryPrefix,
+        let arrayVariableName = component.arrayEntryPrefixes[arrayEntryPrefix];
+        let arrayStateVarObj = component.state[arrayVariableName];
+        let arrayKeys = arrayStateVarObj.getArrayKeysFromVarName({
+          arrayEntryPrefix,
+          varEnding: stateVariable.substring(arrayEntryPrefix.length),
+          nDimensions: arrayStateVarObj.nDimensions,
         });
 
-        if (initializeOnly) {
-          return;
-        }
+        if (arrayKeys.length > 0) {
 
-        let allStateVariablesAffected = [stateVariable];
-        // create an additional array entry state variables
-        // specified as additional state variables defined
-        if (component.state[stateVariable].additionalStateVariablesDefined) {
-          allStateVariablesAffected.push(...component.state[stateVariable].additionalStateVariablesDefined);
-          for (let additionalVar of component.state[stateVariable].additionalStateVariablesDefined) {
-            if (!component.state[additionalVar]) {
-              await this.createFromArrayEntry({
-                stateVariable: additionalVar,
-                component,
-                initializeOnly: true
-              });
-            }
-          }
-        }
+          // found a reference to an arrayEntry that hasn't been created yet
+          // create this arrayEntry
 
+          let arrayStateVariable = component.arrayEntryPrefixes[arrayEntryPrefix];
 
-        await this.dependencies.setUpStateVariableDependencies({
-          component, stateVariable,
-          allStateVariablesAffected,
-          core: this,
-        });
-
-        let newStateVariablesToResolve = [];
-
-        for (let varName of allStateVariablesAffected) {
-
-          this.dependencies.checkForCircularDependency({
-            componentName: component.componentName,
-            varName
+          await this.initializeStateVariable({
+            component, stateVariable,
+            arrayStateVariable, arrayEntryPrefix,
           });
 
-          newStateVariablesToResolve.push(varName);
-
-          if (component.state[varName].determineDependenciesStateVariable) {
-            newStateVariablesToResolve.push(component.state[varName].determineDependenciesStateVariable)
+          if (initializeOnly) {
+            return;
           }
 
+          let allStateVariablesAffected = [stateVariable];
+          // create an additional array entry state variables
+          // specified as additional state variables defined
+          if (component.state[stateVariable].additionalStateVariablesDefined) {
+            allStateVariablesAffected.push(...component.state[stateVariable].additionalStateVariablesDefined);
+            for (let additionalVar of component.state[stateVariable].additionalStateVariablesDefined) {
+              if (!component.state[additionalVar]) {
+                await this.createFromArrayEntry({
+                  stateVariable: additionalVar,
+                  component,
+                  initializeOnly: true
+                });
+              }
+            }
+          }
+
+
+          await this.dependencies.setUpStateVariableDependencies({
+            component, stateVariable,
+            allStateVariablesAffected,
+            core: this,
+          });
+
+          let newStateVariablesToResolve = [];
+
+          for (let varName of allStateVariablesAffected) {
+
+            this.dependencies.checkForCircularDependency({
+              componentName: component.componentName,
+              varName
+            });
+
+            newStateVariablesToResolve.push(varName);
+
+            if (component.state[varName].determineDependenciesStateVariable) {
+              newStateVariablesToResolve.push(component.state[varName].determineDependenciesStateVariable)
+            }
+
+          }
+
+          await this.dependencies.resolveStateVariablesIfReady({
+            component,
+            stateVariables: newStateVariablesToResolve,
+          });
+
+          return
         }
-
-        await this.dependencies.resolveStateVariablesIfReady({
-          component,
-          stateVariables: newStateVariablesToResolve,
-        });
-
-        return
       }
     }
 
@@ -6772,7 +6460,8 @@ export default class Core {
     }
   }
 
-  async addChildrenAndRecurseToShadows({ parent, indexOfDefiningChildren,
+  async addChildrenAndRecurseToShadows({
+    parent, indexOfDefiningChildren,
     newChildren, assignNamesOffset
   }) {
 
@@ -6935,7 +6624,8 @@ export default class Core {
     // }
   }
 
-  async deleteComponents({ components, deleteUpstreamDependencies = true,
+  async deleteComponents({
+    components, deleteUpstreamDependencies = true,
     skipProcessingChildrenOfParents = []
   }) {
 
@@ -8160,7 +7850,8 @@ export default class Core {
   }
 
 
-  async requestUpdate({ updateInstructions, transient = false, event, skippable = false,
+  async requestUpdate({
+    updateInstructions, transient = false, event, skippable = false,
     overrideReadOnly = false
   }) {
 

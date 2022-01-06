@@ -20,7 +20,6 @@ describe('MathList Tag Tests', function () {
         doenetML: `
     <text>a</text>
     <mathlist>a 1+1 </mathlist>
-    <mathlist simplify="full">a  1+1</mathlist>
     ` }, "*");
     });
 
@@ -32,10 +31,6 @@ describe('MathList Tag Tests', function () {
       let child1Anchor = cesc('#' + child1Name);
       let child2Name = components['/_mathlist1'].activeChildren[1].componentName;
       let child2Anchor = cesc('#' + child2Name);
-      let child3Name = components['/_mathlist2'].activeChildren[0].componentName;
-      let child3Anchor = cesc('#' + child3Name);
-      let child4Name = components['/_mathlist2'].activeChildren[1].componentName;
-      let child4Anchor = cesc('#' + child4Name);
 
 
       cy.log('Test value displayed in browser')
@@ -45,12 +40,7 @@ describe('MathList Tag Tests', function () {
       cy.get(child2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('1+1')
       })
-      cy.get(child3Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('a')
-      })
-      cy.get(child4Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('2')
-      })
+
       cy.log('Test internal values are set to the correct values')
       cy.window().then(async (win) => {
         let components = Object.assign({}, win.state.components);
@@ -58,10 +48,6 @@ describe('MathList Tag Tests', function () {
         expect(components['/_mathlist1'].activeChildren[1].stateValues.value.tree).eqls(['+', 1, 1]);
         expect((await components['/_mathlist1'].stateValues.maths)[0].tree).eq('a');
         expect((await components['/_mathlist1'].stateValues.maths)[1].tree).eqls(['+', 1, 1]);
-        expect(components['/_mathlist2'].activeChildren[0].stateValues.value.tree).eq('a');
-        expect(components['/_mathlist2'].activeChildren[1].stateValues.value.tree).eq(2);
-        expect((await components['/_mathlist2'].stateValues.maths)[0].tree).eq('a');
-        expect((await components['/_mathlist2'].stateValues.maths)[1].tree).eq(2);
       })
     })
   })
