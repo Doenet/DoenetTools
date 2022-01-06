@@ -9,7 +9,7 @@ export default class RenderDoenetML extends CompositeComponent {
 
   static acceptTarget = true;
 
-  static stateVariableToEvaluateAfterReplacements = "readyToExpandWhenResolved";
+  static stateVariableToEvaluateAfterReplacements = "needsReplacementsUpdatedWhenStale";
 
   static createAttributesObject(args) {
     let attributes = super.createAttributesObject(args);
@@ -59,14 +59,44 @@ export default class RenderDoenetML extends CompositeComponent {
         doenetML: {
           dependencyType: "stateVariable",
           variableName: "doenetML"
+        },
+      }),
+      definition() {
+        return { newValues: { readyToExpandWhenResolved: true } };
+      },
+    };
+
+    stateVariableDefinitions.needsReplacementsUpdatedWhenStale = {
+      returnDependencies: () => ({
+  
+        triggerUpdates: {
+          dependencyType: "stateVariable",
+          variableName: "triggerUpdates"
         }
       }),
       markStale() {
         return { updateReplacements: true }
       },
       definition() {
-        return { newValues: { readyToExpandWhenResolved: true } };
+        return { newValues: { needsReplacementsUpdatedWhenStale: true } };
       },
+    };
+
+    stateVariableDefinitions.triggerUpdates = {
+      defaultValue: true,
+      returnDependencies: () => ({}),
+      definition() {
+        return { useEssentialOrDefaultValue: { triggerUpdates: {} } };
+      },
+      inverseDefinition({desiredStateVariableValues}) {
+        return {
+          success: true,
+          instructions: [{
+            setStateVariable: "triggerUpdates",
+            value: desiredStateVariableValues.triggerUpdates,
+          }]
+         };
+      }
     };
 
 
@@ -137,7 +167,6 @@ export default class RenderDoenetML extends CompositeComponent {
 
   }
 
-
   static async calculateReplacementChanges({ component, componentChanges,
     componentInfoObjects, flags, workspace
   }) {
@@ -173,5 +202,34 @@ export default class RenderDoenetML extends CompositeComponent {
 
   }
 
+  async updateComponents(){
+    let updateInstructions = [{
+      updateType: "updateValue",
+      componentName: this.componentName,
+      stateVariable:"triggerUpdates",
+      value: true,
+    }];
+
+    await this.coreFunctions.performUpdate({
+      updateInstructions,
+      // event: {
+      //   verb: "selected",
+      //   object: {
+      //     componentName: this.componentName,
+      //     componentType: this.componentType,
+      //   },
+      //   result: {
+      //     response: newValue,
+      //     responseText: newValue.toString(),
+      //   }
+      // },
+    });
+  }
+
+  actions = {
+    updateComponents: this.updateComponents.bind(
+      new Proxy(this, this.readOnlyProxyHandler)
+    )
+  };
 
 }

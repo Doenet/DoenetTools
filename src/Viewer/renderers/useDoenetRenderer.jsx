@@ -13,8 +13,8 @@ export const rendererSVs = atomFamily({
 //Renderer can change it later and values will be here
 export default function useDoenetRenderer(props,initializeChildrenOnConstruction=true,doenetPropsForChildren={}){
   let actions = props.componentInstructions.actions;
-  let [children,setChildren] = useState([]);
   let name =  props.componentInstructions.componentName;
+  let [renderersToLoad,setRenderersToLoad] = useState({})
   
   let stateValues = useRecoilValue(rendererSVs(name));
 
@@ -25,47 +25,38 @@ export default function useDoenetRenderer(props,initializeChildrenOnConstruction
     swapChildren,
   }
 
+  //TODO: Fix this for graph
+  // if (initializeChildrenOnConstruction
+  let children = [];
+  const loadMoreRenderers = Object.keys(renderersToLoad).length === 0;
+  for (let childInstructions of props.componentInstructions.children) {   
+    let child = createChildFromInstructions(childInstructions,loadMoreRenderers);
+    children.push(child);
+  }
+
   useEffect(()=>{
-    if (initializeChildrenOnConstruction){
-      initializeChildren()
+    if (Object.keys(renderersToLoad).length > 0){
+      renderersloadComponent(Object.values(renderersToLoad), Object.keys(renderersToLoad)).then((newRendererClasses)=>{
+        Object.assign(props.rendererClasses,newRendererClasses)
+        setRenderersToLoad({})
+      })
     }
-  },[])
+  },[renderersToLoad,props.rendererClasses])
+
 
   async function addChildren(instruction) {
-    let newChildren = [...children];
-    let childInstructions = props.componentInstructions.children[instruction.indexForParent];
-    let child = await createChildFromInstructions(childInstructions);
-    newChildren.splice(instruction.indexForParent, 0, child);
-    setChildren(newChildren)
+    console.warn("CALLED addChildren in useDoenetRenderer",instruction)
   }
 
   function removeChildren(instruction) {
-    let newChildren = [...children];
-    newChildren.splice(instruction.firstIndexInParent, instruction.numberChildrenDeleted);
-    for (let componentName of instruction.deletedComponentNames) {
-      delete props.rendererUpdateMethods[componentName];
-    }
-    setChildren(newChildren)
+    console.warn("CALLED removeChildren in useDoenetRenderer",instruction)
   }
 
   function swapChildren(instruction) {
     console.warn("CALLED swapChildren in useDoenetRenderer",instruction)
-
-    // [children[instruction.index1], children[instruction.index2]]
-    //   = [children[instruction.index2], children[instruction.index1]];
-    // children = [...children]; // needed for React to recognize it's different
   }
 
-  async function initializeChildren() {
-    let newchildren = [...children];
-    for (let childInstructions of props.componentInstructions.children) {   
-      let child = await createChildFromInstructions(childInstructions);
-      newchildren.push(child);
-    }
-    setChildren(newchildren)
-  }
-
-  async function createChildFromInstructions(childInstructions) {
+  function createChildFromInstructions(childInstructions,loadMoreRenderers) {
 
     if(typeof childInstructions === "string") {
       return childInstructions;
@@ -84,16 +75,18 @@ export default function useDoenetRenderer(props,initializeChildrenOnConstruction
 
     if (!rendererClass) {
       //If we don't have the component then attempt to load it
-      let renderPromises = [import(`./${childInstructions.rendererType}.js`)];
-      let rendererClassNames = [childInstructions.rendererType];
-
-      let newRendererClasses = await renderersloadComponent(renderPromises, rendererClassNames);
-      Object.assign(props.rendererClasses,newRendererClasses)
-
-      rendererClass = props.rendererClasses[childInstructions.rendererType];
-      if (!rendererClass) {
-        throw Error(`Cannot render component ${childInstructions.componentName} as have not loaded renderer type ${childInstructions.rendererType}`)
+      if (loadMoreRenderers){
+        setRenderersToLoad((old)=>{
+          let rendererPromises = {...old};
+          if (!(childInstructions.rendererType in rendererPromises)){
+            rendererPromises[childInstructions.rendererType] = import(`./${childInstructions.rendererType}.js`);
+          }
+          return rendererPromises;
+        })
       }
+      
+      return null;  //skip the child for now
+     
     }
 
     let child = React.createElement(rendererClass, propsForChild);
@@ -104,5 +97,5 @@ export default function useDoenetRenderer(props,initializeChildrenOnConstruction
     // setDoenetPropsForChildren(props);
   }
 
-  return {name,SVs:stateValues,actions,children,initializeChildren,updatesetDoenetPropsForChildren};
+  return {name,SVs:stateValues,actions,children,initializeChildren:()=>{},updatesetDoenetPropsForChildren};
 }
