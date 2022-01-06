@@ -3,7 +3,7 @@ import { atom,  useRecoilValue } from 'recoil';
 import styled from 'styled-components';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronLeft } from "@fortawesome/free-solid-svg-icons";
-import Profile from '../Profile';
+import Logo from '../Logo';
 
 export const selectedMenuPanelAtom = atom({
   key:"selectedMenuPanelAtom",
@@ -22,19 +22,6 @@ const MenuPanelsWrapper = styled.div`
   width: ${({hide})=>hide ? '0px' : '240px'};
 `;
 
-const MenuPanelsCap = styled.div`
-width: 240px;
-height: 35px;
-background: white;
-display: flex;
-justify-content: space-between;
-align-items: center;
-position: ${(props) => props.fix ? 'static' : 'sticky'};
-border-bottom: 2px solid #e2e2e2;
-margin-bottom: -2px;
-top: 0;
-z-index: 2;
-`;
 const MenuPanelsCapComponent = styled.div`
 width: 240px;
 background: white;
@@ -43,7 +30,7 @@ border-top: 1px solid #e2e2e2;
 border-bottom: 2px solid #e2e2e2;
 margin-bottom: -2px;
 position: sticky;
-top: 35px;
+top: 0;
 z-index: 2;
 `;
 
@@ -60,31 +47,17 @@ const MenuHeaderButton = styled.button`
 
 `;
 
-const Logo = styled.div`
-background-image: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)),
-    url('/media/Doenet_Logo_cloud_only.png');
-  background-position: center;
-  background-repeat: no-repeat;
-  background-size: 50px 25px;
-  transition: 300ms;
-  // background-color: pink;
-  width: 50px;
-  height: 25px;
-  display: inline-block;
-  justify-content: center;
-  align-items: center;
-  border-style: none;
-  margin-top: 5px;
-  margin-left: 2px
-`
-
 const CloseButton = styled.button`
 background-color: #1A5A99;
 height: 35px;
 width: 20px;
 color: white;
 border: none;
-display: inline-block;
+position: ${(props) => props.fix ? 'static' : 'absolute'};
+top: 2px;
+left: 220px;
+cursor: pointer;
+z-index: 2;
 `;
 
 const EditMenuPanels = styled.button`
@@ -252,27 +225,13 @@ console.log(">>>===MenuPanel", hide)
 
   }
 
+  menusArray.push(<Logo/>);
+
   return (
     <MenuPanelsWrapper hide={hide}>
-     <MenuPanelsCap fix={hide}>
-        <span >
-          <Logo/>
-          {/* <img style={{height:"45px", width:"70px", objectFit: "scale-down"}} href="https://www.doenet.org/media/Doenet_Logo_cloud_only.png"/> */}
-        </span>
-        <span style={{marginBottom: '1px'}}>Doenet</span>
-        <span >
-          {displayProfile ? 
-            <Profile 
-            margin={hide}
-            />
-          : null }
-        </span>
-        <span >
-          <CloseButton onClick={()=>setMenusOpen(false)}><FontAwesomeIcon icon={faChevronLeft}/></CloseButton>
-        </span>
-        
-      </MenuPanelsCap>
+
       {menuPanelCapComponent}
+      <CloseButton onClick={()=>setMenusOpen(false)} fix={hide}><FontAwesomeIcon icon={faChevronLeft}/></CloseButton>
 
       {selectionPanel}
       <div>{menusArray}</div>
