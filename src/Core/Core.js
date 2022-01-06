@@ -609,6 +609,8 @@ export default class Core {
         stateValuesForRenderer)
 
     }
+    console.log("core",instructions)
+    console.log("core",this.renderedComponentInstructions)
 
     this.coreUpdatedCallback(instructions) //This is async
 
