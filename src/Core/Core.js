@@ -244,9 +244,6 @@ export default class Core {
 
     this.updateInfo.componentsTouched = [];
 
-    this.rendererTypesInDocument = this.document.allPotentialRendererTypes;
-
-
     // evalute itemCreditAchieved so that will be fresh
     // and can detect changes when it is marked stale
     await this.document.stateValues.itemCreditAchieved;
@@ -580,8 +577,8 @@ export default class Core {
     // reset for next time
     this.componentsWithChangedChildrenToRender = new Set([]);
 
-    renderersToUpdate = renderersToUpdate.filter(x => !deletedRenderers.includes(x))
-
+    //TODO: look at this
+    // renderersToUpdate = renderersToUpdate.filter(x => !deletedRenderers.includes(x))
     if (renderersToUpdate.length > 0) {
       let instruction = {
         instructionType: "updateStateVariable",
@@ -593,25 +590,24 @@ export default class Core {
 
     for (let componentName of renderersToUpdate) {
       let component = this._components[componentName];
-      let stateValuesForRenderer = {};
-      for (let stateVariable in component.state) {
-        if (component.state[stateVariable].forRenderer) {
-          let value = await component.state[stateVariable].value;
-          if (value !== null && typeof value === 'object') {
-            value = new Proxy(value, readOnlyProxyHandler)
+      if (component){
+        let stateValuesForRenderer = {};
+        for (let stateVariable in component.state) {
+          if (component.state[stateVariable].forRenderer) {
+            let value = await component.state[stateVariable].value;
+            if (value !== null && typeof value === 'object') {
+              value = new Proxy(value, readOnlyProxyHandler)
+            }
+            stateValuesForRenderer[stateVariable] = value;
           }
-          stateValuesForRenderer[stateVariable] = value;
         }
+      
+        this.externalFunctions.updateRendererSVsWithRecoil({componentName,stateVariables:stateValuesForRenderer})
+
+        Object.assign(this.renderedComponentInstructions[componentName].stateValues,
+          stateValuesForRenderer)
       }
-
-      this.externalFunctions.updateRendererSVsWithRecoil({componentName,stateVariables:stateValuesForRenderer})
-
-      Object.assign(this.renderedComponentInstructions[componentName].stateValues,
-        stateValuesForRenderer)
-
     }
-    console.log("core",instructions)
-    console.log("core",this.renderedComponentInstructions)
 
     this.coreUpdatedCallback(instructions) //This is async
 
@@ -7671,6 +7667,10 @@ export default class Core {
     return isComposite &&
       (includeNonStandard || !componentClass.treatAsComponentForRecursiveReplacements)
   }
+
+  get rendererTypesInDocument() {
+    return this.document.allPotentialRendererTypes;
+  }  
 
   get componentTypesCreatingVariants() {
     return new Proxy(this._componentTypesCreatingVariants, readOnlyProxyHandler);

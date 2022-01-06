@@ -6,9 +6,6 @@ import { renderersloadComponent } from '../DoenetViewer';
 export default class DoenetRenderer extends Component {
   constructor(props) {
     super(props);
-    this.addChildren = this.addChildren.bind(this);
-    this.removeChildren = this.removeChildren.bind(this);
-    this.swapChildren = this.swapChildren.bind(this);
     this.update = this.update.bind(this);
 
     // BADBADBAD: this.childrenToCreate gets updated indirectly by Core
@@ -20,7 +17,6 @@ export default class DoenetRenderer extends Component {
 
     this.actions = props.componentInstructions.actions;
 
-
     // This keeps the proxy in place so that state variables
     // aren't calculated unless asked for
     // Also means it will always have the new values when they are changed
@@ -29,97 +25,39 @@ export default class DoenetRenderer extends Component {
 
     props.rendererUpdateMethods[this.componentName] = {
       update: this.update,
-      addChildren: this.addChildren,
-      removeChildren: this.removeChildren,
-      swapChildren: this.swapChildren,
     }
-
-    this.children = [];
-
+    this.rendererPromises = {};
+    this.initializeChildren();
   }
 
   static initializeChildrenOnConstruction = true;
 
-  async componentDidMount(){
-    if (this.constructor.initializeChildrenOnConstruction) {
-      await this.initializeChildren();
-      this.forceUpdate();
-    }
-  }
-
   update() {
+    this.initializeChildren()
     this.forceUpdate();
   }
 
-  async addChildren(instruction) {
-    let childInstructions = this.childrenToCreate[instruction.indexForParent];
-    let child = await this.createChildFromInstructionsAsync(childInstructions);
-    this.children.splice(instruction.indexForParent, 0, child);
-    this.children = [...this.children]; // needed for React to recognize it's different
-
-    this.forceUpdate();
-  }
-
-  removeChildren(instruction) {
-    this.children.splice(instruction.firstIndexInParent, instruction.numberChildrenDeleted);
-    this.children = [...this.children]; // needed for React to recognize it's different
-    for (let componentName of instruction.deletedComponentNames) {
-      delete this.props.rendererUpdateMethods[componentName];
-    }
-    this.forceUpdate();
-  }
-
-
-  swapChildren(instruction) {
-    [this.children[instruction.index1], this.children[instruction.index2]]
-      = [this.children[instruction.index2], this.children[instruction.index1]];
-    this.children = [...this.children]; // needed for React to recognize it's different
-    this.forceUpdate();
-  }
-
-  async initializeChildren() {
+  initializeChildren() {
     this.children = [];
 
     for (let childInstructions of this.childrenToCreate) {
-      let child = await this.createChildFromInstructionsAsync(childInstructions);
+      let child = this.createChildFromInstructions(childInstructions);
 
       this.children.push(child);
+    }
+    if (Object.keys(this.rendererPromises).length > 0){
+        renderersloadComponent(Object.values(this.rendererPromises), Object.keys(this.rendererPromises)).then((newRendererClasses)=>{
+          Object.assign(this.props.rendererClasses,newRendererClasses)
+          this.rendererPromises = {}
+          this.initializeChildren();
+          this.forceUpdate();
+        })
     }
 
     return this.children;
   }
 
-  // createChildFromInstructions(childInstructions) {
-  //   // add nanoid to key so that will have unique key if recreate
-  //   // renderer for a component with the same name as an old one
-  //   // TODO: is this the best way to do it?
-
-
-  //   if(typeof childInstructions === "string") {
-  //     return childInstructions;
-  //   }
-
-  //   let propsForChild = {
-  //     key: childInstructions.componentName + nanoid(10),
-  //     componentInstructions: childInstructions,
-  //     rendererClasses: this.props.rendererClasses,
-  //     rendererUpdateMethods: this.props.rendererUpdateMethods,
-  //     flags: this.props.flags,
-  //   };
-  //   if (this.doenetPropsForChildren) {
-  //     Object.assign(propsForChild, this.doenetPropsForChildren);
-  //   }
-  //   let rendererClass = this.props.rendererClasses[childInstructions.rendererType];
-
-  //   if (!rendererClass) {
-  //     throw Error(`Cannot render component ${childInstructions.componentName} as have not loaded renderer type ${childInstructions.rendererType}`)
-  //   }
-
-  //   let child = React.createElement(rendererClass, propsForChild);
-  //   return child;
-  // }
-
-  async createChildFromInstructionsAsync(childInstructions) {
+  createChildFromInstructions(childInstructions) {
     // add nanoid to key so that will have unique key if recreate
     // renderer for a component with the same name as an old one
     // TODO: is this the best way to do it?
@@ -142,20 +80,16 @@ export default class DoenetRenderer extends Component {
     let rendererClass = this.props.rendererClasses[childInstructions.rendererType];
 
     if (!rendererClass) {
-      //If we don't have the component then attempt to load it
-      let renderPromises = [import(`./${childInstructions.rendererType}.js`)];
-      let rendererClassNames = [childInstructions.rendererType];
-
-      let newRendererClasses = await renderersloadComponent(renderPromises, rendererClassNames);
-      Object.assign(this.props.rendererClasses,newRendererClasses)
-      
-      rendererClass = this.props.rendererClasses[childInstructions.rendererType];
-      if (!rendererClass) {
-        throw Error(`Cannot render component ${childInstructions.componentName} as have not loaded renderer type ${childInstructions.rendererType}`)
+      if (!(childInstructions.rendererType in this.rendererPromises)){
+        this.rendererPromises[childInstructions.rendererType] = import(`./${childInstructions.rendererType}.js`);
       }
+      return null;
+      // throw Error(`Cannot render component ${childInstructions.componentName} as have not loaded renderer type ${childInstructions.rendererType}`)
     }
 
     let child = React.createElement(rendererClass, propsForChild);
     return child;
   }
+
+  
 }

@@ -20,9 +20,7 @@ export default function useDoenetRenderer(props,initializeChildrenOnConstruction
 
   props.rendererUpdateMethods[name] = {
     update: ()=>{},
-    addChildren,
-    removeChildren,
-    swapChildren,
+
   }
 
   //TODO: Fix this for graph
@@ -43,18 +41,6 @@ export default function useDoenetRenderer(props,initializeChildrenOnConstruction
     }
   },[renderersToLoad,props.rendererClasses])
 
-
-  async function addChildren(instruction) {
-    console.warn("CALLED addChildren in useDoenetRenderer",instruction)
-  }
-
-  function removeChildren(instruction) {
-    console.warn("CALLED removeChildren in useDoenetRenderer",instruction)
-  }
-
-  function swapChildren(instruction) {
-    console.warn("CALLED swapChildren in useDoenetRenderer",instruction)
-  }
 
   function createChildFromInstructions(childInstructions,loadMoreRenderers) {
 

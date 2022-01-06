@@ -482,16 +482,7 @@ class DoenetViewerChild extends Component {
             sourceOfUpdate: instruction.sourceOfUpdate
           });
         }
-      } else if (instruction.instructionType === "addRenderer") {
-        if (instruction.parentName in this.rendererUpdateMethods)
-          await this.rendererUpdateMethods[instruction.parentName].addChildren(instruction)
-      } else if (instruction.instructionType === "deleteRenderers") {
-        if (instruction.parentName in this.rendererUpdateMethods)
-          await this.rendererUpdateMethods[instruction.parentName].removeChildren(instruction)
-      } else if (instruction.instructionType === "swapChildRenderers") {
-        if (instruction.parentName in this.rendererUpdateMethods)
-          await this.rendererUpdateMethods[instruction.parentName].swapChildren(instruction)
-      }
+      } 
     }
 
 
