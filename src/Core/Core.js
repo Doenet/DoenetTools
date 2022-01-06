@@ -393,7 +393,7 @@ export default class Core {
       }
     }
 
-
+    //TODO: Figure out what we need from here
     for (let componentName of this.componentsWithChangedChildrenToRender) {
       if (componentName in this.renderedComponentInstructions) {
         // check to see if current children who render are

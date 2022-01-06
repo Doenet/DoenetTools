@@ -131,7 +131,7 @@ export default class RenderDoenetML extends CompositeComponent {
     } catch (e) {
       console.warn('error in user entered doenetML')
       console.warn(e.message);
-      throw e;
+      // throw e; //TODO: Need to communicate to user
       return { replacements: [] }
     }
 
