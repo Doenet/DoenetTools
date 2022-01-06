@@ -741,6 +741,12 @@ export default function attempt() {
           description: 'Changes the text',
         },
         {
+          name: 'Placeholder',
+          propPreview: '<Textfield placeholder="Enter cat names"/>',
+          propCode: { placeholder: 'Enter cat names' },
+          description: 'Adds placeholder to component',
+        },
+        {
           name: 'Label',
           propPreview: '<Textfield label="What: "/>',
           propCode: { label: 'What: ' },
@@ -751,6 +757,12 @@ export default function attempt() {
           propPreview: '<Textfield label="What: " vertical/>',
           propCode: { label: 'What: ', vertical },
           description: 'Adds label to component on top',
+        },
+        {
+          name: 'Aria Label',
+          propPreview: '<Textfield ariaLabel="Text"/>',
+          propCode: { ariaLabel: 'Text' },
+          description: 'Adds aria label to component',
         },
         {
           name: 'Alert',

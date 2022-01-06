@@ -3,14 +3,14 @@ import { doenetComponentForegroundInactive } from "./theme"
 
 export default function Textfield(props) {
   const [labelVisible, setLabelVisible] = useState(props.label ? 'static' : 'none')
-  const [text, setText] = useState(props.value ? 'Enter text here' : props.value);
+  const [text, setText] = useState("");
   const [align, setAlign] = useState(props.vertical ? 'static' : 'flex');
   const [cursorStart, setCursorStart] = useState(0);
   const [cursorEnd, setCursorEnd] = useState(0);
   const inputRef = useRef(null);
   //Assume small
   var textfield = {
-        margin: '0px 4px 0px 4px',
+        margin: '0px 4px 0px 0px',
         height: '24px',
         border: `2px solid ${doenetComponentForegroundInactive}`,
         fontFamily: 'Arial',
@@ -21,7 +21,7 @@ export default function Textfield(props) {
         whiteSpace: 'nowrap',
         padding:"0px 5px 0px 5px",
         lineHeight:"24px",
-        fontSize: "12px"
+        fontSize: "14px"
       }
       var label ={
         value: 'Label:',
@@ -37,9 +37,9 @@ export default function Textfield(props) {
         alignItems: 'center'
     }
 
-    useEffect(() => {
-      setText(props.value);
-    }, [props]);
+    // useEffect(() => {
+    //   setText(props.value);
+    // }, [props]);
 
     useEffect(() => {
       inputRef.current.selectionStart = cursorStart;
@@ -51,7 +51,16 @@ export default function Textfield(props) {
     }
     if (props.label) {
       label.value = props.label;
-  }
+    }
+    if (props.value) {
+      textfield.value = props.value;
+    }
+    if (props.placeholder) {
+      textfield.placeholder = props.placeholder;
+    }
+    if (props.ariaLabel) {
+      textfield.ariaLabel = props.ariaLabel;
+    }
   var disable = "";
   if (props.disabled) {
     textfield.border = '2px solid #e2e2e2';
@@ -86,7 +95,7 @@ function handleKeyDown(e) {
         <>
           <div style={container}>
                 <p style={label}>{label.value}</p>
-                <input type="text" ref={inputRef} value={textfield.value} style={textfield} onChange={(e) => { handleChange(e) }} onBlur={(e) => { handleBlur(e) }} onKeyDown={(e) => { handleKeyDown(e) }} disabled={disable}></input>
+                <input type="text" ref={inputRef} placeholder={textfield.placeholder} defaultValue={textfield.value} aria-label={textfield.ariaLabel} style={textfield} onChange={(e) => { handleChange(e) }} onBlur={(e) => { handleBlur(e) }} onKeyDown={(e) => { handleKeyDown(e) }} disabled={disable}></input>
           </div>
         </>
     )
