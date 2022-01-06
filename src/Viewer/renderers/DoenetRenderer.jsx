@@ -34,13 +34,18 @@ export default class DoenetRenderer extends Component {
       swapChildren: this.swapChildren,
     }
 
-    if (this.constructor.initializeChildrenOnConstruction) {
-      this.initializeChildren();
-    }
+    this.children = [];
 
   }
 
   static initializeChildrenOnConstruction = true;
+
+  async componentDidMount(){
+    if (this.constructor.initializeChildrenOnConstruction) {
+      await this.initializeChildren();
+      this.forceUpdate();
+    }
+  }
 
   update() {
     this.forceUpdate();
@@ -72,11 +77,11 @@ export default class DoenetRenderer extends Component {
     this.forceUpdate();
   }
 
-  initializeChildren() {
+  async initializeChildren() {
     this.children = [];
 
     for (let childInstructions of this.childrenToCreate) {
-      let child = this.createChildFromInstructions(childInstructions);
+      let child = await this.createChildFromInstructionsAsync(childInstructions);
 
       this.children.push(child);
     }
@@ -84,35 +89,35 @@ export default class DoenetRenderer extends Component {
     return this.children;
   }
 
-  createChildFromInstructions(childInstructions) {
-    // add nanoid to key so that will have unique key if recreate
-    // renderer for a component with the same name as an old one
-    // TODO: is this the best way to do it?
+  // createChildFromInstructions(childInstructions) {
+  //   // add nanoid to key so that will have unique key if recreate
+  //   // renderer for a component with the same name as an old one
+  //   // TODO: is this the best way to do it?
 
 
-    if(typeof childInstructions === "string") {
-      return childInstructions;
-    }
+  //   if(typeof childInstructions === "string") {
+  //     return childInstructions;
+  //   }
 
-    let propsForChild = {
-      key: childInstructions.componentName + nanoid(10),
-      componentInstructions: childInstructions,
-      rendererClasses: this.props.rendererClasses,
-      rendererUpdateMethods: this.props.rendererUpdateMethods,
-      flags: this.props.flags,
-    };
-    if (this.doenetPropsForChildren) {
-      Object.assign(propsForChild, this.doenetPropsForChildren);
-    }
-    let rendererClass = this.props.rendererClasses[childInstructions.rendererType];
+  //   let propsForChild = {
+  //     key: childInstructions.componentName + nanoid(10),
+  //     componentInstructions: childInstructions,
+  //     rendererClasses: this.props.rendererClasses,
+  //     rendererUpdateMethods: this.props.rendererUpdateMethods,
+  //     flags: this.props.flags,
+  //   };
+  //   if (this.doenetPropsForChildren) {
+  //     Object.assign(propsForChild, this.doenetPropsForChildren);
+  //   }
+  //   let rendererClass = this.props.rendererClasses[childInstructions.rendererType];
 
-    if (!rendererClass) {
-      throw Error(`Cannot render component ${childInstructions.componentName} as have not loaded renderer type ${childInstructions.rendererType}`)
-    }
+  //   if (!rendererClass) {
+  //     throw Error(`Cannot render component ${childInstructions.componentName} as have not loaded renderer type ${childInstructions.rendererType}`)
+  //   }
 
-    let child = React.createElement(rendererClass, propsForChild);
-    return child;
-  }
+  //   let child = React.createElement(rendererClass, propsForChild);
+  //   return child;
+  // }
 
   async createChildFromInstructionsAsync(childInstructions) {
     // add nanoid to key so that will have unique key if recreate

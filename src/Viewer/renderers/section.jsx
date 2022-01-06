@@ -23,12 +23,14 @@ export default function Section(props) {
   if (SVs.titleChildName) {
     let titleChildInd;
     for (let [ind, child] of children.entries()) {
-      if (child.props.componentInstructions.componentName === SVs.titleChildName) {
+      //child might be a string
+      if (child.props?.componentInstructions.componentName === SVs.titleChildName) {
         titleChildInd = ind;
+        children.splice(titleChildInd, 1); // remove title
         break;
       }
     }
-    children.splice(titleChildInd, 1); // remove title
+    
   }
 
   let title = SVs.title;

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { atomFamily, useRecoilValue } from 'recoil';
-import { serializedComponentsReviver } from '../../Core/utils/serializedStateProcessing';
+// import { serializedComponentsReviver } from '../../Core/utils/serializedStateProcessing';
 import { renderersloadComponent } from '../DoenetViewer';
 
 export const rendererSVs = atomFamily({
