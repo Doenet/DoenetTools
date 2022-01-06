@@ -65,7 +65,7 @@ export default function attempt() {
   const disabled = () => {};
   const absolute = () => {};
   const left = () => {};
-  const [words, setWords] = useState("test");
+  const [words, setWords] = useState("");
 
   //=== DATA STRUCTURE SECTION ===
   let dataStructure = [
@@ -822,11 +822,11 @@ export default function attempt() {
         {name: 'Disabled',
         propPreview: '<Form disabled />',
         propCode: {disabled},
-        description: 'Makes Form not able to be used.'},
+        description: 'Makes component not able to be used'},
         {name: 'clearInput',
-        propPreview: '<Form clearInput={(e) => e.target.value=null} />',
-        propCode: {value: words, clearInput: () => setWords("")},
-        description: 'Makes clear button available. Need to pass a function that clears the input'},
+        propPreview: '<Form clearInput={(e) => {console.log(e.target.value)} />',
+        propCode: {clearInput: (e) => console.log("clear")},
+        description: 'Makes clear button available'},
         ]
       },
     {

@@ -6,7 +6,7 @@ import { faSearch, faTimes } from '@fortawesome/free-solid-svg-icons';
 
 export default function Form(props) {
     // const [textTerm, setTextTerm] = useState("")
-    const [text, setText] = useState("")
+    const [text, setText] = useState(props.value ? props.value : "")
     const [cancelShown, setCancelShown] = useState('hidden')
     const [formwidth,setformWidth] = useState('0px')
     const [labelVisible, setLabelVisible] = useState(props.label ? 'static' : 'none')
@@ -14,6 +14,8 @@ export default function Form(props) {
     const [cursorStart, setCursorStart] = useState(0);
     const [cursorEnd, setCursorEnd] = useState(0);
     const inputRef = useRef(null);
+
+    let cleared = false;
 
     const formRef = useRef(0)
       useEffect(()=>{
@@ -132,8 +134,12 @@ export default function Form(props) {
     textfield.ariaLabel = props.ariaLabel;
   }
   function handleChange(e) {
-    // let val = e.target.value;
-    // setText(val);
+    if (cleared) {
+      setText("");
+    } else {
+      setText(e.target.value)
+      cleared = false;
+    }
 
     if (props.onChange) props.onChange(e.target.value)
     setCursorStart(e.target.selectionStart);
@@ -145,8 +151,8 @@ export default function Form(props) {
     function clearInput(e) {
       if (props.clearInput) props.clearInput(e)
       setCancelShown('hidden')
-      document.getElementById('textarea').value = ""
-      // setText("")
+      cleared = true;
+      handleChange(e);
     }
     function changeTextTerm() {
         // setTextTerm(textfield.value)
@@ -187,8 +193,8 @@ export default function Form(props) {
         >
           <input
             id="textarea"
+            value={text}
             placeholder={textfield.placeholder}
-            defaultValue={textfield.value}
             type="text"
             ref={inputRef}
             style={textfield}
@@ -198,7 +204,6 @@ export default function Form(props) {
             onChange={(e) => {
               handleChange(e);
             }}
-            // onFocus={() => { clearInput() }}
             onBlur={(e) => { handleBlur(e) }}
             onKeyDown={(e) => { handleKeyDown(e) }}
             disabled={disable}
