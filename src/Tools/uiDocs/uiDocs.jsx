@@ -663,6 +663,12 @@ export default function attempt() {
           description: 'Changes the text',
         },
         {
+          name: 'Placeholder',
+          propPreview: '<TextArea placeholder="Enter cat names"/>',
+          propCode: { placeholder: 'Enter cat names' },
+          description: 'Adds placeholder to component',
+        },
+        {
           name: 'Label',
           propPreview: '<TextArea label="What: "/>',
           propCode: { label: 'What: ' },
@@ -675,6 +681,12 @@ export default function attempt() {
           description: 'Adds label to component on top',
         },
         {
+          name: 'Aria Label',
+          propPreview: '<TextArea ariaLabel="Text"/>',
+          propCode: { ariaLabel: 'Text' },
+          description: 'Adds aria label to component',
+        },
+        {
           name: 'Alert',
           propPreview: '<TextArea alert/>',
           propCode: { alert },
@@ -685,6 +697,18 @@ export default function attempt() {
           propPreview: '<TextArea onChange={(data) => console.log(data)} />',
           propCode: { onChange: (data) => console.log(data) },
           description: 'Function called when data changes',
+        },
+        {
+          name: 'onBlur',
+          propPreview: '<Textfield onBlur={(e) => console.log(e.target.value)} />',
+          propCode: { onBlur: (e) => console.log(e.target.value) },
+          description: 'Function called when component blurs',
+        },
+        {
+          name: 'onKeyDown',
+          propPreview: '<Textfield onKeyDown={(e) => console.log(e.key)} />',
+          propCode: { onKeyDown: (e) => console.log(e.key) },
+          description: 'Function called when key hit with focus on component',
         },
         {
           name: 'Disabled',
