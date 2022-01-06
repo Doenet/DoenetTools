@@ -36,13 +36,11 @@ let input = <div
 
             style={{
               width: sizeToCSS(SVs.width),
-              // height: sizeToCSS(SVs.height),
-              maxHeight: sizeToCSS(SVs.height),
-              minHeight: sizeToCSS(SVs.height),
+              minHeight: sizeToCSS(SVs.minHeight),
+              maxHeight: sizeToCSS(SVs.maxHeight),
               padding: "0px",
               border: "1px solid black",
               overflowY: "scroll"
-              // display: "inline"
             }}>
   <CodeMirror
   // key = {codemirrorKey}

@@ -1,6 +1,6 @@
-import Input from './abstract/Input';
+import BlockComponent from './abstract/BlockComponent';
 
-export default class CodeEditor extends Input {
+export default class CodeEditor extends BlockComponent {
   constructor(args) {
     super(args);
 
@@ -44,6 +44,20 @@ export default class CodeEditor extends Input {
     attributes.height = {
       createComponentOfType: "_componentSize",
       createStateVariable: "height",
+      defaultValue: { size: 120, isAbsolute: true },
+      forRenderer: true,
+      public: true,
+    };
+    attributes.minHeight = {
+      createComponentOfType: "_componentSize",
+      createStateVariable: "minHeight",
+      defaultValue: { size: 26, isAbsolute: true },
+      forRenderer: true,
+      public: true,
+    };
+    attributes.maxHeight = {
+      createComponentOfType: "_componentSize",
+      createStateVariable: "maxHeight",
       defaultValue: { size: 120, isAbsolute: true },
       forRenderer: true,
       public: true,
