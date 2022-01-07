@@ -1034,6 +1034,7 @@ export default class Answer extends InlineComponent {
           variableNames: ["creditAchievedIfSubmit"],
           includeImmediateValueWithValue: true,
           includeRawValueWithImmediateValue: true,
+          includeOnlyEssentialValues: true,
         },
       }),
       definition({ dependencyValues }) {
