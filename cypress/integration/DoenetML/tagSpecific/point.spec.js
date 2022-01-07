@@ -1357,60 +1357,158 @@ describe('Point Tag Tests', function () {
         doenetML: `
   <text>a</text>
   <graph>
-
-  <point x="1" y="2">
-    <constraints>
-      <constrainToGraph/>
-    </constraints>
-  </point>
-
+    <point x="1" y="2" name="A">
+      <constraints baseOnGraph="_graph1">
+        <constrainToGraph/>
+      </constraints>
+    </point>
+    <point x="3" y="4" name="C">
+      <constraints baseOnGraph="_graph1">
+        <constrainToGraph buffer="0.025" />
+      </constraints>
+    </point>
   </graph>
-  <math><copy prop="coords" target="_point1" /></math>
-  <boolean><copy prop="constraintUsed" target="_point1" /></boolean>
+
+  <graph xmin="-20" xmax="20" ymin="-20" ymax="20" >
+    <copy target="A" assignNames="B" />
+    <copy target="C" assignNames="D" />
+  </graph>
+
+  <math><copy prop="coords" target="A" /></math>
+  <boolean><copy prop="constraintUsed" target="A" /></boolean>
+  <math><copy prop="coords" target="B" /></math>
+  <boolean><copy prop="constraintUsed" target="B" /></boolean>
   `}, "*");
     });
 
     // use this to wait for page to load
     cy.get('#\\/_text1').should('have.text', 'a')
 
-    cy.log(`move point to (105,3)`)
+    cy.log(`move point A to (105,3)`)
     cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      await components['/_point1'].movePoint({ x: 105, y: 3 });
-      expect((await components['/_point1'].stateValues.xs)[0].tree).eq(9.8);
-      expect((await components['/_point1'].stateValues.xs)[1].tree).eq(3);
-      expect(components['/_point1'].stateValues.constraintUsed).eq(true);
+      await components['/A'].movePoint({ x: 105, y: 3 });
+      expect((await components['/A'].stateValues.xs)[0].tree).eq(9.8);
+      expect((await components['/A'].stateValues.xs)[1].tree).eq(3);
+      expect(components['/A'].stateValues.constraintUsed).eq(true);
+      expect((await components['/B'].stateValues.xs)[0].tree).eq(9.8);
+      expect((await components['/B'].stateValues.xs)[1].tree).eq(3);
+      expect(components['/B'].stateValues.constraintUsed).eq(true);
     })
     cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(9.8,3)')
     });
     cy.get('#\\/_boolean1').should('have.text', "true")
+    cy.get('#\\/_math2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(9.8,3)')
+    });
+    cy.get('#\\/_boolean2').should('have.text', "true")
 
-    cy.log(`move point to (-30,11)`)
+    cy.log(`move point A to (-30,11)`)
     cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      await components['/_point1'].movePoint({ x: -9.8, y: 9.8 });
-      expect((await components['/_point1'].stateValues.xs)[0].tree).eq(-9.8);
-      expect((await components['/_point1'].stateValues.xs)[1].tree).eq(9.8);
-      expect(components['/_point1'].stateValues.constraintUsed).eq(true);
+      await components['/A'].movePoint({ x: -9.8, y: 9.8 });
+      expect((await components['/A'].stateValues.xs)[0].tree).eq(-9.8);
+      expect((await components['/A'].stateValues.xs)[1].tree).eq(9.8);
+      expect(components['/A'].stateValues.constraintUsed).eq(true);
+      expect((await components['/B'].stateValues.xs)[0].tree).eq(-9.8);
+      expect((await components['/B'].stateValues.xs)[1].tree).eq(9.8);
+      expect(components['/B'].stateValues.constraintUsed).eq(true);
     })
     cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(−9.8,9.8)')
     });
     cy.get('#\\/_boolean1').should('have.text', "true")
+    cy.get('#\\/_math2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(−9.8,9.8)')
+    });
+    cy.get('#\\/_boolean2').should('have.text', "true")
 
-    cy.log(`move point to (-3,1)`)
+    cy.log(`move point A to (-3,1)`)
     cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      await components['/_point1'].movePoint({ x: -3, y: 1 });
-      expect((await components['/_point1'].stateValues.xs)[0].tree).eq(-3);
-      expect((await components['/_point1'].stateValues.xs)[1].tree).eq(1);
-      expect(components['/_point1'].stateValues.constraintUsed).eq(true);
+      await components['/A'].movePoint({ x: -3, y: 1 });
+      expect((await components['/A'].stateValues.xs)[0].tree).eq(-3);
+      expect((await components['/A'].stateValues.xs)[1].tree).eq(1);
+      expect(components['/A'].stateValues.constraintUsed).eq(true);
+      expect((await components['/B'].stateValues.xs)[0].tree).eq(-3);
+      expect((await components['/B'].stateValues.xs)[1].tree).eq(1);
+      expect(components['/B'].stateValues.constraintUsed).eq(true);
     })
     cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(−3,1)')
     });
     cy.get('#\\/_boolean1').should('have.text', "true")
+    cy.get('#\\/_math2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(−3,1)')
+    });
+    cy.get('#\\/_boolean2').should('have.text', "true")
+
+    cy.log(`move point B to (-7,18)`)
+    cy.window().then(async (win) => {
+      let components = Object.assign({}, win.state.components);
+      await components['/B'].movePoint({ x: -7, y: 18 });
+      expect((await components['/A'].stateValues.xs)[0].tree).eq(-7);
+      expect((await components['/A'].stateValues.xs)[1].tree).eq(9.8);
+      expect(components['/A'].stateValues.constraintUsed).eq(true);
+      expect((await components['/B'].stateValues.xs)[0].tree).eq(-7);
+      expect((await components['/B'].stateValues.xs)[1].tree).eq(9.8);
+      expect(components['/B'].stateValues.constraintUsed).eq(true);
+    })
+    cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(−7,9.8)')
+    });
+    cy.get('#\\/_boolean1').should('have.text', "true")
+    cy.get('#\\/_math2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(−7,9.8)')
+    });
+    cy.get('#\\/_boolean2').should('have.text', "true")
+
+
+    cy.log(`move point B to (56,-91)`)
+    cy.window().then(async (win) => {
+      let components = Object.assign({}, win.state.components);
+      await components['/B'].movePoint({ x: 56, y: -91 });
+      expect((await components['/A'].stateValues.xs)[0].tree).eq(9.8);
+      expect((await components['/A'].stateValues.xs)[1].tree).eq(-9.8);
+      expect(components['/A'].stateValues.constraintUsed).eq(true);
+      expect((await components['/B'].stateValues.xs)[0].tree).eq(9.8);
+      expect((await components['/B'].stateValues.xs)[1].tree).eq(-9.8);
+      expect(components['/B'].stateValues.constraintUsed).eq(true);
+    })
+    cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(9.8,−9.8)')
+    });
+    cy.get('#\\/_boolean1').should('have.text', "true")
+    cy.get('#\\/_math2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(9.8,−9.8)')
+    });
+    cy.get('#\\/_boolean2').should('have.text', "true")
+
+    cy.log(`move point C to (56,-91)`)
+    cy.window().then(async (win) => {
+      let components = Object.assign({}, win.state.components);
+      await components['/C'].movePoint({ x: 56, y: -91 });
+      expect((await components['/C'].stateValues.xs)[0].tree).eq(9.5);
+      expect((await components['/C'].stateValues.xs)[1].tree).eq(-9.5);
+      expect(await components['/C'].stateValues.constraintUsed).eq(true);
+      expect((await components['/D'].stateValues.xs)[0].tree).eq(9.5);
+      expect((await components['/D'].stateValues.xs)[1].tree).eq(-9.5);
+      expect(await components['/D'].stateValues.constraintUsed).eq(true);
+    })
+
+    cy.log(`move point D to (5,15)`)
+    cy.window().then(async (win) => {
+      let components = Object.assign({}, win.state.components);
+      await components['/D'].movePoint({ x: 5, y: 15 });
+      expect((await components['/C'].stateValues.xs)[0].tree).eq(5);
+      expect((await components['/C'].stateValues.xs)[1].tree).eq(9.5);
+      expect(await components['/C'].stateValues.constraintUsed).eq(true);
+      expect((await components['/D'].stateValues.xs)[0].tree).eq(5);
+      expect((await components['/D'].stateValues.xs)[1].tree).eq(9.5);
+      expect(await components['/D'].stateValues.constraintUsed).eq(true);
+    })
+
   });
 
   it('three points with one constrained to grid', () => {
@@ -2235,6 +2333,171 @@ describe('Point Tag Tests', function () {
       })
       cy.get(constraintUsed1Anchor).should('have.text', "true")
     })
+
+  });
+
+  it('point attracted to line, based on graph', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <p>xmin = <mathinput name="xmin" prefill="-10" /></p>
+  <p>xmax = <mathinput name="xmax" prefill="10" /></p>
+  <p>ymin = <mathinput name="ymin" prefill="-10" /></p>
+  <p>ymax = <mathinput name="ymax" prefill="10" /></p>
+  <graph xmin="$xmin" xmax="$xmax" ymin="$ymin" ymax="$ymax">
+  <point>(-1,-10)</point>
+  <point>(1,10)</point>
+  <line through="$_point1 $_point2"/>
+  <point name="A" xs="-1 -5">
+    <constraints baseOnGraph="_graph1">
+      <attractTo><copy target="_line1" /></attractTo>
+    </constraints>
+  </point>
+  </graph>
+  <graph xmin="$ymin" xmax="$ymax" ymin="$xmin" ymax="$xmax">
+    <copy target="A" assignNames="B" />
+  </graph>
+  <copy prop="constraintUsed" assignNames="constraintUsedA" target="A" />
+  <copy prop="constraintUsed" assignNames="constraintUsedB" target="B" />
+
+  `}, "*");
+    });
+
+    // use this to wait for page to load
+    cy.get('#\\/_text1').should('have.text', 'a')
+
+    cy.log(`point is not on line`);
+    cy.window().then(async (win) => {
+      let components = Object.assign({}, win.state.components);
+      expect((await components['/A'].stateValues.xs).map(x => x.tree)).eqls([-1, -5])
+      expect((await components['/B'].stateValues.xs).map(x => x.tree)).eqls([-1, -5])
+      expect(await components['/A'].stateValues.constraintUsed).eq(false);
+      expect(await components['/B'].stateValues.constraintUsed).eq(false);
+    })
+
+    cy.get("#\\/constraintUsedA").should('have.text', "false")
+    cy.get("#\\/constraintUsedB").should('have.text', "false")
+
+    cy.log(`move point near line`);
+    cy.window().then(async (win) => {
+      let components = Object.assign({}, win.state.components);
+      await components['/A'].movePoint({ x: 0.3, y: 0 });
+      expect((await components['/A'].stateValues.xs)[0].tree - 0.1*(await components['/A'].stateValues.xs)[1].tree).closeTo(0, 1E-14);
+      expect((await components['/B'].stateValues.xs)[0].tree - 0.1*(await components['/A'].stateValues.xs)[1].tree).closeTo(0, 1E-14);
+      expect(await components['/A'].stateValues.constraintUsed).eq(true);
+      expect(await components['/B'].stateValues.constraintUsed).eq(true);
+    })
+
+    cy.get("#\\/constraintUsedA").should('have.text', "true")
+    cy.get("#\\/constraintUsedB").should('have.text', "true")
+
+    cy.log('narrow range in x')
+    cy.get('#\\/xmin textarea').type("{end}{backspace}{enter}", { force: true })
+    cy.get('#\\/xmax textarea').type("{end}{backspace}{enter}", { force: true })
+    cy.window().then(async (win) => {
+      let components = Object.assign({}, win.state.components);
+      expect((await components['/A'].stateValues.xs)[0].tree - 0.1*(await components['/A'].stateValues.xs)[1].tree).closeTo(0, 1E-14);
+      expect((await components['/B'].stateValues.xs)[0].tree - 0.1*(await components['/A'].stateValues.xs)[1].tree).closeTo(0, 1E-14);
+      expect(await components['/A'].stateValues.constraintUsed).eq(true);
+      expect(await components['/B'].stateValues.constraintUsed).eq(true);
+    })
+
+    cy.get("#\\/constraintUsedA").should('have.text', "true")
+    cy.get("#\\/constraintUsedB").should('have.text', "true")
+
+    cy.log('point is no longer close')
+    
+    cy.window().then(async (win) => {
+      let components = Object.assign({}, win.state.components);
+      await components['/A'].movePoint({ x: 0.3, y: 0 });
+      expect((await components['/A'].stateValues.xs).map(x => x.tree)).eqls([0.3, 0])
+      expect((await components['/B'].stateValues.xs).map(x => x.tree)).eqls([0.3, 0])
+      expect(await components['/A'].stateValues.constraintUsed).eq(false);
+      expect(await components['/B'].stateValues.constraintUsed).eq(false);
+    })
+
+    cy.get("#\\/constraintUsedA").should('have.text', "false")
+    cy.get("#\\/constraintUsedB").should('have.text', "false")
+
+    cy.log('point is close again for larger x limits')
+
+    cy.get('#\\/xmin textarea').type("{end}0{enter}", { force: true })
+    cy.get('#\\/xmax textarea').type("{end}0{enter}", { force: true })
+    cy.window().then(async (win) => {
+      let components = Object.assign({}, win.state.components);
+      expect((await components['/A'].stateValues.xs)[0].tree - 0.1*(await components['/A'].stateValues.xs)[1].tree).closeTo(0, 1E-14);
+      expect((await components['/B'].stateValues.xs)[0].tree - 0.1*(await components['/A'].stateValues.xs)[1].tree).closeTo(0, 1E-14);
+      expect(await components['/A'].stateValues.constraintUsed).eq(true);
+      expect(await components['/B'].stateValues.constraintUsed).eq(true);
+    })
+
+    cy.get("#\\/constraintUsedA").should('have.text', "true")
+    cy.get("#\\/constraintUsedB").should('have.text', "true")
+
+
+    cy.log('make line with shallow slope')
+    cy.window().then(async (win) => {
+      let components = Object.assign({}, win.state.components);
+      await components['/_point1'].movePoint({ x: 10, y: -0.1 });
+      await components['/_point2'].movePoint({ x: -10, y: 0.1 });
+      expect((await components['/A'].stateValues.xs)[0].tree + 100*(await components['/A'].stateValues.xs)[1].tree).closeTo(0, 1E-14);
+      expect((await components['/B'].stateValues.xs)[0].tree + 100*(await components['/A'].stateValues.xs)[1].tree).closeTo(0, 1E-14);
+      expect(await components['/A'].stateValues.constraintUsed).eq(true);
+      expect(await components['/B'].stateValues.constraintUsed).eq(true);
+    })
+
+    cy.get("#\\/constraintUsedA").should('have.text', "true")
+    cy.get("#\\/constraintUsedB").should('have.text', "true")
+
+
+    cy.log('move point away from line')
+    
+    cy.window().then(async (win) => {
+      let components = Object.assign({}, win.state.components);
+      await components['/A'].movePoint({ x: -6, y: 8 });
+      expect((await components['/A'].stateValues.xs).map(x => x.tree)).eqls([-6, 8])
+      expect((await components['/B'].stateValues.xs).map(x => x.tree)).eqls([-6, 8])
+      expect(await components['/A'].stateValues.constraintUsed).eq(false);
+      expect(await components['/B'].stateValues.constraintUsed).eq(false);
+    })
+
+    cy.get("#\\/constraintUsedA").should('have.text', "false")
+    cy.get("#\\/constraintUsedB").should('have.text', "false")
+
+
+    cy.log('point is close again for larger y limits')
+
+    cy.get('#\\/ymin textarea').type("{end}00{enter}", { force: true })
+    cy.get('#\\/ymax textarea').type("{end}00{enter}", { force: true })
+    cy.window().then(async (win) => {
+      let components = Object.assign({}, win.state.components);
+      expect((await components['/A'].stateValues.xs)[0].tree + 100*(await components['/A'].stateValues.xs)[1].tree).closeTo(0, 1E-14);
+      expect((await components['/B'].stateValues.xs)[0].tree + 100*(await components['/A'].stateValues.xs)[1].tree).closeTo(0, 1E-14);
+      expect(await components['/A'].stateValues.constraintUsed).eq(true);
+      expect(await components['/B'].stateValues.constraintUsed).eq(true);
+    })
+
+    cy.get("#\\/constraintUsedA").should('have.text', "true")
+    cy.get("#\\/constraintUsedB").should('have.text', "true")
+
+
+    cy.log('point is not close for smaller y limits')
+
+    cy.get('#\\/ymin textarea').type("{end}{backspace}{enter}", { force: true })
+    cy.get('#\\/ymax textarea').type("{end}{backspace}{enter}", { force: true })
+    cy.window().then(async (win) => {
+      let components = Object.assign({}, win.state.components);
+      expect((await components['/A'].stateValues.xs).map(x => x.tree)).eqls([-6, 8])
+      expect((await components['/B'].stateValues.xs).map(x => x.tree)).eqls([-6, 8])
+      expect(await components['/A'].stateValues.constraintUsed).eq(false);
+      expect(await components['/B'].stateValues.constraintUsed).eq(false);
+    })
+
+    cy.get("#\\/constraintUsedA").should('have.text', "false")
+    cy.get("#\\/constraintUsedB").should('have.text', "false")
+
+
 
   });
 

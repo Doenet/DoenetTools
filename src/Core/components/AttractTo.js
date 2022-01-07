@@ -9,15 +9,7 @@ export default class AttractTo extends ConstraintComponent {
     let attributes = super.createAttributesObject(args);
     attributes.threshold = {
       createComponentOfType: "number",
-      createStateVariable: "threshold",
-      defaultValue: 0.5,
-      public: true,
-    }
-    attributes.thresholdRelativeToGraph = {
-      createComponentOfType: "boolean",
-      createStateVariable: "thresholdRelativeToGraph",
-      defaultValue: false,
-      public: true,
+
     }
     return attributes;
   }
@@ -35,6 +27,83 @@ export default class AttractTo extends ConstraintComponent {
   static returnStateVariableDefinitions() {
 
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
+
+    stateVariableDefinitions.essentialThreshold = {
+      returnDependencies: () => ({
+        constraintsAncestor: {
+          dependencyType: "ancestor",
+          componentType: "constraints",
+          variableNames: ["graphXmin"]
+        }
+      }),
+      definition({ dependencyValues }) {
+        let defaultValue = 0.02;
+        if (dependencyValues.constraintsAncestor === null ||
+          dependencyValues.constraintsAncestor.stateValues.graphXmin === null
+        ) {
+          defaultValue = 0.5;
+        }
+
+        return { useEssentialOrDefaultValue: { essentialThreshold: { defaultValue } } }
+
+      },
+      inverseDefinition({ desiredStateVariableValues }) {
+        return {
+          success: true,
+          instructions: [{
+            setStateVariable: "essentialThreshold",
+            value: desiredStateVariableValues.essentialThreshold
+          }]
+        }
+      }
+
+    }
+
+    stateVariableDefinitions.threshold = {
+      public: true,
+      componentType: "number",
+      returnDependencies: () => ({
+        thresholdAttr: {
+          dependencyType: "attributeComponent",
+          attributeName: "threshold",
+          variableNames: ["value"]
+        },
+        essentialThreshold: {
+          dependencyType: "stateVariable",
+          variableName: "essentialThreshold"
+        }
+      }),
+      definition({ dependencyValues }) {
+        if (dependencyValues.thresholdAttr) {
+          return {
+            newValues: { threshold: dependencyValues.thresholdAttr.stateValues.value }
+          }
+        } else {
+          return {
+            newValues: { threshold: dependencyValues.essentialThreshold }
+          }
+        }
+      },
+      inverseDefinition({ desiredStateVariableValues, dependencyValues }) {
+        if (dependencyValues.thresholdAttr) {
+          return {
+            success: true,
+            instructions: [{
+              setDependency: "thresholdAttr",
+              desiredValue: desiredStateVariableValues.threshold
+            }]
+          }
+        } else {
+          return {
+            success: true,
+            instructions: [{
+              setDependency: "essentialThreshold",
+              desiredValue: desiredStateVariableValues.threshold
+            }]
+          }
+        }
+      },
+    }
 
     stateVariableDefinitions.nearestPointFunctions = {
       returnDependencies: () => ({
@@ -61,9 +130,41 @@ export default class AttractTo extends ConstraintComponent {
       }
     }
 
+    stateVariableDefinitions.graphXscale = {
+      alwaysShadow: true,
+      additionalStateVariablesDefined: [{
+        variableName: "graphYscale",
+        alwaysShadow: true,
+      }],
+      returnDependencies: () => ({
+        graphAncestor: {
+          dependencyType: "ancestor",
+          componentType: "constraints",
+          variableNames: ["scales"]
+        },
+      }),
+      definition({ dependencyValues }) {
+        if (!dependencyValues.graphAncestor) {
+          return {
+            newValues: {
+              graphXscale: null, graphYscale: null
+            }
+          }
+        }
+        let graphXscale = dependencyValues.graphAncestor.stateValues.xscale;
+        let graphYscale = dependencyValues.graphAncestor.stateValues.yscale;
+
+        return {
+          newValues: {
+            graphXscale, graphYscale
+          }
+        }
+      }
+    }
+
+
     stateVariableDefinitions.applyConstraint = {
-      stateVariablesDeterminingDependencies: ["thresholdRelativeToGraph"],
-      returnDependencies({ stateValues }) {
+      returnDependencies() {
         let dependencies = {
           nearestPointFunctions: {
             dependencyType: "stateVariable",
@@ -73,18 +174,11 @@ export default class AttractTo extends ConstraintComponent {
             dependencyType: "stateVariable",
             variableName: "threshold"
           },
-          thresholdRelativeToGraph: {
-            dependencyType: "stateVariable",
-            variableName: "thresholdRelativeToGraph"
-          }
-        }
-
-        if (stateValues.thresholdRelativeToGraph) {
-          dependencies.graphAncestor = {
+          constraintsAncestor: {
             dependencyType: "ancestor",
-            componentType: "graph",
-            variableNames: ["xscale", "yscale"]
-          }
+            componentType: "constraints",
+            variableNames: ["scales"]
+          },
         }
 
         return dependencies;
@@ -94,12 +188,8 @@ export default class AttractTo extends ConstraintComponent {
 
         let xscale = 1, yscale = 1;
 
-        if (dependencyValues.thresholdRelativeToGraph) {
-          if (dependencyValues.graphAncestor) {
-            xscale = dependencyValues.graphAncestor.stateValues.xscale;
-            yscale = dependencyValues.graphAncestor.stateValues.yscale;
-
-          }
+        if(dependencyValues.constraintsAncestor) {
+          [xscale, yscale] = dependencyValues.constraintsAncestor.stateValues.scales;
         }
 
         return {
