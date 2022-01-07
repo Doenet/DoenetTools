@@ -9697,7 +9697,7 @@ describe('Line Tag Tests', function () {
   <graph xmin="-110" xmax="110" ymin="-0.11" ymax="0.11">
     <line through="(0,0) (1,0.05)" name="l" />
     <point x="100" y="0" name="P">
-      <constraints scalesFromGraph="_graph1">
+      <constraints baseOnGraph="_graph1">
         <constrainTo><copy target="l" /></constrainTo>
       </constraints>
     </point>

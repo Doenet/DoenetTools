@@ -9,15 +9,9 @@ export default class Constraints extends BaseComponent {
   static createAttributesObject(args) {
     let attributes = super.createAttributesObject(args);
 
-    attributes.scales = {
-      createComponentOfType: "numberList",
-      createStateVariable: "preliminaryScales",
-      defaultValue: null,
-    };
-
-    attributes.scalesFromGraph = {
+    attributes.baseOnGraph = {
       createPrimitiveOfType: "string",
-      createStateVariable: "scalesFromGraph",
+      createStateVariable: "baseOnGraph",
       defaultValue: null,
     }
 
@@ -98,13 +92,13 @@ export default class Constraints extends BaseComponent {
     }
 
     stateVariableDefinitions.graphComponentName = {
-      stateVariablesDeterminingDependencies: ["scalesFromGraph"],
+      stateVariablesDeterminingDependencies: ["baseOnGraph"],
       returnDependencies({ stateValues }) {
-        if (stateValues.scalesFromGraph) {
+        if (stateValues.baseOnGraph) {
           return {
             graphComponentName: {
               dependencyType: "expandTargetName",
-              target: stateValues.scalesFromGraph
+              target: stateValues.baseOnGraph
             }
           }
         } else {
@@ -112,7 +106,11 @@ export default class Constraints extends BaseComponent {
         }
       },
       definition({ dependencyValues }) {
-        return { newValues: { graphComponentName: dependencyValues.graphComponentName } }
+        if (dependencyValues.graphComponentName) {
+          return { newValues: { graphComponentName: dependencyValues.graphComponentName } }
+        } else {
+          return { newValues: { graphComponentName: null } }
+        }
       }
     }
 
@@ -121,35 +119,20 @@ export default class Constraints extends BaseComponent {
       componentType: "number",
       stateVariablesDeterminingDependencies: ["graphComponentName"],
       returnDependencies({ stateValues }) {
-        let dependencies = {
-          preliminaryScales: {
-            dependencyType: "stateVariable",
-            variableName: "preliminaryScales"
-          }
-        }
         if (stateValues.graphComponentName) {
-          dependencies.graph = {
-            dependencyType: "multipleStateVariables",
-            componentName: stateValues.graphComponentName,
-            variableNames: ["xscale", "yscale"],
-            variablesOptional: true,
+          return {
+            graph: {
+              dependencyType: "multipleStateVariables",
+              componentName: stateValues.graphComponentName,
+              variableNames: ["xscale", "yscale"],
+              variablesOptional: true,
+            }
           }
-
+        } else {
+          return {};
         }
-
-        return dependencies;
       },
       definition({ dependencyValues }) {
-
-        if (dependencyValues.preliminaryScales &&
-          dependencyValues.preliminaryScales.every(x => Number.isFinite(x) && x > 0)
-        ) {
-          let scales = [...dependencyValues.preliminaryScales];
-          if (scales.length < 3) {
-            scales.push(...Array(3 - scales.length).fill(1))
-          }
-          return { newValues: { scales } }
-        }
 
         if (dependencyValues.graph) {
           let SVs = dependencyValues.graph.stateValues;
@@ -163,6 +146,53 @@ export default class Constraints extends BaseComponent {
         return { newValues: { scales: [1, 1, 1] } }
       }
     }
+
+    stateVariableDefinitions.graphXmin = {
+      additionalStateVariablesDefined: ["graphXmax", "graphYmin", "graphYmax"],
+      stateVariablesDeterminingDependencies: ["graphComponentName"],
+      returnDependencies({ stateValues }) {
+        if (stateValues.graphComponentName) {
+          return {
+            graph: {
+              dependencyType: "multipleStateVariables",
+              componentName: stateValues.graphComponentName,
+              variableNames: ["xmin", "xmax", "ymin", "ymax"],
+              variablesOptional: true,
+            }
+          }
+        } else {
+          return {};
+        }
+      },
+      definition({ dependencyValues }) {
+        if (!dependencyValues.graph) {
+          return {
+            newValues: {
+              graphXmin: null, graphXmax: null, graphYmin: null, graphYmax: null
+            }
+          }
+        }
+        let graphXmin = dependencyValues.graph.stateValues.xmin;
+        let graphXmax = dependencyValues.graph.stateValues.xmax;
+        let graphYmin = dependencyValues.graph.stateValues.ymin;
+        let graphYmax = dependencyValues.graph.stateValues.ymax;
+
+        if ([graphXmin, graphXmax, graphYmin, graphYmax].every(Number.isFinite)) {
+          return {
+            newValues: {
+              graphXmin, graphXmax, graphYmin, graphYmax
+            }
+          }
+        } else {
+          return {
+            newValues: {
+              graphXmin: null, graphXmax: null, graphYmin: null, graphYmax: null
+            }
+          }
+        }
+      }
+    }
+
 
     stateVariableDefinitions.constraintResults = {
       additionalStateVariablesDefined: [{

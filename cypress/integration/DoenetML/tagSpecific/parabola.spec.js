@@ -4766,7 +4766,7 @@ describe('Parabola Tag Tests', function () {
     <graph ymin="-1000" ymax="1000">
     <parabola through="(1,-200) (2,-300) (0,-300)" name="p" />
     <point x="0" y="0" name="A">
-      <constraints scalesFromGraph="_graph1">
+      <constraints baseOnGraph="_graph1">
         <constrainTo>$p</constrainTo>
       </constraints>
     </point>
