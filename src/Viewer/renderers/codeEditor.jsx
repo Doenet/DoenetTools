@@ -14,7 +14,7 @@ if (SVs.hidden) {
   return null;
 }
 
-const inputKey = name + '_input';
+const editorKey = name + '_editor';
 const codemirrorKey = name + '_codemirror';
 
 //Received update from core to immediateValue
@@ -30,9 +30,9 @@ if (SVs.immediateValue !== currentValue.current) {
   updateInternalValue.current = SVs.immediateValue;
 }
 
-let input = <div 
-            key={inputKey}
-            id={inputKey}
+let editor = <div 
+            key={editorKey}
+            id={editorKey}
 
             style={{
               width: sizeToCSS(SVs.width),
@@ -76,9 +76,9 @@ let input = <div
 
   return <>
   <a name={name} />
-  <span className="codeEditorSurroundingBox" id={name}>
-    {input}
-  </span>
+  <div className="codeEditorSurroundingBox" id={name}>
+    {editor}
+  </div>
 
 </>
 }
