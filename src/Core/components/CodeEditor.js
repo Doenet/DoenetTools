@@ -44,23 +44,15 @@ export default class CodeEditor extends BlockComponent {
     attributes.height = {
       createComponentOfType: "_componentSize",
       createStateVariable: "height",
-      defaultValue: { size: 120, isAbsolute: true },
-      forRenderer: true,
+      // defaultValue: { size: 120, isAbsolute: true },
+      defaultValue: null,  //fall back to minheight and maxheight
       public: true,
     };
     attributes.minHeight = {
       createComponentOfType: "_componentSize",
-      createStateVariable: "minHeight",
-      defaultValue: { size: 26, isAbsolute: true },
-      forRenderer: true,
-      public: true,
     };
     attributes.maxHeight = {
       createComponentOfType: "_componentSize",
-      createStateVariable: "maxHeight",
-      defaultValue: { size: 120, isAbsolute: true },
-      forRenderer: true,
-      public: true,
     };
     return attributes;
   }
@@ -69,6 +61,66 @@ export default class CodeEditor extends BlockComponent {
   static returnStateVariableDefinitions() {
 
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
+
+    stateVariableDefinitions.minHeight = {
+      public: true,
+      componentType: "_componentSize",
+      forRenderer: true,
+      defaultValue: { size: 26, isAbsolute: true },
+      returnDependencies: () => ({
+        minHeightAttr: {
+          dependencyType: "attributeComponent",
+          attributeName: "minHeight",
+          variableNames: ["componentSize"],
+        },
+        height: {
+          dependencyType: "stateVariable",
+          variableName: "height"
+        },
+      }),
+      definition: function ({ dependencyValues, usedDefault }) {
+        if (!usedDefault.height){
+          //Author specified height
+          return { newValues: { minHeight: dependencyValues.height } };
+        }else if (dependencyValues.minHeightAttr){
+          //Author specified minHeight
+          return { newValues: { minHeight: dependencyValues.minHeightAttr.stateValues.componentSize } };
+        }else{
+          //Default
+          return { useEssentialOrDefaultValue: {minHeight: {}} };
+        }
+      },
+    }
+
+    stateVariableDefinitions.maxHeight = {
+      public: true,
+      componentType: "_componentSize",
+      forRenderer: true,
+      defaultValue: { size: 120, isAbsolute: true },
+      returnDependencies: () => ({
+        maxHeightAttr: {
+          dependencyType: "attributeComponent",
+          attributeName: "maxHeight",
+          variableNames: ["componentSize"],
+        },
+        height: {
+          dependencyType: "stateVariable",
+          variableName: "height"
+        },
+      }),
+      definition: function ({ dependencyValues, usedDefault }) {
+        if (!usedDefault.height){
+          //Author specified height
+          return { newValues: { maxHeight: dependencyValues.height } };
+        }else if (dependencyValues.maxHeightAttr){
+          //Author specified maxHeight
+          return { newValues: { maxHeight: dependencyValues.maxHeightAttr.stateValues.componentSize } };
+        }else{
+          //Default
+          return { useEssentialOrDefaultValue: {maxHeight: {}} };
+        }
+      },
+    }
 
     stateVariableDefinitions.value = {
       public: true,
@@ -181,7 +233,6 @@ export default class CodeEditor extends BlockComponent {
         };
       }
     }
-
 
     stateVariableDefinitions.text = {
       public: true,
