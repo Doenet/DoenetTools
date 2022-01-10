@@ -3922,7 +3922,7 @@ describe('MathInput Tag Tests', function () {
 
   });
 
-  it('prefill is fixed', () => {
+  it('change prefill', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
@@ -3944,22 +3944,59 @@ describe('MathInput Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = win.state.components;
+      expect(components["/mi"].stateValues.value.tree).eqls(["tuple", 1, 2])
       expect(components["/mi"].stateValues.prefill.tree).eqls(["tuple", 1, 2])
     });
 
-    cy.log('cannot change prefill')
+    cy.log('change prefill')
 
-    cy.get('#\\/mipf textarea').type("{end}{backspace}5{enter}", { force: true });
+    cy.get('#\\/mipf textarea').type("{end}{leftArrow}{backspace}5{enter}", { force: true }).blur();
 
-    cy.get('#\\/mi .mq-editable-field').should('have.text', '(1,2)')
-    cy.get('#\\/mipf .mq-editable-field').should('contain.text', '(1,2)')
+    cy.get('#\\/mi .mq-editable-field').should('have.text', '(1,5)')
+    cy.get('#\\/mipf .mq-editable-field').should('have.text', '(1,5)')
     cy.get('#\\/pf .mjx-mrow').eq(0).invoke('text').then(text => {
-      expect(text).eq("(1,2)");
+      expect(text).eq("(1,5)");
     })
 
     cy.window().then((win) => {
       let components = win.state.components;
-      expect(components["/mi"].stateValues.prefill.tree).eqls(["tuple", 1, 2])
+      expect(components["/mi"].stateValues.value.tree).eqls(["tuple", 1, 5])
+      expect(components["/mi"].stateValues.prefill.tree).eqls(["tuple", 1, 5])
+    });
+
+
+    cy.log('change value')
+
+    cy.get('#\\/mi textarea').type("{end}{leftArrow}{backspace}9{enter}", { force: true }).blur();
+
+    cy.get('#\\/mi .mq-editable-field').should('have.text', '(1,9)')
+    cy.get('#\\/mipf .mq-editable-field').should('have.text', '(1,5)')
+    cy.get('#\\/pf .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq("(1,5)");
+    })
+
+    cy.window().then((win) => {
+      let components = win.state.components;
+      expect(components["/mi"].stateValues.value.tree).eqls(["tuple", 1, 9])
+      expect(components["/mi"].stateValues.prefill.tree).eqls(["tuple", 1, 5])
+    });
+
+
+
+    cy.log('change prefill again')
+
+    cy.get('#\\/mipf textarea').type("{end}{leftArrow}{backspace}7{enter}", { force: true }).blur();
+
+    cy.get('#\\/mi .mq-editable-field').should('have.text', '(1,9)')
+    cy.get('#\\/mipf .mq-editable-field').should('have.text', '(1,7)')
+    cy.get('#\\/pf .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq("(1,7)");
+    })
+
+    cy.window().then((win) => {
+      let components = win.state.components;
+      expect(components["/mi"].stateValues.value.tree).eqls(["tuple", 1, 9])
+      expect(components["/mi"].stateValues.prefill.tree).eqls(["tuple", 1, 7])
     });
 
   });

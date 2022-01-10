@@ -49,7 +49,7 @@ export default class RenderDoenetML extends CompositeComponent {
           }
         }
 
-        return { newValues: { doenetML } };
+        return { setValue: { doenetML } };
       }
 
     }
@@ -65,7 +65,7 @@ export default class RenderDoenetML extends CompositeComponent {
         return { updateReplacements: true }
       },
       definition() {
-        return { newValues: { readyToExpandWhenResolved: true } };
+        return { setValue: { readyToExpandWhenResolved: true } };
       },
     };
 

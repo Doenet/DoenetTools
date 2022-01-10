@@ -169,7 +169,7 @@ export default class Vector extends GraphicalComponent {
 
         lineDescription += dependencyValues.selectedStyle.lineColor;
 
-        return { newValues: { styleDescription: lineDescription } };
+        return { setValue: { styleDescription: lineDescription } };
 
       }
     }
@@ -183,17 +183,19 @@ export default class Vector extends GraphicalComponent {
     // that shadows the component adapted or copy
     stateVariableDefinitions.displacementShadow = {
       defaultValue: null,
+      hasEssential: true,
+      essentialVarName: "displacement",
       returnDependencies: () => ({}),
       definition: () => ({
         useEssentialOrDefaultValue: {
-          displacementShadow: { variablesToCheck: ["displacement", "displacementShadow"] }
+          displacementShadow: true
         }
       }),
       inverseDefinition: function ({ desiredStateVariableValues }) {
         return {
           success: true,
           instructions: [{
-            setStateVariable: "displacementShadow",
+            setEssentialValue: "displacementShadow",
             value: desiredStateVariableValues.displacementShadow
           }]
         };
@@ -205,17 +207,19 @@ export default class Vector extends GraphicalComponent {
     // from serialized state with head value
     stateVariableDefinitions.headShadow = {
       defaultValue: null,
+      hasEssential: true,
+      essentialVarName: "head",
       returnDependencies: () => ({}),
       definition: () => ({
         useEssentialOrDefaultValue: {
-          headShadow: { variablesToCheck: ["head", "headShadow"] }
+          headShadow: true
         }
       }),
       inverseDefinition: function ({ desiredStateVariableValues }) {
         return {
           success: true,
           instructions: [{
-            setStateVariable: "headShadow",
+            setEssentialValue: "headShadow",
             value: desiredStateVariableValues.headShadow
           }]
         };
@@ -226,17 +230,19 @@ export default class Vector extends GraphicalComponent {
     // from serialized state with tail value
     stateVariableDefinitions.tailShadow = {
       defaultValue: null,
+      hasEssential: true,
+      essentialVarName: "tail",
       returnDependencies: () => ({}),
       definition: () => ({
         useEssentialOrDefaultValue: {
-          tailShadow: { variablesToCheck: ["tail", "tailShadow"] }
+          tailShadow: true
         }
       }),
       inverseDefinition: function ({ desiredStateVariableValues }) {
         return {
           success: true,
           instructions: [{
-            setStateVariable: "tailShadow",
+            setEssentialValue: "tailShadow",
             value: desiredStateVariableValues.tailShadow
           }]
         };
@@ -292,7 +298,7 @@ export default class Vector extends GraphicalComponent {
         }
 
         return {
-          newValues: { sourceOfDisplacement }
+          setValue: { sourceOfDisplacement }
         }
       }
     }
@@ -331,20 +337,20 @@ export default class Vector extends GraphicalComponent {
             console.warn(`Vector is prescribed by head, tail, and displacement.  Ignoring specified head.`);
           }
           return {
-            newValues: { basedOnHead: false },
+            setValue: { basedOnHead: false },
             checkForActualChange: { basedOnHead: true }
           }
         }
 
         if (dependencyValues.headAttr !== null) {
           return {
-            newValues: { basedOnHead: true },
+            setValue: { basedOnHead: true },
             checkForActualChange: { basedOnHead: true }
           }
         }
 
         return {
-          newValues: { basedOnHead: dependencyValues.headShadow !== null },
+          setValue: { basedOnHead: dependencyValues.headShadow !== null },
           checkForActualChange: { basedOnHead: true }
         }
 
@@ -370,13 +376,13 @@ export default class Vector extends GraphicalComponent {
 
         if (dependencyValues.tailAttr !== null) {
           return {
-            newValues: { basedOnTail: true },
+            setValue: { basedOnTail: true },
             checkForActualChange: { basedOnTail: true }
           }
         }
 
         return {
-          newValues: { basedOnTail: dependencyValues.tailShadow !== null },
+          setValue: { basedOnTail: dependencyValues.tailShadow !== null },
           checkForActualChange: { basedOnTail: true }
         }
 
@@ -397,23 +403,18 @@ export default class Vector extends GraphicalComponent {
       definition: function ({ dependencyValues }) {
         if (dependencyValues.sourceOfDisplacement !== null) {
           return {
-            newValues: { basedOnDisplacement: true },
+            setValue: { basedOnDisplacement: true },
             checkForActualChange: { basedOnDisplacement: true }
           }
         }
         return {
-          newValues: { basedOnDisplacement: dependencyValues.displacementShadow !== null },
+          setValue: { basedOnDisplacement: dependencyValues.displacementShadow !== null },
           checkForActualChange: { basedOnDisplacement: true }
         }
 
       }
     }
 
-
-    // Note: if vector created via a copy (with no prop) of another vector
-    // definition of nDimensions and related will be overwritten to shadow variables
-    // of the other vector
-    // (based on static variable stateVariablesShadowedForReference)
 
     stateVariableDefinitions.nDimDisplacement = {
       stateVariablesDeterminingDependencies: ['basedOnDisplacement', 'basedOnHead', 'basedOnTail'],
@@ -546,7 +547,7 @@ export default class Vector extends GraphicalComponent {
 
         }
 
-        return { newValues: { nDimDisplacement }, checkForActualChange: { nDimDisplacement: true } };
+        return { setValue: { nDimDisplacement }, checkForActualChange: { nDimDisplacement: true } };
 
       }
     }
@@ -630,7 +631,7 @@ export default class Vector extends GraphicalComponent {
           }
         }
 
-        return { newValues: { nDimHead }, checkForActualChange: { nDimHead: true } };
+        return { setValue: { nDimHead }, checkForActualChange: { nDimHead: true } };
 
       }
     }
@@ -714,7 +715,7 @@ export default class Vector extends GraphicalComponent {
           }
         }
 
-        return { newValues: { nDimTail }, checkForActualChange: { nDimTail: true } };
+        return { setValue: { nDimTail }, checkForActualChange: { nDimTail: true } };
 
       }
     }
@@ -758,12 +759,12 @@ export default class Vector extends GraphicalComponent {
             // ignore head if have both displacement and tail
             if (dependencyValues.nDimDisplacement !== dependencyValues.nDimTail) {
               console.warn(`nDimensions mismatch in vector`)
-              return { newValues: { nDimensions: NaN } }
+              return { setValue: { nDimensions: NaN } }
             }
           } else if (dependencyValues.basedOnHead) {
             if (dependencyValues.nDimDisplacement !== dependencyValues.nDimHead) {
               console.warn(`nDimensions mismatch in vector`)
-              return { newValues: { nDimensions: NaN } }
+              return { setValue: { nDimensions: NaN } }
             }
           }
           nDimensions = dependencyValues.nDimDisplacement;
@@ -771,7 +772,7 @@ export default class Vector extends GraphicalComponent {
           if (dependencyValues.basedOnHead) {
             if (dependencyValues.nDimTail !== dependencyValues.nDimHead) {
               console.warn(`nDimensions mismatch in vector`)
-              return { newValues: { nDimensions: NaN } }
+              return { setValue: { nDimensions: NaN } }
             }
           }
           nDimensions = dependencyValues.nDimTail;
@@ -781,7 +782,7 @@ export default class Vector extends GraphicalComponent {
           nDimensions = 2;
         }
 
-        return { newValues: { nDimensions }, checkForActualChange: { nDimensions: true } };
+        return { setValue: { nDimensions }, checkForActualChange: { nDimensions: true } };
 
       }
     }
@@ -797,64 +798,14 @@ export default class Vector extends GraphicalComponent {
     // tail and displacement/xs (head set to tail+displacement)
     // If head, tail, and displacment/xs supplied, ignore head
 
-    stateVariableDefinitions.essentialDisplacement = {
-      isArray: true,
-      entryPrefixes: ["essentialDisplacement"],
-      defaultEntryValue: me.fromAst(0),
-      returnArraySizeDependencies: () => ({
-        nDimDisplacement: {
-          dependencyType: "stateVariable",
-          variableName: "nDimDisplacement",
-        },
-      }),
-      returnArraySize({ dependencyValues }) {
-        return [dependencyValues.nDimDisplacement];
-      },
-      returnArrayDependenciesByKey: () => ({
-        globalDependencies: {
-          basedOnDisplacement: {
-            dependencyType: "stateVariable",
-            variableName: "basedOnDisplacement"
-          }
-        }
-      }),
-      arrayDefinitionByKey({ globalDependencyValues, arrayKeys }) {
-
-        let essentialDisplacement = {};
-        for (let arrayKey of arrayKeys) {
-          if (arrayKey === "0" && !globalDependencyValues.basedOnDisplacement) {
-            essentialDisplacement[arrayKey] = { defaultValue: me.fromAst(1) };
-          } else {
-            essentialDisplacement[arrayKey] = {};
-          }
-        }
-
-        return { useEssentialOrDefaultValue: { essentialDisplacement } }
-      },
-      inverseArrayDefinitionByKey({ desiredStateVariableValues }) {
-
-        let value = {};
-        for (let arrayKey in desiredStateVariableValues.essentialDisplacement) {
-          value[arrayKey] = desiredStateVariableValues.essentialDisplacement[arrayKey];
-        }
-
-        return {
-          success: true,
-          instructions: [{
-            setStateVariable: "essentialDisplacement",
-            value
-          }]
-        }
-      }
-
-    }
-
 
     stateVariableDefinitions.displacement = {
       public: true,
       componentType: "math",
       isArray: true,
       entryPrefixes: ["x"],
+      hasEssential: true,
+      essentialVarName: "displacement2", // since "displacement" used for displacementShadow
       returnWrappingComponents(prefix) {
         if (prefix === "x") {
           return [];
@@ -923,10 +874,6 @@ export default class Vector extends GraphicalComponent {
               dependencyType: "child",
               childGroups: ["vectors"],
               variableNames: ["x" + varEnding],
-            },
-            essentialDisplacement: {
-              dependencyType: "stateVariable",
-              variableName: "essentialDisplacement" + varEnding,
             }
           }
           if (arrayKey === "0") {
@@ -974,6 +921,7 @@ export default class Vector extends GraphicalComponent {
         // console.log(globalDependencyValues, dependencyValuesByKey, arrayKeys)
 
         let displacement = {};
+        let essentialDisplacement = {};
 
         for (let arrayKey of arrayKeys) {
           let varEnding = Number(arrayKey) + 1;
@@ -997,7 +945,9 @@ export default class Vector extends GraphicalComponent {
                 if (componentAttr === null) {
                   // based on component attributes, but don't have
                   // this particular one specified
-                  displacement[arrayKey] = dependencyValuesByKey[arrayKey].essentialDisplacement;
+                  essentialDisplacement[arrayKey] = {
+                    defaultValue: me.fromAst(0)
+                  };
                 } else {
                   displacement[arrayKey] = componentAttr.stateValues.value.simplify();
                 }
@@ -1018,13 +968,24 @@ export default class Vector extends GraphicalComponent {
             displacement[arrayKey] = dependencyValuesByKey[arrayKey].headX.subtract(dependencyValuesByKey[arrayKey].tailX).simplify();
           } else {
             // not based on displacement or head, use essential value
-            displacement[arrayKey] = dependencyValuesByKey[arrayKey].essentialDisplacement;
+            essentialDisplacement[arrayKey] = {
+              defaultValue: me.fromAst(arrayKey === "0" ? 1 : 0)
+            };
           }
 
         }
 
-        return { newValues: { displacement } }
 
+        let result = {};
+
+        if (Object.keys(displacement).length > 0) {
+          result.setValue = { displacement }
+        }
+        if (Object.keys(essentialDisplacement).length > 0) {
+          result.useEssentialOrDefaultValue = { displacement: essentialDisplacement }
+        }
+
+        return result;
       },
       inverseArrayDefinitionByKey({ desiredStateVariableValues,
         globalDependencyValues, dependencyValuesByKey, dependencyNamesByKey, arraySize,
@@ -1080,8 +1041,8 @@ export default class Vector extends GraphicalComponent {
                   // based on component attributes, but don't have
                   // this particular one specified
                   instructions.push({
-                    setDependency: dependencyNamesByKey[arrayKey].essentialDisplacement,
-                    desiredValue: convertValueToMathExpression(desiredStateVariableValues.displacement[arrayKey])
+                    setEssentialValue: "displacement",
+                    value: { [arrayKey]: convertValueToMathExpression(desiredStateVariableValues.displacement[arrayKey]) }
                   })
                 } else {
                   instructions.push({
@@ -1108,11 +1069,11 @@ export default class Vector extends GraphicalComponent {
 
           } else {
             // not based on displacement or head
-            // set essentialDisplacement
+            // set essential value
 
             instructions.push({
-              setDependency: dependencyNamesByKey[arrayKey].essentialDisplacement,
-              desiredValue: convertValueToMathExpression(desiredStateVariableValues.displacement[arrayKey])
+              setEssentialValue: "displacement",
+              value: { [arrayKey]: convertValueToMathExpression(desiredStateVariableValues.displacement[arrayKey]) }
             })
 
           }
@@ -1265,7 +1226,7 @@ export default class Vector extends GraphicalComponent {
           }
         }
 
-        return { newValues: { head } }
+        return { setValue: { head } }
 
       },
 
@@ -1341,53 +1302,15 @@ export default class Vector extends GraphicalComponent {
     }
 
 
-    stateVariableDefinitions.essentialTail = {
-      isArray: true,
-      entryPrefixes: ["essentialTail"],
-      defaultEntryValue: me.fromAst(0),
-      returnArraySizeDependencies: () => ({
-        nDimTail: {
-          dependencyType: "stateVariable",
-          variableName: "nDimTail",
-        },
-      }),
-      returnArraySize({ dependencyValues }) {
-        return [dependencyValues.nDimTail];
-      },
-      returnArrayDependenciesByKey: () => ({}),
-      arrayDefinitionByKey({ arrayKeys }) {
-
-        let essentialTail = {};
-        for (let arrayKey of arrayKeys) {
-          essentialTail[arrayKey] = {};
-        }
-
-        return { useEssentialOrDefaultValue: { essentialTail } }
-      },
-      inverseArrayDefinitionByKey({ desiredStateVariableValues }) {
-
-        let value = {};
-        for (let arrayKey in desiredStateVariableValues.essentialTail) {
-          value[arrayKey] = desiredStateVariableValues.essentialTail[arrayKey];
-        }
-
-        return {
-          success: true,
-          instructions: [{
-            setStateVariable: "essentialTail",
-            value
-          }]
-        }
-      }
-
-    }
-
 
     stateVariableDefinitions.tail = {
       public: true,
       componentType: "math",
       isArray: true,
       entryPrefixes: ["tailX"],
+      hasEssential: true,
+      defaultValueByArrayKey: () => me.fromAst(0),
+      essentialVarName: "tail2",  // since tailShadow uses "tail"
       returnWrappingComponents(prefix) {
         if (prefix === "tailX") {
           return [];
@@ -1434,10 +1357,6 @@ export default class Vector extends GraphicalComponent {
               dependencyType: "attributeComponent",
               attributeName: "tail",
               variableNames: ["x" + varEnding],
-            },
-            essentialTail: {
-              dependencyType: "stateVariable",
-              variableName: "essentialTail" + varEnding
             }
           }
 
@@ -1466,6 +1385,7 @@ export default class Vector extends GraphicalComponent {
         // console.log(JSON.parse(JSON.stringify(arrayKeys)))
 
         let tail = {};
+        let essentialTail = {};
 
         for (let arrayKey of arrayKeys) {
           let varEnding = Number(arrayKey) + 1;
@@ -1489,14 +1409,23 @@ export default class Vector extends GraphicalComponent {
               // (but it will use the resulting essential value after that
               // so any changes will be saved)
 
-              tail[arrayKey] = dependencyValuesByKey[arrayKey].essentialTail;
+              essentialTail[arrayKey] = true;
 
             }
 
           }
         }
 
-        return { newValues: { tail } }
+        let result = {};
+
+        if (Object.keys(tail).length > 0) {
+          result.setValue = { tail };
+        }
+        if (Object.keys(essentialTail).length > 0) {
+          result.useEssentialOrDefaultValue = { tail: essentialTail }
+        }
+
+        return result;
 
       },
 
@@ -1545,8 +1474,8 @@ export default class Vector extends GraphicalComponent {
               // set the value of the variable directly
 
               instructions.push({
-                setDependency: dependencyNamesByKey[arrayKey].essentialTail,
-                desiredValue: desiredStateVariableValues.tail[arrayKey]
+                setEssentialValue: "tail",
+                value: { [arrayKey]: desiredStateVariableValues.tail[arrayKey] }
               })
 
             }
@@ -1632,7 +1561,7 @@ export default class Vector extends GraphicalComponent {
           }
         }
 
-        return { newValues: { numericalEndpoints: [numericalTail, numericalHead] } }
+        return { setValue: { numericalEndpoints: [numericalTail, numericalHead] } }
       }
     }
 
@@ -1661,7 +1590,7 @@ export default class Vector extends GraphicalComponent {
           coordsAst = '\uff3f';
         }
 
-        return { newValues: { displacementCoords: me.fromAst(coordsAst) } }
+        return { setValue: { displacementCoords: me.fromAst(coordsAst) } }
 
       },
       inverseDefinition({ desiredStateVariableValues }) {
@@ -1718,7 +1647,7 @@ export default class Vector extends GraphicalComponent {
 
 
         return {
-          newValues: {
+          setValue: {
             nearestPoint: function ({ variables, scales }) {
 
               if (skip) {

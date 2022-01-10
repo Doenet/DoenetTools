@@ -136,17 +136,19 @@ export default class MathComponent extends InlineComponent {
     // from serialized state with value
     stateVariableDefinitions.valueShadow = {
       defaultValue: me.fromAst('\uff3f'),  // long underscore
+      hasEssential: true,
+      essentialVarName: "value",
       returnDependencies: () => ({}),
       definition: () => ({
         useEssentialOrDefaultValue: {
-          valueShadow: { variablesToCheck: ["value", "valueShadow", "unnormalizedValue"] }
+          valueShadow: true
         }
       }),
       inverseDefinition: function ({ desiredStateVariableValues }) {
         return {
           success: true,
           instructions: [{
-            setStateVariable: "valueShadow",
+            setEssentialValue: "valueShadow",
             value: desiredStateVariableValues.valueShadow
           }]
         };
@@ -157,6 +159,7 @@ export default class MathComponent extends InlineComponent {
       defaultValue: false,
       public: true,
       componentType: "boolean",
+      hasEssential: true,
       returnDependencies: () => ({
         unorderedAttr: {
           dependencyType: "attributeComponent",
@@ -174,17 +177,17 @@ export default class MathComponent extends InlineComponent {
         if (dependencyValues.unorderedAttr === null) {
           if (dependencyValues.mathChildren.length > 0) {
             let unordered = dependencyValues.mathChildren.every(x => x.stateValues.unordered);
-            return { newValues: { unordered } }
+            return { setValue: { unordered } }
           } else {
             return {
-              useDefaultValue: {
-                unordered: {}
+              useEssentialOrDefaultValue: {
+                unordered: true
               }
             }
           }
         } else {
           return {
-            newValues: { unordered: dependencyValues.unorderedAttr.stateValues.value }
+            setValue: { unordered: dependencyValues.unorderedAttr.stateValues.value }
           }
         }
       }
@@ -225,12 +228,13 @@ export default class MathComponent extends InlineComponent {
           }
         }
 
-        return { newValues: { mathChildrenFunctionSymbols } }
+        return { setValue: { mathChildrenFunctionSymbols } }
       }
     }
 
     stateVariableDefinitions.expressionWithCodes = {
-      neverShadow: true,
+      hasEssential: true,
+      doNotShadowEssential: true,
       returnDependencies: () => ({
         stringMathChildren: {
           dependencyType: "child",
@@ -275,7 +279,7 @@ export default class MathComponent extends InlineComponent {
         return {
           success: true,
           instructions: [{
-            setStateVariable: "expressionWithCodes",
+            setEssentialValue: "expressionWithCodes",
             value: desiredStateVariableValues.expressionWithCodes
           }]
         }
@@ -292,7 +296,7 @@ export default class MathComponent extends InlineComponent {
         },
       }),
       definition: ({ dependencyValues }) => ({
-        newValues: { mathChildrenWithCanBeModified: dependencyValues.mathChildren }
+        setValue: { mathChildrenWithCanBeModified: dependencyValues.mathChildren }
       })
     }
 
@@ -371,7 +375,7 @@ export default class MathComponent extends InlineComponent {
           value, simplify, expand, createVectors, createIntervals
         });
 
-        return { newValues: { value } }
+        return { setValue: { value } }
 
       },
       inverseDefinition: function ({ desiredStateVariableValues }) {
@@ -401,7 +405,7 @@ export default class MathComponent extends InlineComponent {
         if (number === null) {
           number = NaN;
         }
-        return { newValues: { number } };
+        return { setValue: { number } };
       },
       inverseDefinition: function ({ desiredStateVariableValues }) {
         return {
@@ -426,7 +430,7 @@ export default class MathComponent extends InlineComponent {
       }),
       definition: function ({ dependencyValues }) {
         return {
-          newValues: {
+          setValue: {
             isNumber: Number.isFinite(dependencyValues.value.tree)
           }
         }
@@ -447,7 +451,7 @@ export default class MathComponent extends InlineComponent {
       }),
       definition: function ({ dependencyValues }) {
         return {
-          newValues: {
+          setValue: {
             isNumeric: Number.isFinite(dependencyValues.number)
           }
         }
@@ -490,7 +494,7 @@ export default class MathComponent extends InlineComponent {
         });
 
         return {
-          newValues: {
+          setValue: {
             valueForDisplay: normalizeMathExpression({
               value: rounded, simplify: dependencyValues.simplify, expand: dependencyValues.expand
             })
@@ -510,7 +514,7 @@ export default class MathComponent extends InlineComponent {
         },
       }),
       definition: function ({ dependencyValues }) {
-        return { newValues: { latex: dependencyValues.valueForDisplay.toLatex() } };
+        return { setValue: { latex: dependencyValues.valueForDisplay.toLatex() } };
       }
     }
 
@@ -523,7 +527,7 @@ export default class MathComponent extends InlineComponent {
         },
       }),
       definition: function ({ dependencyValues }) {
-        return { newValues: { latexWithInputChildren: [dependencyValues.latex] } };
+        return { setValue: { latexWithInputChildren: [dependencyValues.latex] } };
       }
     }
 
@@ -543,7 +547,7 @@ export default class MathComponent extends InlineComponent {
         },
       }),
       definition: function ({ dependencyValues }) {
-        return { newValues: { text: dependencyValues.valueForDisplay.toString() } };
+        return { setValue: { text: dependencyValues.valueForDisplay.toString() } };
       },
       async inverseDefinition({ desiredStateVariableValues, stateValues }) {
         let fromText = getFromText({
@@ -636,7 +640,7 @@ export default class MathComponent extends InlineComponent {
       definition: function ({ dependencyValues }) {
 
         if (dependencyValues.expressionWithCodes === null) {
-          return { newValues: { mathChildrenByVectorComponent: null } };
+          return { setValue: { mathChildrenByVectorComponent: null } };
         }
         let expressionWithCodesTree = dependencyValues.expressionWithCodes.tree;
         let nMathChildren = dependencyValues.mathChildren.length;
@@ -645,7 +649,7 @@ export default class MathComponent extends InlineComponent {
           !Array.isArray(expressionWithCodesTree) ||
           !["tuple", "vector"].includes(expressionWithCodesTree[0])
         ) {
-          return { newValues: { mathChildrenByVectorComponent: null } };
+          return { setValue: { mathChildrenByVectorComponent: null } };
         }
 
         let mathChildrenByVectorComponent = {};
@@ -677,7 +681,7 @@ export default class MathComponent extends InlineComponent {
           }
         }
 
-        return { newValues: { mathChildrenByVectorComponent } };
+        return { setValue: { mathChildrenByVectorComponent } };
 
       }
     }
@@ -700,7 +704,7 @@ export default class MathComponent extends InlineComponent {
           nDimensions = tree.length - 1;
         }
 
-        return { newValues: { nDimensions } }
+        return { setValue: { nDimensions } }
 
       }
     }
@@ -745,7 +749,7 @@ export default class MathComponent extends InlineComponent {
           xs[0] = globalDependencyValues.value;
         }
 
-        return { newValues: { xs } }
+        return { setValue: { xs } }
       },
       async inverseArrayDefinitionByKey({ desiredStateVariableValues,
         stateValues, workspace, arraySize
@@ -845,7 +849,7 @@ function calculateCodePre({ dependencyValues }) {
     }
   } while (foundInString);
 
-  return { newValues: { codePre } };
+  return { setValue: { codePre } };
 }
 
 function calculateExpressionWithCodes({ dependencyValues, changes }) {
@@ -858,14 +862,15 @@ function calculateExpressionWithCodes({ dependencyValues, changes }) {
     // and format didn't change
     // then expressionWithCodes remains unchanged.
     // (We assume that the value of string children cannot change on their own.)
-    return { noChanges: ["expressionWithCodes"] };
+    return { useEssentialOrDefaultValue: { expressionWithCodes: true } }
+    // return { noChanges: ["expressionWithCodes"] };
   }
 
   // if don't have any string or math children,
   // set expressionWithCodes to be null,
   // which will indicate that value should use valueShadow
   if (dependencyValues.stringMathChildren.length === 0) {
-    return { newValues: { expressionWithCodes: null } }
+    return { setValue: { expressionWithCodes: null } }
   }
 
   let inputString = "";
@@ -1053,8 +1058,8 @@ function calculateExpressionWithCodes({ dependencyValues, changes }) {
   }
 
   return {
-    newValues: { expressionWithCodes },
-    makeEssential: { expressionWithCodes: true }
+    setValue: { expressionWithCodes },
+    setEssentialValue: { expressionWithCodes }
   };
 
 }
@@ -1064,7 +1069,7 @@ function calculateMathValue({ dependencyValues } = {}) {
   // if expressionWithCodes is null, there were no string or math children
   if (dependencyValues.expressionWithCodes === null) {
     return {
-      newValues: { unnormalizedValue: dependencyValues.valueShadow },
+      setValue: { unnormalizedValue: dependencyValues.valueShadow },
     }
   }
 
@@ -1082,7 +1087,7 @@ function calculateMathValue({ dependencyValues } = {}) {
 
 
   return {
-    newValues: { unnormalizedValue: value },
+    setValue: { unnormalizedValue: value },
   };
 }
 
@@ -1136,14 +1141,14 @@ function calculateCodesAdjacentToStrings({ dependencyValues }) {
     }
   }
 
-  return { newValues: { codesAdjacentToStrings } };
+  return { setValue: { codesAdjacentToStrings } };
 }
 
 function determineCanBeModified({ dependencyValues }) {
 
   if (!dependencyValues.modifyIndirectly || dependencyValues.fixed) {
     return {
-      newValues: {
+      setValue: {
         canBeModified: false,
         constantChildIndices: null,
         codeForExpression: null,
@@ -1158,7 +1163,7 @@ function determineCanBeModified({ dependencyValues }) {
   // to any specified expression
   if (dependencyValues.mathChildrenModifiable.length === 0) {
     return {
-      newValues: {
+      setValue: {
         canBeModified: true,
         constantChildIndices: null,
         codeForExpression: null,
@@ -1224,7 +1229,7 @@ function determineCanBeModified({ dependencyValues }) {
 
     // found an inverse
     return {
-      newValues: {
+      setValue: {
         canBeModified: true,
         constantChildIndices,
         codeForExpression,
@@ -1236,7 +1241,7 @@ function determineCanBeModified({ dependencyValues }) {
 
   // if not linear, can't find an inverse
   return {
-    newValues: {
+    setValue: {
       canBeModified: false,
       constantChildIndices: null,
       codeForExpression: null,

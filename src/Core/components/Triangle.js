@@ -11,6 +11,16 @@ export default class Triangle extends Polygon {
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
 
+    stateVariableDefinitions.vertices.hasEssential = true;
+
+    stateVariableDefinitions.vertices.defaultValueByArrayKey = function (arrayKey) {
+      if (["0,1", "1,0"].includes(arrayKey)) {
+        return me.fromAst(1)
+      } else {
+        return me.fromAst(0)
+      }
+    }
+
     stateVariableDefinitions.vertices.returnArraySizeDependencies = () => ({
       nDimensions: {
         dependencyType: "stateVariable",
@@ -43,38 +53,18 @@ export default class Triangle extends Polygon {
           vertices[arrayKey] = verticesAttr.stateValues["pointX" + varEnding];
         } else {
 
-          let defaultValue;
-
-          if (pointInd === "0") {
-            if (dim === "1") {
-              defaultValue = me.fromAst(1);
-            } else {
-              defaultValue = me.fromAst(0);
-            }
-          } else if (pointInd === "1") {
-            if (dim === "0") {
-              defaultValue = me.fromAst(1);
-            } else {
-              defaultValue = me.fromAst(0);
-            }
-          } else {
-            defaultValue = me.fromAst(0);
-          }
-          useEssential[arrayKey] = {
-            variablesToCheck: ["vertexX" + varEnding],
-            defaultValue
-          }
+          useEssential[arrayKey] = true
         }
       }
 
       // console.log({
-      //   newValues: { vertices },
+      //   setValue: { vertices },
       //   useEssentialOrDefaultValue: { vertices: useEssential }
 
       // })
 
       return {
-        newValues: { vertices },
+        setValue: { vertices },
         useEssentialOrDefaultValue: { vertices: useEssential }
 
       }
@@ -115,7 +105,7 @@ export default class Triangle extends Polygon {
         } else {
 
           instructions.push({
-            setStateVariable: "vertices",
+            setEssentialValue: "vertices",
             value: { [arrayKey]: desiredStateVariableValues.vertices[arrayKey].simplify() },
           })
         }
@@ -200,7 +190,7 @@ export default class Triangle extends Polygon {
     //         workspace.desiredVertices[ind] = desiredVertex.tree;
 
     //         instructions.push({
-    //           setStateVariable: "vertices",
+    //           setEssentialValue: "vertices",
     //           value: { [ind]: desiredVertex.simplify() },
     //         })
     //       }
@@ -248,7 +238,7 @@ export default class Triangle extends Polygon {
     //     return {
     //       success: true,
     //       instructions: [{
-    //         setStateVariable: "vertices",
+    //         setEssentialValue: "vertices",
     //         value: { [arrayKey]: desiredVertex.simplify() },
     //       }]
     //     }
@@ -263,7 +253,7 @@ export default class Triangle extends Polygon {
       componentType: "number",
       forRenderer: true,
       returnDependencies: () => ({}),
-      definition: () => ({ newValues: { nVertices: 3 } })
+      definition: () => ({ setValue: { nVertices: 3 } })
     }
 
 

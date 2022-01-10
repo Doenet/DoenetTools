@@ -14,10 +14,6 @@ export default class DiscreteSimulationResultPolyline extends GraphicalComponent
     )
   };
 
-  // used when referencing this component without prop
-  static useChildrenForReference = false;
-  static get stateVariablesShadowedForReference() { return ["vertices", "nVertices"] };
-
   static createAttributesObject(args) {
     let attributes = super.createAttributesObject(args);
 
@@ -75,7 +71,7 @@ export default class DiscreteSimulationResultPolyline extends GraphicalComponent
 
         styleDescription += dependencyValues.selectedStyle.lineColor;
 
-        return { newValues: { styleDescription } };
+        return { setValue: { styleDescription } };
       }
     }
 
@@ -90,7 +86,7 @@ export default class DiscreteSimulationResultPolyline extends GraphicalComponent
         },
       }),
       definition: function ({ dependencyValues }) {
-        return { newValues: { nVertices: dependencyValues.allIterates.length } }
+        return { setValue: { nVertices: dependencyValues.allIterates.length } }
 
       }
     }
@@ -101,7 +97,7 @@ export default class DiscreteSimulationResultPolyline extends GraphicalComponent
       forRenderer: true,
       returnDependencies: () => ({}),
       definition: function ({ dependencyValues }) {
-        return { newValues: { nDimensions: 2 } }
+        return { setValue: { nDimensions: 2 } }
 
       }
     }
@@ -243,7 +239,7 @@ export default class DiscreteSimulationResultPolyline extends GraphicalComponent
           vertices[`${ind},1`] = val;
         }
 
-        return { newValues: { vertices } }
+        return { setValue: { vertices } }
       },
 
     }
@@ -289,7 +285,7 @@ export default class DiscreteSimulationResultPolyline extends GraphicalComponent
           numericalVertices[arrayKey] = vert;
         }
 
-        return { newValues: { numericalVertices } }
+        return { setValue: { numericalVertices } }
       }
     }
 
@@ -345,7 +341,7 @@ export default class DiscreteSimulationResultPolyline extends GraphicalComponent
 
 
         return {
-          newValues: {
+          setValue: {
             nearestPoint: function ({ variables, scales }) {
 
               let xscale = scales[0];

@@ -71,7 +71,7 @@ export default class CallAction extends InlineComponent {
         }
       }),
       definition: ({ dependencyValues }) => ({
-        newValues: { target: dependencyValues.target }
+        setValue: { target: dependencyValues.target }
       })
     }
 
@@ -91,7 +91,7 @@ export default class CallAction extends InlineComponent {
         }
 
         return {
-          newValues: { targetComponent }
+          setValue: { targetComponent }
         }
       },
     };
@@ -111,7 +111,7 @@ export default class CallAction extends InlineComponent {
         if (dependencyValues.targetComponent) {
           targetName = dependencyValues.targetComponent.componentName
         }
-        return { newValues: { targetName } };
+        return { setValue: { targetName } };
       },
     }
 
@@ -126,7 +126,7 @@ export default class CallAction extends InlineComponent {
       }),
       definition({ dependencyValues }) {
         return {
-          newValues: {
+          setValue: {
             insideTriggerSet: dependencyValues.parentTriggerSet !== null
           }
         }
@@ -152,10 +152,10 @@ export default class CallAction extends InlineComponent {
         if (dependencyValues.triggerWhen || dependencyValues.insideTriggerSet
           || dependencyValues.triggerWithTargets === null
         ) {
-          return { newValues: { triggerWithTargets: null } }
+          return { setValue: { triggerWithTargets: null } }
         } else {
           return {
-            newValues: {
+            setValue: {
               triggerWithTargets: dependencyValues.triggerWithTargets
                 .split(/\s+/).filter(s => s)
             }
@@ -190,7 +190,7 @@ export default class CallAction extends InlineComponent {
           triggerWithTargetComponentNames.push(dependencyValues[`triggerWithTargetComponentName${i}`])
         }
 
-        return { newValues: { triggerWithTargetComponentNames } }
+        return { setValue: { triggerWithTargetComponentNames } }
       },
       markStale() {
         return { updateActionChaining: true }
@@ -223,7 +223,7 @@ export default class CallAction extends InlineComponent {
         args.dependencyValues.triggerWithTargets ||
         args.dependencyValues.insideTriggerSet
       ) {
-        return { newValues: { hidden: true } }
+        return { setValue: { hidden: true } }
       } else {
         return originalHiddenDefinition(args);
       }

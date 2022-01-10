@@ -93,7 +93,7 @@ export function returnStyleDefinitionStateVariables() {
       }
     }),
     definition({ dependencyValues }) {
-      return { newValues: { setupChildren: dependencyValues.setupChildren } }
+      return { setValue: { setupChildren: dependencyValues.setupChildren } }
     }
   }
 
@@ -161,7 +161,7 @@ export function returnStyleDefinitionStateVariables() {
         }
       }
 
-      return { newValues: { styleDefinitions } };
+      return { setValue: { styleDefinitions } };
 
     }
   }
@@ -198,7 +198,7 @@ export function returnSelectedStyleStateVariableDefinition() {
         if (selectedStyle === undefined) {
           selectedStyle = defaultStyle;
         }
-        return { newValues: { selectedStyle } };
+        return { setValue: { selectedStyle } };
       }
     }
   }

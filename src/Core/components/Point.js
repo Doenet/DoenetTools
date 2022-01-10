@@ -219,7 +219,7 @@ export default class Point extends GraphicalComponent {
       definition: function ({ dependencyValues }) {
 
         return {
-          newValues: {
+          setValue: {
             styleDescription: dependencyValues.selectedStyle.markerColor
           }
         };
@@ -243,7 +243,7 @@ export default class Point extends GraphicalComponent {
         } else {
           pointDescription += ` ${dependencyValues.selectedStyle.markerStyle}`
         }
-        return { newValues: { styleDescriptionWithNoun: pointDescription } };
+        return { setValue: { styleDescriptionWithNoun: pointDescription } };
       }
     }
 
@@ -255,10 +255,11 @@ export default class Point extends GraphicalComponent {
     // that shadows the component adapted or copied
     stateVariableDefinitions.coordsShadow = {
       defaultValue: null,
+      hasEssential: true,
       returnDependencies: () => ({}),
       definition: () => ({
         useEssentialOrDefaultValue: {
-          coordsShadow: { variablesToCheck: ["coords", "coordsShadow"] }
+          coordsShadow: true
         }
       }),
       inverseDefinition: async function ({ desiredStateVariableValues, stateValues, workspace }) {
@@ -266,17 +267,13 @@ export default class Point extends GraphicalComponent {
         return {
           success: true,
           instructions: [{
-            setStateVariable: "coordsShadow",
+            setEssentialValue: "coordsShadow",
             value: desiredStateVariableValues.coordsShadow
           }]
         };
       }
     }
 
-    // Note: if point created via a copy (with no prop) of another point
-    // definition of nDimensions will be overwritten to shadow nDimensions
-    // of the other point
-    // (based on static variable stateVariablesShadowedForReference)
     stateVariableDefinitions.nDimensions = {
       public: true,
       componentType: "number",
@@ -352,21 +349,21 @@ export default class Point extends GraphicalComponent {
 
           // if based on coords, should check for actual change
           // as frequently the dimension doesn't change
-          return { newValues: { nDimensions }, checkForActualChange: { nDimensions: true } };
+          return { setValue: { nDimensions }, checkForActualChange: { nDimensions: true } };
 
 
         } else {
 
           if (dependencyValues.xs !== null) {
             return {
-              newValues: {
+              setValue: {
                 nDimensions: Math.max(dependencyValues.xs.stateValues.nComponents, nDimensions)
               }
             }
           }
           if (dependencyValues.pointChild.length > 0) {
             return {
-              newValues: {
+              setValue: {
                 nDimensions: Math.max(dependencyValues.pointChild[0].stateValues.nDimensions, nDimensions)
               }
             }
@@ -377,7 +374,7 @@ export default class Point extends GraphicalComponent {
             nDimensions = 2;
           }
 
-          return { newValues: { nDimensions }, checkForActualChange: { nDimensions: true } };
+          return { setValue: { nDimensions }, checkForActualChange: { nDimensions: true } };
 
         }
 
@@ -387,12 +384,12 @@ export default class Point extends GraphicalComponent {
 
     stateVariableDefinitions.arrayVariableForConstraints = {
       returnDependencies: () => ({}),
-      definition: () => ({ newValues: { arrayVariableForConstraints: "unconstrainedXs" } })
+      definition: () => ({ setValue: { arrayVariableForConstraints: "unconstrainedXs" } })
     }
 
     stateVariableDefinitions.arrayEntryPrefixForConstraints = {
       returnDependencies: () => ({}),
-      definition: () => ({ newValues: { arrayEntryPrefixForConstraints: "unconstrainedX" } })
+      definition: () => ({ setValue: { arrayEntryPrefixForConstraints: "unconstrainedX" } })
     }
 
     stateVariableDefinitions.nDimensionsForConstraints = {
@@ -404,7 +401,8 @@ export default class Point extends GraphicalComponent {
     stateVariableDefinitions.unconstrainedXs = {
       isArray: true,
       entryPrefixes: ["unconstrainedX"],
-      defaultEntryValue: me.fromAst(0),
+      defaultValueByArrayKey: () => me.fromAst(0),
+      hasEssential: true,
       returnArraySizeDependencies: () => ({
         nDimensions: {
           dependencyType: "stateVariable",
@@ -515,7 +513,7 @@ export default class Point extends GraphicalComponent {
             let xs = dependencyValuesByKey[arrayKey].xs;
             if (xs !== null) {
               let val = xs.stateValues["math" + varEnding];
-              if(val !== undefined) {
+              if (val !== undefined) {
                 newXs[arrayKey] = val.simplify();
               }
             } else {
@@ -534,12 +532,7 @@ export default class Point extends GraphicalComponent {
           if (component) {
             newXs[arrayKey] = component.stateValues.value.simplify();
           } else if (newXs[arrayKey] === undefined) {
-            essentialXs[arrayKey] = {
-              variablesToCheck: [
-                { variableName: "xs", arrayIndex: arrayKey },
-                { variableName: "coords", mathComponentIndex: arrayKey }
-              ]
-            };
+            essentialXs[arrayKey] = true
           }
         }
 
@@ -549,7 +542,7 @@ export default class Point extends GraphicalComponent {
         // console.log(essentialXs);
         let result = {};
         if (Object.keys(newXs).length > 0) {
-          result.newValues = { unconstrainedXs: newXs };
+          result.setValue = { unconstrainedXs: newXs };
         }
         if (Object.keys(essentialXs).length > 0) {
           result.useEssentialOrDefaultValue = { unconstrainedXs: essentialXs };
@@ -620,7 +613,7 @@ export default class Point extends GraphicalComponent {
                 });
               } else {
                 instructions.push({
-                  setStateVariable: "unconstrainedXs",
+                  setEssentialValue: "unconstrainedXs",
                   value: { [arrayKey]: desiredValue },
                 });
               }
@@ -713,7 +706,7 @@ export default class Point extends GraphicalComponent {
         }
 
         if (arrayKeys.length > 0) {
-          return { newValues: { xs } }
+          return { setValue: { xs } }
         } else {
           return {};
         }
@@ -806,7 +799,7 @@ export default class Point extends GraphicalComponent {
           coordsAst = '\uff3f';
         }
 
-        return { newValues: { coords: me.fromAst(coordsAst) } }
+        return { setValue: { coords: me.fromAst(coordsAst) } }
       },
 
       inverseDefinition: async function ({ desiredStateVariableValues, stateValues, initialChange }) {
@@ -874,7 +867,7 @@ export default class Point extends GraphicalComponent {
           dependencyValues, usedDefault
         });
 
-        return { newValues: { coordsForDisplay } }
+        return { setValue: { coordsForDisplay } }
 
       }
     }
@@ -897,10 +890,10 @@ export default class Point extends GraphicalComponent {
       }),
       definition: function ({ dependencyValues }) {
         if (dependencyValues.constraintsChild.length === 0) {
-          return { newValues: { constraintUsed: false } }
+          return { setValue: { constraintUsed: false } }
         } else {
           return {
-            newValues: {
+            setValue: {
               constraintUsed:
                 dependencyValues.constraintsChild[0].stateValues.constraintUsed
             }
@@ -961,7 +954,7 @@ export default class Point extends GraphicalComponent {
           }
         }
 
-        return { newValues: { numericalXs } }
+        return { setValue: { numericalXs } }
       },
 
       async inverseArrayDefinitionByKey({ desiredStateVariableValues,
@@ -1006,7 +999,7 @@ export default class Point extends GraphicalComponent {
         }
       }),
       definition: ({ dependencyValues }) => ({
-        newValues: {
+        setValue: {
           nearestPoint: function () {
             // for point, nearest point is just the point itself
             // only implement for numerical values

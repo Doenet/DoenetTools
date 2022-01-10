@@ -49,7 +49,6 @@ export default class MathInput extends Input {
       defaultValue: me.fromAst("\uff3f"),
       public: true,
       copyComponentAttributesForCreatedComponent: ["format", "functionSymbols", "splitSymbols"],
-      noInverse: true,
     };
     attributes.format = {
       createComponentOfType: "text",
@@ -121,7 +120,8 @@ export default class MathInput extends Input {
       public: true,
       componentType: "math",
       forRenderer: true,
-      alwaysShadow: true,
+      hasEssential: true,
+      shadowVariable: true,
       stateVariablesPrescribingAdditionalAttributes: {
         displayDigits: "displayDigits",
         displayDecimals: "displayDecimals",
@@ -143,14 +143,13 @@ export default class MathInput extends Input {
           return {
             useEssentialOrDefaultValue: {
               value: {
-                variablesToCheck: "value",
                 defaultValue: dependencyValues.prefill
               }
             }
           }
         }
 
-        return { newValues: { value: dependencyValues.bindValueTo.stateValues.value } };
+        return { setValue: { value: dependencyValues.bindValueTo.stateValues.value } };
       },
       inverseDefinition: function ({ desiredStateVariableValues, dependencyValues }) {
 
@@ -171,7 +170,7 @@ export default class MathInput extends Input {
         return {
           success: true,
           instructions: [{
-            setStateVariable: "value",
+            setEssentialValue: "value",
             value: desiredStateVariableValues.value
           }]
         };
@@ -182,6 +181,8 @@ export default class MathInput extends Input {
       public: true,
       componentType: "math",
       forRenderer: true,
+      hasEssential: true,
+      shadowVariable: true,
       stateVariablesPrescribingAdditionalAttributes: {
         displayDigits: "displayDigits",
         displayDecimals: "displayDecimals",
@@ -203,8 +204,8 @@ export default class MathInput extends Input {
           // only update to value when it changes
           // (otherwise, let its essential value change)
           return {
-            newValues: { immediateValue: dependencyValues.value },
-            makeEssential: { immediateValue: true }
+            setValue: { immediateValue: dependencyValues.value },
+            setEssentialValue: { immediateValue: dependencyValues.value },
           };
 
 
@@ -212,7 +213,6 @@ export default class MathInput extends Input {
           return {
             useEssentialOrDefaultValue: {
               immediateValue: {
-                variablesToCheck: "immediateValue",
                 defaultValue: dependencyValues.value
               }
             }
@@ -224,7 +224,7 @@ export default class MathInput extends Input {
 
         // value is essential; give it the desired value
         let instructions = [{
-          setStateVariable: "immediateValue",
+          setEssentialValue: "immediateValue",
           value: desiredStateVariableValues.immediateValue
         }]
 
@@ -273,7 +273,7 @@ export default class MathInput extends Input {
         });
 
         return {
-          newValues: { valueForDisplay: rounded }
+          setValue: { valueForDisplay: rounded }
         }
       }
     }
@@ -289,7 +289,7 @@ export default class MathInput extends Input {
         }
       }),
       definition: function ({ dependencyValues }) {
-        return { newValues: { text: dependencyValues.valueForDisplay.toString() } }
+        return { setValue: { text: dependencyValues.valueForDisplay.toString() } }
       }
     }
 
@@ -298,17 +298,18 @@ export default class MathInput extends Input {
     stateVariableDefinitions.rawRendererValue = {
       defaultValue: null,
       forRenderer: true,
+      hasEssential: true,
       returnDependencies: () => ({}),
       definition: () => ({
         useEssentialOrDefaultValue: {
-          rawRendererValue: { variablesToCheck: ["rawRendererValue"] }
+          rawRendererValue: true
         }
       }),
       inverseDefinition({ desiredStateVariableValues }) {
         return {
           success: true,
           instructions: [{
-            setStateVariable: "rawRendererValue",
+            setEssentialValue: "rawRendererValue",
             value: desiredStateVariableValues.rawRendererValue
           }]
         }
@@ -317,7 +318,7 @@ export default class MathInput extends Input {
 
     stateVariableDefinitions.componentType = {
       returnDependencies: () => ({}),
-      definition: () => ({ newValues: { componentType: "math" } })
+      definition: () => ({ setValue: { componentType: "math" } })
     }
 
 

@@ -265,6 +265,7 @@ describe('Point location validation tests',function() {
       expect(components['/_answer1'].stateValues.creditAchieved).eq(1);
     });
 
+    cy.log("Reload page")
 
     cy.window().then((win) => {
       win.postMessage({
@@ -324,6 +325,8 @@ describe('Point location validation tests',function() {
       expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
     });
 
+
+    cy.log("Reload page")
 
     cy.window().then((win) => {
       win.postMessage({
@@ -398,6 +401,7 @@ describe('Point location validation tests',function() {
     });
 
 
+    cy.log("Reload page")
 
     cy.window().then((win) => {
       win.postMessage({

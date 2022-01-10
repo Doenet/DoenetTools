@@ -61,7 +61,7 @@ export default class Seeds extends InlineComponent {
         }
       }),
       definition: function ({ dependencyValues }) {
-        return { newValues: { nSeeds: dependencyValues.stringChildren.length } }
+        return { setValue: { nSeeds: dependencyValues.stringChildren.length } }
       }
     }
 
@@ -100,7 +100,7 @@ export default class Seeds extends InlineComponent {
             seeds[arrayKey] = dependencyValuesByKey[arrayKey].stringChild[0]
           }
         }
-        return { newValues: { seeds } }
+        return { setValue: { seeds } }
       }
     }
 

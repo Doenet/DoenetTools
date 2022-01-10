@@ -13,8 +13,6 @@ export default class Collect extends CompositeComponent {
   static acceptTarget = true;
   static acceptAnyAttribute = true;
 
-  static get stateVariablesShadowedForReference() { return ["targetComponent", "propName", "componentTypesToCollect"] };
-
   static stateVariableToEvaluateAfterReplacements = "needsReplacementsUpdatedWhenStale";
 
   static createAttributesObject(args) {
@@ -81,6 +79,7 @@ export default class Collect extends CompositeComponent {
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
     stateVariableDefinitions.targetComponent = {
+      shadowVariable: true,
       returnDependencies: () => ({
         targetComponent: {
           dependencyType: "targetComponent",
@@ -88,7 +87,7 @@ export default class Collect extends CompositeComponent {
       }),
       definition: function ({ dependencyValues }) {
         return {
-          newValues: {
+          setValue: {
             targetComponent: dependencyValues.targetComponent
           }
         }
@@ -112,7 +111,7 @@ export default class Collect extends CompositeComponent {
       },
       definition: function ({ dependencyValues }) {
         return {
-          newValues: {
+          setValue: {
             targetInactive: Boolean(dependencyValues.targetIsInactiveCompositeReplacement)
           }
         }
@@ -130,13 +129,14 @@ export default class Collect extends CompositeComponent {
       definition: function ({ dependencyValues }) {
         if (dependencyValues.targetComponent === null) {
           console.warn(`No copy target`);
-          return { newValues: { targetName: "" } }
+          return { setValue: { targetName: "" } }
         }
-        return { newValues: { targetName: dependencyValues.targetComponent.componentName } }
+        return { setValue: { targetName: dependencyValues.targetComponent.componentName } }
       },
     };
 
     stateVariableDefinitions.propName = {
+      shadowVariable: true,
       returnDependencies: () => ({
         propName: {
           dependencyType: "attributePrimitive",
@@ -144,13 +144,17 @@ export default class Collect extends CompositeComponent {
         },
       }),
       definition: function ({ dependencyValues }) {
-        return { newValues: { propName: dependencyValues.propName } }
+        return { setValue: { propName: dependencyValues.propName } }
       }
     }
 
 
     stateVariableDefinitions.componentTypesToCollect = {
-      additionalStateVariablesDefined: ["componentClassesToCollect"],
+      shadowVariable: true,
+      additionalStateVariablesDefined: [{
+        variableName: "componentClassesToCollect",
+        shadowVariable: true
+      }],
       returnDependencies: () => ({
         componentTypesAttr: {
           dependencyType: "attributeComponent",
@@ -181,7 +185,7 @@ export default class Collect extends CompositeComponent {
         }
 
         return {
-          newValues: {
+          setValue: {
             componentTypesToCollect, componentClassesToCollect
           }
         }
@@ -242,7 +246,7 @@ export default class Collect extends CompositeComponent {
         }
 
         return {
-          newValues: { collectedComponents }
+          setValue: { collectedComponents }
         }
 
       }
@@ -261,7 +265,7 @@ export default class Collect extends CompositeComponent {
         },
       }),
       definition: () => ({
-        newValues: { readyToExpandWhenResolved: true }
+        setValue: { readyToExpandWhenResolved: true }
       })
     }
 
@@ -281,7 +285,7 @@ export default class Collect extends CompositeComponent {
         return { updateReplacements: true }
       },
       definition() {
-        return { newValues: { needsReplacementsUpdatedWhenStale: true } }
+        return { setValue: { needsReplacementsUpdatedWhenStale: true } }
       }
     }
 

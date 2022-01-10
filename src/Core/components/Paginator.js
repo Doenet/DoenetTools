@@ -101,7 +101,7 @@ export class Paginator extends Template {
 
 
         return {
-          newValues: {
+          setValue: {
             nPages: countSectionsFromChildren(dependencyValues.serializedChildren)
           }
         }
@@ -112,6 +112,7 @@ export class Paginator extends Template {
     stateVariableDefinitions.currentPage = {
       public: true,
       componentType: "integer",
+      hasEssential: true,
       returnDependencies: () => ({
         initialPage: {
           dependencyType: "stateVariable",
@@ -127,7 +128,6 @@ export class Paginator extends Template {
         return {
           useEssentialOrDefaultValue: {
             currentPage: {
-              variablesToCheck: ["currentPage"],
               get defaultValue() {
                 let initialPageNumber = dependencyValues.initialPage;
                 if (!Number.isInteger(initialPageNumber)) {
@@ -157,7 +157,7 @@ export class Paginator extends Template {
         return {
           success: true,
           instructions: [{
-            setStateVariable: "currentPage",
+            setEssentialValue: "currentPage",
             value: desiredPageNumber
           }]
         }
@@ -175,7 +175,7 @@ export class Paginator extends Template {
       }),
       definition({ dependencyValues }) {
         return {
-          newValues: {
+          setValue: {
             pageSetDescendants: dependencyValues.pageSetDescendants
           }
         }
@@ -211,7 +211,7 @@ export class Paginator extends Template {
           sectionsByPageSet.push(dependencyValues[ind])
         }
         return {
-          newValues: {
+          setValue: {
             sectionsByPageSet
           }
         }
@@ -228,12 +228,12 @@ export class Paginator extends Template {
       definition({ dependencyValues }) {
         if (dependencyValues.documentAncestor) {
           return {
-            newValues: {
+            setValue: {
               documentName: dependencyValues.documentAncestor.componentName
             }
           }
         } else {
-          return { newValues: { documentName: null } }
+          return { setValue: { documentName: null } }
         }
       }
     }
@@ -467,7 +467,7 @@ export class PaginatorPageSet extends Template {
       definition({ dependencyValues }) {
 
 
-        return { newValues: { preserveScores: dependencyValues.paginatorPreserveScores } }
+        return { setValue: { preserveScores: dependencyValues.paginatorPreserveScores } }
 
 
       }
@@ -495,7 +495,7 @@ export class PaginatorPageSet extends Template {
           }
         }
 
-        return { newValues: { pageNumber } }
+        return { setValue: { pageNumber } }
 
 
       }
@@ -523,7 +523,7 @@ export class PaginatorPageSet extends Template {
         }
 
         return {
-          newValues: { renderPage }
+          setValue: { renderPage }
         }
 
       }
@@ -540,7 +540,7 @@ export class PaginatorPageSet extends Template {
       }),
       definition({ dependencyValues }) {
         return {
-          newValues: {
+          setValue: {
             pageDescendants: dependencyValues.pageDescendants
           }
         }
@@ -561,7 +561,7 @@ export class PaginatorPageSet extends Template {
       // so that the variable is marked fresh
       markStale: () => ({ updateReplacements: true }),
       definition: function () {
-        return { newValues: { readyToExpandWhenResolved: true } };
+        return { setValue: { readyToExpandWhenResolved: true } };
       },
     };
 
@@ -698,16 +698,17 @@ export class PaginatorPage extends Template {
       }),
       definition({ dependencyValues }) {
 
-        return { newValues: { pageNumber: dependencyValues.pageNumber } }
+        return { setValue: { pageNumber: dependencyValues.pageNumber } }
 
       }
     }
 
     stateVariableDefinitions.sectionPlaceholder = {
       defaultValue: false,
+      hasEssential: true,
       returnDependencies: () => ({}),
       definition: () => ({
-        useEssentialOrDefaultValue: { sectionPlaceholder: { variablesToCheck: ["sectionPlaceholder"] } }
+        useEssentialOrDefaultValue: { sectionPlaceholder: true }
       })
     }
 
@@ -715,6 +716,7 @@ export class PaginatorPage extends Template {
       public: true,
       componentType: "boolean",
       defaultValue: this.renderedDefault,
+      hasEssential: true,
       returnDependencies: () => ({
         pageNumber: {
           dependencyType: "stateVariable",
@@ -734,7 +736,7 @@ export class PaginatorPage extends Template {
         if (dependencyValues.paginatorPageSetRenderPage === null) {
           return {
             useEssentialOrDefaultValue:
-              { rendered: { variablesToCheck: ["rendered"] } }
+              { rendered: true }
           }
         } else {
           let rendered = dependencyValues.paginatorPageSetRenderPage;
@@ -742,7 +744,7 @@ export class PaginatorPage extends Template {
             rendered = !rendered;
           }
           return {
-            newValues: { rendered }
+            setValue: { rendered }
           }
         }
 
@@ -767,7 +769,7 @@ export class PaginatorPage extends Template {
           }
         }
 
-        return { newValues: { mirrorPage } }
+        return { setValue: { mirrorPage } }
 
       }
     }
@@ -782,7 +784,7 @@ export class PaginatorPage extends Template {
         }
       }),
       definition({ dependencyValues }) {
-        return { newValues: { mirrorPageReplacements: dependencyValues.mirrorPageReplacements } }
+        return { setValue: { mirrorPageReplacements: dependencyValues.mirrorPageReplacements } }
       }
     }
 
@@ -800,7 +802,7 @@ export class PaginatorPage extends Template {
       // so that the variable is marked fresh
       markStale: () => ({ updateReplacements: true }),
       definition: function () {
-        return { newValues: { readyToExpandWhenResolved: true } };
+        return { setValue: { readyToExpandWhenResolved: true } };
       },
     };
 
@@ -1015,7 +1017,7 @@ export class PaginatorControls extends BlockComponent {
         }
       },
       definition({ dependencyValues }) {
-        return { newValues: { paginatorComponentName: dependencyValues.paginatorComponentName } }
+        return { setValue: { paginatorComponentName: dependencyValues.paginatorComponentName } }
       }
     }
 
@@ -1038,10 +1040,10 @@ export class PaginatorControls extends BlockComponent {
       definition({ dependencyValues }) {
         if ("paginatorPage" in dependencyValues) {
           return {
-            newValues: { currentPage: dependencyValues.paginatorPage }
+            setValue: { currentPage: dependencyValues.paginatorPage }
           }
         } else {
-          return { newValues: { currentPage: 1 } }
+          return { setValue: { currentPage: 1 } }
         }
       }
     }
@@ -1065,10 +1067,10 @@ export class PaginatorControls extends BlockComponent {
       definition({ dependencyValues }) {
         if ("paginatorNPages" in dependencyValues) {
           return {
-            newValues: { nPages: dependencyValues.paginatorNPages }
+            setValue: { nPages: dependencyValues.paginatorNPages }
           }
         } else {
-          return { newValues: { nPages: 1 } }
+          return { setValue: { nPages: 1 } }
         }
       }
     }

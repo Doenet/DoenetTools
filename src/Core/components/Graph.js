@@ -185,7 +185,7 @@ export default class Graph extends BlockComponent {
       }),
       definition: function ({ dependencyValues }) {
         return {
-          newValues: {
+          setValue: {
             graphicalDescendants: dependencyValues.graphicalDescendants
           }
         }
@@ -194,13 +194,14 @@ export default class Graph extends BlockComponent {
 
     stateVariableDefinitions.nChildrenAdded = {
       defaultValue: 0,
+      hasEssential: true,
       returnDependencies: () => ({}),
-      definition: () => ({ useEssentialOrDefaultValue: { nChildrenAdded: {} } }),
+      definition: () => ({ useEssentialOrDefaultValue: { nChildrenAdded: true } }),
       inverseDefinition({ desiredStateVariableValues }) {
         return {
           success: true,
           instructions: [{
-            setStateVariable: "nChildrenAdded",
+            setEssentialValue: "nChildrenAdded",
             value: desiredStateVariableValues.nChildrenAdded
           }]
         }
@@ -251,14 +252,14 @@ export default class Graph extends BlockComponent {
       },
       definition({ dependencyValues, usedDefault }) {
         if (!dependencyValues.identicalAxisScales) {
-          return { newValues: { xmin: dependencyValues.xminPrelim } }
+          return { setValue: { xmin: dependencyValues.xminPrelim } }
         }
 
         let xminSpecified = !usedDefault.xminPrelim;
 
         // always use xmin if specified
         if (xminSpecified) {
-          return { newValues: { xmin: dependencyValues.xminPrelim } }
+          return { setValue: { xmin: dependencyValues.xminPrelim } }
         }
 
         let xmaxSpecified = !usedDefault.xmaxPrelim;
@@ -271,17 +272,17 @@ export default class Graph extends BlockComponent {
           let aspectRatio = dependencyValues.width.size / dependencyValues.height.size;
           let yscaleAdjusted = (dependencyValues.ymaxPrelim - dependencyValues.yminPrelim) * aspectRatio;
           if (xmaxSpecified) {
-            return { newValues: { xmin: dependencyValues.xmaxPrelim - yscaleAdjusted } };
+            return { setValue: { xmin: dependencyValues.xmaxPrelim - yscaleAdjusted } };
           } else {
-            return { newValues: { xmin: -yscaleAdjusted / 2 } };
+            return { setValue: { xmin: -yscaleAdjusted / 2 } };
           }
         } else {
           if (xmaxSpecified) {
             // use the default xscale of 20
-            return { newValues: { xmin: dependencyValues.xmaxPrelim - 20 } };
+            return { setValue: { xmin: dependencyValues.xmaxPrelim - 20 } };
           } else {
             // use the default value of xmin
-            return { newValues: { xmin: -10 } }
+            return { setValue: { xmin: -10 } }
           }
         }
 
@@ -344,7 +345,7 @@ export default class Graph extends BlockComponent {
       },
       definition({ dependencyValues, usedDefault }) {
         if (!dependencyValues.identicalAxisScales) {
-          return { newValues: { xmax: dependencyValues.xmaxPrelim } }
+          return { setValue: { xmax: dependencyValues.xmaxPrelim } }
         }
 
         let xminSpecified = !usedDefault.xminPrelim;
@@ -365,27 +366,27 @@ export default class Graph extends BlockComponent {
             let xscale = dependencyValues.xmaxPrelim - xmin;
             let maxScale = Math.max(xscale, yscaleAdjusted);
 
-            return { newValues: { xmax: xmin + maxScale } };
+            return { setValue: { xmax: xmin + maxScale } };
           } else {
             if (xminSpecified) {
-              return { newValues: { xmax: xmin + yscaleAdjusted } }
+              return { setValue: { xmax: xmin + yscaleAdjusted } }
             } else if (xmaxSpecified) {
-              return { newValues: { xmax: dependencyValues.xmaxPrelim } }
+              return { setValue: { xmax: dependencyValues.xmaxPrelim } }
             } else {
-              return { newValues: { xmax: yscaleAdjusted / 2 } };
+              return { setValue: { xmax: yscaleAdjusted / 2 } };
             }
 
           }
         } else {
           // no yscale specified
           if (xmaxSpecified) {
-            return { newValues: { xmax: dependencyValues.xmaxPrelim } }
+            return { setValue: { xmax: dependencyValues.xmaxPrelim } }
           } else if (xminSpecified) {
             // use the default xscale of 20
-            return { newValues: { xmax: xmin + 20 } }
+            return { setValue: { xmax: xmin + 20 } }
           } else {
             // use the default xmax
-            return { newValues: { xmax: 10 } }
+            return { setValue: { xmax: 10 } }
           }
         }
 
@@ -449,14 +450,14 @@ export default class Graph extends BlockComponent {
       },
       definition({ dependencyValues, usedDefault }) {
         if (!dependencyValues.identicalAxisScales) {
-          return { newValues: { ymin: dependencyValues.yminPrelim } }
+          return { setValue: { ymin: dependencyValues.yminPrelim } }
         }
 
         let yminSpecified = !usedDefault.yminPrelim;
 
         // always use ymin if specified
         if (yminSpecified) {
-          return { newValues: { ymin: dependencyValues.yminPrelim } }
+          return { setValue: { ymin: dependencyValues.yminPrelim } }
         }
 
         let ymaxSpecified = !usedDefault.ymaxPrelim;
@@ -469,17 +470,17 @@ export default class Graph extends BlockComponent {
         if (xscaleSpecified) {
           let xscaleAdjusted = (dependencyValues.xmaxPrelim - dependencyValues.xminPrelim) / aspectRatio;
           if (ymaxSpecified) {
-            return { newValues: { ymin: dependencyValues.ymaxPrelim - xscaleAdjusted } };
+            return { setValue: { ymin: dependencyValues.ymaxPrelim - xscaleAdjusted } };
           } else {
-            return { newValues: { ymin: -xscaleAdjusted / 2 } };
+            return { setValue: { ymin: -xscaleAdjusted / 2 } };
           }
         } else {
           if (ymaxSpecified) {
             // use the default xscale of 20, adjusted for aspect ratio
-            return { newValues: { ymin: dependencyValues.ymaxPrelim - 20 / aspectRatio } };
+            return { setValue: { ymin: dependencyValues.ymaxPrelim - 20 / aspectRatio } };
           } else {
             // use the default value of ymin, adjusted for aspect ration
-            return { newValues: { ymin: -10 / aspectRatio } }
+            return { setValue: { ymin: -10 / aspectRatio } }
           }
         }
 
@@ -542,7 +543,7 @@ export default class Graph extends BlockComponent {
       },
       definition({ dependencyValues, usedDefault }) {
         if (!dependencyValues.identicalAxisScales) {
-          return { newValues: { ymax: dependencyValues.ymaxPrelim } }
+          return { setValue: { ymax: dependencyValues.ymaxPrelim } }
         }
 
         let xminSpecified = !usedDefault.xminPrelim;
@@ -564,28 +565,28 @@ export default class Graph extends BlockComponent {
             let yscale = dependencyValues.ymaxPrelim - ymin;
             let maxScale = Math.max(yscale, xscaleAdjusted);
 
-            return { newValues: { ymax: ymin + maxScale } };
+            return { setValue: { ymax: ymin + maxScale } };
           } else {
 
             if (yminSpecified) {
-              return { newValues: { ymax: ymin + xscaleAdjusted } }
+              return { setValue: { ymax: ymin + xscaleAdjusted } }
             } else if (ymaxSpecified) {
-              return { newValues: { ymax: dependencyValues.ymaxPrelim } }
+              return { setValue: { ymax: dependencyValues.ymaxPrelim } }
             } else {
-              return { newValues: { ymax: xscaleAdjusted / 2 } };
+              return { setValue: { ymax: xscaleAdjusted / 2 } };
             }
 
           }
         } else {
           // no xscale specified
           if (ymaxSpecified) {
-            return { newValues: { ymax: dependencyValues.ymaxPrelim } }
+            return { setValue: { ymax: dependencyValues.ymaxPrelim } }
           } else if (yminSpecified) {
             // use the default yscale of 20, adjusted for aspect ratio
-            return { newValues: { ymax: ymin + 20 / aspectRatio } }
+            return { setValue: { ymax: ymin + 20 / aspectRatio } }
           } else {
             // use the default ymax, adjusted for aspect ratio
-            return { newValues: { ymax: 10 / aspectRatio } }
+            return { setValue: { ymax: 10 / aspectRatio } }
           }
         }
 
@@ -620,7 +621,7 @@ export default class Graph extends BlockComponent {
       }),
       definition({ dependencyValues }) {
         return {
-          newValues: {
+          setValue: {
             xscale: dependencyValues.xmax - dependencyValues.xmin
           }
         }
@@ -642,7 +643,7 @@ export default class Graph extends BlockComponent {
       }),
       definition({ dependencyValues }) {
         return {
-          newValues: {
+          setValue: {
             yscale: dependencyValues.ymax - dependencyValues.ymin
           }
         }

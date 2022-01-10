@@ -72,7 +72,7 @@ export default class VariantControl extends BaseComponent {
           }
         }
 
-        return { newValues: { nVariantsSpecified } };
+        return { setValue: { nVariantsSpecified } };
       }
     }
 
@@ -88,9 +88,9 @@ export default class VariantControl extends BaseComponent {
       }),
       definition: function ({ dependencyValues }) {
         if (dependencyValues.seedsAttr !== null) {
-          return { newValues: { nSeeds: dependencyValues.seedsAttr.stateValues.nSeeds } }
+          return { setValue: { nSeeds: dependencyValues.seedsAttr.stateValues.nSeeds } }
         } else {
-          return { newValues: { nSeeds: 0 } }
+          return { setValue: { nSeeds: 0 } }
         }
       }
     }
@@ -131,7 +131,7 @@ export default class VariantControl extends BaseComponent {
               .stateValues["seed" + (Number(arrayKey) + 1)]
           }
         }
-        return { newValues: { seeds } }
+        return { setValue: { seeds } }
       }
     }
 
@@ -148,7 +148,7 @@ export default class VariantControl extends BaseComponent {
         if (dependencyValues.variantNamesAttr !== null) {
           originalVariantNames = dependencyValues.variantNamesAttr.stateValues.variantNames;
         }
-        return { newValues: { originalVariantNames } }
+        return { setValue: { originalVariantNames } }
       }
     }
 
@@ -199,7 +199,7 @@ export default class VariantControl extends BaseComponent {
           variantNames.push(variantString);
         }
 
-        return { newValues: { variantNames } }
+        return { setValue: { variantNames } }
       }
     }
 
@@ -208,6 +208,8 @@ export default class VariantControl extends BaseComponent {
       public: true,
       componentType: "number",
       immutable: true,
+      hasEssential: true,
+      shadowVariable: true,
       returnDependencies: ({ sharedParameters }) => ({
         variantsObject: {
           dependencyType: "variants",
@@ -248,8 +250,8 @@ export default class VariantControl extends BaseComponent {
             if (!Number.isFinite(desiredVariantIndex)) {
               console.warn("Variant index " + dependencyValues.variantsObject.desiredVariantIndex + " must be a number");
               return {
-                makeEssential: { selectedVariantIndex: true },
-                newValues: { selectedVariantIndex: 1 }
+                setEssentialValue: { selectedVariantIndex: tr1ue },
+                setValue: { selectedVariantIndex: 1 }
               }
             } else {
               if (!Number.isInteger(desiredVariantIndex)) {
@@ -263,8 +265,8 @@ export default class VariantControl extends BaseComponent {
               }
               let selectedVariantIndex = indexFrom0 + 1;
               return {
-                makeEssential: { selectedVariantIndex: true },
-                newValues: { selectedVariantIndex }
+                setEssentialValue: { selectedVariantIndex },
+                setValue: { selectedVariantIndex }
               }
             }
           }
@@ -278,15 +280,15 @@ export default class VariantControl extends BaseComponent {
               let desiredIndexFrom0 = lowerCaseVariantNames.indexOf(dependencyValues.variantsObject.desiredVariantName.toLowerCase());
               if (desiredIndexFrom0 !== -1) {
                 return {
-                  makeEssential: { selectedVariantIndex: true },
-                  newValues: { selectedVariantIndex: desiredIndexFrom0 + 1 }
+                  setEssentialValue: { selectedVariantIndex: desiredIndexFrom0 + 1 },
+                  setValue: { selectedVariantIndex: desiredIndexFrom0 + 1 }
                 }
               }
             }
             console.warn("Variant name " + dependencyValues.variantsObject.desiredVariantName + " is not valid");
             return {
-              makeEssential: { selectedVariantIndex: true },
-              newValues: { selectedVariantIndex: 1 }
+              setEssentialValue: { selectedVariantIndex: 1 },
+              setValue: { selectedVariantIndex: 1 }
             }
           }
         }
@@ -309,8 +311,8 @@ export default class VariantControl extends BaseComponent {
         }
 
         return {
-          makeEssential: { selectedVariantIndex: true },
-          newValues: { selectedVariantIndex }
+          setEssentialValue: { selectedVariantIndex },
+          setValue: { selectedVariantIndex }
         }
 
       }
@@ -331,7 +333,7 @@ export default class VariantControl extends BaseComponent {
       }),
       definition: function ({ dependencyValues }) {
         return {
-          newValues: {
+          setValue: {
             selectedVariantName:
               dependencyValues.variantNames[dependencyValues.selectedVariantIndex - 1]
           }
@@ -353,7 +355,7 @@ export default class VariantControl extends BaseComponent {
       }),
       definition: function ({ dependencyValues }) {
         if (dependencyValues.selectedVariantIndex <= dependencyValues.seeds.length) {
-          return { newValues: { selectedSeed: dependencyValues.seeds[dependencyValues.selectedVariantIndex - 1] } }
+          return { setValue: { selectedSeed: dependencyValues.seeds[dependencyValues.selectedVariantIndex - 1] } }
         }
 
         // if fewer seeds than selectedVariantIndex, find additional seeds
@@ -371,7 +373,7 @@ export default class VariantControl extends BaseComponent {
             seedString = seedValue.toString();
           }
         }
-        return { newValues: { selectedSeed: seedString } }
+        return { setValue: { selectedSeed: seedString } }
 
       }
     }
@@ -389,7 +391,7 @@ export default class VariantControl extends BaseComponent {
         }
       }),
       definition: ({ dependencyValues }) => ({
-        newValues: {
+        setValue: {
           selectRng: new dependencyValues.rngClass(dependencyValues.selectedSeed)
         }
       })

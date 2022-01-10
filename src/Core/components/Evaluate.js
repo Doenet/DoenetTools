@@ -71,13 +71,14 @@ export default class Evaluate extends MathComponent {
 
     stateVariableDefinitions.canBeModified = {
       returnDependencies: () => ({}),
-      definition: () => ({ newValues: { canBeModified: false } })
+      definition: () => ({ setValue: { canBeModified: false } })
     }
 
     stateVariableDefinitions.displayDigits = {
       public: true,
       componentType: "integer",
       defaultValue: 10,
+      hasEssential: true,
       returnDependencies: () => ({
         displayDigitsAttr: {
           dependencyType: "attributeComponent",
@@ -93,19 +94,19 @@ export default class Evaluate extends MathComponent {
       definition({ dependencyValues, usedDefault }) {
         if (dependencyValues.displayDigitsAttr !== null) {
           return {
-            newValues: {
+            setValue: {
               displayDigits: dependencyValues.displayDigitsAttr.stateValues.value
             }
           }
         } else if (dependencyValues.functionAttr && !usedDefault.functionAttr) {
           return {
-            newValues: {
+            setValue: {
               displayDigits: dependencyValues.functionAttr.stateValues.displayDigits
             }
           }
         } else {
           return {
-            useDefaultValue: { displayDigits: {} }
+            useEssentialOrDefaultValue: { displayDigits: true }
           }
         }
       }
@@ -115,6 +116,7 @@ export default class Evaluate extends MathComponent {
       public: true,
       componentType: "integer",
       defaultValue: 10,
+      hasEssential: true,
       returnDependencies: () => ({
         displayDecimalsAttr: {
           dependencyType: "attributeComponent",
@@ -130,19 +132,19 @@ export default class Evaluate extends MathComponent {
       definition({ dependencyValues, usedDefault }) {
         if (dependencyValues.displayDecimalsAttr !== null) {
           return {
-            newValues: {
+            setValue: {
               displayDecimals: dependencyValues.displayDecimalsAttr.stateValues.value
             }
           }
         } else if (dependencyValues.functionAttr && !usedDefault.functionAttr) {
           return {
-            newValues: {
+            setValue: {
               displayDecimals: dependencyValues.functionAttr.stateValues.displayDecimals
             }
           }
         } else {
           return {
-            useDefaultValue: { displayDecimals: {} }
+            useEssentialOrDefaultValue: { displayDecimals: true }
           }
         }
       }
@@ -152,6 +154,7 @@ export default class Evaluate extends MathComponent {
       public: true,
       componentType: "number",
       defaultValue: 0,
+      hasEssential: true,
       returnDependencies: () => ({
         displayDecimalsAttr: {
           dependencyType: "attributeComponent",
@@ -167,19 +170,19 @@ export default class Evaluate extends MathComponent {
       definition({ dependencyValues, usedDefault }) {
         if (dependencyValues.displayDecimalsAttr !== null) {
           return {
-            newValues: {
+            setValue: {
               displaySmallAsZero: dependencyValues.displayDecimalsAttr.stateValues.value
             }
           }
         } else if (dependencyValues.functionAttr && !usedDefault.functionAttr) {
           return {
-            newValues: {
+            setValue: {
               displaySmallAsZero: dependencyValues.functionAttr.stateValues.displaySmallAsZero
             }
           }
         } else {
           return {
-            useDefaultValue: { displaySmallAsZero: {} }
+            useEssentialOrDefaultValue: { displaySmallAsZero: true }
           }
         }
       }
@@ -215,7 +218,7 @@ export default class Evaluate extends MathComponent {
 
         if (!(dependencyValues.functionAttr && dependencyValues.inputAttr)) {
           return {
-            newValues: {
+            setValue: {
               unnormalizedValue: me.fromAst('\uFF3F')
             }
           }
@@ -234,7 +237,7 @@ export default class Evaluate extends MathComponent {
 
         if (input.length !== dependencyValues.functionAttr.stateValues.nInputs) {
           return {
-            newValues: {
+            setValue: {
               unnormalizedValue: me.fromAst('\uFF3F')
             }
           }
@@ -272,7 +275,7 @@ export default class Evaluate extends MathComponent {
         // console.log(unnormalizedValue)
 
         return {
-          newValues: { unnormalizedValue }
+          setValue: { unnormalizedValue }
         }
 
       }

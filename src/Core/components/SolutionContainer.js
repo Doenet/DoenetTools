@@ -26,7 +26,7 @@ export default class SolutionContainer extends Template {
       markStale: () => ({ updateReplacements: true }),
       definition({ dependencyValues }) {
         let rendered = Boolean(dependencyValues.parentOpen);
-        return { newValues: { rendered } };
+        return { setValue: { rendered } };
       }
     }
 

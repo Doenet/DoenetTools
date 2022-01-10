@@ -62,7 +62,7 @@ export default class Polyline extends GraphicalComponent {
 
         styleDescription += dependencyValues.selectedStyle.lineColor;
 
-        return { newValues: { styleDescription } };
+        return { setValue: { styleDescription } };
       }
     }
 
@@ -79,9 +79,9 @@ export default class Polyline extends GraphicalComponent {
       }),
       definition: function ({ dependencyValues }) {
         if (dependencyValues.vertices !== null) {
-          return { newValues: { nVertices: dependencyValues.vertices.stateValues.nPoints } }
+          return { setValue: { nVertices: dependencyValues.vertices.stateValues.nPoints } }
         } else {
-          return { newValues: { nVertices: 0 } }
+          return { setValue: { nVertices: 0 } }
         }
 
       }
@@ -104,12 +104,12 @@ export default class Polyline extends GraphicalComponent {
         if (dependencyValues.vertices !== null) {
           let nDimensions = dependencyValues.vertices.stateValues.nDimensions;
           return {
-            newValues: { nDimensions },
+            setValue: { nDimensions },
             checkForActualChange: { nDimensions: true }
           }
         } else {
           // polyline through zero vertices
-          return { newValues: { nDimensions: 2 } }
+          return { setValue: { nDimensions: 2 } }
         }
 
       }
@@ -265,7 +265,7 @@ export default class Polyline extends GraphicalComponent {
           }
         }
 
-        return { newValues: { vertices } }
+        return { setValue: { vertices } }
       },
       async inverseArrayDefinitionByKey({ desiredStateVariableValues,
         dependencyValuesByKey, dependencyNamesByKey,
@@ -352,7 +352,7 @@ export default class Polyline extends GraphicalComponent {
           numericalVertices[arrayKey] = vert;
         }
 
-        return { newValues: { numericalVertices } }
+        return { setValue: { numericalVertices } }
       }
     }
 
@@ -407,7 +407,7 @@ export default class Polyline extends GraphicalComponent {
 
 
         return {
-          newValues: {
+          setValue: {
             nearestPoint: function ({ variables, scales }) {
 
               let xscale = scales[0];

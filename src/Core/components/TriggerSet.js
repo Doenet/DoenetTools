@@ -53,7 +53,7 @@ export default class triggerSet extends InlineComponent {
       }),
       definition({ dependencyValues }) {
         return {
-          newValues: {
+          setValue: {
             updateValueAndActionsToTrigger: dependencyValues.updateValueAndCallActionChildren
           }
         }
@@ -73,10 +73,10 @@ export default class triggerSet extends InlineComponent {
       }),
       definition({ dependencyValues }) {
         if (dependencyValues.triggerWhen || dependencyValues.triggerWithTargets === null) {
-          return { newValues: { triggerWithTargets: null } }
+          return { setValue: { triggerWithTargets: null } }
         } else {
           return {
-            newValues: {
+            setValue: {
               triggerWithTargets: dependencyValues.triggerWithTargets
                 .split(/\s+/).filter(s => s)
             }
@@ -111,7 +111,7 @@ export default class triggerSet extends InlineComponent {
           triggerWithTargetComponentNames.push(dependencyValues[`triggerWithTargetComponentName${i}`])
         }
 
-        return { newValues: { triggerWithTargetComponentNames } }
+        return { setValue: { triggerWithTargetComponentNames } }
       },
       markStale() {
         return { updateActionChaining: true }
@@ -137,7 +137,7 @@ export default class triggerSet extends InlineComponent {
 
     stateVariableDefinitions.hidden.definition = function (args) {
       if (args.dependencyValues.triggerWhen || args.dependencyValues.triggerWithTargets) {
-        return { newValues: { hidden: true } }
+        return { setValue: { hidden: true } }
       } else {
         return originalHiddenDefinition(args);
       }

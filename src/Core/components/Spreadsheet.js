@@ -8,10 +8,6 @@ import { HyperFormula } from 'hyperformula';
 export default class Spreadsheet extends BlockComponent {
   static componentType = "spreadsheet";
 
-  // used when referencing this component without prop
-  static useChildrenForReference = false;
-  static get stateVariablesShadowedForReference() { return ["cells"] };
-
   static createAttributesObject(args) {
     let attributes = super.createAttributesObject(args);
     attributes.width = {
@@ -135,7 +131,7 @@ export default class Spreadsheet extends BlockComponent {
         })
 
         return {
-          newValues: {
+          setValue: {
             cellNameToRowCol: result.cellNameToRowCol,
             cellNamesByRowCol: result.cellNamesByRowCol,
           }
@@ -167,7 +163,7 @@ export default class Spreadsheet extends BlockComponent {
         }
         numRows = Math.max(numRows, dependencyValues.cellNamesByRowCol.length);
         // numRows = Math.max(numRows, dependencyValues.rowChildren.length)
-        return { newValues: { numRows } }
+        return { setValue: { numRows } }
       }
     }
 
@@ -198,7 +194,7 @@ export default class Spreadsheet extends BlockComponent {
             numColumns = Math.max(numColumns, row.length);
           }
         }
-        return { newValues: { numColumns } }
+        return { setValue: { numColumns } }
       }
     }
 
@@ -229,10 +225,10 @@ export default class Spreadsheet extends BlockComponent {
           } else {
             height = 132;  // value if numRows = 4
           }
-          return { newValues: { height: { size: height, isAbsolute: true } } }
+          return { setValue: { height: { size: height, isAbsolute: true } } }
         }
 
-        return { newValues: { height: dependencyValues.heightAttr.stateValues.componentSize } }
+        return { setValue: { height: dependencyValues.heightAttr.stateValues.componentSize } }
 
       }
     }
@@ -245,7 +241,9 @@ export default class Spreadsheet extends BlockComponent {
       isArray: true,
       entryPrefixes: ["cell", "row", "column", "range"],
       nDimensions: 2,
-      defaultEntryValue: "",
+      defaultValueByArrayKey: () => "",
+      hasEssential: true,
+      shadowVariable: true,
       stateVariablesDeterminingDependencies: ["cellNamesByRowCol"],
       // stateVariablesDeterminingDependencies: ["numRows", "numColumns"],
       returnArraySizeDependencies: () => ({
@@ -461,14 +459,14 @@ export default class Spreadsheet extends BlockComponent {
           if (dependencyValuesByKey[arrayKey].cellText !== undefined) {
             cells[arrayKey] = dependencyValuesByKey[arrayKey].cellText
           } else {
-            essentialCells[arrayKey] = {};
+            essentialCells[arrayKey] = true;
           }
         }
 
         let result = {};
 
         if (Object.keys(cells).length > 0) {
-          result.newValues = { cells }
+          result.setValue = { cells }
         }
         if (Object.keys(essentialCells).length > 0) {
           result.useEssentialOrDefaultValue = { cells: essentialCells }
@@ -492,7 +490,7 @@ export default class Spreadsheet extends BlockComponent {
           } else {
             let cellText = desiredStateVariableValues.cells[arrayKey];
             instructions.push({
-              setStateVariable: "cells",
+              setEssentialValue: "cells",
               value: { [arrayKey]: cellText === null ? "" : String(cellText) }
             })
           }
@@ -514,7 +512,6 @@ export default class Spreadsheet extends BlockComponent {
       componentType: "cell",
       entryPrefixes: ["evaluatedCell", "evaluatedRow", "evaluatedColumn", "evaluatedRange"],
       nDimensions: 2,
-      defaultEntryValue: null,
       stateVariablesDeterminingDependencies: ["cellNamesByRowCol"],
       returnArraySizeDependencies: () => ({
         numRows: {
@@ -708,7 +705,7 @@ export default class Spreadsheet extends BlockComponent {
           }
         }
 
-        return { newValues: { evaluatedCells } };
+        return { setValue: { evaluatedCells } };
 
       },
       // inverseArrayDefinitionByKey({ desiredStateVariableValues }) {
@@ -719,7 +716,7 @@ export default class Spreadsheet extends BlockComponent {
 
       //   for (let arrayKey in desiredStateVariableValues.evaluatedCells) {
       //     instructions.push({
-      //       setStateVariable: "evaluatedCells",
+      //       setEssentialValue: "evaluatedCells",
       //       value: { [arrayKey]: desiredStateVariableValues.evaluatedCells[arrayKey] }
       //     })
 
@@ -947,7 +944,7 @@ export default class Spreadsheet extends BlockComponent {
           }
         }
 
-        return { newValues: { pointsInCells } }
+        return { setValue: { pointsInCells } }
 
       },
       // inverseArrayDefinitionByKey({ desiredStateVariableValues, dependencyNamesByKey }) {

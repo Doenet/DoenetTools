@@ -69,7 +69,7 @@ export default class Choice extends InlineComponent {
             text += child.stateValues.text;
           }
         }
-        return { newValues: { text } }
+        return { setValue: { text } }
       }
     }
 
@@ -93,14 +93,14 @@ export default class Choice extends InlineComponent {
           dependencyValues.countAmongSiblings
         );
 
-        return { newValues: { selected } }
+        return { setValue: { selected } }
 
       },
       inverseDefinition: function ({ desiredStateVariableValues }) {
         return {
           success: true,
           instructions: [{
-            setStateVariable: "selected",
+            setEssentialValue: "selected",
             value: desiredStateVariableValues.selected
           }]
         };
@@ -110,21 +110,20 @@ export default class Choice extends InlineComponent {
 
     stateVariableDefinitions.submitted = {
       defaultValue: false,
+      hasEssential: true,
       public: true,
       componentType: "boolean",
       returnDependencies: () => ({}),
       definition: () => ({
         useEssentialOrDefaultValue: {
-          submitted: {
-            variablesToCheck: ["submitted"]
-          }
+          submitted: true
         }
       }),
       inverseDefinition: function ({ desiredStateVariableValues }) {
         return {
           success: true,
           instructions: [{
-            setStateVariable: "submitted",
+            setEssentialValue: "submitted",
             value: desiredStateVariableValues.submitted
           }]
         };
@@ -159,7 +158,7 @@ export default class Choice extends InlineComponent {
       definition({ dependencyValues }) {
 
         if (!dependencyValues.submitted) {
-          return { newValues: { feedbacks: [] } }
+          return { setValue: { feedbacks: [] } }
         }
 
         let feedbacks = [];
@@ -169,7 +168,7 @@ export default class Choice extends InlineComponent {
         for (let feedbackCode of dependencyValues.feedbackCodes) {
           let code = feedbackCode.toLowerCase();
           let feedbackText = feedbackDefinitions[code];
-          if(feedbackText) {
+          if (feedbackText) {
             feedbacks.push(feedbackText);
           }
         }
@@ -178,7 +177,7 @@ export default class Choice extends InlineComponent {
           feedbacks.push(dependencyValues.feedbackText);
         }
 
-        return { newValues: { feedbacks } }
+        return { setValue: { feedbacks } }
 
       }
     };

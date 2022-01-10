@@ -96,12 +96,12 @@ describe('Math Tag Tests', function () {
     cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let replacement = components['/_copy1'].replacements[0];
-      expect(components['/_math1'].stateValues.value.tree).eqls(['+', 'x', 1])
-      expect(replacement.stateValues.value.tree).eqls(['+', 'x', 1])
-      expect(components['/_math2'].stateValues.value.tree).eqls(["+", ["*", 3, ["+", "x", 1]], 5])
-      expect(components['/_math1'].stateValues.hide).eq(true)
+      expect((await components['/_math1'].stateValues.value).tree).eqls(['+', 'x', 1])
+      expect((await replacement.stateValues.value).tree).eqls(['+', 'x', 1])
+      expect((await components['/_math2'].stateValues.value).tree).eqls(["+", ["*", 3, ["+", "x", 1]], 5])
+      expect(await components['/_math1'].stateValues.hide).eq(true)
       expect(await replacement.stateValues.hide).eq(true);
-      expect(components['/_math2'].stateValues.hide).eq(false)
+      expect(await components['/_math2'].stateValues.hide).eq(false)
     })
   })
 
