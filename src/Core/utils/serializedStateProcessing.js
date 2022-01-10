@@ -1266,9 +1266,9 @@ export function applySugar({ serializedComponents, parentParametersFromSugar = {
 
         for (let [sugarInd, sugarInstruction] of componentClass.returnSugarInstructions().entries()) {
 
-          if (component.children.length === 0) {
-            break;
-          }
+          // if (component.children.length === 0) {
+          //   break;
+          // }
 
           let childTypes = component.children
             .map(x => typeof x === "string" ? "s" : "n")

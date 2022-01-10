@@ -2,17 +2,15 @@ import BlockComponent from './abstract/BlockComponent';
 
 export default class CodeViewer extends BlockComponent {
   static componentType = "codeViewer";
-
   static renderChildren = true;
-
-  static variableForPlainMacro = "value";
-
-  static get stateVariablesShadowedForReference() {
-    return ["value"]
-  };
+  // static acceptTarget = true;
 
   static createAttributesObject(args) {
     let attributes = super.createAttributesObject(args);
+
+    attributes.target = {
+      createPrimitiveOfType: "string"
+    };
 
     attributes.width = {
       createComponentOfType: "_componentSize",
@@ -37,6 +35,36 @@ export default class CodeViewer extends BlockComponent {
     return attributes;
   }
 
+
+  static returnSugarInstructions() {
+    let sugarInstructions = super.returnSugarInstructions();
+
+    let addRenderDoenetML = function ({ matchedChildren, componentAttributes }) {
+
+      if (!componentAttributes.target){
+        return {success: false}
+      }
+
+      let renderDoenetML = {
+        componentType: "renderDoenetML",
+        attributes: {
+          target: {
+            primitive:componentAttributes.target
+          }
+        }
+      };
+
+      return {
+        success: true,
+        newChildren: [renderDoenetML],
+      }
+
+    }
+    sugarInstructions.push({
+      replacementFunction: addRenderDoenetML
+    })
+    return sugarInstructions;
+  }
 
   static returnStateVariableDefinitions() {
 
