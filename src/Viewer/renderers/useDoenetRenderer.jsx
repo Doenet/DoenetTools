@@ -5,7 +5,7 @@ import { renderersloadComponent } from '../DoenetViewer';
 
 export const rendererSVs = atomFamily({
   key:'rendererSVs',
-  default:{},
+  default:{stateValues:{},sourceOfUpdate:{}},
   dangerouslyAllowMutability: true,
 })
 
@@ -16,7 +16,7 @@ export default function useDoenetRenderer(props,initializeChildrenOnConstruction
   let name =  props.componentInstructions.componentName;
   let [renderersToLoad,setRenderersToLoad] = useState({})
   
-  let stateValues = useRecoilValue(rendererSVs(name));
+  let {stateValues,sourceOfUpdate={}} = useRecoilValue(rendererSVs(name));
 
   props.rendererUpdateMethods[name] = {
     update: ()=>{},
@@ -83,5 +83,5 @@ export default function useDoenetRenderer(props,initializeChildrenOnConstruction
     // setDoenetPropsForChildren(props);
   }
 
-  return {name,SVs:stateValues,actions,children,initializeChildren:()=>{},updatesetDoenetPropsForChildren};
+  return {name,SVs:stateValues,actions,children,sourceOfUpdate,initializeChildren:()=>{},updatesetDoenetPropsForChildren};
 }

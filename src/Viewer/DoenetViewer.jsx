@@ -771,7 +771,7 @@ class ErrorBoundary extends React.Component {
 
 function DoenetViewer(props) {
   const toast = useToast();
-  const updateRendererSVsWithRecoil = useRecoilCallback(({snapshot,set})=> async({componentName,stateVariables})=>{
+  const updateRendererSVsWithRecoil = useRecoilCallback(({snapshot,set})=> async({componentName,stateValues,sourceOfUpdate})=>{
     // stateVariables = JSON.parse(JSON.stringify(stateVariables))
     // stateVariables = JSON.stringify(stateVariables, serializedComponentsReplacer)
     // stateVariables = JSON.parse(JSON.stringify(stateVariables, serializedComponentsReplacer), serializedComponentsReviver)
@@ -779,7 +779,7 @@ function DoenetViewer(props) {
     // let stateVariables2 = JSON.stringify(stateVariables)
 
     // console.log(">>>>{componentName,stateVariables}",{componentName,stateVariables})
-    set(rendererSVs(componentName),stateVariables)
+    set(rendererSVs(componentName),{stateValues,sourceOfUpdate})
     // set(rendererSVs(componentName),{test:true})
 
   })

@@ -602,7 +602,7 @@ export default class Core {
           }
         }
       
-        this.externalFunctions.updateRendererSVsWithRecoil({componentName,stateVariables:stateValuesForRenderer})
+        this.externalFunctions.updateRendererSVsWithRecoil({componentName,stateValues:stateValuesForRenderer,sourceOfUpdate})
 
         Object.assign(this.renderedComponentInstructions[componentName].stateValues,
           stateValuesForRenderer)
@@ -680,7 +680,7 @@ export default class Core {
         })
       }
     }
-    this.externalFunctions.updateRendererSVsWithRecoil({componentName,stateVariables:stateValuesForRenderer})
+    this.externalFunctions.updateRendererSVsWithRecoil({componentName,stateValues:stateValuesForRenderer})
 
     this.renderedComponentInstructions[componentName] = {
       componentName: componentName,

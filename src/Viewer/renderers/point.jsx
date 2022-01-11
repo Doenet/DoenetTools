@@ -3,7 +3,7 @@ import useDoenetRender from './useDoenetRenderer';
 import { BoardContext } from './graph';
 
   export default function Point(props){
-  let {name, SVs, actions} = useDoenetRender(props);
+  let {name, SVs, actions, sourceOfUpdate} = useDoenetRender(props);
 
   const board = useContext(BoardContext);
   const [pointJXG,setPointJXG] = useState({})
@@ -240,13 +240,12 @@ import { BoardContext } from './graph';
       pointJXG.visProp.fixed = true;
     }
 
-    //TODO!!!!!!!!!!!!!!! sourceOfUpdate !!!!!!!!
     //Update only when the change was initiated with this point
-    // if (sourceOfUpdate && sourceOfUpdate.sourceInformation &&
-    //   name in sourceOfUpdate.sourceInformation
-    // ) {
-    //   board.updateInfobox(pointJXG);
-    // }
+    if (sourceOfUpdate.sourceInformation &&
+      name in sourceOfUpdate.sourceInformation
+      ){
+        board.updateInfobox(pointJXG);
+      }
 
     pointJXG.name = SVs.label;
 
