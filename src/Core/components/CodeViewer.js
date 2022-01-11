@@ -3,14 +3,15 @@ import BlockComponent from './abstract/BlockComponent';
 export default class CodeViewer extends BlockComponent {
   static componentType = "codeViewer";
   static renderChildren = true;
-  // static acceptTarget = true;
 
   static createAttributesObject(args) {
     let attributes = super.createAttributesObject(args);
 
-    attributes.target = {
-      createPrimitiveOfType: "string"
-    };
+    attributes.codeSource = {
+      createPrimitiveOfType: "string",
+      createStateVariable: "rawCodeSource",
+      defaultValue: null,
+    }
 
     attributes.width = {
       createComponentOfType: "_componentSize",
@@ -41,7 +42,7 @@ export default class CodeViewer extends BlockComponent {
 
     let addRenderDoenetML = function ({ matchedChildren, componentAttributes }) {
 
-      if (!componentAttributes.target ||
+      if (!componentAttributes.codeSource ||
         matchedChildren.length > 0){
         return {success: false}
       }
@@ -49,8 +50,8 @@ export default class CodeViewer extends BlockComponent {
       let renderDoenetML = {
         componentType: "renderDoenetML",
         attributes: {
-          target: {
-            primitive:componentAttributes.target
+          codeSource: {
+            primitive:componentAttributes.codeSource
           }
         }
       };
@@ -128,6 +129,49 @@ export default class CodeViewer extends BlockComponent {
           //Default
           return { useEssentialOrDefaultValue: {maxHeight: {}} };
         }
+      },
+    }
+
+    stateVariableDefinitions.codeSourceComponentName = {
+      stateVariablesDeterminingDependencies: ["rawCodeSource"],
+      returnDependencies({ stateValues }) {
+        if (stateValues.rawCodeSource) {
+          return {
+            codeSourceComponentName: {
+              dependencyType: "expandTargetName",
+              target: stateValues.rawCodeSource
+            }
+          }
+        } else {
+          return {}
+        }
+      },
+      definition({ dependencyValues }) {
+        return { newValues: { codeSourceComponentName: dependencyValues.codeSourceComponentName } }
+      }
+    }
+
+    stateVariableDefinitions.codeSource = {
+      returnDependencies: () => ({
+        codeSourceComponentName: {
+          dependencyType: "stateVariable",
+          variableName: "codeSourceComponentName"
+        },
+        codeEditorParent: {
+          dependencyType: "parentIdentity",
+          parentComponentType: "codeEditor"
+        },
+      }),
+      definition: function ({ dependencyValues }) {
+        console.log("dependencyValues",dependencyValues)
+        if (dependencyValues.codeSourceComponentName){
+          return { newValues: { codeSource: dependencyValues.codeSourceComponentName } }; 
+        }else if(dependencyValues.codeEditorParent){
+          return { newValues: { codeSource: dependencyValues.codeEditorParent.componentName } }; 
+        }else{
+          return { newValues: { codeSource: null } }; 
+        }
+     
       },
     }
 

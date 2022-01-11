@@ -4,7 +4,7 @@ import { sizeToCSS } from './utils/css';
 import CodeMirror from '../../Tools/_framework/CodeMirror';
 
 export default function CodeEditor(props){
-  let {name, SVs, actions} = useDoenetRenderer(props,false);
+  let {name, SVs, actions, children} = useDoenetRenderer(props,false);
   let currentValue = useRef(SVs.immediateValue)
   let timer = useRef(null)
   let editorRef = useRef(null)

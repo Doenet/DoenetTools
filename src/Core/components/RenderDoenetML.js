@@ -16,9 +16,9 @@ export default class RenderDoenetML extends CompositeComponent {
       createPrimitiveOfType: "number"
     }
 
-    attributes.target = {
+    attributes.codeSource = {
       createPrimitiveOfType: "string",
-      createStateVariable: "target",
+      createStateVariable: "rawCodeSource",
       defaultValue: null,
     }
 
@@ -34,14 +34,14 @@ export default class RenderDoenetML extends CompositeComponent {
 
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
-    stateVariableDefinitions.targetComponentName = {
-      stateVariablesDeterminingDependencies: ["target"],
+    stateVariableDefinitions.codeSourceComponentName = {
+      stateVariablesDeterminingDependencies: ["rawCodeSource"],
       returnDependencies({ stateValues }) {
-        if (stateValues.target) {
+        if (stateValues.rawCodeSource) {
           return {
-            targetComponentName: {
+            codeSourceComponentName: {
               dependencyType: "expandTargetName",
-              target: stateValues.target
+              target: stateValues.rawCodeSource
             }
           }
         } else {
@@ -49,17 +49,41 @@ export default class RenderDoenetML extends CompositeComponent {
         }
       },
       definition({ dependencyValues }) {
-        return { newValues: { targetComponentName: dependencyValues.targetComponentName } }
+        return { newValues: { codeSourceComponentName: dependencyValues.codeSourceComponentName } }
       }
+    }
+
+    stateVariableDefinitions.codeSource = {
+      returnDependencies: () => ({
+        codeSourceComponentName: {
+          dependencyType: "stateVariable",
+          variableName: "codeSourceComponentName"
+        },
+        codeViewerParent: {
+          dependencyType: "parentIdentity",
+          parentComponentType: "codeEditor"
+        },
+      }),
+      definition: function ({ dependencyValues }) {
+        console.log("dependencyValues",dependencyValues)
+        if (dependencyValues.codeSourceComponentName){
+          return { newValues: { codeSource: dependencyValues.codeSourceComponentName } }; 
+        }else if(dependencyValues.codeViewerParent){
+          return { newValues: { codeSource: dependencyValues.codeViewerParent.componentName } }; 
+        }else{
+          return { newValues: { codeSource: null } }; 
+        }
+     
+      },
     }
 
 
     stateVariableDefinitions.doenetML = {
-      stateVariablesDeterminingDependencies: ["targetComponentName"],
+      stateVariablesDeterminingDependencies: ["codeSourceComponentName"],
       returnDependencies: ({ stateValues }) => ({
         doenetML: {
           dependencyType: "stateVariable",
-          componentName: stateValues.targetComponentName,
+          componentName: stateValues.codeSourceComponentName,
           variableName: "text",
           variablesOptional: true,
         }

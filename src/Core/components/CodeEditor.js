@@ -18,6 +18,8 @@ export default class CodeEditor extends BlockComponent {
 
   static variableForPlainMacro = "value";
 
+  static renderChildren = true;
+
   static get stateVariablesShadowedForReference() {
     return ["value"]
   };
@@ -57,6 +59,30 @@ export default class CodeEditor extends BlockComponent {
     return attributes;
   }
 
+  static returnSugarInstructions() {
+    let sugarInstructions = super.returnSugarInstructions();
+
+    let addCodeViewer = function ({ matchedChildren, componentAttributes }) {
+
+      if (matchedChildren.length > 0){
+        return {success: false}
+      }
+
+      let codeViewer = {
+        componentType: "codeViewer",
+      };
+
+      return {
+        success: true,
+        newChildren: [codeViewer],
+      }
+
+    }
+    sugarInstructions.push({
+      replacementFunction: addCodeViewer
+    })
+    return sugarInstructions;
+  }
 
   static returnStateVariableDefinitions() {
 
