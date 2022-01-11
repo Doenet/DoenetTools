@@ -41,7 +41,8 @@ export default class CodeViewer extends BlockComponent {
 
     let addRenderDoenetML = function ({ matchedChildren, componentAttributes }) {
 
-      if (!componentAttributes.target){
+      if (!componentAttributes.target ||
+        matchedChildren.length > 0){
         return {success: false}
       }
 
@@ -133,5 +134,31 @@ export default class CodeViewer extends BlockComponent {
     return stateVariableDefinitions;
 
   }
+
+  async updateComponents(){
+
+    if (this.definingChildren.length === 1 &&
+      this.definingChildren[0].componentType === 'renderDoenetML'){
+        await this.coreFunctions.performAction({
+          componentName: this.definingChildren[0].componentName,
+          actionName: "updateComponents",
+          // event: {
+          //   verb: "selected",
+          //   object: {
+          //     componentName: this.componentName,
+          //     componentType: this.componentType,
+          //   },
+          // },
+            });
+    }
+
+    
+  }
+
+  actions = {
+    updateComponents: this.updateComponents.bind(
+      new Proxy(this, this.readOnlyProxyHandler)
+    )
+  };
 
 }

@@ -7,8 +7,6 @@ export default class RenderDoenetML extends CompositeComponent {
 
   static assignNamesToReplacements = true;
 
-  static acceptTarget = true;
-
   static stateVariableToEvaluateAfterReplacements = "needsReplacementsUpdatedWhenStale";
 
   static createAttributesObject(args) {
@@ -16,6 +14,12 @@ export default class RenderDoenetML extends CompositeComponent {
 
     attributes.assignNamesSkip = {
       createPrimitiveOfType: "number"
+    }
+
+    attributes.target = {
+      createPrimitiveOfType: "string",
+      createStateVariable: "target",
+      defaultValue: null,
     }
 
 
@@ -30,21 +34,42 @@ export default class RenderDoenetML extends CompositeComponent {
 
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
+    stateVariableDefinitions.targetComponentName = {
+      stateVariablesDeterminingDependencies: ["target"],
+      returnDependencies({ stateValues }) {
+        if (stateValues.target) {
+          return {
+            targetComponentName: {
+              dependencyType: "expandTargetName",
+              target: stateValues.target
+            }
+          }
+        } else {
+          return {}
+        }
+      },
+      definition({ dependencyValues }) {
+        return { newValues: { targetComponentName: dependencyValues.targetComponentName } }
+      }
+    }
+
 
     stateVariableDefinitions.doenetML = {
-      returnDependencies: () => ({
-        targetComponent: {
-          dependencyType: "targetComponent",
-          variableNames: ["text"],
+      stateVariablesDeterminingDependencies: ["targetComponentName"],
+      returnDependencies: ({ stateValues }) => ({
+        doenetML: {
+          dependencyType: "stateVariable",
+          componentName: stateValues.targetComponentName,
+          variableName: "text",
           variablesOptional: true,
         }
       }),
       definition({ dependencyValues }) {
         let doenetML = "";
 
-        if (dependencyValues.targetComponent) {
-          doenetML = dependencyValues.targetComponent.stateValues.text;
-          if (!typeof doenetML === "string") {
+        if (dependencyValues.doenetML) {
+          doenetML = dependencyValues.doenetML;
+          if (typeof doenetML !== "string") {
             doenetML = "";
           }
         }
@@ -107,16 +132,12 @@ export default class RenderDoenetML extends CompositeComponent {
   static async createSerializedReplacements({ component,
     componentInfoObjects, flags, workspace
   }) {
-    console.log(`create serialized replacements for ${component.componentName}`)
 
     let serializedComponents = [];
 
     let doenetML = (await component.stateValues.doenetML).trim();
 
     workspace.previousDoenetML = doenetML;
-
-
-    console.log(component.coreFunctions)
 
     try {
       let expandResult = await serializeFunctions.expandDoenetMLsToFullSerializedComponents({
@@ -135,8 +156,6 @@ export default class RenderDoenetML extends CompositeComponent {
       return { replacements: [] }
     }
 
-
-    console.log(serializedComponents)
 
     let namespaceStack = component.componentName.split('/').map(x => ({ namespace: x, componentCounts: {}, namesUsed: {} }))
 
@@ -159,8 +178,6 @@ export default class RenderDoenetML extends CompositeComponent {
       componentInfoObjects,
       originalNamesAreConsistent: true,
     });
-
-    console.log(processResult.serializedComponents)
 
     return { replacements: processResult.serializedComponents };
 
@@ -195,8 +212,6 @@ export default class RenderDoenetML extends CompositeComponent {
       numberReplacementsToReplace: component.replacements.length,
       serializedReplacements: replacements,
     };
-
-    console.log(replacementInstruction)
 
     return [replacementInstruction];
 
