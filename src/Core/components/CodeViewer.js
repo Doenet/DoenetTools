@@ -41,9 +41,8 @@ export default class CodeViewer extends BlockComponent {
     let sugarInstructions = super.returnSugarInstructions();
 
     let addRenderDoenetML = function ({ matchedChildren, componentAttributes }) {
-
-      if (!componentAttributes.codeSource ||
-        matchedChildren.length > 0){
+      
+      if (matchedChildren.length > 0){
         return {success: false}
       }
 
