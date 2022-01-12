@@ -374,12 +374,6 @@ export default class Core {
 
     }
 
-    this.finishUpdate({
-      addedComponents,
-      deletedComponents,
-      init: initialAdd,
-    });
-
     return newComponents;
   }
 
@@ -1325,19 +1319,24 @@ export default class Core {
   async checkForStateVariablesUpdatesForNewComponent(componentName) {
 
     if (componentName in this.updateInfo.stateVariableUpdatesForMissingComponents) {
-      let nFailures = Infinity;
-      while (true) {
-        let result = await this.processNewStateVariableValues({
+      let result = await this.processNewStateVariableValues({
+        [componentName]: this.updateInfo.stateVariableUpdatesForMissingComponents[componentName]
+      });
+
+      if (result.foundIgnore) {
+        let comp = this._components[componentName]
+        for (let vName in this.updateInfo.stateVariableUpdatesForMissingComponents[componentName]) {
+          if (comp.state[vName]) {
+            await comp.state[vName].value
+          }
+        }
+
+        await this.processNewStateVariableValues({
           [componentName]: this.updateInfo.stateVariableUpdatesForMissingComponents[componentName]
         });
 
-        if (result.nFailures === 0 || !(result.nFailures < nFailures)) {
-          break;
-        }
-
-        nFailures = result.nFailures;
-
       }
+
       delete this.updateInfo.stateVariableUpdatesForMissingComponents[componentName]
     }
 
@@ -4755,7 +4754,7 @@ export default class Core {
         receivedValue[varName] = true;
 
         if (component.state[varName].isArray) {
-          if(!valuesChanged[varName]) {
+          if (!valuesChanged[varName]) {
             valuesChanged[varName] = { arrayKeysChanged: {} };
           }
         } else {
@@ -4771,7 +4770,7 @@ export default class Core {
 
       if (component.state[varName].isArray) {
 
-        if(!valuesChanged[varName]) {
+        if (!valuesChanged[varName]) {
           valuesChanged[varName] = { arrayKeysChanged: {} };
         }
 
@@ -4869,7 +4868,7 @@ export default class Core {
       } else {
         receivedValue[varName] = true;
         if (component.state[varName].isArray) {
-          if(!valuesChanged[varName]) {
+          if (!valuesChanged[varName]) {
             valuesChanged[varName] = { arrayKeysChanged: {} };
           }
         } else {
@@ -4894,7 +4893,7 @@ export default class Core {
         // if have an array state variable,
         // then need to have an object keyed on arrayKey
 
-        if(!valuesChanged[varName]) {
+        if (!valuesChanged[varName]) {
           valuesChanged[varName] = { arrayKeysChanged: {} };
         }
 
@@ -5297,7 +5296,7 @@ export default class Core {
       if (stateVarObj.providePreviousValuesInDefinition) {
         let previousValues = {};
         for (let varName of allStateVariablesDefined) {
-          if(component.state[varName].isArrayEntry) {
+          if (component.state[varName].isArrayEntry) {
             varName = component.state[varName].arrayStateVariable;
           }
           previousValues[varName] = component.state[varName]._previousValue;
@@ -5307,7 +5306,7 @@ export default class Core {
       if (stateVarObj.provideEssentialValuesInDefinition) {
         let essentialValues = {};
         for (let varName of allStateVariablesDefined) {
-          if(component.state[varName].isArrayEntry) {
+          if (component.state[varName].isArrayEntry) {
             varName = component.state[varName].arrayStateVariable;
           }
           let essentialVarName = varName;
@@ -6439,23 +6438,6 @@ export default class Core {
 
   }
 
-  finishUpdate({ deletedComponents, addedComponents, init = false } = {}) {
-
-    // TODO: review this function and what it is supposed to be doing
-
-    // for now, reinitialize all renderers
-    // TODO: initialize just those renderers that changed
-    // (maybe as part of updates, like upstreamupdates?)
-    //Should only be called on new components
-
-    //this.initializeRenderers([this._components['__document1']]);
-
-    // this.rebuildRenderComponents();
-
-    // if (init === false) {
-    //   this.update({ doenetTags: this._renderComponents });
-    // }
-  }
 
   async deleteComponents({
     components, deleteUpstreamDependencies = true,
@@ -7709,8 +7691,6 @@ export default class Core {
         sourceOfUpdate: { sourceInformation }
       });
 
-      this.finishUpdate();
-
       return;
 
     }
@@ -7757,6 +7737,7 @@ export default class Core {
   async performUpdate({ updateInstructions, transient = false, event }) {
 
     let newStateVariableValues = {};
+    let newStateVariableValuesProcessed = [];
     let sourceInformation = {};
     let workspace = {};
     let recordItemSubmissions = [];
@@ -7809,10 +7790,11 @@ export default class Core {
         // state variables updated,
         // i.e., the subsequent inverse definitions use stateValues
         // in their calculations that need to be updated
-        await this.executeUpdateStateVariables({
-          newStateVariableValues,
-          preliminary: true,
-        });
+        await this.executeUpdateStateVariables(newStateVariableValues);
+
+        newStateVariableValuesProcessed.push(newStateVariableValues);
+        newStateVariableValues = {};
+
       } else if (instruction.updateType === "recordItemSubmission") {
         recordItemSubmissions.push(instruction.itemNumber)
       }
@@ -7820,29 +7802,16 @@ export default class Core {
     }
 
 
-    let nFailures = Infinity;
-    while (nFailures > 0) {
-      let result = await this.executeUpdateStateVariables({
-        newStateVariableValues,
-        sourceOfUpdate: {
-          sourceInformation,
-          local: true,
-        }
-      })
-      if (!(result.nFailures && result.nFailures < nFailures)) {
-        break;
-      }
-      nFailures = result.nFailures;
-    }
+    await this.executeUpdateStateVariables(newStateVariableValues)
 
-    // //TODO: Inside for loop?
-    // this.executeUpdateStateVariables({
-    //   newStateVariableValues,
-    //   sourceOfUpdate: {
-    //     sourceInformation,
-    //     local: true,
-    //   }
-    // });
+    newStateVariableValuesProcessed.push(newStateVariableValues);
+
+
+    await this.finishUpdate({
+      sourceInformation,
+      local: true,
+    });
+
 
 
     let itemsWithCreditAchieved = {};
@@ -7887,22 +7856,24 @@ export default class Core {
       }
 
       // merge in new state variables set in update
-      for (let componentName in newStateVariableValues) {
-        if (!newVals[componentName]) {
-          newVals[componentName] = {}
-        }
-        for (let varName in newStateVariableValues[componentName]) {
-          let essentialVals = newVals[componentName][varName];
-          // if essentialVals is an object with mergeObject = true,
-          // then merge attributes from newStateVariableValues into essentialVals
-          if (typeof essentialVals === "object" && essentialVals !== null && essentialVals.mergeObject) {
-            Object.assign(essentialVals, newStateVariableValues[componentName][varName])
-          } else {
-            newVals[componentName][varName] = newStateVariableValues[componentName][varName];
+      for (let newValuesProcessed of newStateVariableValuesProcessed) {
+        for (let componentName in newValuesProcessed) {
+          if (!newVals[componentName]) {
+            newVals[componentName] = {}
+          }
+          for (let varName in newValuesProcessed[componentName]) {
+            let essentialVals = newVals[componentName][varName];
+            // if essentialVals is an object with mergeObject = true,
+            // then merge attributes from newValuesProcessed into essentialVals
+            if (typeof essentialVals === "object" && essentialVals !== null && essentialVals.mergeObject) {
+              Object.assign(essentialVals, newValuesProcessed[componentName][varName])
+            } else {
+              newVals[componentName][varName] = newValuesProcessed[componentName][varName];
+            }
           }
         }
-      }
 
+      }
 
       let currentVariant = await this.document.state.generatedVariantInfo.value
       setTimeout(() => this.externalFunctions.localStateChanged({
@@ -7969,13 +7940,7 @@ export default class Core {
     return Promise.resolve();
   }
 
-  async executeUpdateStateVariables({
-    newStateVariableValues,
-    sourceOfUpdate,
-    preliminary = false
-  }) {
-
-    let executeResult = {};
+  async executeUpdateStateVariables(newStateVariableValues) {
 
     // merge new variables changed from newStateVariableValues into changedStateVariables
     for (let cName in newStateVariableValues) {
@@ -8008,8 +7973,7 @@ export default class Core {
 
     }
 
-    let processResult = await this.processNewStateVariableValues(newStateVariableValues);
-    Object.assign(executeResult, processResult);
+    await this.processNewStateVariableValues(newStateVariableValues);
 
 
     // calculate any replacement changes on composites touched
@@ -8029,12 +7993,13 @@ export default class Core {
     // TODO: do we need to check again if update composites to expand again?
     // If so, how would we end the loop?
 
-    // if preliminary, we don't update renderer instructions or display information
-    if (preliminary) {
-      return executeResult;
-    }
+  }
+
+
+  async finishUpdate(sourceOfUpdate) {
 
     // get unique list of components touched
+
     this.updateInfo.componentsTouched = [...new Set(this.updateInfo.componentsTouched)];
 
     await this.updateRendererInstructions({
@@ -8047,7 +8012,6 @@ export default class Core {
 
     this.updateInfo.componentsTouched = [];
 
-    this.finishUpdate();
 
     if (Object.keys(this.unmatchedChildren).length > 0) {
       let childLogicMessage = "";
@@ -8057,40 +8021,9 @@ export default class Core {
         }
       }
       if (childLogicMessage) {
-        console.warn(childLogicMessage)
+        console.warn(childLogicMessage);
       }
     }
-
-
-    // console.log("**** Components after updateValue");
-    // console.log(this._components);
-
-    // if (sourceOfUpdate !== undefined && sourceOfUpdate.instructionsByComponent !== undefined) {
-    //   let updateKeys = Object.keys(sourceOfUpdate.instructionsByComponent);
-    //   if (updateKeys.length === 1 && updateKeys[0] === this.documentName) {
-    //     saveSerializedStateImmediately = true;
-    //   }
-    // }
-
-
-    // TODO: implement saving serialized state
-
-    // if (saveSerializedState) {
-    //   if (saveSerializedStateImmediately) {
-    //     this.externalFunctions.saveSerializedState({
-    //       document: this.components[this.documentName],
-    //       contentId: this.contentId,
-    //     })
-    //   } else {
-    //     this.externalFunctions.delayedSaveSerializedState({'
-    //       document: this.components[this.documentName],
-    //       contentId: this.contentId,
-    //     })
-    //   }
-    // }
-
-    return executeResult;
-
   }
 
   async replacementChangesFromCompositesToUpdate() {
@@ -8175,6 +8108,9 @@ export default class Core {
 
     let nFailures = 0;
 
+    let foundIgnore = false;
+
+
     for (let cName in newStateVariableValues) {
       let comp = this._components[cName];
 
@@ -8211,10 +8147,26 @@ export default class Core {
 
             continue;
 
+          } else {
+            match = vName.match(/^__def_primitive_ignore_(\d+)$/)
+
+            if (match) {
+
+              let childInd = Number(match[1]);
+
+              comp.definingChildren[childInd] = newComponentStateVariables[vName];
+
+              foundIgnore = true;
+
+              // since marked to ignore, we don't process new defining children
+
+              continue;
+
+            }
+
           }
 
           console.warn(`can't update state variable ${vName} of component ${cName}, as it doesn't exist.`);
-          nFailures += 1;
           continue;
         }
 
@@ -8222,7 +8174,6 @@ export default class Core {
           compStateObj.hasEssential
         )) {
           console.warn(`can't update state variable ${vName} of component ${cName}, as it does not have an essential state variable.`);
-          nFailures += 1;
           continue;
         }
 
@@ -8305,7 +8256,6 @@ export default class Core {
           if (!compStateObj.hasEssential) {
 
             console.warn(`can't update state variable ${vName} of component ${cName}, as it does not have an essential state variable.`);
-            nFailures += 1;
             continue;
           }
 
@@ -8327,7 +8277,7 @@ export default class Core {
       }
     }
 
-    return { nFailures };
+    return { nFailures, foundIgnore };
 
   }
 
@@ -8619,8 +8569,8 @@ export default class Core {
           }
         }
 
-        if (!component.state[stateVariable].hasEssential) {
-          throw Error(`Invalid inverse definition of ${stateVariable} of ${component.componentName}: can't set essential value if it is does not have an essential value.`);
+        if (!component.state[newInstruction.setEssentialValue].hasEssential) {
+          throw Error(`Invalid inverse definition of ${stateVariable} of ${component.componentName}: can't set essential value of ${newInstruction.setEssentialValue} if it is does not have an essential value.`);
         }
 
         if (!("value" in newInstruction)) {
@@ -8726,11 +8676,18 @@ export default class Core {
                 baseParent = this._components[baseParent.shadows.componentName]
               }
 
+              let markToIgnoreForParent;
+
+              if (newInstruction.ignoreChildChangeForComponent) {
+                markToIgnoreForParent = parent.componentName;
+              }
+
               this.calculatePrimitiveChildChanges({
                 parent: baseParent,
                 definingInd,
                 newValue: newInstruction.desiredValue,
-                newStateVariableValues
+                newStateVariableValues,
+                markToIgnoreForParent,
               });
             }
 
@@ -8957,12 +8914,17 @@ export default class Core {
       definingInd,
       newValue,
       newStateVariableValues,
+      markToIgnoreForParent
     }) {
 
     if (!newStateVariableValues[parent.componentName]) {
       newStateVariableValues[parent.componentName] = {};
     }
-    newStateVariableValues[parent.componentName][`__def_primitive_${definingInd}`] = newValue;
+    if (parent.componentName === markToIgnoreForParent) {
+      newStateVariableValues[parent.componentName][`__def_primitive_ignore_${definingInd}`] = newValue;
+    } else {
+      newStateVariableValues[parent.componentName][`__def_primitive_${definingInd}`] = newValue;
+    }
 
     if (parent.shadowedBy) {
       for (let shadow of parent.shadowedBy) {
@@ -8972,6 +8934,7 @@ export default class Core {
             definingInd,
             newValue,
             newStateVariableValues,
+            markToIgnoreForParent
           })
 
         }

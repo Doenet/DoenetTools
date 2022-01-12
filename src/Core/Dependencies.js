@@ -4320,6 +4320,7 @@ class ChildDependency extends Dependency {
       this.downstreamPrimitives.some((v, i) => v !== this.previousDownstreamPrimitives[i])
     ) {
       result.changes.componentIdentitiesChanged = true;
+      this.previousDownstreamPrimitives = [...this.downstreamPrimitives];
     }
 
     if (!this.doNotProxy) {
@@ -5587,6 +5588,7 @@ class ReplacementDependency extends Dependency {
       this.replacementPrimitives.some((v, i) => v !== this.previousReplacementPrimitives[i])
     ) {
       result.changes.componentIdentitiesChanged = true;
+      this.previousReplacementPrimitives = [...this.replacementPrimitives];
     }
 
     if (!this.doNotProxy) {

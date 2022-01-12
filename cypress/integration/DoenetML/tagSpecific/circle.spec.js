@@ -7016,7 +7016,7 @@ describe('Circle Tag Tests', function () {
 
     cy.get('#testRunner_toggleControls').click();
     cy.get('#testRunner_allowLocalPageState').click()
-    cy.wait(1000)
+    cy.wait(100)
     cy.get('#testRunner_toggleControls').click();
 
     cy.get('#\\/_text1').should('have.text', 'a')// to wait for page to load

@@ -897,10 +897,10 @@ describe('SampleRandomNumbers Tag Tests', function () {
       }
 
       expect(me.math.mean(sample1numbersb)).closeTo(5, 1)
-      expect(me.math.var(sample1numbersb, 'uncorrected')).closeTo(10 ** 2 / 12, 1)
+      expect(me.math.var(sample1numbersb, 'uncorrected')).closeTo(10 ** 2 / 12, 2)
 
       expect(me.math.mean(sample2numbersb)).closeTo(0, 1)
-      expect(me.math.var(sample2numbersb, 'uncorrected')).closeTo(16, 2)
+      expect(me.math.var(sample2numbersb, 'uncorrected')).closeTo(16, 4)
 
       for (let ind = 0; ind < 10; ind++) {
         expect(sample1numbersb[ind]).not.eq(sample1numbers[ind])
@@ -1640,8 +1640,8 @@ describe('SampleRandomNumbers Tag Tests', function () {
         specifiedMean, specifiedVariance,
         specifiedFrom, specifiedTo, specifiedStep,
         sampleComponent: components["/samples"],
-        allowedErrorInMean: 0.3,
-        allowedErrorInVariance: 0.1,
+        allowedErrorInMean: 0.4,
+        allowedErrorInVariance: 0.2,
         checkAllSamples: false
       })
 
@@ -1663,8 +1663,8 @@ describe('SampleRandomNumbers Tag Tests', function () {
         specifiedMean, specifiedVariance,
         specifiedFrom, specifiedTo, specifiedStep,
         sampleComponent: components["/samples"],
-        allowedErrorInMean: 0.3,
-        allowedErrorInVariance: 0.3,
+        allowedErrorInMean: 1,
+        allowedErrorInVariance: 2,
         checkAllSamples: false
       })
 
@@ -1723,8 +1723,8 @@ describe('SampleRandomNumbers Tag Tests', function () {
         specifiedMean, specifiedVariance,
         specifiedFrom, specifiedTo, specifiedStep,
         sampleComponent: components["/samples"],
-        allowedErrorInMean: 0.15,
-        allowedErrorInVariance: 0.5,
+        allowedErrorInMean: 0.2,
+        allowedErrorInVariance: 0.8,
         checkAllSamples: false
       })
 

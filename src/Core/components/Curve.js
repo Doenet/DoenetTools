@@ -1200,7 +1200,7 @@ export default class Curve extends GraphicalComponent {
 
 
           } else if ((arrayIndices[1] === 0 && direction === "next") ||
-            (arrayIndices[1] === 0 && direction === "next")
+            (arrayIndices[1] === 1 && direction === "previous")
           ) {
             // calculate control vector from spline
 

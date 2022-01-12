@@ -250,7 +250,7 @@ export default class VariantControl extends BaseComponent {
             if (!Number.isFinite(desiredVariantIndex)) {
               console.warn("Variant index " + dependencyValues.variantsObject.desiredVariantIndex + " must be a number");
               return {
-                setEssentialValue: { selectedVariantIndex: tr1ue },
+                setEssentialValue: { selectedVariantIndex: true },
                 setValue: { selectedVariantIndex: 1 }
               }
             } else {

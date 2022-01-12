@@ -256,6 +256,7 @@ export default class Point extends GraphicalComponent {
     stateVariableDefinitions.coordsShadow = {
       defaultValue: null,
       hasEssential: true,
+      essentialVarName: "coords",
       returnDependencies: () => ({}),
       definition: () => ({
         useEssentialOrDefaultValue: {

@@ -127,6 +127,7 @@ export default class SectioningComponent extends BlockComponent {
       public: true,
       componentType: "text",
       forRenderer: true,
+      shadowVariable: true,
       returnDependencies: () => ({
         titleChild: {
           dependencyType: "child",

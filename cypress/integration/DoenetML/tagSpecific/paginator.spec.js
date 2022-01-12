@@ -59,10 +59,10 @@ describe('Paginator Tag Tests', function () {
       }, "*");
     });
 
-    // at least right now, this turns on Allow Local Page State
-    cy.get('h3 > button').click();
-    cy.get(':nth-child(11) > label > input').click()
-    cy.get('h3 > button').click();
+    cy.get('#testRunner_toggleControls').click();
+    cy.get('#testRunner_allowLocalPageState').click()
+    cy.wait(100)
+    cy.get('#testRunner_toggleControls').click();
 
 
     cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
@@ -746,10 +746,10 @@ describe('Paginator Tag Tests', function () {
       }, "*");
     });
 
-    // at least right now, this turns on Allow Local Page State
-    cy.get('h3 > button').click();
-    cy.get(':nth-child(11) > label > input').click()
-    cy.get('h3 > button').click();
+    cy.get('#testRunner_toggleControls').click();
+    cy.get('#testRunner_allowLocalPageState').click()
+    cy.wait(100)
+    cy.get('#testRunner_toggleControls').click();
 
 
     cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
@@ -1056,10 +1056,10 @@ describe('Paginator Tag Tests', function () {
       }, "*");
     });
 
-    // at least right now, this turns on Allow Local Page State
-    cy.get('h3 > button').click();
-    cy.get(':nth-child(11) > label > input').click()
-    cy.get('h3 > button').click();
+    cy.get('#testRunner_toggleControls').click();
+    cy.get('#testRunner_allowLocalPageState').click()
+    cy.wait(100)
+    cy.get('#testRunner_toggleControls').click();
 
 
     cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
@@ -1384,10 +1384,10 @@ describe('Paginator Tag Tests', function () {
       }, "*");
     });
 
-    // at least right now, this turns on Allow Local Page State
-    cy.get('h3 > button').click();
-    cy.get(':nth-child(11) > label > input').click()
-    cy.get('h3 > button').click();
+    cy.get('#testRunner_toggleControls').click();
+    cy.get('#testRunner_allowLocalPageState').click()
+    cy.wait(100)
+    cy.get('#testRunner_toggleControls').click();
 
 
     cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
@@ -1640,10 +1640,10 @@ describe('Paginator Tag Tests', function () {
       }, "*");
     });
 
-    // at least right now, this turns on Allow Local Page State
-    cy.get('h3 > button').click();
-    cy.get(':nth-child(11) > label > input').click()
-    cy.get('h3 > button').click();
+    cy.get('#testRunner_toggleControls').click();
+    cy.get('#testRunner_allowLocalPageState').click()
+    cy.wait(100)
+    cy.get('#testRunner_toggleControls').click();
 
 
     cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
@@ -1810,10 +1810,10 @@ describe('Paginator Tag Tests', function () {
       }, "*");
     });
 
-    // at least right now, this turns on Allow Local Page State
-    cy.get('h3 > button').click();
-    cy.get(':nth-child(11) > label > input').click()
-    cy.get('h3 > button').click();
+    cy.get('#testRunner_toggleControls').click();
+    cy.get('#testRunner_allowLocalPageState').click()
+    cy.wait(100)
+    cy.get('#testRunner_toggleControls').click();
 
 
     cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
@@ -1977,10 +1977,10 @@ describe('Paginator Tag Tests', function () {
       }, "*");
     });
 
-    // at least right now, this turns on Allow Local Page State
-    cy.get('h3 > button').click();
-    cy.get(':nth-child(11) > label > input').click()
-    cy.get('h3 > button').click();
+    cy.get('#testRunner_toggleControls').click();
+    cy.get('#testRunner_allowLocalPageState').click()
+    cy.wait(100)
+    cy.get('#testRunner_toggleControls').click();
 
 
     cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
@@ -2099,10 +2099,10 @@ describe('Paginator Tag Tests', function () {
       }, "*");
     });
 
-    // at least right now, this turns on Allow Local Page State
-    cy.get('h3 > button').click();
-    cy.get(':nth-child(11) > label > input').click()
-    cy.get('h3 > button').click();
+    cy.get('#testRunner_toggleControls').click();
+    cy.get('#testRunner_allowLocalPageState').click()
+    cy.wait(100)
+    cy.get('#testRunner_toggleControls').click();
 
 
     cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
@@ -2226,10 +2226,10 @@ describe('Paginator Tag Tests', function () {
       }, "*");
     });
 
-    // at least right now, this turns on Allow Local Page State
-    cy.get('h3 > button').click();
-    cy.get(':nth-child(11) > label > input').click()
-    cy.get('h3 > button').click();
+    cy.get('#testRunner_toggleControls').click();
+    cy.get('#testRunner_allowLocalPageState').click()
+    cy.wait(100)
+    cy.get('#testRunner_toggleControls').click();
 
 
     cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
@@ -2355,6 +2355,7 @@ describe('Paginator Tag Tests', function () {
         cy.get('#testRunner_toggleControls').click();
 
         cy.wait(1000)
+
         cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
 
 
@@ -2749,7 +2750,7 @@ describe('Paginator Tag Tests', function () {
 
     cy.get('#testRunner_toggleControls').click();
     cy.get('#testRunner_allowLocalPageState').click()
-    cy.wait(1000)
+    cy.wait(100)
     cy.get('#testRunner_toggleControls').click();
 
 
