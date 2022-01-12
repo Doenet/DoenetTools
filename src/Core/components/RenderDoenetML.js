@@ -7,7 +7,7 @@ export default class RenderDoenetML extends CompositeComponent {
 
   static assignNamesToReplacements = true;
 
-  static stateVariableToEvaluateAfterReplacements = "needsReplacementsUpdatedWhenStale";
+  static stateVariableToEvaluateAfterReplacements = "triggerUpdates";
 
   static createAttributesObject(args) {
     let attributes = super.createAttributesObject(args);
@@ -49,7 +49,7 @@ export default class RenderDoenetML extends CompositeComponent {
         }
       },
       definition({ dependencyValues }) {
-        return { newValues: { codeSourceComponentName: dependencyValues.codeSourceComponentName } }
+        return { setValue: { codeSourceComponentName: dependencyValues.codeSourceComponentName } }
       }
     }
 
@@ -59,31 +59,30 @@ export default class RenderDoenetML extends CompositeComponent {
           dependencyType: "stateVariable",
           variableName: "codeSourceComponentName"
         },
-        codeViewerParent: {
-          dependencyType: "parentIdentity",
-          parentComponentType: "codeEditor"
+        parentCodeSource: {
+          dependencyType: "parentStateVariable",
+          parentComponentType: "codeViewer",
+          variableName: "codeSource"
         },
       }),
       definition: function ({ dependencyValues }) {
-        console.log("dependencyValues",dependencyValues)
         if (dependencyValues.codeSourceComponentName){
-          return { newValues: { codeSource: dependencyValues.codeSourceComponentName } }; 
-        }else if(dependencyValues.codeViewerParent){
-          return { newValues: { codeSource: dependencyValues.codeViewerParent.componentName } }; 
+          return { setValue: { codeSource: dependencyValues.codeSourceComponentName } }; 
+        }else if(dependencyValues.parentCodeSource){
+          return { setValue: { codeSource: dependencyValues.parentCodeSource } }; 
         }else{
-          return { newValues: { codeSource: null } }; 
+          return { setValue: { codeSource: null } }; 
         }
      
       },
     }
 
-
     stateVariableDefinitions.doenetML = {
-      stateVariablesDeterminingDependencies: ["codeSourceComponentName"],
+      stateVariablesDeterminingDependencies: ["codeSource"],
       returnDependencies: ({ stateValues }) => ({
         doenetML: {
           dependencyType: "stateVariable",
-          componentName: stateValues.codeSourceComponentName,
+          componentName: stateValues.codeSource,
           variableName: "text",
           variablesOptional: true,
         }
@@ -111,29 +110,17 @@ export default class RenderDoenetML extends CompositeComponent {
         },
       }),
       definition() {
-        return { newValues: { readyToExpandWhenResolved: true } };
-      },
-    };
-
-    stateVariableDefinitions.needsReplacementsUpdatedWhenStale = {
-      returnDependencies: () => ({
-  
-        triggerUpdates: {
-          dependencyType: "stateVariable",
-          variableName: "triggerUpdates"
-        }
-      }),
-      markStale() {
-        return { updateReplacements: true }
-      },
-      definition() {
-        return { setValue: { needsReplacementsUpdatedWhenStale: true } };
+        return { setValue: { readyToExpandWhenResolved: true } };
       },
     };
 
     stateVariableDefinitions.triggerUpdates = {
       defaultValue: true,
+      hasEssential: true,
       returnDependencies: () => ({}),
+      markStale() {
+        return { updateReplacements: true }
+      },
       definition() {
         return { useEssentialOrDefaultValue: { triggerUpdates: {} } };
       },
@@ -141,7 +128,7 @@ export default class RenderDoenetML extends CompositeComponent {
         return {
           success: true,
           instructions: [{
-            setStateVariable: "triggerUpdates",
+            setEssentialValue: "triggerUpdates",
             value: desiredStateVariableValues.triggerUpdates,
           }]
          };

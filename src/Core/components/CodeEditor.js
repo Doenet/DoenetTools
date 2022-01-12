@@ -1,19 +1,6 @@
 import BlockComponent from './abstract/BlockComponent';
 
 export default class CodeEditor extends BlockComponent {
-  constructor(args) {
-    super(args);
-
-    this.actions = {
-      updateImmediateValue: this.updateImmediateValue.bind(
-        new Proxy(this, this.readOnlyProxyHandler)
-      ),
-      updateValue: this.updateValue.bind(
-        new Proxy(this, this.readOnlyProxyHandler)
-      )
-    };
-
-  }
   static componentType = "codeEditor";
 
   static variableForPlainMacro = "value";
@@ -56,6 +43,23 @@ export default class CodeEditor extends BlockComponent {
     attributes.maxHeight = {
       createComponentOfType: "_componentSize",
     };
+
+    attributes.showResults = {
+      createComponentOfType: "boolean",
+      createStateVariable: "showResults",
+      defaultValue: false,
+      forRenderer: true,
+      public: true,
+    };
+
+    attributes.viewerWidth = {
+      createComponentOfType: "_componentSize",
+      createStateVariable: "viewerWidth",
+      defaultValue: { size: 300, isAbsolute: true },
+      forRenderer: true,
+      public: true,
+    };
+
     return attributes;
   }
 
@@ -70,6 +74,7 @@ export default class CodeEditor extends BlockComponent {
 
       let codeViewer = {
         componentType: "codeViewer",
+        children:[{componentType: "renderDoenetML"}]
       };
 
       return {
@@ -91,6 +96,7 @@ export default class CodeEditor extends BlockComponent {
     stateVariableDefinitions.minHeight = {
       public: true,
       componentType: "_componentSize",
+      hasEssential: true,
       forRenderer: true,
       defaultValue: { size: 26, isAbsolute: true },
       returnDependencies: () => ({
@@ -107,10 +113,10 @@ export default class CodeEditor extends BlockComponent {
       definition: function ({ dependencyValues, usedDefault }) {
         if (!usedDefault.height){
           //Author specified height
-          return { newValues: { minHeight: dependencyValues.height } };
+          return { setValue: { minHeight: dependencyValues.height } };
         }else if (dependencyValues.minHeightAttr){
           //Author specified minHeight
-          return { newValues: { minHeight: dependencyValues.minHeightAttr.stateValues.componentSize } };
+          return { setValue: { minHeight: dependencyValues.minHeightAttr.stateValues.componentSize } };
         }else{
           //Default
           return { useEssentialOrDefaultValue: {minHeight: {}} };
@@ -121,6 +127,7 @@ export default class CodeEditor extends BlockComponent {
     stateVariableDefinitions.maxHeight = {
       public: true,
       componentType: "_componentSize",
+      hasEssential: true,
       forRenderer: true,
       defaultValue: { size: 120, isAbsolute: true },
       returnDependencies: () => ({
@@ -137,10 +144,10 @@ export default class CodeEditor extends BlockComponent {
       definition: function ({ dependencyValues, usedDefault }) {
         if (!usedDefault.height){
           //Author specified height
-          return { newValues: { maxHeight: dependencyValues.height } };
+          return { setValue: { maxHeight: dependencyValues.height } };
         }else if (dependencyValues.maxHeightAttr){
           //Author specified maxHeight
-          return { newValues: { maxHeight: dependencyValues.maxHeightAttr.stateValues.componentSize } };
+          return { setValue: { maxHeight: dependencyValues.maxHeightAttr.stateValues.componentSize } };
         }else{
           //Default
           return { useEssentialOrDefaultValue: {maxHeight: {}} };
@@ -151,6 +158,7 @@ export default class CodeEditor extends BlockComponent {
     stateVariableDefinitions.value = {
       public: true,
       componentType: "text",
+      hasEssential: true,
       forRenderer: true,
       returnDependencies: () => ({
         bindValueTo: {
@@ -174,7 +182,7 @@ export default class CodeEditor extends BlockComponent {
             }
           }
         }
-        return { newValues: { value: dependencyValues.bindValueTo.stateValues.value } };
+        return { setValue: { value: dependencyValues.bindValueTo.stateValues.value } };
       },
       inverseDefinition: function ({ desiredStateVariableValues, dependencyValues }) {
 
@@ -193,7 +201,7 @@ export default class CodeEditor extends BlockComponent {
         return {
           success: true,
           instructions: [{
-            setStateVariable: "value",
+            setEssentialValue: "value",
             value: desiredStateVariableValues.value
           }]
         };
@@ -203,6 +211,7 @@ export default class CodeEditor extends BlockComponent {
     stateVariableDefinitions.immediateValue = {
       public: true,
       componentType: "text",
+      hasEssential: true,
       forRenderer: true,
       returnDependencies: () => ({
         value: {
@@ -219,7 +228,7 @@ export default class CodeEditor extends BlockComponent {
           // only update to value when it changes
           // (otherwise, let its essential value change)
           return {
-            newValues: { immediateValue: dependencyValues.value },
+            setValue: { immediateValue: dependencyValues.value },
             makeEssential: { immediateValue: true }
           };
 
@@ -240,7 +249,7 @@ export default class CodeEditor extends BlockComponent {
 
         // value is essential; give it the desired value
         let instructions = [{
-          setStateVariable: "immediateValue",
+          setEssentialValue: "immediateValue",
           value: desiredStateVariableValues.immediateValue
         }]
 
@@ -270,13 +279,13 @@ export default class CodeEditor extends BlockComponent {
         }
       }),
       definition: function ({ dependencyValues }) {
-        return { newValues: { text: dependencyValues.value } }
+        return { setValue: { text: dependencyValues.value } }
       }
     }
 
     stateVariableDefinitions.componentType = {
       returnDependencies: () => ({}),
-      definition: () => ({ newValues: { componentType: "text" } })
+      definition: () => ({ setValue: { componentType: "text" } })
     }
 
 
@@ -351,5 +360,35 @@ export default class CodeEditor extends BlockComponent {
 
     }
   }
+
+  async updateComponents(){
+
+    if (this.definingChildren.length === 1 &&
+      this.definingChildren[0].componentType === 'codeViewer'){
+        await this.coreFunctions.performAction({
+          componentName: this.definingChildren[0].componentName,
+          actionName: "updateComponents",
+          // event: {
+          //   verb: "selected",
+          //   object: {
+          //     componentName: this.componentName,
+          //     componentType: this.componentType,
+          //   },
+          // },
+            });
+    }
+  }
+
+  actions = {
+    updateImmediateValue: this.updateImmediateValue.bind(
+      new Proxy(this, this.readOnlyProxyHandler)
+    ),
+    updateValue: this.updateValue.bind(
+      new Proxy(this, this.readOnlyProxyHandler)
+    ),
+    updateComponents: this.updateComponents.bind(
+      new Proxy(this, this.readOnlyProxyHandler)
+    )
+  };
 
 }

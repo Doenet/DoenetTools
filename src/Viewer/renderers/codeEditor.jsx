@@ -73,12 +73,19 @@ let editor = <div
   }}
 />
 </div>
+let viewer = null;
+if (SVs.showResults){
+  viewer = <div>
+  {children}
+</div>
+
+}
 
   return <>
   <a name={name} />
   <div className="codeEditorSurroundingBox" id={name}>
     {editor}
   </div>
-
+    {viewer}
 </>
 }

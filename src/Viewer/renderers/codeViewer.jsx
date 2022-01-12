@@ -18,13 +18,14 @@ export default function CodeViewer(props){
     padding: "0px",
     border: "1px solid black",
     overflowY: "scroll"
-  }}>
+  }}><div><button onClick={actions.updateComponents}>update</button></div>
     {children}
   </div>
 
   return <>
   <a name={name} />
   <div className="codeViewerSurroundingBox" id={name} >
+  
     {contentPanel}
     
   </div>
