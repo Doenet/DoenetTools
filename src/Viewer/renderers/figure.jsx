@@ -1,38 +1,36 @@
 import React from 'react';
-import DoenetRenderer from './DoenetRenderer';
-export default class Figure extends DoenetRenderer {
+import useDoenetRender from './useDoenetRenderer';
 
-  render() {
+export default function Figure(props) {
+  let {name, SVs, children} = useDoenetRender(props);
 
-    if (this.doenetSvData.hidden) {
-      return null;
-    }
+  if (SVs.hidden || !children) {
+    return null;
+  }
 
-
-    let childrenToRender = [...this.children];
-
-    // BADBADBAD: need to redo how getting the caption child
+  // BADBADBAD: need to redo how getting the caption child
     // getting it using the internal guts of componentInstructions
     // is just asking for trouble
+    let childrenToRender = children;
 
     let caption;
-    if (this.doenetSvData.captionChildName) {
+    if (SVs.captionChildName) {
       let captionChildInd;
-      for (let [ind, child] of this.children.entries()) {
-        if (typeof child !== "string" && child.props.componentInstructions.componentName === this.doenetSvData.captionChildName) {
+      for (let [ind, child] of children.entries()) {
+        if (typeof child !== "string" && child.props.componentInstructions.componentName === SVs.captionChildName) {
           captionChildInd = ind;
           break;
         }
       }
-      caption = this.children[captionChildInd]
+      caption = children[captionChildInd]
       childrenToRender.splice(captionChildInd, 1); // remove caption
     } else {
-      caption = this.doenetSvData.caption;
+      caption = SVs.caption;
     }
 
 
-    if (!this.doenetSvData.suppressFigureNameInCaption) {
-      let figureName = <strong>{this.doenetSvData.figureName}</strong>
+    if (!SVs.suppressFigureNameInCaption) {
+      let figureName = <strong>{SVs.figureName}</strong>
       if (caption) {
         caption = <>{figureName}: {caption}</>
       } else {
@@ -40,10 +38,10 @@ export default class Figure extends DoenetRenderer {
       }
     }
 
-    return <div id={this.componentName} >
-      <a name={this.componentName} />
+    return <figure id={name} >
+      <a name={name} />
       {childrenToRender}
-      <div id={ this.componentName + "_caption" }>{caption}</div>
-    </div>
-  }
+      <figcaption id={ name + "_caption" }>{caption}</figcaption>
+    </figure>
 }
+
