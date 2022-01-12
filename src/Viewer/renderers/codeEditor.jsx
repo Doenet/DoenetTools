@@ -30,6 +30,14 @@ if (SVs.immediateValue !== currentValue.current) {
   updateInternalValue.current = SVs.immediateValue;
 }
 
+let viewer = null;
+if (SVs.showResults){
+  viewer = <div>
+  {children}
+</div>
+
+}
+
 let editor = <div 
             key={editorKey}
             id={editorKey}
@@ -73,13 +81,7 @@ let editor = <div
   }}
 />
 </div>
-let viewer = null;
-if (SVs.showResults){
-  viewer = <div>
-  {children}
-</div>
 
-}
 
   return <>
   <a name={name} />
