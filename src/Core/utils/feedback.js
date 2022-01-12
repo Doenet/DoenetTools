@@ -24,7 +24,7 @@ export function returnFeedbackDefinitionStateVariables() {
       }
     }),
     definition({ dependencyValues }) {
-      return { newValues: { setupChildren: dependencyValues.setupChildren } }
+      return { setValue: { setupChildren: dependencyValues.setupChildren } }
     }
   }
 
@@ -82,7 +82,7 @@ export function returnFeedbackDefinitionStateVariables() {
         Object.assign(feedbackDefinitions, child.stateValues.value)
       }
 
-      return { newValues: { feedbackDefinitions } };
+      return { setValue: { feedbackDefinitions } };
 
     }
   }

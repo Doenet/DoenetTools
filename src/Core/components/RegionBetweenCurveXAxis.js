@@ -53,7 +53,7 @@ export default class RegionBetweenCurveXAxis extends GraphicalComponent {
 
         lineDescription += dependencyValues.selectedStyle.lineColor;
 
-        return { newValues: { styleDescription: lineDescription } };
+        return { setValue: { styleDescription: lineDescription } };
       }
     }
 
@@ -74,11 +74,11 @@ export default class RegionBetweenCurveXAxis extends GraphicalComponent {
           || dependencyValues.functionAttr.stateValues.nInputs !== 1
           || dependencyValues.functionAttr.stateValues.nOutputs !== 1
         ) {
-          return { newValues: { function: () => NaN, haveFunction: false } }
+          return { setValue: { function: () => NaN, haveFunction: false } }
         }
 
         return {
-          newValues: {
+          setValue: {
             function: dependencyValues.functionAttr.stateValues.numericalfs[0],
             haveFunction: true
           }

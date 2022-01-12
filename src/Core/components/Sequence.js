@@ -64,7 +64,7 @@ export default class Sequence extends CompositeComponent {
       definition: function () {
         // even with invalid sequence, still ready to expand
         // (it will just expand with zero replacements)
-        return { newValues: { readyToExpandWhenResolved: true } };
+        return { setValue: { readyToExpandWhenResolved: true } };
       },
     };
 

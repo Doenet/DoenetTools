@@ -10,8 +10,6 @@ export default class SectioningComponent extends BlockComponent {
 
   static setUpVariantIfVariantControlChild = true;
 
-  static get stateVariablesShadowedForReference() { return ["title"] };
-
   static createAttributesObject(args) {
     let attributes = super.createAttributesObject(args);
     attributes.aggregateScores = {
@@ -95,14 +93,14 @@ export default class SectioningComponent extends BlockComponent {
         }
 
         enumeration.push(dependencyValues.countAmongSiblings)
-        return { newValues: { enumeration } }
+        return { setValue: { enumeration } }
 
       }
     }
 
     stateVariableDefinitions.sectionName = {
       returnDependencies: () => ({}),
-      definition: () => ({ newValues: { sectionName: "Section" } })
+      definition: () => ({ setValue: { sectionName: "Section" } })
     }
 
 
@@ -120,7 +118,7 @@ export default class SectioningComponent extends BlockComponent {
           titleChildName = dependencyValues.titleChild[0].componentName
         }
         return {
-          newValues: { titleChildName }
+          setValue: { titleChildName }
         }
       }
     }
@@ -129,6 +127,7 @@ export default class SectioningComponent extends BlockComponent {
       public: true,
       componentType: "text",
       forRenderer: true,
+      shadowVariable: true,
       returnDependencies: () => ({
         titleChild: {
           dependencyType: "child",
@@ -154,9 +153,9 @@ export default class SectioningComponent extends BlockComponent {
               + dependencyValues.enumeration.join(".")
           }
 
-          return { newValues: { title } };
+          return { setValue: { title } };
         } else {
-          return { newValues: { title: dependencyValues.titleChild[0].stateValues.text } };
+          return { setValue: { title: dependencyValues.titleChild[0].stateValues.text } };
         }
       }
     }
@@ -164,28 +163,29 @@ export default class SectioningComponent extends BlockComponent {
     stateVariableDefinitions.containerTag = {
       forRenderer: true,
       returnDependencies: () => ({}),
-      definition: () => ({ newValues: { containerTag: "section" } })
+      definition: () => ({ setValue: { containerTag: "section" } })
     }
 
     stateVariableDefinitions.level = {
       forRenderer: true,
       returnDependencies: () => ({}),
-      definition: () => ({ newValues: { level: 1 } })
+      definition: () => ({ setValue: { level: 1 } })
     }
 
     stateVariableDefinitions.viewedSolution = {
       defaultValue: false,
+      hasEssential: true,
       returnDependencies: () => ({}),
       definition: () => ({
         useEssentialOrDefaultValue: {
-          viewedSolution: { variablesToCheck: ["viewedSolution"] }
+          viewedSolution: true
         }
       }),
       inverseDefinition({ desiredStateVariableValues }) {
         return {
           success: true,
           instructions: [{
-            setStateVariable: "viewedSolution",
+            setEssentialValue: "viewedSolution",
             value: desiredStateVariableValues.viewedSolution
           }]
         }
@@ -222,7 +222,7 @@ export default class SectioningComponent extends BlockComponent {
           }
         }
 
-        return { newValues: { scoredDescendants } }
+        return { setValue: { scoredDescendants } }
 
       }
     }
@@ -237,7 +237,7 @@ export default class SectioningComponent extends BlockComponent {
         }
       }),
       definition({ dependencyValues }) {
-        return { newValues: { answerDescendants: dependencyValues.answerDescendants } }
+        return { setValue: { answerDescendants: dependencyValues.answerDescendants } }
       }
     }
 
@@ -251,7 +251,7 @@ export default class SectioningComponent extends BlockComponent {
       }),
       definition({ dependencyValues }) {
         return {
-          newValues: {
+          setValue: {
             justSubmitted:
               dependencyValues.answerDescendants.every(x => x.stateValues.justSubmitted)
           }
@@ -269,20 +269,21 @@ export default class SectioningComponent extends BlockComponent {
       }),
       definition({ dependencyValues }) {
         let showCorrectness = dependencyValues.showCorrectnessFlag !== false;
-        return { newValues: { showCorrectness } }
+        return { setValue: { showCorrectness } }
       }
     }
 
     stateVariableDefinitions.displayDigitsForCreditAchieved = {
       returnDependencies: () => ({}),
-      definition: () => ({ newValues: { displayDigitsForCreditAchieved: 3 } })
+      definition: () => ({ setValue: { displayDigitsForCreditAchieved: 3 } })
     }
 
     stateVariableDefinitions.sectionPlaceholder = {
       defaultValue: false,
+      hasEssential: true,
       returnDependencies: () => ({}),
       definition: () => ({
-        useEssentialOrDefaultValue: { sectionPlaceholder: { variablesToCheck: ["sectionPlaceholder"] } }
+        useEssentialOrDefaultValue: { sectionPlaceholder: true }
       })
     }
 
@@ -291,6 +292,7 @@ export default class SectioningComponent extends BlockComponent {
       componentType: "number",
       forRenderer: true,
       defaultValue: 0,
+      hasEssential: true,
       stateVariablesPrescribingAdditionalAttributes: {
         displayDigits: "displayDigitsForCreditAchieved",
       },
@@ -299,6 +301,7 @@ export default class SectioningComponent extends BlockComponent {
         public: true,
         componentType: "number",
         defaultValue: 0,
+        hasEssential: true,
         stateVariablesPrescribingAdditionalAttributes: {
           displayDigits: "displayDigitsForCreditAchieved",
         }
@@ -335,7 +338,7 @@ export default class SectioningComponent extends BlockComponent {
 
         if (!dependencyValues.aggregateScores) {
           return {
-            newValues: {
+            setValue: {
               creditAchieved: 0,
               percentCreditAchieved: 0
             }
@@ -345,8 +348,8 @@ export default class SectioningComponent extends BlockComponent {
         if (dependencyValues.sectionPlaceholder) {
           return {
             useEssentialOrDefaultValue: {
-              creditAchieved: { variablesToCheck: ["creditAchieved"] },
-              percentCreditAchieved: { variablesToCheck: ["percentCreditAchieved"] },
+              creditAchieved: true,
+              percentCreditAchieved: true,
             }
           }
         }
@@ -368,7 +371,7 @@ export default class SectioningComponent extends BlockComponent {
         }
         let percentCreditAchieved = creditAchieved * 100;
 
-        return { newValues: { creditAchieved, percentCreditAchieved } }
+        return { setValue: { creditAchieved, percentCreditAchieved } }
 
       },
       inverseDefinition({ desiredStateVariableValues, dependencyValues }) {
@@ -383,7 +386,7 @@ export default class SectioningComponent extends BlockComponent {
             continue;
           }
           instructions.push({
-            setStateVariable: varName,
+            setEssentialValue: varName,
             value: desiredStateVariableValues[varName]
           })
         }
@@ -425,7 +428,7 @@ export default class SectioningComponent extends BlockComponent {
 
         if (!dependencyValues.aggregateScores) {
           return {
-            newValues: {
+            setValue: {
               creditAchievedIfSubmit: 0,
             }
           }
@@ -441,14 +444,14 @@ export default class SectioningComponent extends BlockComponent {
         }
         let creditAchievedIfSubmit = creditSum / totalWeight;
 
-        return { newValues: { creditAchievedIfSubmit } }
+        return { setValue: { creditAchievedIfSubmit } }
 
       }
     }
 
     stateVariableDefinitions.suppressAutomaticVariants = {
       returnDependencies: () => ({}),
-      definition: () => ({ newValues: { suppressAutomaticVariants: true } })
+      definition: () => ({ setValue: { suppressAutomaticVariants: true } })
     }
 
     stateVariableDefinitions.generatedVariantInfo = {
@@ -499,7 +502,7 @@ export default class SectioningComponent extends BlockComponent {
         if (dependencyValues.variantControlChild.length === 0) {
           if (dependencyValues.suppressAutomaticVariants) {
             return {
-              newValues: {
+              setValue: {
                 generatedVariantInfo: null,
                 isVariantComponent: false
               }
@@ -547,7 +550,7 @@ export default class SectioningComponent extends BlockComponent {
         }
 
         return {
-          newValues: {
+          setValue: {
             generatedVariantInfo,
             isVariantComponent: true
           }
@@ -561,7 +564,7 @@ export default class SectioningComponent extends BlockComponent {
       forRenderer: true,
       returnDependencies: () => ({}),
       definition() {
-        return { newValues: { collapsible: false } }
+        return { setValue: { collapsible: false } }
       }
     }
 
@@ -570,13 +573,12 @@ export default class SectioningComponent extends BlockComponent {
       componentType: "boolean",
       forRenderer: true,
       defaultValue: true,
+      hasEssential: true,
       returnDependencies: () => ({}),
       definition() {
         return {
           useEssentialOrDefaultValue: {
-            open: {
-              variablesToCheck: ["open"]
-            }
+            open: true
           }
         }
       },
@@ -584,7 +586,7 @@ export default class SectioningComponent extends BlockComponent {
         return {
           success: true,
           instructions: [{
-            setStateVariable: "open",
+            setEssentialValue: "open",
             value: desiredStateVariableValues.open
           }]
         }
@@ -641,7 +643,7 @@ export default class SectioningComponent extends BlockComponent {
           }
         }
 
-        return { newValues: { createSubmitAllButton, suppressAnswerSubmitButtons } }
+        return { setValue: { createSubmitAllButton, suppressAnswerSubmitButtons } }
       }
     }
 

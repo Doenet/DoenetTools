@@ -486,6 +486,290 @@ describe('Triangle Tag Tests', function () {
 
   })
 
+  it('copy triangle and overwrite vertices', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <group newNamespace name="g1" >
+    <sideBySide widths="25% 25% 25% 25%" >
+      <graph width="180" height="180">
+        <triangle name="t1" />
+      </graph>
+      <graph width="180" height="180">
+        <copy target="t1" vertices="(3,-2)" assignNames="t2" />
+      </graph>
+      <graph width="180" height="180">
+        <copy target="t1" vertices="(5,2) (6, -1)" assignNames="t3" />
+      </graph>
+      <graph width="180" height="180">
+        <copy target="t1" vertices="(9,0) (-4, 5) (2, -3)" assignNames="t4" />
+      </graph>
+    </sideBySide>
+  </group>
+  
+  <copy target="g1" assignNames="g2" />
+
+  `}, "*");
+    });
+    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+
+
+    async function checkTransformedTrianglesValues({ components,
+      v0x1, v0y1, v1x1, v1y1, v2x1, v2y1,
+      v0x2, v0y2,
+      v0x3, v0y3, v1x3, v1y3,
+      v0x4, v0y4, v1x4, v1y4, v2x4, v2y4,
+    }) {
+
+      let v1s = [[v0x1, v0y1], [v1x1, v1y1], [v2x1, v2y1]];
+      let v2s = [[v0x2, v0y2], [v1x1, v1y1], [v2x1, v2y1]];
+      let v3s = [[v0x3, v0y3], [v1x3, v1y3], [v2x1, v2y1]];
+      let v4s = [[v0x4, v0y4], [v1x4, v1y4], [v2x4, v2y4]];
+
+      expect((await components['/g1/t1'].stateValues.vertices).map(y => y.map(x => x.tree))).eqls(v1s);
+      expect((await components['/g2/t1'].stateValues.vertices).map(y => y.map(x => x.tree))).eqls(v1s);
+
+      expect((await components['/g1/t2'].stateValues.vertices).map(y => y.map(x => x.tree))).eqls(v2s);
+      expect((await components['/g2/t2'].stateValues.vertices).map(y => y.map(x => x.tree))).eqls(v2s);
+
+      expect((await components['/g1/t3'].stateValues.vertices).map(y => y.map(x => x.tree))).eqls(v3s);
+      expect((await components['/g2/t3'].stateValues.vertices).map(y => y.map(x => x.tree))).eqls(v3s);
+
+      expect((await components['/g1/t4'].stateValues.vertices).map(y => y.map(x => x.tree))).eqls(v4s);
+      expect((await components['/g2/t4'].stateValues.vertices).map(y => y.map(x => x.tree))).eqls(v4s);
+
+    }
+
+
+    cy.window().then(async (win) => {
+      let components = Object.assign({}, win.state.components);
+
+      let v0x1 = 0, v0y1 = 1, v1x1 = 1, v1y1 = 0, v2x1 = 0, v2y1 = 0;
+      let v0x2 = 3, v0y2 = -2;
+      let v0x3 = 5, v0y3 = 2, v1x3 = 6, v1y3 = -1;
+      let v0x4 = 9, v0y4 = 0, v1x4 = -4, v1y4 = 5, v2x4 = 2, v2y4 = -3;
+
+
+      await checkTransformedTrianglesValues({
+        components,
+        v0x1, v0y1, v1x1, v1y1, v2x1, v2y1,
+        v0x2, v0y2,
+        v0x3, v0y3, v1x3, v1y3,
+        v0x4, v0y4, v1x4, v1y4, v2x4, v2y4,
+      })
+
+
+      cy.log('move g1/t1 up and to the right')
+      cy.window().then(async (win) => {
+        let components = Object.assign({}, win.state.components);
+
+        let dx = 3, dy = 2;
+
+        v0x1 += dx;
+        v1x1 += dx;
+        v2x1 += dx;
+        v0y1 += dy;
+        v1y1 += dy;
+        v2y1 += dy;
+
+        await components['/g1/t1'].movePolygon({ pointCoords: [[v0x1, v0y1], [v1x1, v1y1], [v2x1, v2y1]] });
+
+
+        await checkTransformedTrianglesValues({
+          components,
+          v0x1, v0y1, v1x1, v1y1, v2x1, v2y1,
+          v0x2, v0y2,
+          v0x3, v0y3, v1x3, v1y3,
+          v0x4, v0y4, v1x4, v1y4, v2x4, v2y4,
+        })
+      })
+
+
+      cy.log('move vertices of g2/t1 independently')
+      cy.window().then(async (win) => {
+        let components = Object.assign({}, win.state.components);
+
+        v0x1 = 7;
+        v1x1 = -5;
+        v2x1 = -1;
+        v0y1 = -4;
+        v1y1 = -9;
+        v2y1 = 8;
+
+        await components['/g2/t1'].movePolygon({ pointCoords: { 0: [v0x1, v0y1] } })
+        await components['/g2/t1'].movePolygon({ pointCoords: { 1: [v1x1, v1y1] } })
+        await components['/g2/t1'].movePolygon({ pointCoords: { 2: [v2x1, v2y1] } })
+
+        await checkTransformedTrianglesValues({
+          components,
+          v0x1, v0y1, v1x1, v1y1, v2x1, v2y1,
+          v0x2, v0y2,
+          v0x3, v0y3, v1x3, v1y3,
+          v0x4, v0y4, v1x4, v1y4, v2x4, v2y4,
+        })
+      })
+
+
+
+      cy.log('move g2/t2 up and to the left')
+      cy.window().then(async (win) => {
+        let components = Object.assign({}, win.state.components);
+
+        let dx = -4, dy = 1;
+
+        v0x2 += dx;
+        v1x1 += dx;
+        v2x1 += dx;
+        v0y2 += dy;
+        v1y1 += dy;
+        v2y1 += dy;
+
+        await components['/g2/t2'].movePolygon({ pointCoords: [[v0x2, v0y2], [v1x1, v1y1], [v2x1, v2y1]] });
+
+
+        await checkTransformedTrianglesValues({
+          components,
+          v0x1, v0y1, v1x1, v1y1, v2x1, v2y1,
+          v0x2, v0y2,
+          v0x3, v0y3, v1x3, v1y3,
+          v0x4, v0y4, v1x4, v1y4, v2x4, v2y4,
+        })
+      })
+
+      cy.log('move vertices of g1/t2 independently')
+      cy.window().then(async (win) => {
+        let components = Object.assign({}, win.state.components);
+
+        v0x2 = 1;
+        v1x1 = 5;
+        v2x1 = -3;
+        v0y2 = 8;
+        v1y1 = 4;
+        v2y1 = -5;
+
+        await components['/g1/t2'].movePolygon({ pointCoords: { 0: [v0x2, v0y2] } })
+        await components['/g1/t2'].movePolygon({ pointCoords: { 1: [v1x1, v1y1] } })
+        await components['/g1/t2'].movePolygon({ pointCoords: { 2: [v2x1, v2y1] } })
+
+        await checkTransformedTrianglesValues({
+          components,
+          v0x1, v0y1, v1x1, v1y1, v2x1, v2y1,
+          v0x2, v0y2,
+          v0x3, v0y3, v1x3, v1y3,
+          v0x4, v0y4, v1x4, v1y4, v2x4, v2y4,
+        })
+      })
+
+
+      cy.log('move g1/t3 down and to the right')
+      cy.window().then(async (win) => {
+        let components = Object.assign({}, win.state.components);
+
+        let dx = 4, dy = -5;
+
+        v0x3 += dx;
+        v1x3 += dx;
+        v2x1 += dx;
+        v0y3 += dy;
+        v1y3 += dy;
+        v2y1 += dy;
+
+        await components['/g1/t3'].movePolygon({ pointCoords: [[v0x3, v0y3], [v1x3, v1y3], [v2x1, v2y1]] });
+
+
+        await checkTransformedTrianglesValues({
+          components,
+          v0x1, v0y1, v1x1, v1y1, v2x1, v2y1,
+          v0x2, v0y2,
+          v0x3, v0y3, v1x3, v1y3,
+          v0x4, v0y4, v1x4, v1y4, v2x4, v2y4,
+        })
+      })
+
+
+
+      cy.log('move vertices of g2/t3 independently')
+      cy.window().then(async (win) => {
+        let components = Object.assign({}, win.state.components);
+
+        v0x3 = 0;
+        v1x3 = 8;
+        v2x1 = 9;
+        v0y3 = 0;
+        v1y3 = -6;
+        v2y1 = -5;
+
+        await components['/g2/t3'].movePolygon({ pointCoords: { 0: [v0x3, v0y3] } })
+        await components['/g2/t3'].movePolygon({ pointCoords: { 1: [v1x3, v1y3] } })
+        await components['/g2/t3'].movePolygon({ pointCoords: { 2: [v2x1, v2y1] } })
+
+        await checkTransformedTrianglesValues({
+          components,
+          v0x1, v0y1, v1x1, v1y1, v2x1, v2y1,
+          v0x2, v0y2,
+          v0x3, v0y3, v1x3, v1y3,
+          v0x4, v0y4, v1x4, v1y4, v2x4, v2y4,
+        })
+
+      })
+
+
+
+      cy.log('move g2/t4 down and to the left')
+      cy.window().then(async (win) => {
+        let components = Object.assign({}, win.state.components);
+
+        let dx = -7, dy = -8;
+
+        v0x4 += dx;
+        v1x4 += dx;
+        v2x4 += dx;
+        v0y4 += dy;
+        v1y4 += dy;
+        v2y4 += dy;
+
+        await components['/g2/t4'].movePolygon({ pointCoords: [[v0x4, v0y4], [v1x4, v1y4], [v2x4, v2y4]] });
+
+
+        await checkTransformedTrianglesValues({
+          components,
+          v0x1, v0y1, v1x1, v1y1, v2x1, v2y1,
+          v0x2, v0y2,
+          v0x3, v0y3, v1x3, v1y3,
+          v0x4, v0y4, v1x4, v1y4, v2x4, v2y4,
+        })
+      })
+
+      cy.log('move vertices of g1/t4 independently')
+      cy.window().then(async (win) => {
+        let components = Object.assign({}, win.state.components);
+
+        v0x4 = -7;
+        v1x4 = 0;
+        v2x4 = 4;
+        v0y4 = 0;
+        v1y4 = -8;
+        v2y4 = 6;
+
+        await components['/g1/t4'].movePolygon({ pointCoords: { 0: [v0x4, v0y4] } })
+        await components['/g1/t4'].movePolygon({ pointCoords: { 1: [v1x4, v1y4] } })
+        await components['/g1/t4'].movePolygon({ pointCoords: { 2: [v2x4, v2y4] } })
+
+        await checkTransformedTrianglesValues({
+          components,
+          v0x1, v0y1, v1x1, v1y1, v2x1, v2y1,
+          v0x2, v0y2,
+          v0x3, v0y3, v1x3, v1y3,
+          v0x4, v0y4, v1x4, v1y4, v2x4, v2y4,
+        })
+      })
+
+
+    })
+
+  })
+
   it('constrain to triangle', () => {
     cy.window().then(async (win) => {
       win.postMessage({

@@ -50,8 +50,8 @@ describe('Polyline Tag Tests', function () {
       let vertices = [];
       for (let i = 0; i < components['/_polyline1'].stateValues.nVertices; i++) {
         vertices.push([
-          components['/_polyline1'].stateValues.vertices[i][0],
-          components['/_polyline1'].stateValues.vertices[i][1]
+          (await components['/_polyline1'].stateValues.vertices)[i][0],
+          (await components['/_polyline1'].stateValues.vertices)[i][1]
         ])
       }
 
@@ -120,8 +120,8 @@ describe('Polyline Tag Tests', function () {
       let vertices = [];
       for (let i = 0; i < components['/_polyline1'].stateValues.nVertices; i++) {
         vertices.push([
-          components['/_polyline1'].stateValues.vertices[i][0],
-          components['/_polyline1'].stateValues.vertices[i][1]
+          (await components['/_polyline1'].stateValues.vertices)[i][0],
+          (await components['/_polyline1'].stateValues.vertices)[i][1]
         ])
       }
 
@@ -462,8 +462,8 @@ describe('Polyline Tag Tests', function () {
         let vertices = [];
         for (let i = 0; i < components['/_polyline1'].stateValues.nVertices; i++) {
           vertices.push([
-            components['/_polyline1'].stateValues.vertices[i][0],
-            components['/_polyline1'].stateValues.vertices[i][1]
+            (await components['/_polyline1'].stateValues.vertices)[i][0],
+            (await components['/_polyline1'].stateValues.vertices)[i][1]
           ])
         }
 
@@ -496,8 +496,8 @@ describe('Polyline Tag Tests', function () {
         let vertices = [];
         for (let i = 0; i < components['/_polyline1'].stateValues.nVertices; i++) {
           vertices.push([
-            components['/_polyline1'].stateValues.vertices[i][0],
-            components['/_polyline1'].stateValues.vertices[i][1]
+            (await components['/_polyline1'].stateValues.vertices)[i][0],
+            (await components['/_polyline1'].stateValues.vertices)[i][1]
           ])
         }
 
@@ -604,8 +604,8 @@ describe('Polyline Tag Tests', function () {
         let vertices = [];
         for (let i = 0; i < nVertices; i++) {
           vertices.push([
-            components['/_polyline1'].stateValues.vertices[i][0],
-            components['/_polyline1'].stateValues.vertices[i][1]
+            (await components['/_polyline1'].stateValues.vertices)[i][0],
+            (await components['/_polyline1'].stateValues.vertices)[i][1]
           ])
         }
 
@@ -640,8 +640,8 @@ describe('Polyline Tag Tests', function () {
         let vertices = [];
         for (let i = 0; i < nVertices; i++) {
           vertices.push([
-            components['/_polyline1'].stateValues.vertices[i][0],
-            components['/_polyline1'].stateValues.vertices[i][1]
+            (await components['/_polyline1'].stateValues.vertices)[i][0],
+            (await components['/_polyline1'].stateValues.vertices)[i][1]
           ])
         }
 
@@ -805,8 +805,8 @@ describe('Polyline Tag Tests', function () {
         let vertices = [];
         for (let i = 0; i < components['/_polyline1'].stateValues.nVertices; i++) {
           vertices.push([
-            components['/_polyline1'].stateValues.vertices[i][0],
-            components['/_polyline1'].stateValues.vertices[i][1]
+            (await components['/_polyline1'].stateValues.vertices)[i][0],
+            (await components['/_polyline1'].stateValues.vertices)[i][1]
           ])
         }
 
@@ -2103,8 +2103,8 @@ describe('Polyline Tag Tests', function () {
       let vertices = [];
       for (let i = 0; i < components['/_polyline1'].stateValues.nVertices; i++) {
         vertices.push([
-          components['/_polyline1'].stateValues.vertices[i][0],
-          components['/_polyline1'].stateValues.vertices[i][1]
+          (await components['/_polyline1'].stateValues.vertices)[i][0],
+          (await components['/_polyline1'].stateValues.vertices)[i][1]
         ])
       }
 

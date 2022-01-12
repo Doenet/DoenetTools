@@ -72,7 +72,7 @@ export default class PeriodicSet extends MathComponent {
 
     stateVariableDefinitions.canBeModified = {
       returnDependencies: () => ({}),
-      definition: () => ({ newValues: { canBeModified: false } })
+      definition: () => ({ setValue: { canBeModified: false } })
     }
 
     stateVariableDefinitions.nOffsets = {
@@ -89,7 +89,7 @@ export default class PeriodicSet extends MathComponent {
         if (dependencyValues.offsets !== null) {
           nOffsets = dependencyValues.offsets.length;
         }
-        return { newValues: { nOffsets } }
+        return { setValue: { nOffsets } }
       }
     }
 
@@ -121,7 +121,7 @@ export default class PeriodicSet extends MathComponent {
           || dependencyValues.period.tree === '\uff3f'
         ) {
           return {
-            newValues: { unnormalizedValue: me.fromAst('\uff3f') }
+            setValue: { unnormalizedValue: me.fromAst('\uff3f') }
           }
         }
 
@@ -136,7 +136,7 @@ export default class PeriodicSet extends MathComponent {
 
         let unnormalizedValue = me.fromAst(['periodic_set', ...periodicInfo])
 
-        return { newValues: { unnormalizedValue } }
+        return { setValue: { unnormalizedValue } }
 
       }
     }
@@ -184,7 +184,7 @@ export default class PeriodicSet extends MathComponent {
           }
         }
 
-        return { newValues: { redundantOffsets, uniqueOffsets } }
+        return { setValue: { redundantOffsets, uniqueOffsets } }
       }
     }
 
@@ -264,7 +264,7 @@ export default class PeriodicSet extends MathComponent {
           }
         }
 
-        return { newValues: { asList } }
+        return { setValue: { asList } }
       }
     }
 

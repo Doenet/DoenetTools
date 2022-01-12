@@ -143,7 +143,7 @@ export default class When extends BooleanComponent {
           // (which could occur if have no children or if have invalid form)
           // return false
           return {
-            newValues: {
+            setValue: {
               conditionSatisfied: false,
               value: false,
               fractionSatisfied: 0,
@@ -162,7 +162,7 @@ export default class When extends BooleanComponent {
         let conditionSatisfied = fractionSatisfied === 1;
 
         return {
-          newValues: { fractionSatisfied, conditionSatisfied, value: conditionSatisfied }
+          setValue: { fractionSatisfied, conditionSatisfied, value: conditionSatisfied }
         }
 
       }

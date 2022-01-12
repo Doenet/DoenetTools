@@ -203,7 +203,7 @@ export default class BooleanComponent extends InlineComponent {
         }
 
         return {
-          newValues: {
+          setValue: {
             mathChildrenByCode, mathListChildrenByCode,
             numberChildrenByCode, numberListChildrenByCode,
             textChildrenByCode, textListChildrenByCode,
@@ -219,6 +219,7 @@ export default class BooleanComponent extends InlineComponent {
       public: true,
       componentType: "boolean",
       forRenderer: true,
+      hasEssential: true,
       defaultValue: false,
       set: Boolean,
       stateVariablesPrescribingAdditionalAttributes: {
@@ -313,7 +314,7 @@ export default class BooleanComponent extends InlineComponent {
         if (dependencyValues.allChildren.length === 0) {
           return {
             useEssentialOrDefaultValue: {
-              value: { variablesToCheck: ["value"] }
+              value: true
             }
           }
         } else if (dependencyValues.parsedExpression === null) {
@@ -321,7 +322,7 @@ export default class BooleanComponent extends InlineComponent {
           // (which could occur if have invalid form)
           // return false
           return {
-            newValues: { value: false }
+            setValue: { value: false }
           }
         }
 
@@ -337,17 +338,16 @@ export default class BooleanComponent extends InlineComponent {
 
 
         return {
-          newValues: { value: fractionSatisfied === 1 }
+          setValue: { value: fractionSatisfied === 1 }
         }
 
       },
       inverseDefinition: function ({ desiredStateVariableValues, dependencyValues, componentInfoObjects }) {
         if (dependencyValues.allChildren.length === 0) {
-          // no children, so value is essential and give it the desired value
           return {
             success: true,
             instructions: [{
-              setStateVariable: "value",
+              setEssentialValue: "value",
               value: Boolean(desiredStateVariableValues.value)
             }]
           };
@@ -398,7 +398,7 @@ export default class BooleanComponent extends InlineComponent {
         },
       }),
       definition: function ({ dependencyValues }) {
-        return { newValues: { text: dependencyValues.value ? "true" : "false" } }
+        return { setValue: { text: dependencyValues.value ? "true" : "false" } }
       },
       inverseDefinition({ desiredStateVariableValues }) {
         let desiredText = String(desiredStateVariableValues.text).toLowerCase();

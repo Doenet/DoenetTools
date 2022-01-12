@@ -194,7 +194,7 @@ describe('AnimateFromSequence Tag Tests', function () {
       expect(components['/x'].stateValues.animationOn).eq(false);
       cy.get('#\\/a').should('have.text', lastValue)
       cy.get('#\\/a2').should('have.text', lastValue)
-  
+
     })
 
 
@@ -237,7 +237,7 @@ describe('AnimateFromSequence Tag Tests', function () {
 
       cy.get('#\\/a').should('have.text', lastValue)
       cy.get('#\\/a2').should('have.text', lastValue)
-  
+
     })
 
   })
@@ -337,7 +337,7 @@ describe('AnimateFromSequence Tag Tests', function () {
     cy.get(`#\\/b_input`).click();
     cy.get(`#\\/b_input`).click();
 
-    
+
     cy.get('#\\/a').contains(/-600|-500/)
 
     cy.window().then(async (win) => {
@@ -346,11 +346,11 @@ describe('AnimateFromSequence Tag Tests', function () {
       expect(lastValue === -600 || lastValue === -500).be.true;
       expect(components['/a'].stateValues.value).eq(lastValue);
       expect(components['/a2'].stateValues.value).eq(lastValue);
-      expect(components['/x'].stateValues.selectedIndex).eq(lastValue === -600 ? 3: 4);
+      expect(components['/x'].stateValues.selectedIndex).eq(lastValue === -600 ? 3 : 4);
       expect(components['/x'].stateValues.animationOn).eq(false);
       cy.get('#\\/a').should('have.text', `${lastValue}`)
       cy.get('#\\/a2').should('have.text', `${lastValue}`)
-  
+
 
     })
 
@@ -411,7 +411,7 @@ describe('AnimateFromSequence Tag Tests', function () {
 
       cy.get('#\\/a').should('have.text', `${lastValue}`)
       cy.get('#\\/a2').should('have.text', `${lastValue}`)
-  
+
     })
 
   })
@@ -593,11 +593,13 @@ describe('AnimateFromSequence Tag Tests', function () {
 
     cy.window().then((win) => {
       win.postMessage({
-        doenetML }, "*");
+        doenetML
+      }, "*");
     });
 
     cy.get('#testRunner_toggleControls').click();
     cy.get('#testRunner_allowLocalPageState').click()
+    cy.wait(100)
     cy.get('#testRunner_toggleControls').click();
 
     cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
@@ -608,7 +610,7 @@ describe('AnimateFromSequence Tag Tests', function () {
 
     cy.get('#\\/anmode_input').clear().type('decrease{enter}')
 
-    cy.get('#\\/cad').should('have.text', 'increase')
+    cy.get('#\\/cad').should('have.text', 'decrease')
     cy.get('#\\/anmode_input').should('have.value', 'decrease')
 
 
@@ -628,7 +630,7 @@ describe('AnimateFromSequence Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
 
-    cy.get('#\\/cad').should('have.text', 'increase')
+    cy.get('#\\/cad').should('have.text', 'decrease')
     cy.get('#\\/anmode_input').should('have.value', 'decrease')
 
 

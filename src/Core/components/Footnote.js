@@ -46,7 +46,7 @@ export default class Footnote extends InlineComponent {
           }
         }
 
-        return { newValues: { text } };
+        return { setValue: { text } };
       }
     }
 
@@ -62,7 +62,7 @@ export default class Footnote extends InlineComponent {
       }),
       definition({ dependencyValues }) {
         return {
-          newValues: { footnoteTag: String(dependencyValues.footnoteCounter) }
+          setValue: { footnoteTag: String(dependencyValues.footnoteCounter) }
         }
       }
     }

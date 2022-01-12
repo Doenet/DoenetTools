@@ -23,7 +23,7 @@ export default class ConstrainToGraph extends ConstraintComponent {
 
     stateVariableDefinitions.independentComponentConstraints = {
       returnDependencies: () => ({}),
-      definition: () => ({ newValues: { independentComponentConstraints: true } })
+      definition: () => ({ setValue: { independentComponentConstraints: true } })
     }
 
 
@@ -48,7 +48,7 @@ export default class ConstrainToGraph extends ConstraintComponent {
         },
       }),
       definition: ({ dependencyValues }) => ({
-        newValues: {
+        setValue: {
           applyComponentConstraint: function ({ variables, scales }) {
 
             if (dependencyValues.constraintAncestor === null ||

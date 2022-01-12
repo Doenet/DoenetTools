@@ -62,6 +62,8 @@ export default class BooleanInput extends Input {
       public: true,
       componentType: "boolean",
       forRenderer: true,
+      hasEssential: true,
+      shadowVariable: true,
       returnDependencies: () => ({
         bindValueTo: {
           dependencyType: "attributeComponent",
@@ -78,13 +80,12 @@ export default class BooleanInput extends Input {
           return {
             useEssentialOrDefaultValue: {
               value: {
-                variablesToCheck: "value",
                 defaultValue: dependencyValues.prefill
               }
             }
           }
         }
-        return { newValues: { value: dependencyValues.bindValueTo.stateValues.value } };
+        return { setValue: { value: dependencyValues.bindValueTo.stateValues.value } };
       },
       inverseDefinition: function ({ desiredStateVariableValues, dependencyValues }) {
 
@@ -98,11 +99,11 @@ export default class BooleanInput extends Input {
             }]
           };
         }
-        // no children, so value is essential and give it the desired value
+
         return {
           success: true,
           instructions: [{
-            setStateVariable: "value",
+            setEssentialValue: "value",
             value: desiredStateVariableValues.value
           }]
         };
@@ -119,13 +120,13 @@ export default class BooleanInput extends Input {
         }
       }),
       definition: function ({ dependencyValues }) {
-        return { newValues: { text: dependencyValues.value ? "true" : "false" } }
+        return { setValue: { text: dependencyValues.value ? "true" : "false" } }
       }
     }
 
     stateVariableDefinitions.componentType = {
       returnDependencies: () => ({}),
-      definition: () => ({ newValues: { componentType: "boolean" } })
+      definition: () => ({ setValue: { componentType: "boolean" } })
     }
 
 

@@ -80,7 +80,7 @@ export default class NumberList extends InlineComponent {
     // so that can't have a list with partially hidden components
     stateVariableDefinitions.overrideChildHide = {
       returnDependencies: () => ({}),
-      definition: () => ({ newValues: { overrideChildHide: true } })
+      definition: () => ({ setValue: { overrideChildHide: true } })
     }
 
     stateVariableDefinitions.nComponents = {
@@ -134,7 +134,7 @@ export default class NumberList extends InlineComponent {
         }
 
         return {
-          newValues: { nComponents, childIndexByArrayKey },
+          setValue: { nComponents, childIndexByArrayKey },
           checkForActualChange: { nComponents: true }
         }
       }
@@ -208,7 +208,7 @@ export default class NumberList extends InlineComponent {
 
         }
 
-        return { newValues: { numbers } }
+        return { setValue: { numbers } }
 
       },
       inverseArrayDefinitionByKey({ desiredStateVariableValues, globalDependencyValues,
@@ -302,7 +302,7 @@ export default class NumberList extends InlineComponent {
 
         let text = texts.join(', ');
 
-        return { newValues: { text, texts } }
+        return { setValue: { text, texts } }
 
       }
     }
@@ -341,7 +341,7 @@ export default class NumberList extends InlineComponent {
           componentNamesInList = componentNamesInList.slice(0, maxNum)
         }
 
-        return { newValues: { componentNamesInList } }
+        return { setValue: { componentNamesInList } }
 
       }
     }
@@ -411,7 +411,7 @@ export default class NumberList extends InlineComponent {
         }
 
         return {
-          newValues: { nComponentsToDisplayByChild, nChildrenToRender },
+          setValue: { nComponentsToDisplayByChild, nChildrenToRender },
         }
       }
     }

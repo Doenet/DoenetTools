@@ -113,6 +113,7 @@ export default class SubsetOfRealsInput extends BlockComponent {
     stateVariableDefinitions.subsetValue = {
       public: true,
       componentType: "subsetOfReals",
+      hasEssential: true,
       returnDependencies: () => ({
         bindValueTo: {
           dependencyType: "attributeComponent",
@@ -138,7 +139,6 @@ export default class SubsetOfRealsInput extends BlockComponent {
           return {
             useEssentialOrDefaultValue: {
               subsetValue: {
-                variablesToCheck: "subsetValue",
                 get defaultValue() {
                   return parseValueIntoSubset({
                     inputString: dependencyValues.prefill,
@@ -152,7 +152,7 @@ export default class SubsetOfRealsInput extends BlockComponent {
         }
 
 
-        return { newValues: { subsetValue: dependencyValues.bindValueTo.stateValues.subsetValue } };
+        return { setValue: { subsetValue: dependencyValues.bindValueTo.stateValues.subsetValue } };
       },
       inverseDefinition({ desiredStateVariableValues, dependencyValues }) {
 
@@ -171,7 +171,7 @@ export default class SubsetOfRealsInput extends BlockComponent {
         return {
           success: true,
           instructions: [{
-            setStateVariable: "subsetValue",
+            setEssentialValue: "subsetValue",
             value: desiredStateVariableValues.subsetValue
           }]
         };
@@ -270,18 +270,19 @@ export default class SubsetOfRealsInput extends BlockComponent {
         pointsFromSubset.sort((a, b) => a.value - b.value);
         intervalsFromSubset.sort((a, b) => a[0] - b[0]);
 
-        return { newValues: { pointsFromSubset, intervalsFromSubset } };
+        return { setValue: { pointsFromSubset, intervalsFromSubset } };
 
       }
     }
 
     stateVariableDefinitions.additionalPoints = {
       defaultValue: [],
+      hasEssential: true,
       returnDependencies: () => ({}),
       definition() {
         return {
           useEssentialOrDefaultValue: {
-            additionalPoints: { variablesToCheck: ["additionalPoints"] }
+            additionalPoints: true
           }
         }
       },
@@ -290,7 +291,7 @@ export default class SubsetOfRealsInput extends BlockComponent {
           return {
             success: true,
             instructions: [{
-              setStateVariable: "additionalPoints",
+              setEssentialValue: "additionalPoints",
               value: [...desiredStateVariableValues.additionalPoints].sort((a, b) => a - b)
             }]
           }
@@ -399,7 +400,7 @@ export default class SubsetOfRealsInput extends BlockComponent {
         points = points.slice(0, points.length - 1);
 
         return {
-          newValues: { points, intervals }
+          setValue: { points, intervals }
         }
 
 

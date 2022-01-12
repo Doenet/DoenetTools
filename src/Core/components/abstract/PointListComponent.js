@@ -69,7 +69,7 @@ export default class PointListComponent extends BaseComponent {
       }),
       definition: function ({ dependencyValues }) {
         return {
-          newValues: { nPoints: dependencyValues.pointChildren.length },
+          setValue: { nPoints: dependencyValues.pointChildren.length },
           checkForActualChange: { nPoints: true }
         }
       }
@@ -100,7 +100,7 @@ export default class PointListComponent extends BaseComponent {
           }
         }
         return {
-          newValues: { nDimensions },
+          setValue: { nDimensions },
           checkForActualChange: { nDimensions: true }
         }
       }
@@ -204,7 +204,7 @@ export default class PointListComponent extends BaseComponent {
         // console.log("result")
         // console.log(JSON.parse(JSON.stringify(points)));
 
-        return { newValues: { points } }
+        return { setValue: { points } }
 
       },
       inverseArrayDefinitionByKey({ desiredStateVariableValues,

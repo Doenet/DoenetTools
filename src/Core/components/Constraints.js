@@ -41,7 +41,7 @@ export default class Constraints extends BaseComponent {
         }
       }),
       definition: ({ dependencyValues }) => ({
-        newValues: {
+        setValue: {
           independentComponentConstraints: dependencyValues.constraintChildren.every(
             x => x.stateValues.independentComponentConstraints
           )
@@ -57,7 +57,7 @@ export default class Constraints extends BaseComponent {
         }
       }),
       definition: ({ dependencyValues }) => ({
-        newValues: {
+        setValue: {
           arrayEntryPrefixForConstraints:
             dependencyValues.arrayEntryPrefixForConstraints
         }
@@ -72,7 +72,7 @@ export default class Constraints extends BaseComponent {
         }
       }),
       definition: ({ dependencyValues }) => ({
-        newValues: {
+        setValue: {
           arrayVariableForConstraints:
             dependencyValues.arrayVariableForConstraints
         }
@@ -87,7 +87,7 @@ export default class Constraints extends BaseComponent {
         }
       }),
       definition({ dependencyValues }) {
-        return { newValues: { nDimensions: dependencyValues.nDimensions } }
+        return { setValue: { nDimensions: dependencyValues.nDimensions } }
       }
     }
 
@@ -107,9 +107,9 @@ export default class Constraints extends BaseComponent {
       },
       definition({ dependencyValues }) {
         if (dependencyValues.graphComponentName) {
-          return { newValues: { graphComponentName: dependencyValues.graphComponentName } }
+          return { setValue: { graphComponentName: dependencyValues.graphComponentName } }
         } else {
-          return { newValues: { graphComponentName: null } }
+          return { setValue: { graphComponentName: null } }
         }
       }
     }
@@ -139,11 +139,11 @@ export default class Constraints extends BaseComponent {
           let scales = [SVs.xscale, SVs.yscale, 1];
 
           if (scales.every(x => Number.isFinite(x) && x > 0)) {
-            return { newValues: { scales } }
+            return { setValue: { scales } }
           }
         }
 
-        return { newValues: { scales: [1, 1, 1] } }
+        return { setValue: { scales: [1, 1, 1] } }
       }
     }
 
@@ -167,7 +167,7 @@ export default class Constraints extends BaseComponent {
       definition({ dependencyValues }) {
         if (!dependencyValues.graph) {
           return {
-            newValues: {
+            setValue: {
               graphXmin: null, graphXmax: null, graphYmin: null, graphYmax: null
             }
           }
@@ -179,13 +179,13 @@ export default class Constraints extends BaseComponent {
 
         if ([graphXmin, graphXmax, graphYmin, graphYmax].every(Number.isFinite)) {
           return {
-            newValues: {
+            setValue: {
               graphXmin, graphXmax, graphYmin, graphYmax
             }
           }
         } else {
           return {
-            newValues: {
+            setValue: {
               graphXmin: null, graphXmax: null, graphYmin: null, graphYmax: null
             }
           }
@@ -303,7 +303,7 @@ export default class Constraints extends BaseComponent {
           }
 
           return {
-            newValues: {
+            setValue: {
               constraintResults,
               constraintUsedByComponent
             }
@@ -350,7 +350,7 @@ export default class Constraints extends BaseComponent {
             constraintUsedByComponent[arrayKey] = constraintUsed;
           }
 
-          return { newValues: { constraintResults, constraintUsedByComponent } }
+          return { setValue: { constraintResults, constraintUsedByComponent } }
 
 
         }
@@ -489,7 +489,7 @@ export default class Constraints extends BaseComponent {
         let constraintUsed = Object.values(dependencyValues.constraintUsedByComponent)
           .some(x => x)
 
-        return { newValues: { constraintUsed } }
+        return { setValue: { constraintUsed } }
 
       }
     }

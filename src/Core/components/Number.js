@@ -125,7 +125,7 @@ export default class NumberComponent extends InlineComponent {
         let singleNumberOrStringChild = nNumberStrings <= 1 && nMaths + nOthers === 0;
         let singleMathChild = nMaths === 1 && nNumberStrings + nOthers === 0;
 
-        return { newValues: { singleNumberOrStringChild, singleMathChild } };
+        return { setValue: { singleNumberOrStringChild, singleMathChild } };
       }
     }
 
@@ -205,7 +205,7 @@ export default class NumberComponent extends InlineComponent {
         }
 
         return {
-          newValues: {
+          setValue: {
             mathChildrenByCode,
             numberChildrenByCode,
             textChildrenByCode,
@@ -220,6 +220,7 @@ export default class NumberComponent extends InlineComponent {
     stateVariableDefinitions.value = {
       public: true,
       componentType: "number",
+      hasEssential: true,
       stateVariablesPrescribingAdditionalAttributes: {
         fixed: "fixed",
         displayDigits: "displayDigits",
@@ -299,7 +300,7 @@ export default class NumberComponent extends InlineComponent {
         if (dependencyValues.singleNumberOrStringChild) {
           if (dependencyValues.numberChild.length === 0) {
             if (dependencyValues.stringChild.length === 0) {
-              return { useEssentialOrDefaultValue: { value: { variablesToCheck: ["value"] } } }
+              return { useEssentialOrDefaultValue: { value: true } }
             }
             let number = Number(dependencyValues.stringChild[0]);
             if (Number.isNaN(number)) {
@@ -321,7 +322,7 @@ export default class NumberComponent extends InlineComponent {
                         allChildren: dependencyValues.stringChild
                       },
                       componentInfoObjects
-                    }).newValues.parsedExpression;
+                    }).setValue.parsedExpression;
 
                     number = evaluateLogic({
                       logicTree: parsedExpression.tree,
@@ -346,9 +347,9 @@ export default class NumberComponent extends InlineComponent {
                 number = NaN;
               }
             }
-            return { newValues: { value: number } };
+            return { setValue: { value: number } };
           } else {
-            return { newValues: { value: dependencyValues.numberChild[0].stateValues.value } }
+            return { setValue: { value: dependencyValues.numberChild[0].stateValues.value } }
           }
         } else {
 
@@ -357,7 +358,7 @@ export default class NumberComponent extends InlineComponent {
             // (which could occur if have invalid form)
             // return NaN
             return {
-              newValues: { value: NaN }
+              setValue: { value: NaN }
             }
           }
 
@@ -394,7 +395,7 @@ export default class NumberComponent extends InlineComponent {
             }
 
             if (Number.isFinite(number) || number === Infinity || number === -Infinity) {
-              return { newValues: { value: number } };
+              return { setValue: { value: number } };
 
             }
 
@@ -402,7 +403,7 @@ export default class NumberComponent extends InlineComponent {
           }
 
           if (!dependencyValues.convertBoolean) {
-            return { newValues: { value: NaN } }
+            return { setValue: { value: NaN } }
           }
 
 
@@ -421,7 +422,7 @@ export default class NumberComponent extends InlineComponent {
           // fractionSatisfied will be either 0 or 1 as have not
           // specified matchPartial
 
-          return { newValues: { value: fractionSatisfied } }
+          return { setValue: { value: fractionSatisfied } }
 
         }
       },
@@ -487,7 +488,7 @@ export default class NumberComponent extends InlineComponent {
         if (dependencyValues.numberChild.length === 0) {
           if (dependencyValues.stringChild.length === 0) {
             instructions = [{
-              setStateVariable: "value",
+              setEssentialValue: "value",
               value: desiredValue,
             }];
           } else {
@@ -548,7 +549,7 @@ export default class NumberComponent extends InlineComponent {
         }
 
         return {
-          newValues: {
+          setValue: {
             valueForDisplay: rounded
           }
         }
@@ -570,7 +571,7 @@ export default class NumberComponent extends InlineComponent {
         },
       }),
       definition: function ({ dependencyValues }) {
-        return { newValues: { text: dependencyValues.valueForDisplay.toString() } };
+        return { setValue: { text: dependencyValues.valueForDisplay.toString() } };
       },
       async inverseDefinition({ desiredStateVariableValues, stateValues }) {
         let desiredNumber = Number(desiredStateVariableValues.text);
@@ -647,15 +648,15 @@ export default class NumberComponent extends InlineComponent {
       definition: function ({ dependencyValues }) {
         if (!dependencyValues.modifyIndirectly || dependencyValues.fixed
           || !(dependencyValues.singleNumberOrStringChild || dependencyValues.singleMathChild)) {
-          return { newValues: { canBeModified: false } };
+          return { setValue: { canBeModified: false } };
         }
 
         if (dependencyValues.numberChildModifiable.length === 1 &&
           !dependencyValues.numberChildModifiable[0].stateValues.canBeModified) {
-          return { newValues: { canBeModified: false } };
+          return { setValue: { canBeModified: false } };
         }
 
-        return { newValues: { canBeModified: true } };
+        return { setValue: { canBeModified: true } };
 
       },
     }

@@ -73,7 +73,7 @@ export default class Polygon extends Polyline {
 
 
         return {
-          newValues: {
+          setValue: {
             nearestPoint: function ({ variables, scales }) {
 
               let xscale = scales[0];

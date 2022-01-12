@@ -56,7 +56,7 @@ export class Idx extends BaseComponent {
           }
           terms = [value];
         }
-        return { newValues: { terms } }
+        return { setValue: { terms } }
       }
     }
 

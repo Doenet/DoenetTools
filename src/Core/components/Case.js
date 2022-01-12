@@ -37,7 +37,7 @@ export default class Case extends Template {
           conditionSatisfied = dependencyValues.condition.stateValues.value;
         }
 
-        return { newValues: { conditionSatisfied } }
+        return { setValue: { conditionSatisfied } }
       }
     };
 

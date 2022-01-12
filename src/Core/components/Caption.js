@@ -47,7 +47,7 @@ export default class Caption extends BlockComponent {
           }
         }
 
-        return { newValues: { text } };
+        return { setValue: { text } };
       }
     }
 

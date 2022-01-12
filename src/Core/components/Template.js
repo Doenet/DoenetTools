@@ -54,7 +54,7 @@ export default class Template extends CompositeComponent {
       }),
       definition: function ({ dependencyValues }) {
         return {
-          newValues: {
+          setValue: {
             serializedChildren: dependencyValues.serializedChildren
           }
         }
@@ -70,7 +70,7 @@ export default class Template extends CompositeComponent {
       }),
       definition({ dependencyValues }) {
         return {
-          newValues: {
+          setValue: {
             newNamespace: dependencyValues.newNamespace
           }
         }
@@ -80,7 +80,7 @@ export default class Template extends CompositeComponent {
     stateVariableDefinitions.readyToExpandWhenResolved = {
       returnDependencies: () => ({}),
       definition: function () {
-        return { newValues: { readyToExpandWhenResolved: true } };
+        return { setValue: { readyToExpandWhenResolved: true } };
       },
     };
 

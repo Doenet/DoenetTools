@@ -52,7 +52,7 @@ export default class Ref extends InlineComponent {
       }),
       definition: function ({ dependencyValues }) {
         return {
-          newValues: {
+          setValue: {
             targetComponent: dependencyValues.targetComponent
           }
         }
@@ -77,7 +77,7 @@ export default class Ref extends InlineComponent {
       },
       definition: function ({ dependencyValues }) {
         return {
-          newValues: {
+          setValue: {
             targetInactive: Boolean(dependencyValues.targetIsInactiveCompositeReplacement)
           }
         }
@@ -103,13 +103,13 @@ export default class Ref extends InlineComponent {
       }),
       definition: function ({ dependencyValues }) {
         if (dependencyValues.targetComponent === null || dependencyValues.targetInactive) {
-          return { newValues: { targetName: "" } }
+          return { setValue: { targetName: "" } }
         } else {
           if (dependencyValues.uri !== null) {
             console.warn("Haven't implemented ref with uri and target, ignoring target.");
-            return { newValues: { targetName: "" } }
+            return { setValue: { targetName: "" } }
           }
-          return { newValues: { targetName: dependencyValues.targetComponent.componentName } }
+          return { setValue: { targetName: dependencyValues.targetComponent.componentName } }
         }
       },
     };
@@ -131,7 +131,7 @@ export default class Ref extends InlineComponent {
           dependencyValues.uri.substring(0, 7).toLowerCase() !== "doenet:"
         ) {
           return {
-            newValues: { contentId: null, doenetId: null }
+            setValue: { contentId: null, doenetId: null }
           }
         }
 
@@ -146,7 +146,7 @@ export default class Ref extends InlineComponent {
           doenetId = result[1];
         }
 
-        return { newValues: { contentId, doenetId } };
+        return { setValue: { contentId, doenetId } };
       },
     };
 
@@ -216,7 +216,7 @@ export default class Ref extends InlineComponent {
         if (!linkText) {
           linkText = "???";
         }
-        return { newValues: { linkText } }
+        return { setValue: { linkText } }
       }
     }
 

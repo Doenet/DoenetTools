@@ -11,7 +11,7 @@ export default class SingleCharacter extends InlineComponent {
       public: true,
       componentType: "text",
       returnDependencies: () => ({}),
-      definition: () => ({ newValues: { text: this.unicodeCharacter } })
+      definition: () => ({ setValue: { text: this.unicodeCharacter } })
     }
 
     return stateVariableDefinitions;

@@ -96,12 +96,12 @@ describe('Math Tag Tests', function () {
     cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let replacement = components['/_copy1'].replacements[0];
-      expect(components['/_math1'].stateValues.value.tree).eqls(['+', 'x', 1])
-      expect(replacement.stateValues.value.tree).eqls(['+', 'x', 1])
-      expect(components['/_math2'].stateValues.value.tree).eqls(["+", ["*", 3, ["+", "x", 1]], 5])
-      expect(components['/_math1'].stateValues.hide).eq(true)
+      expect((await components['/_math1'].stateValues.value).tree).eqls(['+', 'x', 1])
+      expect((await replacement.stateValues.value).tree).eqls(['+', 'x', 1])
+      expect((await components['/_math2'].stateValues.value).tree).eqls(["+", ["*", 3, ["+", "x", 1]], 5])
+      expect(await components['/_math1'].stateValues.hide).eq(true)
       expect(await replacement.stateValues.hide).eq(true);
-      expect(components['/_math2'].stateValues.hide).eq(false)
+      expect(await components['/_math2'].stateValues.hide).eq(false)
     })
   })
 
@@ -1913,6 +1913,39 @@ describe('Math Tag Tests', function () {
 
 
   });
+
+  // TODO: fix so doesn't break when copy the math, not just copy its value
+  it('set vector component to undefined', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+  <p><text>a</text></p>
+  <math name="m">(x,y)</math>
+  <copy target="m" prop="value" assignNames="m2" />
+  <mathinput bindValueTo="$(m{prop='x'})" name="mi" />
+  `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.get('#\\/m .mjx-mrow').eq(0).should('have.text', '(x,y)');
+    cy.get('#\\/m2 .mjx-mrow').eq(0).should('have.text', '(x,y)');
+    cy.get('#\\/mi .mq-editable-field').should('have.text', 'x')
+
+    cy.get("#\\/mi textarea").type("{end}{backspace}{enter}", { force: true }).blur();
+
+    cy.get('#\\/m .mjx-mrow').eq(0).should('have.text', '(＿,y)');
+    cy.get('#\\/m2 .mjx-mrow').eq(0).should('have.text', '(＿,y)');
+    cy.get('#\\/mi .mq-editable-field').should('have.text', '')
+
+    cy.get("#\\/mi textarea").type("{end}q{enter}", { force: true }).blur();
+
+    cy.get('#\\/m .mjx-mrow').eq(0).should('have.text', '(q,y)');
+    cy.get('#\\/m2 .mjx-mrow').eq(0).should('have.text', '(q,y)');
+    cy.get('#\\/mi .mq-editable-field').should('have.text', 'q')
+
+  });
+
 
 
 
