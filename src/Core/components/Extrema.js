@@ -145,11 +145,13 @@ export class Extremum extends BaseComponent {
       public: true,
       componentType: "math",
       defaultValue: null,
+      hasEssential: true,
       additionalStateVariablesDefined: [{
         variableName: "location",
         public: true,
         componentType: "math",
         defaultValue: null,
+        hasEssential: true,
       }],
       returnDependencies: () => ({
         extremumChild: {
@@ -190,29 +192,29 @@ export class Extremum extends BaseComponent {
           }
         }
 
-        let newValues = {};
+        let setValue = {};
         let useEssentialOrDefaultValue = {};
         let haveNewValues = false;
         let haveEssential = false;
         if (location === undefined) {
-          useEssentialOrDefaultValue.location = { variablesToCheck: ["location"] }
+          useEssentialOrDefaultValue.location = true
           haveEssential = true;
         } else {
-          newValues.location = location;
+          setValue.location = location;
           haveNewValues = true;
         }
 
         if (value === undefined) {
-          useEssentialOrDefaultValue.value = { variablesToCheck: ["value"] }
+          useEssentialOrDefaultValue.value = true
           haveEssential = true;
         } else {
-          newValues.value = value;
+          setValue.value = value;
           haveNewValues = true;
         }
 
         let result = {};
         if (haveNewValues) {
-          result.newValues = newValues;
+          result.setValue = setValue;
         }
         if (haveEssential) {
           result.useEssentialOrDefaultValue = useEssentialOrDefaultValue;
@@ -313,7 +315,7 @@ export class Extrema extends BaseComponent {
       definition: function ({ dependencyValues }) {
         let extremeVarName = "n" + extremaClass.componentTypeCapitalized;
         return {
-          newValues: {
+          setValue: {
             [extremeVarName]: dependencyValues.children.length,
             childIdentities: dependencyValues.children,
           },
@@ -450,7 +452,7 @@ export class Extrema extends BaseComponent {
           }
         }
 
-        return { newValues: { [extremaClass.componentType]: extrema } }
+        return { setValue: { [extremaClass.componentType]: extrema } }
 
       },
       inverseArrayDefinitionByKey({ desiredStateVariableValues,

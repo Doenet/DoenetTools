@@ -41,7 +41,7 @@ export default class EquilibriumPoint extends Point {
       }),
       definition({ dependencyValues }) {
         return {
-          newValues: { open: !dependencyValues.stable }
+          setValue: { open: !dependencyValues.stable }
         }
       },
       inverseDefinition({ desiredStateVariableValues }) {

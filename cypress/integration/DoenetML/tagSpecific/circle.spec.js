@@ -6997,5 +6997,80 @@ describe('Circle Tag Tests', function () {
 
   })
 
+  it('reload essential center from database', () => {
+    let doenetML = `
+    <text>a</text>
+    <graph>
+      <circle name="circ" />
+    </graph>
+    <mathinput bindvalueTo="$(circ{prop='radius'})" name="r" />
+    <p>radius: <copy prop='radius' target='circ' assignNames="r2" /></p>
+    <p>Center: <copy prop="center" target="circ" assignNames="c" /></p>
+  `;
+
+
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML }, "*");
+    });
+
+    cy.get('#testRunner_toggleControls').click();
+    cy.get('#testRunner_allowLocalPageState').click()
+    cy.wait(100)
+    cy.get('#testRunner_toggleControls').click();
+
+    cy.get('#\\/_text1').should('have.text', 'a')// to wait for page to load
+
+
+    cy.window().then(async (win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/circ'].stateValues.numericalCenter).eqls([0, 0]);
+      expect(components['/circ'].stateValues.numericalRadius).eq(1);
+    });
+
+    cy.log(`move circle`)
+    cy.window().then(async (win) => {
+      let components = Object.assign({}, win.state.components);
+      await components['/circ'].moveCircle({ center: [-7, 2] });
+      expect(components['/circ'].stateValues.numericalCenter).eqls([-7, 2]);
+      expect(components['/circ'].stateValues.numericalRadius).eq(1);
+    })
+
+    cy.log("change radius");
+    cy.get('#\\/r textarea').type("{end}{backspace}3{enter}", { force: true })
+    cy.get(`#\\/r .mq-editable-field`).should('contain.text', "3");
+    cy.get(`#\\/r2 .mjx-mrow`).should('contain.text', "3");
+
+    cy.window().then(async (win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/circ'].stateValues.numericalCenter).eqls([-7, 2]);
+      expect(components['/circ'].stateValues.numericalRadius).eq(3);
+    })
+
+
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: '<text>b</text>',
+      }, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'b') //wait for page to load
+
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML,
+      }, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+
+
+    cy.window().then(async (win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/circ'].stateValues.numericalCenter).eqls([-7, 2]);
+      expect(components['/circ'].stateValues.numericalRadius).eq(3);
+    })
+
+  })
 
 });

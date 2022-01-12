@@ -98,7 +98,7 @@ export default class AnimateFromSequence extends BaseComponent {
         let possibleValues = returnSequenceValues(dependencyValues);
 
         return {
-          newValues: {
+          setValue: {
             possibleValues,
             numberValues: possibleValues.length
           }
@@ -111,13 +111,12 @@ export default class AnimateFromSequence extends BaseComponent {
       public: true,
       componentType: "number",
       defaultValue: 1,
+      hasEssential: true,
       returnDependencies: () => ({}),
       definition() {
         return {
           useEssentialOrDefaultValue: {
-            selectedIndex: {
-              variablesToCheck: ["selectedIndex"],
-            }
+            selectedIndex: true
           }
         }
       },
@@ -125,7 +124,7 @@ export default class AnimateFromSequence extends BaseComponent {
         return {
           success: true,
           instructions: [{
-            setStateVariable: "selectedIndex",
+            setEssentialValue: "selectedIndex",
             value: me.math.mod(desiredStateVariableValues.selectedIndex - 1, await stateValues.numberValues) + 1
           }]
         }
@@ -151,7 +150,7 @@ export default class AnimateFromSequence extends BaseComponent {
       }),
       definition({ dependencyValues }) {
         return {
-          newValues: { value: dependencyValues.possibleValues[dependencyValues.selectedIndex - 1] },
+          setValue: { value: dependencyValues.possibleValues[dependencyValues.selectedIndex - 1] },
           setComponentType: { value: dependencyValues.type },
         }
       },
@@ -214,6 +213,7 @@ export default class AnimateFromSequence extends BaseComponent {
     stateVariableDefinitions.currentAnimationDirection = {
       public: true,
       componentType: "text",
+      hasEssential: true,
       returnDependencies: () => ({
         animationMode: {
           dependencyType: "stateVariable",
@@ -224,7 +224,6 @@ export default class AnimateFromSequence extends BaseComponent {
         return {
           useEssentialOrDefaultValue: {
             currentAnimationDirection: {
-              variablesToCheck: ["currentAnimationDirection"],
               get defaultValue() {
                 if (dependencyValues.animationMode.substring(0, 8) === "decrease") {
                   return "decrease"
@@ -244,7 +243,7 @@ export default class AnimateFromSequence extends BaseComponent {
         return {
           success: true,
           instructions: [{
-            setStateVariable: "currentAnimationDirection",
+            setEssentialValue: "currentAnimationDirection",
             value: newDirection
           }]
         }
@@ -260,7 +259,7 @@ export default class AnimateFromSequence extends BaseComponent {
         }
       }),
       definition: ({ dependencyValues }) => ({
-        newValues: { target: dependencyValues.target }
+        setValue: { target: dependencyValues.target }
       })
     }
 
@@ -280,7 +279,7 @@ export default class AnimateFromSequence extends BaseComponent {
         }
 
         return {
-          newValues: { targetComponent }
+          setValue: { targetComponent }
         }
       },
     };
@@ -293,7 +292,7 @@ export default class AnimateFromSequence extends BaseComponent {
         },
       }),
       definition: function ({ dependencyValues }) {
-        return { newValues: { propName: dependencyValues.propName } }
+        return { setValue: { propName: dependencyValues.propName } }
       }
     }
 
@@ -339,7 +338,7 @@ export default class AnimateFromSequence extends BaseComponent {
             targetIdentities = [targetIdentities];
           }
         }
-        return { newValues: { targetIdentities } };
+        return { setValue: { targetIdentities } };
       },
     }
 
@@ -405,7 +404,7 @@ export default class AnimateFromSequence extends BaseComponent {
           }
         }
 
-        return { newValues: { targets } };
+        return { setValue: { targets } };
       },
     }
 
@@ -421,7 +420,7 @@ export default class AnimateFromSequence extends BaseComponent {
         for (let [ind, item] of dependencyValues.possibleValues.entries()) {
           valueToIndex[item] = ind;
         }
-        return { newValues: { valueToIndex } }
+        return { setValue: { valueToIndex } }
       }
     }
 

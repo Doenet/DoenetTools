@@ -35,7 +35,7 @@ export default class Intersection extends CompositeComponent {
         }
       }),
       definition: ({ dependencyValues }) => ({
-        newValues: {
+        setValue: {
           lineChildren: dependencyValues.lineChildren
         }
       })
@@ -50,7 +50,7 @@ export default class Intersection extends CompositeComponent {
       }),
       markStale: () => ({ updateReplacements: true }),
       definition: function () {
-        return { newValues: { readyToExpandWhenResolved: true } };
+        return { setValue: { readyToExpandWhenResolved: true } };
       },
     }
 

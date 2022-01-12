@@ -114,7 +114,7 @@ export default class Tabular extends BlockComponent {
     //       numRows = 4;
     //     }
     //     numRows = Math.max(numRows, dependencyValues.rowChildren.length)
-    //     return { newValues: { numRows } }
+    //     return { setValue: { numRows } }
     //   }
     // }
 
@@ -141,7 +141,7 @@ export default class Tabular extends BlockComponent {
     //         numColumns = Math.max(numColumns, row.length);
     //       }
     //     }
-    //     return { newValues: { numColumns } }
+    //     return { setValue: { numColumns } }
     //   }
     // }
 
@@ -172,10 +172,10 @@ export default class Tabular extends BlockComponent {
     //       } else {
     //         height = 130;  // value if numRows = 4
     //       }
-    //       return { newValues: { height: { size: height, isAbsolute: true } } }
+    //       return { setValue: { height: { size: height, isAbsolute: true } } }
     //     }
 
-    //     return { newValues: { height: dependencyValues.heightAttr.stateValues.componentSize } }
+    //     return { setValue: { height: dependencyValues.heightAttr.stateValues.componentSize } }
 
     //   }
     // }
@@ -360,7 +360,7 @@ export default class Tabular extends BlockComponent {
     //         cells[arrayKey] = null;
     //       }
     //     }
-    //     return { newValues: { cells } }
+    //     return { setValue: { cells } }
     //   }
     // }
 

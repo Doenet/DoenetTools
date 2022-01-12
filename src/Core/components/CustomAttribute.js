@@ -35,7 +35,7 @@ export default class CustomAttribute extends CompositeComponent {
       }),
       definition({ dependencyValues }) {
         let componentNameForAttributes = dependencyValues.parentVariableContainingName;
-        return { newValues: { componentNameForAttributes } }
+        return { setValue: { componentNameForAttributes } }
       }
     }
 
@@ -47,7 +47,7 @@ export default class CustomAttribute extends CompositeComponent {
         }
       }),
       definition({ dependencyValues }) {
-        return { newValues: { attributeName: dependencyValues.attribute } }
+        return { setValue: { attributeName: dependencyValues.attribute } }
       }
     }
 
@@ -63,7 +63,7 @@ export default class CustomAttribute extends CompositeComponent {
         }
       }),
       definition() {
-        return { newValues: { readyToExpandWhenResolved: true } };
+        return { setValue: { readyToExpandWhenResolved: true } };
       },
     };
 

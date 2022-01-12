@@ -28,7 +28,7 @@ export default class BooleanList extends InlineComponent {
     attributes.maximumNumber = {
       createComponentOfType: "number",
       createStateVariable: "maximumNumber",
-      defaultValue: undefined,
+      defaultValue: null,
       public: true,
     };
     return attributes;
@@ -83,7 +83,7 @@ export default class BooleanList extends InlineComponent {
     // so that can't have a list with partially hidden components
     stateVariableDefinitions.overrideChildHide = {
       returnDependencies: () => ({}),
-      definition: () => ({ newValues: { overrideChildHide: true } })
+      definition: () => ({ setValue: { overrideChildHide: true } })
     }
 
 
@@ -140,7 +140,7 @@ export default class BooleanList extends InlineComponent {
         }
 
         return {
-          newValues: { nComponents, childIndexByArrayKey },
+          setValue: { nComponents, childIndexByArrayKey },
           checkForActualChange: { nComponents: true }
         }
       }
@@ -213,7 +213,7 @@ export default class BooleanList extends InlineComponent {
 
         }
 
-        return { newValues: { booleans } }
+        return { setValue: { booleans } }
 
       },
       inverseArrayDefinitionByKey({ desiredStateVariableValues, globalDependencyValues,
@@ -304,7 +304,7 @@ export default class BooleanList extends InlineComponent {
           componentNamesInList = componentNamesInList.slice(0, maxNum)
         }
 
-        return { newValues: { componentNamesInList } }
+        return { setValue: { componentNamesInList } }
 
       }
     }
@@ -375,7 +375,7 @@ export default class BooleanList extends InlineComponent {
         }
 
         return {
-          newValues: { nComponentsToDisplayByChild, nChildrenToRender },
+          setValue: { nComponentsToDisplayByChild, nChildrenToRender },
         }
       }
     }

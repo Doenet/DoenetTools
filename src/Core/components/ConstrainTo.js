@@ -37,7 +37,7 @@ export default class ConstrainTo extends ConstraintComponent {
           nearestPointFunctions.push(child.stateValues.nearestPoint);
         }
 
-        return { newValues: { nearestPointFunctions } };
+        return { setValue: { nearestPointFunctions } };
 
       }
     }
@@ -50,7 +50,7 @@ export default class ConstrainTo extends ConstraintComponent {
         },
       }),
       definition: ({ dependencyValues }) => ({
-        newValues: {
+        setValue: {
           applyConstraint: function ({ variables, scales }) {
 
             let closestDistance2 = Infinity;

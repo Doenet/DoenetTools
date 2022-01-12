@@ -621,7 +621,7 @@ describe('Parameterized Curve Tag Tests', function () {
         <copy target="g" />
       </curve>
       <point x="1" y="0.001" name="P">
-        <constraints scalesFromGraph="_graph1">
+        <constraints baseOnGraph="_graph1">
           <constrainTo><copy target="c" /></constrainTo>
         </constraints>
       </point>

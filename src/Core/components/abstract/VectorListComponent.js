@@ -70,7 +70,7 @@ export default class VectorListComponent extends BaseComponent {
         }
       }),
       definition: ({ dependencyValues }) => ({
-        newValues: { nVectors: dependencyValues.vectorChildren.length },
+        setValue: { nVectors: dependencyValues.vectorChildren.length },
         checkForActualChange: { nVectors: true }
       })
     }
@@ -100,7 +100,7 @@ export default class VectorListComponent extends BaseComponent {
           }
         }
         return {
-          newValues: { nDimensions },
+          setValue: { nDimensions },
           checkForActualChange: { nDimensions: true }
         }
       }
@@ -202,7 +202,7 @@ export default class VectorListComponent extends BaseComponent {
           }
         }
 
-        return { newValues: { vectors } }
+        return { setValue: { vectors } }
 
       },
       inverseArrayDefinitionByKey({ desiredStateVariableValues,

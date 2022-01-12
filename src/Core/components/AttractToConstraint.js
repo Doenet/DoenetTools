@@ -48,7 +48,7 @@ export default class AttractToConstraint extends ConstraintComponent {
         }
       }),
       definition: ({ dependencyValues }) => ({
-        newValues: {
+        setValue: {
           applyConstraint: function ({ variables, scales }) {
 
             let constraintResult;

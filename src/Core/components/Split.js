@@ -87,9 +87,9 @@ export default class Split extends CompositeComponent {
       }),
       definition({ dependencyValues }) {
         if (dependencyValues.child.length > 0) {
-          return { newValues: { originalValue: dependencyValues.child[0].stateValues.value } }
+          return { setValue: { originalValue: dependencyValues.child[0].stateValues.value } }
         } else {
-          return { newValues: { originalValue: null } }
+          return { setValue: { originalValue: null } }
         }
       },
       inverseDefinition({ desiredStateVariableValues, dependencyValues }) {
@@ -130,7 +130,7 @@ export default class Split extends CompositeComponent {
 
         if (dependencyValues.originalValue === null) {
           return {
-            newValues: { splitValues: [] },
+            setValue: { splitValues: [] },
           }
         }
 
@@ -147,7 +147,7 @@ export default class Split extends CompositeComponent {
         }
 
         return {
-          newValues: { splitValues },
+          setValue: { splitValues },
         }
 
       }
@@ -167,7 +167,7 @@ export default class Split extends CompositeComponent {
       // so that the variable is marked fresh
       markStale: () => ({ updateReplacements: true }),
       definition: function () {
-        return { newValues: { readyToExpandWhenResolved: true } };
+        return { setValue: { readyToExpandWhenResolved: true } };
       },
     };
 

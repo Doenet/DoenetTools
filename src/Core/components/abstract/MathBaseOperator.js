@@ -112,7 +112,7 @@ export default class MathOperator extends MathComponent {
           );
         }
 
-        return { newValues: { isNumericOperator } }
+        return { setValue: { isNumericOperator } }
       }
     }
 
@@ -124,22 +124,22 @@ export default class MathOperator extends MathComponent {
 
     stateVariableDefinitions.mathOperator = {
       returnDependencies: () => ({}),
-      definition: () => ({ newValues: { mathOperator: x => me.fromAst('\uff3f') } })
+      definition: () => ({ setValue: { mathOperator: x => me.fromAst('\uff3f') } })
     }
 
     stateVariableDefinitions.numericOperator = {
       returnDependencies: () => ({}),
-      definition: () => ({ newValues: { numericOperator: x => me.fromAst('\uff3f') } })
+      definition: () => ({ setValue: { numericOperator: x => me.fromAst('\uff3f') } })
     }
 
     stateVariableDefinitions.inverseMathOperator = {
       returnDependencies: () => ({}),
-      definition: () => ({ newValues: { inverseMathOperator: null } })
+      definition: () => ({ setValue: { inverseMathOperator: null } })
     }
 
     stateVariableDefinitions.inverseNumericOperator = {
       returnDependencies: () => ({}),
-      definition: () => ({ newValues: { inverseNumericOperator: null } })
+      definition: () => ({ setValue: { inverseNumericOperator: null } })
     }
 
     stateVariableDefinitions.unnormalizedValue = {
@@ -173,7 +173,7 @@ export default class MathOperator extends MathComponent {
       definition: function ({ dependencyValues, componentInfoObjects }) {
         if (dependencyValues.mathNumberChildren.length === 0) {
           return {
-            newValues: { unnormalizedValue: me.fromAst('\uff3f') }
+            setValue: { unnormalizedValue: me.fromAst('\uff3f') }
           }
         } else if (dependencyValues.isNumericOperator) {
           let inputs = [];
@@ -193,7 +193,7 @@ export default class MathOperator extends MathComponent {
           }
 
           return {
-            newValues: {
+            setValue: {
               unnormalizedValue: me.fromAst(dependencyValues.numericOperator(inputs))
             }
           }
@@ -213,7 +213,7 @@ export default class MathOperator extends MathComponent {
           }
 
           return {
-            newValues: {
+            setValue: {
               unnormalizedValue: dependencyValues.mathOperator(inputs)
             }
           }
@@ -345,7 +345,7 @@ export default class MathOperator extends MathComponent {
               dependencyValues.inverseMathOperator
           )
 
-        return { newValues: { canBeModified } }
+        return { setValue: { canBeModified } }
       }
     }
 

@@ -43,7 +43,7 @@ export default class AsList extends InlineComponent {
         }
         let text = textpieces.join(', ');
 
-        return { newValues: { text } };
+        return { setValue: { text } };
       }
     }
 

@@ -502,7 +502,7 @@ describe('Function curve Tag Tests', function () {
         <function name='g' variables='t' domain="(0,5)">(60 t - 106 t^2 + 59*t^3 - 13 t^4 + t^5)4</function>
       </curve>
       <point x="1.5" y="2" name="A">
-        <constraints scalesFromGraph="_graph1">
+        <constraints baseOnGraph="_graph1">
           <constrainTo>$c</constrainTo>
         </constraints>
       </point>
@@ -544,7 +544,7 @@ describe('Function curve Tag Tests', function () {
         <function name='g' variables='t' domain="(-20,100)">sin(t/10)+t/50+2</function>
       </curve>
       <point x="1.5" y="2" name="A">
-        <constraints scalesFromGraph="_graph1">
+        <constraints baseOnGraph="_graph1">
           <constrainTo>$c</constrainTo>
         </constraints>
       </point>
@@ -764,7 +764,7 @@ describe('Function curve Tag Tests', function () {
         <function name='g' variables='t' domain="(0,5)">(60 t - 106 t^2 + 59*t^3 - 13 t^4 + t^5)4</function>
       </curve>
       <point y="1.5" x="2" name="A">
-        <constraints scalesFromGraph="_graph1">
+        <constraints baseOnGraph="_graph1">
           <constrainTo>$c</constrainTo>
         </constraints>
       </point>
@@ -806,7 +806,7 @@ describe('Function curve Tag Tests', function () {
         <function name='g' variables='t' domain="(-20,100)">sin(t/10)+t/50+2</function>
       </curve>
       <point y="1.5" x="2" name="A">
-        <constraints scalesFromGraph="_graph1">
+        <constraints baseOnGraph="_graph1">
           <constrainTo>$c</constrainTo>
         </constraints>
       </point>

@@ -23,7 +23,7 @@ export default class ConstrainToGraph extends ConstraintComponent {
 
     stateVariableDefinitions.independentComponentConstraints = {
       returnDependencies: () => ({}),
-      definition: () => ({ newValues: { independentComponentConstraints: true } })
+      definition: () => ({ setValue: { independentComponentConstraints: true } })
     }
 
 
@@ -37,21 +37,23 @@ export default class ConstrainToGraph extends ConstraintComponent {
 
     stateVariableDefinitions.applyComponentConstraint = {
       returnDependencies: () => ({
-        graphAncestor: {
+        constraintAncestor: {
           dependencyType: "ancestor",
-          componentType: "graph",
-          variableNames: ["xmin", "xmax", "ymin", "ymax"]
+          componentType: "constraints",
+          variableNames: ["graphXmin", "graphXmax", "graphYmin", "graphYmax"]
         },
         buffer: {
           dependencyType: "stateVariable",
           variableName: "buffer"
-        }
+        },
       }),
       definition: ({ dependencyValues }) => ({
-        newValues: {
+        setValue: {
           applyComponentConstraint: function ({ variables, scales }) {
 
-            if (!dependencyValues.graphAncestor) {
+            if (dependencyValues.constraintAncestor === null ||
+              dependencyValues.constraintAncestor.stateValues.graphXmin === null
+            ) {
               return {};
             }
 
@@ -65,8 +67,8 @@ export default class ConstrainToGraph extends ConstraintComponent {
                 return {};
               }
 
-              let xmin = dependencyValues.graphAncestor.stateValues.xmin;
-              let xmax = dependencyValues.graphAncestor.stateValues.xmax;
+              let xmin = dependencyValues.constraintAncestor.stateValues.graphXmin;
+              let xmax = dependencyValues.constraintAncestor.stateValues.graphXmax;
 
               if (!(Number.isFinite(xmin) && Number.isFinite(xmax))) {
                 return {};
@@ -98,8 +100,8 @@ export default class ConstrainToGraph extends ConstraintComponent {
                 return {};
               }
 
-              let ymin = dependencyValues.graphAncestor.stateValues.ymin;
-              let ymax = dependencyValues.graphAncestor.stateValues.ymax;
+              let ymin = dependencyValues.constraintAncestor.stateValues.graphYmin;
+              let ymax = dependencyValues.constraintAncestor.stateValues.graphYmax;
 
               if (!(Number.isFinite(ymin) && Number.isFinite(ymax))) {
                 return {};

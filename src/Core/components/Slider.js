@@ -15,10 +15,6 @@ export default class Slider extends BaseComponent {
 
   static variableForPlainMacro = "value";
 
-  static get stateVariablesShadowedForReference() {
-    return ["value"]
-  };
-
   static createAttributesObject(args) {
     let attributes = super.createAttributesObject(args);
     attributes.type = {
@@ -46,13 +42,12 @@ export default class Slider extends BaseComponent {
     attributes.initialValue = {
       createComponentOfType: "_componentWithSelectableType",
       createStateVariable: "initialValue",
-      defaultValue: undefined,
-      noInverse: true,
+      defaultValue: null,
     }
     attributes.label = {
       createComponentOfType: "text",
       createStateVariable: "label",
-      defaultValue: undefined,
+      defaultValue: null,
       public: true,
       forRenderer: true
     };
@@ -204,7 +199,7 @@ export default class Slider extends BaseComponent {
         }
 
         return {
-          newValues: { items },
+          setValue: { items },
           setComponentType: { items: dependencyValues.type },
         };
       }
@@ -249,7 +244,7 @@ export default class Slider extends BaseComponent {
           }
         }
 
-        return { newValues: { nItems } }
+        return { setValue: { nItems } }
       }
     }
 
@@ -281,7 +276,7 @@ export default class Slider extends BaseComponent {
           firstItem = null;  // text with no children
         }
 
-        return { newValues: { firstItem } }
+        return { setValue: { firstItem } }
       }
     }
 
@@ -321,7 +316,7 @@ export default class Slider extends BaseComponent {
           lastItem = null;   // text with no children
         }
 
-        return { newValues: { lastItem } }
+        return { setValue: { lastItem } }
       }
     }
 
@@ -339,12 +334,13 @@ export default class Slider extends BaseComponent {
         for (let [ind, item] of dependencyValues.items.entries()) {
           valueToIndex[item] = ind;
         }
-        return { newValues: { valueToIndex } }
+        return { setValue: { valueToIndex } }
       }
     }
 
 
     stateVariableDefinitions.preliminaryValue = {
+      hasEssential: true,
       returnDependencies: () => ({
         type: {
           dependencyType: "stateVariable",
@@ -365,7 +361,6 @@ export default class Slider extends BaseComponent {
           return {
             useEssentialOrDefaultValue: {
               preliminaryValue: {
-                variablesToCheck: "value",
                 get defaultValue() {
                   return dependencyValues.initialValue;
                 }
@@ -374,7 +369,7 @@ export default class Slider extends BaseComponent {
           }
         }
 
-        return { newValues: { preliminaryValue: dependencyValues.bindValueTo.stateValues.value } };
+        return { setValue: { preliminaryValue: dependencyValues.bindValueTo.stateValues.value } };
 
       },
       inverseDefinition({ desiredStateVariableValues, dependencyValues }) {
@@ -393,7 +388,7 @@ export default class Slider extends BaseComponent {
         return {
           success: true,
           instructions: [{
-            setStateVariable: "preliminaryValue",
+            setEssentialValue: "preliminaryValue",
             value: desiredStateVariableValues.preliminaryValue
           }]
         }
@@ -441,7 +436,7 @@ export default class Slider extends BaseComponent {
           index = 0;
         }
 
-        return { newValues: { index } }
+        return { setValue: { index } }
 
       },
       inverseDefinition({ desiredStateVariableValues, dependencyValues }) {
@@ -493,7 +488,6 @@ export default class Slider extends BaseComponent {
     stateVariableDefinitions.value = {
       forRenderer: true,
       public: true,
-      essential: true,
       hasVariableComponentType: true,
       returnDependencies: () => ({
         type: {
@@ -527,7 +521,7 @@ export default class Slider extends BaseComponent {
         }
 
         return {
-          newValues: { value },
+          setValue: { value },
           setComponentType: { value: dependencyValues.type },
         }
 
@@ -564,7 +558,7 @@ export default class Slider extends BaseComponent {
         });
 
         return {
-          newValues: {
+          setValue: {
             valueForDisplay: rounded.tree
           }
         }
@@ -609,7 +603,7 @@ export default class Slider extends BaseComponent {
           }
         }
 
-        return { newValues: { markers } }
+        return { setValue: { markers } }
 
       }
     }
@@ -627,7 +621,7 @@ export default class Slider extends BaseComponent {
     //     // }
     //   }),
     //   definition: ({ dependencyValues }) => ({
-    //     newValues: {
+    //     setValue: {
     //       // disabled: !dependencyValues.collaborateGroups.matchGroup(dependencyValues.collaboration)
     //       disabled: false
     //     }

@@ -41,7 +41,7 @@ export default class EquilibriumCurve extends Curve {
       }),
       definition({ dependencyValues }) {
         return {
-          newValues: { dashed: !dependencyValues.stable }
+          setValue: { dashed: !dependencyValues.stable }
         }
       },
       inverseDefinition({ desiredStateVariableValues }) {

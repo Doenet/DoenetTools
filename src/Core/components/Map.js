@@ -58,7 +58,7 @@ export default class Map extends CompositeComponent {
       }),
       definition: function ({ dependencyValues }) {
         return {
-          newValues: {
+          setValue: {
             nSources: dependencyValues.sourcesChildren.length,
             sourcesNames: dependencyValues.sourcesChildren.map(x => x.componentName),
             sourceAliases: dependencyValues.sourcesChildren.map(x => x.stateValues.alias),
@@ -86,7 +86,7 @@ export default class Map extends CompositeComponent {
 
         let sourcesChildNames = dependencyValues.sourcesChildren.map(x => [...x.stateValues.childComponentNames]);
 
-        return { newValues: { nIterates, minNIterates, sourcesChildNames } };
+        return { setValue: { nIterates, minNIterates, sourcesChildNames } };
       }
 
     }
@@ -105,7 +105,7 @@ export default class Map extends CompositeComponent {
         let templateChild = dependencyValues.templateChild[0];
         if (!templateChild) {
           return {
-            newValues: { template: null }
+            setValue: { template: null }
           }
         }
         let childrenOfTemplate = templateChild.stateValues.serializedChildren;
@@ -119,7 +119,7 @@ export default class Map extends CompositeComponent {
           template.attributes = { newNamespace: { primitive: true } }
         }
         return {
-          newValues: {
+          setValue: {
             template
           }
         }
@@ -153,7 +153,7 @@ export default class Map extends CompositeComponent {
           validBehavior = false;
         }
 
-        return { newValues: { validBehavior } };
+        return { setValue: { validBehavior } };
       }
     }
 
@@ -173,7 +173,7 @@ export default class Map extends CompositeComponent {
       definition: function () {
         // even with invalid behavior, still ready to expand
         // (it will just expand with zero replacements)
-        return { newValues: { readyToExpandWhenResolved: true } };
+        return { setValue: { readyToExpandWhenResolved: true } };
       },
     };
 

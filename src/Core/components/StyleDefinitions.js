@@ -55,7 +55,7 @@ export class StyleDefinition extends BaseComponent {
           }
         }
 
-        return { newValues: { styleDefinition } }
+        return { setValue: { styleDefinition } }
       }
     }
 
@@ -107,7 +107,7 @@ export class StyleDefinitions extends BaseComponent {
           Object.assign(styleDef, child.stateValues.styleDefinition)
         }
 
-        return { newValues: { value } }
+        return { setValue: { value } }
       }
     }
 

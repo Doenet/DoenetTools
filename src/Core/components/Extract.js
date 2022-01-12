@@ -11,8 +11,6 @@ export default class Extract extends CompositeComponent {
 
   static acceptAnyAttribute = true;
 
-  static get stateVariablesShadowedForReference() { return ["propName"] };
-
   static stateVariableToEvaluateAfterReplacements = "needsReplacementsUpdatedWhenStale";
 
   static createAttributesObject(args) {
@@ -69,6 +67,7 @@ export default class Extract extends CompositeComponent {
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
     stateVariableDefinitions.propName = {
+      shadowVariable: true,
       returnDependencies: () => ({
         propName: {
           dependencyType: "attributePrimitive",
@@ -76,7 +75,7 @@ export default class Extract extends CompositeComponent {
         },
       }),
       definition: function ({ dependencyValues }) {
-        return { newValues: { propName: dependencyValues.propName } }
+        return { setValue: { propName: dependencyValues.propName } }
       }
     }
 
@@ -97,7 +96,7 @@ export default class Extract extends CompositeComponent {
         }
       }),
       definition: ({ dependencyValues }) => ({
-        newValues: {
+        setValue: {
           sourceComponents: dependencyValues.children
         }
       })
@@ -116,7 +115,7 @@ export default class Extract extends CompositeComponent {
         },
       }),
       definition() {
-        return { newValues: { readyToExpandWhenResolved: true } };
+        return { setValue: { readyToExpandWhenResolved: true } };
       },
     };
 
@@ -133,7 +132,7 @@ export default class Extract extends CompositeComponent {
       // the whole point of this state variable is to return updateReplacements
       // on mark stale
       markStale: () => ({ updateReplacements: true }),
-      definition: () => ({ newValues: { needsReplacementsUpdatedWhenStale: true } })
+      definition: () => ({ setValue: { needsReplacementsUpdatedWhenStale: true } })
     }
 
 

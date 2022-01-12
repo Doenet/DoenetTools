@@ -3048,10 +3048,10 @@ describe('Select Tag Tests', function () {
     // to wait for page to load
     cy.get('#\\/_p1').should('have.text', "Selects and hide");
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      let c = components['/c'].stateValues.value;
-      let d = components['/d'].stateValues.value;
+      let c = await components['/c'].stateValues.value;
+      let d = await components['/d'].stateValues.value;
       expect(["a", "b", "c", "d", "e"].includes(c)).eq(true);
       expect(["a", "b", "c", "d", "e"].includes(d)).eq(true);
 
@@ -3098,13 +3098,13 @@ describe('Select Tag Tests', function () {
     // to wait for page to load
     cy.get('#\\/_p1').should('have.text', "Selects and hide");
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      let a = components['/a'].stateValues.value;
-      let b = components['/b'].stateValues.value;
-      let c = components['/c'].stateValues.value;
-      let d = components['/d'].stateValues.value;
-      let e = components['/e'].stateValues.value;
+      let a = await components['/a'].stateValues.value;
+      let b = await components['/b'].stateValues.value;
+      let c = await components['/c'].stateValues.value;
+      let d = await components['/d'].stateValues.value;
+      let e = await components['/e'].stateValues.value;
       expect(["a", "d"].includes(a)).eq(true);
       expect(["b", "e"].includes(b)).eq(true);
       expect(["c", "f"].includes(c)).eq(true);
@@ -3144,10 +3144,10 @@ describe('Select Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      let c = components['/c'].stateValues.value;
-      let d = components['/d'].stateValues.value;
+      let c = await components['/c'].stateValues.value;
+      let d = await components['/d'].stateValues.value;
       expect(["a", "b", "c", "d", "e"].includes(c)).eq(true);
       expect(["a", "b", "c", "d", "e"].includes(d)).eq(true);
 

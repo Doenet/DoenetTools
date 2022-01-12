@@ -417,7 +417,7 @@ export function mathStateVariableFromNumberStateVariable({
       },
     }),
     definition: function ({ dependencyValues }) {
-      return { newValues: { [mathVariableName]: me.fromAst(dependencyValues.number) } };
+      return { setValue: { [mathVariableName]: me.fromAst(dependencyValues.number) } };
     },
     inverseDefinition: function ({ desiredStateVariableValues }) {
 

@@ -36,13 +36,13 @@ export class FeedbackDefinition extends BaseComponent {
         if (dependencyValues.codeAttr !== null && dependencyValues.textAttr !== null) {
           let code = dependencyValues.codeAttr.stateValues.value.toLowerCase();
           return {
-            newValues: {
+            setValue: {
               feedbackDefinition: { [code]: dependencyValues.textAttr.stateValues.value }
             }
           }
         } else {
           return {
-            newValues: { feedbackDefinition: null }
+            setValue: { feedbackDefinition: null }
           }
         }
       }
@@ -92,7 +92,7 @@ export class FeedbackDefinitions extends BaseComponent {
           }
         }
 
-        return { newValues: { value } }
+        return { setValue: { value } }
       }
     }
 

@@ -87,7 +87,7 @@ export class DependencyHandler {
     let stateVarObj = component.state[stateVariable];
     let dependencies;
 
-    if (stateVarObj.stateVariablesDeterminingDependencies || stateVarObj.determineIfShadowData) {
+    if (stateVarObj.stateVariablesDeterminingDependencies) {
       dependencies = {};
 
       if (stateVarObj.stateVariablesDeterminingDependencies) {
@@ -95,23 +95,6 @@ export class DependencyHandler {
           dependencyType: "determineDependencies",
           variableNames: stateVarObj.stateVariablesDeterminingDependencies,
         }
-      }
-      if (stateVarObj.determineIfShadowData) {
-        dependencies.__determine_dependencies_shadow_data = {
-          dependencyType: "determineDependencies",
-          componentName: stateVarObj.determineIfShadowData.targetComponent.componentName,
-          variableNames: allStateVariablesAffected,
-        }
-        if (stateVarObj.determineIfShadowData.arraySizeStateVariableToResolve) {
-          // add array size state variable
-          // just there to make sure it is resolved to determine
-          // if should shadow
-          dependencies.__determine_dependencies_shadow_data_array_size = {
-            dependencyType: "determineDependencies",
-            variableNames: [stateVarObj.determineIfShadowData.arraySizeStateVariableToResolve],
-          }
-        }
-
       }
     } else {
       // Note: arrays now always have a state variable determining dependencies
@@ -590,149 +573,6 @@ export class DependencyHandler {
     let allStateVariablesAffected = [stateVariable];
     if (stateVarObj.additionalStateVariablesDefined) {
       allStateVariablesAffected.push(...stateVarObj.additionalStateVariablesDefined)
-    }
-
-    // first check if we should shadow state variable
-    if (stateVarObj.determineIfShadowData) {
-
-      if (stateVarObj.isArrayEntry) {
-        // addressing determineIfShadowData must be done at the array level,
-        // not the array entry level
-        let arrayStateVariable = stateVarObj.arrayStateVariable;
-        let arrayStateVarObj = component.state[arrayStateVariable]
-
-        if (arrayStateVarObj.determineIfShadowData) {
-          let result = await this.updateDependencies({
-            componentName,
-            stateVariable: arrayStateVariable,
-            dependency: "__determine_dependencies_shadow_data"
-          });
-          if (!result.success) {
-            return { success: false };
-          }
-        }
-
-        delete stateVarObj.determineIfShadowData;
-
-        // TODO: if array entry is shadowed,
-        // do we need to delete a __determine_dependencies dependency
-        // if it exists?
-
-        // try again
-        return await this.updateDependencies({
-          componentName,
-          stateVariable,
-          dependency
-        });
-      }
-
-      let determineIfShadowData = stateVarObj.determineIfShadowData;
-      delete stateVarObj.determineIfShadowData;
-
-      let stateVariablesToShadow = [];
-      let stateVariablesNotShadowed = [];
-
-      let determinedAllShadows = true;
-
-      for (let varName of allStateVariablesAffected) {
-        let stateObj = determineIfShadowData.targetComponent.state[varName];
-        let resolved = stateObj.isResolved;
-
-        if (!resolved) {
-          let result = await this.resolveItem({
-            componentName: determineIfShadowData.targetComponent.componentName,
-            type: "stateVariable",
-            stateVariable: varName,
-          });
-
-          resolved = result.success;
-        }
-
-
-        if (resolved) {
-          // since varName of targetComponent is now resolved
-          // can evaluate it and then determine if it is essential
-
-          await stateObj.value;
-
-          if (stateObj.essential || stateObj.alwaysShadow || stateObj.isShadow
-            || (stateObj.isArray
-              && stateObj.getAllArrayKeys(await stateObj.arraySize).length > 0
-              && stateObj.getAllArrayKeys(await stateObj.arraySize).some(x => stateObj.essentialByArrayKey[x])
-            )
-          ) {
-            stateVariablesToShadow.push(varName);
-          } else {
-            stateVariablesNotShadowed.push(varName)
-          }
-
-        } else {
-
-          determinedAllShadows = false;
-
-          for (let vName2 of allStateVariablesAffected) {
-            await this.addBlocker({
-              blockerComponentName: determineIfShadowData.targetComponent.componentName,
-              blockerType: "stateVariable",
-              blockerStateVariable: varName,
-              componentNameBlocked: componentName,
-              typeBlocked: "determineDependencies",
-              stateVariableBlocked: vName2,
-              dependencyBlocked: dependency,
-            })
-          }
-        }
-
-      }
-
-      if (!determinedAllShadows) {
-        return { success: false }
-      }
-
-      let updatedAllDependencies = true;
-
-      if (stateVariablesToShadow.length > 0) {
-        this.core.modifyStateDefsToBeShadows({
-          stateVariablesToShadow,
-          stateVariableDefinitions: component.state,
-          foundReadyToExpandWhenResolved: determineIfShadowData.foundReadyToExpandWhenResolved,
-          targetComponent: determineIfShadowData.targetComponent
-        });
-
-        // call update dependencies separately for each shadowed variable
-        // (they were removed from additionalStateVariablesDefined
-        // and now have separate definitions)
-        for (let varName of stateVariablesToShadow) {
-          let result = await this.updateDependencies({
-            componentName,
-            stateVariable: varName,
-            dependency
-          });
-
-          if (!result.success) {
-            updatedAllDependencies = false;
-          }
-        }
-
-      }
-
-
-      // call update dependencies for one representative non-shadowed variable
-      // (as they are still all defined together)
-      if (stateVariablesNotShadowed.length > 0) {
-        let result = await this.updateDependencies({
-          componentName,
-          stateVariable: stateVariablesNotShadowed[0],
-          dependency
-        });
-
-        if (!result.success) {
-          updatedAllDependencies = false;
-        }
-      }
-
-      return { success: updatedAllDependencies };
-
     }
 
     let determineDeps = this.downstreamDependencies[componentName][stateVariable].__determine_dependencies;
@@ -4463,12 +4303,12 @@ class ChildDependency extends Dependency {
     let resultValueWithPrimitives = [];
     let resultInd = 0;
 
-    for (let nameOrPrimitive of this.downstreamPrimitives) {
-      if (nameOrPrimitive === null) {
+    for (let primitiveOrNull of this.downstreamPrimitives) {
+      if (primitiveOrNull === null) {
         resultValueWithPrimitives.push(result.value[resultInd]);
         resultInd++;
       } else {
-        resultValueWithPrimitives.push(nameOrPrimitive)
+        resultValueWithPrimitives.push(primitiveOrNull)
       }
     }
 
@@ -4480,6 +4320,7 @@ class ChildDependency extends Dependency {
       this.downstreamPrimitives.some((v, i) => v !== this.previousDownstreamPrimitives[i])
     ) {
       result.changes.componentIdentitiesChanged = true;
+      this.previousDownstreamPrimitives = [...this.downstreamPrimitives];
     }
 
     if (!this.doNotProxy) {
@@ -5732,12 +5573,12 @@ class ReplacementDependency extends Dependency {
     let resultValueWithPrimitives = [];
     let resultInd = 0;
 
-    for (let nameOrPrimitive of this.replacementPrimitives) {
-      if (nameOrPrimitive === null) {
+    for (let primitiveOrNull of this.replacementPrimitives) {
+      if (primitiveOrNull === null) {
         resultValueWithPrimitives.push(result.value[resultInd]);
         resultInd++;
       } else {
-        resultValueWithPrimitives.push(nameOrPrimitive)
+        resultValueWithPrimitives.push(primitiveOrNull)
       }
     }
 
@@ -5747,6 +5588,7 @@ class ReplacementDependency extends Dependency {
       this.replacementPrimitives.some((v, i) => v !== this.previousReplacementPrimitives[i])
     ) {
       result.changes.componentIdentitiesChanged = true;
+      this.previousReplacementPrimitives = [...this.replacementPrimitives];
     }
 
     if (!this.doNotProxy) {

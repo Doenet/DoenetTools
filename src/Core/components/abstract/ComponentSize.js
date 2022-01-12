@@ -118,6 +118,7 @@ export class ComponentSize extends InlineComponent {
     stateVariableDefinitions.componentSize = {
       public: true,
       componentType: "_componentSize",
+      hasEssential: true,
       returnDependencies: () => ({
         componentSizeChild: {
           dependencyType: "child",
@@ -152,7 +153,6 @@ export class ComponentSize extends InlineComponent {
               return {
                 useEssentialOrDefaultValue: {
                   componentSize: {
-                    variablesToCheck: "componentSize",
                     defaultValue: {
                       size: 100,
                       isAbsolute: defaultIsAbsolute
@@ -164,7 +164,7 @@ export class ComponentSize extends InlineComponent {
               //only componentSize child
 
               return {
-                newValues: {
+                setValue: {
                   componentSize: dependencyValues.componentSizeChild[0].stateValues.componentSize
                 }
               }
@@ -173,7 +173,7 @@ export class ComponentSize extends InlineComponent {
             //only number child
 
             return {
-              newValues: {
+              setValue: {
                 componentSize: {
                   size: dependencyValues.numberChild[0].stateValues.value,
                   isAbsolute: true,
@@ -206,7 +206,7 @@ export class ComponentSize extends InlineComponent {
             let result = dependencyValues.stringChild[0].trim().match(/^(-?[\d.]+)\s*(.*)$/);
             if (result === null) {
               // console.warn(componentType + " must begin with a number.");
-              return { newValues: { componentSize: null } };
+              return { setValue: { componentSize: null } };
             }
             originalSize = result[1];
             originalUnit = result[2].trim();
@@ -215,7 +215,7 @@ export class ComponentSize extends InlineComponent {
           originalSize = Number(originalSize);
           if (!Number.isFinite(originalSize)) {
             // console.warn(componentType + " must have a number");
-            return { newValues: { componentSize: null } };
+            return { setValue: { componentSize: null } };
           }
 
           let isAbsolute = !(originalUnit === '%' || originalUnit === 'em');
@@ -233,7 +233,7 @@ export class ComponentSize extends InlineComponent {
           // console.log(`value: ${value}, isAbsolute: ${isAbsolute}`);
 
           return {
-            newValues: {
+            setValue: {
               componentSize: {
                 size,
                 isAbsolute
@@ -252,7 +252,7 @@ export class ComponentSize extends InlineComponent {
               return {
                 success: true,
                 instructions: [{
-                  setStateVariable: "componentSize",
+                  setEssentialValue: "componentSize",
                   value: desiredStateVariableValues.componentSize
                 }]
               }
@@ -367,7 +367,7 @@ export class ComponentSize extends InlineComponent {
           number = dependencyValues.componentSize.size;
         }
 
-        return { newValues: { number } }
+        return { setValue: { number } }
       },
       inverseDefinition({ desiredStateVariableValues, dependencyValues }) {
         if (!dependencyValues.componentSize) {
@@ -410,7 +410,7 @@ export class ComponentSize extends InlineComponent {
           isAbsolute = dependencyValues.componentSize.isAbsolute;
         }
 
-        return { newValues: { isAbsolute } }
+        return { setValue: { isAbsolute } }
       },
     }
 
@@ -435,7 +435,7 @@ export class ComponentSize extends InlineComponent {
         }
 
         return {
-          newValues: { text }
+          setValue: { text }
         }
       }
     }
@@ -553,7 +553,7 @@ export class ComponentSizeList extends BaseComponent {
     // so that can't have a list with partially hidden components
     stateVariableDefinitions.overrideChildHide = {
       returnDependencies: () => ({}),
-      definition: () => ({ newValues: { overrideChildHide: true } })
+      definition: () => ({ setValue: { overrideChildHide: true } })
     }
 
     stateVariableDefinitions.nComponents = {
@@ -599,7 +599,7 @@ export class ComponentSizeList extends BaseComponent {
         }
 
         return {
-          newValues: { nComponents, childIndexByArrayKey },
+          setValue: { nComponents, childIndexByArrayKey },
           checkForActualChange: { nComponents: true }
         }
       }
@@ -674,7 +674,7 @@ export class ComponentSizeList extends BaseComponent {
 
         }
 
-        return { newValues: { componentSizes } }
+        return { setValue: { componentSizes } }
 
       },
       inverseArrayDefinitionByKey({ desiredStateVariableValues, globalDependencyValues,
