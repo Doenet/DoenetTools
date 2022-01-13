@@ -31,7 +31,27 @@ if (SVs.immediateValue !== currentValue.current) {
 }
 
 let viewer = null;
+let editorWidth = SVs.width;
+let componentWidth = SVs.width;
+let editorStyle = {
+  width: sizeToCSS(editorWidth),
+  minHeight: sizeToCSS(SVs.minHeight),
+  maxHeight: sizeToCSS(SVs.maxHeight),
+  padding: "2px",
+  border: "1px solid black",
+  overflowY: "scroll"
+};
+
 if (SVs.showResults){
+  editorWidth = {size: 300, isAbsolute: true};
+  editorStyle = {
+    width: sizeToCSS(editorWidth),
+    minHeight: sizeToCSS(SVs.minHeight),
+    maxHeight: sizeToCSS(SVs.maxHeight),
+    padding: "0px",
+    overflowY: "scroll",
+    overflowX: "hidden"
+  };
   viewer = <div>
   {children}
 </div>
@@ -42,14 +62,7 @@ let editor = <div
             key={editorKey}
             id={editorKey}
 
-            style={{
-              width: sizeToCSS(SVs.width),
-              minHeight: sizeToCSS(SVs.minHeight),
-              maxHeight: sizeToCSS(SVs.maxHeight),
-              padding: "0px",
-              border: "1px solid black",
-              overflowY: "scroll"
-            }}>
+            style={editorStyle}>
   <CodeMirror
   // key = {codemirrorKey}
   editorRef = {editorRef}
@@ -82,12 +95,20 @@ let editor = <div
 />
 </div>
 
+console.log("sizeToCSS(editorWidth)",sizeToCSS(editorWidth),editorWidth)
 
-  return <>
-  <a name={name} />
-  <div className="codeEditorSurroundingBox" id={name}>
-    {editor}
-  </div>
-    {viewer}
-</>
+ return <><a name={name} />
+ <div style={{
+  padding: "0px",
+  border: "1px solid black",
+  width: sizeToCSS(componentWidth),
+  display: 'flex'
+ }}>
+   <div style={{
+  width: sizeToCSS(editorWidth),
+  padding: "0px"}}>{editor}</div>
+   {viewer}
+ </div>
+ </>
+
 }

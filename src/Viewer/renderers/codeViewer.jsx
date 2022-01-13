@@ -10,16 +10,29 @@ export default function CodeViewer(props){
   if (SVs.hidden) {
     return null;
   }
+  let viewerMaxHeight = {...SVs.maxHeight};
+  viewerMaxHeight.size = viewerMaxHeight.size - 30;
 
+  let viewerWidth = {...SVs.width};
+  viewerWidth.size = viewerWidth.size - 4;
+  
+ 
   let contentPanel = <div style={{
     width: sizeToCSS(SVs.width),
     minHeight: sizeToCSS(SVs.minHeight),
     maxHeight: sizeToCSS(SVs.maxHeight),
-    padding: "0px",
-    border: "1px solid black",
-    overflowY: "scroll"
-  }}><div><button onClick={actions.updateComponents}>update</button></div>
-    {children}
+    padding: "2px",
+    // border: "1px solid black",
+    // overflowY: "scroll"
+  }}><div style={{
+height:"28px",
+  }}><button onClick={actions.updateComponents}>update</button></div>
+    <div style={{
+      overflowY: "scroll",
+      width: sizeToCSS(viewerWidth),
+    minHeight: sizeToCSS(SVs.minHeight),
+    maxHeight: sizeToCSS(viewerMaxHeight),
+      }}>{children}</div>
   </div>
 
   return <>
