@@ -60,8 +60,8 @@ export default class RegionHalfPlane extends GraphicalComponent {
 
 
         return {
-          newValues: {
-            nearestPoint: function (variables) {
+          setValue: {
+            nearestPoint: function ({ variables, scales }) {
 
               if (!Number.isFinite(value)) {
                 return {};

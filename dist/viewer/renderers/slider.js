@@ -280,7 +280,7 @@ function nearestValue(refval, points, SVs) {
   return [val, index];
 }
 export default function Slider(props) {
-  let [name, SVs, actions] = useDoenetRender(props);
+  let {name, SVs, actions} = useDoenetRender(props);
   const containerRef = useRef(null);
   const [thumbXPos, setThumbXPos] = useState(0);
   const [thumbValue, setThumbValue] = useState(SVs.firstItem);

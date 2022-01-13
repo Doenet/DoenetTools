@@ -35,7 +35,7 @@ export function returnGroupIntoComponentTypeSeparatedBySpaces({ componentType, f
         }
       } else {
         // forceComponentType is false so add any single non-string directly
-        if(pieces.length === 1 && pieces[0].componentType !== "string") {
+        if(pieces.length === 1 && typeof pieces[0] !== "string") {
           newChildren.push(pieces[0]);
           addedSingleMatch = true;
         }
@@ -53,30 +53,24 @@ export function returnGroupIntoComponentTypeSeparatedBySpaces({ componentType, f
     }
 
     for (let child of matchedChildren) {
-      if (child.componentType !== "string") {
+      if (typeof child !== "string") {
         pieces.push(child);
       } else {
 
-        let stringPieces = child.state.value.split(/\s+/);
+        let stringPieces = child.split(/\s+/);
         let s0 = stringPieces[0];
 
         if (s0 === '') {
           createNewChild();
         } else {
-          pieces.push({
-            componentType: "string",
-            state: { value: s0 }
-          })
+          pieces.push(s0)
         }
 
         for (let s of stringPieces.slice(1)) {
           // if have more than one piece, must have had a space in between pieces
           createNewChild();
           if (s !== "") {
-            pieces.push({
-              componentType: "string",
-              state: { value: s }
-            })
+            pieces.push(s)
           }
 
         }
@@ -100,14 +94,14 @@ export function returnBreakStringsIntoComponentTypeBySpaces({ componentType }) {
     // break any string by white space and wrap pieces with componentType
 
     let newChildren = matchedChildren.reduce(function (a, c) {
-      if (c.componentType === "string") {
+      if (typeof c === "string") {
         return [
           ...a,
-          ...c.state.value.split(/\s+/)
+          ...c.split(/\s+/)
             .filter(s => s)
             .map(s => ({
               componentType,
-              children: [{ componentType: "string", state: { value: s } }]
+              children: [s]
             }))
         ]
       } else {

@@ -58,7 +58,7 @@ export default class Sources extends BaseComponent {
         }
       }),
       definition({ dependencyValues }) {
-        return { newValues: { alias: dependencyValues.alias } }
+        return { setValue: { alias: dependencyValues.alias } }
       }
     }
 
@@ -70,7 +70,7 @@ export default class Sources extends BaseComponent {
         }
       }),
       definition({ dependencyValues }) {
-        return { newValues: { indexAlias: dependencyValues.indexAlias } }
+        return { setValue: { indexAlias: dependencyValues.indexAlias } }
       }
     }
 
@@ -87,7 +87,7 @@ export default class Sources extends BaseComponent {
         let numberOfChildren = dependencyValues.children.length;
         let childComponentNames = dependencyValues.children.map(x => x.componentName);
         return {
-          newValues: {
+          setValue: {
             numberOfChildren,
             childComponentNames,
             childIdentities: dependencyValues.children,

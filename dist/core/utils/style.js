@@ -88,11 +88,12 @@ export function returnStyleDefinitionStateVariables() {
     returnDependencies: () => ({
       setupChildren: {
         dependencyType: "child",
-        childGroups: ["setups"]
+        childGroups: ["setups"],
+        proceedIfAllChildrenNotMatched: true,
       }
     }),
     definition({ dependencyValues }) {
-      return { newValues: { setupChildren: dependencyValues.setupChildren } }
+      return { setValue: { setupChildren: dependencyValues.setupChildren } }
     }
   }
 
@@ -100,18 +101,14 @@ export function returnStyleDefinitionStateVariables() {
     stateVariablesDeterminingDependencies: ["setupChildren"],
     returnDependencies({ stateValues }) {
       let dependencies = {
-        styleDefinitionsChildren: {
-          dependencyType: "child",
-          childGroups: ["styleDefinitions"],
-          variableNames: ["value"]
-        },
         ancestorWithStyle: {
           dependencyType: "ancestor",
           variableNames: ["styleDefinitions"]
         },
-        styleDefinitionsAndSetupChildren: {
+        setupChildren: {
           dependencyType: "child",
-          childGroups: ["styleDefinitions", "setups"]
+          childGroups: ["setups"],
+          proceedIfAllChildrenNotMatched: true,
         }
       }
 
@@ -146,16 +143,9 @@ export function returnStyleDefinitionStateVariables() {
       }
 
 
-      let styleDefChildNum = 0;
-
       let styleDefinitionChildren = [];
-      for (let child of dependencyValues.styleDefinitionsAndSetupChildren) {
-        if (child.componentType === "setup") {
-          styleDefinitionChildren.push(...dependencyValues[`styleDefinitionsOf${child.componentName}`]);
-        } else {
-          styleDefinitionChildren.push(dependencyValues.styleDefinitionsChildren[styleDefChildNum]);
-          styleDefChildNum++;
-        }
+      for (let child of dependencyValues.setupChildren) {
+        styleDefinitionChildren.push(...dependencyValues[`styleDefinitionsOf${child.componentName}`]);
       }
 
 
@@ -171,7 +161,7 @@ export function returnStyleDefinitionStateVariables() {
         }
       }
 
-      return { newValues: { styleDefinitions } };
+      return { setValue: { styleDefinitions } };
 
     }
   }
@@ -208,7 +198,7 @@ export function returnSelectedStyleStateVariableDefinition() {
         if (selectedStyle === undefined) {
           selectedStyle = defaultStyle;
         }
-        return { newValues: { selectedStyle } };
+        return { setValue: { selectedStyle } };
       }
     }
   }

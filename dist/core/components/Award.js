@@ -21,21 +21,21 @@ export default class Award extends BaseComponent {
       createStateVariable: "matchPartial",
       defaultValue: false,
       public: true,
-      propagateToDescendants: true,
+      fallBackToParentStateVariable: "matchPartial",
     };
     attributes.symbolicEquality = {
       createComponentOfType: "boolean",
       createStateVariable: "symbolicEquality",
       defaultValue: false,
       public: true,
-      propagateToDescendants: true,
+      fallBackToParentStateVariable: "symbolicEquality",
     };
     attributes.expandOnCompare = {
       createComponentOfType: "boolean",
       createStateVariable: "expandOnCompare",
       defaultValue: false,
       public: true,
-      propagateToDescendants: true,
+      fallBackToParentStateVariable: "expandOnCompare",
     };
     attributes.simplifyOnCompare = {
       createComponentOfType: "text",
@@ -45,70 +45,68 @@ export default class Award extends BaseComponent {
       valueTransformations: { "": "full", "true": "full" },
       validValues: ["none", "full", "numbers", "numberspreserveorder"],
       public: true,
-      propagateToDescendants: true,
+      fallBackToParentStateVariable: "simplifyOnCompare",
     };
     attributes.unorderedCompare = {
       createComponentOfType: "boolean",
       createStateVariable: "unorderedCompare",
       defaultValue: false,
       public: true,
-      propagateToDescendants: true,
+      fallBackToParentStateVariable: "unorderedCompare",
     };
     attributes.matchByExactPositions = {
       createComponentOfType: "boolean",
       createStateVariable: "matchByExactPositions",
       defaultValue: false,
       public: true,
-      propagateToDescendants: true,
+      fallBackToParentStateVariable: "matchByExactPositions",
     };
     attributes.allowedErrorInNumbers = {
       createComponentOfType: "number",
       createStateVariable: "allowedErrorInNumbers",
       defaultValue: 0,
       public: true,
-      propagateToDescendants: true,
+      fallBackToParentStateVariable: "allowedErrorInNumbers",
     };
     attributes.includeErrorInNumberExponents = {
       createComponentOfType: "boolean",
       createStateVariable: "includeErrorInNumberExponents",
       defaultValue: false,
       public: true,
-      propagateToDescendants: true,
+      fallBackToParentStateVariable: "includeErrorInNumberExponents",
     };
     attributes.allowedErrorIsAbsolute = {
       createComponentOfType: "boolean",
       createStateVariable: "allowedErrorIsAbsolute",
       defaultValue: false,
       public: true,
-      propagateToDescendants: true,
+      fallBackToParentStateVariable: "allowedErrorIsAbsolute",
     };
     attributes.nSignErrorsMatched = {
       createComponentOfType: "number",
       createStateVariable: "nSignErrorsMatched",
       defaultValue: 0,
       public: true,
-      propagateToDescendants: true,
+      fallBackToParentStateVariable: "nSignErrorsMatched",
     };
     attributes.nPeriodicSetMatchesRequired = {
       createComponentOfType: "integer",
       createStateVariable: "nPeriodicSetMatchesRequired",
       defaultValue: 3,
       public: true,
-      propagateToDescendants: true,
+      fallBackToParentStateVariable: "nPeriodicSetMatchesRequired",
     };
     attributes.feedbackCodes = {
       createComponentOfType: "textList",
       createStateVariable: "feedbackCodes",
       defaultValue: [],
       public: true,
-      propagateToDescendants: true,
     };
     attributes.feedbackText = {
       createComponentOfType: "text",
       createStateVariable: "feedbackText",
       defaultValue: null,
       public: true,
-      propagateToDescendants: true,
     };
     attributes.targetsAreResponses = {
       createPrimitiveOfType: "string"
@@ -127,7 +125,7 @@ export default class Award extends BaseComponent {
       // wrap with award and type
 
       if (!matchedChildren.every(child =>
-        child.componentType === "string" ||
+        typeof child === "string" ||
         child.doenetAttributes && child.doenetAttributes.createdFromMacro
       )) {
         return { success: false }
@@ -223,7 +221,7 @@ export default class Award extends BaseComponent {
           parsedExpression = me.fromAst(["=", "comp1", "comp2"]);
         }
 
-        return { newValues: { parsedExpression, requireInputInAnswer } };
+        return { setValue: { parsedExpression, requireInputInAnswer } };
       }
     };
 
@@ -337,7 +335,7 @@ export default class Award extends BaseComponent {
         } else {
           if (!dependencyValues.answerInput || !dependencyValues.parsedExpression) {
             return {
-              newValues: {
+              setValue: {
                 creditAchieved: 0,
                 fractionSatisfied: 0,
               }
@@ -357,7 +355,7 @@ export default class Award extends BaseComponent {
           creditAchieved = Math.max(0, Math.min(1, dependencyValues.credit)) * fractionSatisfied;
         }
         return {
-          newValues: {
+          setValue: {
             fractionSatisfied, creditAchieved,
           }
         }
@@ -369,12 +367,11 @@ export default class Award extends BaseComponent {
       public: true,
       componentType: "boolean",
       defaultValue: false,
+      hasEssential: true,
       returnDependencies: () => ({}),
       definition: () => ({
         useEssentialOrDefaultValue: {
-          awarded: {
-            variablesToCheck: "awarded",
-          }
+          awarded: true
         }
       }),
       inverseDefinition: function ({ desiredStateVariableValues, initialChange }) {
@@ -385,7 +382,7 @@ export default class Award extends BaseComponent {
         return {
           success: true,
           instructions: [{
-            setStateVariable: "awarded",
+            setEssentialValue: "awarded",
             value: desiredStateVariableValues.awarded
           }]
         };
@@ -404,9 +401,9 @@ export default class Award extends BaseComponent {
           dependencyType: "stateVariable",
           variableName: "feedbackCodes",
         },
-        feedbackDefinitions: {
-          dependencyType: "parentStateVariable",
-          variableName: "feedbackDefinitions"
+        feedbackDefinitionAncestor: {
+          dependencyType: "ancestor",
+          variableNames: ["feedbackDefinitions"]
         },
         awarded: {
           dependencyType: "stateVariable",
@@ -416,18 +413,18 @@ export default class Award extends BaseComponent {
       definition: function ({ dependencyValues }) {
 
         if (!dependencyValues.awarded) {
-          return { newValues: { allFeedbacks: [] } }
+          return { setValue: { allFeedbacks: [] } }
         }
 
         let allFeedbacks = [];
 
+        let feedbackDefinitions = dependencyValues.feedbackDefinitionAncestor.stateValues.feedbackDefinitions;
+
         for (let feedbackCode of dependencyValues.feedbackCodes) {
           let code = feedbackCode.toLowerCase();
-          for (let feedbackDefinition of dependencyValues.feedbackDefinitions) {
-            if (code === feedbackDefinition.feedbackCode) {
-              allFeedbacks.push(feedbackDefinition.feedbackText);
-              break;  // just take first match
-            }
+          let feedbackText = feedbackDefinitions[code];
+          if (feedbackText) {
+            allFeedbacks.push(feedbackText);
           }
         }
 
@@ -435,7 +432,7 @@ export default class Award extends BaseComponent {
           allFeedbacks.push(dependencyValues.feedbackText);
         }
 
-        return { newValues: { allFeedbacks } }
+        return { setValue: { allFeedbacks } }
 
       }
     };
@@ -451,7 +448,7 @@ export default class Award extends BaseComponent {
       }),
       definition({ dependencyValues }) {
         return {
-          newValues: { numberFeedbacks: dependencyValues.allFeedbacks.length },
+          setValue: { numberFeedbacks: dependencyValues.allFeedbacks.length },
           checkForActualChange: { numberFeedbacks: true }
         }
       }
@@ -492,7 +489,7 @@ export default class Award extends BaseComponent {
           feedbacks[arrayKey] = globalDependencyValues.allFeedbacks[arrayKey];
         }
 
-        return { newValues: { feedbacks } }
+        return { setValue: { feedbacks } }
       }
 
     }

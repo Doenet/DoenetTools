@@ -28,21 +28,21 @@ export default class TextInput extends DoenetRenderer {
       }
     }
   }
-  handleKeyPress(e) {
+  async handleKeyPress(e) {
     if (e.key === "Enter") {
       this.valueToRevertTo = this.doenetSvData.value;
       if (this.doenetSvData.value !== this.doenetSvData.immediateValue) {
-        this.actions.updateValue();
+        await this.actions.updateValue();
       }
       if (this.doenetSvData.includeCheckWork && this.validationState === "unvalidated") {
-        this.actions.submitAnswer();
+        await this.actions.submitAnswer();
       }
       this.forceUpdate();
     }
   }
-  handleKeyDown(e) {
+  async handleKeyDown(e) {
     if (e.key === "Escape") {
-      this.actions.updateImmediateValue({
+      await this.actions.updateImmediateValue({
         text: this.valueToRevertTo
       });
       this.forceUpdate();
@@ -52,17 +52,17 @@ export default class TextInput extends DoenetRenderer {
     this.focused = true;
     this.forceUpdate();
   }
-  handleBlur(e) {
+  async handleBlur(e) {
     this.focused = false;
     this.valueToRevertTo = this.doenetSvData.immediateValue;
     if (this.doenetSvData.immediateValue !== this.doenetSvData.value) {
-      this.actions.updateValue();
+      await this.actions.updateValue();
     }
     this.forceUpdate();
   }
-  onChangeHandler(e) {
+  async onChangeHandler(e) {
     this.currentValue = e.target.value;
-    this.actions.updateImmediateValue({
+    await this.actions.updateImmediateValue({
       text: e.target.value
     });
     this.forceUpdate();
@@ -79,6 +79,8 @@ export default class TextInput extends DoenetRenderer {
       surroundingBorderColor = "#82a5ff";
     }
     if (this.doenetSvData.immediateValue !== this.currentValue) {
+      console.log(`immediateValue: ${this.doenetSvData.immediateValue}`);
+      console.log(`currentValue: ${this.currentValue}`);
       this.currentValue = this.doenetSvData.immediateValue;
       this.valueToRevertTo = this.doenetSvData.immediateValue;
     }

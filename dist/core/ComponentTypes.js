@@ -22,7 +22,6 @@ import * as Verbatim from './components/Verbatim.js';
 import * as Paginator from './components/Paginator.js';
 
 import Document from './components/Document.js';
-import StringComponent from './components/StringComponent.js';
 import Text from './components/Text.js';
 import TextList from './components/TextList.js';
 import RandomizedTextList from './components/RandomizedTextList.js';
@@ -144,8 +143,11 @@ import SubsetOfRealsInput from './components/SubsetOfRealsInput.js';
 import SubsetOfReals from './components/SubsetOfReals.js';
 import Split from './components/Split.js';
 import BestFitLine from './components/BestFitLine.js';
-import AreaBetweenCurveXAxis from './components/AreaBetweenCurveXAxis.js';
+import RegionBetweenCurveXAxis from './components/RegionBetweenCurveXAxis.js';
 import RegionHalfPlane from './components/RegionHalfPlane.js';
+import CodeEditor from './components/CodeEditor.js';
+import CodeViewer from './components/CodeViewer.js';
+import RenderDoenetML from './components/RenderDoenetML.js';
 
 
 //Extended
@@ -191,7 +193,6 @@ const componentTypeArray = [
   ...Object.values(Verbatim),
   ...Object.values(Paginator),
   Document,
-  StringComponent,
   Text, TextList,
   RandomizedTextList,
   P,
@@ -287,8 +288,11 @@ const componentTypeArray = [
   SubsetOfReals,
   Split,
   BestFitLine,
-  AreaBetweenCurveXAxis,
+  RegionBetweenCurveXAxis,
   RegionHalfPlane,
+  CodeEditor,
+  CodeViewer,
+  RenderDoenetML,
 
   BaseComponent,
   InlineComponent,
