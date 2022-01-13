@@ -901,7 +901,7 @@ export default class Answer extends InlineComponent {
         awardChildren: {
           dependencyType: "child",
           childGroups: ["awards"],
-          variableNames: ["credit", "creditAchieved", "fractionSatisfied"]
+          variableNames: ["credit", "creditAchievedIfSubmit", "fractionSatisfiedIfSubmit"]
         },
         inputChildren: {
           dependencyType: "child",
@@ -942,9 +942,9 @@ export default class Answer extends InlineComponent {
           let awardCredits = Array(n).fill(null);
           let minimumFromAwardCredits = 0;
           for (let child of dependencyValues.awardChildren) {
-            let creditFromChild = child.stateValues.creditAchieved;
+            let creditFromChild = child.stateValues.creditAchievedIfSubmit;
             if (creditFromChild > minimumFromAwardCredits || awardsUsed[n - 1] === null) {
-              if (child.stateValues.fractionSatisfied > 0) {
+              if (child.stateValues.fractionSatisfiedIfSubmit > 0) {
                 if (awardsUsed[0] === null) {
                   awardsUsed[0] = child.componentName;
                   awardCredits[0] = creditFromChild;
@@ -1027,7 +1027,6 @@ export default class Answer extends InlineComponent {
 
     stateVariableDefinitions.creditAchievedDependencies = {
       shadowVariable: true,
-      additionalStateVariablesDefined: ["creditAchievedDependenciesOld"],
       returnDependencies: () => ({
         currentCreditAchievedDependencies: {
           dependencyType: "recursiveDependencyValues",
@@ -1043,17 +1042,12 @@ export default class Answer extends InlineComponent {
         // even if the object was built in a different order
         // (as can happen when reloading from a database)
 
-        // For now, we also calculate the old, non-hashed dependencies
-        // so we can compare with values that were saved in database
-        // from the old system
         let stringified = stringify(
           dependencyValues.currentCreditAchievedDependencies,
           { replacer: serializedComponentsReplacer }
         );
         return {
           setValue: {
-            creditAchievedDependenciesOld:
-              JSON.parse(stringified, serializedComponentsReviver),
             creditAchievedDependencies: Base64.stringify(sha1(stringified))
           }
         }
@@ -1094,10 +1088,6 @@ export default class Answer extends InlineComponent {
           dependencyType: "stateVariable",
           variableName: "creditAchievedDependencies",
         },
-        currentCreditAchievedDependenciesOld: {
-          dependencyType: "stateVariable",
-          variableName: "creditAchievedDependenciesOld",
-        },
         creditAchievedDependenciesAtSubmit: {
           dependencyType: "stateVariable",
           variableName: "creditAchievedDependenciesAtSubmit"
@@ -1120,22 +1110,9 @@ export default class Answer extends InlineComponent {
           }
         }
 
-        let foundChange = true;
+        let foundChange = dependencyValues.creditAchievedDependenciesAtSubmit
+          !== dependencyValues.currentCreditAchievedDependencies;
 
-
-        if (dependencyValues.creditAchievedDependenciesAtSubmit) {
-          if (typeof dependencyValues.creditAchievedDependenciesAtSubmit === "string") {
-            foundChange = dependencyValues.creditAchievedDependenciesAtSubmit
-              !== dependencyValues.currentCreditAchievedDependencies;
-          } else {
-
-            // For now, we keep this backward-compatible code
-            // in case we compare with old dependencies
-            // that were saved in the database
-            foundChange = !deepCompare(dependencyValues.currentCreditAchievedDependenciesOld,
-              dependencyValues.creditAchievedDependenciesAtSubmit)
-          }
-        }
 
         if (foundChange) {
           return {
@@ -1486,6 +1463,18 @@ export default class Answer extends InlineComponent {
         componentName: child.componentName,
         stateVariable: "awarded",
         value: awarded
+      });
+      instructions.push({
+        updateType: "updateValue",
+        componentName: child.componentName,
+        stateVariable: "creditAchieved",
+        value: child.stateValues.creditAchievedIfSubmit 
+      });
+      instructions.push({
+        updateType: "updateValue",
+        componentName: child.componentName,
+        stateVariable: "fractionSatisfied",
+        value: child.stateValues.fractionSatisfiedIfSubmit 
       });
     }
 

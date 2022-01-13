@@ -13800,18 +13800,27 @@ describe('Answer Tag Tests', function () {
       cy.get('#\\/ca').should('have.text', '0')
 
 
-      cy.log('check that have getters for creditAchieved')
+      cy.log('check that have getters for creditAchievedIfSubmit/fractionSatisfiedIfSubmit')
       cy.window().then(async (win) => {
         let components = Object.assign({}, win.state.components);
 
-        let stateVarObj = components["/_award1"].state.creditAchieved;
+        let stateVarObj = components["/_award1"].state.creditAchievedIfSubmit;
         expect(Boolean(Object.getOwnPropertyDescriptor(stateVarObj, 'value').get || stateVarObj.immutable)).to.be.true;
-        stateVarObj = components["/_award2"].state.creditAchieved;
+        stateVarObj = components["/_award1"].state.fractionSatisfiedIfSubmit;
+        expect(Boolean(Object.getOwnPropertyDescriptor(stateVarObj, 'value').get || stateVarObj.immutable)).to.be.true;
+        stateVarObj = components["/_award2"].state.creditAchievedIfSubmit;
+        expect(Boolean(Object.getOwnPropertyDescriptor(stateVarObj, 'value').get || stateVarObj.immutable)).to.be.true;
+        stateVarObj = components["/_award2"].state.fractionSatisfiedIfSubmit;
         expect(Boolean(Object.getOwnPropertyDescriptor(stateVarObj, 'value').get || stateVarObj.immutable)).to.be.true;
         stateVarObj = components["/ans"].state.creditAchievedIfSubmit;
         expect(Boolean(Object.getOwnPropertyDescriptor(stateVarObj, 'value').get || stateVarObj.immutable)).to.be.true;
 
         expect(components["/ans"].state.creditAchieved.value).eq(0);
+        expect(await components["/_award1"].state.creditAchieved.value).eq(0);
+        expect(await components["/_award1"].state.fractionSatisfied.value).eq(0);
+        expect(await components["/_award2"].state.creditAchieved.value).eq(0);
+        expect(await components["/_award2"].state.fractionSatisfied.value).eq(0);
+
 
       })
 
@@ -13833,18 +13842,26 @@ describe('Answer Tag Tests', function () {
       cy.get('#\\/ca').should('have.text', '0')
 
 
-      cy.log('check that still have getters for creditAchieved')
+      cy.log('check that still have getters for creditAchievedIfSubmit/fractionSatisfiedIfSubmit')
       cy.window().then(async (win) => {
         let components = Object.assign({}, win.state.components);
 
-        let stateVarObj = components["/_award1"].state.creditAchieved;
+        let stateVarObj = components["/_award1"].state.creditAchievedIfSubmit;
         expect(Boolean(Object.getOwnPropertyDescriptor(stateVarObj, 'value').get || stateVarObj.immutable)).to.be.true;
-        stateVarObj = components["/_award2"].state.creditAchieved;
+        stateVarObj = components["/_award1"].state.fractionSatisfiedIfSubmit;
+        expect(Boolean(Object.getOwnPropertyDescriptor(stateVarObj, 'value').get || stateVarObj.immutable)).to.be.true;
+        stateVarObj = components["/_award2"].state.creditAchievedIfSubmit;
+        expect(Boolean(Object.getOwnPropertyDescriptor(stateVarObj, 'value').get || stateVarObj.immutable)).to.be.true;
+        stateVarObj = components["/_award2"].state.fractionSatisfiedIfSubmit;
         expect(Boolean(Object.getOwnPropertyDescriptor(stateVarObj, 'value').get || stateVarObj.immutable)).to.be.true;
         stateVarObj = components["/ans"].state.creditAchievedIfSubmit;
         expect(Boolean(Object.getOwnPropertyDescriptor(stateVarObj, 'value').get || stateVarObj.immutable)).to.be.true;
 
         expect(components["/ans"].state.creditAchieved.value).eq(0);
+        expect(await components["/_award1"].state.creditAchieved.value).eq(0);
+        expect(await components["/_award1"].state.fractionSatisfied.value).eq(0);
+        expect(await components["/_award2"].state.creditAchieved.value).eq(0);
+        expect(await components["/_award2"].state.fractionSatisfied.value).eq(0);
 
       })
 
@@ -13867,19 +13884,29 @@ describe('Answer Tag Tests', function () {
 
 
 
-      cy.log('check that no longer have getters for creditAchieved')
+      cy.log('check that no longer have getters for creditAchievedIfSubmit/fractionSatisfiedIfSubmit')
       cy.window().then(async (win) => {
         let components = Object.assign({}, win.state.components);
 
-        let stateVarObj = components["/_award1"].state.creditAchieved;
+        let stateVarObj = components["/_award1"].state.creditAchievedIfSubmit;
         expect(Boolean(Object.getOwnPropertyDescriptor(stateVarObj, 'value').get || stateVarObj.immutable)).to.be.false;
-        stateVarObj = components["/_award2"].state.creditAchieved;
+        stateVarObj = components["/_award1"].state.fractionSatisfiedIfSubmit;
+        expect(Boolean(Object.getOwnPropertyDescriptor(stateVarObj, 'value').get || stateVarObj.immutable)).to.be.false;
+        stateVarObj = components["/_award2"].state.creditAchievedIfSubmit;
+        expect(Boolean(Object.getOwnPropertyDescriptor(stateVarObj, 'value').get || stateVarObj.immutable)).to.be.false;
+        stateVarObj = components["/_award2"].state.fractionSatisfiedIfSubmit;
         expect(Boolean(Object.getOwnPropertyDescriptor(stateVarObj, 'value').get || stateVarObj.immutable)).to.be.false;
         stateVarObj = components["/ans"].state.creditAchievedIfSubmit;
         expect(Boolean(Object.getOwnPropertyDescriptor(stateVarObj, 'value').get || stateVarObj.immutable)).to.be.false;
 
-        expect(components["/_award1"].state.creditAchieved.value).eq(1);
-        expect(components["/_award2"].state.creditAchieved.value).eq(0.5);
+        expect(components["/_award1"].state.creditAchievedIfSubmit.value).eq(1);
+        expect(components["/_award1"].state.fractionSatisfiedIfSubmit.value).eq(1);
+        expect(await components["/_award1"].state.creditAchieved.value).eq(1);
+        expect(await components["/_award1"].state.fractionSatisfied.value).eq(1);
+        expect(components["/_award2"].state.creditAchievedIfSubmit.value).eq(0.5);
+        expect(components["/_award2"].state.fractionSatisfiedIfSubmit.value).eq(1);
+        expect(await components["/_award2"].state.creditAchieved.value).eq(0.5);
+        expect(await components["/_award2"].state.fractionSatisfied.value).eq(1);
         expect(components["/ans"].state.creditAchievedIfSubmit.value).eq(1);
         expect(components["/ans"].state.creditAchieved.value).eq(1);
 
@@ -13903,18 +13930,26 @@ describe('Answer Tag Tests', function () {
       cy.get('#\\/ca').should('have.text', '1')
 
 
-      cy.log('check that still have getters for creditAchieved')
+      cy.log('check that still have getters for creditAchievedIfSubmit/fractionSatisfiedIfSubmit')
       cy.window().then(async (win) => {
         let components = Object.assign({}, win.state.components);
 
-        let stateVarObj = components["/_award1"].state.creditAchieved;
+        let stateVarObj = components["/_award1"].state.creditAchievedIfSubmit;
         expect(Boolean(Object.getOwnPropertyDescriptor(stateVarObj, 'value').get || stateVarObj.immutable)).to.be.true;
-        stateVarObj = components["/_award2"].state.creditAchieved;
+        stateVarObj = components["/_award1"].state.fractionSatisfiedIfSubmit;
+        expect(Boolean(Object.getOwnPropertyDescriptor(stateVarObj, 'value').get || stateVarObj.immutable)).to.be.true;
+        stateVarObj = components["/_award2"].state.creditAchievedIfSubmit;
+        expect(Boolean(Object.getOwnPropertyDescriptor(stateVarObj, 'value').get || stateVarObj.immutable)).to.be.true;
+        stateVarObj = components["/_award2"].state.fractionSatisfiedIfSubmit;
         expect(Boolean(Object.getOwnPropertyDescriptor(stateVarObj, 'value').get || stateVarObj.immutable)).to.be.true;
         stateVarObj = components["/ans"].state.creditAchievedIfSubmit;
         expect(Boolean(Object.getOwnPropertyDescriptor(stateVarObj, 'value').get || stateVarObj.immutable)).to.be.true;
 
         expect(components["/ans"].state.creditAchieved.value).eq(1);
+        expect(await components["/_award1"].state.creditAchieved.value).eq(1);
+        expect(await components["/_award1"].state.fractionSatisfied.value).eq(1);
+        expect(await components["/_award2"].state.creditAchieved.value).eq(0.5);
+        expect(await components["/_award2"].state.fractionSatisfied.value).eq(1);
 
       })
 
@@ -13937,19 +13972,29 @@ describe('Answer Tag Tests', function () {
 
 
 
-      cy.log('check that no longer have getters for creditAchieved')
+      cy.log('check that no longer have getters for creditAchievedIfSubmit/fractionSatisfiedIfSubmit')
       cy.window().then(async (win) => {
         let components = Object.assign({}, win.state.components);
 
-        let stateVarObj = components["/_award1"].state.creditAchieved;
+        let stateVarObj = components["/_award1"].state.creditAchievedIfSubmit;
         expect(Boolean(Object.getOwnPropertyDescriptor(stateVarObj, 'value').get || stateVarObj.immutable)).to.be.false;
-        stateVarObj = components["/_award2"].state.creditAchieved;
+        stateVarObj = components["/_award1"].state.fractionSatisfiedIfSubmit;
+        expect(Boolean(Object.getOwnPropertyDescriptor(stateVarObj, 'value').get || stateVarObj.immutable)).to.be.false;
+        stateVarObj = components["/_award2"].state.creditAchievedIfSubmit;
+        expect(Boolean(Object.getOwnPropertyDescriptor(stateVarObj, 'value').get || stateVarObj.immutable)).to.be.false;
+        stateVarObj = components["/_award2"].state.fractionSatisfiedIfSubmit;
         expect(Boolean(Object.getOwnPropertyDescriptor(stateVarObj, 'value').get || stateVarObj.immutable)).to.be.false;
         stateVarObj = components["/ans"].state.creditAchievedIfSubmit;
         expect(Boolean(Object.getOwnPropertyDescriptor(stateVarObj, 'value').get || stateVarObj.immutable)).to.be.false;
 
-        expect(components["/_award1"].state.creditAchieved.value).eq(0);
-        expect(components["/_award2"].state.creditAchieved.value).eq(0.5);
+        expect(components["/_award1"].state.creditAchievedIfSubmit.value).eq(0);
+        expect(components["/_award1"].state.fractionSatisfiedIfSubmit.value).eq(0);
+        expect(await components["/_award1"].state.creditAchieved.value).eq(0);
+        expect(await components["/_award1"].state.fractionSatisfied.value).eq(0);
+        expect(components["/_award2"].state.creditAchievedIfSubmit.value).eq(0.5);
+        expect(components["/_award2"].state.fractionSatisfiedIfSubmit.value).eq(1);
+        expect(await components["/_award2"].state.creditAchieved.value).eq(0.5);
+        expect(await components["/_award2"].state.fractionSatisfied.value).eq(1);
         expect(components["/ans"].state.creditAchievedIfSubmit.value).eq(0.5);
         expect(components["/ans"].state.creditAchieved.value).eq(0.5);
 
