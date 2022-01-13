@@ -12,6 +12,7 @@ import * as SingleCharacterComponents from './components/SingleCharacterComponen
 import * as Sectioning from './components/Sectioning.js';
 import * as Lists from './components/Lists.js';
 import * as DynamicalSystems from './components/dynamicalSystems/index.js';
+import * as Chemistry from './components/chemistry/index.js';
 import * as FeedbackDefinitions from './components/FeedbackDefinitions.js';
 import * as StyleDefinitions from './components/StyleDefinitions.js';
 import * as ComponentWithSelectableType from './components/abstract/ComponentWithSelectableType.js';
@@ -184,6 +185,7 @@ const componentTypeArray = [
   ...Object.values(Sectioning),
   ...Object.values(Lists),
   ...Object.values(DynamicalSystems),
+  ...Object.values(Chemistry),
   ...Object.values(FeedbackDefinitions),
   ...Object.values(StyleDefinitions),
   ...Object.values(SideBySide),

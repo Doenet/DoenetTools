@@ -3437,6 +3437,7 @@ class RecursiveDependencyValuesDependency extends Dependency {
 
     this.includeImmediateValueWithValue = this.definition.includeImmediateValueWithValue;
     this.includeRawValueWithImmediateValue = this.definition.includeRawValueWithImmediateValue;
+    this.includeOnlyEssentialValues = this.definition.includeOnlyEssentialValues;
 
     this.variablesOptional = true;
 
@@ -3469,9 +3470,30 @@ class RecursiveDependencyValuesDependency extends Dependency {
     let downstreamComponentTypes = [];
 
     for (let componentName in result.components) {
-      downstreamComponentNames.push(componentName)
-      downstreamComponentTypes.push(result.components[componentName].componentType);
-      this.originalDownstreamVariableNamesByComponent.push(result.components[componentName].variableNames)
+
+      if (this.includeOnlyEssentialValues) {
+
+        let essentialVarNames = [];
+        let component = this.dependencyHandler._components[componentName];
+        for (let vName of result.components[componentName].variableNames) {
+          if (component.state[vName]?.hasEssential) {
+            essentialVarNames.push(vName)
+          } else if(component.state[vName]?.isArrayEntry) {
+            if(component.state[component.state[vName].arrayStateVariable].hasEssential) {
+              essentialVarNames.push(vName);
+            }
+          }
+        }
+        if(essentialVarNames.length > 0) {
+          downstreamComponentNames.push(componentName)
+          downstreamComponentTypes.push(result.components[componentName].componentType);
+          this.originalDownstreamVariableNamesByComponent.push(essentialVarNames);
+        }
+      } else {
+        downstreamComponentNames.push(componentName)
+        downstreamComponentTypes.push(result.components[componentName].componentType);
+        this.originalDownstreamVariableNamesByComponent.push(result.components[componentName].variableNames)
+      }
     }
 
     return {

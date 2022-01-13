@@ -225,11 +225,11 @@ export default class Award extends BaseComponent {
       }
     };
 
-    stateVariableDefinitions.creditAchieved = {
+    stateVariableDefinitions.creditAchievedIfSubmit = {
       public: true,
       componentType: "number",
       additionalStateVariablesDefined: [{
-        variableName: "fractionSatisfied",
+        variableName: "fractionSatisfiedIfSubmit",
         public: true,
         componentType: "number"
       }],
@@ -328,37 +328,92 @@ export default class Award extends BaseComponent {
       }),
       definition: function ({ dependencyValues, usedDefault }) {
 
-        let fractionSatisfied;
+        let fractionSatisfiedIfSubmit;
 
         if (dependencyValues.whenChild.length > 0) {
-          fractionSatisfied = dependencyValues.whenChild[0].stateValues.fractionSatisfied;
+          fractionSatisfiedIfSubmit = dependencyValues.whenChild[0].stateValues.fractionSatisfied;
         } else {
           if (!dependencyValues.answerInput || !dependencyValues.parsedExpression) {
             return {
               setValue: {
-                creditAchieved: 0,
-                fractionSatisfied: 0,
+                creditAchievedIfSubmit: 0,
+                fractionSatisfiedIfSubmit: 0,
               }
             }
           }
 
-          fractionSatisfied = evaluateLogicDirectlyFromChildren({
+          fractionSatisfiedIfSubmit = evaluateLogicDirectlyFromChildren({
             dependencyValues, usedDefault
           });
 
         }
 
-        fractionSatisfied = Math.max(0, Math.min(1, fractionSatisfied));
+        fractionSatisfiedIfSubmit = Math.max(0, Math.min(1, fractionSatisfiedIfSubmit));
 
-        let creditAchieved = 0;
+        let creditAchievedIfSubmit = 0;
         if (Number.isFinite(dependencyValues.credit)) {
-          creditAchieved = Math.max(0, Math.min(1, dependencyValues.credit)) * fractionSatisfied;
+          creditAchievedIfSubmit = Math.max(0, Math.min(1, dependencyValues.credit)) * fractionSatisfiedIfSubmit;
         }
         return {
           setValue: {
-            fractionSatisfied, creditAchieved,
+            fractionSatisfiedIfSubmit, creditAchievedIfSubmit,
           }
         }
+      }
+
+    }
+
+
+    stateVariableDefinitions.fractionSatisfied = {
+      public: true,
+      componentType: "number",
+      defaultValue: 0,
+      hasEssential: true,
+      returnDependencies: () => ({}),
+      definition: () => ({
+        useEssentialOrDefaultValue: {
+          fractionSatisfied: true
+        }
+      }),
+      inverseDefinition: function ({ desiredStateVariableValues, initialChange }) {
+        if (!initialChange) {
+          return { success: false }
+        }
+
+        return {
+          success: true,
+          instructions: [{
+            setEssentialValue: "fractionSatisfied",
+            value: desiredStateVariableValues.fractionSatisfied
+          }]
+        };
+      }
+
+    }
+
+    stateVariableDefinitions.creditAchieved = {
+      public: true,
+      componentType: "number",
+      defaultValue: 0,
+      hasEssential: true,
+      returnDependencies: () => ({}),
+      definition: () => ({
+        useEssentialOrDefaultValue: {
+          creditAchieved: true
+        }
+      }),
+      inverseDefinition: function ({ desiredStateVariableValues, initialChange }) {
+        if (!initialChange) {
+          return { success: false }
+        }
+
+        return {
+          success: true,
+          instructions: [{
+            setEssentialValue: "creditAchieved",
+            value: desiredStateVariableValues.creditAchieved
+          }]
+        };
       }
 
     }
