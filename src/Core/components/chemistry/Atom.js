@@ -5,26 +5,43 @@ const elements = {
   H: {
     name: "Hydrogen",
     atomicNumber: 1,
+    nValenceElectrons: 1,
     electronConfiguration: me.fromText("1s^1"),
     defaultMassNumber: 1,
+    groupNumber: 1,
+    metal: "nonmetal",
   },
   He: {
     name: "Helium",
     atomicNumber: 2,
+    nValenceElectrons: 2,
     electronConfiguration: me.fromText("1s^2"),
     defaultMassNumber: 4,
+    groupNumber: 18,
+    groupName: "Noble Gases",
+    metal: "nonmetal",
   },
   Li: {
     name: "Lithium",
     atomicNumber: 3,
+    nValenceElectrons: 1,
     electronConfiguration: me.fromText("1s^2 2s^1"),
     defaultMassNumber: 7,
-
+    groupNumber: 1,
+    groupName: "Alkali Metals",
+    metal: "metal",
   },
 }
 
-export default class ChemAtom extends InlineComponent {
-  static componentType = "chemAtom";
+const neutronMass = 1.6749274980495E-27;
+//, 1.674927471E-27, 1.6749286E-27, 1.6726231E-27]
+const protonMass = 1.6726219236951E-27;
+const electronMass = 9.109383701528E-31;
+
+
+
+export default class Atom extends InlineComponent {
+  static componentType = "atom";
   static rendererType = "math";
 
 
@@ -73,8 +90,7 @@ export default class ChemAtom extends InlineComponent {
           variableNames: ["value"],
         }
       }),
-      definition: function ({ dependencyValues, componentName }) {
-        console.log(`dependencyValues of ${componentName}`, dependencyValues)
+      definition: function ({ dependencyValues }) {
 
         if (dependencyValues.massNumberAttr) {
           return { setValue: { massNumber: dependencyValues.massNumberAttr.stateValues.value } }
@@ -151,6 +167,26 @@ export default class ChemAtom extends InlineComponent {
       }
     }
 
+    stateVariableDefinitions.nValenceElectrons = {
+      public: true,
+      componentType: "number",
+      returnDependencies: () => ({
+        symbol: {
+          dependencyType: "stateVariable",
+          variableName: "symbol",
+        },
+      }),
+      definition({ dependencyValues }) {
+        let nValenceElectrons = elements[dependencyValues.symbol]?.nValenceElectrons;
+        if (!nValenceElectrons) {
+          nValenceElectrons = null;
+        }
+        return {
+          setValue: { nValenceElectrons }
+        }
+      }
+    }
+
 
     stateVariableDefinitions.electronConfiguration = {
       public: true,
@@ -168,6 +204,119 @@ export default class ChemAtom extends InlineComponent {
         }
         return {
           setValue: { electronConfiguration }
+        }
+      }
+    }
+
+    stateVariableDefinitions.mass = {
+      public: true,
+      componentType: "math",
+      returnDependencies: () => ({
+        atomicNumber: {
+          dependencyType: "stateVariable",
+          variableName: "atomicNumber"
+        },
+        massNumber: {
+          dependencyType: "stateVariable",
+          variableName: "massNumber"
+        }
+      }),
+      definition({ dependencyValues }) {
+        return {
+          setValue: {
+            mass: me.fromAst(dependencyValues.atomicNumber * (protonMass + electronMass)
+              + (dependencyValues.massNumber - dependencyValues.atomicNumber) * neutronMass)
+          }
+        }
+      }
+    }
+
+    stateVariableDefinitions.groupNumber = {
+      public: true,
+      componentType: "number",
+      returnDependencies: () => ({
+        symbol: {
+          dependencyType: "stateVariable",
+          variableName: "symbol",
+        },
+      }),
+      definition({ dependencyValues }) {
+        let groupNumber = elements[dependencyValues.symbol]?.groupNumber;
+        if (!groupNumber) {
+          groupNumber = null;
+        }
+        return {
+          setValue: { groupNumber }
+        }
+      }
+    }
+
+    stateVariableDefinitions.groupName = {
+      public: true,
+      componentType: "text",
+      returnDependencies: () => ({
+        symbol: {
+          dependencyType: "stateVariable",
+          variableName: "symbol",
+        },
+      }),
+      definition({ dependencyValues }) {
+        let groupName = elements[dependencyValues.symbol]?.groupName;
+        if (!groupName) {
+          groupName = null;
+        }
+        return {
+          setValue: { groupName }
+        }
+      }
+    }
+
+    stateVariableDefinitions.metal = {
+      public: true,
+      componentType: "text",
+      returnDependencies: () => ({
+        symbol: {
+          dependencyType: "stateVariable",
+          variableName: "symbol",
+        },
+      }),
+      definition({ dependencyValues }) {
+        let metal = elements[dependencyValues.symbol]?.metal;
+        if (!metal) {
+          metal = null;
+        }
+        return {
+          setValue: { metal }
+        }
+      }
+    }
+
+    stateVariableDefinitions.isotopeSymbol = {
+      public: true,
+      componentType: "m",
+      returnDependencies: () => ({
+        symbol: {
+          dependencyType: "stateVariable",
+          variableName: "symbol",
+        },
+        atomicNumber: {
+          dependencyType: "stateVariable",
+          variableName: "atomicNumber",
+        },
+        massNumber: {
+          dependencyType: "stateVariable",
+          variableName: "massNumber",
+        },
+      }),
+      definition({ dependencyValues }) {
+        let latex;
+        if (!(dependencyValues.symbol in elements)) {
+          latex = "[Invalid Chemical Symbol]";
+        } else {
+          latex = `{}^{${dependencyValues.massNumber}}_{${dependencyValues.atomicNumber}}\\text{${dependencyValues.symbol}}`
+        }
+        return {
+          setValue: { isotopeSymbol: latex }
         }
       }
     }
