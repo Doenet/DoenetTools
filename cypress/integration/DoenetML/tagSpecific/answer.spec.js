@@ -13761,5 +13761,205 @@ describe('Answer Tag Tests', function () {
   });
 
 
+  it('credit achieved not calculated before submit', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <answer name="ans">
+    <award>x^2-2x+3</award>
+    <award credit="0.5" nSignErrorsMatched="1">x^2-2x+3</award>
+  </answer>
+  <p>Current response: <copy prop="currentResponse" target="ans" assignNames="cr" /></p>
+  <p>Submitted response: <copy prop="submittedResponse" target="ans" componentType='math' assignNames="sr" /></p>
+  <p>Credit for submitted response: <copy prop="creditAchieved" target="ans" assignNames="ca" /></p>
+
+  `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.window().then(async (win) => {
+      let components = Object.assign({}, win.state.components);
+
+      let mathinputName = components['/ans'].stateValues.inputChildren[0].componentName
+      let mathinputAnchor = cesc('#' + mathinputName) + " textarea";
+      let mathinputSubmitAnchor = cesc('#' + mathinputName + '_submit');
+      let mathinputCorrectAnchor = cesc('#' + mathinputName + '_correct');
+      let mathinputIncorrectAnchor = cesc('#' + mathinputName + '_incorrect');
+      let mathinputPartialAnchor = cesc('#' + mathinputName + '_partial');
+
+      cy.get(mathinputSubmitAnchor).should('be.visible')
+
+      cy.get('#\\/cr .mjx-mrow').eq(0).invoke('text').then(text => {
+        expect(text).eq('\uff3f')
+      })
+      cy.get('#\\/sr .mjx-mrow').eq(0).invoke('text').then(text => {
+        expect(text).eq('\uff3f')
+      })
+      cy.get('#\\/ca').should('have.text', '0')
+
+
+      cy.log('check that have getters for creditAchieved')
+      cy.window().then(async (win) => {
+        let components = Object.assign({}, win.state.components);
+
+        let stateVarObj = components["/_award1"].state.creditAchieved;
+        expect(Boolean(Object.getOwnPropertyDescriptor(stateVarObj, 'value').get || stateVarObj.immutable)).to.be.true;
+        stateVarObj = components["/_award2"].state.creditAchieved;
+        expect(Boolean(Object.getOwnPropertyDescriptor(stateVarObj, 'value').get || stateVarObj.immutable)).to.be.true;
+        stateVarObj = components["/ans"].state.creditAchievedIfSubmit;
+        expect(Boolean(Object.getOwnPropertyDescriptor(stateVarObj, 'value').get || stateVarObj.immutable)).to.be.true;
+
+        expect(components["/ans"].state.creditAchieved.value).eq(0);
+
+      })
+
+
+      cy.log('type correct answer')
+
+      cy.get(mathinputAnchor).type("x^2{rightArrow}-2x+3", { force: true }).blur();
+
+      cy.get(mathinputSubmitAnchor).should('be.visible')
+
+      cy.get('#\\/cr .mjx-mrow').should('contain.text', 'x2−2x+3')
+
+      cy.get('#\\/cr .mjx-mrow').eq(0).invoke('text').then(text => {
+        expect(text).eq('x2−2x+3')
+      })
+      cy.get('#\\/sr .mjx-mrow').eq(0).invoke('text').then(text => {
+        expect(text).eq('\uff3f')
+      })
+      cy.get('#\\/ca').should('have.text', '0')
+
+
+      cy.log('check that still have getters for creditAchieved')
+      cy.window().then(async (win) => {
+        let components = Object.assign({}, win.state.components);
+
+        let stateVarObj = components["/_award1"].state.creditAchieved;
+        expect(Boolean(Object.getOwnPropertyDescriptor(stateVarObj, 'value').get || stateVarObj.immutable)).to.be.true;
+        stateVarObj = components["/_award2"].state.creditAchieved;
+        expect(Boolean(Object.getOwnPropertyDescriptor(stateVarObj, 'value').get || stateVarObj.immutable)).to.be.true;
+        stateVarObj = components["/ans"].state.creditAchievedIfSubmit;
+        expect(Boolean(Object.getOwnPropertyDescriptor(stateVarObj, 'value').get || stateVarObj.immutable)).to.be.true;
+
+        expect(components["/ans"].state.creditAchieved.value).eq(0);
+
+      })
+
+
+      cy.log('click submit')
+
+      cy.get(mathinputSubmitAnchor).click();
+      cy.get(mathinputCorrectAnchor).should('be.visible');
+
+
+      cy.get('#\\/cr .mjx-mrow').eq(0).invoke('text').then(text => {
+        expect(text).eq('x2−2x+3')
+      })
+      cy.get('#\\/sr .mjx-mrow').should('contain.text', 'x2−2x+3')
+
+      cy.get('#\\/sr .mjx-mrow').eq(0).invoke('text').then(text => {
+        expect(text).eq('x2−2x+3')
+      })
+      cy.get('#\\/ca').should('have.text', '1')
+
+
+
+      cy.log('check that no longer have getters for creditAchieved')
+      cy.window().then(async (win) => {
+        let components = Object.assign({}, win.state.components);
+
+        let stateVarObj = components["/_award1"].state.creditAchieved;
+        expect(Boolean(Object.getOwnPropertyDescriptor(stateVarObj, 'value').get || stateVarObj.immutable)).to.be.false;
+        stateVarObj = components["/_award2"].state.creditAchieved;
+        expect(Boolean(Object.getOwnPropertyDescriptor(stateVarObj, 'value').get || stateVarObj.immutable)).to.be.false;
+        stateVarObj = components["/ans"].state.creditAchievedIfSubmit;
+        expect(Boolean(Object.getOwnPropertyDescriptor(stateVarObj, 'value').get || stateVarObj.immutable)).to.be.false;
+
+        expect(components["/_award1"].state.creditAchieved.value).eq(1);
+        expect(components["/_award2"].state.creditAchieved.value).eq(0.5);
+        expect(components["/ans"].state.creditAchievedIfSubmit.value).eq(1);
+        expect(components["/ans"].state.creditAchieved.value).eq(1);
+
+      })
+
+
+      cy.log('type partially correct answer')
+
+      cy.get(mathinputAnchor).type("{end}{leftArrow}{backspace}-", { force: true }).blur();
+
+      cy.get(mathinputSubmitAnchor).should('be.visible')
+
+      cy.get('#\\/cr .mjx-mrow').should('contain.text', 'x2−2x−3')
+
+      cy.get('#\\/cr .mjx-mrow').eq(0).invoke('text').then(text => {
+        expect(text).eq('x2−2x−3')
+      })
+      cy.get('#\\/sr .mjx-mrow').eq(0).invoke('text').then(text => {
+        expect(text).eq('x2−2x+3')
+      })
+      cy.get('#\\/ca').should('have.text', '1')
+
+
+      cy.log('check that still have getters for creditAchieved')
+      cy.window().then(async (win) => {
+        let components = Object.assign({}, win.state.components);
+
+        let stateVarObj = components["/_award1"].state.creditAchieved;
+        expect(Boolean(Object.getOwnPropertyDescriptor(stateVarObj, 'value').get || stateVarObj.immutable)).to.be.true;
+        stateVarObj = components["/_award2"].state.creditAchieved;
+        expect(Boolean(Object.getOwnPropertyDescriptor(stateVarObj, 'value').get || stateVarObj.immutable)).to.be.true;
+        stateVarObj = components["/ans"].state.creditAchievedIfSubmit;
+        expect(Boolean(Object.getOwnPropertyDescriptor(stateVarObj, 'value').get || stateVarObj.immutable)).to.be.true;
+
+        expect(components["/ans"].state.creditAchieved.value).eq(1);
+
+      })
+
+
+
+      cy.log('click submit')
+
+      cy.get(mathinputSubmitAnchor).click();
+      cy.get(mathinputPartialAnchor).should('have.text', '50 %');
+
+      cy.get('#\\/cr .mjx-mrow').eq(0).invoke('text').then(text => {
+        expect(text).eq('x2−2x−3')
+      })
+      cy.get('#\\/sr .mjx-mrow').should('contain.text', 'x2−2x−3')
+
+      cy.get('#\\/sr .mjx-mrow').eq(0).invoke('text').then(text => {
+        expect(text).eq('x2−2x−3')
+      })
+      cy.get('#\\/ca').should('have.text', '0.5')
+
+
+
+      cy.log('check that no longer have getters for creditAchieved')
+      cy.window().then(async (win) => {
+        let components = Object.assign({}, win.state.components);
+
+        let stateVarObj = components["/_award1"].state.creditAchieved;
+        expect(Boolean(Object.getOwnPropertyDescriptor(stateVarObj, 'value').get || stateVarObj.immutable)).to.be.false;
+        stateVarObj = components["/_award2"].state.creditAchieved;
+        expect(Boolean(Object.getOwnPropertyDescriptor(stateVarObj, 'value').get || stateVarObj.immutable)).to.be.false;
+        stateVarObj = components["/ans"].state.creditAchievedIfSubmit;
+        expect(Boolean(Object.getOwnPropertyDescriptor(stateVarObj, 'value').get || stateVarObj.immutable)).to.be.false;
+
+        expect(components["/_award1"].state.creditAchieved.value).eq(0);
+        expect(components["/_award2"].state.creditAchieved.value).eq(0.5);
+        expect(components["/ans"].state.creditAchievedIfSubmit.value).eq(0.5);
+        expect(components["/ans"].state.creditAchieved.value).eq(0.5);
+
+      })
+
+    })
+
+
+
+  });
+
 
 })
