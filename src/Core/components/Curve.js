@@ -26,12 +26,6 @@ export default class Curve extends GraphicalComponent {
   };
 
   static primaryStateVariableForDefinition = "fShadow";
-  static get stateVariablesShadowedForReference() {
-    return [
-      "variableForChild", "parMin", "parMax",
-      "curveType", "nThroughPoints", "nDimensions", "throughPoints"
-    ]
-  };
 
 
   static createAttributesObject(args) {
@@ -45,10 +39,6 @@ export default class Curve extends GraphicalComponent {
       forRenderer: true,
     };
 
-    attributes.label.propagateToDescendants = true;
-    attributes.showLabel.propagateToDescendants = true;
-    attributes.layer.propagateToDescendants = true;
-
     attributes.labelPosition = {
       createComponentOfType: "text",
       createStateVariable: "labelPosition",
@@ -57,7 +47,6 @@ export default class Curve extends GraphicalComponent {
       forRenderer: true,
       toLowerCase: true,
       validValues: ["upperright", "upperleft", "lowerright", "lowerleft", "top", "bottom", "left", "right"],
-      propagateToDescendants: true,
     }
 
     attributes.flipFunction = {
@@ -70,7 +59,7 @@ export default class Curve extends GraphicalComponent {
     attributes.nDiscretizationPoints = {
       createComponentOfType: "number",
       createStateVariable: "nDiscretizationPoints",
-      defaultValue: 100,
+      defaultValue: 1000,
       public: true,
     };
     attributes.periodic = {
@@ -124,6 +113,11 @@ export default class Curve extends GraphicalComponent {
       createComponentOfType: "math"
     }
 
+    attributes.nearestPointAsCurve = {
+      createComponentOfType: "boolean",
+      createStateVariable: "nearestPointAsCurve",
+      defaultValue: false,
+    }
 
     return attributes;
   }
@@ -135,7 +129,7 @@ export default class Curve extends GraphicalComponent {
 
       // only apply if all children are strings or macros
       if (!matchedChildren.every(child =>
-        child.componentType === "string" ||
+        typeof child === "string" ||
         child.doenetAttributes && child.doenetAttributes.createdFromMacro
       )) {
         return { success: false }
@@ -220,7 +214,7 @@ export default class Curve extends GraphicalComponent {
 
         curveDescription += dependencyValues.selectedStyle.lineColor;
 
-        return { newValues: { styleDescription: curveDescription } };
+        return { setValue: { styleDescription: curveDescription } };
       }
     }
 
@@ -244,7 +238,7 @@ export default class Curve extends GraphicalComponent {
           curveType = "parameterization"
         }
 
-        return { newValues: { curveType } }
+        return { setValue: { curveType } }
       }
     }
 
@@ -255,10 +249,11 @@ export default class Curve extends GraphicalComponent {
     // that shadows the component adapted
     stateVariableDefinitions.fShadow = {
       defaultValue: null,
+      hasEssential: true,
       returnDependencies: () => ({}),
       definition: () => ({
         useEssentialOrDefaultValue: {
-          fShadow: { variablesToCheck: ["fShadow"] }
+          fShadow: true
         }
       }),
     }
@@ -286,7 +281,7 @@ export default class Curve extends GraphicalComponent {
       definition({ dependencyValues }) {
         if (dependencyValues.graphAncestor) {
           return {
-            newValues: {
+            setValue: {
               graphXmin: dependencyValues.graphAncestor.stateValues.xmin,
               graphXmax: dependencyValues.graphAncestor.stateValues.xmax,
               graphYmin: dependencyValues.graphAncestor.stateValues.ymin,
@@ -295,7 +290,7 @@ export default class Curve extends GraphicalComponent {
           }
         } else {
           return {
-            newValues: {
+            setValue: {
               graphXmin: null, graphXmax: null,
               graphYmin: null, graphYmax: null
             }
@@ -309,7 +304,6 @@ export default class Curve extends GraphicalComponent {
       public: true,
       componentType: "number",
       forRenderer: true,
-      defaultValue: 10,
       returnDependencies: () => ({
         curveType: {
           dependencyType: "stateVariable",
@@ -345,6 +339,18 @@ export default class Curve extends GraphicalComponent {
           dependencyType: "stateVariable",
           variableName: "graphXmax"
         },
+        graphYmin: {
+          dependencyType: "stateVariable",
+          variableName: "graphYmin"
+        },
+        graphYmax: {
+          dependencyType: "stateVariable",
+          variableName: "graphYmax"
+        },
+        flipFunction: {
+          dependencyType: "stateVariable",
+          variableName: "flipFunction"
+        },
       }),
       definition: function ({ dependencyValues }) {
         let parMax;
@@ -374,32 +380,30 @@ export default class Curve extends GraphicalComponent {
               }
             } catch (e) { }
           }
-          let graphXmax = dependencyValues.graphXmax;
-          let graphXmin = dependencyValues.graphXmin;
-          if (graphXmax !== null && graphXmin !== null) {
+          let graphMin, graphMax;
+          if (dependencyValues.flipFunction) {
+            graphMax = dependencyValues.graphYmax;
+            graphMin = dependencyValues.graphYmin;
+          } else {
+            graphMax = dependencyValues.graphXmax;
+            graphMin = dependencyValues.graphXmin;
+          }
+          if (graphMax !== null && graphMin !== null) {
             if (parMax === undefined) {
-              parMax = graphXmax + 0.1 * (graphXmax - graphXmin);
+              parMax = graphMax + 0.1 * (graphMax - graphMin);
             } else {
-              parMax = Math.min(parMax, graphXmax + 0.1 * (graphXmax - graphXmin))
+              parMax = Math.min(parMax, graphMax + 0.1 * (graphMax - graphMin))
             }
           }
 
           if (parMax === undefined) {
-            return {
-              useEssentialOrDefaultValue: {
-                parMax: { variablesToCheck: ["parMax"], defaultValue: Infinity }
-              }
-            }
+            parMax = Infinity;
           }
         } else {
-          return {
-            useEssentialOrDefaultValue: {
-              parMax: { variablesToCheck: ["parMax"] }
-            }
-          }
+          parMax = 10;
         }
 
-        return { newValues: { parMax } }
+        return { setValue: { parMax } }
       }
     }
 
@@ -407,7 +411,6 @@ export default class Curve extends GraphicalComponent {
       forRenderer: true,
       public: true,
       componentType: "number",
-      defaultValue: -10,
       returnDependencies: () => ({
         curveType: {
           dependencyType: "stateVariable",
@@ -443,6 +446,18 @@ export default class Curve extends GraphicalComponent {
           dependencyType: "stateVariable",
           variableName: "graphXmax"
         },
+        graphYmin: {
+          dependencyType: "stateVariable",
+          variableName: "graphYmin"
+        },
+        graphYmax: {
+          dependencyType: "stateVariable",
+          variableName: "graphYmax"
+        },
+        flipFunction: {
+          dependencyType: "stateVariable",
+          variableName: "flipFunction"
+        },
       }),
       definition: function ({ dependencyValues }) {
         let parMin;
@@ -472,30 +487,28 @@ export default class Curve extends GraphicalComponent {
               }
             } catch (e) { }
           }
-          let graphXmax = dependencyValues.graphXmax;
-          let graphXmin = dependencyValues.graphXmin;
-          if (graphXmax !== null && graphXmin !== null) {
+          let graphMin, graphMax;
+          if (dependencyValues.flipFunction) {
+            graphMax = dependencyValues.graphYmax;
+            graphMin = dependencyValues.graphYmin;
+          } else {
+            graphMax = dependencyValues.graphXmax;
+            graphMin = dependencyValues.graphXmin;
+          }
+          if (graphMax !== null && graphMin !== null) {
             if (parMin === undefined) {
-              parMin = graphXmin + 0.1 * (graphXmin - graphXmax);
+              parMin = graphMin + 0.1 * (graphMin - graphMax);
             } else {
-              parMin = Math.max(parMin, graphXmin + 0.1 * (graphXmin - graphXmax))
+              parMin = Math.max(parMin, graphMin + 0.1 * (graphMin - graphMax))
             }
           }
           if (parMin === undefined) {
-            return {
-              useEssentialOrDefaultValue: {
-                parMin: { variablesToCheck: ["parMin"], defaultValue: -Infinity }
-              }
-            }
+            parMin = -Infinity;
           }
         } else {
-          return {
-            useEssentialOrDefaultValue: {
-              parMin: { variablesToCheck: ["parMin"] }
-            }
-          }
+          parMin = -10;
         }
-        return { newValues: { parMin } }
+        return { setValue: { parMin } }
       }
     }
 
@@ -512,7 +525,7 @@ export default class Curve extends GraphicalComponent {
         if (dependencyValues.through !== null) {
           nThroughPoints = dependencyValues.through.stateValues.nPoints
         }
-        return { newValues: { nThroughPoints } }
+        return { setValue: { nThroughPoints } }
       }
     }
 
@@ -533,12 +546,12 @@ export default class Curve extends GraphicalComponent {
         if (dependencyValues.through !== null) {
           let nDimensions = dependencyValues.through.stateValues.nDimensions;
           return {
-            newValues: { nDimensions },
+            setValue: { nDimensions },
             checkForActualChange: { nDimensions: true }
           }
         } else {
           // curve through zero points
-          return { newValues: { nDimensions: 2 } }
+          return { setValue: { nDimensions: 2 } }
         }
 
       }
@@ -575,9 +588,9 @@ export default class Curve extends GraphicalComponent {
                 return [];
               }
             } else {
-              // if don't know array size, just guess that the entry is OK
-              // It will get corrected once array size is known.
-              // TODO: better to return empty array?
+              // If not given the array size,
+              // then return the array keys assuming the array is large enough.
+              // Must do this as it is used to determine potential array entries.
               return [String(indices)];
             }
           } else {
@@ -585,13 +598,20 @@ export default class Curve extends GraphicalComponent {
           }
         } else {
           // throughPoint3 is all components of the third throughPoint
-          if (!arraySize) {
+
+          let pointInd = Number(varEnding) - 1;
+          if (!(Number.isInteger(pointInd) && pointInd >= 0)) {
             return [];
           }
-          let throughPointInd = Number(varEnding) - 1;
-          if (Number.isInteger(throughPointInd) && throughPointInd >= 0 && throughPointInd < arraySize[0]) {
-            // array of "throughPointInd,i", where i=0, ..., arraySize[1]-1
-            return Array.from(Array(arraySize[1]), (_, i) => throughPointInd + "," + i)
+
+          if (!arraySize) {
+            // If don't have array size, we just need to determine if it is a potential entry.
+            // Return the first entry assuming array is large enough
+            return [pointInd + ",0"];
+          }
+          if (pointInd < arraySize[0]) {
+            // array of "pointInd,i", where i=0, ..., arraySize[1]-1
+            return Array.from(Array(arraySize[1]), (_, i) => pointInd + "," + i)
           } else {
             return [];
           }
@@ -650,9 +670,9 @@ export default class Curve extends GraphicalComponent {
           }
         }
 
-        return { newValues: { throughPoints } }
+        return { setValue: { throughPoints } }
       },
-      inverseArrayDefinitionByKey({ desiredStateVariableValues,
+      async inverseArrayDefinitionByKey({ desiredStateVariableValues,
         dependencyValuesByKey, dependencyNamesByKey,
         initialChange, stateValues,
       }) {
@@ -664,7 +684,7 @@ export default class Curve extends GraphicalComponent {
 
 
         // if not draggable, then disallow initial change 
-        if (initialChange && !stateValues.draggable) {
+        if (initialChange && !await stateValues.draggable) {
           return { success: false };
         }
 
@@ -738,7 +758,7 @@ export default class Curve extends GraphicalComponent {
           numericalThroughPoints[arrayKey] = pt;
         }
 
-        return { newValues: { numericalThroughPoints } }
+        return { setValue: { numericalThroughPoints } }
       }
     }
 
@@ -752,7 +772,7 @@ export default class Curve extends GraphicalComponent {
       }),
       definition({ dependencyValues }) {
         return {
-          newValues: {
+          setValue: {
             haveBezierControls: dependencyValues.controlChild.length > 0
           }
         }
@@ -771,7 +791,7 @@ export default class Curve extends GraphicalComponent {
       }),
       definition({ dependencyValues }) {
         return {
-          newValues: {
+          setValue: {
             bezierControlsAlwaysVisible: dependencyValues.controlChild.length > 0
               && dependencyValues.controlChild[0].stateValues.alwaysVisible
           }
@@ -833,7 +853,7 @@ export default class Curve extends GraphicalComponent {
         }
 
         return {
-          newValues: { vectorControlDirections },
+          setValue: { vectorControlDirections },
         }
       },
       inverseArrayDefinitionByKey({ desiredStateVariableValues,
@@ -847,7 +867,6 @@ export default class Curve extends GraphicalComponent {
         }
 
         let instructions = [];
-        let newDirectionValues = {};
         for (let arrayKey in desiredStateVariableValues.vectorControlDirections) {
           let controlChild = dependencyValuesByKey[arrayKey].controlChild;
 
@@ -859,17 +878,8 @@ export default class Curve extends GraphicalComponent {
               variableIndex: 0
             })
 
-          } else {
-            newDirectionValues[arrayKey] = desiredStateVariableValues.vectorControlDirections[arrayKey]
           }
 
-        }
-
-        if (Object.keys(newDirectionValues).length > 0) {
-          instructions.push({
-            setStateVariable: "vectorControlDirections",
-            value: newDirectionValues
-          })
         }
 
         return {
@@ -932,7 +942,7 @@ export default class Curve extends GraphicalComponent {
         }
 
         return {
-          newValues: { hiddenControls },
+          setValue: { hiddenControls },
         }
       },
       inverseArrayDefinitionByKey({ desiredStateVariableValues,
@@ -944,7 +954,6 @@ export default class Curve extends GraphicalComponent {
         }
 
         let instructions = [];
-        let newHiddenControls = {};
         for (let arrayKey in desiredStateVariableValues.hiddenControls) {
           let controlChild = dependencyValuesByKey[arrayKey].controlChild;
 
@@ -956,17 +965,8 @@ export default class Curve extends GraphicalComponent {
               variableIndex: 0
             })
 
-          } else {
-            newHiddenControls[arrayKey] = desiredStateVariableValues.hiddenControls[arrayKey]
           }
 
-        }
-
-        if (Object.keys(newHiddenControls).length > 0) {
-          instructions.push({
-            setStateVariable: "hiddenControls",
-            value: newHiddenControls
-          })
         }
 
         return {
@@ -1009,9 +1009,9 @@ export default class Curve extends GraphicalComponent {
                 return [];
               }
             } else {
-              // if don't know array size, just guess that the entry is OK
-              // It will get corrected once array size is known.
-              // TODO: better to return empty array?
+              // If not given the array size,
+              // then return the array keys assuming the array is large enough.
+              // Must do this as it is used to determine potential array entries.
               return [String(indices)];
             }
           } else {
@@ -1020,13 +1020,19 @@ export default class Curve extends GraphicalComponent {
         } else {
           // controlVector3_2 is all components of the second control vector
           // controling the third point
-          if (!arraySize) {
+
+          let indices = varEnding.split('_').map(x => Number(x) - 1)
+          if (!(indices.length === 2 && indices.every(
+            x => Number.isInteger(x) && x >= 0
+          ))) {
             return [];
           }
-          let indices = varEnding.split('_').map(x => Number(x) - 1)
-          if (indices.length === 2 && indices.every(
-            (x, i) => Number.isInteger(x) && x >= 0 && x < arraySize[i]
-          )) {
+
+          if (!arraySize) {
+            // if don't' have array size, just return first entry assuming large enough size
+            return [String(indices) + ",0"];
+          }
+          if (indices.every((x, i) => x < arraySize[i])) {
             return Array.from(Array(arraySize[2]), (_, i) => String(indices) + "," + i)
           } else {
             return [];
@@ -1194,7 +1200,7 @@ export default class Curve extends GraphicalComponent {
 
 
           } else if ((arrayIndices[1] === 0 && direction === "next") ||
-            (arrayIndices[1] === 0 && direction === "next")
+            (arrayIndices[1] === 1 && direction === "previous")
           ) {
             // calculate control vector from spline
 
@@ -1227,13 +1233,9 @@ export default class Curve extends GraphicalComponent {
         }
 
         return {
-          newValues: {
+          setValue: {
             controlVectors: newControlValues
           },
-          // useEssentialOrDefaultValue: {
-          //   controlVectors: essentialControls,
-          // },
-          // makeEssential: ["controlVectors"],
         }
       },
       inverseArrayDefinitionByKey({ desiredStateVariableValues,
@@ -1328,7 +1330,7 @@ export default class Curve extends GraphicalComponent {
           numericalControlVectors[arrayKey] = vect;
         }
 
-        return { newValues: { numericalControlVectors } }
+        return { setValue: { numericalControlVectors } }
       }
     }
 
@@ -1363,9 +1365,9 @@ export default class Curve extends GraphicalComponent {
                 return [];
               }
             } else {
-              // if don't know array size, just guess that the entry is OK
-              // It will get corrected once array size is known.
-              // TODO: better to return empty array?
+              // If not given the array size,
+              // then return the array keys assuming the array is large enough.
+              // Must do this as it is used to determine potential array entries.
               return [String(indices)];
             }
           } else {
@@ -1374,13 +1376,19 @@ export default class Curve extends GraphicalComponent {
         } else {
           // controlPoint3_2 is all components of the second control point
           // controling the third point
-          if (!arraySize) {
+
+          let indices = varEnding.split('_').map(x => Number(x) - 1)
+          if (!(indices.length === 2 && indices.every(
+            x => Number.isInteger(x) && x >= 0
+          ))) {
             return [];
           }
-          let indices = varEnding.split('_').map(x => Number(x) - 1)
-          if (indices.length === 2 && indices.every(
-            (x, i) => Number.isInteger(x) && x >= 0 && x < arraySize[i]
-          )) {
+
+          if (!arraySize) {
+            // if don't' have array size, just return first entry assuming large enough size
+            return [String(indices) + ",0"];
+          }
+          if (indices.every((x, i) => x < arraySize[i])) {
             return Array.from(Array(arraySize[2]), (_, i) => String(indices) + "," + i)
           } else {
             return [];
@@ -1468,7 +1476,7 @@ export default class Curve extends GraphicalComponent {
 
         }
         return {
-          newValues: {
+          setValue: {
             controlPoints: newControlValues
           },
         }
@@ -1558,7 +1566,7 @@ export default class Curve extends GraphicalComponent {
           numericalControlPoints[arrayKey] = pt;
         }
 
-        return { newValues: { numericalControlPoints } }
+        return { setValue: { numericalControlPoints } }
       }
     }
 
@@ -1629,7 +1637,7 @@ export default class Curve extends GraphicalComponent {
         }
 
         return {
-          newValues: {
+          setValue: {
             splineCoeffs: newSpineCoeffs,
           }
         }
@@ -1685,7 +1693,7 @@ export default class Curve extends GraphicalComponent {
       definition({ dependencyValues }) {
         if (!dependencyValues.extrapolateBackward || !dependencyValues.firstSplineCoeffs) {
           return {
-            newValues: {
+            setValue: {
               extrapolateBackwardCoeffs: null,
               extrapolateBackwardMode: ""
             }
@@ -1747,7 +1755,7 @@ export default class Curve extends GraphicalComponent {
           ];
 
           return {
-            newValues: {
+            setValue: {
               extrapolateBackwardCoeffs: c,
               extrapolateBackwardMode: "line"
             }
@@ -1817,7 +1825,7 @@ export default class Curve extends GraphicalComponent {
           ];
 
           return {
-            newValues: {
+            setValue: {
               extrapolateBackwardCoeffs: c,
               extrapolateBackwardMode: "parabolaVertical"
             }
@@ -1882,7 +1890,7 @@ export default class Curve extends GraphicalComponent {
           ];
 
           return {
-            newValues: {
+            setValue: {
               extrapolateBackwardCoeffs: c,
               extrapolateBackwardMode: "parabolaHorizontal"
             }
@@ -1940,7 +1948,7 @@ export default class Curve extends GraphicalComponent {
       definition({ dependencyValues }) {
         if (!dependencyValues.extrapolateForward || !dependencyValues.lastSplineCoeffs) {
           return {
-            newValues: {
+            setValue: {
               extrapolateForwardCoeffs: null,
               extrapolateForwardMode: ""
             }
@@ -2002,7 +2010,7 @@ export default class Curve extends GraphicalComponent {
           ];
 
           return {
-            newValues: {
+            setValue: {
               extrapolateForwardCoeffs: c,
               extrapolateForwardMode: "line"
             }
@@ -2072,7 +2080,7 @@ export default class Curve extends GraphicalComponent {
           ];
 
           return {
-            newValues: {
+            setValue: {
               extrapolateForwardCoeffs: c,
               extrapolateForwardMode: "parabolaVertical"
             }
@@ -2136,7 +2144,7 @@ export default class Curve extends GraphicalComponent {
           ];
 
           return {
-            newValues: {
+            setValue: {
               extrapolateForwardCoeffs: c,
               extrapolateForwardMode: "parabolaHorizontal"
             }
@@ -2149,7 +2157,8 @@ export default class Curve extends GraphicalComponent {
       forRenderer: true,
       isArray: true,
       entryPrefixes: ["f"],
-      defaultEntryValue: () => 0,
+      hasEssential: true,
+      defaultValueByArrayKey: () => { () => 0 },
       returnArraySizeDependencies: () => ({
         functionChildren: {
           dependencyType: "child",
@@ -2227,7 +2236,7 @@ export default class Curve extends GraphicalComponent {
 
         if (globalDependencyValues.curveType === "bezier") {
           return {
-            newValues: { fs: returnBezierFunctions({ globalDependencyValues, arrayKeys }) }
+            setValue: { fs: returnBezierFunctions({ globalDependencyValues, arrayKeys }) }
           }
         }
 
@@ -2241,16 +2250,12 @@ export default class Curve extends GraphicalComponent {
             if (Number(arrayKey) === 0 && dependencyValuesByKey[arrayKey].fShadow) {
               fs[arrayKey] = dependencyValuesByKey[arrayKey].fShadow;
             } else {
-              essentialFs[arrayKey] = {
-                variablesToCheck: [
-                  { variableName: "fs", arrayIndex: arrayKey }
-                ],
-              }
+              essentialFs[arrayKey] = true
             }
           }
         }
         return {
-          newValues: { fs },
+          setValue: { fs },
           useEssentialOrDefaultValue: {
             fs: essentialFs,
           },
@@ -2285,7 +2290,7 @@ export default class Curve extends GraphicalComponent {
         let allXCriticalPoints = [];
 
         if (dependencyValues.curveType !== "bezier") {
-          return { newValues: { allXCriticalPoints } }
+          return { setValue: { allXCriticalPoints } }
         }
 
         let fx = dependencyValues.fs[0];
@@ -2345,7 +2350,7 @@ export default class Curve extends GraphicalComponent {
           allXCriticalPoints.push([fx(t), fy(t)])
         }
 
-        return { newValues: { allXCriticalPoints } }
+        return { setValue: { allXCriticalPoints } }
       }
     }
 
@@ -2360,7 +2365,7 @@ export default class Curve extends GraphicalComponent {
       }),
       definition({ dependencyValues }) {
         return {
-          newValues: {
+          setValue: {
             nXCriticalPoints: dependencyValues.allXCriticalPoints.length
           }
         }
@@ -2397,9 +2402,9 @@ export default class Curve extends GraphicalComponent {
                 return [];
               }
             } else {
-              // if don't know array size, just guess that the entry is OK
-              // It will get corrected once array size is known.
-              // TODO: better to return empty array?
+              // If not given the array size,
+              // then return the array keys assuming the array is large enough.
+              // Must do this as it is used to determine potential array entries.
               return [String(indices)];
             }
           } else {
@@ -2407,11 +2412,18 @@ export default class Curve extends GraphicalComponent {
           }
         } else {
           // xCriticalPoint3 is all components of the third xCriticalPoint
-          if (!arraySize) {
+
+          let pointInd = Number(varEnding) - 1;
+          if (!(Number.isInteger(pointInd) && pointInd >= 0)) {
             return [];
           }
-          let pointInd = Number(varEnding) - 1;
-          if (Number.isInteger(pointInd) && pointInd >= 0 && pointInd < arraySize[0]) {
+
+          if (!arraySize) {
+            // If don't have array size, we just need to determine if it is a potential entry.
+            // Return the first entry assuming array is large enough
+            return [pointInd + ",0"];
+          }
+          if (pointInd < arraySize[0]) {
             // array of "pointInd,i", where i=0, ..., arraySize[1]-1
             return Array.from(Array(arraySize[1]), (_, i) => pointInd + "," + i)
           } else {
@@ -2454,7 +2466,7 @@ export default class Curve extends GraphicalComponent {
           }
         }
 
-        return { newValues: { xCriticalPoints } }
+        return { setValue: { xCriticalPoints } }
       }
     }
 
@@ -2477,7 +2489,7 @@ export default class Curve extends GraphicalComponent {
         let allYCriticalPoints = [];
 
         if (dependencyValues.curveType !== "bezier") {
-          return { newValues: { allYCriticalPoints } }
+          return { setValue: { allYCriticalPoints } }
         }
 
         let fx = dependencyValues.fs[0];
@@ -2539,7 +2551,7 @@ export default class Curve extends GraphicalComponent {
           allYCriticalPoints.push([fx(t), fy(t)])
         }
 
-        return { newValues: { allYCriticalPoints } }
+        return { setValue: { allYCriticalPoints } }
       }
     }
 
@@ -2554,7 +2566,7 @@ export default class Curve extends GraphicalComponent {
       }),
       definition({ dependencyValues }) {
         return {
-          newValues: {
+          setValue: {
             nYCriticalPoints: dependencyValues.allYCriticalPoints.length
           }
         }
@@ -2591,9 +2603,9 @@ export default class Curve extends GraphicalComponent {
                 return [];
               }
             } else {
-              // if don't know array size, just guess that the entry is OK
-              // It will get corrected once array size is known.
-              // TODO: better to return empty array?
+              // If not given the array size,
+              // then return the array keys assuming the array is large enough.
+              // Must do this as it is used to determine potential array entries.
               return [String(indices)];
             }
           } else {
@@ -2601,11 +2613,18 @@ export default class Curve extends GraphicalComponent {
           }
         } else {
           // yCriticalPoint3 is all components of the third yCriticalPoint
-          if (!arraySize) {
+
+          let pointInd = Number(varEnding) - 1;
+          if (!(Number.isInteger(pointInd) && pointInd >= 0)) {
             return [];
           }
-          let pointInd = Number(varEnding) - 1;
-          if (Number.isInteger(pointInd) && pointInd >= 0 && pointInd < arraySize[0]) {
+
+          if (!arraySize) {
+            // If don't have array size, we just need to determine if it is a potential entry.
+            // Return the first entry assuming array is large enough
+            return [pointInd + ",0"];
+          }
+          if (pointInd < arraySize[0]) {
             // array of "pointInd,i", where i=0, ..., arraySize[1]-1
             return Array.from(Array(arraySize[1]), (_, i) => pointInd + "," + i)
           } else {
@@ -2648,7 +2667,7 @@ export default class Curve extends GraphicalComponent {
           }
         }
 
-        return { newValues: { yCriticalPoints } }
+        return { setValue: { yCriticalPoints } }
       }
     }
 
@@ -2673,7 +2692,7 @@ export default class Curve extends GraphicalComponent {
         let allCurvatureChangePoints = [];
 
         if (dependencyValues.curveType !== "bezier") {
-          return { newValues: { allCurvatureChangePoints } }
+          return { setValue: { allCurvatureChangePoints } }
         }
 
         let fx = dependencyValues.fs[0];
@@ -2736,7 +2755,7 @@ export default class Curve extends GraphicalComponent {
           allCurvatureChangePoints.push([fx(t), fy(t)])
         }
 
-        return { newValues: { allCurvatureChangePoints } }
+        return { setValue: { allCurvatureChangePoints } }
       }
     }
 
@@ -2751,7 +2770,7 @@ export default class Curve extends GraphicalComponent {
       }),
       definition({ dependencyValues }) {
         return {
-          newValues: {
+          setValue: {
             nCurvatureChangePoints: dependencyValues.allCurvatureChangePoints.length
           }
         }
@@ -2788,9 +2807,9 @@ export default class Curve extends GraphicalComponent {
                 return [];
               }
             } else {
-              // if don't know array size, just guess that the entry is OK
-              // It will get corrected once array size is known.
-              // TODO: better to return empty array?
+              // If not given the array size,
+              // then return the array keys assuming the array is large enough.
+              // Must do this as it is used to determine potential array entries.
               return [String(indices)];
             }
           } else {
@@ -2798,11 +2817,18 @@ export default class Curve extends GraphicalComponent {
           }
         } else {
           // curvatureChangePoint3 is all components of the third curvatureChangePoint
-          if (!arraySize) {
+
+          let pointInd = Number(varEnding) - 1;
+          if (!(Number.isInteger(pointInd) && pointInd >= 0)) {
             return [];
           }
-          let pointInd = Number(varEnding) - 1;
-          if (Number.isInteger(pointInd) && pointInd >= 0 && pointInd < arraySize[0]) {
+
+          if (!arraySize) {
+            // If don't have array size, we just need to determine if it is a potential entry.
+            // Return the first entry assuming array is large enough
+            return [pointInd + ",0"];
+          }
+          if (pointInd < arraySize[0]) {
             // array of "pointInd,i", where i=0, ..., arraySize[1]-1
             return Array.from(Array(arraySize[1]), (_, i) => pointInd + "," + i)
           } else {
@@ -2845,7 +2871,7 @@ export default class Curve extends GraphicalComponent {
           }
         }
 
-        return { newValues: { curvatureChangePoints } }
+        return { setValue: { curvatureChangePoints } }
       }
     }
 
@@ -2896,6 +2922,10 @@ export default class Curve extends GraphicalComponent {
           dependencyType: "stateVariable",
           variableName: "graphYmax"
         },
+        nearestPointAsCurve: {
+          dependencyType: "stateVariable",
+          variableName: "nearestPointAsCurve"
+        },
       }),
       definition({ dependencyValues }) {
         let nearestPointFunction = null;
@@ -2907,7 +2937,7 @@ export default class Curve extends GraphicalComponent {
         }
 
         return {
-          newValues: { nearestPoint: nearestPointFunction }
+          setValue: { nearestPoint: nearestPointFunction }
         }
 
       }
@@ -2919,7 +2949,7 @@ export default class Curve extends GraphicalComponent {
 
 
 
-  moveControlVector({ controlVector, controlVectorInds, transient }) {
+  async moveControlVector({ controlVector, controlVectorInds, transient }) {
 
     let desiredVector = {
       [controlVectorInds + ",0"]: me.fromAst(controlVector[0]),
@@ -2927,7 +2957,7 @@ export default class Curve extends GraphicalComponent {
     }
 
     if (transient) {
-      return this.coreFunctions.performUpdate({
+      return await this.coreFunctions.performUpdate({
         updateInstructions: [{
           updateType: "updateValue",
           componentName: this.componentName,
@@ -2938,7 +2968,7 @@ export default class Curve extends GraphicalComponent {
         transient
       });
     } else {
-      return this.coreFunctions.performUpdate({
+      return await this.coreFunctions.performUpdate({
         updateInstructions: [{
           updateType: "updateValue",
           componentName: this.componentName,
@@ -2960,7 +2990,7 @@ export default class Curve extends GraphicalComponent {
 
   }
 
-  moveThroughPoint({ throughPoint, throughPointInd, transient }) {
+  async moveThroughPoint({ throughPoint, throughPointInd, transient }) {
 
     let desiredPoint = {
       [throughPointInd + ",0"]: me.fromAst(throughPoint[0]),
@@ -2968,7 +2998,7 @@ export default class Curve extends GraphicalComponent {
     }
 
     if (transient) {
-      this.coreFunctions.performUpdate({
+      return await this.coreFunctions.performUpdate({
         updateInstructions: [{
           updateType: "updateValue",
           componentName: this.componentName,
@@ -2979,7 +3009,7 @@ export default class Curve extends GraphicalComponent {
         transient
       });
     } else {
-      this.coreFunctions.performUpdate({
+      return await this.coreFunctions.performUpdate({
         updateInstructions: [{
           updateType: "updateValue",
           componentName: this.componentName,
@@ -3001,8 +3031,8 @@ export default class Curve extends GraphicalComponent {
 
   }
 
-  changeVectorControlDirection({ direction, throughPointInd }) {
-    this.coreFunctions.performUpdate({
+  async changeVectorControlDirection({ direction, throughPointInd }) {
+    return await this.coreFunctions.performUpdate({
       updateInstructions: [{
         updateType: "updateValue",
         componentName: this.componentName,
@@ -3013,7 +3043,7 @@ export default class Curve extends GraphicalComponent {
   }
 
   switchCurve() {
-    
+
   }
 
 
@@ -3025,38 +3055,15 @@ function getNearestPointFunctionCurve({ dependencyValues, numerics }) {
   let nDiscretizationPoints = dependencyValues.nDiscretizationPoints;
   let parMax = dependencyValues.parMax;
   let parMin = dependencyValues.parMin;
-  let xscale = 1, yscale = 1;
-  if (dependencyValues.graphXmin !== null &&
-    dependencyValues.graphXmax !== null &&
-    dependencyValues.graphYmin !== null &&
-    dependencyValues.graphYmax !== null
-  ) {
-    xscale = dependencyValues.graphXmax - dependencyValues.graphXmin;
-    yscale = dependencyValues.graphYmax - dependencyValues.graphYmin;
-  }
 
 
-  return function (variables) {
+  return function ({ variables, scales }) {
 
     let x1 = variables.x1.evaluate_to_constant();
     let x2 = variables.x2.evaluate_to_constant();
 
-
-    // first find nearest point when treating a function
-    // (or an inverse function)
-    // which finds a the nearest point vertically
-    // (or horizontally)
-    // assuming the function is defined at that point
-
-    let x1AsFunction, x2AsFunction;
-    if (flipFunction) {
-      x2AsFunction = x2;
-      x1AsFunction = f(x2AsFunction);
-    } else {
-      x1AsFunction = x1;
-      x2AsFunction = f(x1AsFunction);
-    }
-
+    let xscale = scales[0];
+    let yscale = scales[1];
 
     // compute values at the actual endpoints, if they exist
 
@@ -3085,34 +3092,49 @@ function getNearestPointFunctionCurve({ dependencyValues, numerics }) {
       }
     }
 
+    if (!dependencyValues.nearestPointAsCurve || !(Number.isFinite(x1) && Number.isFinite(x2))) {
 
-    // if function isn't defined at current variable value, replace with
-    // value at nearest endpoint
+      // first find nearest point when treating a function
+      // (or an inverse function)
+      // which finds a the nearest point vertically
+      // (or horizontally)
+      // assuming the function is defined at that point
 
-    if (!(Number.isFinite(x1AsFunction) && Number.isFinite(x2AsFunction))) {
-      let distLeft, distRight;
+      let x1AsFunction, x2AsFunction;
       if (flipFunction) {
-        distLeft = Math.abs(parMin - x2);
-        distRight = Math.abs(parMax - x2);
+        x2AsFunction = x2;
+        x1AsFunction = f(x2AsFunction);
       } else {
-        distLeft = Math.abs(parMin - x1);
-        distRight = Math.abs(parMax - x1);
+        x1AsFunction = x1;
+        x2AsFunction = f(x1AsFunction);
       }
 
-      if (distLeft < distRight || !Number.isFinite(distRight)) {
-        x1AsFunction = x1AtLeftEndpoint;
-        x2AsFunction = x2AtLeftEndpoint;
-      } else {
-        x1AsFunction = x1AtRightEndpoint;
-        x2AsFunction = x2AtRightEndpoint;
+
+      // if function isn't defined at current variable value, replace with
+      // value at nearest endpoint
+
+      if (!(Number.isFinite(x1AsFunction) && Number.isFinite(x2AsFunction))) {
+        let distLeft, distRight;
+        if (flipFunction) {
+          distLeft = Math.abs(parMin - x2);
+          distRight = Math.abs(parMax - x2);
+        } else {
+          distLeft = Math.abs(parMin - x1);
+          distRight = Math.abs(parMax - x1);
+        }
+
+        if (distLeft < distRight || !Number.isFinite(distRight)) {
+          x1AsFunction = x1AtLeftEndpoint;
+          x2AsFunction = x2AtLeftEndpoint;
+        } else {
+          x1AsFunction = x1AtRightEndpoint;
+          x2AsFunction = x2AtRightEndpoint;
+        }
+
       }
 
-    }
 
-
-    // if the point (x1,x2) isn't finite, we can't do anything more
-    // if (!(Number.isFinite(x1) && Number.isFinite(x2))) {
-    if (true) {
+      // assuming we found a finite point, we're done
       if (Number.isFinite(x1AsFunction) && Number.isFinite(x2AsFunction)) {
         let result = {
           x1: x1AsFunction,
@@ -3122,13 +3144,20 @@ function getNearestPointFunctionCurve({ dependencyValues, numerics }) {
           result.x3 = 0;
         }
         return result;
-      } else if (!(Number.isFinite(x1) && Number.isFinite(x2))) {
+      }
+
+      // if we don't have finite values for both componentts
+      // there's nothing more we can do
+      if (!(Number.isFinite(x1) && Number.isFinite(x2))) {
         return {};
       }
 
     }
 
-    // next, find the overall nearest point from the curve to (x1,x2)
+
+    // if we are finding nearest point as a curve,
+    // or if finding nearest point as a function failed,
+    // find the overall nearest point from the curve to (x1,x2)
 
     let minfunc = function (t) {
       let x = -10 * Math.log(1 / t - 1);
@@ -3195,7 +3224,7 @@ function getNearestPointFunctionCurve({ dependencyValues, numerics }) {
 
     }
 
-    // haven't necessarily checked f at tIntermax
+    // haven't necessarily checked f at tIntervalMax
     let fAtIntervalMax = minfunc(tIntervalMax);
     if (!Number.isFinite(fAtIntervalMax)) {
       tIntervalMax -= delta;
@@ -3247,75 +3276,6 @@ function getNearestPointFunctionCurve({ dependencyValues, numerics }) {
     }
 
 
-    // choose the nearest point treating as a function
-    // if that point exists and isn't 10 times further
-    // that the actual nearest point
-    if (Number.isFinite(x1AsFunction) && Number.isFinite(x2AsFunction)) {
-
-      // We now have two candidates for the nearest point
-      // A: (x1AsFunction, x2AsFunction), found by treating as a function
-      // B: (x1Min, x2Min), the actual closest point
-      // We prefer A, as it is more natural for a function
-      // However, if B is fifteen times closer, we'll use B
-      // If B is between ten and fifteen times closer, we'll try to find
-      // a point interpolating between A and B (by treating as a function)
-
-
-
-      let funD2 = Math.pow((x1AsFunction - x1) / xscale, 2)
-        + Math.pow((x2AsFunction - x2) / yscale, 2);
-
-      // 100 is 10 times distance, as working with squared distance
-      if (funD2 < 100 * currentD2) {
-        result = {
-          x1: x1AsFunction,
-          x2: x2AsFunction
-        }
-        if (variables.x3 !== undefined) {
-          result.x3 = 0;
-        }
-        return result;
-      }
-      // 225 is 15 times distance, as working with squared distance
-      if (funD2 < 225 * currentD2) {
-        // can we interpolate to find a point on the function between
-        // (x1AsFunction, x2AsFunction) and (x1Min, x2Min)?
-
-        let currentRatio = Math.sqrt(funD2 / currentD2);   // between 10 and 15
-        let a = (currentRatio - 10) / 5;   // between 0 and 1;
-
-        let x1try, x2try;
-        if (flipFunction) {
-          x2try = x2AsFunction * (1 - a) + x2AtMin * a;
-          x1try = f(x2try);
-        } else {
-          x1try = x1AsFunction * (1 - a) + x1AtMin * a;
-          x2try = f(x1try);
-        }
-        if (Number.isFinite(x1try) && Number.isFinite(x2try)) {
-          result = {
-            x1: x1try,
-            x2: x2try
-          }
-          if (variables.x3 !== undefined) {
-            result.x3 = 0;
-          }
-          return result;
-        } else {
-
-          result = {
-            x1: x1AsFunction,
-            x2: x2AsFunction
-          }
-          if (variables.x3 !== undefined) {
-            result.x3 = 0;
-          }
-          return result;
-        }
-      }
-
-    }
-
     result = {
       x1: x1AtMin,
       x2: x2AtMin
@@ -3336,17 +3296,11 @@ function getNearestPointParametrizedCurve({ dependencyValues, numerics }) {
   let parMax = dependencyValues.parMax;
   let nDiscretizationPoints = dependencyValues.nDiscretizationPoints;
   let periodic = dependencyValues.periodic;
-  let xscale = 1, yscale = 1;
-  if (dependencyValues.graphXmin !== null &&
-    dependencyValues.graphXmax !== null &&
-    dependencyValues.graphYmin !== null &&
-    dependencyValues.graphYmax !== null
-  ) {
-    xscale = dependencyValues.graphXmax - dependencyValues.graphXmin;
-    yscale = dependencyValues.graphYmax - dependencyValues.graphYmin;
-  }
 
-  return function (variables) {
+  return function ({ variables, scales }) {
+
+    let xscale = scales[0];
+    let yscale = scales[1];
 
     // TODO: extend to dimensions other than N=2
 

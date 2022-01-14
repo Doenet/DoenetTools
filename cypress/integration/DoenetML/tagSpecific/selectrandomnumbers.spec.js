@@ -21,10 +21,10 @@ describe('SelectRandomNumbers Tag Tests', function () {
     </aslist></p>
 
     <p><aslist>
-      <copy tname="_map1" />
+      <copy target="_map1" />
     </aslist></p>
 
-    <copy tname="_p1" assignNames = "p" />
+    <copy target="_p1" assignNames = "p" />
     `}, "*");
     });
 
@@ -77,10 +77,10 @@ describe('SelectRandomNumbers Tag Tests', function () {
     </aslist></p>
 
     <p><aslist>
-      <copy tname="_map1" />
+      <copy target="_map1" />
     </aslist></p>
 
-    <copy tname="_p1" assignNames = "p" />
+    <copy target="_p1" assignNames = "p" />
     `}, "*");
     });
 
@@ -131,10 +131,10 @@ describe('SelectRandomNumbers Tag Tests', function () {
     </aslist></p>
 
     <p><aslist>
-      <copy tname="_map1" />
+      <copy target="_map1" />
     </aslist></p>
 
-    <copy tname="_p1" assignNames = "p" />
+    <copy target="_p1" assignNames = "p" />
     `}, "*");
     });
 
@@ -185,10 +185,10 @@ describe('SelectRandomNumbers Tag Tests', function () {
     </aslist></p>
 
     <p><aslist>
-      <copy tname="_map1" />
+      <copy target="_map1" />
     </aslist></p>
 
-    <copy tname="_p1" assignNames = "p" />
+    <copy target="_p1" assignNames = "p" />
     `}, "*");
     });
 
@@ -239,10 +239,10 @@ describe('SelectRandomNumbers Tag Tests', function () {
     </aslist></p>
 
     <p><aslist>
-      <copy tname="_map1" />
+      <copy target="_map1" />
     </aslist></p>
 
-    <copy tname="_p1" assignNames = "p" />
+    <copy target="_p1" assignNames = "p" />
     `}, "*");
     });
 
@@ -293,10 +293,10 @@ describe('SelectRandomNumbers Tag Tests', function () {
     </aslist></p>
 
     <p><aslist>
-      <copy tname="_map1" />
+      <copy target="_map1" />
     </aslist></p>
 
-    <copy tname="_p1" assignNames = "p" />
+    <copy target="_p1" assignNames = "p" />
     `}, "*");
     });
 
@@ -342,10 +342,10 @@ describe('SelectRandomNumbers Tag Tests', function () {
     </aslist></p>
 
     <p><aslist>
-      <copy tname="_map1" />
+      <copy target="_map1" />
     </aslist></p>
 
-    <copy tname="_p1" assignNames = "p" />
+    <copy target="_p1" assignNames = "p" />
     `}, "*");
     });
 
@@ -391,10 +391,10 @@ describe('SelectRandomNumbers Tag Tests', function () {
     </aslist></p>
 
     <p><aslist>
-      <copy tname="_map1" />
+      <copy target="_map1" />
     </aslist></p>
 
-    <copy tname="_p1" assignNames = "p" />
+    <copy target="_p1" assignNames = "p" />
     `}, "*");
     });
 
@@ -440,10 +440,10 @@ describe('SelectRandomNumbers Tag Tests', function () {
     </aslist></p>
 
     <p><aslist>
-      <copy tname="_map1" />
+      <copy target="_map1" />
     </aslist></p>
 
-    <copy tname="_p1" assignNames = "p" />
+    <copy target="_p1" assignNames = "p" />
     `}, "*");
     });
 
@@ -489,10 +489,10 @@ describe('SelectRandomNumbers Tag Tests', function () {
     </aslist></p>
 
     <p><aslist>
-      <copy tname="_map1" />
+      <copy target="_map1" />
     </aslist></p>
 
-    <copy tname="_p1" assignNames = "p" />
+    <copy target="_p1" assignNames = "p" />
     `}, "*");
     });
 
@@ -538,10 +538,10 @@ describe('SelectRandomNumbers Tag Tests', function () {
     </aslist></p>
 
     <p><aslist>
-      <copy tname="_map1" />
+      <copy target="_map1" />
     </aslist></p>
 
-    <copy tname="_p1" assignNames = "p" />
+    <copy target="_p1" assignNames = "p" />
     `}, "*");
     });
 
@@ -591,10 +591,10 @@ describe('SelectRandomNumbers Tag Tests', function () {
     </aslist></p>
 
     <p><aslist>
-      <copy tname="_map1" />
+      <copy target="_map1" />
     </aslist></p>
 
-    <copy tname="_p1" assignNames = "p" />
+    <copy target="_p1" assignNames = "p" />
     `}, "*");
     });
 
@@ -644,10 +644,10 @@ describe('SelectRandomNumbers Tag Tests', function () {
     </aslist></p>
 
     <p><aslist>
-      <copy tname="_map1" />
+      <copy target="_map1" />
     </aslist></p>
 
-    <copy tname="_p1" assignNames = "p" />
+    <copy target="_p1" assignNames = "p" />
     `}, "*");
     });
 
@@ -698,10 +698,10 @@ describe('SelectRandomNumbers Tag Tests', function () {
     </aslist></p>
 
     <p><aslist>
-      <copy tname="_map1" />
+      <copy target="_map1" />
     </aslist></p>
 
-    <copy tname="_p1" assignNames = "p" />
+    <copy target="_p1" assignNames = "p" />
     `}, "*");
     });
 
@@ -751,10 +751,10 @@ describe('SelectRandomNumbers Tag Tests', function () {
     </aslist></p>
 
     <p><aslist>
-      <copy tname="_map1" />
+      <copy target="_map1" />
     </aslist></p>
 
-    <copy tname="_p1" assignNames = "p" />
+    <copy target="_p1" assignNames = "p" />
     `}, "*");
     });
 
@@ -790,10 +790,10 @@ describe('SelectRandomNumbers Tag Tests', function () {
     </aslist></p>
 
     <p><aslist>
-      <copy tname="_map1" />
+      <copy target="_map1" />
     </aslist></p>
 
-    <copy tname="_p1" assignNames = "p" />
+    <copy target="_p1" assignNames = "p" />
     `}, "*");
     });
 
@@ -909,16 +909,16 @@ describe('SelectRandomNumbers Tag Tests', function () {
     </map>
     </aslist></p>
     
-    <p name="p2"><aslist><copy tname="_map1" /></aslist></p>
-    <p name="p3"><copy tname="_aslist1" /></p>
+    <p name="p2"><aslist><copy target="_map1" /></aslist></p>
+    <p name="p3"><copy target="_aslist1" /></p>
 
-    <copy name="p4" tname="p1" />
-    <copy name="p5" tname="p2" />
-    <copy name="p6" tname="p3" />
+    <copy name="p4" target="p1" />
+    <copy name="p5" target="p2" />
+    <copy name="p6" target="p3" />
 
-    <copy name="p7" tname="p4" />
-    <copy name="p8" tname="p5" />
-    <copy name="p9" tname="p6" />
+    <copy name="p7" target="p4" />
+    <copy name="p8" target="p5" />
+    <copy name="p9" target="p6" />
     `}, "*");
     });
 
@@ -1196,9 +1196,9 @@ describe('SelectRandomNumbers Tag Tests', function () {
     <p><selectRandomNumbers type="discreteUniform" from="3" step="7" to="16" assignnames="u"/></p>
     <p><selectRandomNumbers type="discreteUniform" from="3" step="7" to="16" assignnames="v"/></p>
     <p><selectRandomNumbers type="discreteUniform" from="3" step="7" to="16" assignnames="w"/></p>
-    <p><copy assignNames="u2" tname="u" /></p>
-    <p><copy assignNames="v2" tname="v" /></p>
-    <p><copy assignNames="w2" tname="w" /></p>
+    <p><copy assignNames="u2" target="u" /></p>
+    <p><copy assignNames="v2" target="v" /></p>
+    <p><copy assignNames="w2" target="w" /></p>
     `}, "*");
     });
 
@@ -1238,9 +1238,9 @@ describe('SelectRandomNumbers Tag Tests', function () {
     <p><aslist>
       <selectRandomNumbers name="s" from="3" to="13" assignnames="u v w" numberToSelect="6" />
     </aslist></p>
-    <p><copy assignNames="u2" tname="u" /></p>
-    <p><copy assignNames="v2" tname="v" /></p>
-    <p><copy assignNames="w2" tname="w" /></p>
+    <p><copy assignNames="u2" target="u" /></p>
+    <p><copy assignNames="v2" target="v" /></p>
+    <p><copy assignNames="w2" target="w" /></p>
     `}, "*");
     });
 
@@ -1304,9 +1304,9 @@ describe('SelectRandomNumbers Tag Tests', function () {
     <p><aslist>
       <selectRandomNumbers name="s" newnamespace from="3" to="13" assignnames="u v w" numberToSelect="6" />
     </aslist></p>
-    <p><copy assignNames="u2" tname="s/u" /></p>
-    <p><copy assignNames="v2" tname="s/v" /></p>
-    <p><copy assignNames="w2" tname="s/w" /></p>
+    <p><copy assignNames="u2" target="s/u" /></p>
+    <p><copy assignNames="v2" target="s/v" /></p>
+    <p><copy assignNames="w2" target="s/w" /></p>
     `}, "*");
     });
 

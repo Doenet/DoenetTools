@@ -101,7 +101,7 @@ export default function ToolRoot(){
     supportPanelIndex:0,
     hasNoMenuPanel: false,
     headerControls:[],
-    displayProfile:true,
+    displaySettings:true,
   });
   let mainPanel = null;
   let supportPanel = <SupportPanel hide={true} >null</SupportPanel>;
@@ -203,7 +203,7 @@ if (toolRootMenusAndPanels?.supportPanelOptions && toolRootMenusAndPanels?.suppo
     menusTitles={toolRootMenusAndPanels.menusTitles} 
     currentMenus={toolRootMenusAndPanels.currentMenus} 
     initOpen={toolRootMenusAndPanels.menusInitOpen}
-    displayProfile={toolRootMenusAndPanels.displayProfile}
+    displaySettings={toolRootMenusAndPanels.displaySettings}
     />
   }
 
@@ -233,7 +233,7 @@ if (toolRootMenusAndPanels?.supportPanelOptions && toolRootMenusAndPanels?.suppo
     <ToolContainer >
       {menus}
       <ContentPanel 
-      main={<MainPanel headerControls={headerControls} setMenusOpen={setMenusOpen} openMenuButton={openMenuButton} displayProfile={toolRootMenusAndPanels.displayProfile} >{mainPanel}</MainPanel>} 
+      main={<MainPanel headerControls={headerControls} setMenusOpen={setMenusOpen} openMenuButton={openMenuButton} displaySettings={toolRootMenusAndPanels.displaySettings} >{mainPanel}</MainPanel>} 
       support={supportPanel}
       />
       {footer}
@@ -283,7 +283,7 @@ let navigationObj = {
     chooseLearner:{
       pageName:"chooseLearner",
       currentMainPanel:"ChooseLearnerPanel",
-      displayProfile:false,
+      displaySettings:false,
     },
     assessment:{
       pageName:"Assessment",
@@ -293,13 +293,13 @@ let navigationObj = {
       menusTitles:["Time Remaining"],
       menusInitOpen:[true],
       headerControls: [],
-      displayProfile:false,
+      displaySettings:false,
       waitForMenuSuppression:true,
     },
     endExam:{
       pageName:"endExam",
       currentMainPanel:"EndExamPanel",
-      displayProfile:false,
+      displaySettings:false,
       hasNoMenuPanel: true,
     },
     
@@ -342,10 +342,11 @@ let navigationObj = {
       pageName: "Gradebook",
       currentMainPanel: "Gradebook",
       menuPanelCap:"DriveInfoCap",
-      currentMenus:[],
-      menusTitles:[],
-      menusInitOpen:[],
+      currentMenus:["GradeDownload"],
+      menusTitles:["Download"],
+      menusInitOpen:[false],
       headerControls: ["GradebookBreadCrumb"],
+      waitForMenuSuppression:true,
       // onLeave:"",
     },
     gradebookAssignment: {
@@ -463,6 +464,7 @@ let navigationObj = {
       supportPanelTitles:[],
       supportPanelIndex:0,
       hasNoMenuPanel: true,
+      displaySettings:false
     }
   },
   notfound:{
@@ -487,6 +489,7 @@ let navigationObj = {
       supportPanelIndex:0,
       hasNoMenuPanel: true,
       headerControls: ["BackButton"],
+      displaySettings:false,
     }
   },
   signin:{
@@ -500,6 +503,7 @@ let navigationObj = {
       supportPanelTitles:[],
       supportPanelIndex:0,
       hasNoMenuPanel: true,
+      displaySettings:false,
     }
   },
   signout:{
@@ -513,6 +517,7 @@ let navigationObj = {
       supportPanelTitles:[],
       supportPanelIndex:0,
       hasNoMenuPanel: true,
+      displaySettings:false,
     }
   },
   
@@ -761,8 +766,8 @@ let encodeParams = p => Object.entries(p).map(kv =>
     }
 
     //Defaults for undefined 
-    if (nextMenusAndPanels && nextMenusAndPanels.displayProfile === undefined){
-      nextMenusAndPanels.displayProfile = true;
+    if (nextMenusAndPanels && nextMenusAndPanels.displaySettings === undefined){
+      nextMenusAndPanels.displaySettings = true;
     }
 
    

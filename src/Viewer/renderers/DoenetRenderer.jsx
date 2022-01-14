@@ -86,6 +86,12 @@ export default class DoenetRenderer extends Component {
     // add nanoid to key so that will have unique key if recreate
     // renderer for a component with the same name as an old one
     // TODO: is this the best way to do it?
+
+
+    if(typeof childInstructions === "string") {
+      return childInstructions;
+    }
+
     let propsForChild = {
       key: childInstructions.componentName + nanoid(10),
       componentInstructions: childInstructions,

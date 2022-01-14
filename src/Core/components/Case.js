@@ -3,10 +3,6 @@ import Template from './Template';
 export default class Case extends Template {
   static componentType = "case";
 
-  static get stateVariablesShadowedForReference() {
-    return ["conditionSatisfied"]
-  }
-
   static createAttributesObject(args) {
     let attributes = super.createAttributesObject(args);
 
@@ -41,7 +37,7 @@ export default class Case extends Template {
           conditionSatisfied = dependencyValues.condition.stateValues.value;
         }
 
-        return { newValues: { conditionSatisfied } }
+        return { setValue: { conditionSatisfied } }
       }
     };
 

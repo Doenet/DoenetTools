@@ -19,10 +19,11 @@ export default class Textinput extends Input {
     //Complex because the stateValues isn't defined until later
     Object.defineProperty(this.externalActions, 'submitAnswer', {
       enumerable: true,
-      get: function () {
-        if (this.stateValues.answerAncestor !== null) {
+      get: async function () {
+        let answerAncestor = await this.stateValues.answerAncestor;
+        if (answerAncestor !== null) {
           return {
-            componentName: this.stateValues.answerAncestor.componentName,
+            componentName: answerAncestor.componentName,
             actionName: "submitAnswer"
           }
         } else {
@@ -35,10 +36,6 @@ export default class Textinput extends Input {
   static componentType = "textInput";
 
   static variableForPlainMacro = "value";
-
-  static get stateVariablesShadowedForReference() {
-    return ["value"]
-  };
 
   static createAttributesObject(args) {
     let attributes = super.createAttributesObject(args);
@@ -91,6 +88,8 @@ export default class Textinput extends Input {
       public: true,
       componentType: "text",
       forRenderer: true,
+      hasEssential: true,
+      shadowVariable: true,
       returnDependencies: () => ({
         bindValueTo: {
           dependencyType: "attributeComponent",
@@ -107,13 +106,12 @@ export default class Textinput extends Input {
           return {
             useEssentialOrDefaultValue: {
               value: {
-                variablesToCheck: "value",
                 defaultValue: dependencyValues.prefill
               }
             }
           }
         }
-        return { newValues: { value: dependencyValues.bindValueTo.stateValues.value } };
+        return { setValue: { value: dependencyValues.bindValueTo.stateValues.value } };
       },
       inverseDefinition: function ({ desiredStateVariableValues, dependencyValues }) {
 
@@ -132,7 +130,7 @@ export default class Textinput extends Input {
         return {
           success: true,
           instructions: [{
-            setStateVariable: "value",
+            setEssentialValue: "value",
             value: desiredStateVariableValues.value
           }]
         };
@@ -143,6 +141,8 @@ export default class Textinput extends Input {
       public: true,
       componentType: "text",
       forRenderer: true,
+      hasEssential: true,
+      shadowVariable: true,
       returnDependencies: () => ({
         value: {
           dependencyType: "stateVariable",
@@ -158,8 +158,8 @@ export default class Textinput extends Input {
           // only update to value when it changes
           // (otherwise, let its essential value change)
           return {
-            newValues: { immediateValue: dependencyValues.value },
-            makeEssential: { immediateValue: true }
+            setValue: { immediateValue: dependencyValues.value },
+            setEssentialValue: { immediateValue: dependencyValues.value }
           };
 
 
@@ -167,7 +167,6 @@ export default class Textinput extends Input {
           return {
             useEssentialOrDefaultValue: {
               immediateValue: {
-                variablesToCheck: "immediateValue",
                 defaultValue: dependencyValues.value
               }
             }
@@ -179,7 +178,7 @@ export default class Textinput extends Input {
 
         // value is essential; give it the desired value
         let instructions = [{
-          setStateVariable: "immediateValue",
+          setEssentialValue: "immediateValue",
           value: desiredStateVariableValues.immediateValue
         }]
 
@@ -210,13 +209,13 @@ export default class Textinput extends Input {
         }
       }),
       definition: function ({ dependencyValues }) {
-        return { newValues: { text: dependencyValues.value } }
+        return { setValue: { text: dependencyValues.value } }
       }
     }
 
     stateVariableDefinitions.componentType = {
       returnDependencies: () => ({}),
-      definition: () => ({ newValues: { componentType: "text" } })
+      definition: () => ({ setValue: { componentType: "text" } })
     }
 
 
@@ -225,9 +224,9 @@ export default class Textinput extends Input {
   }
 
 
-  updateImmediateValue({ text }) {
-    if (!this.stateValues.disabled) {
-      return this.coreFunctions.performUpdate({
+  async updateImmediateValue({ text }) {
+    if (!await this.stateValues.disabled) {
+      return await this.coreFunctions.performUpdate({
         updateInstructions: [{
           updateType: "updateValue",
           componentName: this.componentName,
@@ -238,13 +237,14 @@ export default class Textinput extends Input {
     }
   }
 
-  updateValue() {
-    if (!this.stateValues.disabled) {
+  async updateValue() {
+    if (!await this.stateValues.disabled) {
+      let immediateValue = await this.stateValues.immediateValue;
       let updateInstructions = [{
         updateType: "updateValue",
         componentName: this.componentName,
         stateVariable: "value",
-        value: this.stateValues.immediateValue,
+        value: immediateValue,
       },
       // in case value ended up being a different value than requested
       // we set immediate value to whatever was the result
@@ -268,23 +268,26 @@ export default class Textinput extends Input {
           componentType: this.componentType,
         },
         result: {
-          response: this.stateValues.immediateValue,
-          responseText: this.stateValues.immediateValue,
+          response: immediateValue,
+          responseText: immediateValue,
         }
       }
 
-      if (this.stateValues.answerAncestor) {
+      let answerAncestor = await this.stateValues.answerAncestor;
+      if (answerAncestor) {
         event.context = {
-          answerAncestor: this.stateValues.answerAncestor.componentName
+          answerAncestor: answerAncestor.componentName
         }
       }
 
-      return this.coreFunctions.performUpdate({
+      await this.coreFunctions.performUpdate({
         updateInstructions,
         event
-      }).then(() => this.coreFunctions.triggerChainedActions({
+      });
+
+      return await this.coreFunctions.triggerChainedActions({
         componentName: this.componentName,
-      }));
+      });
 
     }
   }

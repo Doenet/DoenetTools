@@ -187,13 +187,13 @@ describe('Feedback Tag Tests', function () {
   <text>a</text>
   <p><answer>
     <mathinput />
-    <award credit="0.1"><when><copy prop="immediateValue" tname="_mathinput1" /> > 1</when></award>
-    <award><when><copy prop="immediateValue" tname="_mathinput1" /> > 10</when></award>
-    <award credit="0.2"><when><copy prop="immediateValue" tname="_mathinput1" /> > 2</when></award>
-    <award credit="0.1"><when><copy prop="immediateValue" tname="_mathinput1" /> > 0.9</when></award>
-    <award credit="0"><when><copy prop="immediateValue" tname="_mathinput1" /> < 0</when></award>
+    <award credit="0.1"><when><copy prop="immediateValue" target="_mathinput1" /> > 1</when></award>
+    <award><when><copy prop="immediateValue" target="_mathinput1" /> > 10</when></award>
+    <award credit="0.2"><when><copy prop="immediateValue" target="_mathinput1" /> > 2</when></award>
+    <award credit="0.1"><when><copy prop="immediateValue" target="_mathinput1" /> > 0.9</when></award>
+    <award credit="0"><when><copy prop="immediateValue" target="_mathinput1" /> < 0</when></award>
   </answer></p>
-  <p>Credit achieved: <copy name="ca" prop="creditAchieved" tname="_answer1" /></p>
+  <p>Credit achieved: <copy name="ca" prop="creditAchieved" target="_answer1" /></p>
   <section>
   <feedback condition="$_award1">
     <p>Larger than 1</p>
@@ -324,7 +324,7 @@ describe('Feedback Tag Tests', function () {
     <choice>banana</choice>
     </choiceinput>
   </answer></p>
-  <p>Credit achieved: <copy name="ca" prop="creditAchieved" tname="_answer1" /></p>
+  <p>Credit achieved: <copy name="ca" prop="creditAchieved" target="_answer1" /></p>
   <section>
   <feedback condition="$_choice1">
     <p>Meow</p>
@@ -418,7 +418,7 @@ describe('Feedback Tag Tests', function () {
   <p><answer type="text">hello there</answer></p>
   <section>
   <feedback condition="$(_answer1{prop='creditAchieved'}) != 1 and $(_answer1{prop='responseHasBeenSubmitted'}) ">
-    <p>Your response <em><copy prop="submittedresponse" tname="_answer1" /></em> is incorrect.</p>
+    <p>Your response <em><copy prop="submittedresponse" target="_answer1" /></em> is incorrect.</p>
   </feedback>
   </section>
   `}, "*");
@@ -470,16 +470,16 @@ describe('Feedback Tag Tests', function () {
   </answer></p>
 
   <p>Award 1 feedback:</p>
-  <subsection name="feedback1"><title/><copy prop="feedback" tname="_award1" /></subsection>
+  <subsection name="feedback1"><title/><copy prop="feedback" target="_award1" /></subsection>
   
   <p>Award 2 feedback:</p>
-  <subsection name="feedback2"><title/><copy prop="feedback" tname="_award2" /></subsection>
+  <subsection name="feedback2"><title/><copy prop="feedback" target="_award2" /></subsection>
 
   <p>Award 3 feedback:</p>
-  <subsection name="feedback3"><title/><copy prop="feedback" tname="_award3" /></subsection>
+  <subsection name="feedback3"><title/><copy prop="feedback" target="_award3" /></subsection>
 
   <p>Answer feedbacks:</p>
-  <subsection name="feedback4"><title/><copy prop="feedbacks" tname="_answer1" /></subsection>
+  <subsection name="feedback4"><title/><copy prop="feedbacks" target="_answer1" /></subsection>
   `}, "*");
     });
 
@@ -587,6 +587,423 @@ describe('Feedback Tag Tests', function () {
     })
   });
 
+  it('feedback defined in awards, new feedback definitions', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <setup>
+    <feedbackDefinitions>
+      <feedbackDefinition code="wrongTrig" text="Close, but wrong trignometric function" />
+      <feedbackDefinition code="lostPI" text="You lost pi" />
+    </feedbackDefinitions>
+  </setup>
+
+  <p><answer>
+    <award feedbackcodes="goodJob"><math>sin(pi x)</math></award>
+    <award credit="0.7" feedbackcodes="wrongTRIG"><math>cos(pi x)</math></award>
+    <award credit="0.3" feedbackcodes="lostpi"><math>sin(x)</math></award>
+  </answer></p>
+
+  <p>Award 1 feedback:</p>
+  <subsection name="feedback1"><title/><copy prop="feedback" target="_award1" /></subsection>
+  
+  <p>Award 2 feedback:</p>
+  <subsection name="feedback2"><title/><copy prop="feedback" target="_award2" /></subsection>
+
+  <p>Award 3 feedback:</p>
+  <subsection name="feedback3"><title/><copy prop="feedback" target="_award3" /></subsection>
+
+  <p>Answer feedbacks:</p>
+  <subsection name="feedback4"><title/><copy prop="feedbacks" target="_answer1" /></subsection>
+  `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      let mathinputName = components['/_answer1'].stateValues.inputChildren[0].componentName
+      let mathinputAnchor = cesc('#' + mathinputName) + " textarea";
+      let mathinputSubmitAnchor = cesc('#' + mathinputName + '_submit');
+      let mathinputCorrectAnchor = cesc('#' + mathinputName + '_correct');
+      let mathinputIncorrectAnchor = cesc('#' + mathinputName + '_incorrect');
+      let mathinputPartialAnchor = cesc('#' + mathinputName + '_partial');
+
+      cy.log('Test value displayed in browser')
+      // cy.get(mathinputAnchor).should('have.value', '');
+      cy.get('#\\/feedback1').should('have.text', '')
+      cy.get('#\\/feedback2').should('have.text', '')
+      cy.get('#\\/feedback3').should('have.text', '')
+      cy.get('#\\/feedback4').should('have.text', '')
+      cy.get(mathinputSubmitAnchor).should('be.visible');
+
+      cy.log('submit blank answer');
+      cy.get(mathinputSubmitAnchor).click();
+
+      cy.get(mathinputIncorrectAnchor).should('be.visible');
+      cy.get('#\\/feedback1').should('have.text', '')
+      cy.get('#\\/feedback2').should('have.text', '')
+      cy.get('#\\/feedback3').should('have.text', '')
+      cy.get('#\\/feedback4').should('have.text', '')
+
+
+      cy.log("Type sin(pi x)")
+      cy.get(mathinputAnchor).type(`sin(pi x)`, { force: true });
+
+      cy.get(mathinputSubmitAnchor).should('be.visible');
+      cy.get('#\\/feedback1').should('have.text', '')
+      cy.get('#\\/feedback2').should('have.text', '')
+      cy.get('#\\/feedback3').should('have.text', '')
+      cy.get('#\\/feedback4').should('have.text', '')
+
+
+      cy.log("Blur")
+      cy.get(mathinputAnchor).blur();
+      cy.get(mathinputSubmitAnchor).should('be.visible');
+      cy.get('#\\/feedback1').should('have.text', '')
+      cy.get('#\\/feedback2').should('have.text', '')
+      cy.get('#\\/feedback3').should('have.text', '')
+      cy.get('#\\/feedback4').should('have.text', '')
+
+
+      cy.log("Submit answer")
+      cy.get(mathinputSubmitAnchor).click();
+      cy.get(mathinputCorrectAnchor).should('be.visible');
+      cy.get('#\\/feedback1').should('have.text', ' FeedbackGood job!')
+      cy.get('#\\/feedback2').should('have.text', '')
+      cy.get('#\\/feedback3').should('have.text', '')
+      cy.get('#\\/feedback4').should('have.text', ' FeedbackGood job!')
+
+
+
+      cy.log("Type cos(pi x)")
+      cy.get(mathinputAnchor).type(`{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}cos(pi x)`, { force: true });
+      cy.get(mathinputSubmitAnchor).should('be.visible');
+      cy.get('#\\/feedback1').should('have.text', ' FeedbackGood job!')
+      cy.get('#\\/feedback2').should('have.text', '')
+      cy.get('#\\/feedback3').should('have.text', '')
+      cy.get('#\\/feedback4').should('have.text', ' FeedbackGood job!')
+
+
+      cy.log("Blur")
+      cy.get(mathinputAnchor).blur();
+      cy.get(mathinputSubmitAnchor).should('be.visible');
+      cy.get('#\\/feedback1').should('have.text', ' FeedbackGood job!')
+      cy.get('#\\/feedback2').should('have.text', '')
+      cy.get('#\\/feedback3').should('have.text', '')
+      cy.get('#\\/feedback4').should('have.text', ' FeedbackGood job!')
+
+
+      cy.log("Submit answer")
+      cy.get(mathinputSubmitAnchor).click();
+      cy.get(mathinputPartialAnchor).should('have.text', '70 %');
+      cy.get('#\\/feedback1').should('have.text', '')
+      cy.get('#\\/feedback2').should('have.text', ' FeedbackClose, but wrong trignometric function')
+      cy.get('#\\/feedback3').should('have.text', '')
+      cy.get('#\\/feedback4').should('have.text', ' FeedbackClose, but wrong trignometric function')
+
+
+      cy.log("Enter x")
+      cy.get(mathinputAnchor).type(`{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}x{enter}`, { force: true });
+      cy.get(mathinputIncorrectAnchor).should('be.visible');
+      cy.get('#\\/feedback1').should('have.text', '')
+      cy.get('#\\/feedback2').should('have.text', '')
+      cy.get('#\\/feedback3').should('have.text', '')
+      cy.get('#\\/feedback4').should('have.text', '')
+
+      cy.log("Enter sin(x)")
+      cy.get(mathinputAnchor).type(`{end}{backspace}sin(x){enter}`, { force: true });
+      cy.get(mathinputPartialAnchor).should('have.text', '30 %');
+      cy.get('#\\/feedback1').should('have.text', '')
+      cy.get('#\\/feedback2').should('have.text', '')
+      cy.get('#\\/feedback3').should('have.text', ' FeedbackYou lost pi')
+      cy.get('#\\/feedback4').should('have.text', ' FeedbackYou lost pi')
+
+    })
+  });
+
+  it('feedback defined in awards, new feedback definitions in document and section', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <setup>
+    <feedbackDefinitions>
+      <feedbackDefinition code="wrongTrig" text="typo here" />
+      <feedbackDefinition code="lostPI" text="You lost pi" />
+    </feedbackDefinitions>
+  </setup>
+
+  <section>
+    <setup>
+      <feedbackDefinitions>
+        <feedbackDefinition code="wrongTrig" text="Close, but wrong trignometric function" />
+      </feedbackDefinitions>
+    </setup>
+
+    <p><answer>
+      <award feedbackcodes="goodJob"><math>sin(pi x)</math></award>
+      <award credit="0.7" feedbackcodes="wrongTRIG"><math>cos(pi x)</math></award>
+      <award credit="0.3" feedbackcodes="lostpi"><math>sin(x)</math></award>
+    </answer></p>
+
+    <p>Award 1 feedback:</p>
+    <subsection name="feedback1"><title/><copy prop="feedback" target="_award1" /></subsection>
+    
+    <p>Award 2 feedback:</p>
+    <subsection name="feedback2"><title/><copy prop="feedback" target="_award2" /></subsection>
+
+    <p>Award 3 feedback:</p>
+    <subsection name="feedback3"><title/><copy prop="feedback" target="_award3" /></subsection>
+
+    <p>Answer feedbacks:</p>
+    <subsection name="feedback4"><title/><copy prop="feedbacks" target="_answer1" /></subsection>
+  </section>
+  `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      let mathinputName = components['/_answer1'].stateValues.inputChildren[0].componentName
+      let mathinputAnchor = cesc('#' + mathinputName) + " textarea";
+      let mathinputSubmitAnchor = cesc('#' + mathinputName + '_submit');
+      let mathinputCorrectAnchor = cesc('#' + mathinputName + '_correct');
+      let mathinputIncorrectAnchor = cesc('#' + mathinputName + '_incorrect');
+      let mathinputPartialAnchor = cesc('#' + mathinputName + '_partial');
+
+      cy.log('Test value displayed in browser')
+      // cy.get(mathinputAnchor).should('have.value', '');
+      cy.get('#\\/feedback1').should('have.text', '')
+      cy.get('#\\/feedback2').should('have.text', '')
+      cy.get('#\\/feedback3').should('have.text', '')
+      cy.get('#\\/feedback4').should('have.text', '')
+      cy.get(mathinputSubmitAnchor).should('be.visible');
+
+      cy.log('submit blank answer');
+      cy.get(mathinputSubmitAnchor).click();
+
+      cy.get(mathinputIncorrectAnchor).should('be.visible');
+      cy.get('#\\/feedback1').should('have.text', '')
+      cy.get('#\\/feedback2').should('have.text', '')
+      cy.get('#\\/feedback3').should('have.text', '')
+      cy.get('#\\/feedback4').should('have.text', '')
+
+
+      cy.log("Type sin(pi x)")
+      cy.get(mathinputAnchor).type(`sin(pi x)`, { force: true });
+
+      cy.get(mathinputSubmitAnchor).should('be.visible');
+      cy.get('#\\/feedback1').should('have.text', '')
+      cy.get('#\\/feedback2').should('have.text', '')
+      cy.get('#\\/feedback3').should('have.text', '')
+      cy.get('#\\/feedback4').should('have.text', '')
+
+
+      cy.log("Blur")
+      cy.get(mathinputAnchor).blur();
+      cy.get(mathinputSubmitAnchor).should('be.visible');
+      cy.get('#\\/feedback1').should('have.text', '')
+      cy.get('#\\/feedback2').should('have.text', '')
+      cy.get('#\\/feedback3').should('have.text', '')
+      cy.get('#\\/feedback4').should('have.text', '')
+
+
+      cy.log("Submit answer")
+      cy.get(mathinputSubmitAnchor).click();
+      cy.get(mathinputCorrectAnchor).should('be.visible');
+      cy.get('#\\/feedback1').should('have.text', ' FeedbackGood job!')
+      cy.get('#\\/feedback2').should('have.text', '')
+      cy.get('#\\/feedback3').should('have.text', '')
+      cy.get('#\\/feedback4').should('have.text', ' FeedbackGood job!')
+
+
+
+      cy.log("Type cos(pi x)")
+      cy.get(mathinputAnchor).type(`{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}cos(pi x)`, { force: true });
+      cy.get(mathinputSubmitAnchor).should('be.visible');
+      cy.get('#\\/feedback1').should('have.text', ' FeedbackGood job!')
+      cy.get('#\\/feedback2').should('have.text', '')
+      cy.get('#\\/feedback3').should('have.text', '')
+      cy.get('#\\/feedback4').should('have.text', ' FeedbackGood job!')
+
+
+      cy.log("Blur")
+      cy.get(mathinputAnchor).blur();
+      cy.get(mathinputSubmitAnchor).should('be.visible');
+      cy.get('#\\/feedback1').should('have.text', ' FeedbackGood job!')
+      cy.get('#\\/feedback2').should('have.text', '')
+      cy.get('#\\/feedback3').should('have.text', '')
+      cy.get('#\\/feedback4').should('have.text', ' FeedbackGood job!')
+
+
+      cy.log("Submit answer")
+      cy.get(mathinputSubmitAnchor).click();
+      cy.get(mathinputPartialAnchor).should('have.text', '70 %');
+      cy.get('#\\/feedback1').should('have.text', '')
+      cy.get('#\\/feedback2').should('have.text', ' FeedbackClose, but wrong trignometric function')
+      cy.get('#\\/feedback3').should('have.text', '')
+      cy.get('#\\/feedback4').should('have.text', ' FeedbackClose, but wrong trignometric function')
+
+
+      cy.log("Enter x")
+      cy.get(mathinputAnchor).type(`{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}x{enter}`, { force: true });
+      cy.get(mathinputIncorrectAnchor).should('be.visible');
+      cy.get('#\\/feedback1').should('have.text', '')
+      cy.get('#\\/feedback2').should('have.text', '')
+      cy.get('#\\/feedback3').should('have.text', '')
+      cy.get('#\\/feedback4').should('have.text', '')
+
+      cy.log("Enter sin(x)")
+      cy.get(mathinputAnchor).type(`{end}{backspace}sin(x){enter}`, { force: true });
+      cy.get(mathinputPartialAnchor).should('have.text', '30 %');
+      cy.get('#\\/feedback1').should('have.text', '')
+      cy.get('#\\/feedback2').should('have.text', '')
+      cy.get('#\\/feedback3').should('have.text', ' FeedbackYou lost pi')
+      cy.get('#\\/feedback4').should('have.text', ' FeedbackYou lost pi')
+
+    })
+  });
+
+  it('feedback defined in awards, new feedback definitions in document, incorrect codes', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <setup>
+    <feedbackDefinitions>
+      <feedbackDefinition code="wrongTrig" text="Close, but wrong trignometric function" />
+      <feedbackDefinition code="lostPI" text="You lost pi" />
+    </feedbackDefinitions>
+  </setup>
+
+
+  <p><answer>
+    <award feedbackcodes="goodJob"><math>sin(pi x)</math></award>
+    <award credit="0.7" feedbackcodes="wrongTRIGbad"><math>cos(pi x)</math></award>
+    <award credit="0.3" feedbackcodes="lostpi anotherCode"><math>sin(x)</math></award>
+  </answer></p>
+
+  <p>Award 1 feedback:</p>
+  <subsection name="feedback1"><title/><copy prop="feedback" target="_award1" /></subsection>
+  
+  <p>Award 2 feedback:</p>
+  <subsection name="feedback2"><title/><copy prop="feedback" target="_award2" /></subsection>
+
+  <p>Award 3 feedback:</p>
+  <subsection name="feedback3"><title/><copy prop="feedback" target="_award3" /></subsection>
+
+  <p>Answer feedbacks:</p>
+  <subsection name="feedback4"><title/><copy prop="feedbacks" target="_answer1" /></subsection>
+  `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      let mathinputName = components['/_answer1'].stateValues.inputChildren[0].componentName
+      let mathinputAnchor = cesc('#' + mathinputName) + " textarea";
+      let mathinputSubmitAnchor = cesc('#' + mathinputName + '_submit');
+      let mathinputCorrectAnchor = cesc('#' + mathinputName + '_correct');
+      let mathinputIncorrectAnchor = cesc('#' + mathinputName + '_incorrect');
+      let mathinputPartialAnchor = cesc('#' + mathinputName + '_partial');
+
+      cy.log('Test value displayed in browser')
+      // cy.get(mathinputAnchor).should('have.value', '');
+      cy.get('#\\/feedback1').should('have.text', '')
+      cy.get('#\\/feedback2').should('have.text', '')
+      cy.get('#\\/feedback3').should('have.text', '')
+      cy.get('#\\/feedback4').should('have.text', '')
+      cy.get(mathinputSubmitAnchor).should('be.visible');
+
+      cy.log('submit blank answer');
+      cy.get(mathinputSubmitAnchor).click();
+
+      cy.get(mathinputIncorrectAnchor).should('be.visible');
+      cy.get('#\\/feedback1').should('have.text', '')
+      cy.get('#\\/feedback2').should('have.text', '')
+      cy.get('#\\/feedback3').should('have.text', '')
+      cy.get('#\\/feedback4').should('have.text', '')
+
+
+      cy.log("Type sin(pi x)")
+      cy.get(mathinputAnchor).type(`sin(pi x)`, { force: true });
+
+      cy.get(mathinputSubmitAnchor).should('be.visible');
+      cy.get('#\\/feedback1').should('have.text', '')
+      cy.get('#\\/feedback2').should('have.text', '')
+      cy.get('#\\/feedback3').should('have.text', '')
+      cy.get('#\\/feedback4').should('have.text', '')
+
+
+      cy.log("Blur")
+      cy.get(mathinputAnchor).blur();
+      cy.get(mathinputSubmitAnchor).should('be.visible');
+      cy.get('#\\/feedback1').should('have.text', '')
+      cy.get('#\\/feedback2').should('have.text', '')
+      cy.get('#\\/feedback3').should('have.text', '')
+      cy.get('#\\/feedback4').should('have.text', '')
+
+
+      cy.log("Submit answer")
+      cy.get(mathinputSubmitAnchor).click();
+      cy.get(mathinputCorrectAnchor).should('be.visible');
+      cy.get('#\\/feedback1').should('have.text', ' FeedbackGood job!')
+      cy.get('#\\/feedback2').should('have.text', '')
+      cy.get('#\\/feedback3').should('have.text', '')
+      cy.get('#\\/feedback4').should('have.text', ' FeedbackGood job!')
+
+
+
+      cy.log("Type cos(pi x)")
+      cy.get(mathinputAnchor).type(`{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}cos(pi x)`, { force: true });
+      cy.get(mathinputSubmitAnchor).should('be.visible');
+      cy.get('#\\/feedback1').should('have.text', ' FeedbackGood job!')
+      cy.get('#\\/feedback2').should('have.text', '')
+      cy.get('#\\/feedback3').should('have.text', '')
+      cy.get('#\\/feedback4').should('have.text', ' FeedbackGood job!')
+
+
+      cy.log("Blur")
+      cy.get(mathinputAnchor).blur();
+      cy.get(mathinputSubmitAnchor).should('be.visible');
+      cy.get('#\\/feedback1').should('have.text', ' FeedbackGood job!')
+      cy.get('#\\/feedback2').should('have.text', '')
+      cy.get('#\\/feedback3').should('have.text', '')
+      cy.get('#\\/feedback4').should('have.text', ' FeedbackGood job!')
+
+
+      cy.log("Submit answer")
+      cy.get(mathinputSubmitAnchor).click();
+      cy.get(mathinputPartialAnchor).should('have.text', '70 %');
+      cy.get('#\\/feedback1').should('have.text', '')
+      cy.get('#\\/feedback2').should('have.text', '')
+      cy.get('#\\/feedback3').should('have.text', '')
+      cy.get('#\\/feedback4').should('have.text', '')
+
+
+      cy.log("Enter x")
+      cy.get(mathinputAnchor).type(`{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}x{enter}`, { force: true });
+      cy.get(mathinputIncorrectAnchor).should('be.visible');
+      cy.get('#\\/feedback1').should('have.text', '')
+      cy.get('#\\/feedback2').should('have.text', '')
+      cy.get('#\\/feedback3').should('have.text', '')
+      cy.get('#\\/feedback4').should('have.text', '')
+
+      cy.log("Enter sin(x)")
+      cy.get(mathinputAnchor).type(`{end}{backspace}sin(x){enter}`, { force: true });
+      cy.get(mathinputPartialAnchor).should('have.text', '30 %');
+      cy.get('#\\/feedback1').should('have.text', '')
+      cy.get('#\\/feedback2').should('have.text', '')
+      cy.get('#\\/feedback3').should('have.text', ' FeedbackYou lost pi')
+      cy.get('#\\/feedback4').should('have.text', ' FeedbackYou lost pi')
+
+    })
+  });
+
   it('feedback defined in choices', () => {
     cy.window().then((win) => {
       win.postMessage({
@@ -603,7 +1020,7 @@ describe('Feedback Tag Tests', function () {
   </p>
 
   <p>Answer feedbacks:</p>
-  <subsection name="feedbacks"><title/><copy prop="feedbacks" tname="_answer1" /></subsection>
+  <subsection name="feedbacks"><title/><copy prop="feedbacks" target="_answer1" /></subsection>
   `}, "*");
     });
 
@@ -645,7 +1062,7 @@ describe('Feedback Tag Tests', function () {
       })
       cy.get('#\\/feedbacks').should('have.text', ' Feedbackmeow')
 
-      cy.log("Select half incorrect answer")
+      cy.log("Select incorrect answer")
       cy.get(choiceinputAnchor).contains(`monkey`).click();
       cy.get(choiceinputSubmitAnchor).should('be.visible');
       cy.get('#\\/feedbacks').should('have.text', ' Feedbackmeow')
@@ -658,7 +1075,93 @@ describe('Feedback Tag Tests', function () {
     })
   });
 
-  it('feedback updated with tname', () => {
+  it('feedback defined in choices, new feedback definitions in document and section', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <setup>
+    <feedbackDefinitions>
+      <feedbackDefinition code="catSays" text="Meow" />
+      <feedbackDefinition code="dogSays" text="Woof" />
+    </feedbackDefinitions>
+  </setup>
+
+  <section>
+    <setup>
+      <feedbackDefinitions>
+        <feedbackDefinition code="dogAlsoSays" text="Grrr" />
+      </feedbackDefinitions>
+    </setup>
+
+    <p>
+      <answer>
+        <choiceinput randomizeOrder>
+        <choice feedbackcodes="catsays" credit="0.5">cat</choice>
+        <choice feedbackcodes="DogSays dogalsosays" credit="1">dog</choice>
+        <choice>monkey</choice>
+        </choiceinput>
+      </answer>
+    </p>
+
+    <p>Answer feedbacks:</p>
+    <subsection name="feedbacks"><title/><copy prop="feedbacks" target="_answer1" /></subsection>
+  </section>
+  `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      let choiceinputName = cesc(components['/_answer1'].stateValues.inputChildren[0].componentName);
+      let choiceinputAnchor = '#' + choiceinputName;
+      let choiceinputSubmitAnchor = '#' + choiceinputName + '_submit';
+      let choiceinputCorrectAnchor = '#' + choiceinputName + '_correct';
+      let choiceinputIncorrectAnchor = '#' + choiceinputName + '_incorrect';
+      let choiceinputPartialAnchor = '#' + choiceinputName + '_partial';
+
+      cy.log('Test value displayed in browser')
+      cy.get(choiceinputAnchor).should('have.value', '');
+      cy.get(choiceinputSubmitAnchor).should('be.visible');
+      cy.get('#\\/feedbacks').should('have.text', '')
+
+      cy.log("Select correct answer")
+      cy.get(choiceinputAnchor).contains(`dog`).click();
+      cy.get(choiceinputSubmitAnchor).should('be.visible');
+      cy.get('#\\/feedbacks').should('have.text', '')
+
+      cy.log("Click submit button")
+      cy.get(choiceinputSubmitAnchor).click();
+      cy.get(choiceinputCorrectAnchor).should('be.visible');
+      cy.get('#\\/feedbacks').should('have.text', ' FeedbackWoof FeedbackGrrr')
+
+      cy.log("Select half correct answer")
+      cy.get(choiceinputAnchor).contains(`cat`).click();
+      cy.get(choiceinputSubmitAnchor).should('be.visible');
+      cy.get('#\\/feedbacks').should('have.text', ' FeedbackWoof FeedbackGrrr')
+
+      cy.log("Click submit button")
+      cy.get(choiceinputSubmitAnchor).click();
+      cy.get(choiceinputPartialAnchor).invoke('text').then((text) => {
+        expect(text.trim().toLowerCase()).equal('50% correct')
+      })
+      cy.get('#\\/feedbacks').should('have.text', ' FeedbackMeow')
+
+      cy.log("Select incorrect answer")
+      cy.get(choiceinputAnchor).contains(`monkey`).click();
+      cy.get(choiceinputSubmitAnchor).should('be.visible');
+      cy.get('#\\/feedbacks').should('have.text', ' FeedbackMeow')
+
+      cy.log("Click submit button")
+      cy.get(choiceinputSubmitAnchor).click();
+      cy.get(choiceinputIncorrectAnchor).should('be.visible');
+      cy.get('#\\/feedbacks').should('have.text', '')
+
+    })
+  });
+
+  it('feedback updated with target', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
@@ -670,7 +1173,7 @@ describe('Feedback Tag Tests', function () {
     </award>
   </answer>
   
-  <feedback condition="$mi=y" updateWithTname="ans" name="fback"><p>You typed y!</p></feedback>
+  <feedback condition="$mi=y" updateWithTarget="ans" name="fback"><p>You typed y!</p></feedback>
   `}, "*");
     });
 
@@ -694,7 +1197,7 @@ describe('Feedback Tag Tests', function () {
 
   });
 
-  it('feedback based on booleans, updated with tname', () => {
+  it('feedback based on booleans, updated with target', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
@@ -710,12 +1213,12 @@ describe('Feedback Tag Tests', function () {
     <considerAsResponses>$m1 $m2</considerAsResponses>
   </answer>
 
-  <p>Submitted responses: <copy prop="submittedResponses" tname="ans" assignNames="r1 r2" /></p>
+  <p>Submitted responses: <copy prop="submittedResponses" target="ans" assignNames="r1 r2" /></p>
   
   <subsection>
     <title>Desired feedback behavior</title>
-    <feedback condition="$got1 and not $got2" updateWithTname="ans" name="fback1"><p>You got the first; what about the second?</p></feedback>
-    <feedback condition="$got2 and not $got1" updateWithTname="ans" name="fback2"><p>You got the second; what about the first?</p></feedback>
+    <feedback condition="$got1 and not $got2" updateWithTarget="ans" name="fback1"><p>You got the first; what about the second?</p></feedback>
+    <feedback condition="$got2 and not $got1" updateWithTarget="ans" name="fback2"><p>You got the second; what about the first?</p></feedback>
   </subsection>
   <subsection>
     <title>Default feedback behavior</title>
@@ -810,22 +1313,22 @@ describe('Feedback Tag Tests', function () {
     <award name="large" credit="0"><when>$mi1 < 3 and $mi2 < 3</when></award>
   </answer></p>
   <section>
-  <feedback name="close" condition="$(medium{prop='creditAchieved'}) > $(small{prop='creditAchieved'})" updateWithTname='ans'>
+  <feedback name="close" condition="$(medium{prop='creditAchieved'}) > $(small{prop='creditAchieved'})">
   <p>A number or two is close but not quite.</p>
   </feedback>
-  <feedback name="goodAndClose" condition="$(medium{prop='fractionSatisfied'}) > $(small{prop='fractionSatisfied'}) > 0" updateWithTname='ans'>
+  <feedback name="goodAndClose" condition="$(medium{prop='fractionSatisfied'}) > $(small{prop='fractionSatisfied'}) > 0">
   <p>One number is good, the other number is close but not quite.</p>
   </feedback>
-  <feedback name="startingClose" condition="$(large{prop='fractionSatisfied'}) > 0 and $(medium{prop='fractionSatisfied'}) = 0" updateWithTname='ans'>
+  <feedback name="startingClose" condition="$(large{prop='fractionSatisfied'}) > 0 and $(medium{prop='fractionSatisfied'}) = 0">
   <p>A number or two is starting to get close.</p>
   </feedback>
-  <feedback name="closeStartingClose" condition="$(large{prop='fractionSatisfied'}) >  $(medium{prop='fractionSatisfied'}) > $(small{prop='fractionSatisfied'})" updateWithTname='ans'>
+  <feedback name="closeStartingClose" condition="$(large{prop='fractionSatisfied'}) >  $(medium{prop='fractionSatisfied'}) > $(small{prop='fractionSatisfied'})">
   <p>A number is close but not quite; the other number is starting to get close.</p>
   </feedback>
-  <feedback name="goodStartingClose" condition="$(large{prop='fractionSatisfied'}) > $(small{prop='fractionSatisfied'}) > 0 and  $(small{prop='fractionSatisfied'}) =  $(medium{prop='fractionSatisfied'})" updateWithTname='ans'>
+  <feedback name="goodStartingClose" condition="$(large{prop='fractionSatisfied'}) > $(small{prop='fractionSatisfied'}) > 0 and  $(small{prop='fractionSatisfied'}) =  $(medium{prop='fractionSatisfied'})">
   <p>One number is good, the other number is starting to get close.</p>
   </feedback>
-  <feedback name="good" condition="1 > $(small{prop='fractionSatisfied'}) > 0 and $(small{prop='fractionSatisfied'}) = $(medium{prop='fractionSatisfied'}) = $(large{prop='fractionSatisfied'})" updateWithTname='ans'>
+  <feedback name="good" condition="1 > $(small{prop='fractionSatisfied'}) > 0 and $(small{prop='fractionSatisfied'}) = $(medium{prop='fractionSatisfied'}) = $(large{prop='fractionSatisfied'})">
   <p>One number is good.</p>
   </feedback>
   </section>

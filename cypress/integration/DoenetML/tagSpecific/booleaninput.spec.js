@@ -21,8 +21,8 @@ describe('BooleanInput Tag Tests', function () {
         doenetML: `
     <text>a</text>
     <booleaninput label="hello"/>
-    <copy prop="value" tname="_booleaninput1" />
-    <copy tname="_copy1" />
+    <copy prop="value" target="_booleaninput1" />
+    <copy target="_copy1" />
     `}, "*");
     });
 
@@ -88,7 +88,7 @@ describe('BooleanInput Tag Tests', function () {
         doenetML: `
     <text>a</text>
     <booleaninput prefill="true"/>
-    <copy prop="value" tname="_booleaninput1" />
+    <copy prop="value" target="_booleaninput1" />
     `}, "*");
     });
 
@@ -143,10 +143,10 @@ describe('BooleanInput Tag Tests', function () {
         doenetML: `
     <text>a</text>
     <p><booleaninput prefill="true" label="green"/></p>
-    <p><copy tname="_booleaninput1" /></p>
-    <p><copy prop="value" tname="_booleaninput1" /></p>
+    <p><copy target="_booleaninput1" /></p>
+    <p><copy prop="value" target="_booleaninput1" /></p>
     <p><booleaninput label="red" /></p>
-    <p><copy prop="value" tname="_booleaninput2" /></p>
+    <p><copy prop="value" target="_booleaninput2" /></p>
     `}, "*");
     });
 
@@ -225,8 +225,8 @@ describe('BooleanInput Tag Tests', function () {
     <text>a</text>
     <p>Original boolean: <boolean>true</boolean></p>
     <p>booleaninput based on boolean: <booleaninput bindValueTo="$_boolean1" /></p>
-    <p>Reffed boolean: <copy tname="_boolean1" /></p>
-    <p>Reffed boolean input: <copy prop="value" tname="_booleaninput1" /></p>
+    <p>Copied boolean: <copy target="_boolean1" /></p>
+    <p>Copied boolean input: <copy prop="value" target="_booleaninput1" /></p>
     `}, "*");
     });
 
@@ -335,7 +335,7 @@ describe('BooleanInput Tag Tests', function () {
     <text>a</text>
     <booleaninput name="bi" />
     <number name="n">1</number>
-    <updateValue triggerWithTnames="bi" tname="n" newValue="$n+1" type="number" />
+    <updateValue triggerWithTargets="bi" target="n" newValue="$n+1" type="number" />
     `}, "*");
     });
 

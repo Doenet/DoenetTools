@@ -16,7 +16,7 @@ describe('ChoiceInput Tag Tests', function () {
 
   it('default is block format', () => {
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -27,8 +27,8 @@ describe('ChoiceInput Tag Tests', function () {
       <choice>mouse</choice>
     </choiceinput>
 
-    <p>Selected value: <copy prop='selectedvalue' tname="_choiceinput1" /></p>
-    <p>Selected index: <copy prop='selectedindex' tname="_choiceinput1" /></p>
+    <p>Selected value: <copy prop='selectedvalue' target="_choiceinput1" /></p>
+    <p>Selected index: <copy prop='selectedindex' target="_choiceinput1" /></p>
     `}, "*");
     });
 
@@ -39,7 +39,7 @@ describe('ChoiceInput Tag Tests', function () {
     cy.get('#\\/_p2').should('have.text', 'Selected index: ')
 
     let choices, choiceOrder;
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       choices = [...components['/_choiceinput1'].stateValues.choiceTexts];
       choiceOrder = [...components['/_choiceinput1'].stateValues.choiceOrder];
@@ -54,15 +54,15 @@ describe('ChoiceInput Tag Tests', function () {
       expect(choices[3]).not.eq(choices[0]);
       expect(choices[3]).not.eq(choices[1]);
       expect(choices[3]).not.eq(choices[2]);
-      expect(components['/_choiceinput1'].stateValues.selectedValues).eqls([])
-      expect(components['/_choiceinput1'].stateValues.selectedIndices).eqls([])
+      expect(await components['/_choiceinput1'].stateValues.selectedValues).eqls([])
+      expect(await components['/_choiceinput1'].stateValues.selectedIndices).eqls([])
       // expect(components['/_choiceinput1'].stateValues.selectedoriginalindices).eqls([])
-      expect(components['/_choiceinput1'].stateValues.inline).eq(false);
+      expect(await components['/_choiceinput1'].stateValues.inline).eq(false);
       expect(components['/_choiceinput1'].stateValues.randomizeOrder).eq(true);
-      expect(components['/_choice1'].stateValues.selected).eq(false);
-      expect(components['/_choice2'].stateValues.selected).eq(false);
-      expect(components['/_choice3'].stateValues.selected).eq(false);
-      expect(components['/_choice4'].stateValues.selected).eq(false);
+      expect(await components['/_choice1'].stateValues.selected).eq(false);
+      expect(await components['/_choice2'].stateValues.selected).eq(false);
+      expect(await components['/_choice3'].stateValues.selected).eq(false);
+      expect(await components['/_choice4'].stateValues.selected).eq(false);
 
     });
 
@@ -71,7 +71,7 @@ describe('ChoiceInput Tag Tests', function () {
     for (let i = 0; i < 4; i++) {
       cy.get(`#\\/_choiceinput1_choice${i + 1}_input`).click();
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
 
         // make this asynchronous so that choices is populated before line is executed
         cy.get('#\\/_p1').should('have.text', 'Selected value: ' + choices[i])
@@ -80,13 +80,13 @@ describe('ChoiceInput Tag Tests', function () {
         //   expect(text.trim()).equal(`${originalChoices.indexOf(choices[i])+1}`)
         // })
         let components = Object.assign({}, win.state.components);
-        expect(components['/_choiceinput1'].stateValues.selectedValues).eqls([choices[i]])
-        expect(components['/_choiceinput1'].stateValues.selectedIndices).eqls([i + 1])
+        expect(await components['/_choiceinput1'].stateValues.selectedValues).eqls([choices[i]])
+        expect(await components['/_choiceinput1'].stateValues.selectedIndices).eqls([i + 1])
         // expect(components['/_choiceinput1'].stateValues.selectedoriginalindices).eqls([originalChoices.indexOf(choices[i])+1])
-        expect(components['/_choice1'].stateValues.selected).eq(choiceOrder[i] === 1);
-        expect(components['/_choice2'].stateValues.selected).eq(choiceOrder[i] === 2);
-        expect(components['/_choice3'].stateValues.selected).eq(choiceOrder[i] === 3);
-        expect(components['/_choice4'].stateValues.selected).eq(choiceOrder[i] === 4);
+        expect(await components['/_choice1'].stateValues.selected).eq(choiceOrder[i] === 1);
+        expect(await components['/_choice2'].stateValues.selected).eq(choiceOrder[i] === 2);
+        expect(await components['/_choice3'].stateValues.selected).eq(choiceOrder[i] === 3);
+        expect(await components['/_choice4'].stateValues.selected).eq(choiceOrder[i] === 4);
 
       });
     }
@@ -95,7 +95,7 @@ describe('ChoiceInput Tag Tests', function () {
 
   it('inline choiceinput', () => {
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -106,8 +106,8 @@ describe('ChoiceInput Tag Tests', function () {
       <choice>mouse</choice>
     </choiceinput>
 
-    <p>Selected value: <copy prop='selectedvalue' tname="_choiceinput1" /></p>
-    <p>Selected index: <copy prop='selectedindex' tname="_choiceinput1" /></p>
+    <p>Selected value: <copy prop='selectedvalue' target="_choiceinput1" /></p>
+    <p>Selected index: <copy prop='selectedindex' target="_choiceinput1" /></p>
     `}, "*");
     });
 
@@ -120,7 +120,7 @@ describe('ChoiceInput Tag Tests', function () {
     cy.get("#\\/_choiceinput1").should('have.value', '')
 
     let choices, choiceOrder;
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       choices = [...components['/_choiceinput1'].stateValues.choiceTexts];
       choiceOrder = [...components['/_choiceinput1'].stateValues.choiceOrder];
@@ -135,15 +135,15 @@ describe('ChoiceInput Tag Tests', function () {
       expect(choices[3]).not.eq(choices[0]);
       expect(choices[3]).not.eq(choices[1]);
       expect(choices[3]).not.eq(choices[2]);
-      expect(components['/_choiceinput1'].stateValues.selectedValues).eqls([])
-      expect(components['/_choiceinput1'].stateValues.selectedIndices).eqls([])
+      expect(await components['/_choiceinput1'].stateValues.selectedValues).eqls([])
+      expect(await components['/_choiceinput1'].stateValues.selectedIndices).eqls([])
       // expect(components['/_choiceinput1'].stateValues.selectedoriginalindices).eqls([])
-      expect(components['/_choiceinput1'].stateValues.inline).eq(true);
+      expect(await components['/_choiceinput1'].stateValues.inline).eq(true);
       expect(components['/_choiceinput1'].stateValues.randomizeOrder).eq(true);
-      expect(components['/_choice1'].stateValues.selected).eq(false);
-      expect(components['/_choice2'].stateValues.selected).eq(false);
-      expect(components['/_choice3'].stateValues.selected).eq(false);
-      expect(components['/_choice4'].stateValues.selected).eq(false);
+      expect(await components['/_choice1'].stateValues.selected).eq(false);
+      expect(await components['/_choice2'].stateValues.selected).eq(false);
+      expect(await components['/_choice3'].stateValues.selected).eq(false);
+      expect(await components['/_choice4'].stateValues.selected).eq(false);
 
     });
 
@@ -153,7 +153,7 @@ describe('ChoiceInput Tag Tests', function () {
       cy.get(`#\\/_choiceinput1`).select(`${i + 1}`);
       cy.get("#\\/_choiceinput1").should('have.value', i + 1)
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
 
         // make this asynchronous  so that choices is populated before line is executed
         cy.get('#\\/_p1').should('have.text', 'Selected value: ' + choices[i])
@@ -163,13 +163,13 @@ describe('ChoiceInput Tag Tests', function () {
         // })
 
         let components = Object.assign({}, win.state.components);
-        expect(components['/_choiceinput1'].stateValues.selectedValues).eqls([choices[i]])
-        expect(components['/_choiceinput1'].stateValues.selectedIndices).eqls([i + 1])
+        expect(await components['/_choiceinput1'].stateValues.selectedValues).eqls([choices[i]])
+        expect(await components['/_choiceinput1'].stateValues.selectedIndices).eqls([i + 1])
         // expect(components['/_choiceinput1'].stateValues.selectedoriginalindices).eqls([originalChoices.indexOf(choices[i])+1])
-        expect(components['/_choice1'].stateValues.selected).eq(choiceOrder[i] === 1);
-        expect(components['/_choice2'].stateValues.selected).eq(choiceOrder[i] === 2);
-        expect(components['/_choice3'].stateValues.selected).eq(choiceOrder[i] === 3);
-        expect(components['/_choice4'].stateValues.selected).eq(choiceOrder[i] === 4);
+        expect(await components['/_choice1'].stateValues.selected).eq(choiceOrder[i] === 1);
+        expect(await components['/_choice2'].stateValues.selected).eq(choiceOrder[i] === 2);
+        expect(await components['/_choice3'].stateValues.selected).eq(choiceOrder[i] === 3);
+        expect(await components['/_choice4'].stateValues.selected).eq(choiceOrder[i] === 4);
 
       });
     }
@@ -178,7 +178,7 @@ describe('ChoiceInput Tag Tests', function () {
 
   it('fixed order', () => {
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -189,8 +189,8 @@ describe('ChoiceInput Tag Tests', function () {
       <choice>mouse</choice>
     </choiceinput>
 
-    <p>Selected value: <copy prop='selectedvalue' tname="_choiceinput1" /></p>
-    <p>Selected index: <copy prop='selectedindex' tname="_choiceinput1" /></p>
+    <p>Selected value: <copy prop='selectedvalue' target="_choiceinput1" /></p>
+    <p>Selected index: <copy prop='selectedindex' target="_choiceinput1" /></p>
     `}, "*");
     });
 
@@ -203,19 +203,19 @@ describe('ChoiceInput Tag Tests', function () {
 
 
     let choices;
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       choices = [...components['/_choiceinput1'].stateValues.choiceTexts];
       expect(choices).eqls(originalChoices);
-      expect(components['/_choiceinput1'].stateValues.selectedValues).eqls([])
-      expect(components['/_choiceinput1'].stateValues.selectedIndices).eqls([])
+      expect(await components['/_choiceinput1'].stateValues.selectedValues).eqls([])
+      expect(await components['/_choiceinput1'].stateValues.selectedIndices).eqls([])
       // expect(components['/_choiceinput1'].stateValues.selectedoriginalindices).eqls([])
-      expect(components['/_choiceinput1'].stateValues.inline).eq(false);
+      expect(await components['/_choiceinput1'].stateValues.inline).eq(false);
       expect(components['/_choiceinput1'].stateValues.randomizeOrder).eq(false);
-      expect(components['/_choice1'].stateValues.selected).eq(false);
-      expect(components['/_choice2'].stateValues.selected).eq(false);
-      expect(components['/_choice3'].stateValues.selected).eq(false);
-      expect(components['/_choice4'].stateValues.selected).eq(false);
+      expect(await components['/_choice1'].stateValues.selected).eq(false);
+      expect(await components['/_choice2'].stateValues.selected).eq(false);
+      expect(await components['/_choice3'].stateValues.selected).eq(false);
+      expect(await components['/_choice4'].stateValues.selected).eq(false);
 
     });
 
@@ -224,7 +224,7 @@ describe('ChoiceInput Tag Tests', function () {
     for (let i = 0; i < 4; i++) {
       cy.get(`#\\/_choiceinput1_choice${i + 1}_input`).click();
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
 
         // make this asynchronous  so that choices is populated before line is executed
         cy.get('#\\/_p1').should('have.text', 'Selected value: ' + choices[i])
@@ -234,13 +234,13 @@ describe('ChoiceInput Tag Tests', function () {
         // })
 
         let components = Object.assign({}, win.state.components);
-        expect(components['/_choiceinput1'].stateValues.selectedValues).eqls([choices[i]])
-        expect(components['/_choiceinput1'].stateValues.selectedIndices).eqls([i + 1])
+        expect(await components['/_choiceinput1'].stateValues.selectedValues).eqls([choices[i]])
+        expect(await components['/_choiceinput1'].stateValues.selectedIndices).eqls([i + 1])
         // expect(components['/_choiceinput1'].stateValues.selectedoriginalindices).eqls([i + 1])
-        expect(components['/_choice1'].stateValues.selected).eq(i === 0);
-        expect(components['/_choice2'].stateValues.selected).eq(i === 1);
-        expect(components['/_choice3'].stateValues.selected).eq(i === 2);
-        expect(components['/_choice4'].stateValues.selected).eq(i === 3);
+        expect(await components['/_choice1'].stateValues.selected).eq(i === 0);
+        expect(await components['/_choice2'].stateValues.selected).eq(i === 1);
+        expect(await components['/_choice3'].stateValues.selected).eq(i === 2);
+        expect(await components['/_choice4'].stateValues.selected).eq(i === 3);
 
       });
     }
@@ -249,7 +249,7 @@ describe('ChoiceInput Tag Tests', function () {
 
   it('choiceinput references', () => {
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
       <text>a</text>
@@ -261,21 +261,21 @@ describe('ChoiceInput Tag Tests', function () {
         <choice>e</choice>
         <choice>f</choice>
       </choiceinput>
-      <copy name="copy" tname="_choiceinput1" />
-      <copy name="copy2" inline="false" tname="_choiceinput1" />
-      <copy name="copy3" inline="false" tname="copy" />
+      <copy name="copy" target="_choiceinput1" />
+      <copy name="copy2" inline="false" target="_choiceinput1" />
+      <copy name="copy3" inline="false" target="copy" />
   
       <p>Selected values: <aslist>
-      <copy prop='selectedvalue' tname="_choiceinput1" />
-      <copy prop='selectedvalue' tname="copy" />
-      <copy prop='selectedvalue' tname="copy2" />
-      <copy prop='selectedvalue' tname="copy3" />
+      <copy prop='selectedvalue' target="_choiceinput1" />
+      <copy prop='selectedvalue' target="copy" />
+      <copy prop='selectedvalue' target="copy2" />
+      <copy prop='selectedvalue' target="copy3" />
       </aslist></p>
       <p>Selected indices: <aslist>
-      <copy prop='selectedindex' tname="_choiceinput1" />
-      <copy prop='selectedindex' tname="copy" />
-      <copy prop='selectedindex' tname="copy2" />
-      <copy prop='selectedindex' tname="copy3" />
+      <copy prop='selectedindex' target="_choiceinput1" />
+      <copy prop='selectedindex' target="copy" />
+      <copy prop='selectedindex' target="copy2" />
+      <copy prop='selectedindex' target="copy3" />
       </aslist></p>
 
     `}, "*");
@@ -289,14 +289,14 @@ describe('ChoiceInput Tag Tests', function () {
     // cy.get('#\\/_p3').should('have.text', 'Selected original indices: ')
 
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let choice2Anchor = cesc('#' + components["/copy"].replacements[0].componentName);
       let choice3Anchor = cesc('#' + components["/copy2"].replacements[0].componentName);
       let choice4Anchor = cesc('#' + components["/copy3"].replacements[0].componentName);
 
       let choices;
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let components = Object.assign({}, win.state.components);
         choices = [...components['/_choiceinput1'].stateValues.choiceTexts];
         expect(choices.length).eq(6);
@@ -325,20 +325,20 @@ describe('ChoiceInput Tag Tests', function () {
         expect(components['/copy2'].replacements[0].stateValues.choiceTexts).eqls(choices);
         expect(components['/copy3'].replacements[0].stateValues.choiceTexts).eqls(choices);
 
-        expect(components['/_choiceinput1'].stateValues.selectedValues).eqls([])
-        expect(components['/_choiceinput1'].stateValues.selectedIndices).eqls([])
+        expect(await components['/_choiceinput1'].stateValues.selectedValues).eqls([])
+        expect(await components['/_choiceinput1'].stateValues.selectedIndices).eqls([])
         // expect(components['/_choiceinput1'].stateValues.selectedoriginalindices).eqls([])
-        expect(components['/copy'].replacements[0].stateValues.selectedValues).eqls([])
-        expect(components['/copy'].replacements[0].stateValues.selectedIndices).eqls([])
+        expect(await components['/copy'].replacements[0].stateValues.selectedValues).eqls([])
+        expect(await components['/copy'].replacements[0].stateValues.selectedIndices).eqls([])
         // expect(components['/copy'].replacements[0].stateValues.selectedoriginalindices).eqls([])
-        expect(components['/copy2'].replacements[0].stateValues.selectedValues).eqls([])
-        expect(components['/copy2'].replacements[0].stateValues.selectedIndices).eqls([])
+        expect(await components['/copy2'].replacements[0].stateValues.selectedValues).eqls([])
+        expect(await components['/copy2'].replacements[0].stateValues.selectedIndices).eqls([])
         // expect(components['/copy2'].replacements[0].stateValues.selectedoriginalindices).eqls([])
-        expect(components['/copy3'].replacements[0].stateValues.selectedValues).eqls([])
-        expect(components['/copy3'].replacements[0].stateValues.selectedIndices).eqls([])
+        expect(await components['/copy3'].replacements[0].stateValues.selectedValues).eqls([])
+        expect(await components['/copy3'].replacements[0].stateValues.selectedIndices).eqls([])
         // expect(components['/copy3'].replacements[0].stateValues.selectedoriginalindices).eqls([])
 
-        expect(components['/_choiceinput1'].stateValues.inline).eq(true);
+        expect(await components['/_choiceinput1'].stateValues.inline).eq(true);
         expect(components['/_choiceinput1'].stateValues.randomizeOrder).eq(true);
         expect(components['/copy'].replacements[0].stateValues.inline).eq(true);
         expect(components['/copy'].replacements[0].stateValues.randomizeOrder).eq(true);
@@ -351,9 +351,7 @@ describe('ChoiceInput Tag Tests', function () {
 
       cy.log('select options in order from first input')
       for (let i = 0; i < 6; i++) {
-        cy.get(`#\\/_choiceinput1`).select(`${i + 1}`);
-
-        cy.window().then((win) => {
+        cy.get(`#\\/_choiceinput1`).select(`${i + 1}`).then(() => {
 
           let origInd = originalChoices.indexOf(choices[i]) + 1;
           // make this asynchronous  so that choices is populated before line is executed
@@ -365,28 +363,32 @@ describe('ChoiceInput Tag Tests', function () {
           //   })
           // }
 
-          let components = Object.assign({}, win.state.components);
-          expect(components['/_choiceinput1'].stateValues.selectedValues).eqls([choices[i]])
-          expect(components['/_choiceinput1'].stateValues.selectedIndices).eqls([i + 1])
-          // expect(components['/_choiceinput1'].stateValues.selectedoriginalindices).eqls([origInd])
-          expect(components['/copy'].replacements[0].stateValues.selectedValues).eqls([choices[i]])
-          expect(components['/copy'].replacements[0].stateValues.selectedIndices).eqls([i + 1])
-          // expect(components['/copy'].replacements[0].stateValues.selectedoriginalindices).eqls([origInd])
-          expect(components['/copy2'].replacements[0].stateValues.selectedValues).eqls([choices[i]])
-          expect(components['/copy2'].replacements[0].stateValues.selectedIndices).eqls([i + 1])
-          // expect(components['/copy2'].replacements[0].stateValues.selectedoriginalindices).eqls([origInd])
-          expect(components['/copy3'].replacements[0].stateValues.selectedValues).eqls([choices[i]])
-          expect(components['/copy3'].replacements[0].stateValues.selectedIndices).eqls([i + 1])
-          // expect(components['/copy3'].replacements[0].stateValues.selectedoriginalindices).eqls([origInd])
+          cy.window().then(async (win) => {
+
+            let components = Object.assign({}, win.state.components);
+            expect(await components['/_choiceinput1'].stateValues.selectedValues).eqls([choices[i]])
+            expect(await components['/_choiceinput1'].stateValues.selectedIndices).eqls([i + 1])
+            // expect(components['/_choiceinput1'].stateValues.selectedoriginalindices).eqls([origInd])
+            expect(await components['/copy'].replacements[0].stateValues.selectedValues).eqls([choices[i]])
+            expect(await components['/copy'].replacements[0].stateValues.selectedIndices).eqls([i + 1])
+            // expect(components['/copy'].replacements[0].stateValues.selectedoriginalindices).eqls([origInd])
+            expect(await components['/copy2'].replacements[0].stateValues.selectedValues).eqls([choices[i]])
+            expect(await components['/copy2'].replacements[0].stateValues.selectedIndices).eqls([i + 1])
+            // expect(components['/copy2'].replacements[0].stateValues.selectedoriginalindices).eqls([origInd])
+            expect(await components['/copy3'].replacements[0].stateValues.selectedValues).eqls([choices[i]])
+            expect(await components['/copy3'].replacements[0].stateValues.selectedIndices).eqls([i + 1])
+            // expect(components['/copy3'].replacements[0].stateValues.selectedoriginalindices).eqls([origInd])
+
+          });
 
         });
       }
 
       cy.log('select options in order from second input')
       for (let i = 0; i < 6; i++) {
-        cy.get(choice2Anchor).select(`${i + 1}`);
+        cy.get(choice2Anchor).select(`${i + 1}`).then(() => {
 
-        cy.window().then((win) => {
+
 
           let origInd = originalChoices.indexOf(choices[i]) + 1;
           // make this asynchronous  so that choices is populated before line is executed
@@ -398,28 +400,31 @@ describe('ChoiceInput Tag Tests', function () {
           //   })
           // }
 
-          let components = Object.assign({}, win.state.components);
-          expect(components['/_choiceinput1'].stateValues.selectedValues).eqls([choices[i]])
-          expect(components['/_choiceinput1'].stateValues.selectedIndices).eqls([i + 1])
-          // expect(components['/_choiceinput1'].stateValues.selectedoriginalindices).eqls([origInd])
-          expect(components['/copy'].replacements[0].stateValues.selectedValues).eqls([choices[i]])
-          expect(components['/copy'].replacements[0].stateValues.selectedIndices).eqls([i + 1])
-          // expect(components['/copy'].replacements[0].stateValues.selectedoriginalindices).eqls([origInd])
-          expect(components['/copy2'].replacements[0].stateValues.selectedValues).eqls([choices[i]])
-          expect(components['/copy2'].replacements[0].stateValues.selectedIndices).eqls([i + 1])
-          // expect(components['/copy2'].replacements[0].stateValues.selectedoriginalindices).eqls([origInd])
-          expect(components['/copy3'].replacements[0].stateValues.selectedValues).eqls([choices[i]])
-          expect(components['/copy3'].replacements[0].stateValues.selectedIndices).eqls([i + 1])
-          // expect(components['/copy3'].replacements[0].stateValues.selectedoriginalindices).eqls([origInd])
+          cy.window().then(async (win) => {
 
-        });
+            let components = Object.assign({}, win.state.components);
+            expect(await components['/_choiceinput1'].stateValues.selectedValues).eqls([choices[i]])
+            expect(await components['/_choiceinput1'].stateValues.selectedIndices).eqls([i + 1])
+            // expect(components['/_choiceinput1'].stateValues.selectedoriginalindices).eqls([origInd])
+            expect(await components['/copy'].replacements[0].stateValues.selectedValues).eqls([choices[i]])
+            expect(await components['/copy'].replacements[0].stateValues.selectedIndices).eqls([i + 1])
+            // expect(components['/copy'].replacements[0].stateValues.selectedoriginalindices).eqls([origInd])
+            expect(await components['/copy2'].replacements[0].stateValues.selectedValues).eqls([choices[i]])
+            expect(await components['/copy2'].replacements[0].stateValues.selectedIndices).eqls([i + 1])
+            // expect(components['/copy2'].replacements[0].stateValues.selectedoriginalindices).eqls([origInd])
+            expect(await components['/copy3'].replacements[0].stateValues.selectedValues).eqls([choices[i]])
+            expect(await components['/copy3'].replacements[0].stateValues.selectedIndices).eqls([i + 1])
+            // expect(components['/copy3'].replacements[0].stateValues.selectedoriginalindices).eqls([origInd])
+
+          });
+        })
+
       }
 
       cy.log('select options in order from third input')
       for (let i = 0; i < 6; i++) {
-        cy.get(`${choice3Anchor}_choice${i + 1}_input`).click();
+        cy.get(`${choice3Anchor}_choice${i + 1}_input`).click().then(() => {
 
-        cy.window().then((win) => {
 
           let origInd = originalChoices.indexOf(choices[i]) + 1;
           // make this asynchronous  so that choices is populated before line is executed
@@ -431,28 +436,30 @@ describe('ChoiceInput Tag Tests', function () {
           //   })
           // }
 
-          let components = Object.assign({}, win.state.components);
-          expect(components['/_choiceinput1'].stateValues.selectedValues).eqls([choices[i]])
-          expect(components['/_choiceinput1'].stateValues.selectedIndices).eqls([i + 1])
-          // expect(components['/_choiceinput1'].stateValues.selectedoriginalindices).eqls([origInd])
-          expect(components['/copy'].replacements[0].stateValues.selectedValues).eqls([choices[i]])
-          expect(components['/copy'].replacements[0].stateValues.selectedIndices).eqls([i + 1])
-          // expect(components['/copy'].replacements[0].stateValues.selectedoriginalindices).eqls([origInd])
-          expect(components['/copy2'].replacements[0].stateValues.selectedValues).eqls([choices[i]])
-          expect(components['/copy2'].replacements[0].stateValues.selectedIndices).eqls([i + 1])
-          // expect(components['/copy2'].replacements[0].stateValues.selectedoriginalindices).eqls([origInd])
-          expect(components['/copy3'].replacements[0].stateValues.selectedValues).eqls([choices[i]])
-          expect(components['/copy3'].replacements[0].stateValues.selectedIndices).eqls([i + 1])
-          // expect(components['/copy3'].replacements[0].stateValues.selectedoriginalindices).eqls([origInd])
+          cy.window().then(async (win) => {
+
+            let components = Object.assign({}, win.state.components);
+            expect(await components['/_choiceinput1'].stateValues.selectedValues).eqls([choices[i]])
+            expect(await components['/_choiceinput1'].stateValues.selectedIndices).eqls([i + 1])
+            // expect(components['/_choiceinput1'].stateValues.selectedoriginalindices).eqls([origInd])
+            expect(await components['/copy'].replacements[0].stateValues.selectedValues).eqls([choices[i]])
+            expect(await components['/copy'].replacements[0].stateValues.selectedIndices).eqls([i + 1])
+            // expect(components['/copy'].replacements[0].stateValues.selectedoriginalindices).eqls([origInd])
+            expect(await components['/copy2'].replacements[0].stateValues.selectedValues).eqls([choices[i]])
+            expect(await components['/copy2'].replacements[0].stateValues.selectedIndices).eqls([i + 1])
+            // expect(components['/copy2'].replacements[0].stateValues.selectedoriginalindices).eqls([origInd])
+            expect(await components['/copy3'].replacements[0].stateValues.selectedValues).eqls([choices[i]])
+            expect(await components['/copy3'].replacements[0].stateValues.selectedIndices).eqls([i + 1])
+            // expect(components['/copy3'].replacements[0].stateValues.selectedoriginalindices).eqls([origInd])
+
+          })
 
         });
       }
 
       cy.log('select options in order from fourth input')
       for (let i = 0; i < 6; i++) {
-        cy.get(`${choice4Anchor}_choice${i + 1}_input`).click();
-
-        cy.window().then((win) => {
+        cy.get(`${choice4Anchor}_choice${i + 1}_input`).click().then(() => {
 
           let origInd = originalChoices.indexOf(choices[i]) + 1;
           // make this asynchronous  so that choices is populated before line is executed
@@ -464,19 +471,23 @@ describe('ChoiceInput Tag Tests', function () {
           //   })
           // }
 
-          let components = Object.assign({}, win.state.components);
-          expect(components['/_choiceinput1'].stateValues.selectedValues).eqls([choices[i]])
-          expect(components['/_choiceinput1'].stateValues.selectedIndices).eqls([i + 1])
-          // expect(components['/_choiceinput1'].stateValues.selectedoriginalindices).eqls([origInd])
-          expect(components['/copy'].replacements[0].stateValues.selectedValues).eqls([choices[i]])
-          expect(components['/copy'].replacements[0].stateValues.selectedIndices).eqls([i + 1])
-          // expect(components['/copy'].replacements[0].stateValues.selectedoriginalindices).eqls([origInd])
-          expect(components['/copy2'].replacements[0].stateValues.selectedValues).eqls([choices[i]])
-          expect(components['/copy2'].replacements[0].stateValues.selectedIndices).eqls([i + 1])
-          // expect(components['/copy2'].replacements[0].stateVsalues.selectedoriginalindices).eqls([origInd])
-          expect(components['/copy3'].replacements[0].stateValues.selectedValues).eqls([choices[i]])
-          expect(components['/copy3'].replacements[0].stateValues.selectedIndices).eqls([i + 1])
-          // expect(components['/copy3'].replacements[0].stateValues.selectedoriginalindices).eqls([origInd])
+          cy.window().then(async (win) => {
+
+            let components = Object.assign({}, win.state.components);
+            expect(await components['/_choiceinput1'].stateValues.selectedValues).eqls([choices[i]])
+            expect(await components['/_choiceinput1'].stateValues.selectedIndices).eqls([i + 1])
+            // expect(components['/_choiceinput1'].stateValues.selectedoriginalindices).eqls([origInd])
+            expect(await components['/copy'].replacements[0].stateValues.selectedValues).eqls([choices[i]])
+            expect(await components['/copy'].replacements[0].stateValues.selectedIndices).eqls([i + 1])
+            // expect(components['/copy'].replacements[0].stateValues.selectedoriginalindices).eqls([origInd])
+            expect(await components['/copy2'].replacements[0].stateValues.selectedValues).eqls([choices[i]])
+            expect(await components['/copy2'].replacements[0].stateValues.selectedIndices).eqls([i + 1])
+            // expect(components['/copy2'].replacements[0].stateVsalues.selectedoriginalindices).eqls([origInd])
+            expect(await components['/copy3'].replacements[0].stateValues.selectedValues).eqls([choices[i]])
+            expect(await components['/copy3'].replacements[0].stateValues.selectedIndices).eqls([i + 1])
+            // expect(components['/copy3'].replacements[0].stateValues.selectedoriginalindices).eqls([origInd])
+
+          })
 
         });
       }
@@ -486,26 +497,26 @@ describe('ChoiceInput Tag Tests', function () {
 
   it('math inside choices', () => {
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
     <choiceinput randomizeOrder>
       <choice>The function is <m>f(\\xi)=\\sin(\\xi)</m>.</choice>
-      <choice>The sum of <math name="lambda2">lambda^2</math> and <math name="twice">2 lambda^2</math> is <math simplify><copy tname="lambda2" />+<copy tname="twice" /></math>.</choice>
+      <choice>The sum of <math name="lambda2">lambda^2</math> and <math name="twice">2 lambda^2</math> is <math simplify><copy target="lambda2" />+<copy target="twice" /></math>.</choice>
       <choice>The sequence is <aslist><sequence from="1" to="5" /></aslist>.</choice>
       <choice>Can't convert this latex: <m>\\int_a^b q(t) \\, dt</m>.</choice>
     </choiceinput>
 
-    <copy name="copy" inline tname="_choiceinput1" />
+    <copy name="copy" inline target="_choiceinput1" />
 
     <p>Selected values: <aslist>
-    <copy prop='selectedvalue' tname="_choiceinput1" />
-    <copy prop='selectedvalue' tname="copy" />
+    <copy prop='selectedvalue' target="_choiceinput1" />
+    <copy prop='selectedvalue' target="copy" />
     </aslist></p>
     <p>Selected indices: <aslist>
-    <copy prop='selectedindex' tname="_choiceinput1" />
-    <copy prop='selectedindex' tname="copy" />
+    <copy prop='selectedindex' target="_choiceinput1" />
+    <copy prop='selectedindex' target="copy" />
     </aslist></p>
 
     `}, "*");
@@ -524,13 +535,13 @@ describe('ChoiceInput Tag Tests', function () {
     // cy.get('#\\/_p3').should('have.text', 'Selected original indices: ')
 
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let choice2Anchor = cesc('#' + components["/copy"].replacements[0].componentName);
 
 
       let choices;
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let components = Object.assign({}, win.state.components);
         choices = [...components['/_choiceinput1'].stateValues.choiceTexts];
         expect(choices.length).eq(4);
@@ -547,14 +558,14 @@ describe('ChoiceInput Tag Tests', function () {
 
         expect(components['/copy'].replacements[0].stateValues.choiceTexts).eqls(choices);
 
-        expect(components['/_choiceinput1'].stateValues.selectedValues).eqls([])
-        expect(components['/_choiceinput1'].stateValues.selectedIndices).eqls([])
+        expect(await components['/_choiceinput1'].stateValues.selectedValues).eqls([])
+        expect(await components['/_choiceinput1'].stateValues.selectedIndices).eqls([])
         // expect(components['/_choiceinput1'].stateValues.selectedoriginalindices).eqls([])
-        expect(components['/copy'].replacements[0].stateValues.selectedValues).eqls([])
-        expect(components['/copy'].replacements[0].stateValues.selectedIndices).eqls([])
+        expect(await components['/copy'].replacements[0].stateValues.selectedValues).eqls([])
+        expect(await components['/copy'].replacements[0].stateValues.selectedIndices).eqls([])
         // expect(components['/copy'].replacements[0].stateValues.selectedoriginalindices).eqls([])
 
-        expect(components['/_choiceinput1'].stateValues.inline).eq(false);
+        expect(await components['/_choiceinput1'].stateValues.inline).eq(false);
         expect(components['/_choiceinput1'].stateValues.randomizeOrder).eq(true);
         expect(components['/copy'].replacements[0].stateValues.inline).eq(true);
         expect(components['/copy'].replacements[0].stateValues.randomizeOrder).eq(true);
@@ -563,9 +574,7 @@ describe('ChoiceInput Tag Tests', function () {
 
       cy.log('select options in order from first input')
       for (let i = 0; i < 4; i++) {
-        cy.get(`#\\/_choiceinput1_choice${i + 1}_input`).click();
-
-        cy.window().then((win) => {
+        cy.get(`#\\/_choiceinput1_choice${i + 1}_input`).click().then(() => {
 
           let origInd = originalChoices.indexOf(choices[i]) + 1;
           // make this asynchronous  so that choices is populated before line is executed
@@ -577,22 +586,24 @@ describe('ChoiceInput Tag Tests', function () {
           //   })
           // }
 
-          let components = Object.assign({}, win.state.components);
-          expect(components['/_choiceinput1'].stateValues.selectedValues).eqls([choices[i]])
-          expect(components['/_choiceinput1'].stateValues.selectedIndices).eqls([i + 1])
-          // expect(components['/_choiceinput1'].stateValues.selectedoriginalindices).eqls([origInd])
-          expect(components['/copy'].replacements[0].stateValues.selectedValues).eqls([choices[i]])
-          expect(components['/copy'].replacements[0].stateValues.selectedIndices).eqls([i + 1])
-          // expect(components['/copy'].replacements[0].stateValues.selectedoriginalindices).eqls([origInd])
+          cy.window().then(async (win) => {
 
-        });
+            let components = Object.assign({}, win.state.components);
+            expect(await components['/_choiceinput1'].stateValues.selectedValues).eqls([choices[i]])
+            expect(await components['/_choiceinput1'].stateValues.selectedIndices).eqls([i + 1])
+            // expect(components['/_choiceinput1'].stateValues.selectedoriginalindices).eqls([origInd])
+            expect(await components['/copy'].replacements[0].stateValues.selectedValues).eqls([choices[i]])
+            expect(await components['/copy'].replacements[0].stateValues.selectedIndices).eqls([i + 1])
+            // expect(components['/copy'].replacements[0].stateValues.selectedoriginalindices).eqls([origInd])
+
+          });
+        })
+
       }
 
       cy.log('select options in order from second input')
       for (let i = 0; i < 4; i++) {
-        cy.get(choice2Anchor).select(`${i + 1}`);
-
-        cy.window().then((win) => {
+        cy.get(choice2Anchor).select(`${i + 1}`).then(() => {
 
           let origInd = originalChoices.indexOf(choices[i]) + 1;
           // make this asynchronous  so that choices is populated before line is executed
@@ -604,13 +615,17 @@ describe('ChoiceInput Tag Tests', function () {
           //   })
           // }
 
-          let components = Object.assign({}, win.state.components);
-          expect(components['/_choiceinput1'].stateValues.selectedValues).eqls([choices[i]])
-          expect(components['/_choiceinput1'].stateValues.selectedIndices).eqls([i + 1])
-          // expect(components['/_choiceinput1'].stateValues.selectedoriginalindices).eqls([origInd])
-          expect(components['/copy'].replacements[0].stateValues.selectedValues).eqls([choices[i]])
-          expect(components['/copy'].replacements[0].stateValues.selectedIndices).eqls([i + 1])
-          // expect(components['/copy'].replacements[0].stateValues.selectedoriginalindices).eqls([origInd])
+          cy.window().then(async (win) => {
+
+            let components = Object.assign({}, win.state.components);
+            expect(await components['/_choiceinput1'].stateValues.selectedValues).eqls([choices[i]])
+            expect(await components['/_choiceinput1'].stateValues.selectedIndices).eqls([i + 1])
+            // expect(components['/_choiceinput1'].stateValues.selectedoriginalindices).eqls([origInd])
+            expect(await components['/copy'].replacements[0].stateValues.selectedValues).eqls([choices[i]])
+            expect(await components['/copy'].replacements[0].stateValues.selectedIndices).eqls([i + 1])
+            // expect(components['/copy'].replacements[0].stateValues.selectedoriginalindices).eqls([origInd])
+
+          })
 
         });
       }
@@ -620,7 +635,7 @@ describe('ChoiceInput Tag Tests', function () {
 
   it('bind value to choiceinput', () => {
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -632,15 +647,15 @@ describe('ChoiceInput Tag Tests', function () {
 
     <p>Select by typing: <textinput prefill="monkey" /></p>
 
-    <copy name="copy" inline tname="_choiceinput1" />
+    <copy name="copy" inline target="_choiceinput1" />
 
     <p>Selected values: <aslist>
-    <copy prop='selectedvalue' tname="_choiceinput1" />
-    <copy prop='selectedvalue' tname="copy" />
+    <copy prop='selectedvalue' target="_choiceinput1" />
+    <copy prop='selectedvalue' target="copy" />
     </aslist></p>
     <p>Selected indices: <aslist>
-    <copy prop='selectedindex' tname="_choiceinput1" />
-    <copy prop='selectedindex' tname="copy" />
+    <copy prop='selectedindex' target="_choiceinput1" />
+    <copy prop='selectedindex' target="copy" />
     </aslist></p>
 
     `}, "*");
@@ -650,7 +665,7 @@ describe('ChoiceInput Tag Tests', function () {
 
     let originalChoices = ["caT", "  dog ", "Monkey"]
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let choice2Anchor = cesc('#' + components["/copy"].replacements[0].componentName);
 
@@ -691,11 +706,11 @@ describe('ChoiceInput Tag Tests', function () {
 
         cy.get('#\\/_textinput1_input').should('have.value', inputText)
 
-        cy.window().then((win) => {
-          expect(components['/_choiceinput1'].stateValues.selectedValues).eqls(choiceArray)
-          expect(components['/_choiceinput1'].stateValues.selectedIndices).eqls(indexArray)
-          expect(components['/copy'].replacements[0].stateValues.selectedValues).eqls(choiceArray)
-          expect(components['/copy'].replacements[0].stateValues.selectedIndices).eqls(indexArray)
+        cy.window().then(async (win) => {
+          expect(await components['/_choiceinput1'].stateValues.selectedValues).eqls(choiceArray)
+          expect(await components['/_choiceinput1'].stateValues.selectedIndices).eqls(indexArray)
+          expect(await components['/copy'].replacements[0].stateValues.selectedValues).eqls(choiceArray)
+          expect(await components['/copy'].replacements[0].stateValues.selectedIndices).eqls(indexArray)
         })
       }
 
@@ -767,7 +782,7 @@ describe('ChoiceInput Tag Tests', function () {
 
   it('bind value to choiceinput, select multiple', () => {
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -779,15 +794,15 @@ describe('ChoiceInput Tag Tests', function () {
 
     <p>Select by typing: <textinput prefill="monkey" /></p>
 
-    <copy name="copy" inline tname="_choiceinput1" />
+    <copy name="copy" inline target="_choiceinput1" />
 
     <p>Selected values: <aslist>
-    <copy prop='selectedvalues' tname="_choiceinput1" />
-    <copy prop='selectedvalues' tname="copy" />
+    <copy prop='selectedvalues' target="_choiceinput1" />
+    <copy prop='selectedvalues' target="copy" />
     </aslist></p>
     <p>Selected indices: <aslist>
-    <copy prop='selectedindices' tname="_choiceinput1" />
-    <copy prop='selectedindices' tname="copy" />
+    <copy prop='selectedindices' target="_choiceinput1" />
+    <copy prop='selectedindices' target="copy" />
     </aslist></p>
 
     `}, "*");
@@ -797,7 +812,7 @@ describe('ChoiceInput Tag Tests', function () {
 
     let originalChoices = ["caT", "  dog ", "Monkey"]
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let choice2Anchor = cesc('#' + components["/copy"].replacements[0].componentName);
 
@@ -806,7 +821,6 @@ describe('ChoiceInput Tag Tests', function () {
 
 
       let checkChoices = function (selectedChoices, inputText) {
-        console.log(selectedChoices)
 
         selectedChoices.sort((a, b) => choices.indexOf(a) - choices.indexOf(b))
 
@@ -827,11 +841,11 @@ describe('ChoiceInput Tag Tests', function () {
 
         cy.get('#\\/_textinput1_input').should('have.value', inputText)
 
-        cy.window().then((win) => {
-          expect(components['/_choiceinput1'].stateValues.selectedValues).eqls(selectedChoices)
-          expect(components['/_choiceinput1'].stateValues.selectedIndices).eqls(selectedIndices)
-          expect(components['/copy'].replacements[0].stateValues.selectedValues).eqls(selectedChoices)
-          expect(components['/copy'].replacements[0].stateValues.selectedIndices).eqls(selectedIndices)
+        cy.window().then(async (win) => {
+          expect(await components['/_choiceinput1'].stateValues.selectedValues).eqls(selectedChoices)
+          expect(await components['/_choiceinput1'].stateValues.selectedIndices).eqls(selectedIndices)
+          expect(await components['/copy'].replacements[0].stateValues.selectedValues).eqls(selectedChoices)
+          expect(await components['/copy'].replacements[0].stateValues.selectedIndices).eqls(selectedIndices)
         })
       }
 
@@ -887,7 +901,7 @@ describe('ChoiceInput Tag Tests', function () {
 
 
       cy.log('select all from second input');
-      selectedChoices = [ "Monkey", "  dog ", "caT"];
+      selectedChoices = ["Monkey", "  dog ", "caT"];
       selectedIndices = selectedChoices.map(x => choices.indexOf(x) + 1);
       selectedChoices.sort((a, b) => choices.indexOf(a) - choices.indexOf(b))
       inputText = selectedChoices.join(", ");
@@ -926,7 +940,7 @@ describe('ChoiceInput Tag Tests', function () {
 
   it('preselect choices', () => {
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -1028,7 +1042,7 @@ describe('ChoiceInput Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a')// to wait for page to load
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
 
       cy.get('#\\/c1_choice2_input').should('be.checked')
@@ -1060,7 +1074,7 @@ describe('ChoiceInput Tag Tests', function () {
 
   it('disabled choice with inline choiceinput', () => {
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -1071,8 +1085,8 @@ describe('ChoiceInput Tag Tests', function () {
       <choice>mouse</choice>
     </choiceinput>
 
-    <p>Selected value: <copy prop='selectedvalue' tname="_choiceinput1" /></p>
-    <p>Selected index: <copy prop='selectedindex' tname="_choiceinput1" /></p>
+    <p>Selected value: <copy prop='selectedvalue' target="_choiceinput1" /></p>
+    <p>Selected index: <copy prop='selectedindex' target="_choiceinput1" /></p>
     `}, "*");
     });
 
@@ -1086,7 +1100,7 @@ describe('ChoiceInput Tag Tests', function () {
 
 
     let choices, choiceOrder;
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       choices = [...components['/_choiceinput1'].stateValues.choiceTexts];
       choiceOrder = [...components['/_choiceinput1'].stateValues.choiceOrder];
@@ -1101,15 +1115,15 @@ describe('ChoiceInput Tag Tests', function () {
       expect(choices[3]).not.eq(choices[0]);
       expect(choices[3]).not.eq(choices[1]);
       expect(choices[3]).not.eq(choices[2]);
-      expect(components['/_choiceinput1'].stateValues.selectedValues).eqls([])
-      expect(components['/_choiceinput1'].stateValues.selectedIndices).eqls([])
+      expect(await components['/_choiceinput1'].stateValues.selectedValues).eqls([])
+      expect(await components['/_choiceinput1'].stateValues.selectedIndices).eqls([])
       // expect(components['/_choiceinput1'].stateValues.selectedoriginalindices).eqls([])
-      expect(components['/_choiceinput1'].stateValues.inline).eq(true);
+      expect(await components['/_choiceinput1'].stateValues.inline).eq(true);
       expect(components['/_choiceinput1'].stateValues.randomizeOrder).eq(false);
-      expect(components['/_choice1'].stateValues.selected).eq(false);
-      expect(components['/_choice2'].stateValues.selected).eq(false);
-      expect(components['/_choice3'].stateValues.selected).eq(false);
-      expect(components['/_choice4'].stateValues.selected).eq(false);
+      expect(await components['/_choice1'].stateValues.selected).eq(false);
+      expect(await components['/_choice2'].stateValues.selected).eq(false);
+      expect(await components['/_choice3'].stateValues.selected).eq(false);
+      expect(await components['/_choice4'].stateValues.selected).eq(false);
 
     });
 
@@ -1121,9 +1135,7 @@ describe('ChoiceInput Tag Tests', function () {
         cy.get(`#\\/_choiceinput1`).get('[value="3"]').should('be.disabled')
       } else {
 
-        cy.get(`#\\/_choiceinput1`).select(`${i + 1}`);
-
-        cy.window().then((win) => {
+        cy.get(`#\\/_choiceinput1`).select(`${i + 1}`).then(() => {
 
           // make this asynchronous  so that choices is populated before line is executed
           cy.get('#\\/_p1').should('have.text', 'Selected value: ' + choices[i])
@@ -1132,14 +1144,18 @@ describe('ChoiceInput Tag Tests', function () {
           //   expect(text.trim()).equal(`${originalChoices.indexOf(choices[i])+1}`)
           // })
 
-          let components = Object.assign({}, win.state.components);
-          expect(components['/_choiceinput1'].stateValues.selectedValues).eqls([choices[i]])
-          expect(components['/_choiceinput1'].stateValues.selectedIndices).eqls([i + 1])
-          // expect(components['/_choiceinput1'].stateValues.selectedoriginalindices).eqls([originalChoices.indexOf(choices[i])+1])
-          expect(components['/_choice1'].stateValues.selected).eq(choiceOrder[i] === 1);
-          expect(components['/_choice2'].stateValues.selected).eq(choiceOrder[i] === 2);
-          expect(components['/_choice3'].stateValues.selected).eq(choiceOrder[i] === 3);
-          expect(components['/_choice4'].stateValues.selected).eq(choiceOrder[i] === 4);
+          cy.window().then(async (win) => {
+
+            let components = Object.assign({}, win.state.components);
+            expect(await components['/_choiceinput1'].stateValues.selectedValues).eqls([choices[i]])
+            expect(await components['/_choiceinput1'].stateValues.selectedIndices).eqls([i + 1])
+            // expect(components['/_choiceinput1'].stateValues.selectedoriginalindices).eqls([originalChoices.indexOf(choices[i])+1])
+            expect(await components['/_choice1'].stateValues.selected).eq(choiceOrder[i] === 1);
+            expect(await components['/_choice2'].stateValues.selected).eq(choiceOrder[i] === 2);
+            expect(await components['/_choice3'].stateValues.selected).eq(choiceOrder[i] === 3);
+            expect(await components['/_choice4'].stateValues.selected).eq(choiceOrder[i] === 4);
+
+          });
 
         });
       }
@@ -1149,7 +1165,7 @@ describe('ChoiceInput Tag Tests', function () {
 
   it('hidden choice with inline choiceinput', () => {
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -1160,8 +1176,8 @@ describe('ChoiceInput Tag Tests', function () {
       <choice>mouse</choice>
     </choiceinput>
 
-    <p>Selected value: <copy prop='selectedvalue' tname="_choiceinput1" /></p>
-    <p>Selected index: <copy prop='selectedindex' tname="_choiceinput1" /></p>
+    <p>Selected value: <copy prop='selectedvalue' target="_choiceinput1" /></p>
+    <p>Selected index: <copy prop='selectedindex' target="_choiceinput1" /></p>
     `}, "*");
     });
 
@@ -1175,7 +1191,7 @@ describe('ChoiceInput Tag Tests', function () {
 
 
     let choices, choiceOrder;
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       choices = [...components['/_choiceinput1'].stateValues.choiceTexts];
       choiceOrder = [...components['/_choiceinput1'].stateValues.choiceOrder];
@@ -1190,15 +1206,15 @@ describe('ChoiceInput Tag Tests', function () {
       expect(choices[3]).not.eq(choices[0]);
       expect(choices[3]).not.eq(choices[1]);
       expect(choices[3]).not.eq(choices[2]);
-      expect(components['/_choiceinput1'].stateValues.selectedValues).eqls([])
-      expect(components['/_choiceinput1'].stateValues.selectedIndices).eqls([])
+      expect(await components['/_choiceinput1'].stateValues.selectedValues).eqls([])
+      expect(await components['/_choiceinput1'].stateValues.selectedIndices).eqls([])
       // expect(components['/_choiceinput1'].stateValues.selectedoriginalindices).eqls([])
-      expect(components['/_choiceinput1'].stateValues.inline).eq(true);
+      expect(await components['/_choiceinput1'].stateValues.inline).eq(true);
       expect(components['/_choiceinput1'].stateValues.randomizeOrder).eq(false);
-      expect(components['/_choice1'].stateValues.selected).eq(false);
-      expect(components['/_choice2'].stateValues.selected).eq(false);
-      expect(components['/_choice3'].stateValues.selected).eq(false);
-      expect(components['/_choice4'].stateValues.selected).eq(false);
+      expect(await components['/_choice1'].stateValues.selected).eq(false);
+      expect(await components['/_choice2'].stateValues.selected).eq(false);
+      expect(await components['/_choice3'].stateValues.selected).eq(false);
+      expect(await components['/_choice4'].stateValues.selected).eq(false);
 
     });
 
@@ -1210,9 +1226,7 @@ describe('ChoiceInput Tag Tests', function () {
         cy.get(`#\\/_choiceinput1`).get('[value="3"]').should('not.exist')
       } else {
 
-        cy.get(`#\\/_choiceinput1`).select(`${i + 1}`);
-
-        cy.window().then((win) => {
+        cy.get(`#\\/_choiceinput1`).select(`${i + 1}`).then(() => {
 
           // make this asynchronous  so that choices is populated before line is executed
           cy.get('#\\/_p1').should('have.text', 'Selected value: ' + choices[i])
@@ -1221,14 +1235,18 @@ describe('ChoiceInput Tag Tests', function () {
           //   expect(text.trim()).equal(`${originalChoices.indexOf(choices[i])+1}`)
           // })
 
-          let components = Object.assign({}, win.state.components);
-          expect(components['/_choiceinput1'].stateValues.selectedValues).eqls([choices[i]])
-          expect(components['/_choiceinput1'].stateValues.selectedIndices).eqls([i + 1])
-          // expect(components['/_choiceinput1'].stateValues.selectedoriginalindices).eqls([originalChoices.indexOf(choices[i])+1])
-          expect(components['/_choice1'].stateValues.selected).eq(choiceOrder[i] === 1);
-          expect(components['/_choice2'].stateValues.selected).eq(choiceOrder[i] === 2);
-          expect(components['/_choice3'].stateValues.selected).eq(choiceOrder[i] === 3);
-          expect(components['/_choice4'].stateValues.selected).eq(choiceOrder[i] === 4);
+          cy.window().then(async (win) => {
+
+            let components = Object.assign({}, win.state.components);
+            expect(await components['/_choiceinput1'].stateValues.selectedValues).eqls([choices[i]])
+            expect(await components['/_choiceinput1'].stateValues.selectedIndices).eqls([i + 1])
+            // expect(components['/_choiceinput1'].stateValues.selectedoriginalindices).eqls([originalChoices.indexOf(choices[i])+1])
+            expect(await components['/_choice1'].stateValues.selected).eq(choiceOrder[i] === 1);
+            expect(await components['/_choice2'].stateValues.selected).eq(choiceOrder[i] === 2);
+            expect(await components['/_choice3'].stateValues.selected).eq(choiceOrder[i] === 3);
+            expect(await components['/_choice4'].stateValues.selected).eq(choiceOrder[i] === 4);
+
+          })
 
         });
       }
@@ -1238,7 +1256,7 @@ describe('ChoiceInput Tag Tests', function () {
 
   it('disabled choice with block choiceinput', () => {
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -1249,8 +1267,8 @@ describe('ChoiceInput Tag Tests', function () {
       <choice>mouse</choice>
     </choiceinput>
 
-    <p>Selected value: <copy prop='selectedvalue' tname="_choiceinput1" /></p>
-    <p>Selected index: <copy prop='selectedindex' tname="_choiceinput1" /></p>
+    <p>Selected value: <copy prop='selectedvalue' target="_choiceinput1" /></p>
+    <p>Selected index: <copy prop='selectedindex' target="_choiceinput1" /></p>
     `}, "*");
     });
 
@@ -1263,19 +1281,19 @@ describe('ChoiceInput Tag Tests', function () {
 
 
     let choices;
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       choices = [...components['/_choiceinput1'].stateValues.choiceTexts];
       expect(choices).eqls(originalChoices);
-      expect(components['/_choiceinput1'].stateValues.selectedValues).eqls([])
-      expect(components['/_choiceinput1'].stateValues.selectedIndices).eqls([])
+      expect(await components['/_choiceinput1'].stateValues.selectedValues).eqls([])
+      expect(await components['/_choiceinput1'].stateValues.selectedIndices).eqls([])
       // expect(components['/_choiceinput1'].stateValues.selectedoriginalindices).eqls([])
-      expect(components['/_choiceinput1'].stateValues.inline).eq(false);
+      expect(await components['/_choiceinput1'].stateValues.inline).eq(false);
       expect(components['/_choiceinput1'].stateValues.randomizeOrder).eq(false);
-      expect(components['/_choice1'].stateValues.selected).eq(false);
-      expect(components['/_choice2'].stateValues.selected).eq(false);
-      expect(components['/_choice3'].stateValues.selected).eq(false);
-      expect(components['/_choice4'].stateValues.selected).eq(false);
+      expect(await components['/_choice1'].stateValues.selected).eq(false);
+      expect(await components['/_choice2'].stateValues.selected).eq(false);
+      expect(await components['/_choice3'].stateValues.selected).eq(false);
+      expect(await components['/_choice4'].stateValues.selected).eq(false);
 
     });
 
@@ -1285,9 +1303,7 @@ describe('ChoiceInput Tag Tests', function () {
       if (i === 2) {
         cy.get(`#\\/_choiceinput1_choice${i + 1}_input`).should('be.disabled')
       } else {
-        cy.get(`#\\/_choiceinput1_choice${i + 1}_input`).click();
-
-        cy.window().then((win) => {
+        cy.get(`#\\/_choiceinput1_choice${i + 1}_input`).click().then(() => {
 
           // make this asynchronous  so that choices is populated before line is executed
           cy.get('#\\/_p1').should('have.text', 'Selected value: ' + choices[i])
@@ -1296,14 +1312,18 @@ describe('ChoiceInput Tag Tests', function () {
           //   expect(text.trim()).equal(`${i+1}`)
           // })
 
-          let components = Object.assign({}, win.state.components);
-          expect(components['/_choiceinput1'].stateValues.selectedValues).eqls([choices[i]])
-          expect(components['/_choiceinput1'].stateValues.selectedIndices).eqls([i + 1])
-          // expect(components['/_choiceinput1'].stateValues.selectedoriginalindices).eqls([i + 1])
-          expect(components['/_choice1'].stateValues.selected).eq(i === 0);
-          expect(components['/_choice2'].stateValues.selected).eq(i === 1);
-          expect(components['/_choice3'].stateValues.selected).eq(i === 2);
-          expect(components['/_choice4'].stateValues.selected).eq(i === 3);
+          cy.window().then(async (win) => {
+
+            let components = Object.assign({}, win.state.components);
+            expect(await components['/_choiceinput1'].stateValues.selectedValues).eqls([choices[i]])
+            expect(await components['/_choiceinput1'].stateValues.selectedIndices).eqls([i + 1])
+            // expect(components['/_choiceinput1'].stateValues.selectedoriginalindices).eqls([i + 1])
+            expect(await components['/_choice1'].stateValues.selected).eq(i === 0);
+            expect(await components['/_choice2'].stateValues.selected).eq(i === 1);
+            expect(await components['/_choice3'].stateValues.selected).eq(i === 2);
+            expect(await components['/_choice4'].stateValues.selected).eq(i === 3);
+
+          })
 
         });
       }
@@ -1313,7 +1333,7 @@ describe('ChoiceInput Tag Tests', function () {
 
   it('hidden choice with block choiceinput', () => {
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -1324,8 +1344,8 @@ describe('ChoiceInput Tag Tests', function () {
       <choice>mouse</choice>
     </choiceinput>
 
-    <p>Selected value: <copy prop='selectedvalue' tname="_choiceinput1" /></p>
-    <p>Selected index: <copy prop='selectedindex' tname="_choiceinput1" /></p>
+    <p>Selected value: <copy prop='selectedvalue' target="_choiceinput1" /></p>
+    <p>Selected index: <copy prop='selectedindex' target="_choiceinput1" /></p>
     `}, "*");
     });
 
@@ -1338,19 +1358,19 @@ describe('ChoiceInput Tag Tests', function () {
 
 
     let choices;
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       choices = [...components['/_choiceinput1'].stateValues.choiceTexts];
       expect(choices).eqls(originalChoices);
-      expect(components['/_choiceinput1'].stateValues.selectedValues).eqls([])
-      expect(components['/_choiceinput1'].stateValues.selectedIndices).eqls([])
+      expect(await components['/_choiceinput1'].stateValues.selectedValues).eqls([])
+      expect(await components['/_choiceinput1'].stateValues.selectedIndices).eqls([])
       // expect(components['/_choiceinput1'].stateValues.selectedoriginalindices).eqls([])
-      expect(components['/_choiceinput1'].stateValues.inline).eq(false);
+      expect(await components['/_choiceinput1'].stateValues.inline).eq(false);
       expect(components['/_choiceinput1'].stateValues.randomizeOrder).eq(false);
-      expect(components['/_choice1'].stateValues.selected).eq(false);
-      expect(components['/_choice2'].stateValues.selected).eq(false);
-      expect(components['/_choice3'].stateValues.selected).eq(false);
-      expect(components['/_choice4'].stateValues.selected).eq(false);
+      expect(await components['/_choice1'].stateValues.selected).eq(false);
+      expect(await components['/_choice2'].stateValues.selected).eq(false);
+      expect(await components['/_choice3'].stateValues.selected).eq(false);
+      expect(await components['/_choice4'].stateValues.selected).eq(false);
 
     });
 
@@ -1360,9 +1380,7 @@ describe('ChoiceInput Tag Tests', function () {
       if (i === 2) {
         cy.get(`#\\/_choiceinput1_choice${i + 1}_input`).should('not.exist')
       } else {
-        cy.get(`#\\/_choiceinput1_choice${i + 1}_input`).click();
-
-        cy.window().then((win) => {
+        cy.get(`#\\/_choiceinput1_choice${i + 1}_input`).click().then(() => {
 
           // make this asynchronous  so that choices is populated before line is executed
           cy.get('#\\/_p1').should('have.text', 'Selected value: ' + choices[i])
@@ -1371,14 +1389,18 @@ describe('ChoiceInput Tag Tests', function () {
           //   expect(text.trim()).equal(`${i+1}`)
           // })
 
-          let components = Object.assign({}, win.state.components);
-          expect(components['/_choiceinput1'].stateValues.selectedValues).eqls([choices[i]])
-          expect(components['/_choiceinput1'].stateValues.selectedIndices).eqls([i + 1])
-          // expect(components['/_choiceinput1'].stateValues.selectedoriginalindices).eqls([i + 1])
-          expect(components['/_choice1'].stateValues.selected).eq(i === 0);
-          expect(components['/_choice2'].stateValues.selected).eq(i === 1);
-          expect(components['/_choice3'].stateValues.selected).eq(i === 2);
-          expect(components['/_choice4'].stateValues.selected).eq(i === 3);
+          cy.window().then(async (win) => {
+
+            let components = Object.assign({}, win.state.components);
+            expect(await components['/_choiceinput1'].stateValues.selectedValues).eqls([choices[i]])
+            expect(await components['/_choiceinput1'].stateValues.selectedIndices).eqls([i + 1])
+            // expect(components['/_choiceinput1'].stateValues.selectedoriginalindices).eqls([i + 1])
+            expect(await components['/_choice1'].stateValues.selected).eq(i === 0);
+            expect(await components['/_choice2'].stateValues.selected).eq(i === 1);
+            expect(await components['/_choice3'].stateValues.selected).eq(i === 2);
+            expect(await components['/_choice4'].stateValues.selected).eq(i === 3);
+
+          })
 
         });
       }
@@ -1388,7 +1410,7 @@ describe('ChoiceInput Tag Tests', function () {
 
   it('select multiple with block choiceinput', () => {
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -1399,8 +1421,8 @@ describe('ChoiceInput Tag Tests', function () {
       <choice>mouse</choice>
     </choiceinput>
 
-    <p>Selected values: <aslist><copy prop='selectedvalues' tname="_choiceinput1" /></aslist></p>
-    <p>Selected indices: <aslist><copy prop='selectedindices' tname="_choiceinput1" /></aslist></p>
+    <p>Selected values: <aslist><copy prop='selectedvalues' target="_choiceinput1" /></aslist></p>
+    <p>Selected indices: <aslist><copy prop='selectedindices' target="_choiceinput1" /></aslist></p>
     `}, "*");
     });
 
@@ -1411,7 +1433,7 @@ describe('ChoiceInput Tag Tests', function () {
     cy.get('#\\/_p2').should('have.text', 'Selected indices: ')
 
     let choices, choiceOrder;
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       choices = [...components['/_choiceinput1'].stateValues.choiceTexts];
       choiceOrder = [...components['/_choiceinput1'].stateValues.choiceOrder];
@@ -1426,15 +1448,15 @@ describe('ChoiceInput Tag Tests', function () {
       expect(choices[3]).not.eq(choices[0]);
       expect(choices[3]).not.eq(choices[1]);
       expect(choices[3]).not.eq(choices[2]);
-      expect(components['/_choiceinput1'].stateValues.selectedValues).eqls([])
-      expect(components['/_choiceinput1'].stateValues.selectedIndices).eqls([])
-      expect(components['/_choiceinput1'].stateValues.inline).eq(false);
+      expect(await components['/_choiceinput1'].stateValues.selectedValues).eqls([])
+      expect(await components['/_choiceinput1'].stateValues.selectedIndices).eqls([])
+      expect(await components['/_choiceinput1'].stateValues.inline).eq(false);
       expect(components['/_choiceinput1'].stateValues.randomizeOrder).eq(true);
       expect(components['/_choiceinput1'].stateValues.selectMultiple).eq(true);
-      expect(components['/_choice1'].stateValues.selected).eq(false);
-      expect(components['/_choice2'].stateValues.selected).eq(false);
-      expect(components['/_choice3'].stateValues.selected).eq(false);
-      expect(components['/_choice4'].stateValues.selected).eq(false);
+      expect(await components['/_choice1'].stateValues.selected).eq(false);
+      expect(await components['/_choice2'].stateValues.selected).eq(false);
+      expect(await components['/_choice3'].stateValues.selected).eq(false);
+      expect(await components['/_choice4'].stateValues.selected).eq(false);
 
     });
 
@@ -1447,15 +1469,15 @@ describe('ChoiceInput Tag Tests', function () {
         cy.get('#\\/_p2').should('have.text', 'Selected indices: ' + [...Array(i + 1).keys()].map(x => x + 1).join(", "))
       });
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
 
         let components = Object.assign({}, win.state.components);
-        expect(components['/_choiceinput1'].stateValues.selectedValues).eqls(choices.slice(0, i + 1))
-        expect(components['/_choiceinput1'].stateValues.selectedIndices).eqls([...Array(i + 1).keys()].map(x => x + 1))
-        expect(components['/_choice1'].stateValues.selected).eq(choiceOrder.indexOf(1) <= i);
-        expect(components['/_choice2'].stateValues.selected).eq(choiceOrder.indexOf(2) <= i);
-        expect(components['/_choice3'].stateValues.selected).eq(choiceOrder.indexOf(3) <= i);
-        expect(components['/_choice4'].stateValues.selected).eq(choiceOrder.indexOf(4) <= i);
+        expect(await components['/_choiceinput1'].stateValues.selectedValues).eqls(choices.slice(0, i + 1))
+        expect(await components['/_choiceinput1'].stateValues.selectedIndices).eqls([...Array(i + 1).keys()].map(x => x + 1))
+        expect(await components['/_choice1'].stateValues.selected).eq(choiceOrder.indexOf(1) <= i);
+        expect(await components['/_choice2'].stateValues.selected).eq(choiceOrder.indexOf(2) <= i);
+        expect(await components['/_choice3'].stateValues.selected).eq(choiceOrder.indexOf(3) <= i);
+        expect(await components['/_choice4'].stateValues.selected).eq(choiceOrder.indexOf(4) <= i);
 
       });
     }
@@ -1470,15 +1492,15 @@ describe('ChoiceInput Tag Tests', function () {
         cy.get('#\\/_p2').should('have.text', 'Selected indices: ' + [...Array(3 - i).keys()].map(x => x + 2 + i).join(", "))
       });
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
 
         let components = Object.assign({}, win.state.components);
-        expect(components['/_choiceinput1'].stateValues.selectedValues).eqls(choices.slice(i + 1))
-        expect(components['/_choiceinput1'].stateValues.selectedIndices).eqls([...Array(3 - i).keys()].map(x => x + 2 + i))
-        expect(components['/_choice1'].stateValues.selected).eq(choiceOrder.indexOf(1) > i);
-        expect(components['/_choice2'].stateValues.selected).eq(choiceOrder.indexOf(2) > i);
-        expect(components['/_choice3'].stateValues.selected).eq(choiceOrder.indexOf(3) > i);
-        expect(components['/_choice4'].stateValues.selected).eq(choiceOrder.indexOf(4) > i);
+        expect(await components['/_choiceinput1'].stateValues.selectedValues).eqls(choices.slice(i + 1))
+        expect(await components['/_choiceinput1'].stateValues.selectedIndices).eqls([...Array(3 - i).keys()].map(x => x + 2 + i))
+        expect(await components['/_choice1'].stateValues.selected).eq(choiceOrder.indexOf(1) > i);
+        expect(await components['/_choice2'].stateValues.selected).eq(choiceOrder.indexOf(2) > i);
+        expect(await components['/_choice3'].stateValues.selected).eq(choiceOrder.indexOf(3) > i);
+        expect(await components['/_choice4'].stateValues.selected).eq(choiceOrder.indexOf(4) > i);
 
       });
     }
@@ -1492,15 +1514,15 @@ describe('ChoiceInput Tag Tests', function () {
         cy.get('#\\/_p2').should('have.text', 'Selected indices: ' + [...Array(4 - i).keys()].map(x => x + 1 + i).join(", "))
       });
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
 
         let components = Object.assign({}, win.state.components);
-        expect(components['/_choiceinput1'].stateValues.selectedValues).eqls(choices.slice(i))
-        expect(components['/_choiceinput1'].stateValues.selectedIndices).eqls([...Array(4 - i).keys()].map(x => x + 1 + i))
-        expect(components['/_choice1'].stateValues.selected).eq(choiceOrder.indexOf(1) >= i);
-        expect(components['/_choice2'].stateValues.selected).eq(choiceOrder.indexOf(2) >= i);
-        expect(components['/_choice3'].stateValues.selected).eq(choiceOrder.indexOf(3) >= i);
-        expect(components['/_choice4'].stateValues.selected).eq(choiceOrder.indexOf(4) >= i);
+        expect(await components['/_choiceinput1'].stateValues.selectedValues).eqls(choices.slice(i))
+        expect(await components['/_choiceinput1'].stateValues.selectedIndices).eqls([...Array(4 - i).keys()].map(x => x + 1 + i))
+        expect(await components['/_choice1'].stateValues.selected).eq(choiceOrder.indexOf(1) >= i);
+        expect(await components['/_choice2'].stateValues.selected).eq(choiceOrder.indexOf(2) >= i);
+        expect(await components['/_choice3'].stateValues.selected).eq(choiceOrder.indexOf(3) >= i);
+        expect(await components['/_choice4'].stateValues.selected).eq(choiceOrder.indexOf(4) >= i);
 
       });
     }
@@ -1509,7 +1531,7 @@ describe('ChoiceInput Tag Tests', function () {
 
   it('select multiple with inline choiceinput', () => {
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -1520,8 +1542,8 @@ describe('ChoiceInput Tag Tests', function () {
       <choice>mouse</choice>
     </choiceinput>
 
-    <p>Selected values: <aslist><copy prop='selectedvalues' tname="_choiceinput1" /></aslist></p>
-    <p>Selected indices: <aslist><copy prop='selectedindices' tname="_choiceinput1" /></aslist></p>
+    <p>Selected values: <aslist><copy prop='selectedvalues' target="_choiceinput1" /></aslist></p>
+    <p>Selected indices: <aslist><copy prop='selectedindices' target="_choiceinput1" /></aslist></p>
     `}, "*");
     });
 
@@ -1534,7 +1556,7 @@ describe('ChoiceInput Tag Tests', function () {
     cy.get('#\\/_p2').should('have.text', 'Selected indices: ')
 
     let choices, choiceOrder;
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       choices = [...components['/_choiceinput1'].stateValues.choiceTexts];
       choiceOrder = [...components['/_choiceinput1'].stateValues.choiceOrder];
@@ -1549,15 +1571,15 @@ describe('ChoiceInput Tag Tests', function () {
       expect(choices[3]).not.eq(choices[0]);
       expect(choices[3]).not.eq(choices[1]);
       expect(choices[3]).not.eq(choices[2]);
-      expect(components['/_choiceinput1'].stateValues.selectedValues).eqls([])
-      expect(components['/_choiceinput1'].stateValues.selectedIndices).eqls([])
-      expect(components['/_choiceinput1'].stateValues.inline).eq(true);
+      expect(await components['/_choiceinput1'].stateValues.selectedValues).eqls([])
+      expect(await components['/_choiceinput1'].stateValues.selectedIndices).eqls([])
+      expect(await components['/_choiceinput1'].stateValues.inline).eq(true);
       expect(components['/_choiceinput1'].stateValues.randomizeOrder).eq(true);
       expect(components['/_choiceinput1'].stateValues.selectMultiple).eq(true);
-      expect(components['/_choice1'].stateValues.selected).eq(false);
-      expect(components['/_choice2'].stateValues.selected).eq(false);
-      expect(components['/_choice3'].stateValues.selected).eq(false);
-      expect(components['/_choice4'].stateValues.selected).eq(false);
+      expect(await components['/_choice1'].stateValues.selected).eq(false);
+      expect(await components['/_choice2'].stateValues.selected).eq(false);
+      expect(await components['/_choice3'].stateValues.selected).eq(false);
+      expect(await components['/_choice4'].stateValues.selected).eq(false);
 
     });
 
@@ -1575,15 +1597,15 @@ describe('ChoiceInput Tag Tests', function () {
         cy.get('#\\/_p2').should('have.text', 'Selected indices: ' + [...Array(i + 1).keys()].map(x => x + 1).join(", "))
       });
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
 
         let components = Object.assign({}, win.state.components);
-        expect(components['/_choiceinput1'].stateValues.selectedValues).eqls(choices.slice(0, i + 1))
-        expect(components['/_choiceinput1'].stateValues.selectedIndices).eqls([...Array(i + 1).keys()].map(x => x + 1))
-        expect(components['/_choice1'].stateValues.selected).eq(choiceOrder.indexOf(1) <= i);
-        expect(components['/_choice2'].stateValues.selected).eq(choiceOrder.indexOf(2) <= i);
-        expect(components['/_choice3'].stateValues.selected).eq(choiceOrder.indexOf(3) <= i);
-        expect(components['/_choice4'].stateValues.selected).eq(choiceOrder.indexOf(4) <= i);
+        expect(await components['/_choiceinput1'].stateValues.selectedValues).eqls(choices.slice(0, i + 1))
+        expect(await components['/_choiceinput1'].stateValues.selectedIndices).eqls([...Array(i + 1).keys()].map(x => x + 1))
+        expect(await components['/_choice1'].stateValues.selected).eq(choiceOrder.indexOf(1) <= i);
+        expect(await components['/_choice2'].stateValues.selected).eq(choiceOrder.indexOf(2) <= i);
+        expect(await components['/_choice3'].stateValues.selected).eq(choiceOrder.indexOf(3) <= i);
+        expect(await components['/_choice4'].stateValues.selected).eq(choiceOrder.indexOf(4) <= i);
 
       });
     }
@@ -1594,7 +1616,7 @@ describe('ChoiceInput Tag Tests', function () {
 
     for (let i = 0; i < 4; i++) {
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
 
         let indicesToSelect = [...Array(3 - i).keys()].map(x => String(x + 2 + i));
         if (i === 3) {
@@ -1611,15 +1633,15 @@ describe('ChoiceInput Tag Tests', function () {
           cy.get('#\\/_p2').should('have.text', 'Selected indices: ' + [...Array(3 - i).keys()].map(x => x + 2 + i).join(", "))
         });
 
-        cy.window().then((win) => {
+        cy.window().then(async (win) => {
 
           let components = Object.assign({}, win.state.components);
-          expect(components['/_choiceinput1'].stateValues.selectedValues).eqls(choices.slice(i + 1))
-          expect(components['/_choiceinput1'].stateValues.selectedIndices).eqls([...Array(3 - i).keys()].map(x => x + 2 + i))
-          expect(components['/_choice1'].stateValues.selected).eq(choiceOrder.indexOf(1) > i);
-          expect(components['/_choice2'].stateValues.selected).eq(choiceOrder.indexOf(2) > i);
-          expect(components['/_choice3'].stateValues.selected).eq(choiceOrder.indexOf(3) > i);
-          expect(components['/_choice4'].stateValues.selected).eq(choiceOrder.indexOf(4) > i);
+          expect(await components['/_choiceinput1'].stateValues.selectedValues).eqls(choices.slice(i + 1))
+          expect(await components['/_choiceinput1'].stateValues.selectedIndices).eqls([...Array(3 - i).keys()].map(x => x + 2 + i))
+          expect(await components['/_choice1'].stateValues.selected).eq(choiceOrder.indexOf(1) > i);
+          expect(await components['/_choice2'].stateValues.selected).eq(choiceOrder.indexOf(2) > i);
+          expect(await components['/_choice3'].stateValues.selected).eq(choiceOrder.indexOf(3) > i);
+          expect(await components['/_choice4'].stateValues.selected).eq(choiceOrder.indexOf(4) > i);
 
         });
       })
@@ -1639,15 +1661,15 @@ describe('ChoiceInput Tag Tests', function () {
         cy.get('#\\/_p2').should('have.text', 'Selected indices: ' + [...Array(4 - i).keys()].map(x => x + 1 + i).join(", "))
       });
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
 
         let components = Object.assign({}, win.state.components);
-        expect(components['/_choiceinput1'].stateValues.selectedValues).eqls(choices.slice(i))
-        expect(components['/_choiceinput1'].stateValues.selectedIndices).eqls([...Array(4 - i).keys()].map(x => x + 1 + i))
-        expect(components['/_choice1'].stateValues.selected).eq(choiceOrder.indexOf(1) >= i);
-        expect(components['/_choice2'].stateValues.selected).eq(choiceOrder.indexOf(2) >= i);
-        expect(components['/_choice3'].stateValues.selected).eq(choiceOrder.indexOf(3) >= i);
-        expect(components['/_choice4'].stateValues.selected).eq(choiceOrder.indexOf(4) >= i);
+        expect(await components['/_choiceinput1'].stateValues.selectedValues).eqls(choices.slice(i))
+        expect(await components['/_choiceinput1'].stateValues.selectedIndices).eqls([...Array(4 - i).keys()].map(x => x + 1 + i))
+        expect(await components['/_choice1'].stateValues.selected).eq(choiceOrder.indexOf(1) >= i);
+        expect(await components['/_choice2'].stateValues.selected).eq(choiceOrder.indexOf(2) >= i);
+        expect(await components['/_choice3'].stateValues.selected).eq(choiceOrder.indexOf(3) >= i);
+        expect(await components['/_choice4'].stateValues.selected).eq(choiceOrder.indexOf(4) >= i);
 
       });
     }
@@ -1655,7 +1677,7 @@ describe('ChoiceInput Tag Tests', function () {
   });
 
   it('chain update off choiceinput', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -1668,7 +1690,7 @@ describe('ChoiceInput Tag Tests', function () {
     </choiceinput>
 
     <text name="t"></text>
-    <updateValue triggerWithTnames="ci" tname="t" newValue="$t $ci" type="text" />
+    <updateValue triggerWithTargets="ci" target="t" newValue="$t $ci" type="text" />
     `}, "*");
     });
 

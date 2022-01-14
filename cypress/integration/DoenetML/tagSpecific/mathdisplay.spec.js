@@ -36,8 +36,8 @@ describe('Math Display Tag Tests', function () {
     <men name="e2">\\cos(x)</men>
     <men name="e3">\\tan(x)</men>
 
-    <p>We have equation <ref tname="e1" name="re1" />, equation <ref tname="e2" name="re2" />, and equation <ref tname="e3" name="re3" />.</p>
-    <p>From copying properties: <copy prop="equationTag" tname="e1" assignNames="te1" />, <copy prop="equationTag" tname="e2" assignNames="te2" />, and <copy prop="equationTag" tname="e3" assignNames="te3" />.</p>
+    <p>We have equation <ref target="e1" name="re1" />, equation <ref target="e2" name="re2" />, and equation <ref target="e3" name="re3" />.</p>
+    <p>From copying properties: <copy prop="equationTag" target="e1" assignNames="te1" />, <copy prop="equationTag" target="e2" assignNames="te2" />, and <copy prop="equationTag" target="e3" assignNames="te3" />.</p>
     `}, "*");
     });
 
@@ -88,21 +88,21 @@ describe('Math Display Tag Tests', function () {
     </map>
     <men name="z">z</men>
     
-    <p name="px">x: <copy prop="equationTag" assignNames="etx" tname="x" />, equation <ref tname="x" name="rx" /></p>
-    <p name="pm1">m1: <copy prop="equationTag" assignNames="etm1" tname="m1/eq" />, equation <ref tname="m1/eq" name="rm1" /></p>
-    <p name="pm2">m2: <copy prop="equationTag" assignNames="etm2" tname="m2/eq" />, equation <ref tname="m2/eq" name="rm2" /></p>
-    <p name="pm3">m3: <copy prop="equationTag" assignNames="etm3" tname="m3/eq" />, equation <ref tname="m3/eq" name="rm3" /></p>
-    <p name="pm4">m4: <copy prop="equationTag" assignNames="etm4" tname="m4/eq" />, equation <ref tname="m4/eq" name="rm4" /></p>
-    <p name="pm5">m5: <copy prop="equationTag" assignNames="etm5" tname="m5/eq" />, equation <ref tname="m5/eq" name="rm5" /></p>
-    <p name="pm6">m6: <copy prop="equationTag" assignNames="etm6" tname="m6/eq" />, equation <ref tname="m6/eq" name="rm6" /></p>
-    <p name="py">y: <copy prop="equationTag" assignNames="ety" tname="y" />, equation <ref tname="y" name="ry" /></p>
-    <p name="pn1">n1: <copy prop="equationTag" assignNames="etn1" tname="n1/eq" />, equation <ref tname="n1/eq" name="rn1" /></p>
-    <p name="pn2">n2: <copy prop="equationTag" assignNames="etn2" tname="n2/eq" />, equation <ref tname="n2/eq" name="rn2" /></p>
-    <p name="pn3">n3: <copy prop="equationTag" assignNames="etn3" tname="n3/eq" />, equation <ref tname="n3/eq" name="rn3" /></p>
-    <p name="pn4">n4: <copy prop="equationTag" assignNames="etn4" tname="n4/eq" />, equation <ref tname="n4/eq" name="rn4" /></p>
-    <p name="pn5">n5: <copy prop="equationTag" assignNames="etn5" tname="n5/eq" />, equation <ref tname="n5/eq" name="rn5" /></p>
-    <p name="pn6">n6: <copy prop="equationTag" assignNames="etn6" tname="n6/eq" />, equation <ref tname="n6/eq" name="rn6" /></p>
-    <p name="pz">z: <copy prop="equationTag" assignNames="etz" tname="z" />, equation <ref tname="z" name="rz" /></p>
+    <p name="px">x: <copy prop="equationTag" assignNames="etx" target="x" />, equation <ref target="x" name="rx" /></p>
+    <p name="pm1">m1: <copy prop="equationTag" assignNames="etm1" target="m1/eq" />, equation <ref target="m1/eq" name="rm1" /></p>
+    <p name="pm2">m2: <copy prop="equationTag" assignNames="etm2" target="m2/eq" />, equation <ref target="m2/eq" name="rm2" /></p>
+    <p name="pm3">m3: <copy prop="equationTag" assignNames="etm3" target="m3/eq" />, equation <ref target="m3/eq" name="rm3" /></p>
+    <p name="pm4">m4: <copy prop="equationTag" assignNames="etm4" target="m4/eq" />, equation <ref target="m4/eq" name="rm4" /></p>
+    <p name="pm5">m5: <copy prop="equationTag" assignNames="etm5" target="m5/eq" />, equation <ref target="m5/eq" name="rm5" /></p>
+    <p name="pm6">m6: <copy prop="equationTag" assignNames="etm6" target="m6/eq" />, equation <ref target="m6/eq" name="rm6" /></p>
+    <p name="py">y: <copy prop="equationTag" assignNames="ety" target="y" />, equation <ref target="y" name="ry" /></p>
+    <p name="pn1">n1: <copy prop="equationTag" assignNames="etn1" target="n1/eq" />, equation <ref target="n1/eq" name="rn1" /></p>
+    <p name="pn2">n2: <copy prop="equationTag" assignNames="etn2" target="n2/eq" />, equation <ref target="n2/eq" name="rn2" /></p>
+    <p name="pn3">n3: <copy prop="equationTag" assignNames="etn3" target="n3/eq" />, equation <ref target="n3/eq" name="rn3" /></p>
+    <p name="pn4">n4: <copy prop="equationTag" assignNames="etn4" target="n4/eq" />, equation <ref target="n4/eq" name="rn4" /></p>
+    <p name="pn5">n5: <copy prop="equationTag" assignNames="etn5" target="n5/eq" />, equation <ref target="n5/eq" name="rn5" /></p>
+    <p name="pn6">n6: <copy prop="equationTag" assignNames="etn6" target="n6/eq" />, equation <ref target="n6/eq" name="rn6" /></p>
+    <p name="pz">z: <copy prop="equationTag" assignNames="etz" target="z" />, equation <ref target="z" name="rz" /></p>
     `}, "*");
     });
 
@@ -333,21 +333,21 @@ describe('Math Display Tag Tests', function () {
     </mdn>
     <men name="z">z</men>
     
-    <p name="px">x: <copy prop="equationTag" assignNames="etx" tname="x" />, equation <ref tname="x" name="rx" /></p>
-    <p name="pm1">m1: <copy prop="equationTag" assignNames="etm1" tname="m1/eq" />, equation <ref tname="m1/eq" name="rm1" /></p>
-    <p name="pm2">m2: <copy prop="equationTag" assignNames="etm2" tname="m2/eq" />, equation <ref tname="m2/eq" name="rm2" /></p>
-    <p name="pm3">m3: <copy prop="equationTag" assignNames="etm3" tname="m3/eq" />, equation <ref tname="m3/eq" name="rm3" /></p>
-    <p name="pm4">m4: <copy prop="equationTag" assignNames="etm4" tname="m4/eq" />, equation <ref tname="m4/eq" name="rm4" /></p>
-    <p name="pm5">m5: <copy prop="equationTag" assignNames="etm5" tname="m5/eq" />, equation <ref tname="m5/eq" name="rm5" /></p>
-    <p name="pm6">m6: <copy prop="equationTag" assignNames="etm6" tname="m6/eq" />, equation <ref tname="m6/eq" name="rm6" /></p>
-    <p name="py">y: <copy prop="equationTag" assignNames="ety" tname="y" />, equation <ref tname="y" name="ry" /></p>
-    <p name="pn1">n1: <copy prop="equationTag" assignNames="etn1" tname="n1/eq" />, equation <ref tname="n1/eq" name="rn1" /></p>
-    <p name="pn2">n2: <copy prop="equationTag" assignNames="etn2" tname="n2/eq" />, equation <ref tname="n2/eq" name="rn2" /></p>
-    <p name="pn3">n3: <copy prop="equationTag" assignNames="etn3" tname="n3/eq" />, equation <ref tname="n3/eq" name="rn3" /></p>
-    <p name="pn4">n4: <copy prop="equationTag" assignNames="etn4" tname="n4/eq" />, equation <ref tname="n4/eq" name="rn4" /></p>
-    <p name="pn5">n5: <copy prop="equationTag" assignNames="etn5" tname="n5/eq" />, equation <ref tname="n5/eq" name="rn5" /></p>
-    <p name="pn6">n6: <copy prop="equationTag" assignNames="etn6" tname="n6/eq" />, equation <ref tname="n6/eq" name="rn6" /></p>
-    <p name="pz">z: <copy prop="equationTag" assignNames="etz" tname="z" />, equation <ref tname="z" name="rz" /></p>
+    <p name="px">x: <copy prop="equationTag" assignNames="etx" target="x" />, equation <ref target="x" name="rx" /></p>
+    <p name="pm1">m1: <copy prop="equationTag" assignNames="etm1" target="m1/eq" />, equation <ref target="m1/eq" name="rm1" /></p>
+    <p name="pm2">m2: <copy prop="equationTag" assignNames="etm2" target="m2/eq" />, equation <ref target="m2/eq" name="rm2" /></p>
+    <p name="pm3">m3: <copy prop="equationTag" assignNames="etm3" target="m3/eq" />, equation <ref target="m3/eq" name="rm3" /></p>
+    <p name="pm4">m4: <copy prop="equationTag" assignNames="etm4" target="m4/eq" />, equation <ref target="m4/eq" name="rm4" /></p>
+    <p name="pm5">m5: <copy prop="equationTag" assignNames="etm5" target="m5/eq" />, equation <ref target="m5/eq" name="rm5" /></p>
+    <p name="pm6">m6: <copy prop="equationTag" assignNames="etm6" target="m6/eq" />, equation <ref target="m6/eq" name="rm6" /></p>
+    <p name="py">y: <copy prop="equationTag" assignNames="ety" target="y" />, equation <ref target="y" name="ry" /></p>
+    <p name="pn1">n1: <copy prop="equationTag" assignNames="etn1" target="n1/eq" />, equation <ref target="n1/eq" name="rn1" /></p>
+    <p name="pn2">n2: <copy prop="equationTag" assignNames="etn2" target="n2/eq" />, equation <ref target="n2/eq" name="rn2" /></p>
+    <p name="pn3">n3: <copy prop="equationTag" assignNames="etn3" target="n3/eq" />, equation <ref target="n3/eq" name="rn3" /></p>
+    <p name="pn4">n4: <copy prop="equationTag" assignNames="etn4" target="n4/eq" />, equation <ref target="n4/eq" name="rn4" /></p>
+    <p name="pn5">n5: <copy prop="equationTag" assignNames="etn5" target="n5/eq" />, equation <ref target="n5/eq" name="rn5" /></p>
+    <p name="pn6">n6: <copy prop="equationTag" assignNames="etn6" target="n6/eq" />, equation <ref target="n6/eq" name="rn6" /></p>
+    <p name="pz">z: <copy prop="equationTag" assignNames="etz" target="z" />, equation <ref target="z" name="rz" /></p>
     `}, "*");
     });
 
@@ -492,21 +492,21 @@ describe('Math Display Tag Tests', function () {
     </mdn>
     <men name="z">z</men>
     
-    <p name="px">x: <copy prop="equationTag" assignNames="etx" tname="x" />, equation <ref tname="x" name="rx" /></p>
-    <p name="pm1">m1: <copy prop="equationTag" assignNames="etm1" tname="m1/eq" />, equation <ref tname="m1/eq" name="rm1" /></p>
-    <p name="pm2">m2: <copy prop="equationTag" assignNames="etm2" tname="m2/eq" />, equation <ref tname="m2/eq" name="rm2" /></p>
-    <p name="pm3">m3: <copy prop="equationTag" assignNames="etm3" tname="m3/eq" />, equation <ref tname="m3/eq" name="rm3" /></p>
-    <p name="pm4">m4: <copy prop="equationTag" assignNames="etm4" tname="m4/eq" />, equation <ref tname="m4/eq" name="rm4" /></p>
-    <p name="pm5">m5: <copy prop="equationTag" assignNames="etm5" tname="m5/eq" />, equation <ref tname="m5/eq" name="rm5" /></p>
-    <p name="pm6">m6: <copy prop="equationTag" assignNames="etm6" tname="m6/eq" />, equation <ref tname="m6/eq" name="rm6" /></p>
-    <p name="py">y: <copy prop="equationTag" assignNames="ety" tname="y" />, equation <ref tname="y" name="ry" /></p>
-    <p name="pn1">n1: <copy prop="equationTag" assignNames="etn1" tname="n1/eq" />, equation <ref tname="n1/eq" name="rn1" /></p>
-    <p name="pn2">n2: <copy prop="equationTag" assignNames="etn2" tname="n2/eq" />, equation <ref tname="n2/eq" name="rn2" /></p>
-    <p name="pn3">n3: <copy prop="equationTag" assignNames="etn3" tname="n3/eq" />, equation <ref tname="n3/eq" name="rn3" /></p>
-    <p name="pn4">n4: <copy prop="equationTag" assignNames="etn4" tname="n4/eq" />, equation <ref tname="n4/eq" name="rn4" /></p>
-    <p name="pn5">n5: <copy prop="equationTag" assignNames="etn5" tname="n5/eq" />, equation <ref tname="n5/eq" name="rn5" /></p>
-    <p name="pn6">n6: <copy prop="equationTag" assignNames="etn6" tname="n6/eq" />, equation <ref tname="n6/eq" name="rn6" /></p>
-    <p name="pz">z: <copy prop="equationTag" assignNames="etz" tname="z" />, equation <ref tname="z" name="rz" /></p>
+    <p name="px">x: <copy prop="equationTag" assignNames="etx" target="x" />, equation <ref target="x" name="rx" /></p>
+    <p name="pm1">m1: <copy prop="equationTag" assignNames="etm1" target="m1/eq" />, equation <ref target="m1/eq" name="rm1" /></p>
+    <p name="pm2">m2: <copy prop="equationTag" assignNames="etm2" target="m2/eq" />, equation <ref target="m2/eq" name="rm2" /></p>
+    <p name="pm3">m3: <copy prop="equationTag" assignNames="etm3" target="m3/eq" />, equation <ref target="m3/eq" name="rm3" /></p>
+    <p name="pm4">m4: <copy prop="equationTag" assignNames="etm4" target="m4/eq" />, equation <ref target="m4/eq" name="rm4" /></p>
+    <p name="pm5">m5: <copy prop="equationTag" assignNames="etm5" target="m5/eq" />, equation <ref target="m5/eq" name="rm5" /></p>
+    <p name="pm6">m6: <copy prop="equationTag" assignNames="etm6" target="m6/eq" />, equation <ref target="m6/eq" name="rm6" /></p>
+    <p name="py">y: <copy prop="equationTag" assignNames="ety" target="y" />, equation <ref target="y" name="ry" /></p>
+    <p name="pn1">n1: <copy prop="equationTag" assignNames="etn1" target="n1/eq" />, equation <ref target="n1/eq" name="rn1" /></p>
+    <p name="pn2">n2: <copy prop="equationTag" assignNames="etn2" target="n2/eq" />, equation <ref target="n2/eq" name="rn2" /></p>
+    <p name="pn3">n3: <copy prop="equationTag" assignNames="etn3" target="n3/eq" />, equation <ref target="n3/eq" name="rn3" /></p>
+    <p name="pn4">n4: <copy prop="equationTag" assignNames="etn4" target="n4/eq" />, equation <ref target="n4/eq" name="rn4" /></p>
+    <p name="pn5">n5: <copy prop="equationTag" assignNames="etn5" target="n5/eq" />, equation <ref target="n5/eq" name="rn5" /></p>
+    <p name="pn6">n6: <copy prop="equationTag" assignNames="etn6" target="n6/eq" />, equation <ref target="n6/eq" name="rn6" /></p>
+    <p name="pz">z: <copy prop="equationTag" assignNames="etz" target="z" />, equation <ref target="z" name="rz" /></p>
     `}, "*");
     });
 

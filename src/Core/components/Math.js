@@ -1,6 +1,6 @@
 import InlineComponent from './abstract/InlineComponent';
 import me from 'math-expressions';
-import { getFromText, getFromLatex, convertValueToMathExpression, normalizeMathExpression, roundForDisplay, mergeListsWithOtherContainers } from '../utils/math';
+import { getFromText, getFromLatex, convertValueToMathExpression, normalizeMathExpression, roundForDisplay, mergeListsWithOtherContainers, preprocessMathInverseDefinition } from '../utils/math';
 import { flattenDeep } from '../utils/array';
 
 
@@ -8,11 +8,9 @@ export default class MathComponent extends InlineComponent {
   static componentType = "math";
 
   // used when creating new component via adapter or copy prop
-  static primaryStateVariableForDefinition = "unnormalizedValue";
+  static primaryStateVariableForDefinition = "value";
 
-  // used when referencing this component without prop
-  static useChildrenForReference = false;
-  static get stateVariablesShadowedForReference() { return ["unnormalizedValue", "unordered"] };
+  static variableForPlainMacro = "value";
 
   static descendantCompositesMustHaveAReplacement = true;
   static descendantCompositesDefaultReplacementType = "math";
@@ -109,7 +107,7 @@ export default class MathComponent extends InlineComponent {
     }
 
     attributes.groupCompositeReplacements = {
-      createComponentOfType: "boolean",
+      createPrimitiveOfType: "boolean",
       createStateVariable: "groupCompositeReplacements",
       defaultValue: true,
     }
@@ -138,17 +136,19 @@ export default class MathComponent extends InlineComponent {
     // from serialized state with value
     stateVariableDefinitions.valueShadow = {
       defaultValue: me.fromAst('\uff3f'),  // long underscore
+      hasEssential: true,
+      essentialVarName: "value",
       returnDependencies: () => ({}),
       definition: () => ({
         useEssentialOrDefaultValue: {
-          valueShadow: { variablesToCheck: ["value", "valueShadow", "unnormalizedValue"] }
+          valueShadow: true
         }
       }),
       inverseDefinition: function ({ desiredStateVariableValues }) {
         return {
           success: true,
           instructions: [{
-            setStateVariable: "valueShadow",
+            setEssentialValue: "valueShadow",
             value: desiredStateVariableValues.valueShadow
           }]
         };
@@ -158,6 +158,8 @@ export default class MathComponent extends InlineComponent {
     stateVariableDefinitions.unordered = {
       defaultValue: false,
       public: true,
+      componentType: "boolean",
+      hasEssential: true,
       returnDependencies: () => ({
         unorderedAttr: {
           dependencyType: "attributeComponent",
@@ -175,17 +177,17 @@ export default class MathComponent extends InlineComponent {
         if (dependencyValues.unorderedAttr === null) {
           if (dependencyValues.mathChildren.length > 0) {
             let unordered = dependencyValues.mathChildren.every(x => x.stateValues.unordered);
-            return { newValues: { unordered } }
+            return { setValue: { unordered } }
           } else {
             return {
               useEssentialOrDefaultValue: {
-                unordered: { variablesToCheck: ["unordered"] }
+                unordered: true
               }
             }
           }
         } else {
           return {
-            newValues: { unordered: dependencyValues.unorderedAttr.stateValues.value }
+            setValue: { unordered: dependencyValues.unorderedAttr.stateValues.value }
           }
         }
       }
@@ -197,10 +199,29 @@ export default class MathComponent extends InlineComponent {
         stringChildren: {
           dependencyType: "child",
           childGroups: ["strings"],
-          variableNames: ["value"],
         },
       }),
-      definition: calculateCodePre,
+      definition({ dependencyValues }) {
+
+        let codePre = "math";
+
+        // make sure that codePre is not in any string piece
+        let foundInString = false;
+        do {
+          foundInString = false;
+
+          for (let child of dependencyValues.stringChildren) {
+            if (child.includes(codePre) === true) {
+              // found codePre in a string, so extend codePre and try again
+              foundInString = true;
+              codePre += "m";
+              break;
+            }
+          }
+        } while (foundInString);
+
+        return { setValue: { codePre } };
+      }
 
     }
 
@@ -217,23 +238,36 @@ export default class MathComponent extends InlineComponent {
       }),
       definition({ dependencyValues }) {
         let mathChildrenFunctionSymbols = [];
-        for (let [ind, child] of dependencyValues.mathChildren.entries()) {
-          if (dependencyValues.targetsAreFunctionSymbols.includes(child.compositeTname)) {
-            mathChildrenFunctionSymbols.push(ind)
+        if (dependencyValues.mathChildren.compositeReplacementRange) {
+          for (let compositeInfo of dependencyValues.mathChildren.compositeReplacementRange) {
+            if (dependencyValues.targetsAreFunctionSymbols.includes(compositeInfo.target)) {
+              for (let ind = compositeInfo.firstInd; ind <= compositeInfo.lastInd; ind++) {
+                mathChildrenFunctionSymbols.push(ind)
+              }
+            }
           }
         }
 
-        return { newValues: { mathChildrenFunctionSymbols } }
+        return { setValue: { mathChildrenFunctionSymbols } }
       }
     }
 
     stateVariableDefinitions.expressionWithCodes = {
-      // deferCalculation: false,
+      hasEssential: true,
+      doNotShadowEssential: true,
       returnDependencies: () => ({
         stringMathChildren: {
           dependencyType: "child",
           childGroups: ["strings", "maths"],
-          variableNames: ["value"],
+        },
+        // have stringChildren and mathChildren just for inverse definition
+        stringChildren: {
+          dependencyType: "child",
+          childGroups: ["strings"],
+        },
+        mathChildren: {
+          dependencyType: "child",
+          childGroups: ["maths"],
         },
         format: {
           dependencyType: "stateVariable",
@@ -242,14 +276,6 @@ export default class MathComponent extends InlineComponent {
         codePre: {
           dependencyType: "stateVariable",
           variableName: "codePre"
-        },
-        createVectors: {
-          dependencyType: "stateVariable",
-          variableName: "createVectors"
-        },
-        createIntervals: {
-          dependencyType: "stateVariable",
-          variableName: "createIntervals"
         },
         functionSymbols: {
           dependencyType: "stateVariable",
@@ -269,14 +295,101 @@ export default class MathComponent extends InlineComponent {
         },
       }),
       definition: calculateExpressionWithCodes,
-      inverseDefinition({ desiredStateVariableValues }) {
+      async inverseDefinition({ desiredStateVariableValues, dependencyValues, stateValues, componentName }) {
+
+        let newExpressionWithCodes = desiredStateVariableValues.expressionWithCodes;
+
+        let instructions = [{
+          setEssentialValue: "expressionWithCodes",
+          value: newExpressionWithCodes
+        }];
+
+
+        let nStringChildren = dependencyValues.stringChildren.length;
+
+        if (nStringChildren === 0) {
+          // don't use expressionWithCodes if no children
+          // and expressionWithCodes will not change if no string children
+          return { success: false };
+        }
+
+
+        if (dependencyValues.mathChildren.length === 0) {
+
+          // just string children.  Set first to value, the rest to empty strings
+          let stringValue;
+          if (await stateValues.format === "latex") {
+            stringValue = newExpressionWithCodes.toLatex()
+          } else {
+            stringValue = newExpressionWithCodes.toString()
+          }
+
+          instructions.push({
+            setDependency: "stringChildren",
+            desiredValue: stringValue,
+            childIndex: 0,
+            variableIndex: 0,
+            ignoreChildChangeForComponent: true,
+          });
+
+          for (let ind = 1; ind < nStringChildren; ind++) {
+            instructions.push({
+              setDependency: "stringChildren",
+              desiredValue: "",
+              childIndex: ind,
+              variableIndex: 0,
+              ignoreChildChangeForComponent: true,
+            })
+          }
+
+
+        } else {
+
+          // have math children
+
+          let stringExpr;
+          if (await stateValues.format === "latex") {
+            stringExpr = newExpressionWithCodes.toLatex();
+          } else {
+            stringExpr = newExpressionWithCodes.toString();
+          }
+
+          for (let [ind, stringCodes] of (await stateValues.codesAdjacentToStrings).entries()) {
+            let thisString = stringExpr;
+            if (Object.keys(stringCodes).length === 0) {
+              // string was skipped, so set it to an empty string
+              instructions.push({
+                setDependency: "stringChildren",
+                desiredValue: "",
+                childIndex: ind,
+                variableIndex: 0,
+                ignoreChildChangeForComponent: true,
+              });
+
+            } else {
+              if (stringCodes.prevCode) {
+                thisString = thisString.split(stringCodes.prevCode)[1];
+              }
+              if (stringCodes.nextCode) {
+                thisString = thisString.split(stringCodes.nextCode)[0];
+              }
+              instructions.push({
+                setDependency: "stringChildren",
+                desiredValue: thisString,
+                childIndex: ind,
+                variableIndex: 0,
+                ignoreChildChangeForComponent: true,
+              });
+            }
+          }
+
+        }
+
         return {
           success: true,
-          instructions: [{
-            setStateVariable: "expressionWithCodes",
-            value: desiredStateVariableValues.expressionWithCodes
-          }]
+          instructions
         }
+
       }
 
     }
@@ -290,7 +403,7 @@ export default class MathComponent extends InlineComponent {
         },
       }),
       definition: ({ dependencyValues }) => ({
-        newValues: { mathChildrenWithCanBeModified: dependencyValues.mathChildren }
+        setValue: { mathChildrenWithCanBeModified: dependencyValues.mathChildren }
       })
     }
 
@@ -328,6 +441,15 @@ export default class MathComponent extends InlineComponent {
     stateVariableDefinitions.value = {
       public: true,
       componentType: this.componentType,
+      additionalAttributeComponentsToShadow: ["unordered"],
+      stateVariablesPrescribingAdditionalAttributes: {
+        fixed: "fixed",
+        displayDigits: "displayDigits",
+        displayDecimals: "displayDecimals",
+        displaySmallAsZero: "displaySmallAsZero",
+        simplify: "simplify",
+        expand: "expand",
+      },
       returnDependencies: () => ({
         unnormalizedValue: {
           dependencyType: "stateVariable",
@@ -360,7 +482,7 @@ export default class MathComponent extends InlineComponent {
           value, simplify, expand, createVectors, createIntervals
         });
 
-        return { newValues: { value } }
+        return { setValue: { value } }
 
       },
       inverseDefinition: function ({ desiredStateVariableValues }) {
@@ -390,7 +512,7 @@ export default class MathComponent extends InlineComponent {
         if (number === null) {
           number = NaN;
         }
-        return { newValues: { number } };
+        return { setValue: { number } };
       },
       inverseDefinition: function ({ desiredStateVariableValues }) {
         return {
@@ -415,7 +537,7 @@ export default class MathComponent extends InlineComponent {
       }),
       definition: function ({ dependencyValues }) {
         return {
-          newValues: {
+          setValue: {
             isNumber: Number.isFinite(dependencyValues.value.tree)
           }
         }
@@ -436,7 +558,7 @@ export default class MathComponent extends InlineComponent {
       }),
       definition: function ({ dependencyValues }) {
         return {
-          newValues: {
+          setValue: {
             isNumeric: Number.isFinite(dependencyValues.number)
           }
         }
@@ -479,7 +601,7 @@ export default class MathComponent extends InlineComponent {
         });
 
         return {
-          newValues: {
+          setValue: {
             valueForDisplay: normalizeMathExpression({
               value: rounded, simplify: dependencyValues.simplify, expand: dependencyValues.expand
             })
@@ -499,7 +621,7 @@ export default class MathComponent extends InlineComponent {
         },
       }),
       definition: function ({ dependencyValues }) {
-        return { newValues: { latex: dependencyValues.valueForDisplay.toLatex() } };
+        return { setValue: { latex: dependencyValues.valueForDisplay.toLatex() } };
       }
     }
 
@@ -512,7 +634,7 @@ export default class MathComponent extends InlineComponent {
         },
       }),
       definition: function ({ dependencyValues }) {
-        return { newValues: { latexWithInputChildren: [dependencyValues.latex] } };
+        return { setValue: { latexWithInputChildren: [dependencyValues.latex] } };
       }
     }
 
@@ -532,12 +654,12 @@ export default class MathComponent extends InlineComponent {
         },
       }),
       definition: function ({ dependencyValues }) {
-        return { newValues: { text: dependencyValues.valueForDisplay.toString() } };
+        return { setValue: { text: dependencyValues.valueForDisplay.toString() } };
       },
-      inverseDefinition({ desiredStateVariableValues, stateValues }) {
+      async inverseDefinition({ desiredStateVariableValues, stateValues }) {
         let fromText = getFromText({
-          functionSymbols: stateValues.functionSymbols,
-          splitSymbols: stateValues.splitSymbols
+          functionSymbols: await stateValues.functionSymbols,
+          splitSymbols: await stateValues.splitSymbols
         });
 
         let expr;
@@ -607,7 +729,7 @@ export default class MathComponent extends InlineComponent {
       definition: determineCanBeModified,
     }
 
-    stateVariableDefinitions.mathChildrenByArrayComponent = {
+    stateVariableDefinitions.mathChildrenByVectorComponent = {
       returnDependencies: () => ({
         codePre: {
           dependencyType: "stateVariable",
@@ -625,7 +747,7 @@ export default class MathComponent extends InlineComponent {
       definition: function ({ dependencyValues }) {
 
         if (dependencyValues.expressionWithCodes === null) {
-          return { newValues: { mathChildrenByArrayComponent: null } };
+          return { setValue: { mathChildrenByVectorComponent: null } };
         }
         let expressionWithCodesTree = dependencyValues.expressionWithCodes.tree;
         let nMathChildren = dependencyValues.mathChildren.length;
@@ -634,21 +756,21 @@ export default class MathComponent extends InlineComponent {
           !Array.isArray(expressionWithCodesTree) ||
           !["tuple", "vector"].includes(expressionWithCodesTree[0])
         ) {
-          return { newValues: { mathChildrenByArrayComponent: null } };
+          return { setValue: { mathChildrenByVectorComponent: null } };
         }
 
-        let mathChildrenByArrayComponent = {};
+        let mathChildrenByVectorComponent = {};
 
         let childInd = 0;
         let childCode = dependencyValues.codePre + childInd;
 
         for (let ind = 1; ind < expressionWithCodesTree.length; ind++) {
           let exprComp = expressionWithCodesTree[ind];
-          let mc = mathChildrenByArrayComponent[ind] = [];
+          let mc = mathChildrenByVectorComponent[ind] = [];
 
           if (Array.isArray(exprComp)) {
             let flattenedComp = flattenDeep(exprComp);
-            while (childCode in flattenedComp) {
+            while (flattenedComp.includes(childCode)) {
               mc.push(childInd);
               childInd++;
               childCode = dependencyValues.codePre + childInd;
@@ -666,7 +788,7 @@ export default class MathComponent extends InlineComponent {
           }
         }
 
-        return { newValues: { mathChildrenByArrayComponent } };
+        return { setValue: { mathChildrenByVectorComponent } };
 
       }
     }
@@ -689,7 +811,7 @@ export default class MathComponent extends InlineComponent {
           nDimensions = tree.length - 1;
         }
 
-        return { newValues: { nDimensions } }
+        return { setValue: { nDimensions } }
 
       }
     }
@@ -734,9 +856,9 @@ export default class MathComponent extends InlineComponent {
           xs[0] = globalDependencyValues.value;
         }
 
-        return { newValues: { xs } }
+        return { setValue: { xs } }
       },
-      inverseArrayDefinitionByKey({ desiredStateVariableValues,
+      async inverseArrayDefinitionByKey({ desiredStateVariableValues,
         stateValues, workspace, arraySize
       }) {
 
@@ -749,14 +871,14 @@ export default class MathComponent extends InlineComponent {
           if (desiredStateVariableValues.xs[ind] !== undefined) {
             workspace.desiredXs[ind] = convertValueToMathExpression(desiredStateVariableValues.xs[ind]);
           } else if (workspace.desiredXs[ind] === undefined) {
-            workspace.desiredXs[ind] = stateValues.xs[ind];
+            workspace.desiredXs[ind] = (await stateValues.xs)[ind];
           }
         }
 
 
         let desiredValue;
         if (arraySize[0] > 1) {
-          let operator = stateValues.value.tree[0]
+          let operator = (await stateValues.value).tree[0]
           desiredValue = me.fromAst([operator, ...workspace.desiredXs.map(x => x.tree)])
         } else {
           desiredValue = workspace.desiredXs[0];
@@ -796,16 +918,6 @@ export default class MathComponent extends InlineComponent {
   }
 
 
-  // returnSerializeInstructions() {
-  //   let skipChildren = this.childLogic.returnMatches("atLeastZeroStrings").length === 1 &&
-  //     this.childLogic.returnMatches("atLeastZeroMaths").length === 0;
-  //   if (skipChildren) {
-  //     let stateVariables = ["unnormalizedValue"];
-  //     return { skipChildren, stateVariables };
-  //   }
-  //   return {};
-  // }
-
   static adapters = [
     "number",
     "text",
@@ -815,111 +927,82 @@ export default class MathComponent extends InlineComponent {
 }
 
 
-function calculateCodePre({ dependencyValues }) {
-
-  let codePre = "math";
-
-  // make sure that codePre is not in any string piece
-  let foundInString = false;
-  do {
-    foundInString = false;
-
-    for (let child of dependencyValues.stringChildren) {
-      if (child.componentType === "string" &&
-        child.stateValues.value.includes(codePre) === true) {
-        // found codePre in a string, so extend codePre and try again
-        foundInString = true;
-        codePre += "m";
-        break;
-      }
-    }
-  } while (foundInString);
-
-  return { newValues: { codePre } };
-}
-
 function calculateExpressionWithCodes({ dependencyValues, changes }) {
 
   if (!(("stringMathChildren" in changes && changes.stringMathChildren.componentIdentitiesChanged)
-    || "format" in changes || "createIntervals" in changes || "createVectors" in changes
-    || "splitSymbols" in changes
+    || "format" in changes  || "splitSymbols" in changes 
+    || "functionSymbols" in changes || "mathChildrenFunctionSymbols" in changes
   )) {
     // if component identities of stringMathChildren didn't change
     // and format didn't change
     // then expressionWithCodes remains unchanged.
     // (We assume that the value of string children cannot change on their own.)
-    return { noChanges: ["expressionWithCodes"] };
+    return { useEssentialOrDefaultValue: { expressionWithCodes: true } }
+    // return { noChanges: ["expressionWithCodes"] };
   }
 
   // if don't have any string or math children,
   // set expressionWithCodes to be null,
-  // which will indicate that value should use its essential or default value
+  // which will indicate that value should use valueShadow
   if (dependencyValues.stringMathChildren.length === 0) {
-    return { newValues: { expressionWithCodes: null } }
+    return { setValue: { expressionWithCodes: null } }
   }
 
   let inputString = "";
   let mathInd = 0;
-  let lastCompositeInd;
   let compositeGroupString = "";
-  let nComponentsInGroup = 0;
-  let noGroupingForCompositeInd;
 
-  for (let child of dependencyValues.stringMathChildren) {
-    if (nComponentsInGroup > 0 && child.compositeInd !== lastCompositeInd) {
-      // found end of composite group
-      if (nComponentsInGroup > 1) {
-        // compositeGroupString contains components separated by commas
-        // will wrap in parenthesis unless already contains
-        // delimeters before and after
-        // TODO: \rangle and \langle?
-        let iString = inputString.trimEnd();
-        let wrap = false;
-        if (iString.length === 0) {
-          wrap = true;
-        } else {
-          let lastChar = iString[iString.length - 1];
-          if (!["{", "[", "(", "|", ","].includes(lastChar)) {
-            wrap = true;
-          } else if (child.componentType !== "string") {
-            wrap = true;
-          } else {
-            let nextString = child.stateValues.value.trimStart();
-            if (nextString.length === 0) {
-              wrap = true;
-            } else {
-              let nextChar = nextString[0];
-              if (dependencyValues.format === 'latex' && nextChar === "\\"
-                && nextString.length > 1
-              ) {
-                nextChar = nextString[1];
-              }
-              if (!["}", "]", ")", "|", ","].includes(nextChar)) {
-                wrap = true;
-              }
-            }
+  let compositeReplacementRange = dependencyValues.stringMathChildren.compositeReplacementRange;
+  let currentCompositeInd = undefined;
+  let currentCompositeLastChildInd = undefined;
+  let nextCompositeInd = undefined;
+  let nextCompositeChildInd = undefined;
+  if (dependencyValues.groupCompositeReplacements && compositeReplacementRange.length > 0) {
+    nextCompositeInd = 0;
+    nextCompositeChildInd = compositeReplacementRange[nextCompositeInd].firstInd;
+  }
+
+
+  for (let [childInd, child] of dependencyValues.stringMathChildren.entries()) {
+
+
+    if (currentCompositeInd === undefined && childInd === nextCompositeChildInd) {
+      // we are grouping composite replacements
+      // and we found the beginning of children that are composite replacements
+
+      currentCompositeInd = nextCompositeInd;
+      currentCompositeLastChildInd = compositeReplacementRange[nextCompositeInd].lastInd;
+      compositeGroupString = "";
+
+      // if composite has only one replacement or has a string replacement,
+      // then we don't group
+
+      let dontGroup = currentCompositeLastChildInd === childInd;
+      if (!dontGroup) {
+        for (let ind = childInd; ind <= currentCompositeLastChildInd; ind++) {
+          if (typeof dependencyValues.stringMathChildren[ind] === "string") {
+            dontGroup = true;
+            break;
           }
         }
-
-        if (wrap) {
-          compositeGroupString = "(" + compositeGroupString + ")";
-        }
-
       }
 
-      inputString += compositeGroupString;
-      compositeGroupString = "";
-      nComponentsInGroup = 0;
+      if (dontGroup) {
+        if (compositeReplacementRange.length > currentCompositeInd + 1) {
+          nextCompositeInd = currentCompositeInd + 1;
+          nextCompositeChildInd = compositeReplacementRange[nextCompositeInd].firstInd;
+        } else {
+          nextCompositeInd = undefined;
+          nextCompositeChildInd = undefined;
+        }
+        currentCompositeInd = undefined;
+        currentCompositeLastChildInd = undefined;
+      }
+
     }
 
-    if (child.componentType === "string") {
-      // if have a string in the composite group, then don't group into tuple
-      inputString += compositeGroupString + " " + child.stateValues.value + " ";
-      compositeGroupString = "";
-      nComponentsInGroup = 0;
-      if (child.compositeInd !== undefined) {
-        noGroupingForCompositeInd = child.compositeInd;
-      }
+    if (typeof child === "string") {
+      inputString += " " + child + " ";
     } else { // a math
       let code = dependencyValues.codePre + mathInd;
       mathInd++;
@@ -937,35 +1020,77 @@ function calculateExpressionWithCodes({ dependencyValues, changes }) {
         nextString = " " + code + " ";
       }
 
-      if (dependencyValues.groupCompositeReplacements &&
-        child.compositeInd !== undefined
-        && child.compositeInd !== noGroupingForCompositeInd
-      ) {
-        if (child.compositeInd === lastCompositeInd) {
+      if (currentCompositeInd !== undefined) {
+        if (compositeGroupString) {
           // continuing a composite group
           compositeGroupString += ",";
         }
         compositeGroupString += nextString;
-        nComponentsInGroup++;
       } else {
         inputString += nextString;
-        compositeGroupString = "";
-        nComponentsInGroup = 0;
       }
 
 
     }
 
-    lastCompositeInd = child.compositeInd;
+    if (childInd === currentCompositeLastChildInd) {
+      // compositeGroupString contains components separated by commas
+      // will wrap in parenthesis unless already contains
+      // delimeters before and after
+      // TODO: \rangle and \langle?
+      let iString = inputString.trimEnd();
+      let wrap = false;
+      if (iString.length === 0) {
+        wrap = true;
+      } else {
+        let lastChar = iString[iString.length - 1];
+        if (!["{", "[", "(", "|", ","].includes(lastChar)) {
+          wrap = true;
+        } else {
+          let nextChild = dependencyValues.stringMathChildren[childInd + 1]
+          if (typeof nextChild !== "string") {
+            wrap = true;
+          } else {
+            let nextString = nextChild.trimStart();
+            if (nextString.length === 0) {
+              wrap = true;
+            } else {
+              let nextChar = nextString[0];
+              if (dependencyValues.format === 'latex' && nextChar === "\\"
+                && nextString.length > 1
+              ) {
+                nextChar = nextString[1];
+              }
+              if (!["}", "]", ")", "|", ","].includes(nextChar)) {
+                wrap = true;
+              }
+            }
+          }
+        }
+      }
+
+      if (wrap) {
+        compositeGroupString = "(" + compositeGroupString + ")";
+      }
+
+      inputString += compositeGroupString;
+      compositeGroupString = "";
+
+      if (compositeReplacementRange.length > currentCompositeInd + 1) {
+        nextCompositeInd = currentCompositeInd + 1;
+        nextCompositeChildInd = compositeReplacementRange[nextCompositeInd].firstInd;
+      } else {
+        nextCompositeInd = undefined;
+        nextCompositeChildInd = undefined;
+      }
+      currentCompositeInd = undefined;
+      currentCompositeLastChildInd = undefined;
+
+
+    }
+
   }
 
-  // if ended with a composite, wrap in parens and append
-  if (nComponentsInGroup > 0) {
-    if (nComponentsInGroup > 1) {
-      compositeGroupString = "(" + compositeGroupString + ")";
-    }
-    inputString += compositeGroupString;
-  }
 
   let expressionWithCodes = null;
 
@@ -999,17 +1124,11 @@ function calculateExpressionWithCodes({ dependencyValues, changes }) {
         console.log("Invalid value for a math of latex format: " + inputString);
       }
     }
-    if (dependencyValues.createVectors) {
-      expressionWithCodes = expressionWithCodes.tuples_to_vectors();
-    }
-    if (dependencyValues.createIntervals) {
-      expressionWithCodes = expressionWithCodes.to_intervals();
-    }
   }
 
   return {
-    newValues: { expressionWithCodes },
-    makeEssential: { expressionWithCodes: true }
+    setValue: { expressionWithCodes },
+    setEssentialValue: { expressionWithCodes }
   };
 
 }
@@ -1019,8 +1138,7 @@ function calculateMathValue({ dependencyValues } = {}) {
   // if expressionWithCodes is null, there were no string or math children
   if (dependencyValues.expressionWithCodes === null) {
     return {
-      newValues: { unnormalizedValue: dependencyValues.valueShadow },
-      makeEssential: { unnormalizedValue: true }  // make essential since inverseDef sets it
+      setValue: { unnormalizedValue: dependencyValues.valueShadow },
     }
   }
 
@@ -1038,8 +1156,7 @@ function calculateMathValue({ dependencyValues } = {}) {
 
 
   return {
-    newValues: { unnormalizedValue: value },
-    makeEssential: { unnormalizedValue: true }  // make essential since inverseDef sets it
+    setValue: { unnormalizedValue: value },
   };
 }
 
@@ -1050,9 +1167,9 @@ function calculateCodesAdjacentToStrings({ dependencyValues }) {
   let codesAdjacentToStrings = [];
   let mathInd;
   for (let [ind, child] of dependencyValues.stringMathChildren.entries()) {
-    if (child.componentType === "string") {
+    if (typeof child === "string") {
       let nextChild = dependencyValues.stringMathChildren[ind + 1];
-      if (nextChild !== undefined && nextChild.componentType === "string") {
+      if (nextChild !== undefined && typeof nextChild === "string") {
         // if following child is also a string, we'll skip the first string
         // which means, when inverting, the first string will just be set to blank
         continue;
@@ -1093,14 +1210,14 @@ function calculateCodesAdjacentToStrings({ dependencyValues }) {
     }
   }
 
-  return { newValues: { codesAdjacentToStrings } };
+  return { setValue: { codesAdjacentToStrings } };
 }
 
 function determineCanBeModified({ dependencyValues }) {
 
   if (!dependencyValues.modifyIndirectly || dependencyValues.fixed) {
     return {
-      newValues: {
+      setValue: {
         canBeModified: false,
         constantChildIndices: null,
         codeForExpression: null,
@@ -1115,7 +1232,7 @@ function determineCanBeModified({ dependencyValues }) {
   // to any specified expression
   if (dependencyValues.mathChildrenModifiable.length === 0) {
     return {
-      newValues: {
+      setValue: {
         canBeModified: true,
         constantChildIndices: null,
         codeForExpression: null,
@@ -1181,7 +1298,7 @@ function determineCanBeModified({ dependencyValues }) {
 
     // found an inverse
     return {
-      newValues: {
+      setValue: {
         canBeModified: true,
         constantChildIndices,
         codeForExpression,
@@ -1193,7 +1310,7 @@ function determineCanBeModified({ dependencyValues }) {
 
   // if not linear, can't find an inverse
   return {
-    newValues: {
+    setValue: {
       canBeModified: false,
       constantChildIndices: null,
       codeForExpression: null,
@@ -1339,100 +1456,64 @@ function checkForScalarLinearExpression(tree, variables, inverseTree, components
 
 }
 
-function invertMath({ desiredStateVariableValues, dependencyValues,
-  stateValues, workspace, overrideFixed
+async function invertMath({ desiredStateVariableValues, dependencyValues,
+  stateValues, workspace, overrideFixed, componentName
 }) {
 
-  if (!stateValues.canBeModified && !overrideFixed) {
+  if (!await stateValues.canBeModified && !overrideFixed) {
     return { success: false };
   }
 
-  let desiredExpression = convertValueToMathExpression(desiredStateVariableValues.unnormalizedValue);
-  let currentValue = stateValues.value;
+  let mathChildren = dependencyValues.mathChildren;
+  let nStringChildren = dependencyValues.stringChildren.length;
 
-  let arrayEntriesNotAffected;
 
-  if (desiredExpression.tree[0] === "tuple" || desiredExpression.tree[0] === "vector") {
-    if (currentValue && (currentValue.tree[0] === "tuple" || currentValue.tree[0] === "vector")) {
-      // have vectors
-      // merge desiredExpression into current expression
-      let expressionAst;
 
-      if (workspace.desiredExpressionAst) {
-        // if have desired expresson from workspace, use that instead of currentValue
-        expressionAst = workspace.desiredExpressionAst.slice(0, desiredExpression.tree.length);
-      } else {
-        expressionAst = currentValue.tree.slice(0, desiredExpression.tree.length);
-      }
-
-      let notAffected = [];
-      let foundNotAffected = false;
-      for (let [ind, value] of desiredExpression.tree.entries()) {
-        if (value === undefined) {
-          foundNotAffected = true;
-          notAffected.push(ind);
-        } else {
-          expressionAst[ind] = value;
-        }
-      }
-      desiredExpression = me.fromAst(expressionAst);
-      workspace.desiredExpressionAst = expressionAst;
-
-      if (foundNotAffected) {
-        arrayEntriesNotAffected = notAffected;
-      }
-    } else {
-      // desired expression could have undefined entries
-      // fill in with \uff3f
-      let desiredOperands = [];
-      let foundUndefined = false;
-      for (let val of desiredExpression.tree.slice(1)) {
-        if (val === undefined) {
-          desiredOperands.push('\uff3f');
-          foundUndefined = true;
-        } else {
-          desiredOperands.push(val)
-        }
-      }
-
-      if (foundUndefined) {
-        desiredExpression = me.fromAst([desiredExpression.tree[0], ...desiredOperands])
-      }
+  if (mathChildren.length === 1 && nStringChildren === 0) {
+    // if only child is a math, just send instructions to change it to desired value
+    return {
+      success: true,
+      instructions: [{
+        setDependency: "mathChildren",
+        desiredValue: desiredStateVariableValues.unnormalizedValue,
+        childIndex: 0,
+        variableIndex: 0,
+      }]
     }
-
   }
 
-  let mathChildren = dependencyValues.mathChildren;
-  let stringChildren = dependencyValues.stringChildren;
+
+  let desiredExpression = convertValueToMathExpression(desiredStateVariableValues.unnormalizedValue);
+
+  let result = await preprocessMathInverseDefinition({
+    desiredValue: desiredExpression,
+    stateValues,
+    variableName: "value",
+    workspace,
+  })
+
+
+  let vectorComponentsNotAffected = result.vectorComponentsNotAffected;
+  desiredExpression = result.desiredValue;
 
   if (mathChildren.length === 0) {
 
     let instructions = [];
 
-    for (let ind = 0; ind < stringChildren.length; ind++) {
+    if (nStringChildren > 0) {
+
       instructions.push({
-        deferSettingDependency: "stringChildren",
-        inverseDefinition: finishInvertMathForStringChildren,
-        childIndex: ind,
-        variableIndex: 0,
-        dependencyValues: {
-          mathChildren: dependencyValues.mathChildren,
-          stringChildren: dependencyValues.stringChildren
-        },
-      })
-    }
+        setDependency: "expressionWithCodes",
+        desiredValue: desiredExpression,
+      });
 
-    instructions.push({
-      setStateVariable: "unnormalizedValue",
-      value: desiredExpression,
-    });
-
-    if (stringChildren.length === 0) {
+    } else {
       instructions.push({
         setDependency: "valueShadow",
         desiredValue: desiredExpression,
       });
     }
+
     return {
       success: true,
       instructions
@@ -1440,20 +1521,9 @@ function invertMath({ desiredStateVariableValues, dependencyValues,
 
   }
 
-  if (mathChildren.length === 1 && stringChildren.length === 0) {
-    return {
-      success: true,
-      instructions: [{
-        setDependency: "mathChildren",
-        desiredValue: desiredExpression,
-        childIndex: 0,
-        variableIndex: 0,
-      }]
-    }
-  }
 
   // first calculate expression pieces to make sure really can update
-  let expressionPieces = getExpressionPieces({ expression: desiredExpression, stateValues });
+  let expressionPieces = await getExpressionPieces({ expression: desiredExpression, stateValues });
   if (!expressionPieces) {
     return { success: false };
   }
@@ -1461,26 +1531,29 @@ function invertMath({ desiredStateVariableValues, dependencyValues,
   let instructions = [];
 
   let childrenToSkip = [];
-  if (arrayEntriesNotAffected && stateValues.mathChildrenByArrayComponent) {
-    for (let ind of arrayEntriesNotAffected) {
-      if (stateValues.mathChildrenByArrayComponent[ind]) {
-        childrenToSkip.push(...stateValues.mathChildrenByArrayComponent[ind])
+  if (vectorComponentsNotAffected && await stateValues.mathChildrenByVectorComponent) {
+    let mathChildrenByVectorComponent = await stateValues.mathChildrenByVectorComponent;
+    for (let ind of vectorComponentsNotAffected) {
+      if (mathChildrenByVectorComponent[ind]) {
+        childrenToSkip.push(...mathChildrenByVectorComponent[ind])
       }
     }
   }
 
   // update math children where have inversemap and canBeModified is true
+  let mathChildrenWithCanBeModified = await stateValues.mathChildrenWithCanBeModified;
   for (let [childInd, mathChild] of mathChildren.entries()) {
     if (stateValues.mathChildrenMapped.has(childInd) &&
-      stateValues.mathChildrenWithCanBeModified[childInd].stateValues.canBeModified
+      mathChildrenWithCanBeModified[childInd].stateValues.canBeModified
     ) {
 
       if (!childrenToSkip.includes(childInd)) {
         let childValue = expressionPieces[childInd];
         let subsMap = {};
         let foundConst = false;
-        for (let code in stateValues.constantChildIndices) {
-          let constInd = stateValues.constantChildIndices[code]
+        let constantChildIndices = await stateValues.constantChildIndices;
+        for (let code in constantChildIndices) {
+          let constInd = constantChildIndices[code]
           subsMap[code] = mathChildren[constInd].stateValues.value;
           foundConst = true;
         }
@@ -1505,136 +1578,54 @@ function invertMath({ desiredStateVariableValues, dependencyValues,
 
   // if there are any string children,
   // need to update expressionWithCodes with new values
-  // and then update the string children based on it
 
-  // TODO: the only time a string child could change is if it
-  // entirely contains a component of a vector.
-  // Can we easily determine if this is the case and skip processing
-  // string children and expression with codes if it is not the case?
 
-  if (stringChildren.length > 0) {
-    let newExpressionWithCodes = stateValues.expressionWithCodes;
+  if (nStringChildren > 0) {
+    let newExpressionWithCodes = dependencyValues.expressionWithCodes;
+    let codePre = dependencyValues.codePre;
+    let nCP = codePre.length;
 
-    for (let piece in expressionPieces) {
-      let inverseMap = stateValues.inverseMaps[piece];
-      // skip math children
-      if (inverseMap.mathChildInd !== undefined) {
-        continue;
-      }
-      let components = inverseMap.components;
-      newExpressionWithCodes =
-        newExpressionWithCodes.substitute_component(
-          components, expressionPieces[piece]);
+    // Given that we have both string and math children,
+    // the only way that expressionWithCodes could change
+    // is if expression is a vector 
+    // and there is a vector component that came entirely from a string child,
+    // i.e., that that vector component in expressionWithCodes
+    // does not have any Codes in it.
+
+    function mathComponentIsCode(tree) {
+      return typeof tree === "string" && tree.substring(0, nCP) === codePre
     }
 
+    function mathComponentContainsCode(tree) {
+      if (Array.isArray(tree)) {
+        return flattenDeep(tree.slice(1)).some(mathComponentIsCode)
+      } else {
+        return mathComponentIsCode(tree)
+      }
+    }
 
-    instructions.push({
-      setDependency: "expressionWithCodes",
-      desiredValue: newExpressionWithCodes,
-    });
+    if (["vector", "tuple", "list"].includes(newExpressionWithCodes.tree[0]) &&
+      !newExpressionWithCodes.tree.slice(1).every(mathComponentContainsCode)
+    ) {
 
-    for (let ind = 0; ind < stringChildren.length; ind++) {
+      let inverseMaps = await stateValues.inverseMaps;
+      for (let piece in expressionPieces) {
+        let inverseMap = inverseMaps[piece];
+        // skip math children
+        if (inverseMap.mathChildInd !== undefined) {
+          continue;
+        }
+        let components = inverseMap.components;
+        newExpressionWithCodes =
+          newExpressionWithCodes.substitute_component(
+            components, expressionPieces[piece]);
+      }
+
       instructions.push({
-        deferSettingDependency: "stringChildren",
-        inverseDefinition: finishInvertMathForStringChildren,
-        childIndex: ind,
-        variableIndex: 0,
-        dependencyValues: {
-          mathChildren: dependencyValues.mathChildren,
-          stringChildren: dependencyValues.stringChildren
-        },
+        setDependency: "expressionWithCodes",
+        desiredValue: newExpressionWithCodes,
       });
     }
-  }
-
-  return {
-    success: true,
-    instructions,
-  };
-
-}
-
-
-function finishInvertMathForStringChildren({ dependencyValues, stateValues }) {
-
-  // console.log("finishInvertMathForStringChildren")
-
-  let mathChildren = dependencyValues.mathChildren;
-  let stringChildren = dependencyValues.stringChildren;
-
-  if (mathChildren.length === 0) {
-
-    // just string children.  Set first to value, the rest to empty strings
-    let stringValue;
-    if (stateValues.format === "latex") {
-      stringValue = stateValues.value.toLatex()
-    } else {
-      stringValue = stateValues.value.toString()
-    }
-    let instructions = [{
-      setDependency: "stringChildren",
-      desiredValue: stringValue,
-      childIndex: 0,
-      variableIndex: 0,
-    }];
-    for (let ind = 1; ind < stringChildren.length; ind++) {
-      instructions.push({
-        setDependency: "stringChildren",
-        desiredValue: "",
-        childIndex: ind,
-        variableIndex: 0,
-      })
-    }
-    return {
-      success: true,
-      instructions
-    }
-
-  }
-
-
-  // TODO: see TODO about string children in invertMath
-
-  let instructions = [];
-
-  // if there are any string children,
-  // need to update expressionWithCodes with new values
-  // and then update the string children based on it
-  if (stringChildren.length > 0) {
-
-    let stringExpr;
-    if (stateValues.format === "latex") {
-      stringExpr = stateValues.expressionWithCodes.toLatex();
-    } else {
-      stringExpr = stateValues.expressionWithCodes.toString();
-    }
-
-    for (let [ind, stringCodes] of stateValues.codesAdjacentToStrings.entries()) {
-      let thisString = stringExpr;
-      if (Object.keys(stringCodes).length === 0) {
-        // string was skipped, so set it to an empty string
-        instructions.push({
-          setDependency: "stringChildren",
-          desiredValue: "",
-          childIndex: ind,
-          variableIndex: 0,
-        });
-
-      } else {
-        if (stringCodes.prevCode) {
-          thisString = thisString.split(stringCodes.prevCode)[1];
-        }
-        if (stringCodes.nextCode) {
-          thisString = thisString.split(stringCodes.nextCode)[0];
-        }
-        instructions.push({
-          setDependency: "stringChildren",
-          desiredValue: thisString,
-          childIndex: ind,
-          variableIndex: 0,
-        });
-      }
-    }
 
   }
 
@@ -1646,18 +1637,19 @@ function finishInvertMathForStringChildren({ dependencyValues, stateValues }) {
 }
 
 
+async function getExpressionPieces({ expression, stateValues }) {
 
-function getExpressionPieces({ expression, stateValues }) {
+  let template = await stateValues.template;
 
-  let matching = me.utils.match(expression.tree, stateValues.template);
+  let matching = me.utils.match(expression.tree, template);
 
   // if doesn't match, trying matching, by converting vectors, intervals, or both
   if (!matching) {
-    matching = me.utils.match(expression.tuples_to_vectors().tree, me.fromAst(stateValues.template).tuples_to_vectors().tree);
+    matching = me.utils.match(expression.tuples_to_vectors().tree, me.fromAst(template).tuples_to_vectors().tree);
     if (!matching) {
-      matching = me.utils.match(expression.to_intervals().tree, me.fromAst(stateValues.template).to_intervals().tree);
+      matching = me.utils.match(expression.to_intervals().tree, me.fromAst(template).to_intervals().tree);
       if (!matching) {
-        matching = me.utils.match(expression.tuples_to_vectors().to_intervals().tree, me.fromAst(stateValues.template).tuples_to_vectors().to_intervals().tree);
+        matching = me.utils.match(expression.tuples_to_vectors().to_intervals().tree, me.fromAst(template).tuples_to_vectors().to_intervals().tree);
         if (!matching) {
           return false;
         }
@@ -1668,8 +1660,8 @@ function getExpressionPieces({ expression, stateValues }) {
   let pieces = {};
   for (let x in matching) {
     let subMap = {};
-    subMap[stateValues.codeForExpression] = matching[x];
-    let inverseMap = stateValues.inverseMaps[x];
+    subMap[await stateValues.codeForExpression] = matching[x];
+    let inverseMap = (await stateValues.inverseMaps)[x];
     if (inverseMap !== undefined) {
       let id = x;
       if (inverseMap.mathChildInd !== undefined) {
@@ -1679,10 +1671,10 @@ function getExpressionPieces({ expression, stateValues }) {
 
       pieces[id] = normalizeMathExpression({
         value: pieces[id],
-        simplify: stateValues.simplify,
-        expand: stateValues.expand,
-        createvectors: stateValues.createvectors,
-        createintervals: stateValues.createintervals,
+        simplify: await stateValues.simplify,
+        expand: await stateValues.expand,
+        createVectors: await stateValues.createVectors,
+        createIntervals: await stateValues.createIntervals,
       })
     }
   }

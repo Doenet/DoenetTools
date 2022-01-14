@@ -6,10 +6,6 @@ export default class Row extends BaseComponent {
   static rendererType = "row";
   static renderChildren = true;
 
-  static get stateVariablesShadowedForReference() {
-    return ["halign", "valign", "left", "bottom"]
-  };
-
   static createAttributesObject(args) {
     let attributes = super.createAttributesObject(args);
     attributes.rowNum = {
@@ -58,6 +54,7 @@ export default class Row extends BaseComponent {
       public: true,
       componentType: "text",
       defaultValue: "left",
+      hasEssential: true,
       returnDependencies: () => ({
         halignAttr: {
           dependencyType: "attributeComponent",
@@ -76,11 +73,11 @@ export default class Row extends BaseComponent {
           if (!["left", "center", "right", "justify"].includes(halign)) {
             halign = "left";
           }
-          return { newValues: { halign } }
+          return { setValue: { halign } }
         } else if (dependencyValues.parentHalign !== null && !usedDefault.parentHalign) {
-          return { newValues: { halign: dependencyValues.parentHalign } }
+          return { setValue: { halign: dependencyValues.parentHalign } }
         } else {
-          return { useEssentialOrDefaultValue: { halign: {} } }
+          return { useEssentialOrDefaultValue: { halign: true } }
         }
       }
     }
@@ -90,6 +87,7 @@ export default class Row extends BaseComponent {
       componentType: "text",
       forRenderer: true,
       defaultValue: "middle",
+      hasEssential: true,
       returnDependencies: () => ({
         valignAttr: {
           dependencyType: "attributeComponent",
@@ -108,11 +106,11 @@ export default class Row extends BaseComponent {
           if (!["top", "middle", "bottom"].includes(valign)) {
             valign = "middle";
           }
-          return { newValues: { valign } }
+          return { setValue: { valign } }
         } else if (dependencyValues.parentValign !== null && !usedDefault.parentValign) {
-          return { newValues: { valign: dependencyValues.parentValign } }
+          return { setValue: { valign: dependencyValues.parentValign } }
         } else {
-          return { useEssentialOrDefaultValue: { valign: {} } }
+          return { useEssentialOrDefaultValue: { valign: true } }
         }
       }
     }
@@ -122,6 +120,7 @@ export default class Row extends BaseComponent {
       componentType: "text",
       forRenderer: true,
       defaultValue: "none",
+      hasEssential: true,
       returnDependencies: () => ({
         leftAttr: {
           dependencyType: "attributeComponent",
@@ -140,11 +139,11 @@ export default class Row extends BaseComponent {
           if (!["none", "minor", "medium", "major"].includes(left)) {
             left = "none";
           }
-          return { newValues: { left } }
+          return { setValue: { left } }
         } else if (dependencyValues.parentLeft !== null && !usedDefault.parentLeft) {
-          return { newValues: { left: dependencyValues.parentLeft } }
+          return { setValue: { left: dependencyValues.parentLeft } }
         } else {
-          return { useEssentialOrDefaultValue: { left: {} } }
+          return { useEssentialOrDefaultValue: { left: true } }
         }
       }
     }
@@ -153,6 +152,7 @@ export default class Row extends BaseComponent {
       public: true,
       componentType: "text",
       defaultValue: "none",
+      hasEssential: true,
       returnDependencies: () => ({
         bottomAttr: {
           dependencyType: "attributeComponent",
@@ -171,11 +171,11 @@ export default class Row extends BaseComponent {
           if (!["none", "minor", "medium", "major"].includes(bottom)) {
             bottom = "none";
           }
-          return { newValues: { bottom } }
+          return { setValue: { bottom } }
         } else if (dependencyValues.parentBottom !== null && !usedDefault.parentBottom) {
-          return { newValues: { bottom: dependencyValues.parentBottom } }
+          return { setValue: { bottom: dependencyValues.parentBottom } }
         } else {
-          return { useEssentialOrDefaultValue: { bottom: {} } }
+          return { useEssentialOrDefaultValue: { bottom: true } }
         }
       }
     }
@@ -190,7 +190,7 @@ export default class Row extends BaseComponent {
       }),
       definition({ dependencyValues }) {
         return {
-          newValues: {
+          setValue: {
             prescribedCellsWithColNum: dependencyValues.cellChildren
           }
         }
@@ -301,7 +301,7 @@ export default class Row extends BaseComponent {
     //         }
 
     //         return {
-    //           newValues: { cellMaths: dependencyValues.cellChildren.map(x => x.stateValues.math) }
+    //           setValue: { cellMaths: dependencyValues.cellChildren.map(x => x.stateValues.math) }
     //         }
     //       }
 
@@ -312,7 +312,7 @@ export default class Row extends BaseComponent {
     //           newCellMaths[arrayKey] = dependencyValues.cellChildren[arrayKey].stateValues.math;
     //         }
     //       }
-    //       return { newValues: { cellMaths: newCellMaths } }
+    //       return { setValue: { cellMaths: newCellMaths } }
     //     } else {
 
     //       // have arrayKey
@@ -324,7 +324,7 @@ export default class Row extends BaseComponent {
     //           cellMath = dependencyValues.cellChild[0].stateValues.math;
     //         }
     //         return {
-    //           newValues: {
+    //           setValue: {
     //             cellMaths: {
     //               [arrayKey]: cellMath
     //             }
@@ -487,7 +487,7 @@ export default class Row extends BaseComponent {
     //         }
 
     //         return {
-    //           newValues: { cellNumbers: dependencyValues.cellChildren.map(x => x.stateValues.number) }
+    //           setValue: { cellNumbers: dependencyValues.cellChildren.map(x => x.stateValues.number) }
     //         }
     //       }
 
@@ -498,7 +498,7 @@ export default class Row extends BaseComponent {
     //           newcellNumbers[arrayKey] = dependencyValues.cellChildren[arrayKey].stateValues.number;
     //         }
     //       }
-    //       return { newValues: { cellNumbers: newcellNumbers } }
+    //       return { setValue: { cellNumbers: newcellNumbers } }
     //     } else {
 
     //       // have arrayKey
@@ -510,7 +510,7 @@ export default class Row extends BaseComponent {
     //           cellNumber = dependencyValues.cellChild[0].stateValues.number;
     //         }
     //         return {
-    //           newValues: {
+    //           setValue: {
     //             cellNumbers: {
     //               [arrayKey]: cellNumber
     //             }
@@ -673,7 +673,7 @@ export default class Row extends BaseComponent {
     //         }
 
     //         return {
-    //           newValues: { cellTexts: dependencyValues.cellChildren.map(x => x.stateValues.text) }
+    //           setValue: { cellTexts: dependencyValues.cellChildren.map(x => x.stateValues.text) }
     //         }
     //       }
 
@@ -684,7 +684,7 @@ export default class Row extends BaseComponent {
     //           newcellTexts[arrayKey] = dependencyValues.cellChildren[arrayKey].stateValues.text;
     //         }
     //       }
-    //       return { newValues: { cellTexts: newcellTexts } }
+    //       return { setValue: { cellTexts: newcellTexts } }
     //     } else {
 
     //       // have arrayKey
@@ -696,7 +696,7 @@ export default class Row extends BaseComponent {
     //           cellText = dependencyValues.cellChild[0].stateValues.text;
     //         }
     //         return {
-    //           newValues: {
+    //           setValue: {
     //             cellTexts: {
     //               [arrayKey]: cellText
     //             }

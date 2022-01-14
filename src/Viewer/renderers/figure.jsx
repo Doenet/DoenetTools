@@ -19,7 +19,7 @@ export default class Figure extends DoenetRenderer {
     if (this.doenetSvData.captionChildName) {
       let captionChildInd;
       for (let [ind, child] of this.children.entries()) {
-        if (child.props.componentInstructions.componentName === this.doenetSvData.captionChildName) {
+        if (typeof child !== "string" && child.props.componentInstructions.componentName === this.doenetSvData.captionChildName) {
           captionChildInd = ind;
           break;
         }

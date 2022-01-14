@@ -2,6 +2,7 @@ import readOnlyProxyHandler from '../../ReadOnlyProxyHandler';
 import createStateProxyHandler from '../../StateProxyHandler';
 import { flattenDeep, mapDeep } from '../../utils/array';
 import { deepClone } from '../../utils/deepFunctions';
+import { returnDefaultGetArrayKeysFromVarName } from '../../utils/stateVariables';
 
 export default class BaseComponent {
   constructor({
@@ -51,8 +52,10 @@ export default class BaseComponent {
     }
     this.stateValues = new Proxy(this.state, createStateProxyHandler());
 
+    this.essentialState = {};
+
     if (serializedComponent.state) {
-      this.potentialEssentialState = new Proxy(serializedComponent.state, readOnlyProxyHandler);
+      this.essentialState = deepClone(serializedComponent.state);
     }
 
     this.doenetAttributes = {};
@@ -140,9 +143,13 @@ export default class BaseComponent {
     // recurse to all children
     for (let childName in this.allChildren) {
       let child = this.allChildren[childName].component;
-      for (let rendererType of child.allPotentialRendererTypes) {
-        if (!allPotentialRendererTypes.includes(rendererType)) {
-          allPotentialRendererTypes.push(rendererType);
+      if (typeof child !== "object") {
+        continue;
+      } else {
+        for (let rendererType of child.allPotentialRendererTypes) {
+          if (!allPotentialRendererTypes.includes(rendererType)) {
+            allPotentialRendererTypes.push(rendererType);
+          }
         }
       }
     }
@@ -274,10 +281,10 @@ export default class BaseComponent {
         createStateVariable: "styleNumber",
         defaultValue: 1,
         public: true,
-        propagateToDescendants: true
+        fallBackToParentStateVariable: "styleNumber",
       },
       isResponse: {
-        createComponentOfType: "boolean",
+        createPrimitiveOfType: "boolean",
         createStateVariable: "isResponse",
         defaultValue: false,
         public: true,
@@ -376,21 +383,25 @@ export default class BaseComponent {
         },
       }),
       definition: ({ dependencyValues }) => ({
-        newValues: {
+        setValue: {
           hidden:  // check === true so null gives false
             dependencyValues.parentHidden === true
             || dependencyValues.sourceCompositeHidden === true
             || dependencyValues.adapterSourceHidden === true
             || dependencyValues.hide === true
         }
-      })
+      }),
+      markStale: () => ({ updateParentRenderedChildren: true }),
+
     }
 
     stateVariableDefinitions.disabled = {
       public: true,
       componentType: "boolean",
       forRenderer: true,
-      neverShadow: true,
+      hasEssential: true,
+      doNotShadowEssential: true,
+      defaultValue: false,
       returnDependencies: () => ({
         disabledPreliminary: {
           dependencyType: "stateVariable",
@@ -426,14 +437,14 @@ export default class BaseComponent {
       definition({ dependencyValues, usedDefault }) {
 
         if (dependencyValues.readOnly && !dependencyValues.disabledIgnoresParentReadOnly) {
-          return { newValues: { disabled: true } }
+          return { setValue: { disabled: true } }
         }
 
         if (dependencyValues.disabledPreliminary !== null &&
           dependencyValues.disabledAttr !== null
         ) {
           return {
-            newValues: {
+            setValue: {
               disabled: dependencyValues.disabledPreliminary
             }
           }
@@ -468,11 +479,11 @@ export default class BaseComponent {
         if (useEssential) {
           return {
             useEssentialOrDefaultValue: {
-              disabled: { defaultValue: false }
+              disabled: true
             }
           }
         } else {
-          return { newValues: { disabled } }
+          return { setValue: { disabled } }
         }
       },
     }
@@ -482,7 +493,8 @@ export default class BaseComponent {
       componentType: "boolean",
       forRenderer: true,
       defaultValue: false,
-      neverShadow: true,
+      hasEssential: true,
+      doNotShadowEssential: true,
       returnDependencies: () => ({
         fixedPreliminary: {
           dependencyType: "stateVariable",
@@ -511,7 +523,7 @@ export default class BaseComponent {
           dependencyValues.fixedAttr !== null
         ) {
           return {
-            newValues: {
+            setValue: {
               fixed: dependencyValues.fixedPreliminary
             }
           }
@@ -546,31 +558,30 @@ export default class BaseComponent {
         if (useEssential) {
           return {
             useEssentialOrDefaultValue: {
-              fixed: { variablesToCheck: [] }
+              fixed: true
             }
           }
         }
         else {
-          return { newValues: { fixed } }
+          return { setValue: { fixed } }
         }
       }
     }
 
     stateVariableDefinitions.isInactiveCompositeReplacement = {
       defaultValue: false,
+      hasEssential: true,
       returnDependencies: () => ({}),
       definition: () => ({
         useEssentialOrDefaultValue: {
-          isInactiveCompositeReplacement: {
-            variablesToCheck: ["isInactiveCompositeReplacement"]
-          }
+          isInactiveCompositeReplacement: true
         }
       }),
       inverseDefinition({ desiredStateVariableValues }) {
         return {
           success: true,
           instructions: [{
-            setStateVariable: {
+            setEssentialValue: {
               variableName: "isInactiveCompositeReplacement",
               value: desiredStateVariableValues.isInactiveCompositeReplacement
             }
@@ -710,6 +721,11 @@ export default class BaseComponent {
               }
             }
           }
+          if (theStateDef.getArrayKeysFromVarName) {
+            stateVariableDescriptions[varName].getArrayKeysFromVarName = theStateDef.getArrayKeysFromVarName;
+          } else {
+            stateVariableDescriptions[varName].getArrayKeysFromVarName = returnDefaultGetArrayKeysFromVarName(stateVariableDescriptions[varName].nDimensions)
+          }
         }
       }
     }
@@ -759,15 +775,12 @@ export default class BaseComponent {
   }
 
 
-  static useChildrenForReference = true;
-
-  static get stateVariablesShadowedForReference() { return [] };
 
   // returnSerializeInstructions() {
   //   return {};
   // }
 
-  serialize(parameters = {}) {
+  async serialize(parameters = {}) {
     // TODO: this function is converted only for the case with the parameter
     // forLink set
 
@@ -776,18 +789,6 @@ export default class BaseComponent {
     let includeDefiningChildren = true;
     // let stateVariablesToInclude = [];
 
-    if (parameters.forLink) {
-      includeDefiningChildren = true;//this.constructor.useChildrenForReference;
-    } else {
-      // let instructions = this.returnSerializeInstructions();
-      // if (instructions.skipChildren) {
-      //   includeDefiningChildren = false;
-      // }
-      // if (instructions.stateVariables) {
-      //   stateVariablesToInclude = instructions.stateVariables;
-      // }
-
-    }
 
     let serializedComponent = {
       componentType: this.componentType,
@@ -798,15 +799,16 @@ export default class BaseComponent {
     if (includeDefiningChildren) {
 
       for (let child of this.definingChildren) {
-        serializedChildren.push(child.serialize(parameters));
+        if (typeof child !== "object") {
+          serializedChildren.push(child)
+        } else {
+          serializedChildren.push(await child.serialize(parameters));
+        }
       }
 
       if (this.serializedChildren !== undefined) {
         for (let child of this.serializedChildren) {
-          serializedChildren.push(this.copySerializedComponent({
-            serializedComponent: child,
-            parameters: parameters
-          }));
+          serializedChildren.push(this.copySerializedComponent(child));
         }
       }
 
@@ -824,42 +826,25 @@ export default class BaseComponent {
       let attribute = this.attributes[attrName];
       if (attribute.component) {
         // only copy attribute components if attributes object specifies
-        // or if not linked
+        // or if copy all
         let attrInfo = attributesObject[attrName];
-        if (attrInfo.copyComponentOnReference || !parameters.forLink) {
-          serializedComponent.attributes[attrName] = { component: attribute.component.serialize(parameters) };
+        if (parameters.copyAll) {
+          serializedComponent.attributes[attrName] = { component: await attribute.component.serialize(parameters) };
         }
       } else {
         // always copy others
-        // TODO: for now not copying isResponse if linked
+        // TODO: for now not copying isResponse if not copy all
         // but not sure if that is the right thing to do
-        if (attrName !== "isResponse" || !parameters.forLink) {
+        if (attrName !== "isResponse" || parameters.copyAll) {
           serializedComponent.attributes[attrName] = JSON.parse(JSON.stringify(attribute));
         }
       }
     }
 
-
-    if (!parameters.forLink) {
-      let additionalState = {};
-      for (let item in this.state) {
-        // evaluate state variable first so that 
-        // essential and usedDefault attribute are populated
-        let value = this.state[item].value;
-
-        if (this.state[item].essential || this.state[item].alwaysShadow) {// || stateVariablesToInclude.includes(item)) {
-          if (!this.state[item].usedDefault) {
-            additionalState[item] = value;
-          }
-        }
-      }
-
-      if (Object.keys(additionalState).length > 0) {
-        serializedComponent.state = additionalState;
-      }
-
+    // always copy essential state
+    if(this.essentialState && Object.keys(this.essentialState).length > 0) {
+      serializedComponent.state = deepClone(this.essentialState);
     }
-
 
     serializedComponent.originalName = this.componentName;
     serializedComponent.originalDoenetAttributes = deepClone(this.doenetAttributes);
@@ -874,15 +859,16 @@ export default class BaseComponent {
 
   }
 
-  copySerializedComponent({ serializedComponent, parameters }) {
+  copySerializedComponent(serializedComponent) {
+
+    if (typeof serializedComponent !== "object") {
+      return serializedComponent;
+    }
 
     let serializedChildren = [];
     if (serializedComponent.children !== undefined) {
       for (let child of serializedComponent.children) {
-        serializedChildren.push(this.copySerializedComponent({
-          serializedComponent: child,
-          parameters: parameters
-        }));
+        serializedChildren.push(this.copySerializedComponent(child));
       }
     }
 
@@ -895,8 +881,7 @@ export default class BaseComponent {
       doenetAttributes: {},
     }
 
-    if (//parameters.forLink !== true &&
-      serializedComponent.doenetAttributes !== undefined) {
+    if (serializedComponent.doenetAttributes !== undefined) {
       serializedCopy.originalDoenetAttributes = deepClone(serializedComponent.doenetAttributes);
       serializedCopy.doenetAttributes = deepClone(serializedComponent.doenetAttributes);
       serializedCopy.originalAttributes = deepClone(serializedComponent.attributes);

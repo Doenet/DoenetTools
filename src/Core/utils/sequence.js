@@ -1,13 +1,6 @@
 import { findFiniteNumericalValue } from '../utils/math';
 import me from 'math-expressions';
 
-// Need to shadow these state variables as created from attribute components
-export function returnStandardSequenceStateVariablesShadowedForReference() {
-  return [
-    "specifiedFrom", "specifiedTo",
-    "specifiedLength", "specifiedStep", "specifiedExclude"
-  ]
-}
 
 export function returnStandardSequenceAttributes() {
   return {
@@ -59,12 +52,12 @@ export function returnStandardSequenceStateVariableDefinitions() {
       },
     }),
     defaultValue: null,
+    hasEssential: true,
+    essentialVarName: "from",
     definition: function ({ dependencyValues }) {
       if (dependencyValues.fromAttr === null) {
         return {
-          useEssentialOrDefaultValue: {
-            specifiedFrom: { variablesToCheck: ["from", "specifiedFrom"] },
-          },
+          useEssentialOrDefaultValue: { specifiedFrom: true },
         }
       }
       if (dependencyValues.fromAttr.stateValues.value === null) {
@@ -73,13 +66,13 @@ export function returnStandardSequenceStateVariableDefinitions() {
         // Can't return null, as that indicates value wasn't specified
         // so return NaN
         return {
-          newValues: {
+          setValue: {
             specifiedFrom: NaN,
           }
         }
       }
       return {
-        newValues: {
+        setValue: {
           specifiedFrom: dependencyValues.fromAttr.stateValues.value,
         }
       }
@@ -96,11 +89,13 @@ export function returnStandardSequenceStateVariableDefinitions() {
       },
     }),
     defaultValue: null,
+    hasEssential: true,
+    essentialVarName: "to",
     definition: function ({ dependencyValues }) {
       if (dependencyValues.toAttr === null) {
         return {
           useEssentialOrDefaultValue: {
-            specifiedTo: { variablesToCheck: ["to", "specifiedTo"] },
+            specifiedTo: true,
           },
         }
       }
@@ -110,13 +105,13 @@ export function returnStandardSequenceStateVariableDefinitions() {
         // Can't return null, as that indicates value wasn't specified
         // so return NaN
         return {
-          newValues: {
+          setValue: {
             specifiedTo: NaN,
           }
         }
       }
       return {
-        newValues: {
+        setValue: {
           specifiedTo: dependencyValues.toAttr.stateValues.value,
         }
       }
@@ -132,11 +127,13 @@ export function returnStandardSequenceStateVariableDefinitions() {
       },
     }),
     defaultValue: null,
+    hasEssential: true,
+    essentialVarName: "length",
     definition: function ({ dependencyValues }) {
       if (dependencyValues.lengthAttr === null) {
         return {
           useEssentialOrDefaultValue: {
-            specifiedLength: { variablesToCheck: ["length", "specifiedLength"] }
+            specifiedLength: true
           }
         }
       }
@@ -146,12 +143,12 @@ export function returnStandardSequenceStateVariableDefinitions() {
         // Can't return null, as that indicates value wasn't specified
         // so return NaN
         return {
-          newValues: {
+          setValue: {
             specifiedLength: NaN,
           }
         }
       }
-      return { newValues: { specifiedLength: dependencyValues.lengthAttr.stateValues.value } }
+      return { setValue: { specifiedLength: dependencyValues.lengthAttr.stateValues.value } }
     },
   };
 
@@ -169,11 +166,13 @@ export function returnStandardSequenceStateVariableDefinitions() {
       },
     }),
     defaultValue: null,
+    hasEssential: true,
+    essentialVarName: "step",
     definition: function ({ dependencyValues }) {
       if (dependencyValues.stepAttr === null) {
         return {
           useEssentialOrDefaultValue: {
-            specifiedStep: { variablesToCheck: ["step", "specifiedStep"] }
+            specifiedStep: true
           }
         }
       }
@@ -185,12 +184,12 @@ export function returnStandardSequenceStateVariableDefinitions() {
         // Can't return null, as that indicates value wasn't specified
         // so return NaN
         return {
-          newValues: {
+          setValue: {
             specifiedStep: NaN,
           }
         }
       }
-      return { newValues: { specifiedStep: step } };
+      return { setValue: { specifiedStep: step } };
     },
   };
 
@@ -204,16 +203,18 @@ export function returnStandardSequenceStateVariableDefinitions() {
       },
     }),
     defaultValue: [],
+    hasEssential: true,
+    essentialVarName: "exclude",
     definition: function ({ dependencyValues }) {
       if (dependencyValues.excludeAttr === null) {
         return {
           useEssentialOrDefaultValue: {
-            specifiedExclude: { variablesToCheck: ["exclude"] }
+            specifiedExclude: true
           }
         }
       }
       return {
-        newValues: {
+        setValue: {
           specifiedExclude:
             dependencyValues.excludeAttr.stateValues.values
         }
@@ -248,7 +249,7 @@ export function returnStandardSequenceStateVariableDefinitions() {
         }
       }
 
-      return { newValues: { lowercase } };
+      return { setValue: { lowercase } };
     },
   };
 
@@ -329,7 +330,7 @@ export function returnStandardSequenceStateVariableDefinitions() {
         }
       }
 
-      return { newValues: { validSequence } };
+      return { setValue: { validSequence } };
     },
   };
 
@@ -407,20 +408,12 @@ export function returnStandardSequenceStateVariableDefinitions() {
           // if from, to, and exclude are strings
           // then convert to numbers
           if (from !== null) {
-            if (typeof from === "string") {
-              from = lettersToNumber(from);
-            }
+            from = lettersToNumber(from);
           }
           if (to !== null) {
-            if (typeof to === "string") {
-              to = lettersToNumber(to);
-            }
+            to = lettersToNumber(to);
           }
-          for (let [index, value] of exclude.entries()) {
-            if (typeof value === "string") {
-              exclude[index] = lettersToNumber(value)
-            }
-          }
+          exclude = exclude.map(lettersToNumber);
         } else if (dependencyValues.type === "number") {
           // make sure to, from, and exclude are numbers
           if (to !== null) {
@@ -454,7 +447,7 @@ export function returnStandardSequenceStateVariableDefinitions() {
         });
         results.exclude = exclude;
 
-        return { newValues: results };
+        return { setValue: results };
 
       }
 
@@ -462,7 +455,7 @@ export function returnStandardSequenceStateVariableDefinitions() {
         length = 0;
       }
 
-      return { newValues: { from, step, length, exclude } };
+      return { setValue: { from, step, length, exclude } };
     },
   };
 
@@ -592,7 +585,7 @@ export function calculateSequenceParameters({ from, to, step, length, type }) {
   }
 }
 
-export function returnSequenceValues({ from, step, length, exclude, type, lowercase, maxNum }) {
+export function returnSequenceValues({ from, step, length, exclude, type, lowercase, maxNum }, includeOriginalIndex = false) {
   let sequenceValues = [];
   let nValues = 0;
 
@@ -624,7 +617,12 @@ export function returnSequenceValues({ from, step, length, exclude, type, lowerc
       value = numberToLetters(value, lowercase);
     }
 
-    sequenceValues.push(value);
+    if (includeOriginalIndex) {
+      sequenceValues.push({ value, originalIndex: ind });
+    } else {
+      sequenceValues.push(value);
+    }
+
     nValues++;
 
     if (nValues === maxNum) {
@@ -637,17 +635,9 @@ export function returnSequenceValues({ from, step, length, exclude, type, lowerc
 }
 
 export function returnSequenceValueForIndex({ index, from, step, length, exclude, type, lowercase }) {
-  if (exclude.length > 0) {
-    // if have exclude, then calculate values up to index
-    let firstSequenceValues = returnSequenceValues({ from, step, length, exclude, type, lowercase, maxNum: index + 1 });
-    if (firstSequenceValues.length === index + 1) {
-      return firstSequenceValues[index];
-    } else {
-      return null;
-    }
-  }
 
-  // if don't have exclude, calculate directly
+  // note: if index is excluded or index is out of range, returns null
+
   if (!(index >= 0 && (length === undefined || index < length))) {
     return null;
   }
@@ -660,6 +650,21 @@ export function returnSequenceValueForIndex({ index, from, step, length, exclude
       value += step * index;
     }
   }
+
+  if (type === "math") {
+    if (exclude.some(x => x && x.equals(value))) {
+      return null;
+    }
+  } else if (type === "number") {
+    if (exclude.some(x => Math.abs(x - value) <= 1E-14 * Math.max(Math.abs(x), Math.abs(value)))) {
+      return null;
+    }
+  } else {
+    if (exclude.includes(value)) {
+      return null;
+    }
+  }
+
   if (type === "letters") {
     value = numberToLetters(value, lowercase);
   }
@@ -669,7 +674,13 @@ export function returnSequenceValueForIndex({ index, from, step, length, exclude
 }
 
 export function lettersToNumber(letters) {
-  letters = letters.toUpperCase();
+
+  try {
+    letters = letters.toUpperCase();
+  } catch (e) {
+    console.warn("Cannot convert " + letters + " to a number");
+    return undefined;
+  }
 
   let number = 0,
     len = letters.length,

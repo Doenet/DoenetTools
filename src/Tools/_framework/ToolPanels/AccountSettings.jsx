@@ -314,7 +314,7 @@ export default function DoenetProfile(props) {
                 </Switch>
                 <br/>
                 <Button value={"Sign out"} onClick={() =>{setPageToolView({page: 'signout', tool: '', view: ''})}}/>
-
+                <br/>
               </div>
               </div>
     )
