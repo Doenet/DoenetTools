@@ -20,6 +20,34 @@ import { returnDefaultGetArrayKeysFromVarName } from './utils/stateVariables';
 // componentClass to string: componentClass.componentType
 // validTags: Object.keys(this.standardComponentClasses);
 
+let core;
+
+onmessage = function (e) {
+
+  if (e.data.messageType === "createCore") {
+    console.log("I should create a core")
+    console.log(e.data)
+
+    if (core) {
+      console.log('already have a core.  Refusing to create another one');
+      return;
+    }
+
+    let coreArgs = { ...e.data.createCore };
+
+    console.log("inside on message in core, this is this", this)
+
+    console.log(coreArgs)
+    core = new Core(e.data.args)
+
+  } else if (e.data.messageType === "requestAction") {
+    console.log('received request action')
+    console.log(e.data.args)
+    core.requestAction(e.data.args)
+  }
+}
+
+
 
 export default class Core {
   constructor({ doenetML, parameters, requestedVariant,
@@ -27,7 +55,7 @@ export default class Core {
     stateVariableChanges = {},
     coreReadyCallback, coreUpdatedCallback, coreId }) {
     console.time('core');
-    
+
 
     this.coreId = coreId;
 
@@ -55,9 +83,36 @@ export default class Core {
     this.getStateVariableValue = this.getStateVariableValue.bind(this);
     // this.submitResponseCallBack = this.submitResponseCallBack.bind(this);
 
-    this.coreUpdatedCallback = coreUpdatedCallback;
-    this.coreReadyCallback = function () {
-      coreReadyCallback(this);
+    this.coreUpdatedCallback = async function (args) {
+      console.log('core updated', args);
+
+      postMessage({
+        messageType: "coreUpdated",
+        args,
+      })
+    }
+    this.coreReadyCallback = async function () {
+
+
+      let generatedVariantInfo = deepClone(await this.document.stateValues.generatedVariantInfo);
+      console.log(generatedVariantInfo)
+
+      console.log(this.componentsToRender)
+      postMessage({
+        messageType: "coreCreated",
+        args: {
+          generatedVariantInfo: deepClone(await this.document.stateValues.generatedVariantInfo),
+          itemVariantInfo: deepClone(await this.document.stateValues.itemVariantInfo),
+          allPossibleVariants: deepClone(await this.document.sharedParameters.allPossibleVariants),
+          rendererTypesInDocument: deepClone(this.rendererTypesInDocument),
+          componentsToRender: this.componentsToRender,
+          documentName: this.documentName
+        }
+      })
+
+
+
+      // coreReadyCallback(this);
 
       this.requestRecordEvent({
         verb: "experienced",
@@ -159,7 +214,6 @@ export default class Core {
     this.parameterStack = new ParameterStack(parameters);
 
     this.parameterStack.parameters.rngClass = prng_alea;
-    console.timeLog('core','<-Before Expand');
 
     let contentId = Hex.stringify(sha256(doenetML));
     serializeFunctions.expandDoenetMLsToFullSerializedComponents({
@@ -176,7 +230,6 @@ export default class Core {
     contentIds,
     fullSerializedComponents,
   }) {
-    console.timeLog('core','<-Top of finishCoreConstruction');
 
     this.contentId = contentIds[0];
 
@@ -188,7 +241,6 @@ export default class Core {
       serializedComponents,
       componentInfoObjects: this.componentInfoObjects,
     });
-    console.timeLog('core','<-After createComponentNames');
 
     // console.log(`serialized components at the beginning`)
     // console.log(deepClone(serializedComponents));
@@ -198,7 +250,7 @@ export default class Core {
     serializedComponents[0].doenetAttributes.contentId = this.contentId;
 
     this._components = {};
-    this.renderedComponentInstructions = {};
+    this.componentsToRender = {};
     this.componentsWithChangedChildrenToRender = new Set([]);
 
     this.stateVariableChangeTriggers = {};
@@ -231,24 +283,22 @@ export default class Core {
       desiredVariant: this.parameterStack.parameters.variant
     }
 
-    //Make these variables available for cypress
-    window.state = {
-      components: this._components,
-      renderedComponentInstructions: this.renderedComponentInstructions,
-      renderedComponentTypes: this.renderedComponentTypes,
-      dependencies: this.dependencies,
-      core: this,
-      componentInfoObjects: this.componentInfoObjects,
-    }
+    // //Make these variables available for cypress
+    // window.state = {
+    //   components: this._components,
+    //   componentsToRender: this.componentsToRender,
+    //   renderedComponentTypes: this.renderedComponentTypes,
+    //   dependencies: this.dependencies,
+    //   core: this,
+    //   componentInfoObjects: this.componentInfoObjects,
+    // }
 
     this.changedStateVariables = {};
-    console.timeLog('core','<-Before addComponents');
 
     await this.addComponents({
       serializedComponents,
       initialAdd: true,
     })
-    console.timeLog('core','<-After addComponents');
 
     this.updateInfo.componentsTouched = [];
 
@@ -261,10 +311,8 @@ export default class Core {
     // console.log("** components at the end of the core constructor **");
     // console.log(this._components);
 
-    console.timeLog('core','<-Before coreReady');
 
     this.coreReadyCallback()
-    console.timeLog('core','<-End Construction');
 
   }
 
@@ -314,11 +362,9 @@ export default class Core {
       createNameContext = `addComponents${this.nTimesAddedComponents}`;
 
     }
-    console.timeLog('core','<-Before createIsolatedComponents');
     let createResult = await this.createIsolatedComponents({
       serializedComponents, ancestors, createNameContext,
     });
-    console.timeLog('core','<-After createIsolatedComponents');
     if (!initialAdd) {
       this.parameterStack.pop();
     }
@@ -339,23 +385,17 @@ export default class Core {
       }
       // this.setAncestors(newComponents[0]);
       this.document = newComponents[0];
-      console.timeLog('core','<-Before expandAllComposites');
 
       await this.expandAllComposites(this.document);
-      console.timeLog('core','<-After expandAllComposites');
 
       await this.expandAllComposites(this.document, true);
-      console.timeLog('core','<-After expandAllComposites force');
 
       // calculate any replacement changes on composites touched
       await this.replacementChangesFromCompositesToUpdate();
-      console.timeLog('core','<-After replacementChangesFromCompositesToUpdate');
 
       await this.initializeRenderedComponentInstruction(this.document);
-      console.timeLog('core','<-After initializeRenderedComponentInstruction');
 
       await this.processStateVariableTriggers();
-      console.timeLog('core','<-After processStateVariableTriggers');
 
     } else {
       if (parent === undefined) {
@@ -397,17 +437,17 @@ export default class Core {
     let renderersToUpdate = [];
     let deletedRenderers = [];
 
-    let instructions = [];
+    let updateInstructions = [];
 
     for (let componentName of componentNames) {
-      if (componentName in this.renderedComponentInstructions) {
+      if (componentName in this.componentsToRender) {
         renderersToUpdate.push(componentName);
       }
     }
 
     //TODO: Figure out what we need from here
     for (let componentName of this.componentsWithChangedChildrenToRender) {
-      if (componentName in this.renderedComponentInstructions) {
+      if (componentName in this.componentsToRender) {
         // check to see if current children who render are
         // different from last time rendered
 
@@ -457,7 +497,7 @@ export default class Core {
         }
 
 
-        let instructionChildren = this.renderedComponentInstructions[componentName].children;
+        let instructionChildren = this.componentsToRender[componentName].children;
         let previousChildNames = instructionChildren.map(x => x.componentName).filter(x => x);
 
         let previousChildren = [];
@@ -473,7 +513,6 @@ export default class Core {
         // and create instructions to delete the renderers
 
         let keptChildIdentifiers = [];
-        let keptChildComponentNames = [];
         let deletedChildren = [];
 
         for (let [ind, child] of previousChildren.entries()) {
@@ -481,7 +520,6 @@ export default class Core {
             let childName = child.componentName;
             if (currentChildNames.includes(childName) && !recreatedComponents[childName]) {
               keptChildIdentifiers.push(`componentName:${childName}`);
-              keptChildComponentNames.push(childName);
             } else {
               deletedChildren.push({ childName, ind })
             }
@@ -498,21 +536,13 @@ export default class Core {
           let deletedComponentNames = [];
 
           if (childName) {
-            deletedComponentNames = this.deleteFromRenderedComponentInstructions({
+            deletedComponentNames = this.deleteFromComponentsToRender({
               componentName: childName,
               recurseToChildren: true
             });
           }
 
           instructionChildren.splice(ind, 1);
-
-          instructions.push({
-            instructionType: "deleteRenderers",
-            parentName: componentName,
-            firstIndexInParent: ind,
-            numberChildrenDeleted: 1,
-            deletedComponentNames
-          })
 
           deletedRenderers.push(...deletedComponentNames);
         }
@@ -528,20 +558,13 @@ export default class Core {
         for (let i = 0; i < desiredOrderForKeptChildren.length; i++) {
           if (keptChildIdentifiers[i] !== desiredOrderForKeptChildren[i]) {
             let prevIndex = keptChildIdentifiers.indexOf(desiredOrderForKeptChildren[i]);
-            // swap in renderedComponentInstructions
+            // swap in componentsToRender
             [instructionChildren[i], instructionChildren[prevIndex]]
               = [instructionChildren[prevIndex], instructionChildren[i]];
 
             // swap in keptChildIdentifiers
             [keptChildIdentifiers[i], keptChildIdentifiers[prevIndex]]
               = [keptChildIdentifiers[prevIndex], keptChildIdentifiers[i]];
-
-            instructions.push({
-              instructionType: "swapChildRenderers",
-              parentName: componentName,
-              index1: i,
-              index2: prevIndex
-            })
 
           }
         }
@@ -559,24 +582,11 @@ export default class Core {
                 let childToRender = await this.initializeRenderedComponentInstruction(comp);
                 instructionChildren.splice(ind, 0, childToRender);
 
-                instructions.push({
-                  instructionType: "addRenderer",
-                  componentName: comp.componentName,
-                  parentName: componentName,
-                  indexForParent: ind,
-                })
-
               }
             }
           } else if (!previousChildren.includes(`string${ind}:${child}`)) {
 
             instructionChildren.splice(ind, 0, child);
-
-            instructions.push({
-              instructionType: "addRenderer",
-              parentName: componentName,
-              indexForParent: ind,
-            })
 
           }
 
@@ -589,39 +599,43 @@ export default class Core {
     // reset for next time
     this.componentsWithChangedChildrenToRender = new Set([]);
 
-    //TODO: look at this
-    // renderersToUpdate = renderersToUpdate.filter(x => !deletedRenderers.includes(x))
+    renderersToUpdate = renderersToUpdate.filter(x => !deletedRenderers.includes(x))
     if (renderersToUpdate.length > 0) {
       let instruction = {
         instructionType: "updateStateVariable",
         renderersToUpdate,
         sourceOfUpdate,
       }
-      instructions.push(instruction);
+      updateInstructions.push(instruction);
     }
 
     for (let componentName of renderersToUpdate) {
       let component = this._components[componentName];
-      if (component){
+      if (component) {
         let stateValuesForRenderer = {};
         for (let stateVariable in component.state) {
           if (component.state[stateVariable].forRenderer) {
             let value = await component.state[stateVariable].value;
-            if (value !== null && typeof value === 'object') {
-              value = new Proxy(value, readOnlyProxyHandler)
+            // if (value !== null && typeof value === 'object') {
+            //   value = new Proxy(value, readOnlyProxyHandler)
+            // }
+            if(value instanceof me.class) {
+              stateValuesForRenderer[stateVariable] = value.tree;
+            } else {
+              stateValuesForRenderer[stateVariable] = value;
             }
-            stateValuesForRenderer[stateVariable] = value;
           }
         }
-      
-        this.externalFunctions.updateRendererSVsWithRecoil({componentName,stateValues:stateValuesForRenderer,sourceOfUpdate})
 
-        Object.assign(this.renderedComponentInstructions[componentName].stateValues,
+        // this.externalFunctions.updateRendererSVsWithRecoil({ componentName, stateValues: stateValuesForRenderer, sourceOfUpdate })
+
+
+        Object.assign(this.componentsToRender[componentName].stateValues,
           stateValuesForRenderer)
       }
     }
 
-    this.coreUpdatedCallback(instructions) //This is async
+    this.coreUpdatedCallback({ updateInstructions, componentsToRender: this.componentsToRender })
 
   }
 
@@ -642,13 +656,16 @@ export default class Core {
     for (let stateVariable in component.state) {
       if (component.state[stateVariable].forRenderer) {
         let value = await component.state[stateVariable].value;
-        if (value !== null && typeof value === 'object') {
-          value = new Proxy(value, readOnlyProxyHandler)
+        // if (value !== null && typeof value === 'object') {
+        //   value = new Proxy(value, readOnlyProxyHandler)
+        // }
+        if(value instanceof me.class) {
+          stateValuesForRenderer[stateVariable] = value.tree;
+        } else {
+          stateValuesForRenderer[stateVariable] = value;
         }
-        stateValuesForRenderer[stateVariable] = value;
       }
     }
-
 
     let componentName = component.componentName;
 
@@ -675,26 +692,32 @@ export default class Core {
 
     let requestActions = {};
     for (let actionName in component.actions) {
-      requestActions[actionName] = args => this.requestAction({
-        componentName: component.componentName,
-        actionName,
-        args,
-      })
+      // requestActions[actionName] = args => this.requestAction({
+      //   componentName: component.componentName,
+      //   actionName,
+      //   args,
+      // })
+      requestActions[actionName] = {
+        componentName: component.componentName
+      }
     }
 
     for (let actionName in component.externalActions) {
       let action = await component.externalActions[actionName];
       if (action) {
-        requestActions[actionName] = args => this.requestAction({
-          componentName: action.componentName,
-          actionName: action.actionName,
-          args,
-        })
+        // requestActions[actionName] = args => this.requestAction({
+        //   componentName: action.componentName,
+        //   actionName: action.actionName,
+        //   args,
+        // })
+        requestActions[actionName] = {
+          componentName: action.componentNae,
+        }
       }
     }
-    this.externalFunctions.updateRendererSVsWithRecoil({componentName,stateValues:stateValuesForRenderer})
+    // this.externalFunctions.updateRendererSVsWithRecoil({ componentName, stateValues: stateValuesForRenderer })
 
-    this.renderedComponentInstructions[componentName] = {
+    this.componentsToRender[componentName] = {
       componentName: componentName,
       componentType: component.componentType,
       rendererType: component.rendererType,
@@ -704,19 +727,19 @@ export default class Core {
     };
 
 
-    return this.renderedComponentInstructions[componentName];
+    return this.componentsToRender[componentName];
   }
 
-  deleteFromRenderedComponentInstructions({
+  deleteFromComponentsToRender({
     componentName,
     recurseToChildren = true,
   }) {
     let deletedComponentNames = [componentName]
     if (recurseToChildren) {
-      let componentInstruction = this.renderedComponentInstructions[componentName];
+      let componentInstruction = this.componentsToRender[componentName];
       if (componentInstruction) {
         for (let child of componentInstruction.children) {
-          let additionalDeleted = this.deleteFromRenderedComponentInstructions({
+          let additionalDeleted = this.deleteFromComponentsToRender({
             componentName: child.componentName,
             recurseToChildren,
           })
@@ -724,7 +747,7 @@ export default class Core {
         }
       }
     }
-    delete this.renderedComponentInstructions[componentName];
+    delete this.componentsToRender[componentName];
 
     return deletedComponentNames;
   }
@@ -7509,7 +7532,7 @@ export default class Core {
 
   get rendererTypesInDocument() {
     return this.document.allPotentialRendererTypes;
-  }  
+  }
 
   get componentTypesCreatingVariants() {
     return new Proxy(this._componentTypesCreatingVariants, readOnlyProxyHandler);
@@ -9124,44 +9147,44 @@ export default class Core {
   requestAnimationFrame(animationFunction, delay) {
     if (!this.preventMoreAnimations) {
 
-      // create new animationID
-      let animationID = ++this.lastAnimationID;
+      // // create new animationID
+      // let animationID = ++this.lastAnimationID;
 
-      if (delay) {
-        // set a time out to call actual request animation frame after a delay
-        let timeoutID = window.setTimeout(
-          x => this._requestAnimationFrame(animationFunction, animationID),
-          delay);
-        this.animationIDs[animationID] = { timeoutID: timeoutID };
-        return animationID;
-      } else {
-        // call actual request animation frame right away
-        this.animationIDs[animationID] = {};
-        return this._requestAnimationFrame(animationFunction, animationID);
-      }
+      // if (delay) {
+      //   // set a time out to call actual request animation frame after a delay
+      //   let timeoutID = window.setTimeout(
+      //     x => this._requestAnimationFrame(animationFunction, animationID),
+      //     delay);
+      //   this.animationIDs[animationID] = { timeoutID: timeoutID };
+      //   return animationID;
+      // } else {
+      //   // call actual request animation frame right away
+      //   this.animationIDs[animationID] = {};
+      //   return this._requestAnimationFrame(animationFunction, animationID);
+      // }
     }
   }
 
   _requestAnimationFrame(animationFunction, animationID) {
-    let animationFrameID = window.requestAnimationFrame(animationFunction);
-    let animationIDObj = this.animationIDs[animationID];
-    delete animationIDObj.timeoutID;
-    animationIDObj.animationFrameID = animationFrameID;
-    return animationID;
+    // let animationFrameID = window.requestAnimationFrame(animationFunction);
+    // let animationIDObj = this.animationIDs[animationID];
+    // delete animationIDObj.timeoutID;
+    // animationIDObj.animationFrameID = animationFrameID;
+    // return animationID;
   }
 
 
   async cancelAnimationFrame(animationID) {
-    let animationIDObj = this.animationIDs[animationID];
-    let timeoutID = animationIDObj.timeoutID;
-    if (timeoutID !== undefined) {
-      window.clearTimeout(timeoutID);
-    }
-    let animationFrameID = animationIDObj.animationFrameID;
-    if (animationFrameID !== undefined) {
-      window.cancelAnimationFrame(animationFrameID);
-    }
-    delete this.animationIDs[animationID];
+    // let animationIDObj = this.animationIDs[animationID];
+    // let timeoutID = animationIDObj.timeoutID;
+    // if (timeoutID !== undefined) {
+    //   window.clearTimeout(timeoutID);
+    // }
+    // let animationFrameID = animationIDObj.animationFrameID;
+    // if (animationFrameID !== undefined) {
+    //   window.cancelAnimationFrame(animationFrameID);
+    // }
+    // delete this.animationIDs[animationID];
 
   }
 

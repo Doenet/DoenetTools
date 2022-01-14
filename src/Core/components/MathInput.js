@@ -336,7 +336,7 @@ export default class MathInput extends Input {
           updateType: "updateValue",
           componentName: this.componentName,
           stateVariable: "immediateValue",
-          value: mathExpression,
+          value: me.fromAst(mathExpression),
         }, {
           updateType: "updateValue",
           componentName: this.componentName,

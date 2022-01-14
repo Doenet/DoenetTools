@@ -54,6 +54,7 @@ export default function useDoenetRenderer(props,initializeChildrenOnConstruction
       rendererClasses: props.rendererClasses,
       rendererUpdateMethods: props.rendererUpdateMethods,
       flags: props.flags,
+      callAction: props.callAction,
     };
     Object.assign(propsForChild, doenetPropsForChildren);
 

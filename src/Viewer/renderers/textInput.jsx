@@ -52,9 +52,14 @@ export default class TextInput extends DoenetRenderer {
 
   async handleKeyDown(e) {
     if (e.key === "Escape") {
-      await this.actions.updateImmediateValue({
-        text: this.valueToRevertTo
-      });
+      this.callAction({
+        componentName: this.componentName,
+        actionName: "updateImmediateValue",
+        args: {
+          text: this.valueToRevertTo
+        }
+      })
+
       this.forceUpdate();
     }
   }
@@ -76,9 +81,16 @@ export default class TextInput extends DoenetRenderer {
 
   async onChangeHandler(e) {
     this.currentValue = e.target.value;
-    await this.actions.updateImmediateValue({
-      text: e.target.value
-    });
+    this.callAction({
+      componentName: this.componentName,
+      actionName: "updateImmediateValue",
+      args: {
+        text: e.target.value
+      }
+    })
+    // await this.actions.updateImmediateValue({
+    //   text: e.target.value
+    // });
     this.forceUpdate();
   }
 
