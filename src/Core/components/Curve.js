@@ -11,18 +11,10 @@ export default class Curve extends GraphicalComponent {
 
 
   actions = {
-    moveControlVector: this.moveControlVector.bind(
-      new Proxy(this, this.readOnlyProxyHandler)
-    ),
-    moveThroughPoint: this.moveThroughPoint.bind(
-      new Proxy(this, this.readOnlyProxyHandler)
-    ),
-    changeVectorControlDirection: this.changeVectorControlDirection.bind(
-      new Proxy(this, this.readOnlyProxyHandler)
-    ),
-    switchCurve: this.switchCurve.bind(
-      new Proxy(this, this.readOnlyProxyHandler)
-    )
+    moveControlVector: this.moveControlVector.bind(this),
+    moveThroughPoint: this.moveThroughPoint.bind(this),
+    changeVectorControlDirection: this.changeVectorControlDirection.bind(this),
+    switchCurve: this.switchCurve.bind(this)
   };
 
   static primaryStateVariableForDefinition = "fShadow";

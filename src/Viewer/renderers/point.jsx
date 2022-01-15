@@ -6,8 +6,6 @@ import me from 'math-expressions';
 export default function Point(props) {
   let { name, SVs, actions, sourceOfUpdate } = useDoenetRender(props);
 
-  console.log(`SVs for point ${name}`, SVs)
-
   const board = useContext(BoardContext);
   const [pointJXG, setPointJXG] = useState({})
 

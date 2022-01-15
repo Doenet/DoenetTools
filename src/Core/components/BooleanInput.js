@@ -5,9 +5,7 @@ export default class BooleanInput extends Input {
     super(args);
 
     this.actions = {
-      updateBoolean: this.updateBoolean.bind(
-        new Proxy(this, this.readOnlyProxyHandler)
-      )
+      updateBoolean: this.updateBoolean.bind(this)
     };
 
     this.externalActions = {};

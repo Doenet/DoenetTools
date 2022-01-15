@@ -2,7 +2,6 @@ import me from 'math-expressions';
 import { createUniqueName } from './naming';
 import { flattenDeep } from './array';
 import { deepClone } from './deepFunctions';
-import readOnlyProxyHandler from '../ReadOnlyProxyHandler';
 import { breakEmbeddedStringByCommas } from '../components/commonsugar/breakstrings';
 import sha256 from 'crypto-js/sha256';
 import Hex from 'crypto-js/enc-hex'
@@ -1255,8 +1254,6 @@ export function applySugar({ serializedComponents, parentParametersFromSugar = {
         componentAttributes[attrName] = attribute.primitive;
       }
     }
-
-    componentAttributes = new Proxy(componentAttributes, readOnlyProxyHandler);
 
     if (component.children) {
 

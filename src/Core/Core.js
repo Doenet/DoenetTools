@@ -25,19 +25,12 @@ let core;
 onmessage = function (e) {
 
   if (e.data.messageType === "createCore") {
-    console.log("I should create a core")
-    console.log(e.data)
 
     if (core) {
       console.log('already have a core.  Refusing to create another one');
       return;
     }
 
-    let coreArgs = { ...e.data.createCore };
-
-    console.log("inside on message in core, this is this", this)
-
-    console.log(coreArgs)
     core = new Core(e.data.args)
 
   } else if (e.data.messageType === "requestAction") {
@@ -58,7 +51,8 @@ export default class Core {
     this.coreId = coreId;
 
     this.numerics = new Numerics();
-    this.flags = new Proxy(flags, readOnlyProxyHandler); //components shouldn't modify flags
+    // this.flags = new Proxy(flags, readOnlyProxyHandler); //components shouldn't modify flags
+    this.flags = flags;
 
     this.externalFunctions = externalFunctions;
     if (externalFunctions === undefined) {
@@ -82,7 +76,6 @@ export default class Core {
     // this.submitResponseCallBack = this.submitResponseCallBack.bind(this);
 
     this.coreUpdatedCallback = async function (args) {
-      console.log('core updated', args);
 
       postMessage({
         messageType: "coreUpdated",
@@ -91,8 +84,6 @@ export default class Core {
     }
     this.coreReadyCallback = async function () {
 
-
-      console.log(this.componentsToRender)
       postMessage({
         messageType: "coreCreated",
         args: {
@@ -448,7 +439,7 @@ export default class Core {
         // check to see if current children who render are
         // different from last time rendered
 
-        let curentChildIdentifiers = [];
+        let currentChildIdentifiers = [];
         let unproxiedComponent = this._components[componentName];
         let indicesToRender = [];
 
@@ -465,13 +456,13 @@ export default class Core {
           for (let [ind, child] of unproxiedComponent.activeChildren.entries()) {
             if (indicesToRender.includes(ind)) {
               if (child.rendererType) {
-                curentChildIdentifiers.push(`componentName:${child.componentName}`)
+                currentChildIdentifiers.push(`componentName:${child.componentName}`)
                 renderedInd++;
               } else if (typeof child === "string") {
-                curentChildIdentifiers.push(`string${renderedInd}:${child}`)
+                currentChildIdentifiers.push(`string${renderedInd}:${child}`)
                 renderedInd++;
               } else if (typeof child === "number") {
-                curentChildIdentifiers.push(`number${renderedInd}:${child.toString()}`)
+                currentChildIdentifiers.push(`number${renderedInd}:${child.toString()}`)
                 renderedInd++;
               }
             }
@@ -493,10 +484,9 @@ export default class Core {
           }
         }
 
-        if (curentChildIdentifiers.length !== previousChildIdentifiers.length
-          || curentChildIdentifiers.some((v, i) => v !== previousChildIdentifiers[i])
+        if (currentChildIdentifiers.length !== previousChildIdentifiers.length
+          || currentChildIdentifiers.some((v, i) => v !== previousChildIdentifiers[i])
         ) {
-
 
           // delete old renderers
           for (let child of previousChildRenderers) {
@@ -526,6 +516,8 @@ export default class Core {
               }
             }
           }
+
+          this.componentsToRender[componentName].children = childrenToRender;
 
           this.componentsWithChangedChildrenToRender.delete(componentName);
 
@@ -1316,7 +1308,8 @@ export default class Core {
           }
           Object.assign(shadowInfo, dep);
           delete shadowInfo.dependencyType;
-          newComponent.shadows = new Proxy(shadowInfo, readOnlyProxyHandler);
+          // newComponent.shadows = new Proxy(shadowInfo, readOnlyProxyHandler);
+          newComponent.shadows = shadowInfo;
 
           let shadowedComponent = this._components[name];
           if (!shadowedComponent.shadowedBy) {
@@ -5349,7 +5342,8 @@ export default class Core {
           }
           previousValues[varName] = component.state[varName]._previousValue;
         }
-        args.previousValues = new Proxy(previousValues, readOnlyProxyHandler);
+        // args.previousValues = new Proxy(previousValues, readOnlyProxyHandler);
+        args.previousValues = previousValues;
       }
       if (stateVarObj.provideEssentialValuesInDefinition) {
         let essentialValues = {};
@@ -5364,7 +5358,8 @@ export default class Core {
 
           essentialValues[varName] = component.essentialState[essentialVarName];
         }
-        args.essentialValues = new Proxy(essentialValues, readOnlyProxyHandler);
+        // args.essentialValues = new Proxy(essentialValues, readOnlyProxyHandler);
+        args.essentialValues = essentialValues;
       }
     }
 
@@ -5855,7 +5850,8 @@ export default class Core {
       // have to use last calculated value of arrayKeys
       // because can't evaluate state variable in middle of marking stale
 
-      arrayKeys = new Proxy(stateVarObj._arrayKeys, readOnlyProxyHandler);
+      // arrayKeys = new Proxy(stateVarObj._arrayKeys, readOnlyProxyHandler);
+      arrayKeys = stateVarObj._arrayKeys;
 
     }
 
@@ -5871,7 +5867,7 @@ export default class Core {
       }
 
       if (Array.isArray(arraySize)) {
-        arraySize = new Proxy(arraySize, readOnlyProxyHandler);
+        // arraySize = new Proxy(arraySize, readOnlyProxyHandler);
       } else {
         arraySize = [];
       }
@@ -5973,7 +5969,8 @@ export default class Core {
       // have to use last calculated value of arrayKeys
       // because can't evaluate state variable in middle of marking stale
 
-      arrayKeys = new Proxy(stateVarObj._arrayKeys, readOnlyProxyHandler);
+      // arrayKeys = new Proxy(stateVarObj._arrayKeys, readOnlyProxyHandler);
+      arrayKeys = stateVarObj._arrayKeys;
 
     }
 
@@ -5989,7 +5986,7 @@ export default class Core {
       }
 
       if (Array.isArray(arraySize)) {
-        arraySize = new Proxy(arraySize, readOnlyProxyHandler);
+        // arraySize = new Proxy(arraySize, readOnlyProxyHandler);
       } else {
         arraySize = [];
       }
@@ -6109,7 +6106,8 @@ export default class Core {
             // add any additional information about the stalename of component/varName
             if (freshnessInfo) {
               upDep.valuesChanged[componentInd][varName].freshnessInfo
-                = new Proxy(freshnessInfo, readOnlyProxyHandler);
+                = freshnessInfo;
+              // = new Proxy(freshnessInfo, readOnlyProxyHandler);
             }
 
             foundVarChange = true;
@@ -7486,7 +7484,8 @@ export default class Core {
   }
 
   get standardComponentClasses() {
-    return new Proxy(this._standardComponentClasses, readOnlyProxyHandler);
+    // return new Proxy(this._standardComponentClasses, readOnlyProxyHandler);
+    return this._standardComponentClasses;
   }
 
   set standardComponentClasses(value) {
@@ -7494,7 +7493,8 @@ export default class Core {
   }
 
   get allComponentClasses() {
-    return new Proxy(this._allComponentClasses, readOnlyProxyHandler);
+    // return new Proxy(this._allComponentClasses, readOnlyProxyHandler);
+    return this._allComponentClasses;
   }
 
   set allComponentClasses(value) {
@@ -7540,7 +7540,8 @@ export default class Core {
   }
 
   get componentTypesCreatingVariants() {
-    return new Proxy(this._componentTypesCreatingVariants, readOnlyProxyHandler);
+    // return new Proxy(this._componentTypesCreatingVariants, readOnlyProxyHandler);
+    return this._componentTypesCreatingVariants;
   }
 
   set componentTypesCreatingVariants(value) {
@@ -7548,7 +7549,8 @@ export default class Core {
   }
 
   get componentTypeWithPotentialVariants() {
-    return new Proxy(this._componentTypeWithPotentialVariants, readOnlyProxyHandler);
+    // return new Proxy(this._componentTypeWithPotentialVariants, readOnlyProxyHandler);
+    return this._componentTypeWithPotentialVariants;
   }
 
   set componentTypeWithPotentialVariants(value) {
@@ -7556,7 +7558,8 @@ export default class Core {
   }
 
   get components() {
-    return new Proxy(this._components, readOnlyProxyHandler);
+    // return new Proxy(this._components, readOnlyProxyHandler);
+    return this._components;
   }
 
   set components(value) {

@@ -7,9 +7,7 @@ export default class Choiceinput extends Input {
 
 
     this.actions = {
-      updateSelectedIndices: this.updateSelectedIndices.bind(
-        new Proxy(this, this.readOnlyProxyHandler)
-      )
+      updateSelectedIndices: this.updateSelectedIndices.bind(this),
     }
 
     this.externalActions = {};

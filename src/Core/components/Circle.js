@@ -8,12 +8,8 @@ export default class Circle extends Curve {
   static rendererType = "circle";
 
   actions = {
-    moveCircle: this.moveCircle.bind(
-      new Proxy(this, this.readOnlyProxyHandler)
-    ),
-    finalizeCirclePosition: this.finalizeCirclePosition.bind(
-      new Proxy(this, this.readOnlyProxyHandler)
-    )
+    moveCircle: this.moveCircle.bind(this),
+    finalizeCirclePosition: this.finalizeCirclePosition.bind(this),
   };
 
 

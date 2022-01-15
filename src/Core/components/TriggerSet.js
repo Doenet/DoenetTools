@@ -186,11 +186,7 @@ export default class triggerSet extends InlineComponent {
   }
 
   actions = {
-    triggerActions: this.triggerActions.bind(
-      new Proxy(this, this.readOnlyProxyHandler)
-    ),
-    triggerActionsIfTriggerNewlyTrue: this.triggerActionsIfTriggerNewlyTrue.bind(
-      new Proxy(this, this.readOnlyProxyHandler)
-    )
+    triggerActions: this.triggerActions.bind(this),
+    triggerActionsIfTriggerNewlyTrue: this.triggerActionsIfTriggerNewlyTrue.bind(this)
   };
 }

@@ -7,27 +7,13 @@ export default class SubsetOfRealsInput extends BlockComponent {
   static componentType = "subsetOfRealsInput";
 
   actions = {
-    addPoint: this.addPoint.bind(
-      new Proxy(this, this.readOnlyProxyHandler)
-    ),
-    deletePoint: this.deletePoint.bind(
-      new Proxy(this, this.readOnlyProxyHandler)
-    ),
-    movePoint: this.movePoint.bind(
-      new Proxy(this, this.readOnlyProxyHandler)
-    ),
-    togglePoint: this.togglePoint.bind(
-      new Proxy(this, this.readOnlyProxyHandler)
-    ),
-    toggleInterval: this.toggleInterval.bind(
-      new Proxy(this, this.readOnlyProxyHandler)
-    ),
-    clear: this.clear.bind(
-      new Proxy(this, this.readOnlyProxyHandler)
-    ),
-    setToR: this.setToR.bind(
-      new Proxy(this, this.readOnlyProxyHandler)
-    )
+    addPoint: this.addPoint.bind(this),
+    deletePoint: this.deletePoint.bind(this),
+    movePoint: this.movePoint.bind(this),
+    togglePoint: this.togglePoint.bind(this),
+    toggleInterval: this.toggleInterval.bind(this),
+    clear: this.clear.bind(this),
+    setToR: this.setToR.bind(this)
   };
 
 

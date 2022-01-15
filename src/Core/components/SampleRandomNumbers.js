@@ -547,9 +547,7 @@ export default class SampleRandomNumbers extends CompositeComponent {
 
 
   actions = {
-    resample: this.resample.bind(
-      new Proxy(this, this.readOnlyProxyHandler)
-    ),
+    resample: this.resample.bind(this),
   };
 
 }

@@ -170,8 +170,6 @@ class DoenetViewerChild extends Component {
   coreReady(coreInfo) {
     this.coreInfo = coreInfo;
 
-
-    console.log("coreInfo", coreInfo)
     this.generatedVariant = coreInfo.generatedVariantInfo;
     this.itemVariantInfo = coreInfo.itemVariantInfo;
 
@@ -535,9 +533,6 @@ class DoenetViewerChild extends Component {
   //offscreen then postpone that one
   async update(updateInstructions) {
 
-
-
-
     for (let instruction of updateInstructions) {
 
       if (instruction.instructionType === "updateStateVariable") {
@@ -555,9 +550,6 @@ class DoenetViewerChild extends Component {
           // });
         }
       } else if (instruction.instructionType === "changeChildren") {
-        console.log('change children')
-        console.log(`new children of ${instruction.parentName}`, instruction.childrenToRender)
-
 
         this.componentsToRender[instruction.parentName].children = instruction.childrenToRender;
         this.props.updateRendererSVsWithRecoil({

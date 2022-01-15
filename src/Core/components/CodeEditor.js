@@ -380,15 +380,9 @@ export default class CodeEditor extends BlockComponent {
   }
 
   actions = {
-    updateImmediateValue: this.updateImmediateValue.bind(
-      new Proxy(this, this.readOnlyProxyHandler)
-    ),
-    updateValue: this.updateValue.bind(
-      new Proxy(this, this.readOnlyProxyHandler)
-    ),
-    updateComponents: this.updateComponents.bind(
-      new Proxy(this, this.readOnlyProxyHandler)
-    )
+    updateImmediateValue: this.updateImmediateValue.bind(this),
+    updateValue: this.updateValue.bind(this),
+    updateComponents: this.updateComponents.bind(this),
   };
 
 }

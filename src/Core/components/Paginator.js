@@ -431,12 +431,8 @@ export class Paginator extends Template {
   }
 
   actions = {
-    setPage: this.setPage.bind(
-      new Proxy(this, this.readOnlyProxyHandler)
-    ),
-    setPlaceholderCredit: this.setPlaceholderCredit.bind(
-      new Proxy(this, this.readOnlyProxyHandler)
-    ),
+    setPage: this.setPage.bind(this),
+    setPlaceholderCredit: this.setPlaceholderCredit.bind(this),
   };
 
 }
