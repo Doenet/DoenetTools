@@ -41,8 +41,6 @@ onmessage = function (e) {
     core = new Core(e.data.args)
 
   } else if (e.data.messageType === "requestAction") {
-    console.log('received request action')
-    console.log(e.data.args)
     core.requestAction(e.data.args)
   }
 }
@@ -94,9 +92,6 @@ export default class Core {
     this.coreReadyCallback = async function () {
 
 
-      let generatedVariantInfo = deepClone(await this.document.stateValues.generatedVariantInfo);
-      console.log(generatedVariantInfo)
-
       console.log(this.componentsToRender)
       postMessage({
         messageType: "coreCreated",
@@ -105,8 +100,7 @@ export default class Core {
           itemVariantInfo: deepClone(await this.document.stateValues.itemVariantInfo),
           allPossibleVariants: deepClone(await this.document.sharedParameters.allPossibleVariants),
           rendererTypesInDocument: deepClone(this.rendererTypesInDocument),
-          componentsToRender: this.componentsToRender,
-          documentName: this.documentName
+          documentToRender: this.componentsToRender[this.documentName],
         }
       })
 
@@ -393,7 +387,14 @@ export default class Core {
       // calculate any replacement changes on composites touched
       await this.replacementChangesFromCompositesToUpdate();
 
-      await this.initializeRenderedComponentInstruction(this.document);
+      let results = await this.initializeRenderedComponentInstruction(this.document);
+
+      let updateInstructions = [{
+        instructionType: "updateStateVariable",
+        stateValuesToUpdate: results.stateValuesToUpdate,
+      }]
+
+      this.coreUpdatedCallback(updateInstructions)
 
       await this.processStateVariableTriggers();
 
@@ -434,16 +435,12 @@ export default class Core {
 
   async updateRendererInstructions({ componentNames, sourceOfUpdate, recreatedComponents = {} }) {
 
-    let renderersToUpdate = [];
     let deletedRenderers = [];
 
     let updateInstructions = [];
+    let stateValuesToUpdate = [];
 
-    for (let componentName of componentNames) {
-      if (componentName in this.componentsToRender) {
-        renderersToUpdate.push(componentName);
-      }
-    }
+    let parentsWithChangedChildren = [];
 
     //TODO: Figure out what we need from here
     for (let componentName of this.componentsWithChangedChildrenToRender) {
@@ -451,10 +448,10 @@ export default class Core {
         // check to see if current children who render are
         // different from last time rendered
 
-        let currentChildNames = [];
-        let currentChildIdentifiers = [];
-        let currentChildren = [];
+        let curentChildIdentifiers = [];
         let unproxiedComponent = this._components[componentName];
+        let indicesToRender = [];
+
         if (unproxiedComponent && unproxiedComponent.constructor.renderChildren) {
           if (!unproxiedComponent.childrenMatched) {
             await this.deriveChildResultsFromDefiningChildren({
@@ -462,33 +459,19 @@ export default class Core {
             });
           }
 
-          let activeChildrenToRender = [];
-          let indicesToRender = await this.returnActiveChildrenIndicesToRender(unproxiedComponent);
-          for (let [ind, child] of unproxiedComponent.activeChildren.entries()) {
-            if (indicesToRender.includes(ind)) {
-              activeChildrenToRender.push(child);
-            }
-          }
-
-          currentChildNames = unproxiedComponent.activeChildren
-            .filter((x, i) => indicesToRender.includes(i))
-            .filter(x => x.rendererType)
-            .map(x => x.componentName);
+          indicesToRender = await this.returnActiveChildrenIndicesToRender(unproxiedComponent);
 
           let renderedInd = 0;
           for (let [ind, child] of unproxiedComponent.activeChildren.entries()) {
             if (indicesToRender.includes(ind)) {
               if (child.rendererType) {
-                currentChildIdentifiers.push(`componentName:${child.componentName}`)
-                currentChildren.push({ componentName: child.componentName });
+                curentChildIdentifiers.push(`componentName:${child.componentName}`)
                 renderedInd++;
               } else if (typeof child === "string") {
-                currentChildIdentifiers.push(`string${renderedInd}:${child}`)
-                currentChildren.push(child);
+                curentChildIdentifiers.push(`string${renderedInd}:${child}`)
                 renderedInd++;
               } else if (typeof child === "number") {
-                currentChildIdentifiers.push(`string${renderedInd}:${child.toString()}`)
-                currentChildren.push(child.toString());
+                curentChildIdentifiers.push(`number${renderedInd}:${child.toString()}`)
                 renderedInd++;
               }
             }
@@ -497,98 +480,79 @@ export default class Core {
         }
 
 
-        let instructionChildren = this.componentsToRender[componentName].children;
-        let previousChildNames = instructionChildren.map(x => x.componentName).filter(x => x);
+        let previousChildRenderers = this.componentsToRender[componentName].children;
 
-        let previousChildren = [];
-        for (let [ind, child] of instructionChildren.entries()) {
+        let previousChildIdentifiers = [];
+        for (let [ind, child] of previousChildRenderers.entries()) {
           if (child.componentName) {
-            previousChildren.push({ componentName: child.componentName })
-          } else {
-            previousChildren.push(`string${ind}:${child}`)
+            previousChildIdentifiers.push(`componentName:${child.componentName}`)
+          } else if (typeof child === "string") {
+            previousChildIdentifiers.push(`string${ind}:${child}`)
+          } else if (typeof child === "number") {
+            previousChildIdentifiers.push(`number${ind}:${child.toString()}`)
           }
         }
 
-        // first delete previous children that are no longer in children
-        // and create instructions to delete the renderers
+        if (curentChildIdentifiers.length !== previousChildIdentifiers.length
+          || curentChildIdentifiers.some((v, i) => v !== previousChildIdentifiers[i])
+        ) {
 
-        let keptChildIdentifiers = [];
-        let deletedChildren = [];
 
-        for (let [ind, child] of previousChildren.entries()) {
-          if (child.componentName) {
-            let childName = child.componentName;
-            if (currentChildNames.includes(childName) && !recreatedComponents[childName]) {
-              keptChildIdentifiers.push(`componentName:${childName}`);
-            } else {
-              deletedChildren.push({ childName, ind })
-            }
-          } else {
-            if (currentChildIdentifiers.includes(child)) {
-              keptChildIdentifiers.push(child);
-            } else {
-              deletedChildren.push({ ind });
+          // delete old renderers
+          for (let child of previousChildRenderers) {
+            if (child.componentName) {
+              let deletedNames = this.deleteFromComponentsToRender({
+                componentName: child.componentName,
+                recurseToChildren: true
+              });
+              deletedRenderers.push(...deletedNames);
             }
           }
-        }
 
-        for (let { childName, ind } of deletedChildren.reverse()) {
-          let deletedComponentNames = [];
-
-          if (childName) {
-            deletedComponentNames = this.deleteFromComponentsToRender({
-              componentName: childName,
-              recurseToChildren: true
-            });
-          }
-
-          instructionChildren.splice(ind, 1);
-
-          deletedRenderers.push(...deletedComponentNames);
-        }
-
-
-        // next permute the kept children to be in the order of the current children
-        // and create instructions for the same permutations of the renderers
-
-        let desiredOrderForKeptChildren = currentChildIdentifiers.filter(
-          x => keptChildIdentifiers.includes(x)
-        )
-
-        for (let i = 0; i < desiredOrderForKeptChildren.length; i++) {
-          if (keptChildIdentifiers[i] !== desiredOrderForKeptChildren[i]) {
-            let prevIndex = keptChildIdentifiers.indexOf(desiredOrderForKeptChildren[i]);
-            // swap in componentsToRender
-            [instructionChildren[i], instructionChildren[prevIndex]]
-              = [instructionChildren[prevIndex], instructionChildren[i]];
-
-            // swap in keptChildIdentifiers
-            [keptChildIdentifiers[i], keptChildIdentifiers[prevIndex]]
-              = [keptChildIdentifiers[prevIndex], keptChildIdentifiers[i]];
-
-          }
-        }
-
-
-        // last, add the new children and create instructions to add the renderers
-        for (let [ind, child] of currentChildren.entries()) {
-          if (child.componentName) {
-            let childName = child.componentName;
-            if (!previousChildNames.includes(childName) || recreatedComponents[childName]) {
-
-              let comp = this._components[childName];
-              if (comp && comp.rendererType) {
-
-                let childToRender = await this.initializeRenderedComponentInstruction(comp);
-                instructionChildren.splice(ind, 0, childToRender);
-
+          // create new renderers
+          let childrenToRender = [];
+          if (indicesToRender.length > 0) {
+            for (let [ind, child] of unproxiedComponent.activeChildren.entries()) {
+              if (indicesToRender.includes(ind)) {
+                if (child.rendererType) {
+                  let results = await this.initializeRenderedComponentInstruction(child);
+                  childrenToRender.push(results.componentToRender);
+                  stateValuesToUpdate.push(...results.stateValuesToUpdate);
+                } else if (typeof child === "string") {
+                  childrenToRender.push(child);
+                } else if (typeof child === "number") {
+                  childrenToRender.push(child.toString())
+                }
               }
             }
-          } else if (!previousChildren.includes(`string${ind}:${child}`)) {
-
-            instructionChildren.splice(ind, 0, child);
-
           }
+
+          this.componentsWithChangedChildrenToRender.delete(componentName);
+
+          let stateValuesForRenderer = {};
+          for (let stateVariable in unproxiedComponent.state) {
+            if (unproxiedComponent.state[stateVariable].forRenderer) {
+              let value = await unproxiedComponent.state[stateVariable].value;
+              // if (value !== null && typeof value === 'object') {
+              //   value = new Proxy(value, readOnlyProxyHandler)
+              // }
+              if (value instanceof me.class) {
+                stateValuesForRenderer[stateVariable] = value.tree;
+              } else {
+                stateValuesForRenderer[stateVariable] = value;
+              }
+            }
+          }
+
+
+          updateInstructions.push({
+            instructionType: "changeChildren",
+            parentName: componentName,
+            childrenToRender,
+            stateValues: stateValuesForRenderer
+          });
+
+          parentsWithChangedChildren.push(componentName)
 
         }
 
@@ -599,43 +563,75 @@ export default class Core {
     // reset for next time
     this.componentsWithChangedChildrenToRender = new Set([]);
 
-    renderersToUpdate = renderersToUpdate.filter(x => !deletedRenderers.includes(x))
-    if (renderersToUpdate.length > 0) {
+
+    for (let componentName of componentNames) {
+      if (componentName in this.componentsToRender
+        & !parentsWithChangedChildren.includes(componentName)
+        // && !deletedRenderers.includes(componentName)  TODO: what if recreate with same name?
+      ) {
+        let component = this._components[componentName];
+        if (component) {
+          let stateValuesForRenderer = {};
+          for (let stateVariable in component.state) {
+            if (component.state[stateVariable].forRenderer) {
+              let value = await component.state[stateVariable].value;
+              // if (value !== null && typeof value === 'object') {
+              //   value = new Proxy(value, readOnlyProxyHandler)
+              // }
+              if (value instanceof me.class) {
+                stateValuesForRenderer[stateVariable] = value.tree;
+              } else {
+                stateValuesForRenderer[stateVariable] = value;
+              }
+            }
+          }
+
+          stateValuesToUpdate.push({
+            componentName,
+            stateValues: stateValuesForRenderer
+          });
+        }
+      }
+    }
+
+
+    // stateValuesToUpdate = stateValuesToUpdate.filter(x => !deletedRenderers.includes(x))
+    if (stateValuesToUpdate.length > 0) {
       let instruction = {
         instructionType: "updateStateVariable",
-        renderersToUpdate,
+        stateValuesToUpdate,
         sourceOfUpdate,
       }
       updateInstructions.push(instruction);
     }
 
-    for (let componentName of renderersToUpdate) {
-      let component = this._components[componentName];
-      if (component) {
-        let stateValuesForRenderer = {};
-        for (let stateVariable in component.state) {
-          if (component.state[stateVariable].forRenderer) {
-            let value = await component.state[stateVariable].value;
-            // if (value !== null && typeof value === 'object') {
-            //   value = new Proxy(value, readOnlyProxyHandler)
-            // }
-            if(value instanceof me.class) {
-              stateValuesForRenderer[stateVariable] = value.tree;
-            } else {
-              stateValuesForRenderer[stateVariable] = value;
-            }
-          }
-        }
+    // for (let componentName of stateValuesToUpdate) {
+    //   let component = this._components[componentName];
+    //   if (component) {
+    //     let stateValuesForRenderer = {};
+    //     for (let stateVariable in component.state) {
+    //       if (component.state[stateVariable].forRenderer) {
+    //         let value = await component.state[stateVariable].value;
+    //         // if (value !== null && typeof value === 'object') {
+    //         //   value = new Proxy(value, readOnlyProxyHandler)
+    //         // }
+    //         if (value instanceof me.class) {
+    //           stateValuesForRenderer[stateVariable] = value.tree;
+    //         } else {
+    //           stateValuesForRenderer[stateVariable] = value;
+    //         }
+    //       }
+    //     }
 
-        // this.externalFunctions.updateRendererSVsWithRecoil({ componentName, stateValues: stateValuesForRenderer, sourceOfUpdate })
+    //     // this.externalFunctions.updateRendererSVsWithRecoil({ componentName, stateValues: stateValuesForRenderer, sourceOfUpdate })
 
 
-        Object.assign(this.componentsToRender[componentName].stateValues,
-          stateValuesForRenderer)
-      }
-    }
+    //     Object.assign(this.componentsToRender[componentName].stateValues,
+    //       stateValuesForRenderer)
+    //   }
+    // }
 
-    this.coreUpdatedCallback({ updateInstructions, componentsToRender: this.componentsToRender })
+    this.coreUpdatedCallback(updateInstructions)
 
   }
 
@@ -652,6 +648,8 @@ export default class Core {
     }
 
 
+    let stateValuesToUpdate = [];
+
     let stateValuesForRenderer = {};
     for (let stateVariable in component.state) {
       if (component.state[stateVariable].forRenderer) {
@@ -659,7 +657,7 @@ export default class Core {
         // if (value !== null && typeof value === 'object') {
         //   value = new Proxy(value, readOnlyProxyHandler)
         // }
-        if(value instanceof me.class) {
+        if (value instanceof me.class) {
           stateValuesForRenderer[stateVariable] = value.tree;
         } else {
           stateValuesForRenderer[stateVariable] = value;
@@ -669,19 +667,25 @@ export default class Core {
 
     let componentName = component.componentName;
 
-    let childInstructions = [];
+    stateValuesToUpdate.push({
+      componentName,
+      stateValues: stateValuesForRenderer
+    });
+
+    let childrenToRender = [];
     if (component.constructor.renderChildren) {
       let indicesToRender = await this.returnActiveChildrenIndicesToRender(component);
       for (let [ind, child] of component.activeChildren.entries()) {
         if (indicesToRender.includes(ind)) {
           if (child.rendererType) {
-            childInstructions.push(
-              await this.initializeRenderedComponentInstruction(child)
-            )
+            let results = await this.initializeRenderedComponentInstruction(child);
+            childrenToRender.push(results.componentToRender);
+            stateValuesToUpdate.push(...results.stateValuesToUpdate);
+
           } else if (typeof child === "string") {
-            childInstructions.push(child);
+            childrenToRender.push(child);
           } else if (typeof child === "number") {
-            childInstructions.push(child.toString())
+            childrenToRender.push(child.toString())
           }
         }
       }
@@ -721,13 +725,13 @@ export default class Core {
       componentName: componentName,
       componentType: component.componentType,
       rendererType: component.rendererType,
-      stateValues: stateValuesForRenderer,
-      children: childInstructions,
+      stateValues: stateValuesForRenderer,  // TODO: delete was remove class-based components?
+      children: childrenToRender,
       actions: requestActions,
     };
 
 
-    return this.componentsToRender[componentName];
+    return { componentToRender: this.componentsToRender[componentName], stateValuesToUpdate };
   }
 
   deleteFromComponentsToRender({
@@ -748,6 +752,7 @@ export default class Core {
       }
     }
     delete this.componentsToRender[componentName];
+    this.componentsWithChangedChildrenToRender.delete(componentName);
 
     return deletedComponentNames;
   }

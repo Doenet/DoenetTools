@@ -6,7 +6,7 @@ import { renderersloadComponent } from '../DoenetViewer';
 export const rendererSVs = atomFamily({
   key:'rendererSVs',
   default:{stateValues:{},sourceOfUpdate:{}},
-  dangerouslyAllowMutability: true,
+  // dangerouslyAllowMutability: true,
 })
 
 //Renderers will need to set doenetPropsForChildren locally and pass it along. 

@@ -53,7 +53,6 @@ class DoenetViewerChild extends Component {
     let viewer = this;
 
     this.coreWorker.onmessage = function (e) {
-      console.log('got message from core', e.data)
       if (e.data.messageType === "coreCreated") {
         viewer.coreReady(e.data.args)
       } else if (e.data.messageType === "coreUpdated") {
@@ -213,9 +212,7 @@ class DoenetViewerChild extends Component {
     //TODO: Handle if number of items changed. Handle if weights changed
 
 
-    for (let componentName in coreInfo.componentsToRender) {
-      this.props.updateRendererSVsWithRecoil({ componentName, stateValues: coreInfo.componentsToRender[componentName].stateValues })
-    }
+
 
     let renderPromises = [];
     let rendererClassNames = [];
@@ -226,10 +223,13 @@ class DoenetViewerChild extends Component {
       renderPromises.push(import(`./renderers/${rendererClassName}.js`));
     }
 
+    let documentComponentInstructions = coreInfo.documentToRender;
+    this.componentsToRender = {};
+    this.initializeComponentsToRender(documentComponentInstructions)
+
 
     renderersloadComponent(renderPromises, rendererClassNames).then((rendererClasses) => {
       this.rendererClasses = rendererClasses;
-      let documentComponentInstructions = coreInfo.componentsToRender[coreInfo.documentName];
       let documentRendererClass = this.rendererClasses[documentComponentInstructions.rendererType]
 
       this.documentRenderer = React.createElement(documentRendererClass,
@@ -304,6 +304,17 @@ class DoenetViewerChild extends Component {
     //TODO: THIS ISN'T TRUE AS IT'S HASN'T FINISHED YET
     if (this.props.onCoreReady) {
       this.props.onCoreReady();
+    }
+  }
+
+  initializeComponentsToRender(componentToRender) {
+    this.componentsToRender[componentToRender.componentName] = componentToRender;
+    if(componentToRender.children) {
+      for(let child of componentToRender.children) {
+        if(child.componentName) {
+          this.initializeComponentsToRender(child)
+        }
+      }
     }
   }
 
@@ -522,44 +533,37 @@ class DoenetViewerChild extends Component {
   }
 
   //offscreen then postpone that one
-  async update({updateInstructions, componentsToRender}) {
+  async update(updateInstructions) {
 
-    console.log('update')
-    console.log(updateInstructions, componentsToRender)
 
-    this.coreInfo.componentsToRender = componentsToRender;
 
-    let documentComponentInstructions = componentsToRender[this.coreInfo.documentName];
-    let documentRendererClass = this.rendererClasses[documentComponentInstructions.rendererType]
-
-    this.documentRenderer = React.createElement(documentRendererClass,
-      {
-        key: documentComponentInstructions.componentName,
-        componentInstructions: documentComponentInstructions,
-        rendererClasses: this.rendererClasses,
-        rendererUpdateMethods: this.rendererUpdateMethods,
-        flags: this.props.flags,
-        callAction: this.callAction,
-      }
-    )
 
     for (let instruction of updateInstructions) {
 
       if (instruction.instructionType === "updateStateVariable") {
-        for (let componentName of instruction.renderersToUpdate
+        for (let { componentName, stateValues } of instruction.stateValuesToUpdate
         ) {
 
 
-          this.props.updateRendererSVsWithRecoil({ 
-            componentName, 
-            stateValues: this.coreInfo.componentsToRender[componentName].stateValues
-          
+          this.props.updateRendererSVsWithRecoil({
+            componentName,
+            stateValues
           })
           //TODO: await ????
-          this.rendererUpdateMethods[componentName].update({
-            sourceOfUpdate: instruction.sourceOfUpdate
-          });
+          // this.rendererUpdateMethods[componentName].update({
+          //   sourceOfUpdate: instruction.sourceOfUpdate
+          // });
         }
+      } else if (instruction.instructionType === "changeChildren") {
+        console.log('change children')
+        console.log(`new children of ${instruction.parentName}`, instruction.childrenToRender)
+
+
+        this.componentsToRender[instruction.parentName].children = instruction.childrenToRender;
+        this.props.updateRendererSVsWithRecoil({
+          componentName: instruction.parentName,
+          stateValues: instruction.stateValues,
+        })
       }
     }
 

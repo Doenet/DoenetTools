@@ -16,6 +16,10 @@ export default function Point(props) {
   let dragged = useRef(false);
   let previousWithLabel = useRef(null);
   let previousLabelPosition = useRef(null);
+  
+  let lastPositionFromCore = useRef(null);
+
+  lastPositionFromCore.current = SVs.numericalXs;
 
   useEffect(() => {
     if (board) {
@@ -167,6 +171,9 @@ export default function Point(props) {
             skippable: true,
           }
         })
+
+        newPointJXG.coords.setCoordinates(JXG.COORDS_BY_USER, lastPositionFromCore.current);
+        board.updateInfobox(newPointJXG);
 
         //Protect against very small unintended drags
         if (
