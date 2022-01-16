@@ -33,10 +33,12 @@ export default function Curve(props) {
   let segmentsJXG = useRef(null);
   let vectorControlsVisible = useRef(null);
   let hitObject = useRef(null);
+  let vectorControlDirections = useRef(null);
   let previousVectorControlDirections = useRef(null);
 
-  let lastThroughPointPositionsFromCore = useRef(null);
+  vectorControlDirections.current = SVs.vectorControlDirections;
 
+  let lastThroughPointPositionsFromCore = useRef(null);
   lastThroughPointPositionsFromCore.current = SVs.numericalThroughPoints;
 
 
@@ -451,7 +453,7 @@ export default function Curve(props) {
     if (!SVs.hiddenControls[i]) {
       if (controlPointsJXG.current[i][0]) {
         let isVisible = (i > 0 || SVs.extrapolateBackward)
-          && ["symmetric", "both", "previous"].includes(SVs.vectorControlDirections[i]);
+          && ["symmetric", "both", "previous"].includes(vectorControlDirections.current[i]);
         controlPointsJXG.current[i][0].visProp.visible = isVisible;
         controlPointsJXG.current[i][0].visPropCalc.visible = isVisible;
         controlPointsJXG.current[i][0].needsUpdate = true;
@@ -464,7 +466,7 @@ export default function Curve(props) {
 
       if (controlPointsJXG.current[i][1]) {
         let isVisible = (i < throughPointsJXG.current.length - 1 || SVs.extrapolateForward)
-          && ["symmetric", "both", "next"].includes(SVs.vectorControlDirections[i]);
+          && ["symmetric", "both", "next"].includes(vectorControlDirections.current[i]);
         controlPointsJXG.current[i][1].visProp.visible = isVisible;
         controlPointsJXG.current[i][1].visPropCalc.visible = isVisible;
         controlPointsJXG.current[i][1].needsUpdate = true;
