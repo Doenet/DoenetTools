@@ -35,9 +35,44 @@ onmessage = function (e) {
 
   } else if (e.data.messageType === "requestAction") {
     core.requestAction(e.data.args)
+  } else if (e.data.messageType === "returnAllStateVariables") {
+    console.log('all components')
+    console.log(core._components)
+    returnAllStateVariables(core).then(componentsObj => {
+      postMessage({
+        messageType: "returnAllStateVariables",
+        args: componentsObj
+      })
+    });
   }
 }
 
+async function returnAllStateVariables(core) {
+  let componentsObj = {};
+  for (let componentName in core.components) {
+    let component = core.components[componentName];
+    let compObj = componentsObj[componentName] = {
+      componentName,
+      componentType: component.componentType,
+      stateValues: {}
+    }
+    for (let vName in component.state) {
+      compObj.stateValues[vName] = preprocessCopy(await component.state[vName].value);
+    }
+  }
+  return componentsObj;
+}
+
+function preprocessCopy(value) {
+  if (value instanceof me.class) {
+    value = value.tree;
+  } else if(typeof value === "function") {
+    value = undefined;
+  } else if (Array.isArray(value)) {
+    value = value.map(x => preprocessCopy(x))
+  }
+  return value;
+}
 
 
 export default class Core {
@@ -898,7 +933,7 @@ export default class Core {
   }
 
   async createIsolatedComponents({ serializedComponents, ancestors,
-    applyAdapters = true, shadow = false, createNameContext = "" }
+    shadow = false, createNameContext = "" }
   ) {
 
     let namespaceForUnamed = "/";
@@ -916,7 +951,6 @@ export default class Core {
     let createResult = await this.createIsolatedComponentsSub({
       serializedComponents,
       ancestors,
-      applyAdapters,
       shadow,
       namespaceForUnamed,
       createNameContext
@@ -934,7 +968,7 @@ export default class Core {
   }
 
   async createIsolatedComponentsSub({ serializedComponents, ancestors,
-    applyAdapters = true, shadow = false,
+    shadow = false,
     createNameContext = "", namespaceForUnamed = "/", componentsReplacementOf,
   }
   ) {
@@ -1000,7 +1034,7 @@ export default class Core {
         componentName,
         ancestors,
         componentClass,
-        applyAdapters, shadow,
+        shadow,
         namespaceForUnamed,
         componentsReplacementOf,
       });
@@ -1022,7 +1056,7 @@ export default class Core {
 
   async createChildrenThenComponent({ serializedComponent, componentName,
     ancestors, componentClass,
-    applyAdapters = true, shadow = false,
+    shadow = false,
     namespaceForUnamed = "/", componentsReplacementOf
   }) {
 
@@ -1143,7 +1177,7 @@ export default class Core {
           let childrenResult = await this.createIsolatedComponentsSub({
             serializedComponents: [variantControlChild],
             ancestors: ancestorsForChildren,
-            applyAdapters, shadow,
+            shadow,
             createNameContext: "variantControl",
             namespaceForUnamed,
           });
@@ -1166,7 +1200,7 @@ export default class Core {
         let childrenResult = await this.createIsolatedComponentsSub({
           serializedComponents: childrenToCreate,
           ancestors: ancestorsForChildren,
-          applyAdapters, shadow,
+          shadow,
           namespaceForUnamed,
         });
 
@@ -1203,7 +1237,7 @@ export default class Core {
           let childrenResult = await this.createIsolatedComponentsSub({
             serializedComponents: childrenToCreate,
             ancestors: ancestorsForChildren,
-            applyAdapters, shadow,
+            shadow,
             namespaceForUnamed,
           });
 
@@ -1218,7 +1252,7 @@ export default class Core {
         let childrenResult = await this.createIsolatedComponentsSub({
           serializedComponents: serializedChildren,
           ancestors: ancestorsForChildren,
-          applyAdapters, shadow,
+          shadow,
           namespaceForUnamed,
         });
 
@@ -1239,7 +1273,7 @@ export default class Core {
           let attrResult = await this.createIsolatedComponentsSub({
             serializedComponents: [serializedComponent.attributes[attrName].component],
             ancestors: ancestorsForChildren,
-            applyAdapters, shadow,
+            shadow,
             namespaceForUnamed,
             createNameContext: `attribute|${attrName}`
           });

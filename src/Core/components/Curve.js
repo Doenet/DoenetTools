@@ -4,6 +4,7 @@ import {
 } from './commonsugar/breakstrings';
 
 import me from 'math-expressions';
+import { returnBezierFunctions } from '../utils/function';
 
 export default class Curve extends GraphicalComponent {
   static componentType = "curve";
@@ -2146,11 +2147,13 @@ export default class Curve extends GraphicalComponent {
     }
 
     stateVariableDefinitions.fs = {
-      forRenderer: true,
       isArray: true,
       entryPrefixes: ["f"],
-      hasEssential: true,
-      defaultValueByArrayKey: () => { () => 0 },
+      additionalStateVariablesDefined: [{
+        variableName: "fDefinitions",
+        isArray: true,
+        forRenderer: true,
+      }],
       returnArraySizeDependencies: () => ({
         functionChildren: {
           dependencyType: "child",
@@ -2211,7 +2214,7 @@ export default class Curve extends GraphicalComponent {
             functionChild: {
               dependencyType: "child",
               childGroups: ["functions"],
-              variableNames: ["numericalf"],
+              variableNames: ["numericalf", "fDefinition"],
               childIndices: [arrayKey]
             }
           };
@@ -2219,6 +2222,10 @@ export default class Curve extends GraphicalComponent {
             dependenciesByKey[arrayKey].fShadow = {
               dependencyType: "stateVariable",
               variableName: "fShadow"
+            },
+            dependenciesByKey[arrayKey].fDefinitionAdapted = {
+              dependencyType: "adapterSourceStateVariable",
+              variableName: "fDefinition"
             }
           }
         }
@@ -2227,30 +2234,50 @@ export default class Curve extends GraphicalComponent {
       arrayDefinitionByKey({ globalDependencyValues, dependencyValuesByKey, arrayKeys }) {
 
         if (globalDependencyValues.curveType === "bezier") {
+
           return {
-            setValue: { fs: returnBezierFunctions({ globalDependencyValues, arrayKeys }) }
+            setValue: {
+              fs: returnBezierFunctions(globalDependencyValues),
+              fDefinitions: {
+                0: {
+                  functionType: "bezier",
+                  nThroughPoints: globalDependencyValues.nThroughPoints,
+                  numericalThroughPoints: globalDependencyValues.numericalThroughPoints,
+                  splineCoeffs: globalDependencyValues.splineCoeffs,
+                  extrapolateForward: globalDependencyValues.extrapolateForward,
+                  extrapolateForwardCoeffs: globalDependencyValues.extrapolateForwardCoeffs,
+                  extrapolateBackward: globalDependencyValues.extrapolateBackward,
+                  extrapolateBackwardCoeffs: globalDependencyValues.extrapolateBackwardCoeffs,
+                },
+                1: null,
+              }
+            }
           }
         }
 
         let fs = {};
-        let essentialFs = {};
+        let fDefinitions = {};
         for (let arrayKey of arrayKeys) {
           let functionChild = dependencyValuesByKey[arrayKey].functionChild;
           if (functionChild.length === 1) {
             fs[arrayKey] = functionChild[0].stateValues.numericalf;
+            fDefinitions[arrayKey] = functionChild[0].stateValues.fDefinition;
           } else {
             if (Number(arrayKey) === 0 && dependencyValuesByKey[arrayKey].fShadow) {
               fs[arrayKey] = dependencyValuesByKey[arrayKey].fShadow;
+              // TODO: ???
+              fDefinitions[arrayKey] =  dependencyValuesByKey[arrayKey].fDefinitionAdapted;
+
             } else {
-              essentialFs[arrayKey] = true
+              fs[arrayKey] = () => 0;
+              fDefinitions[arrayKey] = {
+                functionType: "zero"
+              }
             }
           }
         }
         return {
-          setValue: { fs },
-          useEssentialOrDefaultValue: {
-            fs: essentialFs,
-          },
+          setValue: { fs, fDefinitions },
         }
 
       }
@@ -3492,72 +3519,6 @@ function initCubicPoly(x1, x2, t1, t2) {
   ];
 }
 
-function returnBezierFunctions({ globalDependencyValues, arrayKeys }) {
-
-  if (globalDependencyValues.nThroughPoints < 1) {
-    let fs = {};
-    for (let arrayKey of arrayKeys) {
-      fs[arrayKey] = () => NaN;
-    }
-    return fs;
-  }
-
-
-  let len = globalDependencyValues.nThroughPoints - 1;
-
-  let fs = {};
-
-  let extrapolateBackward = globalDependencyValues.extrapolateBackward;
-  let extrapolateForward = globalDependencyValues.extrapolateForward;
-
-  for (let arrayKey of arrayKeys) {
-    let firstPointX = globalDependencyValues.numericalThroughPoints[0][arrayKey];
-    let lastPointX = globalDependencyValues.numericalThroughPoints[len][arrayKey];
-
-    let cs = globalDependencyValues.splineCoeffs.map(x => x[arrayKey])
-    let cB;
-    if (extrapolateBackward) {
-      cB = globalDependencyValues.extrapolateBackwardCoeffs[arrayKey];
-    }
-    let cF;
-    if (extrapolateForward) {
-      cF = globalDependencyValues.extrapolateForwardCoeffs[arrayKey];
-    }
-
-    fs[arrayKey] = function (t) {
-      if (isNaN(t)) {
-        return NaN;
-      }
-
-      if (t < 0) {
-        if (extrapolateBackward) {
-          return (cB[2] * t + cB[1]) * t + cB[0];
-        } else {
-          return firstPointX;
-        }
-      }
-
-      if (t >= len) {
-        if (extrapolateForward) {
-          t -= len;
-          return (cF[2] * t + cF[1]) * t + cF[0];
-        } else {
-          return lastPointX;
-        }
-      }
-
-      let z = Math.floor(t);
-      t -= z;
-      let c = cs[z];
-      return (((c[3] * t + c[2]) * t + c[1]) * t + c[0]);
-    }
-
-  }
-
-  return fs;
-
-
-}
 
 function addTimePointBezier({ t, ind, ts, ignoreLeft = false }) {
   const eps = 1E-14;

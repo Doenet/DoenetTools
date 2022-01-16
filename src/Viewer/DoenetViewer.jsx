@@ -57,8 +57,17 @@ class DoenetViewerChild extends Component {
         viewer.coreReady(e.data.args)
       } else if (e.data.messageType === "coreUpdated") {
         viewer.update(e.data.args)
+      } else if(e.data.messageType === "returnAllStateVariables") {
+        console.log(e.data.args)
+        window.allStateVariables = e.data.args;
       }
     }
+
+    window.returnAllStateVariables = function () {
+      this.coreWorker.postMessage({
+        messageType: "returnAllStateVariables"
+      })
+    }.bind(this)
 
   }
 

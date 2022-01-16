@@ -14,7 +14,7 @@ export default function Point(props) {
   let dragged = useRef(false);
   let previousWithLabel = useRef(null);
   let previousLabelPosition = useRef(null);
-  
+
   let lastPositionFromCore = useRef(null);
 
   lastPositionFromCore.current = SVs.numericalXs;
@@ -119,6 +119,10 @@ export default function Point(props) {
           })
           // actions.finalizePointPosition();
         } else if (SVs.switchable && !SVs.fixed) {
+
+          // TODO: don't think SVS.switchable, SVs.fixed will if change state variables
+          // as useEffect will not be rerun
+
           props.callAction({
             componentName: name,
             actionName: "switchPoint"
