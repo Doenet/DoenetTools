@@ -114,20 +114,16 @@ export default function Point(props) {
 
         if (dragged.current) {
           props.callAction({
-            componentName: name,
-            actionName: "finalizePointPosition"
+            action: actions.finalizePointPosition
           })
-          // actions.finalizePointPosition();
         } else if (SVs.switchable && !SVs.fixed) {
 
           // TODO: don't think SVS.switchable, SVs.fixed will if change state variables
           // as useEffect will not be rerun
 
           props.callAction({
-            componentName: name,
-            actionName: "switchPoint"
+            action: actions.switchPoint
           })
-          // actions.switchPoint();
         }
       })
 
@@ -164,8 +160,7 @@ export default function Point(props) {
         // });
 
         props.callAction({
-          componentName: name,
-          actionName: "movePoint",
+          action: actions.movePoint,
           args: {
             x: calculatedX,
             y: calculatedY,

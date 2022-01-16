@@ -158,8 +158,7 @@ export default function Curve(props) {
           && SVs.switchable && !SVs.fixed
         ) {
           props.callAction({
-            componentName: name,
-            actionName: "switchCurve"
+            action: actions.switchCurve
           })
         }
       })
@@ -333,8 +332,7 @@ export default function Curve(props) {
 
     let tpcoords = [throughPointsJXG.current[i].X(), throughPointsJXG.current[i].Y()];
     props.callAction({
-      actionName: "moveThroughPoint",
-      componentName: name,
+      action: actions.moveThroughPoint,
       args: {
         throughPoint: tpcoords,
         throughPointInd: i,
@@ -359,8 +357,7 @@ export default function Curve(props) {
     }
 
     props.callAction({
-      actionName: "moveControlVector",
-      componentName: name,
+      action: actions.moveControlVector,
       args: {
         controlVector: [controlPointsJXG.current[point][i].X() - throughPointsJXG.current[point].X(),
         controlPointsJXG.current[point][i].Y() - throughPointsJXG.current[point].Y()],

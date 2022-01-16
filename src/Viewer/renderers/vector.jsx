@@ -93,8 +93,7 @@ export default function Vector(props) {
         newVectorJXG.on('up', e => {
           if (headBeingDragged.current && tailBeingDragged.current) {
             props.callAction({
-              actionName: "finalizeVectorPosition",
-              componentName: name,
+              action: actions.finalizeVectorPosition
             })
           }
         });
@@ -160,8 +159,7 @@ export default function Vector(props) {
       
           if (performMove) {
             props.callAction({
-              actionName: "moveVector",
-              componentName: name,
+              action: actions.moveVector,
               args: instructions
             })
 

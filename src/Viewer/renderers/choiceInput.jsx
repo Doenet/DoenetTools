@@ -57,8 +57,7 @@ export default function ChoiceInput(props) {
       SVs.selectedIndices.some((v, i) => v != newSelectedIndices[i])
     ) {
       props.callAction({
-        actionName: "updateSelectedIndices",
-        componentName: name,
+        action: actions.updateSelectedIndices,
         args: {
           selectedIndices: newSelectedIndices
         }

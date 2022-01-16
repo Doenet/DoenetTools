@@ -729,6 +729,7 @@ export default class Core {
       //   args,
       // })
       requestActions[actionName] = {
+        actionName,
         componentName: component.componentName
       }
     }
@@ -742,6 +743,7 @@ export default class Core {
         //   args,
         // })
         requestActions[actionName] = {
+          actionName,
           componentName: action.componentNae,
         }
       }
