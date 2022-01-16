@@ -1,12 +1,11 @@
 import React, { useRef } from 'react';
 import useDoenetRender from './useDoenetRenderer';
 import ReactDOM from 'react-dom';
-import DoenetRenderer from './DoenetRenderer';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCheck, faLevelDownAlt, faTimes, faCloud, faPercentage } from '@fortawesome/free-solid-svg-icons'
 import { sizeToCSS } from './utils/css';
 
-export default function MathInput(props) {
+export default function TextInput(props) {
   let { name, SVs, actions, sourceOfUpdate } = useDoenetRender(props);
 
   let currentValue = useRef(null);
