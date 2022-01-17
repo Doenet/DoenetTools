@@ -71,12 +71,12 @@ class DoenetViewerChild extends Component {
 
   }
 
-  callAction({ actionName, componentName, args }) {
+  callAction({ action, args }) {
     this.coreWorker.postMessage({
       messageType: "requestAction",
       args: {
-        actionName,
-        componentName,
+        actionName: action.actionName,
+        componentName: action.componentName,
         args
       }
     })

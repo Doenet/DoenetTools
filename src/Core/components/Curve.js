@@ -368,7 +368,7 @@ export default class Curve extends GraphicalComponent {
             domain = domain[0];
             try {
               parMax = domain[1].evaluate_to_constant();
-              if (!Number.isFinite(parMax)) {
+              if (!Number.isFinite(parMax) && parMax !== Infinity) {
                 parMax = NaN;
               }
             } catch (e) { }
@@ -475,7 +475,7 @@ export default class Curve extends GraphicalComponent {
             domain = domain[0];
             try {
               parMin = domain[0].evaluate_to_constant();
-              if (!Number.isFinite(parMin)) {
+              if (!Number.isFinite(parMin) && parMin !== -Infinity) {
                 parMin = NaN;
               }
             } catch (e) { }
@@ -2223,10 +2223,10 @@ export default class Curve extends GraphicalComponent {
               dependencyType: "stateVariable",
               variableName: "fShadow"
             },
-            dependenciesByKey[arrayKey].fDefinitionAdapted = {
-              dependencyType: "adapterSourceStateVariable",
-              variableName: "fDefinition"
-            }
+              dependenciesByKey[arrayKey].fDefinitionAdapted = {
+                dependencyType: "adapterSourceStateVariable",
+                variableName: "fDefinition"
+              }
           }
         }
         return { globalDependencies, dependenciesByKey };
@@ -2266,7 +2266,7 @@ export default class Curve extends GraphicalComponent {
             if (Number(arrayKey) === 0 && dependencyValuesByKey[arrayKey].fShadow) {
               fs[arrayKey] = dependencyValuesByKey[arrayKey].fShadow;
               // TODO: ???
-              fDefinitions[arrayKey] =  dependencyValuesByKey[arrayKey].fDefinitionAdapted;
+              fDefinitions[arrayKey] = dependencyValuesByKey[arrayKey].fDefinitionAdapted;
 
             } else {
               fs[arrayKey] = () => 0;
@@ -3221,7 +3221,7 @@ function getNearestPointFunctionCurve({ dependencyValues, numerics }) {
     let tIntervalMin = minT;
     let tIntervalMax = minT + delta;
 
-    let fprev;
+    let fprev, tprev;
 
     for (let step = 1; step <= Nsteps; step++) {
       let tnew = minT + step * delta;
@@ -3231,7 +3231,7 @@ function getNearestPointFunctionCurve({ dependencyValues, numerics }) {
       ) {
         tAtMin = tnew;
         fAtMin = fnew;
-        tIntervalMin = tnew - delta;
+        tIntervalMin = tprev;
         if (step === Nsteps) {
           tIntervalMax = tnew;
         } else {
@@ -3240,6 +3240,7 @@ function getNearestPointFunctionCurve({ dependencyValues, numerics }) {
       }
 
       fprev = fnew;
+      tprev = tnew;
 
     }
 
@@ -3359,19 +3360,26 @@ function getNearestPointParametrizedCurve({ dependencyValues, numerics }) {
     let tIntervalMin = minT;
     let tIntervalMax = minT + delta;
 
+    let fprev, tprev;
+
     for (let step = 1; step <= Nsteps; step++) {
       let tnew = minT + step * delta;
       let fnew = minfunc(tnew);
-      if (fnew < fAtMin || Number.isNaN(fAtMin)) {
+      if (Number.isFinite(fnew) && Number.isFinite(fprev) &&
+        (fnew < fAtMin || Number.isNaN(fAtMin))
+      ) {
         tAtMin = tnew;
         fAtMin = fnew;
-        tIntervalMin = tnew - delta;
+        tIntervalMin = tprev;
         if (step === Nsteps) {
           tIntervalMax = tnew;
         } else {
           tIntervalMax = tnew + delta;
         }
       }
+
+      fprev = fnew;
+      tprev = tnew;
 
     }
 
@@ -3393,6 +3401,34 @@ function getNearestPointParametrizedCurve({ dependencyValues, numerics }) {
 
     let x1AtMin = fs[0](tAtMin);
     let x2AtMin = fs[1](tAtMin);
+
+    // replace with endpoints if closer
+    let fMin = minfunc(tAtMin);
+
+    if (!result.success && Number.isFinite(x1AtMin) && Number.isFinite(x2AtMin)) {
+      fMin = Infinity;
+    }
+
+    if (Number.isFinite(parMin)) {
+      let fParMin = minfunc(parMin);
+      if (fParMin < fMin) {
+        tAtMin = parMin;
+        x1AtMin = fs[0](tAtMin);
+        x2AtMin = fs[1](tAtMin);
+        fMin = fParMin;
+      }
+    }
+
+    if (Number.isFinite(parMax)) {
+      let fParMax = minfunc(parMax);
+      if (fParMax < fMin) {
+        tAtMin = parMax;
+        x1AtMin = fs[0](tAtMin);
+        x2AtMin = fs[1](tAtMin);
+        fMin = fParMax;
+      }
+    }
+
 
     result = {
       x1: x1AtMin,

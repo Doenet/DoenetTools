@@ -57,19 +57,23 @@ async function returnAllStateVariables(core) {
       stateValues: {}
     }
     for (let vName in component.state) {
-      compObj.stateValues[vName] = preprocessCopy(await component.state[vName].value);
+      compObj.stateValues[vName] = preprocessForPostMessage(await component.state[vName].value);
     }
   }
   return componentsObj;
 }
 
-function preprocessCopy(value) {
+function preprocessForPostMessage(value) {
   if (value instanceof me.class) {
     value = value.tree;
-  } else if(typeof value === "function") {
+  } else if (typeof value === "function") {
     value = undefined;
   } else if (Array.isArray(value)) {
-    value = value.map(x => preprocessCopy(x))
+    value = value.map(x => preprocessForPostMessage(x))
+  } else if(typeof value === "object") {
+    for(let key in value) {
+      value[key] = preprocessForPostMessage(value[key]);
+    }
   }
   return value;
 }
@@ -559,15 +563,11 @@ export default class Core {
           let stateValuesForRenderer = {};
           for (let stateVariable in unproxiedComponent.state) {
             if (unproxiedComponent.state[stateVariable].forRenderer) {
-              let value = await unproxiedComponent.state[stateVariable].value;
+              let value = preprocessForPostMessage(await unproxiedComponent.state[stateVariable].value);
               // if (value !== null && typeof value === 'object') {
               //   value = new Proxy(value, readOnlyProxyHandler)
               // }
-              if (value instanceof me.class) {
-                stateValuesForRenderer[stateVariable] = value.tree;
-              } else {
-                stateValuesForRenderer[stateVariable] = value;
-              }
+              stateValuesForRenderer[stateVariable] = value;
             }
           }
 
@@ -601,15 +601,11 @@ export default class Core {
           let stateValuesForRenderer = {};
           for (let stateVariable in component.state) {
             if (component.state[stateVariable].forRenderer) {
-              let value = await component.state[stateVariable].value;
+              let value = preprocessForPostMessage(await component.state[stateVariable].value);
               // if (value !== null && typeof value === 'object') {
               //   value = new Proxy(value, readOnlyProxyHandler)
               // }
-              if (value instanceof me.class) {
-                stateValuesForRenderer[stateVariable] = value.tree;
-              } else {
-                stateValuesForRenderer[stateVariable] = value;
-              }
+              stateValuesForRenderer[stateVariable] = value;
             }
           }
 
@@ -680,15 +676,11 @@ export default class Core {
     let stateValuesForRenderer = {};
     for (let stateVariable in component.state) {
       if (component.state[stateVariable].forRenderer) {
-        let value = await component.state[stateVariable].value;
+        let value = preprocessForPostMessage(await component.state[stateVariable].value);
         // if (value !== null && typeof value === 'object') {
         //   value = new Proxy(value, readOnlyProxyHandler)
         // }
-        if (value instanceof me.class) {
-          stateValuesForRenderer[stateVariable] = value.tree;
-        } else {
-          stateValuesForRenderer[stateVariable] = value;
-        }
+        stateValuesForRenderer[stateVariable] = value;
       }
     }
 

@@ -63,14 +63,15 @@ export function returnNumericalFunctionFromFormula({ formula, nInputs, variables
 
     let minx = -Infinity, maxx = Infinity;
     if (domain !== null) {
-      let domain = domain[0];
-      if (domain !== undefined) {
+      let domain0 = domain[0];
+
+      if (domain0 !== undefined) {
         try {
-          minx = domain[0].evaluate_to_constant();
+          minx = domain0[0].evaluate_to_constant();
           if (!Number.isFinite(minx)) {
             minx = -Infinity;
           }
-          maxx = domain[1].evaluate_to_constant();
+          maxx = domain0[1].evaluate_to_constant();
           if (!Number.isFinite(maxx)) {
             maxx = Infinity;
           }
