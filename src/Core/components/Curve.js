@@ -121,7 +121,7 @@ export default class Curve extends GraphicalComponent {
     let breakIntoFunctionsByCommas = function ({ matchedChildren }) {
 
       // only apply if all children are strings or macros
-      if (!matchedChildren.every(child =>
+      if (matchedChildren.length === 0 || !matchedChildren.every(child =>
         typeof child === "string" ||
         child.doenetAttributes && child.doenetAttributes.createdFromMacro
       )) {

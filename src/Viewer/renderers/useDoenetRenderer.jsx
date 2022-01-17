@@ -9,9 +9,7 @@ export const rendererSVs = atomFamily({
   // dangerouslyAllowMutability: true,
 })
 
-//Renderers will need to set doenetPropsForChildren locally and pass it along. 
-//Renderer can change it later and values will be here
-export default function useDoenetRenderer(props,initializeChildrenOnConstruction=true,doenetPropsForChildren={}){
+export default function useDoenetRenderer(props,initializeChildrenOnConstruction=true){
   let actions = props.componentInstructions.actions;
   let name =  props.componentInstructions.componentName;
   let [renderersToLoad,setRenderersToLoad] = useState({})
@@ -56,7 +54,6 @@ export default function useDoenetRenderer(props,initializeChildrenOnConstruction
       flags: props.flags,
       callAction: props.callAction,
     };
-    Object.assign(propsForChild, doenetPropsForChildren);
 
     let rendererClass = props.rendererClasses[childInstructions.rendererType];
 
@@ -80,9 +77,5 @@ export default function useDoenetRenderer(props,initializeChildrenOnConstruction
     return child;
   }
 
-  function updatesetDoenetPropsForChildren(props){
-    // setDoenetPropsForChildren(props);
-  }
-
-  return {name,SVs:stateValues,actions,children,sourceOfUpdate,initializeChildren:()=>{},updatesetDoenetPropsForChildren};
+  return {name,SVs:stateValues,actions,children,sourceOfUpdate,initializeChildren:()=>{}};
 }
