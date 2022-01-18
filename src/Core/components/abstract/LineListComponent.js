@@ -69,7 +69,7 @@ export default class LineListComponent extends BaseComponent {
       }),
       definition: function ({ dependencyValues }) {
         return {
-          newValues: { nLines: dependencyValues.lineChildren.length },
+          setValue: { nLines: dependencyValues.lineChildren.length },
           checkForActualChange: { nLines: true }
         }
       }
@@ -114,7 +114,7 @@ export default class LineListComponent extends BaseComponent {
           }
         }
 
-        return { newValues: { lineNames } }
+        return { setValue: { lineNames } }
 
       }
     }

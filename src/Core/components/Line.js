@@ -6,15 +6,9 @@ export default class Line extends GraphicalComponent {
   static componentType = "line";
 
   actions = {
-    moveLine: this.moveLine.bind(
-      new Proxy(this, this.readOnlyProxyHandler)
-    ),
-    finalizeLinePosition: this.finalizeLinePosition.bind(
-      new Proxy(this, this.readOnlyProxyHandler)
-    ),
-    switchLine: this.switchLine.bind(
-      new Proxy(this, this.readOnlyProxyHandler)
-    )
+    moveLine: this.moveLine.bind(this),
+    finalizeLinePosition: this.finalizeLinePosition.bind(this),
+    switchLine: this.switchLine.bind(this)
   };
 
 
@@ -112,7 +106,7 @@ export default class Line extends GraphicalComponent {
 
         lineDescription += dependencyValues.selectedStyle.lineColor;
 
-        return { newValues: { styleDescription: lineDescription } };
+        return { setValue: { styleDescription: lineDescription } };
       }
     }
 
@@ -150,7 +144,7 @@ export default class Line extends GraphicalComponent {
         if (dependencyValues.equation) {
           if (changes.equation && changes.equation.componentIdentitiesChanged) {
             return {
-              newValues: { nDimensions: 2 },
+              setValue: { nDimensions: 2 },
               checkForActualChange: { nDimensions: true }
             }
           } else {
@@ -160,12 +154,12 @@ export default class Line extends GraphicalComponent {
           if (dependencyValues.through) {
             let nDimensions = dependencyValues.through.stateValues.nDimensions;
             return {
-              newValues: { nDimensions },
+              setValue: { nDimensions },
               checkForActualChange: { nDimensions: true }
             }
           } else {
             // line through zero points
-            return { newValues: { nDimensions: 2 } }
+            return { setValue: { nDimensions: 2 } }
           }
 
         }
@@ -182,10 +176,10 @@ export default class Line extends GraphicalComponent {
       }),
       definition: function ({ dependencyValues }) {
         if (dependencyValues.throughAttr === null) {
-          return { newValues: { nPointsPrescribed: 0 } }
+          return { setValue: { nPointsPrescribed: 0 } }
         } else {
           return {
-            newValues: {
+            setValue: {
               nPointsPrescribed: dependencyValues.throughAttr.stateValues.nPoints
             }
           }
@@ -210,7 +204,7 @@ export default class Line extends GraphicalComponent {
       }),
       definition({ dependencyValues }) {
         return {
-          newValues: {
+          setValue: {
             basedOnSlope: dependencyValues.nPointsPrescribed < 2 &&
               dependencyValues.slopeAttr !== null &&
               dependencyValues.nDimensions === 2
@@ -221,17 +215,18 @@ export default class Line extends GraphicalComponent {
 
     stateVariableDefinitions.dForSlope = {
       defaultValue: 1,
+      hasEssential: true,
       returnDependencies: () => ({}),
       definition: () => ({
         useEssentialOrDefaultValue: {
-          dForSlope: { variablesToCheck: ["dForSlope"] }
+          dForSlope: true
         }
       }),
       inverseDefinition({ desiredStateVariableValues }) {
         return {
           success: true,
           instructions: [{
-            setStateVariable: "dForSlope",
+            setEssentialValue: "dForSlope",
             value: desiredStateVariableValues.dForSlope
           }]
         }
@@ -270,7 +265,7 @@ export default class Line extends GraphicalComponent {
         }
 
         return {
-          newValues: {
+          setValue: {
             variables: returnNVariables(arraySize[0], variablesSpecified)
           }
         }
@@ -293,9 +288,9 @@ export default class Line extends GraphicalComponent {
         // console.log(dependencyValues);
 
         if (dependencyValues.equation !== null) {
-          return { newValues: { equationIdentity: dependencyValues.equation } }
+          return { setValue: { equationIdentity: dependencyValues.equation } }
         } else {
-          return { newValues: { equationIdentity: null } }
+          return { setValue: { equationIdentity: null } }
         }
       }
     }
@@ -303,7 +298,9 @@ export default class Line extends GraphicalComponent {
     stateVariableDefinitions.essentialPoints = {
       isArray: true,
       nDimensions: "2",
+      hasEssential: true,
       entryPrefixes: ["essentialPointX", "essentialPoint"],
+      defaultValueByArrayKey: (arrayKey) => me.fromAst(arrayKey === "0,0" ? 1 : 0),
       getArrayKeysFromVarName({ arrayEntryPrefix, varEnding, arraySize }) {
         if (arrayEntryPrefix === "essentialPointX") {
           // essentialPointX1_2 is the 2nd component of the first point
@@ -361,11 +358,7 @@ export default class Line extends GraphicalComponent {
       arrayDefinitionByKey({ arrayKeys }) {
         let essentialPoints = {};
         for (let arrayKey of arrayKeys) {
-          if (arrayKey === "0,0") {
-            essentialPoints[arrayKey] = { defaultValue: me.fromAst(1) }
-          } else {
-            essentialPoints[arrayKey] = { defaultValue: me.fromAst(0) }
-          }
+          essentialPoints[arrayKey] = true;
         }
 
         return { useEssentialOrDefaultValue: { essentialPoints } }
@@ -377,7 +370,7 @@ export default class Line extends GraphicalComponent {
 
         for (let arrayKey in desiredStateVariableValues.essentialPoints) {
           instructions.push({
-            setStateVariable: "essentialPoints",
+            setEssentialValue: "essentialPoints",
             value: { [arrayKey]: convertValueToMathExpression(desiredStateVariableValues.essentialPoints[arrayKey]) }
           })
         }
@@ -391,7 +384,6 @@ export default class Line extends GraphicalComponent {
 
 
     }
-
 
     stateVariableDefinitions.points = {
       public: true,
@@ -554,10 +546,13 @@ export default class Line extends GraphicalComponent {
         }
       },
 
-      arrayDefinitionByKey({ globalDependencyValues, dependencyValuesByKey, arrayKeys, arraySize, componentName }) {
+      arrayDefinitionByKey({ globalDependencyValues, dependencyValuesByKey,
+        arrayKeys, arraySize, componentName
+      }) {
         // console.log(`array definition of points for ${componentName}`)
         // console.log(globalDependencyValues)
         // console.log(dependencyValuesByKey)
+        // console.log(essentialValues)
         // console.log(arrayKeys)
 
         if ("coeff0" in globalDependencyValues) {
@@ -571,9 +566,9 @@ export default class Line extends GraphicalComponent {
                 points[ind1 + "," + ind2] = me.fromAst('\uff3f');
               }
             }
-            return { newValues: { points } }
+            return { setValue: { points } }
           } else {
-            return { newValues: { points: result.points } }
+            return { setValue: { points: result.points } }
           }
         } else {
 
@@ -651,9 +646,9 @@ export default class Line extends GraphicalComponent {
           }
 
 
-          // console.log(`result of array definition of key of points`)
+          // console.log(`result of array definition of points of line`)
           // console.log({points});
-          return { newValues: { points } };
+          return { setValue: { points } };
         }
       },
       async inverseArrayDefinitionByKey({ desiredStateVariableValues, globalDependencyValues,
@@ -945,7 +940,7 @@ export default class Line extends GraphicalComponent {
 
           if (!result.success) {
             return {
-              newValues: {
+              setValue: {
                 equation,
                 coeff0: blankMath, coeffvar1: blankMath, coeffvar2: blankMath
               }
@@ -954,7 +949,7 @@ export default class Line extends GraphicalComponent {
 
           let { coeff0, coeffvar1, coeffvar2 } = result;
           return {
-            newValues: {
+            setValue: {
               equation, coeff0, coeffvar1, coeffvar2
             }
           }
@@ -967,7 +962,7 @@ export default class Line extends GraphicalComponent {
         if (Number.isNaN(nDimens)) {
           console.warn("Line through points of undetermined dimensions");
           return {
-            newValues: {
+            setValue: {
               equation: blankMath,
               coeff0: blankMath, coeffvar1: blankMath, coeffvar2: blankMath
             }
@@ -977,7 +972,7 @@ export default class Line extends GraphicalComponent {
         if (nDimens < 2) {
           console.warn("Line must be through points of at least two dimensions");
           return {
-            newValues: {
+            setValue: {
               equation: blankMath,
               coeff0: blankMath, coeffvar1: blankMath, coeffvar2: blankMath
             }
@@ -1000,7 +995,7 @@ export default class Line extends GraphicalComponent {
           ) {
             console.warn("Points through line depend on variables: " + varStrings.join(", "));
             return {
-              newValues: {
+              setValue: {
                 equation: blankMath,
                 coeff0: blankMath, coeffvar1: blankMath, coeffvar2: blankMath
               }
@@ -1011,7 +1006,7 @@ export default class Line extends GraphicalComponent {
         if (nDimens !== 2) {
           // no equation if not in 2D
           return {
-            newValues: {
+            setValue: {
               equation: blankMath,
               coeff0: blankMath, coeffvar1: blankMath, coeffvar2: blankMath
             }
@@ -1022,7 +1017,7 @@ export default class Line extends GraphicalComponent {
           // points are equal, so equation is undefined.  Set all coordinates to 0
           let zero = me.fromAst(0);
           return {
-            newValues: {
+            setValue: {
               equation: blankMath,
               coeff0: zero, coeffvar1: zero, coeffvar2: zero
             }
@@ -1042,7 +1037,7 @@ export default class Line extends GraphicalComponent {
         }).simplify();
 
         return {
-          newValues: {
+          setValue: {
             equation, coeff0, coeffvar1, coeffvar2
           }
         }
@@ -1166,7 +1161,7 @@ export default class Line extends GraphicalComponent {
           numericalPoints[arrayKey] = numericalP;
         }
 
-        return { newValues: { numericalPoints } }
+        return { setValue: { numericalPoints } }
       }
     }
 
@@ -1205,7 +1200,7 @@ export default class Line extends GraphicalComponent {
           numericalCoeffvar2 = NaN;
         }
 
-        return { newValues: { numericalCoeff0, numericalCoeffvar1, numericalCoeffvar2 } }
+        return { setValue: { numericalCoeff0, numericalCoeffvar1, numericalCoeffvar2 } }
       }
     }
 
@@ -1228,7 +1223,7 @@ export default class Line extends GraphicalComponent {
           .substitute({ a: dependencyValues.coeffvar1, b: dependencyValues.coeffvar2 })
           .simplify();
 
-        return { newValues: { slope } }
+        return { setValue: { slope } }
 
       }
     }
@@ -1247,7 +1242,7 @@ export default class Line extends GraphicalComponent {
         },
       }),
       definition: ({ dependencyValues }) => ({
-        newValues: {
+        setValue: {
           xintercept: me.fromAst(["-", ["/", "a", "b"]])
             .substitute({
               a: dependencyValues.coeff0,
@@ -1272,7 +1267,7 @@ export default class Line extends GraphicalComponent {
         },
       }),
       definition: ({ dependencyValues }) => ({
-        newValues: {
+        setValue: {
           yintercept: me.fromAst(["-", ["/", "a", "b"]])
             .substitute({
               a: dependencyValues.coeff0,
@@ -1286,18 +1281,17 @@ export default class Line extends GraphicalComponent {
 
     stateVariableDefinitions.lastPointsFromInverting = {
       defaultValue: null,
+      hasEssential: true,
       returnDependencies: () => ({}),
       definition: () => ({
         useEssentialOrDefaultValue: {
-          lastPointsFromInverting: {
-            variableToCheck: "lastPointsFromInverting"
-          }
+          lastPointsFromInverting: true
         }
       }),
       inverseDefinition: ({ desiredStateVariableValues }) => ({
         success: true,
         instructions: [{
-          setStateVariable: "lastPointsFromInverting",
+          setEssentialValue: "lastPointsFromInverting",
           value: desiredStateVariableValues.lastPointsFromInverting
         }]
       })
@@ -1339,7 +1333,7 @@ export default class Line extends GraphicalComponent {
           || (a0 === 0 && b0 === 0);
 
         return {
-          newValues: {
+          setValue: {
             nearestPoint: function ({ variables, scales }) {
 
               if (skip) {

@@ -6,10 +6,6 @@ export default class DiscreteSimulationResultList extends BlockComponent {
   static componentType = "DiscreteSimulationResultList";
   static rendererType = "spreadsheet";
 
-  // used when referencing this component without prop
-  static useChildrenForReference = false;
-  static get stateVariablesShadowedForReference() { return ["cells", "height"] };
-
   static createAttributesObject(args) {
     let attributes = super.createAttributesObject(args);
     attributes.width = {
@@ -125,6 +121,7 @@ export default class DiscreteSimulationResultList extends BlockComponent {
 
     stateVariableDefinitions.cells = {
       forRenderer: true,
+      shadowVariable: true,
       returnDependencies: () => ({
         allIterates: {
           dependencyType: "stateVariable",
@@ -193,7 +190,7 @@ export default class DiscreteSimulationResultList extends BlockComponent {
           cells.push(cell)
         }
 
-        return { newValues: { cells } };
+        return { setValue: { cells } };
       }
     }
 
@@ -218,7 +215,7 @@ export default class DiscreteSimulationResultList extends BlockComponent {
           numRows = 4;
         }
         numRows = Math.max(numRows, dependencyValues.cells.length);
-        return { newValues: { numRows } }
+        return { setValue: { numRows } }
       }
     }
 
@@ -245,7 +242,7 @@ export default class DiscreteSimulationResultList extends BlockComponent {
             numColumns = Math.max(numColumns, row.length);
           }
         }
-        return { newValues: { numColumns } }
+        return { setValue: { numColumns } }
       }
     }
 
@@ -276,10 +273,10 @@ export default class DiscreteSimulationResultList extends BlockComponent {
           } else {
             height = 130;  // value if numRows = 4
           }
-          return { newValues: { height: { size: height, isAbsolute: true } } }
+          return { setValue: { height: { size: height, isAbsolute: true } } }
         }
 
-        return { newValues: { height: dependencyValues.heightAttr.stateValues.componentSize } }
+        return { setValue: { height: dependencyValues.heightAttr.stateValues.componentSize } }
 
       }
     }
@@ -290,7 +287,7 @@ export default class DiscreteSimulationResultList extends BlockComponent {
   }
 
 
-  onChange({ changes, source }) {
+  async onChange({ changes, source }) {
 
     if (source !== "loadData") {
       let cellChanges = {};
@@ -299,7 +296,7 @@ export default class DiscreteSimulationResultList extends BlockComponent {
         cellChanges[[row, col]] = value === null ? "" : value;
       }
 
-      return this.coreFunctions.performUpdate({
+      return await this.coreFunctions.performUpdate({
         updateInstructions: [{
           updateType: "updateValue",
           componentName: this.componentName,

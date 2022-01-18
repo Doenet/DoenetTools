@@ -79,7 +79,7 @@ export default class Document extends BaseComponent {
           titleChildName = dependencyValues.titleChild[0].componentName
         }
         return {
-          newValues: { titleChildName }
+          setValue: { titleChildName }
         }
       }
     }
@@ -98,9 +98,9 @@ export default class Document extends BaseComponent {
       }),
       definition({ dependencyValues }) {
         if (dependencyValues.titleChild.length === 0) {
-          return { newValues: { title: "" } };
+          return { setValue: { title: "" } };
         } else {
-          return { newValues: { title: dependencyValues.titleChild[0].stateValues.text } };
+          return { setValue: { title: dependencyValues.titleChild[0].stateValues.text } };
         }
       }
     }
@@ -119,9 +119,9 @@ export default class Document extends BaseComponent {
       }),
       definition({ dependencyValues }) {
         if (dependencyValues.descriptionChild.length === 0) {
-          return { newValues: { description: "" } };
+          return { setValue: { description: "" } };
         } else {
-          return { newValues: { description: dependencyValues.descriptionChild[0].stateValues.text } };
+          return { setValue: { description: dependencyValues.descriptionChild[0].stateValues.text } };
         }
       }
     }
@@ -129,22 +129,23 @@ export default class Document extends BaseComponent {
     stateVariableDefinitions.level = {
       forRenderer: true,
       returnDependencies: () => ({}),
-      definition: () => ({ newValues: { level: 0 } })
+      definition: () => ({ setValue: { level: 0 } })
     }
 
     stateVariableDefinitions.viewedSolution = {
       defaultValue: false,
+      hasEssential: true,
       returnDependencies: () => ({}),
       definition: () => ({
         useEssentialOrDefaultValue: {
-          viewedSolution: { variablesToCheck: ["viewedSolution"] }
+          viewedSolution: true
         }
       }),
       inverseDefinition({ desiredStateVariableValues }) {
         return {
           success: true,
           instructions: [{
-            setStateVariable: "viewedSolution",
+            setEssentialValue: "viewedSolution",
             value: desiredStateVariableValues.viewedSolution
           }]
         }
@@ -181,7 +182,7 @@ export default class Document extends BaseComponent {
           }
         }
 
-        return { newValues: { scoredDescendants } }
+        return { setValue: { scoredDescendants } }
 
       }
 
@@ -196,7 +197,7 @@ export default class Document extends BaseComponent {
       }),
       definition({ dependencyValues }) {
         return {
-          newValues: {
+          setValue: {
             nScoredDescendants: dependencyValues.scoredDescendants.length
           }
         }
@@ -242,7 +243,7 @@ export default class Document extends BaseComponent {
           itemCreditAchieved[arrayKey] = dependencyValuesByKey[arrayKey].creditAchieved;
         }
 
-        return { newValues: { itemCreditAchieved } }
+        return { setValue: { itemCreditAchieved } }
 
       }
 
@@ -285,7 +286,7 @@ export default class Document extends BaseComponent {
           }
         }
 
-        return { newValues: { itemNumberByAnswerName } }
+        return { setValue: { itemNumberByAnswerName } }
 
       }
 
@@ -329,7 +330,7 @@ export default class Document extends BaseComponent {
           itemVariantInfo[arrayKey] = dependencyValuesByKey[arrayKey].generatedVariantInfo;
         }
 
-        return { newValues: { itemVariantInfo } }
+        return { setValue: { itemVariantInfo } }
 
       }
 
@@ -345,7 +346,7 @@ export default class Document extends BaseComponent {
         }
       }),
       definition({ dependencyValues }) {
-        return { newValues: { answerDescendants: dependencyValues.answerDescendants } }
+        return { setValue: { answerDescendants: dependencyValues.answerDescendants } }
       }
     }
 
@@ -359,7 +360,7 @@ export default class Document extends BaseComponent {
       }),
       definition({ dependencyValues }) {
         return {
-          newValues: {
+          setValue: {
             justSubmitted:
               dependencyValues.answerDescendants.every(x => x.stateValues.justSubmitted)
           }
@@ -377,14 +378,14 @@ export default class Document extends BaseComponent {
       }),
       definition({ dependencyValues }) {
         let showCorrectness = dependencyValues.showCorrectnessFlag !== false;
-        return { newValues: { showCorrectness } }
+        return { setValue: { showCorrectness } }
       }
     }
 
 
     stateVariableDefinitions.displayDigitsForCreditAchieved = {
       returnDependencies: () => ({}),
-      definition: () => ({ newValues: { displayDigitsForCreditAchieved: 3 } })
+      definition: () => ({ setValue: { displayDigitsForCreditAchieved: 3 } })
     }
 
     stateVariableDefinitions.creditAchieved = {
@@ -434,7 +435,7 @@ export default class Document extends BaseComponent {
 
         let percentCreditAchieved = creditAchieved * 100;
 
-        return { newValues: { creditAchieved, percentCreditAchieved } }
+        return { setValue: { creditAchieved, percentCreditAchieved } }
 
       }
     }
@@ -472,7 +473,7 @@ export default class Document extends BaseComponent {
         }
         let creditAchievedIfSubmit = creditSum / totalWeight;
 
-        return { newValues: { creditAchievedIfSubmit } }
+        return { setValue: { creditAchievedIfSubmit } }
 
       }
     }
@@ -543,7 +544,7 @@ export default class Document extends BaseComponent {
           }
         }
 
-        return { newValues: { generatedVariantInfo } }
+        return { setValue: { generatedVariantInfo } }
 
       }
     }
@@ -570,7 +571,7 @@ export default class Document extends BaseComponent {
           suppressAnswerSubmitButtons = true
         }
 
-        return { newValues: { createSubmitAllButton, suppressAnswerSubmitButtons } }
+        return { setValue: { createSubmitAllButton, suppressAnswerSubmitButtons } }
       }
     }
 

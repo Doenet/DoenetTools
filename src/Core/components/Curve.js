@@ -4,6 +4,7 @@ import {
 } from './commonsugar/breakstrings';
 
 import me from 'math-expressions';
+import { returnBezierFunctions } from '../utils/function';
 
 export default class Curve extends GraphicalComponent {
   static componentType = "curve";
@@ -11,18 +12,10 @@ export default class Curve extends GraphicalComponent {
 
 
   actions = {
-    moveControlVector: this.moveControlVector.bind(
-      new Proxy(this, this.readOnlyProxyHandler)
-    ),
-    moveThroughPoint: this.moveThroughPoint.bind(
-      new Proxy(this, this.readOnlyProxyHandler)
-    ),
-    changeVectorControlDirection: this.changeVectorControlDirection.bind(
-      new Proxy(this, this.readOnlyProxyHandler)
-    ),
-    switchCurve: this.switchCurve.bind(
-      new Proxy(this, this.readOnlyProxyHandler)
-    )
+    moveControlVector: this.moveControlVector.bind(this),
+    moveThroughPoint: this.moveThroughPoint.bind(this),
+    changeVectorControlDirection: this.changeVectorControlDirection.bind(this),
+    switchCurve: this.switchCurve.bind(this)
   };
 
   static primaryStateVariableForDefinition = "fShadow";
@@ -128,7 +121,7 @@ export default class Curve extends GraphicalComponent {
     let breakIntoFunctionsByCommas = function ({ matchedChildren }) {
 
       // only apply if all children are strings or macros
-      if (!matchedChildren.every(child =>
+      if (matchedChildren.length === 0 || !matchedChildren.every(child =>
         typeof child === "string" ||
         child.doenetAttributes && child.doenetAttributes.createdFromMacro
       )) {
@@ -214,7 +207,7 @@ export default class Curve extends GraphicalComponent {
 
         curveDescription += dependencyValues.selectedStyle.lineColor;
 
-        return { newValues: { styleDescription: curveDescription } };
+        return { setValue: { styleDescription: curveDescription } };
       }
     }
 
@@ -238,7 +231,7 @@ export default class Curve extends GraphicalComponent {
           curveType = "parameterization"
         }
 
-        return { newValues: { curveType } }
+        return { setValue: { curveType } }
       }
     }
 
@@ -249,10 +242,11 @@ export default class Curve extends GraphicalComponent {
     // that shadows the component adapted
     stateVariableDefinitions.fShadow = {
       defaultValue: null,
+      hasEssential: true,
       returnDependencies: () => ({}),
       definition: () => ({
         useEssentialOrDefaultValue: {
-          fShadow: { variablesToCheck: ["fShadow"] }
+          fShadow: true
         }
       }),
     }
@@ -280,7 +274,7 @@ export default class Curve extends GraphicalComponent {
       definition({ dependencyValues }) {
         if (dependencyValues.graphAncestor) {
           return {
-            newValues: {
+            setValue: {
               graphXmin: dependencyValues.graphAncestor.stateValues.xmin,
               graphXmax: dependencyValues.graphAncestor.stateValues.xmax,
               graphYmin: dependencyValues.graphAncestor.stateValues.ymin,
@@ -289,7 +283,7 @@ export default class Curve extends GraphicalComponent {
           }
         } else {
           return {
-            newValues: {
+            setValue: {
               graphXmin: null, graphXmax: null,
               graphYmin: null, graphYmax: null
             }
@@ -303,7 +297,6 @@ export default class Curve extends GraphicalComponent {
       public: true,
       componentType: "number",
       forRenderer: true,
-      defaultValue: 10,
       returnDependencies: () => ({
         curveType: {
           dependencyType: "stateVariable",
@@ -375,7 +368,7 @@ export default class Curve extends GraphicalComponent {
             domain = domain[0];
             try {
               parMax = domain[1].evaluate_to_constant();
-              if (!Number.isFinite(parMax)) {
+              if (!Number.isFinite(parMax) && parMax !== Infinity) {
                 parMax = NaN;
               }
             } catch (e) { }
@@ -397,21 +390,13 @@ export default class Curve extends GraphicalComponent {
           }
 
           if (parMax === undefined) {
-            return {
-              useEssentialOrDefaultValue: {
-                parMax: { variablesToCheck: ["parMax"], defaultValue: Infinity }
-              }
-            }
+            parMax = Infinity;
           }
         } else {
-          return {
-            useEssentialOrDefaultValue: {
-              parMax: { variablesToCheck: ["parMax"] }
-            }
-          }
+          parMax = 10;
         }
 
-        return { newValues: { parMax } }
+        return { setValue: { parMax } }
       }
     }
 
@@ -419,7 +404,6 @@ export default class Curve extends GraphicalComponent {
       forRenderer: true,
       public: true,
       componentType: "number",
-      defaultValue: -10,
       returnDependencies: () => ({
         curveType: {
           dependencyType: "stateVariable",
@@ -491,7 +475,7 @@ export default class Curve extends GraphicalComponent {
             domain = domain[0];
             try {
               parMin = domain[0].evaluate_to_constant();
-              if (!Number.isFinite(parMin)) {
+              if (!Number.isFinite(parMin) && parMin !== -Infinity) {
                 parMin = NaN;
               }
             } catch (e) { }
@@ -512,20 +496,12 @@ export default class Curve extends GraphicalComponent {
             }
           }
           if (parMin === undefined) {
-            return {
-              useEssentialOrDefaultValue: {
-                parMin: { variablesToCheck: ["parMin"], defaultValue: -Infinity }
-              }
-            }
+            parMin = -Infinity;
           }
         } else {
-          return {
-            useEssentialOrDefaultValue: {
-              parMin: { variablesToCheck: ["parMin"] }
-            }
-          }
+          parMin = -10;
         }
-        return { newValues: { parMin } }
+        return { setValue: { parMin } }
       }
     }
 
@@ -542,7 +518,7 @@ export default class Curve extends GraphicalComponent {
         if (dependencyValues.through !== null) {
           nThroughPoints = dependencyValues.through.stateValues.nPoints
         }
-        return { newValues: { nThroughPoints } }
+        return { setValue: { nThroughPoints } }
       }
     }
 
@@ -563,12 +539,12 @@ export default class Curve extends GraphicalComponent {
         if (dependencyValues.through !== null) {
           let nDimensions = dependencyValues.through.stateValues.nDimensions;
           return {
-            newValues: { nDimensions },
+            setValue: { nDimensions },
             checkForActualChange: { nDimensions: true }
           }
         } else {
           // curve through zero points
-          return { newValues: { nDimensions: 2 } }
+          return { setValue: { nDimensions: 2 } }
         }
 
       }
@@ -687,7 +663,7 @@ export default class Curve extends GraphicalComponent {
           }
         }
 
-        return { newValues: { throughPoints } }
+        return { setValue: { throughPoints } }
       },
       async inverseArrayDefinitionByKey({ desiredStateVariableValues,
         dependencyValuesByKey, dependencyNamesByKey,
@@ -775,7 +751,7 @@ export default class Curve extends GraphicalComponent {
           numericalThroughPoints[arrayKey] = pt;
         }
 
-        return { newValues: { numericalThroughPoints } }
+        return { setValue: { numericalThroughPoints } }
       }
     }
 
@@ -789,7 +765,7 @@ export default class Curve extends GraphicalComponent {
       }),
       definition({ dependencyValues }) {
         return {
-          newValues: {
+          setValue: {
             haveBezierControls: dependencyValues.controlChild.length > 0
           }
         }
@@ -808,7 +784,7 @@ export default class Curve extends GraphicalComponent {
       }),
       definition({ dependencyValues }) {
         return {
-          newValues: {
+          setValue: {
             bezierControlsAlwaysVisible: dependencyValues.controlChild.length > 0
               && dependencyValues.controlChild[0].stateValues.alwaysVisible
           }
@@ -870,7 +846,7 @@ export default class Curve extends GraphicalComponent {
         }
 
         return {
-          newValues: { vectorControlDirections },
+          setValue: { vectorControlDirections },
         }
       },
       inverseArrayDefinitionByKey({ desiredStateVariableValues,
@@ -884,7 +860,6 @@ export default class Curve extends GraphicalComponent {
         }
 
         let instructions = [];
-        let newDirectionValues = {};
         for (let arrayKey in desiredStateVariableValues.vectorControlDirections) {
           let controlChild = dependencyValuesByKey[arrayKey].controlChild;
 
@@ -896,17 +871,8 @@ export default class Curve extends GraphicalComponent {
               variableIndex: 0
             })
 
-          } else {
-            newDirectionValues[arrayKey] = desiredStateVariableValues.vectorControlDirections[arrayKey]
           }
 
-        }
-
-        if (Object.keys(newDirectionValues).length > 0) {
-          instructions.push({
-            setStateVariable: "vectorControlDirections",
-            value: newDirectionValues
-          })
         }
 
         return {
@@ -969,7 +935,7 @@ export default class Curve extends GraphicalComponent {
         }
 
         return {
-          newValues: { hiddenControls },
+          setValue: { hiddenControls },
         }
       },
       inverseArrayDefinitionByKey({ desiredStateVariableValues,
@@ -981,7 +947,6 @@ export default class Curve extends GraphicalComponent {
         }
 
         let instructions = [];
-        let newHiddenControls = {};
         for (let arrayKey in desiredStateVariableValues.hiddenControls) {
           let controlChild = dependencyValuesByKey[arrayKey].controlChild;
 
@@ -993,17 +958,8 @@ export default class Curve extends GraphicalComponent {
               variableIndex: 0
             })
 
-          } else {
-            newHiddenControls[arrayKey] = desiredStateVariableValues.hiddenControls[arrayKey]
           }
 
-        }
-
-        if (Object.keys(newHiddenControls).length > 0) {
-          instructions.push({
-            setStateVariable: "hiddenControls",
-            value: newHiddenControls
-          })
         }
 
         return {
@@ -1237,7 +1193,7 @@ export default class Curve extends GraphicalComponent {
 
 
           } else if ((arrayIndices[1] === 0 && direction === "next") ||
-            (arrayIndices[1] === 0 && direction === "next")
+            (arrayIndices[1] === 1 && direction === "previous")
           ) {
             // calculate control vector from spline
 
@@ -1270,13 +1226,9 @@ export default class Curve extends GraphicalComponent {
         }
 
         return {
-          newValues: {
+          setValue: {
             controlVectors: newControlValues
           },
-          // useEssentialOrDefaultValue: {
-          //   controlVectors: essentialControls,
-          // },
-          // makeEssential: ["controlVectors"],
         }
       },
       inverseArrayDefinitionByKey({ desiredStateVariableValues,
@@ -1371,7 +1323,7 @@ export default class Curve extends GraphicalComponent {
           numericalControlVectors[arrayKey] = vect;
         }
 
-        return { newValues: { numericalControlVectors } }
+        return { setValue: { numericalControlVectors } }
       }
     }
 
@@ -1517,7 +1469,7 @@ export default class Curve extends GraphicalComponent {
 
         }
         return {
-          newValues: {
+          setValue: {
             controlPoints: newControlValues
           },
         }
@@ -1607,7 +1559,7 @@ export default class Curve extends GraphicalComponent {
           numericalControlPoints[arrayKey] = pt;
         }
 
-        return { newValues: { numericalControlPoints } }
+        return { setValue: { numericalControlPoints } }
       }
     }
 
@@ -1678,7 +1630,7 @@ export default class Curve extends GraphicalComponent {
         }
 
         return {
-          newValues: {
+          setValue: {
             splineCoeffs: newSpineCoeffs,
           }
         }
@@ -1734,7 +1686,7 @@ export default class Curve extends GraphicalComponent {
       definition({ dependencyValues }) {
         if (!dependencyValues.extrapolateBackward || !dependencyValues.firstSplineCoeffs) {
           return {
-            newValues: {
+            setValue: {
               extrapolateBackwardCoeffs: null,
               extrapolateBackwardMode: ""
             }
@@ -1796,7 +1748,7 @@ export default class Curve extends GraphicalComponent {
           ];
 
           return {
-            newValues: {
+            setValue: {
               extrapolateBackwardCoeffs: c,
               extrapolateBackwardMode: "line"
             }
@@ -1866,7 +1818,7 @@ export default class Curve extends GraphicalComponent {
           ];
 
           return {
-            newValues: {
+            setValue: {
               extrapolateBackwardCoeffs: c,
               extrapolateBackwardMode: "parabolaVertical"
             }
@@ -1931,7 +1883,7 @@ export default class Curve extends GraphicalComponent {
           ];
 
           return {
-            newValues: {
+            setValue: {
               extrapolateBackwardCoeffs: c,
               extrapolateBackwardMode: "parabolaHorizontal"
             }
@@ -1989,7 +1941,7 @@ export default class Curve extends GraphicalComponent {
       definition({ dependencyValues }) {
         if (!dependencyValues.extrapolateForward || !dependencyValues.lastSplineCoeffs) {
           return {
-            newValues: {
+            setValue: {
               extrapolateForwardCoeffs: null,
               extrapolateForwardMode: ""
             }
@@ -2051,7 +2003,7 @@ export default class Curve extends GraphicalComponent {
           ];
 
           return {
-            newValues: {
+            setValue: {
               extrapolateForwardCoeffs: c,
               extrapolateForwardMode: "line"
             }
@@ -2121,7 +2073,7 @@ export default class Curve extends GraphicalComponent {
           ];
 
           return {
-            newValues: {
+            setValue: {
               extrapolateForwardCoeffs: c,
               extrapolateForwardMode: "parabolaVertical"
             }
@@ -2185,7 +2137,7 @@ export default class Curve extends GraphicalComponent {
           ];
 
           return {
-            newValues: {
+            setValue: {
               extrapolateForwardCoeffs: c,
               extrapolateForwardMode: "parabolaHorizontal"
             }
@@ -2195,10 +2147,13 @@ export default class Curve extends GraphicalComponent {
     }
 
     stateVariableDefinitions.fs = {
-      forRenderer: true,
       isArray: true,
       entryPrefixes: ["f"],
-      defaultEntryValue: () => 0,
+      additionalStateVariablesDefined: [{
+        variableName: "fDefinitions",
+        isArray: true,
+        forRenderer: true,
+      }],
       returnArraySizeDependencies: () => ({
         functionChildren: {
           dependencyType: "child",
@@ -2259,7 +2214,7 @@ export default class Curve extends GraphicalComponent {
             functionChild: {
               dependencyType: "child",
               childGroups: ["functions"],
-              variableNames: ["numericalf"],
+              variableNames: ["numericalf", "fDefinition"],
               childIndices: [arrayKey]
             }
           };
@@ -2267,7 +2222,11 @@ export default class Curve extends GraphicalComponent {
             dependenciesByKey[arrayKey].fShadow = {
               dependencyType: "stateVariable",
               variableName: "fShadow"
-            }
+            },
+              dependenciesByKey[arrayKey].fDefinitionAdapted = {
+                dependencyType: "adapterSourceStateVariable",
+                variableName: "fDefinition"
+              }
           }
         }
         return { globalDependencies, dependenciesByKey };
@@ -2275,34 +2234,50 @@ export default class Curve extends GraphicalComponent {
       arrayDefinitionByKey({ globalDependencyValues, dependencyValuesByKey, arrayKeys }) {
 
         if (globalDependencyValues.curveType === "bezier") {
+
           return {
-            newValues: { fs: returnBezierFunctions({ globalDependencyValues, arrayKeys }) }
+            setValue: {
+              fs: returnBezierFunctions(globalDependencyValues),
+              fDefinitions: {
+                0: {
+                  functionType: "bezier",
+                  nThroughPoints: globalDependencyValues.nThroughPoints,
+                  numericalThroughPoints: globalDependencyValues.numericalThroughPoints,
+                  splineCoeffs: globalDependencyValues.splineCoeffs,
+                  extrapolateForward: globalDependencyValues.extrapolateForward,
+                  extrapolateForwardCoeffs: globalDependencyValues.extrapolateForwardCoeffs,
+                  extrapolateBackward: globalDependencyValues.extrapolateBackward,
+                  extrapolateBackwardCoeffs: globalDependencyValues.extrapolateBackwardCoeffs,
+                },
+                1: null,
+              }
+            }
           }
         }
 
         let fs = {};
-        let essentialFs = {};
+        let fDefinitions = {};
         for (let arrayKey of arrayKeys) {
           let functionChild = dependencyValuesByKey[arrayKey].functionChild;
           if (functionChild.length === 1) {
             fs[arrayKey] = functionChild[0].stateValues.numericalf;
+            fDefinitions[arrayKey] = functionChild[0].stateValues.fDefinition;
           } else {
             if (Number(arrayKey) === 0 && dependencyValuesByKey[arrayKey].fShadow) {
               fs[arrayKey] = dependencyValuesByKey[arrayKey].fShadow;
+              // TODO: ???
+              fDefinitions[arrayKey] = dependencyValuesByKey[arrayKey].fDefinitionAdapted;
+
             } else {
-              essentialFs[arrayKey] = {
-                variablesToCheck: [
-                  { variableName: "fs", arrayIndex: arrayKey }
-                ],
+              fs[arrayKey] = () => 0;
+              fDefinitions[arrayKey] = {
+                functionType: "zero"
               }
             }
           }
         }
         return {
-          newValues: { fs },
-          useEssentialOrDefaultValue: {
-            fs: essentialFs,
-          },
+          setValue: { fs, fDefinitions },
         }
 
       }
@@ -2334,7 +2309,7 @@ export default class Curve extends GraphicalComponent {
         let allXCriticalPoints = [];
 
         if (dependencyValues.curveType !== "bezier") {
-          return { newValues: { allXCriticalPoints } }
+          return { setValue: { allXCriticalPoints } }
         }
 
         let fx = dependencyValues.fs[0];
@@ -2394,7 +2369,7 @@ export default class Curve extends GraphicalComponent {
           allXCriticalPoints.push([fx(t), fy(t)])
         }
 
-        return { newValues: { allXCriticalPoints } }
+        return { setValue: { allXCriticalPoints } }
       }
     }
 
@@ -2409,7 +2384,7 @@ export default class Curve extends GraphicalComponent {
       }),
       definition({ dependencyValues }) {
         return {
-          newValues: {
+          setValue: {
             nXCriticalPoints: dependencyValues.allXCriticalPoints.length
           }
         }
@@ -2510,7 +2485,7 @@ export default class Curve extends GraphicalComponent {
           }
         }
 
-        return { newValues: { xCriticalPoints } }
+        return { setValue: { xCriticalPoints } }
       }
     }
 
@@ -2533,7 +2508,7 @@ export default class Curve extends GraphicalComponent {
         let allYCriticalPoints = [];
 
         if (dependencyValues.curveType !== "bezier") {
-          return { newValues: { allYCriticalPoints } }
+          return { setValue: { allYCriticalPoints } }
         }
 
         let fx = dependencyValues.fs[0];
@@ -2595,7 +2570,7 @@ export default class Curve extends GraphicalComponent {
           allYCriticalPoints.push([fx(t), fy(t)])
         }
 
-        return { newValues: { allYCriticalPoints } }
+        return { setValue: { allYCriticalPoints } }
       }
     }
 
@@ -2610,7 +2585,7 @@ export default class Curve extends GraphicalComponent {
       }),
       definition({ dependencyValues }) {
         return {
-          newValues: {
+          setValue: {
             nYCriticalPoints: dependencyValues.allYCriticalPoints.length
           }
         }
@@ -2711,7 +2686,7 @@ export default class Curve extends GraphicalComponent {
           }
         }
 
-        return { newValues: { yCriticalPoints } }
+        return { setValue: { yCriticalPoints } }
       }
     }
 
@@ -2736,7 +2711,7 @@ export default class Curve extends GraphicalComponent {
         let allCurvatureChangePoints = [];
 
         if (dependencyValues.curveType !== "bezier") {
-          return { newValues: { allCurvatureChangePoints } }
+          return { setValue: { allCurvatureChangePoints } }
         }
 
         let fx = dependencyValues.fs[0];
@@ -2799,7 +2774,7 @@ export default class Curve extends GraphicalComponent {
           allCurvatureChangePoints.push([fx(t), fy(t)])
         }
 
-        return { newValues: { allCurvatureChangePoints } }
+        return { setValue: { allCurvatureChangePoints } }
       }
     }
 
@@ -2814,7 +2789,7 @@ export default class Curve extends GraphicalComponent {
       }),
       definition({ dependencyValues }) {
         return {
-          newValues: {
+          setValue: {
             nCurvatureChangePoints: dependencyValues.allCurvatureChangePoints.length
           }
         }
@@ -2915,7 +2890,7 @@ export default class Curve extends GraphicalComponent {
           }
         }
 
-        return { newValues: { curvatureChangePoints } }
+        return { setValue: { curvatureChangePoints } }
       }
     }
 
@@ -2981,7 +2956,7 @@ export default class Curve extends GraphicalComponent {
         }
 
         return {
-          newValues: { nearestPoint: nearestPointFunction }
+          setValue: { nearestPoint: nearestPointFunction }
         }
 
       }
@@ -3246,7 +3221,7 @@ function getNearestPointFunctionCurve({ dependencyValues, numerics }) {
     let tIntervalMin = minT;
     let tIntervalMax = minT + delta;
 
-    let fprev;
+    let fprev, tprev;
 
     for (let step = 1; step <= Nsteps; step++) {
       let tnew = minT + step * delta;
@@ -3256,7 +3231,7 @@ function getNearestPointFunctionCurve({ dependencyValues, numerics }) {
       ) {
         tAtMin = tnew;
         fAtMin = fnew;
-        tIntervalMin = tnew - delta;
+        tIntervalMin = tprev;
         if (step === Nsteps) {
           tIntervalMax = tnew;
         } else {
@@ -3265,6 +3240,7 @@ function getNearestPointFunctionCurve({ dependencyValues, numerics }) {
       }
 
       fprev = fnew;
+      tprev = tnew;
 
     }
 
@@ -3384,19 +3360,26 @@ function getNearestPointParametrizedCurve({ dependencyValues, numerics }) {
     let tIntervalMin = minT;
     let tIntervalMax = minT + delta;
 
+    let fprev, tprev;
+
     for (let step = 1; step <= Nsteps; step++) {
       let tnew = minT + step * delta;
       let fnew = minfunc(tnew);
-      if (fnew < fAtMin || Number.isNaN(fAtMin)) {
+      if (Number.isFinite(fnew) && Number.isFinite(fprev) &&
+        (fnew < fAtMin || Number.isNaN(fAtMin))
+      ) {
         tAtMin = tnew;
         fAtMin = fnew;
-        tIntervalMin = tnew - delta;
+        tIntervalMin = tprev;
         if (step === Nsteps) {
           tIntervalMax = tnew;
         } else {
           tIntervalMax = tnew + delta;
         }
       }
+
+      fprev = fnew;
+      tprev = tnew;
 
     }
 
@@ -3418,6 +3401,34 @@ function getNearestPointParametrizedCurve({ dependencyValues, numerics }) {
 
     let x1AtMin = fs[0](tAtMin);
     let x2AtMin = fs[1](tAtMin);
+
+    // replace with endpoints if closer
+    let fMin = minfunc(tAtMin);
+
+    if (!result.success && Number.isFinite(x1AtMin) && Number.isFinite(x2AtMin)) {
+      fMin = Infinity;
+    }
+
+    if (Number.isFinite(parMin)) {
+      let fParMin = minfunc(parMin);
+      if (fParMin < fMin) {
+        tAtMin = parMin;
+        x1AtMin = fs[0](tAtMin);
+        x2AtMin = fs[1](tAtMin);
+        fMin = fParMin;
+      }
+    }
+
+    if (Number.isFinite(parMax)) {
+      let fParMax = minfunc(parMax);
+      if (fParMax < fMin) {
+        tAtMin = parMax;
+        x1AtMin = fs[0](tAtMin);
+        x2AtMin = fs[1](tAtMin);
+        fMin = fParMax;
+      }
+    }
+
 
     result = {
       x1: x1AtMin,
@@ -3544,72 +3555,6 @@ function initCubicPoly(x1, x2, t1, t2) {
   ];
 }
 
-function returnBezierFunctions({ globalDependencyValues, arrayKeys }) {
-
-  if (globalDependencyValues.nThroughPoints < 1) {
-    let fs = {};
-    for (let arrayKey of arrayKeys) {
-      fs[arrayKey] = () => NaN;
-    }
-    return fs;
-  }
-
-
-  let len = globalDependencyValues.nThroughPoints - 1;
-
-  let fs = {};
-
-  let extrapolateBackward = globalDependencyValues.extrapolateBackward;
-  let extrapolateForward = globalDependencyValues.extrapolateForward;
-
-  for (let arrayKey of arrayKeys) {
-    let firstPointX = globalDependencyValues.numericalThroughPoints[0][arrayKey];
-    let lastPointX = globalDependencyValues.numericalThroughPoints[len][arrayKey];
-
-    let cs = globalDependencyValues.splineCoeffs.map(x => x[arrayKey])
-    let cB;
-    if (extrapolateBackward) {
-      cB = globalDependencyValues.extrapolateBackwardCoeffs[arrayKey];
-    }
-    let cF;
-    if (extrapolateForward) {
-      cF = globalDependencyValues.extrapolateForwardCoeffs[arrayKey];
-    }
-
-    fs[arrayKey] = function (t) {
-      if (isNaN(t)) {
-        return NaN;
-      }
-
-      if (t < 0) {
-        if (extrapolateBackward) {
-          return (cB[2] * t + cB[1]) * t + cB[0];
-        } else {
-          return firstPointX;
-        }
-      }
-
-      if (t >= len) {
-        if (extrapolateForward) {
-          t -= len;
-          return (cF[2] * t + cF[1]) * t + cF[0];
-        } else {
-          return lastPointX;
-        }
-      }
-
-      let z = Math.floor(t);
-      t -= z;
-      let c = cs[z];
-      return (((c[3] * t + c[2]) * t + c[1]) * t + c[0]);
-    }
-
-  }
-
-  return fs;
-
-
-}
 
 function addTimePointBezier({ t, ind, ts, ignoreLeft = false }) {
   const eps = 1E-14;

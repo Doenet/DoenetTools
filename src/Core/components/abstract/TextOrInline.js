@@ -39,7 +39,7 @@ export default class TextOrInline extends InlineComponent {
             value += comp.stateValues.text;
           }
         }
-        return { newValues: { value } };
+        return { setValue: { value } };
       }
     }
 
@@ -53,7 +53,7 @@ export default class TextOrInline extends InlineComponent {
         }
       }),
       definition: ({ dependencyValues }) => ({
-        newValues: { text: dependencyValues.value }
+        setValue: { text: dependencyValues.value }
       })
     }
 

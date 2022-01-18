@@ -101,7 +101,7 @@ export default class Lorem extends CompositeComponent {
       }),
       markStale: () => ({ updateReplacements: true }),
       definition() {
-        return { newValues: { readyToExpandWhenResolved: true } };
+        return { setValue: { readyToExpandWhenResolved: true } };
       },
     };
 

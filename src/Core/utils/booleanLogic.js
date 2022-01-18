@@ -93,7 +93,7 @@ export function buildParsedExpression({ dependencyValues, componentInfoObjects }
 
 
   return {
-    newValues: {
+    setValue: {
       codePre, parsedExpression
     }
   }

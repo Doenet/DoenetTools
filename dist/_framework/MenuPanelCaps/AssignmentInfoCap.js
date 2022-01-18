@@ -55,9 +55,9 @@ export default function AssignmentInfoCap() {
     attemptInfo = /* @__PURE__ */ React.createElement("div", null, recoilAttemptNumber, " out of ", attemptsAllowedDescription);
   }
   return /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", {
-    style: {position: "relative", paddingBottom: "100px"}
+    style: {position: "relative", paddingBottom: "135px"}
   }, /* @__PURE__ */ React.createElement("img", {
-    style: {position: "absolute", height: "100px", objectFit: "cover"},
+    style: {position: "absolute", height: "135px", objectFit: "cover"},
     src: imageURL,
     alt: `${driveLabel} course`,
     width: "240px"

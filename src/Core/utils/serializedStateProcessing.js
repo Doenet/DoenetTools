@@ -2,7 +2,6 @@ import me from 'math-expressions';
 import { createUniqueName } from './naming';
 import { flattenDeep } from './array';
 import { deepClone } from './deepFunctions';
-import readOnlyProxyHandler from '../ReadOnlyProxyHandler';
 import { breakEmbeddedStringByCommas } from '../components/commonsugar/breakstrings';
 import sha256 from 'crypto-js/sha256';
 import Hex from 'crypto-js/enc-hex'
@@ -1256,8 +1255,6 @@ export function applySugar({ serializedComponents, parentParametersFromSugar = {
       }
     }
 
-    componentAttributes = new Proxy(componentAttributes, readOnlyProxyHandler);
-
     if (component.children) {
 
       let newParentParametersFromSugar = {};
@@ -1266,9 +1263,9 @@ export function applySugar({ serializedComponents, parentParametersFromSugar = {
 
         for (let [sugarInd, sugarInstruction] of componentClass.returnSugarInstructions().entries()) {
 
-          if (component.children.length === 0) {
-            break;
-          }
+          // if (component.children.length === 0) {
+          //   break;
+          // }
 
           let childTypes = component.children
             .map(x => typeof x === "string" ? "s" : "n")

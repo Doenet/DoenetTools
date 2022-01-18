@@ -65,6 +65,7 @@ export default class Solution extends BlockComponent {
       componentType: "boolean",
       forRenderer: true,
       defaultValue: false,
+      hasEssential: true,
       returnDependencies: () => ({
         hideAttr: {
           dependencyType: "attributeComponent",
@@ -78,17 +79,17 @@ export default class Solution extends BlockComponent {
       }),
       definition({ dependencyValues }) {
         if (dependencyValues.displayMode === "none") {
-          return { newValues: { hide: true } }
+          return { setValue: { hide: true } }
         } else if (dependencyValues.hideAttr !== null) {
           return {
-            newValues: {
+            setValue: {
               hide: dependencyValues.hideAttr.stateValues.value
             }
           }
         } else {
           return {
             useEssentialOrDefaultValue: {
-              hide: { variablesToCheck: ["hide"] }
+              hide: true
             }
           }
         }
@@ -122,6 +123,7 @@ export default class Solution extends BlockComponent {
       componentType: "boolean",
       forRenderer: true,
       defaultValue: false,
+      hasEssential: true,
       returnDependencies: () => ({
         displayMode: {
           dependencyType: "flag",
@@ -130,15 +132,13 @@ export default class Solution extends BlockComponent {
       }),
       definition({ dependencyValues }) {
         if (dependencyValues.displayMode === "displayed") {
-          return { newValues: { open: true } }
+          return { setValue: { open: true } }
         } else if (dependencyValues.displayMode === "none") {
-          return { newValues: { open: false } }
+          return { setValue: { open: false } }
         } else {
           return {
             useEssentialOrDefaultValue: {
-              open: {
-                variablesToCheck: ["open"]
-              }
+              open: true
             }
           }
         }
@@ -155,7 +155,7 @@ export default class Solution extends BlockComponent {
         return {
           success: true,
           instructions: [{
-            setStateVariable: "open",
+            setEssentialValue: "open",
             value: desiredStateVariableValues.open
           }]
         }
@@ -173,9 +173,9 @@ export default class Solution extends BlockComponent {
       }),
       definition({ dependencyValues }) {
         if (dependencyValues.displayMode === "button") {
-          return { newValues: { canBeClosed: true } }
+          return { setValue: { canBeClosed: true } }
         } else {
-          return { newValues: { canBeClosed: false } }
+          return { setValue: { canBeClosed: false } }
         }
       }
     }
@@ -185,19 +185,18 @@ export default class Solution extends BlockComponent {
       componentType: "text",
       forRenderer: true,
       defaultValue: "",
+      hasEssential: true,
       returnDependencies: () => ({}),
       definition: () => ({
         useEssentialOrDefaultValue: {
-          message: {
-            variablesToCheck: ["message"]
-          }
+          message: true
         }
       }),
       inverseDefinition({ desiredStateVariableValues }) {
         return {
           success: true,
           instructions: [{
-            setStateVariable: "message",
+            setEssentialValue: "message",
             value: desiredStateVariableValues.message
           }]
         }
@@ -258,7 +257,7 @@ export default class Solution extends BlockComponent {
       itemNumber: scoredItemNumber,
       scoredComponent: scoredComponent,
     });
-    
+
     return await this.finishRevealSolution()
 
   }

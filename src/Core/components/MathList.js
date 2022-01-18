@@ -116,15 +116,16 @@ export default class MathList extends InlineComponent {
     // so that can't have a list with partially hidden components
     stateVariableDefinitions.overrideChildHide = {
       returnDependencies: () => ({}),
-      definition: () => ({ newValues: { overrideChildHide: true } })
+      definition: () => ({ setValue: { overrideChildHide: true } })
     }
 
     stateVariableDefinitions.mathsShadow = {
       defaultValue: null,
+      hasEssential: true,
       returnDependencies: () => ({}),
       definition: () => ({
         useEssentialOrDefaultValue: {
-          mathsShadow: { variablesToCheck: ["mathsShadow"] }
+          mathsShadow: true
         }
       }),
     }
@@ -155,7 +156,7 @@ export default class MathList extends InlineComponent {
             dependencyValues.mathListChildren.length === 0
             && dependencyValues.mathChildren.length === 1
           );
-        return { newValues: { mergeMathLists } }
+        return { setValue: { mergeMathLists } }
       }
 
     }
@@ -272,7 +273,7 @@ export default class MathList extends InlineComponent {
         }
 
         return {
-          newValues: { nComponents, childIndexByArrayKey },
+          setValue: { nComponents, childIndexByArrayKey },
           checkForActualChange: { nComponents: true }
         }
       }
@@ -365,7 +366,7 @@ export default class MathList extends InlineComponent {
 
         }
 
-        return { newValues: { maths } }
+        return { setValue: { maths } }
 
       },
       inverseArrayDefinitionByKey({ desiredStateVariableValues, globalDependencyValues,
@@ -503,7 +504,7 @@ export default class MathList extends InlineComponent {
 
         let latex = latexs.join(', ');
 
-        return { newValues: { latex, latexs } }
+        return { setValue: { latex, latexs } }
 
       }
     }
@@ -566,7 +567,7 @@ export default class MathList extends InlineComponent {
 
         let text = texts.join(', ');
 
-        return { newValues: { text, texts } }
+        return { setValue: { text, texts } }
 
       }
     }
@@ -605,7 +606,7 @@ export default class MathList extends InlineComponent {
           componentNamesInList = componentNamesInList.slice(0, maxNum)
         }
 
-        return { newValues: { componentNamesInList } }
+        return { setValue: { componentNamesInList } }
 
       }
     }
@@ -675,7 +676,7 @@ export default class MathList extends InlineComponent {
         }
 
         return {
-          newValues: { nComponentsToDisplayByChild, nChildrenToRender },
+          setValue: { nComponentsToDisplayByChild, nChildrenToRender },
         }
       }
     }

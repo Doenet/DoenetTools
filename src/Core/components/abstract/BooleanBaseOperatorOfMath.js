@@ -61,7 +61,7 @@ export default class BooleanBaseOperatorOfMath extends BooleanComponent {
 
     stateVariableDefinitions.booleanOperator = {
       returnDependencies: () => ({}),
-      definition: () => ({ newValues: { booleanOperator: x => false } })
+      definition: () => ({ setValue: { booleanOperator: x => false } })
     }
 
 
@@ -84,7 +84,7 @@ export default class BooleanBaseOperatorOfMath extends BooleanComponent {
       }),
       definition: function ({ dependencyValues }) {
         return {
-          newValues: {
+          setValue: {
             value: dependencyValues.booleanOperator(
               dependencyValues.mathChildren
                 .map(x => x.stateValues.value)

@@ -83,7 +83,7 @@ export default class AttractToGrid extends ConstraintComponent {
         }
       }),
       definition: ({ dependencyValues }) => ({
-        newValues: {
+        setValue: {
           independentComponentConstraints: dependencyValues.includeGridlines
         }
       })
@@ -137,7 +137,7 @@ export default class AttractToGrid extends ConstraintComponent {
         },
       }),
       definition: ({ dependencyValues }) => ({
-        newValues: {
+        setValue: {
           applyComponentConstraint: function ({ variables, scales }) {
 
             // if given the value of x1, apply to constraint to x1
@@ -273,7 +273,7 @@ export default class AttractToGrid extends ConstraintComponent {
         }
       }),
       definition: ({ dependencyValues }) => ({
-        newValues: {
+        setValue: {
           applyConstraint: function ({ variables, scales }) {
 
             let newVariables = {};

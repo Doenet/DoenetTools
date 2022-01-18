@@ -14,8 +14,6 @@ export default class Copy extends CompositeComponent {
   static acceptTarget = true;
   static acceptAnyAttribute = true;
 
-  static get stateVariablesShadowedForReference() { return ["targetComponent", "propName"] };
-
   static stateVariableToEvaluateAfterReplacements = "needsReplacementsUpdatedWhenStale";
 
   static createAttributesObject(args) {
@@ -111,14 +109,20 @@ export default class Copy extends CompositeComponent {
         }
       }),
       definition: ({ dependencyValues }) => ({
-        newValues: { target: dependencyValues.target }
+        setValue: { target: dependencyValues.target }
       })
     }
 
     stateVariableDefinitions.targetSourcesName = {
-      additionalStateVariablesDefined: ["sourcesChildNumber"],
+      additionalStateVariablesDefined: [{
+        variableName: "sourcesChildNumber",
+        hasEssential: true,
+        shadowVariable: true
+      }],
       stateVariablesDeterminingDependencies: ["target"],
       determineDependenciesImmediately: true,
+      hasEssential: true,
+      shadowVariable: true,
       returnDependencies: function ({ stateValues, sharedParameters }) {
 
         let sourceNameMappings = sharedParameters.sourceNameMappings;
@@ -150,8 +154,8 @@ export default class Copy extends CompositeComponent {
           sourcesChildNumber = null;
         }
         return {
-          newValues: { targetSourcesName, sourcesChildNumber },
-          makeEssential: { targetSourcesName: true, sourcesChildNumber: true },
+          setValue: { targetSourcesName, sourcesChildNumber },
+          setEssentialValue: { targetSourcesName, sourcesChildNumber },
         }
       },
     };
@@ -175,7 +179,7 @@ export default class Copy extends CompositeComponent {
         if (!targetSources) {
           targetSources = null;
         }
-        return { newValues: { targetSources } }
+        return { setValue: { targetSources } }
       },
     };
 
@@ -183,6 +187,8 @@ export default class Copy extends CompositeComponent {
     stateVariableDefinitions.sourceIndex = {
       stateVariablesDeterminingDependencies: ["target"],
       determineDependenciesImmediately: true,
+      hasEssential: true,
+      shadowVariable: true,
       returnDependencies: function ({ stateValues, sharedParameters }) {
 
         let sourceIndexMappings = sharedParameters.sourceIndexMappings;
@@ -209,14 +215,15 @@ export default class Copy extends CompositeComponent {
           sourceIndex = null;
         }
         return {
-          newValues: { sourceIndex },
-          makeEssential: { sourceIndex: true },
+          setValue: { sourceIndex },
+          setEssentialValue: { sourceIndex },
         }
       },
     };
 
 
     stateVariableDefinitions.targetComponent = {
+      shadowVariable: true,
       stateVariablesDeterminingDependencies: ["targetSources", "sourceIndex"],
       determineDependenciesImmediately: true,
       returnDependencies({ stateValues }) {
@@ -258,7 +265,7 @@ export default class Copy extends CompositeComponent {
         }
 
         return {
-          newValues: { targetComponent }
+          setValue: { targetComponent }
         }
       },
     };
@@ -280,7 +287,7 @@ export default class Copy extends CompositeComponent {
       },
       definition: function ({ dependencyValues }) {
         return {
-          newValues: {
+          setValue: {
             targetInactive: Boolean(dependencyValues.targetIsInactiveCompositeReplacement)
           }
         }
@@ -300,7 +307,7 @@ export default class Copy extends CompositeComponent {
           dependencyValues.uri.substring(0, 7).toLowerCase() !== "doenet:"
         ) {
           return {
-            newValues: { contentId: null, doenetId: null }
+            setValue: { contentId: null, doenetId: null }
           }
         }
 
@@ -315,7 +322,7 @@ export default class Copy extends CompositeComponent {
           doenetId = result[1];
         }
 
-        return { newValues: { contentId, doenetId } };
+        return { setValue: { contentId, doenetId } };
       },
     };
 
@@ -335,13 +342,13 @@ export default class Copy extends CompositeComponent {
       definition: function ({ dependencyValues }) {
         if (!dependencyValues.contentId) {
           return {
-            newValues: { serializedComponentsForContentId: null }
+            setValue: { serializedComponentsForContentId: null }
           }
         }
         let externalContentChild = dependencyValues.externalContentChild[0];
         if (!externalContentChild) {
           return {
-            newValues: { serializedComponentsForContentId: null }
+            setValue: { serializedComponentsForContentId: null }
           }
         }
         let childrenOfContent = externalContentChild.stateValues.serializedChildren;
@@ -355,7 +362,7 @@ export default class Copy extends CompositeComponent {
           serializedComponentsForContentId.attributes = { newNamespace: { primitive: true } }
         }
         return {
-          newValues: {
+          setValue: {
             serializedComponentsForContentId
           }
         }
@@ -363,6 +370,7 @@ export default class Copy extends CompositeComponent {
     };
 
     stateVariableDefinitions.propName = {
+      shadowVariable: true,
       returnDependencies: () => ({
         propName: {
           dependencyType: "attributePrimitive",
@@ -370,7 +378,7 @@ export default class Copy extends CompositeComponent {
         },
       }),
       definition: function ({ dependencyValues }) {
-        return { newValues: { propName: dependencyValues.propName } }
+        return { setValue: { propName: dependencyValues.propName } }
       }
     }
 
@@ -382,7 +390,7 @@ export default class Copy extends CompositeComponent {
         },
       }),
       definition: function ({ dependencyValues }) {
-        return { newValues: { isPlainMacro: dependencyValues.isPlainMacro } }
+        return { setValue: { isPlainMacro: dependencyValues.isPlainMacro } }
       }
     }
 
@@ -401,7 +409,7 @@ export default class Copy extends CompositeComponent {
           linkAttrForDetermineDeps = dependencyValues.linkAttr;
         }
 
-        return { newValues: { linkAttrForDetermineDeps } };
+        return { setValue: { linkAttrForDetermineDeps } };
       }
     }
 
@@ -470,7 +478,7 @@ export default class Copy extends CompositeComponent {
           }
         }
         return {
-          newValues: {
+          setValue: {
             replacementSourceIdentities,
             addLevelToAssignNames: dependencyValues.addLevelToAssignNames
           }
@@ -531,7 +539,7 @@ export default class Copy extends CompositeComponent {
         }
 
         return {
-          newValues: {
+          setValue: {
             effectivePropNameBySource
           }
         };
@@ -609,7 +617,7 @@ export default class Copy extends CompositeComponent {
           }
         }
 
-        return { newValues: { replacementSources } };
+        return { setValue: { replacementSources } };
       },
     }
 
@@ -642,7 +650,7 @@ export default class Copy extends CompositeComponent {
           nComponentsSpecified = null;
         }
 
-        return { newValues: { nComponentsSpecified } };
+        return { setValue: { nComponentsSpecified } };
       }
     }
 
@@ -683,7 +691,7 @@ export default class Copy extends CompositeComponent {
           link = dependencyValues.linkAttr;
         }
 
-        return { newValues: { link } };
+        return { setValue: { link } };
       }
     }
 
@@ -747,7 +755,7 @@ export default class Copy extends CompositeComponent {
 
       },
       definition() {
-        return { newValues: { readyToExpandWhenResolved: true } };
+        return { setValue: { readyToExpandWhenResolved: true } };
       },
     };
 
@@ -853,7 +861,7 @@ export default class Copy extends CompositeComponent {
       markStale() {
         return { updateReplacements: true }
       },
-      definition: () => ({ newValues: { needsReplacementsUpdatedWhenStale: true } })
+      definition: () => ({ setValue: { needsReplacementsUpdatedWhenStale: true } })
     }
 
     stateVariableDefinitions.effectiveAssignNames = {
@@ -874,7 +882,7 @@ export default class Copy extends CompositeComponent {
           effectiveAssignNames = [effectiveAssignNames]
         }
 
-        return { newValues: { effectiveAssignNames } }
+        return { setValue: { effectiveAssignNames } }
       }
     }
 

@@ -41,7 +41,7 @@ export default class EquilibriumLine extends Line {
       }),
       definition({ dependencyValues }) {
         return {
-          newValues: { dashed: !dependencyValues.stable }
+          setValue: { dashed: !dependencyValues.stable }
         }
       },
       inverseDefinition({ desiredStateVariableValues }) {

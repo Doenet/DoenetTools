@@ -4,12 +4,8 @@ export default class Polygon extends Polyline {
   static componentType = "polygon";
 
   actions = {
-    movePolygon: this.movePolygon.bind(
-      new Proxy(this, this.readOnlyProxyHandler)
-    ),
-    finalizePolygonPosition: this.finalizePolygonPosition.bind(
-      new Proxy(this, this.readOnlyProxyHandler)
-    )
+    movePolygon: this.movePolygon.bind(this),
+    finalizePolygonPosition: this.finalizePolygonPosition.bind(this)
   };
 
   get movePolygon() {
@@ -73,7 +69,7 @@ export default class Polygon extends Polyline {
 
 
         return {
-          newValues: {
+          setValue: {
             nearestPoint: function ({ variables, scales }) {
 
               let xscale = scales[0];

@@ -56,14 +56,14 @@ export default class FunctionIterates extends InlineComponent {
       }),
       definition({ dependencyValues }) {
         if (!dependencyValues.functionAttr) {
-          return { newValues: { nDimensions: 0 } }
+          return { setValue: { nDimensions: 0 } }
         } else if (dependencyValues.functionAttr.stateValues.nInputs !==
           dependencyValues.functionAttr.stateValues.nOutputs
         ) {
           console.warn(`Function iterates are possible only if the number of inputs is equal to the number of outputs`)
-          return { newValues: { nDimensions: 0 } }
+          return { setValue: { nDimensions: 0 } }
         } else {
-          return { newValues: { nDimensions: dependencyValues.functionAttr.stateValues.nInputs } }
+          return { setValue: { nDimensions: dependencyValues.functionAttr.stateValues.nInputs } }
         }
       }
     }
@@ -118,7 +118,7 @@ export default class FunctionIterates extends InlineComponent {
           )
         ) {
           allIterates = Array(nIterates).fill(me.fromAst('\uff3f'));
-          return { newValues: { allIterates } };
+          return { setValue: { allIterates } };
         }
 
         if (symbolic) {
@@ -169,7 +169,7 @@ export default class FunctionIterates extends InlineComponent {
           }
         }
 
-        return { newValues: { allIterates } };
+        return { setValue: { allIterates } };
 
       }
     }
@@ -189,7 +189,7 @@ export default class FunctionIterates extends InlineComponent {
       }),
       definition({ dependencyValues }) {
         return {
-          newValues: {
+          setValue: {
             allIteratesWithInitial: [
               dependencyValues.initialValue, ...dependencyValues.allIterates
             ]
@@ -232,7 +232,7 @@ export default class FunctionIterates extends InlineComponent {
           iterates[ind] = globalDependencyValues.allIterates[ind];
         }
 
-        return { newValues: { iterates } }
+        return { setValue: { iterates } }
       }
 
     }
@@ -264,7 +264,7 @@ export default class FunctionIterates extends InlineComponent {
         }
       },
       definition({ dependencyValues }) {
-        return { newValues: { finalIterate: dependencyValues.finalIterate } }
+        return { setValue: { finalIterate: dependencyValues.finalIterate } }
       }
     }
 

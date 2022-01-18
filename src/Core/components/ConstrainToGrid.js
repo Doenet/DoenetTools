@@ -52,7 +52,7 @@ export default class ConstrainToGrid extends ConstraintComponent {
 
     stateVariableDefinitions.independentComponentConstraints = {
       returnDependencies: () => ({}),
-      definition: () => ({ newValues: { independentComponentConstraints: true } })
+      definition: () => ({ setValue: { independentComponentConstraints: true } })
     }
 
 
@@ -92,7 +92,7 @@ export default class ConstrainToGrid extends ConstraintComponent {
         },
       }),
       definition: ({ dependencyValues }) => ({
-        newValues: {
+        setValue: {
           applyComponentConstraint: function ({ variables, scales }) {
 
             // if given the value of x1, apply to constraint to x1

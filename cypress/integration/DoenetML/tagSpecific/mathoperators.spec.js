@@ -1723,10 +1723,10 @@ describe('Math Operator Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      let p = components['/p'].stateValues.value;
-      expect(components['/_convertsettolist1'].stateValues.value.tree).eqls(['list', 7, 3, p]);
-      expect(components['/csl2'].replacements[0].stateValues.value.tree).eqls(['list', 7, 3, p]);
-      expect(components['/_convertsettolist1'].stateValues.unordered).eq(true);
+      let p = await components['/p'].stateValues.value;
+      expect((await components['/_convertsettolist1'].stateValues.value).tree).eqls(['list', 7, 3, p]);
+      expect((await components['/csl2'].replacements[0].stateValues.value).tree).eqls(['list', 7, 3, p]);
+      expect(await components['/_convertsettolist1'].stateValues.unordered).eq(true);
       expect(await components['/csl2'].replacements[0].stateValues.unordered).eq(true);
     })
   })
@@ -1870,7 +1870,7 @@ describe('Math Operator Tag Tests', function () {
       expect(components['/a3'].stateValues.value.tree).eq(9);
     })
 
-    cy.get("#\\/a2 textarea").type("{end}{backspace}-3{enter}", {force: true})
+    cy.get("#\\/a2 textarea").type("{end}{backspace}-3{enter}", { force: true })
 
     cy.get('#\\/a1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('0')
@@ -1890,7 +1890,7 @@ describe('Math Operator Tag Tests', function () {
     })
 
 
-    cy.get("#\\/a2 textarea").type("{end}{backspace}7{enter}", {force: true})
+    cy.get("#\\/a2 textarea").type("{end}{backspace}7{enter}", { force: true })
 
     cy.get('#\\/a1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('7')
@@ -1910,7 +1910,7 @@ describe('Math Operator Tag Tests', function () {
     })
 
 
-    cy.get("#\\/a2 textarea").type("{end}{backspace}x{enter}", {force: true})
+    cy.get("#\\/a2 textarea").type("{end}{backspace}x{enter}", { force: true })
 
     cy.get('#\\/a1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('|x|')
@@ -1930,7 +1930,7 @@ describe('Math Operator Tag Tests', function () {
     })
 
 
-    cy.get("#\\/a2 textarea").type("{end}{leftArrow}{backspace}y{enter}", {force: true})
+    cy.get("#\\/a2 textarea").type("{end}{leftArrow}{backspace}y{enter}", { force: true })
 
     cy.get('#\\/a1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('|y|')
@@ -5769,7 +5769,7 @@ describe('Math Operator Tag Tests', function () {
     });
     cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-   
+
       expect(components['/_gcd1'].stateValues.value.tree).eq(27);
       expect(components['/_gcd2'].stateValues.value.tree).eq(9);
       expect(components['/_gcd3'].stateValues.value.tree).eqls(["apply", "gcd", ["tuple", "x", "y", "z"]]);
@@ -5886,7 +5886,7 @@ describe('Math Operator Tag Tests', function () {
       expect(components['/operator'].stateValues.value).eq('+')
       expect(components['/numOperands'].stateValues.value.tree).eq(3)
       expect(components['/operand1'].stateValues.value.tree).eqls(['apply', 'f', 'x'])
-      expect(components['/operand2'].stateValues.value.tree).eqls(['apply', 'g', ["tuple",'y',"z"]])
+      expect(components['/operand2'].stateValues.value.tree).eqls(['apply', 'g', ["tuple", 'y', "z"]])
       expect(components['/operand3'].stateValues.value.tree).eqls(['*', 'h', 'q'])
       expect(components['/blank1'].stateValues.value.tree).eqls('＿')
       expect(components['/f'].stateValues.value.tree).eqls('f')
@@ -5895,7 +5895,7 @@ describe('Math Operator Tag Tests', function () {
       expect(components['/farg1'].stateValues.value.tree).eqls('x')
       expect(components['/farg1a'].stateValues.value.tree).eqls('x')
       expect(components['/blank3'].stateValues.value.tree).eqls('＿')
-      expect(components['/gargAll'].stateValues.value.tree).eqls(["tuple",'y',"z"])
+      expect(components['/gargAll'].stateValues.value.tree).eqls(["tuple", 'y', "z"])
       expect(components['/garg1'].stateValues.value.tree).eqls('y')
       expect(components['/garg2'].stateValues.value.tree).eqls('z')
       expect(components['/blank4'].stateValues.value.tree).eqls('＿')
@@ -5921,7 +5921,7 @@ describe('Math Operator Tag Tests', function () {
 
     cy.get('#\\/nOperand textarea').type('{end}{backspace}2', { force: true }).blur();
     cy.get('#\\/operandN .mjx-mrow').should('contain.text', 'g(y,z)')
-      cy.get('#\\/operandN').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get('#\\/operandN').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('g(y,z)')
     });
     cy.get('#\\/functionN').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -5932,7 +5932,7 @@ describe('Math Operator Tag Tests', function () {
     });
     cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/operandN'].stateValues.value.tree).eqls(['apply', 'g', ["tuple",'y',"z"]])
+      expect(components['/operandN'].stateValues.value.tree).eqls(['apply', 'g', ["tuple", 'y', "z"]])
       expect(components['/functionN'].stateValues.value.tree).eqls('g')
       expect(components['/argumentN'].stateValues.value.tree).eqls('z')
     })

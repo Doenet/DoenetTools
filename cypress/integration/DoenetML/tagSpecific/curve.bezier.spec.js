@@ -2529,7 +2529,7 @@ describe('Curve Tag Bezier Tests', function () {
     cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
 
-      let cv2 = components["/_curve1"].stateValues.controlVectors[1][0];
+      let cv2 = (await components["/_curve1"].stateValues.controlVectors)[1][0];
 
       controlVectors[1][0][0] = cv2[0].tree;
       controlVectors[1][0][1] = cv2[1].tree;
@@ -8159,7 +8159,7 @@ describe('Curve Tag Bezier Tests', function () {
     cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
 
-      let cv3 = components["/_curve1"].stateValues.controlVectors[2][0];
+      let cv3 = (await components["/_curve1"].stateValues.controlVectors)[2][0];
 
       controlVectors[0][0][0] = controlVectors[2][0][0] = cv3[0].tree;
       controlVectors[0][0][1] = controlVectors[2][0][1] = cv3[1].tree;

@@ -38,7 +38,7 @@ export default class IntComma extends Text {
           matchObj = value.match(startAtLeastFourNumRegex);
         }
 
-        return { newValues: { value } }
+        return { setValue: { value } }
       }
     }
 
@@ -53,7 +53,7 @@ export default class IntComma extends Text {
         }
       }),
       definition: ({ dependencyValues }) => ({
-        newValues: { text: dependencyValues.value }
+        setValue: { text: dependencyValues.value }
       })
     }
 

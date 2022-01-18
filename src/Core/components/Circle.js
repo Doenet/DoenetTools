@@ -8,12 +8,8 @@ export default class Circle extends Curve {
   static rendererType = "circle";
 
   actions = {
-    moveCircle: this.moveCircle.bind(
-      new Proxy(this, this.readOnlyProxyHandler)
-    ),
-    finalizeCirclePosition: this.finalizeCirclePosition.bind(
-      new Proxy(this, this.readOnlyProxyHandler)
-    )
+    moveCircle: this.moveCircle.bind(this),
+    finalizeCirclePosition: this.finalizeCirclePosition.bind(this),
   };
 
 
@@ -56,7 +52,7 @@ export default class Circle extends Curve {
     stateVariableDefinitions.curveType = {
       forRenderer: true,
       returnDependencies: () => ({}),
-      definition: () => ({ newValues: { curveType: "circle" } })
+      definition: () => ({ setValue: { curveType: "circle" } })
     }
 
 
@@ -65,7 +61,7 @@ export default class Circle extends Curve {
       componentType: "number",
       forRenderer: true,
       returnDependencies: () => ({}),
-      definition: () => ({ newValues: { parMax: NaN } })
+      definition: () => ({ setValue: { parMax: NaN } })
     }
 
     stateVariableDefinitions.parMin = {
@@ -73,7 +69,7 @@ export default class Circle extends Curve {
       componentType: "number",
       forRenderer: true,
       returnDependencies: () => ({}),
-      definition: () => ({ newValues: { parMin: NaN } })
+      definition: () => ({ setValue: { parMin: NaN } })
     }
 
 
@@ -81,11 +77,10 @@ export default class Circle extends Curve {
       forRenderer: true,
       isArray: true,
       entryPrefixes: ["f"],
-      defaultEntryValue: () => 0,
       returnArraySizeDependencies: () => ({}),
       returnArraySize: () => [0],
       returnArrayDependenciesByKey: () => ({}),
-      arrayDefinitionByKey: () => ({ newValues: { fs: {} } })
+      arrayDefinitionByKey: () => ({ setValue: { fs: {} } })
     }
 
     stateVariableDefinitions.nThroughPoints = {
@@ -99,12 +94,12 @@ export default class Circle extends Curve {
       definition: function ({ dependencyValues }) {
         if (dependencyValues.throughAttr !== null) {
           return {
-            newValues: {
+            setValue: {
               nThroughPoints: dependencyValues.throughAttr.stateValues.nPoints
             }
           }
         } else {
-          return { newValues: { nThroughPoints: 0 } }
+          return { setValue: { nThroughPoints: 0 } }
         }
       }
     }
@@ -153,14 +148,14 @@ export default class Circle extends Curve {
           let pointInd = Number(varEnding) - 1;
           if (!(Number.isInteger(pointInd) && pointInd >= 0)) {
             return [];
-          } 
-          
+          }
+
           if (!arraySize) {
             // If don't have array size, we just need to determine if it is a potential entry.
             // Return the first entry assuming array is large enough
             return [pointInd + ",0"];
           }
-          if(pointInd < arraySize[0]) {
+          if (pointInd < arraySize[0]) {
             // array of "pointInd,i", where i=0, ..., arraySize[1]-1
             return Array.from(Array(arraySize[1]), (_, i) => pointInd + "," + i)
           } else {
@@ -217,7 +212,7 @@ export default class Circle extends Curve {
           }
         }
 
-        return { newValues: { throughPoints } };
+        return { setValue: { throughPoints } };
 
       },
 
@@ -273,7 +268,7 @@ export default class Circle extends Curve {
         },
       }),
       definition: ({ dependencyValues }) => ({
-        newValues: {
+        setValue: {
           havePrescribedCenter: dependencyValues.centerAttr !== null
         },
         checkForActualChange: { havePrescribedCenter: true }
@@ -323,7 +318,7 @@ export default class Circle extends Curve {
           }
         }
 
-        return { newValues: { prescribedCenter } }
+        return { setValue: { prescribedCenter } }
       },
       inverseArrayDefinitionByKey({ desiredStateVariableValues,
         globalDependencyValues, dependencyValuesByKey, dependencyNamesByKey, arraySize
@@ -369,13 +364,13 @@ export default class Circle extends Curve {
       definition: function ({ dependencyValues }) {
         if (dependencyValues.radiusAttr !== null) {
           return {
-            newValues: {
+            setValue: {
               prescribedRadius: dependencyValues.radiusAttr.stateValues.value
             }
           }
         } else {
           return {
-            newValues: {
+            setValue: {
               prescribedRadius: null
             }
           }
@@ -407,7 +402,7 @@ export default class Circle extends Curve {
         },
       }),
       definition: ({ dependencyValues }) => ({
-        newValues: {
+        setValue: {
           havePrescribedRadius: dependencyValues.radiusAttr !== null
         },
         checkForActualChange: { havePrescribedRadius: true }
@@ -437,7 +432,7 @@ export default class Circle extends Curve {
         }
 
         return {
-          newValues: {
+          setValue: {
             haveNonNumericalPrescribedRadius,
             numericalPrescribedRadius,
           },
@@ -517,7 +512,7 @@ export default class Circle extends Curve {
           }
         }
 
-        return { newValues: { numericalPrescribedCenter } }
+        return { setValue: { numericalPrescribedCenter } }
       },
       inverseArrayDefinitionByKey({ desiredStateVariableValues, dependencyNamesByKey }) {
 
@@ -556,7 +551,7 @@ export default class Circle extends Curve {
           .some(x => !Number.isFinite(x))
 
         return {
-          newValues: {
+          setValue: {
             haveNonNumericalPrescribedCenter,
           },
           checkForActualChange: { haveNonNumericalPrescribedCenter: true }
@@ -605,7 +600,7 @@ export default class Circle extends Curve {
         }
 
         return {
-          newValues: {
+          setValue: {
             haveNonNumericalThroughPoints,
             numericalThroughPoints
           },
@@ -658,7 +653,7 @@ export default class Circle extends Curve {
         },
       }),
       definition: ({ dependencyValues }) => ({
-        newValues: {
+        setValue: {
           haveNumericalEntries: !(dependencyValues.haveNonNumericalPrescribedCenter
             || dependencyValues.haveNonNumericalPrescribedRadius
             || dependencyValues.haveNonNumericalThroughPoints
@@ -695,7 +690,7 @@ export default class Circle extends Curve {
           message += " in case where don't have numerical values."
           console.warn(message);
           return {
-            newValues: {
+            setValue: {
               numericalRadiusCalculatedWithCenter: null,
               numericalCenterCalculatedWithRadius: null
             }
@@ -711,7 +706,7 @@ export default class Circle extends Curve {
           });
 
           return {
-            newValues: {
+            setValue: {
               numericalCenterCalculatedWithRadius: numericalCenter,
               numericalRadiusCalculatedWithCenter: numericalRadius
             }
@@ -778,7 +773,7 @@ export default class Circle extends Curve {
           }
 
           return {
-            newValues: {
+            setValue: {
               numericalCenterCalculatedWithRadius: numericalCenter,
               numericalRadiusCalculatedWithCenter: numericalRadius
             }
@@ -787,7 +782,7 @@ export default class Circle extends Curve {
         } else if (dependencyValues.nThroughPoints > 3) {
           console.warn("Can't calculate circle through more than 3 points")
           return {
-            newValues: {
+            setValue: {
               numericalRadiusCalculatedWithCenter: null,
               numericalCenterCalculatedWithRadius: null
             }
@@ -795,7 +790,7 @@ export default class Circle extends Curve {
         } else {
           // these variables aren't used with fewer than 2 points
           return {
-            newValues: {
+            setValue: {
               numericalRadiusCalculatedWithCenter: null,
               numericalCenterCalculatedWithRadius: null
             }
@@ -809,10 +804,11 @@ export default class Circle extends Curve {
 
     stateVariableDefinitions.essentialRadius = {
       defaultValue: 1,
+      hasEssential: true,
       returnDependencies: () => ({}),
       definition: () => ({
         useEssentialOrDefaultValue: {
-          essentialRadius: { variablesToCheck: ["radius", "essentialRadius"] }
+          essentialRadius: true
         }
       }),
       inverseDefinition: function ({ desiredStateVariableValues }) {
@@ -820,7 +816,7 @@ export default class Circle extends Curve {
         return {
           success: true,
           instructions: [{
-            setStateVariable: "essentialRadius",
+            setEssentialValue: "essentialRadius",
             value: desiredStateVariableValues.essentialRadius
           }]
         };
@@ -905,7 +901,7 @@ export default class Circle extends Curve {
           || dependencyValues.haveNonNumericalThroughPoints
         ) {
           return {
-            newValues: {
+            setValue: {
               numericalRadius: NaN
             }
           }
@@ -914,11 +910,11 @@ export default class Circle extends Curve {
         if (dependencyValues.numericalPrescribedRadius !== undefined) {
           if (dependencyValues.haveCenterRadiusPoints) {
             console.warn("Can't calculate circle with specified radius and center and through points")
-            return { newValues: { numericalRadius: NaN } }
+            return { setValue: { numericalRadius: NaN } }
           }
 
           return {
-            newValues: {
+            setValue: {
               numericalRadius: Math.max(0, dependencyValues.numericalPrescribedRadius)
             }
           }
@@ -938,10 +934,10 @@ export default class Circle extends Curve {
               }
             }
             return {
-              newValues: { numericalRadius: r }
+              setValue: { numericalRadius: r }
             }
             return {
-              newValues: { numericalRadius: r }
+              setValue: { numericalRadius: r }
             }
           } else if (dependencyValues.nThroughPoints === 1) {
             // center and one point specified.
@@ -951,16 +947,16 @@ export default class Circle extends Curve {
               // if dependencies haven't been updated,
               // it is possible to temporarility have fewer numericalThroughPoints
               // than nThroughPOints
-              return { newValues: { numericalRadius: NaN } }
+              return { setValue: { numericalRadius: NaN } }
             }
             let numericalRadius = Math.sqrt(
               Math.pow(pt[0] - dependencyValues.numericalPrescribedCenter[0], 2)
               + Math.pow(pt[1] - dependencyValues.numericalPrescribedCenter[1], 2)
             );
-            return { newValues: { numericalRadius } }
+            return { setValue: { numericalRadius } }
           } else {
             console.warn("Can't calculate circle with specified center through more than 1 point")
-            return { newValues: { numericalRadius: NaN } }
+            return { setValue: { numericalRadius: NaN } }
           }
 
         }
@@ -979,17 +975,17 @@ export default class Circle extends Curve {
             }
           }
           return {
-            newValues: { numericalRadius: r }
+            setValue: { numericalRadius: r }
           }
           return {
-            newValues: { numericalRadius: r }
+            setValue: { numericalRadius: r }
           }
         } else {
           // having two or three through points
           // with no prescribed radius or center
           // is case where calculated radius and center together.
           return {
-            newValues: {
+            setValue: {
               numericalRadius: dependencyValues.numericalRadiusCalculatedWithCenter
             }
           }
@@ -1093,7 +1089,8 @@ export default class Circle extends Curve {
     stateVariableDefinitions.essentialCenter = {
       isArray: true,
       entryPrefixes: ["essentialCenterX"],
-      defaultEntryValue: 0,
+      hasEssential: true,
+      defaultValueByArrayKey: () => 0,
       returnArraySizeDependencies: () => ({}),
       returnArraySize() {
         return [2];
@@ -1102,9 +1099,7 @@ export default class Circle extends Curve {
       arrayDefinitionByKey: function ({ arrayKeys }) {
         let essentialCenter = {};
         for (let arrayKey of arrayKeys) {
-          essentialCenter[arrayKey] = {
-            variablesToCheck: ["essentialCenterX" + arrayKey, "centerX" + arrayKey],
-          }
+          essentialCenter[arrayKey] = true
         }
         return {
           useEssentialOrDefaultValue: { essentialCenter },
@@ -1114,7 +1109,7 @@ export default class Circle extends Curve {
         let instructions = [];
         for (let arrayKey in desiredStateVariableValues.essentialCenter) {
           instructions.push({
-            setStateVariable: "essentialCenter",
+            setEssentialValue: "essentialCenter",
             value: { [arrayKey]: desiredStateVariableValues.essentialCenter[arrayKey] },
           })
         }
@@ -1218,20 +1213,20 @@ export default class Circle extends Curve {
           if (dependencyValuesByKey[arrayKey].numericalPrescribedCenterX !== undefined) {
             if (globalDependencyValues.haveCenterRadiusPoints) {
               console.warn("Can't calculate circle with specified radius and center and through points")
-              return { newValues: { numericalCenter: [NaN, NaN] } }
+              return { setValue: { numericalCenter: [NaN, NaN] } }
             }
             numericalCenter[arrayKey] = dependencyValuesByKey[arrayKey].numericalPrescribedCenterX;
           }
         }
         if (Object.keys(numericalCenter).length > 0) {
-          return { newValues: { numericalCenter } }
+          return { setValue: { numericalCenter } }
         }
 
         if (globalDependencyValues.haveNonNumericalPrescribedRadius
           || globalDependencyValues.haveNonNumericalThroughPoints
         ) {
           return {
-            newValues: {
+            setValue: {
               numericalCenter: [NaN, NaN]
             }
           }
@@ -1258,7 +1253,7 @@ export default class Circle extends Curve {
               numericalCenter[arrayKey] = value;
             }
 
-            return { newValues: { numericalCenter } }
+            return { setValue: { numericalCenter } }
 
 
           } else if (globalDependencyValues.nThroughPoints === 1) {
@@ -1269,7 +1264,7 @@ export default class Circle extends Curve {
               // if dependencies haven't been updated,
               // it is possible to temporarility have fewer numericalThroughPoints
               // than nThroughPOints
-              return { newValues: { numericalCenter: [NaN, NaN] } }
+              return { setValue: { numericalCenter: [NaN, NaN] } }
             }
 
             let numericalCenter = [
@@ -1277,7 +1272,7 @@ export default class Circle extends Curve {
               globalDependencyValues.numericalThroughPoints[0][1] - globalDependencyValues.numericalRadius
             ];
 
-            return { newValues: { numericalCenter } }
+            return { setValue: { numericalCenter } }
 
           } else if (globalDependencyValues.nThroughPoints === 2) {
 
@@ -1285,7 +1280,7 @@ export default class Circle extends Curve {
               // if dependencies haven't been updated,
               // it is possible to temporarility have fewer numericalThroughPoints
               // than nThroughPOints
-              return { newValues: { numericalCenter: [NaN, NaN] } }
+              return { setValue: { numericalCenter: [NaN, NaN] } }
             }
 
             // find circle through two points with given radius
@@ -1301,12 +1296,12 @@ export default class Circle extends Curve {
 
             if (r < 0 || 4 * r2 < dist2) {
               console.warn("Can't find circle through given radius and two points");
-              return { newValues: { numericalCenter: [NaN, NaN] } }
+              return { setValue: { numericalCenter: [NaN, NaN] } }
             }
 
             if (dist2 === 0) {
               // points are equal to each other, treat as through single point
-              return { newValues: { numericalCenter: [x1, y1 - r] } }
+              return { setValue: { numericalCenter: [x1, y1 - r] } }
             }
 
 
@@ -1316,12 +1311,12 @@ export default class Circle extends Curve {
             let centery = 0.5 * (dist2 * (y1 + y2) + (x2 - x1) * Math.sqrt((4 * r2 - dist2) * dist2))
               / dist2;
 
-            return { newValues: { numericalCenter: [centerx, centery] } }
+            return { setValue: { numericalCenter: [centerx, centery] } }
 
           } else {
 
             console.warn("Can't create circle through more than two points with given radius");
-            return { newValues: { numericalCenter: [NaN, NaN] } }
+            return { setValue: { numericalCenter: [NaN, NaN] } }
 
           }
         }
@@ -1346,7 +1341,7 @@ export default class Circle extends Curve {
             numericalCenter[arrayKey] = value;
           }
 
-          return { newValues: { numericalCenter } }
+          return { setValue: { numericalCenter } }
 
         } else {
 
@@ -1361,7 +1356,7 @@ export default class Circle extends Curve {
             // if nThroughPoints changed, but dependencies haven't been recalculated yet
             // could get to here where don't have numericalCenterCalculatedWithRadius
             return {
-              newValues: {
+              setValue: {
                 numericalCenter: [NaN, NaN]
               }
             }
@@ -1369,7 +1364,7 @@ export default class Circle extends Curve {
           } else {
 
             return {
-              newValues: {
+              setValue: {
                 numericalCenter: globalDependencyValues.numericalCenterCalculatedWithRadius
               }
             }
@@ -1469,7 +1464,8 @@ export default class Circle extends Curve {
       // when dragging circle based on points with constraints
       forRenderer: true,
       defaultValue: [],
-      neverShadow: true,
+      hasEssential: true,
+      doNotShadowEssential: true,
       returnDependencies: () => ({
         haveNumericalEntries: {
           dependencyType: "stateVariable",
@@ -1500,9 +1496,7 @@ export default class Circle extends Curve {
         ) {
           return {
             useEssentialOrDefaultValue: {
-              throughAngles: {
-                variablesToCheck: ["throughAngles"]
-              }
+              throughAngles: true
             }
           }
         }
@@ -1519,8 +1513,8 @@ export default class Circle extends Curve {
         // make throughAngles essential so that can save their values
         // even if values become invalid (such as radius becoming zero)
         return {
-          newValues: { throughAngles },
-          makeEssential: { throughAngles: true }
+          setValue: { throughAngles },
+          setEssentialValue: { throughAngles }
         };
       }
     }
@@ -1580,7 +1574,7 @@ export default class Circle extends Curve {
 
         if (Number.isFinite(dependencyValues.numericalRadius)) {
           return {
-            newValues: {
+            setValue: {
               radius: me.fromAst(dependencyValues.numericalRadius)
             },
           }
@@ -1589,10 +1583,10 @@ export default class Circle extends Curve {
         if (dependencyValues.prescribedRadius !== undefined) {
           if (dependencyValues.haveCenterRadiusPoints) {
             console.warn("Can't calculate circle with specified radius and center and through points")
-            return { newValues: { radius: me.fromAst('\uff3f') } }
+            return { setValue: { radius: me.fromAst('\uff3f') } }
           }
           return {
-            newValues: {
+            setValue: {
               radius: dependencyValues.prescribedRadius
             }
           }
@@ -1609,7 +1603,7 @@ export default class Circle extends Curve {
               }
             }
             return {
-              newValues: { radius: r }
+              setValue: { radius: r }
             }
           } else if (dependencyValues.nThroughPoints === 1) {
             // center and one point specified.
@@ -1626,14 +1620,14 @@ export default class Circle extends Curve {
                 .add(pty.subtract(cty).pow(2))
                 .pow(0.5).simplify();
 
-              return { newValues: { radius } }
+              return { setValue: { radius } }
             } catch (e) {
               console.warn("Invalid center or through points of circle")
-              return { newValues: { radius: me.fromAst('\uff3f') } }
+              return { setValue: { radius: me.fromAst('\uff3f') } }
             }
           } else {
             console.warn("Can't calculate circle with specified center through more than 1 point")
-            return { newValues: { radius: me.fromAst('\uff3f') } }
+            return { setValue: { radius: me.fromAst('\uff3f') } }
           }
 
         }
@@ -1649,14 +1643,14 @@ export default class Circle extends Curve {
             }
           }
           return {
-            newValues: { radius: r }
+            setValue: { radius: r }
           }
         } else {
           // having two or three through points
           // with no prescribed radius or center
 
           console.warn(`Have not implemented circle through ${dependencyValues.nThroughPoints} points when non-numerical values`)
-          return { newValues: { radius: me.fromAst('\uff3f') } }
+          return { setValue: { radius: me.fromAst('\uff3f') } }
         }
 
       },
@@ -1723,7 +1717,7 @@ export default class Circle extends Curve {
       }),
       definition({ dependencyValues }) {
         return {
-          newValues: {
+          setValue: {
             diameter: dependencyValues.radius.multiply(2).simplify()
           }
         }
@@ -1745,7 +1739,6 @@ export default class Circle extends Curve {
       componentType: "math",
       isArray: true,
       entryPrefixes: ["centerX"],
-      defaultEntryValue: me.fromAst(0),
       returnWrappingComponents(prefix) {
         if (prefix === "centerX") {
           return [];
@@ -1860,7 +1853,7 @@ export default class Circle extends Curve {
           if (globalDependencyValues.haveCenterRadiusPoints) {
             console.warn("Can't calculate circle with specified radius and center and through points")
             return {
-              newValues: {
+              setValue: {
                 center: [me.fromAst('\uff3f'), me.fromAst('\uff3f')]
               }
             }
@@ -1875,13 +1868,13 @@ export default class Circle extends Curve {
             }
 
           }
-          return { newValues: { center } }
+          return { setValue: { center } }
         }
 
 
         if (globalDependencyValues.numericalCenter.every(x => Number.isFinite(x))) {
           return {
-            newValues: {
+            setValue: {
               center: globalDependencyValues.numericalCenter.map(x => me.fromAst(x))
             },
           }
@@ -1909,7 +1902,7 @@ export default class Circle extends Curve {
               center[arrayKey] = value;
             }
 
-            return { newValues: { center } }
+            return { setValue: { center } }
 
 
           } else if (globalDependencyValues.nThroughPoints === 1) {
@@ -1931,13 +1924,13 @@ export default class Circle extends Curve {
               center = [me.fromAst('\uff3f'), me.fromAst('\uff3f')];
             }
 
-            return { newValues: { center } }
+            return { setValue: { center } }
 
           } else {
 
             console.warn("Can't create circle through more than one point with given radius when don't have numerical values");
             return {
-              newValues: {
+              setValue: {
                 center: [me.fromAst('\uff3f'), me.fromAst('\uff3f')]
               }
             }
@@ -1963,7 +1956,7 @@ export default class Circle extends Curve {
             center[arrayKey] = value;
           }
 
-          return { newValues: { center } }
+          return { setValue: { center } }
 
         } else {
 
@@ -1972,7 +1965,7 @@ export default class Circle extends Curve {
 
           console.warn("Can't create circle through more than one point when don't have numerical values");
           return {
-            newValues: {
+            setValue: {
               center: [me.fromAst('\uff3f'), me.fromAst('\uff3f')]
             }
           }
@@ -2097,7 +2090,7 @@ export default class Circle extends Curve {
         let centerX = dependencyValues.numericalCenter[0];
         let centerY = dependencyValues.numericalCenter[1];
         return {
-          newValues: {
+          setValue: {
             nearestPoint: function ({ variables, scales }) {
 
               let x1 = variables.x1.evaluate_to_constant();

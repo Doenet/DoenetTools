@@ -5,12 +5,8 @@ export default class Textinput extends Input {
     super(args);
 
     this.actions = {
-      updateImmediateValue: this.updateImmediateValue.bind(
-        new Proxy(this, this.readOnlyProxyHandler)
-      ),
-      updateValue: this.updateValue.bind(
-        new Proxy(this, this.readOnlyProxyHandler)
-      )
+      updateImmediateValue: this.updateImmediateValue.bind(this),
+      updateValue: this.updateValue.bind(this)
     };
 
 
@@ -36,10 +32,6 @@ export default class Textinput extends Input {
   static componentType = "textInput";
 
   static variableForPlainMacro = "value";
-
-  static get stateVariablesShadowedForReference() {
-    return ["value"]
-  };
 
   static createAttributesObject(args) {
     let attributes = super.createAttributesObject(args);
@@ -92,6 +84,8 @@ export default class Textinput extends Input {
       public: true,
       componentType: "text",
       forRenderer: true,
+      hasEssential: true,
+      shadowVariable: true,
       returnDependencies: () => ({
         bindValueTo: {
           dependencyType: "attributeComponent",
@@ -108,13 +102,12 @@ export default class Textinput extends Input {
           return {
             useEssentialOrDefaultValue: {
               value: {
-                variablesToCheck: "value",
                 defaultValue: dependencyValues.prefill
               }
             }
           }
         }
-        return { newValues: { value: dependencyValues.bindValueTo.stateValues.value } };
+        return { setValue: { value: dependencyValues.bindValueTo.stateValues.value } };
       },
       inverseDefinition: function ({ desiredStateVariableValues, dependencyValues }) {
 
@@ -133,7 +126,7 @@ export default class Textinput extends Input {
         return {
           success: true,
           instructions: [{
-            setStateVariable: "value",
+            setEssentialValue: "value",
             value: desiredStateVariableValues.value
           }]
         };
@@ -144,6 +137,8 @@ export default class Textinput extends Input {
       public: true,
       componentType: "text",
       forRenderer: true,
+      hasEssential: true,
+      shadowVariable: true,
       returnDependencies: () => ({
         value: {
           dependencyType: "stateVariable",
@@ -159,8 +154,8 @@ export default class Textinput extends Input {
           // only update to value when it changes
           // (otherwise, let its essential value change)
           return {
-            newValues: { immediateValue: dependencyValues.value },
-            makeEssential: { immediateValue: true }
+            setValue: { immediateValue: dependencyValues.value },
+            setEssentialValue: { immediateValue: dependencyValues.value }
           };
 
 
@@ -168,7 +163,6 @@ export default class Textinput extends Input {
           return {
             useEssentialOrDefaultValue: {
               immediateValue: {
-                variablesToCheck: "immediateValue",
                 defaultValue: dependencyValues.value
               }
             }
@@ -180,7 +174,7 @@ export default class Textinput extends Input {
 
         // value is essential; give it the desired value
         let instructions = [{
-          setStateVariable: "immediateValue",
+          setEssentialValue: "immediateValue",
           value: desiredStateVariableValues.immediateValue
         }]
 
@@ -211,13 +205,13 @@ export default class Textinput extends Input {
         }
       }),
       definition: function ({ dependencyValues }) {
-        return { newValues: { text: dependencyValues.value } }
+        return { setValue: { text: dependencyValues.value } }
       }
     }
 
     stateVariableDefinitions.componentType = {
       returnDependencies: () => ({}),
-      definition: () => ({ newValues: { componentType: "text" } })
+      definition: () => ({ setValue: { componentType: "text" } })
     }
 
 
@@ -242,54 +236,59 @@ export default class Textinput extends Input {
   async updateValue() {
     if (!await this.stateValues.disabled) {
       let immediateValue = await this.stateValues.immediateValue;
-      let updateInstructions = [{
-        updateType: "updateValue",
-        componentName: this.componentName,
-        stateVariable: "value",
-        value: immediateValue,
-      },
-      // in case value ended up being a different value than requested
-      // we set immediate value to whatever was the result
-      // (hence the need to execute update first)
-      // Also, this makes sure immediateValue is saved to the database,
-      // since in updateImmediateValue, immediateValue is note saved to database
-      {
-        updateType: "executeUpdate"
-      },
-      {
-        updateType: "updateValue",
-        componentName: this.componentName,
-        stateVariable: "immediateValue",
-        valueOfStateVariable: "value",
-      }];
 
-      let event = {
-        verb: "answered",
-        object: {
+      if (await this.stateValues.value !== immediateValue) {
+
+        let updateInstructions = [{
+          updateType: "updateValue",
           componentName: this.componentName,
-          componentType: this.componentType,
+          stateVariable: "value",
+          value: immediateValue,
         },
-        result: {
-          response: immediateValue,
-          responseText: immediateValue,
+        // in case value ended up being a different value than requested
+        // we set immediate value to whatever was the result
+        // (hence the need to execute update first)
+        // Also, this makes sure immediateValue is saved to the database,
+        // since in updateImmediateValue, immediateValue is note saved to database
+        {
+          updateType: "executeUpdate"
+        },
+        {
+          updateType: "updateValue",
+          componentName: this.componentName,
+          stateVariable: "immediateValue",
+          valueOfStateVariable: "value",
+        }];
+
+        let event = {
+          verb: "answered",
+          object: {
+            componentName: this.componentName,
+            componentType: this.componentType,
+          },
+          result: {
+            response: immediateValue,
+            responseText: immediateValue,
+          }
         }
-      }
 
-      let answerAncestor = await this.stateValues.answerAncestor;
-      if (answerAncestor) {
-        event.context = {
-          answerAncestor: answerAncestor.componentName
+        let answerAncestor = await this.stateValues.answerAncestor;
+        if (answerAncestor) {
+          event.context = {
+            answerAncestor: answerAncestor.componentName
+          }
         }
+
+        await this.coreFunctions.performUpdate({
+          updateInstructions,
+          event
+        });
+
+        return await this.coreFunctions.triggerChainedActions({
+          componentName: this.componentName,
+        });
+
       }
-
-      await this.coreFunctions.performUpdate({
-        updateInstructions,
-        event
-      });
-
-      return await this.coreFunctions.triggerChainedActions({
-        componentName: this.componentName,
-      });
 
     }
   }

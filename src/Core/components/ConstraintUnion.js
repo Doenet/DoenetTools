@@ -28,7 +28,7 @@ export default class ConstraintUnion extends ConstraintComponent {
         },
       }),
       definition: ({ dependencyValues }) => ({
-        newValues: {
+        setValue: {
           applyConstraint: function ({ variables, scales }) {
 
             let constraintResult;

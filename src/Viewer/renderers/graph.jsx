@@ -1,8 +1,194 @@
-import React from 'react';
+import React, { useEffect, useState, useRef, createContext } from 'react';
 import DoenetRenderer from './DoenetRenderer';
 import { sizeToCSS } from './utils/css';
+import useDoenetRender from './useDoenetRenderer';
 
-export default class Graph extends DoenetRenderer {
+
+export const BoardContext = createContext();
+
+export default function Graph(props){
+let {name, SVs, children, actions} = useDoenetRender(props);
+// console.log({name, SVs, children, actions})
+const [board,setBoard] = useState({});
+const [previousDimensions,setPreviousDimensions] = useState({})
+const [previousBoundingbox,setPreviousBoundingbox] = useState({})
+const [xaxis,setXaxis] = useState({})
+const [yaxis,setYaxis] = useState({})
+const settingBoundingBox = useRef(false)
+const resizingBoard = useRef(false)
+
+
+//Draw Board after mounting component
+useEffect(()=>{
+  let boundingbox = [SVs.xmin, SVs.ymax, SVs.xmax, SVs.ymin];
+  setPreviousBoundingbox(boundingbox)
+
+  JXG.Options.layer.numlayers = 100;
+
+  let board = window.JXG.JSXGraph.initBoard(name,
+    {
+      boundingbox,
+      axis: false,
+      showCopyright: false,
+      showNavigation: SVs.showNavigation && !SVs.fixAxes,
+      keepAspectRatio: SVs.identicalAxisScales,
+      zoom: { wheel: !SVs.fixAxes },
+      pan: { enabled: !SVs.fixAxes }
+    });
+
+    board.itemsRenderedLowQuality = {};
+
+    board.on('boundingbox', () => {
+      console.log('on boundingbox',settingBoundingBox.current,resizingBoard.current)
+      if (!(settingBoundingBox.current || resizingBoard.current)) {
+        console.log('on boundingbox changeAxisLimits')
+        let newPreviousBoundingbox = board.getBoundingBox();
+        let [xmin, ymax, xmax, ymin] = newPreviousBoundingbox;
+        setPreviousBoundingbox(newPreviousBoundingbox);
+        actions.changeAxisLimits({
+          xmin, xmax, ymin, ymax
+        });
+      }
+    })
+    setBoard(board);
+
+    setPreviousDimensions({
+      width: parseFloat(sizeToCSS(SVs.width)),
+      height: parseFloat(sizeToCSS(SVs.height)),
+    })
+
+
+    if (SVs.displayXAxis) {
+      let xaxisOptions = {};
+      if (SVs.xlabel) {
+        let position = 'rt';
+        let offset = [5, 10];
+        let anchorx = 'right'
+        if (SVs.xlabelPosition === "left") {
+          position = 'lft';
+          anchorx = 'left';
+          offset = [-5, 10];
+        }
+        xaxisOptions.name = SVs.xlabel;
+        xaxisOptions.withLabel = true;
+        xaxisOptions.label = {
+          position,
+          offset,
+          anchorx
+        };
+      }
+      xaxisOptions.ticks = {
+        ticksDistance: 2,
+        label: {
+          offset: [-5, -15]
+        },
+        minorTicks: 4,
+        precision: 4,
+      }
+
+      if (SVs.grid === "dense") {
+        xaxisOptions.ticks.majorHeight = -1;
+        xaxisOptions.ticks.minorHeight = -1;
+      } else if (SVs.grid === "medium") {
+        xaxisOptions.ticks.majorHeight = -1;
+        xaxisOptions.ticks.minorHeight = 10;
+      } else {
+        xaxisOptions.ticks.majorHeight = 20;
+        xaxisOptions.ticks.minorHeight = 10;
+      }
+
+      if (!SVs.displayYAxis) {
+        xaxisOptions.ticks.drawZero = true;
+      }
+
+      let xaxis = board.create('axis', [[0, 0], [1, 0]], xaxisOptions)
+      setXaxis(xaxis);
+    }
+
+    if (SVs.displayYAxis) {
+
+      let yaxisOptions = {};
+      if (SVs.ylabel) {
+        let position = 'rt';
+        let offset = [-10, -5];
+        let anchorx = 'right';
+        if (SVs.ylabelPosition === "bottom") {
+          position = 'lft';
+          offset[1] = 5;
+        }
+        if (SVs.ylabelAlignment === "right") {
+          anchorx = 'left';
+          offset[0] = 10;
+        }
+        yaxisOptions.name = SVs.ylabel;
+        yaxisOptions.withLabel = true;
+        yaxisOptions.label = {
+          position,
+          offset,
+          anchorx
+        }
+      }
+      yaxisOptions.ticks = {
+        ticksDistance: 2,
+        label: {
+          offset: [12, -2]
+        },
+        minorTicks: 4,
+        precision: 4,
+      }
+
+      if (SVs.grid === "dense") {
+        yaxisOptions.ticks.majorHeight = -1;
+        yaxisOptions.ticks.minorHeight = -1;
+      } else if (SVs.grid === "medium") {
+        yaxisOptions.ticks.majorHeight = -1;
+        yaxisOptions.ticks.minorHeight = 10;
+      } else {
+        yaxisOptions.ticks.majorHeight = 20;
+        yaxisOptions.ticks.minorHeight = 10;
+      }
+
+      if (!SVs.displayXAxis) {
+        yaxisOptions.ticks.drawZero = true;
+      }
+
+      let yaxis = board.create('axis', [[0, 0], [0, 1]], yaxisOptions)
+      setYaxis(yaxis)
+    }
+
+
+},[])
+
+
+
+const divStyle = {
+  width: sizeToCSS(SVs.width),
+  height: sizeToCSS(SVs.height),
+}
+
+if (SVs.hidden) {
+  divStyle.display = "none";
+}
+
+if (Object.keys(board).length === 0){
+  return <>
+  <a name={name} />
+  <div id={name} className="jxgbox" style={divStyle} />
+  </>;
+}
+
+
+return <>
+<a name={name} />
+<div id={name} className="jxgbox" style={divStyle} />
+<BoardContext.Provider value={board}> 
+{children}
+</BoardContext.Provider>
+</>;
+}
+
+export class Graph2 extends DoenetRenderer {
+  // export default class Graph extends DoenetRenderer {
 
   constructor(props) {
     super(props);

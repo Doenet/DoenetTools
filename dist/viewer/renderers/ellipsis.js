@@ -1,10 +1,11 @@
 import React from "../../_snowpack/pkg/react.js";
-import DoenetRenderer from "./DoenetRenderer.js";
-export default class Ellipsis extends DoenetRenderer {
-  render() {
-    if (this.doenetSvData.hidden) {
-      return null;
-    }
-    return /* @__PURE__ */ React.createElement(React.Fragment, null, "…");
+import useDoenetRender from "./useDoenetRenderer.js";
+export default function Ellipsis(props) {
+  let {name, SVs} = useDoenetRender(props);
+  if (SVs.hidden) {
+    return null;
   }
+  return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("a", {
+    name
+  }), "…");
 }

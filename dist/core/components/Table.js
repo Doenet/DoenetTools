@@ -64,13 +64,13 @@ export default class Table extends BlockComponent {
       },
       definition({ dependencyValues }) {
         if (dependencyValues.tableCounter === undefined) {
-          return { newValues: { tableEnumeration: null, tableName: "Table" } };
+          return { setValue: { tableEnumeration: null, tableName: "Table" } };
         }
         let tableEnumeration = String(dependencyValues.tableCounter);
         let tableName = "Table " + tableEnumeration;
         return {
 
-          newValues: { tableEnumeration, tableName }
+          setValue: { tableEnumeration, tableName }
         }
       }
     }
@@ -90,7 +90,7 @@ export default class Table extends BlockComponent {
           titleChildName = dependencyValues.titleChild[0].componentName
         }
         return {
-          newValues: { titleChildName }
+          setValue: { titleChildName }
         }
       }
     }
@@ -113,7 +113,7 @@ export default class Table extends BlockComponent {
         if (dependencyValues.titleChild.length > 0) {
           title = dependencyValues.titleChild[0].stateValues.text;
         }
-        return { newValues: { title } }
+        return { setValue: { title } }
       }
     }
 

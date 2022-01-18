@@ -12,6 +12,7 @@ import * as SingleCharacterComponents from './components/SingleCharacterComponen
 import * as Sectioning from './components/Sectioning';
 import * as Lists from './components/Lists';
 import * as DynamicalSystems from './components/dynamicalSystems';
+import * as Chemistry from './components/chemistry';
 import * as FeedbackDefinitions from './components/FeedbackDefinitions';
 import * as StyleDefinitions from './components/StyleDefinitions';
 import * as ComponentWithSelectableType from './components/abstract/ComponentWithSelectableType';
@@ -145,6 +146,8 @@ import Split from './components/Split';
 import BestFitLine from './components/BestFitLine';
 import RegionBetweenCurveXAxis from './components/RegionBetweenCurveXAxis';
 import RegionHalfPlane from './components/RegionHalfPlane';
+import CodeEditor from './components/CodeEditor';
+import CodeViewer from './components/CodeViewer';
 import RenderDoenetML from './components/RenderDoenetML';
 
 
@@ -182,6 +185,7 @@ const componentTypeArray = [
   ...Object.values(Sectioning),
   ...Object.values(Lists),
   ...Object.values(DynamicalSystems),
+  ...Object.values(Chemistry),
   ...Object.values(FeedbackDefinitions),
   ...Object.values(StyleDefinitions),
   ...Object.values(SideBySide),
@@ -288,6 +292,8 @@ const componentTypeArray = [
   BestFitLine,
   RegionBetweenCurveXAxis,
   RegionHalfPlane,
+  CodeEditor,
+  CodeViewer,
   RenderDoenetML,
 
   BaseComponent,
