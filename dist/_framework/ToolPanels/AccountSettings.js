@@ -179,5 +179,5 @@ export default function DoenetProfile(props) {
     onClick: () => {
       setPageToolView({page: "signout", tool: "", view: ""});
     }
-  })));
+  }), /* @__PURE__ */ React.createElement("br", null)));
 }

@@ -26,7 +26,8 @@ export default class Core {
     externalFunctions, flags = {},
     stateVariableChanges = {},
     coreReadyCallback, coreUpdatedCallback, coreId }) {
-    // console.time('start up time');
+    console.time('core');
+    
 
     this.coreId = coreId;
 
@@ -158,6 +159,7 @@ export default class Core {
     this.parameterStack = new ParameterStack(parameters);
 
     this.parameterStack.parameters.rngClass = prng_alea;
+    console.timeLog('core','<-Before Expand');
 
     let contentId = Hex.stringify(sha256(doenetML));
     serializeFunctions.expandDoenetMLsToFullSerializedComponents({
@@ -169,10 +171,12 @@ export default class Core {
     }).then(this.finishCoreConstruction)
   }
 
+
   async finishCoreConstruction({
     contentIds,
     fullSerializedComponents,
   }) {
+    console.timeLog('core','<-Top of finishCoreConstruction');
 
     this.contentId = contentIds[0];
 
@@ -184,6 +188,7 @@ export default class Core {
       serializedComponents,
       componentInfoObjects: this.componentInfoObjects,
     });
+    console.timeLog('core','<-After createComponentNames');
 
     // console.log(`serialized components at the beginning`)
     // console.log(deepClone(serializedComponents));
@@ -237,16 +242,15 @@ export default class Core {
     }
 
     this.changedStateVariables = {};
+    console.timeLog('core','<-Before addComponents');
 
     await this.addComponents({
       serializedComponents,
       initialAdd: true,
     })
+    console.timeLog('core','<-After addComponents');
 
     this.updateInfo.componentsTouched = [];
-
-    this.rendererTypesInDocument = this.document.allPotentialRendererTypes;
-
 
     // evalute itemCreditAchieved so that will be fresh
     // and can detect changes when it is marked stale
@@ -257,8 +261,10 @@ export default class Core {
     // console.log("** components at the end of the core constructor **");
     // console.log(this._components);
 
+    console.timeLog('core','<-Before coreReady');
 
     this.coreReadyCallback()
+    console.timeLog('core','<-End Construction');
 
   }
 
@@ -308,11 +314,11 @@ export default class Core {
       createNameContext = `addComponents${this.nTimesAddedComponents}`;
 
     }
-
+    console.timeLog('core','<-Before createIsolatedComponents');
     let createResult = await this.createIsolatedComponents({
       serializedComponents, ancestors, createNameContext,
     });
-
+    console.timeLog('core','<-After createIsolatedComponents');
     if (!initialAdd) {
       this.parameterStack.pop();
     }
@@ -333,15 +339,23 @@ export default class Core {
       }
       // this.setAncestors(newComponents[0]);
       this.document = newComponents[0];
+      console.timeLog('core','<-Before expandAllComposites');
 
       await this.expandAllComposites(this.document);
+      console.timeLog('core','<-After expandAllComposites');
+
       await this.expandAllComposites(this.document, true);
+      console.timeLog('core','<-After expandAllComposites force');
 
       // calculate any replacement changes on composites touched
       await this.replacementChangesFromCompositesToUpdate();
+      console.timeLog('core','<-After replacementChangesFromCompositesToUpdate');
 
       await this.initializeRenderedComponentInstruction(this.document);
+      console.timeLog('core','<-After initializeRenderedComponentInstruction');
+
       await this.processStateVariableTriggers();
+      console.timeLog('core','<-After processStateVariableTriggers');
 
     } else {
       if (parent === undefined) {
@@ -391,7 +405,7 @@ export default class Core {
       }
     }
 
-
+    //TODO: Figure out what we need from here
     for (let componentName of this.componentsWithChangedChildrenToRender) {
       if (componentName in this.renderedComponentInstructions) {
         // check to see if current children who render are
@@ -575,8 +589,8 @@ export default class Core {
     // reset for next time
     this.componentsWithChangedChildrenToRender = new Set([]);
 
-    renderersToUpdate = renderersToUpdate.filter(x => !deletedRenderers.includes(x))
-
+    //TODO: look at this
+    // renderersToUpdate = renderersToUpdate.filter(x => !deletedRenderers.includes(x))
     if (renderersToUpdate.length > 0) {
       let instruction = {
         instructionType: "updateStateVariable",
@@ -588,22 +602,26 @@ export default class Core {
 
     for (let componentName of renderersToUpdate) {
       let component = this._components[componentName];
-      let stateValuesForRenderer = {};
-      for (let stateVariable in component.state) {
-        if (component.state[stateVariable].forRenderer) {
-          let value = await component.state[stateVariable].value;
-          if (value !== null && typeof value === 'object') {
-            value = new Proxy(value, readOnlyProxyHandler)
+      if (component){
+        let stateValuesForRenderer = {};
+        for (let stateVariable in component.state) {
+          if (component.state[stateVariable].forRenderer) {
+            let value = await component.state[stateVariable].value;
+            if (value !== null && typeof value === 'object') {
+              value = new Proxy(value, readOnlyProxyHandler)
+            }
+            stateValuesForRenderer[stateVariable] = value;
           }
-          stateValuesForRenderer[stateVariable] = value;
         }
-      }
-      Object.assign(this.renderedComponentInstructions[componentName].stateValues,
-        stateValuesForRenderer)
+      
+        this.externalFunctions.updateRendererSVsWithRecoil({componentName,stateValues:stateValuesForRenderer,sourceOfUpdate})
 
+        Object.assign(this.renderedComponentInstructions[componentName].stateValues,
+          stateValuesForRenderer)
+      }
     }
 
-    this.coreUpdatedCallback(instructions)
+    this.coreUpdatedCallback(instructions) //This is async
 
   }
 
@@ -674,6 +692,7 @@ export default class Core {
         })
       }
     }
+    this.externalFunctions.updateRendererSVsWithRecoil({componentName,stateValues:stateValuesForRenderer})
 
     this.renderedComponentInstructions[componentName] = {
       componentName: componentName,
@@ -906,6 +925,7 @@ export default class Core {
     let lastMessage = "";
 
     for (let [componentInd, serializedComponent] of serializedComponents.entries()) {
+      // console.timeLog('core','<-Top serializedComponents ',serializedComponent.componentName);
 
       if (typeof serializedComponent !== "object") {
         newComponents.push(serializedComponent);
@@ -971,7 +991,7 @@ export default class Core {
 
       // TODO: need to get message
       //lastMessage = createResult.lastMessage;
-
+      // console.timeLog('core','<-Bottom serializedComponents ',serializedComponent.componentName);
     }
 
     let results = { components: newComponents };
@@ -7486,6 +7506,10 @@ export default class Core {
     return isComposite &&
       (includeNonStandard || !componentClass.treatAsComponentForRecursiveReplacements)
   }
+
+  get rendererTypesInDocument() {
+    return this.document.allPotentialRendererTypes;
+  }  
 
   get componentTypesCreatingVariants() {
     return new Proxy(this._componentTypesCreatingVariants, readOnlyProxyHandler);

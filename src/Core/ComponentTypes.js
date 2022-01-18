@@ -146,6 +146,8 @@ import Split from './components/Split';
 import BestFitLine from './components/BestFitLine';
 import RegionBetweenCurveXAxis from './components/RegionBetweenCurveXAxis';
 import RegionHalfPlane from './components/RegionHalfPlane';
+import CodeEditor from './components/CodeEditor';
+import CodeViewer from './components/CodeViewer';
 import RenderDoenetML from './components/RenderDoenetML';
 
 
@@ -290,6 +292,8 @@ const componentTypeArray = [
   BestFitLine,
   RegionBetweenCurveXAxis,
   RegionHalfPlane,
+  CodeEditor,
+  CodeViewer,
   RenderDoenetML,
 
   BaseComponent,

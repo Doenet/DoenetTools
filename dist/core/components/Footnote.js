@@ -37,14 +37,16 @@ export default class Footnote extends InlineComponent {
 
         let text = ""
         for (let child of dependencyValues.inlineChildren) {
-          if (typeof child.stateValues.text === "string") {
+          if (typeof child !== "object") {
+            text += child.toString();
+          } else if (typeof child.stateValues.text === "string") {
             text += child.stateValues.text;
           } else {
             text += " ";
           }
         }
 
-        return { newValues: { text } };
+        return { setValue: { text } };
       }
     }
 
@@ -60,7 +62,7 @@ export default class Footnote extends InlineComponent {
       }),
       definition({ dependencyValues }) {
         return {
-          newValues: { footnoteTag: String(dependencyValues.footnoteCounter) }
+          setValue: { footnoteTag: String(dependencyValues.footnoteCounter) }
         }
       }
     }

@@ -8,7 +8,8 @@ import { useToast, toastType } from '@Toast';
 import { serializedComponentsReplacer, serializedComponentsReviver } from '../Core/utils/serializedStateProcessing';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faExclamationCircle } from '@fortawesome/free-solid-svg-icons';
-
+import { rendererSVs } from '../Viewer/renderers/useDoenetRenderer';
+import { useRecoilCallback } from 'recoil';
 
 class DoenetViewerChild extends Component {
 
@@ -79,6 +80,7 @@ class DoenetViewerChild extends Component {
           doenetML: this.doenetML,
           externalFunctions: {
             localStateChanged: this.localStateChanged,
+            updateRendererSVsWithRecoil: this.props.updateRendererSVsWithRecoil,
             // submitResponse: this.submitResponse,
             recordSolutionView: this.recordSolutionView,
             recordEvent: this.recordEvent,
@@ -96,6 +98,7 @@ class DoenetViewerChild extends Component {
           doenetML: this.doenetML,
           externalFunctions: {
             localStateChanged: this.localStateChanged,
+            updateRendererSVsWithRecoil: this.props.updateRendererSVsWithRecoil,
             // submitResponse: this.submitResponse,
             recordSolutionView: this.recordSolutionView,
             recordEvent: this.recordEvent,
@@ -246,6 +249,7 @@ class DoenetViewerChild extends Component {
 
     //Let the calling tool know we are ready
     //TODO: Move this to renderer
+    //TODO: THIS ISN'T TRUE AS IT'S HASN'T FINISHED YET
     if (this.props.onCoreReady) {
       this.props.onCoreReady();
     }
@@ -466,27 +470,19 @@ class DoenetViewerChild extends Component {
   }
 
   //offscreen then postpone that one
-  update(instructions) {
+  async update(instructions) {
     for (let instruction of instructions) {
 
       if (instruction.instructionType === "updateStateVariable") {
         for (let componentName of instruction.renderersToUpdate
           .filter(x => x in this.rendererUpdateMethods)
         ) {
+          //TODO: await ????
           this.rendererUpdateMethods[componentName].update({
             sourceOfUpdate: instruction.sourceOfUpdate
           });
         }
-      } else if (instruction.instructionType === "addRenderer") {
-        if (instruction.parentName in this.rendererUpdateMethods)
-          this.rendererUpdateMethods[instruction.parentName].addChildren(instruction)
-      } else if (instruction.instructionType === "deleteRenderers") {
-        if (instruction.parentName in this.rendererUpdateMethods)
-          this.rendererUpdateMethods[instruction.parentName].removeChildren(instruction)
-      } else if (instruction.instructionType === "swapChildRenderers") {
-        if (instruction.parentName in this.rendererUpdateMethods)
-          this.rendererUpdateMethods[instruction.parentName].swapChildren(instruction)
-      }
+      } 
     }
 
 
@@ -775,7 +771,22 @@ class ErrorBoundary extends React.Component {
 
 function DoenetViewer(props) {
   const toast = useToast();
-  let newProps = { ...props, toast }
+  const updateRendererSVsWithRecoil = useRecoilCallback(({snapshot,set})=> async({componentName,stateValues,sourceOfUpdate})=>{
+    // stateVariables = JSON.parse(JSON.stringify(stateVariables))
+    // stateVariables = JSON.stringify(stateVariables, serializedComponentsReplacer)
+    // stateVariables = JSON.parse(JSON.stringify(stateVariables, serializedComponentsReplacer), serializedComponentsReviver)
+    
+    // let stateVariables2 = JSON.stringify(stateVariables)
+
+    // console.log(">>>>{componentName,stateVariables}",{componentName,stateVariables})
+    set(rendererSVs(componentName),{stateValues,sourceOfUpdate})
+    // set(rendererSVs(componentName),{test:true})
+
+  })
+  // function updateRendererSVsWithRecoil({componentName,stateVariables}){
+  //   console.log(">>>>{componentName,stateVariables}",{componentName,stateVariables})
+  // }
+  let newProps = { ...props, toast, updateRendererSVsWithRecoil }
   return <ErrorBoundary><DoenetViewerChild {...newProps} /></ErrorBoundary>
 }
 
@@ -783,7 +794,7 @@ export default DoenetViewer;
 
 
 
-async function renderersloadComponent(promises, rendererClassNames) {
+export async function renderersloadComponent(promises, rendererClassNames) {
 
   var rendererClasses = {};
   for (let [index, promise] of promises.entries()) {
