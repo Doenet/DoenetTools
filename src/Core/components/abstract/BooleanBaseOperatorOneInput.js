@@ -32,7 +32,7 @@ export default class BooleanOperatorOneInput extends BooleanComponent {
       }),
       definition: function ({ dependencyValues }) {
         return {
-          newValues: {
+          setValue: {
             value: constructor.applyBooleanOperator(
               dependencyValues.value
             )

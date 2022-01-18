@@ -1,15 +1,14 @@
 import React from 'react';
-import DoenetRenderer from './DoenetRenderer';
+import useDoenetRender from './useDoenetRenderer';
 
-export default class Boolean extends DoenetRenderer {
+export default function Boolean(props) {
+  let {name, SVs} = useDoenetRender(props,false);
 
-  static initializeChildrenOnConstruction = false;
-  
-  render() {
-
-    if (this.doenetSvData.hidden) {
-      return null;
-    }
-    return <><a name={this.componentName} /><span id={this.componentName}>{this.doenetSvData.text}</span></>
+  if (SVs.hidden) {
+    return null;
   }
+
+  return <><a name={name} /><span id={name}>{SVs.text}</span></>
 }
+
+

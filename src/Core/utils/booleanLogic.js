@@ -22,7 +22,7 @@ export function buildParsedExpression({ dependencyValues, componentInfoObjects }
     foundInString = false;
 
     for (let child of dependencyValues.stringChildren) {
-      if (child.stateValues.value.includes(codePre)) {
+      if (child.includes(codePre)) {
         // found codePre in a string, so extend codePre and try again
         foundInString = true;
         codePre += "p";
@@ -37,10 +37,10 @@ export function buildParsedExpression({ dependencyValues, componentInfoObjects }
   let stringChildInd = 0;
 
   for (let child of dependencyValues.allChildren) {
-    if (child.componentType === "string") {
+    if (typeof child === "string") {
       // need to use stringChildren
       // as child variable doesn't have stateVariables
-      inputString += " " + dependencyValues.stringChildren[stringChildInd].stateValues.value + " ";
+      inputString += " " + dependencyValues.stringChildren[stringChildInd] + " ";
       stringChildInd++;
     }
     else { // a math, mathList, number, numberList, text, textList, boolean, or booleanList
@@ -93,7 +93,7 @@ export function buildParsedExpression({ dependencyValues, componentInfoObjects }
 
 
   return {
-    newValues: {
+    setValue: {
       codePre, parsedExpression
     }
   }

@@ -7,9 +7,7 @@ export default class Choiceinput extends Input {
 
 
     this.actions = {
-      updateSelectedIndices: this.updateSelectedIndices.bind(
-        new Proxy(this, this.readOnlyProxyHandler)
-      )
+      updateSelectedIndices: this.updateSelectedIndices.bind(this),
     }
 
     this.externalActions = {};
@@ -17,10 +15,11 @@ export default class Choiceinput extends Input {
     //Complex because the stateValues isn't defined until later
     Object.defineProperty(this.externalActions, 'submitAnswer', {
       enumerable: true,
-      get: function () {
-        if (this.stateValues.answerAncestor !== null) {
+      get: async function () {
+        let answerAncestor = await this.stateValues.answerAncestor;
+        if (answerAncestor !== null) {
           return {
-            componentName: this.stateValues.answerAncestor.componentName,
+            componentName: answerAncestor.componentName,
             actionName: "submitAnswer"
           }
         } else {
@@ -38,13 +37,6 @@ export default class Choiceinput extends Input {
   static variableForPlainMacro = "values";
 
   static createsVariants = true;
-
-  // used when referencing this component without prop
-  static get stateVariablesShadowedForReference() {
-    return [
-      "choiceOrder", "allSelectedIndices", "indicesMatchedByBoundValue"
-    ]
-  };
 
   static createAttributesObject(args) {
     let attributes = super.createAttributesObject(args);
@@ -64,23 +56,12 @@ export default class Choiceinput extends Input {
     };
     attributes.inline = {
       createComponentOfType: "boolean",
-      createStateVariable: "inline",
-      defaultValue: false,
-      public: true,
-      forRenderer: true,
     };
     attributes.randomizeOrder = {
       createComponentOfType: "boolean",
       createStateVariable: "randomizeOrder",
       defaultValue: false,
       public: true,
-    };
-    attributes.feedbackDefinitions = {
-      createComponentOfType: "feedbackDefinitions",
-      createStateVariable: "feedbackDefinitions",
-      public: true,
-      propagateToDescendants: true,
-      mergeArrays: true
     };
 
     attributes.preselectChoice = {
@@ -117,6 +98,33 @@ export default class Choiceinput extends Input {
 
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
+    stateVariableDefinitions.inline = {
+      public: true,
+      componentType: "boolean",
+      forRenderer: true,
+      defaultValue: false,
+      hasEssential: true,
+      returnDependencies: () => ({
+        inlineAttr: {
+          dependencyType: "attributeComponent",
+          attributeName: "inline",
+          variableNames: ["value"]
+        },
+        parentInline: {
+          dependencyType: "parentStateVariable",
+          variableName: "inline"
+        }
+      }),
+      definition({ dependencyValues }) {
+        if (dependencyValues.inlineAttr) {
+          return { setValue: { inline: dependencyValues.inlineAttr.stateValues.value } }
+        } else if (dependencyValues.parentInline !== null) {
+          return { setValue: { inline: dependencyValues.parentInline } }
+        } else {
+          return { useEssentialOrDefaultValue: { inline: {} } }
+        }
+      }
+    }
 
     stateVariableDefinitions.numberChoices = {
       public: true,
@@ -128,12 +136,13 @@ export default class Choiceinput extends Input {
         },
       }),
       definition({ dependencyValues }) {
-        return { newValues: { numberChoices: dependencyValues.choiceChildren.length } }
+        return { setValue: { numberChoices: dependencyValues.choiceChildren.length } }
       }
     }
 
     stateVariableDefinitions.choiceOrder = {
       forRenderer: true,
+      shadowVariable: true,
       returnDependencies: ({ sharedParameters }) => ({
         choiceChildren: {
           dependencyType: "child",
@@ -177,7 +186,7 @@ export default class Choiceinput extends Input {
 
                   return {
                     // makeEssential: ["choiceOrder"],
-                    newValues: {
+                    setValue: {
                       choiceOrder: desiredChoiceOrder,
                     },
                   }
@@ -196,7 +205,7 @@ export default class Choiceinput extends Input {
             [choiceOrder[i], choiceOrder[j]] = [choiceOrder[j], choiceOrder[i]];
           }
         }
-        return { newValues: { choiceOrder } }
+        return { setValue: { choiceOrder } }
       }
     }
 
@@ -230,7 +239,7 @@ export default class Choiceinput extends Input {
 
         if (!dependencyValues.randomizeOrder) {
           return {
-            newValues: {
+            setValue: {
               isVariantComponent: false,
               generatedVariantInfo: null
             }
@@ -252,7 +261,7 @@ export default class Choiceinput extends Input {
           }
 
         }
-        return { newValues: { generatedVariantInfo, isVariantComponent: true } }
+        return { setValue: { generatedVariantInfo, isVariantComponent: true } }
 
       }
     }
@@ -279,7 +288,7 @@ export default class Choiceinput extends Input {
         let choiceChildrenOrdered = dependencyValues.choiceOrder.map(i => dependencyValues.choiceChildren[i - 1]);
 
         return {
-          newValues: {
+          setValue: {
             choiceChildrenOrdered, numberChoices
           }
         }
@@ -322,7 +331,7 @@ export default class Choiceinput extends Input {
         );
 
         return {
-          newValues: {
+          setValue: {
             choiceTexts: choiceChildrenOrdered.map(x => x.stateValues.text),
           }
         }
@@ -362,7 +371,7 @@ export default class Choiceinput extends Input {
         );
 
         return {
-          newValues: {
+          setValue: {
             choicePreselects: choiceChildrenOrdered.map(x => x.stateValues.preSelect),
           }
         }
@@ -403,7 +412,7 @@ export default class Choiceinput extends Input {
         );
 
         return {
-          newValues: {
+          setValue: {
             choicesDisabled: choiceChildrenOrdered.map(x => x.stateValues.disabled),
           }
         }
@@ -444,7 +453,7 @@ export default class Choiceinput extends Input {
         );
 
         return {
-          newValues: {
+          setValue: {
             choicesHidden: choiceChildrenOrdered.map(x => x.stateValues.hidden),
           }
         }
@@ -454,7 +463,7 @@ export default class Choiceinput extends Input {
 
     stateVariableDefinitions.componentType = {
       returnDependencies: () => ({}),
-      definition: () => ({ newValues: { componentType: "text" } })
+      definition: () => ({ setValue: { componentType: "text" } })
     }
 
     stateVariableDefinitions.indicesMatchedByBoundValue = {
@@ -495,23 +504,24 @@ export default class Choiceinput extends Input {
                 }
               }
               indicesMatchedByBoundValue.sort((a, b) => a - b);
-              return { newValues: { indicesMatchedByBoundValue } }
+              return { setValue: { indicesMatchedByBoundValue } }
             } else {
               let ind = choiceTexts.indexOf(dependencyValues.bindValueTo.stateValues.value.toLowerCase().trim());
               if (ind !== -1) {
-                return { newValues: { indicesMatchedByBoundValue: [ind + 1] } }
+                return { setValue: { indicesMatchedByBoundValue: [ind + 1] } }
               }
             }
 
           }
         }
 
-        return { newValues: { indicesMatchedByBoundValue: [] } }
+        return { setValue: { indicesMatchedByBoundValue: [] } }
       }
     }
 
 
     stateVariableDefinitions.allSelectedIndices = {
+      hasEssential: true,
       returnDependencies() {
         return {
           choiceOrder: {
@@ -545,12 +555,11 @@ export default class Choiceinput extends Input {
       },
       definition({ dependencyValues }) {
         if (dependencyValues.bindValueTo !== null) {
-          return { newValues: { allSelectedIndices: dependencyValues.indicesMatchedByBoundValue } }
+          return { setValue: { allSelectedIndices: dependencyValues.indicesMatchedByBoundValue } }
         } else {
           return {
             useEssentialOrDefaultValue: {
               allSelectedIndices: {
-                variablesToCheck: ["allSelectedIndices"],
                 get defaultValue() {
                   let ind = dependencyValues.choicePreselects.indexOf(true);
                   if (ind !== -1) {
@@ -574,7 +583,7 @@ export default class Choiceinput extends Input {
           return {
             success: true,
             instructions: [{
-              setStateVariable: "allSelectedIndices",
+              setEssentialValue: "allSelectedIndices",
               value: desiredStateVariableValues.allSelectedIndices
             }]
           }
@@ -614,7 +623,7 @@ export default class Choiceinput extends Input {
         },
       }),
       definition({ dependencyValues }) {
-        return { newValues: { nSelectedIndices: dependencyValues.allSelectedIndices.length } }
+        return { setValue: { nSelectedIndices: dependencyValues.allSelectedIndices.length } }
       },
     }
 
@@ -625,7 +634,6 @@ export default class Choiceinput extends Input {
       isArray: true,
       entryPrefixes: ["selectedIndex"],
       forRenderer: true,
-      defaultEntryValue: 0,
       returnArraySizeDependencies: () => ({
         nSelectedIndices: {
           dependencyType: "stateVariable",
@@ -651,7 +659,7 @@ export default class Choiceinput extends Input {
         for (let key in globalDependencyValues.allSelectedIndices) {
           selectedIndices[key] = globalDependencyValues.allSelectedIndices[key]
         }
-        return { newValues: { selectedIndices } }
+        return { setValue: { selectedIndices } }
 
       },
     }
@@ -701,7 +709,7 @@ export default class Choiceinput extends Input {
           ]
         }
 
-        return { newValues: { selectedValues } }
+        return { setValue: { selectedValues } }
 
       },
     }
@@ -737,7 +745,7 @@ export default class Choiceinput extends Input {
           x => dependencyValues.choiceOrder[x - 1]
         )
 
-        return { newValues: { childIndicesSelected } }
+        return { setValue: { childIndicesSelected } }
       }
     }
 
@@ -797,7 +805,7 @@ export default class Choiceinput extends Input {
           }
         }
 
-        return { newValues: { creditAchievedIfSubmit } }
+        return { setValue: { creditAchievedIfSubmit } }
       }
     }
 
@@ -829,7 +837,7 @@ export default class Choiceinput extends Input {
           }
         }
 
-        return { newValues: { submittedIndices } }
+        return { setValue: { submittedIndices } }
       },
       inverseDefinition({ desiredStateVariableValues, dependencyValues }) {
 
@@ -879,7 +887,7 @@ export default class Choiceinput extends Input {
           feedbacks.push(...choiceChild.stateValues.feedbacks);
         }
         return {
-          newValues: {
+          setValue: {
             allFeedbacks: feedbacks
           }
         }
@@ -897,7 +905,7 @@ export default class Choiceinput extends Input {
       }),
       definition({ dependencyValues }) {
         return {
-          newValues: { numberFeedbacks: dependencyValues.allFeedbacks.length },
+          setValue: { numberFeedbacks: dependencyValues.allFeedbacks.length },
           checkForActualChange: { numberFeedbacks: true }
         }
       }
@@ -938,7 +946,7 @@ export default class Choiceinput extends Input {
           feedbacks[arrayKey] = globalDependencyValues.allFeedbacks[arrayKey];
         }
 
-        return { newValues: { feedbacks } }
+        return { setValue: { feedbacks } }
       }
 
     }
@@ -957,10 +965,10 @@ export default class Choiceinput extends Input {
     //   }),
     //   definition: function ({ dependencyValues }) {
     //     if (dependencyValues.inline) {
-    //       return { newValues: { childrenToRender: [] } }
+    //       return { setValue: { childrenToRender: [] } }
     //     } else {
     //       return {
-    //         newValues: {
+    //         setValue: {
     //           childrenToRender: dependencyValues.choiceChildrenOrdered.map(x => x.componentName)
     //         }
     //       }
@@ -973,8 +981,8 @@ export default class Choiceinput extends Input {
 
   }
 
-  updateSelectedIndices({ selectedIndices }) {
-    if (!this.stateValues.disabled) {
+  async updateSelectedIndices({ selectedIndices }) {
+    if (!await this.stateValues.disabled) {
       let updateInstructions = [{
         updateType: "updateValue",
         componentName: this.componentName,
@@ -982,6 +990,7 @@ export default class Choiceinput extends Input {
         value: selectedIndices
       }];
 
+      let choiceTexts = await this.stateValues.choiceTexts;
       let event = {
         verb: "selected",
         object: {
@@ -991,23 +1000,26 @@ export default class Choiceinput extends Input {
         result: {
           response: selectedIndices,
           responseText: selectedIndices
-            .map(i => this.stateValues.choiceTexts[i - 1])
+            .map(i => choiceTexts[i - 1])
         }
       }
 
-      if (this.stateValues.answerAncestor) {
+      let answerAncestor = await this.stateValues.answerAncestor;
+      if (answerAncestor) {
         event.context = {
-          answerAncestor: this.stateValues.answerAncestor.componentName
+          answerAncestor: answerAncestor.componentName
         }
       }
 
 
-      return this.coreFunctions.performUpdate({
+      await this.coreFunctions.performUpdate({
         updateInstructions,
         event,
-      }).then(() => this.coreFunctions.triggerChainedActions({
+      });
+
+      return await this.coreFunctions.triggerChainedActions({
         componentName: this.componentName,
-      }));
+      });
 
     }
   }

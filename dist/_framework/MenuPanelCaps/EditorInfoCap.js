@@ -26,9 +26,9 @@ export default function EditorInfoCap() {
   }
   let imageURL = `/media/drive_pictures/${image}`;
   return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("div", {
-    style: {position: "relative", paddingBottom: "100px"}
+    style: {position: "relative", paddingBottom: "135px"}
   }, /* @__PURE__ */ React.createElement("img", {
-    style: {position: "absolute", height: "100px", objectFit: "cover"},
+    style: {position: "absolute", height: "135px", objectFit: "cover"},
     src: imageURL,
     alt: `${course_label} course`,
     width: "240px"

@@ -5,9 +5,7 @@ import { evaluateLogic, buildParsedExpression } from '../utils/booleanLogic';
 export default class BooleanComponent extends InlineComponent {
   static componentType = "boolean";
 
-  // used when referencing this component without prop
-  static useChildrenForReference = false;
-  static get stateVariablesShadowedForReference() { return ["value"] };
+  static variableForPlainMacro = "value";
 
   static descendantCompositesMustHaveAReplacement = true;
   static descendantCompositesDefaultReplacementType = "math";
@@ -20,14 +18,12 @@ export default class BooleanComponent extends InlineComponent {
       createStateVariable: "symbolicEquality",
       defaultValue: false,
       public: true,
-      ignorePropagationFromAncestors: true,
     };
     attributes.expandOnCompare = {
       createComponentOfType: "boolean",
       createStateVariable: "expandOnCompare",
       defaultValue: false,
       public: true,
-      ignorePropagationFromAncestors: true,
     };
     attributes.simplifyOnCompare = {
       createComponentOfType: "text",
@@ -37,56 +33,48 @@ export default class BooleanComponent extends InlineComponent {
       valueTransformations: { "": "full", "true": "full" },
       validValues: ["none", "full", "numbers", "numbersepreserveorder"],
       public: true,
-      ignorePropagationFromAncestors: true,
     };
     attributes.unorderedCompare = {
       createComponentOfType: "boolean",
       createStateVariable: "unorderedCompare",
       defaultValue: false,
       public: true,
-      ignorePropagationFromAncestors: true,
     };
     attributes.matchByExactPositions = {
       createComponentOfType: "boolean",
       createStateVariable: "matchByExactPositions",
       defaultValue: false,
       public: true,
-      ignorePropagationFromAncestors: true,
     }
     attributes.allowedErrorInNumbers = {
       createComponentOfType: "number",
       createStateVariable: "allowedErrorInNumbers",
       defaultValue: 0,
       public: true,
-      ignorePropagationFromAncestors: true,
     };
     attributes.includeErrorInNumberExponents = {
       createComponentOfType: "boolean",
       createStateVariable: "includeErrorInNumberExponents",
       defaultValue: false,
       public: true,
-      ignorePropagationFromAncestors: true,
     };
     attributes.allowedErrorIsAbsolute = {
       createComponentOfType: "boolean",
       createStateVariable: "allowedErrorIsAbsolute",
       defaultValue: false,
       public: true,
-      ignorePropagationFromAncestors: true,
     };
     attributes.nSignErrorsMatched = {
       createComponentOfType: "number",
       createStateVariable: "nSignErrorsMatched",
       defaultValue: 0,
       public: true,
-      ignorePropagationFromAncestors: true,
     };
     attributes.nPeriodicSetMatchesRequired = {
       createComponentOfType: "integer",
       createStateVariable: "nPeriodicSetMatchesRequired",
       defaultValue: 3,
       public: true,
-      ignorePropagationFromAncestors: true,
     };
     return attributes;
   }
@@ -167,7 +155,7 @@ export default class BooleanComponent extends InlineComponent {
         let codePre = dependencyValues.codePre;
 
         for (let child of dependencyValues.allChildren) {
-          if (child.componentType !== "string") {
+          if (typeof child !== "string") {
             // a math, mathList, text, textList, boolean, or booleanList
             let code = codePre + subnum;
 
@@ -215,7 +203,7 @@ export default class BooleanComponent extends InlineComponent {
         }
 
         return {
-          newValues: {
+          setValue: {
             mathChildrenByCode, mathListChildrenByCode,
             numberChildrenByCode, numberListChildrenByCode,
             textChildrenByCode, textListChildrenByCode,
@@ -231,8 +219,12 @@ export default class BooleanComponent extends InlineComponent {
       public: true,
       componentType: "boolean",
       forRenderer: true,
+      hasEssential: true,
       defaultValue: false,
       set: Boolean,
+      stateVariablesPrescribingAdditionalAttributes: {
+        fixed: "fixed",
+      },
       returnDependencies: () => ({
         symbolicEquality: {
           dependencyType: "stateVariable",
@@ -322,7 +314,7 @@ export default class BooleanComponent extends InlineComponent {
         if (dependencyValues.allChildren.length === 0) {
           return {
             useEssentialOrDefaultValue: {
-              value: { variablesToCheck: ["value"] }
+              value: true
             }
           }
         } else if (dependencyValues.parsedExpression === null) {
@@ -330,7 +322,7 @@ export default class BooleanComponent extends InlineComponent {
           // (which could occur if have invalid form)
           // return false
           return {
-            newValues: { value: false }
+            setValue: { value: false }
           }
         }
 
@@ -346,29 +338,28 @@ export default class BooleanComponent extends InlineComponent {
 
 
         return {
-          newValues: { value: fractionSatisfied === 1 }
+          setValue: { value: fractionSatisfied === 1 }
         }
 
       },
       inverseDefinition: function ({ desiredStateVariableValues, dependencyValues, componentInfoObjects }) {
         if (dependencyValues.allChildren.length === 0) {
-          // no children, so value is essential and give it the desired value
           return {
             success: true,
             instructions: [{
-              setStateVariable: "value",
+              setEssentialValue: "value",
               value: Boolean(desiredStateVariableValues.value)
             }]
           };
         } else if (dependencyValues.allChildren.length === 1) {
 
           let child = dependencyValues.allChildren[0];
-          if (child.componentType === "string") {
+          if (typeof child === "string") {
             return {
               success: true,
               instructions: [{
                 setDependency: "allChildren",
-                desiredValue: desiredStateVariableValues.value,
+                desiredValue: desiredStateVariableValues.value.toString(),
                 childIndex: 0,
                 variableIndex: 0,
               }]
@@ -407,7 +398,7 @@ export default class BooleanComponent extends InlineComponent {
         },
       }),
       definition: function ({ dependencyValues }) {
-        return { newValues: { text: dependencyValues.value ? "true" : "false" } }
+        return { setValue: { text: dependencyValues.value ? "true" : "false" } }
       },
       inverseDefinition({ desiredStateVariableValues }) {
         let desiredText = String(desiredStateVariableValues.text).toLowerCase();

@@ -43,17 +43,17 @@ import { getFromLatex, normalizeLatexString } from '../../Core/utils/math';
 // `;
 
 export default function MathInput(props) {
-  let [name, SVs, actions] = useDoenetRender(props);
+  let {name, SVs, actions} = useDoenetRender(props);
   const [latex, setLatex] = useState('');
   const [focused, setFocus] = useState(false);
-  let mathExpression = SVs.valueForDisplay;
-  let latexValue = stripLatex(SVs.valueForDisplay.toLatex());
+  let mathExpression = me.fromAst(SVs.valueForDisplay);
+  let latexValue = stripLatex(me.fromAst(SVs.valueForDisplay).toLatex());
   const [mathField, setMathField] = useState(null);
   let validationState = 'unvalidated';
   const setFocusedField = useSetRecoilState(focusedMathField);
   const setFocusedFieldReturn = useSetRecoilState(focusedMathFieldReturn);
-  let valueToRevertTo = SVs.value;
-  let valueForDisplayToRevertTo = SVs.valueForDisplay;
+  let valueToRevertTo = me.fromAst(SVs.value);
+  let valueForDisplayToRevertTo = me.fromAst(SVs.valueForDisplay);
   const containerRef = useRecoilValue(palletRef);
   const toggleButtonRef = useRecoilValue(buttonRef);
   const functionTabRef = useRecoilValue(functionRef);
@@ -61,8 +61,6 @@ export default function MathInput(props) {
   if (latexValue === '\uFF3F') {
     latexValue = '';
   }
-
-  console.log('input field loaded');
 
   let initializeChildrenOnConstruction = false;
 
@@ -97,8 +95,9 @@ export default function MathInput(props) {
     let newMathExpression = calculateMathExpressionFromLatex(text);
     if (!newMathExpression.equalsViaSyntax(currentMathExpressionNormalized)) {
       mathExpression = newMathExpression;
-      actions.updateImmediateValue({
-        mathExpression: newMathExpression,
+      props.callAction({
+        action:actions.updateImmediateValue,
+        args:{mathExpression: newMathExpression.tree}
       });
     }
   };
@@ -142,15 +141,19 @@ export default function MathInput(props) {
   };
 
   const handlePressEnter = (e) => {
-    valueToRevertTo = SVs.immediateValue;
+    valueToRevertTo = me.fromAst(SVs.immediateValue);
     valueForDisplayToRevertTo = mathExpression;
 
     // this.latexValueToRevertTo = this.latexValue;
-    if (!SVs.value.equalsViaSyntax(SVs.immediateValue)) {
-      actions.updateValue();
+    if (!me.fromAst(SVs.value).equalsViaSyntax(me.fromAst(SVs.immediateValue))) {
+      props.callAction({
+        action:actions.updateValue,
+      });
     }
     if (SVs.includeCheckWork && validationState === 'unvalidated') {
-      actions.submitAnswer();
+      props.callAction({
+        action:actions.submitAnswer,
+      });
     }
   };
 
@@ -181,11 +184,13 @@ export default function MathInput(props) {
     ) {
       console.log('>>> clicked inside the panel functional panel');
     } else {
-      valueToRevertTo = SVs.immediateValue;
+      valueToRevertTo = me.fromAst(SVs.immediateValue);
       valueForDisplayToRevertTo = mathExpression;
       // this.latexValueToRevertTo = this.latexValue;
-      if (!SVs.value.equalsViaSyntax(SVs.immediateValue)) {
-        actions.updateValue();
+      if (!me.fromAst(SVs.value).equalsViaSyntax(me.fromAst(SVs.immediateValue))) {
+        props.callAction({
+          action:actions.updateValue,
+        });
       }
 
       setFocus(false);
@@ -212,18 +217,18 @@ export default function MathInput(props) {
     surroundingBorderColor = '#82a5ff';
   }
 
-  if (!valueForDisplayToRevertTo.equalsViaSyntax(SVs.valueForDisplay)) {
+  if (!valueForDisplayToRevertTo.equalsViaSyntax(me.fromAst(SVs.valueForDisplay))) {
     // The valueForDisplay coming from the mathInput component
     // is not the same as the renderer's value
     // so we change the renderer's value to match
 
-    mathExpression = SVs.valueForDisplay;
+    mathExpression = me.fromAst(SVs.valueForDisplay);
     latexValue = stripLatex(mathExpression.toLatex());
     if (latexValue === '\uFF3F') {
       latexValue = '';
     }
-    valueToRevertTo = SVs.value;
-    valueForDisplayToRevertTo = SVs.valueForDisplay;
+    valueToRevertTo = me.fromAst(SVs.value);
+    valueForDisplayToRevertTo = me.fromAst(SVs.valueForDisplay);
     // this.latexValueToRevertTo = this.latexValue;
   }
 
@@ -251,10 +256,14 @@ export default function MathInput(props) {
           tabIndex="0"
           //ref={c => { this.target = c && ReactDOM.findDOMNode(c); }}
           style={checkWorkStyle}
-          onClick={actions.submitAnswer}
+          onClick={()=>props.callAction({
+            action:actions.submitAnswer,
+          })}
           onKeyPress={(e) => {
             if (e.key === 'Enter') {
-              actions.submitAnswer();
+              props.callAction({
+                action:actions.submitAnswer,
+              });
             }
           }}
         >

@@ -1,9 +1,10 @@
 import React from 'react';
 import styled from 'styled-components';
-import Profile from '../Profile';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faChevronRight } from "@fortawesome/free-solid-svg-icons";
-import { atom, useRecoilCallback } from 'recoil';
+import { faChevronRight, faCog } from "@fortawesome/free-solid-svg-icons";
+import { atom, useRecoilCallback, useSetRecoilState } from 'recoil';
+import { pageToolViewAtom } from '../NewToolRoot';
+
 
 export const mainPanelClickAtom = atom({
   key:"mainPanelClickAtom",
@@ -38,11 +39,27 @@ height: 35px;
 width: 20px;
 color: white;
 border: none;
-display: inline-block;
+position: relative;
+cursor: pointer;
+
 `;
 
-export default function MainPanel({ headerControls, children, setMenusOpen, openMenuButton, displayProfile }) {
+const SettingsButton = styled.button`
+background-color: white;
+height: 50px;
+width: 50px;
+color: black;
+border: none;
+position: absolute;
+bottom: 0;
+right: 0;
+cursor: pointer;
+font-size: 20px;
+`
+
+export default function MainPanel({ headerControls, children, setMenusOpen, openMenuButton, displaySettings }) {
   console.log(">>>===main panel")
+  const setPageToolView = useSetRecoilState(pageToolViewAtom);
 
   const mpOnClick = useRecoilCallback(({set,snapshot})=> async ()=>{
     const atomArray = await snapshot.getPromise(mainPanelClickAtom)
@@ -56,7 +73,6 @@ export default function MainPanel({ headerControls, children, setMenusOpen, open
 
   if (openMenuButton){
     controls.push(<OpenButton key='openbutton' onClick={()=>setMenusOpen(true)}><FontAwesomeIcon icon={faChevronRight}/></OpenButton>)
-   if(displayProfile){controls.push(<Profile key='profile'/>)}
   }
   if (headerControls){
     for (const [i,control] of Object.entries(headerControls)){
@@ -64,12 +80,23 @@ export default function MainPanel({ headerControls, children, setMenusOpen, open
     }
   }
 
+  const contents = [];
+
+  if (displaySettings){
+    contents.push(<SettingsButton onClick={()=>setPageToolView({page:'settings',tool:'',view:''})}><FontAwesomeIcon icon={faCog}/></SettingsButton>)
+  }
+  if (children) {
+    contents.push(children)
+  }
+
   return (
     <>
       <ControlsWrapper>
       {controls}
       </ControlsWrapper>
-      <ContentWrapper onClick={mpOnClick}>{children}</ContentWrapper>
+      <ContentWrapper onClick={mpOnClick}>
+        {contents}
+      </ContentWrapper>
     </>
   );
 }

@@ -5,7 +5,7 @@ describe('Function curve Tag Tests', function () {
   })
 
   it('a function of x', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -20,7 +20,7 @@ describe('Function curve Tag Tests', function () {
     //to wait for window to load
     cy.get('#\\/_text1').should('have.text', 'a');
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/_curve1'].stateValues.curveType).eq("function");
       expect(components['/_curve1'].stateValues.flipFunction).eq(false);
@@ -31,7 +31,7 @@ describe('Function curve Tag Tests', function () {
   });
 
   it('sugar a function of x', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -45,7 +45,7 @@ describe('Function curve Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a');  //wait for window to load
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/_curve1'].stateValues.variableForChild.tree).eq("x");
       expect(components['/_curve1'].stateValues.flipFunction).eq(false);
@@ -56,7 +56,7 @@ describe('Function curve Tag Tests', function () {
   });
 
   it('sugar a function of x, with strings and macros', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -71,7 +71,7 @@ describe('Function curve Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a');  //wait for window to load
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/_curve1'].stateValues.variableForChild.tree).eq("x");
       expect(components['/_curve1'].stateValues.flipFunction).eq(false);
@@ -82,7 +82,7 @@ describe('Function curve Tag Tests', function () {
   });
 
   it.skip('x = a function of y', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -97,7 +97,7 @@ describe('Function curve Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');  //wait for window to load
 
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let functionCurve = components[components['/_curve1'].stateValues.curveChild];
       // expect(components['/_curve1'].stateValues.curveType).eq("function");
@@ -113,7 +113,7 @@ describe('Function curve Tag Tests', function () {
   });
 
   it.skip('x = a function of y, switching variables', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -128,7 +128,7 @@ describe('Function curve Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');  //wait for window to load
 
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let functionCurve = components[components['/_curve1'].stateValues.curveChild];
       // expect(components['/_curve1'].stateValues.curveType).eq("function");
@@ -144,7 +144,7 @@ describe('Function curve Tag Tests', function () {
   });
 
   it.skip('q = a function of p', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -157,7 +157,7 @@ describe('Function curve Tag Tests', function () {
     });
     cy.get('#\\/_text1').should('have.text', 'a');  //wait for window to load
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let functionCurve = components[components['/_curve1'].stateValues.curveChild];
       // expect(components['/_curve1'].stateValues.curveType).eq("function");
@@ -173,7 +173,7 @@ describe('Function curve Tag Tests', function () {
   });
 
   it.skip('q = a function of p, switching variables', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -188,7 +188,7 @@ describe('Function curve Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');  //wait for window to load
 
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let functionCurve = components[components['/_curve1'].stateValues.curveChild];
       // expect(components['/_curve1'].stateValues.curveType).eq("function");
@@ -204,7 +204,7 @@ describe('Function curve Tag Tests', function () {
   });
 
   it('sugar a function of r', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -219,7 +219,7 @@ describe('Function curve Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');  //wait for window to load
 
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/_curve1'].stateValues.curveType).eq("function");
       expect(components['/_curve1'].stateValues.variableForChild.tree).eq("r");
@@ -231,7 +231,7 @@ describe('Function curve Tag Tests', function () {
   });
 
   it('sugar a function of r, with strings and macro', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -247,7 +247,7 @@ describe('Function curve Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');  //wait for window to load
 
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/_curve1'].stateValues.curveType).eq("function");
       expect(components['/_curve1'].stateValues.variableForChild.tree).eq("r");
@@ -259,7 +259,7 @@ describe('Function curve Tag Tests', function () {
   });
 
   it('a function of a', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -274,7 +274,7 @@ describe('Function curve Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');  //wait for window to load
 
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/_curve1'].stateValues.curveType).eq("function");
       expect(components['/_curve1'].stateValues.flipFunction).eq(false);
@@ -285,7 +285,7 @@ describe('Function curve Tag Tests', function () {
   });
 
   it('a function with copy', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -299,7 +299,7 @@ describe('Function curve Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');  //wait for window to load
 
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/_curve1'].stateValues.curveType).eq("function");
       expect(components['/_curve1'].stateValues.flipFunction).eq(false);
@@ -308,7 +308,7 @@ describe('Function curve Tag Tests', function () {
     })
 
     cy.get("#\\/a textarea").type("{end}{backspace}-2{enter}", { force: true });
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/_curve1'].stateValues.curveType).eq("function");
       expect(components['/_curve1'].stateValues.flipFunction).eq(false);
@@ -319,7 +319,7 @@ describe('Function curve Tag Tests', function () {
   });
 
   it('a function manually flipped', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -334,7 +334,7 @@ describe('Function curve Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');  //wait for window to load
 
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/_curve1'].stateValues.flipFunction).eq(true);
       expect(components['/_curve1'].stateValues.fs[0](-2)).eq(-8 + 2);
@@ -344,7 +344,7 @@ describe('Function curve Tag Tests', function () {
   });
 
   it('constrain to function', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -357,7 +357,7 @@ describe('Function curve Tag Tests', function () {
     
     <point x='3' y='5'>
     <constraints>
-      <constrainTo><copy tname="_curve1" /></constrainTo>
+      <constrainTo><copy target="_curve1" /></constrainTo>
     </constraints>
     </point>
     
@@ -368,7 +368,7 @@ describe('Function curve Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');  //wait for window to load
 
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/_curve1'].stateValues.flipFunction).eq(false);
       let x = components['/_point1'].stateValues.xs[0].tree;
@@ -377,27 +377,27 @@ describe('Function curve Tag Tests', function () {
       expect(y).closeTo(x * x * x * x - 5 * x * x, 1E-5);
     })
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components['/_point1'].movePoint({ x: 1.5, y: -1.5 })
+      await components['/_point1'].movePoint({ x: 1.5, y: -1.5 })
       let x = components['/_point1'].stateValues.xs[0].tree;
       let y = components['/_point1'].stateValues.xs[1].tree;
       expect(x).eq(1.5);
       expect(y).closeTo(x * x * x * x - 5 * x * x, 1E-5);
     })
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components['/_point1'].movePoint({ x: 0.1, y: -10 })
+      await components['/_point1'].movePoint({ x: 0.1, y: -10 })
       let x = components['/_point1'].stateValues.xs[0].tree;
       let y = components['/_point1'].stateValues.xs[1].tree;
       expect(x).eq(0.1);
       expect(y).closeTo(x * x * x * x - 5 * x * x, 1E-5);
     })
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components['/_point1'].movePoint({ x: -0.1, y: -10 })
+      await components['/_point1'].movePoint({ x: -0.1, y: -10 })
       let x = components['/_point1'].stateValues.xs[0].tree;
       let y = components['/_point1'].stateValues.xs[1].tree;
       expect(x).eq(-0.1);
@@ -407,7 +407,7 @@ describe('Function curve Tag Tests', function () {
   });
 
   it('constrain to function, nearest point as curve', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -420,7 +420,7 @@ describe('Function curve Tag Tests', function () {
     
     <point x='3' y='5'>
     <constraints>
-      <constrainTo><copy tname="_curve1" /></constrainTo>
+      <constrainTo><copy target="_curve1" /></constrainTo>
     </constraints>
     </point>
     
@@ -431,7 +431,7 @@ describe('Function curve Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');  //wait for window to load
 
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/_curve1'].stateValues.flipFunction).eq(false);
       let x = components['/_point1'].stateValues.xs[0].tree;
@@ -441,9 +441,9 @@ describe('Function curve Tag Tests', function () {
       expect(y).closeTo(x * x * x * x - 5 * x * x, 1E-5);
     })
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components['/_point1'].movePoint({ x: 1.5, y: -1.5 })
+      await components['/_point1'].movePoint({ x: 1.5, y: -1.5 })
       let x = components['/_point1'].stateValues.xs[0].tree;
       let y = components['/_point1'].stateValues.xs[1].tree;
       expect(y).closeTo(-1.5, 0.1);
@@ -451,21 +451,21 @@ describe('Function curve Tag Tests', function () {
       expect(y).closeTo(x * x * x * x - 5 * x * x, 1E-5);
     })
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components['/_point1'].movePoint({ x: 0.1, y: -10 })
+      await components['/_point1'].movePoint({ x: 0.1, y: -10 })
       let x = components['/_point1'].stateValues.xs[0].tree;
       let y = components['/_point1'].stateValues.xs[1].tree;
-      let minimum2 = components["/_function1"].stateValues.minima[1];
+      let minimum2 = (await components["/_function1"].stateValues.minima)[1];
 
       expect(x).closeTo(minimum2[0], 0.1);
       expect(y).closeTo(minimum2[1], 0.1);
       expect(y).closeTo(x * x * x * x - 5 * x * x, 1E-5);
     })
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components['/_point1'].movePoint({ x: -0.1, y: -10 })
+      await components['/_point1'].movePoint({ x: -0.1, y: -10 })
       let x = components['/_point1'].stateValues.xs[0].tree;
       let y = components['/_point1'].stateValues.xs[1].tree;
       let minimum1 = components["/_function1"].stateValues.minima[0];
@@ -479,9 +479,9 @@ describe('Function curve Tag Tests', function () {
     // try a bunch of points at right to make sure stay on right branch
     // which fails with nDiscretizationPoints too low (e.g., at 100) 
     for (let v = -5; v <= -1; v += 0.1) {
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let components = Object.assign({}, win.state.components);
-        components['/_point1'].movePoint({ x: 5, y: v })
+        await components['/_point1'].movePoint({ x: 5, y: v })
         let x = components['/_point1'].stateValues.xs[0].tree;
         let y = components['/_point1'].stateValues.xs[1].tree;
         expect(x).greaterThan(1.7)
@@ -493,7 +493,7 @@ describe('Function curve Tag Tests', function () {
   });
 
   it('constrain to function, different scales from graph', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -502,7 +502,7 @@ describe('Function curve Tag Tests', function () {
         <function name='g' variables='t' domain="(0,5)">(60 t - 106 t^2 + 59*t^3 - 13 t^4 + t^5)4</function>
       </curve>
       <point x="1.5" y="2" name="A">
-        <constraints>
+        <constraints baseOnGraph="_graph1">
           <constrainTo>$c</constrainTo>
         </constraints>
       </point>
@@ -515,7 +515,7 @@ describe('Function curve Tag Tests', function () {
 
     let f = t => (60 * t - 106 * t ** 2 + 59 * t ** 3 - 13 * t ** 4 + t ** 5) * 4;
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let x = components['/A'].stateValues.xs[0].tree;
       let y = components['/A'].stateValues.xs[1].tree;
@@ -523,9 +523,9 @@ describe('Function curve Tag Tests', function () {
       expect(y).closeTo(f(1.5), 1E-10);
     })
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components['/A'].movePoint({ x: 5, y: -60 })
+      await components['/A'].movePoint({ x: 5, y: -60 })
       let x = components['/A'].stateValues.xs[0].tree;
       let y = components['/A'].stateValues.xs[1].tree;
       expect(x).closeTo(5, 1E-10);
@@ -535,7 +535,7 @@ describe('Function curve Tag Tests', function () {
   });
 
   it('constrain to function, different scales from graph 2 ', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -544,7 +544,7 @@ describe('Function curve Tag Tests', function () {
         <function name='g' variables='t' domain="(-20,100)">sin(t/10)+t/50+2</function>
       </curve>
       <point x="1.5" y="2" name="A">
-        <constraints>
+        <constraints baseOnGraph="_graph1">
           <constrainTo>$c</constrainTo>
         </constraints>
       </point>
@@ -557,7 +557,7 @@ describe('Function curve Tag Tests', function () {
 
     let f = t => Math.sin(t / 10) + t / 50 + 2;
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let x = components['/A'].stateValues.xs[0].tree;
       let y = components['/A'].stateValues.xs[1].tree;
@@ -565,18 +565,18 @@ describe('Function curve Tag Tests', function () {
       expect(y).closeTo(f(1.5), 1E-10);
     })
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components['/A'].movePoint({ x: 90, y: 5 })
+      await components['/A'].movePoint({ x: 90, y: 5 })
       let x = components['/A'].stateValues.xs[0].tree;
       let y = components['/A'].stateValues.xs[1].tree;
       expect(x).closeTo(90, 1E-10);
       expect(y).closeTo(f(90), 1E-10);
     })
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components['/A'].movePoint({ x: 120, y: -5 })
+      await components['/A'].movePoint({ x: 120, y: -5 })
       let x = components['/A'].stateValues.xs[0].tree;
       let y = components['/A'].stateValues.xs[1].tree;
       expect(x).closeTo(100, 1E-10);
@@ -584,18 +584,18 @@ describe('Function curve Tag Tests', function () {
     })
 
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components['/A'].movePoint({ x: -10, y: 10 })
+      await components['/A'].movePoint({ x: -10, y: 10 })
       let x = components['/A'].stateValues.xs[0].tree;
       let y = components['/A'].stateValues.xs[1].tree;
       expect(x).closeTo(-10, 1E-10);
       expect(y).closeTo(f(-10), 1E-10);
     })
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components['/A'].movePoint({ x: -50, y: -100 })
+      await components['/A'].movePoint({ x: -50, y: -100 })
       let x = components['/A'].stateValues.xs[0].tree;
       let y = components['/A'].stateValues.xs[1].tree;
       expect(x).closeTo(-20, 1E-10);
@@ -606,7 +606,7 @@ describe('Function curve Tag Tests', function () {
   });
 
   it('constrain to inverse function', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -619,7 +619,7 @@ describe('Function curve Tag Tests', function () {
     
     <point x='5' y='3'>
     <constraints>
-      <constrainTo><copy tname="_curve1" /></constrainTo>
+      <constrainTo><copy target="_curve1" /></constrainTo>
     </constraints>
     </point>
     
@@ -630,7 +630,7 @@ describe('Function curve Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');  //wait for window to load
 
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/_curve1'].stateValues.flipFunction).eq(true);
       let x = components['/_point1'].stateValues.xs[0].tree;
@@ -639,27 +639,27 @@ describe('Function curve Tag Tests', function () {
       expect(x).closeTo(y * y * y * y - 5 * y * y, 1E-5);
     })
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components['/_point1'].movePoint({ y: 1.5, x: -1.5 })
+      await components['/_point1'].movePoint({ y: 1.5, x: -1.5 })
       let x = components['/_point1'].stateValues.xs[0].tree;
       let y = components['/_point1'].stateValues.xs[1].tree;
       expect(y).eq(1.5);
       expect(x).closeTo(y * y * y * y - 5 * y * y, 1E-5);
     })
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components['/_point1'].movePoint({ y: 0.1, x: -10 })
+      await components['/_point1'].movePoint({ y: 0.1, x: -10 })
       let x = components['/_point1'].stateValues.xs[0].tree;
       let y = components['/_point1'].stateValues.xs[1].tree;
       expect(y).eq(0.1);
       expect(x).closeTo(y * y * y * y - 5 * y * y, 1E-5);
     })
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components['/_point1'].movePoint({ y: -0.1, x: -10 })
+      await components['/_point1'].movePoint({ y: -0.1, x: -10 })
       let x = components['/_point1'].stateValues.xs[0].tree;
       let y = components['/_point1'].stateValues.xs[1].tree;
       expect(y).eq(-0.1);
@@ -669,7 +669,7 @@ describe('Function curve Tag Tests', function () {
   });
 
   it('constrain to inverse function, nearest point as curve', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -682,7 +682,7 @@ describe('Function curve Tag Tests', function () {
     
     <point x='5' y='3'>
     <constraints>
-      <constrainTo><copy tname="_curve1" /></constrainTo>
+      <constrainTo><copy target="_curve1" /></constrainTo>
     </constraints>
     </point>
     
@@ -693,7 +693,7 @@ describe('Function curve Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');  //wait for window to load
 
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/_curve1'].stateValues.flipFunction).eq(true);
       let x = components['/_point1'].stateValues.xs[0].tree;
@@ -703,9 +703,9 @@ describe('Function curve Tag Tests', function () {
       expect(x).closeTo(y * y * y * y - 5 * y * y, 1E-5);
     })
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components['/_point1'].movePoint({ x: -1.5, y: 1.5 })
+      await components['/_point1'].movePoint({ x: -1.5, y: 1.5 })
       let x = components['/_point1'].stateValues.xs[0].tree;
       let y = components['/_point1'].stateValues.xs[1].tree;
       expect(x).closeTo(-1.5, 0.1);
@@ -713,21 +713,21 @@ describe('Function curve Tag Tests', function () {
       expect(x).closeTo(y * y * y * y - 5 * y * y, 1E-5);
     })
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components['/_point1'].movePoint({ x: -10, y: 0.1 })
+      await components['/_point1'].movePoint({ x: -10, y: 0.1 })
       let x = components['/_point1'].stateValues.xs[0].tree;
       let y = components['/_point1'].stateValues.xs[1].tree;
-      let minimum2 = components["/_function1"].stateValues.minima[1];
+      let minimum2 =(await components["/_function1"].stateValues.minima)[1];
 
       expect(y).closeTo(minimum2[0], 0.1);
       expect(x).closeTo(minimum2[1], 0.1);
       expect(x).closeTo(y * y * y * y - 5 * y * y, 1E-5);
     })
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components['/_point1'].movePoint({ x: -10, y: -0.1 })
+      await components['/_point1'].movePoint({ x: -10, y: -0.1 })
       let x = components['/_point1'].stateValues.xs[0].tree;
       let y = components['/_point1'].stateValues.xs[1].tree;
       let minimum1 = components["/_function1"].stateValues.minima[0];
@@ -741,9 +741,9 @@ describe('Function curve Tag Tests', function () {
     // try a bunch of points at top to make sure stay on top branch
     // which fails with nDiscretizationPoints too low (e.g., at 100) 
     for (let v = -5; v <= -1; v += 0.1) {
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let components = Object.assign({}, win.state.components);
-        components['/_point1'].movePoint({ x: v, y: 5 })
+        await components['/_point1'].movePoint({ x: v, y: 5 })
         let x = components['/_point1'].stateValues.xs[0].tree;
         let y = components['/_point1'].stateValues.xs[1].tree;
         expect(y).greaterThan(1.7)
@@ -755,7 +755,7 @@ describe('Function curve Tag Tests', function () {
   });
 
   it('constrain to inverse function, different scales from graph', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -764,7 +764,7 @@ describe('Function curve Tag Tests', function () {
         <function name='g' variables='t' domain="(0,5)">(60 t - 106 t^2 + 59*t^3 - 13 t^4 + t^5)4</function>
       </curve>
       <point y="1.5" x="2" name="A">
-        <constraints>
+        <constraints baseOnGraph="_graph1">
           <constrainTo>$c</constrainTo>
         </constraints>
       </point>
@@ -777,7 +777,7 @@ describe('Function curve Tag Tests', function () {
 
     let f = t => (60 * t - 106 * t ** 2 + 59 * t ** 3 - 13 * t ** 4 + t ** 5) * 4;
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let x = components['/A'].stateValues.xs[0].tree;
       let y = components['/A'].stateValues.xs[1].tree;
@@ -785,9 +785,9 @@ describe('Function curve Tag Tests', function () {
       expect(x).closeTo(f(1.5), 1E-10);
     })
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components['/A'].movePoint({ x: -60, y: 5 })
+      await components['/A'].movePoint({ x: -60, y: 5 })
       let x = components['/A'].stateValues.xs[0].tree;
       let y = components['/A'].stateValues.xs[1].tree;
       expect(y).closeTo(5, 1E-10);
@@ -797,7 +797,7 @@ describe('Function curve Tag Tests', function () {
   });
 
   it('constrain to inverse function, different scales from graph 2 ', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -806,7 +806,7 @@ describe('Function curve Tag Tests', function () {
         <function name='g' variables='t' domain="(-20,100)">sin(t/10)+t/50+2</function>
       </curve>
       <point y="1.5" x="2" name="A">
-        <constraints>
+        <constraints baseOnGraph="_graph1">
           <constrainTo>$c</constrainTo>
         </constraints>
       </point>
@@ -819,7 +819,7 @@ describe('Function curve Tag Tests', function () {
 
     let f = t => Math.sin(t / 10) + t / 50 + 2;
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let x = components['/A'].stateValues.xs[0].tree;
       let y = components['/A'].stateValues.xs[1].tree;
@@ -827,18 +827,18 @@ describe('Function curve Tag Tests', function () {
       expect(x).closeTo(f(1.5), 1E-10);
     })
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components['/A'].movePoint({ x: 5, y: 90 })
+      await components['/A'].movePoint({ x: 5, y: 90 })
       let x = components['/A'].stateValues.xs[0].tree;
       let y = components['/A'].stateValues.xs[1].tree;
       expect(y).closeTo(90, 1E-10);
       expect(x).closeTo(f(90), 1E-10);
     })
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components['/A'].movePoint({ x: -5, y: 120 })
+      await components['/A'].movePoint({ x: -5, y: 120 })
       let x = components['/A'].stateValues.xs[0].tree;
       let y = components['/A'].stateValues.xs[1].tree;
       expect(y).closeTo(100, 1E-10);
@@ -846,18 +846,18 @@ describe('Function curve Tag Tests', function () {
     })
 
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components['/A'].movePoint({ x: 10, y: -10 })
+      await components['/A'].movePoint({ x: 10, y: -10 })
       let x = components['/A'].stateValues.xs[0].tree;
       let y = components['/A'].stateValues.xs[1].tree;
       expect(y).closeTo(-10, 1E-10);
       expect(x).closeTo(f(-10), 1E-10);
     })
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components['/A'].movePoint({ x: -100, y: -50 })
+      await components['/A'].movePoint({ x: -100, y: -50 })
       let x = components['/A'].stateValues.xs[0].tree;
       let y = components['/A'].stateValues.xs[1].tree;
       expect(y).closeTo(-20, 1E-10);

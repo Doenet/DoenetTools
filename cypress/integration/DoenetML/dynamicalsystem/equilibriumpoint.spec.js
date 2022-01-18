@@ -31,20 +31,20 @@ describe('Equilibriumpoint Tag Tests', function () {
     <booleaninput name="b2" />
 
     <p><aslist>
-    <copy prop="stable" tname="g/A" assignNames="gAs" />
-    <copy prop="stable" tname="g/B" assignNames="gBs" />
-    <copy prop="stable" tname="g/C" assignNames="gCs" />
-    <copy prop="stable" tname="g/D" assignNames="gDs" />
+    <copy prop="stable" target="g/A" assignNames="gAs" />
+    <copy prop="stable" target="g/B" assignNames="gBs" />
+    <copy prop="stable" target="g/C" assignNames="gCs" />
+    <copy prop="stable" target="g/D" assignNames="gDs" />
     </aslist>
     </p>
 
-    <copy tname="g" assignNames="g2" />
+    <copy target="g" assignNames="g2" />
 
     <p><aslist>
-    <copy prop="stable" tname="g2/A" assignNames="g2As" />
-    <copy prop="stable" tname="g2/B" assignNames="g2Bs" />
-    <copy prop="stable" tname="g2/C" assignNames="g2Cs" />
-    <copy prop="stable" tname="g2/D" assignNames="g2Ds" />
+    <copy prop="stable" target="g2/A" assignNames="g2As" />
+    <copy prop="stable" target="g2/B" assignNames="g2Bs" />
+    <copy prop="stable" target="g2/C" assignNames="g2Cs" />
+    <copy prop="stable" target="g2/D" assignNames="g2Ds" />
     </aslist>
     </p>
     `}, "*");
@@ -137,9 +137,9 @@ describe('Equilibriumpoint Tag Tests', function () {
 
 
     cy.log('switch A via first action')
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components["/g/A"].actions.switchPoint();
+      await components["/g/A"].actions.switchPoint();
 
       expect(components["/g/A"].stateValues.stable).eq(false);
       expect(components["/g/B"].stateValues.stable).eq(false);
@@ -165,9 +165,9 @@ describe('Equilibriumpoint Tag Tests', function () {
 
 
     cy.log('switch A via second action')
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components["/g2/A"].actions.switchPoint();
+      await components["/g2/A"].actions.switchPoint();
 
       expect(components["/g/A"].stateValues.stable).eq(true);
       expect(components["/g/B"].stateValues.stable).eq(false);
@@ -192,9 +192,9 @@ describe('Equilibriumpoint Tag Tests', function () {
 
 
     cy.log('cannot switch B via action')
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components["/g/B"].actions.switchPoint();
+      await components["/g/B"].actions.switchPoint();
 
       expect(components["/g/A"].stateValues.stable).eq(true);
       expect(components["/g/B"].stateValues.stable).eq(false);
@@ -219,9 +219,9 @@ describe('Equilibriumpoint Tag Tests', function () {
 
 
     cy.log('cannot switch C via second action')
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components["/g2/C"].actions.switchPoint();
+      await components["/g2/C"].actions.switchPoint();
 
       expect(components["/g/A"].stateValues.stable).eq(true);
       expect(components["/g/B"].stateValues.stable).eq(false);
@@ -245,9 +245,9 @@ describe('Equilibriumpoint Tag Tests', function () {
 
 
     cy.log('switch D via second action')
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components["/g2/D"].actions.switchPoint();
+      await components["/g2/D"].actions.switchPoint();
 
       expect(components["/g/A"].stateValues.stable).eq(true);
       expect(components["/g/B"].stateValues.stable).eq(false);

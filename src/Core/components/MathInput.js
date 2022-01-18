@@ -7,15 +7,9 @@ export default class MathInput extends Input {
     super(args);
 
     this.actions = {
-      updateImmediateValue: this.updateImmediateValue.bind(
-        new Proxy(this, this.readOnlyProxyHandler)
-      ),
-      updateRawValue: this.updateRawValue.bind(
-        new Proxy(this, this.readOnlyProxyHandler)
-      ),
-      updateValue: this.updateValue.bind(
-        new Proxy(this, this.readOnlyProxyHandler)
-      )
+      updateImmediateValue: this.updateImmediateValue.bind(this),
+      updateRawValue: this.updateRawValue.bind(this),
+      updateValue: this.updateValue.bind(this)
     };
 
     this.externalActions = {};
@@ -23,10 +17,11 @@ export default class MathInput extends Input {
     //Complex because the stateValues isn't defined until later
     Object.defineProperty(this.externalActions, 'submitAnswer', {
       enumerable: true,
-      get: function () {
-        if (this.stateValues.answerAncestor !== null) {
+      get: async function () {
+        let answerAncestor = await this.stateValues.answerAncestor;
+        if (answerAncestor !== null) {
           return {
-            componentName: this.stateValues.answerAncestor.componentName,
+            componentName: answerAncestor.componentName,
             actionName: "submitAnswer"
           }
         } else {
@@ -39,10 +34,6 @@ export default class MathInput extends Input {
   static componentType = "mathInput";
 
   static variableForPlainMacro = "value";
-
-  static get stateVariablesShadowedForReference() {
-    return ["value"]
-  };
 
   static createAttributesObject(args) {
     let attributes = super.createAttributesObject(args);
@@ -123,6 +114,8 @@ export default class MathInput extends Input {
       public: true,
       componentType: "math",
       forRenderer: true,
+      hasEssential: true,
+      shadowVariable: true,
       stateVariablesPrescribingAdditionalAttributes: {
         displayDigits: "displayDigits",
         displayDecimals: "displayDecimals",
@@ -144,14 +137,13 @@ export default class MathInput extends Input {
           return {
             useEssentialOrDefaultValue: {
               value: {
-                variablesToCheck: "value",
                 defaultValue: dependencyValues.prefill
               }
             }
           }
         }
 
-        return { newValues: { value: dependencyValues.bindValueTo.stateValues.value } };
+        return { setValue: { value: dependencyValues.bindValueTo.stateValues.value } };
       },
       inverseDefinition: function ({ desiredStateVariableValues, dependencyValues }) {
 
@@ -172,7 +164,7 @@ export default class MathInput extends Input {
         return {
           success: true,
           instructions: [{
-            setStateVariable: "value",
+            setEssentialValue: "value",
             value: desiredStateVariableValues.value
           }]
         };
@@ -183,6 +175,8 @@ export default class MathInput extends Input {
       public: true,
       componentType: "math",
       forRenderer: true,
+      hasEssential: true,
+      shadowVariable: true,
       stateVariablesPrescribingAdditionalAttributes: {
         displayDigits: "displayDigits",
         displayDecimals: "displayDecimals",
@@ -204,8 +198,8 @@ export default class MathInput extends Input {
           // only update to value when it changes
           // (otherwise, let its essential value change)
           return {
-            newValues: { immediateValue: dependencyValues.value },
-            makeEssential: { immediateValue: true }
+            setValue: { immediateValue: dependencyValues.value },
+            setEssentialValue: { immediateValue: dependencyValues.value },
           };
 
 
@@ -213,7 +207,6 @@ export default class MathInput extends Input {
           return {
             useEssentialOrDefaultValue: {
               immediateValue: {
-                variablesToCheck: "immediateValue",
                 defaultValue: dependencyValues.value
               }
             }
@@ -225,7 +218,7 @@ export default class MathInput extends Input {
 
         // value is essential; give it the desired value
         let instructions = [{
-          setStateVariable: "immediateValue",
+          setEssentialValue: "immediateValue",
           value: desiredStateVariableValues.immediateValue
         }]
 
@@ -274,7 +267,7 @@ export default class MathInput extends Input {
         });
 
         return {
-          newValues: { valueForDisplay: rounded }
+          setValue: { valueForDisplay: rounded }
         }
       }
     }
@@ -290,7 +283,7 @@ export default class MathInput extends Input {
         }
       }),
       definition: function ({ dependencyValues }) {
-        return { newValues: { text: dependencyValues.valueForDisplay.toString() } }
+        return { setValue: { text: dependencyValues.valueForDisplay.toString() } }
       }
     }
 
@@ -299,17 +292,18 @@ export default class MathInput extends Input {
     stateVariableDefinitions.rawRendererValue = {
       defaultValue: null,
       forRenderer: true,
+      hasEssential: true,
       returnDependencies: () => ({}),
       definition: () => ({
         useEssentialOrDefaultValue: {
-          rawRendererValue: { variablesToCheck: ["rawRendererValue"] }
+          rawRendererValue: true
         }
       }),
       inverseDefinition({ desiredStateVariableValues }) {
         return {
           success: true,
           instructions: [{
-            setStateVariable: "rawRendererValue",
+            setEssentialValue: "rawRendererValue",
             value: desiredStateVariableValues.rawRendererValue
           }]
         }
@@ -318,7 +312,7 @@ export default class MathInput extends Input {
 
     stateVariableDefinitions.componentType = {
       returnDependencies: () => ({}),
-      definition: () => ({ newValues: { componentType: "math" } })
+      definition: () => ({ setValue: { componentType: "math" } })
     }
 
 
@@ -327,16 +321,16 @@ export default class MathInput extends Input {
   }
 
 
-  updateImmediateValue({ mathExpression, rawRendererValue }) {
-    if (!this.stateValues.disabled) {
+  async updateImmediateValue({ mathExpression, rawRendererValue }) {
+    if (!await this.stateValues.disabled) {
       // we set transient to true so that each keystroke does not
       // add a row to the database
-      return this.coreFunctions.performUpdate({
+      return await this.coreFunctions.performUpdate({
         updateInstructions: [{
           updateType: "updateValue",
           componentName: this.componentName,
           stateVariable: "immediateValue",
-          value: mathExpression,
+          value: me.fromAst(mathExpression),
         }, {
           updateType: "updateValue",
           componentName: this.componentName,
@@ -348,12 +342,12 @@ export default class MathInput extends Input {
     }
   }
 
-  updateRawValue({ rawRendererValue, transient = false }) {
-    if (!this.stateValues.disabled) {
+  async updateRawValue({ rawRendererValue, transient = false }) {
+    if (!await this.stateValues.disabled) {
       // we set transient to true so that each keystroke does not
       // add a row to the database
 
-      return this.coreFunctions.performUpdate({
+      return await this.coreFunctions.performUpdate({
         updateInstructions: [{
           updateType: "updateValue",
           componentName: this.componentName,
@@ -365,18 +359,19 @@ export default class MathInput extends Input {
     }
   }
 
-  updateValue() {
-    if (!this.stateValues.disabled) {
+  async updateValue() {
+    if (!await this.stateValues.disabled) {
+      let immediateValue = await this.stateValues.immediateValue;
       let updateInstructions = [{
         updateType: "updateValue",
         componentName: this.componentName,
         stateVariable: "value",
-        value: this.stateValues.immediateValue,
+        value: immediateValue,
       }, {
         updateType: "updateValue",
         componentName: this.componentName,
         stateVariable: "rawRendererValue",
-        value: this.stateValues.rawRendererValue,  // so gets saved to database
+        value: await this.stateValues.rawRendererValue,  // so gets saved to database
       },
       // in case value ended up being a different value than requested
       // we set immediate value to whatever was the result
@@ -400,23 +395,27 @@ export default class MathInput extends Input {
           componentType: this.componentType,
         },
         result: {
-          response: this.stateValues.immediateValue,
-          responseText: this.stateValues.immediateValue.toString(),
+          response: immediateValue,
+          responseText: immediateValue.toString(),
         }
       }
 
-      if (this.stateValues.answerAncestor) {
+
+      let answerAncestor = await this.stateValues.answerAncestor;
+      if (answerAncestor) {
         event.context = {
-          answerAncestor: this.stateValues.answerAncestor.componentName
+          answerAncestor: answerAncestor.componentName
         }
       }
 
-      return this.coreFunctions.performUpdate({
+      await this.coreFunctions.performUpdate({
         updateInstructions,
         event,
-      }).then(() => this.coreFunctions.triggerChainedActions({
+      });
+
+      return await this.coreFunctions.triggerChainedActions({
         componentName: this.componentName,
-      }));
+      });
 
 
     }

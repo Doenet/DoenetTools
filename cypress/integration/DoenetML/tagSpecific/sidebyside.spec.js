@@ -16,8 +16,8 @@ describe('SideBySide Tag Tests', function () {
   })
 
 
-  let checkSingleColumnSbs = function ({
-    specifiedWidth, specifiedMargins = [undefined, undefined], specifiedValign,
+  let checkSingleColumnSbs = async function ({
+    specifiedWidth = null, specifiedMargins = [null, null], specifiedValign = null,
     sbsWidth,
     sbsName = "/sbs",
     isSbsGroup = false
@@ -27,9 +27,9 @@ describe('SideBySide Tag Tests', function () {
     let actualLeftMargin = specifiedMargins[0];
     let actualRightMargin = specifiedMargins[1];
 
-    if (actualWidth === undefined) {
-      if (actualLeftMargin === undefined) {
-        if (actualRightMargin === undefined) {
+    if (actualWidth === null) {
+      if (actualLeftMargin === null) {
+        if (actualRightMargin === null) {
           actualWidth = 100;
           actualLeftMargin = actualRightMargin = 0;
         } else {
@@ -37,7 +37,7 @@ describe('SideBySide Tag Tests', function () {
           actualWidth = Math.max(0, 100 - actualRightMargin);
         }
       } else {
-        if (actualRightMargin === undefined) {
+        if (actualRightMargin === null) {
           actualRightMargin = 0;
           actualWidth = Math.max(0, 100 - actualLeftMargin);
         } else {
@@ -45,14 +45,14 @@ describe('SideBySide Tag Tests', function () {
         }
       }
     } else {
-      if (actualLeftMargin === undefined) {
-        if (actualRightMargin === undefined) {
+      if (actualLeftMargin === null) {
+        if (actualRightMargin === null) {
           actualLeftMargin = actualRightMargin = Math.max(0, (100 - actualWidth) / 2);
         } else {
           actualLeftMargin = Math.max(0, 100 - actualWidth - actualRightMargin);
         }
       } else {
-        if (actualRightMargin === undefined) {
+        if (actualRightMargin === null) {
           actualRightMargin = Math.max(0, 100 - actualWidth - actualLeftMargin);
         }
       }
@@ -90,25 +90,25 @@ describe('SideBySide Tag Tests', function () {
     let specifiedWidthName = isSbsGroup ? "specifiedWidths" : "allWidthsSpecified";
     let specifiedMarginName = isSbsGroup ? "specifiedMargins" : "allMarginsSpecified";
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components[sbsName].stateValues.widths.length).eq(1);
-      expect(components[sbsName].stateValues[specifiedWidthName]).eqls([specifiedWidth]);
+      expect((await components[sbsName].stateValues.widths).length).eq(1);
+      expect(await components[sbsName].stateValues[specifiedWidthName]).eqls([specifiedWidth]);
       expect(components[sbsName].stateValues.widths[0]).closeTo(actualWidth, 1E-5);
-      expect(components[sbsName].stateValues[specifiedMarginName]).eqls(specifiedMargins);
-      expect(components[sbsName].stateValues.margins.length).eq(2)
+      expect(await components[sbsName].stateValues[specifiedMarginName]).eqls(specifiedMargins);
+      expect((await components[sbsName].stateValues.margins).length).eq(2)
       expect(components[sbsName].stateValues.margins[0]).closeTo(actualLeftMargin, 1E-5);
       expect(components[sbsName].stateValues.margins[1]).closeTo(actualRightMargin, 1E-5);
-      expect(components[sbsName].stateValues.valigns).eqls([valign]);
+      expect(await components[sbsName].stateValues.valigns).eqls([valign]);
     })
 
   }
 
 
   let checkTwoColumnSbs = function ({
-    specifiedWidths = [undefined, undefined],
-    specifiedMargins = [undefined, undefined],
-    specifiedValigns = [undefined, undefined],
+    specifiedWidths = [null, null],
+    specifiedMargins = [null, null],
+    specifiedValigns = [null, null],
     sbsWidth,
     sbsName = "/sbs",
     isSbsGroup = false
@@ -120,10 +120,10 @@ describe('SideBySide Tag Tests', function () {
     let actualRightMargin = specifiedMargins[1];
     let actualGap = 0;
 
-    if (actualWidth1 === undefined) {
-      if (actualWidth2 === undefined) {
-        if (actualLeftMargin === undefined) {
-          if (actualRightMargin === undefined) {
+    if (actualWidth1 === null) {
+      if (actualWidth2 === null) {
+        if (actualLeftMargin === null) {
+          if (actualRightMargin === null) {
             actualWidth1 = actualWidth2 = 50;
             actualLeftMargin = actualRightMargin = 0;
           } else {
@@ -131,7 +131,7 @@ describe('SideBySide Tag Tests', function () {
             actualLeftMargin = 0;
           }
         } else {
-          if (actualRightMargin === undefined) {
+          if (actualRightMargin === null) {
             actualWidth1 = actualWidth2 = Math.max(0, (100 - 2 * actualLeftMargin) / 2);
             actualRightMargin = 0;
           } else {
@@ -139,8 +139,8 @@ describe('SideBySide Tag Tests', function () {
           }
         }
       } else {
-        if (actualLeftMargin === undefined) {
-          if (actualRightMargin === undefined) {
+        if (actualLeftMargin === null) {
+          if (actualRightMargin === null) {
             actualWidth1 = Math.max(0, 100 - actualWidth2);
             actualLeftMargin = actualRightMargin = 0;
           } else {
@@ -148,7 +148,7 @@ describe('SideBySide Tag Tests', function () {
             actualLeftMargin = 0;
           }
         } else {
-          if (actualRightMargin === undefined) {
+          if (actualRightMargin === null) {
             actualWidth1 = Math.max(0, 100 - actualWidth2 - 2 * actualLeftMargin);
             actualRightMargin = 0;
           } else {
@@ -157,9 +157,9 @@ describe('SideBySide Tag Tests', function () {
         }
       }
     } else {
-      if (actualWidth2 === undefined) {
-        if (actualLeftMargin === undefined) {
-          if (actualRightMargin === undefined) {
+      if (actualWidth2 === null) {
+        if (actualLeftMargin === null) {
+          if (actualRightMargin === null) {
             actualWidth2 = Math.max(0, 100 - actualWidth1);
             actualLeftMargin = actualRightMargin = 0;
           } else {
@@ -167,7 +167,7 @@ describe('SideBySide Tag Tests', function () {
             actualLeftMargin = 0;
           }
         } else {
-          if (actualRightMargin === undefined) {
+          if (actualRightMargin === null) {
             actualWidth2 = Math.max(0, 100 - actualWidth1 - 2 * actualLeftMargin);
             actualRightMargin = 0;
           } else {
@@ -175,14 +175,14 @@ describe('SideBySide Tag Tests', function () {
           }
         }
       } else {
-        if (actualLeftMargin === undefined) {
-          if (actualRightMargin === undefined) {
+        if (actualLeftMargin === null) {
+          if (actualRightMargin === null) {
             actualLeftMargin = actualRightMargin = Math.max(0, (100 - actualWidth1 - actualWidth2) / 4);
           } else {
             actualLeftMargin = Math.max(0, (100 - actualWidth1 - actualWidth2 - 2 * actualRightMargin) / 2);
           }
         } else {
-          if (actualRightMargin === undefined) {
+          if (actualRightMargin === null) {
             actualRightMargin = Math.max(0, (100 - actualWidth1 - actualWidth2 - 2 * actualLeftMargin) / 2);
           }
         }
@@ -234,18 +234,18 @@ describe('SideBySide Tag Tests', function () {
     let specifiedWidthName = isSbsGroup ? "specifiedWidths" : "allWidthsSpecified";
     let specifiedMarginName = isSbsGroup ? "specifiedMargins" : "allMarginsSpecified";
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components[sbsName].stateValues[specifiedWidthName]).eqls(specifiedWidths);
-      expect(components[sbsName].stateValues.widths.length).eq(2);
+      expect(await components[sbsName].stateValues[specifiedWidthName]).eqls(specifiedWidths);
+      expect((await components[sbsName].stateValues.widths).length).eq(2);
       expect(components[sbsName].stateValues.widths[0]).closeTo(actualWidth1, 1E-5);
       expect(components[sbsName].stateValues.widths[1]).closeTo(actualWidth2, 1E-5);
-      expect(components[sbsName].stateValues[specifiedMarginName]).eqls(specifiedMargins);
-      expect(components[sbsName].stateValues.margins.length).eq(2)
+      expect(await components[sbsName].stateValues[specifiedMarginName]).eqls(specifiedMargins);
+      expect((await components[sbsName].stateValues.margins).length).eq(2)
       expect(components[sbsName].stateValues.margins[0]).closeTo(actualLeftMargin, 1E-5);
       expect(components[sbsName].stateValues.margins[1]).closeTo(actualRightMargin, 1E-5);
-      expect(components[sbsName].stateValues.gapWidth).closeTo(actualGap, 1E-5);
-      expect(components[sbsName].stateValues.valigns).eqls(valigns);
+      expect(await components[sbsName].stateValues.gapWidth).closeTo(actualGap, 1E-5);
+      expect(await components[sbsName].stateValues.valigns).eqls(valigns);
 
     })
 
@@ -253,9 +253,9 @@ describe('SideBySide Tag Tests', function () {
 
 
   let checkFourColumnSbs = function ({
-    specifiedWidths = [undefined, undefined, undefined, undefined],
-    specifiedMargins = [undefined, undefined],
-    specifiedValigns = [undefined, undefined, undefined, undefined],
+    specifiedWidths = [null, null, null, null],
+    specifiedMargins = [null, null],
+    specifiedValigns = [null, null, null, null],
     sbsWidth,
     sbsName = "/sbs",
     isSbsGroup = false
@@ -266,7 +266,7 @@ describe('SideBySide Tag Tests', function () {
 
     for (let ind = 0; ind < 4; ind++) {
       let width = specifiedWidths[ind];
-      if (width === undefined) {
+      if (width === null) {
         nWidthsUndefined++;
       } else {
         totalWidthSpecified += width;
@@ -278,7 +278,7 @@ describe('SideBySide Tag Tests', function () {
 
     for (let ind = 0; ind < 2; ind++) {
       let margin = specifiedMargins[ind];
-      if (margin === undefined) {
+      if (margin === null) {
         nMarginsUndefined++;
       } else {
         totalMarginSpecified += margin;
@@ -293,19 +293,19 @@ describe('SideBySide Tag Tests', function () {
 
     if (totalWidthSpecified + totalMarginSpecified >= 100) {
       // we are already over 100%
-      // anything undefined becomes width 0
+      // anything null becomes width 0
       // everything else is normalized to add up to 100
 
       let normalization = 100 / (totalWidthSpecified + totalMarginSpecified);
       for (let ind = 0; ind < 4; ind++) {
-        if (actualWidths[ind] === undefined) {
+        if (actualWidths[ind] === null) {
           actualWidths[ind] = 0;
         } else {
           actualWidths[ind] *= normalization;
         }
       }
       for (let ind = 0; ind < 2; ind++) {
-        if (actualMargins[ind] === undefined) {
+        if (actualMargins[ind] === null) {
           actualMargins[ind] = 0;
         } else {
           actualMargins[ind] *= normalization;
@@ -314,10 +314,10 @@ describe('SideBySide Tag Tests', function () {
 
     } else {
       // since we are under 100%, we try the following to get to 100%
-      // 1. if there are any undefined widths,
+      // 1. if there are any null widths,
       //    define them to be the same value that makes the total 100%
-      //    and make any undefined margins be zero
-      // 2. else, if there are any undefined margins,
+      //    and make any null margins be zero
+      // 2. else, if there are any null margins,
       //    define them to be the same value that makes the total 100%
       // 3. else set gapWidth to make the total 100%
 
@@ -325,14 +325,14 @@ describe('SideBySide Tag Tests', function () {
 
         let newWidth = (100 - (totalWidthSpecified + totalMarginSpecified)) / nWidthsUndefined;
         for (let ind = 0; ind < 4; ind++) {
-          if (actualWidths[ind] === undefined) {
+          if (actualWidths[ind] === null) {
             actualWidths[ind] = newWidth;
           }
         }
 
         for (let ind = 0; ind < 2; ind++) {
           let margin = actualMargins[ind];
-          if (margin === undefined) {
+          if (margin === null) {
             actualMargins[ind] = 0;
           }
         }
@@ -340,7 +340,7 @@ describe('SideBySide Tag Tests', function () {
       } else if (nMarginsUndefined > 0) {
         let newMargin = (100 - (totalWidthSpecified + totalMarginSpecified)) / (nMarginsUndefined * 4);
         for (let ind = 0; ind < 2; ind++) {
-          if (actualMargins[ind] === undefined) {
+          if (actualMargins[ind] === null) {
             actualMargins[ind] = newMargin;
           }
         }
@@ -387,20 +387,20 @@ describe('SideBySide Tag Tests', function () {
     let specifiedWidthName = isSbsGroup ? "specifiedWidths" : "allWidthsSpecified";
     let specifiedMarginName = isSbsGroup ? "specifiedMargins" : "allMarginsSpecified";
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components[sbsName].stateValues[specifiedWidthName]).eqls(specifiedWidths);
-      expect(components[sbsName].stateValues.widths.length).eq(4);
+      expect(await components[sbsName].stateValues[specifiedWidthName]).eqls(specifiedWidths);
+      expect((await components[sbsName].stateValues.widths).length).eq(4);
       expect(components[sbsName].stateValues.widths[0]).closeTo(actualWidths[0], 1E-5);
       expect(components[sbsName].stateValues.widths[1]).closeTo(actualWidths[1], 1E-5);
       expect(components[sbsName].stateValues.widths[2]).closeTo(actualWidths[2], 1E-5);
       expect(components[sbsName].stateValues.widths[3]).closeTo(actualWidths[3], 1E-5);
-      expect(components[sbsName].stateValues[specifiedMarginName]).eqls(specifiedMargins);
-      expect(components[sbsName].stateValues.margins.length).eq(2)
+      expect(await components[sbsName].stateValues[specifiedMarginName]).eqls(specifiedMargins);
+      expect((await components[sbsName].stateValues.margins).length).eq(2)
       expect(components[sbsName].stateValues.margins[0]).closeTo(actualLeftMargin, 1E-5);
       expect(components[sbsName].stateValues.margins[1]).closeTo(actualRightMargin, 1E-5);
-      expect(components[sbsName].stateValues.gapWidth).closeTo(actualGap, 1E-5);
-      expect(components[sbsName].stateValues.valigns).eqls(valigns);
+      expect(await components[sbsName].stateValues.gapWidth).closeTo(actualGap, 1E-5);
+      expect(await components[sbsName].stateValues.valigns).eqls(valigns);
 
     })
 
@@ -453,7 +453,7 @@ describe('SideBySide Tag Tests', function () {
       cy.get("#\\/m1 textarea").type("{end}{backspace}{backspace}10{enter}", { force: true });
 
       checkSingleColumnSbs({
-        specifiedMargins: [10, undefined],
+        specifiedMargins: [10, null],
         sbsWidth, sbsName: "/sbs"
       })
 
@@ -616,9 +616,9 @@ describe('SideBySide Tag Tests', function () {
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
         expect(components["/sbs"].stateValues.absoluteMeasurements).eq(false);
-        expect(components["/sbs"].stateValues.allWidthsSpecified).eqls([undefined]);
+        expect(components["/sbs"].stateValues.allWidthsSpecified).eqls([null]);
         expect(components["/sbs"].stateValues.widths).eqls([100]);
-        expect(components["/sbs"].stateValues.allMarginsSpecified).eqls([undefined, undefined]);
+        expect(components["/sbs"].stateValues.allMarginsSpecified).eqls([null, null]);
         expect(components["/sbs"].stateValues.margins).eqls([0, 0]);
         expect(components["/sbs"].stateValues.valigns).eqls(["top"]);
       })
@@ -653,7 +653,7 @@ describe('SideBySide Tag Tests', function () {
 
       checkSingleColumnSbs({
         specifiedWidth: 60,
-        specifiedMargins: [undefined, 10],
+        specifiedMargins: [null, 10],
         sbsWidth, sbsName: "/sbs"
       })
 
@@ -663,7 +663,7 @@ describe('SideBySide Tag Tests', function () {
 
       checkSingleColumnSbs({
         specifiedWidth: 60,
-        specifiedMargins: [undefined, 60],
+        specifiedMargins: [null, 60],
         sbsWidth, sbsName: "/sbs"
       })
 
@@ -1015,7 +1015,7 @@ describe('SideBySide Tag Tests', function () {
       cy.get("#\\/m1 textarea").type("{end}{backspace}{backspace}10{enter}", { force: true });
 
       checkTwoColumnSbs({
-        specifiedMargins: [10, undefined],
+        specifiedMargins: [10, null],
         sbsWidth, sbsName: "/sbs"
       })
 
@@ -1032,7 +1032,7 @@ describe('SideBySide Tag Tests', function () {
       cy.get("#\\/w1 textarea").type("{end}{backspace}{backspace}20{enter}", { force: true });
 
       checkTwoColumnSbs({
-        specifiedWidths: [20, undefined],
+        specifiedWidths: [20, null],
         specifiedMargins: [10, 5],
         sbsWidth, sbsName: "/sbs"
       })
@@ -1041,7 +1041,7 @@ describe('SideBySide Tag Tests', function () {
       cy.get("#\\/w1 textarea").type("{end}{backspace}{backspace}95{enter}", { force: true });
 
       checkTwoColumnSbs({
-        specifiedWidths: [95, undefined],
+        specifiedWidths: [95, null],
         specifiedMargins: [10, 5],
         sbsWidth, sbsName: "/sbs"
       })
@@ -1050,7 +1050,7 @@ describe('SideBySide Tag Tests', function () {
       cy.get("#\\/w1 textarea").type("{end}{backspace}{backspace}10{enter}", { force: true });
 
       checkTwoColumnSbs({
-        specifiedWidths: [10, undefined],
+        specifiedWidths: [10, null],
         specifiedMargins: [10, 5],
         sbsWidth, sbsName: "/sbs"
       })
@@ -1150,7 +1150,7 @@ describe('SideBySide Tag Tests', function () {
       checkTwoColumnSbs({
         specifiedWidths: [5, 10],
         specifiedMargins: [21.5, 18.5],
-        specifiedValigns: ["bottom", undefined],
+        specifiedValigns: ["bottom", null],
         sbsWidth, sbsName: "/sbs"
       })
 
@@ -1224,7 +1224,7 @@ describe('SideBySide Tag Tests', function () {
       cy.get("#\\/w2 textarea").type("{end}{backspace}{backspace}130{enter}", { force: true });
 
       checkTwoColumnSbs({
-        specifiedWidths: [undefined, 130],
+        specifiedWidths: [null, 130],
         sbsWidth, sbsName: "/sbs"
       })
 
@@ -1232,7 +1232,7 @@ describe('SideBySide Tag Tests', function () {
       cy.get("#\\/w2 textarea").type("{end}{backspace}{backspace}{backspace}10{enter}", { force: true });
 
       checkTwoColumnSbs({
-        specifiedWidths: [undefined, 10],
+        specifiedWidths: [null, 10],
         sbsWidth, sbsName: "/sbs"
       })
 
@@ -1250,7 +1250,7 @@ describe('SideBySide Tag Tests', function () {
 
       checkTwoColumnSbs({
         specifiedWidths: [30, 10],
-        specifiedMargins: [undefined, 5],
+        specifiedMargins: [null, 5],
         sbsWidth, sbsName: "/sbs"
       })
 
@@ -1259,7 +1259,7 @@ describe('SideBySide Tag Tests', function () {
 
       checkTwoColumnSbs({
         specifiedWidths: [30, 85],
-        specifiedMargins: [undefined, 5],
+        specifiedMargins: [null, 5],
         sbsWidth, sbsName: "/sbs"
       })
 
@@ -1268,7 +1268,7 @@ describe('SideBySide Tag Tests', function () {
 
       checkTwoColumnSbs({
         specifiedWidths: [30, 20],
-        specifiedMargins: [undefined, 5],
+        specifiedMargins: [null, 5],
         sbsWidth, sbsName: "/sbs"
       })
 
@@ -1576,9 +1576,9 @@ describe('SideBySide Tag Tests', function () {
     cy.get('#\\/sbs').invoke('width').then(sbsWidth => {
 
       checkTwoColumnSbs({
-        specifiedWidths: [20, undefined],
-        specifiedMargins: [undefined, undefined],
-        specifiedValigns: ["middle", undefined],
+        specifiedWidths: [20, null],
+        specifiedMargins: [null, null],
+        specifiedValigns: ["middle", null],
         sbsWidth, sbsName: "/sbs"
       })
 
@@ -1592,9 +1592,9 @@ describe('SideBySide Tag Tests', function () {
       cy.get("#\\/w1 textarea").type("{end}{backspace}{backspace}30{enter}", { force: true });
 
       checkTwoColumnSbs({
-        specifiedWidths: [30, undefined],
-        specifiedMargins: [undefined, undefined],
-        specifiedValigns: ["middle", undefined],
+        specifiedWidths: [30, null],
+        specifiedMargins: [null, null],
+        specifiedValigns: ["middle", null],
         sbsWidth, sbsName: "/sbs"
       })
 
@@ -1603,9 +1603,9 @@ describe('SideBySide Tag Tests', function () {
       cy.get("#\\/m2 textarea").type("{end}{backspace}{backspace}10{enter}", { force: true });
 
       checkTwoColumnSbs({
-        specifiedWidths: [30, undefined],
+        specifiedWidths: [30, null],
         specifiedMargins: [10, 10],
-        specifiedValigns: ["middle", undefined],
+        specifiedValigns: ["middle", null],
         sbsWidth, sbsName: "/sbs"
       })
 
@@ -1616,7 +1616,7 @@ describe('SideBySide Tag Tests', function () {
       checkTwoColumnSbs({
         specifiedWidths: [30, 20],
         specifiedMargins: [10, 10],
-        specifiedValigns: ["middle", undefined],
+        specifiedValigns: ["middle", null],
         sbsWidth, sbsName: "/sbs"
       })
 
@@ -1627,7 +1627,7 @@ describe('SideBySide Tag Tests', function () {
       checkTwoColumnSbs({
         specifiedWidths: [140, 20],
         specifiedMargins: [10, 10],
-        specifiedValigns: ["middle", undefined],
+        specifiedValigns: ["middle", null],
         sbsWidth, sbsName: "/sbs"
       })
 
@@ -1638,7 +1638,7 @@ describe('SideBySide Tag Tests', function () {
       checkTwoColumnSbs({
         specifiedWidths: [10, 20],
         specifiedMargins: [10, 10],
-        specifiedValigns: ["middle", undefined],
+        specifiedValigns: ["middle", null],
         sbsWidth, sbsName: "/sbs"
       })
 
@@ -1648,7 +1648,7 @@ describe('SideBySide Tag Tests', function () {
       checkTwoColumnSbs({
         specifiedWidths: [10, 20],
         specifiedMargins: [5, 5],
-        specifiedValigns: ["middle", undefined],
+        specifiedValigns: ["middle", null],
         sbsWidth, sbsName: "/sbs"
       })
 
@@ -1658,7 +1658,7 @@ describe('SideBySide Tag Tests', function () {
       checkTwoColumnSbs({
         specifiedWidths: [10, 20],
         specifiedMargins: [42.5, 42.5],
-        specifiedValigns: ["middle", undefined],
+        specifiedValigns: ["middle", null],
         sbsWidth, sbsName: "/sbs"
       })
 
@@ -1669,7 +1669,7 @@ describe('SideBySide Tag Tests', function () {
       checkTwoColumnSbs({
         specifiedWidths: [10, 20],
         specifiedMargins: [42.5, 42.5],
-        specifiedValigns: ["top", undefined],
+        specifiedValigns: ["top", null],
         sbsWidth, sbsName: "/sbs"
       })
 
@@ -1750,7 +1750,7 @@ describe('SideBySide Tag Tests', function () {
       cy.get("#\\/m1 textarea").type("{end}{backspace}{backspace}2{enter}", { force: true });
 
       checkFourColumnSbs({
-        specifiedMargins: [2, undefined],
+        specifiedMargins: [2, null],
         sbsWidth, sbsName: "/sbs"
       })
 
@@ -1767,7 +1767,7 @@ describe('SideBySide Tag Tests', function () {
       cy.get("#\\/w3 textarea").type("{end}{backspace}{backspace}14{enter}", { force: true });
 
       checkFourColumnSbs({
-        specifiedWidths: [undefined, undefined, 14, undefined],
+        specifiedWidths: [null, null, 14, null],
         specifiedMargins: [2, 3],
         sbsWidth, sbsName: "/sbs"
       })
@@ -1777,7 +1777,7 @@ describe('SideBySide Tag Tests', function () {
       cy.get("#\\/w3 textarea").type("{end}{backspace}{backspace}180{enter}", { force: true });
 
       checkFourColumnSbs({
-        specifiedWidths: [undefined, undefined, 180, undefined],
+        specifiedWidths: [null, null, 180, null],
         specifiedMargins: [2, 3],
         sbsWidth, sbsName: "/sbs"
       })
@@ -1787,7 +1787,7 @@ describe('SideBySide Tag Tests', function () {
       cy.get("#\\/w3 textarea").type("{end}{backspace}{backspace}11{enter}", { force: true });
 
       checkFourColumnSbs({
-        specifiedWidths: [undefined, undefined, 11, undefined],
+        specifiedWidths: [null, null, 11, null],
         specifiedMargins: [2, 3],
         sbsWidth, sbsName: "/sbs"
       })
@@ -1797,7 +1797,7 @@ describe('SideBySide Tag Tests', function () {
       cy.get("#\\/w2 textarea").type("{end}{backspace}{backspace}15{enter}", { force: true });
 
       checkFourColumnSbs({
-        specifiedWidths: [undefined, 15, 11, undefined],
+        specifiedWidths: [null, 15, 11, null],
         specifiedMargins: [2, 3],
         sbsWidth, sbsName: "/sbs"
       })
@@ -1807,7 +1807,7 @@ describe('SideBySide Tag Tests', function () {
       cy.get("#\\/w1 textarea").type("{end}{backspace}{backspace}20{enter}", { force: true });
 
       checkFourColumnSbs({
-        specifiedWidths: [20, 15, 11, undefined],
+        specifiedWidths: [20, 15, 11, null],
         specifiedMargins: [2, 3],
         sbsWidth, sbsName: "/sbs"
       })
@@ -1859,7 +1859,7 @@ describe('SideBySide Tag Tests', function () {
       checkFourColumnSbs({
         specifiedWidths: [20, 30, 11, 19],
         specifiedMargins: [2, 1],
-        specifiedValigns: [undefined, undefined, undefined, "bottom"],
+        specifiedValigns: [null, null, null, "bottom"],
         sbsWidth, sbsName: "/sbs"
       })
 
@@ -1870,7 +1870,7 @@ describe('SideBySide Tag Tests', function () {
       checkFourColumnSbs({
         specifiedWidths: [20, 30, 11, 19],
         specifiedMargins: [2, 1],
-        specifiedValigns: [undefined, "middle", undefined, "bottom"],
+        specifiedValigns: [null, "middle", null, "bottom"],
         sbsWidth, sbsName: "/sbs"
       })
 
@@ -1881,7 +1881,7 @@ describe('SideBySide Tag Tests', function () {
       checkFourColumnSbs({
         specifiedWidths: [20, 30, 11, 19],
         specifiedMargins: [2, 1],
-        specifiedValigns: ["middle", "middle", undefined, "bottom"],
+        specifiedValigns: ["middle", "middle", null, "bottom"],
         sbsWidth, sbsName: "/sbs"
       })
 
@@ -2051,7 +2051,7 @@ describe('SideBySide Tag Tests', function () {
       checkFourColumnSbs({
         specifiedWidths: [5, 10, 15, 20],
         specifiedMargins: [5, 2],
-        specifiedValigns: ["middle", undefined, undefined, undefined],
+        specifiedValigns: ["middle", null, null, null],
         sbsWidth, sbsName: "/sbs"
       })
 
@@ -2067,7 +2067,7 @@ describe('SideBySide Tag Tests', function () {
       checkFourColumnSbs({
         specifiedWidths: [5, 10, 15, 9],
         specifiedMargins: [5, 2],
-        specifiedValigns: ["middle", undefined, undefined, undefined],
+        specifiedValigns: ["middle", null, null, null],
         sbsWidth, sbsName: "/sbs"
       })
 
@@ -2078,7 +2078,7 @@ describe('SideBySide Tag Tests', function () {
       checkFourColumnSbs({
         specifiedWidths: [63, 10, 15, 9],
         specifiedMargins: [5, 2],
-        specifiedValigns: ["middle", undefined, undefined, undefined],
+        specifiedValigns: ["middle", null, null, null],
         sbsWidth, sbsName: "/sbs"
       })
 
@@ -2091,7 +2091,7 @@ describe('SideBySide Tag Tests', function () {
       checkFourColumnSbs({
         specifiedWidths: [3, 8, 13, 9],
         specifiedMargins: [5, 2],
-        specifiedValigns: ["middle", undefined, undefined, undefined],
+        specifiedValigns: ["middle", null, null, null],
         sbsWidth, sbsName: "/sbs"
       })
 
@@ -2103,7 +2103,7 @@ describe('SideBySide Tag Tests', function () {
       checkFourColumnSbs({
         specifiedWidths: [3, 8, 13, 9],
         specifiedMargins: [7, 6],
-        specifiedValigns: ["middle", undefined, undefined, undefined],
+        specifiedValigns: ["middle", null, null, null],
         sbsWidth, sbsName: "/sbs"
       })
 
@@ -2120,6 +2120,55 @@ describe('SideBySide Tag Tests', function () {
         specifiedValigns: ["top", "middle", "bottom", "middle"],
         sbsWidth, sbsName: "/sbs"
       })
+
+    })
+
+  })
+
+  it('copy sideBySide and overwrite parameters', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <sideBySide name="sbs" widths="5% 10% 15% 20%" margins="5% 2%" valigns="middle">
+      <lorem generateParagraphs="4" />
+    </sideBySide>
+
+    <copy target="sbs" widths="30% 10%" margins="1% 3%" valigns="bottom middle top bottom" assignNames="sbs2" />
+
+    <copy target="sbs2" widths="7% 8% 11% 12%" valigns="top bottom" assignNames="sbs3" />
+
+    `}, "*");
+    });
+
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+
+
+    cy.get('#\\/sbs').invoke('width').then(sbsWidth => {
+
+      checkFourColumnSbs({
+        specifiedWidths: [5, 10, 15, 20],
+        specifiedMargins: [5, 2],
+        specifiedValigns: ["middle", null, null, null],
+        sbsWidth, sbsName: "/sbs"
+      })
+
+      checkFourColumnSbs({
+        specifiedWidths: [30, 10, null, null],
+        specifiedMargins: [1, 3],
+        specifiedValigns: ["bottom", "middle", "top", "bottom"],
+        sbsWidth, sbsName: "/sbs2"
+      })
+
+      checkFourColumnSbs({
+        specifiedWidths: [7, 8, 11, 12],
+        specifiedMargins: [1, 3],
+        specifiedValigns: ["top", "bottom", null, null],
+        sbsWidth, sbsName: "/sbs3"
+      })
+
+
 
     })
 
@@ -2203,11 +2252,11 @@ describe('SideBySide Tag Tests', function () {
         let components = Object.assign({}, win.state.components);
         expect(components["/sbsg"].stateValues.absoluteMeasurements).eq(false);
         expect(components["/sbs1"].stateValues.absoluteMeasurements).eq(false);
-        expect(components["/sbs1"].stateValues.essentialWidths).eqls([undefined]);
-        expect(components["/sbs1"].stateValues.essentialMargins).eqls([undefined, undefined]);
+        expect(components["/sbs1"].stateValues.essentialWidths).eqls([null]);
+        expect(components["/sbs1"].stateValues.essentialMargins).eqls([null, null]);
         expect(components["/sbs2"].stateValues.absoluteMeasurements).eq(false);
-        expect(components["/sbs2"].stateValues.essentialWidths).eqls([undefined]);
-        expect(components["/sbs2"].stateValues.essentialMargins).eqls([undefined, undefined]);
+        expect(components["/sbs2"].stateValues.essentialWidths).eqls([null]);
+        expect(components["/sbs2"].stateValues.essentialMargins).eqls([null, null]);
       })
 
 
@@ -2218,7 +2267,7 @@ describe('SideBySide Tag Tests', function () {
         sbsWidth, sbsName: "/sbsg", isSbsGroup: true
       })
       checkSingleColumnSbs({
-        specifiedMargins: [10, undefined],
+        specifiedMargins: [10, null],
         sbsWidth, sbsName: "/sbs1"
       })
       checkSingleColumnSbs({
@@ -2227,10 +2276,10 @@ describe('SideBySide Tag Tests', function () {
 
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
-        expect(components["/sbs1"].stateValues.essentialWidths).eqls([undefined]);
-        expect(components["/sbs1"].stateValues.essentialMargins).eqls([10, undefined]);
-        expect(components["/sbs2"].stateValues.essentialWidths).eqls([undefined]);
-        expect(components["/sbs2"].stateValues.essentialMargins).eqls([undefined, undefined]);
+        expect(components["/sbs1"].stateValues.essentialWidths).eqls([null]);
+        expect(components["/sbs1"].stateValues.essentialMargins).eqls([10, null]);
+        expect(components["/sbs2"].stateValues.essentialWidths).eqls([null]);
+        expect(components["/sbs2"].stateValues.essentialMargins).eqls([null, null]);
       })
 
       cy.log(`change width of sbsg, unspecified margin(s) adjust`)
@@ -2242,7 +2291,7 @@ describe('SideBySide Tag Tests', function () {
       })
       checkSingleColumnSbs({
         specifiedWidth: 70,
-        specifiedMargins: [10, undefined],
+        specifiedMargins: [10, null],
         sbsWidth, sbsName: "/sbs1"
       })
       checkSingleColumnSbs({
@@ -2253,10 +2302,10 @@ describe('SideBySide Tag Tests', function () {
 
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
-        expect(components["/sbs1"].stateValues.essentialWidths).eqls([undefined]);
-        expect(components["/sbs1"].stateValues.essentialMargins).eqls([10, undefined]);
-        expect(components["/sbs2"].stateValues.essentialWidths).eqls([undefined]);
-        expect(components["/sbs2"].stateValues.essentialMargins).eqls([undefined, undefined]);
+        expect(components["/sbs1"].stateValues.essentialWidths).eqls([null]);
+        expect(components["/sbs1"].stateValues.essentialMargins).eqls([10, null]);
+        expect(components["/sbs2"].stateValues.essentialWidths).eqls([null]);
+        expect(components["/sbs2"].stateValues.essentialMargins).eqls([null, null]);
       })
 
 
@@ -2269,21 +2318,21 @@ describe('SideBySide Tag Tests', function () {
       })
       checkSingleColumnSbs({
         specifiedWidth: 70,
-        specifiedMargins: [10, undefined],
+        specifiedMargins: [10, null],
         sbsWidth, sbsName: "/sbs1"
       })
       checkSingleColumnSbs({
         specifiedWidth: 70,
-        specifiedMargins: [undefined, 25],
+        specifiedMargins: [null, 25],
         sbsWidth, sbsName: "/sbs2"
       })
 
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
-        expect(components["/sbs1"].stateValues.essentialWidths).eqls([undefined]);
-        expect(components["/sbs1"].stateValues.essentialMargins).eqls([10, undefined]);
-        expect(components["/sbs2"].stateValues.essentialWidths).eqls([undefined]);
-        expect(components["/sbs2"].stateValues.essentialMargins).eqls([undefined, 25]);
+        expect(components["/sbs1"].stateValues.essentialWidths).eqls([null]);
+        expect(components["/sbs1"].stateValues.essentialMargins).eqls([10, null]);
+        expect(components["/sbs2"].stateValues.essentialWidths).eqls([null]);
+        expect(components["/sbs2"].stateValues.essentialMargins).eqls([null, 25]);
       })
 
 
@@ -2292,12 +2341,12 @@ describe('SideBySide Tag Tests', function () {
 
       checkSingleColumnSbs({
         specifiedWidth: 70,
-        specifiedMargins: [4, undefined],
+        specifiedMargins: [4, null],
         sbsWidth, sbsName: "/sbsg", isSbsGroup: true
       })
       checkSingleColumnSbs({
         specifiedWidth: 70,
-        specifiedMargins: [10, undefined],
+        specifiedMargins: [10, null],
         sbsWidth, sbsName: "/sbs1"
       })
       checkSingleColumnSbs({
@@ -2308,10 +2357,10 @@ describe('SideBySide Tag Tests', function () {
 
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
-        expect(components["/sbs1"].stateValues.essentialWidths).eqls([undefined]);
-        expect(components["/sbs1"].stateValues.essentialMargins).eqls([10, undefined]);
-        expect(components["/sbs2"].stateValues.essentialWidths).eqls([undefined]);
-        expect(components["/sbs2"].stateValues.essentialMargins).eqls([undefined, 25]);
+        expect(components["/sbs1"].stateValues.essentialWidths).eqls([null]);
+        expect(components["/sbs1"].stateValues.essentialMargins).eqls([10, null]);
+        expect(components["/sbs2"].stateValues.essentialWidths).eqls([null]);
+        expect(components["/sbs2"].stateValues.essentialMargins).eqls([null, 25]);
       })
 
 
@@ -2320,12 +2369,12 @@ describe('SideBySide Tag Tests', function () {
 
       checkSingleColumnSbs({
         specifiedWidth: 60,
-        specifiedMargins: [4, undefined],
+        specifiedMargins: [4, null],
         sbsWidth, sbsName: "/sbsg", isSbsGroup: true
       })
       checkSingleColumnSbs({
         specifiedWidth: 60,
-        specifiedMargins: [10, undefined],
+        specifiedMargins: [10, null],
         sbsWidth, sbsName: "/sbs1"
       })
       checkSingleColumnSbs({
@@ -2336,10 +2385,10 @@ describe('SideBySide Tag Tests', function () {
 
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
-        expect(components["/sbs1"].stateValues.essentialWidths).eqls([undefined]);
-        expect(components["/sbs1"].stateValues.essentialMargins).eqls([10, undefined]);
-        expect(components["/sbs2"].stateValues.essentialWidths).eqls([undefined]);
-        expect(components["/sbs2"].stateValues.essentialMargins).eqls([undefined, 25]);
+        expect(components["/sbs1"].stateValues.essentialWidths).eqls([null]);
+        expect(components["/sbs1"].stateValues.essentialMargins).eqls([10, null]);
+        expect(components["/sbs2"].stateValues.essentialWidths).eqls([null]);
+        expect(components["/sbs2"].stateValues.essentialMargins).eqls([null, 25]);
       })
 
 
@@ -2348,12 +2397,12 @@ describe('SideBySide Tag Tests', function () {
 
       checkSingleColumnSbs({
         specifiedWidth: 60,
-        specifiedMargins: [4, undefined],
+        specifiedMargins: [4, null],
         sbsWidth, sbsName: "/sbsg", isSbsGroup: true
       })
       checkSingleColumnSbs({
         specifiedWidth: 50,
-        specifiedMargins: [10, undefined],
+        specifiedMargins: [10, null],
         sbsWidth, sbsName: "/sbs1"
       })
       checkSingleColumnSbs({
@@ -2365,9 +2414,9 @@ describe('SideBySide Tag Tests', function () {
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
         expect(components["/sbs1"].stateValues.essentialWidths).eqls([50]);
-        expect(components["/sbs1"].stateValues.essentialMargins).eqls([10, undefined]);
-        expect(components["/sbs2"].stateValues.essentialWidths).eqls([undefined]);
-        expect(components["/sbs2"].stateValues.essentialMargins).eqls([undefined, 25]);
+        expect(components["/sbs1"].stateValues.essentialMargins).eqls([10, null]);
+        expect(components["/sbs2"].stateValues.essentialWidths).eqls([null]);
+        expect(components["/sbs2"].stateValues.essentialMargins).eqls([null, 25]);
       })
 
 
@@ -2376,12 +2425,12 @@ describe('SideBySide Tag Tests', function () {
 
       checkSingleColumnSbs({
         specifiedWidth: 60,
-        specifiedMargins: [20, undefined],
+        specifiedMargins: [20, null],
         sbsWidth, sbsName: "/sbsg", isSbsGroup: true
       })
       checkSingleColumnSbs({
         specifiedWidth: 50,
-        specifiedMargins: [10, undefined],
+        specifiedMargins: [10, null],
         sbsWidth, sbsName: "/sbs1"
       })
       checkSingleColumnSbs({
@@ -2393,9 +2442,9 @@ describe('SideBySide Tag Tests', function () {
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
         expect(components["/sbs1"].stateValues.essentialWidths).eqls([50]);
-        expect(components["/sbs1"].stateValues.essentialMargins).eqls([10, undefined]);
-        expect(components["/sbs2"].stateValues.essentialWidths).eqls([undefined]);
-        expect(components["/sbs2"].stateValues.essentialMargins).eqls([undefined, 25]);
+        expect(components["/sbs1"].stateValues.essentialMargins).eqls([10, null]);
+        expect(components["/sbs2"].stateValues.essentialWidths).eqls([null]);
+        expect(components["/sbs2"].stateValues.essentialMargins).eqls([null, 25]);
       })
 
 
@@ -2405,12 +2454,12 @@ describe('SideBySide Tag Tests', function () {
 
       checkSingleColumnSbs({
         specifiedWidth: 90,
-        specifiedMargins: [20, undefined],
+        specifiedMargins: [20, null],
         sbsWidth, sbsName: "/sbsg", isSbsGroup: true
       })
       checkSingleColumnSbs({
         specifiedWidth: 50,
-        specifiedMargins: [10, undefined],
+        specifiedMargins: [10, null],
         sbsWidth, sbsName: "/sbs1"
       })
       checkSingleColumnSbs({
@@ -2422,9 +2471,9 @@ describe('SideBySide Tag Tests', function () {
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
         expect(components["/sbs1"].stateValues.essentialWidths).eqls([50]);
-        expect(components["/sbs1"].stateValues.essentialMargins).eqls([10, undefined]);
-        expect(components["/sbs2"].stateValues.essentialWidths).eqls([undefined]);
-        expect(components["/sbs2"].stateValues.essentialMargins).eqls([undefined, 25]);
+        expect(components["/sbs1"].stateValues.essentialMargins).eqls([10, null]);
+        expect(components["/sbs2"].stateValues.essentialWidths).eqls([null]);
+        expect(components["/sbs2"].stateValues.essentialMargins).eqls([null, 25]);
       })
 
 
@@ -2433,12 +2482,12 @@ describe('SideBySide Tag Tests', function () {
 
       checkSingleColumnSbs({
         specifiedWidth: 40,
-        specifiedMargins: [20, undefined],
+        specifiedMargins: [20, null],
         sbsWidth, sbsName: "/sbsg", isSbsGroup: true
       })
       checkSingleColumnSbs({
         specifiedWidth: 50,
-        specifiedMargins: [10, undefined],
+        specifiedMargins: [10, null],
         sbsWidth, sbsName: "/sbs1"
       })
       checkSingleColumnSbs({
@@ -2450,9 +2499,9 @@ describe('SideBySide Tag Tests', function () {
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
         expect(components["/sbs1"].stateValues.essentialWidths).eqls([50]);
-        expect(components["/sbs1"].stateValues.essentialMargins).eqls([10, undefined]);
-        expect(components["/sbs2"].stateValues.essentialWidths).eqls([undefined]);
-        expect(components["/sbs2"].stateValues.essentialMargins).eqls([undefined, 25]);
+        expect(components["/sbs1"].stateValues.essentialMargins).eqls([10, null]);
+        expect(components["/sbs2"].stateValues.essentialWidths).eqls([null]);
+        expect(components["/sbs2"].stateValues.essentialMargins).eqls([null, 25]);
       })
 
 
@@ -2461,12 +2510,12 @@ describe('SideBySide Tag Tests', function () {
 
       checkSingleColumnSbs({
         specifiedWidth: 40,
-        specifiedMargins: [20, undefined],
+        specifiedMargins: [20, null],
         sbsWidth, sbsName: "/sbsg", isSbsGroup: true
       })
       checkSingleColumnSbs({
         specifiedWidth: 50,
-        specifiedMargins: [10, undefined],
+        specifiedMargins: [10, null],
         specifiedValign: "bottom",
         sbsWidth, sbsName: "/sbs1"
       })
@@ -2479,9 +2528,9 @@ describe('SideBySide Tag Tests', function () {
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
         expect(components["/sbs1"].stateValues.essentialWidths).eqls([50]);
-        expect(components["/sbs1"].stateValues.essentialMargins).eqls([10, undefined]);
-        expect(components["/sbs2"].stateValues.essentialWidths).eqls([undefined]);
-        expect(components["/sbs2"].stateValues.essentialMargins).eqls([undefined, 25]);
+        expect(components["/sbs1"].stateValues.essentialMargins).eqls([10, null]);
+        expect(components["/sbs2"].stateValues.essentialWidths).eqls([null]);
+        expect(components["/sbs2"].stateValues.essentialMargins).eqls([null, 25]);
       })
 
       cy.log(`change valign of sbsg`)
@@ -2489,13 +2538,13 @@ describe('SideBySide Tag Tests', function () {
 
       checkSingleColumnSbs({
         specifiedWidth: 40,
-        specifiedMargins: [20, undefined],
+        specifiedMargins: [20, null],
         specifiedValign: "middle",
         sbsWidth, sbsName: "/sbsg", isSbsGroup: true
       })
       checkSingleColumnSbs({
         specifiedWidth: 50,
-        specifiedMargins: [10, undefined],
+        specifiedMargins: [10, null],
         specifiedValign: "bottom",
         sbsWidth, sbsName: "/sbs1"
       })
@@ -2509,9 +2558,9 @@ describe('SideBySide Tag Tests', function () {
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
         expect(components["/sbs1"].stateValues.essentialWidths).eqls([50]);
-        expect(components["/sbs1"].stateValues.essentialMargins).eqls([10, undefined]);
-        expect(components["/sbs2"].stateValues.essentialWidths).eqls([undefined]);
-        expect(components["/sbs2"].stateValues.essentialMargins).eqls([undefined, 25]);
+        expect(components["/sbs1"].stateValues.essentialMargins).eqls([10, null]);
+        expect(components["/sbs2"].stateValues.essentialWidths).eqls([null]);
+        expect(components["/sbs2"].stateValues.essentialMargins).eqls([null, 25]);
       })
 
       cy.log(`change valign of sbs2`)
@@ -2519,13 +2568,13 @@ describe('SideBySide Tag Tests', function () {
 
       checkSingleColumnSbs({
         specifiedWidth: 40,
-        specifiedMargins: [20, undefined],
+        specifiedMargins: [20, null],
         specifiedValign: "middle",
         sbsWidth, sbsName: "/sbsg", isSbsGroup: true
       })
       checkSingleColumnSbs({
         specifiedWidth: 50,
-        specifiedMargins: [10, undefined],
+        specifiedMargins: [10, null],
         specifiedValign: "bottom",
         sbsWidth, sbsName: "/sbs1"
       })
@@ -2539,9 +2588,9 @@ describe('SideBySide Tag Tests', function () {
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
         expect(components["/sbs1"].stateValues.essentialWidths).eqls([50]);
-        expect(components["/sbs1"].stateValues.essentialMargins).eqls([10, undefined]);
-        expect(components["/sbs2"].stateValues.essentialWidths).eqls([undefined]);
-        expect(components["/sbs2"].stateValues.essentialMargins).eqls([undefined, 25]);
+        expect(components["/sbs1"].stateValues.essentialMargins).eqls([10, null]);
+        expect(components["/sbs2"].stateValues.essentialWidths).eqls([null]);
+        expect(components["/sbs2"].stateValues.essentialMargins).eqls([null, 25]);
       })
 
 
@@ -2550,13 +2599,13 @@ describe('SideBySide Tag Tests', function () {
 
       checkSingleColumnSbs({
         specifiedWidth: 40,
-        specifiedMargins: [20, undefined],
+        specifiedMargins: [20, null],
         specifiedValign: "middle",
         sbsWidth, sbsName: "/sbsg", isSbsGroup: true
       })
       checkSingleColumnSbs({
         specifiedWidth: 50,
-        specifiedMargins: [10, undefined],
+        specifiedMargins: [10, null],
         specifiedValign: "bottom",
         sbsWidth, sbsName: "/sbs1"
       })
@@ -2570,9 +2619,9 @@ describe('SideBySide Tag Tests', function () {
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
         expect(components["/sbs1"].stateValues.essentialWidths).eqls([50]);
-        expect(components["/sbs1"].stateValues.essentialMargins).eqls([10, undefined]);
-        expect(components["/sbs2"].stateValues.essentialWidths).eqls([undefined]);
-        expect(components["/sbs2"].stateValues.essentialMargins).eqls([undefined, 25]);
+        expect(components["/sbs1"].stateValues.essentialMargins).eqls([10, null]);
+        expect(components["/sbs2"].stateValues.essentialWidths).eqls([null]);
+        expect(components["/sbs2"].stateValues.essentialMargins).eqls([null, 25]);
       })
     })
 
@@ -2664,11 +2713,11 @@ describe('SideBySide Tag Tests', function () {
         let components = Object.assign({}, win.state.components);
         expect(components["/sbsg"].stateValues.absoluteMeasurements).eq(false);
         expect(components["/sbs1"].stateValues.absoluteMeasurements).eq(false);
-        expect(components["/sbs1"].stateValues.essentialWidths).eqls([undefined, undefined]);
-        expect(components["/sbs1"].stateValues.essentialMargins).eqls([undefined, undefined]);
+        expect(components["/sbs1"].stateValues.essentialWidths).eqls([null, null]);
+        expect(components["/sbs1"].stateValues.essentialMargins).eqls([null, null]);
         expect(components["/sbs2"].stateValues.absoluteMeasurements).eq(false);
-        expect(components["/sbs2"].stateValues.essentialWidths).eqls([undefined, undefined]);
-        expect(components["/sbs2"].stateValues.essentialMargins).eqls([undefined, undefined]);
+        expect(components["/sbs2"].stateValues.essentialWidths).eqls([null, null]);
+        expect(components["/sbs2"].stateValues.essentialMargins).eqls([null, null]);
       })
 
 
@@ -2676,24 +2725,24 @@ describe('SideBySide Tag Tests', function () {
       cy.get("#\\/w1g textarea").type("{end}{backspace}{backspace}40{enter}", { force: true });
 
       checkTwoColumnSbs({
-        specifiedWidths: [40, undefined],
+        specifiedWidths: [40, null],
         sbsWidth, sbsName: "/sbsg", isSbsGroup: true
       })
       checkTwoColumnSbs({
-        specifiedWidths: [40, undefined],
+        specifiedWidths: [40, null],
         sbsWidth, sbsName: "/sbs1"
       })
       checkTwoColumnSbs({
-        specifiedWidths: [40, undefined],
+        specifiedWidths: [40, null],
         sbsWidth, sbsName: "/sbs2"
       })
 
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
-        expect(components["/sbs1"].stateValues.essentialWidths).eqls([undefined, undefined]);
-        expect(components["/sbs1"].stateValues.essentialMargins).eqls([undefined, undefined]);
-        expect(components["/sbs2"].stateValues.essentialWidths).eqls([undefined, undefined]);
-        expect(components["/sbs2"].stateValues.essentialMargins).eqls([undefined, undefined]);
+        expect(components["/sbs1"].stateValues.essentialWidths).eqls([null, null]);
+        expect(components["/sbs1"].stateValues.essentialMargins).eqls([null, null]);
+        expect(components["/sbs2"].stateValues.essentialWidths).eqls([null, null]);
+        expect(components["/sbs2"].stateValues.essentialMargins).eqls([null, null]);
       })
 
 
@@ -2701,24 +2750,24 @@ describe('SideBySide Tag Tests', function () {
       cy.get("#\\/w11 textarea").type("{end}{backspace}{backspace}30{enter}", { force: true });
 
       checkTwoColumnSbs({
-        specifiedWidths: [40, undefined],
+        specifiedWidths: [40, null],
         sbsWidth, sbsName: "/sbsg", isSbsGroup: true
       })
       checkTwoColumnSbs({
-        specifiedWidths: [30, undefined],
+        specifiedWidths: [30, null],
         sbsWidth, sbsName: "/sbs1"
       })
       checkTwoColumnSbs({
-        specifiedWidths: [40, undefined],
+        specifiedWidths: [40, null],
         sbsWidth, sbsName: "/sbs2"
       })
 
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
-        expect(components["/sbs1"].stateValues.essentialWidths).eqls([30, undefined]);
-        expect(components["/sbs1"].stateValues.essentialMargins).eqls([undefined, undefined]);
-        expect(components["/sbs2"].stateValues.essentialWidths).eqls([undefined, undefined]);
-        expect(components["/sbs2"].stateValues.essentialMargins).eqls([undefined, undefined]);
+        expect(components["/sbs1"].stateValues.essentialWidths).eqls([30, null]);
+        expect(components["/sbs1"].stateValues.essentialMargins).eqls([null, null]);
+        expect(components["/sbs2"].stateValues.essentialWidths).eqls([null, null]);
+        expect(components["/sbs2"].stateValues.essentialMargins).eqls([null, null]);
       })
 
 
@@ -2726,11 +2775,11 @@ describe('SideBySide Tag Tests', function () {
       cy.get("#\\/w22 textarea").type("{end}{backspace}{backspace}50{enter}", { force: true });
 
       checkTwoColumnSbs({
-        specifiedWidths: [40, undefined],
+        specifiedWidths: [40, null],
         sbsWidth, sbsName: "/sbsg", isSbsGroup: true
       })
       checkTwoColumnSbs({
-        specifiedWidths: [30, undefined],
+        specifiedWidths: [30, null],
         sbsWidth, sbsName: "/sbs1"
       })
       checkTwoColumnSbs({
@@ -2740,10 +2789,10 @@ describe('SideBySide Tag Tests', function () {
 
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
-        expect(components["/sbs1"].stateValues.essentialWidths).eqls([30, undefined]);
-        expect(components["/sbs1"].stateValues.essentialMargins).eqls([undefined, undefined]);
-        expect(components["/sbs2"].stateValues.essentialWidths).eqls([undefined, 50]);
-        expect(components["/sbs2"].stateValues.essentialMargins).eqls([undefined, undefined]);
+        expect(components["/sbs1"].stateValues.essentialWidths).eqls([30, null]);
+        expect(components["/sbs1"].stateValues.essentialMargins).eqls([null, null]);
+        expect(components["/sbs2"].stateValues.essentialWidths).eqls([null, 50]);
+        expect(components["/sbs2"].stateValues.essentialMargins).eqls([null, null]);
       })
 
 
@@ -2751,12 +2800,12 @@ describe('SideBySide Tag Tests', function () {
       cy.get("#\\/m11 textarea").type("{end}{backspace}{backspace}5{enter}", { force: true });
 
       checkTwoColumnSbs({
-        specifiedWidths: [40, undefined],
+        specifiedWidths: [40, null],
         sbsWidth, sbsName: "/sbsg", isSbsGroup: true
       })
       checkTwoColumnSbs({
-        specifiedWidths: [30, undefined],
-        specifiedMargins: [5, undefined],
+        specifiedWidths: [30, null],
+        specifiedMargins: [5, null],
         sbsWidth, sbsName: "/sbs1"
       })
       checkTwoColumnSbs({
@@ -2766,10 +2815,10 @@ describe('SideBySide Tag Tests', function () {
 
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
-        expect(components["/sbs1"].stateValues.essentialWidths).eqls([30, undefined]);
-        expect(components["/sbs1"].stateValues.essentialMargins).eqls([5, undefined]);
-        expect(components["/sbs2"].stateValues.essentialWidths).eqls([undefined, 50]);
-        expect(components["/sbs2"].stateValues.essentialMargins).eqls([undefined, undefined]);
+        expect(components["/sbs1"].stateValues.essentialWidths).eqls([30, null]);
+        expect(components["/sbs1"].stateValues.essentialMargins).eqls([5, null]);
+        expect(components["/sbs2"].stateValues.essentialWidths).eqls([null, 50]);
+        expect(components["/sbs2"].stateValues.essentialMargins).eqls([null, null]);
       })
 
 
@@ -2777,27 +2826,27 @@ describe('SideBySide Tag Tests', function () {
       cy.get("#\\/m1g textarea").type("{end}{backspace}{backspace}3{enter}", { force: true });
 
       checkTwoColumnSbs({
-        specifiedWidths: [40, undefined],
-        specifiedMargins: [3, undefined],
+        specifiedWidths: [40, null],
+        specifiedMargins: [3, null],
         sbsWidth, sbsName: "/sbsg", isSbsGroup: true
       })
       checkTwoColumnSbs({
-        specifiedWidths: [30, undefined],
-        specifiedMargins: [5, undefined],
+        specifiedWidths: [30, null],
+        specifiedMargins: [5, null],
         sbsWidth, sbsName: "/sbs1"
       })
       checkTwoColumnSbs({
         specifiedWidths: [40, 50],
-        specifiedMargins: [3, undefined],
+        specifiedMargins: [3, null],
         sbsWidth, sbsName: "/sbs2"
       })
 
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
-        expect(components["/sbs1"].stateValues.essentialWidths).eqls([30, undefined]);
-        expect(components["/sbs1"].stateValues.essentialMargins).eqls([5, undefined]);
-        expect(components["/sbs2"].stateValues.essentialWidths).eqls([undefined, 50]);
-        expect(components["/sbs2"].stateValues.allMarginsSpecified).eqls([3, undefined]);
+        expect(components["/sbs1"].stateValues.essentialWidths).eqls([30, null]);
+        expect(components["/sbs1"].stateValues.essentialMargins).eqls([5, null]);
+        expect(components["/sbs2"].stateValues.essentialWidths).eqls([null, 50]);
+        expect(components["/sbs2"].stateValues.allMarginsSpecified).eqls([3, null]);
       })
 
 
@@ -2805,12 +2854,12 @@ describe('SideBySide Tag Tests', function () {
       cy.get("#\\/m2g textarea").type("{end}{backspace}{backspace}1{enter}", { force: true });
 
       checkTwoColumnSbs({
-        specifiedWidths: [40, undefined],
+        specifiedWidths: [40, null],
         specifiedMargins: [3, 1],
         sbsWidth, sbsName: "/sbsg", isSbsGroup: true
       })
       checkTwoColumnSbs({
-        specifiedWidths: [30, undefined],
+        specifiedWidths: [30, null],
         specifiedMargins: [5, 1],
         sbsWidth, sbsName: "/sbs1"
       })
@@ -2822,10 +2871,10 @@ describe('SideBySide Tag Tests', function () {
 
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
-        expect(components["/sbs1"].stateValues.essentialWidths).eqls([30, undefined]);
-        expect(components["/sbs1"].stateValues.essentialMargins).eqls([5, undefined]);
-        expect(components["/sbs2"].stateValues.essentialWidths).eqls([undefined, 50]);
-        expect(components["/sbs2"].stateValues.essentialMargins).eqls([undefined, undefined]);
+        expect(components["/sbs1"].stateValues.essentialWidths).eqls([30, null]);
+        expect(components["/sbs1"].stateValues.essentialMargins).eqls([5, null]);
+        expect(components["/sbs2"].stateValues.essentialWidths).eqls([null, 50]);
+        expect(components["/sbs2"].stateValues.essentialMargins).eqls([null, null]);
       })
 
 
@@ -2850,10 +2899,10 @@ describe('SideBySide Tag Tests', function () {
 
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
-        expect(components["/sbs1"].stateValues.essentialWidths).eqls([30, undefined]);
-        expect(components["/sbs1"].stateValues.essentialMargins).eqls([5, undefined]);
-        expect(components["/sbs2"].stateValues.essentialWidths).eqls([undefined, 50]);
-        expect(components["/sbs2"].stateValues.essentialMargins).eqls([undefined, undefined]);
+        expect(components["/sbs1"].stateValues.essentialWidths).eqls([30, null]);
+        expect(components["/sbs1"].stateValues.essentialMargins).eqls([5, null]);
+        expect(components["/sbs2"].stateValues.essentialWidths).eqls([null, 50]);
+        expect(components["/sbs2"].stateValues.essentialMargins).eqls([null, null]);
       })
 
 
@@ -2878,10 +2927,10 @@ describe('SideBySide Tag Tests', function () {
 
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
-        expect(components["/sbs1"].stateValues.essentialWidths).eqls([30, undefined]);
-        expect(components["/sbs1"].stateValues.essentialMargins).eqls([5, undefined]);
-        expect(components["/sbs2"].stateValues.essentialWidths).eqls([undefined, 50]);
-        expect(components["/sbs2"].stateValues.essentialMargins).eqls([undefined, undefined]);
+        expect(components["/sbs1"].stateValues.essentialWidths).eqls([30, null]);
+        expect(components["/sbs1"].stateValues.essentialMargins).eqls([5, null]);
+        expect(components["/sbs2"].stateValues.essentialWidths).eqls([null, 50]);
+        expect(components["/sbs2"].stateValues.essentialMargins).eqls([null, null]);
       })
 
 
@@ -2907,9 +2956,9 @@ describe('SideBySide Tag Tests', function () {
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
         expect(components["/sbs1"].stateValues.essentialWidths).eqls([30, 55]);
-        expect(components["/sbs1"].stateValues.essentialMargins).eqls([5, undefined]);
-        expect(components["/sbs2"].stateValues.essentialWidths).eqls([undefined, 50]);
-        expect(components["/sbs2"].stateValues.essentialMargins).eqls([undefined, undefined]);
+        expect(components["/sbs1"].stateValues.essentialMargins).eqls([5, null]);
+        expect(components["/sbs2"].stateValues.essentialWidths).eqls([null, 50]);
+        expect(components["/sbs2"].stateValues.essentialMargins).eqls([null, null]);
       })
 
 
@@ -2935,9 +2984,9 @@ describe('SideBySide Tag Tests', function () {
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
         expect(components["/sbs1"].stateValues.essentialWidths).eqls([30, 55]);
-        expect(components["/sbs1"].stateValues.essentialMargins).eqls([5, undefined]);
-        expect(components["/sbs2"].stateValues.essentialWidths).eqls([undefined, 50]);
-        expect(components["/sbs2"].stateValues.essentialMargins).eqls([undefined, undefined]);
+        expect(components["/sbs1"].stateValues.essentialMargins).eqls([5, null]);
+        expect(components["/sbs2"].stateValues.essentialWidths).eqls([null, 50]);
+        expect(components["/sbs2"].stateValues.essentialMargins).eqls([null, null]);
       })
 
 
@@ -2947,28 +2996,28 @@ describe('SideBySide Tag Tests', function () {
       checkTwoColumnSbs({
         specifiedWidths: [25, 65],
         specifiedMargins: [3, 1],
-        specifiedValigns: ["bottom", undefined],
+        specifiedValigns: ["bottom", null],
         sbsWidth, sbsName: "/sbsg", isSbsGroup: true
       })
       checkTwoColumnSbs({
         specifiedWidths: [30, 55],
         specifiedMargins: [5, 1],
-        specifiedValigns: ["bottom", undefined],
+        specifiedValigns: ["bottom", null],
         sbsWidth, sbsName: "/sbs1"
       })
       checkTwoColumnSbs({
         specifiedWidths: [25, 50],
         specifiedMargins: [3, 1],
-        specifiedValigns: ["bottom", undefined],
+        specifiedValigns: ["bottom", null],
         sbsWidth, sbsName: "/sbs2"
       })
 
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
         expect(components["/sbs1"].stateValues.essentialWidths).eqls([30, 55]);
-        expect(components["/sbs1"].stateValues.essentialMargins).eqls([5, undefined]);
-        expect(components["/sbs2"].stateValues.essentialWidths).eqls([undefined, 50]);
-        expect(components["/sbs2"].stateValues.essentialMargins).eqls([undefined, undefined]);
+        expect(components["/sbs1"].stateValues.essentialMargins).eqls([5, null]);
+        expect(components["/sbs2"].stateValues.essentialWidths).eqls([null, 50]);
+        expect(components["/sbs2"].stateValues.essentialMargins).eqls([null, null]);
       })
 
       cy.log(`change first valign of sbs2`)
@@ -2977,28 +3026,28 @@ describe('SideBySide Tag Tests', function () {
       checkTwoColumnSbs({
         specifiedWidths: [25, 65],
         specifiedMargins: [3, 1],
-        specifiedValigns: ["bottom", undefined],
+        specifiedValigns: ["bottom", null],
         sbsWidth, sbsName: "/sbsg", isSbsGroup: true
       })
       checkTwoColumnSbs({
         specifiedWidths: [30, 55],
         specifiedMargins: [5, 1],
-        specifiedValigns: ["bottom", undefined],
+        specifiedValigns: ["bottom", null],
         sbsWidth, sbsName: "/sbs1"
       })
       checkTwoColumnSbs({
         specifiedWidths: [25, 50],
         specifiedMargins: [3, 1],
-        specifiedValigns: ["middle", undefined],
+        specifiedValigns: ["middle", null],
         sbsWidth, sbsName: "/sbs2"
       })
 
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
         expect(components["/sbs1"].stateValues.essentialWidths).eqls([30, 55]);
-        expect(components["/sbs1"].stateValues.essentialMargins).eqls([5, undefined]);
-        expect(components["/sbs2"].stateValues.essentialWidths).eqls([undefined, 50]);
-        expect(components["/sbs2"].stateValues.essentialMargins).eqls([undefined, undefined]);
+        expect(components["/sbs1"].stateValues.essentialMargins).eqls([5, null]);
+        expect(components["/sbs2"].stateValues.essentialWidths).eqls([null, 50]);
+        expect(components["/sbs2"].stateValues.essentialMargins).eqls([null, null]);
       })
 
       cy.log(`change second valign of sbs1`)
@@ -3007,7 +3056,7 @@ describe('SideBySide Tag Tests', function () {
       checkTwoColumnSbs({
         specifiedWidths: [25, 65],
         specifiedMargins: [3, 1],
-        specifiedValigns: ["bottom", undefined],
+        specifiedValigns: ["bottom", null],
         sbsWidth, sbsName: "/sbsg", isSbsGroup: true
       })
       checkTwoColumnSbs({
@@ -3019,16 +3068,16 @@ describe('SideBySide Tag Tests', function () {
       checkTwoColumnSbs({
         specifiedWidths: [25, 50],
         specifiedMargins: [3, 1],
-        specifiedValigns: ["middle", undefined],
+        specifiedValigns: ["middle", null],
         sbsWidth, sbsName: "/sbs2"
       })
 
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
         expect(components["/sbs1"].stateValues.essentialWidths).eqls([30, 55]);
-        expect(components["/sbs1"].stateValues.essentialMargins).eqls([5, undefined]);
-        expect(components["/sbs2"].stateValues.essentialWidths).eqls([undefined, 50]);
-        expect(components["/sbs2"].stateValues.essentialMargins).eqls([undefined, undefined]);
+        expect(components["/sbs1"].stateValues.essentialMargins).eqls([5, null]);
+        expect(components["/sbs2"].stateValues.essentialWidths).eqls([null, 50]);
+        expect(components["/sbs2"].stateValues.essentialMargins).eqls([null, null]);
       })
 
       cy.log(`change second valign of sbsg`)
@@ -3056,9 +3105,9 @@ describe('SideBySide Tag Tests', function () {
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
         expect(components["/sbs1"].stateValues.essentialWidths).eqls([30, 55]);
-        expect(components["/sbs1"].stateValues.essentialMargins).eqls([5, undefined]);
-        expect(components["/sbs2"].stateValues.essentialWidths).eqls([undefined, 50]);
-        expect(components["/sbs2"].stateValues.essentialMargins).eqls([undefined, undefined]);
+        expect(components["/sbs1"].stateValues.essentialMargins).eqls([5, null]);
+        expect(components["/sbs2"].stateValues.essentialWidths).eqls([null, 50]);
+        expect(components["/sbs2"].stateValues.essentialMargins).eqls([null, null]);
       })
 
     })
@@ -3158,11 +3207,11 @@ describe('SideBySide Tag Tests', function () {
         let components = Object.assign({}, win.state.components);
         expect(components["/sbsg"].stateValues.absoluteMeasurements).eq(false);
         expect(components["/sbs1"].stateValues.absoluteMeasurements).eq(false);
-        expect(components["/sbs1"].stateValues.essentialWidths).eqls([undefined, undefined]);
-        expect(components["/sbs1"].stateValues.essentialMargins).eqls([undefined, undefined]);
+        expect(components["/sbs1"].stateValues.essentialWidths).eqls([null, null]);
+        expect(components["/sbs1"].stateValues.essentialMargins).eqls([null, null]);
         expect(components["/sbs2"].stateValues.absoluteMeasurements).eq(false);
-        expect(components["/sbs2"].stateValues.essentialWidths).eqls([undefined, undefined]);
-        expect(components["/sbs2"].stateValues.essentialMargins).eqls([undefined, undefined]);
+        expect(components["/sbs2"].stateValues.essentialWidths).eqls([null, null]);
+        expect(components["/sbs2"].stateValues.essentialMargins).eqls([null, null]);
       })
 
 
@@ -3190,10 +3239,10 @@ describe('SideBySide Tag Tests', function () {
 
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
-        expect(components["/sbs1"].stateValues.essentialWidths).eqls([undefined, undefined]);
-        expect(components["/sbs1"].stateValues.essentialMargins).eqls([undefined, undefined]);
-        expect(components["/sbs2"].stateValues.essentialWidths).eqls([undefined, undefined]);
-        expect(components["/sbs2"].stateValues.essentialMargins).eqls([undefined, undefined]);
+        expect(components["/sbs1"].stateValues.essentialWidths).eqls([null, null]);
+        expect(components["/sbs1"].stateValues.essentialMargins).eqls([null, null]);
+        expect(components["/sbs2"].stateValues.essentialWidths).eqls([null, null]);
+        expect(components["/sbs2"].stateValues.essentialMargins).eqls([null, null]);
       })
 
 
@@ -3222,10 +3271,10 @@ describe('SideBySide Tag Tests', function () {
 
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
-        expect(components["/sbs1"].stateValues.essentialWidths).eqls([undefined, undefined]);
-        expect(components["/sbs1"].stateValues.essentialMargins).eqls([undefined, undefined]);
-        expect(components["/sbs2"].stateValues.essentialWidths).eqls([undefined, 15]);
-        expect(components["/sbs2"].stateValues.essentialMargins).eqls([undefined, undefined]);
+        expect(components["/sbs1"].stateValues.essentialWidths).eqls([null, null]);
+        expect(components["/sbs1"].stateValues.essentialMargins).eqls([null, null]);
+        expect(components["/sbs2"].stateValues.essentialWidths).eqls([null, 15]);
+        expect(components["/sbs2"].stateValues.essentialMargins).eqls([null, null]);
       })
 
 
@@ -3253,10 +3302,10 @@ describe('SideBySide Tag Tests', function () {
 
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
-        expect(components["/sbs1"].stateValues.essentialWidths).eqls([undefined, undefined]);
-        expect(components["/sbs1"].stateValues.essentialMargins).eqls([undefined, undefined]);
-        expect(components["/sbs2"].stateValues.essentialWidths).eqls([undefined, 15]);
-        expect(components["/sbs2"].stateValues.essentialMargins).eqls([undefined, undefined]);
+        expect(components["/sbs1"].stateValues.essentialWidths).eqls([null, null]);
+        expect(components["/sbs1"].stateValues.essentialMargins).eqls([null, null]);
+        expect(components["/sbs2"].stateValues.essentialWidths).eqls([null, 15]);
+        expect(components["/sbs2"].stateValues.essentialMargins).eqls([null, null]);
       })
 
 
@@ -3284,10 +3333,10 @@ describe('SideBySide Tag Tests', function () {
 
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
-        expect(components["/sbs1"].stateValues.essentialWidths).eqls([undefined, undefined]);
-        expect(components["/sbs1"].stateValues.essentialMargins).eqls([undefined, undefined]);
-        expect(components["/sbs2"].stateValues.essentialWidths).eqls([undefined, 15]);
-        expect(components["/sbs2"].stateValues.essentialMargins).eqls([undefined, undefined]);
+        expect(components["/sbs1"].stateValues.essentialWidths).eqls([null, null]);
+        expect(components["/sbs1"].stateValues.essentialMargins).eqls([null, null]);
+        expect(components["/sbs2"].stateValues.essentialWidths).eqls([null, 15]);
+        expect(components["/sbs2"].stateValues.essentialMargins).eqls([null, null]);
       })
 
 
@@ -3316,10 +3365,10 @@ describe('SideBySide Tag Tests', function () {
 
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
-        expect(components["/sbs1"].stateValues.essentialWidths).eqls([undefined, undefined]);
-        expect(components["/sbs1"].stateValues.essentialMargins).eqls([undefined, undefined]);
-        expect(components["/sbs2"].stateValues.essentialWidths).eqls([undefined, 15]);
-        expect(components["/sbs2"].stateValues.essentialMargins).eqls([undefined, undefined]);
+        expect(components["/sbs1"].stateValues.essentialWidths).eqls([null, null]);
+        expect(components["/sbs1"].stateValues.essentialMargins).eqls([null, null]);
+        expect(components["/sbs2"].stateValues.essentialWidths).eqls([null, 15]);
+        expect(components["/sbs2"].stateValues.essentialMargins).eqls([null, null]);
       })
 
       cy.log(`change right margin of sbsg`)
@@ -3346,10 +3395,10 @@ describe('SideBySide Tag Tests', function () {
 
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
-        expect(components["/sbs1"].stateValues.essentialWidths).eqls([undefined, undefined]);
-        expect(components["/sbs1"].stateValues.essentialMargins).eqls([undefined, undefined]);
-        expect(components["/sbs2"].stateValues.essentialWidths).eqls([undefined, 15]);
-        expect(components["/sbs2"].stateValues.essentialMargins).eqls([undefined, undefined]);
+        expect(components["/sbs1"].stateValues.essentialWidths).eqls([null, null]);
+        expect(components["/sbs1"].stateValues.essentialMargins).eqls([null, null]);
+        expect(components["/sbs2"].stateValues.essentialWidths).eqls([null, 15]);
+        expect(components["/sbs2"].stateValues.essentialMargins).eqls([null, null]);
       })
 
       cy.log(`change right margin of sbs1`)
@@ -3376,10 +3425,10 @@ describe('SideBySide Tag Tests', function () {
 
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
-        expect(components["/sbs1"].stateValues.essentialWidths).eqls([undefined, undefined]);
-        expect(components["/sbs1"].stateValues.essentialMargins).eqls([undefined, 7]);
-        expect(components["/sbs2"].stateValues.essentialWidths).eqls([undefined, 15]);
-        expect(components["/sbs2"].stateValues.essentialMargins).eqls([undefined, undefined]);
+        expect(components["/sbs1"].stateValues.essentialWidths).eqls([null, null]);
+        expect(components["/sbs1"].stateValues.essentialMargins).eqls([null, 7]);
+        expect(components["/sbs2"].stateValues.essentialWidths).eqls([null, 15]);
+        expect(components["/sbs2"].stateValues.essentialMargins).eqls([null, null]);
       })
 
 
@@ -3407,10 +3456,10 @@ describe('SideBySide Tag Tests', function () {
 
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
-        expect(components["/sbs1"].stateValues.essentialWidths).eqls([undefined, undefined]);
-        expect(components["/sbs1"].stateValues.essentialMargins).eqls([undefined, 7]);
-        expect(components["/sbs2"].stateValues.essentialWidths).eqls([undefined, 15]);
-        expect(components["/sbs2"].stateValues.essentialMargins).eqls([undefined, undefined]);
+        expect(components["/sbs1"].stateValues.essentialWidths).eqls([null, null]);
+        expect(components["/sbs1"].stateValues.essentialMargins).eqls([null, 7]);
+        expect(components["/sbs2"].stateValues.essentialWidths).eqls([null, 15]);
+        expect(components["/sbs2"].stateValues.essentialMargins).eqls([null, null]);
       })
 
       cy.log(`change left margin of sbs1`)
@@ -3437,10 +3486,10 @@ describe('SideBySide Tag Tests', function () {
 
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
-        expect(components["/sbs1"].stateValues.essentialWidths).eqls([undefined, undefined]);
+        expect(components["/sbs1"].stateValues.essentialWidths).eqls([null, null]);
         expect(components["/sbs1"].stateValues.essentialMargins).eqls([6, 7]);
-        expect(components["/sbs2"].stateValues.essentialWidths).eqls([undefined, 15]);
-        expect(components["/sbs2"].stateValues.essentialMargins).eqls([undefined, undefined]);
+        expect(components["/sbs2"].stateValues.essentialWidths).eqls([null, 15]);
+        expect(components["/sbs2"].stateValues.essentialMargins).eqls([null, null]);
       })
 
 
@@ -3468,10 +3517,10 @@ describe('SideBySide Tag Tests', function () {
 
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
-        expect(components["/sbs1"].stateValues.essentialWidths).eqls([undefined, undefined]);
+        expect(components["/sbs1"].stateValues.essentialWidths).eqls([null, null]);
         expect(components["/sbs1"].stateValues.essentialMargins).eqls([6, 7]);
-        expect(components["/sbs2"].stateValues.essentialWidths).eqls([undefined, 15]);
-        expect(components["/sbs2"].stateValues.essentialMargins).eqls([undefined, undefined]);
+        expect(components["/sbs2"].stateValues.essentialWidths).eqls([null, 15]);
+        expect(components["/sbs2"].stateValues.essentialMargins).eqls([null, null]);
       })
 
 
@@ -3499,10 +3548,10 @@ describe('SideBySide Tag Tests', function () {
 
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
-        expect(components["/sbs1"].stateValues.essentialWidths).eqls([undefined, undefined]);
+        expect(components["/sbs1"].stateValues.essentialWidths).eqls([null, null]);
         expect(components["/sbs1"].stateValues.essentialMargins).eqls([6, 7]);
-        expect(components["/sbs2"].stateValues.essentialWidths).eqls([undefined, 15]);
-        expect(components["/sbs2"].stateValues.essentialMargins).eqls([undefined, undefined]);
+        expect(components["/sbs2"].stateValues.essentialWidths).eqls([null, 15]);
+        expect(components["/sbs2"].stateValues.essentialMargins).eqls([null, null]);
       })
 
       cy.log(`change valign2 of sbsg`)
@@ -3529,10 +3578,10 @@ describe('SideBySide Tag Tests', function () {
 
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
-        expect(components["/sbs1"].stateValues.essentialWidths).eqls([undefined, undefined]);
+        expect(components["/sbs1"].stateValues.essentialWidths).eqls([null, null]);
         expect(components["/sbs1"].stateValues.essentialMargins).eqls([6, 7]);
-        expect(components["/sbs2"].stateValues.essentialWidths).eqls([undefined, 15]);
-        expect(components["/sbs2"].stateValues.essentialMargins).eqls([undefined, undefined]);
+        expect(components["/sbs2"].stateValues.essentialWidths).eqls([null, 15]);
+        expect(components["/sbs2"].stateValues.essentialMargins).eqls([null, null]);
       })
 
       cy.log(`change valign1 of sbs1`)
@@ -3559,10 +3608,10 @@ describe('SideBySide Tag Tests', function () {
 
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
-        expect(components["/sbs1"].stateValues.essentialWidths).eqls([undefined, undefined]);
+        expect(components["/sbs1"].stateValues.essentialWidths).eqls([null, null]);
         expect(components["/sbs1"].stateValues.essentialMargins).eqls([6, 7]);
-        expect(components["/sbs2"].stateValues.essentialWidths).eqls([undefined, 15]);
-        expect(components["/sbs2"].stateValues.essentialMargins).eqls([undefined, undefined]);
+        expect(components["/sbs2"].stateValues.essentialWidths).eqls([null, 15]);
+        expect(components["/sbs2"].stateValues.essentialMargins).eqls([null, null]);
       })
 
       cy.log(`change valigns of sbs2`)
@@ -3590,10 +3639,10 @@ describe('SideBySide Tag Tests', function () {
 
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
-        expect(components["/sbs1"].stateValues.essentialWidths).eqls([undefined, undefined]);
+        expect(components["/sbs1"].stateValues.essentialWidths).eqls([null, null]);
         expect(components["/sbs1"].stateValues.essentialMargins).eqls([6, 7]);
-        expect(components["/sbs2"].stateValues.essentialWidths).eqls([undefined, 15]);
-        expect(components["/sbs2"].stateValues.essentialMargins).eqls([undefined, undefined]);
+        expect(components["/sbs2"].stateValues.essentialWidths).eqls([null, 15]);
+        expect(components["/sbs2"].stateValues.essentialMargins).eqls([null, null]);
       })
 
     })
@@ -3692,11 +3741,11 @@ describe('SideBySide Tag Tests', function () {
         let components = Object.assign({}, win.state.components);
         expect(components["/sbsg"].stateValues.absoluteMeasurements).eq(false);
         expect(components["/sbs1"].stateValues.absoluteMeasurements).eq(false);
-        expect(components["/sbs1"].stateValues.essentialWidths).eqls([undefined, undefined]);
-        expect(components["/sbs1"].stateValues.essentialMargins).eqls([undefined, undefined]);
+        expect(components["/sbs1"].stateValues.essentialWidths).eqls([null, null]);
+        expect(components["/sbs1"].stateValues.essentialMargins).eqls([null, null]);
         expect(components["/sbs2"].stateValues.absoluteMeasurements).eq(false);
-        expect(components["/sbs2"].stateValues.essentialWidths).eqls([undefined, undefined]);
-        expect(components["/sbs2"].stateValues.essentialMargins).eqls([undefined, undefined]);
+        expect(components["/sbs2"].stateValues.essentialWidths).eqls([null, null]);
+        expect(components["/sbs2"].stateValues.essentialMargins).eqls([null, null]);
       })
 
 
@@ -3724,10 +3773,10 @@ describe('SideBySide Tag Tests', function () {
 
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
-        expect(components["/sbs1"].stateValues.essentialWidths).eqls([undefined, undefined]);
-        expect(components["/sbs1"].stateValues.essentialMargins).eqls([undefined, undefined]);
-        expect(components["/sbs2"].stateValues.essentialWidths).eqls([undefined, undefined]);
-        expect(components["/sbs2"].stateValues.essentialMargins).eqls([undefined, undefined]);
+        expect(components["/sbs1"].stateValues.essentialWidths).eqls([null, null]);
+        expect(components["/sbs1"].stateValues.essentialMargins).eqls([null, null]);
+        expect(components["/sbs2"].stateValues.essentialWidths).eqls([null, null]);
+        expect(components["/sbs2"].stateValues.essentialMargins).eqls([null, null]);
       })
 
 
@@ -3755,10 +3804,10 @@ describe('SideBySide Tag Tests', function () {
 
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
-        expect(components["/sbs1"].stateValues.essentialWidths).eqls([undefined, undefined]);
-        expect(components["/sbs1"].stateValues.essentialMargins).eqls([undefined, undefined]);
-        expect(components["/sbs2"].stateValues.essentialWidths).eqls([undefined, 25]);
-        expect(components["/sbs2"].stateValues.essentialMargins).eqls([undefined, undefined]);
+        expect(components["/sbs1"].stateValues.essentialWidths).eqls([null, null]);
+        expect(components["/sbs1"].stateValues.essentialMargins).eqls([null, null]);
+        expect(components["/sbs2"].stateValues.essentialWidths).eqls([null, 25]);
+        expect(components["/sbs2"].stateValues.essentialMargins).eqls([null, null]);
       })
 
 
@@ -3786,10 +3835,10 @@ describe('SideBySide Tag Tests', function () {
 
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
-        expect(components["/sbs1"].stateValues.essentialWidths).eqls([undefined, undefined]);
-        expect(components["/sbs1"].stateValues.essentialMargins).eqls([undefined, undefined]);
-        expect(components["/sbs2"].stateValues.essentialWidths).eqls([undefined, 25]);
-        expect(components["/sbs2"].stateValues.essentialMargins).eqls([undefined, undefined]);
+        expect(components["/sbs1"].stateValues.essentialWidths).eqls([null, null]);
+        expect(components["/sbs1"].stateValues.essentialMargins).eqls([null, null]);
+        expect(components["/sbs2"].stateValues.essentialWidths).eqls([null, 25]);
+        expect(components["/sbs2"].stateValues.essentialMargins).eqls([null, null]);
       })
 
 
@@ -3817,10 +3866,10 @@ describe('SideBySide Tag Tests', function () {
 
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
-        expect(components["/sbs1"].stateValues.essentialWidths).eqls([undefined, undefined]);
-        expect(components["/sbs1"].stateValues.essentialMargins).eqls([undefined, undefined]);
-        expect(components["/sbs2"].stateValues.essentialWidths).eqls([undefined, 25]);
-        expect(components["/sbs2"].stateValues.essentialMargins).eqls([undefined, undefined]);
+        expect(components["/sbs1"].stateValues.essentialWidths).eqls([null, null]);
+        expect(components["/sbs1"].stateValues.essentialMargins).eqls([null, null]);
+        expect(components["/sbs2"].stateValues.essentialWidths).eqls([null, 25]);
+        expect(components["/sbs2"].stateValues.essentialMargins).eqls([null, null]);
       })
 
 
@@ -3848,10 +3897,10 @@ describe('SideBySide Tag Tests', function () {
 
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
-        expect(components["/sbs1"].stateValues.essentialWidths).eqls([undefined, undefined]);
-        expect(components["/sbs1"].stateValues.essentialMargins).eqls([undefined, undefined]);
-        expect(components["/sbs2"].stateValues.essentialWidths).eqls([undefined, 25]);
-        expect(components["/sbs2"].stateValues.essentialMargins).eqls([undefined, undefined]);
+        expect(components["/sbs1"].stateValues.essentialWidths).eqls([null, null]);
+        expect(components["/sbs1"].stateValues.essentialMargins).eqls([null, null]);
+        expect(components["/sbs2"].stateValues.essentialWidths).eqls([null, 25]);
+        expect(components["/sbs2"].stateValues.essentialMargins).eqls([null, null]);
       })
 
 
@@ -3879,10 +3928,10 @@ describe('SideBySide Tag Tests', function () {
 
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
-        expect(components["/sbs1"].stateValues.essentialWidths).eqls([undefined, undefined]);
-        expect(components["/sbs1"].stateValues.essentialMargins).eqls([undefined, undefined]);
+        expect(components["/sbs1"].stateValues.essentialWidths).eqls([null, null]);
+        expect(components["/sbs1"].stateValues.essentialMargins).eqls([null, null]);
         expect(components["/sbs2"].stateValues.essentialWidths).eqls([22, 25]);
-        expect(components["/sbs2"].stateValues.essentialMargins).eqls([undefined, undefined]);
+        expect(components["/sbs2"].stateValues.essentialMargins).eqls([null, null]);
       })
 
 
@@ -3910,10 +3959,10 @@ describe('SideBySide Tag Tests', function () {
 
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
-        expect(components["/sbs1"].stateValues.essentialWidths).eqls([undefined, undefined]);
-        expect(components["/sbs1"].stateValues.essentialMargins).eqls([undefined, undefined]);
+        expect(components["/sbs1"].stateValues.essentialWidths).eqls([null, null]);
+        expect(components["/sbs1"].stateValues.essentialMargins).eqls([null, null]);
         expect(components["/sbs2"].stateValues.essentialWidths).eqls([22, 25]);
-        expect(components["/sbs2"].stateValues.essentialMargins).eqls([undefined, undefined]);
+        expect(components["/sbs2"].stateValues.essentialMargins).eqls([null, null]);
       })
 
 
@@ -3941,10 +3990,10 @@ describe('SideBySide Tag Tests', function () {
 
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
-        expect(components["/sbs1"].stateValues.essentialWidths).eqls([undefined, undefined]);
-        expect(components["/sbs1"].stateValues.essentialMargins).eqls([undefined, 7]);
+        expect(components["/sbs1"].stateValues.essentialWidths).eqls([null, null]);
+        expect(components["/sbs1"].stateValues.essentialMargins).eqls([null, 7]);
         expect(components["/sbs2"].stateValues.essentialWidths).eqls([22, 25]);
-        expect(components["/sbs2"].stateValues.essentialMargins).eqls([undefined, undefined]);
+        expect(components["/sbs2"].stateValues.essentialMargins).eqls([null, null]);
       })
 
 
@@ -3972,10 +4021,10 @@ describe('SideBySide Tag Tests', function () {
 
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
-        expect(components["/sbs1"].stateValues.essentialWidths).eqls([undefined, undefined]);
-        expect(components["/sbs1"].stateValues.essentialMargins).eqls([undefined, 7]);
+        expect(components["/sbs1"].stateValues.essentialWidths).eqls([null, null]);
+        expect(components["/sbs1"].stateValues.essentialMargins).eqls([null, 7]);
         expect(components["/sbs2"].stateValues.essentialWidths).eqls([22, 25]);
-        expect(components["/sbs2"].stateValues.essentialMargins).eqls([undefined, undefined]);
+        expect(components["/sbs2"].stateValues.essentialMargins).eqls([null, null]);
       })
 
 
@@ -4003,10 +4052,10 @@ describe('SideBySide Tag Tests', function () {
 
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
-        expect(components["/sbs1"].stateValues.essentialWidths).eqls([undefined, undefined]);
+        expect(components["/sbs1"].stateValues.essentialWidths).eqls([null, null]);
         expect(components["/sbs1"].stateValues.essentialMargins).eqls([6, 7]);
         expect(components["/sbs2"].stateValues.essentialWidths).eqls([22, 25]);
-        expect(components["/sbs2"].stateValues.essentialMargins).eqls([undefined, undefined]);
+        expect(components["/sbs2"].stateValues.essentialMargins).eqls([null, null]);
       })
 
 
@@ -4034,10 +4083,10 @@ describe('SideBySide Tag Tests', function () {
 
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
-        expect(components["/sbs1"].stateValues.essentialWidths).eqls([undefined, undefined]);
+        expect(components["/sbs1"].stateValues.essentialWidths).eqls([null, null]);
         expect(components["/sbs1"].stateValues.essentialMargins).eqls([6, 7]);
         expect(components["/sbs2"].stateValues.essentialWidths).eqls([22, 25]);
-        expect(components["/sbs2"].stateValues.essentialMargins).eqls([undefined, undefined]);
+        expect(components["/sbs2"].stateValues.essentialMargins).eqls([null, null]);
       })
 
 
@@ -4065,10 +4114,10 @@ describe('SideBySide Tag Tests', function () {
 
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
-        expect(components["/sbs1"].stateValues.essentialWidths).eqls([undefined, undefined]);
+        expect(components["/sbs1"].stateValues.essentialWidths).eqls([null, null]);
         expect(components["/sbs1"].stateValues.essentialMargins).eqls([6, 7]);
         expect(components["/sbs2"].stateValues.essentialWidths).eqls([22, 25]);
-        expect(components["/sbs2"].stateValues.essentialMargins).eqls([undefined, undefined]);
+        expect(components["/sbs2"].stateValues.essentialMargins).eqls([null, null]);
       })
 
 
@@ -4096,10 +4145,10 @@ describe('SideBySide Tag Tests', function () {
 
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
-        expect(components["/sbs1"].stateValues.essentialWidths).eqls([undefined, undefined]);
+        expect(components["/sbs1"].stateValues.essentialWidths).eqls([null, null]);
         expect(components["/sbs1"].stateValues.essentialMargins).eqls([6, 7]);
         expect(components["/sbs2"].stateValues.essentialWidths).eqls([22, 25]);
-        expect(components["/sbs2"].stateValues.essentialMargins).eqls([undefined, undefined]);
+        expect(components["/sbs2"].stateValues.essentialMargins).eqls([null, null]);
       })
 
 
@@ -4127,10 +4176,10 @@ describe('SideBySide Tag Tests', function () {
 
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
-        expect(components["/sbs1"].stateValues.essentialWidths).eqls([undefined, undefined]);
+        expect(components["/sbs1"].stateValues.essentialWidths).eqls([null, null]);
         expect(components["/sbs1"].stateValues.essentialMargins).eqls([6, 7]);
         expect(components["/sbs2"].stateValues.essentialWidths).eqls([22, 25]);
-        expect(components["/sbs2"].stateValues.essentialMargins).eqls([undefined, undefined]);
+        expect(components["/sbs2"].stateValues.essentialMargins).eqls([null, null]);
       })
 
 
@@ -4158,10 +4207,10 @@ describe('SideBySide Tag Tests', function () {
 
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
-        expect(components["/sbs1"].stateValues.essentialWidths).eqls([undefined, undefined]);
+        expect(components["/sbs1"].stateValues.essentialWidths).eqls([null, null]);
         expect(components["/sbs1"].stateValues.essentialMargins).eqls([6, 7]);
         expect(components["/sbs2"].stateValues.essentialWidths).eqls([22, 25]);
-        expect(components["/sbs2"].stateValues.essentialMargins).eqls([undefined, undefined]);
+        expect(components["/sbs2"].stateValues.essentialMargins).eqls([null, null]);
       })
 
 
@@ -4189,10 +4238,10 @@ describe('SideBySide Tag Tests', function () {
 
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
-        expect(components["/sbs1"].stateValues.essentialWidths).eqls([undefined, undefined]);
+        expect(components["/sbs1"].stateValues.essentialWidths).eqls([null, null]);
         expect(components["/sbs1"].stateValues.essentialMargins).eqls([6, 7]);
         expect(components["/sbs2"].stateValues.essentialWidths).eqls([22, 25]);
-        expect(components["/sbs2"].stateValues.essentialMargins).eqls([undefined, undefined]);
+        expect(components["/sbs2"].stateValues.essentialMargins).eqls([null, null]);
       })
 
       cy.log(`change valigns of sbs2`)
@@ -4220,15 +4269,110 @@ describe('SideBySide Tag Tests', function () {
 
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
-        expect(components["/sbs1"].stateValues.essentialWidths).eqls([undefined, undefined]);
+        expect(components["/sbs1"].stateValues.essentialWidths).eqls([null, null]);
         expect(components["/sbs1"].stateValues.essentialMargins).eqls([6, 7]);
         expect(components["/sbs2"].stateValues.essentialWidths).eqls([22, 25]);
-        expect(components["/sbs2"].stateValues.essentialMargins).eqls([undefined, undefined]);
+        expect(components["/sbs2"].stateValues.essentialMargins).eqls([null, null]);
       })
 
     })
 
   })
+
+  it('copy sbsGroup and overwrite parameters', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <sbsgroup name="sbsg" widths="25% 15%" margins="5% 10%" valigns="middle top" newNamespace>
+      <sideBySide name="sbs1" width="20%" valign="top">
+        <lorem generateParagraphs="2" />
+      </sideBySide>
+      <sideBySide name="sbs2" margins="8%">
+        <lorem generateParagraphs="2" />
+      </sideBySide>
+    </sbsgroup>
+
+    <copy target="sbsg" widths="30% 10%" margins="1% 3%" valigns="bottom middle" assignNames="sbsg2" />
+
+    <copy target="sbsg2" widths="7%" valigns="top bottom" assignNames="sbsg3" />
+
+    `}, "*");
+    });
+
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+
+
+    cy.get('#\\/sbsg\\/sbs1').invoke('width').then(sbsWidth => {
+
+      checkTwoColumnSbs({
+        specifiedWidths: [25, 15],
+        specifiedMargins: [5, 10],
+        specifiedValigns: ["middle", "top"],
+        sbsWidth, sbsName: "/sbsg", isSbsGroup: true
+      })
+
+
+      checkTwoColumnSbs({
+        specifiedWidths: [20, 20],
+        specifiedMargins: [5, 10],
+        specifiedValigns: ["top", "top"],
+        sbsWidth, sbsName: "/sbsg/sbs1"
+      })
+      checkTwoColumnSbs({
+        specifiedWidths: [25, 15],
+        specifiedMargins: [8, 8],
+        specifiedValigns: ["middle", "top"],
+        sbsWidth, sbsName: "/sbsg/sbs2"
+      })
+
+
+      checkTwoColumnSbs({
+        specifiedWidths: [30, 10],
+        specifiedMargins: [1, 3],
+        specifiedValigns: ["bottom", "middle"],
+        sbsWidth, sbsName: "/sbsg2", isSbsGroup: true
+      })
+
+      checkTwoColumnSbs({
+        specifiedWidths: [20, 20],
+        specifiedMargins: [1, 3],
+        specifiedValigns: ["top", "top"],
+        sbsWidth, sbsName: "/sbsg2/sbs1"
+      })
+      checkTwoColumnSbs({
+        specifiedWidths: [30, 10],
+        specifiedMargins: [8, 8],
+        specifiedValigns: ["bottom", "middle"],
+        sbsWidth, sbsName: "/sbsg2/sbs2"
+      })
+
+
+      checkTwoColumnSbs({
+        specifiedWidths: [7, null],
+        specifiedMargins: [1, 3],
+        specifiedValigns: ["top", "bottom"],
+        sbsWidth, sbsName: "/sbsg3", isSbsGroup: true
+      })
+
+      checkTwoColumnSbs({
+        specifiedWidths: [20, 20],
+        specifiedMargins: [1, 3],
+        specifiedValigns: ["top", "top"],
+        sbsWidth, sbsName: "/sbsg3/sbs1"
+      })
+      checkTwoColumnSbs({
+        specifiedWidths: [7, null],
+        specifiedMargins: [8, 8],
+        specifiedValigns: ["top", "bottom"],
+        sbsWidth, sbsName: "/sbsg3/sbs2"
+      })
+
+    })
+
+  })
+
 
   it('sideBySide with a stack', () => {
     cy.window().then((win) => {
@@ -4348,11 +4492,11 @@ describe('SideBySide Tag Tests', function () {
         sbsWidth, sbsName: "/sbs"
       })
 
-      cy.log(`invalid defining width treated as undefined`)
+      cy.log(`invalid defining width treated as null`)
       cy.get("#\\/w textarea").type("{end}{backspace}{backspace}x{enter}", { force: true });
 
       checkTwoColumnSbs({
-        specifiedWidths: [undefined, undefined],
+        specifiedWidths: [null, null],
         specifiedMargins: [10, 10],
         specifiedValigns: ["middle", "middle"],
         sbsWidth, sbsName: "/sbs"
@@ -4379,12 +4523,12 @@ describe('SideBySide Tag Tests', function () {
         sbsWidth, sbsName: "/sbs"
       })
 
-      cy.log(`invalid defining margin treated as undefined`)
+      cy.log(`invalid defining margin treated as null`)
       cy.get("#\\/m textarea").type("{end}{backspace}{backspace}none{enter}", { force: true });
 
       checkTwoColumnSbs({
         specifiedWidths: [10, 10],
-        specifiedMargins: [undefined, undefined],
+        specifiedMargins: [null, null],
         specifiedValigns: ["middle", "middle"],
         sbsWidth, sbsName: "/sbs"
       })
@@ -4447,7 +4591,7 @@ describe('SideBySide Tag Tests', function () {
       checkTwoColumnSbs({
         specifiedWidths: [10, 10],
         specifiedMargins: [45, 45],
-        specifiedValigns: [undefined, undefined],
+        specifiedValigns: [null, null],
         sbsWidth, sbsName: "/sbs"
       })
 
@@ -4544,21 +4688,21 @@ describe('SideBySide Tag Tests', function () {
         sbsWidth, sbsName: "/sbs"
       })
 
-      cy.log(`make second defining width be invalid, treated as undefined`)
+      cy.log(`make second defining width be invalid, treated as null`)
       cy.get("#\\/dw2 textarea").type("{end}{backspace}{backspace}{backspace}hello{enter}", { force: true });
 
       checkTwoColumnSbs({
-        specifiedWidths: [30, undefined],
+        specifiedWidths: [30, null],
         specifiedMargins: [10, 20],
         specifiedValigns: ["middle", "bottom"],
         sbsWidth, sbsName: "/sbs"
       })
 
-      cy.log(`make first defining width be invalid, treated as undefined`)
+      cy.log(`make first defining width be invalid, treated as null`)
       cy.get("#\\/dw1 textarea").type("{end}{backspace}{backspace}{backspace}bye{enter}", { force: true });
 
       checkTwoColumnSbs({
-        specifiedWidths: [undefined, undefined],
+        specifiedWidths: [null, null],
         specifiedMargins: [10, 20],
         specifiedValigns: ["middle", "bottom"],
         sbsWidth, sbsName: "/sbs"
@@ -4568,7 +4712,7 @@ describe('SideBySide Tag Tests', function () {
       cy.get("#\\/w2 textarea").type("{end}{backspace}{backspace}5{enter}", { force: true });
 
       checkTwoColumnSbs({
-        specifiedWidths: [undefined, 5],
+        specifiedWidths: [null, 5],
         specifiedMargins: [10, 20],
         specifiedValigns: ["middle", "bottom"],
         sbsWidth, sbsName: "/sbs"
@@ -4617,22 +4761,22 @@ describe('SideBySide Tag Tests', function () {
       })
 
 
-      cy.log(`invalid left defining margin, treated as undefined`)
+      cy.log(`invalid left defining margin, treated as null`)
       cy.get("#\\/dm1 textarea").type("{end}{backspace}{backspace}hello{enter}", { force: true });
 
       checkTwoColumnSbs({
         specifiedWidths: [30, 5],
-        specifiedMargins: [undefined, 5],
+        specifiedMargins: [null, 5],
         specifiedValigns: ["middle", "bottom"],
         sbsWidth, sbsName: "/sbs"
       })
 
-      cy.log(`invalid right defining margin, treated as undefined`)
+      cy.log(`invalid right defining margin, treated as null`)
       cy.get("#\\/dm2 textarea").type("{end}{backspace}{backspace}bye{enter}", { force: true });
 
       checkTwoColumnSbs({
         specifiedWidths: [30, 5],
-        specifiedMargins: [undefined, undefined],
+        specifiedMargins: [null, null],
         specifiedValigns: ["middle", "bottom"],
         sbsWidth, sbsName: "/sbs"
       })
@@ -4642,7 +4786,7 @@ describe('SideBySide Tag Tests', function () {
 
       checkTwoColumnSbs({
         specifiedWidths: [30, 5],
-        specifiedMargins: [12, undefined],
+        specifiedMargins: [12, null],
         specifiedValigns: ["middle", "bottom"],
         sbsWidth, sbsName: "/sbs"
       })
@@ -4698,23 +4842,23 @@ describe('SideBySide Tag Tests', function () {
         sbsWidth, sbsName: "/sbs"
       })
 
-      cy.log(`invalid second defining valign treated as undefined`)
+      cy.log(`invalid second defining valign treated as null`)
       cy.get("#\\/dv2_input").clear().type("banana{enter}");
 
       checkTwoColumnSbs({
         specifiedWidths: [30, 5],
         specifiedMargins: [12, 8],
-        specifiedValigns: ["bottom", undefined],
+        specifiedValigns: ["bottom", null],
         sbsWidth, sbsName: "/sbs"
       })
 
-      cy.log(`invalid first defining valign treated as undefined`)
+      cy.log(`invalid first defining valign treated as null`)
       cy.get("#\\/dv1_input").clear().type("apple{enter}");
 
       checkTwoColumnSbs({
         specifiedWidths: [30, 5],
         specifiedMargins: [12, 8],
-        specifiedValigns: [undefined, undefined],
+        specifiedValigns: [null, null],
         sbsWidth, sbsName: "/sbs"
       })
 
@@ -4725,7 +4869,7 @@ describe('SideBySide Tag Tests', function () {
       checkTwoColumnSbs({
         specifiedWidths: [30, 5],
         specifiedMargins: [12, 8],
-        specifiedValigns: ["middle", undefined],
+        specifiedValigns: ["middle", null],
         sbsWidth, sbsName: "/sbs"
       })
 

@@ -1,13 +1,6 @@
 import { findFiniteNumericalValue } from './math.js';
 import me from '../../_snowpack/pkg/math-expressions.js';
 
-// Need to shadow these state variables as created from attribute components
-export function returnStandardSequenceStateVariablesShadowedForReference() {
-  return [
-    "specifiedFrom", "specifiedTo",
-    "specifiedLength", "specifiedStep", "specifiedExclude"
-  ]
-}
 
 export function returnStandardSequenceAttributes() {
   return {
@@ -59,12 +52,12 @@ export function returnStandardSequenceStateVariableDefinitions() {
       },
     }),
     defaultValue: null,
+    hasEssential: true,
+    essentialVarName: "from",
     definition: function ({ dependencyValues }) {
       if (dependencyValues.fromAttr === null) {
         return {
-          useEssentialOrDefaultValue: {
-            specifiedFrom: { variablesToCheck: ["from", "specifiedFrom"] },
-          },
+          useEssentialOrDefaultValue: { specifiedFrom: true },
         }
       }
       if (dependencyValues.fromAttr.stateValues.value === null) {
@@ -73,13 +66,13 @@ export function returnStandardSequenceStateVariableDefinitions() {
         // Can't return null, as that indicates value wasn't specified
         // so return NaN
         return {
-          newValues: {
+          setValue: {
             specifiedFrom: NaN,
           }
         }
       }
       return {
-        newValues: {
+        setValue: {
           specifiedFrom: dependencyValues.fromAttr.stateValues.value,
         }
       }
@@ -96,11 +89,13 @@ export function returnStandardSequenceStateVariableDefinitions() {
       },
     }),
     defaultValue: null,
+    hasEssential: true,
+    essentialVarName: "to",
     definition: function ({ dependencyValues }) {
       if (dependencyValues.toAttr === null) {
         return {
           useEssentialOrDefaultValue: {
-            specifiedTo: { variablesToCheck: ["to", "specifiedTo"] },
+            specifiedTo: true,
           },
         }
       }
@@ -110,13 +105,13 @@ export function returnStandardSequenceStateVariableDefinitions() {
         // Can't return null, as that indicates value wasn't specified
         // so return NaN
         return {
-          newValues: {
+          setValue: {
             specifiedTo: NaN,
           }
         }
       }
       return {
-        newValues: {
+        setValue: {
           specifiedTo: dependencyValues.toAttr.stateValues.value,
         }
       }
@@ -132,11 +127,13 @@ export function returnStandardSequenceStateVariableDefinitions() {
       },
     }),
     defaultValue: null,
+    hasEssential: true,
+    essentialVarName: "length",
     definition: function ({ dependencyValues }) {
       if (dependencyValues.lengthAttr === null) {
         return {
           useEssentialOrDefaultValue: {
-            specifiedLength: { variablesToCheck: ["length", "specifiedLength"] }
+            specifiedLength: true
           }
         }
       }
@@ -146,12 +143,12 @@ export function returnStandardSequenceStateVariableDefinitions() {
         // Can't return null, as that indicates value wasn't specified
         // so return NaN
         return {
-          newValues: {
+          setValue: {
             specifiedLength: NaN,
           }
         }
       }
-      return { newValues: { specifiedLength: dependencyValues.lengthAttr.stateValues.value } }
+      return { setValue: { specifiedLength: dependencyValues.lengthAttr.stateValues.value } }
     },
   };
 
@@ -169,11 +166,13 @@ export function returnStandardSequenceStateVariableDefinitions() {
       },
     }),
     defaultValue: null,
+    hasEssential: true,
+    essentialVarName: "step",
     definition: function ({ dependencyValues }) {
       if (dependencyValues.stepAttr === null) {
         return {
           useEssentialOrDefaultValue: {
-            specifiedStep: { variablesToCheck: ["step", "specifiedStep"] }
+            specifiedStep: true
           }
         }
       }
@@ -185,12 +184,12 @@ export function returnStandardSequenceStateVariableDefinitions() {
         // Can't return null, as that indicates value wasn't specified
         // so return NaN
         return {
-          newValues: {
+          setValue: {
             specifiedStep: NaN,
           }
         }
       }
-      return { newValues: { specifiedStep: step } };
+      return { setValue: { specifiedStep: step } };
     },
   };
 
@@ -204,16 +203,18 @@ export function returnStandardSequenceStateVariableDefinitions() {
       },
     }),
     defaultValue: [],
+    hasEssential: true,
+    essentialVarName: "exclude",
     definition: function ({ dependencyValues }) {
       if (dependencyValues.excludeAttr === null) {
         return {
           useEssentialOrDefaultValue: {
-            specifiedExclude: { variablesToCheck: ["exclude"] }
+            specifiedExclude: true
           }
         }
       }
       return {
-        newValues: {
+        setValue: {
           specifiedExclude:
             dependencyValues.excludeAttr.stateValues.values
         }
@@ -248,7 +249,7 @@ export function returnStandardSequenceStateVariableDefinitions() {
         }
       }
 
-      return { newValues: { lowercase } };
+      return { setValue: { lowercase } };
     },
   };
 
@@ -329,7 +330,7 @@ export function returnStandardSequenceStateVariableDefinitions() {
         }
       }
 
-      return { newValues: { validSequence } };
+      return { setValue: { validSequence } };
     },
   };
 
@@ -446,7 +447,7 @@ export function returnStandardSequenceStateVariableDefinitions() {
         });
         results.exclude = exclude;
 
-        return { newValues: results };
+        return { setValue: results };
 
       }
 
@@ -454,7 +455,7 @@ export function returnStandardSequenceStateVariableDefinitions() {
         length = 0;
       }
 
-      return { newValues: { from, step, length, exclude } };
+      return { setValue: { from, step, length, exclude } };
     },
   };
 

@@ -18,9 +18,6 @@ export default class MathList extends DoenetRenderer {
       return null;
     }
     let children = this.children;
-    if (this.doenetSvData.nChildrenToDisplay !== void 0) {
-      children = children.slice(0, this.doenetSvData.nChildrenToDisplay);
-    }
     if (children.length === 0 && this.doenetSvData.latex) {
       return /* @__PURE__ */ React.createElement(React.Fragment, {
         key: this.componentName
@@ -30,7 +27,6 @@ export default class MathList extends DoenetRenderer {
         id: this.componentName
       }, "\\(" + this.doenetSvData.latex + "\\)"));
     }
-    children = children.filter((x) => !x.props.componentInstructions.stateValues.hidden);
     if (children.length === 0) {
       return /* @__PURE__ */ React.createElement(React.Fragment, {
         key: this.componentName

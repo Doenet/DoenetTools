@@ -33,7 +33,9 @@ export default class AsList extends InlineComponent {
 
         let textpieces = [];
         for (let child of dependencyValues.inlineChildren) {
-          if (typeof child.stateValues.text === "string") {
+          if (typeof child !== "object") {
+            textpieces.push(child.toString());
+          } else if (typeof child.stateValues.text === "string") {
             textpieces.push(child.stateValues.text);
           } else {
             textpieces.push('');
@@ -41,7 +43,7 @@ export default class AsList extends InlineComponent {
         }
         let text = textpieces.join(', ');
 
-        return { newValues: { text } };
+        return { setValue: { text } };
       }
     }
 

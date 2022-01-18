@@ -21,16 +21,6 @@ export default class MathList extends InlineComponent {
 
   static createAttributesObject(args) {
     let attributes = super.createAttributesObject(args);
-    attributes.simplify = {
-      propagateToDescendants: true,
-      createComponentOfType: "text",
-      createStateVariable: "simplify",
-      defaultValue: "none",
-      public: true,
-      toLowerCase: true,
-      valueTransformations: { "true": "full" },
-      validValues: ["none", "full", "numbers", "numberspreserveorder"]
-    };
 
     attributes.unordered = {
       createComponentOfType: "boolean",
@@ -89,8 +79,12 @@ export default class MathList extends InlineComponent {
         matchedChildren, isAttributeComponent = false, createdFromMacro = false,
       }) {
         if (isAttributeComponent && !createdFromMacro) {
+          // if in attribute not created by a macros,
+          // then group expressions like 3$x+3 into a single match by wrapping with a math
           return groupIntoMathsSeparatedBySpaces({ matchedChildren });
         } else {
+          // otherwise, just break strings into pieces and wrap each piece with a math,
+          // leaving all othe components alone
           return breakStringsIntoMathsBySpaces({ matchedChildren })
         }
       }
@@ -122,15 +116,16 @@ export default class MathList extends InlineComponent {
     // so that can't have a list with partially hidden components
     stateVariableDefinitions.overrideChildHide = {
       returnDependencies: () => ({}),
-      definition: () => ({ newValues: { overrideChildHide: true } })
+      definition: () => ({ setValue: { overrideChildHide: true } })
     }
 
     stateVariableDefinitions.mathsShadow = {
       defaultValue: null,
+      hasEssential: true,
       returnDependencies: () => ({}),
       definition: () => ({
         useEssentialOrDefaultValue: {
-          mathsShadow: { variablesToCheck: ["mathsShadow"] }
+          mathsShadow: true
         }
       }),
     }
@@ -161,7 +156,7 @@ export default class MathList extends InlineComponent {
             dependencyValues.mathListChildren.length === 0
             && dependencyValues.mathChildren.length === 1
           );
-        return { newValues: { mergeMathLists } }
+        return { setValue: { mergeMathLists } }
       }
 
     }
@@ -278,7 +273,7 @@ export default class MathList extends InlineComponent {
         }
 
         return {
-          newValues: { nComponents, childIndexByArrayKey },
+          setValue: { nComponents, childIndexByArrayKey },
           checkForActualChange: { nComponents: true }
         }
       }
@@ -371,7 +366,7 @@ export default class MathList extends InlineComponent {
 
         }
 
-        return { newValues: { maths } }
+        return { setValue: { maths } }
 
       },
       inverseArrayDefinitionByKey({ desiredStateVariableValues, globalDependencyValues,
@@ -509,7 +504,7 @@ export default class MathList extends InlineComponent {
 
         let latex = latexs.join(', ');
 
-        return { newValues: { latex, latexs } }
+        return { setValue: { latex, latexs } }
 
       }
     }
@@ -572,7 +567,7 @@ export default class MathList extends InlineComponent {
 
         let text = texts.join(', ');
 
-        return { newValues: { text, texts } }
+        return { setValue: { text, texts } }
 
       }
     }
@@ -611,16 +606,13 @@ export default class MathList extends InlineComponent {
           componentNamesInList = componentNamesInList.slice(0, maxNum)
         }
 
-        return { newValues: { componentNamesInList } }
+        return { setValue: { componentNamesInList } }
 
       }
     }
 
     stateVariableDefinitions.nComponentsToDisplayByChild = {
-      additionalStateVariablesDefined: [{
-        variableName: "nChildrenToDisplay",
-        forRenderer: true,
-      }],
+      additionalStateVariablesDefined: ["nChildrenToRender"],
       returnDependencies: () => ({
         nComponents: {
           dependencyType: "stateVariable",
@@ -655,13 +647,13 @@ export default class MathList extends InlineComponent {
         let nComponentsToDisplayByChild = {};
 
         let nComponentsSoFar = 0;
-        let nChildrenToDisplay = 0;
+        let nChildrenToRender = 0;
 
         let nMathLists = 0;
         for (let child of dependencyValues.mathAndMathListChildren) {
           let nComponentsLeft = Math.max(0, nComponentsToDisplay - nComponentsSoFar);
           if (nComponentsLeft > 0) {
-            nChildrenToDisplay++;
+            nChildrenToRender++;
           }
           if (componentInfoObjects.isInheritedComponentType({
             inheritedComponentType: child.componentType,
@@ -684,7 +676,7 @@ export default class MathList extends InlineComponent {
         }
 
         return {
-          newValues: { nComponentsToDisplayByChild, nChildrenToDisplay },
+          setValue: { nComponentsToDisplayByChild, nChildrenToRender },
         }
       }
     }

@@ -35,7 +35,7 @@ describe('selects assignName Tests', function () {
       </select>
     </option>
     <option>
-      <copy assignNamesSkip="1" tname="h" />
+      <copy assignNamesSkip="1" target="h" />
     </option>
     <option>
       <selectFromSequence assignNamesSkip="1" type="letters" from="a" to="z" />

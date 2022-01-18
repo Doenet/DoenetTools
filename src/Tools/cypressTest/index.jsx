@@ -2,6 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import CypressTest from './CypressTest.jsx';
 import axios from 'axios';
+import {RecoilRoot} from 'recoil';
 
 
 // function CypressTest(props){
@@ -12,7 +13,9 @@ import axios from 'axios';
 // }
 
 ReactDOM.render(
-  <CypressTest />,
+  <RecoilRoot>
+    <CypressTest />
+  </RecoilRoot>,
   document.getElementById('root'),
 );
 

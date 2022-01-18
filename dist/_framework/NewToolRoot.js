@@ -76,7 +76,7 @@ export default function ToolRoot() {
     supportPanelIndex: 0,
     hasNoMenuPanel: false,
     headerControls: [],
-    displayProfile: true
+    displaySettings: true
   });
   let mainPanel = null;
   let supportPanel = /* @__PURE__ */ React.createElement(SupportPanel, {
@@ -171,7 +171,7 @@ export default function ToolRoot() {
       menusTitles: toolRootMenusAndPanels.menusTitles,
       currentMenus: toolRootMenusAndPanels.currentMenus,
       initOpen: toolRootMenusAndPanels.menusInitOpen,
-      displayProfile: toolRootMenusAndPanels.displayProfile
+      displaySettings: toolRootMenusAndPanels.displaySettings
     });
   }
   let openMenuButton = !menusOpen;
@@ -194,7 +194,7 @@ export default function ToolRoot() {
       headerControls,
       setMenusOpen,
       openMenuButton,
-      displayProfile: toolRootMenusAndPanels.displayProfile
+      displaySettings: toolRootMenusAndPanels.displaySettings
     }, mainPanel),
     support: supportPanel
   }), footer), /* @__PURE__ */ React.createElement(Toast, null), /* @__PURE__ */ React.createElement(MemoizedRootController, {
@@ -225,7 +225,7 @@ let navigationObj = {
     chooseLearner: {
       pageName: "chooseLearner",
       currentMainPanel: "ChooseLearnerPanel",
-      displayProfile: false
+      displaySettings: false
     },
     assessment: {
       pageName: "Assessment",
@@ -235,13 +235,13 @@ let navigationObj = {
       menusTitles: ["Time Remaining"],
       menusInitOpen: [true],
       headerControls: [],
-      displayProfile: false,
+      displaySettings: false,
       waitForMenuSuppression: true
     },
     endExam: {
       pageName: "endExam",
       currentMainPanel: "EndExamPanel",
-      displayProfile: false,
+      displaySettings: false,
       hasNoMenuPanel: true
     }
   },
@@ -385,7 +385,8 @@ let navigationObj = {
       supportPanelOptions: [],
       supportPanelTitles: [],
       supportPanelIndex: 0,
-      hasNoMenuPanel: true
+      hasNoMenuPanel: true,
+      displaySettings: false
     }
   },
   notfound: {
@@ -409,7 +410,8 @@ let navigationObj = {
       supportPanelTitles: [],
       supportPanelIndex: 0,
       hasNoMenuPanel: true,
-      headerControls: ["BackButton"]
+      headerControls: ["BackButton"],
+      displaySettings: false
     }
   },
   signin: {
@@ -422,7 +424,8 @@ let navigationObj = {
       supportPanelOptions: [],
       supportPanelTitles: [],
       supportPanelIndex: 0,
-      hasNoMenuPanel: true
+      hasNoMenuPanel: true,
+      displaySettings: false
     }
   },
   signout: {
@@ -435,7 +438,8 @@ let navigationObj = {
       supportPanelOptions: [],
       supportPanelTitles: [],
       supportPanelIndex: 0,
-      hasNoMenuPanel: true
+      hasNoMenuPanel: true,
+      displaySettings: false
     }
   }
 };
@@ -614,8 +618,8 @@ function RootController(props) {
     }
     setSuppressMenus(null);
   }
-  if (nextMenusAndPanels && nextMenusAndPanels.displayProfile === void 0) {
-    nextMenusAndPanels.displayProfile = true;
+  if (nextMenusAndPanels && nextMenusAndPanels.displaySettings === void 0) {
+    nextMenusAndPanels.displaySettings = true;
   }
   if (nextMenusAndPanels && JSON.stringify(nextPageToolView) !== JSON.stringify(lastPageToolView.current)) {
     backPageToolView.current = lastPageToolView.current;

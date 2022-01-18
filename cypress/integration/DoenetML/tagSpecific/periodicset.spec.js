@@ -6,7 +6,7 @@ describe('PeriodicSet Tag Tests', function () {
   })
 
   it('match given periodic set', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -21,7 +21,7 @@ describe('PeriodicSet Tag Tests', function () {
         </when>
       </award>
     </answer>
-    <p>Credit achieved: <copy prop="creditAchieved" tname="_answer1" assignNames="ca" /></p>
+    <p>Credit achieved: <copy prop="creditAchieved" target="_answer1" assignNames="ca" /></p>
     `}, "*");
     });
 
@@ -31,19 +31,19 @@ describe('PeriodicSet Tag Tests', function () {
 
     cy.get('#\\/ca').should('have.text', '0')
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/s1'].stateValues.value.tree).eq('\uFF3F');
+      expect((await components['/s1'].stateValues.value).tree).eq('\uFF3F');
 
       let s2 = ['periodic_set'];
       s2.push(['tuple', ['/', 'pi', 4], 'pi', -Infinity, Infinity])
       s2.push(['tuple', ['/', ['*', 3, 'pi'], 4], 'pi', -Infinity, Infinity])
-      expect(components['/s2'].stateValues.value.tree).eqls(s2);
-      expect(components['/s2'].stateValues.nOffsets).eq(2);
-      expect(components['/s2'].stateValues.offsets[0].tree).eqls(['/', 'pi', 4]);
-      expect(components['/s2'].stateValues.offsets[1].tree).eqls(['/', ['*', 3, 'pi'], 4]);
+      expect((await components['/s2'].stateValues.value).tree).eqls(s2);
+      expect((await components['/s2'].stateValues.nOffsets)).eq(2);
+      expect((await components['/s2'].stateValues.offsets)[0].tree).eqls(['/', 'pi', 4]);
+      expect((await components['/s2'].stateValues.offsets)[1].tree).eqls(['/', ['*', 3, 'pi'], 4]);
       expect(components['/s2'].stateValues.period.tree).eq('pi');
-      expect(components['/s2'].stateValues.redundantOffsets).eq(false);
+      expect((await components['/s2'].stateValues.redundantOffsets)).eq(false);
 
       expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
     });
@@ -54,9 +54,9 @@ describe('PeriodicSet Tag Tests', function () {
 
     cy.get('#\\/ca').should('have.text', '0')
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/s1'].stateValues.value.tree).eq('\uFF3F');
+      expect((await components['/s1'].stateValues.value).tree).eq('\uFF3F');
       expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
     });
 
@@ -66,16 +66,16 @@ describe('PeriodicSet Tag Tests', function () {
 
     cy.get('#\\/ca').should('have.text', '1')
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
 
       let s1 = ['periodic_set'];
       s1.push(['tuple', ['-', ['/', 'pi', 4]], ['/', 'pi', 2], -Infinity, Infinity])
-      expect(components['/s1'].stateValues.value.tree).eqls(s1);
-      expect(components['/s1'].stateValues.nOffsets).eq(1);
-      expect(components['/s1'].stateValues.offsets[0].tree).eqls(['-', ['/', 'pi', 4]]);
+      expect((await components['/s1'].stateValues.value).tree).eqls(s1);
+      expect((await components['/s1'].stateValues.nOffsets)).eq(1);
+      expect((await components['/s1'].stateValues.offsets)[0].tree).eqls(['-', ['/', 'pi', 4]]);
       expect(components['/s1'].stateValues.period.tree).eqls(['/', 'pi', 2]);
-      expect(components['/s1'].stateValues.redundantOffsets).eq(false);
+      expect((await components['/s1'].stateValues.redundantOffsets)).eq(false);
 
       expect(components['/_answer1'].stateValues.creditAchieved).eq(1);
     });
@@ -86,16 +86,16 @@ describe('PeriodicSet Tag Tests', function () {
 
     cy.get('#\\/ca').should('have.text', '0')
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
 
       let s1 = ['periodic_set'];
       s1.push(['tuple', ['-', ['/', 'pi', 4]], 1, -Infinity, Infinity])
-      expect(components['/s1'].stateValues.value.tree).eqls(s1);
-      expect(components['/s1'].stateValues.nOffsets).eq(1);
-      expect(components['/s1'].stateValues.offsets[0].tree).eqls(['-', ['/', 'pi', 4]]);
+      expect((await components['/s1'].stateValues.value).tree).eqls(s1);
+      expect((await components['/s1'].stateValues.nOffsets)).eq(1);
+      expect((await components['/s1'].stateValues.offsets)[0].tree).eqls(['-', ['/', 'pi', 4]]);
       expect(components['/s1'].stateValues.period.tree).eqls(1);
-      expect(components['/s1'].stateValues.redundantOffsets).eq(false);
+      expect((await components['/s1'].stateValues.redundantOffsets)).eq(false);
 
       expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
     });
@@ -107,16 +107,16 @@ describe('PeriodicSet Tag Tests', function () {
 
     cy.get('#\\/ca').should('have.text', '0')
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
 
       let s1 = ['periodic_set'];
       s1.push(['tuple', ['-', ['/', 'pi', 4]], 'pi', -Infinity, Infinity])
-      expect(components['/s1'].stateValues.value.tree).eqls(s1);
-      expect(components['/s1'].stateValues.nOffsets).eq(1);
-      expect(components['/s1'].stateValues.offsets[0].tree).eqls(['-', ['/', 'pi', 4]]);
+      expect((await components['/s1'].stateValues.value).tree).eqls(s1);
+      expect((await components['/s1'].stateValues.nOffsets)).eq(1);
+      expect((await components['/s1'].stateValues.offsets)[0].tree).eqls(['-', ['/', 'pi', 4]]);
       expect(components['/s1'].stateValues.period.tree).eqls('pi');
-      expect(components['/s1'].stateValues.redundantOffsets).eq(false);
+      expect((await components['/s1'].stateValues.redundantOffsets)).eq(false);
 
       expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
     });
@@ -127,18 +127,18 @@ describe('PeriodicSet Tag Tests', function () {
 
     cy.get('#\\/ca').should('have.text', '1')
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
 
       let s1 = ['periodic_set'];
       s1.push(['tuple', ['-', ['/', 'pi', 4]], 'pi', -Infinity, Infinity])
       s1.push(['tuple', ['/', ['*', 5, 'pi'], 4], 'pi', -Infinity, Infinity])
-      expect(components['/s1'].stateValues.value.tree).eqls(s1);
-      expect(components['/s1'].stateValues.nOffsets).eq(2);
-      expect(components['/s1'].stateValues.offsets[0].tree).eqls(['-', ['/', 'pi', 4]]);
-      expect(components['/s1'].stateValues.offsets[1].tree).eqls(['/', ['*', 5, 'pi'], 4]);
+      expect((await components['/s1'].stateValues.value).tree).eqls(s1);
+      expect((await components['/s1'].stateValues.nOffsets)).eq(2);
+      expect((await components['/s1'].stateValues.offsets)[0].tree).eqls(['-', ['/', 'pi', 4]]);
+      expect((await components['/s1'].stateValues.offsets)[1].tree).eqls(['/', ['*', 5, 'pi'], 4]);
       expect(components['/s1'].stateValues.period.tree).eqls('pi');
-      expect(components['/s1'].stateValues.redundantOffsets).eq(false);
+      expect((await components['/s1'].stateValues.redundantOffsets)).eq(false);
 
       expect(components['/_answer1'].stateValues.creditAchieved).eq(1);
     });
@@ -149,20 +149,20 @@ describe('PeriodicSet Tag Tests', function () {
 
     cy.get('#\\/ca').should('have.text', '1')
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
 
       let s1 = ['periodic_set'];
       s1.push(['tuple', ['-', ['/', 'pi', 4]], 'pi', -Infinity, Infinity])
       s1.push(['tuple', ['/', ['*', 5, 'pi'], 4], 'pi', -Infinity, Infinity])
       s1.push(['tuple', ['/', 'pi', 4], 'pi', -Infinity, Infinity])
-      expect(components['/s1'].stateValues.value.tree).eqls(s1);
-      expect(components['/s1'].stateValues.nOffsets).eq(3);
-      expect(components['/s1'].stateValues.offsets[0].tree).eqls(['-', ['/', 'pi', 4]]);
-      expect(components['/s1'].stateValues.offsets[1].tree).eqls(['/', ['*', 5, 'pi'], 4]);
-      expect(components['/s1'].stateValues.offsets[2].tree).eqls(['/', 'pi', 4]);
+      expect((await components['/s1'].stateValues.value).tree).eqls(s1);
+      expect((await components['/s1'].stateValues.nOffsets)).eq(3);
+      expect((await components['/s1'].stateValues.offsets)[0].tree).eqls(['-', ['/', 'pi', 4]]);
+      expect((await components['/s1'].stateValues.offsets)[1].tree).eqls(['/', ['*', 5, 'pi'], 4]);
+      expect((await components['/s1'].stateValues.offsets)[2].tree).eqls(['/', 'pi', 4]);
       expect(components['/s1'].stateValues.period.tree).eqls('pi');
-      expect(components['/s1'].stateValues.redundantOffsets).eq(true);
+      expect((await components['/s1'].stateValues.redundantOffsets)).eq(true);
 
       expect(components['/_answer1'].stateValues.creditAchieved).eq(1);
     });
@@ -173,7 +173,7 @@ describe('PeriodicSet Tag Tests', function () {
 
     cy.get('#\\/ca').should('have.text', '0')
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
 
       let s1 = ['periodic_set'];
@@ -181,14 +181,14 @@ describe('PeriodicSet Tag Tests', function () {
       s1.push(['tuple', ['/', ['*', 5, 'pi'], 4], 'pi', -Infinity, Infinity])
       s1.push(['tuple', ['/', 'pi', 4], 'pi', -Infinity, Infinity])
       s1.push(['tuple', ['/', 'pi', 2], 'pi', -Infinity, Infinity])
-      expect(components['/s1'].stateValues.value.tree).eqls(s1);
-      expect(components['/s1'].stateValues.nOffsets).eq(4);
-      expect(components['/s1'].stateValues.offsets[0].tree).eqls(['-', ['/', 'pi', 4]]);
-      expect(components['/s1'].stateValues.offsets[1].tree).eqls(['/', ['*', 5, 'pi'], 4]);
-      expect(components['/s1'].stateValues.offsets[2].tree).eqls(['/', 'pi', 4]);
-      expect(components['/s1'].stateValues.offsets[3].tree).eqls(['/', 'pi', 2]);
+      expect((await components['/s1'].stateValues.value).tree).eqls(s1);
+      expect((await components['/s1'].stateValues.nOffsets)).eq(4);
+      expect((await components['/s1'].stateValues.offsets)[0].tree).eqls(['-', ['/', 'pi', 4]]);
+      expect((await components['/s1'].stateValues.offsets)[1].tree).eqls(['/', ['*', 5, 'pi'], 4]);
+      expect((await components['/s1'].stateValues.offsets)[2].tree).eqls(['/', 'pi', 4]);
+      expect((await components['/s1'].stateValues.offsets)[3].tree).eqls(['/', 'pi', 2]);
       expect(components['/s1'].stateValues.period.tree).eqls('pi');
-      expect(components['/s1'].stateValues.redundantOffsets).eq(true);
+      expect((await components['/s1'].stateValues.redundantOffsets)).eq(true);
 
       expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
     });
@@ -199,10 +199,10 @@ describe('PeriodicSet Tag Tests', function () {
 
     cy.get('#\\/ca').should('have.text', '0')
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
 
-      expect(components['/s1'].stateValues.value.tree).eq('\uff3f');
+      expect((await components['/s1'].stateValues.value).tree).eq('\uff3f');
       expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
     });
 
@@ -210,7 +210,7 @@ describe('PeriodicSet Tag Tests', function () {
   });
 
   it('match reffed periodic sets', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -225,13 +225,13 @@ describe('PeriodicSet Tag Tests', function () {
     
     <answer>
       <award>
-        <when><copy name="a2" tname="a" /> = <copy name="b2" tname="b" /></when>
+        <when><copy name="a2" target="a" /> = <copy name="b2" target="b" /></when>
       </award>
     </answer>
     
-    <p>Credit achieved: <copy prop="creditAchieved" tname="_answer1" assignNames="ca" /></p>
+    <p>Credit achieved: <copy prop="creditAchieved" target="_answer1" assignNames="ca" /></p>
     
-    <p>Redundancies: <copy prop="redundantOffsets" tname="a" />, <copy prop="redundantOffsets" tname="b" />, <copy prop="redundantOffsets" tname="a2" />, <copy prop="redundantOffsets" tname="b2" /></p>
+    <p>Redundancies: <copy prop="redundantOffsets" target="a" />, <copy prop="redundantOffsets" target="b" />, <copy prop="redundantOffsets" target="a2" />, <copy prop="redundantOffsets" target="b2" /></p>
     `}, "*");
     });
 
@@ -249,12 +249,12 @@ describe('PeriodicSet Tag Tests', function () {
     cy.get('#\\/ca').should('have.text', '0')
     cy.get('#\\/_p6').should('have.text', 'Redundancies: false, false, false, false')
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/a'].stateValues.value.tree).eq('\uFF3F');
-      expect(components['/b'].stateValues.value.tree).eq('\uFF3F');
-      expect(components['/a2'].replacements[0].stateValues.value.tree).eq('\uFF3F');
-      expect(components['/b2'].replacements[0].stateValues.value.tree).eq('\uFF3F');
+      expect((await components['/a'].stateValues.value).tree).eq('\uFF3F');
+      expect((await components['/b'].stateValues.value).tree).eq('\uFF3F');
+      expect((await components['/a2'].replacements[0].stateValues.value).tree).eq('\uFF3F');
+      expect((await components['/b2'].replacements[0].stateValues.value).tree).eq('\uFF3F');
       expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
     });
 
@@ -263,12 +263,12 @@ describe('PeriodicSet Tag Tests', function () {
     cy.get('#\\/offsets2 textarea').type(`-pi/4{enter}`, { force: true });
     cy.get('#\\/_answer1_submit').click();
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/a'].stateValues.value.tree).eq('\uFF3F');
-      expect(components['/b'].stateValues.value.tree).eq('\uFF3F');
-      expect(components['/a2'].replacements[0].stateValues.value.tree).eq('\uFF3F');
-      expect(components['/b2'].replacements[0].stateValues.value.tree).eq('\uFF3F');
+      expect((await components['/a'].stateValues.value).tree).eq('\uFF3F');
+      expect((await components['/b'].stateValues.value).tree).eq('\uFF3F');
+      expect((await components['/a2'].replacements[0].stateValues.value).tree).eq('\uFF3F');
+      expect((await components['/b2'].replacements[0].stateValues.value).tree).eq('\uFF3F');
       expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
     });
 
@@ -286,34 +286,34 @@ describe('PeriodicSet Tag Tests', function () {
     cy.get('#\\/ca').should('have.text', '0')
     cy.get('#\\/_p6').should('have.text', 'Redundancies: false, false, false, false')
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
 
       let a = ['periodic_set'];
       a.push(['tuple', ['-', ['/', 'pi', 4]], ['/', 'pi', 2], -Infinity, Infinity])
-      expect(components['/a'].stateValues.value.tree).eqls(a);
-      expect(components['/a'].stateValues.nOffsets).eq(1);
-      expect(components['/a'].stateValues.offsets[0].tree).eqls(['-', ['/', 'pi', 4]]);
+      expect((await components['/a'].stateValues.value).tree).eqls(a);
+      expect((await components['/a'].stateValues.nOffsets)).eq(1);
+      expect((await components['/a'].stateValues.offsets)[0].tree).eqls(['-', ['/', 'pi', 4]]);
       expect(components['/a'].stateValues.period.tree).eqls(['/', 'pi', 2]);
-      expect(components['/a'].stateValues.redundantOffsets).eq(false);
-      expect(components['/a2'].replacements[0].stateValues.value.tree).eqls(a);
-      expect(components['/a2'].replacements[0].stateValues.nOffsets).eq(1);
-      expect(components['/a2'].replacements[0].stateValues.offsets[0].tree).eqls(['-', ['/', 'pi', 4]]);
+      expect((await components['/a'].stateValues.redundantOffsets)).eq(false);
+      expect((await components['/a2'].replacements[0].stateValues.value).tree).eqls(a);
+      expect((await components['/a2'].replacements[0].stateValues.nOffsets)).eq(1);
+      expect((await components['/a2'].replacements[0].stateValues.offsets)[0].tree).eqls(['-', ['/', 'pi', 4]]);
       expect(components['/a2'].replacements[0].stateValues.period.tree).eqls(['/', 'pi', 2]);
-      expect(components['/a2'].replacements[0].stateValues.redundantOffsets).eq(false);
+      expect((await components['/a2'].replacements[0].stateValues.redundantOffsets)).eq(false);
 
       let b = ['periodic_set'];
       b.push(['tuple', ['-', ['/', 'pi', 4]], ['*', 2, 'pi'], -Infinity, Infinity])
-      expect(components['/b'].stateValues.value.tree).eqls(b);
-      expect(components['/b'].stateValues.nOffsets).eq(1);
-      expect(components['/b'].stateValues.offsets[0].tree).eqls(['-', ['/', 'pi', 4]]);
-      expect(components['/b'].stateValues.redundantOffsets).eq(false);
+      expect((await components['/b'].stateValues.value).tree).eqls(b);
+      expect((await components['/b'].stateValues.nOffsets)).eq(1);
+      expect((await components['/b'].stateValues.offsets)[0].tree).eqls(['-', ['/', 'pi', 4]]);
+      expect((await components['/b'].stateValues.redundantOffsets)).eq(false);
       expect(components['/b'].stateValues.period.tree).eqls(['*', 2, 'pi']);
-      expect(components['/b2'].replacements[0].stateValues.value.tree).eqls(b);
-      expect(components['/b2'].replacements[0].stateValues.nOffsets).eq(1);
-      expect(components['/b2'].replacements[0].stateValues.offsets[0].tree).eqls(['-', ['/', 'pi', 4]]);
+      expect((await components['/b2'].replacements[0].stateValues.value).tree).eqls(b);
+      expect((await components['/b2'].replacements[0].stateValues.nOffsets)).eq(1);
+      expect((await components['/b2'].replacements[0].stateValues.offsets)[0].tree).eqls(['-', ['/', 'pi', 4]]);
       expect(components['/b2'].replacements[0].stateValues.period.tree).eqls(['*', 2, 'pi']);
-      expect(components['/b2'].replacements[0].stateValues.redundantOffsets).eq(false);
+      expect((await components['/b2'].replacements[0].stateValues.redundantOffsets)).eq(false);
 
       expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
     });
@@ -327,21 +327,21 @@ describe('PeriodicSet Tag Tests', function () {
     cy.get('#\\/_p6').should('have.text', 'Redundancies: false, false, false, false')
 
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
 
       let a = ['periodic_set'];
       a.push(['tuple', ['-', ['/', 'pi', 4]], ['/', 'pi', 2], -Infinity, Infinity])
-      expect(components['/a'].stateValues.value.tree).eqls(a);
-      expect(components['/a'].stateValues.nOffsets).eq(1);
-      expect(components['/a'].stateValues.offsets[0].tree).eqls(['-', ['/', 'pi', 4]]);
+      expect((await components['/a'].stateValues.value).tree).eqls(a);
+      expect((await components['/a'].stateValues.nOffsets)).eq(1);
+      expect((await components['/a'].stateValues.offsets)[0].tree).eqls(['-', ['/', 'pi', 4]]);
       expect(components['/a'].stateValues.period.tree).eqls(['/', 'pi', 2]);
-      expect(components['/a'].stateValues.redundantOffsets).eq(false);
-      expect(components['/a2'].replacements[0].stateValues.value.tree).eqls(a);
-      expect(components['/a2'].replacements[0].stateValues.nOffsets).eq(1);
-      expect(components['/a2'].replacements[0].stateValues.offsets[0].tree).eqls(['-', ['/', 'pi', 4]]);
+      expect((await components['/a'].stateValues.redundantOffsets)).eq(false);
+      expect((await components['/a2'].replacements[0].stateValues.value).tree).eqls(a);
+      expect((await components['/a2'].replacements[0].stateValues.nOffsets)).eq(1);
+      expect((await components['/a2'].replacements[0].stateValues.offsets)[0].tree).eqls(['-', ['/', 'pi', 4]]);
       expect(components['/a2'].replacements[0].stateValues.period.tree).eqls(['/', 'pi', 2]);
-      expect(components['/a2'].replacements[0].stateValues.redundantOffsets).eq(false);
+      expect((await components['/a2'].replacements[0].stateValues.redundantOffsets)).eq(false);
 
       let b = ['periodic_set'];
 
@@ -354,22 +354,22 @@ describe('PeriodicSet Tag Tests', function () {
       b.push(['tuple', offset1, ['*', 2, 'pi'], -Infinity, Infinity])
       b.push(['tuple', offset2, ['*', 2, 'pi'], -Infinity, Infinity])
       b.push(['tuple', offset3, ['*', 2, 'pi'], -Infinity, Infinity])
-      expect(components['/b'].stateValues.value.tree).eqls(b);
-      expect(components['/b'].stateValues.nOffsets).eq(4);
-      expect(components['/b'].stateValues.offsets[0].tree).eqls(offset0);
-      expect(components['/b'].stateValues.offsets[1].tree).eqls(offset1);
-      expect(components['/b'].stateValues.offsets[2].tree).eqls(offset2);
-      expect(components['/b'].stateValues.offsets[3].tree).eqls(offset3);
-      expect(components['/b'].stateValues.redundantOffsets).eq(false);
+      expect((await components['/b'].stateValues.value).tree).eqls(b);
+      expect((await components['/b'].stateValues.nOffsets)).eq(4);
+      expect((await components['/b'].stateValues.offsets)[0].tree).eqls(offset0);
+      expect((await components['/b'].stateValues.offsets)[1].tree).eqls(offset1);
+      expect((await components['/b'].stateValues.offsets)[2].tree).eqls(offset2);
+      expect((await components['/b'].stateValues.offsets)[3].tree).eqls(offset3);
+      expect((await components['/b'].stateValues.redundantOffsets)).eq(false);
       expect(components['/b'].stateValues.period.tree).eqls(['*', 2, 'pi']);
-      expect(components['/b2'].replacements[0].stateValues.value.tree).eqls(b);
-      expect(components['/b2'].replacements[0].stateValues.nOffsets).eq(4);
-      expect(components['/b2'].replacements[0].stateValues.offsets[0].tree).eqls(offset0);
-      expect(components['/b2'].replacements[0].stateValues.offsets[1].tree).eqls(offset1);
-      expect(components['/b2'].replacements[0].stateValues.offsets[2].tree).eqls(offset2);
-      expect(components['/b2'].replacements[0].stateValues.offsets[3].tree).eqls(offset3);
+      expect((await components['/b2'].replacements[0].stateValues.value).tree).eqls(b);
+      expect((await components['/b2'].replacements[0].stateValues.nOffsets)).eq(4);
+      expect((await components['/b2'].replacements[0].stateValues.offsets)[0].tree).eqls(offset0);
+      expect((await components['/b2'].replacements[0].stateValues.offsets)[1].tree).eqls(offset1);
+      expect((await components['/b2'].replacements[0].stateValues.offsets)[2].tree).eqls(offset2);
+      expect((await components['/b2'].replacements[0].stateValues.offsets)[3].tree).eqls(offset3);
       expect(components['/b2'].replacements[0].stateValues.period.tree).eqls(['*', 2, 'pi']);
-      expect(components['/b2'].replacements[0].stateValues.redundantOffsets).eq(false);
+      expect((await components['/b2'].replacements[0].stateValues.redundantOffsets)).eq(false);
 
       expect(components['/_answer1'].stateValues.creditAchieved).eq(1);
     });
@@ -383,7 +383,7 @@ describe('PeriodicSet Tag Tests', function () {
 
     cy.get('#\\/_p6').should('have.text', 'Redundancies: true, false, true, false')
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
 
       let offset0 = ['-', ['/', 'pi', 4]];
@@ -392,18 +392,18 @@ describe('PeriodicSet Tag Tests', function () {
       let a = ['periodic_set'];
       a.push(['tuple', offset0, ['/', 'pi', 2], -Infinity, Infinity])
       a.push(['tuple', offset1, ['/', 'pi', 2], -Infinity, Infinity])
-      expect(components['/a'].stateValues.value.tree).eqls(a);
-      expect(components['/a'].stateValues.nOffsets).eq(2);
-      expect(components['/a'].stateValues.offsets[0].tree).eqls(offset0);
-      expect(components['/a'].stateValues.offsets[1].tree).eqls(offset1);
+      expect((await components['/a'].stateValues.value).tree).eqls(a);
+      expect((await components['/a'].stateValues.nOffsets)).eq(2);
+      expect((await components['/a'].stateValues.offsets)[0].tree).eqls(offset0);
+      expect((await components['/a'].stateValues.offsets)[1].tree).eqls(offset1);
       expect(components['/a'].stateValues.period.tree).eqls(['/', 'pi', 2]);
-      expect(components['/a'].stateValues.redundantOffsets).eq(true);
-      expect(components['/a2'].replacements[0].stateValues.value.tree).eqls(a);
-      expect(components['/a2'].replacements[0].stateValues.nOffsets).eq(2);
-      expect(components['/a2'].replacements[0].stateValues.offsets[0].tree).eqls(offset0);
-      expect(components['/a2'].replacements[0].stateValues.offsets[1].tree).eqls(offset1);
+      expect((await components['/a'].stateValues.redundantOffsets)).eq(true);
+      expect((await components['/a2'].replacements[0].stateValues.value).tree).eqls(a);
+      expect((await components['/a2'].replacements[0].stateValues.nOffsets)).eq(2);
+      expect((await components['/a2'].replacements[0].stateValues.offsets)[0].tree).eqls(offset0);
+      expect((await components['/a2'].replacements[0].stateValues.offsets)[1].tree).eqls(offset1);
       expect(components['/a2'].replacements[0].stateValues.period.tree).eqls(['/', 'pi', 2]);
-      expect(components['/a2'].replacements[0].stateValues.redundantOffsets).eq(true);
+      expect((await components['/a2'].replacements[0].stateValues.redundantOffsets)).eq(true);
 
       let b = ['periodic_set'];
 
@@ -416,22 +416,22 @@ describe('PeriodicSet Tag Tests', function () {
       b.push(['tuple', offset1, ['*', 2, 'pi'], -Infinity, Infinity])
       b.push(['tuple', offset2, ['*', 2, 'pi'], -Infinity, Infinity])
       b.push(['tuple', offset3, ['*', 2, 'pi'], -Infinity, Infinity])
-      expect(components['/b'].stateValues.value.tree).eqls(b);
-      expect(components['/b'].stateValues.nOffsets).eq(4);
-      expect(components['/b'].stateValues.offsets[0].tree).eqls(offset0);
-      expect(components['/b'].stateValues.offsets[1].tree).eqls(offset1);
-      expect(components['/b'].stateValues.offsets[2].tree).eqls(offset2);
-      expect(components['/b'].stateValues.offsets[3].tree).eqls(offset3);
-      expect(components['/b'].stateValues.redundantOffsets).eq(false);
+      expect((await components['/b'].stateValues.value).tree).eqls(b);
+      expect((await components['/b'].stateValues.nOffsets)).eq(4);
+      expect((await components['/b'].stateValues.offsets)[0].tree).eqls(offset0);
+      expect((await components['/b'].stateValues.offsets)[1].tree).eqls(offset1);
+      expect((await components['/b'].stateValues.offsets)[2].tree).eqls(offset2);
+      expect((await components['/b'].stateValues.offsets)[3].tree).eqls(offset3);
+      expect((await components['/b'].stateValues.redundantOffsets)).eq(false);
       expect(components['/b'].stateValues.period.tree).eqls(['*', 2, 'pi']);
-      expect(components['/b2'].replacements[0].stateValues.value.tree).eqls(b);
-      expect(components['/b2'].replacements[0].stateValues.nOffsets).eq(4);
-      expect(components['/b2'].replacements[0].stateValues.offsets[0].tree).eqls(offset0);
-      expect(components['/b2'].replacements[0].stateValues.offsets[1].tree).eqls(offset1);
-      expect(components['/b2'].replacements[0].stateValues.offsets[2].tree).eqls(offset2);
-      expect(components['/b2'].replacements[0].stateValues.offsets[3].tree).eqls(offset3);
+      expect((await components['/b2'].replacements[0].stateValues.value).tree).eqls(b);
+      expect((await components['/b2'].replacements[0].stateValues.nOffsets)).eq(4);
+      expect((await components['/b2'].replacements[0].stateValues.offsets)[0].tree).eqls(offset0);
+      expect((await components['/b2'].replacements[0].stateValues.offsets)[1].tree).eqls(offset1);
+      expect((await components['/b2'].replacements[0].stateValues.offsets)[2].tree).eqls(offset2);
+      expect((await components['/b2'].replacements[0].stateValues.offsets)[3].tree).eqls(offset3);
       expect(components['/b2'].replacements[0].stateValues.period.tree).eqls(['*', 2, 'pi']);
-      expect(components['/b2'].replacements[0].stateValues.redundantOffsets).eq(false);
+      expect((await components['/b2'].replacements[0].stateValues.redundantOffsets)).eq(false);
 
       expect(components['/_answer1'].stateValues.creditAchieved).eq(1);
     });
@@ -446,7 +446,7 @@ describe('PeriodicSet Tag Tests', function () {
     cy.get('#\\/_p6').should('have.text', 'Redundancies: true, true, true, true')
 
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
 
       let offset0 = ['-', ['/', 'pi', 4]];
@@ -455,18 +455,18 @@ describe('PeriodicSet Tag Tests', function () {
       let a = ['periodic_set'];
       a.push(['tuple', offset0, ['/', 'pi', 2], -Infinity, Infinity])
       a.push(['tuple', offset1, ['/', 'pi', 2], -Infinity, Infinity])
-      expect(components['/a'].stateValues.value.tree).eqls(a);
-      expect(components['/a'].stateValues.nOffsets).eq(2);
-      expect(components['/a'].stateValues.offsets[0].tree).eqls(offset0);
-      expect(components['/a'].stateValues.offsets[1].tree).eqls(offset1);
+      expect((await components['/a'].stateValues.value).tree).eqls(a);
+      expect((await components['/a'].stateValues.nOffsets)).eq(2);
+      expect((await components['/a'].stateValues.offsets)[0].tree).eqls(offset0);
+      expect((await components['/a'].stateValues.offsets)[1].tree).eqls(offset1);
       expect(components['/a'].stateValues.period.tree).eqls(['/', 'pi', 2]);
-      expect(components['/a'].stateValues.redundantOffsets).eq(true);
-      expect(components['/a2'].replacements[0].stateValues.value.tree).eqls(a);
-      expect(components['/a2'].replacements[0].stateValues.nOffsets).eq(2);
-      expect(components['/a2'].replacements[0].stateValues.offsets[0].tree).eqls(offset0);
-      expect(components['/a2'].replacements[0].stateValues.offsets[1].tree).eqls(offset1);
+      expect((await components['/a'].stateValues.redundantOffsets)).eq(true);
+      expect((await components['/a2'].replacements[0].stateValues.value).tree).eqls(a);
+      expect((await components['/a2'].replacements[0].stateValues.nOffsets)).eq(2);
+      expect((await components['/a2'].replacements[0].stateValues.offsets)[0].tree).eqls(offset0);
+      expect((await components['/a2'].replacements[0].stateValues.offsets)[1].tree).eqls(offset1);
       expect(components['/a2'].replacements[0].stateValues.period.tree).eqls(['/', 'pi', 2]);
-      expect(components['/a2'].replacements[0].stateValues.redundantOffsets).eq(true);
+      expect((await components['/a2'].replacements[0].stateValues.redundantOffsets)).eq(true);
 
       let b = ['periodic_set'];
 
@@ -479,22 +479,22 @@ describe('PeriodicSet Tag Tests', function () {
       b.push(['tuple', offset1, 'pi', -Infinity, Infinity])
       b.push(['tuple', offset2, 'pi', -Infinity, Infinity])
       b.push(['tuple', offset3, 'pi', -Infinity, Infinity])
-      expect(components['/b'].stateValues.value.tree).eqls(b);
-      expect(components['/b'].stateValues.nOffsets).eq(4);
-      expect(components['/b'].stateValues.offsets[0].tree).eqls(offset0);
-      expect(components['/b'].stateValues.offsets[1].tree).eqls(offset1);
-      expect(components['/b'].stateValues.offsets[2].tree).eqls(offset2);
-      expect(components['/b'].stateValues.offsets[3].tree).eqls(offset3);
-      expect(components['/b'].stateValues.redundantOffsets).eq(true);
+      expect((await components['/b'].stateValues.value).tree).eqls(b);
+      expect((await components['/b'].stateValues.nOffsets)).eq(4);
+      expect((await components['/b'].stateValues.offsets)[0].tree).eqls(offset0);
+      expect((await components['/b'].stateValues.offsets)[1].tree).eqls(offset1);
+      expect((await components['/b'].stateValues.offsets)[2].tree).eqls(offset2);
+      expect((await components['/b'].stateValues.offsets)[3].tree).eqls(offset3);
+      expect((await components['/b'].stateValues.redundantOffsets)).eq(true);
       expect(components['/b'].stateValues.period.tree).eqls('pi');
-      expect(components['/b2'].replacements[0].stateValues.value.tree).eqls(b);
-      expect(components['/b2'].replacements[0].stateValues.nOffsets).eq(4);
-      expect(components['/b2'].replacements[0].stateValues.offsets[0].tree).eqls(offset0);
-      expect(components['/b2'].replacements[0].stateValues.offsets[1].tree).eqls(offset1);
-      expect(components['/b2'].replacements[0].stateValues.offsets[2].tree).eqls(offset2);
-      expect(components['/b2'].replacements[0].stateValues.offsets[3].tree).eqls(offset3);
+      expect((await components['/b2'].replacements[0].stateValues.value).tree).eqls(b);
+      expect((await components['/b2'].replacements[0].stateValues.nOffsets)).eq(4);
+      expect((await components['/b2'].replacements[0].stateValues.offsets)[0].tree).eqls(offset0);
+      expect((await components['/b2'].replacements[0].stateValues.offsets)[1].tree).eqls(offset1);
+      expect((await components['/b2'].replacements[0].stateValues.offsets)[2].tree).eqls(offset2);
+      expect((await components['/b2'].replacements[0].stateValues.offsets)[3].tree).eqls(offset3);
       expect(components['/b2'].replacements[0].stateValues.period.tree).eqls('pi');
-      expect(components['/b2'].replacements[0].stateValues.redundantOffsets).eq(true);
+      expect((await components['/b2'].replacements[0].stateValues.redundantOffsets)).eq(true);
 
       expect(components['/_answer1'].stateValues.creditAchieved).eq(1);
     });
@@ -509,7 +509,7 @@ describe('PeriodicSet Tag Tests', function () {
     cy.get('#\\/_p6').should('have.text', 'Redundancies: true, true, true, true')
 
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
 
       let offset0 = ['-', ['/', 'pi', 4]];
@@ -518,18 +518,18 @@ describe('PeriodicSet Tag Tests', function () {
       let a = ['periodic_set'];
       a.push(['tuple', offset0, ['/', 'pi', 2], -Infinity, Infinity])
       a.push(['tuple', offset1, ['/', 'pi', 2], -Infinity, Infinity])
-      expect(components['/a'].stateValues.value.tree).eqls(a);
-      expect(components['/a'].stateValues.nOffsets).eq(2);
-      expect(components['/a'].stateValues.offsets[0].tree).eqls(offset0);
-      expect(components['/a'].stateValues.offsets[1].tree).eqls(offset1);
+      expect((await components['/a'].stateValues.value).tree).eqls(a);
+      expect((await components['/a'].stateValues.nOffsets)).eq(2);
+      expect((await components['/a'].stateValues.offsets)[0].tree).eqls(offset0);
+      expect((await components['/a'].stateValues.offsets)[1].tree).eqls(offset1);
       expect(components['/a'].stateValues.period.tree).eqls(['/', 'pi', 2]);
-      expect(components['/a'].stateValues.redundantOffsets).eq(true);
-      expect(components['/a2'].replacements[0].stateValues.value.tree).eqls(a);
-      expect(components['/a2'].replacements[0].stateValues.nOffsets).eq(2);
-      expect(components['/a2'].replacements[0].stateValues.offsets[0].tree).eqls(offset0);
-      expect(components['/a2'].replacements[0].stateValues.offsets[1].tree).eqls(offset1);
+      expect((await components['/a'].stateValues.redundantOffsets)).eq(true);
+      expect((await components['/a2'].replacements[0].stateValues.value).tree).eqls(a);
+      expect((await components['/a2'].replacements[0].stateValues.nOffsets)).eq(2);
+      expect((await components['/a2'].replacements[0].stateValues.offsets)[0].tree).eqls(offset0);
+      expect((await components['/a2'].replacements[0].stateValues.offsets)[1].tree).eqls(offset1);
       expect(components['/a2'].replacements[0].stateValues.period.tree).eqls(['/', 'pi', 2]);
-      expect(components['/a2'].replacements[0].stateValues.redundantOffsets).eq(true);
+      expect((await components['/a2'].replacements[0].stateValues.redundantOffsets)).eq(true);
 
       let b = ['periodic_set'];
 
@@ -544,24 +544,24 @@ describe('PeriodicSet Tag Tests', function () {
       b.push(['tuple', offset2, 'pi', -Infinity, Infinity])
       b.push(['tuple', offset3, 'pi', -Infinity, Infinity])
       b.push(['tuple', offset4, 'pi', -Infinity, Infinity])
-      expect(components['/b'].stateValues.value.tree).eqls(b);
-      expect(components['/b'].stateValues.nOffsets).eq(5);
-      expect(components['/b'].stateValues.offsets[0].tree).eqls(offset0);
-      expect(components['/b'].stateValues.offsets[1].tree).eqls(offset1);
-      expect(components['/b'].stateValues.offsets[2].tree).eqls(offset2);
-      expect(components['/b'].stateValues.offsets[3].tree).eqls(offset3);
-      expect(components['/b'].stateValues.offsets[4].tree).eqls(offset4);
-      expect(components['/b'].stateValues.redundantOffsets).eq(true);
+      expect((await components['/b'].stateValues.value).tree).eqls(b);
+      expect((await components['/b'].stateValues.nOffsets)).eq(5);
+      expect((await components['/b'].stateValues.offsets)[0].tree).eqls(offset0);
+      expect((await components['/b'].stateValues.offsets)[1].tree).eqls(offset1);
+      expect((await components['/b'].stateValues.offsets)[2].tree).eqls(offset2);
+      expect((await components['/b'].stateValues.offsets)[3].tree).eqls(offset3);
+      expect((await components['/b'].stateValues.offsets)[4].tree).eqls(offset4);
+      expect((await components['/b'].stateValues.redundantOffsets)).eq(true);
       expect(components['/b'].stateValues.period.tree).eqls('pi');
-      expect(components['/b2'].replacements[0].stateValues.value.tree).eqls(b);
-      expect(components['/b2'].replacements[0].stateValues.nOffsets).eq(5);
-      expect(components['/b2'].replacements[0].stateValues.offsets[0].tree).eqls(offset0);
-      expect(components['/b2'].replacements[0].stateValues.offsets[1].tree).eqls(offset1);
-      expect(components['/b2'].replacements[0].stateValues.offsets[2].tree).eqls(offset2);
-      expect(components['/b2'].replacements[0].stateValues.offsets[3].tree).eqls(offset3);
-      expect(components['/b2'].replacements[0].stateValues.offsets[4].tree).eqls(offset4);
+      expect((await components['/b2'].replacements[0].stateValues.value).tree).eqls(b);
+      expect((await components['/b2'].replacements[0].stateValues.nOffsets)).eq(5);
+      expect((await components['/b2'].replacements[0].stateValues.offsets)[0].tree).eqls(offset0);
+      expect((await components['/b2'].replacements[0].stateValues.offsets)[1].tree).eqls(offset1);
+      expect((await components['/b2'].replacements[0].stateValues.offsets)[2].tree).eqls(offset2);
+      expect((await components['/b2'].replacements[0].stateValues.offsets)[3].tree).eqls(offset3);
+      expect((await components['/b2'].replacements[0].stateValues.offsets)[4].tree).eqls(offset4);
       expect(components['/b2'].replacements[0].stateValues.period.tree).eqls('pi');
-      expect(components['/b2'].replacements[0].stateValues.redundantOffsets).eq(true);
+      expect((await components['/b2'].replacements[0].stateValues.redundantOffsets)).eq(true);
 
       expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
     });
@@ -569,12 +569,12 @@ describe('PeriodicSet Tag Tests', function () {
   });
 
   it('partial credit with periodic set', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <setup>
       <mathlist name="correct_offsets" mergemathlists="true">30,150</mathlist>
-      <copy prop="nComponents" tname="correct_offsets" assignNames="n_correct_offsets" />
+      <copy prop="nComponents" target="correct_offsets" assignNames="n_correct_offsets" />
       <math name="correct_period">180</math>
       <periodicSet name="correct"  offsets="$correct_offsets" period="$correct_period" />
     </setup>
@@ -610,7 +610,7 @@ describe('PeriodicSet Tag Tests', function () {
     </p>
 
     <mathlist name="collected_offsets" hide>
-      <collect componentTypes="mathinput" prop="value" tname="offset_p" />
+      <collect componentTypes="mathinput" prop="value" target="offset_p" />
     </mathlist>
 
     <setup>
@@ -642,7 +642,7 @@ describe('PeriodicSet Tag Tests', function () {
           </when>
         </award>
         <award name="redund" credit="0">
-          <when><copy prop="redundantOffsets" tname="userPeriodicSet" /></when>
+          <when><copy prop="redundantOffsets" target="userPeriodicSet" /></when>
         </award>
         <considerAsResponses>
           $p$o
@@ -830,7 +830,7 @@ describe('PeriodicSet Tag Tests', function () {
   });
 
   it('display periodic set as list', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -840,13 +840,13 @@ describe('PeriodicSet Tag Tests', function () {
 
     <periodicSet period="$period" offsets="$offsets" name="pset" />
   
-    <p>As list: <copy prop="asList" tname="pset" assignNames="l1" /></p>
+    <p>As list: <copy prop="asList" target="pset" assignNames="l1" /></p>
 
     <p>Min index: <mathinput name="minIndex" />, <mathinput name="maxIndex" /></p>
 
     <periodicSet period="$period" offsets="$offsets" name="pset2" minIndexAsList="$minIndex" maxIndexAsList="$maxIndex" />
 
-    <p>As list with specified min/max: <copy prop="asList" tname="pset2" assignNames="l2" /></p>
+    <p>As list with specified min/max: <copy prop="asList" target="pset2" assignNames="l2" /></p>
 
 
 

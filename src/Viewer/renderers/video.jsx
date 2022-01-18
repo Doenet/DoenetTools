@@ -133,7 +133,7 @@ export default class Video extends DoenetRenderer {
   }
 
 
-  onPlayerStateChange(event) {
+  async onPlayerStateChange(event) {
 
     var lastPlayerState = this.lastPlayerState;
 
@@ -159,7 +159,7 @@ export default class Video extends DoenetRenderer {
 
             if (timeSincePaused < 0 || timeSincePaused > 0.5) {
               // console.log(`recording video skipped ${this.lastPausedTime}, ${newTime}`)
-              this.actions.recordVideoSkipped({
+              await this.actions.recordVideoSkipped({
                 beginTime: this.lastPausedTime,
                 endTime: newTime,
                 duration,
@@ -177,7 +177,7 @@ export default class Video extends DoenetRenderer {
           this.currentTime = NaN;
 
           // console.log(`recording that video started at ${this.lastPlayedTime} at rate ${rate}`)
-          this.actions.recordVideoStarted({
+          await this.actions.recordVideoStarted({
             beginTime: player.getCurrentTime(),
             duration,
             rate,
@@ -189,24 +189,24 @@ export default class Video extends DoenetRenderer {
 
       case (window.YT.PlayerState.PAUSED):
         var timer = setTimeout(
-          function () {
+          async function () {
             let currentTime = player.getCurrentTime();
 
             if (renderer.lastEventState === window.YT.PlayerState.PLAYING) {
               // console.log(`recording video watched ${renderer.lastPlayedTime}, ${currentTime}`);
               renderer.rates[renderer.rates.length - 1].endingPoint = currentTime;
-              renderer.actions.recordVideoWatched({
+              await renderer.actions.recordVideoWatched({
                 beginTime: renderer.lastPlayedTime,
                 endTime: currentTime,
                 duration,
                 rates: renderer.rates,
-              })
+              });
             }
             // console.log(`recording that video paused ${currentTime}`)
-            renderer.actions.recordVideoPaused({
+            await renderer.actions.recordVideoPaused({
               endTime: currentTime,
               duration,
-            })
+            });
 
             renderer.currentTime = NaN;
             renderer.lastEventState = event.data;
@@ -226,7 +226,7 @@ export default class Video extends DoenetRenderer {
           // console.log(`recording video watched ${this.lastPlayedTime}, ${this.currentTime}`);
 
           this.rates[this.rates.length - 1].endingPoint = this.currentTime;
-          this.actions.recordVideoWatched({
+          await this.actions.recordVideoWatched({
             beginTime: this.lastPlayedTime,
             endTime: this.currentTime,
             duration,
@@ -234,7 +234,7 @@ export default class Video extends DoenetRenderer {
           })
 
           // console.log(`recording video skipped ${this.currentTime}, ${newTime}`)
-          this.actions.recordVideoSkipped({
+          await this.actions.recordVideoSkipped({
             beginTime: this.currentTime,
             endTime: newTime,
             duration,
@@ -256,7 +256,7 @@ export default class Video extends DoenetRenderer {
 
         // console.log(`recording video watched ${this.lastPlayedTime}, ${player.getCurrentTime()}`);
         this.rates[this.rates.length - 1].endingPoint = player.getCurrentTime();
-        this.actions.recordVideoWatched({
+        await this.actions.recordVideoWatched({
           beginTime: this.lastPlayedTime,
           endTime: player.getCurrentTime(),
           duration,
@@ -264,7 +264,7 @@ export default class Video extends DoenetRenderer {
         })
 
         // console.log(`recording video ended`)
-        this.actions.recordVideoCompleted({
+        await this.actions.recordVideoCompleted({
           duration,
         })
         this.currentTime = NaN;

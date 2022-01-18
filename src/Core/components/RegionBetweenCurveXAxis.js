@@ -1,10 +1,7 @@
-import GraphicalComponent from './abstract/GraphicalComponent.js';
+import GraphicalComponent from './abstract/GraphicalComponent';
 
-export default class AreaBetweenCurveXAxis extends GraphicalComponent {
-  static componentType = "areaBetweenCurveXAxis";
-
-  // used when referencing this component without prop
-  static get stateVariablesShadowedForReference() { return ["endpoint"] };
+export default class RegionBetweenCurveXAxis extends GraphicalComponent {
+  static componentType = "regionBetweenCurveXAxis";
 
   static createAttributesObject(args) {
     let attributes = super.createAttributesObject(args);
@@ -56,7 +53,7 @@ export default class AreaBetweenCurveXAxis extends GraphicalComponent {
 
         lineDescription += dependencyValues.selectedStyle.lineColor;
 
-        return { newValues: { styleDescription: lineDescription } };
+        return { setValue: { styleDescription: lineDescription } };
       }
     }
 
@@ -77,11 +74,11 @@ export default class AreaBetweenCurveXAxis extends GraphicalComponent {
           || dependencyValues.functionAttr.stateValues.nInputs !== 1
           || dependencyValues.functionAttr.stateValues.nOutputs !== 1
         ) {
-          return { newValues: { function: () => NaN, haveFunction: false } }
+          return { setValue: { function: () => NaN, haveFunction: false } }
         }
 
         return {
-          newValues: {
+          setValue: {
             function: dependencyValues.functionAttr.stateValues.numericalfs[0],
             haveFunction: true
           }

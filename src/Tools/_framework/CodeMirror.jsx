@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useRef } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { basicSetup } from '@codemirror/basic-setup';
 import { EditorState, Transaction, StateEffect } from '@codemirror/state';
 import { selectLine, deleteLine, cursorLineUp } from '@codemirror/commands';
@@ -18,7 +18,8 @@ const editorConfigStateAtom = atom({
 });
 
 let view;
-export default function CodeMirror({setInternalValue,onBeforeChange,readOnly}){
+
+export default function CodeMirror({setInternalValue,onBeforeChange,readOnly,onBlur,onFocus}){
     if(readOnly === undefined){
         readOnly = false;
     }
@@ -26,6 +27,7 @@ export default function CodeMirror({setInternalValue,onBeforeChange,readOnly}){
     let editorConfig = useRecoilValue(editorConfigStateAtom);
     view = useRef(null);
     let parent = useRef(null);
+    const [count,setCount] = useState(0)
 
     const changeFunc = useCallback((tr) => {
         if(tr.docChanged){
@@ -37,6 +39,36 @@ export default function CodeMirror({setInternalValue,onBeforeChange,readOnly}){
         //eslint-disable-next-line
     },[]);
 
+    //Make sure readOnly takes affect
+    //TODO: Do this is a smarter way - async await?
+    if (readOnly && view.current?.state?.facet(EditorView.editable)){
+        const disabledExtensions = [
+            EditorView.editable.of(false),
+            lineNumbers(),
+        ]
+        view.current.dispatch({
+            effects: StateEffect.reconfigure.of(disabledExtensions)
+        });
+    }
+
+    //Fires when the editor losses focus
+    const onBlurExtension = EditorView.domEventHandlers({
+        blur(){
+            if (onBlur){
+                onBlur();
+            }
+        }
+    })
+
+    //Fires when the editor receives focus
+    const onFocusExtension = EditorView.domEventHandlers({
+        focus(){
+            if (onFocus){
+                onFocus();
+            }
+        }
+    })
+
 
     const doenetExtensions = useMemo(() => [
         basicSetup,
@@ -45,6 +77,8 @@ export default function CodeMirror({setInternalValue,onBeforeChange,readOnly}){
         tabExtension,
         cutExtension,
         copyExtension,
+        onBlurExtension,
+        onFocusExtension,
         EditorState.changeFilter.of(changeFunc)
     ],[changeFunc]); 
 
@@ -88,13 +122,20 @@ export default function CodeMirror({setInternalValue,onBeforeChange,readOnly}){
     useEffect(() => {
         if(view.current === null && parent.current !== null){
             view.current = new EditorView({state, parent: parent.current});
+
+            if(readOnly && view.current.state.facet(EditorView.editable)){
+                //Force a refresh
+                setCount((old)=>{return old+1})
+            }
         }
     });
     
     useEffect(() => {
         if(view.current !== null && parent.current !== null){
+     
             if(readOnly && view.current.state.facet(EditorView.editable)){
                 // console.log(">>>read only has been set, changing");
+                //NOTE: WHY DOESN'T THIS WORK?
                 const disabledExtensions = [
                     EditorView.editable.of(false),
                     lineNumbers(),

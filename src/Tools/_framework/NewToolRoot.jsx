@@ -100,7 +100,7 @@ export default function ToolRoot() {
     supportPanelIndex: 0,
     hasNoMenuPanel: false,
     headerControls: [],
-    displayProfile: true,
+    displaySettings: true,
   });
   let mainPanel = null;
   let supportPanel = <SupportPanel hide={true}>null</SupportPanel>;
@@ -234,22 +234,21 @@ export default function ToolRoot() {
       }
     }
   }
+   
 
-  let menus = <MenuPanel key="menuPanel" hide={true} />;
-  if (menusOpen && !toolRootMenusAndPanels.hasNoMenuPanel) {
-    menus = (
-      <MenuPanel
-        key="menuPanel"
-        hide={false}
-        setMenusOpen={setMenusOpen}
-        menusOpen={menusOpen}
-        menuPanelCap={toolRootMenusAndPanels.menuPanelCap}
-        menusTitles={toolRootMenusAndPanels.menusTitles}
-        currentMenus={toolRootMenusAndPanels.currentMenus}
-        initOpen={toolRootMenusAndPanels.menusInitOpen}
-        displayProfile={toolRootMenusAndPanels.displayProfile}
-      />
-    );
+  let menus = <MenuPanel key='menuPanel' hide={true} />;
+  if (menusOpen && !toolRootMenusAndPanels.hasNoMenuPanel){
+    menus = <MenuPanel 
+    key='menuPanel' 
+    hide={false} 
+    setMenusOpen={setMenusOpen} 
+    menusOpen={menusOpen} 
+    menuPanelCap={toolRootMenusAndPanels.menuPanelCap}
+    menusTitles={toolRootMenusAndPanels.menusTitles} 
+    currentMenus={toolRootMenusAndPanels.currentMenus} 
+    initOpen={toolRootMenusAndPanels.menusInitOpen}
+    displaySettings={toolRootMenusAndPanels.displaySettings}
+    />
   }
 
   //If no menu panel then don't show open menu button
@@ -261,6 +260,8 @@ export default function ToolRoot() {
   //MathInputKeyboard
   let footer = null;
 
+  //Todo: Why is this null?
+  console.log("footerObj",footerObj)
   if (footerObj) {
     let footerKey = `footer`;
     footer = (
@@ -293,7 +294,7 @@ export default function ToolRoot() {
               headerControls={headerControls}
               setMenusOpen={setMenusOpen}
               openMenuButton={openMenuButton}
-              displayProfile={toolRootMenusAndPanels.displayProfile}
+              displaySettings={toolRootMenusAndPanels.displaySettings}
             >
               {mainPanel}
             </MainPanel>
@@ -347,7 +348,7 @@ let navigationObj = {
     chooseLearner: {
       pageName: 'chooseLearner',
       currentMainPanel: 'ChooseLearnerPanel',
-      displayProfile: false,
+      displaySettings: false,
     },
     assessment: {
       pageName: 'Assessment',
@@ -357,13 +358,13 @@ let navigationObj = {
       menusTitles: ['Time Remaining'],
       menusInitOpen: [true],
       headerControls: [],
-      displayProfile: false,
+      displaySettings: false,
       waitForMenuSuppression: true,
     },
     endExam: {
       pageName: 'endExam',
       currentMainPanel: 'EndExamPanel',
-      displayProfile: false,
+      displaySettings: false,
       hasNoMenuPanel: true,
     },
   },
@@ -529,6 +530,7 @@ let navigationObj = {
       supportPanelTitles: [],
       supportPanelIndex: 0,
       hasNoMenuPanel: true,
+      displaySettings:false
     },
   },
   notfound: {
@@ -553,6 +555,7 @@ let navigationObj = {
       supportPanelIndex: 0,
       hasNoMenuPanel: true,
       headerControls: ['BackButton'],
+      displaySettings: false,
     },
   },
   signin: {
@@ -566,6 +569,7 @@ let navigationObj = {
       supportPanelTitles: [],
       supportPanelIndex: 0,
       hasNoMenuPanel: true,
+      displaySettings: false,
     },
   },
   signout: {
@@ -579,6 +583,7 @@ let navigationObj = {
       supportPanelTitles: [],
       supportPanelIndex: 0,
       hasNoMenuPanel: true,
+      displaySettings: false,
     },
   },
 };

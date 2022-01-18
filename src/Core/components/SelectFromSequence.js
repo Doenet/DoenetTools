@@ -13,10 +13,6 @@ export default class SelectFromSequence extends Sequence {
 
   static createsVariants = true;
 
-  static get stateVariablesShadowedForReference() {
-    return [...super.stateVariablesShadowedForReference, "excludedCombinations"]
-  }
-
   static createAttributesObject(args) {
     let attributes = super.createAttributesObject(args);
     attributes.assignNamesSkip = {
@@ -61,14 +57,14 @@ export default class SelectFromSequence extends Sequence {
       definition: function ({ dependencyValues }) {
         if (dependencyValues.excludeCombinations !== null) {
           return {
-            newValues:
+            setValue:
             {
               excludedCombinations:
                 dependencyValues.excludeCombinations.stateValues.lists
             }
           }
         } else {
-          return { newValues: { excludedCombinations: [] } }
+          return { setValue: { excludedCombinations: [] } }
         }
 
       }
@@ -81,13 +77,20 @@ export default class SelectFromSequence extends Sequence {
         },
       }),
       definition: function ({ dependencyValues }) {
-        return { newValues: { variants: dependencyValues.variants } };
+        return { setValue: { variants: dependencyValues.variants } };
       },
     };
 
     stateVariableDefinitions.selectedValues = {
       immutable: true,
-      additionalStateVariablesDefined: ["selectedIndices"],
+      hasEssential: true,
+      shadowVariable: true,
+      additionalStateVariablesDefined: [{
+        variableName: "selectedIndices",
+        hasEssential: true,
+        shadowVariable: true,
+        immutable: true,
+      }],
       returnDependencies: ({ sharedParameters }) => ({
         numberToSelect: {
           dependencyType: "stateVariable",
@@ -146,7 +149,7 @@ export default class SelectFromSequence extends Sequence {
 
     stateVariableDefinitions.isVariantComponent = {
       returnDependencies: () => ({}),
-      definition: () => ({ newValues: { isVariantComponent: true } })
+      definition: () => ({ setValue: { isVariantComponent: true } })
     }
 
     stateVariableDefinitions.generatedVariantInfo = {
@@ -163,7 +166,7 @@ export default class SelectFromSequence extends Sequence {
           meta: { createdBy: componentName }
         };
 
-        return { newValues: { generatedVariantInfo } }
+        return { setValue: { generatedVariantInfo } }
 
       }
     }
@@ -184,10 +187,10 @@ export default class SelectFromSequence extends Sequence {
     return stateVariableDefinitions;
   }
 
-  static createSerializedReplacements({ component, componentInfoObjects }) {
+  static async createSerializedReplacements({ component, componentInfoObjects, flags }) {
 
-    let componentType = component.stateValues.type;
-    if (component.stateValues.type === "letters") {
+    let componentType = await component.stateValues.type;
+    if (componentType === "letters") {
       componentType = "text"
     }
 
@@ -202,13 +205,14 @@ export default class SelectFromSequence extends Sequence {
         attributes: { fixed: component.attributes.fixed },
         componentType,
         componentInfoObjects,
-        compositeCreatesNewNamespace: newNamespace
+        compositeCreatesNewNamespace: newNamespace,
+        flags
       })
     }
 
     let replacements = [];
 
-    for (let value of component.stateValues.selectedValues) {
+    for (let value of await component.stateValues.selectedValues) {
 
       replacements.push({
         componentType,
@@ -269,8 +273,8 @@ export default class SelectFromSequence extends Sequence {
         // children overwrite state
         if (child.children !== undefined) {
           for (let grandchild of child.children) {
-            if (grandchild.componentType === "string") {
-              numberToSelect = Math.round(Number(grandchild.state.value));
+            if (typeof grandchild === "string") {
+              numberToSelect = Math.round(Number(grandchild));
               foundValid = true;
               break;
             }
@@ -292,9 +296,9 @@ export default class SelectFromSequence extends Sequence {
         // children overwrite state
         if (child.children !== undefined) {
           for (let grandchild of child.children) {
-            if (grandchild.componentType === "string") {
+            if (typeof grandchild === "string") {
               foundValid = true;
-              if (grandchild.state.value.trim().toLowerCase() === "true") {
+              if (grandchild.trim().toLowerCase() === "true") {
                 withReplacement = true;
               } else {
                 withReplacement = false;
@@ -317,8 +321,8 @@ export default class SelectFromSequence extends Sequence {
         // children overwrite state
         if (child.children !== undefined) {
           for (let grandchild of child.children) {
-            if (grandchild.componentType === "string") {
-              sequencePars[componentType] = grandchild.state.value;
+            if (typeof grandchild === "string") {
+              sequencePars[componentType] = grandchild;
               foundValid = true;
               break;
             }
@@ -332,9 +336,9 @@ export default class SelectFromSequence extends Sequence {
         let foundValid = false;
         if (child.children !== undefined) {
           for (let grandchild of child.children) {
-            if (grandchild.componentType === "string") {
+            if (typeof grandchild === "string") {
               foundValid = true;
-              let stringPieces = grandchild.state.value.split(",").map(x => x.trim());
+              let stringPieces = grandchild.split(",").map(x => x.trim());
               excludes.push(...stringPieces);
               break;
             }
@@ -344,7 +348,7 @@ export default class SelectFromSequence extends Sequence {
           return { success: false }
         }
 
-      } else if (componentType === "string") {
+      } else if (typeof child === "string") {
         stringChild = child;
       }
     }
@@ -353,7 +357,7 @@ export default class SelectFromSequence extends Sequence {
       if (sequencePars.to !== undefined || sequencePars.from !== undefined) {
         return { success: false }
       }
-      let stringPieces = stringChild.state.value.split(",");
+      let stringPieces = stringChild.split(",");
       if (stringPieces.length === 1) {
         sequencePars.to = stringPieces[0].trim();
       } else if (stringPieces.length === 2) {
@@ -530,8 +534,11 @@ function makeSelection({ dependencyValues }) {
 
   if (dependencyValues.numberToSelect < 1) {
     return {
-      makeEssential: { selectedValues: true, selectedIndices: true },
-      newValues: {
+      setEssentialValue: {
+        selectedValues: [],
+        selectedIndices: []
+      },
+      setValue: {
         selectedValues: [],
         selectedIndices: [],
       }
@@ -591,8 +598,8 @@ function makeSelection({ dependencyValues }) {
       }
 
       return {
-        makeEssential: { selectedValues: true, selectedIndices: true },
-        newValues: { selectedValues, selectedIndices: desiredIndices }
+        setEssentialValue: { selectedValues, selectedIndices: desiredIndices },
+        setValue: { selectedValues, selectedIndices: desiredIndices }
       }
     }
   }
@@ -722,8 +729,8 @@ function makeSelection({ dependencyValues }) {
   }
 
   return {
-    makeEssential: { selectedValues: true, selectedIndices: true },
-    newValues: { selectedValues, selectedIndices }
+    setEssentialValue: { selectedValues, selectedIndices },
+    setValue: { selectedValues, selectedIndices }
   }
 
 }
