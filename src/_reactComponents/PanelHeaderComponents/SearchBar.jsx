@@ -52,13 +52,13 @@ export default function Searchbar(props) {
     var submitButton = {
         position: 'absolute',
         display: 'inline',
-        margin: '2px 0px 0px -58px',
+        margin: '0px 0px 0px -60px',
         zIndex: '2',
-        height: '24px',
-        border: `2px hidden`,
+        height: '28px',
+        border: `2px solid black`,
         backgroundColor: `${doenetComponentForegroundActive}`,
         color: '#FFFFFF',
-        borderRadius: '0px 3px 3px 0px',
+        borderRadius: '0px 5px 5px 0px',
         cursor: 'pointer',
         fontSize: '12px',
         overflow: 'hidden'
