@@ -1,268 +1,268 @@
-import React from 'react';
+import React, { useRef } from 'react';
+import useDoenetRender from './useDoenetRenderer';
 import ReactDOM from 'react-dom';
-import DoenetRenderer from './DoenetRenderer';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCheck, faLevelDownAlt, faTimes, faCloud, faPercentage } from '@fortawesome/free-solid-svg-icons'
 import { sizeToCSS } from './utils/css';
 
+export default function TextInput(props) {
+  let { name, SVs, actions, sourceOfUpdate } = useDoenetRender(props);
 
-export default class TextInput extends DoenetRenderer {
-  constructor(props) {
-    super(props);
+  let currentValue = useRef(null);
+  let valueToRevertTo = useRef(null);
+  let validationState = useRef(null);
+  let focused = useRef(null);
 
-    this.handleKeyPress = this.handleKeyPress.bind(this);
-    this.handleKeyDown = this.handleKeyDown.bind(this);
-    this.handleBlur = this.handleBlur.bind(this);
-    this.handleFocus = this.handleFocus.bind(this);
-    this.onChangeHandler = this.onChangeHandler.bind(this);
+  currentValue.current = SVs.value;
+  valueToRevertTo.current = SVs.value;
 
-    this.currentValue = this.doenetSvData.value;
-    this.valueToRevertTo = this.doenetSvData.value;
 
-  }
 
-  static initializeChildrenOnConstruction = false;
+  function updateValidationState() {
 
-  updateValidationState() {
-
-    this.validationState = "unvalidated";
-    if (this.doenetSvData.valueHasBeenValidated || this.doenetSvData.numberOfAttemptsLeft < 1) {
-      if (this.doenetSvData.creditAchieved === 1) {
-        this.validationState = "correct";
-      } else if (this.doenetSvData.creditAchieved === 0) {
-        this.validationState = "incorrect";
+    validationState.current = "unvalidated";
+    if (SVs.valueHasBeenValidated || SVs.numberOfAttemptsLeft < 1) {
+      if (SVs.creditAchieved === 1) {
+        validationState.current = "correct";
+      } else if (SVs.creditAchieved === 0) {
+        validationState.current = "incorrect";
       } else {
-        this.validationState = "partialcorrect";
+        validationState.current = "partialcorrect";
       }
     }
   }
 
-  async handleKeyPress(e) {
+  function handleKeyPress(e) {
     if (e.key === "Enter") {
-      this.valueToRevertTo = this.doenetSvData.value;
-      if (this.doenetSvData.value !== this.doenetSvData.immediateValue) {
-        await this.actions.updateValue();
+      valueToRevertTo.current = SVs.value;
+      props.callAction({
+        actionName: "updateValue",
+        componentName: name
+      })
+      // await this.actions.updateValue();
+
+      if (SVs.includeCheckWork && validationState.current === "unvalidated") {
+        // await this.actions.submitAnswer();
       }
-      if (this.doenetSvData.includeCheckWork && this.validationState === "unvalidated") {
-        await this.actions.submitAnswer();
-      }
-      this.forceUpdate();
     }
   }
 
-  async handleKeyDown(e) {
+  function handleKeyDown(e) {
     if (e.key === "Escape") {
-      await this.actions.updateImmediateValue({
-        text: this.valueToRevertTo
-      });
-      this.forceUpdate();
-    }
-  }
-
-  handleFocus(e) {
-    this.focused = true;
-    this.forceUpdate();
-  }
-
-  async handleBlur(e) {
-    this.focused = false;
-    this.valueToRevertTo = this.doenetSvData.immediateValue;
-    if (this.doenetSvData.immediateValue !== this.doenetSvData.value) {
-      await this.actions.updateValue();
-    }
-
-    this.forceUpdate();
-  }
-
-  async onChangeHandler(e) {
-    this.currentValue = e.target.value;
-    await this.actions.updateImmediateValue({
-      text: e.target.value
-    });
-    this.forceUpdate();
-  }
-
-  render() {
-
-    if (this.doenetSvData.hidden) {
-      return null;
-    }
-
-    this.updateValidationState();
-
-    let disabled = this.doenetSvData.disabled;
-
-    const inputKey = this.componentName + '_input';
-
-    let surroundingBorderColor = "#efefef";
-    if (this.focused) {
-      surroundingBorderColor = "#82a5ff";
-    }
-
-
-    if (this.doenetSvData.immediateValue !== this.currentValue) {
-      console.log(`immediateValue: ${this.doenetSvData.immediateValue}`)
-      console.log(`currentValue: ${this.currentValue}`)
-      this.currentValue = this.doenetSvData.immediateValue;
-      this.valueToRevertTo = this.doenetSvData.immediateValue;
-    }
-
-
-    let checkWorkStyle = {
-      position: "relative",
-      width: "30px",
-      height: "24px",
-      fontSize: "20px",
-      fontWeight: "bold",
-      color: "#ffffff",
-      display: "inline-block",
-      textAlign: "center",
-      top: "3px",
-      padding: "2px",
-    }
-
-    //Assume we don't have a check work button
-    let checkWorkButton = null;
-    if (this.doenetSvData.includeCheckWork) {
-
-      if (this.validationState === "unvalidated") {
-        if (disabled) {
-          checkWorkStyle.backgroundColor = "rgb(200,200,200)";
-        } else {
-          checkWorkStyle.backgroundColor = "rgb(2, 117, 216)";
+      props.callAction({
+        componentName: name,
+        actionName: "updateImmediateValue",
+        args: {
+          text: valueToRevertTo.current
         }
-        checkWorkButton = <button
-          id={this.componentName + '_submit'}
-          tabIndex="0"
-          disabled={disabled}
-          ref={c => { this.target = c && ReactDOM.findDOMNode(c); }}
-          style={checkWorkStyle}
-          onClick={this.actions.submitAnswer}
-          onKeyPress={(e) => {
-            if (e.key === 'Enter') {
-              this.actions.submitAnswer();
-            }
-          }}
-        >
-          <FontAwesomeIcon icon={faLevelDownAlt} transform={{ rotate: 90 }} />
-        </button>
+      })
+
+    }
+  }
+
+  function handleFocus(e) {
+    focused.current = true;
+  }
+
+  function handleBlur(e) {
+    focused.current = false;
+    props.callAction({
+      actionName: "updateValue",
+      componentName: name
+    })
+  }
+
+  function onChangeHandler(e) {
+    currentValue.current = e.target.value;
+    props.callAction({
+      componentName: name,
+      actionName: "updateImmediateValue",
+      args: {
+        text: e.target.value
+      }
+    })
+    // await this.actions.updateImmediateValue({
+    //   text: e.target.value
+    // });
+  }
+
+
+  if (SVs.hidden) {
+    return null;
+  }
+
+  updateValidationState();
+
+  let disabled = SVs.disabled;
+
+  const inputKey = name + '_input';
+
+  let surroundingBorderColor = "#efefef";
+  if (focused.current) {
+    surroundingBorderColor = "#82a5ff";
+  }
+
+
+  if (SVs.immediateValue !== currentValue.current) {
+    currentValue.current = SVs.immediateValue;
+    valueToRevertTo.current = SVs.immediateValue;
+  }
+
+
+  let checkWorkStyle = {
+    position: "relative",
+    width: "30px",
+    height: "24px",
+    fontSize: "20px",
+    fontWeight: "bold",
+    color: "#ffffff",
+    display: "inline-block",
+    textAlign: "center",
+    top: "3px",
+    padding: "2px",
+  }
+
+  //Assume we don't have a check work button
+  let checkWorkButton = null;
+  if (SVs.includeCheckWork) {
+
+    if (validationState.current === "unvalidated") {
+      if (disabled) {
+        checkWorkStyle.backgroundColor = "rgb(200,200,200)";
       } else {
-        if (this.doenetSvData.showCorrectness) {
-          if (this.validationState === "correct") {
-            checkWorkStyle.backgroundColor = "rgb(92, 184, 92)";
-            checkWorkButton = <span
-              id={this.componentName + '_correct'}
-              style={checkWorkStyle}
-              ref={c => { this.target = c && ReactDOM.findDOMNode(c); }}
-            >
-              <FontAwesomeIcon icon={faCheck} />
-            </span>
-          } else if (this.validationState === "partialcorrect") {
-            //partial credit
-
-            let percent = Math.round(this.doenetSvData.creditAchieved * 100);
-            let partialCreditContents = `${percent} %`;
-            checkWorkStyle.width = "50px";
-
-            checkWorkStyle.backgroundColor = "#efab34";
-            checkWorkButton = <span
-              id={this.componentName + '_partial'}
-              style={checkWorkStyle}
-              ref={c => { this.target = c && ReactDOM.findDOMNode(c); }}
-            >{partialCreditContents}</span>
-          } else {
-            //incorrect
-            checkWorkStyle.backgroundColor = "rgb(187, 0, 0)";
-            checkWorkButton = <span
-              id={this.componentName + '_incorrect'}
-              style={checkWorkStyle}
-              ref={c => { this.target = c && ReactDOM.findDOMNode(c); }}
-            ><FontAwesomeIcon icon={faTimes} /></span>
-
+        checkWorkStyle.backgroundColor = "rgb(2, 117, 216)";
+      }
+      checkWorkButton = <button
+        id={name + '_submit'}
+        tabIndex="0"
+        disabled={disabled}
+        // ref={c => { this.target = c && ReactDOM.findDOMNode(c); }}
+        style={checkWorkStyle}
+        // onClick={this.actions.submitAnswer}
+        onKeyPress={(e) => {
+          if (e.key === 'Enter') {
+            // this.actions.submitAnswer();
           }
-        } else {
-          // showCorrectness is false
-          checkWorkStyle.backgroundColor = "rgb(74, 3, 217)";
+        }}
+      >
+        <FontAwesomeIcon icon={faLevelDownAlt} transform={{ rotate: 90 }} />
+      </button>
+    } else {
+      if (SVs.showCorrectness) {
+        if (validationState.current === "correct") {
+          checkWorkStyle.backgroundColor = "rgb(92, 184, 92)";
           checkWorkButton = <span
-            id={this.componentName + '_saved'}
+            id={name + '_correct'}
             style={checkWorkStyle}
-            ref={c => { this.target = c && ReactDOM.findDOMNode(c); }}
-          ><FontAwesomeIcon icon={faCloud} /></span>
+            // ref={c => { this.target = c && ReactDOM.findDOMNode(c); }}
+          >
+            <FontAwesomeIcon icon={faCheck} />
+          </span>
+        } else if (validationState.current === "partialcorrect") {
+          //partial credit
+
+          let percent = Math.round(SVs.creditAchieved * 100);
+          let partialCreditContents = `${percent} %`;
+          checkWorkStyle.width = "50px";
+
+          checkWorkStyle.backgroundColor = "#efab34";
+          checkWorkButton = <span
+            id={name + '_partial'}
+            style={checkWorkStyle}
+            // ref={c => { this.target = c && ReactDOM.findDOMNode(c); }}
+          >{partialCreditContents}</span>
+        } else {
+          //incorrect
+          checkWorkStyle.backgroundColor = "rgb(187, 0, 0)";
+          checkWorkButton = <span
+            id={name + '_incorrect'}
+            style={checkWorkStyle}
+            // ref={c => { this.target = c && ReactDOM.findDOMNode(c); }}
+          ><FontAwesomeIcon icon={faTimes} /></span>
 
         }
+      } else {
+        // showCorrectness is false
+        checkWorkStyle.backgroundColor = "rgb(74, 3, 217)";
+        checkWorkButton = <span
+          id={name + '_saved'}
+          style={checkWorkStyle}
+          // ref={c => { this.target = c && ReactDOM.findDOMNode(c); }}
+        ><FontAwesomeIcon icon={faCloud} /></span>
+
       }
-
-      if (this.doenetSvData.numberOfAttemptsLeft < 0) {
-        checkWorkButton = <>
-          {checkWorkButton}
-          <span>
-            (no attempts remaining)
-          </span>
-        </>
-      } else if (this.doenetSvData.numberOfAttemptsLeft < Infinity) {
-
-        checkWorkButton = <>
-          {checkWorkButton}
-          <span>
-            (attempts remaining: {this.doenetSvData.numberOfAttemptsLeft})
-          </span>
-        </>
-      }
-
     }
 
-    let input;
-    if (this.doenetSvData.expanded) {
-      input = <textarea
-        key={inputKey}
-        id={inputKey}
-        value={this.currentValue}
-        disabled={disabled}
-        onChange={this.onChangeHandler}
-        onKeyPress={this.handleKeyPress}
-        onKeyDown={this.handleKeyDown}
-        onBlur={this.handleBlur}
-        onFocus={this.handleFocus}
-        style={{
-          width: sizeToCSS(this.doenetSvData.width),
-          height: sizeToCSS(this.doenetSvData.height),
-          fontSize: "14px",
-          borderWidth: "1px",
-          // borderColor: surroundingBorderColor,
-          padding: "4px",
-        }}
-      />
-    } else {
-      input = <input
-        key={inputKey}
-        id={inputKey}
-        value={this.currentValue}
-        disabled={disabled}
-        onChange={this.onChangeHandler}
-        onKeyPress={this.handleKeyPress}
-        onKeyDown={this.handleKeyDown}
-        onBlur={this.handleBlur}
-        onFocus={this.handleFocus}
-        style={{
-          width: `${this.doenetSvData.size * 10}px`,
-          height: "22px",
-          fontSize: "14px",
-          borderWidth: "1px",
-          borderColor: surroundingBorderColor,
-          padding: "4px",
-        }}
-      />
-    }
-
-
-    return <React.Fragment>
-      <a name={this.componentName} />
-      <span className="textInputSurroundingBox" id={this.componentName}>
-        {input}
+    if (SVs.numberOfAttemptsLeft < 0) {
+      checkWorkButton = <>
         {checkWorkButton}
-      </span>
+        <span>
+          (no attempts remaining)
+        </span>
+      </>
+    } else if (SVs.numberOfAttemptsLeft < Infinity) {
 
-    </React.Fragment>
+      checkWorkButton = <>
+        {checkWorkButton}
+        <span>
+          (attempts remaining: {SVs.numberOfAttemptsLeft})
+        </span>
+      </>
+    }
 
   }
+
+  let input;
+  if (SVs.expanded) {
+    input = <textarea
+      key={inputKey}
+      id={inputKey}
+      value={currentValue.current}
+      disabled={disabled}
+      onChange={onChangeHandler}
+      onKeyPress={handleKeyPress}
+      onKeyDown={handleKeyDown}
+      onBlur={handleBlur}
+      onFocus={handleFocus}
+      style={{
+        width: sizeToCSS(SVs.width),
+        height: sizeToCSS(SVs.height),
+        fontSize: "14px",
+        borderWidth: "1px",
+        // borderColor: surroundingBorderColor,
+        padding: "4px",
+      }}
+    />
+  } else {
+    input = <input
+      key={inputKey}
+      id={inputKey}
+      value={currentValue.current}
+      disabled={disabled}
+      onChange={onChangeHandler}
+      onKeyPress={handleKeyPress}
+      onKeyDown={handleKeyDown}
+      onBlur={handleBlur}
+      onFocus={handleFocus}
+      style={{
+        width: `${SVs.size * 10}px`,
+        height: "22px",
+        fontSize: "14px",
+        borderWidth: "1px",
+        borderColor: surroundingBorderColor,
+        padding: "4px",
+      }}
+    />
+  }
+
+
+  return <React.Fragment>
+    <a name={name} />
+    <span className="textInputSurroundingBox" id={name}>
+      {input}
+      {checkWorkButton}
+    </span>
+
+  </React.Fragment>
+
 }

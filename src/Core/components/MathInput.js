@@ -7,15 +7,9 @@ export default class MathInput extends Input {
     super(args);
 
     this.actions = {
-      updateImmediateValue: this.updateImmediateValue.bind(
-        new Proxy(this, this.readOnlyProxyHandler)
-      ),
-      updateRawValue: this.updateRawValue.bind(
-        new Proxy(this, this.readOnlyProxyHandler)
-      ),
-      updateValue: this.updateValue.bind(
-        new Proxy(this, this.readOnlyProxyHandler)
-      )
+      updateImmediateValue: this.updateImmediateValue.bind(this),
+      updateRawValue: this.updateRawValue.bind(this),
+      updateValue: this.updateValue.bind(this)
     };
 
     this.externalActions = {};
@@ -336,7 +330,7 @@ export default class MathInput extends Input {
           updateType: "updateValue",
           componentName: this.componentName,
           stateVariable: "immediateValue",
-          value: mathExpression,
+          value: me.fromAst(mathExpression),
         }, {
           updateType: "updateValue",
           componentName: this.componentName,

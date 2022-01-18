@@ -16,6 +16,7 @@ export default class DoenetRenderer extends Component {
     this.componentName = props.componentInstructions.componentName;
 
     this.actions = props.componentInstructions.actions;
+    this.callAction = props.callAction;
 
     // This keeps the proxy in place so that state variables
     // aren't calculated unless asked for
@@ -73,6 +74,7 @@ export default class DoenetRenderer extends Component {
       rendererClasses: this.props.rendererClasses,
       rendererUpdateMethods: this.props.rendererUpdateMethods,
       flags: this.props.flags,
+      callAction: this.callAction,
     };
     if (this.doenetPropsForChildren) {
       Object.assign(propsForChild, this.doenetPropsForChildren);

@@ -2,7 +2,7 @@ import React from 'react';
 import useDoenetRender from './useDoenetRenderer';
 import Button from '../../_reactComponents/PanelHeaderComponents/Button';
 
-export default function C(props) {
+export default function CallAction(props) {
   let {name, SVs, actions} = useDoenetRender(props);
 
   if (SVs.hidden) {

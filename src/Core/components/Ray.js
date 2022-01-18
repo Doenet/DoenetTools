@@ -6,12 +6,8 @@ export default class Ray extends GraphicalComponent {
   static componentType = "ray";
 
   actions = {
-    moveRay: this.moveRay.bind(
-      new Proxy(this, this.readOnlyProxyHandler)
-    ),
-    finalizeRayPosition: this.finalizeRayPosition.bind(
-      new Proxy(this, this.readOnlyProxyHandler)
-    )
+    moveRay: this.moveRay.bind(this),
+    finalizeRayPosition: this.finalizeRayPosition.bind(this)
   };
 
   static createAttributesObject(args) {

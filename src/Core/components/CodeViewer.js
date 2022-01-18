@@ -228,9 +228,7 @@ export default class CodeViewer extends BlockComponent {
   }
 
   actions = {
-    updateComponents: this.updateComponents.bind(
-      new Proxy(this, this.readOnlyProxyHandler)
-    )
+    updateComponents: this.updateComponents.bind(this),
   };
 
 }

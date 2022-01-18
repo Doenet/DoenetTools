@@ -51,16 +51,24 @@ export default class MathInput extends DoenetRenderer {
     // this.handleDragThrough = this.handleDragThrough.bind(this);
     // this.handleDragExit = this.handleDragExit.bind(this);
 
-    this.mathExpression = this.doenetSvData.valueForDisplay;
+    this.mathExpression = me.fromAst(this.doenetSvData.valueForDisplay);
 
     if (this.doenetSvData.rawRendererValue !== null) {
       this.latexValue = this.doenetSvData.rawRendererValue
     } else {
-      this.latexValue = stripLatex(this.doenetSvData.valueForDisplay.toLatex());
-      this.actions.updateRawValue({
-        rawRendererValue: this.latexValue,
-        transient: false
+      this.latexValue = stripLatex(me.fromAst(this.doenetSvData.valueForDisplay).toLatex());
+      this.callAction({
+        componentName: this.componentName,
+        actionName: "updateRawValue",
+        args: {
+          rawRendererValue: this.latexValue,
+          transient: false
+        }
       })
+      // this.actions.updateRawValue({
+      //   rawRendererValue: this.latexValue,
+      //   transient: false
+      // })
     }
     this.latexValueSetInRender = true;
 
@@ -69,8 +77,8 @@ export default class MathInput extends DoenetRenderer {
     // this.mathInputRef = React.createRef();
 
 
-    this.valueToRevertTo = this.doenetSvData.value;
-    this.valueForDisplayToRevertTo = this.doenetSvData.valueForDisplay;
+    this.valueToRevertTo = me.fromAst(this.doenetSvData.value);
+    this.valueForDisplayToRevertTo = me.fromAst(this.doenetSvData.valueForDisplay);
     // this.latexValueToRevertTo = this.latexValue;
     // this.previewValue = "";
 
@@ -140,18 +148,38 @@ export default class MathInput extends DoenetRenderer {
 
     if (actuallyUpdate) {
       this.mathExpression = newMathExpression;
-      await this.actions.updateImmediateValue({
-        mathExpression: newMathExpression,
-        rawRendererValue: this.latexValue,
-        transient: true,
-        skippable: true,
-      });
+      this.callAction({
+        componentName: this.componentName,
+        actionName: "updateImmediateValue",
+        args: {
+          mathExpression: newMathExpression.tree,
+          rawRendererValue: this.latexValue,
+          transient: true,
+          skippable: true,
+        }
+      })
+      // await this.actions.updateImmediateValue({
+      //   mathExpression: newMathExpression,
+      //   rawRendererValue: this.latexValue,
+      //   transient: true,
+      //   skippable: true,
+      // });
     } else if (rawValueChanged) {
-      await this.actions.updateRawValue({
-        rawRendererValue: this.latexValue,
-        transient: transientForRaw,
-        skippable: transientForRaw
-      });
+      this.callAction({
+        componentName: this.componentName,
+        actionName: "updateRawValue",
+        args: {
+          rawRendererValue: this.latexValue,
+          transient: transientForRaw,
+          skippable: transientForRaw
+        }
+      })
+
+      // await this.actions.updateRawValue({
+      //   rawRendererValue: this.latexValue,
+      //   transient: transientForRaw,
+      //   skippable: transientForRaw
+      // });
     }
 
 
@@ -195,17 +223,33 @@ export default class MathInput extends DoenetRenderer {
   // }
 
   async handlePressEnter(e) {
-    this.valueToRevertTo = this.doenetSvData.immediateValue;
+    this.valueToRevertTo = me.fromAst(this.doenetSvData.immediateValue);
     this.valueForDisplayToRevertTo = this.mathExpression;
 
     // this.latexValueToRevertTo = this.latexValue;
-    if (!this.doenetSvData.value.equalsViaSyntax(this.doenetSvData.immediateValue)) {
-      await this.actions.updateValue();
-    } else {
-      await this.actions.updateRawValue({
-        rawRendererValue: this.latexValue,
-        transient: false
+
+    console.log('handle press enter')
+    console.log(this.doenetSvData.value)
+    console.log(this.doenetSvData.immediateValue)
+    if (!me.fromAst(this.doenetSvData.value).equalsViaSyntax(me.fromAst(this.doenetSvData.immediateValue))) {
+      this.callAction({
+        componentName: this.componentName,
+        actionName: "updateValue"
       })
+      // await this.actions.updateValue();
+    } else {
+      this.callAction({
+        componentName: this.componentName,
+        actionName: "updateRawValue",
+        args: {
+          rawRendererValue: this.latexValue,
+          transient: false
+        }
+      })
+      // await this.actions.updateRawValue({
+      //   rawRendererValue: this.latexValue,
+      //   transient: false
+      // })
     }
     if (this.doenetSvData.includeCheckWork && this.validationState === "unvalidated") {
       await this.actions.submitAnswer();
@@ -235,13 +279,25 @@ export default class MathInput extends DoenetRenderer {
     this.valueToRevertTo = this.doenetSvData.immediateValue;
     this.valueForDisplayToRevertTo = this.mathExpression;
     // this.latexValueToRevertTo = this.latexValue;
-    if (!this.doenetSvData.value.equalsViaSyntax(this.doenetSvData.immediateValue)) {
-      await this.actions.updateValue();
-    } else {
-      await this.actions.updateRawValue({
-        rawRendererValue: this.latexValue,
-        transient: false
+    if (!me.fromAst(this.doenetSvData.value).equalsViaSyntax(me.fromAst(this.doenetSvData.immediateValue))) {
+      this.callAction({
+        componentName: this.componentName,
+        actionName: "updateValue"
       })
+      // await this.actions.updateValue();
+    } else {
+      this.callAction({
+        componentName: this.componentName,
+        actionName: "updateRawValue",
+        args: {
+          rawRendererValue: this.latexValue,
+          transient: false
+        }
+      })
+      // await this.actions.updateRawValue({
+      //   rawRendererValue: this.latexValue,
+      //   transient: false
+      // })
     }
     this.forceUpdate();
 
@@ -271,20 +327,20 @@ export default class MathInput extends DoenetRenderer {
       surroundingBorderColor = "#82a5ff";
     }
 
-    if (!this.valueForDisplayToRevertTo.equalsViaSyntax(this.doenetSvData.valueForDisplay)) {
+    if (!this.valueForDisplayToRevertTo.equalsViaSyntax(me.fromAst(this.doenetSvData.valueForDisplay))) {
       // The valueForDisplay coming from the mathInput component
       // is not the same as the renderer's value
       // so we change the renderer's value to match
 
-      this.mathExpression = this.doenetSvData.valueForDisplay;
+      this.mathExpression = me.fromAst(this.doenetSvData.valueForDisplay);
       this.latexValue = stripLatex(this.mathExpression.toLatex());
       if (this.latexValue === '\uFF3F') {
         this.latexValue = "";
       }
       this.latexValueSetInRender = true;
       this.latexValueSetFromValueForDisplay = true;
-      this.valueToRevertTo = this.doenetSvData.value;
-      this.valueForDisplayToRevertTo = this.doenetSvData.valueForDisplay;
+      this.valueToRevertTo = me.fromAst(this.doenetSvData.value);
+      this.valueForDisplayToRevertTo = me.fromAst(this.doenetSvData.valueForDisplay);
       // this.latexValueToRevertTo = this.latexValue;
 
     }

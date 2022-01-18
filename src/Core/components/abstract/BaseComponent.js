@@ -1,4 +1,3 @@
-import readOnlyProxyHandler from '../../ReadOnlyProxyHandler';
 import createStateProxyHandler from '../../StateProxyHandler';
 import { flattenDeep, mapDeep } from '../../utils/array';
 import { deepClone } from '../../utils/deepFunctions';
@@ -158,7 +157,6 @@ export default class BaseComponent {
 
   }
 
-  readOnlyProxyHandler = readOnlyProxyHandler;
 
   potentialRendererTypesFromSerializedComponents(serializedComponents) {
     let potentialRendererTypes = [];

@@ -7,12 +7,8 @@ export default class Vector extends GraphicalComponent {
   static componentType = "vector";
 
   actions = {
-    moveVector: this.moveVector.bind(
-      new Proxy(this, this.readOnlyProxyHandler)
-    ),
-    finalizeVectorPosition: this.finalizeVectorPosition.bind(
-      new Proxy(this, this.readOnlyProxyHandler)
-    )
+    moveVector: this.moveVector.bind(this),
+    finalizeVectorPosition: this.finalizeVectorPosition.bind(this)
   }
 
   static primaryStateVariableForDefinition = "displacementShadow";

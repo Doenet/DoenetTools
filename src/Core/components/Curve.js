@@ -4,6 +4,7 @@ import {
 } from './commonsugar/breakstrings';
 
 import me from 'math-expressions';
+import { returnBezierFunctions } from '../utils/function';
 
 export default class Curve extends GraphicalComponent {
   static componentType = "curve";
@@ -11,18 +12,10 @@ export default class Curve extends GraphicalComponent {
 
 
   actions = {
-    moveControlVector: this.moveControlVector.bind(
-      new Proxy(this, this.readOnlyProxyHandler)
-    ),
-    moveThroughPoint: this.moveThroughPoint.bind(
-      new Proxy(this, this.readOnlyProxyHandler)
-    ),
-    changeVectorControlDirection: this.changeVectorControlDirection.bind(
-      new Proxy(this, this.readOnlyProxyHandler)
-    ),
-    switchCurve: this.switchCurve.bind(
-      new Proxy(this, this.readOnlyProxyHandler)
-    )
+    moveControlVector: this.moveControlVector.bind(this),
+    moveThroughPoint: this.moveThroughPoint.bind(this),
+    changeVectorControlDirection: this.changeVectorControlDirection.bind(this),
+    switchCurve: this.switchCurve.bind(this)
   };
 
   static primaryStateVariableForDefinition = "fShadow";
@@ -128,7 +121,7 @@ export default class Curve extends GraphicalComponent {
     let breakIntoFunctionsByCommas = function ({ matchedChildren }) {
 
       // only apply if all children are strings or macros
-      if (!matchedChildren.every(child =>
+      if (matchedChildren.length === 0 || !matchedChildren.every(child =>
         typeof child === "string" ||
         child.doenetAttributes && child.doenetAttributes.createdFromMacro
       )) {
@@ -375,7 +368,7 @@ export default class Curve extends GraphicalComponent {
             domain = domain[0];
             try {
               parMax = domain[1].evaluate_to_constant();
-              if (!Number.isFinite(parMax)) {
+              if (!Number.isFinite(parMax) && parMax !== Infinity) {
                 parMax = NaN;
               }
             } catch (e) { }
@@ -482,7 +475,7 @@ export default class Curve extends GraphicalComponent {
             domain = domain[0];
             try {
               parMin = domain[0].evaluate_to_constant();
-              if (!Number.isFinite(parMin)) {
+              if (!Number.isFinite(parMin) && parMin !== -Infinity) {
                 parMin = NaN;
               }
             } catch (e) { }
@@ -2154,11 +2147,13 @@ export default class Curve extends GraphicalComponent {
     }
 
     stateVariableDefinitions.fs = {
-      forRenderer: true,
       isArray: true,
       entryPrefixes: ["f"],
-      hasEssential: true,
-      defaultValueByArrayKey: () => { () => 0 },
+      additionalStateVariablesDefined: [{
+        variableName: "fDefinitions",
+        isArray: true,
+        forRenderer: true,
+      }],
       returnArraySizeDependencies: () => ({
         functionChildren: {
           dependencyType: "child",
@@ -2219,7 +2214,7 @@ export default class Curve extends GraphicalComponent {
             functionChild: {
               dependencyType: "child",
               childGroups: ["functions"],
-              variableNames: ["numericalf"],
+              variableNames: ["numericalf", "fDefinition"],
               childIndices: [arrayKey]
             }
           };
@@ -2227,7 +2222,11 @@ export default class Curve extends GraphicalComponent {
             dependenciesByKey[arrayKey].fShadow = {
               dependencyType: "stateVariable",
               variableName: "fShadow"
-            }
+            },
+              dependenciesByKey[arrayKey].fDefinitionAdapted = {
+                dependencyType: "adapterSourceStateVariable",
+                variableName: "fDefinition"
+              }
           }
         }
         return { globalDependencies, dependenciesByKey };
@@ -2235,30 +2234,50 @@ export default class Curve extends GraphicalComponent {
       arrayDefinitionByKey({ globalDependencyValues, dependencyValuesByKey, arrayKeys }) {
 
         if (globalDependencyValues.curveType === "bezier") {
+
           return {
-            setValue: { fs: returnBezierFunctions({ globalDependencyValues, arrayKeys }) }
+            setValue: {
+              fs: returnBezierFunctions(globalDependencyValues),
+              fDefinitions: {
+                0: {
+                  functionType: "bezier",
+                  nThroughPoints: globalDependencyValues.nThroughPoints,
+                  numericalThroughPoints: globalDependencyValues.numericalThroughPoints,
+                  splineCoeffs: globalDependencyValues.splineCoeffs,
+                  extrapolateForward: globalDependencyValues.extrapolateForward,
+                  extrapolateForwardCoeffs: globalDependencyValues.extrapolateForwardCoeffs,
+                  extrapolateBackward: globalDependencyValues.extrapolateBackward,
+                  extrapolateBackwardCoeffs: globalDependencyValues.extrapolateBackwardCoeffs,
+                },
+                1: null,
+              }
+            }
           }
         }
 
         let fs = {};
-        let essentialFs = {};
+        let fDefinitions = {};
         for (let arrayKey of arrayKeys) {
           let functionChild = dependencyValuesByKey[arrayKey].functionChild;
           if (functionChild.length === 1) {
             fs[arrayKey] = functionChild[0].stateValues.numericalf;
+            fDefinitions[arrayKey] = functionChild[0].stateValues.fDefinition;
           } else {
             if (Number(arrayKey) === 0 && dependencyValuesByKey[arrayKey].fShadow) {
               fs[arrayKey] = dependencyValuesByKey[arrayKey].fShadow;
+              // TODO: ???
+              fDefinitions[arrayKey] = dependencyValuesByKey[arrayKey].fDefinitionAdapted;
+
             } else {
-              essentialFs[arrayKey] = true
+              fs[arrayKey] = () => 0;
+              fDefinitions[arrayKey] = {
+                functionType: "zero"
+              }
             }
           }
         }
         return {
-          setValue: { fs },
-          useEssentialOrDefaultValue: {
-            fs: essentialFs,
-          },
+          setValue: { fs, fDefinitions },
         }
 
       }
@@ -3202,7 +3221,7 @@ function getNearestPointFunctionCurve({ dependencyValues, numerics }) {
     let tIntervalMin = minT;
     let tIntervalMax = minT + delta;
 
-    let fprev;
+    let fprev, tprev;
 
     for (let step = 1; step <= Nsteps; step++) {
       let tnew = minT + step * delta;
@@ -3212,7 +3231,7 @@ function getNearestPointFunctionCurve({ dependencyValues, numerics }) {
       ) {
         tAtMin = tnew;
         fAtMin = fnew;
-        tIntervalMin = tnew - delta;
+        tIntervalMin = tprev;
         if (step === Nsteps) {
           tIntervalMax = tnew;
         } else {
@@ -3221,6 +3240,7 @@ function getNearestPointFunctionCurve({ dependencyValues, numerics }) {
       }
 
       fprev = fnew;
+      tprev = tnew;
 
     }
 
@@ -3340,19 +3360,26 @@ function getNearestPointParametrizedCurve({ dependencyValues, numerics }) {
     let tIntervalMin = minT;
     let tIntervalMax = minT + delta;
 
+    let fprev, tprev;
+
     for (let step = 1; step <= Nsteps; step++) {
       let tnew = minT + step * delta;
       let fnew = minfunc(tnew);
-      if (fnew < fAtMin || Number.isNaN(fAtMin)) {
+      if (Number.isFinite(fnew) && Number.isFinite(fprev) &&
+        (fnew < fAtMin || Number.isNaN(fAtMin))
+      ) {
         tAtMin = tnew;
         fAtMin = fnew;
-        tIntervalMin = tnew - delta;
+        tIntervalMin = tprev;
         if (step === Nsteps) {
           tIntervalMax = tnew;
         } else {
           tIntervalMax = tnew + delta;
         }
       }
+
+      fprev = fnew;
+      tprev = tnew;
 
     }
 
@@ -3374,6 +3401,34 @@ function getNearestPointParametrizedCurve({ dependencyValues, numerics }) {
 
     let x1AtMin = fs[0](tAtMin);
     let x2AtMin = fs[1](tAtMin);
+
+    // replace with endpoints if closer
+    let fMin = minfunc(tAtMin);
+
+    if (!result.success && Number.isFinite(x1AtMin) && Number.isFinite(x2AtMin)) {
+      fMin = Infinity;
+    }
+
+    if (Number.isFinite(parMin)) {
+      let fParMin = minfunc(parMin);
+      if (fParMin < fMin) {
+        tAtMin = parMin;
+        x1AtMin = fs[0](tAtMin);
+        x2AtMin = fs[1](tAtMin);
+        fMin = fParMin;
+      }
+    }
+
+    if (Number.isFinite(parMax)) {
+      let fParMax = minfunc(parMax);
+      if (fParMax < fMin) {
+        tAtMin = parMax;
+        x1AtMin = fs[0](tAtMin);
+        x2AtMin = fs[1](tAtMin);
+        fMin = fParMax;
+      }
+    }
+
 
     result = {
       x1: x1AtMin,
@@ -3500,72 +3555,6 @@ function initCubicPoly(x1, x2, t1, t2) {
   ];
 }
 
-function returnBezierFunctions({ globalDependencyValues, arrayKeys }) {
-
-  if (globalDependencyValues.nThroughPoints < 1) {
-    let fs = {};
-    for (let arrayKey of arrayKeys) {
-      fs[arrayKey] = () => NaN;
-    }
-    return fs;
-  }
-
-
-  let len = globalDependencyValues.nThroughPoints - 1;
-
-  let fs = {};
-
-  let extrapolateBackward = globalDependencyValues.extrapolateBackward;
-  let extrapolateForward = globalDependencyValues.extrapolateForward;
-
-  for (let arrayKey of arrayKeys) {
-    let firstPointX = globalDependencyValues.numericalThroughPoints[0][arrayKey];
-    let lastPointX = globalDependencyValues.numericalThroughPoints[len][arrayKey];
-
-    let cs = globalDependencyValues.splineCoeffs.map(x => x[arrayKey])
-    let cB;
-    if (extrapolateBackward) {
-      cB = globalDependencyValues.extrapolateBackwardCoeffs[arrayKey];
-    }
-    let cF;
-    if (extrapolateForward) {
-      cF = globalDependencyValues.extrapolateForwardCoeffs[arrayKey];
-    }
-
-    fs[arrayKey] = function (t) {
-      if (isNaN(t)) {
-        return NaN;
-      }
-
-      if (t < 0) {
-        if (extrapolateBackward) {
-          return (cB[2] * t + cB[1]) * t + cB[0];
-        } else {
-          return firstPointX;
-        }
-      }
-
-      if (t >= len) {
-        if (extrapolateForward) {
-          t -= len;
-          return (cF[2] * t + cF[1]) * t + cF[0];
-        } else {
-          return lastPointX;
-        }
-      }
-
-      let z = Math.floor(t);
-      t -= z;
-      let c = cs[z];
-      return (((c[3] * t + c[2]) * t + c[1]) * t + c[0]);
-    }
-
-  }
-
-  return fs;
-
-
-}
 
 function addTimePointBezier({ t, ind, ts, ignoreLeft = false }) {
   const eps = 1E-14;
