@@ -70,9 +70,9 @@ function preprocessForPostMessage(value) {
     value = undefined;
   } else if (Array.isArray(value)) {
     value = value.map(x => preprocessForPostMessage(x))
-  } else if(typeof value === "object") {
+  } else if (typeof value === "object") {
     let valueCopy = {}
-    for(let key in value) {
+    for (let key in value) {
       valueCopy[key] = preprocessForPostMessage(value[key]);
     }
     value = valueCopy;
