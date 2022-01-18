@@ -6,6 +6,9 @@ import { faSearch, faTimes } from '@fortawesome/free-solid-svg-icons';
 export default function Searchbar(props) {
     const [searchTerm, setSearchTerm] = useState('')
     const [cancelShown, setCancelShown] = useState('hidden')
+    const [labelVisible, setLabelVisible] = useState(props.label ? 'static' : 'none')
+    const [align, setAlign] = useState(props.vertical ? 'static' : 'flex')
+
     var searchBar = {
         margin: '0px',
         height: '24px',
@@ -68,9 +71,22 @@ export default function Searchbar(props) {
         searchBar.cursor = 'not-allowed';
         disable = "disabled";
     }
+    var label = {
+        value: 'Label:',
+        fontSize: '14px',
+        marginRight: '5px',
+        display: `${labelVisible}`, 
+    }
+    var container = {
+        display: `${align}`, 
+        width: '235px',
+        alignItems:'center'
+    }
     
+    if (props.label) {
+        label.value = props.label;
+    }
 
-    
     function clearInput() {
         setSearchTerm('');
         setCancelShown('hidden')
@@ -102,22 +118,25 @@ export default function Searchbar(props) {
         autoFocus = true;
     }
     return (
-        <div style={{display: "table-cell"}} >
-            <FontAwesomeIcon icon={faSearch} style={searchIcon}/>
-            <button style={cancelButton} onClick={() => { clearInput() }} ><FontAwesomeIcon icon={faTimes}/></button>
-            <input 
-            id="search" 
-            type="text" 
-            placeholder="Search..." 
-            style={searchBar} 
-            onChange={onChange}
-            disabled={disable}
-            value={searchTerm}
-            onKeyDown={(e)=>{if (e.key === 'Enter'){searchSubmitAction()}}}
-            autoFocus={autoFocus} 
-            />
-            <div style={{padding: '3px', display:'inline'}}></div>
-            <button style={submitButton} onClick={searchSubmitAction}>Search</button>
+        <div style={container}>
+            <p style={label}>{label?.value}</p>
+            <div style={{display: "table-cell"}} >
+                <FontAwesomeIcon icon={faSearch} style={searchIcon}/>
+                <button style={cancelButton} onClick={() => { clearInput() }} ><FontAwesomeIcon icon={faTimes}/></button>
+                <input 
+                id="search" 
+                type="text" 
+                placeholder="Search..." 
+                style={searchBar} 
+                onChange={onChange}
+                disabled={disable}
+                value={searchTerm}
+                onKeyDown={(e)=>{if (e.key === 'Enter'){searchSubmitAction()}}}
+                autoFocus={autoFocus} 
+                />
+                <div style={{padding: '3px', display:'inline'}}></div>
+                <button style={submitButton} onClick={searchSubmitAction}>Search</button>
+            </div>
         </div>
     )
   }

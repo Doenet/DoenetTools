@@ -629,10 +629,18 @@ export default function attempt() {
           propCode: { width: 'menu' },
           description: 'Sets width to fill menu panel width',
         },
-        // {name: 'Label',
-        //   propPreview: '<Increment label="What: "/>',
-        //   propCode: {label: 'What: ', width: 'menu'},
-        //   description: 'Adds label to componenet'},
+        {
+          name: 'Label',
+          propPreview: '<Form label="What: "/>',
+          propCode: { label: 'What: ' },
+          description: 'Adds label to componenet',
+        },
+        {
+          name: 'Vertical Label',
+          propPreview: '<Form label="What: " vertical/>',
+          propCode: { label: 'What: ', vertical },
+          description: 'Adds label to component on top',
+        },
         {
           name: 'Disabled',
           propPreview: '<Increment disabled />',
