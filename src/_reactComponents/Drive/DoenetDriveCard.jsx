@@ -4,6 +4,7 @@ import styled from 'styled-components';
 // import './drivecard.css';
 
 const DriveCardContainer = styled.figure`
+  margin: 0px;
   position: relative;
   background-size: cover;
   background-position: center center;

@@ -70,7 +70,6 @@ const DriveCardWrapper = (props) => {
   const columns = useMedia(
     ['(min-width: 1500px)', '(min-width: 1000px)', '(min-width: 600px)'],
     [5, 4, 3],
-    // [4, 3, 2],
     2,
   );
 
@@ -85,14 +84,14 @@ const DriveCardWrapper = (props) => {
     let heights = new Array(columns).fill(0); // Each column gets a height starting with zero
     let driveCardItems = showCards.map((child, i) => {
       const column = heights.indexOf(Math.min(...heights)); // Basic masonry-grid placing, puts tile into the smallest column using Math.min
-      const x = (width / columns) * column; // x = container width / number of columns * column index,
+      const x = (width / columns) * column + 20; // x = container width / number of columns * column index,
       const y = (heights[column] += 270) - 270; // y = it's just the height of the current column
       return {
         ...child,
         x,
         y,
-        width: width / columns,
-        height: 250,
+        width: width / columns - 40,
+        height: 230,
         drivePathSyncKey,
       };
     });
@@ -128,9 +127,22 @@ const DriveCardWrapper = (props) => {
 
   
     const handleOnBlur = () => {
-    if (drivecardSelectedValue.length == 1) {
+    if (drivecardSelectedValue.length === 1 && document.getElementsByClassName("sc-fubCzh clCijf").length === 1) {
       setDrivecardSelection([]);
     }
+    // if (getSelectedCard == true) {
+    //   setDrivecardSelection([]);
+    // }
+
+    // if (document.getElementById('test')) {
+    //   setDrivecardSelection([]);
+    //   e.stopPropagation();
+    // }
+
+    // get id of drive card, use an if statement to check 
+    // put a deselection handler that triggers only on the whitespace
+    // will probably need e.stopPropogation()
+    // include comments
   };
 
   const handleKeyUp = (e, item) => {
@@ -233,60 +245,8 @@ const DriveCardWrapper = (props) => {
     return availableCard.length > 0 ? true : false;
   };
 
-  // return (
-  //   <div className="drivecardContainer">
-  //     <div
-  //       ref={ref}
-  //       className="driveCardList"
-  //       style={{ height: Math.max(...heights) }}
-  //     >
-  //       {/* {transitions((style, item, t, index) => {
-  //         console.log('');
-  //         let isSelected = getSelectedCard(item); */}
-  //         return (
-  //           <a.div style={props.style}>
-  //             <div
-  //               role="button"
-  //               style={{ height: '100%', outline: 'none', margin: '20px' }}
-  //               tabIndex={props.index + 1}
-  //               onClick={(e) => {
-  //                 e.preventDefault();
-  //                 e.stopPropagation();
-  //                 drivecardselection(e, props.item, props);
-  //               }}
-  //               onBlur={() => handleOnBlur(props.item)}
-  //               onKeyDown={(e) => handleKeyDown(e, props.item)}
-  //               onKeyUp={(e) => handleKeyUp(e, props.item)}
-  //               onDoubleClick={(e) => {
-  //                 e.preventDefault();
-  //                 e.stopPropagation();
-  //                 setDrivecardSelection([]); //TODO: on leave instead
-  //                 setPageToolView({
-  //                   page: 'course',
-  //                   tool: 'dashboard',
-  //                   view: '',
-  //                   params: {
-  //                     path: `${props.item.driveId}:${props.item.driveId}:${props.item.driveId}:Drive`,
-  //                   },
-  //                 });
-  //               }}
-  //             >
-  //               <DriveCard
-  //                 image={props.item.image}
-  //                 color={props.item.color}
-  //                 label={props.item.label}
-  //                 isSelected={getSelectedCard(props.item)}
-  //                 role={props.item.role}
-  //               />
-  //             </div>
-  //           </a.div>
-  //         );
-  //       {/* })} */}
-  //     </div>
-  //   </div>
-  // );
   return (
-    <div className="drivecardContainer">
+    <div className="drivecardContainer" id="test">
       <div
         ref={ref}
         className="driveCardList"
@@ -296,9 +256,10 @@ const DriveCardWrapper = (props) => {
           console.log('');
           let isSelected = getSelectedCard(item);
           return (
-            <a.div style={style}
-            role="button"
-                // style={{ height: '100%', outline: 'none', padding: '10px' }}
+            <a.div style={style} >
+              <div
+                role="button"
+                style={{ height: '100%', outline: 'none' }}
                 tabIndex={index + 1}
                 onClick={(e) => {
                   e.preventDefault();
@@ -321,32 +282,7 @@ const DriveCardWrapper = (props) => {
                     },
                   });
                 }}>
-              
-                {/* // role="button"
-                // style={{ height: '100%', outline: 'none', padding: '10px' }}
-                // tabIndex={index + 1}
-                // onClick={(e) => { */}
-                {/* //   e.preventDefault();
-                //   e.stopPropagation();
-                //   drivecardselection(e, item, props);
-                // }}
-                // onBlur={() => handleOnBlur()}
-                // onKeyDown={(e) => handleKeyDown(e, item)}
-                // onKeyUp={(e) => handleKeyUp(e, item)}
-                // onDoubleClick={(e) => { */}
-                {/* //   e.preventDefault();
-                //   e.stopPropagation();
-                //   setDrivecardSelection([]); //TODO: on leave instead
-                //   setPageToolView({ */}
-                {/* //     page: 'course',
-                //     tool: 'dashboard',
-                //     view: '',
-                //     params: { */}
-                {/* //       path: `${item.driveId}:${item.driveId}:${item.driveId}:Drive`,
-                //     },
-                //   });
-                // }}
-              // > */}
+          
                 <DriveCard
                   image={item.image}
                   color={item.color}
@@ -354,7 +290,7 @@ const DriveCardWrapper = (props) => {
                   isSelected={isSelected}
                   role={item.role}
                 />
-              
+              </div>
             </a.div>
           );
         })}
