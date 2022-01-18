@@ -86,6 +86,9 @@ export default function Searchbar(props) {
     if (props.label) {
         label.value = props.label;
     }
+    if (props.ariaLabel) {
+        ariaLabel = props.ariaLabel;
+    }
 
     function clearInput() {
         setSearchTerm('');
@@ -123,7 +126,7 @@ export default function Searchbar(props) {
             <div style={{display: "table-cell"}} >
                 <FontAwesomeIcon icon={faSearch} style={searchIcon}/>
                 <button style={cancelButton} onClick={() => { clearInput() }} ><FontAwesomeIcon icon={faTimes}/></button>
-                <input 
+                <input
                 id="search" 
                 type="text" 
                 placeholder="Search..." 
@@ -133,6 +136,7 @@ export default function Searchbar(props) {
                 value={searchTerm}
                 onKeyDown={(e)=>{if (e.key === 'Enter'){searchSubmitAction()}}}
                 autoFocus={autoFocus} 
+                aria-label={ariaLabel}
                 />
                 <div style={{padding: '3px', display:'inline'}}></div>
                 <button style={submitButton} onClick={searchSubmitAction}>Search</button>
