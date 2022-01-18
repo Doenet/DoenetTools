@@ -87,7 +87,7 @@ export default function Searchbar(props) {
         label.value = props.label;
     }
     if (props.ariaLabel) {
-        ariaLabel = props.ariaLabel;
+        searchBar.ariaLabel = props.ariaLabel;
     }
 
     function clearInput() {
@@ -136,7 +136,7 @@ export default function Searchbar(props) {
                 value={searchTerm}
                 onKeyDown={(e)=>{if (e.key === 'Enter'){searchSubmitAction()}}}
                 autoFocus={autoFocus} 
-                aria-label={ariaLabel}
+                aria-label={searchBar.ariaLabel}
                 />
                 <div style={{padding: '3px', display:'inline'}}></div>
                 <button style={submitButton} onClick={searchSubmitAction}>Search</button>
