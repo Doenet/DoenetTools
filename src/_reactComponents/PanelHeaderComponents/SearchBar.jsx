@@ -89,6 +89,9 @@ export default function Searchbar(props) {
     if (props.ariaLabel) {
         searchBar.ariaLabel = props.ariaLabel;
     }
+    if (props.alert) {
+        searchBar.border = '2px solid #C1292E'
+    }
 
     function clearInput() {
         setSearchTerm('');

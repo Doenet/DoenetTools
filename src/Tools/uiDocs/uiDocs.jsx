@@ -631,15 +631,27 @@ export default function attempt() {
         },
         {
           name: 'Label',
-          propPreview: '<Form label="What: "/>',
+          propPreview: '<SearchBar label="What: "/>',
           propCode: { label: 'What: ' },
           description: 'Adds label to componenet',
         },
         {
           name: 'Vertical Label',
-          propPreview: '<Form label="What: " vertical/>',
+          propPreview: '<SearchBar label="What: " vertical/>',
           propCode: { label: 'What: ', vertical },
           description: 'Adds label to component on top',
+        },
+        {
+          name: 'Aria Label',
+            propPreview: '<SearchBar ariaLabel="Text"/>',
+            propCode: {ariaLabel: 'Text'},
+            description: 'Adds aria label to component'
+        },
+        {
+          name: 'Alert',
+          propPreview: '<SearchBar alert/>',
+          propCode: { alert },
+          description: 'Changes to alert mode (border is red)',
         },
         {
           name: 'Disabled',
