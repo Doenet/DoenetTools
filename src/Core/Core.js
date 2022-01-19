@@ -26,10 +26,11 @@ onmessage = function (e) {
 
   if (e.data.messageType === "createCore") {
 
-    if (core) {
-      console.log('already have a core.  Refusing to create another one');
-      return;
-    }
+    // if (core) {
+    //   // console.log('already have a core.  Refusing to create another one');
+    //   // return;
+    //   //TODO: Investigate for memory leaks
+    // }
 
     core = new Core(e.data.args)
 
@@ -133,6 +134,7 @@ export default class Core {
           allPossibleVariants: deepClone(await this.document.sharedParameters.allPossibleVariants),
           rendererTypesInDocument: deepClone(this.rendererTypesInDocument),
           documentToRender: this.componentsToRender[this.documentName],
+          scoredItemWeights:await this.scoredItemWeights,
         }
       })
 
