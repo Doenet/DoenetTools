@@ -280,7 +280,7 @@ class DoenetViewerChild extends Component {
 
       axios.post('/api/initAssignmentAttempt.php', {
         doenetId: this.props.doenetId,
-        weights: this.core.scoredItemWeights,
+        weights: coreInfo.scoredItemWeights,
         attemptNumber: this.attemptNumber,
         contentId: this.contentId,
         requestedVariant: JSON.stringify(this.requestedVariant, serializedComponentsReplacer),
