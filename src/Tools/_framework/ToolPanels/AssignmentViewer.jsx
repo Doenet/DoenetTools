@@ -242,10 +242,9 @@ export default function AssignmentViewer() {
         //Find allPossibleVariants
         returnAllPossibleVariants({
           doenetML,
-          callback: isCollection
-            ? setCollectionVariant
-            : setVariantsFromDoenetML,
-        });
+          }).then(isCollection
+        ? setCollectionVariant
+        : setVariantsFromDoenetML);
       
         async function setVariantsFromDoenetML({ allPossibleVariants }) {
           storedAllPossibleVariants.current = allPossibleVariants;
