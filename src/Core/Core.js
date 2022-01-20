@@ -71,7 +71,7 @@ function preprocessForPostMessage(value) {
     value = undefined;
   } else if (Array.isArray(value)) {
     value = value.map(x => preprocessForPostMessage(x))
-  } else if (typeof value === "object") {
+  } else if (typeof value === "object" && value !== null) {
     let valueCopy = {}
     for (let key in value) {
       valueCopy[key] = preprocessForPostMessage(value[key]);
@@ -87,7 +87,7 @@ export default class Core {
     externalFunctions, flags = {},
     stateVariableChanges = {},
     coreReadyCallback, coreUpdatedCallback, coreId }) {
-    console.time('core');
+    // console.time('core');
 
 
     this.coreId = coreId;
@@ -740,7 +740,7 @@ export default class Core {
         // })
         requestActions[actionName] = {
           actionName,
-          componentName: action.componentNae,
+          componentName: action.componentName,
         }
       }
     }
@@ -7607,12 +7607,19 @@ export default class Core {
         if (!nextUpdateInfo.skippable || this.processQueue.length < 2) {
           result = await this.performUpdate(nextUpdateInfo);
         }
+
+        // TODO: if skip an update, presumably we should call reject???
+
+
         // } else if (nextUpdateInfo.type === "getStateVariableValues") {
         //   result = await this.performGetStateVariableValues(nextUpdateInfo);
       } else if (nextUpdateInfo.type === "action") {
         if (!nextUpdateInfo.skippable || this.processQueue.length < 2) {
           result = await this.performAction(nextUpdateInfo);
         }
+
+        // TODO: if skip an update, presumably we should call reject???
+
       } else if (nextUpdateInfo.type === "recordEvent") {
         result = await this.performRecordEvent(nextUpdateInfo);
       } else {

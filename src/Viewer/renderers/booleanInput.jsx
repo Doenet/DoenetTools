@@ -1,6 +1,5 @@
 import React, { useRef } from 'react';
 import useDoenetRender from './useDoenetRenderer';
-import ReactDOM from 'react-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCheck, faLevelDownAlt, faTimes, faCloud, faPercentage } from '@fortawesome/free-solid-svg-icons'
 
@@ -73,10 +72,14 @@ export default function BooleanInput(props) {
         disabled={disabled}
         // ref={c => { this.target = c && ReactDOM.findDOMNode(c); }}
         style={checkWorkStyle}
-        onClick={this.actions.submitAnswer}
+        onClick={() => props.callAction({
+          action: actions.submitAnswer,
+        })}
         onKeyPress={(e) => {
           if (e.key === 'Enter') {
-            this.actions.submitAnswer();
+            props.callAction({
+              action: actions.submitAnswer,
+            });
           }
         }}
       >
@@ -89,7 +92,6 @@ export default function BooleanInput(props) {
           checkWorkButton = <span
             id={name + '_correct'}
             style={checkWorkStyle}
-            // ref={c => { this.target = c && ReactDOM.findDOMNode(c); }}
           >
             <FontAwesomeIcon icon={faCheck} />
           </span>
@@ -104,7 +106,6 @@ export default function BooleanInput(props) {
           checkWorkButton = <span
             id={name + '_partial'}
             style={checkWorkStyle}
-            // ref={c => { this.target = c && ReactDOM.findDOMNode(c); }}
           >{partialCreditContents}</span>
         } else {
           //incorrect
@@ -112,7 +113,6 @@ export default function BooleanInput(props) {
           checkWorkButton = <span
             id={name + '_incorrect'}
             style={checkWorkStyle}
-            // ref={c => { this.target = c && ReactDOM.findDOMNode(c); }}
           ><FontAwesomeIcon icon={faTimes} /></span>
 
         }
@@ -122,7 +122,6 @@ export default function BooleanInput(props) {
         checkWorkButton = <span
           id={name + '_saved'}
           style={checkWorkStyle}
-          // ref={c => { this.target = c && ReactDOM.findDOMNode(c); }}
         ><FontAwesomeIcon icon={faCloud} /></span>
 
       }
