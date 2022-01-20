@@ -1,6 +1,6 @@
 import Input from './abstract/Input';
 import me from 'math-expressions';
-import { getFromText, getFromLatex, roundForDisplay, } from '../utils/math';
+import { getFromText, getFromLatex, roundForDisplay, stripLatex, } from '../utils/math';
 
 export default class MathInput extends Input {
   constructor(args) {
@@ -290,13 +290,21 @@ export default class MathInput extends Input {
 
     // raw value from renderer
     stateVariableDefinitions.rawRendererValue = {
-      defaultValue: null,
       forRenderer: true,
       hasEssential: true,
-      returnDependencies: () => ({}),
-      definition: () => ({
+      returnDependencies: () => ({
+        valueForDisplay: {
+          dependencyType: "stateVariable",
+          variableName: "valueForDisplay"
+        }
+      }),
+      definition: ({ dependencyValues }) => ({
         useEssentialOrDefaultValue: {
-          rawRendererValue: true
+          rawRendererValue: {
+            get defaultValue() {
+              return stripLatex(dependencyValues.valueForDisplay.toLatex())
+            }
+          }
         }
       }),
       inverseDefinition({ desiredStateVariableValues }) {

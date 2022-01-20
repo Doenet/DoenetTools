@@ -1,7 +1,5 @@
 import React, { useRef, useState, useEffect } from 'react';
 import useDoenetRender from './useDoenetRenderer';
-import ReactDOM from 'react-dom';
-import DoenetRenderer from './DoenetRenderer';
 import me from 'math-expressions';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
@@ -23,7 +21,7 @@ import {
   functionRef,
 } from '../../Tools/_framework/Footers/MathInputSelector';
 import { useRecoilValue, useSetRecoilState } from 'recoil';
-import { getFromLatex, normalizeLatexString } from '../../Core/utils/math';
+import { getFromLatex, normalizeLatexString, stripLatex } from '../../Core/utils/math';
 
 // const Prev = styled.div`
 //   font-size: 23px;
@@ -43,32 +41,50 @@ import { getFromLatex, normalizeLatexString } from '../../Core/utils/math';
 // `;
 
 export default function MathInput(props) {
-  let {name, SVs, actions} = useDoenetRender(props);
-  const [latex, setLatex] = useState('');
-  const [focused, setFocus] = useState(false);
-  let mathExpression = me.fromAst(SVs.valueForDisplay);
-  let latexValue = stripLatex(me.fromAst(SVs.valueForDisplay).toLatex());
+  let { name, SVs, actions } = useDoenetRender(props);
+
+  // const [focused, setFocus] = useState(false);
+  const focused = useRef(false);
+
   const [mathField, setMathField] = useState(null);
-  let validationState = 'unvalidated';
+
   const setFocusedField = useSetRecoilState(focusedMathField);
   const setFocusedFieldReturn = useSetRecoilState(focusedMathFieldReturn);
-  let valueToRevertTo = me.fromAst(SVs.value);
-  let valueForDisplayToRevertTo = me.fromAst(SVs.valueForDisplay);
   const containerRef = useRecoilValue(palletRef);
   const toggleButtonRef = useRecoilValue(buttonRef);
   const functionTabRef = useRecoilValue(functionRef);
 
-  if (latexValue === '\uFF3F') {
-    latexValue = '';
-  }
+  let valueToRevertTo = useRef(me.fromAst(SVs.value));
+  let valueForDisplayToRevertTo = useRef(me.fromAst(SVs.valueForDisplay));
 
-  let initializeChildrenOnConstruction = false;
+  let validationState = 'unvalidated';
+
+
+  let latexValueSetInRender = useRef(false);
+  let latexValueSetFromValueForDisplay = useRef(false);
+
+  let mathExpression = useRef(me.fromAst(SVs.valueForDisplay));
+
+  let latexValue = useRef(SVs.rawRendererValue && SVs.rawRendererValue !== '\uFF3F' ? SVs.rawRendererValue : "");
+
+  // create refs for value and immediate value
+  // so that handlePressEnter can access their current value
+  let immediateValue = useRef(null);
+  immediateValue.current = SVs.immediateValue;
+  let value = useRef(null);
+  value.current = SVs.value;
+
+  // create ref for unionFromU
+  // so that calculateMathExpressionFromLatex can access its current value
+  let unionFromU = useRef(null);
+  unionFromU.current = SVs.unionFromU;
+  
 
   const calculateMathExpressionFromLatex = (text) => {
     let expression;
 
     text = normalizeLatexString(text, {
-      unionFromU: SVs.unionFromU,
+      unionFromU: unionFromU.current,
     });
 
     // replace ^25 with ^{2}5, since mathQuill uses standard latex conventions
@@ -77,7 +93,9 @@ export default function MathInput(props) {
 
     let fromLatex = getFromLatex({
       functionSymbols: SVs.functionSymbols,
+      splitSymbols: SVs.splitSymbols,
     });
+
     try {
       expression = fromLatex(text);
     } catch (e) {
@@ -88,18 +106,57 @@ export default function MathInput(props) {
   };
 
   const updateImmediateValueFromLatex = (text) => {
-    let currentMathExpressionNormalized =
-      calculateMathExpressionFromLatex(latexValue);
+    // The check whether or not to call the updateImmediateValue action is subtle.
+    // We need to achieve two effects:
+    // 1. Do not call the updateImmediateValue action
+    // when mathQuill invokes onChange from render()
+    // due to differences in latex format between it and math-expressions.
+    // 2. Call the updateImmediateValue action
+    // whenever the user types anything into the input
+    // even if it does not change the underlying math expression
 
-    latexValue = text;
+    let currentMathExpressionNormalized =
+      calculateMathExpressionFromLatex(latexValue.current);
+
     let newMathExpression = calculateMathExpressionFromLatex(text);
-    if (!newMathExpression.equalsViaSyntax(currentMathExpressionNormalized)) {
-      mathExpression = newMathExpression;
+
+    let rawValueChanged = text !== latexValue.current || latexValueSetFromValueForDisplay.current;
+    let transientForRaw = !latexValueSetInRender.current;
+
+    let actuallyUpdate = !newMathExpression.equalsViaSyntax(currentMathExpressionNormalized)
+      || (!latexValueSetInRender.current && text !== latexValue.current);
+
+
+    // Note: must set latexValue.current before calling updateImmediateValue action
+
+    latexValue.current = text;
+    latexValueSetInRender.current = false;
+    latexValueSetFromValueForDisplay.current = false;
+
+
+    if (actuallyUpdate) {
+      mathExpression.current = newMathExpression;
       props.callAction({
-        action:actions.updateImmediateValue,
-        args:{mathExpression: newMathExpression.tree}
-      });
+        action: actions.updateImmediateValue,
+        args: {
+          mathExpression: newMathExpression.tree,
+          rawRendererValue: latexValue.current,
+          transient: true,
+          skippable: true,
+        }
+      })
+    } else if (rawValueChanged) {
+      props.callAction({
+        action: actions.updateRawValue,
+        args: {
+          rawRendererValue: latexValue.current,
+          transient: transientForRaw,
+          skippable: transientForRaw
+        }
+      })
+
     }
+
   };
 
   const updateValidationState = () => {
@@ -141,25 +198,32 @@ export default function MathInput(props) {
   };
 
   const handlePressEnter = (e) => {
-    valueToRevertTo = me.fromAst(SVs.immediateValue);
-    valueForDisplayToRevertTo = mathExpression;
 
-    // this.latexValueToRevertTo = this.latexValue;
-    if (!me.fromAst(SVs.value).equalsViaSyntax(me.fromAst(SVs.immediateValue))) {
+    valueToRevertTo.current = me.fromAst(immediateValue.current);
+    valueForDisplayToRevertTo.current = mathExpression.current;
+
+    if (!me.fromAst(value.current).equalsViaSyntax(valueToRevertTo.current)) {
       props.callAction({
-        action:actions.updateValue,
+        action: actions.updateValue,
       });
+    } else {
+      props.callAction({
+        action: actions.updateRawValue,
+        args: {
+          rawRendererValue: latexValue.current,
+          transient: false
+        }
+      })
     }
     if (SVs.includeCheckWork && validationState === 'unvalidated') {
       props.callAction({
-        action:actions.submitAnswer,
+        action: actions.submitAnswer,
       });
     }
   };
 
   const handleFocus = (e) => {
-    setFocus(true);
-    console.log('>>> ', mathField);
+    focus.current = true; //setFocus(true);
     setFocusedField(() => handleVirtualKeyboardClick);
     setFocusedFieldReturn(() => handlePressEnter);
   };
@@ -184,16 +248,27 @@ export default function MathInput(props) {
     ) {
       console.log('>>> clicked inside the panel functional panel');
     } else {
-      valueToRevertTo = me.fromAst(SVs.immediateValue);
-      valueForDisplayToRevertTo = mathExpression;
-      // this.latexValueToRevertTo = this.latexValue;
+
+
+      valueToRevertTo.current = me.fromAst(SVs.immediateValue);
+      valueForDisplayToRevertTo.current = mathExpression.current;
+
       if (!me.fromAst(SVs.value).equalsViaSyntax(me.fromAst(SVs.immediateValue))) {
         props.callAction({
-          action:actions.updateValue,
+          action: actions.updateValue,
         });
+      } else {
+        props.callAction({
+          action: actions.updateRawValue,
+          args: {
+            rawRendererValue: latexValue.current,
+            transient: false
+          }
+        })
       }
 
-      setFocus(false);
+      // setFocus(false);
+      focus.current = false;
       //console.log(">>>", e.target, e.currentTarget, e.relatedTarget);
       setFocusedField(() => handleDefaultVirtualKeyboardClick);
       setFocusedFieldReturn(() => handleDefaultVirtualKeyboardReturn);
@@ -213,56 +288,65 @@ export default function MathInput(props) {
   // const inputKey = this.componentName + '_input';
 
   let surroundingBorderColor = '#efefef';
-  if (focused) {
+  if (focused.current) {
     surroundingBorderColor = '#82a5ff';
   }
 
-  if (!valueForDisplayToRevertTo.equalsViaSyntax(me.fromAst(SVs.valueForDisplay))) {
+  if (!valueForDisplayToRevertTo.current.equalsViaSyntax(me.fromAst(SVs.valueForDisplay))) {
     // The valueForDisplay coming from the mathInput component
     // is not the same as the renderer's value
     // so we change the renderer's value to match
 
-    mathExpression = me.fromAst(SVs.valueForDisplay);
-    latexValue = stripLatex(mathExpression.toLatex());
-    if (latexValue === '\uFF3F') {
-      latexValue = '';
+    mathExpression.current = me.fromAst(SVs.valueForDisplay);
+    latexValue.current = stripLatex(mathExpression.current.toLatex());
+    if (latexValue.current === '\uFF3F') {
+      latexValue.current = '';
     }
-    valueToRevertTo = me.fromAst(SVs.value);
-    valueForDisplayToRevertTo = me.fromAst(SVs.valueForDisplay);
-    // this.latexValueToRevertTo = this.latexValue;
+
+    latexValueSetInRender.current = true;
+    latexValueSetFromValueForDisplay.current = true;
+    valueToRevertTo.current = me.fromAst(SVs.value);
+    valueForDisplayToRevertTo.current = me.fromAst(SVs.valueForDisplay);
   }
 
-  let checkWorkStyle = {
-    position: 'relative',
-    width: '30px',
-    height: '24px',
-    fontSize: '20px',
-    fontWeight: 'bold',
-    color: '#ffffff',
-    display: 'inline-block',
-    textAlign: 'center',
-    top: '3px',
-    padding: '2px',
-    zIndex: '0',
-  };
+
   //Assume we don't have a check work button
   let checkWorkButton = null;
   if (SVs.includeCheckWork) {
+
+    let checkWorkStyle = {
+      position: 'relative',
+      width: '30px',
+      height: '24px',
+      fontSize: '20px',
+      fontWeight: 'bold',
+      color: '#ffffff',
+      display: 'inline-block',
+      textAlign: 'center',
+      top: '3px',
+      padding: '2px',
+      zIndex: '0',
+    };
+
     if (validationState === 'unvalidated') {
-      checkWorkStyle.backgroundColor = 'rgb(2, 117, 216)';
+      if (SVs.disabled) {
+        checkWorkStyle.backgroundColor = "rgb(200,200,200)";
+      } else {
+        checkWorkStyle.backgroundColor = "rgb(2, 117, 216)";
+      }
       checkWorkButton = (
         <button
           id={'_submit'}
           tabIndex="0"
-          //ref={c => { this.target = c && ReactDOM.findDOMNode(c); }}
+          disabled={SVs.disabled}
           style={checkWorkStyle}
-          onClick={()=>props.callAction({
-            action:actions.submitAnswer,
+          onClick={() => props.callAction({
+            action: actions.submitAnswer,
           })}
           onKeyPress={(e) => {
             if (e.key === 'Enter') {
               props.callAction({
-                action:actions.submitAnswer,
+                action: actions.submitAnswer,
               });
             }
           }}
@@ -278,7 +362,6 @@ export default function MathInput(props) {
             <span
               id={'_correct'}
               style={checkWorkStyle}
-              //ref={c => { this.target = c && ReactDOM.findDOMNode(c); }}
             >
               <FontAwesomeIcon icon={faCheck} />
             </span>
@@ -295,7 +378,6 @@ export default function MathInput(props) {
             <span
               id={'_partial'}
               style={checkWorkStyle}
-              //ref={c => { this.target = c && ReactDOM.findDOMNode(c); }}
             >
               {partialCreditContents}
             </span>
@@ -307,7 +389,6 @@ export default function MathInput(props) {
             <span
               id={'_incorrect'}
               style={checkWorkStyle}
-              //ref={c => { this.target = c && ReactDOM.findDOMNode(c); }}
             >
               <FontAwesomeIcon icon={faTimes} />
             </span>
@@ -320,12 +401,28 @@ export default function MathInput(props) {
           <span
             id={'_saved'}
             style={checkWorkStyle}
-            //ref={c => { this.target = c && ReactDOM.findDOMNode(c); }}
           >
             <FontAwesomeIcon icon={faCloud} />
           </span>
         );
       }
+    }
+
+    if (SVs.numberOfAttemptsLeft < 0) {
+      checkWorkButton = <>
+        {checkWorkButton}
+        <span>
+          (no attempts remaining)
+        </span>
+      </>
+    } else if (SVs.numberOfAttemptsLeft < Infinity) {
+
+      checkWorkButton = <>
+        {checkWorkButton}
+        <span>
+          (attempts remaining: {SVs.numberOfAttemptsLeft})
+        </span>
+      </>
     }
   }
 
@@ -333,10 +430,11 @@ export default function MathInput(props) {
     <React.Fragment>
       <a />
 
-      <span className="textInputSurroundingBox">
+
+      <span className="textInputSurroundingBox" id={name}>
         <span style={{ margin: '10px' }}>
           <EditableMathField
-            latex={latexValue}
+            latex={latexValue.current}
             config={{
               autoCommands:
                 'alpha beta gamma delta epsilon zeta eta mu nu xi omega rho sigma tau phi chi psi omega iota kappa lambda Gamma Delta Xi Omega Sigma Phi Psi Omega Lambda sqrt pi Pi theta Theta integral infinity',
@@ -382,8 +480,3 @@ export default function MathInput(props) {
   );
 }
 
-function stripLatex(latex) {
-  let s = latex.replaceAll(`\\,`, '');
-
-  return s;
-}

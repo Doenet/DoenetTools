@@ -59,7 +59,7 @@ class DoenetViewerChild extends Component {
         viewer.update(e.data.args)
       } else if(e.data.messageType === "returnAllStateVariables") {
         console.log(e.data.args)
-        window.allStateVariables = e.data.args;
+        viewer.resolveAllStateVariables(e.data.args);
       }
     }
 
@@ -67,7 +67,20 @@ class DoenetViewerChild extends Component {
       this.coreWorker.postMessage({
         messageType: "returnAllStateVariables"
       })
+      
+      return new Promise((resolve, reject) => {
+        viewer.resolveAllStateVariables = resolve;
+      })
+      
     }.bind(this)
+
+
+    window.callAction = function({actionName, componentName, args}) {
+      this.callAction({
+        action: {actionName, componentName},
+        args
+      })
+    }.bind(this);
 
   }
 

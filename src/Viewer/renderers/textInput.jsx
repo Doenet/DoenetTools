@@ -1,6 +1,5 @@
 import React, { useRef } from 'react';
 import useDoenetRender from './useDoenetRenderer';
-import ReactDOM from 'react-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCheck, faLevelDownAlt, faTimes, faCloud, faPercentage } from '@fortawesome/free-solid-svg-icons'
 import { sizeToCSS } from './utils/css';
@@ -36,13 +35,13 @@ export default function TextInput(props) {
     if (e.key === "Enter") {
       valueToRevertTo.current = SVs.value;
       props.callAction({
-        actionName: "updateValue",
-        componentName: name
+        action: actions.updateValue,
       })
-      // await this.actions.updateValue();
 
       if (SVs.includeCheckWork && validationState.current === "unvalidated") {
-        // await this.actions.submitAnswer();
+        props.callAction({
+          action: actions.submitAnswer,
+        })
       }
     }
   }
@@ -50,12 +49,11 @@ export default function TextInput(props) {
   function handleKeyDown(e) {
     if (e.key === "Escape") {
       props.callAction({
-        componentName: name,
-        actionName: "updateImmediateValue",
+        action: actions.updateImmediateValue,
         args: {
           text: valueToRevertTo.current
         }
-      })
+      });
 
     }
   }
@@ -67,23 +65,18 @@ export default function TextInput(props) {
   function handleBlur(e) {
     focused.current = false;
     props.callAction({
-      actionName: "updateValue",
-      componentName: name
+      action: actions.updateValue,
     })
   }
 
   function onChangeHandler(e) {
     currentValue.current = e.target.value;
     props.callAction({
-      componentName: name,
-      actionName: "updateImmediateValue",
+      action: actions.updateImmediateValue,
       args: {
         text: e.target.value
       }
-    })
-    // await this.actions.updateImmediateValue({
-    //   text: e.target.value
-    // });
+    });
   }
 
 
@@ -109,22 +102,22 @@ export default function TextInput(props) {
   }
 
 
-  let checkWorkStyle = {
-    position: "relative",
-    width: "30px",
-    height: "24px",
-    fontSize: "20px",
-    fontWeight: "bold",
-    color: "#ffffff",
-    display: "inline-block",
-    textAlign: "center",
-    top: "3px",
-    padding: "2px",
-  }
-
   //Assume we don't have a check work button
   let checkWorkButton = null;
   if (SVs.includeCheckWork) {
+
+    let checkWorkStyle = {
+      position: "relative",
+      width: "30px",
+      height: "24px",
+      fontSize: "20px",
+      fontWeight: "bold",
+      color: "#ffffff",
+      display: "inline-block",
+      textAlign: "center",
+      top: "3px",
+      padding: "2px",
+    }
 
     if (validationState.current === "unvalidated") {
       if (disabled) {
@@ -138,10 +131,14 @@ export default function TextInput(props) {
         disabled={disabled}
         // ref={c => { this.target = c && ReactDOM.findDOMNode(c); }}
         style={checkWorkStyle}
-        // onClick={this.actions.submitAnswer}
+        onClick={() => props.callAction({
+          action: actions.submitAnswer,
+        })}
         onKeyPress={(e) => {
           if (e.key === 'Enter') {
-            // this.actions.submitAnswer();
+            props.callAction({
+              action: actions.submitAnswer,
+            });
           }
         }}
       >
@@ -154,7 +151,6 @@ export default function TextInput(props) {
           checkWorkButton = <span
             id={name + '_correct'}
             style={checkWorkStyle}
-            // ref={c => { this.target = c && ReactDOM.findDOMNode(c); }}
           >
             <FontAwesomeIcon icon={faCheck} />
           </span>
@@ -169,7 +165,6 @@ export default function TextInput(props) {
           checkWorkButton = <span
             id={name + '_partial'}
             style={checkWorkStyle}
-            // ref={c => { this.target = c && ReactDOM.findDOMNode(c); }}
           >{partialCreditContents}</span>
         } else {
           //incorrect
@@ -177,7 +172,6 @@ export default function TextInput(props) {
           checkWorkButton = <span
             id={name + '_incorrect'}
             style={checkWorkStyle}
-            // ref={c => { this.target = c && ReactDOM.findDOMNode(c); }}
           ><FontAwesomeIcon icon={faTimes} /></span>
 
         }
@@ -187,7 +181,6 @@ export default function TextInput(props) {
         checkWorkButton = <span
           id={name + '_saved'}
           style={checkWorkStyle}
-          // ref={c => { this.target = c && ReactDOM.findDOMNode(c); }}
         ><FontAwesomeIcon icon={faCloud} /></span>
 
       }
