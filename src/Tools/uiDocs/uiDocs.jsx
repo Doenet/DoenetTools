@@ -65,7 +65,7 @@ export default function attempt() {
   const disabled = () => {};
   const absolute = () => {};
   const left = () => {};
-  const [words, setWords] = useState("");
+  const noButton = () => {};
 
   //=== DATA STRUCTURE SECTION ===
   let dataStructure = [
@@ -631,6 +631,18 @@ export default function attempt() {
           description: 'Sets width to fill menu panel width',
         },
         {
+          name: 'No Search Button',
+          propPreview: '<SearchBar noButton/>',
+          propCode: { noButton },
+          description: 'Removes button from search bar',
+        },
+        {
+          name: 'Placeholder',
+          propPreview: '<SearchBar placeholder="Enter cat names..."/>',
+          propCode: { placeholder: 'Enter cat names...' },
+          description: 'Adds placeholder to component'
+        },
+        {
           name: 'Label',
           propPreview: '<SearchBar label="What: "/>',
           propCode: { label: 'What: ' },
@@ -647,6 +659,24 @@ export default function attempt() {
             propPreview: '<SearchBar ariaLabel="Text"/>',
             propCode: {ariaLabel: 'Text'},
             description: 'Adds aria label to component'
+        },
+        {
+          name: 'onChange',
+          propPreview: '<SearchBar onChange={(data) => console.log(data)} />',
+          propCode: {onChange: (data) => console.log(data)},
+          description: 'Function called when data changes'
+        },
+        {
+          name: 'onBlur',
+          propPreview: '<SearchBar onBlur={(e) => console.log(e.target.value)} />',
+          propCode: {onBlur: (e) => console.log(e.target.value)},
+          description: 'Function called when component blurs'
+        },
+        {
+          name: 'onKeyDown',
+          propPreview: '<SearchBar onKeyDown={(e) => console.log(e.key)} />',
+          propCode: {onKeyDown: (e) => console.log(e.key)},
+          description: 'Function called when key hit with focus on component'
         },
         {
           name: 'Alert',

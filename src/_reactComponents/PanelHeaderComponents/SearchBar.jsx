@@ -6,6 +6,7 @@ import { faSearch, faTimes } from '@fortawesome/free-solid-svg-icons';
 export default function Searchbar(props) {
     const [searchTerm, setSearchTerm] = useState('')
     const [cancelShown, setCancelShown] = useState('hidden')
+    const [searchShown, setSearchShown] = useState('visible')
     const [labelVisible, setLabelVisible] = useState(props.label ? 'static' : 'none')
     const [align, setAlign] = useState(props.vertical ? 'static' : 'flex')
 
@@ -18,14 +19,15 @@ export default function Searchbar(props) {
         padding: '0px 70px 0px 30px',
         color: '#000',
         overflow: 'hidden',
-        width: '220px'
+        width: '220px',
+        fontSize: '14px'
        }
     if (props.width) {
         if (props.width === "menu") {
             searchBar.width = '130px'
         } 
     }
-    let cancelLeftMargin = Number(searchBar.width.split('px')[0]) + 30 + "px"
+    let cancelLeftMargin = Number(searchBar.width.split('px')[0]) + 26 + "px"
 
     var cancelButton = {
         float: 'right',
@@ -57,6 +59,7 @@ export default function Searchbar(props) {
         height: '28px',
         border: `2px solid black`,
         backgroundColor: `${doenetComponentForegroundActive}`,
+        visibility: `${searchShown}`,
         color: '#FFFFFF',
         borderRadius: '0px 5px 5px 0px',
         cursor: 'pointer',
@@ -71,11 +74,16 @@ export default function Searchbar(props) {
         searchBar.cursor = 'not-allowed';
         disable = "disabled";
     }
+    var noButton = "";
+    if (props.noButton) {
+        setSearchShown('hidden');
+        searchBar.noButton = props.noButton;
+    }
     var label = {
         value: 'Label:',
         fontSize: '14px',
-        marginRight: '5px',
         display: `${labelVisible}`, 
+        margin: '0px 5px 2px 0px'
     }
     var container = {
         display: `${align}`, 
@@ -83,6 +91,9 @@ export default function Searchbar(props) {
         alignItems:'center'
     }
     
+    if (props.placeholder) {
+        searchBar.placeholder = props.placeholder;
+    }
     if (props.label) {
         label.value = props.label;
     }
@@ -100,7 +111,6 @@ export default function Searchbar(props) {
             props.onChange('');
         }
     }
-
     function onChange(e) {
         let val = e.target.value;
         setSearchTerm(val);
@@ -113,6 +123,12 @@ export default function Searchbar(props) {
             props.onChange(val);
         }
     }
+    function handleBlur(e) {
+        if (props.onBlur) props.onBlur(e)
+    }
+    function handleKeyDown(e) {
+        if (props.onKeyDown) props.onKeyDown(e)
+    }
 
     function searchSubmitAction() {
         if (props.onSubmit){
@@ -120,9 +136,10 @@ export default function Searchbar(props) {
         }
     }
     let autoFocus = false;
-    if (props.autoFocus){
+    if (props.autoFocus) {
         autoFocus = true;
     }
+
     return (
         <div style={container}>
             <p style={label}>{label?.value}</p>
@@ -132,9 +149,11 @@ export default function Searchbar(props) {
                 <input
                 id="search" 
                 type="text" 
-                placeholder="Search..." 
+                placeholder={props.placeholder ? searchBar.placeholder : "Search..."} 
                 style={searchBar} 
                 onChange={onChange}
+                onBlur={(e) => { handleBlur(e) }}
+                onKeyDownCapture={(e) => { handleKeyDown(e) }}
                 disabled={disable}
                 value={searchTerm}
                 onKeyDown={(e)=>{if (e.key === 'Enter'){searchSubmitAction()}}}
@@ -142,7 +161,8 @@ export default function Searchbar(props) {
                 aria-label={searchBar.ariaLabel}
                 />
                 <div style={{padding: '3px', display:'inline'}}></div>
-                <button style={submitButton} onClick={searchSubmitAction}>Search</button>
+                {/* <button style={submitButton} onClick={searchSubmitAction}>Search</button> */}
+                {props.noButton ? props.noButton : <button style={submitButton} onClick={searchSubmitAction}>Search</button>}
             </div>
         </div>
     )
