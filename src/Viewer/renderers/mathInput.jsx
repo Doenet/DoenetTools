@@ -78,7 +78,8 @@ export default function MathInput(props) {
   // so that calculateMathExpressionFromLatex can access its current value
   let unionFromU = useRef(null);
   unionFromU.current = SVs.unionFromU;
-  
+
+  console.log(`For ${name}, immediateValue`, SVs.immediateValue, 'rawRendererValue', SVs.rawRendererValue)
 
   const calculateMathExpressionFromLatex = (text) => {
     let expression;
@@ -133,6 +134,8 @@ export default function MathInput(props) {
     latexValueSetInRender.current = false;
     latexValueSetFromValueForDisplay.current = false;
 
+
+    console.log(`For ${name}, setting rawRendererValue 1`, latexValue.current)
 
     if (actuallyUpdate) {
       mathExpression.current = newMathExpression;
@@ -207,6 +210,8 @@ export default function MathInput(props) {
         action: actions.updateValue,
       });
     } else {
+      console.log(`For ${name}, setting rawRendererValue 2`, latexValue.current)
+
       props.callAction({
         action: actions.updateRawValue,
         args: {
@@ -258,6 +263,8 @@ export default function MathInput(props) {
           action: actions.updateValue,
         });
       } else {
+        console.log(`For ${name}, setting rawRendererValue 3`, latexValue.current)
+
         props.callAction({
           action: actions.updateRawValue,
           args: {
@@ -276,6 +283,7 @@ export default function MathInput(props) {
   };
 
   const onChangeHandler = (e) => {
+    console.log(`For ${name}, on change handler`, e)
     updateImmediateValueFromLatex(e);
   };
 
@@ -336,7 +344,7 @@ export default function MathInput(props) {
       }
       checkWorkButton = (
         <button
-          id={'_submit'}
+          id={name + '_submit'}
           tabIndex="0"
           disabled={SVs.disabled}
           style={checkWorkStyle}
@@ -360,7 +368,7 @@ export default function MathInput(props) {
           checkWorkStyle.backgroundColor = 'rgb(92, 184, 92)';
           checkWorkButton = (
             <span
-              id={'_correct'}
+              id={name + '_correct'}
               style={checkWorkStyle}
             >
               <FontAwesomeIcon icon={faCheck} />
@@ -376,7 +384,7 @@ export default function MathInput(props) {
           checkWorkStyle.backgroundColor = '#efab34';
           checkWorkButton = (
             <span
-              id={'_partial'}
+              id={name + '_partial'}
               style={checkWorkStyle}
             >
               {partialCreditContents}
@@ -387,7 +395,7 @@ export default function MathInput(props) {
           checkWorkStyle.backgroundColor = 'rgb(187, 0, 0)';
           checkWorkButton = (
             <span
-              id={'_incorrect'}
+              id={name + '_incorrect'}
               style={checkWorkStyle}
             >
               <FontAwesomeIcon icon={faTimes} />
@@ -399,7 +407,7 @@ export default function MathInput(props) {
         checkWorkStyle.backgroundColor = 'rgb(74, 3, 217)';
         checkWorkButton = (
           <span
-            id={'_saved'}
+            id={name + '_saved'}
             style={checkWorkStyle}
           >
             <FontAwesomeIcon icon={faCloud} />
@@ -451,8 +459,8 @@ export default function MathInput(props) {
                 enter: handlePressEnter,
               },
             }} //more commands go here
-            onChange={(mathField) => {
-              onChangeHandler(mathField.latex());
+            onChange={(mField) => {
+              onChangeHandler(mField.latex());
             }}
             onBlur={handleBlur}
             onFocus={handleFocus}
