@@ -1066,6 +1066,14 @@ export default function attempt() {
       req_props: null,
       req_children: null,
       use: 'Creates visual separation.',
+      props: [{
+        name: 'Height',
+        propPreview: '<VerticalDivider height="200px" />',
+        propCode: {
+          height: '200px'
+        },
+        description: 'Changes height of divider',
+      },]
     },
   ];
   // === END OF DATA STRUCTURE SECTION ===
