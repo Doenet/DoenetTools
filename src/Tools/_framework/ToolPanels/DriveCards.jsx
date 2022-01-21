@@ -12,7 +12,7 @@ import { selectedMenuPanelAtom } from '../Panels/NewMenuPanel';
 import { drivecardSelectedNodesAtom } from '../ToolHandlers/CourseToolHandler';
 import { pageToolViewAtom } from '../NewToolRoot';
 import DriveCard from '../../../_reactComponents/Drive/DoenetDriveCard';
-import { fetchDrivesQuery } from '../../../_reactComponents/Drive/NewDrive';
+import { clearDriveAndItemSelections, fetchDrivesQuery } from '../../../_reactComponents/Drive/NewDrive';
 import { mainPanelClickAtom } from '../Panels/NewMainPanel';
 import useMedia from './useMedia';
 import './driveCardsStyle.css';
@@ -33,6 +33,7 @@ export default function DriveCardsNew(props) {
   useEffect(() => {
     setMainPanelClear((was) => [
       ...was,
+      { atom: clearDriveAndItemSelections, value: null },
       { atom: selectedMenuPanelAtom, value: null },
     ]);
     return setMainPanelClear((was) => [
