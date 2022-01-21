@@ -2,7 +2,8 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { returnAllPossibleVariants } from '../../Core/utils/returnAllPossibleVariants';
 //import DateTime from '../../_reactComponents/PanelHeaderComponents/DateTime'
-import DropdownMenu from '../../_reactComponents/PanelHeaderComponents/DropdownMenu'
+import Card from '../../_reactComponents/PanelHeaderComponents/Card.jsx';
+
 
 function testReturnVariants() {
   returnAllPossibleVariants({
@@ -18,8 +19,7 @@ function gotAll({ allPossibleVariants }) {
 
 
 ReactDOM.render(
-  // <DropdownMenu width = "200px" defaultIndex = {'1'} title = "test" items = {[[1, "one"], [2, "two"]]} callBack = { ({ value }) => console.log(">>>", value)}/>,
-  <button onClick={testReturnVariants}>Get all variants</button>,
+  <Card></Card>,
   document.getElementById('root'),
 );
 
