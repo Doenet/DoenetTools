@@ -78,6 +78,7 @@ export default function Searchbar(props) {
     if (props.noButton) {
         setSearchShown('hidden');
         searchBar.noButton = props.noButton;
+        noButton = "hiddenButton";
     }
     var label = {
         value: 'Label:',
@@ -162,7 +163,7 @@ export default function Searchbar(props) {
                 />
                 <div style={{padding: '3px', display:'inline'}}></div>
                 {/* <button style={submitButton} onClick={searchSubmitAction}>Search</button> */}
-                {props.noButton ? props.noButton : <button style={submitButton} onClick={searchSubmitAction}>Search</button>}
+                {props.noButton ? searchBar.noButton : <button style={submitButton} onClick={searchSubmitAction}>Search</button>}
             </div>
         </div>
     )
