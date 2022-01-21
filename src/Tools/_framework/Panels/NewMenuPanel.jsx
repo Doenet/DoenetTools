@@ -3,8 +3,9 @@ import { atom,  useRecoilValue, useSetRecoilState } from 'recoil';
 import styled from 'styled-components';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronLeft, faCog, faHome } from "@fortawesome/free-solid-svg-icons";
-// import Logo from '../Logo';
+import Logo from '../Logo';
 import { pageToolViewAtom } from '../NewToolRoot';
+// import Logo from '../Logo';
 
 export const selectedMenuPanelAtom = atom({
   key:"selectedMenuPanelAtom",
@@ -42,7 +43,7 @@ const IconsGroup = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-left: 35px;
+  margin-left: 70px;
   // width: 40px;
 `;
 
@@ -51,23 +52,23 @@ const Branding = styled.div`
   justify-content: space-between;
   align-items: center;
   // margin-left: 95px;
-  width: 120px;
+  width: 110px;
   cursor: default;
   font-size: 16px;
 `;
 
-const Logo = styled.img`
-  background-image: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)),
-  url('/media/Doenet_Logo_cloud_only.png');
-  background-position: center;
-  background-repeat: no-repeat;
-  background-size: 50px 25px;
-  transition: 300ms;
-  background-color: white;
-  width: 50px;
-  height: 25px;
-  border: 0;
-`;
+// const Logo = styled.img`
+//   background-image: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)),
+//   url('/media/Doenet_Logo_cloud_only.png');
+//   background-position: center;
+//   background-repeat: no-repeat;
+//   background-size: 50px 25px;
+//   transition: 300ms;
+//   background-color: white;
+//   width: 50px;
+//   height: 25px;
+//   border: 0;
+// `;
 
 const MenuPanelsCapComponent = styled.div`
 width: 240px;
@@ -294,15 +295,16 @@ console.log(">>>===MenuPanel", hide)
       <MenuPanelsCap fix={hide}>
         
         <Branding style={{ marginLeft: '5px'}}>
-          <Logo src="data:image/gif;base64,R0lGODlhAQABAPcAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACH5BAEAAP8ALAAAAAABAAEAAAgEAP8FBAA7
-"/>
+          {/* <Logo src="data:image/gif;base64,R0lGODlhAQABAPcAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACH5BAEAAP8ALAAAAAABAAEAAAgEAP8FBAA7 */}
+{/* "/> */}
+          <Logo/>
           <p>Doenet</p>
         </Branding>
         <IconsGroup>
           {/* <Logo/> */}
-          <HomeButton onClick={()=>setPageToolView({page:'home',tool:'',view:''})}>
+          {/* <HomeButton onClick={()=>setPageToolView({page:'home',tool:'',view:''})}>
             <FontAwesomeIcon icon={faHome}/>
-          </HomeButton> 
+          </HomeButton>  */}
           
           <SettingsButton onClick={()=>setPageToolView({page:'settings',tool:'',view:''})}>
             <FontAwesomeIcon icon={faCog}/>
