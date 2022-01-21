@@ -861,8 +861,8 @@ function RootController(props) {
   }
 
   //Defaults for undefined
-  if (nextMenusAndPanels && nextMenusAndPanels.displayProfile === undefined) {
-    nextMenusAndPanels.displayProfile = true;
+  if (nextMenusAndPanels && nextMenusAndPanels.displaySettings === undefined) {
+    nextMenusAndPanels.displaySettings = true;
   }
 
   //Only update ToolRoot if nextMenusAndPanels was indicated as a change
