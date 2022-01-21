@@ -796,6 +796,7 @@ export const fetchDrivesSelector = selector({
     return get(fetchDrivesQuery);
   },
   set: ({ get, set }, labelTypeDriveIdColorImage) => {
+    // console.log(labelTypeDriveIdColorImage);
     let driveData = get(fetchDrivesQuery);
     // let selectedDrives = get(selectedDriveInformation);
     let newDriveData = { ...driveData };
@@ -881,8 +882,8 @@ export const fetchDrivesSelector = selector({
       set(fetchDrivesQuery, newDriveData);
 
       const payload = { params };
-      axios.get('/api/addDrive.php', payload);
-      // .then((resp)=>console.log(">>>resp",resp.data))
+      axios.get('/api/addDrive.php', payload)
+      .then((resp)=>console.log(">>>resp",resp.data))
     } else if (labelTypeDriveIdColorImage.type === 'new course drive') {
       newDrive = {
         driveId: labelTypeDriveIdColorImage.newDriveId,
@@ -916,6 +917,36 @@ export const fetchDrivesSelector = selector({
       axios.get('/api/updateDrive.php', payload);
     } else if (labelTypeDriveIdColorImage.type === 'update drive color') {
       //TODO: implement
+      //Find matching drive and update label
+      for (let [i, drive] of newDriveData.driveIdsAndLabels.entries()) {
+        if (drive.driveId === labelTypeDriveIdColorImage.newDriveId) {
+          let newDrive = { ...drive };
+          newDrive.color = labelTypeDriveIdColorImage.color;
+          newDriveData.driveIdsAndLabels[i] = newDrive;
+          break;
+        }
+      }
+      //Set drive
+      set(fetchDrivesQuery, newDriveData);
+      //Save to db
+      const payload = { params };
+      axios.get('/api/updateDrive.php', payload);
+    } else if (labelTypeDriveIdColorImage.type === 'update drive image') {
+      //TODO: implement
+      //Find matching drive and update label
+      for (let [i, drive] of newDriveData.driveIdsAndLabels.entries()) {
+        if (drive.driveId === labelTypeDriveIdColorImage.newDriveId) {
+          let newDrive = { ...drive };
+          newDrive.image = labelTypeDriveIdColorImage.image;
+          newDriveData.driveIdsAndLabels[i] = newDrive;
+          break;
+        }
+      }
+      //Set drive
+      set(fetchDrivesQuery, newDriveData);
+      //Save to db
+      const payload = { params };
+      axios.get('/api/updateDrive.php', payload);
     } else if (labelTypeDriveIdColorImage.type === 'delete drive') {
       //Find matching drive and update label
       //delete drive

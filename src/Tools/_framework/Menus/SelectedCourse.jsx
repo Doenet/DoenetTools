@@ -20,6 +20,8 @@ import { driveColors } from '../../../_reactComponents/Drive/util';
 import { useToast } from '../../_framework/Toast';
 import ButtonGroup from '../../../_reactComponents/PanelHeaderComponents/ButtonGroup';
 import Textfield from '../../../_reactComponents/PanelHeaderComponents/Textfield';
+import ColorImagePicker from '../../../_reactComponents/PanelHeaderComponents/ColorImagePicker';
+
 
 
 export default function SelectedCourse() {
@@ -312,7 +314,7 @@ const DriveInfoPanel = function (props) {
       />
     </ButtonGroup>
   );
-
+  // console.log("image", props.image);
   return (
     <>
       <h2 data-cy="infoPanelItemLabel">
@@ -342,6 +344,7 @@ const DriveInfoPanel = function (props) {
                 newDriveId: props.driveId,
                 type: 'update drive label',
               });
+              // console.log(effectiveDriveLabel);
             }
             
           }}
@@ -414,9 +417,35 @@ const DriveInfoPanel = function (props) {
       <br />
       <CoursePassword driveId={props.driveId} />
       <br />
-      <label>
-        Image (soon)
-        <DoenetDriveCardMenu
+      {/* <label>
+        Image (soon) */}
+        <ColorImagePicker 
+          initialImage={props.image}
+          initialColor={props.color}
+          // callback={(image) => {
+          //   console.log(image);}}
+          imageCallback={(newImage) => {
+            setDrivesInfo({
+              color: "none",
+              label: props.label,
+              image: newImage,
+              newDriveId: props.driveId,
+              type: 'update drive image',
+            });
+            // console.log(newImage);
+          }}
+          imageCallback={(newColor) => {
+            setDrivesInfo({
+              color: newColor,
+              label: props.label,
+              image: "none",
+              newDriveId: props.driveId,
+              type: 'update drive color',
+            });
+            console.log(newColor);
+          }}
+        />
+        {/* <DoenetDriveCardMenu
           key={`colorMenu${props.driveId}`}
           colors={driveColors}
           initialValue={props.color}
@@ -429,8 +458,8 @@ const DriveInfoPanel = function (props) {
               type: 'update drive color',
             });
           }}
-        />
-      </label>
+        /> */}
+      {/* </label> */}
 
       <br />
       {addOwners}

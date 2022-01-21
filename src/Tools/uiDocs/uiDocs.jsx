@@ -20,6 +20,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Increment from '../../_reactComponents/PanelHeaderComponents/IncrementMenu.jsx';
 import DropdownMenu from '../../_reactComponents/PanelHeaderComponents/DropdownMenu.jsx';
 import DateTime from '../../_reactComponents/PanelHeaderComponents/DateTime.jsx';
+import ColorImagePicker from '../../_reactComponents/PanelHeaderComponents/ColorImagePicker.jsx';
 
 // === HOW TO ADD TO UI DOCS ===
 // 1. Import the component in the COMPONENT IMPORTS SECTION above
@@ -263,6 +264,15 @@ export default function attempt() {
         // propCode: {width: '500px'},
         // description: 'Sets width to custom dimensions'},
       ],
+    },
+    {
+      name: 'ColorImagePicker',
+      id: 'colorimagepicker',
+      code: ColorImagePicker,
+      codePreview: '<ColorImagePicker/>',
+      req_props: null,
+      req_children: null,
+      use: 'Allows user to pick background color or image',
     },
     {
       name: 'DateTime',
