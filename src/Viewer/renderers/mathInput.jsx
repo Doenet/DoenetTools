@@ -1,4 +1,5 @@
 import React, { useRef, useState, useEffect } from 'react';
+import { nanoid } from 'nanoid';
 import useDoenetRender from './useDoenetRenderer';
 import me from 'math-expressions';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -41,7 +42,7 @@ import { getFromLatex, normalizeLatexString, stripLatex } from '../../Core/utils
 // `;
 
 export default function MathInput(props) {
-  let { name, SVs, actions } = useDoenetRender(props);
+  let { name, SVs, actions, sourceOfUpdate } = useDoenetRender(props);
 
   // const [focused, setFocus] = useState(false);
   const focused = useRef(false);
@@ -54,113 +55,28 @@ export default function MathInput(props) {
   const toggleButtonRef = useRecoilValue(buttonRef);
   const functionTabRef = useRecoilValue(functionRef);
 
-  let valueToRevertTo = useRef(me.fromAst(SVs.value));
-  let valueForDisplayToRevertTo = useRef(me.fromAst(SVs.valueForDisplay));
+  const updatesToIgnore = useRef({});
+
 
   let validationState = 'unvalidated';
 
 
-  let latexValueSetInRender = useRef(false);
-  let latexValueSetFromValueForDisplay = useRef(false);
+  let rawRendererValue = useRef(SVs.rawRendererValue);
 
-  let mathExpression = useRef(me.fromAst(SVs.valueForDisplay));
+  let sourceActionId = sourceOfUpdate.sourceInformation?.[name]?.actionId;
 
-  let latexValue = useRef(SVs.rawRendererValue && SVs.rawRendererValue !== '\uFF3F' ? SVs.rawRendererValue : "");
+  // only apply the update if it isn't marked to be ignored
+  // TODO: skip this earlier (in DoenetViewer?) so we don't even have to rerender
+  if (updatesToIgnore.current[sourceActionId] !== SVs.rawRendererValue) {
+    rawRendererValue.current = SVs.rawRendererValue;
 
-  // create refs for value and immediate value
-  // so that handlePressEnter can access their current value
-  let immediateValue = useRef(null);
-  immediateValue.current = SVs.immediateValue;
-  let value = useRef(null);
-  value.current = SVs.value;
+    // since value was changed, don't ignore any pending changes
+    // as we changed the state used to when determining that they could be ignored
+    updatesToIgnore.current = {};
+  } else {
+    delete updatesToIgnore.current[sourceActionId];
+  }
 
-  // create ref for unionFromU
-  // so that calculateMathExpressionFromLatex can access its current value
-  let unionFromU = useRef(null);
-  unionFromU.current = SVs.unionFromU;
-
-  console.log(`For ${name}, immediateValue`, SVs.immediateValue, 'rawRendererValue', SVs.rawRendererValue)
-
-  const calculateMathExpressionFromLatex = (text) => {
-    let expression;
-
-    text = normalizeLatexString(text, {
-      unionFromU: unionFromU.current,
-    });
-
-    // replace ^25 with ^{2}5, since mathQuill uses standard latex conventions
-    // unlike math-expression's latex parser
-    text = text.replace(/\^(\w)/g, '^{$1}');
-
-    let fromLatex = getFromLatex({
-      functionSymbols: SVs.functionSymbols,
-      splitSymbols: SVs.splitSymbols,
-    });
-
-    try {
-      expression = fromLatex(text);
-    } catch (e) {
-      // TODO: error on bad text
-      expression = me.fromAst('\uFF3F');
-    }
-    return expression;
-  };
-
-  const updateImmediateValueFromLatex = (text) => {
-    // The check whether or not to call the updateImmediateValue action is subtle.
-    // We need to achieve two effects:
-    // 1. Do not call the updateImmediateValue action
-    // when mathQuill invokes onChange from render()
-    // due to differences in latex format between it and math-expressions.
-    // 2. Call the updateImmediateValue action
-    // whenever the user types anything into the input
-    // even if it does not change the underlying math expression
-
-    let currentMathExpressionNormalized =
-      calculateMathExpressionFromLatex(latexValue.current);
-
-    let newMathExpression = calculateMathExpressionFromLatex(text);
-
-    let rawValueChanged = text !== latexValue.current || latexValueSetFromValueForDisplay.current;
-    let transientForRaw = !latexValueSetInRender.current;
-
-    let actuallyUpdate = !newMathExpression.equalsViaSyntax(currentMathExpressionNormalized)
-      || (!latexValueSetInRender.current && text !== latexValue.current);
-
-
-    // Note: must set latexValue.current before calling updateImmediateValue action
-
-    latexValue.current = text;
-    latexValueSetInRender.current = false;
-    latexValueSetFromValueForDisplay.current = false;
-
-
-    console.log(`For ${name}, setting rawRendererValue 1`, latexValue.current)
-
-    if (actuallyUpdate) {
-      mathExpression.current = newMathExpression;
-      props.callAction({
-        action: actions.updateImmediateValue,
-        args: {
-          mathExpression: newMathExpression.tree,
-          rawRendererValue: latexValue.current,
-          transient: true,
-          skippable: true,
-        }
-      })
-    } else if (rawValueChanged) {
-      props.callAction({
-        action: actions.updateRawValue,
-        args: {
-          rawRendererValue: latexValue.current,
-          transient: transientForRaw,
-          skippable: transientForRaw
-        }
-      })
-
-    }
-
-  };
 
   const updateValidationState = () => {
     validationState = 'unvalidated';
@@ -202,24 +118,18 @@ export default function MathInput(props) {
 
   const handlePressEnter = (e) => {
 
-    valueToRevertTo.current = me.fromAst(immediateValue.current);
-    valueForDisplayToRevertTo.current = mathExpression.current;
+    let actionId = nanoid();
 
-    if (!me.fromAst(value.current).equalsViaSyntax(valueToRevertTo.current)) {
-      props.callAction({
-        action: actions.updateValue,
-      });
-    } else {
-      console.log(`For ${name}, setting rawRendererValue 2`, latexValue.current)
+    // add to updates to ignore so don't apply change again
+    // if it comes back from core without any changes
+    // (possibly after a delay)
+    updatesToIgnore.current[actionId] = rawRendererValue.current;
 
-      props.callAction({
-        action: actions.updateRawValue,
-        args: {
-          rawRendererValue: latexValue.current,
-          transient: false
-        }
-      })
-    }
+    props.callAction({
+      action: actions.updateValue,
+      args: { actionId }
+    });
+
     if (SVs.includeCheckWork && validationState === 'unvalidated') {
       props.callAction({
         action: actions.submitAnswer,
@@ -235,44 +145,30 @@ export default function MathInput(props) {
 
   const handleBlur = (e) => {
     if (
-      containerRef &&
-      containerRef.current &&
-      containerRef.current.contains(e.relatedTarget)
+      containerRef?.current?.contains(e.relatedTarget)
     ) {
       console.log('>>> clicked inside the panel');
     } else if (
-      toggleButtonRef &&
-      toggleButtonRef.current &&
-      toggleButtonRef.current.contains(e.relatedTarget)
+      toggleButtonRef?.current?.contains(e.relatedTarget)
     ) {
       console.log('>>> clicked inside the button');
     } else if (
-      functionTabRef &&
-      functionTabRef.current &&
-      functionTabRef.current.contains(e.relatedTarget)
+      functionTabRef?.current?.contains(e.relatedTarget)
     ) {
       console.log('>>> clicked inside the panel functional panel');
     } else {
 
+      let actionId = nanoid();
 
-      valueToRevertTo.current = me.fromAst(SVs.immediateValue);
-      valueForDisplayToRevertTo.current = mathExpression.current;
+      // add to updates to ignore so don't apply change again
+      // if it comes back from core without any changes
+      // (possibly after a delay)
+      updatesToIgnore.current[actionId] = rawRendererValue.current;
 
-      if (!me.fromAst(SVs.value).equalsViaSyntax(me.fromAst(SVs.immediateValue))) {
-        props.callAction({
-          action: actions.updateValue,
-        });
-      } else {
-        console.log(`For ${name}, setting rawRendererValue 3`, latexValue.current)
-
-        props.callAction({
-          action: actions.updateRawValue,
-          args: {
-            rawRendererValue: latexValue.current,
-            transient: false
-          }
-        })
-      }
+      props.callAction({
+        action: actions.updateValue,
+        args: { actionId }
+      });
 
       // setFocus(false);
       focus.current = false;
@@ -283,8 +179,25 @@ export default function MathInput(props) {
   };
 
   const onChangeHandler = (e) => {
-    console.log(`For ${name}, on change handler`, e)
-    updateImmediateValueFromLatex(e);
+
+    if (e !== rawRendererValue.current) {
+      let actionId = nanoid();
+
+      // add to updates to ignore so don't apply change again
+      // if it comes back from core without any changes
+      // (possibly after a delay)
+      updatesToIgnore.current[actionId] = e;
+
+      rawRendererValue.current = e;
+
+      props.callAction({
+        action: actions.updateRawValue,
+        args: {
+          rawRendererValue: e,
+          actionId,
+        }
+      })
+    }
   };
 
   if (SVs.hidden) {
@@ -298,23 +211,6 @@ export default function MathInput(props) {
   let surroundingBorderColor = '#efefef';
   if (focused.current) {
     surroundingBorderColor = '#82a5ff';
-  }
-
-  if (!valueForDisplayToRevertTo.current.equalsViaSyntax(me.fromAst(SVs.valueForDisplay))) {
-    // The valueForDisplay coming from the mathInput component
-    // is not the same as the renderer's value
-    // so we change the renderer's value to match
-
-    mathExpression.current = me.fromAst(SVs.valueForDisplay);
-    latexValue.current = stripLatex(mathExpression.current.toLatex());
-    if (latexValue.current === '\uFF3F') {
-      latexValue.current = '';
-    }
-
-    latexValueSetInRender.current = true;
-    latexValueSetFromValueForDisplay.current = true;
-    valueToRevertTo.current = me.fromAst(SVs.value);
-    valueForDisplayToRevertTo.current = me.fromAst(SVs.valueForDisplay);
   }
 
 
@@ -436,13 +332,12 @@ export default function MathInput(props) {
 
   return (
     <React.Fragment>
-      <a />
-
+      <a name={name} />
 
       <span className="textInputSurroundingBox" id={name}>
         <span style={{ margin: '10px' }}>
           <EditableMathField
-            latex={latexValue.current}
+            latex={rawRendererValue.current}
             config={{
               autoCommands:
                 'alpha beta gamma delta epsilon zeta eta mu nu xi omega rho sigma tau phi chi psi omega iota kappa lambda Gamma Delta Xi Omega Sigma Phi Psi Omega Lambda sqrt pi Pi theta Theta integral infinity',
@@ -469,20 +364,8 @@ export default function MathInput(props) {
               setMathField(mf);
             }}
           />
-          {/* <p>{this.mathExpression.toLatex()}</p> */}
         </span>
         {checkWorkButton}
-        {/* {this.textValue ? 
-      <Prev style = {{top: this.state.previewTopOffset+"px", left: this.state.previewLeftOffset+"px"}} onMouseDown = {this.handleDragEnter} onMouseMove = {this.handleDragThrough} onMouseUp = {this.handleDragExit} onMouseLeave = {this.handleDragExit}>
-        <div>
-          <MathJax.Context input='tex'>
-              <div>
-                  <MathJax.Node inline>{this.textValue ? this.previewValue : ''}</MathJax.Node>
-              </div>
-          </MathJax.Context>
-        </div>
-      </Prev> : 
-      null} */}
       </span>
     </React.Fragment>
   );
