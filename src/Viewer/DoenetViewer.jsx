@@ -564,7 +564,8 @@ class DoenetViewerChild extends Component {
 
           this.props.updateRendererSVsWithRecoil({
             componentName,
-            stateValues
+            stateValues,
+            sourceOfUpdate: instruction.sourceOfUpdate
           })
           //TODO: await ????
           // this.rendererUpdateMethods[componentName].update({
@@ -577,6 +578,7 @@ class DoenetViewerChild extends Component {
         this.props.updateRendererSVsWithRecoil({
           componentName: instruction.parentName,
           stateValues: instruction.stateValues,
+          sourceOfUpdate: instruction.sourceOfUpdate
         })
       }
     }

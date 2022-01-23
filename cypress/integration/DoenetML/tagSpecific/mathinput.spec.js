@@ -29,7 +29,11 @@ describe('MathInput Tag Tests', function () {
     <copy target="mi1" assignNames="mi1a"  />
     <copy prop='value' target="mi1" assignNames="v1" />
     <copy prop='immediatevalue' target="mi1" assignNames="iv1"  />
+    <copy prop='value' target="mi1a" assignNames="v1a" />
+    <copy prop='immediatevalue' target="mi1a" assignNames="iv1a"  />
     <mathinput name="mi2" />
+    <copy prop='value' target="mi2" assignNames="v2" />
+    <copy prop='immediatevalue' target="mi2" assignNames="iv2"  />
     `}, "*");
     });
 
@@ -53,6 +57,18 @@ describe('MathInput Tag Tests', function () {
     cy.get(`#\\/iv1`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('x+1')
     });
+    cy.get(`#\\/v1a`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('x+1')
+    });
+    cy.get(`#\\/iv1a`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('x+1')
+    });
+    cy.get(`#\\/v2`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('＿')
+    });
+    cy.get(`#\\/iv2`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('＿')
+    });
 
     cy.log('Test internal values are set to the correct values')
     cy.window().then(async (win) => {
@@ -70,11 +86,13 @@ describe('MathInput Tag Tests', function () {
     cy.get('#\\/mi1 textarea').type(`{end}2`, { force: true });
 
     cy.log('Test values displayed in browser')
+    cy.get(`#\\/mi1 .mq-editable-field`).should('contain.text', 'x+12')
+    cy.get(`#\\/mi1a .mq-editable-field`).should('contain.text', 'x+12')
     cy.get(`#\\/mi1 .mq-editable-field`).invoke('text').then((text) => {
       expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('x+12')
     })
     cy.get(`#\\/mi1a .mq-editable-field`).invoke('text').then((text) => {
-      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('x+1')
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('x+12')
     })
     cy.get(`#\\/mi2 .mq-editable-field`).invoke('text').then((text) => {
       expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('')
@@ -85,6 +103,18 @@ describe('MathInput Tag Tests', function () {
     });
     cy.get(`#\\/iv1`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('x+12')
+    });
+    cy.get(`#\\/v1a`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('x+1')
+    });
+    cy.get(`#\\/iv1a`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('x+12')
+    });
+    cy.get(`#\\/v2`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('＿')
+    });
+    cy.get(`#\\/iv2`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('＿')
     });
 
     cy.log('Test internal values are set to the correct values')
@@ -130,11 +160,13 @@ describe('MathInput Tag Tests', function () {
     cy.get('#\\/mi1 textarea').type(`{end}{backspace}3`, { force: true });
 
     cy.log('Test values displayed in browser')
+    cy.get(`#\\/mi1 .mq-editable-field`).should('contain.text', 'x+13')
+    cy.get(`#\\/mi1a .mq-editable-field`).should('contain.text', 'x+13')
     cy.get(`#\\/mi1 .mq-editable-field`).invoke('text').then((text) => {
       expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('x+13')
     })
     cy.get(`#\\/mi1a .mq-editable-field`).invoke('text').then((text) => {
-      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('x+1')
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('x+13')
     })
     cy.get(`#\\/mi2 .mq-editable-field`).invoke('text').then((text) => {
       expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('')
@@ -145,6 +177,18 @@ describe('MathInput Tag Tests', function () {
     });
     cy.get(`#\\/iv1`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('x+13')
+    });
+    cy.get(`#\\/v1a`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('x+1')
+    });
+    cy.get(`#\\/iv1a`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('x+13')
+    });
+    cy.get(`#\\/v2`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('＿')
+    });
+    cy.get(`#\\/iv2`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('＿')
     });
 
     cy.log('Test internal values are set to the correct values')
@@ -173,11 +217,27 @@ describe('MathInput Tag Tests', function () {
       expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('')
     })
 
+    cy.get(`#\\/v1 .mjx-mrow`).should('contain.text', 'x+13')
+    cy.get(`#\\/iv1 .mjx-mrow`).should('contain.text', 'x+13')
+    cy.get(`#\\/v1a .mjx-mrow`).should('contain.text', 'x+13')
+    cy.get(`#\\/iv1 .mjx-mrow`).should('contain.text', 'x+13')
     cy.get(`#\\/v1`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('x+13')
     });
     cy.get(`#\\/iv1`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('x+13')
+    });
+    cy.get(`#\\/v1a`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('x+13')
+    });
+    cy.get(`#\\/iv1a`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('x+13')
+    });
+    cy.get(`#\\/v2`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('＿')
+    });
+    cy.get(`#\\/iv2`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('＿')
     });
 
     cy.log('Test internal values are set to the correct values')
@@ -225,8 +285,10 @@ describe('MathInput Tag Tests', function () {
     cy.get(`#\\/mi1a textarea`).type(`{end}{backspace}{backspace}y`, { force: true });
 
     cy.log('Test values displayed in browser')
+    cy.get(`#\\/mi1 .mq-editable-field`).should('contain.text', 'x+y')
+    cy.get(`#\\/mi1a .mq-editable-field`).should('contain.text', 'x+y')
     cy.get(`#\\/mi1 .mq-editable-field`).invoke('text').then((text) => {
-      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('x+13')
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('x+y')
     })
     cy.get(`#\\/mi1a .mq-editable-field`).invoke('text').then((text) => {
       expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('x+y')
@@ -235,11 +297,25 @@ describe('MathInput Tag Tests', function () {
       expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('')
     })
 
+    cy.get(`#\\/iv1 .mjx-mrow`).should('contain.text', 'x+y')
+    cy.get(`#\\/iv1a .mjx-mrow`).should('contain.text', 'x+y')
     cy.get(`#\\/v1`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('x+13')
     });
     cy.get(`#\\/iv1`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('x+y')
+    });
+    cy.get(`#\\/v1a`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('x+13')
+    });
+    cy.get(`#\\/iv1a`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('x+y')
+    });
+    cy.get(`#\\/v2`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('＿')
+    });
+    cy.get(`#\\/iv2`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('＿')
     });
 
     cy.log('Test internal values are set to the correct values')
@@ -259,6 +335,7 @@ describe('MathInput Tag Tests', function () {
 
     cy.log('Test values displayed in browser')
     cy.get(`#\\/mi1 .mq-editable-field`).should('contain.text', 'x+y')
+    cy.get(`#\\/mi1a .mq-editable-field`).should('contain.text', 'x+y')
     cy.get(`#\\/mi1 .mq-editable-field`).invoke('text').then((text) => {
       expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('x+y')
     })
@@ -269,11 +346,25 @@ describe('MathInput Tag Tests', function () {
       expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('')
     })
 
+    cy.get(`#\\/v1 .mjx-mrow`).should('contain.text', 'x+y')
+    cy.get(`#\\/v1a .mjx-mrow`).should('contain.text', 'x+y')
     cy.get(`#\\/v1`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('x+y')
     });
     cy.get(`#\\/iv1`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('x+y')
+    });
+    cy.get(`#\\/v1a`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('x+y')
+    });
+    cy.get(`#\\/iv1a`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('x+y')
+    });
+    cy.get(`#\\/v2`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('＿')
+    });
+    cy.get(`#\\/iv2`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('＿')
     });
 
     cy.log('Test internal values are set to the correct values')
@@ -322,6 +413,7 @@ describe('MathInput Tag Tests', function () {
     cy.get('#\\/mi2 textarea').type(`pq`, { force: true });
 
     cy.log('Test values displayed in browser')
+    cy.get(`#\\/mi2 .mq-editable-field`).should('contain.text', 'pq')
     cy.get(`#\\/mi1 .mq-editable-field`).invoke('text').then((text) => {
       expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('x+y')
     })
@@ -332,11 +424,25 @@ describe('MathInput Tag Tests', function () {
       expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('pq')
     })
 
+
+    cy.get(`#\\/iv2 .mjx-mrow`).should('contain.text', 'pq')
     cy.get(`#\\/v1`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('x+y')
     });
     cy.get(`#\\/iv1`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('x+y')
+    });
+    cy.get(`#\\/v1a`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('x+y')
+    });
+    cy.get(`#\\/iv1a`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('x+y')
+    });
+    cy.get(`#\\/v2`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('＿')
+    });
+    cy.get(`#\\/iv2`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('pq')
     });
 
     cy.log('Test internal values are set to the correct values')
@@ -368,11 +474,24 @@ describe('MathInput Tag Tests', function () {
       expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('pq')
     })
 
+    cy.get(`#\\/v2 .mjx-mrow`).should('contain.text', 'pq')
     cy.get(`#\\/v1`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('x+y')
     });
     cy.get(`#\\/iv1`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('x+y')
+    });
+    cy.get(`#\\/v1a`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('x+y')
+    });
+    cy.get(`#\\/iv1a`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('x+y')
+    });
+    cy.get(`#\\/v2`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('pq')
+    });
+    cy.get(`#\\/iv2`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('pq')
     });
 
     cy.log('Test internal values are set to the correct values')
@@ -393,8 +512,10 @@ describe('MathInput Tag Tests', function () {
     cy.get(`#\\/mi1a textarea`).type(`{end}{backspace}{backspace}{backspace}abc`, { force: true });
 
     cy.log('Test values displayed in browser')
+    cy.get(`#\\/mi1 .mq-editable-field`).should('contain.text', 'abc')
+    cy.get(`#\\/mi1a .mq-editable-field`).should('contain.text', 'abc')
     cy.get(`#\\/mi1 .mq-editable-field`).invoke('text').then((text) => {
-      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('x+y')
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('abc')
     })
     cy.get(`#\\/mi1a .mq-editable-field`).invoke('text').then((text) => {
       expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('abc')
@@ -403,11 +524,25 @@ describe('MathInput Tag Tests', function () {
       expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('pq')
     })
 
+    cy.get(`#\\/iv1 .mjx-mrow`).should('contain.text', 'abc')
+    cy.get(`#\\/iv1a .mjx-mrow`).should('contain.text', 'abc')
     cy.get(`#\\/v1`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('x+y')
     });
     cy.get(`#\\/iv1`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('abc')
+    });
+    cy.get(`#\\/v1a`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('x+y')
+    });
+    cy.get(`#\\/iv1a`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('abc')
+    });
+    cy.get(`#\\/v2`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('pq')
+    });
+    cy.get(`#\\/iv2`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('pq')
     });
 
     cy.log('Test internal values are set to the correct values')
@@ -428,9 +563,8 @@ describe('MathInput Tag Tests', function () {
     cy.get(`#\\/mi1a textarea`).blur();
 
     cy.log('Test values displayed in browser')
-    // for some reason, invoking text before mathinput1 is changed to abc,
-    // so call unescaped version first, as that will wait for the change
-    cy.get(`#\\/mi1 .mq-editable-field`).should('have.text', 'abc')
+    cy.get(`#\\/mi1 .mq-editable-field`).should('contain.text', 'abc')
+    cy.get(`#\\/mi1a .mq-editable-field`).should('contain.text', 'abc')
     cy.get(`#\\/mi1 .mq-editable-field`).invoke('text').then((text) => {
       expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('abc')
     })
@@ -441,11 +575,25 @@ describe('MathInput Tag Tests', function () {
       expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('pq')
     })
 
+    cy.get(`#\\/v1 .mjx-mrow`).should('contain.text', 'abc')
+    cy.get(`#\\/v1a .mjx-mrow`).should('contain.text', 'abc')
     cy.get(`#\\/v1`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('abc')
     });
     cy.get(`#\\/iv1`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('abc')
+    });
+    cy.get(`#\\/v1a`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('abc')
+    });
+    cy.get(`#\\/iv1a`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('abc')
+    });
+    cy.get(`#\\/v2`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('pq')
+    });
+    cy.get(`#\\/iv2`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('pq')
     });
 
     cy.log('Test internal values are set to the correct values')
@@ -465,6 +613,8 @@ describe('MathInput Tag Tests', function () {
     cy.get('#\\/mi1 textarea').type(`{end}{backspace}{backspace}{backspace}abc{enter}`, { force: true });
 
     cy.log('Test values displayed in browser')
+    cy.get(`#\\/mi1 .mq-editable-field`).should('contain.text', 'abc')
+    cy.get(`#\\/mi1a .mq-editable-field`).should('contain.text', 'abc')
     cy.get(`#\\/mi1 .mq-editable-field`).invoke('text').then((text) => {
       expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('abc')
     })
@@ -480,6 +630,18 @@ describe('MathInput Tag Tests', function () {
     });
     cy.get(`#\\/iv1`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('abc')
+    });
+    cy.get(`#\\/v1a`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('abc')
+    });
+    cy.get(`#\\/iv1a`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('abc')
+    });
+    cy.get(`#\\/v2`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('pq')
+    });
+    cy.get(`#\\/iv2`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('pq')
     });
 
     cy.log('Test internal values are set to the correct values')
@@ -500,6 +662,7 @@ describe('MathInput Tag Tests', function () {
     cy.get('#\\/mi2 textarea').type(`{end}{backspace}{backspace}{backspace}u/v`, { force: true });
 
     cy.log('Test values displayed in browser')
+    cy.get(`#\\/mi2 .mq-editable-field`).should('contain.text', 'uv')
     cy.get(`#\\/mi1 .mq-editable-field`).invoke('text').then((text) => {
       expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('abc')
     })
@@ -510,11 +673,24 @@ describe('MathInput Tag Tests', function () {
       expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('uv')
     })
 
+    cy.get(`#\\/iv2 .mjx-mrow`).should('contain.text', 'uv')
     cy.get(`#\\/v1`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('abc')
     });
     cy.get(`#\\/iv1`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('abc')
+    });
+    cy.get(`#\\/v1a`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('abc')
+    });
+    cy.get(`#\\/iv1a`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('abc')
+    });
+    cy.get(`#\\/v2`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('pq')
+    });
+    cy.get(`#\\/iv2`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('uv')
     });
 
     cy.log('Test internal values are set to the correct values')
@@ -535,21 +711,37 @@ describe('MathInput Tag Tests', function () {
     cy.get('#\\/mi1 textarea').type(`{end}d`, { force: true });
 
     cy.log('Test values displayed in browser')
+    cy.get(`#\\/mi1 .mq-editable-field`).should('contain.text', 'abcd')
+    cy.get(`#\\/mi1a .mq-editable-field`).should('contain.text', 'abcd')
     cy.get(`#\\/mi1 .mq-editable-field`).invoke('text').then((text) => {
       expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('abcd')
     })
     cy.get(`#\\/mi1a .mq-editable-field`).invoke('text').then((text) => {
-      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('abc')
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('abcd')
     })
     cy.get(`#\\/mi2 .mq-editable-field`).invoke('text').then((text) => {
       expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('uv')
     })
 
+    cy.get(`#\\/iv1 .mjx-mrow`).should('contain.text', 'abcd')
+    cy.get(`#\\/v2 .mjx-mrow`).should('contain.text', 'uv')
     cy.get(`#\\/v1`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('abc')
     });
     cy.get(`#\\/iv1`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('abcd')
+    });
+    cy.get(`#\\/v1a`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('abc')
+    });
+    cy.get(`#\\/iv1a`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('abcd')
+    });
+    cy.get(`#\\/v2`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('uv')
+    });
+    cy.get(`#\\/iv2`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('uv')
     });
 
     cy.log('Test internal values are set to the correct values')
@@ -568,12 +760,11 @@ describe('MathInput Tag Tests', function () {
     cy.get('#\\/mi1 textarea').blur();
 
     cy.log('Test values displayed in browser')
+    cy.get(`#\\/mi1 .mq-editable-field`).should('contain.text', 'abcd')
+    cy.get(`#\\/mi1a .mq-editable-field`).should('contain.text', 'abcd')
     cy.get(`#\\/mi1 .mq-editable-field`).invoke('text').then((text) => {
       expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('abcd')
     })
-    // for some reason, invoking text before stateVariables['/mi1a'] is changed to abcd,
-    // so call unescaped version first, as that will wait for the change
-    cy.get(`#\\/mi1a .mq-editable-field`).should('have.text', 'abcd')
     cy.get(`#\\/mi1a .mq-editable-field`).invoke('text').then((text) => {
       expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('abcd')
     })
@@ -581,11 +772,25 @@ describe('MathInput Tag Tests', function () {
       expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('uv')
     })
 
+    cy.get(`#\\/v1 .mjx-mrow`).should('contain.text', 'abcd')
+    cy.get(`#\\/v1a .mjx-mrow`).should('contain.text', 'abcd')
     cy.get(`#\\/v1`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('abcd')
     });
     cy.get(`#\\/iv1`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('abcd')
+    });
+    cy.get(`#\\/v1a`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('abcd')
+    });
+    cy.get(`#\\/iv1a`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('abcd')
+    });
+    cy.get(`#\\/v2`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('uv')
+    });
+    cy.get(`#\\/iv2`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('uv')
     });
 
     cy.log('Test internal values are set to the correct values')
@@ -603,8 +808,10 @@ describe('MathInput Tag Tests', function () {
     cy.get(`#\\/mi1a textarea`).type("{end}{backspace}{backspace}{backspace}{backspace}", { force: true });
 
     cy.log('Test values displayed in browser')
+    cy.get(`#\\/mi1 .mq-editable-field`).should('not.contain.text', 'a')
+    cy.get(`#\\/mi1a .mq-editable-field`).should('not.contain.text', 'a')
     cy.get(`#\\/mi1 .mq-editable-field`).invoke('text').then((text) => {
-      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('abcd')
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('')
     })
     cy.get(`#\\/mi1a .mq-editable-field`).invoke('text').then((text) => {
       expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('')
@@ -613,11 +820,25 @@ describe('MathInput Tag Tests', function () {
       expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('uv')
     })
 
+    cy.get(`#\\/iv1 .mjx-mrow`).should('contain.text', '\uFF3F')
+    cy.get(`#\\/iv1a .mjx-mrow`).should('contain.text', '\uFF3F')
     cy.get(`#\\/v1`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('abcd')
     });
     cy.get(`#\\/iv1`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('\uFF3F')
+    });
+    cy.get(`#\\/v1a`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('abcd')
+    });
+    cy.get(`#\\/iv1a`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('\uFF3F')
+    });
+    cy.get(`#\\/v2`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('uv')
+    });
+    cy.get(`#\\/iv2`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('uv')
     });
 
     cy.log('Test internal values are set to the correct values')
@@ -636,6 +857,7 @@ describe('MathInput Tag Tests', function () {
 
     cy.log('Test values displayed in browser')
     cy.get(`#\\/mi1 .mq-editable-field`).should('not.contain.text', 'abcd')
+    cy.get(`#\\/mi1a .mq-editable-field`).should('not.contain.text', 'abcd')
     cy.get(`#\\/mi1 .mq-editable-field`).invoke('text').then((text) => {
       expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('')
     })
@@ -646,11 +868,25 @@ describe('MathInput Tag Tests', function () {
       expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('uv')
     })
 
+    cy.get(`#\\/v1 .mjx-mrow`).should('contain.text', '\uFF3F')
+    cy.get(`#\\/v1a .mjx-mrow`).should('contain.text', '\uFF3F')
     cy.get(`#\\/v1`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('\uFF3F')
     });
     cy.get(`#\\/iv1`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('\uFF3F')
+    });
+    cy.get(`#\\/v1a`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('\uFF3F')
+    });
+    cy.get(`#\\/iv1a`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('\uFF3F')
+    });
+    cy.get(`#\\/v2`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('uv')
+    });
+    cy.get(`#\\/iv2`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('uv')
     });
 
     cy.log('Test internal values are set to the correct values')
@@ -667,6 +903,284 @@ describe('MathInput Tag Tests', function () {
 
   });
 
+  // TODO: add that can get back after reload
+  it('mathinput references with invalid math expressions', () => {
+
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <mathinput name="mi1" />
+    <copy target="mi1" assignNames="mi1a"  />
+    <copy prop='value' target="mi1" assignNames="v1" />
+    <copy prop='immediatevalue' target="mi1" assignNames="iv1"  />
+    <copy prop='value' target="mi1a" assignNames="v1a" />
+    <copy prop='immediatevalue' target="mi1a" assignNames="iv1a"  />
+    `}, "*");
+    });
+
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.log('Test values displayed in browser')
+    cy.get(`#\\/mi1 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('')
+    })
+    cy.get(`#\\/mi1a .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('')
+    })
+
+    cy.get(`#\\/v1`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('＿')
+    });
+    cy.get(`#\\/iv1`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('＿')
+    });
+    cy.get(`#\\/v1a`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('＿')
+    });
+    cy.get(`#\\/iv1a`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('＿')
+    });
+
+    cy.log('Test internal values are set to the correct values')
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables();
+      expect(stateVariables['/mi1'].stateValues.immediateValue).eqls('＿');
+      expect(stateVariables['/mi1a'].stateValues.immediateValue).eqls('＿');
+      expect(stateVariables['/mi1'].stateValues.value).eqls('＿');
+      expect(stateVariables['/mi1a'].stateValues.value).eqls('＿');
+    });
+
+
+    cy.log("Type x- in first mathinput");
+    cy.get('#\\/mi1 textarea').type(`x-`, { force: true });
+
+    cy.log('Test values displayed in browser')
+    cy.get(`#\\/mi1 .mq-editable-field`).should('contain.text', 'x−')
+    cy.get(`#\\/mi1a .mq-editable-field`).should('contain.text', 'x−')
+    cy.get(`#\\/mi1 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('x−')
+    })
+    cy.get(`#\\/mi1a .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('x−')
+    })
+
+    cy.get(`#\\/v1`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('＿')
+    });
+    cy.get(`#\\/iv1`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('＿')
+    });
+    cy.get(`#\\/v1a`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('＿')
+    });
+    cy.get(`#\\/iv1a`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('＿')
+    });
+
+    cy.log('Test internal values are set to the correct values')
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables();
+      expect(stateVariables['/mi1'].stateValues.immediateValue).eqls('＿');
+      expect(stateVariables['/mi1a'].stateValues.immediateValue).eqls('＿');
+      expect(stateVariables['/mi1'].stateValues.value).eqls('＿');
+      expect(stateVariables['/mi1a'].stateValues.value).eqls('＿');
+    });
+
+    cy.log("Add y in copied mathinput");
+    cy.get('#\\/mi1a textarea').type(`{end}y`, { force: true });
+
+    cy.log('Test values displayed in browser')
+    cy.get(`#\\/mi1 .mq-editable-field`).should('contain.text', 'x−y')
+    cy.get(`#\\/mi1a .mq-editable-field`).should('contain.text', 'x−y')
+    cy.get(`#\\/mi1 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('x−y')
+    })
+    cy.get(`#\\/mi1a .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('x−y')
+    })
+
+    cy.get(`#\\/v1`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('＿')
+    });
+    cy.get(`#\\/iv1`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('x−y')
+    });
+    cy.get(`#\\/v1a`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('＿')
+    });
+    cy.get(`#\\/iv1a`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('x−y')
+    });
+
+    cy.log('Test internal values are set to the correct values')
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables();
+      expect(stateVariables['/mi1'].stateValues.immediateValue).eqls(['+', 'x', ['-', 'y']]);
+      expect(stateVariables['/mi1a'].stateValues.immediateValue).eqls(['+', 'x', ['-', 'y']]);
+      expect(stateVariables['/mi1'].stateValues.value).eqls('＿');
+      expect(stateVariables['/mi1a'].stateValues.value).eqls('＿');
+    });
+
+
+    cy.log("blur");
+    cy.get('#\\/mi1a textarea').blur();
+
+    cy.log('Test values displayed in browser')
+    cy.get(`#\\/v1 .mjx-mrow`).should('contain.text', 'x−y')
+    cy.get(`#\\/v1a .mjx-mrow`).should('contain.text', 'x−y')
+    cy.get(`#\\/mi1 .mq-editable-field`).should('contain.text', 'x−y')
+    cy.get(`#\\/mi1a .mq-editable-field`).should('contain.text', 'x−y')
+    cy.get(`#\\/mi1 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('x−y')
+    })
+    cy.get(`#\\/mi1a .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('x−y')
+    })
+
+
+    cy.get(`#\\/v1`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('x−y')
+    });
+    cy.get(`#\\/iv1`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('x−y')
+    });
+    cy.get(`#\\/v1a`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('x−y')
+    });
+    cy.get(`#\\/iv1a`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('x−y')
+    });
+
+    cy.log('Test internal values are set to the correct values')
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables();
+      expect(stateVariables['/mi1'].stateValues.immediateValue).eqls(['+', 'x', ['-', 'y']]);
+      expect(stateVariables['/mi1a'].stateValues.immediateValue).eqls(['+', 'x', ['-', 'y']]);
+      expect(stateVariables['/mi1'].stateValues.value).eqls(['+', 'x', ['-', 'y']]);
+      expect(stateVariables['/mi1a'].stateValues.value).eqls(['+', 'x', ['-', 'y']]);
+    });
+
+
+    cy.log("Add * in copied mathinput");
+    cy.get('#\\/mi1a textarea').type(`{end}*`, { force: true });
+
+    cy.log('Test values displayed in browser')
+    cy.get(`#\\/mi1 .mq-editable-field`).should('contain.text', 'x−y·')
+    cy.get(`#\\/mi1a .mq-editable-field`).should('contain.text', 'x−y·')
+    cy.get(`#\\/iv1 .mjx-mrow`).should('contain.text', '＿')
+    cy.get(`#\\/iv1a .mjx-mrow`).should('contain.text', '＿')
+    cy.get(`#\\/mi1 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('x−y·')
+    })
+    cy.get(`#\\/mi1a .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('x−y·')
+    })
+
+
+    cy.get(`#\\/v1`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('x−y')
+    });
+    cy.get(`#\\/iv1`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('＿')
+    });
+    cy.get(`#\\/v1a`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('x−y')
+    });
+    cy.get(`#\\/iv1a`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('＿')
+    });
+
+    cy.log('Test internal values are set to the correct values')
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables();
+      expect(stateVariables['/mi1'].stateValues.immediateValue).eqls('＿');
+      expect(stateVariables['/mi1a'].stateValues.immediateValue).eqls('＿');
+      expect(stateVariables['/mi1'].stateValues.value).eqls(['+', 'x', ['-', 'y']]);
+      expect(stateVariables['/mi1a'].stateValues.value).eqls(['+', 'x', ['-', 'y']]);
+    });
+
+
+    cy.log("Add z in first mathinput");
+    cy.get('#\\/mi1 textarea').type(`{end}z`, { force: true });
+
+    cy.log('Test values displayed in browser')
+    cy.get(`#\\/mi1 .mq-editable-field`).should('contain.text', 'x−y·z')
+    cy.get(`#\\/mi1a .mq-editable-field`).should('contain.text', 'x−y·z')
+    cy.get(`#\\/iv1 .mjx-mrow`).should('contain.text', 'x−yz')
+    cy.get(`#\\/iv1a .mjx-mrow`).should('contain.text', 'x−yz')
+    cy.get(`#\\/mi1 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('x−y·z')
+    })
+    cy.get(`#\\/mi1a .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('x−y·z')
+    })
+
+
+    cy.get(`#\\/v1`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('＿')
+    });
+    cy.get(`#\\/iv1`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('x−yz')
+    });
+    cy.get(`#\\/v1a`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('＿')
+    });
+    cy.get(`#\\/iv1a`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('x−yz')
+    });
+
+    cy.log('Test internal values are set to the correct values')
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables();
+      expect(stateVariables['/mi1'].stateValues.immediateValue).eqls(['+', 'x', ['-', ['*', 'y', 'z']]]);
+      expect(stateVariables['/mi1a'].stateValues.immediateValue).eqls(['+', 'x', ['-', ['*', 'y', 'z']]]);
+      expect(stateVariables['/mi1'].stateValues.value).eqls('＿');
+      expect(stateVariables['/mi1a'].stateValues.value).eqls('＿');
+    });
+
+
+    cy.log("Press enter");
+    cy.get('#\\/mi1 textarea').type(`{enter}`, { force: true });
+
+    cy.get(`#\\/v1 .mjx-mrow`).should('contain.text', 'x−yz')
+    cy.get(`#\\/v1a .mjx-mrow`).should('contain.text', 'x−yz')
+
+
+    cy.log('Test values displayed in browser')
+    cy.get(`#\\/mi1 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('x−y·z')
+    })
+    cy.get(`#\\/mi1a .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('x−y·z')
+    })
+
+
+    cy.get(`#\\/v1`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('x−yz')
+    });
+    cy.get(`#\\/iv1`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('x−yz')
+    });
+    cy.get(`#\\/v1a`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('x−yz')
+    });
+    cy.get(`#\\/iv1a`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('x−yz')
+    });
+
+    cy.log('Test internal values are set to the correct values')
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables();
+      expect(stateVariables['/mi1'].stateValues.immediateValue).eqls(['+', 'x', ['-', ['*', 'y', 'z']]]);
+      expect(stateVariables['/mi1a'].stateValues.immediateValue).eqls(['+', 'x', ['-', ['*', 'y', 'z']]]);
+      expect(stateVariables['/mi1'].stateValues.value).eqls(['+', 'x', ['-', ['*', 'y', 'z']]]);
+      expect(stateVariables['/mi1a'].stateValues.value).eqls(['+', 'x', ['-', ['*', 'y', 'z']]]);
+    });
+
+
+  })
 
   it('downstream from mathinput', () => {
     cy.window().then(async (win) => {
@@ -686,8 +1200,12 @@ describe('MathInput Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
 
-    // cy.get('#\\/mi1_input').should('have.value', '1 + 2 x');
-    // cy.get(`#\\/mi2 textarea`).should('have.value', '1 + 2 x');
+    cy.get(`#\\/mi1 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('1+2x')
+    })
+    cy.get(`#\\/mi2 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('1+2x')
+    })
 
     cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('1+2x')
@@ -718,9 +1236,17 @@ describe('MathInput Tag Tests', function () {
     cy.log('type new values')
     cy.get('#\\/mi1 textarea').type(`{end}{backspace}{backspace}{backspace}{backspace}xy`, { force: true });
 
-    // cy.get('#\\/mi1_input').should('have.value', 'xy');
-    // cy.get(`#\\/mi2 textarea`).should('have.value', '1 + 2 x');
+    cy.get(`#\\/mi1 .mq-editable-field`).should('contain.text', 'xy')
+    cy.get(`#\\/mi2 .mq-editable-field`).should('contain.text', 'xy')
+    cy.get(`#\\/mi1 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('xy')
+    })
+    cy.get(`#\\/mi2 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('xy')
+    })
 
+    cy.get(`#\\/immediate1 .mjx-mrow`).should('contain.text', 'xy')
+    cy.get(`#\\/immediate2 .mjx-mrow`).should('contain.text', 'xy')
     cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('1+2x')
     });
@@ -751,8 +1277,18 @@ describe('MathInput Tag Tests', function () {
     cy.log('press enter')
     cy.get('#\\/mi1 textarea').type(`{enter}`, { force: true });
 
-    // cy.get('#\\/mi1_input').should('have.value', 'xy');
-    // cy.get(`#\\/mi2 textarea`).should('have.value', 'x y');
+    cy.get(`#\\/mi1 .mq-editable-field`).should('contain.text', 'xy')
+    cy.get(`#\\/mi2 .mq-editable-field`).should('contain.text', 'xy')
+    cy.get(`#\\/mi1 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('xy')
+    })
+    cy.get(`#\\/mi2 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('xy')
+    })
+
+    cy.get(`#\\/_math1 .mjx-mrow`).should('contain.text', 'xy')
+    cy.get(`#\\/value1 .mjx-mrow`).should('contain.text', 'xy')
+    cy.get(`#\\/value2 .mjx-mrow`).should('contain.text', 'xy')
 
     cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('xy')
@@ -782,10 +1318,23 @@ describe('MathInput Tag Tests', function () {
 
 
     cy.log('enter new values in referenced')
-    cy.get(`#\\/mi2 textarea`).type(`{end}{backspace}{backspace}qr{enter}`, { force: true });
+    cy.get(`#\\/mi2 textarea`).type(`{end}{backspace}{backspace}qr{enter}`, { force: true }).blur();
 
-    // cy.get('#\\/mi1_input').should('have.value', 'q r');
-    // cy.get(`#\\/mi2 textarea`).should('have.value', 'qr');
+
+    cy.get(`#\\/mi1 .mq-editable-field`).should('contain.text', 'qr')
+    cy.get(`#\\/mi2 .mq-editable-field`).should('contain.text', 'qr')
+    cy.get(`#\\/mi1 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('qr')
+    })
+    cy.get(`#\\/mi2 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('qr')
+    })
+
+    cy.get(`#\\/_math1 .mjx-mrow`).should('contain.text', 'qr')
+    cy.get(`#\\/value1 .mjx-mrow`).should('contain.text', 'qr')
+    cy.get(`#\\/immediate1 .mjx-mrow`).should('contain.text', 'qr')
+    cy.get(`#\\/value2 .mjx-mrow`).should('contain.text', 'qr')
+    cy.get(`#\\/immediate2 .mjx-mrow`).should('contain.text', 'qr')
 
     cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('qr')
@@ -813,6 +1362,7 @@ describe('MathInput Tag Tests', function () {
       expect(stateVariables['/mi2'].stateValues.immediateValue).eqls(['*', 'q', 'r']);
     });
 
+    cy.wait(400);
 
 
     cy.log('prefill ignored');
@@ -835,8 +1385,12 @@ describe('MathInput Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'b');  // to wait until loaded
 
 
-    // cy.get('#\\/mi1_input').should('have.value', '1 + 2 x');
-    // cy.get(`#\\/mi2 textarea`).should('have.value', '1 + 2 x');
+    cy.get(`#\\/mi1 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('1+2x')
+    })
+    cy.get(`#\\/mi2 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('1+2x')
+    })
 
     cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('1+2x')
@@ -864,6 +1418,7 @@ describe('MathInput Tag Tests', function () {
     });
 
 
+    cy.wait(400)
 
     cy.log("normal downstream rules apply")
     cy.window().then(async (win) => {
@@ -884,9 +1439,12 @@ describe('MathInput Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'c');  // to wait until loaded
 
 
-
-    // cy.get('#\\/mi1_input').should('have.value', '3 x + 1');
-    // cy.get(`#\\/mi2 textarea`).should('have.value', '3 x + 1');
+    cy.get(`#\\/mi1 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('3x+1')
+    })
+    cy.get(`#\\/mi2 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('3x+1')
+    })
 
     cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('3x+1')
@@ -916,11 +1474,23 @@ describe('MathInput Tag Tests', function () {
     });
 
 
-    cy.log('enter new values')
+    cy.log('type new values')
     cy.get('#\\/mi1 textarea').type(`{end}{backspace}{backspace}{backspace}{backspace}xy{enter}`, { force: true });
 
-    // cy.get('#\\/mi1_input').should('have.value', 'xy');
-    // cy.get(`#\\/mi2 textarea`).should('have.value', 'x y');
+    cy.get(`#\\/mi1 .mq-editable-field`).should('contain.text', 'xy')
+    cy.get(`#\\/mi2 .mq-editable-field`).should('contain.text', 'xy')
+    cy.get(`#\\/mi1 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('xy')
+    })
+    cy.get(`#\\/mi2 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('xy')
+    })
+
+    cy.get(`#\\/_math1 .mjx-mrow`).should('contain.text', 'xy')
+    cy.get(`#\\/value1 .mjx-mrow`).should('contain.text', 'xy')
+    cy.get(`#\\/immediate1 .mjx-mrow`).should('contain.text', 'xy')
+    cy.get(`#\\/value2 .mjx-mrow`).should('contain.text', 'xy')
+    cy.get(`#\\/immediate2 .mjx-mrow`).should('contain.text', 'xy')
 
     cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('xy')
@@ -953,8 +1523,21 @@ describe('MathInput Tag Tests', function () {
     cy.log('enter new values in reffed')
     cy.get(`#\\/mi2 textarea`).type(`{end}{backspace}{backspace}qr{enter}`, { force: true });
 
-    // cy.get('#\\/mi1_input').should('have.value', 'q r');
-    // cy.get(`#\\/mi2 textarea`).should('have.value', 'qr');
+
+    cy.get(`#\\/mi1 .mq-editable-field`).should('contain.text', 'qr')
+    cy.get(`#\\/mi2 .mq-editable-field`).should('contain.text', 'qr')
+    cy.get(`#\\/mi1 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('qr')
+    })
+    cy.get(`#\\/mi2 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('qr')
+    })
+
+    cy.get(`#\\/_math1 .mjx-mrow`).should('contain.text', 'qr')
+    cy.get(`#\\/value1 .mjx-mrow`).should('contain.text', 'qr')
+    cy.get(`#\\/immediate1 .mjx-mrow`).should('contain.text', 'qr')
+    cy.get(`#\\/value2 .mjx-mrow`).should('contain.text', 'qr')
+    cy.get(`#\\/immediate2 .mjx-mrow`).should('contain.text', 'qr')
 
     cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('qr')
@@ -985,11 +1568,14 @@ describe('MathInput Tag Tests', function () {
     });
 
 
-    cy.log("values revert if not updatable")
+
+  })
+
+  it('values revert if bind to value that is not updatable', () => {
     cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
-    <text>d</text>
+    <text>a</text>
     <p>Original math: <math>1+<math>2x</math><math>z</math></math></p>
     <p>MathInput based on math: <mathinput bindValueTo="$_math1" name="mi1" /></p>
     <p>Copied mathinput: <copy target="mi1" assignNames="mi2" /></p>
@@ -1002,44 +1588,15 @@ describe('MathInput Tag Tests', function () {
     });
 
 
-    cy.get('#\\/_text1').should('have.text', 'd');  // to wait until loaded
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
 
 
-    // cy.get('#\\/mi1_input').should('have.value', '1 + 2 x z');
-    // cy.get(`#\\/mi2 textarea`).should('have.value', '1 + 2 x z');
-
-    cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('1+2xz')
-    });
-
-    cy.get(`#\\/value1`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('1+2xz')
-    });
-    cy.get(`#\\/immediate1`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('1+2xz')
-    });
-    cy.get(`#\\/value2`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('1+2xz')
-    });
-    cy.get(`#\\/immediate2`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('1+2xz')
-    });
-
-
-    cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
-      expect(stateVariables['/mi1'].stateValues.value).eqls(['+', 1, ['*', 2, 'x', 'z']]);
-      expect(stateVariables['/mi2'].stateValues.value).eqls(['+', 1, ['*', 2, 'x', 'z']]);
-      expect(stateVariables['/mi1'].stateValues.immediateValue).eqls(['+', 1, ['*', 2, 'x', 'z']]);
-      expect(stateVariables['/mi2'].stateValues.immediateValue).eqls(['+', 1, ['*', 2, 'x', 'z']]);
-      expect(stateVariables['/_math1'].stateValues.value).eqls(['+', 1, ['*', 2, 'x', 'z']]);
-    });
-
-    cy.log('enter new values, but they revert')
-    cy.get('#\\/mi1 textarea').type(`{end}{rightarrow}{backspace}{backspace}{backspace}{backspace}{backspace}xy{enter}`, { force: true });
-
-    // cy.get('#\\/mi1_input').should('have.value', '1 + 2 x z');
-    // cy.get(`#\\/mi2 textarea`).should('have.value', '1 + 2 x z');
+    cy.get(`#\\/mi1 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('1+2xz')
+    })
+    cy.get(`#\\/mi2 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('1+2xz')
+    })
 
     cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('1+2xz')
@@ -1068,12 +1625,168 @@ describe('MathInput Tag Tests', function () {
       expect(stateVariables['/_math1'].stateValues.value).eqls(['+', 1, ['*', 2, 'x', 'z']]);
     });
 
+    cy.log('type new values')
+    cy.get('#\\/mi1 textarea').type(`{end}{rightarrow}{backspace}{backspace}{backspace}{backspace}{backspace}xy`, { force: true });
 
-    cy.log('enter new values in reffed, but they revert')
-    cy.get(`#\\/mi2 textarea`).type(`{end}{backspace}{backspace}{backspace}{backspace}{backspace}qr{enter}`, { force: true });
 
-    // cy.get('#\\/mi1_input').should('have.value', '1 + 2 x z');
-    // cy.get(`#\\/mi2 textarea`).should('have.value', '1 + 2 x z');
+    cy.get(`#\\/mi1 .mq-editable-field`).should('contain.text', 'xy')
+    cy.get(`#\\/mi2 .mq-editable-field`).should('contain.text', 'xy')
+    cy.get(`#\\/mi1 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('xy')
+    })
+    cy.get(`#\\/mi2 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('xy')
+    })
+
+    cy.get(`#\\/_math1 .mjx-mrow`).should('contain.text', '1+2xz')
+    cy.get(`#\\/value1 .mjx-mrow`).should('contain.text', '1+2xz')
+    cy.get(`#\\/immediate1 .mjx-mrow`).should('contain.text', 'xy')
+    cy.get(`#\\/value2 .mjx-mrow`).should('contain.text', '1+2xz')
+    cy.get(`#\\/immediate2 .mjx-mrow`).should('contain.text', 'xy')
+
+
+    cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('1+2xz')
+    });
+
+    cy.get(`#\\/value1`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('1+2xz')
+    });
+    cy.get(`#\\/immediate1`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('xy')
+    });
+    cy.get(`#\\/value2`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('1+2xz')
+    });
+    cy.get(`#\\/immediate2`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('xy')
+    });
+
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables();
+      expect(stateVariables['/mi1'].stateValues.value).eqls(['+', 1, ['*', 2, 'x', 'z']]);
+      expect(stateVariables['/mi2'].stateValues.value).eqls(['+', 1, ['*', 2, 'x', 'z']]);
+      expect(stateVariables['/mi1'].stateValues.immediateValue).eqls(['*', 'x', 'y']);
+      expect(stateVariables['/mi2'].stateValues.immediateValue).eqls(['*', 'x', 'y']);
+      expect(stateVariables['/_math1'].stateValues.value).eqls(['+', 1, ['*', 2, 'x', 'z']]);
+    });
+
+
+    cy.log('value revert when press enter')
+    cy.get('#\\/mi1 textarea').type(`{enter}`, { force: true });
+
+
+    cy.get(`#\\/mi1 .mq-editable-field`).should('contain.text', '1+2xz')
+    cy.get(`#\\/mi2 .mq-editable-field`).should('contain.text', '1+2xz')
+    cy.get(`#\\/mi1 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('1+2xz')
+    })
+    cy.get(`#\\/mi2 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('1+2xz')
+    })
+
+    cy.get(`#\\/_math1 .mjx-mrow`).should('contain.text', '1+2xz')
+    cy.get(`#\\/value1 .mjx-mrow`).should('contain.text', '1+2xz')
+    cy.get(`#\\/immediate1 .mjx-mrow`).should('contain.text', '1+2xz')
+    cy.get(`#\\/value2 .mjx-mrow`).should('contain.text', '1+2xz')
+    cy.get(`#\\/immediate2 .mjx-mrow`).should('contain.text', '1+2xz')
+
+
+    cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('1+2xz')
+    });
+
+    cy.get(`#\\/value1`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('1+2xz')
+    });
+    cy.get(`#\\/immediate1`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('1+2xz')
+    });
+    cy.get(`#\\/value2`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('1+2xz')
+    });
+    cy.get(`#\\/immediate2`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('1+2xz')
+    });
+
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables();
+      expect(stateVariables['/mi1'].stateValues.value).eqls(['+', 1, ['*', 2, 'x', 'z']]);
+      expect(stateVariables['/mi2'].stateValues.value).eqls(['+', 1, ['*', 2, 'x', 'z']]);
+      expect(stateVariables['/mi1'].stateValues.immediateValue).eqls(['+', 1, ['*', 2, 'x', 'z']]);
+      expect(stateVariables['/mi2'].stateValues.immediateValue).eqls(['+', 1, ['*', 2, 'x', 'z']]);
+      expect(stateVariables['/_math1'].stateValues.value).eqls(['+', 1, ['*', 2, 'x', 'z']]);
+    });
+
+
+    cy.log('type new values in copy')
+    cy.get(`#\\/mi2 textarea`).type(`{end}{backspace}{backspace}{backspace}{backspace}{backspace}qr`, { force: true });
+
+    cy.get(`#\\/mi1 .mq-editable-field`).should('contain.text', 'qr')
+    cy.get(`#\\/mi2 .mq-editable-field`).should('contain.text', 'qr')
+    cy.get(`#\\/mi1 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('qr')
+    })
+    cy.get(`#\\/mi2 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('qr')
+    })
+
+    cy.get(`#\\/_math1 .mjx-mrow`).should('contain.text', '1+2xz')
+    cy.get(`#\\/value1 .mjx-mrow`).should('contain.text', '1+2xz')
+    cy.get(`#\\/immediate1 .mjx-mrow`).should('contain.text', 'qr')
+    cy.get(`#\\/value2 .mjx-mrow`).should('contain.text', '1+2xz')
+    cy.get(`#\\/immediate2 .mjx-mrow`).should('contain.text', 'qr')
+
+
+    cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('1+2xz')
+    });
+
+    cy.get(`#\\/value1`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('1+2xz')
+    });
+    cy.get(`#\\/immediate1`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('qr')
+    });
+    cy.get(`#\\/value2`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('1+2xz')
+    });
+    cy.get(`#\\/immediate2`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('qr')
+    });
+
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables();
+      expect(stateVariables['/mi1'].stateValues.value).eqls(['+', 1, ['*', 2, 'x', 'z']]);
+      expect(stateVariables['/mi2'].stateValues.value).eqls(['+', 1, ['*', 2, 'x', 'z']]);
+      expect(stateVariables['/mi1'].stateValues.immediateValue).eqls(['*', 'q', 'r']);
+      expect(stateVariables['/mi2'].stateValues.immediateValue).eqls(['*', 'q', 'r']);
+      expect(stateVariables['/_math1'].stateValues.value).eqls(['+', 1, ['*', 2, 'x', 'z']]);
+    });
+
+
+    cy.log('values revert when blur')
+    cy.get(`#\\/mi2 textarea`).blur();
+
+
+    cy.get(`#\\/mi1 .mq-editable-field`).should('contain.text', '1+2xz')
+    cy.get(`#\\/mi2 .mq-editable-field`).should('contain.text', '1+2xz')
+    cy.get(`#\\/mi1 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('1+2xz')
+    })
+    cy.get(`#\\/mi2 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('1+2xz')
+    })
+
+    cy.get(`#\\/_math1 .mjx-mrow`).should('contain.text', '1+2xz')
+    cy.get(`#\\/value1 .mjx-mrow`).should('contain.text', '1+2xz')
+    cy.get(`#\\/immediate1 .mjx-mrow`).should('contain.text', '1+2xz')
+    cy.get(`#\\/value2 .mjx-mrow`).should('contain.text', '1+2xz')
+    cy.get(`#\\/immediate2 .mjx-mrow`).should('contain.text', '1+2xz')
+
 
     cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('1+2xz')
@@ -1104,6 +1817,252 @@ describe('MathInput Tag Tests', function () {
 
   })
 
+  it('values revert if bind to fixed value', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <p>Original math: <math fixed>x</math></p>
+    <p>MathInput based on math: <mathinput bindValueTo="$_math1" name="mi1" /></p>
+    <p>Copied mathinput: <copy target="mi1" assignNames="mi2" /></p>
+    <p>Value of original mathinput: <copy target="mi1" prop="value" assignNames="value1" /></p>
+    <p>Immediate value of original mathinput: <copy target="mi1" prop="immediateValue" assignNames="immediate1" /></p>
+    <p>Value of copied mathinput: <copy target="mi2" prop="value" assignNames="value2" /></p>
+    <p>Immediate value of copied mathinput: <copy target="mi2" prop="immediateValue" assignNames="immediate2" /></p>
+
+    `}, "*");
+    });
+
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+
+    cy.get(`#\\/mi1 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('x')
+    })
+    cy.get(`#\\/mi2 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('x')
+    })
+
+    cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('x')
+    });
+
+    cy.get(`#\\/value1`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('x')
+    });
+    cy.get(`#\\/immediate1`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('x')
+    });
+    cy.get(`#\\/value2`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('x')
+    });
+    cy.get(`#\\/immediate2`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('x')
+    });
+
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables();
+      expect(stateVariables['/mi1'].stateValues.value).eq('x');
+      expect(stateVariables['/mi2'].stateValues.value).eq('x');
+      expect(stateVariables['/mi1'].stateValues.immediateValue).eq('x');
+      expect(stateVariables['/mi2'].stateValues.immediateValue).eq('x');
+      expect(stateVariables['/_math1'].stateValues.value).eq('x');
+    });
+
+    cy.log('type new values')
+    cy.get('#\\/mi1 textarea').type(`{end}{backspace}y`, { force: true });
+
+
+    cy.get(`#\\/mi1 .mq-editable-field`).should('contain.text', 'y')
+    cy.get(`#\\/mi2 .mq-editable-field`).should('contain.text', 'y')
+    cy.get(`#\\/mi1 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('y')
+    })
+    cy.get(`#\\/mi2 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('y')
+    })
+
+    cy.get(`#\\/_math1 .mjx-mrow`).should('contain.text', 'x')
+    cy.get(`#\\/value1 .mjx-mrow`).should('contain.text', 'x')
+    cy.get(`#\\/immediate1 .mjx-mrow`).should('contain.text', 'y')
+    cy.get(`#\\/value2 .mjx-mrow`).should('contain.text', 'x')
+    cy.get(`#\\/immediate2 .mjx-mrow`).should('contain.text', 'y')
+
+
+    cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('x')
+    });
+
+    cy.get(`#\\/value1`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('x')
+    });
+    cy.get(`#\\/immediate1`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('y')
+    });
+    cy.get(`#\\/value2`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('x')
+    });
+    cy.get(`#\\/immediate2`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('y')
+    });
+
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables();
+      expect(stateVariables['/mi1'].stateValues.value).eq('x');
+      expect(stateVariables['/mi2'].stateValues.value).eq('x');
+      expect(stateVariables['/mi1'].stateValues.immediateValue).eq('y');
+      expect(stateVariables['/mi2'].stateValues.immediateValue).eq('y');
+      expect(stateVariables['/_math1'].stateValues.value).eq('x');
+    });
+
+
+    cy.log('value revert when press enter')
+    cy.get('#\\/mi1 textarea').type(`{enter}`, { force: true });
+
+
+    cy.get(`#\\/mi1 .mq-editable-field`).should('contain.text', 'x')
+    cy.get(`#\\/mi2 .mq-editable-field`).should('contain.text', 'x')
+    cy.get(`#\\/mi1 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('x')
+    })
+    cy.get(`#\\/mi2 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('x')
+    })
+
+    cy.get(`#\\/_math1 .mjx-mrow`).should('contain.text', 'x')
+    cy.get(`#\\/value1 .mjx-mrow`).should('contain.text', 'x')
+    cy.get(`#\\/immediate1 .mjx-mrow`).should('contain.text', 'x')
+    cy.get(`#\\/value2 .mjx-mrow`).should('contain.text', 'x')
+    cy.get(`#\\/immediate2 .mjx-mrow`).should('contain.text', 'x')
+
+
+    cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('x')
+    });
+
+    cy.get(`#\\/value1`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('x')
+    });
+    cy.get(`#\\/immediate1`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('x')
+    });
+    cy.get(`#\\/value2`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('x')
+    });
+    cy.get(`#\\/immediate2`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('x')
+    });
+
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables();
+      expect(stateVariables['/mi1'].stateValues.value).eq('x');
+      expect(stateVariables['/mi2'].stateValues.value).eq('x');
+      expect(stateVariables['/mi1'].stateValues.immediateValue).eq('x');
+      expect(stateVariables['/mi2'].stateValues.immediateValue).eq('x');
+      expect(stateVariables['/_math1'].stateValues.value).eq('x');
+    });
+
+
+    cy.log('type new values in copy')
+    cy.get(`#\\/mi2 textarea`).type(`{end}{backspace}z`, { force: true });
+
+    cy.get(`#\\/mi1 .mq-editable-field`).should('contain.text', 'z')
+    cy.get(`#\\/mi2 .mq-editable-field`).should('contain.text', 'z')
+    cy.get(`#\\/mi1 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('z')
+    })
+    cy.get(`#\\/mi2 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('z')
+    })
+
+    cy.get(`#\\/_math1 .mjx-mrow`).should('contain.text', 'x')
+    cy.get(`#\\/value1 .mjx-mrow`).should('contain.text', 'x')
+    cy.get(`#\\/immediate1 .mjx-mrow`).should('contain.text', 'z')
+    cy.get(`#\\/value2 .mjx-mrow`).should('contain.text', 'x')
+    cy.get(`#\\/immediate2 .mjx-mrow`).should('contain.text', 'z')
+
+
+    cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('x')
+    });
+
+    cy.get(`#\\/value1`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('x')
+    });
+    cy.get(`#\\/immediate1`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('z')
+    });
+    cy.get(`#\\/value2`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('x')
+    });
+    cy.get(`#\\/immediate2`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('z')
+    });
+
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables();
+      expect(stateVariables['/mi1'].stateValues.value).eq('x');
+      expect(stateVariables['/mi2'].stateValues.value).eq('x');
+      expect(stateVariables['/mi1'].stateValues.immediateValue).eq('z');
+      expect(stateVariables['/mi2'].stateValues.immediateValue).eq('z');
+      expect(stateVariables['/_math1'].stateValues.value).eq('x');
+    });
+
+
+    cy.log('values revert when blur')
+    cy.get(`#\\/mi2 textarea`).blur();
+
+
+    cy.get(`#\\/mi1 .mq-editable-field`).should('contain.text', 'x')
+    cy.get(`#\\/mi2 .mq-editable-field`).should('contain.text', 'x')
+    cy.get(`#\\/mi1 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('x')
+    })
+    cy.get(`#\\/mi2 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('x')
+    })
+
+    cy.get(`#\\/_math1 .mjx-mrow`).should('contain.text', 'x')
+    cy.get(`#\\/value1 .mjx-mrow`).should('contain.text', 'x')
+    cy.get(`#\\/immediate1 .mjx-mrow`).should('contain.text', 'x')
+    cy.get(`#\\/value2 .mjx-mrow`).should('contain.text', 'x')
+    cy.get(`#\\/immediate2 .mjx-mrow`).should('contain.text', 'x')
+
+
+    cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('x')
+    });
+
+    cy.get(`#\\/value1`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('x')
+    });
+    cy.get(`#\\/immediate1`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('x')
+    });
+    cy.get(`#\\/value2`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('x')
+    });
+    cy.get(`#\\/immediate2`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('x')
+    });
+
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables();
+      expect(stateVariables['/mi1'].stateValues.value).eq('x');
+      expect(stateVariables['/mi2'].stateValues.value).eq('x');
+      expect(stateVariables['/mi1'].stateValues.immediateValue).eq('x');
+      expect(stateVariables['/mi2'].stateValues.immediateValue).eq('x');
+      expect(stateVariables['/_math1'].stateValues.value).eq('x');
+    });
+
+  })
+
   it('mathinput based on value of mathinput', () => {
     cy.window().then(async (win) => {
       win.postMessage({
@@ -1117,9 +2076,12 @@ describe('MathInput Tag Tests', function () {
   `}, "*");
     });
 
-    // cy.get('#\\/_mathinput1_input').should('have.value', 'x + 1');
-    // cy.get('#\\/_mathinput2_input').should('have.value', 'x + 1');
-
+    cy.get(`#\\/_mathinput1 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('x+1')
+    })
+    cy.get(`#\\/_mathinput2 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('x+1')
+    })
 
     cy.get('#\\/originalimmediate').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('x+1')
@@ -1146,9 +2108,16 @@ describe('MathInput Tag Tests', function () {
     cy.log('type 2 first mathinput')
     cy.get('#\\/_mathinput1 textarea').type(`{end}2`, { force: true });
 
-    // cy.get('#\\/_mathinput1_input').should('have.value', 'x + 12');
-    // cy.get('#\\/_mathinput2_input').should('have.value', 'x + 1');
+    cy.get(`#\\/_mathinput1 .mq-editable-field`).should('contain.text', 'x+12')
+    cy.get(`#\\/_mathinput2 .mq-editable-field`).should('contain.text', 'x+1')
+    cy.get(`#\\/_mathinput1 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('x+12')
+    })
+    cy.get(`#\\/_mathinput2 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('x+1')
+    })
 
+    cy.get('#\\/originalimmediate .mjx-mrow').should('contain.text', 'x+12')
     cy.get('#\\/originalimmediate').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('x+12')
     });
@@ -1174,8 +2143,19 @@ describe('MathInput Tag Tests', function () {
     cy.log('press enter')
     cy.get('#\\/_mathinput1 textarea').type(`{enter}`, { force: true });
 
-    // cy.get('#\\/_mathinput1_input').should('have.value', 'x + 12');
-    // cy.get('#\\/_mathinput2_input').should('have.value', 'x + 12');
+    cy.get(`#\\/_mathinput1 .mq-editable-field`).should('contain.text', 'x+12')
+    cy.get(`#\\/_mathinput2 .mq-editable-field`).should('contain.text', 'x+12')
+    cy.get(`#\\/_mathinput1 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('x+12')
+    })
+    cy.get(`#\\/_mathinput2 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('x+12')
+    })
+
+    cy.get('#\\/originalimmediate .mjx-mrow').should('contain.text', 'x+12')
+    cy.get('#\\/originalvalue .mjx-mrow').should('contain.text', 'x+12')
+    cy.get('#\\/secondimmediate .mjx-mrow').should('contain.text', 'x+12')
+    cy.get('#\\/secondvalue .mjx-mrow').should('contain.text', 'x+12')
 
     cy.get('#\\/originalimmediate').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('x+12')
@@ -1202,8 +2182,15 @@ describe('MathInput Tag Tests', function () {
     cy.log('type 3 in second mathinput')
     cy.get('#\\/_mathinput2 textarea').type(`{end}3`, { force: true });
 
-    // cy.get('#\\/_mathinput1_input').should('have.value', 'x + 12');
-    // cy.get('#\\/_mathinput2_input').should('have.value', 'x + 123');
+    cy.get(`#\\/_mathinput1 .mq-editable-field`).should('contain.text', 'x+12')
+    cy.get(`#\\/_mathinput2 .mq-editable-field`).should('contain.text', 'x+123')
+    cy.get(`#\\/_mathinput1 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('x+12')
+    })
+    cy.get(`#\\/_mathinput2 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('x+123')
+    })
+
 
     cy.get('#\\/originalimmediate').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('x+12')
@@ -1211,6 +2198,8 @@ describe('MathInput Tag Tests', function () {
     cy.get('#\\/originalvalue').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('x+12')
     });
+
+    cy.get('#\\/secondimmediate .mjx-mrow').should('contain.text', 'x+123')
     cy.get('#\\/secondimmediate').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('x+123')
     });
@@ -1229,10 +2218,20 @@ describe('MathInput Tag Tests', function () {
     cy.log('leave second mathinput')
     cy.get('#\\/_mathinput2 textarea').blur();
 
-    // cy.get('#\\/_mathinput1_input').should('have.value', 'x + 123');
-    // cy.get('#\\/_mathinput2_input').should('have.value', 'x + 123');
+    cy.get(`#\\/_mathinput1 .mq-editable-field`).should('contain.text', 'x+123')
+    cy.get(`#\\/_mathinput2 .mq-editable-field`).should('contain.text', 'x+123')
+    cy.get(`#\\/_mathinput1 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('x+123')
+    })
+    cy.get(`#\\/_mathinput2 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('x+123')
+    })
+
 
     cy.get('#\\/originalimmediate .mjx-mrow').should('contain.text', 'x+123')
+    cy.get('#\\/originalvalue .mjx-mrow').should('contain.text', 'x+123')
+    cy.get('#\\/secondimmediate .mjx-mrow').should('contain.text', 'x+123')
+    cy.get('#\\/secondvalue .mjx-mrow').should('contain.text', 'x+123')
     cy.get('#\\/originalimmediate').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('x+123')
     });
@@ -1268,9 +2267,12 @@ describe('MathInput Tag Tests', function () {
   `}, "*");
     });
 
-    // cy.get('#\\/_mathinput1_input').should('have.value', 'x + 1');
-    // cy.get('#\\/_mathinput2_input').should('have.value', 'x + 1');
-
+    cy.get(`#\\/_mathinput1 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('x+1')
+    })
+    cy.get(`#\\/_mathinput2 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('x+1')
+    })
 
     cy.get('#\\/originalimmediate').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('x+1')
@@ -1297,9 +2299,19 @@ describe('MathInput Tag Tests', function () {
     cy.log('type 2 first mathinput')
     cy.get('#\\/_mathinput1 textarea').type(`{end}2`, { force: true });
 
-    // cy.get('#\\/_mathinput1_input').should('have.value', 'x + 12');
-    // cy.get('#\\/_mathinput2_input').should('have.value', 'x + 12');
+    cy.get(`#\\/_mathinput1 .mq-editable-field`).should('contain.text', 'x+12')
+    cy.get(`#\\/_mathinput2 .mq-editable-field`).should('contain.text', 'x+12')
+    cy.get(`#\\/_mathinput1 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('x+12')
+    })
+    cy.get(`#\\/_mathinput2 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('x+12')
+    })
 
+    cy.get('#\\/originalimmediate .mjx-mrow').should('contain.text', 'x+12')
+    cy.get('#\\/originalvalue .mjx-mrow').should('contain.text', 'x+1')
+    cy.get('#\\/secondimmediate .mjx-mrow').should('contain.text', 'x+12')
+    cy.get('#\\/secondvalue .mjx-mrow').should('contain.text', 'x+12')
     cy.get('#\\/originalimmediate').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('x+12')
     });
@@ -1325,9 +2337,19 @@ describe('MathInput Tag Tests', function () {
     cy.log('press enter')
     cy.get('#\\/_mathinput1 textarea').type(`{enter}`, { force: true });
 
-    // cy.get('#\\/_mathinput1_input').should('have.value', 'x + 12');
-    // cy.get('#\\/_mathinput2_input').should('have.value', 'x + 12');
+    cy.get(`#\\/_mathinput1 .mq-editable-field`).should('contain.text', 'x+12')
+    cy.get(`#\\/_mathinput2 .mq-editable-field`).should('contain.text', 'x+12')
+    cy.get(`#\\/_mathinput1 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('x+12')
+    })
+    cy.get(`#\\/_mathinput2 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('x+12')
+    })
 
+    cy.get('#\\/originalimmediate .mjx-mrow').should('contain.text', 'x+12')
+    cy.get('#\\/originalvalue .mjx-mrow').should('contain.text', 'x+12')
+    cy.get('#\\/secondimmediate .mjx-mrow').should('contain.text', 'x+12')
+    cy.get('#\\/secondvalue .mjx-mrow').should('contain.text', 'x+12')
     cy.get('#\\/originalimmediate').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('x+12')
     });
@@ -1353,9 +2375,19 @@ describe('MathInput Tag Tests', function () {
     cy.log('type 3 in second mathinput')
     cy.get('#\\/_mathinput2 textarea').type(`{end}3`, { force: true });
 
-    // cy.get('#\\/_mathinput1_input').should('have.value', 'x + 12');
-    // cy.get('#\\/_mathinput2_input').should('have.value', 'x + 123');
+    cy.get(`#\\/_mathinput1 .mq-editable-field`).should('contain.text', 'x+12')
+    cy.get(`#\\/_mathinput2 .mq-editable-field`).should('contain.text', 'x+123')
+    cy.get(`#\\/_mathinput1 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('x+12')
+    })
+    cy.get(`#\\/_mathinput2 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('x+123')
+    })
 
+    cy.get('#\\/originalimmediate .mjx-mrow').should('contain.text', 'x+12')
+    cy.get('#\\/originalvalue .mjx-mrow').should('contain.text', 'x+12')
+    cy.get('#\\/secondimmediate .mjx-mrow').should('contain.text', 'x+123')
+    cy.get('#\\/secondvalue .mjx-mrow').should('contain.text', 'x+12')
     cy.get('#\\/originalimmediate').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('x+12')
     });
@@ -1380,9 +2412,19 @@ describe('MathInput Tag Tests', function () {
     cy.log('leave second mathinput')
     cy.get('#\\/_mathinput2 textarea').blur();
 
-    // cy.get('#\\/_mathinput1_input').should('have.value', 'x + 123');
-    // cy.get('#\\/_mathinput2_input').should('have.value', 'x + 123');
+    cy.get(`#\\/_mathinput1 .mq-editable-field`).should('contain.text', 'x+123')
+    cy.get(`#\\/_mathinput2 .mq-editable-field`).should('contain.text', 'x+123')
+    cy.get(`#\\/_mathinput1 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('x+123')
+    })
+    cy.get(`#\\/_mathinput2 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('x+123')
+    })
 
+    cy.get('#\\/originalimmediate .mjx-mrow').should('contain.text', 'x+123')
+    cy.get('#\\/originalvalue .mjx-mrow').should('contain.text', 'x+123')
+    cy.get('#\\/secondimmediate .mjx-mrow').should('contain.text', 'x+123')
+    cy.get('#\\/secondvalue .mjx-mrow').should('contain.text', 'x+123')
     cy.get('#\\/originalimmediate .mjx-mrow').should('contain.text', 'x+123')
     cy.get('#\\/originalimmediate').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('x+123')
@@ -1421,10 +2463,12 @@ describe('MathInput Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'Enter vector');
 
     cy.get('#\\/a textarea').type('(1,2,3){enter}', { force: true });
+    cy.get('#\\/b .mjx-mrow').should('contain.text', '(1,2,3)')
     cy.get('#\\/b').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(1,2,3)')
     })
     cy.get('#\\/a textarea').type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(2,3){enter}', { force: true });
+    cy.get('#\\/b .mjx-mrow').should('contain.text', '(2,3)')
     cy.get('#\\/b').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(2,3)')
     })
@@ -1448,6 +2492,8 @@ describe('MathInput Tag Tests', function () {
     cy.get('#\\/a textarea').type('f(x){enter}', { force: true });
     cy.get('#\\/b textarea').type('f(x){enter}', { force: true });
 
+    cy.get('#\\/a2 .mjx-mrow').should('contain.text', 'f(x)')
+    cy.get('#\\/b2 .mjx-mrow').should('contain.text', 'fx')
     cy.get('#\\/a2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('f(x)')
     })
@@ -1466,6 +2512,9 @@ describe('MathInput Tag Tests', function () {
     cy.get('#\\/a textarea').type('{end}{backspace}{backspace}{backspace}{backspace}g(f){enter}', { force: true });
     cy.get('#\\/b textarea').type('{end}{backspace}{backspace}{backspace}{backspace}g(f){enter}', { force: true });
 
+
+    cy.get('#\\/a2 .mjx-mrow').should('contain.text', 'g(f)')
+    cy.get('#\\/b2 .mjx-mrow').should('contain.text', 'gf')
     cy.get('#\\/a2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('g(f)')
     })
@@ -1484,6 +2533,9 @@ describe('MathInput Tag Tests', function () {
     cy.get('#\\/a textarea').type('{end}{backspace}{backspace}{backspace}{backspace}h(q){enter}', { force: true });
     cy.get('#\\/b textarea').type('{end}{backspace}{backspace}{backspace}{backspace}h(q){enter}', { force: true });
 
+
+    cy.get('#\\/a2 .mjx-mrow').should('contain.text', 'hq')
+    cy.get('#\\/b2 .mjx-mrow').should('contain.text', 'h(q)')
     cy.get('#\\/a2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('hq')
     })
@@ -1503,6 +2555,9 @@ describe('MathInput Tag Tests', function () {
     cy.get('#\\/a textarea').type('{end}{backspace}{backspace}{backspace}{backspace}q(z){enter}', { force: true });
     cy.get('#\\/b textarea').type('{end}{backspace}{backspace}{backspace}{backspace}q(z){enter}', { force: true });
 
+
+    cy.get('#\\/a2 .mjx-mrow').should('contain.text', 'qz')
+    cy.get('#\\/b2 .mjx-mrow').should('contain.text', 'q(z)')
     cy.get('#\\/a2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('qz')
     })
@@ -1580,7 +2635,13 @@ describe('MathInput Tag Tests', function () {
       expect(stateVariables['/b4'].stateValues.valueForDisplay).eqls(['*', 10, ['^', 'e', ['*', 3, 'y']]]);
     });
 
-    cy.get('#\\/a textarea').type('{end}{leftArrow}{leftArrow}{backspace}345.15389319', { force: true });
+    cy.wait(500);
+
+    cy.get('#\\/a textarea').type('{end}{leftArrow}{leftArrow}{backspace}345.15389319{ctrl+end}', { force: true });
+
+    cy.get('#\\/a .mq-editable-field').should('contain.text', 'sin(345.15389319x)')
+    cy.get('#\\/a2 .mjx-mrow').should('contain.text', 'sin(2x)')
+    cy.get('#\\/a3 .mjx-mrow').should('contain.text', 'sin(345.15x)')
     cy.get('#\\/a .mq-editable-field').invoke('text').then((text) => {
       expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('sin(345.15389319x)')
     })
@@ -1591,8 +2652,11 @@ describe('MathInput Tag Tests', function () {
       expect(text.trim()).equal('sin(345.15x)')
     })
 
-    cy.get('#\\/b2 textarea').type('{ctrl+home}{rightArrow}{rightArrow}{backspace}{backspace}2.047529344518{ctrl+end}{leftArrow}{leftArrow}{backspace}0.0000073013048309', { force: true });
+    cy.get('#\\/b2 textarea').type('{ctrl+home}{rightArrow}{rightArrow}{backspace}{backspace}2.047529344518{ctrl+end}{leftArrow}{leftArrow}{backspace}0.0000073013048309{ctrl+end}', { force: true });
 
+    cy.get('#\\/a .mq-editable-field').should('contain.text', 'sin(345.15x)')
+    cy.get('#\\/a2 .mjx-mrow').should('contain.text', 'sin(345.15x)')
+    cy.get('#\\/a3 .mjx-mrow').should('contain.text', 'sin(345.15x)')
     cy.get('#\\/a .mq-editable-field').invoke('text').then((text) => {
       expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('sin(345.15x)')
     })
@@ -1602,6 +2666,12 @@ describe('MathInput Tag Tests', function () {
     cy.get('#\\/a3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('sin(345.15x)')
     })
+
+    cy.get('#\\/b .mjx-mrow').should('contain.text', '10e3y')
+    cy.get('#\\/b2 .mq-editable-field').should('contain.text', '2.047529344518e0.0000073013048309y')
+    cy.get('#\\/b3 .mjx-mrow').should('contain.text', '10e3y')
+    cy.get('#\\/b4 .mjx-mrow').should('contain.text', '2.05e0.0000073y')
+
     cy.get('#\\/b').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('10e3y')
     })
@@ -1615,9 +2685,12 @@ describe('MathInput Tag Tests', function () {
       expect(text.trim()).equal('2.05e0.0000073y')
     })
 
-    // for some reason, blurring doesn't seem to get mq-editable-field to updates, so type enter
-    cy.get('#\\/b2 textarea').type("{enter}", { force: true });
+    cy.get('#\\/b2 textarea').blur();
 
+    cy.get('#\\/b .mjx-mrow').should('contain.text', '2.047529345e0.000007301304831y')
+    cy.get('#\\/b2 .mq-editable-field').should('contain.text', '2.05e0.0000073y')
+    cy.get('#\\/b3 .mjx-mrow').should('contain.text', '2.05e0.0000073y')
+    cy.get('#\\/b4 .mjx-mrow').should('contain.text', '2.05e0.0000073y')
     cy.get('#\\/b').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('2.047529345e0.000007301304831y')
     })
@@ -1633,6 +2706,9 @@ describe('MathInput Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables();
+      console.log(stateVariables['/a3'].stateValues.value)
+      console.log(['apply', 'sin', ['*', 345.15389319, 'x']]);
+
       expect(stateVariables['/a'].stateValues.value).eqls(['apply', 'sin', ['*', 345.15389319, 'x']]);
       expect(stateVariables['/a'].stateValues.valueForDisplay).eqls(['apply', 'sin', ['*', 345.15, 'x']]);
       expect(stateVariables['/a2'].stateValues.value).eqls(['apply', 'sin', ['*', 345.15389319, 'x']]);
@@ -1649,7 +2725,12 @@ describe('MathInput Tag Tests', function () {
     });
 
 
-    cy.get('#\\/a textarea').type('{end}{leftArrow}{leftArrow}{backspace}4', { force: true });
+    cy.get('#\\/a textarea').type('{end}{leftArrow}{leftArrow}{backspace}4{ctrl+end}', { force: true });
+
+
+    cy.get('#\\/a .mq-editable-field').should('contain.text', 'sin(345.14x)')
+    cy.get('#\\/a2 .mjx-mrow').should('contain.text', 'sin(345.15x)')
+    cy.get('#\\/a3 .mjx-mrow').should('contain.text', 'sin(345.14x)')
 
     cy.get('#\\/a .mq-editable-field').invoke('text').then((text) => {
       expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('sin(345.14x)')
@@ -1673,6 +2754,9 @@ describe('MathInput Tag Tests', function () {
 
     cy.get('#\\/a textarea').blur();
 
+    cy.get('#\\/a .mq-editable-field').should('contain.text', 'sin(345.14x)')
+    cy.get('#\\/a2 .mjx-mrow').should('contain.text', 'sin(345.14x)')
+    cy.get('#\\/a3 .mjx-mrow').should('contain.text', 'sin(345.14x)')
     cy.get('#\\/a .mq-editable-field').invoke('text').then((text) => {
       expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('sin(345.14x)')
     })
@@ -1694,8 +2778,12 @@ describe('MathInput Tag Tests', function () {
       expect(stateVariables['/a3'].stateValues.valueForDisplay).eqls(['apply', 'sin', ['*', 345.14, 'x']]);
     });
 
-    cy.get('#\\/b2 textarea').type('{ctrl+home}{rightArrow}{backspace}6', { force: true });
+    cy.get('#\\/b2 textarea').type('{ctrl+home}{rightArrow}{backspace}6{ctrl+home}', { force: true });
 
+    cy.get('#\\/b .mjx-mrow').should('contain.text', '2.047529345e0.000007301304831y')
+    cy.get('#\\/b2 .mq-editable-field').should('contain.text', '6.05e0.0000073y')
+    cy.get('#\\/b3 .mjx-mrow').should('contain.text', '2.05e0.0000073y')
+    cy.get('#\\/b4 .mjx-mrow').should('contain.text', '6.05e0.0000073y')
     cy.get('#\\/b').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('2.047529345e0.000007301304831y')
     })
@@ -1723,6 +2811,9 @@ describe('MathInput Tag Tests', function () {
     cy.get('#\\/b2 textarea').blur();
 
     cy.get('#\\/b .mjx-mrow').should('contain.text', '6.05e0.0000073y')
+    cy.get('#\\/b2 .mq-editable-field').should('contain.text', '6.05e0.0000073y')
+    cy.get('#\\/b3 .mjx-mrow').should('contain.text', '6.05e0.0000073y')
+    cy.get('#\\/b4 .mjx-mrow').should('contain.text', '6.05e0.0000073y')
     cy.get('#\\/b').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('6.05e0.0000073y')
     })
@@ -1806,8 +2897,14 @@ describe('MathInput Tag Tests', function () {
       expect(stateVariables['/b4'].stateValues.valueForDisplay).eqls(['*', 10, ['^', 'e', ['*', 3, 'y']]]);
     });
 
-    cy.get('#\\/a textarea').type('{end}{leftArrow}{leftArrow}{backspace}345.15389319', { force: true });
 
+    cy.wait(500)
+
+    cy.get('#\\/a textarea').type('{end}{leftArrow}{leftArrow}{backspace}345.15389319{ctrl+end}', { force: true });
+
+    cy.get('#\\/a .mq-editable-field').should('contain.text', 'sin(345.15389319x)')
+    cy.get('#\\/a2 .mjx-mrow').should('contain.text', 'sin(2x)')
+    cy.get('#\\/a3 .mjx-mrow').should('contain.text', 'sin(345.15x)')
     cy.get('#\\/a .mq-editable-field').invoke('text').then((text) => {
       expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('sin(345.15389319x)')
     })
@@ -1818,8 +2915,11 @@ describe('MathInput Tag Tests', function () {
       expect(text.trim()).equal('sin(345.15x)')
     })
 
-    cy.get('#\\/b2 textarea').type('{ctrl+home}{rightArrow}{rightArrow}{backspace}{backspace}2.047529344518{ctrl+end}{leftArrow}{leftArrow}{backspace}0.0000073013048309', { force: true });
+    cy.get('#\\/b2 textarea').type('{ctrl+home}{rightArrow}{rightArrow}{backspace}{backspace}2.047529344518{ctrl+end}{leftArrow}{leftArrow}{backspace}0.0000073013048309{ctrl+end}', { force: true });
 
+    cy.get('#\\/a .mq-editable-field').should('contain.text', 'sin(345.15x)')
+    cy.get('#\\/a2 .mjx-mrow').should('contain.text', 'sin(345.15x)')
+    cy.get('#\\/a3 .mjx-mrow').should('contain.text', 'sin(345.15x)')
     cy.get('#\\/a .mq-editable-field').invoke('text').then((text) => {
       expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('sin(345.15x)')
     })
@@ -1829,6 +2929,13 @@ describe('MathInput Tag Tests', function () {
     cy.get('#\\/a3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('sin(345.15x)')
     })
+
+
+    cy.get('#\\/b .mjx-mrow').should('contain.text', '10e3y')
+    cy.get('#\\/b2 .mq-editable-field').should('contain.text', '2.047529344518e0.0000073013048309y')
+    cy.get('#\\/b3 .mjx-mrow').should('contain.text', '10e3y')
+    cy.get('#\\/b4 .mjx-mrow').should('contain.text', '2.04752934e0.0000073y')
+
     cy.get('#\\/b').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('10e3y')
     })
@@ -1842,8 +2949,12 @@ describe('MathInput Tag Tests', function () {
       expect(text.trim()).equal('2.04752934e0.0000073y')
     })
 
-    // for some reason, blurring doesn't seem to get mq-editable-field to updates, so type enter
-    cy.get('#\\/b2 textarea').type("{enter}", { force: true });
+    cy.get('#\\/b2 textarea').blur();
+
+    cy.get('#\\/b .mjx-mrow').should('contain.text', '2.047529345e0.000007301304831y')
+    cy.get('#\\/b2 .mq-editable-field').should('contain.text', '2.04752934e0.0000073y')
+    cy.get('#\\/b3 .mjx-mrow').should('contain.text', '2.04752934e0.0000073y')
+    cy.get('#\\/b4 .mjx-mrow').should('contain.text', '2.04752934e0.0000073y')
 
     cy.get('#\\/b').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('2.047529345e0.000007301304831y')
@@ -1876,8 +2987,12 @@ describe('MathInput Tag Tests', function () {
     });
 
 
-    cy.get('#\\/a textarea').type('{end}{leftArrow}{leftArrow}{backspace}4', { force: true });
+    cy.get('#\\/a textarea').type('{end}{leftArrow}{leftArrow}{backspace}4{ctrl+end}', { force: true });
 
+
+    cy.get('#\\/a .mq-editable-field').should('contain.text', 'sin(345.14x)')
+    cy.get('#\\/a2 .mjx-mrow').should('contain.text', 'sin(345.15x)')
+    cy.get('#\\/a3 .mjx-mrow').should('contain.text', 'sin(345.14x)')
     cy.get('#\\/a .mq-editable-field').invoke('text').then((text) => {
       expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('sin(345.14x)')
     })
@@ -1900,6 +3015,9 @@ describe('MathInput Tag Tests', function () {
 
     cy.get('#\\/a textarea').blur();
 
+    cy.get('#\\/a .mq-editable-field').should('contain.text', 'sin(345.14x)')
+    cy.get('#\\/a2 .mjx-mrow').should('contain.text', 'sin(345.14x)')
+    cy.get('#\\/a3 .mjx-mrow').should('contain.text', 'sin(345.14x)')
     cy.get('#\\/a .mq-editable-field').invoke('text').then((text) => {
       expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('sin(345.14x)')
     })
@@ -1922,7 +3040,12 @@ describe('MathInput Tag Tests', function () {
     });
 
 
-    cy.get('#\\/b2 textarea').type('{ctrl+home}{rightArrow}{backspace}6', { force: true });
+    cy.get('#\\/b2 textarea').type('{ctrl+home}{rightArrow}{backspace}6{ctrl+home}', { force: true });
+
+    cy.get('#\\/b .mjx-mrow').should('contain.text', '2.047529345e0.000007301304831y')
+    cy.get('#\\/b2 .mq-editable-field').should('contain.text', '6.04752934e0.0000073y')
+    cy.get('#\\/b3 .mjx-mrow').should('contain.text', '2.04752934e0.0000073y')
+    cy.get('#\\/b4 .mjx-mrow').should('contain.text', '6.04752934e0.0000073y')
 
     cy.get('#\\/b').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('2.047529345e0.000007301304831y')
@@ -1950,6 +3073,11 @@ describe('MathInput Tag Tests', function () {
     });
 
     cy.get('#\\/b2 textarea').blur();
+
+    cy.get('#\\/b .mjx-mrow').should('contain.text', '6.04752934e0.0000073y')
+    cy.get('#\\/b2 .mq-editable-field').should('contain.text', '6.04752934e0.0000073y')
+    cy.get('#\\/b3 .mjx-mrow').should('contain.text', '6.04752934e0.0000073y')
+    cy.get('#\\/b4 .mjx-mrow').should('contain.text', '6.04752934e0.0000073y')
 
     cy.get('#\\/b .mjx-mrow').should('contain.text', '6.04752934e0.0000073y')
     cy.get('#\\/b').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -2080,10 +3208,16 @@ describe('MathInput Tag Tests', function () {
       expect(stateVariables['/d4'].stateValues.valueForDisplay).eqls(['*', 10, ['^', 'e', ['*', 3, 'y']]]);
     });
 
-    cy.get('#\\/a textarea').type('{end}{leftArrow}{leftArrow}{backspace}0.000000000000000472946384739473{enter}', { force: true });
+    cy.wait(500)
+
+    cy.get('#\\/a textarea').type('{ctrl+end}{leftArrow}{leftArrow}{backspace}0.000000000000000472946384739473{enter}', { force: true });
     cy.get('#\\/b2 textarea').type('{ctrl+home}{rightArrow}{rightArrow}{backspace}{backspace}0.0000000000000934720357236{ctrl+end}{leftArrow}{leftArrow}{backspace}0.0000000000000073013048309{enter}', { force: true });
     cy.get('#\\/c textarea').type('{end}{leftArrow}{leftArrow}{backspace}0.000000000000000472946384739473{enter}', { force: true });
     cy.get('#\\/d2 textarea').type('{ctrl+home}{rightArrow}{rightArrow}{backspace}{backspace}0.0000000000000934720357236{ctrl+end}{leftArrow}{leftArrow}{backspace}0.0000000000000073013048309{enter}', { force: true }).blur();
+
+    cy.get('#\\/a .mq-editable-field').should('contain.text', 'sin(4.7295')
+    cy.get('#\\/a2 .mjx-mrow').should('contain.text', 'sin(4.7295')
+    cy.get('#\\/a3 .mjx-mrow').should('contain.text', 'sin(4.7295')
 
     cy.get('#\\/a .mq-editable-field').invoke('text').then((text) => {
       expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '').replace(/\u00B7/g, '\u22C5')).equal('sin(4.7295⋅10−16x)')
@@ -2094,6 +3228,12 @@ describe('MathInput Tag Tests', function () {
     cy.get('#\\/a3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('sin(4.7295⋅10−16x)')
     })
+
+    cy.get('#\\/b .mjx-mrow').should('contain.text', '9.347203572')
+    cy.get('#\\/b2 .mq-editable-field').should('contain.text', '9.35')
+    cy.get('#\\/b3 .mjx-mrow').should('contain.text', '9.35')
+    cy.get('#\\/b4 .mjx-mrow').should('contain.text', '9.35')
+
     cy.get('#\\/b').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('9.347203572⋅10−14e7.301304831⋅10−15y')
     })
@@ -2106,6 +3246,10 @@ describe('MathInput Tag Tests', function () {
     cy.get('#\\/b4').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('9.35⋅10−14e7.3⋅10−15y')
     })
+
+    cy.get('#\\/c .mq-editable-field').should('contain.text', 'sin(0)')
+    cy.get('#\\/c2 .mjx-mrow').should('contain.text', 'sin(0)')
+    cy.get('#\\/c3 .mjx-mrow').should('contain.text', 'sin(0)')
     cy.get('#\\/c .mq-editable-field').invoke('text').then((text) => {
       expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '').replace(/\u00B7/g, '\u22C5')).equal('sin(0)')
     })
@@ -2115,6 +3259,12 @@ describe('MathInput Tag Tests', function () {
     cy.get('#\\/c3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('sin(0)')
     })
+
+
+    cy.get('#\\/d .mjx-mrow').should('contain.text', '9.347203572')
+    cy.get('#\\/d2 .mq-editable-field').should('contain.text', '9.35')
+    cy.get('#\\/d3 .mjx-mrow').should('contain.text', '9.35')
+    cy.get('#\\/d4 .mjx-mrow').should('contain.text', '9.35')
     cy.get('#\\/d').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('9.347203572⋅10−14e7.301304831⋅10−15y')
     })
@@ -2131,6 +3281,10 @@ describe('MathInput Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables();
+      console.log(stateVariables['/a'].stateValues.value)
+      console.log(['apply', 'sin', ['*', 4.72946384739473e-16, 'x']])
+      console.log(stateVariables['/a3'].stateValues.value)
+
       expect(stateVariables['/a'].stateValues.value).eqls(['apply', 'sin', ['*', 4.72946384739473e-16, 'x']]);
       expect(stateVariables['/a'].stateValues.valueForDisplay).eqls(['apply', 'sin', ['*', 4.7295e-16, 'x']]);
       expect(stateVariables['/a2'].stateValues.value).eqls(['apply', 'sin', ['*', 4.72946384739473e-16, 'x']]);
@@ -2164,6 +3318,10 @@ describe('MathInput Tag Tests', function () {
     cy.get('#\\/c textarea').type('{end}{leftArrow}{leftArrow}3{enter}', { force: true });
     cy.get('#\\/d2 textarea').type('{ctrl+home}{rightArrow}{backspace}6{enter}', { force: true }).blur();
 
+    cy.get('#\\/a .mq-editable-field').should('contain.text', 'sin(5.7295')
+    cy.get('#\\/a2 .mjx-mrow').should('contain.text', 'sin(5.7295')
+    cy.get('#\\/a3 .mjx-mrow').should('contain.text', 'sin(5.7295')
+
     cy.get('#\\/a .mq-editable-field').invoke('text').then((text) => {
       expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '').replace(/\u00B7/g, '\u22C5')).equal('sin(5.7295⋅10−16x)')
     })
@@ -2173,6 +3331,12 @@ describe('MathInput Tag Tests', function () {
     cy.get('#\\/a3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('sin(5.7295⋅10−16x)')
     })
+
+    cy.get('#\\/b .mjx-mrow').should('contain.text', '8.35')
+    cy.get('#\\/b2 .mq-editable-field').should('contain.text', '8.35')
+    cy.get('#\\/b3 .mjx-mrow').should('contain.text', '8.35')
+    cy.get('#\\/b4 .mjx-mrow').should('contain.text', '8.35')
+
     cy.get('#\\/b').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('8.35⋅10−14e7.3⋅10−15y')
     })
@@ -2185,6 +3349,10 @@ describe('MathInput Tag Tests', function () {
     cy.get('#\\/b4').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('8.35⋅10−14e7.3⋅10−15y')
     })
+
+    cy.get('#\\/c .mq-editable-field').should('contain.text', 'sin(30)')
+    cy.get('#\\/c2 .mjx-mrow').should('contain.text', 'sin(30)')
+    cy.get('#\\/c3 .mjx-mrow').should('contain.text', 'sin(30)')
     cy.get('#\\/c .mq-editable-field').invoke('text').then((text) => {
       expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '').replace(/\u00B7/g, '\u22C5')).equal('sin(30)')
     })
@@ -2194,6 +3362,11 @@ describe('MathInput Tag Tests', function () {
     cy.get('#\\/c3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('sin(30)')
     })
+
+    cy.get('#\\/d .mjx-mrow').should('contain.text', '6.35')
+    cy.get('#\\/d2 .mq-editable-field').should('contain.text', '6.35')
+    cy.get('#\\/d3 .mjx-mrow').should('contain.text', '6.35')
+    cy.get('#\\/d4 .mjx-mrow').should('contain.text', '6.35')
     cy.get('#\\/d').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('6.35⋅10−14')
     })
@@ -2282,6 +3455,10 @@ describe('MathInput Tag Tests', function () {
     cy.get('#\\/a textarea').type('{end}{backspace}2.4295639461593{enter}', { force: true });
     cy.get('#\\/b2 textarea').type('{end}{backspace}9.3935596792746{enter}', { force: true }).blur();
 
+    cy.get('#\\/a .mq-editable-field').should('contain.text', '2.4296')
+    cy.get('#\\/b .mjx-mrow').should('contain.text', '9.393559679')
+    cy.get('#\\/b2 .mq-editable-field').should('contain.text', '9.39')
+
     cy.get('#\\/a .mq-editable-field').invoke('text').then((text) => {
       expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('2.4296')
     })
@@ -2311,8 +3488,10 @@ describe('MathInput Tag Tests', function () {
         args: { x: 7.936497798143, y: 2.142218345836 }
       })
 
-      // have to add 'have.text' version to get it to wait
-      cy.get('#\\/a .mq-editable-field').should('have.text', '7.9365')
+      cy.get('#\\/a .mq-editable-field').should('contain.text', '7.9365')
+      cy.get('#\\/b .mjx-mrow').should('contain.text', '2.142218346')
+      cy.get('#\\/b2 .mq-editable-field').should('contain.text', '2.14')
+
       cy.get('#\\/a .mq-editable-field').invoke('text').then((text) => {
         expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('7.9365')
       })
@@ -2381,6 +3560,10 @@ describe('MathInput Tag Tests', function () {
     cy.get('#\\/a textarea').type('{end}{backspace}2.4295639461593{enter}', { force: true });
     cy.get('#\\/b2 textarea').type('{end}{backspace}9.3935596792746{enter}', { force: true }).blur();
 
+    cy.get('#\\/a .mq-editable-field').should('contain.text', '2.4296')
+    cy.get('#\\/b .mjx-mrow').should('contain.text', '9.393559679')
+    cy.get('#\\/b2 .mq-editable-field').should('contain.text', '9.39')
+
     cy.get('#\\/a .mq-editable-field').invoke('text').then((text) => {
       expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('2.4296')
     })
@@ -2410,8 +3593,10 @@ describe('MathInput Tag Tests', function () {
         args: { x: 7.936497798143, y: 2.142218345836 }
       })
 
-      // have to add 'have.text' version to get it to wait
-      cy.get('#\\/a .mq-editable-field').should('have.text', '7.9365')
+      cy.get('#\\/a .mq-editable-field').should('contain.text', '7.9365')
+      cy.get('#\\/b .mjx-mrow').should('contain.text', '2.142218346')
+      cy.get('#\\/b2 .mq-editable-field').should('contain.text', '2.14')
+
       cy.get('#\\/a .mq-editable-field').invoke('text').then((text) => {
         expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('7.9365')
       })
@@ -2453,6 +3638,10 @@ describe('MathInput Tag Tests', function () {
 
     cy.get('#\\/a textarea').type('sqrt4{enter}', { force: true });
 
+    cy.get('#\\/a .mq-editable-field').should('contain.text', '√4')
+    cy.get('#\\/a2 .mjx-mrow').should('contain.text', '√4')
+    cy.get('#\\/a3 .mjx-mrow').should('contain.text', '2')
+
     cy.get('#\\/a .mq-editable-field').invoke('text').then((text) => {
       expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('√4')
     })
@@ -2482,6 +3671,10 @@ describe('MathInput Tag Tests', function () {
     cy.log(`unicode α U+03B1`)
     cy.get('#\\/a textarea').type('α{enter}', { force: true });
 
+    cy.get('#\\/a .mq-editable-field').should('contain.text', 'α')
+    cy.get('#\\/a2 .mjx-mrow').should('contain.text', 'α')
+    cy.get('#\\/a3 .mjx-mrow').should('contain.text', 'α')
+
     cy.get('#\\/a .mq-editable-field').invoke('text').then((text) => {
       expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('α')
     })
@@ -2499,29 +3692,38 @@ describe('MathInput Tag Tests', function () {
     });
 
 
-    cy.log(`latex \\alpha`)
-    cy.get('#\\/a textarea').type('{end}{backspace}\\alpha{enter}', { force: true });
+    cy.log(`latex \\alpha\\beta`)
+    // Note: first {enter} changes \beta to β and second {enter} is detected as an Enter
+    cy.get('#\\/a textarea').type('{end}{backspace}\\alpha\\beta{enter}{enter}', { force: true });
+
+    cy.get('#\\/a .mq-editable-field').should('contain.text', 'αβ')
+    cy.get('#\\/a2 .mjx-mrow').should('contain.text', 'αβ')
+    cy.get('#\\/a3 .mjx-mrow').should('contain.text', 'αβ')
 
     cy.get('#\\/a .mq-editable-field').invoke('text').then((text) => {
-      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('α')
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('αβ')
     })
     cy.get('#\\/a2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('α')
+      expect(text.trim()).equal('αβ')
     })
     cy.get('#\\/a3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('α')
+      expect(text.trim()).equal('αβ')
     })
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables();
-      expect(stateVariables['/a'].stateValues.value).eqls("alpha");
-      expect(stateVariables['/a2'].stateValues.value).eqls("alpha");
-      expect(stateVariables['/a3'].stateValues.value).eqls("alpha");
+      expect(stateVariables['/a'].stateValues.value).eqls(["*", "alpha", "beta"]);
+      expect(stateVariables['/a2'].stateValues.value).eqls(["*", "alpha", "beta"]);
+      expect(stateVariables['/a3'].stateValues.value).eqls(["*", "alpha", "beta"]);
     });
 
 
     cy.log(`unicode − U+2212 is subtraction`)
 
-    cy.get('#\\/a textarea').type('{end}{backspace}y\u2212z{enter}', { force: true });
+    cy.get('#\\/a textarea').type('{end}{backspace}{backspace}y\u2212z{enter}', { force: true });
+
+    cy.get('#\\/a .mq-editable-field').should('contain.text', 'y−z')
+    cy.get('#\\/a2 .mjx-mrow').should('contain.text', 'y−z')
+    cy.get('#\\/a3 .mjx-mrow').should('contain.text', 'y−z')
 
     cy.get('#\\/a .mq-editable-field').invoke('text').then((text) => {
       expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('y−z')
@@ -2541,27 +3743,35 @@ describe('MathInput Tag Tests', function () {
 
     cy.log(`normal minus`)
 
-    cy.get('#\\/a textarea').type('{end}{backspace}{backspace}{backspace}y-z{enter}', { force: true });
+    cy.get('#\\/a textarea').type('{end}{backspace}{backspace}{backspace}a-b{enter}', { force: true });
+
+    cy.get('#\\/a .mq-editable-field').should('contain.text', 'a−b')
+    cy.get('#\\/a2 .mjx-mrow').should('contain.text', 'a−b')
+    cy.get('#\\/a3 .mjx-mrow').should('contain.text', 'a−b')
 
     cy.get('#\\/a .mq-editable-field').invoke('text').then((text) => {
-      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('y−z')
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('a−b')
     })
     cy.get('#\\/a2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('y−z')
+      expect(text.trim()).equal('a−b')
     })
     cy.get('#\\/a3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('y−z')
+      expect(text.trim()).equal('a−b')
     })
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables();
-      expect(stateVariables['/a'].stateValues.value).eqls(["+", "y", ["-", "z"]]);
-      expect(stateVariables['/a2'].stateValues.value).eqls(["+", "y", ["-", "z"]]);
-      expect(stateVariables['/a3'].stateValues.value).eqls(["+", "y", ["-", "z"]]);
+      expect(stateVariables['/a'].stateValues.value).eqls(["+", "a", ["-", "b"]]);
+      expect(stateVariables['/a2'].stateValues.value).eqls(["+", "a", ["-", "b"]]);
+      expect(stateVariables['/a3'].stateValues.value).eqls(["+", "a", ["-", "b"]]);
     });
 
     cy.log(`unicode ⋅ U+22C5 is multiplication`)
 
     cy.get('#\\/a textarea').type('{end}{backspace}{backspace}{backspace}y\u22C5z{enter}', { force: true });
+
+    cy.get('#\\/a .mq-editable-field').should('contain.text', 'y⋅z')
+    cy.get('#\\/a2 .mjx-mrow').should('contain.text', 'yz')
+    cy.get('#\\/a3 .mjx-mrow').should('contain.text', 'yz')
 
     cy.get('#\\/a .mq-editable-field').invoke('text').then((text) => {
       expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('y⋅z')
@@ -2581,27 +3791,35 @@ describe('MathInput Tag Tests', function () {
 
     cy.log(`normal *`)
 
-    cy.get('#\\/a textarea').type('{end}{backspace}{backspace}{backspace}y*z{enter}', { force: true });
+    cy.get('#\\/a textarea').type('{end}{backspace}{backspace}{backspace}a*b{enter}', { force: true });
+
+    cy.get('#\\/a .mq-editable-field').should('contain.text', 'a\u00B7b')
+    cy.get('#\\/a2 .mjx-mrow').should('contain.text', 'ab')
+    cy.get('#\\/a3 .mjx-mrow').should('contain.text', 'ab')
 
     cy.get('#\\/a .mq-editable-field').invoke('text').then((text) => {
-      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('y\u00B7z')
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('a\u00B7b')
     })
     cy.get('#\\/a2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('yz')
+      expect(text.trim()).equal('ab')
     })
     cy.get('#\\/a3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('yz')
+      expect(text.trim()).equal('ab')
     })
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables();
-      expect(stateVariables['/a'].stateValues.value).eqls(["*", "y", "z"]);
-      expect(stateVariables['/a2'].stateValues.value).eqls(["*", "y", "z"]);
-      expect(stateVariables['/a3'].stateValues.value).eqls(["*", "y", "z"]);
+      expect(stateVariables['/a'].stateValues.value).eqls(["*", "a", "b"]);
+      expect(stateVariables['/a2'].stateValues.value).eqls(["*", "a", "b"]);
+      expect(stateVariables['/a3'].stateValues.value).eqls(["*", "a", "b"]);
     });
 
     cy.log(`unicode · U+00B7 becomes multiplication`)
 
     cy.get('#\\/a textarea').type('{end}{backspace}{backspace}{backspace}y\u00B7z{enter}', { force: true });
+
+    cy.get('#\\/a .mq-editable-field').should('contain.text', 'y\u00B7z')
+    cy.get('#\\/a2 .mjx-mrow').should('contain.text', 'yz')
+    cy.get('#\\/a3 .mjx-mrow').should('contain.text', 'yz')
 
     cy.get('#\\/a .mq-editable-field').invoke('text').then((text) => {
       expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('y\u00B7z')
@@ -2622,27 +3840,35 @@ describe('MathInput Tag Tests', function () {
 
     cy.log(`unicode × U+00D7 becomes multiplication`)
 
-    cy.get('#\\/a textarea').type('{end}{backspace}{backspace}{backspace}y\u00D7z{enter}', { force: true });
+    cy.get('#\\/a textarea').type('{end}{backspace}{backspace}{backspace}u\u00D7v{enter}', { force: true });
+
+    cy.get('#\\/a .mq-editable-field').should('contain.text', 'u\u00D7v')
+    cy.get('#\\/a2 .mjx-mrow').should('contain.text', 'uv')
+    cy.get('#\\/a3 .mjx-mrow').should('contain.text', 'uv')
 
     cy.get('#\\/a .mq-editable-field').invoke('text').then((text) => {
-      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('y\u00D7z')
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('u\u00D7v')
     })
     cy.get('#\\/a2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('yz')
+      expect(text.trim()).equal('uv')
     })
     cy.get('#\\/a3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('yz')
+      expect(text.trim()).equal('uv')
     })
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables();
-      expect(stateVariables['/a'].stateValues.value).eqls(["*", "y", "z"]);
-      expect(stateVariables['/a2'].stateValues.value).eqls(["*", "y", "z"]);
-      expect(stateVariables['/a3'].stateValues.value).eqls(["*", "y", "z"]);
+      expect(stateVariables['/a'].stateValues.value).eqls(["*", "u", "v"]);
+      expect(stateVariables['/a2'].stateValues.value).eqls(["*", "u", "v"]);
+      expect(stateVariables['/a3'].stateValues.value).eqls(["*", "u", "v"]);
     });
 
     cy.log(`unicode ∪ U+222A becomes union`)
 
     cy.get('#\\/a textarea').type('{end}{backspace}{backspace}{backspace}A\u222AB{enter}', { force: true });
+
+    cy.get('#\\/a .mq-editable-field').should('contain.text', 'A\u222AB')
+    cy.get('#\\/a2 .mjx-mrow').should('contain.text', 'A\u222AB')
+    cy.get('#\\/a3 .mjx-mrow').should('contain.text', 'A\u222AB')
 
     cy.get('#\\/a .mq-editable-field').invoke('text').then((text) => {
       expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('A\u222AB')
@@ -2665,6 +3891,10 @@ describe('MathInput Tag Tests', function () {
 
     cy.get('#\\/a textarea').type('{end}{backspace}{backspace}{backspace}A\u2229B{enter}', { force: true });
 
+    cy.get('#\\/a .mq-editable-field').should('contain.text', 'A\u2229B')
+    cy.get('#\\/a2 .mjx-mrow').should('contain.text', 'A\u2229B')
+    cy.get('#\\/a3 .mjx-mrow').should('contain.text', 'A\u2229B')
+
     cy.get('#\\/a .mq-editable-field').invoke('text').then((text) => {
       expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('A\u2229B')
     })
@@ -2685,6 +3915,10 @@ describe('MathInput Tag Tests', function () {
     cy.log(`unicode ∞ U+221E becomes infinity`)
 
     cy.get('#\\/a textarea').type('{end}{backspace}{backspace}{backspace}\u221E{enter}', { force: true });
+
+    cy.get('#\\/a .mq-editable-field').should('contain.text', '\u221E')
+    cy.get('#\\/a2 .mjx-mrow').should('contain.text', '\u221E')
+    cy.get('#\\/a3 .mjx-mrow').should('contain.text', '\u221E')
 
     cy.get('#\\/a .mq-editable-field').invoke('text').then((text) => {
       expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('\u221E')
@@ -2707,6 +3941,10 @@ describe('MathInput Tag Tests', function () {
 
     cy.get('#\\/a textarea').type('{end}{backspace}{backspace}{backspace}\u00B5{enter}', { force: true });
 
+    cy.get('#\\/a .mq-editable-field').should('contain.text', '\u00B5')
+    cy.get('#\\/a2 .mjx-mrow').should('contain.text', '\u03BC')
+    cy.get('#\\/a3 .mjx-mrow').should('contain.text', '\u03BC')
+
     cy.get('#\\/a .mq-editable-field').invoke('text').then((text) => {
       expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('\u00B5')
     })
@@ -2727,6 +3965,10 @@ describe('MathInput Tag Tests', function () {
     cy.log(`unicode μ U+u03BC becomes mu`)
 
     cy.get('#\\/a textarea').type('{end}{backspace}{backspace}{backspace}\u03BC{enter}', { force: true });
+
+    cy.get('#\\/a .mq-editable-field').should('contain.text', '\u03BC')
+    cy.get('#\\/a2 .mjx-mrow').should('contain.text', '\u03BC')
+    cy.get('#\\/a3 .mjx-mrow').should('contain.text', '\u03BC')
 
     cy.get('#\\/a .mq-editable-field').invoke('text').then((text) => {
       expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('\u03BC')
@@ -2761,6 +4003,10 @@ describe('MathInput Tag Tests', function () {
 
     cy.get('#\\/a textarea').type('3^2{rightArrow}5{enter}', { force: true });
 
+    cy.get('#\\/a .mq-editable-field').should('contain.text', '325')
+    cy.get('#\\/a2 .mjx-mrow').should('contain.text', '32⋅52')
+    cy.get('#\\/a3 .mjx-mrow').should('contain.text', '45')
+
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables();
       expect(stateVariables['/a'].stateValues.value).eqls(['*', ['^', 3, 2], 5]);
@@ -2770,6 +4016,10 @@ describe('MathInput Tag Tests', function () {
 
 
     cy.get('#\\/a textarea').type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}3^25{enter}', { force: true });
+
+    cy.get('#\\/a .mq-editable-field').should('contain.text', '325')
+    cy.get('#\\/a2 .mjx-mrow').should('contain.text', '325')
+    cy.get('#\\/a3 .mjx-mrow').should('contain.text', '847288609400')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables();
@@ -2781,6 +4031,10 @@ describe('MathInput Tag Tests', function () {
 
     cy.get('#\\/a textarea').type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}3^2x{enter}', { force: true });
 
+    cy.get('#\\/a .mq-editable-field').should('contain.text', '32x')
+    cy.get('#\\/a2 .mjx-mrow').should('contain.text', '32x')
+    cy.get('#\\/a3 .mjx-mrow').should('contain.text', '32x')
+
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables();
       expect(stateVariables['/a'].stateValues.value).eqls(['^', 3, ['*', 2, 'x']]);
@@ -2790,6 +4044,10 @@ describe('MathInput Tag Tests', function () {
 
 
     cy.get('#\\/a textarea').type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}3^2{rightarrow}x{enter}', { force: true });
+
+    cy.get('#\\/a .mq-editable-field').should('contain.text', '32x')
+    cy.get('#\\/a2 .mjx-mrow').should('contain.text', '32x')
+    cy.get('#\\/a3 .mjx-mrow').should('contain.text', '9x')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables();
@@ -2801,6 +4059,10 @@ describe('MathInput Tag Tests', function () {
 
     cy.get('#\\/a textarea').type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}3^x2{enter}', { force: true });
 
+    cy.get('#\\/a .mq-editable-field').should('contain.text', '3x2')
+    cy.get('#\\/a2 .mjx-mrow').should('contain.text', '3x2')
+    cy.get('#\\/a3 .mjx-mrow').should('contain.text', '3x2')
+
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables();
       expect(stateVariables['/a'].stateValues.value).eqls(['^', 3, 'x2']);
@@ -2809,6 +4071,10 @@ describe('MathInput Tag Tests', function () {
     });
 
     cy.get('#\\/a textarea').type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}3^x{rightarrow}2{enter}', { force: true });
+
+    cy.get('#\\/a .mq-editable-field').should('contain.text', '3x2')
+    cy.get('#\\/a2 .mjx-mrow').should('contain.text', '3x2')
+    cy.get('#\\/a3 .mjx-mrow').should('contain.text', '2⋅3x')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables();
@@ -2872,6 +4138,11 @@ describe('MathInput Tag Tests', function () {
 
     cy.get('#\\/mi textarea').type('{end}{backspace}-7.4{enter}', { force: true });
 
+
+    cy.get('#\\/Ax .mjx-mrow').should('contain.text', '−7')
+    cy.get('#\\/mi2 .mjx-mrow').should('contain.text', '−7')
+    cy.get('#\\/mi .mq-editable-field').should('contain.text', '−7')
+
     cy.get('#\\/Ax').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('−7')
     })
@@ -2903,6 +4174,9 @@ describe('MathInput Tag Tests', function () {
     });
 
     cy.get('#\\/Ax .mjx-mrow').should('contain.text', '4')
+    cy.get('#\\/mi2 .mjx-mrow').should('contain.text', '4')
+    cy.get('#\\/mi .mq-editable-field').should('contain.text', '4')
+
     cy.get('#\\/Ax').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('4')
     })
@@ -2910,14 +4184,9 @@ describe('MathInput Tag Tests', function () {
       expect(text.trim()).equal('4')
     })
 
-    cy.get('#\\/mi .mq-editable-field').should('contain.text', '4')
-
     cy.get('#\\/mi .mq-editable-field').invoke('text').then((text) => {
       expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('4')
     })
-
-    // wait to make sure asynchronous update to rawRendererValue can execute
-    cy.wait(10);
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables();
@@ -2943,6 +4212,8 @@ describe('MathInput Tag Tests', function () {
     });
 
     cy.get('#\\/Ax .mjx-mrow').should('contain.text', '5')
+    cy.get('#\\/mi2 .mjx-mrow').should('contain.text', '5')
+    cy.get('#\\/mi .mq-editable-field').should('contain.text', '5')
 
     cy.get('#\\/Ax').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('5')
@@ -2951,14 +4222,10 @@ describe('MathInput Tag Tests', function () {
       expect(text.trim()).equal('5')
     })
 
-    cy.get('#\\/mi .mq-editable-field').should('contain.text', '5')
-
     cy.get('#\\/mi .mq-editable-field').invoke('text').then((text) => {
       expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('5')
     })
 
-    // wait to make sure asynchronous update to rawRendererValue can execute
-    cy.wait(10);
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables();
@@ -2992,11 +4259,13 @@ describe('MathInput Tag Tests', function () {
     })
 
     cy.get('#\\/mi textarea').type("y", { force: true })
+    cy.get('#\\/x .mjx-mrow').should('have.text', 'x')
     cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('x')
     })
 
     cy.get('#\\/mi textarea').type("{backspace}x", { force: true })
+    cy.get('#\\/x .mjx-mrow').should('have.text', 'x')
     cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('x')
     })
@@ -3008,11 +4277,13 @@ describe('MathInput Tag Tests', function () {
     })
 
     cy.get('#\\/mi textarea').type("{end}{backspace}y", { force: true })
+    cy.get('#\\/x .mjx-mrow').should('have.text', '2x')
     cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('2x')
     })
 
     cy.get('#\\/mi textarea').type("+x", { force: true })
+    cy.get('#\\/x .mjx-mrow').should('have.text', '2x')
     cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('2x')
     })
@@ -3042,6 +4313,8 @@ describe('MathInput Tag Tests', function () {
 
     cy.get('#\\/mins textarea').type("xy{enter}", { force: true })
     cy.get('#\\/mis textarea').type("xy{enter}", { force: true })
+    cy.get('#\\/mns .mjx-mrow').should('contain.text', 'xy')
+    cy.get('#\\/ms .mjx-mrow').should('contain.text', 'xy')
     cy.get('#\\/mns').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('xy')
     })
@@ -3059,6 +4332,8 @@ describe('MathInput Tag Tests', function () {
 
     cy.get('#\\/mins textarea').type("{end}0{enter}", { force: true })
     cy.get('#\\/mis textarea').type("{end}0{enter}", { force: true })
+    cy.get('#\\/mns .mjx-mrow').should('contain.text', 'xy0')
+    cy.get('#\\/ms .mjx-mrow').should('contain.text', 'xy0')
     cy.get('#\\/mns').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('xy0')
     })
@@ -3076,6 +4351,8 @@ describe('MathInput Tag Tests', function () {
 
     cy.get('#\\/mins textarea').type("{end}{backspace}_uv{enter}", { force: true })
     cy.get('#\\/mis textarea').type("{end}{backspace}_uv{enter}", { force: true })
+    cy.get('#\\/mns .mjx-mrow').should('contain.text', 'xyuv')
+    cy.get('#\\/ms .mjx-mrow').should('contain.text', 'xyuv')
     cy.get('#\\/mns').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('xyuv')
     })
@@ -3109,6 +4386,7 @@ describe('MathInput Tag Tests', function () {
     cy.log('use periods, no commas')
     cy.get('#\\/mi textarea').type("...x,y,z...{enter}", { force: true })
 
+    cy.get('#\\/m .mjx-mrow').should('contain.text', '…,x,y,z,…')
     cy.get('#\\/m').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('…,x,y,z,…')
     })
@@ -3125,133 +4403,147 @@ describe('MathInput Tag Tests', function () {
 
     cy.log('add spaces in between some periods')
 
-    cy.get('#\\/mi textarea').type("{home} {rightarrow} {rightarrow} {end} {leftarrow}{leftarrow} {enter}", { force: true })
+    cy.get('#\\/mi textarea').type("{home} {rightarrow} {rightarrow} {end} {leftarrow}{leftarrow} {leftarrow}{leftarrow}{leftarrow}{backspace}a{end}{enter}", { force: true })
+
+    cy.get('#\\/m .mjx-mrow').should('contain.text', '…,x,y,a,…')
 
     cy.get('#\\/m').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('…,x,y,z,…')
+      expect(text.trim()).equal('…,x,y,a,…')
     })
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables();
       expect(stateVariables['/mi'].stateValues.value).eqls([
-        "list", ["ldots"], "x", "y", "z", ["ldots"]
+        "list", ["ldots"], "x", "y", "a", ["ldots"]
       ]);
       expect(stateVariables['/m'].stateValues.value).eqls([
-        "list", ["ldots"], "x", "y", "z", ["ldots"]
+        "list", ["ldots"], "x", "y", "a", ["ldots"]
       ]);
     })
 
 
     cy.log('add commas after first set of periods')
 
-    cy.get('#\\/mi textarea').type("{home}{rightarrow}{rightarrow}{rightarrow}{rightarrow}{rightarrow}{rightarrow},{enter}", { force: true })
+    cy.get('#\\/mi textarea').type("{home}{rightarrow}{rightarrow}{rightarrow}{rightarrow}{rightarrow}{rightarrow},{rightarrow}{backspace}b{end}{enter}", { force: true })
+
+    cy.get('#\\/m .mjx-mrow').should('contain.text', '…,b,y,a,…')
 
     cy.get('#\\/m').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('…,x,y,z,…')
+      expect(text.trim()).equal('…,b,y,a,…')
     })
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables();
       expect(stateVariables['/mi'].stateValues.value).eqls([
-        "list", ["ldots"], "x", "y", "z", ["ldots"]
+        "list", ["ldots"], "b", "y", "a", ["ldots"]
       ]);
       expect(stateVariables['/m'].stateValues.value).eqls([
-        "list", ["ldots"], "x", "y", "z", ["ldots"]
+        "list", ["ldots"], "b", "y", "a", ["ldots"]
       ]);
     })
 
 
     cy.log('add commas before second set of periods')
 
-    cy.get('#\\/mi textarea').type("{end}{leftarrow}{leftarrow}{leftarrow}{leftarrow}{leftarrow},{enter}", { force: true })
+    cy.get('#\\/mi textarea').type("{end}{leftarrow}{leftarrow}{leftarrow}{leftarrow}{leftarrow},{leftarrow}{backspace}c{end}{enter}", { force: true })
+
+    cy.get('#\\/m .mjx-mrow').should('contain.text', '…,b,y,c,…')
 
     cy.get('#\\/m').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('…,x,y,z,…')
+      expect(text.trim()).equal('…,b,y,c,…')
     })
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables();
       expect(stateVariables['/mi'].stateValues.value).eqls([
-        "list", ["ldots"], "x", "y", "z", ["ldots"]
+        "list", ["ldots"], "b", "y", "c", ["ldots"]
       ]);
       expect(stateVariables['/m'].stateValues.value).eqls([
-        "list", ["ldots"], "x", "y", "z", ["ldots"]
+        "list", ["ldots"], "b", "y", "c", ["ldots"]
       ]);
     })
 
 
     cy.log('change second set of periods to ldots')
 
-    cy.get('#\\/mi textarea').type("{end}{backspace}{backspace}{backspace}{backspace}{backspace}\\ldots {enter}", { force: true })
+    cy.get('#\\/mi textarea').type("{end}{backspace}{backspace}{backspace}{backspace}{backspace}{leftarrow}{backspace}d{rightarrow}\\ldots {enter}", { force: true })
+
+    cy.get('#\\/m .mjx-mrow').should('contain.text', '…,b,y,d,…')
 
     cy.get('#\\/m').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('…,x,y,z,…')
+      expect(text.trim()).equal('…,b,y,d,…')
     })
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables();
       expect(stateVariables['/mi'].stateValues.value).eqls([
-        "list", ["ldots"], "x", "y", "z", ["ldots"]
+        "list", ["ldots"], "b", "y", "d", ["ldots"]
       ]);
       expect(stateVariables['/m'].stateValues.value).eqls([
-        "list", ["ldots"], "x", "y", "z", ["ldots"]
+        "list", ["ldots"], "b", "y", "d", ["ldots"]
       ]);
     })
 
 
     cy.log('change first set of periods to ldots')
 
-    cy.get('#\\/mi textarea').type("{home}{rightarrow}{rightarrow}{rightarrow}{rightarrow}{rightarrow}{rightarrow}{backspace}{backspace}{backspace}{backspace}{backspace}\\ldots  {enter}", { force: true })
+    cy.get('#\\/mi textarea').type("{home}{rightarrow}{rightarrow}{rightarrow}{rightarrow}{rightarrow}{rightarrow}{backspace}{backspace}{backspace}{backspace}{backspace}\\ldots  {rightarrow}{rightarrow}{backspace}e{end}{enter}", { force: true })
+
+    cy.get('#\\/m .mjx-mrow').should('contain.text', '…,e,y,d,…')
 
     cy.get('#\\/m').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('…,x,y,z,…')
+      expect(text.trim()).equal('…,e,y,d,…')
     })
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables();
       expect(stateVariables['/mi'].stateValues.value).eqls([
-        "list", ["ldots"], "x", "y", "z", ["ldots"]
+        "list", ["ldots"], "e", "y", "d", ["ldots"]
       ]);
       expect(stateVariables['/m'].stateValues.value).eqls([
-        "list", ["ldots"], "x", "y", "z", ["ldots"]
+        "list", ["ldots"], "e", "y", "d", ["ldots"]
       ]);
     })
 
 
     cy.log('remove first comma')
 
-    cy.get('#\\/mi textarea').type("{rightarrow}{backspace}{enter}", { force: true })
+    cy.get('#\\/mi textarea').type("{home}{rightarrow}{rightarrow}{rightarrow}{rightarrow}{rightarrow}{backspace}{backspace}f{end}{enter}", { force: true })
+
+    cy.get('#\\/m .mjx-mrow').should('contain.text', '…,f,y,d,…')
 
     cy.get('#\\/m').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('…,x,y,z,…')
+      expect(text.trim()).equal('…,f,y,d,…')
     })
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables();
       expect(stateVariables['/mi'].stateValues.value).eqls([
-        "list", ["ldots"], "x", "y", "z", ["ldots"]
+        "list", ["ldots"], "f", "y", "d", ["ldots"]
       ]);
       expect(stateVariables['/m'].stateValues.value).eqls([
-        "list", ["ldots"], "x", "y", "z", ["ldots"]
+        "list", ["ldots"], "f", "y", "d", ["ldots"]
       ]);
     })
 
 
     cy.log('remove last comma')
 
-    cy.get('#\\/mi textarea').type("{end}{leftarrow}{backspace}{enter}", { force: true })
+    cy.get('#\\/mi textarea').type("{end}{leftarrow}{backspace}{backspace}g{end}{enter}", { force: true })
+
+    cy.get('#\\/m .mjx-mrow').should('contain.text', '…,f,y,g,…')
 
     cy.get('#\\/m').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('…,x,y,z,…')
+      expect(text.trim()).equal('…,f,y,g,…')
     })
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables();
       expect(stateVariables['/mi'].stateValues.value).eqls([
-        "list", ["ldots"], "x", "y", "z", ["ldots"]
+        "list", ["ldots"], "f", "y", "g", ["ldots"]
       ]);
       expect(stateVariables['/m'].stateValues.value).eqls([
-        "list", ["ldots"], "x", "y", "z", ["ldots"]
+        "list", ["ldots"], "f", "y", "g", ["ldots"]
       ]);
     })
 
@@ -3306,6 +4598,13 @@ describe('MathInput Tag Tests', function () {
     cy.get('#\\/varWithNum2 textarea').type("{end}{backspace}u9j{enter}", { force: true })
     cy.get('#\\/noSplit2 textarea').type("{end}{backspace}uv{enter}", { force: true })
 
+
+    cy.get('#\\/varWithNum .mjx-mrow').should('contain.text', 'xu9j')
+    cy.get(`#\\/varWithNum2 .mq-editable-field`).should('contain.text', 'xu9j')
+    cy.get('#\\/varWithNum3 .mjx-mrow').should('contain.text', 'xu9j')
+    cy.get('#\\/noSplit .mjx-mrow').should('contain.text', 'xyuv')
+    cy.get(`#\\/noSplit2 .mq-editable-field`).should('contain.text', 'xyuv')
+    cy.get('#\\/noSplit3 .mjx-mrow').should('contain.text', 'xyuv')
 
     cy.get('#\\/varWithNum').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('xu9j')
@@ -3499,6 +4798,19 @@ describe('MathInput Tag Tests', function () {
     cy.get('#\\/splits6 textarea').type("{end}z{enter}", { force: true })
 
 
+    cy.get(`#\\/splits1 .mq-editable-field`).should('contain.text', 'xyz');
+    cy.get(`#\\/splits2 .mq-editable-field`).should('contain.text', 'xyz');
+    cy.get(`#\\/splits3 .mq-editable-field`).should('contain.text', 'xyz');
+    cy.get(`#\\/splits4 .mq-editable-field`).should('contain.text', 'xyz');
+    cy.get(`#\\/splits5 .mq-editable-field`).should('contain.text', 'xyz');
+    cy.get(`#\\/splits6 .mq-editable-field`).should('contain.text', 'xyz');
+    cy.get('#\\/splits1m .mjx-mrow').should('contain.text', 'xyz');
+    cy.get('#\\/splits2m .mjx-mrow').should('contain.text', 'xyz');
+    cy.get('#\\/splits3m .mjx-mrow').should('contain.text', 'xyz');
+    cy.get('#\\/splits4m .mjx-mrow').should('contain.text', 'xyz');
+    cy.get('#\\/splits5m .mjx-mrow').should('contain.text', 'xyz');
+    cy.get('#\\/splits6m .mjx-mrow').should('contain.text', 'xyz');
+
     cy.get(`#\\/splits1 .mq-editable-field`).invoke('text').then((text) => {
       expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('xyz')
     })
@@ -3615,6 +4927,19 @@ describe('MathInput Tag Tests', function () {
     cy.get('#\\/hFunction5 textarea').type("{end}{backspace}{backspace}{backspace}{backspace}h(y){enter}", { force: true })
     cy.get('#\\/hFunction6 textarea').type("{end}{backspace}{backspace}{backspace}{backspace}h(y){enter}", { force: true })
 
+    cy.get(`#\\/hFunction1 .mq-editable-field`).should('contain.text', 'h(y)');
+    cy.get(`#\\/hFunction2 .mq-editable-field`).should('contain.text', 'h(y)');
+    cy.get(`#\\/hFunction3 .mq-editable-field`).should('contain.text', 'h(y)');
+    cy.get(`#\\/hFunction4 .mq-editable-field`).should('contain.text', 'h(y)');
+    cy.get(`#\\/hFunction5 .mq-editable-field`).should('contain.text', 'h(y)');
+    cy.get(`#\\/hFunction6 .mq-editable-field`).should('contain.text', 'h(y)');
+    cy.get('#\\/hFunction1m .mjx-mrow').should('contain.text', 'hy');
+    cy.get('#\\/hFunction2m .mjx-mrow').should('contain.text', 'h(y)');
+    cy.get('#\\/hFunction3m .mjx-mrow').should('contain.text', 'hy');
+    cy.get('#\\/hFunction4m .mjx-mrow').should('contain.text', 'h(y)');
+    cy.get('#\\/hFunction5m .mjx-mrow').should('contain.text', 'hy');
+    cy.get('#\\/hFunction6m .mjx-mrow').should('contain.text', 'h(y)');
+
     cy.get(`#\\/hFunction1 .mq-editable-field`).invoke('text').then((text) => {
       expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('h(y)')
     })
@@ -3687,6 +5012,14 @@ describe('MathInput Tag Tests', function () {
     cy.log('equalities with or')
     cy.get('#\\/mi textarea').type("x=1 or u=x{enter}", { force: true })
 
+    // cy.get(`#\\/mi .mq-editable-field`).should('contain.text', 'x=1 or u=x');
+    cy.get('#\\/m .mjx-mrow').should('contain.text', '(x=1)∨(u=x)')
+
+    cy.get(`#\\/mi .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('x=1oru=x')
+    })
+
+
     cy.get('#\\/m').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(x=1)∨(u=x)')
     })
@@ -3703,6 +5036,13 @@ describe('MathInput Tag Tests', function () {
 
     cy.log('inequalities with and')
     cy.get('#\\/mi textarea').type("{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}x>3 and x <= 5{enter}", { force: true })
+
+    // cy.get(`#\\/mi .mq-editable-field`).should('contain.text', 'x>3 and x≤5');
+    cy.get('#\\/m .mjx-mrow').should('contain.text', '(x>3)∧(x≤5)')
+
+    cy.get(`#\\/mi .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('x>3andx≤5')
+    })
 
     cy.get('#\\/m').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(x>3)∧(x≤5)')
@@ -3722,6 +5062,14 @@ describe('MathInput Tag Tests', function () {
     cy.log(`don't convert if not word`)
     cy.get('#\\/mi textarea').type("{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}AandBorC{enter}", { force: true })
 
+
+    // cy.get(`#\\/mi .mq-editable-field`).should('contain.text', 'AandBorC');
+    cy.get('#\\/m .mjx-mrow').should('contain.text', 'AandBorC')
+
+    cy.get(`#\\/mi .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('AandBorC')
+    })
+
     cy.get('#\\/m').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('AandBorC')
     })
@@ -3738,6 +5086,13 @@ describe('MathInput Tag Tests', function () {
 
     cy.log(`add parens or spaces`)
     cy.get('#\\/mi textarea').type("{home}({rightArrow}){rightArrow}{rightArrow}{rightArrow} {rightArrow} {rightArrow}{rightArrow}({rightArrow}){enter}", { force: true })
+
+    // cy.get(`#\\/mi .mq-editable-field`).should('contain.text', '(A)and B or(C)');
+    cy.get('#\\/m .mjx-mrow').should('contain.text', '(A∧B)∨C')
+
+    cy.get(`#\\/mi .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('(A)andBor(C)')
+    })
 
     cy.get('#\\/m').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(A∧B)∨C')
@@ -3768,26 +5123,39 @@ describe('MathInput Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
 
-    cy.log('A U B without unionFromU')
-    cy.get('#\\/mi textarea').type("A U B{enter}", { force: true })
+    cy.log('A U C without unionFromU')
+    cy.get('#\\/mi textarea').type("A U C{enter}", { force: true })
+
+    cy.get('#\\/m .mjx-mrow').should('contain.text', 'AUC')
+
+    cy.get(`#\\/mi .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('AUC')
+    })
 
     cy.get('#\\/m').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('AUB')
+      expect(text.trim()).equal('AUC')
     })
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables();
       expect(stateVariables['/mi'].stateValues.value).eqls([
-        "*", "A", "U", "B"
+        "*", "A", "U", "C"
       ]);
       expect(stateVariables['/m'].stateValues.value).eqls([
-        "*", "A", "U", "B"
+        "*", "A", "U", "C"
       ]);
     })
 
     cy.log('active unionFromU and modify text')
     cy.get('#\\/ufu').click();
-    cy.get('#\\/mi textarea').type("{end} {enter}", { force: true })
+    cy.get('#\\/mi textarea').type("{end}{backspace}B{enter}", { force: true })
+
+
+    cy.get('#\\/m .mjx-mrow').should('contain.text', 'A∪B')
+
+    cy.get(`#\\/mi .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('AUB')
+    })
 
     cy.get('#\\/m').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('A∪B')
@@ -3804,7 +5172,13 @@ describe('MathInput Tag Tests', function () {
     })
 
     cy.log('no substitution without spaces')
-    cy.get('#\\/mi textarea').type("{end}{backspace}{leftArrow}{backspace}{enter}", { force: true })
+    cy.get('#\\/mi textarea').type("{end}{leftArrow}{backspace}{enter}", { force: true })
+
+    cy.get('#\\/m .mjx-mrow').should('contain.text', 'AUB')
+
+    cy.get(`#\\/mi .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('AUB')
+    })
 
     cy.get('#\\/m').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('AUB')
@@ -3820,8 +5194,14 @@ describe('MathInput Tag Tests', function () {
       ]);
     })
 
-    cy.log('add parents')
+    cy.log('add parens')
     cy.get('#\\/mi textarea').type("{end}){leftArrow}{leftArrow}({enter}", { force: true })
+
+    cy.get('#\\/m .mjx-mrow').should('contain.text', 'A∪B')
+
+    cy.get(`#\\/mi .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('AU(B)')
+    })
 
     cy.get('#\\/m').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('A∪B')
@@ -3898,7 +5278,8 @@ describe('MathInput Tag Tests', function () {
       win.postMessage({
         doenetML: `
   <p><text>a</text></p>
-  <mathinput name="mi" prefill="(1,2)" />
+  <p><mathinput name="mi" prefill="(1,2)" /></p>
+  <p>Value: <copy prop="value" target="mi" assignNames="m" /></p>
   <p>Prefill: <copy target="mi" prop="prefill" assignNames="pf" /></p>
   <p>Change prefill: <mathinput name="mipf" bindValueTo="$(mi{prop='prefill'})" /></p>
   `}, "*");
@@ -3907,6 +5288,9 @@ describe('MathInput Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
 
     cy.get('#\\/pf .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq("(1,2)");
+    })
+    cy.get('#\\/m .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text).eq("(1,2)");
     })
 
@@ -3925,6 +5309,12 @@ describe('MathInput Tag Tests', function () {
 
     cy.get('#\\/mi .mq-editable-field').should('have.text', '(1,5)')
     cy.get('#\\/mipf .mq-editable-field').should('have.text', '(1,5)')
+    cy.get('#\\/m .mjx-mrow').should("contain.text", "(1,5)")
+    cy.get('#\\/pf .mjx-mrow').should("contain.text", "(1,5)")
+
+    cy.get('#\\/m .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq("(1,5)");
+    })
     cy.get('#\\/pf .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text).eq("(1,5)");
     })
@@ -3940,8 +5330,13 @@ describe('MathInput Tag Tests', function () {
 
     cy.get('#\\/mi textarea').type("{end}{leftArrow}{backspace}9{enter}", { force: true }).blur();
 
+    cy.get('#\\/m .mjx-mrow').should("contain.text", "(1,9)")
     cy.get('#\\/mi .mq-editable-field').should('have.text', '(1,9)')
     cy.get('#\\/mipf .mq-editable-field').should('have.text', '(1,5)')
+    cy.get('#\\/pf .mjx-mrow').should("contain.text", "(1,5)")
+    cy.get('#\\/m .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq("(1,9)");
+    })
     cy.get('#\\/pf .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text).eq("(1,5)");
     })
@@ -3958,10 +5353,15 @@ describe('MathInput Tag Tests', function () {
 
     cy.get('#\\/mipf textarea').type("{end}{leftArrow}{backspace}7{enter}", { force: true }).blur();
 
+    cy.get('#\\/pf .mjx-mrow').should("contain.text", "(1,7)")
+    cy.get('#\\/m .mjx-mrow').should("contain.text", "(1,9)")
     cy.get('#\\/mi .mq-editable-field').should('have.text', '(1,9)')
     cy.get('#\\/mipf .mq-editable-field').should('have.text', '(1,7)')
     cy.get('#\\/pf .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text).eq("(1,7)");
+    })
+    cy.get('#\\/m .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq("(1,9)");
     })
 
     cy.window().then(async (win) => {
