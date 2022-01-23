@@ -9,7 +9,13 @@ import { serializedComponentsReplacer, serializedComponentsReviver } from '../Co
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faExclamationCircle } from '@fortawesome/free-solid-svg-icons';
 import { rendererSVs } from '../Viewer/renderers/useDoenetRenderer';
-import { useRecoilCallback } from 'recoil';
+import { atomFamily, useRecoilCallback } from 'recoil';
+
+
+export const rendererUpdatesToIgnore = atomFamily({
+  key: 'rendererUpdatesToIgnore',
+  default: {},
+})
 
 class DoenetViewerChild extends Component {
 
@@ -57,7 +63,7 @@ class DoenetViewerChild extends Component {
         viewer.coreReady(e.data.args)
       } else if (e.data.messageType === "coreUpdated") {
         viewer.update(e.data.args)
-      } else if(e.data.messageType === "returnAllStateVariables") {
+      } else if (e.data.messageType === "returnAllStateVariables") {
         console.log(e.data.args)
         viewer.resolveAllStateVariables(e.data.args);
       }
@@ -67,30 +73,42 @@ class DoenetViewerChild extends Component {
       this.coreWorker.postMessage({
         messageType: "returnAllStateVariables"
       })
-      
+
       return new Promise((resolve, reject) => {
         viewer.resolveAllStateVariables = resolve;
       })
-      
+
     }.bind(this)
 
 
-    window.callAction = function({actionName, componentName, args}) {
+    window.callAction = function ({ actionName, componentName, args }) {
       this.callAction({
-        action: {actionName, componentName},
+        action: { actionName, componentName },
         args
       })
     }.bind(this);
 
   }
 
-  callAction({ action, args }) {
+  callAction({ action, args, baseVariableValue, name }) {
+
+    if (baseVariableValue !== undefined && name) {
+      let actionId = nanoid();
+      this.props.updateRendererUpdatesToIgnore({
+        componentName: name,
+        baseVariableValue,
+        actionId
+      })
+      args = { ...args };
+      args.actionId = actionId;
+    }
+
     this.coreWorker.postMessage({
       messageType: "requestAction",
       args: {
         actionName: action.actionName,
         componentName: action.componentName,
-        args
+        args,
       }
     })
   }
@@ -329,9 +347,9 @@ class DoenetViewerChild extends Component {
 
   initializeComponentsToRender(componentToRender) {
     this.componentsToRender[componentToRender.componentName] = componentToRender;
-    if(componentToRender.children) {
-      for(let child of componentToRender.children) {
-        if(child.componentName) {
+    if (componentToRender.children) {
+      for (let child of componentToRender.children) {
+        if (child.componentName) {
           this.initializeComponentsToRender(child)
         }
       }
@@ -558,14 +576,15 @@ class DoenetViewerChild extends Component {
     for (let instruction of updateInstructions) {
 
       if (instruction.instructionType === "updateStateVariable") {
-        for (let { componentName, stateValues } of instruction.stateValuesToUpdate
+        for (let { componentName, stateValues, rendererType } of instruction.stateValuesToUpdate
         ) {
 
 
           this.props.updateRendererSVsWithRecoil({
             componentName,
             stateValues,
-            sourceOfUpdate: instruction.sourceOfUpdate
+            sourceOfUpdate: instruction.sourceOfUpdate,
+            baseStateVariable: this.rendererClasses?.[rendererType]?.baseStateVariable
           })
           //TODO: await ????
           // this.rendererUpdateMethods[componentName].update({
@@ -578,7 +597,8 @@ class DoenetViewerChild extends Component {
         this.props.updateRendererSVsWithRecoil({
           componentName: instruction.parentName,
           stateValues: instruction.stateValues,
-          sourceOfUpdate: instruction.sourceOfUpdate
+          sourceOfUpdate: instruction.sourceOfUpdate,
+          baseStateVariable: this.rendererClasses?.[instruction.rendererType]?.baseStateVariable
         })
       }
     }
@@ -869,7 +889,7 @@ class ErrorBoundary extends React.Component {
 
 function DoenetViewer(props) {
   const toast = useToast();
-  const updateRendererSVsWithRecoil = useRecoilCallback(({ snapshot, set }) => async ({ componentName, stateValues, sourceOfUpdate }) => {
+  const updateRendererSVsWithRecoil = useRecoilCallback(({ snapshot, set }) => async ({ componentName, stateValues, sourceOfUpdate, baseStateVariable }) => {
     // stateVariables = JSON.parse(JSON.stringify(stateVariables))
     // stateVariables = JSON.stringify(stateVariables, serializedComponentsReplacer)
     // stateVariables = JSON.parse(JSON.stringify(stateVariables, serializedComponentsReplacer), serializedComponentsReviver)
@@ -877,14 +897,51 @@ function DoenetViewer(props) {
     // let stateVariables2 = JSON.stringify(stateVariables)
 
     // console.log(">>>>{componentName,stateVariables}",{componentName,stateVariables})
-    set(rendererSVs(componentName), { stateValues, sourceOfUpdate })
-    // set(rendererSVs(componentName),{test:true})
+
+    let ignoreUpdate = false;
+
+    if (baseStateVariable) {
+
+      let sourceActionId = sourceOfUpdate?.sourceInformation?.[componentName]?.actionId;
+
+      let updatesToIgnore = snapshot.getLoadable(rendererUpdatesToIgnore(componentName)).contents;
+
+      if (Object.keys(updatesToIgnore).length > 0) {
+        if (updatesToIgnore[sourceActionId] === stateValues[baseStateVariable]) {
+          // console.log(`ignoring update of ${componentName} to ${stateValues[baseStateVariable]}`)
+          ignoreUpdate = true;
+          set(rendererUpdatesToIgnore(componentName), uti => {
+            uti = { ...uti };
+            delete uti[sourceActionId];
+            return uti;
+          })
+
+        } else {
+          // since value was change from the time the update was created
+          // don't ignore the remaining pending changes in updatesToIgnore
+          // as we changed the state used to determine they could be ignored
+          set(rendererUpdatesToIgnore(componentName), {});
+        }
+      }
+    }
+
+    set(rendererSVs(componentName), { stateValues, sourceOfUpdate, ignoreUpdate })
 
   })
-  // function updateRendererSVsWithRecoil({componentName,stateVariables}){
-  //   console.log(">>>>{componentName,stateVariables}",{componentName,stateVariables})
-  // }
-  let newProps = { ...props, toast, updateRendererSVsWithRecoil }
+  const updateRendererUpdatesToIgnore = useRecoilCallback(({ snapshot, set }) => async ({ componentName, baseVariableValue, actionId }) => {
+
+    // add to updates to ignore so don't apply change again
+    // if it comes back from core without any changes
+    // (possibly after a delay)
+    set(rendererUpdatesToIgnore(componentName), uti => {
+      uti = { ...uti };
+      uti[actionId] = baseVariableValue;
+      return uti;
+    })
+
+  })
+
+  let newProps = { ...props, toast, updateRendererSVsWithRecoil, updateRendererUpdatesToIgnore }
   return <ErrorBoundary><DoenetViewerChild {...newProps} /></ErrorBoundary>
 }
 
