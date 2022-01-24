@@ -907,8 +907,17 @@ function DoenetViewer(props) {
       let updatesToIgnore = snapshot.getLoadable(rendererUpdatesToIgnore(componentName)).contents;
 
       if (Object.keys(updatesToIgnore).length > 0) {
-        if (updatesToIgnore[sourceActionId] === stateValues[baseStateVariable]) {
-          // console.log(`ignoring update of ${componentName} to ${stateValues[baseStateVariable]}`)
+        let v1 = updatesToIgnore[sourceActionId];
+        let v2 = stateValues[baseStateVariable];
+        if (v1 === v2
+          || (
+            Array.isArray(v1)
+            && Array.isArray(v2)
+            && v1.length == v2.length
+            && v1.every((v, i) => v2[i] === v)
+          )
+        ) {
+          // console.log(`ignoring update of ${componentName} to ${v2}`)
           ignoreUpdate = true;
           set(rendererUpdatesToIgnore(componentName), uti => {
             uti = { ...uti };

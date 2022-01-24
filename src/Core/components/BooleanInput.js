@@ -132,13 +132,14 @@ export default class BooleanInput extends Input {
 
   }
 
-  async updateBoolean({ boolean }) {
+  async updateBoolean({ boolean, actionId }) {
     if (!await this.stateValues.disabled) {
       let updateInstructions = [{
         updateType: "updateValue",
         componentName: this.componentName,
         stateVariable: "value",
         value: boolean,
+        sourceInformation: { actionId }
       }];
 
       let event = {
