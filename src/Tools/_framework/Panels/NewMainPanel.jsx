@@ -44,18 +44,7 @@ cursor: pointer;
 
 `;
 
-const SettingsButton = styled.button`
-background-color: white;
-height: 50px;
-width: 50px;
-color: black;
-border: none;
-position: absolute;
-bottom: 0;
-right: 0;
-cursor: pointer;
-font-size: 20px;
-`
+
 
 export default function MainPanel({ headerControls, children, setMenusOpen, openMenuButton, displaySettings }) {
   console.log(">>>===main panel")
@@ -83,7 +72,8 @@ export default function MainPanel({ headerControls, children, setMenusOpen, open
   const contents = [];
 
   if (displaySettings){
-    contents.push(<SettingsButton onClick={()=>setPageToolView({page:'settings',tool:'',view:''})}><FontAwesomeIcon icon={faCog}/></SettingsButton>)
+    //TODO
+    // contents.push(<SettingsButton onClick={()=>setPageToolView({page:'settings',tool:'',view:''})}><FontAwesomeIcon icon={faCog}/></SettingsButton>)
   }
   if (children) {
     contents.push(children)

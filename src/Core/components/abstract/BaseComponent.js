@@ -625,6 +625,8 @@ export default class BaseComponent {
       "markStale", "getPreviousDependencyValuesForMarkStale",
       "determineDependenciesImmediately",
       "createWorkspace", "workspace",
+      "provideEssentialValuesInDefinition",
+      "providePreviousValuesInDefinition",
     ];
 
     let stateVariableDefinitions = {};
@@ -675,7 +677,7 @@ export default class BaseComponent {
 
   }
 
-  static returnStateVariableInfo({ onlyPublic = false, flags }) {
+  static returnStateVariableInfo({ onlyPublic = false, flags, onlyForRenderer = false }) {
     let attributeObject = this.createAttributesObject({ flags });
 
     let stateVariableDescriptions = {};
@@ -683,11 +685,13 @@ export default class BaseComponent {
     let aliases = {};
 
     for (let varName in attributeObject) {
-      let componentTypeOverride = attributeObject[varName].componentType;
-      stateVariableDescriptions[varName] = {
-        componentType: componentTypeOverride ? componentTypeOverride : varName,
-        public: true,
-
+      let attrObj = attributeObject[varName];
+      let componentTypeOverride = attrObj.componentType;
+      if ((!onlyPublic || attrObj.public) && (!onlyForRenderer || attrObj.forRenderer)) {
+        stateVariableDescriptions[varName] = {
+          componentType: componentTypeOverride ? componentTypeOverride : varName,
+          public: attrObj.public,
+        }
       }
 
     }
@@ -700,7 +704,7 @@ export default class BaseComponent {
         aliases[varName] = theStateDef.targetVariableName;
         continue;
       }
-      if (!onlyPublic || theStateDef.public) {
+      if ((!onlyPublic || theStateDef.public) && (!onlyForRenderer || theStateDef.forRenderer)) {
         stateVariableDescriptions[varName] = {
           componentType: theStateDef.componentType,
           public: theStateDef.public,
@@ -840,7 +844,7 @@ export default class BaseComponent {
     }
 
     // always copy essential state
-    if(this.essentialState && Object.keys(this.essentialState).length > 0) {
+    if (this.essentialState && Object.keys(this.essentialState).length > 0) {
       serializedComponent.state = deepClone(this.essentialState);
     }
 

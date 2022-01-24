@@ -1,62 +1,78 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import useDoenetRender from './useDoenetRenderer';
-import ReactDOM from 'react-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCheck, faLevelDownAlt, faTimes, faCloud, faPercentage } from '@fortawesome/free-solid-svg-icons'
 import { sizeToCSS } from './utils/css';
 
 export default function TextInput(props) {
-  let { name, SVs, actions, sourceOfUpdate } = useDoenetRender(props);
+  let { name, SVs, actions, sourceOfUpdate, ignoreUpdate, callAction } = useDoenetRender(props);
 
-  let currentValue = useRef(null);
-  let valueToRevertTo = useRef(null);
-  let validationState = useRef(null);
+  TextInput.baseStateVariable = "immediateValue";
+
+  const [rendererValue, setRendererValue] = useState(SVs.immediateValue);
+
+  let valueToRevertTo = useRef(SVs.immediateValue);
   let focused = useRef(null);
 
-  currentValue.current = SVs.value;
-  valueToRevertTo.current = SVs.value;
+  let immediateValueWhenSetState = useRef(null);
 
 
+  if (!ignoreUpdate && immediateValueWhenSetState.current !== SVs.immediateValue) {
+    // console.log(`setting value to ${SVs.immediateValue}`)
+    setRendererValue(SVs.immediateValue);
+    immediateValueWhenSetState.current = SVs.immediateValue;
+    valueToRevertTo.current = SVs.immediateValue;
+  } else {
+    immediateValueWhenSetState.current = null;
+  }
 
-  function updateValidationState() {
 
-    validationState.current = "unvalidated";
-    if (SVs.valueHasBeenValidated || SVs.numberOfAttemptsLeft < 1) {
-      if (SVs.creditAchieved === 1) {
-        validationState.current = "correct";
-      } else if (SVs.creditAchieved === 0) {
-        validationState.current = "incorrect";
-      } else {
-        validationState.current = "partialcorrect";
-      }
+  let validationState = 'unvalidated';
+  if (SVs.valueHasBeenValidated) {
+    if (SVs.creditAchieved === 1) {
+      validationState = 'correct';
+    } else if (SVs.creditAchieved === 0) {
+      validationState = 'incorrect';
+    } else {
+      validationState = 'partialcorrect';
     }
   }
 
+
   function handleKeyPress(e) {
     if (e.key === "Enter") {
-      valueToRevertTo.current = SVs.value;
-      props.callAction({
-        actionName: "updateValue",
-        componentName: name
-      })
-      // await this.actions.updateValue();
+      valueToRevertTo.current = rendererValue;
 
-      if (SVs.includeCheckWork && validationState.current === "unvalidated") {
-        // await this.actions.submitAnswer();
+      callAction({
+        action: actions.updateValue,
+        baseVariableValue: rendererValue,
+      });
+
+      if (SVs.includeCheckWork && validationState === "unvalidated") {
+        callAction({
+          action: actions.submitAnswer,
+        })
       }
     }
   }
 
   function handleKeyDown(e) {
     if (e.key === "Escape") {
-      props.callAction({
-        componentName: name,
-        actionName: "updateImmediateValue",
-        args: {
-          text: valueToRevertTo.current
-        }
-      })
+      let oldValue = valueToRevertTo.current;
 
+      if (oldValue !== rendererValue) {
+
+        setRendererValue(oldValue);
+        immediateValueWhenSetState.current = SVs.immediateValue;
+
+        callAction({
+          action: actions.updateImmediateValue,
+          args: {
+            text: oldValue,
+          },
+          baseVariableValue: oldValue,
+        })
+      }
     }
   }
 
@@ -66,24 +82,35 @@ export default function TextInput(props) {
 
   function handleBlur(e) {
     focused.current = false;
-    props.callAction({
-      actionName: "updateValue",
-      componentName: name
-    })
+
+    valueToRevertTo.current = rendererValue;
+
+    callAction({
+      action: actions.updateValue,
+      baseVariableValue: rendererValue,
+    });
+
   }
 
   function onChangeHandler(e) {
-    currentValue.current = e.target.value;
-    props.callAction({
-      componentName: name,
-      actionName: "updateImmediateValue",
-      args: {
-        text: e.target.value
-      }
-    })
-    // await this.actions.updateImmediateValue({
-    //   text: e.target.value
-    // });
+
+    let newValue = e.target.value;
+
+    // console.log(`on change handler for ${name}, desired value: ${newValue}`)
+
+    if (newValue !== rendererValue) {
+
+      setRendererValue(newValue);
+      immediateValueWhenSetState.current = SVs.immediateValue;
+
+      callAction({
+        action: actions.updateImmediateValue,
+        args: {
+          text: newValue,
+        },
+        baseVariableValue: newValue,
+      })
+    }
   }
 
 
@@ -91,7 +118,7 @@ export default function TextInput(props) {
     return null;
   }
 
-  updateValidationState();
+
 
   let disabled = SVs.disabled;
 
@@ -103,30 +130,24 @@ export default function TextInput(props) {
   }
 
 
-  if (SVs.immediateValue !== currentValue.current) {
-    currentValue.current = SVs.immediateValue;
-    valueToRevertTo.current = SVs.immediateValue;
-  }
-
-
-  let checkWorkStyle = {
-    position: "relative",
-    width: "30px",
-    height: "24px",
-    fontSize: "20px",
-    fontWeight: "bold",
-    color: "#ffffff",
-    display: "inline-block",
-    textAlign: "center",
-    top: "3px",
-    padding: "2px",
-  }
-
   //Assume we don't have a check work button
   let checkWorkButton = null;
   if (SVs.includeCheckWork) {
 
-    if (validationState.current === "unvalidated") {
+    let checkWorkStyle = {
+      position: "relative",
+      width: "30px",
+      height: "24px",
+      fontSize: "20px",
+      fontWeight: "bold",
+      color: "#ffffff",
+      display: "inline-block",
+      textAlign: "center",
+      top: "3px",
+      padding: "2px",
+    }
+
+    if (validationState === "unvalidated") {
       if (disabled) {
         checkWorkStyle.backgroundColor = "rgb(200,200,200)";
       } else {
@@ -136,12 +157,15 @@ export default function TextInput(props) {
         id={name + '_submit'}
         tabIndex="0"
         disabled={disabled}
-        // ref={c => { this.target = c && ReactDOM.findDOMNode(c); }}
         style={checkWorkStyle}
-        // onClick={this.actions.submitAnswer}
+        onClick={() => callAction({
+          action: actions.submitAnswer,
+        })}
         onKeyPress={(e) => {
           if (e.key === 'Enter') {
-            // this.actions.submitAnswer();
+            callAction({
+              action: actions.submitAnswer,
+            });
           }
         }}
       >
@@ -149,16 +173,15 @@ export default function TextInput(props) {
       </button>
     } else {
       if (SVs.showCorrectness) {
-        if (validationState.current === "correct") {
+        if (validationState === "correct") {
           checkWorkStyle.backgroundColor = "rgb(92, 184, 92)";
           checkWorkButton = <span
             id={name + '_correct'}
             style={checkWorkStyle}
-            // ref={c => { this.target = c && ReactDOM.findDOMNode(c); }}
           >
             <FontAwesomeIcon icon={faCheck} />
           </span>
-        } else if (validationState.current === "partialcorrect") {
+        } else if (validationState === "partialcorrect") {
           //partial credit
 
           let percent = Math.round(SVs.creditAchieved * 100);
@@ -169,7 +192,6 @@ export default function TextInput(props) {
           checkWorkButton = <span
             id={name + '_partial'}
             style={checkWorkStyle}
-            // ref={c => { this.target = c && ReactDOM.findDOMNode(c); }}
           >{partialCreditContents}</span>
         } else {
           //incorrect
@@ -177,7 +199,6 @@ export default function TextInput(props) {
           checkWorkButton = <span
             id={name + '_incorrect'}
             style={checkWorkStyle}
-            // ref={c => { this.target = c && ReactDOM.findDOMNode(c); }}
           ><FontAwesomeIcon icon={faTimes} /></span>
 
         }
@@ -187,7 +208,6 @@ export default function TextInput(props) {
         checkWorkButton = <span
           id={name + '_saved'}
           style={checkWorkStyle}
-          // ref={c => { this.target = c && ReactDOM.findDOMNode(c); }}
         ><FontAwesomeIcon icon={faCloud} /></span>
 
       }
@@ -217,7 +237,7 @@ export default function TextInput(props) {
     input = <textarea
       key={inputKey}
       id={inputKey}
-      value={currentValue.current}
+      value={rendererValue}
       disabled={disabled}
       onChange={onChangeHandler}
       onKeyPress={handleKeyPress}
@@ -237,7 +257,7 @@ export default function TextInput(props) {
     input = <input
       key={inputKey}
       id={inputKey}
-      value={currentValue.current}
+      value={rendererValue}
       disabled={disabled}
       onChange={onChangeHandler}
       onKeyPress={handleKeyPress}

@@ -83,7 +83,6 @@ export default class Textinput extends Input {
     stateVariableDefinitions.value = {
       public: true,
       componentType: "text",
-      forRenderer: true,
       hasEssential: true,
       shadowVariable: true,
       returnDependencies: () => ({
@@ -220,7 +219,7 @@ export default class Textinput extends Input {
   }
 
 
-  async updateImmediateValue({ text }) {
+  async updateImmediateValue({ text, actionId }) {
     if (!await this.stateValues.disabled) {
       return await this.coreFunctions.performUpdate({
         updateInstructions: [{
@@ -228,12 +227,14 @@ export default class Textinput extends Input {
           componentName: this.componentName,
           stateVariable: "immediateValue",
           value: text,
-        }]
+          sourceInformation: { actionId }
+        }],
+        transient: true,
       })
     }
   }
 
-  async updateValue() {
+  async updateValue({ actionId }) {
     if (!await this.stateValues.disabled) {
       let immediateValue = await this.stateValues.immediateValue;
 
@@ -244,6 +245,7 @@ export default class Textinput extends Input {
           componentName: this.componentName,
           stateVariable: "value",
           value: immediateValue,
+          sourceInformation: { actionId }
         },
         // in case value ended up being a different value than requested
         // we set immediate value to whatever was the result

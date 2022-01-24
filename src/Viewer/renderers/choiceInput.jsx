@@ -1,26 +1,34 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import useDoenetRender from './useDoenetRenderer';
-import ReactDOM from 'react-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCheck, faLevelDownAlt, faTimes, faCloud } from '@fortawesome/free-solid-svg-icons'
 
 export default function ChoiceInput(props) {
-  let { name, SVs, actions, children, sourceOfUpdate } = useDoenetRender(props);
+  let { name, SVs, actions, children, sourceOfUpdate, ignoreUpdate, callAction } = useDoenetRender(props);
 
-  let validationState = useRef(null);
+  ChoiceInput.baseStateVariable = "selectedIndices";
+
+  const [rendererSelectedIndices, setRendererSelectedIndices] = useState(SVs.selectedIndices);
+
+  let selectedIndicesWhenSetState = useRef(null);
+
+  if (!ignoreUpdate && selectedIndicesWhenSetState.current !== SVs.selectedIndices) {
+    // console.log(`setting value to ${SVs.immediateValue}`)
+    setRendererSelectedIndices(SVs.selectedIndices);
+    selectedIndicesWhenSetState.current = SVs.selectedIndices;
+  } else {
+    selectedIndicesWhenSetState.current = null;
+  }
 
 
-  function updateValidationState() {
-
-    validationState.current = "unvalidated";
-    if (SVs.valueHasBeenValidated || SVs.numberOfAttemptsLeft < 1) {
-      if (SVs.creditAchieved === 1) {
-        validationState.current = "correct";
-      } else if (SVs.creditAchieved === 0) {
-        validationState.current = "incorrect";
-      } else {
-        validationState.current = "partialcorrect";
-      }
+  let validationState = "unvalidated";
+  if (SVs.valueHasBeenValidated || SVs.numberOfAttemptsLeft < 1) {
+    if (SVs.creditAchieved === 1) {
+      validationState = "correct";
+    } else if (SVs.creditAchieved === 0) {
+      validationState = "incorrect";
+    } else {
+      validationState = "partialcorrect";
     }
   }
 
@@ -34,7 +42,7 @@ export default function ChoiceInput(props) {
       }
     } else {
       if (SVs.selectMultiple) {
-        newSelectedIndices = [...SVs.selectedIndices];
+        newSelectedIndices = [...rendererSelectedIndices];
         let index = Number(e.target.value);
         if (e.target.checked) {
           if (!newSelectedIndices.includes(index)) {
@@ -53,14 +61,20 @@ export default function ChoiceInput(props) {
       }
     }
 
-    if (SVs.selectedIndices.length !== newSelectedIndices.length ||
-      SVs.selectedIndices.some((v, i) => v != newSelectedIndices[i])
+    if (rendererSelectedIndices.length !== newSelectedIndices.length ||
+      rendererSelectedIndices.some((v, i) => v != newSelectedIndices[i])
     ) {
-      props.callAction({
+
+
+      setRendererSelectedIndices(newSelectedIndices);
+      selectedIndicesWhenSetState.current = SVs.selectedIndices;
+
+      callAction({
         action: actions.updateSelectedIndices,
         args: {
-          selectedIndices: newSelectedIndices
-        }
+          selectedIndices: newSelectedIndices,
+        },
+        baseVariableValue: newSelectedIndices,
       })
     }
   }
@@ -70,7 +84,6 @@ export default function ChoiceInput(props) {
     return null;
   }
 
-  updateValidationState();
 
   let disabled = SVs.disabled;
 
@@ -93,7 +106,7 @@ export default function ChoiceInput(props) {
     let checkWorkButton = null;
     if (SVs.includeCheckWork) {
 
-      if (validationState.current === "unvalidated") {
+      if (validationState === "unvalidated") {
         if (disabled) {
           checkWorkStyle.backgroundColor = "rgb(200,200,200)";
         } else {
@@ -105,10 +118,14 @@ export default function ChoiceInput(props) {
           tabIndex="0"
           // ref={c => { this.target = c && ReactDOM.findDOMNode(c); }}
           style={checkWorkStyle}
-          onClick={this.actions.submitAnswer}
+          onClick={() => callAction({
+            action: actions.submitAnswer,
+          })}
           onKeyPress={(e) => {
             if (e.key === 'Enter') {
-              this.actions.submitAnswer();
+              callAction({
+                action: actions.submitAnswer,
+              });
             }
           }}
         >
@@ -116,16 +133,15 @@ export default function ChoiceInput(props) {
         </button>
       } else {
         if (SVs.showCorrectness) {
-          if (validationState.current === "correct") {
+          if (validationState === "correct") {
             checkWorkStyle.backgroundColor = "rgb(92, 184, 92)";
             checkWorkButton = <span
               id={name + '_correct'}
               style={checkWorkStyle}
-              // ref={c => { this.target = c && ReactDOM.findDOMNode(c); }}
             >
               <FontAwesomeIcon icon={faCheck} />
             </span>
-          } else if (validationState.current === "partialcorrect") {
+          } else if (validationState === "partialcorrect") {
             //partial credit
 
             let percent = Math.round(SVs.creditAchieved * 100);
@@ -136,7 +152,6 @@ export default function ChoiceInput(props) {
             checkWorkButton = <span
               id={name + '_partial'}
               style={checkWorkStyle}
-              // ref={c => { this.target = c && ReactDOM.findDOMNode(c); }}
             >{partialCreditContents}</span>
           } else {
             //incorrect
@@ -144,7 +159,6 @@ export default function ChoiceInput(props) {
             checkWorkButton = <span
               id={name + '_incorrect'}
               style={checkWorkStyle}
-              // ref={c => { this.target = c && ReactDOM.findDOMNode(c); }}
             ><FontAwesomeIcon icon={faTimes} /></span>
 
           }
@@ -154,7 +168,6 @@ export default function ChoiceInput(props) {
           checkWorkButton = <span
             id={name + '_saved'}
             style={checkWorkStyle}
-            // ref={c => { this.target = c && ReactDOM.findDOMNode(c); }}
           ><FontAwesomeIcon icon={faCloud} /></span>
 
         }
@@ -188,7 +201,7 @@ export default function ChoiceInput(props) {
     });
 
 
-    let value = SVs.selectedIndices;
+    let value = rendererSelectedIndices;
     if (value === undefined) {
       value = "";
     } else if (!SVs.selectMultiple) {
@@ -228,7 +241,7 @@ export default function ChoiceInput(props) {
 
     if (SVs.includeCheckWork) {
 
-      if (validationState.current === "unvalidated") {
+      if (validationState === "unvalidated") {
 
         let checkWorkText = "Check Work";
         if (!SVs.showCorrectness) {
@@ -242,10 +255,14 @@ export default function ChoiceInput(props) {
             tabIndex="0"
             disabled={disabled}
             style={checkWorkStyle}
-            onClick={this.actions.submitAnswer}
+            onClick={() => callAction({
+              action: actions.submitAnswer,
+            })}
             onKeyPress={(e) => {
               if (e.key === 'Enter') {
-                this.actions.submitAnswer();
+                callAction({
+                  action: actions.submitAnswer,
+                });
               }
             }}
           >
@@ -256,7 +273,7 @@ export default function ChoiceInput(props) {
 
       } else {
         if (SVs.showCorrectness) {
-          if (validationState.current === "correct") {
+          if (validationState === "correct") {
             checkWorkStyle.backgroundColor = "rgb(92, 184, 92)";
             checkworkComponent = (
               <span id={name + "_correct"}
@@ -266,7 +283,7 @@ export default function ChoiceInput(props) {
                 &nbsp;
                 Correct
               </span>);
-          } else if (validationState.current === "incorrect") {
+          } else if (validationState === "incorrect") {
             checkWorkStyle.backgroundColor = "rgb(187, 0, 0)";
             checkworkComponent = (
               <span id={name + "_incorrect"}
@@ -276,7 +293,7 @@ export default function ChoiceInput(props) {
                 &nbsp;
                 Incorrect
               </span>);
-          } else if (validationState.current === "partialcorrect") {
+          } else if (validationState === "partialcorrect") {
             checkWorkStyle.backgroundColor = "#efab34";
             let percent = Math.round(SVs.creditAchieved * 100);
             let partialCreditContents = `${percent}% Correct`;
@@ -324,7 +341,6 @@ export default function ChoiceInput(props) {
       listStyleType: "none"
     }
 
-    let selectedIndices = SVs.selectedIndices;
     let keyBeginning = inputKey + '_choice';
     let inputType = 'radio';
     if (SVs.selectMultiple) {
@@ -345,7 +361,7 @@ export default function ChoiceInput(props) {
             id={keyBeginning + (i + 1) + "_input"}
             name={inputKey}
             value={i + 1}
-            checked={selectedIndices.includes(i + 1)}
+            checked={rendererSelectedIndices.includes(i + 1)}
             onChange={onChangeHandler}
             disabled={disabled || svData.choicesDisabled[i]}
           />

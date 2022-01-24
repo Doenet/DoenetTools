@@ -101,13 +101,13 @@ describe('Boolean Tag Tests', function () {
       cy.get(`#\\/f${i}`).should('have.text', "false")
     }
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables();
       for (let i = 1; i <= nTrues; i++) {
-        expect(components[`/t${i}`].stateValues.value).to.be.true
+        expect(stateVariables[`/t${i}`].stateValues.value).to.be.true
       }
       for (let i = 1; i <= nFalses; i++) {
-        expect(components[`/f${i}`].stateValues.value).to.be.false
+        expect(stateVariables[`/f${i}`].stateValues.value).to.be.false
       }
     })
 
