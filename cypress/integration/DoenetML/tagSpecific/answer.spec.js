@@ -7070,8 +7070,6 @@ describe('Answer Tag Tests', function () {
       expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls([]);
       expect(stateVariables['/_choiceinput1'].stateValues.selectedValues).eqls([]);
       expect(stateVariables['/_choiceinput1'].stateValues.selectedIndices).eqls([]);
-      // expect(stateVariables['/_choiceinput1'].stateValues.submittedValues).eqls([]);
-      // expect(stateVariables['/_choiceinput1'].stateValues.submittedIndices).eqls([]);
 
     });
 
@@ -7093,8 +7091,6 @@ describe('Answer Tag Tests', function () {
       expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls([]);
       expect(stateVariables['/_choiceinput1'].stateValues.selectedValues).eqls(["dog"]);
       expect(stateVariables['/_choiceinput1'].stateValues.selectedIndices).eqls([indexByName["dog"]]);
-      // expect(stateVariables['/_choiceinput1'].stateValues.submittedValues).eqls([]);
-      // expect(stateVariables['/_choiceinput1'].stateValues.submittedIndices).eqls([]);
     });
 
     cy.log("Click submit button")
@@ -7115,8 +7111,6 @@ describe('Answer Tag Tests', function () {
       expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls(['dog']);
       expect(stateVariables['/_choiceinput1'].stateValues.selectedValues).eqls(["dog"]);
       expect(stateVariables['/_choiceinput1'].stateValues.selectedIndices).eqls([indexByName["dog"]]);
-      // expect(stateVariables['/_choiceinput1'].stateValues.submittedValues).eqls(["dog"]);
-      // expect(stateVariables['/_choiceinput1'].stateValues.submittedIndices).eqls([indexByName["dog"]]);
     });
 
     cy.log("Select incorrect answer")
@@ -7137,8 +7131,6 @@ describe('Answer Tag Tests', function () {
       expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls(['dog']);
       expect(stateVariables['/_choiceinput1'].stateValues.selectedValues).eqls(["monkey"]);
       expect(stateVariables['/_choiceinput1'].stateValues.selectedIndices).eqls([indexByName["monkey"]]);
-      // expect(stateVariables['/_choiceinput1'].stateValues.submittedValues).eqls(["dog"]);
-      // expect(stateVariables['/_choiceinput1'].stateValues.submittedIndices).eqls([indexByName["dog"]]);
     });
 
     cy.log("Press enter on submit button")
@@ -7159,8 +7151,6 @@ describe('Answer Tag Tests', function () {
       expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls(['monkey']);
       expect(stateVariables['/_choiceinput1'].stateValues.selectedValues).eqls(["monkey"]);
       expect(stateVariables['/_choiceinput1'].stateValues.selectedIndices).eqls([indexByName["monkey"]]);
-      // expect(stateVariables['/_choiceinput1'].stateValues.submittedValues).eqls(["monkey"]);
-      // expect(stateVariables['/_choiceinput1'].stateValues.submittedIndices).eqls([indexByName["monkey"]]);
     });
 
     cy.log("Select partially correct answer")
@@ -7181,8 +7171,6 @@ describe('Answer Tag Tests', function () {
       expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls(['monkey']);
       expect(stateVariables['/_choiceinput1'].stateValues.selectedValues).eqls(["cat"]);
       expect(stateVariables['/_choiceinput1'].stateValues.selectedIndices).eqls([indexByName["cat"]]);
-      // expect(stateVariables['/_choiceinput1'].stateValues.submittedValues).eqls(["monkey"]);
-      // expect(stateVariables['/_choiceinput1'].stateValues.submittedIndices).eqls([indexByName["monkey"]]);
     });
 
     cy.log("Press enter on submit button")
@@ -7203,8 +7191,6 @@ describe('Answer Tag Tests', function () {
       expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls(['cat']);
       expect(stateVariables['/_choiceinput1'].stateValues.selectedValues).eqls(["cat"]);
       expect(stateVariables['/_choiceinput1'].stateValues.selectedIndices).eqls([indexByName["cat"]]);
-      // expect(stateVariables['/_choiceinput1'].stateValues.submittedValues).eqls(["cat"]);
-      // expect(stateVariables['/_choiceinput1'].stateValues.submittedIndices).eqls([indexByName["cat"]]);
     });
 
 
@@ -7226,8 +7212,6 @@ describe('Answer Tag Tests', function () {
       expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls(['cat']);
       expect(stateVariables['/_choiceinput1'].stateValues.selectedValues).eqls(["monkey"]);
       expect(stateVariables['/_choiceinput1'].stateValues.selectedIndices).eqls([indexByName["monkey"]]);
-      // expect(stateVariables['/_choiceinput1'].stateValues.submittedValues).eqls(["dog"]);
-      // expect(stateVariables['/_choiceinput1'].stateValues.submittedIndices).eqls([indexByName["dog"]]);
     });
 
 
@@ -7249,8 +7233,6 @@ describe('Answer Tag Tests', function () {
       expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls(['cat']);
       expect(stateVariables['/_choiceinput1'].stateValues.selectedValues).eqls(["cat"]);
       expect(stateVariables['/_choiceinput1'].stateValues.selectedIndices).eqls([indexByName["cat"]]);
-      // expect(stateVariables['/_choiceinput1'].stateValues.submittedValues).eqls(["cat"]);
-      // expect(stateVariables['/_choiceinput1'].stateValues.submittedIndices).eqls([indexByName["cat"]]);
     });
 
     cy.log("Submit answer")
@@ -7271,8 +7253,6 @@ describe('Answer Tag Tests', function () {
       expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls(['cat']);
       expect(stateVariables['/_choiceinput1'].stateValues.selectedValues).eqls(["cat"]);
       expect(stateVariables['/_choiceinput1'].stateValues.selectedIndices).eqls([indexByName["cat"]]);
-      // expect(stateVariables['/_choiceinput1'].stateValues.submittedValues).eqls(["cat"]);
-      // expect(stateVariables['/_choiceinput1'].stateValues.submittedIndices).eqls([indexByName["cat"]]);
     });
 
   });
@@ -7320,8 +7300,6 @@ describe('Answer Tag Tests', function () {
       expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls([]);
       expect(stateVariables['/_choiceinput1'].stateValues.selectedValues).eqls([]);
       expect(stateVariables['/_choiceinput1'].stateValues.selectedIndices).eqls([]);
-      // expect(stateVariables['/_choiceinput1'].stateValues.submittedValues).eqls([]);
-      // expect(stateVariables['/_choiceinput1'].stateValues.submittedIndices).eqls([]);
 
     });
 
@@ -7343,8 +7321,6 @@ describe('Answer Tag Tests', function () {
       expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls([]);
       expect(stateVariables['/_choiceinput1'].stateValues.selectedValues).eqls(["dog"]);
       expect(stateVariables['/_choiceinput1'].stateValues.selectedIndices).eqls([indexByName["dog"]]);
-      // expect(stateVariables['/_choiceinput1'].stateValues.submittedValues).eqls([]);
-      // expect(stateVariables['/_choiceinput1'].stateValues.submittedIndices).eqls([]);
     });
 
     cy.log("Click submit button")
@@ -7365,8 +7341,6 @@ describe('Answer Tag Tests', function () {
       expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls(['dog']);
       expect(stateVariables['/_choiceinput1'].stateValues.selectedValues).eqls(["dog"]);
       expect(stateVariables['/_choiceinput1'].stateValues.selectedIndices).eqls([indexByName["dog"]]);
-      // expect(stateVariables['/_choiceinput1'].stateValues.submittedValues).eqls(["dog"]);
-      // expect(stateVariables['/_choiceinput1'].stateValues.submittedIndices).eqls([indexByName["dog"]]);
     });
 
     cy.log("Select incorrect answer")
@@ -7387,8 +7361,6 @@ describe('Answer Tag Tests', function () {
       expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls(['dog']);
       expect(stateVariables['/_choiceinput1'].stateValues.selectedValues).eqls(["monkey"]);
       expect(stateVariables['/_choiceinput1'].stateValues.selectedIndices).eqls([indexByName["monkey"]]);
-      // expect(stateVariables['/_choiceinput1'].stateValues.submittedValues).eqls(["dog"]);
-      // expect(stateVariables['/_choiceinput1'].stateValues.submittedIndices).eqls([indexByName["dog"]]);
     });
 
     cy.log("Press enter on submit button")
@@ -7409,8 +7381,6 @@ describe('Answer Tag Tests', function () {
       expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls(['monkey']);
       expect(stateVariables['/_choiceinput1'].stateValues.selectedValues).eqls(["monkey"]);
       expect(stateVariables['/_choiceinput1'].stateValues.selectedIndices).eqls([indexByName["monkey"]]);
-      // expect(stateVariables['/_choiceinput1'].stateValues.submittedValues).eqls(["monkey"]);
-      // expect(stateVariables['/_choiceinput1'].stateValues.submittedIndices).eqls([indexByName["monkey"]]);
     });
 
     cy.log("Select partially correct answer")
@@ -7431,8 +7401,6 @@ describe('Answer Tag Tests', function () {
       expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls(['monkey']);
       expect(stateVariables['/_choiceinput1'].stateValues.selectedValues).eqls(["cat"]);
       expect(stateVariables['/_choiceinput1'].stateValues.selectedIndices).eqls([indexByName["cat"]]);
-      // expect(stateVariables['/_choiceinput1'].stateValues.submittedValues).eqls(["monkey"]);
-      // expect(stateVariables['/_choiceinput1'].stateValues.submittedIndices).eqls([indexByName["monkey"]]);
     });
 
     cy.log("Press enter on submit button")
@@ -7453,8 +7421,6 @@ describe('Answer Tag Tests', function () {
       expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls(['cat']);
       expect(stateVariables['/_choiceinput1'].stateValues.selectedValues).eqls(["cat"]);
       expect(stateVariables['/_choiceinput1'].stateValues.selectedIndices).eqls([indexByName["cat"]]);
-      // expect(stateVariables['/_choiceinput1'].stateValues.submittedValues).eqls(["cat"]);
-      // expect(stateVariables['/_choiceinput1'].stateValues.submittedIndices).eqls([indexByName["cat"]]);
     });
 
 
@@ -7476,8 +7442,6 @@ describe('Answer Tag Tests', function () {
       expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls(['cat']);
       expect(stateVariables['/_choiceinput1'].stateValues.selectedValues).eqls(["monkey"]);
       expect(stateVariables['/_choiceinput1'].stateValues.selectedIndices).eqls([indexByName["monkey"]]);
-      // expect(stateVariables['/_choiceinput1'].stateValues.submittedValues).eqls(["dog"]);
-      // expect(stateVariables['/_choiceinput1'].stateValues.submittedIndices).eqls([indexByName["dog"]]);
     });
 
 
@@ -7499,8 +7463,6 @@ describe('Answer Tag Tests', function () {
       expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls(['cat']);
       expect(stateVariables['/_choiceinput1'].stateValues.selectedValues).eqls(["cat"]);
       expect(stateVariables['/_choiceinput1'].stateValues.selectedIndices).eqls([indexByName["cat"]]);
-      // expect(stateVariables['/_choiceinput1'].stateValues.submittedValues).eqls(["cat"]);
-      // expect(stateVariables['/_choiceinput1'].stateValues.submittedIndices).eqls([indexByName["cat"]]);
     });
 
     cy.log("Submit answer")
@@ -7521,8 +7483,6 @@ describe('Answer Tag Tests', function () {
       expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls(['cat']);
       expect(stateVariables['/_choiceinput1'].stateValues.selectedValues).eqls(["cat"]);
       expect(stateVariables['/_choiceinput1'].stateValues.selectedIndices).eqls([indexByName["cat"]]);
-      // expect(stateVariables['/_choiceinput1'].stateValues.submittedValues).eqls(["cat"]);
-      // expect(stateVariables['/_choiceinput1'].stateValues.submittedIndices).eqls([indexByName["cat"]]);
     });
 
   });
@@ -7572,8 +7532,6 @@ describe('Answer Tag Tests', function () {
       expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls([]);
       expect(stateVariables['/_choiceinput1'].stateValues.selectedValues).eqls([]);
       expect(stateVariables['/_choiceinput1'].stateValues.selectedIndices).eqls([]);
-      // expect(stateVariables['/_choiceinput1'].stateValues.submittedValues).eqls([]);
-      // expect(stateVariables['/_choiceinput1'].stateValues.submittedIndices).eqls([]);
 
     });
 
@@ -7595,8 +7553,6 @@ describe('Answer Tag Tests', function () {
       expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls([]);
       expect(stateVariables['/_choiceinput1'].stateValues.selectedValues).eqls(["dog"]);
       expect(stateVariables['/_choiceinput1'].stateValues.selectedIndices).eqls([indexByName["dog"]]);
-      // expect(stateVariables['/_choiceinput1'].stateValues.submittedValues).eqls([]);
-      // expect(stateVariables['/_choiceinput1'].stateValues.submittedIndices).eqls([]);
     });
 
     cy.log("Click submit button")
@@ -7617,8 +7573,6 @@ describe('Answer Tag Tests', function () {
       expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls(['dog']);
       expect(stateVariables['/_choiceinput1'].stateValues.selectedValues).eqls(["dog"]);
       expect(stateVariables['/_choiceinput1'].stateValues.selectedIndices).eqls([indexByName["dog"]]);
-      // expect(stateVariables['/_choiceinput1'].stateValues.submittedValues).eqls(["dog"]);
-      // expect(stateVariables['/_choiceinput1'].stateValues.submittedIndices).eqls([indexByName["dog"]]);
     });
 
     cy.log("Select incorrect answer")
@@ -7639,8 +7593,6 @@ describe('Answer Tag Tests', function () {
       expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls(['dog']);
       expect(stateVariables['/_choiceinput1'].stateValues.selectedValues).eqls(["monkey"]);
       expect(stateVariables['/_choiceinput1'].stateValues.selectedIndices).eqls([indexByName["monkey"]]);
-      // expect(stateVariables['/_choiceinput1'].stateValues.submittedValues).eqls(["dog"]);
-      // expect(stateVariables['/_choiceinput1'].stateValues.submittedIndices).eqls([indexByName["dog"]]);
     });
 
     cy.log("Press enter on submit button")
@@ -7661,8 +7613,6 @@ describe('Answer Tag Tests', function () {
       expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls(['monkey']);
       expect(stateVariables['/_choiceinput1'].stateValues.selectedValues).eqls(["monkey"]);
       expect(stateVariables['/_choiceinput1'].stateValues.selectedIndices).eqls([indexByName["monkey"]]);
-      // expect(stateVariables['/_choiceinput1'].stateValues.submittedValues).eqls(["monkey"]);
-      // expect(stateVariables['/_choiceinput1'].stateValues.submittedIndices).eqls([indexByName["monkey"]]);
     });
 
     cy.log("Select partially correct answer")
@@ -7683,8 +7633,6 @@ describe('Answer Tag Tests', function () {
       expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls(['monkey']);
       expect(stateVariables['/_choiceinput1'].stateValues.selectedValues).eqls(["cat"]);
       expect(stateVariables['/_choiceinput1'].stateValues.selectedIndices).eqls([indexByName["cat"]]);
-      // expect(stateVariables['/_choiceinput1'].stateValues.submittedValues).eqls(["monkey"]);
-      // expect(stateVariables['/_choiceinput1'].stateValues.submittedIndices).eqls([indexByName["monkey"]]);
     });
 
     cy.log("Press enter on submit button")
@@ -7705,8 +7653,6 @@ describe('Answer Tag Tests', function () {
       expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls(['cat']);
       expect(stateVariables['/_choiceinput1'].stateValues.selectedValues).eqls(["cat"]);
       expect(stateVariables['/_choiceinput1'].stateValues.selectedIndices).eqls([indexByName["cat"]]);
-      // expect(stateVariables['/_choiceinput1'].stateValues.submittedValues).eqls(["cat"]);
-      // expect(stateVariables['/_choiceinput1'].stateValues.submittedIndices).eqls([indexByName["cat"]]);
     });
 
 
@@ -7728,8 +7674,6 @@ describe('Answer Tag Tests', function () {
       expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls(['cat']);
       expect(stateVariables['/_choiceinput1'].stateValues.selectedValues).eqls(["monkey"]);
       expect(stateVariables['/_choiceinput1'].stateValues.selectedIndices).eqls([indexByName["monkey"]]);
-      // expect(stateVariables['/_choiceinput1'].stateValues.submittedValues).eqls(["dog"]);
-      // expect(stateVariables['/_choiceinput1'].stateValues.submittedIndices).eqls([indexByName["dog"]]);
     });
 
 
@@ -7751,8 +7695,6 @@ describe('Answer Tag Tests', function () {
       expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls(['cat']);
       expect(stateVariables['/_choiceinput1'].stateValues.selectedValues).eqls(["cat"]);
       expect(stateVariables['/_choiceinput1'].stateValues.selectedIndices).eqls([indexByName["cat"]]);
-      // expect(stateVariables['/_choiceinput1'].stateValues.submittedValues).eqls(["cat"]);
-      // expect(stateVariables['/_choiceinput1'].stateValues.submittedIndices).eqls([indexByName["cat"]]);
     });
 
 
@@ -7774,8 +7716,6 @@ describe('Answer Tag Tests', function () {
       expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls(['cat']);
       expect(stateVariables['/_choiceinput1'].stateValues.selectedValues).eqls(["cat"]);
       expect(stateVariables['/_choiceinput1'].stateValues.selectedIndices).eqls([indexByName["cat"]]);
-      // expect(stateVariables['/_choiceinput1'].stateValues.submittedValues).eqls(["cat"]);
-      // expect(stateVariables['/_choiceinput1'].stateValues.submittedIndices).eqls([indexByName["cat"]]);
     });
 
 
@@ -8083,8 +8023,6 @@ describe('Answer Tag Tests', function () {
       expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls([]);
       expect(stateVariables['/_choiceinput1'].stateValues.selectedValues).eqls([]);
       expect(stateVariables['/_choiceinput1'].stateValues.selectedIndices).eqls([]);
-      // expect(stateVariables['/_choiceinput1'].stateValues.submittedValues).eqls([]);
-      // expect(stateVariables['/_choiceinput1'].stateValues.submittedIndices).eqls([]);
 
     });
 
@@ -8108,8 +8046,6 @@ describe('Answer Tag Tests', function () {
       expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls([]);
       expect(stateVariables['/_choiceinput1'].stateValues.selectedValues).eqls(["dog"]);
       expect(stateVariables['/_choiceinput1'].stateValues.selectedIndices).eqls([indexByName["dog"]]);
-      // expect(stateVariables['/_choiceinput1'].stateValues.submittedValues).eqls([]);
-      // expect(stateVariables['/_choiceinput1'].stateValues.submittedIndices).eqls([]);
     });
 
     cy.log("Click submit button")
@@ -8132,8 +8068,6 @@ describe('Answer Tag Tests', function () {
       expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls(['dog']);
       expect(stateVariables['/_choiceinput1'].stateValues.selectedValues).eqls(["dog"]);
       expect(stateVariables['/_choiceinput1'].stateValues.selectedIndices).eqls([indexByName["dog"]]);
-      // expect(stateVariables['/_choiceinput1'].stateValues.submittedValues).eqls(["dog"]);
-      // expect(stateVariables['/_choiceinput1'].stateValues.submittedIndices).eqls([indexByName["dog"]]);
     });
 
     cy.log("Select incorrect answer")
@@ -8156,8 +8090,6 @@ describe('Answer Tag Tests', function () {
       expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls(['dog']);
       expect(stateVariables['/_choiceinput1'].stateValues.selectedValues).eqls(["monkey"]);
       expect(stateVariables['/_choiceinput1'].stateValues.selectedIndices).eqls([indexByName["monkey"]]);
-      // expect(stateVariables['/_choiceinput1'].stateValues.submittedValues).eqls(["dog"]);
-      // expect(stateVariables['/_choiceinput1'].stateValues.submittedIndices).eqls([indexByName["dog"]]);
     });
 
     cy.log("Press enter on submit button")
@@ -8180,8 +8112,6 @@ describe('Answer Tag Tests', function () {
       expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls(['monkey']);
       expect(stateVariables['/_choiceinput1'].stateValues.selectedValues).eqls(["monkey"]);
       expect(stateVariables['/_choiceinput1'].stateValues.selectedIndices).eqls([indexByName["monkey"]]);
-      // expect(stateVariables['/_choiceinput1'].stateValues.submittedValues).eqls(["monkey"]);
-      // expect(stateVariables['/_choiceinput1'].stateValues.submittedIndices).eqls([indexByName["monkey"]]);
     });
 
     cy.log("Select partially correct answer")
@@ -8204,8 +8134,6 @@ describe('Answer Tag Tests', function () {
       expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls(['monkey']);
       expect(stateVariables['/_choiceinput1'].stateValues.selectedValues).eqls(["cat"]);
       expect(stateVariables['/_choiceinput1'].stateValues.selectedIndices).eqls([indexByName["cat"]]);
-      // expect(stateVariables['/_choiceinput1'].stateValues.submittedValues).eqls(["monkey"]);
-      // expect(stateVariables['/_choiceinput1'].stateValues.submittedIndices).eqls([indexByName["monkey"]]);
     });
 
     cy.log("Press enter on submit button")
@@ -8228,8 +8156,6 @@ describe('Answer Tag Tests', function () {
       expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls(['cat']);
       expect(stateVariables['/_choiceinput1'].stateValues.selectedValues).eqls(["cat"]);
       expect(stateVariables['/_choiceinput1'].stateValues.selectedIndices).eqls([indexByName["cat"]]);
-      // expect(stateVariables['/_choiceinput1'].stateValues.submittedValues).eqls(["cat"]);
-      // expect(stateVariables['/_choiceinput1'].stateValues.submittedIndices).eqls([indexByName["cat"]]);
     });
 
 
@@ -8253,8 +8179,6 @@ describe('Answer Tag Tests', function () {
       expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls(['cat']);
       expect(stateVariables['/_choiceinput1'].stateValues.selectedValues).eqls(["monkey"]);
       expect(stateVariables['/_choiceinput1'].stateValues.selectedIndices).eqls([indexByName["monkey"]]);
-      // expect(stateVariables['/_choiceinput1'].stateValues.submittedValues).eqls(["dog"]);
-      // expect(stateVariables['/_choiceinput1'].stateValues.submittedIndices).eqls([indexByName["dog"]]);
     });
 
 
@@ -8278,8 +8202,6 @@ describe('Answer Tag Tests', function () {
       expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls(['cat']);
       expect(stateVariables['/_choiceinput1'].stateValues.selectedValues).eqls(["cat"]);
       expect(stateVariables['/_choiceinput1'].stateValues.selectedIndices).eqls([indexByName["cat"]]);
-      // expect(stateVariables['/_choiceinput1'].stateValues.submittedValues).eqls(["cat"]);
-      // expect(stateVariables['/_choiceinput1'].stateValues.submittedIndices).eqls([indexByName["cat"]]);
     });
 
 
@@ -8303,8 +8225,6 @@ describe('Answer Tag Tests', function () {
       expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls(['cat']);
       expect(stateVariables['/_choiceinput1'].stateValues.selectedValues).eqls(["cat"]);
       expect(stateVariables['/_choiceinput1'].stateValues.selectedIndices).eqls([indexByName["cat"]]);
-      // expect(stateVariables['/_choiceinput1'].stateValues.submittedValues).eqls(["cat"]);
-      // expect(stateVariables['/_choiceinput1'].stateValues.submittedIndices).eqls([indexByName["cat"]]);
     });
 
 
@@ -8820,7 +8740,6 @@ describe('Answer Tag Tests', function () {
 
   });
 
-
   it('answer with choiceinput, no bug when submit first', () => {
     cy.window().then(async (win) => {
       win.postMessage({
@@ -8973,6 +8892,8 @@ describe('Answer Tag Tests', function () {
     cy.log("add another choice");
     cy.get("#\\/num textarea").type("{end}{backspace}4{enter}", { force: true });
 
+    cy.get('#\\/_choiceinput1 li:nth-of-type(4)').should('be.visible')
+
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables();
       expect(stateVariables['/_choiceinput1'].stateValues.choiceTexts.length).eq(4);
@@ -9062,6 +8983,8 @@ describe('Answer Tag Tests', function () {
     cy.log("go back to 3 choices")
     cy.get("#\\/num textarea").type("{end}{backspace}3{enter}", { force: true });
 
+    cy.get('#\\/_choiceinput1 li:nth-of-type(4)').should('not.exist')
+
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables();
       expect(stateVariables['/_choiceinput1'].stateValues.choiceTexts.length).eq(3);
@@ -9132,6 +9055,8 @@ describe('Answer Tag Tests', function () {
 
     cy.log("create 6 choices");
     cy.get("#\\/num textarea").type("{end}{backspace}6{enter}", { force: true });
+
+    cy.get('#\\/_choiceinput1 li:nth-of-type(6)').should('be.visible')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables();
@@ -9462,6 +9387,7 @@ describe('Answer Tag Tests', function () {
 
       cy.log("toggle inline")
       cy.get('#\\/inline_input').click();
+      cy.get(`${choiceinputAnchor} option:nth-of-type(3)`).should('be.visible')
       cy.get(choiceinputAnchor).should('have.value', '');
       cy.get(choiceinputSubmitAnchor).should('be.visible');
       cy.get(choiceinputCorrectAnchor).should('not.exist');
@@ -9484,6 +9410,7 @@ describe('Answer Tag Tests', function () {
 
       cy.log("toggle inline")
       cy.get('#\\/inline_input').click();
+      cy.get(`${choiceinputAnchor} li:nth-of-type(3)`).should('be.visible')
       cy.get(choiceinputSubmitAnchor).should('not.exist');
       cy.get(choiceinputCorrectAnchor).invoke('text').then((text) => {
         expect(text.trim().toLowerCase()).equal('correct')
@@ -9511,6 +9438,7 @@ describe('Answer Tag Tests', function () {
 
       cy.log("toggle inline")
       cy.get('#\\/inline_input').click();
+      cy.get(`${choiceinputAnchor} option:nth-of-type(3)`).should('be.visible')
       cy.get(choiceinputSubmitAnchor).should('not.exist');
       cy.get(choiceinputCorrectAnchor).should('not.exist');
       cy.get(choiceinputIncorrectAnchor).should('not.exist');
@@ -11987,10 +11915,12 @@ describe('Answer Tag Tests', function () {
 
 
       cy.log('Submit incorrect answers')
-      cy.get(cesc('#' + inputNames[0]) + " textarea").type('{end}{backspace}y{enter}', { force: true })
-      cy.get(cesc('#' + inputNames[1]) + " textarea").type('{end}{backspace}y{enter}', { force: true })
-      cy.get(cesc('#' + inputNames[2]) + " textarea").type('{end}{backspace}y{enter}', { force: true })
-      cy.get(cesc('#' + inputNames[3]) + " textarea").type('{end}{backspace}y{enter}', { force: true })
+      cy.get(cesc('#' + inputNames[0]) + " textarea").type('{end}{backspace}y', { force: true })
+      cy.get(cesc('#' + inputNames[1]) + " textarea").type('{end}{backspace}y', { force: true })
+      cy.get(cesc('#' + inputNames[2]) + " textarea").type('{end}{backspace}y', { force: true })
+      cy.get(cesc('#' + inputNames[3]) + " textarea").type('{end}{backspace}y', { force: true })
+      cy.get(cesc('#' + inputNames[0]) + "_submit").click();
+      cy.get(cesc('#' + inputNames[1]) + "_submit").click();
       cy.get(cesc("#/_answer3_submit")).click();
       cy.get(cesc("#/_answer4_submit")).click();
       cy.get(cesc('#' + inputNames[0]) + "_incorrect").should('be.visible');
@@ -11998,10 +11928,12 @@ describe('Answer Tag Tests', function () {
       cy.get(cesc("#/_answer3_incorrect")).should('be.visible');
       cy.get(cesc("#/_answer4_incorrect")).should('be.visible');
 
-      cy.get(cesc('#' + inputNames[4]) + "_input").clear().type('bye{enter}')
-      cy.get(cesc('#' + inputNames[5]) + "_input").clear().type('bye{enter}')
-      cy.get(cesc('#' + inputNames[6]) + "_input").clear().type('bye{enter}')
-      cy.get(cesc('#' + inputNames[7]) + "_input").clear().type('bye{enter}')
+      cy.get(cesc('#' + inputNames[4]) + "_input").clear().type('bye')
+      cy.get(cesc('#' + inputNames[5]) + "_input").clear().type('bye')
+      cy.get(cesc('#' + inputNames[6]) + "_input").clear().type('bye')
+      cy.get(cesc('#' + inputNames[7]) + "_input").clear().type('bye')
+      cy.get(cesc('#' + inputNames[4]) + "_submit").click();
+      cy.get(cesc('#' + inputNames[5]) + "_submit").click();
       cy.get(cesc("#/_answer7_submit")).click();
       cy.get(cesc("#/_answer8_submit")).click();
       cy.get(cesc('#' + inputNames[4]) + "_incorrect").should('be.visible');
@@ -12054,20 +11986,22 @@ describe('Answer Tag Tests', function () {
       // the 2nd and 4th input should be disabled,
       // but this isn't working yet.
       // For now, best we can do is make sure button still say incorrect
-      cy.get(cesc('#' + inputNames[0]) + " textarea").type('{end}{backspace}x{enter}', { force: true })
-      cy.get(cesc('#' + inputNames[1]) + " textarea").type('{end}{backspace}x{enter}', { force: true })
-      cy.get(cesc('#' + inputNames[2]) + " textarea").type('{end}{backspace}x{enter}', { force: true })
-      cy.get(cesc('#' + inputNames[3]) + " textarea").type('{end}{backspace}x{enter}', { force: true })
+      cy.get(cesc('#' + inputNames[0]) + " textarea").type('{end}{backspace}x', { force: true })
+      cy.get(cesc('#' + inputNames[1]) + " textarea").type('{end}{backspace}x', { force: true })
+      cy.get(cesc('#' + inputNames[2]) + " textarea").type('{end}{backspace}x', { force: true })
+      cy.get(cesc('#' + inputNames[3]) + " textarea").type('{end}{backspace}x', { force: true })
+      cy.get(cesc('#' + inputNames[0]) + "_submit").click();
       cy.get(cesc("#/_answer3_submit")).click();
       cy.get(cesc('#' + inputNames[0]) + "_correct").should('be.visible');
       cy.get(cesc('#' + inputNames[1]) + "_incorrect").should('be.visible');
       cy.get(cesc("#/_answer3_correct")).should('be.visible');
       cy.get(cesc("#/_answer4_incorrect")).should('be.visible');
 
-      cy.get(cesc('#' + inputNames[4]) + "_input").clear().type('hello{enter}')
+      cy.get(cesc('#' + inputNames[4]) + "_input").clear().type('hello')
       cy.get(cesc('#' + inputNames[5]) + "_input").should('be.disabled');
-      cy.get(cesc('#' + inputNames[6]) + "_input").clear().type('hello{enter}')
+      cy.get(cesc('#' + inputNames[6]) + "_input").clear().type('hello')
       cy.get(cesc('#' + inputNames[7]) + "_input").should('be.disabled');
+      cy.get(cesc('#' + inputNames[4]) + "_submit").click();
       cy.get(cesc("#/_answer7_submit")).click();
       cy.get(cesc('#' + inputNames[4]) + "_correct").should('be.visible');
       cy.get(cesc('#' + inputNames[5]) + "_incorrect").should('be.visible');
@@ -12253,10 +12187,12 @@ describe('Answer Tag Tests', function () {
 
 
       cy.log("Submit correct answers")
-      cy.get(cesc('#' + inputNames[0]) + " textarea").type('{end}{backspace}x{enter}', { force: true })
-      cy.get(cesc('#' + inputNames[1]) + " textarea").type('{end}{backspace}x{enter}', { force: true })
-      cy.get(cesc('#' + inputNames[2]) + " textarea").type('{end}{backspace}x{enter}', { force: true })
-      cy.get(cesc('#' + inputNames[3]) + " textarea").type('{end}{backspace}x{enter}', { force: true })
+      cy.get(cesc('#' + inputNames[0]) + " textarea").type('{end}{backspace}x', { force: true })
+      cy.get(cesc('#' + inputNames[1]) + " textarea").type('{end}{backspace}x', { force: true })
+      cy.get(cesc('#' + inputNames[2]) + " textarea").type('{end}{backspace}x', { force: true })
+      cy.get(cesc('#' + inputNames[3]) + " textarea").type('{end}{backspace}x', { force: true })
+      cy.get(cesc('#' + inputNames[0]) + "_submit").click();
+      cy.get(cesc('#' + inputNames[1]) + "_submit").click();
       cy.get(cesc("#/_answer3_submit")).click();
       cy.get(cesc("#/_answer4_submit")).click();
       cy.get(cesc('#' + inputNames[0]) + "_correct").should('be.visible');
@@ -12264,10 +12200,12 @@ describe('Answer Tag Tests', function () {
       cy.get(cesc("#/_answer3_correct")).should('be.visible');
       cy.get(cesc("#/_answer4_correct")).should('be.visible');
 
-      cy.get(cesc('#' + inputNames[4]) + "_input").clear().type('hello{enter}')
-      cy.get(cesc('#' + inputNames[5]) + "_input").clear().type('hello{enter}')
-      cy.get(cesc('#' + inputNames[6]) + "_input").clear().type('hello{enter}')
-      cy.get(cesc('#' + inputNames[7]) + "_input").clear().type('hello{enter}')
+      cy.get(cesc('#' + inputNames[4]) + "_input").clear().type('hello')
+      cy.get(cesc('#' + inputNames[5]) + "_input").clear().type('hello')
+      cy.get(cesc('#' + inputNames[6]) + "_input").clear().type('hello')
+      cy.get(cesc('#' + inputNames[7]) + "_input").clear().type('hello')
+      cy.get(cesc('#' + inputNames[4]) + "_submit").click();
+      cy.get(cesc('#' + inputNames[5]) + "_submit").click();
       cy.get(cesc("#/_answer7_submit")).click();
       cy.get(cesc("#/_answer8_submit")).click();
       cy.get(cesc('#' + inputNames[4]) + "_correct").should('be.visible');
@@ -12321,20 +12259,22 @@ describe('Answer Tag Tests', function () {
       // the 2nd and 4th input should be disabled,
       // but this isn't working yet.
       // For now, best we can do is make sure button still say incorrect
-      cy.get(cesc('#' + inputNames[0]) + " textarea").type('{end}{backspace}y{enter}', { force: true })
-      cy.get(cesc('#' + inputNames[1]) + " textarea").type('{end}{backspace}y{enter}', { force: true })
-      cy.get(cesc('#' + inputNames[2]) + " textarea").type('{end}{backspace}y{enter}', { force: true })
-      cy.get(cesc('#' + inputNames[3]) + " textarea").type('{end}{backspace}y{enter}', { force: true })
+      cy.get(cesc('#' + inputNames[0]) + " textarea").type('{end}{backspace}y', { force: true })
+      cy.get(cesc('#' + inputNames[1]) + " textarea").type('{end}{backspace}y', { force: true })
+      cy.get(cesc('#' + inputNames[2]) + " textarea").type('{end}{backspace}y', { force: true })
+      cy.get(cesc('#' + inputNames[3]) + " textarea").type('{end}{backspace}y', { force: true })
+      cy.get(cesc('#' + inputNames[0]) + "_submit").click();
       cy.get(cesc("#/_answer3_submit")).click();
       cy.get(cesc('#' + inputNames[0]) + "_incorrect").should('be.visible');
       cy.get(cesc('#' + inputNames[1]) + "_correct").should('be.visible');
       cy.get(cesc("#/_answer3_incorrect")).should('be.visible');
       cy.get(cesc("#/_answer4_correct")).should('be.visible');
 
-      cy.get(cesc('#' + inputNames[4]) + "_input").clear().type('bye{enter}')
+      cy.get(cesc('#' + inputNames[4]) + "_input").clear().type('bye')
       cy.get(cesc('#' + inputNames[5]) + "_input").should('be.disabled');
-      cy.get(cesc('#' + inputNames[6]) + "_input").clear().type('bye{enter}')
+      cy.get(cesc('#' + inputNames[6]) + "_input").clear().type('bye')
       cy.get(cesc('#' + inputNames[7]) + "_input").should('be.disabled');
+      cy.get(cesc('#' + inputNames[4]) + "_submit").click();
       cy.get(cesc("#/_answer7_submit")).click();
       cy.get(cesc('#' + inputNames[4]) + "_incorrect").should('be.visible');
       cy.get(cesc('#' + inputNames[5]) + "_correct").should('be.visible');
