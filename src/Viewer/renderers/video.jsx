@@ -2,12 +2,301 @@
 // https://github.com/XimeraProject/server
 // https://github.com/XimeraProject/server/blob/master/public/javascripts/youtube.js
 
-import React from 'react';
-import DoenetRenderer from './DoenetRenderer';
-import cssesc from 'cssesc';
-import { sizeToCSS } from './utils/css';
 
-export default class Video extends DoenetRenderer {
+import React, { useRef, useEffect } from 'react';
+import useDoenetRender from './useDoenetRenderer';
+import { sizeToCSS } from './utils/css';
+import cssesc from 'cssesc';
+
+import DoenetRenderer from './DoenetRenderer';
+
+
+export default function Video(props) {
+  let { name, SVs, actions, sourceOfUpdate } = useDoenetRender(props);
+  let player = useRef(null);
+  let skippedCurrentTime = useRef(null);
+  let currentTime = useRef(null);
+  let rates = useRef([]);
+
+
+  useEffect(()=>{
+    if (SVs.youtube) {
+
+      let cName = cssesc(name);
+
+      player.current = new window.YT.Player(cName, {
+        videoId: SVs.youtube,
+        width: sizeToCSS(SVs.width),
+        height: sizeToCSS(SVs.height),
+        playerVars: {
+          autoplay: 0,
+          controls: 1,
+          modestbranding: 1,
+          rel: 0,
+          showinfo: 0
+        },
+        events: {
+          'onReady': onPlayerReady,
+          'onStateChange': onPlayerStateChange,
+          'onPlaybackRateChange': onPlaybackRateChange,
+        }
+      })
+
+    }
+
+
+  },[])
+
+  function onPlayerReady(){
+    player.current.setPlaybackQuality("hd720");
+    console.log(player.current)
+
+    // To correctly capture the "watched" events, we need to know the last time
+    // of the player before the user skips to a new spot
+    // Since the callbacks only give the time after a skip,
+    // we poll the player for the current time every 200 ms
+    // to record the last time before a skip
+
+
+    window.setInterval(function () {
+      let newTime = player.current.getCurrentTime();
+      console.log("newTime",newTime)
+        let timeInterval;
+
+      // if previously skipped a time (because the jump was too large)
+      // we need to calculate the interval from that skipped time
+      if (skippedCurrentTime.current) {
+        timeInterval = newTime - skippedCurrentTime.current;
+      } else {
+        timeInterval = newTime - currentTime.current;
+      }
+
+      // We are polling every 200 ms,
+      // hence if a jump was larger than a second (or negative),
+      // we guess that a portion of the video was skipped
+      // so don't update the current time for one cycle
+      // (which is typically long enough for the state change listener
+      // to be able to grab the current time to determine
+      // the end of the watched segment)
+      if (!(currentTime.current >= 0) || (timeInterval > 0 && timeInterval < 1)) {
+        currentTime.current = newTime;
+        skippedCurrentTime.current = null;
+      } else {
+        // jump was negative or longer than a second
+        skippedCurrentTime.current = newTime;
+      }
+    }, 200);
+  }
+
+  async function onPlayerStateChange(event){
+    console.log("onPlayerStateChange")
+
+    // var lastPlayerState = this.lastPlayerState;
+
+    // let renderer = this;
+    // let player = this.player;
+    // let duration = player.getDuration();
+
+    // // console.log(`on player state change: ${event.data}`)
+
+    // switch (event.data) {
+    //   case (window.YT.PlayerState.PLAYING):
+
+    //     if (this.lastEventState !== event.data) {
+    //       let newTime = player.getCurrentTime();
+
+    //       if (this.lastEventState === window.YT.PlayerState.PAUSED) {
+    //         let timeSincePaused = newTime - this.lastPausedTime;
+
+    //         // if the time has gone backward or move ahead more than a half-second,
+    //         // we consider that a portion of the video was skipped
+    //         // (When video is paused and immediately restarted, the time
+    //         // skips forward a small amount, but less than a half-second)
+
+    //         if (timeSincePaused < 0 || timeSincePaused > 0.5) {
+    //           // console.log(`recording video skipped ${this.lastPausedTime}, ${newTime}`)
+    //           await this.actions.recordVideoSkipped({
+    //             beginTime: this.lastPausedTime,
+    //             endTime: newTime,
+    //             duration,
+    //           })
+    //         }
+    //       }
+
+    //       this.lastPlayedTime = newTime;
+    //       let rate = player.getPlaybackRate();
+    //       this.rates = [{
+    //         startingPoint: newTime,
+    //         rate
+    //       }]
+
+    //       this.currentTime = NaN;
+
+    //       // console.log(`recording that video started at ${this.lastPlayedTime} at rate ${rate}`)
+    //       await this.actions.recordVideoStarted({
+    //         beginTime: player.getCurrentTime(),
+    //         duration,
+    //         rate,
+    //       })
+
+    //       this.lastEventState = event.data;
+    //     }
+    //     break;
+
+    //   case (window.YT.PlayerState.PAUSED):
+    //     var timer = setTimeout(
+    //       async function () {
+    //         let currentTime = player.getCurrentTime();
+
+    //         if (renderer.lastEventState === window.YT.PlayerState.PLAYING) {
+    //           // console.log(`recording video watched ${renderer.lastPlayedTime}, ${currentTime}`);
+    //           renderer.rates[renderer.rates.length - 1].endingPoint = currentTime;
+    //           await renderer.actions.recordVideoWatched({
+    //             beginTime: renderer.lastPlayedTime,
+    //             endTime: currentTime,
+    //             duration,
+    //             rates: renderer.rates,
+    //           });
+    //         }
+    //         // console.log(`recording that video paused ${currentTime}`)
+    //         await renderer.actions.recordVideoPaused({
+    //           endTime: currentTime,
+    //           duration,
+    //         });
+
+    //         renderer.currentTime = NaN;
+    //         renderer.lastEventState = event.data;
+    //         renderer.lastPausedTime = currentTime;
+
+    //       }, 250);
+
+    //     this.timer = timer;
+
+    //     break;
+
+    //   case (window.YT.PlayerState.BUFFERING):
+    //     clearTimeout(this.timer);
+
+    //     if (lastPlayerState !== window.YT.PlayerState.UNSTARTED && Number.isFinite(this.currentTime)) {
+    //       let newTime = player.getCurrentTime();
+    //       // console.log(`recording video watched ${this.lastPlayedTime}, ${this.currentTime}`);
+
+    //       this.rates[this.rates.length - 1].endingPoint = this.currentTime;
+    //       await this.actions.recordVideoWatched({
+    //         beginTime: this.lastPlayedTime,
+    //         endTime: this.currentTime,
+    //         duration,
+    //         rates: this.rates,
+    //       })
+
+    //       // console.log(`recording video skipped ${this.currentTime}, ${newTime}`)
+    //       await this.actions.recordVideoSkipped({
+    //         beginTime: this.currentTime,
+    //         endTime: newTime,
+    //         duration,
+    //       })
+    //       this.currentTime = NaN;
+
+    //       // videoWatched(player, container, container.data('lastPlayedTime'), container.data('currentTime'));
+    //       // videoSkipped(player, container, container.data('currentTime'), player.getCurrentTime());
+
+    //       this.lastEventState = event.data;
+
+    //     }
+    //     break;
+
+    //   case (window.YT.PlayerState.ENDED):
+    //     // BADBAD: We're treating ENDED as though it meant the user
+    //     // completed the video, even thought it
+    //     // doesn't necessarily mean the learner watched ALL the video
+
+    //     // console.log(`recording video watched ${this.lastPlayedTime}, ${player.getCurrentTime()}`);
+    //     this.rates[this.rates.length - 1].endingPoint = player.getCurrentTime();
+    //     await this.actions.recordVideoWatched({
+    //       beginTime: this.lastPlayedTime,
+    //       endTime: player.getCurrentTime(),
+    //       duration,
+    //       rates: this.rates,
+    //     })
+
+    //     // console.log(`recording video ended`)
+    //     await this.actions.recordVideoCompleted({
+    //       duration,
+    //     })
+    //     this.currentTime = NaN;
+
+    //     this.lastEventState = event.data;
+
+    //     break;
+
+    //   case (window.YT.PlayerState.UNSTARTED):
+    //     break;
+    // }
+
+    // this.lastPlayerState = event.data;
+
+  }
+
+  function onPlaybackRateChange(event){
+    console.log("onPlaybackRateChange")
+
+    rates.current[rates.current.length - 1].endingPoint = this.currentTime;
+    rates.current.push({
+      startingPoint: this.currentTime,
+      rate: event.data
+    })
+
+  }
+
+  if (SVs.hidden) {
+    return null;
+  }
+
+  if (SVs.youtube) {
+    return <>
+      <a name={name} />
+      <div className="video" id={name} />
+    </>
+  } else if (SVs.source) {
+    let extension = SVs.source.split('/').pop().split('.').pop();
+    let type;
+    if (extension === "ogg") {
+      type = "video/ogg";
+    } else if (extension === "webm") {
+      type = "video/webm";
+    } else if (extension === "mp4") {
+      type = "video/mp4";
+    } else {
+      console.warn("Haven't implemented video for any extension other than .ogg, .webm, .mp4");
+    }
+    if (type) {
+
+      return <React.Fragment>
+        <a name={name} />
+        <video className="video" id={name} style={{ objectFit: "fill" }} controls={true} width={sizeToCSS(SVs.width)} height={sizeToCSS(SVs.height)}>
+          <source src={SVs.source} type={type} />
+        Your browser does not support the &lt;video&gt; tag.
+      </video>
+      </React.Fragment>
+    } else {
+      return null;
+    }
+  }
+
+  console.warn("No video returned youtube or no valid sources specified");
+  return null;
+
+
+  return <><a name={name} /><span id={name}>{SVs.text}</span></>
+}
+
+
+
+// import React from 'react';
+// import cssesc from 'cssesc';
+// import { sizeToCSS } from './utils/css';
+
+export class Video2 extends DoenetRenderer {
 
   constructor(props) {
     super(props);
