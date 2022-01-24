@@ -593,7 +593,8 @@ export default class Core {
             instructionType: "changeChildren",
             parentName: componentName,
             childrenToRender,
-            stateValues: stateValuesForRenderer
+            stateValues: stateValuesForRenderer,
+            rendererType: unproxiedComponent.rendererType,
           });
 
           parentsWithChangedChildren.push(componentName)
@@ -628,7 +629,8 @@ export default class Core {
 
           stateValuesToUpdate.push({
             componentName,
-            stateValues: stateValuesForRenderer
+            stateValues: stateValuesForRenderer,
+            rendererType: component.rendererType,
           });
         }
       }

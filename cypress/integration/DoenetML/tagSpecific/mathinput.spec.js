@@ -1362,7 +1362,7 @@ describe('MathInput Tag Tests', function () {
       expect(stateVariables['/mi2'].stateValues.immediateValue).eqls(['*', 'q', 'r']);
     });
 
-    cy.wait(400);
+    cy.wait(500);
 
 
     cy.log('prefill ignored');
@@ -1418,7 +1418,7 @@ describe('MathInput Tag Tests', function () {
     });
 
 
-    cy.wait(400)
+    cy.wait(500)
 
     cy.log("normal downstream rules apply")
     cy.window().then(async (win) => {

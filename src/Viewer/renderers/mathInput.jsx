@@ -1,7 +1,5 @@
 import React, { useRef, useState, useEffect } from 'react';
-import { nanoid } from 'nanoid';
 import useDoenetRender from './useDoenetRenderer';
-import me from 'math-expressions';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faCheck,
@@ -10,7 +8,6 @@ import {
   faCloud,
   faPercentage,
 } from '@fortawesome/free-solid-svg-icons';
-import styled from 'styled-components';
 import mathquill from 'react-mathquill';
 mathquill.addStyles(); //Styling for react-mathquill input field
 let EditableMathField = mathquill.EditableMathField;
@@ -22,7 +19,6 @@ import {
   functionRef,
 } from '../../Tools/_framework/Footers/MathInputSelector';
 import { useRecoilValue, useSetRecoilState } from 'recoil';
-import { getFromLatex, normalizeLatexString, stripLatex } from '../../Core/utils/math';
 
 // const Prev = styled.div`
 //   font-size: 23px;
@@ -42,12 +38,26 @@ import { getFromLatex, normalizeLatexString, stripLatex } from '../../Core/utils
 // `;
 
 export default function MathInput(props) {
-  let { name, SVs, actions, sourceOfUpdate } = useDoenetRender(props);
+  let { name, SVs, actions, sourceOfUpdate, ignoreUpdate, callAction } = useDoenetRender(props);
+
+  MathInput.baseStateVariable = "rawRendererValue";
 
   // const [focused, setFocus] = useState(false);
   const focused = useRef(false);
 
   const [mathField, setMathField] = useState(null);
+
+
+  let rendererValue = useRef(null);
+
+  if (!ignoreUpdate) {
+    rendererValue.current = SVs.rawRendererValue;
+  }
+
+
+  // need to use a ref for validation state as handlePressEnter
+  // does not update to current values
+  let validationState = useRef(null);
 
   const setFocusedField = useSetRecoilState(focusedMathField);
   const setFocusedFieldReturn = useSetRecoilState(focusedMathFieldReturn);
@@ -55,41 +65,20 @@ export default function MathInput(props) {
   const toggleButtonRef = useRecoilValue(buttonRef);
   const functionTabRef = useRecoilValue(functionRef);
 
-  const updatesToIgnore = useRef({});
-
-
-  let validationState = 'unvalidated';
-
-
-  let rawRendererValue = useRef(SVs.rawRendererValue);
-
-  let sourceActionId = sourceOfUpdate.sourceInformation?.[name]?.actionId;
-
-  // only apply the update if it isn't marked to be ignored
-  // TODO: skip this earlier (in DoenetViewer?) so we don't even have to rerender
-  if (updatesToIgnore.current[sourceActionId] !== SVs.rawRendererValue) {
-    rawRendererValue.current = SVs.rawRendererValue;
-
-    // since value was changed, don't ignore any pending changes
-    // as we changed the state used to when determining that they could be ignored
-    updatesToIgnore.current = {};
-  } else {
-    delete updatesToIgnore.current[sourceActionId];
-  }
-
 
   const updateValidationState = () => {
-    validationState = 'unvalidated';
+    validationState.current = 'unvalidated';
     if (SVs.valueHasBeenValidated) {
       if (SVs.creditAchieved === 1) {
-        validationState = 'correct';
+        validationState.current = 'correct';
       } else if (SVs.creditAchieved === 0) {
-        validationState = 'incorrect';
+        validationState.current = 'incorrect';
       } else {
-        validationState = 'partialcorrect';
+        validationState.current = 'partialcorrect';
       }
     }
   };
+
   const handleVirtualKeyboardClick = (text) => {
     mathField.focus();
     if (!text) {
@@ -118,20 +107,13 @@ export default function MathInput(props) {
 
   const handlePressEnter = (e) => {
 
-    let actionId = nanoid();
-
-    // add to updates to ignore so don't apply change again
-    // if it comes back from core without any changes
-    // (possibly after a delay)
-    updatesToIgnore.current[actionId] = rawRendererValue.current;
-
-    props.callAction({
+    callAction({
       action: actions.updateValue,
-      args: { actionId }
+      baseVariableValue: rendererValue.current,
     });
 
-    if (SVs.includeCheckWork && validationState === 'unvalidated') {
-      props.callAction({
+    if (SVs.includeCheckWork && validationState.current === 'unvalidated') {
+      callAction({
         action: actions.submitAnswer,
       });
     }
@@ -158,16 +140,9 @@ export default function MathInput(props) {
       console.log('>>> clicked inside the panel functional panel');
     } else {
 
-      let actionId = nanoid();
-
-      // add to updates to ignore so don't apply change again
-      // if it comes back from core without any changes
-      // (possibly after a delay)
-      updatesToIgnore.current[actionId] = rawRendererValue.current;
-
-      props.callAction({
+      callAction({
         action: actions.updateValue,
-        args: { actionId }
+        baseVariableValue: rendererValue.current,
       });
 
       // setFocus(false);
@@ -180,23 +155,19 @@ export default function MathInput(props) {
 
   const onChangeHandler = (e) => {
 
-    if (e !== rawRendererValue.current) {
-      let actionId = nanoid();
+    if (e !== rendererValue.current) {
 
-      // add to updates to ignore so don't apply change again
-      // if it comes back from core without any changes
-      // (possibly after a delay)
-      updatesToIgnore.current[actionId] = e;
+      rendererValue.current = e;
 
-      rawRendererValue.current = e;
-
-      props.callAction({
+      callAction({
         action: actions.updateRawValue,
         args: {
           rawRendererValue: e,
-          actionId,
-        }
+        },
+        baseVariableValue: e,
       })
+
+
     }
   };
 
@@ -232,7 +203,7 @@ export default function MathInput(props) {
       zIndex: '0',
     };
 
-    if (validationState === 'unvalidated') {
+    if (validationState.current === 'unvalidated') {
       if (SVs.disabled) {
         checkWorkStyle.backgroundColor = "rgb(200,200,200)";
       } else {
@@ -244,12 +215,12 @@ export default function MathInput(props) {
           tabIndex="0"
           disabled={SVs.disabled}
           style={checkWorkStyle}
-          onClick={() => props.callAction({
+          onClick={() => callAction({
             action: actions.submitAnswer,
           })}
           onKeyPress={(e) => {
             if (e.key === 'Enter') {
-              props.callAction({
+              callAction({
                 action: actions.submitAnswer,
               });
             }
@@ -260,7 +231,7 @@ export default function MathInput(props) {
       );
     } else {
       if (SVs.showCorrectness) {
-        if (validationState === 'correct') {
+        if (validationState.current === 'correct') {
           checkWorkStyle.backgroundColor = 'rgb(92, 184, 92)';
           checkWorkButton = (
             <span
@@ -270,7 +241,7 @@ export default function MathInput(props) {
               <FontAwesomeIcon icon={faCheck} />
             </span>
           );
-        } else if (validationState === 'partialcorrect') {
+        } else if (validationState.current === 'partialcorrect') {
           //partial credit
 
           let percent = Math.round(SVs.creditAchieved * 100);
@@ -337,7 +308,7 @@ export default function MathInput(props) {
       <span className="textInputSurroundingBox" id={name}>
         <span style={{ margin: '10px' }}>
           <EditableMathField
-            latex={rawRendererValue.current}
+            latex={rendererValue.current}
             config={{
               autoCommands:
                 'alpha beta gamma delta epsilon zeta eta mu nu xi omega rho sigma tau phi chi psi omega iota kappa lambda Gamma Delta Xi Omega Sigma Phi Psi Omega Lambda sqrt pi Pi theta Theta integral infinity',
