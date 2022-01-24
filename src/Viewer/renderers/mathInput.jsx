@@ -153,18 +153,18 @@ export default function MathInput(props) {
     }
   };
 
-  const onChangeHandler = (e) => {
+  const onChangeHandler = (text) => {
 
-    if (e !== rendererValue.current) {
+    if (text !== rendererValue.current) {
 
-      rendererValue.current = e;
+      rendererValue.current = text;
 
       callAction({
         action: actions.updateRawValue,
         args: {
-          rawRendererValue: e,
+          rawRendererValue: text,
         },
-        baseVariableValue: e,
+        baseVariableValue: text,
       })
 
 
