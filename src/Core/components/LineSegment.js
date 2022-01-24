@@ -6,12 +6,8 @@ export default class LineSegment extends GraphicalComponent {
   static componentType = "lineSegment";
 
   actions = {
-    moveLineSegment: this.moveLineSegment.bind(
-      new Proxy(this, this.readOnlyProxyHandler)
-    ),
-    finalizeLineSegmentPosition: this.finalizeLineSegmentPosition.bind(
-      new Proxy(this, this.readOnlyProxyHandler)
-    )
+    moveLineSegment: this.moveLineSegment.bind(this),
+    finalizeLineSegmentPosition: this.finalizeLineSegmentPosition.bind(this)
   };
 
   static createAttributesObject(args) {

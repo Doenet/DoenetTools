@@ -109,7 +109,6 @@ export default class Document extends BaseComponent {
     stateVariableDefinitions.description = {
       public: true,
       componentType: "text",
-      forRenderer: true,
       returnDependencies: () => ({
         descriptionChild: {
           dependencyType: "child",
@@ -351,7 +350,6 @@ export default class Document extends BaseComponent {
     }
 
     stateVariableDefinitions.justSubmitted = {
-      forRenderer: true,
       returnDependencies: () => ({
         answerDescendants: {
           dependencyType: "stateVariable",
@@ -369,7 +367,6 @@ export default class Document extends BaseComponent {
     }
 
     stateVariableDefinitions.showCorrectness = {
-      forRenderer: true,
       returnDependencies: () => ({
         showCorrectnessFlag: {
           dependencyType: "flag",
@@ -391,7 +388,6 @@ export default class Document extends BaseComponent {
     stateVariableDefinitions.creditAchieved = {
       public: true,
       componentType: "number",
-      forRenderer: true,
       defaultValue: 0,
       stateVariablesPrescribingAdditionalAttributes: {
         displayDigits: "displayDigitsForCreditAchieved",

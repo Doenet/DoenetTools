@@ -155,13 +155,13 @@ export default class subsetOfReals extends DoenetRenderer {
       }));
     }
   }
-  handleInput(e, inputState) {
+  async handleInput(e, inputState) {
     let mouseLeft = e.clientX - this.bounds.current.offsetLeft;
     let xPosition = this.xPositionToXValue(mouseLeft);
     if (inputState === "up") {
       if (this.state.mode === "move points") {
         if (this.pointGrabbed !== void 0) {
-          this.actions.movePoint({
+          await this.actions.movePoint({
             pointInd: this.pointGrabbed,
             value: xPosition,
             transient: false
@@ -179,15 +179,15 @@ export default class subsetOfReals extends DoenetRenderer {
         }
         if (this.state.mode === "add remove points") {
           if (pointInd !== -1) {
-            this.actions.deletePoint(pointInd);
+            await this.actions.deletePoint(pointInd);
             this.forceUpdate();
           } else if (!this.doenetSvData.points.map((x) => x.value).includes(xPosition)) {
-            this.actions.addPoint(xPosition);
+            await this.actions.addPoint(xPosition);
             this.forceUpdate();
           }
         } else if (this.state.mode === "toggle") {
           if (pointInd !== -1) {
-            this.actions.togglePoint(pointInd);
+            await this.actions.togglePoint(pointInd);
           } else {
             let intervalInd = 0;
             for (let pt of this.doenetSvData.points) {
@@ -195,7 +195,7 @@ export default class subsetOfReals extends DoenetRenderer {
                 intervalInd++;
               }
             }
-            this.actions.toggleInterval(intervalInd);
+            await this.actions.toggleInterval(intervalInd);
           }
           this.forceUpdate();
         }
@@ -215,7 +215,7 @@ export default class subsetOfReals extends DoenetRenderer {
       }
     } else if (inputState === "move") {
       if (this.pointGrabbed !== void 0) {
-        this.actions.movePoint({
+        await this.actions.movePoint({
           pointInd: this.pointGrabbed,
           value: xPosition,
           transient: true
@@ -225,7 +225,7 @@ export default class subsetOfReals extends DoenetRenderer {
     } else if (inputState == "leave") {
       if (this.state.mode === "move points") {
         if (this.pointGrabbed !== void 0) {
-          this.actions.movePoint({
+          await this.actions.movePoint({
             pointInd: this.pointGrabbed,
             value: xPosition,
             transient: false

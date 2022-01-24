@@ -449,12 +449,8 @@ export default class UpdateValue extends InlineComponent {
   }
 
   actions = {
-    updateValue: this.updateValue.bind(
-      new Proxy(this, this.readOnlyProxyHandler)
-    ),
-    updateValueIfTriggerNewlyTrue: this.updateValueIfTriggerNewlyTrue.bind(
-      new Proxy(this, this.readOnlyProxyHandler)
-    )
+    updateValue: this.updateValue.bind(this),
+    updateValueIfTriggerNewlyTrue: this.updateValueIfTriggerNewlyTrue.bind(this)
   };
 }
 

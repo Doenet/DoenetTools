@@ -1,15 +1,11 @@
 import React from 'react';
-import DoenetRenderer from './DoenetRenderer';
+import useDoenetRender from './useDoenetRenderer';
 
-export default class Text extends DoenetRenderer {
+export default function Text(props) {
+  let { name, SVs, actions, sourceOfUpdate } = useDoenetRender(props);
 
-  static initializeChildrenOnConstruction = false;
-
-  render() {
-
-    if (this.doenetSvData.hidden) {
-      return null;
-    }
-    return <><a name={this.componentName} /><span id={this.componentName}>{this.doenetSvData.text}</span></>
+  if (SVs.hidden) {
+    return null;
   }
+  return <><a name={name} /><span id={name}>{SVs.text}</span></>
 }

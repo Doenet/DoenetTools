@@ -6,12 +6,8 @@ export default class DiscreteSimulationResultPolyline extends GraphicalComponent
   static rendererType = "polyline";
 
   actions = {
-    movePolyline: this.movePolyline.bind(
-      new Proxy(this, this.readOnlyProxyHandler)
-    ),
-    finalizePolylinePosition: this.finalizePolylinePosition.bind(
-      new Proxy(this, this.readOnlyProxyHandler)
-    )
+    movePolyline: this.movePolyline.bind(this),
+    finalizePolylinePosition: this.finalizePolylinePosition.bind(this)
   };
 
   static createAttributesObject(args) {

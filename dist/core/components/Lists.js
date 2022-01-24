@@ -11,7 +11,7 @@ export class Ol extends BlockComponent {
     attributes.label = {
       createComponentOfType: "text",
       createStateVariable: "label",
-      defaultValue: undefined,
+      defaultValue: null,
       public: true,
       forRenderer: true
     };
@@ -35,7 +35,7 @@ export class Ol extends BlockComponent {
     stateVariableDefinitions.numbered = {
       forRenderer: true,
       returnDependencies: () => ({}),
-      definition: () => ({ newValues: { numbered: true } })
+      definition: () => ({ setValue: { numbered: true } })
     }
 
     return stateVariableDefinitions;
@@ -56,7 +56,7 @@ export class Ul extends Ol {
     stateVariableDefinitions.numbered = {
       forRenderer: true,
       returnDependencies: () => ({}),
-      definition: () => ({ newValues: { numbered: false } })
+      definition: () => ({ setValue: { numbered: false } })
     }
 
     return stateVariableDefinitions;
@@ -90,7 +90,7 @@ export class Li extends BaseComponent {
     stateVariableDefinitions.item = {
       forRenderer: true,
       returnDependencies: () => ({}),
-      definition: () => ({ newValues: { item: true } })
+      definition: () => ({ setValue: { item: true } })
     }
 
     return stateVariableDefinitions;

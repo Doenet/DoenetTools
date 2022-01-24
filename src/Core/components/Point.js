@@ -1089,15 +1089,9 @@ export default class Point extends GraphicalComponent {
   }
 
   actions = {
-    movePoint: this.movePoint.bind(
-      new Proxy(this, this.readOnlyProxyHandler)
-    ),
-    finalizePointPosition: this.finalizePointPosition.bind(
-      new Proxy(this, this.readOnlyProxyHandler)
-    ),
-    switchPoint: this.switchPoint.bind(
-      new Proxy(this, this.readOnlyProxyHandler)
-    )
+    movePoint: this.movePoint.bind(this),
+    finalizePointPosition: this.finalizePointPosition.bind(this),
+    switchPoint: this.switchPoint.bind(this)
   };
 
 }

@@ -30,7 +30,7 @@ export function gatherDescendants({ ancestor, descendantTypes,
         composite: ancestor,
         componentInfoObjects,
         includeComposites: includeNonActiveChildren,
-      }))
+      }).filter(x => typeof x === "object"));
     }
 
   } else {
@@ -63,7 +63,7 @@ export function gatherDescendants({ ancestor, descendantTypes,
               childIsAdapter = true;
             }
             break;
-          } else if(aChild.adaptedFrom && achild.adaptedFrom.placeholderInd === childName) {
+          } else if (aChild.adaptedFrom && achild.adaptedFrom.placeholderInd === childName) {
             child = aChild.adaptedFrom;
             break;
           }
@@ -71,17 +71,18 @@ export function gatherDescendants({ ancestor, descendantTypes,
 
       }
 
-      if(child) {
-        if(childIsAdapter && skipOverAdapters) {
-          if(!childrenToCheck.includes(child.adaptedFrom)) {
+      if (child) {
+        if (childIsAdapter && skipOverAdapters) {
+          if (!childrenToCheck.includes(child.adaptedFrom)) {
             childrenToCheck.push(child.adaptedFrom)
           }
-        } else if(childIsActive|| includeNonActiveChildren) {
+        } else if (childIsActive || includeNonActiveChildren) {
           childrenToCheck.push(child);
         }
       }
     }
   }
+
 
   if (ignoreReplacementsOfMatchedComposites) {
     // first check if have matched any composites, so can ignore their replacements
@@ -96,7 +97,8 @@ export function gatherDescendants({ ancestor, descendantTypes,
           ...namesToIgnore,
           ...replacementsForComposites({
             composite: child, componentInfoObjects, includeComposites: true
-          }).map(x => x.componentName ? x.componentName : x.placeholderInd)
+          }).filter(x => typeof x === "object")
+            .map(x => x.componentName ? x.componentName : x.placeholderInd)
         ]
       }
     }

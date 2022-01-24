@@ -8,7 +8,7 @@ export default class Input extends InlineComponent {
     attributes.collaborateGroups = {
       createComponentOfType: "collaborateGroups",
       createStateVariable: "collaborateGroups",
-      defaultValue: undefined,
+      defaultValue: null,
       public: true,
     };
     return attributes;
@@ -22,7 +22,7 @@ export default class Input extends InlineComponent {
     // how many values an input returns
     stateVariableDefinitions.nValues = {
       returnDependencies: () => ({}),
-      definition: () => ({ newValues: { nValues: 1 } })
+      definition: () => ({ setValue: { nValues: 1 } })
     }
 
 
@@ -43,7 +43,7 @@ export default class Input extends InlineComponent {
       }),
       definition: function ({ dependencyValues }) {
         return {
-          newValues: { answerAncestor: dependencyValues.answerAncestor }
+          setValue: { answerAncestor: dependencyValues.answerAncestor }
         }
       }
     }
@@ -62,7 +62,7 @@ export default class Input extends InlineComponent {
           includeCheckWork = dependencyValues.answerAncestor.stateValues.delegateCheckWorkToInput;
         }
         return {
-          newValues: { includeCheckWork }
+          setValue: { includeCheckWork }
         }
       }
 
@@ -86,7 +86,7 @@ export default class Input extends InlineComponent {
           creditAchieved = dependencyValues.answerAncestor.stateValues.creditAchieved;
         }
         return {
-          newValues: { creditAchieved }
+          setValue: { creditAchieved }
         }
       }
     }
@@ -108,7 +108,7 @@ export default class Input extends InlineComponent {
     //     if (dependencyValues.collaborateGroups) {
     //       disabled = !dependencyValues.collaborateGroups.matchGroup(dependencyValues.collaboration)
     //     }
-    //     return { newValues: { disabled } }
+    //     return { setValue: { disabled } }
     //   }
     // }
 
@@ -130,7 +130,7 @@ export default class Input extends InlineComponent {
           valueHasBeenValidated = true;
         }
         return {
-          newValues: { valueHasBeenValidated }
+          setValue: { valueHasBeenValidated }
         }
       }
     }
@@ -154,7 +154,7 @@ export default class Input extends InlineComponent {
         } else {
           showCorrectness = dependencyValues.showCorrectnessFlag !== false;
         }
-        return { newValues: { showCorrectness } }
+        return { setValue: { showCorrectness } }
       }
     }
 
@@ -173,7 +173,7 @@ export default class Input extends InlineComponent {
         } else {
           numberOfAttemptsLeft = Infinity;
         }
-        return { newValues: { numberOfAttemptsLeft } }
+        return { setValue: { numberOfAttemptsLeft } }
       }
     }
 

@@ -52,7 +52,7 @@ export default class CellBlock extends BaseComponent {
       }),
       definition({ dependencyValues }) {
         return {
-          newValues: {
+          setValue: {
             prescribedCellsRowsColumnsBlocks: dependencyValues.cellRelatedChildren
           }
         }

@@ -1364,10 +1364,7 @@ export default class Answer extends InlineComponent {
   }
 
   actions = {
-    submitAnswer: this.submitAnswer.bind(
-      this)
-    //   new Proxy(this, this.readOnlyProxyHandler)
-    // ),
+    submitAnswer: this.submitAnswer.bind(this)
   };
 
 

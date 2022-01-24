@@ -6,15 +6,9 @@ export default class Line extends GraphicalComponent {
   static componentType = "line";
 
   actions = {
-    moveLine: this.moveLine.bind(
-      new Proxy(this, this.readOnlyProxyHandler)
-    ),
-    finalizeLinePosition: this.finalizeLinePosition.bind(
-      new Proxy(this, this.readOnlyProxyHandler)
-    ),
-    switchLine: this.switchLine.bind(
-      new Proxy(this, this.readOnlyProxyHandler)
-    )
+    moveLine: this.moveLine.bind(this),
+    finalizeLinePosition: this.finalizeLinePosition.bind(this),
+    switchLine: this.switchLine.bind(this)
   };
 
 

@@ -1,1 +1,1 @@
-export { default as ChemAtom } from './ChemAtom';
+export { default as Atom } from './Atom';

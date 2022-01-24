@@ -6,10 +6,6 @@ export default class ODESystem extends InlineComponent {
   static componentType = "odesystem";
   static rendererType = "math";
 
-  static get stateVariablesShadowedForReference() {
-    return ["variables", "validVariable", "validIndependentVariable", "initialConditions"]
-  };
-
   static createAttributesObject(args) {
     let attributes = super.createAttributesObject(args);
 
@@ -128,7 +124,7 @@ export default class ODESystem extends InlineComponent {
         if (dependencyValues.independentVarAttr) {
           validVariable = dependencyValues.independentVarAttr.stateValues.validVariable;
         }
-        return { newValues: { validIndependentVariable: validVariable } }
+        return { setValue: { validIndependentVariable: validVariable } }
       }
     }
 
@@ -142,7 +138,7 @@ export default class ODESystem extends InlineComponent {
       }),
       definition: function ({ dependencyValues }) {
         return {
-          newValues: { nDimensions: dependencyValues.rhsChildren.length },
+          setValue: { nDimensions: dependencyValues.rhsChildren.length },
           checkForActualChange: { nDimensions: true }
         }
       }
@@ -204,7 +200,7 @@ export default class ODESystem extends InlineComponent {
         }
 
         return {
-          newValues: { variables, validVariables }
+          setValue: { variables, validVariables }
         }
 
       }
@@ -250,7 +246,7 @@ export default class ODESystem extends InlineComponent {
         }
 
         return {
-          newValues: { rhss }
+          setValue: { rhss }
         }
 
       }
@@ -274,7 +270,7 @@ export default class ODESystem extends InlineComponent {
       public: true,
       componentType: "math",
       entryPrefixes: ["initialCondition"],
-      defaultEntryValue: me.fromAst(0),
+      defaultValueByArrayKey: () => me.fromAst(0),
       returnArraySizeDependencies: () => ({
         nDimensions: {
           dependencyType: "stateVariable",
@@ -303,7 +299,7 @@ export default class ODESystem extends InlineComponent {
       arrayDefinitionByKey({ dependencyValuesByKey, arrayKeys }) {
 
         let initialConditions = {};
-        let essentialInitialConditions = {};
+        let defaultInitialConditions = {};
 
         for (let arrayKey of arrayKeys) {
           let foundValue = false;
@@ -316,17 +312,17 @@ export default class ODESystem extends InlineComponent {
             }
           }
           if (!foundValue) {
-            essentialInitialConditions[arrayKey] = {};
+            defaultInitialConditions[arrayKey] = true;
           }
         }
 
         let result = {};
 
         if (Object.keys(initialConditions).length > 0) {
-          result.newValues = { initialConditions }
+          result.setValue = { initialConditions }
         }
-        if (Object.keys(essentialInitialConditions).length > 0) {
-          result.useEssentialOrDefaultValue = { initialConditions: essentialInitialConditions }
+        if (Object.keys(defaultInitialConditions).length > 0) {
+          result.useEssentialOrDefaultValue = { initialConditions: defaultInitialConditions }
         }
 
         return result;
@@ -359,10 +355,10 @@ export default class ODESystem extends InlineComponent {
       definition({ dependencyValues }) {
         if (dependencyValues.equationCounter !== undefined) {
           return {
-            newValues: { equationTag: String(dependencyValues.equationCounter) }
+            setValue: { equationTag: String(dependencyValues.equationCounter) }
           }
         } else {
-          return { newValues: { equationTag: null } }
+          return { setValue: { equationTag: null } }
         }
       }
     }
@@ -462,7 +458,7 @@ export default class ODESystem extends InlineComponent {
         }
         let latex = systemDisplay.join('\\\\');
 
-        return { newValues: { latex } }
+        return { setValue: { latex } }
       }
     }
 
@@ -475,7 +471,7 @@ export default class ODESystem extends InlineComponent {
         },
       }),
       definition: function ({ dependencyValues }) {
-        return { newValues: { latexWithInputChildren: [dependencyValues.latex] } };
+        return { setValue: { latexWithInputChildren: [dependencyValues.latex] } };
       }
     }
 
@@ -536,11 +532,11 @@ export default class ODESystem extends InlineComponent {
         }
 
         if (!valid) {
-          return { newValues: { numericalRHSf: _ => NaN } }
+          return { setValue: { numericalRHSf: _ => NaN } }
         }
 
         return {
-          newValues: {
+          setValue: {
             numericalRHSf: function (t, x) {
               let fargs = { [indVarName]: t };
               if (Array.isArray(x)) {
@@ -583,7 +579,7 @@ export default class ODESystem extends InlineComponent {
         let haveNumericalInitialConditions = Number.isFinite(t0) && x0s.every(x => Number.isFinite(x));
 
         return {
-          newValues: { t0, x0s, haveNumericalInitialConditions }
+          setValue: { t0, x0s, haveNumericalInitialConditions }
         }
       }
 
@@ -673,7 +669,7 @@ export default class ODESystem extends InlineComponent {
           for (let ind = 0; ind < globalDependencyValues.nDimensions; ind++) {
             numericalSolutions[ind] = _ => NaN;
           }
-          return { newValues: { numericalSolutions } }
+          return { setValue: { numericalSolutions } }
         }
 
         let t0 = globalDependencyValues.t0;
@@ -748,7 +744,7 @@ export default class ODESystem extends InlineComponent {
 
         }
 
-        return { newValues: { numericalSolutions } }
+        return { setValue: { numericalSolutions } }
       }
     }
 

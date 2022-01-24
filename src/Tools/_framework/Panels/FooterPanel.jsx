@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import styled from 'styled-components';
 import DragPanel, { handleDirection } from './Panel';
 
-export default function NavPanel({ children, isInitOpen, height=120 }) {
+export default function NavPanel({ children, id, isInitOpen, height = 120 }) {
   const [visible, setVisible] = useState(isInitOpen);
 
   return (
@@ -11,6 +11,7 @@ export default function NavPanel({ children, isInitOpen, height=120 }) {
       direction={handleDirection.UP}
       panelSize={height}
       isInitOpen={isInitOpen}
+      id={id}
     >
       {children}
     </DragPanel>

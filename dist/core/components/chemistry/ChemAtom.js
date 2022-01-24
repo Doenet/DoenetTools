@@ -1,5 +1,5 @@
-import InlineComponent from '../abstract/InlineComponent';
-import me from 'math-expressions';
+import InlineComponent from '../abstract/InlineComponent.js';
+import me from '../../../_snowpack/pkg/math-expressions.js';
 
 const elements = {
   H: {

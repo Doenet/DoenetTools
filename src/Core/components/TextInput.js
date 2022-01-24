@@ -5,12 +5,8 @@ export default class Textinput extends Input {
     super(args);
 
     this.actions = {
-      updateImmediateValue: this.updateImmediateValue.bind(
-        new Proxy(this, this.readOnlyProxyHandler)
-      ),
-      updateValue: this.updateValue.bind(
-        new Proxy(this, this.readOnlyProxyHandler)
-      )
+      updateImmediateValue: this.updateImmediateValue.bind(this),
+      updateValue: this.updateValue.bind(this)
     };
 
 
@@ -87,7 +83,6 @@ export default class Textinput extends Input {
     stateVariableDefinitions.value = {
       public: true,
       componentType: "text",
-      forRenderer: true,
       hasEssential: true,
       shadowVariable: true,
       returnDependencies: () => ({
@@ -224,7 +219,7 @@ export default class Textinput extends Input {
   }
 
 
-  async updateImmediateValue({ text }) {
+  async updateImmediateValue({ text, actionId }) {
     if (!await this.stateValues.disabled) {
       return await this.coreFunctions.performUpdate({
         updateInstructions: [{
@@ -232,62 +227,70 @@ export default class Textinput extends Input {
           componentName: this.componentName,
           stateVariable: "immediateValue",
           value: text,
-        }]
+          sourceInformation: { actionId }
+        }],
+        transient: true,
       })
     }
   }
 
-  async updateValue() {
+  async updateValue({ actionId }) {
     if (!await this.stateValues.disabled) {
       let immediateValue = await this.stateValues.immediateValue;
-      let updateInstructions = [{
-        updateType: "updateValue",
-        componentName: this.componentName,
-        stateVariable: "value",
-        value: immediateValue,
-      },
-      // in case value ended up being a different value than requested
-      // we set immediate value to whatever was the result
-      // (hence the need to execute update first)
-      // Also, this makes sure immediateValue is saved to the database,
-      // since in updateImmediateValue, immediateValue is note saved to database
-      {
-        updateType: "executeUpdate"
-      },
-      {
-        updateType: "updateValue",
-        componentName: this.componentName,
-        stateVariable: "immediateValue",
-        valueOfStateVariable: "value",
-      }];
 
-      let event = {
-        verb: "answered",
-        object: {
+      if (await this.stateValues.value !== immediateValue) {
+
+        let updateInstructions = [{
+          updateType: "updateValue",
           componentName: this.componentName,
-          componentType: this.componentType,
+          stateVariable: "value",
+          value: immediateValue,
+          sourceInformation: { actionId }
         },
-        result: {
-          response: immediateValue,
-          responseText: immediateValue,
+        // in case value ended up being a different value than requested
+        // we set immediate value to whatever was the result
+        // (hence the need to execute update first)
+        // Also, this makes sure immediateValue is saved to the database,
+        // since in updateImmediateValue, immediateValue is note saved to database
+        {
+          updateType: "executeUpdate"
+        },
+        {
+          updateType: "updateValue",
+          componentName: this.componentName,
+          stateVariable: "immediateValue",
+          valueOfStateVariable: "value",
+        }];
+
+        let event = {
+          verb: "answered",
+          object: {
+            componentName: this.componentName,
+            componentType: this.componentType,
+          },
+          result: {
+            response: immediateValue,
+            responseText: immediateValue,
+          }
         }
-      }
 
-      let answerAncestor = await this.stateValues.answerAncestor;
-      if (answerAncestor) {
-        event.context = {
-          answerAncestor: answerAncestor.componentName
+        let answerAncestor = await this.stateValues.answerAncestor;
+        if (answerAncestor) {
+          event.context = {
+            answerAncestor: answerAncestor.componentName
+          }
         }
+
+        await this.coreFunctions.performUpdate({
+          updateInstructions,
+          event
+        });
+
+        return await this.coreFunctions.triggerChainedActions({
+          componentName: this.componentName,
+        });
+
       }
-
-      await this.coreFunctions.performUpdate({
-        updateInstructions,
-        event
-      });
-
-      return await this.coreFunctions.triggerChainedActions({
-        componentName: this.componentName,
-      });
 
     }
   }
