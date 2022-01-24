@@ -11,8 +11,7 @@ import { faExclamationCircle } from '@fortawesome/free-solid-svg-icons';
 import { rendererSVs } from '../Viewer/renderers/useDoenetRenderer';
 import { atomFamily, useRecoilCallback } from 'recoil';
 
-
-export const rendererUpdatesToIgnore = atomFamily({
+const rendererUpdatesToIgnore = atomFamily({
   key: 'rendererUpdatesToIgnore',
   default: {},
 })
@@ -907,22 +906,22 @@ function DoenetViewer(props) {
       let updatesToIgnore = snapshot.getLoadable(rendererUpdatesToIgnore(componentName)).contents;
 
       if (Object.keys(updatesToIgnore).length > 0) {
-        let v1 = updatesToIgnore[sourceActionId];
-        let v2 = stateValues[baseStateVariable];
-        if (v1 === v2
+        let valueFromRenderer = updatesToIgnore[sourceActionId];
+        let valueFromCore = stateValues[baseStateVariable];
+        if (valueFromRenderer === valueFromCore
           || (
-            Array.isArray(v1)
-            && Array.isArray(v2)
-            && v1.length == v2.length
-            && v1.every((v, i) => v2[i] === v)
+            Array.isArray(valueFromRenderer)
+            && Array.isArray(valueFromCore)
+            && valueFromRenderer.length == valueFromCore.length
+            && valueFromRenderer.every((v, i) => valueFromCore[i] === v)
           )
         ) {
-          // console.log(`ignoring update of ${componentName} to ${v2}`)
+          // console.log(`ignoring update of ${componentName} to ${valueFromCore}`)
           ignoreUpdate = true;
-          set(rendererUpdatesToIgnore(componentName), uti => {
-            uti = { ...uti };
-            delete uti[sourceActionId];
-            return uti;
+          set(rendererUpdatesToIgnore(componentName), was => {
+            let newUpdatesToIgnore = { ...was };
+            delete newUpdatesToIgnore[sourceActionId];
+            return newUpdatesToIgnore;
           })
 
         } else {
@@ -942,10 +941,10 @@ function DoenetViewer(props) {
     // add to updates to ignore so don't apply change again
     // if it comes back from core without any changes
     // (possibly after a delay)
-    set(rendererUpdatesToIgnore(componentName), uti => {
-      uti = { ...uti };
-      uti[actionId] = baseVariableValue;
-      return uti;
+    set(rendererUpdatesToIgnore(componentName), was => {
+      let newUpdatesToIgnore = { ...was };
+      newUpdatesToIgnore[actionId] = baseVariableValue;
+      return newUpdatesToIgnore;
     })
 
   })
