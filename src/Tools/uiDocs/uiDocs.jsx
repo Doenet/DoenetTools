@@ -632,8 +632,8 @@ export default function attempt() {
         },
         {
           name: 'No Search Button',
-          propPreview: '<SearchBar noButton/>',
-          propCode: { noButton },
+          propPreview: '<SearchBar searchShown="hidden" />',
+          propCode: { visibility: "hidden" },
           description: 'Removes button from search bar',
         },
         {

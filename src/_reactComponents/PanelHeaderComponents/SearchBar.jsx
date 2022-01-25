@@ -74,12 +74,7 @@ export default function Searchbar(props) {
         searchBar.cursor = 'not-allowed';
         disable = "disabled";
     }
-    var noButton = "";
-    if (props.noButton) {
-        setSearchShown('hidden');
-        searchBar.noButton = props.noButton;
-        noButton = "hiddenButton";
-    }
+
     var label = {
         value: 'Label:',
         fontSize: '14px',
@@ -92,6 +87,9 @@ export default function Searchbar(props) {
         alignItems:'center'
     }
     
+    if (props.visibility) {
+        submitButton.visibility = props.visibility;
+    }
     if (props.placeholder) {
         searchBar.placeholder = props.placeholder;
     }
@@ -162,8 +160,7 @@ export default function Searchbar(props) {
                 aria-label={searchBar.ariaLabel}
                 />
                 <div style={{padding: '3px', display:'inline'}}></div>
-                {/* <button style={submitButton} onClick={searchSubmitAction}>Search</button> */}
-                {props.noButton ? searchBar.noButton : <button style={submitButton} onClick={searchSubmitAction}>Search</button>}
+                <button style={submitButton} searchShown={searchShown} onClick={searchSubmitAction}>Search</button>
             </div>
         </div>
     )
