@@ -471,7 +471,9 @@ export default class Core {
       // calculate any replacement changes on composites touched
       await this.replacementChangesFromCompositesToUpdate();
 
-      await this.updateRendererInstructions({ componentNames: await this.componentAndRenderedDescendants(parent) });
+      await this.updateRendererInstructions({
+        componentNamesToUpdate: await this.componentAndRenderedDescendants(parent)
+      });
       await this.processStateVariableTriggers();
 
     }
@@ -480,7 +482,7 @@ export default class Core {
   }
 
 
-  async updateRendererInstructions({ componentNames, sourceOfUpdate, recreatedComponents = {} }) {
+  async updateRendererInstructions({ componentNamesToUpdate, sourceOfUpdate, recreatedComponents = {} }) {
 
     let deletedRenderers = [];
 
@@ -609,7 +611,7 @@ export default class Core {
     this.componentsWithChangedChildrenToRender = new Set([]);
 
 
-    for (let componentName of componentNames) {
+    for (let componentName of componentNamesToUpdate) {
       if (componentName in this.componentsToRender
         & !parentsWithChangedChildren.includes(componentName)
         // && !deletedRenderers.includes(componentName)  TODO: what if recreate with same name?
@@ -7804,7 +7806,7 @@ export default class Core {
       }
 
       await this.updateRendererInstructions({
-        componentNames: updateInstructions.map(x => x.componentName),
+        componentNamesToUpdate: updateInstructions.map(x => x.componentName),
         sourceOfUpdate: { sourceInformation }
       });
 
@@ -8115,20 +8117,23 @@ export default class Core {
 
   async finishUpdate(sourceOfUpdate) {
 
-    // get unique list of components touched
-
-    this.updateInfo.componentsToUpdateRenderers = [...new Set(this.updateInfo.componentsToUpdateRenderers)];
+    // use set to create deduplicated list of components to update renderers
+    let componentNamesToUpdate = [...new Set(this.updateInfo.componentsToUpdateRenderers)];
+    this.updateInfo.componentsToUpdateRenderers = [];
 
     await this.updateRendererInstructions({
-      componentNames: this.updateInfo.componentsToUpdateRenderers,
+      componentNamesToUpdate,
       sourceOfUpdate,
       recreatedComponents: this.updateInfo.recreatedComponents
     });
 
     await this.processStateVariableTriggers();
 
-    this.updateInfo.componentsToUpdateRenderers = [];
-
+    // it is possible that components were added back to componentNamesToUpdateRenderers
+    // while processing the renderer instructions
+    // so delete any names that were just address
+    this.updateInfo.componentsToUpdateRenderers
+      = this.updateInfo.componentsToUpdateRenderers.filter(x => !componentNamesToUpdate.includes(x));
 
     if (Object.keys(this.unmatchedChildren).length > 0) {
       let childLogicMessage = "";
