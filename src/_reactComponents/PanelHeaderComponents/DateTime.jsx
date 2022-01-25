@@ -14,6 +14,7 @@ const Label = styled.div`
 export default function DateTime(props) {
   //console.log('props', props);
   const [value, setValue] = useState(props.value);
+  const [lastValid, setLastValid] = useState(props.value);
   const inputRef = useRef(null);
   const [cursorStart, setCursorStart] = useState(0);
   const [cursorEnd, setCursorEnd] = useState(0);
@@ -23,6 +24,8 @@ export default function DateTime(props) {
   let cursorStyle = props.disabled ? 'not-allowed' : 'auto';
 
   useEffect(() => {
+    //todo try lastValid update
+    setLastValid(props.value);
     setValue(props.value);
   }, [props]);
 
@@ -78,6 +81,7 @@ export default function DateTime(props) {
             }
             if (e.key === 'Enter') {
               closeCalendar();
+              e.target.blur();
             }
           }}
         />
@@ -119,9 +123,16 @@ export default function DateTime(props) {
       }}
       onClose={(_) => {
         //console.log('onBlur', dateObjectOrString.toDate());
+        let valid = typeof value !== 'string';
+        if (valid) {
+          setLastValid(value);
+        } else {
+          setValue(lastValid);
+        }
+
         if (props.onBlur) {
           props.onBlur({
-            valid: typeof value !== 'string',
+            valid: valid,
             value: value,
           });
         }
