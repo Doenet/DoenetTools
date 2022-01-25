@@ -9,6 +9,7 @@ export default function Searchbar(props) {
     const [searchShown, setSearchShown] = useState('visible')
     const [labelVisible, setLabelVisible] = useState(props.label ? 'static' : 'none')
     const [align, setAlign] = useState(props.vertical ? 'static' : 'flex')
+    const marginLeft = props.noSearchButton ? 80 : 26;
 
     var searchBar = {
         margin: '0px',
@@ -27,7 +28,7 @@ export default function Searchbar(props) {
             searchBar.width = '130px'
         } 
     }
-    let cancelLeftMargin = Number(searchBar.width.split('px')[0]) + 26 + "px"
+    let cancelLeftMargin = Number(searchBar.width.split('px')[0]) + marginLeft + "px"
 
     var cancelButton = {
         float: 'right',
@@ -59,7 +60,6 @@ export default function Searchbar(props) {
         height: '28px',
         border: `2px solid black`,
         backgroundColor: `${doenetComponentForegroundActive}`,
-        visibility: `${searchShown}`,
         color: '#FFFFFF',
         borderRadius: '0px 5px 5px 0px',
         cursor: 'pointer',
@@ -87,8 +87,18 @@ export default function Searchbar(props) {
         alignItems:'center'
     }
     
-    if (props.visibility) {
-        submitButton.visibility = props.visibility;
+    var searchButton = 
+        <button
+            style={submitButton} onClick={searchSubmitAction}>
+            Search
+        </button>
+
+    // if (props.visibility) {
+    //     submitButton.visibility = props.visibility;
+    // }
+    if (props.noSearchButton) {
+        searchButton = '';
+        console.log(cancelLeftMargin)
     }
     if (props.placeholder) {
         searchBar.placeholder = props.placeholder;
@@ -160,7 +170,7 @@ export default function Searchbar(props) {
                 aria-label={searchBar.ariaLabel}
                 />
                 <div style={{padding: '3px', display:'inline'}}></div>
-                <button style={submitButton} searchShown={searchShown} onClick={searchSubmitAction}>Search</button>
+                {searchButton}
             </div>
         </div>
     )

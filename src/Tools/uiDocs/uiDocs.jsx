@@ -65,7 +65,7 @@ export default function attempt() {
   const disabled = () => {};
   const absolute = () => {};
   const left = () => {};
-  const noButton = () => {};
+  const noSearchButton = () => {};
 
   //=== DATA STRUCTURE SECTION ===
   let dataStructure = [
@@ -632,8 +632,8 @@ export default function attempt() {
         },
         {
           name: 'No Search Button',
-          propPreview: '<SearchBar searchShown="hidden" />',
-          propCode: { visibility: "hidden" },
+          propPreview: '<SearchBar noSearchButton />',
+          propCode: { noSearchButton },
           description: 'Removes button from search bar',
         },
         {
