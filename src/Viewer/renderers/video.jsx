@@ -12,7 +12,7 @@ import DoenetRenderer from './DoenetRenderer';
 
 
 export default function Video(props) {
-  let { name, SVs, actions, sourceOfUpdate } = useDoenetRender(props);
+  let { name, SVs, actions, callAction } = useDoenetRender(props);
   let player = useRef(null);
   let skippedCurrentTime = useRef(null);
   let currentTime = useRef(null);
@@ -57,7 +57,6 @@ export default function Video(props) {
     // event.target.setPlaybackQuality("hd720");
     // player.current.setPlaybackQuality("hd720");
 
-    console.log("player.current",player.current)
 
     // To correctly capture the "watched" events, we need to know the last time
     // of the player before the user skips to a new spot
@@ -120,18 +119,21 @@ export default function Video(props) {
             // skips forward a small amount, but less than a half-second)
 
             if (timeSincePaused < 0 || timeSincePaused > 0.5) {
-               console.log("recordVideoSkipped",{
-                  beginTime: lastPausedTime.current,
-                  endTime: currentTime,
-                  duration,
+              //  console.log("recordVideoSkipped",{
+              //     beginTime: lastPausedTime.current,
+              //     endTime: currentTime,
+              //     duration,
+              //   })
+
+                callAction({
+                  action:actions.recordVideoSkipped,
+                  args:{
+                    beginTime: lastPausedTime.current,
+                    endTime: currentTime,
+                    duration,
+                  }
                 })
 
-              //TODO: migrate action
-              // await this.actions.recordVideoSkipped({
-              //   beginTime: lastPausedTime.current,
-              //   endTime: currentTime,
-              //   duration,
-              // })
             }
           }
 
@@ -145,17 +147,20 @@ export default function Video(props) {
           // currentTime.current = NaN;  //TODO: Why reset this?
           lastPlayedTime.current = currentTime;
 
-              //TODO: migrate action
-          console.log("recordVideoStarted",{
-              beginTime: player.current.getCurrentTime(),
-              duration,
-              rate,
+          // console.log("recordVideoStarted",{
+          //     beginTime: player.current.getCurrentTime(),
+          //     duration,
+          //     rate,
+          //   })
+            callAction({
+              action:actions.recordVideoStarted,
+              args:{
+                beginTime: player.current.getCurrentTime(),
+                duration,
+                rate,
+              }
             })
-          // await this.actions.recordVideoStarted({
-          //   beginTime: player.current.getCurrentTime(),
-          //   duration,
-          //   rate,
-          // })
+    
           
           lastPlayerState.current = event.data;
 
@@ -171,32 +176,37 @@ export default function Video(props) {
             if (lastPlayerState.current === window.YT.PlayerState.PLAYING) {
               rates.current[rates.current.length - 1].endingPoint = currentTime;
 
-              console.log("recordVideoWatched",{
-                  beginTime: lastPlayedTime.current,
-                  endTime: currentTime,
-                  duration,
-                  rates: rates.current,
+              // console.log("recordVideoWatched",{
+              //     beginTime: lastPlayedTime.current,
+              //     endTime: currentTime,
+              //     duration,
+              //     rates: rates.current,
+              //   })
+                callAction({
+                  action:actions.recordVideoWatched,
+                  args:{
+                    beginTime: lastPlayedTime.current,
+                    endTime: currentTime,
+                    duration,
+                    rates: rates.current,
+                  }
                 })
-              // await renderer.actions.recordVideoWatched({
-              //   beginTime: lastPlayedTime.current,
-              //   endTime: currentTime,
-              //   duration,
-              //   rates: rates.current,
-              // });
+             
             }
-            console.log("recordVideoPaused",{
-              endTime: currentTime,
-              duration,
-            })
-            // await renderer.actions.recordVideoPaused({
+            // console.log("recordVideoPaused",{
             //   endTime: currentTime,
             //   duration,
-            // });
+            // })
+            callAction({
+              action:actions.recordVideoPaused,
+              args:{
+                endTime: currentTime,
+                duration,
+              }
+            })
 
             lastPausedTime.current = currentTime;
-
             lastPlayerState.current = event.data;
-
 
           }, 250);
 
@@ -212,31 +222,38 @@ export default function Video(props) {
 
           rates.current[rates.current.length - 1].endingPoint = currentTime;
 
-          console.log("BUFFERING recordVideoWatched",{
-            beginTime: lastPlayedTime.current,
-            endTime: currentTime,
-            duration,
-            rates: rates.current,
-          })
-
-          // await this.actions.recordVideoWatched({
+          // console.log("BUFFERING recordVideoWatched",{
           //   beginTime: lastPlayedTime.current,
           //   endTime: currentTime,
           //   duration,
           //   rates: rates.current,
           // })
 
-          console.log("BUFFERING recordVideoSkipped",{
-            beginTime: lastPlayedTime.current,
-            endTime: currentTime,
-            duration,
+          callAction({
+            action:actions.recordVideoWatched,
+            args:{
+              beginTime: lastPlayedTime.current,
+              endTime: currentTime,
+              duration,
+              rates: rates.current,
+            }
           })
 
-          // await this.actions.recordVideoSkipped({
+
+          // console.log("BUFFERING recordVideoSkipped",{
           //   beginTime: lastPlayedTime.current,
           //   endTime: currentTime,
           //   duration,
           // })
+
+          callAction({
+            action:actions.recordVideoSkipped,
+            args:{
+              beginTime: lastPlayedTime.current,
+              endTime: currentTime,
+              duration,
+            }
+          })
 
 
            lastPlayerState.current = event.data;
@@ -254,29 +271,32 @@ export default function Video(props) {
 
         rates.current[rates.current.length - 1].endingPoint = player.current.getCurrentTime();
 
-    console.log("recordVideoWatched",{
-      beginTime: lastPlayedTime.current,
-      endTime: player.current.getCurrentTime(),
-      duration,
-      rates: rates.current,
-    })
-
-        // await this.actions.recordVideoWatched({
+        // console.log("recordVideoWatched",{
         //   beginTime: lastPlayedTime.current,
         //   endTime: player.current.getCurrentTime(),
         //   duration,
         //   rates: rates.current,
         // })
-
-        console.log("recordVideoCompleted",{
-          duration,
+        callAction({
+          action:actions.recordVideoWatched,
+          args:{
+            beginTime: lastPlayedTime.current,
+            endTime: player.current.getCurrentTime(),
+            duration,
+            rates: rates.current,
+          }
         })
 
-        // await this.actions.recordVideoCompleted({
+
+        // console.log("recordVideoCompleted",{
         //   duration,
         // })
-
-    //     currentTime = NaN;  //TODO: Why?
+        callAction({
+          action:actions.recordVideoCompleted,
+          args:{
+            duration,
+          }
+        })
 
 
         lastPlayerState.current = event.data;
