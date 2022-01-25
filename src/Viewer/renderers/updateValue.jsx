@@ -4,7 +4,7 @@ import Button from '../../_reactComponents/PanelHeaderComponents/Button';
 
 
 export default function UpdateValue(props) {
-  let { name, SVs, actions, callAction } = useDoenetRender(props);
+  let { name, SVs, actions, callAction } = useDoenetRender(props,false);
 
   if (SVs.hidden) {
     return null;
