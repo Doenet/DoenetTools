@@ -7,6 +7,7 @@ import { pageToolViewAtom, searchParamAtomFamily, profileAtom } from '../NewTool
 import Next7Days from '../Widgets/Next7Days';
 import { effectiveRoleAtom } from '../../../_reactComponents/PanelHeaderComponents/RoleDropdown';
 import { suppressMenusAtom } from '../NewToolRoot';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCode, faUser, faChartPie, faTasks } from '@fortawesome/free-solid-svg-icons';
 
 
@@ -34,7 +35,7 @@ export default function Dashboard(props) {
         <div style={{display: 'flex', justifyContent: 'space-between', col: '1', width: '850px'}}>
           <Card 
             name='Content' 
-            icon={faCode}
+            icon={<FontAwesomeIcon icon={faCode}/>}
             value="Content"
             onClick={() => {
               setPageToolView((was) => {
@@ -46,7 +47,7 @@ export default function Dashboard(props) {
           <>
           <Card 
             name='Enrollment' 
-            icon={faUser}
+            icon={<FontAwesomeIcon icon={faUser}/>}
             value="Enrollment"
             onClick={() =>
               setPageToolView({
@@ -59,7 +60,7 @@ export default function Dashboard(props) {
           />
           <Card 
             name='Surveys' 
-            icon={faChartPie}
+            icon={<FontAwesomeIcon icon={faChartPie}/>}
             value="Surveys"
             onClick={() =>
               setPageToolView({
@@ -75,7 +76,7 @@ export default function Dashboard(props) {
           {effectiveRole === 'instructor' ?
           <Card 
             name='Gradebook' 
-            icon={faTasks}
+            icon={<FontAwesomeIcon icon={faTasks}/>}
             value="Gradebook" 
             onClick={() => 
             setPageToolView((was)=>{return {
