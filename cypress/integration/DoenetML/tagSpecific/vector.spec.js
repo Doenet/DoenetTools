@@ -1,4 +1,5 @@
 import cssesc from 'cssesc';
+import me from 'math-expressions';
 
 function cesc(s) {
   s = cssesc(s, { isIdentifier: true });
@@ -5910,7 +5911,7 @@ describe('Vector Tag Tests', function () {
 
   })
 
-  it.only('updates depending on vector definition', () => {
+  it('updates depending on vector definition', () => {
     cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
@@ -5999,6 +6000,20 @@ describe('Vector Tag Tests', function () {
 
   </graph>
 
+  <copy prop="head" target="dfvhd2" assignNames="dfvhd2_hdom" />
+  <copy target="hfvhd2" assignNames="hfvhd2_dom" />
+  <copy target="tfvhd2" assignNames="tfvhd2_dom" />
+  <copy prop="head" target="vhd2" assignNames="vhd2_hdom" />
+  <copy prop="tail" target="vhd2" assignNames="vhd2_tdom" />
+  <copy prop="head" target="dfvhd" assignNames="dfvhd_hdom" />
+  <copy target="hfvhd" assignNames="hfvhd_dom" />
+  <copy target="tfvhd" assignNames="tfvhd_dom" />
+  <copy target="dvhd" assignNames="dvhd_dom" />
+  <copy target="hvhd" assignNames="hvhd_dom" />
+  <copy target="tvtd" assignNames="tvtd_dom" />
+  <copy prop="head" target="vhd" assignNames="vhd_hdom" />
+  <copy prop="tail" target="vhd" assignNames="vhd_tdom" />
+
   `}, "*");
     });
 
@@ -6035,117 +6050,116 @@ describe('Vector Tag Tests', function () {
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables();
 
-      expect(stateVariables['/tvt'].stateValues.coords.simplify()).eqls(["vector", ...tvt]);
-      expect(stateVariables['/hvh'].stateValues.coords.simplify()).eqls(["vector", ...hvh]);
-      expect(stateVariables['/dvd'].stateValues.coords.simplify()).eqls(["vector", ...dvd]);
-      expect(stateVariables['/tvth'].stateValues.coords.simplify()).eqls(["vector", ...tvth]);
-      expect(stateVariables['/hvth'].stateValues.coords.simplify()).eqls(["vector", ...hvth]);
-      expect(stateVariables['/tvtd'].stateValues.coords.simplify()).eqls(["vector", ...tvtd]);
-      expect(stateVariables['/dvtd'].stateValues.coords.simplify()).eqls(["vector", ...dvtd]);
-      expect(stateVariables['/hvhd'].stateValues.coords.simplify()).eqls(["vector", ...hvhd]);
-      expect(stateVariables['/dvhd'].stateValues.coords.simplify()).eqls(["vector", ...dvhd]);
+      expect(me.fromAst(stateVariables['/tvt'].stateValues.coords).simplify().tree).eqls(["vector", ...tvt]);
+      expect(me.fromAst(stateVariables['/hvh'].stateValues.coords).simplify().tree).eqls(["vector", ...hvh]);
+      expect(me.fromAst(stateVariables['/dvd'].stateValues.coords).simplify().tree).eqls(["vector", ...dvd]);
+      expect(me.fromAst(stateVariables['/tvth'].stateValues.coords).simplify().tree).eqls(["vector", ...tvth]);
+      expect(me.fromAst(stateVariables['/hvth'].stateValues.coords).simplify().tree).eqls(["vector", ...hvth]);
+      expect(me.fromAst(stateVariables['/tvtd'].stateValues.coords).simplify().tree).eqls(["vector", ...tvtd]);
+      expect(me.fromAst(stateVariables['/dvtd'].stateValues.coords).simplify().tree).eqls(["vector", ...dvtd]);
+      expect(me.fromAst(stateVariables['/hvhd'].stateValues.coords).simplify().tree).eqls(["vector", ...hvhd]);
+      expect(me.fromAst(stateVariables['/dvhd'].stateValues.coords).simplify().tree).eqls(["vector", ...dvhd]);
 
-      expect(stateVariables['/vt'].stateValues.tail.map(x => x.simplify())).eqls([...tvt]);
-      expect(stateVariables['/vt'].stateValues.head.map(x => x.simplify())).eqls([...hvt]);
-      expect(stateVariables['/vt'].stateValues.displacement.map(x => x.simplify())).eqls([...dvt]);
+      expect(stateVariables['/vt'].stateValues.tail.map(x => me.fromAst(x).simplify().tree)).eqls([...tvt]);
+      expect(stateVariables['/vt'].stateValues.head.map(x => me.fromAst(x).simplify().tree)).eqls([...hvt]);
+      expect(stateVariables['/vt'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvt]);
 
-      expect(stateVariables['/vh'].stateValues.tail.map(x => x.simplify())).eqls([...tvh]);
-      expect(stateVariables['/vh'].stateValues.head.map(x => x.simplify())).eqls([...hvh]);
-      expect(stateVariables['/vh'].stateValues.displacement.map(x => x.simplify())).eqls([...dvh]);
+      expect(stateVariables['/vh'].stateValues.tail.map(x => me.fromAst(x).simplify().tree)).eqls([...tvh]);
+      expect(stateVariables['/vh'].stateValues.head.map(x => me.fromAst(x).simplify().tree)).eqls([...hvh]);
+      expect(stateVariables['/vh'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvh]);
 
-      expect(stateVariables['/vd'].stateValues.tail.map(x => x.simplify())).eqls([...tvd]);
-      expect(stateVariables['/vd'].stateValues.head.map(x => x.simplify())).eqls([...hvd]);
-      expect(stateVariables['/vd'].stateValues.displacement.map(x => x.simplify())).eqls([...dvd]);
+      expect(stateVariables['/vd'].stateValues.tail.map(x => me.fromAst(x).simplify().tree)).eqls([...tvd]);
+      expect(stateVariables['/vd'].stateValues.head.map(x => me.fromAst(x).simplify().tree)).eqls([...hvd]);
+      expect(stateVariables['/vd'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvd]);
 
-      expect(stateVariables['/vth'].stateValues.tail.map(x => x.simplify())).eqls([...tvth]);
-      expect(stateVariables['/vth'].stateValues.head.map(x => x.simplify())).eqls([...hvth]);
-      expect(stateVariables['/vth'].stateValues.displacement.map(x => x.simplify())).eqls([...dvth]);
+      expect(stateVariables['/vth'].stateValues.tail.map(x => me.fromAst(x).simplify().tree)).eqls([...tvth]);
+      expect(stateVariables['/vth'].stateValues.head.map(x => me.fromAst(x).simplify().tree)).eqls([...hvth]);
+      expect(stateVariables['/vth'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvth]);
 
-      expect(stateVariables['/vtd'].stateValues.tail.map(x => x.simplify())).eqls([...tvtd]);
-      expect(stateVariables['/vtd'].stateValues.head.map(x => x.simplify())).eqls([...hvtd]);
-      expect(stateVariables['/vtd'].stateValues.displacement.map(x => x.simplify())).eqls([...dvtd]);
+      expect(stateVariables['/vtd'].stateValues.tail.map(x => me.fromAst(x).simplify().tree)).eqls([...tvtd]);
+      expect(stateVariables['/vtd'].stateValues.head.map(x => me.fromAst(x).simplify().tree)).eqls([...hvtd]);
+      expect(stateVariables['/vtd'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvtd]);
 
-      expect(stateVariables['/vhd'].stateValues.tail.map(x => x.simplify())).eqls([...tvhd]);
-      expect(stateVariables['/vhd'].stateValues.head.map(x => x.simplify())).eqls([...hvhd]);
-      expect(stateVariables['/vhd'].stateValues.displacement.map(x => x.simplify())).eqls([...dvhd]);
+      expect(stateVariables['/vhd'].stateValues.tail.map(x => me.fromAst(x).simplify().tree)).eqls([...tvhd]);
+      expect(stateVariables['/vhd'].stateValues.head.map(x => me.fromAst(x).simplify().tree)).eqls([...hvhd]);
+      expect(stateVariables['/vhd'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvhd]);
 
-      expect(stateVariables['/tfvt'].stateValues.coords.simplify()).eqls(["vector", ...tvt]);
-      expect(stateVariables['/hfvt'].stateValues.coords.simplify()).eqls(["vector", ...hvt]);
-      expect(stateVariables['/dfvt'].stateValues.displacement.map(x => x.simplify())).eqls([...dvt]);
+      expect(me.fromAst(stateVariables['/tfvt'].stateValues.coords).simplify().tree).eqls(["vector", ...tvt]);
+      expect(me.fromAst(stateVariables['/hfvt'].stateValues.coords).simplify().tree).eqls(["vector", ...hvt]);
+      expect(stateVariables['/dfvt'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvt]);
 
-      expect(stateVariables['/tfvh'].stateValues.coords.simplify()).eqls(["vector", ...tvh]);
-      expect(stateVariables['/hfvh'].stateValues.coords.simplify()).eqls(["vector", ...hvh]);
-      expect(stateVariables['/dfvh'].stateValues.displacement.map(x => x.simplify())).eqls([...dvh]);
+      expect(me.fromAst(stateVariables['/tfvh'].stateValues.coords).simplify().tree).eqls(["vector", ...tvh]);
+      expect(me.fromAst(stateVariables['/hfvh'].stateValues.coords).simplify().tree).eqls(["vector", ...hvh]);
+      expect(stateVariables['/dfvh'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvh]);
 
-      expect(stateVariables['/tfvd'].stateValues.coords.simplify()).eqls(["vector", ...tvd]);
-      expect(stateVariables['/hfvd'].stateValues.coords.simplify()).eqls(["vector", ...hvd]);
-      expect(stateVariables['/dfvd'].stateValues.displacement.map(x => x.simplify())).eqls([...dvd]);
+      expect(me.fromAst(stateVariables['/tfvd'].stateValues.coords).simplify().tree).eqls(["vector", ...tvd]);
+      expect(me.fromAst(stateVariables['/hfvd'].stateValues.coords).simplify().tree).eqls(["vector", ...hvd]);
+      expect(stateVariables['/dfvd'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvd]);
 
-      expect(stateVariables['/tfvth'].stateValues.coords.simplify()).eqls(["vector", ...tvth]);
-      expect(stateVariables['/hfvth'].stateValues.coords.simplify()).eqls(["vector", ...hvth]);
-      expect(stateVariables['/dfvth'].stateValues.displacement.map(x => x.simplify())).eqls([...dvth]);
+      expect(me.fromAst(stateVariables['/tfvth'].stateValues.coords).simplify().tree).eqls(["vector", ...tvth]);
+      expect(me.fromAst(stateVariables['/hfvth'].stateValues.coords).simplify().tree).eqls(["vector", ...hvth]);
+      expect(stateVariables['/dfvth'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvth]);
 
-      expect(stateVariables['/tfvtd'].stateValues.coords.simplify()).eqls(["vector", ...tvtd]);
-      expect(stateVariables['/hfvtd'].stateValues.coords.simplify()).eqls(["vector", ...hvtd]);
-      expect(stateVariables['/dfvtd'].stateValues.displacement.map(x => x.simplify())).eqls([...dvtd]);
+      expect(me.fromAst(stateVariables['/tfvtd'].stateValues.coords).simplify().tree).eqls(["vector", ...tvtd]);
+      expect(me.fromAst(stateVariables['/hfvtd'].stateValues.coords).simplify().tree).eqls(["vector", ...hvtd]);
+      expect(stateVariables['/dfvtd'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvtd]);
 
-      expect(stateVariables['/tfvhd'].stateValues.coords.simplify()).eqls(["vector", ...tvhd]);
-      expect(stateVariables['/hfvhd'].stateValues.coords.simplify()).eqls(["vector", ...hvhd]);
-      expect(stateVariables['/dfvhd'].stateValues.displacement.map(x => x.simplify())).eqls([...dvhd]);
+      expect(me.fromAst(stateVariables['/tfvhd'].stateValues.coords).simplify().tree).eqls(["vector", ...tvhd]);
+      expect(me.fromAst(stateVariables['/hfvhd'].stateValues.coords).simplify().tree).eqls(["vector", ...hvhd]);
+      expect(stateVariables['/dfvhd'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvhd]);
 
-      expect(stateVariables['/vt2'].stateValues.tail.map(x => x.simplify())).eqls([...tvt]);
-      expect(stateVariables['/vt2'].stateValues.head.map(x => x.simplify())).eqls([...hvt]);
-      expect(stateVariables['/vt2'].stateValues.displacement.map(x => x.simplify())).eqls([...dvt]);
+      expect(stateVariables['/vt2'].stateValues.tail.map(x => me.fromAst(x).simplify().tree)).eqls([...tvt]);
+      expect(stateVariables['/vt2'].stateValues.head.map(x => me.fromAst(x).simplify().tree)).eqls([...hvt]);
+      expect(stateVariables['/vt2'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvt]);
 
-      expect(stateVariables['/vh2'].stateValues.tail.map(x => x.simplify())).eqls([...tvh]);
-      expect(stateVariables['/vh2'].stateValues.head.map(x => x.simplify())).eqls([...hvh]);
-      expect(stateVariables['/vh2'].stateValues.displacement.map(x => x.simplify())).eqls([...dvh]);
+      expect(stateVariables['/vh2'].stateValues.tail.map(x => me.fromAst(x).simplify().tree)).eqls([...tvh]);
+      expect(stateVariables['/vh2'].stateValues.head.map(x => me.fromAst(x).simplify().tree)).eqls([...hvh]);
+      expect(stateVariables['/vh2'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvh]);
 
-      expect(stateVariables['/vd2'].stateValues.tail.map(x => x.simplify())).eqls([...tvd]);
-      expect(stateVariables['/vd2'].stateValues.head.map(x => x.simplify())).eqls([...hvd]);
-      expect(stateVariables['/vd2'].stateValues.displacement.map(x => x.simplify())).eqls([...dvd]);
+      expect(stateVariables['/vd2'].stateValues.tail.map(x => me.fromAst(x).simplify().tree)).eqls([...tvd]);
+      expect(stateVariables['/vd2'].stateValues.head.map(x => me.fromAst(x).simplify().tree)).eqls([...hvd]);
+      expect(stateVariables['/vd2'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvd]);
 
-      expect(stateVariables['/vth2'].stateValues.tail.map(x => x.simplify())).eqls([...tvth]);
-      expect(stateVariables['/vth2'].stateValues.head.map(x => x.simplify())).eqls([...hvth]);
-      expect(stateVariables['/vth2'].stateValues.displacement.map(x => x.simplify())).eqls([...dvth]);
+      expect(stateVariables['/vth2'].stateValues.tail.map(x => me.fromAst(x).simplify().tree)).eqls([...tvth]);
+      expect(stateVariables['/vth2'].stateValues.head.map(x => me.fromAst(x).simplify().tree)).eqls([...hvth]);
+      expect(stateVariables['/vth2'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvth]);
 
-      expect(stateVariables['/vtd2'].stateValues.tail.map(x => x.simplify())).eqls([...tvtd]);
-      expect(stateVariables['/vtd2'].stateValues.head.map(x => x.simplify())).eqls([...hvtd]);
-      expect(stateVariables['/vtd2'].stateValues.displacement.map(x => x.simplify())).eqls([...dvtd]);
+      expect(stateVariables['/vtd2'].stateValues.tail.map(x => me.fromAst(x).simplify().tree)).eqls([...tvtd]);
+      expect(stateVariables['/vtd2'].stateValues.head.map(x => me.fromAst(x).simplify().tree)).eqls([...hvtd]);
+      expect(stateVariables['/vtd2'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvtd]);
 
-      expect(stateVariables['/vhd2'].stateValues.tail.map(x => x.simplify())).eqls([...tvhd]);
-      expect(stateVariables['/vhd2'].stateValues.head.map(x => x.simplify())).eqls([...hvhd]);
-      expect(stateVariables['/vhd2'].stateValues.displacement.map(x => x.simplify())).eqls([...dvhd]);
+      expect(stateVariables['/vhd2'].stateValues.tail.map(x => me.fromAst(x).simplify().tree)).eqls([...tvhd]);
+      expect(stateVariables['/vhd2'].stateValues.head.map(x => me.fromAst(x).simplify().tree)).eqls([...hvhd]);
+      expect(stateVariables['/vhd2'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvhd]);
 
-      expect(stateVariables['/tfvt2'].stateValues.coords.simplify()).eqls(["vector", ...tvt]);
-      expect(stateVariables['/hfvt2'].stateValues.coords.simplify()).eqls(["vector", ...hvt]);
-      expect(stateVariables['/dfvt2'].stateValues.displacement.map(x => x.simplify())).eqls([...dvt]);
+      expect(me.fromAst(stateVariables['/tfvt2'].stateValues.coords).simplify().tree).eqls(["vector", ...tvt]);
+      expect(me.fromAst(stateVariables['/hfvt2'].stateValues.coords).simplify().tree).eqls(["vector", ...hvt]);
+      expect(stateVariables['/dfvt2'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvt]);
 
-      expect(stateVariables['/tfvh2'].stateValues.coords.simplify()).eqls(["vector", ...tvh]);
-      expect(stateVariables['/hfvh2'].stateValues.coords.simplify()).eqls(["vector", ...hvh]);
-      expect(stateVariables['/dfvh2'].stateValues.displacement.map(x => x.simplify())).eqls([...dvh]);
+      expect(me.fromAst(stateVariables['/tfvh2'].stateValues.coords).simplify().tree).eqls(["vector", ...tvh]);
+      expect(me.fromAst(stateVariables['/hfvh2'].stateValues.coords).simplify().tree).eqls(["vector", ...hvh]);
+      expect(stateVariables['/dfvh2'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvh]);
 
-      expect(stateVariables['/tfvd2'].stateValues.coords.simplify()).eqls(["vector", ...tvd]);
-      expect(stateVariables['/hfvd2'].stateValues.coords.simplify()).eqls(["vector", ...hvd]);
-      expect(stateVariables['/dfvd2'].stateValues.displacement.map(x => x.simplify())).eqls([...dvd]);
+      expect(me.fromAst(stateVariables['/tfvd2'].stateValues.coords).simplify().tree).eqls(["vector", ...tvd]);
+      expect(me.fromAst(stateVariables['/hfvd2'].stateValues.coords).simplify().tree).eqls(["vector", ...hvd]);
+      expect(stateVariables['/dfvd2'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvd]);
 
-      expect(stateVariables['/tfvth2'].stateValues.coords.simplify()).eqls(["vector", ...tvth]);
-      expect(stateVariables['/hfvth2'].stateValues.coords.simplify()).eqls(["vector", ...hvth]);
-      expect(stateVariables['/dfvth2'].stateValues.displacement.map(x => x.simplify())).eqls([...dvth]);
+      expect(me.fromAst(stateVariables['/tfvth2'].stateValues.coords).simplify().tree).eqls(["vector", ...tvth]);
+      expect(me.fromAst(stateVariables['/hfvth2'].stateValues.coords).simplify().tree).eqls(["vector", ...hvth]);
+      expect(stateVariables['/dfvth2'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvth]);
 
-      expect(stateVariables['/tfvtd2'].stateValues.coords.simplify()).eqls(["vector", ...tvtd]);
-      expect(stateVariables['/hfvtd2'].stateValues.coords.simplify()).eqls(["vector", ...hvtd]);
-      expect(stateVariables['/dfvtd2'].stateValues.displacement.map(x => x.simplify())).eqls([...dvtd]);
+      expect(me.fromAst(stateVariables['/tfvtd2'].stateValues.coords).simplify().tree).eqls(["vector", ...tvtd]);
+      expect(me.fromAst(stateVariables['/hfvtd2'].stateValues.coords).simplify().tree).eqls(["vector", ...hvtd]);
+      expect(stateVariables['/dfvtd2'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvtd]);
 
-      expect(stateVariables['/tfvhd2'].stateValues.coords.simplify()).eqls(["vector", ...tvhd]);
-      expect(stateVariables['/hfvhd2'].stateValues.coords.simplify()).eqls(["vector", ...hvhd]);
-      expect(stateVariables['/dfvhd2'].stateValues.displacement.map(x => x.simplify())).eqls([...dvhd]);
+      expect(me.fromAst(stateVariables['/tfvhd2'].stateValues.coords).simplify().tree).eqls(["vector", ...tvhd]);
+      expect(me.fromAst(stateVariables['/hfvhd2'].stateValues.coords).simplify().tree).eqls(["vector", ...hvhd]);
+      expect(stateVariables['/dfvhd2'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvhd]);
 
     });
 
     cy.log("move tail of each vector directly")
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
 
       tvt = [-3, 5];
       tvh = [9, -2];
@@ -6154,12 +6168,39 @@ describe('Vector Tag Tests', function () {
       tvtd = [5, -9];
       tvhd = [-1, -6];
 
-      await stateVariables['/vt'].moveVector({ tailcoords: tvt })
-      await stateVariables['/vh'].moveVector({ tailcoords: tvh })
-      await stateVariables['/vd'].moveVector({ tailcoords: tvd })
-      await stateVariables['/vth'].moveVector({ tailcoords: tvth })
-      await stateVariables['/vtd'].moveVector({ tailcoords: tvtd })
-      await stateVariables['/vhd'].moveVector({ tailcoords: tvhd })
+
+      win.callAction({
+        actionName: "moveVector",
+        componentName: '/vt',
+        args: { tailcoords: tvt }
+      })
+      win.callAction({
+        actionName: "moveVector",
+        componentName: '/vh',
+        args: { tailcoords: tvh }
+      })
+      win.callAction({
+        actionName: "moveVector",
+        componentName: '/vd',
+        args: { tailcoords: tvd }
+      })
+      win.callAction({
+        actionName: "moveVector",
+        componentName: '/vth',
+        args: { tailcoords: tvth }
+      })
+      win.callAction({
+        actionName: "moveVector",
+        componentName: '/vtd',
+        args: { tailcoords: tvtd }
+      })
+      win.callAction({
+        actionName: "moveVector",
+        componentName: '/vhd',
+        args: { tailcoords: tvhd }
+      })
+
+      cy.get('#\\/vhd_tdom').should('contain.text', `(${nInDOM(tvhd[0])},${nInDOM(tvhd[1])})`)
 
       // since moved tails directly, heads stay fixed and displacement changes
       dvt = [hvt[0] - tvt[0], hvt[1] - tvt[1]];
@@ -6169,117 +6210,120 @@ describe('Vector Tag Tests', function () {
       dvtd = [hvtd[0] - tvtd[0], hvtd[1] - tvtd[1]];
       dvhd = [hvhd[0] - tvhd[0], hvhd[1] - tvhd[1]];
 
-      expect(stateVariables['/tvt'].stateValues.coords.simplify()).eqls(["vector", ...tvt]);
-      expect(stateVariables['/hvh'].stateValues.coords.simplify()).eqls(["vector", ...hvh]);
-      expect(stateVariables['/dvd'].stateValues.coords.simplify()).eqls(["vector", ...dvd]);
-      expect(stateVariables['/tvth'].stateValues.coords.simplify()).eqls(["vector", ...tvth]);
-      expect(stateVariables['/hvth'].stateValues.coords.simplify()).eqls(["vector", ...hvth]);
-      expect(stateVariables['/tvtd'].stateValues.coords.simplify()).eqls(["vector", ...tvtd]);
-      expect(stateVariables['/dvtd'].stateValues.coords.simplify()).eqls(["vector", ...dvtd]);
-      expect(stateVariables['/hvhd'].stateValues.coords.simplify()).eqls(["vector", ...hvhd]);
-      expect(stateVariables['/dvhd'].stateValues.coords.simplify()).eqls(["vector", ...dvhd]);
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables();
 
-      expect(stateVariables['/vt'].stateValues.tail.map(x => x.simplify())).eqls([...tvt]);
-      expect(stateVariables['/vt'].stateValues.head.map(x => x.simplify())).eqls([...hvt]);
-      expect(stateVariables['/vt'].stateValues.displacement.map(x => x.simplify())).eqls([...dvt]);
+        expect(me.fromAst(stateVariables['/tvt'].stateValues.coords).simplify().tree).eqls(["vector", ...tvt]);
+        expect(me.fromAst(stateVariables['/hvh'].stateValues.coords).simplify().tree).eqls(["vector", ...hvh]);
+        expect(me.fromAst(stateVariables['/dvd'].stateValues.coords).simplify().tree).eqls(["vector", ...dvd]);
+        expect(me.fromAst(stateVariables['/tvth'].stateValues.coords).simplify().tree).eqls(["vector", ...tvth]);
+        expect(me.fromAst(stateVariables['/hvth'].stateValues.coords).simplify().tree).eqls(["vector", ...hvth]);
+        expect(me.fromAst(stateVariables['/tvtd'].stateValues.coords).simplify().tree).eqls(["vector", ...tvtd]);
+        expect(me.fromAst(stateVariables['/dvtd'].stateValues.coords).simplify().tree).eqls(["vector", ...dvtd]);
+        expect(me.fromAst(stateVariables['/hvhd'].stateValues.coords).simplify().tree).eqls(["vector", ...hvhd]);
+        expect(me.fromAst(stateVariables['/dvhd'].stateValues.coords).simplify().tree).eqls(["vector", ...dvhd]);
 
-      expect(stateVariables['/vh'].stateValues.tail.map(x => x.simplify())).eqls([...tvh]);
-      expect(stateVariables['/vh'].stateValues.head.map(x => x.simplify())).eqls([...hvh]);
-      expect(stateVariables['/vh'].stateValues.displacement.map(x => x.simplify())).eqls([...dvh]);
+        expect(stateVariables['/vt'].stateValues.tail.map(x => me.fromAst(x).simplify().tree)).eqls([...tvt]);
+        expect(stateVariables['/vt'].stateValues.head.map(x => me.fromAst(x).simplify().tree)).eqls([...hvt]);
+        expect(stateVariables['/vt'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvt]);
 
-      expect(stateVariables['/vd'].stateValues.tail.map(x => x.simplify())).eqls([...tvd]);
-      expect(stateVariables['/vd'].stateValues.head.map(x => x.simplify())).eqls([...hvd]);
-      expect(stateVariables['/vd'].stateValues.displacement.map(x => x.simplify())).eqls([...dvd]);
+        expect(stateVariables['/vh'].stateValues.tail.map(x => me.fromAst(x).simplify().tree)).eqls([...tvh]);
+        expect(stateVariables['/vh'].stateValues.head.map(x => me.fromAst(x).simplify().tree)).eqls([...hvh]);
+        expect(stateVariables['/vh'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvh]);
 
-      expect(stateVariables['/vth'].stateValues.tail.map(x => x.simplify())).eqls([...tvth]);
-      expect(stateVariables['/vth'].stateValues.head.map(x => x.simplify())).eqls([...hvth]);
-      expect(stateVariables['/vth'].stateValues.displacement.map(x => x.simplify())).eqls([...dvth]);
+        expect(stateVariables['/vd'].stateValues.tail.map(x => me.fromAst(x).simplify().tree)).eqls([...tvd]);
+        expect(stateVariables['/vd'].stateValues.head.map(x => me.fromAst(x).simplify().tree)).eqls([...hvd]);
+        expect(stateVariables['/vd'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvd]);
 
-      expect(stateVariables['/vtd'].stateValues.tail.map(x => x.simplify())).eqls([...tvtd]);
-      expect(stateVariables['/vtd'].stateValues.head.map(x => x.simplify())).eqls([...hvtd]);
-      expect(stateVariables['/vtd'].stateValues.displacement.map(x => x.simplify())).eqls([...dvtd]);
+        expect(stateVariables['/vth'].stateValues.tail.map(x => me.fromAst(x).simplify().tree)).eqls([...tvth]);
+        expect(stateVariables['/vth'].stateValues.head.map(x => me.fromAst(x).simplify().tree)).eqls([...hvth]);
+        expect(stateVariables['/vth'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvth]);
 
-      expect(stateVariables['/vhd'].stateValues.tail.map(x => x.simplify())).eqls([...tvhd]);
-      expect(stateVariables['/vhd'].stateValues.head.map(x => x.simplify())).eqls([...hvhd]);
-      expect(stateVariables['/vhd'].stateValues.displacement.map(x => x.simplify())).eqls([...dvhd]);
+        expect(stateVariables['/vtd'].stateValues.tail.map(x => me.fromAst(x).simplify().tree)).eqls([...tvtd]);
+        expect(stateVariables['/vtd'].stateValues.head.map(x => me.fromAst(x).simplify().tree)).eqls([...hvtd]);
+        expect(stateVariables['/vtd'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvtd]);
 
-      expect(stateVariables['/tfvt'].stateValues.coords.simplify()).eqls(["vector", ...tvt]);
-      expect(stateVariables['/hfvt'].stateValues.coords.simplify()).eqls(["vector", ...hvt]);
-      expect(stateVariables['/dfvt'].stateValues.displacement.map(x => x.simplify())).eqls([...dvt]);
+        expect(stateVariables['/vhd'].stateValues.tail.map(x => me.fromAst(x).simplify().tree)).eqls([...tvhd]);
+        expect(stateVariables['/vhd'].stateValues.head.map(x => me.fromAst(x).simplify().tree)).eqls([...hvhd]);
+        expect(stateVariables['/vhd'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvhd]);
 
-      expect(stateVariables['/tfvh'].stateValues.coords.simplify()).eqls(["vector", ...tvh]);
-      expect(stateVariables['/hfvh'].stateValues.coords.simplify()).eqls(["vector", ...hvh]);
-      expect(stateVariables['/dfvh'].stateValues.displacement.map(x => x.simplify())).eqls([...dvh]);
+        expect(me.fromAst(stateVariables['/tfvt'].stateValues.coords).simplify().tree).eqls(["vector", ...tvt]);
+        expect(me.fromAst(stateVariables['/hfvt'].stateValues.coords).simplify().tree).eqls(["vector", ...hvt]);
+        expect(stateVariables['/dfvt'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvt]);
 
-      expect(stateVariables['/tfvd'].stateValues.coords.simplify()).eqls(["vector", ...tvd]);
-      expect(stateVariables['/hfvd'].stateValues.coords.simplify()).eqls(["vector", ...hvd]);
-      expect(stateVariables['/dfvd'].stateValues.displacement.map(x => x.simplify())).eqls([...dvd]);
+        expect(me.fromAst(stateVariables['/tfvh'].stateValues.coords).simplify().tree).eqls(["vector", ...tvh]);
+        expect(me.fromAst(stateVariables['/hfvh'].stateValues.coords).simplify().tree).eqls(["vector", ...hvh]);
+        expect(stateVariables['/dfvh'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvh]);
 
-      expect(stateVariables['/tfvth'].stateValues.coords.simplify()).eqls(["vector", ...tvth]);
-      expect(stateVariables['/hfvth'].stateValues.coords.simplify()).eqls(["vector", ...hvth]);
-      expect(stateVariables['/dfvth'].stateValues.displacement.map(x => x.simplify())).eqls([...dvth]);
+        expect(me.fromAst(stateVariables['/tfvd'].stateValues.coords).simplify().tree).eqls(["vector", ...tvd]);
+        expect(me.fromAst(stateVariables['/hfvd'].stateValues.coords).simplify().tree).eqls(["vector", ...hvd]);
+        expect(stateVariables['/dfvd'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvd]);
 
-      expect(stateVariables['/tfvtd'].stateValues.coords.simplify()).eqls(["vector", ...tvtd]);
-      expect(stateVariables['/hfvtd'].stateValues.coords.simplify()).eqls(["vector", ...hvtd]);
-      expect(stateVariables['/dfvtd'].stateValues.displacement.map(x => x.simplify())).eqls([...dvtd]);
+        expect(me.fromAst(stateVariables['/tfvth'].stateValues.coords).simplify().tree).eqls(["vector", ...tvth]);
+        expect(me.fromAst(stateVariables['/hfvth'].stateValues.coords).simplify().tree).eqls(["vector", ...hvth]);
+        expect(stateVariables['/dfvth'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvth]);
 
-      expect(stateVariables['/tfvhd'].stateValues.coords.simplify()).eqls(["vector", ...tvhd]);
-      expect(stateVariables['/hfvhd'].stateValues.coords.simplify()).eqls(["vector", ...hvhd]);
-      expect(stateVariables['/dfvhd'].stateValues.displacement.map(x => x.simplify())).eqls([...dvhd]);
+        expect(me.fromAst(stateVariables['/tfvtd'].stateValues.coords).simplify().tree).eqls(["vector", ...tvtd]);
+        expect(me.fromAst(stateVariables['/hfvtd'].stateValues.coords).simplify().tree).eqls(["vector", ...hvtd]);
+        expect(stateVariables['/dfvtd'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvtd]);
 
-      expect(stateVariables['/vt2'].stateValues.tail.map(x => x.simplify())).eqls([...tvt]);
-      expect(stateVariables['/vt2'].stateValues.head.map(x => x.simplify())).eqls([...hvt]);
-      expect(stateVariables['/vt2'].stateValues.displacement.map(x => x.simplify())).eqls([...dvt]);
+        expect(me.fromAst(stateVariables['/tfvhd'].stateValues.coords).simplify().tree).eqls(["vector", ...tvhd]);
+        expect(me.fromAst(stateVariables['/hfvhd'].stateValues.coords).simplify().tree).eqls(["vector", ...hvhd]);
+        expect(stateVariables['/dfvhd'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvhd]);
 
-      expect(stateVariables['/vh2'].stateValues.tail.map(x => x.simplify())).eqls([...tvh]);
-      expect(stateVariables['/vh2'].stateValues.head.map(x => x.simplify())).eqls([...hvh]);
-      expect(stateVariables['/vh2'].stateValues.displacement.map(x => x.simplify())).eqls([...dvh]);
+        expect(stateVariables['/vt2'].stateValues.tail.map(x => me.fromAst(x).simplify().tree)).eqls([...tvt]);
+        expect(stateVariables['/vt2'].stateValues.head.map(x => me.fromAst(x).simplify().tree)).eqls([...hvt]);
+        expect(stateVariables['/vt2'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvt]);
 
-      expect(stateVariables['/vd2'].stateValues.tail.map(x => x.simplify())).eqls([...tvd]);
-      expect(stateVariables['/vd2'].stateValues.head.map(x => x.simplify())).eqls([...hvd]);
-      expect(stateVariables['/vd2'].stateValues.displacement.map(x => x.simplify())).eqls([...dvd]);
+        expect(stateVariables['/vh2'].stateValues.tail.map(x => me.fromAst(x).simplify().tree)).eqls([...tvh]);
+        expect(stateVariables['/vh2'].stateValues.head.map(x => me.fromAst(x).simplify().tree)).eqls([...hvh]);
+        expect(stateVariables['/vh2'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvh]);
 
-      expect(stateVariables['/vth2'].stateValues.tail.map(x => x.simplify())).eqls([...tvth]);
-      expect(stateVariables['/vth2'].stateValues.head.map(x => x.simplify())).eqls([...hvth]);
-      expect(stateVariables['/vth2'].stateValues.displacement.map(x => x.simplify())).eqls([...dvth]);
+        expect(stateVariables['/vd2'].stateValues.tail.map(x => me.fromAst(x).simplify().tree)).eqls([...tvd]);
+        expect(stateVariables['/vd2'].stateValues.head.map(x => me.fromAst(x).simplify().tree)).eqls([...hvd]);
+        expect(stateVariables['/vd2'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvd]);
 
-      expect(stateVariables['/vtd2'].stateValues.tail.map(x => x.simplify())).eqls([...tvtd]);
-      expect(stateVariables['/vtd2'].stateValues.head.map(x => x.simplify())).eqls([...hvtd]);
-      expect(stateVariables['/vtd2'].stateValues.displacement.map(x => x.simplify())).eqls([...dvtd]);
+        expect(stateVariables['/vth2'].stateValues.tail.map(x => me.fromAst(x).simplify().tree)).eqls([...tvth]);
+        expect(stateVariables['/vth2'].stateValues.head.map(x => me.fromAst(x).simplify().tree)).eqls([...hvth]);
+        expect(stateVariables['/vth2'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvth]);
 
-      expect(stateVariables['/vhd2'].stateValues.tail.map(x => x.simplify())).eqls([...tvhd]);
-      expect(stateVariables['/vhd2'].stateValues.head.map(x => x.simplify())).eqls([...hvhd]);
-      expect(stateVariables['/vhd2'].stateValues.displacement.map(x => x.simplify())).eqls([...dvhd]);
+        expect(stateVariables['/vtd2'].stateValues.tail.map(x => me.fromAst(x).simplify().tree)).eqls([...tvtd]);
+        expect(stateVariables['/vtd2'].stateValues.head.map(x => me.fromAst(x).simplify().tree)).eqls([...hvtd]);
+        expect(stateVariables['/vtd2'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvtd]);
 
-      expect(stateVariables['/tfvt2'].stateValues.coords.simplify()).eqls(["vector", ...tvt]);
-      expect(stateVariables['/hfvt2'].stateValues.coords.simplify()).eqls(["vector", ...hvt]);
-      expect(stateVariables['/dfvt2'].stateValues.displacement.map(x => x.simplify())).eqls([...dvt]);
+        expect(stateVariables['/vhd2'].stateValues.tail.map(x => me.fromAst(x).simplify().tree)).eqls([...tvhd]);
+        expect(stateVariables['/vhd2'].stateValues.head.map(x => me.fromAst(x).simplify().tree)).eqls([...hvhd]);
+        expect(stateVariables['/vhd2'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvhd]);
 
-      expect(stateVariables['/tfvh2'].stateValues.coords.simplify()).eqls(["vector", ...tvh]);
-      expect(stateVariables['/hfvh2'].stateValues.coords.simplify()).eqls(["vector", ...hvh]);
-      expect(stateVariables['/dfvh2'].stateValues.displacement.map(x => x.simplify())).eqls([...dvh]);
+        expect(me.fromAst(stateVariables['/tfvt2'].stateValues.coords).simplify().tree).eqls(["vector", ...tvt]);
+        expect(me.fromAst(stateVariables['/hfvt2'].stateValues.coords).simplify().tree).eqls(["vector", ...hvt]);
+        expect(stateVariables['/dfvt2'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvt]);
 
-      expect(stateVariables['/tfvd2'].stateValues.coords.simplify()).eqls(["vector", ...tvd]);
-      expect(stateVariables['/hfvd2'].stateValues.coords.simplify()).eqls(["vector", ...hvd]);
-      expect(stateVariables['/dfvd2'].stateValues.displacement.map(x => x.simplify())).eqls([...dvd]);
+        expect(me.fromAst(stateVariables['/tfvh2'].stateValues.coords).simplify().tree).eqls(["vector", ...tvh]);
+        expect(me.fromAst(stateVariables['/hfvh2'].stateValues.coords).simplify().tree).eqls(["vector", ...hvh]);
+        expect(stateVariables['/dfvh2'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvh]);
 
-      expect(stateVariables['/tfvth2'].stateValues.coords.simplify()).eqls(["vector", ...tvth]);
-      expect(stateVariables['/hfvth2'].stateValues.coords.simplify()).eqls(["vector", ...hvth]);
-      expect(stateVariables['/dfvth2'].stateValues.displacement.map(x => x.simplify())).eqls([...dvth]);
+        expect(me.fromAst(stateVariables['/tfvd2'].stateValues.coords).simplify().tree).eqls(["vector", ...tvd]);
+        expect(me.fromAst(stateVariables['/hfvd2'].stateValues.coords).simplify().tree).eqls(["vector", ...hvd]);
+        expect(stateVariables['/dfvd2'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvd]);
 
-      expect(stateVariables['/tfvtd2'].stateValues.coords.simplify()).eqls(["vector", ...tvtd]);
-      expect(stateVariables['/hfvtd2'].stateValues.coords.simplify()).eqls(["vector", ...hvtd]);
-      expect(stateVariables['/dfvtd2'].stateValues.displacement.map(x => x.simplify())).eqls([...dvtd]);
+        expect(me.fromAst(stateVariables['/tfvth2'].stateValues.coords).simplify().tree).eqls(["vector", ...tvth]);
+        expect(me.fromAst(stateVariables['/hfvth2'].stateValues.coords).simplify().tree).eqls(["vector", ...hvth]);
+        expect(stateVariables['/dfvth2'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvth]);
 
-      expect(stateVariables['/tfvhd2'].stateValues.coords.simplify()).eqls(["vector", ...tvhd]);
-      expect(stateVariables['/hfvhd2'].stateValues.coords.simplify()).eqls(["vector", ...hvhd]);
-      expect(stateVariables['/dfvhd2'].stateValues.displacement.map(x => x.simplify())).eqls([...dvhd]);
+        expect(me.fromAst(stateVariables['/tfvtd2'].stateValues.coords).simplify().tree).eqls(["vector", ...tvtd]);
+        expect(me.fromAst(stateVariables['/hfvtd2'].stateValues.coords).simplify().tree).eqls(["vector", ...hvtd]);
+        expect(stateVariables['/dfvtd2'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvtd]);
 
-    });
+        expect(me.fromAst(stateVariables['/tfvhd2'].stateValues.coords).simplify().tree).eqls(["vector", ...tvhd]);
+        expect(me.fromAst(stateVariables['/hfvhd2'].stateValues.coords).simplify().tree).eqls(["vector", ...hvhd]);
+        expect(stateVariables['/dfvhd2'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvhd]);
+
+      });
+    })
 
     cy.log("move head of each vector directly")
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
 
       hvt = [5, -1];
       hvh = [3, -6];
@@ -6288,12 +6332,40 @@ describe('Vector Tag Tests', function () {
       hvtd = [-6, -4];
       hvhd = [-4, 8];
 
-      await stateVariables['/vt'].moveVector({ headcoords: hvt })
-      await stateVariables['/vh'].moveVector({ headcoords: hvh })
-      await stateVariables['/vd'].moveVector({ headcoords: hvd })
-      await stateVariables['/vth'].moveVector({ headcoords: hvth })
-      await stateVariables['/vtd'].moveVector({ headcoords: hvtd })
-      await stateVariables['/vhd'].moveVector({ headcoords: hvhd })
+
+      win.callAction({
+        actionName: "moveVector",
+        componentName: '/vt',
+        args: { headcoords: hvt }
+      })
+      win.callAction({
+        actionName: "moveVector",
+        componentName: '/vh',
+        args: { headcoords: hvh }
+      })
+      win.callAction({
+        actionName: "moveVector",
+        componentName: '/vd',
+        args: { headcoords: hvd }
+      })
+      win.callAction({
+        actionName: "moveVector",
+        componentName: '/vth',
+        args: { headcoords: hvth }
+      })
+      win.callAction({
+        actionName: "moveVector",
+        componentName: '/vtd',
+        args: { headcoords: hvtd }
+      })
+      win.callAction({
+        actionName: "moveVector",
+        componentName: '/vhd',
+        args: { headcoords: hvhd }
+      })
+
+
+      cy.get('#\\/vhd_hdom').should('contain.text', `(${nInDOM(hvhd[0])},${nInDOM(hvhd[1])})`)
 
       // since moved heads directly, tails stay fixed and displacement changes
       dvt = [hvt[0] - tvt[0], hvt[1] - tvt[1]];
@@ -6303,125 +6375,143 @@ describe('Vector Tag Tests', function () {
       dvtd = [hvtd[0] - tvtd[0], hvtd[1] - tvtd[1]];
       dvhd = [hvhd[0] - tvhd[0], hvhd[1] - tvhd[1]];
 
-      expect(stateVariables['/tvt'].stateValues.coords.simplify()).eqls(["vector", ...tvt]);
-      expect(stateVariables['/hvh'].stateValues.coords.simplify()).eqls(["vector", ...hvh]);
-      expect(stateVariables['/dvd'].stateValues.coords.simplify()).eqls(["vector", ...dvd]);
-      expect(stateVariables['/tvth'].stateValues.coords.simplify()).eqls(["vector", ...tvth]);
-      expect(stateVariables['/hvth'].stateValues.coords.simplify()).eqls(["vector", ...hvth]);
-      expect(stateVariables['/tvtd'].stateValues.coords.simplify()).eqls(["vector", ...tvtd]);
-      expect(stateVariables['/dvtd'].stateValues.coords.simplify()).eqls(["vector", ...dvtd]);
-      expect(stateVariables['/hvhd'].stateValues.coords.simplify()).eqls(["vector", ...hvhd]);
-      expect(stateVariables['/dvhd'].stateValues.coords.simplify()).eqls(["vector", ...dvhd]);
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables();
 
-      expect(stateVariables['/vt'].stateValues.tail.map(x => x.simplify())).eqls([...tvt]);
-      expect(stateVariables['/vt'].stateValues.head.map(x => x.simplify())).eqls([...hvt]);
-      expect(stateVariables['/vt'].stateValues.displacement.map(x => x.simplify())).eqls([...dvt]);
+        expect(me.fromAst(stateVariables['/tvt'].stateValues.coords).simplify().tree).eqls(["vector", ...tvt]);
+        expect(me.fromAst(stateVariables['/hvh'].stateValues.coords).simplify().tree).eqls(["vector", ...hvh]);
+        expect(me.fromAst(stateVariables['/dvd'].stateValues.coords).simplify().tree).eqls(["vector", ...dvd]);
+        expect(me.fromAst(stateVariables['/tvth'].stateValues.coords).simplify().tree).eqls(["vector", ...tvth]);
+        expect(me.fromAst(stateVariables['/hvth'].stateValues.coords).simplify().tree).eqls(["vector", ...hvth]);
+        expect(me.fromAst(stateVariables['/tvtd'].stateValues.coords).simplify().tree).eqls(["vector", ...tvtd]);
+        expect(me.fromAst(stateVariables['/dvtd'].stateValues.coords).simplify().tree).eqls(["vector", ...dvtd]);
+        expect(me.fromAst(stateVariables['/hvhd'].stateValues.coords).simplify().tree).eqls(["vector", ...hvhd]);
+        expect(me.fromAst(stateVariables['/dvhd'].stateValues.coords).simplify().tree).eqls(["vector", ...dvhd]);
 
-      expect(stateVariables['/vh'].stateValues.tail.map(x => x.simplify())).eqls([...tvh]);
-      expect(stateVariables['/vh'].stateValues.head.map(x => x.simplify())).eqls([...hvh]);
-      expect(stateVariables['/vh'].stateValues.displacement.map(x => x.simplify())).eqls([...dvh]);
+        expect(stateVariables['/vt'].stateValues.tail.map(x => me.fromAst(x).simplify().tree)).eqls([...tvt]);
+        expect(stateVariables['/vt'].stateValues.head.map(x => me.fromAst(x).simplify().tree)).eqls([...hvt]);
+        expect(stateVariables['/vt'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvt]);
 
-      expect(stateVariables['/vd'].stateValues.tail.map(x => x.simplify())).eqls([...tvd]);
-      expect(stateVariables['/vd'].stateValues.head.map(x => x.simplify())).eqls([...hvd]);
-      expect(stateVariables['/vd'].stateValues.displacement.map(x => x.simplify())).eqls([...dvd]);
+        expect(stateVariables['/vh'].stateValues.tail.map(x => me.fromAst(x).simplify().tree)).eqls([...tvh]);
+        expect(stateVariables['/vh'].stateValues.head.map(x => me.fromAst(x).simplify().tree)).eqls([...hvh]);
+        expect(stateVariables['/vh'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvh]);
 
-      expect(stateVariables['/vth'].stateValues.tail.map(x => x.simplify())).eqls([...tvth]);
-      expect(stateVariables['/vth'].stateValues.head.map(x => x.simplify())).eqls([...hvth]);
-      expect(stateVariables['/vth'].stateValues.displacement.map(x => x.simplify())).eqls([...dvth]);
+        expect(stateVariables['/vd'].stateValues.tail.map(x => me.fromAst(x).simplify().tree)).eqls([...tvd]);
+        expect(stateVariables['/vd'].stateValues.head.map(x => me.fromAst(x).simplify().tree)).eqls([...hvd]);
+        expect(stateVariables['/vd'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvd]);
 
-      expect(stateVariables['/vtd'].stateValues.tail.map(x => x.simplify())).eqls([...tvtd]);
-      expect(stateVariables['/vtd'].stateValues.head.map(x => x.simplify())).eqls([...hvtd]);
-      expect(stateVariables['/vtd'].stateValues.displacement.map(x => x.simplify())).eqls([...dvtd]);
+        expect(stateVariables['/vth'].stateValues.tail.map(x => me.fromAst(x).simplify().tree)).eqls([...tvth]);
+        expect(stateVariables['/vth'].stateValues.head.map(x => me.fromAst(x).simplify().tree)).eqls([...hvth]);
+        expect(stateVariables['/vth'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvth]);
 
-      expect(stateVariables['/vhd'].stateValues.tail.map(x => x.simplify())).eqls([...tvhd]);
-      expect(stateVariables['/vhd'].stateValues.head.map(x => x.simplify())).eqls([...hvhd]);
-      expect(stateVariables['/vhd'].stateValues.displacement.map(x => x.simplify())).eqls([...dvhd]);
+        expect(stateVariables['/vtd'].stateValues.tail.map(x => me.fromAst(x).simplify().tree)).eqls([...tvtd]);
+        expect(stateVariables['/vtd'].stateValues.head.map(x => me.fromAst(x).simplify().tree)).eqls([...hvtd]);
+        expect(stateVariables['/vtd'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvtd]);
 
-      expect(stateVariables['/tfvt'].stateValues.coords.simplify()).eqls(["vector", ...tvt]);
-      expect(stateVariables['/hfvt'].stateValues.coords.simplify()).eqls(["vector", ...hvt]);
-      expect(stateVariables['/dfvt'].stateValues.displacement.map(x => x.simplify())).eqls([...dvt]);
+        expect(stateVariables['/vhd'].stateValues.tail.map(x => me.fromAst(x).simplify().tree)).eqls([...tvhd]);
+        expect(stateVariables['/vhd'].stateValues.head.map(x => me.fromAst(x).simplify().tree)).eqls([...hvhd]);
+        expect(stateVariables['/vhd'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvhd]);
 
-      expect(stateVariables['/tfvh'].stateValues.coords.simplify()).eqls(["vector", ...tvh]);
-      expect(stateVariables['/hfvh'].stateValues.coords.simplify()).eqls(["vector", ...hvh]);
-      expect(stateVariables['/dfvh'].stateValues.displacement.map(x => x.simplify())).eqls([...dvh]);
+        expect(me.fromAst(stateVariables['/tfvt'].stateValues.coords).simplify().tree).eqls(["vector", ...tvt]);
+        expect(me.fromAst(stateVariables['/hfvt'].stateValues.coords).simplify().tree).eqls(["vector", ...hvt]);
+        expect(stateVariables['/dfvt'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvt]);
 
-      expect(stateVariables['/tfvd'].stateValues.coords.simplify()).eqls(["vector", ...tvd]);
-      expect(stateVariables['/hfvd'].stateValues.coords.simplify()).eqls(["vector", ...hvd]);
-      expect(stateVariables['/dfvd'].stateValues.displacement.map(x => x.simplify())).eqls([...dvd]);
+        expect(me.fromAst(stateVariables['/tfvh'].stateValues.coords).simplify().tree).eqls(["vector", ...tvh]);
+        expect(me.fromAst(stateVariables['/hfvh'].stateValues.coords).simplify().tree).eqls(["vector", ...hvh]);
+        expect(stateVariables['/dfvh'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvh]);
 
-      expect(stateVariables['/tfvth'].stateValues.coords.simplify()).eqls(["vector", ...tvth]);
-      expect(stateVariables['/hfvth'].stateValues.coords.simplify()).eqls(["vector", ...hvth]);
-      expect(stateVariables['/dfvth'].stateValues.displacement.map(x => x.simplify())).eqls([...dvth]);
+        expect(me.fromAst(stateVariables['/tfvd'].stateValues.coords).simplify().tree).eqls(["vector", ...tvd]);
+        expect(me.fromAst(stateVariables['/hfvd'].stateValues.coords).simplify().tree).eqls(["vector", ...hvd]);
+        expect(stateVariables['/dfvd'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvd]);
 
-      expect(stateVariables['/tfvtd'].stateValues.coords.simplify()).eqls(["vector", ...tvtd]);
-      expect(stateVariables['/hfvtd'].stateValues.coords.simplify()).eqls(["vector", ...hvtd]);
-      expect(stateVariables['/dfvtd'].stateValues.displacement.map(x => x.simplify())).eqls([...dvtd]);
+        expect(me.fromAst(stateVariables['/tfvth'].stateValues.coords).simplify().tree).eqls(["vector", ...tvth]);
+        expect(me.fromAst(stateVariables['/hfvth'].stateValues.coords).simplify().tree).eqls(["vector", ...hvth]);
+        expect(stateVariables['/dfvth'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvth]);
 
-      expect(stateVariables['/tfvhd'].stateValues.coords.simplify()).eqls(["vector", ...tvhd]);
-      expect(stateVariables['/hfvhd'].stateValues.coords.simplify()).eqls(["vector", ...hvhd]);
-      expect(stateVariables['/dfvhd'].stateValues.displacement.map(x => x.simplify())).eqls([...dvhd]);
+        expect(me.fromAst(stateVariables['/tfvtd'].stateValues.coords).simplify().tree).eqls(["vector", ...tvtd]);
+        expect(me.fromAst(stateVariables['/hfvtd'].stateValues.coords).simplify().tree).eqls(["vector", ...hvtd]);
+        expect(stateVariables['/dfvtd'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvtd]);
 
-      expect(stateVariables['/vt2'].stateValues.tail.map(x => x.simplify())).eqls([...tvt]);
-      expect(stateVariables['/vt2'].stateValues.head.map(x => x.simplify())).eqls([...hvt]);
-      expect(stateVariables['/vt2'].stateValues.displacement.map(x => x.simplify())).eqls([...dvt]);
+        expect(me.fromAst(stateVariables['/tfvhd'].stateValues.coords).simplify().tree).eqls(["vector", ...tvhd]);
+        expect(me.fromAst(stateVariables['/hfvhd'].stateValues.coords).simplify().tree).eqls(["vector", ...hvhd]);
+        expect(stateVariables['/dfvhd'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvhd]);
 
-      expect(stateVariables['/vh2'].stateValues.tail.map(x => x.simplify())).eqls([...tvh]);
-      expect(stateVariables['/vh2'].stateValues.head.map(x => x.simplify())).eqls([...hvh]);
-      expect(stateVariables['/vh2'].stateValues.displacement.map(x => x.simplify())).eqls([...dvh]);
+        expect(stateVariables['/vt2'].stateValues.tail.map(x => me.fromAst(x).simplify().tree)).eqls([...tvt]);
+        expect(stateVariables['/vt2'].stateValues.head.map(x => me.fromAst(x).simplify().tree)).eqls([...hvt]);
+        expect(stateVariables['/vt2'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvt]);
 
-      expect(stateVariables['/vd2'].stateValues.tail.map(x => x.simplify())).eqls([...tvd]);
-      expect(stateVariables['/vd2'].stateValues.head.map(x => x.simplify())).eqls([...hvd]);
-      expect(stateVariables['/vd2'].stateValues.displacement.map(x => x.simplify())).eqls([...dvd]);
+        expect(stateVariables['/vh2'].stateValues.tail.map(x => me.fromAst(x).simplify().tree)).eqls([...tvh]);
+        expect(stateVariables['/vh2'].stateValues.head.map(x => me.fromAst(x).simplify().tree)).eqls([...hvh]);
+        expect(stateVariables['/vh2'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvh]);
 
-      expect(stateVariables['/vth2'].stateValues.tail.map(x => x.simplify())).eqls([...tvth]);
-      expect(stateVariables['/vth2'].stateValues.head.map(x => x.simplify())).eqls([...hvth]);
-      expect(stateVariables['/vth2'].stateValues.displacement.map(x => x.simplify())).eqls([...dvth]);
+        expect(stateVariables['/vd2'].stateValues.tail.map(x => me.fromAst(x).simplify().tree)).eqls([...tvd]);
+        expect(stateVariables['/vd2'].stateValues.head.map(x => me.fromAst(x).simplify().tree)).eqls([...hvd]);
+        expect(stateVariables['/vd2'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvd]);
 
-      expect(stateVariables['/vtd2'].stateValues.tail.map(x => x.simplify())).eqls([...tvtd]);
-      expect(stateVariables['/vtd2'].stateValues.head.map(x => x.simplify())).eqls([...hvtd]);
-      expect(stateVariables['/vtd2'].stateValues.displacement.map(x => x.simplify())).eqls([...dvtd]);
+        expect(stateVariables['/vth2'].stateValues.tail.map(x => me.fromAst(x).simplify().tree)).eqls([...tvth]);
+        expect(stateVariables['/vth2'].stateValues.head.map(x => me.fromAst(x).simplify().tree)).eqls([...hvth]);
+        expect(stateVariables['/vth2'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvth]);
 
-      expect(stateVariables['/vhd2'].stateValues.tail.map(x => x.simplify())).eqls([...tvhd]);
-      expect(stateVariables['/vhd2'].stateValues.head.map(x => x.simplify())).eqls([...hvhd]);
-      expect(stateVariables['/vhd2'].stateValues.displacement.map(x => x.simplify())).eqls([...dvhd]);
+        expect(stateVariables['/vtd2'].stateValues.tail.map(x => me.fromAst(x).simplify().tree)).eqls([...tvtd]);
+        expect(stateVariables['/vtd2'].stateValues.head.map(x => me.fromAst(x).simplify().tree)).eqls([...hvtd]);
+        expect(stateVariables['/vtd2'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvtd]);
 
-      expect(stateVariables['/tfvt2'].stateValues.coords.simplify()).eqls(["vector", ...tvt]);
-      expect(stateVariables['/hfvt2'].stateValues.coords.simplify()).eqls(["vector", ...hvt]);
-      expect(stateVariables['/dfvt2'].stateValues.displacement.map(x => x.simplify())).eqls([...dvt]);
+        expect(stateVariables['/vhd2'].stateValues.tail.map(x => me.fromAst(x).simplify().tree)).eqls([...tvhd]);
+        expect(stateVariables['/vhd2'].stateValues.head.map(x => me.fromAst(x).simplify().tree)).eqls([...hvhd]);
+        expect(stateVariables['/vhd2'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvhd]);
 
-      expect(stateVariables['/tfvh2'].stateValues.coords.simplify()).eqls(["vector", ...tvh]);
-      expect(stateVariables['/hfvh2'].stateValues.coords.simplify()).eqls(["vector", ...hvh]);
-      expect(stateVariables['/dfvh2'].stateValues.displacement.map(x => x.simplify())).eqls([...dvh]);
+        expect(me.fromAst(stateVariables['/tfvt2'].stateValues.coords).simplify().tree).eqls(["vector", ...tvt]);
+        expect(me.fromAst(stateVariables['/hfvt2'].stateValues.coords).simplify().tree).eqls(["vector", ...hvt]);
+        expect(stateVariables['/dfvt2'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvt]);
 
-      expect(stateVariables['/tfvd2'].stateValues.coords.simplify()).eqls(["vector", ...tvd]);
-      expect(stateVariables['/hfvd2'].stateValues.coords.simplify()).eqls(["vector", ...hvd]);
-      expect(stateVariables['/dfvd2'].stateValues.displacement.map(x => x.simplify())).eqls([...dvd]);
+        expect(me.fromAst(stateVariables['/tfvh2'].stateValues.coords).simplify().tree).eqls(["vector", ...tvh]);
+        expect(me.fromAst(stateVariables['/hfvh2'].stateValues.coords).simplify().tree).eqls(["vector", ...hvh]);
+        expect(stateVariables['/dfvh2'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvh]);
 
-      expect(stateVariables['/tfvth2'].stateValues.coords.simplify()).eqls(["vector", ...tvth]);
-      expect(stateVariables['/hfvth2'].stateValues.coords.simplify()).eqls(["vector", ...hvth]);
-      expect(stateVariables['/dfvth2'].stateValues.displacement.map(x => x.simplify())).eqls([...dvth]);
+        expect(me.fromAst(stateVariables['/tfvd2'].stateValues.coords).simplify().tree).eqls(["vector", ...tvd]);
+        expect(me.fromAst(stateVariables['/hfvd2'].stateValues.coords).simplify().tree).eqls(["vector", ...hvd]);
+        expect(stateVariables['/dfvd2'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvd]);
 
-      expect(stateVariables['/tfvtd2'].stateValues.coords.simplify()).eqls(["vector", ...tvtd]);
-      expect(stateVariables['/hfvtd2'].stateValues.coords.simplify()).eqls(["vector", ...hvtd]);
-      expect(stateVariables['/dfvtd2'].stateValues.displacement.map(x => x.simplify())).eqls([...dvtd]);
+        expect(me.fromAst(stateVariables['/tfvth2'].stateValues.coords).simplify().tree).eqls(["vector", ...tvth]);
+        expect(me.fromAst(stateVariables['/hfvth2'].stateValues.coords).simplify().tree).eqls(["vector", ...hvth]);
+        expect(stateVariables['/dfvth2'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvth]);
 
-      expect(stateVariables['/tfvhd2'].stateValues.coords.simplify()).eqls(["vector", ...tvhd]);
-      expect(stateVariables['/hfvhd2'].stateValues.coords.simplify()).eqls(["vector", ...hvhd]);
-      expect(stateVariables['/dfvhd2'].stateValues.displacement.map(x => x.simplify())).eqls([...dvhd]);
+        expect(me.fromAst(stateVariables['/tfvtd2'].stateValues.coords).simplify().tree).eqls(["vector", ...tvtd]);
+        expect(me.fromAst(stateVariables['/hfvtd2'].stateValues.coords).simplify().tree).eqls(["vector", ...hvtd]);
+        expect(stateVariables['/dfvtd2'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvtd]);
 
-    });
+        expect(me.fromAst(stateVariables['/tfvhd2'].stateValues.coords).simplify().tree).eqls(["vector", ...tvhd]);
+        expect(me.fromAst(stateVariables['/hfvhd2'].stateValues.coords).simplify().tree).eqls(["vector", ...hvhd]);
+        expect(stateVariables['/dfvhd2'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvhd]);
+
+      });
+    })
 
     cy.log("move tail through defining point, if exists")
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
 
       tvt = [9, -1];
       tvth = [3, -2];
       tvtd = [-1, 5];
 
-      await stateVariables['/tvt'].movePoint({ x: tvt[0], y: tvt[1] })
-      await stateVariables['/tvth'].movePoint({ x: tvth[0], y: tvth[1] })
-      await stateVariables['/tvtd'].movePoint({ x: tvtd[0], y: tvtd[1] })
+
+      win.callAction({
+        actionName: "movePoint",
+        componentName: "/tvt",
+        args: { x: tvt[0], y: tvt[1] }
+      })
+      win.callAction({
+        actionName: "movePoint",
+        componentName: "/tvth",
+        args: { x: tvth[0], y: tvth[1] }
+      })
+      win.callAction({
+        actionName: "movePoint",
+        componentName: "/tvtd",
+        args: { x: tvtd[0], y: tvtd[1] }
+      })
+
+      cy.get('#\\/tvtd_dom').should('contain.text', `(${nInDOM(tvtd[0])},${nInDOM(tvtd[1])})`)
 
       // defined by tail/head, head stays fixed and displacement changes
       dvth = [hvth[0] - tvth[0], hvth[1] - tvth[1]];
@@ -6430,71 +6520,87 @@ describe('Vector Tag Tests', function () {
       hvt = [tvt[0] + dvt[0], tvt[1] + dvt[1]];
       hvtd = [tvtd[0] + dvtd[0], tvtd[1] + dvtd[1]];
 
-      expect(stateVariables['/tvt'].stateValues.coords.simplify()).eqls(["vector", ...tvt]);
-      expect(stateVariables['/tvth'].stateValues.coords.simplify()).eqls(["vector", ...tvth]);
-      expect(stateVariables['/tvtd'].stateValues.coords.simplify()).eqls(["vector", ...tvtd]);
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables();
 
-      expect(stateVariables['/vt'].stateValues.tail.map(x => x.simplify())).eqls([...tvt]);
-      expect(stateVariables['/vt'].stateValues.head.map(x => x.simplify())).eqls([...hvt]);
-      expect(stateVariables['/vt'].stateValues.displacement.map(x => x.simplify())).eqls([...dvt]);
+        expect(me.fromAst(stateVariables['/tvt'].stateValues.coords).simplify().tree).eqls(["vector", ...tvt]);
+        expect(me.fromAst(stateVariables['/tvth'].stateValues.coords).simplify().tree).eqls(["vector", ...tvth]);
+        expect(me.fromAst(stateVariables['/tvtd'].stateValues.coords).simplify().tree).eqls(["vector", ...tvtd]);
 
-      expect(stateVariables['/vth'].stateValues.tail.map(x => x.simplify())).eqls([...tvth]);
-      expect(stateVariables['/vth'].stateValues.head.map(x => x.simplify())).eqls([...hvth]);
-      expect(stateVariables['/vth'].stateValues.displacement.map(x => x.simplify())).eqls([...dvth]);
+        expect(stateVariables['/vt'].stateValues.tail.map(x => me.fromAst(x).simplify().tree)).eqls([...tvt]);
+        expect(stateVariables['/vt'].stateValues.head.map(x => me.fromAst(x).simplify().tree)).eqls([...hvt]);
+        expect(stateVariables['/vt'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvt]);
 
-      expect(stateVariables['/vtd'].stateValues.tail.map(x => x.simplify())).eqls([...tvtd]);
-      expect(stateVariables['/vtd'].stateValues.head.map(x => x.simplify())).eqls([...hvtd]);
-      expect(stateVariables['/vtd'].stateValues.displacement.map(x => x.simplify())).eqls([...dvtd]);
+        expect(stateVariables['/vth'].stateValues.tail.map(x => me.fromAst(x).simplify().tree)).eqls([...tvth]);
+        expect(stateVariables['/vth'].stateValues.head.map(x => me.fromAst(x).simplify().tree)).eqls([...hvth]);
+        expect(stateVariables['/vth'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvth]);
 
-      expect(stateVariables['/tfvt'].stateValues.coords.simplify()).eqls(["vector", ...tvt]);
-      expect(stateVariables['/hfvt'].stateValues.coords.simplify()).eqls(["vector", ...hvt]);
-      expect(stateVariables['/dfvt'].stateValues.displacement.map(x => x.simplify())).eqls([...dvt]);
+        expect(stateVariables['/vtd'].stateValues.tail.map(x => me.fromAst(x).simplify().tree)).eqls([...tvtd]);
+        expect(stateVariables['/vtd'].stateValues.head.map(x => me.fromAst(x).simplify().tree)).eqls([...hvtd]);
+        expect(stateVariables['/vtd'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvtd]);
 
-      expect(stateVariables['/tfvth'].stateValues.coords.simplify()).eqls(["vector", ...tvth]);
-      expect(stateVariables['/hfvth'].stateValues.coords.simplify()).eqls(["vector", ...hvth]);
-      expect(stateVariables['/dfvth'].stateValues.displacement.map(x => x.simplify())).eqls([...dvth]);
+        expect(me.fromAst(stateVariables['/tfvt'].stateValues.coords).simplify().tree).eqls(["vector", ...tvt]);
+        expect(me.fromAst(stateVariables['/hfvt'].stateValues.coords).simplify().tree).eqls(["vector", ...hvt]);
+        expect(stateVariables['/dfvt'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvt]);
 
-      expect(stateVariables['/tfvtd'].stateValues.coords.simplify()).eqls(["vector", ...tvtd]);
-      expect(stateVariables['/hfvtd'].stateValues.coords.simplify()).eqls(["vector", ...hvtd]);
-      expect(stateVariables['/dfvtd'].stateValues.displacement.map(x => x.simplify())).eqls([...dvtd]);
+        expect(me.fromAst(stateVariables['/tfvth'].stateValues.coords).simplify().tree).eqls(["vector", ...tvth]);
+        expect(me.fromAst(stateVariables['/hfvth'].stateValues.coords).simplify().tree).eqls(["vector", ...hvth]);
+        expect(stateVariables['/dfvth'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvth]);
 
-      expect(stateVariables['/vt2'].stateValues.tail.map(x => x.simplify())).eqls([...tvt]);
-      expect(stateVariables['/vt2'].stateValues.head.map(x => x.simplify())).eqls([...hvt]);
-      expect(stateVariables['/vt2'].stateValues.displacement.map(x => x.simplify())).eqls([...dvt]);
+        expect(me.fromAst(stateVariables['/tfvtd'].stateValues.coords).simplify().tree).eqls(["vector", ...tvtd]);
+        expect(me.fromAst(stateVariables['/hfvtd'].stateValues.coords).simplify().tree).eqls(["vector", ...hvtd]);
+        expect(stateVariables['/dfvtd'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvtd]);
 
-      expect(stateVariables['/vth2'].stateValues.tail.map(x => x.simplify())).eqls([...tvth]);
-      expect(stateVariables['/vth2'].stateValues.head.map(x => x.simplify())).eqls([...hvth]);
-      expect(stateVariables['/vth2'].stateValues.displacement.map(x => x.simplify())).eqls([...dvth]);
+        expect(stateVariables['/vt2'].stateValues.tail.map(x => me.fromAst(x).simplify().tree)).eqls([...tvt]);
+        expect(stateVariables['/vt2'].stateValues.head.map(x => me.fromAst(x).simplify().tree)).eqls([...hvt]);
+        expect(stateVariables['/vt2'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvt]);
 
-      expect(stateVariables['/vtd2'].stateValues.tail.map(x => x.simplify())).eqls([...tvtd]);
-      expect(stateVariables['/vtd2'].stateValues.head.map(x => x.simplify())).eqls([...hvtd]);
-      expect(stateVariables['/vtd2'].stateValues.displacement.map(x => x.simplify())).eqls([...dvtd]);
+        expect(stateVariables['/vth2'].stateValues.tail.map(x => me.fromAst(x).simplify().tree)).eqls([...tvth]);
+        expect(stateVariables['/vth2'].stateValues.head.map(x => me.fromAst(x).simplify().tree)).eqls([...hvth]);
+        expect(stateVariables['/vth2'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvth]);
 
-      expect(stateVariables['/tfvt2'].stateValues.coords.simplify()).eqls(["vector", ...tvt]);
-      expect(stateVariables['/hfvt2'].stateValues.coords.simplify()).eqls(["vector", ...hvt]);
-      expect(stateVariables['/dfvt2'].stateValues.displacement.map(x => x.simplify())).eqls([...dvt]);
+        expect(stateVariables['/vtd2'].stateValues.tail.map(x => me.fromAst(x).simplify().tree)).eqls([...tvtd]);
+        expect(stateVariables['/vtd2'].stateValues.head.map(x => me.fromAst(x).simplify().tree)).eqls([...hvtd]);
+        expect(stateVariables['/vtd2'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvtd]);
 
-      expect(stateVariables['/tfvth2'].stateValues.coords.simplify()).eqls(["vector", ...tvth]);
-      expect(stateVariables['/hfvth2'].stateValues.coords.simplify()).eqls(["vector", ...hvth]);
-      expect(stateVariables['/dfvth2'].stateValues.displacement.map(x => x.simplify())).eqls([...dvth]);
+        expect(me.fromAst(stateVariables['/tfvt2'].stateValues.coords).simplify().tree).eqls(["vector", ...tvt]);
+        expect(me.fromAst(stateVariables['/hfvt2'].stateValues.coords).simplify().tree).eqls(["vector", ...hvt]);
+        expect(stateVariables['/dfvt2'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvt]);
 
-      expect(stateVariables['/tfvtd2'].stateValues.coords.simplify()).eqls(["vector", ...tvtd]);
-      expect(stateVariables['/hfvtd2'].stateValues.coords.simplify()).eqls(["vector", ...hvtd]);
-      expect(stateVariables['/dfvtd2'].stateValues.displacement.map(x => x.simplify())).eqls([...dvtd]);
+        expect(me.fromAst(stateVariables['/tfvth2'].stateValues.coords).simplify().tree).eqls(["vector", ...tvth]);
+        expect(me.fromAst(stateVariables['/hfvth2'].stateValues.coords).simplify().tree).eqls(["vector", ...hvth]);
+        expect(stateVariables['/dfvth2'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvth]);
 
+        expect(me.fromAst(stateVariables['/tfvtd2'].stateValues.coords).simplify().tree).eqls(["vector", ...tvtd]);
+        expect(me.fromAst(stateVariables['/hfvtd2'].stateValues.coords).simplify().tree).eqls(["vector", ...hvtd]);
+        expect(stateVariables['/dfvtd2'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvtd]);
+      })
     });
 
     cy.log("move head through defining point, if exists")
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
 
       hvh = [5, 3];
       hvth = [-8, -3];
       hvhd = [7, -6];
 
-      await stateVariables['/hvh'].movePoint({ x: hvh[0], y: hvh[1] })
-      await stateVariables['/hvth'].movePoint({ x: hvth[0], y: hvth[1] })
-      await stateVariables['/hvhd'].movePoint({ x: hvhd[0], y: hvhd[1] })
+      win.callAction({
+        actionName: "movePoint",
+        componentName: "/hvh",
+        args: { x: hvh[0], y: hvh[1] }
+      })
+      win.callAction({
+        actionName: "movePoint",
+        componentName: "/hvth",
+        args: { x: hvth[0], y: hvth[1] }
+      })
+      win.callAction({
+        actionName: "movePoint",
+        componentName: "/hvhd",
+        args: { x: hvhd[0], y: hvhd[1] }
+      })
+
+      cy.get('#\\/hvhd_dom').should('contain.text', `(${nInDOM(hvhd[0])},${nInDOM(hvhd[1])})`)
 
       // defined by head only or tail/head, tail stays fixed and displacement changes
       dvh = [hvh[0] - tvh[0], hvh[1] - tvh[1]];
@@ -6503,71 +6609,88 @@ describe('Vector Tag Tests', function () {
       // defined by head and displacement, displacement stays fixed and tail changes
       tvhd = [hvhd[0] - dvhd[0], hvhd[1] - dvhd[1]];
 
-      expect(stateVariables['/hvh'].stateValues.coords.simplify()).eqls(["vector", ...hvh]);
-      expect(stateVariables['/hvth'].stateValues.coords.simplify()).eqls(["vector", ...hvth]);
-      expect(stateVariables['/hvhd'].stateValues.coords.simplify()).eqls(["vector", ...hvhd]);
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables();
 
-      expect(stateVariables['/vh'].stateValues.tail.map(x => x.simplify())).eqls([...tvh]);
-      expect(stateVariables['/vh'].stateValues.head.map(x => x.simplify())).eqls([...hvh]);
-      expect(stateVariables['/vh'].stateValues.displacement.map(x => x.simplify())).eqls([...dvh]);
+        expect(me.fromAst(stateVariables['/hvh'].stateValues.coords).simplify().tree).eqls(["vector", ...hvh]);
+        expect(me.fromAst(stateVariables['/hvth'].stateValues.coords).simplify().tree).eqls(["vector", ...hvth]);
+        expect(me.fromAst(stateVariables['/hvhd'].stateValues.coords).simplify().tree).eqls(["vector", ...hvhd]);
 
-      expect(stateVariables['/vth'].stateValues.tail.map(x => x.simplify())).eqls([...tvth]);
-      expect(stateVariables['/vth'].stateValues.head.map(x => x.simplify())).eqls([...hvth]);
-      expect(stateVariables['/vth'].stateValues.displacement.map(x => x.simplify())).eqls([...dvth]);
+        expect(stateVariables['/vh'].stateValues.tail.map(x => me.fromAst(x).simplify().tree)).eqls([...tvh]);
+        expect(stateVariables['/vh'].stateValues.head.map(x => me.fromAst(x).simplify().tree)).eqls([...hvh]);
+        expect(stateVariables['/vh'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvh]);
 
-      expect(stateVariables['/vhd'].stateValues.tail.map(x => x.simplify())).eqls([...tvhd]);
-      expect(stateVariables['/vhd'].stateValues.head.map(x => x.simplify())).eqls([...hvhd]);
-      expect(stateVariables['/vhd'].stateValues.displacement.map(x => x.simplify())).eqls([...dvhd]);
+        expect(stateVariables['/vth'].stateValues.tail.map(x => me.fromAst(x).simplify().tree)).eqls([...tvth]);
+        expect(stateVariables['/vth'].stateValues.head.map(x => me.fromAst(x).simplify().tree)).eqls([...hvth]);
+        expect(stateVariables['/vth'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvth]);
 
-      expect(stateVariables['/tfvh'].stateValues.coords.simplify()).eqls(["vector", ...tvh]);
-      expect(stateVariables['/hfvh'].stateValues.coords.simplify()).eqls(["vector", ...hvh]);
-      expect(stateVariables['/dfvh'].stateValues.displacement.map(x => x.simplify())).eqls([...dvh]);
+        expect(stateVariables['/vhd'].stateValues.tail.map(x => me.fromAst(x).simplify().tree)).eqls([...tvhd]);
+        expect(stateVariables['/vhd'].stateValues.head.map(x => me.fromAst(x).simplify().tree)).eqls([...hvhd]);
+        expect(stateVariables['/vhd'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvhd]);
 
-      expect(stateVariables['/tfvth'].stateValues.coords.simplify()).eqls(["vector", ...tvth]);
-      expect(stateVariables['/hfvth'].stateValues.coords.simplify()).eqls(["vector", ...hvth]);
-      expect(stateVariables['/dfvth'].stateValues.displacement.map(x => x.simplify())).eqls([...dvth]);
+        expect(me.fromAst(stateVariables['/tfvh'].stateValues.coords).simplify().tree).eqls(["vector", ...tvh]);
+        expect(me.fromAst(stateVariables['/hfvh'].stateValues.coords).simplify().tree).eqls(["vector", ...hvh]);
+        expect(stateVariables['/dfvh'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvh]);
 
-      expect(stateVariables['/tfvhd'].stateValues.coords.simplify()).eqls(["vector", ...tvhd]);
-      expect(stateVariables['/hfvhd'].stateValues.coords.simplify()).eqls(["vector", ...hvhd]);
-      expect(stateVariables['/dfvhd'].stateValues.displacement.map(x => x.simplify())).eqls([...dvhd]);
+        expect(me.fromAst(stateVariables['/tfvth'].stateValues.coords).simplify().tree).eqls(["vector", ...tvth]);
+        expect(me.fromAst(stateVariables['/hfvth'].stateValues.coords).simplify().tree).eqls(["vector", ...hvth]);
+        expect(stateVariables['/dfvth'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvth]);
 
-      expect(stateVariables['/vh2'].stateValues.tail.map(x => x.simplify())).eqls([...tvh]);
-      expect(stateVariables['/vh2'].stateValues.head.map(x => x.simplify())).eqls([...hvh]);
-      expect(stateVariables['/vh2'].stateValues.displacement.map(x => x.simplify())).eqls([...dvh]);
+        expect(me.fromAst(stateVariables['/tfvhd'].stateValues.coords).simplify().tree).eqls(["vector", ...tvhd]);
+        expect(me.fromAst(stateVariables['/hfvhd'].stateValues.coords).simplify().tree).eqls(["vector", ...hvhd]);
+        expect(stateVariables['/dfvhd'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvhd]);
 
-      expect(stateVariables['/vth2'].stateValues.tail.map(x => x.simplify())).eqls([...tvth]);
-      expect(stateVariables['/vth2'].stateValues.head.map(x => x.simplify())).eqls([...hvth]);
-      expect(stateVariables['/vth2'].stateValues.displacement.map(x => x.simplify())).eqls([...dvth]);
+        expect(stateVariables['/vh2'].stateValues.tail.map(x => me.fromAst(x).simplify().tree)).eqls([...tvh]);
+        expect(stateVariables['/vh2'].stateValues.head.map(x => me.fromAst(x).simplify().tree)).eqls([...hvh]);
+        expect(stateVariables['/vh2'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvh]);
 
-      expect(stateVariables['/vhd2'].stateValues.tail.map(x => x.simplify())).eqls([...tvhd]);
-      expect(stateVariables['/vhd2'].stateValues.head.map(x => x.simplify())).eqls([...hvhd]);
-      expect(stateVariables['/vhd2'].stateValues.displacement.map(x => x.simplify())).eqls([...dvhd]);
+        expect(stateVariables['/vth2'].stateValues.tail.map(x => me.fromAst(x).simplify().tree)).eqls([...tvth]);
+        expect(stateVariables['/vth2'].stateValues.head.map(x => me.fromAst(x).simplify().tree)).eqls([...hvth]);
+        expect(stateVariables['/vth2'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvth]);
 
-      expect(stateVariables['/tfvh2'].stateValues.coords.simplify()).eqls(["vector", ...tvh]);
-      expect(stateVariables['/hfvh2'].stateValues.coords.simplify()).eqls(["vector", ...hvh]);
-      expect(stateVariables['/dfvh2'].stateValues.displacement.map(x => x.simplify())).eqls([...dvh]);
+        expect(stateVariables['/vhd2'].stateValues.tail.map(x => me.fromAst(x).simplify().tree)).eqls([...tvhd]);
+        expect(stateVariables['/vhd2'].stateValues.head.map(x => me.fromAst(x).simplify().tree)).eqls([...hvhd]);
+        expect(stateVariables['/vhd2'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvhd]);
 
-      expect(stateVariables['/tfvth2'].stateValues.coords.simplify()).eqls(["vector", ...tvth]);
-      expect(stateVariables['/hfvth2'].stateValues.coords.simplify()).eqls(["vector", ...hvth]);
-      expect(stateVariables['/dfvth2'].stateValues.displacement.map(x => x.simplify())).eqls([...dvth]);
+        expect(me.fromAst(stateVariables['/tfvh2'].stateValues.coords).simplify().tree).eqls(["vector", ...tvh]);
+        expect(me.fromAst(stateVariables['/hfvh2'].stateValues.coords).simplify().tree).eqls(["vector", ...hvh]);
+        expect(stateVariables['/dfvh2'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvh]);
 
-      expect(stateVariables['/tfvhd2'].stateValues.coords.simplify()).eqls(["vector", ...tvhd]);
-      expect(stateVariables['/hfvhd2'].stateValues.coords.simplify()).eqls(["vector", ...hvhd]);
-      expect(stateVariables['/dfvhd2'].stateValues.displacement.map(x => x.simplify())).eqls([...dvhd]);
+        expect(me.fromAst(stateVariables['/tfvth2'].stateValues.coords).simplify().tree).eqls(["vector", ...tvth]);
+        expect(me.fromAst(stateVariables['/hfvth2'].stateValues.coords).simplify().tree).eqls(["vector", ...hvth]);
+        expect(stateVariables['/dfvth2'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvth]);
 
+        expect(me.fromAst(stateVariables['/tfvhd2'].stateValues.coords).simplify().tree).eqls(["vector", ...tvhd]);
+        expect(me.fromAst(stateVariables['/hfvhd2'].stateValues.coords).simplify().tree).eqls(["vector", ...hvhd]);
+        expect(stateVariables['/dfvhd2'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvhd]);
+      })
     });
 
     cy.log("change displacement through defining point, if exists")
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
 
       dvd = [-1, -2];
       dvtd = [-6, 8];
       dvhd = [3, -7];
 
-      await stateVariables['/dvd'].movePoint({ x: dvd[0], y: dvd[1] })
-      await stateVariables['/dvtd'].movePoint({ x: dvtd[0], y: dvtd[1] })
-      await stateVariables['/dvhd'].movePoint({ x: dvhd[0], y: dvhd[1] })
+      win.callAction({
+        actionName: "movePoint",
+        componentName: "/dvd",
+        args: { x: dvd[0], y: dvd[1] }
+      })
+      win.callAction({
+        actionName: "movePoint",
+        componentName: "/dvtd",
+        args: { x: dvtd[0], y: dvtd[1] }
+      })
+      win.callAction({
+        actionName: "movePoint",
+        componentName: "/dvhd",
+        args: { x: dvhd[0], y: dvhd[1] }
+      })
+
+      cy.get('#\\/dvhd_dom').should('contain.text', `(${nInDOM(dvhd[0])},${nInDOM(dvhd[1])})`)
+
 
       // defined by displacement only or tail/displacement, tail stays fixed and head changes
       hvd = [tvd[0] + dvd[0], tvd[1] + dvd[1]];
@@ -6576,63 +6699,66 @@ describe('Vector Tag Tests', function () {
       // defined by head and displacement, head stays fixed and tail changes
       tvhd = [hvhd[0] - dvhd[0], hvhd[1] - dvhd[1]];
 
-      expect(stateVariables['/dvd'].stateValues.coords.simplify()).eqls(["vector", ...dvd]);
-      expect(stateVariables['/dvtd'].stateValues.coords.simplify()).eqls(["vector", ...dvtd]);
-      expect(stateVariables['/dvhd'].stateValues.coords.simplify()).eqls(["vector", ...dvhd]);
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables();
 
-      expect(stateVariables['/vd'].stateValues.tail.map(x => x.simplify())).eqls([...tvd]);
-      expect(stateVariables['/vd'].stateValues.head.map(x => x.simplify())).eqls([...hvd]);
-      expect(stateVariables['/vd'].stateValues.displacement.map(x => x.simplify())).eqls([...dvd]);
+        expect(me.fromAst(stateVariables['/dvd'].stateValues.coords).simplify().tree).eqls(["vector", ...dvd]);
+        expect(me.fromAst(stateVariables['/dvtd'].stateValues.coords).simplify().tree).eqls(["vector", ...dvtd]);
+        expect(me.fromAst(stateVariables['/dvhd'].stateValues.coords).simplify().tree).eqls(["vector", ...dvhd]);
 
-      expect(stateVariables['/vtd'].stateValues.tail.map(x => x.simplify())).eqls([...tvtd]);
-      expect(stateVariables['/vtd'].stateValues.head.map(x => x.simplify())).eqls([...hvtd]);
-      expect(stateVariables['/vtd'].stateValues.displacement.map(x => x.simplify())).eqls([...dvtd]);
+        expect(stateVariables['/vd'].stateValues.tail.map(x => me.fromAst(x).simplify().tree)).eqls([...tvd]);
+        expect(stateVariables['/vd'].stateValues.head.map(x => me.fromAst(x).simplify().tree)).eqls([...hvd]);
+        expect(stateVariables['/vd'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvd]);
 
-      expect(stateVariables['/vhd'].stateValues.tail.map(x => x.simplify())).eqls([...tvhd]);
-      expect(stateVariables['/vhd'].stateValues.head.map(x => x.simplify())).eqls([...hvhd]);
-      expect(stateVariables['/vhd'].stateValues.displacement.map(x => x.simplify())).eqls([...dvhd]);
+        expect(stateVariables['/vtd'].stateValues.tail.map(x => me.fromAst(x).simplify().tree)).eqls([...tvtd]);
+        expect(stateVariables['/vtd'].stateValues.head.map(x => me.fromAst(x).simplify().tree)).eqls([...hvtd]);
+        expect(stateVariables['/vtd'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvtd]);
 
-      expect(stateVariables['/tfvd'].stateValues.coords.simplify()).eqls(["vector", ...tvd]);
-      expect(stateVariables['/hfvd'].stateValues.coords.simplify()).eqls(["vector", ...hvd]);
-      expect(stateVariables['/dfvd'].stateValues.displacement.map(x => x.simplify())).eqls([...dvd]);
+        expect(stateVariables['/vhd'].stateValues.tail.map(x => me.fromAst(x).simplify().tree)).eqls([...tvhd]);
+        expect(stateVariables['/vhd'].stateValues.head.map(x => me.fromAst(x).simplify().tree)).eqls([...hvhd]);
+        expect(stateVariables['/vhd'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvhd]);
 
-      expect(stateVariables['/tfvtd'].stateValues.coords.simplify()).eqls(["vector", ...tvtd]);
-      expect(stateVariables['/hfvtd'].stateValues.coords.simplify()).eqls(["vector", ...hvtd]);
-      expect(stateVariables['/dfvtd'].stateValues.displacement.map(x => x.simplify())).eqls([...dvtd]);
+        expect(me.fromAst(stateVariables['/tfvd'].stateValues.coords).simplify().tree).eqls(["vector", ...tvd]);
+        expect(me.fromAst(stateVariables['/hfvd'].stateValues.coords).simplify().tree).eqls(["vector", ...hvd]);
+        expect(stateVariables['/dfvd'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvd]);
 
-      expect(stateVariables['/tfvhd'].stateValues.coords.simplify()).eqls(["vector", ...tvhd]);
-      expect(stateVariables['/hfvhd'].stateValues.coords.simplify()).eqls(["vector", ...hvhd]);
-      expect(stateVariables['/dfvhd'].stateValues.displacement.map(x => x.simplify())).eqls([...dvhd]);
+        expect(me.fromAst(stateVariables['/tfvtd'].stateValues.coords).simplify().tree).eqls(["vector", ...tvtd]);
+        expect(me.fromAst(stateVariables['/hfvtd'].stateValues.coords).simplify().tree).eqls(["vector", ...hvtd]);
+        expect(stateVariables['/dfvtd'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvtd]);
 
-      expect(stateVariables['/vd2'].stateValues.tail.map(x => x.simplify())).eqls([...tvd]);
-      expect(stateVariables['/vd2'].stateValues.head.map(x => x.simplify())).eqls([...hvd]);
-      expect(stateVariables['/vd2'].stateValues.displacement.map(x => x.simplify())).eqls([...dvd]);
+        expect(me.fromAst(stateVariables['/tfvhd'].stateValues.coords).simplify().tree).eqls(["vector", ...tvhd]);
+        expect(me.fromAst(stateVariables['/hfvhd'].stateValues.coords).simplify().tree).eqls(["vector", ...hvhd]);
+        expect(stateVariables['/dfvhd'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvhd]);
 
-      expect(stateVariables['/vtd2'].stateValues.tail.map(x => x.simplify())).eqls([...tvtd]);
-      expect(stateVariables['/vtd2'].stateValues.head.map(x => x.simplify())).eqls([...hvtd]);
-      expect(stateVariables['/vtd2'].stateValues.displacement.map(x => x.simplify())).eqls([...dvtd]);
+        expect(stateVariables['/vd2'].stateValues.tail.map(x => me.fromAst(x).simplify().tree)).eqls([...tvd]);
+        expect(stateVariables['/vd2'].stateValues.head.map(x => me.fromAst(x).simplify().tree)).eqls([...hvd]);
+        expect(stateVariables['/vd2'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvd]);
 
-      expect(stateVariables['/vhd2'].stateValues.tail.map(x => x.simplify())).eqls([...tvhd]);
-      expect(stateVariables['/vhd2'].stateValues.head.map(x => x.simplify())).eqls([...hvhd]);
-      expect(stateVariables['/vhd2'].stateValues.displacement.map(x => x.simplify())).eqls([...dvhd]);
+        expect(stateVariables['/vtd2'].stateValues.tail.map(x => me.fromAst(x).simplify().tree)).eqls([...tvtd]);
+        expect(stateVariables['/vtd2'].stateValues.head.map(x => me.fromAst(x).simplify().tree)).eqls([...hvtd]);
+        expect(stateVariables['/vtd2'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvtd]);
 
-      expect(stateVariables['/tfvd2'].stateValues.coords.simplify()).eqls(["vector", ...tvd]);
-      expect(stateVariables['/hfvd2'].stateValues.coords.simplify()).eqls(["vector", ...hvd]);
-      expect(stateVariables['/dfvd2'].stateValues.displacement.map(x => x.simplify())).eqls([...dvd]);
+        expect(stateVariables['/vhd2'].stateValues.tail.map(x => me.fromAst(x).simplify().tree)).eqls([...tvhd]);
+        expect(stateVariables['/vhd2'].stateValues.head.map(x => me.fromAst(x).simplify().tree)).eqls([...hvhd]);
+        expect(stateVariables['/vhd2'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvhd]);
 
-      expect(stateVariables['/tfvtd2'].stateValues.coords.simplify()).eqls(["vector", ...tvtd]);
-      expect(stateVariables['/hfvtd2'].stateValues.coords.simplify()).eqls(["vector", ...hvtd]);
-      expect(stateVariables['/dfvtd2'].stateValues.displacement.map(x => x.simplify())).eqls([...dvtd]);
+        expect(me.fromAst(stateVariables['/tfvd2'].stateValues.coords).simplify().tree).eqls(["vector", ...tvd]);
+        expect(me.fromAst(stateVariables['/hfvd2'].stateValues.coords).simplify().tree).eqls(["vector", ...hvd]);
+        expect(stateVariables['/dfvd2'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvd]);
 
-      expect(stateVariables['/tfvhd2'].stateValues.coords.simplify()).eqls(["vector", ...tvhd]);
-      expect(stateVariables['/hfvhd2'].stateValues.coords.simplify()).eqls(["vector", ...hvhd]);
-      expect(stateVariables['/dfvhd2'].stateValues.displacement.map(x => x.simplify())).eqls([...dvhd]);
+        expect(me.fromAst(stateVariables['/tfvtd2'].stateValues.coords).simplify().tree).eqls(["vector", ...tvtd]);
+        expect(me.fromAst(stateVariables['/hfvtd2'].stateValues.coords).simplify().tree).eqls(["vector", ...hvtd]);
+        expect(stateVariables['/dfvtd2'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvtd]);
 
+        expect(me.fromAst(stateVariables['/tfvhd2'].stateValues.coords).simplify().tree).eqls(["vector", ...tvhd]);
+        expect(me.fromAst(stateVariables['/hfvhd2'].stateValues.coords).simplify().tree).eqls(["vector", ...hvhd]);
+        expect(stateVariables['/dfvhd2'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvhd]);
+
+      })
     });
 
     cy.log("move tail of each vector through copied point")
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
 
       tvt = [-5, 3];
       tvh = [7, 0];
@@ -6641,12 +6767,41 @@ describe('Vector Tag Tests', function () {
       tvtd = [6, 5];
       tvhd = [-3, 4];
 
-      await stateVariables['/tfvt'].movePoint({ x: tvt[0], y: tvt[1] })
-      await stateVariables['/tfvh'].movePoint({ x: tvh[0], y: tvh[1] })
-      await stateVariables['/tfvd'].movePoint({ x: tvd[0], y: tvd[1] })
-      await stateVariables['/tfvth'].movePoint({ x: tvth[0], y: tvth[1] })
-      await stateVariables['/tfvtd'].movePoint({ x: tvtd[0], y: tvtd[1] })
-      await stateVariables['/tfvhd'].movePoint({ x: tvhd[0], y: tvhd[1] })
+
+      win.callAction({
+        actionName: "movePoint",
+        componentName: "/tfvt",
+        args: { x: tvt[0], y: tvt[1] }
+      })
+      win.callAction({
+        actionName: "movePoint",
+        componentName: "/tfvh",
+        args: { x: tvh[0], y: tvh[1] }
+      })
+      win.callAction({
+        actionName: "movePoint",
+        componentName: "/tfvd",
+        args: { x: tvd[0], y: tvd[1] }
+      })
+      win.callAction({
+        actionName: "movePoint",
+        componentName: "/tfvth",
+        args: { x: tvth[0], y: tvth[1] }
+      })
+      win.callAction({
+        actionName: "movePoint",
+        componentName: "/tfvtd",
+        args: { x: tvtd[0], y: tvtd[1] }
+      })
+      win.callAction({
+        actionName: "movePoint",
+        componentName: "/tfvhd",
+        args: { x: tvhd[0], y: tvhd[1] }
+      })
+
+
+      cy.get('#\\/tfvhd_dom').should('contain.text', `(${nInDOM(tvhd[0])},${nInDOM(tvhd[1])})`)
+
 
       // if defined by head, head stays fixed and displacement changes
       dvh = [hvh[0] - tvh[0], hvh[1] - tvh[1]];
@@ -6659,112 +6814,115 @@ describe('Vector Tag Tests', function () {
       hvd = [tvd[0] + dvd[0], tvd[1] + dvd[1]];
       hvtd = [tvtd[0] + dvtd[0], tvtd[1] + dvtd[1]];
 
-      expect(stateVariables['/tvt'].stateValues.coords.simplify()).eqls(["vector", ...tvt]);
-      expect(stateVariables['/hvh'].stateValues.coords.simplify()).eqls(["vector", ...hvh]);
-      expect(stateVariables['/dvd'].stateValues.coords.simplify()).eqls(["vector", ...dvd]);
-      expect(stateVariables['/tvth'].stateValues.coords.simplify()).eqls(["vector", ...tvth]);
-      expect(stateVariables['/hvth'].stateValues.coords.simplify()).eqls(["vector", ...hvth]);
-      expect(stateVariables['/tvtd'].stateValues.coords.simplify()).eqls(["vector", ...tvtd]);
-      expect(stateVariables['/dvtd'].stateValues.coords.simplify()).eqls(["vector", ...dvtd]);
-      expect(stateVariables['/hvhd'].stateValues.coords.simplify()).eqls(["vector", ...hvhd]);
-      expect(stateVariables['/dvhd'].stateValues.coords.simplify()).eqls(["vector", ...dvhd]);
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables();
 
-      expect(stateVariables['/vt'].stateValues.tail.map(x => x.simplify())).eqls([...tvt]);
-      expect(stateVariables['/vt'].stateValues.head.map(x => x.simplify())).eqls([...hvt]);
-      expect(stateVariables['/vt'].stateValues.displacement.map(x => x.simplify())).eqls([...dvt]);
+        expect(me.fromAst(stateVariables['/tvt'].stateValues.coords).simplify().tree).eqls(["vector", ...tvt]);
+        expect(me.fromAst(stateVariables['/hvh'].stateValues.coords).simplify().tree).eqls(["vector", ...hvh]);
+        expect(me.fromAst(stateVariables['/dvd'].stateValues.coords).simplify().tree).eqls(["vector", ...dvd]);
+        expect(me.fromAst(stateVariables['/tvth'].stateValues.coords).simplify().tree).eqls(["vector", ...tvth]);
+        expect(me.fromAst(stateVariables['/hvth'].stateValues.coords).simplify().tree).eqls(["vector", ...hvth]);
+        expect(me.fromAst(stateVariables['/tvtd'].stateValues.coords).simplify().tree).eqls(["vector", ...tvtd]);
+        expect(me.fromAst(stateVariables['/dvtd'].stateValues.coords).simplify().tree).eqls(["vector", ...dvtd]);
+        expect(me.fromAst(stateVariables['/hvhd'].stateValues.coords).simplify().tree).eqls(["vector", ...hvhd]);
+        expect(me.fromAst(stateVariables['/dvhd'].stateValues.coords).simplify().tree).eqls(["vector", ...dvhd]);
 
-      expect(stateVariables['/vh'].stateValues.tail.map(x => x.simplify())).eqls([...tvh]);
-      expect(stateVariables['/vh'].stateValues.head.map(x => x.simplify())).eqls([...hvh]);
-      expect(stateVariables['/vh'].stateValues.displacement.map(x => x.simplify())).eqls([...dvh]);
+        expect(stateVariables['/vt'].stateValues.tail.map(x => me.fromAst(x).simplify().tree)).eqls([...tvt]);
+        expect(stateVariables['/vt'].stateValues.head.map(x => me.fromAst(x).simplify().tree)).eqls([...hvt]);
+        expect(stateVariables['/vt'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvt]);
 
-      expect(stateVariables['/vd'].stateValues.tail.map(x => x.simplify())).eqls([...tvd]);
-      expect(stateVariables['/vd'].stateValues.head.map(x => x.simplify())).eqls([...hvd]);
-      expect(stateVariables['/vd'].stateValues.displacement.map(x => x.simplify())).eqls([...dvd]);
+        expect(stateVariables['/vh'].stateValues.tail.map(x => me.fromAst(x).simplify().tree)).eqls([...tvh]);
+        expect(stateVariables['/vh'].stateValues.head.map(x => me.fromAst(x).simplify().tree)).eqls([...hvh]);
+        expect(stateVariables['/vh'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvh]);
 
-      expect(stateVariables['/vth'].stateValues.tail.map(x => x.simplify())).eqls([...tvth]);
-      expect(stateVariables['/vth'].stateValues.head.map(x => x.simplify())).eqls([...hvth]);
-      expect(stateVariables['/vth'].stateValues.displacement.map(x => x.simplify())).eqls([...dvth]);
+        expect(stateVariables['/vd'].stateValues.tail.map(x => me.fromAst(x).simplify().tree)).eqls([...tvd]);
+        expect(stateVariables['/vd'].stateValues.head.map(x => me.fromAst(x).simplify().tree)).eqls([...hvd]);
+        expect(stateVariables['/vd'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvd]);
 
-      expect(stateVariables['/vtd'].stateValues.tail.map(x => x.simplify())).eqls([...tvtd]);
-      expect(stateVariables['/vtd'].stateValues.head.map(x => x.simplify())).eqls([...hvtd]);
-      expect(stateVariables['/vtd'].stateValues.displacement.map(x => x.simplify())).eqls([...dvtd]);
+        expect(stateVariables['/vth'].stateValues.tail.map(x => me.fromAst(x).simplify().tree)).eqls([...tvth]);
+        expect(stateVariables['/vth'].stateValues.head.map(x => me.fromAst(x).simplify().tree)).eqls([...hvth]);
+        expect(stateVariables['/vth'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvth]);
 
-      expect(stateVariables['/vhd'].stateValues.tail.map(x => x.simplify())).eqls([...tvhd]);
-      expect(stateVariables['/vhd'].stateValues.head.map(x => x.simplify())).eqls([...hvhd]);
-      expect(stateVariables['/vhd'].stateValues.displacement.map(x => x.simplify())).eqls([...dvhd]);
+        expect(stateVariables['/vtd'].stateValues.tail.map(x => me.fromAst(x).simplify().tree)).eqls([...tvtd]);
+        expect(stateVariables['/vtd'].stateValues.head.map(x => me.fromAst(x).simplify().tree)).eqls([...hvtd]);
+        expect(stateVariables['/vtd'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvtd]);
 
-      expect(stateVariables['/tfvt'].stateValues.coords.simplify()).eqls(["vector", ...tvt]);
-      expect(stateVariables['/hfvt'].stateValues.coords.simplify()).eqls(["vector", ...hvt]);
-      expect(stateVariables['/dfvt'].stateValues.displacement.map(x => x.simplify())).eqls([...dvt]);
+        expect(stateVariables['/vhd'].stateValues.tail.map(x => me.fromAst(x).simplify().tree)).eqls([...tvhd]);
+        expect(stateVariables['/vhd'].stateValues.head.map(x => me.fromAst(x).simplify().tree)).eqls([...hvhd]);
+        expect(stateVariables['/vhd'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvhd]);
 
-      expect(stateVariables['/tfvh'].stateValues.coords.simplify()).eqls(["vector", ...tvh]);
-      expect(stateVariables['/hfvh'].stateValues.coords.simplify()).eqls(["vector", ...hvh]);
-      expect(stateVariables['/dfvh'].stateValues.displacement.map(x => x.simplify())).eqls([...dvh]);
+        expect(me.fromAst(stateVariables['/tfvt'].stateValues.coords).simplify().tree).eqls(["vector", ...tvt]);
+        expect(me.fromAst(stateVariables['/hfvt'].stateValues.coords).simplify().tree).eqls(["vector", ...hvt]);
+        expect(stateVariables['/dfvt'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvt]);
 
-      expect(stateVariables['/tfvd'].stateValues.coords.simplify()).eqls(["vector", ...tvd]);
-      expect(stateVariables['/hfvd'].stateValues.coords.simplify()).eqls(["vector", ...hvd]);
-      expect(stateVariables['/dfvd'].stateValues.displacement.map(x => x.simplify())).eqls([...dvd]);
+        expect(me.fromAst(stateVariables['/tfvh'].stateValues.coords).simplify().tree).eqls(["vector", ...tvh]);
+        expect(me.fromAst(stateVariables['/hfvh'].stateValues.coords).simplify().tree).eqls(["vector", ...hvh]);
+        expect(stateVariables['/dfvh'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvh]);
 
-      expect(stateVariables['/tfvth'].stateValues.coords.simplify()).eqls(["vector", ...tvth]);
-      expect(stateVariables['/hfvth'].stateValues.coords.simplify()).eqls(["vector", ...hvth]);
-      expect(stateVariables['/dfvth'].stateValues.displacement.map(x => x.simplify())).eqls([...dvth]);
+        expect(me.fromAst(stateVariables['/tfvd'].stateValues.coords).simplify().tree).eqls(["vector", ...tvd]);
+        expect(me.fromAst(stateVariables['/hfvd'].stateValues.coords).simplify().tree).eqls(["vector", ...hvd]);
+        expect(stateVariables['/dfvd'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvd]);
 
-      expect(stateVariables['/tfvtd'].stateValues.coords.simplify()).eqls(["vector", ...tvtd]);
-      expect(stateVariables['/hfvtd'].stateValues.coords.simplify()).eqls(["vector", ...hvtd]);
-      expect(stateVariables['/dfvtd'].stateValues.displacement.map(x => x.simplify())).eqls([...dvtd]);
+        expect(me.fromAst(stateVariables['/tfvth'].stateValues.coords).simplify().tree).eqls(["vector", ...tvth]);
+        expect(me.fromAst(stateVariables['/hfvth'].stateValues.coords).simplify().tree).eqls(["vector", ...hvth]);
+        expect(stateVariables['/dfvth'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvth]);
 
-      expect(stateVariables['/tfvhd'].stateValues.coords.simplify()).eqls(["vector", ...tvhd]);
-      expect(stateVariables['/hfvhd'].stateValues.coords.simplify()).eqls(["vector", ...hvhd]);
-      expect(stateVariables['/dfvhd'].stateValues.displacement.map(x => x.simplify())).eqls([...dvhd]);
+        expect(me.fromAst(stateVariables['/tfvtd'].stateValues.coords).simplify().tree).eqls(["vector", ...tvtd]);
+        expect(me.fromAst(stateVariables['/hfvtd'].stateValues.coords).simplify().tree).eqls(["vector", ...hvtd]);
+        expect(stateVariables['/dfvtd'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvtd]);
 
-      expect(stateVariables['/vt2'].stateValues.tail.map(x => x.simplify())).eqls([...tvt]);
-      expect(stateVariables['/vt2'].stateValues.head.map(x => x.simplify())).eqls([...hvt]);
-      expect(stateVariables['/vt2'].stateValues.displacement.map(x => x.simplify())).eqls([...dvt]);
+        expect(me.fromAst(stateVariables['/tfvhd'].stateValues.coords).simplify().tree).eqls(["vector", ...tvhd]);
+        expect(me.fromAst(stateVariables['/hfvhd'].stateValues.coords).simplify().tree).eqls(["vector", ...hvhd]);
+        expect(stateVariables['/dfvhd'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvhd]);
 
-      expect(stateVariables['/vh2'].stateValues.tail.map(x => x.simplify())).eqls([...tvh]);
-      expect(stateVariables['/vh2'].stateValues.head.map(x => x.simplify())).eqls([...hvh]);
-      expect(stateVariables['/vh2'].stateValues.displacement.map(x => x.simplify())).eqls([...dvh]);
+        expect(stateVariables['/vt2'].stateValues.tail.map(x => me.fromAst(x).simplify().tree)).eqls([...tvt]);
+        expect(stateVariables['/vt2'].stateValues.head.map(x => me.fromAst(x).simplify().tree)).eqls([...hvt]);
+        expect(stateVariables['/vt2'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvt]);
 
-      expect(stateVariables['/vd2'].stateValues.tail.map(x => x.simplify())).eqls([...tvd]);
-      expect(stateVariables['/vd2'].stateValues.head.map(x => x.simplify())).eqls([...hvd]);
-      expect(stateVariables['/vd2'].stateValues.displacement.map(x => x.simplify())).eqls([...dvd]);
+        expect(stateVariables['/vh2'].stateValues.tail.map(x => me.fromAst(x).simplify().tree)).eqls([...tvh]);
+        expect(stateVariables['/vh2'].stateValues.head.map(x => me.fromAst(x).simplify().tree)).eqls([...hvh]);
+        expect(stateVariables['/vh2'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvh]);
 
-      expect(stateVariables['/vth2'].stateValues.tail.map(x => x.simplify())).eqls([...tvth]);
-      expect(stateVariables['/vth2'].stateValues.head.map(x => x.simplify())).eqls([...hvth]);
-      expect(stateVariables['/vth2'].stateValues.displacement.map(x => x.simplify())).eqls([...dvth]);
+        expect(stateVariables['/vd2'].stateValues.tail.map(x => me.fromAst(x).simplify().tree)).eqls([...tvd]);
+        expect(stateVariables['/vd2'].stateValues.head.map(x => me.fromAst(x).simplify().tree)).eqls([...hvd]);
+        expect(stateVariables['/vd2'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvd]);
 
-      expect(stateVariables['/vtd2'].stateValues.tail.map(x => x.simplify())).eqls([...tvtd]);
-      expect(stateVariables['/vtd2'].stateValues.head.map(x => x.simplify())).eqls([...hvtd]);
-      expect(stateVariables['/vtd2'].stateValues.displacement.map(x => x.simplify())).eqls([...dvtd]);
+        expect(stateVariables['/vth2'].stateValues.tail.map(x => me.fromAst(x).simplify().tree)).eqls([...tvth]);
+        expect(stateVariables['/vth2'].stateValues.head.map(x => me.fromAst(x).simplify().tree)).eqls([...hvth]);
+        expect(stateVariables['/vth2'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvth]);
 
-      expect(stateVariables['/vhd2'].stateValues.tail.map(x => x.simplify())).eqls([...tvhd]);
-      expect(stateVariables['/vhd2'].stateValues.head.map(x => x.simplify())).eqls([...hvhd]);
-      expect(stateVariables['/vhd2'].stateValues.displacement.map(x => x.simplify())).eqls([...dvhd]);
+        expect(stateVariables['/vtd2'].stateValues.tail.map(x => me.fromAst(x).simplify().tree)).eqls([...tvtd]);
+        expect(stateVariables['/vtd2'].stateValues.head.map(x => me.fromAst(x).simplify().tree)).eqls([...hvtd]);
+        expect(stateVariables['/vtd2'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvtd]);
 
-      expect(stateVariables['/tfvt2'].stateValues.coords.simplify()).eqls(["vector", ...tvt]);
-      expect(stateVariables['/hfvt2'].stateValues.coords.simplify()).eqls(["vector", ...hvt]);
-      expect(stateVariables['/dfvt2'].stateValues.displacement.map(x => x.simplify())).eqls([...dvt]);
+        expect(stateVariables['/vhd2'].stateValues.tail.map(x => me.fromAst(x).simplify().tree)).eqls([...tvhd]);
+        expect(stateVariables['/vhd2'].stateValues.head.map(x => me.fromAst(x).simplify().tree)).eqls([...hvhd]);
+        expect(stateVariables['/vhd2'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvhd]);
 
-      expect(stateVariables['/tfvh2'].stateValues.coords.simplify()).eqls(["vector", ...tvh]);
-      expect(stateVariables['/hfvh2'].stateValues.coords.simplify()).eqls(["vector", ...hvh]);
-      expect(stateVariables['/dfvh2'].stateValues.displacement.map(x => x.simplify())).eqls([...dvh]);
+        expect(me.fromAst(stateVariables['/tfvt2'].stateValues.coords).simplify().tree).eqls(["vector", ...tvt]);
+        expect(me.fromAst(stateVariables['/hfvt2'].stateValues.coords).simplify().tree).eqls(["vector", ...hvt]);
+        expect(stateVariables['/dfvt2'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvt]);
 
-      expect(stateVariables['/tfvd2'].stateValues.coords.simplify()).eqls(["vector", ...tvd]);
-      expect(stateVariables['/hfvd2'].stateValues.coords.simplify()).eqls(["vector", ...hvd]);
-      expect(stateVariables['/dfvd2'].stateValues.displacement.map(x => x.simplify())).eqls([...dvd]);
+        expect(me.fromAst(stateVariables['/tfvh2'].stateValues.coords).simplify().tree).eqls(["vector", ...tvh]);
+        expect(me.fromAst(stateVariables['/hfvh2'].stateValues.coords).simplify().tree).eqls(["vector", ...hvh]);
+        expect(stateVariables['/dfvh2'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvh]);
 
-      expect(stateVariables['/tfvth2'].stateValues.coords.simplify()).eqls(["vector", ...tvth]);
-      expect(stateVariables['/hfvth2'].stateValues.coords.simplify()).eqls(["vector", ...hvth]);
-      expect(stateVariables['/dfvth2'].stateValues.displacement.map(x => x.simplify())).eqls([...dvth]);
+        expect(me.fromAst(stateVariables['/tfvd2'].stateValues.coords).simplify().tree).eqls(["vector", ...tvd]);
+        expect(me.fromAst(stateVariables['/hfvd2'].stateValues.coords).simplify().tree).eqls(["vector", ...hvd]);
+        expect(stateVariables['/dfvd2'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvd]);
 
-      expect(stateVariables['/tfvtd2'].stateValues.coords.simplify()).eqls(["vector", ...tvtd]);
-      expect(stateVariables['/hfvtd2'].stateValues.coords.simplify()).eqls(["vector", ...hvtd]);
-      expect(stateVariables['/dfvtd2'].stateValues.displacement.map(x => x.simplify())).eqls([...dvtd]);
+        expect(me.fromAst(stateVariables['/tfvth2'].stateValues.coords).simplify().tree).eqls(["vector", ...tvth]);
+        expect(me.fromAst(stateVariables['/hfvth2'].stateValues.coords).simplify().tree).eqls(["vector", ...hvth]);
+        expect(stateVariables['/dfvth2'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvth]);
 
-      expect(stateVariables['/tfvhd2'].stateValues.coords.simplify()).eqls(["vector", ...tvhd]);
-      expect(stateVariables['/hfvhd2'].stateValues.coords.simplify()).eqls(["vector", ...hvhd]);
-      expect(stateVariables['/dfvhd2'].stateValues.displacement.map(x => x.simplify())).eqls([...dvhd]);
+        expect(me.fromAst(stateVariables['/tfvtd2'].stateValues.coords).simplify().tree).eqls(["vector", ...tvtd]);
+        expect(me.fromAst(stateVariables['/hfvtd2'].stateValues.coords).simplify().tree).eqls(["vector", ...hvtd]);
+        expect(stateVariables['/dfvtd2'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvtd]);
 
+        expect(me.fromAst(stateVariables['/tfvhd2'].stateValues.coords).simplify().tree).eqls(["vector", ...tvhd]);
+        expect(me.fromAst(stateVariables['/hfvhd2'].stateValues.coords).simplify().tree).eqls(["vector", ...hvhd]);
+        expect(stateVariables['/dfvhd2'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvhd]);
+      })
     });
 
     cy.log("move head of each vector through copied point")
@@ -6778,12 +6936,40 @@ describe('Vector Tag Tests', function () {
       hvtd = [9, 1];
       hvhd = [-4, 4];
 
-      await stateVariables['/hfvt'].movePoint({ x: hvt[0], y: hvt[1] })
-      await stateVariables['/hfvh'].movePoint({ x: hvh[0], y: hvh[1] })
-      await stateVariables['/hfvd'].movePoint({ x: hvd[0], y: hvd[1] })
-      await stateVariables['/hfvth'].movePoint({ x: hvth[0], y: hvth[1] })
-      await stateVariables['/hfvtd'].movePoint({ x: hvtd[0], y: hvtd[1] })
-      await stateVariables['/hfvhd'].movePoint({ x: hvhd[0], y: hvhd[1] })
+
+      win.callAction({
+        actionName: "movePoint",
+        componentName: "/hfvt",
+        args: { x: hvt[0], y: hvt[1] }
+      })
+      win.callAction({
+        actionName: "movePoint",
+        componentName: "/hfvh",
+        args: { x: hvh[0], y: hvh[1] }
+      })
+      win.callAction({
+        actionName: "movePoint",
+        componentName: "/hfvd",
+        args: { x: hvd[0], y: hvd[1] }
+      })
+      win.callAction({
+        actionName: "movePoint",
+        componentName: "/hfvth",
+        args: { x: hvth[0], y: hvth[1] }
+      })
+      win.callAction({
+        actionName: "movePoint",
+        componentName: "/hfvtd",
+        args: { x: hvtd[0], y: hvtd[1] }
+      })
+      win.callAction({
+        actionName: "movePoint",
+        componentName: "/hfvhd",
+        args: { x: hvhd[0], y: hvhd[1] }
+      })
+
+      cy.get('#\\/hfvhd_dom').should('contain.text', `(${nInDOM(hvhd[0])},${nInDOM(hvhd[1])})`)
+
 
       // for most vectors, tails stay fixed and displacement changes
       dvt = [hvt[0] - tvt[0], hvt[1] - tvt[1]];
@@ -6795,117 +6981,119 @@ describe('Vector Tag Tests', function () {
       // defined by head and displacement, displacement stays fixed and tail changes
       tvhd = [hvhd[0] - dvhd[0], hvhd[1] - dvhd[1]];
 
-      expect(stateVariables['/tvt'].stateValues.coords.simplify()).eqls(["vector", ...tvt]);
-      expect(stateVariables['/hvh'].stateValues.coords.simplify()).eqls(["vector", ...hvh]);
-      expect(stateVariables['/dvd'].stateValues.coords.simplify()).eqls(["vector", ...dvd]);
-      expect(stateVariables['/tvth'].stateValues.coords.simplify()).eqls(["vector", ...tvth]);
-      expect(stateVariables['/hvth'].stateValues.coords.simplify()).eqls(["vector", ...hvth]);
-      expect(stateVariables['/tvtd'].stateValues.coords.simplify()).eqls(["vector", ...tvtd]);
-      expect(stateVariables['/dvtd'].stateValues.coords.simplify()).eqls(["vector", ...dvtd]);
-      expect(stateVariables['/hvhd'].stateValues.coords.simplify()).eqls(["vector", ...hvhd]);
-      expect(stateVariables['/dvhd'].stateValues.coords.simplify()).eqls(["vector", ...dvhd]);
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables();
 
-      expect(stateVariables['/vt'].stateValues.tail.map(x => x.simplify())).eqls([...tvt]);
-      expect(stateVariables['/vt'].stateValues.head.map(x => x.simplify())).eqls([...hvt]);
-      expect(stateVariables['/vt'].stateValues.displacement.map(x => x.simplify())).eqls([...dvt]);
+        expect(me.fromAst(stateVariables['/tvt'].stateValues.coords).simplify().tree).eqls(["vector", ...tvt]);
+        expect(me.fromAst(stateVariables['/hvh'].stateValues.coords).simplify().tree).eqls(["vector", ...hvh]);
+        expect(me.fromAst(stateVariables['/dvd'].stateValues.coords).simplify().tree).eqls(["vector", ...dvd]);
+        expect(me.fromAst(stateVariables['/tvth'].stateValues.coords).simplify().tree).eqls(["vector", ...tvth]);
+        expect(me.fromAst(stateVariables['/hvth'].stateValues.coords).simplify().tree).eqls(["vector", ...hvth]);
+        expect(me.fromAst(stateVariables['/tvtd'].stateValues.coords).simplify().tree).eqls(["vector", ...tvtd]);
+        expect(me.fromAst(stateVariables['/dvtd'].stateValues.coords).simplify().tree).eqls(["vector", ...dvtd]);
+        expect(me.fromAst(stateVariables['/hvhd'].stateValues.coords).simplify().tree).eqls(["vector", ...hvhd]);
+        expect(me.fromAst(stateVariables['/dvhd'].stateValues.coords).simplify().tree).eqls(["vector", ...dvhd]);
 
-      expect(stateVariables['/vh'].stateValues.tail.map(x => x.simplify())).eqls([...tvh]);
-      expect(stateVariables['/vh'].stateValues.head.map(x => x.simplify())).eqls([...hvh]);
-      expect(stateVariables['/vh'].stateValues.displacement.map(x => x.simplify())).eqls([...dvh]);
+        expect(stateVariables['/vt'].stateValues.tail.map(x => me.fromAst(x).simplify().tree)).eqls([...tvt]);
+        expect(stateVariables['/vt'].stateValues.head.map(x => me.fromAst(x).simplify().tree)).eqls([...hvt]);
+        expect(stateVariables['/vt'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvt]);
 
-      expect(stateVariables['/vd'].stateValues.tail.map(x => x.simplify())).eqls([...tvd]);
-      expect(stateVariables['/vd'].stateValues.head.map(x => x.simplify())).eqls([...hvd]);
-      expect(stateVariables['/vd'].stateValues.displacement.map(x => x.simplify())).eqls([...dvd]);
+        expect(stateVariables['/vh'].stateValues.tail.map(x => me.fromAst(x).simplify().tree)).eqls([...tvh]);
+        expect(stateVariables['/vh'].stateValues.head.map(x => me.fromAst(x).simplify().tree)).eqls([...hvh]);
+        expect(stateVariables['/vh'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvh]);
 
-      expect(stateVariables['/vth'].stateValues.tail.map(x => x.simplify())).eqls([...tvth]);
-      expect(stateVariables['/vth'].stateValues.head.map(x => x.simplify())).eqls([...hvth]);
-      expect(stateVariables['/vth'].stateValues.displacement.map(x => x.simplify())).eqls([...dvth]);
+        expect(stateVariables['/vd'].stateValues.tail.map(x => me.fromAst(x).simplify().tree)).eqls([...tvd]);
+        expect(stateVariables['/vd'].stateValues.head.map(x => me.fromAst(x).simplify().tree)).eqls([...hvd]);
+        expect(stateVariables['/vd'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvd]);
 
-      expect(stateVariables['/vtd'].stateValues.tail.map(x => x.simplify())).eqls([...tvtd]);
-      expect(stateVariables['/vtd'].stateValues.head.map(x => x.simplify())).eqls([...hvtd]);
-      expect(stateVariables['/vtd'].stateValues.displacement.map(x => x.simplify())).eqls([...dvtd]);
+        expect(stateVariables['/vth'].stateValues.tail.map(x => me.fromAst(x).simplify().tree)).eqls([...tvth]);
+        expect(stateVariables['/vth'].stateValues.head.map(x => me.fromAst(x).simplify().tree)).eqls([...hvth]);
+        expect(stateVariables['/vth'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvth]);
 
-      expect(stateVariables['/vhd'].stateValues.tail.map(x => x.simplify())).eqls([...tvhd]);
-      expect(stateVariables['/vhd'].stateValues.head.map(x => x.simplify())).eqls([...hvhd]);
-      expect(stateVariables['/vhd'].stateValues.displacement.map(x => x.simplify())).eqls([...dvhd]);
+        expect(stateVariables['/vtd'].stateValues.tail.map(x => me.fromAst(x).simplify().tree)).eqls([...tvtd]);
+        expect(stateVariables['/vtd'].stateValues.head.map(x => me.fromAst(x).simplify().tree)).eqls([...hvtd]);
+        expect(stateVariables['/vtd'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvtd]);
 
-      expect(stateVariables['/tfvt'].stateValues.coords.simplify()).eqls(["vector", ...tvt]);
-      expect(stateVariables['/hfvt'].stateValues.coords.simplify()).eqls(["vector", ...hvt]);
-      expect(stateVariables['/dfvt'].stateValues.displacement.map(x => x.simplify())).eqls([...dvt]);
+        expect(stateVariables['/vhd'].stateValues.tail.map(x => me.fromAst(x).simplify().tree)).eqls([...tvhd]);
+        expect(stateVariables['/vhd'].stateValues.head.map(x => me.fromAst(x).simplify().tree)).eqls([...hvhd]);
+        expect(stateVariables['/vhd'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvhd]);
 
-      expect(stateVariables['/tfvh'].stateValues.coords.simplify()).eqls(["vector", ...tvh]);
-      expect(stateVariables['/hfvh'].stateValues.coords.simplify()).eqls(["vector", ...hvh]);
-      expect(stateVariables['/dfvh'].stateValues.displacement.map(x => x.simplify())).eqls([...dvh]);
+        expect(me.fromAst(stateVariables['/tfvt'].stateValues.coords).simplify().tree).eqls(["vector", ...tvt]);
+        expect(me.fromAst(stateVariables['/hfvt'].stateValues.coords).simplify().tree).eqls(["vector", ...hvt]);
+        expect(stateVariables['/dfvt'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvt]);
 
-      expect(stateVariables['/tfvd'].stateValues.coords.simplify()).eqls(["vector", ...tvd]);
-      expect(stateVariables['/hfvd'].stateValues.coords.simplify()).eqls(["vector", ...hvd]);
-      expect(stateVariables['/dfvd'].stateValues.displacement.map(x => x.simplify())).eqls([...dvd]);
+        expect(me.fromAst(stateVariables['/tfvh'].stateValues.coords).simplify().tree).eqls(["vector", ...tvh]);
+        expect(me.fromAst(stateVariables['/hfvh'].stateValues.coords).simplify().tree).eqls(["vector", ...hvh]);
+        expect(stateVariables['/dfvh'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvh]);
 
-      expect(stateVariables['/tfvth'].stateValues.coords.simplify()).eqls(["vector", ...tvth]);
-      expect(stateVariables['/hfvth'].stateValues.coords.simplify()).eqls(["vector", ...hvth]);
-      expect(stateVariables['/dfvth'].stateValues.displacement.map(x => x.simplify())).eqls([...dvth]);
+        expect(me.fromAst(stateVariables['/tfvd'].stateValues.coords).simplify().tree).eqls(["vector", ...tvd]);
+        expect(me.fromAst(stateVariables['/hfvd'].stateValues.coords).simplify().tree).eqls(["vector", ...hvd]);
+        expect(stateVariables['/dfvd'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvd]);
 
-      expect(stateVariables['/tfvtd'].stateValues.coords.simplify()).eqls(["vector", ...tvtd]);
-      expect(stateVariables['/hfvtd'].stateValues.coords.simplify()).eqls(["vector", ...hvtd]);
-      expect(stateVariables['/dfvtd'].stateValues.displacement.map(x => x.simplify())).eqls([...dvtd]);
+        expect(me.fromAst(stateVariables['/tfvth'].stateValues.coords).simplify().tree).eqls(["vector", ...tvth]);
+        expect(me.fromAst(stateVariables['/hfvth'].stateValues.coords).simplify().tree).eqls(["vector", ...hvth]);
+        expect(stateVariables['/dfvth'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvth]);
 
-      expect(stateVariables['/tfvhd'].stateValues.coords.simplify()).eqls(["vector", ...tvhd]);
-      expect(stateVariables['/hfvhd'].stateValues.coords.simplify()).eqls(["vector", ...hvhd]);
-      expect(stateVariables['/dfvhd'].stateValues.displacement.map(x => x.simplify())).eqls([...dvhd]);
+        expect(me.fromAst(stateVariables['/tfvtd'].stateValues.coords).simplify().tree).eqls(["vector", ...tvtd]);
+        expect(me.fromAst(stateVariables['/hfvtd'].stateValues.coords).simplify().tree).eqls(["vector", ...hvtd]);
+        expect(stateVariables['/dfvtd'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvtd]);
 
-      expect(stateVariables['/vt2'].stateValues.tail.map(x => x.simplify())).eqls([...tvt]);
-      expect(stateVariables['/vt2'].stateValues.head.map(x => x.simplify())).eqls([...hvt]);
-      expect(stateVariables['/vt2'].stateValues.displacement.map(x => x.simplify())).eqls([...dvt]);
+        expect(me.fromAst(stateVariables['/tfvhd'].stateValues.coords).simplify().tree).eqls(["vector", ...tvhd]);
+        expect(me.fromAst(stateVariables['/hfvhd'].stateValues.coords).simplify().tree).eqls(["vector", ...hvhd]);
+        expect(stateVariables['/dfvhd'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvhd]);
 
-      expect(stateVariables['/vh2'].stateValues.tail.map(x => x.simplify())).eqls([...tvh]);
-      expect(stateVariables['/vh2'].stateValues.head.map(x => x.simplify())).eqls([...hvh]);
-      expect(stateVariables['/vh2'].stateValues.displacement.map(x => x.simplify())).eqls([...dvh]);
+        expect(stateVariables['/vt2'].stateValues.tail.map(x => me.fromAst(x).simplify().tree)).eqls([...tvt]);
+        expect(stateVariables['/vt2'].stateValues.head.map(x => me.fromAst(x).simplify().tree)).eqls([...hvt]);
+        expect(stateVariables['/vt2'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvt]);
 
-      expect(stateVariables['/vd2'].stateValues.tail.map(x => x.simplify())).eqls([...tvd]);
-      expect(stateVariables['/vd2'].stateValues.head.map(x => x.simplify())).eqls([...hvd]);
-      expect(stateVariables['/vd2'].stateValues.displacement.map(x => x.simplify())).eqls([...dvd]);
+        expect(stateVariables['/vh2'].stateValues.tail.map(x => me.fromAst(x).simplify().tree)).eqls([...tvh]);
+        expect(stateVariables['/vh2'].stateValues.head.map(x => me.fromAst(x).simplify().tree)).eqls([...hvh]);
+        expect(stateVariables['/vh2'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvh]);
 
-      expect(stateVariables['/vth2'].stateValues.tail.map(x => x.simplify())).eqls([...tvth]);
-      expect(stateVariables['/vth2'].stateValues.head.map(x => x.simplify())).eqls([...hvth]);
-      expect(stateVariables['/vth2'].stateValues.displacement.map(x => x.simplify())).eqls([...dvth]);
+        expect(stateVariables['/vd2'].stateValues.tail.map(x => me.fromAst(x).simplify().tree)).eqls([...tvd]);
+        expect(stateVariables['/vd2'].stateValues.head.map(x => me.fromAst(x).simplify().tree)).eqls([...hvd]);
+        expect(stateVariables['/vd2'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvd]);
 
-      expect(stateVariables['/vtd2'].stateValues.tail.map(x => x.simplify())).eqls([...tvtd]);
-      expect(stateVariables['/vtd2'].stateValues.head.map(x => x.simplify())).eqls([...hvtd]);
-      expect(stateVariables['/vtd2'].stateValues.displacement.map(x => x.simplify())).eqls([...dvtd]);
+        expect(stateVariables['/vth2'].stateValues.tail.map(x => me.fromAst(x).simplify().tree)).eqls([...tvth]);
+        expect(stateVariables['/vth2'].stateValues.head.map(x => me.fromAst(x).simplify().tree)).eqls([...hvth]);
+        expect(stateVariables['/vth2'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvth]);
 
-      expect(stateVariables['/vhd2'].stateValues.tail.map(x => x.simplify())).eqls([...tvhd]);
-      expect(stateVariables['/vhd2'].stateValues.head.map(x => x.simplify())).eqls([...hvhd]);
-      expect(stateVariables['/vhd2'].stateValues.displacement.map(x => x.simplify())).eqls([...dvhd]);
+        expect(stateVariables['/vtd2'].stateValues.tail.map(x => me.fromAst(x).simplify().tree)).eqls([...tvtd]);
+        expect(stateVariables['/vtd2'].stateValues.head.map(x => me.fromAst(x).simplify().tree)).eqls([...hvtd]);
+        expect(stateVariables['/vtd2'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvtd]);
 
-      expect(stateVariables['/tfvt2'].stateValues.coords.simplify()).eqls(["vector", ...tvt]);
-      expect(stateVariables['/hfvt2'].stateValues.coords.simplify()).eqls(["vector", ...hvt]);
-      expect(stateVariables['/dfvt2'].stateValues.displacement.map(x => x.simplify())).eqls([...dvt]);
+        expect(stateVariables['/vhd2'].stateValues.tail.map(x => me.fromAst(x).simplify().tree)).eqls([...tvhd]);
+        expect(stateVariables['/vhd2'].stateValues.head.map(x => me.fromAst(x).simplify().tree)).eqls([...hvhd]);
+        expect(stateVariables['/vhd2'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvhd]);
 
-      expect(stateVariables['/tfvh2'].stateValues.coords.simplify()).eqls(["vector", ...tvh]);
-      expect(stateVariables['/hfvh2'].stateValues.coords.simplify()).eqls(["vector", ...hvh]);
-      expect(stateVariables['/dfvh2'].stateValues.displacement.map(x => x.simplify())).eqls([...dvh]);
+        expect(me.fromAst(stateVariables['/tfvt2'].stateValues.coords).simplify().tree).eqls(["vector", ...tvt]);
+        expect(me.fromAst(stateVariables['/hfvt2'].stateValues.coords).simplify().tree).eqls(["vector", ...hvt]);
+        expect(stateVariables['/dfvt2'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvt]);
 
-      expect(stateVariables['/tfvd2'].stateValues.coords.simplify()).eqls(["vector", ...tvd]);
-      expect(stateVariables['/hfvd2'].stateValues.coords.simplify()).eqls(["vector", ...hvd]);
-      expect(stateVariables['/dfvd2'].stateValues.displacement.map(x => x.simplify())).eqls([...dvd]);
+        expect(me.fromAst(stateVariables['/tfvh2'].stateValues.coords).simplify().tree).eqls(["vector", ...tvh]);
+        expect(me.fromAst(stateVariables['/hfvh2'].stateValues.coords).simplify().tree).eqls(["vector", ...hvh]);
+        expect(stateVariables['/dfvh2'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvh]);
 
-      expect(stateVariables['/tfvth2'].stateValues.coords.simplify()).eqls(["vector", ...tvth]);
-      expect(stateVariables['/hfvth2'].stateValues.coords.simplify()).eqls(["vector", ...hvth]);
-      expect(stateVariables['/dfvth2'].stateValues.displacement.map(x => x.simplify())).eqls([...dvth]);
+        expect(me.fromAst(stateVariables['/tfvd2'].stateValues.coords).simplify().tree).eqls(["vector", ...tvd]);
+        expect(me.fromAst(stateVariables['/hfvd2'].stateValues.coords).simplify().tree).eqls(["vector", ...hvd]);
+        expect(stateVariables['/dfvd2'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvd]);
 
-      expect(stateVariables['/tfvtd2'].stateValues.coords.simplify()).eqls(["vector", ...tvtd]);
-      expect(stateVariables['/hfvtd2'].stateValues.coords.simplify()).eqls(["vector", ...hvtd]);
-      expect(stateVariables['/dfvtd2'].stateValues.displacement.map(x => x.simplify())).eqls([...dvtd]);
+        expect(me.fromAst(stateVariables['/tfvth2'].stateValues.coords).simplify().tree).eqls(["vector", ...tvth]);
+        expect(me.fromAst(stateVariables['/hfvth2'].stateValues.coords).simplify().tree).eqls(["vector", ...hvth]);
+        expect(stateVariables['/dfvth2'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvth]);
 
-      expect(stateVariables['/tfvhd2'].stateValues.coords.simplify()).eqls(["vector", ...tvhd]);
-      expect(stateVariables['/hfvhd2'].stateValues.coords.simplify()).eqls(["vector", ...hvhd]);
-      expect(stateVariables['/dfvhd2'].stateValues.displacement.map(x => x.simplify())).eqls([...dvhd]);
+        expect(me.fromAst(stateVariables['/tfvtd2'].stateValues.coords).simplify().tree).eqls(["vector", ...tvtd]);
+        expect(me.fromAst(stateVariables['/hfvtd2'].stateValues.coords).simplify().tree).eqls(["vector", ...hvtd]);
+        expect(stateVariables['/dfvtd2'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvtd]);
 
+        expect(me.fromAst(stateVariables['/tfvhd2'].stateValues.coords).simplify().tree).eqls(["vector", ...tvhd]);
+        expect(me.fromAst(stateVariables['/hfvhd2'].stateValues.coords).simplify().tree).eqls(["vector", ...hvhd]);
+        expect(stateVariables['/dfvhd2'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvhd]);
+      })
     });
 
     cy.log("change displacement of each vector through copied vectors")
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
 
       dvt = [-9, 0];
       dvh = [-3, -1];
@@ -6914,12 +7102,38 @@ describe('Vector Tag Tests', function () {
       dvtd = [9, -8];
       dvhd = [1, 2];
 
-      await stateVariables['/dfvt'].moveVector({ headcoords: dvt });
-      await stateVariables['/dfvh'].moveVector({ headcoords: dvh });
-      await stateVariables['/dfvd'].moveVector({ headcoords: dvd });
-      await stateVariables['/dfvth'].moveVector({ headcoords: dvth });
-      await stateVariables['/dfvtd'].moveVector({ headcoords: dvtd });
-      await stateVariables['/dfvhd'].moveVector({ headcoords: dvhd });
+      win.callAction({
+        actionName: "moveVector",
+        componentName: '/dfvt',
+        args: { headcoords: dvt }
+      })
+      win.callAction({
+        actionName: "moveVector",
+        componentName: '/dfvh',
+        args: { headcoords: dvh }
+      })
+      win.callAction({
+        actionName: "moveVector",
+        componentName: '/dfvd',
+        args: { headcoords: dvd }
+      })
+      win.callAction({
+        actionName: "moveVector",
+        componentName: '/dfvth',
+        args: { headcoords: dvth }
+      })
+      win.callAction({
+        actionName: "moveVector",
+        componentName: '/dfvtd',
+        args: { headcoords: dvtd }
+      })
+      win.callAction({
+        actionName: "moveVector",
+        componentName: '/dfvhd',
+        args: { headcoords: dvhd }
+      })
+
+      cy.get('#\\/dfvhd_hdom').should('contain.text', `(${nInDOM(dvhd[0])},${nInDOM(dvhd[1])})`)
 
       // for most vectors, tails stay fixed and head changes
       hvt = [tvt[0] + dvt[0], tvt[1] + dvt[1]];
@@ -6931,117 +7145,120 @@ describe('Vector Tag Tests', function () {
       // defined by head and displacement, head stays fixed and tail changes
       tvhd = [hvhd[0] - dvhd[0], hvhd[1] - dvhd[1]];
 
-      expect(stateVariables['/tvt'].stateValues.coords.simplify()).eqls(["vector", ...tvt]);
-      expect(stateVariables['/hvh'].stateValues.coords.simplify()).eqls(["vector", ...hvh]);
-      expect(stateVariables['/dvd'].stateValues.coords.simplify()).eqls(["vector", ...dvd]);
-      expect(stateVariables['/tvth'].stateValues.coords.simplify()).eqls(["vector", ...tvth]);
-      expect(stateVariables['/hvth'].stateValues.coords.simplify()).eqls(["vector", ...hvth]);
-      expect(stateVariables['/tvtd'].stateValues.coords.simplify()).eqls(["vector", ...tvtd]);
-      expect(stateVariables['/dvtd'].stateValues.coords.simplify()).eqls(["vector", ...dvtd]);
-      expect(stateVariables['/hvhd'].stateValues.coords.simplify()).eqls(["vector", ...hvhd]);
-      expect(stateVariables['/dvhd'].stateValues.coords.simplify()).eqls(["vector", ...dvhd]);
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables();
 
-      expect(stateVariables['/vt'].stateValues.tail.map(x => x.simplify())).eqls([...tvt]);
-      expect(stateVariables['/vt'].stateValues.head.map(x => x.simplify())).eqls([...hvt]);
-      expect(stateVariables['/vt'].stateValues.displacement.map(x => x.simplify())).eqls([...dvt]);
+        expect(me.fromAst(stateVariables['/tvt'].stateValues.coords).simplify().tree).eqls(["vector", ...tvt]);
+        expect(me.fromAst(stateVariables['/hvh'].stateValues.coords).simplify().tree).eqls(["vector", ...hvh]);
+        expect(me.fromAst(stateVariables['/dvd'].stateValues.coords).simplify().tree).eqls(["vector", ...dvd]);
+        expect(me.fromAst(stateVariables['/tvth'].stateValues.coords).simplify().tree).eqls(["vector", ...tvth]);
+        expect(me.fromAst(stateVariables['/hvth'].stateValues.coords).simplify().tree).eqls(["vector", ...hvth]);
+        expect(me.fromAst(stateVariables['/tvtd'].stateValues.coords).simplify().tree).eqls(["vector", ...tvtd]);
+        expect(me.fromAst(stateVariables['/dvtd'].stateValues.coords).simplify().tree).eqls(["vector", ...dvtd]);
+        expect(me.fromAst(stateVariables['/hvhd'].stateValues.coords).simplify().tree).eqls(["vector", ...hvhd]);
+        expect(me.fromAst(stateVariables['/dvhd'].stateValues.coords).simplify().tree).eqls(["vector", ...dvhd]);
 
-      expect(stateVariables['/vh'].stateValues.tail.map(x => x.simplify())).eqls([...tvh]);
-      expect(stateVariables['/vh'].stateValues.head.map(x => x.simplify())).eqls([...hvh]);
-      expect(stateVariables['/vh'].stateValues.displacement.map(x => x.simplify())).eqls([...dvh]);
+        expect(stateVariables['/vt'].stateValues.tail.map(x => me.fromAst(x).simplify().tree)).eqls([...tvt]);
+        expect(stateVariables['/vt'].stateValues.head.map(x => me.fromAst(x).simplify().tree)).eqls([...hvt]);
+        expect(stateVariables['/vt'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvt]);
 
-      expect(stateVariables['/vd'].stateValues.tail.map(x => x.simplify())).eqls([...tvd]);
-      expect(stateVariables['/vd'].stateValues.head.map(x => x.simplify())).eqls([...hvd]);
-      expect(stateVariables['/vd'].stateValues.displacement.map(x => x.simplify())).eqls([...dvd]);
+        expect(stateVariables['/vh'].stateValues.tail.map(x => me.fromAst(x).simplify().tree)).eqls([...tvh]);
+        expect(stateVariables['/vh'].stateValues.head.map(x => me.fromAst(x).simplify().tree)).eqls([...hvh]);
+        expect(stateVariables['/vh'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvh]);
 
-      expect(stateVariables['/vth'].stateValues.tail.map(x => x.simplify())).eqls([...tvth]);
-      expect(stateVariables['/vth'].stateValues.head.map(x => x.simplify())).eqls([...hvth]);
-      expect(stateVariables['/vth'].stateValues.displacement.map(x => x.simplify())).eqls([...dvth]);
+        expect(stateVariables['/vd'].stateValues.tail.map(x => me.fromAst(x).simplify().tree)).eqls([...tvd]);
+        expect(stateVariables['/vd'].stateValues.head.map(x => me.fromAst(x).simplify().tree)).eqls([...hvd]);
+        expect(stateVariables['/vd'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvd]);
 
-      expect(stateVariables['/vtd'].stateValues.tail.map(x => x.simplify())).eqls([...tvtd]);
-      expect(stateVariables['/vtd'].stateValues.head.map(x => x.simplify())).eqls([...hvtd]);
-      expect(stateVariables['/vtd'].stateValues.displacement.map(x => x.simplify())).eqls([...dvtd]);
+        expect(stateVariables['/vth'].stateValues.tail.map(x => me.fromAst(x).simplify().tree)).eqls([...tvth]);
+        expect(stateVariables['/vth'].stateValues.head.map(x => me.fromAst(x).simplify().tree)).eqls([...hvth]);
+        expect(stateVariables['/vth'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvth]);
 
-      expect(stateVariables['/vhd'].stateValues.tail.map(x => x.simplify())).eqls([...tvhd]);
-      expect(stateVariables['/vhd'].stateValues.head.map(x => x.simplify())).eqls([...hvhd]);
-      expect(stateVariables['/vhd'].stateValues.displacement.map(x => x.simplify())).eqls([...dvhd]);
+        expect(stateVariables['/vtd'].stateValues.tail.map(x => me.fromAst(x).simplify().tree)).eqls([...tvtd]);
+        expect(stateVariables['/vtd'].stateValues.head.map(x => me.fromAst(x).simplify().tree)).eqls([...hvtd]);
+        expect(stateVariables['/vtd'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvtd]);
 
-      expect(stateVariables['/tfvt'].stateValues.coords.simplify()).eqls(["vector", ...tvt]);
-      expect(stateVariables['/hfvt'].stateValues.coords.simplify()).eqls(["vector", ...hvt]);
-      expect(stateVariables['/dfvt'].stateValues.displacement.map(x => x.simplify())).eqls([...dvt]);
+        expect(stateVariables['/vhd'].stateValues.tail.map(x => me.fromAst(x).simplify().tree)).eqls([...tvhd]);
+        expect(stateVariables['/vhd'].stateValues.head.map(x => me.fromAst(x).simplify().tree)).eqls([...hvhd]);
+        expect(stateVariables['/vhd'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvhd]);
 
-      expect(stateVariables['/tfvh'].stateValues.coords.simplify()).eqls(["vector", ...tvh]);
-      expect(stateVariables['/hfvh'].stateValues.coords.simplify()).eqls(["vector", ...hvh]);
-      expect(stateVariables['/dfvh'].stateValues.displacement.map(x => x.simplify())).eqls([...dvh]);
+        expect(me.fromAst(stateVariables['/tfvt'].stateValues.coords).simplify().tree).eqls(["vector", ...tvt]);
+        expect(me.fromAst(stateVariables['/hfvt'].stateValues.coords).simplify().tree).eqls(["vector", ...hvt]);
+        expect(stateVariables['/dfvt'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvt]);
 
-      expect(stateVariables['/tfvd'].stateValues.coords.simplify()).eqls(["vector", ...tvd]);
-      expect(stateVariables['/hfvd'].stateValues.coords.simplify()).eqls(["vector", ...hvd]);
-      expect(stateVariables['/dfvd'].stateValues.displacement.map(x => x.simplify())).eqls([...dvd]);
+        expect(me.fromAst(stateVariables['/tfvh'].stateValues.coords).simplify().tree).eqls(["vector", ...tvh]);
+        expect(me.fromAst(stateVariables['/hfvh'].stateValues.coords).simplify().tree).eqls(["vector", ...hvh]);
+        expect(stateVariables['/dfvh'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvh]);
 
-      expect(stateVariables['/tfvth'].stateValues.coords.simplify()).eqls(["vector", ...tvth]);
-      expect(stateVariables['/hfvth'].stateValues.coords.simplify()).eqls(["vector", ...hvth]);
-      expect(stateVariables['/dfvth'].stateValues.displacement.map(x => x.simplify())).eqls([...dvth]);
+        expect(me.fromAst(stateVariables['/tfvd'].stateValues.coords).simplify().tree).eqls(["vector", ...tvd]);
+        expect(me.fromAst(stateVariables['/hfvd'].stateValues.coords).simplify().tree).eqls(["vector", ...hvd]);
+        expect(stateVariables['/dfvd'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvd]);
 
-      expect(stateVariables['/tfvtd'].stateValues.coords.simplify()).eqls(["vector", ...tvtd]);
-      expect(stateVariables['/hfvtd'].stateValues.coords.simplify()).eqls(["vector", ...hvtd]);
-      expect(stateVariables['/dfvtd'].stateValues.displacement.map(x => x.simplify())).eqls([...dvtd]);
+        expect(me.fromAst(stateVariables['/tfvth'].stateValues.coords).simplify().tree).eqls(["vector", ...tvth]);
+        expect(me.fromAst(stateVariables['/hfvth'].stateValues.coords).simplify().tree).eqls(["vector", ...hvth]);
+        expect(stateVariables['/dfvth'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvth]);
 
-      expect(stateVariables['/tfvhd'].stateValues.coords.simplify()).eqls(["vector", ...tvhd]);
-      expect(stateVariables['/hfvhd'].stateValues.coords.simplify()).eqls(["vector", ...hvhd]);
-      expect(stateVariables['/dfvhd'].stateValues.displacement.map(x => x.simplify())).eqls([...dvhd]);
+        expect(me.fromAst(stateVariables['/tfvtd'].stateValues.coords).simplify().tree).eqls(["vector", ...tvtd]);
+        expect(me.fromAst(stateVariables['/hfvtd'].stateValues.coords).simplify().tree).eqls(["vector", ...hvtd]);
+        expect(stateVariables['/dfvtd'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvtd]);
 
-      expect(stateVariables['/vt2'].stateValues.tail.map(x => x.simplify())).eqls([...tvt]);
-      expect(stateVariables['/vt2'].stateValues.head.map(x => x.simplify())).eqls([...hvt]);
-      expect(stateVariables['/vt2'].stateValues.displacement.map(x => x.simplify())).eqls([...dvt]);
+        expect(me.fromAst(stateVariables['/tfvhd'].stateValues.coords).simplify().tree).eqls(["vector", ...tvhd]);
+        expect(me.fromAst(stateVariables['/hfvhd'].stateValues.coords).simplify().tree).eqls(["vector", ...hvhd]);
+        expect(stateVariables['/dfvhd'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvhd]);
 
-      expect(stateVariables['/vh2'].stateValues.tail.map(x => x.simplify())).eqls([...tvh]);
-      expect(stateVariables['/vh2'].stateValues.head.map(x => x.simplify())).eqls([...hvh]);
-      expect(stateVariables['/vh2'].stateValues.displacement.map(x => x.simplify())).eqls([...dvh]);
+        expect(stateVariables['/vt2'].stateValues.tail.map(x => me.fromAst(x).simplify().tree)).eqls([...tvt]);
+        expect(stateVariables['/vt2'].stateValues.head.map(x => me.fromAst(x).simplify().tree)).eqls([...hvt]);
+        expect(stateVariables['/vt2'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvt]);
 
-      expect(stateVariables['/vd2'].stateValues.tail.map(x => x.simplify())).eqls([...tvd]);
-      expect(stateVariables['/vd2'].stateValues.head.map(x => x.simplify())).eqls([...hvd]);
-      expect(stateVariables['/vd2'].stateValues.displacement.map(x => x.simplify())).eqls([...dvd]);
+        expect(stateVariables['/vh2'].stateValues.tail.map(x => me.fromAst(x).simplify().tree)).eqls([...tvh]);
+        expect(stateVariables['/vh2'].stateValues.head.map(x => me.fromAst(x).simplify().tree)).eqls([...hvh]);
+        expect(stateVariables['/vh2'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvh]);
 
-      expect(stateVariables['/vth2'].stateValues.tail.map(x => x.simplify())).eqls([...tvth]);
-      expect(stateVariables['/vth2'].stateValues.head.map(x => x.simplify())).eqls([...hvth]);
-      expect(stateVariables['/vth2'].stateValues.displacement.map(x => x.simplify())).eqls([...dvth]);
+        expect(stateVariables['/vd2'].stateValues.tail.map(x => me.fromAst(x).simplify().tree)).eqls([...tvd]);
+        expect(stateVariables['/vd2'].stateValues.head.map(x => me.fromAst(x).simplify().tree)).eqls([...hvd]);
+        expect(stateVariables['/vd2'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvd]);
 
-      expect(stateVariables['/vtd2'].stateValues.tail.map(x => x.simplify())).eqls([...tvtd]);
-      expect(stateVariables['/vtd2'].stateValues.head.map(x => x.simplify())).eqls([...hvtd]);
-      expect(stateVariables['/vtd2'].stateValues.displacement.map(x => x.simplify())).eqls([...dvtd]);
+        expect(stateVariables['/vth2'].stateValues.tail.map(x => me.fromAst(x).simplify().tree)).eqls([...tvth]);
+        expect(stateVariables['/vth2'].stateValues.head.map(x => me.fromAst(x).simplify().tree)).eqls([...hvth]);
+        expect(stateVariables['/vth2'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvth]);
 
-      expect(stateVariables['/vhd2'].stateValues.tail.map(x => x.simplify())).eqls([...tvhd]);
-      expect(stateVariables['/vhd2'].stateValues.head.map(x => x.simplify())).eqls([...hvhd]);
-      expect(stateVariables['/vhd2'].stateValues.displacement.map(x => x.simplify())).eqls([...dvhd]);
+        expect(stateVariables['/vtd2'].stateValues.tail.map(x => me.fromAst(x).simplify().tree)).eqls([...tvtd]);
+        expect(stateVariables['/vtd2'].stateValues.head.map(x => me.fromAst(x).simplify().tree)).eqls([...hvtd]);
+        expect(stateVariables['/vtd2'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvtd]);
 
-      expect(stateVariables['/tfvt2'].stateValues.coords.simplify()).eqls(["vector", ...tvt]);
-      expect(stateVariables['/hfvt2'].stateValues.coords.simplify()).eqls(["vector", ...hvt]);
-      expect(stateVariables['/dfvt2'].stateValues.displacement.map(x => x.simplify())).eqls([...dvt]);
+        expect(stateVariables['/vhd2'].stateValues.tail.map(x => me.fromAst(x).simplify().tree)).eqls([...tvhd]);
+        expect(stateVariables['/vhd2'].stateValues.head.map(x => me.fromAst(x).simplify().tree)).eqls([...hvhd]);
+        expect(stateVariables['/vhd2'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvhd]);
 
-      expect(stateVariables['/tfvh2'].stateValues.coords.simplify()).eqls(["vector", ...tvh]);
-      expect(stateVariables['/hfvh2'].stateValues.coords.simplify()).eqls(["vector", ...hvh]);
-      expect(stateVariables['/dfvh2'].stateValues.displacement.map(x => x.simplify())).eqls([...dvh]);
+        expect(me.fromAst(stateVariables['/tfvt2'].stateValues.coords).simplify().tree).eqls(["vector", ...tvt]);
+        expect(me.fromAst(stateVariables['/hfvt2'].stateValues.coords).simplify().tree).eqls(["vector", ...hvt]);
+        expect(stateVariables['/dfvt2'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvt]);
 
-      expect(stateVariables['/tfvd2'].stateValues.coords.simplify()).eqls(["vector", ...tvd]);
-      expect(stateVariables['/hfvd2'].stateValues.coords.simplify()).eqls(["vector", ...hvd]);
-      expect(stateVariables['/dfvd2'].stateValues.displacement.map(x => x.simplify())).eqls([...dvd]);
+        expect(me.fromAst(stateVariables['/tfvh2'].stateValues.coords).simplify().tree).eqls(["vector", ...tvh]);
+        expect(me.fromAst(stateVariables['/hfvh2'].stateValues.coords).simplify().tree).eqls(["vector", ...hvh]);
+        expect(stateVariables['/dfvh2'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvh]);
 
-      expect(stateVariables['/tfvth2'].stateValues.coords.simplify()).eqls(["vector", ...tvth]);
-      expect(stateVariables['/hfvth2'].stateValues.coords.simplify()).eqls(["vector", ...hvth]);
-      expect(stateVariables['/dfvth2'].stateValues.displacement.map(x => x.simplify())).eqls([...dvth]);
+        expect(me.fromAst(stateVariables['/tfvd2'].stateValues.coords).simplify().tree).eqls(["vector", ...tvd]);
+        expect(me.fromAst(stateVariables['/hfvd2'].stateValues.coords).simplify().tree).eqls(["vector", ...hvd]);
+        expect(stateVariables['/dfvd2'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvd]);
 
-      expect(stateVariables['/tfvtd2'].stateValues.coords.simplify()).eqls(["vector", ...tvtd]);
-      expect(stateVariables['/hfvtd2'].stateValues.coords.simplify()).eqls(["vector", ...hvtd]);
-      expect(stateVariables['/dfvtd2'].stateValues.displacement.map(x => x.simplify())).eqls([...dvtd]);
+        expect(me.fromAst(stateVariables['/tfvth2'].stateValues.coords).simplify().tree).eqls(["vector", ...tvth]);
+        expect(me.fromAst(stateVariables['/hfvth2'].stateValues.coords).simplify().tree).eqls(["vector", ...hvth]);
+        expect(stateVariables['/dfvth2'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvth]);
 
-      expect(stateVariables['/tfvhd2'].stateValues.coords.simplify()).eqls(["vector", ...tvhd]);
-      expect(stateVariables['/hfvhd2'].stateValues.coords.simplify()).eqls(["vector", ...hvhd]);
-      expect(stateVariables['/dfvhd2'].stateValues.displacement.map(x => x.simplify())).eqls([...dvhd]);
+        expect(me.fromAst(stateVariables['/tfvtd2'].stateValues.coords).simplify().tree).eqls(["vector", ...tvtd]);
+        expect(me.fromAst(stateVariables['/hfvtd2'].stateValues.coords).simplify().tree).eqls(["vector", ...hvtd]);
+        expect(stateVariables['/dfvtd2'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvtd]);
 
+        expect(me.fromAst(stateVariables['/tfvhd2'].stateValues.coords).simplify().tree).eqls(["vector", ...tvhd]);
+        expect(me.fromAst(stateVariables['/hfvhd2'].stateValues.coords).simplify().tree).eqls(["vector", ...hvhd]);
+        expect(stateVariables['/dfvhd2'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvhd]);
+
+      })
     });
 
     cy.log("move tail of each copied vector directly")
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
 
       tvt = [1, 8];
       tvh = [-3, 2];
@@ -7050,12 +7267,39 @@ describe('Vector Tag Tests', function () {
       tvtd = [-4, -8];
       tvhd = [-1, 6];
 
-      await stateVariables['/vt2'].moveVector({ tailcoords: tvt })
-      await stateVariables['/vh2'].moveVector({ tailcoords: tvh })
-      await stateVariables['/vd2'].moveVector({ tailcoords: tvd })
-      await stateVariables['/vth2'].moveVector({ tailcoords: tvth })
-      await stateVariables['/vtd2'].moveVector({ tailcoords: tvtd })
-      await stateVariables['/vhd2'].moveVector({ tailcoords: tvhd })
+      win.callAction({
+        actionName: "moveVector",
+        componentName: '/vt2',
+        args: { tailcoords: tvt }
+      })
+      win.callAction({
+        actionName: "moveVector",
+        componentName: '/vh2',
+        args: { tailcoords: tvh }
+      })
+      win.callAction({
+        actionName: "moveVector",
+        componentName: '/vd2',
+        args: { tailcoords: tvd }
+      })
+      win.callAction({
+        actionName: "moveVector",
+        componentName: '/vth2',
+        args: { tailcoords: tvth }
+      })
+      win.callAction({
+        actionName: "moveVector",
+        componentName: '/vtd2',
+        args: { tailcoords: tvtd }
+      })
+      win.callAction({
+        actionName: "moveVector",
+        componentName: '/vhd2',
+        args: { tailcoords: tvhd }
+      })
+
+
+      cy.get('#\\/vhd2_tdom').should('contain.text', `(${nInDOM(tvhd[0])},${nInDOM(tvhd[1])})`)
 
       // since moved tails directly, heads stay fixed and displacement changes
       dvt = [hvt[0] - tvt[0], hvt[1] - tvt[1]];
@@ -7065,117 +7309,119 @@ describe('Vector Tag Tests', function () {
       dvtd = [hvtd[0] - tvtd[0], hvtd[1] - tvtd[1]];
       dvhd = [hvhd[0] - tvhd[0], hvhd[1] - tvhd[1]];
 
-      expect(stateVariables['/tvt'].stateValues.coords.simplify()).eqls(["vector", ...tvt]);
-      expect(stateVariables['/hvh'].stateValues.coords.simplify()).eqls(["vector", ...hvh]);
-      expect(stateVariables['/dvd'].stateValues.coords.simplify()).eqls(["vector", ...dvd]);
-      expect(stateVariables['/tvth'].stateValues.coords.simplify()).eqls(["vector", ...tvth]);
-      expect(stateVariables['/hvth'].stateValues.coords.simplify()).eqls(["vector", ...hvth]);
-      expect(stateVariables['/tvtd'].stateValues.coords.simplify()).eqls(["vector", ...tvtd]);
-      expect(stateVariables['/dvtd'].stateValues.coords.simplify()).eqls(["vector", ...dvtd]);
-      expect(stateVariables['/hvhd'].stateValues.coords.simplify()).eqls(["vector", ...hvhd]);
-      expect(stateVariables['/dvhd'].stateValues.coords.simplify()).eqls(["vector", ...dvhd]);
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables();
 
-      expect(stateVariables['/vt'].stateValues.tail.map(x => x.simplify())).eqls([...tvt]);
-      expect(stateVariables['/vt'].stateValues.head.map(x => x.simplify())).eqls([...hvt]);
-      expect(stateVariables['/vt'].stateValues.displacement.map(x => x.simplify())).eqls([...dvt]);
+        expect(me.fromAst(stateVariables['/tvt'].stateValues.coords).simplify().tree).eqls(["vector", ...tvt]);
+        expect(me.fromAst(stateVariables['/hvh'].stateValues.coords).simplify().tree).eqls(["vector", ...hvh]);
+        expect(me.fromAst(stateVariables['/dvd'].stateValues.coords).simplify().tree).eqls(["vector", ...dvd]);
+        expect(me.fromAst(stateVariables['/tvth'].stateValues.coords).simplify().tree).eqls(["vector", ...tvth]);
+        expect(me.fromAst(stateVariables['/hvth'].stateValues.coords).simplify().tree).eqls(["vector", ...hvth]);
+        expect(me.fromAst(stateVariables['/tvtd'].stateValues.coords).simplify().tree).eqls(["vector", ...tvtd]);
+        expect(me.fromAst(stateVariables['/dvtd'].stateValues.coords).simplify().tree).eqls(["vector", ...dvtd]);
+        expect(me.fromAst(stateVariables['/hvhd'].stateValues.coords).simplify().tree).eqls(["vector", ...hvhd]);
+        expect(me.fromAst(stateVariables['/dvhd'].stateValues.coords).simplify().tree).eqls(["vector", ...dvhd]);
 
-      expect(stateVariables['/vh'].stateValues.tail.map(x => x.simplify())).eqls([...tvh]);
-      expect(stateVariables['/vh'].stateValues.head.map(x => x.simplify())).eqls([...hvh]);
-      expect(stateVariables['/vh'].stateValues.displacement.map(x => x.simplify())).eqls([...dvh]);
+        expect(stateVariables['/vt'].stateValues.tail.map(x => me.fromAst(x).simplify().tree)).eqls([...tvt]);
+        expect(stateVariables['/vt'].stateValues.head.map(x => me.fromAst(x).simplify().tree)).eqls([...hvt]);
+        expect(stateVariables['/vt'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvt]);
 
-      expect(stateVariables['/vd'].stateValues.tail.map(x => x.simplify())).eqls([...tvd]);
-      expect(stateVariables['/vd'].stateValues.head.map(x => x.simplify())).eqls([...hvd]);
-      expect(stateVariables['/vd'].stateValues.displacement.map(x => x.simplify())).eqls([...dvd]);
+        expect(stateVariables['/vh'].stateValues.tail.map(x => me.fromAst(x).simplify().tree)).eqls([...tvh]);
+        expect(stateVariables['/vh'].stateValues.head.map(x => me.fromAst(x).simplify().tree)).eqls([...hvh]);
+        expect(stateVariables['/vh'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvh]);
 
-      expect(stateVariables['/vth'].stateValues.tail.map(x => x.simplify())).eqls([...tvth]);
-      expect(stateVariables['/vth'].stateValues.head.map(x => x.simplify())).eqls([...hvth]);
-      expect(stateVariables['/vth'].stateValues.displacement.map(x => x.simplify())).eqls([...dvth]);
+        expect(stateVariables['/vd'].stateValues.tail.map(x => me.fromAst(x).simplify().tree)).eqls([...tvd]);
+        expect(stateVariables['/vd'].stateValues.head.map(x => me.fromAst(x).simplify().tree)).eqls([...hvd]);
+        expect(stateVariables['/vd'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvd]);
 
-      expect(stateVariables['/vtd'].stateValues.tail.map(x => x.simplify())).eqls([...tvtd]);
-      expect(stateVariables['/vtd'].stateValues.head.map(x => x.simplify())).eqls([...hvtd]);
-      expect(stateVariables['/vtd'].stateValues.displacement.map(x => x.simplify())).eqls([...dvtd]);
+        expect(stateVariables['/vth'].stateValues.tail.map(x => me.fromAst(x).simplify().tree)).eqls([...tvth]);
+        expect(stateVariables['/vth'].stateValues.head.map(x => me.fromAst(x).simplify().tree)).eqls([...hvth]);
+        expect(stateVariables['/vth'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvth]);
 
-      expect(stateVariables['/vhd'].stateValues.tail.map(x => x.simplify())).eqls([...tvhd]);
-      expect(stateVariables['/vhd'].stateValues.head.map(x => x.simplify())).eqls([...hvhd]);
-      expect(stateVariables['/vhd'].stateValues.displacement.map(x => x.simplify())).eqls([...dvhd]);
+        expect(stateVariables['/vtd'].stateValues.tail.map(x => me.fromAst(x).simplify().tree)).eqls([...tvtd]);
+        expect(stateVariables['/vtd'].stateValues.head.map(x => me.fromAst(x).simplify().tree)).eqls([...hvtd]);
+        expect(stateVariables['/vtd'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvtd]);
 
-      expect(stateVariables['/tfvt'].stateValues.coords.simplify()).eqls(["vector", ...tvt]);
-      expect(stateVariables['/hfvt'].stateValues.coords.simplify()).eqls(["vector", ...hvt]);
-      expect(stateVariables['/dfvt'].stateValues.displacement.map(x => x.simplify())).eqls([...dvt]);
+        expect(stateVariables['/vhd'].stateValues.tail.map(x => me.fromAst(x).simplify().tree)).eqls([...tvhd]);
+        expect(stateVariables['/vhd'].stateValues.head.map(x => me.fromAst(x).simplify().tree)).eqls([...hvhd]);
+        expect(stateVariables['/vhd'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvhd]);
 
-      expect(stateVariables['/tfvh'].stateValues.coords.simplify()).eqls(["vector", ...tvh]);
-      expect(stateVariables['/hfvh'].stateValues.coords.simplify()).eqls(["vector", ...hvh]);
-      expect(stateVariables['/dfvh'].stateValues.displacement.map(x => x.simplify())).eqls([...dvh]);
+        expect(me.fromAst(stateVariables['/tfvt'].stateValues.coords).simplify().tree).eqls(["vector", ...tvt]);
+        expect(me.fromAst(stateVariables['/hfvt'].stateValues.coords).simplify().tree).eqls(["vector", ...hvt]);
+        expect(stateVariables['/dfvt'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvt]);
 
-      expect(stateVariables['/tfvd'].stateValues.coords.simplify()).eqls(["vector", ...tvd]);
-      expect(stateVariables['/hfvd'].stateValues.coords.simplify()).eqls(["vector", ...hvd]);
-      expect(stateVariables['/dfvd'].stateValues.displacement.map(x => x.simplify())).eqls([...dvd]);
+        expect(me.fromAst(stateVariables['/tfvh'].stateValues.coords).simplify().tree).eqls(["vector", ...tvh]);
+        expect(me.fromAst(stateVariables['/hfvh'].stateValues.coords).simplify().tree).eqls(["vector", ...hvh]);
+        expect(stateVariables['/dfvh'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvh]);
 
-      expect(stateVariables['/tfvth'].stateValues.coords.simplify()).eqls(["vector", ...tvth]);
-      expect(stateVariables['/hfvth'].stateValues.coords.simplify()).eqls(["vector", ...hvth]);
-      expect(stateVariables['/dfvth'].stateValues.displacement.map(x => x.simplify())).eqls([...dvth]);
+        expect(me.fromAst(stateVariables['/tfvd'].stateValues.coords).simplify().tree).eqls(["vector", ...tvd]);
+        expect(me.fromAst(stateVariables['/hfvd'].stateValues.coords).simplify().tree).eqls(["vector", ...hvd]);
+        expect(stateVariables['/dfvd'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvd]);
 
-      expect(stateVariables['/tfvtd'].stateValues.coords.simplify()).eqls(["vector", ...tvtd]);
-      expect(stateVariables['/hfvtd'].stateValues.coords.simplify()).eqls(["vector", ...hvtd]);
-      expect(stateVariables['/dfvtd'].stateValues.displacement.map(x => x.simplify())).eqls([...dvtd]);
+        expect(me.fromAst(stateVariables['/tfvth'].stateValues.coords).simplify().tree).eqls(["vector", ...tvth]);
+        expect(me.fromAst(stateVariables['/hfvth'].stateValues.coords).simplify().tree).eqls(["vector", ...hvth]);
+        expect(stateVariables['/dfvth'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvth]);
 
-      expect(stateVariables['/tfvhd'].stateValues.coords.simplify()).eqls(["vector", ...tvhd]);
-      expect(stateVariables['/hfvhd'].stateValues.coords.simplify()).eqls(["vector", ...hvhd]);
-      expect(stateVariables['/dfvhd'].stateValues.displacement.map(x => x.simplify())).eqls([...dvhd]);
+        expect(me.fromAst(stateVariables['/tfvtd'].stateValues.coords).simplify().tree).eqls(["vector", ...tvtd]);
+        expect(me.fromAst(stateVariables['/hfvtd'].stateValues.coords).simplify().tree).eqls(["vector", ...hvtd]);
+        expect(stateVariables['/dfvtd'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvtd]);
 
-      expect(stateVariables['/vt2'].stateValues.tail.map(x => x.simplify())).eqls([...tvt]);
-      expect(stateVariables['/vt2'].stateValues.head.map(x => x.simplify())).eqls([...hvt]);
-      expect(stateVariables['/vt2'].stateValues.displacement.map(x => x.simplify())).eqls([...dvt]);
+        expect(me.fromAst(stateVariables['/tfvhd'].stateValues.coords).simplify().tree).eqls(["vector", ...tvhd]);
+        expect(me.fromAst(stateVariables['/hfvhd'].stateValues.coords).simplify().tree).eqls(["vector", ...hvhd]);
+        expect(stateVariables['/dfvhd'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvhd]);
 
-      expect(stateVariables['/vh2'].stateValues.tail.map(x => x.simplify())).eqls([...tvh]);
-      expect(stateVariables['/vh2'].stateValues.head.map(x => x.simplify())).eqls([...hvh]);
-      expect(stateVariables['/vh2'].stateValues.displacement.map(x => x.simplify())).eqls([...dvh]);
+        expect(stateVariables['/vt2'].stateValues.tail.map(x => me.fromAst(x).simplify().tree)).eqls([...tvt]);
+        expect(stateVariables['/vt2'].stateValues.head.map(x => me.fromAst(x).simplify().tree)).eqls([...hvt]);
+        expect(stateVariables['/vt2'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvt]);
 
-      expect(stateVariables['/vd2'].stateValues.tail.map(x => x.simplify())).eqls([...tvd]);
-      expect(stateVariables['/vd2'].stateValues.head.map(x => x.simplify())).eqls([...hvd]);
-      expect(stateVariables['/vd2'].stateValues.displacement.map(x => x.simplify())).eqls([...dvd]);
+        expect(stateVariables['/vh2'].stateValues.tail.map(x => me.fromAst(x).simplify().tree)).eqls([...tvh]);
+        expect(stateVariables['/vh2'].stateValues.head.map(x => me.fromAst(x).simplify().tree)).eqls([...hvh]);
+        expect(stateVariables['/vh2'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvh]);
 
-      expect(stateVariables['/vth2'].stateValues.tail.map(x => x.simplify())).eqls([...tvth]);
-      expect(stateVariables['/vth2'].stateValues.head.map(x => x.simplify())).eqls([...hvth]);
-      expect(stateVariables['/vth2'].stateValues.displacement.map(x => x.simplify())).eqls([...dvth]);
+        expect(stateVariables['/vd2'].stateValues.tail.map(x => me.fromAst(x).simplify().tree)).eqls([...tvd]);
+        expect(stateVariables['/vd2'].stateValues.head.map(x => me.fromAst(x).simplify().tree)).eqls([...hvd]);
+        expect(stateVariables['/vd2'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvd]);
 
-      expect(stateVariables['/vtd2'].stateValues.tail.map(x => x.simplify())).eqls([...tvtd]);
-      expect(stateVariables['/vtd2'].stateValues.head.map(x => x.simplify())).eqls([...hvtd]);
-      expect(stateVariables['/vtd2'].stateValues.displacement.map(x => x.simplify())).eqls([...dvtd]);
+        expect(stateVariables['/vth2'].stateValues.tail.map(x => me.fromAst(x).simplify().tree)).eqls([...tvth]);
+        expect(stateVariables['/vth2'].stateValues.head.map(x => me.fromAst(x).simplify().tree)).eqls([...hvth]);
+        expect(stateVariables['/vth2'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvth]);
 
-      expect(stateVariables['/vhd2'].stateValues.tail.map(x => x.simplify())).eqls([...tvhd]);
-      expect(stateVariables['/vhd2'].stateValues.head.map(x => x.simplify())).eqls([...hvhd]);
-      expect(stateVariables['/vhd2'].stateValues.displacement.map(x => x.simplify())).eqls([...dvhd]);
+        expect(stateVariables['/vtd2'].stateValues.tail.map(x => me.fromAst(x).simplify().tree)).eqls([...tvtd]);
+        expect(stateVariables['/vtd2'].stateValues.head.map(x => me.fromAst(x).simplify().tree)).eqls([...hvtd]);
+        expect(stateVariables['/vtd2'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvtd]);
 
-      expect(stateVariables['/tfvt2'].stateValues.coords.simplify()).eqls(["vector", ...tvt]);
-      expect(stateVariables['/hfvt2'].stateValues.coords.simplify()).eqls(["vector", ...hvt]);
-      expect(stateVariables['/dfvt2'].stateValues.displacement.map(x => x.simplify())).eqls([...dvt]);
+        expect(stateVariables['/vhd2'].stateValues.tail.map(x => me.fromAst(x).simplify().tree)).eqls([...tvhd]);
+        expect(stateVariables['/vhd2'].stateValues.head.map(x => me.fromAst(x).simplify().tree)).eqls([...hvhd]);
+        expect(stateVariables['/vhd2'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvhd]);
 
-      expect(stateVariables['/tfvh2'].stateValues.coords.simplify()).eqls(["vector", ...tvh]);
-      expect(stateVariables['/hfvh2'].stateValues.coords.simplify()).eqls(["vector", ...hvh]);
-      expect(stateVariables['/dfvh2'].stateValues.displacement.map(x => x.simplify())).eqls([...dvh]);
+        expect(me.fromAst(stateVariables['/tfvt2'].stateValues.coords).simplify().tree).eqls(["vector", ...tvt]);
+        expect(me.fromAst(stateVariables['/hfvt2'].stateValues.coords).simplify().tree).eqls(["vector", ...hvt]);
+        expect(stateVariables['/dfvt2'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvt]);
 
-      expect(stateVariables['/tfvd2'].stateValues.coords.simplify()).eqls(["vector", ...tvd]);
-      expect(stateVariables['/hfvd2'].stateValues.coords.simplify()).eqls(["vector", ...hvd]);
-      expect(stateVariables['/dfvd2'].stateValues.displacement.map(x => x.simplify())).eqls([...dvd]);
+        expect(me.fromAst(stateVariables['/tfvh2'].stateValues.coords).simplify().tree).eqls(["vector", ...tvh]);
+        expect(me.fromAst(stateVariables['/hfvh2'].stateValues.coords).simplify().tree).eqls(["vector", ...hvh]);
+        expect(stateVariables['/dfvh2'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvh]);
 
-      expect(stateVariables['/tfvth2'].stateValues.coords.simplify()).eqls(["vector", ...tvth]);
-      expect(stateVariables['/hfvth2'].stateValues.coords.simplify()).eqls(["vector", ...hvth]);
-      expect(stateVariables['/dfvth2'].stateValues.displacement.map(x => x.simplify())).eqls([...dvth]);
+        expect(me.fromAst(stateVariables['/tfvd2'].stateValues.coords).simplify().tree).eqls(["vector", ...tvd]);
+        expect(me.fromAst(stateVariables['/hfvd2'].stateValues.coords).simplify().tree).eqls(["vector", ...hvd]);
+        expect(stateVariables['/dfvd2'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvd]);
 
-      expect(stateVariables['/tfvtd2'].stateValues.coords.simplify()).eqls(["vector", ...tvtd]);
-      expect(stateVariables['/hfvtd2'].stateValues.coords.simplify()).eqls(["vector", ...hvtd]);
-      expect(stateVariables['/dfvtd2'].stateValues.displacement.map(x => x.simplify())).eqls([...dvtd]);
+        expect(me.fromAst(stateVariables['/tfvth2'].stateValues.coords).simplify().tree).eqls(["vector", ...tvth]);
+        expect(me.fromAst(stateVariables['/hfvth2'].stateValues.coords).simplify().tree).eqls(["vector", ...hvth]);
+        expect(stateVariables['/dfvth2'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvth]);
 
-      expect(stateVariables['/tfvhd2'].stateValues.coords.simplify()).eqls(["vector", ...tvhd]);
-      expect(stateVariables['/hfvhd2'].stateValues.coords.simplify()).eqls(["vector", ...hvhd]);
-      expect(stateVariables['/dfvhd2'].stateValues.displacement.map(x => x.simplify())).eqls([...dvhd]);
+        expect(me.fromAst(stateVariables['/tfvtd2'].stateValues.coords).simplify().tree).eqls(["vector", ...tvtd]);
+        expect(me.fromAst(stateVariables['/hfvtd2'].stateValues.coords).simplify().tree).eqls(["vector", ...hvtd]);
+        expect(stateVariables['/dfvtd2'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvtd]);
 
+        expect(me.fromAst(stateVariables['/tfvhd2'].stateValues.coords).simplify().tree).eqls(["vector", ...tvhd]);
+        expect(me.fromAst(stateVariables['/hfvhd2'].stateValues.coords).simplify().tree).eqls(["vector", ...hvhd]);
+        expect(stateVariables['/dfvhd2'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvhd]);
+      })
     });
 
     cy.log("move head of each copied vector directly")
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
 
       hvt = [-7, 2];
       hvh = [-2, 9];
@@ -7184,12 +7430,40 @@ describe('Vector Tag Tests', function () {
       hvtd = [7, 0];
       hvhd = [-8, -4];
 
-      await stateVariables['/vt2'].moveVector({ headcoords: hvt })
-      await stateVariables['/vh2'].moveVector({ headcoords: hvh })
-      await stateVariables['/vd2'].moveVector({ headcoords: hvd })
-      await stateVariables['/vth2'].moveVector({ headcoords: hvth })
-      await stateVariables['/vtd2'].moveVector({ headcoords: hvtd })
-      await stateVariables['/vhd2'].moveVector({ headcoords: hvhd })
+
+      win.callAction({
+        actionName: "moveVector",
+        componentName: '/vt2',
+        args: { headcoords: hvt }
+      })
+      win.callAction({
+        actionName: "moveVector",
+        componentName: '/vh2',
+        args: { headcoords: hvh }
+      })
+      win.callAction({
+        actionName: "moveVector",
+        componentName: '/vd2',
+        args: { headcoords: hvd }
+      })
+      win.callAction({
+        actionName: "moveVector",
+        componentName: '/vth2',
+        args: { headcoords: hvth }
+      })
+      win.callAction({
+        actionName: "moveVector",
+        componentName: '/vtd2',
+        args: { headcoords: hvtd }
+      })
+      win.callAction({
+        actionName: "moveVector",
+        componentName: '/vhd2',
+        args: { headcoords: hvhd }
+      })
+
+
+      cy.get('#\\/vhd2_hdom').should('contain.text', `(${nInDOM(hvhd[0])},${nInDOM(hvhd[1])})`)
 
       // since moved heads directly, tails stay fixed and displacement changes
       dvt = [hvt[0] - tvt[0], hvt[1] - tvt[1]];
@@ -7199,117 +7473,119 @@ describe('Vector Tag Tests', function () {
       dvtd = [hvtd[0] - tvtd[0], hvtd[1] - tvtd[1]];
       dvhd = [hvhd[0] - tvhd[0], hvhd[1] - tvhd[1]];
 
-      expect(stateVariables['/tvt'].stateValues.coords.simplify()).eqls(["vector", ...tvt]);
-      expect(stateVariables['/hvh'].stateValues.coords.simplify()).eqls(["vector", ...hvh]);
-      expect(stateVariables['/dvd'].stateValues.coords.simplify()).eqls(["vector", ...dvd]);
-      expect(stateVariables['/tvth'].stateValues.coords.simplify()).eqls(["vector", ...tvth]);
-      expect(stateVariables['/hvth'].stateValues.coords.simplify()).eqls(["vector", ...hvth]);
-      expect(stateVariables['/tvtd'].stateValues.coords.simplify()).eqls(["vector", ...tvtd]);
-      expect(stateVariables['/dvtd'].stateValues.coords.simplify()).eqls(["vector", ...dvtd]);
-      expect(stateVariables['/hvhd'].stateValues.coords.simplify()).eqls(["vector", ...hvhd]);
-      expect(stateVariables['/dvhd'].stateValues.coords.simplify()).eqls(["vector", ...dvhd]);
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables();
 
-      expect(stateVariables['/vt'].stateValues.tail.map(x => x.simplify())).eqls([...tvt]);
-      expect(stateVariables['/vt'].stateValues.head.map(x => x.simplify())).eqls([...hvt]);
-      expect(stateVariables['/vt'].stateValues.displacement.map(x => x.simplify())).eqls([...dvt]);
+        expect(me.fromAst(stateVariables['/tvt'].stateValues.coords).simplify().tree).eqls(["vector", ...tvt]);
+        expect(me.fromAst(stateVariables['/hvh'].stateValues.coords).simplify().tree).eqls(["vector", ...hvh]);
+        expect(me.fromAst(stateVariables['/dvd'].stateValues.coords).simplify().tree).eqls(["vector", ...dvd]);
+        expect(me.fromAst(stateVariables['/tvth'].stateValues.coords).simplify().tree).eqls(["vector", ...tvth]);
+        expect(me.fromAst(stateVariables['/hvth'].stateValues.coords).simplify().tree).eqls(["vector", ...hvth]);
+        expect(me.fromAst(stateVariables['/tvtd'].stateValues.coords).simplify().tree).eqls(["vector", ...tvtd]);
+        expect(me.fromAst(stateVariables['/dvtd'].stateValues.coords).simplify().tree).eqls(["vector", ...dvtd]);
+        expect(me.fromAst(stateVariables['/hvhd'].stateValues.coords).simplify().tree).eqls(["vector", ...hvhd]);
+        expect(me.fromAst(stateVariables['/dvhd'].stateValues.coords).simplify().tree).eqls(["vector", ...dvhd]);
 
-      expect(stateVariables['/vh'].stateValues.tail.map(x => x.simplify())).eqls([...tvh]);
-      expect(stateVariables['/vh'].stateValues.head.map(x => x.simplify())).eqls([...hvh]);
-      expect(stateVariables['/vh'].stateValues.displacement.map(x => x.simplify())).eqls([...dvh]);
+        expect(stateVariables['/vt'].stateValues.tail.map(x => me.fromAst(x).simplify().tree)).eqls([...tvt]);
+        expect(stateVariables['/vt'].stateValues.head.map(x => me.fromAst(x).simplify().tree)).eqls([...hvt]);
+        expect(stateVariables['/vt'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvt]);
 
-      expect(stateVariables['/vd'].stateValues.tail.map(x => x.simplify())).eqls([...tvd]);
-      expect(stateVariables['/vd'].stateValues.head.map(x => x.simplify())).eqls([...hvd]);
-      expect(stateVariables['/vd'].stateValues.displacement.map(x => x.simplify())).eqls([...dvd]);
+        expect(stateVariables['/vh'].stateValues.tail.map(x => me.fromAst(x).simplify().tree)).eqls([...tvh]);
+        expect(stateVariables['/vh'].stateValues.head.map(x => me.fromAst(x).simplify().tree)).eqls([...hvh]);
+        expect(stateVariables['/vh'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvh]);
 
-      expect(stateVariables['/vth'].stateValues.tail.map(x => x.simplify())).eqls([...tvth]);
-      expect(stateVariables['/vth'].stateValues.head.map(x => x.simplify())).eqls([...hvth]);
-      expect(stateVariables['/vth'].stateValues.displacement.map(x => x.simplify())).eqls([...dvth]);
+        expect(stateVariables['/vd'].stateValues.tail.map(x => me.fromAst(x).simplify().tree)).eqls([...tvd]);
+        expect(stateVariables['/vd'].stateValues.head.map(x => me.fromAst(x).simplify().tree)).eqls([...hvd]);
+        expect(stateVariables['/vd'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvd]);
 
-      expect(stateVariables['/vtd'].stateValues.tail.map(x => x.simplify())).eqls([...tvtd]);
-      expect(stateVariables['/vtd'].stateValues.head.map(x => x.simplify())).eqls([...hvtd]);
-      expect(stateVariables['/vtd'].stateValues.displacement.map(x => x.simplify())).eqls([...dvtd]);
+        expect(stateVariables['/vth'].stateValues.tail.map(x => me.fromAst(x).simplify().tree)).eqls([...tvth]);
+        expect(stateVariables['/vth'].stateValues.head.map(x => me.fromAst(x).simplify().tree)).eqls([...hvth]);
+        expect(stateVariables['/vth'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvth]);
 
-      expect(stateVariables['/vhd'].stateValues.tail.map(x => x.simplify())).eqls([...tvhd]);
-      expect(stateVariables['/vhd'].stateValues.head.map(x => x.simplify())).eqls([...hvhd]);
-      expect(stateVariables['/vhd'].stateValues.displacement.map(x => x.simplify())).eqls([...dvhd]);
+        expect(stateVariables['/vtd'].stateValues.tail.map(x => me.fromAst(x).simplify().tree)).eqls([...tvtd]);
+        expect(stateVariables['/vtd'].stateValues.head.map(x => me.fromAst(x).simplify().tree)).eqls([...hvtd]);
+        expect(stateVariables['/vtd'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvtd]);
 
-      expect(stateVariables['/tfvt'].stateValues.coords.simplify()).eqls(["vector", ...tvt]);
-      expect(stateVariables['/hfvt'].stateValues.coords.simplify()).eqls(["vector", ...hvt]);
-      expect(stateVariables['/dfvt'].stateValues.displacement.map(x => x.simplify())).eqls([...dvt]);
+        expect(stateVariables['/vhd'].stateValues.tail.map(x => me.fromAst(x).simplify().tree)).eqls([...tvhd]);
+        expect(stateVariables['/vhd'].stateValues.head.map(x => me.fromAst(x).simplify().tree)).eqls([...hvhd]);
+        expect(stateVariables['/vhd'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvhd]);
 
-      expect(stateVariables['/tfvh'].stateValues.coords.simplify()).eqls(["vector", ...tvh]);
-      expect(stateVariables['/hfvh'].stateValues.coords.simplify()).eqls(["vector", ...hvh]);
-      expect(stateVariables['/dfvh'].stateValues.displacement.map(x => x.simplify())).eqls([...dvh]);
+        expect(me.fromAst(stateVariables['/tfvt'].stateValues.coords).simplify().tree).eqls(["vector", ...tvt]);
+        expect(me.fromAst(stateVariables['/hfvt'].stateValues.coords).simplify().tree).eqls(["vector", ...hvt]);
+        expect(stateVariables['/dfvt'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvt]);
 
-      expect(stateVariables['/tfvd'].stateValues.coords.simplify()).eqls(["vector", ...tvd]);
-      expect(stateVariables['/hfvd'].stateValues.coords.simplify()).eqls(["vector", ...hvd]);
-      expect(stateVariables['/dfvd'].stateValues.displacement.map(x => x.simplify())).eqls([...dvd]);
+        expect(me.fromAst(stateVariables['/tfvh'].stateValues.coords).simplify().tree).eqls(["vector", ...tvh]);
+        expect(me.fromAst(stateVariables['/hfvh'].stateValues.coords).simplify().tree).eqls(["vector", ...hvh]);
+        expect(stateVariables['/dfvh'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvh]);
 
-      expect(stateVariables['/tfvth'].stateValues.coords.simplify()).eqls(["vector", ...tvth]);
-      expect(stateVariables['/hfvth'].stateValues.coords.simplify()).eqls(["vector", ...hvth]);
-      expect(stateVariables['/dfvth'].stateValues.displacement.map(x => x.simplify())).eqls([...dvth]);
+        expect(me.fromAst(stateVariables['/tfvd'].stateValues.coords).simplify().tree).eqls(["vector", ...tvd]);
+        expect(me.fromAst(stateVariables['/hfvd'].stateValues.coords).simplify().tree).eqls(["vector", ...hvd]);
+        expect(stateVariables['/dfvd'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvd]);
 
-      expect(stateVariables['/tfvtd'].stateValues.coords.simplify()).eqls(["vector", ...tvtd]);
-      expect(stateVariables['/hfvtd'].stateValues.coords.simplify()).eqls(["vector", ...hvtd]);
-      expect(stateVariables['/dfvtd'].stateValues.displacement.map(x => x.simplify())).eqls([...dvtd]);
+        expect(me.fromAst(stateVariables['/tfvth'].stateValues.coords).simplify().tree).eqls(["vector", ...tvth]);
+        expect(me.fromAst(stateVariables['/hfvth'].stateValues.coords).simplify().tree).eqls(["vector", ...hvth]);
+        expect(stateVariables['/dfvth'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvth]);
 
-      expect(stateVariables['/tfvhd'].stateValues.coords.simplify()).eqls(["vector", ...tvhd]);
-      expect(stateVariables['/hfvhd'].stateValues.coords.simplify()).eqls(["vector", ...hvhd]);
-      expect(stateVariables['/dfvhd'].stateValues.displacement.map(x => x.simplify())).eqls([...dvhd]);
+        expect(me.fromAst(stateVariables['/tfvtd'].stateValues.coords).simplify().tree).eqls(["vector", ...tvtd]);
+        expect(me.fromAst(stateVariables['/hfvtd'].stateValues.coords).simplify().tree).eqls(["vector", ...hvtd]);
+        expect(stateVariables['/dfvtd'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvtd]);
 
-      expect(stateVariables['/vt2'].stateValues.tail.map(x => x.simplify())).eqls([...tvt]);
-      expect(stateVariables['/vt2'].stateValues.head.map(x => x.simplify())).eqls([...hvt]);
-      expect(stateVariables['/vt2'].stateValues.displacement.map(x => x.simplify())).eqls([...dvt]);
+        expect(me.fromAst(stateVariables['/tfvhd'].stateValues.coords).simplify().tree).eqls(["vector", ...tvhd]);
+        expect(me.fromAst(stateVariables['/hfvhd'].stateValues.coords).simplify().tree).eqls(["vector", ...hvhd]);
+        expect(stateVariables['/dfvhd'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvhd]);
 
-      expect(stateVariables['/vh2'].stateValues.tail.map(x => x.simplify())).eqls([...tvh]);
-      expect(stateVariables['/vh2'].stateValues.head.map(x => x.simplify())).eqls([...hvh]);
-      expect(stateVariables['/vh2'].stateValues.displacement.map(x => x.simplify())).eqls([...dvh]);
+        expect(stateVariables['/vt2'].stateValues.tail.map(x => me.fromAst(x).simplify().tree)).eqls([...tvt]);
+        expect(stateVariables['/vt2'].stateValues.head.map(x => me.fromAst(x).simplify().tree)).eqls([...hvt]);
+        expect(stateVariables['/vt2'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvt]);
 
-      expect(stateVariables['/vd2'].stateValues.tail.map(x => x.simplify())).eqls([...tvd]);
-      expect(stateVariables['/vd2'].stateValues.head.map(x => x.simplify())).eqls([...hvd]);
-      expect(stateVariables['/vd2'].stateValues.displacement.map(x => x.simplify())).eqls([...dvd]);
+        expect(stateVariables['/vh2'].stateValues.tail.map(x => me.fromAst(x).simplify().tree)).eqls([...tvh]);
+        expect(stateVariables['/vh2'].stateValues.head.map(x => me.fromAst(x).simplify().tree)).eqls([...hvh]);
+        expect(stateVariables['/vh2'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvh]);
 
-      expect(stateVariables['/vth2'].stateValues.tail.map(x => x.simplify())).eqls([...tvth]);
-      expect(stateVariables['/vth2'].stateValues.head.map(x => x.simplify())).eqls([...hvth]);
-      expect(stateVariables['/vth2'].stateValues.displacement.map(x => x.simplify())).eqls([...dvth]);
+        expect(stateVariables['/vd2'].stateValues.tail.map(x => me.fromAst(x).simplify().tree)).eqls([...tvd]);
+        expect(stateVariables['/vd2'].stateValues.head.map(x => me.fromAst(x).simplify().tree)).eqls([...hvd]);
+        expect(stateVariables['/vd2'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvd]);
 
-      expect(stateVariables['/vtd2'].stateValues.tail.map(x => x.simplify())).eqls([...tvtd]);
-      expect(stateVariables['/vtd2'].stateValues.head.map(x => x.simplify())).eqls([...hvtd]);
-      expect(stateVariables['/vtd2'].stateValues.displacement.map(x => x.simplify())).eqls([...dvtd]);
+        expect(stateVariables['/vth2'].stateValues.tail.map(x => me.fromAst(x).simplify().tree)).eqls([...tvth]);
+        expect(stateVariables['/vth2'].stateValues.head.map(x => me.fromAst(x).simplify().tree)).eqls([...hvth]);
+        expect(stateVariables['/vth2'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvth]);
 
-      expect(stateVariables['/vhd2'].stateValues.tail.map(x => x.simplify())).eqls([...tvhd]);
-      expect(stateVariables['/vhd2'].stateValues.head.map(x => x.simplify())).eqls([...hvhd]);
-      expect(stateVariables['/vhd2'].stateValues.displacement.map(x => x.simplify())).eqls([...dvhd]);
+        expect(stateVariables['/vtd2'].stateValues.tail.map(x => me.fromAst(x).simplify().tree)).eqls([...tvtd]);
+        expect(stateVariables['/vtd2'].stateValues.head.map(x => me.fromAst(x).simplify().tree)).eqls([...hvtd]);
+        expect(stateVariables['/vtd2'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvtd]);
 
-      expect(stateVariables['/tfvt2'].stateValues.coords.simplify()).eqls(["vector", ...tvt]);
-      expect(stateVariables['/hfvt2'].stateValues.coords.simplify()).eqls(["vector", ...hvt]);
-      expect(stateVariables['/dfvt2'].stateValues.displacement.map(x => x.simplify())).eqls([...dvt]);
+        expect(stateVariables['/vhd2'].stateValues.tail.map(x => me.fromAst(x).simplify().tree)).eqls([...tvhd]);
+        expect(stateVariables['/vhd2'].stateValues.head.map(x => me.fromAst(x).simplify().tree)).eqls([...hvhd]);
+        expect(stateVariables['/vhd2'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvhd]);
 
-      expect(stateVariables['/tfvh2'].stateValues.coords.simplify()).eqls(["vector", ...tvh]);
-      expect(stateVariables['/hfvh2'].stateValues.coords.simplify()).eqls(["vector", ...hvh]);
-      expect(stateVariables['/dfvh2'].stateValues.displacement.map(x => x.simplify())).eqls([...dvh]);
+        expect(me.fromAst(stateVariables['/tfvt2'].stateValues.coords).simplify().tree).eqls(["vector", ...tvt]);
+        expect(me.fromAst(stateVariables['/hfvt2'].stateValues.coords).simplify().tree).eqls(["vector", ...hvt]);
+        expect(stateVariables['/dfvt2'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvt]);
 
-      expect(stateVariables['/tfvd2'].stateValues.coords.simplify()).eqls(["vector", ...tvd]);
-      expect(stateVariables['/hfvd2'].stateValues.coords.simplify()).eqls(["vector", ...hvd]);
-      expect(stateVariables['/dfvd2'].stateValues.displacement.map(x => x.simplify())).eqls([...dvd]);
+        expect(me.fromAst(stateVariables['/tfvh2'].stateValues.coords).simplify().tree).eqls(["vector", ...tvh]);
+        expect(me.fromAst(stateVariables['/hfvh2'].stateValues.coords).simplify().tree).eqls(["vector", ...hvh]);
+        expect(stateVariables['/dfvh2'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvh]);
 
-      expect(stateVariables['/tfvth2'].stateValues.coords.simplify()).eqls(["vector", ...tvth]);
-      expect(stateVariables['/hfvth2'].stateValues.coords.simplify()).eqls(["vector", ...hvth]);
-      expect(stateVariables['/dfvth2'].stateValues.displacement.map(x => x.simplify())).eqls([...dvth]);
+        expect(me.fromAst(stateVariables['/tfvd2'].stateValues.coords).simplify().tree).eqls(["vector", ...tvd]);
+        expect(me.fromAst(stateVariables['/hfvd2'].stateValues.coords).simplify().tree).eqls(["vector", ...hvd]);
+        expect(stateVariables['/dfvd2'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvd]);
 
-      expect(stateVariables['/tfvtd2'].stateValues.coords.simplify()).eqls(["vector", ...tvtd]);
-      expect(stateVariables['/hfvtd2'].stateValues.coords.simplify()).eqls(["vector", ...hvtd]);
-      expect(stateVariables['/dfvtd2'].stateValues.displacement.map(x => x.simplify())).eqls([...dvtd]);
+        expect(me.fromAst(stateVariables['/tfvth2'].stateValues.coords).simplify().tree).eqls(["vector", ...tvth]);
+        expect(me.fromAst(stateVariables['/hfvth2'].stateValues.coords).simplify().tree).eqls(["vector", ...hvth]);
+        expect(stateVariables['/dfvth2'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvth]);
 
-      expect(stateVariables['/tfvhd2'].stateValues.coords.simplify()).eqls(["vector", ...tvhd]);
-      expect(stateVariables['/hfvhd2'].stateValues.coords.simplify()).eqls(["vector", ...hvhd]);
-      expect(stateVariables['/dfvhd2'].stateValues.displacement.map(x => x.simplify())).eqls([...dvhd]);
+        expect(me.fromAst(stateVariables['/tfvtd2'].stateValues.coords).simplify().tree).eqls(["vector", ...tvtd]);
+        expect(me.fromAst(stateVariables['/hfvtd2'].stateValues.coords).simplify().tree).eqls(["vector", ...hvtd]);
+        expect(stateVariables['/dfvtd2'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvtd]);
 
+        expect(me.fromAst(stateVariables['/tfvhd2'].stateValues.coords).simplify().tree).eqls(["vector", ...tvhd]);
+        expect(me.fromAst(stateVariables['/hfvhd2'].stateValues.coords).simplify().tree).eqls(["vector", ...hvhd]);
+        expect(stateVariables['/dfvhd2'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvhd]);
+      })
     });
 
     cy.log("move tail of each copied vector through copied point")
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
 
       tvt = [1, -1];
       tvh = [9, -9];
@@ -7318,12 +7594,41 @@ describe('Vector Tag Tests', function () {
       tvtd = [-1, 7];
       tvhd = [-6, 6];
 
-      await stateVariables['/tfvt2'].movePoint({ x: tvt[0], y: tvt[1] })
-      await stateVariables['/tfvh2'].movePoint({ x: tvh[0], y: tvh[1] })
-      await stateVariables['/tfvd2'].movePoint({ x: tvd[0], y: tvd[1] })
-      await stateVariables['/tfvth2'].movePoint({ x: tvth[0], y: tvth[1] })
-      await stateVariables['/tfvtd2'].movePoint({ x: tvtd[0], y: tvtd[1] })
-      await stateVariables['/tfvhd2'].movePoint({ x: tvhd[0], y: tvhd[1] })
+
+      win.callAction({
+        actionName: "movePoint",
+        componentName: "/tfvt2",
+        args: { x: tvt[0], y: tvt[1] }
+      })
+      win.callAction({
+        actionName: "movePoint",
+        componentName: "/tfvh2",
+        args: { x: tvh[0], y: tvh[1] }
+      })
+      win.callAction({
+        actionName: "movePoint",
+        componentName: "/tfvd2",
+        args: { x: tvd[0], y: tvd[1] }
+      })
+      win.callAction({
+        actionName: "movePoint",
+        componentName: "/tfvth2",
+        args: { x: tvth[0], y: tvth[1] }
+      })
+      win.callAction({
+        actionName: "movePoint",
+        componentName: "/tfvtd2",
+        args: { x: tvtd[0], y: tvtd[1] }
+      })
+      win.callAction({
+        actionName: "movePoint",
+        componentName: "/tfvhd2",
+        args: { x: tvhd[0], y: tvhd[1] }
+      })
+
+
+      cy.get('#\\/tfvhd2_dom').should('contain.text', `(${nInDOM(tvhd[0])},${nInDOM(tvhd[1])}`)
+
 
       // if defined by head, head stays fixed and displacement changes
       dvh = [hvh[0] - tvh[0], hvh[1] - tvh[1]];
@@ -7336,117 +7641,119 @@ describe('Vector Tag Tests', function () {
       hvd = [tvd[0] + dvd[0], tvd[1] + dvd[1]];
       hvtd = [tvtd[0] + dvtd[0], tvtd[1] + dvtd[1]];
 
-      expect(stateVariables['/tvt'].stateValues.coords.simplify()).eqls(["vector", ...tvt]);
-      expect(stateVariables['/hvh'].stateValues.coords.simplify()).eqls(["vector", ...hvh]);
-      expect(stateVariables['/dvd'].stateValues.coords.simplify()).eqls(["vector", ...dvd]);
-      expect(stateVariables['/tvth'].stateValues.coords.simplify()).eqls(["vector", ...tvth]);
-      expect(stateVariables['/hvth'].stateValues.coords.simplify()).eqls(["vector", ...hvth]);
-      expect(stateVariables['/tvtd'].stateValues.coords.simplify()).eqls(["vector", ...tvtd]);
-      expect(stateVariables['/dvtd'].stateValues.coords.simplify()).eqls(["vector", ...dvtd]);
-      expect(stateVariables['/hvhd'].stateValues.coords.simplify()).eqls(["vector", ...hvhd]);
-      expect(stateVariables['/dvhd'].stateValues.coords.simplify()).eqls(["vector", ...dvhd]);
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables();
 
-      expect(stateVariables['/vt'].stateValues.tail.map(x => x.simplify())).eqls([...tvt]);
-      expect(stateVariables['/vt'].stateValues.head.map(x => x.simplify())).eqls([...hvt]);
-      expect(stateVariables['/vt'].stateValues.displacement.map(x => x.simplify())).eqls([...dvt]);
+        expect(me.fromAst(stateVariables['/tvt'].stateValues.coords).simplify().tree).eqls(["vector", ...tvt]);
+        expect(me.fromAst(stateVariables['/hvh'].stateValues.coords).simplify().tree).eqls(["vector", ...hvh]);
+        expect(me.fromAst(stateVariables['/dvd'].stateValues.coords).simplify().tree).eqls(["vector", ...dvd]);
+        expect(me.fromAst(stateVariables['/tvth'].stateValues.coords).simplify().tree).eqls(["vector", ...tvth]);
+        expect(me.fromAst(stateVariables['/hvth'].stateValues.coords).simplify().tree).eqls(["vector", ...hvth]);
+        expect(me.fromAst(stateVariables['/tvtd'].stateValues.coords).simplify().tree).eqls(["vector", ...tvtd]);
+        expect(me.fromAst(stateVariables['/dvtd'].stateValues.coords).simplify().tree).eqls(["vector", ...dvtd]);
+        expect(me.fromAst(stateVariables['/hvhd'].stateValues.coords).simplify().tree).eqls(["vector", ...hvhd]);
+        expect(me.fromAst(stateVariables['/dvhd'].stateValues.coords).simplify().tree).eqls(["vector", ...dvhd]);
 
-      expect(stateVariables['/vh'].stateValues.tail.map(x => x.simplify())).eqls([...tvh]);
-      expect(stateVariables['/vh'].stateValues.head.map(x => x.simplify())).eqls([...hvh]);
-      expect(stateVariables['/vh'].stateValues.displacement.map(x => x.simplify())).eqls([...dvh]);
+        expect(stateVariables['/vt'].stateValues.tail.map(x => me.fromAst(x).simplify().tree)).eqls([...tvt]);
+        expect(stateVariables['/vt'].stateValues.head.map(x => me.fromAst(x).simplify().tree)).eqls([...hvt]);
+        expect(stateVariables['/vt'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvt]);
 
-      expect(stateVariables['/vd'].stateValues.tail.map(x => x.simplify())).eqls([...tvd]);
-      expect(stateVariables['/vd'].stateValues.head.map(x => x.simplify())).eqls([...hvd]);
-      expect(stateVariables['/vd'].stateValues.displacement.map(x => x.simplify())).eqls([...dvd]);
+        expect(stateVariables['/vh'].stateValues.tail.map(x => me.fromAst(x).simplify().tree)).eqls([...tvh]);
+        expect(stateVariables['/vh'].stateValues.head.map(x => me.fromAst(x).simplify().tree)).eqls([...hvh]);
+        expect(stateVariables['/vh'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvh]);
 
-      expect(stateVariables['/vth'].stateValues.tail.map(x => x.simplify())).eqls([...tvth]);
-      expect(stateVariables['/vth'].stateValues.head.map(x => x.simplify())).eqls([...hvth]);
-      expect(stateVariables['/vth'].stateValues.displacement.map(x => x.simplify())).eqls([...dvth]);
+        expect(stateVariables['/vd'].stateValues.tail.map(x => me.fromAst(x).simplify().tree)).eqls([...tvd]);
+        expect(stateVariables['/vd'].stateValues.head.map(x => me.fromAst(x).simplify().tree)).eqls([...hvd]);
+        expect(stateVariables['/vd'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvd]);
 
-      expect(stateVariables['/vtd'].stateValues.tail.map(x => x.simplify())).eqls([...tvtd]);
-      expect(stateVariables['/vtd'].stateValues.head.map(x => x.simplify())).eqls([...hvtd]);
-      expect(stateVariables['/vtd'].stateValues.displacement.map(x => x.simplify())).eqls([...dvtd]);
+        expect(stateVariables['/vth'].stateValues.tail.map(x => me.fromAst(x).simplify().tree)).eqls([...tvth]);
+        expect(stateVariables['/vth'].stateValues.head.map(x => me.fromAst(x).simplify().tree)).eqls([...hvth]);
+        expect(stateVariables['/vth'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvth]);
 
-      expect(stateVariables['/vhd'].stateValues.tail.map(x => x.simplify())).eqls([...tvhd]);
-      expect(stateVariables['/vhd'].stateValues.head.map(x => x.simplify())).eqls([...hvhd]);
-      expect(stateVariables['/vhd'].stateValues.displacement.map(x => x.simplify())).eqls([...dvhd]);
+        expect(stateVariables['/vtd'].stateValues.tail.map(x => me.fromAst(x).simplify().tree)).eqls([...tvtd]);
+        expect(stateVariables['/vtd'].stateValues.head.map(x => me.fromAst(x).simplify().tree)).eqls([...hvtd]);
+        expect(stateVariables['/vtd'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvtd]);
 
-      expect(stateVariables['/tfvt'].stateValues.coords.simplify()).eqls(["vector", ...tvt]);
-      expect(stateVariables['/hfvt'].stateValues.coords.simplify()).eqls(["vector", ...hvt]);
-      expect(stateVariables['/dfvt'].stateValues.displacement.map(x => x.simplify())).eqls([...dvt]);
+        expect(stateVariables['/vhd'].stateValues.tail.map(x => me.fromAst(x).simplify().tree)).eqls([...tvhd]);
+        expect(stateVariables['/vhd'].stateValues.head.map(x => me.fromAst(x).simplify().tree)).eqls([...hvhd]);
+        expect(stateVariables['/vhd'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvhd]);
 
-      expect(stateVariables['/tfvh'].stateValues.coords.simplify()).eqls(["vector", ...tvh]);
-      expect(stateVariables['/hfvh'].stateValues.coords.simplify()).eqls(["vector", ...hvh]);
-      expect(stateVariables['/dfvh'].stateValues.displacement.map(x => x.simplify())).eqls([...dvh]);
+        expect(me.fromAst(stateVariables['/tfvt'].stateValues.coords).simplify().tree).eqls(["vector", ...tvt]);
+        expect(me.fromAst(stateVariables['/hfvt'].stateValues.coords).simplify().tree).eqls(["vector", ...hvt]);
+        expect(stateVariables['/dfvt'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvt]);
 
-      expect(stateVariables['/tfvd'].stateValues.coords.simplify()).eqls(["vector", ...tvd]);
-      expect(stateVariables['/hfvd'].stateValues.coords.simplify()).eqls(["vector", ...hvd]);
-      expect(stateVariables['/dfvd'].stateValues.displacement.map(x => x.simplify())).eqls([...dvd]);
+        expect(me.fromAst(stateVariables['/tfvh'].stateValues.coords).simplify().tree).eqls(["vector", ...tvh]);
+        expect(me.fromAst(stateVariables['/hfvh'].stateValues.coords).simplify().tree).eqls(["vector", ...hvh]);
+        expect(stateVariables['/dfvh'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvh]);
 
-      expect(stateVariables['/tfvth'].stateValues.coords.simplify()).eqls(["vector", ...tvth]);
-      expect(stateVariables['/hfvth'].stateValues.coords.simplify()).eqls(["vector", ...hvth]);
-      expect(stateVariables['/dfvth'].stateValues.displacement.map(x => x.simplify())).eqls([...dvth]);
+        expect(me.fromAst(stateVariables['/tfvd'].stateValues.coords).simplify().tree).eqls(["vector", ...tvd]);
+        expect(me.fromAst(stateVariables['/hfvd'].stateValues.coords).simplify().tree).eqls(["vector", ...hvd]);
+        expect(stateVariables['/dfvd'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvd]);
 
-      expect(stateVariables['/tfvtd'].stateValues.coords.simplify()).eqls(["vector", ...tvtd]);
-      expect(stateVariables['/hfvtd'].stateValues.coords.simplify()).eqls(["vector", ...hvtd]);
-      expect(stateVariables['/dfvtd'].stateValues.displacement.map(x => x.simplify())).eqls([...dvtd]);
+        expect(me.fromAst(stateVariables['/tfvth'].stateValues.coords).simplify().tree).eqls(["vector", ...tvth]);
+        expect(me.fromAst(stateVariables['/hfvth'].stateValues.coords).simplify().tree).eqls(["vector", ...hvth]);
+        expect(stateVariables['/dfvth'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvth]);
 
-      expect(stateVariables['/tfvhd'].stateValues.coords.simplify()).eqls(["vector", ...tvhd]);
-      expect(stateVariables['/hfvhd'].stateValues.coords.simplify()).eqls(["vector", ...hvhd]);
-      expect(stateVariables['/dfvhd'].stateValues.displacement.map(x => x.simplify())).eqls([...dvhd]);
+        expect(me.fromAst(stateVariables['/tfvtd'].stateValues.coords).simplify().tree).eqls(["vector", ...tvtd]);
+        expect(me.fromAst(stateVariables['/hfvtd'].stateValues.coords).simplify().tree).eqls(["vector", ...hvtd]);
+        expect(stateVariables['/dfvtd'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvtd]);
 
-      expect(stateVariables['/vt2'].stateValues.tail.map(x => x.simplify())).eqls([...tvt]);
-      expect(stateVariables['/vt2'].stateValues.head.map(x => x.simplify())).eqls([...hvt]);
-      expect(stateVariables['/vt2'].stateValues.displacement.map(x => x.simplify())).eqls([...dvt]);
+        expect(me.fromAst(stateVariables['/tfvhd'].stateValues.coords).simplify().tree).eqls(["vector", ...tvhd]);
+        expect(me.fromAst(stateVariables['/hfvhd'].stateValues.coords).simplify().tree).eqls(["vector", ...hvhd]);
+        expect(stateVariables['/dfvhd'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvhd]);
 
-      expect(stateVariables['/vh2'].stateValues.tail.map(x => x.simplify())).eqls([...tvh]);
-      expect(stateVariables['/vh2'].stateValues.head.map(x => x.simplify())).eqls([...hvh]);
-      expect(stateVariables['/vh2'].stateValues.displacement.map(x => x.simplify())).eqls([...dvh]);
+        expect(stateVariables['/vt2'].stateValues.tail.map(x => me.fromAst(x).simplify().tree)).eqls([...tvt]);
+        expect(stateVariables['/vt2'].stateValues.head.map(x => me.fromAst(x).simplify().tree)).eqls([...hvt]);
+        expect(stateVariables['/vt2'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvt]);
 
-      expect(stateVariables['/vd2'].stateValues.tail.map(x => x.simplify())).eqls([...tvd]);
-      expect(stateVariables['/vd2'].stateValues.head.map(x => x.simplify())).eqls([...hvd]);
-      expect(stateVariables['/vd2'].stateValues.displacement.map(x => x.simplify())).eqls([...dvd]);
+        expect(stateVariables['/vh2'].stateValues.tail.map(x => me.fromAst(x).simplify().tree)).eqls([...tvh]);
+        expect(stateVariables['/vh2'].stateValues.head.map(x => me.fromAst(x).simplify().tree)).eqls([...hvh]);
+        expect(stateVariables['/vh2'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvh]);
 
-      expect(stateVariables['/vth2'].stateValues.tail.map(x => x.simplify())).eqls([...tvth]);
-      expect(stateVariables['/vth2'].stateValues.head.map(x => x.simplify())).eqls([...hvth]);
-      expect(stateVariables['/vth2'].stateValues.displacement.map(x => x.simplify())).eqls([...dvth]);
+        expect(stateVariables['/vd2'].stateValues.tail.map(x => me.fromAst(x).simplify().tree)).eqls([...tvd]);
+        expect(stateVariables['/vd2'].stateValues.head.map(x => me.fromAst(x).simplify().tree)).eqls([...hvd]);
+        expect(stateVariables['/vd2'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvd]);
 
-      expect(stateVariables['/vtd2'].stateValues.tail.map(x => x.simplify())).eqls([...tvtd]);
-      expect(stateVariables['/vtd2'].stateValues.head.map(x => x.simplify())).eqls([...hvtd]);
-      expect(stateVariables['/vtd2'].stateValues.displacement.map(x => x.simplify())).eqls([...dvtd]);
+        expect(stateVariables['/vth2'].stateValues.tail.map(x => me.fromAst(x).simplify().tree)).eqls([...tvth]);
+        expect(stateVariables['/vth2'].stateValues.head.map(x => me.fromAst(x).simplify().tree)).eqls([...hvth]);
+        expect(stateVariables['/vth2'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvth]);
 
-      expect(stateVariables['/vhd2'].stateValues.tail.map(x => x.simplify())).eqls([...tvhd]);
-      expect(stateVariables['/vhd2'].stateValues.head.map(x => x.simplify())).eqls([...hvhd]);
-      expect(stateVariables['/vhd2'].stateValues.displacement.map(x => x.simplify())).eqls([...dvhd]);
+        expect(stateVariables['/vtd2'].stateValues.tail.map(x => me.fromAst(x).simplify().tree)).eqls([...tvtd]);
+        expect(stateVariables['/vtd2'].stateValues.head.map(x => me.fromAst(x).simplify().tree)).eqls([...hvtd]);
+        expect(stateVariables['/vtd2'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvtd]);
 
-      expect(stateVariables['/tfvt2'].stateValues.coords.simplify()).eqls(["vector", ...tvt]);
-      expect(stateVariables['/hfvt2'].stateValues.coords.simplify()).eqls(["vector", ...hvt]);
-      expect(stateVariables['/dfvt2'].stateValues.displacement.map(x => x.simplify())).eqls([...dvt]);
+        expect(stateVariables['/vhd2'].stateValues.tail.map(x => me.fromAst(x).simplify().tree)).eqls([...tvhd]);
+        expect(stateVariables['/vhd2'].stateValues.head.map(x => me.fromAst(x).simplify().tree)).eqls([...hvhd]);
+        expect(stateVariables['/vhd2'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvhd]);
 
-      expect(stateVariables['/tfvh2'].stateValues.coords.simplify()).eqls(["vector", ...tvh]);
-      expect(stateVariables['/hfvh2'].stateValues.coords.simplify()).eqls(["vector", ...hvh]);
-      expect(stateVariables['/dfvh2'].stateValues.displacement.map(x => x.simplify())).eqls([...dvh]);
+        expect(me.fromAst(stateVariables['/tfvt2'].stateValues.coords).simplify().tree).eqls(["vector", ...tvt]);
+        expect(me.fromAst(stateVariables['/hfvt2'].stateValues.coords).simplify().tree).eqls(["vector", ...hvt]);
+        expect(stateVariables['/dfvt2'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvt]);
 
-      expect(stateVariables['/tfvd2'].stateValues.coords.simplify()).eqls(["vector", ...tvd]);
-      expect(stateVariables['/hfvd2'].stateValues.coords.simplify()).eqls(["vector", ...hvd]);
-      expect(stateVariables['/dfvd2'].stateValues.displacement.map(x => x.simplify())).eqls([...dvd]);
+        expect(me.fromAst(stateVariables['/tfvh2'].stateValues.coords).simplify().tree).eqls(["vector", ...tvh]);
+        expect(me.fromAst(stateVariables['/hfvh2'].stateValues.coords).simplify().tree).eqls(["vector", ...hvh]);
+        expect(stateVariables['/dfvh2'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvh]);
 
-      expect(stateVariables['/tfvth2'].stateValues.coords.simplify()).eqls(["vector", ...tvth]);
-      expect(stateVariables['/hfvth2'].stateValues.coords.simplify()).eqls(["vector", ...hvth]);
-      expect(stateVariables['/dfvth2'].stateValues.displacement.map(x => x.simplify())).eqls([...dvth]);
+        expect(me.fromAst(stateVariables['/tfvd2'].stateValues.coords).simplify().tree).eqls(["vector", ...tvd]);
+        expect(me.fromAst(stateVariables['/hfvd2'].stateValues.coords).simplify().tree).eqls(["vector", ...hvd]);
+        expect(stateVariables['/dfvd2'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvd]);
 
-      expect(stateVariables['/tfvtd2'].stateValues.coords.simplify()).eqls(["vector", ...tvtd]);
-      expect(stateVariables['/hfvtd2'].stateValues.coords.simplify()).eqls(["vector", ...hvtd]);
-      expect(stateVariables['/dfvtd2'].stateValues.displacement.map(x => x.simplify())).eqls([...dvtd]);
+        expect(me.fromAst(stateVariables['/tfvth2'].stateValues.coords).simplify().tree).eqls(["vector", ...tvth]);
+        expect(me.fromAst(stateVariables['/hfvth2'].stateValues.coords).simplify().tree).eqls(["vector", ...hvth]);
+        expect(stateVariables['/dfvth2'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvth]);
 
-      expect(stateVariables['/tfvhd2'].stateValues.coords.simplify()).eqls(["vector", ...tvhd]);
-      expect(stateVariables['/hfvhd2'].stateValues.coords.simplify()).eqls(["vector", ...hvhd]);
-      expect(stateVariables['/dfvhd2'].stateValues.displacement.map(x => x.simplify())).eqls([...dvhd]);
+        expect(me.fromAst(stateVariables['/tfvtd2'].stateValues.coords).simplify().tree).eqls(["vector", ...tvtd]);
+        expect(me.fromAst(stateVariables['/hfvtd2'].stateValues.coords).simplify().tree).eqls(["vector", ...hvtd]);
+        expect(stateVariables['/dfvtd2'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvtd]);
 
+        expect(me.fromAst(stateVariables['/tfvhd2'].stateValues.coords).simplify().tree).eqls(["vector", ...tvhd]);
+        expect(me.fromAst(stateVariables['/hfvhd2'].stateValues.coords).simplify().tree).eqls(["vector", ...hvhd]);
+        expect(stateVariables['/dfvhd2'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvhd]);
+      })
     });
 
     cy.log("move head of each copied vector through copied point")
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
 
       hvt = [-6, -8];
       hvh = [2, -2];
@@ -7455,12 +7762,40 @@ describe('Vector Tag Tests', function () {
       hvtd = [3, 8];
       hvhd = [-1, 5];
 
-      await stateVariables['/hfvt2'].movePoint({ x: hvt[0], y: hvt[1] })
-      await stateVariables['/hfvh2'].movePoint({ x: hvh[0], y: hvh[1] })
-      await stateVariables['/hfvd2'].movePoint({ x: hvd[0], y: hvd[1] })
-      await stateVariables['/hfvth2'].movePoint({ x: hvth[0], y: hvth[1] })
-      await stateVariables['/hfvtd2'].movePoint({ x: hvtd[0], y: hvtd[1] })
-      await stateVariables['/hfvhd2'].movePoint({ x: hvhd[0], y: hvhd[1] })
+
+      win.callAction({
+        actionName: "movePoint",
+        componentName: "/hfvt2",
+        args: { x: hvt[0], y: hvt[1] }
+      })
+      win.callAction({
+        actionName: "movePoint",
+        componentName: "/hfvh2",
+        args: { x: hvh[0], y: hvh[1] }
+      })
+      win.callAction({
+        actionName: "movePoint",
+        componentName: "/hfvd2",
+        args: { x: hvd[0], y: hvd[1] }
+      })
+      win.callAction({
+        actionName: "movePoint",
+        componentName: "/hfvth2",
+        args: { x: hvth[0], y: hvth[1] }
+      })
+      win.callAction({
+        actionName: "movePoint",
+        componentName: "/hfvtd2",
+        args: { x: hvtd[0], y: hvtd[1] }
+      })
+      win.callAction({
+        actionName: "movePoint",
+        componentName: "/hfvhd2",
+        args: { x: hvhd[0], y: hvhd[1] }
+      })
+
+      cy.get('#\\/hfvhd2_dom').should('contain.text', `(${nInDOM(hvhd[0])},${nInDOM(hvhd[1])})`)
+
 
       // for most vectors, tails stay fixed and displacement changes
       dvt = [hvt[0] - tvt[0], hvt[1] - tvt[1]];
@@ -7472,117 +7807,119 @@ describe('Vector Tag Tests', function () {
       // defined by head and displacement, displacement stays fixed and tail changes
       tvhd = [hvhd[0] - dvhd[0], hvhd[1] - dvhd[1]];
 
-      expect(stateVariables['/tvt'].stateValues.coords.simplify()).eqls(["vector", ...tvt]);
-      expect(stateVariables['/hvh'].stateValues.coords.simplify()).eqls(["vector", ...hvh]);
-      expect(stateVariables['/dvd'].stateValues.coords.simplify()).eqls(["vector", ...dvd]);
-      expect(stateVariables['/tvth'].stateValues.coords.simplify()).eqls(["vector", ...tvth]);
-      expect(stateVariables['/hvth'].stateValues.coords.simplify()).eqls(["vector", ...hvth]);
-      expect(stateVariables['/tvtd'].stateValues.coords.simplify()).eqls(["vector", ...tvtd]);
-      expect(stateVariables['/dvtd'].stateValues.coords.simplify()).eqls(["vector", ...dvtd]);
-      expect(stateVariables['/hvhd'].stateValues.coords.simplify()).eqls(["vector", ...hvhd]);
-      expect(stateVariables['/dvhd'].stateValues.coords.simplify()).eqls(["vector", ...dvhd]);
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables();
 
-      expect(stateVariables['/vt'].stateValues.tail.map(x => x.simplify())).eqls([...tvt]);
-      expect(stateVariables['/vt'].stateValues.head.map(x => x.simplify())).eqls([...hvt]);
-      expect(stateVariables['/vt'].stateValues.displacement.map(x => x.simplify())).eqls([...dvt]);
+        expect(me.fromAst(stateVariables['/tvt'].stateValues.coords).simplify().tree).eqls(["vector", ...tvt]);
+        expect(me.fromAst(stateVariables['/hvh'].stateValues.coords).simplify().tree).eqls(["vector", ...hvh]);
+        expect(me.fromAst(stateVariables['/dvd'].stateValues.coords).simplify().tree).eqls(["vector", ...dvd]);
+        expect(me.fromAst(stateVariables['/tvth'].stateValues.coords).simplify().tree).eqls(["vector", ...tvth]);
+        expect(me.fromAst(stateVariables['/hvth'].stateValues.coords).simplify().tree).eqls(["vector", ...hvth]);
+        expect(me.fromAst(stateVariables['/tvtd'].stateValues.coords).simplify().tree).eqls(["vector", ...tvtd]);
+        expect(me.fromAst(stateVariables['/dvtd'].stateValues.coords).simplify().tree).eqls(["vector", ...dvtd]);
+        expect(me.fromAst(stateVariables['/hvhd'].stateValues.coords).simplify().tree).eqls(["vector", ...hvhd]);
+        expect(me.fromAst(stateVariables['/dvhd'].stateValues.coords).simplify().tree).eqls(["vector", ...dvhd]);
 
-      expect(stateVariables['/vh'].stateValues.tail.map(x => x.simplify())).eqls([...tvh]);
-      expect(stateVariables['/vh'].stateValues.head.map(x => x.simplify())).eqls([...hvh]);
-      expect(stateVariables['/vh'].stateValues.displacement.map(x => x.simplify())).eqls([...dvh]);
+        expect(stateVariables['/vt'].stateValues.tail.map(x => me.fromAst(x).simplify().tree)).eqls([...tvt]);
+        expect(stateVariables['/vt'].stateValues.head.map(x => me.fromAst(x).simplify().tree)).eqls([...hvt]);
+        expect(stateVariables['/vt'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvt]);
 
-      expect(stateVariables['/vd'].stateValues.tail.map(x => x.simplify())).eqls([...tvd]);
-      expect(stateVariables['/vd'].stateValues.head.map(x => x.simplify())).eqls([...hvd]);
-      expect(stateVariables['/vd'].stateValues.displacement.map(x => x.simplify())).eqls([...dvd]);
+        expect(stateVariables['/vh'].stateValues.tail.map(x => me.fromAst(x).simplify().tree)).eqls([...tvh]);
+        expect(stateVariables['/vh'].stateValues.head.map(x => me.fromAst(x).simplify().tree)).eqls([...hvh]);
+        expect(stateVariables['/vh'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvh]);
 
-      expect(stateVariables['/vth'].stateValues.tail.map(x => x.simplify())).eqls([...tvth]);
-      expect(stateVariables['/vth'].stateValues.head.map(x => x.simplify())).eqls([...hvth]);
-      expect(stateVariables['/vth'].stateValues.displacement.map(x => x.simplify())).eqls([...dvth]);
+        expect(stateVariables['/vd'].stateValues.tail.map(x => me.fromAst(x).simplify().tree)).eqls([...tvd]);
+        expect(stateVariables['/vd'].stateValues.head.map(x => me.fromAst(x).simplify().tree)).eqls([...hvd]);
+        expect(stateVariables['/vd'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvd]);
 
-      expect(stateVariables['/vtd'].stateValues.tail.map(x => x.simplify())).eqls([...tvtd]);
-      expect(stateVariables['/vtd'].stateValues.head.map(x => x.simplify())).eqls([...hvtd]);
-      expect(stateVariables['/vtd'].stateValues.displacement.map(x => x.simplify())).eqls([...dvtd]);
+        expect(stateVariables['/vth'].stateValues.tail.map(x => me.fromAst(x).simplify().tree)).eqls([...tvth]);
+        expect(stateVariables['/vth'].stateValues.head.map(x => me.fromAst(x).simplify().tree)).eqls([...hvth]);
+        expect(stateVariables['/vth'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvth]);
 
-      expect(stateVariables['/vhd'].stateValues.tail.map(x => x.simplify())).eqls([...tvhd]);
-      expect(stateVariables['/vhd'].stateValues.head.map(x => x.simplify())).eqls([...hvhd]);
-      expect(stateVariables['/vhd'].stateValues.displacement.map(x => x.simplify())).eqls([...dvhd]);
+        expect(stateVariables['/vtd'].stateValues.tail.map(x => me.fromAst(x).simplify().tree)).eqls([...tvtd]);
+        expect(stateVariables['/vtd'].stateValues.head.map(x => me.fromAst(x).simplify().tree)).eqls([...hvtd]);
+        expect(stateVariables['/vtd'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvtd]);
 
-      expect(stateVariables['/tfvt'].stateValues.coords.simplify()).eqls(["vector", ...tvt]);
-      expect(stateVariables['/hfvt'].stateValues.coords.simplify()).eqls(["vector", ...hvt]);
-      expect(stateVariables['/dfvt'].stateValues.displacement.map(x => x.simplify())).eqls([...dvt]);
+        expect(stateVariables['/vhd'].stateValues.tail.map(x => me.fromAst(x).simplify().tree)).eqls([...tvhd]);
+        expect(stateVariables['/vhd'].stateValues.head.map(x => me.fromAst(x).simplify().tree)).eqls([...hvhd]);
+        expect(stateVariables['/vhd'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvhd]);
 
-      expect(stateVariables['/tfvh'].stateValues.coords.simplify()).eqls(["vector", ...tvh]);
-      expect(stateVariables['/hfvh'].stateValues.coords.simplify()).eqls(["vector", ...hvh]);
-      expect(stateVariables['/dfvh'].stateValues.displacement.map(x => x.simplify())).eqls([...dvh]);
+        expect(me.fromAst(stateVariables['/tfvt'].stateValues.coords).simplify().tree).eqls(["vector", ...tvt]);
+        expect(me.fromAst(stateVariables['/hfvt'].stateValues.coords).simplify().tree).eqls(["vector", ...hvt]);
+        expect(stateVariables['/dfvt'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvt]);
 
-      expect(stateVariables['/tfvd'].stateValues.coords.simplify()).eqls(["vector", ...tvd]);
-      expect(stateVariables['/hfvd'].stateValues.coords.simplify()).eqls(["vector", ...hvd]);
-      expect(stateVariables['/dfvd'].stateValues.displacement.map(x => x.simplify())).eqls([...dvd]);
+        expect(me.fromAst(stateVariables['/tfvh'].stateValues.coords).simplify().tree).eqls(["vector", ...tvh]);
+        expect(me.fromAst(stateVariables['/hfvh'].stateValues.coords).simplify().tree).eqls(["vector", ...hvh]);
+        expect(stateVariables['/dfvh'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvh]);
 
-      expect(stateVariables['/tfvth'].stateValues.coords.simplify()).eqls(["vector", ...tvth]);
-      expect(stateVariables['/hfvth'].stateValues.coords.simplify()).eqls(["vector", ...hvth]);
-      expect(stateVariables['/dfvth'].stateValues.displacement.map(x => x.simplify())).eqls([...dvth]);
+        expect(me.fromAst(stateVariables['/tfvd'].stateValues.coords).simplify().tree).eqls(["vector", ...tvd]);
+        expect(me.fromAst(stateVariables['/hfvd'].stateValues.coords).simplify().tree).eqls(["vector", ...hvd]);
+        expect(stateVariables['/dfvd'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvd]);
 
-      expect(stateVariables['/tfvtd'].stateValues.coords.simplify()).eqls(["vector", ...tvtd]);
-      expect(stateVariables['/hfvtd'].stateValues.coords.simplify()).eqls(["vector", ...hvtd]);
-      expect(stateVariables['/dfvtd'].stateValues.displacement.map(x => x.simplify())).eqls([...dvtd]);
+        expect(me.fromAst(stateVariables['/tfvth'].stateValues.coords).simplify().tree).eqls(["vector", ...tvth]);
+        expect(me.fromAst(stateVariables['/hfvth'].stateValues.coords).simplify().tree).eqls(["vector", ...hvth]);
+        expect(stateVariables['/dfvth'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvth]);
 
-      expect(stateVariables['/tfvhd'].stateValues.coords.simplify()).eqls(["vector", ...tvhd]);
-      expect(stateVariables['/hfvhd'].stateValues.coords.simplify()).eqls(["vector", ...hvhd]);
-      expect(stateVariables['/dfvhd'].stateValues.displacement.map(x => x.simplify())).eqls([...dvhd]);
+        expect(me.fromAst(stateVariables['/tfvtd'].stateValues.coords).simplify().tree).eqls(["vector", ...tvtd]);
+        expect(me.fromAst(stateVariables['/hfvtd'].stateValues.coords).simplify().tree).eqls(["vector", ...hvtd]);
+        expect(stateVariables['/dfvtd'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvtd]);
 
-      expect(stateVariables['/vt2'].stateValues.tail.map(x => x.simplify())).eqls([...tvt]);
-      expect(stateVariables['/vt2'].stateValues.head.map(x => x.simplify())).eqls([...hvt]);
-      expect(stateVariables['/vt2'].stateValues.displacement.map(x => x.simplify())).eqls([...dvt]);
+        expect(me.fromAst(stateVariables['/tfvhd'].stateValues.coords).simplify().tree).eqls(["vector", ...tvhd]);
+        expect(me.fromAst(stateVariables['/hfvhd'].stateValues.coords).simplify().tree).eqls(["vector", ...hvhd]);
+        expect(stateVariables['/dfvhd'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvhd]);
 
-      expect(stateVariables['/vh2'].stateValues.tail.map(x => x.simplify())).eqls([...tvh]);
-      expect(stateVariables['/vh2'].stateValues.head.map(x => x.simplify())).eqls([...hvh]);
-      expect(stateVariables['/vh2'].stateValues.displacement.map(x => x.simplify())).eqls([...dvh]);
+        expect(stateVariables['/vt2'].stateValues.tail.map(x => me.fromAst(x).simplify().tree)).eqls([...tvt]);
+        expect(stateVariables['/vt2'].stateValues.head.map(x => me.fromAst(x).simplify().tree)).eqls([...hvt]);
+        expect(stateVariables['/vt2'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvt]);
 
-      expect(stateVariables['/vd2'].stateValues.tail.map(x => x.simplify())).eqls([...tvd]);
-      expect(stateVariables['/vd2'].stateValues.head.map(x => x.simplify())).eqls([...hvd]);
-      expect(stateVariables['/vd2'].stateValues.displacement.map(x => x.simplify())).eqls([...dvd]);
+        expect(stateVariables['/vh2'].stateValues.tail.map(x => me.fromAst(x).simplify().tree)).eqls([...tvh]);
+        expect(stateVariables['/vh2'].stateValues.head.map(x => me.fromAst(x).simplify().tree)).eqls([...hvh]);
+        expect(stateVariables['/vh2'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvh]);
 
-      expect(stateVariables['/vth2'].stateValues.tail.map(x => x.simplify())).eqls([...tvth]);
-      expect(stateVariables['/vth2'].stateValues.head.map(x => x.simplify())).eqls([...hvth]);
-      expect(stateVariables['/vth2'].stateValues.displacement.map(x => x.simplify())).eqls([...dvth]);
+        expect(stateVariables['/vd2'].stateValues.tail.map(x => me.fromAst(x).simplify().tree)).eqls([...tvd]);
+        expect(stateVariables['/vd2'].stateValues.head.map(x => me.fromAst(x).simplify().tree)).eqls([...hvd]);
+        expect(stateVariables['/vd2'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvd]);
 
-      expect(stateVariables['/vtd2'].stateValues.tail.map(x => x.simplify())).eqls([...tvtd]);
-      expect(stateVariables['/vtd2'].stateValues.head.map(x => x.simplify())).eqls([...hvtd]);
-      expect(stateVariables['/vtd2'].stateValues.displacement.map(x => x.simplify())).eqls([...dvtd]);
+        expect(stateVariables['/vth2'].stateValues.tail.map(x => me.fromAst(x).simplify().tree)).eqls([...tvth]);
+        expect(stateVariables['/vth2'].stateValues.head.map(x => me.fromAst(x).simplify().tree)).eqls([...hvth]);
+        expect(stateVariables['/vth2'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvth]);
 
-      expect(stateVariables['/vhd2'].stateValues.tail.map(x => x.simplify())).eqls([...tvhd]);
-      expect(stateVariables['/vhd2'].stateValues.head.map(x => x.simplify())).eqls([...hvhd]);
-      expect(stateVariables['/vhd2'].stateValues.displacement.map(x => x.simplify())).eqls([...dvhd]);
+        expect(stateVariables['/vtd2'].stateValues.tail.map(x => me.fromAst(x).simplify().tree)).eqls([...tvtd]);
+        expect(stateVariables['/vtd2'].stateValues.head.map(x => me.fromAst(x).simplify().tree)).eqls([...hvtd]);
+        expect(stateVariables['/vtd2'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvtd]);
 
-      expect(stateVariables['/tfvt2'].stateValues.coords.simplify()).eqls(["vector", ...tvt]);
-      expect(stateVariables['/hfvt2'].stateValues.coords.simplify()).eqls(["vector", ...hvt]);
-      expect(stateVariables['/dfvt2'].stateValues.displacement.map(x => x.simplify())).eqls([...dvt]);
+        expect(stateVariables['/vhd2'].stateValues.tail.map(x => me.fromAst(x).simplify().tree)).eqls([...tvhd]);
+        expect(stateVariables['/vhd2'].stateValues.head.map(x => me.fromAst(x).simplify().tree)).eqls([...hvhd]);
+        expect(stateVariables['/vhd2'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvhd]);
 
-      expect(stateVariables['/tfvh2'].stateValues.coords.simplify()).eqls(["vector", ...tvh]);
-      expect(stateVariables['/hfvh2'].stateValues.coords.simplify()).eqls(["vector", ...hvh]);
-      expect(stateVariables['/dfvh2'].stateValues.displacement.map(x => x.simplify())).eqls([...dvh]);
+        expect(me.fromAst(stateVariables['/tfvt2'].stateValues.coords).simplify().tree).eqls(["vector", ...tvt]);
+        expect(me.fromAst(stateVariables['/hfvt2'].stateValues.coords).simplify().tree).eqls(["vector", ...hvt]);
+        expect(stateVariables['/dfvt2'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvt]);
 
-      expect(stateVariables['/tfvd2'].stateValues.coords.simplify()).eqls(["vector", ...tvd]);
-      expect(stateVariables['/hfvd2'].stateValues.coords.simplify()).eqls(["vector", ...hvd]);
-      expect(stateVariables['/dfvd2'].stateValues.displacement.map(x => x.simplify())).eqls([...dvd]);
+        expect(me.fromAst(stateVariables['/tfvh2'].stateValues.coords).simplify().tree).eqls(["vector", ...tvh]);
+        expect(me.fromAst(stateVariables['/hfvh2'].stateValues.coords).simplify().tree).eqls(["vector", ...hvh]);
+        expect(stateVariables['/dfvh2'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvh]);
 
-      expect(stateVariables['/tfvth2'].stateValues.coords.simplify()).eqls(["vector", ...tvth]);
-      expect(stateVariables['/hfvth2'].stateValues.coords.simplify()).eqls(["vector", ...hvth]);
-      expect(stateVariables['/dfvth2'].stateValues.displacement.map(x => x.simplify())).eqls([...dvth]);
+        expect(me.fromAst(stateVariables['/tfvd2'].stateValues.coords).simplify().tree).eqls(["vector", ...tvd]);
+        expect(me.fromAst(stateVariables['/hfvd2'].stateValues.coords).simplify().tree).eqls(["vector", ...hvd]);
+        expect(stateVariables['/dfvd2'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvd]);
 
-      expect(stateVariables['/tfvtd2'].stateValues.coords.simplify()).eqls(["vector", ...tvtd]);
-      expect(stateVariables['/hfvtd2'].stateValues.coords.simplify()).eqls(["vector", ...hvtd]);
-      expect(stateVariables['/dfvtd2'].stateValues.displacement.map(x => x.simplify())).eqls([...dvtd]);
+        expect(me.fromAst(stateVariables['/tfvth2'].stateValues.coords).simplify().tree).eqls(["vector", ...tvth]);
+        expect(me.fromAst(stateVariables['/hfvth2'].stateValues.coords).simplify().tree).eqls(["vector", ...hvth]);
+        expect(stateVariables['/dfvth2'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvth]);
 
-      expect(stateVariables['/tfvhd2'].stateValues.coords.simplify()).eqls(["vector", ...tvhd]);
-      expect(stateVariables['/hfvhd2'].stateValues.coords.simplify()).eqls(["vector", ...hvhd]);
-      expect(stateVariables['/dfvhd2'].stateValues.displacement.map(x => x.simplify())).eqls([...dvhd]);
+        expect(me.fromAst(stateVariables['/tfvtd2'].stateValues.coords).simplify().tree).eqls(["vector", ...tvtd]);
+        expect(me.fromAst(stateVariables['/hfvtd2'].stateValues.coords).simplify().tree).eqls(["vector", ...hvtd]);
+        expect(stateVariables['/dfvtd2'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvtd]);
 
+        expect(me.fromAst(stateVariables['/tfvhd2'].stateValues.coords).simplify().tree).eqls(["vector", ...tvhd]);
+        expect(me.fromAst(stateVariables['/hfvhd2'].stateValues.coords).simplify().tree).eqls(["vector", ...hvhd]);
+        expect(stateVariables['/dfvhd2'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvhd]);
+      })
     });
 
     cy.log("change displacement of each copied vector through copied vectors")
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
 
       dvt = [-1, 7];
       dvh = [5, 9];
@@ -7591,12 +7928,39 @@ describe('Vector Tag Tests', function () {
       dvtd = [9, -4];
       dvhd = [-5, 3];
 
-      await stateVariables['/dfvt2'].moveVector({ headcoords: dvt });
-      await stateVariables['/dfvh2'].moveVector({ headcoords: dvh });
-      await stateVariables['/dfvd2'].moveVector({ headcoords: dvd });
-      await stateVariables['/dfvth2'].moveVector({ headcoords: dvth });
-      await stateVariables['/dfvtd2'].moveVector({ headcoords: dvtd });
-      await stateVariables['/dfvhd2'].moveVector({ headcoords: dvhd });
+
+      win.callAction({
+        actionName: "moveVector",
+        componentName: '/dfvt2',
+        args: { headcoords: dvt }
+      })
+      win.callAction({
+        actionName: "moveVector",
+        componentName: '/dfvh2',
+        args: { headcoords: dvh }
+      })
+      win.callAction({
+        actionName: "moveVector",
+        componentName: '/dfvd2',
+        args: { headcoords: dvd }
+      })
+      win.callAction({
+        actionName: "moveVector",
+        componentName: '/dfvth2',
+        args: { headcoords: dvth }
+      })
+      win.callAction({
+        actionName: "moveVector",
+        componentName: '/dfvtd2',
+        args: { headcoords: dvtd }
+      })
+      win.callAction({
+        actionName: "moveVector",
+        componentName: '/dfvhd2',
+        args: { headcoords: dvhd }
+      })
+
+      cy.get('#\\/dfvhd2_hdom').should('contain.text', `(${nInDOM(dvhd[0])},${nInDOM(dvhd[1])})`)
 
       // for most vectors, tails stay fixed and head changes
       hvt = [tvt[0] + dvt[0], tvt[1] + dvt[1]];
@@ -7608,112 +7972,115 @@ describe('Vector Tag Tests', function () {
       // defined by head and displacement, head stays fixed and tail changes
       tvhd = [hvhd[0] - dvhd[0], hvhd[1] - dvhd[1]];
 
-      expect(stateVariables['/tvt'].stateValues.coords.simplify()).eqls(["vector", ...tvt]);
-      expect(stateVariables['/hvh'].stateValues.coords.simplify()).eqls(["vector", ...hvh]);
-      expect(stateVariables['/dvd'].stateValues.coords.simplify()).eqls(["vector", ...dvd]);
-      expect(stateVariables['/tvth'].stateValues.coords.simplify()).eqls(["vector", ...tvth]);
-      expect(stateVariables['/hvth'].stateValues.coords.simplify()).eqls(["vector", ...hvth]);
-      expect(stateVariables['/tvtd'].stateValues.coords.simplify()).eqls(["vector", ...tvtd]);
-      expect(stateVariables['/dvtd'].stateValues.coords.simplify()).eqls(["vector", ...dvtd]);
-      expect(stateVariables['/hvhd'].stateValues.coords.simplify()).eqls(["vector", ...hvhd]);
-      expect(stateVariables['/dvhd'].stateValues.coords.simplify()).eqls(["vector", ...dvhd]);
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables();
 
-      expect(stateVariables['/vt'].stateValues.tail.map(x => x.simplify())).eqls([...tvt]);
-      expect(stateVariables['/vt'].stateValues.head.map(x => x.simplify())).eqls([...hvt]);
-      expect(stateVariables['/vt'].stateValues.displacement.map(x => x.simplify())).eqls([...dvt]);
+        expect(me.fromAst(stateVariables['/tvt'].stateValues.coords).simplify().tree).eqls(["vector", ...tvt]);
+        expect(me.fromAst(stateVariables['/hvh'].stateValues.coords).simplify().tree).eqls(["vector", ...hvh]);
+        expect(me.fromAst(stateVariables['/dvd'].stateValues.coords).simplify().tree).eqls(["vector", ...dvd]);
+        expect(me.fromAst(stateVariables['/tvth'].stateValues.coords).simplify().tree).eqls(["vector", ...tvth]);
+        expect(me.fromAst(stateVariables['/hvth'].stateValues.coords).simplify().tree).eqls(["vector", ...hvth]);
+        expect(me.fromAst(stateVariables['/tvtd'].stateValues.coords).simplify().tree).eqls(["vector", ...tvtd]);
+        expect(me.fromAst(stateVariables['/dvtd'].stateValues.coords).simplify().tree).eqls(["vector", ...dvtd]);
+        expect(me.fromAst(stateVariables['/hvhd'].stateValues.coords).simplify().tree).eqls(["vector", ...hvhd]);
+        expect(me.fromAst(stateVariables['/dvhd'].stateValues.coords).simplify().tree).eqls(["vector", ...dvhd]);
 
-      expect(stateVariables['/vh'].stateValues.tail.map(x => x.simplify())).eqls([...tvh]);
-      expect(stateVariables['/vh'].stateValues.head.map(x => x.simplify())).eqls([...hvh]);
-      expect(stateVariables['/vh'].stateValues.displacement.map(x => x.simplify())).eqls([...dvh]);
+        expect(stateVariables['/vt'].stateValues.tail.map(x => me.fromAst(x).simplify().tree)).eqls([...tvt]);
+        expect(stateVariables['/vt'].stateValues.head.map(x => me.fromAst(x).simplify().tree)).eqls([...hvt]);
+        expect(stateVariables['/vt'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvt]);
 
-      expect(stateVariables['/vd'].stateValues.tail.map(x => x.simplify())).eqls([...tvd]);
-      expect(stateVariables['/vd'].stateValues.head.map(x => x.simplify())).eqls([...hvd]);
-      expect(stateVariables['/vd'].stateValues.displacement.map(x => x.simplify())).eqls([...dvd]);
+        expect(stateVariables['/vh'].stateValues.tail.map(x => me.fromAst(x).simplify().tree)).eqls([...tvh]);
+        expect(stateVariables['/vh'].stateValues.head.map(x => me.fromAst(x).simplify().tree)).eqls([...hvh]);
+        expect(stateVariables['/vh'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvh]);
 
-      expect(stateVariables['/vth'].stateValues.tail.map(x => x.simplify())).eqls([...tvth]);
-      expect(stateVariables['/vth'].stateValues.head.map(x => x.simplify())).eqls([...hvth]);
-      expect(stateVariables['/vth'].stateValues.displacement.map(x => x.simplify())).eqls([...dvth]);
+        expect(stateVariables['/vd'].stateValues.tail.map(x => me.fromAst(x).simplify().tree)).eqls([...tvd]);
+        expect(stateVariables['/vd'].stateValues.head.map(x => me.fromAst(x).simplify().tree)).eqls([...hvd]);
+        expect(stateVariables['/vd'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvd]);
 
-      expect(stateVariables['/vtd'].stateValues.tail.map(x => x.simplify())).eqls([...tvtd]);
-      expect(stateVariables['/vtd'].stateValues.head.map(x => x.simplify())).eqls([...hvtd]);
-      expect(stateVariables['/vtd'].stateValues.displacement.map(x => x.simplify())).eqls([...dvtd]);
+        expect(stateVariables['/vth'].stateValues.tail.map(x => me.fromAst(x).simplify().tree)).eqls([...tvth]);
+        expect(stateVariables['/vth'].stateValues.head.map(x => me.fromAst(x).simplify().tree)).eqls([...hvth]);
+        expect(stateVariables['/vth'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvth]);
 
-      expect(stateVariables['/vhd'].stateValues.tail.map(x => x.simplify())).eqls([...tvhd]);
-      expect(stateVariables['/vhd'].stateValues.head.map(x => x.simplify())).eqls([...hvhd]);
-      expect(stateVariables['/vhd'].stateValues.displacement.map(x => x.simplify())).eqls([...dvhd]);
+        expect(stateVariables['/vtd'].stateValues.tail.map(x => me.fromAst(x).simplify().tree)).eqls([...tvtd]);
+        expect(stateVariables['/vtd'].stateValues.head.map(x => me.fromAst(x).simplify().tree)).eqls([...hvtd]);
+        expect(stateVariables['/vtd'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvtd]);
 
-      expect(stateVariables['/tfvt'].stateValues.coords.simplify()).eqls(["vector", ...tvt]);
-      expect(stateVariables['/hfvt'].stateValues.coords.simplify()).eqls(["vector", ...hvt]);
-      expect(stateVariables['/dfvt'].stateValues.displacement.map(x => x.simplify())).eqls([...dvt]);
+        expect(stateVariables['/vhd'].stateValues.tail.map(x => me.fromAst(x).simplify().tree)).eqls([...tvhd]);
+        expect(stateVariables['/vhd'].stateValues.head.map(x => me.fromAst(x).simplify().tree)).eqls([...hvhd]);
+        expect(stateVariables['/vhd'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvhd]);
 
-      expect(stateVariables['/tfvh'].stateValues.coords.simplify()).eqls(["vector", ...tvh]);
-      expect(stateVariables['/hfvh'].stateValues.coords.simplify()).eqls(["vector", ...hvh]);
-      expect(stateVariables['/dfvh'].stateValues.displacement.map(x => x.simplify())).eqls([...dvh]);
+        expect(me.fromAst(stateVariables['/tfvt'].stateValues.coords).simplify().tree).eqls(["vector", ...tvt]);
+        expect(me.fromAst(stateVariables['/hfvt'].stateValues.coords).simplify().tree).eqls(["vector", ...hvt]);
+        expect(stateVariables['/dfvt'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvt]);
 
-      expect(stateVariables['/tfvd'].stateValues.coords.simplify()).eqls(["vector", ...tvd]);
-      expect(stateVariables['/hfvd'].stateValues.coords.simplify()).eqls(["vector", ...hvd]);
-      expect(stateVariables['/dfvd'].stateValues.displacement.map(x => x.simplify())).eqls([...dvd]);
+        expect(me.fromAst(stateVariables['/tfvh'].stateValues.coords).simplify().tree).eqls(["vector", ...tvh]);
+        expect(me.fromAst(stateVariables['/hfvh'].stateValues.coords).simplify().tree).eqls(["vector", ...hvh]);
+        expect(stateVariables['/dfvh'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvh]);
 
-      expect(stateVariables['/tfvth'].stateValues.coords.simplify()).eqls(["vector", ...tvth]);
-      expect(stateVariables['/hfvth'].stateValues.coords.simplify()).eqls(["vector", ...hvth]);
-      expect(stateVariables['/dfvth'].stateValues.displacement.map(x => x.simplify())).eqls([...dvth]);
+        expect(me.fromAst(stateVariables['/tfvd'].stateValues.coords).simplify().tree).eqls(["vector", ...tvd]);
+        expect(me.fromAst(stateVariables['/hfvd'].stateValues.coords).simplify().tree).eqls(["vector", ...hvd]);
+        expect(stateVariables['/dfvd'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvd]);
 
-      expect(stateVariables['/tfvtd'].stateValues.coords.simplify()).eqls(["vector", ...tvtd]);
-      expect(stateVariables['/hfvtd'].stateValues.coords.simplify()).eqls(["vector", ...hvtd]);
-      expect(stateVariables['/dfvtd'].stateValues.displacement.map(x => x.simplify())).eqls([...dvtd]);
+        expect(me.fromAst(stateVariables['/tfvth'].stateValues.coords).simplify().tree).eqls(["vector", ...tvth]);
+        expect(me.fromAst(stateVariables['/hfvth'].stateValues.coords).simplify().tree).eqls(["vector", ...hvth]);
+        expect(stateVariables['/dfvth'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvth]);
 
-      expect(stateVariables['/tfvhd'].stateValues.coords.simplify()).eqls(["vector", ...tvhd]);
-      expect(stateVariables['/hfvhd'].stateValues.coords.simplify()).eqls(["vector", ...hvhd]);
-      expect(stateVariables['/dfvhd'].stateValues.displacement.map(x => x.simplify())).eqls([...dvhd]);
+        expect(me.fromAst(stateVariables['/tfvtd'].stateValues.coords).simplify().tree).eqls(["vector", ...tvtd]);
+        expect(me.fromAst(stateVariables['/hfvtd'].stateValues.coords).simplify().tree).eqls(["vector", ...hvtd]);
+        expect(stateVariables['/dfvtd'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvtd]);
 
-      expect(stateVariables['/vt2'].stateValues.tail.map(x => x.simplify())).eqls([...tvt]);
-      expect(stateVariables['/vt2'].stateValues.head.map(x => x.simplify())).eqls([...hvt]);
-      expect(stateVariables['/vt2'].stateValues.displacement.map(x => x.simplify())).eqls([...dvt]);
+        expect(me.fromAst(stateVariables['/tfvhd'].stateValues.coords).simplify().tree).eqls(["vector", ...tvhd]);
+        expect(me.fromAst(stateVariables['/hfvhd'].stateValues.coords).simplify().tree).eqls(["vector", ...hvhd]);
+        expect(stateVariables['/dfvhd'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvhd]);
 
-      expect(stateVariables['/vh2'].stateValues.tail.map(x => x.simplify())).eqls([...tvh]);
-      expect(stateVariables['/vh2'].stateValues.head.map(x => x.simplify())).eqls([...hvh]);
-      expect(stateVariables['/vh2'].stateValues.displacement.map(x => x.simplify())).eqls([...dvh]);
+        expect(stateVariables['/vt2'].stateValues.tail.map(x => me.fromAst(x).simplify().tree)).eqls([...tvt]);
+        expect(stateVariables['/vt2'].stateValues.head.map(x => me.fromAst(x).simplify().tree)).eqls([...hvt]);
+        expect(stateVariables['/vt2'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvt]);
 
-      expect(stateVariables['/vd2'].stateValues.tail.map(x => x.simplify())).eqls([...tvd]);
-      expect(stateVariables['/vd2'].stateValues.head.map(x => x.simplify())).eqls([...hvd]);
-      expect(stateVariables['/vd2'].stateValues.displacement.map(x => x.simplify())).eqls([...dvd]);
+        expect(stateVariables['/vh2'].stateValues.tail.map(x => me.fromAst(x).simplify().tree)).eqls([...tvh]);
+        expect(stateVariables['/vh2'].stateValues.head.map(x => me.fromAst(x).simplify().tree)).eqls([...hvh]);
+        expect(stateVariables['/vh2'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvh]);
 
-      expect(stateVariables['/vth2'].stateValues.tail.map(x => x.simplify())).eqls([...tvth]);
-      expect(stateVariables['/vth2'].stateValues.head.map(x => x.simplify())).eqls([...hvth]);
-      expect(stateVariables['/vth2'].stateValues.displacement.map(x => x.simplify())).eqls([...dvth]);
+        expect(stateVariables['/vd2'].stateValues.tail.map(x => me.fromAst(x).simplify().tree)).eqls([...tvd]);
+        expect(stateVariables['/vd2'].stateValues.head.map(x => me.fromAst(x).simplify().tree)).eqls([...hvd]);
+        expect(stateVariables['/vd2'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvd]);
 
-      expect(stateVariables['/vtd2'].stateValues.tail.map(x => x.simplify())).eqls([...tvtd]);
-      expect(stateVariables['/vtd2'].stateValues.head.map(x => x.simplify())).eqls([...hvtd]);
-      expect(stateVariables['/vtd2'].stateValues.displacement.map(x => x.simplify())).eqls([...dvtd]);
+        expect(stateVariables['/vth2'].stateValues.tail.map(x => me.fromAst(x).simplify().tree)).eqls([...tvth]);
+        expect(stateVariables['/vth2'].stateValues.head.map(x => me.fromAst(x).simplify().tree)).eqls([...hvth]);
+        expect(stateVariables['/vth2'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvth]);
 
-      expect(stateVariables['/vhd2'].stateValues.tail.map(x => x.simplify())).eqls([...tvhd]);
-      expect(stateVariables['/vhd2'].stateValues.head.map(x => x.simplify())).eqls([...hvhd]);
-      expect(stateVariables['/vhd2'].stateValues.displacement.map(x => x.simplify())).eqls([...dvhd]);
+        expect(stateVariables['/vtd2'].stateValues.tail.map(x => me.fromAst(x).simplify().tree)).eqls([...tvtd]);
+        expect(stateVariables['/vtd2'].stateValues.head.map(x => me.fromAst(x).simplify().tree)).eqls([...hvtd]);
+        expect(stateVariables['/vtd2'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvtd]);
 
-      expect(stateVariables['/tfvt2'].stateValues.coords.simplify()).eqls(["vector", ...tvt]);
-      expect(stateVariables['/hfvt2'].stateValues.coords.simplify()).eqls(["vector", ...hvt]);
-      expect(stateVariables['/dfvt2'].stateValues.displacement.map(x => x.simplify())).eqls([...dvt]);
+        expect(stateVariables['/vhd2'].stateValues.tail.map(x => me.fromAst(x).simplify().tree)).eqls([...tvhd]);
+        expect(stateVariables['/vhd2'].stateValues.head.map(x => me.fromAst(x).simplify().tree)).eqls([...hvhd]);
+        expect(stateVariables['/vhd2'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvhd]);
 
-      expect(stateVariables['/tfvh2'].stateValues.coords.simplify()).eqls(["vector", ...tvh]);
-      expect(stateVariables['/hfvh2'].stateValues.coords.simplify()).eqls(["vector", ...hvh]);
-      expect(stateVariables['/dfvh2'].stateValues.displacement.map(x => x.simplify())).eqls([...dvh]);
+        expect(me.fromAst(stateVariables['/tfvt2'].stateValues.coords).simplify().tree).eqls(["vector", ...tvt]);
+        expect(me.fromAst(stateVariables['/hfvt2'].stateValues.coords).simplify().tree).eqls(["vector", ...hvt]);
+        expect(stateVariables['/dfvt2'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvt]);
 
-      expect(stateVariables['/tfvd2'].stateValues.coords.simplify()).eqls(["vector", ...tvd]);
-      expect(stateVariables['/hfvd2'].stateValues.coords.simplify()).eqls(["vector", ...hvd]);
-      expect(stateVariables['/dfvd2'].stateValues.displacement.map(x => x.simplify())).eqls([...dvd]);
+        expect(me.fromAst(stateVariables['/tfvh2'].stateValues.coords).simplify().tree).eqls(["vector", ...tvh]);
+        expect(me.fromAst(stateVariables['/hfvh2'].stateValues.coords).simplify().tree).eqls(["vector", ...hvh]);
+        expect(stateVariables['/dfvh2'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvh]);
 
-      expect(stateVariables['/tfvth2'].stateValues.coords.simplify()).eqls(["vector", ...tvth]);
-      expect(stateVariables['/hfvth2'].stateValues.coords.simplify()).eqls(["vector", ...hvth]);
-      expect(stateVariables['/dfvth2'].stateValues.displacement.map(x => x.simplify())).eqls([...dvth]);
+        expect(me.fromAst(stateVariables['/tfvd2'].stateValues.coords).simplify().tree).eqls(["vector", ...tvd]);
+        expect(me.fromAst(stateVariables['/hfvd2'].stateValues.coords).simplify().tree).eqls(["vector", ...hvd]);
+        expect(stateVariables['/dfvd2'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvd]);
 
-      expect(stateVariables['/tfvtd2'].stateValues.coords.simplify()).eqls(["vector", ...tvtd]);
-      expect(stateVariables['/hfvtd2'].stateValues.coords.simplify()).eqls(["vector", ...hvtd]);
-      expect(stateVariables['/dfvtd2'].stateValues.displacement.map(x => x.simplify())).eqls([...dvtd]);
+        expect(me.fromAst(stateVariables['/tfvth2'].stateValues.coords).simplify().tree).eqls(["vector", ...tvth]);
+        expect(me.fromAst(stateVariables['/hfvth2'].stateValues.coords).simplify().tree).eqls(["vector", ...hvth]);
+        expect(stateVariables['/dfvth2'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvth]);
 
-      expect(stateVariables['/tfvhd2'].stateValues.coords.simplify()).eqls(["vector", ...tvhd]);
-      expect(stateVariables['/hfvhd2'].stateValues.coords.simplify()).eqls(["vector", ...hvhd]);
-      expect(stateVariables['/dfvhd2'].stateValues.displacement.map(x => x.simplify())).eqls([...dvhd]);
+        expect(me.fromAst(stateVariables['/tfvtd2'].stateValues.coords).simplify().tree).eqls(["vector", ...tvtd]);
+        expect(me.fromAst(stateVariables['/hfvtd2'].stateValues.coords).simplify().tree).eqls(["vector", ...hvtd]);
+        expect(stateVariables['/dfvtd2'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvtd]);
 
+        expect(me.fromAst(stateVariables['/tfvhd2'].stateValues.coords).simplify().tree).eqls(["vector", ...tvhd]);
+        expect(me.fromAst(stateVariables['/hfvhd2'].stateValues.coords).simplify().tree).eqls(["vector", ...hvhd]);
+        expect(stateVariables['/dfvhd2'].stateValues.displacement.map(x => me.fromAst(x).simplify().tree)).eqls([...dvhd]);
+      })
     });
 
 
@@ -7746,8 +8113,16 @@ describe('Vector Tag Tests', function () {
 
     cy.log("move vector head");
     cy.window().then(async (win) => {
+      win.callAction({
+        actionName: "moveVector",
+        componentName: '/_vector1',
+        args: { headcoords: [9, 7] }
+      })
+    })
+    cy.get('#\\/_math1 .mjx-mrow').should('contain.text', '(8,5)')
+
+    cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables();
-      await stateVariables['/_vector1'].moveVector({ headcoords: [9, 7] })
       expect(stateVariables['/_vector1'].stateValues.displacement).eqls([8, 5]);
       expect(stateVariables['/_math1'].stateValues.value).eqls(["vector", 8, 5]);
     })
@@ -7757,10 +8132,18 @@ describe('Vector Tag Tests', function () {
     })
 
 
-    cy.log("move vector head");
+    cy.log("move vector tail");
+    cy.window().then(async (win) => {
+      win.callAction({
+        actionName: "moveVector",
+        componentName: '/_vector1',
+        args: { tailcoords: [-2, 6] }
+      })
+    })
+    cy.get('#\\/_math1 .mjx-mrow').should('contain.text', '(11,1)')
+
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables();
-      await stateVariables['/_vector1'].moveVector({ tailcoords: [-2, 6] })
       expect(stateVariables['/_vector1'].stateValues.displacement).eqls([11, 1]);
       expect(stateVariables['/_math1'].stateValues.value).eqls(["vector", 11, 1]);
     })
@@ -7782,6 +8165,12 @@ describe('Vector Tag Tests', function () {
   <vector tail="$(_vector3{prop='tail'})" head="(3,2)" />
   <vector head="$(_vector1{prop='tail'})" tail="(-1,4)" />
   </graph>
+  <copy prop="head" target="_vector1" assignNames="v1h" />
+  <copy prop="tail" target="_vector1" assignNames="v1t" />
+  <copy prop="head" target="_vector2" assignNames="v2h" />
+  <copy prop="tail" target="_vector2" assignNames="v2t" />
+  <copy prop="head" target="_vector3" assignNames="v3h" />
+  <copy prop="tail" target="_vector3" assignNames="v3t" />
   `}, "*");
     });
 
@@ -7805,104 +8194,152 @@ describe('Vector Tag Tests', function () {
 
     cy.log("move head of vector 1")
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
 
       x2 = 7;
       y2 = -3;
-      let head1 = stateVariables["/_vector1"].attributes.head.component;
-      await head1.movePoint({ x: x2, y: y2 });
-      expect(stateVariables['/_vector1'].stateValues.tail).eqls([x1, y1]);
-      expect(stateVariables['/_vector1'].stateValues.head).eqls([x2, y2]);
-      expect(stateVariables['/_vector2'].stateValues.tail).eqls([x3, y3]);
-      expect(stateVariables['/_vector2'].stateValues.head).eqls([x2, y2]);
-      expect(stateVariables['/_vector3'].stateValues.tail).eqls([x3, y3]);
-      expect(stateVariables['/_vector3'].stateValues.head).eqls([x1, y1]);
 
+      win.callAction({
+        actionName: "movePoint",
+        componentName: "/v1h",
+        args: { x: x2, y: y2 }
+      })
+
+      cy.get('#\\/v1h').should('contain.text', `(${nInDOM(x2)},${nInDOM(y2)})`)
+
+
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables();
+        expect(stateVariables['/_vector1'].stateValues.tail).eqls([x1, y1]);
+        expect(stateVariables['/_vector1'].stateValues.head).eqls([x2, y2]);
+        expect(stateVariables['/_vector2'].stateValues.tail).eqls([x3, y3]);
+        expect(stateVariables['/_vector2'].stateValues.head).eqls([x2, y2]);
+        expect(stateVariables['/_vector3'].stateValues.tail).eqls([x3, y3]);
+        expect(stateVariables['/_vector3'].stateValues.head).eqls([x1, y1]);
+      })
     })
 
     cy.log("move tail of vector 1")
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
 
       x1 = -1;
       y1 = -4;
-      let tail1 = stateVariables["/_vector1"].attributes.tail.component;
-      await tail1.movePoint({ x: x1, y: y1 });
-      expect(stateVariables['/_vector1'].stateValues.tail).eqls([x1, y1]);
-      expect(stateVariables['/_vector1'].stateValues.head).eqls([x2, y2]);
-      expect(stateVariables['/_vector2'].stateValues.tail).eqls([x3, y3]);
-      expect(stateVariables['/_vector2'].stateValues.head).eqls([x2, y2]);
-      expect(stateVariables['/_vector3'].stateValues.tail).eqls([x3, y3]);
-      expect(stateVariables['/_vector3'].stateValues.head).eqls([x1, y1]);
 
+      win.callAction({
+        actionName: "movePoint",
+        componentName: "/v1t",
+        args: { x: x1, y: y1 }
+      })
+
+      cy.get('#\\/v1t').should('contain.text', `(${nInDOM(x1)},${nInDOM(y1)})`)
+
+
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables();
+        expect(stateVariables['/_vector1'].stateValues.tail).eqls([x1, y1]);
+        expect(stateVariables['/_vector1'].stateValues.head).eqls([x2, y2]);
+        expect(stateVariables['/_vector2'].stateValues.tail).eqls([x3, y3]);
+        expect(stateVariables['/_vector2'].stateValues.head).eqls([x2, y2]);
+        expect(stateVariables['/_vector3'].stateValues.tail).eqls([x3, y3]);
+        expect(stateVariables['/_vector3'].stateValues.head).eqls([x1, y1]);
+      })
     })
 
     cy.log("move tail of vector 2")
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
 
       x3 = 9;
       y3 = -8;
-      let tail2 = stateVariables["/_vector2"].attributes.tail.component;
-      await tail2.movePoint({ x: x3, y: y3 });
-      expect(stateVariables['/_vector1'].stateValues.tail).eqls([x1, y1]);
-      expect(stateVariables['/_vector1'].stateValues.head).eqls([x2, y2]);
-      expect(stateVariables['/_vector2'].stateValues.tail).eqls([x3, y3]);
-      expect(stateVariables['/_vector2'].stateValues.head).eqls([x2, y2]);
-      expect(stateVariables['/_vector3'].stateValues.tail).eqls([x3, y3]);
-      expect(stateVariables['/_vector3'].stateValues.head).eqls([x1, y1]);
 
+      win.callAction({
+        actionName: "movePoint",
+        componentName: "/v2t",
+        args: { x: x3, y: y3 }
+      })
+
+      cy.get('#\\/v2t').should('contain.text', `(${nInDOM(x3)},${nInDOM(y3)})`)
+
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables();
+        expect(stateVariables['/_vector1'].stateValues.tail).eqls([x1, y1]);
+        expect(stateVariables['/_vector1'].stateValues.head).eqls([x2, y2]);
+        expect(stateVariables['/_vector2'].stateValues.tail).eqls([x3, y3]);
+        expect(stateVariables['/_vector2'].stateValues.head).eqls([x2, y2]);
+        expect(stateVariables['/_vector3'].stateValues.tail).eqls([x3, y3]);
+        expect(stateVariables['/_vector3'].stateValues.head).eqls([x1, y1]);
+      })
     })
 
     cy.log("move head of vector 2")
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
 
       x2 = 3;
       y2 = 2;
-      let head2 = stateVariables["/_vector2"].attributes.head.component;
-      await head2.movePoint({ x: x2, y: y2 });
-      expect(stateVariables['/_vector1'].stateValues.tail).eqls([x1, y1]);
-      expect(stateVariables['/_vector1'].stateValues.head).eqls([x2, y2]);
-      expect(stateVariables['/_vector2'].stateValues.tail).eqls([x3, y3]);
-      expect(stateVariables['/_vector2'].stateValues.head).eqls([x2, y2]);
-      expect(stateVariables['/_vector3'].stateValues.tail).eqls([x3, y3]);
-      expect(stateVariables['/_vector3'].stateValues.head).eqls([x1, y1]);
+      win.callAction({
+        actionName: "movePoint",
+        componentName: "/v2h",
+        args: { x: x2, y: y2 }
+      })
 
+      cy.get('#\\/v2h').should('contain.text', `(${nInDOM(x2)},${nInDOM(y2)})`)
+
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables();
+        expect(stateVariables['/_vector1'].stateValues.tail).eqls([x1, y1]);
+        expect(stateVariables['/_vector1'].stateValues.head).eqls([x2, y2]);
+        expect(stateVariables['/_vector2'].stateValues.tail).eqls([x3, y3]);
+        expect(stateVariables['/_vector2'].stateValues.head).eqls([x2, y2]);
+        expect(stateVariables['/_vector3'].stateValues.tail).eqls([x3, y3]);
+        expect(stateVariables['/_vector3'].stateValues.head).eqls([x1, y1]);
+      })
     })
 
     cy.log("move head of vector 3")
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
 
       x1 = -5;
       y1 = 8;
-      let head3 = stateVariables["/_vector3"].attributes.head.component;
-      await head3.movePoint({ x: x1, y: y1 });
-      expect(stateVariables['/_vector1'].stateValues.tail).eqls([x1, y1]);
-      expect(stateVariables['/_vector1'].stateValues.head).eqls([x2, y2]);
-      expect(stateVariables['/_vector2'].stateValues.tail).eqls([x3, y3]);
-      expect(stateVariables['/_vector2'].stateValues.head).eqls([x2, y2]);
-      expect(stateVariables['/_vector3'].stateValues.tail).eqls([x3, y3]);
-      expect(stateVariables['/_vector3'].stateValues.head).eqls([x1, y1]);
+      win.callAction({
+        actionName: "movePoint",
+        componentName: "/v3h",
+        args: { x: x1, y: y1 }
+      })
 
+      cy.get('#\\/v3h').should('contain.text', `(${nInDOM(x1)},${nInDOM(y1)})`)
+
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables();
+        expect(stateVariables['/_vector1'].stateValues.tail).eqls([x1, y1]);
+        expect(stateVariables['/_vector1'].stateValues.head).eqls([x2, y2]);
+        expect(stateVariables['/_vector2'].stateValues.tail).eqls([x3, y3]);
+        expect(stateVariables['/_vector2'].stateValues.head).eqls([x2, y2]);
+        expect(stateVariables['/_vector3'].stateValues.tail).eqls([x3, y3]);
+        expect(stateVariables['/_vector3'].stateValues.head).eqls([x1, y1]);
+      })
     })
 
     cy.log("move tail of vector 3")
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
 
       x3 = 0;
       y3 = -5;
-      let tail3 = stateVariables["/_vector3"].attributes.tail.component;
-      await tail3.movePoint({ x: x3, y: y3 });
-      expect(stateVariables['/_vector1'].stateValues.tail).eqls([x1, y1]);
-      expect(stateVariables['/_vector1'].stateValues.head).eqls([x2, y2]);
-      expect(stateVariables['/_vector2'].stateValues.tail).eqls([x3, y3]);
-      expect(stateVariables['/_vector2'].stateValues.head).eqls([x2, y2]);
-      expect(stateVariables['/_vector3'].stateValues.tail).eqls([x3, y3]);
-      expect(stateVariables['/_vector3'].stateValues.head).eqls([x1, y1]);
 
+      win.callAction({
+        actionName: "movePoint",
+        componentName: "/v3t",
+        args: { x: x3, y: y3 }
+      })
+
+      cy.get('#\\/v3t').should('contain.text', `(${nInDOM(x3)},${nInDOM(y3)})`)
+
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables();
+        expect(stateVariables['/_vector1'].stateValues.tail).eqls([x1, y1]);
+        expect(stateVariables['/_vector1'].stateValues.head).eqls([x2, y2]);
+        expect(stateVariables['/_vector2'].stateValues.tail).eqls([x3, y3]);
+        expect(stateVariables['/_vector2'].stateValues.head).eqls([x2, y2]);
+        expect(stateVariables['/_vector3'].stateValues.tail).eqls([x3, y3]);
+        expect(stateVariables['/_vector3'].stateValues.head).eqls([x1, y1]);
+      })
     })
 
   })
@@ -7915,8 +8352,8 @@ describe('Vector Tag Tests', function () {
   <text>a</text>
   <vector tail="(3, $b)" head="($a,4)" />
 
-  <copy prop="x" target="_vector1" />
-  <copy prop="y" target="_vector1" />
+  <copy prop="x" target="_vector1" assignNames="v1x" />
+  <copy prop="y" target="_vector1" assignNames="v1y" />
   
   <p><mathinput name="a" prefill="1"></mathinput></p>
   <p><mathinput name="b" prefill="2"></mathinput></p>
@@ -7927,76 +8364,67 @@ describe('Vector Tag Tests', function () {
     // to wait for page to load
     cy.get('#\\/_text1').should('have.text', 'a');
 
+    let a = 1;
+    let b = 2;
+    let dx = a - 3;
+    let dy = 4 - b;
+
+    cy.log('Test values displayed in browser')
+    cy.get("#\\/v1x").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim().replace(/−/g, '-')).equal(`${dx}`)
+    });
+
+    cy.get("#\\/v1y").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim().replace(/−/g, '-')).equal(`${dy}`)
+    });
+
+    cy.get('#\\/_vector1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim().replace(/−/g, '-')).equal(`(${dx},${dy})`)
+    });
+
+
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables();
-      let x = stateVariables['/_copy1'];
-      let xAnchor = cesc('#' + x.componentName);
-      let y = stateVariables['/_copy2'];
-      let yAnchor = cesc('#' + y.componentName);
+      expect(stateVariables['/_vector1'].stateValues.tail).eqls([3, b]);
+      expect(stateVariables['/_vector1'].stateValues.head).eqls([a, 4]);
+      expect(stateVariables['/_vector1'].stateValues.displacement).eqls([dx, dy]);
+      expect(stateVariables['/v1x'].stateValues.value).eq(dx)
+      expect(stateVariables['/v1y'].stateValues.value).eq(dy)
+    })
+
+    cy.log("changed values");
+
+    let a2 = -5;
+    let b2 = 7;
+    let dx2 = a2 - 3;
+    let dy2 = 4 - b2;
+
+    cy.get('#\\/a textarea').type(`{end}{backspace}${a2}`, { force: true });
+    cy.get('#\\/b textarea').type(`{end}{backspace}${b2}`, { force: true }).blur();
+
+    cy.get("#\\/v1x .mjx-mrow").should('contain.text', `${nInDOM(dx2)}`)
+    cy.get("#\\/v1y .mjx-mrow").should('contain.text', `${nInDOM(dy2)}`)
+
+    cy.get("#\\/v1x").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim().replace(/−/g, '-')).equal(`${dx2}`)
+    });
+
+    cy.get("#\\/v1y").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim().replace(/−/g, '-')).equal(`${dy2}`)
+    });
+
+    cy.get('#\\/_vector1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim().replace(/−/g, '-')).equal(`(${dx2},${dy2})`)
+    });
 
 
-      let a = 1;
-      let b = 2;
-      let dx = a - 3;
-      let dy = 4 - b;
-
-      cy.log('Test values displayed in browser')
-      cy.get(xAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim().replace(/−/g, '-')).equal(`${dx}`)
-      });
-
-      cy.get(yAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim().replace(/−/g, '-')).equal(`${dy}`)
-      });
-
-      cy.get('#\\/_vector1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim().replace(/−/g, '-')).equal(`(${dx},${dy})`)
-      });
-
-
-      cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
-        expect(stateVariables['/_vector1'].stateValues.tail).eqls([3, b]);
-        expect(stateVariables['/_vector1'].stateValues.head).eqls([a, 4]);
-        expect(stateVariables['/_vector1'].stateValues.displacement).eqls([dx, dy]);
-        expect(x.stateValues.value).eq(dx)
-        expect(y.stateValues.value).eq(dy)
-      })
-
-      cy.log("changed values");
-
-      let a2 = -5;
-      let b2 = 7;
-      let dx2 = a2 - 3;
-      let dy2 = 4 - b2;
-
-      cy.get('#\\/a textarea').type(`{end}{backspace}${a2}`, { force: true });
-      cy.get('#\\/b textarea').type(`{end}{backspace}${b2}`, { force: true }).blur();
-
-      cy.get(xAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim().replace(/−/g, '-')).equal(`${dx2}`)
-      });
-
-      cy.get(yAnchor + ' .mjx-mrow').should('contain.text', `${dy2}`.replace(/-/g, '−'))
-      cy.get(yAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim().replace(/−/g, '-')).equal(`${dy2}`)
-      });
-
-      cy.get('#\\/_vector1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim().replace(/−/g, '-')).equal(`(${dx2},${dy2})`)
-      });
-
-
-      cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
-        expect(stateVariables['/_vector1'].stateValues.tail).eqls([3, b2]);
-        expect(stateVariables['/_vector1'].stateValues.head).eqls([a2, 4]);
-        expect(stateVariables['/_vector1'].stateValues.displacement).eqls([dx2, dy2]);
-        expect(x.stateValues.value).eq(dx2)
-        expect(y.stateValues.value).eq(dy2)
-      })
-
-
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables();
+      expect(stateVariables['/_vector1'].stateValues.tail).eqls([3, b2]);
+      expect(stateVariables['/_vector1'].stateValues.head).eqls([a2, 4]);
+      expect(stateVariables['/_vector1'].stateValues.displacement).eqls([dx2, dy2]);
+      expect(stateVariables['/v1x'].stateValues.value).eq(dx2)
+      expect(stateVariables['/v1y'].stateValues.value).eq(dy2)
     })
   })
 
@@ -8008,6 +8436,7 @@ describe('Vector Tag Tests', function () {
   <graph>
   <vector displacement="(-8,1)" tail="(4,1)" />
   </graph>
+  <copy target="_vector1" assignNames="v1a" />
   `}, "*");
     });
 
@@ -8031,7 +8460,6 @@ describe('Vector Tag Tests', function () {
 
     cy.log(`move tail, make sure head doesn't move`)
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
 
       let tailx = -3;
       let taily = 7;
@@ -8040,13 +8468,20 @@ describe('Vector Tag Tests', function () {
       let displacementx = headx - tailx;
       let displacementy = heady - taily;
 
-      await stateVariables['/_vector1'].moveVector({
-        tailcoords: [tailx, taily],
-      });
+      win.callAction({
+        actionName: "moveVector",
+        componentName: '/_vector1',
+        args: { tailcoords: [tailx, taily] }
+      })
 
-      expect(stateVariables['/_vector1'].stateValues.tail).eqls([tailx, taily]);
-      expect(stateVariables['/_vector1'].stateValues.head).eqls([headx, heady]);
-      expect(stateVariables['/_vector1'].stateValues.displacement).eqls([displacementx, displacementy]);
+      cy.get("#\\/v1a .mjx-mrow").should('contain.text', `(${nInDOM(displacementx)},${nInDOM(displacementy)})`)
+
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables();
+        expect(stateVariables['/_vector1'].stateValues.tail).eqls([tailx, taily]);
+        expect(stateVariables['/_vector1'].stateValues.head).eqls([headx, heady]);
+        expect(stateVariables['/_vector1'].stateValues.displacement).eqls([displacementx, displacementy]);
+      })
     })
 
 
@@ -8060,6 +8495,7 @@ describe('Vector Tag Tests', function () {
   <graph>
   <vector displacement="(-8,1)" head="(-4,2)" />
   </graph>
+  <copy target="_vector1" assignNames="v1a" />
   `}, "*");
     });
 
@@ -8083,7 +8519,6 @@ describe('Vector Tag Tests', function () {
 
     cy.log(`move tail, make sure head doesn't move`)
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
 
       let tailx = 4;
       let taily = 1;
@@ -8092,13 +8527,20 @@ describe('Vector Tag Tests', function () {
       let displacementx = headx - tailx;
       let displacementy = heady - taily;
 
-      await stateVariables['/_vector1'].moveVector({
-        headcoords: [headx, heady],
-      });
+      win.callAction({
+        actionName: "moveVector",
+        componentName: '/_vector1',
+        args: { headcoords: [headx, heady] }
+      })
 
-      expect(stateVariables['/_vector1'].stateValues.tail).eqls([tailx, taily]);
-      expect(stateVariables['/_vector1'].stateValues.head).eqls([headx, heady]);
-      expect(stateVariables['/_vector1'].stateValues.displacement).eqls([displacementx, displacementy]);
+      cy.get("#\\/v1a .mjx-mrow").should('contain.text', `(${nInDOM(displacementx)},${nInDOM(displacementy)})`)
+
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables();
+        expect(stateVariables['/_vector1'].stateValues.tail).eqls([tailx, taily]);
+        expect(stateVariables['/_vector1'].stateValues.head).eqls([headx, heady]);
+        expect(stateVariables['/_vector1'].stateValues.displacement).eqls([displacementx, displacementy]);
+      })
     })
 
 
@@ -8112,6 +8554,7 @@ describe('Vector Tag Tests', function () {
   <graph>
   <vector displacement="(-8,1)" />
   </graph>
+  <copy target="_vector1" assignNames="v1a" />
   `}, "*");
     });
 
@@ -8135,7 +8578,6 @@ describe('Vector Tag Tests', function () {
 
     cy.log(`move tail, make sure head doesn't move`)
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
 
       let tailx = -3;
       let taily = 7;
@@ -8144,13 +8586,20 @@ describe('Vector Tag Tests', function () {
       let displacementx = headx - tailx;
       let displacementy = heady - taily;
 
-      await stateVariables['/_vector1'].moveVector({
-        tailcoords: [tailx, taily],
-      });
+      win.callAction({
+        actionName: "moveVector",
+        componentName: '/_vector1',
+        args: { tailcoords: [tailx, taily] }
+      })
 
-      expect(stateVariables['/_vector1'].stateValues.tail).eqls([tailx, taily]);
-      expect(stateVariables['/_vector1'].stateValues.head).eqls([headx, heady]);
-      expect(stateVariables['/_vector1'].stateValues.displacement).eqls([displacementx, displacementy]);
+      cy.get("#\\/v1a .mjx-mrow").should('contain.text', `(${nInDOM(displacementx)},${nInDOM(displacementy)})`)
+
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables();
+        expect(stateVariables['/_vector1'].stateValues.tail).eqls([tailx, taily]);
+        expect(stateVariables['/_vector1'].stateValues.head).eqls([headx, heady]);
+        expect(stateVariables['/_vector1'].stateValues.displacement).eqls([displacementx, displacementy]);
+      })
     })
 
 
@@ -8166,168 +8615,133 @@ describe('Vector Tag Tests', function () {
   </graph>
 
   <graph>
-  <copy prop="tail" target="_vector1" />
-  <copy prop="head" target="_vector1" />
-  <copy prop="displacement" target="_vector1" />
+  <copy prop="tail" target="_vector1" assignNames="tail" />
+  <copy prop="head" target="_vector1" assignNames="head" />
+  <copy prop="displacement" target="_vector1" assignNames="displacement" />
   </graph>
+  
+  <copy prop="tail" target="_vector1" assignNames="tail2" />
+  <copy prop="head" target="_vector1" assignNames="head2" />
+  <copy prop="displacement" target="_vector1" assignNames="displacement2" />
+
   `}, "*");
     });
 
     // to wait for page to load
     cy.get('#\\/_text1').should('have.text', 'a');
 
+    let tailx = 0;
+    let taily = 0;
+    let headx = -4;
+    let heady = 2;
+    let displacementTailShiftx = 0;
+    let displacementTailShifty = 0;
+
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
-      let tail = stateVariables['/_copy1'];
-      let head = stateVariables['/_copy2'];
-      let displacement = stateVariables['/_copy3'];
 
-      cy.window().then(async (win) => {
-        let tailx = 0;
-        let taily = 0;
-        let headx = -4;
-        let heady = 2;
-        let displacementx = headx - tailx;
-        let displacementy = heady - taily;
-
-        expect(stateVariables['/_vector1'].stateValues.tail).eqls([tailx, taily]);
-        expect(stateVariables['/_vector1'].stateValues.head).eqls([headx, heady]);
-        expect(stateVariables['/_vector1'].stateValues.displacement).eqls([displacementx, displacementy]);
-        expect(stateVariables['/tail'].stateValues.xs[0]).eq(tailx);
-        expect(stateVariables['/tail'].stateValues.xs[1]).eq(taily);
-        expect(stateVariables['/head'].stateValues.xs[0]).eq(headx);
-        expect(stateVariables['/head'].stateValues.xs[1]).eq(heady);
-        expect(stateVariables['/displacement'].stateValues.tail).eqls([0, 0]);
-        expect(stateVariables['/displacement'].stateValues.head).eqls([displacementx, displacementy]);
-        expect(stateVariables['/displacement'].stateValues.displacement).eqls([displacementx, displacementy]);
-
+      await testVectorCopiedHTD({
+        headx, heady, tailx, taily, displacementTailShiftx, displacementTailShifty
       })
 
-      cy.log('move vector up and to the right')
-      cy.window().then(async (win) => {
+    })
 
-        let tailcoords = [
-          stateVariables['/_vector1'].stateValues.tail[0],
-          stateVariables['/_vector1'].stateValues.tail[1],
-        ];
-        let headcoords = [
-          stateVariables['/_vector1'].stateValues.head[0],
-          stateVariables['/_vector1'].stateValues.head[1],
-        ];
+    cy.log('move vector up and to the right')
+    cy.window().then(async (win) => {
 
-        let moveX = 3;
-        let moveY = 2;
+      let moveX = 3;
+      let moveY = 2;
+      tailx += moveX;
+      headx += moveX;
+      taily += moveY;
+      heady += moveY;
 
-        tailcoords[0] = tailcoords[0].add(moveX).simplify();
-        tailcoords[1] = tailcoords[1].add(moveY).simplify();
-        headcoords[0] = headcoords[0].add(moveX).simplify();
-        headcoords[1] = headcoords[1].add(moveY).simplify();
 
-        await stateVariables['/_vector1'].moveVector({
-          tailcoords: tailcoords,
-          headcoords: headcoords
-        });
-
-        let tailx = tailcoords[0].simplify();
-        let taily = tailcoords[1].simplify();
-        let headx = headcoords[0].simplify();
-        let heady = headcoords[1].simplify();
-        let displacementx = headx - tailx;
-        let displacementy = heady - taily;
-
-        expect(stateVariables['/_vector1'].stateValues.tail).eqls([tailx, taily]);
-        expect(stateVariables['/_vector1'].stateValues.head).eqls([headx, heady]);
-        expect(stateVariables['/_vector1'].stateValues.displacement).eqls([displacementx, displacementy]);
-        expect(stateVariables['/tail'].stateValues.xs[0]).eq(tailx);
-        expect(stateVariables['/tail'].stateValues.xs[1]).eq(taily);
-        expect(stateVariables['/head'].stateValues.xs[0]).eq(headx);
-        expect(stateVariables['/head'].stateValues.xs[1]).eq(heady);
-        expect(stateVariables['/displacement'].stateValues.tail).eqls([0, 0]);
-        expect(stateVariables['/displacement'].stateValues.head).eqls([displacementx, displacementy]);
-        expect(stateVariables['/displacement'].stateValues.displacement).eqls([displacementx, displacementy]);
+      win.callAction({
+        actionName: "moveVector",
+        componentName: "/_vector1",
+        args: {
+          tailcoords: [tailx, taily],
+          headcoords: [headx, heady]
+        }
       })
 
-      cy.log('move copied tail moves vector')
-      cy.window().then(async (win) => {
-
-        let tailx = 1;
-        let taily = 6;
-        let headx = -3;
-        let heady = 8;
-        let displacementx = headx - tailx;
-        let displacementy = heady - taily;
-
-        await tail.movePoint({ x: tailx, y: taily });
-
-        expect(stateVariables['/_vector1'].stateValues.tail).eqls([tailx, taily]);
-        expect(stateVariables['/_vector1'].stateValues.head).eqls([headx, heady]);
-        expect(stateVariables['/_vector1'].stateValues.displacement).eqls([displacementx, displacementy]);
-        expect(stateVariables['/tail'].stateValues.xs[0]).eq(tailx);
-        expect(stateVariables['/tail'].stateValues.xs[1]).eq(taily);
-        expect(stateVariables['/head'].stateValues.xs[0]).eq(headx);
-        expect(stateVariables['/head'].stateValues.xs[1]).eq(heady);
-        expect(stateVariables['/displacement'].stateValues.tail).eqls([0, 0]);
-        expect(stateVariables['/displacement'].stateValues.head).eqls([displacementx, displacementy]);
-        expect(stateVariables['/displacement'].stateValues.displacement).eqls([displacementx, displacementy]);
+      await testVectorCopiedHTD({
+        headx, heady, tailx, taily, displacementTailShiftx, displacementTailShifty
       })
 
-      cy.log('move copied head')
-      cy.window().then(async (win) => {
+    })
 
+    cy.log('move copied tail moves vector')
+    cy.window().then(async (win) => {
 
-        let tailx = 1;
-        let taily = 6;
-        let headx = 4;
-        let heady = -9;
-        let displacementx = headx - tailx;
-        let displacementy = heady - taily;
+      let moveX = -8;
+      let moveY = 4;
+      tailx += moveX;
+      headx += moveX;
+      taily += moveY;
+      heady += moveY;
 
-        await head.movePoint({ x: headx, y: heady });
-
-        expect(stateVariables['/_vector1'].stateValues.tail).eqls([tailx, taily]);
-        expect(stateVariables['/_vector1'].stateValues.head).eqls([headx, heady]);
-        expect(stateVariables['/_vector1'].stateValues.displacement).eqls([displacementx, displacementy]);
-        expect(stateVariables['/tail'].stateValues.xs[0]).eq(tailx);
-        expect(stateVariables['/tail'].stateValues.xs[1]).eq(taily);
-        expect(stateVariables['/head'].stateValues.xs[0]).eq(headx);
-        expect(stateVariables['/head'].stateValues.xs[1]).eq(heady);
-        expect(stateVariables['/displacement'].stateValues.tail).eqls([0, 0]);
-        expect(stateVariables['/displacement'].stateValues.head).eqls([displacementx, displacementy]);
-        expect(stateVariables['/displacement'].stateValues.displacement).eqls([displacementx, displacementy]);
+      win.callAction({
+        actionName: "movePoint",
+        componentName: "/tail",
+        args: { x: tailx, y: taily }
       })
 
-      cy.log('move displacement')
-      cy.window().then(async (win) => {
 
-        let tailx = 1;
-        let taily = 6;
-        let displacementtailx = 3;
-        let displacementtaily = -5;
-        let displacementheadx = 6;
-        let displacementheady = -9;
-        let displacementx = displacementheadx - displacementtailx;
-        let displacementy = displacementheady - displacementtaily;
-
-        let headx = tailx + displacementx;
-        let heady = taily + displacementy;
-
-        await displacement.moveVector({
-          tailcoords: [displacementtailx, displacementtaily],
-          headcoords: [displacementheadx, displacementheady]
-        });
-
-        expect(stateVariables['/_vector1'].stateValues.tail).eqls([tailx, taily]);
-        expect(stateVariables['/_vector1'].stateValues.head).eqls([headx, heady]);
-        expect(stateVariables['/_vector1'].stateValues.displacement).eqls([displacementx, displacementy]);
-        expect(stateVariables['/tail'].stateValues.xs[0]).eq(tailx);
-        expect(stateVariables['/tail'].stateValues.xs[1]).eq(taily);
-        expect(stateVariables['/head'].stateValues.xs[0]).eq(headx);
-        expect(stateVariables['/head'].stateValues.xs[1]).eq(heady);
-        expect(stateVariables['/displacement'].stateValues.tail).eqls([displacementtailx, displacementtaily]);
-        expect(stateVariables['/displacement'].stateValues.head).eqls([displacementheadx, displacementheady]);
-        expect(stateVariables['/displacement'].stateValues.displacement).eqls([displacementx, displacementy]);
+      await testVectorCopiedHTD({
+        headx, heady, tailx, taily, displacementTailShiftx, displacementTailShifty
       })
     })
+
+    cy.log('move copied head')
+    cy.window().then(async (win) => {
+
+      headx = -3;
+      heady = -9;
+
+      win.callAction({
+        actionName: "movePoint",
+        componentName: "/head",
+        args: { x: headx, y: heady }
+      })
+
+      await testVectorCopiedHTD({
+        headx, heady, tailx, taily, displacementTailShiftx, displacementTailShifty
+      })
+    })
+
+    cy.log('move copied displacement')
+    cy.window().then(async (win) => {
+
+      let displacementTailShiftx = -4;
+      let displacementTailShifty = -5;
+
+      let displacementx = 2;
+      let displacementy = -3;
+
+      headx = tailx + displacementx;
+      heady = taily + displacementy;
+
+      let displacementheadx = displacementTailShiftx + displacementx;
+      let displacementheady = displacementTailShifty + displacementy;
+
+
+      win.callAction({
+        actionName: "moveVector",
+        componentName: "/displacement",
+        args: {
+          tailcoords: [displacementTailShiftx, displacementTailShifty],
+          headcoords: [displacementheadx, displacementheady]
+        }
+      })
+
+
+      await testVectorCopiedHTD({
+        headx, heady, tailx, taily, displacementTailShiftx, displacementTailShifty
+      })
+
+    })
+
   })
 
   it('vector inside vector overrides displacement', () => {
@@ -8340,167 +8754,130 @@ describe('Vector Tag Tests', function () {
   </graph>
 
   <graph>
-  <copy prop="tail" target="_vector1" />
-  <copy prop="head" target="_vector1" />
-  <copy prop="displacement" target="_vector1" />
+  <copy prop="tail" target="_vector1" assignNames="tail" />
+  <copy prop="head" target="_vector1" assignNames="head" />
+  <copy prop="displacement" target="_vector1" assignNames="displacement" />
   </graph>
+  
+  <copy prop="tail" target="_vector1" assignNames="tail2" />
+  <copy prop="head" target="_vector1" assignNames="head2" />
+  <copy prop="displacement" target="_vector1" assignNames="displacement2" />
   `}, "*");
     });
 
     // to wait for page to load
     cy.get('#\\/_text1').should('have.text', 'a');
 
+    let tailx = 0;
+    let taily = 0;
+    let headx = -4;
+    let heady = 2;
+    let displacementTailShiftx = 0;
+    let displacementTailShifty = 0;
+
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
-      let tail = stateVariables['/_copy1'].replacements[0];
-      let head = stateVariables['/_copy2'].replacements[0];
-      let displacement = stateVariables['/_copy3'].replacements[0];
 
-      cy.window().then(async (win) => {
-        let tailx = 0;
-        let taily = 0;
-        let headx = -4;
-        let heady = 2;
-        let displacementx = headx - tailx;
-        let displacementy = heady - taily;
-
-        expect(stateVariables['/_vector1'].stateValues.tail).eqls([tailx, taily]);
-        expect(stateVariables['/_vector1'].stateValues.head).eqls([headx, heady]);
-        expect(stateVariables['/_vector1'].stateValues.displacement).eqls([displacementx, displacementy]);
-        expect(stateVariables['/tail'].stateValues.xs[0]).eq(tailx);
-        expect(stateVariables['/tail'].stateValues.xs[1]).eq(taily);
-        expect(stateVariables['/head'].stateValues.xs[0]).eq(headx);
-        expect(stateVariables['/head'].stateValues.xs[1]).eq(heady);
-        expect(stateVariables['/displacement'].stateValues.tail).eqls([0, 0]);
-        expect(stateVariables['/displacement'].stateValues.head).eqls([displacementx, displacementy]);
-        expect(stateVariables['/displacement'].stateValues.displacement).eqls([displacementx, displacementy]);
-
+      await testVectorCopiedHTD({
+        headx, heady, tailx, taily, displacementTailShiftx, displacementTailShifty
       })
 
-      cy.log('move vector up and to the right')
-      cy.window().then(async (win) => {
+    })
 
-        let tailcoords = [
-          stateVariables['/_vector1'].stateValues.tail[0],
-          stateVariables['/_vector1'].stateValues.tail[1],
-        ];
-        let headcoords = [
-          stateVariables['/_vector1'].stateValues.head[0],
-          stateVariables['/_vector1'].stateValues.head[1],
-        ];
+    cy.log('move vector up and to the right')
+    cy.window().then(async (win) => {
 
-        let moveX = 3;
-        let moveY = 2;
+      let moveX = 3;
+      let moveY = 2;
+      tailx += moveX;
+      headx += moveX;
+      taily += moveY;
+      heady += moveY;
 
-        tailcoords[0] = tailcoords[0].add(moveX).simplify();
-        tailcoords[1] = tailcoords[1].add(moveY).simplify();
-        headcoords[0] = headcoords[0].add(moveX).simplify();
-        headcoords[1] = headcoords[1].add(moveY).simplify();
 
-        await stateVariables['/_vector1'].moveVector({
-          tailcoords: tailcoords,
-          headcoords: headcoords
-        });
-
-        let tailx = tailcoords[0].simplify();
-        let taily = tailcoords[1].simplify();
-        let headx = headcoords[0].simplify();
-        let heady = headcoords[1].simplify();
-        let displacementx = headx - tailx;
-        let displacementy = heady - taily;
-
-        expect(stateVariables['/_vector1'].stateValues.tail).eqls([tailx, taily]);
-        expect(stateVariables['/_vector1'].stateValues.head).eqls([headx, heady]);
-        expect(stateVariables['/_vector1'].stateValues.displacement).eqls([displacementx, displacementy]);
-        expect(stateVariables['/tail'].stateValues.xs[0]).eq(tailx);
-        expect(stateVariables['/tail'].stateValues.xs[1]).eq(taily);
-        expect(stateVariables['/head'].stateValues.xs[0]).eq(headx);
-        expect(stateVariables['/head'].stateValues.xs[1]).eq(heady);
-        expect(stateVariables['/displacement'].stateValues.tail).eqls([0, 0]);
-        expect(stateVariables['/displacement'].stateValues.head).eqls([displacementx, displacementy]);
-        expect(stateVariables['/displacement'].stateValues.displacement).eqls([displacementx, displacementy]);
+      win.callAction({
+        actionName: "moveVector",
+        componentName: "/_vector1",
+        args: {
+          tailcoords: [tailx, taily],
+          headcoords: [headx, heady]
+        }
       })
 
-      cy.log('move copied tail moves vector')
-      cy.window().then(async (win) => {
-
-        let tailx = 1;
-        let taily = 6;
-        let headx = -3;
-        let heady = 8;
-        let displacementx = headx - tailx;
-        let displacementy = heady - taily;
-
-        await tail.movePoint({ x: tailx, y: taily });
-
-        expect(stateVariables['/_vector1'].stateValues.tail).eqls([tailx, taily]);
-        expect(stateVariables['/_vector1'].stateValues.head).eqls([headx, heady]);
-        expect(stateVariables['/_vector1'].stateValues.displacement).eqls([displacementx, displacementy]);
-        expect(stateVariables['/tail'].stateValues.xs[0]).eq(tailx);
-        expect(stateVariables['/tail'].stateValues.xs[1]).eq(taily);
-        expect(stateVariables['/head'].stateValues.xs[0]).eq(headx);
-        expect(stateVariables['/head'].stateValues.xs[1]).eq(heady);
-        expect(stateVariables['/displacement'].stateValues.tail).eqls([0, 0]);
-        expect(stateVariables['/displacement'].stateValues.head).eqls([displacementx, displacementy]);
-        expect(stateVariables['/displacement'].stateValues.displacement).eqls([displacementx, displacementy]);
+      await testVectorCopiedHTD({
+        headx, heady, tailx, taily, displacementTailShiftx, displacementTailShifty
       })
 
-      cy.log('move copied head')
-      cy.window().then(async (win) => {
+    })
 
+    cy.log('move copied tail moves vector')
+    cy.window().then(async (win) => {
 
-        let tailx = 1;
-        let taily = 6;
-        let headx = 4;
-        let heady = -9;
-        let displacementx = headx - tailx;
-        let displacementy = heady - taily;
+      let moveX = -8;
+      let moveY = 4;
+      tailx += moveX;
+      headx += moveX;
+      taily += moveY;
+      heady += moveY;
 
-        await head.movePoint({ x: headx, y: heady });
-
-        expect(stateVariables['/_vector1'].stateValues.tail).eqls([tailx, taily]);
-        expect(stateVariables['/_vector1'].stateValues.head).eqls([headx, heady]);
-        expect(stateVariables['/_vector1'].stateValues.displacement).eqls([displacementx, displacementy]);
-        expect(stateVariables['/tail'].stateValues.xs[0]).eq(tailx);
-        expect(stateVariables['/tail'].stateValues.xs[1]).eq(taily);
-        expect(stateVariables['/head'].stateValues.xs[0]).eq(headx);
-        expect(stateVariables['/head'].stateValues.xs[1]).eq(heady);
-        expect(stateVariables['/displacement'].stateValues.tail).eqls([0, 0]);
-        expect(stateVariables['/displacement'].stateValues.head).eqls([displacementx, displacementy]);
-        expect(stateVariables['/displacement'].stateValues.displacement).eqls([displacementx, displacementy]);
+      win.callAction({
+        actionName: "movePoint",
+        componentName: "/tail",
+        args: { x: tailx, y: taily }
       })
 
-      cy.log('move displacement')
-      cy.window().then(async (win) => {
 
-        let tailx = 1;
-        let taily = 6;
-        let displacementtailx = 3;
-        let displacementtaily = -5;
-        let displacementheadx = 6;
-        let displacementheady = -9;
-        let displacementx = displacementheadx - displacementtailx;
-        let displacementy = displacementheady - displacementtaily;
+      await testVectorCopiedHTD({
+        headx, heady, tailx, taily, displacementTailShiftx, displacementTailShifty
+      })
+    })
 
-        let headx = tailx + displacementx;
-        let heady = taily + displacementy;
+    cy.log('move copied head')
+    cy.window().then(async (win) => {
 
-        await displacement.moveVector({
-          tailcoords: [displacementtailx, displacementtaily],
+      headx = -3;
+      heady = -9;
+
+      win.callAction({
+        actionName: "movePoint",
+        componentName: "/head",
+        args: { x: headx, y: heady }
+      })
+
+      await testVectorCopiedHTD({
+        headx, heady, tailx, taily, displacementTailShiftx, displacementTailShifty
+      })
+    })
+
+    cy.log('move copied displacement')
+    cy.window().then(async (win) => {
+
+      let displacementTailShiftx = -4;
+      let displacementTailShifty = -5;
+
+      let displacementx = 2;
+      let displacementy = -3;
+
+      headx = tailx + displacementx;
+      heady = taily + displacementy;
+
+      let displacementheadx = displacementTailShiftx + displacementx;
+      let displacementheady = displacementTailShifty + displacementy;
+
+
+      win.callAction({
+        actionName: "moveVector",
+        componentName: "/displacement",
+        args: {
+          tailcoords: [displacementTailShiftx, displacementTailShifty],
           headcoords: [displacementheadx, displacementheady]
-        });
-
-        expect(stateVariables['/_vector1'].stateValues.tail).eqls([tailx, taily]);
-        expect(stateVariables['/_vector1'].stateValues.head).eqls([headx, heady]);
-        expect(stateVariables['/_vector1'].stateValues.displacement).eqls([displacementx, displacementy]);
-        expect(stateVariables['/tail'].stateValues.xs[0]).eq(tailx);
-        expect(stateVariables['/tail'].stateValues.xs[1]).eq(taily);
-        expect(stateVariables['/head'].stateValues.xs[0]).eq(headx);
-        expect(stateVariables['/head'].stateValues.xs[1]).eq(heady);
-        expect(stateVariables['/displacement'].stateValues.tail).eqls([displacementtailx, displacementtaily]);
-        expect(stateVariables['/displacement'].stateValues.head).eqls([displacementheadx, displacementheady]);
-        expect(stateVariables['/displacement'].stateValues.displacement).eqls([displacementx, displacementy]);
+        }
       })
+
+
+      await testVectorCopiedHTD({
+        headx, heady, tailx, taily, displacementTailShiftx, displacementTailShifty
+      })
+
     })
   })
 
@@ -8514,168 +8891,133 @@ describe('Vector Tag Tests', function () {
   </graph>
 
   <graph>
-  <copy prop="tail" target="_vector1" />
-  <copy prop="head" target="_vector1" />
-  <copy prop="displacement" target="_vector1" />
+  <copy prop="tail" target="_vector1" assignNames="tail" />
+  <copy prop="head" target="_vector1" assignNames="head" />
+  <copy prop="displacement" target="_vector1" assignNames="displacement" />
   </graph>
+  
+  <copy prop="tail" target="_vector1" assignNames="tail2" />
+  <copy prop="head" target="_vector1" assignNames="head2" />
+  <copy prop="displacement" target="_vector1" assignNames="displacement2" />
+
   `}, "*");
     });
 
     // to wait for page to load
     cy.get('#\\/_text1').should('have.text', 'a');
 
+    let tailx = 0;
+    let taily = 0;
+    let headx = -4;
+    let heady = 2;
+    let displacementTailShiftx = 0;
+    let displacementTailShifty = 0;
+
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
-      let tail = stateVariables['/_copy1'].replacements[0];
-      let head = stateVariables['/_copy2'].replacements[0];
-      let displacement = stateVariables['/_copy3'].replacements[0];
 
-      cy.window().then(async (win) => {
-        let tailx = 0;
-        let taily = 0;
-        let headx = -4;
-        let heady = 2;
-        let displacementx = headx - tailx;
-        let displacementy = heady - taily;
-
-        expect(stateVariables['/_vector1'].stateValues.tail).eqls([tailx, taily]);
-        expect(stateVariables['/_vector1'].stateValues.head).eqls([headx, heady]);
-        expect(stateVariables['/_vector1'].stateValues.displacement).eqls([displacementx, displacementy]);
-        expect(stateVariables['/tail'].stateValues.xs[0]).eq(tailx);
-        expect(stateVariables['/tail'].stateValues.xs[1]).eq(taily);
-        expect(stateVariables['/head'].stateValues.xs[0]).eq(headx);
-        expect(stateVariables['/head'].stateValues.xs[1]).eq(heady);
-        expect(stateVariables['/displacement'].stateValues.tail).eqls([0, 0]);
-        expect(stateVariables['/displacement'].stateValues.head).eqls([displacementx, displacementy]);
-        expect(stateVariables['/displacement'].stateValues.displacement).eqls([displacementx, displacementy]);
-
+      await testVectorCopiedHTD({
+        headx, heady, tailx, taily, displacementTailShiftx, displacementTailShifty
       })
 
-      cy.log('move vector up and to the right')
-      cy.window().then(async (win) => {
+    })
 
-        let tailcoords = [
-          stateVariables['/_vector1'].stateValues.tail[0],
-          stateVariables['/_vector1'].stateValues.tail[1],
-        ];
-        let headcoords = [
-          stateVariables['/_vector1'].stateValues.head[0],
-          stateVariables['/_vector1'].stateValues.head[1],
-        ];
+    cy.log('move vector up and to the right')
+    cy.window().then(async (win) => {
 
-        let moveX = 3;
-        let moveY = 2;
+      let moveX = 3;
+      let moveY = 2;
+      tailx += moveX;
+      headx += moveX;
+      taily += moveY;
+      heady += moveY;
 
-        tailcoords[0] = tailcoords[0].add(moveX).simplify();
-        tailcoords[1] = tailcoords[1].add(moveY).simplify();
-        headcoords[0] = headcoords[0].add(moveX).simplify();
-        headcoords[1] = headcoords[1].add(moveY).simplify();
 
-        await stateVariables['/_vector1'].moveVector({
-          tailcoords: tailcoords,
-          headcoords: headcoords
-        });
-
-        let tailx = tailcoords[0].simplify();
-        let taily = tailcoords[1].simplify();
-        let headx = headcoords[0].simplify();
-        let heady = headcoords[1].simplify();
-        let displacementx = headx - tailx;
-        let displacementy = heady - taily;
-
-        expect(stateVariables['/_vector1'].stateValues.tail).eqls([tailx, taily]);
-        expect(stateVariables['/_vector1'].stateValues.head).eqls([headx, heady]);
-        expect(stateVariables['/_vector1'].stateValues.displacement).eqls([displacementx, displacementy]);
-        expect(stateVariables['/tail'].stateValues.xs[0]).eq(tailx);
-        expect(stateVariables['/tail'].stateValues.xs[1]).eq(taily);
-        expect(stateVariables['/head'].stateValues.xs[0]).eq(headx);
-        expect(stateVariables['/head'].stateValues.xs[1]).eq(heady);
-        expect(stateVariables['/displacement'].stateValues.tail).eqls([0, 0]);
-        expect(stateVariables['/displacement'].stateValues.head).eqls([displacementx, displacementy]);
-        expect(stateVariables['/displacement'].stateValues.displacement).eqls([displacementx, displacementy]);
+      win.callAction({
+        actionName: "moveVector",
+        componentName: "/_vector1",
+        args: {
+          tailcoords: [tailx, taily],
+          headcoords: [headx, heady]
+        }
       })
 
-      cy.log('move copied tail moves vector')
-      cy.window().then(async (win) => {
-
-        let tailx = 1;
-        let taily = 6;
-        let headx = -3;
-        let heady = 8;
-        let displacementx = headx - tailx;
-        let displacementy = heady - taily;
-
-        await tail.movePoint({ x: tailx, y: taily });
-
-        expect(stateVariables['/_vector1'].stateValues.tail).eqls([tailx, taily]);
-        expect(stateVariables['/_vector1'].stateValues.head).eqls([headx, heady]);
-        expect(stateVariables['/_vector1'].stateValues.displacement).eqls([displacementx, displacementy]);
-        expect(stateVariables['/tail'].stateValues.xs[0]).eq(tailx);
-        expect(stateVariables['/tail'].stateValues.xs[1]).eq(taily);
-        expect(stateVariables['/head'].stateValues.xs[0]).eq(headx);
-        expect(stateVariables['/head'].stateValues.xs[1]).eq(heady);
-        expect(stateVariables['/displacement'].stateValues.tail).eqls([0, 0]);
-        expect(stateVariables['/displacement'].stateValues.head).eqls([displacementx, displacementy]);
-        expect(stateVariables['/displacement'].stateValues.displacement).eqls([displacementx, displacementy]);
+      await testVectorCopiedHTD({
+        headx, heady, tailx, taily, displacementTailShiftx, displacementTailShifty
       })
 
-      cy.log('move copied head')
-      cy.window().then(async (win) => {
+    })
 
+    cy.log('move copied tail moves vector')
+    cy.window().then(async (win) => {
 
-        let tailx = 1
-        let taily = 6;
-        let headx = 4;
-        let heady = -9;
-        let displacementx = headx - tailx;
-        let displacementy = heady - taily;
+      let moveX = -8;
+      let moveY = 4;
+      tailx += moveX;
+      headx += moveX;
+      taily += moveY;
+      heady += moveY;
 
-        await head.movePoint({ x: headx, y: heady });
-
-        expect(stateVariables['/_vector1'].stateValues.tail).eqls([tailx, taily]);
-        expect(stateVariables['/_vector1'].stateValues.head).eqls([headx, heady]);
-        expect(stateVariables['/_vector1'].stateValues.displacement).eqls([displacementx, displacementy]);
-        expect(stateVariables['/tail'].stateValues.xs[0]).eq(tailx);
-        expect(stateVariables['/tail'].stateValues.xs[1]).eq(taily);
-        expect(stateVariables['/head'].stateValues.xs[0]).eq(headx);
-        expect(stateVariables['/head'].stateValues.xs[1]).eq(heady);
-        expect(stateVariables['/displacement'].stateValues.tail).eqls([0, 0]);
-        expect(stateVariables['/displacement'].stateValues.head).eqls([displacementx, displacementy]);
-        expect(stateVariables['/displacement'].stateValues.displacement).eqls([displacementx, displacementy]);
+      win.callAction({
+        actionName: "movePoint",
+        componentName: "/tail",
+        args: { x: tailx, y: taily }
       })
 
-      cy.log('move displacement')
-      cy.window().then(async (win) => {
 
-        let tailx = 1;
-        let taily = 6;
-        let displacementtailx = 3;
-        let displacementtaily = -5;
-        let displacementheadx = 6;
-        let displacementheady = -9;
-        let displacementx = displacementheadx - displacementtailx;
-        let displacementy = displacementheady - displacementtaily;
-
-        let headx = tailx + displacementx;
-        let heady = taily + displacementy;
-
-        await displacement.moveVector({
-          tailcoords: [displacementtailx, displacementtaily],
-          headcoords: [displacementheadx, displacementheady]
-        });
-
-        expect(stateVariables['/_vector1'].stateValues.tail).eqls([tailx, taily]);
-        expect(stateVariables['/_vector1'].stateValues.head).eqls([headx, heady]);
-        expect(stateVariables['/_vector1'].stateValues.displacement).eqls([displacementx, displacementy]);
-        expect(stateVariables['/tail'].stateValues.xs[0]).eq(tailx);
-        expect(stateVariables['/tail'].stateValues.xs[1]).eq(taily);
-        expect(stateVariables['/head'].stateValues.xs[0]).eq(headx);
-        expect(stateVariables['/head'].stateValues.xs[1]).eq(heady);
-        expect(stateVariables['/displacement'].stateValues.tail).eqls([displacementtailx, displacementtaily]);
-        expect(stateVariables['/displacement'].stateValues.head).eqls([displacementheadx, displacementheady]);
-        expect(stateVariables['/displacement'].stateValues.displacement).eqls([displacementx, displacementy]);
+      await testVectorCopiedHTD({
+        headx, heady, tailx, taily, displacementTailShiftx, displacementTailShifty
       })
     })
+
+    cy.log('move copied head')
+    cy.window().then(async (win) => {
+
+      headx = -3;
+      heady = -9;
+
+      win.callAction({
+        actionName: "movePoint",
+        componentName: "/head",
+        args: { x: headx, y: heady }
+      })
+
+      await testVectorCopiedHTD({
+        headx, heady, tailx, taily, displacementTailShiftx, displacementTailShifty
+      })
+    })
+
+    cy.log('move copied displacement')
+    cy.window().then(async (win) => {
+
+      let displacementTailShiftx = -4;
+      let displacementTailShifty = -5;
+
+      let displacementx = 2;
+      let displacementy = -3;
+
+      headx = tailx + displacementx;
+      heady = taily + displacementy;
+
+      let displacementheadx = displacementTailShiftx + displacementx;
+      let displacementheady = displacementTailShifty + displacementy;
+
+
+      win.callAction({
+        actionName: "moveVector",
+        componentName: "/displacement",
+        args: {
+          tailcoords: [displacementTailShiftx, displacementTailShifty],
+          headcoords: [displacementheadx, displacementheady]
+        }
+      })
+
+
+      await testVectorCopiedHTD({
+        headx, heady, tailx, taily, displacementTailShiftx, displacementTailShifty
+      })
+
+    })
+
   })
 
   it('vector inside vector overrides xs', () => {
@@ -8688,168 +9030,132 @@ describe('Vector Tag Tests', function () {
   </graph>
 
   <graph>
-  <copy prop="tail" target="_vector1" />
-  <copy prop="head" target="_vector1" />
-  <copy prop="displacement" target="_vector1" />
+  <copy prop="tail" target="_vector1" assignNames="tail" />
+  <copy prop="head" target="_vector1" assignNames="head" />
+  <copy prop="displacement" target="_vector1" assignNames="displacement" />
   </graph>
+  
+  <copy prop="tail" target="_vector1" assignNames="tail2" />
+  <copy prop="head" target="_vector1" assignNames="head2" />
+  <copy prop="displacement" target="_vector1" assignNames="displacement2" />
   `}, "*");
     });
 
     // to wait for page to load
     cy.get('#\\/_text1').should('have.text', 'a');
 
+    let tailx = 0;
+    let taily = 0;
+    let headx = -4;
+    let heady = 2;
+    let displacementTailShiftx = 0;
+    let displacementTailShifty = 0;
+
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
-      let tail = stateVariables['/_copy1'].replacements[0];
-      let head = stateVariables['/_copy2'].replacements[0];
-      let displacement = stateVariables['/_copy3'].replacements[0];
 
-      cy.window().then(async (win) => {
-        let tailx = 0;
-        let taily = 0;
-        let headx = -4;
-        let heady = 2;
-        let displacementx = headx - tailx;
-        let displacementy = heady - taily;
-
-        expect(stateVariables['/_vector1'].stateValues.tail).eqls([tailx, taily]);
-        expect(stateVariables['/_vector1'].stateValues.head).eqls([headx, heady]);
-        expect(stateVariables['/_vector1'].stateValues.displacement).eqls([displacementx, displacementy]);
-        expect(stateVariables['/tail'].stateValues.xs[0]).eq(tailx);
-        expect(stateVariables['/tail'].stateValues.xs[1]).eq(taily);
-        expect(stateVariables['/head'].stateValues.xs[0]).eq(headx);
-        expect(stateVariables['/head'].stateValues.xs[1]).eq(heady);
-        expect(stateVariables['/displacement'].stateValues.tail).eqls([0, 0]);
-        expect(stateVariables['/displacement'].stateValues.head).eqls([displacementx, displacementy]);
-        expect(stateVariables['/displacement'].stateValues.displacement).eqls([displacementx, displacementy]);
-
+      await testVectorCopiedHTD({
+        headx, heady, tailx, taily, displacementTailShiftx, displacementTailShifty
       })
 
-      cy.log('move vector up and to the right')
-      cy.window().then(async (win) => {
+    })
 
-        let tailcoords = [
-          stateVariables['/_vector1'].stateValues.tail[0],
-          stateVariables['/_vector1'].stateValues.tail[1],
-        ];
-        let headcoords = [
-          stateVariables['/_vector1'].stateValues.head[0],
-          stateVariables['/_vector1'].stateValues.head[1],
-        ];
+    cy.log('move vector up and to the right')
+    cy.window().then(async (win) => {
 
-        let moveX = 3;
-        let moveY = 2;
+      let moveX = 3;
+      let moveY = 2;
+      tailx += moveX;
+      headx += moveX;
+      taily += moveY;
+      heady += moveY;
 
-        tailcoords[0] = tailcoords[0].add(moveX).simplify();
-        tailcoords[1] = tailcoords[1].add(moveY).simplify();
-        headcoords[0] = headcoords[0].add(moveX).simplify();
-        headcoords[1] = headcoords[1].add(moveY).simplify();
 
-        await stateVariables['/_vector1'].moveVector({
-          tailcoords: tailcoords,
-          headcoords: headcoords
-        });
-
-        let tailx = tailcoords[0].simplify();
-        let taily = tailcoords[1].simplify();
-        let headx = headcoords[0].simplify();
-        let heady = headcoords[1].simplify();
-        let displacementx = headx - tailx;
-        let displacementy = heady - taily;
-
-        expect(stateVariables['/_vector1'].stateValues.tail).eqls([tailx, taily]);
-        expect(stateVariables['/_vector1'].stateValues.head).eqls([headx, heady]);
-        expect(stateVariables['/_vector1'].stateValues.displacement).eqls([displacementx, displacementy]);
-        expect(stateVariables['/tail'].stateValues.xs[0]).eq(tailx);
-        expect(stateVariables['/tail'].stateValues.xs[1]).eq(taily);
-        expect(stateVariables['/head'].stateValues.xs[0]).eq(headx);
-        expect(stateVariables['/head'].stateValues.xs[1]).eq(heady);
-        expect(stateVariables['/displacement'].stateValues.tail).eqls([0, 0]);
-        expect(stateVariables['/displacement'].stateValues.head).eqls([displacementx, displacementy]);
-        expect(stateVariables['/displacement'].stateValues.displacement).eqls([displacementx, displacementy]);
+      win.callAction({
+        actionName: "moveVector",
+        componentName: "/_vector1",
+        args: {
+          tailcoords: [tailx, taily],
+          headcoords: [headx, heady]
+        }
       })
 
-      cy.log('move copied tail moves vector')
-      cy.window().then(async (win) => {
-
-        let tailx = 1;
-        let taily = 6;
-        let headx = -3;
-        let heady = 8;
-        let displacementx = headx - tailx;
-        let displacementy = heady - taily;
-
-        await tail.movePoint({ x: tailx, y: taily });
-
-        expect(stateVariables['/_vector1'].stateValues.tail).eqls([tailx, taily]);
-        expect(stateVariables['/_vector1'].stateValues.head).eqls([headx, heady]);
-        expect(stateVariables['/_vector1'].stateValues.displacement).eqls([displacementx, displacementy]);
-        expect(stateVariables['/tail'].stateValues.xs[0]).eq(tailx);
-        expect(stateVariables['/tail'].stateValues.xs[1]).eq(taily);
-        expect(stateVariables['/head'].stateValues.xs[0]).eq(headx);
-        expect(stateVariables['/head'].stateValues.xs[1]).eq(heady);
-        expect(stateVariables['/displacement'].stateValues.tail).eqls([0, 0]);
-        expect(stateVariables['/displacement'].stateValues.head).eqls([displacementx, displacementy]);
-        expect(stateVariables['/displacement'].stateValues.displacement).eqls([displacementx, displacementy]);
+      await testVectorCopiedHTD({
+        headx, heady, tailx, taily, displacementTailShiftx, displacementTailShifty
       })
 
-      cy.log('move copied head')
-      cy.window().then(async (win) => {
+    })
 
+    cy.log('move copied tail moves vector')
+    cy.window().then(async (win) => {
 
-        let tailx = 1;
-        let taily = 6;
-        let headx = 4;
-        let heady = -9;
-        let displacementx = headx - tailx;
-        let displacementy = heady - taily;
+      let moveX = -8;
+      let moveY = 4;
+      tailx += moveX;
+      headx += moveX;
+      taily += moveY;
+      heady += moveY;
 
-        await head.movePoint({ x: headx, y: heady });
-
-        expect(stateVariables['/_vector1'].stateValues.tail).eqls([tailx, taily]);
-        expect(stateVariables['/_vector1'].stateValues.head).eqls([headx, heady]);
-        expect(stateVariables['/_vector1'].stateValues.displacement).eqls([displacementx, displacementy]);
-        expect(stateVariables['/tail'].stateValues.xs[0]).eq(tailx);
-        expect(stateVariables['/tail'].stateValues.xs[1]).eq(taily);
-        expect(stateVariables['/head'].stateValues.xs[0]).eq(headx);
-        expect(stateVariables['/head'].stateValues.xs[1]).eq(heady);
-        expect(stateVariables['/displacement'].stateValues.tail).eqls([0, 0]);
-        expect(stateVariables['/displacement'].stateValues.head).eqls([displacementx, displacementy]);
-        expect(stateVariables['/displacement'].stateValues.displacement).eqls([displacementx, displacementy]);
+      win.callAction({
+        actionName: "movePoint",
+        componentName: "/tail",
+        args: { x: tailx, y: taily }
       })
 
-      cy.log('move displacement')
-      cy.window().then(async (win) => {
 
-        let tailx = 1;
-        let taily = 6;
-        let displacementtailx = 3;
-        let displacementtaily = -5;
-        let displacementheadx = 6;
-        let displacementheady = -9;
-        let displacementx = displacementheadx - displacementtailx;
-        let displacementy = displacementheady - displacementtaily;
-
-        let headx = tailx + displacementx;
-        let heady = taily + displacementy;
-
-        await displacement.moveVector({
-          tailcoords: [displacementtailx, displacementtaily],
-          headcoords: [displacementheadx, displacementheady]
-        });
-
-        expect(stateVariables['/_vector1'].stateValues.tail).eqls([tailx, taily]);
-        expect(stateVariables['/_vector1'].stateValues.head).eqls([headx, heady]);
-        expect(stateVariables['/_vector1'].stateValues.displacement).eqls([displacementx, displacementy]);
-        expect(stateVariables['/tail'].stateValues.xs[0]).eq(tailx);
-        expect(stateVariables['/tail'].stateValues.xs[1]).eq(taily);
-        expect(stateVariables['/head'].stateValues.xs[0]).eq(headx);
-        expect(stateVariables['/head'].stateValues.xs[1]).eq(heady);
-        expect(stateVariables['/displacement'].stateValues.tail).eqls([displacementtailx, displacementtaily]);
-        expect(stateVariables['/displacement'].stateValues.head).eqls([displacementheadx, displacementheady]);
-        expect(stateVariables['/displacement'].stateValues.displacement).eqls([displacementx, displacementy]);
+      await testVectorCopiedHTD({
+        headx, heady, tailx, taily, displacementTailShiftx, displacementTailShifty
       })
     })
+
+    cy.log('move copied head')
+    cy.window().then(async (win) => {
+
+      headx = -3;
+      heady = -9;
+
+      win.callAction({
+        actionName: "movePoint",
+        componentName: "/head",
+        args: { x: headx, y: heady }
+      })
+
+      await testVectorCopiedHTD({
+        headx, heady, tailx, taily, displacementTailShiftx, displacementTailShifty
+      })
+    })
+
+    cy.log('move copied displacement')
+    cy.window().then(async (win) => {
+
+      let displacementTailShiftx = -4;
+      let displacementTailShifty = -5;
+
+      let displacementx = 2;
+      let displacementy = -3;
+
+      headx = tailx + displacementx;
+      heady = taily + displacementy;
+
+      let displacementheadx = displacementTailShiftx + displacementx;
+      let displacementheady = displacementTailShifty + displacementy;
+
+
+      win.callAction({
+        actionName: "moveVector",
+        componentName: "/displacement",
+        args: {
+          tailcoords: [displacementTailShiftx, displacementTailShifty],
+          headcoords: [displacementheadx, displacementheady]
+        }
+      })
+
+
+      await testVectorCopiedHTD({
+        headx, heady, tailx, taily, displacementTailShiftx, displacementTailShifty
+      })
+
+    })
+
   })
 
   it('displacement overrides xs', () => {
@@ -8862,168 +9168,132 @@ describe('Vector Tag Tests', function () {
   </graph>
 
   <graph>
-  <copy prop="tail" target="_vector1" />
-  <copy prop="head" target="_vector1" />
-  <copy prop="displacement" target="_vector1" />
+  <copy prop="tail" target="_vector1" assignNames="tail" />
+  <copy prop="head" target="_vector1" assignNames="head" />
+  <copy prop="displacement" target="_vector1" assignNames="displacement" />
   </graph>
+  
+  <copy prop="tail" target="_vector1" assignNames="tail2" />
+  <copy prop="head" target="_vector1" assignNames="head2" />
+  <copy prop="displacement" target="_vector1" assignNames="displacement2" />
   `}, "*");
     });
 
     // to wait for page to load
     cy.get('#\\/_text1').should('have.text', 'a');
 
+    let tailx = 0;
+    let taily = 0;
+    let headx = -4;
+    let heady = 2;
+    let displacementTailShiftx = 0;
+    let displacementTailShifty = 0;
+
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
-      let tail = stateVariables['/_copy1'].replacements[0];
-      let head = stateVariables['/_copy2'].replacements[0];
-      let displacement = stateVariables['/_copy3'].replacements[0];
 
-      cy.window().then(async (win) => {
-        let tailx = 0;
-        let taily = 0;
-        let headx = -4;
-        let heady = 2;
-        let displacementx = headx - tailx;
-        let displacementy = heady - taily;
-
-        expect(stateVariables['/_vector1'].stateValues.tail).eqls([tailx, taily]);
-        expect(stateVariables['/_vector1'].stateValues.head).eqls([headx, heady]);
-        expect(stateVariables['/_vector1'].stateValues.displacement).eqls([displacementx, displacementy]);
-        expect(stateVariables['/tail'].stateValues.xs[0]).eq(tailx);
-        expect(stateVariables['/tail'].stateValues.xs[1]).eq(taily);
-        expect(stateVariables['/head'].stateValues.xs[0]).eq(headx);
-        expect(stateVariables['/head'].stateValues.xs[1]).eq(heady);
-        expect(stateVariables['/displacement'].stateValues.tail).eqls([0, 0]);
-        expect(stateVariables['/displacement'].stateValues.head).eqls([displacementx, displacementy]);
-        expect(stateVariables['/displacement'].stateValues.displacement).eqls([displacementx, displacementy]);
-
+      await testVectorCopiedHTD({
+        headx, heady, tailx, taily, displacementTailShiftx, displacementTailShifty
       })
 
-      cy.log('move vector up and to the right')
-      cy.window().then(async (win) => {
+    })
 
-        let tailcoords = [
-          stateVariables['/_vector1'].stateValues.tail[0],
-          stateVariables['/_vector1'].stateValues.tail[1],
-        ];
-        let headcoords = [
-          stateVariables['/_vector1'].stateValues.head[0],
-          stateVariables['/_vector1'].stateValues.head[1],
-        ];
+    cy.log('move vector up and to the right')
+    cy.window().then(async (win) => {
 
-        let moveX = 3;
-        let moveY = 2;
+      let moveX = 3;
+      let moveY = 2;
+      tailx += moveX;
+      headx += moveX;
+      taily += moveY;
+      heady += moveY;
 
-        tailcoords[0] = tailcoords[0].add(moveX).simplify();
-        tailcoords[1] = tailcoords[1].add(moveY).simplify();
-        headcoords[0] = headcoords[0].add(moveX).simplify();
-        headcoords[1] = headcoords[1].add(moveY).simplify();
 
-        await stateVariables['/_vector1'].moveVector({
-          tailcoords: tailcoords,
-          headcoords: headcoords
-        });
-
-        let tailx = tailcoords[0].simplify();
-        let taily = tailcoords[1].simplify();
-        let headx = headcoords[0].simplify();
-        let heady = headcoords[1].simplify();
-        let displacementx = headx - tailx;
-        let displacementy = heady - taily;
-
-        expect(stateVariables['/_vector1'].stateValues.tail).eqls([tailx, taily]);
-        expect(stateVariables['/_vector1'].stateValues.head).eqls([headx, heady]);
-        expect(stateVariables['/_vector1'].stateValues.displacement).eqls([displacementx, displacementy]);
-        expect(stateVariables['/tail'].stateValues.xs[0]).eq(tailx);
-        expect(stateVariables['/tail'].stateValues.xs[1]).eq(taily);
-        expect(stateVariables['/head'].stateValues.xs[0]).eq(headx);
-        expect(stateVariables['/head'].stateValues.xs[1]).eq(heady);
-        expect(stateVariables['/displacement'].stateValues.tail).eqls([0, 0]);
-        expect(stateVariables['/displacement'].stateValues.head).eqls([displacementx, displacementy]);
-        expect(stateVariables['/displacement'].stateValues.displacement).eqls([displacementx, displacementy]);
+      win.callAction({
+        actionName: "moveVector",
+        componentName: "/_vector1",
+        args: {
+          tailcoords: [tailx, taily],
+          headcoords: [headx, heady]
+        }
       })
 
-      cy.log('move copied tail moves vector')
-      cy.window().then(async (win) => {
-
-        let tailx = 1;
-        let taily = 6;
-        let headx = -3;
-        let heady = 8;
-        let displacementx = headx - tailx;
-        let displacementy = heady - taily;
-
-        await tail.movePoint({ x: tailx, y: taily });
-
-        expect(stateVariables['/_vector1'].stateValues.tail).eqls([tailx, taily]);
-        expect(stateVariables['/_vector1'].stateValues.head).eqls([headx, heady]);
-        expect(stateVariables['/_vector1'].stateValues.displacement).eqls([displacementx, displacementy]);
-        expect(stateVariables['/tail'].stateValues.xs[0]).eq(tailx);
-        expect(stateVariables['/tail'].stateValues.xs[1]).eq(taily);
-        expect(stateVariables['/head'].stateValues.xs[0]).eq(headx);
-        expect(stateVariables['/head'].stateValues.xs[1]).eq(heady);
-        expect(stateVariables['/displacement'].stateValues.tail).eqls([0, 0]);
-        expect(stateVariables['/displacement'].stateValues.head).eqls([displacementx, displacementy]);
-        expect(stateVariables['/displacement'].stateValues.displacement).eqls([displacementx, displacementy]);
+      await testVectorCopiedHTD({
+        headx, heady, tailx, taily, displacementTailShiftx, displacementTailShifty
       })
 
-      cy.log('move copied head')
-      cy.window().then(async (win) => {
+    })
 
+    cy.log('move copied tail moves vector')
+    cy.window().then(async (win) => {
 
-        let tailx = 1;
-        let taily = 6;
-        let headx = 4;
-        let heady = -9;
-        let displacementx = headx - tailx;
-        let displacementy = heady - taily;
+      let moveX = -8;
+      let moveY = 4;
+      tailx += moveX;
+      headx += moveX;
+      taily += moveY;
+      heady += moveY;
 
-        await head.movePoint({ x: headx, y: heady });
-
-        expect(stateVariables['/_vector1'].stateValues.tail).eqls([tailx, taily]);
-        expect(stateVariables['/_vector1'].stateValues.head).eqls([headx, heady]);
-        expect(stateVariables['/_vector1'].stateValues.displacement).eqls([displacementx, displacementy]);
-        expect(stateVariables['/tail'].stateValues.xs[0]).eq(tailx);
-        expect(stateVariables['/tail'].stateValues.xs[1]).eq(taily);
-        expect(stateVariables['/head'].stateValues.xs[0]).eq(headx);
-        expect(stateVariables['/head'].stateValues.xs[1]).eq(heady);
-        expect(stateVariables['/displacement'].stateValues.tail).eqls([0, 0]);
-        expect(stateVariables['/displacement'].stateValues.head).eqls([displacementx, displacementy]);
-        expect(stateVariables['/displacement'].stateValues.displacement).eqls([displacementx, displacementy]);
+      win.callAction({
+        actionName: "movePoint",
+        componentName: "/tail",
+        args: { x: tailx, y: taily }
       })
 
-      cy.log('move displacement')
-      cy.window().then(async (win) => {
 
-        let tailx = 1;
-        let taily = 6;
-        let displacementtailx = 3;
-        let displacementtaily = -5;
-        let displacementheadx = 6;
-        let displacementheady = -9;
-        let displacementx = displacementheadx - displacementtailx;
-        let displacementy = displacementheady - displacementtaily;
-
-        let headx = tailx + displacementx;
-        let heady = taily + displacementy;
-
-        await displacement.moveVector({
-          tailcoords: [displacementtailx, displacementtaily],
-          headcoords: [displacementheadx, displacementheady]
-        });
-
-        expect(stateVariables['/_vector1'].stateValues.tail).eqls([tailx, taily]);
-        expect(stateVariables['/_vector1'].stateValues.head).eqls([headx, heady]);
-        expect(stateVariables['/_vector1'].stateValues.displacement).eqls([displacementx, displacementy]);
-        expect(stateVariables['/tail'].stateValues.xs[0]).eq(tailx);
-        expect(stateVariables['/tail'].stateValues.xs[1]).eq(taily);
-        expect(stateVariables['/head'].stateValues.xs[0]).eq(headx);
-        expect(stateVariables['/head'].stateValues.xs[1]).eq(heady);
-        expect(stateVariables['/displacement'].stateValues.tail).eqls([displacementtailx, displacementtaily]);
-        expect(stateVariables['/displacement'].stateValues.head).eqls([displacementheadx, displacementheady]);
-        expect(stateVariables['/displacement'].stateValues.displacement).eqls([displacementx, displacementy]);
+      await testVectorCopiedHTD({
+        headx, heady, tailx, taily, displacementTailShiftx, displacementTailShifty
       })
     })
+
+    cy.log('move copied head')
+    cy.window().then(async (win) => {
+
+      headx = -3;
+      heady = -9;
+
+      win.callAction({
+        actionName: "movePoint",
+        componentName: "/head",
+        args: { x: headx, y: heady }
+      })
+
+      await testVectorCopiedHTD({
+        headx, heady, tailx, taily, displacementTailShiftx, displacementTailShifty
+      })
+    })
+
+    cy.log('move copied displacement')
+    cy.window().then(async (win) => {
+
+      let displacementTailShiftx = -4;
+      let displacementTailShifty = -5;
+
+      let displacementx = 2;
+      let displacementy = -3;
+
+      headx = tailx + displacementx;
+      heady = taily + displacementy;
+
+      let displacementheadx = displacementTailShiftx + displacementx;
+      let displacementheady = displacementTailShifty + displacementy;
+
+
+      win.callAction({
+        actionName: "moveVector",
+        componentName: "/displacement",
+        args: {
+          tailcoords: [displacementTailShiftx, displacementTailShifty],
+          headcoords: [displacementheadx, displacementheady]
+        }
+      })
+
+
+      await testVectorCopiedHTD({
+        headx, heady, tailx, taily, displacementTailShiftx, displacementTailShifty
+      })
+
+    })
+
   })
 
   it('point inside vector overrides x and y', () => {
@@ -9036,168 +9306,132 @@ describe('Vector Tag Tests', function () {
   </graph>
 
   <graph>
-  <copy prop="tail" target="_vector1" />
-  <copy prop="head" target="_vector1" />
-  <copy prop="displacement" target="_vector1" />
+  <copy prop="tail" target="_vector1" assignNames="tail" />
+  <copy prop="head" target="_vector1" assignNames="head" />
+  <copy prop="displacement" target="_vector1" assignNames="displacement" />
   </graph>
+  
+  <copy prop="tail" target="_vector1" assignNames="tail2" />
+  <copy prop="head" target="_vector1" assignNames="head2" />
+  <copy prop="displacement" target="_vector1" assignNames="displacement2" />
   `}, "*");
     });
 
     // to wait for page to load
     cy.get('#\\/_text1').should('have.text', 'a');
 
+    let tailx = 0;
+    let taily = 0;
+    let headx = -4;
+    let heady = 2;
+    let displacementTailShiftx = 0;
+    let displacementTailShifty = 0;
+
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
-      let tail = stateVariables['/_copy1'].replacements[0];
-      let head = stateVariables['/_copy2'].replacements[0];
-      let displacement = stateVariables['/_copy3'].replacements[0];
 
-      cy.window().then(async (win) => {
-        let tailx = 0;
-        let taily = 0;
-        let headx = -4;
-        let heady = 2;
-        let displacementx = headx - tailx;
-        let displacementy = heady - taily;
-
-        expect(stateVariables['/_vector1'].stateValues.tail).eqls([tailx, taily]);
-        expect(stateVariables['/_vector1'].stateValues.head).eqls([headx, heady]);
-        expect(stateVariables['/_vector1'].stateValues.displacement).eqls([displacementx, displacementy]);
-        expect(stateVariables['/tail'].stateValues.xs[0]).eq(tailx);
-        expect(stateVariables['/tail'].stateValues.xs[1]).eq(taily);
-        expect(stateVariables['/head'].stateValues.xs[0]).eq(headx);
-        expect(stateVariables['/head'].stateValues.xs[1]).eq(heady);
-        expect(stateVariables['/displacement'].stateValues.tail).eqls([0, 0]);
-        expect(stateVariables['/displacement'].stateValues.head).eqls([displacementx, displacementy]);
-        expect(stateVariables['/displacement'].stateValues.displacement).eqls([displacementx, displacementy]);
-
+      await testVectorCopiedHTD({
+        headx, heady, tailx, taily, displacementTailShiftx, displacementTailShifty
       })
 
-      cy.log('move vector up and to the right')
-      cy.window().then(async (win) => {
+    })
 
-        let tailcoords = [
-          stateVariables['/_vector1'].stateValues.tail[0],
-          stateVariables['/_vector1'].stateValues.tail[1],
-        ];
-        let headcoords = [
-          stateVariables['/_vector1'].stateValues.head[0],
-          stateVariables['/_vector1'].stateValues.head[1],
-        ];
+    cy.log('move vector up and to the right')
+    cy.window().then(async (win) => {
 
-        let moveX = 3;
-        let moveY = 2;
+      let moveX = 3;
+      let moveY = 2;
+      tailx += moveX;
+      headx += moveX;
+      taily += moveY;
+      heady += moveY;
 
-        tailcoords[0] = tailcoords[0].add(moveX).simplify();
-        tailcoords[1] = tailcoords[1].add(moveY).simplify();
-        headcoords[0] = headcoords[0].add(moveX).simplify();
-        headcoords[1] = headcoords[1].add(moveY).simplify();
 
-        await stateVariables['/_vector1'].moveVector({
-          tailcoords: tailcoords,
-          headcoords: headcoords
-        });
-
-        let tailx = tailcoords[0].simplify();
-        let taily = tailcoords[1].simplify();
-        let headx = headcoords[0].simplify();
-        let heady = headcoords[1].simplify();
-        let displacementx = headx - tailx;
-        let displacementy = heady - taily;
-
-        expect(stateVariables['/_vector1'].stateValues.tail).eqls([tailx, taily]);
-        expect(stateVariables['/_vector1'].stateValues.head).eqls([headx, heady]);
-        expect(stateVariables['/_vector1'].stateValues.displacement).eqls([displacementx, displacementy]);
-        expect(stateVariables['/tail'].stateValues.xs[0]).eq(tailx);
-        expect(stateVariables['/tail'].stateValues.xs[1]).eq(taily);
-        expect(stateVariables['/head'].stateValues.xs[0]).eq(headx);
-        expect(stateVariables['/head'].stateValues.xs[1]).eq(heady);
-        expect(stateVariables['/displacement'].stateValues.tail).eqls([0, 0]);
-        expect(stateVariables['/displacement'].stateValues.head).eqls([displacementx, displacementy]);
-        expect(stateVariables['/displacement'].stateValues.displacement).eqls([displacementx, displacementy]);
+      win.callAction({
+        actionName: "moveVector",
+        componentName: "/_vector1",
+        args: {
+          tailcoords: [tailx, taily],
+          headcoords: [headx, heady]
+        }
       })
 
-      cy.log('move copied tail moves vector')
-      cy.window().then(async (win) => {
-
-        let tailx = 1;
-        let taily = 6;
-        let headx = -3;
-        let heady = 8;
-        let displacementx = headx - tailx;
-        let displacementy = heady - taily;
-
-        await tail.movePoint({ x: tailx, y: taily });
-
-        expect(stateVariables['/_vector1'].stateValues.tail).eqls([tailx, taily]);
-        expect(stateVariables['/_vector1'].stateValues.head).eqls([headx, heady]);
-        expect(stateVariables['/_vector1'].stateValues.displacement).eqls([displacementx, displacementy]);
-        expect(stateVariables['/tail'].stateValues.xs[0]).eq(tailx);
-        expect(stateVariables['/tail'].stateValues.xs[1]).eq(taily);
-        expect(stateVariables['/head'].stateValues.xs[0]).eq(headx);
-        expect(stateVariables['/head'].stateValues.xs[1]).eq(heady);
-        expect(stateVariables['/displacement'].stateValues.tail).eqls([0, 0]);
-        expect(stateVariables['/displacement'].stateValues.head).eqls([displacementx, displacementy]);
-        expect(stateVariables['/displacement'].stateValues.displacement).eqls([displacementx, displacementy]);
+      await testVectorCopiedHTD({
+        headx, heady, tailx, taily, displacementTailShiftx, displacementTailShifty
       })
 
-      cy.log('move copied head')
-      cy.window().then(async (win) => {
+    })
 
+    cy.log('move copied tail moves vector')
+    cy.window().then(async (win) => {
 
-        let tailx = 1;
-        let taily = 6;
-        let headx = 4;
-        let heady = -9;
-        let displacementx = headx - tailx;
-        let displacementy = heady - taily;
+      let moveX = -8;
+      let moveY = 4;
+      tailx += moveX;
+      headx += moveX;
+      taily += moveY;
+      heady += moveY;
 
-        await head.movePoint({ x: headx, y: heady });
-
-        expect(stateVariables['/_vector1'].stateValues.tail).eqls([tailx, taily]);
-        expect(stateVariables['/_vector1'].stateValues.head).eqls([headx, heady]);
-        expect(stateVariables['/_vector1'].stateValues.displacement).eqls([displacementx, displacementy]);
-        expect(stateVariables['/tail'].stateValues.xs[0]).eq(tailx);
-        expect(stateVariables['/tail'].stateValues.xs[1]).eq(taily);
-        expect(stateVariables['/head'].stateValues.xs[0]).eq(headx);
-        expect(stateVariables['/head'].stateValues.xs[1]).eq(heady);
-        expect(stateVariables['/displacement'].stateValues.tail).eqls([0, 0]);
-        expect(stateVariables['/displacement'].stateValues.head).eqls([displacementx, displacementy]);
-        expect(stateVariables['/displacement'].stateValues.displacement).eqls([displacementx, displacementy]);
+      win.callAction({
+        actionName: "movePoint",
+        componentName: "/tail",
+        args: { x: tailx, y: taily }
       })
 
-      cy.log('move displacement')
-      cy.window().then(async (win) => {
 
-        let tailx = 1;
-        let taily = 6;
-        let displacementtailx = 3;
-        let displacementtaily = -5;
-        let displacementheadx = 6;
-        let displacementheady = -9;
-        let displacementx = displacementheadx - displacementtailx;
-        let displacementy = displacementheady - displacementtaily;
-
-        let headx = tailx + displacementx;
-        let heady = taily + displacementy;
-
-        await displacement.moveVector({
-          tailcoords: [displacementtailx, displacementtaily],
-          headcoords: [displacementheadx, displacementheady]
-        });
-
-        expect(stateVariables['/_vector1'].stateValues.tail).eqls([tailx, taily]);
-        expect(stateVariables['/_vector1'].stateValues.head).eqls([headx, heady]);
-        expect(stateVariables['/_vector1'].stateValues.displacement).eqls([displacementx, displacementy]);
-        expect(stateVariables['/tail'].stateValues.xs[0]).eq(tailx);
-        expect(stateVariables['/tail'].stateValues.xs[1]).eq(taily);
-        expect(stateVariables['/head'].stateValues.xs[0]).eq(headx);
-        expect(stateVariables['/head'].stateValues.xs[1]).eq(heady);
-        expect(stateVariables['/displacement'].stateValues.tail).eqls([displacementtailx, displacementtaily]);
-        expect(stateVariables['/displacement'].stateValues.head).eqls([displacementheadx, displacementheady]);
-        expect(stateVariables['/displacement'].stateValues.displacement).eqls([displacementx, displacementy]);
+      await testVectorCopiedHTD({
+        headx, heady, tailx, taily, displacementTailShiftx, displacementTailShifty
       })
     })
+
+    cy.log('move copied head')
+    cy.window().then(async (win) => {
+
+      headx = -3;
+      heady = -9;
+
+      win.callAction({
+        actionName: "movePoint",
+        componentName: "/head",
+        args: { x: headx, y: heady }
+      })
+
+      await testVectorCopiedHTD({
+        headx, heady, tailx, taily, displacementTailShiftx, displacementTailShifty
+      })
+    })
+
+    cy.log('move copied displacement')
+    cy.window().then(async (win) => {
+
+      let displacementTailShiftx = -4;
+      let displacementTailShifty = -5;
+
+      let displacementx = 2;
+      let displacementy = -3;
+
+      headx = tailx + displacementx;
+      heady = taily + displacementy;
+
+      let displacementheadx = displacementTailShiftx + displacementx;
+      let displacementheady = displacementTailShifty + displacementy;
+
+
+      win.callAction({
+        actionName: "moveVector",
+        componentName: "/displacement",
+        args: {
+          tailcoords: [displacementTailShiftx, displacementTailShifty],
+          headcoords: [displacementheadx, displacementheady]
+        }
+      })
+
+
+      await testVectorCopiedHTD({
+        headx, heady, tailx, taily, displacementTailShiftx, displacementTailShifty
+      })
+
+    })
+
   })
 
   it('vector inside vector overrides x and y', () => {
@@ -9210,168 +9444,132 @@ describe('Vector Tag Tests', function () {
   </graph>
 
   <graph>
-  <copy prop="tail" target="_vector1" />
-  <copy prop="head" target="_vector1" />
-  <copy prop="displacement" target="_vector1" />
+  <copy prop="tail" target="_vector1" assignNames="tail" />
+  <copy prop="head" target="_vector1" assignNames="head" />
+  <copy prop="displacement" target="_vector1" assignNames="displacement" />
   </graph>
+  
+  <copy prop="tail" target="_vector1" assignNames="tail2" />
+  <copy prop="head" target="_vector1" assignNames="head2" />
+  <copy prop="displacement" target="_vector1" assignNames="displacement2" />
   `}, "*");
     });
 
     // to wait for page to load
     cy.get('#\\/_text1').should('have.text', 'a');
 
+    let tailx = 0;
+    let taily = 0;
+    let headx = -4;
+    let heady = 2;
+    let displacementTailShiftx = 0;
+    let displacementTailShifty = 0;
+
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
-      let tail = stateVariables['/_copy1'].replacements[0];
-      let head = stateVariables['/_copy2'].replacements[0];
-      let displacement = stateVariables['/_copy3'].replacements[0];
 
-      cy.window().then(async (win) => {
-        let tailx = 0;
-        let taily = 0;
-        let headx = -4;
-        let heady = 2;
-        let displacementx = headx - tailx;
-        let displacementy = heady - taily;
-
-        expect(stateVariables['/_vector1'].stateValues.tail).eqls([tailx, taily]);
-        expect(stateVariables['/_vector1'].stateValues.head).eqls([headx, heady]);
-        expect(stateVariables['/_vector1'].stateValues.displacement).eqls([displacementx, displacementy]);
-        expect(stateVariables['/tail'].stateValues.xs[0]).eq(tailx);
-        expect(stateVariables['/tail'].stateValues.xs[1]).eq(taily);
-        expect(stateVariables['/head'].stateValues.xs[0]).eq(headx);
-        expect(stateVariables['/head'].stateValues.xs[1]).eq(heady);
-        expect(stateVariables['/displacement'].stateValues.tail).eqls([0, 0]);
-        expect(stateVariables['/displacement'].stateValues.head).eqls([displacementx, displacementy]);
-        expect(stateVariables['/displacement'].stateValues.displacement).eqls([displacementx, displacementy]);
-
+      await testVectorCopiedHTD({
+        headx, heady, tailx, taily, displacementTailShiftx, displacementTailShifty
       })
 
-      cy.log('move vector up and to the right')
-      cy.window().then(async (win) => {
+    })
 
-        let tailcoords = [
-          stateVariables['/_vector1'].stateValues.tail[0],
-          stateVariables['/_vector1'].stateValues.tail[1],
-        ];
-        let headcoords = [
-          stateVariables['/_vector1'].stateValues.head[0],
-          stateVariables['/_vector1'].stateValues.head[1],
-        ];
+    cy.log('move vector up and to the right')
+    cy.window().then(async (win) => {
 
-        let moveX = 3;
-        let moveY = 2;
+      let moveX = 3;
+      let moveY = 2;
+      tailx += moveX;
+      headx += moveX;
+      taily += moveY;
+      heady += moveY;
 
-        tailcoords[0] = tailcoords[0].add(moveX).simplify();
-        tailcoords[1] = tailcoords[1].add(moveY).simplify();
-        headcoords[0] = headcoords[0].add(moveX).simplify();
-        headcoords[1] = headcoords[1].add(moveY).simplify();
 
-        await stateVariables['/_vector1'].moveVector({
-          tailcoords: tailcoords,
-          headcoords: headcoords
-        });
-
-        let tailx = tailcoords[0].simplify();
-        let taily = tailcoords[1].simplify();
-        let headx = headcoords[0].simplify();
-        let heady = headcoords[1].simplify();
-        let displacementx = headx - tailx;
-        let displacementy = heady - taily;
-
-        expect(stateVariables['/_vector1'].stateValues.tail).eqls([tailx, taily]);
-        expect(stateVariables['/_vector1'].stateValues.head).eqls([headx, heady]);
-        expect(stateVariables['/_vector1'].stateValues.displacement).eqls([displacementx, displacementy]);
-        expect(stateVariables['/tail'].stateValues.xs[0]).eq(tailx);
-        expect(stateVariables['/tail'].stateValues.xs[1]).eq(taily);
-        expect(stateVariables['/head'].stateValues.xs[0]).eq(headx);
-        expect(stateVariables['/head'].stateValues.xs[1]).eq(heady);
-        expect(stateVariables['/displacement'].stateValues.tail).eqls([0, 0]);
-        expect(stateVariables['/displacement'].stateValues.head).eqls([displacementx, displacementy]);
-        expect(stateVariables['/displacement'].stateValues.displacement).eqls([displacementx, displacementy]);
+      win.callAction({
+        actionName: "moveVector",
+        componentName: "/_vector1",
+        args: {
+          tailcoords: [tailx, taily],
+          headcoords: [headx, heady]
+        }
       })
 
-      cy.log('move copied tail moves vector')
-      cy.window().then(async (win) => {
-
-        let tailx = 1;
-        let taily = 6;
-        let headx = -3;
-        let heady = 8;
-        let displacementx = headx - tailx;
-        let displacementy = heady - taily;
-
-        await tail.movePoint({ x: tailx, y: taily });
-
-        expect(stateVariables['/_vector1'].stateValues.tail).eqls([tailx, taily]);
-        expect(stateVariables['/_vector1'].stateValues.head).eqls([headx, heady]);
-        expect(stateVariables['/_vector1'].stateValues.displacement).eqls([displacementx, displacementy]);
-        expect(stateVariables['/tail'].stateValues.xs[0]).eq(tailx);
-        expect(stateVariables['/tail'].stateValues.xs[1]).eq(taily);
-        expect(stateVariables['/head'].stateValues.xs[0]).eq(headx);
-        expect(stateVariables['/head'].stateValues.xs[1]).eq(heady);
-        expect(stateVariables['/displacement'].stateValues.tail).eqls([0, 0]);
-        expect(stateVariables['/displacement'].stateValues.head).eqls([displacementx, displacementy]);
-        expect(stateVariables['/displacement'].stateValues.displacement).eqls([displacementx, displacementy]);
+      await testVectorCopiedHTD({
+        headx, heady, tailx, taily, displacementTailShiftx, displacementTailShifty
       })
 
-      cy.log('move copied head')
-      cy.window().then(async (win) => {
+    })
 
+    cy.log('move copied tail moves vector')
+    cy.window().then(async (win) => {
 
-        let tailx = 1;
-        let taily = 6;
-        let headx = 4;
-        let heady = -9;
-        let displacementx = headx - tailx;
-        let displacementy = heady - taily;
+      let moveX = -8;
+      let moveY = 4;
+      tailx += moveX;
+      headx += moveX;
+      taily += moveY;
+      heady += moveY;
 
-        await head.movePoint({ x: headx, y: heady });
-
-        expect(stateVariables['/_vector1'].stateValues.tail).eqls([tailx, taily]);
-        expect(stateVariables['/_vector1'].stateValues.head).eqls([headx, heady]);
-        expect(stateVariables['/_vector1'].stateValues.displacement).eqls([displacementx, displacementy]);
-        expect(stateVariables['/tail'].stateValues.xs[0]).eq(tailx);
-        expect(stateVariables['/tail'].stateValues.xs[1]).eq(taily);
-        expect(stateVariables['/head'].stateValues.xs[0]).eq(headx);
-        expect(stateVariables['/head'].stateValues.xs[1]).eq(heady);
-        expect(stateVariables['/displacement'].stateValues.tail).eqls([0, 0]);
-        expect(stateVariables['/displacement'].stateValues.head).eqls([displacementx, displacementy]);
-        expect(stateVariables['/displacement'].stateValues.displacement).eqls([displacementx, displacementy]);
+      win.callAction({
+        actionName: "movePoint",
+        componentName: "/tail",
+        args: { x: tailx, y: taily }
       })
 
-      cy.log('move displacement')
-      cy.window().then(async (win) => {
 
-        let tailx = 1;
-        let taily = 6;
-        let displacementtailx = 3;
-        let displacementtaily = -5;
-        let displacementheadx = 6;
-        let displacementheady = -9;
-        let displacementx = displacementheadx - displacementtailx;
-        let displacementy = displacementheady - displacementtaily;
-
-        let headx = tailx + displacementx;
-        let heady = taily + displacementy;
-
-        await displacement.moveVector({
-          tailcoords: [displacementtailx, displacementtaily],
-          headcoords: [displacementheadx, displacementheady]
-        });
-
-        expect(stateVariables['/_vector1'].stateValues.tail).eqls([tailx, taily]);
-        expect(stateVariables['/_vector1'].stateValues.head).eqls([headx, heady]);
-        expect(stateVariables['/_vector1'].stateValues.displacement).eqls([displacementx, displacementy]);
-        expect(stateVariables['/tail'].stateValues.xs[0]).eq(tailx);
-        expect(stateVariables['/tail'].stateValues.xs[1]).eq(taily);
-        expect(stateVariables['/head'].stateValues.xs[0]).eq(headx);
-        expect(stateVariables['/head'].stateValues.xs[1]).eq(heady);
-        expect(stateVariables['/displacement'].stateValues.tail).eqls([displacementtailx, displacementtaily]);
-        expect(stateVariables['/displacement'].stateValues.head).eqls([displacementheadx, displacementheady]);
-        expect(stateVariables['/displacement'].stateValues.displacement).eqls([displacementx, displacementy]);
+      await testVectorCopiedHTD({
+        headx, heady, tailx, taily, displacementTailShiftx, displacementTailShifty
       })
     })
+
+    cy.log('move copied head')
+    cy.window().then(async (win) => {
+
+      headx = -3;
+      heady = -9;
+
+      win.callAction({
+        actionName: "movePoint",
+        componentName: "/head",
+        args: { x: headx, y: heady }
+      })
+
+      await testVectorCopiedHTD({
+        headx, heady, tailx, taily, displacementTailShiftx, displacementTailShifty
+      })
+    })
+
+    cy.log('move copied displacement')
+    cy.window().then(async (win) => {
+
+      let displacementTailShiftx = -4;
+      let displacementTailShifty = -5;
+
+      let displacementx = 2;
+      let displacementy = -3;
+
+      headx = tailx + displacementx;
+      heady = taily + displacementy;
+
+      let displacementheadx = displacementTailShiftx + displacementx;
+      let displacementheady = displacementTailShifty + displacementy;
+
+
+      win.callAction({
+        actionName: "moveVector",
+        componentName: "/displacement",
+        args: {
+          tailcoords: [displacementTailShiftx, displacementTailShifty],
+          headcoords: [displacementheadx, displacementheady]
+        }
+      })
+
+
+      await testVectorCopiedHTD({
+        headx, heady, tailx, taily, displacementTailShiftx, displacementTailShifty
+      })
+
+    })
+
   })
 
   it('displacement overrides x and y', () => {
@@ -9384,168 +9582,132 @@ describe('Vector Tag Tests', function () {
   </graph>
 
   <graph>
-  <copy prop="tail" target="_vector1" />
-  <copy prop="head" target="_vector1" />
-  <copy prop="displacement" target="_vector1" />
+  <copy prop="tail" target="_vector1" assignNames="tail" />
+  <copy prop="head" target="_vector1" assignNames="head" />
+  <copy prop="displacement" target="_vector1" assignNames="displacement" />
   </graph>
+  
+  <copy prop="tail" target="_vector1" assignNames="tail2" />
+  <copy prop="head" target="_vector1" assignNames="head2" />
+  <copy prop="displacement" target="_vector1" assignNames="displacement2" />
   `}, "*");
     });
 
     // to wait for page to load
     cy.get('#\\/_text1').should('have.text', 'a');
 
+    let tailx = 0;
+    let taily = 0;
+    let headx = -4;
+    let heady = 2;
+    let displacementTailShiftx = 0;
+    let displacementTailShifty = 0;
+
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
-      let tail = stateVariables['/_copy1'].replacements[0];
-      let head = stateVariables['/_copy2'].replacements[0];
-      let displacement = stateVariables['/_copy3'].replacements[0];
 
-      cy.window().then(async (win) => {
-        let tailx = 0;
-        let taily = 0;
-        let headx = -4;
-        let heady = 2;
-        let displacementx = headx - tailx;
-        let displacementy = heady - taily;
-
-        expect(stateVariables['/_vector1'].stateValues.tail).eqls([tailx, taily]);
-        expect(stateVariables['/_vector1'].stateValues.head).eqls([headx, heady]);
-        expect(stateVariables['/_vector1'].stateValues.displacement).eqls([displacementx, displacementy]);
-        expect(stateVariables['/tail'].stateValues.xs[0]).eq(tailx);
-        expect(stateVariables['/tail'].stateValues.xs[1]).eq(taily);
-        expect(stateVariables['/head'].stateValues.xs[0]).eq(headx);
-        expect(stateVariables['/head'].stateValues.xs[1]).eq(heady);
-        expect(stateVariables['/displacement'].stateValues.tail).eqls([0, 0]);
-        expect(stateVariables['/displacement'].stateValues.head).eqls([displacementx, displacementy]);
-        expect(stateVariables['/displacement'].stateValues.displacement).eqls([displacementx, displacementy]);
-
+      await testVectorCopiedHTD({
+        headx, heady, tailx, taily, displacementTailShiftx, displacementTailShifty
       })
 
-      cy.log('move vector up and to the right')
-      cy.window().then(async (win) => {
+    })
 
-        let tailcoords = [
-          stateVariables['/_vector1'].stateValues.tail[0],
-          stateVariables['/_vector1'].stateValues.tail[1],
-        ];
-        let headcoords = [
-          stateVariables['/_vector1'].stateValues.head[0],
-          stateVariables['/_vector1'].stateValues.head[1],
-        ];
+    cy.log('move vector up and to the right')
+    cy.window().then(async (win) => {
 
-        let moveX = 3;
-        let moveY = 2;
+      let moveX = 3;
+      let moveY = 2;
+      tailx += moveX;
+      headx += moveX;
+      taily += moveY;
+      heady += moveY;
 
-        tailcoords[0] = tailcoords[0].add(moveX).simplify();
-        tailcoords[1] = tailcoords[1].add(moveY).simplify();
-        headcoords[0] = headcoords[0].add(moveX).simplify();
-        headcoords[1] = headcoords[1].add(moveY).simplify();
 
-        await stateVariables['/_vector1'].moveVector({
-          tailcoords: tailcoords,
-          headcoords: headcoords
-        });
-
-        let tailx = tailcoords[0].simplify();
-        let taily = tailcoords[1].simplify();
-        let headx = headcoords[0].simplify();
-        let heady = headcoords[1].simplify();
-        let displacementx = headx - tailx;
-        let displacementy = heady - taily;
-
-        expect(stateVariables['/_vector1'].stateValues.tail).eqls([tailx, taily]);
-        expect(stateVariables['/_vector1'].stateValues.head).eqls([headx, heady]);
-        expect(stateVariables['/_vector1'].stateValues.displacement).eqls([displacementx, displacementy]);
-        expect(stateVariables['/tail'].stateValues.xs[0]).eq(tailx);
-        expect(stateVariables['/tail'].stateValues.xs[1]).eq(taily);
-        expect(stateVariables['/head'].stateValues.xs[0]).eq(headx);
-        expect(stateVariables['/head'].stateValues.xs[1]).eq(heady);
-        expect(stateVariables['/displacement'].stateValues.tail).eqls([0, 0]);
-        expect(stateVariables['/displacement'].stateValues.head).eqls([displacementx, displacementy]);
-        expect(stateVariables['/displacement'].stateValues.displacement).eqls([displacementx, displacementy]);
+      win.callAction({
+        actionName: "moveVector",
+        componentName: "/_vector1",
+        args: {
+          tailcoords: [tailx, taily],
+          headcoords: [headx, heady]
+        }
       })
 
-      cy.log('move copied tail moves vector')
-      cy.window().then(async (win) => {
-
-        let tailx = 1;
-        let taily = 6;
-        let headx = -3;
-        let heady = 8;
-        let displacementx = headx - tailx;
-        let displacementy = heady - taily;
-
-        await tail.movePoint({ x: tailx, y: taily });
-
-        expect(stateVariables['/_vector1'].stateValues.tail).eqls([tailx, taily]);
-        expect(stateVariables['/_vector1'].stateValues.head).eqls([headx, heady]);
-        expect(stateVariables['/_vector1'].stateValues.displacement).eqls([displacementx, displacementy]);
-        expect(stateVariables['/tail'].stateValues.xs[0]).eq(tailx);
-        expect(stateVariables['/tail'].stateValues.xs[1]).eq(taily);
-        expect(stateVariables['/head'].stateValues.xs[0]).eq(headx);
-        expect(stateVariables['/head'].stateValues.xs[1]).eq(heady);
-        expect(stateVariables['/displacement'].stateValues.tail).eqls([0, 0]);
-        expect(stateVariables['/displacement'].stateValues.head).eqls([displacementx, displacementy]);
-        expect(stateVariables['/displacement'].stateValues.displacement).eqls([displacementx, displacementy]);
+      await testVectorCopiedHTD({
+        headx, heady, tailx, taily, displacementTailShiftx, displacementTailShifty
       })
 
-      cy.log('move copied head')
-      cy.window().then(async (win) => {
+    })
 
+    cy.log('move copied tail moves vector')
+    cy.window().then(async (win) => {
 
-        let tailx = 1;
-        let taily = 6;
-        let headx = 4;
-        let heady = -9;
-        let displacementx = headx - tailx;
-        let displacementy = heady - taily;
+      let moveX = -8;
+      let moveY = 4;
+      tailx += moveX;
+      headx += moveX;
+      taily += moveY;
+      heady += moveY;
 
-        await head.movePoint({ x: headx, y: heady });
-
-        expect(stateVariables['/_vector1'].stateValues.tail).eqls([tailx, taily]);
-        expect(stateVariables['/_vector1'].stateValues.head).eqls([headx, heady]);
-        expect(stateVariables['/_vector1'].stateValues.displacement).eqls([displacementx, displacementy]);
-        expect(stateVariables['/tail'].stateValues.xs[0]).eq(tailx);
-        expect(stateVariables['/tail'].stateValues.xs[1]).eq(taily);
-        expect(stateVariables['/head'].stateValues.xs[0]).eq(headx);
-        expect(stateVariables['/head'].stateValues.xs[1]).eq(heady);
-        expect(stateVariables['/displacement'].stateValues.tail).eqls([0, 0]);
-        expect(stateVariables['/displacement'].stateValues.head).eqls([displacementx, displacementy]);
-        expect(stateVariables['/displacement'].stateValues.displacement).eqls([displacementx, displacementy]);
+      win.callAction({
+        actionName: "movePoint",
+        componentName: "/tail",
+        args: { x: tailx, y: taily }
       })
 
-      cy.log('move displacement')
-      cy.window().then(async (win) => {
 
-        let tailx = 1;
-        let taily = 6;
-        let displacementtailx = 3;
-        let displacementtaily = -5;
-        let displacementheadx = 6;
-        let displacementheady = -9;
-        let displacementx = displacementheadx - displacementtailx;
-        let displacementy = displacementheady - displacementtaily;
-
-        let headx = tailx + displacementx;
-        let heady = taily + displacementy;
-
-        await displacement.moveVector({
-          tailcoords: [displacementtailx, displacementtaily],
-          headcoords: [displacementheadx, displacementheady]
-        });
-
-        expect(stateVariables['/_vector1'].stateValues.tail).eqls([tailx, taily]);
-        expect(stateVariables['/_vector1'].stateValues.head).eqls([headx, heady]);
-        expect(stateVariables['/_vector1'].stateValues.displacement).eqls([displacementx, displacementy]);
-        expect(stateVariables['/tail'].stateValues.xs[0]).eq(tailx);
-        expect(stateVariables['/tail'].stateValues.xs[1]).eq(taily);
-        expect(stateVariables['/head'].stateValues.xs[0]).eq(headx);
-        expect(stateVariables['/head'].stateValues.xs[1]).eq(heady);
-        expect(stateVariables['/displacement'].stateValues.tail).eqls([displacementtailx, displacementtaily]);
-        expect(stateVariables['/displacement'].stateValues.head).eqls([displacementheadx, displacementheady]);
-        expect(stateVariables['/displacement'].stateValues.displacement).eqls([displacementx, displacementy]);
+      await testVectorCopiedHTD({
+        headx, heady, tailx, taily, displacementTailShiftx, displacementTailShifty
       })
     })
+
+    cy.log('move copied head')
+    cy.window().then(async (win) => {
+
+      headx = -3;
+      heady = -9;
+
+      win.callAction({
+        actionName: "movePoint",
+        componentName: "/head",
+        args: { x: headx, y: heady }
+      })
+
+      await testVectorCopiedHTD({
+        headx, heady, tailx, taily, displacementTailShiftx, displacementTailShifty
+      })
+    })
+
+    cy.log('move copied displacement')
+    cy.window().then(async (win) => {
+
+      let displacementTailShiftx = -4;
+      let displacementTailShifty = -5;
+
+      let displacementx = 2;
+      let displacementy = -3;
+
+      headx = tailx + displacementx;
+      heady = taily + displacementy;
+
+      let displacementheadx = displacementTailShiftx + displacementx;
+      let displacementheady = displacementTailShifty + displacementy;
+
+
+      win.callAction({
+        actionName: "moveVector",
+        componentName: "/displacement",
+        args: {
+          tailcoords: [displacementTailShiftx, displacementTailShifty],
+          headcoords: [displacementheadx, displacementheady]
+        }
+      })
+
+
+      await testVectorCopiedHTD({
+        headx, heady, tailx, taily, displacementTailShiftx, displacementTailShifty
+      })
+
+    })
+
   })
 
   it('xs overrides x and y', () => {
@@ -9558,168 +9720,132 @@ describe('Vector Tag Tests', function () {
   </graph>
 
   <graph>
-  <copy prop="tail" target="_vector1" />
-  <copy prop="head" target="_vector1" />
-  <copy prop="displacement" target="_vector1" />
+  <copy prop="tail" target="_vector1" assignNames="tail" />
+  <copy prop="head" target="_vector1" assignNames="head" />
+  <copy prop="displacement" target="_vector1" assignNames="displacement" />
   </graph>
+  
+  <copy prop="tail" target="_vector1" assignNames="tail2" />
+  <copy prop="head" target="_vector1" assignNames="head2" />
+  <copy prop="displacement" target="_vector1" assignNames="displacement2" />
   `}, "*");
     });
 
     // to wait for page to load
     cy.get('#\\/_text1').should('have.text', 'a');
 
+    let tailx = 0;
+    let taily = 0;
+    let headx = -4;
+    let heady = 2;
+    let displacementTailShiftx = 0;
+    let displacementTailShifty = 0;
+
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
-      let tail = stateVariables['/_copy1'].replacements[0];
-      let head = stateVariables['/_copy2'].replacements[0];
-      let displacement = stateVariables['/_copy3'].replacements[0];
 
-      cy.window().then(async (win) => {
-        let tailx = 0;
-        let taily = 0;
-        let headx = -4;
-        let heady = 2;
-        let displacementx = headx - tailx;
-        let displacementy = heady - taily;
-
-        expect(stateVariables['/_vector1'].stateValues.tail).eqls([tailx, taily]);
-        expect(stateVariables['/_vector1'].stateValues.head).eqls([headx, heady]);
-        expect(stateVariables['/_vector1'].stateValues.displacement).eqls([displacementx, displacementy]);
-        expect(stateVariables['/tail'].stateValues.xs[0]).eq(tailx);
-        expect(stateVariables['/tail'].stateValues.xs[1]).eq(taily);
-        expect(stateVariables['/head'].stateValues.xs[0]).eq(headx);
-        expect(stateVariables['/head'].stateValues.xs[1]).eq(heady);
-        expect(stateVariables['/displacement'].stateValues.tail).eqls([0, 0]);
-        expect(stateVariables['/displacement'].stateValues.head).eqls([displacementx, displacementy]);
-        expect(stateVariables['/displacement'].stateValues.displacement).eqls([displacementx, displacementy]);
-
+      await testVectorCopiedHTD({
+        headx, heady, tailx, taily, displacementTailShiftx, displacementTailShifty
       })
 
-      cy.log('move vector up and to the right')
-      cy.window().then(async (win) => {
+    })
 
-        let tailcoords = [
-          stateVariables['/_vector1'].stateValues.tail[0],
-          stateVariables['/_vector1'].stateValues.tail[1],
-        ];
-        let headcoords = [
-          stateVariables['/_vector1'].stateValues.head[0],
-          stateVariables['/_vector1'].stateValues.head[1],
-        ];
+    cy.log('move vector up and to the right')
+    cy.window().then(async (win) => {
 
-        let moveX = 3;
-        let moveY = 2;
+      let moveX = 3;
+      let moveY = 2;
+      tailx += moveX;
+      headx += moveX;
+      taily += moveY;
+      heady += moveY;
 
-        tailcoords[0] = tailcoords[0].add(moveX).simplify();
-        tailcoords[1] = tailcoords[1].add(moveY).simplify();
-        headcoords[0] = headcoords[0].add(moveX).simplify();
-        headcoords[1] = headcoords[1].add(moveY).simplify();
 
-        await stateVariables['/_vector1'].moveVector({
-          tailcoords: tailcoords,
-          headcoords: headcoords
-        });
-
-        let tailx = tailcoords[0].simplify();
-        let taily = tailcoords[1].simplify();
-        let headx = headcoords[0].simplify();
-        let heady = headcoords[1].simplify();
-        let displacementx = headx - tailx;
-        let displacementy = heady - taily;
-
-        expect(stateVariables['/_vector1'].stateValues.tail).eqls([tailx, taily]);
-        expect(stateVariables['/_vector1'].stateValues.head).eqls([headx, heady]);
-        expect(stateVariables['/_vector1'].stateValues.displacement).eqls([displacementx, displacementy]);
-        expect(stateVariables['/tail'].stateValues.xs[0]).eq(tailx);
-        expect(stateVariables['/tail'].stateValues.xs[1]).eq(taily);
-        expect(stateVariables['/head'].stateValues.xs[0]).eq(headx);
-        expect(stateVariables['/head'].stateValues.xs[1]).eq(heady);
-        expect(stateVariables['/displacement'].stateValues.tail).eqls([0, 0]);
-        expect(stateVariables['/displacement'].stateValues.head).eqls([displacementx, displacementy]);
-        expect(stateVariables['/displacement'].stateValues.displacement).eqls([displacementx, displacementy]);
+      win.callAction({
+        actionName: "moveVector",
+        componentName: "/_vector1",
+        args: {
+          tailcoords: [tailx, taily],
+          headcoords: [headx, heady]
+        }
       })
 
-      cy.log('move copied tail moves vector')
-      cy.window().then(async (win) => {
-
-        let tailx = 1;
-        let taily = 6;
-        let headx = -3;
-        let heady = 8;
-        let displacementx = headx - tailx;
-        let displacementy = heady - taily;
-
-        await tail.movePoint({ x: tailx, y: taily });
-
-        expect(stateVariables['/_vector1'].stateValues.tail).eqls([tailx, taily]);
-        expect(stateVariables['/_vector1'].stateValues.head).eqls([headx, heady]);
-        expect(stateVariables['/_vector1'].stateValues.displacement).eqls([displacementx, displacementy]);
-        expect(stateVariables['/tail'].stateValues.xs[0]).eq(tailx);
-        expect(stateVariables['/tail'].stateValues.xs[1]).eq(taily);
-        expect(stateVariables['/head'].stateValues.xs[0]).eq(headx);
-        expect(stateVariables['/head'].stateValues.xs[1]).eq(heady);
-        expect(stateVariables['/displacement'].stateValues.tail).eqls([0, 0]);
-        expect(stateVariables['/displacement'].stateValues.head).eqls([displacementx, displacementy]);
-        expect(stateVariables['/displacement'].stateValues.displacement).eqls([displacementx, displacementy]);
+      await testVectorCopiedHTD({
+        headx, heady, tailx, taily, displacementTailShiftx, displacementTailShifty
       })
 
-      cy.log('move copied head')
-      cy.window().then(async (win) => {
+    })
 
+    cy.log('move copied tail moves vector')
+    cy.window().then(async (win) => {
 
-        let tailx = 1;
-        let taily = 6;
-        let headx = 4;
-        let heady = -9;
-        let displacementx = headx - tailx;
-        let displacementy = heady - taily;
+      let moveX = -8;
+      let moveY = 4;
+      tailx += moveX;
+      headx += moveX;
+      taily += moveY;
+      heady += moveY;
 
-        await head.movePoint({ x: headx, y: heady });
-
-        expect(stateVariables['/_vector1'].stateValues.tail).eqls([tailx, taily]);
-        expect(stateVariables['/_vector1'].stateValues.head).eqls([headx, heady]);
-        expect(stateVariables['/_vector1'].stateValues.displacement).eqls([displacementx, displacementy]);
-        expect(stateVariables['/tail'].stateValues.xs[0]).eq(tailx);
-        expect(stateVariables['/tail'].stateValues.xs[1]).eq(taily);
-        expect(stateVariables['/head'].stateValues.xs[0]).eq(headx);
-        expect(stateVariables['/head'].stateValues.xs[1]).eq(heady);
-        expect(stateVariables['/displacement'].stateValues.tail).eqls([0, 0]);
-        expect(stateVariables['/displacement'].stateValues.head).eqls([displacementx, displacementy]);
-        expect(stateVariables['/displacement'].stateValues.displacement).eqls([displacementx, displacementy]);
+      win.callAction({
+        actionName: "movePoint",
+        componentName: "/tail",
+        args: { x: tailx, y: taily }
       })
 
-      cy.log('move displacement')
-      cy.window().then(async (win) => {
 
-        let tailx = 1;
-        let taily = 6;
-        let displacementtailx = 3;
-        let displacementtaily = -5;
-        let displacementheadx = 6;
-        let displacementheady = -9;
-        let displacementx = displacementheadx - displacementtailx;
-        let displacementy = displacementheady - displacementtaily;
-
-        let headx = tailx + displacementx;
-        let heady = taily + displacementy;
-
-        await displacement.moveVector({
-          tailcoords: [displacementtailx, displacementtaily],
-          headcoords: [displacementheadx, displacementheady]
-        });
-
-        expect(stateVariables['/_vector1'].stateValues.tail).eqls([tailx, taily]);
-        expect(stateVariables['/_vector1'].stateValues.head).eqls([headx, heady]);
-        expect(stateVariables['/_vector1'].stateValues.displacement).eqls([displacementx, displacementy]);
-        expect(stateVariables['/tail'].stateValues.xs[0]).eq(tailx);
-        expect(stateVariables['/tail'].stateValues.xs[1]).eq(taily);
-        expect(stateVariables['/head'].stateValues.xs[0]).eq(headx);
-        expect(stateVariables['/head'].stateValues.xs[1]).eq(heady);
-        expect(stateVariables['/displacement'].stateValues.tail).eqls([displacementtailx, displacementtaily]);
-        expect(stateVariables['/displacement'].stateValues.head).eqls([displacementheadx, displacementheady]);
-        expect(stateVariables['/displacement'].stateValues.displacement).eqls([displacementx, displacementy]);
+      await testVectorCopiedHTD({
+        headx, heady, tailx, taily, displacementTailShiftx, displacementTailShifty
       })
     })
+
+    cy.log('move copied head')
+    cy.window().then(async (win) => {
+
+      headx = -3;
+      heady = -9;
+
+      win.callAction({
+        actionName: "movePoint",
+        componentName: "/head",
+        args: { x: headx, y: heady }
+      })
+
+      await testVectorCopiedHTD({
+        headx, heady, tailx, taily, displacementTailShiftx, displacementTailShifty
+      })
+    })
+
+    cy.log('move copied displacement')
+    cy.window().then(async (win) => {
+
+      let displacementTailShiftx = -4;
+      let displacementTailShifty = -5;
+
+      let displacementx = 2;
+      let displacementy = -3;
+
+      headx = tailx + displacementx;
+      heady = taily + displacementy;
+
+      let displacementheadx = displacementTailShiftx + displacementx;
+      let displacementheady = displacementTailShifty + displacementy;
+
+
+      win.callAction({
+        actionName: "moveVector",
+        componentName: "/displacement",
+        args: {
+          tailcoords: [displacementTailShiftx, displacementTailShifty],
+          headcoords: [displacementheadx, displacementheady]
+        }
+      })
+
+
+      await testVectorCopiedHTD({
+        headx, heady, tailx, taily, displacementTailShiftx, displacementTailShifty
+      })
+
+    })
+
   })
 
   it('1D vector', () => {
@@ -9794,6 +9920,12 @@ describe('Vector Tag Tests', function () {
   <graph>
     <vector name="v6" displacement="$(v6{prop='tail'})" tail="(3,4)" />
   </graph>
+  <copy target="v1" prop="head" assignNames="v1h" />
+  <copy target="v2" prop="head" assignNames="v2h" />
+  <copy target="v3" prop="head" assignNames="v3h" />
+  <copy target="v4" prop="head" assignNames="v4h" />
+  <copy target="v5" prop="head" assignNames="v5h" />
+  <copy target="v6" prop="head" assignNames="v6h" />
   `}, "*");
     });
 
@@ -9829,81 +9961,202 @@ describe('Vector Tag Tests', function () {
     })
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
-      await stateVariables["/v1"].moveVector({ headcoords: [1, 2] })
-      expect(stateVariables["/v1"].stateValues.head).eqls([1, 2])
-      expect(stateVariables["/v1"].stateValues.tail).eqls([1, 2])
-      expect(stateVariables["/v1"].stateValues.displacement).eqls([0, 0])
+      win.callAction({
+        actionName: "moveVector",
+        componentName: "/v1",
+        args: { headcoords: [1, 2] }
+      })
 
-      await stateVariables["/v1"].moveVector({ tailcoords: [-4, 5] })
-      expect(stateVariables["/v1"].stateValues.head).eqls([-4, 5])
-      expect(stateVariables["/v1"].stateValues.tail).eqls([-4, 5])
-      expect(stateVariables["/v1"].stateValues.displacement).eqls([0, 0])
+      cy.get("#\\/v1h .mjx-mrow").should('contain.text', `(${nInDOM(1)},${nInDOM(2)})`)
 
-      await stateVariables["/v3"].moveVector({ headcoords: [1, 2] })
-      expect(stateVariables["/v3"].stateValues.head).eqls([1, 2])
-      expect(stateVariables["/v3"].stateValues.tail).eqls([1, 2])
-      expect(stateVariables["/v3"].stateValues.displacement).eqls([0, 0])
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables();
+        expect(stateVariables["/v1"].stateValues.head).eqls([1, 2])
+        expect(stateVariables["/v1"].stateValues.tail).eqls([1, 2])
+        expect(stateVariables["/v1"].stateValues.displacement).eqls([0, 0])
+      });
+    })
 
-      await stateVariables["/v3"].moveVector({ tailcoords: [-4, 5] })
-      expect(stateVariables["/v3"].stateValues.head).eqls([-4, 5])
-      expect(stateVariables["/v3"].stateValues.tail).eqls([-4, 5])
-      expect(stateVariables["/v3"].stateValues.displacement).eqls([0, 0])
+    cy.window().then(async (win) => {
+      win.callAction({
+        actionName: "moveVector",
+        componentName: "/v1",
+        args: { tailcoords: [-4, 5] }
+      })
 
+      cy.get("#\\/v1h .mjx-mrow").should('contain.text', `(${nInDOM(-4)},${nInDOM(5)})`)
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables();
+        expect(stateVariables["/v1"].stateValues.head).eqls([-4, 5])
+        expect(stateVariables["/v1"].stateValues.tail).eqls([-4, 5])
+        expect(stateVariables["/v1"].stateValues.displacement).eqls([0, 0])
+      })
+    })
+
+    cy.window().then(async (win) => {
+      win.callAction({
+        actionName: "moveVector",
+        componentName: "/v3",
+        args: { headcoords: [1, 2] }
+      })
+
+      cy.get("#\\/v3h .mjx-mrow").should('contain.text', `(${nInDOM(1)},${nInDOM(2)})`)
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables();
+        expect(stateVariables["/v3"].stateValues.head).eqls([1, 2])
+        expect(stateVariables["/v3"].stateValues.tail).eqls([1, 2])
+        expect(stateVariables["/v3"].stateValues.displacement).eqls([0, 0])
+      })
+    })
+
+    cy.window().then(async (win) => {
+      win.callAction({
+        actionName: "moveVector",
+        componentName: "/v3",
+        args: { tailcoords: [-4, 5] }
+      })
+
+      cy.get("#\\/v3h .mjx-mrow").should('contain.text', `(${nInDOM(-4)},${nInDOM(5)})`)
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables();
+        expect(stateVariables["/v3"].stateValues.head).eqls([-4, 5])
+        expect(stateVariables["/v3"].stateValues.tail).eqls([-4, 5])
+        expect(stateVariables["/v3"].stateValues.displacement).eqls([0, 0])
+      })
     });
 
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
-      await stateVariables["/v2"].moveVector({ headcoords: [1, 2] })
-      expect(stateVariables["/v2"].stateValues.head).eqls([1, 2])
-      expect(stateVariables["/v2"].stateValues.tail).eqls([0, 0])
-      expect(stateVariables["/v2"].stateValues.displacement).eqls([1, 2])
+      win.callAction({
+        actionName: "moveVector",
+        componentName: "/v2",
+        args: { headcoords: [1, 2] }
+      })
 
-      await stateVariables["/v2"].moveVector({ tailcoords: [5, 7] })
-      expect(stateVariables["/v2"].stateValues.head).eqls([-4, -5])
-      expect(stateVariables["/v2"].stateValues.tail).eqls([0, 0])
-      expect(stateVariables["/v2"].stateValues.displacement).eqls([-4, -5])
+      cy.get("#\\/v2h .mjx-mrow").should('contain.text', `(${nInDOM(1)},${nInDOM(2)})`)
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables();
+        expect(stateVariables["/v2"].stateValues.head).eqls([1, 2])
+        expect(stateVariables["/v2"].stateValues.tail).eqls([0, 0])
+        expect(stateVariables["/v2"].stateValues.displacement).eqls([1, 2])
+      })
+    })
 
-      await stateVariables["/v5"].moveVector({ headcoords: [1, 2] })
-      expect(stateVariables["/v5"].stateValues.head).eqls([1, 2])
-      expect(stateVariables["/v5"].stateValues.tail).eqls([0, 0])
-      expect(stateVariables["/v5"].stateValues.displacement).eqls([1, 2])
+    cy.window().then(async (win) => {
+      win.callAction({
+        actionName: "moveVector",
+        componentName: "/v2",
+        args: { tailcoords: [5, 7] }
+      })
 
-      await stateVariables["/v5"].moveVector({ tailcoords: [5, 7] })
-      expect(stateVariables["/v5"].stateValues.head).eqls([-4, -5])
-      expect(stateVariables["/v5"].stateValues.tail).eqls([0, 0])
-      expect(stateVariables["/v5"].stateValues.displacement).eqls([-4, -5])
+      cy.get("#\\/v2h .mjx-mrow").should('contain.text', `(${nInDOM(-4)},${nInDOM(-5)})`)
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables();
+        expect(stateVariables["/v2"].stateValues.head).eqls([-4, -5])
+        expect(stateVariables["/v2"].stateValues.tail).eqls([0, 0])
+        expect(stateVariables["/v2"].stateValues.displacement).eqls([-4, -5])
+      })
+    })
 
+    cy.window().then(async (win) => {
+      win.callAction({
+        actionName: "moveVector",
+        componentName: "/v5",
+        args: { headcoords: [1, 2] }
+      })
+      cy.get("#\\/v5h .mjx-mrow").should('contain.text', `(${nInDOM(1)},${nInDOM(2)})`)
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables();
+        expect(stateVariables["/v5"].stateValues.head).eqls([1, 2])
+        expect(stateVariables["/v5"].stateValues.tail).eqls([0, 0])
+        expect(stateVariables["/v5"].stateValues.displacement).eqls([1, 2])
+      })
+    })
+
+    cy.window().then(async (win) => {
+      win.callAction({
+        actionName: "moveVector",
+        componentName: "/v5",
+        args: { tailcoords: [5, 7] }
+      })
+      cy.get("#\\/v5h .mjx-mrow").should('contain.text', `(${nInDOM(-4)},${nInDOM(-5)})`)
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables();
+        expect(stateVariables["/v5"].stateValues.head).eqls([-4, -5])
+        expect(stateVariables["/v5"].stateValues.tail).eqls([0, 0])
+        expect(stateVariables["/v5"].stateValues.displacement).eqls([-4, -5])
+      })
     });
 
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
-      await stateVariables["/v4"].moveVector({ headcoords: [-1, 1] })
-      expect(stateVariables["/v4"].stateValues.head).eqls([-8, -6])
-      expect(stateVariables["/v4"].stateValues.tail).eqls([-4, -3])
-      expect(stateVariables["/v4"].stateValues.displacement).eqls([-4, -3])
+      win.callAction({
+        actionName: "moveVector",
+        componentName: "/v4",
+        args: { headcoords: [-1, 1] }
+      })
+      cy.get("#\\/v4h .mjx-mrow").should('contain.text', `(${nInDOM(-8)},${nInDOM(-6)})`)
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables();
+        expect(stateVariables["/v4"].stateValues.head).eqls([-8, -6])
+        expect(stateVariables["/v4"].stateValues.tail).eqls([-4, -3])
+        expect(stateVariables["/v4"].stateValues.displacement).eqls([-4, -3])
+      })
+    })
 
-      await stateVariables["/v4"].moveVector({ tailcoords: [-10, -2] })
+
+    cy.window().then(async (win) => {
+      win.callAction({
+        actionName: "moveVector",
+        componentName: "/v4",
+        args: { tailcoords: [-10, -2] }
+      })
+
       // since based on tail and displacement
       // Vector sets displacement to try to keep head in the same place
-      expect(stateVariables["/v4"].stateValues.head).eqls([4, -8])
-      expect(stateVariables["/v4"].stateValues.tail).eqls([2, -4])
-      expect(stateVariables["/v4"].stateValues.displacement).eqls([2, -4])
 
-      await stateVariables["/v6"].moveVector({ headcoords: [-1, 1] })
-      expect(stateVariables["/v6"].stateValues.head).eqls([-8, -6])
-      expect(stateVariables["/v6"].stateValues.tail).eqls([-4, -3])
-      expect(stateVariables["/v6"].stateValues.displacement).eqls([-4, -3])
+      cy.get("#\\/v4h .mjx-mrow").should('contain.text', `(${nInDOM(4)},${nInDOM(-8)})`)
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables();
+        expect(stateVariables["/v4"].stateValues.head).eqls([4, -8])
+        expect(stateVariables["/v4"].stateValues.tail).eqls([2, -4])
+        expect(stateVariables["/v4"].stateValues.displacement).eqls([2, -4])
+      })
+    })
 
-      await stateVariables["/v6"].moveVector({ tailcoords: [-10, -2] })
+    cy.window().then(async (win) => {
+      win.callAction({
+        actionName: "moveVector",
+        componentName: "/v6",
+        args: { headcoords: [-1, 1] }
+      })
+
+      cy.get("#\\/v6h .mjx-mrow").should('contain.text', `(${nInDOM(-8)},${nInDOM(-6)})`)
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables();
+        expect(stateVariables["/v6"].stateValues.head).eqls([-8, -6])
+        expect(stateVariables["/v6"].stateValues.tail).eqls([-4, -3])
+        expect(stateVariables["/v6"].stateValues.displacement).eqls([-4, -3])
+      })
+    })
+
+    cy.window().then(async (win) => {
+      win.callAction({
+        actionName: "moveVector",
+        componentName: "/v6",
+        args: { tailcoords: [-10, -2] }
+      })
+
       // since based on tail and displacement
       // Vector sets displacement to try to keep head in the same place
-      expect(stateVariables["/v6"].stateValues.head).eqls([4, -8])
-      expect(stateVariables["/v6"].stateValues.tail).eqls([2, -4])
-      expect(stateVariables["/v6"].stateValues.displacement).eqls([2, -4])
 
+      cy.get("#\\/v6h .mjx-mrow").should('contain.text', `(${nInDOM(4)},${nInDOM(-8)})`)
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables();
+        expect(stateVariables["/v6"].stateValues.head).eqls([4, -8])
+        expect(stateVariables["/v6"].stateValues.tail).eqls([2, -4])
+        expect(stateVariables["/v6"].stateValues.displacement).eqls([2, -4])
+      })
     });
 
   })
@@ -9924,6 +10177,21 @@ describe('Vector Tag Tests', function () {
   </graph>
 
   <copy tname="g0" assignNames="g1" />
+
+  <copy target="g0/v0" prop="tail" assignNames="v0t" />
+  <copy target="g0/v0" prop="head" assignNames="v0h" />
+  <copy target="g0/v1" prop="tail" assignNames="v1t" />
+  <copy target="g0/v1" prop="head" assignNames="v1h" />
+  <copy target="g0/v2" prop="tail" assignNames="v2t" />
+  <copy target="g0/v2" prop="head" assignNames="v2h" />
+  <copy target="g0/v3" prop="tail" assignNames="v3t" />
+  <copy target="g0/v3" prop="head" assignNames="v3h" />
+  <copy target="g0/v4" prop="tail" assignNames="v4t" />
+  <copy target="g0/v4" prop="head" assignNames="v4h" />
+  <copy target="g0/v5" prop="tail" assignNames="v5t" />
+  <copy target="g0/v5" prop="head" assignNames="v5h" />
+  <copy target="g0/v6" prop="tail" assignNames="v6t" />
+  <copy target="g0/v6" prop="head" assignNames="v6h" />
 
   `}, "*");
     });
@@ -9970,31 +10238,37 @@ describe('Vector Tag Tests', function () {
     cy.log('move tail of g0/v0');
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
-
       tails[0] = tails[1] = tails[5] = [3, 5];
       heads[5] = [tails[5][0] + displacements[5][0], tails[5][1] + displacements[5][1]]
       displacements = heads.map((v, i) => [v[0] - tails[i][0], v[1] - tails[i][1]])
       heads[3] = [tails[3][0] + displacements[0][0], tails[3][1] + displacements[0][1]]
       displacements = heads.map((v, i) => [v[0] - tails[i][0], v[1] - tails[i][1]])
 
-      await stateVariables["/g0/v0"].moveVector({ tailcoords: tails[0] })
 
-      for (let i = 0; i < 7; i++) {
-        for (let j = 0; j < 2; j++) {
-          expect(stateVariables[`/g${j}/v${i}`].stateValues.tail).eqls(tails[i]);
-          expect(stateVariables[`/g${j}/v${i}`].stateValues.head).eqls(heads[i]);
-          expect(stateVariables[`/g${j}/v${i}`].stateValues.displacement).eqls(displacements[i]);
+      win.callAction({
+        actionName: "moveVector",
+        componentName: "/g0/v0",
+        args: { tailcoords: tails[0] }
+      })
+
+      cy.get("#\\/v0t .mjx-mrow").should('contain.text', `(${nInDOM(tails[0][0])},${nInDOM(tails[0][1])})`)
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables();
+
+        for (let i = 0; i < 7; i++) {
+          for (let j = 0; j < 2; j++) {
+            expect(stateVariables[`/g${j}/v${i}`].stateValues.tail).eqls(tails[i]);
+            expect(stateVariables[`/g${j}/v${i}`].stateValues.head).eqls(heads[i]);
+            expect(stateVariables[`/g${j}/v${i}`].stateValues.displacement).eqls(displacements[i]);
+          }
         }
-      }
-
+      })
     })
 
 
     cy.log('move head of g1/v0');
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
 
       heads[0] = [-2, 8]
 
@@ -10002,37 +10276,53 @@ describe('Vector Tag Tests', function () {
       heads[3] = [tails[3][0] + displacements[0][0], tails[3][1] + displacements[0][1]]
       displacements = heads.map((v, i) => [v[0] - tails[i][0], v[1] - tails[i][1]])
 
-      await stateVariables["/g1/v0"].moveVector({ headcoords: heads[0] })
+      win.callAction({
+        actionName: "moveVector",
+        componentName: "/g1/v0",
+        args: { headcoords: heads[0] }
+      })
 
-      for (let i = 0; i < 7; i++) {
-        for (let j = 0; j < 2; j++) {
-          expect(stateVariables[`/g${j}/v${i}`].stateValues.tail).eqls(tails[i]);
-          expect(stateVariables[`/g${j}/v${i}`].stateValues.head).eqls(heads[i]);
-          expect(stateVariables[`/g${j}/v${i}`].stateValues.displacement).eqls(displacements[i]);
+      cy.get("#\\/v0h .mjx-mrow").should('contain.text', `(${nInDOM(heads[0][0])},${nInDOM(heads[0][1])})`)
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables();
+
+        for (let i = 0; i < 7; i++) {
+          for (let j = 0; j < 2; j++) {
+            expect(stateVariables[`/g${j}/v${i}`].stateValues.tail).eqls(tails[i]);
+            expect(stateVariables[`/g${j}/v${i}`].stateValues.head).eqls(heads[i]);
+            expect(stateVariables[`/g${j}/v${i}`].stateValues.displacement).eqls(displacements[i]);
+          }
         }
-      }
-
+      })
     })
 
 
     cy.log('move head of g0/v1');
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
 
       heads[1] = heads[2] = [-9, -1]
 
       displacements = heads.map((v, i) => [v[0] - tails[i][0], v[1] - tails[i][1]])
 
-      await stateVariables["/g0/v1"].moveVector({ headcoords: heads[1] })
+      win.callAction({
+        actionName: "moveVector",
+        componentName: "/g0/v1",
+        args: { headcoords: heads[1] }
+      })
 
-      for (let i = 0; i < 7; i++) {
-        for (let j = 0; j < 2; j++) {
-          expect(stateVariables[`/g${j}/v${i}`].stateValues.tail).eqls(tails[i]);
-          expect(stateVariables[`/g${j}/v${i}`].stateValues.head).eqls(heads[i]);
-          expect(stateVariables[`/g${j}/v${i}`].stateValues.displacement).eqls(displacements[i]);
+      cy.get("#\\/v1h .mjx-mrow").should('contain.text', `(${nInDOM(heads[1][0])},${nInDOM(heads[1][1])})`)
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables();
+
+        for (let i = 0; i < 7; i++) {
+          for (let j = 0; j < 2; j++) {
+            expect(stateVariables[`/g${j}/v${i}`].stateValues.tail).eqls(tails[i]);
+            expect(stateVariables[`/g${j}/v${i}`].stateValues.head).eqls(heads[i]);
+            expect(stateVariables[`/g${j}/v${i}`].stateValues.displacement).eqls(displacements[i]);
+          }
         }
-      }
+      })
 
     })
 
@@ -10041,67 +10331,88 @@ describe('Vector Tag Tests', function () {
     cy.log('move tail of g1/v1');
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
 
       tails[0] = tails[1] = tails[5] = [5, -3];
       heads[0] = [tails[0][0] + displacements[0][0], tails[0][1] + displacements[0][1]]
       heads[5] = [tails[5][0] + displacements[5][0], tails[5][1] + displacements[5][1]]
       displacements = heads.map((v, i) => [v[0] - tails[i][0], v[1] - tails[i][1]])
 
-      await stateVariables["/g1/v1"].moveVector({ tailcoords: tails[1] })
+      win.callAction({
+        actionName: "moveVector",
+        componentName: "/g1/v1",
+        args: { tailcoords: tails[1] }
+      })
 
-      for (let i = 0; i < 7; i++) {
-        for (let j = 0; j < 2; j++) {
-          expect(stateVariables[`/g${j}/v${i}`].stateValues.tail).eqls(tails[i]);
-          expect(stateVariables[`/g${j}/v${i}`].stateValues.head).eqls(heads[i]);
-          expect(stateVariables[`/g${j}/v${i}`].stateValues.displacement).eqls(displacements[i]);
+      cy.get("#\\/v1t .mjx-mrow").should('contain.text', `(${nInDOM(tails[1][0])},${nInDOM(tails[1][1])})`)
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables();
+
+        for (let i = 0; i < 7; i++) {
+          for (let j = 0; j < 2; j++) {
+            expect(stateVariables[`/g${j}/v${i}`].stateValues.tail).eqls(tails[i]);
+            expect(stateVariables[`/g${j}/v${i}`].stateValues.head).eqls(heads[i]);
+            expect(stateVariables[`/g${j}/v${i}`].stateValues.displacement).eqls(displacements[i]);
+          }
         }
-      }
-
+      })
     })
 
 
     cy.log('move tail of g0/v2');
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
 
       tails[2] = [7, 9];
 
       displacements = heads.map((v, i) => [v[0] - tails[i][0], v[1] - tails[i][1]])
 
-      await stateVariables["/g0/v2"].moveVector({ tailcoords: tails[2] })
+      win.callAction({
+        actionName: "moveVector",
+        componentName: "/g0/v2",
+        args: { tailcoords: tails[2] }
+      })
 
-      for (let i = 0; i < 7; i++) {
-        for (let j = 0; j < 2; j++) {
-          expect(stateVariables[`/g${j}/v${i}`].stateValues.tail).eqls(tails[i]);
-          expect(stateVariables[`/g${j}/v${i}`].stateValues.head).eqls(heads[i]);
-          expect(stateVariables[`/g${j}/v${i}`].stateValues.displacement).eqls(displacements[i]);
+      cy.get("#\\/v2t .mjx-mrow").should('contain.text', `(${nInDOM(tails[2][0])},${nInDOM(tails[2][1])})`)
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables();
+
+        for (let i = 0; i < 7; i++) {
+          for (let j = 0; j < 2; j++) {
+            expect(stateVariables[`/g${j}/v${i}`].stateValues.tail).eqls(tails[i]);
+            expect(stateVariables[`/g${j}/v${i}`].stateValues.head).eqls(heads[i]);
+            expect(stateVariables[`/g${j}/v${i}`].stateValues.displacement).eqls(displacements[i]);
+          }
         }
-      }
-
+      })
     })
 
 
     cy.log('move head of g1/v2');
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
 
       heads[1] = heads[2] = [8, 4];
 
       displacements = heads.map((v, i) => [v[0] - tails[i][0], v[1] - tails[i][1]])
 
-      await stateVariables["/g1/v2"].moveVector({ headcoords: heads[2] })
+      win.callAction({
+        actionName: "moveVector",
+        componentName: "/g1/v2",
+        args: { headcoords: heads[2] }
+      })
 
-      for (let i = 0; i < 7; i++) {
-        for (let j = 0; j < 2; j++) {
-          expect(stateVariables[`/g${j}/v${i}`].stateValues.tail).eqls(tails[i]);
-          expect(stateVariables[`/g${j}/v${i}`].stateValues.head).eqls(heads[i]);
-          expect(stateVariables[`/g${j}/v${i}`].stateValues.displacement).eqls(displacements[i]);
+      cy.get("#\\/v2h .mjx-mrow").should('contain.text', `(${nInDOM(heads[2][0])},${nInDOM(heads[2][1])})`)
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables();
+
+        for (let i = 0; i < 7; i++) {
+          for (let j = 0; j < 2; j++) {
+            expect(stateVariables[`/g${j}/v${i}`].stateValues.tail).eqls(tails[i]);
+            expect(stateVariables[`/g${j}/v${i}`].stateValues.head).eqls(heads[i]);
+            expect(stateVariables[`/g${j}/v${i}`].stateValues.displacement).eqls(displacements[i]);
+          }
         }
-      }
-
+      })
     })
 
 
@@ -10109,30 +10420,36 @@ describe('Vector Tag Tests', function () {
     cy.log('move head of g0/v3');
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
 
       heads[3] = [-4, -7];
       displacements = heads.map((v, i) => [v[0] - tails[i][0], v[1] - tails[i][1]])
       heads[0] = [tails[0][0] + displacements[3][0], tails[0][1] + displacements[3][1]]
       displacements = heads.map((v, i) => [v[0] - tails[i][0], v[1] - tails[i][1]])
 
-      await stateVariables["/g0/v3"].moveVector({ headcoords: heads[3] })
+      win.callAction({
+        actionName: "moveVector",
+        componentName: "/g0/v3",
+        args: { headcoords: heads[3] }
+      })
 
-      for (let i = 0; i < 7; i++) {
-        for (let j = 0; j < 2; j++) {
-          expect(stateVariables[`/g${j}/v${i}`].stateValues.tail).eqls(tails[i]);
-          expect(stateVariables[`/g${j}/v${i}`].stateValues.head).eqls(heads[i]);
-          expect(stateVariables[`/g${j}/v${i}`].stateValues.displacement).eqls(displacements[i]);
+      cy.get("#\\/v3h .mjx-mrow").should('contain.text', `(${nInDOM(heads[3][0])},${nInDOM(heads[3][1])})`)
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables();
+
+        for (let i = 0; i < 7; i++) {
+          for (let j = 0; j < 2; j++) {
+            expect(stateVariables[`/g${j}/v${i}`].stateValues.tail).eqls(tails[i]);
+            expect(stateVariables[`/g${j}/v${i}`].stateValues.head).eqls(heads[i]);
+            expect(stateVariables[`/g${j}/v${i}`].stateValues.displacement).eqls(displacements[i]);
+          }
         }
-      }
-
+      })
     })
 
 
     cy.log('move tail of g1/v3');
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
 
       tails[3] = tails[4] = [-6, 2]
       heads[4] = [tails[4][0] + displacements[4][0], tails[4][1] + displacements[4][1]]
@@ -10141,16 +10458,24 @@ describe('Vector Tag Tests', function () {
       heads[0] = [tails[0][0] + displacements[3][0], tails[0][1] + displacements[3][1]]
       displacements = heads.map((v, i) => [v[0] - tails[i][0], v[1] - tails[i][1]])
 
-      await stateVariables["/g1/v3"].moveVector({ tailcoords: tails[3] })
+      win.callAction({
+        actionName: "moveVector",
+        componentName: "/g1/v3",
+        args: { tailcoords: tails[3] }
+      })
 
-      for (let i = 0; i < 7; i++) {
-        for (let j = 0; j < 2; j++) {
-          expect(stateVariables[`/g${j}/v${i}`].stateValues.tail).eqls(tails[i]);
-          expect(stateVariables[`/g${j}/v${i}`].stateValues.head).eqls(heads[i]);
-          expect(stateVariables[`/g${j}/v${i}`].stateValues.displacement).eqls(displacements[i]);
+      cy.get("#\\/v3t .mjx-mrow").should('contain.text', `(${nInDOM(tails[3][0])},${nInDOM(tails[3][1])})`)
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables();
+
+        for (let i = 0; i < 7; i++) {
+          for (let j = 0; j < 2; j++) {
+            expect(stateVariables[`/g${j}/v${i}`].stateValues.tail).eqls(tails[i]);
+            expect(stateVariables[`/g${j}/v${i}`].stateValues.head).eqls(heads[i]);
+            expect(stateVariables[`/g${j}/v${i}`].stateValues.displacement).eqls(displacements[i]);
+          }
         }
-      }
-
+      })
     })
 
 
@@ -10158,23 +10483,30 @@ describe('Vector Tag Tests', function () {
     cy.log('move tail of g0/v4');
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
 
       tails[3] = tails[4] = [-2, 3]
       heads[3] = [tails[3][0] + displacements[3][0], tails[3][1] + displacements[3][1]]
 
       displacements = heads.map((v, i) => [v[0] - tails[i][0], v[1] - tails[i][1]])
 
-      await stateVariables["/g0/v4"].moveVector({ tailcoords: tails[4] })
+      win.callAction({
+        actionName: "moveVector",
+        componentName: "/g0/v4",
+        args: { tailcoords: tails[4] }
+      })
 
-      for (let i = 0; i < 7; i++) {
-        for (let j = 0; j < 2; j++) {
-          expect(stateVariables[`/g${j}/v${i}`].stateValues.tail).eqls(tails[i]);
-          expect(stateVariables[`/g${j}/v${i}`].stateValues.head).eqls(heads[i]);
-          expect(stateVariables[`/g${j}/v${i}`].stateValues.displacement).eqls(displacements[i]);
+      cy.get("#\\/v4t .mjx-mrow").should('contain.text', `(${nInDOM(tails[4][0])},${nInDOM(tails[4][1])})`)
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables();
+
+        for (let i = 0; i < 7; i++) {
+          for (let j = 0; j < 2; j++) {
+            expect(stateVariables[`/g${j}/v${i}`].stateValues.tail).eqls(tails[i]);
+            expect(stateVariables[`/g${j}/v${i}`].stateValues.head).eqls(heads[i]);
+            expect(stateVariables[`/g${j}/v${i}`].stateValues.displacement).eqls(displacements[i]);
+          }
         }
-      }
-
+      })
     })
 
 
@@ -10182,29 +10514,35 @@ describe('Vector Tag Tests', function () {
     cy.log('move head of g1/v4');
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
 
       heads[4] = [2, 0]
 
       displacements = heads.map((v, i) => [v[0] - tails[i][0], v[1] - tails[i][1]])
 
-      await stateVariables["/g1/v4"].moveVector({ headcoords: heads[4] })
+      win.callAction({
+        actionName: "moveVector",
+        componentName: "/g1/v4",
+        args: { headcoords: heads[4] }
+      })
 
-      for (let i = 0; i < 7; i++) {
-        for (let j = 0; j < 2; j++) {
-          expect(stateVariables[`/g${j}/v${i}`].stateValues.tail).eqls(tails[i]);
-          expect(stateVariables[`/g${j}/v${i}`].stateValues.head).eqls(heads[i]);
-          expect(stateVariables[`/g${j}/v${i}`].stateValues.displacement).eqls(displacements[i]);
+      cy.get("#\\/v4h .mjx-mrow").should('contain.text', `(${nInDOM(heads[4][0])},${nInDOM(heads[4][1])})`)
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables();
+
+        for (let i = 0; i < 7; i++) {
+          for (let j = 0; j < 2; j++) {
+            expect(stateVariables[`/g${j}/v${i}`].stateValues.tail).eqls(tails[i]);
+            expect(stateVariables[`/g${j}/v${i}`].stateValues.head).eqls(heads[i]);
+            expect(stateVariables[`/g${j}/v${i}`].stateValues.displacement).eqls(displacements[i]);
+          }
         }
-      }
-
+      })
     })
 
 
     cy.log('move head of g0/v5');
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
 
       heads[5] = [-9, -8]
 
@@ -10212,16 +10550,24 @@ describe('Vector Tag Tests', function () {
       tails[6] = [heads[6][0] - displacements[5][0], heads[6][1] - displacements[5][1]]
       displacements = heads.map((v, i) => [v[0] - tails[i][0], v[1] - tails[i][1]])
 
-      await stateVariables["/g0/v5"].moveVector({ headcoords: heads[5] })
+      win.callAction({
+        actionName: "moveVector",
+        componentName: "/g0/v5",
+        args: { headcoords: heads[5] }
+      })
 
-      for (let i = 0; i < 7; i++) {
-        for (let j = 0; j < 2; j++) {
-          expect(stateVariables[`/g${j}/v${i}`].stateValues.tail).eqls(tails[i]);
-          expect(stateVariables[`/g${j}/v${i}`].stateValues.head).eqls(heads[i]);
-          expect(stateVariables[`/g${j}/v${i}`].stateValues.displacement).eqls(displacements[i]);
+      cy.get("#\\/v5h .mjx-mrow").should('contain.text', `(${nInDOM(heads[5][0])},${nInDOM(heads[5][1])})`)
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables();
+
+        for (let i = 0; i < 7; i++) {
+          for (let j = 0; j < 2; j++) {
+            expect(stateVariables[`/g${j}/v${i}`].stateValues.tail).eqls(tails[i]);
+            expect(stateVariables[`/g${j}/v${i}`].stateValues.head).eqls(heads[i]);
+            expect(stateVariables[`/g${j}/v${i}`].stateValues.displacement).eqls(displacements[i]);
+          }
         }
-      }
-
+      })
     })
 
 
@@ -10229,7 +10575,6 @@ describe('Vector Tag Tests', function () {
     cy.log('move tail of g1/v5');
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
 
       tails[0] = tails[1] = tails[5] = [3, 7]
 
@@ -10239,16 +10584,24 @@ describe('Vector Tag Tests', function () {
       tails[6] = [heads[6][0] - displacements[5][0], heads[6][1] - displacements[5][1]]
       displacements = heads.map((v, i) => [v[0] - tails[i][0], v[1] - tails[i][1]])
 
-      await stateVariables["/g1/v5"].moveVector({ tailcoords: tails[5] })
+      win.callAction({
+        actionName: "moveVector",
+        componentName: "/g1/v5",
+        args: { tailcoords: tails[5] }
+      })
 
-      for (let i = 0; i < 7; i++) {
-        for (let j = 0; j < 2; j++) {
-          expect(stateVariables[`/g${j}/v${i}`].stateValues.tail).eqls(tails[i]);
-          expect(stateVariables[`/g${j}/v${i}`].stateValues.head).eqls(heads[i]);
-          expect(stateVariables[`/g${j}/v${i}`].stateValues.displacement).eqls(displacements[i]);
+      cy.get("#\\/v5t .mjx-mrow").should('contain.text', `(${nInDOM(tails[5][0])},${nInDOM(tails[5][1])})`)
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables();
+
+        for (let i = 0; i < 7; i++) {
+          for (let j = 0; j < 2; j++) {
+            expect(stateVariables[`/g${j}/v${i}`].stateValues.tail).eqls(tails[i]);
+            expect(stateVariables[`/g${j}/v${i}`].stateValues.head).eqls(heads[i]);
+            expect(stateVariables[`/g${j}/v${i}`].stateValues.displacement).eqls(displacements[i]);
+          }
         }
-      }
-
+      })
     })
 
 
@@ -10256,7 +10609,6 @@ describe('Vector Tag Tests', function () {
     cy.log('move tail of g0/v6');
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
 
       tails[6] = [8, -7]
 
@@ -10264,16 +10616,24 @@ describe('Vector Tag Tests', function () {
       heads[5] = [tails[5][0] + displacements[6][0], tails[5][1] + displacements[6][1]]
       displacements = heads.map((v, i) => [v[0] - tails[i][0], v[1] - tails[i][1]])
 
-      await stateVariables["/g0/v6"].moveVector({ tailcoords: tails[6] })
+      win.callAction({
+        actionName: "moveVector",
+        componentName: "/g0/v6",
+        args: { tailcoords: tails[6] }
+      })
 
-      for (let i = 0; i < 7; i++) {
-        for (let j = 0; j < 2; j++) {
-          expect(stateVariables[`/g${j}/v${i}`].stateValues.tail).eqls(tails[i]);
-          expect(stateVariables[`/g${j}/v${i}`].stateValues.head).eqls(heads[i]);
-          expect(stateVariables[`/g${j}/v${i}`].stateValues.displacement).eqls(displacements[i]);
+      cy.get("#\\/v6t .mjx-mrow").should('contain.text', `(${nInDOM(tails[6][0])},${nInDOM(tails[6][1])})`)
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables();
+
+        for (let i = 0; i < 7; i++) {
+          for (let j = 0; j < 2; j++) {
+            expect(stateVariables[`/g${j}/v${i}`].stateValues.tail).eqls(tails[i]);
+            expect(stateVariables[`/g${j}/v${i}`].stateValues.head).eqls(heads[i]);
+            expect(stateVariables[`/g${j}/v${i}`].stateValues.displacement).eqls(displacements[i]);
+          }
         }
-      }
-
+      })
     })
 
 
@@ -10281,7 +10641,6 @@ describe('Vector Tag Tests', function () {
     cy.log('move head of g1/v6');
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
 
       heads[6] = [9, -5]
 
@@ -10289,16 +10648,24 @@ describe('Vector Tag Tests', function () {
       heads[5] = [tails[5][0] + displacements[6][0], tails[5][1] + displacements[6][1]]
       displacements = heads.map((v, i) => [v[0] - tails[i][0], v[1] - tails[i][1]])
 
-      await stateVariables["/g1/v6"].moveVector({ headcoords: heads[6] })
+      win.callAction({
+        actionName: "moveVector",
+        componentName: "/g1/v6",
+        args: { headcoords: heads[6] }
+      })
 
-      for (let i = 0; i < 7; i++) {
-        for (let j = 0; j < 2; j++) {
-          expect(stateVariables[`/g${j}/v${i}`].stateValues.tail).eqls(tails[i]);
-          expect(stateVariables[`/g${j}/v${i}`].stateValues.head).eqls(heads[i]);
-          expect(stateVariables[`/g${j}/v${i}`].stateValues.displacement).eqls(displacements[i]);
+      cy.get("#\\/v6h .mjx-mrow").should('contain.text', `(${nInDOM(heads[6][0])},${nInDOM(heads[6][1])})`)
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables();
+
+        for (let i = 0; i < 7; i++) {
+          for (let j = 0; j < 2; j++) {
+            expect(stateVariables[`/g${j}/v${i}`].stateValues.tail).eqls(tails[i]);
+            expect(stateVariables[`/g${j}/v${i}`].stateValues.head).eqls(heads[i]);
+            expect(stateVariables[`/g${j}/v${i}`].stateValues.displacement).eqls(displacements[i]);
+          }
         }
-      }
-
+      })
     })
 
   })

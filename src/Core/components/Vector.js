@@ -1624,10 +1624,10 @@ export default class Vector extends GraphicalComponent {
       }),
       definition({ dependencyValues }) {
 
-        let A1 = dependencyValues.numericalEndpoints[0][0];
-        let A2 = dependencyValues.numericalEndpoints[0][1];
-        let B1 = dependencyValues.numericalEndpoints[1][0];
-        let B2 = dependencyValues.numericalEndpoints[1][1];
+        let A1 = dependencyValues.numericalEndpoints[0]?.[0];
+        let A2 = dependencyValues.numericalEndpoints[0]?.[1];
+        let B1 = dependencyValues.numericalEndpoints[1]?.[0];
+        let B2 = dependencyValues.numericalEndpoints[1]?.[1];
 
         let haveConstants = Number.isFinite(A1) && Number.isFinite(A2) &&
           Number.isFinite(B1) && Number.isFinite(B2);
