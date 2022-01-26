@@ -33,8 +33,10 @@ export default function DriveCardsNew(props) {
   useEffect(() => {
     setMainPanelClear((was) => [
       ...was,
-      { atom: clearDriveAndItemSelections, value: null },
-      { atom: selectedMenuPanelAtom, value: null },
+      { atom: selectedMenuPanelAtom, value: null }, // Anyone know what this is?
+      // Deselect the selected card when onBlur in the main panel
+      // Remain selected when onBlur in the side panel
+      { atom: drivecardSelectedNodesAtom, value: [] },
     ]);
     return setMainPanelClear((was) => [
       ...was,
@@ -128,23 +130,8 @@ const DriveCardWrapper = (props) => {
 
   
     const handleOnBlur = () => {
-    if (drivecardSelectedValue.length === 1 && document.getElementsByClassName("sc-fubCzh clCijf").length === 1) {
-      setDrivecardSelection([]);
-    }
-    // if (getSelectedCard == true) {
-    //   setDrivecardSelection([]);
-    // }
 
-    // if (document.getElementById('test')) {
-    //   setDrivecardSelection([]);
-    //   e.stopPropagation();
-    // }
-
-    // get id of drive card, use an if statement to check 
-    // put a deselection handler that triggers only on the whitespace
-    // will probably need e.stopPropogation()
-    // include comments
-  };
+    };
 
   const handleKeyUp = (e, item) => {
     if (e.key === 'Tab') {
