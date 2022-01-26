@@ -45,6 +45,10 @@ export default class Line extends GraphicalComponent {
 
     let stringAndMacrosToEquationAttribute = function ({ matchedChildren }) {
 
+      if (matchedChildren.length === 0) {
+        return { success: false };
+      }
+
       // only apply if all children are strings or macros
       if (!matchedChildren.every(child =>
         typeof child === "string" ||

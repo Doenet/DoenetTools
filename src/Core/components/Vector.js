@@ -1624,10 +1624,10 @@ export default class Vector extends GraphicalComponent {
       }),
       definition({ dependencyValues }) {
 
-        let A1 = dependencyValues.numericalEndpoints[0][0];
-        let A2 = dependencyValues.numericalEndpoints[0][1];
-        let B1 = dependencyValues.numericalEndpoints[1][0];
-        let B2 = dependencyValues.numericalEndpoints[1][1];
+        let A1 = dependencyValues.numericalEndpoints[0]?.[0];
+        let A2 = dependencyValues.numericalEndpoints[0]?.[1];
+        let B1 = dependencyValues.numericalEndpoints[1]?.[0];
+        let B2 = dependencyValues.numericalEndpoints[1]?.[1];
 
         let haveConstants = Number.isFinite(A1) && Number.isFinite(A2) &&
           Number.isFinite(B1) && Number.isFinite(B2);
@@ -1694,7 +1694,7 @@ export default class Vector extends GraphicalComponent {
     componentType: "coords",
   }];
 
-  async moveVector({ tailcoords, headcoords, transient, sourceInformation }) {
+  async moveVector({ tailcoords, headcoords, transient, skippable, sourceInformation }) {
 
     let updateInstructions = [];
 
@@ -1804,7 +1804,8 @@ export default class Vector extends GraphicalComponent {
     if (transient) {
       return await this.coreFunctions.performUpdate({
         updateInstructions,
-        transient
+        transient,
+        skippable
       });
     } else {
       return await this.coreFunctions.performUpdate({
@@ -1825,7 +1826,7 @@ export default class Vector extends GraphicalComponent {
 
   }
 
-  async finalizeVectorPosition() {
+  async finalizeVectorPosition({ includeHead = true, includeTail = true } = {}) {
     // trigger a moveVector 
     // to send the final values with transient=false
     // so that the final position will be recorded
@@ -1833,8 +1834,8 @@ export default class Vector extends GraphicalComponent {
     let numericalEndpoints = await this.stateValues.numericalEndpoints;
 
     return await this.actions.moveVector({
-      tailcoords: numericalEndpoints[0],
-      headcoords: numericalEndpoints[1],
+      tailcoords: includeTail ? numericalEndpoints[0] : undefined,
+      headcoords: includeHead ? numericalEndpoints[1] : undefined,
     });
   }
 
