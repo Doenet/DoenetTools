@@ -104,69 +104,6 @@ export default function Dashboard(props) {
           />
           }
         </div>
-  
-        {/* <ButtonGroup vertical>
-        <Button
-          value="Content"
-          onClick={() => {
-            setPageToolView((was) => {
-              // console.log(">>>>was",was);
-            return { ...was, tool: 'navigation' }
-          })}}
-          
-        />
-        {effectiveRole === 'instructor' ?
-        <>
-        <Button
-          value="Enrollment"
-          onClick={() =>
-            setPageToolView({
-              page: 'course',
-              tool: 'enrollment',
-              view: '',
-              params: { driveId },
-            })
-          }
-        />
-        <Button
-          value="Surveys"
-          onClick={() =>
-            setPageToolView({
-              page: 'course',
-              tool: 'surveyList',
-              view: '',
-              params: { driveId },
-            })
-          }
-        />
-        </>
-        : null }
-        {effectiveRole === 'instructor' ?
-        <Button value="Gradebook" 
-        onClick={() => 
-        setPageToolView((was)=>{return {
-          page: 'course',
-          tool: 'gradebook',
-          view: was.view,
-          params: { driveId },
-          }})
-        } 
-      />
-        : 
-        <Button value="Gradebook" 
-          onClick={() => 
-          setPageToolView((was)=>{return {
-            page: 'course',
-            tool: 'gradebookStudent',
-            view: was.view,
-            params: { driveId, userId:profile.userId },
-            }})
-
-          } 
-        />
-         }
-        
-        </ButtonGroup> */}
       </div>
       <div style={{ marginTop: '10px', margin: '10px'}}>
       <Next7Days driveId={driveId}/>
