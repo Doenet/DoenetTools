@@ -65,7 +65,7 @@ export default function attempt() {
   const disabled = () => {};
   const absolute = () => {};
   const left = () => {};
-  const [words, setWords] = useState("");
+  const noSearchButton = () => {};
 
   //=== DATA STRUCTURE SECTION ===
   let dataStructure = [
@@ -630,10 +630,60 @@ export default function attempt() {
           propCode: { width: 'menu' },
           description: 'Sets width to fill menu panel width',
         },
-        // {name: 'Label',
-        //   propPreview: '<Increment label="What: "/>',
-        //   propCode: {label: 'What: ', width: 'menu'},
-        //   description: 'Adds label to componenet'},
+        {
+          name: 'No Search Button',
+          propPreview: '<SearchBar noSearchButton />',
+          propCode: { noSearchButton },
+          description: 'Removes button from search bar',
+        },
+        {
+          name: 'Placeholder',
+          propPreview: '<SearchBar placeholder="Enter cat names..."/>',
+          propCode: { placeholder: 'Enter cat names...' },
+          description: 'Adds placeholder to component'
+        },
+        {
+          name: 'Label',
+          propPreview: '<SearchBar label="What: "/>',
+          propCode: { label: 'What: ' },
+          description: 'Adds label to componenet',
+        },
+        {
+          name: 'Vertical Label',
+          propPreview: '<SearchBar label="What: " vertical/>',
+          propCode: { label: 'What: ', vertical },
+          description: 'Adds label to component on top',
+        },
+        {
+          name: 'Aria Label',
+            propPreview: '<SearchBar ariaLabel="Text"/>',
+            propCode: {ariaLabel: 'Text'},
+            description: 'Adds aria label to component'
+        },
+        {
+          name: 'onChange',
+          propPreview: '<SearchBar onChange={(data) => console.log(data)} />',
+          propCode: {onChange: (data) => console.log(data)},
+          description: 'Function called when data changes'
+        },
+        {
+          name: 'onBlur',
+          propPreview: '<SearchBar onBlur={(e) => console.log(e.target.value)} />',
+          propCode: {onBlur: (e) => console.log(e.target.value)},
+          description: 'Function called when component blurs'
+        },
+        {
+          name: 'onKeyDown',
+          propPreview: '<SearchBar onKeyDown={(e) => console.log(e.key)} />',
+          propCode: {onKeyDown: (e) => console.log(e.key)},
+          description: 'Function called when key hit with focus on component'
+        },
+        {
+          name: 'Alert',
+          propPreview: '<SearchBar alert/>',
+          propCode: { alert },
+          description: 'Changes to alert mode (border is red)',
+        },
         {
           name: 'Disabled',
           propPreview: '<Increment disabled />',
