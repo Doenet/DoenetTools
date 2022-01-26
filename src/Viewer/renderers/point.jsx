@@ -204,10 +204,6 @@ export default function Point(props) {
 
 
 
-  if (SVs.hidden) {
-    return null;
-  }
-
   if (board) {
     if (Object.keys(pointJXG).length === 0) {
       setPointJXG(createPointJXG())
@@ -220,9 +216,6 @@ export default function Point(props) {
       }
 
       //Note label update in jsxGraph maybe slow (so check previous value)
-
-      console.log(SVs)
-      console.log(SVs.numericalXs)
 
       // Note: for now, putting ?. after numericalXs
       // because found a case involving an intersections
@@ -352,6 +345,10 @@ export default function Point(props) {
   }
 
   // not in board
+
+  if (SVs.hidden) {
+    return null;
+  }
 
   //Render text coordinates when outside of graph
 

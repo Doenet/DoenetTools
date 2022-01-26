@@ -113,8 +113,22 @@ export default function Vector(props) {
     newPoint1JXG.on('drag', e => onDragHandler(e, 0, true));
     newPoint2JXG.on('drag', e => onDragHandler(e, 1, true));
     newVectorJXG.on('drag', e => onDragHandler(e, -1, true));
-    newPoint1JXG.on('up', e => onDragHandler(e, 0, false));
-    newPoint2JXG.on('up', e => onDragHandler(e, 1, false));
+    newPoint1JXG.on('up', e => {
+      if (!headBeingDragged.current && tailBeingDragged.current) {
+        callAction({
+          action: actions.finalizeVectorPosition,
+          args: { includeHead: false }
+        });
+      }
+    });
+    newPoint2JXG.on('up', e => {
+      if (headBeingDragged.current && !tailBeingDragged.current) {
+        callAction({
+          action: actions.finalizeVectorPosition,
+          args: { includeTail: false }
+        });
+      }
+    });
     newVectorJXG.on('up', e => {
       if (headBeingDragged.current && tailBeingDragged.current) {
         callAction({
@@ -228,127 +242,6 @@ export default function Vector(props) {
     point2JXG.current = {};
   }
 
-
-  if (Object.keys(vectorJXG.current).length === 0) {
-
-    createVectorJXG();
-
-  } else if (SVs.numericalEndpoints.length !== 2 ||
-    SVs.numericalEndpoints.some(x => x.length !== 2)
-  ) {
-
-    deleteVectorJXG();
-
-  } else {
-
-    let validPoints = true;
-
-    for (let coords of [SVs.numericalEndpoints[0], SVs.numericalEndpoints[1]]) {
-      if (!Number.isFinite(coords[0])) {
-        validPoints = false;
-      }
-      if (!Number.isFinite(coords[1])) {
-        validPoints = false;
-      }
-    }
-
-    vectorJXG.current.point1.coords.setCoordinates(JXG.COORDS_BY_USER, SVs.numericalEndpoints[0]);
-    vectorJXG.current.point2.coords.setCoordinates(JXG.COORDS_BY_USER, SVs.numericalEndpoints[1]);
-
-    let visible = !SVs.hidden;
-
-    if (validPoints) {
-      vectorJXG.current.visProp["visible"] = visible;
-      vectorJXG.current.visPropCalc["visible"] = visible;
-      // vectorJXG.current.setAttribute({visible: visible})
-
-
-      if (SVs.draggable && !SVs.fixed) {
-        vectorJXG.current.visProp["fixed"] = false;
-
-        if (SVs.tailDraggable) {
-          point1JXG.current.visProp["visible"] = visible;
-          point1JXG.current.visPropCalc["visible"] = visible;
-          point1JXG.current.visProp["fixed"] = false;
-        } else {
-          point1JXG.current.visProp["visible"] = false;
-          point1JXG.current.visPropCalc["visible"] = false;
-          point1JXG.current.visProp["fixed"] = true;
-        }
-
-        if (SVs.headDraggable) {
-          point2JXG.current.visProp["visible"] = visible;
-          point2JXG.current.visPropCalc["visible"] = visible;
-          point2JXG.current.visProp["fixed"] = false;
-        } else {
-          point2JXG.current.visProp["visible"] = false;
-          point2JXG.current.visPropCalc["visible"] = false;
-          point2JXG.current.visProp["fixed"] = true;
-        }
-      } else {
-        vectorJXG.current.visProp["fixed"] = true;
-
-        point1JXG.current.visProp["visible"] = false;
-        point1JXG.current.visPropCalc["visible"] = false;
-        point1JXG.current.visProp["fixed"] = true;
-
-        point2JXG.current.visProp["visible"] = false;
-        point2JXG.current.visPropCalc["visible"] = false;
-        point2JXG.current.visProp["fixed"] = true;
-
-      }
-    }
-    else {
-      vectorJXG.current.visProp["visible"] = false;
-      vectorJXG.current.visPropCalc["visible"] = false;
-      // vectorJXG.current.setAttribute({visible: false})
-
-      point1JXG.current.visProp["visible"] = false;
-      point1JXG.current.visPropCalc["visible"] = false;
-
-      point2JXG.current.visProp["visible"] = false;
-      point2JXG.current.visPropCalc["visible"] = false;
-
-    }
-
-    if (sourceOfUpdate.sourceInformation &&
-      name in sourceOfUpdate.sourceInformation
-    ) {
-      let sourceInfo = sourceOfUpdate.sourceInformation[name]
-      if (sourceInfo.vertex === 0) {
-        board.updateInfobox(point1JXG.current);
-      } else if (sourceInfo.vertex === 1) {
-        board.updateInfobox(point2JXG.current);
-      }
-    }
-
-    vectorJXG.current.name = SVs.label;
-    // vectorJXG.current.visProp.withlabel = this.showlabel && this.label !== "";
-
-    let withlabel = SVs.showLabel && SVs.label !== "";
-    if (withlabel != previousWithLabel.current) {
-      this.vectorJXG.current.setAttribute({ withlabel: withlabel });
-      previousWithLabel.current = withlabel;
-    }
-
-    vectorJXG.current.needsUpdate = true;
-    vectorJXG.current.update()
-    if (vectorJXG.current.hasLabel) {
-      vectorJXG.current.label.needsUpdate = true;
-      vectorJXG.current.label.update();
-    }
-
-    point1JXG.current.needsUpdate = true;
-    point1JXG.current.update();
-    point2JXG.current.needsUpdate = true;
-    point2JXG.current.update();
-
-    board.updateRenderer();
-
-  }
-
-
-
   function calculatePointPosition(e, i) {
     var o = board.origin.scrCoords;
 
@@ -365,14 +258,134 @@ export default function Vector(props) {
 
 
   if (board) {
+    if (Object.keys(vectorJXG.current).length === 0) {
+
+      createVectorJXG();
+
+    } else if (SVs.numericalEndpoints.length !== 2 ||
+      SVs.numericalEndpoints.some(x => x.length !== 2)
+    ) {
+
+      deleteVectorJXG();
+
+    } else {
+
+      let validPoints = true;
+
+      for (let coords of [SVs.numericalEndpoints[0], SVs.numericalEndpoints[1]]) {
+        if (!Number.isFinite(coords[0])) {
+          validPoints = false;
+        }
+        if (!Number.isFinite(coords[1])) {
+          validPoints = false;
+        }
+      }
+
+      vectorJXG.current.point1.coords.setCoordinates(JXG.COORDS_BY_USER, SVs.numericalEndpoints[0]);
+      vectorJXG.current.point2.coords.setCoordinates(JXG.COORDS_BY_USER, SVs.numericalEndpoints[1]);
+
+      let visible = !SVs.hidden;
+
+      if (validPoints) {
+        vectorJXG.current.visProp["visible"] = visible;
+        vectorJXG.current.visPropCalc["visible"] = visible;
+        // vectorJXG.current.setAttribute({visible: visible})
+
+
+        if (SVs.draggable && !SVs.fixed) {
+          vectorJXG.current.visProp["fixed"] = false;
+
+          if (SVs.tailDraggable) {
+            point1JXG.current.visProp["visible"] = visible;
+            point1JXG.current.visPropCalc["visible"] = visible;
+            point1JXG.current.visProp["fixed"] = false;
+          } else {
+            point1JXG.current.visProp["visible"] = false;
+            point1JXG.current.visPropCalc["visible"] = false;
+            point1JXG.current.visProp["fixed"] = true;
+          }
+
+          if (SVs.headDraggable) {
+            point2JXG.current.visProp["visible"] = visible;
+            point2JXG.current.visPropCalc["visible"] = visible;
+            point2JXG.current.visProp["fixed"] = false;
+          } else {
+            point2JXG.current.visProp["visible"] = false;
+            point2JXG.current.visPropCalc["visible"] = false;
+            point2JXG.current.visProp["fixed"] = true;
+          }
+        } else {
+          vectorJXG.current.visProp["fixed"] = true;
+
+          point1JXG.current.visProp["visible"] = false;
+          point1JXG.current.visPropCalc["visible"] = false;
+          point1JXG.current.visProp["fixed"] = true;
+
+          point2JXG.current.visProp["visible"] = false;
+          point2JXG.current.visPropCalc["visible"] = false;
+          point2JXG.current.visProp["fixed"] = true;
+
+        }
+      }
+      else {
+        vectorJXG.current.visProp["visible"] = false;
+        vectorJXG.current.visPropCalc["visible"] = false;
+        // vectorJXG.current.setAttribute({visible: false})
+
+        point1JXG.current.visProp["visible"] = false;
+        point1JXG.current.visPropCalc["visible"] = false;
+
+        point2JXG.current.visProp["visible"] = false;
+        point2JXG.current.visPropCalc["visible"] = false;
+
+      }
+
+      if (sourceOfUpdate.sourceInformation &&
+        name in sourceOfUpdate.sourceInformation
+      ) {
+        let sourceInfo = sourceOfUpdate.sourceInformation[name]
+        if (sourceInfo.vertex === 0) {
+          board.updateInfobox(point1JXG.current);
+        } else if (sourceInfo.vertex === 1) {
+          board.updateInfobox(point2JXG.current);
+        }
+      }
+
+      vectorJXG.current.name = SVs.label;
+      // vectorJXG.current.visProp.withlabel = this.showlabel && this.label !== "";
+
+      let withlabel = SVs.showLabel && SVs.label !== "";
+      if (withlabel != previousWithLabel.current) {
+        this.vectorJXG.current.setAttribute({ withlabel: withlabel });
+        previousWithLabel.current = withlabel;
+      }
+
+      vectorJXG.current.needsUpdate = true;
+      vectorJXG.current.update()
+      if (vectorJXG.current.hasLabel) {
+        vectorJXG.current.label.needsUpdate = true;
+        vectorJXG.current.label.update();
+      }
+
+      point1JXG.current.needsUpdate = true;
+      point1JXG.current.update();
+      point2JXG.current.needsUpdate = true;
+      point2JXG.current.update();
+
+      board.updateRenderer();
+
+    }
+
     return <><a name={name} /></>
+
   }
+
 
   if (SVs.hidden) {
     return null;
   }
 
-  let mathJaxify = "\\(" + SVs.displacementCoords + "\\)";
+  let mathJaxify = "\\(" + me.fromAst(SVs.displacementCoords).toLatex() + "\\)";
   return <><a name={name} /><span id={name}>{mathJaxify}</span></>
 }
 

@@ -1826,7 +1826,7 @@ export default class Vector extends GraphicalComponent {
 
   }
 
-  async finalizeVectorPosition() {
+  async finalizeVectorPosition({ includeHead = true, includeTail = true } = {}) {
     // trigger a moveVector 
     // to send the final values with transient=false
     // so that the final position will be recorded
@@ -1834,8 +1834,8 @@ export default class Vector extends GraphicalComponent {
     let numericalEndpoints = await this.stateValues.numericalEndpoints;
 
     return await this.actions.moveVector({
-      tailcoords: numericalEndpoints[0],
-      headcoords: numericalEndpoints[1],
+      tailcoords: includeTail ? numericalEndpoints[0] : undefined,
+      headcoords: includeHead ? numericalEndpoints[1] : undefined,
     });
   }
 
