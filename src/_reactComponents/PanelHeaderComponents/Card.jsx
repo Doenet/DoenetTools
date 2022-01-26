@@ -1,7 +1,7 @@
 import React, { useState ,useRef, useEffect} from 'react';
 import { doenetComponentForegroundInactive, doenetComponentForegroundActive, doenetComponentBackgroundActive } from "./theme.js";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faUser } from '@fortawesome/free-solid-svg-icons';
+import { faCode } from '@fortawesome/free-solid-svg-icons';
 import Button from './Button.jsx';
 
 
@@ -58,7 +58,10 @@ export default function Card(props) {
     var icon = '';
     if (props.icon){
         icon = props.icon
+        console.log(icon)
     }
+    const iconVisible = props.icon ? <div style={{padding: '8px', fontSize: '20px'}}>{icon}</div> : ''
+
     if (props.label) {
         label.value = props.label;
     }
@@ -82,11 +85,8 @@ export default function Card(props) {
                 style={card}
                 onClick={(e) => { handleClick(e) }}
                 >
-                {/* <FontAwesomeIcon icon={faUser} style={{padding: '8px', fontSize: '20px'}}/> */}
-                {/* <div style={circle}></div> */}
                 <h4 style={title}><b>{title.value}</b></h4>
-                <FontAwesomeIcon icon={icon} style={{name: 'faUser', padding: '8px', fontSize: '20px'}}
-                />
+                {iconVisible}
             </button>
         </div>
     );

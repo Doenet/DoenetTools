@@ -290,18 +290,10 @@ export default function attempt() {
         {
           name: 'Icon',
           propPreview: '<Card icon={<FontAwesomeIcon icon={faCode}}/>',
-          propCode: { icon: {faCode} },
+          propCode: { icon: <FontAwesomeIcon icon={faCode} />},
           description:
             'See Style Guide for more info on how to use FontAwesomeIcons. Adds icon in button',
         },
-        // {
-        //   name: 'Value + Icon',
-        //   propPreview:
-        //     '<Button icon={<FontAwesomeIcon icon={faCode}} value="code"/>',
-        //   propCode: { icon: <FontAwesomeIcon icon={faCode} />, value: 'code' },
-        //   description:
-        //     'See Style Guide for more info on how to use FontAwesomeIcons. Adds icon in button',
-        // },
         {
           name: 'Label',
           propPreview: '<Card label="What: "/>',

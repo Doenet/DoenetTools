@@ -28,7 +28,6 @@ export default function Dashboard(props) {
     },[effectiveRole,setSuppressMenus])
 
   return (
-    
     <div style={props?.style ?? {}}>
       <div style={{marginLeft: '10px', marginRight: '10px'}}>
         <h1>Welcome!</h1>
