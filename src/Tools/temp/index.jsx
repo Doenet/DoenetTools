@@ -2,25 +2,25 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { returnAllPossibleVariants } from '../../Core/utils/returnAllPossibleVariants';
 //import DateTime from '../../_reactComponents/PanelHeaderComponents/DateTime'
-import DropdownMenu from '../../_reactComponents/PanelHeaderComponents/DropdownMenu'
-import SearchBar from '../../_reactComponents/PanelHeaderComponents/SearchBar.jsx'
+import Card from '../../_reactComponents/PanelHeaderComponents/Card.jsx';
 
 
-function testReturnVariants() {
-  returnAllPossibleVariants({
-    doenetML: `<variantControl nVariants='5' variantNames='hello cat dog mouse' /> <copy assignNames="problem1" uri="doenet:conTentId=a666134b719e70e8acb48d91d582d1efd90d7f11fb499ab77f9f1fa5dafdb96d&DoenEtiD=abcdefg" />`,
-    callback: gotAll,
-  })
 
-}
+// function testReturnVariants() {
+//   returnAllPossibleVariants({
+//     doenetML: `<variantControl nVariants='5' variantNames='hello cat dog mouse' /> <copy assignNames="problem1" uri="doenet:conTentId=a666134b719e70e8acb48d91d582d1efd90d7f11fb499ab77f9f1fa5dafdb96d&DoenEtiD=abcdefg" />`,
+//     callback: gotAll,
+//   })
 
-function gotAll({ allPossibleVariants }) {
-  console.log(`all possible variants`, allPossibleVariants)
-}
+// }
+
+// function gotAll({ allPossibleVariants }) {
+//   console.log(`all possible variants`, allPossibleVariants)
+// }
 
 
 ReactDOM.render(
-  <SearchBar noButton></SearchBar>,
+  <Card></Card>,
   document.getElementById('root'),
 );
 

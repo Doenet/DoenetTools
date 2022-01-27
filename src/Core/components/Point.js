@@ -1070,27 +1070,12 @@ export default class Point extends GraphicalComponent {
 
   }
 
-  async finalizePointPosition() {
-    // trigger a movePointe 
-    // to send the final values with transient=false
-    // so that the final position will be recorded
-
-    let numericalXs = await this.stateValues.numericalXs;
-
-    return await this.actions.movePoint({
-      x: numericalXs[0],
-      y: numericalXs[1],
-      z: numericalXs[2],
-      transient: false,
-    })
-  }
 
   switchPoint() {
   }
 
   actions = {
     movePoint: this.movePoint.bind(this),
-    finalizePointPosition: this.finalizePointPosition.bind(this),
     switchPoint: this.switchPoint.bind(this)
   };
 

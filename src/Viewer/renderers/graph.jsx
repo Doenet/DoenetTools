@@ -6,48 +6,49 @@ import useDoenetRender from './useDoenetRenderer';
 
 export const BoardContext = createContext();
 
-export default function Graph(props){
-let {name, SVs, children, actions} = useDoenetRender(props);
-// console.log({name, SVs, children, actions})
-const [board,setBoard] = useState({});
-const [previousDimensions,setPreviousDimensions] = useState({})
-const [previousBoundingbox,setPreviousBoundingbox] = useState({})
-const [xaxis,setXaxis] = useState({})
-const [yaxis,setYaxis] = useState({})
-const settingBoundingBox = useRef(false)
-const resizingBoard = useRef(false)
+export default function Graph(props) {
+  let { name, SVs, children, actions, callAction } = useDoenetRender(props);
+  // console.log({name, SVs, children, actions})
+  const [board, setBoard] = useState({});
+  const [previousDimensions, setPreviousDimensions] = useState({})
+  const [previousBoundingbox, setPreviousBoundingbox] = useState({})
+  const [xaxis, setXaxis] = useState({})
+  const [yaxis, setYaxis] = useState({})
+  const settingBoundingBox = useRef(false)
+  const resizingBoard = useRef(false)
 
 
-//Draw Board after mounting component
-useEffect(()=>{
-  let boundingbox = [SVs.xmin, SVs.ymax, SVs.xmax, SVs.ymin];
-  setPreviousBoundingbox(boundingbox)
+  //Draw Board after mounting component
+  useEffect(() => {
+    let boundingbox = [SVs.xmin, SVs.ymax, SVs.xmax, SVs.ymin];
+    setPreviousBoundingbox(boundingbox)
 
-  JXG.Options.layer.numlayers = 100;
+    JXG.Options.layer.numlayers = 100;
 
-  let board = window.JXG.JSXGraph.initBoard(name,
-    {
-      boundingbox,
-      axis: false,
-      showCopyright: false,
-      showNavigation: SVs.showNavigation && !SVs.fixAxes,
-      keepAspectRatio: SVs.identicalAxisScales,
-      zoom: { wheel: !SVs.fixAxes },
-      pan: { enabled: !SVs.fixAxes }
-    });
+    let board = window.JXG.JSXGraph.initBoard(name,
+      {
+        boundingbox,
+        axis: false,
+        showCopyright: false,
+        showNavigation: SVs.showNavigation && !SVs.fixAxes,
+        keepAspectRatio: SVs.identicalAxisScales,
+        zoom: { wheel: !SVs.fixAxes },
+        pan: { enabled: !SVs.fixAxes }
+      });
 
     board.itemsRenderedLowQuality = {};
 
     board.on('boundingbox', () => {
-      console.log('on boundingbox',settingBoundingBox.current,resizingBoard.current)
+      console.log('on boundingbox', settingBoundingBox.current, resizingBoard.current)
       if (!(settingBoundingBox.current || resizingBoard.current)) {
         console.log('on boundingbox changeAxisLimits')
         let newPreviousBoundingbox = board.getBoundingBox();
         let [xmin, ymax, xmax, ymin] = newPreviousBoundingbox;
         setPreviousBoundingbox(newPreviousBoundingbox);
-        actions.changeAxisLimits({
-          xmin, xmax, ymin, ymax
-        });
+        callAction({
+          action: actions.changeAxisLimits,
+          args: { xmin, xmax, ymin, ymax }
+        })
       }
     })
     setBoard(board);
@@ -157,34 +158,34 @@ useEffect(()=>{
     }
 
 
-},[])
+  }, [])
 
 
 
-const divStyle = {
-  width: sizeToCSS(SVs.width),
-  height: sizeToCSS(SVs.height),
-}
+  const divStyle = {
+    width: sizeToCSS(SVs.width),
+    height: sizeToCSS(SVs.height),
+  }
 
-if (SVs.hidden) {
-  divStyle.display = "none";
-}
+  if (SVs.hidden) {
+    divStyle.display = "none";
+  }
 
-if (Object.keys(board).length === 0){
+  if (Object.keys(board).length === 0) {
+    return <>
+      <a name={name} />
+      <div id={name} className="jxgbox" style={divStyle} />
+    </>;
+  }
+
+
   return <>
-  <a name={name} />
-  <div id={name} className="jxgbox" style={divStyle} />
+    <a name={name} />
+    <div id={name} className="jxgbox" style={divStyle} />
+    <BoardContext.Provider value={board}>
+      {children}
+    </BoardContext.Provider>
   </>;
-}
-
-
-return <>
-<a name={name} />
-<div id={name} className="jxgbox" style={divStyle} />
-<BoardContext.Provider value={board}> 
-{children}
-</BoardContext.Provider>
-</>;
 }
 
 export class Graph2 extends DoenetRenderer {
@@ -329,9 +330,10 @@ export class Graph2 extends DoenetRenderer {
       if (!(this.settingBoundingBox || this.resizingBoard)) {
         this.previousBoundingbox = this.board.getBoundingBox();
         let [xmin, ymax, xmax, ymin] = this.previousBoundingbox;
-        this.actions.changeAxisLimits({
-          xmin, xmax, ymin, ymax
-        });
+        callAction({
+          action: actions.changeAxisLimits,
+          args: { xmin, xmax, ymin, ymax }
+        })
       }
     })
 

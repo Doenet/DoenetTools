@@ -20,6 +20,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Increment from '../../_reactComponents/PanelHeaderComponents/IncrementMenu.jsx';
 import DropdownMenu from '../../_reactComponents/PanelHeaderComponents/DropdownMenu.jsx';
 import DateTime from '../../_reactComponents/PanelHeaderComponents/DateTime.jsx';
+import Card from '../../_reactComponents/PanelHeaderComponents/Card.jsx';
 
 // === HOW TO ADD TO UI DOCS ===
 // 1. Import the component in the COMPONENT IMPORTS SECTION above
@@ -263,6 +264,66 @@ export default function attempt() {
         // propPreview: '<ActionButtonGroup width="500px" />',
         // propCode: {width: '500px'},
         // description: 'Sets width to custom dimensions'},
+      ],
+    },
+    {
+      name: 'Card',
+      id: 'card',
+      code: Card,
+      codePreview: '<Card/>',
+      req_props: null,
+      req_children: null,
+      use: 'Card is an eye-catching button that brings that user to more content or a new location.',
+      props: [
+        // {
+        //   name: 'Width - Menu Panel',
+        //   propPreview: '<Button width="menu" />',
+        //   propCode: { width: 'menu' },
+        //   description: 'Sets width to fill menu panel width',
+        // },
+        {
+          name: 'Value',
+          propPreview: '<Card value="Click Me!"/>',
+          propCode: { value: 'Click Me!' },
+          description: 'Changes the text',
+        },
+        {
+          name: 'Icon',
+          propPreview: '<Card icon={<FontAwesomeIcon icon={faCode}}/>',
+          propCode: { icon: <FontAwesomeIcon icon={faCode} />},
+          description:
+            'See Style Guide for more info on how to use FontAwesomeIcons. Adds icon in button',
+        },
+        {
+          name: 'Label',
+          propPreview: '<Card label="What: "/>',
+          propCode: { label: 'What: ' },
+          description: 'Adds label to card',
+        },
+        {
+          name: 'Vertical Label',
+          propPreview: '<Card label="What: " vertical/>',
+          propCode: { label: 'What: ', vertical },
+          description: 'Adds label to component on top',
+        },
+        {
+          name: 'Alert',
+          propPreview: '<Card alert/>',
+          propCode: { alert },
+          description: 'Changes to alert mode (color is red)',
+        },
+        {
+          name: 'onClick',
+          propPreview: '<Card onClick={() => console.log("clicked")} />',
+          propCode: { onClick: () => console.log('clicked') },
+          description: 'Function called when button is clicked',
+        },
+        {
+          name: 'Disabled',
+          propPreview: '<Card disabled />',
+          propCode: { disabled },
+          description: 'Makes button not able to be used.',
+        },
       ],
     },
     {
