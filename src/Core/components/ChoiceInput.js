@@ -981,13 +981,14 @@ export default class Choiceinput extends Input {
 
   }
 
-  async updateSelectedIndices({ selectedIndices }) {
+  async updateSelectedIndices({ selectedIndices, actionId }) {
     if (!await this.stateValues.disabled) {
       let updateInstructions = [{
         updateType: "updateValue",
         componentName: this.componentName,
         stateVariable: "allSelectedIndices",
-        value: selectedIndices
+        value: selectedIndices,
+        sourceInformation: { actionId }
       }];
 
       let choiceTexts = await this.stateValues.choiceTexts;

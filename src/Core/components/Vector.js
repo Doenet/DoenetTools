@@ -8,7 +8,6 @@ export default class Vector extends GraphicalComponent {
 
   actions = {
     moveVector: this.moveVector.bind(this),
-    finalizeVectorPosition: this.finalizeVectorPosition.bind(this)
   }
 
   static primaryStateVariableForDefinition = "displacementShadow";
@@ -181,6 +180,7 @@ export default class Vector extends GraphicalComponent {
       defaultValue: null,
       hasEssential: true,
       essentialVarName: "displacement",
+      set: convertValueToMathExpression,
       returnDependencies: () => ({}),
       definition: () => ({
         useEssentialOrDefaultValue: {
@@ -192,7 +192,7 @@ export default class Vector extends GraphicalComponent {
           success: true,
           instructions: [{
             setEssentialValue: "displacementShadow",
-            value: desiredStateVariableValues.displacementShadow
+            value: convertValueToMathExpression(desiredStateVariableValues.displacementShadow)
           }]
         };
       }
@@ -205,6 +205,7 @@ export default class Vector extends GraphicalComponent {
       defaultValue: null,
       hasEssential: true,
       essentialVarName: "head",
+      set: convertValueToMathExpression,
       returnDependencies: () => ({}),
       definition: () => ({
         useEssentialOrDefaultValue: {
@@ -216,7 +217,7 @@ export default class Vector extends GraphicalComponent {
           success: true,
           instructions: [{
             setEssentialValue: "headShadow",
-            value: desiredStateVariableValues.headShadow
+            value: convertValueToMathExpression(desiredStateVariableValues.headShadow)
           }]
         };
       }
@@ -228,6 +229,7 @@ export default class Vector extends GraphicalComponent {
       defaultValue: null,
       hasEssential: true,
       essentialVarName: "tail",
+      set: convertValueToMathExpression,
       returnDependencies: () => ({}),
       definition: () => ({
         useEssentialOrDefaultValue: {
@@ -239,7 +241,7 @@ export default class Vector extends GraphicalComponent {
           success: true,
           instructions: [{
             setEssentialValue: "tailShadow",
-            value: desiredStateVariableValues.tailShadow
+            value: convertValueToMathExpression(desiredStateVariableValues.tailShadow)
           }]
         };
       }
@@ -802,6 +804,7 @@ export default class Vector extends GraphicalComponent {
       entryPrefixes: ["x"],
       hasEssential: true,
       essentialVarName: "displacement2", // since "displacement" used for displacementShadow
+      set: convertValueToMathExpression,
       returnWrappingComponents(prefix) {
         if (prefix === "x") {
           return [];
@@ -1124,6 +1127,7 @@ export default class Vector extends GraphicalComponent {
       componentType: "math",
       isArray: true,
       entryPrefixes: ["headX"],
+      set: convertValueToMathExpression,
       returnWrappingComponents(prefix) {
         if (prefix === "headX") {
           return [];
@@ -1307,6 +1311,7 @@ export default class Vector extends GraphicalComponent {
       hasEssential: true,
       defaultValueByArrayKey: () => me.fromAst(0),
       essentialVarName: "tail2",  // since tailShadow uses "tail"
+      set: convertValueToMathExpression,
       returnWrappingComponents(prefix) {
         if (prefix === "tailX") {
           return [];
@@ -1471,7 +1476,7 @@ export default class Vector extends GraphicalComponent {
 
               instructions.push({
                 setEssentialValue: "tail",
-                value: { [arrayKey]: desiredStateVariableValues.tail[arrayKey] }
+                value: { [arrayKey]: convertValueToMathExpression(desiredStateVariableValues.tail[arrayKey]) }
               })
 
             }
@@ -1624,10 +1629,10 @@ export default class Vector extends GraphicalComponent {
       }),
       definition({ dependencyValues }) {
 
-        let A1 = dependencyValues.numericalEndpoints[0][0];
-        let A2 = dependencyValues.numericalEndpoints[0][1];
-        let B1 = dependencyValues.numericalEndpoints[1][0];
-        let B2 = dependencyValues.numericalEndpoints[1][1];
+        let A1 = dependencyValues.numericalEndpoints[0]?.[0];
+        let A2 = dependencyValues.numericalEndpoints[0]?.[1];
+        let B1 = dependencyValues.numericalEndpoints[1]?.[0];
+        let B2 = dependencyValues.numericalEndpoints[1]?.[1];
 
         let haveConstants = Number.isFinite(A1) && Number.isFinite(A2) &&
           Number.isFinite(B1) && Number.isFinite(B2);
@@ -1694,7 +1699,7 @@ export default class Vector extends GraphicalComponent {
     componentType: "coords",
   }];
 
-  async moveVector({ tailcoords, headcoords, transient, sourceInformation }) {
+  async moveVector({ tailcoords, headcoords, transient, skippable, sourceInformation }) {
 
     let updateInstructions = [];
 
@@ -1804,7 +1809,8 @@ export default class Vector extends GraphicalComponent {
     if (transient) {
       return await this.coreFunctions.performUpdate({
         updateInstructions,
-        transient
+        transient,
+        skippable
       });
     } else {
       return await this.coreFunctions.performUpdate({
@@ -1824,19 +1830,5 @@ export default class Vector extends GraphicalComponent {
     }
 
   }
-
-  async finalizeVectorPosition() {
-    // trigger a moveVector 
-    // to send the final values with transient=false
-    // so that the final position will be recorded
-
-    let numericalEndpoints = await this.stateValues.numericalEndpoints;
-
-    return await this.actions.moveVector({
-      tailcoords: numericalEndpoints[0],
-      headcoords: numericalEndpoints[1],
-    });
-  }
-
 
 }

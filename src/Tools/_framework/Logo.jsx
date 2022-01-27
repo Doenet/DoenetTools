@@ -11,16 +11,16 @@ const LogoButton = styled.button`
   background-repeat: no-repeat;
   background-size: 50px 25px;
   transition: 300ms;
-  background-color: hsl(209,54%,82%);
-  width: 57px;
-  height: 57px;
+  background-color: white;
+  width: 50px;
+  height: 25px;
   display: inline-block;
   justify-content: center;
   align-items: center;
   border-style: none;
-  border-radius: 50%;
-  margin-top: 8px;
-  margin-left: 90px;
+  // border-radius: 50%;
+  // margin-top: 8px;
+  // margin-left: 90px;
   cursor: pointer;
 `;
 
