@@ -1,15 +1,13 @@
 import React from 'react';
-import DoenetRenderer from './DoenetRenderer';
+import useDoenetRender from './useDoenetRenderer';
 
+export default function Nbsp(props) {
+  let { name, SVs, children } = useDoenetRender(props);
 
-export default class Nbsp extends DoenetRenderer {
-
-  render() {
-
-    if (this.doenetSvData.hidden) {
-      return null;
-    }
-
-    return <>&nbsp;</>
+  if (SVs.hidden) {
+    return null;
   }
+
+  return <>&nbsp;</>
+
 }
