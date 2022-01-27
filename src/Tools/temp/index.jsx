@@ -2,7 +2,8 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { returnAllPossibleVariants } from '../../Core/utils/returnAllPossibleVariants';
 //import DateTime from '../../_reactComponents/PanelHeaderComponents/DateTime'
-import SearchBar from '../../_reactComponents/PanelHeaderComponents/SearchBar.jsx'
+import Card from '../../_reactComponents/PanelHeaderComponents/Card.jsx';
+
 
 
 // function testReturnVariants() {
@@ -19,7 +20,7 @@ import SearchBar from '../../_reactComponents/PanelHeaderComponents/SearchBar.js
 
 
 ReactDOM.render(
-  <SearchBar noButton></SearchBar>,
+  <Card></Card>,
   document.getElementById('root'),
 );
 
