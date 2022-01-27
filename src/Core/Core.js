@@ -22,6 +22,8 @@ import { returnDefaultGetArrayKeysFromVarName } from './utils/stateVariables';
 
 let core;
 
+let queuedRequestActions = [];
+
 onmessage = function (e) {
 
   if (e.data.messageType === "createCore") {
@@ -32,10 +34,26 @@ onmessage = function (e) {
     //   //TODO: Investigate for memory leaks
     // }
 
+    // this.setTimeout(() => {
+    //   core = new Core(e.data.args)
+    //   core.initialized.then(() => {
+    //     let actionsToProcess = queuedRequestActions;
+    //     console.log('actions to process', actionsToProcess)
+    //     queuedRequestActions = [];
+    //     for (let action of actionsToProcess) {
+    //       core.requestAction(action);
+    //     }
+    //   })
+    // }, 10000)
     core = new Core(e.data.args)
 
   } else if (e.data.messageType === "requestAction") {
-    core.requestAction(e.data.args)
+    if (core) {
+      // setTimeout(() => core.requestAction(e.data.args), 1000)
+      core.requestAction(e.data.args)
+    } else {
+      queuedRequestActions.push(e.data.args);
+    }
   } else if (e.data.messageType === "returnAllStateVariables") {
     console.log('all components')
     console.log(core._components)
@@ -86,7 +104,7 @@ export default class Core {
   constructor({ doenetML, parameters, requestedVariant,
     externalFunctions, flags = {},
     stateVariableChanges = {},
-    coreReadyCallback, coreUpdatedCallback, coreId }) {
+    coreId }) {
     // console.time('core');
 
 
@@ -117,11 +135,12 @@ export default class Core {
     this.getStateVariableValue = this.getStateVariableValue.bind(this);
     // this.submitResponseCallBack = this.submitResponseCallBack.bind(this);
 
-    this.coreUpdatedCallback = async function (args) {
+    this.postUpdateRenderers = async function (args, init = false) {
 
       postMessage({
-        messageType: "coreUpdated",
+        messageType: "updateRenderers",
         args,
+        init
       })
     }
     this.coreReadyCallback = async function () {
@@ -256,6 +275,10 @@ export default class Core {
 
     this.parameterStack.parameters.rngClass = prng_alea;
 
+    this.initialized = new Promise((resolve, reject) => {
+      this.resolveInitialized = resolve;
+    })
+
     let contentId = Hex.stringify(sha256(doenetML));
     serializeFunctions.expandDoenetMLsToFullSerializedComponents({
       contentIds: [contentId],
@@ -355,6 +378,8 @@ export default class Core {
 
     this.coreReadyCallback()
 
+    this.resolveInitialized(true);
+
   }
 
 
@@ -441,7 +466,7 @@ export default class Core {
         stateValuesToUpdate: results.stateValuesToUpdate,
       }]
 
-      this.coreUpdatedCallback(updateInstructions)
+      this.postUpdateRenderers(updateInstructions, true)
 
       await this.processStateVariableTriggers();
 
@@ -675,7 +700,7 @@ export default class Core {
     //   }
     // }
 
-    this.coreUpdatedCallback(updateInstructions)
+    this.postUpdateRenderers(updateInstructions)
 
   }
 
@@ -697,11 +722,7 @@ export default class Core {
     let stateValuesForRenderer = {};
     for (let stateVariable in component.state) {
       if (component.state[stateVariable].forRenderer) {
-        let value = preprocessForPostMessage(await component.state[stateVariable].value);
-        // if (value !== null && typeof value === 'object') {
-        //   value = new Proxy(value, readOnlyProxyHandler)
-        // }
-        stateValuesForRenderer[stateVariable] = value;
+        stateValuesForRenderer[stateVariable] = preprocessForPostMessage(await component.state[stateVariable].value);
       }
     }
 
@@ -736,11 +757,6 @@ export default class Core {
 
     let requestActions = {};
     for (let actionName in component.actions) {
-      // requestActions[actionName] = args => this.requestAction({
-      //   componentName: component.componentName,
-      //   actionName,
-      //   args,
-      // })
       requestActions[actionName] = {
         actionName,
         componentName: component.componentName
@@ -750,11 +766,6 @@ export default class Core {
     for (let actionName in component.externalActions) {
       let action = await component.externalActions[actionName];
       if (action) {
-        // requestActions[actionName] = args => this.requestAction({
-        //   componentName: action.componentName,
-        //   actionName: action.actionName,
-        //   args,
-        // })
         requestActions[actionName] = {
           actionName,
           componentName: action.componentName,
@@ -767,7 +778,7 @@ export default class Core {
       componentName: componentName,
       componentType: component.componentType,
       rendererType: component.rendererType,
-      stateValues: stateValuesForRenderer,  // TODO: delete was remove class-based components?
+      // stateValues: stateValuesForRenderer,  // TODO: delete when remove class-based components?
       children: childrenToRender,
       actions: requestActions,
     };
@@ -7964,7 +7975,7 @@ export default class Core {
 
 
     //TODO: Inside for loop?
-    if (this.externalFunctions.localStateChanged) {
+    if (!transient) {
 
       let newVals = {};
 
@@ -7995,16 +8006,17 @@ export default class Core {
       }
 
       let currentVariant = await this.document.state.generatedVariantInfo.value
-      setTimeout(() => this.externalFunctions.localStateChanged({
-        newStateVariableValues: newVals,
-        contentId: this.contentId,
-        sourceOfUpdate: {
-          sourceInformation
+
+      postMessage({
+        messageType: "saveState",
+        args: {
+          newStateVariableValues: preprocessForPostMessage(newVals),
+          contentId: this.contentId,
+          itemsWithCreditAchieved,
+          currentVariant
         },
-        transient,
-        itemsWithCreditAchieved,
-        currentVariant
-      }), 0)
+      })
+
     }
 
 
@@ -8131,7 +8143,7 @@ export default class Core {
 
     // it is possible that components were added back to componentNamesToUpdateRenderers
     // while processing the renderer instructions
-    // so delete any names that were just address
+    // so delete any names that were just addressed
     this.updateInfo.componentsToUpdateRenderers
       = this.updateInfo.componentsToUpdateRenderers.filter(x => !componentNamesToUpdate.includes(x));
 
@@ -8334,16 +8346,19 @@ export default class Core {
           // to tell external functions new attributes of the object
           // should be merged into the old object
 
-          // TODO: what about a .set function here?
           for (let arrayKey in newComponentStateVariables[vName]) {
 
             if (arrayKey === "mergeObject") {
               continue;
             }
 
+            let set = x => x;
+            if (compStateObj.set) {
+              set = compStateObj.set;
+            }
 
             let setResult = compStateObj.setArrayValue({
-              value: newComponentStateVariables[vName][arrayKey],
+              value: set(newComponentStateVariables[vName][arrayKey]),
               arrayKey,
               arraySize,
               arrayValues: essentialArray

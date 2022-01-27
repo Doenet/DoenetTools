@@ -6,7 +6,7 @@ import me from 'math-expressions';
 export default function Point(props) {
   let { name, SVs, actions, sourceOfUpdate, callAction } = useDoenetRender(props);
 
-  console.log(`for point ${name}, SVs: `, SVs)
+  // console.log(`for point ${name}, SVs: `, SVs)
 
   const board = useContext(BoardContext);
   const [pointJXG, setPointJXG] = useState({})
@@ -16,6 +16,8 @@ export default function Point(props) {
   let dragged = useRef(false);
   let previousWithLabel = useRef(null);
   let previousLabelPosition = useRef(null);
+  let calculatedX = useRef(null);
+  let calculatedY = useRef(null);
 
   let lastPositionFromCore = useRef(null);
 
@@ -138,7 +140,11 @@ export default function Point(props) {
 
       if (dragged.current) {
         callAction({
-          action: actions.finalizePointPosition
+          action: actions.movePoint,
+          args: {
+            x: calculatedX.current,
+            y: calculatedY.current,
+          }
         });
       } else if (SVs.switchable && !SVs.fixed) {
 
@@ -164,26 +170,20 @@ export default function Point(props) {
 
       let [xmin, ymax, xmax, ymin] = board.getBoundingBox();
 
-      let calculatedX = (pointAtDown.current[1] + e.x - pointerAtDown.current[0]
+      calculatedX.current = (pointAtDown.current[1] + e.x - pointerAtDown.current[0]
         - o[1]) / board.unitX;
-      calculatedX = Math.min(xmax, Math.max(xmin, calculatedX));
+      calculatedX.current = Math.min(xmax, Math.max(xmin, calculatedX.current));
 
-      let calculatedY = (o[2] -
+      calculatedY.current = (o[2] -
         (pointAtDown.current[2] + e.y - pointerAtDown.current[1]))
         / board.unitY;
-      calculatedY = Math.min(ymax, Math.max(ymin, calculatedY));
+      calculatedY.current = Math.min(ymax, Math.max(ymin, calculatedY.current));
 
-      // actions.movePoint({
-      //   x: calculatedX,
-      //   y: calculatedY,
-      //   transient: true,
-      //   skippable: true,
-      // });
       callAction({
         action: actions.movePoint,
         args: {
-          x: calculatedX,
-          y: calculatedY,
+          x: calculatedX.current,
+          y: calculatedY.current,
           transient: true,
           skippable: true,
         }
