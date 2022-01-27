@@ -1,7 +1,7 @@
 import React, {useRef, useState, useEffect} from "../../_snowpack/pkg/react.js";
 import useDoenetRender from "./useDoenetRenderer.js";
 export default function sideBySide(props) {
-  let [name, SVs, _, children] = useDoenetRender(props);
+  let {name, SVs, children} = useDoenetRender(props);
   if (SVs.hidden) {
     return null;
   }

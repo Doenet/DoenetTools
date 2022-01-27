@@ -12,7 +12,7 @@ describe('BestFitLine Tag Tests', function () {
       win.postMessage({
         doenetML: `
       <setup>
-        <collect name="ps" componentTypes="point" tname="g" />
+        <collect name="ps" componentTypes="point" target="g" />
       </setup>
       
       <text>a</text>
@@ -27,7 +27,7 @@ describe('BestFitLine Tag Tests', function () {
       
       </graph>
       
-      <copy prop="equation" tname="l" assignNames="eq" />
+      <copy prop="equation" target="l" assignNames="eq" />
     `}, "*");
     });
 
@@ -46,13 +46,13 @@ describe('BestFitLine Tag Tests', function () {
 
     cy.log('move points')
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components["/_point1"].movePoint({ x: -5, y: -8 });
-      components["/_point2"].movePoint({ x: 3, y: 5 });
+      await components["/_point1"].movePoint({ x: -5, y: -8 });
+      await components["/_point2"].movePoint({ x: 3, y: 5 });
 
-      components["/_point3"].movePoint({ x: -5, y: -10 });
-      components["/_point4"].movePoint({ x: 3, y: 9 });
+      await components["/_point3"].movePoint({ x: -5, y: -10 });
+      await components["/_point4"].movePoint({ x: 3, y: 9 });
 
     })
 
@@ -81,7 +81,7 @@ describe('BestFitLine Tag Tests', function () {
       
       </graph>
       
-      <copy prop="equation" tname="l" assignNames="eq" />
+      <copy prop="equation" target="l" assignNames="eq" />
     `}, "*");
     });
 
@@ -105,7 +105,7 @@ describe('BestFitLine Tag Tests', function () {
       win.postMessage({
         doenetML: `
       <setup>
-        <collect name="ps" componentTypes="point" tname="g" />
+        <collect name="ps" componentTypes="point" target="g" />
       </setup>
       
       <text>a</text>
@@ -115,7 +115,7 @@ describe('BestFitLine Tag Tests', function () {
       
       </graph>
       
-      <copy prop="equation" tname="l" assignNames="eq" />
+      <copy prop="equation" target="l" assignNames="eq" />
     `}, "*");
     });
 
@@ -138,7 +138,7 @@ describe('BestFitLine Tag Tests', function () {
       win.postMessage({
         doenetML: `
       <setup>
-        <collect name="ps" componentTypes="point" tname="g" />
+        <collect name="ps" componentTypes="point" target="g" />
       </setup>
       
       <text>a</text>
@@ -149,7 +149,7 @@ describe('BestFitLine Tag Tests', function () {
       
       </graph>
       
-      <copy prop="equation" tname="l" assignNames="eq" />
+      <copy prop="equation" target="l" assignNames="eq" />
     `}, "*");
     });
 
@@ -167,9 +167,9 @@ describe('BestFitLine Tag Tests', function () {
 
     cy.log('move point')
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components["/_point1"].movePoint({ x: -5, y: -8 });
+      await components["/_point1"].movePoint({ x: -5, y: -8 });
     })
 
     cy.get('#\\/eq').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -189,7 +189,7 @@ describe('BestFitLine Tag Tests', function () {
       win.postMessage({
         doenetML: `
       <setup>
-        <collect name="ps" componentTypes="point" tname="g" />
+        <collect name="ps" componentTypes="point" target="g" />
       </setup>
       
       <text>a</text>
@@ -201,7 +201,7 @@ describe('BestFitLine Tag Tests', function () {
       
       </graph>
       
-      <copy prop="equation" tname="l" assignNames="eq" />
+      <copy prop="equation" target="l" assignNames="eq" />
     `}, "*");
     });
 
@@ -220,9 +220,9 @@ describe('BestFitLine Tag Tests', function () {
 
     cy.log('move points to be vertical')
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components["/_point1"].movePoint({ x: -5, y: -8 });
+      await components["/_point1"].movePoint({ x: -5, y: -8 });
     })
 
     cy.get('#\\/eq').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -238,9 +238,9 @@ describe('BestFitLine Tag Tests', function () {
 
     cy.log('move points')
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components["/_point2"].movePoint({ x: -4, y: -6 });
+      await components["/_point2"].movePoint({ x: -4, y: -6 });
     })
 
     cy.get('#\\/eq').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -261,7 +261,7 @@ describe('BestFitLine Tag Tests', function () {
       win.postMessage({
         doenetML: `
       <setup>
-        <collect name="ps" componentTypes="point" tname="g" />
+        <collect name="ps" componentTypes="point" target="g" />
       </setup>
       
       <text>a</text>
@@ -276,7 +276,7 @@ describe('BestFitLine Tag Tests', function () {
       
       </graph>
       
-      <copy prop="equation" tname="l" assignNames="eq" />
+      <copy prop="equation" target="l" assignNames="eq" />
 
     `}, "*");
     });
@@ -296,13 +296,13 @@ describe('BestFitLine Tag Tests', function () {
 
     cy.log('move points')
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components["/_point1"].movePoint({ x: -5, y: -8 });
-      components["/_point2"].movePoint({ x: 3, y: 5 });
+      await components["/_point1"].movePoint({ x: -5, y: -8 });
+      await components["/_point2"].movePoint({ x: 3, y: 5 });
 
-      components["/_point3"].movePoint({ x: -5, y: -10 });
-      components["/_point4"].movePoint({ x: 3, y: 9 });
+      await components["/_point3"].movePoint({ x: -5, y: -10 });
+      await components["/_point4"].movePoint({ x: 3, y: 9 });
 
     })
 
@@ -325,7 +325,7 @@ describe('BestFitLine Tag Tests', function () {
       win.postMessage({
         doenetML: `
       <setup>
-        <collect name="ps" componentTypes="point" tname="g" />
+        <collect name="ps" componentTypes="point" target="g" />
       </setup>
       
       <text>a</text>
@@ -345,7 +345,7 @@ describe('BestFitLine Tag Tests', function () {
       
       </graph>
       
-      <copy prop="equation" tname="l" assignNames="eq" />
+      <copy prop="equation" target="l" assignNames="eq" />
     `}, "*");
     });
 
@@ -364,13 +364,13 @@ describe('BestFitLine Tag Tests', function () {
 
     cy.log('move points')
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components["/_point2"].movePoint({ x: -5, y: -8 });
-      components["/_point4"].movePoint({ x: 3, y: 5 });
+      await components["/_point2"].movePoint({ x: -5, y: -8 });
+      await components["/_point4"].movePoint({ x: 3, y: 5 });
 
-      components["/_point6"].movePoint({ x: -5, y: -10 });
-      components["/_point8"].movePoint({ x: 3, y: 9 });
+      await components["/_point6"].movePoint({ x: -5, y: -10 });
+      await components["/_point8"].movePoint({ x: 3, y: 9 });
 
     })
 

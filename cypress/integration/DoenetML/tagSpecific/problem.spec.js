@@ -20,14 +20,14 @@ describe('Problem Tag Tests', function () {
       win.postMessage({
         doenetML: `
     <title>Activity</title>
-    <p>Credit achieved for <copy prop="title" tname="_document1" />:
-    <copy name="docCa" prop="creditAchieved" tname="_document1" />, or <copy name="docPca" prop="percentCreditAchieved" tname="_document1" />%</p>
+    <p>Credit achieved for <copy prop="title" target="_document1" />:
+    <copy name="docCa" prop="creditAchieved" target="_document1" />, or <copy name="docPca" prop="percentCreditAchieved" target="_document1" />%</p>
 
     <p>Enter <m>u</m>: <answer>u</answer></p>
 
     <problem name="problem1"><title>Problem 1</title>
-      <p>Credit achieved for <copy prop="title" tname="problem1" />:
-      <copy name="p1Ca" prop="creditAchieved" tname="problem1" />, or <copy name="p1Pca" prop="percentCreditAchieved" tname="problem1" />%</p>
+      <p>Credit achieved for <copy prop="title" target="problem1" />:
+      <copy name="p1Ca" prop="creditAchieved" target="problem1" />, or <copy name="p1Pca" prop="percentCreditAchieved" target="problem1" />%</p>
 
       <p>Enter <m>x</m>: <answer>x</answer></p>
       <p>Enter <m>y</m>: <answer weight="2">y</answer></p>
@@ -35,35 +35,35 @@ describe('Problem Tag Tests', function () {
 
     </problem>
     <problem name="problem2"><title>Problem 2</title>
-      <p>Credit achieved for <copy prop="title" tname="problem2" />:
-      <copy name="p2Ca" prop="creditAchieved" tname="problem2" />, or <copy name="p2Pca" prop="percentCreditAchieved" tname="problem2" />%</p>
+      <p>Credit achieved for <copy prop="title" target="problem2" />:
+      <copy name="p2Ca" prop="creditAchieved" target="problem2" />, or <copy name="p2Pca" prop="percentCreditAchieved" target="problem2" />%</p>
 
       <p>Enter <m>z</m>: <answer>z</answer></p>
 
       <problem name="problem21"><title>Problem 2.1</title>
-        <p>Credit achieved for <copy prop="title" tname="problem21" />:
-        <copy name="p21Ca" prop="creditAchieved" tname="problem21" />, or <copy name="p21Pca" prop="percentCreditAchieved" tname="problem21" />%</p>
+        <p>Credit achieved for <copy prop="title" target="problem21" />:
+        <copy name="p21Ca" prop="creditAchieved" target="problem21" />, or <copy name="p21Pca" prop="percentCreditAchieved" target="problem21" />%</p>
 
         <p>Enter <m>v</m>: <answer weight="0.5">v</answer></p>
         <p>Enter <m>w</m>: <answer>w</answer></p>
 
       </problem>
       <problem name="problem22"><title>Problem 2.2</title>
-        <p>Credit achieved for <copy prop="title" tname="problem22" />:
-        <copy name="p22Ca" prop="creditAchieved" tname="problem22" />, or <copy name="p22Pca" prop="percentCreditAchieved" tname="problem22" />%</p>
+        <p>Credit achieved for <copy prop="title" target="problem22" />:
+        <copy name="p22Ca" prop="creditAchieved" target="problem22" />, or <copy name="p22Pca" prop="percentCreditAchieved" target="problem22" />%</p>
 
         <p>Enter <m>q</m>: <answer>q</answer></p>
 
         <problem name="problem221"><title>Problem 2.2.1</title>
-          <p>Credit achieved for <copy prop="title" tname="problem221" />:
-          <copy name="p221Ca" prop="creditAchieved" tname="problem221" />, or <copy name="p221Pca" prop="percentCreditAchieved" tname="problem221" />%</p>
+          <p>Credit achieved for <copy prop="title" target="problem221" />:
+          <copy name="p221Ca" prop="creditAchieved" target="problem221" />, or <copy name="p221Pca" prop="percentCreditAchieved" target="problem221" />%</p>
 
           <p>Enter <m>r</m>: <answer>r</answer></p>
 
         </problem>
         <problem name="problem222"><title>Problem 2.2.2</title>
-          <p>Credit achieved for <copy prop="title" tname="problem222" />:
-          <copy name="p222Ca" prop="creditAchieved" tname="problem222" />, or <copy name="p222Pca" prop="percentCreditAchieved" tname="problem222" />%</p>
+          <p>Credit achieved for <copy prop="title" target="problem222" />:
+          <copy name="p222Ca" prop="creditAchieved" target="problem222" />, or <copy name="p222Pca" prop="percentCreditAchieved" target="problem222" />%</p>
 
           <p>Enter <m>s</m>: <answer weight="3">s</answer></p>
 
@@ -437,14 +437,14 @@ describe('Problem Tag Tests', function () {
       win.postMessage({
         doenetML: `
     <title>Activity</title>
-    <p>Credit achieved for <copy prop="title" tname="_document1" />:
-    <copy name="docCa" prop="creditAchieved" tname="_document1" />, or <copy name="docPca" prop="percentCreditAchieved" tname="_document1" />%</p>
+    <p>Credit achieved for <copy prop="title" target="_document1" />:
+    <copy name="docCa" prop="creditAchieved" target="_document1" />, or <copy name="docPca" prop="percentCreditAchieved" target="_document1" />%</p>
 
     <p>Enter <m>u</m>: <answer>u</answer></p>
 
     <problem name="problem1" weight="0.5"><title>Problem 1</title>
-      <p>Credit achieved for <copy prop="title" tname="problem1" />:
-      <copy name="p1Ca" prop="creditAchieved" tname="problem1" />, or <copy name="p1Pca" prop="percentCreditAchieved" tname="problem1" />%</p>
+      <p>Credit achieved for <copy prop="title" target="problem1" />:
+      <copy name="p1Ca" prop="creditAchieved" target="problem1" />, or <copy name="p1Pca" prop="percentCreditAchieved" target="problem1" />%</p>
 
       <p>Enter <m>x</m>: <answer>x</answer></p>
       <p>Enter <m>y</m>: <answer weight="2">y</answer></p>
@@ -452,14 +452,14 @@ describe('Problem Tag Tests', function () {
 
     </problem>
     <problem name="problem2" weight="2"><title>Problem 2</title>
-      <p>Credit achieved for <copy prop="title" tname="problem2" />:
-      <copy name="p2Ca" prop="creditAchieved" tname="problem2" />, or <copy name="p2Pca" prop="percentCreditAchieved" tname="problem2" />%</p>
+      <p>Credit achieved for <copy prop="title" target="problem2" />:
+      <copy name="p2Ca" prop="creditAchieved" target="problem2" />, or <copy name="p2Pca" prop="percentCreditAchieved" target="problem2" />%</p>
 
       <p>Enter <m>z</m>: <answer>z</answer></p>
 
       <problem name="problem21" weight="3"><title>Problem 2.1</title>
-        <p>Credit achieved for <copy prop="title" tname="problem21" />:
-        <copy name="p21Ca" prop="creditAchieved" tname="problem21" />, or <copy name="p21Pca" prop="percentCreditAchieved" tname="problem21" />%</p>
+        <p>Credit achieved for <copy prop="title" target="problem21" />:
+        <copy name="p21Ca" prop="creditAchieved" target="problem21" />, or <copy name="p21Pca" prop="percentCreditAchieved" target="problem21" />%</p>
 
 
         <p>Enter <m>v</m>: <answer weight="0.5">v</answer></p>
@@ -467,21 +467,21 @@ describe('Problem Tag Tests', function () {
 
       </problem>
       <problem name="problem22" weight="4"><title>Problem 2.2</title>
-        <p>Credit achieved for <copy prop="title" tname="problem22" />:
-        <copy name="p22Ca" prop="creditAchieved" tname="problem22" />, or <copy name="p22Pca" prop="percentCreditAchieved" tname="problem22" />%</p>
+        <p>Credit achieved for <copy prop="title" target="problem22" />:
+        <copy name="p22Ca" prop="creditAchieved" target="problem22" />, or <copy name="p22Pca" prop="percentCreditAchieved" target="problem22" />%</p>
 
         <p>Enter <m>q</m>: <answer>q</answer></p>
 
         <problem name="problem221" weight="5"><title>Problem 2.2.1</title>
-          <p>Credit achieved for <copy prop="title" tname="problem221" />:
-          <copy name="p221Ca" prop="creditAchieved" tname="problem221" />, or <copy name="p221Pca" prop="percentCreditAchieved" tname="problem221" />%</p>
+          <p>Credit achieved for <copy prop="title" target="problem221" />:
+          <copy name="p221Ca" prop="creditAchieved" target="problem221" />, or <copy name="p221Pca" prop="percentCreditAchieved" target="problem221" />%</p>
 
           <p>Enter <m>r</m>: <answer>r</answer></p>
 
         </problem>
         <problem name="problem222" weight="1"><title>Problem 2.2.2</title>
-          <p>Credit achieved for <copy prop="title" tname="problem222" />:
-          <copy name="p222Ca" prop="creditAchieved" tname="problem222" />, or <copy name="p222Pca" prop="percentCreditAchieved" tname="problem222" />%</p>
+          <p>Credit achieved for <copy prop="title" target="problem222" />:
+          <copy name="p222Ca" prop="creditAchieved" target="problem222" />, or <copy name="p222Pca" prop="percentCreditAchieved" target="problem222" />%</p>
 
           <p>Enter <m>s</m>: <answer weight="3">s</answer></p>
 
@@ -1964,7 +1964,7 @@ describe('Problem Tag Tests', function () {
     </p>
     </problem>
   
-    <p>Credit achieved: <copy prop="creditAchieved" tname="_document1" assignNames="ca" /></p>
+    <p>Credit achieved: <copy prop="creditAchieved" target="_document1" assignNames="ca" /></p>
     `
 
     cy.window().then((win) => {

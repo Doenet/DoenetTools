@@ -4,7 +4,7 @@ export default class InlineRenderInlineChildren extends InlineComponent {
   static componentType = "_inlineRenderInlineChildren";
   static renderChildren = true;
   static includeBlankStringChildren = true;
-  
+
   static beginTextDelimiter = "";
   static endTextDelimiter = "";
 
@@ -39,7 +39,9 @@ export default class InlineRenderInlineChildren extends InlineComponent {
 
         let text = ""
         for (let child of dependencyValues.inlineChildren) {
-          if (typeof child.stateValues.text === "string") {
+          if (typeof child !== "object") {
+            text += child.toString();
+          } else if (typeof child.stateValues.text === "string") {
             text += child.stateValues.text;
           } else {
             text += " ";
@@ -48,7 +50,7 @@ export default class InlineRenderInlineChildren extends InlineComponent {
 
         text = componentClass.beginTextDelimiter + text + componentClass.endTextDelimiter;
 
-        return { newValues: { text } };
+        return { setValue: { text } };
       }
     }
 

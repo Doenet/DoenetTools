@@ -4,7 +4,7 @@ export default class Ref extends InlineComponent {
   static componentType = "ref";
   static renderChildren = true;
 
-  static acceptTname = true;
+  static acceptTarget = true;
 
   static createAttributesObject(args) {
     let attributes = super.createAttributesObject(args);
@@ -52,7 +52,7 @@ export default class Ref extends InlineComponent {
       }),
       definition: function ({ dependencyValues }) {
         return {
-          newValues: {
+          setValue: {
             targetComponent: dependencyValues.targetComponent
           }
         }
@@ -77,7 +77,7 @@ export default class Ref extends InlineComponent {
       },
       definition: function ({ dependencyValues }) {
         return {
-          newValues: {
+          setValue: {
             targetInactive: Boolean(dependencyValues.targetIsInactiveCompositeReplacement)
           }
         }
@@ -103,13 +103,13 @@ export default class Ref extends InlineComponent {
       }),
       definition: function ({ dependencyValues }) {
         if (dependencyValues.targetComponent === null || dependencyValues.targetInactive) {
-          return { newValues: { targetName: "" } }
+          return { setValue: { targetName: "" } }
         } else {
           if (dependencyValues.uri !== null) {
-            console.warn("Haven't implemented ref with uri and tname, ignoring tname.");
-            return { newValues: { targetName: "" } }
+            console.warn("Haven't implemented ref with uri and target, ignoring target.");
+            return { setValue: { targetName: "" } }
           }
-          return { newValues: { targetName: dependencyValues.targetComponent.componentName } }
+          return { setValue: { targetName: dependencyValues.targetComponent.componentName } }
         }
       },
     };
@@ -131,7 +131,7 @@ export default class Ref extends InlineComponent {
           dependencyValues.uri.substring(0, 7).toLowerCase() !== "doenet:"
         ) {
           return {
-            newValues: { contentId: null, doenetId: null }
+            setValue: { contentId: null, doenetId: null }
           }
         }
 
@@ -146,7 +146,7 @@ export default class Ref extends InlineComponent {
           doenetId = result[1];
         }
 
-        return { newValues: { contentId, doenetId } };
+        return { setValue: { contentId, doenetId } };
       },
     };
 
@@ -157,7 +157,7 @@ export default class Ref extends InlineComponent {
       stateVariablesDeterminingDependencies: ["targetName"],
       returnDependencies({ stateValues }) {
         let dependencies = {
-          inlineChildren: {
+          allChildren: {
             dependencyType: "child",
             childGroups: ["anything"],
             variableNames: ["text"],
@@ -193,7 +193,7 @@ export default class Ref extends InlineComponent {
       },
       definition: function ({ dependencyValues }) {
         let linkText = "";
-        if (dependencyValues.inlineChildren.length === 0) {
+        if (dependencyValues.allChildren.length === 0) {
           if (dependencyValues.uri !== null) {
             linkText = dependencyValues.uri;
           } else if (!dependencyValues.targetInactive) {
@@ -204,8 +204,10 @@ export default class Ref extends InlineComponent {
             }
           }
         } else {
-          for (let child of dependencyValues.inlineChildren) {
-            if (typeof child.stateValues.text === "string") {
+          for (let child of dependencyValues.allChildren) {
+            if(typeof child !== "object") {
+              linkText += child.toString();
+            } else if (typeof child.stateValues.text === "string") {
               linkText += child.stateValues.text;
             }
           }
@@ -214,7 +216,7 @@ export default class Ref extends InlineComponent {
         if (!linkText) {
           linkText = "???";
         }
-        return { newValues: { linkText } }
+        return { setValue: { linkText } }
       }
     }
 

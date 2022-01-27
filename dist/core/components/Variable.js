@@ -24,7 +24,7 @@ export default class Variable extends MathComponent {
           console.warn("Invalid value of a " + this.componentType);
         }
 
-        return { newValues: { validVariable } }
+        return { setValue: { validVariable } }
       }
     }
 

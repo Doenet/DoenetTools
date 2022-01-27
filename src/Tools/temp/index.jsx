@@ -2,7 +2,8 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { returnAllPossibleVariants } from '../../Core/utils/returnAllPossibleVariants';
 //import DateTime from '../../_reactComponents/PanelHeaderComponents/DateTime'
-import Form from '../../_reactComponents/PanelHeaderComponents/Form'
+import SearchBar from '../../_reactComponents/PanelHeaderComponents/SearchBar.jsx'
+
 
 // function testReturnVariants() {
 //   returnAllPossibleVariants({
@@ -18,8 +19,7 @@ import Form from '../../_reactComponents/PanelHeaderComponents/Form'
 
 
 ReactDOM.render(
-  // <DropdownMenu width = "200px" defaultIndex = {'1'} title = "test" items = {[[1, "one"], [2, "two"]]} callBack = { ({ value }) => console.log(">>>", value)}/>,
-  <Form width="menu"/>,
+  <SearchBar noButton></SearchBar>,
   document.getElementById('root'),
 );
 

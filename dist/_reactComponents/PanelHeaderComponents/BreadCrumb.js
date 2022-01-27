@@ -29,6 +29,29 @@ const BreadcrumbItem = styled.li`
     color: black;
   }
 `;
+const CrumbMenuItem = styled.div`
+  padding: 4px;
+  cursor: pointer;
+  color: black;
+  background: white;
+  border: 2px solid black;
+  border-radius: ${(props) => props.radius};
+  margin: -2px 0px -2px 0px;
+  border-left: 0px;
+  border-right: 0px;
+  padding-left: 8px;
+  padding-right: 8px;
+  max-width: 120px;
+  white-space: nowrap;
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  height: 21.6px;
+  &:hover {
+    background-color: hsl(209,54%,82%);
+    color:black;
+  }
+`;
 const BreadcrumbSpan = styled.span`
   padding: 0px 0px 0px 45px;
   position: relative;
@@ -99,8 +122,10 @@ export function BreadCrumb({crumbs = [], offset = 0}) {
   let [crumbRefs, setCrumbRefs] = useState([]);
   let [windowWidth, setWindowWidth] = useState(window.innerWidth);
   let [crumbBreaks, setCrumbBreaks] = useState(null);
+  let [menuVisible, setMenuVisible] = useState(false);
   let supportPanelHandleLeftValue = useRecoilValue(supportPanelHandleLeft);
   let prevWidths = useRef([]);
+  let elipseItemRef = useRef(null);
   const prevRightFirstCrumb = useRef(0);
   const containerRef = useRef(null);
   function onWindowResize() {
@@ -195,10 +220,55 @@ export function BreadCrumb({crumbs = [], offset = 0}) {
   }
   if (numHidden > 0) {
     crumbsJSX[1] = /* @__PURE__ */ React.createElement(BreadcrumbItem, {
+      ref: elipseItemRef,
       key: `breadcrumbitem1`
-    }, /* @__PURE__ */ React.createElement(BreadcrumbSpan, null, "..."));
+    }, /* @__PURE__ */ React.createElement(BreadcrumbSpan, {
+      onClick: () => {
+        setMenuVisible((was) => !was);
+      }
+    }, "..."));
+  }
+  let breadcrumbMenu = null;
+  if (numHidden > 0 && menuVisible) {
+    let crumMenuItemsJSX = [];
+    for (let [i, {icon, label, onClick}] of Object.entries(crumbs)) {
+      if (i == 0) {
+        continue;
+      }
+      if (i > numHidden) {
+        break;
+      }
+      crumMenuItemsJSX.push(/* @__PURE__ */ React.createElement(CrumbMenuItem, {
+        key: `breadcrumbitem${i}`,
+        radius: "0px",
+        onClick
+      }, icon, label));
+    }
+    if (crumMenuItemsJSX.length > 1) {
+      crumMenuItemsJSX = [React.cloneElement(crumMenuItemsJSX[0], {radius: "5px 5px 0px 0px"})].concat(crumMenuItemsJSX.slice(1, -1)).concat(React.cloneElement(crumMenuItemsJSX[crumMenuItemsJSX.length - 1], {radius: "0px 0px 5px 5px"}));
+    } else if (crumMenuItemsJSX.length == 1) {
+      crumMenuItemsJSX = [React.cloneElement(crumMenuItemsJSX[0], {radius: "5px"})];
+    }
+    const breadcrumbMenuLeft = elipseItemRef.current?.getBoundingClientRect()?.left + 25;
+    if (!isNaN(breadcrumbMenuLeft)) {
+      breadcrumbMenu = /* @__PURE__ */ React.createElement("div", {
+        style: {
+          left: breadcrumbMenuLeft,
+          zIndex: "20",
+          top: "31px",
+          position: "absolute",
+          backgroundColor: "white",
+          border: "2px solid black",
+          borderRadius: "5px",
+          maxHeight: "121px",
+          overflowY: "scroll"
+        }
+      }, crumMenuItemsJSX);
+    } else {
+      setMenuVisible(false);
+    }
   }
   return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(BreadCrumbContainer, {
     ref: containerRef
-  }, " ", crumbsJSX, " "));
+  }, crumbsJSX, breadcrumbMenu));
 }

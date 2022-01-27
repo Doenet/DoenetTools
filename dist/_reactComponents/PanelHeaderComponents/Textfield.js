@@ -1,14 +1,14 @@
-import React, {useState, useEffect, useRef, useLayoutEffect} from "../../_snowpack/pkg/react.js";
+import React, {useState, useEffect, useRef} from "../../_snowpack/pkg/react.js";
 import {doenetComponentForegroundInactive} from "./theme.js";
 export default function Textfield(props) {
   const [labelVisible, setLabelVisible] = useState(props.label ? "static" : "none");
-  const [text, setText] = useState(props.value ? "Enter text here" : props.value);
+  const [text, setText] = useState("");
   const [align, setAlign] = useState(props.vertical ? "static" : "flex");
   const [cursorStart, setCursorStart] = useState(0);
   const [cursorEnd, setCursorEnd] = useState(0);
   const inputRef = useRef(null);
   var textfield = {
-    margin: "0px 4px 0px 4px",
+    margin: "0px 4px 0px 0px",
     height: "24px",
     border: `2px solid ${doenetComponentForegroundInactive}`,
     fontFamily: "Arial",
@@ -19,7 +19,7 @@ export default function Textfield(props) {
     whiteSpace: "nowrap",
     padding: "0px 5px 0px 5px",
     lineHeight: "24px",
-    fontSize: "12px"
+    fontSize: "14px"
   };
   var label = {
     value: "Label:",
@@ -34,9 +34,6 @@ export default function Textfield(props) {
     alignItems: "center"
   };
   useEffect(() => {
-    setText(props.value);
-  }, [props]);
-  useLayoutEffect(() => {
     inputRef.current.selectionStart = cursorStart;
     inputRef.current.selectionEnd = cursorEnd;
   });
@@ -45,6 +42,15 @@ export default function Textfield(props) {
   }
   if (props.label) {
     label.value = props.label;
+  }
+  if (props.value) {
+    textfield.value = props.value;
+  }
+  if (props.placeholder) {
+    textfield.placeholder = props.placeholder;
+  }
+  if (props.ariaLabel) {
+    textfield.ariaLabel = props.ariaLabel;
   }
   var disable = "";
   if (props.disabled) {
@@ -81,7 +87,9 @@ export default function Textfield(props) {
   }, label.value), /* @__PURE__ */ React.createElement("input", {
     type: "text",
     ref: inputRef,
-    value: textfield.value,
+    placeholder: textfield.placeholder,
+    defaultValue: textfield.value,
+    "aria-label": textfield.ariaLabel,
     style: textfield,
     onChange: (e) => {
       handleChange(e);

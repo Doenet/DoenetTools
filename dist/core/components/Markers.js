@@ -43,7 +43,7 @@ export default class Markers extends BaseComponent {
         } else {
           markerType = "empty";
         }
-        return { newValues: { markerType } }
+        return { setValue: { markerType } }
       }
     }
 
@@ -82,7 +82,7 @@ export default class Markers extends BaseComponent {
         }
 
         return {
-          newValues: { markers },
+          setValue: { markers },
           setComponentType: { markers: componentType },
         }
       }

@@ -61,21 +61,21 @@ describe('Lorem Tag Tests', function () {
       expect(components["/words/lWords"].replacements.length).eq(2 * nWords - 1);
 
       for (let [ind, repl] of components["/paragraphs/lPars"].replacements.entries()) {
-        cy.get(cesc(`#/paragraphs/${names[ind]}`)).should('have.text', repl.activeChildren[0].stateValues.value)
+        cy.get(cesc(`#/paragraphs/${names[ind]}`)).should('have.text', repl.activeChildren[0])
       }
 
       for (let [ind, repl] of components["/sentences/lSens"].replacements.entries()) {
         if (ind % 2 === 1) {
           continue;
         }
-        cy.get(cesc(`#/sentences/${names[ind / 2]}`)).should('have.text', repl.activeChildren[0].stateValues.value)
+        cy.get(cesc(`#/sentences/${names[ind / 2]}`)).should('have.text', repl.activeChildren[0])
       }
 
       for (let [ind, repl] of components["/words/lWords"].replacements.entries()) {
         if (ind % 2 === 1) {
           continue;
         }
-        cy.get(cesc(`#/words/${names[ind / 2]}`)).should('have.text', repl.activeChildren[0].stateValues.value)
+        cy.get(cesc(`#/words/${names[ind / 2]}`)).should('have.text', repl.activeChildren[0])
       }
 
 
@@ -96,21 +96,21 @@ describe('Lorem Tag Tests', function () {
       expect(components["/words/lWords"].replacements.length).eq(2 * nWords - 1);
 
       for (let [ind, repl] of components["/paragraphs/lPars"].replacements.entries()) {
-        cy.get(cesc(`#/paragraphs/${names[ind]}`)).should('have.text', repl.activeChildren[0].stateValues.value)
+        cy.get(cesc(`#/paragraphs/${names[ind]}`)).should('have.text', repl.activeChildren[0])
       }
 
       for (let [ind, repl] of components["/sentences/lSens"].replacements.entries()) {
         if (ind % 2 === 1) {
           continue;
         }
-        cy.get(cesc(`#/sentences/${names[ind / 2]}`)).should('have.text', repl.activeChildren[0].stateValues.value)
+        cy.get(cesc(`#/sentences/${names[ind / 2]}`)).should('have.text', repl.activeChildren[0])
       }
 
       for (let [ind, repl] of components["/words/lWords"].replacements.entries()) {
         if (ind % 2 === 1) {
           continue;
         }
-        cy.get(cesc(`#/words/${names[ind / 2]}`)).should('have.text', repl.activeChildren[0].stateValues.value)
+        cy.get(cesc(`#/words/${names[ind / 2]}`)).should('have.text', repl.activeChildren[0])
       }
 
 
@@ -137,7 +137,7 @@ describe('Lorem Tag Tests', function () {
       let components = Object.assign({}, win.state.components);
 
       expect(components["/lPars"].replacements.length).eq(1);
-      paragraph0 = components["/lPars"].replacements[0].activeChildren[0].stateValues.value
+      paragraph0 = components["/lPars"].replacements[0].activeChildren[0]
       cy.get(cesc('#/a')).should('have.text', paragraph0)
 
     });
@@ -160,7 +160,7 @@ describe('Lorem Tag Tests', function () {
       let components = Object.assign({}, win.state.components);
 
       expect(components["/lPars"].replacements.length).eq(1);
-      expect(components["/lPars"].replacements[0].activeChildren[0].stateValues.value).eq(paragraph0);
+      expect(components["/lPars"].replacements[0].activeChildren[0]).eq(paragraph0);
       cy.get(cesc('#/a')).should('have.text', paragraph0)
 
     });
@@ -184,7 +184,7 @@ describe('Lorem Tag Tests', function () {
 
       expect(components["/lPars"].replacements.length).eq(1);
       
-      paragraph1 = components["/lPars"].replacements[0].activeChildren[0].stateValues.value;
+      paragraph1 = components["/lPars"].replacements[0].activeChildren[0];
       expect(paragraph1).not.eq(paragraph0);
       cy.get(cesc('#/a')).should('have.text', paragraph1)
 
@@ -209,7 +209,7 @@ describe('Lorem Tag Tests', function () {
       let components = Object.assign({}, win.state.components);
 
       expect(components["/lPars"].replacements.length).eq(1);
-      expect(components["/lPars"].replacements[0].activeChildren[0].stateValues.value).eq(paragraph1);
+      expect(components["/lPars"].replacements[0].activeChildren[0]).eq(paragraph1);
       cy.get(cesc('#/a')).should('have.text', paragraph1)
 
 

@@ -5,7 +5,7 @@ import useDoenetRender from './useDoenetRenderer';
 
 
 export default function sideBySide(props) {
-  let [name, SVs, _, children] = useDoenetRender(props);
+  let {name, SVs, children} = useDoenetRender(props);
   // console.log(">>>name: ", name, " value: ", SVs);
   // console.log(">>>children",children)
 

@@ -883,8 +883,8 @@ describe('Specifying single variant document tests', function () {
       <option selectForVariantNames="broccoli"><math>b</math></option>
     </select>
     </p>
-    <p>Selected variable repeated: <copy name="x2" tname="x" /></p>
-    <p>Selected variable repeated again: <copy name="x3" tname="_select1" /></p>
+    <p>Selected variable repeated: <copy name="x2" target="x" /></p>
+    <p>Selected variable repeated again: <copy name="x3" target="_select1" /></p>
     `,
         requestedVariant: { index: 1 },
       }, "*");
@@ -938,8 +938,8 @@ describe('Specifying single variant document tests', function () {
       <option selectForVariantNames="broccoli"><math>b</math></option>
     </select>
     </p>
-    <p>Selected variable repeated: <copy name="x2" tname="x" /></p>
-    <p>Selected variable repeated again: <copy name="x3" tname="_select1" /></p>
+    <p>Selected variable repeated: <copy name="x2" target="x" /></p>
+    <p>Selected variable repeated again: <copy name="x3" target="_select1" /></p>
     `,
         requestedVariant: { index: 3 },
       }, "*");
@@ -994,8 +994,8 @@ describe('Specifying single variant document tests', function () {
       <option selectForVariantNames="broccoli"><math>b</math></option>
     </select>
     </p>
-    <p>Selected variable repeated: <copy name="x2" tname="x" /></p>
-    <p>Selected variable repeated again: <copy name="x3" tname="_select1" /></p>
+    <p>Selected variable repeated: <copy name="x2" target="x" /></p>
+    <p>Selected variable repeated again: <copy name="x3" target="_select1" /></p>
     `,
         requestedVariant: { name: 'bRoccoli' },
       }, "*");
@@ -1050,8 +1050,8 @@ describe('Specifying single variant document tests', function () {
       <option selectForVariantNames="broccoli"><math>b</math></option>
     </select>
     </p>
-    <p>Selected variable repeated: <copy name="x2" tname="x" /></p>
-    <p>Selected variable repeated again: <copy name="x3" tname="_select1" /></p>
+    <p>Selected variable repeated: <copy name="x2" target="x" /></p>
+    <p>Selected variable repeated again: <copy name="x3" target="_select1" /></p>
     `,
         requestedVariant: generatedVariantInfo,
       }, "*");
@@ -1104,8 +1104,8 @@ describe('Specifying single variant document tests', function () {
       <option selectForVariantNames="broccoli"><math>b</math></option>
     </select>
     </p>
-    <p>Selected variable repeated: <copy name="x2" tname="x" /></p>
-    <p>Selected variable repeated again: <copy name="x3" tname="_select1" /></p>
+    <p>Selected variable repeated: <copy name="x2" target="x" /></p>
+    <p>Selected variable repeated again: <copy name="x3" target="_select1" /></p>
     `,
         requestedVariant: { name: 'dill' },
       }, "*");
@@ -1159,8 +1159,8 @@ describe('Specifying single variant document tests', function () {
       <option selectForVariantNames="broccoli"><math>b</math></option>
     </select>
     </p>
-    <p>Selected variable repeated: <copy name="x2" tname="x" /></p>
-    <p>Selected variable repeated again: <copy name="x3" tname="_select1" /></p>
+    <p>Selected variable repeated: <copy name="x2" target="x" /></p>
+    <p>Selected variable repeated again: <copy name="x3" target="_select1" /></p>
     `,
         requestedVariant: { index: 20582310 },
       }, "*");
@@ -1214,8 +1214,8 @@ describe('Specifying single variant document tests', function () {
       <option selectForVariantNames="broccoli"><math>b</math></option>
     </select>
     </p>
-    <p>Selected variable repeated: <copy name="x2" tname="x" /></p>
-    <p>Selected variable repeated again: <copy name="x3" tname="_select1" /></p>
+    <p>Selected variable repeated: <copy name="x2" target="x" /></p>
+    <p>Selected variable repeated again: <copy name="x3" target="_select1" /></p>
     `,
         requestedVariant: { index: '-20582308' },
       }, "*");
@@ -1269,8 +1269,8 @@ describe('Specifying single variant document tests', function () {
       <option selectForVariantNames="broccoli"><math>b</math></option>
     </select>
     </p>
-    <p>Selected variable repeated: <copy name="x2" tname="x" /></p>
-    <p>Selected variable repeated again: <copy name="x3" tname="_select1" /></p>
+    <p>Selected variable repeated: <copy name="x2" target="x" /></p>
+    <p>Selected variable repeated again: <copy name="x3" target="_select1" /></p>
     `,
         requestedVariant: { index: 'wrong' },
       }, "*");
@@ -1324,8 +1324,8 @@ describe('Specifying single variant document tests', function () {
       <option selectForVariantNames="broccoli"><math>b</math></option>
     </select>
     </p>
-    <p>Selected variable repeated: <copy name="x2" tname="x" /></p>
-    <p>Selected variable repeated again: <copy name="x3" tname="_select1" /></p>
+    <p>Selected variable repeated: <copy name="x2" target="x" /></p>
+    <p>Selected variable repeated again: <copy name="x3" target="_select1" /></p>
     `,
         requestedVariant: { name: 'rotten' },
       }, "*");
@@ -1379,8 +1379,8 @@ describe('Specifying single variant document tests', function () {
       <option selectForVariantNames="broccoli"><math>b</math></option>
     </select>
     </p>
-    <p>Selected variable repeated: <copy name="x2" tname="x" /></p>
-    <p>Selected variable repeated again: <copy name="x3" tname="_select1" /></p>
+    <p>Selected variable repeated: <copy name="x2" target="x" /></p>
+    <p>Selected variable repeated again: <copy name="x3" target="_select1" /></p>
     `,
         requestedVariant: { index: 4.5 },
       }, "*");
@@ -2682,7 +2682,7 @@ describe('Specifying single variant document tests', function () {
             subvariants: []
           }
 
-          let variantInd = firstStringsToInd[p.activeChildren[0].stateValues.value.trim()];
+          let variantInd = firstStringsToInd[p.activeChildren[0].trim()];
           expect(variantInd).not.eq(undefined);
 
           let secondChild = p.activeChildren[1];
@@ -2825,7 +2825,7 @@ describe('Specifying single variant document tests', function () {
         subvariants: []
       }
 
-      let variantInd = firstStringsToInd[p.activeChildren[0].stateValues.value.trim()];
+      let variantInd = firstStringsToInd[p.activeChildren[0].trim()];
       expect(variantInd).not.eq(undefined);
 
       let secondChild = p.activeChildren[1];
@@ -3001,7 +3001,7 @@ describe('Specifying single variant document tests', function () {
             let p = problem.activeChildren[4];
 
             if (variantInd === 1) {
-              expect(p.activeChildren[0].stateValues.value.trim()).eq("Word:")
+              expect(p.activeChildren[0].trim()).eq("Word:")
               let problemVariantInd = ["angry", "bad", "churlish", "drab", "excoriated"].indexOf(p.activeChildren[1].stateValues.value) + 1;
               expect(problemVariantInd).not.eq(0)
               if (!variantOfProblemsFound[0].includes(problemVariantInd)) {
@@ -3027,7 +3027,7 @@ describe('Specifying single variant document tests', function () {
                 }]
               })
             } else {
-              expect(p.activeChildren[0].stateValues.value.trim()).eq("Number:");
+              expect(p.activeChildren[0].trim()).eq("Number:");
               let num = p.activeChildren[1].stateValues.value;
               expect(Number.isInteger(num)).eq(true);
               expect(num >= 1 && num <= 10).eq(true);
@@ -3147,7 +3147,7 @@ describe('Specifying single variant document tests', function () {
         let p = problem.activeChildren[4];
 
         if (variantInd === 1) {
-          expect(p.activeChildren[0].stateValues.value.trim()).eq("Word:")
+          expect(p.activeChildren[0].trim()).eq("Word:")
           let problemVariantInd = ["angry", "bad", "churlish", "drab", "excoriated"].indexOf(p.activeChildren[1].stateValues.value) + 1;
           expect(problemVariantInd).not.eq(0)
           if (!variantOfProblemsFound[0].includes(problemVariantInd)) {
@@ -3173,7 +3173,7 @@ describe('Specifying single variant document tests', function () {
             }]
           })
         } else {
-          expect(p.activeChildren[0].stateValues.value.trim()).eq("Number:");
+          expect(p.activeChildren[0].trim()).eq("Number:");
           let num = p.activeChildren[1].stateValues.value;
           expect(Number.isInteger(num)).eq(true);
           expect(num >= 1 && num <= 10).eq(true);
@@ -3321,7 +3321,7 @@ describe('Specifying single variant document tests', function () {
             let p = problem.activeChildren[4];
 
             if (variantInd === 1) {
-              expect(p.activeChildren[0].stateValues.value.trim()).eq("Word:")
+              expect(p.activeChildren[0].trim()).eq("Word:")
               let problemVariantInd = ["angry", "bad", "churlish", "drab", "excoriated"].indexOf(p.activeChildren[1].stateValues.value) + 1;
               expect(problemVariantInd).not.eq(0)
               if (!variantOfProblemsFound[0].includes(problemVariantInd)) {
@@ -3354,7 +3354,7 @@ describe('Specifying single variant document tests', function () {
               );
 
             } else {
-              expect(p.activeChildren[0].stateValues.value.trim()).eq("Number:");
+              expect(p.activeChildren[0].trim()).eq("Number:");
               let num = p.activeChildren[1].stateValues.value;
               expect(Number.isInteger(num)).eq(true);
               expect(num >= 1 && num <= 10).eq(true);
@@ -3489,7 +3489,7 @@ describe('Specifying single variant document tests', function () {
         let p = problem.activeChildren[4];
 
         if (variantInd === 1) {
-          expect(p.activeChildren[0].stateValues.value.trim()).eq("Word:")
+          expect(p.activeChildren[0].trim()).eq("Word:")
           let problemVariantInd = ["angry", "bad", "churlish", "drab", "excoriated"].indexOf(p.activeChildren[1].stateValues.value) + 1;
           expect(problemVariantInd).not.eq(0)
           if (!variantOfProblemsFound[0].includes(problemVariantInd)) {
@@ -3521,7 +3521,7 @@ describe('Specifying single variant document tests', function () {
             problemVariantInfo
           );
         } else {
-          expect(p.activeChildren[0].stateValues.value.trim()).eq("Number:");
+          expect(p.activeChildren[0].trim()).eq("Number:");
           let num = p.activeChildren[1].stateValues.value;
           expect(Number.isInteger(num)).eq(true);
           expect(num >= 1 && num <= 10).eq(true);
@@ -3669,7 +3669,7 @@ describe('Specifying single variant document tests', function () {
             let p = problem.activeChildren[4];
 
             if (variantInd === 1) {
-              expect(p.activeChildren[0].stateValues.value.trim()).eq("Word:")
+              expect(p.activeChildren[0].trim()).eq("Word:")
               let problemVariantInd = ["angry", "bad", "churlish", "drab", "excoriated"].indexOf(p.activeChildren[1].stateValues.value) + 1;
               expect(problemVariantInd).not.eq(0)
               if (!variantOfProblemsFound[0].includes(problemVariantInd)) {
@@ -3695,7 +3695,7 @@ describe('Specifying single variant document tests', function () {
                 }]
               })
             } else {
-              expect(p.activeChildren[0].stateValues.value.trim()).eq("Number:");
+              expect(p.activeChildren[0].trim()).eq("Number:");
               let num = p.activeChildren[1].stateValues.value;
               expect(Number.isInteger(num)).eq(true);
               expect(num >= 1 && num <= 10).eq(true);
@@ -3815,7 +3815,7 @@ describe('Specifying single variant document tests', function () {
         let p = problem.activeChildren[4];
 
         if (variantInd === 1) {
-          expect(p.activeChildren[0].stateValues.value.trim()).eq("Word:")
+          expect(p.activeChildren[0].trim()).eq("Word:")
           let problemVariantInd = ["angry", "bad", "churlish", "drab", "excoriated"].indexOf(p.activeChildren[1].stateValues.value) + 1;
           expect(problemVariantInd).not.eq(0)
           if (!variantOfProblemsFound[0].includes(problemVariantInd)) {
@@ -3841,7 +3841,7 @@ describe('Specifying single variant document tests', function () {
             }]
           })
         } else {
-          expect(p.activeChildren[0].stateValues.value.trim()).eq("Number:");
+          expect(p.activeChildren[0].trim()).eq("Number:");
           let num = p.activeChildren[1].stateValues.value;
           expect(Number.isInteger(num)).eq(true);
           expect(num >= 1 && num <= 10).eq(true);

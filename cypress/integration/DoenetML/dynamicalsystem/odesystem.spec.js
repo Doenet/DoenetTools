@@ -19,7 +19,7 @@ describe('ODEsystem Tag Tests', function () {
     </odesystem>
 
     <graph>
-    <copy prop="numericalsolution" tname="ode" />
+    <copy prop="numericalsolution" target="ode" />
     <point x='$zeroFixed' y='$ic' />
     </graph>
 
@@ -34,11 +34,11 @@ describe('ODEsystem Tag Tests', function () {
     })
 
     let ic = 1, a = 1, tol = 1e-6;
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
 
       let ode = components['/ode'];
-      let solutionF = ode.stateValues.numericalSolutions[0];
+      let solutionF = (await ode.stateValues.numericalSolutions)[0];
       let expectedF = x => ic * Math.exp(a * x);
       for (let x = 0; x <= 5; x += 0.5) {
         expect(solutionF(x)).closeTo(expectedF(x), tol * Math.max(1, Math.abs(expectedF(x))));
@@ -54,12 +54,12 @@ describe('ODEsystem Tag Tests', function () {
       expect(text.trim()).equal('dxdt=xx(0)=3')
     })
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       ic = 3;
 
       let ode = components['/ode'];
-      let solutionF = ode.stateValues.numericalSolutions[0];
+      let solutionF = (await ode.stateValues.numericalSolutions)[0];
       let expectedF = x => ic * Math.exp(a * x);
       for (let x = 0; x <= 5; x += 0.5) {
         expect(solutionF(x)).closeTo(expectedF(x), tol * Math.max(1, Math.abs(expectedF(x))));
@@ -74,12 +74,12 @@ describe('ODEsystem Tag Tests', function () {
       expect(text.replace('−', '-').trim()).equal('dxdt=-2xx(0)=3')
     })
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       a = -2;
 
       let ode = components['/ode'];
-      let solutionF = ode.stateValues.numericalSolutions[0];
+      let solutionF = (await ode.stateValues.numericalSolutions)[0];
       let expectedF = x => ic * Math.exp(a * x);
       for (let x = 0; x <= 5; x += 0.5) {
         expect(solutionF(x)).closeTo(expectedF(x), tol * Math.max(1, Math.abs(expectedF(x))));
@@ -89,14 +89,14 @@ describe('ODEsystem Tag Tests', function () {
 
 
     cy.log("Change ic with point")
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       ic = -5;
 
-      components['/_point1'].movePoint({ y: ic });
+      await components['/_point1'].movePoint({ y: ic });
 
       let ode = components['/ode'];
-      let solutionF = ode.stateValues.numericalSolutions[0];
+      let solutionF = (await ode.stateValues.numericalSolutions)[0];
       let expectedF = x => ic * Math.exp(a * x);
       for (let x = 0; x <= 5; x += 0.5) {
         expect(solutionF(x)).closeTo(expectedF(x), tol * Math.max(1, Math.abs(expectedF(x))));
@@ -116,12 +116,12 @@ describe('ODEsystem Tag Tests', function () {
       expect(text.replace(/−/g, '-').trim()).equal('dxdt=-2xx(0)=-5')
     })
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       tol = 1E-10;
 
       let ode = components['/ode'];
-      let solutionF = ode.stateValues.numericalSolutions[0];
+      let solutionF = (await ode.stateValues.numericalSolutions)[0];
       let expectedF = x => ic * Math.exp(a * x);
       for (let x = 0; x <= 5; x += 0.5) {
         expect(solutionF(x)).closeTo(expectedF(x), tol * Math.max(1, Math.abs(expectedF(x))));
@@ -137,12 +137,12 @@ describe('ODEsystem Tag Tests', function () {
       expect(text.replace(/−/g, '-').trim()).equal('dxdt=0.5xx(0)=-5')
     })
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       a = 0.5;
 
       let ode = components['/ode'];
-      let solutionF = ode.stateValues.numericalSolutions[0];
+      let solutionF = (await ode.stateValues.numericalSolutions)[0];
       let expectedF = x => ic * Math.exp(a * x);
       for (let x = 0; x <= 5; x += 0.5) {
         expect(solutionF(x)).closeTo(expectedF(x), tol * Math.max(1, Math.abs(expectedF(x))));
@@ -157,10 +157,10 @@ describe('ODEsystem Tag Tests', function () {
       expect(text.replace(/−/g, '-').trim()).equal('dxdt=0.5xx(0)=0')
     })
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let ode = components['/ode'];
-      let solutionF = ode.stateValues.numericalSolutions[0];
+      let solutionF = (await ode.stateValues.numericalSolutions)[0];
       for (let x = 0; x <= 1000; x += 100) {
         expect(solutionF(x)).eq(0);
       }
@@ -196,11 +196,11 @@ describe('ODEsystem Tag Tests', function () {
       expect(Number(text.split('=')[1])).closeTo(expectedF(10), tol * expectedF(10));
     })
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
 
       let ode = components['/ode'];
-      let solutionF = ode.stateValues.numericalSolutions[0];
+      let solutionF = (await ode.stateValues.numericalSolutions)[0];
       for (let x = 0; x <= 10; x += 1) {
         expect(solutionF(x)).closeTo(expectedF(x), tol * Math.max(1, Math.abs(expectedF(x))));
       }
@@ -214,11 +214,11 @@ describe('ODEsystem Tag Tests', function () {
       expect(text.split('=')[1].trim()).eq("NaN");
     })
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
 
       let ode = components['/ode'];
-      let solutionF = ode.stateValues.numericalSolutions[0];
+      let solutionF = (await ode.stateValues.numericalSolutions)[0];
       assert.isNaN(solutionF(20));
 
     });
@@ -230,11 +230,11 @@ describe('ODEsystem Tag Tests', function () {
       expect(Number(text.split('=')[1])).closeTo(expectedF(20), tol * expectedF(20));
     })
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
 
       let ode = components['/ode'];
-      let solutionF = ode.stateValues.numericalSolutions[0];
+      let solutionF = (await ode.stateValues.numericalSolutions)[0];
       for (let x = 0; x <= 20; x += 1) {
         expect(solutionF(x)).closeTo(expectedF(x), tol * Math.max(1, Math.abs(expectedF(x))));
       }
@@ -248,11 +248,11 @@ describe('ODEsystem Tag Tests', function () {
       expect(text.split('=')[1].trim()).eq("NaN");
     })
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
 
       let ode = components['/ode'];
-      let solutionF = ode.stateValues.numericalSolutions[0];
+      let solutionF = (await ode.stateValues.numericalSolutions)[0];
       assert.isNaN(solutionF(20));
 
     });
@@ -265,11 +265,11 @@ describe('ODEsystem Tag Tests', function () {
       expect(Number(text.split('=')[1])).closeTo(expectedF(20), tol * expectedF(20));
     })
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
 
       let ode = components['/ode'];
-      let solutionF = ode.stateValues.numericalSolutions[0];
+      let solutionF = (await ode.stateValues.numericalSolutions)[0];
       for (let x = 0; x <= 20; x += 1) {
         expect(solutionF(x)).closeTo(expectedF(x), tol * Math.max(1, Math.abs(expectedF(x))));
       }
@@ -285,11 +285,11 @@ describe('ODEsystem Tag Tests', function () {
       expect(text.split('=')[1].trim()).eq("NaN");
     })
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
 
       let ode = components['/ode'];
-      let solutionF = ode.stateValues.numericalSolutions[0];
+      let solutionF = (await ode.stateValues.numericalSolutions)[0];
       assert.isNaN(solutionF(20));
 
     });
@@ -302,11 +302,11 @@ describe('ODEsystem Tag Tests', function () {
       expect(Number(text.split('=')[1])).closeTo(expectedF(20), tol * expectedF(20));
     })
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
 
       let ode = components['/ode'];
-      let solutionF = ode.stateValues.numericalSolutions[0];
+      let solutionF = (await ode.stateValues.numericalSolutions)[0];
       for (let x = 0; x <= 20; x += 1) {
         expect(solutionF(x)).closeTo(expectedF(x), tol * Math.max(1, Math.abs(expectedF(x))));
       }
@@ -329,7 +329,7 @@ describe('ODEsystem Tag Tests', function () {
   </odesystem>
 
   <graph>
-  <copy prop="numericalsolution" tname="ode"/>
+  <copy prop="numericalsolution" target="ode"/>
   </graph>
   `}, "*");
     });
@@ -343,11 +343,11 @@ describe('ODEsystem Tag Tests', function () {
       expect(text.trim()).equal('dxdt=xx(0)=1')
     })
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
 
       let ode = components['/ode'];
-      let solutionF = ode.stateValues.numericalSolutions[0];
+      let solutionF = (await ode.stateValues.numericalSolutions)[0];
       expect(solutionF(0)).eq(1);
       for (let t = 1; t <= 5; t += 1) {
         expect(solutionF(t)).closeTo(expectedF(t), tol * Math.max(1, Math.abs(expectedF(t))));
@@ -362,11 +362,11 @@ describe('ODEsystem Tag Tests', function () {
       expect(text.trim()).equal('dxds=xx(0)=1')
     })
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
 
       let ode = components['/ode'];
-      let solutionF = ode.stateValues.numericalSolutions[0];
+      let solutionF = (await ode.stateValues.numericalSolutions)[0];
       expect(solutionF(0)).eq(1);
       for (let t = 1; t <= 5; t += 1) {
         expect(solutionF(t)).closeTo(expectedF(t), tol * Math.max(1, Math.abs(expectedF(t))));
@@ -381,10 +381,10 @@ describe('ODEsystem Tag Tests', function () {
       expect(text.trim()).equal('dxd＿=xx(0)=1')
     })
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let ode = components['/ode'];
-      let solutionF = ode.stateValues.numericalSolutions[0];
+      let solutionF = (await ode.stateValues.numericalSolutions)[0];
       expect(solutionF(0)).eq(1);
       for (let t = 1; t <= 5; t += 1) {
         assert.isNaN(solutionF(t));
@@ -398,10 +398,10 @@ describe('ODEsystem Tag Tests', function () {
       expect(text.trim()).equal('dxdu=xx(0)=1')
     })
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let ode = components['/ode'];
-      let solutionF = ode.stateValues.numericalSolutions[0];
+      let solutionF = (await ode.stateValues.numericalSolutions)[0];
       expect(solutionF(0)).eq(1);
       for (let t = 1; t <= 5; t += 1) {
         expect(solutionF(t)).closeTo(expectedF(t), tol * Math.max(1, Math.abs(expectedF(t))));
@@ -416,10 +416,10 @@ describe('ODEsystem Tag Tests', function () {
       expect(text.trim()).equal('dxd1=xx(0)=1')
     })
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let ode = components['/ode'];
-      let solutionF = ode.stateValues.numericalSolutions[0];
+      let solutionF = (await ode.stateValues.numericalSolutions)[0];
       expect(solutionF(0)).eq(1);
       for (let t = 1; t <= 5; t += 1) {
         assert.isNaN(solutionF(t));
@@ -433,10 +433,10 @@ describe('ODEsystem Tag Tests', function () {
       expect(text.trim()).equal('dxdv=xx(0)=1')
     })
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let ode = components['/ode'];
-      let solutionF = ode.stateValues.numericalSolutions[0];
+      let solutionF = (await ode.stateValues.numericalSolutions)[0];
       expect(solutionF(0)).eq(1);
       for (let t = 1; t <= 5; t += 1) {
         expect(solutionF(t)).closeTo(expectedF(t), tol * Math.max(1, Math.abs(expectedF(t))));
@@ -450,10 +450,10 @@ describe('ODEsystem Tag Tests', function () {
       expect(text.trim()).equal('dzdv=zz(0)=1')
     })
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let ode = components['/ode'];
-      let solutionF = ode.stateValues.numericalSolutions[0];
+      let solutionF = (await ode.stateValues.numericalSolutions)[0];
       expect(solutionF(0)).eq(1);
       for (let t = 1; t <= 5; t += 1) {
         expect(solutionF(t)).closeTo(expectedF(t), tol * Math.max(1, Math.abs(expectedF(t))));
@@ -468,10 +468,10 @@ describe('ODEsystem Tag Tests', function () {
       expect(text.trim()).equal('dvdv=vv(0)=1')
     })
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let ode = components['/ode'];
-      let solutionF = ode.stateValues.numericalSolutions[0];
+      let solutionF = (await ode.stateValues.numericalSolutions)[0];
       expect(solutionF(0)).eq(1);
       for (let t = 1; t <= 5; t += 1) {
         assert.isNaN(solutionF(t));
@@ -486,10 +486,10 @@ describe('ODEsystem Tag Tests', function () {
       expect(text.trim()).equal('dv1dv=v1v1(0)=1')
     })
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let ode = components['/ode'];
-      let solutionF = ode.stateValues.numericalSolutions[0];
+      let solutionF = (await ode.stateValues.numericalSolutions)[0];
       expect(solutionF(0)).eq(1);
       for (let t = 1; t <= 5; t += 1) {
         expect(solutionF(t)).closeTo(expectedF(t), tol * Math.max(1, Math.abs(expectedF(t))));
@@ -504,10 +504,10 @@ describe('ODEsystem Tag Tests', function () {
       expect(text.trim()).equal('dabdv=abab(0)=1')
     })
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let ode = components['/ode'];
-      let solutionF = ode.stateValues.numericalSolutions[0];
+      let solutionF = (await ode.stateValues.numericalSolutions)[0];
       expect(solutionF(0)).eq(1);
       for (let t = 1; t <= 5; t += 1) {
         assert.isNaN(solutionF(t));
@@ -521,10 +521,10 @@ describe('ODEsystem Tag Tests', function () {
       expect(text.trim()).equal('dadv=aa(0)=1')
     })
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let ode = components['/ode'];
-      let solutionF = ode.stateValues.numericalSolutions[0];
+      let solutionF = (await ode.stateValues.numericalSolutions)[0];
       expect(solutionF(0)).eq(1);
       for (let t = 1; t <= 5; t += 1) {
         expect(solutionF(t)).closeTo(expectedF(t), tol * Math.max(1, Math.abs(expectedF(t))));
@@ -582,7 +582,7 @@ describe('ODEsystem Tag Tests', function () {
   </odesystem>
 
   <p>We started with 
-  <m>x(<copy prop="initialindependentvariablevalue" tname="ode"/>) = 1</m>.</p>
+  <m>x(<copy prop="initialindependentvariablevalue" target="ode"/>) = 1</m>.</p>
 
   <p>We end with
   <m>x($tf) = $$(ode{prop='numericalSolution'})($tf)</m></p>
@@ -687,7 +687,7 @@ describe('ODEsystem Tag Tests', function () {
 
   <graph>
     <curve parmin="0" parmax="10">
-      <copy prop="numericalsolutions" tname="ode" />
+      <copy prop="numericalsolutions" target="ode" />
     </curve>
     <point x="$ic1" y="$ic2" />
   </graph>
@@ -702,11 +702,11 @@ describe('ODEsystem Tag Tests', function () {
       expect(text.trim().replace(/−/g, '-')).equal('dxdt=-0.2ydydt=0.1x+0.3yx(0)=1y(0)=3')
     })
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let ode = components['/ode'];
-      let solutionFx = ode.stateValues.numericalSolutions[0];
-      let solutionFy = ode.stateValues.numericalSolutions[1];
+      let solutionFx = (await ode.stateValues.numericalSolutions)[0];
+      let solutionFy = (await ode.stateValues.numericalSolutions)[1];
       let expectedFx = t => 8 * Math.exp(0.1 * t) - 7 * Math.exp(0.2 * t);
       let expectedFy = t => -4 * Math.exp(0.1 * t) + 7 * Math.exp(0.2 * t);
       for (let t = 0; t <= 10; t += 1) {
@@ -726,11 +726,11 @@ describe('ODEsystem Tag Tests', function () {
     })
 
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let ode = components['/ode'];
-      let solutionFx = ode.stateValues.numericalSolutions[0];
-      let solutionFy = ode.stateValues.numericalSolutions[1];
+      let solutionFx = (await ode.stateValues.numericalSolutions)[0];
+      let solutionFy = (await ode.stateValues.numericalSolutions)[1];
       let expectedFx = t => 4 * Math.exp(0.1 * t) - 1 * Math.exp(0.2 * t);
       let expectedFy = t => -2 * Math.exp(0.1 * t) + 1 * Math.exp(0.2 * t);
       for (let t = 0; t <= 10; t += 1) {
@@ -742,13 +742,13 @@ describe('ODEsystem Tag Tests', function () {
 
 
     cy.log("Change ic with point")
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components['/_point1'].movePoint({ x: -5, y: 2 });
+      await components['/_point1'].movePoint({ x: -5, y: 2 });
 
       let ode = components['/ode'];
-      let solutionFx = ode.stateValues.numericalSolutions[0];
-      let solutionFy = ode.stateValues.numericalSolutions[1];
+      let solutionFx = (await ode.stateValues.numericalSolutions)[0];
+      let solutionFy = (await ode.stateValues.numericalSolutions)[1];
       let expectedFx = t => -6 * Math.exp(0.1 * t) + 1 * Math.exp(0.2 * t);
       let expectedFy = t => 3 * Math.exp(0.1 * t) - 1 * Math.exp(0.2 * t);
       for (let t = 0; t <= 10; t += 1) {
@@ -772,11 +772,11 @@ describe('ODEsystem Tag Tests', function () {
     })
 
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let ode = components['/ode'];
-      let solutionFx = ode.stateValues.numericalSolutions[0];
-      let solutionFy = ode.stateValues.numericalSolutions[1];
+      let solutionFx = (await ode.stateValues.numericalSolutions)[0];
+      let solutionFy = (await ode.stateValues.numericalSolutions)[1];
       for (let t = 0; t <= 10; t += 1) {
         expect(solutionFx(t)).eq(0);
         expect(solutionFy(t)).eq(0);
@@ -890,25 +890,25 @@ describe('ODEsystem Tag Tests', function () {
   <righthandside>x/y</righthandside>
   </odesystem>
 
-  <p>RHS1: <copy name="rhs1a" prop="rhs1" tname="ode" /></p>
-  <p>RHS2: <copy name="rhs2a" prop="rhs2" tname="ode" /></p>
-  <p>RHS1: <copy name="rhs1b" prop="rhs" tname="ode" /></p>
-  <p>Both RHSs: <aslist><copy name="rhssa" prop="rhss" tname="ode" /></aslist></p>
-  <p>RHS1: <copy name="rhs1c" prop="righthandside1" tname="ode" /></p>
-  <p>RHS2: <copy name="rhs2b" prop="righthandside2" tname="ode" /></p>
-  <p>RHS1: <copy name="rhs1d" prop="righthandside" tname="ode" /></p>
-  <p>Both RHSs: <aslist><copy name="rhssb" prop="righthandsides" tname="ode" /></aslist></p>
+  <p>RHS1: <copy name="rhs1a" prop="rhs1" target="ode" /></p>
+  <p>RHS2: <copy name="rhs2a" prop="rhs2" target="ode" /></p>
+  <p>RHS1: <copy name="rhs1b" prop="rhs" target="ode" /></p>
+  <p>Both RHSs: <aslist><copy name="rhssa" prop="rhss" target="ode" /></aslist></p>
+  <p>RHS1: <copy name="rhs1c" prop="righthandside1" target="ode" /></p>
+  <p>RHS2: <copy name="rhs2b" prop="righthandside2" target="ode" /></p>
+  <p>RHS1: <copy name="rhs1d" prop="righthandside" target="ode" /></p>
+  <p>Both RHSs: <aslist><copy name="rhssb" prop="righthandsides" target="ode" /></aslist></p>
   
-  <p>IC1: <copy name="ic1a" prop="initialcondition1" tname="ode" /></p>
-  <p>IC2: <copy name="ic2a" prop="initialcondition2" tname="ode" /></p>
-  <p>IC1: <copy name="ic1b" prop="initialcondition" tname="ode" /></p>
-  <p>Both ICs: <aslist><copy name="icsa" prop="initialconditions" tname="ode" /></aslist></p>
+  <p>IC1: <copy name="ic1a" prop="initialcondition1" target="ode" /></p>
+  <p>IC2: <copy name="ic2a" prop="initialcondition2" target="ode" /></p>
+  <p>IC1: <copy name="ic1b" prop="initialcondition" target="ode" /></p>
+  <p>Both ICs: <aslist><copy name="icsa" prop="initialconditions" target="ode" /></aslist></p>
 
   <p>Swap right hand sides and keep initial conditions</p>
 
   <odesystem name="odeswap" initialconditions="$(ode{prop='initialconditions'})">
-    <righthandside><copy prop="rhs2" tname="ode" /></righthandside>
-    <righthandside><copy prop="rhs1" tname="ode" /></righthandside>
+    <righthandside><copy prop="rhs2" target="ode" /></righthandside>
+    <righthandside><copy prop="rhs1" target="ode" /></righthandside>
   </odesystem>
   `}, "*");
     });

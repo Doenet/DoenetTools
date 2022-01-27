@@ -20,7 +20,7 @@ describe('Integer Tag Tests', function () {
       win.postMessage({
         doenetML: `
       <text>a</text>
-      <copy tname="_integer1" />
+      <copy target="_integer1" />
       <integer>1.2+1.1</integer>
     ` }, "*");
     })
@@ -50,7 +50,7 @@ describe('Integer Tag Tests', function () {
       win.postMessage({
         doenetML: `
       <text>a</text>
-      <copy tname="_integer1" />
+      <copy target="_integer1" />
       <integer>x+1</integer>
       ` }, "*");
     })

@@ -5,9 +5,8 @@ export default class Text extends InlineComponent {
 
   static includeBlankStringChildren = true;
 
-  // used when referencing this component without prop
-  static useChildrenForReference = false;
-  static get stateVariablesShadowedForReference() { return ["value"] };
+  static variableForPlainMacro = "value";
+
 
   static returnChildGroups() {
 
@@ -26,7 +25,10 @@ export default class Text extends InlineComponent {
     stateVariableDefinitions.value = {
       public: true,
       componentType: this.componentType,
-      // deferCalculation: false,
+      hasEssential: true,
+      stateVariablesPrescribingAdditionalAttributes: {
+        fixed: "fixed",
+      },
       returnDependencies: () => ({
         textLikeChildren: {
           dependencyType: "child",
@@ -40,15 +42,19 @@ export default class Text extends InlineComponent {
         if (dependencyValues.textLikeChildren.length === 0) {
           return {
             useEssentialOrDefaultValue: {
-              value: { variablesToCheck: "value" }
+              value: true
             }
           }
         }
         let value = "";
         for (let comp of dependencyValues.textLikeChildren) {
-          value += comp.stateValues.text;
+          if (typeof comp === "string") {
+            value += comp;
+          } else {
+            value += comp.stateValues.text;
+          }
         }
-        return { newValues: { value } };
+        return { setValue: { value } };
       },
       inverseDefinition: function ({ desiredStateVariableValues, dependencyValues }) {
         let numChildren = dependencyValues.textLikeChildren.length;
@@ -66,11 +72,11 @@ export default class Text extends InlineComponent {
             }]
           };
         }
-        // no children, so value is essential and give it the desired value
+        // no children, so set essential value to the desired value
         return {
           success: true,
           instructions: [{
-            setStateVariable: "value",
+            setEssentialValue: "value",
             value: desiredStateVariableValues.value === null ? "" : String(desiredStateVariableValues.value)
           }]
         };
@@ -88,7 +94,7 @@ export default class Text extends InlineComponent {
         }
       }),
       definition: ({ dependencyValues }) => ({
-        newValues: { text: dependencyValues.value }
+        setValue: { text: dependencyValues.value }
       }),
       inverseDefinition: ({ desiredStateVariableValues }) => ({
         success: true,

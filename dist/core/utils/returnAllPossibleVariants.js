@@ -154,7 +154,7 @@ function finishReturnAllPossibleVariants({
     if (variantControlChild.attributes && variantControlChild.attributes.variantNames) {
       let variantNamesComponent = variantControlChild.attributes.variantNames.component;
 
-      variantNames = variantNamesComponent.children.map(x => x.state.value.toLowerCase().substring(0, 1000));
+      variantNames = variantNamesComponent.children.map(x => x.toLowerCase().substring(0, 1000));
     }
 
 

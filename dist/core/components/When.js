@@ -16,7 +16,7 @@ export default class When extends BooleanComponent {
       createStateVariable: "matchPartial",
       defaultValue: false,
       public: true,
-      propagateToDescendants: true,
+      fallBackToParentStateVariable: "matchPartial",
     };
 
     for (let attrName of ["symbolicEquality", "expandOnCompare",
@@ -26,8 +26,7 @@ export default class When extends BooleanComponent {
       "nSignErrorsMatched",
       "nPeriodicSetMatchesRequired"
     ]) {
-      delete attributes[attrName].ignorePropagationFromAncestors;
-      attributes[attrName].propagateToDescendants = true;
+      attributes[attrName].fallBackToParentStateVariable = attrName;
     }
 
     return attributes;
@@ -144,7 +143,7 @@ export default class When extends BooleanComponent {
           // (which could occur if have no children or if have invalid form)
           // return false
           return {
-            newValues: {
+            setValue: {
               conditionSatisfied: false,
               value: false,
               fractionSatisfied: 0,
@@ -163,7 +162,7 @@ export default class When extends BooleanComponent {
         let conditionSatisfied = fractionSatisfied === 1;
 
         return {
-          newValues: { fractionSatisfied, conditionSatisfied, value: conditionSatisfied }
+          setValue: { fractionSatisfied, conditionSatisfied, value: conditionSatisfied }
         }
 
       }

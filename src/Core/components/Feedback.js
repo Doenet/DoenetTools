@@ -6,17 +6,13 @@ export default class Feedback extends BlockComponent {
 
   static primaryStateVariableForDefinition = "feedbackText";
 
-  static get stateVariablesShadowedForReference() {
-    return ["hide"]
-  }
-
   static createAttributesObject(args) {
     let attributes = super.createAttributesObject(args);
     delete attributes.hide;
     attributes.condition = {
       createComponentOfType: "boolean"
     }
-    attributes.updateWithTname = {
+    attributes.updateWithTarget = {
       createPrimitiveOfType: "string"
     }
 
@@ -36,31 +32,31 @@ export default class Feedback extends BlockComponent {
 
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
-    stateVariableDefinitions.updateWithTname = {
+    stateVariableDefinitions.updateWithTarget = {
       returnDependencies: () => ({
-        updateWithTnameAttr: {
+        updateWithTargetAttr: {
           dependencyType: "attributePrimitive",
-          attributeName: "updateWithTname"
+          attributeName: "updateWithTarget"
         }
       }),
       definition({ dependencyValues }) {
         return {
-          newValues: { updateWithTname: dependencyValues.updateWithTnameAttr }
+          setValue: { updateWithTarget: dependencyValues.updateWithTargetAttr }
         }
       }
     }
 
-    stateVariableDefinitions.updateWithFullTnames = {
+    stateVariableDefinitions.updateWithTargetComponentNames = {
       chainActionOnActionOfStateVariableTargets: {
         triggeredAction: "updateHide"
       },
-      stateVariablesDeterminingDependencies: ["updateWithTname"],
+      stateVariablesDeterminingDependencies: ["updateWithTarget"],
       returnDependencies({ stateValues }) {
-        if (stateValues.updateWithTname) {
+        if (stateValues.updateWithTarget) {
           return {
-            updateWithFullTname: {
+            updateWithTargetComponentName: {
               dependencyType: "expandTargetName",
-              tName: stateValues.updateWithTname
+              target: stateValues.updateWithTarget
             }
           }
         } else {
@@ -68,10 +64,10 @@ export default class Feedback extends BlockComponent {
         }
       },
       definition({ dependencyValues }) {
-        if (dependencyValues.updateWithFullTname) {
-          return { newValues: { updateWithFullTnames: [dependencyValues.updateWithFullTname] } }
+        if (dependencyValues.updateWithTargetComponentName) {
+          return { setValue: { updateWithTargetComponentNames: [dependencyValues.updateWithTargetComponentName] } }
         } else {
-          return { newValues: { updateWithFullTnames: [] } }
+          return { setValue: { updateWithTargetComponentNames: [] } }
         }
       }
     }
@@ -97,16 +93,17 @@ export default class Feedback extends BlockComponent {
           hideWhenUpdated = !(dependencyValues.showFeedback && dependencyValues.condition.stateValues.value);
         }
 
-        return { newValues: { hideWhenUpdated } }
+        return { setValue: { hideWhenUpdated } }
       }
     };
 
     stateVariableDefinitions.hide = {
       forRenderer: true,
       defaultValue: true,
-      stateVariablesDeterminingDependencies: ["updateWithTname"],
+      hasEssential: true,
+      stateVariablesDeterminingDependencies: ["updateWithTarget"],
       returnDependencies({ stateValues }) {
-        if (stateValues.updateWithTname) {
+        if (stateValues.updateWithTarget) {
           return {};
         } else {
           return {
@@ -126,7 +123,7 @@ export default class Feedback extends BlockComponent {
 
         if (!("condition" in dependencyValues)) {
           return {
-            useEssentialOrDefaultValue: { hide: { variablesToCheck: ["hide"] } }
+            useEssentialOrDefaultValue: { hide: true }
           }
         }
 
@@ -137,7 +134,7 @@ export default class Feedback extends BlockComponent {
           hide = !(dependencyValues.showFeedback && dependencyValues.condition.stateValues.value);
         }
 
-        return { newValues: { hide } }
+        return { setValue: { hide } }
       },
       inverseDefinition({ desiredStateVariableValues, dependencyValues }) {
         if ("condition" in dependencyValues) {
@@ -146,7 +143,7 @@ export default class Feedback extends BlockComponent {
           return {
             success: true,
             instructions: [{
-              setStateVariable: "hide",
+              setEssentialValue: "hide",
               value: desiredStateVariableValues.hide
             }]
           }
@@ -158,10 +155,11 @@ export default class Feedback extends BlockComponent {
     stateVariableDefinitions.feedbackText = {
       forRenderer: true,
       defaultValue: null,
+      hasEssential: true,
       returnDependencies: () => ({}),
       definition: () => ({
         useEssentialOrDefaultValue: {
-          feedbackText: { variablesToCheck: ["feedbackText"] }
+          feedbackText: true
         }
       })
     }
@@ -170,21 +168,19 @@ export default class Feedback extends BlockComponent {
     return stateVariableDefinitions;
   }
 
-  updateHide() {
+  async updateHide() {
     let updateInstructions = [{
       updateType: "updateValue",
       componentName: this.componentName,
       stateVariable: "hide",
-      value: this.stateValues.hideWhenUpdated,
+      value: await this.stateValues.hideWhenUpdated,
     }]
 
-    return this.coreFunctions.performUpdate({ updateInstructions });
+    return await this.coreFunctions.performUpdate({ updateInstructions });
   }
 
   actions = {
-    updateHide: this.updateHide.bind(
-      new Proxy(this, this.readOnlyProxyHandler)
-    ),
+    updateHide: this.updateHide.bind(this),
   };
 
 }

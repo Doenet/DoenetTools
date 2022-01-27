@@ -66,9 +66,8 @@ const loadAssignmentAtomFamily = atomFamily({
   default: selectorFamily({
     key: 'loadAssignmentAtomFamily/Default',
     get: (doenetId) => async () => {
-      const payload = { doenetId };
       const { data } = await axios.get('/api/getAllAssignmentSettings.php', {
-        params: payload,
+        params: { doenetId },
       });
       let assignment = { ...data.assignment };
 

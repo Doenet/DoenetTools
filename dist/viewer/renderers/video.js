@@ -95,7 +95,7 @@ export default class Video extends DoenetRenderer {
       }
     }, 200);
   }
-  onPlayerStateChange(event) {
+  async onPlayerStateChange(event) {
     var lastPlayerState = this.lastPlayerState;
     let renderer = this;
     let player = this.player;
@@ -107,7 +107,7 @@ export default class Video extends DoenetRenderer {
           if (this.lastEventState === window.YT.PlayerState.PAUSED) {
             let timeSincePaused = newTime - this.lastPausedTime;
             if (timeSincePaused < 0 || timeSincePaused > 0.5) {
-              this.actions.recordVideoSkipped({
+              await this.actions.recordVideoSkipped({
                 beginTime: this.lastPausedTime,
                 endTime: newTime,
                 duration
@@ -121,7 +121,7 @@ export default class Video extends DoenetRenderer {
             rate
           }];
           this.currentTime = NaN;
-          this.actions.recordVideoStarted({
+          await this.actions.recordVideoStarted({
             beginTime: player.getCurrentTime(),
             duration,
             rate
@@ -130,18 +130,18 @@ export default class Video extends DoenetRenderer {
         }
         break;
       case window.YT.PlayerState.PAUSED:
-        var timer = setTimeout(function() {
+        var timer = setTimeout(async function() {
           let currentTime = player.getCurrentTime();
           if (renderer.lastEventState === window.YT.PlayerState.PLAYING) {
             renderer.rates[renderer.rates.length - 1].endingPoint = currentTime;
-            renderer.actions.recordVideoWatched({
+            await renderer.actions.recordVideoWatched({
               beginTime: renderer.lastPlayedTime,
               endTime: currentTime,
               duration,
               rates: renderer.rates
             });
           }
-          renderer.actions.recordVideoPaused({
+          await renderer.actions.recordVideoPaused({
             endTime: currentTime,
             duration
           });
@@ -156,13 +156,13 @@ export default class Video extends DoenetRenderer {
         if (lastPlayerState !== window.YT.PlayerState.UNSTARTED && Number.isFinite(this.currentTime)) {
           let newTime = player.getCurrentTime();
           this.rates[this.rates.length - 1].endingPoint = this.currentTime;
-          this.actions.recordVideoWatched({
+          await this.actions.recordVideoWatched({
             beginTime: this.lastPlayedTime,
             endTime: this.currentTime,
             duration,
             rates: this.rates
           });
-          this.actions.recordVideoSkipped({
+          await this.actions.recordVideoSkipped({
             beginTime: this.currentTime,
             endTime: newTime,
             duration
@@ -173,13 +173,13 @@ export default class Video extends DoenetRenderer {
         break;
       case window.YT.PlayerState.ENDED:
         this.rates[this.rates.length - 1].endingPoint = player.getCurrentTime();
-        this.actions.recordVideoWatched({
+        await this.actions.recordVideoWatched({
           beginTime: this.lastPlayedTime,
           endTime: player.getCurrentTime(),
           duration,
           rates: this.rates
         });
-        this.actions.recordVideoCompleted({
+        await this.actions.recordVideoCompleted({
           duration
         });
         this.currentTime = NaN;

@@ -48,7 +48,7 @@ export class Tage extends InlineRenderInlineChildren {
     stateVariableDefinitions.selfClosed = {
       forRenderer: true,
       returnDependencies: () => ({}),
-      definition: () => ({ newValues: { selfClosed: true } })
+      definition: () => ({ setValue: { selfClosed: true } })
     }
     return stateVariableDefinitions;
   }

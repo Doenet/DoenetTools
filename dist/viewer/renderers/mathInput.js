@@ -52,7 +52,7 @@ export default class MathInput extends DoenetRenderer {
     }
     return expression;
   }
-  updateImmediateValueFromLatex(text) {
+  async updateImmediateValueFromLatex(text) {
     let currentMathExpressionNormalized = this.calculateMathExpressionFromLatex(this.latexValue);
     let newMathExpression = this.calculateMathExpressionFromLatex(text);
     let rawValueChanged = text !== this.latexValue || this.latexValueSetFromValueForDisplay;
@@ -63,14 +63,14 @@ export default class MathInput extends DoenetRenderer {
     this.latexValueSetFromValueForDisplay = false;
     if (actuallyUpdate) {
       this.mathExpression = newMathExpression;
-      this.actions.updateImmediateValue({
+      await this.actions.updateImmediateValue({
         mathExpression: newMathExpression,
         rawRendererValue: this.latexValue,
         transient: true,
         skippable: true
       });
     } else if (rawValueChanged) {
-      this.actions.updateRawValue({
+      await this.actions.updateRawValue({
         rawRendererValue: this.latexValue,
         transient: transientForRaw,
         skippable: transientForRaw
@@ -124,7 +124,7 @@ export default class MathInput extends DoenetRenderer {
     this.forceUpdate();
   }
   async onChangeHandler(e) {
-    this.updateImmediateValueFromLatex(e);
+    await this.updateImmediateValueFromLatex(e);
     this.forceUpdate();
   }
   render() {
