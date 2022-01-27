@@ -16,10 +16,8 @@ export default function Vector(props) {
   let pointsAtDown = useRef(false);
   let headBeingDragged = useRef(false);
   let tailBeingDragged = useRef(false);
-
-  headBeingDragged.current = false;
-  tailBeingDragged.current = false;
-
+  let headcoords = useRef(null);
+  let tailcoords = useRef(null);
 
   let previousWithLabel = useRef(false);
 
@@ -110,29 +108,33 @@ export default function Vector(props) {
 
     let newVectorJXG = board.create('arrow', [newPoint1JXG, newPoint2JXG], jsxVectorAttributes);
 
-    newPoint1JXG.on('drag', e => onDragHandler(e, 0, true));
-    newPoint2JXG.on('drag', e => onDragHandler(e, 1, true));
-    newVectorJXG.on('drag', e => onDragHandler(e, -1, true));
+    newPoint1JXG.on('drag', e => onDragHandler(e, 0));
+    newPoint2JXG.on('drag', e => onDragHandler(e, 1));
+    newVectorJXG.on('drag', e => onDragHandler(e, -1));
     newPoint1JXG.on('up', e => {
       if (!headBeingDragged.current && tailBeingDragged.current) {
         callAction({
-          action: actions.finalizeVectorPosition,
-          args: { includeHead: false }
+          action: actions.moveVector,
+          args: { tailcoords: tailcoords.current }
         });
       }
     });
     newPoint2JXG.on('up', e => {
       if (headBeingDragged.current && !tailBeingDragged.current) {
         callAction({
-          action: actions.finalizeVectorPosition,
-          args: { includeTail: false }
+          action: actions.moveVector,
+          args: { headcoords: headcoords.current }
         });
       }
     });
     newVectorJXG.on('up', e => {
       if (headBeingDragged.current && tailBeingDragged.current) {
         callAction({
-          action: actions.finalizeVectorPosition
+          action: actions.moveVector,
+          args: {
+            headcoords: headcoords.current,
+            tailcoords: tailcoords.current
+          }
         });
       }
     });
@@ -158,38 +160,39 @@ export default function Vector(props) {
       ];
     });
 
-    function onDragHandler(e, i, transient) {
+    function onDragHandler(e, i) {
 
-      if (transient) {
-        if (i === 0) {
-          tailBeingDragged.current = true;
-        } else if (i === 1) {
-          headBeingDragged.current = true;
-        } else {
-          headBeingDragged.current = true;
-          tailBeingDragged.current = true;
-        }
+      if (i === 0) {
+        tailBeingDragged.current = true;
+      } else if (i === 1) {
+        headBeingDragged.current = true;
+      } else {
+        headBeingDragged.current = true;
+        tailBeingDragged.current = true;
       }
 
-      let instructions = { transient, skippable: transient };
+      let instructions = { transient: true, skippable: true };
 
       let performMove = false;
 
       if (headBeingDragged.current) {
         performMove = true;
         if (i === -1) {
-          instructions.headcoords = calculatePointPosition(e, 1);
+          headcoords.current = calculatePointPosition(e, 1);
         } else {
-          instructions.headcoords = [newVectorJXG.point2.X(), newVectorJXG.point2.Y()];
+          headcoords.current = [newVectorJXG.point2.X(), newVectorJXG.point2.Y()];
         }
+        instructions.headcoords = headcoords.current;
       }
       if (tailBeingDragged.current) {
         performMove = true;
         if (i === -1) {
-          instructions.tailcoords = calculatePointPosition(e, 0);
+          tailcoords.current = calculatePointPosition(e, 0);
         } else {
-          instructions.tailcoords = [newVectorJXG.point1.X(), newVectorJXG.point1.Y()];
+          tailcoords.current = [newVectorJXG.point1.X(), newVectorJXG.point1.Y()];
         }
+        instructions.tailcoords = tailcoords.current;
+
       }
 
       if (i === 0 || i === 1) {
