@@ -91,6 +91,8 @@ class DoenetViewerChild extends Component {
         }
       } else if (e.data.messageType === "saveState") {
         viewer.saveState(e.data.args)
+      } else if (e.data.messageType === "recordSolutionView") {
+        viewer.recordSolutionView(e.data.args);
       } else if (e.data.messageType === "returnAllStateVariables") {
         console.log(e.data.args)
         viewer.resolveAllStateVariables(e.data.args);
@@ -692,19 +694,24 @@ class DoenetViewerChild extends Component {
   //   callBack("submitResponse callback parameter");
   // }
 
-  // TODO: if assignmentId, then need to record fact that student
-  // viewed solution in user_assignment_attempt_item
+
   // console.log(">>>>recordSolutionView")
-  async recordSolutionView({ itemNumber, scoredComponent }) {
+  async recordSolutionView({ itemNumber, scoredComponent, messageId }) {
+
     const resp = await axios.post('/api/reportSolutionViewed.php', {
       doenetId: this.props.doenetId,
       itemNumber,
       attemptNumber: this.attemptNumber,
     });
 
+    // TODO: check if student was actually allowed to view solution.
+
     // console.log('reportSolutionViewed-->>>>',resp.data);
 
-    return { allowView: true, message: "", scoredComponent };
+    this.coreWorker.postMessage({
+      messageType: "allowSolutionView",
+      args: { allowView: true, message: "", scoredComponent, messageId }
+    })
 
     // console.log(`reveal solution, ${itemNumber}`)
 

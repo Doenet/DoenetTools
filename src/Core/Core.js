@@ -15,6 +15,7 @@ import sha256 from 'crypto-js/sha256';
 import Hex from 'crypto-js/enc-hex'
 import { preprocessMathInverseDefinition } from './utils/math';
 import { returnDefaultGetArrayKeysFromVarName } from './utils/stateVariables';
+import { nanoid } from 'nanoid';
 
 // string to componentClass: this.allComponentClasses["string"]
 // componentClass to string: componentClass.componentType
@@ -66,6 +67,13 @@ onmessage = function (e) {
         args: componentsObj
       })
     });
+  } else if (e.data.messageType === "allowSolutionView") {
+    let messageId = e.data.args.messageId;
+    let resolveRecordSolutionView = core.resolveRecordSolutionView[messageId];
+    if (resolveRecordSolutionView) {
+      resolveRecordSolutionView(e.data.args)
+      delete core.resolveRecordSolutionView[messageId];
+    }
   }
 }
 
@@ -127,6 +135,7 @@ export default class Core {
     this.performUpdate = this.performUpdate.bind(this);
     this.requestAction = this.requestAction.bind(this);
     this.performAction = this.performAction.bind(this);
+    this.recordSolutionView = this.recordSolutionView.bind(this);
     this.triggerChainedActions = this.triggerChainedActions.bind(this);
     this.requestRecordEvent = this.requestRecordEvent.bind(this);
     this.requestAnimationFrame = this.requestAnimationFrame.bind(this);
@@ -246,7 +255,7 @@ export default class Core {
       requestAnimationFrame: this.requestAnimationFrame,
       cancelAnimationFrame: this.cancelAnimationFrame,
       calculateScoredItemNumberOfContainer: this.calculateScoredItemNumberOfContainer,
-      recordSolutionView: this.externalFunctions.recordSolutionView,
+      recordSolutionView: this.recordSolutionView,
       contentIdsToDoenetMLs: this.externalFunctions.contentIdsToDoenetMLs,
     }
 
@@ -343,6 +352,8 @@ export default class Core {
     this._graphRenderComponents = [];
 
     this.processQueue = [];
+
+    this.resolveRecordSolutionView = {};
 
     this.dependencies = new DependencyHandler({
       _components: this._components,
@@ -9235,6 +9246,15 @@ export default class Core {
     return { scoredItemNumber, scoredComponent };
   }
 
+  recordSolutionView({ itemNumber, scoredComponent }) {
+    let messageId = nanoid();
+
+    postMessage({ messageType: "recordSolutionView", args: { itemNumber, scoredComponent, messageId } })
+
+    return new Promise((resolve, reject) => {
+      this.resolveRecordSolutionView[messageId] = resolve;
+    })
+  }
 
   get doenetState() {
     return this._renderComponents;
