@@ -86,7 +86,6 @@ export default function subsetOfReals(props) {
       </span>
       <span>
         <button
-          // onClick={() => actions.clear()}
           onClick={()=> callAction({
             action: actions.clear,
           })}
@@ -96,7 +95,6 @@ export default function subsetOfReals(props) {
       </span>
       <span>
         <button
-          // onClick={() => actions.setToR()}
           onClick={()=> callAction({
             action: actions.setToR,
           })}
