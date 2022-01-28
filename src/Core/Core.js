@@ -22,6 +22,8 @@ import { returnDefaultGetArrayKeysFromVarName } from './utils/stateVariables';
 
 let core;
 
+let queuedRequestActions = [];
+
 onmessage = function (e) {
 
   if (e.data.messageType === "createCore") {
@@ -32,10 +34,26 @@ onmessage = function (e) {
     //   //TODO: Investigate for memory leaks
     // }
 
+    // this.setTimeout(() => {
+    //   core = new Core(e.data.args)
+    //   core.initialized.then(() => {
+    //     let actionsToProcess = queuedRequestActions;
+    //     console.log('actions to process', actionsToProcess)
+    //     queuedRequestActions = [];
+    //     for (let action of actionsToProcess) {
+    //       core.requestAction(action);
+    //     }
+    //   })
+    // }, 10000)
     core = new Core(e.data.args)
 
   } else if (e.data.messageType === "requestAction") {
-    core.requestAction(e.data.args)
+    if (core) {
+      // setTimeout(() => core.requestAction(e.data.args), 1000)
+      core.requestAction(e.data.args)
+    } else {
+      queuedRequestActions.push(e.data.args);
+    }
   } else if (e.data.messageType === "returnAllStateVariables") {
     console.log('all components')
     console.log(core._components)
@@ -86,7 +104,7 @@ export default class Core {
   constructor({ doenetML, parameters, requestedVariant,
     externalFunctions, flags = {},
     stateVariableChanges = {},
-    coreReadyCallback, coreUpdatedCallback, coreId }) {
+    coreId }) {
     // console.time('core');
 
 
@@ -117,11 +135,12 @@ export default class Core {
     this.getStateVariableValue = this.getStateVariableValue.bind(this);
     // this.submitResponseCallBack = this.submitResponseCallBack.bind(this);
 
-    this.coreUpdatedCallback = async function (args) {
+    this.postUpdateRenderers = async function (args, init = false) {
 
       postMessage({
-        messageType: "coreUpdated",
+        messageType: "updateRenderers",
         args,
+        init
       })
     }
     this.coreReadyCallback = async function () {
@@ -134,7 +153,7 @@ export default class Core {
           allPossibleVariants: deepClone(await this.document.sharedParameters.allPossibleVariants),
           rendererTypesInDocument: deepClone(this.rendererTypesInDocument),
           documentToRender: this.componentsToRender[this.documentName],
-          scoredItemWeights:await this.scoredItemWeights,
+          scoredItemWeights: await this.scoredItemWeights,
         }
       })
 
@@ -188,6 +207,19 @@ export default class Core {
       })
     }
 
+    this.rendererStateVariables = {};
+    for (let componentType in this.allComponentClasses) {
+      Object.defineProperty(this.rendererStateVariables, componentType, {
+        get: function () {
+          let varDescriptions = this.allComponentClasses[componentType].returnStateVariableInfo({
+            onlyForRenderer: true, flags: this.flags
+          }).stateVariableDescriptions;
+          delete this.rendererStateVariables[componentType];
+          return this.rendererStateVariables[componentType] = varDescriptions;
+        }.bind(this),
+        configurable: true
+      })
+    }
 
     this.componentInfoObjects = {
       standardComponentClasses: this.standardComponentClasses,
@@ -216,7 +248,7 @@ export default class Core {
     }
 
     this.updateInfo = {
-      componentsTouched: [],
+      componentsToUpdateRenderers: [],
       compositesToExpand: new Set([]),
       compositesToUpdateReplacements: [],
       inactiveCompositesToUpdateReplacements: [],
@@ -242,6 +274,10 @@ export default class Core {
     this.parameterStack = new ParameterStack(parameters);
 
     this.parameterStack.parameters.rngClass = prng_alea;
+
+    this.initialized = new Promise((resolve, reject) => {
+      this.resolveInitialized = resolve;
+    })
 
     let contentId = Hex.stringify(sha256(doenetML));
     serializeFunctions.expandDoenetMLsToFullSerializedComponents({
@@ -328,7 +364,7 @@ export default class Core {
       initialAdd: true,
     })
 
-    this.updateInfo.componentsTouched = [];
+    this.updateInfo.componentsToUpdateRenderers = [];
 
     // evalute itemCreditAchieved so that will be fresh
     // and can detect changes when it is marked stale
@@ -341,6 +377,8 @@ export default class Core {
 
 
     this.coreReadyCallback()
+
+    this.resolveInitialized(true);
 
   }
 
@@ -428,7 +466,7 @@ export default class Core {
         stateValuesToUpdate: results.stateValuesToUpdate,
       }]
 
-      this.coreUpdatedCallback(updateInstructions)
+      this.postUpdateRenderers(updateInstructions, true)
 
       await this.processStateVariableTriggers();
 
@@ -458,7 +496,9 @@ export default class Core {
       // calculate any replacement changes on composites touched
       await this.replacementChangesFromCompositesToUpdate();
 
-      await this.updateRendererInstructions({ componentNames: await this.componentAndRenderedDescendants(parent) });
+      await this.updateRendererInstructions({
+        componentNamesToUpdate: await this.componentAndRenderedDescendants(parent)
+      });
       await this.processStateVariableTriggers();
 
     }
@@ -467,7 +507,7 @@ export default class Core {
   }
 
 
-  async updateRendererInstructions({ componentNames, sourceOfUpdate, recreatedComponents = {} }) {
+  async updateRendererInstructions({ componentNamesToUpdate, sourceOfUpdate, recreatedComponents = {} }) {
 
     let deletedRenderers = [];
 
@@ -580,7 +620,8 @@ export default class Core {
             instructionType: "changeChildren",
             parentName: componentName,
             childrenToRender,
-            stateValues: stateValuesForRenderer
+            stateValues: stateValuesForRenderer,
+            rendererType: unproxiedComponent.rendererType,
           });
 
           parentsWithChangedChildren.push(componentName)
@@ -595,7 +636,7 @@ export default class Core {
     this.componentsWithChangedChildrenToRender = new Set([]);
 
 
-    for (let componentName of componentNames) {
+    for (let componentName of componentNamesToUpdate) {
       if (componentName in this.componentsToRender
         & !parentsWithChangedChildren.includes(componentName)
         // && !deletedRenderers.includes(componentName)  TODO: what if recreate with same name?
@@ -615,7 +656,8 @@ export default class Core {
 
           stateValuesToUpdate.push({
             componentName,
-            stateValues: stateValuesForRenderer
+            stateValues: stateValuesForRenderer,
+            rendererType: component.rendererType,
           });
         }
       }
@@ -629,7 +671,7 @@ export default class Core {
         stateValuesToUpdate,
         sourceOfUpdate,
       }
-      updateInstructions.push(instruction);
+      updateInstructions.splice(0, 0, instruction);
     }
 
     // for (let componentName of stateValuesToUpdate) {
@@ -658,7 +700,7 @@ export default class Core {
     //   }
     // }
 
-    this.coreUpdatedCallback(updateInstructions)
+    this.postUpdateRenderers(updateInstructions)
 
   }
 
@@ -680,11 +722,7 @@ export default class Core {
     let stateValuesForRenderer = {};
     for (let stateVariable in component.state) {
       if (component.state[stateVariable].forRenderer) {
-        let value = preprocessForPostMessage(await component.state[stateVariable].value);
-        // if (value !== null && typeof value === 'object') {
-        //   value = new Proxy(value, readOnlyProxyHandler)
-        // }
-        stateValuesForRenderer[stateVariable] = value;
+        stateValuesForRenderer[stateVariable] = preprocessForPostMessage(await component.state[stateVariable].value);
       }
     }
 
@@ -719,11 +757,6 @@ export default class Core {
 
     let requestActions = {};
     for (let actionName in component.actions) {
-      // requestActions[actionName] = args => this.requestAction({
-      //   componentName: component.componentName,
-      //   actionName,
-      //   args,
-      // })
       requestActions[actionName] = {
         actionName,
         componentName: component.componentName
@@ -733,11 +766,6 @@ export default class Core {
     for (let actionName in component.externalActions) {
       let action = await component.externalActions[actionName];
       if (action) {
-        // requestActions[actionName] = args => this.requestAction({
-        //   componentName: action.componentName,
-        //   actionName: action.actionName,
-        //   args,
-        // })
         requestActions[actionName] = {
           actionName,
           componentName: action.componentName,
@@ -750,7 +778,7 @@ export default class Core {
       componentName: componentName,
       componentType: component.componentType,
       rendererType: component.rendererType,
-      stateValues: stateValuesForRenderer,  // TODO: delete was remove class-based components?
+      // stateValues: stateValuesForRenderer,  // TODO: delete when remove class-based components?
       children: childrenToRender,
       actions: requestActions,
     };
@@ -785,7 +813,7 @@ export default class Core {
   async processStateVariableTriggers() {
 
     // TODO: can we make this more efficient by only checking components that changed?
-    // componentsTouched is close, but it includes only rendered components
+    // componentsToUpdateRenderers is close, but it includes only rendered components
     // and we could have components with triggers that are not rendered
 
     for (let componentName in this.stateVariableChangeTriggers) {
@@ -912,7 +940,7 @@ export default class Core {
   }
 
   async componentAndRenderedDescendants(component) {
-    if (component === undefined) {
+    if (!component?.componentName) {
       return [];
     }
 
@@ -954,12 +982,9 @@ export default class Core {
       createNameContext
     });
 
-    let componentsTouched = [...new Set(this.updateInfo.componentsTouched)];
-
     return {
       success: true,
       components: createResult.components,
-      componentsTouched
     }
 
 
@@ -5732,7 +5757,9 @@ export default class Core {
 
     // console.log(`mark state variable ${varName} of ${component.componentName} and updeps stale`)
 
-    this.updateInfo.componentsTouched.push(component.componentName);
+    if (varName in this.rendererStateVariables[component.componentType]) {
+      this.updateInfo.componentsToUpdateRenderers.push(component.componentName);
+    }
 
     let allStateVariablesAffectedObj = { [varName]: component.state[varName] };
     if (component.state[varName].additionalStateVariablesDefined) {
@@ -6163,7 +6190,12 @@ export default class Core {
 
         if (foundVarChange) {
 
-          this.updateInfo.componentsTouched.push(upDep.upstreamComponentName);
+          for (let varName of upDep.upstreamVariableNames) {
+            if (varName in this.rendererStateVariables[this.components[upDep.upstreamComponentName].componentType]) {
+              this.updateInfo.componentsToUpdateRenderers.push(upDep.upstreamComponentName);
+              break;
+            }
+          }
 
           let upVarName = upDep.upstreamVariableNames[0];
           let upDepComponent = this._components[upDep.upstreamComponentName];
@@ -6685,7 +6717,7 @@ export default class Core {
 
 
     // remove deleted components from this.updateInfo arrays
-    this.updateInfo.componentsTouched = [... new Set(this.updateInfo.componentsTouched)].filter(x => !(x in componentsToDelete))
+    this.updateInfo.componentsToUpdateRenderers = [... new Set(this.updateInfo.componentsToUpdateRenderers)].filter(x => !(x in componentsToDelete))
     this.updateInfo.compositesToUpdateReplacements = [... new Set(this.updateInfo.compositesToUpdateReplacements)].filter(x => !(x in componentsToDelete))
 
     return {
@@ -6955,7 +6987,8 @@ export default class Core {
 
             await this.processNewDefiningChildren({ parent, expandComposites: false });
 
-            this.updateInfo.componentsTouched.push(...await this.componentAndRenderedDescendants(parent));
+            let componentsAffected = await this.componentAndRenderedDescendants(parent);
+            this.updateInfo.componentsToUpdateRenderers.push(...componentsAffected);
 
           } else {
             // if not top level replacements
@@ -6974,7 +7007,8 @@ export default class Core {
               }
             }
 
-            this.updateInfo.componentsTouched.push(...await this.componentAndRenderedDescendants(parent));
+            let componentsAffected = await this.componentAndRenderedDescendants(parent);
+            this.updateInfo.componentsToUpdateRenderers.push(...componentsAffected);
 
             let newChange = {
               changeType: "addedReplacements",
@@ -7017,8 +7051,6 @@ export default class Core {
 
 
         // TODO: check if component is appropriate dependency of composite
-
-        this.updateInfo.componentsTouched.push(change.component.componentName);
 
         let workspace = {};
         let newStateVariableValues = {};
@@ -7162,7 +7194,8 @@ export default class Core {
       }
       for (let parent of deleteResults.parentsOfDeleted) {
         parentsOfDeleted.add(parent.componentName);
-        this.updateInfo.componentsTouched.push(...await this.componentAndRenderedDescendants(parent));
+        let componentsAffected = await this.componentAndRenderedDescendants(parent);
+        this.updateInfo.componentsToUpdateRenderers.push(...componentsAffected);
       }
       let deletedNamesByParent = {};
       for (let compName in deleteResults.deletedComponents) {
@@ -7185,7 +7218,8 @@ export default class Core {
       componentChanges.push(newChange);
       Object.assign(deletedComponents, deleteResults.deletedComponents);
       let parent = this._components[composite.parentName];
-      this.updateInfo.componentsTouched.push(...await this.componentAndRenderedDescendants(parent));
+      let componentsAffected = await this.componentAndRenderedDescendants(parent);
+      this.updateInfo.componentsToUpdateRenderers.push(...componentsAffected);
     }
     else {
       // if not change top level replacements
@@ -7202,7 +7236,8 @@ export default class Core {
       }
       for (let parent of deleteResults.parentsOfDeleted) {
         parentsOfDeleted.add(parent.componentName);
-        this.updateInfo.componentsTouched.push(...await this.componentAndRenderedDescendants(parent));
+        let componentsAffected = await this.componentAndRenderedDescendants(parent);
+        this.updateInfo.componentsToUpdateRenderers.push(...componentsAffected);
       }
       let deletedNamesByParent = {};
       for (let compName in deleteResults.deletedComponents) {
@@ -7232,7 +7267,8 @@ export default class Core {
   async processChildChangesAndRecurseToShadows(component) {
     let parent = this._components[component.parentName];
     await this.processNewDefiningChildren({ parent, expandComposites: false });
-    this.updateInfo.componentsTouched.push(...await this.componentAndRenderedDescendants(parent));
+    let componentsAffected = await this.componentAndRenderedDescendants(parent);
+    this.updateInfo.componentsToUpdateRenderers.push(...componentsAffected);
 
     if (component.shadowedBy) {
       for (let shadowingComponent of component.shadowedBy) {
@@ -7686,7 +7722,7 @@ export default class Core {
 
     return new Promise((resolve, reject) => {
 
-      let skippable = args && args.skippable;
+      let skippable = args?.skippable;
 
       this.processQueue.push({
         type: "action", componentName, actionName, args, skippable, event, resolve, reject
@@ -7781,7 +7817,7 @@ export default class Core {
       }
 
       await this.updateRendererInstructions({
-        componentNames: updateInstructions.map(x => x.componentName),
+        componentNamesToUpdate: updateInstructions.map(x => x.componentName),
         sourceOfUpdate: { sourceInformation }
       });
 
@@ -7939,7 +7975,7 @@ export default class Core {
 
 
     //TODO: Inside for loop?
-    if (this.externalFunctions.localStateChanged) {
+    if (!transient) {
 
       let newVals = {};
 
@@ -7970,16 +8006,17 @@ export default class Core {
       }
 
       let currentVariant = await this.document.state.generatedVariantInfo.value
-      setTimeout(() => this.externalFunctions.localStateChanged({
-        newStateVariableValues: newVals,
-        contentId: this.contentId,
-        sourceOfUpdate: {
-          sourceInformation
+
+      postMessage({
+        messageType: "saveState",
+        args: {
+          newStateVariableValues: preprocessForPostMessage(newVals),
+          contentId: this.contentId,
+          itemsWithCreditAchieved,
+          currentVariant
         },
-        transient,
-        itemsWithCreditAchieved,
-        currentVariant
-      }), 0)
+      })
+
     }
 
 
@@ -8092,20 +8129,23 @@ export default class Core {
 
   async finishUpdate(sourceOfUpdate) {
 
-    // get unique list of components touched
-
-    this.updateInfo.componentsTouched = [...new Set(this.updateInfo.componentsTouched)];
+    // use set to create deduplicated list of components to update renderers
+    let componentNamesToUpdate = [...new Set(this.updateInfo.componentsToUpdateRenderers)];
+    this.updateInfo.componentsToUpdateRenderers = [];
 
     await this.updateRendererInstructions({
-      componentNames: this.updateInfo.componentsTouched,
+      componentNamesToUpdate,
       sourceOfUpdate,
       recreatedComponents: this.updateInfo.recreatedComponents
     });
 
     await this.processStateVariableTriggers();
 
-    this.updateInfo.componentsTouched = [];
-
+    // it is possible that components were added back to componentNamesToUpdateRenderers
+    // while processing the renderer instructions
+    // so delete any names that were just addressed
+    this.updateInfo.componentsToUpdateRenderers
+      = this.updateInfo.componentsToUpdateRenderers.filter(x => !componentNamesToUpdate.includes(x));
 
     if (Object.keys(this.unmatchedChildren).length > 0) {
       let childLogicMessage = "";
@@ -8276,6 +8316,9 @@ export default class Core {
           essentialVarName = comp.state[vName].essentialVarName;
         }
 
+        if (vName in this.rendererStateVariables[comp.componentType]) {
+          this.updateInfo.componentsToUpdateRenderers.push(comp.componentName);
+        }
 
         if (compStateObj.isArray) {
 
@@ -8303,16 +8346,19 @@ export default class Core {
           // to tell external functions new attributes of the object
           // should be merged into the old object
 
-          // TODO: what about a .set function here?
           for (let arrayKey in newComponentStateVariables[vName]) {
 
             if (arrayKey === "mergeObject") {
               continue;
             }
 
+            let set = x => x;
+            if (compStateObj.set) {
+              set = compStateObj.set;
+            }
 
             let setResult = compStateObj.setArrayValue({
-              value: newComponentStateVariables[vName][arrayKey],
+              value: set(newComponentStateVariables[vName][arrayKey]),
               arrayKey,
               arraySize,
               arrayValues: essentialArray
@@ -8521,8 +8567,6 @@ export default class Core {
       }
     }
 
-
-    this.updateInfo.componentsTouched.push(component.componentName);
 
     if (!stateVarObj.inverseDefinition) {
       console.warn(`Cannot change state variable ${stateVariable} of ${component.componentName} as it doesn't have an inverse definition`);

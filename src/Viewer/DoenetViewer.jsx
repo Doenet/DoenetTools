@@ -9,7 +9,12 @@ import { serializedComponentsReplacer, serializedComponentsReviver } from '../Co
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faExclamationCircle } from '@fortawesome/free-solid-svg-icons';
 import { rendererSVs } from '../Viewer/renderers/useDoenetRenderer';
-import { useRecoilCallback } from 'recoil';
+import { atomFamily, useRecoilCallback } from 'recoil';
+
+const rendererUpdatesToIgnore = atomFamily({
+  key: 'rendererUpdatesToIgnore',
+  default: {},
+})
 
 class DoenetViewerChild extends Component {
 
@@ -17,17 +22,17 @@ class DoenetViewerChild extends Component {
     // console.log("===DoenetViewerChild constructor")
 
     super(props);
-    this.update = this.update.bind(this);
+    this.updateRenderers = this.updateRenderers.bind(this);
     this.coreReady = this.coreReady.bind(this);
     this.createCore = this.createCore.bind(this);
     this.loadState = this.loadState.bind(this);
-    this.localStateChanged = this.localStateChanged.bind(this);
     // this.submitResponse = this.submitResponse.bind(this);
     this.recordSolutionView = this.recordSolutionView.bind(this);
     this.recordEvent = this.recordEvent.bind(this);
     this.callAction = this.callAction.bind(this);
 
     this.rendererUpdateMethods = {};
+    this.rendererStateValues = {};
 
     this.cumulativeStateVariableChanges = {};
 
@@ -54,10 +59,20 @@ class DoenetViewerChild extends Component {
 
     this.coreWorker.onmessage = function (e) {
       if (e.data.messageType === "coreCreated") {
-        viewer.coreReady(e.data.args)
-      } else if (e.data.messageType === "coreUpdated") {
-        viewer.update(e.data.args)
-      } else if(e.data.messageType === "returnAllStateVariables") {
+        if (viewer.coreInfo) {
+          console.log('do we skip sending core ready since already have coreInfo?')
+        } else {
+          viewer.coreReady(e.data.args)
+        }
+      } else if (e.data.messageType === "updateRenderers") {
+        if(e.data.init && viewer.coreInfo) {
+          console.log('do we skip initial render state values since already have coreInfo?')
+        } else {
+          viewer.updateRenderers(e.data.args)
+        }
+      } else if (e.data.messageType === "saveState") {
+        viewer.saveState(e.data.args)
+      } else if (e.data.messageType === "returnAllStateVariables") {
         console.log(e.data.args)
         viewer.resolveAllStateVariables(e.data.args);
       }
@@ -67,30 +82,42 @@ class DoenetViewerChild extends Component {
       this.coreWorker.postMessage({
         messageType: "returnAllStateVariables"
       })
-      
+
       return new Promise((resolve, reject) => {
         viewer.resolveAllStateVariables = resolve;
       })
-      
+
     }.bind(this)
 
 
-    window.callAction = function({actionName, componentName, args}) {
+    window.callAction = function ({ actionName, componentName, args }) {
       this.callAction({
-        action: {actionName, componentName},
+        action: { actionName, componentName },
         args
       })
     }.bind(this);
 
   }
 
-  callAction({ action, args }) {
+  callAction({ action, args, baseVariableValue, name }) {
+
+    if (baseVariableValue !== undefined && name) {
+      let actionId = nanoid();
+      this.props.updateRendererUpdatesToIgnore({
+        componentName: name,
+        baseVariableValue,
+        actionId
+      })
+      args = { ...args };
+      args.actionId = actionId;
+    }
+
     this.coreWorker.postMessage({
       messageType: "requestAction",
       args: {
         actionName: action.actionName,
         componentName: action.componentName,
-        args
+        args,
       }
     })
   }
@@ -192,13 +219,13 @@ class DoenetViewerChild extends Component {
   coreReady(coreInfo) {
     this.coreInfo = coreInfo;
 
-    this.generatedVariant = coreInfo.generatedVariantInfo;
-    this.itemVariantInfo = coreInfo.itemVariantInfo;
+    // this.generatedVariant = coreInfo.generatedVariantInfo;
+    // this.itemVariantInfo = coreInfo.itemVariantInfo;
 
-    this.allPossibleVariants = coreInfo.allPossibleVariants;
+    // this.allPossibleVariants = coreInfo.allPossibleVariants;
 
     if (this.props.generatedVariantCallback) {
-      this.props.generatedVariantCallback(this.generatedVariant, this.allPossibleVariants);
+      this.props.generatedVariantCallback(this.coreInfo.generatedVariant, this.coreInfo.allPossibleVariants);
     }
 
     // if (this.cumulativeStateVariableChanges) {
@@ -277,7 +304,7 @@ class DoenetViewerChild extends Component {
     // console.log(">>>>this.contentId",this.contentId)
     // console.log(">>>>this.attemptNumber",this.attemptNumber)
     // console.log(">>>>this.requestedVariant",this.requestedVariant)
-    // console.log(">>>>this.generatedVariant",this.generatedVariant)
+    // console.log(">>>>this.coreInfo.generatedVariant",this.coreInfo.generatedVariant)
     // console.log(">>>>this.allowSavePageState",this.allowSavePageState)
     // console.log(">>>>this.savedUserAssignmentAttemptNumber",this.savedUserAssignmentAttemptNumber)
     if (this.allowSavePageState &&
@@ -297,8 +324,8 @@ class DoenetViewerChild extends Component {
         attemptNumber: this.attemptNumber,
         contentId: this.contentId,
         requestedVariant: JSON.stringify(this.requestedVariant, serializedComponentsReplacer),
-        generatedVariant: JSON.stringify(this.generatedVariant, serializedComponentsReplacer),
-        itemVariantInfo: this.itemVariantInfo.map(x => JSON.stringify(x, serializedComponentsReplacer)),
+        generatedVariant: JSON.stringify(this.coreInfo.generatedVariant, serializedComponentsReplacer),
+        itemVariantInfo: this.coreInfo.itemVariantInfo.map(x => JSON.stringify(x, serializedComponentsReplacer)),
       }).then(({ data }) => {
 
         if (!data.success) {
@@ -319,28 +346,22 @@ class DoenetViewerChild extends Component {
 
     }
 
-    //Let the calling tool know we are ready
-    //TODO: Move this to renderer
-    //TODO: THIS ISN'T TRUE AS IT'S HASN'T FINISHED YET
-    if (this.props.onCoreReady) {
-      this.props.onCoreReady();
-    }
   }
 
   initializeComponentsToRender(componentToRender) {
     this.componentsToRender[componentToRender.componentName] = componentToRender;
-    if(componentToRender.children) {
-      for(let child of componentToRender.children) {
-        if(child.componentName) {
+    if (componentToRender.children) {
+      for (let child of componentToRender.children) {
+        if (child.componentName) {
           this.initializeComponentsToRender(child)
         }
       }
     }
   }
 
-  localStateChanged({
+  saveState({
     newStateVariableValues,
-    contentId, sourceOfUpdate, transient = false,
+    contentId,
     itemsWithCreditAchieved,
     currentVariant,
   }) {
@@ -350,10 +371,8 @@ class DoenetViewerChild extends Component {
     // flags: allowSavePageState, allowLocalPageState, allowSaveSubmissions
     // For now: we will not save submissions unless either
     // allowSavePageState is true
-    // (also won't save if transient is true but that will never happen :) )
 
-    // TODO: what should we do with transient updates?
-    if (transient || !this.allowSavePageState && !this.allowLocalPageState) {
+    if (!this.allowSavePageState && !this.allowLocalPageState) {
       return;
     }
 
@@ -376,17 +395,17 @@ class DoenetViewerChild extends Component {
 
     let changeString = JSON.stringify(this.cumulativeStateVariableChanges, serializedComponentsReplacer);
 
-    let variantString = JSON.stringify(this.generatedVariant, serializedComponentsReplacer);
+    let variantString = JSON.stringify(this.coreInfo.generatedVariant, serializedComponentsReplacer);
 
 
     // check if generated variant changed
     // (which could happen, at least for now, when paginator changes pages)
     let currentVariantString = JSON.stringify(currentVariant, serializedComponentsReplacer);
     if (currentVariantString !== variantString) {
-      this.generatedVariant = currentVariant;
+      this.coreInfo.generatedVariant = currentVariant;
       variantString = currentVariantString;
       if (this.props.generatedVariantCallback) {
-        this.props.generatedVariantCallback(this.generatedVariant, this.allPossibleVariants);
+        this.props.generatedVariantCallback(this.coreInfo.generatedVariant, this.coreInfo.allPossibleVariants);
       }
 
     }
@@ -409,7 +428,15 @@ class DoenetViewerChild extends Component {
     }
 
     if (this.allowLocalPageState) {
-      localStorage.setItem(`${contentId}${this.props.doenetId}${this.attemptNumber}`, JSON.stringify({ stateVariables: changeString, variant: variantString }))
+      localStorage.setItem(
+        `${contentId}${this.props.doenetId}${this.attemptNumber}`,
+        JSON.stringify({
+          stateVariables: changeString,
+          variant: variantString,
+          rendererStateValues: this.rendererStateValues,
+          coreInfo: this.coreInfo,
+        })
+      )
     }
 
     if (!this.allowSavePageState) {
@@ -497,17 +524,45 @@ class DoenetViewerChild extends Component {
 
     if (this.allowLocalPageState) {
 
-      let stateVarVariant = JSON.parse(localStorage.getItem(`${this.contentId}${this.props.doenetId}${this.attemptNumber}`))
+      let localInfo = JSON.parse(localStorage.getItem(
+        `${this.contentId}${this.props.doenetId}${this.attemptNumber}`
+      ))
       let stateVariables = null;
       let variant = null;
+      let rendererStateValues = {};
 
-      if (stateVarVariant) {
-        stateVariables = stateVarVariant.stateVariables;
-        variant = stateVarVariant.variant
+      if (localInfo) {
+        stateVariables = localInfo.stateVariables;
+        variant = localInfo.variant;
+
+        if (localInfo.rendererStateValues) {
+          this.rendererStateValues = localInfo.rendererStateValues;
+
+          console.log('loading renderer values')
+          console.log(this.rendererStateValues)
+          for (let componentName in this.rendererStateValues) {
+            this.props.updateRendererSVsWithRecoil({
+              componentName,
+              stateValues: this.rendererStateValues[componentName],
+            })
+          }
+        }
+
+
+        this.coreInfo = localInfo.coreInfo;
+        if (this.coreInfo) {
+
+
+
+
+          console.log('pretending core ready from database')
+          this.coreReady(this.coreInfo);
+        }
       }
       callback({
         stateVariables,
-        variant
+        variant,
+        rendererStateValues,
       });
       return;
     }
@@ -553,19 +608,22 @@ class DoenetViewerChild extends Component {
   }
 
   //offscreen then postpone that one
-  async update(updateInstructions) {
+  async updateRenderers(updateInstructions) {
 
     for (let instruction of updateInstructions) {
 
       if (instruction.instructionType === "updateStateVariable") {
-        for (let { componentName, stateValues } of instruction.stateValuesToUpdate
+        for (let { componentName, stateValues, rendererType } of instruction.stateValuesToUpdate
         ) {
 
 
           this.props.updateRendererSVsWithRecoil({
             componentName,
-            stateValues
+            stateValues,
+            sourceOfUpdate: instruction.sourceOfUpdate,
+            baseStateVariable: this.rendererClasses?.[rendererType]?.baseStateVariable
           })
+          this.rendererStateValues[componentName] = stateValues;
           //TODO: await ????
           // this.rendererUpdateMethods[componentName].update({
           //   sourceOfUpdate: instruction.sourceOfUpdate
@@ -577,7 +635,12 @@ class DoenetViewerChild extends Component {
         this.props.updateRendererSVsWithRecoil({
           componentName: instruction.parentName,
           stateValues: instruction.stateValues,
+          sourceOfUpdate: instruction.sourceOfUpdate,
+          baseStateVariable: this.rendererClasses?.[instruction.rendererType]?.baseStateVariable
         })
+
+        this.rendererStateValues[instruction.parentName] = instruction.stateValues;
+
       }
     }
 
@@ -662,7 +725,7 @@ class DoenetViewerChild extends Component {
       doenetId: this.props.doenetId,
       contentId: this.contentId,
       attemptNumber: this.attemptNumber,
-      variant: JSON.stringify(this.generatedVariant, serializedComponentsReplacer),
+      variant: JSON.stringify(this.coreInfo.generatedVariant, serializedComponentsReplacer),
       verb: event.verb,
       object: JSON.stringify(event.object, serializedComponentsReplacer),
       result: JSON.stringify(event.result, serializedComponentsReplacer),
@@ -867,7 +930,7 @@ class ErrorBoundary extends React.Component {
 
 function DoenetViewer(props) {
   const toast = useToast();
-  const updateRendererSVsWithRecoil = useRecoilCallback(({ snapshot, set }) => async ({ componentName, stateValues, sourceOfUpdate }) => {
+  const updateRendererSVsWithRecoil = useRecoilCallback(({ snapshot, set }) => async ({ componentName, stateValues, sourceOfUpdate, baseStateVariable }) => {
     // stateVariables = JSON.parse(JSON.stringify(stateVariables))
     // stateVariables = JSON.stringify(stateVariables, serializedComponentsReplacer)
     // stateVariables = JSON.parse(JSON.stringify(stateVariables, serializedComponentsReplacer), serializedComponentsReviver)
@@ -875,14 +938,60 @@ function DoenetViewer(props) {
     // let stateVariables2 = JSON.stringify(stateVariables)
 
     // console.log(">>>>{componentName,stateVariables}",{componentName,stateVariables})
-    set(rendererSVs(componentName), { stateValues, sourceOfUpdate })
-    // set(rendererSVs(componentName),{test:true})
+
+    let ignoreUpdate = false;
+
+    if (baseStateVariable) {
+
+      let sourceActionId = sourceOfUpdate?.sourceInformation?.[componentName]?.actionId;
+
+      let updatesToIgnore = snapshot.getLoadable(rendererUpdatesToIgnore(componentName)).contents;
+
+      if (Object.keys(updatesToIgnore).length > 0) {
+        let valueFromRenderer = updatesToIgnore[sourceActionId];
+        let valueFromCore = stateValues[baseStateVariable];
+        if (valueFromRenderer === valueFromCore
+          || (
+            Array.isArray(valueFromRenderer)
+            && Array.isArray(valueFromCore)
+            && valueFromRenderer.length == valueFromCore.length
+            && valueFromRenderer.every((v, i) => valueFromCore[i] === v)
+          )
+        ) {
+          // console.log(`ignoring update of ${componentName} to ${valueFromCore}`)
+          ignoreUpdate = true;
+          set(rendererUpdatesToIgnore(componentName), was => {
+            let newUpdatesToIgnore = { ...was };
+            delete newUpdatesToIgnore[sourceActionId];
+            return newUpdatesToIgnore;
+          })
+
+        } else {
+          // since value was change from the time the update was created
+          // don't ignore the remaining pending changes in updatesToIgnore
+          // as we changed the state used to determine they could be ignored
+          set(rendererUpdatesToIgnore(componentName), {});
+        }
+      }
+    }
+
+    set(rendererSVs(componentName), { stateValues, sourceOfUpdate, ignoreUpdate })
 
   })
-  // function updateRendererSVsWithRecoil({componentName,stateVariables}){
-  //   console.log(">>>>{componentName,stateVariables}",{componentName,stateVariables})
-  // }
-  let newProps = { ...props, toast, updateRendererSVsWithRecoil }
+  const updateRendererUpdatesToIgnore = useRecoilCallback(({ snapshot, set }) => async ({ componentName, baseVariableValue, actionId }) => {
+
+    // add to updates to ignore so don't apply change again
+    // if it comes back from core without any changes
+    // (possibly after a delay)
+    set(rendererUpdatesToIgnore(componentName), was => {
+      let newUpdatesToIgnore = { ...was };
+      newUpdatesToIgnore[actionId] = baseVariableValue;
+      return newUpdatesToIgnore;
+    })
+
+  })
+
+  let newProps = { ...props, toast, updateRendererSVsWithRecoil, updateRendererUpdatesToIgnore }
   return <ErrorBoundary><DoenetViewerChild {...newProps} /></ErrorBoundary>
 }
 

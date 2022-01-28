@@ -385,7 +385,6 @@ export function AssignmentSettings({ role, doenetId }) {
   let [showCreditAchievedMenu, setShowCreditAchievedMenu] = useState(true);
   let [proctorMakesAvailable, setProctorMakesAvailable] = useState(true);
 
-
   const updateAssignment = useRecoilCallback(
     ({ set, snapshot }) =>
       async ({
@@ -461,38 +460,41 @@ export function AssignmentSettings({ role, doenetId }) {
     [addToast],
   );
 
-  const loadRecoilAssignmentValues = useRecoilCallback(({snapshot})=> async (doenetId)=>{
+  const loadRecoilAssignmentValues = useRecoilCallback(
+    ({ snapshot }) =>
+      async (doenetId) => {
+        const aLoadable = await snapshot.getPromise(
+          loadAssignmentSelector(doenetId),
+        );
 
-    const aLoadable = await snapshot.getPromise(loadAssignmentSelector(doenetId))
+        aInfoRef.current = { ...aLoadable };
 
-    aInfoRef.current = {...aLoadable}
+        setAssignedDate(aLoadable?.assignedDate);
+        setDueDate(aLoadable?.dueDate);
+        setLimitAttempts(aLoadable?.numberOfAttemptsAllowed !== null);
+        setNumberOfAttemptsAllowed(aLoadable?.numberOfAttemptsAllowed);
+        setAttemptAggregation(aLoadable?.attemptAggregation);
+        setTotalPointsOrPercent(aLoadable?.totalPointsOrPercent);
+        setGradeCategory(aLoadable?.gradeCategory);
+        setIndividualize(aLoadable?.individualize);
+        setShowSolution(aLoadable?.showSolution);
+        setShowSolutionInGradebook(aLoadable?.showSolutionInGradebook);
+        setShowFeedback(aLoadable?.showFeedback);
+        setShowHints(aLoadable?.showHints);
+        setShowCorrectness(aLoadable?.showCorrectness);
+        setShowCreditAchievedMenu(aLoadable?.showCreditAchievedMenu);
+        setProctorMakesAvailable(aLoadable?.proctorMakesAvailable);
+        setTimeLimit(aLoadable?.timeLimit);
+        setPinnedUntilDate(aLoadable?.pinnedUntilDate);
+        setPinnedAfterDate(aLoadable?.pinnedAfterDate);
+      },
+    [],
+  );
 
-    setAssignedDate(aLoadable?.assignedDate);
-    setDueDate(aLoadable?.dueDate);
-    setLimitAttempts(aLoadable?.numberOfAttemptsAllowed !== null);
-    setNumberOfAttemptsAllowed(aLoadable?.numberOfAttemptsAllowed);
-    setAttemptAggregation(aLoadable?.attemptAggregation);
-    setTotalPointsOrPercent(aLoadable?.totalPointsOrPercent);
-    setGradeCategory(aLoadable?.gradeCategory);
-    setIndividualize(aLoadable?.individualize);
-    setShowSolution(aLoadable?.showSolution);
-    setShowSolutionInGradebook(aLoadable?.showSolutionInGradebook);
-    setShowFeedback(aLoadable?.showFeedback);
-    setShowHints(aLoadable?.showHints);
-    setShowCorrectness(aLoadable?.showCorrectness);
-    setShowCreditAchievedMenu(aLoadable?.showCreditAchievedMenu);
-    setProctorMakesAvailable(aLoadable?.proctorMakesAvailable);
-    setTimeLimit(aLoadable?.timeLimit);
-    setPinnedUntilDate(aLoadable?.pinnedUntilDate);
-    setPinnedAfterDate(aLoadable?.pinnedAfterDate);
-  },[])
-
-
-  if (Object.keys(aInfo).length === 0){
+  if (Object.keys(aInfo).length === 0) {
     loadRecoilAssignmentValues(doenetId);
     return null;
   }
-
 
   //Student JSX
   if (role === 'student') {
@@ -537,22 +539,17 @@ export function AssignmentSettings({ role, doenetId }) {
             }}
           >
             <CalendarToggle
-              checked={
-                assignedDate !== null && assignedDate !== undefined
-              }
+              checked={assignedDate !== null && assignedDate !== undefined}
               onClick={(e) => {
                 let valueDescription = 'None';
                 let value = null;
 
-                if (
-                  assignedDate === null ||
-                  assignedDate === undefined
-                ) {
+                if (assignedDate === null || assignedDate === undefined) {
                   valueDescription = 'Now';
                   value = DateToDateString(new Date());
                 }
 
-                setAssignedDate(value)
+                setAssignedDate(value);
 
                 updateAssignment({
                   doenetId,
@@ -563,71 +560,49 @@ export function AssignmentSettings({ role, doenetId }) {
                 });
               }}
             />
-            {assignedDate !== null && assignedDate !== undefined ? (
-              <DateTime
-                value={assignedDate ? new Date(assignedDate) : null}
-                onBlur={({ valid, value }) => {
-                  if (valid) {
-                    try {
-                      value = value.toDate();
-                    } catch (e) {
-                      // console.log('value not moment');
-                    }
-                    if (
-                      new Date(DateToDateString(value)).getTime() !==
-                      new Date(assignedDate).getTime()
-                    ) {
-                      setAssignedDate(DateToDateString(value))
 
-                      updateAssignment({
-                        doenetId,
-                        keyToUpdate: 'assignedDate',
-                        value: DateToDateString(value),
-                        description: 'Assigned Date',
-                      });
-                    }
-                  } else {
+            <DateTime
+              disabled={assignedDate === null || assignedDate === undefined}
+              value={assignedDate ? new Date(assignedDate) : null}
+              disabledText="No Assigned Day"
+              disabledOnClick={(e) => {
+                let valueDescription = 'Now';
+                let value = DateToDateString(new Date());
+                setAssignedDate(value);
 
-                    addToast('Invalid Assigned Date');
-
+                updateAssignment({
+                  doenetId,
+                  keyToUpdate: 'assignedDate',
+                  value,
+                  description: 'Assigned Date',
+                  valueDescription,
+                });
+              }}
+              onBlur={({ valid, value }) => {
+                if (valid) {
+                  try {
+                    value = value.toDate();
+                  } catch (e) {
+                    // console.log('value not moment');
                   }
-                }}
-              />
-            ) : (
-              <input
-                value="No Assigned Date"
-                onClick={(e) => {
-                  let valueDescription = 'None';
-                  let value = null;
-
                   if (
-                    assignedDate === null ||
-                    assignedDate === undefined
+                    new Date(DateToDateString(value)).getTime() !==
+                    new Date(assignedDate).getTime()
                   ) {
-                    valueDescription = 'Now';
-                    value = DateToDateString(new Date());
-                  }
-                  setAssignedDate(value)
+                    setAssignedDate(DateToDateString(value));
 
-                  updateAssignment({
-                    doenetId,
-                    keyToUpdate: 'assignedDate',
-                    value,
-                    description: 'Assigned Date',
-                    valueDescription,
-                  });
-                }}
-                // disabled
-                style={{
-                  cursor: 'not-allowed',
-                  color: '#545454',
-                  height: '18px',
-                  width: '177px',
-                  border: '2px solid #e2e2e2',
-                  borderRadius: '5px',
-                }}
-              />
-            )}
+                    updateAssignment({
+                      doenetId,
+                      keyToUpdate: 'assignedDate',
+                      value: DateToDateString(value),
+                      description: 'Assigned Date',
+                    });
+                  }
+                } else {
+                  addToast('Invalid Assigned Date');
+                }
+              }}
+            />
           </div>
         </label>
       </div>
@@ -663,67 +638,49 @@ export function AssignmentSettings({ role, doenetId }) {
                 });
               }}
             />
-            {dueDate !== null && dueDate !== undefined ? (
-              <DateTime
-                value={dueDate ? new Date(dueDate) : null}
-                onBlur={({ valid, value }) => {
-                  if (valid) {
-                    try {
-                      value = value.toDate();
-                    } catch (e) {
-                      // console.log('value not moment');
-                    }
-                    if (
-                      new Date(DateToDateString(value)).getTime() !==
-                      new Date(dueDate).getTime()
-                    ) {
-                      setDueDate(DateToDateString(value));
 
-                      updateAssignment({
-                        doenetId,
-                        keyToUpdate: 'dueDate',
-                        value: DateToDateString(value),
-                        description: 'Due Date',
-                      });
-                    }
-                  } else {
-                    addToast('Invalid Due Date');
+            <DateTime
+              disabled={dueDate === null || dueDate === undefined}
+              value={dueDate ? new Date(dueDate) : null}
+              onBlur={({ valid, value }) => {
+                if (valid) {
+                  try {
+                    value = value.toDate();
+                  } catch (e) {
+                    // console.log('value not moment');
                   }
-                }}
-              />
-            ) : (
-              <input
-                onClick={(e) => {
-                  let valueDescription = 'None';
-                  let value = null;
-
-                  if (aInfo.dueDate === null || aInfo.dueDate === undefined) {
-                    valueDescription = 'Next Week';
-                    let nextWeek = new Date();
-                    nextWeek.setDate(nextWeek.getDate() + 7);
-                    value = DateToDateString(nextWeek);
+                  if (
+                    new Date(DateToDateString(value)).getTime() !==
+                    new Date(dueDate).getTime()
+                  ) {
+                    setDueDate(DateToDateString(value));
+                    updateAssignment({
+                      doenetId,
+                      keyToUpdate: 'dueDate',
+                      value: DateToDateString(value),
+                      description: 'Due Date',
+                    });
                   }
-                  setDueDate(value)
-                  updateAssignment({
-                    doenetId,
-                    keyToUpdate: 'dueDate',
-                    value,
-                    description: 'Due Date',
-                    valueDescription,
-                  });
-                }}
-                value="No Due Date"
-                // disabled
-                style={{
-                  cursor: 'not-allowed',
-                  color: '#545454',
-                  height: '18px',
-                  width: '177px',
-                  border: '2px solid #e2e2e2',
-                  borderRadius: '5px',
-                }}
-              />
-            )}
+                } else {
+                  addToast('Invalid Due Date');
+                }
+              }}
+              disabledText="No Due Date"
+              disabledOnClick={(e) => {
+                let valueDescription = 'Next Week';
+                let nextWeek = new Date();
+                nextWeek.setDate(nextWeek.getDate() + 7);
+                let value = DateToDateString(nextWeek);
+                setDueDate(value);
+                updateAssignment({
+                  doenetId,
+                  keyToUpdate: 'dueDate',
+                  value,
+                  description: 'Due Date',
+                  valueDescription,
+                });
+              }}
+            />
           </div>
         </label>
       </div>
@@ -797,9 +754,9 @@ export function AssignmentSettings({ role, doenetId }) {
                 valueDescription = '1';
                 value = 1;
               }
-              setLimitAttempts(value)
-              setNumberOfAttemptsAllowed(value)
- 
+              setLimitAttempts(value);
+              setNumberOfAttemptsAllowed(value);
+
               updateAssignment({
                 doenetId,
                 keyToUpdate: 'numberOfAttemptsAllowed',
@@ -862,7 +819,7 @@ export function AssignmentSettings({ role, doenetId }) {
               if (val === 'l') {
                 valueDescription = 'Last Attempt';
               }
-              setAttemptAggregation(val)
+              setAttemptAggregation(val);
               updateAssignment({
                 doenetId,
                 keyToUpdate: 'attemptAggregation',
@@ -894,7 +851,7 @@ export function AssignmentSettings({ role, doenetId }) {
                 totalPointsOrPercentLocal = parseInt(totalPointsOrPercent);
                 setTotalPointsOrPercent(parseInt(totalPointsOrPercent));
               }
-          
+
               updateAssignment({
                 doenetId,
                 keyToUpdate: 'totalPointsOrPercent',
@@ -952,7 +909,7 @@ export function AssignmentSettings({ role, doenetId }) {
               if (e.currentTarget.checked) {
                 valueDescription = 'True';
               }
-              setIndividualize(e.currentTarget.checked)
+              setIndividualize(e.currentTarget.checked);
               updateAssignment({
                 doenetId,
                 keyToUpdate: 'individualize',
@@ -976,7 +933,7 @@ export function AssignmentSettings({ role, doenetId }) {
               if (e.currentTarget.checked) {
                 valueDescription = 'True';
               }
-              setShowSolution(e.currentTarget.checked)
+              setShowSolution(e.currentTarget.checked);
               updateAssignment({
                 doenetId,
                 keyToUpdate: 'showSolution',
@@ -1000,7 +957,7 @@ export function AssignmentSettings({ role, doenetId }) {
               if (e.currentTarget.checked) {
                 valueDescription = 'True';
               }
-              setShowSolutionInGradebook(e.currentTarget.checked)
+              setShowSolutionInGradebook(e.currentTarget.checked);
               updateAssignment({
                 doenetId,
                 keyToUpdate: 'showSolutionInGradebook',
@@ -1024,7 +981,7 @@ export function AssignmentSettings({ role, doenetId }) {
               if (e.currentTarget.checked) {
                 valueDescription = 'True';
               }
-              setShowFeedback(e.currentTarget.checked)
+              setShowFeedback(e.currentTarget.checked);
               updateAssignment({
                 doenetId,
                 keyToUpdate: 'showFeedback',
@@ -1048,7 +1005,7 @@ export function AssignmentSettings({ role, doenetId }) {
               if (e.currentTarget.checked) {
                 valueDescription = 'True';
               }
-              setShowHints(e.currentTarget.checked)
+              setShowHints(e.currentTarget.checked);
               updateAssignment({
                 doenetId,
                 keyToUpdate: 'showHints',
@@ -1072,7 +1029,7 @@ export function AssignmentSettings({ role, doenetId }) {
               if (e.currentTarget.checked) {
                 valueDescription = 'True';
               }
-              setShowCorrectness(e.currentTarget.checked)
+              setShowCorrectness(e.currentTarget.checked);
               updateAssignment({
                 doenetId,
                 keyToUpdate: 'showCorrectness',
@@ -1096,7 +1053,7 @@ export function AssignmentSettings({ role, doenetId }) {
               if (e.currentTarget.checked) {
                 valueDescription = 'True';
               }
-              setShowCreditAchievedMenu(e.currentTarget.checked)
+              setShowCreditAchievedMenu(e.currentTarget.checked);
               updateAssignment({
                 doenetId,
                 keyToUpdate: 'showCreditAchievedMenu',
@@ -1120,7 +1077,7 @@ export function AssignmentSettings({ role, doenetId }) {
               if (e.currentTarget.checked) {
                 valueDescription = 'True';
               }
-              setProctorMakesAvailable(e.currentTarget.checked)
+              setProctorMakesAvailable(e.currentTarget.checked);
               updateAssignment({
                 doenetId,
                 keyToUpdate: 'proctorMakesAvailable',
@@ -1145,18 +1102,14 @@ export function AssignmentSettings({ role, doenetId }) {
           >
             <CalendarToggle
               checked={
-                pinnedUntilDate !== null &&
-                pinnedUntilDate !== undefined
+                pinnedUntilDate !== null && pinnedUntilDate !== undefined
               }
               onClick={(e) => {
                 let valueDescription = 'None';
                 let value = null;
                 let secondValue = null;
 
-                if (
-                  pinnedUntilDate === null ||
-                  pinnedUntilDate === undefined
-                ) {
+                if (pinnedUntilDate === null || pinnedUntilDate === undefined) {
                   valueDescription = 'Now to Next Year';
                   let today = new Date();
                   let nextYear = new Date();
@@ -1164,8 +1117,8 @@ export function AssignmentSettings({ role, doenetId }) {
                   value = DateToDateString(today);
                   secondValue = DateToDateString(nextYear);
                 }
-                setPinnedAfterDate(value)
-                setPinnedUntilDate(secondValue)
+                setPinnedAfterDate(value);
+                setPinnedUntilDate(secondValue);
                 updateAssignment({
                   doenetId,
                   keyToUpdate: 'pinnedAfterDate',
@@ -1177,12 +1130,9 @@ export function AssignmentSettings({ role, doenetId }) {
                 });
               }}
             />
-            {pinnedAfterDate !== null &&
-            pinnedAfterDate !== undefined ? (
+            {pinnedAfterDate !== null && pinnedAfterDate !== undefined ? (
               <DateTime
-                value={
-                  pinnedAfterDate ? new Date(pinnedAfterDate) : null
-                }
+                value={pinnedAfterDate ? new Date(pinnedAfterDate) : null}
                 onBlur={({ valid, value }) => {
                   if (valid) {
                     try {
@@ -1194,7 +1144,7 @@ export function AssignmentSettings({ role, doenetId }) {
                       new Date(DateToDateString(value)).getTime() !==
                       new Date(pinnedAfterDate).getTime()
                     ) {
-                      setPinnedAfterDate(DateToDateString(value))
+                      setPinnedAfterDate(DateToDateString(value));
                       updateAssignment({
                         doenetId,
                         keyToUpdate: 'pinnedAfterDate',
@@ -1225,8 +1175,8 @@ export function AssignmentSettings({ role, doenetId }) {
                     value = DateToDateString(today);
                     secondValue = DateToDateString(nextYear);
                   }
-                  setPinnedAfterDate(value)
-                  setPinnedUntilDate(secondValue)
+                  setPinnedAfterDate(value);
+                  setPinnedUntilDate(secondValue);
                   updateAssignment({
                     doenetId,
                     keyToUpdate: 'pinnedAfterDate',
@@ -1256,12 +1206,9 @@ export function AssignmentSettings({ role, doenetId }) {
               e.preventDefault();
             }}
           >
-            {pinnedUntilDate !== null &&
-            pinnedUntilDate !== undefined ? (
+            {pinnedUntilDate !== null && pinnedUntilDate !== undefined ? (
               <DateTime
-                value={
-                  pinnedUntilDate ? new Date(pinnedUntilDate) : null
-                }
+                value={pinnedUntilDate ? new Date(pinnedUntilDate) : null}
                 onBlur={({ valid, value }) => {
                   if (valid) {
                     try {
@@ -1273,7 +1220,7 @@ export function AssignmentSettings({ role, doenetId }) {
                       new Date(DateToDateString(value)).getTime() !==
                       new Date(pinnedUntilDate).getTime()
                     ) {
-                      setPinnedUntilDate(DateToDateString(value))
+                      setPinnedUntilDate(DateToDateString(value));
 
                       updateAssignment({
                         doenetId,
@@ -1286,7 +1233,6 @@ export function AssignmentSettings({ role, doenetId }) {
                     addToast('Invalid Pin Until Date');
                   }
                 }}
-               
               />
             ) : (
               <input
@@ -1306,8 +1252,8 @@ export function AssignmentSettings({ role, doenetId }) {
                     value = DateToDateString(today);
                     secondValue = DateToDateString(nextYear);
                   }
-                  setPinnedAfterDate(value)
-                  setPinnedUntilDate(secondValue)
+                  setPinnedAfterDate(value);
+                  setPinnedUntilDate(secondValue);
                   updateAssignment({
                     doenetId,
                     keyToUpdate: 'pinnedAfterDate',
