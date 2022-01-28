@@ -220,7 +220,7 @@ export default function TextInput(props) {
           (no attempts remaining)
         </span>
       </>
-    } else if (SVs.numberOfAttemptsLeft < Infinity) {
+    } else if (Number.isFinite(SVs.numberOfAttemptsLeft)) {
 
       checkWorkButton = <>
         {checkWorkButton}

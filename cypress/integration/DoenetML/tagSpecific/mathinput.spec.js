@@ -905,10 +905,7 @@ describe('MathInput Tag Tests', function () {
 
   // TODO: add that can get back after reload
   it('mathinput references with invalid math expressions', () => {
-
-    cy.window().then(async (win) => {
-      win.postMessage({
-        doenetML: `
+    let doenetML = `
     <text>a</text>
     <mathinput name="mi1" />
     <copy target="mi1" assignNames="mi1a"  />
@@ -916,9 +913,18 @@ describe('MathInput Tag Tests', function () {
     <copy prop='immediatevalue' target="mi1" assignNames="iv1"  />
     <copy prop='value' target="mi1a" assignNames="v1a" />
     <copy prop='immediatevalue' target="mi1a" assignNames="iv1a"  />
-    `}, "*");
-    });
+    `;
 
+    cy.get('#testRunner_toggleControls').click();
+    cy.get('#testRunner_allowLocalPageState').click()
+    cy.wait(100)
+    cy.get('#testRunner_toggleControls').click();
+
+
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML }, "*");
+    });
 
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
 
@@ -954,7 +960,56 @@ describe('MathInput Tag Tests', function () {
 
 
     cy.log("Type x- in first mathinput");
-    cy.get('#\\/mi1 textarea').type(`x-`, { force: true });
+    cy.get('#\\/mi1 textarea').type(`x-`, { force: true }).blur();
+
+    cy.log('Test values displayed in browser')
+    cy.get(`#\\/mi1 .mq-editable-field`).should('contain.text', 'x−')
+    cy.get(`#\\/mi1a .mq-editable-field`).should('contain.text', 'x−')
+    cy.get(`#\\/mi1 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('x−')
+    })
+    cy.get(`#\\/mi1a .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('x−')
+    })
+
+    cy.get(`#\\/v1`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('＿')
+    });
+    cy.get(`#\\/iv1`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('＿')
+    });
+    cy.get(`#\\/v1a`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('＿')
+    });
+    cy.get(`#\\/iv1a`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('＿')
+    });
+
+    cy.log('Test internal values are set to the correct values')
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables();
+      expect(stateVariables['/mi1'].stateValues.immediateValue).eqls('＿');
+      expect(stateVariables['/mi1a'].stateValues.immediateValue).eqls('＿');
+      expect(stateVariables['/mi1'].stateValues.value).eqls('＿');
+      expect(stateVariables['/mi1a'].stateValues.value).eqls('＿');
+    });
+
+    cy.log('reload page')
+
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: "<text>b</text>" }, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'b');  // to wait until loaded
+    
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML }, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
 
     cy.log('Test values displayed in browser')
     cy.get(`#\\/mi1 .mq-editable-field`).should('contain.text', 'x−')
