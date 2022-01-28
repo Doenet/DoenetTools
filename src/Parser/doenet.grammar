@@ -100,7 +100,7 @@ doubleQuoteAttributeValue { "\"" (attributeContentDoubleQuote | EntityReference 
   @precedence {attributeContentSingleQuote, space}
   @precedence {attributeContentDoubleQuote, space}
 
-  @precedence {space, Text}
+  @precedence {Text, space}
 
 }
 @skip { space }
