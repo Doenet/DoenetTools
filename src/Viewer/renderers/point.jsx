@@ -11,7 +11,8 @@ export default function Point(props) {
   // console.log(`for point ${name}, SVs: `, SVs)
 
   const board = useContext(BoardContext);
-  const [pointJXG, setPointJXG] = useState({})
+
+  let pointJXG = useRef(null)
 
   let pointerAtDown = useRef(false);
   let pointAtDown = useRef(false);
@@ -37,12 +38,12 @@ export default function Point(props) {
     //On unmount
     return () => {
       // if point is defined
-      if (Object.keys(pointJXG).length !== 0) {
-        pointJXG.off('drag');
-        pointJXG.off('down');
-        pointJXG.off('up');
-        board.removeObject(pointJXG);
-        setPointJXG({})
+      if (pointJXG.current !== null) {
+        pointJXG.current.off('drag');
+        pointJXG.current.off('down');
+        pointJXG.current.off('up');
+        board.removeObject(pointJXG.current);
+        pointJXG.current = null;
       }
 
     }
@@ -207,14 +208,13 @@ export default function Point(props) {
 
 
   if (board) {
-    if (Object.keys(pointJXG).length === 0) {
-      setPointJXG(createPointJXG())
-
+    if (pointJXG.current === null) {
+      pointJXG.current = createPointJXG();
     } else {
       //if values update
       let newFillColor = SVs.open ? "white" : SVs.selectedStyle.markerColor;
-      if (pointJXG.visProp.fillcolor !== newFillColor) {
-        pointJXG.visProp.fillcolor = newFillColor;
+      if (pointJXG.current.visProp.fillcolor !== newFillColor) {
+        pointJXG.current.visProp.fillcolor = newFillColor;
       }
 
       //Note label update in jsxGraph maybe slow (so check previous value)
@@ -229,67 +229,67 @@ export default function Point(props) {
       let x = SVs.numericalXs?.[0];
       let y = SVs.numericalXs?.[1];
 
-      pointJXG.coords.setCoordinates(JXG.COORDS_BY_USER, [x, y]);
+      pointJXG.current.coords.setCoordinates(JXG.COORDS_BY_USER, [x, y]);
 
       let visible = !SVs.hidden;
 
       if (Number.isFinite(x) && Number.isFinite(y)) {
-        let actuallyChangedVisibility = pointJXG.visProp["visible"] !== visible;
-        pointJXG.visProp["visible"] = visible;
-        pointJXG.visPropCalc["visible"] = visible;
+        let actuallyChangedVisibility = pointJXG.current.visProp["visible"] !== visible;
+        pointJXG.current.visProp["visible"] = visible;
+        pointJXG.current.visPropCalc["visible"] = visible;
 
         if (actuallyChangedVisibility) {
           // this function is incredibly slow, so don't run it if not necessary
           // TODO: figure out how to make label disappear right away so don't need to run this function
-          pointJXG.setAttribute({ visible: visible })
+          pointJXG.current.setAttribute({ visible: visible })
         }
       } else {
-        pointJXG.visProp["visible"] = false;
-        pointJXG.visPropCalc["visible"] = false;
-        // pointJXG.setAttribute({visible: false})
+        pointJXG.current.visProp["visible"] = false;
+        pointJXG.current.visPropCalc["visible"] = false;
+        // pointJXG.current.setAttribute({visible: false})
       }
 
-      if (pointJXG.visProp.strokecolor !== SVs.selectedStyle.markerColor) {
-        pointJXG.visProp.strokecolor = SVs.selectedStyle.markerColor;
+      if (pointJXG.current.visProp.strokecolor !== SVs.selectedStyle.markerColor) {
+        pointJXG.current.visProp.strokecolor = SVs.selectedStyle.markerColor;
       }
 
       let newFace = normalizeStyle(SVs.selectedStyle.markerStyle);
-      if (pointJXG.visProp.face !== newFace) {
-        pointJXG.setAttribute({ face: newFace });
+      if (pointJXG.current.visProp.face !== newFace) {
+        pointJXG.current.setAttribute({ face: newFace });
       }
-      if (pointJXG.visProp.size !== SVs.selectedStyle.markerSize) {
-        pointJXG.visProp.size = SVs.selectedStyle.markerSize
+      if (pointJXG.current.visProp.size !== SVs.selectedStyle.markerSize) {
+        pointJXG.current.visProp.size = SVs.selectedStyle.markerSize
       }
 
       if (SVs.draggable && !SVs.fixed) {
-        pointJXG.visProp.highlightfillcolor = "#EEEEEE";
-        pointJXG.visProp.highlightstrokecolor = "#C3D9FF";
-        pointJXG.visProp.showinfobox = SVs.showCoordsWhenDragging;
-        pointJXG.visProp.fixed = false;
+        pointJXG.current.visProp.highlightfillcolor = "#EEEEEE";
+        pointJXG.current.visProp.highlightstrokecolor = "#C3D9FF";
+        pointJXG.current.visProp.showinfobox = SVs.showCoordsWhenDragging;
+        pointJXG.current.visProp.fixed = false;
       } else {
-        pointJXG.visProp.highlightfillcolor = newFillColor;
-        pointJXG.visProp.highlightstrokecolor = SVs.selectedStyle.markerColor;
-        pointJXG.visProp.showinfobox = false;
-        pointJXG.visProp.fixed = true;
+        pointJXG.current.visProp.highlightfillcolor = newFillColor;
+        pointJXG.current.visProp.highlightstrokecolor = SVs.selectedStyle.markerColor;
+        pointJXG.current.visProp.showinfobox = false;
+        pointJXG.current.visProp.fixed = true;
       }
 
       //Update only when the change was initiated with this point
       if (sourceOfUpdate.sourceInformation &&
         name in sourceOfUpdate.sourceInformation
       ) {
-        board.updateInfobox(pointJXG);
+        board.updateInfobox(pointJXG.current);
       }
 
-      pointJXG.name = SVs.label;
+      pointJXG.current.name = SVs.label;
 
       let withlabel = SVs.showLabel && SVs.label !== "";
       if (withlabel != previousWithLabel.current) {
-        pointJXG.setAttribute({ withlabel: withlabel });
+        pointJXG.current.setAttribute({ withlabel: withlabel });
         previousWithLabel.current = withlabel;
       }
 
-      if (pointJXG.hasLabel) {
-        pointJXG.label.needsUpdate = true;
+      if (pointJXG.current.hasLabel) {
+        pointJXG.current.label.needsUpdate = true;
 
         if (SVs.labelPosition !== previousLabelPosition.current) {
           let anchorx, anchory, offset;
@@ -327,19 +327,19 @@ export default function Point(props) {
             anchorx = "left";
             anchory = "middle";
           }
-          pointJXG.label.visProp.anchorx = anchorx;
-          pointJXG.label.visProp.anchory = anchory;
-          pointJXG.label.visProp.offset = offset;
+          pointJXG.current.label.visProp.anchorx = anchorx;
+          pointJXG.current.label.visProp.anchory = anchory;
+          pointJXG.current.label.visProp.offset = offset;
           previousLabelPosition.current = SVs.labelPosition;
-          pointJXG.label.fullUpdate();
+          pointJXG.current.label.fullUpdate();
         } else {
-          pointJXG.label.update();
+          pointJXG.current.label.update();
         }
       }
 
 
-      pointJXG.needsUpdate = true;
-      pointJXG.update();
+      pointJXG.current.needsUpdate = true;
+      pointJXG.current.update();
       board.updateRenderer();
     }
 
