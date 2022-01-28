@@ -1,22 +1,21 @@
 import React from 'react';
-import DoenetRenderer from './DoenetRenderer';
+import useDoenetRender from './useDoenetRenderer';
 
-export default class List extends DoenetRenderer {
+export default function List(props) {
+  let { name, SVs, children } = useDoenetRender(props);
 
-  render() {
-
-    if (this.doenetSvData.hidden) {
-      return null;
-    }
-
-    // TODO: incorporate label
-    if (this.doenetSvData.item) {
-      return <><a name={this.componentName} /><li id={this.componentName}>{this.children}</li></>;
-    } else if (this.doenetSvData.numbered) {
-      return <ol id={this.componentName}><a name={this.componentName} />{this.children}</ol>;
-    } else {
-      return <ul id={this.componentName}><a name={this.componentName} />{this.children}</ul>;
-    }
-
+  if (SVs.hidden) {
+    return null;
   }
+
+  // TODO: incorporate label
+  if (SVs.item) {
+    return <><a name={name} /><li id={name}>{children}</li></>;
+  } else if (SVs.numbered) {
+    return <ol id={name}><a name={name} />{children}</ol>;
+  } else {
+    return <ul id={name}><a name={name} />{children}</ul>;
+  }
+
 }
+
