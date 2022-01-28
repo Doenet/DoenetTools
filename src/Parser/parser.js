@@ -44,15 +44,17 @@ export function parseAndCompile(inText){
                 cursor.firstChild();
                 let attrName = inText.substring(cursor.from,cursor.to);
                 //skip the name and equals sign
-                cursor.nextSibling();
-                cursor.nextSibling();
-                //boundry fuddling to ignore the quotes
+                if(cursor.nextSibling() === false){
+                    attrs[attrName] = true;
+                } else {
+                    cursor.nextSibling();
+                    //boundry fuddling to ignore the quotes
+                    let attrValue = inText.substring(cursor.from+1,cursor.to-1);
 
-                let attrValue = inText.substring(cursor.from+1,cursor.to-1);
-
+                    attrs[attrName] = attrValue;
+                }
                 //move out of Attribute to maintain loop invariant
                 cursor.parent();
-                attrs[attrName] = attrValue;
             }
 
             //get back to the level of OpenTag in order to parse tag body
@@ -70,7 +72,7 @@ export function parseAndCompile(inText){
                 if(cursor.name === "Text"){
                     let txt = inText.substring(cursor.from,cursor.to).trimEnd();
                     if(txt !== ""){
-                        element.children.push({componentType: "string", state: {value: txt},  props: {}});
+                        element.children.push(txt)
                     }
                 } else if (cursor.name === "Element") {
                     element.children.push(compileElement(cursor.node.cursor))
@@ -79,7 +81,7 @@ export function parseAndCompile(inText){
                     break;
                 } else if (cursor.name === "Macro"){
                     //add the macro to the children, ignoring the dollar sign in the name.
-                    element.children.push({componentType: "string", state: {value: inText.substring(cursor.from,cursor.to)},  props: {}});
+                    element.children.push(inText.substring(cursor.from,cursor.to))
                     // element.children.push({componentType: "macro", macroName : inText.substring(cursor.from+1,cursor.to)});
                 } else if (cursor.name === "Comment") {
                     //ignore comments
@@ -107,13 +109,19 @@ export function parseAndCompile(inText){
                 //We scrape the content of both from the in string and add them to the attribute array here
                 cursor.firstChild();
                 let attrName = inText.substring(cursor.from,cursor.to);
-                cursor.nextSibling();
-                cursor.nextSibling();
-                //fuddling to ignore the quotes
-                let attrValue = inText.substring(cursor.from + 1,cursor.to - 1);
+                
+                console.log("113",showCursor(cursor))
+                if(cursor.nextSibling() === false){
+                    attrs[attrName] = true;
+                } else {
+                    cursor.nextSibling();
+                    //fuddling to ignore the quotes
+                    let attrValue = inText.substring(cursor.from + 1,cursor.to - 1);
 
+                    attrs[attrName] = attrValue;
+                }
+                //move out of Attribute to maintain loop invariant
                 cursor.parent();
-                attrs[attrName] = attrValue;
             }
 
             // console.log(">>>toReturn", {componentType :  tagName, props : attrs, children : []});
@@ -129,18 +137,20 @@ export function parseAndCompile(inText){
     }
     function compileTopLevel(tc){
         if(tc.node.name === "Element"){
-            out.push(compileElement(tc.node.cursor));
+            return compileElement(tc.node.cursor);
         } else if (tc.node.name === "Comment") {
             return null;
         } else if (tc.node.name === "Macro") {
-            return {componentType: "string", state: {value: inText.substring(tc.from,tc.to)},  props: {}};
+            return inText.substring(tc.from,tc.to)
         } else if(tc.node.name === "Text"){
             //TODO probably don't need to trim anymore?
             let txt = inText.substring(tc.node.from,tc.node.to).trimEnd();
             //why is it called state...
             if(txt !== ""){
-                out.push({componentType: "string", state: {value: txt}, props: {} });
+                return txt;
             }
+        } else {
+            return null;
         }
     }
     let tc = parse(inText);
@@ -148,11 +158,13 @@ export function parseAndCompile(inText){
     if(!tc.firstChild()){
         return out;
     }
+    // console.log("intext",inText)
+    // console.log("showCursor",showCursor(tc));
 
     out.push(compileTopLevel(tc));
     while(tc.nextSibling()){
         let next = compileTopLevel(tc);
-        if(next !== null){
+        if(next !== null || next !== undefined){
             out.push(next);
         }
     }
