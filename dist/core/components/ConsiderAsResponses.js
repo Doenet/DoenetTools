@@ -27,7 +27,7 @@ export default class ConsiderAsResponses extends BlockComponent {
         }
       }),
       definition: ({ dependencyValues }) => ({
-        newValues: { childrenWithNValues: dependencyValues.children }
+        setValue: { childrenWithNValues: dependencyValues.children }
       })
     }
 
@@ -41,7 +41,7 @@ export default class ConsiderAsResponses extends BlockComponent {
         }
       }),
       definition: ({ dependencyValues }) => ({
-        newValues: { childrenAsResponses: dependencyValues.children }
+        setValue: { childrenAsResponses: dependencyValues.children }
       })
     }
 

@@ -1206,10 +1206,10 @@ describe('SelectFromSequence Tag Tests', function () {
     // to wait for page to load
     cy.get('#\\/_p1').should('have.text', "Selectfromsequences and hide");
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      let c = components['/c'].stateValues.value;
-      let d = components['/d'].stateValues.value;
+      let c = await components['/c'].stateValues.value;
+      let d = await components['/d'].stateValues.value;
       expect(["a", "b", "c", "d", "e"].includes(c)).eq(true);
       expect(["a", "b", "c", "d", "e"].includes(d)).eq(true);
 
@@ -1691,10 +1691,10 @@ describe('SelectFromSequence Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      let c = components['/c'].stateValues.value;
-      let d = components['/d'].stateValues.value;
+      let c = await components['/c'].stateValues.value;
+      let d = await components['/d'].stateValues.value;
       expect(["a", "b", "c", "d", "e"].includes(c)).eq(true);
       expect(["a", "b", "c", "d", "e"].includes(d)).eq(true);
 

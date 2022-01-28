@@ -49,8 +49,8 @@ describe('Polygon Tag Tests', function () {
       let vertices = [];
       for (let i = 0; i < components['/_polygon1'].stateValues.nVertices; i++) {
         vertices.push([
-          components['/_polygon1'].stateValues.vertices[i][0],
-          components['/_polygon1'].stateValues.vertices[i][1]
+          (await components['/_polygon1'].stateValues.vertices)[i][0],
+          (await components['/_polygon1'].stateValues.vertices)[i][1]
         ])
       }
 
@@ -119,8 +119,8 @@ describe('Polygon Tag Tests', function () {
       let vertices = [];
       for (let i = 0; i < components['/_polygon1'].stateValues.nVertices; i++) {
         vertices.push([
-          components['/_polygon1'].stateValues.vertices[i][0],
-          components['/_polygon1'].stateValues.vertices[i][1]
+          (await components['/_polygon1'].stateValues.vertices)[i][0],
+          (await components['/_polygon1'].stateValues.vertices)[i][1]
         ])
       }
 
@@ -461,8 +461,8 @@ describe('Polygon Tag Tests', function () {
         let vertices = [];
         for (let i = 0; i < components['/_polygon1'].stateValues.nVertices; i++) {
           vertices.push([
-            components['/_polygon1'].stateValues.vertices[i][0],
-            components['/_polygon1'].stateValues.vertices[i][1]
+            (await components['/_polygon1'].stateValues.vertices)[i][0],
+            (await components['/_polygon1'].stateValues.vertices)[i][1]
           ])
         }
 
@@ -495,8 +495,8 @@ describe('Polygon Tag Tests', function () {
         let vertices = [];
         for (let i = 0; i < components['/_polygon1'].stateValues.nVertices; i++) {
           vertices.push([
-            components['/_polygon1'].stateValues.vertices[i][0],
-            components['/_polygon1'].stateValues.vertices[i][1]
+            (await components['/_polygon1'].stateValues.vertices)[i][0],
+            (await components['/_polygon1'].stateValues.vertices)[i][1]
           ])
         }
 
@@ -603,8 +603,8 @@ describe('Polygon Tag Tests', function () {
         let vertices = [];
         for (let i = 0; i < nVertices; i++) {
           vertices.push([
-            components['/_polygon1'].stateValues.vertices[i][0],
-            components['/_polygon1'].stateValues.vertices[i][1]
+            (await components['/_polygon1'].stateValues.vertices)[i][0],
+            (await components['/_polygon1'].stateValues.vertices)[i][1]
           ])
         }
 
@@ -639,8 +639,8 @@ describe('Polygon Tag Tests', function () {
         let vertices = [];
         for (let i = 0; i < nVertices; i++) {
           vertices.push([
-            components['/_polygon1'].stateValues.vertices[i][0],
-            components['/_polygon1'].stateValues.vertices[i][1]
+            (await components['/_polygon1'].stateValues.vertices)[i][0],
+            (await components['/_polygon1'].stateValues.vertices)[i][1]
           ])
         }
 
@@ -804,8 +804,8 @@ describe('Polygon Tag Tests', function () {
         let vertices = [];
         for (let i = 0; i < components['/_polygon1'].stateValues.nVertices; i++) {
           vertices.push([
-            components['/_polygon1'].stateValues.vertices[i][0],
-            components['/_polygon1'].stateValues.vertices[i][1]
+            (await components['/_polygon1'].stateValues.vertices)[i][0],
+            (await components['/_polygon1'].stateValues.vertices)[i][1]
           ])
         }
 
@@ -2090,8 +2090,8 @@ describe('Polygon Tag Tests', function () {
       let vertices = [];
       for (let i = 0; i < components['/_polygon1'].stateValues.nVertices; i++) {
         vertices.push([
-          components['/_polygon1'].stateValues.vertices[i][0],
-          components['/_polygon1'].stateValues.vertices[i][1]
+          (await components['/_polygon1'].stateValues.vertices)[i][0],
+          (await components['/_polygon1'].stateValues.vertices)[i][1]
         ])
       }
 
@@ -2322,8 +2322,8 @@ describe('Polygon Tag Tests', function () {
       let vertices = [];
       for (let i = 0; i < components['/_polygon1'].stateValues.nVertices; i++) {
         vertices.push([
-          components['/_polygon1'].stateValues.vertices[i][0],
-          components['/_polygon1'].stateValues.vertices[i][1]
+          (await components['/_polygon1'].stateValues.vertices)[i][0],
+          (await components['/_polygon1'].stateValues.vertices)[i][1]
         ])
       }
 
@@ -2397,7 +2397,7 @@ describe('Polygon Tag Tests', function () {
   <graph xmin="-110" xmax="110" ymin="-0.11" ymax="0.11">
     <polygon vertices="(-50,-0.02) (-40,0.07) (70,0.06) (10,-0.01)" name="p" />
     <point x="0" y="0.01" name="A">
-      <constraints>
+      <constraints baseOnGraph="_graph1">
         <constrainTo><copy target="p" /></constrainTo>
       </constraints>
     </point>
@@ -2466,7 +2466,7 @@ describe('Polygon Tag Tests', function () {
 
   })
 
-  it('constrain to polygon, different scales from graph', () => {
+  it('fixed polygon', () => {
     cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `

@@ -41,7 +41,7 @@ export default class EquilibriumPoint extends Point {
       }),
       definition({ dependencyValues }) {
         return {
-          newValues: { open: !dependencyValues.stable }
+          setValue: { open: !dependencyValues.stable }
         }
       },
       inverseDefinition({ desiredStateVariableValues }) {
@@ -60,9 +60,9 @@ export default class EquilibriumPoint extends Point {
 
   };
 
-  switchPoint() {
-    if (this.stateValues.switchable) {
-      return this.coreFunctions.performUpdate({
+  async switchPoint() {
+    if (await this.stateValues.switchable) {
+      return await this.coreFunctions.performUpdate({
         updateInstructions: [{
           updateType: "updateValue",
           componentName: this.componentName,

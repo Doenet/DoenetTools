@@ -177,12 +177,12 @@ describe('Graph Reference Test', function () {
 
         let moveUp = -3;
         let point1coords = [
-          components['/lineA'].stateValues.points[0][0],
-          components['/lineA'].stateValues.points[0][1],
+          (await components['/lineA'].stateValues.points)[0][0],
+          (await components['/lineA'].stateValues.points)[0][1],
         ];
         let point2coords = [
-          components['/lineA'].stateValues.points[1][0],
-          components['/lineA'].stateValues.points[1][1],
+          (await components['/lineA'].stateValues.points)[1][0],
+          (await components['/lineA'].stateValues.points)[1][1],
         ];
         point1coords[1] = point1coords[1].add(moveUp);
         point2coords[1] = point2coords[1].add(moveUp);

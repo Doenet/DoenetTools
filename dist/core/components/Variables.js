@@ -48,7 +48,7 @@ export default class Variables extends MathList {
           variables[arrayKey] = dependencyValuesByKey[arrayKey].math;
         }
         return {
-          newValues: { variables }
+          setValue: { variables }
         }
       }
     }
@@ -76,7 +76,7 @@ export default class Variables extends MathList {
 
         }
 
-        return { newValues: { validVariables } }
+        return { setValue: { validVariables } }
       }
 
     }

@@ -134,9 +134,9 @@ export default class Substitute extends CompositeComponent {
       }),
       definition({ dependencyValues }) {
         if (dependencyValues.child.length > 0) {
-          return { newValues: { originalValue: dependencyValues.child[0].stateValues.value } }
+          return { setValue: { originalValue: dependencyValues.child[0].stateValues.value } }
         } else {
-          return { newValues: { originalValue: null } }
+          return { setValue: { originalValue: null } }
         }
       },
       inverseDefinition({ desiredStateVariableValues, dependencyValues }) {
@@ -197,14 +197,14 @@ export default class Substitute extends CompositeComponent {
 
         if (dependencyValues.originalValue === null) {
           return {
-            newValues: { value: null },
+            setValue: { value: null },
           }
         }
 
         if (dependencyValues.match === null
           || dependencyValues.replacement === null
         ) {
-          return { newValues: { value: dependencyValues.originalValue } }
+          return { setValue: { value: dependencyValues.originalValue } }
         }
 
         if (dependencyValues.type === "text") {
@@ -236,7 +236,7 @@ export default class Substitute extends CompositeComponent {
             value = value.replace(re, replacement);
           }
           return {
-            newValues: { value },
+            setValue: { value },
           }
         } else {
           // math
@@ -253,7 +253,7 @@ export default class Substitute extends CompositeComponent {
           });
 
           return {
-            newValues: { value },
+            setValue: { value },
           }
 
         }
@@ -376,7 +376,7 @@ export default class Substitute extends CompositeComponent {
       // so that the variable is marked fresh
       markStale: () => ({ updateReplacements: true }),
       definition: function () {
-        return { newValues: { readyToExpandWhenResolved: true } };
+        return { setValue: { readyToExpandWhenResolved: true } };
       },
     };
 
@@ -387,7 +387,7 @@ export default class Substitute extends CompositeComponent {
 
 
 
-  static async createSerializedReplacements({ component, componentInfoObjects }) {
+  static async createSerializedReplacements({ component, componentInfoObjects, flags }) {
 
     let newNamespace = component.attributes.newNamespace && component.attributes.newNamespace.primitive;
 
@@ -423,7 +423,8 @@ export default class Substitute extends CompositeComponent {
           attributes,
           componentType: "math",
           componentInfoObjects,
-          compositeCreatesNewNamespace: newNamespace
+          compositeCreatesNewNamespace: newNamespace,
+          flags
         })
 
 

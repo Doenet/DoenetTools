@@ -309,7 +309,7 @@ function nearestValue(refval, points, SVs) {
 }
 
 export default function Slider(props) {
-  let [name, SVs, actions] = useDoenetRender(props);
+  let {name, SVs, actions} = useDoenetRender(props);
   // console.log("name: ", name, " value: ", SVs.value, " index: ", SVs.index);
   // console.log(SVs)
 

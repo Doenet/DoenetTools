@@ -12,7 +12,7 @@ import { selectedMenuPanelAtom } from '../Panels/NewMenuPanel';
 import { drivecardSelectedNodesAtom } from '../ToolHandlers/CourseToolHandler';
 import { pageToolViewAtom } from '../NewToolRoot';
 import DriveCard from '../../../_reactComponents/Drive/DoenetDriveCard';
-import { fetchDrivesQuery } from '../../../_reactComponents/Drive/NewDrive';
+import { clearDriveAndItemSelections, fetchDrivesQuery } from '../../../_reactComponents/Drive/NewDrive';
 import { mainPanelClickAtom } from '../Panels/NewMainPanel';
 import useMedia from './useMedia';
 import './driveCardsStyle.css';
@@ -33,7 +33,10 @@ export default function DriveCardsNew(props) {
   useEffect(() => {
     setMainPanelClear((was) => [
       ...was,
-      { atom: selectedMenuPanelAtom, value: null },
+      { atom: selectedMenuPanelAtom, value: null }, // Anyone know what this is?
+      // Deselect the selected card when onBlur in the main panel
+      // Remain selected when onBlur in the side panel
+      { atom: drivecardSelectedNodesAtom, value: [] },
     ]);
     return setMainPanelClear((was) => [
       ...was,
@@ -84,14 +87,14 @@ const DriveCardWrapper = (props) => {
     let heights = new Array(columns).fill(0); // Each column gets a height starting with zero
     let driveCardItems = showCards.map((child, i) => {
       const column = heights.indexOf(Math.min(...heights)); // Basic masonry-grid placing, puts tile into the smallest column using Math.min
-      const x = (width / columns) * column; // x = container width / number of columns * column index,
+      const x = (width / columns) * column + 20; // x = container width / number of columns * column index,
       const y = (heights[column] += 270) - 270; // y = it's just the height of the current column
       return {
         ...child,
         x,
         y,
-        width: width / columns,
-        height: 250,
+        width: width / columns - 40,
+        height: 230,
         drivePathSyncKey,
       };
     });
@@ -102,8 +105,8 @@ const DriveCardWrapper = (props) => {
 
   const transitions = useTransition(driveCardItems, {
     key: (item) => item.driveId,
-    from: ({ x, y, width, height }) => ({ x, y, width, height, opacity: 0 }),
-    enter: ({ x, y, width, height }) => ({ x, y, width, height, opacity: 1 }),
+    from: ({ opacity: 0}),
+    enter: ({ opacity: 1 }),
     update: ({ x, y, width, height }) => ({ x, y, width, height }),
     leave: { height: 0, opacity: 0 },
     config: { mass: 5, tension: 500, friction: 100 },
@@ -124,6 +127,11 @@ const DriveCardWrapper = (props) => {
       });
     }
   };
+
+  
+    const handleOnBlur = () => {
+
+    };
 
   const handleKeyUp = (e, item) => {
     if (e.key === 'Tab') {
@@ -226,7 +234,7 @@ const DriveCardWrapper = (props) => {
   };
 
   return (
-    <div className="drivecardContainer">
+    <div className="drivecardContainer" id="test">
       <div
         ref={ref}
         className="driveCardList"
@@ -236,16 +244,17 @@ const DriveCardWrapper = (props) => {
           console.log('');
           let isSelected = getSelectedCard(item);
           return (
-            <a.div style={style}>
+            <a.div style={style} >
               <div
                 role="button"
-                style={{ height: '100%', outline: 'none', padding: '10px' }}
+                style={{ height: '100%', outline: 'none' }}
                 tabIndex={index + 1}
                 onClick={(e) => {
                   e.preventDefault();
                   e.stopPropagation();
                   drivecardselection(e, item, props);
                 }}
+                onBlur={() => handleOnBlur()}
                 onKeyDown={(e) => handleKeyDown(e, item)}
                 onKeyUp={(e) => handleKeyUp(e, item)}
                 onDoubleClick={(e) => {
@@ -260,8 +269,8 @@ const DriveCardWrapper = (props) => {
                       path: `${item.driveId}:${item.driveId}:${item.driveId}:Drive`,
                     },
                   });
-                }}
-              >
+                }}>
+          
                 <DriveCard
                   image={item.image}
                   color={item.color}

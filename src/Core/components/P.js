@@ -43,7 +43,7 @@ export default class P extends BlockComponent {
           }
         }
 
-        return { newValues: { text } };
+        return { setValue: { text } };
       }
     }
 

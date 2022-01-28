@@ -18,10 +18,6 @@ export default class Select extends CompositeComponent {
   static includeBlankStringChildren = true;
   static removeBlankStringChildrenPostSugar = true;
 
-  // used when referencing this component without prop
-  static useChildrenForReference = false;
-  static get stateVariablesShadowedForReference() { return ["selectedIndices"] };
-
   static createAttributesObject(args) {
     let attributes = super.createAttributesObject(args);
     attributes.assignNamesSkip = {
@@ -142,7 +138,7 @@ export default class Select extends CompositeComponent {
         },
       }),
       definition: function ({ dependencyValues }) {
-        return { newValues: { variants: dependencyValues.variants } };
+        return { setValue: { variants: dependencyValues.variants } };
       },
     };
 
@@ -154,7 +150,7 @@ export default class Select extends CompositeComponent {
         }
       }),
       definition: ({ dependencyValues }) => ({
-        newValues: { currentVariantName: dependencyValues.variantName }
+        setValue: { currentVariantName: dependencyValues.variantName }
       })
     }
 
@@ -166,7 +162,7 @@ export default class Select extends CompositeComponent {
         }
       }),
       definition: ({ dependencyValues }) => ({
-        newValues: { allPossibleVariants: dependencyValues.allPossibleVariants }
+        setValue: { allPossibleVariants: dependencyValues.allPossibleVariants }
       })
     }
 
@@ -181,7 +177,7 @@ export default class Select extends CompositeComponent {
       }),
       definition({ dependencyValues }) {
         return {
-          newValues: {
+          setValue: {
             optionChildren: dependencyValues.optionChildren,
             nOptions: dependencyValues.optionChildren.length
           }
@@ -242,7 +238,7 @@ export default class Select extends CompositeComponent {
         }
 
         return {
-          newValues: { availableVariants }
+          setValue: { availableVariants }
         }
       }
     }
@@ -250,11 +246,9 @@ export default class Select extends CompositeComponent {
 
     stateVariableDefinitions.selectedIndices = {
       immutable: true,
+      hasEssential: true,
+      shadowVariable: true,
       returnDependencies: ({ sharedParameters }) => ({
-        // essentialSelectedIndices: {
-        //   dependencyType: "potentialEssentialVariable",
-        //   variableName: "selectedIndex",
-        // },
         numberToSelect: {
           dependencyType: "stateVariable",
           variableName: "numberToSelect",
@@ -296,10 +290,8 @@ export default class Select extends CompositeComponent {
 
         if (!(dependencyValues.numberToSelect >= 1) || dependencyValues.nOptions === 0) {
           return {
-            makeEssential: { selectedIndices: true },
-            newValues: {
-              selectedIndices: [],
-            },
+            setEssentialValue: { selectedIndices: [] },
+            setValue: { selectedIndices: [] },
           }
         }
 
@@ -318,10 +310,8 @@ export default class Select extends CompositeComponent {
             desiredIndices = desiredIndices.map(x => ((((x - 1) % n) + n) % n) + 1);
 
             return {
-              makeEssential: { selectedIndices: true },
-              newValues: {
-                selectedIndices: desiredIndices,
-              },
+              setEssentialValue: { selectedIndices: desiredIndices },
+              setValue: { selectedIndices: desiredIndices },
             }
           }
         }
@@ -345,10 +335,8 @@ export default class Select extends CompositeComponent {
             }
           }
           return {
-            makeEssential: { selectedIndices: true },
-            newValues: {
-              selectedIndices: variantOptions,
-            },
+            setEssentialValue: { selectedIndices: variantOptions },
+            setValue: { selectedIndices: variantOptions },
           }
 
         }
@@ -408,17 +396,15 @@ export default class Select extends CompositeComponent {
 
 
         return {
-          makeEssential: { selectedIndices: true },
-          newValues: {
-            selectedIndices,
-          },
+          setEssentialValue: { selectedIndices },
+          setValue: { selectedIndices },
         }
       }
     }
 
     stateVariableDefinitions.isVariantComponent = {
       returnDependencies: () => ({}),
-      definition: () => ({ newValues: { isVariantComponent: true } })
+      definition: () => ({ setValue: { isVariantComponent: true } })
     }
 
     stateVariableDefinitions.generatedVariantInfo = {
@@ -470,7 +456,7 @@ export default class Select extends CompositeComponent {
           }
         }
 
-        return { newValues: { generatedVariantInfo } }
+        return { setValue: { generatedVariantInfo } }
 
       }
     }
@@ -485,7 +471,7 @@ export default class Select extends CompositeComponent {
       }),
       definition() {
         return {
-          newValues: { readyToExpandWhenResolved: true }
+          setValue: { readyToExpandWhenResolved: true }
         }
       }
     }

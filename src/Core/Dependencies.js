@@ -87,7 +87,7 @@ export class DependencyHandler {
     let stateVarObj = component.state[stateVariable];
     let dependencies;
 
-    if (stateVarObj.stateVariablesDeterminingDependencies || stateVarObj.determineIfShadowData) {
+    if (stateVarObj.stateVariablesDeterminingDependencies) {
       dependencies = {};
 
       if (stateVarObj.stateVariablesDeterminingDependencies) {
@@ -95,23 +95,6 @@ export class DependencyHandler {
           dependencyType: "determineDependencies",
           variableNames: stateVarObj.stateVariablesDeterminingDependencies,
         }
-      }
-      if (stateVarObj.determineIfShadowData) {
-        dependencies.__determine_dependencies_shadow_data = {
-          dependencyType: "determineDependencies",
-          componentName: stateVarObj.determineIfShadowData.targetComponent.componentName,
-          variableNames: allStateVariablesAffected,
-        }
-        if (stateVarObj.determineIfShadowData.arraySizeStateVariableToResolve) {
-          // add array size state variable
-          // just there to make sure it is resolved to determine
-          // if should shadow
-          dependencies.__determine_dependencies_shadow_data_array_size = {
-            dependencyType: "determineDependencies",
-            variableNames: [stateVarObj.determineIfShadowData.arraySizeStateVariableToResolve],
-          }
-        }
-
       }
     } else {
       // Note: arrays now always have a state variable determining dependencies
@@ -590,149 +573,6 @@ export class DependencyHandler {
     let allStateVariablesAffected = [stateVariable];
     if (stateVarObj.additionalStateVariablesDefined) {
       allStateVariablesAffected.push(...stateVarObj.additionalStateVariablesDefined)
-    }
-
-    // first check if we should shadow state variable
-    if (stateVarObj.determineIfShadowData) {
-
-      if (stateVarObj.isArrayEntry) {
-        // addressing determineIfShadowData must be done at the array level,
-        // not the array entry level
-        let arrayStateVariable = stateVarObj.arrayStateVariable;
-        let arrayStateVarObj = component.state[arrayStateVariable]
-
-        if (arrayStateVarObj.determineIfShadowData) {
-          let result = await this.updateDependencies({
-            componentName,
-            stateVariable: arrayStateVariable,
-            dependency: "__determine_dependencies_shadow_data"
-          });
-          if (!result.success) {
-            return { success: false };
-          }
-        }
-
-        delete stateVarObj.determineIfShadowData;
-
-        // TODO: if array entry is shadowed,
-        // do we need to delete a __determine_dependencies dependency
-        // if it exists?
-
-        // try again
-        return await this.updateDependencies({
-          componentName,
-          stateVariable,
-          dependency
-        });
-      }
-
-      let determineIfShadowData = stateVarObj.determineIfShadowData;
-      delete stateVarObj.determineIfShadowData;
-
-      let stateVariablesToShadow = [];
-      let stateVariablesNotShadowed = [];
-
-      let determinedAllShadows = true;
-
-      for (let varName of allStateVariablesAffected) {
-        let stateObj = determineIfShadowData.targetComponent.state[varName];
-        let resolved = stateObj.isResolved;
-
-        if (!resolved) {
-          let result = await this.resolveItem({
-            componentName: determineIfShadowData.targetComponent.componentName,
-            type: "stateVariable",
-            stateVariable: varName,
-          });
-
-          resolved = result.success;
-        }
-
-
-        if (resolved) {
-          // since varName of targetComponent is now resolved
-          // can evaluate it and then determine if it is essential
-
-          await stateObj.value;
-
-          if (stateObj.essential || stateObj.alwaysShadow || stateObj.isShadow
-            || (stateObj.isArray
-              && stateObj.getAllArrayKeys(await stateObj.arraySize).length > 0
-              && stateObj.getAllArrayKeys(await stateObj.arraySize).some(x => stateObj.essentialByArrayKey[x])
-            )
-          ) {
-            stateVariablesToShadow.push(varName);
-          } else {
-            stateVariablesNotShadowed.push(varName)
-          }
-
-        } else {
-
-          determinedAllShadows = false;
-
-          for (let vName2 of allStateVariablesAffected) {
-            await this.addBlocker({
-              blockerComponentName: determineIfShadowData.targetComponent.componentName,
-              blockerType: "stateVariable",
-              blockerStateVariable: varName,
-              componentNameBlocked: componentName,
-              typeBlocked: "determineDependencies",
-              stateVariableBlocked: vName2,
-              dependencyBlocked: dependency,
-            })
-          }
-        }
-
-      }
-
-      if (!determinedAllShadows) {
-        return { success: false }
-      }
-
-      let updatedAllDependencies = true;
-
-      if (stateVariablesToShadow.length > 0) {
-        this.core.modifyStateDefsToBeShadows({
-          stateVariablesToShadow,
-          stateVariableDefinitions: component.state,
-          foundReadyToExpandWhenResolved: determineIfShadowData.foundReadyToExpandWhenResolved,
-          targetComponent: determineIfShadowData.targetComponent
-        });
-
-        // call update dependencies separately for each shadowed variable
-        // (they were removed from additionalStateVariablesDefined
-        // and now have separate definitions)
-        for (let varName of stateVariablesToShadow) {
-          let result = await this.updateDependencies({
-            componentName,
-            stateVariable: varName,
-            dependency
-          });
-
-          if (!result.success) {
-            updatedAllDependencies = false;
-          }
-        }
-
-      }
-
-
-      // call update dependencies for one representative non-shadowed variable
-      // (as they are still all defined together)
-      if (stateVariablesNotShadowed.length > 0) {
-        let result = await this.updateDependencies({
-          componentName,
-          stateVariable: stateVariablesNotShadowed[0],
-          dependency
-        });
-
-        if (!result.success) {
-          updatedAllDependencies = false;
-        }
-      }
-
-      return { success: updatedAllDependencies };
-
     }
 
     let determineDeps = this.downstreamDependencies[componentName][stateVariable].__determine_dependencies;
@@ -2494,7 +2334,8 @@ export class DependencyHandler {
   }
 
   get components() {
-    return new Proxy(this._components, readOnlyProxyHandler);
+    return this._components;
+    // return new Proxy(this._components, readOnlyProxyHandler);
   }
 
   set components(value) {
@@ -2697,8 +2538,18 @@ class Dependency {
               .sort((a, b) => b.length - a.length);
             for (let arrayEntryPrefix of arrayEntryPrefixesLongestToShortest) {
               if (vName.substring(0, arrayEntryPrefix.length) === arrayEntryPrefix) {
-                let arrayVarName = downComponent.arrayEntryPrefixes[arrayEntryPrefix];
-                return downComponent.state[arrayVarName].arraySizeStateVariable
+
+                let arrayVariableName = downComponent.arrayEntryPrefixes[arrayEntryPrefix];
+                let arrayStateVarObj = downComponent.state[arrayVariableName];
+                let arrayKeys = arrayStateVarObj.getArrayKeysFromVarName({
+                  arrayEntryPrefix,
+                  varEnding: vName.substring(arrayEntryPrefix.length),
+                  nDimensions: arrayStateVarObj.nDimensions,
+                });
+
+                if (arrayKeys.length > 0) {
+                  return downComponent.state[arrayVariableName].arraySizeStateVariable
+                }
               }
             }
           }
@@ -3045,8 +2896,9 @@ class Dependency {
             let nameForOutput = this.useMappedVariableNames ? mappedVarName : originalVarName;
 
             if (!this.variablesOptional || mappedVarName in depComponent.state) {
-              if (!depComponent.state[mappedVarName].deferred) {
-                componentObj.stateValues[nameForOutput] = await depComponent.state[mappedVarName].value;
+              let mappedStateVarObj = depComponent.state[mappedVarName];
+              if (!mappedStateVarObj.deferred) {
+                componentObj.stateValues[nameForOutput] = await mappedStateVarObj.value;
                 if (this.valuesChanged[componentInd][mappedVarName].changed) {
                   if (!changes.valuesChanged) {
                     changes.valuesChanged = {};
@@ -3058,9 +2910,18 @@ class Dependency {
                 }
                 this.valuesChanged[componentInd][mappedVarName] = {};
 
-                if (depComponent.state[mappedVarName].usedDefault) {
+                if (mappedStateVarObj.usedDefault) {
                   usedDefaultObj[nameForOutput] = true;
                   foundOneUsedDefault = true;
+                } else if (mappedStateVarObj.isArrayEntry && mappedStateVarObj.arrayKeys.length === 1) {
+                  // if have an array entry with just one arrayKey,
+                  // check if used default for that arrayKey
+                  let arrayStateVarObj = depComponent.state[mappedStateVarObj.arrayStateVariable];
+                  if (arrayStateVarObj.usedDefaultByArrayKey[mappedStateVarObj.arrayKeys[0]]) {
+                    usedDefaultObj[nameForOutput] = true;
+                    foundOneUsedDefault = true;
+                  }
+
                 }
 
               }
@@ -3134,11 +2995,11 @@ class Dependency {
       }
     }
 
-    if (!this.doNotProxy && !skipProxy &&
-      value !== null && typeof value === 'object'
-    ) {
-      value = new Proxy(value, readOnlyProxyHandler)
-    }
+    // if (!this.doNotProxy && !skipProxy &&
+    //   value !== null && typeof value === 'object'
+    // ) {
+    //   value = new Proxy(value, readOnlyProxyHandler)
+    // }
 
     return { value, changes, usedDefault }
   }
@@ -3533,9 +3394,9 @@ class StateVariableComponentTypeDependency extends StateVariableDependency {
       }
     }
 
-    if (!this.doNotProxy && value !== null && typeof value === 'object') {
-      value = new Proxy(value, readOnlyProxyHandler)
-    }
+    // if (!this.doNotProxy && value !== null && typeof value === 'object') {
+    //   value = new Proxy(value, readOnlyProxyHandler)
+    // }
 
 
     return { value, changes, usedDefault: false }
@@ -3577,6 +3438,7 @@ class RecursiveDependencyValuesDependency extends Dependency {
 
     this.includeImmediateValueWithValue = this.definition.includeImmediateValueWithValue;
     this.includeRawValueWithImmediateValue = this.definition.includeRawValueWithImmediateValue;
+    this.includeOnlyEssentialValues = this.definition.includeOnlyEssentialValues;
 
     this.variablesOptional = true;
 
@@ -3609,9 +3471,30 @@ class RecursiveDependencyValuesDependency extends Dependency {
     let downstreamComponentTypes = [];
 
     for (let componentName in result.components) {
-      downstreamComponentNames.push(componentName)
-      downstreamComponentTypes.push(result.components[componentName].componentType);
-      this.originalDownstreamVariableNamesByComponent.push(result.components[componentName].variableNames)
+
+      if (this.includeOnlyEssentialValues) {
+
+        let essentialVarNames = [];
+        let component = this.dependencyHandler._components[componentName];
+        for (let vName of result.components[componentName].variableNames) {
+          if (component.state[vName]?.hasEssential) {
+            essentialVarNames.push(vName)
+          } else if(component.state[vName]?.isArrayEntry) {
+            if(component.state[component.state[vName].arrayStateVariable].hasEssential) {
+              essentialVarNames.push(vName);
+            }
+          }
+        }
+        if(essentialVarNames.length > 0) {
+          downstreamComponentNames.push(componentName)
+          downstreamComponentTypes.push(result.components[componentName].componentType);
+          this.originalDownstreamVariableNamesByComponent.push(essentialVarNames);
+        }
+      } else {
+        downstreamComponentNames.push(componentName)
+        downstreamComponentTypes.push(result.components[componentName].componentType);
+        this.originalDownstreamVariableNamesByComponent.push(result.components[componentName].variableNames)
+      }
     }
 
     return {
@@ -3967,6 +3850,11 @@ class AttributeComponentDependency extends Dependency {
 
     this.attributeName = this.definition.attributeName;
 
+    this.fallBackToAttributeFromShadow = true;
+    if (this.definition.fallBackToAttributeFromShadow !== undefined) {
+      this.fallBackToAttributeFromShadow = this.definition.fallBackToAttributeFromShadow;
+    }
+
     this.returnSingleComponent = true;
 
   }
@@ -4012,22 +3900,58 @@ class AttributeComponentDependency extends Dependency {
       }
     }
 
-
     let attribute = parent.attributes[this.attributeName];
 
-    if (attribute && attribute.component) {
+    if (attribute?.component) {
       // have an attribute that is a component
       return {
         success: true,
         downstreamComponentNames: [attribute.component.componentName],
         downstreamComponentTypes: [attribute.component.componentType],
       }
-    } else {
-      return {
-        success: true,
-        downstreamComponentNames: [],
-        downstreamComponentTypes: []
+    }
+
+    if (this.fallBackToAttributeFromShadow) {
+      // if don't have an attribute component, i
+      // check if shadows a component with that attribute component
+
+      let comp = parent;
+
+      while (comp.shadows) {
+
+        let propVariable = comp.shadows.propVariable;
+
+        comp = this.dependencyHandler._components[comp.shadows.componentName];
+        if (!comp) {
+          break;
+        }
+
+        if (propVariable) {
+          if (!(
+            comp.state[propVariable]?.additionalAttributeComponentsToShadow
+            && comp.state[propVariable].additionalAttributeComponentsToShadow.includes(this.attributeName)
+          )) {
+            break;
+          }
+        }
+
+        attribute = comp.attributes[this.attributeName];
+
+        if (attribute?.component) {
+          return {
+            success: true,
+            downstreamComponentNames: [attribute.component.componentName],
+            downstreamComponentTypes: [attribute.component.componentType],
+          }
+        }
       }
+
+    }
+
+    return {
+      success: true,
+      downstreamComponentNames: [],
+      downstreamComponentTypes: [],
     }
 
   }
@@ -4081,6 +4005,8 @@ class ChildDependency extends Dependency {
 
     this.skipComponentNames = this.definition.skipComponentNames;
     this.skipPlaceholders = this.definition.skipPlaceholders;
+
+    this.proceedIfAllChildrenNotMatched = this.definition.proceedIfAllChildrenNotMatched;
 
   }
 
@@ -4157,7 +4083,9 @@ class ChildDependency extends Dependency {
         .filter((x, i) => this.childIndices.includes(i));
     }
 
-    if (!parent.childrenMatched) {
+
+
+    if (!parent.childrenMatched && !this.proceedIfAllChildrenNotMatched) {
 
       let canProceedWithPlaceholders = false;
 
@@ -4398,12 +4326,12 @@ class ChildDependency extends Dependency {
     let resultValueWithPrimitives = [];
     let resultInd = 0;
 
-    for (let nameOrPrimitive of this.downstreamPrimitives) {
-      if (nameOrPrimitive === null) {
+    for (let primitiveOrNull of this.downstreamPrimitives) {
+      if (primitiveOrNull === null) {
         resultValueWithPrimitives.push(result.value[resultInd]);
         resultInd++;
       } else {
-        resultValueWithPrimitives.push(nameOrPrimitive)
+        resultValueWithPrimitives.push(primitiveOrNull)
       }
     }
 
@@ -4415,11 +4343,12 @@ class ChildDependency extends Dependency {
       this.downstreamPrimitives.some((v, i) => v !== this.previousDownstreamPrimitives[i])
     ) {
       result.changes.componentIdentitiesChanged = true;
+      this.previousDownstreamPrimitives = [...this.downstreamPrimitives];
     }
 
-    if (!this.doNotProxy) {
-      result.value = new Proxy(result.value, readOnlyProxyHandler)
-    }
+    // if (!this.doNotProxy) {
+    //   result.value = new Proxy(result.value, readOnlyProxyHandler)
+    // }
 
     return result;
 
@@ -5667,12 +5596,12 @@ class ReplacementDependency extends Dependency {
     let resultValueWithPrimitives = [];
     let resultInd = 0;
 
-    for (let nameOrPrimitive of this.replacementPrimitives) {
-      if (nameOrPrimitive === null) {
+    for (let primitiveOrNull of this.replacementPrimitives) {
+      if (primitiveOrNull === null) {
         resultValueWithPrimitives.push(result.value[resultInd]);
         resultInd++;
       } else {
-        resultValueWithPrimitives.push(nameOrPrimitive)
+        resultValueWithPrimitives.push(primitiveOrNull)
       }
     }
 
@@ -5682,11 +5611,12 @@ class ReplacementDependency extends Dependency {
       this.replacementPrimitives.some((v, i) => v !== this.previousReplacementPrimitives[i])
     ) {
       result.changes.componentIdentitiesChanged = true;
+      this.previousReplacementPrimitives = [...this.replacementPrimitives];
     }
 
-    if (!this.doNotProxy) {
-      result.value = new Proxy(result.value, readOnlyProxyHandler)
-    }
+    // if (!this.doNotProxy) {
+    //   result.value = new Proxy(result.value, readOnlyProxyHandler)
+    // }
 
     return result;
 
@@ -6529,9 +6459,9 @@ class DoenetAttributeDependency extends StateVariableDependency {
 
     }
 
-    if (!this.doNotProxy && value !== null && typeof value === 'object') {
-      value = new Proxy(value, readOnlyProxyHandler)
-    }
+    // if (!this.doNotProxy && value !== null && typeof value === 'object') {
+    //   value = new Proxy(value, readOnlyProxyHandler)
+    // }
 
     return { value, changes }
   }
@@ -6579,9 +6509,9 @@ class AttributePrimitiveDependency extends StateVariableDependency {
 
     }
 
-    if (!this.doNotProxy && value !== null && typeof value === 'object') {
-      value = new Proxy(value, readOnlyProxyHandler)
-    }
+    // if (!this.doNotProxy && value !== null && typeof value === 'object') {
+    //   value = new Proxy(value, readOnlyProxyHandler)
+    // }
 
     return { value, changes }
   }

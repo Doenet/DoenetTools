@@ -1,21 +1,15 @@
 import Input from './abstract/Input';
 import me from 'math-expressions';
-import { getFromText, getFromLatex, roundForDisplay, } from '../utils/math';
+import { getFromText, getFromLatex, roundForDisplay, stripLatex, normalizeLatexString, } from '../utils/math';
+import { deepCompare } from '../utils/deepFunctions';
 
 export default class MathInput extends Input {
   constructor(args) {
     super(args);
 
     this.actions = {
-      updateImmediateValue: this.updateImmediateValue.bind(
-        new Proxy(this, this.readOnlyProxyHandler)
-      ),
-      updateRawValue: this.updateRawValue.bind(
-        new Proxy(this, this.readOnlyProxyHandler)
-      ),
-      updateValue: this.updateValue.bind(
-        new Proxy(this, this.readOnlyProxyHandler)
-      )
+      updateRawValue: this.updateRawValue.bind(this),
+      updateValue: this.updateValue.bind(this)
     };
 
     this.externalActions = {};
@@ -41,10 +35,6 @@ export default class MathInput extends Input {
 
   static variableForPlainMacro = "value";
 
-  static get stateVariablesShadowedForReference() {
-    return ["value"]
-  };
-
   static createAttributesObject(args) {
     let attributes = super.createAttributesObject(args);
     attributes.prefill = {
@@ -60,25 +50,16 @@ export default class MathInput extends Input {
       defaultValue: "text",
       public: true,
     };
-    attributes.size = {
-      createComponentOfType: "number",
-      createStateVariable: "size",
-      defaultValue: 10,
-      forRenderer: true,
-      public: true,
-    };
     attributes.functionSymbols = {
       createComponentOfType: "textList",
       createStateVariable: "functionSymbols",
       defaultValue: ["f", "g"],
-      forRenderer: true,
       public: true,
     };
     attributes.splitSymbols = {
       createComponentOfType: "boolean",
       createStateVariable: "splitSymbols",
       defaultValue: true,
-      forRenderer: true,
       public: true,
     };
     attributes.displayDigits = {
@@ -109,7 +90,6 @@ export default class MathInput extends Input {
       createStateVariable: "unionFromU",
       defaultValue: false,
       public: true,
-      forRenderer: true,
     }
 
     return attributes;
@@ -123,7 +103,8 @@ export default class MathInput extends Input {
     stateVariableDefinitions.value = {
       public: true,
       componentType: "math",
-      forRenderer: true,
+      hasEssential: true,
+      shadowVariable: true,
       stateVariablesPrescribingAdditionalAttributes: {
         displayDigits: "displayDigits",
         displayDecimals: "displayDecimals",
@@ -145,14 +126,13 @@ export default class MathInput extends Input {
           return {
             useEssentialOrDefaultValue: {
               value: {
-                variablesToCheck: "value",
                 defaultValue: dependencyValues.prefill
               }
             }
           }
         }
 
-        return { newValues: { value: dependencyValues.bindValueTo.stateValues.value } };
+        return { setValue: { value: dependencyValues.bindValueTo.stateValues.value } };
       },
       inverseDefinition: function ({ desiredStateVariableValues, dependencyValues }) {
 
@@ -173,7 +153,7 @@ export default class MathInput extends Input {
         return {
           success: true,
           instructions: [{
-            setStateVariable: "value",
+            setEssentialValue: "value",
             value: desiredStateVariableValues.value
           }]
         };
@@ -183,7 +163,8 @@ export default class MathInput extends Input {
     stateVariableDefinitions.immediateValue = {
       public: true,
       componentType: "math",
-      forRenderer: true,
+      hasEssential: true,
+      shadowVariable: true,
       stateVariablesPrescribingAdditionalAttributes: {
         displayDigits: "displayDigits",
         displayDecimals: "displayDecimals",
@@ -205,8 +186,8 @@ export default class MathInput extends Input {
           // only update to value when it changes
           // (otherwise, let its essential value change)
           return {
-            newValues: { immediateValue: dependencyValues.value },
-            makeEssential: { immediateValue: true }
+            setValue: { immediateValue: dependencyValues.value },
+            setEssentialValue: { immediateValue: dependencyValues.value },
           };
 
 
@@ -214,7 +195,6 @@ export default class MathInput extends Input {
           return {
             useEssentialOrDefaultValue: {
               immediateValue: {
-                variablesToCheck: "immediateValue",
                 defaultValue: dependencyValues.value
               }
             }
@@ -226,7 +206,7 @@ export default class MathInput extends Input {
 
         // value is essential; give it the desired value
         let instructions = [{
-          setStateVariable: "immediateValue",
+          setEssentialValue: "immediateValue",
           value: desiredStateVariableValues.immediateValue
         }]
 
@@ -275,7 +255,7 @@ export default class MathInput extends Input {
         });
 
         return {
-          newValues: { valueForDisplay: rounded }
+          setValue: { valueForDisplay: rounded }
         }
       }
     }
@@ -291,35 +271,173 @@ export default class MathInput extends Input {
         }
       }),
       definition: function ({ dependencyValues }) {
-        return { newValues: { text: dependencyValues.valueForDisplay.toString() } }
+        return { setValue: { text: dependencyValues.valueForDisplay.toString() } }
       }
     }
 
 
     // raw value from renderer
     stateVariableDefinitions.rawRendererValue = {
-      defaultValue: null,
       forRenderer: true,
-      returnDependencies: () => ({}),
-      definition: () => ({
-        useEssentialOrDefaultValue: {
-          rawRendererValue: { variablesToCheck: ["rawRendererValue"] }
-        }
+      hasEssential: true,
+      shadowVariable: true,
+      defaultValue: "",
+      provideEssentialValuesInDefinition: true,
+      public: true,
+      componentType: "text",
+      additionalStateVariablesDefined: [{
+        variableName: "lastValueForDisplay",
+        hasEssential: true,
+        shadowVariable: true,
+        defaultValue: null,
+      }],
+      returnDependencies: () => ({
+        // include immediateValue for inverse definition
+        immediateValue: {
+          dependencyType: "stateVariable",
+          variableName: "immediateValue"
+        },
+        valueForDisplay: {
+          dependencyType: "stateVariable",
+          variableName: "valueForDisplay"
+        },
+
       }),
-      inverseDefinition({ desiredStateVariableValues }) {
+      definition({ dependencyValues, essentialValues }) {
+
+        // console.log(`definition of raw value for ${componentName}`)
+        // console.log(dependencyValues, essentialValues)
+
+        // use deepCompare of trees rather than equalsViaSyntax
+        // so even tiny numerical differences that within double precision are detected
+        if (essentialValues.rawRendererValue === undefined
+          || !deepCompare(essentialValues.lastValueForDisplay.tree, dependencyValues.valueForDisplay.tree)
+        ) {
+          let rawRendererValue = stripLatex(dependencyValues.valueForDisplay.toLatex());
+          if (rawRendererValue === "\uff3f") {
+            rawRendererValue = '';
+          }
+          return {
+            setValue: {
+              rawRendererValue,
+              lastValueForDisplay: dependencyValues.valueForDisplay,
+            },
+            setEssentialValue: {
+              rawRendererValue,
+              lastValueForDisplay: dependencyValues.valueForDisplay,
+            }
+          }
+        } else {
+          return {
+            useEssentialOrDefaultValue: {
+              rawRendererValue: true,
+              lastValueForDisplay: true
+            }
+          }
+        }
+
+      },
+      async inverseDefinition({ desiredStateVariableValues, stateValues, essentialValues }) {
+
+        // console.log(`inverse definition of rawRenderer value for ${componentName}`, desiredStateVariableValues, essentialValues)
+
+        const calculateMathExpressionFromLatex = async (text) => {
+
+          let expression;
+
+          text = normalizeLatexString(text, {
+            unionFromU: await stateValues.unionFromU,
+          });
+
+          // replace ^25 with ^{2}5, since mathQuill uses standard latex conventions
+          // unlike math-expression's latex parser
+          text = text.replace(/\^(\w)/g, '^{$1}');
+
+          let fromLatex = getFromLatex({
+            functionSymbols: await stateValues.functionSymbols,
+            splitSymbols: await stateValues.splitSymbols,
+          });
+
+          try {
+            expression = fromLatex(text);
+          } catch (e) {
+            // TODO: error on bad text
+            expression = me.fromAst('\uFF3F');
+          }
+          return expression;
+        };
+
+
+        let instructions = [];
+
+        if (typeof desiredStateVariableValues.rawRendererValue === "string") {
+
+          let currentValue = essentialValues.rawRendererValue;
+          let desiredValue = desiredStateVariableValues.rawRendererValue;
+
+          if (currentValue !== desiredValue) {
+            instructions.push({
+              setEssentialValue: "rawRendererValue",
+              value: desiredValue
+            })
+          }
+
+          let currentMath = await calculateMathExpressionFromLatex(currentValue);
+          let desiredMath = await calculateMathExpressionFromLatex(desiredValue);
+
+          // use deepCompare of trees rather than equalsViaSyntax
+          // so even tiny numerical differences that within double precision are detected
+          if (!deepCompare(desiredMath.tree, currentMath.tree)) {
+
+            instructions.push({
+              setDependency: "immediateValue",
+              desiredValue: desiredMath,
+              treatAsInitialChange: true, // so does not change value
+            })
+          }
+        } else {
+          // since desired value was not a string, it must be a math-expression
+          // always update lastValueForDisplay
+          // update rawRendererValue 
+          // if desired expression is different from math-expression obtained from current raw value
+          // do not update immediate value
+
+          instructions.push({
+            setEssentialValue: "lastValueForDisplay",
+            value: desiredStateVariableValues.rawRendererValue
+          })
+
+
+          let currentMath = await calculateMathExpressionFromLatex(essentialValues.rawRendererValue);
+
+          // use deepCompare of trees rather than equalsViaSyntax
+          // so even tiny numerical differences that within double precision are detected
+          if (!deepCompare(desiredStateVariableValues.rawRendererValue.tree, currentMath.tree)) {
+
+            let desiredValue = stripLatex(desiredStateVariableValues.rawRendererValue.toLatex());
+            if (desiredValue === "\uff3f") {
+              desiredValue = '';
+            }
+            instructions.push({
+              setEssentialValue: "rawRendererValue",
+              value: desiredValue
+            })
+
+          }
+
+
+        }
+
         return {
           success: true,
-          instructions: [{
-            setStateVariable: "rawRendererValue",
-            value: desiredStateVariableValues.rawRendererValue
-          }]
+          instructions
         }
       }
     }
 
     stateVariableDefinitions.componentType = {
       returnDependencies: () => ({}),
-      definition: () => ({ newValues: { componentType: "math" } })
+      definition: () => ({ setValue: { componentType: "math" } })
     }
 
 
@@ -328,102 +446,114 @@ export default class MathInput extends Input {
   }
 
 
-  async updateImmediateValue({ mathExpression, rawRendererValue }) {
+  async updateRawValue({ rawRendererValue, actionId }) {
     if (!await this.stateValues.disabled) {
       // we set transient to true so that each keystroke does not
       // add a row to the database
+
       return await this.coreFunctions.performUpdate({
         updateInstructions: [{
+          updateType: "updateValue",
+          componentName: this.componentName,
+          stateVariable: "rawRendererValue",
+          value: rawRendererValue,
+          sourceInformation: { actionId }
+        }],
+        transient: true,
+      });
+    }
+  }
+
+  async updateValue({ actionId }) {
+
+    if (!await this.stateValues.disabled) {
+      let immediateValue = await this.stateValues.immediateValue;
+
+      if (!deepCompare((await this.stateValues.value).tree, immediateValue.tree)) {
+
+        let updateInstructions = [{
+          updateType: "updateValue",
+          componentName: this.componentName,
+          stateVariable: "value",
+          value: immediateValue,
+          sourceInformation: { actionId }
+        },
+        // in case value ended up being a different value than requested
+        // we set immediate value to whatever was the result
+        // (hence the need to execute update first)
+        // Also, this makes sure immediateValue is saved to the database,
+        // since in updateImmediateValue, immediateValue is not saved to database
+        {
+          updateType: "executeUpdate"
+        },
+        {
           updateType: "updateValue",
           componentName: this.componentName,
           stateVariable: "immediateValue",
-          value: mathExpression,
-        }, {
-          updateType: "updateValue",
-          componentName: this.componentName,
-          stateVariable: "rawRendererValue",
-          value: rawRendererValue,
-        }],
-        transient: true
-      });
-    }
-  }
+          valueOfStateVariable: "value",
+        }];
 
-  async updateRawValue({ rawRendererValue, transient = false }) {
-    if (!await this.stateValues.disabled) {
-      // we set transient to true so that each keystroke does not
-      // add a row to the database
-
-      return await this.coreFunctions.performUpdate({
-        updateInstructions: [{
-          updateType: "updateValue",
-          componentName: this.componentName,
-          stateVariable: "rawRendererValue",
-          value: rawRendererValue,
-        }],
-        transient
-      });
-    }
-  }
-
-  async updateValue() {
-    if (!await this.stateValues.disabled) {
-      let immediateValue = await this.stateValues.immediateValue;
-      let updateInstructions = [{
-        updateType: "updateValue",
-        componentName: this.componentName,
-        stateVariable: "value",
-        value: immediateValue,
-      }, {
-        updateType: "updateValue",
-        componentName: this.componentName,
-        stateVariable: "rawRendererValue",
-        value: await this.stateValues.rawRendererValue,  // so gets saved to database
-      },
-      // in case value ended up being a different value than requested
-      // we set immediate value to whatever was the result
-      // (hence the need to execute update first)
-      // Also, this makes sure immediateValue is saved to the database,
-      // since in updateImmediateValue, immediateValue is not saved to database
-      {
-        updateType: "executeUpdate"
-      },
-      {
-        updateType: "updateValue",
-        componentName: this.componentName,
-        stateVariable: "immediateValue",
-        valueOfStateVariable: "value",
-      }];
-
-      let event = {
-        verb: "answered",
-        object: {
-          componentName: this.componentName,
-          componentType: this.componentType,
-        },
-        result: {
-          response: immediateValue,
-          responseText: immediateValue.toString(),
+        if (immediateValue.tree !== '\uff3f') {
+          updateInstructions.push({
+            updateType: "updateValue",
+            componentName: this.componentName,
+            stateVariable: "rawRendererValue",
+            valueOfStateVariable: "valueForDisplay",
+          })
+        } else {
+          // set raw renderer value to save it to the database,
+          // as it might not have been saved
+          // given that updateRawValue is transient
+          updateInstructions.push({
+            updateType: "updateValue",
+            componentName: this.componentName,
+            stateVariable: "rawRendererValue",
+            valueOfStateVariable: "rawRendererValue",
+          })
         }
-      }
 
-
-      let answerAncestor = await this.stateValues.answerAncestor;
-      if (answerAncestor) {
-        event.context = {
-          answerAncestor: answerAncestor.componentName
+        let event = {
+          verb: "answered",
+          object: {
+            componentName: this.componentName,
+            componentType: this.componentType,
+          },
+          result: {
+            response: immediateValue,
+            responseText: immediateValue.toString(),
+          }
         }
+
+
+        let answerAncestor = await this.stateValues.answerAncestor;
+        if (answerAncestor) {
+          event.context = {
+            answerAncestor: answerAncestor.componentName
+          }
+        }
+
+        await this.coreFunctions.performUpdate({
+          updateInstructions,
+          event,
+        });
+
+        return await this.coreFunctions.triggerChainedActions({
+          componentName: this.componentName,
+        });
+
+      } else {
+        // set raw renderer value to save it to the database,
+        // as it might not have been saved
+        // given that updateRawValue is transient
+        await this.coreFunctions.performUpdate({
+          updateInstructions: [{
+            updateType: "updateValue",
+            componentName: this.componentName,
+            stateVariable: "rawRendererValue",
+            valueOfStateVariable: "rawRendererValue",
+          }]
+        })
       }
-
-      await this.coreFunctions.performUpdate({
-        updateInstructions,
-        event,
-      });
-
-      return await this.coreFunctions.triggerChainedActions({
-        componentName: this.componentName,
-      });
-
 
     }
   }

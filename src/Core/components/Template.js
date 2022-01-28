@@ -54,7 +54,7 @@ export default class Template extends CompositeComponent {
       }),
       definition: function ({ dependencyValues }) {
         return {
-          newValues: {
+          setValue: {
             serializedChildren: dependencyValues.serializedChildren
           }
         }
@@ -70,7 +70,7 @@ export default class Template extends CompositeComponent {
       }),
       definition({ dependencyValues }) {
         return {
-          newValues: {
+          setValue: {
             newNamespace: dependencyValues.newNamespace
           }
         }
@@ -80,14 +80,16 @@ export default class Template extends CompositeComponent {
     stateVariableDefinitions.readyToExpandWhenResolved = {
       returnDependencies: () => ({}),
       definition: function () {
-        return { newValues: { readyToExpandWhenResolved: true } };
+        return { setValue: { readyToExpandWhenResolved: true } };
       },
     };
 
     return stateVariableDefinitions;
   }
 
-  static async createSerializedReplacements({ component, componentInfoObjects, alwaysCreateReplacements }) {
+  static async createSerializedReplacements({ component, componentInfoObjects,
+    alwaysCreateReplacements, flags
+  }) {
     // console.log(`create serialized replacements for ${component.componentName}`)
     // console.log(await component.stateValues.rendered);
 
@@ -99,29 +101,28 @@ export default class Template extends CompositeComponent {
 
       let newNamespace = component.attributes.newNamespace && component.attributes.newNamespace.primitive;
 
-      for (let repl of replacements) {
-        if (typeof repl !== "object") {
-          continue;
-        }
-
+      if ("isResponse" in component.attributes) {
         // pass isResponse to replacements
-        let attributesFromComposite = {};
 
-        if ("isResponse" in component.attributes) {
-          attributesFromComposite = convertAttributesForComponentType({
+        for (let repl of replacements) {
+          if (typeof repl !== "object") {
+            continue;
+          }
+
+          let attributesFromComposite = convertAttributesForComponentType({
             attributes: { isResponse: component.attributes.isResponse },
             componentType: repl.componentType,
             componentInfoObjects,
-            compositeCreatesNewNamespace: newNamespace
+            compositeCreatesNewNamespace: newNamespace,
+            flags
           })
+          if (!repl.attributes) {
+            repl.attributes = {};
+          }
+
+          Object.assign(repl.attributes, attributesFromComposite)
+
         }
-
-        if (!repl.attributes) {
-          repl.attributes = {};
-        }
-
-        Object.assign(repl.attributes, attributesFromComposite)
-
       }
 
 

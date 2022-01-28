@@ -1,3 +1,5 @@
+import { C } from "../../../../src/Core/components/ParagraphMarkup";
+
 describe('Circle Tag Tests', function () {
 
   beforeEach(() => {
@@ -6662,9 +6664,9 @@ describe('Circle Tag Tests', function () {
     cy.get('#\\/c textarea').type("(2,1){enter}", { force: true })
     cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/circ'].stateValues.numericalCenter).eqls([2,1]);
+      expect(components['/circ'].stateValues.numericalCenter).eqls([2, 1]);
       expect(components['/circ'].stateValues.numericalRadius).eq(1);
-      expect(components['/circ2'].stateValues.numericalCenter).eqls([2,1]);
+      expect(components['/circ2'].stateValues.numericalCenter).eqls([2, 1]);
       expect(components['/circ2'].stateValues.numericalRadius).eq(1);
     })
 
@@ -6672,9 +6674,9 @@ describe('Circle Tag Tests', function () {
     cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       await components['/circ'].moveCircle({ center: [-7, 2] });
-      expect(components['/circ'].stateValues.numericalCenter).eqls([-7,2]);
+      expect(components['/circ'].stateValues.numericalCenter).eqls([-7, 2]);
       expect(components['/circ'].stateValues.numericalRadius).eq(1);
-      expect(components['/circ2'].stateValues.numericalCenter).eqls([-7,2]);
+      expect(components['/circ2'].stateValues.numericalCenter).eqls([-7, 2]);
       expect(components['/circ2'].stateValues.numericalRadius).eq(1);
     })
 
@@ -6682,19 +6684,19 @@ describe('Circle Tag Tests', function () {
     cy.get('#\\/c textarea').type("{end}{leftArrow}{backspace}-4{enter}", { force: true })
     cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/circ'].stateValues.numericalCenter).eqls([-7,-4]);
+      expect(components['/circ'].stateValues.numericalCenter).eqls([-7, -4]);
       expect(components['/circ'].stateValues.numericalRadius).eq(1);
-      expect(components['/circ2'].stateValues.numericalCenter).eqls([-7,-4]);
+      expect(components['/circ2'].stateValues.numericalCenter).eqls([-7, -4]);
       expect(components['/circ2'].stateValues.numericalRadius).eq(1);
     })
 
     cy.log(`move circle2`)
     cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      await components['/circ2'].moveCircle({ center: [6,9] });
-      expect(components['/circ'].stateValues.numericalCenter).eqls([6,9]);
+      await components['/circ2'].moveCircle({ center: [6, 9] });
+      expect(components['/circ'].stateValues.numericalCenter).eqls([6, 9]);
       expect(components['/circ'].stateValues.numericalRadius).eq(1);
-      expect(components['/circ2'].stateValues.numericalCenter).eqls([6,9]);
+      expect(components['/circ2'].stateValues.numericalCenter).eqls([6, 9]);
       expect(components['/circ2'].stateValues.numericalRadius).eq(1);
     })
 
@@ -6702,9 +6704,9 @@ describe('Circle Tag Tests', function () {
     cy.get('#\\/c textarea').type("{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{enter}", { force: true })
     cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/circ'].stateValues.numericalCenter).eqls([NaN,NaN]);
+      expect(components['/circ'].stateValues.numericalCenter).eqls([NaN, NaN]);
       expect(components['/circ'].stateValues.numericalRadius).eq(1);
-      expect(components['/circ2'].stateValues.numericalCenter).eqls([NaN,NaN]);
+      expect(components['/circ2'].stateValues.numericalCenter).eqls([NaN, NaN]);
       expect(components['/circ2'].stateValues.numericalRadius).eq(1);
     })
 
@@ -6712,13 +6714,363 @@ describe('Circle Tag Tests', function () {
     cy.get('#\\/c textarea').type("(5,4){enter}", { force: true })
     cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/circ'].stateValues.numericalCenter).eqls([5,4]);
+      expect(components['/circ'].stateValues.numericalCenter).eqls([5, 4]);
       expect(components['/circ'].stateValues.numericalRadius).eq(1);
-      expect(components['/circ2'].stateValues.numericalCenter).eqls([5,4]);
+      expect(components['/circ2'].stateValues.numericalCenter).eqls([5, 4]);
       expect(components['/circ2'].stateValues.numericalRadius).eq(1);
     })
 
   })
 
+  it('overwrite attributes on copy', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <graph>
+    <circle name="c" />
+  </graph>
+
+  <p>Change radius: <mathinput name="rc" bindValueTo="$(c{prop='radius'})" /></p>
+  <p>Change center: <mathinput name="cc" bindValueTo="$(c{prop='center'})" /></p>
+
+  <graph>
+    <point name="P">(3,4)</point>
+    <copy target="c" center="$P" assignNames="c1" />
+  </graph>
+
+  <p>Change radius: <mathinput name="rc1" bindValueTo="$(c1{prop='radius'})" /></p>
+  <p>Change center: <mathinput name="cc1" bindValueTo="$(c1{prop='center'})" /></p>
+
+  <graph>
+    <point name="Q">(7,7)</point>
+    <copy target="c1" through="$Q" assignNames="c2" />
+  </graph>
+
+  <p>Change radius: <mathinput name="rc2" bindValueTo="$(c2{prop='radius'})" /></p>
+  <p>Change center: <mathinput name="cc2" bindValueTo="$(c2{prop='center'})" /></p>
+
+  <graph>
+    <copy target="c" radius="$src3" assignNames = "c3" />
+  </graph>
+
+  <p>Set radius radius: <mathinput name="src3" prefill="3" /></p>
+  <p>Change radius: <mathinput name="rc3" bindValueTo="$(c3{prop='radius'})" /></p>
+  <p>Change center: <mathinput name="cc3" bindValueTo="$(c3{prop='center'})" /></p>
+
+  `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a')// to wait for page to load
+
+    cy.get('#\\/rc .mq-editable-field').should('have.text', '1')
+    cy.get('#\\/cc .mq-editable-field').should('have.text', '(0,0)')
+    cy.get('#\\/rc1 .mq-editable-field').should('have.text', '1')
+    cy.get('#\\/cc1 .mq-editable-field').should('have.text', '(3,4)')
+    cy.get('#\\/rc2 .mq-editable-field').should('have.text', '5')
+    cy.get('#\\/cc2 .mq-editable-field').should('have.text', '(3,4)')
+    cy.get('#\\/src3 .mq-editable-field').should('have.text', '3')
+    cy.get('#\\/rc3 .mq-editable-field').should('have.text', '3')
+    cy.get('#\\/cc3 .mq-editable-field').should('have.text', '(0,0)')
+
+
+    cy.log('move original circle')
+    cy.window().then(async (win) => {
+      let components = Object.assign({}, win.state.components);
+      await components["/c"].moveCircle({ center: [-1, 2] })
+    });
+
+    cy.get('#\\/rc .mq-editable-field').should('have.text', '1')
+    cy.get('#\\/cc .mq-editable-field').should('have.text', '(−1,2)')
+    cy.get('#\\/rc1 .mq-editable-field').should('have.text', '1')
+    cy.get('#\\/cc1 .mq-editable-field').should('have.text', '(3,4)')
+    cy.get('#\\/rc2 .mq-editable-field').should('have.text', '5')
+    cy.get('#\\/cc2 .mq-editable-field').should('have.text', '(3,4)')
+    cy.get('#\\/src3 .mq-editable-field').should('have.text', '3')
+    cy.get('#\\/rc3 .mq-editable-field').should('have.text', '3')
+    cy.get('#\\/cc3 .mq-editable-field').should('have.text', '(−1,2)')
+
+    cy.window().then(async (win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(await (components["/P"].stateValues.xs).map(x => x.tree)).eqls([3, 4]);
+      expect(await (components["/Q"].stateValues.xs).map(x => x.tree)).eqls([7, 7]);
+    });
+
+    cy.log('enter non-numeric radius and center for original circle');
+    cy.get('#\\/rc textarea').type("{end}+x{enter}", { force: true })
+    cy.get('#\\/cc textarea').type("{end}{leftArrow}{backspace}y{enter}", { force: true })
+
+    cy.get('#\\/rc .mq-editable-field').should('have.text', '1+x')
+    cy.get('#\\/cc .mq-editable-field').invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('(−1,y)')
+    })
+    cy.get('#\\/rc1 .mq-editable-field').should('have.text', '1+x')
+    cy.get('#\\/cc1 .mq-editable-field').should('have.text', '(3,4)')
+    cy.get('#\\/rc2 .mq-editable-field').should('have.text', '5')
+    cy.get('#\\/cc2 .mq-editable-field').should('have.text', '(3,4)')
+    cy.get('#\\/src3 .mq-editable-field').should('have.text', '3')
+    cy.get('#\\/rc3 .mq-editable-field').should('have.text', '3')
+    cy.get('#\\/cc3 .mq-editable-field').should('have.text', '(−1,y)')
+
+    cy.window().then(async (win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(await (components["/P"].stateValues.xs).map(x => x.tree)).eqls([3, 4]);
+      expect(await (components["/Q"].stateValues.xs).map(x => x.tree)).eqls([7, 7]);
+    });
+
+    cy.log('set radius and center for original circle back to number using other components');
+    cy.get('#\\/rc1 textarea').type("{end}{backspace}{backspace}{backspace}2{enter}", { force: true })
+    cy.get('#\\/cc3 textarea').type("{end}{leftArrow}{backspace}{backspace}{backspace}{backspace}4,5{enter}", { force: true })
+
+    cy.get('#\\/rc .mq-editable-field').should('have.text', '2')
+    cy.get('#\\/cc .mq-editable-field').should('have.text', '(4,5)')
+    cy.get('#\\/rc1 .mq-editable-field').should('have.text', '2')
+    cy.get('#\\/cc1 .mq-editable-field').should('have.text', '(3,4)')
+    cy.get('#\\/rc2 .mq-editable-field').should('have.text', '5')
+    cy.get('#\\/cc2 .mq-editable-field').should('have.text', '(3,4)')
+    cy.get('#\\/src3 .mq-editable-field').should('have.text', '3')
+    cy.get('#\\/rc3 .mq-editable-field').should('have.text', '3')
+    cy.get('#\\/cc3 .mq-editable-field').invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('(4,5)')
+    })
+
+    cy.window().then(async (win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(await (components["/P"].stateValues.xs).map(x => x.tree)).eqls([3, 4]);
+      expect(await (components["/Q"].stateValues.xs).map(x => x.tree)).eqls([7, 7]);
+    });
+
+
+    cy.log('move point P and set radius of second circle')
+    cy.window().then(async (win) => {
+      let components = Object.assign({}, win.state.components);
+      await components["/P"].movePoint({ x: -5, y: 2 })
+    });
+
+    cy.get('#\\/rc1 textarea').type("{end}{backspace}4{enter}", { force: true })
+
+    cy.get('#\\/rc .mq-editable-field').should('have.text', '4')
+    cy.get('#\\/cc .mq-editable-field').should('have.text', '(4,5)')
+    cy.get('#\\/rc1 .mq-editable-field').invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('4')
+    })
+    cy.get('#\\/cc1 .mq-editable-field').should('have.text', '(−5,2)')
+    cy.get('#\\/rc2 .mq-editable-field').should('have.text', '13')
+    cy.get('#\\/cc2 .mq-editable-field').should('have.text', '(−5,2)')
+    cy.get('#\\/src3 .mq-editable-field').should('have.text', '3')
+    cy.get('#\\/rc3 .mq-editable-field').should('have.text', '3')
+    cy.get('#\\/cc3 .mq-editable-field').should('have.text', '(4,5)')
+
+    cy.window().then(async (win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(await (components["/P"].stateValues.xs).map(x => x.tree)).eqls([-5, 2]);
+      expect(await (components["/Q"].stateValues.xs).map(x => x.tree)).eqls([7, 7]);
+    });
+
+
+    cy.log('move point Q')
+    cy.window().then(async (win) => {
+      let components = Object.assign({}, win.state.components);
+      await components["/Q"].movePoint({ x: 3, y: 8 })
+    });
+
+    cy.get('#\\/rc .mq-editable-field').should('have.text', '4')
+    cy.get('#\\/cc .mq-editable-field').should('have.text', '(4,5)')
+    cy.get('#\\/rc1 .mq-editable-field').invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('4')
+    })
+    cy.get('#\\/cc1 .mq-editable-field').should('have.text', '(−5,2)')
+    cy.get('#\\/rc2 .mq-editable-field').should('have.text', '10')
+    cy.get('#\\/cc2 .mq-editable-field').should('have.text', '(−5,2)')
+    cy.get('#\\/src3 .mq-editable-field').should('have.text', '3')
+    cy.get('#\\/rc3 .mq-editable-field').should('have.text', '3')
+    cy.get('#\\/cc3 .mq-editable-field').should('have.text', '(4,5)')
+
+
+    cy.window().then(async (win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(await (components["/P"].stateValues.xs).map(x => x.tree)).eqls([-5, 2]);
+      expect(await (components["/Q"].stateValues.xs).map(x => x.tree)).eqls([3, 8]);
+    });
+    
+    cy.log('set radius of third circle')
+
+    cy.get('#\\/rc2 textarea').type("{end}{backspace}{backspace}5{enter}", { force: true })
+
+    cy.get('#\\/rc .mq-editable-field').should('have.text', '4')
+    cy.get('#\\/cc .mq-editable-field').should('have.text', '(4,5)')
+    cy.get('#\\/rc1 .mq-editable-field').should('have.text', '4')
+    cy.get('#\\/cc1 .mq-editable-field').should('have.text', '(−5,2)')
+    cy.get('#\\/rc2 .mq-editable-field').invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('5')
+    })
+    cy.get('#\\/cc2 .mq-editable-field').should('have.text', '(−5,2)')
+    cy.get('#\\/src3 .mq-editable-field').should('have.text', '3')
+    cy.get('#\\/rc3 .mq-editable-field').should('have.text', '3')
+    cy.get('#\\/cc3 .mq-editable-field').should('have.text', '(4,5)')
+
+
+    cy.window().then(async (win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(await (components["/P"].stateValues.xs).map(x => x.tree)).eqls([-5, 2]);
+      expect(await (components["/Q"].stateValues.xs).map(x => x.tree)).eqls([-1, 5]);
+    });
+
+
+    cy.log('set center of third circle')
+
+    cy.get('#\\/cc2 textarea').type("{end}{leftArrow}{backspace}{backspace}{backspace}{backspace}5,-3{enter}", { force: true })
+
+    cy.get('#\\/rc .mq-editable-field').should('have.text', '4')
+    cy.get('#\\/cc .mq-editable-field').should('have.text', '(4,5)')
+    cy.get('#\\/rc1 .mq-editable-field').should('have.text', '4')
+    cy.get('#\\/cc1 .mq-editable-field').should('have.text', '(5,−3)')
+    cy.get('#\\/rc2 .mq-editable-field').should('have.text', '10')
+    cy.get('#\\/cc2 .mq-editable-field').invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('(5,−3)')
+    })
+    cy.get('#\\/src3 .mq-editable-field').should('have.text', '3')
+    cy.get('#\\/rc3 .mq-editable-field').should('have.text', '3')
+    cy.get('#\\/cc3 .mq-editable-field').should('have.text', '(4,5)')
+
+
+    cy.window().then(async (win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(await (components["/P"].stateValues.xs).map(x => x.tree)).eqls([5, -3]);
+      expect(await (components["/Q"].stateValues.xs).map(x => x.tree)).eqls([-1, 5]);
+    });
+
+
+    cy.log('set radius of fourth circle')
+
+    cy.get('#\\/src3 textarea').type("{end}{backspace}9{enter}", { force: true })
+
+    cy.get('#\\/rc .mq-editable-field').should('have.text', '4')
+    cy.get('#\\/cc .mq-editable-field').should('have.text', '(4,5)')
+    cy.get('#\\/rc1 .mq-editable-field').should('have.text', '4')
+    cy.get('#\\/cc1 .mq-editable-field').should('have.text', '(5,−3)')
+    cy.get('#\\/rc2 .mq-editable-field').should('have.text', '10')
+    cy.get('#\\/cc2 .mq-editable-field').should('have.text', '(5,−3)')
+    cy.get('#\\/src3 .mq-editable-field').invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('9')
+    })
+    cy.get('#\\/rc3 .mq-editable-field').should('have.text', '9')
+    cy.get('#\\/cc3 .mq-editable-field').should('have.text', '(4,5)')
+
+
+    cy.window().then(async (win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(await (components["/P"].stateValues.xs).map(x => x.tree)).eqls([5, -3]);
+      expect(await (components["/Q"].stateValues.xs).map(x => x.tree)).eqls([-1, 5]);
+    });
+
+
+
+    cy.log('move and change radius of fourth circle')
+
+    cy.window().then(async (win) => {
+      let components = Object.assign({}, win.state.components);
+      await components["/c3"].moveCircle({ center: [3, 8] })
+    });
+
+    cy.get('#\\/rc3 textarea').type("{end}{backspace}9{enter}", { force: true })
+
+    cy.get('#\\/rc .mq-editable-field').should('have.text', '4')
+    cy.get('#\\/cc .mq-editable-field').should('have.text', '(3,8)')
+    cy.get('#\\/rc1 .mq-editable-field').should('have.text', '4')
+    cy.get('#\\/cc1 .mq-editable-field').should('have.text', '(5,−3)')
+    cy.get('#\\/rc2 .mq-editable-field').should('have.text', '10')
+    cy.get('#\\/cc2 .mq-editable-field').should('have.text', '(5,−3)')
+    cy.get('#\\/src3 .mq-editable-field').should('have.text', '9')
+    cy.get('#\\/rc3 .mq-editable-field').invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('9')
+    })
+    cy.get('#\\/cc3 .mq-editable-field').should('have.text', '(3,8)')
+
+
+    cy.window().then(async (win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(await (components["/P"].stateValues.xs).map(x => x.tree)).eqls([5, -3]);
+      expect(await (components["/Q"].stateValues.xs).map(x => x.tree)).eqls([-1, 5]);
+    });
+
+
+  })
+
+  it('reload essential center from database', () => {
+    let doenetML = `
+    <text>a</text>
+    <graph>
+      <circle name="circ" />
+    </graph>
+    <mathinput bindvalueTo="$(circ{prop='radius'})" name="r" />
+    <p>radius: <copy prop='radius' target='circ' assignNames="r2" /></p>
+    <p>Center: <copy prop="center" target="circ" assignNames="c" /></p>
+  `;
+
+
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML }, "*");
+    });
+
+    cy.get('#testRunner_toggleControls').click();
+    cy.get('#testRunner_allowLocalPageState').click()
+    cy.wait(100)
+    cy.get('#testRunner_toggleControls').click();
+
+    cy.get('#\\/_text1').should('have.text', 'a')// to wait for page to load
+
+
+    cy.window().then(async (win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/circ'].stateValues.numericalCenter).eqls([0, 0]);
+      expect(components['/circ'].stateValues.numericalRadius).eq(1);
+    });
+
+    cy.log(`move circle`)
+    cy.window().then(async (win) => {
+      let components = Object.assign({}, win.state.components);
+      await components['/circ'].moveCircle({ center: [-7, 2] });
+      expect(components['/circ'].stateValues.numericalCenter).eqls([-7, 2]);
+      expect(components['/circ'].stateValues.numericalRadius).eq(1);
+    })
+
+    cy.log("change radius");
+    cy.get('#\\/r textarea').type("{end}{backspace}3{enter}", { force: true })
+    cy.get(`#\\/r .mq-editable-field`).should('contain.text', "3");
+    cy.get(`#\\/r2 .mjx-mrow`).should('contain.text', "3");
+
+    cy.window().then(async (win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/circ'].stateValues.numericalCenter).eqls([-7, 2]);
+      expect(components['/circ'].stateValues.numericalRadius).eq(3);
+    })
+
+
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: '<text>b</text>',
+      }, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'b') //wait for page to load
+
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML,
+      }, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+
+
+    cy.window().then(async (win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/circ'].stateValues.numericalCenter).eqls([-7, 2]);
+      expect(components['/circ'].stateValues.numericalRadius).eq(3);
+    })
+
+  })
 
 });

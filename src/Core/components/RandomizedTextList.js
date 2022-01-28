@@ -116,7 +116,7 @@ export default class TextList extends InlineComponent {
           }
         }
 
-        return { newValues: { texts } }
+        return { setValue: { texts } }
 
       }
     }
@@ -131,7 +131,7 @@ export default class TextList extends InlineComponent {
         }
       }),
       definition: ({ dependencyValues }) => ({
-        newValues: { text: dependencyValues.texts.join(", ") }
+        setValue: { text: dependencyValues.texts.join(", ") }
       })
     }
 
@@ -145,7 +145,7 @@ export default class TextList extends InlineComponent {
         }
       }),
       definition: function ({ dependencyValues }) {
-        return { newValues: { nComponents: dependencyValues.texts.length } }
+        return { setValue: { nComponents: dependencyValues.texts.length } }
       }
     }
 
@@ -201,7 +201,7 @@ export default class TextList extends InlineComponent {
         childrenToRender = childrenToRender.slice(0, numChildren)
 
 
-        return { newValues: { childrenToRender } }
+        return { setValue: { childrenToRender } }
 
       }
     }

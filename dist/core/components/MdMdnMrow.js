@@ -10,10 +10,6 @@ export class Md extends InlineComponent {
   // used when creating new component via adapter or copy prop
   static primaryStateVariableForDefinition = "latex";
 
-  // used when referencing this component without prop
-  static useChildrenForReference = false;
-  static get stateVariablesShadowedForReference() { return ["latex"] };
-
   static returnChildGroups() {
 
     return [{
@@ -37,7 +33,7 @@ export class Md extends InlineComponent {
         }
       }),
       definition: ({ dependencyValues }) => ({
-        newValues: { mrowChildNames: dependencyValues.mrowChildren.map(x => x.componentName) }
+        setValue: { mrowChildNames: dependencyValues.mrowChildren.map(x => x.componentName) }
       })
     }
 
@@ -45,6 +41,8 @@ export class Md extends InlineComponent {
       public: true,
       componentType: "text",
       defaultValue: "",
+      hasEssential: true,
+      shadowVariable: true,
       returnDependencies: () => ({
         mrowChildren: {
           dependencyType: "child",
@@ -70,12 +68,12 @@ export class Md extends InlineComponent {
             latex += child.stateValues.latex;
 
           }
-          return { newValues: { latex } }
+          return { setValue: { latex } }
 
         } else {
           return {
             useEssentialOrDefaultValue: {
-              latex: { variablesToCheck: "latex" }
+              latex: true
             }
           }
         }
@@ -131,11 +129,11 @@ export class Md extends InlineComponent {
           if (lastLatex.length > 0) {
             latexWithInputChildren.push(lastLatex);
           }
-          return { newValues: { latexWithInputChildren } }
+          return { setValue: { latexWithInputChildren } }
 
         } else {
           return {
-            newValues: {
+            setValue: {
               latexWithInputChildren: [dependencyValues.latex]
             }
           }
@@ -163,7 +161,7 @@ export class Md extends InlineComponent {
             .join('\\\\\n');
         } catch (e) {
           // just return latex if can't parse with math-expressions
-          return { newValues: { text: dependencyValues.latex } };
+          return { setValue: { text: dependencyValues.latex } };
         }
         return { neswValues: { text: expressionText } };
       }
@@ -172,13 +170,13 @@ export class Md extends InlineComponent {
     stateVariableDefinitions.renderMode = {
       forRenderer: true,
       returnDependencies: () => ({}),
-      definition: () => ({ newValues: { renderMode: "align" } })
+      definition: () => ({ setValue: { renderMode: "align" } })
     }
 
 
     stateVariableDefinitions.numbered = {
       returnDependencies: () => ({}),
-      definition: () => ({ newValues: { numbered: false } })
+      definition: () => ({ setValue: { numbered: false } })
     }
 
     return stateVariableDefinitions;
@@ -195,7 +193,7 @@ export class Mdn extends Md {
 
     stateVariableDefinitions.numbered = {
       returnDependencies: () => ({}),
-      definition: () => ({ newValues: { numbered: true } })
+      definition: () => ({ setValue: { numbered: true } })
     }
 
     return stateVariableDefinitions;
@@ -220,7 +218,7 @@ export class Mrow extends M {
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
     stateVariableDefinitions.renderMode.definition = () => ({
-      newValues: { renderMode: "display" }
+      setValue: { renderMode: "display" }
     });
 
     stateVariableDefinitions.numbered = {
@@ -245,7 +243,7 @@ export class Mrow extends M {
         }
 
         return {
-          newValues: { numbered }
+          setValue: { numbered }
         }
       }
     }
@@ -270,10 +268,10 @@ export class Mrow extends M {
       definition({ dependencyValues }) {
         if (dependencyValues.equationCounter !== undefined) {
           return {
-            newValues: { equationTag: String(dependencyValues.equationCounter) }
+            setValue: { equationTag: String(dependencyValues.equationCounter) }
           }
         } else {
-          return { newValues: { equationTag: null } }
+          return { setValue: { equationTag: null } }
         }
       }
     }

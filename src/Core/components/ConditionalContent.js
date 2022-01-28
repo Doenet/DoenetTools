@@ -11,9 +11,6 @@ export default class ConditionalContent extends CompositeComponent {
   static assignNamesToReplacements = true;
   static originalNamesAreConsistent = true;
 
-  static get stateVariablesShadowedForReference() {
-    return ["baseConditionSatisfied"]
-  }
 
   static stateVariableToEvaluateAfterReplacements = "readyToExpandWhenResolved";
 
@@ -88,7 +85,7 @@ export default class ConditionalContent extends CompositeComponent {
           baseConditionSatisfied = dependencyValues.conditionAttr.stateValues.value;
         }
 
-        return { newValues: { baseConditionSatisfied } }
+        return { setValue: { baseConditionSatisfied } }
       }
     };
 
@@ -103,7 +100,7 @@ export default class ConditionalContent extends CompositeComponent {
       }),
       definition({ dependencyValues }) {
         return {
-          newValues: {
+          setValue: {
             caseChildren: dependencyValues.caseChildren,
             nCases: dependencyValues.caseChildren.length
           }
@@ -123,7 +120,7 @@ export default class ConditionalContent extends CompositeComponent {
         if (dependencyValues.elseChild.length > 0) {
           elseChild = dependencyValues.elseChild[0]
         }
-        return { newValues: { elseChild } };
+        return { setValue: { elseChild } };
       }
     }
 
@@ -139,7 +136,7 @@ export default class ConditionalContent extends CompositeComponent {
         },
       }),
       definition: ({ dependencyValues }) => ({
-        newValues: { haveCasesOrElse: dependencyValues.nCases > 0 || dependencyValues.elseChild !== null }
+        setValue: { haveCasesOrElse: dependencyValues.nCases > 0 || dependencyValues.elseChild !== null }
       })
     }
 
@@ -177,7 +174,7 @@ export default class ConditionalContent extends CompositeComponent {
         }
 
         return {
-          newValues: {
+          setValue: {
             selectedIndices,
           }
         };
@@ -202,7 +199,7 @@ export default class ConditionalContent extends CompositeComponent {
       markStale: () => ({ updateReplacements: true }),
       definition() {
         return {
-          newValues: { readyToExpandWhenResolved: true }
+          setValue: { readyToExpandWhenResolved: true }
         }
       }
     }

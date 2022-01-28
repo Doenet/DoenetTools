@@ -1,14 +1,12 @@
 import React from 'react';
-import DoenetRenderer from './DoenetRenderer';
+import useDoenetRenderer from './useDoenetRenderer';
 
-export default class Pre extends DoenetRenderer {
+export default function Pre(props){
+  let {name, SVs, children} = useDoenetRenderer(props);
 
-  render() {
-
-    if (this.doenetSvData.hidden) {
-      return null;
-    }
-
-    return <pre id={this.componentName}><a name={this.componentName} />{this.children}</pre>
+  if (SVs.hidden) {
+    return null;
   }
+
+  return <pre id={name}><a name={name} />{children}</pre>
 }

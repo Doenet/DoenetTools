@@ -18,7 +18,7 @@ export default class TextList extends DoenetRenderer {
         id: this.componentName
       }, this.doenetSvData.text));
     }
-    children = children.filter((x) => !x.props.componentInstructions.stateValues.hidden);
+    children = children.filter((x) => typeof x === "string" || !x.props.componentInstructions.stateValues.hidden);
     if (children.length === 0) {
       return /* @__PURE__ */ React.createElement(React.Fragment, {
         key: this.componentName

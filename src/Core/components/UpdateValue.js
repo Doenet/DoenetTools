@@ -6,10 +6,6 @@ export default class UpdateValue extends InlineComponent {
 
   static acceptTarget = true;
 
-  static get stateVariablesShadowedForReference() {
-    return ["newValue"]
-  }
-
   static createAttributesObject(args) {
     let attributes = super.createAttributesObject(args);
     // attributes.width = {default: 300};
@@ -85,7 +81,7 @@ export default class UpdateValue extends InlineComponent {
         }
       }),
       definition: ({ dependencyValues }) => ({
-        newValues: { target: dependencyValues.target }
+        setValue: { target: dependencyValues.target }
       })
     }
 
@@ -105,7 +101,7 @@ export default class UpdateValue extends InlineComponent {
         }
 
         return {
-          newValues: { targetComponent }
+          setValue: { targetComponent }
         }
       },
     };
@@ -118,7 +114,7 @@ export default class UpdateValue extends InlineComponent {
         },
       }),
       definition: function ({ dependencyValues }) {
-        return { newValues: { propName: dependencyValues.propName } }
+        return { setValue: { propName: dependencyValues.propName } }
       }
     }
 
@@ -163,7 +159,7 @@ export default class UpdateValue extends InlineComponent {
             targetIdentities = [targetIdentities];
           }
         }
-        return { newValues: { targetIdentities } };
+        return { setValue: { targetIdentities } };
       },
     }
 
@@ -226,7 +222,7 @@ export default class UpdateValue extends InlineComponent {
           }
         }
 
-        return { newValues: { targets } };
+        return { setValue: { targets } };
       },
     }
 
@@ -249,7 +245,7 @@ export default class UpdateValue extends InlineComponent {
       definition: function ({ dependencyValues }) {
         if (dependencyValues.newValueAttr === null) {
           return {
-            newValues: {
+            setValue: {
               newValue: null,
             }
           }
@@ -265,7 +261,7 @@ export default class UpdateValue extends InlineComponent {
         }
 
         return {
-          newValues: { newValue }
+          setValue: { newValue }
         }
       },
     };
@@ -280,7 +276,7 @@ export default class UpdateValue extends InlineComponent {
       }),
       definition({ dependencyValues }) {
         return {
-          newValues: {
+          setValue: {
             insideTriggerSet: dependencyValues.parentTriggerSet !== null
           }
         }
@@ -306,10 +302,10 @@ export default class UpdateValue extends InlineComponent {
         if (dependencyValues.triggerWhen || dependencyValues.insideTriggerSet
           || dependencyValues.triggerWithTargets === null
         ) {
-          return { newValues: { triggerWithTargets: null } }
+          return { setValue: { triggerWithTargets: null } }
         } else {
           return {
-            newValues: {
+            setValue: {
               triggerWithTargets: dependencyValues.triggerWithTargets
                 .split(/\s+/).filter(s => s)
             }
@@ -344,7 +340,7 @@ export default class UpdateValue extends InlineComponent {
           triggerWithTargetComponentNames.push(dependencyValues[`triggerWithTargetComponentName${i}`])
         }
 
-        return { newValues: { triggerWithTargetComponentNames } }
+        return { setValue: { triggerWithTargetComponentNames } }
       },
       markStale() {
         return { updateActionChaining: true }
@@ -377,7 +373,7 @@ export default class UpdateValue extends InlineComponent {
         args.dependencyValues.triggerWithTargets ||
         args.dependencyValues.insideTriggerSet
       ) {
-        return { newValues: { hidden: true } }
+        return { setValue: { hidden: true } }
       } else {
         return originalHiddenDefinition(args);
       }
@@ -453,12 +449,8 @@ export default class UpdateValue extends InlineComponent {
   }
 
   actions = {
-    updateValue: this.updateValue.bind(
-      new Proxy(this, this.readOnlyProxyHandler)
-    ),
-    updateValueIfTriggerNewlyTrue: this.updateValueIfTriggerNewlyTrue.bind(
-      new Proxy(this, this.readOnlyProxyHandler)
-    )
+    updateValue: this.updateValue.bind(this),
+    updateValueIfTriggerNewlyTrue: this.updateValueIfTriggerNewlyTrue.bind(this)
   };
 }
 

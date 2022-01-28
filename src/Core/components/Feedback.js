@@ -6,10 +6,6 @@ export default class Feedback extends BlockComponent {
 
   static primaryStateVariableForDefinition = "feedbackText";
 
-  static get stateVariablesShadowedForReference() {
-    return ["hide"]
-  }
-
   static createAttributesObject(args) {
     let attributes = super.createAttributesObject(args);
     delete attributes.hide;
@@ -45,7 +41,7 @@ export default class Feedback extends BlockComponent {
       }),
       definition({ dependencyValues }) {
         return {
-          newValues: { updateWithTarget: dependencyValues.updateWithTargetAttr }
+          setValue: { updateWithTarget: dependencyValues.updateWithTargetAttr }
         }
       }
     }
@@ -69,9 +65,9 @@ export default class Feedback extends BlockComponent {
       },
       definition({ dependencyValues }) {
         if (dependencyValues.updateWithTargetComponentName) {
-          return { newValues: { updateWithTargetComponentNames: [dependencyValues.updateWithTargetComponentName] } }
+          return { setValue: { updateWithTargetComponentNames: [dependencyValues.updateWithTargetComponentName] } }
         } else {
-          return { newValues: { updateWithTargetComponentNames: [] } }
+          return { setValue: { updateWithTargetComponentNames: [] } }
         }
       }
     }
@@ -97,13 +93,14 @@ export default class Feedback extends BlockComponent {
           hideWhenUpdated = !(dependencyValues.showFeedback && dependencyValues.condition.stateValues.value);
         }
 
-        return { newValues: { hideWhenUpdated } }
+        return { setValue: { hideWhenUpdated } }
       }
     };
 
     stateVariableDefinitions.hide = {
       forRenderer: true,
       defaultValue: true,
+      hasEssential: true,
       stateVariablesDeterminingDependencies: ["updateWithTarget"],
       returnDependencies({ stateValues }) {
         if (stateValues.updateWithTarget) {
@@ -126,7 +123,7 @@ export default class Feedback extends BlockComponent {
 
         if (!("condition" in dependencyValues)) {
           return {
-            useEssentialOrDefaultValue: { hide: { variablesToCheck: ["hide"] } }
+            useEssentialOrDefaultValue: { hide: true }
           }
         }
 
@@ -137,7 +134,7 @@ export default class Feedback extends BlockComponent {
           hide = !(dependencyValues.showFeedback && dependencyValues.condition.stateValues.value);
         }
 
-        return { newValues: { hide } }
+        return { setValue: { hide } }
       },
       inverseDefinition({ desiredStateVariableValues, dependencyValues }) {
         if ("condition" in dependencyValues) {
@@ -146,7 +143,7 @@ export default class Feedback extends BlockComponent {
           return {
             success: true,
             instructions: [{
-              setStateVariable: "hide",
+              setEssentialValue: "hide",
               value: desiredStateVariableValues.hide
             }]
           }
@@ -158,10 +155,11 @@ export default class Feedback extends BlockComponent {
     stateVariableDefinitions.feedbackText = {
       forRenderer: true,
       defaultValue: null,
+      hasEssential: true,
       returnDependencies: () => ({}),
       definition: () => ({
         useEssentialOrDefaultValue: {
-          feedbackText: { variablesToCheck: ["feedbackText"] }
+          feedbackText: true
         }
       })
     }
@@ -182,9 +180,7 @@ export default class Feedback extends BlockComponent {
   }
 
   actions = {
-    updateHide: this.updateHide.bind(
-      new Proxy(this, this.readOnlyProxyHandler)
-    ),
+    updateHide: this.updateHide.bind(this),
   };
 
 }

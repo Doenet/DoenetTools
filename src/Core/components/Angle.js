@@ -4,12 +4,6 @@ import me from 'math-expressions';
 export default class Angle extends GraphicalComponent {
   static componentType = "angle";
 
-  static get stateVariablesShadowedForReference() {
-    return [
-      "nPointsSpecified", "points", "radians", "degrees", "numericalPoints"
-    ]
-  };
-
   static createAttributesObject(args) {
     let attributes = super.createAttributesObject(args);
     attributes.draggable = {
@@ -60,7 +54,7 @@ export default class Angle extends GraphicalComponent {
   static returnSugarInstructions() {
     let sugarInstructions = super.returnSugarInstructions();
 
-    let stringAndMacrosToRadiansAttribute = function({matchedChildren}) {
+    let stringAndMacrosToRadiansAttribute = function ({ matchedChildren }) {
 
       // only apply if all children are strings or macros
       if (!matchedChildren.every(child =>
@@ -112,7 +106,7 @@ export default class Angle extends GraphicalComponent {
         if (dependencyValues.betweenLines !== null) {
           lineNames = dependencyValues.betweenLines.stateValues.lineNames;
         }
-        return { newValues: { lineNames } }
+        return { setValue: { lineNames } }
       }
     }
 
@@ -129,7 +123,7 @@ export default class Angle extends GraphicalComponent {
         if (dependencyValues.betweenLines !== null) {
           betweenLinesName = dependencyValues.betweenLines.componentName
         }
-        return { newValues: { betweenLinesName } }
+        return { setValue: { betweenLinesName } }
       }
     }
 
@@ -144,13 +138,13 @@ export default class Angle extends GraphicalComponent {
       definition({ dependencyValues }) {
         if (dependencyValues.through !== null) {
           return {
-            newValues: {
+            setValue: {
               nPointsSpecified: dependencyValues.through.stateValues.nPoints
             }
           }
 
         } else {
-          return { newValues: { nPointsSpecified: 0 } }
+          return { setValue: { nPointsSpecified: 0 } }
         }
 
       }
@@ -160,6 +154,8 @@ export default class Angle extends GraphicalComponent {
       isArray: true,
       nDimensions: 2,
       entryPrefixes: ["pointX", "point"],
+      hasEssential: true,
+      defaultValueByArrayKey: (arrayKey) => me.fromAst(["0,1", "2,0"].includes(arrayKey) ? 1 : 0),
       stateVariablesDeterminingDependencies: ["nPointsSpecified", "betweenLinesName"],
       returnArraySizeDependencies: () => ({
         radians: {
@@ -196,9 +192,9 @@ export default class Angle extends GraphicalComponent {
                 return [];
               }
             } else {
-              // if don't know array size, just guess that the entry is OK
-              // It will get corrected once array size is known.
-              // TODO: better to return empty array?
+              // If not given the array size,
+              // then return the array keys assuming the array is large enough.
+              // Must do this as it is used to determine potential array entries.
               return [String(indices)];
             }
           } else {
@@ -206,11 +202,18 @@ export default class Angle extends GraphicalComponent {
           }
         } else {
           // point3 is all components of the third point
-          if (!arraySize) {
+
+          let pointInd = Number(varEnding) - 1;
+          if (!(Number.isInteger(pointInd) && pointInd >= 0)) {
             return [];
           }
-          let pointInd = Number(varEnding) - 1;
-          if (Number.isInteger(pointInd) && pointInd >= 0 && pointInd < arraySize[0]) {
+
+          if (!arraySize) {
+            // If don't have array size, we just need to determine if it is a potential entry.
+            // Return the first entry assuming array is large enough
+            return [pointInd + ",0"];
+          }
+          if (pointInd < arraySize[0]) {
             // array of "pointInd,i", where i=0, ..., arraySize[1]-1
             return Array.from(Array(arraySize[1]), (_, i) => pointInd + "," + i)
           } else {
@@ -302,7 +305,7 @@ export default class Angle extends GraphicalComponent {
                   points[i + "," + j] = me.fromAst("\uff3f")
                 }
               }
-              return { newValues: { points } }
+              return { setValue: { points } }
             }
 
             let point2 = lineIntersection;
@@ -326,7 +329,7 @@ export default class Angle extends GraphicalComponent {
             ];
 
             return {
-              newValues: {
+              setValue: {
                 points: {
                   "0,0": point1[0],
                   "0,1": point1[1],
@@ -355,11 +358,7 @@ export default class Angle extends GraphicalComponent {
               specifiedPointComponent = dependencyValuesByKey[arrayKey].through.stateValues["pointX" + varEnding];
             }
             if (specifiedPointComponent === undefined) {
-              if ((pointInd === "0" && dim === "1") || (pointInd === "2" && dim === "0")) {
-                essentialPoints[arrayKey] = { defaultValue: me.fromAst(1) }
-              } else {
-                essentialPoints[arrayKey] = { defaultValue: me.fromAst(0) }
-              }
+              essentialPoints[arrayKey] = true;
             } else {
               points[arrayKey] = specifiedPointComponent;
             }
@@ -374,20 +373,12 @@ export default class Angle extends GraphicalComponent {
               specifiedPointComponent = dependencyValuesByKey[arrayKey].through.stateValues["pointX" + varEnding];
             }
             if (specifiedPointComponent === undefined) {
-              if (dim === "0") {
-                essentialPoints[arrayKey] = { defaultValue: me.fromAst(1) }
-              } else {
-                essentialPoints[arrayKey] = { defaultValue: me.fromAst(0) }
-              }
+              essentialPoints[arrayKey] = true;
             } else {
               points[arrayKey] = specifiedPointComponent;
             }
           } else {
-            if (pointInd === "2" && dim === "0") {
-              essentialPoints[arrayKey] = { defaultValue: me.fromAst(1) }
-            } else {
-              essentialPoints[arrayKey] = { defaultValue: me.fromAst(0) }
-            }
+            essentialPoints[arrayKey] = true;
           }
         }
 
@@ -395,7 +386,7 @@ export default class Angle extends GraphicalComponent {
         let result = {};
 
         if (Object.keys(points).length > 0) {
-          result.newValues = { points }
+          result.setValue = { points }
         }
         if (Object.keys(essentialPoints).length > 0) {
           result.useEssentialOrDefaultValue = { points: essentialPoints }
@@ -431,13 +422,13 @@ export default class Angle extends GraphicalComponent {
 
         if (dependencyValues.radians !== null) {
           return {
-            newValues: {
+            setValue: {
               radians: dependencyValues.radians.stateValues.value.simplify()
             }
           }
         } else if (dependencyValues.degrees !== null) {
           return {
-            newValues: {
+            setValue: {
               radians: dependencyValues.degrees.stateValues.value.multiply(me.fromAst(["/", 'pi', 180])).simplify()
             }
           }
@@ -458,7 +449,7 @@ export default class Angle extends GraphicalComponent {
         let radians;
 
         if (foundNull) {
-          return { newValues: { radians: me.fromAst('\uff3f') } }
+          return { setValue: { radians: me.fromAst('\uff3f') } }
         } else {
           radians = Math.atan2(ps[2][1] - ps[1][1], ps[2][0] - ps[1][0]) -
             Math.atan2(ps[0][1] - ps[1][1], ps[0][0] - ps[1][0])
@@ -469,7 +460,7 @@ export default class Angle extends GraphicalComponent {
           radians += 2 * Math.PI;
         }
 
-        return { newValues: { radians: me.fromAst(radians) } }
+        return { setValue: { radians: me.fromAst(radians) } }
       }
     }
 
@@ -502,7 +493,7 @@ export default class Angle extends GraphicalComponent {
         } else {
           degrees = dependencyValues.radians.multiply(me.fromAst(["/", 180, 'pi'])).simplify()
         }
-        return { newValues: { degrees } }
+        return { setValue: { degrees } }
       }
     }
 
@@ -563,7 +554,7 @@ export default class Angle extends GraphicalComponent {
           numericalPoints[arrayKey] = numericalP;
         }
 
-        return { newValues: { numericalPoints } }
+        return { setValue: { numericalPoints } }
       }
     }
 
@@ -580,7 +571,7 @@ export default class Angle extends GraphicalComponent {
         if (!Number.isFinite(numericalRadius)) {
           numericalRadius = NaN;
         }
-        return { newValues: { numericalRadius } }
+        return { setValue: { numericalRadius } }
       }
     }
 

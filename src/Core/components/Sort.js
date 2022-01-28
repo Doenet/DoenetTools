@@ -68,7 +68,7 @@ export default class Sort extends CompositeComponent {
           }
         }
 
-        return { newValues: { componentNamesForValues } }
+        return { setValue: { componentNamesForValues } }
       }
     }
 
@@ -171,7 +171,7 @@ export default class Sort extends CompositeComponent {
         allValues.sort((a, b) => a.numericalValue - b.numericalValue)
 
         return {
-          newValues: {
+          setValue: {
             sortedValues: allValues
           }
         }
@@ -187,7 +187,7 @@ export default class Sort extends CompositeComponent {
       }),
       markStale: () => ({ updateReplacements: true }),
       definition: function () {
-        return { newValues: { readyToExpandWhenResolved: true } };
+        return { setValue: { readyToExpandWhenResolved: true } };
       },
     }
 

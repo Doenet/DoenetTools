@@ -101,13 +101,13 @@ describe('Boolean Tag Tests', function () {
       cy.get(`#\\/f${i}`).should('have.text', "false")
     }
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables();
       for (let i = 1; i <= nTrues; i++) {
-        expect(components[`/t${i}`].stateValues.value).to.be.true
+        expect(stateVariables[`/t${i}`].stateValues.value).to.be.true
       }
       for (let i = 1; i <= nFalses; i++) {
-        expect(components[`/f${i}`].stateValues.value).to.be.false
+        expect(stateVariables[`/f${i}`].stateValues.value).to.be.false
       }
     })
 
@@ -457,6 +457,36 @@ describe('Boolean Tag Tests', function () {
 
     cy.get('#\\/b1').should('have.text', "true")
     cy.get('#\\/b2').should('have.text', "true")
+
+  })
+
+
+  it('overwrite properties when copying', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <boolean name="b">x+x = 2x</boolean>
+
+    <copy target="b" symbolicEquality name="c1" assignNames="b1" />
+    <copy target="b1" symbolicEquality="false" name="c2" assignNames="b2" />
+    <copy target="c1" symbolicEquality="false" name="c3" assignNames="b3" />
+    
+    <copy target="b1" simplifyOnCompare name="c4" assignNames="b4" />
+    <copy target="b4" simplifyOnCompare="false" name="c5" assignNames="b5" />
+    <copy target="c4" simplifyOnCompare="false" name="c6" assignNames="b6" />
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a')// to wait for page to load
+
+    cy.get('#\\/b').should('have.text', "true")
+    cy.get('#\\/b1').should('have.text', "false")
+    cy.get('#\\/b2').should('have.text', "true")
+    cy.get('#\\/b3').should('have.text', "true")
+    cy.get('#\\/b4').should('have.text', "true")
+    cy.get('#\\/b5').should('have.text', "false")
+    cy.get('#\\/b6').should('have.text', "false")
 
   })
 

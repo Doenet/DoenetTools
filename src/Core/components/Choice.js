@@ -69,7 +69,7 @@ export default class Choice extends InlineComponent {
             text += child.stateValues.text;
           }
         }
-        return { newValues: { text } }
+        return { setValue: { text } }
       }
     }
 
@@ -93,14 +93,14 @@ export default class Choice extends InlineComponent {
           dependencyValues.countAmongSiblings
         );
 
-        return { newValues: { selected } }
+        return { setValue: { selected } }
 
       },
       inverseDefinition: function ({ desiredStateVariableValues }) {
         return {
           success: true,
           instructions: [{
-            setStateVariable: "selected",
+            setEssentialValue: "selected",
             value: desiredStateVariableValues.selected
           }]
         };
@@ -110,21 +110,20 @@ export default class Choice extends InlineComponent {
 
     stateVariableDefinitions.submitted = {
       defaultValue: false,
+      hasEssential: true,
       public: true,
       componentType: "boolean",
       returnDependencies: () => ({}),
       definition: () => ({
         useEssentialOrDefaultValue: {
-          submitted: {
-            variablesToCheck: ["submitted"]
-          }
+          submitted: true
         }
       }),
       inverseDefinition: function ({ desiredStateVariableValues }) {
         return {
           success: true,
           instructions: [{
-            setStateVariable: "submitted",
+            setEssentialValue: "submitted",
             value: desiredStateVariableValues.submitted
           }]
         };
@@ -147,9 +146,9 @@ export default class Choice extends InlineComponent {
           dependencyType: "stateVariable",
           variableName: "feedbackCodes",
         },
-        feedbackDefinitions: {
-          dependencyType: "parentStateVariable",
-          variableName: "feedbackDefinitions"
+        feedbackDefinitionAncestor: {
+          dependencyType: "ancestor",
+          variableNames: ["feedbackDefinitions"]
         },
         submitted: {
           dependencyType: "stateVariable",
@@ -159,18 +158,18 @@ export default class Choice extends InlineComponent {
       definition({ dependencyValues }) {
 
         if (!dependencyValues.submitted) {
-          return { newValues: { feedbacks: [] } }
+          return { setValue: { feedbacks: [] } }
         }
 
         let feedbacks = [];
 
+        let feedbackDefinitions = dependencyValues.feedbackDefinitionAncestor.stateValues.feedbackDefinitions;
+
         for (let feedbackCode of dependencyValues.feedbackCodes) {
           let code = feedbackCode.toLowerCase();
-          for (let feedbackDefinition of dependencyValues.feedbackDefinitions) {
-            if (code === feedbackDefinition.feedbackCode) {
-              feedbacks.push(feedbackDefinition.feedbackText);
-              break;  // just take first match
-            }
+          let feedbackText = feedbackDefinitions[code];
+          if (feedbackText) {
+            feedbacks.push(feedbackText);
           }
         }
 
@@ -178,7 +177,7 @@ export default class Choice extends InlineComponent {
           feedbacks.push(dependencyValues.feedbackText);
         }
 
-        return { newValues: { feedbacks } }
+        return { setValue: { feedbacks } }
 
       }
     };

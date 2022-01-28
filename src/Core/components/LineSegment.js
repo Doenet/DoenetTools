@@ -6,17 +6,9 @@ export default class LineSegment extends GraphicalComponent {
   static componentType = "lineSegment";
 
   actions = {
-    moveLineSegment: this.moveLineSegment.bind(
-      new Proxy(this, this.readOnlyProxyHandler)
-    ),
-    finalizeLineSegmentPosition: this.finalizeLineSegmentPosition.bind(
-      new Proxy(this, this.readOnlyProxyHandler)
-    )
+    moveLineSegment: this.moveLineSegment.bind(this),
+    finalizeLineSegmentPosition: this.finalizeLineSegmentPosition.bind(this)
   };
-
-  // used when referencing this component without prop
-  static useChildrenForReference = false;
-  static get stateVariablesShadowedForReference() { return ["endpoints"] };
 
   static createAttributesObject(args) {
     let attributes = super.createAttributesObject(args);
@@ -40,7 +32,7 @@ export default class LineSegment extends GraphicalComponent {
       public: true,
       forRenderer: true
     }
-    
+
     return attributes;
   }
 
@@ -74,7 +66,7 @@ export default class LineSegment extends GraphicalComponent {
 
         lineDescription += dependencyValues.selectedStyle.lineColor;
 
-        return { newValues: { styleDescription: lineDescription } };
+        return { setValue: { styleDescription: lineDescription } };
       }
     }
 
@@ -97,16 +89,17 @@ export default class LineSegment extends GraphicalComponent {
         if (dependencyValues.endpointsAttr !== null) {
           let nDimensions = dependencyValues.endpointsAttr.stateValues.nDimensions;
           return {
-            newValues: { nDimensions },
+            setValue: { nDimensions },
             checkForActualChange: { nDimensions: true }
           }
         } else {
           // line segment through zero points
-          return { newValues: { nDimensions: 2 } }
+          return { setValue: { nDimensions: 2 } }
         }
 
       }
     }
+
 
     stateVariableDefinitions.endpoints = {
       public: true,
@@ -114,6 +107,8 @@ export default class LineSegment extends GraphicalComponent {
       isArray: true,
       nDimensions: 2,
       entryPrefixes: ["endpointX", "endpoint"],
+      hasEssential: true,
+      defaultValueByArrayKey: (arrayKey) => me.fromAst(arrayKey === "0,0" ? 1 : 0),
       returnWrappingComponents(prefix) {
         if (prefix === "endpointX") {
           return [];
@@ -138,9 +133,9 @@ export default class LineSegment extends GraphicalComponent {
                 return [];
               }
             } else {
-              // if don't know array size, just guess that the entry is OK
-              // It will get corrected once array size is known.
-              // TODO: better to return empty array?
+              // If not given the array size,
+              // then return the array keys assuming the array is large enough.
+              // Must do this as it is used to determine potential array entries.
               return [String(indices)];
             }
           } else {
@@ -148,11 +143,18 @@ export default class LineSegment extends GraphicalComponent {
           }
         } else {
           // endpoint3 is all components of the third point
-          if (!arraySize) {
+
+          let pointInd = Number(varEnding) - 1;
+          if (!(Number.isInteger(pointInd) && pointInd >= 0)) {
             return [];
           }
-          let pointInd = Number(varEnding) - 1;
-          if (Number.isInteger(pointInd) && pointInd >= 0 && pointInd < arraySize[0]) {
+
+          if (!arraySize) {
+            // If don't have array size, we just need to determine if it is a potential entry.
+            // Return the first entry assuming array is large enough
+            return [pointInd + ",0"];
+          }
+          if (pointInd < arraySize[0]) {
             // array of "pointInd,i", where i=0, ..., arraySize[1]-1
             return Array.from(Array(arraySize[1]), (_, i) => pointInd + "," + i)
           } else {
@@ -193,7 +195,7 @@ export default class LineSegment extends GraphicalComponent {
         // console.log(arrayKeys);
 
         let endpoints = {};
-        let essentialPoints = {};
+        let essentialEndpoints = {};
 
         for (let arrayKey of arrayKeys) {
 
@@ -205,23 +207,21 @@ export default class LineSegment extends GraphicalComponent {
           ) {
             endpoints[arrayKey] = dependencyValuesByKey[arrayKey].endpointsAttr.stateValues["pointX" + varEnding];
           } else {
-            if (arrayKey === "0,0") {
-              essentialPoints[arrayKey] = { defaultValue: me.fromAst(1) }
-            } else {
-              essentialPoints[arrayKey] = { defaultValue: me.fromAst(0) }
-            }
+            essentialEndpoints[arrayKey] = true;
           }
         }
 
         let result = {};
 
         if (Object.keys(endpoints).length > 0) {
-          result.newValues = { endpoints }
+          result.setValue = { endpoints }
         }
-        if (Object.keys(essentialPoints).length > 0) {
-          result.useEssentialOrDefaultValue = { endpoints: essentialPoints }
+        if (Object.keys(essentialEndpoints).length > 0) {
+          result.useEssentialOrDefaultValue = { endpoints: essentialEndpoints }
         }
+
         return result;
+
 
       },
       async inverseArrayDefinitionByKey({ desiredStateVariableValues,
@@ -258,11 +258,11 @@ export default class LineSegment extends GraphicalComponent {
             })
 
           } else {
-
             instructions.push({
-              setStateVariable: "endpoints",
-              value: { [arrayKey]: convertValueToMathExpression(desiredStateVariableValues.endpoints[arrayKey]) },
+              setEssentialValue: "endpoints",
+              value: { [arrayKey]: desiredStateVariableValues.endpoints[arrayKey] }
             })
+
           }
         }
 
@@ -331,47 +331,7 @@ export default class LineSegment extends GraphicalComponent {
           numericalEndpoints[arrayKey] = numericalP;
         }
 
-        return { newValues: { numericalEndpoints } }
-      }
-    }
-
-    stateVariableDefinitions.graphXmin = {
-      forRenderer: true,
-      additionalStateVariablesDefined: [{
-        variableName: "graphXmax",
-        forRenderer: true,
-      }, {
-        variableName: "graphYmin",
-        forRenderer: true,
-      }, {
-        variableName: "graphYmax",
-        forRenderer: true,
-      }],
-      returnDependencies: () => ({
-        graphAncestor: {
-          dependencyType: "ancestor",
-          componentType: "graph",
-          variableNames: ["xmin", "xmax", "ymin", "ymax"]
-        }
-      }),
-      definition({ dependencyValues }) {
-        if (dependencyValues.graphAncestor) {
-          return {
-            newValues: {
-              graphXmin: dependencyValues.graphAncestor.stateValues.xmin,
-              graphXmax: dependencyValues.graphAncestor.stateValues.xmax,
-              graphYmin: dependencyValues.graphAncestor.stateValues.ymin,
-              graphYmax: dependencyValues.graphAncestor.stateValues.ymax,
-            }
-          }
-        } else {
-          return {
-            newValues: {
-              graphXmin: null, graphXmax: null,
-              graphYmin: null, graphYmax: null
-            }
-          }
-        }
+        return { setValue: { numericalEndpoints } }
       }
     }
 
@@ -385,33 +345,8 @@ export default class LineSegment extends GraphicalComponent {
           dependencyType: "stateVariable",
           variableName: "numericalEndpoints"
         },
-        graphXmin: {
-          dependencyType: "stateVariable",
-          variableName: "graphXmin"
-        },
-        graphXmax: {
-          dependencyType: "stateVariable",
-          variableName: "graphXmax"
-        },
-        graphYmin: {
-          dependencyType: "stateVariable",
-          variableName: "graphYmin"
-        },
-        graphYmax: {
-          dependencyType: "stateVariable",
-          variableName: "graphYmax"
-        },
       }),
       definition({ dependencyValues }) {
-        let xscale = 1, yscale = 1;
-        if (dependencyValues.graphXmin !== null &&
-          dependencyValues.graphXmax !== null &&
-          dependencyValues.graphYmin !== null &&
-          dependencyValues.graphYmax !== null
-        ) {
-          xscale = dependencyValues.graphXmax - dependencyValues.graphXmin;
-          yscale = dependencyValues.graphYmax - dependencyValues.graphYmin;
-        }
 
         let A1 = dependencyValues.numericalEndpoints[0][0];
         let A2 = dependencyValues.numericalEndpoints[0][1];
@@ -421,9 +356,6 @@ export default class LineSegment extends GraphicalComponent {
         let haveConstants = Number.isFinite(A1) && Number.isFinite(A2) &&
           Number.isFinite(B1) && Number.isFinite(B2);
 
-        let BA1 = (B1 - A1) / xscale;
-        let BA2 = (B2 - A2) / yscale;
-        let denom = (BA1 * BA1 + BA2 * BA2);
 
         // only implement for 
         // - 2D
@@ -431,17 +363,23 @@ export default class LineSegment extends GraphicalComponent {
         // - non-degenerate parameters
         let skip = dependencyValues.nDimensions !== 2
           || !haveConstants
-          || denom === 0;
+          || (B1 === A1 && B2 === A2);
 
 
         return {
-          newValues: {
-            nearestPoint: function (variables) {
+          setValue: {
+            nearestPoint: function ({ variables, scales }) {
 
               if (skip) {
                 return {};
               }
 
+              let xscale = scales[0];
+              let yscale = scales[1];
+
+              let BA1 = (B1 - A1) / xscale;
+              let BA2 = (B2 - A2) / yscale;
+              let denom = (BA1 * BA1 + BA2 * BA2);
 
               let t = ((variables.x1 - A1) / xscale * BA1 + (variables.x2 - A2) / yscale * BA2) / denom;
 

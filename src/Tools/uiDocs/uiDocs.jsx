@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { BrowserRouter as Router, Link, Route } from 'react-router-dom';
 import styled from 'styled-components';
 
@@ -21,6 +21,7 @@ import Increment from '../../_reactComponents/PanelHeaderComponents/IncrementMen
 import DropdownMenu from '../../_reactComponents/PanelHeaderComponents/DropdownMenu.jsx';
 import DateTime from '../../_reactComponents/PanelHeaderComponents/DateTime.jsx';
 import ColorImagePicker from '../../_reactComponents/PanelHeaderComponents/ColorImagePicker.jsx';
+import Card from '../../_reactComponents/PanelHeaderComponents/Card.jsx';
 
 // === HOW TO ADD TO UI DOCS ===
 // 1. Import the component in the COMPONENT IMPORTS SECTION above
@@ -66,6 +67,7 @@ export default function attempt() {
   const disabled = () => {};
   const absolute = () => {};
   const left = () => {};
+  const noSearchButton = () => {};
 
   //=== DATA STRUCTURE SECTION ===
   let dataStructure = [
@@ -266,13 +268,64 @@ export default function attempt() {
       ],
     },
     {
-      name: 'ColorImagePicker',
-      id: 'colorimagepicker',
-      code: ColorImagePicker,
-      codePreview: '<ColorImagePicker/>',
+      name: 'Card',
+      id: 'card',
+      code: Card,
+      codePreview: '<Card/>',
       req_props: null,
       req_children: null,
-      use: 'Allows user to pick background color or image',
+      use: 'Card is an eye-catching button that brings that user to more content or a new location.',
+      props: [
+        // {
+        //   name: 'Width - Menu Panel',
+        //   propPreview: '<Button width="menu" />',
+        //   propCode: { width: 'menu' },
+        //   description: 'Sets width to fill menu panel width',
+        // },
+        {
+          name: 'Value',
+          propPreview: '<Card value="Click Me!"/>',
+          propCode: { value: 'Click Me!' },
+          description: 'Changes the text',
+        },
+        {
+          name: 'Icon',
+          propPreview: '<Card icon={<FontAwesomeIcon icon={faCode}}/>',
+          propCode: { icon: <FontAwesomeIcon icon={faCode} />},
+          description:
+            'See Style Guide for more info on how to use FontAwesomeIcons. Adds icon in button',
+        },
+        {
+          name: 'Label',
+          propPreview: '<Card label="What: "/>',
+          propCode: { label: 'What: ' },
+          description: 'Adds label to card',
+        },
+        {
+          name: 'Vertical Label',
+          propPreview: '<Card label="What: " vertical/>',
+          propCode: { label: 'What: ', vertical },
+          description: 'Adds label to component on top',
+        },
+        {
+          name: 'Alert',
+          propPreview: '<Card alert/>',
+          propCode: { alert },
+          description: 'Changes to alert mode (color is red)',
+        },
+        {
+          name: 'onClick',
+          propPreview: '<Card onClick={() => console.log("clicked")} />',
+          propCode: { onClick: () => console.log('clicked') },
+          description: 'Function called when button is clicked',
+        },
+        {
+          name: 'Disabled',
+          propPreview: '<Card disabled />',
+          propCode: { disabled },
+          description: 'Makes button not able to be used.',
+        },
+      ],
     },
     {
       name: 'DateTime',
@@ -639,10 +692,60 @@ export default function attempt() {
           propCode: { width: 'menu' },
           description: 'Sets width to fill menu panel width',
         },
-        // {name: 'Label',
-        //   propPreview: '<Increment label="What: "/>',
-        //   propCode: {label: 'What: ', width: 'menu'},
-        //   description: 'Adds label to componenet'},
+        {
+          name: 'No Search Button',
+          propPreview: '<SearchBar noSearchButton />',
+          propCode: { noSearchButton },
+          description: 'Removes button from search bar',
+        },
+        {
+          name: 'Placeholder',
+          propPreview: '<SearchBar placeholder="Enter cat names..."/>',
+          propCode: { placeholder: 'Enter cat names...' },
+          description: 'Adds placeholder to component'
+        },
+        {
+          name: 'Label',
+          propPreview: '<SearchBar label="What: "/>',
+          propCode: { label: 'What: ' },
+          description: 'Adds label to componenet',
+        },
+        {
+          name: 'Vertical Label',
+          propPreview: '<SearchBar label="What: " vertical/>',
+          propCode: { label: 'What: ', vertical },
+          description: 'Adds label to component on top',
+        },
+        {
+          name: 'Aria Label',
+            propPreview: '<SearchBar ariaLabel="Text"/>',
+            propCode: {ariaLabel: 'Text'},
+            description: 'Adds aria label to component'
+        },
+        {
+          name: 'onChange',
+          propPreview: '<SearchBar onChange={(data) => console.log(data)} />',
+          propCode: {onChange: (data) => console.log(data)},
+          description: 'Function called when data changes'
+        },
+        {
+          name: 'onBlur',
+          propPreview: '<SearchBar onBlur={(e) => console.log(e.target.value)} />',
+          propCode: {onBlur: (e) => console.log(e.target.value)},
+          description: 'Function called when component blurs'
+        },
+        {
+          name: 'onKeyDown',
+          propPreview: '<SearchBar onKeyDown={(e) => console.log(e.key)} />',
+          propCode: {onKeyDown: (e) => console.log(e.key)},
+          description: 'Function called when key hit with focus on component'
+        },
+        {
+          name: 'Alert',
+          propPreview: '<SearchBar alert/>',
+          propCode: { alert },
+          description: 'Changes to alert mode (border is red)',
+        },
         {
           name: 'Disabled',
           propPreview: '<Increment disabled />',
@@ -673,6 +776,12 @@ export default function attempt() {
           description: 'Changes the text',
         },
         {
+          name: 'Placeholder',
+          propPreview: '<TextArea placeholder="Enter cat names"/>',
+          propCode: { placeholder: 'Enter cat names' },
+          description: 'Adds placeholder to component',
+        },
+        {
           name: 'Label',
           propPreview: '<TextArea label="What: "/>',
           propCode: { label: 'What: ' },
@@ -685,6 +794,12 @@ export default function attempt() {
           description: 'Adds label to component on top',
         },
         {
+          name: 'Aria Label',
+          propPreview: '<TextArea ariaLabel="Text"/>',
+          propCode: { ariaLabel: 'Text' },
+          description: 'Adds aria label to component',
+        },
+        {
           name: 'Alert',
           propPreview: '<TextArea alert/>',
           propCode: { alert },
@@ -695,6 +810,18 @@ export default function attempt() {
           propPreview: '<TextArea onChange={(data) => console.log(data)} />',
           propCode: { onChange: (data) => console.log(data) },
           description: 'Function called when data changes',
+        },
+        {
+          name: 'onBlur',
+          propPreview: '<Textfield onBlur={(e) => console.log(e.target.value)} />',
+          propCode: { onBlur: (e) => console.log(e.target.value) },
+          description: 'Function called when component blurs',
+        },
+        {
+          name: 'onKeyDown',
+          propPreview: '<Textfield onKeyDown={(e) => console.log(e.key)} />',
+          propCode: { onKeyDown: (e) => console.log(e.key) },
+          description: 'Function called when key hit with focus on component',
         },
         {
           name: 'Disabled',
@@ -726,6 +853,12 @@ export default function attempt() {
           description: 'Changes the text',
         },
         {
+          name: 'Placeholder',
+          propPreview: '<Textfield placeholder="Enter cat names"/>',
+          propCode: { placeholder: 'Enter cat names' },
+          description: 'Adds placeholder to component',
+        },
+        {
           name: 'Label',
           propPreview: '<Textfield label="What: "/>',
           propCode: { label: 'What: ' },
@@ -736,6 +869,12 @@ export default function attempt() {
           propPreview: '<Textfield label="What: " vertical/>',
           propCode: { label: 'What: ', vertical },
           description: 'Adds label to component on top',
+        },
+        {
+          name: 'Aria Label',
+          propPreview: '<Textfield ariaLabel="Text"/>',
+          propCode: { ariaLabel: 'Text' },
+          description: 'Adds aria label to component',
         },
         {
           name: 'Alert',
@@ -780,62 +919,64 @@ export default function attempt() {
       req_children: null,
       use: 'This is where you can enter text.',
       props: [
-        {
-          name: 'Width - Menu Panel',
-          propPreview: '<Form width="menu" />',
-          propCode: { width: 'menu' },
-          description: 'Sets width to fill menu panel width',
-        },
-        {
-          name: 'Submit Button Text',
-          propPreview: '<Form submitButton="add Text" />',
-          propCode: { submitButton: 'add Text' },
-          description: 'Changes the button text',
-        },
-        {
-          name: 'Value',
-          propPreview: '<Form value="Enter cat names"/>',
-          propCode: { value: 'Enter cat names' },
-          description: 'Changes the text',
-        },
-        {
-          name: 'Label',
-          propPreview: '<Form label="What: "/>',
-          propCode: { label: 'What: ' },
-          description: 'Adds label to componenet',
-        },
-        {
-          name: 'Vertical Label',
-          propPreview: '<Form label="What: " vertical/>',
-          propCode: { label: 'What: ', vertical },
-          description: 'Adds label to component on top',
-        },
-        {
-          name: 'Alert',
-          propPreview: '<Form alert/>',
-          propCode: { alert },
-          description: 'Changes to alert mode (border is red)',
-        },
-        {
-          name: 'onChange',
-          propPreview: '<Form onChange={(data) => console.log(data)} />',
-          propCode: { onChange: (data) => console.log(data) },
-          description: 'Function called when data changes',
-        },
-        {
-          name: 'onClick',
-          propPreview: '<Form onClick={() => console.log("clicked")} />',
-          propCode: { onClick: () => console.log('clicked') },
-          description: 'Function called when form button is clicked',
-        },
-        {
-          name: 'Disabled',
-          propPreview: '<Form disabled />',
-          propCode: { disabled },
-          description: 'Makes Form not able to be used.',
-        },
-      ],
-    },
+        {name: 'Width - Menu Panel',
+        propPreview: '<Form width="menu" />',
+        propCode: {width: 'menu'},
+        description: 'Sets width to fill menu panel width'},
+        {name: 'Submit Button Text',
+        propPreview: '<Form submitButton="add Text" />',
+        propCode: {submitButton:"add Text"},
+        description: 'Changes the button text'},
+        {name: 'Value',
+        propPreview: '<Form value="Sprinkles"/>',
+        propCode: {value: 'Sprinkles'},
+        description: 'Changes the text'},
+        {name: 'Placeholder',
+        propPreview: '<Form placeholder="Enter cat names"/>',
+        propCode: {placeholder: 'Enter cat names'},
+        description: 'Adds placeholder to component'},
+        {name: 'Label',
+            propPreview: '<Form label="What: "/>',
+            propCode: {label: 'What: '},
+            description: 'Adds label to component'},
+            {name: 'Vertical Label',
+            propPreview: '<Form label="What: " vertical/>',
+            propCode: {label: 'What: ', vertical},
+            description: 'Adds label to component on top'},
+            {name: 'Aria Label',
+            propPreview: '<Form ariaLabel="Text"/>',
+            propCode: {ariaLabel: 'Text'},
+            description: 'Adds aria label to component'},
+        {name: 'Alert',
+        propPreview: '<Form alert/>',
+        propCode: {alert},
+        description: 'Changes to alert mode (border is red)'},
+        {name: 'onChange',
+        propPreview: '<Form onChange={(data) => console.log(data)} />',
+        propCode: {onChange: (data) => console.log(data)},
+        description: 'Function called when data changes'},
+        {name: 'onClick',
+        propPreview: '<Form onClick={() => console.log("clicked")} />',
+        propCode: {onClick: () => console.log("clicked")},
+        description: 'Function called when form button is clicked'},
+        {name: 'onBlur',
+        propPreview: '<Form onBlur={(e) => console.log(e.target.value)} />',
+        propCode: {onBlur: (e) => console.log(e.target.value)},
+        description: 'Function called when component blurs'},
+        {name: 'onKeyDown',
+        propPreview: '<Form onKeyDown={(e) => console.log(e.key)} />',
+        propCode: {onKeyDown: (e) => console.log(e.key)},
+        description: 'Function called when key hit with focus on component'},
+        {name: 'Disabled',
+        propPreview: '<Form disabled />',
+        propCode: {disabled},
+        description: 'Makes component not able to be used'},
+        {name: 'clearInput',
+        propPreview: '<Form clearInput={(e) => {console.log(e.target.value)} />',
+        propCode: {clearInput: (e) => console.log("clear")},
+        description: 'Makes clear button available'},
+        ]
+      },
     {
       name: 'ToggleButton',
       id: 'togglebutton',
@@ -1037,6 +1178,14 @@ export default function attempt() {
       req_props: null,
       req_children: null,
       use: 'Creates visual separation.',
+      props: [{
+        name: 'Height',
+        propPreview: '<VerticalDivider height="200px" />',
+        propCode: {
+          height: '200px'
+        },
+        description: 'Changes height of divider',
+      },]
     },
   ];
   // === END OF DATA STRUCTURE SECTION ===

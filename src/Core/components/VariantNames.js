@@ -64,7 +64,7 @@ export default class VariantNames extends BaseComponent {
         }
       }),
       definition: function ({ dependencyValues }) {
-        return { newValues: { nVariants: dependencyValues.stringChildren.length } }
+        return { setValue: { nVariants: dependencyValues.stringChildren.length } }
       }
     }
 
@@ -104,7 +104,7 @@ export default class VariantNames extends BaseComponent {
               .toLowerCase().substring(0, 1000);
           }
         }
-        return { newValues: { variantNames } }
+        return { setValue: { variantNames } }
       }
     }
 

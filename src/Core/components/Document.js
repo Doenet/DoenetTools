@@ -1,6 +1,7 @@
 import BaseComponent from './abstract/BaseComponent';
 import { getVariantsForDescendants } from '../utils/variants';
 import { returnStyleDefinitionStateVariables } from '../utils/style';
+import { returnFeedbackDefinitionStateVariables } from '../utils/feedback';
 import { numberToLetters } from '../utils/sequence';
 
 export default class Document extends BaseComponent {
@@ -28,14 +29,6 @@ export default class Document extends BaseComponent {
       defaultValue: false,
       public: true,
     };
-    attributes.feedbackDefinitions = {
-      createComponentOfType: "feedbackDefinitions",
-      createStateVariable: "feedbackDefinitions",
-      get defaultValue() { return returnDefaultFeedbackDefinitions() },
-      propagateToDescendants: true,
-      mergeArrayWithDefault: true,
-      public: true,
-    };
     return attributes;
   }
 
@@ -52,10 +45,7 @@ export default class Document extends BaseComponent {
       componentTypes: ["description"]
     }, {
       group: "setups",
-      componentTypes: ["setup"]
-    }, {
-      group: "styleDefinitions",
-      componentTypes: ["styleDefinitions"]
+      componentTypes: ["setup"],
     }, {
       group: "anything",
       componentTypes: ["_base"]
@@ -69,8 +59,11 @@ export default class Document extends BaseComponent {
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
     let styleDefinitionStateVariables = returnStyleDefinitionStateVariables();
-
     Object.assign(stateVariableDefinitions, styleDefinitionStateVariables);
+
+    let feedbackDefinitionStateVariables = returnFeedbackDefinitionStateVariables();
+    Object.assign(stateVariableDefinitions, feedbackDefinitionStateVariables);
+
 
     stateVariableDefinitions.titleChildName = {
       forRenderer: true,
@@ -86,7 +79,7 @@ export default class Document extends BaseComponent {
           titleChildName = dependencyValues.titleChild[0].componentName
         }
         return {
-          newValues: { titleChildName }
+          setValue: { titleChildName }
         }
       }
     }
@@ -105,9 +98,9 @@ export default class Document extends BaseComponent {
       }),
       definition({ dependencyValues }) {
         if (dependencyValues.titleChild.length === 0) {
-          return { newValues: { title: "" } };
+          return { setValue: { title: "" } };
         } else {
-          return { newValues: { title: dependencyValues.titleChild[0].stateValues.text } };
+          return { setValue: { title: dependencyValues.titleChild[0].stateValues.text } };
         }
       }
     }
@@ -116,7 +109,6 @@ export default class Document extends BaseComponent {
     stateVariableDefinitions.description = {
       public: true,
       componentType: "text",
-      forRenderer: true,
       returnDependencies: () => ({
         descriptionChild: {
           dependencyType: "child",
@@ -126,9 +118,9 @@ export default class Document extends BaseComponent {
       }),
       definition({ dependencyValues }) {
         if (dependencyValues.descriptionChild.length === 0) {
-          return { newValues: { description: "" } };
+          return { setValue: { description: "" } };
         } else {
-          return { newValues: { description: dependencyValues.descriptionChild[0].stateValues.text } };
+          return { setValue: { description: dependencyValues.descriptionChild[0].stateValues.text } };
         }
       }
     }
@@ -136,22 +128,23 @@ export default class Document extends BaseComponent {
     stateVariableDefinitions.level = {
       forRenderer: true,
       returnDependencies: () => ({}),
-      definition: () => ({ newValues: { level: 0 } })
+      definition: () => ({ setValue: { level: 0 } })
     }
 
     stateVariableDefinitions.viewedSolution = {
       defaultValue: false,
+      hasEssential: true,
       returnDependencies: () => ({}),
       definition: () => ({
         useEssentialOrDefaultValue: {
-          viewedSolution: { variablesToCheck: ["viewedSolution"] }
+          viewedSolution: true
         }
       }),
       inverseDefinition({ desiredStateVariableValues }) {
         return {
           success: true,
           instructions: [{
-            setStateVariable: "viewedSolution",
+            setEssentialValue: "viewedSolution",
             value: desiredStateVariableValues.viewedSolution
           }]
         }
@@ -188,7 +181,7 @@ export default class Document extends BaseComponent {
           }
         }
 
-        return { newValues: { scoredDescendants } }
+        return { setValue: { scoredDescendants } }
 
       }
 
@@ -203,7 +196,7 @@ export default class Document extends BaseComponent {
       }),
       definition({ dependencyValues }) {
         return {
-          newValues: {
+          setValue: {
             nScoredDescendants: dependencyValues.scoredDescendants.length
           }
         }
@@ -249,7 +242,7 @@ export default class Document extends BaseComponent {
           itemCreditAchieved[arrayKey] = dependencyValuesByKey[arrayKey].creditAchieved;
         }
 
-        return { newValues: { itemCreditAchieved } }
+        return { setValue: { itemCreditAchieved } }
 
       }
 
@@ -292,7 +285,7 @@ export default class Document extends BaseComponent {
           }
         }
 
-        return { newValues: { itemNumberByAnswerName } }
+        return { setValue: { itemNumberByAnswerName } }
 
       }
 
@@ -336,7 +329,7 @@ export default class Document extends BaseComponent {
           itemVariantInfo[arrayKey] = dependencyValuesByKey[arrayKey].generatedVariantInfo;
         }
 
-        return { newValues: { itemVariantInfo } }
+        return { setValue: { itemVariantInfo } }
 
       }
 
@@ -352,12 +345,11 @@ export default class Document extends BaseComponent {
         }
       }),
       definition({ dependencyValues }) {
-        return { newValues: { answerDescendants: dependencyValues.answerDescendants } }
+        return { setValue: { answerDescendants: dependencyValues.answerDescendants } }
       }
     }
 
     stateVariableDefinitions.justSubmitted = {
-      forRenderer: true,
       returnDependencies: () => ({
         answerDescendants: {
           dependencyType: "stateVariable",
@@ -366,7 +358,7 @@ export default class Document extends BaseComponent {
       }),
       definition({ dependencyValues }) {
         return {
-          newValues: {
+          setValue: {
             justSubmitted:
               dependencyValues.answerDescendants.every(x => x.stateValues.justSubmitted)
           }
@@ -375,7 +367,6 @@ export default class Document extends BaseComponent {
     }
 
     stateVariableDefinitions.showCorrectness = {
-      forRenderer: true,
       returnDependencies: () => ({
         showCorrectnessFlag: {
           dependencyType: "flag",
@@ -384,20 +375,19 @@ export default class Document extends BaseComponent {
       }),
       definition({ dependencyValues }) {
         let showCorrectness = dependencyValues.showCorrectnessFlag !== false;
-        return { newValues: { showCorrectness } }
+        return { setValue: { showCorrectness } }
       }
     }
 
 
     stateVariableDefinitions.displayDigitsForCreditAchieved = {
       returnDependencies: () => ({}),
-      definition: () => ({ newValues: { displayDigitsForCreditAchieved: 3 } })
+      definition: () => ({ setValue: { displayDigitsForCreditAchieved: 3 } })
     }
 
     stateVariableDefinitions.creditAchieved = {
       public: true,
       componentType: "number",
-      forRenderer: true,
       defaultValue: 0,
       stateVariablesPrescribingAdditionalAttributes: {
         displayDigits: "displayDigitsForCreditAchieved",
@@ -441,7 +431,7 @@ export default class Document extends BaseComponent {
 
         let percentCreditAchieved = creditAchieved * 100;
 
-        return { newValues: { creditAchieved, percentCreditAchieved } }
+        return { setValue: { creditAchieved, percentCreditAchieved } }
 
       }
     }
@@ -479,7 +469,7 @@ export default class Document extends BaseComponent {
         }
         let creditAchievedIfSubmit = creditSum / totalWeight;
 
-        return { newValues: { creditAchievedIfSubmit } }
+        return { setValue: { creditAchievedIfSubmit } }
 
       }
     }
@@ -514,17 +504,17 @@ export default class Document extends BaseComponent {
       }),
       definition({ dependencyValues, componentName, previousValues }) {
 
-        let subvariantsSpecified = Boolean(
-          dependencyValues.variants.desiredVariant &&
-          dependencyValues.variants.desiredVariant.subvariants
-        )
+        // let subvariantsSpecified = Boolean(
+        //   dependencyValues.variants.desiredVariant &&
+        //   dependencyValues.variants.desiredVariant.subvariants
+        // )
 
         let generatedVariantInfo = {
           index: dependencyValues.variantIndex,
           name: dependencyValues.variantName,
           meta: {
             createdBy: componentName,
-            subvariantsSpecified
+            // subvariantsSpecified
           },
         }
 
@@ -550,7 +540,7 @@ export default class Document extends BaseComponent {
           }
         }
 
-        return { newValues: { generatedVariantInfo } }
+        return { setValue: { generatedVariantInfo } }
 
       }
     }
@@ -577,7 +567,7 @@ export default class Document extends BaseComponent {
           suppressAnswerSubmitButtons = true
         }
 
-        return { newValues: { createSubmitAllButton, suppressAnswerSubmitButtons } }
+        return { setValue: { createSubmitAllButton, suppressAnswerSubmitButtons } }
       }
     }
 
@@ -836,24 +826,4 @@ function indexToLowercaseLetters(index) {
 }
 
 
-function returnDefaultFeedbackDefinitions() {
-  return [
-    {
-      feedbackCode: 'numericalerror',
-      feedbackText: `Credit reduced because numbers in your answer weren't quite right.  Did you round too much?`
-    },
-    {
-      feedbackCode: 'goodjob',
-      feedbackText: `Good job!`
-    },
-    {
-      feedbackCode: 'onesignerror',
-      feedbackText: `Credit reduced because it appears that you made a sign error.`
-    },
-    {
-      feedbackCode: 'twosignerrors',
-      feedbackText: `Credit reduced because it appears that you made two sign errors.`
-    },
-  ]
-}
 

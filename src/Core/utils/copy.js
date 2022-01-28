@@ -1,5 +1,5 @@
 import { getUniqueIdentifierFromBase } from "./naming";
-import { applyMacros, componentFromAttribute } from "./serializedStateProcessing";
+import { applyMacros, applySugar, componentFromAttribute, removeBlankStringChildren } from "./serializedStateProcessing";
 
 export function postProcessCopy({ serializedComponents, componentName,
   addShadowDependencies = true, uniqueIdentifiersUsed = [], identifierPrefix = "",
@@ -14,7 +14,7 @@ export function postProcessCopy({ serializedComponents, componentName,
   for (let ind in serializedComponents) {
     let component = serializedComponents[ind];
 
-    if(typeof component !== "object") {
+    if (typeof component !== "object") {
       continue;
     }
 
@@ -108,7 +108,7 @@ export function postProcessCopy({ serializedComponents, componentName,
 
   for (let ind in serializedComponents) {
     let component = serializedComponents[ind];
-    if(typeof component !== "object") {
+    if (typeof component !== "object") {
       continue;
     }
 
@@ -217,11 +217,23 @@ export function convertAttributesForComponentType({
         componentInfoObjects
       });
 
-      if (newAttributes[propName].children) {
-        newAttributes[propName].children = applyMacros(newAttributes[propName].children, componentInfoObjects);
+      if (newAttributes[propName].component?.children) {
+
+        let serializedComponents = [newAttributes[propName].component];
+
+        applyMacros(serializedComponents, componentInfoObjects);
+
+        removeBlankStringChildren(serializedComponents, componentInfoObjects)
+
+        applySugar({
+          serializedComponents,
+          componentInfoObjects,
+          isAttributeComponent: true,
+        });
+
         if (compositeCreatesNewNamespace) {
           // modify targets to go back one namespace
-          for (let child of newAttributes[propName].children) {
+          for (let child of newAttributes[propName].component.children) {
             if (child.componentType === "copy") {
               let target = child.doenetAttributes.target;
               if (/[a-zA-Z_]/.test(target[0])) {

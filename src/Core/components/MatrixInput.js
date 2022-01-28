@@ -9,15 +9,9 @@ export default class MatrixInput extends MathInput {
 
     delete this.actions.updateRawValue;
 
-    this.actions.updateRawValues = this.updateRawValues.bind(
-      new Proxy(this, this.readOnlyProxyHandler)
-    )
-    this.actions.updateNumRows = this.updateNumRows.bind(
-      new Proxy(this, this.readOnlyProxyHandler)
-    )
-    this.actions.updateNumColumns = this.updateNumColumns.bind(
-      new Proxy(this, this.readOnlyProxyHandler)
-    )
+    this.actions.updateRawValues = this.updateRawValues.bind(this)
+    this.actions.updateNumRows = this.updateNumRows.bind(this)
+    this.actions.updateNumColumns = this.updateNumColumns.bind(this)
 
   }
 
@@ -75,7 +69,7 @@ export default class MatrixInput extends MathInput {
         }
       }),
       definition({ dependencyValues }) {
-        return { newValues: { haveBoundValue: dependencyValues.bindValueTo !== null } }
+        return { setValue: { haveBoundValue: dependencyValues.bindValueTo !== null } }
       }
     }
 
@@ -118,10 +112,12 @@ export default class MatrixInput extends MathInput {
 
         }
 
-        return { newValues: { numRows } }
+        return { setValue: { numRows } }
 
       },
       async inverseDefinition({ desiredStateVariableValues, dependencyValues, stateValues }) {
+        console.log(desiredStateVariableValues, dependencyValues)
+
         let desiredNumRows = desiredStateVariableValues.numRows;
         if (!Number.isInteger(desiredNumRows)) {
           return { success: false };
@@ -213,6 +209,8 @@ export default class MatrixInput extends MathInput {
 
         }
 
+        console.log(instructions)
+
         return {
           success: true,
           instructions
@@ -262,7 +260,7 @@ export default class MatrixInput extends MathInput {
 
         }
 
-        return { newValues: { numColumns } }
+        return { setValue: { numColumns } }
 
       },
       async inverseDefinition({ desiredStateVariableValues, dependencyValues, stateValues }) {
@@ -394,7 +392,7 @@ export default class MatrixInput extends MathInput {
               }
             }
 
-            return { newValues: { accumulatedComponents } }
+            return { setValue: { accumulatedComponents } }
 
           } else if (operator === "vector" || operator === "tuple") {
             // treat vector/tuple as first column in matrix
@@ -407,7 +405,7 @@ export default class MatrixInput extends MathInput {
               accumRow[0] = comp;
             }
 
-            return { newValues: { accumulatedComponents } }
+            return { setValue: { accumulatedComponents } }
 
           } else if (Array.isArray(originalTree[1])
             && (originalTree[1][0] === "vector" || originalTree[1][0] === "tuple")
@@ -423,7 +421,7 @@ export default class MatrixInput extends MathInput {
               accumRow[colInd] = comp;
             }
 
-            return { newValues: { accumulatedComponents } }
+            return { setValue: { accumulatedComponents } }
 
           }
         }
@@ -434,7 +432,7 @@ export default class MatrixInput extends MathInput {
         }
         accumRow[0] = originalTree;
 
-        return { newValues: { accumulatedComponents } }
+        return { setValue: { accumulatedComponents } }
 
       }
     }
@@ -478,7 +476,7 @@ export default class MatrixInput extends MathInput {
             if (originalTree[1][1] === numRows
               && originalTree[1][2] === numColumns
             ) {
-              return { newValues: { value: dependencyValues.valueOriginal } }
+              return { setValue: { value: dependencyValues.valueOriginal } }
             }
 
             // have matrix, just wrong size
@@ -528,7 +526,7 @@ export default class MatrixInput extends MathInput {
             }
 
 
-            return { newValues: { value: me.fromAst(newTree) } }
+            return { setValue: { value: me.fromAst(newTree) } }
 
 
           } else if (operator === "vector" || operator === "tuple") {
@@ -565,7 +563,7 @@ export default class MatrixInput extends MathInput {
               }
             }
 
-            return { newValues: { value: me.fromAst(newTree) } }
+            return { setValue: { value: me.fromAst(newTree) } }
 
           } else if (Array.isArray(originalTree[1])
             && (originalTree[1][0] === "vector" || originalTree[1][0] === "tuple")
@@ -608,7 +606,7 @@ export default class MatrixInput extends MathInput {
               }
             }
 
-            return { newValues: { value: me.fromAst(newTree) } }
+            return { setValue: { value: me.fromAst(newTree) } }
 
 
           }
@@ -645,7 +643,7 @@ export default class MatrixInput extends MathInput {
           }
         }
 
-        return { newValues: { value: me.fromAst(newTree) } }
+        return { setValue: { value: me.fromAst(newTree) } }
 
 
       },
@@ -728,7 +726,7 @@ export default class MatrixInput extends MathInput {
         let componentDisplayValues = dependencyValues.valueForDisplay.tree[2]
           .slice(1).map(x => x.slice(1).map(y => me.fromAst(y)));
 
-        return { newValues: { componentDisplayValues } };
+        return { setValue: { componentDisplayValues } };
 
       }
     }
@@ -738,17 +736,18 @@ export default class MatrixInput extends MathInput {
     stateVariableDefinitions.rawRendererValues = {
       defaultValue: [],
       forRenderer: true,
+      hasEssential: true,
       returnDependencies: () => ({}),
       definition: () => ({
         useEssentialOrDefaultValue: {
-          rawRendererValues: { variablesToCheck: ["rawRendererValues"] }
+          rawRendererValues: true
         }
       }),
       inverseDefinition({ desiredStateVariableValues }) {
         return {
           success: true,
           instructions: [{
-            setStateVariable: "rawRendererValues",
+            setEssentialValue: "rawRendererValues",
             value: desiredStateVariableValues.rawRendererValues
           }]
         }
@@ -777,6 +776,7 @@ export default class MatrixInput extends MathInput {
   }
 
   async updateNumRows({ numRows }) {
+    console.log(`update num rows to ${numRows}`)
     if (!await this.stateValues.disabled) {
       return await this.coreFunctions.performUpdate({
         updateInstructions: [{

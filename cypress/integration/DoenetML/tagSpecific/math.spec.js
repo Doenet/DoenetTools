@@ -96,12 +96,12 @@ describe('Math Tag Tests', function () {
     cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
       let replacement = components['/_copy1'].replacements[0];
-      expect(components['/_math1'].stateValues.value.tree).eqls(['+', 'x', 1])
-      expect(replacement.stateValues.value.tree).eqls(['+', 'x', 1])
-      expect(components['/_math2'].stateValues.value.tree).eqls(["+", ["*", 3, ["+", "x", 1]], 5])
-      expect(components['/_math1'].stateValues.hide).eq(true)
+      expect((await components['/_math1'].stateValues.value).tree).eqls(['+', 'x', 1])
+      expect((await replacement.stateValues.value).tree).eqls(['+', 'x', 1])
+      expect((await components['/_math2'].stateValues.value).tree).eqls(["+", ["*", 3, ["+", "x", 1]], 5])
+      expect(await components['/_math1'].stateValues.hide).eq(true)
       expect(await replacement.stateValues.hide).eq(true);
-      expect(components['/_math2'].stateValues.hide).eq(false)
+      expect(await components['/_math2'].stateValues.hide).eq(false)
     })
   })
 
@@ -847,6 +847,58 @@ describe('Math Tag Tests', function () {
 
   });
 
+  it('copy and overwrite function symbols', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+  <p><text>a</text></p>
+  <math name="m1">f(x)+m(x)</math>
+  <copy target="m1" functionSymbols="m" assignNames="m2" />
+  <copy target="m2" functionSymbols="m f" assignNames="m3" />
+
+  <math name="m4" functionSymbols="m f">f(x)+m(x)</math>
+  <copy target="m4" functionSymbols="m" assignNames="m5" />
+  <copy target="m5" functionSymbols="f" assignNames="m6" />
+  `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.log('Test value displayed in browser')
+    cy.get('#\\/m1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('f(x)+mx')
+    })
+    cy.get('#\\/m2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('fx+m(x)')
+    })
+    cy.get('#\\/m3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('f(x)+m(x)')
+    })
+    cy.get('#\\/m4').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('f(x)+m(x)')
+    })
+    cy.get('#\\/m5').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('fx+m(x)')
+    })
+    cy.get('#\\/m6').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('f(x)+mx')
+    })
+
+    cy.log('Test internal values')
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/m1'].stateValues.value.tree).eqls(["+", ["apply", "f", "x"], ["*", "m", "x"]]);
+      expect(components['/m2'].stateValues.value.tree).eqls(["+", ["*", "f", "x"], ["apply", "m", "x"]]);
+      expect(components['/m3'].stateValues.value.tree).eqls(["+", ["apply", "f", "x"], ["apply", "m", "x"]]);
+      expect(components['/m4'].stateValues.value.tree).eqls(["+", ["apply", "f", "x"], ["apply", "m", "x"]]);
+      expect(components['/m5'].stateValues.value.tree).eqls(["+", ["*", "f", "x"], ["apply", "m", "x"]]);
+      expect(components['/m6'].stateValues.value.tree).eqls(["+", ["apply", "f", "x"], ["*", "m", "x"]]);
+
+    });
+
+
+  });
+
   it('targetsAreFunctionSymbols', () => {
     cy.window().then((win) => {
       win.postMessage({
@@ -889,6 +941,65 @@ describe('Math Tag Tests', function () {
         expect(components['/_math2'].stateValues.value.tree).eqls(["*", x, f]);
         expect(components['/_math3'].stateValues.value.tree).eqls(["apply", f, x]);
         expect(components['/_math4'].stateValues.value.tree).eqls(["*", x, f]);
+
+      });
+    })
+
+
+  });
+
+  it('copy and overwrite targetsAreFunctionSymbols', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+  <p><text>a</text></p>
+  <p><select assignNames="f">f g h k m n</select></p>
+
+  <p><math name="m1">$f(x)</math></p>
+  <p><copy target="m1" targetsAreFunctionSymbols="f" assignNames="m2" /></p>
+  <p><copy target="m2" targetsAreFunctionSymbols="" assignNames="m3" /></p>
+
+  <p><math name="m4" targetsAreFunctionSymbols="f">$f(x)</math></p>
+  <p><copy target="m4" targetsAreFunctionSymbols="" assignNames="m5" /></p>
+  <p><copy target="m5" targetsAreFunctionSymbols="f" assignNames="m6" /></p>
+  `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      let f = components["/f"].stateValues.value.tree;
+
+      cy.log('Test value displayed in browser')
+      cy.get('#\\/m1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal(`${f}x`)
+      })
+      cy.get('#\\/m2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal(`${f}(x)`)
+      })
+      cy.get('#\\/m3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal(`${f}x`)
+      })
+      cy.get('#\\/m4').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal(`${f}(x)`)
+      })
+      cy.get('#\\/m5').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal(`${f}x`)
+      })
+      cy.get('#\\/m6').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal(`${f}(x)`)
+      })
+
+
+      cy.log('Test internal values')
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
+        expect(components['/m1'].stateValues.value.tree).eqls(["*", f, "x"]);
+        expect(components['/m2'].stateValues.value.tree).eqls(["apply", f, "x"]);
+        expect(components['/m3'].stateValues.value.tree).eqls(["*", f, "x"]);
+        expect(components['/m4'].stateValues.value.tree).eqls(["apply", f, "x"]);
+        expect(components['/m5'].stateValues.value.tree).eqls(["*", f, "x"]);
+        expect(components['/m6'].stateValues.value.tree).eqls(["apply", f, "x"]);
 
       });
     })
@@ -1141,6 +1252,58 @@ describe('Math Tag Tests', function () {
 
   });
 
+  it('copy and overwrite split symbols', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+  <p><text>a</text></p>
+  <p><math name="m1">xyz</math></p>
+  <p><copy target="m1" splitsymbols="false" assignNames="m2" /></p>
+  <p><copy target="m2" splitsymbols assignNames="m3" /></p>
+
+  <p><math name="m4" splitSymbols="false">xyz</math></p>
+  <p><copy target="m4" splitsymbols assignNames="m5" /></p>
+  <p><copy target="m5" splitsymbols="false" assignNames="m6" /></p>
+  `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.log('Test value displayed in browser')
+    cy.get('#\\/m1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('xyz')
+    })
+    cy.get('#\\/m2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('xyz')
+    })
+    cy.get('#\\/m3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('xyz')
+    })
+    cy.get('#\\/m4').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('xyz')
+    })
+    cy.get('#\\/m5').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('xyz')
+    })
+    cy.get('#\\/m6').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('xyz')
+    })
+
+
+    cy.log('Test internal values')
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/m1'].stateValues.value.tree).eqls(["*", "x", "y", "z"]);
+      expect(components['/m2'].stateValues.value.tree).eqls("xyz");
+      expect(components['/m3'].stateValues.value.tree).eqls(["*", "x", "y", "z"]);
+      expect(components['/m4'].stateValues.value.tree).eqls("xyz");
+      expect(components['/m5'].stateValues.value.tree).eqls(["*", "x", "y", "z"]);
+      expect(components['/m6'].stateValues.value.tree).eqls("xyz");
+
+    });
+
+  });
+
   it('merge lists with other containers', () => {
     cy.window().then((win) => {
       win.postMessage({
@@ -1383,8 +1546,53 @@ describe('Math Tag Tests', function () {
   <p><text>a</text></p>
   <math name="unordered1"><math unordered>2,3</math></math>
   <math name="unordered2">4<math unordered>(2,3)</math></math>
+  <math name="unordered3" unordered><math>4</math><math unordered>(2,3)</math></math>
   <math name="ordered1">2,3</math>
   <math name="ordered2"><math>4</math><math unordered>(2,3)</math></math>
+  <math name="ordered3" unordered="false"><math unordered>2,3</math></math>
+
+  `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.window().then(async (win) => {
+
+      let components = Object.assign({}, win.state.components);
+      expect(await components["/unordered1"].stateValues.unordered).eq(true);
+      expect(await components["/unordered2"].stateValues.unordered).eq(true);
+      expect(await components["/unordered3"].stateValues.unordered).eq(true);
+      expect(await components["/ordered1"].stateValues.unordered).eq(false);
+      expect(await components["/ordered2"].stateValues.unordered).eq(false);
+      expect(await components["/ordered3"].stateValues.unordered).eq(false);
+
+
+    });
+
+
+  });
+
+  it('copy math and overwrite unordered', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+  <p><text>a</text></p>
+  <math name="ordered1">2,3</math>
+  <copy target="ordered1" unordered assignNames="unordered1" />
+  <copy target="unordered1" unordered="false" assignNames="ordered2" />
+
+  <math name="unordered2" unordered>2,3</math>
+  <copy target="unordered2" unordered="false" assignNames="ordered3" />
+  <copy target="ordered3" unordered assignNames="unordered3" />
+
+  <math name="unordered4"><math unordered>2,3</math></math>
+  <copy target="unordered4" unordered="false" assignNames="ordered4" />
+  <copy target="ordered4" unordered assignNames="unordered5" />
+
+  <math name="ordered5" unordered="false"><math unordered>2,3</math></math>
+  <copy target="ordered5" unordered assignNames="unordered6" />
+  <copy target="unordered6" unordered="false" assignNames="ordered6" />
+
   `}, "*");
     });
 
@@ -1394,12 +1602,87 @@ describe('Math Tag Tests', function () {
       let components = Object.assign({}, win.state.components);
       expect(await components["/unordered1"].stateValues.unordered).eq(true);
       expect(await components["/unordered2"].stateValues.unordered).eq(true);
+      expect(await components["/unordered3"].stateValues.unordered).eq(true);
+      expect(await components["/unordered4"].stateValues.unordered).eq(true);
+      expect(await components["/unordered5"].stateValues.unordered).eq(true);
+      expect(await components["/unordered6"].stateValues.unordered).eq(true);
       expect(await components["/ordered1"].stateValues.unordered).eq(false);
       expect(await components["/ordered2"].stateValues.unordered).eq(false);
+      expect(await components["/ordered3"].stateValues.unordered).eq(false);
+      expect(await components["/ordered4"].stateValues.unordered).eq(false);
+      expect(await components["/ordered5"].stateValues.unordered).eq(false);
+      expect(await components["/ordered6"].stateValues.unordered).eq(false);
 
 
     });
 
+
+  });
+
+  it('copy math and overwrite unordered, change dynamically', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+  <p><text>a</text></p>
+  <booleaninput name="b1" prefill="true" />
+  <booleaninput name="b2" />
+  <booleaninput name="b3" prefill="true" />
+
+  <p name="p1" newNamespace>
+    <math name="m1" unordered="$(../b1)">2,3</math>
+    <copy target="m1" unordered="$(../b2)" assignNames="m2" />
+    <copy target="m2" unordered="$(../b3)" assignNames="m3" />
+  </p>
+
+  <copy target="p1" assignNames="p2" />
+  `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.window().then(async (win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(await components["/p1/m1"].stateValues.unordered).eq(true);
+      expect(await components["/p1/m2"].stateValues.unordered).eq(false);
+      expect(await components["/p1/m3"].stateValues.unordered).eq(true);
+      expect(await components["/p2/m1"].stateValues.unordered).eq(true);
+      expect(await components["/p2/m2"].stateValues.unordered).eq(false);
+      expect(await components["/p2/m3"].stateValues.unordered).eq(true);
+
+    });
+
+    cy.get('#\\/b1_input').click();
+    cy.window().then(async (win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(await components["/p1/m1"].stateValues.unordered).eq(false);
+      expect(await components["/p1/m2"].stateValues.unordered).eq(false);
+      expect(await components["/p1/m3"].stateValues.unordered).eq(true);
+      expect(await components["/p2/m1"].stateValues.unordered).eq(false);
+      expect(await components["/p2/m2"].stateValues.unordered).eq(false);
+      expect(await components["/p2/m3"].stateValues.unordered).eq(true);
+    });
+
+    cy.get('#\\/b2_input').click();
+    cy.window().then(async (win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(await components["/p1/m1"].stateValues.unordered).eq(false);
+      expect(await components["/p1/m2"].stateValues.unordered).eq(true);
+      expect(await components["/p1/m3"].stateValues.unordered).eq(true);
+      expect(await components["/p2/m1"].stateValues.unordered).eq(false);
+      expect(await components["/p2/m2"].stateValues.unordered).eq(true);
+      expect(await components["/p2/m3"].stateValues.unordered).eq(true);
+    });
+
+    cy.get('#\\/b3_input').click();
+    cy.window().then(async (win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(await components["/p1/m1"].stateValues.unordered).eq(false);
+      expect(await components["/p1/m2"].stateValues.unordered).eq(true);
+      expect(await components["/p1/m3"].stateValues.unordered).eq(false);
+      expect(await components["/p2/m1"].stateValues.unordered).eq(false);
+      expect(await components["/p2/m2"].stateValues.unordered).eq(true);
+      expect(await components["/p2/m3"].stateValues.unordered).eq(false);
+    });
 
   });
 
@@ -1428,4 +1711,243 @@ describe('Math Tag Tests', function () {
 
   });
 
+  it('change one vector component in inverse direction does not affect other', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+  <p><text>a</text></p>
+  <number name="n">1</number>
+  <graph>
+    <point name="P" coords="(2$n+1,1)" />
+    <copy target="P" assignNames="Q" x="2$n-1" />
+  </graph>
+  `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.get('#\\/n').should('have.text', '1');
+
+    cy.window().then(async (win) => {
+      let components = Object.assign({}, win.state.components);
+      expect((await components['/P'].stateValues.xs).map(x => x.tree)).eqls([3, 1])
+      expect((await components['/Q'].stateValues.xs).map(x => x.tree)).eqls([1, 1])
+    })
+
+    cy.log('move dependent point')
+    cy.window().then(async (win) => {
+      let components = Object.assign({}, win.state.components);
+      await components["/Q"].movePoint({ x: -2, y: 3 })
+    })
+
+    cy.get('#\\/n').should('have.text', '-0.5');
+
+    cy.window().then(async (win) => {
+      let components = Object.assign({}, win.state.components);
+      expect((await components['/P'].stateValues.xs).map(x => x.tree)).eqls([0, 3])
+      expect((await components['/Q'].stateValues.xs).map(x => x.tree)).eqls([-2, 3])
+    })
+
+
+  });
+
+  it('change one vector component in inverse direction does not affect other, original in math', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+  <p><text>a</text></p>
+  <number name="n">1</number>
+  <math name="coords" simplify>(2$n+1,1)</math>
+  <graph>
+    <point name="P" coords="$coords" />
+    <copy target="P" assignNames="Q" x="2$n-1" />
+  </graph>
+  `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.get('#\\/n').should('have.text', '1');
+
+    cy.get('#\\/coords').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(3,1)');
+    })
+
+    cy.window().then(async (win) => {
+      let components = Object.assign({}, win.state.components);
+      expect((await components['/P'].stateValues.xs).map(x => x.tree)).eqls([3, 1])
+      expect((await components['/Q'].stateValues.xs).map(x => x.tree)).eqls([1, 1])
+    })
+
+    cy.log('move dependent point')
+    cy.window().then(async (win) => {
+      let components = Object.assign({}, win.state.components);
+      await components["/Q"].movePoint({ x: -2, y: 3 })
+    })
+
+    cy.get('#\\/n').should('have.text', '-0.5');
+    cy.get('#\\/coords').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(0,3)');
+    })
+
+    cy.window().then(async (win) => {
+      let components = Object.assign({}, win.state.components);
+      expect((await components['/P'].stateValues.xs).map(x => x.tree)).eqls([0, 3])
+      expect((await components['/Q'].stateValues.xs).map(x => x.tree)).eqls([-2, 3])
+    })
+
+
+  });
+
+  it('change one vector component in inverse direction does not affect other, through mathinput', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+  <p><text>a</text></p>
+  <number name="n">1</number>
+  <math name="coords1" simplify>(2$n+1,1)</math>
+  <mathinput name="coords2" bindValueTo="$coords1" />
+  <graph>
+    <point name="P" coords="$coords2" />
+    <copy target="P" assignNames="Q" x="2$n-1" />
+  </graph>
+  `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.get('#\\/n').should('have.text', '1');
+
+    cy.get('#\\/coords1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(3,1)');
+    })
+
+    cy.window().then(async (win) => {
+      let components = Object.assign({}, win.state.components);
+      expect((await components['/P'].stateValues.xs).map(x => x.tree)).eqls([3, 1])
+      expect((await components['/Q'].stateValues.xs).map(x => x.tree)).eqls([1, 1])
+    })
+
+    cy.log('move dependent point')
+    cy.window().then(async (win) => {
+      let components = Object.assign({}, win.state.components);
+      await components["/Q"].movePoint({ x: -2, y: 3 })
+    })
+
+    cy.get('#\\/n').should('have.text', '-0.5');
+    cy.get('#\\/coords1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(0,3)');
+    })
+
+    cy.window().then(async (win) => {
+      let components = Object.assign({}, win.state.components);
+      expect((await components['/P'].stateValues.xs).map(x => x.tree)).eqls([0, 3])
+      expect((await components['/Q'].stateValues.xs).map(x => x.tree)).eqls([-2, 3])
+    })
+
+    cy.log('enter value in mathinput')
+    cy.get('#\\/coords2 textarea').type("{end}{leftArrow}{backspace}{backspace}{backspace}6,9{enter}", { force: true })
+
+    cy.get('#\\/n').should('have.text', '2.5');
+    cy.get('#\\/coords1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(6,9)');
+    })
+
+    cy.window().then(async (win) => {
+      let components = Object.assign({}, win.state.components);
+      expect((await components['/P'].stateValues.xs).map(x => x.tree)).eqls([6, 9])
+      expect((await components['/Q'].stateValues.xs).map(x => x.tree)).eqls([4, 9])
+    })
+
+
+  });
+
+  it('copy value prop copies attributes', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+  <p><text>a</text></p>
+  <p><math name="m1" displayDigits="3">8.5203845251</math>
+  <copy target="m1" prop="value" assignNames="m1a" />
+  <copy target="m1" prop="value" displayDigits="5" assignNames="m1b" />
+  <copy target="m1" prop="value" link="false" assignNames="m1c" />
+  <copy target="m1" prop="value" link="false" displayDigits="5" assignNames="m1d" />
+  </p>
+
+  <p><math name="m2" displayDecimals="4">8.5203845251</math>
+  <copy target="m2" prop="value" assignNames="m2a" />
+  <copy target="m2" prop="value" displayDecimals="6" assignNames="m2b" />
+  <copy target="m2" prop="value" link="false" assignNames="m2c" />
+  <copy target="m2" prop="value" link="false" displayDecimals="6" assignNames="m2d" />
+  </p>
+
+  <p><math name="m3" displaySmallAsZero>0.000000000000000015382487</math>
+  <copy target="m3" prop="value" assignNames="m3a" />
+  <copy target="m3" prop="value" displaySmallAsZero="false" assignNames="m3b" />
+  <copy target="m3" prop="value" link="false" assignNames="m3c" />
+  <copy target="m3" prop="value" link="false" displaySmallAsZero="false" assignNames="m3d" />
+  </p>
+
+  `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.get('#\\/m1 .mjx-mrow').eq(0).should('have.text', '8.52');
+    cy.get('#\\/m1a .mjx-mrow').eq(0).should('have.text', '8.52');
+    cy.get('#\\/m1b .mjx-mrow').eq(0).should('have.text', '8.5204');
+    cy.get('#\\/m1c .mjx-mrow').eq(0).should('have.text', '8.52');
+    cy.get('#\\/m1d .mjx-mrow').eq(0).should('have.text', '8.5204');
+
+    cy.get('#\\/m2 .mjx-mrow').eq(0).should('have.text', '8.5204');
+    cy.get('#\\/m2a .mjx-mrow').eq(0).should('have.text', '8.5204');
+    cy.get('#\\/m2b .mjx-mrow').eq(0).should('have.text', '8.520385');
+    cy.get('#\\/m2c .mjx-mrow').eq(0).should('have.text', '8.5204');
+    cy.get('#\\/m2d .mjx-mrow').eq(0).should('have.text', '8.520385');
+
+    cy.get('#\\/m3 .mjx-mrow').eq(0).should('have.text', '0');
+    cy.get('#\\/m3a .mjx-mrow').eq(0).should('have.text', '0');
+    cy.get('#\\/m3b .mjx-mrow').eq(0).should('have.text', '1.5382487⋅10−17');
+    cy.get('#\\/m3c .mjx-mrow').eq(0).should('have.text', '0');
+    cy.get('#\\/m3d .mjx-mrow').eq(0).should('have.text', '1.5382487⋅10−17');
+
+
+  });
+
+  // TODO: fix so doesn't break when copy the math, not just copy its value
+  it('set vector component to undefined', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+  <p><text>a</text></p>
+  <math name="m">(x,y)</math>
+  <copy target="m" prop="value" assignNames="m2" />
+  <mathinput bindValueTo="$(m{prop='x'})" name="mi" />
+  `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.get('#\\/m .mjx-mrow').eq(0).should('have.text', '(x,y)');
+    cy.get('#\\/m2 .mjx-mrow').eq(0).should('have.text', '(x,y)');
+    cy.get('#\\/mi .mq-editable-field').should('have.text', 'x')
+
+    cy.get("#\\/mi textarea").type("{end}{backspace}{enter}", { force: true }).blur();
+
+    cy.get('#\\/m .mjx-mrow').eq(0).should('have.text', '(＿,y)');
+    cy.get('#\\/m2 .mjx-mrow').eq(0).should('have.text', '(＿,y)');
+    cy.get('#\\/mi .mq-editable-field').should('have.text', '')
+
+    cy.get("#\\/mi textarea").type("{end}q{enter}", { force: true }).blur();
+
+    cy.get('#\\/m .mjx-mrow').eq(0).should('have.text', '(q,y)');
+    cy.get('#\\/m2 .mjx-mrow').eq(0).should('have.text', '(q,y)');
+    cy.get('#\\/mi .mq-editable-field').should('have.text', 'q')
+
+  });
+
+
+
+
 })
+

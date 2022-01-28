@@ -5,8 +5,6 @@ export default class CobwebPolyline extends Polyline {
   static componentType = "cobwebPolyline";
   static rendererType = "cobwebPolyline";
 
-  static get stateVariablesShadowedForReference() { return ["initialPoint", "f"] };
-
   static createAttributesObject(args) {
     let attributes = super.createAttributesObject(args);
 
@@ -69,7 +67,7 @@ export default class CobwebPolyline extends Polyline {
 
     stateVariableDefinitions.nDimensions.returnDependencies = () => ({});
     stateVariableDefinitions.nDimensions.definition = () => ({
-      newValues: { nDimensions: 2 }
+      setValue: { nDimensions: 2 }
     })
 
     stateVariableDefinitions.initialPoint = {
@@ -77,7 +75,8 @@ export default class CobwebPolyline extends Polyline {
       public: true,
       componentType: "math",
       entryPrefixes: ["initialPointX"],
-      defaultEntryValue: me.fromAst(0),
+      defaultValueByArrayKey: () => me.fromAst(0),
+      hasEssential: true,
       returnWrappingComponents(prefix) {
         if (prefix === "initialPointX") {
           return [];
@@ -111,13 +110,13 @@ export default class CobwebPolyline extends Polyline {
           if (dependencyValuesByKey[arrayKey].initialPointAttr) {
             initialPoint[arrayKey] = dependencyValuesByKey[arrayKey].initialPointAttr.stateValues["x" + varEnding];
           } else {
-            essentialInitialPoint[arrayKey] = {}
+            essentialInitialPoint[arrayKey] = true;
           }
         }
         let result = {};
 
         if (Object.keys(initialPoint).length > 0) {
-          result.newValues = { initialPoint }
+          result.setValue = { initialPoint }
         }
         if (Object.keys(essentialInitialPoint).length > 0) {
           result.useEssentialOrDefaultValue = { initialPoint: essentialInitialPoint }
@@ -147,7 +146,7 @@ export default class CobwebPolyline extends Polyline {
 
           } else {
             instructions.push({
-              setStateVariable: "initialPoint",
+              setEssentialValue: "initialPoint",
               value: { [arrayKey]: desiredStateVariableValues.initialPoint[arrayKey] }
             })
           }
@@ -173,9 +172,9 @@ export default class CobwebPolyline extends Polyline {
       }),
       definition({ dependencyValues }) {
         if (dependencyValues.functionAttr) {
-          return { newValues: { f: dependencyValues.functionAttr.stateValues.numericalf } }
+          return { setValue: { f: dependencyValues.functionAttr.stateValues.numericalf } }
         } else {
-          return { newValues: { f: null } }
+          return { setValue: { f: null } }
         }
       }
     }
@@ -202,13 +201,14 @@ export default class CobwebPolyline extends Polyline {
           nOriginalVertices = previousValues.nOriginalVertices
         }
 
-        return { newValues: { nOriginalVertices } }
+        return { setValue: { nOriginalVertices } }
       }
     }
 
     stateVariableDefinitions.originalVertices = {
       isArray: true,
       nDimensions: 2,
+      hasEssential: true,
       entryPrefixes: ["originalVertexX", "originalVertex"],
       getArrayKeysFromVarName({ arrayEntryPrefix, varEnding, arraySize }) {
         if (arrayEntryPrefix === "originalVertexX") {
@@ -224,23 +224,30 @@ export default class CobwebPolyline extends Polyline {
                 return [];
               }
             } else {
-              // if don't know array size, just guess that the entry is OK
-              // It will get corrected once array size is known.
-              // TODO: better to return empty array?
+              // If not given the array size,
+              // then return the array keys assuming the array is large enough.
+              // Must do this as it is used to determine potential array entries.
               return [String(indices)];
             }
           } else {
             return [];
           }
         } else {
-          // originalVertex3 is all components of the third riginalVertex
-          if (!arraySize) {
+          // originalVertex3 is all components of the third originalVertex
+
+          let pointInd = Number(varEnding) - 1;
+          if (!(Number.isInteger(pointInd) && pointInd >= 0)) {
             return [];
           }
-          let vertexInd = Number(varEnding) - 1;
-          if (Number.isInteger(vertexInd) && vertexInd >= 0 && vertexInd < arraySize[0]) {
-            // array of "vertexInd,i", where i=0, ..., arraySize[1]-1
-            return Array.from(Array(arraySize[1]), (_, i) => vertexInd + "," + i)
+
+          if (!arraySize) {
+            // If don't have array size, we just need to determine if it is a potential entry.
+            // Return the first entry assuming array is large enough
+            return [pointInd + ",0"];
+          }
+          if (pointInd < arraySize[0]) {
+            // array of "pointInd,i", where i=0, ..., arraySize[1]-1
+            return Array.from(Array(arraySize[1]), (_, i) => pointInd + "," + i)
           } else {
             return [];
           }
@@ -279,10 +286,8 @@ export default class CobwebPolyline extends Polyline {
 
         for (let arrayKey of arrayKeys) {
           let arrayIndices = arrayKey.split(",").map(Number)
-          let jointVarEnding = arrayIndices.map(x => x + 1).join('_');
 
           originalVertices[arrayKey] = {
-            variablesToCheck: ["originalVertex" + jointVarEnding],
             get defaultValue() {
               if (globalDependencyValues.defaultPoint) {
                 let xs = globalDependencyValues.defaultPoint.stateValues.xs;
@@ -318,7 +323,7 @@ export default class CobwebPolyline extends Polyline {
         let instructions = [];
         for (let arrayKey in desiredStateVariableValues.originalVertices) {
           instructions.push({
-            setStateVariable: "originalVertices",
+            setEssentialValue: "originalVertices",
             value: { [arrayKey]: desiredStateVariableValues.originalVertices[arrayKey] }
           })
         }
@@ -348,9 +353,9 @@ export default class CobwebPolyline extends Polyline {
                 return [];
               }
             } else {
-              // if don't know array size, just guess that the entry is OK
-              // It will get corrected once array size is known.
-              // TODO: better to return empty array?
+              // If not given the array size,
+              // then return the array keys assuming the array is large enough.
+              // Must do this as it is used to determine potential array entries.
               return [String(indices)];
             }
           } else {
@@ -358,13 +363,20 @@ export default class CobwebPolyline extends Polyline {
           }
         } else {
           // prelimCorrectVertex3 is all components of the third prelimCorrectVertex
-          if (!arraySize) {
+
+          let pointInd = Number(varEnding) - 1;
+          if (!(Number.isInteger(pointInd) && pointInd >= 0)) {
             return [];
           }
-          let vertexInd = Number(varEnding) - 1;
-          if (Number.isInteger(vertexInd) && vertexInd >= 0 && vertexInd < arraySize[0]) {
-            // array of "vertexInd,i", where i=0, ..., arraySize[1]-1
-            return Array.from(Array(arraySize[1]), (_, i) => vertexInd + "," + i)
+
+          if (!arraySize) {
+            // If don't have array size, we just need to determine if it is a potential entry.
+            // Return the first entry assuming array is large enough
+            return [pointInd + ",0"];
+          }
+          if (pointInd < arraySize[0]) {
+            // array of "pointInd,i", where i=0, ..., arraySize[1]-1
+            return Array.from(Array(arraySize[1]), (_, i) => pointInd + "," + i)
           } else {
             return [];
           }
@@ -507,7 +519,7 @@ export default class CobwebPolyline extends Polyline {
         }
       }
 
-      return { newValues: { vertices, prelimCorrectVertices } }
+      return { setValue: { vertices, prelimCorrectVertices } }
     }
     stateVariableDefinitions.vertices.inverseArrayDefinitionByKey = async function ({
       desiredStateVariableValues,
@@ -581,7 +593,7 @@ export default class CobwebPolyline extends Polyline {
         for (let arrayKey of arrayKeys) {
           correctVertices[arrayKey] = dependencyValuesByKey[arrayKey].prelimCorrectVertex;
         }
-        return { newValues: { correctVertices } };
+        return { setValue: { correctVertices } };
       }
     }
 
@@ -621,7 +633,7 @@ export default class CobwebPolyline extends Polyline {
         }
 
         return {
-          newValues: {
+          setValue: {
             fractionCorrectVertices, nGradedVertices, nCorrectVertices
           }
         }
@@ -666,7 +678,7 @@ export default class CobwebPolyline extends Polyline {
           fractionCorrectVerticesAdjusted = dependencyValues.nCorrectVertices / nGradedVerticesAdjusted;
         }
 
-        return { newValues: { fractionCorrectVerticesAdjusted, nGradedVerticesAdjusted } }
+        return { setValue: { fractionCorrectVerticesAdjusted, nGradedVerticesAdjusted } }
       }
     }
 
@@ -680,7 +692,7 @@ export default class CobwebPolyline extends Polyline {
         }
       }),
       definition: ({ dependencyValues }) => ({
-        newValues: { nIterateValues: Math.ceil((dependencyValues.nVertices + 1) / 2) }
+        setValue: { nIterateValues: Math.ceil((dependencyValues.nVertices + 1) / 2) }
       })
     }
 
@@ -726,7 +738,7 @@ export default class CobwebPolyline extends Polyline {
         for (let arrayKey of arrayKeys) {
           iterateValues[arrayKey] = dependencyValuesByKey[arrayKey].iterateValue;
         }
-        return { newValues: { iterateValues } };
+        return { setValue: { iterateValues } };
       }
     }
 
@@ -765,7 +777,7 @@ export default class CobwebPolyline extends Polyline {
     //     for (let arrayKey of arrayKeys) {
     //       lastVertex[arrayKey] = dependencyValuesByKey[arrayKey].lastVertex
     //     }
-    //     return { newValues: { lastVertex } }
+    //     return { setValue: { lastVertex } }
     //   }
     // }
 

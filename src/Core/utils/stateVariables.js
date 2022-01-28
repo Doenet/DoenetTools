@@ -13,18 +13,17 @@ export function renameStateVariable({ stateVariableDefinitions, oldName, newName
   }
 
   // third, wrap definition in a function that changes oldName to newName in
-  // - newValues
+  // - setValue
   // - useEssentialOrDefaultValue
   // - noChanges
   // - makeEssential
-  // - alwaysShadow
   // Note: if add additional possibilities to definition result,
   // will have to add them to what is changed here
 
   let originalDefinition = stateVarDef.definition;
 
-  let keysInObjects = ['newValues', 'useEssentialOrDefaultValue', 'makeEssential'];
-  let entriesInArrays = ['noChanges', 'alwaysShadow']
+  let keysInObjects = ['setValue', 'useEssentialOrDefaultValue', 'setEssentialValue'];
+  let entriesInArrays = ['noChanges']
 
   stateVarDef.definition = function (args) {
     let result = originalDefinition(args);
@@ -63,8 +62,8 @@ export function renameStateVariable({ stateVariableDefinitions, oldName, newName
 
       if (results.success) {
         for (let instruction of results.instructions) {
-          if (instruction.setStateVariable === oldName) {
-            instruction.setStateVariable = newName
+          if (instruction.setEssentialValue === oldName) {
+            instruction.setEssentialValue = newName
           }
         }
       }
@@ -74,4 +73,59 @@ export function renameStateVariable({ stateVariableDefinitions, oldName, newName
     }
   }
 
+}
+
+export function returnDefaultGetArrayKeysFromVarName(nDim) {
+  // the default function for getArrayKeysFromVarName ignores the
+  // array entry prefix, but is just based on the variable ending.
+  // A component class's function could use arrayEntryPrefix
+
+  if (nDim > 1) {
+    return function ({
+      arrayEntryPrefix, varEnding, arraySize, nDimensions,
+    }) {
+      let indices = varEnding.split('_').map(x => Number(x) - 1)
+      if (indices.length === nDimensions && indices.every(
+        (x, i) => Number.isInteger(x) && x >= 0
+      )) {
+
+        if (arraySize) {
+          if (indices.every((x, i) => x < arraySize[i])) {
+            return [String(indices)];
+          } else {
+            return [];
+          }
+        } else {
+          // If not given the array size,
+          // then return the array keys assuming the array is large enough.
+          // Must do this as it is used to determine potential array entries.
+          return [String(indices)];
+        }
+      } else {
+        return [];
+      }
+    }
+  } else {
+    return function ({
+      arrayEntryPrefix, varEnding, arraySize
+    }) {
+      let index = Number(varEnding) - 1;
+      if (Number.isInteger(index) && index >= 0) {
+        if (arraySize) {
+          if (index < arraySize[0]) {
+            return [String(index)];
+          } else {
+            return [];
+          }
+        } else {
+          // If not given the array size,
+          // then return the array keys assuming the array is large enough.
+          // Must do this as it is used to determine potential array entries.
+          return [String(index)];
+        }
+      } else {
+        return [];
+      }
+    };
+  }
 }

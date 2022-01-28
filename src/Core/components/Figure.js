@@ -63,13 +63,13 @@ export default class Figure extends BlockComponent {
       },
       definition({ dependencyValues }) {
         if (dependencyValues.figureCounter === undefined) {
-          return { newValues: { figureEnumeration: null, figureName: "Figure" } };
+          return { setValue: { figureEnumeration: null, figureName: "Figure" } };
         }
         let figureEnumeration = String(dependencyValues.figureCounter);
         let figureName = "Figure " + figureEnumeration;
         return {
 
-          newValues: { figureEnumeration, figureName }
+          setValue: { figureEnumeration, figureName }
         }
       }
     }
@@ -88,7 +88,7 @@ export default class Figure extends BlockComponent {
           captionChildName = dependencyValues.captionChild[0].componentName
         }
         return {
-          newValues: { captionChildName }
+          setValue: { captionChildName }
         }
       }
     }
@@ -112,7 +112,7 @@ export default class Figure extends BlockComponent {
         if (dependencyValues.captionChild.length > 0) {
           caption = dependencyValues.captionChild[0].stateValues.text;
         }
-        return { newValues: { caption } }
+        return { setValue: { caption } }
       }
     }
 

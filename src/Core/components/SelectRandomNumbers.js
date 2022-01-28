@@ -12,7 +12,7 @@ export default class SelectRandomNumbers extends SampleRandomNumbers {
     let attributes = super.createAttributesObject(args);
 
     delete attributes.numberOfSamples;
-    
+
     attributes.assignNamesSkip = {
       createPrimitiveOfType: "number"
     }
@@ -37,7 +37,7 @@ export default class SelectRandomNumbers extends SampleRandomNumbers {
         },
       }),
       definition: function ({ dependencyValues }) {
-        return { newValues: { variants: dependencyValues.variants } };
+        return { setValue: { variants: dependencyValues.variants } };
       },
     };
 
@@ -56,6 +56,8 @@ export default class SelectRandomNumbers extends SampleRandomNumbers {
 
     stateVariableDefinitions.selectedValues = {
       immutable: true,
+      hasEssential: true,
+      shadowVariable: true,
       returnDependencies: ({ sharedParameters }) => ({
         numberOfSamples: {
           dependencyType: "stateVariable",
@@ -104,10 +106,8 @@ export default class SelectRandomNumbers extends SampleRandomNumbers {
       definition({ dependencyValues }) {
         if (dependencyValues.numberOfSamples < 1) {
           return {
-            makeEssential: { selectedValues: true },
-            newValues: {
-              selectedValues: [],
-            }
+            setEssentialValue: { selectedValues: [] },
+            setValue: { selectedValues: [] }
           }
         }
 
@@ -120,10 +120,8 @@ export default class SelectRandomNumbers extends SampleRandomNumbers {
 
             // just give the desired values without any verification
             return {
-              makeEssential: { selectedValues: true },
-              newValues: {
-                selectedValues: desiredValues,
-              }
+              setEssentialValue: { selectedValues: desiredValues },
+              setValue: { selectedValues: desiredValues }
             }
 
           }
@@ -132,8 +130,8 @@ export default class SelectRandomNumbers extends SampleRandomNumbers {
         let selectedValues = sampleFromRandomNumbers(dependencyValues);
 
         return {
-          makeEssential: { selectedValues: true },
-          newValues: { selectedValues }
+          setEssentialValue: { selectedValues },
+          setValue: { selectedValues }
         }
 
       }
@@ -141,7 +139,7 @@ export default class SelectRandomNumbers extends SampleRandomNumbers {
 
     stateVariableDefinitions.isVariantComponent = {
       returnDependencies: () => ({}),
-      definition: () => ({ newValues: { isVariantComponent: true } })
+      definition: () => ({ setValue: { isVariantComponent: true } })
     }
 
     stateVariableDefinitions.generatedVariantInfo = {
@@ -158,7 +156,7 @@ export default class SelectRandomNumbers extends SampleRandomNumbers {
           meta: { createdBy: componentName }
         };
 
-        return { newValues: { generatedVariantInfo } }
+        return { setValue: { generatedVariantInfo } }
 
       }
     }
@@ -172,7 +170,7 @@ export default class SelectRandomNumbers extends SampleRandomNumbers {
         },
       }),
       definition: function () {
-        return { newValues: { readyToExpandWhenResolved: true } };
+        return { setValue: { readyToExpandWhenResolved: true } };
       },
     };
 
@@ -181,7 +179,7 @@ export default class SelectRandomNumbers extends SampleRandomNumbers {
   }
 
 
-  static async createSerializedReplacements({ component, componentInfoObjects }) {
+  static async createSerializedReplacements({ component, componentInfoObjects, flags }) {
 
     let newNamespace = component.attributes.newNamespace && component.attributes.newNamespace.primitive;
 
@@ -203,7 +201,8 @@ export default class SelectRandomNumbers extends SampleRandomNumbers {
           attributes: attributesToConvert,
           componentType: "number",
           componentInfoObjects,
-          compositeCreatesNewNamespace: newNamespace
+          compositeCreatesNewNamespace: newNamespace,
+          flags
         })
       }
 

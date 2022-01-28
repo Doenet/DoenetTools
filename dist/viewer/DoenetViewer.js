@@ -8,6 +8,8 @@ import {useToast, toastType} from "../_framework/Toast.js";
 import {serializedComponentsReplacer, serializedComponentsReviver} from "../core/utils/serializedStateProcessing.js";
 import {FontAwesomeIcon} from "../_snowpack/pkg/@fortawesome/react-fontawesome.js";
 import {faExclamationCircle} from "../_snowpack/pkg/@fortawesome/free-solid-svg-icons.js";
+import {rendererSVs} from "./renderers/useDoenetRenderer.js";
+import {useRecoilCallback} from "../_snowpack/pkg/recoil.js";
 class DoenetViewerChild extends Component {
   constructor(props) {
     super(props);
@@ -50,6 +52,7 @@ class DoenetViewerChild extends Component {
           doenetML: this.doenetML,
           externalFunctions: {
             localStateChanged: this.localStateChanged,
+            updateRendererSVsWithRecoil: this.props.updateRendererSVsWithRecoil,
             recordSolutionView: this.recordSolutionView,
             recordEvent: this.recordEvent,
             contentIdsToDoenetMLs: this.contentIdsToDoenetMLs.bind(this)
@@ -66,6 +69,7 @@ class DoenetViewerChild extends Component {
           doenetML: this.doenetML,
           externalFunctions: {
             localStateChanged: this.localStateChanged,
+            updateRendererSVsWithRecoil: this.props.updateRendererSVsWithRecoil,
             recordSolutionView: this.recordSolutionView,
             recordEvent: this.recordEvent,
             contentIdsToDoenetMLs: this.contentIdsToDoenetMLs.bind(this)
@@ -76,6 +80,7 @@ class DoenetViewerChild extends Component {
         });
       }
     } catch (e) {
+      throw e;
       if (this.props.setIsInErrorState) {
         this.props.setIsInErrorState(true);
       }
@@ -150,7 +155,8 @@ class DoenetViewerChild extends Component {
     contentId,
     sourceOfUpdate,
     transient = false,
-    itemsWithCreditAchieved
+    itemsWithCreditAchieved,
+    currentVariant
   }) {
     if (transient || !this.allowSavePageState && !this.allowLocalPageState) {
       return;
@@ -170,9 +176,9 @@ class DoenetViewerChild extends Component {
     }
     let changeString = JSON.stringify(this.cumulativeStateVariableChanges, serializedComponentsReplacer);
     let variantString = JSON.stringify(this.generatedVariant, serializedComponentsReplacer);
-    let currentVariantString = JSON.stringify(this.core.document.stateValues.generatedVariantInfo, serializedComponentsReplacer);
+    let currentVariantString = JSON.stringify(currentVariant, serializedComponentsReplacer);
     if (currentVariantString !== variantString) {
-      this.generatedVariant = this.core.document.stateValues.generatedVariantInfo;
+      this.generatedVariant = currentVariant;
       variantString = currentVariantString;
       if (this.props.generatedVariantCallback) {
         this.props.generatedVariantCallback(this.generatedVariant, this.allPossibleVariants);
@@ -194,11 +200,16 @@ class DoenetViewerChild extends Component {
     if (!navigator.onLine) {
       this.props.toast("You're not connected to the internet. Changes are not saved. ", toastType.ERROR);
     }
-    axios.post("/api/recordContentInteraction.php", data).then(({data: data2}) => {
-      if (!data2.success) {
-        this.props.toast(data2.message, toastType.ERROR);
-      }
-    });
+    if (this.savePageStateTimeoutID) {
+      clearTimeout(this.savePageStateTimeoutID);
+    }
+    this.savePageStateTimeoutID = setTimeout(() => {
+      axios.post("/api/recordContentInteraction.php", data).then(({data: data2}) => {
+        if (!data2.success) {
+          this.props.toast(data2.message, toastType.ERROR);
+        }
+      });
+    }, 1e3);
     if (!this.allowSaveSubmissions) {
       return;
     }
@@ -287,7 +298,7 @@ class DoenetViewerChild extends Component {
       this.setState({errMsg: errMsg.message});
     });
   }
-  update(instructions) {
+  async update(instructions) {
     for (let instruction of instructions) {
       if (instruction.instructionType === "updateStateVariable") {
         for (let componentName of instruction.renderersToUpdate.filter((x) => x in this.rendererUpdateMethods)) {
@@ -295,15 +306,6 @@ class DoenetViewerChild extends Component {
             sourceOfUpdate: instruction.sourceOfUpdate
           });
         }
-      } else if (instruction.instructionType === "addRenderer") {
-        if (instruction.parentName in this.rendererUpdateMethods)
-          this.rendererUpdateMethods[instruction.parentName].addChildren(instruction);
-      } else if (instruction.instructionType === "deleteRenderers") {
-        if (instruction.parentName in this.rendererUpdateMethods)
-          this.rendererUpdateMethods[instruction.parentName].removeChildren(instruction);
-      } else if (instruction.instructionType === "swapChildRenderers") {
-        if (instruction.parentName in this.rendererUpdateMethods)
-          this.rendererUpdateMethods[instruction.parentName].swapChildren(instruction);
       }
     }
   }
@@ -333,32 +335,17 @@ class DoenetViewerChild extends Component {
     };
     axios.post("/api/recordEvent.php", payload);
   }
-  contentIdsToDoenetMLs({contentIds, callBack}) {
+  contentIdsToDoenetMLs(contentIds) {
     let promises = [];
     let newDoenetMLs = {};
     let newContentIds = contentIds;
     for (let contentId of contentIds) {
       promises.push(axios.get(`/media/${contentId}.doenet`));
     }
-    function ErrorFromWithinCallback(originalError) {
-      this.name = "ErrorFromWithinCallback";
-      this.originalError = originalError;
-    }
-    Promise.all(promises).then((resps) => {
+    return Promise.all(promises).then((resps) => {
       newDoenetMLs = resps.map((x) => x.data);
-      try {
-        callBack({
-          newDoenetMLs,
-          newContentIds,
-          success: true
-        });
-      } catch (e) {
-        throw new ErrorFromWithinCallback(e);
-      }
+      return Promise.resolve({newDoenetMLs, newContentIds});
     }).catch((err) => {
-      if (err.name === "ErrorFromWithinCallback") {
-        throw err.originalError;
-      }
       let message;
       if (newContentIds.length === 1) {
         message = `Could not retrieve contentId ${newContentIds[0]}`;
@@ -366,12 +353,8 @@ class DoenetViewerChild extends Component {
         message = `Could not retrieve contentIds ${newContentIds.join(",")}`;
       }
       message += ": " + err.message;
-      callBack({
-        success: false,
-        message,
-        newDoenetMLs: [],
-        newContentIds: []
-      });
+      console.error(message);
+      return Promise.reject(new Error(message));
     });
   }
   render() {
@@ -479,13 +462,16 @@ class ErrorBoundary extends React.Component {
 }
 function DoenetViewer(props) {
   const toast = useToast();
-  let newProps = {...props, toast};
+  const updateRendererSVsWithRecoil = useRecoilCallback(({snapshot, set}) => async ({componentName, stateValues, sourceOfUpdate}) => {
+    set(rendererSVs(componentName), {stateValues, sourceOfUpdate});
+  });
+  let newProps = {...props, toast, updateRendererSVsWithRecoil};
   return /* @__PURE__ */ React.createElement(ErrorBoundary, null, /* @__PURE__ */ React.createElement(DoenetViewerChild, {
     ...newProps
   }));
 }
 export default DoenetViewer;
-async function renderersloadComponent(promises, rendererClassNames) {
+export async function renderersloadComponent(promises, rendererClassNames) {
   var rendererClasses = {};
   for (let [index, promise] of promises.entries()) {
     try {

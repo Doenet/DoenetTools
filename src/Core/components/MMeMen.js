@@ -29,6 +29,7 @@ export class M extends InlineComponent {
       public: true,
       componentType: "text",
       defaultValue: "",
+      hasEssential: true,
       returnDependencies: () => ({
         stringTextMathChildren: {
           dependencyType: "child",
@@ -37,12 +38,12 @@ export class M extends InlineComponent {
           variablesOptional: true,
         },
       }),
-      definition: function ({ dependencyValues, componentInfoObjects }) {
+      definition: function ({ dependencyValues }) {
 
         if (dependencyValues.stringTextMathChildren.length === 0) {
           return {
             useEssentialOrDefaultValue: {
-              latex: { variablesToCheck: "latex" }
+              latex: true
             }
           }
         }
@@ -50,7 +51,7 @@ export class M extends InlineComponent {
         let latex = "";
 
         for (let child of dependencyValues.stringTextMathChildren) {
-          if(typeof child === "string") {
+          if (typeof child === "string") {
             latex += child;
           } else if (child.stateValues.latex) {
             latex += child.stateValues.latex
@@ -59,7 +60,7 @@ export class M extends InlineComponent {
           }
         }
 
-        return { newValues: { latex } }
+        return { setValue: { latex } }
 
       }
 
@@ -83,7 +84,7 @@ export class M extends InlineComponent {
 
         if (dependencyValues.stringTextMathChildren.length === 0) {
           return {
-            newValues: {
+            setValue: {
               latexWithInputChildren: [dependencyValues.latex]
             }
           }
@@ -93,7 +94,7 @@ export class M extends InlineComponent {
         let lastLatex = "";
         let inputInd = 0;
         for (let child of dependencyValues.stringTextMathChildren) {
-          if(typeof child === "string") {
+          if (typeof child === "string") {
             lastLatex += child;
           } else if (componentInfoObjects.isInheritedComponentType({
             inheritedComponentType: child.componentType,
@@ -117,7 +118,7 @@ export class M extends InlineComponent {
           latexWithInputChildren.push(lastLatex);
         }
 
-        return { newValues: { latexWithInputChildren } }
+        return { setValue: { latexWithInputChildren } }
 
       }
 
@@ -127,7 +128,7 @@ export class M extends InlineComponent {
     stateVariableDefinitions.renderMode = {
       forRenderer: true,
       returnDependencies: () => ({}),
-      definition: () => ({ newValues: { renderMode: "inline" } })
+      definition: () => ({ setValue: { renderMode: "inline" } })
     }
 
 
@@ -144,9 +145,9 @@ export class M extends InlineComponent {
           expression = me.fromAst(latexToAst.convert(dependencyValues.latex));
         } catch (e) {
           // just return latex if can't parse with math-expressions
-          return { newValues: { text: dependencyValues.latex } };
+          return { setValue: { text: dependencyValues.latex } };
         }
-        return { newValues: { text: expression.toString() } };
+        return { setValue: { text: expression.toString() } };
       }
     }
 
@@ -167,7 +168,7 @@ export class Me extends M {
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
     stateVariableDefinitions.renderMode.definition = () => ({
-      newValues: { renderMode: "display" }
+      setValue: { renderMode: "display" }
     });
     return stateVariableDefinitions;
   }
@@ -181,7 +182,7 @@ export class Men extends M {
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
     stateVariableDefinitions.renderMode.definition = () => ({
-      newValues: { renderMode: "numbered" }
+      setValue: { renderMode: "numbered" }
     });
 
     stateVariableDefinitions.equationTag = {
@@ -196,7 +197,7 @@ export class Men extends M {
       }),
       definition({ dependencyValues }) {
         return {
-          newValues: { equationTag: String(dependencyValues.equationCounter) }
+          setValue: { equationTag: String(dependencyValues.equationCounter) }
         }
       }
     }

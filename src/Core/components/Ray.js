@@ -6,16 +6,9 @@ export default class Ray extends GraphicalComponent {
   static componentType = "ray";
 
   actions = {
-    moveRay: this.moveRay.bind(
-      new Proxy(this, this.readOnlyProxyHandler)
-    ),
-    finalizeRayPosition: this.finalizeRayPosition.bind(
-      new Proxy(this, this.readOnlyProxyHandler)
-    )
+    moveRay: this.moveRay.bind(this),
+    finalizeRayPosition: this.finalizeRayPosition.bind(this)
   };
-
-  // used when referencing this component without prop
-  static get stateVariablesShadowedForReference() { return ["endpoint"] };
 
   static createAttributesObject(args) {
     let attributes = super.createAttributesObject(args);
@@ -68,7 +61,7 @@ export default class Ray extends GraphicalComponent {
 
         lineDescription += dependencyValues.selectedStyle.lineColor;
 
-        return { newValues: { styleDescription: lineDescription } };
+        return { setValue: { styleDescription: lineDescription } };
       }
     }
 
@@ -101,20 +94,20 @@ export default class Ray extends GraphicalComponent {
           }
 
           return {
-            newValues: { nDimensions },
+            setValue: { nDimensions },
             checkForActualChange: { nDimensions: true }
           }
         } else if (dependencyValues.throughAttr !== null) {
           let nDimensions = dependencyValues.throughAttr.stateValues.nDimensions;
           return {
-            newValues: { nDimensions },
+            setValue: { nDimensions },
             checkForActualChange: { nDimensions: true }
           }
 
         } else {
 
           // line segment through zero points
-          return { newValues: { nDimensions: 2 } }
+          return { setValue: { nDimensions: 2 } }
         }
 
       }
@@ -125,7 +118,8 @@ export default class Ray extends GraphicalComponent {
       componentType: "math",
       isArray: true,
       entryPrefixes: ["endpointX"],
-      defaultEntryValue: me.fromAst(0),
+      defaultValueByArrayKey: () => me.fromAst(0),
+      hasEssential: true,
       returnWrappingComponents(prefix) {
         if (prefix === "endpointX") {
           return [];
@@ -174,17 +168,13 @@ export default class Ray extends GraphicalComponent {
             let varEnding = Number(arrayKey) + 1;
             endpoint[arrayKey] = dependencyValuesByKey[arrayKey].endpointAttr.stateValues[`x${varEnding}`];
           } else {
-            essentialEndpoint[arrayKey] = {
-              variablesToCheck: [
-                { variableName: "endpoint", arrayIndex: arrayKey },
-              ]
-            };
+            essentialEndpoint[arrayKey] = true;
           }
         }
 
         let result = {};
         if (Object.keys(endpoint).length > 0) {
-          result.newValues = { endpoint };
+          result.setValue = { endpoint };
         }
         if (Object.keys(essentialEndpoint).length > 0) {
           result.useEssentialOrDefaultValue = { endpoint: essentialEndpoint };
@@ -221,7 +211,7 @@ export default class Ray extends GraphicalComponent {
           } else {
 
             instructions.push({
-              setStateVariable: "endpoint",
+              setEssentialValue: "endpoint",
               value: { [arrayKey]: desiredStateVariableValues.endpoint[arrayKey] }
             });
           }
@@ -240,6 +230,8 @@ export default class Ray extends GraphicalComponent {
       componentType: "math",
       isArray: true,
       entryPrefixes: ["throughpointX"],
+      hasEssential: true,
+      defaultValueByArrayKey: (arrayKey) => me.fromAst(arrayKey === "0" ? 1 : 0),
       returnWrappingComponents(prefix) {
         if (prefix === "throughpointX") {
           return [];
@@ -288,25 +280,13 @@ export default class Ray extends GraphicalComponent {
             let varEnding = Number(arrayKey) + 1;
             throughpoint[arrayKey] = dependencyValuesByKey[arrayKey].throughpointAttr.stateValues[`x${varEnding}`];
           } else {
-            let defaultValue;
-            if (arrayKey === "0") {
-              defaultValue = me.fromAst(1);
-            } else {
-              defaultValue = me.fromAst(0);
-            }
-
-            essentialThroughpoint[arrayKey] = {
-              variablesToCheck: [
-                { variableName: "throughpoint", arrayIndex: arrayKey },
-              ],
-              defaultValue
-            };
+            essentialThroughpoint[arrayKey] = true;
           }
         }
 
         let result = {};
         if (Object.keys(throughpoint).length > 0) {
-          result.newValues = { throughpoint };
+          result.setValue = { throughpoint };
         }
         if (Object.keys(essentialThroughpoint).length > 0) {
           result.useEssentialOrDefaultValue = { throughpoint: essentialThroughpoint };
@@ -343,7 +323,7 @@ export default class Ray extends GraphicalComponent {
           } else {
 
             instructions.push({
-              setStateVariable: "throughpoint",
+              setEssentialValue: "throughpoint",
               value: { [arrayKey]: desiredStateVariableValues.throughpoint[arrayKey] }
             });
           }
@@ -390,7 +370,7 @@ export default class Ray extends GraphicalComponent {
         }
 
 
-        return { newValues: { numericalEndpoint } }
+        return { setValue: { numericalEndpoint } }
       }
     }
 
@@ -426,7 +406,7 @@ export default class Ray extends GraphicalComponent {
         }
 
 
-        return { newValues: { numericalThroughpoint } }
+        return { setValue: { numericalThroughpoint } }
       }
     }
 
@@ -443,7 +423,7 @@ export default class Ray extends GraphicalComponent {
     //     },
     //   }),
     //   definition: ({ dependencyValues }) => ({
-    //     newValues: {
+    //     setValue: {
     //       nearestPoint: function (variables) {
 
     //         // only implemented in 2D for now

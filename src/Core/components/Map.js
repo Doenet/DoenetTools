@@ -1,6 +1,7 @@
 import CompositeComponent from './abstract/CompositeComponent';
 import { deepClone } from '../utils/deepFunctions';
 import { processAssignNames } from '../utils/serializedStateProcessing';
+import { convertAttributesForComponentType } from '../utils/copy';
 
 export default class Map extends CompositeComponent {
   static componentType = "map";
@@ -57,7 +58,7 @@ export default class Map extends CompositeComponent {
       }),
       definition: function ({ dependencyValues }) {
         return {
-          newValues: {
+          setValue: {
             nSources: dependencyValues.sourcesChildren.length,
             sourcesNames: dependencyValues.sourcesChildren.map(x => x.componentName),
             sourceAliases: dependencyValues.sourcesChildren.map(x => x.stateValues.alias),
@@ -85,7 +86,7 @@ export default class Map extends CompositeComponent {
 
         let sourcesChildNames = dependencyValues.sourcesChildren.map(x => [...x.stateValues.childComponentNames]);
 
-        return { newValues: { nIterates, minNIterates, sourcesChildNames } };
+        return { setValue: { nIterates, minNIterates, sourcesChildNames } };
       }
 
     }
@@ -104,7 +105,7 @@ export default class Map extends CompositeComponent {
         let templateChild = dependencyValues.templateChild[0];
         if (!templateChild) {
           return {
-            newValues: { template: null }
+            setValue: { template: null }
           }
         }
         let childrenOfTemplate = templateChild.stateValues.serializedChildren;
@@ -118,7 +119,7 @@ export default class Map extends CompositeComponent {
           template.attributes = { newNamespace: { primitive: true } }
         }
         return {
-          newValues: {
+          setValue: {
             template
           }
         }
@@ -152,7 +153,7 @@ export default class Map extends CompositeComponent {
           validBehavior = false;
         }
 
-        return { newValues: { validBehavior } };
+        return { setValue: { validBehavior } };
       }
     }
 
@@ -172,7 +173,7 @@ export default class Map extends CompositeComponent {
       definition: function () {
         // even with invalid behavior, still ready to expand
         // (it will just expand with zero replacements)
-        return { newValues: { readyToExpandWhenResolved: true } };
+        return { setValue: { readyToExpandWhenResolved: true } };
       },
     };
 
@@ -180,7 +181,7 @@ export default class Map extends CompositeComponent {
 
   }
 
-  static async createSerializedReplacements({ component, workspace, componentInfoObjects }) {
+  static async createSerializedReplacements({ component, workspace, componentInfoObjects, flags }) {
 
     // console.log(`create serialized replacements for ${component.componentName}`);
 
@@ -211,7 +212,7 @@ export default class Map extends CompositeComponent {
     if (await component.stateValues.behavior === "parallel") {
       for (let iter = 0; iter < await component.stateValues.minNIterates; iter++) {
         replacements.push(
-          ...await this.parallelReplacement({ component, iter, componentInfoObjects })
+          ...await this.parallelReplacement({ component, iter, componentInfoObjects, flags })
         );
       }
     } else {
@@ -222,7 +223,8 @@ export default class Map extends CompositeComponent {
         component,
         sourcesNumber: 0,
         iterateNumber: -1,
-        componentInfoObjects
+        componentInfoObjects,
+        flags
       });
       replacements = results.replacements;
 
@@ -234,10 +236,28 @@ export default class Map extends CompositeComponent {
     return { replacements };
   }
 
-  static async parallelReplacement({ component, iter, componentInfoObjects }) {
+  static async parallelReplacement({ component, iter, componentInfoObjects, flags }) {
 
     let replacements = [deepClone(await component.stateValues.template)];
-    let newNamespace = component.attributes.newNamespace && component.attributes.newNamespace.primitive;
+    let newNamespace = component.attributes.newNamespace?.primitive;
+
+
+    if ("isResponse" in component.attributes) {
+      // pass isResponse to replacements
+
+      let attributesFromComposite = convertAttributesForComponentType({
+        attributes: { isResponse: component.attributes.isResponse },
+        componentType: repl.componentType,
+        componentInfoObjects,
+        compositeCreatesNewNamespace: newNamespace,
+        flags
+      })
+      if (!replacements[0].attributes) {
+        replacements[0].attributes = {};
+      }
+
+      Object.assign(replacements[0].attributes, attributesFromComposite)
+    }
 
     let processResult = processAssignNames({
       assignNames: component.doenetAttributes.assignNames,
@@ -258,7 +278,8 @@ export default class Map extends CompositeComponent {
 
 
   static async recurseThroughCombinations({ component, sourcesNumber,
-    childnumberArray = [], iterateNumber, componentInfoObjects }) {
+    childnumberArray = [], iterateNumber, componentInfoObjects, flags
+  }) {
     let replacements = [];
     let newChildnumberArray = [...childnumberArray, 0];
     let newNamespace = component.attributes.newNamespace && component.attributes.newNamespace.primitive;
@@ -267,12 +288,35 @@ export default class Map extends CompositeComponent {
     let nSources = await component.stateValues.nSources;
     let template = await component.stateValues.template;
 
+    let compositeAttributesObj = this.createAttributesObject({ flags });
+
     for (let iter = 0; iter < nIterates[sourcesNumber]; iter++) {
       newChildnumberArray[sourcesNumber] = iter;
       if (sourcesNumber >= nSources - 1) {
         iterateNumber++;
 
         let serializedComponents = [deepClone(template)];
+
+        // pass isResponse to template
+        // (only isResponse will be copied, as it is only attribute with leaveRaw)
+
+        let attributesFromComposite = {};
+
+        attributesFromComposite = convertAttributesForComponentType({
+          attributes: component.attributes,
+          componentType: serializedComponents[0].componentType,
+          componentInfoObjects,
+          compositeAttributesObj,
+          compositeCreatesNewNamespace: newNamespace,
+          flags
+        })
+
+        if (!serializedComponents[0].attributes) {
+          serializedComponents[0].attributes = {};
+        }
+
+        Object.assign(serializedComponents[0].attributes, attributesFromComposite)
+
 
         let processResult = processAssignNames({
           assignNames: component.doenetAttributes.assignNames,
@@ -295,7 +339,8 @@ export default class Map extends CompositeComponent {
           sourcesNumber: sourcesNumber + 1,
           childnumberArray: newChildnumberArray,
           iterateNumber,
-          componentInfoObjects
+          componentInfoObjects,
+          flags
         });
         replacements.push(...results.replacements);
         iterateNumber = results.iterateNumber
@@ -305,7 +350,7 @@ export default class Map extends CompositeComponent {
     return { replacements, iterateNumber };
   }
 
-  static async calculateReplacementChanges({ component, components, workspace, componentInfoObjects }) {
+  static async calculateReplacementChanges({ component, components, workspace, componentInfoObjects, flags }) {
 
     // console.log(`calculate replacement changes for ${component.componentName}`)
 
@@ -416,7 +461,7 @@ export default class Map extends CompositeComponent {
 
     if (recreateReplacements) {
       let newSerializedReplacements = await this.createSerializedReplacements({
-        component, workspace, componentInfoObjects
+        component, workspace, componentInfoObjects, flags
       }).replacements;
 
       let replacementInstruction = {
@@ -560,7 +605,7 @@ export default class Map extends CompositeComponent {
 
         for (let iter = prevMinNIterates; iter < currentMinNIterates; iter++) {
           replacements.push(
-            ...await this.parallelReplacement({ component, iter, componentInfoObjects })
+            ...await this.parallelReplacement({ component, iter, componentInfoObjects, flags })
           );
         }
 

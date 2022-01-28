@@ -76,7 +76,7 @@ export default class BooleanOperator extends BooleanComponent {
       }),
       definition: function ({ dependencyValues }) {
         return {
-          newValues: {
+          setValue: {
             value: constructor.applyBooleanOperator(
               dependencyValues.booleanChildren
                 .map(x => x.stateValues.value)
