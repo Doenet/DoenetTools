@@ -6,6 +6,8 @@ import me from 'math-expressions';
 export default function Point(props) {
   let { name, SVs, actions, sourceOfUpdate, callAction } = useDoenetRender(props);
 
+  Point.ignoreActionsWithoutCore = true;
+
   // console.log(`for point ${name}, SVs: `, SVs)
 
   const board = useContext(BoardContext);

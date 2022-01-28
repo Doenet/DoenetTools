@@ -180,7 +180,7 @@ export default function ChoiceInput(props) {
             (no attempts remaining)
           </span>
         </>
-      } else if (SVs.numberOfAttemptsLeft < Infinity) {
+      } else if (Number.isFinite(SVs.numberOfAttemptsLeft)) {
 
         checkWorkButton = <>
           {checkWorkButton}
@@ -326,7 +326,7 @@ export default function ChoiceInput(props) {
           (no attempts remaining)
         </span>
       </>
-    } else if (SVs.numberOfAttemptsLeft < Infinity) {
+    } else if (Number.isFinite(SVs.numberOfAttemptsLeft)) {
 
       checkworkComponent = <>
         {checkworkComponent}

@@ -504,17 +504,17 @@ export default class Document extends BaseComponent {
       }),
       definition({ dependencyValues, componentName, previousValues }) {
 
-        let subvariantsSpecified = Boolean(
-          dependencyValues.variants.desiredVariant &&
-          dependencyValues.variants.desiredVariant.subvariants
-        )
+        // let subvariantsSpecified = Boolean(
+        //   dependencyValues.variants.desiredVariant &&
+        //   dependencyValues.variants.desiredVariant.subvariants
+        // )
 
         let generatedVariantInfo = {
           index: dependencyValues.variantIndex,
           name: dependencyValues.variantName,
           meta: {
             createdBy: componentName,
-            subvariantsSpecified
+            // subvariantsSpecified
           },
         }
 
