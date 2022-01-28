@@ -36,17 +36,20 @@ onmessage = function (e) {
 
     // this.setTimeout(() => {
     //   core = new Core(e.data.args)
-    //   core.initialized.then(() => {
-    //     let actionsToProcess = queuedRequestActions;
-    //     console.log('actions to process', actionsToProcess)
-    //     queuedRequestActions = [];
-    //     for (let action of actionsToProcess) {
+    //   core.getInitializedPromise().then(() => {
+    //     console.log('actions to process', queuedRequestActions)
+    //     for (let action of queuedRequestActions) {
     //       core.requestAction(action);
     //     }
     //   })
     // }, 10000)
     core = new Core(e.data.args)
-
+    core.getInitializedPromise().then(() => {
+      for (let action of queuedRequestActions) {
+        core.requestAction(action);
+      }
+      queuedRequestActions = [];
+    })
   } else if (e.data.messageType === "requestAction") {
     if (core) {
       // setTimeout(() => core.requestAction(e.data.args), 1000)
@@ -275,9 +278,21 @@ export default class Core {
 
     this.parameterStack.parameters.rngClass = prng_alea;
 
-    this.initialized = new Promise((resolve, reject) => {
-      this.resolveInitialized = resolve;
-    })
+    this.initialized = false;
+    this.initializedPromiseResolves = [];
+    this.resolveInitialized = () => {
+      this.initialized = true;
+      this.initializedPromiseResolves.forEach(resolve => resolve(true))
+    }
+    this.getInitializedPromise = () => {
+      if (this.initialized) {
+        return Promise.resolve(true);
+      } else {
+        return new Promise((resolve, reject) => {
+          this.initializedPromiseResolves.push(resolve)
+        })
+      }
+    }
 
     let contentId = Hex.stringify(sha256(doenetML));
     serializeFunctions.expandDoenetMLsToFullSerializedComponents({
@@ -378,7 +393,7 @@ export default class Core {
 
     this.coreReadyCallback()
 
-    this.resolveInitialized(true);
+    this.resolveInitialized();
 
   }
 
