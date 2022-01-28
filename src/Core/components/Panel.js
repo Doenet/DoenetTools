@@ -113,7 +113,7 @@ export default class panel extends InlineComponent {
 
         }
 
-        return { newValues: { breakpoints } }
+        return { setValue: { breakpoints } }
       }
 
     }

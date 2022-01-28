@@ -1,49 +1,35 @@
-import React from 'react';
-import DoenetRenderer from './DoenetRenderer';
+import React, { useEffect } from 'react';
+import useDoenetRender from './useDoenetRenderer';
 
-export default class MathList extends DoenetRenderer {
+export default function MathList(props) {
+  let { name, SVs, children } = useDoenetRender(props);
 
-  componentDidMount() {
+  useEffect(()=>{
     if (window.MathJax) {
       window.MathJax.Hub.Config({ showProcessingMessages: false, "fast-preview": { disabled: true } });
       window.MathJax.Hub.processSectionDelay = 0;
-      window.MathJax.Hub.Queue(["Typeset", window.MathJax.Hub, "#" + this.componentName]);
+      window.MathJax.Hub.Queue(["Typeset", window.MathJax.Hub, "#" + name]);
     }
+  },[]);
+
+  if (window.MathJax) {
+    window.MathJax.Hub.Queue(["Typeset", window.MathJax.Hub, "#" + name]);
   }
 
-  componentDidUpdate() {
-    if (window.MathJax) {
-      window.MathJax.Hub.Queue(["Typeset", window.MathJax.Hub, "#" + this.componentName]);
-    }
+  if (SVs.hidden) {
+    return null;
   }
 
-  render() {
-
-    if (this.doenetSvData.hidden) {
-      return null;
-    }
-
-    let children = this.children;
-
-    if (this.doenetSvData.nChildrenToDisplay !== undefined) {
-      children = children.slice(0, this.doenetSvData.nChildrenToDisplay);
-    }
-
-    if (children.length === 0 && this.doenetSvData.latex) {
-      return <React.Fragment key={this.componentName}><a name={this.componentName} /><span id={this.componentName}>{"\\(" + this.doenetSvData.latex + "\\)"}</span></React.Fragment>;
-    }
-
-
-    // BADBADBAD: what is the best way to filter out the hidden children?
-    // This approach doesn't seem like a good idea.
-    children = children.filter(x => !x.props.componentInstructions.stateValues.hidden);
-
-    if (children.length === 0) {
-      return <React.Fragment key={this.componentName} />
-    }
-
-    let withCommas = children.slice(1).reduce((a, b) => [...a, ', ', b], [children[0]])
-
-    return <React.Fragment key={this.componentName}><a name={this.componentName} />{withCommas}</React.Fragment>;
+  if (children.length === 0 && SVs.latex) {
+    return <React.Fragment key={name}><a name={name} /><span id={name}>{"\\(" + SVs.latex + "\\)"}</span></React.Fragment>;
   }
+
+  if (children.length === 0) {
+    return <React.Fragment key={name} />
+  }
+
+  let withCommas = children.slice(1).reduce((a, b) => [...a, ', ', b], [children[0]])
+
+  return <React.Fragment key={name}><a name={name} />{withCommas}</React.Fragment>;
 }
+

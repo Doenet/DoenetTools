@@ -21,21 +21,21 @@ describe('Basic copy assignName Tests', function () {
         doenetML: `
   <text>a</text>
   <text name="a">hello</text>
-  <copy name="cp1" assignNames="b" tname="a" />
-  <copy name="cp2" assignNames="c" tname="b" />
-  <copy name="cp3" assignNames="d" tname="cp1" />
-  <copy name="cp4" assignNames="e" tname="c" />
-  <copy name="cp5" assignNames="f" tname="cp2" />
-  <copy name="cp6" assignNames="g" tname="d" />
-  <copy name="cp7" assignNames="h" tname="cp3" />
-  <copy name="cp8" assignNames="i" tname="e" />
-  <copy name="cp9" assignNames="j" tname="cp4" />
-  <copy name="cp10" assignNames="k" tname="f" />
-  <copy name="cp11" assignNames="l" tname="cp5" />
-  <copy name="cp12" assignNames="m" tname="g" />
-  <copy name="cp13" assignNames="n" tname="cp6" />
-  <copy name="cp14" assignNames="o" tname="h" />
-  <copy name="cp15" assignNames="p" tname="cp7" />
+  <copy name="cp1" assignNames="b" target="a" />
+  <copy name="cp2" assignNames="c" target="b" />
+  <copy name="cp3" assignNames="d" target="cp1" />
+  <copy name="cp4" assignNames="e" target="c" />
+  <copy name="cp5" assignNames="f" target="cp2" />
+  <copy name="cp6" assignNames="g" target="d" />
+  <copy name="cp7" assignNames="h" target="cp3" />
+  <copy name="cp8" assignNames="i" target="e" />
+  <copy name="cp9" assignNames="j" target="cp4" />
+  <copy name="cp10" assignNames="k" target="f" />
+  <copy name="cp11" assignNames="l" target="cp5" />
+  <copy name="cp12" assignNames="m" target="g" />
+  <copy name="cp13" assignNames="n" target="cp6" />
+  <copy name="cp14" assignNames="o" target="h" />
+  <copy name="cp15" assignNames="p" target="cp7" />
 
   `}, "*");
     });
@@ -107,23 +107,23 @@ describe('Basic copy assignName Tests', function () {
         doenetML: `
   <text>a</text>
   <math>x+x</math>
-  <copy name="cp1" prop="simplify" assignNames="s1" tname="_math1" />
-  <copy name="cp2" tname="s1" assignNames="s2" />
-  <copy name="cp3" tname="cp1" assignNames="s3" />
+  <copy name="cp1" prop="simplify" assignNames="s1" target="_math1" />
+  <copy name="cp2" target="s1" assignNames="s2" />
+  <copy name="cp3" target="cp1" assignNames="s3" />
 
-  <copy name="cp4" assignNames="m1" tname="_math1" simplify="full" />
-  <copy name="cp5" prop="simplify" assignNames="s4" tname="m1" />
-  <copy name="cp6" prop="simplify" assignNames="s5" tname="cp4" />
-  <copy name="cp7" tname="s4" assignNames="s6" />
-  <copy name="cp8" tname="cp5" assignNames="s7" />
-  <copy name="cp9" tname="s5" assignNames="s8" />
-  <copy name="cp10" tname="cp6" assignNames="s9" />
+  <copy name="cp4" assignNames="m1" target="_math1" simplify="full" />
+  <copy name="cp5" prop="simplify" assignNames="s4" target="m1" />
+  <copy name="cp6" prop="simplify" assignNames="s5" target="cp4" />
+  <copy name="cp7" target="s4" assignNames="s6" />
+  <copy name="cp8" target="cp5" assignNames="s7" />
+  <copy name="cp9" target="s5" assignNames="s8" />
+  <copy name="cp10" target="cp6" assignNames="s9" />
 
 
-  <extract name="ex1" prop="simplify" assignNames="s10"><copy tname="_math1" /></extract>
-  <copy name="cp11" tname="s10" assignNames="s11" />
-  <extract name="ex2" prop="simplify" assignNames="s12"><copy tname="m1" /></extract>
-  <copy name="cp12" tname="s12" assignNames="s13" />
+  <extract name="ex1" prop="simplify" assignNames="s10"><copy target="_math1" /></extract>
+  <copy name="cp11" target="s10" assignNames="s11" />
+  <extract name="ex2" prop="simplify" assignNames="s12"><copy target="m1" /></extract>
+  <copy name="cp12" target="s12" assignNames="s13" />
 
   `}, "*");
     });
@@ -206,19 +206,19 @@ describe('Basic copy assignName Tests', function () {
     <line through="(0,0) (1,1)" />
   </graph>
 
-  <copy name="cp1" prop="points" assignNames="b c" tname="_line1" />
+  <copy name="cp1" prop="points" assignNames="b c" target="_line1" />
 
   <graph>
-    <copy tname="b" assignNames="b1" />
-    <copy tname="c" assignNames="c1" />
+    <copy target="b" assignNames="b1" />
+    <copy target="c" assignNames="c1" />
   </graph>
 
   <graph>
-    <copy assignNames="d e" tname="cp1" />
+    <copy assignNames="d e" target="cp1" />
   </graph>
 
-  <copy tname="d" assignNames="f" />
-  <copy tname="e" assignNames="g" />
+  <copy target="d" assignNames="f" />
+  <copy target="e" assignNames="g" />
 
   `}, "*");
     });
@@ -260,6 +260,7 @@ describe('Basic copy assignName Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       components['/b'].movePoint({ x: 5, y: -5 });
+      cy.get('#\\/b .mjx-mrow').should('contain.text', '(5,−5)')
       cy.get('#\\/b').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(5,−5)')
       })
@@ -271,15 +272,17 @@ describe('Basic copy assignName Tests', function () {
       })
       cy.get('#\\/g').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(1,1)')
+      }).then(() => {
+        expect(components['/b'].stateValues.xs.map(x => x.tree)).eqls([5, -5]);
+        expect(components['/c'].stateValues.xs.map(x => x.tree)).eqls([1, 1]);
+        expect(components['/b1'].stateValues.xs.map(x => x.tree)).eqls([5, -5]);
+        expect(components['/c1'].stateValues.xs.map(x => x.tree)).eqls([1, 1]);
+        expect(components['/d'].stateValues.xs.map(x => x.tree)).eqls([5, -5]);
+        expect(components['/e'].stateValues.xs.map(x => x.tree)).eqls([1, 1]);
+        expect(components['/f'].stateValues.xs.map(x => x.tree)).eqls([5, -5]);
+        expect(components['/g'].stateValues.xs.map(x => x.tree)).eqls([1, 1]);
       })
-      expect(components['/b'].stateValues.xs.map(x => x.tree)).eqls([5, -5]);
-      expect(components['/c'].stateValues.xs.map(x => x.tree)).eqls([1, 1]);
-      expect(components['/b1'].stateValues.xs.map(x => x.tree)).eqls([5, -5]);
-      expect(components['/c1'].stateValues.xs.map(x => x.tree)).eqls([1, 1]);
-      expect(components['/d'].stateValues.xs.map(x => x.tree)).eqls([5, -5]);
-      expect(components['/e'].stateValues.xs.map(x => x.tree)).eqls([1, 1]);
-      expect(components['/f'].stateValues.xs.map(x => x.tree)).eqls([5, -5]);
-      expect(components['/g'].stateValues.xs.map(x => x.tree)).eqls([1, 1]);
+
     })
 
     cy.log('move point c')
@@ -289,6 +292,7 @@ describe('Basic copy assignName Tests', function () {
       cy.get('#\\/b').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(5,−5)')
       })
+      cy.get('#\\/c .mjx-mrow').should('contain.text', '(3,4)')
       cy.get('#\\/c').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(3,4)')
       })
@@ -297,21 +301,23 @@ describe('Basic copy assignName Tests', function () {
       })
       cy.get('#\\/g').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(3,4)')
+      }).then(() => {
+        expect(components['/b'].stateValues.xs.map(x => x.tree)).eqls([5, -5]);
+        expect(components['/c'].stateValues.xs.map(x => x.tree)).eqls([3, 4]);
+        expect(components['/b1'].stateValues.xs.map(x => x.tree)).eqls([5, -5]);
+        expect(components['/c1'].stateValues.xs.map(x => x.tree)).eqls([3, 4]);
+        expect(components['/d'].stateValues.xs.map(x => x.tree)).eqls([5, -5]);
+        expect(components['/e'].stateValues.xs.map(x => x.tree)).eqls([3, 4]);
+        expect(components['/f'].stateValues.xs.map(x => x.tree)).eqls([5, -5]);
+        expect(components['/g'].stateValues.xs.map(x => x.tree)).eqls([3, 4]);
       })
-      expect(components['/b'].stateValues.xs.map(x => x.tree)).eqls([5, -5]);
-      expect(components['/c'].stateValues.xs.map(x => x.tree)).eqls([3, 4]);
-      expect(components['/b1'].stateValues.xs.map(x => x.tree)).eqls([5, -5]);
-      expect(components['/c1'].stateValues.xs.map(x => x.tree)).eqls([3, 4]);
-      expect(components['/d'].stateValues.xs.map(x => x.tree)).eqls([5, -5]);
-      expect(components['/e'].stateValues.xs.map(x => x.tree)).eqls([3, 4]);
-      expect(components['/f'].stateValues.xs.map(x => x.tree)).eqls([5, -5]);
-      expect(components['/g'].stateValues.xs.map(x => x.tree)).eqls([3, 4]);
+
     })
 
     cy.log('move point b1')
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components['/b1'].movePoint({ x: -9, y: -8 });
+      await components['/b1'].movePoint({ x: -9, y: -8 });
       cy.get('#\\/b').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(−9,−8)')
       })
@@ -323,22 +329,24 @@ describe('Basic copy assignName Tests', function () {
       })
       cy.get('#\\/g').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(3,4)')
+      }).then(() => {
+        expect(components['/b'].stateValues.xs.map(x => x.tree)).eqls([-9, -8]);
+        expect(components['/c'].stateValues.xs.map(x => x.tree)).eqls([3, 4]);
+        expect(components['/b1'].stateValues.xs.map(x => x.tree)).eqls([-9, -8]);
+        expect(components['/c1'].stateValues.xs.map(x => x.tree)).eqls([3, 4]);
+        expect(components['/d'].stateValues.xs.map(x => x.tree)).eqls([-9, -8]);
+        expect(components['/e'].stateValues.xs.map(x => x.tree)).eqls([3, 4]);
+        expect(components['/f'].stateValues.xs.map(x => x.tree)).eqls([-9, -8]);
+        expect(components['/g'].stateValues.xs.map(x => x.tree)).eqls([3, 4]);
       })
-      expect(components['/b'].stateValues.xs.map(x => x.tree)).eqls([-9, -8]);
-      expect(components['/c'].stateValues.xs.map(x => x.tree)).eqls([3, 4]);
-      expect(components['/b1'].stateValues.xs.map(x => x.tree)).eqls([-9, -8]);
-      expect(components['/c1'].stateValues.xs.map(x => x.tree)).eqls([3, 4]);
-      expect(components['/d'].stateValues.xs.map(x => x.tree)).eqls([-9, -8]);
-      expect(components['/e'].stateValues.xs.map(x => x.tree)).eqls([3, 4]);
-      expect(components['/f'].stateValues.xs.map(x => x.tree)).eqls([-9, -8]);
-      expect(components['/g'].stateValues.xs.map(x => x.tree)).eqls([3, 4]);
+
     })
 
 
     cy.log('move point c1')
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components['/c1'].movePoint({ x: -1, y: -3 });
+      await components['/c1'].movePoint({ x: -1, y: -3 });
       cy.get('#\\/b').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(−9,−8)')
       })
@@ -350,22 +358,24 @@ describe('Basic copy assignName Tests', function () {
       })
       cy.get('#\\/g').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(−1,−3)')
+      }).then(() => {
+        expect(components['/b'].stateValues.xs.map(x => x.tree)).eqls([-9, -8]);
+        expect(components['/c'].stateValues.xs.map(x => x.tree)).eqls([-1, -3]);
+        expect(components['/b1'].stateValues.xs.map(x => x.tree)).eqls([-9, -8]);
+        expect(components['/c1'].stateValues.xs.map(x => x.tree)).eqls([-1, -3]);
+        expect(components['/d'].stateValues.xs.map(x => x.tree)).eqls([-9, -8]);
+        expect(components['/e'].stateValues.xs.map(x => x.tree)).eqls([-1, -3]);
+        expect(components['/f'].stateValues.xs.map(x => x.tree)).eqls([-9, -8]);
+        expect(components['/g'].stateValues.xs.map(x => x.tree)).eqls([-1, -3]);
       })
-      expect(components['/b'].stateValues.xs.map(x => x.tree)).eqls([-9, -8]);
-      expect(components['/c'].stateValues.xs.map(x => x.tree)).eqls([-1, -3]);
-      expect(components['/b1'].stateValues.xs.map(x => x.tree)).eqls([-9, -8]);
-      expect(components['/c1'].stateValues.xs.map(x => x.tree)).eqls([-1, -3]);
-      expect(components['/d'].stateValues.xs.map(x => x.tree)).eqls([-9, -8]);
-      expect(components['/e'].stateValues.xs.map(x => x.tree)).eqls([-1, -3]);
-      expect(components['/f'].stateValues.xs.map(x => x.tree)).eqls([-9, -8]);
-      expect(components['/g'].stateValues.xs.map(x => x.tree)).eqls([-1, -3]);
+
     })
 
 
     cy.log('move point d')
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components['/d'].movePoint({ x: 0, y: 2 });
+      await components['/d'].movePoint({ x: 0, y: 2 });
       cy.get('#\\/b').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(0,2)')
       })
@@ -377,22 +387,24 @@ describe('Basic copy assignName Tests', function () {
       })
       cy.get('#\\/g').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(−1,−3)')
+      }).then(() => {
+        expect(components['/b'].stateValues.xs.map(x => x.tree)).eqls([0, 2]);
+        expect(components['/c'].stateValues.xs.map(x => x.tree)).eqls([-1, -3]);
+        expect(components['/b1'].stateValues.xs.map(x => x.tree)).eqls([0, 2]);
+        expect(components['/c1'].stateValues.xs.map(x => x.tree)).eqls([-1, -3]);
+        expect(components['/d'].stateValues.xs.map(x => x.tree)).eqls([0, 2]);
+        expect(components['/e'].stateValues.xs.map(x => x.tree)).eqls([-1, -3]);
+        expect(components['/f'].stateValues.xs.map(x => x.tree)).eqls([0, 2]);
+        expect(components['/g'].stateValues.xs.map(x => x.tree)).eqls([-1, -3]);
       })
-      expect(components['/b'].stateValues.xs.map(x => x.tree)).eqls([0, 2]);
-      expect(components['/c'].stateValues.xs.map(x => x.tree)).eqls([-1, -3]);
-      expect(components['/b1'].stateValues.xs.map(x => x.tree)).eqls([0, 2]);
-      expect(components['/c1'].stateValues.xs.map(x => x.tree)).eqls([-1, -3]);
-      expect(components['/d'].stateValues.xs.map(x => x.tree)).eqls([0, 2]);
-      expect(components['/e'].stateValues.xs.map(x => x.tree)).eqls([-1, -3]);
-      expect(components['/f'].stateValues.xs.map(x => x.tree)).eqls([0, 2]);
-      expect(components['/g'].stateValues.xs.map(x => x.tree)).eqls([-1, -3]);
+
     })
 
 
     cy.log('move point e')
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components['/e'].movePoint({ x: 5, y: 4 });
+      await components['/e'].movePoint({ x: 5, y: 4 });
       cy.get('#\\/b').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(0,2)')
       })
@@ -404,21 +416,23 @@ describe('Basic copy assignName Tests', function () {
       })
       cy.get('#\\/g').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(5,4)')
+      }).then(() => {
+        expect(components['/b'].stateValues.xs.map(x => x.tree)).eqls([0, 2]);
+        expect(components['/c'].stateValues.xs.map(x => x.tree)).eqls([5, 4]);
+        expect(components['/b1'].stateValues.xs.map(x => x.tree)).eqls([0, 2]);
+        expect(components['/c1'].stateValues.xs.map(x => x.tree)).eqls([5, 4]);
+        expect(components['/d'].stateValues.xs.map(x => x.tree)).eqls([0, 2]);
+        expect(components['/e'].stateValues.xs.map(x => x.tree)).eqls([5, 4]);
+        expect(components['/f'].stateValues.xs.map(x => x.tree)).eqls([0, 2]);
+        expect(components['/g'].stateValues.xs.map(x => x.tree)).eqls([5, 4]);
       })
-      expect(components['/b'].stateValues.xs.map(x => x.tree)).eqls([0, 2]);
-      expect(components['/c'].stateValues.xs.map(x => x.tree)).eqls([5, 4]);
-      expect(components['/b1'].stateValues.xs.map(x => x.tree)).eqls([0, 2]);
-      expect(components['/c1'].stateValues.xs.map(x => x.tree)).eqls([5, 4]);
-      expect(components['/d'].stateValues.xs.map(x => x.tree)).eqls([0, 2]);
-      expect(components['/e'].stateValues.xs.map(x => x.tree)).eqls([5, 4]);
-      expect(components['/f'].stateValues.xs.map(x => x.tree)).eqls([0, 2]);
-      expect(components['/g'].stateValues.xs.map(x => x.tree)).eqls([5, 4]);
+
     })
 
     cy.log('move point f')
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components['/f'].movePoint({ x: 6, y: 7 });
+      await components['/f'].movePoint({ x: 6, y: 7 });
       cy.get('#\\/b').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(6,7)')
       })
@@ -430,22 +444,24 @@ describe('Basic copy assignName Tests', function () {
       })
       cy.get('#\\/g').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(5,4)')
+      }).then(() => {
+        expect(components['/b'].stateValues.xs.map(x => x.tree)).eqls([6, 7]);
+        expect(components['/c'].stateValues.xs.map(x => x.tree)).eqls([5, 4]);
+        expect(components['/b1'].stateValues.xs.map(x => x.tree)).eqls([6, 7]);
+        expect(components['/c1'].stateValues.xs.map(x => x.tree)).eqls([5, 4]);
+        expect(components['/d'].stateValues.xs.map(x => x.tree)).eqls([6, 7]);
+        expect(components['/e'].stateValues.xs.map(x => x.tree)).eqls([5, 4]);
+        expect(components['/f'].stateValues.xs.map(x => x.tree)).eqls([6, 7]);
+        expect(components['/g'].stateValues.xs.map(x => x.tree)).eqls([5, 4]);
       })
-      expect(components['/b'].stateValues.xs.map(x => x.tree)).eqls([6, 7]);
-      expect(components['/c'].stateValues.xs.map(x => x.tree)).eqls([5, 4]);
-      expect(components['/b1'].stateValues.xs.map(x => x.tree)).eqls([6, 7]);
-      expect(components['/c1'].stateValues.xs.map(x => x.tree)).eqls([5, 4]);
-      expect(components['/d'].stateValues.xs.map(x => x.tree)).eqls([6, 7]);
-      expect(components['/e'].stateValues.xs.map(x => x.tree)).eqls([5, 4]);
-      expect(components['/f'].stateValues.xs.map(x => x.tree)).eqls([6, 7]);
-      expect(components['/g'].stateValues.xs.map(x => x.tree)).eqls([5, 4]);
+
     })
 
 
     cy.log('move point g')
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components['/g'].movePoint({ x: 9, y: 3 });
+      await components['/g'].movePoint({ x: 9, y: 3 });
       cy.get('#\\/b').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(6,7)')
       })
@@ -457,15 +473,17 @@ describe('Basic copy assignName Tests', function () {
       })
       cy.get('#\\/g').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(9,3)')
+      }).then(() => {
+        expect(components['/b'].stateValues.xs.map(x => x.tree)).eqls([6, 7]);
+        expect(components['/c'].stateValues.xs.map(x => x.tree)).eqls([9, 3]);
+        expect(components['/b1'].stateValues.xs.map(x => x.tree)).eqls([6, 7]);
+        expect(components['/c1'].stateValues.xs.map(x => x.tree)).eqls([9, 3]);
+        expect(components['/d'].stateValues.xs.map(x => x.tree)).eqls([6, 7]);
+        expect(components['/e'].stateValues.xs.map(x => x.tree)).eqls([9, 3]);
+        expect(components['/f'].stateValues.xs.map(x => x.tree)).eqls([6, 7]);
+        expect(components['/g'].stateValues.xs.map(x => x.tree)).eqls([9, 3]);
       })
-      expect(components['/b'].stateValues.xs.map(x => x.tree)).eqls([6, 7]);
-      expect(components['/c'].stateValues.xs.map(x => x.tree)).eqls([9, 3]);
-      expect(components['/b1'].stateValues.xs.map(x => x.tree)).eqls([6, 7]);
-      expect(components['/c1'].stateValues.xs.map(x => x.tree)).eqls([9, 3]);
-      expect(components['/d'].stateValues.xs.map(x => x.tree)).eqls([6, 7]);
-      expect(components['/e'].stateValues.xs.map(x => x.tree)).eqls([9, 3]);
-      expect(components['/f'].stateValues.xs.map(x => x.tree)).eqls([6, 7]);
-      expect(components['/g'].stateValues.xs.map(x => x.tree)).eqls([9, 3]);
+
     })
 
   })
@@ -480,17 +498,17 @@ describe('Basic copy assignName Tests', function () {
     <line through="(0,0) (1,1)" />
   </graph>
 
-  <copy name="cp1" prop="point1" assignNames="b" tname="_line1" />
+  <copy name="cp1" prop="point1" assignNames="b" target="_line1" />
 
   <graph>
-    <copy tname="b" assignNames="b1" />
+    <copy target="b" assignNames="b1" />
   </graph>
 
   <graph>
-    <copy assignNames="d" tname="cp1" />
+    <copy assignNames="d" target="cp1" />
   </graph>
 
-  <copy tname="d" assignNames="f" />
+  <copy target="d" assignNames="f" />
 
   `}, "*");
     });
@@ -519,9 +537,9 @@ describe('Basic copy assignName Tests', function () {
     })
 
     cy.log('move point b')
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components['/b'].movePoint({ x: 5, y: -5 });
+      await components['/b'].movePoint({ x: 5, y: -5 });
       cy.get('#\\/b').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(5,−5)')
       })
@@ -535,9 +553,9 @@ describe('Basic copy assignName Tests', function () {
     })
 
     cy.log('move point b1')
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components['/b1'].movePoint({ x: -9, y: -8 });
+      await components['/b1'].movePoint({ x: -9, y: -8 });
       cy.get('#\\/b').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(−9,−8)')
       })
@@ -552,9 +570,9 @@ describe('Basic copy assignName Tests', function () {
 
 
     cy.log('move point d')
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components['/d'].movePoint({ x: 0, y: 2 });
+      await components['/d'].movePoint({ x: 0, y: 2 });
       cy.get('#\\/b').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(0,2)')
       })
@@ -569,9 +587,9 @@ describe('Basic copy assignName Tests', function () {
 
 
     cy.log('move point f')
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components['/f'].movePoint({ x: 6, y: 7 });
+      await components['/f'].movePoint({ x: 6, y: 7 });
       cy.get('#\\/b').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(6,7)')
       })
@@ -598,14 +616,14 @@ describe('Basic copy assignName Tests', function () {
   </graph>
 
   <graph>
-     <copy name="cp1" prop="points" assignNames="b c" tname="_line1" />
+     <copy name="cp1" prop="points" assignNames="b c" target="_line1" />
   </graph>
 
-  <p>xs of points: <copy prop="x" tname="cp1" assignNames="d e" /></p>
+  <p>xs of points: <copy prop="x" target="cp1" assignNames="d e" /></p>
 
   <p>
-    xs again: <copy tname="d" assignNames="f" />
-    <copy tname="e" assignNames="g" />
+    xs again: <copy target="d" assignNames="f" />
+    <copy target="e" assignNames="g" />
   </p>
 
   `}, "*");
@@ -643,9 +661,9 @@ describe('Basic copy assignName Tests', function () {
     })
 
     cy.log('move point b')
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components['/b'].movePoint({ x: 5, y: -5 });
+      await components['/b'].movePoint({ x: 5, y: -5 });
       cy.get('#\\/d').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('5')
       })
@@ -668,9 +686,9 @@ describe('Basic copy assignName Tests', function () {
     })
 
     cy.log('move point c')
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components['/c'].movePoint({ x: 3, y: 4 });
+      await components['/c'].movePoint({ x: 3, y: 4 });
       cy.get('#\\/d').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('5')
       })
@@ -704,33 +722,33 @@ describe('Basic copy assignName Tests', function () {
     <line through="(0,0) (1,1)" />
   </graph>
 
-  <copy name="cp1" prop="points" assignNames="(a1 a2) (b1 b2)" tname="_line1" />
+  <copy name="cp1" prop="points" assignNames="(a1 a2) (b1 b2)" target="_line1" />
   
-  <p name="n1">nothing 1: <copy tname="a1" /></p>
-  <p name="n2">nothing 2: <copy tname="a2" /></p>
-  <p name="n3">nothing 3: <copy tname="b1" /></p>
-  <p name="n4">nothing 4: <copy tname="b2" /></p>
+  <p name="n1">nothing 1: <copy target="a1" /></p>
+  <p name="n2">nothing 2: <copy target="a2" /></p>
+  <p name="n3">nothing 3: <copy target="b1" /></p>
+  <p name="n4">nothing 4: <copy target="b2" /></p>
 
   <graph>
-    <copy name="cp2" assignNames="c d" tname="cp1" />
+    <copy name="cp2" assignNames="c d" target="cp1" />
   </graph>
 
-  <copy tname="c" assignNames="e" />
-  <copy tname="d" assignNames="f" />
+  <copy target="c" assignNames="e" />
+  <copy target="d" assignNames="f" />
 
-  <copy name="cp3" assignNames="(g1 g2) (h1 h2)" tname="cp1" />
+  <copy name="cp3" assignNames="(g1 g2) (h1 h2)" target="cp1" />
   
-  <p name="n5">nothing 5: <copy tname="g1" /></p>
-  <p name="n6">nothing 6: <copy tname="g2" /></p>
-  <p name="n7">nothing 7: <copy tname="h1" /></p>
-  <p name="n8">nothing 8: <copy tname="h2" /></p>
+  <p name="n5">nothing 5: <copy target="g1" /></p>
+  <p name="n6">nothing 6: <copy target="g2" /></p>
+  <p name="n7">nothing 7: <copy target="h1" /></p>
+  <p name="n8">nothing 8: <copy target="h2" /></p>
 
-  <copy name="cp4" assignNames="(i1 i2) (j1 j2)" tname="cp2" />
+  <copy name="cp4" assignNames="(i1 i2) (j1 j2)" target="cp2" />
   
-  <p name="n9">nothing 9: <copy tname="i1" /></p>
-  <p name="n10">nothing 10: <copy tname="i2" /></p>
-  <p name="n11">nothing 11: <copy tname="j1" /></p>
-  <p name="n12">nothing 12: <copy tname="j2" /></p>
+  <p name="n9">nothing 9: <copy target="i1" /></p>
+  <p name="n10">nothing 10: <copy target="i2" /></p>
+  <p name="n11">nothing 11: <copy target="j1" /></p>
+  <p name="n12">nothing 12: <copy target="j2" /></p>
 
 
   `}, "*");
@@ -806,9 +824,9 @@ describe('Basic copy assignName Tests', function () {
       })
 
       cy.log('move point c')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let components = Object.assign({}, win.state.components);
-        components['/c'].movePoint({ x: 5, y: -5 });
+        await components['/c'].movePoint({ x: 5, y: -5 });
         cy.get(point1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('(5,−5)')
         })
@@ -853,9 +871,9 @@ describe('Basic copy assignName Tests', function () {
       })
 
       cy.log('move point d')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let components = Object.assign({}, win.state.components);
-        components['/d'].movePoint({ x: 3, y: 4 });
+        await components['/d'].movePoint({ x: 3, y: 4 });
         cy.get(point1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('(5,−5)')
         })
@@ -900,9 +918,9 @@ describe('Basic copy assignName Tests', function () {
       })
 
       cy.log('move point e')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let components = Object.assign({}, win.state.components);
-        components['/e'].movePoint({ x: -9, y: -8 });
+        await components['/e'].movePoint({ x: -9, y: -8 });
         cy.get(point1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('(−9,−8)')
         })
@@ -948,9 +966,9 @@ describe('Basic copy assignName Tests', function () {
 
 
       cy.log('move point f')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let components = Object.assign({}, win.state.components);
-        components['/f'].movePoint({ x: -1, y: -3 });
+        await components['/f'].movePoint({ x: -1, y: -3 });
         cy.get(point1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('(−9,−8)')
         })
@@ -1009,43 +1027,43 @@ describe('Basic copy assignName Tests', function () {
     <line through="(0,0) (1,1)" />
   </graph>
 
-  <copy name="cp1" prop="points" assignNames="(a1 a2) (b1 b2)" tname="_line1" />
+  <copy name="cp1" prop="points" assignNames="(a1 a2) (b1 b2)" target="_line1" />
   
-  <p name="n1">nothing 1: <copy tname="a1" /></p>
-  <p name="n2">nothing 2: <copy tname="a2" /></p>
-  <p name="n3">nothing 3: <copy tname="b1" /></p>
-  <p name="n4">nothing 4: <copy tname="b2" /></p>
+  <p name="n1">nothing 1: <copy target="a1" /></p>
+  <p name="n2">nothing 2: <copy target="a2" /></p>
+  <p name="n3">nothing 3: <copy target="b1" /></p>
+  <p name="n4">nothing 4: <copy target="b2" /></p>
 
   <graph>
-    <copy name="cp2" assignNames="c d" tname="cp1" />
+    <copy name="cp2" assignNames="c d" target="cp1" />
   </graph>
 
-  <copy tname="c" assignNames="e" />
-  <copy tname="d" assignNames="f" />
+  <copy target="c" assignNames="e" />
+  <copy target="d" assignNames="f" />
 
-  <copy name="cp3" assignNames="(g1 g2) (h1 h2)" tname="cp1" />
+  <copy name="cp3" assignNames="(g1 g2) (h1 h2)" target="cp1" />
   
-  <p name="n5">nothing 5: <copy tname="g1" /></p>
-  <p name="n6">nothing 6: <copy tname="g2" /></p>
-  <p name="n7">nothing 7: <copy tname="h1" /></p>
-  <p name="n8">nothing 8: <copy tname="h2" /></p>
+  <p name="n5">nothing 5: <copy target="g1" /></p>
+  <p name="n6">nothing 6: <copy target="g2" /></p>
+  <p name="n7">nothing 7: <copy target="h1" /></p>
+  <p name="n8">nothing 8: <copy target="h2" /></p>
 
-  <copy name="cp4" assignNames="(i1 i2) (j1 j2)" tname="cp2" />
+  <copy name="cp4" assignNames="(i1 i2) (j1 j2)" target="cp2" />
   
-  <p name="n9">nothing 9: <copy tname="i1" /></p>
-  <p name="n10">nothing 10: <copy tname="i2" /></p>
-  <p name="n11">nothing 11: <copy tname="j1" /></p>
-  <p name="n12">nothing 12: <copy tname="j2" /></p>
+  <p name="n9">nothing 9: <copy target="i1" /></p>
+  <p name="n10">nothing 10: <copy target="i2" /></p>
+  <p name="n11">nothing 11: <copy target="j1" /></p>
+  <p name="n12">nothing 12: <copy target="j2" /></p>
   
   </section>
 
-  <copy tname="hello/e" assignNames="e" />
-  <copy tname="hello/f" assignNames="f" />
+  <copy target="hello/e" assignNames="e" />
+  <copy target="hello/f" assignNames="f" />
 
-  <p name="n13">nothing 13: <copy tname="hello/i1" /></p>
-  <p name="n14">nothing 14: <copy tname="hello/i2" /></p>
-  <p name="n15">nothing 15: <copy tname="hello/j1" /></p>
-  <p name="n16">nothing 16: <copy tname="hello/j2" /></p>
+  <p name="n13">nothing 13: <copy target="hello/i1" /></p>
+  <p name="n14">nothing 14: <copy target="hello/i2" /></p>
+  <p name="n15">nothing 15: <copy target="hello/j1" /></p>
+  <p name="n16">nothing 16: <copy target="hello/j2" /></p>
   
 
   `}, "*");
@@ -1135,9 +1153,9 @@ describe('Basic copy assignName Tests', function () {
       })
 
       cy.log('move point c')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let components = Object.assign({}, win.state.components);
-        components['/hello/c'].movePoint({ x: 5, y: -5 });
+        await components['/hello/c'].movePoint({ x: 5, y: -5 });
         cy.get(point1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('(5,−5)')
         })
@@ -1184,19 +1202,19 @@ describe('Basic copy assignName Tests', function () {
         cy.get(cesc('#/n14')).should('have.text', 'nothing 14: ')
         cy.get(cesc('#/n15')).should('have.text', 'nothing 15: ')
         cy.get(cesc('#/n16')).should('have.text', 'nothing 16: ')
-  
+
         expect(components['/hello/c'].stateValues.xs.map(x => x.tree)).eqls([5, -5]);
         expect(components['/hello/d'].stateValues.xs.map(x => x.tree)).eqls([1, 1]);
         expect(components['/hello/e'].stateValues.xs.map(x => x.tree)).eqls([5, -5]);
         expect(components['/hello/f'].stateValues.xs.map(x => x.tree)).eqls([1, 1]);
         expect(components['/e'].stateValues.xs.map(x => x.tree)).eqls([5, -5]);
         expect(components['/f'].stateValues.xs.map(x => x.tree)).eqls([1, 1]);
-     })
+      })
 
       cy.log('move point d')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let components = Object.assign({}, win.state.components);
-        components['/hello/d'].movePoint({ x: 3, y: 4 });
+        await components['/hello/d'].movePoint({ x: 3, y: 4 });
         cy.get(point1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('(5,−5)')
         })
@@ -1243,19 +1261,19 @@ describe('Basic copy assignName Tests', function () {
         cy.get(cesc('#/n14')).should('have.text', 'nothing 14: ')
         cy.get(cesc('#/n15')).should('have.text', 'nothing 15: ')
         cy.get(cesc('#/n16')).should('have.text', 'nothing 16: ')
-  
+
         expect(components['/hello/c'].stateValues.xs.map(x => x.tree)).eqls([5, -5]);
         expect(components['/hello/d'].stateValues.xs.map(x => x.tree)).eqls([3, 4]);
         expect(components['/hello/e'].stateValues.xs.map(x => x.tree)).eqls([5, -5]);
         expect(components['/hello/f'].stateValues.xs.map(x => x.tree)).eqls([3, 4]);
         expect(components['/e'].stateValues.xs.map(x => x.tree)).eqls([5, -5]);
         expect(components['/f'].stateValues.xs.map(x => x.tree)).eqls([3, 4]);
-     })
+      })
 
       cy.log('move point e')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let components = Object.assign({}, win.state.components);
-        components['/hello/e'].movePoint({ x: -9, y: -8 });
+        await components['/hello/e'].movePoint({ x: -9, y: -8 });
         cy.get(point1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('(−9,−8)')
         })
@@ -1302,7 +1320,7 @@ describe('Basic copy assignName Tests', function () {
         cy.get(cesc('#/n14')).should('have.text', 'nothing 14: ')
         cy.get(cesc('#/n15')).should('have.text', 'nothing 15: ')
         cy.get(cesc('#/n16')).should('have.text', 'nothing 16: ')
-  
+
         expect(components['/hello/c'].stateValues.xs.map(x => x.tree)).eqls([-9, -8]);
         expect(components['/hello/d'].stateValues.xs.map(x => x.tree)).eqls([3, 4]);
         expect(components['/hello/e'].stateValues.xs.map(x => x.tree)).eqls([-9, -8]);
@@ -1313,9 +1331,9 @@ describe('Basic copy assignName Tests', function () {
 
 
       cy.log('move point f')
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         let components = Object.assign({}, win.state.components);
-        components['/hello/f'].movePoint({ x: -1, y: -3 });
+        await components['/hello/f'].movePoint({ x: -1, y: -3 });
         cy.get(point1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('(−9,−8)')
         })
@@ -1362,14 +1380,14 @@ describe('Basic copy assignName Tests', function () {
         cy.get(cesc('#/n14')).should('have.text', 'nothing 14: ')
         cy.get(cesc('#/n15')).should('have.text', 'nothing 15: ')
         cy.get(cesc('#/n16')).should('have.text', 'nothing 16: ')
-  
+
         expect(components['/hello/c'].stateValues.xs.map(x => x.tree)).eqls([-9, -8]);
         expect(components['/hello/d'].stateValues.xs.map(x => x.tree)).eqls([-1, -3]);
         expect(components['/hello/e'].stateValues.xs.map(x => x.tree)).eqls([-9, -8]);
         expect(components['/hello/f'].stateValues.xs.map(x => x.tree)).eqls([-1, -3]);
         expect(components['/e'].stateValues.xs.map(x => x.tree)).eqls([-9, -8]);
         expect(components['/f'].stateValues.xs.map(x => x.tree)).eqls([-1, -3]);
-     })
+      })
 
 
     })
@@ -1389,13 +1407,13 @@ describe('Basic copy assignName Tests', function () {
     </subsection>
   </section>
 
-  <copy assignNames="a" tname="_section1"/>
+  <copy assignNames="a" target="_section1"/>
 
-  <copy assignNames="b" tname="a" />
+  <copy assignNames="b" target="a" />
 
-  <p><copy tname="_section1/_p1/person"/> <copy tname="_section1/person"/>
-<copy tname="a/_p1/person" /> <copy tname="a/person" />
-<copy tname="b/_p1/person" /> <copy tname="b/person" /></p>
+  <p><copy target="_section1/_p1/person"/> <copy target="_section1/person"/>
+<copy target="a/_p1/person" /> <copy target="a/person" />
+<copy target="b/_p1/person" /> <copy target="b/person" /></p>
   `}, "*");
     });
 
@@ -1431,13 +1449,13 @@ describe('Basic copy assignName Tests', function () {
   <text>a</text>
   <section name="hello" newNamespace><title>Hello</title>
     <p newNamespace>Hello, <text name="person">Jesse</text>!</p>
-    <copy assignNames="a" tname="_p1"/>
-    <p><copy tname="_p1/person"/> <copy tname="a/person" /> <copy tname="../bye/a/person" /></p>
+    <copy assignNames="a" target="_p1"/>
+    <p><copy target="_p1/person"/> <copy target="a/person" /> <copy target="../bye/a/person" /></p>
   </section>
 
   <section name="bye" newNamespace><title>Bye</title>
-    <copy assignNames="a" tname="../hello/_p1"/>
-    <p><copy tname="../hello/_p1/person"/> <copy tname="../hello/a/person" /> <copy tname="a/person" /></p>
+    <copy assignNames="a" target="../hello/_p1"/>
+    <p><copy target="../hello/_p1/person"/> <copy target="../hello/a/person" /> <copy target="a/person" /></p>
   </section>
   `}, "*");
     });
@@ -1474,14 +1492,14 @@ describe('Basic copy assignName Tests', function () {
     </math>
   </p>
 
-  <copy tname="pOriginal" assignNames="pCopy" />
+  <copy target="pOriginal" assignNames="pCopy" />
 
-  <p>This grabs expression: <copy tname="pOriginal/expression" assignNames="expressionCopy" /></p>
-  <p>This grabs expression: <copy tname="pCopy/expression" assignNames="expressionCopy2" /></p>
-  <p>This grabs piece x: <copy tname="pOriginal/x" assignNames="xCopy" /></p>
-  <p>This grabs piece y: <copy tname="pOriginal/y" assignNames="yCopy" /></p>
-  <p>Should this grab piece x? <copy tname="pCopy/x" assignNames="xCopy2" /></p>
-  <p>Should this grab piece y? <copy tname="pCopy/y" assignNames="yCopy2" /></p>
+  <p>This grabs expression: <copy target="pOriginal/expression" assignNames="expressionCopy" /></p>
+  <p>This grabs expression: <copy target="pCopy/expression" assignNames="expressionCopy2" /></p>
+  <p>This grabs piece x: <copy target="pOriginal/x" assignNames="xCopy" /></p>
+  <p>This grabs piece y: <copy target="pOriginal/y" assignNames="yCopy" /></p>
+  <p>Should this grab piece x? <copy target="pCopy/x" assignNames="xCopy2" /></p>
+  <p>Should this grab piece y? <copy target="pCopy/y" assignNames="yCopy2" /></p>
 
   `}, "*");
     });

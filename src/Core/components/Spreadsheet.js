@@ -8,10 +8,6 @@ import { HyperFormula } from 'hyperformula';
 export default class Spreadsheet extends BlockComponent {
   static componentType = "spreadsheet";
 
-  // used when referencing this component without prop
-  static useChildrenForReference = false;
-  static get stateVariablesShadowedForReference() { return ["cells", "height"] };
-
   static createAttributesObject(args) {
     let attributes = super.createAttributesObject(args);
     attributes.width = {
@@ -135,7 +131,7 @@ export default class Spreadsheet extends BlockComponent {
         })
 
         return {
-          newValues: {
+          setValue: {
             cellNameToRowCol: result.cellNameToRowCol,
             cellNamesByRowCol: result.cellNamesByRowCol,
           }
@@ -167,7 +163,7 @@ export default class Spreadsheet extends BlockComponent {
         }
         numRows = Math.max(numRows, dependencyValues.cellNamesByRowCol.length);
         // numRows = Math.max(numRows, dependencyValues.rowChildren.length)
-        return { newValues: { numRows } }
+        return { setValue: { numRows } }
       }
     }
 
@@ -198,7 +194,7 @@ export default class Spreadsheet extends BlockComponent {
             numColumns = Math.max(numColumns, row.length);
           }
         }
-        return { newValues: { numColumns } }
+        return { setValue: { numColumns } }
       }
     }
 
@@ -229,10 +225,10 @@ export default class Spreadsheet extends BlockComponent {
           } else {
             height = 132;  // value if numRows = 4
           }
-          return { newValues: { height: { size: height, isAbsolute: true } } }
+          return { setValue: { height: { size: height, isAbsolute: true } } }
         }
 
-        return { newValues: { height: dependencyValues.heightAttr.stateValues.componentSize } }
+        return { setValue: { height: dependencyValues.heightAttr.stateValues.componentSize } }
 
       }
     }
@@ -245,7 +241,9 @@ export default class Spreadsheet extends BlockComponent {
       isArray: true,
       entryPrefixes: ["cell", "row", "column", "range"],
       nDimensions: 2,
-      defaultEntryValue: "",
+      defaultValueByArrayKey: () => "",
+      hasEssential: true,
+      shadowVariable: true,
       stateVariablesDeterminingDependencies: ["cellNamesByRowCol"],
       // stateVariablesDeterminingDependencies: ["numRows", "numColumns"],
       returnArraySizeDependencies: () => ({
@@ -300,8 +298,15 @@ export default class Spreadsheet extends BlockComponent {
           let rowIndex = normalizeIndex(rowNum);
           let colIndex = normalizeIndex(colNum);
 
-          if (!(rowIndex >= 0 && rowIndex < arraySize[0] && colIndex >= 0 && colIndex < arraySize[1])) {
-            // invalid index or index of out range
+          if (!(rowIndex >= 0 && colIndex >= 0)) {
+            // invalid index or index out of range
+            return [];
+          }
+
+          if (arraySize && !(rowIndex < arraySize[0] && colIndex < arraySize[1])) {
+            // invalid index or index out of range
+            // Note: if don't have array size, assume it is OK,
+            // as it corresponds to checking if it is a potential array entry
             return [];
           }
 
@@ -311,8 +316,19 @@ export default class Spreadsheet extends BlockComponent {
           // row2 or rowB
 
           let rowIndex = normalizeIndex(varEnding);
-          if (!(rowIndex >= 0 && rowIndex < arraySize[0])) {
-            // invalid index or index of out range
+          if (!(rowIndex >= 0)) {
+            // invalid index
+            return [];
+          }
+
+          if (!arraySize) {
+            // if don't have array size, just return first entry,
+            // assuming array size is large enough
+            return [String(rowIndex) + ",0"]
+          }
+
+          if (!(rowIndex < arraySize[0])) {
+            // index out of range
             return [];
           }
 
@@ -328,8 +344,19 @@ export default class Spreadsheet extends BlockComponent {
           // column2 or columnB
 
           let colIndex = normalizeIndex(varEnding);
-          if (!(colIndex >= 0 && colIndex < arraySize[1])) {
-            // invalid index or index of out range
+          if (!(colIndex >= 0)) {
+            // invalid index
+            return [];
+          }
+
+          if (!arraySize) {
+            // if don't have array size, just return first entry,
+            // assuming array size is large enough
+            return ["0," + String(colIndex)];
+          }
+
+          if (!(colIndex < arraySize[1])) {
+            // index out of range
             return [];
           }
 
@@ -371,6 +398,12 @@ export default class Spreadsheet extends BlockComponent {
           if (!(fromRow >= 0 && toRow >= 0 && fromCol >= 0 && toCol >= 0)) {
             // invalid range
             return [];
+          }
+
+          if (!arraySize) {
+            // if don't have array size, just return an entry
+            // assuming array size is large enough
+            return [String(fromRow) + "," + String(fromCol)]
           }
 
           let row1 = Math.min(Math.min(fromRow, toRow), arraySize[0] - 1);
@@ -426,14 +459,14 @@ export default class Spreadsheet extends BlockComponent {
           if (dependencyValuesByKey[arrayKey].cellText !== undefined) {
             cells[arrayKey] = dependencyValuesByKey[arrayKey].cellText
           } else {
-            essentialCells[arrayKey] = {};
+            essentialCells[arrayKey] = true;
           }
         }
 
         let result = {};
 
         if (Object.keys(cells).length > 0) {
-          result.newValues = { cells }
+          result.setValue = { cells }
         }
         if (Object.keys(essentialCells).length > 0) {
           result.useEssentialOrDefaultValue = { cells: essentialCells }
@@ -457,7 +490,7 @@ export default class Spreadsheet extends BlockComponent {
           } else {
             let cellText = desiredStateVariableValues.cells[arrayKey];
             instructions.push({
-              setStateVariable: "cells",
+              setEssentialValue: "cells",
               value: { [arrayKey]: cellText === null ? "" : String(cellText) }
             })
           }
@@ -479,7 +512,6 @@ export default class Spreadsheet extends BlockComponent {
       componentType: "cell",
       entryPrefixes: ["evaluatedCell", "evaluatedRow", "evaluatedColumn", "evaluatedRange"],
       nDimensions: 2,
-      defaultEntryValue: null,
       stateVariablesDeterminingDependencies: ["cellNamesByRowCol"],
       returnArraySizeDependencies: () => ({
         numRows: {
@@ -528,8 +560,13 @@ export default class Spreadsheet extends BlockComponent {
           let rowIndex = normalizeIndex(rowNum);
           let colIndex = normalizeIndex(colNum);
 
-          if (!(rowIndex >= 0 && rowIndex < arraySize[0] && colIndex >= 0 && colIndex < arraySize[1])) {
-            // invalid index or index of out range
+          if (!(rowIndex >= 0 && colIndex >= 0)) {
+            // invalid index
+            return [];
+          }
+
+          if (arraySize && !(rowIndex < arraySize[0] && colIndex < arraySize[1])) {
+            // index out of range
             return [];
           }
 
@@ -539,8 +576,18 @@ export default class Spreadsheet extends BlockComponent {
           // evaluatedRow2 or evaluatedRowB
 
           let rowIndex = normalizeIndex(varEnding);
-          if (!(rowIndex >= 0 && rowIndex < arraySize[0])) {
-            // invalid index or index of out range
+          if (!(rowIndex >= 0)) {
+            // invalid index
+            return [];
+          }
+
+          if (!arraySize) {
+            // just give the first cell from the row
+            return [String(rowIndex) + ",0"]
+          }
+
+          if (!(rowIndex < arraySize[0])) {
+            // index out of range
             return [];
           }
 
@@ -556,8 +603,18 @@ export default class Spreadsheet extends BlockComponent {
           // evaluatedColumn2 or evaluatedColumnB
 
           let colIndex = normalizeIndex(varEnding);
-          if (!(colIndex >= 0 && colIndex < arraySize[1])) {
-            // invalid index or index of out range
+          if (!(colIndex >= 0)) {
+            // invalid index
+            return [];
+          }
+
+          if (!arraySize) {
+            // just give the first cell of the column
+            return ["0," + String(colIndex)]
+          }
+
+          if (!(colIndex < arraySize[1])) {
+            // index out of range
             return [];
           }
 
@@ -599,6 +656,11 @@ export default class Spreadsheet extends BlockComponent {
           if (!(fromRow >= 0 && toRow >= 0 && fromCol >= 0 && toCol >= 0)) {
             // invalid range
             return [];
+          }
+
+          if (!arraySize) {
+            // just pick one of the cells
+            return [String(fromRow) + "," + String(fromCol)];
           }
 
           let row1 = Math.min(Math.min(fromRow, toRow), arraySize[0] - 1);
@@ -643,7 +705,7 @@ export default class Spreadsheet extends BlockComponent {
           }
         }
 
-        return { newValues: { evaluatedCells } };
+        return { setValue: { evaluatedCells } };
 
       },
       // inverseArrayDefinitionByKey({ desiredStateVariableValues }) {
@@ -654,7 +716,7 @@ export default class Spreadsheet extends BlockComponent {
 
       //   for (let arrayKey in desiredStateVariableValues.evaluatedCells) {
       //     instructions.push({
-      //       setStateVariable: "evaluatedCells",
+      //       setEssentialValue: "evaluatedCells",
       //       value: { [arrayKey]: desiredStateVariableValues.evaluatedCells[arrayKey] }
       //     })
 
@@ -714,8 +776,14 @@ export default class Spreadsheet extends BlockComponent {
           let rowIndex = normalizeIndex(rowNum);
           let colIndex = normalizeIndex(colNum);
 
-          if (!(rowIndex >= 0 && rowIndex < arraySize[0] && colIndex >= 0 && colIndex < arraySize[1])) {
-            // invalid index or index of out range
+          if (!(rowIndex >= 0 && colIndex >= 0)) {
+            // invalid index
+            return [];
+          }
+
+
+          if (arraySize && !(rowIndex < arraySize[0] && colIndex < arraySize[1])) {
+            // index out of range
             return [];
           }
 
@@ -725,8 +793,17 @@ export default class Spreadsheet extends BlockComponent {
           // pointsInRow2 or pointsInRowB
 
           let rowIndex = normalizeIndex(varEnding);
+          if (!(rowIndex >= 0)) {
+            // invalid index 
+            return [];
+          }
+
+          if (!arraySize) {
+            return [String(rowIndex), ",0"];
+          }
+
           if (!(rowIndex >= 0 && rowIndex < arraySize[0])) {
-            // invalid index or index of out range
+            // index out of range
             return [];
           }
 
@@ -742,8 +819,17 @@ export default class Spreadsheet extends BlockComponent {
           // pointsInColumn2 or pointsInColumnB
 
           let colIndex = normalizeIndex(varEnding);
-          if (!(colIndex >= 0 && colIndex < arraySize[1])) {
-            // invalid index or index of out range
+          if (!(colIndex >= 0)) {
+            // invalid index
+            return [];
+          }
+
+          if (!arraySize) {
+            return ["0," + String(colIndex)];
+          }
+
+          if (!(colIndex < arraySize[1])) {
+            // index out of range
             return [];
           }
 
@@ -785,6 +871,11 @@ export default class Spreadsheet extends BlockComponent {
           if (!(fromRow >= 0 && toRow >= 0 && fromCol >= 0 && toCol >= 0)) {
             // invalid range
             return [];
+          }
+
+          if (!arraySize) {
+            // just return on value
+            return [String(fromRow) + "," + String(fromCol)]
           }
 
           let row1 = Math.min(Math.min(fromRow, toRow), arraySize[0] - 1);
@@ -853,7 +944,7 @@ export default class Spreadsheet extends BlockComponent {
           }
         }
 
-        return { newValues: { pointsInCells } }
+        return { setValue: { pointsInCells } }
 
       },
       // inverseArrayDefinitionByKey({ desiredStateVariableValues, dependencyNamesByKey }) {
@@ -883,7 +974,7 @@ export default class Spreadsheet extends BlockComponent {
   }
 
 
-  onChange({ changes, source }) {
+  async onChange({ changes, source }) {
 
     if (source !== "loadData") {
       let cellChanges = {};
@@ -892,7 +983,7 @@ export default class Spreadsheet extends BlockComponent {
         cellChanges[[row, col]] = value === null ? "" : value;
       }
 
-      return this.coreFunctions.performUpdate({
+      return await this.coreFunctions.performUpdate({
         updateInstructions: [{
           updateType: "updateValue",
           componentName: this.componentName,
@@ -914,9 +1005,7 @@ export default class Spreadsheet extends BlockComponent {
   }
 
   actions = {
-    onChange: this.onChange.bind(
-      new Proxy(this, this.readOnlyProxyHandler)
-    ),
+    onChange: this.onChange.bind(this),
   };
 
 

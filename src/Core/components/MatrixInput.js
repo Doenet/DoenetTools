@@ -9,15 +9,9 @@ export default class MatrixInput extends MathInput {
 
     delete this.actions.updateRawValue;
 
-    this.actions.updateRawValues = this.updateRawValues.bind(
-      new Proxy(this, this.readOnlyProxyHandler)
-    )
-    this.actions.updateNumRows = this.updateNumRows.bind(
-      new Proxy(this, this.readOnlyProxyHandler)
-    )
-    this.actions.updateNumColumns = this.updateNumColumns.bind(
-      new Proxy(this, this.readOnlyProxyHandler)
-    )
+    this.actions.updateRawValues = this.updateRawValues.bind(this)
+    this.actions.updateNumRows = this.updateNumRows.bind(this)
+    this.actions.updateNumColumns = this.updateNumColumns.bind(this)
 
   }
 
@@ -75,7 +69,7 @@ export default class MatrixInput extends MathInput {
         }
       }),
       definition({ dependencyValues }) {
-        return { newValues: { haveBoundValue: dependencyValues.bindValueTo !== null } }
+        return { setValue: { haveBoundValue: dependencyValues.bindValueTo !== null } }
       }
     }
 
@@ -118,10 +112,12 @@ export default class MatrixInput extends MathInput {
 
         }
 
-        return { newValues: { numRows } }
+        return { setValue: { numRows } }
 
       },
-      inverseDefinition({ desiredStateVariableValues, dependencyValues, stateValues }) {
+      async inverseDefinition({ desiredStateVariableValues, dependencyValues, stateValues }) {
+        console.log(desiredStateVariableValues, dependencyValues)
+
         let desiredNumRows = desiredStateVariableValues.numRows;
         if (!Number.isInteger(desiredNumRows)) {
           return { success: false };
@@ -135,8 +131,8 @@ export default class MatrixInput extends MathInput {
 
         if (dependencyValues.haveBoundValue) {
           let originalTree = dependencyValues.valueOriginal.tree;
-          let defaultEntryTree = stateValues.defaultEntry.tree;
-          if (stateValues.numColumns === 1 && Array.isArray(originalTree)
+          let defaultEntryTree = (await stateValues.defaultEntry).tree;
+          if (await stateValues.numColumns === 1 && Array.isArray(originalTree)
             && (originalTree[0] === "vector" || originalTree[0] === "tuple")
           ) {
             // original value was a vector
@@ -153,8 +149,9 @@ export default class MatrixInput extends MathInput {
             } else if (desiredNumRows > currentNumRows) {
 
               let newTree = deepClone(originalTree);
+              let accumulatedComponents = await stateValues.accumulatedComponents;
               for (let rowInd = currentNumRows; rowInd < desiredNumRows; rowInd++) {
-                let accumRow = stateValues.accumulatedComponents[rowInd];
+                let accumRow = accumulatedComponents[rowInd];
                 let accumVal;
                 if (accumRow) {
                   accumVal = accumRow[0];
@@ -170,7 +167,7 @@ export default class MatrixInput extends MathInput {
 
           } else {
 
-            let valueTree = deepClone(stateValues.value.tree);
+            let valueTree = deepClone((await stateValues.value).tree);
             let previousNumRows = valueTree[1][1];
             valueTree[1][1] = desiredNumRows;
 
@@ -180,14 +177,16 @@ export default class MatrixInput extends MathInput {
                 valueTree[2].length = desiredNumRows + 1;
               } else {
                 // add any extra rows
-                let numColumns = stateValues.numColumns;
+                let numColumns = await stateValues.numColumns;
                 let data = valueTree[2];
+                let accumulatedComponents = await stateValues.accumulatedComponents;
+
                 for (let rowInd = previousNumRows; rowInd < desiredNumRows; rowInd++) {
                   if (!data[rowInd + 1]) {
                     data[rowInd + 1] = ["tuple"]
                   }
 
-                  let accumRow = stateValues.accumulatedComponents[rowInd];
+                  let accumRow = accumulatedComponents[rowInd];
                   if (!accumRow) {
                     accumRow = [];
                   }
@@ -209,6 +208,8 @@ export default class MatrixInput extends MathInput {
           }
 
         }
+
+        console.log(instructions)
 
         return {
           success: true,
@@ -259,10 +260,10 @@ export default class MatrixInput extends MathInput {
 
         }
 
-        return { newValues: { numColumns } }
+        return { setValue: { numColumns } }
 
       },
-      inverseDefinition({ desiredStateVariableValues, dependencyValues, stateValues }) {
+      async inverseDefinition({ desiredStateVariableValues, dependencyValues, stateValues }) {
         let desiredNumColumns = desiredStateVariableValues.numColumns;
         if (!Number.isInteger(desiredNumColumns)) {
           return { success: false };
@@ -275,7 +276,7 @@ export default class MatrixInput extends MathInput {
         }]
 
         if (dependencyValues.haveBoundValue) {
-          let defaultEntryTree = stateValues.defaultEntry.tree;
+          let defaultEntryTree = (await stateValues.defaultEntry).tree;
           let originalTree = dependencyValues.valueOriginal.tree;
           let operator = originalTree[0];
 
@@ -299,7 +300,7 @@ export default class MatrixInput extends MathInput {
             } else if (desiredNumColumns > currentNumColumns) {
 
               let newTree = deepClone(originalTree);
-              let accumRow = stateValues.accumulatedComponents[0];
+              let accumRow = (await stateValues.accumulatedComponents)[0];
               if (!accumRow) {
                 accumRow = [];
               }
@@ -317,12 +318,12 @@ export default class MatrixInput extends MathInput {
 
           } else {
 
-            let valueTree = deepClone(stateValues.value.tree);
+            let valueTree = deepClone((await stateValues.value).tree);
             let previousNumColumns = valueTree[1][2];
             valueTree[1][2] = desiredNumColumns;
 
             if (desiredNumColumns !== previousNumColumns) {
-              let numRows = stateValues.numRows;
+              let numRows = await stateValues.numRows;
               let data = valueTree[2];
 
               if (desiredNumColumns < previousNumColumns) {
@@ -331,8 +332,9 @@ export default class MatrixInput extends MathInput {
                 }
               } else {
                 // add any extra columns
+                let accumulatedComponents = await stateValues.accumulatedComponents;
                 for (let rowInd = 0; rowInd < numRows; rowInd++) {
-                  let accumRow = stateValues.accumulatedComponents[rowInd];
+                  let accumRow = accumulatedComponents[rowInd];
                   if (!accumRow) {
                     accumRow = [];
                   }
@@ -390,7 +392,7 @@ export default class MatrixInput extends MathInput {
               }
             }
 
-            return { newValues: { accumulatedComponents } }
+            return { setValue: { accumulatedComponents } }
 
           } else if (operator === "vector" || operator === "tuple") {
             // treat vector/tuple as first column in matrix
@@ -403,7 +405,7 @@ export default class MatrixInput extends MathInput {
               accumRow[0] = comp;
             }
 
-            return { newValues: { accumulatedComponents } }
+            return { setValue: { accumulatedComponents } }
 
           } else if (Array.isArray(originalTree[1])
             && (originalTree[1][0] === "vector" || originalTree[1][0] === "tuple")
@@ -419,7 +421,7 @@ export default class MatrixInput extends MathInput {
               accumRow[colInd] = comp;
             }
 
-            return { newValues: { accumulatedComponents } }
+            return { setValue: { accumulatedComponents } }
 
           }
         }
@@ -430,7 +432,7 @@ export default class MatrixInput extends MathInput {
         }
         accumRow[0] = originalTree;
 
-        return { newValues: { accumulatedComponents } }
+        return { setValue: { accumulatedComponents } }
 
       }
     }
@@ -474,7 +476,7 @@ export default class MatrixInput extends MathInput {
             if (originalTree[1][1] === numRows
               && originalTree[1][2] === numColumns
             ) {
-              return { newValues: { value: dependencyValues.valueOriginal } }
+              return { setValue: { value: dependencyValues.valueOriginal } }
             }
 
             // have matrix, just wrong size
@@ -524,7 +526,7 @@ export default class MatrixInput extends MathInput {
             }
 
 
-            return { newValues: { value: me.fromAst(newTree) } }
+            return { setValue: { value: me.fromAst(newTree) } }
 
 
           } else if (operator === "vector" || operator === "tuple") {
@@ -561,7 +563,7 @@ export default class MatrixInput extends MathInput {
               }
             }
 
-            return { newValues: { value: me.fromAst(newTree) } }
+            return { setValue: { value: me.fromAst(newTree) } }
 
           } else if (Array.isArray(originalTree[1])
             && (originalTree[1][0] === "vector" || originalTree[1][0] === "tuple")
@@ -604,7 +606,7 @@ export default class MatrixInput extends MathInput {
               }
             }
 
-            return { newValues: { value: me.fromAst(newTree) } }
+            return { setValue: { value: me.fromAst(newTree) } }
 
 
           }
@@ -641,7 +643,7 @@ export default class MatrixInput extends MathInput {
           }
         }
 
-        return { newValues: { value: me.fromAst(newTree) } }
+        return { setValue: { value: me.fromAst(newTree) } }
 
 
       },
@@ -724,7 +726,7 @@ export default class MatrixInput extends MathInput {
         let componentDisplayValues = dependencyValues.valueForDisplay.tree[2]
           .slice(1).map(x => x.slice(1).map(y => me.fromAst(y)));
 
-        return { newValues: { componentDisplayValues } };
+        return { setValue: { componentDisplayValues } };
 
       }
     }
@@ -734,17 +736,18 @@ export default class MatrixInput extends MathInput {
     stateVariableDefinitions.rawRendererValues = {
       defaultValue: [],
       forRenderer: true,
+      hasEssential: true,
       returnDependencies: () => ({}),
       definition: () => ({
         useEssentialOrDefaultValue: {
-          rawRendererValues: { variablesToCheck: ["rawRendererValues"] }
+          rawRendererValues: true
         }
       }),
       inverseDefinition({ desiredStateVariableValues }) {
         return {
           success: true,
           instructions: [{
-            setStateVariable: "rawRendererValues",
+            setEssentialValue: "rawRendererValues",
             value: desiredStateVariableValues.rawRendererValues
           }]
         }
@@ -755,12 +758,12 @@ export default class MatrixInput extends MathInput {
     return stateVariableDefinitions;
   }
 
-  updateRawValues({ rawRendererValues, transient = false }) {
-    if (!this.stateValues.disabled) {
+  async updateRawValues({ rawRendererValues, transient = false }) {
+    if (!await this.stateValues.disabled) {
       // we set transient to true so that each keystroke does not
       // add a row to the database
 
-      return this.coreFunctions.performUpdate({
+      return await this.coreFunctions.performUpdate({
         updateInstructions: [{
           updateType: "updateValue",
           componentName: this.componentName,
@@ -772,9 +775,10 @@ export default class MatrixInput extends MathInput {
     }
   }
 
-  updateNumRows({ numRows }) {
-    if (!this.stateValues.disabled) {
-      return this.coreFunctions.performUpdate({
+  async updateNumRows({ numRows }) {
+    console.log(`update num rows to ${numRows}`)
+    if (!await this.stateValues.disabled) {
+      return await this.coreFunctions.performUpdate({
         updateInstructions: [{
           updateType: "updateValue",
           componentName: this.componentName,
@@ -786,9 +790,9 @@ export default class MatrixInput extends MathInput {
   }
 
 
-  updateNumColumns({ numColumns }) {
-    if (!this.stateValues.disabled) {
-      return this.coreFunctions.performUpdate({
+  async updateNumColumns({ numColumns }) {
+    if (!await this.stateValues.disabled) {
+      return await this.coreFunctions.performUpdate({
         updateInstructions: [{
           updateType: "updateValue",
           componentName: this.componentName,

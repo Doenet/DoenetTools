@@ -27,8 +27,8 @@ export default function DriveInfoCap(){
  let imageURL = `/media/drive_pictures/${image}`
  
  return <>
-    <div style={{position: 'relative', paddingBottom: '100px'}}>
-    <img style={{position: "absolute", height: "100px", objectFit: 'cover'}} src={imageURL} alt={`${label} course`} width='240px' />
+    <div style={{position: 'relative', paddingBottom: '135px'}}>
+    <img style={{position: "absolute", height: "135px", objectFit: 'cover'}} src={imageURL} alt={`${label} course`} width='240px' />
     </div>
     <div style={{padding:'8px'}}>
     <div>{label}</div>

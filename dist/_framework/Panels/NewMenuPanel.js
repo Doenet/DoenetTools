@@ -3,7 +3,7 @@ import {atom, useRecoilValue} from "../../_snowpack/pkg/recoil.js";
 import styled from "../../_snowpack/pkg/styled-components.js";
 import {FontAwesomeIcon} from "../../_snowpack/pkg/@fortawesome/react-fontawesome.js";
 import {faChevronLeft} from "../../_snowpack/pkg/@fortawesome/free-solid-svg-icons.js";
-import Profile from "../Profile.js";
+import Logo from "../Logo.js";
 export const selectedMenuPanelAtom = atom({
   key: "selectedMenuPanelAtom",
   default: null
@@ -19,19 +19,6 @@ const MenuPanelsWrapper = styled.div`
   overflow-x: hidden;
   width: ${({hide}) => hide ? "0px" : "240px"};
 `;
-const MenuPanelsCap = styled.div`
-width: 240px;
-height: 35px;
-background: white;
-display: flex;
-justify-content: space-between;
-align-items: center;
-position: ${(props) => props.fix ? "static" : "sticky"};
-border-bottom: 2px solid #e2e2e2;
-margin-bottom: -2px;
-top: 0;
-z-index: 2;
-`;
 const MenuPanelsCapComponent = styled.div`
 width: 240px;
 background: white;
@@ -40,7 +27,7 @@ border-top: 1px solid #e2e2e2;
 border-bottom: 2px solid #e2e2e2;
 margin-bottom: -2px;
 position: sticky;
-top: 35px;
+top: 0;
 z-index: 2;
 `;
 const MenuHeaderButton = styled.button`
@@ -53,30 +40,17 @@ const MenuHeaderButton = styled.button`
   height: 100%;
 
 `;
-const Logo = styled.div`
-background-image: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)),
-    url('/media/Doenet_Logo_cloud_only.png');
-  background-position: center;
-  background-repeat: no-repeat;
-  background-size: 50px 25px;
-  transition: 300ms;
-  // background-color: pink;
-  width: 50px;
-  height: 25px;
-  display: inline-block;
-  justify-content: center;
-  align-items: center;
-  border-style: none;
-  margin-top: 5px;
-  margin-left: 2px
-`;
 const CloseButton = styled.button`
 background-color: #1A5A99;
 height: 35px;
 width: 20px;
 color: white;
 border: none;
-display: inline-block;
+position: ${(props) => props.fix ? "static" : "absolute"};
+top: 2px;
+left: 220px;
+cursor: pointer;
+z-index: 2;
 `;
 const EditMenuPanels = styled.button`
 background-color: #1A5A99;
@@ -171,6 +145,7 @@ export default function MenuPanel({hide, menuPanelCap = "", menusTitles = [], cu
     AutoSaves: lazy(() => import("../Menus/AutoSaves.js")),
     LoadEnrollment: lazy(() => import("../Menus/LoadEnrollment.js")),
     GradeUpload: lazy(() => import("../Menus/GradeUpload.js")),
+    GradeDownload: lazy(() => import("../Menus/GradeDownload.js")),
     ManualEnrollment: lazy(() => import("../Menus/ManualEnrollment.js")),
     AssignmentSettingsMenu: lazy(() => import("../Menus/AssignmentSettingsMenu.js")),
     GroupSettings: lazy(() => import("../Menus/GroupSettings.js")),
@@ -210,17 +185,13 @@ export default function MenuPanel({hide, menuPanelCap = "", menusTitles = [], cu
       fallback: /* @__PURE__ */ React.createElement(LoadingFallback, null, "loading...")
     }, React.createElement(LazyMenuObj[type], {mKey}))));
   }
+  menusArray.push(/* @__PURE__ */ React.createElement(Logo, null));
   return /* @__PURE__ */ React.createElement(MenuPanelsWrapper, {
     hide
-  }, /* @__PURE__ */ React.createElement(MenuPanelsCap, {
+  }, menuPanelCapComponent, /* @__PURE__ */ React.createElement(CloseButton, {
+    onClick: () => setMenusOpen(false),
     fix: hide
-  }, /* @__PURE__ */ React.createElement("span", null, /* @__PURE__ */ React.createElement(Logo, null)), /* @__PURE__ */ React.createElement("span", {
-    style: {marginBottom: "1px"}
-  }, "Doenet"), /* @__PURE__ */ React.createElement("span", null, displayProfile ? /* @__PURE__ */ React.createElement(Profile, {
-    margin: hide
-  }) : null), /* @__PURE__ */ React.createElement("span", null, /* @__PURE__ */ React.createElement(CloseButton, {
-    onClick: () => setMenusOpen(false)
   }, /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
     icon: faChevronLeft
-  })))), menuPanelCapComponent, selectionPanel, /* @__PURE__ */ React.createElement("div", null, menusArray));
+  })), selectionPanel, /* @__PURE__ */ React.createElement("div", null, menusArray));
 }

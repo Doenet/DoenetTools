@@ -1,59 +1,66 @@
 import React from 'react';
-import DoenetRenderer from './DoenetRenderer';
+import useDoenetRender from './useDoenetRenderer';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPuzzlePiece as puzzle } from '@fortawesome/free-solid-svg-icons';
 
-export default class Solution extends DoenetRenderer {
 
-  render() {
+export default function Solution(props) {
+  let { name, SVs, children, actions, callAction } = useDoenetRender(props);
 
-    if (this.doenetSvData.hidden) {
-      return null;
-    }
-
-    let icon;
-    let childrenToRender = null;
-    let infoBlockStyle = { display: "none" };
-
-    let onClickFunction;
-    let cursorStyle;
-
-    if (this.doenetSvData.open) {
-      icon = <FontAwesomeIcon icon={puzzle} />
-
-      childrenToRender = this.children;
-      infoBlockStyle = { display: "block", margin: "0px 4px 4px 4px", padding: "6px", border: "1px solid #ebebeb", backgroundColor: "#fcfcfc" };
-
-      if (this.doenetSvData.canBeClosed) {
-        cursorStyle = "pointer";
-        onClickFunction = this.actions.closeSolution;
-      } else {
-        onClickFunction = null;
-      }
-
-    } else {
-      icon = <FontAwesomeIcon icon={puzzle} rotation={90} />
-      cursorStyle = "pointer";
-      onClickFunction = this.actions.revealSolution;
-    }
-
-    return <aside id={this.componentName}>
-      <a name={this.componentName} />
-      <span id={this.componentName + "_button"} style={{
-        display: "block",
-        margin: "4px 4px 0px 4px",
-        padding: "6px", border: "1px solid #ebebeb",
-        backgroundColor: "#ebebeb",
-        cursor: cursorStyle
-      }}
-        onClick={onClickFunction}
-      >
-        {icon} Solution {this.doenetSvData.message}
-      </span>
-      <span style={infoBlockStyle}>
-        {childrenToRender}
-      </span>
-    </aside>
-
+  if (SVs.hidden) {
+    return null;
   }
+
+  let icon;
+  let childrenToRender = null;
+  let infoBlockStyle = { display: "none" };
+
+  let onClickFunction;
+  let cursorStyle;
+
+  if (SVs.open) {
+    icon = <FontAwesomeIcon icon={puzzle} />
+
+    childrenToRender = children;
+    infoBlockStyle = { display: "block", margin: "0px 4px 4px 4px", padding: "6px", border: "1px solid #ebebeb", backgroundColor: "#fcfcfc" };
+
+    if (SVs.canBeClosed) {
+      cursorStyle = "pointer";
+      onClickFunction = ()=>{
+        callAction({
+          action: actions.closeSolution
+        });
+      }
+    } else {
+      onClickFunction = ()=>{};
+    }
+
+  } else {
+    icon = <FontAwesomeIcon icon={puzzle} rotation={90} />
+    cursorStyle = "pointer";
+    onClickFunction = ()=>{
+      callAction({
+        action: actions.revealSolution
+      });
+    }
+  }
+
+  return <aside id={name}>
+    <a name={name} />
+    <span id={name + "_button"} style={{
+      display: "block",
+      margin: "4px 4px 0px 4px",
+      padding: "6px", border: "1px solid #ebebeb",
+      backgroundColor: "#ebebeb",
+      cursor: cursorStyle
+    }}
+      onClick={onClickFunction}
+    >
+      {icon} Solution {SVs.message}
+    </span>
+    <span style={infoBlockStyle}>
+      {childrenToRender}
+    </span>
+  </aside>
+
 }

@@ -135,7 +135,7 @@ export default class MathInput extends DoenetRenderer {
     return expression;
   }
 
-  updateImmediateValueFromLatex(latex, rowInd, colInd) {
+  async updateImmediateValueFromLatex(latex, rowInd, colInd) {
 
     // The check whether or not to call the updateImmediateValue action is subtle.
     // We need to achieve two effects:
@@ -162,14 +162,14 @@ export default class MathInput extends DoenetRenderer {
 
     if (actuallyUpdate) {
       this.mathExpression = this.updateMathExpression(newMathExpression, rowInd, colInd)
-      this.actions.updateImmediateValue({
+      await this.actions.updateImmediateValue({
         mathExpression: this.mathExpression,
         rawRendererValues: this.latexValues,
         transient: true,
         skippable: true,
       });
     } else if (rawValueChanged) {
-      this.actions.updateRawValues({
+      await this.actions.updateRawValues({
         rawRendererValues: this.latexValues,
         transient: transientForRaw,
         skippable: transientForRaw
@@ -273,7 +273,7 @@ export default class MathInput extends DoenetRenderer {
   }
 
   async onChangeHandler(latex, rowInd, colInd) {
-    this.updateImmediateValueFromLatex(latex, rowInd, colInd)
+    await this.updateImmediateValueFromLatex(latex, rowInd, colInd)
     this.forceUpdate();
   }
 

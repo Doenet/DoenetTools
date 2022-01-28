@@ -22,23 +22,23 @@ describe('Symbolic equality tests', function () {
     <p>
     <math>1+3</math>: 
     <answer>
-      <award symbolicEquality="true"><copy tname="_math1" /></award>
+      <award symbolicEquality="true"><copy target="_math1" /></award>
     </answer>
 
     </p>
     
     <p><math>3+1</math>: 
     <answer>
-      <award symbolicEquality="true"><copy tname="_math2" /></award>
+      <award symbolicEquality="true"><copy target="_math2" /></award>
     </answer>
     </p>
 
     <p>Numeric versions</p>
     <p><answer>
-      <award><copy tname="_math1" /></award>
+      <award><copy target="_math1" /></award>
     </answer></p>
     <p><answer>
-      <award><copy tname="_math2" /></award>
+      <award><copy target="_math2" /></award>
     </answer></p>
     `}, "*");
     });
@@ -182,13 +182,13 @@ describe('Symbolic equality tests', function () {
     <p>
     <math>1x-0y+-3s</math>: 
     <answer>
-      <award symbolicEquality="true"><copy tname="_math1" /></award>
+      <award symbolicEquality="true"><copy target="_math1" /></award>
     </answer>
     </p>
 
     <p>Numeric version</p>
     <p><answer>
-      <award><copy tname="_math1" /></award>
+      <award><copy target="_math1" /></award>
     </answer></p>
     `}, "*");
     });
@@ -304,14 +304,14 @@ describe('Symbolic equality tests', function () {
     <p><text>a</text></p>
     <p>
     <math>1x^2+2-0x^2+3+x^2+3x^2+7+4</math>: 
-    <answer size="20">
+    <answer>
       <award symbolicEquality="true" simplifyOnCompare="numbersPreserveOrder">$_math1</award>
     </answer>
     </p>
     
     <p>Numeric versions</p>
-    <p><answer size="20">
-      <award><copy tname="_math1" /></award>
+    <p><answer>
+      <award><copy target="_math1" /></award>
     </answer></p>
     `}, "*");
     });
@@ -427,14 +427,14 @@ describe('Symbolic equality tests', function () {
     <p><text>a</text></p>
     <p>
     <math>1x^2+2-0x^2+3+x^2+3x^2+7+4</math>: 
-    <answer size="20">
+    <answer>
       <award symbolicEquality="true" simplifyOnCompare="numbers">$_math1</award>
     </answer>
     </p>
     
     <p>Numeric versions</p>
-    <p><answer size="20">
-      <award><copy tname="_math1" /></award>
+    <p><answer>
+      <award><copy target="_math1" /></award>
     </answer></p>
     `}, "*");
     });
@@ -539,14 +539,14 @@ describe('Symbolic equality tests', function () {
     <p><text>a</text></p>
     <p>
     <math>6x^2 -3x +8x-4 + (2x-3)(4-x)</math>: 
-    <answer size="20">
+    <answer>
       <award symbolicEquality="true" simplifyOnCompare>$_math1</award>
     </answer>
     </p>
     
     <p>Numeric versions</p>
-    <p><answer size="20">
-      <award><copy tname="_math1" /></award>
+    <p><answer>
+      <award><copy target="_math1" /></award>
     </answer></p>
     `}, "*");
     });
@@ -650,14 +650,14 @@ describe('Symbolic equality tests', function () {
     <p><text>a</text></p>
     <p>
     <math>(2x-3)(4-x) + sin(x)^2+cos(x)^2</math>: 
-    <answer size="20">
+    <answer>
       <award symbolicEquality="true" simplifyOnCompare expandOnCompare>$_math1</award>
     </answer>
     </p>
     
     <p>Numeric versions</p>
-    <p><answer size="20">
-      <award><copy tname="_math1" /></award>
+    <p><answer>
+      <award><copy target="_math1" /></award>
     </answer></p>
     `}, "*");
     });

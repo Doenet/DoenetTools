@@ -22,7 +22,7 @@ export default class CompositeComponent extends BaseComponent {
         },
       }),
       definition: ({ dependencyValues }) => ({
-        newValues: { replacements: dependencyValues.replacements }
+        setValue: { replacements: dependencyValues.replacements }
       })
     }
 
@@ -35,7 +35,7 @@ export default class CompositeComponent extends BaseComponent {
         },
       }),
       definition: ({ dependencyValues }) => ({
-        newValues: { recursiveReplacements: dependencyValues.recursiveReplacements }
+        setValue: { recursiveReplacements: dependencyValues.recursiveReplacements }
       })
     }
 
@@ -48,7 +48,7 @@ export default class CompositeComponent extends BaseComponent {
         },
       }),
       definition: ({ dependencyValues }) => ({
-        newValues: { fullRecursiveReplacements: dependencyValues.recursiveReplacements }
+        setValue: { fullRecursiveReplacements: dependencyValues.recursiveReplacements }
       })
     }
 
@@ -103,9 +103,11 @@ export default class CompositeComponent extends BaseComponent {
 
     if (this.replacements) {
       for (let replacement of this.replacements) {
-        for (let rendererType of replacement.allPotentialRendererTypes) {
-          if (!allPotentialRendererTypes.includes(rendererType)) {
-            allPotentialRendererTypes.push(rendererType);
+        if (typeof replacement === "object") {
+          for (let rendererType of replacement.allPotentialRendererTypes) {
+            if (!allPotentialRendererTypes.includes(rendererType)) {
+              allPotentialRendererTypes.push(rendererType);
+            }
           }
         }
       }

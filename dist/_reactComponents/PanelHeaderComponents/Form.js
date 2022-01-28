@@ -3,11 +3,15 @@ import {doenetComponentForegroundInactive, doenetComponentForegroundActive} from
 import {FontAwesomeIcon} from "../../_snowpack/pkg/@fortawesome/react-fontawesome.js";
 import {faSearch, faTimes} from "../../_snowpack/pkg/@fortawesome/free-solid-svg-icons.js";
 export default function Form(props) {
-  const [textTerm, setTextTerm] = useState("");
+  const [text, setText] = useState(props.value ? props.value : "");
   const [cancelShown, setCancelShown] = useState("hidden");
   const [formwidth, setformWidth] = useState("0px");
   const [labelVisible, setLabelVisible] = useState(props.label ? "static" : "none");
   const [align, setAlign] = useState(props.vertical ? "static" : "flex");
+  const [cursorStart, setCursorStart] = useState(0);
+  const [cursorEnd, setCursorEnd] = useState(0);
+  const inputRef = useRef(null);
+  let cleared = false;
   const formRef = useRef(0);
   useEffect(() => {
     if (formRef && props.submitButton) {
@@ -17,22 +21,27 @@ export default function Form(props) {
       }, 1e3);
     }
   }, [formRef, props]);
+  useEffect(() => {
+    inputRef.current.selectionStart = cursorStart;
+    inputRef.current.selectionEnd = cursorEnd;
+  });
   var textfield = {
     margin: `0px -${formwidth}px 0px 0px`,
-    height: "20px",
+    height: "24px",
     border: `2px solid black`,
     borderRadius: "5px",
     position: "relative",
-    padding: "0px 70px 0px 5px",
+    padding: "0px 30px 0px 5px",
     color: "#000",
     overflow: "hidden",
-    width: "215px",
+    width: "175px",
     resize: "none",
     alignItems: "center",
-    value: "Enter Text here",
+    value: `${text}`,
     whiteSpace: "nowrap",
     outline: "none",
     fontFamily: "Open Sans",
+    fontSize: "14px",
     lineHeight: "20px"
   };
   var container = {
@@ -40,16 +49,14 @@ export default function Form(props) {
     width: "235px",
     alignItems: "center"
   };
-  var tableCellContainer = {
-    display: `table-cell`
-  };
+  var tableCellContainer = {};
   var cancelButton = {
     float: "right",
-    margin: "6px 0px 0px -30px",
+    margin: "5px 0px 0px -30px",
     position: "absolute",
     zIndex: "4",
     border: "0px",
-    backgroundColor: "#FFF",
+    backgroundColor: "transparent",
     visibility: `${cancelShown}`,
     color: "#000",
     overflow: "hidden",
@@ -58,9 +65,9 @@ export default function Form(props) {
   var submitButton = {
     position: "absolute",
     display: "inline",
-    margin: `0px -6px 0px -5px`,
+    margin: `0px -5px 0px -5px`,
     zIndex: "2",
-    height: "24px",
+    height: "28px",
     border: `2px solid black`,
     backgroundColor: `${doenetComponentForegroundActive}`,
     color: "#FFFFFF",
@@ -71,9 +78,10 @@ export default function Form(props) {
   };
   var label = {
     value: "Label:",
-    fontSize: "12px",
+    fontSize: "14px",
     marginRight: "5px",
-    display: `${labelVisible}`
+    display: `${labelVisible}`,
+    margin: "0px 5px 2px 0px"
   };
   var disable = "";
   if (props.disabled) {
@@ -100,41 +108,79 @@ export default function Form(props) {
   if (props.value) {
     textfield.value = props.value;
   }
+  if (props.placeholder) {
+    textfield.placeholder = props.placeholder;
+  }
   if (props.label) {
     label.value = props.label;
   }
   if (props.alert) {
     textfield.border = "2px solid #C1292E";
+    submitButton.border = "2px solid #C1292E";
+  }
+  if (props.ariaLabel) {
+    textfield.ariaLabel = props.ariaLabel;
   }
   function handleChange(e) {
+    if (cleared) {
+      setText("");
+    } else {
+      setText(e.target.value);
+      cleared = false;
+    }
     if (props.onChange)
       props.onChange(e.target.value);
+    setCursorStart(e.target.selectionStart);
+    setCursorEnd(e.target.selectionEnd);
   }
   function handleClick(e) {
     if (props.onClick)
       props.onClick(e);
   }
-  function clearInput() {
-    document.getElementById("textarea").value = "";
+  function clearInput(e) {
+    if (props.clearInput)
+      props.clearInput(e);
     setCancelShown("hidden");
+    cleared = true;
+    handleChange(e);
   }
   function changeTextTerm() {
-    setTextTerm(document.getElementById("textarea").value);
     setCancelShown("visible");
+    console.log("cancelShown", cancelShown);
+  }
+  function handleBlur(e) {
+    if (props.onBlur)
+      props.onBlur(e);
+  }
+  function handleKeyDown(e) {
+    if (props.onKeyDown)
+      props.onKeyDown(e);
+    console.log("cancelShown", cancelShown);
+  }
+  let clearButton = null;
+  if (props.clearInput) {
+    clearButton = /* @__PURE__ */ React.createElement("button", {
+      id: "clearButton",
+      style: cancelButton,
+      onClick: (e) => {
+        clearInput(e);
+      }
+    }, /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
+      icon: faTimes
+    }));
   }
   return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("div", {
     style: container
   }, /* @__PURE__ */ React.createElement("p", {
     style: label
   }, label?.value), /* @__PURE__ */ React.createElement("div", {
-    style: tableCellContainer,
-    onClick: () => {
-      clearInput();
-    }
-  }, /* @__PURE__ */ React.createElement("textarea", {
+    style: tableCellContainer
+  }, /* @__PURE__ */ React.createElement("input", {
     id: "textarea",
-    defaultValue: textfield.value,
+    value: text,
+    placeholder: textfield.placeholder,
     type: "text",
+    ref: inputRef,
     style: textfield,
     onKeyUp: () => {
       changeTextTerm();
@@ -142,15 +188,15 @@ export default function Form(props) {
     onChange: (e) => {
       handleChange(e);
     },
-    disabled: disable
-  }), /* @__PURE__ */ React.createElement("button", {
-    style: cancelButton,
-    onClick: () => {
-      clearInput();
-    }
-  }, /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
-    icon: faTimes
-  })), /* @__PURE__ */ React.createElement("button", {
+    onBlur: (e) => {
+      handleBlur(e);
+    },
+    onKeyDown: (e) => {
+      handleKeyDown(e);
+    },
+    disabled: disable,
+    "aria-label": textfield.ariaLabel
+  }), clearButton, /* @__PURE__ */ React.createElement("button", {
     id: "submitButton",
     style: submitButton,
     ref: formRef,

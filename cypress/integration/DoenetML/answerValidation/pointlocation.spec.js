@@ -11,12 +11,12 @@ describe('Point location validation tests',function() {
     <graph><point>(-3.9,4.5)</point></graph>
     <p><answer>
       <award><when>
-        <copy prop="x" tname="_point1" /> > 0 and 
-        <copy prop="y" tname="_point1" /> > 0
+        <copy prop="x" target="_point1" /> > 0 and 
+        <copy prop="y" target="_point1" /> > 0
       </when></award>
       <considerAsResponses>$_point1</considerAsResponses>
     </answer></p>
-    <p>Credit for answer: <copy prop="creditAchieved" tname="_answer1" /></p>
+    <p>Credit for answer: <copy prop="creditAchieved" target="_answer1" /></p>
     `},"*");
     });
 
@@ -190,12 +190,12 @@ describe('Point location validation tests',function() {
     <graph><point>(-3.9,4.5)</point></graph>
     <p><answer>
       <award><when>
-        <copy prop="x" tname="_point1" /> > 0 and 
-        <copy prop="y" tname="_point1" /> > 0
+        <copy prop="x" target="_point1" /> > 0 and 
+        <copy prop="y" target="_point1" /> > 0
       </when></award>
       <considerAsResponses>$_point1</considerAsResponses>
     </answer></p>
-    <p>Credit for answer: <copy prop="creditAchieved" tname="_answer1" /></p>
+    <p>Credit for answer: <copy prop="creditAchieved" target="_answer1" /></p>
     `;
 
 
@@ -207,7 +207,7 @@ describe('Point location validation tests',function() {
 
     cy.get('#testRunner_toggleControls').click();
     cy.get('#testRunner_allowLocalPageState').click()
-    cy.wait(1000)
+    cy.wait(100)
     cy.get('#testRunner_toggleControls').click();
 
 
@@ -223,10 +223,25 @@ describe('Point location validation tests',function() {
     cy.log("Move point to correct quadrant and move again")
     // for some reason, have to move point twice to trigger bug
     // that occurs when expressionWithCodes of math isn't changed
+    
     cy.window().then((win) => {
-      let components = Object.assign({},win.state.components);
-      components['/_point1'].movePoint({x: 5.9, y: 3.5})
-      components['/_point1'].movePoint({x: 5.9, y: 3.4})
+      let core = win.state.core;
+      // Note: have to use requestAction here
+      // rather than call movePoint twice directly
+      // to make sure the second action is queued and waits for first to complete
+      core.requestAction({
+        componentName: "/_point1",
+        actionName: "movePoint",
+        args: {x: 5.9, y: 3.5},
+      })
+      core.requestAction({
+        componentName: "/_point1",
+        actionName: "movePoint",
+        args: {x: 5.9, y: 3.4},
+      })
+      // let components = Object.assign({},win.state.components);
+      // components['/_point1'].movePoint({x: 5.9, y: 3.5})
+      // components['/_point1'].movePoint({x: 5.9, y: 3.4})
     });
 
     cy.get('#\\/_answer1_submit').invoke('text').then((text) => {
@@ -250,6 +265,7 @@ describe('Point location validation tests',function() {
       expect(components['/_answer1'].stateValues.creditAchieved).eq(1);
     });
 
+    cy.log("Reload page")
 
     cy.window().then((win) => {
       win.postMessage({
@@ -310,6 +326,8 @@ describe('Point location validation tests',function() {
     });
 
 
+    cy.log("Reload page")
+
     cy.window().then((win) => {
       win.postMessage({
         doenetML: '<text>b</text>',
@@ -342,9 +360,23 @@ describe('Point location validation tests',function() {
   
     cy.log("Move point to third quadrant and submit")
     cy.window().then((win) => {
+      let core = win.state.core;
+      // Note: have to use requestAction here
+      // rather than call movePoint twice directly
+      // to make sure the second action is queued and waits for first to complete
+      core.requestAction({
+        componentName: "/_point1",
+        actionName: "movePoint",
+        args: {x: -9.4, y: -5.1},
+      })
+      core.requestAction({
+        componentName: "/_point1",
+        actionName: "movePoint",
+        args: {x: -9.5, y: -5.1},
+      })
       let components = Object.assign({},win.state.components);
-      components['/_point1'].movePoint({x: -9.4, y: -5.1})
-      components['/_point1'].movePoint({x: -9.5, y: -5.1})
+      // components['/_point1'].movePoint({x: -9.4, y: -5.1})
+      // components['/_point1'].movePoint({x: -9.5, y: -5.1})
       expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
     });
 
@@ -369,6 +401,7 @@ describe('Point location validation tests',function() {
     });
 
 
+    cy.log("Reload page")
 
     cy.window().then((win) => {
       win.postMessage({
@@ -401,19 +434,19 @@ describe('Point location validation tests',function() {
     cy.window().then((win) => { win.postMessage({doenetML: `
     <text>a</text>
     <point name="goal">(-4.1, 7.4)</point>
-    <p>Move point to <copy prop="coords" tname="goal" /></p>
+    <p>Move point to <copy prop="coords" target="goal" /></p>
     <graph>
       <point name="A" x="4.9" y="-1.1">
         <constraints>
-          <attractTo><copy tname="goal" /></attractTo>
+          <attractTo><copy target="goal" /></attractTo>
         </constraints>
       </point>
     </graph>
     <p><answer><award><when>
-    <copy prop="x" tname="A" isResponse /> = <copy prop="x" tname="goal" /> and 
-    <copy prop="y" tname="A" isResponse /> = <copy prop="y" tname="goal" />
+    <copy prop="x" target="A" isResponse /> = <copy prop="x" target="goal" /> and 
+    <copy prop="y" target="A" isResponse /> = <copy prop="y" target="goal" />
     </when></award></answer></p>
-    <p>Credit for answer: <copy prop="creditAchieved" tname="_answer1" /></p>
+    <p>Credit for answer: <copy prop="creditAchieved" target="_answer1" /></p>
     `},"*");
     });
 
@@ -533,25 +566,25 @@ describe('Point location validation tests',function() {
     <p>Criterion distance: <mathinput name="criterion" prefill="2"/></p>
     <p>Partial credit distance: <mathinput name="partialcriterion" prefill="3"/></p>
 
-    <number hide name="criterion2"><copy prop="value" tname="criterion" />^2</number>
-    <number hide name="partialcriterion2"><copy prop="value" tname="partialcriterion" />^2</number>
-    <number hide name="distance2">(<copy prop="x" tname="A" /> - <copy prop="x" tname="goal" />)^2 + 
-    (<copy prop="y" tname="A" /> - <copy prop="y" tname="goal" />)^2</number>
+    <number hide name="criterion2"><copy prop="value" target="criterion" />^2</number>
+    <number hide name="partialcriterion2"><copy prop="value" target="partialcriterion" />^2</number>
+    <number hide name="distance2">(<copy prop="x" target="A" /> - <copy prop="x" target="goal" />)^2 + 
+    (<copy prop="y" target="A" /> - <copy prop="y" target="goal" />)^2</number>
 
-    <p>Move point to within distance of <copy prop="value" tname="criterion" /> to <copy prop="coords" tname="goal" /></p>
+    <p>Move point to within distance of <copy prop="value" target="criterion" /> to <copy prop="coords" target="goal" /></p>
     <graph>
       <point name="A">(4.9, -1.1)</point>
     </graph>
     <p><answer>
       <award><when>
-        <copy tname="distance2" /> < <copy tname="criterion2" />
+        <copy target="distance2" /> < <copy target="criterion2" />
       </when></award>
       <award credit="0.6"><when>
-        <copy tname="distance2" /> < <copy tname="partialcriterion2" />
+        <copy target="distance2" /> < <copy target="partialcriterion2" />
       </when></award>
       <considerAsResponses>$A</considerAsResponses>
     </answer></p>
-    <p>Credit for answer: <copy prop="creditAchieved" tname="_answer1" /></p>
+    <p>Credit for answer: <copy prop="creditAchieved" target="_answer1" /></p>
     `},"*");
     });
 
@@ -750,18 +783,18 @@ describe('Point location validation tests',function() {
     <text>a</text>
     <point name="goal1">(-4.1, 7.4)</point>
     <point name="goal2">(6.8, 9.1)</point>
-    <p>Move points to <copy prop="coords" tname="goal1" /> <copy prop="coords" tname="goal2" /></p>
+    <p>Move points to <copy prop="coords" target="goal1" /> <copy prop="coords" target="goal2" /></p>
     <graph>
       <point name="A" x="4.9" y="-1.1">
         <constraints>
-          <attractTo><copy tname="goal1" /></attractTo>
-          <attractTo><copy tname="goal2" /></attractTo>
+          <attractTo><copy target="goal1" /></attractTo>
+          <attractTo><copy target="goal2" /></attractTo>
         </constraints>
       </point>
       <point name="B" x="-2.3" y="-3.4">
         <constraints>
-          <attractTo><copy tname="goal1" /></attractTo>
-          <attractTo><copy tname="goal2" /></attractTo>
+          <attractTo><copy target="goal1" /></attractTo>
+          <attractTo><copy target="goal2" /></attractTo>
         </constraints>
       </point>
     </graph>
@@ -772,8 +805,8 @@ describe('Point location validation tests',function() {
         </when>
       </award>
     </answer></p>
-    <p>Credit for answer: <copy prop="creditAchieved" tname="_answer1" assignNames="ca" /></p>
-    <p>Submitted responses: <math name="srs"><copy prop="submittedResponses" tname="_answer1" /></math></p>
+    <p>Credit for answer: <copy prop="creditAchieved" target="_answer1" assignNames="ca" /></p>
+    <p>Submitted responses: <math name="srs"><copy prop="submittedResponses" target="_answer1" /></math></p>
     `},"*");
     });
 
@@ -1071,18 +1104,18 @@ describe('Point location validation tests',function() {
     <text>a</text>
     <point name="goal1">(-4.1, 7.4)</point>
     <point name="goal2">(6.8, 9.1)</point>
-    <p>Move points to <copy prop="coords" tname="goal1" /> <copy prop="coords" tname="goal2" /></p>
+    <p>Move points to <copy prop="coords" target="goal1" /> <copy prop="coords" target="goal2" /></p>
     <graph>
       <point name="A" x="4.9" y="-1.1">
         <constraints>
-          <attractTo><copy tname="goal1" /></attractTo>
-          <attractTo><copy tname="goal2" /></attractTo>
+          <attractTo><copy target="goal1" /></attractTo>
+          <attractTo><copy target="goal2" /></attractTo>
         </constraints>
       </point>
       <point name="B" x="-2.3" y="-3.4">
         <constraints>
-          <attractTo><copy tname="goal1" /></attractTo>
-          <attractTo><copy tname="goal2" /></attractTo>
+          <attractTo><copy target="goal1" /></attractTo>
+          <attractTo><copy target="goal2" /></attractTo>
         </constraints>
       </point>
     </graph>
@@ -1093,8 +1126,8 @@ describe('Point location validation tests',function() {
         </when>
       </award>
     </answer></p>
-    <p>Credit for answer: <copy prop="creditAchieved" tname="_answer1" assignNames="ca" /></p>
-    <p>Submitted responses: <math name="srs"><copy prop="submittedResponses" tname="_answer1" /></math></p>
+    <p>Credit for answer: <copy prop="creditAchieved" target="_answer1" assignNames="ca" /></p>
+    <p>Submitted responses: <math name="srs"><copy prop="submittedResponses" target="_answer1" /></math></p>
     `},"*");
     });
 
@@ -1392,18 +1425,18 @@ describe('Point location validation tests',function() {
     <text>a</text>
     <point name="goal1">(-4.1, 7.4)</point>
     <point name="goal2">(6.8, 9.1)</point>
-    <p>Move points to <copy prop="coords" tname="goal1" /> <copy prop="coords" tname="goal2" /></p>
+    <p>Move points to <copy prop="coords" target="goal1" /> <copy prop="coords" target="goal2" /></p>
     <graph>
       <point name="A" x="4.9" y="-1.1">
         <constraints>
-          <attractTo><copy tname="goal1" /></attractTo>
-          <attractTo><copy tname="goal2" /></attractTo>
+          <attractTo><copy target="goal1" /></attractTo>
+          <attractTo><copy target="goal2" /></attractTo>
         </constraints>
       </point>
       <point name="B" x="-2.3" y="-3.4">
         <constraints>
-          <attractTo><copy tname="goal1" /></attractTo>
-          <attractTo><copy tname="goal2" /></attractTo>
+          <attractTo><copy target="goal1" /></attractTo>
+          <attractTo><copy target="goal2" /></attractTo>
         </constraints>
       </point>
     </graph>
@@ -1414,8 +1447,8 @@ describe('Point location validation tests',function() {
         </when>
       </award>
     </answer></p>
-    <p>Credit for answer: <copy prop="creditAchieved" tname="_answer1" assignNames="ca" /></p>
-    <p>Submitted responses: <math name="srs"><copy prop="submittedResponses" tname="_answer1" /></math></p>
+    <p>Credit for answer: <copy prop="creditAchieved" target="_answer1" assignNames="ca" /></p>
+    <p>Submitted responses: <math name="srs"><copy prop="submittedResponses" target="_answer1" /></math></p>
     `},"*");
     });
 
@@ -1713,18 +1746,18 @@ describe('Point location validation tests',function() {
     <text>a</text>
     <point name="goal1">(-4.1, 7.4)</point>
     <point name="goal2">(6.8, 9.1)</point>
-    <p>Move points to <copy prop="coords" tname="goal1" /> <copy prop="coords" tname="goal2" /></p>
+    <p>Move points to <copy prop="coords" target="goal1" /> <copy prop="coords" target="goal2" /></p>
     <graph>
       <point name="A" x="4.9" y="-1.1">
         <constraints>
-          <attractTo><copy tname="goal1" /></attractTo>
-          <attractTo><copy tname="goal2" /></attractTo>
+          <attractTo><copy target="goal1" /></attractTo>
+          <attractTo><copy target="goal2" /></attractTo>
         </constraints>
       </point>
       <point name="B" x="-2.3" y="-3.4">
         <constraints>
-          <attractTo><copy tname="goal1" /></attractTo>
-          <attractTo><copy tname="goal2" /></attractTo>
+          <attractTo><copy target="goal1" /></attractTo>
+          <attractTo><copy target="goal2" /></attractTo>
         </constraints>
       </point>
     </graph>
@@ -1735,8 +1768,8 @@ describe('Point location validation tests',function() {
         </when>
       </award>
     </answer></p>
-    <p>Credit for answer: <copy prop="creditAchieved" tname="_answer1" assignNames="ca" /></p>
-    <p>Submitted responses: <math name="srs"><copy prop="submittedResponses" tname="_answer1" /></math></p>
+    <p>Credit for answer: <copy prop="creditAchieved" target="_answer1" assignNames="ca" /></p>
+    <p>Submitted responses: <math name="srs"><copy prop="submittedResponses" target="_answer1" /></math></p>
     `},"*");
     });
 
@@ -2034,18 +2067,18 @@ describe('Point location validation tests',function() {
     <text>a</text>
     <point name="goal1">(-4.1, 7.4)</point>
     <point name="goal2">(6.8, 9.1)</point>
-    <p>Move points to <copy prop="coords" tname="goal1" /> <copy prop="coords" tname="goal2" /></p>
+    <p>Move points to <copy prop="coords" target="goal1" /> <copy prop="coords" target="goal2" /></p>
     <graph>
       <point name="A" x="4.9" y="-1.1">
         <constraints>
-          <attractTo><copy tname="goal1" /></attractTo>
-          <attractTo><copy tname="goal2" /></attractTo>
+          <attractTo><copy target="goal1" /></attractTo>
+          <attractTo><copy target="goal2" /></attractTo>
         </constraints>
       </point>
       <point name="B" x="-2.3" y="-3.4">
         <constraints>
-          <attractTo><copy tname="goal1" /></attractTo>
-          <attractTo><copy tname="goal2" /></attractTo>
+          <attractTo><copy target="goal1" /></attractTo>
+          <attractTo><copy target="goal2" /></attractTo>
         </constraints>
       </point>
     </graph>
@@ -2056,8 +2089,8 @@ describe('Point location validation tests',function() {
         </when>
       </award>
     </answer></p>
-    <p>Credit for answer: <copy prop="creditAchieved" tname="_answer1" assignNames="ca" /></p>
-    <p>Submitted responses: <math name="srs"><copy prop="submittedResponses" tname="_answer1" /></math></p>
+    <p>Credit for answer: <copy prop="creditAchieved" target="_answer1" assignNames="ca" /></p>
+    <p>Submitted responses: <math name="srs"><copy prop="submittedResponses" target="_answer1" /></math></p>
     `},"*");
     });
 
@@ -2355,15 +2388,15 @@ describe('Point location validation tests',function() {
     <text>a</text>
     <point name="goal1">(-4.1, 7.4)</point>
     <point name="goal2">(6.8, 9.1)</point>
-    <p>Move points to <copy prop="coords" tname="goal1" /> <copy prop="coords" tname="goal2" /></p>
+    <p>Move points to <copy prop="coords" target="goal1" /> <copy prop="coords" target="goal2" /></p>
     <p>Number of points: <mathinput prefill="0" name="n" /></p>
     <graph>
       <map name="map1" assignNames="(A) (B) (C)">
         <template>
           <point x='$i' y='1'>
             <constraints>
-              <attractTo><copy tname="goal1" /></attractTo>
-              <attractTo><copy tname="goal2" /></attractTo>
+              <attractTo><copy target="goal1" /></attractTo>
+              <attractTo><copy target="goal2" /></attractTo>
             </constraints>
           </point>
         </template>
@@ -2377,8 +2410,8 @@ describe('Point location validation tests',function() {
         </when>
       </award>
     </answer></p>
-    <p>Credit for answer: <copy prop="creditAchieved" tname="_answer1" assignNames="ca" /></p>
-    <p>Submitted responses: <math name="srs"><copy prop="submittedResponses" tname="_answer1" /></math></p>
+    <p>Credit for answer: <copy prop="creditAchieved" target="_answer1" assignNames="ca" /></p>
+    <p>Submitted responses: <math name="srs"><copy prop="submittedResponses" target="_answer1" /></math></p>
     `},"*");
     });
 
@@ -2654,7 +2687,7 @@ describe('Point location validation tests',function() {
     <text>a</text>
     <point name="goal1">(-4.1, 7.4)</point>
     <point name="goal2">(6.8, 9.1)</point>
-    <p>Move points to <copy prop="coords" tname="goal1" /> <copy prop="coords" tname="goal2" /></p>
+    <p>Move points to <copy prop="coords" target="goal1" /> <copy prop="coords" target="goal2" /></p>
     <p>Number of points: <mathinput prefill="0" name="n" /></p>
     <p>Number of points 2: <mathinput prefill="0" name="m" /></p>
     <graph>
@@ -2662,16 +2695,16 @@ describe('Point location validation tests',function() {
         <template>
           <point x='$i' y='1'>
             <constraints>
-              <attractTo><copy tname="goal1" /></attractTo>
-              <attractTo><copy tname="goal2" /></attractTo>
+              <attractTo><copy target="goal1" /></attractTo>
+              <attractTo><copy target="goal2" /></attractTo>
             </constraints>
           </point>
           <map>
             <template>
               <point x='$j' y='2'>
                 <constraints>
-                  <attractTo><copy tname="goal1" /></attractTo>
-                  <attractTo><copy tname="goal2" /></attractTo>
+                  <attractTo><copy target="goal1" /></attractTo>
+                  <attractTo><copy target="goal2" /></attractTo>
                 </constraints>
               </point>
             </template>
@@ -2688,8 +2721,8 @@ describe('Point location validation tests',function() {
         </when>
       </award>
     </answer></p>
-    <p>Credit for answer: <copy prop="creditAchieved" tname="_answer1" assignNames="ca" /></p>
-    <p>Submitted responses: <math name="srs"><copy prop="submittedResponses" tname="_answer1" /></math></p>
+    <p>Credit for answer: <copy prop="creditAchieved" target="_answer1" assignNames="ca" /></p>
+    <p>Submitted responses: <math name="srs"><copy prop="submittedResponses" target="_answer1" /></math></p>
     `},"*");
     });
 

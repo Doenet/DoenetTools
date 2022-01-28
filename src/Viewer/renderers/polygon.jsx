@@ -30,13 +30,13 @@ export default class Polygon extends DoenetRenderer {
       highlightFillColor: 'lightgray',
       visible: this.doenetSvData.draggable && !this.doenetSvData.fixed,
       withLabel: false,
-      layer: 10 * this.doenetSvData.layer + 8,
+      layer: 10 * this.doenetSvData.layer + 9,
     };
 
     this.jsxBorderAttributes = {
       highlight: false,
       visible: !this.doenetSvData.hidden,
-      layer: 10 * this.doenetSvData.layer + 7,
+      layer: 10 * this.doenetSvData.layer + 6,
       strokeColor: this.doenetSvData.selectedStyle.lineColor,
       highlightStrokeColor: this.doenetSvData.selectedStyle.lineColor,
       strokeWidth: this.doenetSvData.selectedStyle.lineWidth,
@@ -75,7 +75,21 @@ export default class Polygon extends DoenetRenderer {
 
     this.initializePoints();
 
-    this.initializeBorders();
+    this.polygonJXG.on('drag', e => this.onDragHandler(-1, true, e));
+    this.polygonJXG.on('up', function (e) {
+      if (this.draggedPoint === -1) {
+        this.actions.finalizePolygonPosition();
+      }
+    }.bind(this));
+
+    this.polygonJXG.on('down', function (e) {
+      this.draggedPoint = null
+      this.pointerAtDown = [e.x, e.y];
+
+      this.pointsAtDown = this.polygonJXG.vertices.map(x => [...x.coords.scrCoords])
+
+    }.bind(this));
+
 
     this.props.board.unsuspendUpdate();
 
@@ -94,110 +108,12 @@ export default class Polygon extends DoenetRenderer {
       vertex.on('drag', x => this.onDragHandler(i, true));
       vertex.off('up');
       vertex.on('up', x => this.onDragHandler(i, false));
+      vertex.off('down');
+      vertex.on('down', x => this.draggedPoint = null);
+
     }
   }
 
-  initializeBorders() {
-    let offsets = [];
-    let renderer = this;
-    // create listeners for border so that when drag border,
-    // the whole polygon translates
-    // To accomplish this, set offset for all vertices on mousedown
-    // and change coordinates for all vertices on drag
-
-    let polygonJXG = this.polygonJXG;
-    let newPointcoords;
-    let board = this.props.board;
-    let borderPointsAtDown;
-    let pointerAtDown;
-
-    function onDownBorder(e) {
-
-      pointerAtDown = [e.x, e.y];
-
-      borderPointsAtDown = [[...this.point1.coords.scrCoords], [...this.point2.coords.scrCoords]];
-
-      newPointcoords = undefined;
-      offsets = [];
-      // calculate offsets for all vertices not on given border segment
-      for (let j = 0; j < renderer.doenetSvData.nVertices; j++) {
-        let vertex = polygonJXG.vertices[j];
-        if (vertex !== this.point1 && vertex !== this.point2) {
-          // found a vertex not on given border segment
-          // record offset from first point on border segment
-          let pointInfo = {
-            id: vertex.id,
-            offset: [vertex.X() - this.point1.X(),
-            vertex.Y() - this.point1.Y()],
-          };
-          offsets.push(pointInfo);
-        }
-      }
-    }
-
-    function onDragBorder(i, e) {
-
-      let o = board.origin.scrCoords;
-
-      // create update instructions for moving entire polygon
-      newPointcoords = {};
-
-      let border = polygonJXG.borders[i];
-
-      let borderPointCoords = [];
-      for (let i = 0; i < 2; i++) {
-        let calculatedX = (borderPointsAtDown[i][1] + e.x - pointerAtDown[0]
-          - o[1]) / board.unitX;
-        let calculatedY = (o[2] -
-          (borderPointsAtDown[i][2] + e.y - pointerAtDown[1]))
-          / board.unitY;
-        borderPointCoords.push([calculatedX, calculatedY]);
-      }
-
-      for (let j = 0; j < renderer.doenetSvData.nVertices; j++) {
-        let point = polygonJXG.vertices[j];
-        if (point === border.point1) {
-          newPointcoords[j] = borderPointCoords[0]
-        } else if (point === border.point2) {
-          newPointcoords[j] = borderPointCoords[1]
-        } else {
-          // for remaining vertices, set to offset from
-          // first point of segment dragged
-          let item = offsets.find(x => x.id === point.id);
-          newPointcoords[j] = [
-            border.point1.X() + item.offset[0],
-            border.point1.Y() + item.offset[1]
-          ];
-        }
-      }
-
-      renderer.actions.movePolygon({
-        pointCoords: newPointcoords,
-        transient: true,
-        skippable: true,
-      });
-    }
-
-    function onUpBorder() {
-      if (newPointcoords) {
-
-        renderer.actions.movePolygon({
-          pointCoords: newPointcoords,
-        });
-      }
-    }
-
-    for (let i = 0; i < this.polygonJXG.borders.length; i++) {
-      let border = this.polygonJXG.borders[i];
-
-      border.off('drag');
-      border.on('drag', (e) => onDragBorder(i, e))
-      border.off('up');
-      border.on('up', onUpBorder)
-      border.off('down');
-      border.on('down', onDownBorder);
-    }
-  }
 
   deleteGraphicalObject() {
     for (let i = 0; i < this.doenetSvData.nVertices; i++) {
@@ -205,14 +121,6 @@ export default class Polygon extends DoenetRenderer {
       if (vertex) {
         vertex.off('drag');
         vertex.off('up');
-      }
-    }
-    if (this.polygonJXG.borders) {
-      for (let i = 0; i < this.polygonJXG.borders.length; i++) {
-        let border = this.polygonJXG.borders[i];
-        border.off('drag')
-        border.off('up')
-        border.off('down');
       }
     }
     this.props.board.removeObject(this.polygonJXG);
@@ -267,17 +175,8 @@ export default class Polygon extends DoenetRenderer {
         this.polygonJXG.addPoints(newPoint);
       }
       this.initializePoints();
-      this.initializeBorders();
 
     } else if (this.doenetSvData.nVertices < this.previousNVertices) {
-      // remove all border event handlers
-      // (they will get recreated in initializeBorders)
-      for (let i = 0; i < this.polygonJXG.borders.length; i++) {
-        let border = this.polygonJXG.borders[i];
-        border.off('drag')
-        border.off('up')
-        border.off('down');
-      }
       for (let i = this.previousNVertices - 1; i >= this.doenetSvData.nVertices; i--) {
         this.polygonJXG.vertices[i].drag('drag')
         this.polygonJXG.vertices[i].drag('down')
@@ -285,7 +184,6 @@ export default class Polygon extends DoenetRenderer {
         this.polygonJXG.removePoints(this.polygonJXG.vertices[i]);
       }
       this.initializePoints();
-      this.initializeBorders();
     }
 
     for (let i = 0; i < this.doenetSvData.nVertices; i++) {
@@ -321,12 +219,49 @@ export default class Polygon extends DoenetRenderer {
   }
 
 
-  onDragHandler(i, transient) {
+  onDragHandler(i, transient, e) {
+    if (transient) {
+      this.draggedPoint = i;
+    } else if (this.draggedPoint !== i) {
+      return;
+    }
 
-    let pointCoords = {};
-    pointCoords[i] = [this.polygonJXG.vertices[i].X(), this.polygonJXG.vertices[i].Y()];
-    this.actions.movePolygon({ pointCoords, transient, skippable: transient });
+    if (i === -1) {
+      let pointCoords = this.calculatePointPositions(e);
 
+      this.actions.movePolygon({ pointCoords, transient, skippable: transient });
+    } else {
+      let pointCoords = {};
+      pointCoords[i] = [this.polygonJXG.vertices[i].X(), this.polygonJXG.vertices[i].Y()];
+      this.actions.movePolygon({
+        pointCoords,
+        transient,
+        skippable: transient,
+        sourceInformation: { vertex: i }
+      });
+    }
+
+  }
+
+  calculatePointPositions(e) {
+
+    // the reason we calculate point positions with this algorithm,
+    // is so that points don't get trapped on an attracting object
+    // if you move the mouse slowly.
+
+    var o = this.props.board.origin.scrCoords;
+
+    let pointCoords = []
+
+    for (let i = 0; i < this.polygonJXG.vertices.length - 1; i++) {
+      let calculatedX = (this.pointsAtDown[i][1] + e.x - this.pointerAtDown[0]
+        - o[1]) / this.props.board.unitX;
+      let calculatedY = (o[2] -
+        (this.pointsAtDown[i][2] + e.y - this.pointerAtDown[1]))
+        / this.props.board.unitY;
+      pointCoords.push([calculatedX, calculatedY]);
+    }
+    return pointCoords;
   }
 
   render() {

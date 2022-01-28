@@ -1,81 +1,112 @@
-import React from 'react';
-import DoenetRenderer from './DoenetRenderer';
+import React, { useContext, useEffect, useRef, useState } from 'react';
+import { createFunctionFromDefinition } from '../../Core/utils/function';
+import useDoenetRender from './useDoenetRenderer';
+import { BoardContext } from './graph';
+import me from 'math-expressions';
 
-export default class FunctionCurve extends DoenetRenderer {
-  constructor(props) {
-    super(props)
 
-    this.dragThroughPoint = this.dragThroughPoint.bind(this);
-    this.dragControlPoint = this.dragControlPoint.bind(this);
-    this.downThroughPoint = this.downThroughPoint.bind(this);
-    this.upBoard = this.upBoard.bind(this);
-    this.downOther = this.downOther.bind(this);
+export default function Curve(props) {
+  let { name, SVs, actions, sourceOfUpdate } = useDoenetRender(props);
 
-    if (props.board) {
-      this.createGraphicalObject();
+  const board = useContext(BoardContext);
 
-      this.doenetPropsForChildren = { board: this.props.board };
-      this.initializeChildren();
+  let curveJXG = useRef({});
+  let throughPointsJXG = useRef(null);
+  let controlPointsJXG = useRef(null);
+
+  let previousCurveType = useRef(null);
+  let draggedControlPoint = useRef(null);
+  let draggedThroughPoint = useRef(null);
+  let updateSinceDown = useRef(false);
+  let previousFlipFunction = useRef(null);
+  let segmentAttributes = useRef(null);
+  let throughPointAttributes = useRef(null);
+  let throughPointAlwaysVisible = useRef(null);
+  let throughPointHoverVisible = useRef(null);
+  let controlPointAttributes = useRef(null);
+  let previousNumberOfPoints = useRef(null);
+  let segmentsJXG = useRef(null);
+  let vectorControlsVisible = useRef(null);
+  let hitObject = useRef(null);
+  let vectorControlDirections = useRef(null);
+  let previousVectorControlDirections = useRef(null);
+
+  vectorControlDirections.current = SVs.vectorControlDirections;
+
+  let lastThroughPointPositionsFromCore = useRef(null);
+  lastThroughPointPositionsFromCore.current = SVs.numericalThroughPoints;
+
+
+  useEffect(() => {
+
+    //On unmount
+    return () => {
+      // if point is defined
+      if (Object.keys(curveJXG.current).length !== 0) {
+        deleteCurveJXG();
+        curveJXG.current = {}
+      }
     }
-  }
+  }, [])
 
-  static initializeChildrenOnConstruction = false;
 
-  createGraphicalObject() {
 
-    if (this.doenetSvData.curveType === "bezier" &&
-      this.doenetSvData.numericalThroughPoints.length < 2
+  function createCurveJXG() {
+
+    if (SVs.curveType === "bezier" &&
+      SVs.numericalThroughPoints.length < 2
     ) {
-      return;
+      return {};
     }
 
     //things to be passed to JSXGraph as attributes
+
     var curveAttributes = {
-      name: this.doenetSvData.label,
-      visible: !this.doenetSvData.hidden,
-      withLabel: this.doenetSvData.showLabel && this.doenetSvData.label !== "",
-      fixed: true, //this.doenetSvData.draggable !== true,
-      layer: 10 * this.doenetSvData.layer + 5,
-      strokeColor: this.doenetSvData.selectedStyle.lineColor,
-      highlightStrokeColor: this.doenetSvData.selectedStyle.lineColor,
-      strokeWidth: this.doenetSvData.selectedStyle.lineWidth,
-      dash: styleToDash(this.doenetSvData.selectedStyle.lineStyle, this.doenetSvData.dashed),
+      name: SVs.label,
+      visible: !SVs.hidden,
+      withLabel: SVs.showLabel && SVs.label !== "",
+      fixed: true,
+      layer: 10 * SVs.layer + 5,
+      strokeColor: SVs.selectedStyle.lineColor,
+      highlightStrokeColor: SVs.selectedStyle.lineColor,
+      strokeWidth: SVs.selectedStyle.lineWidth,
+      dash: styleToDash(SVs.selectedStyle.lineStyle, SVs.dashed),
     };
 
 
-    if (this.doenetSvData.showLabel && this.doenetSvData.label !== "") {
+    if (SVs.showLabel && SVs.label !== "") {
       let anchorx, offset, position;
-      if (this.doenetSvData.labelPosition === "upperright") {
+      if (SVs.labelPosition === "upperright") {
         position = 'urt';
         offset = [-5, -10];
         anchorx = "right";
-      } else if (this.doenetSvData.labelPosition === "upperleft") {
+      } else if (SVs.labelPosition === "upperleft") {
         position = 'ulft';
         offset = [5, -10];
         anchorx = "left";
-      } else if (this.doenetSvData.labelPosition === "lowerright") {
+      } else if (SVs.labelPosition === "lowerright") {
         position = 'lrt';
         offset = [-5, 10];
         anchorx = "right";
-      } else if (this.doenetSvData.labelPosition === "lowerleft") {
-        position = 'llft'
+      } else if (SVs.labelPosition === "lowerleft") {
+        position = 'llft';
         offset = [5, 10];
         anchorx = "left";
-      } else if (this.doenetSvData.labelPosition === "top") {
-        position = 'top'
+      } else if (SVs.labelPosition === "top") {
+        position = 'top';
         offset = [0, -10];
         anchorx = "left";
-      } else if (this.doenetSvData.labelPosition === "bottom") {
-        position = 'bot'
+      } else if (SVs.labelPosition === "bottom") {
+        position = 'bot';
         offset = [0, 10];
         anchorx = "left";
-      } else if (this.doenetSvData.labelPosition === "left") {
-        position = 'lft'
+      } else if (SVs.labelPosition === "left") {
+        position = 'lft';
         offset = [10, 0];
         anchorx = "left";
       } else {
         // right
-        position = 'rt'
+        position = 'rt';
         offset = [-10, 0];
         anchorx = "right";
       }
@@ -84,69 +115,84 @@ export default class FunctionCurve extends DoenetRenderer {
         offset,
         position,
         anchorx,
-      }
+      };
     }
 
 
-    if (!this.doenetSvData.draggable || this.doenetSvData.fixed) {
-      curveAttributes.highlightStrokeWidth = this.doenetSvData.selectedStyle.lineWidth;
+    if (!SVs.draggable || SVs.fixed) {
+      curveAttributes.highlightStrokeWidth = SVs.selectedStyle.lineWidth;
     }
 
-    if (["parameterization", "bezier"].includes(this.doenetSvData.curveType)) {
-      this.curveJXG = this.props.board.create('curve', [
-        this.doenetSvData.fs[0], this.doenetSvData.fs[1],
-        this.doenetSvData.parMin, this.doenetSvData.parMax
+    let newCurveJXG;
+
+    if (SVs.curveType === "parameterization") {
+      let f1 = createFunctionFromDefinition(SVs.fDefinitions[0]);
+      let f2 = createFunctionFromDefinition(SVs.fDefinitions[1]);
+
+      newCurveJXG = board.create('curve', [
+        f1, f2,
+        SVs.parMin, SVs.parMax
+      ], curveAttributes);
+
+    } else if (SVs.curveType === "bezier") {
+      let fs = createFunctionFromDefinition(SVs.fDefinitions[0]);
+      newCurveJXG = board.create('curve', [
+        fs[0], fs[1],
+        SVs.parMin, SVs.parMax
       ], curveAttributes);
 
     } else {
-      if (this.doenetSvData.flipFunction) {
-        let ymin = this.doenetSvData.graphYmin;
-        let ymax = this.doenetSvData.graphYmax;
-        let minForF = Math.max(ymin - (ymax - ymin) * 0.1, this.doenetSvData.parMin);
-        let maxForF = Math.min(ymax + (ymax - ymin) * 0.1, this.doenetSvData.parMax);
-        this.curveJXG = this.props.board.create('curve', [this.doenetSvData.fs[0], x => x, minForF, maxForF], curveAttributes);
+      let f = createFunctionFromDefinition(SVs.fDefinitions[0]);
+      if (SVs.flipFunction) {
+        let ymin = SVs.graphYmin;
+        let ymax = SVs.graphYmax;
+        let minForF = Math.max(ymin - (ymax - ymin) * 0.1, SVs.parMin);
+        let maxForF = Math.min(ymax + (ymax - ymin) * 0.1, SVs.parMax);
+        newCurveJXG = board.create('curve', [f, x => x, minForF, maxForF], curveAttributes);
       } else {
-        let xmin = this.doenetSvData.graphXmin;
-        let xmax = this.doenetSvData.graphXmax;
-        let minForF = Math.max(xmin - (xmax - xmin) * 0.1, this.doenetSvData.parMin);
-        let maxForF = Math.min(xmax + (xmax - xmin) * 0.1, this.doenetSvData.parMax);
-        this.curveJXG = this.props.board.create('functiongraph', [this.doenetSvData.fs[0], minForF, maxForF], curveAttributes);
+        let xmin = SVs.graphXmin;
+        let xmax = SVs.graphXmax;
+        let minForF = Math.max(xmin - (xmax - xmin) * 0.1, SVs.parMin);
+        let maxForF = Math.min(xmax + (xmax - xmin) * 0.1, SVs.parMax);
+        newCurveJXG = board.create('functiongraph', [f, minForF, maxForF], curveAttributes);
       }
-      this.previousFlipFunction = this.doenetSvData.flipFunction;
+      previousFlipFunction.current = SVs.flipFunction;
 
     }
 
-    this.previousCurveType = this.doenetSvData.curveType;
+    previousCurveType.current = SVs.curveType;
 
-    this.draggedControlPoint = null;
-    this.draggedThroughPoint = null;
+    draggedControlPoint.current = null;
+    draggedThroughPoint.current = null;
 
-    this.curveJXG.on('up', function (e) {
-      if (!this.updateSinceDown && this.draggedControlPoint === null && this.draggedThroughPoint === null
-        && this.doenetSvData.switchable && !this.doenetSvData.fixed
-      ) {
-        this.actions.switchCurve();
+    newCurveJXG.on('up', function (e) {
+      // TODO: don't think SVS.switchable, SVs.fixed will if change state variables
+      // as useEffect will not be rerun
+      if (!updateSinceDown.current && draggedControlPoint.current === null && draggedThroughPoint.current === null
+        && SVs.switchable && !SVs.fixed) {
+        props.callAction({
+          action: actions.switchCurve
+        });
       }
-    }.bind(this));
+    });
 
-    if (this.doenetSvData.curveType === "bezier") {
+    if (SVs.curveType === "bezier") {
 
-      this.props.board.on('up', this.upBoard);
-      this.curveJXG.on('down', this.downOther);
+      board.on('up', upBoard);
+      newCurveJXG.on('down', downOther);
 
-
-      this.segmentAttributes = {
+      segmentAttributes.current = {
         visible: false,
         withLabel: false,
         fixed: true,
         strokeColor: 'lightgray',
         highlightStrokeColor: 'lightgray',
-        layer: 10 * this.doenetSvData.layer + 7,
+        layer: 10 * SVs.layer + 7,
         strokeWidth: 1,
         highlightStrokeWidth: 1,
       };
-      this.throughPointAttributes = {
-        visible: !this.doenetSvData.hidden,
+      throughPointAttributes.current = {
+        visible: !SVs.hidden,
         withLabel: false,
         fixed: false,
         fillColor: 'none',
@@ -155,19 +201,19 @@ export default class FunctionCurve extends DoenetRenderer {
         highlightStrokeColor: 'lightgray',
         strokeWidth: 1,
         highlightStrokeWidth: 1,
-        layer: 10 * this.doenetSvData.layer + 7,
+        layer: 10 * SVs.layer + 7,
         size: 3,
       };
-      this.throughPointAlwaysVisible = {
+      throughPointAlwaysVisible.current = {
         fillcolor: 'lightgray',
         strokecolor: 'lightgray',
-      }
-      this.throughPointHoverVisible = {
+      };
+      throughPointHoverVisible.current = {
         fillcolor: 'none',
         strokecolor: 'none',
-      }
+      };
 
-      this.controlPointAttributes = {
+      controlPointAttributes.current = {
         visible: false,
         withLabel: false,
         fixed: false,
@@ -177,182 +223,170 @@ export default class FunctionCurve extends DoenetRenderer {
         highlightStrokeColor: 'gray',
         strokeWidth: 1,
         highlightStrokeWidth: 1,
-        layer: 10 * this.doenetSvData.layer + 8,
+        layer: 10 * SVs.layer + 8,
         size: 2,
       };
 
-      if (!this.doenetSvData.draggable || this.doenetSvData.fixed) {
-        return this.curveJXG;
+      if (SVs.draggable && !SVs.fixed) {
+
+
+        createControls();
+
+        if (SVs.bezierControlsAlwaysVisible) {
+          makeThroughPointsAlwaysVisible();
+          showAllControls();
+        }
+
+        board.updateRenderer();
+
+        previousNumberOfPoints.current = SVs.numericalThroughPoints.length;
+        previousVectorControlDirections.current = [...SVs.vectorControlDirections];
       }
-
-
-      this.createControls();
-
-      if (this.doenetSvData.bezierControlsAlwaysVisible) {
-        this.makeThroughPointsAlwaysVisible()
-        this.showAllControls();
-      }
-
-      this.props.board.updateRenderer();
-
-      this.previousNumberOfPoints = this.doenetSvData.numericalThroughPoints.length;
-      this.previousVectorControlDirections = [...this.doenetSvData.vectorControlDirections];
-
 
     } else {
-      this.curveJXG.on('down', function (e) {
-        this.updateSinceDown = false;
-      }.bind(this));
+      newCurveJXG.on('down', function (e) {
+        updateSinceDown.current = false;
+      });
     }
-
-    return this.curveJXG;
-
+    return newCurveJXG;
   }
 
+  function deleteCurveJXG() {
+    board.off('up', upBoard);
+    curveJXG.current.off('down');
+    board.removeObject(curveJXG.current);
+    deleteControls();
+  }
 
-  createControls() {
-    this.throughPointsJXG = [];
-    this.controlPointsJXG = [];
-    this.segmentsJXG = [];
+  function createControls() {
+    throughPointsJXG.current = [];
+    controlPointsJXG.current = [];
+    segmentsJXG.current = [];
 
-    let downTP = this.downThroughPoint;
-    let dragTP = this.dragThroughPoint;
-    let dragCP = this.dragControlPoint;
-    let downO = this.downOther;
 
-    for (let i = 0; i < this.doenetSvData.numericalThroughPoints.length; i++) {
+    for (let i = 0; i < SVs.numericalThroughPoints.length; i++) {
       // middle through points have two controls
-      let tp = this.props.board.create('point', [...this.doenetSvData.numericalThroughPoints[i]], this.throughPointAttributes);
-      this.throughPointsJXG.push(tp);
-      let cp1 = this.props.board.create('point', [...this.doenetSvData.numericalControlPoints[i][0]], this.controlPointAttributes);
-      let cp2 = this.props.board.create('point', [...this.doenetSvData.numericalControlPoints[i][1]], this.controlPointAttributes);
-      this.controlPointsJXG.push([cp1, cp2]);
-      let seg1 = this.props.board.create('segment', [tp, cp1], this.segmentAttributes);
-      let seg2 = this.props.board.create('segment', [tp, cp2], this.segmentAttributes);
-      this.segmentsJXG.push([seg1, seg2]);
-      tp.on('drag', e => dragTP(i, true, e));
-      tp.on('down', e => downTP(i, e));
-      tp.on('up', e => dragTP(i, false, e));
-      cp1.on('drag', e => dragCP(i, 0, true, e));
-      cp2.on('drag', e => dragCP(i, 1, true, e));
-      cp1.on('down', downO);
-      cp2.on('down', downO);
-      seg1.on('down', downO);
-      seg1.on('down', downO);
-      cp1.on('up', e => dragCP(i, 0, false, e));
-      cp2.on('up', e => dragCP(i, 1, false, e));
+      let tp = board.create('point', [...SVs.numericalThroughPoints[i]], throughPointAttributes.current);
+      throughPointsJXG.current.push(tp);
+      let cp1 = board.create('point', [...SVs.numericalControlPoints[i][0]], controlPointAttributes.current);
+      let cp2 = board.create('point', [...SVs.numericalControlPoints[i][1]], controlPointAttributes.current);
+      controlPointsJXG.current.push([cp1, cp2]);
+      let seg1 = board.create('segment', [tp, cp1], segmentAttributes.current);
+      let seg2 = board.create('segment', [tp, cp2], segmentAttributes.current);
+      segmentsJXG.current.push([seg1, seg2]);
+      tp.on('drag', e => dragThroughPoint(i, true, e));
+      tp.on('down', e => downThroughPoint(i, e));
+      tp.on('up', e => dragThroughPoint(i, false, e));
+      cp1.on('drag', e => dragControlPoint(i, 0, true, e));
+      cp2.on('drag', e => dragControlPoint(i, 1, true, e));
+      cp1.on('down', downOther);
+      cp2.on('down', downOther);
+      seg1.on('down', downOther);
+      seg1.on('down', downOther);
+      cp1.on('up', e => dragControlPoint(i, 0, false, e));
+      cp2.on('up', e => dragControlPoint(i, 1, false, e));
     }
 
-    this.vectorControlsVisible = [];
+    vectorControlsVisible.current = [];
 
   }
 
-
-  deleteControls() {
-    if (this.segmentsJXG) {
-      this.segmentsJXG.forEach(x => x.forEach(y => {
+  function deleteControls() {
+    if (segmentsJXG.current) {
+      segmentsJXG.current.forEach(x => x.forEach(y => {
         if (y) {
           y.off('down');
-          this.props.board.removeObject(y)
+          board.removeObject(y)
         }
       }));
-      this.segmentsJXG = [];
-      this.controlPointsJXG.forEach(x => x.forEach(y => {
+      segmentsJXG.current = [];
+      controlPointsJXG.current.forEach(x => x.forEach(y => {
         if (y) {
           y.off('drag')
           y.off('down')
           y.off('up')
-          this.props.board.removeObject(y)
+          board.removeObject(y)
         }
       }));
-      this.controlPointsJXG = [];
-      this.throughPointsJXG.forEach(x => {
+      controlPointsJXG.current = [];
+      throughPointsJXG.current.forEach(x => {
         x.off('drag')
         x.off('down')
         x.off('up')
-        this.props.board.removeObject(x)
+        board.removeObject(x)
       });
-      this.throughPointsJXG = [];
+      throughPointsJXG.current = [];
     }
   }
 
-  deleteGraphicalObject() {
-
-    this.props.board.off('up', this.upBoard);
-    this.curveJXG.off('down');
-
-    this.props.board.removeObject(this.curveJXG);
-    delete this.curveJXG;
-
-    this.deleteControls();
-  }
-
-  componentWillUnmount() {
-    if (this.curveJXG) {
-      this.deleteGraphicalObject();
-    }
-  }
-
-
-
-  dragThroughPoint(i, transient) {
+  function dragThroughPoint(i, transient) {
     if (transient) {
-      this.draggedThroughPoint = i;
-    } else if (this.draggedThroughPoint !== i) {
+      draggedThroughPoint.current = i;
+    } else if (draggedThroughPoint.current !== i) {
       return;
     }
 
-    let tpcoords = [this.throughPointsJXG[i].X(), this.throughPointsJXG[i].Y()];
-    this.actions.moveThroughPoint({
-      throughPoint: tpcoords,
-      throughPointInd: i,
-      transient,
-      skippable: transient,
-    });
+    let tpcoords = [throughPointsJXG.current[i].X(), throughPointsJXG.current[i].Y()];
+    props.callAction({
+      action: actions.moveThroughPoint,
+      args: {
+        throughPoint: tpcoords,
+        throughPointInd: i,
+        transient,
+        skippable: transient,
+      }
+    })
+
+    throughPointsJXG.current[i].coords.setCoordinates(JXG.COORDS_BY_USER, lastThroughPointPositionsFromCore.current[i]);
+    board.updateInfobox(throughPointsJXG.current[i]);
+
 
   }
 
-  dragControlPoint(point, i, transient) {
+  function dragControlPoint(point, i, transient) {
     // console.log(`drag control point ${point}, ${i}`)
 
     if (transient) {
-      this.draggedControlPoint = point + "_" + i;
-    } else if (this.draggedControlPoint !== point + "_" + i) {
+      draggedControlPoint.current = point + "_" + i;
+    } else if (draggedControlPoint.current !== point + "_" + i) {
       return;
     }
 
-    this.actions.moveControlVector({
-      controlVector: [this.controlPointsJXG[point][i].X() - this.throughPointsJXG[point].X(),
-      this.controlPointsJXG[point][i].Y() - this.throughPointsJXG[point].Y()],
-      controlVectorInds: [point, i],
-      transient,
-      skippable: transient,
+    props.callAction({
+      action: actions.moveControlVector,
+      args: {
+        controlVector: [controlPointsJXG.current[point][i].X() - throughPointsJXG.current[point].X(),
+        controlPointsJXG.current[point][i].Y() - throughPointsJXG.current[point].Y()],
+        controlVectorInds: [point, i],
+        transient,
+        skippable: transient,
+      }
     });
 
   }
 
-  makeThroughPointsAlwaysVisible() {
-    for (let point of this.throughPointsJXG) {
-      for (let attribute in this.throughPointAlwaysVisible) {
-        point.visProp[attribute] = this.throughPointAlwaysVisible[attribute];
+  function makeThroughPointsAlwaysVisible() {
+    for (let point of throughPointsJXG.current) {
+      for (let attribute in throughPointAlwaysVisible.current) {
+        point.visProp[attribute] = throughPointAlwaysVisible.current[attribute];
       }
       point.needsUpdate = true;
       point.update();
     }
   }
 
-  makeThroughPointsHoverVisible() {
-    for (let point of this.throughPointsJXG) {
-      for (let attribute in this.throughPointHoverVisible) {
-        point.visProp[attribute] = this.throughPointHoverVisible[attribute];
+  function makeThroughPointsHoverVisible() {
+    for (let point of throughPointsJXG.current) {
+      for (let attribute in throughPointHoverVisible.current) {
+        point.visProp[attribute] = throughPointHoverVisible.current[attribute];
       }
       point.needsUpdate = true;
       point.update();
     }
   }
 
-  hideAllControls() {
-    for (let controlPair of this.controlPointsJXG) {
+  function hideAllControls() {
+    for (let controlPair of controlPointsJXG.current) {
       for (let cp of controlPair) {
         if (cp) {
           cp.visProp.visible = false;
@@ -361,7 +395,7 @@ export default class FunctionCurve extends DoenetRenderer {
         }
       }
     }
-    for (let segmentPair of this.segmentsJXG) {
+    for (let segmentPair of segmentsJXG.current) {
       for (let seg of segmentPair) {
         if (seg) {
           seg.visProp.visible = false;
@@ -370,371 +404,369 @@ export default class FunctionCurve extends DoenetRenderer {
         }
       }
     }
-    this.vectorControlsVisible = [];
+    vectorControlsVisible.current = [];
   }
 
-  showAllControls() {
-    for (let ind in this.controlPointsJXG) {
-      this.makeVectorControlVisible(ind);
+  function showAllControls() {
+    for (let ind in controlPointsJXG.current) {
+      makeVectorControlVisible(ind);
     }
   }
 
-  upBoard() {
-    if (!this.doenetSvData.draggable || this.doenetSvData.fixed) {
+  function upBoard() {
+    if (!SVs.draggable || SVs.fixed) {
       return;
     }
-    if (this.hitObject !== true && !this.doenetSvData.bezierControlsAlwaysVisible) {
-      this.makeThroughPointsHoverVisible();
-      this.hideAllControls();
-      this.props.board.updateRenderer();
+    if (hitObject.current !== true && !SVs.bezierControlsAlwaysVisible) {
+      makeThroughPointsHoverVisible();
+      hideAllControls();
+      board.updateRenderer();
     }
-    this.hitObject = false;
+    hitObject.current = false;
   }
 
-  downThroughPoint(i, e) {
+  function downThroughPoint(i, e) {
 
-    if (!this.doenetSvData.draggable || this.doenetSvData.fixed) {
+    if (!SVs.draggable || SVs.fixed) {
       return;
     }
 
-    this.draggedThroughPoint = null;
-    this.draggedControlPoint = null;
+    draggedThroughPoint.current = null;
+    draggedControlPoint.current = null;
 
     // console.log(`down through point: ${i}`)
-    this.hitObject = true;
+    hitObject.current = true;
 
-    this.makeThroughPointsAlwaysVisible();
-    this.makeVectorControlVisible(i);
-    this.props.board.updateRenderer();
+    makeThroughPointsAlwaysVisible();
+    makeVectorControlVisible(i);
+    board.updateRenderer();
   }
 
-  makeVectorControlVisible(i) {
-    if (!this.doenetSvData.hiddenControls[i]) {
-      if (this.controlPointsJXG[i][0]) {
-        let isVisible = (i > 0 || this.doenetSvData.extrapolateBackward)
-          && ["symmetric", "both", "previous"].includes(this.doenetSvData.vectorControlDirections[i]);
-        this.controlPointsJXG[i][0].visProp.visible = isVisible;
-        this.controlPointsJXG[i][0].visPropCalc.visible = isVisible;
-        this.controlPointsJXG[i][0].needsUpdate = true;
-        this.controlPointsJXG[i][0].update();
-        this.segmentsJXG[i][0].visProp.visible = isVisible;
-        this.segmentsJXG[i][0].visPropCalc.visible = isVisible;
-        this.segmentsJXG[i][0].needsUpdate = true;
-        this.segmentsJXG[i][0].update();
+  function makeVectorControlVisible(i) {
+    if (!SVs.hiddenControls[i]) {
+      if (controlPointsJXG.current[i][0]) {
+        let isVisible = (i > 0 || SVs.extrapolateBackward)
+          && ["symmetric", "both", "previous"].includes(vectorControlDirections.current[i]);
+        controlPointsJXG.current[i][0].visProp.visible = isVisible;
+        controlPointsJXG.current[i][0].visPropCalc.visible = isVisible;
+        controlPointsJXG.current[i][0].needsUpdate = true;
+        controlPointsJXG.current[i][0].update();
+        segmentsJXG.current[i][0].visProp.visible = isVisible;
+        segmentsJXG.current[i][0].visPropCalc.visible = isVisible;
+        segmentsJXG.current[i][0].needsUpdate = true;
+        segmentsJXG.current[i][0].update();
       }
 
-      if (this.controlPointsJXG[i][1]) {
-        let isVisible = (i < this.throughPointsJXG.length - 1 || this.doenetSvData.extrapolateForward)
-          && ["symmetric", "both", "next"].includes(this.doenetSvData.vectorControlDirections[i]);
-        this.controlPointsJXG[i][1].visProp.visible = isVisible;
-        this.controlPointsJXG[i][1].visPropCalc.visible = isVisible;
-        this.controlPointsJXG[i][1].needsUpdate = true;
-        this.controlPointsJXG[i][1].update();
-        this.segmentsJXG[i][1].visProp.visible = isVisible;
-        this.segmentsJXG[i][1].visPropCalc.visible = isVisible;
-        this.segmentsJXG[i][1].needsUpdate = true;
-        this.segmentsJXG[i][1].update();
+      if (controlPointsJXG.current[i][1]) {
+        let isVisible = (i < throughPointsJXG.current.length - 1 || SVs.extrapolateForward)
+          && ["symmetric", "both", "next"].includes(vectorControlDirections.current[i]);
+        controlPointsJXG.current[i][1].visProp.visible = isVisible;
+        controlPointsJXG.current[i][1].visPropCalc.visible = isVisible;
+        controlPointsJXG.current[i][1].needsUpdate = true;
+        controlPointsJXG.current[i][1].update();
+        segmentsJXG.current[i][1].visProp.visible = isVisible;
+        segmentsJXG.current[i][1].visPropCalc.visible = isVisible;
+        segmentsJXG.current[i][1].needsUpdate = true;
+        segmentsJXG.current[i][1].update();
       }
 
-      this.vectorControlsVisible[i] = true;
+      vectorControlsVisible.current[i] = true;
     }
   }
 
-  downOther() {
-    if (!this.doenetSvData.draggable || this.doenetSvData.fixed) {
+  function downOther() {
+    if (!SVs.draggable || SVs.fixed) {
       return;
     }
 
-    this.draggedThroughPoint = null;
-    this.draggedControlPoint = null;
+    draggedThroughPoint.current = null;
+    draggedControlPoint.current = null;
 
-    this.hitObject = true;
+    hitObject.current = true;
 
-    this.updateSinceDown = false;
+    updateSinceDown.current = false;
 
-    this.makeThroughPointsAlwaysVisible();
-    this.props.board.updateRenderer();
+    makeThroughPointsAlwaysVisible();
+    board.updateRenderer();
   }
 
 
-  update({ sourceOfUpdate }) {
+  if (board) {
 
-    if (!this.props.board) {
-      this.forceUpdate();
-      return;
-    }
+    if (Object.keys(curveJXG.current).length === 0) {
+      // attempt to create curveJXG.current if it doesn't exist yet
 
-    if (this.curveJXG === undefined) {
-      return this.createGraphicalObject();
-    }
+      curveJXG.current = createCurveJXG();
 
 
-    if (this.doenetSvData.curveType === "bezier" && this.doenetSvData.numericalThroughPoints.length < 2) {
-      this.deleteGraphicalObject();
-      return;
-    }
-
-
-    if (
-      this.previousCurveType !== this.doenetSvData.curveType ||
+    } else if (SVs.curveType === "bezier" &&
+      SVs.numericalThroughPoints.length < 2
+    ) {
+      deleteCurveJXG();
+      curveJXG.current = {};
+    } else if (
+      previousCurveType.current !== SVs.curveType ||
       (
-        this.previousCurveType === "function" &&
-        this.previousFlipFunction !== this.doenetSvData.flipFunction
+        previousCurveType.current === "function" &&
+        previousFlipFunction.current !== SVs.flipFunction
       )
     ) {
 
-      // redraw entire curve curve type changed or if flip of function changed
-      this.deleteGraphicalObject();
-      let result = this.createGraphicalObject();
+      // if curve type changed or if flip of function changed
+      // delete and recreate curve
 
-      if (this.props.board.updateQuality === this.props.board.BOARD_QUALITY_LOW) {
-        this.props.board.itemsRenderedLowQuality[this._key] = this.curveJXG;
+      deleteCurveJXG();
+      curveJXG.current = createCurveJXG()
+
+
+      if (board.updateQuality === board.BOARD_QUALITY_LOW) {
+        board.itemsRenderedLowQuality[name] = curveJXG.current;
       }
 
-      return result;
-    }
-
-    if (this.props.board.updateQuality === this.props.board.BOARD_QUALITY_LOW) {
-      this.props.board.itemsRenderedLowQuality[this._key] = this.curveJXG;
-    }
-
-    this.updateSinceDown = true;
-
-    let visible = !this.doenetSvData.hidden;
-
-    this.curveJXG.name = this.doenetSvData.label;
-
-    this.curveJXG.visProp["visible"] = visible;
-    this.curveJXG.visPropCalc["visible"] = visible;
-
-
-    if (this.curveJXG.visProp.strokecolor !== this.doenetSvData.selectedStyle.lineColor) {
-      this.curveJXG.visProp.strokecolor = this.doenetSvData.selectedStyle.lineColor;
-      this.curveJXG.visProp.highlightstrokecolor = this.doenetSvData.selectedStyle.lineColor;
-    }
-    let newDash = styleToDash(this.doenetSvData.selectedStyle.lineStyle, this.doenetSvData.dashed);
-    if (this.curveJXG.visProp.dash !== newDash) {
-      this.curveJXG.visProp.dash = newDash;
-    }
-    if (this.curveJXG.visProp.strokewidth !== this.doenetSvData.selectedStyle.lineWidth) {
-      this.curveJXG.visProp.strokewidth = this.doenetSvData.selectedStyle.lineWidth
-    }
-
-    if (["parameterization", "bezier"].includes(this.doenetSvData.curveType)) {
-      this.curveJXG.X = this.doenetSvData.fs[0];
-      this.curveJXG.Y = this.doenetSvData.fs[1];
-      this.curveJXG.minX = () => this.doenetSvData.parMin;
-      this.curveJXG.maxX = () => this.doenetSvData.parMax;
     } else {
-      if (this.doenetSvData.flipFunction) {
-        this.curveJXG.X = this.doenetSvData.fs[0];
-        let ymin = this.doenetSvData.graphYmin;
-        let ymax = this.doenetSvData.graphYmax;
-        let minForF = Math.max(ymin - (ymax - ymin) * 0.1, this.doenetSvData.parMin);
-        let maxForF = Math.min(ymax + (ymax - ymin) * 0.1, this.doenetSvData.parMax);
-        this.curveJXG.minX = () => minForF;
-        this.curveJXG.maxX = () => maxForF;
+
+      if (board.updateQuality === board.BOARD_QUALITY_LOW) {
+        board.itemsRenderedLowQuality[name] = curveJXG.current;
+      }
+
+      updateSinceDown.current = true;
+
+      let visible = !SVs.hidden;
+
+      curveJXG.current.name = SVs.label;
+
+      curveJXG.current.visProp["visible"] = visible;
+      curveJXG.current.visPropCalc["visible"] = visible;
+
+
+      if (curveJXG.current.visProp.strokecolor !== SVs.selectedStyle.lineColor) {
+        curveJXG.current.visProp.strokecolor = SVs.selectedStyle.lineColor;
+        curveJXG.current.visProp.highlightstrokecolor = SVs.selectedStyle.lineColor;
+      }
+      let newDash = styleToDash(SVs.selectedStyle.lineStyle, SVs.dashed);
+      if (curveJXG.current.visProp.dash !== newDash) {
+        curveJXG.current.visProp.dash = newDash;
+      }
+      if (curveJXG.current.visProp.strokewidth !== SVs.selectedStyle.lineWidth) {
+        curveJXG.current.visProp.strokewidth = SVs.selectedStyle.lineWidth
+      }
+
+
+      if (SVs.curveType === "parameterization") {
+        let f1 = createFunctionFromDefinition(SVs.fDefinitions[0]);
+        let f2 = createFunctionFromDefinition(SVs.fDefinitions[1]);
+
+        curveJXG.current.X = f1;
+        curveJXG.current.Y = f2;
+        curveJXG.current.minX = () => SVs.parMin;
+        curveJXG.current.maxX = () => SVs.parMax;
+
+      } else if (SVs.curveType === "bezier") {
+        let fs = createFunctionFromDefinition(SVs.fDefinitions[0]);
+        curveJXG.current.X = fs[0];
+        curveJXG.current.Y = fs[1];
+        curveJXG.current.minX = () => SVs.parMin;
+        curveJXG.current.maxX = () => SVs.parMax;
+
       } else {
-        this.curveJXG.Y = this.doenetSvData.fs[0];
-        let xmin = this.doenetSvData.graphXmin;
-        let xmax = this.doenetSvData.graphXmax;
-        let minForF = Math.max(xmin - (xmax - xmin) * 0.1, this.doenetSvData.parMin);
-        let maxForF = Math.min(xmax + (xmax - xmin) * 0.1, this.doenetSvData.parMax);
-        this.curveJXG.minX = () => minForF;
-        this.curveJXG.maxX = () => maxForF;
-      }
-    }
-
-    this.curveJXG.needsUpdate = true;
-    this.curveJXG.updateCurve();
-    if (this.curveJXG.hasLabel) {
-      this.curveJXG.label.needsUpdate = true;
-      this.curveJXG.label.visPropCalc.visible = this.doenetSvData.showLabel && this.doenetSvData.label !== "";
-      this.curveJXG.label.update();
-    }
-
-
-    if (this.doenetSvData.curveType !== "bezier") {
-      this.props.board.updateRenderer();
-      return;
-    }
-
-
-    if (!this.doenetSvData.draggable || this.doenetSvData.fixed) {
-      if (this.segmentsJXG) {
-        this.deleteControls();
-      }
-      this.props.board.updateRenderer();
-      return;
-    }
-
-    if (!this.segmentsJXG) {
-      this.createControls();
-
-      this.previousNumberOfPoints = this.doenetSvData.numericalThroughPoints.length;
-      this.previousVectorControlDirections = [...this.doenetSvData.vectorControlDirections];
-
-      this.props.board.updateRenderer();
-      return;
-    }
-
-    let downTP = this.downThroughPoint;
-    let dragTP = this.dragThroughPoint;
-    let dragCP = this.dragControlPoint;
-    let downO = this.downOther;
-
-    // add or delete segments and points if number changed
-    if (this.doenetSvData.numericalThroughPoints.length > this.previousNumberOfPoints) {
-
-      let iPreviousLast = this.previousNumberOfPoints - 1;
-
-      let attributesForNewThroughPoints = Object.assign({}, this.throughPointAttributes)
-      if (this.throughPointsJXG[iPreviousLast].visProp.fillcolor
-        === this.throughPointAlwaysVisible.fillcolor
-      ) {
-        Object.assign(attributesForNewThroughPoints, this.throughPointAlwaysVisible)
-      }
-
-      for (let i = this.previousNumberOfPoints; i < this.doenetSvData.numericalThroughPoints.length; i++) {
-
-        // add point and its controls
-        let tp = this.props.board.create('point', [...this.doenetSvData.numericalThroughPoints[i]], attributesForNewThroughPoints);
-        this.throughPointsJXG.push(tp);
-        let cp1 = this.props.board.create('point', [...this.doenetSvData.numericalControlPoints[i][0]], this.controlPointAttributes);
-        let cp2 = this.props.board.create('point', [...this.doenetSvData.numericalControlPoints[i][1]], this.controlPointAttributes);
-        this.controlPointsJXG.push([cp1, cp2]);
-        let seg1 = this.props.board.create('segment', [tp, cp1], this.segmentAttributes);
-        let seg2 = this.props.board.create('segment', [tp, cp2], this.segmentAttributes);
-        this.segmentsJXG.push([seg1, seg2]);
-
-        cp1.visProp.visible = false;
-        seg1.visProp.visible = false;
-        cp2.visProp.visible = false;
-        seg2.visProp.visible = false;
-
-
-        tp.on('drag', e => dragTP(i, true, e));
-        tp.on('down', e => downTP(i, e));
-        tp.on('up', e => dragTP(i, false, e));
-        cp1.on('drag', e => dragCP(i, 0, true, e));
-        cp1.on('down', downO);
-        cp1.on('up', e => dragCP(i, 0, false, e));
-        cp2.on('drag', e => dragCP(i, 1, true, e));
-        cp2.on('down', downO);
-        cp2.on('up', e => dragCP(i, 1, false, e));
-        seg1.on('down', downO);
-        seg2.on('down', downO);
-
-      }
-
-      if (this.vectorControlsVisible[iPreviousLast]) {
-        // since added new point on one side of previous last point
-        // (at least if not extrapolating)
-        // refresh visibility to add extra handle
-        this.makeVectorControlVisible(iPreviousLast);
-      }
-    } else if (this.doenetSvData.numericalThroughPoints.length < this.previousNumberOfPoints) {
-      for (let i = this.previousNumberOfPoints - 1; i >= this.doenetSvData.numericalThroughPoints.length; i--) {
-
-        this.segmentsJXG[i][0].off('down')
-        this.segmentsJXG[i][1].off('down')
-        this.props.board.removeObject(this.segmentsJXG[i][0])
-        this.props.board.removeObject(this.segmentsJXG[i][1]);
-        this.segmentsJXG.pop();
-
-        this.controlPointsJXG[i][0].off('drag')
-        this.controlPointsJXG[i][0].off('down')
-        this.controlPointsJXG[i][0].off('up')
-        this.controlPointsJXG[i][1].off('drag')
-        this.controlPointsJXG[i][1].off('down')
-        this.controlPointsJXG[i][1].off('up')
-        this.props.board.removeObject(this.controlPointsJXG[i][0])
-        this.props.board.removeObject(this.controlPointsJXG[i][1]);
-        this.controlPointsJXG.pop();
-
-
-        let tp = this.throughPointsJXG.pop();
-        tp.off('drag')
-        tp.off('down')
-        tp.off('up')
-        this.props.board.removeObject(tp);
-      }
-
-      let iNewLast = this.doenetSvData.numericalThroughPoints.length - 1
-      if (this.vectorControlsVisible[iNewLast]) {
-        this.makeVectorControlVisible(iNewLast);
-      }
-
-    }
-
-    // move old points
-    let nOld = Math.min(this.doenetSvData.numericalThroughPoints.length, this.previousNumberOfPoints);
-
-    for (let i = 0; i < nOld; i++) {
-
-      if (this.previousVectorControlDirections[i] !== this.doenetSvData.vectorControlDirections[i]
-        && this.vectorControlsVisible[i]
-      ) {
-        // refresh visibility
-        this.makeVectorControlVisible(i);
-      }
-
-      this.throughPointsJXG[i].coords.setCoordinates(JXG.COORDS_BY_USER, [...this.doenetSvData.numericalThroughPoints[i]]);
-      this.throughPointsJXG[i].needsUpdate = true;
-      this.throughPointsJXG[i].update();
-      this.controlPointsJXG[i][0].coords.setCoordinates(JXG.COORDS_BY_USER, [...this.doenetSvData.numericalControlPoints[i][0]]);
-      this.controlPointsJXG[i][0].needsUpdate = true;
-      this.controlPointsJXG[i][0].update();
-      this.segmentsJXG[i][0].needsUpdate = true;
-      this.segmentsJXG[i][0].update();
-      this.controlPointsJXG[i][1].coords.setCoordinates(JXG.COORDS_BY_USER, [...this.doenetSvData.numericalControlPoints[i][1]]);
-      this.controlPointsJXG[i][1].needsUpdate = true;
-      this.controlPointsJXG[i][1].update();
-      this.segmentsJXG[i][1].needsUpdate = true;
-      this.segmentsJXG[i][1].update();
-    }
-
-    for (let i = 0; i < this.doenetSvData.numericalThroughPoints.length; i++) {
-      this.throughPointsJXG[i].visProp["visible"] = !this.doenetSvData.hidden;
-      this.throughPointsJXG[i].visPropCalc["visible"] = !this.doenetSvData.hidden;
-    }
-
-
-    if (this.componentName in sourceOfUpdate.sourceInformation) {
-      let ind = sourceOfUpdate.sourceInformation.throughPointMoved;
-      if (ind !== undefined) {
-        this.props.board.updateInfobox(this.throughPointsJXG[ind]);
-      } else {
-        ind = sourceOfUpdate.sourceInformation.controlVectorMoved;
-        if (ind !== undefined) {
-          this.props.board.updateInfobox(this.controlPointsJXG[ind[0]][ind[1]]);
+        let f = createFunctionFromDefinition(SVs.fDefinitions[0]);
+        if (SVs.flipFunction) {
+          curveJXG.current.X = f;
+          let ymin = SVs.graphYmin;
+          let ymax = SVs.graphYmax;
+          let minForF = Math.max(ymin - (ymax - ymin) * 0.1, SVs.parMin);
+          let maxForF = Math.min(ymax + (ymax - ymin) * 0.1, SVs.parMax);
+          curveJXG.current.minX = () => minForF;
+          curveJXG.current.maxX = () => maxForF;
+        } else {
+          curveJXG.current.Y = f;
+          let xmin = SVs.graphXmin;
+          let xmax = SVs.graphXmax;
+          let minForF = Math.max(xmin - (xmax - xmin) * 0.1, SVs.parMin);
+          let maxForF = Math.min(xmax + (xmax - xmin) * 0.1, SVs.parMax);
+          curveJXG.current.minX = () => minForF;
+          curveJXG.current.maxX = () => maxForF;
         }
       }
+
+      curveJXG.current.needsUpdate = true;
+      curveJXG.current.updateCurve();
+      if (curveJXG.current.hasLabel) {
+        curveJXG.current.label.needsUpdate = true;
+        curveJXG.current.label.visPropCalc.visible = SVs.showLabel && SVs.label !== "";
+        curveJXG.current.label.update();
+      }
+
+
+      if (SVs.curveType !== "bezier") {
+        board.updateRenderer();
+        return <><a name={name} /></>
+      }
+
+
+      if (!SVs.draggable || SVs.fixed) {
+        if (segmentsJXG.current) {
+          deleteControls();
+        }
+        board.updateRenderer();
+        return <><a name={name} /></>
+      }
+
+      if (!segmentsJXG.current) {
+        createControls();
+
+        previousNumberOfPoints.current = SVs.numericalThroughPoints.length;
+        previousVectorControlDirections.current = [...SVs.vectorControlDirections];
+
+        board.updateRenderer();
+        return <><a name={name} /></>
+      }
+
+      // add or delete segments and points if number changed
+      if (SVs.numericalThroughPoints.length > previousNumberOfPoints.current) {
+
+        let iPreviousLast = previousNumberOfPoints.current - 1;
+
+        let attributesForNewThroughPoints = Object.assign({}, throughPointAttributes.current)
+        if (throughPointsJXG.current[iPreviousLast].visProp.fillcolor
+          === throughPointAlwaysVisible.current.fillcolor
+        ) {
+          Object.assign(attributesForNewThroughPoints, throughPointAlwaysVisible.current)
+        }
+
+        for (let i = previousNumberOfPoints.current; i < SVs.numericalThroughPoints.length; i++) {
+
+          // add point and its controls
+          let tp = board.create('point', [...SVs.numericalThroughPoints[i]], attributesForNewThroughPoints);
+          throughPointsJXG.current.push(tp);
+          let cp1 = board.create('point', [...SVs.numericalControlPoints[i][0]], controlPointAttributes.current);
+          let cp2 = board.create('point', [...SVs.numericalControlPoints[i][1]], controlPointAttributes.current);
+          controlPointsJXG.current.push([cp1, cp2]);
+          let seg1 = board.create('segment', [tp, cp1], segmentAttributes.current);
+          let seg2 = board.create('segment', [tp, cp2], segmentAttributes.current);
+          segmentsJXG.current.push([seg1, seg2]);
+
+          cp1.visProp.visible = false;
+          seg1.visProp.visible = false;
+          cp2.visProp.visible = false;
+          seg2.visProp.visible = false;
+
+
+          tp.on('drag', e => dragThroughPoint(i, true, e));
+          tp.on('down', e => downThroughPoint(i, e));
+          tp.on('up', e => dragThroughPoint(i, false, e));
+          cp1.on('drag', e => dragControlPoint(i, 0, true, e));
+          cp1.on('down', downOther);
+          cp1.on('up', e => dragControlPoint(i, 0, false, e));
+          cp2.on('drag', e => dragControlPoint(i, 1, true, e));
+          cp2.on('down', downOther);
+          cp2.on('up', e => dragControlPoint(i, 1, false, e));
+          seg1.on('down', downOther);
+          seg2.on('down', downOther);
+
+        }
+
+        if (vectorControlsVisible.current[iPreviousLast]) {
+          // since added new point on one side of previous last point
+          // (at least if not extrapolating)
+          // refresh visibility to add extra handle
+          makeVectorControlVisible(iPreviousLast);
+        }
+      } else if (SVs.numericalThroughPoints.length < previousNumberOfPoints.current) {
+        for (let i = previousNumberOfPoints.current - 1; i >= SVs.numericalThroughPoints.length; i--) {
+
+          segmentsJXG.current[i][0].off('down')
+          segmentsJXG.current[i][1].off('down')
+          board.removeObject(segmentsJXG.current[i][0])
+          board.removeObject(segmentsJXG.current[i][1]);
+          segmentsJXG.current.pop();
+
+          controlPointsJXG.current[i][0].off('drag')
+          controlPointsJXG.current[i][0].off('down')
+          controlPointsJXG.current[i][0].off('up')
+          controlPointsJXG.current[i][1].off('drag')
+          controlPointsJXG.current[i][1].off('down')
+          controlPointsJXG.current[i][1].off('up')
+          board.removeObject(controlPointsJXG.current[i][0])
+          board.removeObject(controlPointsJXG.current[i][1]);
+          controlPointsJXG.current.pop();
+
+
+          let tp = throughPointsJXG.current.pop();
+          tp.off('drag')
+          tp.off('down')
+          tp.off('up')
+          board.removeObject(tp);
+        }
+
+        let iNewLast = SVs.numericalThroughPoints.length - 1
+        if (vectorControlsVisible.current[iNewLast]) {
+          makeVectorControlVisible(iNewLast);
+        }
+
+      }
+
+      // move old points
+      let nOld = Math.min(SVs.numericalThroughPoints.length, previousNumberOfPoints.current);
+
+      for (let i = 0; i < nOld; i++) {
+
+        if (previousVectorControlDirections.current[i] !== SVs.vectorControlDirections[i]
+          && vectorControlsVisible.current[i]
+        ) {
+          // refresh visibility
+          makeVectorControlVisible(i);
+        }
+
+        throughPointsJXG.current[i].coords.setCoordinates(JXG.COORDS_BY_USER, [...SVs.numericalThroughPoints[i]]);
+        throughPointsJXG.current[i].needsUpdate = true;
+        throughPointsJXG.current[i].update();
+        controlPointsJXG.current[i][0].coords.setCoordinates(JXG.COORDS_BY_USER, [...SVs.numericalControlPoints[i][0]]);
+        controlPointsJXG.current[i][0].needsUpdate = true;
+        controlPointsJXG.current[i][0].update();
+        segmentsJXG.current[i][0].needsUpdate = true;
+        segmentsJXG.current[i][0].update();
+        controlPointsJXG.current[i][1].coords.setCoordinates(JXG.COORDS_BY_USER, [...SVs.numericalControlPoints[i][1]]);
+        controlPointsJXG.current[i][1].needsUpdate = true;
+        controlPointsJXG.current[i][1].update();
+        segmentsJXG.current[i][1].needsUpdate = true;
+        segmentsJXG.current[i][1].update();
+      }
+
+      for (let i = 0; i < SVs.numericalThroughPoints.length; i++) {
+        throughPointsJXG.current[i].visProp["visible"] = !SVs.hidden;
+        throughPointsJXG.current[i].visPropCalc["visible"] = !SVs.hidden;
+      }
+
+
+      if (sourceOfUpdate.sourceInformation &&
+        name in sourceOfUpdate.sourceInformation
+      ) {
+        let ind = sourceOfUpdate.sourceInformation.throughPointMoved;
+        if (ind !== undefined) {
+          board.updateInfobox(throughPointsJXG.current[ind]);
+        } else {
+          ind = sourceOfUpdate.sourceInformation.controlVectorMoved;
+          if (ind !== undefined) {
+            board.updateInfobox(controlPointsJXG.current[ind[0]][ind[1]]);
+          }
+        }
+      }
+
+      previousNumberOfPoints.current = SVs.numericalThroughPoints.length;
+      previousVectorControlDirections.current = [...SVs.vectorControlDirections];
+
+      board.updateRenderer();
     }
-
-    this.previousNumberOfPoints = this.doenetSvData.numericalThroughPoints.length;
-    this.previousVectorControlDirections = [...this.doenetSvData.vectorControlDirections];
-
-    this.props.board.updateRenderer();
-
-
-
   }
 
 
-  render() {
-
-    if (this.props.board) {
-      return <><a name={this.componentName} /></>
-    }
-
-    if (this.doenetSvData.hidden) {
-      return null;
-    }
-
-    // don't think we want to return anything if not in board
-    return <><a name={this.componentName} /></>
+  if (SVs.hidden) {
+    return null;
   }
+
+  // don't think we want to return anything if not in board
+  return <><a name={name} /></>
 
 }
 
@@ -749,3 +781,5 @@ function styleToDash(style, dash) {
     return 0;
   }
 }
+
+

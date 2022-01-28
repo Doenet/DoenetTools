@@ -6,9 +6,7 @@ import { buildParsedExpression, evaluateLogic } from '../utils/booleanLogic';
 export default class NumberComponent extends InlineComponent {
   static componentType = "number";
 
-  // used when referencing this component without prop
-  static useChildrenForReference = false;
-  static get stateVariablesShadowedForReference() { return ["value", "convertBoolean"] };
+  static variableForPlainMacro = "value";
 
   static createAttributesObject(args) {
     let attributes = super.createAttributesObject(args);
@@ -127,7 +125,7 @@ export default class NumberComponent extends InlineComponent {
         let singleNumberOrStringChild = nNumberStrings <= 1 && nMaths + nOthers === 0;
         let singleMathChild = nMaths === 1 && nNumberStrings + nOthers === 0;
 
-        return { newValues: { singleNumberOrStringChild, singleMathChild } };
+        return { setValue: { singleNumberOrStringChild, singleMathChild } };
       }
     }
 
@@ -179,7 +177,7 @@ export default class NumberComponent extends InlineComponent {
         let codePre = dependencyValues.codePre;
 
         for (let child of dependencyValues.allChildren) {
-          if (child.componentType !== "string") {
+          if (typeof child !== "string") {
             // a math, mathList, text, textList, boolean, or booleanList
             let code = codePre + subnum;
 
@@ -207,7 +205,7 @@ export default class NumberComponent extends InlineComponent {
         }
 
         return {
-          newValues: {
+          setValue: {
             mathChildrenByCode,
             numberChildrenByCode,
             textChildrenByCode,
@@ -222,6 +220,13 @@ export default class NumberComponent extends InlineComponent {
     stateVariableDefinitions.value = {
       public: true,
       componentType: "number",
+      hasEssential: true,
+      stateVariablesPrescribingAdditionalAttributes: {
+        fixed: "fixed",
+        displayDigits: "displayDigits",
+        displayDecimals: "displayDecimals",
+        displaySmallAsZero: "displaySmallAsZero",
+      },
       stateVariablesDeterminingDependencies: ["singleNumberOrStringChild"],
       returnDependencies({ stateValues }) {
         if (stateValues.singleNumberOrStringChild) {
@@ -295,12 +300,12 @@ export default class NumberComponent extends InlineComponent {
         if (dependencyValues.singleNumberOrStringChild) {
           if (dependencyValues.numberChild.length === 0) {
             if (dependencyValues.stringChild.length === 0) {
-              return { useEssentialOrDefaultValue: { value: { variablesToCheck: ["value"] } } }
+              return { useEssentialOrDefaultValue: { value: true } }
             }
-            let number = Number(dependencyValues.stringChild[0].stateValues.value);
+            let number = Number(dependencyValues.stringChild[0]);
             if (Number.isNaN(number)) {
               try {
-                number = me.fromAst(textToAst.convert(dependencyValues.stringChild[0].stateValues.value)).evaluate_to_constant();
+                number = me.fromAst(textToAst.convert(dependencyValues.stringChild[0])).evaluate_to_constant();
 
                 if (typeof number === "boolean") {
                   if (dependencyValues.convertBoolean) {
@@ -317,7 +322,7 @@ export default class NumberComponent extends InlineComponent {
                         allChildren: dependencyValues.stringChild
                       },
                       componentInfoObjects
-                    }).newValues.parsedExpression;
+                    }).setValue.parsedExpression;
 
                     number = evaluateLogic({
                       logicTree: parsedExpression.tree,
@@ -342,9 +347,9 @@ export default class NumberComponent extends InlineComponent {
                 number = NaN;
               }
             }
-            return { newValues: { value: number } };
+            return { setValue: { value: number } };
           } else {
-            return { newValues: { value: dependencyValues.numberChild[0].stateValues.value } }
+            return { setValue: { value: dependencyValues.numberChild[0].stateValues.value } }
           }
         } else {
 
@@ -353,7 +358,7 @@ export default class NumberComponent extends InlineComponent {
             // (which could occur if have invalid form)
             // return NaN
             return {
-              newValues: { value: NaN }
+              setValue: { value: NaN }
             }
           }
 
@@ -390,7 +395,7 @@ export default class NumberComponent extends InlineComponent {
             }
 
             if (Number.isFinite(number) || number === Infinity || number === -Infinity) {
-              return { newValues: { value: number } };
+              return { setValue: { value: number } };
 
             }
 
@@ -398,7 +403,7 @@ export default class NumberComponent extends InlineComponent {
           }
 
           if (!dependencyValues.convertBoolean) {
-            return { newValues: { value: NaN } }
+            return { setValue: { value: NaN } }
           }
 
 
@@ -417,7 +422,7 @@ export default class NumberComponent extends InlineComponent {
           // fractionSatisfied will be either 0 or 1 as have not
           // specified matchPartial
 
-          return { newValues: { value: fractionSatisfied } }
+          return { setValue: { value: fractionSatisfied } }
 
         }
       },
@@ -439,12 +444,12 @@ export default class NumberComponent extends InlineComponent {
         }
         return number;
       },
-      inverseDefinition: function ({ desiredStateVariableValues,
+      inverseDefinition: async function ({ desiredStateVariableValues,
         dependencyValues, stateValues, overrideFixed,
       }) {
 
 
-        if (!stateValues.canBeModified && !overrideFixed) {
+        if (!await stateValues.canBeModified && !overrideFixed) {
           return { success: false };
         }
 
@@ -483,7 +488,7 @@ export default class NumberComponent extends InlineComponent {
         if (dependencyValues.numberChild.length === 0) {
           if (dependencyValues.stringChild.length === 0) {
             instructions = [{
-              setStateVariable: "value",
+              setEssentialValue: "value",
               value: desiredValue,
             }];
           } else {
@@ -544,7 +549,7 @@ export default class NumberComponent extends InlineComponent {
         }
 
         return {
-          newValues: {
+          setValue: {
             valueForDisplay: rounded
           }
         }
@@ -566,9 +571,9 @@ export default class NumberComponent extends InlineComponent {
         },
       }),
       definition: function ({ dependencyValues }) {
-        return { newValues: { text: dependencyValues.valueForDisplay.toString() } };
+        return { setValue: { text: dependencyValues.valueForDisplay.toString() } };
       },
-      inverseDefinition({ desiredStateVariableValues, stateValues }) {
+      async inverseDefinition({ desiredStateVariableValues, stateValues }) {
         let desiredNumber = Number(desiredStateVariableValues.text);
         if (Number.isFinite(desiredNumber)) {
           return {
@@ -580,8 +585,8 @@ export default class NumberComponent extends InlineComponent {
           }
         } else {
           let fromText = getFromText({
-            functionSymbols: stateValues.functionSymbols,
-            splitSymbols: stateValues.splitSymbols
+            functionSymbols: await stateValues.functionSymbols,
+            splitSymbols: await stateValues.splitSymbols
           });
 
           let expr;
@@ -643,15 +648,15 @@ export default class NumberComponent extends InlineComponent {
       definition: function ({ dependencyValues }) {
         if (!dependencyValues.modifyIndirectly || dependencyValues.fixed
           || !(dependencyValues.singleNumberOrStringChild || dependencyValues.singleMathChild)) {
-          return { newValues: { canBeModified: false } };
+          return { setValue: { canBeModified: false } };
         }
 
         if (dependencyValues.numberChildModifiable.length === 1 &&
           !dependencyValues.numberChildModifiable[0].stateValues.canBeModified) {
-          return { newValues: { canBeModified: false } };
+          return { setValue: { canBeModified: false } };
         }
 
-        return { newValues: { canBeModified: true } };
+        return { setValue: { canBeModified: true } };
 
       },
     }

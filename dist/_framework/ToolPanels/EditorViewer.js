@@ -1,4 +1,4 @@
-import React, {useEffect} from "../../_snowpack/pkg/react.js";
+import React, {useEffect, useRef} from "../../_snowpack/pkg/react.js";
 import DoenetViewer from "../../viewer/DoenetViewer.js";
 import {
   useRecoilValue,
@@ -102,7 +102,7 @@ export default function EditorViewer() {
       return newObj;
     });
   }
-  return /* @__PURE__ */ React.createElement(DoenetViewer, {
+  return /* @__PURE__ */ React.createElement(MemoDoenetViewer, {
     key: `doenetviewer${refreshNumber}`,
     doenetML: viewerDoenetML,
     flags: {
@@ -123,3 +123,15 @@ export default function EditorViewer() {
     setIsInErrorState
   });
 }
+const MemoDoenetViewer = React.memo(DoenetViewer, (prev, next) => {
+  if (prev.doenetML !== next.doenetML) {
+    return false;
+  }
+  if (prev.requestedVariant?.name !== next.requestedVariant?.name) {
+    return false;
+  }
+  if (prev.requestedVariant?.index !== next.requestedVariant?.index) {
+    return false;
+  }
+  return true;
+});

@@ -161,7 +161,7 @@ describe('Sort Tag Tests', function () {
     })
 
 
-    
+
     cy.log('change second value')
     cy.get('#\\/m2 textarea').type('{end}{backspace}{backspace}{backspace}{backspace}e^5{enter}', { force: true })
 
@@ -375,9 +375,9 @@ describe('Sort Tag Tests', function () {
       expect(text.trim()).equal('(7,1)')
     })
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components["/A"].movePoint({x:-8, y:9})
+      await components["/A"].movePoint({ x: -8, y: 9 })
     })
 
 
@@ -397,9 +397,9 @@ describe('Sort Tag Tests', function () {
       expect(text.trim()).equal('(7,1)')
     })
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components["/B"].movePoint({x:8, y:-3})
+      await components["/B"].movePoint({ x: 8, y: -3 })
     })
 
     cy.get('#\\/P1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -419,9 +419,9 @@ describe('Sort Tag Tests', function () {
     })
 
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components["/C"].movePoint({x:4, y:5})
+      await components["/C"].movePoint({ x: 4, y: 5 })
     })
 
     cy.get('#\\/P1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -441,9 +441,9 @@ describe('Sort Tag Tests', function () {
     })
 
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components["/D"].movePoint({x:-9, y:0})
+      await components["/D"].movePoint({ x: -9, y: 0 })
     })
 
     cy.get('#\\/P1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -462,9 +462,9 @@ describe('Sort Tag Tests', function () {
       expect(text.trim()).equal('(8,−3)')
     })
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let components = Object.assign({}, win.state.components);
-      components["/E"].movePoint({x:-2, y:-1})
+      await components["/E"].movePoint({ x: -2, y: -1 })
     })
 
     cy.get('#\\/P1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -750,7 +750,7 @@ describe('Sort Tag Tests', function () {
     })
 
 
-    
+
     cy.get('#\\/Vyt1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(5,1)')
     })

@@ -83,14 +83,14 @@ export default class AttractToGrid extends ConstraintComponent {
         }
       }),
       definition: ({ dependencyValues }) => ({
-        newValues: {
+        setValue: {
           independentComponentConstraints: dependencyValues.includeGridlines
         }
       })
     }
 
 
-    // Since state variable independentComponentConstraints maybe true,
+    // Since state variable independentComponentConstraints may be true,
     // expect function applyComponentConstraint to be called with 
     // a single component value as the object, for example,  {x1: 13}
 
@@ -137,8 +137,8 @@ export default class AttractToGrid extends ConstraintComponent {
         },
       }),
       definition: ({ dependencyValues }) => ({
-        newValues: {
-          applyComponentConstraint: function (variables) {
+        setValue: {
+          applyComponentConstraint: function ({ variables, scales }) {
 
             // if given the value of x1, apply to constraint to x1
             // and ignore any other arguments (which shouldn't be given)
@@ -151,10 +151,10 @@ export default class AttractToGrid extends ConstraintComponent {
 
               let dx = dependencyValues.dx;
               let xoffset = dependencyValues.xoffset;
-              let x1grid = Math.round((variables.x1 - xoffset) / dx) * dx + xoffset;
+              let x1grid = Math.round((x1 - xoffset) / dx) * dx + xoffset;
 
               if (Number.isFinite(x1grid) &&
-                Math.abs(variables.x1 - x1grid) < dependencyValues.xthreshold
+                Math.abs(x1 - x1grid) < dependencyValues.xthreshold
               ) {
                 return {
                   constrained: true,
@@ -177,9 +177,9 @@ export default class AttractToGrid extends ConstraintComponent {
 
               let dy = dependencyValues.dy;
               let yoffset = dependencyValues.yoffset;
-              let x2grid = Math.round((variables.x2 - yoffset) / dy) * dy + yoffset;
+              let x2grid = Math.round((x2 - yoffset) / dy) * dy + yoffset;
               if (Number.isFinite(x2grid) &&
-                Math.abs(variables.x2 - x2grid) < dependencyValues.ythreshold
+                Math.abs(x2 - x2grid) < dependencyValues.ythreshold
               ) {
                 return {
                   constrained: true,
@@ -203,9 +203,9 @@ export default class AttractToGrid extends ConstraintComponent {
 
               let dz = dependencyValues.dz;
               let zoffset = dependencyValues.zoffset;
-              let x3grid = Math.round((variables.x3 - zoffset) / dz) * dz + zoffset;
+              let x3grid = Math.round((x3 - zoffset) / dz) * dz + zoffset;
               if (Number.isFinite(x3grid) &&
-                Math.abs(variables.x3 - x3grid) < dependencyValues.zthreshold
+                Math.abs(x3 - x3grid) < dependencyValues.zthreshold
               ) {
                 return {
                   constrained: true,
@@ -273,15 +273,16 @@ export default class AttractToGrid extends ConstraintComponent {
         }
       }),
       definition: ({ dependencyValues }) => ({
-        newValues: {
-          applyConstraint: function (variables) {
+        setValue: {
+          applyConstraint: function ({ variables, scales }) {
 
             let newVariables = {};
             let constrained = false;
 
             for (let varName in variables) {
               let result = dependencyValues.applyComponentConstraint({
-                [varName]: variables[varName]
+                variables: { [varName]: variables[varName] },
+                scales
               })
               if (result.constrained) {
                 constrained = true;

@@ -11,12 +11,12 @@ export default class MathOperatorOneInput extends MathComponent {
 
     stateVariableDefinitions.mathOperator = {
       returnDependencies: () => ({}),
-      definition: () => ({ newValues: { mathOperator: x => me.fromAst('\uff3f') } })
+      definition: () => ({ setValue: { mathOperator: x => me.fromAst('\uff3f') } })
     }
 
     stateVariableDefinitions.inverseMathOperator = {
       returnDependencies: () => ({}),
-      definition: () => ({ newValues: { inverseMathOperator: null } })
+      definition: () => ({ setValue: { inverseMathOperator: null } })
     }
 
     // rename unnormalizedValue to unnormalizedValuePreOperator
@@ -45,7 +45,7 @@ export default class MathOperatorOneInput extends MathComponent {
       definition: function ({ dependencyValues }) {
 
         return {
-          newValues: {
+          setValue: {
             unnormalizedValue: dependencyValues.mathOperator(
               dependencyValues.value
             )
@@ -97,7 +97,7 @@ export default class MathOperatorOneInput extends MathComponent {
           canBeModified = false;
         }
 
-        return { newValues: { canBeModified } }
+        return { setValue: { canBeModified } }
       }
     }
 

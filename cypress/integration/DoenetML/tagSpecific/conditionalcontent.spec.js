@@ -205,7 +205,7 @@ describe('Conditional Content Tag Tests', function () {
   <answer>
     <choiceinput inline="true" randomizeOrder><choice>stable</choice><choice>unstable</choice></choiceinput>
     <award><when>
-      <copy prop="selectedvalue" tname="_choiceinput1" />
+      <copy prop="selectedvalue" target="_choiceinput1" />
       =
       <text>
         <conditionalcontent condition="abs($m) < 1" >
@@ -286,7 +286,7 @@ describe('Conditional Content Tag Tests', function () {
   <answer>
     <mathinput name="x" />
     <award><when>
-      <copy prop="immediateValue" tname="x" />
+      <copy prop="immediateValue" target="x" />
       =
       <math>
         <conditionalcontent condition="$c = positive" >
@@ -368,7 +368,7 @@ describe('Conditional Content Tag Tests', function () {
     
     <p name="pb">$b</p>
 
-    <p name="p2" ><copy tname="_conditionalcontent1" assignNames="c d" /></p>
+    <p name="p2" ><copy target="_conditionalcontent1" assignNames="c d" /></p>
 
     <p name="pc">$c</p>
     
@@ -428,11 +428,11 @@ describe('Conditional Content Tag Tests', function () {
       <else><text>mouse</text></else>
     </conditionalContent></p>
 
-    <p name="pa1">a1: <copy tname="a" assignNames="(a1)" /></p>
+    <p name="pa1">a1: <copy target="a" assignNames="(a1)" /></p>
 
-    <p name="pb" >b: <copy tname="_conditionalcontent1" assignNames="(b)" /></p>
+    <p name="pb" >b: <copy target="_conditionalcontent1" assignNames="(b)" /></p>
 
-    <p name="pb1">b1: <copy tname="b" assignNames="b1" /></p>
+    <p name="pb1">b1: <copy target="b" assignNames="b1" /></p>
 
     `}, "*");
     });
@@ -511,11 +511,11 @@ describe('Conditional Content Tag Tests', function () {
       <else><text>mouse</text></else>
     </conditionalContent></p>
 
-    <p name="pa1">a1: <copy tname="a" assignNames="a1" /></p>
+    <p name="pa1">a1: <copy target="a" assignNames="a1" /></p>
 
-    <p name="pb" >b: <copy tname="_conditionalcontent1" assignNames="b" /></p>
+    <p name="pb" >b: <copy target="_conditionalcontent1" assignNames="b" /></p>
 
-    <p name="pb1">b1: <copy tname="b" assignNames="(b1)" /></p>
+    <p name="pb1">b1: <copy target="b" assignNames="(b1)" /></p>
 
     `}, "*");
     });
@@ -594,13 +594,13 @@ describe('Conditional Content Tag Tests', function () {
       <else><text>mouse</text></else>
     </conditionalContent></p>
 
-    <p name="pa1">a1: <copy tname="a" assignNames="(a1)" /></p>
-    <p name="paa1">aa1: <copy tname="aa" assignNames="(aa1)" /></p>
+    <p name="pa1">a1: <copy target="a" assignNames="(a1)" /></p>
+    <p name="paa1">aa1: <copy target="aa" assignNames="(aa1)" /></p>
 
-    <p name="pb" >b,bb: <copy tname="_conditionalcontent1" assignNames="(b) (bb)" /></p>
+    <p name="pb" >b,bb: <copy target="_conditionalcontent1" assignNames="(b) (bb)" /></p>
 
-    <p name="pb1">b1: <copy tname="b" assignNames="b1" /></p>
-    <p name="pbb1">bb1: <copy tname="bb" assignNames="bb1" /></p>
+    <p name="pb1">b1: <copy target="b" assignNames="b1" /></p>
+    <p name="pbb1">bb1: <copy target="bb" assignNames="bb1" /></p>
 
     `}, "*");
     });
@@ -704,11 +704,11 @@ describe('Conditional Content Tag Tests', function () {
       <else><text>mouse</text></else>
     </conditionalContent></p>
 
-    <p name="pa1">a1: <copy tname="a" assignNames="(a1)" /></p>
+    <p name="pa1">a1: <copy target="a" assignNames="(a1)" /></p>
 
-    <p name="pb" >b: <copy tname="_conditionalcontent1" assignNames="(b)" /></p>
+    <p name="pb" >b: <copy target="_conditionalcontent1" assignNames="(b)" /></p>
 
-    <p name="pb1">b1: <copy tname="b" assignNames="b1" /></p>
+    <p name="pb1">b1: <copy target="b" assignNames="b1" /></p>
 
     `}, "*");
     });
@@ -791,24 +791,24 @@ describe('Conditional Content Tag Tests', function () {
       </else>
     </conditionalContent></p>
 
-    <p>a1: <copy tname="a" assignNames="a1" /></p>
-    <p>b1: <copy tname="b" assignNames="b1" /></p>
-    <p>c1: <copy tname="c" assignNames="c1" /></p>
-    <p>d1: <copy tname="d" assignNames="d1" /></p>
+    <p>a1: <copy target="a" assignNames="a1" /></p>
+    <p>b1: <copy target="b" assignNames="b1" /></p>
+    <p>c1: <copy target="c" assignNames="c1" /></p>
+    <p>d1: <copy target="d" assignNames="d1" /></p>
 
-    <p>copy: <copy name="cp1" tname="_conditionalcontent1" assignNames="(e f g h i)" /></p>
+    <p>copy: <copy name="cp1" target="_conditionalcontent1" assignNames="(e f g h i)" /></p>
 
-    <p>e1: <copy tname="e" assignNames="e1" /></p>
-    <p>f1: <copy tname="f" assignNames="f1" /></p>
-    <p>g1: <copy tname="g" assignNames="g1" /></p>
-    <p>h1: <copy tname="h" assignNames="h1" /></p>
-    <p>i1: <copy tname="i" assignNames="i1" /></p>
+    <p>e1: <copy target="e" assignNames="e1" /></p>
+    <p>f1: <copy target="f" assignNames="f1" /></p>
+    <p>g1: <copy target="g" assignNames="g1" /></p>
+    <p>h1: <copy target="h" assignNames="h1" /></p>
+    <p>i1: <copy target="i" assignNames="i1" /></p>
 
-    <p>copied copy: <copy tname="cp1" assignNames="(j k l)" /></p>
+    <p>copied copy: <copy target="cp1" assignNames="(j k l)" /></p>
 
-    <p>j1: <copy tname="j" assignNames="j1" /></p>
-    <p>k1: <copy tname="k" assignNames="k1" /></p>
-    <p>l1: <copy tname="l" assignNames="l1" /></p>
+    <p>j1: <copy target="j" assignNames="j1" /></p>
+    <p>k1: <copy target="k" assignNames="k1" /></p>
+    <p>l1: <copy target="l" assignNames="l1" /></p>
     `}, "*");
     });
 
@@ -1050,24 +1050,24 @@ describe('Conditional Content Tag Tests', function () {
       </else>
     </conditionalContent></p>
 
-    <p>a1: <copy tname="s1/a" assignNames="a1" /></p>
-    <p>b1: <copy tname="s1/b" assignNames="b1" /></p>
-    <p>c1: <copy tname="s1/c" assignNames="c1" /></p>
-    <p>d1: <copy tname="s1/d" assignNames="d1" /></p>
+    <p>a1: <copy target="s1/a" assignNames="a1" /></p>
+    <p>b1: <copy target="s1/b" assignNames="b1" /></p>
+    <p>c1: <copy target="s1/c" assignNames="c1" /></p>
+    <p>d1: <copy target="s1/d" assignNames="d1" /></p>
 
-    <p>copy: <copy name="s2" tname="s1" assignNames="(e f g h i)" /></p>
+    <p>copy: <copy name="s2" target="s1" assignNames="(e f g h i)" /></p>
 
-    <p>e1: <copy tname="e" assignNames="e1" /></p>
-    <p>f1: <copy tname="f" assignNames="f1" /></p>
-    <p>g1: <copy tname="g" assignNames="g1" /></p>
-    <p>h1: <copy tname="h" assignNames="h1" /></p>
-    <p>i1: <copy tname="i" assignNames="i1" /></p>
+    <p>e1: <copy target="e" assignNames="e1" /></p>
+    <p>f1: <copy target="f" assignNames="f1" /></p>
+    <p>g1: <copy target="g" assignNames="g1" /></p>
+    <p>h1: <copy target="h" assignNames="h1" /></p>
+    <p>i1: <copy target="i" assignNames="i1" /></p>
 
-    <p>copied copy: <copy name="s3" tname="s2" assignNames="(j k l)" newNamespace /></p>
+    <p>copied copy: <copy name="s3" target="s2" assignNames="(j k l)" newNamespace /></p>
 
-    <p>j1: <copy tname="s3/j" assignNames="j1" /></p>
-    <p>k1: <copy tname="s3/k" assignNames="k1" /></p>
-    <p>l1: <copy tname="s3/l" assignNames="l1" /></p>
+    <p>j1: <copy target="s3/j" assignNames="j1" /></p>
+    <p>k1: <copy target="s3/k" assignNames="k1" /></p>
+    <p>l1: <copy target="s3/l" assignNames="l1" /></p>
     `}, "*");
     });
 
@@ -1305,19 +1305,19 @@ describe('Conditional Content Tag Tests', function () {
     <mathinput name="n" />
     <p>original: <conditionalContent assignNames="(a b c)" maximumNumberToShow="1">
       <case condition="$n<0" >
-        <copy tname="x1" />
-        <copy tname="y1" />
-        <math simplify>3<math name="a1">x</math><math name="b1">a</math> + <copy tname="a1" /><copy tname="b1" /></math>
+        <copy target="x1" />
+        <copy target="y1" />
+        <math simplify>3<math name="a1">x</math><math name="b1">a</math> + <copy target="a1" /><copy target="b1" /></math>
       </case>
       <case condition="$n <= 1" >
-        <copy tname="x2" />
-        <copy tname="y2" />
-        <math simplify>4<math name="a2">y</math><math name="b2">b</math> + <copy tname="a2" /><copy tname="b2" /></math>
+        <copy target="x2" />
+        <copy target="y2" />
+        <math simplify>4<math name="a2">y</math><math name="b2">b</math> + <copy target="a2" /><copy target="b2" /></math>
       </case>
       <else>
-        <copy tname="x3" />
-        <copy tname="y3" />
-        <math simplify>5<math name="a3">z</math><math name="b3">c</math> + <copy tname="a3" /><copy tname="b3" /></math>
+        <copy target="x3" />
+        <copy target="y3" />
+        <math simplify>5<math name="a3">z</math><math name="b3">c</math> + <copy target="a3" /><copy target="b3" /></math>
       </else>
     </conditionalContent></p>
 
@@ -1326,17 +1326,17 @@ describe('Conditional Content Tag Tests', function () {
     <text name="y3">bush</text>
 
     <p>Selected options repeated</p>
-    <copy assignNames="aa" tname="a" />
-    <copy assignNames="bb" tname="b" />
-    <copy assignNames="cc" tname="c" />
+    <copy assignNames="aa" target="a" />
+    <copy assignNames="bb" target="b" />
+    <copy assignNames="cc" target="c" />
 
     <p>Whole thing repeated</p>
-    <copy tname="_conditionalcontent1" assignNames="(d e f)" />
+    <copy target="_conditionalcontent1" assignNames="(d e f)" />
 
     <p>Selected options repeated from copy</p>
-    <copy assignNames="dd" tname="d" />
-    <copy assignNames="ee" tname="e" />
-    <copy assignNames="ff" tname="f" />
+    <copy assignNames="dd" target="d" />
+    <copy assignNames="ee" target="e" />
+    <copy assignNames="ff" target="f" />
 
 
     `}, "*");
@@ -1488,19 +1488,19 @@ describe('Conditional Content Tag Tests', function () {
     <mathinput name="n" />
     <p>original: <conditionalContent assignNames="a" maximumNumberToShow="1">
       <case condition="$n<0" newNamespace >
-        <copy tname="../x1" assignNames="animal" />
-        <copy tname="../y1" assignNames="plant" />
-        <math simplify name="p">3<math name="x">x</math><math name="a">a</math> + <copy tname="x" /><copy tname="a" /></math>
+        <copy target="../x1" assignNames="animal" />
+        <copy target="../y1" assignNames="plant" />
+        <math simplify name="p">3<math name="x">x</math><math name="a">a</math> + <copy target="x" /><copy target="a" /></math>
       </case>
       <case condition="$n <= 1" newNamespace >
-        <copy tname="../x2" assignNames="animal" />
-        <copy tname="../y2" assignNames="plant" />
-        <math simplify name="p">4<math name="x">y</math><math name="a">b</math> + <copy tname="x" /><copy tname="a" /></math>
+        <copy target="../x2" assignNames="animal" />
+        <copy target="../y2" assignNames="plant" />
+        <math simplify name="p">4<math name="x">y</math><math name="a">b</math> + <copy target="x" /><copy target="a" /></math>
       </case>
       <else newNamespace>
-        <copy tname="../x3" assignNames="animal" />
-        <copy tname="../y3" assignNames="plant" />
-        <math simplify name="p">5<math name="x">z</math><math name="a">c</math> + <copy tname="x" /><copy tname="a" /></math>
+        <copy target="../x3" assignNames="animal" />
+        <copy target="../y3" assignNames="plant" />
+        <math simplify name="p">5<math name="x">z</math><math name="a">c</math> + <copy target="x" /><copy target="a" /></math>
       </else>
     </conditionalContent></p>
 
@@ -1509,21 +1509,21 @@ describe('Conditional Content Tag Tests', function () {
     <text name="y3">bush</text>
 
     <p>Selected options repeated</p>
-    <copy assignNames="animal" tname="a/animal" />
-    <copy assignNames="plant" tname="a/plant" />
-    <copy assignNames="p" tname="a/p" />
-    <copy assignNames="xx" tname="a/x" />
-    <copy assignNames="aa" tname="a/a" />
+    <copy assignNames="animal" target="a/animal" />
+    <copy assignNames="plant" target="a/plant" />
+    <copy assignNames="p" target="a/p" />
+    <copy assignNames="xx" target="a/x" />
+    <copy assignNames="aa" target="a/a" />
 
     <p>Whole thing repeated</p>
-    <copy tname="_conditionalcontent1" assignNames="b" />
+    <copy target="_conditionalcontent1" assignNames="b" />
 
     <p>Selected options repeated from copy</p>
-    <copy assignNames="animalcopy" tname="b/animal" />
-    <copy assignNames="plantcopy" tname="b/plant" />
-    <copy assignNames="pcopy" tname="b/p" />
-    <copy assignNames="xxcopy" tname="b/x" />
-    <copy assignNames="aacopy" tname="b/a" />
+    <copy assignNames="animalcopy" target="b/animal" />
+    <copy assignNames="plantcopy" target="b/plant" />
+    <copy assignNames="pcopy" target="b/p" />
+    <copy assignNames="xxcopy" target="b/x" />
+    <copy assignNames="aacopy" target="b/a" />
 
     `}, "*");
     });
@@ -1700,19 +1700,19 @@ describe('Conditional Content Tag Tests', function () {
     <mathinput name="n" />
     <p>original: <conditionalContent name="s" assignNames="a" maximumNumberToShow="1" newNamespace>
       <case newNamespace condition="$(../n) < 0" >
-        <copy tname="../../x1" assignNames="animal" />
-        <copy tname="../../y1" assignNames="plant" />
-        <math simplify name="p">3<math name="x">x</math><math name="a">a</math> + <copy tname="x" /><copy tname="a" /></math>
+        <copy target="../../x1" assignNames="animal" />
+        <copy target="../../y1" assignNames="plant" />
+        <math simplify name="p">3<math name="x">x</math><math name="a">a</math> + <copy target="x" /><copy target="a" /></math>
       </case>
       <case newNamespace condition="$(../n) <= 1" >
-        <copy tname="../../x2" assignNames="animal" />
-        <copy tname="../../y2" assignNames="plant" />
-        <math simplify name="p">4<math name="x">y</math><math name="a">b</math> + <copy tname="x" /><copy tname="a" /></math>
+        <copy target="../../x2" assignNames="animal" />
+        <copy target="../../y2" assignNames="plant" />
+        <math simplify name="p">4<math name="x">y</math><math name="a">b</math> + <copy target="x" /><copy target="a" /></math>
       </case>
       <else newNamespace>
-        <copy tname="../../x3" assignNames="animal" />
-        <copy tname="../../y3" assignNames="plant" />
-        <math simplify name="p">5<math name="x">z</math><math name="a">c</math> + <copy tname="x" /><copy tname="a" /></math>
+        <copy target="../../x3" assignNames="animal" />
+        <copy target="../../y3" assignNames="plant" />
+        <math simplify name="p">5<math name="x">z</math><math name="a">c</math> + <copy target="x" /><copy target="a" /></math>
       </else>
     </conditionalContent></p>
 
@@ -1721,21 +1721,21 @@ describe('Conditional Content Tag Tests', function () {
     <text name="y3">bush</text>
 
     <p>Selected options repeated</p>
-    <copy assignNames="animal" tname="s/a/animal" />
-    <copy assignNames="plant" tname="s/a/plant" />
-    <copy assignNames="p" tname="s/a/p" />
-    <copy assignNames="xx" tname="s/a/x" />
-    <copy assignNames="aa" tname="s/a/a" />
+    <copy assignNames="animal" target="s/a/animal" />
+    <copy assignNames="plant" target="s/a/plant" />
+    <copy assignNames="p" target="s/a/p" />
+    <copy assignNames="xx" target="s/a/x" />
+    <copy assignNames="aa" target="s/a/a" />
 
     <p>Whole thing repeated</p>
-    <copy tname="s" assignNames="b" />
+    <copy target="s" assignNames="b" />
 
     <p>Selected options repeated from copy</p>
-    <copy assignNames="animalcopy" tname="b/animal" />
-    <copy assignNames="plantcopy" tname="b/plant" />
-    <copy assignNames="pcopy" tname="b/p" />
-    <copy assignNames="xxcopy" tname="b/x" />
-    <copy assignNames="aacopy" tname="b/a" />
+    <copy assignNames="animalcopy" target="b/animal" />
+    <copy assignNames="plantcopy" target="b/plant" />
+    <copy assignNames="pcopy" target="b/p" />
+    <copy assignNames="xxcopy" target="b/x" />
+    <copy assignNames="aacopy" target="b/a" />
 
     `}, "*");
     });
@@ -1916,19 +1916,19 @@ describe('Conditional Content Tag Tests', function () {
     <mathinput name="n" />
     <p>original: <conditionalContent assignNames="a" maximumNumberToShow="1">
       <case condition="$n<0" >
-        <copy tname="x1" assignNames="theanimal" />
-        <copy tname="y1" assignNames="theplant" />
-        <math simplify name="thep">3<math name="thex">x</math><math name="thea">a</math> + <copy tname="thex" /><copy tname="thea" /></math>
+        <copy target="x1" assignNames="theanimal" />
+        <copy target="y1" assignNames="theplant" />
+        <math simplify name="thep">3<math name="thex">x</math><math name="thea">a</math> + <copy target="thex" /><copy target="thea" /></math>
       </case>
       <case newNamespace condition="$n <= 1" >
-        <copy tname="../x2" assignNames="animal" />
-        <copy tname="../y2" assignNames="plant" />
-        <math simplify name="p">4<math name="x">y</math><math name="a">b</math> + <copy tname="x" /><copy tname="a" /></math>
+        <copy target="../x2" assignNames="animal" />
+        <copy target="../y2" assignNames="plant" />
+        <math simplify name="p">4<math name="x">y</math><math name="a">b</math> + <copy target="x" /><copy target="a" /></math>
       </case>
       <else newNamespace>
-        <copy tname="../x3" assignNames="animal" />
-        <copy tname="../y3" assignNames="plant" />
-        <math simplify name="p">5<math name="x">z</math><math name="a">c</math> + <copy tname="x" /><copy tname="a" /></math>
+        <copy target="../x3" assignNames="animal" />
+        <copy target="../y3" assignNames="plant" />
+        <math simplify name="p">5<math name="x">z</math><math name="a">c</math> + <copy target="x" /><copy target="a" /></math>
       </else>
     </conditionalContent></p>
 
@@ -1937,21 +1937,21 @@ describe('Conditional Content Tag Tests', function () {
     <text name="y3">bush</text>
 
     <p>Selected options repeated</p>
-    <copy assignNames="animal" tname="a/animal" />
-    <copy assignNames="plant" tname="a/plant" />
-    <copy assignNames="p" tname="a/p" />
-    <copy assignNames="xx" tname="a/x" />
-    <copy assignNames="aa" tname="a/a" />
+    <copy assignNames="animal" target="a/animal" />
+    <copy assignNames="plant" target="a/plant" />
+    <copy assignNames="p" target="a/p" />
+    <copy assignNames="xx" target="a/x" />
+    <copy assignNames="aa" target="a/a" />
 
     <p>Whole thing repeated</p>
-    <p name="repeat"><copy tname="_conditionalcontent1" assignNames="b" /></p>
+    <p name="repeat"><copy target="_conditionalcontent1" assignNames="b" /></p>
 
     <p>Selected options repeated from copy</p>
-    <copy assignNames="animalcopy" tname="b/animal" />
-    <copy assignNames="plantcopy" tname="b/plant" />
-    <copy assignNames="pcopy" tname="b/p" />
-    <copy assignNames="xxcopy" tname="b/x" />
-    <copy assignNames="aacopy" tname="b/a" />
+    <copy assignNames="animalcopy" target="b/animal" />
+    <copy assignNames="plantcopy" target="b/plant" />
+    <copy assignNames="pcopy" target="b/p" />
+    <copy assignNames="xxcopy" target="b/x" />
+    <copy assignNames="aacopy" target="b/a" />
 
     `}, "*");
     });
@@ -2155,23 +2155,23 @@ describe('Conditional Content Tag Tests', function () {
     <conditionalContent assignNames="a" maximumNumberToShow="1">
       <case condition="$n<0" newNamespace>
         <p>What is your favorite animal? <textinput name="response" /></p>
-        <p>I like <copy prop="value" tname="response" />, too.</p>
+        <p>I like <copy prop="value" target="response" />, too.</p>
       </case>
       <case condition="$n <= 1" newNamespace >
         <p>What is your name? <textinput name="response" /></p>
-        <p>Hello, <copy prop="value" tname="response" />!</p>
+        <p>Hello, <copy prop="value" target="response" />!</p>
       </case>
       <else newNamespace>
         <p>Anything else? <textinput name="response" /></p>
-        <p>To repeat: <copy prop="value" tname="response" />.</p>
+        <p>To repeat: <copy prop="value" target="response" />.</p>
       </else>
     </conditionalContent>
     
-    <p>The response: <copy tname="a/response" prop="value" /></p>
+    <p>The response: <copy target="a/response" prop="value" /></p>
     
-    <copy name="sc2" tname="_conditionalcontent1" assignNames="b" />
+    <copy name="sc2" target="_conditionalcontent1" assignNames="b" />
     
-    <p>The response one more time: <copy tname="b/response" prop="value" /></p>
+    <p>The response one more time: <copy target="b/response" prop="value" /></p>
     `}, "*");
     });
 
@@ -2234,23 +2234,23 @@ describe('Conditional Content Tag Tests', function () {
     <conditionalContent assignNames="(a b)" maximumNumberToShow="1">
       <case condition="$n<0" >
         <p newNamespace name="panimal">What is your favorite animal? <textinput name="response" /></p>
-        <p newNamespace>I like <copy prop="value" tname="../panimal/response" />, too.</p>
+        <p newNamespace>I like <copy prop="value" target="../panimal/response" />, too.</p>
       </case>
       <case condition="$n <= 1" >
         <p newNamespace name="pname">What is your name? <textinput name="response" /></p>
-        <p newNamespace>Hello, <copy prop="value" tname="../pname/response" />!</p>
+        <p newNamespace>Hello, <copy prop="value" target="../pname/response" />!</p>
       </case>
       <else>
         <p newNamespace name="pelse">Anything else? <textinput name="response" /></p>
-        <p newNamespace>To repeat: <copy prop="value" tname="../pelse/response" />.</p>
+        <p newNamespace>To repeat: <copy prop="value" target="../pelse/response" />.</p>
       </else>
     </conditionalContent>
     
-    <p name="pResponse">The response: <copy tname="a/response" prop="value" /></p>
+    <p name="pResponse">The response: <copy target="a/response" prop="value" /></p>
     
-    <copy name="sc2" tname="_conditionalcontent1" assignNames="(c d)" />
+    <copy name="sc2" target="_conditionalcontent1" assignNames="(c d)" />
     
-    <p name="pResponse2">The response one more time: <copy tname="c/response" prop="value" /></p>
+    <p name="pResponse2">The response one more time: <copy target="c/response" prop="value" /></p>
     `}, "*");
     });
 
@@ -2316,15 +2316,15 @@ describe('Conditional Content Tag Tests', function () {
     </conditionalContent></p>
     
     <p><conditionalContent>
-      <copy tname="positiveCase" componentType="case" />
+      <copy target="positiveCase" componentType="case" />
       <case condition="$n<0" ><text>negative</text></case>
       <else><text>neither</text></else>
     </conditionalContent></p>
     
     
-    <p><copy tname="_conditionalcontent1" /></p>
+    <p><copy target="_conditionalcontent1" /></p>
 
-    <p><copy tname="_conditionalcontent2" /></p>
+    <p><copy target="_conditionalcontent2" /></p>
 
     `}, "*");
     });
@@ -2378,12 +2378,12 @@ describe('Conditional Content Tag Tests', function () {
     <p><conditionalContent>
       <case condition="$n<0" ><text>hello</text></case>
       <case condition="$n>0" ><text>oops</text></case>
-      <copy tname="bye" componentType="else" />
+      <copy target="bye" componentType="else" />
     </conditionalContent></p>
     
-    <p><copy tname="_conditionalcontent1" /></p>
+    <p><copy target="_conditionalcontent1" /></p>
 
-    <p><copy tname="_conditionalcontent2" /></p>
+    <p><copy target="_conditionalcontent2" /></p>
 
     `}, "*");
     });
@@ -2441,8 +2441,8 @@ describe('Conditional Content Tag Tests', function () {
       <case condition="$n<=1"><text>cat</text></case>
       <else><text>mouse</text></else>
     </conditionalContent></p>
-    <p name="pa1">a1: <copy tname="a" assignNames="(a1)" /></p>
-    <p name="pb1">b1: <copy tname="b" assignNames="(b1)" /></p>
+    <p name="pa1">a1: <copy target="a" assignNames="(a1)" /></p>
+    <p name="pb1">b1: <copy target="b" assignNames="(b1)" /></p>
     `}, "*");
     });
 
@@ -2502,12 +2502,12 @@ describe('Conditional Content Tag Tests', function () {
     <else>The $animal2 $verb2.</else>
   </conditionalContent></p>
 
-  <p name="pa1">a1: <copy tname="a" assignNames="((a11) (a12))" /></p>
+  <p name="pa1">a1: <copy target="a" assignNames="((a11) (a12))" /></p>
 
-  <p name="ppieces" >pieces: <copy tname="_conditionalcontent1" assignNames="(b c)" /></p>
+  <p name="ppieces" >pieces: <copy target="_conditionalcontent1" assignNames="(b c)" /></p>
 
-  <p name="pb1">b1: <copy tname="b" assignNames="b1" /></p>
-  <p name="pc1">c1: <copy tname="c" assignNames="c1" /></p>
+  <p name="pb1">b1: <copy target="b" assignNames="b1" /></p>
+  <p name="pc1">c1: <copy target="c" assignNames="c1" /></p>
 
   `}, "*");
     });
@@ -2555,7 +2555,7 @@ describe('Conditional Content Tag Tests', function () {
 
   })
 
-  it('copy with invalid tname gets expanded', () => {
+  it('copy with invalid target gets expanded', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
@@ -2563,7 +2563,7 @@ describe('Conditional Content Tag Tests', function () {
   <mathinput name="n" />
   before
   <conditionalContent assignNames='a'>
-    <case condition="$n=1" newNamespace>nothing: <copy tname="nada" name="nothing" /></case>
+    <case condition="$n=1" newNamespace>nothing: <copy target="nada" name="nothing" /></case>
   </conditionalContent>
   after
   `}, "*");

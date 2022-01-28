@@ -10,7 +10,7 @@ export default class ConstraintComponent extends BaseComponent {
 
     stateVariableDefinitions.independentComponentConstraints = {
       returnDependencies: () => ({}),
-      definition: () => ({ newValues: { independentComponentConstraints: false } })
+      definition: () => ({ setValue: { independentComponentConstraints: false } })
     }
 
     return stateVariableDefinitions;

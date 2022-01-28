@@ -52,7 +52,7 @@ export default class ConstrainToGrid extends ConstraintComponent {
 
     stateVariableDefinitions.independentComponentConstraints = {
       returnDependencies: () => ({}),
-      definition: () => ({ newValues: { independentComponentConstraints: true } })
+      definition: () => ({ setValue: { independentComponentConstraints: true } })
     }
 
 
@@ -92,8 +92,8 @@ export default class ConstrainToGrid extends ConstraintComponent {
         },
       }),
       definition: ({ dependencyValues }) => ({
-        newValues: {
-          applyComponentConstraint: function (variables) {
+        setValue: {
+          applyComponentConstraint: function ({ variables, scales }) {
 
             // if given the value of x1, apply to constraint to x1
             // and ignore any other arguments (which shouldn't be given)
@@ -107,7 +107,7 @@ export default class ConstrainToGrid extends ConstraintComponent {
 
               let dx = dependencyValues.dx;
               let xoffset = dependencyValues.xoffset;
-              let x1constrained = Math.round((variables.x1 - xoffset) / dx) * dx + xoffset;
+              let x1constrained = Math.round((x1 - xoffset) / dx) * dx + xoffset;
               if (Number.isFinite(x1constrained)) {
                 return {
                   constrained: true,
@@ -130,7 +130,7 @@ export default class ConstrainToGrid extends ConstraintComponent {
 
               let dy = dependencyValues.dy;
               let yoffset = dependencyValues.yoffset;
-              let x2constrained = Math.round((variables.x2 - yoffset) / dy) * dy + yoffset;
+              let x2constrained = Math.round((x2 - yoffset) / dy) * dy + yoffset;
               if (Number.isFinite(x2constrained)) {
                 return {
                   constrained: true,
@@ -154,7 +154,7 @@ export default class ConstrainToGrid extends ConstraintComponent {
 
               let dz = dependencyValues.dz;
               let zoffset = dependencyValues.zoffset;
-              let x3constrained = Math.round((variables.x3 - zoffset) / dz) * dz + zoffset;
+              let x3constrained = Math.round((x3 - zoffset) / dz) * dz + zoffset;
               if (Number.isFinite(x3constrained)) {
                 return {
                   constrained: true,

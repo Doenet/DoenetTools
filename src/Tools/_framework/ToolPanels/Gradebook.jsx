@@ -18,8 +18,8 @@ import axios from "axios";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSort, faSortUp, faSortDown } from '@fortawesome/free-solid-svg-icons';
 
-import { pageToolViewAtom, searchParamAtomFamily } from '../NewToolRoot';
-import { use } from "chai";
+import { pageToolViewAtom, searchParamAtomFamily, suppressMenusAtom } from '../NewToolRoot';
+import { effectiveRoleAtom } from "../../../_reactComponents/PanelHeaderComponents/RoleDropdown";
 
 
 // // React Table Styling
@@ -539,25 +539,23 @@ function DefaultColumnFilter({
     )
 }
 
-const getUserId = (students, name) => {
-    for(let userId in students){
-        //console.log(userId, students[userId].firstName);
-        
-        if(students[userId].firstName + " " + students[userId].lastName == name){
-          return userId;
-        }
-      }
-    return -1;
-} 
-
 function GradebookOverview() {
     //const { openOverlay, activateMenuPanel } = useToolControlHelper();
     let driveIdValue = useRecoilValue(driveId)
     const setPageToolView = useSetRecoilState(pageToolViewAtom);
     let students = useRecoilValueLoadable(studentData)
     let assignments = useRecoilValueLoadable(assignmentData);
-    let overView = useRecoilValueLoadable(overViewData)
+    let overView = useRecoilValueLoadable(overViewData);
+    let effectiveRole = useRecoilValue(effectiveRoleAtom);
+    const setSuppressMenus = useSetRecoilState(suppressMenusAtom);
 
+    useEffect(()=>{
+        if (effectiveRole === 'student'){
+            setSuppressMenus(["GradeDownload"])
+        }else{
+            setSuppressMenus([])
+        }
+    },[effectiveRole,setSuppressMenus])
 // console.log(">>>>students",students)
 // console.log(">>>>assignments",assignments)
 // console.log(">>>>overView",overView)
