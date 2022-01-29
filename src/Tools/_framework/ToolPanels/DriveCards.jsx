@@ -105,8 +105,8 @@ const DriveCardWrapper = (props) => {
 
   const transitions = useTransition(driveCardItems, {
     key: (item) => item.driveId,
-    from: ({ opacity: 0}),
-    enter: ({ opacity: 1 }),
+    from: ({ opacity: 0 }),
+    enter: ({ x, y, width, height }) => ({ x, y, width, height, opacity: 1 }),
     update: ({ x, y, width, height }) => ({ x, y, width, height }),
     leave: { height: 0, opacity: 0 },
     config: { mass: 5, tension: 500, friction: 100 },
