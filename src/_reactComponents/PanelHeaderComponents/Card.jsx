@@ -1,19 +1,15 @@
-import React, { useState ,useRef, useEffect} from 'react';
-import { doenetComponentForegroundInactive, doenetComponentForegroundActive, doenetComponentBackgroundActive } from "./theme.js";
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCode } from '@fortawesome/free-solid-svg-icons';
-import Button from './Button.jsx';
+import React from 'react';
+// import { doenetComponentBackgroundInactive } from '../../Tools/_framework/temp/theme';
 
 
 export default function Card(props) {
 
-    const [labelVisible, setLabelVisible] = useState(props.label ? 'static' : 'none');
-    const [align, setAlign] = useState(props.vertical ? 'static' : 'flex');
+    const labelVisible = props.label ? 'static' : 'none';
+    const align = props.vertical ? 'static' : 'flex';
 
     var card = {
-        // boxShadow: `0 4px 8px 0 ${doenetComponentForegroundInactive}`,
+        // boxShadow: `0 4px 8px 0 ${doenetComponentBackgroundInactive}`,
         backgroundImage: `linear-gradient(to bottom left, white, white, white, rgb(143, 184, 222))`,
-        // backgroundColor: `${doenetComponentForegroundActive}`,
         transition: '0.3s',
         borderRadius: '5px',
         width: '190px',
@@ -40,18 +36,9 @@ export default function Card(props) {
     }
     var container = {
         display: `${align}`, 
-        // width: '235px',
         alignItems:'center',
     }
-    // var circle = {
-    //     height: '50px',
-    //     width: '50px',
-    //     backgroundColor: `${doenetComponentBackgroundActive}`,
-    //     borderRadius: '50%',
-    //     position: 'absolute',
-    //     top: '40px',
-    //     left: '350px'
-    // }
+
     if (props.value){
         title.value = props.value;
     }
