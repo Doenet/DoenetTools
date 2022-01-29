@@ -63,6 +63,15 @@ export default class CodeViewer extends BlockComponent {
     return sugarInstructions;
   }
 
+  static returnChildGroups() {
+
+    return [{
+      group: "children",
+      componentTypes: ["_base"]
+    }]
+
+  }
+
   static returnStateVariableDefinitions() {
 
     let stateVariableDefinitions = super.returnStateVariableDefinitions();

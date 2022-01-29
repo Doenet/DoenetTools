@@ -89,6 +89,15 @@ export default class CodeEditor extends BlockComponent {
     return sugarInstructions;
   }
 
+  static returnChildGroups() {
+
+    return [{
+      group: "codeViewers",
+      componentTypes: ["codeViewer"]
+    }]
+
+  }
+
   static returnStateVariableDefinitions() {
 
     let stateVariableDefinitions = super.returnStateVariableDefinitions();

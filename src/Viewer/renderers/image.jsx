@@ -1,25 +1,23 @@
 import React from 'react';
-import DoenetRenderer from './DoenetRenderer';
+import useDoenetRender from './useDoenetRenderer';
 import { sizeToCSS } from './utils/css';
 
-export default class Image extends DoenetRenderer {
+export default function Image(props) {
+  let { name, SVs } = useDoenetRender(props,false);
 
-  render() {
-
-    if (this.doenetSvData.hidden) {
-      return null;
-    }
-
-    if (this.doenetSvData.source) {
-
-      return <React.Fragment>
-        <a name={this.componentName} />
-        <img id={this.componentName} src={this.doenetSvData.source} width={sizeToCSS(this.doenetSvData.width)} height={sizeToCSS(this.doenetSvData.height)} alt={this.doenetSvData.description} />
-      </React.Fragment>
-
-    }
-
+  if (SVs.hidden) {
     return null;
+  }
+
+  if (SVs.source) {
+
+    return <React.Fragment>
+      <a name={name} />
+      <img id={name} src={SVs.source} width={sizeToCSS(SVs.width)} height={sizeToCSS(SVs.height)} alt={SVs.description} />
+    </React.Fragment>
 
   }
+
+  return null;
+
 }

@@ -1,14 +1,14 @@
 import React from 'react';
-import DoenetRenderer from './DoenetRenderer';
+import useDoenetRender from './useDoenetRenderer';
 
-export default class Q extends DoenetRenderer {
+export default function Q(props) {
+  let { name, SVs, children } = useDoenetRender(props);
 
-  render() {
-
-    if (this.doenetSvData.hidden) {
-      return null;
-    }
-
-    return <><a name={this.componentName} />&ldquo;{this.children}&rdquo;</>
+  if (SVs.hidden) {
+    return null;
   }
+
+  return <><a name={name} />&ldquo;{children}&rdquo;</>
+
 }
+
