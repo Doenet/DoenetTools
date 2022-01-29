@@ -46,13 +46,14 @@ onmessage = function (e) {
     // }, 10000)
     core = new Core(e.data.args)
     core.getInitializedPromise().then(() => {
+      // console.log('actions to process', queuedRequestActions)
       for (let action of queuedRequestActions) {
         core.requestAction(action);
       }
       queuedRequestActions = [];
     })
   } else if (e.data.messageType === "requestAction") {
-    if (core) {
+    if (core?.initialized) {
       // setTimeout(() => core.requestAction(e.data.args), 1000)
       core.requestAction(e.data.args)
     } else {
@@ -290,8 +291,8 @@ export default class Core {
     this.initialized = false;
     this.initializedPromiseResolves = [];
     this.resolveInitialized = () => {
-      this.initialized = true;
       this.initializedPromiseResolves.forEach(resolve => resolve(true))
+      this.initialized = true;
     }
     this.getInitializedPromise = () => {
       if (this.initialized) {
@@ -8007,7 +8008,20 @@ export default class Core {
 
       // start with any essential values saved when calculating definitions
       if (Object.keys(this.essentialValuesSavedInDefinition).length > 0) {
-        Object.assign(newVals, this.essentialValuesSavedInDefinition);
+        for (let componentName in this.essentialValuesSavedInDefinition) {
+          let essentialState = this._components[componentName]?.essentialState;
+          if (essentialState) {
+            newVals[componentName] = {};
+            for (let varName in this.essentialValuesSavedInDefinition[componentName]) {
+              if (essentialState[varName] !== undefined) {
+                // console.log(`saving ${varName} of ${componentName}`, essentialState[varName])
+                // console.log('not using', this.essentialValuesSavedInDefinition[componentName][varName])
+                newVals[componentName][varName] = essentialState[varName];
+              }
+            }
+          }
+
+        }
         this.essentialValuesSavedInDefinition = {};
       }
 

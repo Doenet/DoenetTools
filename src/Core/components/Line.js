@@ -304,6 +304,7 @@ export default class Line extends GraphicalComponent {
       nDimensions: "2",
       hasEssential: true,
       entryPrefixes: ["essentialPointX", "essentialPoint"],
+      set: convertValueToMathExpression,
       defaultValueByArrayKey: (arrayKey) => me.fromAst(arrayKey === "0,0" ? 1 : 0),
       getArrayKeysFromVarName({ arrayEntryPrefix, varEnding, arraySize }) {
         if (arrayEntryPrefix === "essentialPointX") {
@@ -556,7 +557,6 @@ export default class Line extends GraphicalComponent {
         // console.log(`array definition of points for ${componentName}`)
         // console.log(globalDependencyValues)
         // console.log(dependencyValuesByKey)
-        // console.log(essentialValues)
         // console.log(arrayKeys)
 
         if ("coeff0" in globalDependencyValues) {

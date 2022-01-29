@@ -907,6 +907,7 @@ class DoenetViewerChild extends Component {
 
     if (this.needNewCoreFlag) {
       delete this.coreInfo;
+      this.coreCreated = false;
       this.loadState().then(createCoreInfo => {
         if (createCoreInfo) {
           this.createCore(createCoreInfo)
