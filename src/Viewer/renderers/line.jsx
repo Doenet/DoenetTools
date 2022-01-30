@@ -1,16 +1,13 @@
-import React, { useContext, useEffect, useState, useRef } from 'react';
+import React, { useContext, useEffect, useRef } from 'react';
 import useDoenetRender from './useDoenetRenderer';
 import { BoardContext } from './graph';
 import me from 'math-expressions';
 
 
 export default function Line(props) {
-  let { name, SVs, actions, sourceOfUpdate, callAction } = useDoenetRender(props);
+  let { name, SVs, actions, callAction } = useDoenetRender(props);
 
   Line.ignoreActionsWithoutCore = true;
-
-
-  // console.log(`line ${name}`, SVs.numericalPoints[0], SVs.numericalPoints[1])
 
   const board = useContext(BoardContext);
 

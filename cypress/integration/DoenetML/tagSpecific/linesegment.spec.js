@@ -1,51 +1,334 @@
+import me from 'math-expressions';
+import cssesc from 'cssesc';
+
+function cesc(s) {
+  s = cssesc(s, { isIdentifier: true });
+  if (s.slice(0, 2) === '\\#') {
+    s = s.slice(1);
+  }
+  return s;
+}
+
+
+function nInDOM(n) {
+  if (n < 0) {
+    return `−${Math.abs(n)}`
+  } else {
+    return String(n);
+  }
+}
+
+async function testLineSegmentCopiedTwice({ x1, y1, x2, y2,
+  lineSegmentName = "/ls",
+  graph1Name = "/g1", graph2Name = "/g2", graph3Name = "/g3",
+  point1InDomName = "/p1", point2InDomName = "/p2"
+}) {
+
+  cy.get(`#${cesc(point1InDomName)} .mjx-mrow`).should('contain.text', `(${nInDOM(x1)},${nInDOM(y1)})`)
+  cy.get(`#${cesc(point2InDomName)} .mjx-mrow`).should('contain.text', `(${nInDOM(x2)},${nInDOM(y2)})`)
+
+  cy.window().then(async (win) => {
+    let stateVariables = await win.returnAllStateVariables();
+    expect(stateVariables[graph1Name + lineSegmentName].stateValues.endpoints[0]).eqls([x1, y1]);
+    expect(stateVariables[graph1Name + lineSegmentName].stateValues.endpoints[1]).eqls([x2, y2]);
+    expect(stateVariables[graph2Name + lineSegmentName].stateValues.endpoints[0]).eqls([x1, y1]);
+    expect(stateVariables[graph2Name + lineSegmentName].stateValues.endpoints[1]).eqls([x2, y2]);
+    expect(stateVariables[graph3Name + lineSegmentName].stateValues.endpoints[0]).eqls([x1, y1]);
+    expect(stateVariables[graph3Name + lineSegmentName].stateValues.endpoints[1]).eqls([x2, y2]);
+  })
+}
+
+async function testLineSegmentCopiedTwiceWithEndpoints({ x1, y1, x2, y2,
+  lineSegmentName = "/ls", endpoint1Name = "/A", endpoint2Name = "/B",
+  graph1Name = "/g1", graph2Name = "/g2", graph3Name = "/g3",
+  point1InDomName = "/p1", point2InDomName = "/p2"
+}) {
+
+  cy.get(`#${cesc(point1InDomName)} .mjx-mrow`).should('contain.text', `(${nInDOM(x1)},${nInDOM(y1)})`)
+  cy.get(`#${cesc(point2InDomName)} .mjx-mrow`).should('contain.text', `(${nInDOM(x2)},${nInDOM(y2)})`)
+
+  cy.window().then(async (win) => {
+    let stateVariables = await win.returnAllStateVariables();
+    expect(stateVariables[graph1Name + lineSegmentName].stateValues.endpoints[0]).eqls([x1, y1]);
+    expect(stateVariables[graph1Name + lineSegmentName].stateValues.endpoints[1]).eqls([x2, y2]);
+    expect(stateVariables[graph2Name + lineSegmentName].stateValues.endpoints[0]).eqls([x1, y1]);
+    expect(stateVariables[graph2Name + lineSegmentName].stateValues.endpoints[1]).eqls([x2, y2]);
+    expect(stateVariables[graph3Name + lineSegmentName].stateValues.endpoints[0]).eqls([x1, y1]);
+    expect(stateVariables[graph3Name + lineSegmentName].stateValues.endpoints[1]).eqls([x2, y2]);
+    expect(stateVariables[graph1Name + endpoint1Name].stateValues.coords).eqls(["vector", x1, y1]);
+    expect(stateVariables[graph1Name + endpoint2Name].stateValues.coords).eqls(["vector", x2, y2]);
+    expect(stateVariables[graph2Name + endpoint1Name].stateValues.coords).eqls(["vector", x1, y1]);
+    expect(stateVariables[graph2Name + endpoint2Name].stateValues.coords).eqls(["vector", x2, y2]);
+    expect(stateVariables[graph3Name + endpoint1Name].stateValues.coords).eqls(["vector", x1, y1]);
+    expect(stateVariables[graph3Name + endpoint2Name].stateValues.coords).eqls(["vector", x2, y2]);
+  })
+}
+
+
 describe('LineSegment Tag Tests', function () {
 
   beforeEach(() => {
     cy.visit('/cypressTest')
   })
 
-  it('lineSegment with no children', () => {
+  it('lineSegment with no arguments', () => {
     cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
-  <graph>
-    <lineSegment/>
+  <graph name="g1" newNamespace>
+    <lineSegment name="ls"/>
   </graph>
+
+  <graph name="g2" newNamespace>
+    <copy assignNames="ls" target="../g1/ls" />
+  </graph>
+
+  <copy assignNames="g3" target="g2" />
+
+  <copy prop="endpoint1" target="g1/ls" assignNames="p1" />
+  <copy prop="endpoint2" target="g1/ls" assignNames="p2" />
   `}, "*");
     });
 
     cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
 
-    cy.log('initial values')
+    let x1 = 1, y1 = 0;
+    let x2 = 0, y2 = 0;
+
+    testLineSegmentCopiedTwice({ x1, y1, x2, y2 })
+
+    cy.log('move original first point')
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      expect((await components['/_linesegment1'].stateValues.endpoints)[0].map(x => x.tree)).eqls([1, 0]);
-      expect((await components['/_linesegment1'].stateValues.endpoints)[1].map(x => x.tree)).eqls([0, 0]);
+      x1 = 3;
+      y1 = -5;
+
+      win.callAction({
+        actionName: "moveLineSegment",
+        componentName: "/g1/ls",
+        args: {
+          point1coords: [x1, y1]
+        }
+      })
+
+      testLineSegmentCopiedTwice({ x1, y1, x2, y2 })
+
     })
 
-
-    cy.log('move first point')
+    cy.log('move copied second point')
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      await components['/_linesegment1'].moveLineSegment({
-        point1coords: [3, -5],
-      });
+      x2 = -7;
+      y2 = -5;
 
-      expect((await components['/_linesegment1'].stateValues.endpoints)[0].map(x => x.tree)).eqls([3, -5]);
-      expect((await components['/_linesegment1'].stateValues.endpoints)[1].map(x => x.tree)).eqls([0, 0]);
+      win.callAction({
+        actionName: "moveLineSegment",
+        componentName: "/g1/ls",
+        args: {
+          point2coords: [x2, y2]
+        }
+      })
+
+      testLineSegmentCopiedTwice({ x1, y1, x2, y2 })
+
     })
 
-
-    cy.log('move second point')
+    cy.log('move copied first point')
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      await components['/_linesegment1'].moveLineSegment({
-        point2coords: [-7, -1],
-      });
+      x1 = 6;
+      y1 = 0;
 
-      expect((await components['/_linesegment1'].stateValues.endpoints)[0].map(x => x.tree)).eqls([3, -5]);
-      expect((await components['/_linesegment1'].stateValues.endpoints)[1].map(x => x.tree)).eqls([-7, -1]);
+      win.callAction({
+        actionName: "moveLineSegment",
+        componentName: "/g2/ls",
+        args: {
+          point1coords: [x1, y1]
+        }
+      })
+
+      testLineSegmentCopiedTwice({ x1, y1, x2, y2 })
+
+    })
+
+    cy.log('move copied second point')
+    cy.window().then(async (win) => {
+      x2 = 9;
+      y2 = -8;
+
+      win.callAction({
+        actionName: "moveLineSegment",
+        componentName: "/g2/ls",
+        args: {
+          point2coords: [x2, y2]
+        }
+      })
+
+      testLineSegmentCopiedTwice({ x1, y1, x2, y2 })
+
+    })
+
+    cy.log('move double copied first point')
+    cy.window().then(async (win) => {
+      x1 = -5;
+      y1 = 7;
+
+      win.callAction({
+        actionName: "moveLineSegment",
+        componentName: "/g3/ls",
+        args: {
+          point1coords: [x1, y1]
+        }
+      })
+
+      testLineSegmentCopiedTwice({ x1, y1, x2, y2 })
+
+    })
+
+    cy.log('move double copied second point')
+    cy.window().then(async (win) => {
+      x2 = -1;
+      y2 = 3;
+
+      win.callAction({
+        actionName: "moveLineSegment",
+        componentName: "/g3/ls",
+        args: {
+          point2coords: [x2, y2]
+        }
+      })
+
+      testLineSegmentCopiedTwice({ x1, y1, x2, y2 })
+
+    })
+
+  })
+
+  it('lineSegment with empty endpoints', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <graph name="g1" newNamespace>
+    <lineSegment name="ls" endpoints="" />
+  </graph>
+
+  <graph name="g2" newNamespace>
+    <copy assignNames="ls" target="../g1/ls" />
+  </graph>
+
+  <copy assignNames="g3" target="g2" />
+
+  <copy prop="endpoint1" target="g1/ls" assignNames="p1" />
+  <copy prop="endpoint2" target="g1/ls" assignNames="p2" />
+  `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
+
+    let x1 = 1, y1 = 0;
+    let x2 = 0, y2 = 0;
+
+    testLineSegmentCopiedTwice({ x1, y1, x2, y2 })
+
+    cy.log('move original first point')
+    cy.window().then(async (win) => {
+      x1 = 3;
+      y1 = -5;
+
+      win.callAction({
+        actionName: "moveLineSegment",
+        componentName: "/g1/ls",
+        args: {
+          point1coords: [x1, y1]
+        }
+      })
+
+      testLineSegmentCopiedTwice({ x1, y1, x2, y2 })
+
+    })
+
+    cy.log('move copied second point')
+    cy.window().then(async (win) => {
+      x2 = -7;
+      y2 = -5;
+
+      win.callAction({
+        actionName: "moveLineSegment",
+        componentName: "/g1/ls",
+        args: {
+          point2coords: [x2, y2]
+        }
+      })
+
+      testLineSegmentCopiedTwice({ x1, y1, x2, y2 })
+
+    })
+
+    cy.log('move copied first point')
+    cy.window().then(async (win) => {
+      x1 = 6;
+      y1 = 0;
+
+      win.callAction({
+        actionName: "moveLineSegment",
+        componentName: "/g2/ls",
+        args: {
+          point1coords: [x1, y1]
+        }
+      })
+
+      testLineSegmentCopiedTwice({ x1, y1, x2, y2 })
+
+    })
+
+    cy.log('move copied second point')
+    cy.window().then(async (win) => {
+      x2 = 9;
+      y2 = -8;
+
+      win.callAction({
+        actionName: "moveLineSegment",
+        componentName: "/g2/ls",
+        args: {
+          point2coords: [x2, y2]
+        }
+      })
+
+      testLineSegmentCopiedTwice({ x1, y1, x2, y2 })
+
+    })
+
+    cy.log('move double copied first point')
+    cy.window().then(async (win) => {
+      x1 = -5;
+      y1 = 7;
+
+      win.callAction({
+        actionName: "moveLineSegment",
+        componentName: "/g3/ls",
+        args: {
+          point1coords: [x1, y1]
+        }
+      })
+
+      testLineSegmentCopiedTwice({ x1, y1, x2, y2 })
+
+    })
+
+    cy.log('move double copied second point')
+    cy.window().then(async (win) => {
+      x2 = -1;
+      y2 = 3;
+
+      win.callAction({
+        actionName: "moveLineSegment",
+        componentName: "/g3/ls",
+        args: {
+          point2coords: [x2, y2]
+        }
+      })
+
+      testLineSegmentCopiedTwice({ x1, y1, x2, y2 })
+
     })
 
   })
@@ -55,43 +338,128 @@ describe('LineSegment Tag Tests', function () {
       win.postMessage({
         doenetML: `
   <text>a</text>
-  <graph>
-    <lineSegment endpoints="(3,-8)" />
+  <graph name="g1" newNamespace>
+    <lineSegment  endpoints="(3,-8)" name="ls"/>
   </graph>
+
+  <graph name="g2" newNamespace>
+    <copy assignNames="ls" target="../g1/ls" />
+  </graph>
+
+  <copy assignNames="g3" target="g2" />
+
+  <copy prop="endpoint1" target="g1/ls" assignNames="p1" />
+  <copy prop="endpoint2" target="g1/ls" assignNames="p2" />
   `}, "*");
     });
 
     cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
 
-    cy.log('initial values')
+    let x1 = 3, y1 = -8;
+    let x2 = 0, y2 = 0;
+
+    testLineSegmentCopiedTwice({ x1, y1, x2, y2 })
+
+    cy.log('move original first point')
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      expect((await components['/_linesegment1'].stateValues.endpoints)[0].map(x => x.tree)).eqls([3, -8]);
-      expect((await components['/_linesegment1'].stateValues.endpoints)[1].map(x => x.tree)).eqls([0, 0]);
+      x1 = 3;
+      y1 = -5;
+
+      win.callAction({
+        actionName: "moveLineSegment",
+        componentName: "/g1/ls",
+        args: {
+          point1coords: [x1, y1]
+        }
+      })
+
+      testLineSegmentCopiedTwice({ x1, y1, x2, y2 })
+
     })
 
-
-    cy.log('move first point')
+    cy.log('move copied second point')
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      await components['/_linesegment1'].moveLineSegment({
-        point1coords: [3, -5],
-      });
+      x2 = -7;
+      y2 = -5;
 
-      expect((await components['/_linesegment1'].stateValues.endpoints)[0].map(x => x.tree)).eqls([3, -5]);
-      expect((await components['/_linesegment1'].stateValues.endpoints)[1].map(x => x.tree)).eqls([0, 0]);
+      win.callAction({
+        actionName: "moveLineSegment",
+        componentName: "/g1/ls",
+        args: {
+          point2coords: [x2, y2]
+        }
+      })
+
+      testLineSegmentCopiedTwice({ x1, y1, x2, y2 })
+
     })
 
-
-    cy.log('move second point')
+    cy.log('move copied first point')
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      await components['/_linesegment1'].moveLineSegment({
-        point2coords: [-7, -1],
-      });
+      x1 = 6;
+      y1 = 0;
 
-      expect((await components['/_linesegment1'].stateValues.endpoints)[0].map(x => x.tree)).eqls([3, -5]);
-      expect((await components['/_linesegment1'].stateValues.endpoints)[1].map(x => x.tree)).eqls([-7, -1]);
+      win.callAction({
+        actionName: "moveLineSegment",
+        componentName: "/g2/ls",
+        args: {
+          point1coords: [x1, y1]
+        }
+      })
+
+      testLineSegmentCopiedTwice({ x1, y1, x2, y2 })
+
+    })
+
+    cy.log('move copied second point')
+    cy.window().then(async (win) => {
+      x2 = 9;
+      y2 = -8;
+
+      win.callAction({
+        actionName: "moveLineSegment",
+        componentName: "/g2/ls",
+        args: {
+          point2coords: [x2, y2]
+        }
+      })
+
+      testLineSegmentCopiedTwice({ x1, y1, x2, y2 })
+
+    })
+
+    cy.log('move double copied first point')
+    cy.window().then(async (win) => {
+      x1 = -5;
+      y1 = 7;
+
+      win.callAction({
+        actionName: "moveLineSegment",
+        componentName: "/g3/ls",
+        args: {
+          point1coords: [x1, y1]
+        }
+      })
+
+      testLineSegmentCopiedTwice({ x1, y1, x2, y2 })
+
+    })
+
+    cy.log('move double copied second point')
+    cy.window().then(async (win) => {
+      x2 = -1;
+      y2 = 3;
+
+      win.callAction({
+        actionName: "moveLineSegment",
+        componentName: "/g3/ls",
+        args: {
+          point2coords: [x2, y2]
+        }
+      })
+
+      testLineSegmentCopiedTwice({ x1, y1, x2, y2 })
+
     })
 
   })
@@ -101,43 +469,128 @@ describe('LineSegment Tag Tests', function () {
       win.postMessage({
         doenetML: `
   <text>a</text>
-  <graph>
-    <lineSegment endpoints="(0,0)" />
+  <graph name="g1" newNamespace>
+    <lineSegment  endpoints="(0,0)" name="ls"/>
   </graph>
+
+  <graph name="g2" newNamespace>
+    <copy assignNames="ls" target="../g1/ls" />
+  </graph>
+
+  <copy assignNames="g3" target="g2" />
+
+  <copy prop="endpoint1" target="g1/ls" assignNames="p1" />
+  <copy prop="endpoint2" target="g1/ls" assignNames="p2" />
   `}, "*");
     });
 
     cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
 
-    cy.log('initial values')
+    let x1 = 0, y1 = 0;
+    let x2 = 0, y2 = 0;
+
+    testLineSegmentCopiedTwice({ x1, y1, x2, y2 })
+
+    cy.log('move original first point')
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      expect((await components['/_linesegment1'].stateValues.endpoints)[0].map(x => x.tree)).eqls([0, 0]);
-      expect((await components['/_linesegment1'].stateValues.endpoints)[1].map(x => x.tree)).eqls([0, 0]);
+      x1 = 3;
+      y1 = -5;
+
+      win.callAction({
+        actionName: "moveLineSegment",
+        componentName: "/g1/ls",
+        args: {
+          point1coords: [x1, y1]
+        }
+      })
+
+      testLineSegmentCopiedTwice({ x1, y1, x2, y2 })
+
     })
 
-
-    cy.log('move first point')
+    cy.log('move copied second point')
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      await components['/_linesegment1'].moveLineSegment({
-        point1coords: [3, -5],
-      });
+      x2 = -7;
+      y2 = -5;
 
-      expect((await components['/_linesegment1'].stateValues.endpoints)[0].map(x => x.tree)).eqls([3, -5]);
-      expect((await components['/_linesegment1'].stateValues.endpoints)[1].map(x => x.tree)).eqls([0, 0]);
+      win.callAction({
+        actionName: "moveLineSegment",
+        componentName: "/g1/ls",
+        args: {
+          point2coords: [x2, y2]
+        }
+      })
+
+      testLineSegmentCopiedTwice({ x1, y1, x2, y2 })
+
     })
 
-
-    cy.log('move second point')
+    cy.log('move copied first point')
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      await components['/_linesegment1'].moveLineSegment({
-        point2coords: [-7, -1],
-      });
+      x1 = 6;
+      y1 = 0;
 
-      expect((await components['/_linesegment1'].stateValues.endpoints)[0].map(x => x.tree)).eqls([3, -5]);
-      expect((await components['/_linesegment1'].stateValues.endpoints)[1].map(x => x.tree)).eqls([-7, -1]);
+      win.callAction({
+        actionName: "moveLineSegment",
+        componentName: "/g2/ls",
+        args: {
+          point1coords: [x1, y1]
+        }
+      })
+
+      testLineSegmentCopiedTwice({ x1, y1, x2, y2 })
+
+    })
+
+    cy.log('move copied second point')
+    cy.window().then(async (win) => {
+      x2 = 9;
+      y2 = -8;
+
+      win.callAction({
+        actionName: "moveLineSegment",
+        componentName: "/g2/ls",
+        args: {
+          point2coords: [x2, y2]
+        }
+      })
+
+      testLineSegmentCopiedTwice({ x1, y1, x2, y2 })
+
+    })
+
+    cy.log('move double copied first point')
+    cy.window().then(async (win) => {
+      x1 = -5;
+      y1 = 7;
+
+      win.callAction({
+        actionName: "moveLineSegment",
+        componentName: "/g3/ls",
+        args: {
+          point1coords: [x1, y1]
+        }
+      })
+
+      testLineSegmentCopiedTwice({ x1, y1, x2, y2 })
+
+    })
+
+    cy.log('move double copied second point')
+    cy.window().then(async (win) => {
+      x2 = -1;
+      y2 = 3;
+
+      win.callAction({
+        actionName: "moveLineSegment",
+        componentName: "/g3/ls",
+        args: {
+          point2coords: [x2, y2]
+        }
+      })
+
+      testLineSegmentCopiedTwice({ x1, y1, x2, y2 })
+
     })
 
   })
@@ -147,70 +600,87 @@ describe('LineSegment Tag Tests', function () {
       win.postMessage({
         doenetML: `
   <text>a</text>
-  <graph>
-  <point label='P'>(3,5)</point>
-  <point label='Q'>(-4,-1)</point>
-    <lineSegment endpoints="$_point1 $_point2" />
+  <graph name="g1" newNamespace>
+    <point label='A' name="A">(3,5)</point>
+    <point label='B' name="B">(-4,-1)</point>
+    <lineSegment endpoints="$A $B" name="ls"/>
   </graph>
+
+  <graph name="g2" newNamespace>
+    <copy assignNames="ls" target="../g1/ls" />
+    <copy prop="endpoint1" target="ls" assignNames="A" />
+    <copy prop="endpoint2" target="ls" assignNames="B" />
+  </graph>
+
+  <copy assignNames="g3" target="g2" />
+
+  <copy prop="endpoint1" target="g1/ls" assignNames="p1" />
+  <copy prop="endpoint2" target="g1/ls" assignNames="p2" />
   `}, "*");
     });
 
     cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
 
-    cy.log('move point P to (5,-5)')
+
+    let x1 = 3, y1 = 5;
+    let x2 = -4, y2 = -1;
+
+    testLineSegmentCopiedTwiceWithEndpoints({ x1, y1, x2, y2 })
+
+
+    cy.log('move point A to (5,-5)')
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      await components['/_point1'].movePoint({ x: 5, y: -5 });
-      expect((await components['/_point1'].stateValues.xs)[0].tree).eq(5)
-      expect((await components['/_point1'].stateValues.xs)[1].tree).eq(-5)
-      expect((await components['/_point1'].stateValues.coords).tree).eqls(['vector', 5, -5])
-      expect((await components['/_point2'].stateValues.xs)[0].tree).eq(-4)
-      expect((await components['/_point2'].stateValues.xs)[1].tree).eq(-1)
-      expect((await components['/_point2'].stateValues.coords).tree).eqls(['vector', -4, -1])
-      expect((await components['/_linesegment1'].stateValues.endpoints)[0].map(x => x.tree)).eqls([5, -5]);
-      expect((await components['/_linesegment1'].stateValues.endpoints)[1].map(x => x.tree)).eqls([-4, -1]);
+
+      x1 = 5;
+      y1 = -5;
+
+      win.callAction({
+        actionName: "movePoint",
+        componentName: "/g1/A",
+        args: { x: x1, y: y1 }
+      })
+
+      testLineSegmentCopiedTwiceWithEndpoints({ x1, y1, x2, y2 })
     })
 
     cy.log('move line segment up and to the right')
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-
-      let point1coords = [
-        (await components['/_linesegment1'].stateValues.endpoints)[0][0],
-        (await components['/_linesegment1'].stateValues.endpoints)[0][1],
-      ];
-      let point2coords = [
-        (await components['/_linesegment1'].stateValues.endpoints)[1][0],
-        (await components['/_linesegment1'].stateValues.endpoints)[1][1],
-      ];
 
       let moveX = 3;
       let moveY = 2;
 
-      point1coords[0] = point1coords[0].add(moveX);
-      point1coords[1] = point1coords[1].add(moveY);
-      point2coords[0] = point2coords[0].add(moveX);
-      point2coords[1] = point2coords[1].add(moveY);
+      x1 += moveX;
+      x2 += moveX;
+      y1 += moveY;
+      y2 += moveY;
 
-      await components['/_linesegment1'].moveLineSegment({
-        point1coords: point1coords,
-        point2coords: point2coords
-      });
+      win.callAction({
+        actionName: "moveLineSegment",
+        componentName: "/g1/ls",
+        args: {
+          point1coords: [x1, y1],
+          point2coords: [x2, y2]
+        }
+      })
 
-      let p1x = point1coords[0].simplify().tree;
-      let p1y = point1coords[1].simplify().tree;
-      let p2x = point2coords[0].simplify().tree;
-      let p2y = point2coords[1].simplify().tree;
+      testLineSegmentCopiedTwiceWithEndpoints({ x1, y1, x2, y2 })
 
-      expect((await components['/_point1'].stateValues.xs)[0].tree).eq(p1x)
-      expect((await components['/_point1'].stateValues.xs)[1].tree).eq(p1y)
-      expect((await components['/_point1'].stateValues.coords).tree).eqls(['vector', p1x, p1y])
-      expect((await components['/_point2'].stateValues.xs)[0].tree).eq(p2x)
-      expect((await components['/_point2'].stateValues.xs)[1].tree).eq(p2y)
-      expect((await components['/_point2'].stateValues.coords).tree).eqls(['vector', p2x, p2y])
-      expect((await components['/_linesegment1'].stateValues.endpoints)[0].map(x => x.tree)).eqls([p1x, p1y]);
-      expect((await components['/_linesegment1'].stateValues.endpoints)[1].map(x => x.tree)).eqls([p2x, p2y]);
+    })
 
+
+    cy.log('move second copy of B to (-1,8)')
+    cy.window().then(async (win) => {
+
+      x2 = -1;
+      y2 = 8;
+
+      win.callAction({
+        actionName: "movePoint",
+        componentName: "/g3/B",
+        args: { x: x2, y: y2 }
+      })
+
+      testLineSegmentCopiedTwiceWithEndpoints({ x1, y1, x2, y2 })
     })
   })
 
@@ -219,74 +689,130 @@ describe('LineSegment Tag Tests', function () {
       win.postMessage({
         doenetML: `
   <text>a</text>
-  <graph>
-    <lineSegment endpoints="(3,5) (-4,9)" />
+  <graph name="g1" newNamespace>
+    <lineSegment  endpoints="(3,5) (-4,9)" name="ls"/>
   </graph>
+
+  <graph name="g2" newNamespace>
+    <copy assignNames="ls" target="../g1/ls" />
+  </graph>
+
+  <copy assignNames="g3" target="g2" />
+
+  <copy prop="endpoint1" target="g1/ls" assignNames="p1" />
+  <copy prop="endpoint2" target="g1/ls" assignNames="p2" />
   `}, "*");
     });
 
     cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
 
+    let x1 = 3, y1 = 5;
+    let x2 = -4, y2 = 9;
+
+    testLineSegmentCopiedTwice({ x1, y1, x2, y2 })
+
+    cy.log('move original first point')
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
+      x1 = 3;
+      y1 = -5;
 
-      let point1 = components["/_linesegment1"].attributes["endpoints"].component.activeChildren[0];
-      let point2 = components["/_linesegment1"].attributes["endpoints"].component.activeChildren[1];
-
-      cy.log('Test location')
-      cy.window().then(async (win) => {
-        let components = Object.assign({}, win.state.components);
-        expect((await point1.stateValues.xs)[0].tree).eq(3)
-        expect((await point1.stateValues.xs)[1].tree).eq(5)
-        expect((await point2.stateValues.xs)[0].tree).eq(-4)
-        expect((await point2.stateValues.xs)[1].tree).eq(9)
-        expect((await components['/_linesegment1'].stateValues.endpoints)[0].map(x => x.tree)).eqls([3, 5]);
-        expect((await components['/_linesegment1'].stateValues.endpoints)[1].map(x => x.tree)).eqls([-4, 9]);
-
+      win.callAction({
+        actionName: "moveLineSegment",
+        componentName: "/g1/ls",
+        args: {
+          point1coords: [x1, y1]
+        }
       })
 
-      cy.log('move line segment up and to the left')
-      cy.window().then(async (win) => {
-        let components = Object.assign({}, win.state.components);
+      testLineSegmentCopiedTwice({ x1, y1, x2, y2 })
 
-        let point1coords = [
-          (await components['/_linesegment1'].stateValues.endpoints)[0][0],
-          (await components['/_linesegment1'].stateValues.endpoints)[0][1],
-        ];
-        let point2coords = [
-          (await components['/_linesegment1'].stateValues.endpoints)[1][0],
-          (await components['/_linesegment1'].stateValues.endpoints)[1][1],
-        ];
-
-        let moveX = -3;
-        let moveY = 2;
-
-        point1coords[0] = point1coords[0].add(moveX);
-        point1coords[1] = point1coords[1].add(moveY);
-        point2coords[0] = point2coords[0].add(moveX);
-        point2coords[1] = point2coords[1].add(moveY);
-
-        await components['/_linesegment1'].moveLineSegment({
-          point1coords: point1coords,
-          point2coords: point2coords
-        });
-
-        let p1x = point1coords[0].simplify().tree;
-        let p1y = point1coords[1].simplify().tree;
-        let p2x = point2coords[0].simplify().tree;
-        let p2y = point2coords[1].simplify().tree;
-
-        expect((await point1.stateValues.xs)[0].tree).eq(p1x)
-        expect((await point1.stateValues.xs)[1].tree).eq(p1y)
-        expect((await point1.stateValues.coords).tree).eqls(['vector', p1x, p1y])
-        expect((await point2.stateValues.xs)[0].tree).eq(p2x)
-        expect((await point2.stateValues.xs)[1].tree).eq(p2y)
-        expect((await point2.stateValues.coords).tree).eqls(['vector', p2x, p2y])
-        expect((await components['/_linesegment1'].stateValues.endpoints)[0].map(x => x.tree)).eqls([p1x, p1y]);
-        expect((await components['/_linesegment1'].stateValues.endpoints)[1].map(x => x.tree)).eqls([p2x, p2y]);
-
-      })
     })
+
+    cy.log('move copied second point')
+    cy.window().then(async (win) => {
+      x2 = -7;
+      y2 = -5;
+
+      win.callAction({
+        actionName: "moveLineSegment",
+        componentName: "/g1/ls",
+        args: {
+          point2coords: [x2, y2]
+        }
+      })
+
+      testLineSegmentCopiedTwice({ x1, y1, x2, y2 })
+
+    })
+
+    cy.log('move copied first point')
+    cy.window().then(async (win) => {
+      x1 = 6;
+      y1 = 0;
+
+      win.callAction({
+        actionName: "moveLineSegment",
+        componentName: "/g2/ls",
+        args: {
+          point1coords: [x1, y1]
+        }
+      })
+
+      testLineSegmentCopiedTwice({ x1, y1, x2, y2 })
+
+    })
+
+    cy.log('move copied second point')
+    cy.window().then(async (win) => {
+      x2 = 9;
+      y2 = -8;
+
+      win.callAction({
+        actionName: "moveLineSegment",
+        componentName: "/g2/ls",
+        args: {
+          point2coords: [x2, y2]
+        }
+      })
+
+      testLineSegmentCopiedTwice({ x1, y1, x2, y2 })
+
+    })
+
+    cy.log('move double copied first point')
+    cy.window().then(async (win) => {
+      x1 = -5;
+      y1 = 7;
+
+      win.callAction({
+        actionName: "moveLineSegment",
+        componentName: "/g3/ls",
+        args: {
+          point1coords: [x1, y1]
+        }
+      })
+
+      testLineSegmentCopiedTwice({ x1, y1, x2, y2 })
+
+    })
+
+    cy.log('move double copied second point')
+    cy.window().then(async (win) => {
+      x2 = -1;
+      y2 = 3;
+
+      win.callAction({
+        actionName: "moveLineSegment",
+        componentName: "/g3/ls",
+        args: {
+          point2coords: [x2, y2]
+        }
+      })
+
+      testLineSegmentCopiedTwice({ x1, y1, x2, y2 })
+
+    })
+
   })
 
   it('lineSegment with strings and copies', () => {
@@ -296,145 +822,142 @@ describe('LineSegment Tag Tests', function () {
   <text>a</text>
   <number>3</number>
   <graph>
-  <point>(-2,1)</point>
-  <linesegment endpoints="($_number1, $(_point1{prop='x'})) ($(_point1{prop='y'}),5) "/>
+  <linesegment "/>
   </graph>
+  <graph name="g1" newNamespace>
+    <point>(-2,1)</point>
+    <lineSegment endpoints="($(../_number1), $(_point1{prop='x'})) ($(_point1{prop='y'}),5)"  name="ls"/>
+  </graph>
+
+  <graph name="g2" newNamespace>
+    <copy assignNames="ls" target="../g1/ls" />
+  </graph>
+
+  <copy assignNames="g3" target="g2" />
+
+  <copy prop="endpoint1" target="g1/ls" assignNames="p1" />
+  <copy prop="endpoint2" target="g1/ls" assignNames="p2" />
   `}, "*");
     });
 
 
     cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
 
-    cy.log('Test location')
-    cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      expect((await components['/_linesegment1'].stateValues.endpoints)[0].map(x => x.tree)).eqls([3, -2]);
-      expect((await components['/_linesegment1'].stateValues.endpoints)[1].map(x => x.tree)).eqls([1, 5]);
-      expect((await components['/_point1'].stateValues.xs)[0].tree).eq(-2);
-      expect((await components['/_point1'].stateValues.xs)[1].tree).eq(1);
-      expect(await components['/_number1'].stateValues.value).eq(3);
+    let x1 = 3, y1 = -2;
+    let x2 = 1, y2 = 5;
 
+
+    testLineSegmentCopiedTwice({ x1, y1, x2, y2 })
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables();
+      expect(stateVariables['/g1/_point1'].stateValues.xs).eqls([-2, 1]);
+      expect(stateVariables['/_number1'].stateValues.value).eq(3);
     })
 
-    cy.log('move line segment up and to the left')
+
+    cy.log('move original first point')
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
+      x1 = 3;
+      y1 = -5;
 
-      let point1coords = [
-        (await components['/_linesegment1'].stateValues.endpoints)[0][0],
-        (await components['/_linesegment1'].stateValues.endpoints)[0][1],
-      ];
-      let point2coords = [
-        (await components['/_linesegment1'].stateValues.endpoints)[1][0],
-        (await components['/_linesegment1'].stateValues.endpoints)[1][1],
-      ];
-
-      let moveX = -3;
-      let moveY = 2;
-
-      point1coords[0] = point1coords[0].add(moveX);
-      point1coords[1] = point1coords[1].add(moveY);
-      point2coords[0] = point2coords[0].add(moveX);
-      point2coords[1] = point2coords[1].add(moveY);
-
-      await components['/_linesegment1'].moveLineSegment({
-        point1coords: point1coords,
-        point2coords: point2coords
-      });
-
-      let p1x = point1coords[0].simplify().tree;
-      let p1y = point1coords[1].simplify().tree;
-      let p2x = point2coords[0].simplify().tree;
-      let p2y = point2coords[1].simplify().tree;
-
-      expect((await components['/_point1'].stateValues.xs)[0].tree).eq(p1y)
-      expect((await components['/_point1'].stateValues.xs)[1].tree).eq(p2x)
-      expect(await components['/_number1'].stateValues.value).eq(p1x)
-      expect((await components['/_linesegment1'].stateValues.endpoints)[0].map(x => x.tree)).eqls([p1x, p1y]);
-      expect((await components['/_linesegment1'].stateValues.endpoints)[1].map(x => x.tree)).eqls([p2x, p2y]);
-
-    })
-  })
-
-  it('lineSegment with endpoints based on sugared strings 2', () => {
-    cy.window().then(async (win) => {
-      win.postMessage({
-        doenetML: `
-  <text>a</text>
-  <graph>
-    <lineSegment endpoints="(-1,2) (-2,3)" />
-  </graph>
-  `}, "*");
-    });
-
-    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
-
-    cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-
-      let point1 = components["/_linesegment1"].attributes["endpoints"].component.activeChildren[0];
-      let point2 = components["/_linesegment1"].attributes["endpoints"].component.activeChildren[1];
-
-      cy.log('move point1 via segment to (-2,-3)')
-      cy.window().then(async (win) => {
-        let components = Object.assign({}, win.state.components);
-        await components['/_linesegment1'].moveLineSegment({
-          point1coords: [-2, -3],
-          point2coords: [-2, 3]
-        });
-        expect((await point1.stateValues.xs)[0].tree).eq(-2)
-        expect((await point1.stateValues.xs)[1].tree).eq(-3)
-        expect((await point1.stateValues.coords).tree).eqls(['vector', -2, -3])
-        expect((await point2.stateValues.xs)[0].tree).eq(-2)
-        expect((await point2.stateValues.xs)[1].tree).eq(3)
-        expect((await point2.stateValues.coords).tree).eqls(['vector', -2, 3])
-        expect((await components['/_linesegment1'].stateValues.endpoints)[0].map(x => x.tree)).eqls([-2, -3]);
-        expect((await components['/_linesegment1'].stateValues.endpoints)[1].map(x => x.tree)).eqls([-2, 3]);
-
+      win.callAction({
+        actionName: "moveLineSegment",
+        componentName: "/g1/ls",
+        args: {
+          point1coords: [x1, y1]
+        }
       })
 
-      cy.log('move line segment up and to the right')
-      cy.window().then(async (win) => {
-        let components = Object.assign({}, win.state.components);
+      testLineSegmentCopiedTwice({ x1, y1, x2, y2 })
 
-        let point1coords = [
-          (await components['/_linesegment1'].stateValues.endpoints)[0][0],
-          (await components['/_linesegment1'].stateValues.endpoints)[0][1],
-        ];
-        let point2coords = [
-          (await components['/_linesegment1'].stateValues.endpoints)[1][0],
-          (await components['/_linesegment1'].stateValues.endpoints)[1][1],
-        ];
-
-        let moveX = 3;
-        let moveY = 2;
-
-        point1coords[0] = point1coords[0].add(moveX);
-        point1coords[1] = point1coords[1].add(moveY);
-        point2coords[0] = point2coords[0].add(moveX);
-        point2coords[1] = point2coords[1].add(moveY);
-
-        await components['/_linesegment1'].moveLineSegment({
-          point1coords: point1coords,
-          point2coords: point2coords
-        });
-
-        let p1x = point1coords[0].simplify().tree;
-        let p1y = point1coords[1].simplify().tree;
-        let p2x = point2coords[0].simplify().tree;
-        let p2y = point2coords[1].simplify().tree;
-
-        expect((await point1.stateValues.xs)[0].tree).eq(p1x)
-        expect((await point1.stateValues.xs)[1].tree).eq(p1y)
-        expect((await point1.stateValues.coords).tree).eqls(['vector', p1x, p1y])
-        expect((await point2.stateValues.xs)[0].tree).eq(p2x)
-        expect((await point2.stateValues.xs)[1].tree).eq(p2y)
-        expect((await point2.stateValues.coords).tree).eqls(['vector', p2x, p2y])
-        expect((await components['/_linesegment1'].stateValues.endpoints)[0].map(x => x.tree)).eqls([p1x, p1y]);
-        expect((await components['/_linesegment1'].stateValues.endpoints)[1].map(x => x.tree)).eqls([p2x, p2y]);
-
-      })
     })
+
+    cy.log('move copied second point')
+    cy.window().then(async (win) => {
+      x2 = -7;
+      y2 = -5;
+
+      win.callAction({
+        actionName: "moveLineSegment",
+        componentName: "/g1/ls",
+        args: {
+          point2coords: [x2, y2]
+        }
+      })
+
+      testLineSegmentCopiedTwice({ x1, y1, x2, y2 })
+
+    })
+
+    cy.log('move copied first point')
+    cy.window().then(async (win) => {
+      x1 = 6;
+      y1 = 0;
+
+      win.callAction({
+        actionName: "moveLineSegment",
+        componentName: "/g2/ls",
+        args: {
+          point1coords: [x1, y1]
+        }
+      })
+
+      testLineSegmentCopiedTwice({ x1, y1, x2, y2 })
+
+    })
+
+    cy.log('move copied second point')
+    cy.window().then(async (win) => {
+      x2 = 9;
+      y2 = -8;
+
+      win.callAction({
+        actionName: "moveLineSegment",
+        componentName: "/g2/ls",
+        args: {
+          point2coords: [x2, y2]
+        }
+      })
+
+      testLineSegmentCopiedTwice({ x1, y1, x2, y2 })
+
+    })
+
+    cy.log('move double copied first point')
+    cy.window().then(async (win) => {
+      x1 = -5;
+      y1 = 7;
+
+      win.callAction({
+        actionName: "moveLineSegment",
+        componentName: "/g3/ls",
+        args: {
+          point1coords: [x1, y1]
+        }
+      })
+
+      testLineSegmentCopiedTwice({ x1, y1, x2, y2 })
+
+    })
+
+    cy.log('move double copied second point')
+    cy.window().then(async (win) => {
+      x2 = -1;
+      y2 = 3;
+
+      win.callAction({
+        actionName: "moveLineSegment",
+        componentName: "/g3/ls",
+        args: {
+          point2coords: [x2, y2]
+        }
+      })
+
+      testLineSegmentCopiedTwice({ x1, y1, x2, y2 })
+
+    })
+
   })
 
   it('lineSegment with multiple layers of copied points', () => {
@@ -451,458 +974,131 @@ describe('LineSegment Tag Tests', function () {
   <copy target="_copy3" />
   <copy target="_copy4" />
   
-  <graph>
-    <lineSegment endpoints="$_copy5 $_copy6" />
+  <graph name="g1" newNamespace>
+    <lineSegment  endpoints="$(../_copy5) $(../_copy6)" name="ls"/>
   </graph>
-  <copy prop="y" target="_point1" />
+
+  <graph name="g2" newNamespace>
+    <copy assignNames="ls" target="../g1/ls" />
+  </graph>
+
+  <copy assignNames="g3" target="g2" />
+
+  <copy prop="endpoint1" target="g1/ls" assignNames="p1" />
+  <copy prop="endpoint2" target="g1/ls" assignNames="p2" />
   `}, "*");
     });
 
     cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
 
+    let x1 = 2, y1 = 1;
+    let x2 = -2, y2 = -5;
+
+
+    testLineSegmentCopiedTwice({ x1, y1, x2, y2 })
+
+    cy.log('move original first point')
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
+      x1 = 3;
+      y1 = -5;
 
-      let point1 = components["/_linesegment1"].attributes["endpoints"].component.activeChildren[0];
-      let point2 = components["/_linesegment1"].attributes["endpoints"].component.activeChildren[1];
-
-      cy.log('move point 10 to (0,-3)')
-      cy.window().then(async (win) => {
-        let components = Object.assign({}, win.state.components);
-        await point2.movePoint({ x: 0, y: -3 });
-        expect((await point1.stateValues.xs)[0].tree).eq(2)
-        expect((await point1.stateValues.xs)[1].tree).eq(1)
-        expect((await point2.stateValues.xs)[0].tree).eq(0)
-        expect((await point2.stateValues.xs)[1].tree).eq(-3)
-        expect((await components['/_linesegment1'].stateValues.endpoints)[0].map(x => x.tree)).eqls([2, 1]);
-        expect((await components['/_linesegment1'].stateValues.endpoints)[1].map(x => x.tree)).eqls([0, -3]);
-
-      })
-
-      cy.log('move line segment down and to the left')
-      cy.window().then(async (win) => {
-        let components = Object.assign({}, win.state.components);
-
-        let point1coords = [
-          (await components['/_linesegment1'].stateValues.endpoints)[0][0],
-          (await components['/_linesegment1'].stateValues.endpoints)[0][1],
-        ];
-        let point2coords = [
-          (await components['/_linesegment1'].stateValues.endpoints)[1][0],
-          (await components['/_linesegment1'].stateValues.endpoints)[1][1],
-        ];
-
-        let moveX = -3;
-        let moveY = -2;
-
-        point1coords[0] = point1coords[0].add(moveX);
-        point1coords[1] = point1coords[1].add(moveY);
-        point2coords[0] = point2coords[0].add(moveX);
-        point2coords[1] = point2coords[1].add(moveY);
-
-        await components['/_linesegment1'].moveLineSegment({
-          point1coords: point1coords,
-          point2coords: point2coords
-        });
-
-        let p1x = point1coords[0].simplify().tree;
-        let p1y = point1coords[1].simplify().tree;
-        let p2x = point2coords[0].simplify().tree;
-        let p2y = point2coords[1].simplify().tree;
-
-        expect((await point1.stateValues.xs)[0].tree).eq(p1x)
-        expect((await point1.stateValues.xs)[1].tree).eq(p1y)
-        expect((await point2.stateValues.xs)[0].tree).eq(p2x)
-        expect((await point2.stateValues.xs)[1].tree).eq(p2y)
-        expect((await components['/_linesegment1'].stateValues.endpoints)[0].map(x => x.tree)).eqls([p1x, p1y]);
-        expect((await components['/_linesegment1'].stateValues.endpoints)[1].map(x => x.tree)).eqls([p2x, p2y]);
-
-      })
-    })
-  })
-
-  it('copied line segments', () => {
-    cy.window().then(async (win) => {
-      win.postMessage({
-        doenetML: `
-  <text>a</text>
-  <graph>
-    <linesegment endpoints="(-1,2) (-2,3)" />
-    <point>(-4,7)</point>
-    <point>(3,5)</point>
-    <linesegment endpoints="$_point1 $_point2" />
-    <linesegment endpoints="(-9,-1) (-3,6) "/>
-  </graph>
-
-  <graph>
-    <copy name="ls1a" target="_linesegment1" />
-    <copy name="ls2a" target="_linesegment2" />
-    <copy name="ls3a" target="_linesegment3" />
-  </graph>
-
-  <copy name="g3" target="_graph2" />
-  `}, "*");
-    });
-
-    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
-
-    cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-
-      let ls1a = components["/ls1a"].replacements[0];
-      let ls2a = components["/ls2a"].replacements[0];
-      let ls3a = components["/ls3a"].replacements[0];
-      let lsbs = components["/g3"].replacements[0].activeChildren;
-
-      let linesegment1s = ['/_linesegment1', ls1a.componentName, lsbs[0].componentName];
-      let linesegment2s = ['/_linesegment2', ls2a.componentName, lsbs[1].componentName];
-      let linesegment3s = ['/_linesegment3', ls3a.componentName, lsbs[2].componentName];
-
-      cy.log("initial state")
-
-      cy.window().then(async (win) => {
-        let components = Object.assign({}, win.state.components);
-        let v1tx = -1;
-        let v1ty = 2;
-        let v1hx = -2;
-        let v1hy = 3;
-        let v2tx = -4;
-        let v2ty = 7;
-        let v2hx = 3;
-        let v2hy = 5;
-        let v3tx = -9;
-        let v3ty = -1;
-        let v3hx = -3;
-        let v3hy = 6;
-
-        for (let name of linesegment1s) {
-          expect((await components[name].stateValues.endpoints)[0].map(x => x.tree)).eqls([v1tx, v1ty]);
-          expect((await components[name].stateValues.endpoints)[1].map(x => x.tree)).eqls([v1hx, v1hy]);
-        }
-        for (let name of linesegment2s) {
-          expect((await components[name].stateValues.endpoints)[0].map(x => x.tree)).eqls([v2tx, v2ty]);
-          expect((await components[name].stateValues.endpoints)[1].map(x => x.tree)).eqls([v2hx, v2hy]);
-        }
-        for (let name of linesegment3s) {
-          expect((await components[name].stateValues.endpoints)[0].map(x => x.tree)).eqls([v3tx, v3ty]);
-          expect((await components[name].stateValues.endpoints)[1].map(x => x.tree)).eqls([v3hx, v3hy]);
-        }
-
-      })
-
-      cy.log('move linesegment1')
-      cy.window().then(async (win) => {
-        let components = Object.assign({}, win.state.components);
-
-        let v1tx = 5;
-        let v1ty = -8;
-        let v1hx = 4;
-        let v1hy = -9;
-        await components['/_linesegment1'].moveLineSegment({
-          point1coords: [v1tx, v1ty],
-          point2coords: [v1hx, v1hy]
-        });
-        let v2tx = -4;
-        let v2ty = 7;
-        let v2hx = 3;
-        let v2hy = 5;
-        let v3tx = -9;
-        let v3ty = -1;
-        let v3hx = -3;
-        let v3hy = 6;
-        for (let name of linesegment1s) {
-          expect((await components[name].stateValues.endpoints)[0].map(x => x.tree)).eqls([v1tx, v1ty]);
-          expect((await components[name].stateValues.endpoints)[1].map(x => x.tree)).eqls([v1hx, v1hy]);
-        }
-        for (let name of linesegment2s) {
-          expect((await components[name].stateValues.endpoints)[0].map(x => x.tree)).eqls([v2tx, v2ty]);
-          expect((await components[name].stateValues.endpoints)[1].map(x => x.tree)).eqls([v2hx, v2hy]);
-        }
-        for (let name of linesegment3s) {
-          expect((await components[name].stateValues.endpoints)[0].map(x => x.tree)).eqls([v3tx, v3ty]);
-          expect((await components[name].stateValues.endpoints)[1].map(x => x.tree)).eqls([v3hx, v3hy]);
+      win.callAction({
+        actionName: "moveLineSegment",
+        componentName: "/g1/ls",
+        args: {
+          point1coords: [x1, y1]
         }
       })
 
-      cy.log('move linesegment1a')
-      cy.window().then(async (win) => {
-        let components = Object.assign({}, win.state.components);
-
-        let v1tx = 2;
-        let v1ty = 6;
-        let v1hx = -2;
-        let v1hy = -4;
-        await ls1a.moveLineSegment({
-          point1coords: [v1tx, v1ty],
-          point2coords: [v1hx, v1hy]
-        });
-        let v2tx = -4;
-        let v2ty = 7;
-        let v2hx = 3;
-        let v2hy = 5;
-        let v3tx = -9;
-        let v3ty = -1;
-        let v3hx = -3;
-        let v3hy = 6;
-        for (let name of linesegment1s) {
-          expect((await components[name].stateValues.endpoints)[0].map(x => x.tree)).eqls([v1tx, v1ty]);
-          expect((await components[name].stateValues.endpoints)[1].map(x => x.tree)).eqls([v1hx, v1hy]);
-        }
-        for (let name of linesegment2s) {
-          expect((await components[name].stateValues.endpoints)[0].map(x => x.tree)).eqls([v2tx, v2ty]);
-          expect((await components[name].stateValues.endpoints)[1].map(x => x.tree)).eqls([v2hx, v2hy]);
-        }
-        for (let name of linesegment3s) {
-          expect((await components[name].stateValues.endpoints)[0].map(x => x.tree)).eqls([v3tx, v3ty]);
-          expect((await components[name].stateValues.endpoints)[1].map(x => x.tree)).eqls([v3hx, v3hy]);
-        }
-      })
-
-      cy.log('move linesegment1b')
-      cy.window().then(async (win) => {
-        let components = Object.assign({}, win.state.components);
-
-        let v1tx = -3;
-        let v1ty = 9;
-        let v1hx = 6;
-        let v1hy = -8;
-        await lsbs[0].moveLineSegment({
-          point1coords: [v1tx, v1ty],
-          point2coords: [v1hx, v1hy]
-        });
-        let v2tx = -4;
-        let v2ty = 7;
-        let v2hx = 3;
-        let v2hy = 5;
-        let v3tx = -9;
-        let v3ty = -1;
-        let v3hx = -3;
-        let v3hy = 6;
-        for (let name of linesegment1s) {
-          expect((await components[name].stateValues.endpoints)[0].map(x => x.tree)).eqls([v1tx, v1ty]);
-          expect((await components[name].stateValues.endpoints)[1].map(x => x.tree)).eqls([v1hx, v1hy]);
-        }
-        for (let name of linesegment2s) {
-          expect((await components[name].stateValues.endpoints)[0].map(x => x.tree)).eqls([v2tx, v2ty]);
-          expect((await components[name].stateValues.endpoints)[1].map(x => x.tree)).eqls([v2hx, v2hy]);
-        }
-        for (let name of linesegment3s) {
-          expect((await components[name].stateValues.endpoints)[0].map(x => x.tree)).eqls([v3tx, v3ty]);
-          expect((await components[name].stateValues.endpoints)[1].map(x => x.tree)).eqls([v3hx, v3hy]);
-        }
-      })
-
-      cy.log('move linesegment2')
-      cy.window().then(async (win) => {
-        let components = Object.assign({}, win.state.components);
-
-        let v2tx = -4;
-        let v2ty = 7;
-        let v2hx = 3;
-        let v2hy = 5;
-
-        await components['/_linesegment2'].moveLineSegment({
-          point1coords: [v2tx, v2ty],
-          point2coords: [v2hx, v2hy]
-        });
-        let v1tx = -3;
-        let v1ty = 9;
-        let v1hx = 6;
-        let v1hy = -8;
-        let v3tx = -9;
-        let v3ty = -1;
-        let v3hx = -3;
-        let v3hy = 6;
-        for (let name of linesegment1s) {
-          expect((await components[name].stateValues.endpoints)[0].map(x => x.tree)).eqls([v1tx, v1ty]);
-          expect((await components[name].stateValues.endpoints)[1].map(x => x.tree)).eqls([v1hx, v1hy]);
-        }
-        for (let name of linesegment2s) {
-          expect((await components[name].stateValues.endpoints)[0].map(x => x.tree)).eqls([v2tx, v2ty]);
-          expect((await components[name].stateValues.endpoints)[1].map(x => x.tree)).eqls([v2hx, v2hy]);
-        }
-        for (let name of linesegment3s) {
-          expect((await components[name].stateValues.endpoints)[0].map(x => x.tree)).eqls([v3tx, v3ty]);
-          expect((await components[name].stateValues.endpoints)[1].map(x => x.tree)).eqls([v3hx, v3hy]);
-        }
-      })
-
-      cy.log('move linesegment2a')
-      cy.window().then(async (win) => {
-        let components = Object.assign({}, win.state.components);
-
-        let v2tx = 6;
-        let v2ty = -2;
-        let v2hx = 1;
-        let v2hy = -7;
-
-        await ls2a.moveLineSegment({
-          point1coords: [v2tx, v2ty],
-          point2coords: [v2hx, v2hy]
-        });
-        let v1tx = -3;
-        let v1ty = 9;
-        let v1hx = 6;
-        let v1hy = -8;
-        let v3tx = -9;
-        let v3ty = -1;
-        let v3hx = -3;
-        let v3hy = 6;
-        for (let name of linesegment1s) {
-          expect((await components[name].stateValues.endpoints)[0].map(x => x.tree)).eqls([v1tx, v1ty]);
-          expect((await components[name].stateValues.endpoints)[1].map(x => x.tree)).eqls([v1hx, v1hy]);
-        }
-        for (let name of linesegment2s) {
-          expect((await components[name].stateValues.endpoints)[0].map(x => x.tree)).eqls([v2tx, v2ty]);
-          expect((await components[name].stateValues.endpoints)[1].map(x => x.tree)).eqls([v2hx, v2hy]);
-        }
-        for (let name of linesegment3s) {
-          expect((await components[name].stateValues.endpoints)[0].map(x => x.tree)).eqls([v3tx, v3ty]);
-          expect((await components[name].stateValues.endpoints)[1].map(x => x.tree)).eqls([v3hx, v3hy]);
-        }
-      })
-
-      cy.log('move linesegment2b')
-      cy.window().then(async (win) => {
-        let components = Object.assign({}, win.state.components);
-
-        let v2tx = -3;
-        let v2ty = -6;
-        let v2hx = 5;
-        let v2hy = -9;
-
-        await lsbs[1].moveLineSegment({
-          point1coords: [v2tx, v2ty],
-          point2coords: [v2hx, v2hy]
-        });
-        let v1tx = -3;
-        let v1ty = 9;
-        let v1hx = 6;
-        let v1hy = -8;
-        let v3tx = -9;
-        let v3ty = -1;
-        let v3hx = -3;
-        let v3hy = 6;
-        for (let name of linesegment1s) {
-          expect((await components[name].stateValues.endpoints)[0].map(x => x.tree)).eqls([v1tx, v1ty]);
-          expect((await components[name].stateValues.endpoints)[1].map(x => x.tree)).eqls([v1hx, v1hy]);
-        }
-        for (let name of linesegment2s) {
-          expect((await components[name].stateValues.endpoints)[0].map(x => x.tree)).eqls([v2tx, v2ty]);
-          expect((await components[name].stateValues.endpoints)[1].map(x => x.tree)).eqls([v2hx, v2hy]);
-        }
-        for (let name of linesegment3s) {
-          expect((await components[name].stateValues.endpoints)[0].map(x => x.tree)).eqls([v3tx, v3ty]);
-          expect((await components[name].stateValues.endpoints)[1].map(x => x.tree)).eqls([v3hx, v3hy]);
-        }
-      })
-
-      cy.log('move linesegment3')
-      cy.window().then(async (win) => {
-        let components = Object.assign({}, win.state.components);
-
-        let v3tx = 6;
-        let v3ty = -8;
-        let v3hx = -1;
-        let v3hy = 0;
-
-        await components['/_linesegment3'].moveLineSegment({
-          point1coords: [v3tx, v3ty],
-          point2coords: [v3hx, v3hy]
-        });
-        let v1tx = -3;
-        let v1ty = 9;
-        let v1hx = 6;
-        let v1hy = -8;
-        let v2ty = -6;
-        let v2tx = -3;
-        let v2hx = 5;
-        let v2hy = -9;
-        for (let name of linesegment1s) {
-          expect((await components[name].stateValues.endpoints)[0].map(x => x.tree)).eqls([v1tx, v1ty]);
-          expect((await components[name].stateValues.endpoints)[1].map(x => x.tree)).eqls([v1hx, v1hy]);
-        }
-        for (let name of linesegment2s) {
-          expect((await components[name].stateValues.endpoints)[0].map(x => x.tree)).eqls([v2tx, v2ty]);
-          expect((await components[name].stateValues.endpoints)[1].map(x => x.tree)).eqls([v2hx, v2hy]);
-        }
-        for (let name of linesegment3s) {
-          expect((await components[name].stateValues.endpoints)[0].map(x => x.tree)).eqls([v3tx, v3ty]);
-          expect((await components[name].stateValues.endpoints)[1].map(x => x.tree)).eqls([v3hx, v3hy]);
-        }
-      })
-
-      cy.log('move linesegment3a')
-      cy.window().then(async (win) => {
-        let components = Object.assign({}, win.state.components);
-
-        let v3tx = 3;
-        let v3ty = 1;
-        let v3hx = -7;
-        let v3hy = -2;
-
-        await ls3a.moveLineSegment({
-          point1coords: [v3tx, v3ty],
-          point2coords: [v3hx, v3hy]
-        });
-        let v1tx = -3;
-        let v1ty = 9;
-        let v1hx = 6;
-        let v1hy = -8;
-        let v2ty = -6;
-        let v2tx = -3;
-        let v2hx = 5;
-        let v2hy = -9;
-        for (let name of linesegment1s) {
-          expect((await components[name].stateValues.endpoints)[0].map(x => x.tree)).eqls([v1tx, v1ty]);
-          expect((await components[name].stateValues.endpoints)[1].map(x => x.tree)).eqls([v1hx, v1hy]);
-        }
-        for (let name of linesegment2s) {
-          expect((await components[name].stateValues.endpoints)[0].map(x => x.tree)).eqls([v2tx, v2ty]);
-          expect((await components[name].stateValues.endpoints)[1].map(x => x.tree)).eqls([v2hx, v2hy]);
-        }
-        for (let name of linesegment3s) {
-          expect((await components[name].stateValues.endpoints)[0].map(x => x.tree)).eqls([v3tx, v3ty]);
-          expect((await components[name].stateValues.endpoints)[1].map(x => x.tree)).eqls([v3hx, v3hy]);
-        }
-      })
-
-      cy.log('move linesegment3b')
-      cy.window().then(async (win) => {
-        let components = Object.assign({}, win.state.components);
-
-        let v3tx = -2;
-        let v3ty = 7;
-        let v3hx = 5;
-        let v3hy = -6;
-
-        await lsbs[2].moveLineSegment({
-          point1coords: [v3tx, v3ty],
-          point2coords: [v3hx, v3hy]
-        });
-        let v1tx = -3;
-        let v1ty = 9;
-        let v1hx = 6;
-        let v1hy = -8;
-        let v2ty = -6;
-        let v2tx = -3;
-        let v2hx = 5;
-        let v2hy = -9;
-        for (let name of linesegment1s) {
-          expect((await components[name].stateValues.endpoints)[0].map(x => x.tree)).eqls([v1tx, v1ty]);
-          expect((await components[name].stateValues.endpoints)[1].map(x => x.tree)).eqls([v1hx, v1hy]);
-        }
-        for (let name of linesegment2s) {
-          expect((await components[name].stateValues.endpoints)[0].map(x => x.tree)).eqls([v2tx, v2ty]);
-          expect((await components[name].stateValues.endpoints)[1].map(x => x.tree)).eqls([v2hx, v2hy]);
-        }
-        for (let name of linesegment3s) {
-          expect((await components[name].stateValues.endpoints)[0].map(x => x.tree)).eqls([v3tx, v3ty]);
-          expect((await components[name].stateValues.endpoints)[1].map(x => x.tree)).eqls([v3hx, v3hy]);
-        }
-      })
+      testLineSegmentCopiedTwice({ x1, y1, x2, y2 })
 
     })
+
+    cy.log('move copied second point')
+    cy.window().then(async (win) => {
+      x2 = -7;
+      y2 = -5;
+
+      win.callAction({
+        actionName: "moveLineSegment",
+        componentName: "/g1/ls",
+        args: {
+          point2coords: [x2, y2]
+        }
+      })
+
+      testLineSegmentCopiedTwice({ x1, y1, x2, y2 })
+
+    })
+
+    cy.log('move copied first point')
+    cy.window().then(async (win) => {
+      x1 = 6;
+      y1 = 0;
+
+      win.callAction({
+        actionName: "moveLineSegment",
+        componentName: "/g2/ls",
+        args: {
+          point1coords: [x1, y1]
+        }
+      })
+
+      testLineSegmentCopiedTwice({ x1, y1, x2, y2 })
+
+    })
+
+    cy.log('move copied second point')
+    cy.window().then(async (win) => {
+      x2 = 9;
+      y2 = -8;
+
+      win.callAction({
+        actionName: "moveLineSegment",
+        componentName: "/g2/ls",
+        args: {
+          point2coords: [x2, y2]
+        }
+      })
+
+      testLineSegmentCopiedTwice({ x1, y1, x2, y2 })
+
+    })
+
+    cy.log('move double copied first point')
+    cy.window().then(async (win) => {
+      x1 = -5;
+      y1 = 7;
+
+      win.callAction({
+        actionName: "moveLineSegment",
+        componentName: "/g3/ls",
+        args: {
+          point1coords: [x1, y1]
+        }
+      })
+
+      testLineSegmentCopiedTwice({ x1, y1, x2, y2 })
+
+    })
+
+    cy.log('move double copied second point')
+    cy.window().then(async (win) => {
+      x2 = -1;
+      y2 = 3;
+
+      win.callAction({
+        actionName: "moveLineSegment",
+        componentName: "/g3/ls",
+        args: {
+          point2coords: [x2, y2]
+        }
+      })
+
+      testLineSegmentCopiedTwice({ x1, y1, x2, y2 })
+
+    })
+
   })
 
   it('initially non-numeric point', () => {
@@ -914,6 +1110,7 @@ describe('LineSegment Tag Tests', function () {
   <graph>
     <lineSegment endpoints="($x,2) (-2,3)" />
   </graph>
+  <copy prop="endpoint1" target="_linesegment1" assignNames="p1" />
   `}, "*");
     });
 
@@ -922,18 +1119,20 @@ describe('LineSegment Tag Tests', function () {
 
     cy.log('check initial values')
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      expect((await components['/_linesegment1'].stateValues.endpoints)[0].map(x => x.tree)).eqls(["q", 2]);
-      expect((await components['/_linesegment1'].stateValues.endpoints)[1].map(x => x.tree)).eqls([-2, 3]);
+      let stateVariables = await win.returnAllStateVariables();
+      expect((await stateVariables['/_linesegment1'].stateValues.endpoints)[0]).eqls(["q", 2]);
+      expect((await stateVariables['/_linesegment1'].stateValues.endpoints)[1]).eqls([-2, 3]);
     });
 
     cy.log('change point to be numeric');
     cy.get('#\\/x textarea').type("{end}{backspace}5{enter}", { force: true });
 
+    cy.get('#\\/p1 .mjx-mrow').should('contain.text', '(5,2)')
+
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      expect((await components['/_linesegment1'].stateValues.endpoints)[0].map(x => x.tree)).eqls([5, 2]);
-      expect((await components['/_linesegment1'].stateValues.endpoints)[1].map(x => x.tree)).eqls([-2, 3]);
+      let stateVariables = await win.returnAllStateVariables();
+      expect((await stateVariables['/_linesegment1'].stateValues.endpoints)[0]).eqls([5, 2]);
+      expect((await stateVariables['/_linesegment1'].stateValues.endpoints)[1]).eqls([-2, 3]);
 
     })
   })
@@ -969,63 +1168,80 @@ describe('LineSegment Tag Tests', function () {
 
   <copy target="g2" assignNames="g5" />
 
+  <copy prop="endpointX1_1" target="g1/l" assignNames="x11" />
+  <copy prop="endpointX1_2" target="g1/l" assignNames="y11" />
+  <copy prop="endpointX2_1" target="g1/l" assignNames="x2" />
+  <copy prop="endpointX2_2" target="g1/l" assignNames="y2" />
+  <copy prop="endpointX1_1" target="g2/l" assignNames="x12" />
+  <copy prop="endpointX1_2" target="g2/l" assignNames="y12" />
+
   `}, "*");
     });
 
     cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
 
-    async function checkLineSegments({ x11, y11, x12, y12, x2, y2, components }) {
+    async function checkLineSegments({ x11, y11, x12, y12, x2, y2 }) {
 
-      expect((await components['/g1/l'].stateValues.endpoints)[0][0].evaluate_to_constant()).closeTo(x11, 1E-12);
-      expect((await components['/g1/l'].stateValues.endpoints)[0][1].evaluate_to_constant()).closeTo(y11, 1E-12);
-      expect((await components['/g1/l'].stateValues.endpoints)[1][0].evaluate_to_constant()).closeTo(x2, 1E-12);
-      expect((await components['/g1/l'].stateValues.endpoints)[1][1].evaluate_to_constant()).closeTo(y2, 1E-12);
+      cy.get("#\\/x11 .mjx-mrow").should('contain.text', `${nInDOM(x11).substring(0, 6)}`)
+      cy.get("#\\/y11 .mjx-mrow").should('contain.text', `${nInDOM(y11).substring(0, 6)}`)
+      cy.get("#\\/x2 .mjx-mrow").should('contain.text', `${nInDOM(x2).substring(0, 6)}`)
+      cy.get("#\\/y2 .mjx-mrow").should('contain.text', `${nInDOM(y2).substring(0, 6)}`)
+      cy.get("#\\/x12 .mjx-mrow").should('contain.text', `${nInDOM(x12).substring(0, 6)}`)
+      cy.get("#\\/y12 .mjx-mrow").should('contain.text', `${nInDOM(y12).substring(0, 6)}`)
 
-      expect((await components['/g2/l'].stateValues.endpoints)[0][0].evaluate_to_constant()).closeTo(x12, 1E-12);
-      expect((await components['/g2/l'].stateValues.endpoints)[0][1].evaluate_to_constant()).closeTo(y12, 1E-12);
-      expect((await components['/g2/l'].stateValues.endpoints)[1][0].evaluate_to_constant()).closeTo(x2, 1E-12);
-      expect((await components['/g2/l'].stateValues.endpoints)[1][1].evaluate_to_constant()).closeTo(y2, 1E-12);
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables();
 
-      expect((await components['/g3/l'].stateValues.endpoints)[0][0].evaluate_to_constant()).closeTo(x12, 1E-12);
-      expect((await components['/g3/l'].stateValues.endpoints)[0][1].evaluate_to_constant()).closeTo(y12, 1E-12);
-      expect((await components['/g3/l'].stateValues.endpoints)[1][0].evaluate_to_constant()).closeTo(x2, 1E-12);
-      expect((await components['/g3/l'].stateValues.endpoints)[1][1].evaluate_to_constant()).closeTo(y2, 1E-12);
+        expect(me.fromAst(stateVariables['/g1/l'].stateValues.endpoints[0][0]).evaluate_to_constant()).closeTo(x11, 1E-12);
+        expect(me.fromAst(stateVariables['/g1/l'].stateValues.endpoints[0][1]).evaluate_to_constant()).closeTo(y11, 1E-12);
+        expect(me.fromAst(stateVariables['/g1/l'].stateValues.endpoints[1][0]).evaluate_to_constant()).closeTo(x2, 1E-12);
+        expect(me.fromAst(stateVariables['/g1/l'].stateValues.endpoints[1][1]).evaluate_to_constant()).closeTo(y2, 1E-12);
 
-      expect((await components['/g4/l'].stateValues.endpoints)[0][0].evaluate_to_constant()).closeTo(x12, 1E-12);
-      expect((await components['/g4/l'].stateValues.endpoints)[0][1].evaluate_to_constant()).closeTo(y12, 1E-12);
-      expect((await components['/g4/l'].stateValues.endpoints)[1][0].evaluate_to_constant()).closeTo(x2, 1E-12);
-      expect((await components['/g4/l'].stateValues.endpoints)[1][1].evaluate_to_constant()).closeTo(y2, 1E-12);
+        expect(me.fromAst(stateVariables['/g2/l'].stateValues.endpoints[0][0]).evaluate_to_constant()).closeTo(x12, 1E-12);
+        expect(me.fromAst(stateVariables['/g2/l'].stateValues.endpoints[0][1]).evaluate_to_constant()).closeTo(y12, 1E-12);
+        expect(me.fromAst(stateVariables['/g2/l'].stateValues.endpoints[1][0]).evaluate_to_constant()).closeTo(x2, 1E-12);
+        expect(me.fromAst(stateVariables['/g2/l'].stateValues.endpoints[1][1]).evaluate_to_constant()).closeTo(y2, 1E-12);
 
-      expect((await components['/g5/l'].stateValues.endpoints)[0][0].evaluate_to_constant()).closeTo(x12, 1E-12);
-      expect((await components['/g5/l'].stateValues.endpoints)[0][1].evaluate_to_constant()).closeTo(y12, 1E-12);
-      expect((await components['/g5/l'].stateValues.endpoints)[1][0].evaluate_to_constant()).closeTo(x2, 1E-12);
-      expect((await components['/g5/l'].stateValues.endpoints)[1][1].evaluate_to_constant()).closeTo(y2, 1E-12);
+        expect(me.fromAst(stateVariables['/g3/l'].stateValues.endpoints[0][0]).evaluate_to_constant()).closeTo(x12, 1E-12);
+        expect(me.fromAst(stateVariables['/g3/l'].stateValues.endpoints[0][1]).evaluate_to_constant()).closeTo(y12, 1E-12);
+        expect(me.fromAst(stateVariables['/g3/l'].stateValues.endpoints[1][0]).evaluate_to_constant()).closeTo(x2, 1E-12);
+        expect(me.fromAst(stateVariables['/g3/l'].stateValues.endpoints[1][1]).evaluate_to_constant()).closeTo(y2, 1E-12);
 
-      expect((await components['/g1/A'].stateValues.xs)[0].tree).closeTo(x11, 1E-12);
-      expect((await components['/g1/A'].stateValues.xs)[1].tree).closeTo(y11, 1E-12);
-      expect((await components['/g1/B'].stateValues.xs)[0].tree).closeTo(x2, 1E-12);
-      expect((await components['/g1/B'].stateValues.xs)[1].tree).closeTo(y2, 1E-12);
+        expect(me.fromAst(stateVariables['/g4/l'].stateValues.endpoints[0][0]).evaluate_to_constant()).closeTo(x12, 1E-12);
+        expect(me.fromAst(stateVariables['/g4/l'].stateValues.endpoints[0][1]).evaluate_to_constant()).closeTo(y12, 1E-12);
+        expect(me.fromAst(stateVariables['/g4/l'].stateValues.endpoints[1][0]).evaluate_to_constant()).closeTo(x2, 1E-12);
+        expect(me.fromAst(stateVariables['/g4/l'].stateValues.endpoints[1][1]).evaluate_to_constant()).closeTo(y2, 1E-12);
 
-      expect((await components['/g2/A'].stateValues.xs)[0].tree).closeTo(x12, 1E-12);
-      expect((await components['/g2/A'].stateValues.xs)[1].tree).closeTo(y12, 1E-12);
-      expect((await components['/g2/B'].stateValues.xs)[0].tree).closeTo(x2, 1E-12);
-      expect((await components['/g2/B'].stateValues.xs)[1].tree).closeTo(y2, 1E-12);
+        expect(me.fromAst(stateVariables['/g5/l'].stateValues.endpoints[0][0]).evaluate_to_constant()).closeTo(x12, 1E-12);
+        expect(me.fromAst(stateVariables['/g5/l'].stateValues.endpoints[0][1]).evaluate_to_constant()).closeTo(y12, 1E-12);
+        expect(me.fromAst(stateVariables['/g5/l'].stateValues.endpoints[1][0]).evaluate_to_constant()).closeTo(x2, 1E-12);
+        expect(me.fromAst(stateVariables['/g5/l'].stateValues.endpoints[1][1]).evaluate_to_constant()).closeTo(y2, 1E-12);
 
-      expect((await components['/g3/A'].stateValues.xs)[0].tree).closeTo(x12, 1E-12);
-      expect((await components['/g3/A'].stateValues.xs)[1].tree).closeTo(y12, 1E-12);
-      expect((await components['/g3/B'].stateValues.xs)[0].tree).closeTo(x2, 1E-12);
-      expect((await components['/g3/B'].stateValues.xs)[1].tree).closeTo(y2, 1E-12);
+        expect(stateVariables['/g1/A'].stateValues.xs[0]).closeTo(x11, 1E-12);
+        expect(stateVariables['/g1/A'].stateValues.xs[1]).closeTo(y11, 1E-12);
+        expect(stateVariables['/g1/B'].stateValues.xs[0]).closeTo(x2, 1E-12);
+        expect(stateVariables['/g1/B'].stateValues.xs[1]).closeTo(y2, 1E-12);
 
-      expect((await components['/g4/A'].stateValues.xs)[0].tree).closeTo(x12, 1E-12);
-      expect((await components['/g4/A'].stateValues.xs)[1].tree).closeTo(y12, 1E-12);
-      expect((await components['/g4/B'].stateValues.xs)[0].tree).closeTo(x2, 1E-12);
-      expect((await components['/g4/B'].stateValues.xs)[1].tree).closeTo(y2, 1E-12);
+        expect(stateVariables['/g2/A'].stateValues.xs[0]).closeTo(x12, 1E-12);
+        expect(stateVariables['/g2/A'].stateValues.xs[1]).closeTo(y12, 1E-12);
+        expect(stateVariables['/g2/B'].stateValues.xs[0]).closeTo(x2, 1E-12);
+        expect(stateVariables['/g2/B'].stateValues.xs[1]).closeTo(y2, 1E-12);
 
-      expect((await components['/g5/A'].stateValues.xs)[0].tree).closeTo(x12, 1E-12);
-      expect((await components['/g5/A'].stateValues.xs)[1].tree).closeTo(y12, 1E-12);
-      expect((await components['/g5/B'].stateValues.xs)[0].tree).closeTo(x2, 1E-12);
-      expect((await components['/g5/B'].stateValues.xs)[1].tree).closeTo(y2, 1E-12);
+        expect(stateVariables['/g3/A'].stateValues.xs[0]).closeTo(x12, 1E-12);
+        expect(stateVariables['/g3/A'].stateValues.xs[1]).closeTo(y12, 1E-12);
+        expect(stateVariables['/g3/B'].stateValues.xs[0]).closeTo(x2, 1E-12);
+        expect(stateVariables['/g3/B'].stateValues.xs[1]).closeTo(y2, 1E-12);
 
+        expect(stateVariables['/g4/A'].stateValues.xs[0]).closeTo(x12, 1E-12);
+        expect(stateVariables['/g4/A'].stateValues.xs[1]).closeTo(y12, 1E-12);
+        expect(stateVariables['/g4/B'].stateValues.xs[0]).closeTo(x2, 1E-12);
+        expect(stateVariables['/g4/B'].stateValues.xs[1]).closeTo(y2, 1E-12);
+
+        expect(stateVariables['/g5/A'].stateValues.xs[0]).closeTo(x12, 1E-12);
+        expect(stateVariables['/g5/A'].stateValues.xs[1]).closeTo(y12, 1E-12);
+        expect(stateVariables['/g5/B'].stateValues.xs[0]).closeTo(x2, 1E-12);
+        expect(stateVariables['/g5/B'].stateValues.xs[1]).closeTo(y2, 1E-12);
+      })
     }
 
     let x11 = -5, y11 = 9;
@@ -1033,189 +1249,235 @@ describe('LineSegment Tag Tests', function () {
     let x2 = 0, y2 = 0;
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      await checkLineSegments({ x11, y11, x12, y12, x2, y2, components });
+      await checkLineSegments({ x11, y11, x12, y12, x2, y2 });
 
     })
 
     cy.log("move point g1/A")
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
       x11 = 7;
       y11 = -3;
-      await components["/g1/A"].movePoint({ x: x11, y: y11 });
-      await checkLineSegments({ x11, y11, x12, y12, x2, y2, components });
+      win.callAction({
+        actionName: "movePoint",
+        componentName: "/g1/A",
+        args: { x: x11, y: y11 }
+      })
+      await checkLineSegments({ x11, y11, x12, y12, x2, y2 });
     })
 
     cy.log("move point g1/B")
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
       x2 = -1;
       y2 = -4;
-      await components["/g1/B"].movePoint({ x: x2, y: y2 });
-      await checkLineSegments({ x11, y11, x12, y12, x2, y2, components });
+      win.callAction({
+        actionName: "movePoint",
+        componentName: "/g1/B",
+        args: { x: x2, y: y2 }
+      })
+      await checkLineSegments({ x11, y11, x12, y12, x2, y2 });
 
     })
 
     cy.log("move line g1/l")
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
 
       x11 = 5;
       y11 = 3;
       x2 = -7;
       y2 = -8;
-      await components['/g1/l'].moveLineSegment({
-        point1coords: [x11, y11],
-        point2coords: [x2, y2]
-      });
-      await checkLineSegments({ x11, y11, x12, y12, x2, y2, components });
+      win.callAction({
+        actionName: "moveLineSegment",
+        componentName: '/g1/l',
+        args: {
+          point1coords: [x11, y11],
+          point2coords: [x2, y2]
+        }
+      })
+      await checkLineSegments({ x11, y11, x12, y12, x2, y2 });
 
     })
 
 
     cy.log("move point g2/A")
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
       x12 = -1;
       y12 = 0;
-      await components["/g2/A"].movePoint({ x: x12, y: y12 });
-      await checkLineSegments({ x11, y11, x12, y12, x2, y2, components });
+      win.callAction({
+        actionName: "movePoint",
+        componentName: "/g2/A",
+        args: { x: x12, y: y12 }
+      })
+      await checkLineSegments({ x11, y11, x12, y12, x2, y2 });
     })
 
     cy.log("move point g2/B")
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
       x2 = 6;
       y2 = -6;
-      await components["/g2/B"].movePoint({ x: x2, y: y2 });
-      await checkLineSegments({ x11, y11, x12, y12, x2, y2, components });
+      win.callAction({
+        actionName: "movePoint",
+        componentName: "/g2/B",
+        args: { x: x2, y: y2 }
+      })
+      await checkLineSegments({ x11, y11, x12, y12, x2, y2 });
 
     })
 
     cy.log("move line g2/l")
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
 
       x12 = 10;
       y12 = 9;
       x2 = 8;
       y2 = 7;
-      await components["/g2/l"].moveLineSegment({
-        point1coords: [x12, y12],
-        point2coords: [x2, y2]
-      });
-      await checkLineSegments({ x11, y11, x12, y12, x2, y2, components });
+      win.callAction({
+        actionName: "moveLineSegment",
+        componentName: '/g2/l',
+        args: {
+          point1coords: [x12, y12],
+          point2coords: [x2, y2]
+        }
+      })
+
+      await checkLineSegments({ x11, y11, x12, y12, x2, y2 });
 
     })
 
     cy.log("move point g3/A")
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
       x12 = -3;
       y12 = 7;
-      await components["/g3/A"].movePoint({ x: x12, y: y12 });
-      await checkLineSegments({ x11, y11, x12, y12, x2, y2, components });
+      win.callAction({
+        actionName: "movePoint",
+        componentName: "/g3/A",
+        args: { x: x12, y: y12 }
+      })
+      await checkLineSegments({ x11, y11, x12, y12, x2, y2 });
 
     })
 
     cy.log("move point g3/B")
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
       x2 = -8;
       y2 = -4;
-      await components["/g3/B"].movePoint({ x: x2, y: y2 });
-      await checkLineSegments({ x11, y11, x12, y12, x2, y2, components });
+      win.callAction({
+        actionName: "movePoint",
+        componentName: "/g3/B",
+        args: { x: x2, y: y2 }
+      })
+      await checkLineSegments({ x11, y11, x12, y12, x2, y2 });
 
     })
 
     cy.log("move line g3/l")
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
 
       x12 = 0;
       y12 = -1;
       x2 = 2;
       y2 = -3;
-      await components["/g3/l"].moveLineSegment({
-        point1coords: [x12, y12],
-        point2coords: [x2, y2]
-      });
-      await checkLineSegments({ x11, y11, x12, y12, x2, y2, components });
+      win.callAction({
+        actionName: "moveLineSegment",
+        componentName: '/g3/l',
+        args: {
+          point1coords: [x12, y12],
+          point2coords: [x2, y2]
+        }
+      })
+      await checkLineSegments({ x11, y11, x12, y12, x2, y2 });
 
     })
 
 
     cy.log("move point g4/A")
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
       x12 = 9;
       y12 = 8;
-      await components["/g4/A"].movePoint({ x: x12, y: y12 });
-      await checkLineSegments({ x11, y11, x12, y12, x2, y2, components });
+      win.callAction({
+        actionName: "movePoint",
+        componentName: "/g4/A",
+        args: { x: x12, y: y12 }
+      })
+      await checkLineSegments({ x11, y11, x12, y12, x2, y2 });
 
     })
 
     cy.log("move point g4/B")
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
       x2 = 6;
       y2 = -9;
-      await components["/g4/B"].movePoint({ x: x2, y: y2 });
-      await checkLineSegments({ x11, y11, x12, y12, x2, y2, components });
+      win.callAction({
+        actionName: "movePoint",
+        componentName: "/g4/B",
+        args: { x: x2, y: y2 }
+      })
+      await checkLineSegments({ x11, y11, x12, y12, x2, y2 });
 
     })
 
     cy.log("move line g4/l")
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
 
       x12 = -3;
       y12 = 4;
       x2 = -5;
       y2 = 6;
-      await components["/g4/l"].moveLineSegment({
-        point1coords: [x12, y12],
-        point2coords: [x2, y2]
-      });
-      await checkLineSegments({ x11, y11, x12, y12, x2, y2, components });
+      win.callAction({
+        actionName: "moveLineSegment",
+        componentName: '/g4/l',
+        args: {
+          point1coords: [x12, y12],
+          point2coords: [x2, y2]
+        }
+      })
+      await checkLineSegments({ x11, y11, x12, y12, x2, y2 });
 
     })
 
 
     cy.log("move point g5/A")
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
       x12 = 1;
       y12 = -3;
-      await components["/g5/A"].movePoint({ x: x12, y: y12 });
-      await checkLineSegments({ x11, y11, x12, y12, x2, y2, components });
+      win.callAction({
+        actionName: "movePoint",
+        componentName: "/g5/A",
+        args: { x: x12, y: y12 }
+      })
+      await checkLineSegments({ x11, y11, x12, y12, x2, y2 });
 
     })
 
     cy.log("move point g5/B")
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
       x2 = 0;
       y2 = 7;
-      await components["/g5/B"].movePoint({ x: x2, y: y2 });
-      await checkLineSegments({ x11, y11, x12, y12, x2, y2, components });
+      win.callAction({
+        actionName: "movePoint",
+        componentName: "/g5/B",
+        args: { x: x2, y: y2 }
+      })
+      await checkLineSegments({ x11, y11, x12, y12, x2, y2 });
 
     })
 
     cy.log("move line g5/l")
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
+      let stateVariables = await win.returnAllStateVariables();
 
       x12 = 4;
       y12 = 5;
       x2 = -6;
       y2 = -7;
-      await components["/g5/l"].moveLineSegment({
-        point1coords: [x12, y12],
-        point2coords: [x2, y2]
-      });
-      await checkLineSegments({ x11, y11, x12, y12, x2, y2, components });
+      win.callAction({
+        actionName: "moveLineSegment",
+        componentName: '/g5/l',
+        args: {
+          point1coords: [x12, y12],
+          point2coords: [x2, y2]
+        }
+      })
+      await checkLineSegments({ x11, y11, x12, y12, x2, y2 });
 
     })
 
@@ -1261,63 +1523,80 @@ describe('LineSegment Tag Tests', function () {
 
   <copy target="g2" assignNames="g5" />
 
+  <copy prop="endpointX1_1" target="g1/l" assignNames="x11" />
+  <copy prop="endpointX1_2" target="g1/l" assignNames="y11" />
+  <copy prop="endpointX2_1" target="g1/l" assignNames="x2" />
+  <copy prop="endpointX2_2" target="g1/l" assignNames="y2" />
+  <copy prop="endpointX1_1" target="g2/l" assignNames="x12" />
+  <copy prop="endpointX1_2" target="g2/l" assignNames="y12" />
+
   `}, "*");
     });
 
     cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
 
-    async function checkLineSegments({ x11, y11, x12, y12, x2, y2, components }) {
+    async function checkLineSegments({ x11, y11, x12, y12, x2, y2 }) {
 
-      expect((await components['/g1/l'].stateValues.endpoints)[0][0].evaluate_to_constant()).closeTo(x11, 1E-12);
-      expect((await components['/g1/l'].stateValues.endpoints)[0][1].evaluate_to_constant()).closeTo(y11, 1E-12);
-      expect((await components['/g1/l'].stateValues.endpoints)[1][0].evaluate_to_constant()).closeTo(x2, 1E-12);
-      expect((await components['/g1/l'].stateValues.endpoints)[1][1].evaluate_to_constant()).closeTo(y2, 1E-12);
+      cy.get("#\\/x11 .mjx-mrow").should('contain.text', `${nInDOM(x11).substring(0, 6)}`)
+      cy.get("#\\/y11 .mjx-mrow").should('contain.text', `${nInDOM(y11).substring(0, 6)}`)
+      cy.get("#\\/x2 .mjx-mrow").should('contain.text', `${nInDOM(x2).substring(0, 6)}`)
+      cy.get("#\\/y2 .mjx-mrow").should('contain.text', `${nInDOM(y2).substring(0, 6)}`)
+      cy.get("#\\/x12 .mjx-mrow").should('contain.text', `${nInDOM(x12).substring(0, 6)}`)
+      cy.get("#\\/y12 .mjx-mrow").should('contain.text', `${nInDOM(y12).substring(0, 6)}`)
 
-      expect((await components['/g2/l'].stateValues.endpoints)[0][0].evaluate_to_constant()).closeTo(x12, 1E-12);
-      expect((await components['/g2/l'].stateValues.endpoints)[0][1].evaluate_to_constant()).closeTo(y12, 1E-12);
-      expect((await components['/g2/l'].stateValues.endpoints)[1][0].evaluate_to_constant()).closeTo(x2, 1E-12);
-      expect((await components['/g2/l'].stateValues.endpoints)[1][1].evaluate_to_constant()).closeTo(y2, 1E-12);
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables();
 
-      expect((await components['/g3/l'].stateValues.endpoints)[0][0].evaluate_to_constant()).closeTo(x12, 1E-12);
-      expect((await components['/g3/l'].stateValues.endpoints)[0][1].evaluate_to_constant()).closeTo(y12, 1E-12);
-      expect((await components['/g3/l'].stateValues.endpoints)[1][0].evaluate_to_constant()).closeTo(x2, 1E-12);
-      expect((await components['/g3/l'].stateValues.endpoints)[1][1].evaluate_to_constant()).closeTo(y2, 1E-12);
+        expect(me.fromAst(stateVariables['/g1/l'].stateValues.endpoints[0][0]).evaluate_to_constant()).closeTo(x11, 1E-12);
+        expect(me.fromAst(stateVariables['/g1/l'].stateValues.endpoints[0][1]).evaluate_to_constant()).closeTo(y11, 1E-12);
+        expect(me.fromAst(stateVariables['/g1/l'].stateValues.endpoints[1][0]).evaluate_to_constant()).closeTo(x2, 1E-12);
+        expect(me.fromAst(stateVariables['/g1/l'].stateValues.endpoints[1][1]).evaluate_to_constant()).closeTo(y2, 1E-12);
 
-      expect((await components['/g4/l'].stateValues.endpoints)[0][0].evaluate_to_constant()).closeTo(x12, 1E-12);
-      expect((await components['/g4/l'].stateValues.endpoints)[0][1].evaluate_to_constant()).closeTo(y12, 1E-12);
-      expect((await components['/g4/l'].stateValues.endpoints)[1][0].evaluate_to_constant()).closeTo(x2, 1E-12);
-      expect((await components['/g4/l'].stateValues.endpoints)[1][1].evaluate_to_constant()).closeTo(y2, 1E-12);
+        expect(me.fromAst(stateVariables['/g2/l'].stateValues.endpoints[0][0]).evaluate_to_constant()).closeTo(x12, 1E-12);
+        expect(me.fromAst(stateVariables['/g2/l'].stateValues.endpoints[0][1]).evaluate_to_constant()).closeTo(y12, 1E-12);
+        expect(me.fromAst(stateVariables['/g2/l'].stateValues.endpoints[1][0]).evaluate_to_constant()).closeTo(x2, 1E-12);
+        expect(me.fromAst(stateVariables['/g2/l'].stateValues.endpoints[1][1]).evaluate_to_constant()).closeTo(y2, 1E-12);
 
-      expect((await components['/g5/l'].stateValues.endpoints)[0][0].evaluate_to_constant()).closeTo(x12, 1E-12);
-      expect((await components['/g5/l'].stateValues.endpoints)[0][1].evaluate_to_constant()).closeTo(y12, 1E-12);
-      expect((await components['/g5/l'].stateValues.endpoints)[1][0].evaluate_to_constant()).closeTo(x2, 1E-12);
-      expect((await components['/g5/l'].stateValues.endpoints)[1][1].evaluate_to_constant()).closeTo(y2, 1E-12);
+        expect(me.fromAst(stateVariables['/g3/l'].stateValues.endpoints[0][0]).evaluate_to_constant()).closeTo(x12, 1E-12);
+        expect(me.fromAst(stateVariables['/g3/l'].stateValues.endpoints[0][1]).evaluate_to_constant()).closeTo(y12, 1E-12);
+        expect(me.fromAst(stateVariables['/g3/l'].stateValues.endpoints[1][0]).evaluate_to_constant()).closeTo(x2, 1E-12);
+        expect(me.fromAst(stateVariables['/g3/l'].stateValues.endpoints[1][1]).evaluate_to_constant()).closeTo(y2, 1E-12);
 
-      expect((await components['/g1/A'].stateValues.xs)[0].tree).closeTo(x11, 1E-12);
-      expect((await components['/g1/A'].stateValues.xs)[1].tree).closeTo(y11, 1E-12);
-      expect((await components['/g1/B'].stateValues.xs)[0].tree).closeTo(x2, 1E-12);
-      expect((await components['/g1/B'].stateValues.xs)[1].tree).closeTo(y2, 1E-12);
+        expect(me.fromAst(stateVariables['/g4/l'].stateValues.endpoints[0][0]).evaluate_to_constant()).closeTo(x12, 1E-12);
+        expect(me.fromAst(stateVariables['/g4/l'].stateValues.endpoints[0][1]).evaluate_to_constant()).closeTo(y12, 1E-12);
+        expect(me.fromAst(stateVariables['/g4/l'].stateValues.endpoints[1][0]).evaluate_to_constant()).closeTo(x2, 1E-12);
+        expect(me.fromAst(stateVariables['/g4/l'].stateValues.endpoints[1][1]).evaluate_to_constant()).closeTo(y2, 1E-12);
 
-      expect((await components['/g2/A'].stateValues.xs)[0].tree).closeTo(x12, 1E-12);
-      expect((await components['/g2/A'].stateValues.xs)[1].tree).closeTo(y12, 1E-12);
-      expect((await components['/g2/B'].stateValues.xs)[0].tree).closeTo(x2, 1E-12);
-      expect((await components['/g2/B'].stateValues.xs)[1].tree).closeTo(y2, 1E-12);
+        expect(me.fromAst(stateVariables['/g5/l'].stateValues.endpoints[0][0]).evaluate_to_constant()).closeTo(x12, 1E-12);
+        expect(me.fromAst(stateVariables['/g5/l'].stateValues.endpoints[0][1]).evaluate_to_constant()).closeTo(y12, 1E-12);
+        expect(me.fromAst(stateVariables['/g5/l'].stateValues.endpoints[1][0]).evaluate_to_constant()).closeTo(x2, 1E-12);
+        expect(me.fromAst(stateVariables['/g5/l'].stateValues.endpoints[1][1]).evaluate_to_constant()).closeTo(y2, 1E-12);
 
-      expect((await components['/g3/A'].stateValues.xs)[0].tree).closeTo(x12, 1E-12);
-      expect((await components['/g3/A'].stateValues.xs)[1].tree).closeTo(y12, 1E-12);
-      expect((await components['/g3/B'].stateValues.xs)[0].tree).closeTo(x2, 1E-12);
-      expect((await components['/g3/B'].stateValues.xs)[1].tree).closeTo(y2, 1E-12);
+        expect(stateVariables['/g1/A'].stateValues.xs[0]).closeTo(x11, 1E-12);
+        expect(stateVariables['/g1/A'].stateValues.xs[1]).closeTo(y11, 1E-12);
+        expect(stateVariables['/g1/B'].stateValues.xs[0]).closeTo(x2, 1E-12);
+        expect(stateVariables['/g1/B'].stateValues.xs[1]).closeTo(y2, 1E-12);
 
-      expect((await components['/g4/A'].stateValues.xs)[0].tree).closeTo(x12, 1E-12);
-      expect((await components['/g4/A'].stateValues.xs)[1].tree).closeTo(y12, 1E-12);
-      expect((await components['/g4/B'].stateValues.xs)[0].tree).closeTo(x2, 1E-12);
-      expect((await components['/g4/B'].stateValues.xs)[1].tree).closeTo(y2, 1E-12);
+        expect(stateVariables['/g2/A'].stateValues.xs[0]).closeTo(x12, 1E-12);
+        expect(stateVariables['/g2/A'].stateValues.xs[1]).closeTo(y12, 1E-12);
+        expect(stateVariables['/g2/B'].stateValues.xs[0]).closeTo(x2, 1E-12);
+        expect(stateVariables['/g2/B'].stateValues.xs[1]).closeTo(y2, 1E-12);
 
-      expect((await components['/g5/A'].stateValues.xs)[0].tree).closeTo(x12, 1E-12);
-      expect((await components['/g5/A'].stateValues.xs)[1].tree).closeTo(y12, 1E-12);
-      expect((await components['/g5/B'].stateValues.xs)[0].tree).closeTo(x2, 1E-12);
-      expect((await components['/g5/B'].stateValues.xs)[1].tree).closeTo(y2, 1E-12);
+        expect(stateVariables['/g3/A'].stateValues.xs[0]).closeTo(x12, 1E-12);
+        expect(stateVariables['/g3/A'].stateValues.xs[1]).closeTo(y12, 1E-12);
+        expect(stateVariables['/g3/B'].stateValues.xs[0]).closeTo(x2, 1E-12);
+        expect(stateVariables['/g3/B'].stateValues.xs[1]).closeTo(y2, 1E-12);
 
+        expect(stateVariables['/g4/A'].stateValues.xs[0]).closeTo(x12, 1E-12);
+        expect(stateVariables['/g4/A'].stateValues.xs[1]).closeTo(y12, 1E-12);
+        expect(stateVariables['/g4/B'].stateValues.xs[0]).closeTo(x2, 1E-12);
+        expect(stateVariables['/g4/B'].stateValues.xs[1]).closeTo(y2, 1E-12);
+
+        expect(stateVariables['/g5/A'].stateValues.xs[0]).closeTo(x12, 1E-12);
+        expect(stateVariables['/g5/A'].stateValues.xs[1]).closeTo(y12, 1E-12);
+        expect(stateVariables['/g5/B'].stateValues.xs[0]).closeTo(x2, 1E-12);
+        expect(stateVariables['/g5/B'].stateValues.xs[1]).closeTo(y2, 1E-12);
+      })
     }
 
     let x11 = -5, y11 = 9;
@@ -1325,189 +1604,232 @@ describe('LineSegment Tag Tests', function () {
     let x2 = 0, y2 = 0;
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      await checkLineSegments({ x11, y11, x12, y12, x2, y2, components });
-
+      await checkLineSegments({ x11, y11, x12, y12, x2, y2 });
     })
 
     cy.log("move point g1/A")
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
       x11 = 7;
       y11 = -3;
-      await components["/g1/A"].movePoint({ x: x11, y: y11 });
-      await checkLineSegments({ x11, y11, x12, y12, x2, y2, components });
+      win.callAction({
+        actionName: "movePoint",
+        componentName: "/g1/A",
+        args: { x: x11, y: y11 }
+      })
+      await checkLineSegments({ x11, y11, x12, y12, x2, y2 });
     })
 
     cy.log("move point g1/B")
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
       x2 = -1;
       y2 = -4;
-      await components["/g1/B"].movePoint({ x: x2, y: y2 });
-      await checkLineSegments({ x11, y11, x12, y12, x2, y2, components });
+      win.callAction({
+        actionName: "movePoint",
+        componentName: "/g1/B",
+        args: { x: x2, y: y2 }
+      })
+      await checkLineSegments({ x11, y11, x12, y12, x2, y2 });
 
     })
 
     cy.log("move line g1/l")
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
 
       x11 = 5;
       y11 = 3;
       x2 = -7;
       y2 = -8;
-      await components['/g1/l'].moveLineSegment({
-        point1coords: [x11, y11],
-        point2coords: [x2, y2]
-      });
-      await checkLineSegments({ x11, y11, x12, y12, x2, y2, components });
+      win.callAction({
+        actionName: "moveLineSegment",
+        componentName: '/g1/l',
+        args: {
+          point1coords: [x11, y11],
+          point2coords: [x2, y2]
+        }
+      })
+      await checkLineSegments({ x11, y11, x12, y12, x2, y2 });
 
     })
 
 
     cy.log("move point g2/A")
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
       x12 = -1;
       y12 = 0;
-      await components["/g2/A"].movePoint({ x: x12, y: y12 });
-      await checkLineSegments({ x11, y11, x12, y12, x2, y2, components });
+      win.callAction({
+        actionName: "movePoint",
+        componentName: "/g2/A",
+        args: { x: x12, y: y12 }
+      })
+      await checkLineSegments({ x11, y11, x12, y12, x2, y2 });
     })
 
     cy.log("move point g2/B")
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
       x2 = 6;
       y2 = -6;
-      await components["/g2/B"].movePoint({ x: x2, y: y2 });
-      await checkLineSegments({ x11, y11, x12, y12, x2, y2, components });
+      win.callAction({
+        actionName: "movePoint",
+        componentName: "/g2/B",
+        args: { x: x2, y: y2 }
+      })
+      await checkLineSegments({ x11, y11, x12, y12, x2, y2 });
 
     })
 
     cy.log("move line g2/l")
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
 
       x12 = 10;
       y12 = 9;
       x2 = 8;
       y2 = 7;
-      await components["/g2/l"].moveLineSegment({
-        point1coords: [x12, y12],
-        point2coords: [x2, y2]
-      });
-      await checkLineSegments({ x11, y11, x12, y12, x2, y2, components });
+      win.callAction({
+        actionName: "moveLineSegment",
+        componentName: '/g2/l',
+        args: {
+          point1coords: [x12, y12],
+          point2coords: [x2, y2]
+        }
+      })
+      await checkLineSegments({ x11, y11, x12, y12, x2, y2 });
 
     })
 
     cy.log("move point g3/A")
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
       x12 = -3;
       y12 = 7;
-      await components["/g3/A"].movePoint({ x: x12, y: y12 });
-      await checkLineSegments({ x11, y11, x12, y12, x2, y2, components });
+      win.callAction({
+        actionName: "movePoint",
+        componentName: "/g3/A",
+        args: { x: x12, y: y12 }
+      })
+      await checkLineSegments({ x11, y11, x12, y12, x2, y2 });
 
     })
 
     cy.log("move point g3/B")
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
       x2 = -8;
       y2 = -4;
-      await components["/g3/B"].movePoint({ x: x2, y: y2 });
-      await checkLineSegments({ x11, y11, x12, y12, x2, y2, components });
+      win.callAction({
+        actionName: "movePoint",
+        componentName: "/g3/B",
+        args: { x: x2, y: y2 }
+      })
+      await checkLineSegments({ x11, y11, x12, y12, x2, y2 });
 
     })
 
     cy.log("move line g3/l")
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
 
       x12 = 0;
       y12 = -1;
       x2 = 2;
       y2 = -3;
-      await components["/g3/l"].moveLineSegment({
-        point1coords: [x12, y12],
-        point2coords: [x2, y2]
-      });
-      await checkLineSegments({ x11, y11, x12, y12, x2, y2, components });
+      win.callAction({
+        actionName: "moveLineSegment",
+        componentName: '/g3/l',
+        args: {
+          point1coords: [x12, y12],
+          point2coords: [x2, y2]
+        }
+      })
+      await checkLineSegments({ x11, y11, x12, y12, x2, y2 });
 
     })
 
 
     cy.log("move point g4/A")
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
       x12 = 9;
       y12 = 8;
-      await components["/g4/A"].movePoint({ x: x12, y: y12 });
-      await checkLineSegments({ x11, y11, x12, y12, x2, y2, components });
+      win.callAction({
+        actionName: "movePoint",
+        componentName: "/g4/A",
+        args: { x: x12, y: y12 }
+      })
+      await checkLineSegments({ x11, y11, x12, y12, x2, y2 });
 
     })
 
     cy.log("move point g4/B")
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
       x2 = 6;
       y2 = -9;
-      await components["/g4/B"].movePoint({ x: x2, y: y2 });
-      await checkLineSegments({ x11, y11, x12, y12, x2, y2, components });
+      win.callAction({
+        actionName: "movePoint",
+        componentName: "/g4/B",
+        args: { x: x2, y: y2 }
+      })
+      await checkLineSegments({ x11, y11, x12, y12, x2, y2 });
 
     })
 
     cy.log("move line g4/l")
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
 
       x12 = -3;
       y12 = 4;
       x2 = -5;
       y2 = 6;
-      await components["/g4/l"].moveLineSegment({
-        point1coords: [x12, y12],
-        point2coords: [x2, y2]
-      });
-      await checkLineSegments({ x11, y11, x12, y12, x2, y2, components });
+      win.callAction({
+        actionName: "moveLineSegment",
+        componentName: '/g4/l',
+        args: {
+          point1coords: [x12, y12],
+          point2coords: [x2, y2]
+        }
+      })
+      await checkLineSegments({ x11, y11, x12, y12, x2, y2 });
 
     })
 
 
     cy.log("move point g5/A")
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
       x12 = 1;
       y12 = -3;
-      await components["/g5/A"].movePoint({ x: x12, y: y12 });
-      await checkLineSegments({ x11, y11, x12, y12, x2, y2, components });
+      win.callAction({
+        actionName: "movePoint",
+        componentName: "/g5/A",
+        args: { x: x12, y: y12 }
+      })
+      await checkLineSegments({ x11, y11, x12, y12, x2, y2 });
 
     })
 
     cy.log("move point g5/B")
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
       x2 = 0;
       y2 = 7;
-      await components["/g5/B"].movePoint({ x: x2, y: y2 });
-      await checkLineSegments({ x11, y11, x12, y12, x2, y2, components });
+      win.callAction({
+        actionName: "movePoint",
+        componentName: "/g5/B",
+        args: { x: x2, y: y2 }
+      })
+      await checkLineSegments({ x11, y11, x12, y12, x2, y2 });
 
     })
 
     cy.log("move line g5/l")
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
 
       x12 = 4;
       y12 = 5;
       x2 = -6;
       y2 = -7;
-      await components["/g5/l"].moveLineSegment({
-        point1coords: [x12, y12],
-        point2coords: [x2, y2]
-      });
-      await checkLineSegments({ x11, y11, x12, y12, x2, y2, components });
+      win.callAction({
+        actionName: "moveLineSegment",
+        componentName: '/g5/l',
+        args: {
+          point1coords: [x12, y12],
+          point2coords: [x2, y2]
+        }
+      })
+      await checkLineSegments({ x11, y11, x12, y12, x2, y2 });
 
     })
 
@@ -1516,193 +1838,237 @@ describe('LineSegment Tag Tests', function () {
 
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
       x11 = 1, y11 = 2;
       x12 = 4, y12 = -2;
       x2 = 0, y2 = 0;
 
-      await checkLineSegments({ x11, y11, x12, y12, x2, y2, components });
+      await checkLineSegments({ x11, y11, x12, y12, x2, y2 });
 
     })
 
     cy.log("move point g1/A")
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
       x11 = 7;
       y11 = -3;
-      await components["/g1/A"].movePoint({ x: x11, y: y11 });
-      await checkLineSegments({ x11, y11, x12, y12, x2, y2, components });
+      win.callAction({
+        actionName: "movePoint",
+        componentName: "/g1/A",
+        args: { x: x11, y: y11 }
+      })
+      await checkLineSegments({ x11, y11, x12, y12, x2, y2 });
     })
 
     cy.log("move point g1/B")
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
       x2 = -1;
       y2 = -4;
-      await components["/g1/B"].movePoint({ x: x2, y: y2 });
-      await checkLineSegments({ x11, y11, x12, y12, x2, y2, components });
+      win.callAction({
+        actionName: "movePoint",
+        componentName: "/g1/B",
+        args: { x: x2, y: y2 }
+      })
+      await checkLineSegments({ x11, y11, x12, y12, x2, y2 });
 
     })
 
     cy.log("move line g1/l")
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
 
       x11 = 5;
       y11 = 3;
       x2 = -7;
       y2 = -8;
-      await components['/g1/l'].moveLineSegment({
-        point1coords: [x11, y11],
-        point2coords: [x2, y2]
-      });
-      await checkLineSegments({ x11, y11, x12, y12, x2, y2, components });
+      win.callAction({
+        actionName: "moveLineSegment",
+        componentName: '/g1/l',
+        args: {
+          point1coords: [x11, y11],
+          point2coords: [x2, y2]
+        }
+      })
+      await checkLineSegments({ x11, y11, x12, y12, x2, y2 });
 
     })
 
 
     cy.log("move point g2/A")
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
       x12 = -1;
       y12 = 0;
-      await components["/g2/A"].movePoint({ x: x12, y: y12 });
-      await checkLineSegments({ x11, y11, x12, y12, x2, y2, components });
+      win.callAction({
+        actionName: "movePoint",
+        componentName: "/g2/A",
+        args: { x: x12, y: y12 }
+      })
+      await checkLineSegments({ x11, y11, x12, y12, x2, y2 });
     })
 
     cy.log("move point g2/B")
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
       x2 = 6;
       y2 = -6;
-      await components["/g2/B"].movePoint({ x: x2, y: y2 });
-      await checkLineSegments({ x11, y11, x12, y12, x2, y2, components });
+      win.callAction({
+        actionName: "movePoint",
+        componentName: "/g2/B",
+        args: { x: x2, y: y2 }
+      })
+      await checkLineSegments({ x11, y11, x12, y12, x2, y2 });
 
     })
 
     cy.log("move line g2/l")
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
 
       x12 = 10;
       y12 = 9;
       x2 = 8;
       y2 = 7;
-      await components["/g2/l"].moveLineSegment({
-        point1coords: [x12, y12],
-        point2coords: [x2, y2]
-      });
-      await checkLineSegments({ x11, y11, x12, y12, x2, y2, components });
+      win.callAction({
+        actionName: "moveLineSegment",
+        componentName: '/g2/l',
+        args: {
+          point1coords: [x12, y12],
+          point2coords: [x2, y2]
+        }
+      })
+      await checkLineSegments({ x11, y11, x12, y12, x2, y2 });
 
     })
 
     cy.log("move point g3/A")
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
       x12 = -3;
       y12 = 7;
-      await components["/g3/A"].movePoint({ x: x12, y: y12 });
-      await checkLineSegments({ x11, y11, x12, y12, x2, y2, components });
+      win.callAction({
+        actionName: "movePoint",
+        componentName: "/g3/A",
+        args: { x: x12, y: y12 }
+      })
+      await checkLineSegments({ x11, y11, x12, y12, x2, y2 });
 
     })
 
     cy.log("move point g3/B")
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
       x2 = -8;
       y2 = -4;
-      await components["/g3/B"].movePoint({ x: x2, y: y2 });
-      await checkLineSegments({ x11, y11, x12, y12, x2, y2, components });
+      win.callAction({
+        actionName: "movePoint",
+        componentName: "/g3/B",
+        args: { x: x2, y: y2 }
+      })
+      await checkLineSegments({ x11, y11, x12, y12, x2, y2 });
 
     })
 
     cy.log("move line g3/l")
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
 
       x12 = 0;
       y12 = -1;
       x2 = 2;
       y2 = -3;
-      await components["/g3/l"].moveLineSegment({
-        point1coords: [x12, y12],
-        point2coords: [x2, y2]
-      });
-      await checkLineSegments({ x11, y11, x12, y12, x2, y2, components });
+      win.callAction({
+        actionName: "moveLineSegment",
+        componentName: '/g3/l',
+        args: {
+          point1coords: [x12, y12],
+          point2coords: [x2, y2]
+        }
+      })
+      await checkLineSegments({ x11, y11, x12, y12, x2, y2 });
 
     })
 
 
     cy.log("move point g4/A")
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
       x12 = 9;
       y12 = 8;
-      await components["/g4/A"].movePoint({ x: x12, y: y12 });
-      await checkLineSegments({ x11, y11, x12, y12, x2, y2, components });
+      win.callAction({
+        actionName: "movePoint",
+        componentName: "/g4/A",
+        args: { x: x12, y: y12 }
+      })
+      await checkLineSegments({ x11, y11, x12, y12, x2, y2 });
 
     })
 
     cy.log("move point g4/B")
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
       x2 = 6;
       y2 = -9;
-      await components["/g4/B"].movePoint({ x: x2, y: y2 });
-      await checkLineSegments({ x11, y11, x12, y12, x2, y2, components });
+      win.callAction({
+        actionName: "movePoint",
+        componentName: "/g4/B",
+        args: { x: x2, y: y2 }
+      })
+      await checkLineSegments({ x11, y11, x12, y12, x2, y2 });
 
     })
 
     cy.log("move line g4/l")
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
 
       x12 = -3;
       y12 = 4;
       x2 = -5;
       y2 = 6;
-      await components["/g4/l"].moveLineSegment({
-        point1coords: [x12, y12],
-        point2coords: [x2, y2]
-      });
-      await checkLineSegments({ x11, y11, x12, y12, x2, y2, components });
+      win.callAction({
+        actionName: "moveLineSegment",
+        componentName: '/g4/l',
+        args: {
+          point1coords: [x12, y12],
+          point2coords: [x2, y2]
+        }
+      })
+      await checkLineSegments({ x11, y11, x12, y12, x2, y2 });
 
     })
 
 
     cy.log("move point g5/A")
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
       x12 = 1;
       y12 = -3;
-      await components["/g5/A"].movePoint({ x: x12, y: y12 });
-      await checkLineSegments({ x11, y11, x12, y12, x2, y2, components });
+      win.callAction({
+        actionName: "movePoint",
+        componentName: "/g5/A",
+        args: { x: x12, y: y12 }
+      })
+      await checkLineSegments({ x11, y11, x12, y12, x2, y2 });
 
     })
 
     cy.log("move point g5/B")
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
       x2 = 0;
       y2 = 7;
-      await components["/g5/B"].movePoint({ x: x2, y: y2 });
-      await checkLineSegments({ x11, y11, x12, y12, x2, y2, components });
+      win.callAction({
+        actionName: "movePoint",
+        componentName: "/g5/B",
+        args: { x: x2, y: y2 }
+      })
+      await checkLineSegments({ x11, y11, x12, y12, x2, y2 });
 
     })
 
     cy.log("move line g5/l")
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
 
       x12 = 4;
       y12 = 5;
       x2 = -6;
       y2 = -7;
-      await components["/g5/l"].moveLineSegment({
-        point1coords: [x12, y12],
-        point2coords: [x2, y2]
-      });
-      await checkLineSegments({ x11, y11, x12, y12, x2, y2, components });
+      win.callAction({
+        actionName: "moveLineSegment",
+        componentName: '/g5/l',
+        args: {
+          point1coords: [x12, y12],
+          point2coords: [x2, y2]
+        }
+      })
+      await checkLineSegments({ x11, y11, x12, y12, x2, y2 });
 
     })
 
@@ -1725,6 +2091,8 @@ describe('LineSegment Tag Tests', function () {
     </constraints>
   </point>
   </graph>
+  <copy target="_linesegment1" prop="endpoint1" assignNames="ep1a" />
+  <copy target="_point3" assignNames="p3a" />
   `}, "*");
     });
 
@@ -1732,45 +2100,59 @@ describe('LineSegment Tag Tests', function () {
 
     cy.log('check initial values')
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      expect((await components['/_linesegment1'].stateValues.endpoints)[0].map(x => x.tree)).eqls([1, 2]);
-      expect((await components['/_linesegment1'].stateValues.endpoints)[1].map(x => x.tree)).eqls([3, 4]);
-      expect((await components['/_point3'].stateValues.xs)[0].tree).eq(1);
-      expect((await components['/_point3'].stateValues.xs)[1].tree).eq(2);
+      let stateVariables = await win.returnAllStateVariables();
+      expect((await stateVariables['/_linesegment1'].stateValues.endpoints)[0]).eqls([1, 2]);
+      expect((await stateVariables['/_linesegment1'].stateValues.endpoints)[1]).eqls([3, 4]);
+      expect((await stateVariables['/_point3'].stateValues.xs)[0]).eq(1);
+      expect((await stateVariables['/_point3'].stateValues.xs)[1]).eq(2);
     });
 
     cy.log('move line segment to 45 degrees')
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      await components['/_linesegment1'].moveLineSegment({
-        point1coords: [-4, 4],
-        point2coords: [4, -4],
+
+      win.callAction({
+        actionName: "moveLineSegment",
+        componentName: '/_linesegment1',
+        args: {
+          point1coords: [-4, 4],
+          point2coords: [4, -4],
+        }
       })
-      expect((await components['/_linesegment1'].stateValues.endpoints)[0].map(x => x.tree)).eqls([-4, 4]);
-      expect((await components['/_linesegment1'].stateValues.endpoints)[1].map(x => x.tree)).eqls([4, -4]);
 
-      let xorig = -5;
-      let yorig = 2;
-      let temp = (xorig - yorig) / 2;
-      if (temp > 4) {
-        temp = 4;
-      } else if (temp < -4) {
-        temp = -4;
-      }
-      let p5x = temp;
-      let p5y = -temp;
+      cy.get('#\\/ep1a .mjx-mrow').should('contain.text', `(${nInDOM(-4)},${nInDOM(4)})`)
 
-      expect((await components['/_point3'].stateValues.xs)[0].tree).closeTo(p5x, 1E-12);
-      expect((await components['/_point3'].stateValues.xs)[1].tree).closeTo(p5y, 1E-12);
-    });
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables();
+
+        expect((await stateVariables['/_linesegment1'].stateValues.endpoints)[0]).eqls([-4, 4]);
+        expect((await stateVariables['/_linesegment1'].stateValues.endpoints)[1]).eqls([4, -4]);
+
+        let xorig = -5;
+        let yorig = 2;
+        let temp = (xorig - yorig) / 2;
+        if (temp > 4) {
+          temp = 4;
+        } else if (temp < -4) {
+          temp = -4;
+        }
+        let p5x = temp;
+        let p5y = -temp;
+
+        expect((await stateVariables['/_point3'].stateValues.xs)[0]).closeTo(p5x, 1E-12);
+        expect((await stateVariables['/_point3'].stateValues.xs)[1]).closeTo(p5y, 1E-12);
+      });
+    })
 
     cy.log('move point')
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
       let xorig = 10;
       let yorig = 1;
 
-      await components['/_point3'].movePoint({ x: xorig, y: yorig });
+      win.callAction({
+        actionName: "movePoint",
+        componentName: "/_point3",
+        args: { x: xorig, y: yorig }
+      })
 
       let temp = (xorig - yorig) / 2;
       if (temp > 4) {
@@ -1781,17 +2163,25 @@ describe('LineSegment Tag Tests', function () {
       let p5x = temp;
       let p5y = -temp;
 
-      expect((await components['/_point3'].stateValues.xs)[0].tree).closeTo(p5x, 1E-12);
-      expect((await components['/_point3'].stateValues.xs)[1].tree).closeTo(p5y, 1E-12);
-    });
+      cy.get('#\\/p3a .mjx-mrow').should('contain.text', `(${nInDOM(p5x)},${nInDOM(p5y)})`)
+
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables();
+        expect((await stateVariables['/_point3'].stateValues.xs)[0]).closeTo(p5x, 1E-12);
+        expect((await stateVariables['/_point3'].stateValues.xs)[1]).closeTo(p5y, 1E-12);
+      });
+    })
 
     cy.log('move point')
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
       let xorig = 9;
       let yorig = 7;
 
-      await components['/_point3'].movePoint({ x: xorig, y: yorig });
+      win.callAction({
+        actionName: "movePoint",
+        componentName: "/_point3",
+        args: { x: xorig, y: yorig }
+      })
 
       let temp = (xorig - yorig) / 2;
       if (temp > 4) {
@@ -1802,17 +2192,26 @@ describe('LineSegment Tag Tests', function () {
       let p5x = temp;
       let p5y = -temp;
 
-      expect((await components['/_point3'].stateValues.xs)[0].tree).closeTo(p5x, 1E-12);
-      expect((await components['/_point3'].stateValues.xs)[1].tree).closeTo(p5y, 1E-12);
-    });
+
+      cy.get('#\\/p3a .mjx-mrow').should('contain.text', `(${nInDOM(p5x)},${nInDOM(p5y)})`)
+
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables();
+        expect((await stateVariables['/_point3'].stateValues.xs)[0]).closeTo(p5x, 1E-12);
+        expect((await stateVariables['/_point3'].stateValues.xs)[1]).closeTo(p5y, 1E-12);
+      });
+    })
 
     cy.log('move point')
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
       let xorig = -9;
       let yorig = 7;
 
-      await components['/_point3'].movePoint({ x: xorig, y: yorig });
+      win.callAction({
+        actionName: "movePoint",
+        componentName: "/_point3",
+        args: { x: xorig, y: yorig }
+      })
 
       let temp = (xorig - yorig) / 2;
       if (temp > 4) {
@@ -1823,10 +2222,15 @@ describe('LineSegment Tag Tests', function () {
       let p5x = temp;
       let p5y = -temp;
 
-      expect((await components['/_point3'].stateValues.xs)[0].tree).closeTo(p5x, 1E-12);
-      expect((await components['/_point3'].stateValues.xs)[1].tree).closeTo(p5y, 1E-12);
-    });
 
+      cy.get('#\\/p3a .mjx-mrow').should('contain.text', `(${nInDOM(p5x)},${nInDOM(p5y)})`)
+
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables();
+        expect((await stateVariables['/_point3'].stateValues.xs)[0]).closeTo(p5x, 1E-12);
+        expect((await stateVariables['/_point3'].stateValues.xs)[1]).closeTo(p5y, 1E-12);
+      });
+    })
 
   })
 
@@ -1846,6 +2250,8 @@ describe('LineSegment Tag Tests', function () {
     </constraints>
   </point>
   </graph>
+  <copy target="_linesegment1" prop="endpoint1" assignNames="ep1a" />
+  <copy target="_point3" assignNames="p3a" />
   `}, "*");
     });
 
@@ -1853,33 +2259,46 @@ describe('LineSegment Tag Tests', function () {
 
     cy.log('check initial values')
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      expect((await components['/_linesegment1'].stateValues.endpoints)[0].map(x => x.tree)).eqls([1, 2]);
-      expect((await components['/_linesegment1'].stateValues.endpoints)[1].map(x => x.tree)).eqls([3, 4]);
-      expect((await components['/_point3'].stateValues.xs)[0].tree).eq(-5);
-      expect((await components['/_point3'].stateValues.xs)[1].tree).eq(2);
+      let stateVariables = await win.returnAllStateVariables();
+      expect((await stateVariables['/_linesegment1'].stateValues.endpoints)[0]).eqls([1, 2]);
+      expect((await stateVariables['/_linesegment1'].stateValues.endpoints)[1]).eqls([3, 4]);
+      expect((await stateVariables['/_point3'].stateValues.xs)[0]).eq(-5);
+      expect((await stateVariables['/_point3'].stateValues.xs)[1]).eq(2);
     });
 
     cy.log('move line segment to 45 degrees')
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      await components['/_linesegment1'].moveLineSegment({
-        point1coords: [-4, 4],
-        point2coords: [4, -4],
+
+      win.callAction({
+        actionName: "moveLineSegment",
+        componentName: '/_linesegment1',
+        args: {
+          point1coords: [-4, 4],
+          point2coords: [4, -4],
+        }
       })
-      expect((await components['/_linesegment1'].stateValues.endpoints)[0].map(x => x.tree)).eqls([-4, 4]);
-      expect((await components['/_linesegment1'].stateValues.endpoints)[1].map(x => x.tree)).eqls([4, -4]);
-      expect((await components['/_point3'].stateValues.xs)[0].tree).eq(-5)
-      expect((await components['/_point3'].stateValues.xs)[1].tree).eq(2)
+
+      cy.get('#\\/ep1a .mjx-mrow').should('contain.text', `(${nInDOM(-4)},${nInDOM(4)})`)
+
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables();
+        expect((await stateVariables['/_linesegment1'].stateValues.endpoints)[0]).eqls([-4, 4]);
+        expect((await stateVariables['/_linesegment1'].stateValues.endpoints)[1]).eqls([4, -4]);
+        expect((await stateVariables['/_point3'].stateValues.xs)[0]).eq(-5)
+        expect((await stateVariables['/_point3'].stateValues.xs)[1]).eq(2)
+      })
     });
 
     cy.log('move point')
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
       let xorig = 3.3;
       let yorig = -3.6;
 
-      await components['/_point3'].movePoint({ x: xorig, y: yorig });
+      win.callAction({
+        actionName: "movePoint",
+        componentName: "/_point3",
+        args: { x: xorig, y: yorig }
+      })
 
       let temp = (xorig - yorig) / 2;
       if (temp > 4) {
@@ -1890,29 +2309,47 @@ describe('LineSegment Tag Tests', function () {
       let p5x = temp;
       let p5y = -temp;
 
-      expect((await components['/_point3'].stateValues.xs)[0].tree).closeTo(p5x, 1E-12);
-      expect((await components['/_point3'].stateValues.xs)[1].tree).closeTo(p5y, 1E-12);
+
+      cy.get('#\\/p3a .mjx-mrow').should('contain.text', `(${nInDOM(p5x)},${nInDOM(p5y)})`)
+
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables();
+        expect((await stateVariables['/_point3'].stateValues.xs)[0]).closeTo(p5x, 1E-12);
+        expect((await stateVariables['/_point3'].stateValues.xs)[1]).closeTo(p5y, 1E-12);
+      })
     });
 
     cy.log('move point')
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
       let xorig = 4.3;
       let yorig = -4.6;
 
-      await components['/_point3'].movePoint({ x: xorig, y: yorig });
+      win.callAction({
+        actionName: "movePoint",
+        componentName: "/_point3",
+        args: { x: xorig, y: yorig }
+      })
 
-      expect((await components['/_point3'].stateValues.xs)[0].tree).closeTo(4.3, 1E-12);
-      expect((await components['/_point3'].stateValues.xs)[1].tree).closeTo(-4.6, 1E-12);
+
+      cy.get('#\\/p3a .mjx-mrow').should('contain.text', `(${nInDOM(xorig)},${nInDOM(yorig)})`)
+
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables();
+        expect((await stateVariables['/_point3'].stateValues.xs)[0]).closeTo(4.3, 1E-12);
+        expect((await stateVariables['/_point3'].stateValues.xs)[1]).closeTo(-4.6, 1E-12);
+      })
     });
 
     cy.log('move point')
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
       let xorig = -2.4;
       let yorig = 2.8;
 
-      await components['/_point3'].movePoint({ x: xorig, y: yorig });
+      win.callAction({
+        actionName: "movePoint",
+        componentName: "/_point3",
+        args: { x: xorig, y: yorig }
+      })
 
       let temp = (xorig - yorig) / 2;
       if (temp > 4) {
@@ -1923,17 +2360,26 @@ describe('LineSegment Tag Tests', function () {
       let p5x = temp;
       let p5y = -temp;
 
-      expect((await components['/_point3'].stateValues.xs)[0].tree).closeTo(p5x, 1E-12);
-      expect((await components['/_point3'].stateValues.xs)[1].tree).closeTo(p5y, 1E-12);
+
+      cy.get('#\\/p3a .mjx-mrow').should('contain.text', `(${nInDOM(Math.round(p5x * 1000) / 1000)},${nInDOM(Math.round(p5y * 1000) / 1000)})`)
+
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables();
+        expect((await stateVariables['/_point3'].stateValues.xs)[0]).closeTo(p5x, 1E-12);
+        expect((await stateVariables['/_point3'].stateValues.xs)[1]).closeTo(p5y, 1E-12);
+      })
     });
 
     cy.log('move point')
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
       let xorig = -4.2;
       let yorig = 4.3;
 
-      await components['/_point3'].movePoint({ x: xorig, y: yorig });
+      win.callAction({
+        actionName: "movePoint",
+        componentName: "/_point3",
+        args: { x: xorig, y: yorig }
+      })
 
       let temp = (xorig - yorig) / 2;
       if (temp > 4) {
@@ -1944,8 +2390,14 @@ describe('LineSegment Tag Tests', function () {
       let p5x = temp;
       let p5y = -temp;
 
-      expect((await components['/_point3'].stateValues.xs)[0].tree).closeTo(p5x, 1E-12);
-      expect((await components['/_point3'].stateValues.xs)[1].tree).closeTo(p5y, 1E-12);
+
+      cy.get('#\\/p3a .mjx-mrow').should('contain.text', `(${nInDOM(p5x)},${nInDOM(p5y)})`)
+
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables();
+        expect((await stateVariables['/_point3'].stateValues.xs)[0]).closeTo(p5x, 1E-12);
+        expect((await stateVariables['/_point3'].stateValues.xs)[1]).closeTo(p5y, 1E-12);
+      })
     });
 
 
@@ -1964,6 +2416,7 @@ describe('LineSegment Tag Tests', function () {
       </constraints>
     </point>
   </graph>
+  <copy target="P" assignNames="P1a" />
   `}, "*");
     });
 
@@ -1972,35 +2425,53 @@ describe('LineSegment Tag Tests', function () {
 
     cy.log(`point on line segment, close to origin`);
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      let x = (await components['/P'].stateValues.xs)[0].tree;
-      let y = (await components['/P'].stateValues.xs)[1].tree;
+      let stateVariables = await win.returnAllStateVariables();
+      let x = (await stateVariables['/P'].stateValues.xs)[0];
+      let y = (await stateVariables['/P'].stateValues.xs)[1];
 
       expect(y).greaterThan(0);
       expect(y).lessThan(0.01);
 
-      expect(x).closeTo(20*y, 1E-10)
+      expect(x).closeTo(20 * y, 1E-10)
     })
 
     cy.log(`move point`);
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      await components['/P'].movePoint({ x: -100, y: 0.05 });
-      let x = (await components['/P'].stateValues.xs)[0].tree;
-      let y = (await components['/P'].stateValues.xs)[1].tree;
-      expect(y).lessThan(0.05);
-      expect(y).greaterThan(0.04);
-      expect(x).closeTo(20*y, 1E-10)
+
+      win.callAction({
+        actionName: "movePoint",
+        componentName: "/P",
+        args: { x: -100, y: 0.05 }
+      })
+
+      cy.get('#\\/P1a .mjx-mrow').should('contain.text', ',0.04')
+
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables();
+        let x = (await stateVariables['/P'].stateValues.xs)[0];
+        let y = (await stateVariables['/P'].stateValues.xs)[1];
+        expect(y).lessThan(0.05);
+        expect(y).greaterThan(0.04);
+        expect(x).closeTo(20 * y, 1E-10)
+      })
     })
 
     cy.log(`move point past endpoint`);
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      await components['/P'].movePoint({ x: -100, y: 0.1 });
-      let x = (await components['/P'].stateValues.xs)[0].tree;
-      let y = (await components['/P'].stateValues.xs)[1].tree;
-      expect(y).eq(0.05);
-      expect(x).closeTo(20*y, 1E-10)
+      win.callAction({
+        actionName: "movePoint",
+        componentName: "/P",
+        args: { x: -100, y: 0.1 }
+      })
+
+      cy.get('#\\/P1a .mjx-mrow').should('contain.text', ',0.05')
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables();
+        let x = (await stateVariables['/P'].stateValues.xs)[0];
+        let y = (await stateVariables['/P'].stateValues.xs)[1];
+        expect(y).eq(0.05);
+        expect(x).closeTo(20 * y, 1E-10)
+      })
     })
 
   });
@@ -2014,176 +2485,191 @@ describe('LineSegment Tag Tests', function () {
   <linesegment endpoints="(1,2)(3,4)"/>
   </graph>
   <graph>
-  <copy prop="endpoint1" name="point3" target="_linesegment1" />
-  <copy prop="endpoint2" name="point4" target="_linesegment1" />
+  <copy prop="endpoint1" target="_linesegment1" assignNames="p1" />
+  <copy prop="endpoint2" target="_linesegment1" assignNames="p2" />
   </graph>
   <graph>
-  <copy prop="endpoints" name="points56" target="_linesegment1" />
+  <copy prop="endpoints"  target="_linesegment1" assignNames="p1a p2a" />
   </graph>
+  <copy prop="endpoint1" target="_linesegment1" assignNames="p1b" />
+  <copy prop="endpoint2" target="_linesegment1" assignNames="p2b" />
   `}, "*");
     });
 
     cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
 
+
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
+      let stateVariables = await win.returnAllStateVariables();
+      let p1x = 1;
+      let p1y = 2;
+      let p2x = 3;
+      let p2y = 4;
+      expect(stateVariables["/p1"].stateValues.xs[0]).eq(p1x)
+      expect(stateVariables["/p1"].stateValues.xs[1]).eq(p1y)
+      expect(stateVariables["/p2"].stateValues.xs[0]).eq(p2x)
+      expect(stateVariables["/p2"].stateValues.xs[1]).eq(p2y)
+      expect(stateVariables["/p1a"].stateValues.xs[0]).eq(p1x)
+      expect(stateVariables["/p1a"].stateValues.xs[1]).eq(p1y)
+      expect(stateVariables["/p2a"].stateValues.xs[0]).eq(p2x)
+      expect(stateVariables["/p2a"].stateValues.xs[1]).eq(p2y)
+    })
 
-      let point1 = components["/_linesegment1"].attributes["endpoints"].component.activeChildren[0];
-      let point2 = components["/_linesegment1"].attributes["endpoints"].component.activeChildren[1];
-      let point3 = components["/point3"].replacements[0]
-      let point4 = components["/point4"].replacements[0]
-      let point5 = components["/points56"].replacements[0]
-      let point6 = components["/points56"].replacements[1]
+    cy.log('move first individually copied point');
+    cy.window().then(async (win) => {
+      let p1x = -2;
+      let p1y = -5;
+      win.callAction({
+        actionName: "movePoint",
+        componentName: "/p1",
+        args: { x: p1x, y: p1y }
+      })
+
+      cy.get("#\\/p1b .mjx-mrow").should('contain.text', `(${nInDOM(p1x)},${nInDOM(p1y)})`)
 
       cy.window().then(async (win) => {
-        let p1x = 1;
-        let p1y = 2;
+        let stateVariables = await win.returnAllStateVariables();
         let p2x = 3;
         let p2y = 4;
-        expect((await point1.stateValues.xs)[0].tree).eq(p1x)
-        expect((await point1.stateValues.xs)[1].tree).eq(p1y)
-        expect((await point2.stateValues.xs)[0].tree).eq(p2x)
-        expect((await point2.stateValues.xs)[1].tree).eq(p2y)
-        expect((await point3.stateValues.xs)[0].tree).eq(p1x)
-        expect((await point3.stateValues.xs)[1].tree).eq(p1y)
-        expect((await point4.stateValues.xs)[0].tree).eq(p2x)
-        expect((await point4.stateValues.xs)[1].tree).eq(p2y)
-        expect((await point5.stateValues.xs)[0].tree).eq(p1x)
-        expect((await point5.stateValues.xs)[1].tree).eq(p1y)
-        expect((await point6.stateValues.xs)[0].tree).eq(p2x)
-        expect((await point6.stateValues.xs)[1].tree).eq(p2y)
-      })
-
-      cy.log('move first individually copied endpoint');
-      cy.window().then(async (win) => {
-        let p1x = -2;
-        let p1y = -5;
-        await point3.movePoint({ x: p1x, y: p1y });
-        let p2x = 3;
-        let p2y = 4;
-        expect((await point1.stateValues.xs)[0].tree).eq(p1x)
-        expect((await point1.stateValues.xs)[1].tree).eq(p1y)
-        expect((await point2.stateValues.xs)[0].tree).eq(p2x)
-        expect((await point2.stateValues.xs)[1].tree).eq(p2y)
-        expect((await point3.stateValues.xs)[0].tree).eq(p1x)
-        expect((await point3.stateValues.xs)[1].tree).eq(p1y)
-        expect((await point4.stateValues.xs)[0].tree).eq(p2x)
-        expect((await point4.stateValues.xs)[1].tree).eq(p2y)
-        expect((await point5.stateValues.xs)[0].tree).eq(p1x)
-        expect((await point5.stateValues.xs)[1].tree).eq(p1y)
-        expect((await point6.stateValues.xs)[0].tree).eq(p2x)
-        expect((await point6.stateValues.xs)[1].tree).eq(p2y)
-      })
-
-      cy.log('move second individually copied endpoint');
-      cy.window().then(async (win) => {
-        let p2x = 8;
-        let p2y = -1;
-        await point4.movePoint({ x: p2x, y: p2y });
-        let p1x = -2;
-        let p1y = -5;
-        expect((await point1.stateValues.xs)[0].tree).eq(p1x)
-        expect((await point1.stateValues.xs)[1].tree).eq(p1y)
-        expect((await point2.stateValues.xs)[0].tree).eq(p2x)
-        expect((await point2.stateValues.xs)[1].tree).eq(p2y)
-        expect((await point3.stateValues.xs)[0].tree).eq(p1x)
-        expect((await point3.stateValues.xs)[1].tree).eq(p1y)
-        expect((await point4.stateValues.xs)[0].tree).eq(p2x)
-        expect((await point4.stateValues.xs)[1].tree).eq(p2y)
-        expect((await point5.stateValues.xs)[0].tree).eq(p1x)
-        expect((await point5.stateValues.xs)[1].tree).eq(p1y)
-        expect((await point6.stateValues.xs)[0].tree).eq(p2x)
-        expect((await point6.stateValues.xs)[1].tree).eq(p2y)
-      })
-
-      cy.log('move second array-copied endpoint');
-      cy.window().then(async (win) => {
-        let p2x = -6;
-        let p2y = 4;
-        await point6.movePoint({ x: p2x, y: p2y });
-        let p1x = -2;
-        let p1y = -5;
-        expect((await point1.stateValues.xs)[0].tree).eq(p1x)
-        expect((await point1.stateValues.xs)[1].tree).eq(p1y)
-        expect((await point2.stateValues.xs)[0].tree).eq(p2x)
-        expect((await point2.stateValues.xs)[1].tree).eq(p2y)
-        expect((await point3.stateValues.xs)[0].tree).eq(p1x)
-        expect((await point3.stateValues.xs)[1].tree).eq(p1y)
-        expect((await point4.stateValues.xs)[0].tree).eq(p2x)
-        expect((await point4.stateValues.xs)[1].tree).eq(p2y)
-        expect((await point5.stateValues.xs)[0].tree).eq(p1x)
-        expect((await point5.stateValues.xs)[1].tree).eq(p1y)
-        expect((await point6.stateValues.xs)[0].tree).eq(p2x)
-        expect((await point6.stateValues.xs)[1].tree).eq(p2y)
-      })
-
-      cy.log('move first array-copied endpoint');
-      cy.window().then(async (win) => {
-        let p1x = 0;
-        let p1y = 7;
-        await point5.movePoint({ x: p1x, y: p1y });
-        let p2x = -6;
-        let p2y = 4;
-        expect((await point1.stateValues.xs)[0].tree).eq(p1x)
-        expect((await point1.stateValues.xs)[1].tree).eq(p1y)
-        expect((await point2.stateValues.xs)[0].tree).eq(p2x)
-        expect((await point2.stateValues.xs)[1].tree).eq(p2y)
-        expect((await point3.stateValues.xs)[0].tree).eq(p1x)
-        expect((await point3.stateValues.xs)[1].tree).eq(p1y)
-        expect((await point4.stateValues.xs)[0].tree).eq(p2x)
-        expect((await point4.stateValues.xs)[1].tree).eq(p2y)
-        expect((await point5.stateValues.xs)[0].tree).eq(p1x)
-        expect((await point5.stateValues.xs)[1].tree).eq(p1y)
-        expect((await point6.stateValues.xs)[0].tree).eq(p2x)
-        expect((await point6.stateValues.xs)[1].tree).eq(p2y)
-      })
-
-      cy.log('move line segment up and to the right')
-      cy.window().then(async (win) => {
-        let components = Object.assign({}, win.state.components);
-
-        let point1coords = [
-          (await components['/_linesegment1'].stateValues.endpoints)[0][0],
-          (await components['/_linesegment1'].stateValues.endpoints)[0][1],
-        ];
-        let point2coords = [
-          (await components['/_linesegment1'].stateValues.endpoints)[1][0],
-          (await components['/_linesegment1'].stateValues.endpoints)[1][1],
-        ];
-
-        let moveX = 4;
-        let moveY = 2;
-
-        point1coords[0] = point1coords[0].add(moveX);
-        point1coords[1] = point1coords[1].add(moveY);
-        point2coords[0] = point2coords[0].add(moveX);
-        point2coords[1] = point2coords[1].add(moveY);
-
-        await components['/_linesegment1'].moveLineSegment({
-          point1coords: point1coords,
-          point2coords: point2coords
-        });
-
-        let p1x = point1coords[0].simplify().tree;
-        let p1y = point1coords[1].simplify().tree;
-        let p2x = point2coords[0].simplify().tree;
-        let p2y = point2coords[1].simplify().tree;
-
-        expect((await point1.stateValues.xs)[0].tree).eq(p1x)
-        expect((await point1.stateValues.xs)[1].tree).eq(p1y)
-        expect((await point2.stateValues.xs)[0].tree).eq(p2x)
-        expect((await point2.stateValues.xs)[1].tree).eq(p2y)
-        expect((await point3.stateValues.xs)[0].tree).eq(p1x)
-        expect((await point3.stateValues.xs)[1].tree).eq(p1y)
-        expect((await point4.stateValues.xs)[0].tree).eq(p2x)
-        expect((await point4.stateValues.xs)[1].tree).eq(p2y)
-        expect((await point5.stateValues.xs)[0].tree).eq(p1x)
-        expect((await point5.stateValues.xs)[1].tree).eq(p1y)
-        expect((await point6.stateValues.xs)[0].tree).eq(p2x)
-        expect((await point6.stateValues.xs)[1].tree).eq(p2y)
-
+        expect((await stateVariables["/p1"].stateValues.xs)[0]).eq(p1x)
+        expect((await stateVariables["/p1"].stateValues.xs)[1]).eq(p1y)
+        expect((await stateVariables["/p2"].stateValues.xs)[0]).eq(p2x)
+        expect((await stateVariables["/p2"].stateValues.xs)[1]).eq(p2y)
+        expect(stateVariables["/p1a"].stateValues.xs[0]).eq(p1x)
+        expect(stateVariables["/p1a"].stateValues.xs[1]).eq(p1y)
+        expect(stateVariables["/p2a"].stateValues.xs[0]).eq(p2x)
+        expect(stateVariables["/p2a"].stateValues.xs[1]).eq(p2y)
       })
     })
+
+    cy.log('move second individually copied point');
+    cy.window().then(async (win) => {
+      let p2x = 8;
+      let p2y = -1;
+      win.callAction({
+        actionName: "movePoint",
+        componentName: "/p2",
+        args: { x: p2x, y: p2y }
+      })
+
+      cy.get("#\\/p2b .mjx-mrow").should('contain.text', `(${nInDOM(p2x)},${nInDOM(p2y)})`)
+
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables();
+        let p1x = -2;
+        let p1y = -5;
+        expect((await stateVariables["/p1"].stateValues.xs)[0]).eq(p1x)
+        expect((await stateVariables["/p1"].stateValues.xs)[1]).eq(p1y)
+        expect((await stateVariables["/p2"].stateValues.xs)[0]).eq(p2x)
+        expect((await stateVariables["/p2"].stateValues.xs)[1]).eq(p2y)
+        expect(stateVariables["/p1a"].stateValues.xs[0]).eq(p1x)
+        expect(stateVariables["/p1a"].stateValues.xs[1]).eq(p1y)
+        expect(stateVariables["/p2a"].stateValues.xs[0]).eq(p2x)
+        expect(stateVariables["/p2a"].stateValues.xs[1]).eq(p2y)
+      })
+    })
+
+    cy.log('move second array-copied point');
+    cy.window().then(async (win) => {
+      let p2x = -6;
+      let p2y = 4;
+      win.callAction({
+        actionName: "movePoint",
+        componentName: "/p2a",
+        args: { x: p2x, y: p2y }
+      })
+
+      cy.get("#\\/p2b .mjx-mrow").should('contain.text', `(${nInDOM(p2x)},${nInDOM(p2y)})`)
+
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables();
+        let p1x = -2;
+        let p1y = -5;
+        expect((await stateVariables["/p1"].stateValues.xs)[0]).eq(p1x)
+        expect((await stateVariables["/p1"].stateValues.xs)[1]).eq(p1y)
+        expect((await stateVariables["/p2"].stateValues.xs)[0]).eq(p2x)
+        expect((await stateVariables["/p2"].stateValues.xs)[1]).eq(p2y)
+        expect(stateVariables["/p1a"].stateValues.xs[0]).eq(p1x)
+        expect(stateVariables["/p1a"].stateValues.xs[1]).eq(p1y)
+        expect(stateVariables["/p2a"].stateValues.xs[0]).eq(p2x)
+        expect(stateVariables["/p2a"].stateValues.xs[1]).eq(p2y)
+      })
+    })
+
+    cy.log('move first array-copied point');
+    cy.window().then(async (win) => {
+      let p1x = 0;
+      let p1y = 7;
+      win.callAction({
+        actionName: "movePoint",
+        componentName: "/p1a",
+        args: { x: p1x, y: p1y }
+      })
+
+      cy.get("#\\/p1b .mjx-mrow").should('contain.text', `(${nInDOM(p1x)},${nInDOM(p1y)})`)
+
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables();
+        let p2x = -6;
+        let p2y = 4;
+        expect((await stateVariables["/p1"].stateValues.xs)[0]).eq(p1x)
+        expect((await stateVariables["/p1"].stateValues.xs)[1]).eq(p1y)
+        expect((await stateVariables["/p2"].stateValues.xs)[0]).eq(p2x)
+        expect((await stateVariables["/p2"].stateValues.xs)[1]).eq(p2y)
+        expect(stateVariables["/p1a"].stateValues.xs[0]).eq(p1x)
+        expect(stateVariables["/p1a"].stateValues.xs[1]).eq(p1y)
+        expect(stateVariables["/p2a"].stateValues.xs[0]).eq(p2x)
+        expect(stateVariables["/p2a"].stateValues.xs[1]).eq(p2y)
+      })
+    })
+
+    cy.log('move line up and to the right')
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables();
+
+      let point1coords = [
+        (await stateVariables['/_linesegment1'].stateValues.endpoints)[0][0],
+        (await stateVariables['/_linesegment1'].stateValues.endpoints)[0][1],
+      ];
+      let point2coords = [
+        (await stateVariables['/_linesegment1'].stateValues.endpoints)[1][0],
+        (await stateVariables['/_linesegment1'].stateValues.endpoints)[1][1],
+      ];
+
+      let moveX = 4;
+      let moveY = 2;
+
+      point1coords[0] = me.fromAst(point1coords[0]).add(moveX).simplify().tree;
+      point1coords[1] = me.fromAst(point1coords[1]).add(moveY).simplify().tree;
+      point2coords[0] = me.fromAst(point2coords[0]).add(moveX).simplify().tree;
+      point2coords[1] = me.fromAst(point2coords[1]).add(moveY).simplify().tree;
+
+      win.callAction({
+        actionName: "moveLineSegment",
+        componentName: "/_linesegment1",
+        args: {
+          point1coords: point1coords,
+          point2coords: point2coords
+        }
+      })
+
+      cy.get("#\\/p1b .mjx-mrow").should('contain.text', `(${nInDOM(point1coords[0]).substring(0, 4)}`)
+      cy.get("#\\/p1b .mjx-mrow").should('contain.text', `,${nInDOM(point1coords[1]).substring(0, 4)}`)
+
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables();
+
+        expect((await stateVariables["/p1"].stateValues.xs)[0]).eq(point1coords[0])
+        expect((await stateVariables["/p1"].stateValues.xs)[1]).eq(point1coords[1])
+        expect((await stateVariables["/p2"].stateValues.xs)[0]).eq(point2coords[0])
+        expect((await stateVariables["/p2"].stateValues.xs)[1]).eq(point2coords[1])
+        expect(stateVariables["/p1a"].stateValues.xs[0]).eq(point1coords[0])
+        expect(stateVariables["/p1a"].stateValues.xs[1]).eq(point1coords[1])
+        expect(stateVariables["/p2a"].stateValues.xs[0]).eq(point2coords[0])
+        expect(stateVariables["/p2a"].stateValues.xs[1]).eq(point2coords[1])
+      })
+    })
+
 
   })
 
@@ -2197,113 +2683,128 @@ describe('LineSegment Tag Tests', function () {
   </graph>
   <graph>
   <linesegment endpoints="$(_linesegment1{prop='endpoints'})" />
+  <copy prop="endpoints" target="_linesegment1" assignNames="p1 p2" />
   </graph>
+  <copy prop="endpoint1" target="_linesegment1" assignNames="p1b" />
+  <copy prop="endpoint2" target="_linesegment1" assignNames="p2b" />
   `}, "*");
     });
 
     cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
+      let stateVariables = await win.returnAllStateVariables();
+      let p1x = -1;
+      let p1y = -2;
+      let p2x = -3;
+      let p2y = -4;
+      expect((await stateVariables["/p1"].stateValues.xs)[0]).eq(p1x)
+      expect((await stateVariables["/p1"].stateValues.xs)[1]).eq(p1y)
+      expect((await stateVariables["/p2"].stateValues.xs)[0]).eq(p2x)
+      expect((await stateVariables["/p2"].stateValues.xs)[1]).eq(p2y)
+      expect(stateVariables["/p1"].stateValues.xs[0]).eq(p1x)
+      expect(stateVariables["/p1"].stateValues.xs[1]).eq(p1y)
+      expect(stateVariables["/p2"].stateValues.xs[0]).eq(p2x)
+      expect(stateVariables["/p2"].stateValues.xs[1]).eq(p2y)
+      expect((await stateVariables['/_linesegment1'].stateValues.endpoints)[0]).eqls([p1x, p1y]);
+      expect((await stateVariables['/_linesegment1'].stateValues.endpoints)[1]).eqls([p2x, p2y]);
+      expect(stateVariables['/_linesegment2'].stateValues.endpoints[0]).eqls([p1x, p1y]);
+      expect(stateVariables['/_linesegment2'].stateValues.endpoints[1]).eqls([p2x, p2y]);
+    })
 
-      let point1 = components["/_linesegment1"].attributes["endpoints"].component.activeChildren[0];
-      let point2 = components["/_linesegment1"].attributes["endpoints"].component.activeChildren[1];
-      let point3 = components["/_linesegment2"].attributes["endpoints"].component.activeChildren[0];
-      let point4 = components["/_linesegment2"].attributes["endpoints"].component.activeChildren[1];
+    cy.log('move first line segment up and to the right')
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables();
 
-      cy.window().then(async (win) => {
-        let components = Object.assign({}, win.state.components);
-        let p1x = -1;
-        let p1y = -2;
-        let p2x = -3;
-        let p2y = -4;
-        expect((await point1.stateValues.xs)[0].tree).eq(p1x)
-        expect((await point1.stateValues.xs)[1].tree).eq(p1y)
-        expect((await point2.stateValues.xs)[0].tree).eq(p2x)
-        expect((await point2.stateValues.xs)[1].tree).eq(p2y)
-        expect((await point3.stateValues.xs)[0].tree).eq(p1x)
-        expect((await point3.stateValues.xs)[1].tree).eq(p1y)
-        expect((await point4.stateValues.xs)[0].tree).eq(p2x)
-        expect((await point4.stateValues.xs)[1].tree).eq(p2y)
-        expect((await components['/_linesegment1'].stateValues.endpoints)[0].map(x => x.tree)).eqls([p1x, p1y]);
-        expect((await components['/_linesegment1'].stateValues.endpoints)[1].map(x => x.tree)).eqls([p2x, p2y]);
-        expect((await components['/_linesegment2'].stateValues.endpoints)[0].map(x => x.tree)).eqls([p1x, p1y]);
-        expect((await components['/_linesegment2'].stateValues.endpoints)[1].map(x => x.tree)).eqls([p2x, p2y]);
-      })
+      let point1coords = [
+        (await stateVariables['/_linesegment1'].stateValues.endpoints)[0][0],
+        (await stateVariables['/_linesegment1'].stateValues.endpoints)[0][1],
+      ];
+      let point2coords = [
+        (await stateVariables['/_linesegment1'].stateValues.endpoints)[1][0],
+        (await stateVariables['/_linesegment1'].stateValues.endpoints)[1][1],
+      ];
 
-      cy.log('move first line segment up and to the right')
-      cy.window().then(async (win) => {
-        let components = Object.assign({}, win.state.components);
+      let moveX = 4;
+      let moveY = 2;
 
-        let point1coords = [
-          (await components['/_linesegment1'].stateValues.endpoints)[0][0],
-          (await components['/_linesegment1'].stateValues.endpoints)[0][1],
-        ];
-        let point2coords = [
-          (await components['/_linesegment1'].stateValues.endpoints)[1][0],
-          (await components['/_linesegment1'].stateValues.endpoints)[1][1],
-        ];
+      point1coords[0] = me.fromAst(point1coords[0]).add(moveX).simplify().tree;
+      point1coords[1] = me.fromAst(point1coords[1]).add(moveY).simplify().tree;
+      point2coords[0] = me.fromAst(point2coords[0]).add(moveX).simplify().tree;
+      point2coords[1] = me.fromAst(point2coords[1]).add(moveY).simplify().tree;
 
-        let moveX = 4;
-        let moveY = 2;
-
-        point1coords[0] = point1coords[0].add(moveX);
-        point1coords[1] = point1coords[1].add(moveY);
-        point2coords[0] = point2coords[0].add(moveX);
-        point2coords[1] = point2coords[1].add(moveY);
-
-        await components['/_linesegment1'].moveLineSegment({
+      win.callAction({
+        actionName: "moveLineSegment",
+        componentName: "/_linesegment1",
+        args: {
           point1coords: point1coords,
           point2coords: point2coords
-        });
+        }
+      })
+
+      cy.get("#\\/p1b .mjx-mrow").should('contain.text', `(${nInDOM(point1coords[0]).substring(0, 4)}`)
+      cy.get("#\\/p1b .mjx-mrow").should('contain.text', `,${nInDOM(point1coords[1]).substring(0, 4)}`)
+
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables();
 
         let p1x = -1 + moveX;
         let p1y = -2 + moveY;
         let p2x = -3 + moveX;
         let p2y = -4 + moveY;
 
-        expect((await point1.stateValues.xs)[0].tree).eq(p1x)
-        expect((await point1.stateValues.xs)[1].tree).eq(p1y)
-        expect((await point2.stateValues.xs)[0].tree).eq(p2x)
-        expect((await point2.stateValues.xs)[1].tree).eq(p2y)
-        expect((await point3.stateValues.xs)[0].tree).eq(p1x)
-        expect((await point3.stateValues.xs)[1].tree).eq(p1y)
-        expect((await point4.stateValues.xs)[0].tree).eq(p2x)
-        expect((await point4.stateValues.xs)[1].tree).eq(p2y)
-        expect((await components['/_linesegment1'].stateValues.endpoints)[0].map(x => x.tree)).eqls([p1x, p1y]);
-        expect((await components['/_linesegment1'].stateValues.endpoints)[1].map(x => x.tree)).eqls([p2x, p2y]);
-        expect((await components['/_linesegment2'].stateValues.endpoints)[0].map(x => x.tree)).eqls([p1x, p1y]);
-        expect((await components['/_linesegment2'].stateValues.endpoints)[1].map(x => x.tree)).eqls([p2x, p2y]);
+        expect((await stateVariables["/p1"].stateValues.xs)[0]).eq(p1x)
+        expect((await stateVariables["/p1"].stateValues.xs)[1]).eq(p1y)
+        expect((await stateVariables["/p2"].stateValues.xs)[0]).eq(p2x)
+        expect((await stateVariables["/p2"].stateValues.xs)[1]).eq(p2y)
+        expect(stateVariables["/p1"].stateValues.xs[0]).eq(p1x)
+        expect(stateVariables["/p1"].stateValues.xs[1]).eq(p1y)
+        expect(stateVariables["/p2"].stateValues.xs[0]).eq(p2x)
+        expect(stateVariables["/p2"].stateValues.xs[1]).eq(p2y)
+        expect((await stateVariables['/_linesegment1'].stateValues.endpoints)[0]).eqls([p1x, p1y]);
+        expect((await stateVariables['/_linesegment1'].stateValues.endpoints)[1]).eqls([p2x, p2y]);
+        expect(stateVariables['/_linesegment2'].stateValues.endpoints[0]).eqls([p1x, p1y]);
+        expect(stateVariables['/_linesegment2'].stateValues.endpoints[1]).eqls([p2x, p2y]);
 
       })
+    })
 
 
-      cy.log('move second line segment up and to the left')
-      cy.window().then(async (win) => {
-        let components = Object.assign({}, win.state.components);
+    cy.log('move second line segment up and to the left')
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables();
 
-        let point1coords = [
-          (await components['/_linesegment2'].stateValues.endpoints)[0][0],
-          (await components['/_linesegment2'].stateValues.endpoints)[0][1],
-        ];
-        let point2coords = [
-          (await components['/_linesegment2'].stateValues.endpoints)[1][0],
-          (await components['/_linesegment2'].stateValues.endpoints)[1][1],
-        ];
+      let point1coords = [
+        (await stateVariables['/_linesegment2'].stateValues.endpoints)[0][0],
+        (await stateVariables['/_linesegment2'].stateValues.endpoints)[0][1],
+      ];
+      let point2coords = [
+        (await stateVariables['/_linesegment2'].stateValues.endpoints)[1][0],
+        (await stateVariables['/_linesegment2'].stateValues.endpoints)[1][1],
+      ];
 
-        let moveX = -7;
-        let moveY = 3;
+      let moveX = -7;
+      let moveY = 3;
 
-        point1coords[0] = point1coords[0].add(moveX);
-        point1coords[1] = point1coords[1].add(moveY);
-        point2coords[0] = point2coords[0].add(moveX);
-        point2coords[1] = point2coords[1].add(moveY);
+      point1coords[0] = me.fromAst(point1coords[0]).add(moveX).simplify().tree;
+      point1coords[1] = me.fromAst(point1coords[1]).add(moveY).simplify().tree;
+      point2coords[0] = me.fromAst(point2coords[0]).add(moveX).simplify().tree;
+      point2coords[1] = me.fromAst(point2coords[1]).add(moveY).simplify().tree;
 
-        await components['/_linesegment2'].moveLineSegment({
+      win.callAction({
+        actionName: "moveLineSegment",
+        componentName: "/_linesegment2",
+        args: {
           point1coords: point1coords,
           point2coords: point2coords
-        });
+        }
+      })
 
+      cy.get("#\\/p1b .mjx-mrow").should('contain.text', `(${nInDOM(point1coords[0]).substring(0, 4)}`)
+      cy.get("#\\/p1b .mjx-mrow").should('contain.text', `,${nInDOM(point1coords[1]).substring(0, 4)}`)
+
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables();
 
         moveX = 4 + moveX;
         moveY = 2 + moveY;
@@ -2312,21 +2813,22 @@ describe('LineSegment Tag Tests', function () {
         let p2x = -3 + moveX;
         let p2y = -4 + moveY;
 
-        expect((await point1.stateValues.xs)[0].tree).eq(p1x)
-        expect((await point1.stateValues.xs)[1].tree).eq(p1y)
-        expect((await point2.stateValues.xs)[0].tree).eq(p2x)
-        expect((await point2.stateValues.xs)[1].tree).eq(p2y)
-        expect((await point3.stateValues.xs)[0].tree).eq(p1x)
-        expect((await point3.stateValues.xs)[1].tree).eq(p1y)
-        expect((await point4.stateValues.xs)[0].tree).eq(p2x)
-        expect((await point4.stateValues.xs)[1].tree).eq(p2y)
-        expect((await components['/_linesegment1'].stateValues.endpoints)[0].map(x => x.tree)).eqls([p1x, p1y]);
-        expect((await components['/_linesegment1'].stateValues.endpoints)[1].map(x => x.tree)).eqls([p2x, p2y]);
-        expect((await components['/_linesegment2'].stateValues.endpoints)[0].map(x => x.tree)).eqls([p1x, p1y]);
-        expect((await components['/_linesegment2'].stateValues.endpoints)[1].map(x => x.tree)).eqls([p2x, p2y]);
 
+        expect((await stateVariables["/p1"].stateValues.xs)[0]).eq(p1x)
+        expect((await stateVariables["/p1"].stateValues.xs)[1]).eq(p1y)
+        expect((await stateVariables["/p2"].stateValues.xs)[0]).eq(p2x)
+        expect((await stateVariables["/p2"].stateValues.xs)[1]).eq(p2y)
+        expect(stateVariables["/p1"].stateValues.xs[0]).eq(p1x)
+        expect(stateVariables["/p1"].stateValues.xs[1]).eq(p1y)
+        expect(stateVariables["/p2"].stateValues.xs[0]).eq(p2x)
+        expect(stateVariables["/p2"].stateValues.xs[1]).eq(p2y)
+        expect((await stateVariables['/_linesegment1'].stateValues.endpoints)[0]).eqls([p1x, p1y]);
+        expect((await stateVariables['/_linesegment1'].stateValues.endpoints)[1]).eqls([p2x, p2y]);
+        expect(stateVariables['/_linesegment2'].stateValues.endpoints[0]).eqls([p1x, p1y]);
+        expect(stateVariables['/_linesegment2'].stateValues.endpoints[1]).eqls([p2x, p2y]);
       })
     })
+
 
   })
 
@@ -2336,24 +2838,26 @@ describe('LineSegment Tag Tests', function () {
         doenetML: `
   <text>a</text>
   <graph>
-  <linesegment endpoints="(1,2) ($(_linesegment1{prop='endpointX1_2'}), $(_linesegment1{prop='endpointX1_1'}))" />
-  <point name="x1">
-    (<extract prop="x"><copy prop="endpoint1" target="_linesegment1" /></extract>,
-    <math fixed>3</math>)
-  </point>
-  <point name="x2">
-    (<extract prop="x"><copy prop="endpoint2" target="_linesegment1" /></extract>,
-    <math fixed>4</math>)
-  </point>
-  <point name="y1">
-    (<math fixed>3</math>,
-    <extract prop="y"><copy prop="endpoint1" target="_linesegment1" /></extract>)
-  </point>
-  <point name="y2">
-    (<math fixed>4</math>,
-    <extract prop="y"><copy prop="endpoint2" target="_linesegment1" /></extract>)
-  </point>
-</graph>
+    <linesegment endpoints="(1,2) ($(_linesegment1{prop='endpointX1_2'}), $(_linesegment1{prop='endpointX1_1'}))" />
+    <point name="x1">
+      (<extract prop="x"><copy prop="endpoint1" target="_linesegment1" /></extract>,
+      <math fixed>3</math>)
+    </point>
+    <point name="x2">
+      (<extract prop="x"><copy prop="endpoint2" target="_linesegment1" /></extract>,
+      <math fixed>4</math>)
+    </point>
+    <point name="y1">
+      (<math fixed>3</math>,
+      <extract prop="y"><copy prop="endpoint1" target="_linesegment1" /></extract>)
+    </point>
+    <point name="y2">
+      (<math fixed>4</math>,
+      <extract prop="y"><copy prop="endpoint2" target="_linesegment1" /></extract>)
+    </point>
+  </graph>
+  <copy prop="endpoint1" target="_linesegment1" assignNames="p1" />
+  <copy prop="endpoint2" target="_linesegment1" assignNames="p2" />
   `}, "*");
     });
 
@@ -2363,71 +2867,114 @@ describe('LineSegment Tag Tests', function () {
     let x = 1, y = 2;
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      expect((await components['/_linesegment1'].stateValues.endpoints)[0].map(x => x.tree)).eqls([x, y]);
-      expect((await components['/_linesegment1'].stateValues.endpoints)[1].map(x => x.tree)).eqls([y, x]);
-      expect((await components['/x1'].stateValues.xs)[0].tree).eq(x);
-      expect((await components['/x2'].stateValues.xs)[0].tree).eq(y);
-      expect((await components['/y1'].stateValues.xs)[1].tree).eq(y);
-      expect((await components['/y2'].stateValues.xs)[1].tree).eq(x);
+      let stateVariables = await win.returnAllStateVariables();
+      expect((await stateVariables['/_linesegment1'].stateValues.endpoints)[0]).eqls([x, y]);
+      expect((await stateVariables['/_linesegment1'].stateValues.endpoints)[1]).eqls([y, x]);
+      expect((await stateVariables['/x1'].stateValues.xs)[0]).eq(x);
+      expect((await stateVariables['/x2'].stateValues.xs)[0]).eq(y);
+      expect((await stateVariables['/y1'].stateValues.xs)[1]).eq(y);
+      expect((await stateVariables['/y2'].stateValues.xs)[1]).eq(x);
     })
 
     cy.log("move x point 1")
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
 
       x = 3;
-      await components['/x1'].movePoint({ x: x });
-      expect((await components['/_linesegment1'].stateValues.endpoints)[0].map(x => x.tree)).eqls([x, y]);
-      expect((await components['/_linesegment1'].stateValues.endpoints)[1].map(x => x.tree)).eqls([y, x]);
-      expect((await components['/x1'].stateValues.xs)[0].tree).eq(x);
-      expect((await components['/x2'].stateValues.xs)[0].tree).eq(y);
-      expect((await components['/y1'].stateValues.xs)[1].tree).eq(y);
-      expect((await components['/y2'].stateValues.xs)[1].tree).eq(x);
+
+      win.callAction({
+        actionName: "movePoint",
+        componentName: "/x1",
+        args: { x }
+      })
+
+      cy.get("#\\/p1 .mjx-mrow").should('contain.text', `(${nInDOM(x)},${nInDOM(y)})`)
+      cy.get("#\\/p2 .mjx-mrow").should('contain.text', `(${nInDOM(y)},${nInDOM(x)})`)
+
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables();
+        expect((await stateVariables['/_linesegment1'].stateValues.endpoints)[0]).eqls([x, y]);
+        expect((await stateVariables['/_linesegment1'].stateValues.endpoints)[1]).eqls([y, x]);
+        expect((await stateVariables['/x1'].stateValues.xs)[0]).eq(x);
+        expect((await stateVariables['/x2'].stateValues.xs)[0]).eq(y);
+        expect((await stateVariables['/y1'].stateValues.xs)[1]).eq(y);
+        expect((await stateVariables['/y2'].stateValues.xs)[1]).eq(x);
+      })
     })
 
     cy.log("move x point 2")
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
 
       y = 4;
-      await components['/x2'].movePoint({ x: y });
-      expect((await components['/_linesegment1'].stateValues.endpoints)[0].map(x => x.tree)).eqls([x, y]);
-      expect((await components['/_linesegment1'].stateValues.endpoints)[1].map(x => x.tree)).eqls([y, x]);
-      expect((await components['/x1'].stateValues.xs)[0].tree).eq(x);
-      expect((await components['/x2'].stateValues.xs)[0].tree).eq(y);
-      expect((await components['/y1'].stateValues.xs)[1].tree).eq(y);
-      expect((await components['/y2'].stateValues.xs)[1].tree).eq(x);
+
+      win.callAction({
+        actionName: "movePoint",
+        componentName: "/x2",
+        args: { x: y }
+      })
+
+      cy.get("#\\/p1 .mjx-mrow").should('contain.text', `(${nInDOM(x)},${nInDOM(y)})`)
+      cy.get("#\\/p2 .mjx-mrow").should('contain.text', `(${nInDOM(y)},${nInDOM(x)})`)
+
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables();
+        expect((await stateVariables['/_linesegment1'].stateValues.endpoints)[0]).eqls([x, y]);
+        expect((await stateVariables['/_linesegment1'].stateValues.endpoints)[1]).eqls([y, x]);
+        expect((await stateVariables['/x1'].stateValues.xs)[0]).eq(x);
+        expect((await stateVariables['/x2'].stateValues.xs)[0]).eq(y);
+        expect((await stateVariables['/y1'].stateValues.xs)[1]).eq(y);
+        expect((await stateVariables['/y2'].stateValues.xs)[1]).eq(x);
+      })
     })
 
     cy.log("move y point 1")
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
 
       y = -6;
-      await components['/y1'].movePoint({ y: y });
-      expect((await components['/_linesegment1'].stateValues.endpoints)[0].map(x => x.tree)).eqls([x, y]);
-      expect((await components['/_linesegment1'].stateValues.endpoints)[1].map(x => x.tree)).eqls([y, x]);
-      expect((await components['/x1'].stateValues.xs)[0].tree).eq(x);
-      expect((await components['/x2'].stateValues.xs)[0].tree).eq(y);
-      expect((await components['/y1'].stateValues.xs)[1].tree).eq(y);
-      expect((await components['/y2'].stateValues.xs)[1].tree).eq(x);
+
+      win.callAction({
+        actionName: "movePoint",
+        componentName: "/y1",
+        args: { y }
+      })
+
+      cy.get("#\\/p1 .mjx-mrow").should('contain.text', `(${nInDOM(x)},${nInDOM(y)})`)
+      cy.get("#\\/p2 .mjx-mrow").should('contain.text', `(${nInDOM(y)},${nInDOM(x)})`)
+
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables();
+        expect((await stateVariables['/_linesegment1'].stateValues.endpoints)[0]).eqls([x, y]);
+        expect((await stateVariables['/_linesegment1'].stateValues.endpoints)[1]).eqls([y, x]);
+        expect((await stateVariables['/x1'].stateValues.xs)[0]).eq(x);
+        expect((await stateVariables['/x2'].stateValues.xs)[0]).eq(y);
+        expect((await stateVariables['/y1'].stateValues.xs)[1]).eq(y);
+        expect((await stateVariables['/y2'].stateValues.xs)[1]).eq(x);
+      })
     })
 
     cy.log("move y point 2")
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
 
       x = -8;
-      await components['/y2'].movePoint({ y: x });
-      expect((await components['/_linesegment1'].stateValues.endpoints)[0].map(x => x.tree)).eqls([x, y]);
-      expect((await components['/_linesegment1'].stateValues.endpoints)[1].map(x => x.tree)).eqls([y, x]);
-      expect((await components['/x1'].stateValues.xs)[0].tree).eq(x);
-      expect((await components['/x2'].stateValues.xs)[0].tree).eq(y);
-      expect((await components['/y1'].stateValues.xs)[1].tree).eq(y);
-      expect((await components['/y2'].stateValues.xs)[1].tree).eq(x);
-    })
 
+      win.callAction({
+        actionName: "movePoint",
+        componentName: "/y2",
+        args: { y: x }
+      })
+
+      cy.get("#\\/p1 .mjx-mrow").should('contain.text', `(${nInDOM(x)},${nInDOM(y)})`)
+      cy.get("#\\/p2 .mjx-mrow").should('contain.text', `(${nInDOM(y)},${nInDOM(x)})`)
+
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables();
+        expect((await stateVariables['/_linesegment1'].stateValues.endpoints)[0]).eqls([x, y]);
+        expect((await stateVariables['/_linesegment1'].stateValues.endpoints)[1]).eqls([y, x]);
+        expect((await stateVariables['/x1'].stateValues.xs)[0]).eq(x);
+        expect((await stateVariables['/x2'].stateValues.xs)[0]).eq(y);
+        expect((await stateVariables['/y1'].stateValues.xs)[1]).eq(y);
+        expect((await stateVariables['/y2'].stateValues.xs)[1]).eq(x);
+      })
+    })
 
   })
 
@@ -2441,131 +2988,183 @@ describe('LineSegment Tag Tests', function () {
   <linesegment endpoints="$(_linesegment3{prop='endpoint2' componentType='point'}) (3,2)" />
   <linesegment endpoints="$(_linesegment1{prop='endpoint2' componentType='point'}) (-1,4)" />
   </graph>
+  <copy prop="endpoint1" target="_linesegment1" assignNames="p11" />
+  <copy prop="endpoint2" target="_linesegment1" assignNames="p12" />
+  <copy prop="endpoint1" target="_linesegment2" assignNames="p21" />
+  <copy prop="endpoint2" target="_linesegment2" assignNames="p22" />
+  <copy prop="endpoint1" target="_linesegment3" assignNames="p31" />
+  <copy prop="endpoint2" target="_linesegment3" assignNames="p32" />
   `}, "*");
     });
 
     cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
 
+
+    let x1 = 1, y1 = 0;
+    let x2 = 3, y2 = 2;
+    let x3 = -1, y3 = 4;
+
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      let point1 = components["/_linesegment1"].attributes["endpoints"].component.activeChildren[0];
-      let point2 = components["/_linesegment1"].attributes["endpoints"].component.activeChildren[1];
-      let point3 = components["/_linesegment2"].attributes["endpoints"].component.activeChildren[0];
-      let point4 = components["/_linesegment2"].attributes["endpoints"].component.activeChildren[1];
-      let point5 = components["/_linesegment3"].attributes["endpoints"].component.activeChildren[0];
-      let point6 = components["/_linesegment3"].attributes["endpoints"].component.activeChildren[1];
-
-      let x1 = 1, y1 = 0;
-      let x2 = 3, y2 = 2;
-      let x3 = -1, y3 = 4;
-
-      cy.window().then(async (win) => {
-        let components = Object.assign({}, win.state.components);
-        expect((await components['/_linesegment1'].stateValues.endpoints)[0].map(x => x.tree)).eqls([x2, y2]);
-        expect((await components['/_linesegment1'].stateValues.endpoints)[1].map(x => x.tree)).eqls([x1, y1]);
-        expect((await components['/_linesegment2'].stateValues.endpoints)[0].map(x => x.tree)).eqls([x3, y3]);
-        expect((await components['/_linesegment2'].stateValues.endpoints)[1].map(x => x.tree)).eqls([x2, y2]);
-        expect((await components['/_linesegment3'].stateValues.endpoints)[0].map(x => x.tree)).eqls([x1, y1]);
-        expect((await components['/_linesegment3'].stateValues.endpoints)[1].map(x => x.tree)).eqls([x3, y3]);
-
-      })
-
-      cy.log("move point 1 of line segment 1")
-      cy.window().then(async (win) => {
-        let components = Object.assign({}, win.state.components);
-
-        x2 = 7;
-        y2 = -3;
-        await point1.movePoint({ x: x2, y: y2 });
-        expect((await components['/_linesegment1'].stateValues.endpoints)[0].map(x => x.tree)).eqls([x2, y2]);
-        expect((await components['/_linesegment1'].stateValues.endpoints)[1].map(x => x.tree)).eqls([x1, y1]);
-        expect((await components['/_linesegment2'].stateValues.endpoints)[0].map(x => x.tree)).eqls([x3, y3]);
-        expect((await components['/_linesegment2'].stateValues.endpoints)[1].map(x => x.tree)).eqls([x2, y2]);
-        expect((await components['/_linesegment3'].stateValues.endpoints)[0].map(x => x.tree)).eqls([x1, y1]);
-        expect((await components['/_linesegment3'].stateValues.endpoints)[1].map(x => x.tree)).eqls([x3, y3]);
-
-      })
-
-      cy.log("move point 2 of line segment 1")
-      cy.window().then(async (win) => {
-        let components = Object.assign({}, win.state.components);
-
-        x1 = -1;
-        y1 = -4;
-        await point2.movePoint({ x: x1, y: y1 });
-        expect((await components['/_linesegment1'].stateValues.endpoints)[0].map(x => x.tree)).eqls([x2, y2]);
-        expect((await components['/_linesegment1'].stateValues.endpoints)[1].map(x => x.tree)).eqls([x1, y1]);
-        expect((await components['/_linesegment2'].stateValues.endpoints)[0].map(x => x.tree)).eqls([x3, y3]);
-        expect((await components['/_linesegment2'].stateValues.endpoints)[1].map(x => x.tree)).eqls([x2, y2]);
-        expect((await components['/_linesegment3'].stateValues.endpoints)[0].map(x => x.tree)).eqls([x1, y1]);
-        expect((await components['/_linesegment3'].stateValues.endpoints)[1].map(x => x.tree)).eqls([x3, y3]);
-
-      })
-
-      cy.log("move point 1 of line segment 2")
-      cy.window().then(async (win) => {
-        let components = Object.assign({}, win.state.components);
-
-        x3 = 9;
-        y3 = -8;
-        await point3.movePoint({ x: x3, y: y3 });
-        expect((await components['/_linesegment1'].stateValues.endpoints)[0].map(x => x.tree)).eqls([x2, y2]);
-        expect((await components['/_linesegment1'].stateValues.endpoints)[1].map(x => x.tree)).eqls([x1, y1]);
-        expect((await components['/_linesegment2'].stateValues.endpoints)[0].map(x => x.tree)).eqls([x3, y3]);
-        expect((await components['/_linesegment2'].stateValues.endpoints)[1].map(x => x.tree)).eqls([x2, y2]);
-        expect((await components['/_linesegment3'].stateValues.endpoints)[0].map(x => x.tree)).eqls([x1, y1]);
-        expect((await components['/_linesegment3'].stateValues.endpoints)[1].map(x => x.tree)).eqls([x3, y3]);
-
-      })
-
-      cy.log("move point 2 of line segment 2")
-      cy.window().then(async (win) => {
-        let components = Object.assign({}, win.state.components);
-
-        x2 = 3;
-        y2 = 2;
-        await point4.movePoint({ x: x2, y: y2 });
-        expect((await components['/_linesegment1'].stateValues.endpoints)[0].map(x => x.tree)).eqls([x2, y2]);
-        expect((await components['/_linesegment1'].stateValues.endpoints)[1].map(x => x.tree)).eqls([x1, y1]);
-        expect((await components['/_linesegment2'].stateValues.endpoints)[0].map(x => x.tree)).eqls([x3, y3]);
-        expect((await components['/_linesegment2'].stateValues.endpoints)[1].map(x => x.tree)).eqls([x2, y2]);
-        expect((await components['/_linesegment3'].stateValues.endpoints)[0].map(x => x.tree)).eqls([x1, y1]);
-        expect((await components['/_linesegment3'].stateValues.endpoints)[1].map(x => x.tree)).eqls([x3, y3]);
-
-      })
-
-      cy.log("move point 1 of line segment 3")
-      cy.window().then(async (win) => {
-        let components = Object.assign({}, win.state.components);
-
-        x1 = -5;
-        y1 = 8;
-        await point5.movePoint({ x: x1, y: y1 });
-        expect((await components['/_linesegment1'].stateValues.endpoints)[0].map(x => x.tree)).eqls([x2, y2]);
-        expect((await components['/_linesegment1'].stateValues.endpoints)[1].map(x => x.tree)).eqls([x1, y1]);
-        expect((await components['/_linesegment2'].stateValues.endpoints)[0].map(x => x.tree)).eqls([x3, y3]);
-        expect((await components['/_linesegment2'].stateValues.endpoints)[1].map(x => x.tree)).eqls([x2, y2]);
-        expect((await components['/_linesegment3'].stateValues.endpoints)[0].map(x => x.tree)).eqls([x1, y1]);
-        expect((await components['/_linesegment3'].stateValues.endpoints)[1].map(x => x.tree)).eqls([x3, y3]);
-
-      })
-
-      cy.log("move point 2 of line segment 3")
-      cy.window().then(async (win) => {
-        let components = Object.assign({}, win.state.components);
-
-        x3 = 0;
-        y3 = -5;
-        await point6.movePoint({ x: x3, y: y3 });
-        expect((await components['/_linesegment1'].stateValues.endpoints)[0].map(x => x.tree)).eqls([x2, y2]);
-        expect((await components['/_linesegment1'].stateValues.endpoints)[1].map(x => x.tree)).eqls([x1, y1]);
-        expect((await components['/_linesegment2'].stateValues.endpoints)[0].map(x => x.tree)).eqls([x3, y3]);
-        expect((await components['/_linesegment2'].stateValues.endpoints)[1].map(x => x.tree)).eqls([x2, y2]);
-        expect((await components['/_linesegment3'].stateValues.endpoints)[0].map(x => x.tree)).eqls([x1, y1]);
-        expect((await components['/_linesegment3'].stateValues.endpoints)[1].map(x => x.tree)).eqls([x3, y3]);
-
-      })
+      let stateVariables = await win.returnAllStateVariables();
+      expect((await stateVariables['/_linesegment1'].stateValues.endpoints)[0]).eqls([x2, y2]);
+      expect((await stateVariables['/_linesegment1'].stateValues.endpoints)[1]).eqls([x1, y1]);
+      expect((await stateVariables['/_linesegment2'].stateValues.endpoints)[0]).eqls([x3, y3]);
+      expect((await stateVariables['/_linesegment2'].stateValues.endpoints)[1]).eqls([x2, y2]);
+      expect((await stateVariables['/_linesegment3'].stateValues.endpoints)[0]).eqls([x1, y1]);
+      expect((await stateVariables['/_linesegment3'].stateValues.endpoints)[1]).eqls([x3, y3]);
 
     })
+
+    cy.log("move point 1 of line segment 1")
+    cy.window().then(async (win) => {
+
+      x2 = 7;
+      y2 = -3
+
+      win.callAction({
+        actionName: "movePoint",
+        componentName: "/p11",
+        args: { x: x2, y: y2 }
+      })
+
+      cy.get("#\\/p11 .mjx-mrow").should('contain.text', `(${nInDOM(x2)},${nInDOM(y2)})`)
+
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables();;
+        expect((await stateVariables['/_linesegment1'].stateValues.endpoints)[0]).eqls([x2, y2]);
+        expect((await stateVariables['/_linesegment1'].stateValues.endpoints)[1]).eqls([x1, y1]);
+        expect((await stateVariables['/_linesegment2'].stateValues.endpoints)[0]).eqls([x3, y3]);
+        expect((await stateVariables['/_linesegment2'].stateValues.endpoints)[1]).eqls([x2, y2]);
+        expect((await stateVariables['/_linesegment3'].stateValues.endpoints)[0]).eqls([x1, y1]);
+        expect((await stateVariables['/_linesegment3'].stateValues.endpoints)[1]).eqls([x3, y3]);
+      })
+    })
+
+    cy.log("move point 2 of line segment 1")
+    cy.window().then(async (win) => {
+
+      x1 = -1;
+      y1 = -4;
+
+      win.callAction({
+        actionName: "movePoint",
+        componentName: "/p12",
+        args: { x: x1, y: y1 }
+      })
+
+      cy.get("#\\/p12 .mjx-mrow").should('contain.text', `(${nInDOM(x1)},${nInDOM(y1)})`)
+
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables();
+        expect((await stateVariables['/_linesegment1'].stateValues.endpoints)[0]).eqls([x2, y2]);
+        expect((await stateVariables['/_linesegment1'].stateValues.endpoints)[1]).eqls([x1, y1]);
+        expect((await stateVariables['/_linesegment2'].stateValues.endpoints)[0]).eqls([x3, y3]);
+        expect((await stateVariables['/_linesegment2'].stateValues.endpoints)[1]).eqls([x2, y2]);
+        expect((await stateVariables['/_linesegment3'].stateValues.endpoints)[0]).eqls([x1, y1]);
+        expect((await stateVariables['/_linesegment3'].stateValues.endpoints)[1]).eqls([x3, y3]);
+      })
+    })
+
+    cy.log("move point 1 of line segment 2")
+    cy.window().then(async (win) => {
+
+      x3 = 9;
+      y3 = -8;
+
+      win.callAction({
+        actionName: "movePoint",
+        componentName: "/p21",
+        args: { x: x3, y: y3 }
+      })
+
+      cy.get("#\\/p21 .mjx-mrow").should('contain.text', `(${nInDOM(x3)},${nInDOM(y3)})`)
+
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables();
+        expect((await stateVariables['/_linesegment1'].stateValues.endpoints)[0]).eqls([x2, y2]);
+        expect((await stateVariables['/_linesegment1'].stateValues.endpoints)[1]).eqls([x1, y1]);
+        expect((await stateVariables['/_linesegment2'].stateValues.endpoints)[0]).eqls([x3, y3]);
+        expect((await stateVariables['/_linesegment2'].stateValues.endpoints)[1]).eqls([x2, y2]);
+        expect((await stateVariables['/_linesegment3'].stateValues.endpoints)[0]).eqls([x1, y1]);
+        expect((await stateVariables['/_linesegment3'].stateValues.endpoints)[1]).eqls([x3, y3]);
+      })
+    })
+
+    cy.log("move point 2 of line segment 2")
+    cy.window().then(async (win) => {
+
+      x2 = 3;
+      y2 = 2;
+
+      win.callAction({
+        actionName: "movePoint",
+        componentName: "/p22",
+        args: { x: x2, y: y2 }
+      })
+
+      cy.get("#\\/p22 .mjx-mrow").should('contain.text', `(${nInDOM(x2)},${nInDOM(y2)})`)
+
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables();
+        expect((await stateVariables['/_linesegment1'].stateValues.endpoints)[0]).eqls([x2, y2]);
+        expect((await stateVariables['/_linesegment1'].stateValues.endpoints)[1]).eqls([x1, y1]);
+        expect((await stateVariables['/_linesegment2'].stateValues.endpoints)[0]).eqls([x3, y3]);
+        expect((await stateVariables['/_linesegment2'].stateValues.endpoints)[1]).eqls([x2, y2]);
+        expect((await stateVariables['/_linesegment3'].stateValues.endpoints)[0]).eqls([x1, y1]);
+        expect((await stateVariables['/_linesegment3'].stateValues.endpoints)[1]).eqls([x3, y3]);
+      })
+    })
+
+    cy.log("move point 1 of line segment 3")
+    cy.window().then(async (win) => {
+
+      x1 = -5;
+      y1 = 8;
+
+      win.callAction({
+        actionName: "movePoint",
+        componentName: "/p31",
+        args: { x: x1, y: y1 }
+      })
+
+      cy.get("#\\/p31 .mjx-mrow").should('contain.text', `(${nInDOM(x1)},${nInDOM(y1)})`)
+
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables();
+        expect((await stateVariables['/_linesegment1'].stateValues.endpoints)[0]).eqls([x2, y2]);
+        expect((await stateVariables['/_linesegment1'].stateValues.endpoints)[1]).eqls([x1, y1]);
+        expect((await stateVariables['/_linesegment2'].stateValues.endpoints)[0]).eqls([x3, y3]);
+        expect((await stateVariables['/_linesegment2'].stateValues.endpoints)[1]).eqls([x2, y2]);
+        expect((await stateVariables['/_linesegment3'].stateValues.endpoints)[0]).eqls([x1, y1]);
+        expect((await stateVariables['/_linesegment3'].stateValues.endpoints)[1]).eqls([x3, y3]);
+      })
+    })
+
+    cy.log("move point 2 of line segment 3")
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables();
+
+      x3 = 0;
+      y3 = -5;
+
+      win.callAction({
+        actionName: "movePoint",
+        componentName: "/p32",
+        args: { x: x3, y: y3 }
+      })
+
+      cy.get("#\\/p32 .mjx-mrow").should('contain.text', `(${nInDOM(x3)},${nInDOM(y3)})`)
+
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables();
+        expect((await stateVariables['/_linesegment1'].stateValues.endpoints)[0]).eqls([x2, y2]);
+        expect((await stateVariables['/_linesegment1'].stateValues.endpoints)[1]).eqls([x1, y1]);
+        expect((await stateVariables['/_linesegment2'].stateValues.endpoints)[0]).eqls([x3, y3]);
+        expect((await stateVariables['/_linesegment2'].stateValues.endpoints)[1]).eqls([x2, y2]);
+        expect((await stateVariables['/_linesegment3'].stateValues.endpoints)[0]).eqls([x1, y1]);
+        expect((await stateVariables['/_linesegment3'].stateValues.endpoints)[1]).eqls([x3, y3]);
+      })
+    })
+
   })
 });

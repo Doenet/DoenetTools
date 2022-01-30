@@ -264,8 +264,6 @@ describe('Line Tag Tests', function () {
         }
       })
 
-      console.log()
-
       cy.get("#\\/p1 .mjx-mrow").should('contain.text', `(${nInDOM(point1coords[0]).substring(0, 4)}`)
       cy.get("#\\/p1 .mjx-mrow").should('contain.text', `,${nInDOM(point1coords[1]).substring(0, 4)}`)
 
@@ -1566,7 +1564,6 @@ describe('Line Tag Tests', function () {
 
     cy.log("move y point 2")
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
 
       x = -8;
 
@@ -3324,7 +3321,6 @@ describe('Line Tag Tests', function () {
       y12 = 9;
       x2 = 8;
       y2 = 7;
-      y2 = -7;
       win.callAction({
         actionName: "moveLine",
         componentName: '/g2/l',
