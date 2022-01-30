@@ -7,7 +7,6 @@ export default class LineSegment extends GraphicalComponent {
 
   actions = {
     moveLineSegment: this.moveLineSegment.bind(this),
-    finalizeLineSegmentPosition: this.finalizeLineSegmentPosition.bind(this)
   };
 
   static createAttributesObject(args) {
@@ -108,6 +107,7 @@ export default class LineSegment extends GraphicalComponent {
       nDimensions: 2,
       entryPrefixes: ["endpointX", "endpoint"],
       hasEssential: true,
+      set: convertValueToMathExpression,
       defaultValueByArrayKey: (arrayKey) => me.fromAst(arrayKey === "0,0" ? 1 : 0),
       returnWrappingComponents(prefix) {
         if (prefix === "endpointX") {
@@ -459,19 +459,6 @@ export default class LineSegment extends GraphicalComponent {
       });
     }
 
-  }
-
-  async finalizeLineSegmentPosition() {
-    // trigger a moveLine 
-    // to send the final values with transient=false
-    // so that the final position will be recorded
-
-    let numericalEndpoints = await this.stateValues.numericalEndpoints;
-    return await this.actions.moveLineSegment({
-      point1coords: numericalEndpoints[0],
-      point2coords: numericalEndpoints[1],
-      transient: false,
-    });
   }
 
 }

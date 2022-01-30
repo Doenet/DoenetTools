@@ -9,20 +9,20 @@ function cesc(s) {
   return s;
 }
 
+function nInDOM(n) {
+  if (n < 0) {
+    return `−${Math.abs(n)}`
+  } else {
+    return String(n);
+  }
+}
+
 describe('Vector Tag Tests', function () {
 
   beforeEach(() => {
     cy.visit('/cypressTest')
 
   })
-
-  function nInDOM(n) {
-    if (n < 0) {
-      return `−${Math.abs(n)}`
-    } else {
-      return String(n);
-    }
-  }
 
   async function testVectorCopiedHTD({ headx, heady, tailx, taily,
     displacementTailShiftx = 0, displacementTailShifty = 0,

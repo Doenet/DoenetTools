@@ -294,6 +294,7 @@ export default class MathComponent extends InlineComponent {
           variableName: "groupCompositeReplacements"
         },
       }),
+      set: x => x === null ? null : convertValueToMathExpression(x),
       definition: calculateExpressionWithCodes,
       async inverseDefinition({ desiredStateVariableValues, dependencyValues, stateValues, componentName }) {
 
@@ -594,7 +595,7 @@ export default class MathComponent extends InlineComponent {
       }),
       definition: function ({ dependencyValues, usedDefault }) {
         // for display via latex and text, round any decimal numbers to the significant digits
-        // determined by displaydigits or displaydecimals
+        // determined by displaydigits, displaydecimals, and/or displaySmallAsZero
         let rounded = roundForDisplay({
           value: dependencyValues.value,
           dependencyValues, usedDefault
@@ -930,7 +931,7 @@ export default class MathComponent extends InlineComponent {
 function calculateExpressionWithCodes({ dependencyValues, changes }) {
 
   if (!(("stringMathChildren" in changes && changes.stringMathChildren.componentIdentitiesChanged)
-    || "format" in changes  || "splitSymbols" in changes 
+    || "format" in changes || "splitSymbols" in changes
     || "functionSymbols" in changes || "mathChildrenFunctionSymbols" in changes
   )) {
     // if component identities of stringMathChildren didn't change
