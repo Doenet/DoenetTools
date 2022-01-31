@@ -59,7 +59,7 @@ export default function Form(props) {
     }
     var tableCellContainer = {
 
-  }
+    }     
     var cancelButton = {
         float: 'right',
         margin: '5px 0px 0px -30px',
@@ -79,9 +79,9 @@ export default function Form(props) {
         zIndex: '2',
         height: '28px',
         border: `2px solid black`,
+        borderRadius: '0px 5px 5px 0px',
         backgroundColor: `${doenetComponentForegroundActive}`,
         color: '#FFFFFF',
-        borderRadius: '0px 3px 3px 0px',
         cursor: 'pointer',
         fontSize: '12px',
         overflow: 'hidden',
@@ -165,8 +165,8 @@ export default function Form(props) {
   function handleKeyDown(e) {
     if (props.onKeyDown) props.onKeyDown(e)
     console.log("cancelShown", cancelShown)
-
   }
+
   let clearButton = null;
   if (props.clearInput) {
     clearButton = 

@@ -4,7 +4,7 @@ import { sizeToCSS } from './utils/css';
 import CodeMirror from '../../Tools/_framework/CodeMirror';
 
 export default function CodeEditor(props){
-  let {name, SVs, actions, children} = useDoenetRenderer(props,false);
+  let {name, SVs, children, actions, callAction } = useDoenetRenderer(props,false);
   let currentValue = useRef(SVs.immediateValue)
   let timer = useRef(null)
   let editorRef = useRef(null)
@@ -70,23 +70,21 @@ let editor = <div
   //TODO: read only isn't working <codeeditor disabled />
   readOnly = {SVs.disabled}
 
-  onBlur={(e)=>{
-    actions.updateValue();
-  }}
+  onBlur={
+    ()=>callAction({action:actions.updateValue})
+  }
   onFocus={()=>{
     // console.log(">>codeEditor FOCUS!!!!!")
   }}
   onBeforeChange={(value) => {
     currentValue.current = value;
-    actions.updateImmediateValue({
-      text: value
-    });
+    callAction({action:actions.updateImmediateValue, args:{text:value}})
    
   //TODO: when you try to leave the page before it saved you will lose work
   //so prompt the user on page leave
     if (timer.current === null){
       timer.current = setTimeout(function(){
-          actions.updateValue();
+          ()=>callAction({action:actions.updateValue})
         timer.current = null;
       },3000)//3 seconds
     }

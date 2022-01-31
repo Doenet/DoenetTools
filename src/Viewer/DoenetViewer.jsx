@@ -22,17 +22,17 @@ class DoenetViewerChild extends Component {
     // console.log("===DoenetViewerChild constructor")
 
     super(props);
-    this.update = this.update.bind(this);
+    this.updateRenderers = this.updateRenderers.bind(this);
     this.coreReady = this.coreReady.bind(this);
     this.createCore = this.createCore.bind(this);
     this.loadState = this.loadState.bind(this);
-    this.localStateChanged = this.localStateChanged.bind(this);
     // this.submitResponse = this.submitResponse.bind(this);
     this.recordSolutionView = this.recordSolutionView.bind(this);
     this.recordEvent = this.recordEvent.bind(this);
     this.callAction = this.callAction.bind(this);
 
     this.rendererUpdateMethods = {};
+    this.rendererStateValues = {};
 
     this.cumulativeStateVariableChanges = {};
 
@@ -57,11 +57,42 @@ class DoenetViewerChild extends Component {
 
     let viewer = this;
 
+    this.coreCreated = false;
+
     this.coreWorker.onmessage = function (e) {
       if (e.data.messageType === "coreCreated") {
-        viewer.coreReady(e.data.args)
-      } else if (e.data.messageType === "coreUpdated") {
-        viewer.update(e.data.args)
+        viewer.coreCreated = true;
+        if (viewer.coreInfo && JSON.stringify(viewer.coreInfo) === JSON.stringify(e.data.args)) {
+          console.log('do we skip sending core ready since already have coreInfo?')
+
+          // let string1 = JSON.stringify(viewer.coreInfo);
+          // let string2 = JSON.stringify(e.data.args);
+          // console.log('Is coreInfo unchanged?', string1 === string2)
+
+          // for(let i=0; i < string1.length; i++) {
+          //   let c1 = string1[i];
+          //   let c2 = string2[i];
+          //   if(c1 !== c2) {
+          //     console.log(`different at ${i}: ${c1} vs ${c2}}`)
+          //   }
+          // }
+
+          // console.log(JSON.stringify(viewer.coreInfo))
+          // console.log(JSON.stringify(e.data.args))
+        } else {
+          console.log('creating new core')
+          viewer.coreReady(e.data.args)
+        }
+      } else if (e.data.messageType === "updateRenderers") {
+        if (e.data.init && viewer.coreInfo) {
+          console.log('do we skip initial render state values since already have coreInfo?')
+        } else {
+          viewer.updateRenderers(e.data.args)
+        }
+      } else if (e.data.messageType === "saveState") {
+        viewer.saveState(e.data.args)
+      } else if (e.data.messageType === "recordSolutionView") {
+        viewer.recordSolutionView(e.data.args);
       } else if (e.data.messageType === "returnAllStateVariables") {
         console.log(e.data.args)
         viewer.resolveAllStateVariables(e.data.args);
@@ -89,27 +120,29 @@ class DoenetViewerChild extends Component {
 
   }
 
-  callAction({ action, args, baseVariableValue, name }) {
+  callAction({ action, args, baseVariableValue, name, rendererType }) {
 
-    if (baseVariableValue !== undefined && name) {
-      let actionId = nanoid();
-      this.props.updateRendererUpdatesToIgnore({
-        componentName: name,
-        baseVariableValue,
-        actionId
-      })
-      args = { ...args };
-      args.actionId = actionId;
-    }
-
-    this.coreWorker.postMessage({
-      messageType: "requestAction",
-      args: {
-        actionName: action.actionName,
-        componentName: action.componentName,
-        args,
+    if (this.coreCreated || !this.rendererClasses?.[rendererType]?.ignoreActionsWithoutCore) {
+      if (baseVariableValue !== undefined && name) {
+        let actionId = nanoid();
+        this.props.updateRendererUpdatesToIgnore({
+          componentName: name,
+          baseVariableValue,
+          actionId
+        })
+        args = { ...args };
+        args.actionId = actionId;
       }
-    })
+
+      this.coreWorker.postMessage({
+        messageType: "requestAction",
+        args: {
+          actionName: action.actionName,
+          componentName: action.componentName,
+          args,
+        }
+      })
+    }
   }
 
   createCore({ stateVariables, variant }) {
@@ -209,13 +242,13 @@ class DoenetViewerChild extends Component {
   coreReady(coreInfo) {
     this.coreInfo = coreInfo;
 
-    this.generatedVariant = coreInfo.generatedVariantInfo;
-    this.itemVariantInfo = coreInfo.itemVariantInfo;
+    // this.generatedVariantInfo = coreInfo.generatedVariantInfo;
+    // this.itemVariantInfo = coreInfo.itemVariantInfo;
 
-    this.allPossibleVariants = coreInfo.allPossibleVariants;
+    // this.allPossibleVariants = coreInfo.allPossibleVariants;
 
     if (this.props.generatedVariantCallback) {
-      this.props.generatedVariantCallback(this.generatedVariant, this.allPossibleVariants);
+      this.props.generatedVariantCallback(this.coreInfo.generatedVariantInfo, this.coreInfo.allPossibleVariants);
     }
 
     // if (this.cumulativeStateVariableChanges) {
@@ -294,7 +327,7 @@ class DoenetViewerChild extends Component {
     // console.log(">>>>this.contentId",this.contentId)
     // console.log(">>>>this.attemptNumber",this.attemptNumber)
     // console.log(">>>>this.requestedVariant",this.requestedVariant)
-    // console.log(">>>>this.generatedVariant",this.generatedVariant)
+    // console.log(">>>>this.coreInfo.generatedVariantInfo",this.coreInfo.generatedVariantInfo)
     // console.log(">>>>this.allowSavePageState",this.allowSavePageState)
     // console.log(">>>>this.savedUserAssignmentAttemptNumber",this.savedUserAssignmentAttemptNumber)
     if (this.allowSavePageState &&
@@ -314,8 +347,8 @@ class DoenetViewerChild extends Component {
         attemptNumber: this.attemptNumber,
         contentId: this.contentId,
         requestedVariant: JSON.stringify(this.requestedVariant, serializedComponentsReplacer),
-        generatedVariant: JSON.stringify(this.generatedVariant, serializedComponentsReplacer),
-        itemVariantInfo: this.itemVariantInfo.map(x => JSON.stringify(x, serializedComponentsReplacer)),
+        generatedVariant: JSON.stringify(this.coreInfo.generatedVariantInfo, serializedComponentsReplacer),
+        itemVariantInfo: this.coreInfo.itemVariantInfo.map(x => JSON.stringify(x, serializedComponentsReplacer)),
       }).then(({ data }) => {
 
         if (!data.success) {
@@ -336,12 +369,6 @@ class DoenetViewerChild extends Component {
 
     }
 
-    //Let the calling tool know we are ready
-    //TODO: Move this to renderer
-    //TODO: THIS ISN'T TRUE AS IT'S HASN'T FINISHED YET
-    if (this.props.onCoreReady) {
-      this.props.onCoreReady();
-    }
   }
 
   initializeComponentsToRender(componentToRender) {
@@ -355,9 +382,9 @@ class DoenetViewerChild extends Component {
     }
   }
 
-  localStateChanged({
+  saveState({
     newStateVariableValues,
-    contentId, sourceOfUpdate, transient = false,
+    contentId,
     itemsWithCreditAchieved,
     currentVariant,
   }) {
@@ -367,10 +394,8 @@ class DoenetViewerChild extends Component {
     // flags: allowSavePageState, allowLocalPageState, allowSaveSubmissions
     // For now: we will not save submissions unless either
     // allowSavePageState is true
-    // (also won't save if transient is true but that will never happen :) )
 
-    // TODO: what should we do with transient updates?
-    if (transient || !this.allowSavePageState && !this.allowLocalPageState) {
+    if (!this.allowSavePageState && !this.allowLocalPageState) {
       return;
     }
 
@@ -393,17 +418,17 @@ class DoenetViewerChild extends Component {
 
     let changeString = JSON.stringify(this.cumulativeStateVariableChanges, serializedComponentsReplacer);
 
-    let variantString = JSON.stringify(this.generatedVariant, serializedComponentsReplacer);
+    let variantString = JSON.stringify(this.coreInfo.generatedVariantInfo, serializedComponentsReplacer);
 
 
     // check if generated variant changed
     // (which could happen, at least for now, when paginator changes pages)
     let currentVariantString = JSON.stringify(currentVariant, serializedComponentsReplacer);
     if (currentVariantString !== variantString) {
-      this.generatedVariant = currentVariant;
+      this.coreInfo.generatedVariantInfo = currentVariant;
       variantString = currentVariantString;
       if (this.props.generatedVariantCallback) {
-        this.props.generatedVariantCallback(this.generatedVariant, this.allPossibleVariants);
+        this.props.generatedVariantCallback(this.coreInfo.generatedVariantInfo, this.coreInfo.allPossibleVariants);
       }
 
     }
@@ -426,7 +451,15 @@ class DoenetViewerChild extends Component {
     }
 
     if (this.allowLocalPageState) {
-      localStorage.setItem(`${contentId}${this.props.doenetId}${this.attemptNumber}`, JSON.stringify({ stateVariables: changeString, variant: variantString }))
+      localStorage.setItem(
+        `${contentId}${this.props.doenetId}${this.attemptNumber}`,
+        JSON.stringify({
+          stateVariables: changeString,
+          variant: variantString,
+          rendererStateValues: this.rendererStateValues,
+          coreInfo: this.coreInfo,
+        })
+      )
     }
 
     if (!this.allowSavePageState) {
@@ -502,31 +535,53 @@ class DoenetViewerChild extends Component {
 
   }
 
-  loadState(callback) {
+  async loadState() {
 
     if (!this.allowLoadPageState && !this.allowLocalPageState) {
-      callback({
+      return {
         stateVariables: null,
         variant: null
-      });
-      return;
+      };
     }
 
     if (this.allowLocalPageState) {
 
-      let stateVarVariant = JSON.parse(localStorage.getItem(`${this.contentId}${this.props.doenetId}${this.attemptNumber}`))
+      let localInfo = JSON.parse(localStorage.getItem(
+        `${this.contentId}${this.props.doenetId}${this.attemptNumber}`
+      ))
       let stateVariables = null;
       let variant = null;
+      let rendererStateValues = {};
 
-      if (stateVarVariant) {
-        stateVariables = stateVarVariant.stateVariables;
-        variant = stateVarVariant.variant
+      if (localInfo) {
+        stateVariables = localInfo.stateVariables;
+        variant = localInfo.variant;
+
+        if (localInfo.rendererStateValues) {
+          this.rendererStateValues = localInfo.rendererStateValues;
+
+          console.log('loading renderer values')
+          console.log(this.rendererStateValues)
+          for (let componentName in this.rendererStateValues) {
+            this.props.updateRendererSVsWithRecoil({
+              componentName,
+              stateValues: this.rendererStateValues[componentName],
+            })
+          }
+        }
+
+
+        this.coreInfo = localInfo.coreInfo;
+        if (this.coreInfo) {
+
+          console.log('pretending core ready from database')
+          this.coreReady(this.coreInfo);
+        }
       }
-      callback({
+      return {
         stateVariables,
-        variant
-      });
-      return;
+        variant,
+      }
     }
 
     //submissions or pageState
@@ -546,31 +601,31 @@ class DoenetViewerChild extends Component {
     }
     // console.log(">>>>>loadContentInteractions")
 
-    axios.get('/api/loadContentInteractions.php', payload)
-      .then(resp => {
-        // console.log(">>>>>resp",resp.data)
+    try {
+      let resp = await axios.get('/api/loadContentInteractions.php', payload);
 
-        if (!resp.data.success) {
-          throw new Error(resp.data.message)
-        }
-        if (callback) {
-          callback({
-            stateVariables: resp.data.stateVariables,
-            variant: resp.data.variant
-          })
-        }
-      })
-      .catch(errMsg => {
-        if (this.props.setIsInErrorState) {
-          this.props.setIsInErrorState(true)
-        }
-        this.setState({ errMsg: errMsg.message })
-      })
+      // console.log(">>>>>resp",resp.data)
+
+      if (!resp.data.success) {
+        throw new Error(resp.data.message)
+      }
+      return {
+        stateVariables: resp.data.stateVariables,
+        variant: resp.data.variant
+      }
+    } catch (errMsg) {
+      if (this.props.setIsInErrorState) {
+        this.props.setIsInErrorState(true)
+      }
+      this.setState({ errMsg: errMsg.message })
+
+      return null;
+    }
 
   }
 
   //offscreen then postpone that one
-  async update(updateInstructions) {
+  async updateRenderers(updateInstructions) {
 
     for (let instruction of updateInstructions) {
 
@@ -585,6 +640,7 @@ class DoenetViewerChild extends Component {
             sourceOfUpdate: instruction.sourceOfUpdate,
             baseStateVariable: this.rendererClasses?.[rendererType]?.baseStateVariable
           })
+          this.rendererStateValues[componentName] = stateValues;
           //TODO: await ????
           // this.rendererUpdateMethods[componentName].update({
           //   sourceOfUpdate: instruction.sourceOfUpdate
@@ -599,6 +655,9 @@ class DoenetViewerChild extends Component {
           sourceOfUpdate: instruction.sourceOfUpdate,
           baseStateVariable: this.rendererClasses?.[instruction.rendererType]?.baseStateVariable
         })
+
+        this.rendererStateValues[instruction.parentName] = instruction.stateValues;
+
       }
     }
 
@@ -635,19 +694,24 @@ class DoenetViewerChild extends Component {
   //   callBack("submitResponse callback parameter");
   // }
 
-  // TODO: if assignmentId, then need to record fact that student
-  // viewed solution in user_assignment_attempt_item
+
   // console.log(">>>>recordSolutionView")
-  async recordSolutionView({ itemNumber, scoredComponent }) {
+  async recordSolutionView({ itemNumber, scoredComponent, messageId }) {
+
     const resp = await axios.post('/api/reportSolutionViewed.php', {
       doenetId: this.props.doenetId,
       itemNumber,
       attemptNumber: this.attemptNumber,
     });
 
+    // TODO: check if student was actually allowed to view solution.
+
     // console.log('reportSolutionViewed-->>>>',resp.data);
 
-    return { allowView: true, message: "", scoredComponent };
+    this.coreWorker.postMessage({
+      messageType: "allowSolutionView",
+      args: { allowView: true, message: "", scoredComponent, messageId }
+    })
 
     // console.log(`reveal solution, ${itemNumber}`)
 
@@ -683,7 +747,7 @@ class DoenetViewerChild extends Component {
       doenetId: this.props.doenetId,
       contentId: this.contentId,
       attemptNumber: this.attemptNumber,
-      variant: JSON.stringify(this.generatedVariant, serializedComponentsReplacer),
+      variant: JSON.stringify(this.coreInfo.generatedVariantInfo, serializedComponentsReplacer),
       verb: event.verb,
       object: JSON.stringify(event.object, serializedComponentsReplacer),
       result: JSON.stringify(event.result, serializedComponentsReplacer),
@@ -842,7 +906,13 @@ class DoenetViewerChild extends Component {
 
 
     if (this.needNewCoreFlag) {
-      this.loadState(this.createCore);
+      delete this.coreInfo;
+      this.coreCreated = false;
+      this.loadState().then(createCoreInfo => {
+        if (createCoreInfo) {
+          this.createCore(createCoreInfo)
+        }
+      })
       return null;
     }
 

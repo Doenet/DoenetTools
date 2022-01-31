@@ -77,10 +77,15 @@ export default function useDoenetRenderer(props,initializeChildrenOnConstruction
     return child;
   }
 
+  let rendererType = props.componentInstructions.rendererType;
   const callAction = argObj => {
     if (!argObj.name) {
       argObj = { ...argObj };
       argObj.name = name;
+    }
+    if (!argObj.rendererType) {
+      argObj = { ...argObj };
+      argObj.rendererType = rendererType;
     }
     return props.callAction(argObj);
   }

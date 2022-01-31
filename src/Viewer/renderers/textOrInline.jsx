@@ -1,14 +1,12 @@
 import React from 'react';
-import DoenetRenderer from './DoenetRenderer';
+import useDoenetRender from './useDoenetRenderer';
 
-export default class TextOrInline extends DoenetRenderer {
+export default function TextOrInline(props) {
+  let { name, SVs, children } = useDoenetRender(props);
 
-  render() {
-
-    if (this.doenetSvData.hidden) {
-      return null;
-    }
-
-    return <span id={this.componentName}><a name={this.componentName} />{this.children}</span>
+  if (SVs.hidden) {
+    return null;
   }
+
+  return <span id={name}><a name={name} />{children}</span>;
 }

@@ -491,13 +491,26 @@ export default class MathInput extends Input {
           componentName: this.componentName,
           stateVariable: "immediateValue",
           valueOfStateVariable: "value",
-        },
-        {
-          updateType: "updateValue",
-          componentName: this.componentName,
-          stateVariable: "rawRendererValue",
-          valueOfStateVariable: "valueForDisplay",
         }];
+
+        if (immediateValue.tree !== '\uff3f') {
+          updateInstructions.push({
+            updateType: "updateValue",
+            componentName: this.componentName,
+            stateVariable: "rawRendererValue",
+            valueOfStateVariable: "valueForDisplay",
+          })
+        } else {
+          // set raw renderer value to save it to the database,
+          // as it might not have been saved
+          // given that updateRawValue is transient
+          updateInstructions.push({
+            updateType: "updateValue",
+            componentName: this.componentName,
+            stateVariable: "rawRendererValue",
+            valueOfStateVariable: "rawRendererValue",
+          })
+        }
 
         let event = {
           verb: "answered",
@@ -528,6 +541,18 @@ export default class MathInput extends Input {
           componentName: this.componentName,
         });
 
+      } else {
+        // set raw renderer value to save it to the database,
+        // as it might not have been saved
+        // given that updateRawValue is transient
+        await this.coreFunctions.performUpdate({
+          updateInstructions: [{
+            updateType: "updateValue",
+            componentName: this.componentName,
+            stateVariable: "rawRendererValue",
+            valueOfStateVariable: "rawRendererValue",
+          }]
+        })
       }
 
     }
