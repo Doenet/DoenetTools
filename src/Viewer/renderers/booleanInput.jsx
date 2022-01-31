@@ -1,44 +1,60 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import useDoenetRender from './useDoenetRenderer';
-import ReactDOM from 'react-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCheck, faLevelDownAlt, faTimes, faCloud, faPercentage } from '@fortawesome/free-solid-svg-icons'
 
 export default function BooleanInput(props) {
-  let { name, SVs, actions, sourceOfUpdate } = useDoenetRender(props);
+  let { name, SVs, actions, sourceOfUpdate, ignoreUpdate, callAction } = useDoenetRender(props);
 
-  let validationState = useRef(null);
+  BooleanInput.baseStateVariable = "value";
+
+  const [rendererValue, setRendererValue] = useState(SVs.value);
+
+  let valueWhenSetState = useRef(null);
 
 
-  function updateValidationState() {
+  if (!ignoreUpdate && valueWhenSetState.current !== SVs.value) {
+    // console.log(`setting value to ${SVs.value}`)
+    setRendererValue(SVs.value);
+    valueWhenSetState.current = SVs.value;
+  } else {
+    valueWhenSetState.current = null;
+  }
 
-    validationState.current = "unvalidated";
-    if (SVs.valueHasBeenValidated || SVs.numberOfAttemptsLeft < 1) {
-      if (SVs.creditAchieved === 1) {
-        validationState.current = "correct";
-      } else if (SVs.creditAchieved === 0) {
-        validationState.current = "incorrect";
-      } else {
-        validationState.current = "partialcorrect";
-      }
+
+  let validationState = 'unvalidated';
+  if (SVs.valueHasBeenValidated) {
+    if (SVs.creditAchieved === 1) {
+      validationState = 'correct';
+    } else if (SVs.creditAchieved === 0) {
+      validationState = 'incorrect';
+    } else {
+      validationState = 'partialcorrect';
     }
   }
 
+
   function onChangeHandler(e) {
-    props.callAction({
+
+    let newValue = e.target.checked;
+
+    setRendererValue(newValue);
+    valueWhenSetState.current = SVs.value;
+
+    callAction({
       action: actions.updateBoolean,
       args: {
-        boolean: e.target.checked
-      }
+        boolean: newValue,
+      },
+      baseVariableValue: newValue,
     })
+
   }
 
 
   if (SVs.hidden) {
     return null;
   }
-
-  updateValidationState();
 
   let disabled = SVs.disabled;
 
@@ -61,7 +77,7 @@ export default function BooleanInput(props) {
   let checkWorkButton = null;
   if (SVs.includeCheckWork) {
 
-    if (validationState.current === "unvalidated") {
+    if (validationState === "unvalidated") {
       if (disabled) {
         checkWorkStyle.backgroundColor = "rgb(200,200,200)";
       } else {
@@ -73,10 +89,14 @@ export default function BooleanInput(props) {
         disabled={disabled}
         // ref={c => { this.target = c && ReactDOM.findDOMNode(c); }}
         style={checkWorkStyle}
-        onClick={this.actions.submitAnswer}
+        onClick={() => props.callAction({
+          action: actions.submitAnswer,
+        })}
         onKeyPress={(e) => {
           if (e.key === 'Enter') {
-            this.actions.submitAnswer();
+            props.callAction({
+              action: actions.submitAnswer,
+            });
           }
         }}
       >
@@ -84,16 +104,15 @@ export default function BooleanInput(props) {
       </button>
     } else {
       if (SVs.showCorrectness) {
-        if (validationState.current === "correct") {
+        if (validationState === "correct") {
           checkWorkStyle.backgroundColor = "rgb(92, 184, 92)";
           checkWorkButton = <span
             id={name + '_correct'}
             style={checkWorkStyle}
-            // ref={c => { this.target = c && ReactDOM.findDOMNode(c); }}
           >
             <FontAwesomeIcon icon={faCheck} />
           </span>
-        } else if (validationState.current === "partialcorrect") {
+        } else if (validationState === "partialcorrect") {
           //partial credit
 
           let percent = Math.round(SVs.creditAchieved * 100);
@@ -104,7 +123,6 @@ export default function BooleanInput(props) {
           checkWorkButton = <span
             id={name + '_partial'}
             style={checkWorkStyle}
-            // ref={c => { this.target = c && ReactDOM.findDOMNode(c); }}
           >{partialCreditContents}</span>
         } else {
           //incorrect
@@ -112,7 +130,6 @@ export default function BooleanInput(props) {
           checkWorkButton = <span
             id={name + '_incorrect'}
             style={checkWorkStyle}
-            // ref={c => { this.target = c && ReactDOM.findDOMNode(c); }}
           ><FontAwesomeIcon icon={faTimes} /></span>
 
         }
@@ -122,7 +139,6 @@ export default function BooleanInput(props) {
         checkWorkButton = <span
           id={name + '_saved'}
           style={checkWorkStyle}
-          // ref={c => { this.target = c && ReactDOM.findDOMNode(c); }}
         ><FontAwesomeIcon icon={faCloud} /></span>
 
       }
@@ -135,7 +151,7 @@ export default function BooleanInput(props) {
           (no attempts remaining)
         </span>
       </>
-    } else if (SVs.numberOfAttemptsLeft < Infinity) {
+    } else if (Number.isFinite(SVs.numberOfAttemptsLeft)) {
 
       checkWorkButton = <>
         {checkWorkButton}
@@ -154,7 +170,7 @@ export default function BooleanInput(props) {
           type="checkbox"
           key={inputKey}
           id={inputKey}
-          checked={SVs.value}
+          checked={rendererValue}
           onChange={onChangeHandler}
           disabled={disabled}
         />

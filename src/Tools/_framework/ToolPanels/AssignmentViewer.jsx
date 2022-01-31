@@ -243,19 +243,14 @@ export default function AssignmentViewer() {
         //Find allPossibleVariants
         returnAllPossibleVariants({
           doenetML,
-          callback: isCollection
-            ? setCollectionVariant
-            : setVariantsFromDoenetML,
-        });
+        }).then(isCollection ? setCollectionVariant : setVariantsFromDoenetML);
 
         async function setVariantsFromDoenetML({ allPossibleVariants }) {
           storedAllPossibleVariants.current = allPossibleVariants;
           //Find attemptNumber
-
           const { data } = await axios.get('/api/loadTakenVariants.php', {
             params: { doenetId },
           });
-          // console.log(">>>>data",data)
 
           let usersVariantAttempts = [];
 

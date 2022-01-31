@@ -4,7 +4,7 @@ import { sizeToCSS } from './utils/css';
 import CodeMirror from '../../Tools/_framework/CodeMirror';
 
 export default function CodeViewer(props){
-  let {name, SVs, actions, children} = useDoenetRenderer(props,false);
+  let {name, SVs, children, actions, callAction} = useDoenetRenderer(props,false);
 
 
   if (SVs.hidden) {
@@ -26,7 +26,8 @@ export default function CodeViewer(props){
     // overflowY: "scroll"
   }}><div style={{
 height:"28px",
-  }}><button onClick={actions.updateComponents}>update</button></div>
+  }}><button onClick={()=>callAction({action:actions.updateComponents})
+    }>update</button></div>
     <div style={{
       overflowY: "scroll",
       width: sizeToCSS(viewerWidth),

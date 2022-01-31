@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { atomFamily, useRecoilValue } from 'recoil';
+import { atomFamily, useRecoilValue, useSetRecoilState } from 'recoil';
 // import { serializedComponentsReviver } from '../../Core/utils/serializedStateProcessing';
 import { renderersloadComponent } from '../DoenetViewer';
 
 export const rendererSVs = atomFamily({
   key:'rendererSVs',
-  default:{stateValues:{},sourceOfUpdate:{}},
+  default:{stateValues:{},sourceOfUpdate:{},ignoreUpdate:false},
   // dangerouslyAllowMutability: true,
 })
 
@@ -14,7 +14,7 @@ export default function useDoenetRenderer(props,initializeChildrenOnConstruction
   let name =  props.componentInstructions.componentName;
   let [renderersToLoad,setRenderersToLoad] = useState({})
   
-  let {stateValues,sourceOfUpdate={}} = useRecoilValue(rendererSVs(name));
+  let {stateValues,sourceOfUpdate={},ignoreUpdate} = useRecoilValue(rendererSVs(name));
 
   props.rendererUpdateMethods[name] = {
     update: ()=>{},
@@ -77,5 +77,18 @@ export default function useDoenetRenderer(props,initializeChildrenOnConstruction
     return child;
   }
 
-  return {name,SVs:stateValues,actions,children,sourceOfUpdate,initializeChildren:()=>{}};
+  let rendererType = props.componentInstructions.rendererType;
+  const callAction = argObj => {
+    if (!argObj.name) {
+      argObj = { ...argObj };
+      argObj.name = name;
+    }
+    if (!argObj.rendererType) {
+      argObj = { ...argObj };
+      argObj.rendererType = rendererType;
+    }
+    return props.callAction(argObj);
+  }
+
+  return {name,SVs:stateValues,actions,children,sourceOfUpdate,ignoreUpdate,initializeChildren:()=>{}, callAction};
 }

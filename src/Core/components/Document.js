@@ -109,7 +109,6 @@ export default class Document extends BaseComponent {
     stateVariableDefinitions.description = {
       public: true,
       componentType: "text",
-      forRenderer: true,
       returnDependencies: () => ({
         descriptionChild: {
           dependencyType: "child",
@@ -351,7 +350,6 @@ export default class Document extends BaseComponent {
     }
 
     stateVariableDefinitions.justSubmitted = {
-      forRenderer: true,
       returnDependencies: () => ({
         answerDescendants: {
           dependencyType: "stateVariable",
@@ -369,7 +367,6 @@ export default class Document extends BaseComponent {
     }
 
     stateVariableDefinitions.showCorrectness = {
-      forRenderer: true,
       returnDependencies: () => ({
         showCorrectnessFlag: {
           dependencyType: "flag",
@@ -391,7 +388,6 @@ export default class Document extends BaseComponent {
     stateVariableDefinitions.creditAchieved = {
       public: true,
       componentType: "number",
-      forRenderer: true,
       defaultValue: 0,
       stateVariablesPrescribingAdditionalAttributes: {
         displayDigits: "displayDigitsForCreditAchieved",
@@ -508,17 +504,17 @@ export default class Document extends BaseComponent {
       }),
       definition({ dependencyValues, componentName, previousValues }) {
 
-        let subvariantsSpecified = Boolean(
-          dependencyValues.variants.desiredVariant &&
-          dependencyValues.variants.desiredVariant.subvariants
-        )
+        // let subvariantsSpecified = Boolean(
+        //   dependencyValues.variants.desiredVariant &&
+        //   dependencyValues.variants.desiredVariant.subvariants
+        // )
 
         let generatedVariantInfo = {
           index: dependencyValues.variantIndex,
           name: dependencyValues.variantName,
           meta: {
             createdBy: componentName,
-            subvariantsSpecified
+            // subvariantsSpecified
           },
         }
 

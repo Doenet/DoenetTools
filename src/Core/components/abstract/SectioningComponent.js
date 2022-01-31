@@ -527,7 +527,7 @@ export default class SectioningComponent extends BlockComponent {
 
         generatedVariantInfo.meta = {
           createdBy: componentName,
-          subvariantsSpecified
+          // subvariantsSpecified
         }
 
 

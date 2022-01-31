@@ -234,21 +234,22 @@ export default function ToolRoot() {
       }
     }
   }
-   
 
-  let menus = <MenuPanel key='menuPanel' hide={true} />;
-  if (menusOpen && !toolRootMenusAndPanels.hasNoMenuPanel){
-    menus = <MenuPanel 
-    key='menuPanel' 
-    hide={false} 
-    setMenusOpen={setMenusOpen} 
-    menusOpen={menusOpen} 
-    menuPanelCap={toolRootMenusAndPanels.menuPanelCap}
-    menusTitles={toolRootMenusAndPanels.menusTitles} 
-    currentMenus={toolRootMenusAndPanels.currentMenus} 
-    initOpen={toolRootMenusAndPanels.menusInitOpen}
-    displaySettings={toolRootMenusAndPanels.displaySettings}
-    />
+  let menus = <MenuPanel key="menuPanel" hide={true} />;
+  if (menusOpen && !toolRootMenusAndPanels.hasNoMenuPanel) {
+    menus = (
+      <MenuPanel
+        key="menuPanel"
+        hide={false}
+        setMenusOpen={setMenusOpen}
+        menusOpen={menusOpen}
+        menuPanelCap={toolRootMenusAndPanels.menuPanelCap}
+        menusTitles={toolRootMenusAndPanels.menusTitles}
+        currentMenus={toolRootMenusAndPanels.currentMenus}
+        initOpen={toolRootMenusAndPanels.menusInitOpen}
+        displaySettings={toolRootMenusAndPanels.displaySettings}
+      />
+    );
   }
 
   //If no menu panel then don't show open menu button
@@ -261,7 +262,7 @@ export default function ToolRoot() {
   let footer = null;
 
   //Todo: Why is this null?
-  console.log("footerObj",footerObj)
+  console.log('footerObj', footerObj);
   if (footerObj) {
     let footerKey = `footer`;
     footer = (
@@ -530,7 +531,7 @@ let navigationObj = {
       supportPanelTitles: [],
       supportPanelIndex: 0,
       hasNoMenuPanel: true,
-      displaySettings:false
+      displaySettings: false,
     },
   },
   notfound: {
@@ -861,8 +862,8 @@ function RootController(props) {
   }
 
   //Defaults for undefined
-  if (nextMenusAndPanels && nextMenusAndPanels.displayProfile === undefined) {
-    nextMenusAndPanels.displayProfile = true;
+  if (nextMenusAndPanels && nextMenusAndPanels.displaySettings === undefined) {
+    nextMenusAndPanels.displaySettings = true;
   }
 
   //Only update ToolRoot if nextMenusAndPanels was indicated as a change
