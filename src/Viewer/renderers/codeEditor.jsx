@@ -4,11 +4,17 @@ import { sizeToCSS } from './utils/css';
 import CodeMirror from '../../Tools/_framework/CodeMirror';
 
 export default function CodeEditor(props){
-  let {name, SVs, children, actions, callAction } = useDoenetRenderer(props,false);
+  let {name, SVs, children, actions, callAction } = useDoenetRenderer(props);
   let currentValue = useRef(SVs.immediateValue)
   let timer = useRef(null)
   let editorRef = useRef(null)
   let updateInternalValue = useRef(SVs.immediateValue)
+
+  let componentHeight = {...SVs.height};
+  let editorHeight = {...SVs.height};
+  if (SVs.showResults){
+    editorHeight.size *= 1-SVs.viewerRatio
+  }
 
 if (SVs.hidden) {
   return null;
@@ -35,27 +41,21 @@ let editorWidth = SVs.width;
 let componentWidth = SVs.width;
 let editorStyle = {
   width: sizeToCSS(editorWidth),
-  minHeight: sizeToCSS(SVs.minHeight),
-  maxHeight: sizeToCSS(SVs.maxHeight),
-  padding: "2px",
-  border: "1px solid black",
-  overflowY: "scroll"
+  height: sizeToCSS(editorHeight),
+    padding: "0px",
+    // padding: "2px",
+  // border: "1px solid black",
+    overflowX: "hidden",
+    overflowY: "scroll"
 };
 
 if (SVs.showResults){
-  editorWidth = {size: 300, isAbsolute: true};
-  editorStyle = {
-    width: sizeToCSS(editorWidth),
-    minHeight: sizeToCSS(SVs.minHeight),
-    maxHeight: sizeToCSS(SVs.maxHeight),
-    padding: "0px",
-    overflowY: "scroll",
-    overflowX: "hidden"
-  };
-  viewer = <div>
+  viewer = <>
+  <hr style={{width: sizeToCSS(componentWidth)}}/>
+  <div>
   {children}
-</div>
-
+  </div>
+  </>
 }
 
 let editor = <div 
@@ -93,20 +93,19 @@ let editor = <div
 />
 </div>
 
-console.log("sizeToCSS(editorWidth)",sizeToCSS(editorWidth),editorWidth)
 
  return <><a name={name} />
  <div style={{
   padding: "0px",
   border: "1px solid black",
+  height: sizeToCSS(componentHeight),
   width: sizeToCSS(componentWidth),
-  display: 'flex'
+  display: 'flex',
+  flexDirection: 'column',
  }}>
-   <div style={{
-  width: sizeToCSS(editorWidth),
-  padding: "0px"}}>{editor}</div>
-   {viewer}
- </div>
- </>
+  {editor}
+  {viewer}
+  </div>
+  </>
 
 }

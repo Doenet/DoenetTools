@@ -16,19 +16,11 @@ export default class CodeViewer extends BlockComponent {
     attributes.width = {
       createComponentOfType: "_componentSize",
     };
+
     attributes.height = {
       createComponentOfType: "_componentSize",
-      createStateVariable: "height",
-      // defaultValue: { size: 120, isAbsolute: true },
-      defaultValue: null,  //fall back to minheight and maxheight
-      public: true,
     };
-    attributes.minHeight = {
-      createComponentOfType: "_componentSize",
-    };
-    attributes.maxHeight = {
-      createComponentOfType: "_componentSize",
-    };
+
     return attributes;
   }
 
@@ -76,68 +68,6 @@ export default class CodeViewer extends BlockComponent {
 
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
-    stateVariableDefinitions.minHeight = {
-      public: true,
-      componentType: "_componentSize",
-      hasEssential: true,
-      forRenderer: true,
-      defaultValue: { size: 26, isAbsolute: true },
-      returnDependencies: () => ({
-        minHeightAttr: {
-          dependencyType: "attributeComponent",
-          attributeName: "minHeight",
-          variableNames: ["componentSize"],
-        },
-        height: {
-          dependencyType: "stateVariable",
-          variableName: "height"
-        },
-      }),
-      definition: function ({ dependencyValues, usedDefault }) {
-        if (!usedDefault.height){
-          //Author specified height
-          return { setValue: { minHeight: dependencyValues.height } };
-        }else if (dependencyValues.minHeightAttr){
-          //Author specified minHeight
-          return { setValue: { minHeight: dependencyValues.minHeightAttr.stateValues.componentSize } };
-        }else{
-          //Default
-          return { useEssentialOrDefaultValue: {minHeight: {}} };
-        }
-      },
-    }
-
-    stateVariableDefinitions.maxHeight = {
-      public: true,
-      componentType: "_componentSize",
-      hasEssential: true,
-      forRenderer: true,
-      defaultValue: { size: 120, isAbsolute: true },
-      returnDependencies: () => ({
-        maxHeightAttr: {
-          dependencyType: "attributeComponent",
-          attributeName: "maxHeight",
-          variableNames: ["componentSize"],
-        },
-        height: {
-          dependencyType: "stateVariable",
-          variableName: "height"
-        },
-      }),
-      definition: function ({ dependencyValues, usedDefault }) {
-        if (!usedDefault.height){
-          //Author specified height
-          return { setValue: { maxHeight: dependencyValues.height } };
-        }else if (dependencyValues.maxHeightAttr){
-          //Author specified maxHeight
-          return { setValue: { maxHeight: dependencyValues.maxHeightAttr.stateValues.componentSize } };
-        }else{
-          //Default
-          return { useEssentialOrDefaultValue: {maxHeight: {}} };
-        }
-      },
-    }
-
     stateVariableDefinitions.width = {
       public: true,
       componentType: "_componentSize",
@@ -150,21 +80,54 @@ export default class CodeViewer extends BlockComponent {
           attributeName: "width",
           variableNames: ["componentSize"],
         },
-        parentViewerWidth: {
+        parentWidth: {
           dependencyType: "parentStateVariable",
-          variableName: "viewerWidth"
+          variableName: "width",
+          parentComponentType: "codeEditor",
         },
       }),
       definition: function ({ dependencyValues }) {
         if (dependencyValues.widthAttr){
           //Author specified width
           return { setValue: { width: dependencyValues.widthAttr.stateValues.componentSize } };
-        }else if(dependencyValues.parentViewerWidth){
+        }else if(dependencyValues.parentWidth){
           //Parent component specified viewerWidth
-          return { setValue: { width: dependencyValues.parentViewerWidth } };
+          return { setValue: { width: dependencyValues.parentWidth } };
         }else{
           //Default
           return { useEssentialOrDefaultValue: {width: true} };
+        }
+      },
+    }
+
+    stateVariableDefinitions.height = {
+      public: true,
+      componentType: "_componentSize",
+      hasEssential: true,
+      forRenderer: true,
+      defaultValue: { size: 400, isAbsolute: true },
+      returnDependencies: () => ({
+        heightAttr: {
+          dependencyType: "attributeComponent",
+          attributeName: "height",
+          variableNames: ["componentSize"],
+        },
+        parentViewerHeight: {
+          dependencyType: "parentStateVariable",
+          variableName: "viewerHeight",
+          parentComponentType: "codeEditor",
+        },
+      }),
+      definition: function ({ dependencyValues }) {
+        if (dependencyValues.heightAttr){
+          //Author specified height
+          return { setValue: { height: dependencyValues.heightAttr.stateValues.componentSize } };
+        }else if(dependencyValues.parentViewerHeight){
+          //Parent component specified viewerheight
+          return { setValue: { height: dependencyValues.parentViewerHeight } };
+        }else{
+          //Default
+          return { useEssentialOrDefaultValue: {height: true} };
         }
       },
     }
@@ -200,7 +163,6 @@ export default class CodeViewer extends BlockComponent {
         },
       }),
       definition: function ({ dependencyValues }) {
-        console.log("dependencyValues",dependencyValues)
         if (dependencyValues.codeSourceComponentName){
           return { setValue: { codeSource: dependencyValues.codeSourceComponentName } }; 
         }else if(dependencyValues.codeEditorParent){
