@@ -19,10 +19,9 @@ export default function CodeViewer(props){
     width: sizeToCSS(SVs.width),
   }
 
-  // console.log("SVs",SVs)
-  // if (something){
-  //   surroundingBoxStyle.border = "1px solid black";
-  // }
+  if (!SVs.hasCodeEditorParent){
+    surroundingBoxStyle.border = "1px solid black";
+  }
  
   let contentPanel = <div style={{
     width: sizeToCSS(SVs.width),

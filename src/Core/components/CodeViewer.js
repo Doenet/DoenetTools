@@ -21,6 +21,10 @@ export default class CodeViewer extends BlockComponent {
       createComponentOfType: "_componentSize",
     };
 
+    attributes.hasCodeEditorParent = {
+      createComponentOfType: "boolean",
+    };
+
     return attributes;
   }
 
@@ -67,6 +71,27 @@ export default class CodeViewer extends BlockComponent {
   static returnStateVariableDefinitions() {
 
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
+
+    stateVariableDefinitions.hasCodeEditorParent = {
+      public: true,
+      componentType: "boolean",
+      forRenderer: true,
+      returnDependencies: () => ({
+        codeEditorParent: {
+          dependencyType: "parentIdentity",
+          parentComponentType: "codeEditor"
+        },
+      }),
+      definition: function ({ dependencyValues }) {
+        if (dependencyValues.codeEditorParent){
+          return { setValue: { hasCodeEditorParent: true} };
+        }else{
+          //Default
+          return { setValue: { hasCodeEditorParent: false} };
+        }
+      },
+
+    }
 
     stateVariableDefinitions.width = {
       public: true,

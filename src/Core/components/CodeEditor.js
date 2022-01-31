@@ -33,7 +33,7 @@ export default class CodeEditor extends BlockComponent {
     attributes.height = {
       createComponentOfType: "_componentSize",
       createStateVariable: "height",
-      defaultValue: { size: 300, isAbsolute: true },
+      defaultValue: { size: 400, isAbsolute: true },
       forRenderer: true,
       public: true,
     };
