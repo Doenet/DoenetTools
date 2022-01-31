@@ -4,6 +4,10 @@ import { HotTable } from '@handsontable/react';
 import { HyperFormula } from 'hyperformula';
 import 'handsontable/dist/handsontable.full.css';
 import { sizeToCSS } from './utils/css';
+import { registerAllModules } from 'handsontable/registry';
+
+registerAllModules();
+
 
 export default function SpreadsheetRenderer(props) {
   let { name, SVs, actions, callAction } = useDoenetRender(props);
