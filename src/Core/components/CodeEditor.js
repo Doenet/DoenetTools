@@ -53,6 +53,10 @@ export default class CodeEditor extends BlockComponent {
       public: true,
     };
 
+    attributes.renderedName = {
+      createPrimitiveOfType: "string",
+    }
+
     return attributes;
   }
 
@@ -69,6 +73,13 @@ export default class CodeEditor extends BlockComponent {
         componentType: "codeViewer",
         children:[{componentType: "renderDoenetML"}]
       };
+
+      if (componentAttributes.renderedName){
+        codeViewer.attributes = {
+          renderedName: {primitive:componentAttributes.renderedName}
+        }
+        codeViewer.children[0].props = {name:componentAttributes.renderedName}
+      }
 
       return {
         success: true,

@@ -25,6 +25,10 @@ export default class CodeViewer extends BlockComponent {
       createComponentOfType: "boolean",
     };
 
+    attributes.renderedName = {
+      createPrimitiveOfType: "string",
+    }
+
     return attributes;
   }
 
@@ -38,6 +42,7 @@ export default class CodeViewer extends BlockComponent {
         return {success: false}
       }
 
+
       let renderDoenetML = {
         componentType: "renderDoenetML",
         attributes: {
@@ -46,6 +51,10 @@ export default class CodeViewer extends BlockComponent {
           }
         }
       };
+
+      if (componentAttributes.renderedName){
+        renderDoenetML.props = {name:componentAttributes.renderedName}
+      }
 
       return {
         success: true,
