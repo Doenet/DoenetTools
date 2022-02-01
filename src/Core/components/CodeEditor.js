@@ -53,6 +53,14 @@ export default class CodeEditor extends BlockComponent {
       public: true,
     };
 
+    attributes.renderedName = {
+      createPrimitiveOfType: "string",
+    }
+
+    attributes.staticName = {
+      createPrimitiveOfType: "string",
+    }
+
     return attributes;
   }
 
@@ -69,10 +77,35 @@ export default class CodeEditor extends BlockComponent {
         componentType: "codeViewer",
         children:[{componentType: "renderDoenetML"}]
       };
+      
+      //Update depends on this being the 1st index position
+      let newChildren = [codeViewer];
+
+      if (componentAttributes.renderedName){
+        codeViewer.attributes = {
+          renderedName: {primitive:componentAttributes.renderedName}
+        }
+        codeViewer.children[0].props = {name:componentAttributes.renderedName}
+      }
+
+      if (componentAttributes.staticName){
+        let hiddenRenderDoenetML ={
+          componentType: "codeViewer",
+          attributes:{hide:{component:{componentType:"boolean",state:{value:true}}}},
+          children:[{
+            componentType: "renderDoenetML",
+            props: {name:componentAttributes.staticName},
+          }]
+        };
+        //Update code depends on this being the 2nd index position
+        newChildren.push(hiddenRenderDoenetML)
+      }
+
+
 
       return {
         success: true,
-        newChildren: [codeViewer],
+        newChildren,
       }
 
     }
@@ -315,9 +348,19 @@ export default class CodeEditor extends BlockComponent {
       return this.coreFunctions.performUpdate({
         updateInstructions,
         event
-      }).then(() => this.coreFunctions.triggerChainedActions({
-        componentName: this.componentName,
-      }));
+      }).then(() => {
+        this.coreFunctions.triggerChainedActions({
+          componentName: this.componentName,
+        }) 
+        if (this.attributes.staticName &&
+            this.definingChildren.length === 2 &&
+            this.definingChildren[1].componentType === 'codeViewer'){
+          this.coreFunctions.performAction({
+            componentName: this.definingChildren[1].componentName,
+            actionName: "updateComponents",
+          });
+        }
+      });
 
     }
   }
