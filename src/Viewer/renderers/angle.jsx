@@ -3,16 +3,15 @@ import useDoenetRender from './useDoenetRenderer';
 import { BoardContext } from './graph';
 
 export default function Angle(props) {
-  let { name, SVs, children } = useDoenetRender(props);
+  let { name, SVs } = useDoenetRender(props);
 
   const board = useContext(BoardContext);
-  console.log("SVs.numericalPoints",SVs.numericalPoints)
 
   let point1JXG = useRef(null)
   let point2JXG = useRef(null)
   let point3JXG = useRef(null)
   let angleJXG = useRef(null)
-  let previousWithLabel = SVs.showLabel && SVs.label !== "";
+  let previousWithLabel = useRef(null);
 
   useEffect(() => {
     if (!board && window.MathJax) {
@@ -29,18 +28,18 @@ export default function Angle(props) {
     }
   }, [])
 
-  function deleteGraphicalObject(){
-    // if point is defined
-      if (pointJXG.current !== null) {
-        board.removeObject(angleJXG.current);
-        angleJXG.current = null;
-        board.removeObject(point1JXG.current);
-        point1JXG.current = null;
-        board.removeObject(point2JXG.current);
-        point2JXG.current = null;
-        board.removeObject(point3JXG.current);
-        point3JXG.current = null;
-      }
+  function deleteGraphicalObject() {
+    // if angle is defined
+    if (point1JXG.current !== null) {
+      board.removeObject(angleJXG.current);
+      angleJXG.current = null;
+      board.removeObject(point1JXG.current);
+      point1JXG.current = null;
+      board.removeObject(point2JXG.current);
+      point2JXG.current = null;
+      board.removeObject(point3JXG.current);
+      point3JXG.current = null;
+    }
 
   }
 
@@ -49,7 +48,7 @@ export default function Angle(props) {
     if (SVs.numericalPoints.length !== 3 ||
       SVs.numericalPoints.some(x => x.length !== 2) ||
       !(Number.isFinite(SVs.numericalRadius) && SVs.numericalRadius > 0)) {
-      return;
+      return null;
     }
 
     let angleColor = "#FF7F00";
@@ -67,6 +66,8 @@ export default function Angle(props) {
       highlightStrokeColor: angleColor,
     };
 
+
+    previousWithLabel.current = SVs.showLabel && SVs.label !== "";
 
     let through;
 
@@ -102,17 +103,18 @@ export default function Angle(props) {
     return null;
   }
 
-  if (board){
+  if (board) {
     if (angleJXG.current === null) {
       angleJXG.current = createAngleJXG();
+    } else if (SVs.numericalPoints.length !== 3 ||
+      SVs.numericalPoints.some(x => x.length !== 2) ||
+      !(Number.isFinite(SVs.numericalRadius) && SVs.numericalRadius > 0)) {
+
+      deleteGraphicalObject();
+
     } else {
       //update
-      if (SVs.numericalPoints.length !== 3 ||
-        SVs.numericalPoints.some(x => x.length !== 2) ||
-        !(Number.isFinite(SVs.numericalRadius) && SVs.numericalRadius > 0)) {
-        deleteGraphicalObject();
-      }
-  
+
       let through;
       if (SVs.renderAsAcuteAngle && (SVs.degrees.evaluate_to_constant() % 360) > 180) {
         through = [
@@ -127,45 +129,46 @@ export default function Angle(props) {
           [...SVs.numericalPoints[2]]
         ];
       }
-  
+
       // in JSXgraph, point 1 and point 2 are switched
       angleJXG.current.point2.coords.setCoordinates(JXG.COORDS_BY_USER, through[0]);
       angleJXG.current.point1.coords.setCoordinates(JXG.COORDS_BY_USER, through[1]);
       angleJXG.current.point3.coords.setCoordinates(JXG.COORDS_BY_USER, through[2]);
-  
+
       angleJXG.current.setAttribute({ radius: SVs.numericalRadius, visible: !SVs.hidden });
-  
+
       angleJXG.current.name = SVs.label;
-  
+
       let withlabel = SVs.showLabel && SVs.label !== "";
-      if (withlabel != previousWithLabel) {
+      if (withlabel != previousWithLabel.current) {
         angleJXG.current.setAttribute({ withlabel: withlabel });
-        previousWithLabel = withlabel;
+        previousWithLabel.current = withlabel;
       }
-  
+
       angleJXG.current.needsUpdate = true;
       angleJXG.current.update();
-  
+
       if (angleJXG.current.hasLabel) {
         angleJXG.current.label.needsUpdate = true;
         angleJXG.current.label.update();
       }
       board.updateRenderer();
-  
+
     }
 
-
-    return <><a name={name} />{children}</>
+    return <><a name={name} /></>
   }
-  
-  let mathJaxify;
-    if (SVs.inDegrees) {
-      mathJaxify = "\\(" + SVs.degrees + "^\\circ \\)";
-    } else {
-      mathJaxify = "\\(" + SVs.radians + "\\)";
-    }
 
-    return <><a name={name} /><span id={name}>{mathJaxify}</span></>
+
+
+  let mathJaxify;
+  if (SVs.inDegrees) {
+    mathJaxify = "\\(" + SVs.degrees + "^\\circ \\)";
+  } else {
+    mathJaxify = "\\(" + SVs.radians + "\\)";
+  }
+
+  return <><a name={name} /><span id={name}>{mathJaxify}</span></>
 }
 
 
