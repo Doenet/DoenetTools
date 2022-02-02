@@ -1,25 +1,12 @@
 import React from 'react';
-import DoenetRenderer from './DoenetRenderer';
+import useDoenetRenderer from './useDoenetRenderer';
 
-export default class Container extends DoenetRenderer {
-  constructor(props) {
-    super(props);
+export default function Container(props){
+  let {name, SVs, children} = useDoenetRenderer(props);
 
-    if (this.props.board) {
-      this.doenetPropsForChildren = { board: this.props.board };
-    }
-    this.initializeChildren();
-
+  if (SVs.hidden) {
+    return null;
   }
 
-  static initializeChildrenOnConstruction = false;
-
-  render() {
-
-    if (this.doenetSvData.hidden) {
-      return null;
-    }
-
-    return <><a name={this.componentName} />{this.children}</>
-  }
+  return <><a name={name} />{children}</>
 }

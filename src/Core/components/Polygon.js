@@ -5,7 +5,6 @@ export default class Polygon extends Polyline {
 
   actions = {
     movePolygon: this.movePolygon.bind(this),
-    finalizePolygonPosition: this.finalizePolygonPosition.bind(this)
   };
 
   get movePolygon() {
@@ -40,15 +39,15 @@ export default class Polygon extends Polyline {
 
         let vals = [];
         let prPtx, prPty;
-        let nxPtx = numericalVertices[nVertices - 1][0];
-        let nxPty = numericalVertices[nVertices - 1][1];
+        let nxPtx = numericalVertices[nVertices - 1]?.[0];
+        let nxPty = numericalVertices[nVertices - 1]?.[1];
 
         for (let i = 0; i < nVertices; i++) {
           prPtx = nxPtx;
           prPty = nxPty;
 
-          nxPtx = numericalVertices[i][0];
-          nxPty = numericalVertices[i][1];
+          nxPtx = numericalVertices[i]?.[0];
+          nxPty = numericalVertices[i]?.[1];
 
           // only implement for constants
           if (!(Number.isFinite(prPtx) && Number.isFinite(prPty) &&
@@ -143,17 +142,6 @@ export default class Polygon extends Polyline {
       }
     }
     return stateVariableDefinitions;
-  }
-
-  async finalizePolygonPosition() {
-    // trigger a movePolygon 
-    // to send the final values with transient=false
-    // so that the final position will be recorded
-
-    return await this.actions.movePolygon({
-      pointCoords: await this.stateValues.numericalVertices,
-      transient: false
-    });
   }
 
 

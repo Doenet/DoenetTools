@@ -7,7 +7,6 @@ export default class Line extends GraphicalComponent {
 
   actions = {
     moveLine: this.moveLine.bind(this),
-    finalizeLinePosition: this.finalizeLinePosition.bind(this),
     switchLine: this.switchLine.bind(this)
   };
 
@@ -1432,18 +1431,6 @@ export default class Line extends GraphicalComponent {
 
   }
 
-
-  async finalizeLinePosition() {
-    // trigger a moveLine 
-    // to send the final values with transient=false
-    // so that the final position will be recorded
-
-    return await this.actions.moveLine({
-      point1coords: await this.stateValues.numericalPoints[0],
-      point2coords: await this.stateValues.numericalPoints[1],
-      transient: false,
-    });
-  }
 
   switchLine() {
 
