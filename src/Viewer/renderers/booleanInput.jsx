@@ -4,7 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCheck, faLevelDownAlt, faTimes, faCloud, faPercentage } from '@fortawesome/free-solid-svg-icons'
 
 export default function BooleanInput(props) {
-  let { name, SVs, actions, sourceOfUpdate, ignoreUpdate, callAction } = useDoenetRender(props);
+  let { name, SVs, actions, ignoreUpdate, callAction } = useDoenetRender(props);
 
   BooleanInput.baseStateVariable = "value";
 
@@ -89,12 +89,12 @@ export default function BooleanInput(props) {
         disabled={disabled}
         // ref={c => { this.target = c && ReactDOM.findDOMNode(c); }}
         style={checkWorkStyle}
-        onClick={() => props.callAction({
+        onClick={() => callAction({
           action: actions.submitAnswer,
         })}
         onKeyPress={(e) => {
           if (e.key === 'Enter') {
-            props.callAction({
+            callAction({
               action: actions.submitAnswer,
             });
           }
