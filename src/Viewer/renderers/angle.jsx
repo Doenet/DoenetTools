@@ -1,6 +1,7 @@
 import React, { useEffect, useContext, useRef } from 'react';
 import useDoenetRender from './useDoenetRenderer';
 import { BoardContext } from './graph';
+import me from 'math-expressions';
 
 export default function Angle(props) {
   let { name, SVs } = useDoenetRender(props);
@@ -163,9 +164,9 @@ export default function Angle(props) {
 
   let mathJaxify;
   if (SVs.inDegrees) {
-    mathJaxify = "\\(" + SVs.degrees + "^\\circ \\)";
+    mathJaxify = "\\(" + me.fromAst(SVs.degrees).toLatex() + "^\\circ \\)";
   } else {
-    mathJaxify = "\\(" + SVs.radians + "\\)";
+    mathJaxify = "\\(" + me.fromAst(SVs.radians).toLatex() + "\\)";
   }
 
   return <><a name={name} /><span id={name}>{mathJaxify}</span></>

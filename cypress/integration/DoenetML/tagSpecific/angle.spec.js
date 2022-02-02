@@ -569,7 +569,7 @@ describe('Angle Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
 
     cy.get('#\\/_angle1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text).eq("π/2")
+      expect(text).eq("π2")
     })
     cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text).eq("π")
@@ -605,7 +605,7 @@ describe('Angle Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
 
     cy.get('#\\/_angle1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text).eq("π/2")
+      expect(text).eq("π2")
     })
     cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text).eq("π")
@@ -640,9 +640,9 @@ describe('Angle Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
 
-    // TODO: add this when can simplify ratioss
+    // TODO: add this when can simplify ratios
     // cy.get('#\\/_angle1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-    //   expect(text).eq("π/2")
+    //   expect(text).eq("π2")
     // })
     cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text).eq("π")
@@ -656,7 +656,7 @@ describe('Angle Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables();
-      expect(stateVariables['/_angle1'].stateValues.radians.evaluate_to_constant()).closeTo(Math.PI / 2, 1E-12);
+      expect(me.fromAst(stateVariables['/_angle1'].stateValues.radians).evaluate_to_constant()).closeTo(Math.PI / 2, 1E-12);
       expect(stateVariables['/_angle1'].stateValues.degrees).eq(90);
     })
 
@@ -752,7 +752,7 @@ describe('Angle Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
 
     cy.get('#\\/_angle1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text).eq("π/2")
+      expect(text).eq("π2")
     })
 
     cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
