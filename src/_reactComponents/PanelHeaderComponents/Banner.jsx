@@ -65,7 +65,7 @@ export default function Banner(props) {
         backgroundColor: `${type}`
     }
     if (props.type) {
-        container.backgroundColor = `${type => type?.backgroundColor}`
+        container.backgroundColor = type.backgroundColor
     }
     function clearBanner() {
         setBannerVisible('none');
