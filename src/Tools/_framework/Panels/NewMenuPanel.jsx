@@ -237,6 +237,7 @@ console.log(">>>===MenuPanel", hide)
     GradeDownload:lazy(() => import('../Menus/GradeDownload')),
     ManualEnrollment:lazy(() => import('../Menus/ManualEnrollment')),
     AssignmentSettingsMenu:lazy(() => import('../Menus/AssignmentSettingsMenu')),
+    SupportingFilesMenu:lazy(() => import('../Menus/SupportingFilesMenu')),
     GroupSettings:lazy(() => import('../Menus/GroupSettings')),
     TimerMenu:lazy(() => import('../Menus/TimerMenu')),
     CreditAchieved:lazy(() => import('../Menus/CreditAchieved')),
