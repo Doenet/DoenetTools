@@ -200,8 +200,6 @@ export default function Polyline(props) {
         action: actions.movePolyline,
         args: {
           pointCoords: pointCoords.current,
-          transient: true,
-          skippable: true,
           sourceInformation: { vertex: i }
         }
       })

@@ -257,7 +257,6 @@ export default class Core {
       cancelAnimationFrame: this.cancelAnimationFrame,
       calculateScoredItemNumberOfContainer: this.calculateScoredItemNumberOfContainer,
       recordSolutionView: this.recordSolutionView,
-      contentIdsToDoenetMLs: this.externalFunctions.contentIdsToDoenetMLs,
     }
 
     this.updateInfo = {
@@ -310,7 +309,6 @@ export default class Core {
       doenetMLs: [doenetML],
       componentInfoObjects: this.componentInfoObjects,
       flags: this.flags,
-      contentIdsToDoenetMLs: this.externalFunctions.contentIdsToDoenetMLs
     }).then(this.finishCoreConstruction)
   }
 
