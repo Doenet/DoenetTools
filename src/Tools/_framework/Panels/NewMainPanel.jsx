@@ -4,7 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronRight, faCog } from "@fortawesome/free-solid-svg-icons";
 import { atom, useRecoilCallback, useSetRecoilState } from 'recoil';
 import { pageToolViewAtom } from '../NewToolRoot';
-
+import Banner from '../../../_reactComponents/PanelHeaderComponents/Banner.jsx';
 
 export const mainPanelClickAtom = atom({
   key:"mainPanelClickAtom",
@@ -85,6 +85,7 @@ export default function MainPanel({ headerControls, children, setMenusOpen, open
       {controls}
       </ControlsWrapper>
       <ContentWrapper onClick={mpOnClick}>
+      <Banner></Banner>
         {contents}
       </ContentWrapper>
     </>
