@@ -560,7 +560,7 @@ describe('Specifying subvariants tests', function () {
         let components = Object.assign({}, win.state.components);
         let p = components['/p'];
 
-        let variantInd = firstStringsToInd[p.activeChildren[0].stateValues.value.trim()];
+        let variantInd = firstStringsToInd[p.activeChildren[0].trim()];
         expect(variantInd).eq(1);
 
         expect(p.activeChildren[1].stateValues.value).eq(colorsByInd[(ind - 1) % 5])
@@ -637,7 +637,7 @@ describe('Specifying subvariants tests', function () {
           let components = Object.assign({}, win.state.components);
           let p = components['/p'];
 
-          let variantInd = firstStringsToInd[p.activeChildren[0].stateValues.value.trim()];
+          let variantInd = firstStringsToInd[p.activeChildren[0].trim()];
           expect(variantInd).eq(2);
 
           let num = p.activeChildren[1].stateValues.value;
@@ -720,7 +720,7 @@ describe('Specifying subvariants tests', function () {
         let components = Object.assign({}, win.state.components);
         let p = components['/p'];
 
-        let variantInd = firstStringsToInd[p.activeChildren[0].stateValues.value.trim()];
+        let variantInd = firstStringsToInd[p.activeChildren[0].trim()];
         expect(variantInd).eq(3);
 
         expect(p.activeChildren[1].stateValues.value).eq(lettersByInd[(ind - 1) % 5])
@@ -791,7 +791,7 @@ describe('Specifying subvariants tests', function () {
         let components = Object.assign({}, win.state.components);
         let p = components['/p'];
 
-        let variantInd = firstStringsToInd[p.activeChildren[0].stateValues.value.trim()];
+        let variantInd = firstStringsToInd[p.activeChildren[0].trim()];
         expect(variantInd).eq(4);
 
         expect(p.activeChildren[1].stateValues.value.tree).eq(lettersByInd2[(ind - 1) % 6])
@@ -2005,8 +2005,8 @@ describe('Specifying subvariants tests', function () {
         <p>$(o2/t): <answer name="ans5" type="text">$(o2/t)</answer></p>
 
       </problem>
-      <copy tname="problem1" assignNames="problem2" />
-      <copy tname="problem1" assignNames="problem3" />
+      <copy target="problem1" assignNames="problem2" />
+      <copy target="problem1" assignNames="problem3" />
     `
 
     let problemRepeatedAsExternalCopiesInPaginator = `

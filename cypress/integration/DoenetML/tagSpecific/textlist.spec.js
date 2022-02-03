@@ -21,18 +21,18 @@ describe('TextList Tag Tests', function () {
         doenetML: `
     <p><textlist hide="true">a b c</textlist></p>
 
-    <p><copy hide="false" tname="_textlist1" /></p>
+    <p><copy hide="false" target="_textlist1" /></p>
 
     <p><textlist>
       <text>hello</text>
-      <copy tname="_textlist1" />
+      <copy target="_textlist1" />
       <text>bye</text>
-      <copy tname="_copy1" />
+      <copy target="_copy1" />
     </textlist></p>
 
-    <p><copy maximumnumber="6" tname="_textlist2" /></p>
+    <p><copy maximumnumber="6" target="_textlist2" /></p>
 
-    <p><copy prop="text" tname="_textlist2" /></p>
+    <p><copy prop="text" target="_textlist2" /></p>
 
     `}, "*");
     });
@@ -194,6 +194,50 @@ describe('TextList Tag Tests', function () {
     cy.get('#\\/_boolean1').should('have.text', 'true')
 
   })
+
+  it('copy textlist and overwrite maximum number', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+      <text>a</text>
+      <p><textlist name="tl1">a b c d e</textlist></p>
+      <p><copy target="tl1" maximumNumber="3" assignNames="tl2" /></p>
+      <p><copy target="tl2" maximumNumber="" assignNames="tl3" /></p>
+
+      <p><textlist name="tl4" maximumNumber="3">a b c d e</textlist></p>
+      <p><copy target="tl4" maximumNumber="4" assignNames="tl5" /></p>
+      <p><copy target="tl5" maximumNumber="" assignNames="tl6" /></p>
+
+      ` }, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+
+    cy.window().then(async (win) => {
+
+      cy.get('#\\/_p1').should('have.text', 'a, b, c, d, e')
+      cy.get('#\\/_p2').should('have.text', 'a, b, c')
+      cy.get('#\\/_p3').should('have.text', 'a, b, c, d, e')
+
+      cy.get('#\\/_p4').should('have.text', 'a, b, c')
+      cy.get('#\\/_p5').should('have.text', 'a, b, c, d')
+      cy.get('#\\/_p6').should('have.text', 'a, b, c, d, e')
+
+      cy.log('Test internal values are set to the correct values')
+      cy.window().then(async (win) => {
+        let components = Object.assign({}, win.state.components);
+        expect(await components['/tl1'].stateValues.texts).eqls(["a", "b", "c", "d", "e"]);
+        expect(await components['/tl2'].stateValues.texts).eqls(["a", "b", "c"]);
+        expect(await components['/tl3'].stateValues.texts).eqls(["a", "b", "c", "d", "e"]);
+        expect(await components['/tl4'].stateValues.texts).eqls(["a", "b", "c"]);
+        expect(await components['/tl5'].stateValues.texts).eqls(["a", "b", "c", "d"]);
+        expect(await components['/tl6'].stateValues.texts).eqls(["a", "b", "c", "d", "e"]);
+
+      })
+    })
+  })
+
 
 })
 

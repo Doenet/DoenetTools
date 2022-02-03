@@ -54,7 +54,7 @@
     "lodash.debounce": "^4.0.8",
     "lorem-ipsum": "^2.0.4",
     "math-expressions": "^2.0.0-alpha27",
-    "nanoid": "^3.1.28",
+    "nanoid": "^3.1.31",
     "react": "^16.14.0",
     "react-copy-to-clipboard": "^5.0.3",
     "react-datetime": "^3.1.1",
@@ -87,7 +87,7 @@
     "@testing-library/react": "^11.2.7",
     "@web/test-runner": "^0.12.19",
     "chai": "^4.2.0",
-    "cypress": "^7.7.0",
+    "cypress": "^9.2.0",
     "esbuild": "^0.12.29",
     "eslint": "^7.32.0",
     "eslint-config-prettier": "^8.2.0",
@@ -99,7 +99,7 @@
     "http-proxy": "^1.18.1",
     "lezer-generator": "^0.13.3",
     "prettier": "^2.4.1",
-    "snowpack": "^3.7.0",
+    "snowpack": "3.7.0",
     "snowpack-plugin-raw-file-loader": "^1.0.9"
   },
   "eslintConfig": {

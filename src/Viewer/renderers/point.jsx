@@ -1,63 +1,96 @@
-import React from 'react';
-import DoenetRenderer from './DoenetRenderer';
+import React, { useContext, useEffect, useState, useRef } from 'react';
+import useDoenetRender from './useDoenetRenderer';
+import { BoardContext } from './graph';
+import me from 'math-expressions';
 
-export default class Point extends DoenetRenderer {
-  constructor(props) {
-    super(props)
+export default function Point(props) {
+  let { name, SVs, actions, sourceOfUpdate, callAction } = useDoenetRender(props);
 
-    if (props.board) {
-      this.createGraphicalObject();
+  // console.log(`for point ${name}, SVs: `, SVs)
+
+  const board = useContext(BoardContext);
+  const [pointJXG, setPointJXG] = useState({})
+
+  let pointerAtDown = useRef(false);
+  let pointAtDown = useRef(false);
+  let dragged = useRef(false);
+  let previousWithLabel = useRef(null);
+  let previousLabelPosition = useRef(null);
+  let calculatedX = useRef(null);
+  let calculatedY = useRef(null);
+
+  let lastPositionFromCore = useRef(null);
+
+  lastPositionFromCore.current = SVs.numericalXs;
+
+  useEffect(() => {
+    if (!board && window.MathJax) {
+      window.MathJax.Hub.Config({ showProcessingMessages: false, "fast-preview": { disabled: true } });
+      window.MathJax.Hub.processSectionDelay = 0;
+      window.MathJax.Hub.Queue(["Typeset", window.MathJax.Hub, "#" + name]);
     }
-  }
+  })
 
-  static initializeChildrenOnConstruction = false;
+  useEffect(() => {
+    //On unmount
+    return () => {
+      // if point is defined
+      if (Object.keys(pointJXG).length !== 0) {
+        pointJXG.off('drag');
+        pointJXG.off('down');
+        pointJXG.off('up');
+        board.removeObject(pointJXG);
+        setPointJXG({})
+      }
 
-  createGraphicalObject() {
+    }
+  }, [])
 
-    let fillColor = this.doenetSvData.open ? "white" : this.doenetSvData.selectedStyle.markerColor;
+  function createPointJXG() {
+    let fillColor = SVs.open ? "white" : SVs.selectedStyle.markerColor;
 
     //things to be passed to JSXGraph as attributes
-    var jsxPointAttributes = {
-      name: this.doenetSvData.label,
-      visible: !this.doenetSvData.hidden,
-      withLabel: this.doenetSvData.showLabel && this.doenetSvData.label !== "",
-      fixed: !this.doenetSvData.draggable || this.doenetSvData.fixed,
-      layer: 10 * this.doenetSvData.layer + 9,
+    let jsxPointAttributes = {
+      name: SVs.label,
+      visible: !SVs.hidden,
+      withLabel: SVs.showLabel && SVs.label !== "",
+      fixed: !SVs.draggable || SVs.fixed,
+      layer: 10 * SVs.layer + 9,
       fillColor: fillColor,
-      strokeColor: this.doenetSvData.selectedStyle.markerColor,
-      // highlightFillColor: this.doenetSvData.selectedStyle.markerColor,
-      // highlightStrokeColor: this.doenetSvData.selectedStyle.markerColor,
-      size: this.doenetSvData.selectedStyle.markerSize,
-      face: normalizeStyle(this.doenetSvData.selectedStyle.markerStyle),
+      strokeColor: SVs.selectedStyle.markerColor,
+      // highlightFillColor: SVs.selectedStyle.markerColor,
+      // highlightStrokeColor: SVs.selectedStyle.markerColor,
+      size: SVs.selectedStyle.markerSize,
+      face: normalizeStyle(SVs.selectedStyle.markerStyle),
     };
 
-    if (this.doenetSvData.showLabel && this.doenetSvData.label !== "") {
+    if (SVs.showLabel && SVs.label !== "") {
       let anchorx, anchory, offset;
-      if (this.doenetSvData.labelPosition === "upperright") {
+      if (SVs.labelPosition === "upperright") {
         offset = [5, 5];
         anchorx = "left";
         anchory = "bottom";
-      } else if (this.doenetSvData.labelPosition === "upperleft") {
+      } else if (SVs.labelPosition === "upperleft") {
         offset = [-5, 5];
         anchorx = "right";
         anchory = "bottom";
-      } else if (this.doenetSvData.labelPosition === "lowerright") {
+      } else if (SVs.labelPosition === "lowerright") {
         offset = [5, -5];
         anchorx = "left";
         anchory = "top";
-      } else if (this.doenetSvData.labelPosition === "lowerleft") {
+      } else if (SVs.labelPosition === "lowerleft") {
         offset = [-5, -5];
         anchorx = "right";
         anchory = "top";
-      } else if (this.doenetSvData.labelPosition === "top") {
+      } else if (SVs.labelPosition === "top") {
         offset = [0, 10];
         anchorx = "middle";
         anchory = "bottom";
-      } else if (this.doenetSvData.labelPosition === "bottom") {
+      } else if (SVs.labelPosition === "bottom") {
         offset = [0, -10];
         anchorx = "middle";
         anchory = "top";
-      } else if (this.doenetSvData.labelPosition === "left") {
+      } else if (SVs.labelPosition === "left") {
         offset = [-10, 0];
         anchorx = "right";
         anchory = "middle";
@@ -71,22 +104,20 @@ export default class Point extends DoenetRenderer {
         offset,
         anchorx,
         anchory
-      }
+      };
     }
 
-
-
-    if (this.doenetSvData.draggable && !this.doenetSvData.fixed) {
+    if (SVs.draggable && !SVs.fixed) {
       jsxPointAttributes.highlightFillColor = "#EEEEEE";
       jsxPointAttributes.highlightStrokeColor = "#C3D9FF";
-      jsxPointAttributes.showInfoBox = this.doenetSvData.showCoordsWhenDragging;
+      jsxPointAttributes.showInfoBox = SVs.showCoordsWhenDragging;
     } else {
       jsxPointAttributes.highlightFillColor = fillColor;
-      jsxPointAttributes.highlightStrokeColor = this.doenetSvData.selectedStyle.markerColor;
+      jsxPointAttributes.highlightStrokeColor = SVs.selectedStyle.markerColor;
       jsxPointAttributes.showInfoBox = false;
     }
 
-    let coords = [this.doenetSvData.numericalXs[0], this.doenetSvData.numericalXs[1]];
+    let coords = [SVs.numericalXs[0], SVs.numericalXs[1]];
 
     if (!Number.isFinite(coords[0])) {
       coords[0] = 0;
@@ -97,263 +128,234 @@ export default class Point extends DoenetRenderer {
       jsxPointAttributes['visible'] = false;
     }
 
-    this.pointJXG = this.props.board.create('point', coords, jsxPointAttributes);
+    let newPointJXG = board.create('point', coords, jsxPointAttributes);
 
-    this.pointJXG.on('drag', function (e) {
-      this.dragged = true;
-      this.onDragHandler(e);
-    }.bind(this));
+    newPointJXG.on('down', function (e) {
+      pointerAtDown.current = [e.x, e.y];
+      pointAtDown.current = [...newPointJXG.coords.scrCoords];
+      dragged.current = false;
+    });
 
-    this.pointJXG.on('up', function (e) {
-      if (this.dragged) {
-        this.actions.finalizePointPosition();
-      } else if(this.doenetSvData.switchable && !this.doenetSvData.fixed) {
-        this.actions.switchPoint();
+    newPointJXG.on('up', function (e) {
+
+      if (dragged.current) {
+        callAction({
+          action: actions.movePoint,
+          args: {
+            x: calculatedX.current,
+            y: calculatedY.current,
+          }
+        });
+      } else if (SVs.switchable && !SVs.fixed) {
+
+        // TODO: don't think SVS.switchable, SVs.fixed will if change state variables
+        // as useEffect will not be rerun
+        callAction({
+          action: actions.switchPoint
+        });
       }
-    }.bind(this));
+    });
 
-    this.pointJXG.on('down', function (e) {
-      this.dragged = false;
-      this.pointerAtDown = [e.x, e.y];
-      this.pointAtDown =
-        [...this.pointJXG.coords.scrCoords];
-    }.bind(this));
+    newPointJXG.on('drag', function (e) {
+      // the reason we calculate point position with this algorithm,
+      // rather than using .X() and .Y() directly
+      // is that attributes .X() and .Y() are affected by the
+      // .setCoordinates function called in update().
+      // Due to this dependence, the location of .X() and .Y()
+      // can be affected by constraints of objects that the points depends on,
+      // leading to a different location on up than on drag
+      // (as dragging uses the mouse location)
+      // TODO: find an example where need this this additional complexity
+      var o = board.origin.scrCoords;
 
+      let [xmin, ymax, xmax, ymin] = board.getBoundingBox();
 
-    this.previousWithLabel = this.doenetSvData.showLabel && this.doenetSvData.label !== "";
-    this.previousLabelPosition = this.doenetSvData.labelPosition;
+      calculatedX.current = (pointAtDown.current[1] + e.x - pointerAtDown.current[0]
+        - o[1]) / board.unitX;
+      calculatedX.current = Math.min(xmax, Math.max(xmin, calculatedX.current));
 
-    return this.pointJXG;
+      calculatedY.current = (o[2] -
+        (pointAtDown.current[2] + e.y - pointerAtDown.current[1]))
+        / board.unitY;
+      calculatedY.current = Math.min(ymax, Math.max(ymin, calculatedY.current));
 
-  }
-
-  deleteGraphicalObject() {
-    this.pointJXG.off('drag');
-    this.pointJXG.off('down');
-    this.pointJXG.off('up');
-    this.props.board.removeObject(this.pointJXG);
-    delete this.pointJXG;
-  }
-
-  componentWillUnmount() {
-    if (this.pointJXG) {
-      this.deleteGraphicalObject();
-    }
-  }
-
-
-  // update({ x, y, changeInitiatedWithPoint, label, visible, draggable, showlabel }) {
-  update({ sourceOfUpdate }) {
-
-    if (!this.props.board) {
-      this.forceUpdate();
-      return;
-    }
-
-    // even points that are hidden have renderers
-    // (or this could be called before createGraphicalObject
-    // for dynamically added components)
-    // so this could be called even for points that don't have a JXG point created
-    if (this.pointJXG === undefined) {
-      return;
-    }
-
-    let x = this.doenetSvData.numericalXs[0];
-    let y = this.doenetSvData.numericalXs[1];
-
-    this.pointJXG.coords.setCoordinates(JXG.COORDS_BY_USER, [x, y]);
-
-    let visible = !this.doenetSvData.hidden;
-
-    if (Number.isFinite(x) && Number.isFinite(y)) {
-      let actuallyChangedVisibility = this.pointJXG.visProp["visible"] !== visible;
-      this.pointJXG.visProp["visible"] = visible;
-      this.pointJXG.visPropCalc["visible"] = visible;
-
-      if (actuallyChangedVisibility) {
-        // this function is incredibly slow, so don't run it if not necessary
-        // TODO: figure out how to make label disappear right away so don't need to run this function
-        this.pointJXG.setAttribute({ visible: visible })
-      }
-    } else {
-      this.pointJXG.visProp["visible"] = false;
-      this.pointJXG.visPropCalc["visible"] = false;
-      // this.pointJXG.setAttribute({visible: false})
-    }
-
-    if (this.pointJXG.visProp.strokecolor !== this.doenetSvData.selectedStyle.markerColor) {
-      this.pointJXG.visProp.strokecolor = this.doenetSvData.selectedStyle.markerColor;
-    }
-    let newFillColor = this.doenetSvData.open ? "white" : this.doenetSvData.selectedStyle.markerColor;
-    if (this.pointJXG.visProp.fillcolor !== newFillColor) {
-      this.pointJXG.visProp.fillcolor = newFillColor;
-    }
-
-    let newFace = normalizeStyle(this.doenetSvData.selectedStyle.markerStyle);
-    if (this.pointJXG.visProp.face !== newFace) {
-      this.pointJXG.setAttribute({ face: newFace });
-    }
-    if (this.pointJXG.visProp.size !== this.doenetSvData.selectedStyle.markerSize) {
-      this.pointJXG.visProp.size = this.doenetSvData.selectedStyle.markerSize
-    }
-
-    if (this.doenetSvData.draggable && !this.doenetSvData.fixed) {
-      this.pointJXG.visProp.highlightfillcolor = "#EEEEEE";
-      this.pointJXG.visProp.highlightstrokecolor = "#C3D9FF";
-      this.pointJXG.visProp.showinfobox = this.doenetSvData.showCoordsWhenDragging;
-      this.pointJXG.visProp.fixed = false;
-    } else {
-      this.pointJXG.visProp.highlightfillcolor = newFillColor;
-      this.pointJXG.visProp.highlightstrokecolor = this.doenetSvData.selectedStyle.markerColor;
-      this.pointJXG.visProp.showinfobox = false;
-      this.pointJXG.visProp.fixed = true;
-    }
-
-
-    if (sourceOfUpdate && sourceOfUpdate.sourceInformation &&
-      this.componentName in sourceOfUpdate.sourceInformation
-    ) {
-      this.props.board.updateInfobox(this.pointJXG);
-    }
-
-    this.pointJXG.name = this.doenetSvData.label;
-    // this.pointJXG.visProp.withlabel = this.showlabel && this.label !== "";
-
-    let withlabel = this.doenetSvData.showLabel && this.doenetSvData.label !== "";
-    if (withlabel != this.previousWithLabel) {
-      this.pointJXG.setAttribute({ withlabel: withlabel });
-      this.previousWithLabel = withlabel;
-    }
-
-    this.pointJXG.needsUpdate = true;
-    this.pointJXG.update();
-    if (this.pointJXG.hasLabel) {
-      this.pointJXG.label.needsUpdate = true;
-
-      if (this.doenetSvData.labelPosition !== this.previousLabelPosition) {
-        let anchorx, anchory, offset;
-        if (this.doenetSvData.labelPosition === "upperright") {
-          offset = [5, 5];
-          anchorx = "left";
-          anchory = "bottom";
-        } else if (this.doenetSvData.labelPosition === "upperleft") {
-          offset = [-5, 5];
-          anchorx = "right";
-          anchory = "bottom";
-        } else if (this.doenetSvData.labelPosition === "lowerright") {
-          offset = [5, -5];
-          anchorx = "left";
-          anchory = "top";
-        } else if (this.doenetSvData.labelPosition === "lowerleft") {
-          offset = [-5, -5];
-          anchorx = "right";
-          anchory = "top";
-        } else if (this.doenetSvData.labelPosition === "top") {
-          offset = [0, 10];
-          anchorx = "middle";
-          anchory = "bottom";
-        } else if (this.doenetSvData.labelPosition === "bottom") {
-          offset = [0, -10];
-          anchorx = "middle";
-          anchory = "top";
-        } else if (this.doenetSvData.labelPosition === "left") {
-          offset = [-10, 0];
-          anchorx = "right";
-          anchory = "middle";
-        } else {
-          // labelPosition === right
-          offset = [10, 0];
-          anchorx = "left";
-          anchory = "middle";
+      callAction({
+        action: actions.movePoint,
+        args: {
+          x: calculatedX.current,
+          y: calculatedY.current,
+          transient: true,
+          skippable: true,
         }
-        this.pointJXG.label.visProp.anchorx = anchorx;
-        this.pointJXG.label.visProp.anchory = anchory;
-        this.pointJXG.label.visProp.offset = offset;
-        this.previousLabelPosition = this.doenetSvData.labelPosition;
-        this.pointJXG.label.fullUpdate();
-      } else {
-        this.pointJXG.label.update();
-      }
-
-    }
-    this.props.board.updateRenderer();
-
-
-  }
-
-  onDragHandler(e) {
-    if (this.dragged) {
-      let pointCoords = this.calculatePointPosition(e);
-      this.actions.movePoint({
-        x: pointCoords[0],
-        y: pointCoords[1],
-        transient: true,
-        skippable: true,
       });
-    }
-  }
 
-  calculatePointPosition(e) {
+      newPointJXG.coords.setCoordinates(JXG.COORDS_BY_USER, lastPositionFromCore.current);
+      board.updateInfobox(newPointJXG);
 
-    // the reason we calculate point position with this algorithm,
-    // rather than using .X() and .Y() directly
-    // is that attributes .X() and .Y() are affected by the
-    // .setCoordinates function called in update().
-    // Due to this dependence, the location of .X() and .Y()
-    // can be affected by constraints of objects that the points depends on,
-    // leading to a different location on up than on drag
-    // (as dragging uses the mouse location)
-
-    // TODO: find an example where need this this additional complexity
-
-    var o = this.props.board.origin.scrCoords;
-
-    let [xmin, ymax, xmax, ymin] = this.props.board.getBoundingBox();
-
-    let calculatedX = (this.pointAtDown[1] + e.x - this.pointerAtDown[0]
-      - o[1]) / this.props.board.unitX;
-    calculatedX = Math.min(xmax, Math.max(xmin, calculatedX));
-
-    let calculatedY = (o[2] -
-      (this.pointAtDown[2] + e.y - this.pointerAtDown[1]))
-      / this.props.board.unitY;
-    calculatedY = Math.min(ymax, Math.max(ymin, calculatedY))
-
-    return [calculatedX, calculatedY]
-  }
-
-
-  componentDidMount() {
-    if (!this.props.board) {
-      if (window.MathJax) {
-        window.MathJax.Hub.Config({ showProcessingMessages: false, "fast-preview": { disabled: true } });
-        window.MathJax.Hub.processSectionDelay = 0;
-        window.MathJax.Hub.Queue(["Typeset", window.MathJax.Hub, "#" + this.componentName]);
+      //Protect against very small unintended drags
+      if (Math.abs(e.x - pointerAtDown.current[0]) > .1 ||
+        Math.abs(e.y - pointerAtDown.current[1]) > .1) {
+        dragged.current = true;
       }
-    }
+
+    });
+    return newPointJXG;
   }
 
-  componentDidUpdate() {
-    if (!this.props.board) {
-      if (window.MathJax) {
-        window.MathJax.Hub.Queue(["Typeset", window.MathJax.Hub, "#" + this.componentName]);
+
+
+  if (board) {
+    if (Object.keys(pointJXG).length === 0) {
+      setPointJXG(createPointJXG())
+
+    } else {
+      //if values update
+      let newFillColor = SVs.open ? "white" : SVs.selectedStyle.markerColor;
+      if (pointJXG.visProp.fillcolor !== newFillColor) {
+        pointJXG.visProp.fillcolor = newFillColor;
       }
+
+      //Note label update in jsxGraph maybe slow (so check previous value)
+
+      // Note: for now, putting ?. after numericalXs
+      // because found a case involving an intersections
+      // where a line was turned into a point
+      // and the point renderer was called with the SVs of a line
+      // TODO: is this a problem for which we should find a general fix?
+
+      //if coordinates update
+      let x = SVs.numericalXs?.[0];
+      let y = SVs.numericalXs?.[1];
+
+      pointJXG.coords.setCoordinates(JXG.COORDS_BY_USER, [x, y]);
+
+      let visible = !SVs.hidden;
+
+      if (Number.isFinite(x) && Number.isFinite(y)) {
+        let actuallyChangedVisibility = pointJXG.visProp["visible"] !== visible;
+        pointJXG.visProp["visible"] = visible;
+        pointJXG.visPropCalc["visible"] = visible;
+
+        if (actuallyChangedVisibility) {
+          // this function is incredibly slow, so don't run it if not necessary
+          // TODO: figure out how to make label disappear right away so don't need to run this function
+          pointJXG.setAttribute({ visible: visible })
+        }
+      } else {
+        pointJXG.visProp["visible"] = false;
+        pointJXG.visPropCalc["visible"] = false;
+        // pointJXG.setAttribute({visible: false})
+      }
+
+      if (pointJXG.visProp.strokecolor !== SVs.selectedStyle.markerColor) {
+        pointJXG.visProp.strokecolor = SVs.selectedStyle.markerColor;
+      }
+
+      let newFace = normalizeStyle(SVs.selectedStyle.markerStyle);
+      if (pointJXG.visProp.face !== newFace) {
+        pointJXG.setAttribute({ face: newFace });
+      }
+      if (pointJXG.visProp.size !== SVs.selectedStyle.markerSize) {
+        pointJXG.visProp.size = SVs.selectedStyle.markerSize
+      }
+
+      if (SVs.draggable && !SVs.fixed) {
+        pointJXG.visProp.highlightfillcolor = "#EEEEEE";
+        pointJXG.visProp.highlightstrokecolor = "#C3D9FF";
+        pointJXG.visProp.showinfobox = SVs.showCoordsWhenDragging;
+        pointJXG.visProp.fixed = false;
+      } else {
+        pointJXG.visProp.highlightfillcolor = newFillColor;
+        pointJXG.visProp.highlightstrokecolor = SVs.selectedStyle.markerColor;
+        pointJXG.visProp.showinfobox = false;
+        pointJXG.visProp.fixed = true;
+      }
+
+      //Update only when the change was initiated with this point
+      if (sourceOfUpdate.sourceInformation &&
+        name in sourceOfUpdate.sourceInformation
+      ) {
+        board.updateInfobox(pointJXG);
+      }
+
+      pointJXG.name = SVs.label;
+
+      let withlabel = SVs.showLabel && SVs.label !== "";
+      if (withlabel != previousWithLabel.current) {
+        pointJXG.setAttribute({ withlabel: withlabel });
+        previousWithLabel.current = withlabel;
+      }
+
+      if (pointJXG.hasLabel) {
+        pointJXG.label.needsUpdate = true;
+
+        if (SVs.labelPosition !== previousLabelPosition.current) {
+          let anchorx, anchory, offset;
+          if (SVs.labelPosition === "upperright") {
+            offset = [5, 5];
+            anchorx = "left";
+            anchory = "bottom";
+          } else if (SVs.labelPosition === "upperleft") {
+            offset = [-5, 5];
+            anchorx = "right";
+            anchory = "bottom";
+          } else if (SVs.labelPosition === "lowerright") {
+            offset = [5, -5];
+            anchorx = "left";
+            anchory = "top";
+          } else if (SVs.labelPosition === "lowerleft") {
+            offset = [-5, -5];
+            anchorx = "right";
+            anchory = "top";
+          } else if (SVs.labelPosition === "top") {
+            offset = [0, 10];
+            anchorx = "middle";
+            anchory = "bottom";
+          } else if (SVs.labelPosition === "bottom") {
+            offset = [0, -10];
+            anchorx = "middle";
+            anchory = "top";
+          } else if (SVs.labelPosition === "left") {
+            offset = [-10, 0];
+            anchorx = "right";
+            anchory = "middle";
+          } else {
+            // labelPosition === right
+            offset = [10, 0];
+            anchorx = "left";
+            anchory = "middle";
+          }
+          pointJXG.label.visProp.anchorx = anchorx;
+          pointJXG.label.visProp.anchory = anchory;
+          pointJXG.label.visProp.offset = offset;
+          previousLabelPosition.current = SVs.labelPosition;
+          pointJXG.label.fullUpdate();
+        } else {
+          pointJXG.label.update();
+        }
+      }
+
+
+      pointJXG.needsUpdate = true;
+      pointJXG.update();
+      board.updateRenderer();
     }
+
+    return <a name={name} />
   }
 
-  render() {
+  // not in board
 
-    if (this.props.board) {
-      return <a name={this.componentName} />
-    }
-
-    if (this.doenetSvData.hidden) {
-      return null;
-    }
-
-    let mathJaxify = "\\(" + this.doenetSvData.coordsForDisplay.toLatex() + "\\)";
-    return <><a name={this.componentName} /><span id={this.componentName}>{mathJaxify}</span></>
+  if (SVs.hidden) {
+    return null;
   }
+
+  //Render text coordinates when outside of graph
+
+  let mathJaxify = "\\(" + me.fromAst(SVs.coordsForDisplay).toLatex() + "\\)";
+  return <><a name={name} /><span id={name}>{mathJaxify}</span></>
+
+
 }
 
 function normalizeStyle(style) {

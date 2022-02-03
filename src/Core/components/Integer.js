@@ -26,7 +26,7 @@ export default class Integer extends NumberComponent {
         }
       }),
       definition({ dependencyValues }) {
-        return { newValues: { value: Math.round(dependencyValues.valuePreRound) } }
+        return { setValue: { value: Math.round(dependencyValues.valuePreRound) } }
       },
       inverseDefinition({desiredStateVariableValues}) {
         let desiredValue = desiredStateVariableValues.value;

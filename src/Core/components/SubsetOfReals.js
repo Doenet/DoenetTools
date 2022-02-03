@@ -68,7 +68,7 @@ export default class SubsetOfReals extends MathComponent {
           })
         ).length === 1;
 
-        return { newValues: { haveSingleSubsetChild } }
+        return { setValue: { haveSingleSubsetChild } }
       }
     }
 
@@ -113,9 +113,9 @@ export default class SubsetOfReals extends MathComponent {
           )
         }
 
-        return { newValues: { subsetValue } }
+        return { setValue: { subsetValue } }
       },
-      inverseDefinition({ desiredStateVariableValues, dependencyValues, stateValues }) {
+      async inverseDefinition({ desiredStateVariableValues, dependencyValues, stateValues }) {
 
         if (dependencyValues.haveSingleSubsetChild) {
           return {
@@ -132,7 +132,7 @@ export default class SubsetOfReals extends MathComponent {
           let mathExpression = mathExpressionFromSubsetValue({
             subsetValue: desiredStateVariableValues.subsetValue,
             variable: dependencyValues.variable,
-            displayMode: stateValues.displayMode
+            displayMode: await stateValues.displayMode
           })
 
           return {
@@ -165,7 +165,7 @@ export default class SubsetOfReals extends MathComponent {
 
         let unnormalizedValue = mathExpressionFromSubsetValue(dependencyValues);
 
-        return { newValues: { unnormalizedValue } }
+        return { setValue: { unnormalizedValue } }
 
 
       },

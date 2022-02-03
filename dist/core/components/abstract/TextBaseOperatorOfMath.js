@@ -32,7 +32,7 @@ export default class TextBaseOperatorOfMath extends TextComponent {
       }),
       definition: function ({ dependencyValues }) {
         return {
-          newValues: {
+          setValue: {
             value: constructor.applyTextOperator(
               dependencyValues.mathChildren
                 .map(x => x.stateValues.value)

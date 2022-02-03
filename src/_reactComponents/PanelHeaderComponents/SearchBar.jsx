@@ -6,6 +6,11 @@ import { faSearch, faTimes } from '@fortawesome/free-solid-svg-icons';
 export default function Searchbar(props) {
     const [searchTerm, setSearchTerm] = useState('')
     const [cancelShown, setCancelShown] = useState('hidden')
+    const [searchShown, setSearchShown] = useState('visible')
+    const [labelVisible, setLabelVisible] = useState(props.label ? 'static' : 'none')
+    const [align, setAlign] = useState(props.vertical ? 'static' : 'flex')
+    const marginLeft = props.noSearchButton ? 80 : 26;
+
     var searchBar = {
         margin: '0px',
         height: '24px',
@@ -15,14 +20,15 @@ export default function Searchbar(props) {
         padding: '0px 70px 0px 30px',
         color: '#000',
         overflow: 'hidden',
-        width: '220px'
+        width: '220px',
+        fontSize: '14px'
        }
     if (props.width) {
         if (props.width === "menu") {
             searchBar.width = '130px'
         } 
     }
-    let cancelLeftMargin = Number(searchBar.width.split('px')[0]) + 30 + "px"
+    let cancelLeftMargin = Number(searchBar.width.split('px')[0]) + marginLeft + "px"
 
     var cancelButton = {
         float: 'right',
@@ -49,13 +55,13 @@ export default function Searchbar(props) {
     var submitButton = {
         position: 'absolute',
         display: 'inline',
-        margin: '2px 0px 0px -58px',
+        margin: '0px 0px 0px -60px',
         zIndex: '2',
-        height: '24px',
-        border: `2px hidden`,
+        height: '28px',
+        border: `2px solid black`,
         backgroundColor: `${doenetComponentForegroundActive}`,
         color: '#FFFFFF',
-        borderRadius: '0px 3px 3px 0px',
+        borderRadius: '0px 5px 5px 0px',
         cursor: 'pointer',
         fontSize: '12px',
         overflow: 'hidden'
@@ -68,9 +74,45 @@ export default function Searchbar(props) {
         searchBar.cursor = 'not-allowed';
         disable = "disabled";
     }
-    
 
+    var label = {
+        value: 'Label:',
+        fontSize: '14px',
+        display: `${labelVisible}`, 
+        margin: '0px 5px 2px 0px'
+    }
+    var container = {
+        display: `${align}`, 
+        width: '235px',
+        alignItems:'center'
+    }
     
+    var searchButton = 
+        <button
+            style={submitButton} onClick={searchSubmitAction}>
+            Search
+        </button>
+
+    // if (props.visibility) {
+    //     submitButton.visibility = props.visibility;
+    // }
+    if (props.noSearchButton) {
+        searchButton = '';
+        console.log(cancelLeftMargin)
+    }
+    if (props.placeholder) {
+        searchBar.placeholder = props.placeholder;
+    }
+    if (props.label) {
+        label.value = props.label;
+    }
+    if (props.ariaLabel) {
+        searchBar.ariaLabel = props.ariaLabel;
+    }
+    if (props.alert) {
+        searchBar.border = '2px solid #C1292E'
+    }
+
     function clearInput() {
         setSearchTerm('');
         setCancelShown('hidden')
@@ -78,7 +120,6 @@ export default function Searchbar(props) {
             props.onChange('');
         }
     }
-
     function onChange(e) {
         let val = e.target.value;
         setSearchTerm(val);
@@ -91,6 +132,12 @@ export default function Searchbar(props) {
             props.onChange(val);
         }
     }
+    function handleBlur(e) {
+        if (props.onBlur) props.onBlur(e)
+    }
+    function handleKeyDown(e) {
+        if (props.onKeyDown) props.onKeyDown(e)
+    }
 
     function searchSubmitAction() {
         if (props.onSubmit){
@@ -98,26 +145,33 @@ export default function Searchbar(props) {
         }
     }
     let autoFocus = false;
-    if (props.autoFocus){
+    if (props.autoFocus) {
         autoFocus = true;
     }
+
     return (
-        <div style={{display: "table-cell"}} >
-            <FontAwesomeIcon icon={faSearch} style={searchIcon}/>
-            <button style={cancelButton} onClick={() => { clearInput() }} ><FontAwesomeIcon icon={faTimes}/></button>
-            <input 
-            id="search" 
-            type="text" 
-            placeholder="Search..." 
-            style={searchBar} 
-            onChange={onChange}
-            disabled={disable}
-            value={searchTerm}
-            onKeyDown={(e)=>{if (e.key === 'Enter'){searchSubmitAction()}}}
-            autoFocus={autoFocus} 
-            />
-            <div style={{padding: '3px', display:'inline'}}></div>
-            <button style={submitButton} onClick={searchSubmitAction}>Search</button>
+        <div style={container}>
+            <p style={label}>{label?.value}</p>
+            <div style={{display: "table-cell"}} >
+                <FontAwesomeIcon icon={faSearch} style={searchIcon}/>
+                <button style={cancelButton} onClick={() => { clearInput() }} ><FontAwesomeIcon icon={faTimes}/></button>
+                <input
+                id="search" 
+                type="text" 
+                placeholder={props.placeholder ? searchBar.placeholder : "Search..."} 
+                style={searchBar} 
+                onChange={onChange}
+                onBlur={(e) => { handleBlur(e) }}
+                onKeyDownCapture={(e) => { handleKeyDown(e) }}
+                disabled={disable}
+                value={searchTerm}
+                onKeyDown={(e)=>{if (e.key === 'Enter'){searchSubmitAction()}}}
+                autoFocus={autoFocus} 
+                aria-label={searchBar.ariaLabel}
+                />
+                <div style={{padding: '3px', display:'inline'}}></div>
+                {searchButton}
+            </div>
         </div>
     )
   }

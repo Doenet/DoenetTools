@@ -41,7 +41,7 @@ export default class EquilibriumCurve extends Curve {
       }),
       definition({ dependencyValues }) {
         return {
-          newValues: { dashed: !dependencyValues.stable }
+          setValue: { dashed: !dependencyValues.stable }
         }
       },
       inverseDefinition({ desiredStateVariableValues }) {
@@ -60,9 +60,9 @@ export default class EquilibriumCurve extends Curve {
 
   };
 
-  switchCurve() {
-    if (this.stateValues.switchable) {
-      return this.coreFunctions.performUpdate({
+  async switchCurve() {
+    if (await this.stateValues.switchable) {
+      return await this.coreFunctions.performUpdate({
         updateInstructions: [{
           updateType: "updateValue",
           componentName: this.componentName,

@@ -1,14 +1,17 @@
 import React, { useState, lazy, useRef, Suspense } from 'react';
-import { atom,  useRecoilValue } from 'recoil';
+import { atom,  useRecoilValue, useSetRecoilState } from 'recoil';
 import styled from 'styled-components';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faChevronLeft } from "@fortawesome/free-solid-svg-icons";
-import Profile from '../Profile';
+import { faChevronLeft, faCog, faHome } from "@fortawesome/free-solid-svg-icons";
+import Logo from '../Logo';
+import { pageToolViewAtom } from '../NewToolRoot';
+// import Logo from '../Logo';
 
 export const selectedMenuPanelAtom = atom({
   key:"selectedMenuPanelAtom",
   default:null
 }) 
+
 
 const MenuPanelsWrapper = styled.div`
   grid-area: menuPanel;
@@ -35,6 +38,38 @@ margin-bottom: -2px;
 top: 0;
 z-index: 2;
 `;
+
+const IconsGroup = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-left: 70px;
+  // width: 40px;
+`;
+
+const Branding = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  // margin-left: 95px;
+  width: 110px;
+  cursor: default;
+  font-size: 16px;
+`;
+
+// const Logo = styled.img`
+//   background-image: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)),
+//   url('/media/Doenet_Logo_cloud_only.png');
+//   background-position: center;
+//   background-repeat: no-repeat;
+//   background-size: 50px 25px;
+//   transition: 300ms;
+//   background-color: white;
+//   width: 50px;
+//   height: 25px;
+//   border: 0;
+// `;
+
 const MenuPanelsCapComponent = styled.div`
 width: 240px;
 background: white;
@@ -43,7 +78,7 @@ border-top: 1px solid #e2e2e2;
 border-bottom: 2px solid #e2e2e2;
 margin-bottom: -2px;
 position: sticky;
-top: 35px;
+top: 35;
 z-index: 2;
 `;
 
@@ -60,31 +95,17 @@ const MenuHeaderButton = styled.button`
 
 `;
 
-const Logo = styled.div`
-background-image: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)),
-    url('/media/Doenet_Logo_cloud_only.png');
-  background-position: center;
-  background-repeat: no-repeat;
-  background-size: 50px 25px;
-  transition: 300ms;
-  // background-color: pink;
-  width: 50px;
-  height: 25px;
-  display: inline-block;
-  justify-content: center;
-  align-items: center;
-  border-style: none;
-  margin-top: 5px;
-  margin-left: 2px
-`
-
 const CloseButton = styled.button`
 background-color: #1A5A99;
 height: 35px;
 width: 20px;
 color: white;
 border: none;
-display: inline-block;
+// display: inline-block;
+position: static;
+left: 220px;
+cursor: pointer;
+z-index: 2;
 `;
 
 const EditMenuPanels = styled.button`
@@ -109,6 +130,22 @@ border: 0px solid white;
 border-bottom: ${props => props.isOpen ? '2px solid black' : '0px solid black'} ;
 margin-top: 2px;
 `
+
+const SettingsButton = styled.button`
+background-color: white;
+color: black;
+border: none;
+cursor: pointer;
+font-size: 20px;
+`
+
+const HomeButton = styled.button`
+  color: black;
+  background-color: white;
+  border-style: none;
+  cursor: pointer;
+  font-size: 20px;
+`;
 
 function SelectionMenu(props){
   console.log("child", props.children);
@@ -170,6 +207,7 @@ console.log(">>>===MenuPanel", hide)
 
   //These maintain the panels' state
   const currentSelectionMenu = useRecoilValue(selectedMenuPanelAtom);
+  const setPageToolView = useSetRecoilState(pageToolViewAtom);
   let menusArray = [];
 
   // const profilePicName = profile.profilePicture;
@@ -254,25 +292,35 @@ console.log(">>>===MenuPanel", hide)
 
   return (
     <MenuPanelsWrapper hide={hide}>
-     <MenuPanelsCap fix={hide}>
-        <span >
+      <MenuPanelsCap fix={hide}>
+        
+        <Branding style={{ marginLeft: '5px'}}>
+          {/* <Logo src="data:image/gif;base64,R0lGODlhAQABAPcAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACH5BAEAAP8ALAAAAAABAAEAAAgEAP8FBAA7 */}
+{/* "/> */}
           <Logo/>
-          {/* <img style={{height:"45px", width:"70px", objectFit: "scale-down"}} href="https://www.doenet.org/media/Doenet_Logo_cloud_only.png"/> */}
-        </span>
-        <span style={{marginBottom: '1px'}}>Doenet</span>
-        <span >
-          {displayProfile ? 
-            <Profile 
-            margin={hide}
-            />
-          : null }
-        </span>
+          <p>Doenet</p>
+        </Branding>
+        <IconsGroup>
+          {/* <Logo/> */}
+          {/* <HomeButton onClick={()=>setPageToolView({page:'home',tool:'',view:''})}>
+            <FontAwesomeIcon icon={faHome}/>
+          </HomeButton>  */}
+          
+          <SettingsButton onClick={()=>setPageToolView({page:'settings',tool:'',view:''})}>
+            <FontAwesomeIcon icon={faCog}/>
+          </SettingsButton>
+          
+           
+        </IconsGroup>
+        
         <span >
           <CloseButton onClick={()=>setMenusOpen(false)}><FontAwesomeIcon icon={faChevronLeft}/></CloseButton>
         </span>
-        
+
       </MenuPanelsCap>
+
       {menuPanelCapComponent}
+      {/* <CloseButton onClick={()=>setMenusOpen(false)} fix={hide}><FontAwesomeIcon icon={faChevronLeft}/></CloseButton> */}
 
       {selectionPanel}
       <div>{menusArray}</div>

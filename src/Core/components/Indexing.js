@@ -48,11 +48,15 @@ export class Idx extends BaseComponent {
         } else {
           let value = "";
           for (let comp of dependencyValues.stringTextChildren) {
-            value += comp.stateValues.value;
+            if (typeof comp === "string") {
+              value += comp;
+            } else {
+              value += comp.stateValues.value;
+            }
           }
           terms = [value];
         }
-        return { newValues: { terms } }
+        return { setValue: { terms } }
       }
     }
 

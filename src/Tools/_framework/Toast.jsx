@@ -15,7 +15,7 @@ const ToastContainer = styled.div`
   width: 0 auto;
   top: unset;
   left: unset;
-  bottom: 30px;
+  bottom: 50px;
   right: 20px;
   display: flex;
   flex-direction: column;

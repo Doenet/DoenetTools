@@ -33,11 +33,13 @@ export default class TextOrInline extends InlineComponent {
       definition: function ({ dependencyValues }) {
         let value = "";
         for (let comp of dependencyValues.inlineChildren) {
-          if (typeof comp.stateValues.text === "string") {
+          if(typeof comp !== "object") {
+            value += comp.toString();
+          } else if (typeof comp.stateValues.text === "string") {
             value += comp.stateValues.text;
           }
         }
-        return { newValues: { value } };
+        return { setValue: { value } };
       }
     }
 
@@ -51,7 +53,7 @@ export default class TextOrInline extends InlineComponent {
         }
       }),
       definition: ({ dependencyValues }) => ({
-        newValues: { text: dependencyValues.value }
+        setValue: { text: dependencyValues.value }
       })
     }
 

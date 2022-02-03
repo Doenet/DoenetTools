@@ -42,7 +42,7 @@ export class ClampFunction extends FunctionBaseOperator {
       definition: function ({ dependencyValues }) {
 
         return {
-          newValues: {
+          setValue: {
             numericalFunctionOperator: function (x) {
               // if don't have a number, return NaN
               if (!Number.isFinite(x)) {
@@ -67,7 +67,7 @@ export class ClampFunction extends FunctionBaseOperator {
       }),
       definition({ dependencyValues }) {
         return {
-          newValues: {
+          setValue: {
             symbolicFunctionOperator:
               x => me.fromAst(dependencyValues.numericalFunctionOperator(x.evaluate_to_constant()))
           }
@@ -119,7 +119,7 @@ export class WrapFunctionPeriodic extends FunctionBaseOperator {
       definition: function ({ dependencyValues }) {
 
         return {
-          newValues: {
+          setValue: {
             numericalFunctionOperator: function (x) {
               // if don't have a number, return NaN
               if (!Number.isFinite(x)) {
@@ -161,7 +161,7 @@ export class WrapFunctionPeriodic extends FunctionBaseOperator {
       }),
       definition({ dependencyValues }) {
         return {
-          newValues: {
+          setValue: {
             symbolicFunctionOperator:
               x => me.fromAst(dependencyValues.numericalFunctionOperator(x.evaluate_to_constant()))
           }
@@ -194,12 +194,12 @@ export class Derivative extends FunctionBaseOperator {
 
     stateVariableDefinitions.operatorBasedOnFormulaIfAvailable = {
       returnDependencies: () => ({}),
-      definition: () => ({ newValues: { operatorBasedOnFormulaIfAvailable: true } })
+      definition: () => ({ setValue: { operatorBasedOnFormulaIfAvailable: true } })
     }
 
     stateVariableDefinitions.operatorComposesWithOriginal = {
       returnDependencies: () => ({}),
-      definition: () => ({ newValues: { operatorComposesWithOriginal: false } })
+      definition: () => ({ setValue: { operatorComposesWithOriginal: false } })
     }
 
     stateVariableDefinitions.haveFunctionChild = {
@@ -211,7 +211,7 @@ export class Derivative extends FunctionBaseOperator {
       }),
       definition({ dependencyValues }) {
         return {
-          newValues: {
+          setValue: {
             haveFunctionChild: dependencyValues.functionChild.length > 0
           }
         }
@@ -223,6 +223,7 @@ export class Derivative extends FunctionBaseOperator {
 
     stateVariableDefinitions.nInputs = {
       defaultValue: 1,
+      hasEssential: true,
       public: true,
       componentType: "integer",
       stateVariablesDeterminingDependencies: ["haveFunctionChild"],
@@ -262,12 +263,12 @@ export class Derivative extends FunctionBaseOperator {
           if (!(nInputs >= 0)) {
             nInputs = 1;
           }
-          return { newValues: { nInputs } };
+          return { setValue: { nInputs } };
         } else if (dependencyValues.variablesAttr !== null) {
-          return { newValues: { nInputs: Math.max(1, dependencyValues.variablesAttr.stateValues.nComponents) } }
+          return { setValue: { nInputs: Math.max(1, dependencyValues.variablesAttr.stateValues.nComponents) } }
         } else if (dependencyValues.functionChild.length > 0) {
           return {
-            newValues: {
+            setValue: {
               nInputs: dependencyValues.functionChild[0].stateValues.nInputs
             }
           }
@@ -281,9 +282,9 @@ export class Derivative extends FunctionBaseOperator {
             )
           ].length;
 
-          return { newValues: { nInputs: nUniqueDerivVariables } }
+          return { setValue: { nInputs: nUniqueDerivVariables } }
         } else {
-          return { useEssentialOrDefaultValue: { nInputs: { variablesToCheck: ["nInputs"] } } }
+          return { useEssentialOrDefaultValue: { nInputs: true } }
         }
       }
     }
@@ -353,7 +354,7 @@ export class Derivative extends FunctionBaseOperator {
         if (globalDependencyValues.variablesAttr !== null) {
           let variablesSpecified = globalDependencyValues.variablesAttr.stateValues.variables;
           return {
-            newValues: {
+            setValue: {
               variables: returnNVariables(arraySize[0], variablesSpecified)
             }
           }
@@ -363,7 +364,7 @@ export class Derivative extends FunctionBaseOperator {
             variables[arrayKey] = dependencyValuesByKey[arrayKey].functionChild[0]
               .stateValues["variable" + (Number(arrayKey) + 1)];
           }
-          return { newValues: { variables } }
+          return { setValue: { variables } }
         } else if (globalDependencyValues.derivVariablesAttr !== null) {
 
           let variablesSpecified = [];
@@ -380,15 +381,15 @@ export class Derivative extends FunctionBaseOperator {
           }
 
           return {
-            newValues: {
+            setValue: {
               variables: returnNVariables(arraySize[0], variablesSpecified)
             }
           }
         } else if (globalDependencyValues.parentVariableForChild && !usedDefault.parentVariableForChild) {
-          return { newValues: { variables: Array(arraySize[0]).fill(globalDependencyValues.parentVariableForChild) } }
+          return { setValue: { variables: Array(arraySize[0]).fill(globalDependencyValues.parentVariableForChild) } }
         } else {
           return {
-            newValues: {
+            setValue: {
               variables: returnNVariables(arraySize[0], [])
             }
           }
@@ -412,9 +413,9 @@ export class Derivative extends FunctionBaseOperator {
       },
       definition({ dependencyValues }) {
         if (dependencyValues.derivVariablesAttr !== null) {
-          return { newValues: { nDerivatives: dependencyValues.derivVariablesAttr.stateValues.nComponents } }
+          return { setValue: { nDerivatives: dependencyValues.derivVariablesAttr.stateValues.nComponents } }
         } else {
-          return { newValues: { nDerivatives: 1 } }
+          return { setValue: { nDerivatives: 1 } }
         }
       }
     }
@@ -452,13 +453,13 @@ export class Derivative extends FunctionBaseOperator {
       arrayDefinitionByKey({ globalDependencyValues }) {
         if (globalDependencyValues.derivVariablesAttr !== null) {
           return {
-            newValues: {
+            setValue: {
               derivVariables: globalDependencyValues.derivVariablesAttr.stateValues.variables
             }
           }
         } else {
           return {
-            newValues: {
+            setValue: {
               derivVariables: { 0: globalDependencyValues.variable1 }
             }
           }
@@ -476,7 +477,7 @@ export class Derivative extends FunctionBaseOperator {
       }),
       definition({ dependencyValues }) {
         return {
-          newValues: {
+          setValue: {
             formulaOperator: function (formula) {
               let value = formula.subscripts_to_strings();
               for (let variable of dependencyValues.derivVariables) {
@@ -510,7 +511,7 @@ export class Derivative extends FunctionBaseOperator {
           || !dependencyValues.functionChild[0].stateValues.returnNumericalDerivatives
         ) {
           return {
-            newValues: {
+            setValue: {
               numericalFunctionOperator: x => NaN,
               returnNumericalDerivatives: null,
             }
@@ -530,7 +531,7 @@ export class Derivative extends FunctionBaseOperator {
         }
 
         return {
-          newValues: {
+          setValue: {
             numericalFunctionOperator: derivativeNumericalFunctionOperator,
             returnNumericalDerivatives: augmentedReturnNumericalDerivatives,
           }
@@ -547,7 +548,7 @@ export class Derivative extends FunctionBaseOperator {
       }),
       definition({ dependencyValues }) {
         return {
-          newValues: {
+          setValue: {
             symbolicFunctionOperator:
               x => me.fromAst(dependencyValues.numericalFunctionOperator(x.evaluate_to_constant()))
           }

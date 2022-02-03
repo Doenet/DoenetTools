@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect, useMemo, useRef} from "../_snowpack/pkg/react.js";
+import React, {useCallback, useEffect, useMemo, useRef, useState} from "../_snowpack/pkg/react.js";
 import {basicSetup} from "../_snowpack/pkg/@codemirror/basic-setup.js";
 import {EditorState, Transaction, StateEffect} from "../_snowpack/pkg/@codemirror/state.js";
 import {selectLine, deleteLine, cursorLineUp} from "../_snowpack/pkg/@codemirror/commands.js";
@@ -16,13 +16,14 @@ const editorConfigStateAtom = atom({
   }
 });
 let view;
-export default function CodeMirror({setInternalValue, onBeforeChange, readOnly}) {
+export default function CodeMirror({setInternalValue, onBeforeChange, readOnly, onBlur, onFocus}) {
   if (readOnly === void 0) {
     readOnly = false;
   }
   let editorConfig = useRecoilValue(editorConfigStateAtom);
   view = useRef(null);
   let parent = useRef(null);
+  const [count, setCount] = useState(0);
   const changeFunc = useCallback((tr) => {
     if (tr.docChanged) {
       let strOfDoc = tr.state.sliceDoc();
@@ -30,6 +31,29 @@ export default function CodeMirror({setInternalValue, onBeforeChange, readOnly})
       return true;
     }
   }, []);
+  if (readOnly && view.current?.state?.facet(EditorView.editable)) {
+    const disabledExtensions = [
+      EditorView.editable.of(false),
+      lineNumbers()
+    ];
+    view.current.dispatch({
+      effects: StateEffect.reconfigure.of(disabledExtensions)
+    });
+  }
+  const onBlurExtension = EditorView.domEventHandlers({
+    blur() {
+      if (onBlur) {
+        onBlur();
+      }
+    }
+  });
+  const onFocusExtension = EditorView.domEventHandlers({
+    focus() {
+      if (onFocus) {
+        onFocus();
+      }
+    }
+  });
   const doenetExtensions = useMemo(() => [
     basicSetup,
     doenet(doenetSchema),
@@ -37,6 +61,8 @@ export default function CodeMirror({setInternalValue, onBeforeChange, readOnly})
     tabExtension,
     cutExtension,
     copyExtension,
+    onBlurExtension,
+    onFocusExtension,
     EditorState.changeFilter.of(changeFunc)
   ], [changeFunc]);
   const matchTag = useCallback((tr) => {
@@ -68,6 +94,11 @@ export default function CodeMirror({setInternalValue, onBeforeChange, readOnly})
   useEffect(() => {
     if (view.current === null && parent.current !== null) {
       view.current = new EditorView({state, parent: parent.current});
+      if (readOnly && view.current.state.facet(EditorView.editable)) {
+        setCount((old) => {
+          return old + 1;
+        });
+      }
     }
   });
   useEffect(() => {

@@ -36,7 +36,7 @@ export default class BestFitLine extends Line {
       public: true,
       forRenderer: true,
       returnDependencies: () => ({}),
-      definition: () => ({ newValues: { draggable: false } })
+      definition: () => ({ setValue: { draggable: false } })
     }
 
 
@@ -44,7 +44,7 @@ export default class BestFitLine extends Line {
       public: true,
       componentType: "number",
       returnDependencies: () => ({}),
-      definition: () => ({ newValues: { nDimensions: 2 } })
+      definition: () => ({ setValue: { nDimensions: 2 } })
     }
 
 
@@ -78,7 +78,7 @@ export default class BestFitLine extends Line {
       ) {
         let blankMath = me.fromAst('\uff3f');
         return {
-          newValues: {
+          setValue: {
             equation: blankMath,
             coeff0: blankMath, coeffvar1: blankMath, coeffvar2: blankMath
           }
@@ -101,7 +101,7 @@ export default class BestFitLine extends Line {
       if (X.length === 0) {
         let blankMath = me.fromAst('\uff3f');
         return {
-          newValues: {
+          setValue: {
             equation: blankMath,
             coeff0: blankMath, coeffvar1: blankMath, coeffvar2: blankMath
           }
@@ -133,7 +133,7 @@ export default class BestFitLine extends Line {
       });
 
       return {
-        newValues: {
+        setValue: {
           equation, coeff0, coeffvar1, coeffvar2
         }
       }

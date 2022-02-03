@@ -344,6 +344,7 @@ function NewUser(props) {
       }
     }
   }
+  console.log("Email" + email);
   return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("label", null, "User's Email Address", /* @__PURE__ */ React.createElement("br", null), /* @__PURE__ */ React.createElement("input", {
     type: "text",
     value: email,

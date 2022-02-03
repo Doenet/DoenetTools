@@ -98,7 +98,7 @@ export default class CollaborateGroups extends BaseComponent {
         }
 
         return {
-          newValues: {
+          setValue: {
             collaborateGroups: {
               groups, matchGroup
             }

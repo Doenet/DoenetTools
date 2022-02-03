@@ -1,6 +1,6 @@
 import BaseComponent from './abstract/BaseComponent.js';
 import me from '../../_snowpack/pkg/math-expressions.js';
-import { textToAst } from '../utils/math.js';
+import { preprocessMathInverseDefinition, textToAst } from '../utils/math.js';
 
 export default class Cell extends BaseComponent {
   static componentType = "cell";
@@ -10,10 +10,6 @@ export default class Cell extends BaseComponent {
   static includeBlankStringChildren = true;
 
   static primaryStateVariableForDefinition = "text";
-
-  static get stateVariablesShadowedForReference() {
-    return ["halign", "bottom", "right"]
-  };
 
   static createAttributesObject(args) {
     let attributes = super.createAttributesObject(args);
@@ -76,6 +72,7 @@ export default class Cell extends BaseComponent {
       public: true,
       componentType: "text",
       forRenderer: true,
+      hasEssential: true,
       defaultValue: "left",
       returnDependencies: () => ({
         halignAttr: {
@@ -101,13 +98,13 @@ export default class Cell extends BaseComponent {
           if (!["left", "center", "right", "justify"].includes(halign)) {
             halign = "left";
           }
-          return { newValues: { halign } }
+          return { setValue: { halign } }
         } else if (!usedDefault.parentHalign && dependencyValues.parentHalign) {
-          return { newValues: { halign: dependencyValues.parentHalign } }
+          return { setValue: { halign: dependencyValues.parentHalign } }
         } else if (!usedDefault.tabularHalign && dependencyValues.tabularHalign) {
-          return { newValues: { halign: dependencyValues.tabularHalign.stateValues.halign } }
+          return { setValue: { halign: dependencyValues.tabularHalign.stateValues.halign } }
         } else {
-          return { useEssentialOrDefaultValue: { halign: {} } }
+          return { useEssentialOrDefaultValue: { halign: true } }
         }
       }
     }
@@ -116,6 +113,7 @@ export default class Cell extends BaseComponent {
       public: true,
       componentType: "text",
       forRenderer: true,
+      hasEssential: true,
       defaultValue: "none",
       returnDependencies: () => ({
         bottomAttr: {
@@ -140,13 +138,13 @@ export default class Cell extends BaseComponent {
           if (!["none", "minor", "medium", "major"].includes(bottom)) {
             bottom = "none";
           }
-          return { newValues: { bottom } }
+          return { setValue: { bottom } }
         } else if (!usedDefault.parentBottom && dependencyValues.parentBottom) {
-          return { newValues: { bottom: dependencyValues.parentBottom } }
+          return { setValue: { bottom: dependencyValues.parentBottom } }
         } else if (!usedDefault.tabularBottom && dependencyValues.tabularBottom) {
-          return { newValues: { bottom: dependencyValues.tabularBottom.stateValues.bottom } }
+          return { setValue: { bottom: dependencyValues.tabularBottom.stateValues.bottom } }
         } else {
-          return { useEssentialOrDefaultValue: { bottom: {} } }
+          return { useEssentialOrDefaultValue: { bottom: true } }
         }
       }
     }
@@ -155,6 +153,7 @@ export default class Cell extends BaseComponent {
       public: true,
       componentType: "text",
       forRenderer: true,
+      hasEssential: true,
       defaultValue: "none",
       returnDependencies: () => ({
         rightAttr: {
@@ -176,11 +175,11 @@ export default class Cell extends BaseComponent {
           if (!["none", "minor", "medium", "major"].includes(right)) {
             right = "none";
           }
-          return { newValues: { right } }
+          return { setValue: { right } }
         } else if (!usedDefault.tabularRight && dependencyValues.tabularRight) {
-          return { newValues: { right: dependencyValues.tabularRight.stateValues.right } }
+          return { setValue: { right: dependencyValues.tabularRight.stateValues.right } }
         } else {
-          return { useEssentialOrDefaultValue: { right: {} } }
+          return { useEssentialOrDefaultValue: { right: true } }
         }
       }
     }
@@ -197,7 +196,7 @@ export default class Cell extends BaseComponent {
         },
       }),
       definition({ dependencyValues }) {
-        return { newValues: { inHeader: dependencyValues.parentHeader === true } }
+        return { setValue: { inHeader: dependencyValues.parentHeader === true } }
       }
     }
 
@@ -213,7 +212,7 @@ export default class Cell extends BaseComponent {
         },
       }),
       definition: ({ dependencyValues }) => ({
-        newValues: {
+        setValue: {
           onlyMathChild: dependencyValues.mathChild.length === 1 &&
             dependencyValues.otherChildren.length === 0
         }
@@ -223,7 +222,7 @@ export default class Cell extends BaseComponent {
     stateVariableDefinitions.text = {
       public: true,
       componentType: "text",
-      defaultValue: "",
+      hasEssential: true,
       forRenderer: true,
       returnDependencies: () => ({
         children: {
@@ -242,7 +241,6 @@ export default class Cell extends BaseComponent {
           return {
             useEssentialOrDefaultValue: {
               text: {
-                variablesToCheck: ["text"],
                 defaultValue: dependencyValues.prefill
               }
             }
@@ -250,12 +248,16 @@ export default class Cell extends BaseComponent {
         }
         let text = "";
         for (let child of dependencyValues.children) {
-          if (child.stateValues.text) {
-            text += child.stateValues.text;
+          if (typeof child === "object") {
+            if (child.stateValues.text) {
+              text += child.stateValues.text;
+            }
+          } else {
+            text += child.toString();
           }
         }
 
-        return { newValues: { text } }
+        return { setValue: { text } }
 
       },
       inverseDefinition({ desiredStateVariableValues, dependencyValues }) {
@@ -263,12 +265,14 @@ export default class Cell extends BaseComponent {
           return {
             success: true,
             instructions: [{
-              setStateVariable: "text",
+              setEssentialValue: "text",
               value: desiredStateVariableValues.text === null ? "" : String(desiredStateVariableValues.text)
             }]
           }
         } else if (dependencyValues.children.length === 1) {
-          if (dependencyValues.children[0].stateValues.text === undefined) {
+          if (typeof dependencyValues.children[0] === "object" &&
+            dependencyValues.children[0].stateValues.text === undefined
+          ) {
             return { success: false }
           } else {
             return {
@@ -312,7 +316,7 @@ export default class Cell extends BaseComponent {
       },
       definition({ dependencyValues }) {
         if (dependencyValues.mathChild) {
-          return { newValues: { math: dependencyValues.mathChild[0].stateValues.value } }
+          return { setValue: { math: dependencyValues.mathChild[0].stateValues.value } }
         } else {
           let math;
           try {
@@ -321,10 +325,10 @@ export default class Cell extends BaseComponent {
             math = me.fromAst('\uff3f')
           }
 
-          return { newValues: { math } }
+          return { setValue: { math } }
         }
       },
-      inverseDefinition({ desiredStateVariableValues, dependencyValues }) {
+      async inverseDefinition({ desiredStateVariableValues, dependencyValues, stateValues, workspace }) {
         if (dependencyValues.mathChild) {
           return {
             success: true,
@@ -336,11 +340,19 @@ export default class Cell extends BaseComponent {
             }]
           }
         } else {
+
+          let result = await preprocessMathInverseDefinition({
+            desiredValue: desiredStateVariableValues.math,
+            stateValues,
+            variableName: "math",
+            workspace,
+          })
+
           return {
             success: true,
             instructions: [{
               setDependency: "text",
-              desiredValue: desiredStateVariableValues.math.toString(),
+              desiredValue: result.desiredValue.toString(),
             }]
           }
         }
@@ -361,7 +373,7 @@ export default class Cell extends BaseComponent {
         if (!Number.isFinite(number)) {
           number = NaN;
         }
-        return { newValues: { number } }
+        return { setValue: { number } }
       },
       inverseDefinition({ desiredStateVariableValues }) {
         return {
