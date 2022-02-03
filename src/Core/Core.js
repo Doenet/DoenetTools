@@ -5137,6 +5137,44 @@ export default class Core {
       }
     }
 
+    for (let varName in result.markAsUsedDefault) {
+      if (!component.state[varName].isResolved) {
+        throw Error(`Marking state variable as used default when it isn't yet resolved: ${varName} of ${component.componentName}`)
+      }
+
+      if (!(varName in receivedValue)) {
+        let matchingArrayEntry;
+        if (component.state[varName].isArray && component.state[varName].arrayEntryNames) {
+          for (let arrayEntryName of component.state[varName].arrayEntryNames) {
+            if (arrayEntryName in receivedValue) {
+              matchingArrayEntry = arrayEntryName;
+              break;
+            }
+          }
+        }
+        if (!matchingArrayEntry) {
+          throw Error(`Marking state variable  ${varName} as used default in definition of ${stateVariable} of ${component.componentName}, but it's not listed as an additional state variable defined.`)
+        }
+      }
+
+      if(Array.isArray()) {
+
+        for (let arrayKey in result.markAsUsedDefault[varName]) {
+          if(result.markAsUsedDefault[varName][arrayKey]) {
+            component.state[varName].usedDefaultByArrayKey[arrayKey] = true;
+          }
+        }
+
+      } else {
+
+        if(result.markAsUsedDefault[varName]) {
+          component.state[varName].usedDefault = true;
+        }
+
+      }
+
+    }
+
 
     if (result.noChanges) {
       for (let varName of result.noChanges) {
