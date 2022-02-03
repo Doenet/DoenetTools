@@ -3,29 +3,26 @@ import { atomFamily, useRecoilValue, useSetRecoilState } from 'recoil';
 // import { serializedComponentsReviver } from '../../Core/utils/serializedStateProcessing';
 import { renderersloadComponent } from '../DoenetViewer';
 
-export const rendererSVs = atomFamily({
-  key:'rendererSVs',
-  default:{stateValues:{},sourceOfUpdate:{},ignoreUpdate:false},
+export const rendererState = atomFamily({
+  key:'rendererState',
+  default:{stateValues:{},sourceOfUpdate:{},ignoreUpdate:false,childrenInstructions:[]},
   // dangerouslyAllowMutability: true,
 })
 
+// TODO: potentially remove initializeChildrenOnConstruction
 export default function useDoenetRenderer(props,initializeChildrenOnConstruction=true){
   let actions = props.componentInstructions.actions;
   let name =  props.componentInstructions.componentName;
   let [renderersToLoad,setRenderersToLoad] = useState({})
   
-  let {stateValues,sourceOfUpdate={},ignoreUpdate} = useRecoilValue(rendererSVs(name));
+  let {stateValues,sourceOfUpdate={},ignoreUpdate,childrenInstructions} = useRecoilValue(rendererState(name));
 
-  props.rendererUpdateMethods[name] = {
-    update: ()=>{},
-
-  }
 
   //TODO: Fix this for graph
   // if (initializeChildrenOnConstruction
   let children = [];
   const loadMoreRenderers = Object.keys(renderersToLoad).length === 0;
-  for (let childInstructions of props.componentInstructions.children) {   
+  for (let childInstructions of childrenInstructions) {   
     let child = createChildFromInstructions(childInstructions,loadMoreRenderers);
     children.push(child);
   }
@@ -50,7 +47,6 @@ export default function useDoenetRenderer(props,initializeChildrenOnConstruction
       key: childInstructions.componentName,
       componentInstructions: childInstructions,
       rendererClasses: props.rendererClasses,
-      rendererUpdateMethods: props.rendererUpdateMethods,
       flags: props.flags,
       callAction: props.callAction,
     };
