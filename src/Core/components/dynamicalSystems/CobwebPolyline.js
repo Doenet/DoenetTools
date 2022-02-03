@@ -162,19 +162,27 @@ export default class CobwebPolyline extends Polyline {
     }
 
     stateVariableDefinitions.f = {
-      forRenderer: true,
+      additionalStateVariablesDefined: [{
+        variableName: "fDefinition",
+        forRenderer: true,
+      }],
       returnDependencies: () => ({
         functionAttr: {
           dependencyType: "attributeComponent",
           attributeName: "function",
-          variableNames: ["numericalf"]
+          variableNames: ["numericalf", "fDefinition"]
         }
       }),
       definition({ dependencyValues }) {
         if (dependencyValues.functionAttr) {
-          return { setValue: { f: dependencyValues.functionAttr.stateValues.numericalf } }
+          return {
+            setValue: {
+              f: dependencyValues.functionAttr.stateValues.numericalf,
+              fDefinition: dependencyValues.functionAttr.stateValues.fDefinition,
+            }
+          }
         } else {
-          return { setValue: { f: null } }
+          return { setValue: { f: null, fDefinition: null } }
         }
       }
     }

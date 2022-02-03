@@ -734,43 +734,6 @@ class DoenetViewerChild extends Component {
 
   }
 
-  contentIdsToDoenetMLs(contentIds) {
-    let promises = [];
-    let newDoenetMLs = {};
-    let newContentIds = contentIds;
-
-    for (let contentId of contentIds) {
-      promises.push(axios.get(`/media/${contentId}.doenet`))
-
-    }
-
-    return Promise.all(promises).then((resps) => {
-      // contentIds.forEach((x, i) => newDoenetMLs[x] = resps[i].data)
-      newDoenetMLs = resps.map(x => x.data);
-
-      // console.log({ newDoenetMLs, newContentIds })
-      return Promise.resolve({ newDoenetMLs, newContentIds });
-
-    }).catch(err => {
-
-      let message;
-      if (newContentIds.length === 1) {
-        message = `Could not retrieve contentId ${newContentIds[0]}`
-      } else {
-        message = `Could not retrieve contentIds ${newContentIds.join(',')}`
-      }
-
-      message += ": " + err.message;
-
-      console.error(message)
-
-      return Promise.reject(new Error(message));
-
-    })
-
-  }
-
-
 
   render() {
 
