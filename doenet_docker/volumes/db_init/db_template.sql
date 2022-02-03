@@ -7,7 +7,7 @@
 #
 # Host: 127.0.0.1 (MySQL 5.7.29)
 # Database: doenet_local
-# Generation Time: 2021-11-09 18:05:29 +0000
+# Generation Time: 2022-02-03 04:31:14 +0000
 # ************************************************************
 
 
@@ -359,6 +359,28 @@ CREATE TABLE `experiment` (
   `hasBegun` int(1) DEFAULT '0',
   `numberOfGroups` int(11) DEFAULT '1',
   PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+
+
+# Dump of table support_files
+# ------------------------------------------------------------
+
+DROP TABLE IF EXISTS `support_files`;
+
+CREATE TABLE `support_files` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `userId` char(21) COLLATE utf8_unicode_ci DEFAULT '0',
+  `fileName` varchar(68) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `contentId` char(64) COLLATE utf8_unicode_ci DEFAULT '0',
+  `doenetId` char(21) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
+  `versionId` char(21) COLLATE utf8_unicode_ci DEFAULT '0',
+  `sizeInBytes` mediumint(11) DEFAULT NULL,
+  `timestamp` datetime DEFAULT NULL,
+  `removedFlag` tinyint(1) NOT NULL DEFAULT '0',
+  `public` tinyint(1) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`),
+  KEY `userId` (`userId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 
