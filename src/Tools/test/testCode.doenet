@@ -1,11 +1,1 @@
-<title>out here</title>
-<codeeditor name='ce' width='350px' />
-<callAction label='update' target='renderer' actionName='updateComponents'/>
-<renderDoenetML name='renderer' target='ce' />
-
-<p>test 1</p>
-<p>test 2</p>
-<p>test 3</p>
-
-
-
+<p>Use this to test DoenetML</p>

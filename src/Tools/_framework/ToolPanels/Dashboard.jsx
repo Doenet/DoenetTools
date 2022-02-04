@@ -32,7 +32,7 @@ export default function Dashboard(props) {
     <div style={props?.style ?? {}}>
       <div style={{marginLeft: '10px', marginRight: '10px'}}>
         <h1>Welcome!</h1>
-        <div style={{display: 'flex', justifyContent: 'space-between', col: '1', width: '850px'}}>
+        <div style={{display: 'grid', gridAutoFlow: 'column dense', gridAutoColumns: 'min-content', gap: '30px', width: '850px'}}>
           <Card 
             name='Content' 
             icon={<FontAwesomeIcon icon={faCode}/>}
@@ -90,7 +90,8 @@ export default function Dashboard(props) {
           :
           <Card 
             name='Gradebook' 
-            icon={faTasks}
+            icon={<FontAwesomeIcon icon={faTasks}/>}
+            style={{marginLeft: '-600px'}}
             value="Gradebook" 
             onClick={() => 
             setPageToolView((was)=>{return {

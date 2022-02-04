@@ -56,6 +56,15 @@ export default class Point extends GraphicalComponent {
       public: true,
     };
 
+    attributes.displaySmallAsZero = {
+      createComponentOfType: "number",
+      createStateVariable: "displaySmallAsZero",
+      valueForTrue: 1E-14,
+      valueForFalse: 0,
+      defaultValue: 0,
+      public: true,
+    };
+
     attributes.labelPosition = {
       createComponentOfType: "text",
       createStateVariable: "labelPosition",
@@ -859,10 +868,14 @@ export default class Point extends GraphicalComponent {
           dependencyType: "stateVariable",
           variableName: "displayDecimals"
         },
+        displaySmallAsZero: {
+          dependencyType: "stateVariable",
+          variableName: "displaySmallAsZero"
+        },
       }),
       definition: function ({ dependencyValues, usedDefault }) {
         // for display via latex and text, round any decimal numbers to the significant digits
-        // determined by displaydigits or displaydecimals
+        // determined by displaydigits, displaydecimals, and/or displaySmallAsZero
         let coordsForDisplay = roundForDisplay({
           value: dependencyValues.coords,
           dependencyValues, usedDefault
