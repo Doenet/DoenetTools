@@ -52,10 +52,11 @@ export default function SupprtingFilesMenu(props){
 
     //Upload files
     files.map((file,fileIndex)=>{
+      console.log('file',file)
       //TODO: Show loading  image
         const reader = new FileReader();
-        // reader.readAsDataURL(file);  //This one could be used with image source to preview image
-        reader.readAsArrayBuffer(file);
+        reader.readAsDataURL(file);  //This one could be used with image source to preview image
+        // reader.readAsArrayBuffer(file);
   
       reader.onabort = () => {};
       reader.onerror = () => {};
@@ -67,27 +68,27 @@ export default function SupprtingFilesMenu(props){
         let contentData = reader.result;
         // setImageSrc(imageData)
         // setImageSrc(reader.result)
-        // const uploadData = new FormData();
-        // uploadData.append('file',file);
-        // uploadData.append('data',[1,2,3]);
+        const uploadData = new FormData();
+        uploadData.append('file',file);
+        uploadData.append('doenetId',doenetId);
         // uploadData.set('thing','mytest');
         // let doenetId = 'need!';
         // uploadData.append('contents',reader.result);
         // axios.post('/api/upload.php',uploadData,{onUploadProgress: (progressEvent)=>{
 
-        let uploadData = {
-          type:file.type,
-          content:contentData,
-          // content:reader.result,
-          doenetId,
-          size:file.size,
-        }
+        // let uploadData = {
+        //   type:file.type,
+        //   content:contentData,
+        //   // content:reader.result,
+        //   doenetId,
+        //   size:file.size,
+        // }
           axios.post('/api/upload.php',uploadData,{onUploadProgress: (progressEvent)=>{
         const totalLength = progressEvent.lengthComputable ? progressEvent.total : progressEvent.target.getResponseHeader('content-length') || progressEvent.target.getResponseHeader('x-decompressed-content-length');
             // console.log("onUploadProgress",file.name,fileIndex, totalLength);
             if (totalLength !== null) {
-                this.updateProgressBarValue(Math.round( (progressEvent.loaded * 100) / totalLength ));
-            // console.log("updateProgressBarValue",file.name,fileIndex, Math.round( (progressEvent.loaded * 100) / totalLength ));
+                // this.updateProgressBarValue(Math.round( (progressEvent.loaded * 100) / totalLength ));
+            console.log("updateProgressBarValue",file.name,fileIndex, Math.round( (progressEvent.loaded * 100) / totalLength ));
             }
       }}).then(({data})=>{
         // console.log("data",file.name,fileIndex,data)
