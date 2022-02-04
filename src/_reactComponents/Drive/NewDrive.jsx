@@ -922,6 +922,7 @@ export const fetchDrivesSelector = selector({
         if (drive.driveId === labelTypeDriveIdColorImage.newDriveId) {
           let newDrive = { ...drive };
           newDrive.color = labelTypeDriveIdColorImage.color;
+          newDrive.image = labelTypeDriveIdColorImage.image;
           newDriveData.driveIdsAndLabels[i] = newDrive;
           break;
         }
@@ -938,6 +939,7 @@ export const fetchDrivesSelector = selector({
         if (drive.driveId === labelTypeDriveIdColorImage.newDriveId) {
           let newDrive = { ...drive };
           newDrive.image = labelTypeDriveIdColorImage.image;
+          newDrive.color = labelTypeDriveIdColorImage.color;
           newDriveData.driveIdsAndLabels[i] = newDrive;
           break;
         }

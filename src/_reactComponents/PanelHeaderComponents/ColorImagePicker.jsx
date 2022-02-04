@@ -137,7 +137,7 @@ export default function ColorImagePicker(props){
         colorArray.push(
             <Color 
                 key={i} 
-                color={driveColors[i]} 
+                color={"#" + driveColors[i]} 
                 onClick={() => {
                     changeColor(driveColors[i]);
                 }}
@@ -165,7 +165,7 @@ export default function ColorImagePicker(props){
             <Label>Background Image</Label>
             <Display 
                 onClick={(e) => { handleClick(e) }} 
-                color={displayColor}
+                color={"#" + displayColor}
                 image={"url(/media/drive_pictures/" + displayImage + ")"}>
                 <Menu visible={menuOpen}>
                     <ColorSection>

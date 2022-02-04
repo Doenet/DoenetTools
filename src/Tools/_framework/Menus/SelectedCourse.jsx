@@ -434,15 +434,15 @@ const DriveInfoPanel = function (props) {
             });
             // console.log(newImage);
           }}
-          imageCallback={(newColor) => {
+          colorCallback={(newColor) => {
             setDrivesInfo({
+              image: "none",
               color: newColor,
               label: props.label,
-              image: "none",
               newDriveId: props.driveId,
               type: 'update drive color',
             });
-            console.log(newColor);
+            // console.log("What is the color??", newColor);
           }}
         />
         {/* <DoenetDriveCardMenu
