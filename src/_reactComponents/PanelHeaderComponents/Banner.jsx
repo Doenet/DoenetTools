@@ -1,42 +1,10 @@
 import React, { useState } from 'react';
-import { doenetComponentForegroundInactive, doenetComponentForegroundActive, doenetComponentBackgroundActive } from "./theme.js";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTimes } from '@fortawesome/free-solid-svg-icons';
 
 
-export const bannerType = Object.freeze({
-    //Color contrast with accessibility -- no text on color
-    ERROR: {
-      // process failed or error occurred, user must dismiss
-      backgroundColor: 'rgba(193, 41, 46, 1)'
-    },
-    ALERT: {
-      // user attetion reqired to dismiss
-      backgroundColor: 'rgba(255, 230, 0, 1)'
-    },
-    ACTION: {
-      // requires user interaction
-      // backgroundColor: 'rgba()'
-      backgroundColor: 'hsl(209,54%,82%)'
-    },
-    INFO: {
-      // non-interactive information
-      // backgroundColor: 'rgba(26, 90, 153,1)'
-      backgroundColor: '#E2E2E2'
-    },
-    SUCCESS: {
-      // confirm action
-      backgroundColor: 'rgba(41, 193, 67,  1)'
-    },
-    // CONFIRMATION: {
-    //   //confirm action and offer undo
-    //   backgroundColor: 'rgba(26,90,153,1)'
-    // },
-});
-
 export default function Banner(props) {
     const [bannerVisible, setBannerVisible] = useState('flex');
-    const type = props.type ? props.type : bannerType.INFO;
 
     var banner = {
         padding: '10px',
@@ -61,19 +29,35 @@ export default function Banner(props) {
         fontSize: '14px',
         cursor: 'pointer',
     }
-    var container = {
-        backgroundColor: `${type}`
+    var container = {}
+
+    switch (props.type) {
+        case 'ERROR':
+            container.backgroundColor = 'rgba(193, 41, 46, 1)';
+            container.color = 'white';
+            closeButton.color = 'white';
+            break;
+        case 'ALERT':
+            container.backgroundColor = '#f5ed85';
+            break;
+        case 'ACTION':
+            container.backgroundColor = 'hsl(209,54%,82%)';
+            break;
+        case 'SUCCESS':
+            container.backgroundColor = '#a6f19f';
+            break;
+        default:
+            container.backgroundColor = '#E2E2E2';
+            break;
     }
-    if (props.type) {
-        container.backgroundColor = type.backgroundColor
-    }
+
     function clearBanner() {
         setBannerVisible('none');
     }
 
     return (
         <div>
-            <div style={container} type={type}>
+            <div style={container}> 
                 <div style={banner}>
                     <div style={bannerText}>
                         <strong>Reminder:</strong> your subscription expires in 22 days. Renew to avoid account suspension.
