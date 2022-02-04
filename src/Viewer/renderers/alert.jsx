@@ -8,6 +8,6 @@ export default function Alert(props){
     return null;
   }
 
-  return <strong id={name}><a name={name} />{children}</strong>
+  return <strong id={name} style={{color: '#C1292E'}}><a name={name} />{children}</strong>
 
 }
