@@ -1,79 +1,71 @@
 <?php
 header("Access-Control-Allow-Origin: *");
-// header("Access-Control-Allow-Headers: access");
+header("Access-Control-Allow-Headers: access");
 header("Access-Control-Allow-Methods: POST");
 header("Access-Control-Allow-Credentials: true");
 header('Content-Type: application/json');
-header("Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Accept");
+// header("Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Accept");
 
 include "db_connection.php";
 $jwtArray = include "jwtArray.php";
 $userId = $jwtArray['userId'];
 
+$_POST = json_decode(file_get_contents("php://input"),true);
+$size =  mysqli_real_escape_string($conn,$_POST["size"]);
+$doenetId =  mysqli_real_escape_string($conn,$_POST["doenetId"]);
+$type =  mysqli_real_escape_string($conn,$_POST["type"]);
+$trackingConsent =  mysqli_real_escape_string($conn,$_POST["trackingConsent"]);
+$dangerousContent = $_POST["content"];
+// echo "post\n";
+var_dump($_POST);
+// echo "\npost\n";
+// var_dump(file_get_contents("php://input"));
+// echo "\n_FILES\n";
+// var_dump($_FILES);
+// $doenetId =  mysqli_real_escape_string($conn,$_POST["doenetId"]);
+
 $success = true;
+
+//TODO: Test if user has permission and space to upload files
+
+
 $uploads_dir = '../media/';
 
-// echo 'file_get_contents->';
-// var_dump(file_get_contents("php://input"));
-// echo '<-';
-// echo 'HTTP_RAW_POST_DATA->';
-// var_dump($HTTP_RAW_POST_DATA);
-// echo '<-';
-// echo '_POST->';
-// var_dump($_POST);
-// echo '<-';
-// echo '_FILES->';
-// var_dump($_FILES);
-// echo '<-';
-// echo '_FILES[file]->';
-// var_dump($_FILES['file']);
-// echo '<-';
-$type = $_FILES['file']['type'];
-$tmp_name = $_FILES['file']['tmp_name'];
-$error = $_FILES['file']['error'];
+// $type = $_FILES['file']['type'];
+// $tmp_name = $_FILES['file']['tmp_name'];
+// $error = $_FILES['file']['error'];
+// $size = $_FILES['file']['size'];
+
 $extension = '';
 if ($type == 'image/jpeg'){
   $extension = '.jpg';
 }else if ($type == 'text/csv'){
   $extension = '.csv';
 }
-// $contentId = hash('sha256', $dangerousDoenetML);
+// $contentId = hash('sha256', $dangerousContent);
+$contentId = 'testme';
+$newFileName = $contentId . $extension;
+$destination = $uploads_dir . $newFileName;
+$newfile = fopen($destination, "w") or die("Unable to open file!");
+    $status = fwrite($newfile, $dangerousContent);
+    if ($status === false){
+      return "Didn't save to file";
+    }
+    fclose($newfile);
 
-$destination = $uploads_dir . 'test' . $extension;
-echo "\n";
-echo "type $type\n";
-echo "tmp_name $tmp_name\n";
-echo "destination $destination\n";
-var_dump($_FILES['file']);
-// echo "error $error\n";
-move_uploaded_file($tmp_name, $destination);
+// move_uploaded_file($tmp_name, $destination);
 
-// $_POST = json_decode(file_get_contents("php://input"),true);
-// $file = file_get_contents("php://input");
-// $firstName =  mysqli_real_escape_string($conn,$_POST["firstName"]);
-// $lastName =  mysqli_real_escape_string($conn,$_POST["lastName"]);
-// $profilePicture =  mysqli_real_escape_string($conn,$_POST["profilePicture"]);
-// $trackingConsent =  mysqli_real_escape_string($conn,$_POST["trackingConsent"]);
-// $roleStudent =  mysqli_real_escape_string($conn,$_POST["roleStudent"]);
-// $roleInstructor =  mysqli_real_escape_string($conn,$_POST["roleInstructor"]);
-// $roleCourseDesigner =  mysqli_real_escape_string($conn,$_POST["roleCourseDesigner"]);
+$sql = "
+INSERT INTO support_files 
+(userId,fileName,contentId,doenetId,sizeInBytes,timestamp)
+VALUES
+('$userId','$newFileName','$contentId','$doenetId','$size',NOW())
+";
+$result = $conn->query($sql);
+echo $sql;
 
-// if ($roleStudent == true){$roleStudent = "1";}else{$roleStudent = "0";}
-// if ($roleInstructor == true){$roleInstructor = "1";}else{$roleInstructor = "0";}
-// if ($roleCourseDesigner == true){$roleCourseDesigner = "1";}else{$roleCourseDesigner = "0";}
 
-// $sql = "UPDATE user
-//         SET screenName = '$screenName', 
-//         firstName = '$firstName', 
-//         lastName = '$lastName',  
-//         profilePicture = '$profilePicture', 
-//         trackingConsent = '$trackingConsent', 
-//         roleStudent = '$roleStudent', 
-//         roleInstructor = '$roleInstructor', 
-//         roleCourseDesigner = '$roleCourseDesigner'
-//         WHERE userId = '$userId' ";
-// // echo $sql;
-// $result = $conn->query($sql);
+
 
 
 // set response code - 200 OK
@@ -82,7 +74,7 @@ http_response_code(200);
 $response_arr = array("success" => $success,"file" => $file);
 
 // make it json format
-// echo json_encode($response_arr);
+echo json_encode($response_arr);
 
-$conn->close();
+// $conn->close();
 

@@ -4,12 +4,15 @@ import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
 // import parse from 'csv-parse';
 import {
   useSetRecoilState,
+  useRecoilValue,
 } from 'recoil';
 import ButtonGroup from '../../../_reactComponents/PanelHeaderComponents/ButtonGroup';
 import CollapseSection from '../../../_reactComponents/PanelHeaderComponents/CollapseSection';
 import { useToast, toastType }  from '../Toast';
 import axios from 'axios';
 import { getSHAofContent } from '../ToolHandlers/CourseToolHandler';
+import { searchParamAtomFamily } from '../NewToolRoot';
+
 
 function bytesToSize(bytes) {
   var sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
@@ -20,6 +23,7 @@ function bytesToSize(bytes) {
 
 export default function SupprtingFilesMenu(props){
   const addToast = useToast();
+  const doenetId = useRecoilValue(searchParamAtomFamily('doenetId'));
   // let [imageSrc,setImageSrc] = useState(null);
   let userQuotaBytesAvailable = 1073741824; //1 GB in bytes
   // let userQuotaBytesAvailable = 100024; //TEST
@@ -50,7 +54,8 @@ export default function SupprtingFilesMenu(props){
     files.map((file,fileIndex)=>{
       //TODO: Show loading  image
         const reader = new FileReader();
-        reader.readAsDataURL(file);
+        // reader.readAsDataURL(file);  //This one could be used with image source to preview image
+        reader.readAsArrayBuffer(file);
   
       reader.onabort = () => {};
       reader.onerror = () => {};
@@ -58,17 +63,30 @@ export default function SupprtingFilesMenu(props){
         // let contentId = getSHAofContent(reader.result);
         // console.log("contentId",contentId);
         // console.log("reader.result",reader.result)
-        // let imageData = reader.result.split(',')[1];
+        // let contentData = reader.result.split(',')[1];
+        let contentData = reader.result;
         // setImageSrc(imageData)
         // setImageSrc(reader.result)
-        const uploadData = new FormData();
-        uploadData.append('file',file);
+        // const uploadData = new FormData();
+        // uploadData.append('file',file);
+        // uploadData.append('data',[1,2,3]);
+        // uploadData.set('thing','mytest');
+        // let doenetId = 'need!';
         // uploadData.append('contents',reader.result);
-        axios.post('/api/upload.php',uploadData,{onUploadProgress: (progressEvent)=>{
+        // axios.post('/api/upload.php',uploadData,{onUploadProgress: (progressEvent)=>{
+
+        let uploadData = {
+          type:file.type,
+          content:contentData,
+          // content:reader.result,
+          doenetId,
+          size:file.size,
+        }
+          axios.post('/api/upload.php',uploadData,{onUploadProgress: (progressEvent)=>{
         const totalLength = progressEvent.lengthComputable ? progressEvent.total : progressEvent.target.getResponseHeader('content-length') || progressEvent.target.getResponseHeader('x-decompressed-content-length');
             // console.log("onUploadProgress",file.name,fileIndex, totalLength);
             if (totalLength !== null) {
-                // this.updateProgressBarValue(Math.round( (progressEvent.loaded * 100) / totalLength ));
+                this.updateProgressBarValue(Math.round( (progressEvent.loaded * 100) / totalLength ));
             // console.log("updateProgressBarValue",file.name,fileIndex, Math.round( (progressEvent.loaded * 100) / totalLength ));
             }
       }}).then(({data})=>{
