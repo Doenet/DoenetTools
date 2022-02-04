@@ -1,4 +1,5 @@
 import cssesc from 'cssesc';
+import { createFunctionFromDefinition } from '../../../../src/Core/utils/function';
 
 function cesc(s) {
   s = cssesc(s, { isIdentifier: true });
@@ -16,7 +17,7 @@ describe('Graph Tag Tests', function () {
   })
 
   it.skip('string sugared to curve in graph', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -26,9 +27,9 @@ describe('Graph Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      let curve = components["/_graph1"].activeChildren[0];
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables();
+      let curve = stateVariables["/_graph1"].activeChildren[0];
       expect(curve.stateValues.flipFunction).eq(false);
       expect(curve.stateValues.fs[0](-2)).eq(4);
       expect(curve.stateValues.fs[0](3)).eq(9);
@@ -37,7 +38,7 @@ describe('Graph Tag Tests', function () {
   });
 
   it.skip('y = function string sugared to curve in graph', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -47,9 +48,9 @@ describe('Graph Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      let curve = components["/_graph1"].activeChildren[0];
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables();
+      let curve = stateVariables["/_graph1"].activeChildren[0];
       let functioncurve = curve.activeChildren[0];
       expect(curve.stateValues.variables[0].tree).eq("x");
       expect(curve.stateValues.variables[1].tree).eq("y");
@@ -63,7 +64,7 @@ describe('Graph Tag Tests', function () {
   });
 
   it.skip('inverse function string sugared to curve in graph', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -73,9 +74,9 @@ describe('Graph Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      let curve = components["/_graph1"].activeChildren[0];
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables();
+      let curve = stateVariables["/_graph1"].activeChildren[0];
       let functioncurve = curve.activeChildren[0];
       expect(curve.stateValues.variables[0].tree).eq("x");
       expect(curve.stateValues.variables[1].tree).eq("y");
@@ -89,7 +90,7 @@ describe('Graph Tag Tests', function () {
   });
 
   it('functions sugared to curves in graph', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -102,26 +103,28 @@ describe('Graph Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      let curve1 = components["/_graph1"].activeChildren[0];
-      let curve2 = components["/_graph1"].activeChildren[1];
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables();
+      let curve1Name = stateVariables["/_graph1"].activeChildren[0];
+      let curve2Name = stateVariables["/_graph1"].activeChildren[1];
 
-      expect(curve1.stateValues.fs[0](-2)).eq(4);
-      expect(curve1.stateValues.fs[0](3)).eq(9);
-      expect(curve2.stateValues.fs[0](-2)).eq(-8);
-      expect(curve2.stateValues.fs[0](3)).eq(27);
-      expect(curve1.stateValues.label).eq("");
-      expect(curve2.stateValues.label).eq("g");
-      expect(curve1.stateValues.styleNumber).eq(1);
-      expect(curve2.stateValues.styleNumber).eq(2);
+      let f1 = createFunctionFromDefinition(stateVariables[curve1Name].stateValues.fDefinitions[0]);
+      let f2 = createFunctionFromDefinition(stateVariables[curve2Name].stateValues.fDefinitions[0]);
+      expect(f1(-2)).eq(4);
+      expect(f1(3)).eq(9);
+      expect(f2(-2)).eq(-8);
+      expect(f2(3)).eq(27);
+      expect(stateVariables[curve1Name].stateValues.label).eq("");
+      expect(stateVariables[curve2Name].stateValues.label).eq("g");
+      expect(stateVariables[curve1Name].stateValues.styleNumber).eq(1);
+      expect(stateVariables[curve2Name].stateValues.styleNumber).eq(2);
 
     })
 
   });
 
   it('changing bounding box', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -149,12 +152,12 @@ describe('Graph Tag Tests', function () {
       cy.get('#\\/ymin').should('have.text', String(ymin));
       cy.get('#\\/ymax').should('have.text', String(ymax));
 
-      cy.window().then((win) => {
-        let components = Object.assign({}, win.state.components);
-        expect(components["/_graph1"].stateValues.xmin).eq(xmin);
-        expect(components["/_graph1"].stateValues.xmax).eq(xmax);
-        expect(components["/_graph1"].stateValues.ymin).eq(ymin);
-        expect(components["/_graph1"].stateValues.ymax).eq(ymax);
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables();
+        expect(stateVariables["/_graph1"].stateValues.xmin).eq(xmin);
+        expect(stateVariables["/_graph1"].stateValues.xmax).eq(xmax);
+        expect(stateVariables["/_graph1"].stateValues.ymin).eq(ymin);
+        expect(stateVariables["/_graph1"].stateValues.ymax).eq(ymax);
 
       })
 
@@ -275,7 +278,7 @@ describe('Graph Tag Tests', function () {
   });
 
   it('labels and positioning', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -326,7 +329,7 @@ describe('Graph Tag Tests', function () {
   });
 
   it('identical axis scales', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -345,25 +348,58 @@ describe('Graph Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
 
-    cy.get('#\\/xmin').should('have.text', '-10')
-    cy.get('#\\/xmax').should('have.text', '10')
-    cy.get('#\\/ymin').should('have.text', '-10')
-    cy.get('#\\/ymax').should('have.text', '10')
+    function checkLimits(xmin, xmax, ymin, ymax) {
+      cy.get('#\\/xmin').should('have.text', String(xmin));
+      cy.get('#\\/xmax').should('have.text', String(xmax));
+      cy.get('#\\/ymin').should('have.text', String(ymin));
+      cy.get('#\\/ymax').should('have.text', String(ymax));
 
-    cy.get('#\\/width textarea').type('{rightArrow}{backspace}4{enter}', { force: true });
-    cy.get('#\\/xmin').should('have.text', '-10')
-    cy.get('#\\/xmax').should('have.text', '10')
-    cy.get('#\\/ymin').should('have.text', '-5')
-    cy.get('#\\/ymax').should('have.text', '5')
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables();
+        expect(stateVariables["/g"].stateValues.xmin).eq(xmin);
+        expect(stateVariables["/g"].stateValues.xmax).eq(xmax);
+        expect(stateVariables["/g"].stateValues.ymin).eq(ymin);
+        expect(stateVariables["/g"].stateValues.ymax).eq(ymax);
 
-    cy.get('#\\/width textarea').type('{backspace}1{enter}', { force: true });
-    cy.get('#\\/xmin').should('have.text', '-10')
-    cy.get('#\\/xmax').should('have.text', '10')
-    cy.get('#\\/ymin').should('have.text', '-20')
-    cy.get('#\\/ymax').should('have.text', '20')
+      })
+
+    }
+
+    let xmin = -10, xmax = 10, ymin = -10, ymax = 10;
+
+    checkLimits(xmin, xmax, ymin, ymax)
+
+    cy.log('set width to 400')
+    cy.get('#\\/width textarea').type('{rightArrow}{backspace}4{enter}', { force: true }).then(() => {
+      ymin = -5;
+      ymax = 5;
+      checkLimits(xmin, xmax, ymin, ymax)
+    })
+
+    cy.log('set width to 100')
+    cy.get('#\\/width textarea').type('{backspace}1{enter}', { force: true }).then(() => {
+      ymin = -20;
+      ymax = 20;
+      checkLimits(xmin, xmax, ymin, ymax)
+    })
+
+    cy.log('set height to 400')
+    cy.get('#\\/height textarea').type('{rightarrow}{backspace}4{enter}', { force: true }).then(() => {
+      ymin = -40;
+      ymax = 40;
+      checkLimits(xmin, xmax, ymin, ymax)
+    })
+
+    cy.log('set height to 100')
+    cy.get('#\\/height textarea').type('{backspace}1{enter}', { force: true }).then(() => {
+      ymin = -10;
+      ymax = 10;
+      checkLimits(xmin, xmax, ymin, ymax)
+    })
+
 
     cy.log('xmin alone specified')
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>b</text>
@@ -380,28 +416,45 @@ describe('Graph Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'b') //wait for page to load
+    //wait for page to load
+    cy.get('#\\/_text1').should('have.text', 'b').then(() => {
+      xmin = -5;
+      xmax = 15;
+      ymin = -10;
+      ymax = 10;
+      checkLimits(xmin, xmax, ymin, ymax)
+    })
 
-    cy.get('#\\/xmin').should('have.text', '-5')
-    cy.get('#\\/xmax').should('have.text', '15')
-    cy.get('#\\/ymin').should('have.text', '-10')
-    cy.get('#\\/ymax').should('have.text', '10')
+    cy.log('set width to 400')
+    cy.get('#\\/width textarea').type('{rightArrow}{backspace}4{enter}', { force: true }).then(() => {
+      ymin = -5;
+      ymax = 5;
+      checkLimits(xmin, xmax, ymin, ymax)
+    })
 
-    cy.get('#\\/width textarea').type('{rightArrow}{backspace}4{enter}', { force: true });
-    cy.get('#\\/xmin').should('have.text', '-5')
-    cy.get('#\\/xmax').should('have.text', '15')
-    cy.get('#\\/ymin').should('have.text', '-5')
-    cy.get('#\\/ymax').should('have.text', '5')
+    cy.log('set width to 100')
+    cy.get('#\\/width textarea').type('{backspace}1{enter}', { force: true }).then(() => {
+      ymin = -20;
+      ymax = 20;
+      checkLimits(xmin, xmax, ymin, ymax)
+    })
 
-    cy.get('#\\/width textarea').type('{backspace}1{enter}', { force: true });
-    cy.get('#\\/xmin').should('have.text', '-5')
-    cy.get('#\\/xmax').should('have.text', '15')
-    cy.get('#\\/ymin').should('have.text', '-20')
-    cy.get('#\\/ymax').should('have.text', '20')
+    cy.log('set height to 400')
+    cy.get('#\\/height textarea').type('{rightarrow}{backspace}4{enter}', { force: true }).then(() => {
+      ymin = -40;
+      ymax = 40;
+      checkLimits(xmin, xmax, ymin, ymax)
+    })
 
+    cy.log('set height to 100')
+    cy.get('#\\/height textarea').type('{backspace}1{enter}', { force: true }).then(() => {
+      ymin = -10;
+      ymax = 10;
+      checkLimits(xmin, xmax, ymin, ymax)
+    })
 
     cy.log('xmax alone specified')
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>c</text>
@@ -418,29 +471,45 @@ describe('Graph Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'c') //wait for page to load
+    //wait for page to load
+    cy.get('#\\/_text1').should('have.text', 'c').then(() => {
+      xmin = -15;
+      xmax = 5;
+      ymin = -10;
+      ymax = 10;
+      checkLimits(xmin, xmax, ymin, ymax)
+    })
 
-    cy.get('#\\/xmin').should('have.text', '-15')
-    cy.get('#\\/xmax').should('have.text', '5')
-    cy.get('#\\/ymin').should('have.text', '-10')
-    cy.get('#\\/ymax').should('have.text', '10')
+    cy.log('set width to 400')
+    cy.get('#\\/width textarea').type('{rightArrow}{backspace}4{enter}', { force: true }).then(() => {
+      ymin = -5;
+      ymax = 5;
+      checkLimits(xmin, xmax, ymin, ymax)
+    })
 
-    cy.get('#\\/width textarea').type('{rightArrow}{backspace}4{enter}', { force: true });
-    cy.get('#\\/xmin').should('have.text', '-15')
-    cy.get('#\\/xmax').should('have.text', '5')
-    cy.get('#\\/ymin').should('have.text', '-5')
-    cy.get('#\\/ymax').should('have.text', '5')
+    cy.log('set width to 100')
+    cy.get('#\\/width textarea').type('{backspace}1{enter}', { force: true }).then(() => {
+      ymin = -20;
+      ymax = 20;
+      checkLimits(xmin, xmax, ymin, ymax)
+    })
 
-    cy.get('#\\/width textarea').type('{backspace}1{enter}', { force: true });
-    cy.get('#\\/xmin').should('have.text', '-15')
-    cy.get('#\\/xmax').should('have.text', '5')
-    cy.get('#\\/ymin').should('have.text', '-20')
-    cy.get('#\\/ymax').should('have.text', '20')
+    cy.log('set height to 400')
+    cy.get('#\\/height textarea').type('{rightarrow}{backspace}4{enter}', { force: true }).then(() => {
+      ymin = -40;
+      ymax = 40;
+      checkLimits(xmin, xmax, ymin, ymax)
+    })
 
-
+    cy.log('set height to 100')
+    cy.get('#\\/height textarea').type('{backspace}1{enter}', { force: true }).then(() => {
+      ymin = -10;
+      ymax = 10;
+      checkLimits(xmin, xmax, ymin, ymax)
+    })
 
     cy.log('ymin alone specified')
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>d</text>
@@ -457,29 +526,42 @@ describe('Graph Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'd') //wait for page to load
+    //wait for page to load
+    cy.get('#\\/_text1').should('have.text', 'd').then(() => {
+      xmin = -10;
+      xmax = 10;
+      ymin = -5;
+      ymax = 15;
+      checkLimits(xmin, xmax, ymin, ymax)
+    })
 
-    cy.get('#\\/xmin').should('have.text', '-10')
-    cy.get('#\\/xmax').should('have.text', '10')
-    cy.get('#\\/ymin').should('have.text', '-5')
-    cy.get('#\\/ymax').should('have.text', '15')
+    cy.log('set width to 400')
+    cy.get('#\\/width textarea').type('{rightArrow}{backspace}4{enter}', { force: true }).then(() => {
+      ymax = 5;
+      checkLimits(xmin, xmax, ymin, ymax)
+    })
 
-    cy.get('#\\/width textarea').type('{rightArrow}{backspace}4{enter}', { force: true });
-    cy.get('#\\/xmin').should('have.text', '-10')
-    cy.get('#\\/xmax').should('have.text', '10')
-    cy.get('#\\/ymin').should('have.text', '-5')
-    cy.get('#\\/ymax').should('have.text', '5')
+    cy.log('set width to 100')
+    cy.get('#\\/width textarea').type('{backspace}1{enter}', { force: true }).then(() => {
+      ymax = 35;
+      checkLimits(xmin, xmax, ymin, ymax)
+    })
 
-    cy.get('#\\/width textarea').type('{backspace}1{enter}', { force: true });
-    cy.get('#\\/xmin').should('have.text', '-10')
-    cy.get('#\\/xmax').should('have.text', '10')
-    cy.get('#\\/ymin').should('have.text', '-5')
-    cy.get('#\\/ymax').should('have.text', '35')
+    cy.log('set height to 400')
+    cy.get('#\\/height textarea').type('{rightarrow}{backspace}4{enter}', { force: true }).then(() => {
+      ymax = 75;
+      checkLimits(xmin, xmax, ymin, ymax)
+    })
 
+    cy.log('set height to 100')
+    cy.get('#\\/height textarea').type('{backspace}1{enter}', { force: true }).then(() => {
+      ymax = 15;
+      checkLimits(xmin, xmax, ymin, ymax)
+    })
 
 
     cy.log('ymax alone specified')
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>e</text>
@@ -496,29 +578,42 @@ describe('Graph Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'e') //wait for page to load
+    //wait for page to load
+    cy.get('#\\/_text1').should('have.text', 'e').then(() => {
+      xmin = -10;
+      xmax = 10;
+      ymin = -15;
+      ymax = 5;
+      checkLimits(xmin, xmax, ymin, ymax)
+    })
 
-    cy.get('#\\/xmin').should('have.text', '-10')
-    cy.get('#\\/xmax').should('have.text', '10')
-    cy.get('#\\/ymin').should('have.text', '-15')
-    cy.get('#\\/ymax').should('have.text', '5')
+    cy.log('set width to 400')
+    cy.get('#\\/width textarea').type('{rightArrow}{backspace}4{enter}', { force: true }).then(() => {
+      ymin = -5;
+      checkLimits(xmin, xmax, ymin, ymax)
+    })
 
-    cy.get('#\\/width textarea').type('{rightArrow}{backspace}4{enter}', { force: true });
-    cy.get('#\\/xmin').should('have.text', '-10')
-    cy.get('#\\/xmax').should('have.text', '10')
-    cy.get('#\\/ymin').should('have.text', '-5')
-    cy.get('#\\/ymax').should('have.text', '5')
+    cy.log('set width to 100')
+    cy.get('#\\/width textarea').type('{backspace}1{enter}', { force: true }).then(() => {
+      ymin = -35;
+      checkLimits(xmin, xmax, ymin, ymax)
+    })
 
-    cy.get('#\\/width textarea').type('{backspace}1{enter}', { force: true });
-    cy.get('#\\/xmin').should('have.text', '-10')
-    cy.get('#\\/xmax').should('have.text', '10')
-    cy.get('#\\/ymin').should('have.text', '-35')
-    cy.get('#\\/ymax').should('have.text', '5')
+    cy.log('set height to 400')
+    cy.get('#\\/height textarea').type('{rightarrow}{backspace}4{enter}', { force: true }).then(() => {
+      ymin = -75;
+      checkLimits(xmin, xmax, ymin, ymax)
+    })
 
+    cy.log('set height to 100')
+    cy.get('#\\/height textarea').type('{backspace}1{enter}', { force: true }).then(() => {
+      ymin = -15;
+      checkLimits(xmin, xmax, ymin, ymax)
+    })
 
 
     cy.log('xmin and xmax specified')
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>f</text>
@@ -535,29 +630,47 @@ describe('Graph Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'f') //wait for page to load
+    //wait for page to load
+    cy.get('#\\/_text1').should('have.text', 'f').then(() => {
+      xmin = -20;
+      xmax = 40;
+      ymin = -30;
+      ymax = 30;
+      checkLimits(xmin, xmax, ymin, ymax)
+    })
 
-    cy.get('#\\/xmin').should('have.text', '-20')
-    cy.get('#\\/xmax').should('have.text', '40')
-    cy.get('#\\/ymin').should('have.text', '-30')
-    cy.get('#\\/ymax').should('have.text', '30')
+    cy.log('set width to 400')
+    cy.get('#\\/width textarea').type('{rightArrow}{backspace}4{enter}', { force: true }).then(() => {
+      ymin = -15;
+      ymax = 15;
+      checkLimits(xmin, xmax, ymin, ymax)
+    })
 
-    cy.get('#\\/width textarea').type('{rightArrow}{backspace}4{enter}', { force: true });
-    cy.get('#\\/xmin').should('have.text', '-20')
-    cy.get('#\\/xmax').should('have.text', '40')
-    cy.get('#\\/ymin').should('have.text', '-15')
-    cy.get('#\\/ymax').should('have.text', '15')
+    cy.log('set width to 100')
+    cy.get('#\\/width textarea').type('{backspace}1{enter}', { force: true }).then(() => {
+      ymin = -60;
+      ymax = 60;
+      checkLimits(xmin, xmax, ymin, ymax)
+    })
 
-    cy.get('#\\/width textarea').type('{backspace}1{enter}', { force: true });
-    cy.get('#\\/xmin').should('have.text', '-20')
-    cy.get('#\\/xmax').should('have.text', '40')
-    cy.get('#\\/ymin').should('have.text', '-60')
-    cy.get('#\\/ymax').should('have.text', '60')
+    cy.log('set height to 400')
+    cy.get('#\\/height textarea').type('{rightarrow}{backspace}4{enter}', { force: true }).then(() => {
+      ymin = -120;
+      ymax = 120;
+      checkLimits(xmin, xmax, ymin, ymax)
+    })
+
+    cy.log('set height to 100')
+    cy.get('#\\/height textarea').type('{backspace}1{enter}', { force: true }).then(() => {
+      ymin = -30;
+      ymax = 30;
+      checkLimits(xmin, xmax, ymin, ymax)
+    })
 
 
 
     cy.log('ymin and ymax specified')
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>g</text>
@@ -574,30 +687,47 @@ describe('Graph Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'g') //wait for page to load
+    //wait for page to load
+    cy.get('#\\/_text1').should('have.text', 'g').then(() => {
+      xmin = -30;
+      xmax = 30;
+      ymin = -20;
+      ymax = 40;
+      checkLimits(xmin, xmax, ymin, ymax)
+    })
 
-    cy.get('#\\/xmin').should('have.text', '-30')
-    cy.get('#\\/xmax').should('have.text', '30')
-    cy.get('#\\/ymin').should('have.text', '-20')
-    cy.get('#\\/ymax').should('have.text', '40')
+    cy.log('set width to 400')
+    cy.get('#\\/width textarea').type('{rightArrow}{backspace}4{enter}', { force: true }).then(() => {
+      xmin = -60;
+      xmax = 60;
+      checkLimits(xmin, xmax, ymin, ymax)
+    })
 
-    cy.get('#\\/width textarea').type('{rightArrow}{backspace}4{enter}', { force: true });
-    cy.get('#\\/xmin').should('have.text', '-60')
-    cy.get('#\\/xmax').should('have.text', '60')
-    cy.get('#\\/ymin').should('have.text', '-20')
-    cy.get('#\\/ymax').should('have.text', '40')
+    cy.log('set width to 100')
+    cy.get('#\\/width textarea').type('{backspace}1{enter}', { force: true }).then(() => {
+      xmin = -15;
+      xmax = 15;
+      checkLimits(xmin, xmax, ymin, ymax)
+    })
 
-    cy.get('#\\/width textarea').type('{backspace}1{enter}', { force: true });
-    cy.get('#\\/xmin').should('have.text', '-15')
-    cy.get('#\\/xmax').should('have.text', '15')
-    cy.get('#\\/ymin').should('have.text', '-20')
-    cy.get('#\\/ymax').should('have.text', '40')
+    cy.log('set height to 400')
+    cy.get('#\\/height textarea').type('{rightarrow}{backspace}4{enter}', { force: true }).then(() => {
+      xmin = -7.5;
+      xmax = 7.5;
+      checkLimits(xmin, xmax, ymin, ymax)
+    })
 
+    cy.log('set height to 100')
+    cy.get('#\\/height textarea').type('{backspace}1{enter}', { force: true }).then(() => {
+      xmin = -30;
+      xmax = 30;
+      checkLimits(xmin, xmax, ymin, ymax)
+    })
 
 
 
     cy.log('xmin, xmax, ymin and ymax specified')
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>h</text>
@@ -614,29 +744,44 @@ describe('Graph Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'h') //wait for page to load
+    //wait for page to load
+    cy.get('#\\/_text1').should('have.text', 'h').then(() => {
+      xmin = -50;
+      xmax = 30;
+      ymin = -20;
+      ymax = 60;
+      checkLimits(xmin, xmax, ymin, ymax)
+    })
 
-    cy.get('#\\/xmin').should('have.text', '-50')
-    cy.get('#\\/xmax').should('have.text', '30')
-    cy.get('#\\/ymin').should('have.text', '-20')
-    cy.get('#\\/ymax').should('have.text', '60')
+    cy.log('set width to 400')
+    cy.get('#\\/width textarea').type('{rightArrow}{backspace}4{enter}', { force: true }).then(() => {
+      xmax = 70;
+      ymax = 40;
+      checkLimits(xmin, xmax, ymin, ymax)
+    })
 
-    cy.get('#\\/width textarea').type('{rightArrow}{backspace}4{enter}', { force: true });
-    cy.get('#\\/xmin').should('have.text', '-50')
-    cy.get('#\\/xmax').should('have.text', '70')
-    cy.get('#\\/ymin').should('have.text', '-20')
-    cy.get('#\\/ymax').should('have.text', '40')
+    cy.log('set width to 100')
+    cy.get('#\\/width textarea').type('{backspace}1{enter}', { force: true }).then(() => {
+      xmax = 30;
+      ymax = 140;
+      checkLimits(xmin, xmax, ymin, ymax)
+    })
 
-    cy.get('#\\/width textarea').type('{backspace}1{enter}', { force: true });
-    cy.get('#\\/xmin').should('have.text', '-50')
-    cy.get('#\\/xmax').should('have.text', '30')
-    cy.get('#\\/ymin').should('have.text', '-20')
-    cy.get('#\\/ymax').should('have.text', '140')
+    cy.log('set height to 400')
+    cy.get('#\\/height textarea').type('{rightarrow}{backspace}4{enter}', { force: true }).then(() => {
+      ymax = 300;
+      checkLimits(xmin, xmax, ymin, ymax)
+    })
 
+    cy.log('set height to 100')
+    cy.get('#\\/height textarea').type('{backspace}1{enter}', { force: true }).then(() => {
+      ymax = 60;
+      checkLimits(xmin, xmax, ymin, ymax)
+    })
 
 
     cy.log('leave out xmin')
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>i</text>
@@ -653,29 +798,42 @@ describe('Graph Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'i') //wait for page to load
+    //wait for page to load
+    cy.get('#\\/_text1').should('have.text', 'i').then(() => {
+      xmin = -30;
+      xmax = 30;
+      ymin = -20;
+      ymax = 40;
+      checkLimits(xmin, xmax, ymin, ymax)
+    })
 
-    cy.get('#\\/xmin').should('have.text', '-30')
-    cy.get('#\\/xmax').should('have.text', '30')
-    cy.get('#\\/ymin').should('have.text', '-20')
-    cy.get('#\\/ymax').should('have.text', '40')
+    cy.log('set width to 400')
+    cy.get('#\\/width textarea').type('{rightArrow}{backspace}4{enter}', { force: true }).then(() => {
+      xmin = -90;
+      checkLimits(xmin, xmax, ymin, ymax)
+    })
 
-    cy.get('#\\/width textarea').type('{rightArrow}{backspace}4{enter}', { force: true });
-    cy.get('#\\/xmin').should('have.text', '-90')
-    cy.get('#\\/xmax').should('have.text', '30')
-    cy.get('#\\/ymin').should('have.text', '-20')
-    cy.get('#\\/ymax').should('have.text', '40')
+    cy.log('set width to 100')
+    cy.get('#\\/width textarea').type('{backspace}1{enter}', { force: true }).then(() => {
+      xmin = 0;
+      checkLimits(xmin, xmax, ymin, ymax)
+    })
 
-    cy.get('#\\/width textarea').type('{backspace}1{enter}', { force: true });
-    cy.get('#\\/xmin').should('have.text', '0')
-    cy.get('#\\/xmax').should('have.text', '30')
-    cy.get('#\\/ymin').should('have.text', '-20')
-    cy.get('#\\/ymax').should('have.text', '40')
+    cy.log('set height to 400')
+    cy.get('#\\/height textarea').type('{rightarrow}{backspace}4{enter}', { force: true }).then(() => {
+      xmin = 15;
+      checkLimits(xmin, xmax, ymin, ymax)
+    })
 
+    cy.log('set height to 100')
+    cy.get('#\\/height textarea').type('{backspace}1{enter}', { force: true }).then(() => {
+      xmin = -30;
+      checkLimits(xmin, xmax, ymin, ymax)
+    })
 
 
     cy.log('leave out xmax')
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>j</text>
@@ -692,29 +850,43 @@ describe('Graph Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'j') //wait for page to load
+    //wait for page to load
+    cy.get('#\\/_text1').should('have.text', 'j').then(() => {
+      xmin = -30;
+      xmax = 30;
+      ymin = -20;
+      ymax = 40;
+      checkLimits(xmin, xmax, ymin, ymax)
+    })
 
-    cy.get('#\\/xmin').should('have.text', '-30')
-    cy.get('#\\/xmax').should('have.text', '30')
-    cy.get('#\\/ymin').should('have.text', '-20')
-    cy.get('#\\/ymax').should('have.text', '40')
+    cy.log('set width to 400')
+    cy.get('#\\/width textarea').type('{rightArrow}{backspace}4{enter}', { force: true }).then(() => {
+      xmax = 90;
+      checkLimits(xmin, xmax, ymin, ymax)
+    })
 
-    cy.get('#\\/width textarea').type('{rightArrow}{backspace}4{enter}', { force: true });
-    cy.get('#\\/xmin').should('have.text', '-30')
-    cy.get('#\\/xmax').should('have.text', '90')
-    cy.get('#\\/ymin').should('have.text', '-20')
-    cy.get('#\\/ymax').should('have.text', '40')
+    cy.log('set width to 100')
+    cy.get('#\\/width textarea').type('{backspace}1{enter}', { force: true }).then(() => {
+      xmax = 0;
+      checkLimits(xmin, xmax, ymin, ymax)
+    })
 
-    cy.get('#\\/width textarea').type('{backspace}1{enter}', { force: true });
-    cy.get('#\\/xmin').should('have.text', '-30')
-    cy.get('#\\/xmax').should('have.text', '0')
-    cy.get('#\\/ymin').should('have.text', '-20')
-    cy.get('#\\/ymax').should('have.text', '40')
+    cy.log('set height to 400')
+    cy.get('#\\/height textarea').type('{rightarrow}{backspace}4{enter}', { force: true }).then(() => {
+      xmax = -15;
+      checkLimits(xmin, xmax, ymin, ymax)
+    })
+
+    cy.log('set height to 100')
+    cy.get('#\\/height textarea').type('{backspace}1{enter}', { force: true }).then(() => {
+      xmax = 30;
+      checkLimits(xmin, xmax, ymin, ymax)
+    })
 
 
 
     cy.log('leave out ymin')
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>k</text>
@@ -731,29 +903,43 @@ describe('Graph Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'k') //wait for page to load
+    //wait for page to load
+    cy.get('#\\/_text1').should('have.text', 'k').then(() => {
+      xmin = -50;
+      xmax = 30;
+      ymin = -40;
+      ymax = 40;
+      checkLimits(xmin, xmax, ymin, ymax)
+    })
 
-    cy.get('#\\/xmin').should('have.text', '-50')
-    cy.get('#\\/xmax').should('have.text', '30')
-    cy.get('#\\/ymin').should('have.text', '-40')
-    cy.get('#\\/ymax').should('have.text', '40')
+    cy.log('set width to 400')
+    cy.get('#\\/width textarea').type('{rightArrow}{backspace}4{enter}', { force: true }).then(() => {
+      ymin = 0;
+      checkLimits(xmin, xmax, ymin, ymax)
+    })
 
-    cy.get('#\\/width textarea').type('{rightArrow}{backspace}4{enter}', { force: true });
-    cy.get('#\\/xmin').should('have.text', '-50')
-    cy.get('#\\/xmax').should('have.text', '30')
-    cy.get('#\\/ymin').should('have.text', '0')
-    cy.get('#\\/ymax').should('have.text', '40')
+    cy.log('set width to 100')
+    cy.get('#\\/width textarea').type('{backspace}1{enter}', { force: true }).then(() => {
+      ymin = -120;
+      checkLimits(xmin, xmax, ymin, ymax)
+    })
 
-    cy.get('#\\/width textarea').type('{backspace}1{enter}', { force: true });
-    cy.get('#\\/xmin').should('have.text', '-50')
-    cy.get('#\\/xmax').should('have.text', '30')
-    cy.get('#\\/ymin').should('have.text', '-120')
-    cy.get('#\\/ymax').should('have.text', '40')
+    cy.log('set height to 400')
+    cy.get('#\\/height textarea').type('{rightarrow}{backspace}4{enter}', { force: true }).then(() => {
+      ymin = -280;
+      checkLimits(xmin, xmax, ymin, ymax)
+    })
+
+    cy.log('set height to 100')
+    cy.get('#\\/height textarea').type('{backspace}1{enter}', { force: true }).then(() => {
+      ymin = -40;
+      checkLimits(xmin, xmax, ymin, ymax)
+    })
 
 
 
     cy.log('leave out ymax')
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>l</text>
@@ -770,30 +956,44 @@ describe('Graph Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text', 'l') //wait for page to load
+    //wait for page to load
+    cy.get('#\\/_text1').should('have.text', 'l').then(() => {
+      xmin = -50;
+      xmax = 30;
+      ymin = -40;
+      ymax = 40;
+      checkLimits(xmin, xmax, ymin, ymax)
+    })
 
-    cy.get('#\\/xmin').should('have.text', '-50')
-    cy.get('#\\/xmax').should('have.text', '30')
-    cy.get('#\\/ymin').should('have.text', '-40')
-    cy.get('#\\/ymax').should('have.text', '40')
+    cy.log('set width to 400')
+    cy.get('#\\/width textarea').type('{rightArrow}{backspace}4{enter}', { force: true }).then(() => {
+      ymax = 0;
+      checkLimits(xmin, xmax, ymin, ymax)
+    })
 
-    cy.get('#\\/width textarea').type('{rightArrow}{backspace}4{enter}', { force: true });
-    cy.get('#\\/xmin').should('have.text', '-50')
-    cy.get('#\\/xmax').should('have.text', '30')
-    cy.get('#\\/ymin').should('have.text', '-40')
-    cy.get('#\\/ymax').should('have.text', '0')
+    cy.log('set width to 100')
+    cy.get('#\\/width textarea').type('{backspace}1{enter}', { force: true }).then(() => {
+      ymax = 120;
+      checkLimits(xmin, xmax, ymin, ymax)
+    })
 
-    cy.get('#\\/width textarea').type('{backspace}1{enter}', { force: true });
-    cy.get('#\\/xmin').should('have.text', '-50')
-    cy.get('#\\/xmax').should('have.text', '30')
-    cy.get('#\\/ymin').should('have.text', '-40')
-    cy.get('#\\/ymax').should('have.text', '120')
+    cy.log('set height to 400')
+    cy.get('#\\/height textarea').type('{rightarrow}{backspace}4{enter}', { force: true }).then(() => {
+      ymax = 280;
+      checkLimits(xmin, xmax, ymin, ymax)
+    })
+
+    cy.log('set height to 100')
+    cy.get('#\\/height textarea').type('{backspace}1{enter}', { force: true }).then(() => {
+      ymax = 40;
+      checkLimits(xmin, xmax, ymin, ymax)
+    })
 
 
   });
 
   it('show grid', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -871,13 +1071,14 @@ describe('Graph Tag Tests', function () {
 
   // check for bug in placeholder adapter
   it('graph with label as submitted response, componentType specified', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
     <graph xlabel="$(x{prop='submittedResponse' componentType='math'})" ylabel="y" />
 
     <answer name="x">x</answer>
+    <copy prop="submittedResponse" target="x" assignNames="sr" />
     
     `}, "*");
     });
@@ -888,16 +1089,20 @@ describe('Graph Tag Tests', function () {
     // but main thing is that don't have an error
 
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components["/_graph1"].stateValues.xlabel).eq('\uff3f');
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables();
+      expect(stateVariables["/_graph1"].stateValues.xlabel).eq('\uff3f');
 
-      let mathinputName = components['/x'].stateValues.inputChildren[0].componentName
+      let mathinputName = stateVariables['/x'].stateValues.inputChildren[0].componentName
       let mathinputAnchor = cesc('#' + mathinputName) + " textarea";
 
 
-      cy.get(mathinputAnchor).type("x{enter}", { force: true }).then(() => {
-        expect(components["/_graph1"].stateValues.xlabel).eq('x');
+      cy.get(mathinputAnchor).type("x{enter}", { force: true });
+
+      cy.get('#\\/sr .mjx-mrow').should('contain.text', 'x')
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables();
+        expect(stateVariables["/_graph1"].stateValues.xlabel).eq('x');
       });
 
 

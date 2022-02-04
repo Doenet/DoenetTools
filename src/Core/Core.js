@@ -90,6 +90,7 @@ async function returnAllStateVariables(core) {
     for (let vName in component.state) {
       compObj.stateValues[vName] = preprocessForPostMessage(await component.state[vName].value);
     }
+    compObj.activeChildren = component.activeChildren.map(x => x.componentName ? x.componentName : x)
   }
   return componentsObj;
 }
