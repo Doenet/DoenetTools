@@ -101,7 +101,7 @@ const DriveCardWrapper = (props) => {
     return [heights, driveCardItems];
   }, [columns, showCards, width]);
 
-  console.log('>>> driveInfo', driveInfo);
+  console.log('>>> driveInfo', driveCardItems);
 
   const transitions = useTransition(driveCardItems, {
     key: (item) => item.driveId,
@@ -240,11 +240,8 @@ const DriveCardWrapper = (props) => {
         className="driveCardList"
         style={{ height: Math.max(...heights) }}
       >
-        {transitions((style, item, t, index) => {
-          console.log('');
-          let isSelected = getSelectedCard(item);
-          return (
-            <a.div style={style} >
+        {driveCardItems.map((style, item, t, index) => {
+            <a.div style={style}>
               <div
                 role="button"
                 style={{ height: '100%', outline: 'none' }}
@@ -270,17 +267,15 @@ const DriveCardWrapper = (props) => {
                     },
                   });
                 }}>
-          
                 <DriveCard
                   image={item.image}
                   color={item.color}
                   label={item.label}
-                  isSelected={isSelected}
+                  isSelected={getSelectedCard(item)}
                   role={item.role}
                 />
               </div>
             </a.div>
-          );
         })}
       </div>
     </div>
