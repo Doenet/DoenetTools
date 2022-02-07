@@ -85,7 +85,9 @@ export default function MainPanel({ headerControls, children, setMenusOpen, open
       {controls}
       </ControlsWrapper>
       <ContentWrapper onClick={mpOnClick}>
-      <Banner></Banner>
+      {/* <Banner></Banner>  */}
+      {/* Uncomment the line above to show banner on the main panel. Change the color of banner
+      using type={'TYPENAME'}. The types can be found in Banner.jsx. */}
         {contents}
       </ContentWrapper>
     </>
