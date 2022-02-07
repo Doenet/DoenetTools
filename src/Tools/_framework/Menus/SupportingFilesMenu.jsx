@@ -1,10 +1,12 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useState, useRef } from 'react';
 import { useDropzone } from 'react-dropzone';
 import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
 // import parse from 'csv-parse';
 import {
   useSetRecoilState,
   useRecoilValue,
+  atomFamily,
+  selectorFamily
 } from 'recoil';
 import ButtonGroup from '../../../_reactComponents/PanelHeaderComponents/ButtonGroup';
 import CollapseSection from '../../../_reactComponents/PanelHeaderComponents/CollapseSection';
@@ -21,16 +23,39 @@ function bytesToSize(bytes) {
   return Math.round(bytes / Math.pow(1024, i), 2) + ' ' + sizes[i];
 }
 
-export default function SupprtingFilesMenu(props){
+const supportingFilesAndPermissionByDoenetIdAtom = atomFamily({
+  key: 'supportingFilesAndPermissionByDoenetId',
+  default: selectorFamily({
+    key: 'supportingFilesAndPermissionByDoenetId/Default',
+    get: (doenetId) => async () => {
+      let { data } = await axios.get('/api/loadSupprtingFileInfo.php', {params:{doenetId}})
+      console.log("data",data)
+      let {canUpload,supportingFiles,userQuotaBytesAvailable} = data;
+      return {canUpload,supportingFiles,userQuotaBytesAvailable};
+    },
+  }),
+});
+
+const supportingFilesAndPermissionByDoenetIdSelector = selectorFamily({
+  get:
+    (doenetId) =>
+    ({ get }) => {
+      return get(supportingFilesAndPermissionByDoenetIdAtom(doenetId));
+    },
+});
+
+export default function SupportingFilesMenu(props){
   const addToast = useToast();
   const doenetId = useRecoilValue(searchParamAtomFamily('doenetId'));
-  // let [imageSrc,setImageSrc] = useState(null);
-  let userQuotaBytesAvailable = 1073741824; //1 GB in bytes
-  // let userQuotaBytesAvailable = 100024; //TEST
+  const { canUpload, userQuotaBytesAvailable, supportingFiles} = useRecoilValue(supportingFilesAndPermissionByDoenetIdSelector(doenetId));
+  console.log("supportingFiles",supportingFiles)
+  // let userQuotaBytesAvailable = 1073741824; //1 GB in bytes
+  // let userQuotaBytesAvailable = supportingFiles.userQuotaBytesAvailable
   let typesAllowed = ["text/csv","image/jpeg"]
+  let [uploadProgress,setUploadProgress] = useState([]); // {fileName,size,progressPercent}
+  let numberOfFilesUploading = useRef(0);
 
   const onDrop = useCallback((files) => {
-    // console.log("files",files)
     let success = true;
     let sizeOfUpload = 0;
     files.map(file=>{
@@ -46,13 +71,25 @@ export default function SupprtingFilesMenu(props){
       addToast(`Upload size ${uploadText} exceeds quota by ${overage}. No files uploaded.`, toastType.ERROR);
       success = false;
     }
+    //Only upload one batch at a time
+    if (numberOfFilesUploading.current > 0){
+      addToast(`Already uploading files.  Please wait before sending more.`, toastType.ERROR);
+      success = false;
+    }
     //If file sizes are over quota or any files aren't right type then abort
     if (!success){ return; }
-  
+
+    numberOfFilesUploading.current = files.length;
+    
+    files.map((file)=>{
+      let initialFileInfo = {fileName:file.name,size:file.size,progressPercent:0}
+      setUploadProgress((was)=>[...was,initialFileInfo])
+    })
+
 
     //Upload files
     files.map((file,fileIndex)=>{
-      console.log('file',file)
+      // console.log('file',file)
       //TODO: Show loading  image
         const reader = new FileReader();
         reader.readAsDataURL(file);  //This one could be used with image source to preview image
@@ -63,68 +100,69 @@ export default function SupprtingFilesMenu(props){
       reader.onload = () => {
         // let contentId = getSHAofContent(reader.result);
         // console.log("contentId",contentId);
-        // console.log("reader.result",reader.result)
-        // let contentData = reader.result.split(',')[1];
-        let contentData = reader.result;
-        // setImageSrc(imageData)
-        // setImageSrc(reader.result)
+
         const uploadData = new FormData();
         uploadData.append('file',file);
         uploadData.append('doenetId',doenetId);
-        // uploadData.set('thing','mytest');
-        // let doenetId = 'need!';
-        // uploadData.append('contents',reader.result);
-        // axios.post('/api/upload.php',uploadData,{onUploadProgress: (progressEvent)=>{
-
-        // let uploadData = {
-        //   type:file.type,
-        //   content:contentData,
-        //   // content:reader.result,
-        //   doenetId,
-        //   size:file.size,
-        // }
+  
           axios.post('/api/upload.php',uploadData,{onUploadProgress: (progressEvent)=>{
         const totalLength = progressEvent.lengthComputable ? progressEvent.total : progressEvent.target.getResponseHeader('content-length') || progressEvent.target.getResponseHeader('x-decompressed-content-length');
-            // console.log("onUploadProgress",file.name,fileIndex, totalLength);
             if (totalLength !== null) {
                 // this.updateProgressBarValue(Math.round( (progressEvent.loaded * 100) / totalLength ));
-            console.log("updateProgressBarValue",file.name,fileIndex, Math.round( (progressEvent.loaded * 100) / totalLength ));
+            // console.log("updateProgressBarValue",file.name,fileIndex, Math.round( (progressEvent.loaded * 100) / totalLength ));
+            let progressPercent = Math.round( (progressEvent.loaded * 100) / totalLength );
+            setUploadProgress((was)=>{
+              let newArray = [...was];
+              newArray[fileIndex].progressPercent = progressPercent;
+              return newArray;
+            })
             }
       }}).then(({data})=>{
         // console.log("data",file.name,fileIndex,data)
         console.log("RESPONSE data>",data)
+
+        //test if all uploads are finished then clear it out
+        numberOfFilesUploading.current = numberOfFilesUploading.current - 1;
+        if (numberOfFilesUploading.current < 1){setUploadProgress([])}
       })
       };
       
-
-      
-
     })
 
-    
-
-
-    
   }, []);
   const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
 
+  let uploadProgressJSX = uploadProgress.map((info)=>{
+    return <div>{info.fileName} - {info.progressPercent}%</div>
+  })
 
-  return <div style={props.style}>
+  let uploadingSection = null;
+
+  if (canUpload){
+    uploadingSection = <>
     <div key="drop" {...getRootProps()}>
-        <input {...getInputProps()} />
-        {isDragActive ? (
-          <p>Drop the files here</p>
-        ) : (
-          <ButtonGroup vertical>
-            <Button width="menu" value="Upload files"></Button>
-          </ButtonGroup>
-        )}
-      </div>
-      <CollapseSection title="Accepted File Types" collapsed={true} >
-        <div><b>Image</b>.jpg .jpeg</div>
-        <div><b>Data</b>.csv</div>
-        {/* <div><b>Audio</b></div> */}
-      </CollapseSection>
+    <input {...getInputProps()} />
+    {isDragActive ? (
+      <p>Drop the files here</p>
+    ) : (
+      <ButtonGroup vertical>
+        <Button width="menu" value="Upload files"></Button>
+      </ButtonGroup>
+    )}
+    </div>
+    <CollapseSection title="Accepted File Types" collapsed={true} >
+      <div><b>Image</b>.jpg .jpeg</div>
+      <div><b>Data</b>.csv</div>
+      {/* <div><b>Audio</b></div> */}
+    </CollapseSection>
+    {uploadProgressJSX}
+    </>
+  }
+  
+
+  return <div>
+    {uploadingSection}
+      
       <br />
       {/* <img src={imageSrc} width={100}/> */}
       
