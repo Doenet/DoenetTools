@@ -60,21 +60,19 @@ move_uploaded_file($tmp_name, $destination);
 
 $sql = "
 INSERT INTO support_files 
-(userId,fileName,contentId,doenetId,sizeInBytes,timestamp)
+(userId,fileName,contentId,doenetId,fileType,sizeInBytes,timestamp)
 VALUES
-('$userId','$newFileName','$contentId','$doenetId','$size',NOW())
+('$userId','$newFileName','$contentId','$doenetId','$type','$size',NOW())
 ";
 $result = $conn->query($sql);
 // echo $sql;
 
 
 
-
-
 // set response code - 200 OK
 http_response_code(200);
 
-$response_arr = array("success" => $success,"file" => $file);
+$response_arr = array("success" => $success);
 
 // make it json format
 echo json_encode($response_arr);
