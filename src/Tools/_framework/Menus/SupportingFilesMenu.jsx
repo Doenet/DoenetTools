@@ -34,9 +34,9 @@ const supportingFilesAndPermissionByDoenetIdAtom = atomFamily({
     key: 'supportingFilesAndPermissionByDoenetId/Default',
     get: (doenetId) => async () => {
       let { data } = await axios.get('/api/loadSupprtingFileInfo.php', {params:{doenetId}})
-      console.log("data",data)
-      let {canUpload,supportingFiles,userQuotaBytesAvailable} = data;
-      return {canUpload,supportingFiles,userQuotaBytesAvailable};
+      // console.log("data",data)
+      // let {canUpload,supportingFiles,userQuotaBytesAvailable, quotaBytes} = data;
+      return data;
     },
   }),
 });
@@ -57,7 +57,7 @@ const supportingFilesAndPermissionByDoenetIdSelector = selectorFamily({
 export default function SupportingFilesMenu(props){
   const addToast = useToast();
   const doenetId = useRecoilValue(searchParamAtomFamily('doenetId'));
-  const [{ canUpload, userQuotaBytesAvailable, supportingFiles},setSupportFileInfo] = useRecoilState(supportingFilesAndPermissionByDoenetIdSelector(doenetId));
+  const [{ canUpload, userQuotaBytesAvailable, supportingFiles, quotaBytes},setSupportFileInfo] = useRecoilState(supportingFilesAndPermissionByDoenetIdSelector(doenetId));
   // const { canUpload, userQuotaBytesAvailable, supportingFiles} = useRecoilValue(supportingFilesAndPermissionByDoenetIdSelector(doenetId));
   console.log("supportingFiles",{ canUpload, userQuotaBytesAvailable, supportingFiles})
   // let userQuotaBytesAvailable = 1073741824; //1 GB in bytes
@@ -166,7 +166,7 @@ export default function SupportingFilesMenu(props){
 
   if (canUpload){
     uploadingSection = <>
-    <div>Bytes Available {userQuotaBytesAvailable}</div>
+    <div>{userQuotaBytesAvailable}/{quotaBytes} Bytes</div>
     <div key="drop" {...getRootProps()}>
     <input {...getInputProps()} />
     {isDragActive ? (
@@ -217,8 +217,5 @@ export default function SupportingFilesMenu(props){
       <br />
       {supportFilesJSX}
       {/* <img src={imageSrc} width={100}/> */}
-      
-      
-
   </div>
 }

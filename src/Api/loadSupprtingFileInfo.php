@@ -16,7 +16,7 @@ $doenetId = mysqli_real_escape_string($conn,$_REQUEST["doenetId"]);
 $success = true;
 $supportingFiles = [];
 $canUpload = FALSE;
-$userQuotaBytesAvailable = 1073741824; // 1 GB QUOTA
+$quotaBytes = 1073741824; // 1 GB QUOTA
 
 //TODO: Test if user has permission and space to see file info
 
@@ -29,7 +29,7 @@ AND userId='$userId'
 ";
 $result = $conn->query($sql);
 $row = $result->fetch_assoc();
-$userQuotaBytesAvailable - $row['totalBytes'];
+$userQuotaBytesAvailable = $quotaBytes - $row['totalBytes'];
 
 $sql = "
 SELECT du.canUpload 
@@ -71,6 +71,7 @@ $response_arr = array(
   "supportingFiles" => $supportingFiles,
   "canUpload" => $canUpload,
   "userQuotaBytesAvailable" => $userQuotaBytesAvailable,
+  "quotaBytes" => $quotaBytes,
 );
 
 // make it json format
