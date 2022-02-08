@@ -6,7 +6,8 @@ import {
   useSetRecoilState,
   useRecoilValue,
   atomFamily,
-  selectorFamily
+  selectorFamily,
+  useRecoilState
 } from 'recoil';
 import ButtonGroup from '../../../_reactComponents/PanelHeaderComponents/ButtonGroup';
 import CollapseSection from '../../../_reactComponents/PanelHeaderComponents/CollapseSection';
@@ -14,7 +15,11 @@ import { useToast, toastType }  from '../Toast';
 import axios from 'axios';
 import { getSHAofContent } from '../ToolHandlers/CourseToolHandler';
 import { searchParamAtomFamily } from '../NewToolRoot';
-
+import { CopyToClipboard } from 'react-copy-to-clipboard';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { 
+  faClipboard
+ } from '@fortawesome/free-regular-svg-icons';
 
 function bytesToSize(bytes) {
   var sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
@@ -42,13 +47,19 @@ const supportingFilesAndPermissionByDoenetIdSelector = selectorFamily({
     ({ get }) => {
       return get(supportingFilesAndPermissionByDoenetIdAtom(doenetId));
     },
+  set:
+    (doenetId) =>
+    ({set},newValue) => {
+      set(supportingFilesAndPermissionByDoenetIdAtom(doenetId),newValue)
+    }
 });
 
 export default function SupportingFilesMenu(props){
   const addToast = useToast();
   const doenetId = useRecoilValue(searchParamAtomFamily('doenetId'));
-  const { canUpload, userQuotaBytesAvailable, supportingFiles} = useRecoilValue(supportingFilesAndPermissionByDoenetIdSelector(doenetId));
-  console.log("supportingFiles",supportingFiles)
+  const [{ canUpload, userQuotaBytesAvailable, supportingFiles},setSupportFileInfo] = useRecoilState(supportingFilesAndPermissionByDoenetIdSelector(doenetId));
+  // const { canUpload, userQuotaBytesAvailable, supportingFiles} = useRecoilValue(supportingFilesAndPermissionByDoenetIdSelector(doenetId));
+  console.log("supportingFiles",{ canUpload, userQuotaBytesAvailable, supportingFiles})
   // let userQuotaBytesAvailable = 1073741824; //1 GB in bytes
   // let userQuotaBytesAvailable = supportingFiles.userQuotaBytesAvailable
   let typesAllowed = ["text/csv","image/jpeg"]
@@ -119,11 +130,26 @@ export default function SupportingFilesMenu(props){
             }
       }}).then(({data})=>{
         // console.log("data",file.name,fileIndex,data)
-        console.log("RESPONSE data>",data)
+        // console.log("RESPONSE data>",data)
 
         //test if all uploads are finished then clear it out
         numberOfFilesUploading.current = numberOfFilesUploading.current - 1;
         if (numberOfFilesUploading.current < 1){setUploadProgress([])}
+        let {fileName, contentId} = data;
+        console.log("FILE UPLOAD COMPLETE: Update UI",file,data)
+        setSupportFileInfo((was)=>{
+          let newObj = {...was}
+          let newSupportingFiles = [...was.supportingFiles];
+          newSupportingFiles.push({
+            contentId,
+            fileName,
+            fileType:file.type,
+          })
+          newObj.supportingFiles = newSupportingFiles;
+          newObj['userQuotaBytesAvailable'] = newObj['userQuotaBytesAvailable'] - file.size;
+          console.log(newObj)
+          return newObj;
+        })
       })
       };
       
@@ -140,6 +166,7 @@ export default function SupportingFilesMenu(props){
 
   if (canUpload){
     uploadingSection = <>
+    <div>Bytes Available {userQuotaBytesAvailable}</div>
     <div key="drop" {...getRootProps()}>
     <input {...getInputProps()} />
     {isDragActive ? (
@@ -158,12 +185,37 @@ export default function SupportingFilesMenu(props){
     {uploadProgressJSX}
     </>
   }
+
+  let supportFilesJSX = [];
+
+  supportingFiles.map(({
+    contentId,
+    fileName,
+    fileType
+  })=>{
+    let doenetMLCode = 'Error';
+    if (fileType === 'image/jpeg'){
+      doenetMLCode = `<image source='media/${fileName}' />`
+    }else if (fileType === 'text/csv'){
+      doenetMLCode = `<data source='media/${fileName}' />`
+    }
+    
+    supportFilesJSX.push(
+    <div>{fileType}
+    <CopyToClipboard onCopy={()=>addToast('Code copied to clipboard!', toastType.SUCCESS)} text={doenetMLCode}>
+      <button onClick={()=>{
+        
+      }}>Code <FontAwesomeIcon icon={faClipboard}/></button> 
+      </CopyToClipboard>
+    </div>)
+   
+  })
   
 
   return <div>
     {uploadingSection}
-      
       <br />
+      {supportFilesJSX}
       {/* <img src={imageSrc} width={100}/> */}
       
       

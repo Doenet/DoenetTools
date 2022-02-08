@@ -72,7 +72,9 @@ $result = $conn->query($sql);
 // set response code - 200 OK
 http_response_code(200);
 
-$response_arr = array("success" => $success);
+$response_arr = array("success" => $success,
+                       "contentId" => $contentId,
+                        "fileName" => $newFileName);
 
 // make it json format
 echo json_encode($response_arr);
