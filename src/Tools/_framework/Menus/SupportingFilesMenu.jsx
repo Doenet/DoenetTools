@@ -62,7 +62,7 @@ export default function SupportingFilesMenu(props){
   // console.log("supportingFiles",{ canUpload, userQuotaBytesAvailable, supportingFiles})
   // let userQuotaBytesAvailable = 1073741824; //1 GB in bytes
   // let userQuotaBytesAvailable = supportingFiles.userQuotaBytesAvailable
-  let typesAllowed = ["text/csv","image/jpeg"]
+  let typesAllowed = ["text/csv","image/jpeg","image/png"]
   let [uploadProgress,setUploadProgress] = useState([]); // {fileName,size,progressPercent}
   let numberOfFilesUploading = useRef(0);
 
@@ -135,22 +135,29 @@ export default function SupportingFilesMenu(props){
         //test if all uploads are finished then clear it out
         numberOfFilesUploading.current = numberOfFilesUploading.current - 1;
         if (numberOfFilesUploading.current < 1){setUploadProgress([])}
-        let {fileName, contentId, description} = data;
+        let {success, fileName, contentId, description, msg, count_against_quota} = data;
         console.log("FILE UPLOAD COMPLETE: Update UI",file,data)
-        setSupportFileInfo((was)=>{
-          let newObj = {...was}
-          let newSupportingFiles = [...was.supportingFiles];
-          newSupportingFiles.push({
-            contentId,
-            fileName,
-            fileType:file.type,
-            description
+        if (msg){
+          addToast(msg, toastType.INFO)
+        }
+        if (success){
+          setSupportFileInfo((was)=>{
+            let newObj = {...was}
+            let newSupportingFiles = [...was.supportingFiles];
+            newSupportingFiles.push({
+              contentId,
+              fileName,
+              fileType:file.type,
+              description
+            })
+            newObj.supportingFiles = newSupportingFiles;
+            if (count_against_quota){
+              newObj['userQuotaBytesAvailable'] = newObj['userQuotaBytesAvailable'] - file.size;
+            }
+            return newObj;
           })
-          newObj.supportingFiles = newSupportingFiles;
-          newObj['userQuotaBytesAvailable'] = newObj['userQuotaBytesAvailable'] - file.size;
-          console.log(newObj)
-          return newObj;
-        })
+        }
+        
       })
       };
       
@@ -179,7 +186,7 @@ export default function SupportingFilesMenu(props){
     )}
     </div>
     <CollapseSection title="Accepted File Types" collapsed={true} >
-      <div><b>Image</b>.jpg .jpeg</div>
+      <div><b>Image</b>.jpg .png</div>
       <div><b>Data</b>.csv</div>
       {/* <div><b>Audio</b></div> */}
     </CollapseSection>
@@ -196,10 +203,10 @@ export default function SupportingFilesMenu(props){
     description,
   })=>{
     let doenetMLCode = 'Error';
-    if (fileType === 'image/jpeg'){
+    if (fileType === 'image/jpeg' || fileType === 'image/png'){
       doenetMLCode = `<image source='media/${fileName}' description='${description}' />`
     }else if (fileType === 'text/csv'){
-      doenetMLCode = `<data source='media/${fileName}' />`
+      doenetMLCode = `<dataset source='media/${fileName}' />`
     }
     
     supportFilesJSX.push(

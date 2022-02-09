@@ -18,6 +18,8 @@ $doenetId =  mysqli_real_escape_string($conn,$_POST["doenetId"]);
 
 
 $success = true;
+$msg = "";
+$count_against_quota = true;
 
 //TODO: Test if user has permission and space to upload files
 
@@ -64,20 +66,47 @@ $destination = $uploads_dir . $newFileName;
 
 rename($tmp_dest,$destination);
 
-
-//Test if user has file in another activity
-
 //Test if user already has this file in this activity
-
-
-
 $sql = "
-INSERT INTO support_files 
-(userId,fileName,contentId,doenetId,fileType,description,sizeInBytes,timestamp)
-VALUES
-('$userId','$newFileName','$contentId','$doenetId','$type','$description','$size',NOW())
+SELECT contentId
+FROM support_files 
+WHERE userId = '$userId'
+AND contentId = '$contentId'
+AND doenetId = '$doenetId'
 ";
 $result = $conn->query($sql);
+
+if ($result->num_rows > 0){
+        $success = false;
+        $msg = "Already have the file '$original_file_name' in this activity. Not used against your quota.";
+}
+if ($success){
+        //Test if user has file in another activity
+        $sql = "
+        SELECT contentId
+        FROM support_files 
+        WHERE userId = '$userId'
+        AND contentId = '$contentId'
+        AND doenetId != '$doenetId'
+        ";
+        $result = $conn->query($sql);
+
+        if ($result->num_rows > 0){
+                $count_against_quota = false;
+                $msg = "Found the file in another activity.  Not used against your quota.";
+        }
+}
+
+
+if ($success){
+        $sql = "
+        INSERT INTO support_files 
+        (userId,fileName,contentId,doenetId,fileType,description,sizeInBytes,timestamp)
+        VALUES
+        ('$userId','$newFileName','$contentId','$doenetId','$type','$description','$size',NOW())
+        ";
+        $result = $conn->query($sql);
+}
 
 // set response code - 200 OK
 http_response_code(200);
@@ -85,7 +114,9 @@ http_response_code(200);
 $response_arr = array("success" => $success,
                        "contentId" => $contentId,
                         "fileName" => $newFileName,
-                        "description" => $description);
+                        "description" => $description,
+                        "msg" => $msg,
+                        "count_against_quota" => $count_against_quota);
 
 // make it json format
 echo json_encode($response_arr);
