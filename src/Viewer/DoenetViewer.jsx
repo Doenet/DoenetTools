@@ -235,8 +235,13 @@ class DoenetViewerChild extends Component {
 
   }
 
+  async coreReady(core) {
+    this.core = core;
 
-
+    this.generatedVariant = await core.document.stateValues.generatedVariantInfo;
+    this.itemVariantInfo = await core.document.stateValues.itemVariantInfo;
+console.log("this.itemVariantInfo",this.itemVariantInfo)
+    this.allPossibleVariants = [...core.document.sharedParameters.allPossibleVariants];
 
   coreReady(coreInfo) {
     this.coreInfo = coreInfo;

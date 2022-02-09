@@ -243,10 +243,10 @@ export default function AssignmentViewer() {
         //Find allPossibleVariants
         returnAllPossibleVariants({
           doenetML,
-        }).then(isCollection
-          ? setCollectionVariant
-          : setVariantsFromDoenetML);
-
+          }).then(isCollection
+        ? setCollectionVariant
+        : setVariantsFromDoenetML);
+      
         async function setVariantsFromDoenetML({ allPossibleVariants }) {
           storedAllPossibleVariants.current = allPossibleVariants;
           //Find attemptNumber
