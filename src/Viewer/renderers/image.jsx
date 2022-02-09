@@ -13,7 +13,13 @@ export default function Image(props) {
 
     return <React.Fragment>
       <a name={name} />
-      <img id={name} src={SVs.source} width={sizeToCSS(SVs.width)} height={sizeToCSS(SVs.height)} alt={SVs.description} />
+      <img 
+      id={name} 
+      src={SVs.source} 
+      style={{maxWidth:'850px'}}
+      width={sizeToCSS(SVs.width)} 
+      height={sizeToCSS(SVs.height)} 
+      alt={SVs.description} />
     </React.Fragment>
 
   }

@@ -7,7 +7,7 @@
 #
 # Host: 127.0.0.1 (MySQL 5.7.29)
 # Database: doenet_local
-# Generation Time: 2022-02-07 18:09:03 +0000
+# Generation Time: 2022-02-09 03:02:02 +0000
 # ************************************************************
 
 
@@ -371,14 +371,15 @@ DROP TABLE IF EXISTS `support_files`;
 CREATE TABLE `support_files` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `userId` char(21) COLLATE utf8_unicode_ci DEFAULT '0',
-  `fileName` varchar(68) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `contentId` char(64) COLLATE utf8_unicode_ci DEFAULT '0',
+  `fileName` varchar(80) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `contentId` char(80) COLLATE utf8_unicode_ci DEFAULT '0',
   `doenetId` char(21) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
   `fileType` varchar(32) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `description` varchar(256) COLLATE utf8_unicode_ci DEFAULT NULL,
   `sizeInBytes` mediumint(11) DEFAULT NULL,
   `timestamp` datetime DEFAULT NULL,
-  `removedFlag` tinyint(1) NOT NULL DEFAULT '0',
-  `public` tinyint(1) NOT NULL DEFAULT '0',
+  `isListed` tinyint(1) NOT NULL DEFAULT '0',
+  `isPublic` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
   KEY `userId` (`userId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;

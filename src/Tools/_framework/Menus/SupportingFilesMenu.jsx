@@ -59,7 +59,7 @@ export default function SupportingFilesMenu(props){
   const doenetId = useRecoilValue(searchParamAtomFamily('doenetId'));
   const [{ canUpload, userQuotaBytesAvailable, supportingFiles, quotaBytes},setSupportFileInfo] = useRecoilState(supportingFilesAndPermissionByDoenetIdSelector(doenetId));
   // const { canUpload, userQuotaBytesAvailable, supportingFiles} = useRecoilValue(supportingFilesAndPermissionByDoenetIdSelector(doenetId));
-  console.log("supportingFiles",{ canUpload, userQuotaBytesAvailable, supportingFiles})
+  // console.log("supportingFiles",{ canUpload, userQuotaBytesAvailable, supportingFiles})
   // let userQuotaBytesAvailable = 1073741824; //1 GB in bytes
   // let userQuotaBytesAvailable = supportingFiles.userQuotaBytesAvailable
   let typesAllowed = ["text/csv","image/jpeg"]
@@ -135,7 +135,7 @@ export default function SupportingFilesMenu(props){
         //test if all uploads are finished then clear it out
         numberOfFilesUploading.current = numberOfFilesUploading.current - 1;
         if (numberOfFilesUploading.current < 1){setUploadProgress([])}
-        let {fileName, contentId} = data;
+        let {fileName, contentId, description} = data;
         console.log("FILE UPLOAD COMPLETE: Update UI",file,data)
         setSupportFileInfo((was)=>{
           let newObj = {...was}
@@ -144,6 +144,7 @@ export default function SupportingFilesMenu(props){
             contentId,
             fileName,
             fileType:file.type,
+            description
           })
           newObj.supportingFiles = newSupportingFiles;
           newObj['userQuotaBytesAvailable'] = newObj['userQuotaBytesAvailable'] - file.size;
@@ -191,17 +192,18 @@ export default function SupportingFilesMenu(props){
   supportingFiles.map(({
     contentId,
     fileName,
-    fileType
+    fileType,
+    description,
   })=>{
     let doenetMLCode = 'Error';
     if (fileType === 'image/jpeg'){
-      doenetMLCode = `<image source='media/${fileName}' />`
+      doenetMLCode = `<image source='media/${fileName}' description='${description}' />`
     }else if (fileType === 'text/csv'){
       doenetMLCode = `<data source='media/${fileName}' />`
     }
     
     supportFilesJSX.push(
-    <div>{fileType}
+    <div>{description}
     <CopyToClipboard onCopy={()=>addToast('Code copied to clipboard!', toastType.SUCCESS)} text={doenetMLCode}>
       <button onClick={()=>{
         

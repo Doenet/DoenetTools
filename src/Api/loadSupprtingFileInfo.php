@@ -24,8 +24,8 @@ $quotaBytes = 1073741824; // 1 GB QUOTA
 $sql = "
 SELECT SUM(sizeInBytes) AS totalBytes
 FROM support_files
-WHERE removedFlag='0'
-AND userId='$userId'
+WHERE userId='$userId'
+AND NOT (isListed='1' AND isPublic='1')
 ";
 $result = $conn->query($sql);
 $row = $result->fetch_assoc();
@@ -44,10 +44,9 @@ $row = $result->fetch_assoc();
 if ($row['canUpload'] == '1'){$canUpload = TRUE;}
 
 $sql = "
-SELECT contentId, fileName, fileType
+SELECT contentId, fileName, fileType, description
 FROM support_files
 WHERE doenetId='$doenetId'
-AND removedFlag='0'
 ORDER BY timestamp
 ";
 
@@ -58,6 +57,7 @@ $result = $conn->query($sql);
             "contentId" => $row['contentId'],
             "fileName" => $row['fileName'],
             "fileType" => $row['fileType'],
+            "description" => $row['description'],
         )
     );
 }

@@ -13,27 +13,13 @@ $userId = $jwtArray['userId'];
 
 include "randomId.php";
 
-// echo "\n\nuserId $userId \n\n";
 
-// $_POST = json_decode(file_get_contents("php://input"),true);
-// $size =  mysqli_real_escape_string($conn,$_POST["size"]);
 $doenetId =  mysqli_real_escape_string($conn,$_POST["doenetId"]);
-// echo "\n\ndoenetId $doenetId\n";
-// $type =  mysqli_real_escape_string($conn,$_POST["type"]);
-// $trackingConsent =  mysqli_real_escape_string($conn,$_POST["trackingConsent"]);
-// $dangerousContent = $_POST["content"];
-// echo "\n\npost\n";
-// var_dump($_POST);
-// echo "\n file_get_contents\n";
-// var_dump(file_get_contents("php://input"));
-// echo "\n_FILES\n";
-// var_dump($_FILES);
-// $doenetId =  mysqli_real_escape_string($conn,$_POST["doenetId"]);
+
 
 $success = true;
 
 //TODO: Test if user has permission and space to upload files
-
 
 $uploads_dir = '../media/';
 
@@ -41,6 +27,8 @@ $type = $_FILES['file']['type'];
 $tmp_name = $_FILES['file']['tmp_name'];
 $error = $_FILES['file']['error'];
 $size = $_FILES['file']['size'];
+$original_file_name = $_FILES['file']['name'];
+$description = substr($original_file_name, 0, strrpos($original_file_name, "."));
 
 $extension = '';
 if ($type == 'image/jpeg'){
@@ -48,20 +36,12 @@ if ($type == 'image/jpeg'){
 }else if ($type == 'text/csv'){
   $extension = '.csv';
 }
-// $contentId = hash('sha256', $dangerousContent);
 
 $tmp_dest = $uploads_dir . 'tmp_' . $random_id . $extension;
-// $newfile = fopen($destination, "w") or die("Unable to open file!");
-//     $status = fwrite($newfile, $dangerousContent);
-//     if ($status === false){
-//       return "Didn't save to file";
-//     }
-//     fclose($newfile);
 
 move_uploaded_file($tmp_name, $tmp_dest);
 
 $SHA = hash_file("sha256",$tmp_dest);
-echo "\n SHA $SHA \n";
 
 $hashLen = '20'; //32 bit
 $algorithm = '12'; //18 in decimal
@@ -85,12 +65,17 @@ $destination = $uploads_dir . $newFileName;
 rename($tmp_dest,$destination);
 
 
+//Test if user has file in another activity
+
+//Test if user already has this file in this activity
+
+
 
 $sql = "
 INSERT INTO support_files 
-(userId,fileName,contentId,doenetId,fileType,sizeInBytes,timestamp)
+(userId,fileName,contentId,doenetId,fileType,description,sizeInBytes,timestamp)
 VALUES
-('$userId','$newFileName','$contentId','$doenetId','$type','$size',NOW())
+('$userId','$newFileName','$contentId','$doenetId','$type','$description','$size',NOW())
 ";
 $result = $conn->query($sql);
 
@@ -99,7 +84,8 @@ http_response_code(200);
 
 $response_arr = array("success" => $success,
                        "contentId" => $contentId,
-                        "fileName" => $newFileName);
+                        "fileName" => $newFileName,
+                        "description" => $description);
 
 // make it json format
 echo json_encode($response_arr);
