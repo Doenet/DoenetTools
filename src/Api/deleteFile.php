@@ -7,6 +7,7 @@ header('Content-Type: application/json');
 
 include "db_connection.php";
 include "userQuotaBytesAvailable.php";
+include "getFilename.php";
 
 $jwtArray = include "jwtArray.php";
 $userId = $jwtArray['userId'];
@@ -31,7 +32,7 @@ if ($doenetId == ""){
 //Is anyone using this contentId file?
 //AKA can we delete the file?
 $sql = "
-SELECT contentId,fileName
+SELECT contentId
 FROM support_files
 WHERE contentId = '$contentId'
 AND doenetId != '$doenetId'
@@ -41,14 +42,14 @@ $result = $conn->query($sql);
 if ($result->num_rows == 0){
   //Delete from media folder
   $sql = "
-  SELECT contentId,fileName
+  SELECT contentId,fileType
   FROM support_files
   WHERE contentId = '$contentId'
   AND doenetId = '$doenetId'
   ";
   $result = $conn->query($sql);
   $row = $result->fetch_assoc();
-  $fileLocation = $uploads_dir . $row['fileName'];
+  $fileLocation = $uploads_dir . getFileName($row['contentId'],$row['fileType']);
   unlink($fileLocation);
 }
 
