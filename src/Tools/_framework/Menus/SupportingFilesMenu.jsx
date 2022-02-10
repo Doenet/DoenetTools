@@ -7,7 +7,8 @@ import {
   useRecoilValue,
   atomFamily,
   selectorFamily,
-  useRecoilState
+  useRecoilState,
+  useRecoilCallback
 } from 'recoil';
 import ButtonGroup from '../../../_reactComponents/PanelHeaderComponents/ButtonGroup';
 import CollapseSection from '../../../_reactComponents/PanelHeaderComponents/CollapseSection';
@@ -65,6 +66,21 @@ export default function SupportingFilesMenu(props){
   let typesAllowed = ["text/csv","image/jpeg","image/png"]
   let [uploadProgress,setUploadProgress] = useState([]); // {fileName,size,progressPercent}
   let numberOfFilesUploading = useRef(0);
+
+  const deleteFile = useRecoilCallback(({set})=> async (contentId)=>{
+    console.log("Delete file",{doenetId,contentId});
+    //Update quota info using the server's records
+    let { data } = await axios.get('/api/deleteFile.php',{params:{doenetId,contentId}});
+    // console.log("data",data)
+    let { userQuotaBytesAvailable } = data;
+    set(supportingFilesAndPermissionByDoenetIdSelector(doenetId),(was)=>{
+      let newObj = {...was};
+      newObj.supportingFiles = was.supportingFiles.filter((file)=>file.contentId !== contentId);
+      newObj.userQuotaBytesAvailable = userQuotaBytesAvailable;
+      return newObj;
+    })
+
+  },[doenetId])
 
   const onDrop = useCallback((files) => {
     let success = true;
@@ -211,6 +227,9 @@ export default function SupportingFilesMenu(props){
     
     supportFilesJSX.push(
     <div>{description}
+    <button onClick={()=>{
+      deleteFile(contentId);
+    }}>delete</button>
     <CopyToClipboard onCopy={()=>addToast('Code copied to clipboard!', toastType.SUCCESS)} text={doenetMLCode}>
       <button onClick={()=>{
         
