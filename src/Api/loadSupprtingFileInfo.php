@@ -7,6 +7,7 @@ header('Content-Type: application/json');
 
 include "db_connection.php";
 include "userQuotaBytesAvailable.php";
+include "getFilename.php";
 $jwtArray = include "jwtArray.php";
 $userId = $jwtArray['userId'];
 
@@ -35,7 +36,7 @@ $row = $result->fetch_assoc();
 if ($row['canUpload'] == '1'){$canUpload = TRUE;}
 
 $sql = "
-SELECT contentId, fileName, fileType, description
+SELECT contentId, fileType, description
 FROM support_files
 WHERE doenetId='$doenetId'
 ORDER BY timestamp
@@ -43,10 +44,11 @@ ORDER BY timestamp
 
 $result = $conn->query($sql);
   while ($row = $result->fetch_assoc()) {
+    
     array_push($supportingFiles,
         array(
             "contentId" => $row['contentId'],
-            "fileName" => $row['fileName'],
+            "fileName" => getFileName($row['contentId'],$row['fileType']),
             "fileType" => $row['fileType'],
             "description" => $row['description'],
         )

@@ -13,7 +13,7 @@ $userId = $jwtArray['userId'];
 
 include "randomId.php";
 include "userQuotaBytesAvailable.php";
-
+include "getFilename.php";
 
 
 $doenetId =  mysqli_real_escape_string($conn,$_POST["doenetId"]);
@@ -34,14 +34,9 @@ $size = $_FILES['file']['size'];
 $original_file_name = $_FILES['file']['name'];
 $description = substr($original_file_name, 0, strrpos($original_file_name, "."));
 
-$extension = '';
-if ($type == 'image/jpeg'){
-  $extension = '.jpg';
-}else if ($type == 'text/csv'){
-  $extension = '.csv';
-}
 
-$tmp_dest = $uploads_dir . 'tmp_' . $random_id . $extension;
+
+$tmp_dest = $uploads_dir . getFileName('tmp_' . $random_id,$type);
 
 move_uploaded_file($tmp_name, $tmp_dest);
 
@@ -63,7 +58,7 @@ $CID = $base . $CIDversion . $multiCodec . $multiHash; //hexadecimal string
 
 
 $contentId = $CID;
-$newFileName = $contentId . $extension;
+$newFileName = getFileName($contentId,$type);
 $destination = $uploads_dir . $newFileName;
 
 rename($tmp_dest,$destination);
@@ -102,9 +97,9 @@ if ($success){
 if ($success){
         $sql = "
         INSERT INTO support_files 
-        (userId,fileName,contentId,doenetId,fileType,description,sizeInBytes,timestamp)
+        (userId,contentId,doenetId,fileType,description,sizeInBytes,timestamp)
         VALUES
-        ('$userId','$newFileName','$contentId','$doenetId','$type','$description','$size',NOW())
+        ('$userId','$contentId','$doenetId','$type','$description','$size',NOW())
         ";
         $result = $conn->query($sql);
 }

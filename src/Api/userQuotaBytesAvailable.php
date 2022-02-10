@@ -19,6 +19,4 @@ $userQuotaBytesAvailable = $quotaBytes - $row['totalBytes'];
 return [$userQuotaBytesAvailable,$quotaBytes];
 }
 
-
-
 ?>
