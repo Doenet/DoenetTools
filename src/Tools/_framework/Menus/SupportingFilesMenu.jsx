@@ -55,6 +55,23 @@ const supportingFilesAndPermissionByDoenetIdSelector = selectorFamily({
     }
 });
 
+function EditableText({text,submit}){
+  if (!submit){ submit = ()=>{}}
+  let [editingMode,setEditingMode] = useState(false);
+  let [edittext,setText] = useState(text);
+
+  if (!editingMode){
+    return <span onClick={()=>setEditingMode(true)}>{text}</span>
+  }
+  return <input type='text' width='100px' value={edittext} onChange={(e)=>setText(e.target.value)} onKeyDown={(e)=>{
+    if (e.key === 'Enter'){
+      setEditingMode(false);
+      submit(edittext);
+    }
+  }}/>
+
+}
+
 export default function SupportingFilesMenu(props){
   const addToast = useToast();
   const doenetId = useRecoilValue(searchParamAtomFamily('doenetId'));
@@ -67,6 +84,25 @@ export default function SupportingFilesMenu(props){
   // let typesAllowed = ["text/csv","image/jpeg","image/png"]
   let [uploadProgress,setUploadProgress] = useState([]); // {fileName,size,progressPercent}
   let numberOfFilesUploading = useRef(0);
+
+  const updateDescription = useRecoilCallback(({set})=> async (description,contentId)=>{
+    console.log("updateDescription",description,contentId,doenetId);
+    // let { data } = await axios.get('/api/updateFileDescription.php',{params:{doenetId,contentId,description}});
+    // console.log("updateDescription data",data)
+    // let { userQuotaBytesAvailable } = data;
+    set(supportingFilesAndPermissionByDoenetIdSelector(doenetId),(was)=>{
+      let newObj = {...was};
+      let newSupportingFiles = [...was.supportingFiles];
+      newSupportingFiles.map((file,index)=>{
+        if (file.contentId === contentId){
+          newSupportingFiles[index] = {...newSupportingFiles[index]}
+          newSupportingFiles[index].description = description;
+        }
+      })
+      newObj.supportingFiles = newSupportingFiles;
+      return newObj;
+    })
+  },[doenetId]);
 
   const deleteFile = useRecoilCallback(({set})=> async (contentId)=>{
     // console.log("Delete file",{doenetId,contentId});
@@ -225,7 +261,7 @@ export default function SupportingFilesMenu(props){
     }
     
     supportFilesJSX.push(
-    <div>{description}
+    <div><EditableText text={description} submit={(text)=>{updateDescription(text,contentId)}}/>
     <button onClick={()=>{
       deleteFile(contentId);
     }}>delete</button>
