@@ -57,12 +57,13 @@ AND doenetId = '$doenetId'
 $result = $conn->query($sql);
 
 //Calculate quota remaining after change
-//TODO: make this based on each doenetId is not repeated
+//Based on unique contentIds, so bytes countent just once
 $sql = "
-SELECT SUM(sizeInBytes) AS totalBytes
+SELECT SUM(sizeInBytes) AS totalBytes FROM
+(SELECT DISTINCT(contentId), sizeInBytes
 FROM support_files
 WHERE userId='$userId'
-AND NOT (isListed='1' AND isPublic='1')
+AND NOT (isListed='1' AND isPublic='1')) T1
 ";
 $result = $conn->query($sql);
 $row = $result->fetch_assoc();

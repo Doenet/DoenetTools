@@ -19,7 +19,8 @@ $doenetId =  mysqli_real_escape_string($conn,$_POST["doenetId"]);
 
 $success = true;
 $msg = "";
-$count_against_quota = true;
+$quotaBytes = 1073741824; // 1 GB QUOTA
+
 
 //TODO: Test if user has permission and space to upload files
 
@@ -92,7 +93,6 @@ if ($success){
         $result = $conn->query($sql);
 
         if ($result->num_rows > 0){
-                $count_against_quota = false;
                 $msg = "Found the file in another activity.  Not used against your quota.";
         }
 }
@@ -108,6 +108,19 @@ if ($success){
         $result = $conn->query($sql);
 }
 
+//Calculate quota remaining after change
+//Based on unique contentIds, so bytes countent just once
+$sql = "
+SELECT SUM(sizeInBytes) AS totalBytes FROM
+(SELECT DISTINCT(contentId), sizeInBytes
+FROM support_files
+WHERE userId='$userId'
+AND NOT (isListed='1' AND isPublic='1')) T1
+";
+$result = $conn->query($sql);
+$row = $result->fetch_assoc();
+$userQuotaBytesAvailable = $quotaBytes - $row['totalBytes'];
+
 // set response code - 200 OK
 http_response_code(200);
 
@@ -116,7 +129,7 @@ $response_arr = array("success" => $success,
                         "fileName" => $newFileName,
                         "description" => $description,
                         "msg" => $msg,
-                        "count_against_quota" => $count_against_quota);
+                        "userQuotaBytesAvailable" => $userQuotaBytesAvailable);
 
 // make it json format
 echo json_encode($response_arr);

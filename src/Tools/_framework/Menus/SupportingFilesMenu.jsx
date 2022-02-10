@@ -151,7 +151,7 @@ export default function SupportingFilesMenu(props){
         //test if all uploads are finished then clear it out
         numberOfFilesUploading.current = numberOfFilesUploading.current - 1;
         if (numberOfFilesUploading.current < 1){setUploadProgress([])}
-        let {success, fileName, contentId, description, msg, count_against_quota} = data;
+        let {success, fileName, contentId, description, msg, userQuotaBytesAvailable} = data;
         console.log("FILE UPLOAD COMPLETE: Update UI",file,data)
         if (msg){
           addToast(msg, toastType.INFO)
@@ -167,9 +167,7 @@ export default function SupportingFilesMenu(props){
               description
             })
             newObj.supportingFiles = newSupportingFiles;
-            if (count_against_quota){
-              newObj['userQuotaBytesAvailable'] = newObj['userQuotaBytesAvailable'] - file.size;
-            }
+            newObj['userQuotaBytesAvailable'] = userQuotaBytesAvailable;
             return newObj;
           })
         }

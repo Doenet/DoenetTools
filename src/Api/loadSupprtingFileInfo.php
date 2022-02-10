@@ -22,10 +22,11 @@ $quotaBytes = 1073741824; // 1 GB QUOTA
 
 
 $sql = "
-SELECT SUM(sizeInBytes) AS totalBytes
+SELECT SUM(sizeInBytes) AS totalBytes FROM
+(SELECT DISTINCT(contentId), sizeInBytes
 FROM support_files
 WHERE userId='$userId'
-AND NOT (isListed='1' AND isPublic='1')
+AND NOT (isListed='1' AND isPublic='1')) T1
 ";
 $result = $conn->query($sql);
 $row = $result->fetch_assoc();
