@@ -63,7 +63,8 @@ export default function SupportingFilesMenu(props){
   // console.log("supportingFiles",{ canUpload, userQuotaBytesAvailable, supportingFiles})
   // let userQuotaBytesAvailable = 1073741824; //1 GB in bytes
   // let userQuotaBytesAvailable = supportingFiles.userQuotaBytesAvailable
-  let typesAllowed = ["text/csv","image/jpeg","image/png"]
+  let typesAllowed = ["image/jpeg","image/png"]
+  // let typesAllowed = ["text/csv","image/jpeg","image/png"]
   let [uploadProgress,setUploadProgress] = useState([]); // {fileName,size,progressPercent}
   let numberOfFilesUploading = useRef(0);
 
@@ -201,7 +202,7 @@ export default function SupportingFilesMenu(props){
     </div>
     <CollapseSection title="Accepted File Types" collapsed={true} >
       <div><b>Image</b>.jpg .png</div>
-      <div><b>Data</b>.csv</div>
+      {/* <div><b>Data</b>.csv</div> */}
       {/* <div><b>Audio</b></div> */}
     </CollapseSection>
     {uploadProgressJSX}
