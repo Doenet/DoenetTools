@@ -7,7 +7,7 @@
 #
 # Host: 127.0.0.1 (MySQL 5.7.29)
 # Database: doenet_local
-# Generation Time: 2022-02-10 22:05:34 +0000
+# Generation Time: 2022-02-10 22:35:04 +0000
 # ************************************************************
 
 
@@ -245,6 +245,7 @@ CREATE TABLE `drive_user` (
   `canViewDrive` tinyint(1) DEFAULT '0',
   `canDeleteDrive` tinyint(1) DEFAULT '0',
   `canShareDrive` tinyint(1) DEFAULT '0',
+  `canUpload` tinyint(1) DEFAULT '0',
   `canAddItemsAndFolders` tinyint(1) DEFAULT '0',
   `canDeleteItemsAndFolders` tinyint(1) DEFAULT '0',
   `canMoveItemsAndFolders` tinyint(1) DEFAULT '0',
