@@ -68,10 +68,10 @@ export default function SupportingFilesMenu(props){
   let numberOfFilesUploading = useRef(0);
 
   const deleteFile = useRecoilCallback(({set})=> async (contentId)=>{
-    console.log("Delete file",{doenetId,contentId});
+    // console.log("Delete file",{doenetId,contentId});
     //Update quota info using the server's records
     let { data } = await axios.get('/api/deleteFile.php',{params:{doenetId,contentId}});
-    // console.log("data",data)
+    // console.log("deleteFile data",data)
     let { userQuotaBytesAvailable } = data;
     set(supportingFilesAndPermissionByDoenetIdSelector(doenetId),(was)=>{
       let newObj = {...was};

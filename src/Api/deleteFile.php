@@ -6,6 +6,7 @@ header("Access-Control-Allow-Credentials: true");
 header('Content-Type: application/json');
 
 include "db_connection.php";
+include "userQuotaBytesAvailable.php";
 
 $jwtArray = include "jwtArray.php";
 $userId = $jwtArray['userId'];
@@ -15,8 +16,6 @@ $contentId = mysqli_real_escape_string($conn,$_REQUEST["contentId"]);
 
 $success = TRUE;
 $message = "";
-$userQuotaBytesAvailable = 0;
-$quotaBytes = 1073741824; // 1 GB QUOTA
 $uploads_dir = '../media/';
 
 if ($doenetId == ""){
@@ -41,10 +40,16 @@ $result = $conn->query($sql);
 
 if ($result->num_rows == 0){
   //Delete from media folder
+  $sql = "
+  SELECT contentId,fileName
+  FROM support_files
+  WHERE contentId = '$contentId'
+  AND doenetId = '$doenetId'
+  ";
+  $result = $conn->query($sql);
   $row = $result->fetch_assoc();
   $fileLocation = $uploads_dir . $row['fileName'];
-  echo "\nDELETE! $fileLocation\n";
-  // unlink($fileLocation);
+  unlink($fileLocation);
 }
 
 //Delete row of doenetId and contentId for this user
@@ -56,18 +61,8 @@ AND doenetId = '$doenetId'
 ";
 $result = $conn->query($sql);
 
-//Calculate quota remaining after change
-//Based on unique contentIds, so bytes countent just once
-$sql = "
-SELECT SUM(sizeInBytes) AS totalBytes FROM
-(SELECT DISTINCT(contentId), sizeInBytes
-FROM support_files
-WHERE userId='$userId'
-AND NOT (isListed='1' AND isPublic='1')) T1
-";
-$result = $conn->query($sql);
-$row = $result->fetch_assoc();
-$userQuotaBytesAvailable = $quotaBytes - $row['totalBytes'];
+
+list($userQuotaBytesAvailable,$quotaBytes) = getBytesAvailable($conn,$userId);
 
 
 $response_arr = array(
@@ -83,3 +78,4 @@ http_response_code(200);
 echo json_encode($response_arr);
 
 $conn->close();
+?>

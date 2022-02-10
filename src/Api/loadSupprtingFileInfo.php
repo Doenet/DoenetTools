@@ -6,6 +6,7 @@ header("Access-Control-Allow-Credentials: true");
 header('Content-Type: application/json');
 
 include "db_connection.php";
+include "userQuotaBytesAvailable.php";
 $jwtArray = include "jwtArray.php";
 $userId = $jwtArray['userId'];
 
@@ -16,21 +17,10 @@ $doenetId = mysqli_real_escape_string($conn,$_REQUEST["doenetId"]);
 $success = true;
 $supportingFiles = [];
 $canUpload = FALSE;
-$quotaBytes = 1073741824; // 1 GB QUOTA
 
 //TODO: Test if user has permission and space to see file info
 
-
-$sql = "
-SELECT SUM(sizeInBytes) AS totalBytes FROM
-(SELECT DISTINCT(contentId), sizeInBytes
-FROM support_files
-WHERE userId='$userId'
-AND NOT (isListed='1' AND isPublic='1')) T1
-";
-$result = $conn->query($sql);
-$row = $result->fetch_assoc();
-$userQuotaBytesAvailable = $quotaBytes - $row['totalBytes'];
+list($userQuotaBytesAvailable,$quotaBytes) = getBytesAvailable($conn,$userId);
 
 $sql = "
 SELECT du.canUpload 
