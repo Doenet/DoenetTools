@@ -5,9 +5,6 @@ import {parseAndCompile} from '../../Parser/parser'
 import { returnAllPossibleVariants } from '../../Core/utils/returnAllPossibleVariants';
 //import DateTime from '../../_reactComponents/PanelHeaderComponents/DateTime'
 import ProgressBar from '../../_reactComponents/PanelHeaderComponents/ProgressBar.jsx';
-import ProgressBarNew from '../../_reactComponents/PanelHeaderComponents/ProgressBarNew.jsx';
-
-
 
 // function testReturnVariants() {
 //   returnAllPossibleVariants({
