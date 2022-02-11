@@ -58,15 +58,21 @@ const supportingFilesAndPermissionByDoenetIdSelector = selectorFamily({
 function EditableText({text,submit}){
   if (!submit){ submit = ()=>{}}
   let [editingMode,setEditingMode] = useState(false);
-  let [edittext,setText] = useState(text);
+  let [editText,setText] = useState(text);
+
+  //Don't wait for parent's prop to display editted text
+  let displayText = text;
+  if (!editingMode && editText !== displayText){
+    displayText = editText;
+  }
 
   if (!editingMode){
-    return <span onClick={()=>setEditingMode(true)}>{text}</span>
+    return <span onClick={()=>setEditingMode(true)}>{displayText}</span>
   }
-  return <input type='text' width='100px' value={edittext} onChange={(e)=>setText(e.target.value)} onKeyDown={(e)=>{
+  return <input type='text' width='100px' value={editText} onChange={(e)=>setText(e.target.value)} onKeyDown={(e)=>{
     if (e.key === 'Enter'){
       setEditingMode(false);
-      submit(edittext);
+      submit(editText);
     }
   }}/>
 
@@ -87,8 +93,8 @@ export default function SupportingFilesMenu(props){
 
   const updateDescription = useRecoilCallback(({set})=> async (description,contentId)=>{
     console.log("updateDescription",description,contentId,doenetId);
-    // let { data } = await axios.get('/api/updateFileDescription.php',{params:{doenetId,contentId,description}});
-    // console.log("updateDescription data",data)
+    let { data } = await axios.get('/api/updateFileDescription.php',{params:{doenetId,contentId,description}});
+    console.log("updateDescription data",data)
     // let { userQuotaBytesAvailable } = data;
     set(supportingFilesAndPermissionByDoenetIdSelector(doenetId),(was)=>{
       let newObj = {...was};
