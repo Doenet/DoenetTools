@@ -451,7 +451,7 @@ export default function AssignmentViewer() {
             let newObj = null;
             if (!was) {
               newObj = {
-                height: 220,
+                height: 250,
                 open: true,
                 component: 'MathInputKeyboard',
               };

@@ -8,6 +8,11 @@ import {
   useRecoilValueLoadable,
 } from 'recoil';
 
+export const focusedMathFieldID = atom({
+  key: 'focusedMathFieldID',
+  default: null,
+});
+
 export const focusedMathField = atom({
   key: 'focusedMathField',
   default: () => {},
@@ -23,13 +28,8 @@ export const palletRef = atom({
   default: null,
 });
 
-export const buttonRef = atom({
-  key: 'buttonRef',
-  default: null,
-});
-
-export const functionRef = atom({
-  key: 'functionRef',
+export const handleRef = atom({
+  key: 'handleRef',
   default: null,
 });
 

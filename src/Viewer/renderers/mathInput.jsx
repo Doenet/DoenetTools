@@ -6,7 +6,6 @@ import {
   faLevelDownAlt,
   faTimes,
   faCloud,
-  faPercentage,
 } from '@fortawesome/free-solid-svg-icons';
 import mathquill from 'react-mathquill';
 mathquill.addStyles(); //Styling for react-mathquill input field
@@ -14,37 +13,18 @@ let EditableMathField = mathquill.EditableMathField;
 import {
   focusedMathField,
   focusedMathFieldReturn,
+  focusedMathFieldID,
   palletRef,
-  buttonRef,
-  functionRef,
+  handleRef,
 } from '../../Tools/_framework/Footers/MathInputSelector';
-import { useRecoilValue, useSetRecoilState } from 'recoil';
 
-// const Prev = styled.div`
-//   font-size: 23px;
-//   // min-height: 30px;
-//   background: rgba(0, 0, 0, 0.8);
-//   width: auto;
-//   display: inline-block;
-//   border-radius: 5px;
-//   color: white;
-//   // line-height: 0px;
-//   z-index: 10;
-//   padding: 3px;
-//   // position: absolute;
-//   user-select: none;
-//   // left: ${props => `${props.left}px`};
-//   // top: ${props => `${props.top}px`};
-// `;
+import { useRecoilValue, useSetRecoilState } from 'recoil';
 
 export default function MathInput(props) {
   let { name, SVs, actions, sourceOfUpdate, ignoreUpdate, callAction } =
     useDoenetRender(props);
 
   MathInput.baseStateVariable = 'rawRendererValue';
-
-  // const [focused, setFocus] = useState(false);
-  const focused = useRef(false);
 
   const [mathField, setMathField] = useState(null);
 
@@ -59,10 +39,11 @@ export default function MathInput(props) {
   let validationState = useRef(null);
 
   const setFocusedField = useSetRecoilState(focusedMathField);
+  const setFocusedFieldID = useSetRecoilState(focusedMathFieldID);
+  const focusedFieldID = useRecoilValue(focusedMathFieldID);
   const setFocusedFieldReturn = useSetRecoilState(focusedMathFieldReturn);
   const containerRef = useRecoilValue(palletRef);
-  const toggleButtonRef = useRecoilValue(buttonRef);
-  const functionTabRef = useRecoilValue(functionRef);
+  const dragHandleRef = useRecoilValue(handleRef);
 
   const updateValidationState = () => {
     validationState.current = 'unvalidated';
@@ -117,29 +98,29 @@ export default function MathInput(props) {
   };
 
   const handleFocus = (e) => {
-    focus.current = true; //setFocus(true);
     setFocusedField(() => handleVirtualKeyboardClick);
     setFocusedFieldReturn(() => handlePressEnter);
+    setFocusedFieldID(mathField.id);
   };
 
   const handleBlur = (e) => {
     if (containerRef?.current?.contains(e.relatedTarget)) {
-      console.log('>>> clicked inside the panel');
-    } else if (toggleButtonRef?.current?.contains(e.relatedTarget)) {
-      console.log('>>> clicked inside the button');
-    } else if (functionTabRef?.current?.contains(e.relatedTarget)) {
-      console.log('>>> clicked inside the panel functional panel');
+      setTimeout(() => {
+        mathField.focus();
+      }, 100);
+    } else if (dragHandleRef?.current?.contains(e.relatedTarget)) {
+      setTimeout(() => {
+        mathField.focus();
+      }, 100);
     } else {
       callAction({
         action: actions.updateValue,
         baseVariableValue: rendererValue.current,
       });
-
-      // setFocus(false);
-      focus.current = false;
       //console.log(">>>", e.target, e.currentTarget, e.relatedTarget);
       setFocusedField(() => handleDefaultVirtualKeyboardClick);
       setFocusedFieldReturn(() => handleDefaultVirtualKeyboardReturn);
+      setFocusedFieldID(null);
     }
   };
 
@@ -164,11 +145,6 @@ export default function MathInput(props) {
   updateValidationState();
 
   // const inputKey = this.componentName + '_input';
-
-  let surroundingBorderColor = '#efefef';
-  if (focused.current) {
-    surroundingBorderColor = '#82a5ff';
-  }
 
   //Assume we don't have a check work button
   let checkWorkButton = null;

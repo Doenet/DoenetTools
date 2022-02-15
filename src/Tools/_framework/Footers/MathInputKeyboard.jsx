@@ -4,6 +4,7 @@ import MathJax from 'react-mathjax';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import ToggleButton from '../../../_reactComponents/PanelHeaderComponents/ToggleButton';
 import ToggleButtonGroup from '../../../_reactComponents/PanelHeaderComponents/ToggleButtonGroup';
+import VerticalDivider from '../../../_reactComponents/PanelHeaderComponents/VerticalDivider';
 
 import { faBackspace, faArrowUp } from '@fortawesome/free-solid-svg-icons';
 
@@ -12,8 +13,6 @@ import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
 import {
   focusedMathField,
   palletRef,
-  buttonRef,
-  functionRef,
   focusedMathFieldReturn,
 } from './MathInputSelector';
 
@@ -24,16 +23,16 @@ import { doenetMainBlue } from '../../../_reactComponents/PanelHeaderComponents/
 import { useRef } from 'react';
 
 const Panel = styled.div`
-  height: 230px;
+  height: 240px;
   // position: fixed;
   bottom: 0;
   left: 0;
   width: 100%;
   background-color: #fff;
   color: white;
-  text-align: center;
   display: flex;
   flex-direction: row;
+  text-align: center;
   justify-content: center;
 `;
 
@@ -41,6 +40,15 @@ const ContainerSection = styled.div`
   display: flex;
   flex-direction: column;
   flex-wrap: no-wrap;
+  flex-basis: 27%;
+  flex-grow: 1;
+`;
+
+const ControlSection = styled.div`
+  display: flex;
+  flex-direction: column;
+  flex-wrap: no-wrap;
+  flex-basis: 19%;
 `;
 
 const ToggleButtonSection = styled.div`
@@ -53,9 +61,8 @@ const Section = styled.div`
   height: 160px;
   min-width: 100px;
   max-width: 300px;
-  margin-left: 5px;
-  margin-right: 5px;
-  /* border: 0.5px solid gray; */
+  margin-left: auto;
+  margin-right: auto;
   margin-top: auto;
   margin-bottom: auto;
   display: flex;
@@ -65,12 +72,10 @@ const Section = styled.div`
 
 const LettersSection = styled.div`
   height: 150px;
-  /* min-width: 100px; */
   max-width: 700px;
   flex-basis: 90%;
   margin-left: 5px;
   margin-right: 5px;
-  /* border: 0.5px solid gray; */
   margin-top: auto;
   margin-bottom: auto;
   display: flex;
@@ -81,59 +86,55 @@ const LettersSection = styled.div`
 const Button = styled.button`
   flex-basis: 23%;
   height: 30px;
-  background: ${doenetMainBlue};
-  color: white;
-  border: 0;
+  color: ${doenetMainBlue};
+  border: 2px solid ${doenetMainBlue};
+  background: white;
   border-radius: 3px;
 `;
 
 const Button33 = styled.button`
   flex-basis: 30%;
   height: 30px;
-  background: ${doenetMainBlue};
-  color: white;
-  border: 0;
+  color: ${doenetMainBlue};
+  border: 2px solid ${doenetMainBlue};
   border-radius: 3px;
-`;
-
-const WhiteButton = styled.button`
-  flex-basis: 23%;
-  height: 30px;
   background: white;
-  border: 2px solid black;
-  border-radius: 5px;
 `;
 
 const White15Button = styled.button`
   flex-basis: 14%;
   margin: 1px;
   height: 30px;
-  background: white;
-  border: 2px solid black;
+  background: ${doenetMainBlue};
+  border: none;
+  color: white;
   border-radius: 5px;
 `;
 
 const CursorButton = styled.button`
   flex-basis: 42%;
   height: 30px;
-  background: white;
-  border: 2px solid black;
+  background: ${doenetMainBlue};
+  border: none;
+  color: white;
   border-radius: 5px;
 `;
 
 const DeleteButton = styled.button`
   flex-basis: 90%;
   height: 30px;
-  background: white;
-  border: 2px solid black;
+  background: ${doenetMainBlue};
+  border: none;
+  color: white;
   border-radius: 5px;
 `;
 
 const EnterButton = styled.button`
   flex-basis: 90%;
   height: 30px;
-  background: white;
-  border: 2px solid black;
+  background: ${doenetMainBlue};
+  border: none;
+  color: white;
   border-radius: 5px;
 `;
 
@@ -141,8 +142,9 @@ const White20Button = styled.button`
   flex-basis: 19%;
   margin: 1px;
   height: 30px;
-  background: white;
-  border: 2px solid black;
+  background: ${doenetMainBlue};
+  border: none;
+  color: white;
   border-radius: 5px;
 `;
 
@@ -150,9 +152,9 @@ const LetterButton = styled.button`
   flex-basis: 9%;
   margin: 1px;
   height: 30px;
-  background: ${doenetMainBlue};
-  color: white;
-  border: 0;
+  color: ${doenetMainBlue};
+  border: 2px solid ${doenetMainBlue};
+  background: white;
   border-radius: 3px;
 `;
 
@@ -353,26 +355,26 @@ export default function VirtualKeyboard() {
         <Button33 onClick={() => callback('cmd \\sin')}>
           <MathJax.Node inline formula={'\\sin'} />
         </Button33>
-        <Button33 onClick={() => callback('write \\sin^{-1}')}>
-          <MathJax.Node inline formula={'\\sin^{-1}'} />
-        </Button33>
-        <Button33 onClick={() => callback('cmd \\sinh')}>
-          <MathJax.Node inline formula={'\\sinh'} />
+        <Button33 onClick={() => callback('cmd \\cos')}>
+          <MathJax.Node inline formula={'\\cos'} />
         </Button33>
         <Button33 onClick={() => callback('cmd \\tan')}>
           <MathJax.Node inline formula={'\\tan'} />
         </Button33>
-        <Button33 onClick={() => callback('write \\tan^{-1}')}>
-          <MathJax.Node inline formula={'\\tan^{-1}'} />
-        </Button33>
-        <Button33 onClick={() => callback('cmd \\tanh')}>
-          <MathJax.Node inline formula={'\\tanh'} />
-        </Button33>
-        <Button33 onClick={() => callback('cmd \\cos')}>
-          <MathJax.Node inline formula={'\\cos'} />
+        <Button33 onClick={() => callback('write \\sin^{-1}')}>
+          <MathJax.Node inline formula={'\\sin^{-1}'} />
         </Button33>
         <Button33 onClick={() => callback('write \\cos^{-1}')}>
           <MathJax.Node inline formula={'\\cos^{-1}'} />
+        </Button33>
+        <Button33 onClick={() => callback('write \\tan^{-1}')}>
+          <MathJax.Node inline formula={'\\tan^{-1}'} />
+        </Button33>
+        <Button33 onClick={() => callback('cmd \\sinh')}>
+          <MathJax.Node inline formula={'\\sinh'} />
+        </Button33>
+        <Button33 onClick={() => callback('cmd \\tanh')}>
+          <MathJax.Node inline formula={'\\tanh'} />
         </Button33>
         <Button33 onClick={() => callback('cmd \\cosh')}>
           <MathJax.Node inline formula={'\\cosh'} />
@@ -384,26 +386,26 @@ export default function VirtualKeyboard() {
         <Button33 onClick={() => callback('cmd \\csc')}>
           <MathJax.Node inline formula={'\\csc'} />
         </Button33>
-        <Button33 onClick={() => callback('write \\csc^{-1}')}>
-          <MathJax.Node inline formula={'\\csc^{-1}'} />
-        </Button33>
-        <Button33 onClick={() => callback('cmd \\csch')}>
-          <MathJax.Node inline formula={'csch'} />
+        <Button33 onClick={() => callback('cmd \\sec')}>
+          <MathJax.Node inline formula={'\\sec'} />
         </Button33>
         <Button33 onClick={() => callback('cmd \\cot')}>
           <MathJax.Node inline formula={'\\cot'} />
         </Button33>
-        <Button33 onClick={() => callback('write \\cot^{-1}')}>
-          <MathJax.Node inline formula={'\\cot^{-1}'} />
-        </Button33>
-        <Button33 onClick={() => callback('cmd \\coth')}>
-          <MathJax.Node inline formula={'\\coth'} />
-        </Button33>
-        <Button33 onClick={() => callback('cmd \\sec')}>
-          <MathJax.Node inline formula={'\\sec'} />
+        <Button33 onClick={() => callback('write \\csc^{-1}')}>
+          <MathJax.Node inline formula={'\\csc^{-1}'} />
         </Button33>
         <Button33 onClick={() => callback('write \\sec^{-1}')}>
           <MathJax.Node inline formula={'\\sec^{-1}'} />
+        </Button33>
+        <Button33 onClick={() => callback('write \\cot^{-1}')}>
+          <MathJax.Node inline formula={'\\cot^{-1}'} />
+        </Button33>
+        <Button33 onClick={() => callback('cmd \\csch')}>
+          <MathJax.Node inline formula={'csch'} />
+        </Button33>
+        <Button33 onClick={() => callback('cmd \\coth')}>
+          <MathJax.Node inline formula={'\\coth'} />
         </Button33>
         <Button33 onClick={() => callback('cmd \\sech')}>
           <MathJax.Node inline formula={'sech'} />
@@ -447,6 +449,8 @@ export default function VirtualKeyboard() {
         </Button33>
       </Section>
     );
+
+    let sectionGreekNone = null;
 
     let sectionGreek1 = (
       <Section>
@@ -588,9 +592,9 @@ export default function VirtualKeyboard() {
         <Button onClick={() => callback('type >=')}>
           <MathJax.Node inline formula={'\\geq'} />
         </Button>
-        <WhiteButton onClick={handleToggleLetters}>
-          <MathJax.Node inline formula={'ABC'} />
-        </WhiteButton>
+        <Button onClick={() => callback('cmd /')}>
+          <MathJax.Node inline formula={'\\div'} />
+        </Button>
         <Button onClick={() => callback('type sqrt')}>
           <MathJax.Node inline formula={'\\sqrt{}'} />
         </Button>
@@ -657,7 +661,7 @@ export default function VirtualKeyboard() {
     );
 
     let sectionControl = (
-      <Section style={{ marginTop: '10px' }}>
+      <Section style={{ marginTop: '57px' }}>
         {/* <BlueButton onClick={handleToggleFunctions}>functions</BlueButton> */}
         <CursorButton onClick={() => callback('keystroke Left')}>
           <MathJax.Node inline formula={'\\leftarrow'} />
@@ -691,39 +695,42 @@ export default function VirtualKeyboard() {
               ? sectionGreek2
               : null}
           </ContainerSection>
+          <VerticalDivider height="230px" marginTop="10px" />
           <ContainerSection>
             <ToggleButtonSection>
               <ToggleButtonGroup onClick={handleFnToggle}>
-                <ToggleButton value="Set" />
                 <ToggleButton value="Trig 1" />
                 <ToggleButton value="Trig 2" />
+                <ToggleButton value="Set" />
                 <ToggleButton value="Fn" />
               </ToggleButtonGroup>
             </ToggleButtonSection>
             {toggleFn === 0
-              ? sectionSet
-              : toggleFn === 1
               ? sectionTrig1
-              : toggleFn === 2
+              : toggleFn === 1
               ? sectionTrig2
+              : toggleFn === 2
+              ? sectionSet
               : toggleFn === 3
               ? sectionFn
               : null}
           </ContainerSection>
+          <VerticalDivider height="230px" marginTop="10px" />
           <ContainerSection>
             <ToggleButtonSection>
               <ToggleButtonGroup onClick={handleNumpadToggle}>
-                <ToggleButton value="xyz" />
                 <ToggleButton value="123" />
+                <ToggleButton value="xy" />
               </ToggleButtonGroup>
             </ToggleButtonSection>
             {toggleNumpad === 0
-              ? sectionXYZ
-              : toggleNumpad === 1
               ? section123
+              : toggleNumpad === 1
+              ? sectionXYZ
               : null}
           </ContainerSection>
-          <ContainerSection>{sectionControl}</ContainerSection>
+          <VerticalDivider height="230px" marginTop="10px" />
+          <ControlSection>{sectionControl}</ControlSection>
         </Panel>
       </MathJax.Provider>
     );
