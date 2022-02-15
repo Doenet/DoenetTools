@@ -70,7 +70,7 @@ export function parseAndCompile(inText){
             //Corrosponds to the entity non-terminal in the grammar
             while(cursor.nextSibling()){
                 if(cursor.name === "Text"){
-                    let txt = inText.substring(cursor.from,cursor.to).trimEnd();
+                    let txt = inText.substring(cursor.from,cursor.to);
                     if(txt !== ""){
                         element.children.push(txt)
                     }
@@ -110,7 +110,6 @@ export function parseAndCompile(inText){
                 cursor.firstChild();
                 let attrName = inText.substring(cursor.from,cursor.to);
                 
-                console.log("113",showCursor(cursor))
                 if(cursor.nextSibling() === false){
                     attrs[attrName] = true;
                 } else {
@@ -144,8 +143,7 @@ export function parseAndCompile(inText){
             return inText.substring(tc.from,tc.to)
         } else if(tc.node.name === "Text"){
             //TODO probably don't need to trim anymore?
-            let txt = inText.substring(tc.node.from,tc.node.to).trimEnd();
-            //why is it called state...
+            let txt = inText.substring(tc.node.from,tc.node.to);
             if(txt !== ""){
                 return txt;
             }
@@ -158,8 +156,8 @@ export function parseAndCompile(inText){
     if(!tc.firstChild()){
         return out;
     }
-    // console.log("intext",inText)
-    // console.log("showCursor",showCursor(tc));
+    console.log("intext",inText)
+    console.log("showCursor",showCursor(tc));
 
     out.push(compileTopLevel(tc));
     while(tc.nextSibling()){

@@ -8,7 +8,7 @@ import { useToast, toastType } from '@Toast';
 import { serializedComponentsReplacer, serializedComponentsReviver } from '../Core/utils/serializedStateProcessing';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faExclamationCircle } from '@fortawesome/free-solid-svg-icons';
-import { rendererSVs } from '../Viewer/renderers/useDoenetRenderer';
+import { rendererState } from '../Viewer/renderers/useDoenetRenderer';
 import { atomFamily, useRecoilCallback } from 'recoil';
 
 const rendererUpdatesToIgnore = atomFamily({
@@ -31,7 +31,6 @@ class DoenetViewerChild extends Component {
     this.recordEvent = this.recordEvent.bind(this);
     this.callAction = this.callAction.bind(this);
 
-    this.rendererUpdateMethods = {};
     this.rendererStateValues = {};
 
     this.cumulativeStateVariableChanges = {};
@@ -294,8 +293,6 @@ class DoenetViewerChild extends Component {
     }
 
     let documentComponentInstructions = coreInfo.documentToRender;
-    this.componentsToRender = {};
-    this.initializeComponentsToRender(documentComponentInstructions)
 
 
     renderersloadComponent(renderPromises, rendererClassNames).then((rendererClasses) => {
@@ -307,7 +304,6 @@ class DoenetViewerChild extends Component {
           key: documentComponentInstructions.componentName,
           componentInstructions: documentComponentInstructions,
           rendererClasses: this.rendererClasses,
-          rendererUpdateMethods: this.rendererUpdateMethods,
           flags: this.props.flags,
           callAction: this.callAction,
         }
@@ -371,16 +367,6 @@ class DoenetViewerChild extends Component {
 
   }
 
-  initializeComponentsToRender(componentToRender) {
-    this.componentsToRender[componentToRender.componentName] = componentToRender;
-    if (componentToRender.children) {
-      for (let child of componentToRender.children) {
-        if (child.componentName) {
-          this.initializeComponentsToRender(child)
-        }
-      }
-    }
-  }
 
   saveState({
     newStateVariableValues,
@@ -629,35 +615,20 @@ class DoenetViewerChild extends Component {
 
     for (let instruction of updateInstructions) {
 
-      if (instruction.instructionType === "updateStateVariable") {
-        for (let { componentName, stateValues, rendererType } of instruction.stateValuesToUpdate
+      if (instruction.instructionType === "updateRendererStates") {
+        for (let { componentName, stateValues, rendererType, childrenInstructions } of instruction.rendererStatesToUpdate
         ) {
-
 
           this.props.updateRendererSVsWithRecoil({
             componentName,
             stateValues,
+            childrenInstructions,
             sourceOfUpdate: instruction.sourceOfUpdate,
             baseStateVariable: this.rendererClasses?.[rendererType]?.baseStateVariable
           })
           this.rendererStateValues[componentName] = stateValues;
-          //TODO: await ????
-          // this.rendererUpdateMethods[componentName].update({
-          //   sourceOfUpdate: instruction.sourceOfUpdate
-          // });
+
         }
-      } else if (instruction.instructionType === "changeChildren") {
-
-        this.componentsToRender[instruction.parentName].children = instruction.childrenToRender;
-        this.props.updateRendererSVsWithRecoil({
-          componentName: instruction.parentName,
-          stateValues: instruction.stateValues,
-          sourceOfUpdate: instruction.sourceOfUpdate,
-          baseStateVariable: this.rendererClasses?.[instruction.rendererType]?.baseStateVariable
-        })
-
-        this.rendererStateValues[instruction.parentName] = instruction.stateValues;
-
       }
     }
 
@@ -762,43 +733,6 @@ class DoenetViewerChild extends Component {
     // });
 
   }
-
-  contentIdsToDoenetMLs(contentIds) {
-    let promises = [];
-    let newDoenetMLs = {};
-    let newContentIds = contentIds;
-
-    for (let contentId of contentIds) {
-      promises.push(axios.get(`/media/${contentId}.doenet`))
-
-    }
-
-    return Promise.all(promises).then((resps) => {
-      // contentIds.forEach((x, i) => newDoenetMLs[x] = resps[i].data)
-      newDoenetMLs = resps.map(x => x.data);
-
-      // console.log({ newDoenetMLs, newContentIds })
-      return Promise.resolve({ newDoenetMLs, newContentIds });
-
-    }).catch(err => {
-
-      let message;
-      if (newContentIds.length === 1) {
-        message = `Could not retrieve contentId ${newContentIds[0]}`
-      } else {
-        message = `Could not retrieve contentIds ${newContentIds.join(',')}`
-      }
-
-      message += ": " + err.message;
-
-      console.error(message)
-
-      return Promise.reject(new Error(message));
-
-    })
-
-  }
-
 
 
   render() {
@@ -958,7 +892,9 @@ class ErrorBoundary extends React.Component {
 
 function DoenetViewer(props) {
   const toast = useToast();
-  const updateRendererSVsWithRecoil = useRecoilCallback(({ snapshot, set }) => async ({ componentName, stateValues, sourceOfUpdate, baseStateVariable }) => {
+  const updateRendererSVsWithRecoil = useRecoilCallback(({ snapshot, set }) => async ({
+    componentName, stateValues, childrenInstructions, sourceOfUpdate, baseStateVariable
+  }) => {
     // stateVariables = JSON.parse(JSON.stringify(stateVariables))
     // stateVariables = JSON.stringify(stateVariables, serializedComponentsReplacer)
     // stateVariables = JSON.parse(JSON.stringify(stateVariables, serializedComponentsReplacer), serializedComponentsReviver)
@@ -1003,7 +939,14 @@ function DoenetViewer(props) {
       }
     }
 
-    set(rendererSVs(componentName), { stateValues, sourceOfUpdate, ignoreUpdate })
+    let newRendererState = { stateValues, childrenInstructions, sourceOfUpdate, ignoreUpdate };
+
+    if (childrenInstructions === undefined) {
+      let previousRendererState = snapshot.getLoadable(rendererState(componentName)).contents;
+      newRendererState.childrenInstructions = previousRendererState.childrenInstructions;
+    }
+
+    set(rendererState(componentName), newRendererState)
 
   })
   const updateRendererUpdatesToIgnore = useRecoilCallback(({ snapshot, set }) => async ({ componentName, baseVariableValue, actionId }) => {

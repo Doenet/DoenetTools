@@ -7,6 +7,7 @@ import sha256 from 'crypto-js/sha256';
 import Hex from 'crypto-js/enc-hex'
 import { parseAndCompile } from '../../Parser/parser';
 import subsets from './subset-of-reals';
+import axios from 'axios';
 
 export function scrapeOffAllDoumentRelated(serializedComponents) {
 
@@ -134,7 +135,7 @@ function findNextTag(text) {
 
 export async function expandDoenetMLsToFullSerializedComponents({
   contentIds, doenetMLs,
-  componentInfoObjects, flags, contentIdsToDoenetMLs
+  componentInfoObjects, flags,
 }) {
 
   let arrayOfSerializedComponents = [];
@@ -209,7 +210,6 @@ export async function expandDoenetMLsToFullSerializedComponents({
       doenetMLs: newDoenetMLs,
       contentIds: newContentIds,
       componentInfoObjects, flags,
-      contentIdsToDoenetMLs
     });
 
     for (let [ind, contentId] of contentIdList.entries()) {
@@ -237,6 +237,44 @@ export async function expandDoenetMLsToFullSerializedComponents({
   };
 
 }
+
+function contentIdsToDoenetMLs(contentIds) {
+  let promises = [];
+  let newDoenetMLs = {};
+  let newContentIds = contentIds;
+
+  for (let contentId of contentIds) {
+    promises.push(axios.get(`/media/${contentId}.doenet`))
+  }
+
+  return Promise.all(promises).then((resps) => {
+
+    // contentIds.forEach((x, i) => newDoenetMLs[x] = resps[i].data)
+    newDoenetMLs = resps.map(x => x.data);
+
+    // console.log({ newDoenetMLs, newContentIds })
+    return Promise.resolve({ newDoenetMLs, newContentIds });
+
+  }).catch(err => {
+
+    let message;
+    if (newContentIds.length === 1) {
+      message = `Could not retrieve contentId ${newContentIds[0]}`
+    } else {
+      message = `Could not retrieve contentIds ${newContentIds.join(',')}`
+    }
+
+    message += ": " + err.message;
+
+    console.error(message)
+
+    return Promise.reject(new Error(message));
+
+  })
+
+}
+
+
 
 export function doenetMLToSerializedComponents(doenetML, init = true) {
   if (doenetML === undefined) { return []; }

@@ -4,7 +4,7 @@ import {doenetMLToSerializedComponents} from  '../../Core/utils/serializedStateP
 import {parseAndCompile} from '../../Parser/parser'
 import { returnAllPossibleVariants } from '../../Core/utils/returnAllPossibleVariants';
 //import DateTime from '../../_reactComponents/PanelHeaderComponents/DateTime'
-import Card from '../../_reactComponents/PanelHeaderComponents/Card.jsx';
+import Banner from '../../_reactComponents/PanelHeaderComponents/Banner.jsx';
 
 
 
@@ -38,7 +38,7 @@ import Card from '../../_reactComponents/PanelHeaderComponents/Card.jsx';
 
 
 ReactDOM.render(
-  <Card></Card>,
+  <Banner></Banner>,
   document.getElementById('root'),
 );
 

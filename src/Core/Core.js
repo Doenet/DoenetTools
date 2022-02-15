@@ -90,6 +90,7 @@ async function returnAllStateVariables(core) {
     for (let vName in component.state) {
       compObj.stateValues[vName] = preprocessForPostMessage(await component.state[vName].value);
     }
+    compObj.activeChildren = component.activeChildren.map(x => x.componentName ? x.componentName : x)
   }
   return componentsObj;
 }
@@ -165,7 +166,7 @@ export default class Core {
           itemVariantInfo: deepClone(await this.document.stateValues.itemVariantInfo),
           allPossibleVariants: deepClone(await this.document.sharedParameters.allPossibleVariants),
           rendererTypesInDocument: deepClone(this.rendererTypesInDocument),
-          documentToRender: this.componentsToRender[this.documentName],
+          documentToRender: this.documentRendererInstructions,
           scoredItemWeights: await this.scoredItemWeights,
         }
       })
@@ -257,7 +258,6 @@ export default class Core {
       cancelAnimationFrame: this.cancelAnimationFrame,
       calculateScoredItemNumberOfContainer: this.calculateScoredItemNumberOfContainer,
       recordSolutionView: this.recordSolutionView,
-      contentIdsToDoenetMLs: this.externalFunctions.contentIdsToDoenetMLs,
     }
 
     this.updateInfo = {
@@ -310,7 +310,6 @@ export default class Core {
       doenetMLs: [doenetML],
       componentInfoObjects: this.componentInfoObjects,
       flags: this.flags,
-      contentIdsToDoenetMLs: this.externalFunctions.contentIdsToDoenetMLs
     }).then(this.finishCoreConstruction)
   }
 
@@ -488,9 +487,11 @@ export default class Core {
 
       let results = await this.initializeRenderedComponentInstruction(this.document);
 
+      this.documentRendererInstructions = results.componentToRender;
+
       let updateInstructions = [{
-        instructionType: "updateStateVariable",
-        stateValuesToUpdate: results.stateValuesToUpdate,
+        instructionType: "updateRendererStates",
+        rendererStatesToUpdate: results.rendererStatesToUpdate,
       }]
 
       this.postUpdateRenderers(updateInstructions, true)
@@ -539,9 +540,9 @@ export default class Core {
     let deletedRenderers = [];
 
     let updateInstructions = [];
-    let stateValuesToUpdate = [];
+    let rendererStatesToUpdate = [];
 
-    let parentsWithChangedChildren = [];
+    let newChildrenInstructions = {};
 
     //TODO: Figure out what we need from here
     for (let componentName of this.componentsWithChangedChildrenToRender) {
@@ -617,7 +618,7 @@ export default class Core {
                 if (child.rendererType) {
                   let results = await this.initializeRenderedComponentInstruction(child);
                   childrenToRender.push(results.componentToRender);
-                  stateValuesToUpdate.push(...results.stateValuesToUpdate);
+                  rendererStatesToUpdate.push(...results.rendererStatesToUpdate);
                 } else if (typeof child === "string") {
                   childrenToRender.push(child);
                 } else if (typeof child === "number") {
@@ -629,29 +630,13 @@ export default class Core {
 
           this.componentsToRender[componentName].children = childrenToRender;
 
+          newChildrenInstructions[componentName] = childrenToRender;
+
           this.componentsWithChangedChildrenToRender.delete(componentName);
 
-          let stateValuesForRenderer = {};
-          for (let stateVariable in unproxiedComponent.state) {
-            if (unproxiedComponent.state[stateVariable].forRenderer) {
-              let value = preprocessForPostMessage(await unproxiedComponent.state[stateVariable].value);
-              // if (value !== null && typeof value === 'object') {
-              //   value = new Proxy(value, readOnlyProxyHandler)
-              // }
-              stateValuesForRenderer[stateVariable] = value;
-            }
+          if (!componentNamesToUpdate.includes(componentName)) {
+            componentNamesToUpdate.push(componentName);
           }
-
-
-          updateInstructions.push({
-            instructionType: "changeChildren",
-            parentName: componentName,
-            childrenToRender,
-            stateValues: stateValuesForRenderer,
-            rendererType: unproxiedComponent.rendererType,
-          });
-
-          parentsWithChangedChildren.push(componentName)
 
         }
 
@@ -665,7 +650,6 @@ export default class Core {
 
     for (let componentName of componentNamesToUpdate) {
       if (componentName in this.componentsToRender
-        & !parentsWithChangedChildren.includes(componentName)
         // && !deletedRenderers.includes(componentName)  TODO: what if recreate with same name?
       ) {
         let component = this._components[componentName];
@@ -681,51 +665,32 @@ export default class Core {
             }
           }
 
-          stateValuesToUpdate.push({
+          let newRendererState = {
             componentName,
             stateValues: stateValuesForRenderer,
-            rendererType: component.rendererType,
-          });
+            rendererType: component.rendererType,  // TODO: need this to ignore baseVariables change: is this right place?
+          }
+
+          // only add childrenInstructions if they changed
+          if (newChildrenInstructions[componentName]) {
+            newRendererState.childrenInstructions = newChildrenInstructions[componentName];
+          }
+
+          rendererStatesToUpdate.push(newRendererState);
         }
       }
     }
 
 
-    // stateValuesToUpdate = stateValuesToUpdate.filter(x => !deletedRenderers.includes(x))
-    if (stateValuesToUpdate.length > 0) {
+    // rendererStatesToUpdate = rendererStatesToUpdate.filter(x => !deletedRenderers.includes(x))
+    if (rendererStatesToUpdate.length > 0) {
       let instruction = {
-        instructionType: "updateStateVariable",
-        stateValuesToUpdate,
+        instructionType: "updateRendererStates",
+        rendererStatesToUpdate,
         sourceOfUpdate,
       }
       updateInstructions.splice(0, 0, instruction);
     }
-
-    // for (let componentName of stateValuesToUpdate) {
-    //   let component = this._components[componentName];
-    //   if (component) {
-    //     let stateValuesForRenderer = {};
-    //     for (let stateVariable in component.state) {
-    //       if (component.state[stateVariable].forRenderer) {
-    //         let value = await component.state[stateVariable].value;
-    //         // if (value !== null && typeof value === 'object') {
-    //         //   value = new Proxy(value, readOnlyProxyHandler)
-    //         // }
-    //         if (value instanceof me.class) {
-    //           stateValuesForRenderer[stateVariable] = value.tree;
-    //         } else {
-    //           stateValuesForRenderer[stateVariable] = value;
-    //         }
-    //       }
-    //     }
-
-    //     // this.externalFunctions.updateRendererSVsWithRecoil({ componentName, stateValues: stateValuesForRenderer, sourceOfUpdate })
-
-
-    //     Object.assign(this.componentsToRender[componentName].stateValues,
-    //       stateValuesForRenderer)
-    //   }
-    // }
 
     this.postUpdateRenderers(updateInstructions)
 
@@ -744,7 +709,7 @@ export default class Core {
     }
 
 
-    let stateValuesToUpdate = [];
+    let rendererStatesToUpdate = [];
 
     let stateValuesForRenderer = {};
     for (let stateVariable in component.state) {
@@ -755,10 +720,6 @@ export default class Core {
 
     let componentName = component.componentName;
 
-    stateValuesToUpdate.push({
-      componentName,
-      stateValues: stateValuesForRenderer
-    });
 
     let childrenToRender = [];
     if (component.constructor.renderChildren) {
@@ -768,7 +729,7 @@ export default class Core {
           if (child.rendererType) {
             let results = await this.initializeRenderedComponentInstruction(child);
             childrenToRender.push(results.componentToRender);
-            stateValuesToUpdate.push(...results.stateValuesToUpdate);
+            rendererStatesToUpdate.push(...results.rendererStatesToUpdate);
 
           } else if (typeof child === "string") {
             childrenToRender.push(child);
@@ -778,6 +739,12 @@ export default class Core {
         }
       }
     }
+
+    rendererStatesToUpdate.push({
+      componentName,
+      stateValues: stateValuesForRenderer,
+      childrenInstructions: childrenToRender,
+    });
 
     this.componentsWithChangedChildrenToRender.delete(componentName);
 
@@ -799,19 +766,20 @@ export default class Core {
         }
       }
     }
-    // this.externalFunctions.updateRendererSVsWithRecoil({ componentName, stateValues: stateValuesForRenderer })
 
-    this.componentsToRender[componentName] = {
+    let rendererInstructions = {
       componentName: componentName,
       componentType: component.componentType,
       rendererType: component.rendererType,
-      // stateValues: stateValuesForRenderer,  // TODO: delete when remove class-based components?
-      children: childrenToRender,
-      actions: requestActions,
+      actions: requestActions
+    }
+
+    this.componentsToRender[componentName] = {
+      children: childrenToRender
     };
 
 
-    return { componentToRender: this.componentsToRender[componentName], stateValuesToUpdate };
+    return { componentToRender: rendererInstructions, rendererStatesToUpdate };
   }
 
   deleteFromComponentsToRender({
@@ -5135,6 +5103,44 @@ export default class Core {
           }
         }
       }
+    }
+
+    for (let varName in result.markAsUsedDefault) {
+      if (!component.state[varName].isResolved) {
+        throw Error(`Marking state variable as used default when it isn't yet resolved: ${varName} of ${component.componentName}`)
+      }
+
+      if (!(varName in receivedValue)) {
+        let matchingArrayEntry;
+        if (component.state[varName].isArray && component.state[varName].arrayEntryNames) {
+          for (let arrayEntryName of component.state[varName].arrayEntryNames) {
+            if (arrayEntryName in receivedValue) {
+              matchingArrayEntry = arrayEntryName;
+              break;
+            }
+          }
+        }
+        if (!matchingArrayEntry) {
+          throw Error(`Marking state variable  ${varName} as used default in definition of ${stateVariable} of ${component.componentName}, but it's not listed as an additional state variable defined.`)
+        }
+      }
+
+      if (Array.isArray()) {
+
+        for (let arrayKey in result.markAsUsedDefault[varName]) {
+          if (result.markAsUsedDefault[varName][arrayKey]) {
+            component.state[varName].usedDefaultByArrayKey[arrayKey] = true;
+          }
+        }
+
+      } else {
+
+        if (result.markAsUsedDefault[varName]) {
+          component.state[varName].usedDefault = true;
+        }
+
+      }
+
     }
 
 
