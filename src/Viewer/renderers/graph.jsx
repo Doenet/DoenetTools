@@ -182,7 +182,7 @@ export default function Graph(props) {
   if (SVs.hidden) {
     divStyle.display = "none";
   }
-
+  divStyle.border = "2px solid black";
   if (!board) {
     return <>
       <a name={name} />
