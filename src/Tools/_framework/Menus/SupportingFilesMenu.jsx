@@ -35,7 +35,7 @@ const supportingFilesAndPermissionByDoenetIdAtom = atomFamily({
     key: 'supportingFilesAndPermissionByDoenetId/Default',
     get: (doenetId) => async () => {
       let { data } = await axios.get('/api/loadSupprtingFileInfo.php', {params:{doenetId}})
-      // console.log("data",data)
+      // console.log("loadSupprtingFileInfo data",data)
       // let {canUpload,supportingFiles,userQuotaBytesAvailable, quotaBytes} = data;
       return data;
     },
@@ -92,9 +92,9 @@ export default function SupportingFilesMenu(props){
   let numberOfFilesUploading = useRef(0);
 
   const updateDescription = useRecoilCallback(({set})=> async (description,contentId)=>{
-    console.log("updateDescription",description,contentId,doenetId);
+    // console.log("updateDescription",description,contentId,doenetId);
     let { data } = await axios.get('/api/updateFileDescription.php',{params:{doenetId,contentId,description}});
-    console.log("updateDescription data",data)
+    // console.log("updateDescription data",data)
     // let { userQuotaBytesAvailable } = data;
     set(supportingFilesAndPermissionByDoenetIdSelector(doenetId),(was)=>{
       let newObj = {...was};
@@ -194,8 +194,9 @@ export default function SupportingFilesMenu(props){
         //test if all uploads are finished then clear it out
         numberOfFilesUploading.current = numberOfFilesUploading.current - 1;
         if (numberOfFilesUploading.current < 1){setUploadProgress([])}
-        let {success, fileName, contentId, description, msg, userQuotaBytesAvailable} = data;
-        console.log("FILE UPLOAD COMPLETE: Update UI",file,data)
+        let {success, fileName, contentId, description, asFileName, msg, userQuotaBytesAvailable} = data;
+        // console.log(">>data",data)
+        // console.log("FILE UPLOAD COMPLETE: Update UI",file,data)
         if (msg){
           addToast(msg, toastType.INFO)
         }
@@ -207,7 +208,8 @@ export default function SupportingFilesMenu(props){
               contentId,
               fileName,
               fileType:file.type,
-              description
+              description,
+              asFileName
             })
             newObj.supportingFiles = newSupportingFiles;
             newObj['userQuotaBytesAvailable'] = userQuotaBytesAvailable;
@@ -258,12 +260,14 @@ export default function SupportingFilesMenu(props){
     fileName,
     fileType,
     description,
+    asFileName
   })=>{
     let doenetMLCode = 'Error';
+    let source = `doenet:cid=${contentId}`;
     if (fileType === 'image/jpeg' || fileType === 'image/png'){
-      doenetMLCode = `<image source='media/${fileName}' description='${description}' />`
+      doenetMLCode = `<image source='${source}' description='${description}' asfilename='${asFileName}'/>`
     }else if (fileType === 'text/csv'){
-      doenetMLCode = `<dataset source='media/${fileName}' />`
+      doenetMLCode = `<dataset source='${source}' />`
     }
     
     supportFilesJSX.push(

@@ -36,7 +36,7 @@ $row = $result->fetch_assoc();
 if ($row['canUpload'] == '1'){$canUpload = TRUE;}
 
 $sql = "
-SELECT contentId, fileType, description
+SELECT contentId, fileType, description, asFileName
 FROM support_files
 WHERE doenetId='$doenetId'
 ORDER BY timestamp
@@ -50,6 +50,7 @@ $result = $conn->query($sql);
             "contentId" => $row['contentId'],
             "fileName" => getFileName($row['contentId'],$row['fileType']),
             "fileType" => $row['fileType'],
+            "asFileName" => $row['asFileName'],
             "description" => $row['description'],
         )
     );

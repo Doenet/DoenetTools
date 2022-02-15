@@ -7,7 +7,7 @@
 #
 # Host: 127.0.0.1 (MySQL 5.7.29)
 # Database: doenet_local
-# Generation Time: 2022-02-10 22:35:04 +0000
+# Generation Time: 2022-02-15 20:49:16 +0000
 # ************************************************************
 
 
@@ -376,6 +376,7 @@ CREATE TABLE `support_files` (
   `doenetId` char(21) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
   `fileType` varchar(32) COLLATE utf8_unicode_ci DEFAULT NULL,
   `description` varchar(256) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `asFileName` varchar(256) COLLATE utf8_unicode_ci DEFAULT NULL,
   `sizeInBytes` mediumint(11) DEFAULT NULL,
   `timestamp` datetime DEFAULT NULL,
   `isListed` tinyint(1) NOT NULL DEFAULT '0',
