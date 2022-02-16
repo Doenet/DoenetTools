@@ -69,7 +69,7 @@ if ($success){
   $thefile = fread($thefileHandle,filesize($tmp_dest));
   fclose($thefileHandle);
 
-  $token = $ini_array['ipfstoken'];
+  $token = $ini_array['web3storagetoken'];
   $url = "https://api.web3.storage/upload";
   $postField = array();
   $tmpfile = $_FILES['file']['tmp_name'];
