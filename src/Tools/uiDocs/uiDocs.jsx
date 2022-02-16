@@ -21,6 +21,7 @@ import Increment from '../../_reactComponents/PanelHeaderComponents/IncrementMen
 import DropdownMenu from '../../_reactComponents/PanelHeaderComponents/DropdownMenu.jsx';
 import DateTime from '../../_reactComponents/PanelHeaderComponents/DateTime.jsx';
 import Card from '../../_reactComponents/PanelHeaderComponents/Card.jsx';
+import ProgressBar from '../../_reactComponents/PanelHeaderComponents/ProgressBar.jsx';
 
 // === HOW TO ADD TO UI DOCS ===
 // 1. Import the component in the COMPONENT IMPORTS SECTION above
@@ -67,6 +68,7 @@ export default function attempt() {
   const absolute = () => {};
   const left = () => {};
   const noSearchButton = () => {};
+  const donutIcon = () => {};
 
   //=== DATA STRUCTURE SECTION ===
   let dataStructure = [
@@ -674,6 +676,41 @@ export default function attempt() {
           propCode: { disabled: true },
           description: 'Makes button not able to be used.',
         },
+      ],
+    },
+    {
+      name: 'ProgressBar',
+      id: 'progressbar',
+      code: ProgressBar,
+      codePreview: '<ProgressBar/>',
+      req_props: null,
+      req_children: null,
+      use: 'Used for finding things.',
+      props: [
+        {
+          name: 'Donut Icon',
+          propPreview: '<ProgressBar donutIcon />',
+          propCode: { donutIcon },
+          description: 'Progress bar with a donut icon',
+        },
+        {
+          name: 'Label',
+          propPreview: '<ProgressBar label="What: "/>',
+          propCode: { label: 'What: ' },
+          description: 'Adds label to componenet',
+        },
+        {
+          name: 'Vertical Label',
+          propPreview: '<ProgressBar label="What: " vertical/>',
+          propCode: { label: 'What: ', vertical },
+          description: 'Adds label to component on top',
+        },
+        {
+          name: 'Aria Label',
+            propPreview: '<SearchBar ariaLabel="Text"/>',
+            propCode: {ariaLabel: 'Text'},
+            description: 'Adds aria label to component'
+        }
       ],
     },
     {
