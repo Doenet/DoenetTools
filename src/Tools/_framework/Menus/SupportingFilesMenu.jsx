@@ -130,7 +130,7 @@ export default function SupportingFilesMenu(props){
     let sizeOfUpload = 0;
     files.map(file=>{
       if (!typesAllowed.includes(file.type)){
-        addToast(`File ${file.name} of type ${file.type} is not allowed. No files uploaded.`, toastType.ERROR);
+        addToast(`File '${file.name}' of type '${file.type}' is not allowed. No files uploaded.`, toastType.ERROR);
         success = false;
       }
       sizeOfUpload += file.size;
@@ -146,6 +146,15 @@ export default function SupportingFilesMenu(props){
       addToast(`Already uploading files.  Please wait before sending more.`, toastType.ERROR);
       success = false;
     }
+
+    files.map(file=>{
+      if (file.size >= 2000000){
+        addToast(`File '${file.name}' is larger than 2MB. No files uploaded.`, toastType.ERROR);
+        success = false;
+      }
+    })
+
+
     //If file sizes are over quota or any files aren't right type then abort
     if (!success){ return; }
 
