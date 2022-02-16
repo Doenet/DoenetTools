@@ -8,6 +8,7 @@ export default class DoenetRenderer extends Component {
     this.childrenToCreate = props.componentInstructions.children;
     this.componentName = props.componentInstructions.componentName;
     this.actions = props.componentInstructions.actions;
+    this.callAction = props.callAction;
     this.doenetSvData = props.componentInstructions.stateValues;
     props.rendererUpdateMethods[this.componentName] = {
       update: this.update
@@ -45,7 +46,8 @@ export default class DoenetRenderer extends Component {
       componentInstructions: childInstructions,
       rendererClasses: this.props.rendererClasses,
       rendererUpdateMethods: this.props.rendererUpdateMethods,
-      flags: this.props.flags
+      flags: this.props.flags,
+      callAction: this.callAction
     };
     if (this.doenetPropsForChildren) {
       Object.assign(propsForChild, this.doenetPropsForChildren);

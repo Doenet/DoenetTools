@@ -9,15 +9,9 @@ export default class MatrixInput extends MathInput {
 
     delete this.actions.updateRawValue;
 
-    this.actions.updateRawValues = this.updateRawValues.bind(
-      new Proxy(this, this.readOnlyProxyHandler)
-    )
-    this.actions.updateNumRows = this.updateNumRows.bind(
-      new Proxy(this, this.readOnlyProxyHandler)
-    )
-    this.actions.updateNumColumns = this.updateNumColumns.bind(
-      new Proxy(this, this.readOnlyProxyHandler)
-    )
+    this.actions.updateRawValues = this.updateRawValues.bind(this)
+    this.actions.updateNumRows = this.updateNumRows.bind(this)
+    this.actions.updateNumColumns = this.updateNumColumns.bind(this)
 
   }
 

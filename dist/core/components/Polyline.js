@@ -5,12 +5,8 @@ export default class Polyline extends GraphicalComponent {
   static componentType = "polyline";
 
   actions = {
-    movePolyline: this.movePolyline.bind(
-      new Proxy(this, this.readOnlyProxyHandler)
-    ),
-    finalizePolylinePosition: this.finalizePolylinePosition.bind(
-      new Proxy(this, this.readOnlyProxyHandler)
-    )
+    movePolyline: this.movePolyline.bind(this),
+    finalizePolylinePosition: this.finalizePolylinePosition.bind(this)
   };
 
   static createAttributesObject(args) {

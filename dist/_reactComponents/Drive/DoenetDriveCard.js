@@ -1,6 +1,7 @@
 import React from "../../_snowpack/pkg/react.js";
 import styled from "../../_snowpack/pkg/styled-components.js";
-const DriveCardContainer = styled.div`
+const DriveCardContainer = styled.figure`
+  margin: 0px;
   position: relative;
   background-size: cover;
   background-position: center center;
@@ -10,14 +11,14 @@ const DriveCardContainer = styled.div`
   font-size: 10px;
   line-height: 12px;
   border-radius: 5px;
-  display: flex; /*added*/
-  flex-direction: column; /*added*/
+  display: flex; // added
+  flex-direction: column; // added
   justify-content: space-between;
   background-image: url(${(props) => props.url});
   background-color: ${(props) => `#${props.color}`};
   border: 2px solid #040f1a;
 `;
-const Image = styled.div`
+const Image = styled.img`
   height: 100%;
   //width: 100%;
   color: red;
@@ -26,7 +27,7 @@ const Image = styled.div`
   background-size: cover;
   background-position: center;
 `;
-const Info = styled.div`
+const Info = styled.figcaption`
   border-radius: 0px 0px 5px 5px;
   // position: absolute;
   border-top: 2px solid #040f1a;

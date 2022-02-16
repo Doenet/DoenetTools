@@ -6,8 +6,7 @@ import sha256 from '../../_snowpack/pkg/crypto-js/sha256.js';
 import axios from '../../_snowpack/pkg/axios.js';
 
 export function returnAllPossibleVariants({
-  doenetML, flags = {},
-  callback
+  doenetML, flags = {}
 }) {
 
 
@@ -21,6 +20,7 @@ export function returnAllPossibleVariants({
     componentTypeLowerCaseMapping[componentType.toLowerCase()] = componentType;
   }
 
+
   let stateVariableInfo = {};
   for (let componentType in allComponentClasses) {
     Object.defineProperty(stateVariableInfo, componentType, {
@@ -32,6 +32,8 @@ export function returnAllPossibleVariants({
       configurable: true
     })
   }
+
+
 
   let publicStateVariableInfo = {};
   for (let componentType in allComponentClasses) {
@@ -87,43 +89,23 @@ export function returnAllPossibleVariants({
   };
   let contentId = Hex.stringify(sha256(doenetML));
 
-  serializeFunctions.expandDoenetMLsToFullSerializedComponents({
+  return serializeFunctions.expandDoenetMLsToFullSerializedComponents({
     contentIds: [contentId],
     doenetMLs: [doenetML],
-    callBack: args => finishReturnAllPossibleVariants(
-      args,
-      { callback, componentInfoObjects }),
     componentInfoObjects,
-    componentTypeLowerCaseMapping,
     flags,
     contentIdsToDoenetMLs
-  })
+}).then(finishReturnAllPossibleVariants)
+
 }
 
 function finishReturnAllPossibleVariants({
-  contentIds,
-  fullSerializedComponents,
-  finishSerializedStateProcessing = true,
-  calledAsynchronously = false
-}, { callback, componentInfoObjects }) {
-
-
+  fullSerializedComponents
+}) {
 
   let serializedComponents = fullSerializedComponents[0];
 
   serializeFunctions.addDocumentIfItsMissing(serializedComponents);
-
-  if (finishSerializedStateProcessing) {
-
-    serializeFunctions.createComponentNames({
-      serializedComponents,
-      componentInfoObjects,
-    });
-  } else {
-    if (serializedComponents[0].doenetAttributes === undefined) {
-      serializedComponents[0].doenetAttributes = {};
-    }
-  }
 
   let document = serializedComponents[0];
 
@@ -186,13 +168,7 @@ function finishReturnAllPossibleVariants({
 
   }
 
-
-
-  if (calledAsynchronously) {
-    callback({ allPossibleVariants })
-  } else {
-    setTimeout(() => callback({ allPossibleVariants }), 0)
-  }
+ return Promise.resolve({allPossibleVariants});
 }
 
 

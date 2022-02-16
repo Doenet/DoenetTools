@@ -3,7 +3,10 @@ import styled from "../../_snowpack/pkg/styled-components.js";
 import {animated, useSpring} from "../../_snowpack/pkg/@react-spring/web.js";
 import {useGesture} from "../../_snowpack/pkg/react-use-gesture.js";
 import {FontAwesomeIcon} from "../../_snowpack/pkg/@fortawesome/react-fontawesome.js";
-import {faGripLinesVertical, faGripLines} from "../../_snowpack/pkg/@fortawesome/free-solid-svg-icons.js";
+import {
+  faGripLinesVertical,
+  faGripLines
+} from "../../_snowpack/pkg/@fortawesome/free-solid-svg-icons.js";
 import {useRecoilState, atomFamily} from "../../_snowpack/pkg/recoil.js";
 export const handleDirection = {
   LEFT: {
@@ -62,7 +65,7 @@ const DragHandle = styled.div`
   box-sizing: border-box;
   touch-action: none;
 `;
-const panelOpen = atomFamily({
+export const panelOpen = atomFamily({
   key: "panelOpenAtom",
   default: false
 });
@@ -75,6 +78,7 @@ export default function DragPanel({
   panelSize = 240,
   isInitOpen = false
 }) {
+  console.log("id", id);
   const [open, setOpen] = useRecoilState(panelOpen(id));
   const [{dir}, api] = useSpring(() => ({
     dir: open ? handleSize + panelSize : handleSize

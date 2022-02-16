@@ -1,40 +1,41 @@
 import React from "../../_snowpack/pkg/react.js";
-import DoenetRenderer from "./DoenetRenderer.js";
+import useDoenetRender from "./useDoenetRenderer.js";
 import {HotTable} from "../../_snowpack/pkg/@handsontable/react.js";
 import {HyperFormula} from "../../_snowpack/pkg/hyperformula.js";
 import "../../_snowpack/pkg/handsontable/dist/handsontable.full.css.proxy.js";
 import {sizeToCSS} from "./utils/css.js";
-export default class SpreadsheetRenderer extends DoenetRenderer {
-  render() {
-    if (this.doenetSvData.hidden) {
-      return null;
-    }
-    return /* @__PURE__ */ React.createElement("div", {
-      id: this.componentName
-    }, /* @__PURE__ */ React.createElement("a", {
-      name: this.componentName
-    }), /* @__PURE__ */ React.createElement(HotTable, {
-      licenseKey: "non-commercial-and-evaluation",
-      data: this.doenetSvData.cells.map((x) => [...x]),
-      colHeaders: this.doenetSvData.columnHeaders,
-      rowHeaders: this.doenetSvData.rowHeaders,
-      width: sizeToCSS(this.doenetSvData.width),
-      height: sizeToCSS(this.doenetSvData.height),
-      afterChange: (changes, source) => this.actions.onChange({changes, source}),
-      formulas: {
-        engine: HyperFormula
-      },
-      fixedRowsTop: this.doenetSvData.fixedRowsTop,
-      fixedColumnsLeft: this.doenetSvData.fixedColumnsLeft,
-      hiddenColumns: {
-        columns: this.doenetSvData.hiddenColumns.map((x) => x - 1),
-        indicators: false
-      },
-      hiddenRows: {
-        rows: this.doenetSvData.hiddenRows.map((x) => x - 1),
-        indicators: false
-      },
-      stretchH: "all"
-    }));
+import {registerAllModules} from "../../_snowpack/pkg/handsontable/registry.js";
+registerAllModules();
+export default function SpreadsheetRenderer(props) {
+  let {name, SVs, actions, callAction} = useDoenetRender(props);
+  if (SVs.hidden) {
+    return null;
   }
+  return /* @__PURE__ */ React.createElement("div", {
+    id: name
+  }, /* @__PURE__ */ React.createElement("a", {
+    name
+  }), /* @__PURE__ */ React.createElement(HotTable, {
+    licenseKey: "non-commercial-and-evaluation",
+    data: SVs.cells.map((x) => [...x]),
+    colHeaders: SVs.columnHeaders,
+    rowHeaders: SVs.rowHeaders,
+    width: sizeToCSS(SVs.width),
+    height: sizeToCSS(SVs.height),
+    afterChange: (changes, source) => callAction({action: actions.onChange, args: {changes, source}}),
+    formulas: {
+      engine: HyperFormula
+    },
+    fixedRowsTop: SVs.fixedRowsTop,
+    fixedColumnsLeft: SVs.fixedColumnsLeft,
+    hiddenColumns: {
+      columns: SVs.hiddenColumns.map((x) => x - 1),
+      indicators: false
+    },
+    hiddenRows: {
+      rows: SVs.hiddenRows.map((x) => x - 1),
+      indicators: false
+    },
+    stretchH: "all"
+  }));
 }

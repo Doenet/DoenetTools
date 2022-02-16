@@ -761,15 +761,9 @@ export default class Graph extends BlockComponent {
   }
 
   actions = {
-    changeAxisLimits: this.changeAxisLimits.bind(
-      new Proxy(this, this.readOnlyProxyHandler)
-    ),
-    addChildren: this.addChildren.bind(
-      new Proxy(this, this.readOnlyProxyHandler)
-    ),
-    deleteChildren: this.deleteChildren.bind(
-      new Proxy(this, this.readOnlyProxyHandler)
-    )
+    changeAxisLimits: this.changeAxisLimits.bind(this),
+    addChildren: this.addChildren.bind(this),
+    deleteChildren: this.deleteChildren.bind(this)
   };
 
 }

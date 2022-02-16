@@ -588,3 +588,7 @@ function wrapWordIncludingNumberWithVarSub(string) {
   return newString;
 
 }
+
+export function stripLatex(latex) {
+  return latex.replaceAll(`\\,`, '').replaceAll(/\\var{([^{}]*)}/g, '$1');
+}

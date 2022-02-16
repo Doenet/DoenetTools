@@ -1,7 +1,7 @@
 import { B as Buffer } from './common/_polyfill-node:buffer-e7aca6c6.js';
 import { g as global } from './common/_polyfill-node:global-acbc543a.js';
 import { p as process, n as nextTick } from './common/process-e9e98960.js';
-import { d as getDefaultExportFromNamespaceIfNotNamed } from './common/_commonjsHelpers-b3efd043.js';
+import { b as getDefaultExportFromNamespaceIfNotNamed } from './common/_commonjsHelpers-f5d70792.js';
 
 var domain;
 

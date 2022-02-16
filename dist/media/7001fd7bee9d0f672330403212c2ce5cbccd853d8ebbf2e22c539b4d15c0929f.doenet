@@ -1,0 +1,2 @@
+<textinput name='t' expanded prefill="text"/>
+  <renderDoenetML codeSource='t' />

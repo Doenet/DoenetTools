@@ -1,5 +1,6 @@
-import Function, { returnSymbolicFunctionFromFormula, returnNumericalFunctionFromFormula } from '../Function.js';
+import Function, { returnSymbolicFunctionFromFormula } from '../Function.js';
 import me from '../../../_snowpack/pkg/math-expressions.js';
+import { returnNumericalFunctionFromFormula } from '../../utils/function.js';
 
 export default class FunctionOperator extends Function {
   static componentType = "_functionOperator";
@@ -369,7 +370,13 @@ export default class FunctionOperator extends Function {
         if (globalDependencyValues.operatorBasedOnFormula) {
           let numericalfs = {};
           for (let arrayKey of arrayKeys) {
-            numericalfs[arrayKey] = returnNumericalFunctionFromFormula(globalDependencyValues, arrayKey)
+            numericalfs[arrayKey] = returnNumericalFunctionFromFormula({
+              formula: globalDependencyValues.formula,
+              nInputs: globalDependencyValues.nInputs,
+              variables: globalDependencyValues.variables,
+              domain: globalDependencyValues.domain,
+              component: arrayKey
+            })
             return {
               setValue: { numericalfs }
             }
@@ -394,7 +401,13 @@ export default class FunctionOperator extends Function {
               let childFs = [];
 
               for (let ind = 0; ind < arraySize[0]; ind++) {
-                childFs.push(returnNumericalFunctionFromFormula(dependencyValuesWithChildFormula, ind))
+                childFs.push(returnNumericalFunctionFromFormula({
+                  formula: globalDependencyValues.formula,
+                  nInputs: globalDependencyValues.nInputs,
+                  variables: globalDependencyValues.variables,
+                  domain: globalDependencyValues.domain,
+                  component: ind
+                }))
               }
               let numericalfs = {};
               for (let arrayKey of arrayKeys) {

@@ -3,9 +3,9 @@ import {basicSetup} from "../_snowpack/pkg/@codemirror/basic-setup.js";
 import {EditorState, Transaction, StateEffect} from "../_snowpack/pkg/@codemirror/state.js";
 import {selectLine, deleteLine, cursorLineUp} from "../_snowpack/pkg/@codemirror/commands.js";
 import {EditorView, keymap} from "../_snowpack/pkg/@codemirror/view.js";
-import {styleTags, defaultHighlightStyle, tags as t} from "../_snowpack/pkg/@codemirror/highlight.js";
+import {styleTags, tags as t} from "../_snowpack/pkg/@codemirror/highlight.js";
 import {lineNumbers} from "../_snowpack/pkg/@codemirror/gutter.js";
-import {LezerLanguage, LanguageSupport, syntaxTree, indentNodeProp, foldNodeProp} from "../_snowpack/pkg/@codemirror/language.js";
+import {LRLanguage, LanguageSupport, syntaxTree, indentNodeProp, foldNodeProp} from "../_snowpack/pkg/@codemirror/language.js";
 import {completeFromSchema} from "../_snowpack/pkg/@codemirror/lang-xml.js";
 import {parser} from "../parser/doenet.js";
 import {atom, useRecoilValue} from "../_snowpack/pkg/recoil.js";
@@ -188,7 +188,8 @@ let parserWithMetadata = parser.configure({
     indentNodeProp.add({
       Element(context) {
         let closed = /^\s*<\//.test(context.textAfter);
-        return context.lineIndent(context.state.doc.lineAt(context.node.from)) + (closed ? 0 : context.unit);
+        console.log("youuuhj", context.state.doc.lineAt(context.node.from));
+        return context.lineIndent(context.node.from) + (closed ? 0 : context.unit);
       },
       "OpenTag CloseTag SelfClosingTag"(context) {
         if (context.node.firstChild.name == "TagName") {
@@ -222,7 +223,7 @@ let parserWithMetadata = parser.configure({
     })
   ]
 });
-const doenetLanguage = LezerLanguage.define({
+const doenetLanguage = LRLanguage.define({
   parser: parserWithMetadata,
   languageData: {
     commentTokens: {block: {open: "<!--", close: "-->"}},

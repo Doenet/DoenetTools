@@ -1,9 +1,10 @@
 import React, {useState, lazy, useRef, Suspense} from "../../_snowpack/pkg/react.js";
-import {atom, useRecoilValue} from "../../_snowpack/pkg/recoil.js";
+import {atom, useRecoilValue, useSetRecoilState} from "../../_snowpack/pkg/recoil.js";
 import styled from "../../_snowpack/pkg/styled-components.js";
 import {FontAwesomeIcon} from "../../_snowpack/pkg/@fortawesome/react-fontawesome.js";
-import {faChevronLeft} from "../../_snowpack/pkg/@fortawesome/free-solid-svg-icons.js";
+import {faChevronLeft, faCog, faHome} from "../../_snowpack/pkg/@fortawesome/free-solid-svg-icons.js";
 import Logo from "../Logo.js";
+import {pageToolViewAtom} from "../NewToolRoot.js";
 export const selectedMenuPanelAtom = atom({
   key: "selectedMenuPanelAtom",
   default: null
@@ -19,6 +20,35 @@ const MenuPanelsWrapper = styled.div`
   overflow-x: hidden;
   width: ${({hide}) => hide ? "0px" : "240px"};
 `;
+const MenuPanelsCap = styled.div`
+width: 240px;
+height: 35px;
+background: white;
+display: flex;
+justify-content: space-between;
+align-items: center;
+position: ${(props) => props.fix ? "static" : "sticky"};
+border-bottom: 2px solid #e2e2e2;
+margin-bottom: -2px;
+top: 0;
+z-index: 2;
+`;
+const IconsGroup = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-left: 70px;
+  // width: 40px;
+`;
+const Branding = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  // margin-left: 95px;
+  width: 110px;
+  cursor: default;
+  font-size: 16px;
+`;
 const MenuPanelsCapComponent = styled.div`
 width: 240px;
 background: white;
@@ -27,7 +57,7 @@ border-top: 1px solid #e2e2e2;
 border-bottom: 2px solid #e2e2e2;
 margin-bottom: -2px;
 position: sticky;
-top: 0;
+top: 35;
 z-index: 2;
 `;
 const MenuHeaderButton = styled.button`
@@ -46,8 +76,8 @@ height: 35px;
 width: 20px;
 color: white;
 border: none;
-position: ${(props) => props.fix ? "static" : "absolute"};
-top: 2px;
+// display: inline-block;
+position: static;
 left: 220px;
 cursor: pointer;
 z-index: 2;
@@ -72,6 +102,20 @@ border: 0px solid white;
 // border-top: 1px solid black;
 border-bottom: ${(props) => props.isOpen ? "2px solid black" : "0px solid black"} ;
 margin-top: 2px;
+`;
+const SettingsButton = styled.button`
+background-color: white;
+color: black;
+border: none;
+cursor: pointer;
+font-size: 20px;
+`;
+const HomeButton = styled.button`
+  color: black;
+  background-color: white;
+  border-style: none;
+  cursor: pointer;
+  font-size: 20px;
 `;
 function SelectionMenu(props) {
   console.log("child", props.children);
@@ -122,6 +166,7 @@ const LoadingFallback = styled.div`
 export default function MenuPanel({hide, menuPanelCap = "", menusTitles = [], currentMenus = [], initOpen = [], setMenusOpen, displayProfile}) {
   console.log(">>>===MenuPanel", hide);
   const currentSelectionMenu = useRecoilValue(selectedMenuPanelAtom);
+  const setPageToolView = useSetRecoilState(pageToolViewAtom);
   let menusArray = [];
   const LazyMenuPanelCapObj = useRef({
     DriveInfoCap: lazy(() => import("../MenuPanelCaps/DriveInfoCap.js")),
@@ -148,6 +193,7 @@ export default function MenuPanel({hide, menuPanelCap = "", menusTitles = [], cu
     GradeDownload: lazy(() => import("../Menus/GradeDownload.js")),
     ManualEnrollment: lazy(() => import("../Menus/ManualEnrollment.js")),
     AssignmentSettingsMenu: lazy(() => import("../Menus/AssignmentSettingsMenu.js")),
+    SupportingFilesMenu: lazy(() => import("../Menus/SupportingFilesMenu.js")),
     GroupSettings: lazy(() => import("../Menus/GroupSettings.js")),
     TimerMenu: lazy(() => import("../Menus/TimerMenu.js")),
     CreditAchieved: lazy(() => import("../Menus/CreditAchieved.js")),
@@ -185,13 +231,19 @@ export default function MenuPanel({hide, menuPanelCap = "", menusTitles = [], cu
       fallback: /* @__PURE__ */ React.createElement(LoadingFallback, null, "loading...")
     }, React.createElement(LazyMenuObj[type], {mKey}))));
   }
-  menusArray.push(/* @__PURE__ */ React.createElement(Logo, null));
   return /* @__PURE__ */ React.createElement(MenuPanelsWrapper, {
     hide
-  }, menuPanelCapComponent, /* @__PURE__ */ React.createElement(CloseButton, {
-    onClick: () => setMenusOpen(false),
+  }, /* @__PURE__ */ React.createElement(MenuPanelsCap, {
     fix: hide
+  }, /* @__PURE__ */ React.createElement(Branding, {
+    style: {marginLeft: "5px"}
+  }, /* @__PURE__ */ React.createElement(Logo, null), /* @__PURE__ */ React.createElement("p", null, "Doenet")), /* @__PURE__ */ React.createElement(IconsGroup, null, /* @__PURE__ */ React.createElement(SettingsButton, {
+    onClick: () => setPageToolView({page: "settings", tool: "", view: ""})
+  }, /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
+    icon: faCog
+  }))), /* @__PURE__ */ React.createElement("span", null, /* @__PURE__ */ React.createElement(CloseButton, {
+    onClick: () => setMenusOpen(false)
   }, /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
     icon: faChevronLeft
-  })), selectionPanel, /* @__PURE__ */ React.createElement("div", null, menusArray));
+  })))), menuPanelCapComponent, selectionPanel, /* @__PURE__ */ React.createElement("div", null, menusArray));
 }

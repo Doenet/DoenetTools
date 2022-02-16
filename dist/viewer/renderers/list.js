@@ -1,28 +1,27 @@
 import React from "../../_snowpack/pkg/react.js";
-import DoenetRenderer from "./DoenetRenderer.js";
-export default class List extends DoenetRenderer {
-  render() {
-    if (this.doenetSvData.hidden) {
-      return null;
-    }
-    if (this.doenetSvData.item) {
-      return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("a", {
-        name: this.componentName
-      }), /* @__PURE__ */ React.createElement("li", {
-        id: this.componentName
-      }, this.children));
-    } else if (this.doenetSvData.numbered) {
-      return /* @__PURE__ */ React.createElement("ol", {
-        id: this.componentName
-      }, /* @__PURE__ */ React.createElement("a", {
-        name: this.componentName
-      }), this.children);
-    } else {
-      return /* @__PURE__ */ React.createElement("ul", {
-        id: this.componentName
-      }, /* @__PURE__ */ React.createElement("a", {
-        name: this.componentName
-      }), this.children);
-    }
+import useDoenetRender from "./useDoenetRenderer.js";
+export default function List(props) {
+  let {name, SVs, children} = useDoenetRender(props);
+  if (SVs.hidden) {
+    return null;
+  }
+  if (SVs.item) {
+    return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("a", {
+      name
+    }), /* @__PURE__ */ React.createElement("li", {
+      id: name
+    }, children));
+  } else if (SVs.numbered) {
+    return /* @__PURE__ */ React.createElement("ol", {
+      id: name
+    }, /* @__PURE__ */ React.createElement("a", {
+      name
+    }), children);
+  } else {
+    return /* @__PURE__ */ React.createElement("ul", {
+      id: name
+    }, /* @__PURE__ */ React.createElement("a", {
+      name
+    }), children);
   }
 }

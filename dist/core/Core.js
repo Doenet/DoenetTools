@@ -15,24 +15,116 @@ import sha256 from '../_snowpack/pkg/crypto-js/sha256.js';
 import Hex from '../_snowpack/pkg/crypto-js/enc-hex.js'
 import { preprocessMathInverseDefinition } from './utils/math.js';
 import { returnDefaultGetArrayKeysFromVarName } from './utils/stateVariables.js';
+import { nanoid } from '../_snowpack/pkg/nanoid.js';
 
 // string to componentClass: this.allComponentClasses["string"]
 // componentClass to string: componentClass.componentType
 // validTags: Object.keys(this.standardComponentClasses);
+
+let core;
+
+let queuedRequestActions = [];
+
+onmessage = function (e) {
+
+  if (e.data.messageType === "createCore") {
+
+    // if (core) {
+    //   // console.log('already have a core.  Refusing to create another one');
+    //   // return;
+    //   //TODO: Investigate for memory leaks
+    // }
+
+    // this.setTimeout(() => {
+    //   core = new Core(e.data.args)
+    //   core.getInitializedPromise().then(() => {
+    //     console.log('actions to process', queuedRequestActions)
+    //     for (let action of queuedRequestActions) {
+    //       core.requestAction(action);
+    //     }
+    //   })
+    // }, 10000)
+    core = new Core(e.data.args)
+    core.getInitializedPromise().then(() => {
+      // console.log('actions to process', queuedRequestActions)
+      for (let action of queuedRequestActions) {
+        core.requestAction(action);
+      }
+      queuedRequestActions = [];
+    })
+  } else if (e.data.messageType === "requestAction") {
+    if (core?.initialized) {
+      // setTimeout(() => core.requestAction(e.data.args), 1000)
+      core.requestAction(e.data.args)
+    } else {
+      queuedRequestActions.push(e.data.args);
+    }
+  } else if (e.data.messageType === "returnAllStateVariables") {
+    console.log('all components')
+    console.log(core._components)
+    returnAllStateVariables(core).then(componentsObj => {
+      postMessage({
+        messageType: "returnAllStateVariables",
+        args: componentsObj
+      })
+    });
+  } else if (e.data.messageType === "allowSolutionView") {
+    let messageId = e.data.args.messageId;
+    let resolveRecordSolutionView = core.resolveRecordSolutionView[messageId];
+    if (resolveRecordSolutionView) {
+      resolveRecordSolutionView(e.data.args)
+      delete core.resolveRecordSolutionView[messageId];
+    }
+  }
+}
+
+async function returnAllStateVariables(core) {
+  let componentsObj = {};
+  for (let componentName in core.components) {
+    let component = core.components[componentName];
+    let compObj = componentsObj[componentName] = {
+      componentName,
+      componentType: component.componentType,
+      stateValues: {}
+    }
+    for (let vName in component.state) {
+      compObj.stateValues[vName] = preprocessForPostMessage(await component.state[vName].value);
+    }
+  }
+  return componentsObj;
+}
+
+function preprocessForPostMessage(value) {
+  if (value instanceof me.class) {
+    value = value.tree;
+  } else if (typeof value === "function") {
+    value = undefined;
+  } else if (Array.isArray(value)) {
+    value = value.map(x => preprocessForPostMessage(x))
+  } else if (typeof value === "object" && value !== null) {
+    let valueCopy = {}
+    for (let key in value) {
+      valueCopy[key] = preprocessForPostMessage(value[key]);
+    }
+    value = valueCopy;
+  }
+  return value;
+}
 
 
 export default class Core {
   constructor({ doenetML, parameters, requestedVariant,
     externalFunctions, flags = {},
     stateVariableChanges = {},
-    coreReadyCallback, coreUpdatedCallback, coreId }) {
-    console.time('core');
-    
+    coreId }) {
+    // console.time('core');
+
 
     this.coreId = coreId;
 
     this.numerics = new Numerics();
-    this.flags = new Proxy(flags, readOnlyProxyHandler); //components shouldn't modify flags
+    // this.flags = new Proxy(flags, readOnlyProxyHandler); //components shouldn't modify flags
+    this.flags = flags;
 
     this.externalFunctions = externalFunctions;
     if (externalFunctions === undefined) {
@@ -44,6 +136,7 @@ export default class Core {
     this.performUpdate = this.performUpdate.bind(this);
     this.requestAction = this.requestAction.bind(this);
     this.performAction = this.performAction.bind(this);
+    this.recordSolutionView = this.recordSolutionView.bind(this);
     this.triggerChainedActions = this.triggerChainedActions.bind(this);
     this.requestRecordEvent = this.requestRecordEvent.bind(this);
     this.requestAnimationFrame = this.requestAnimationFrame.bind(this);
@@ -55,9 +148,31 @@ export default class Core {
     this.getStateVariableValue = this.getStateVariableValue.bind(this);
     // this.submitResponseCallBack = this.submitResponseCallBack.bind(this);
 
-    this.coreUpdatedCallback = coreUpdatedCallback;
-    this.coreReadyCallback = function () {
-      coreReadyCallback(this);
+    this.postUpdateRenderers = async function (args, init = false) {
+
+      postMessage({
+        messageType: "updateRenderers",
+        args,
+        init
+      })
+    }
+    this.coreReadyCallback = async function () {
+
+      postMessage({
+        messageType: "coreCreated",
+        args: {
+          generatedVariantInfo: deepClone(await this.document.stateValues.generatedVariantInfo),
+          itemVariantInfo: deepClone(await this.document.stateValues.itemVariantInfo),
+          allPossibleVariants: deepClone(await this.document.sharedParameters.allPossibleVariants),
+          rendererTypesInDocument: deepClone(this.rendererTypesInDocument),
+          documentToRender: this.componentsToRender[this.documentName],
+          scoredItemWeights: await this.scoredItemWeights,
+        }
+      })
+
+
+
+      // coreReadyCallback(this);
 
       this.requestRecordEvent({
         verb: "experienced",
@@ -105,6 +220,19 @@ export default class Core {
       })
     }
 
+    this.rendererStateVariables = {};
+    for (let componentType in this.allComponentClasses) {
+      Object.defineProperty(this.rendererStateVariables, componentType, {
+        get: function () {
+          let varDescriptions = this.allComponentClasses[componentType].returnStateVariableInfo({
+            onlyForRenderer: true, flags: this.flags
+          }).stateVariableDescriptions;
+          delete this.rendererStateVariables[componentType];
+          return this.rendererStateVariables[componentType] = varDescriptions;
+        }.bind(this),
+        configurable: true
+      })
+    }
 
     this.componentInfoObjects = {
       standardComponentClasses: this.standardComponentClasses,
@@ -128,12 +256,12 @@ export default class Core {
       requestAnimationFrame: this.requestAnimationFrame,
       cancelAnimationFrame: this.cancelAnimationFrame,
       calculateScoredItemNumberOfContainer: this.calculateScoredItemNumberOfContainer,
-      recordSolutionView: this.externalFunctions.recordSolutionView,
+      recordSolutionView: this.recordSolutionView,
       contentIdsToDoenetMLs: this.externalFunctions.contentIdsToDoenetMLs,
     }
 
     this.updateInfo = {
-      componentsTouched: [],
+      componentsToUpdateRenderers: [],
       compositesToExpand: new Set([]),
       compositesToUpdateReplacements: [],
       inactiveCompositesToUpdateReplacements: [],
@@ -159,7 +287,22 @@ export default class Core {
     this.parameterStack = new ParameterStack(parameters);
 
     this.parameterStack.parameters.rngClass = prng_alea;
-    console.timeLog('core','<-Before Expand');
+
+    this.initialized = false;
+    this.initializedPromiseResolves = [];
+    this.resolveInitialized = () => {
+      this.initializedPromiseResolves.forEach(resolve => resolve(true))
+      this.initialized = true;
+    }
+    this.getInitializedPromise = () => {
+      if (this.initialized) {
+        return Promise.resolve(true);
+      } else {
+        return new Promise((resolve, reject) => {
+          this.initializedPromiseResolves.push(resolve)
+        })
+      }
+    }
 
     let contentId = Hex.stringify(sha256(doenetML));
     serializeFunctions.expandDoenetMLsToFullSerializedComponents({
@@ -176,7 +319,6 @@ export default class Core {
     contentIds,
     fullSerializedComponents,
   }) {
-    console.timeLog('core','<-Top of finishCoreConstruction');
 
     this.contentId = contentIds[0];
 
@@ -188,7 +330,6 @@ export default class Core {
       serializedComponents,
       componentInfoObjects: this.componentInfoObjects,
     });
-    console.timeLog('core','<-After createComponentNames');
 
     // console.log(`serialized components at the beginning`)
     // console.log(deepClone(serializedComponents));
@@ -198,7 +339,7 @@ export default class Core {
     serializedComponents[0].doenetAttributes.contentId = this.contentId;
 
     this._components = {};
-    this.renderedComponentInstructions = {};
+    this.componentsToRender = {};
     this.componentsWithChangedChildrenToRender = new Set([]);
 
     this.stateVariableChangeTriggers = {};
@@ -212,6 +353,8 @@ export default class Core {
     this._graphRenderComponents = [];
 
     this.processQueue = [];
+
+    this.resolveRecordSolutionView = {};
 
     this.dependencies = new DependencyHandler({
       _components: this._components,
@@ -231,26 +374,24 @@ export default class Core {
       desiredVariant: this.parameterStack.parameters.variant
     }
 
-    //Make these variables available for cypress
-    window.state = {
-      components: this._components,
-      renderedComponentInstructions: this.renderedComponentInstructions,
-      renderedComponentTypes: this.renderedComponentTypes,
-      dependencies: this.dependencies,
-      core: this,
-      componentInfoObjects: this.componentInfoObjects,
-    }
+    // //Make these variables available for cypress
+    // window.state = {
+    //   components: this._components,
+    //   componentsToRender: this.componentsToRender,
+    //   renderedComponentTypes: this.renderedComponentTypes,
+    //   dependencies: this.dependencies,
+    //   core: this,
+    //   componentInfoObjects: this.componentInfoObjects,
+    // }
 
     this.changedStateVariables = {};
-    console.timeLog('core','<-Before addComponents');
 
     await this.addComponents({
       serializedComponents,
       initialAdd: true,
     })
-    console.timeLog('core','<-After addComponents');
 
-    this.updateInfo.componentsTouched = [];
+    this.updateInfo.componentsToUpdateRenderers = [];
 
     // evalute itemCreditAchieved so that will be fresh
     // and can detect changes when it is marked stale
@@ -261,10 +402,10 @@ export default class Core {
     // console.log("** components at the end of the core constructor **");
     // console.log(this._components);
 
-    console.timeLog('core','<-Before coreReady');
 
     this.coreReadyCallback()
-    console.timeLog('core','<-End Construction');
+
+    this.resolveInitialized();
 
   }
 
@@ -314,11 +455,9 @@ export default class Core {
       createNameContext = `addComponents${this.nTimesAddedComponents}`;
 
     }
-    console.timeLog('core','<-Before createIsolatedComponents');
     let createResult = await this.createIsolatedComponents({
       serializedComponents, ancestors, createNameContext,
     });
-    console.timeLog('core','<-After createIsolatedComponents');
     if (!initialAdd) {
       this.parameterStack.pop();
     }
@@ -339,23 +478,24 @@ export default class Core {
       }
       // this.setAncestors(newComponents[0]);
       this.document = newComponents[0];
-      console.timeLog('core','<-Before expandAllComposites');
 
       await this.expandAllComposites(this.document);
-      console.timeLog('core','<-After expandAllComposites');
 
       await this.expandAllComposites(this.document, true);
-      console.timeLog('core','<-After expandAllComposites force');
 
       // calculate any replacement changes on composites touched
       await this.replacementChangesFromCompositesToUpdate();
-      console.timeLog('core','<-After replacementChangesFromCompositesToUpdate');
 
-      await this.initializeRenderedComponentInstruction(this.document);
-      console.timeLog('core','<-After initializeRenderedComponentInstruction');
+      let results = await this.initializeRenderedComponentInstruction(this.document);
+
+      let updateInstructions = [{
+        instructionType: "updateStateVariable",
+        stateValuesToUpdate: results.stateValuesToUpdate,
+      }]
+
+      this.postUpdateRenderers(updateInstructions, true)
 
       await this.processStateVariableTriggers();
-      console.timeLog('core','<-After processStateVariableTriggers');
 
     } else {
       if (parent === undefined) {
@@ -383,7 +523,9 @@ export default class Core {
       // calculate any replacement changes on composites touched
       await this.replacementChangesFromCompositesToUpdate();
 
-      await this.updateRendererInstructions({ componentNames: await this.componentAndRenderedDescendants(parent) });
+      await this.updateRendererInstructions({
+        componentNamesToUpdate: await this.componentAndRenderedDescendants(parent)
+      });
       await this.processStateVariableTriggers();
 
     }
@@ -392,29 +534,25 @@ export default class Core {
   }
 
 
-  async updateRendererInstructions({ componentNames, sourceOfUpdate, recreatedComponents = {} }) {
+  async updateRendererInstructions({ componentNamesToUpdate, sourceOfUpdate, recreatedComponents = {} }) {
 
-    let renderersToUpdate = [];
     let deletedRenderers = [];
 
-    let instructions = [];
+    let updateInstructions = [];
+    let stateValuesToUpdate = [];
 
-    for (let componentName of componentNames) {
-      if (componentName in this.renderedComponentInstructions) {
-        renderersToUpdate.push(componentName);
-      }
-    }
+    let parentsWithChangedChildren = [];
 
     //TODO: Figure out what we need from here
     for (let componentName of this.componentsWithChangedChildrenToRender) {
-      if (componentName in this.renderedComponentInstructions) {
+      if (componentName in this.componentsToRender) {
         // check to see if current children who render are
         // different from last time rendered
 
-        let currentChildNames = [];
         let currentChildIdentifiers = [];
-        let currentChildren = [];
         let unproxiedComponent = this._components[componentName];
+        let indicesToRender = [];
+
         if (unproxiedComponent && unproxiedComponent.constructor.renderChildren) {
           if (!unproxiedComponent.childrenMatched) {
             await this.deriveChildResultsFromDefiningChildren({
@@ -422,33 +560,19 @@ export default class Core {
             });
           }
 
-          let activeChildrenToRender = [];
-          let indicesToRender = await this.returnActiveChildrenIndicesToRender(unproxiedComponent);
-          for (let [ind, child] of unproxiedComponent.activeChildren.entries()) {
-            if (indicesToRender.includes(ind)) {
-              activeChildrenToRender.push(child);
-            }
-          }
-
-          currentChildNames = unproxiedComponent.activeChildren
-            .filter((x, i) => indicesToRender.includes(i))
-            .filter(x => x.rendererType)
-            .map(x => x.componentName);
+          indicesToRender = await this.returnActiveChildrenIndicesToRender(unproxiedComponent);
 
           let renderedInd = 0;
           for (let [ind, child] of unproxiedComponent.activeChildren.entries()) {
             if (indicesToRender.includes(ind)) {
               if (child.rendererType) {
                 currentChildIdentifiers.push(`componentName:${child.componentName}`)
-                currentChildren.push({ componentName: child.componentName });
                 renderedInd++;
               } else if (typeof child === "string") {
                 currentChildIdentifiers.push(`string${renderedInd}:${child}`)
-                currentChildren.push(child);
                 renderedInd++;
               } else if (typeof child === "number") {
-                currentChildIdentifiers.push(`string${renderedInd}:${child.toString()}`)
-                currentChildren.push(child.toString());
+                currentChildIdentifiers.push(`number${renderedInd}:${child.toString()}`)
                 renderedInd++;
               }
             }
@@ -457,128 +581,77 @@ export default class Core {
         }
 
 
-        let instructionChildren = this.renderedComponentInstructions[componentName].children;
-        let previousChildNames = instructionChildren.map(x => x.componentName).filter(x => x);
+        let previousChildRenderers = this.componentsToRender[componentName].children;
 
-        let previousChildren = [];
-        for (let [ind, child] of instructionChildren.entries()) {
+        let previousChildIdentifiers = [];
+        for (let [ind, child] of previousChildRenderers.entries()) {
           if (child.componentName) {
-            previousChildren.push({ componentName: child.componentName })
-          } else {
-            previousChildren.push(`string${ind}:${child}`)
+            previousChildIdentifiers.push(`componentName:${child.componentName}`)
+          } else if (typeof child === "string") {
+            previousChildIdentifiers.push(`string${ind}:${child}`)
+          } else if (typeof child === "number") {
+            previousChildIdentifiers.push(`number${ind}:${child.toString()}`)
           }
         }
 
-        // first delete previous children that are no longer in children
-        // and create instructions to delete the renderers
+        if (currentChildIdentifiers.length !== previousChildIdentifiers.length
+          || currentChildIdentifiers.some((v, i) => v !== previousChildIdentifiers[i])
+        ) {
 
-        let keptChildIdentifiers = [];
-        let keptChildComponentNames = [];
-        let deletedChildren = [];
-
-        for (let [ind, child] of previousChildren.entries()) {
-          if (child.componentName) {
-            let childName = child.componentName;
-            if (currentChildNames.includes(childName) && !recreatedComponents[childName]) {
-              keptChildIdentifiers.push(`componentName:${childName}`);
-              keptChildComponentNames.push(childName);
-            } else {
-              deletedChildren.push({ childName, ind })
-            }
-          } else {
-            if (currentChildIdentifiers.includes(child)) {
-              keptChildIdentifiers.push(child);
-            } else {
-              deletedChildren.push({ ind });
+          // delete old renderers
+          for (let child of previousChildRenderers) {
+            if (child.componentName) {
+              let deletedNames = this.deleteFromComponentsToRender({
+                componentName: child.componentName,
+                recurseToChildren: true
+              });
+              deletedRenderers.push(...deletedNames);
             }
           }
-        }
 
-        for (let { childName, ind } of deletedChildren.reverse()) {
-          let deletedComponentNames = [];
-
-          if (childName) {
-            deletedComponentNames = this.deleteFromRenderedComponentInstructions({
-              componentName: childName,
-              recurseToChildren: true
-            });
-          }
-
-          instructionChildren.splice(ind, 1);
-
-          instructions.push({
-            instructionType: "deleteRenderers",
-            parentName: componentName,
-            firstIndexInParent: ind,
-            numberChildrenDeleted: 1,
-            deletedComponentNames
-          })
-
-          deletedRenderers.push(...deletedComponentNames);
-        }
-
-
-        // next permute the kept children to be in the order of the current children
-        // and create instructions for the same permutations of the renderers
-
-        let desiredOrderForKeptChildren = currentChildIdentifiers.filter(
-          x => keptChildIdentifiers.includes(x)
-        )
-
-        for (let i = 0; i < desiredOrderForKeptChildren.length; i++) {
-          if (keptChildIdentifiers[i] !== desiredOrderForKeptChildren[i]) {
-            let prevIndex = keptChildIdentifiers.indexOf(desiredOrderForKeptChildren[i]);
-            // swap in renderedComponentInstructions
-            [instructionChildren[i], instructionChildren[prevIndex]]
-              = [instructionChildren[prevIndex], instructionChildren[i]];
-
-            // swap in keptChildIdentifiers
-            [keptChildIdentifiers[i], keptChildIdentifiers[prevIndex]]
-              = [keptChildIdentifiers[prevIndex], keptChildIdentifiers[i]];
-
-            instructions.push({
-              instructionType: "swapChildRenderers",
-              parentName: componentName,
-              index1: i,
-              index2: prevIndex
-            })
-
-          }
-        }
-
-
-        // last, add the new children and create instructions to add the renderers
-        for (let [ind, child] of currentChildren.entries()) {
-          if (child.componentName) {
-            let childName = child.componentName;
-            if (!previousChildNames.includes(childName) || recreatedComponents[childName]) {
-
-              let comp = this._components[childName];
-              if (comp && comp.rendererType) {
-
-                let childToRender = await this.initializeRenderedComponentInstruction(comp);
-                instructionChildren.splice(ind, 0, childToRender);
-
-                instructions.push({
-                  instructionType: "addRenderer",
-                  componentName: comp.componentName,
-                  parentName: componentName,
-                  indexForParent: ind,
-                })
-
+          // create new renderers
+          let childrenToRender = [];
+          if (indicesToRender.length > 0) {
+            for (let [ind, child] of unproxiedComponent.activeChildren.entries()) {
+              if (indicesToRender.includes(ind)) {
+                if (child.rendererType) {
+                  let results = await this.initializeRenderedComponentInstruction(child);
+                  childrenToRender.push(results.componentToRender);
+                  stateValuesToUpdate.push(...results.stateValuesToUpdate);
+                } else if (typeof child === "string") {
+                  childrenToRender.push(child);
+                } else if (typeof child === "number") {
+                  childrenToRender.push(child.toString())
+                }
               }
             }
-          } else if (!previousChildren.includes(`string${ind}:${child}`)) {
-
-            instructionChildren.splice(ind, 0, child);
-
-            instructions.push({
-              instructionType: "addRenderer",
-              parentName: componentName,
-              indexForParent: ind,
-            })
-
           }
+
+          this.componentsToRender[componentName].children = childrenToRender;
+
+          this.componentsWithChangedChildrenToRender.delete(componentName);
+
+          let stateValuesForRenderer = {};
+          for (let stateVariable in unproxiedComponent.state) {
+            if (unproxiedComponent.state[stateVariable].forRenderer) {
+              let value = preprocessForPostMessage(await unproxiedComponent.state[stateVariable].value);
+              // if (value !== null && typeof value === 'object') {
+              //   value = new Proxy(value, readOnlyProxyHandler)
+              // }
+              stateValuesForRenderer[stateVariable] = value;
+            }
+          }
+
+
+          updateInstructions.push({
+            instructionType: "changeChildren",
+            parentName: componentName,
+            childrenToRender,
+            stateValues: stateValuesForRenderer,
+            rendererType: unproxiedComponent.rendererType,
+          });
+
+          parentsWithChangedChildren.push(componentName)
 
         }
 
@@ -589,39 +662,72 @@ export default class Core {
     // reset for next time
     this.componentsWithChangedChildrenToRender = new Set([]);
 
-    //TODO: look at this
-    // renderersToUpdate = renderersToUpdate.filter(x => !deletedRenderers.includes(x))
-    if (renderersToUpdate.length > 0) {
+
+    for (let componentName of componentNamesToUpdate) {
+      if (componentName in this.componentsToRender
+        & !parentsWithChangedChildren.includes(componentName)
+        // && !deletedRenderers.includes(componentName)  TODO: what if recreate with same name?
+      ) {
+        let component = this._components[componentName];
+        if (component) {
+          let stateValuesForRenderer = {};
+          for (let stateVariable in component.state) {
+            if (component.state[stateVariable].forRenderer) {
+              let value = preprocessForPostMessage(await component.state[stateVariable].value);
+              // if (value !== null && typeof value === 'object') {
+              //   value = new Proxy(value, readOnlyProxyHandler)
+              // }
+              stateValuesForRenderer[stateVariable] = value;
+            }
+          }
+
+          stateValuesToUpdate.push({
+            componentName,
+            stateValues: stateValuesForRenderer,
+            rendererType: component.rendererType,
+          });
+        }
+      }
+    }
+
+
+    // stateValuesToUpdate = stateValuesToUpdate.filter(x => !deletedRenderers.includes(x))
+    if (stateValuesToUpdate.length > 0) {
       let instruction = {
         instructionType: "updateStateVariable",
-        renderersToUpdate,
+        stateValuesToUpdate,
         sourceOfUpdate,
       }
-      instructions.push(instruction);
+      updateInstructions.splice(0, 0, instruction);
     }
 
-    for (let componentName of renderersToUpdate) {
-      let component = this._components[componentName];
-      if (component){
-        let stateValuesForRenderer = {};
-        for (let stateVariable in component.state) {
-          if (component.state[stateVariable].forRenderer) {
-            let value = await component.state[stateVariable].value;
-            if (value !== null && typeof value === 'object') {
-              value = new Proxy(value, readOnlyProxyHandler)
-            }
-            stateValuesForRenderer[stateVariable] = value;
-          }
-        }
-      
-        this.externalFunctions.updateRendererSVsWithRecoil({componentName,stateValues:stateValuesForRenderer,sourceOfUpdate})
+    // for (let componentName of stateValuesToUpdate) {
+    //   let component = this._components[componentName];
+    //   if (component) {
+    //     let stateValuesForRenderer = {};
+    //     for (let stateVariable in component.state) {
+    //       if (component.state[stateVariable].forRenderer) {
+    //         let value = await component.state[stateVariable].value;
+    //         // if (value !== null && typeof value === 'object') {
+    //         //   value = new Proxy(value, readOnlyProxyHandler)
+    //         // }
+    //         if (value instanceof me.class) {
+    //           stateValuesForRenderer[stateVariable] = value.tree;
+    //         } else {
+    //           stateValuesForRenderer[stateVariable] = value;
+    //         }
+    //       }
+    //     }
 
-        Object.assign(this.renderedComponentInstructions[componentName].stateValues,
-          stateValuesForRenderer)
-      }
-    }
+    //     // this.externalFunctions.updateRendererSVsWithRecoil({ componentName, stateValues: stateValuesForRenderer, sourceOfUpdate })
 
-    this.coreUpdatedCallback(instructions) //This is async
+
+    //     Object.assign(this.componentsToRender[componentName].stateValues,
+    //       stateValuesForRenderer)
+    //   }
+    // }
+
+    this.postUpdateRenderers(updateInstructions)
 
   }
 
@@ -638,33 +744,36 @@ export default class Core {
     }
 
 
+    let stateValuesToUpdate = [];
+
     let stateValuesForRenderer = {};
     for (let stateVariable in component.state) {
       if (component.state[stateVariable].forRenderer) {
-        let value = await component.state[stateVariable].value;
-        if (value !== null && typeof value === 'object') {
-          value = new Proxy(value, readOnlyProxyHandler)
-        }
-        stateValuesForRenderer[stateVariable] = value;
+        stateValuesForRenderer[stateVariable] = preprocessForPostMessage(await component.state[stateVariable].value);
       }
     }
 
-
     let componentName = component.componentName;
 
-    let childInstructions = [];
+    stateValuesToUpdate.push({
+      componentName,
+      stateValues: stateValuesForRenderer
+    });
+
+    let childrenToRender = [];
     if (component.constructor.renderChildren) {
       let indicesToRender = await this.returnActiveChildrenIndicesToRender(component);
       for (let [ind, child] of component.activeChildren.entries()) {
         if (indicesToRender.includes(ind)) {
           if (child.rendererType) {
-            childInstructions.push(
-              await this.initializeRenderedComponentInstruction(child)
-            )
+            let results = await this.initializeRenderedComponentInstruction(child);
+            childrenToRender.push(results.componentToRender);
+            stateValuesToUpdate.push(...results.stateValuesToUpdate);
+
           } else if (typeof child === "string") {
-            childInstructions.push(child);
+            childrenToRender.push(child);
           } else if (typeof child === "number") {
-            childInstructions.push(child.toString())
+            childrenToRender.push(child.toString())
           }
         }
       }
@@ -675,48 +784,46 @@ export default class Core {
 
     let requestActions = {};
     for (let actionName in component.actions) {
-      requestActions[actionName] = args => this.requestAction({
-        componentName: component.componentName,
+      requestActions[actionName] = {
         actionName,
-        args,
-      })
+        componentName: component.componentName
+      }
     }
 
     for (let actionName in component.externalActions) {
       let action = await component.externalActions[actionName];
       if (action) {
-        requestActions[actionName] = args => this.requestAction({
+        requestActions[actionName] = {
+          actionName,
           componentName: action.componentName,
-          actionName: action.actionName,
-          args,
-        })
+        }
       }
     }
-    this.externalFunctions.updateRendererSVsWithRecoil({componentName,stateValues:stateValuesForRenderer})
+    // this.externalFunctions.updateRendererSVsWithRecoil({ componentName, stateValues: stateValuesForRenderer })
 
-    this.renderedComponentInstructions[componentName] = {
+    this.componentsToRender[componentName] = {
       componentName: componentName,
       componentType: component.componentType,
       rendererType: component.rendererType,
-      stateValues: stateValuesForRenderer,
-      children: childInstructions,
+      // stateValues: stateValuesForRenderer,  // TODO: delete when remove class-based components?
+      children: childrenToRender,
       actions: requestActions,
     };
 
 
-    return this.renderedComponentInstructions[componentName];
+    return { componentToRender: this.componentsToRender[componentName], stateValuesToUpdate };
   }
 
-  deleteFromRenderedComponentInstructions({
+  deleteFromComponentsToRender({
     componentName,
     recurseToChildren = true,
   }) {
     let deletedComponentNames = [componentName]
     if (recurseToChildren) {
-      let componentInstruction = this.renderedComponentInstructions[componentName];
+      let componentInstruction = this.componentsToRender[componentName];
       if (componentInstruction) {
         for (let child of componentInstruction.children) {
-          let additionalDeleted = this.deleteFromRenderedComponentInstructions({
+          let additionalDeleted = this.deleteFromComponentsToRender({
             componentName: child.componentName,
             recurseToChildren,
           })
@@ -724,7 +831,8 @@ export default class Core {
         }
       }
     }
-    delete this.renderedComponentInstructions[componentName];
+    delete this.componentsToRender[componentName];
+    this.componentsWithChangedChildrenToRender.delete(componentName);
 
     return deletedComponentNames;
   }
@@ -732,7 +840,7 @@ export default class Core {
   async processStateVariableTriggers() {
 
     // TODO: can we make this more efficient by only checking components that changed?
-    // componentsTouched is close, but it includes only rendered components
+    // componentsToUpdateRenderers is close, but it includes only rendered components
     // and we could have components with triggers that are not rendered
 
     for (let componentName in this.stateVariableChangeTriggers) {
@@ -859,7 +967,7 @@ export default class Core {
   }
 
   async componentAndRenderedDescendants(component) {
-    if (component === undefined) {
+    if (!component?.componentName) {
       return [];
     }
 
@@ -878,7 +986,7 @@ export default class Core {
   }
 
   async createIsolatedComponents({ serializedComponents, ancestors,
-    applyAdapters = true, shadow = false, createNameContext = "" }
+    shadow = false, createNameContext = "" }
   ) {
 
     let namespaceForUnamed = "/";
@@ -896,25 +1004,21 @@ export default class Core {
     let createResult = await this.createIsolatedComponentsSub({
       serializedComponents,
       ancestors,
-      applyAdapters,
       shadow,
       namespaceForUnamed,
       createNameContext
     });
 
-    let componentsTouched = [...new Set(this.updateInfo.componentsTouched)];
-
     return {
       success: true,
       components: createResult.components,
-      componentsTouched
     }
 
 
   }
 
   async createIsolatedComponentsSub({ serializedComponents, ancestors,
-    applyAdapters = true, shadow = false,
+    shadow = false,
     createNameContext = "", namespaceForUnamed = "/", componentsReplacementOf,
   }
   ) {
@@ -980,7 +1084,7 @@ export default class Core {
         componentName,
         ancestors,
         componentClass,
-        applyAdapters, shadow,
+        shadow,
         namespaceForUnamed,
         componentsReplacementOf,
       });
@@ -1002,7 +1106,7 @@ export default class Core {
 
   async createChildrenThenComponent({ serializedComponent, componentName,
     ancestors, componentClass,
-    applyAdapters = true, shadow = false,
+    shadow = false,
     namespaceForUnamed = "/", componentsReplacementOf
   }) {
 
@@ -1123,7 +1227,7 @@ export default class Core {
           let childrenResult = await this.createIsolatedComponentsSub({
             serializedComponents: [variantControlChild],
             ancestors: ancestorsForChildren,
-            applyAdapters, shadow,
+            shadow,
             createNameContext: "variantControl",
             namespaceForUnamed,
           });
@@ -1146,7 +1250,7 @@ export default class Core {
         let childrenResult = await this.createIsolatedComponentsSub({
           serializedComponents: childrenToCreate,
           ancestors: ancestorsForChildren,
-          applyAdapters, shadow,
+          shadow,
           namespaceForUnamed,
         });
 
@@ -1183,7 +1287,7 @@ export default class Core {
           let childrenResult = await this.createIsolatedComponentsSub({
             serializedComponents: childrenToCreate,
             ancestors: ancestorsForChildren,
-            applyAdapters, shadow,
+            shadow,
             namespaceForUnamed,
           });
 
@@ -1198,7 +1302,7 @@ export default class Core {
         let childrenResult = await this.createIsolatedComponentsSub({
           serializedComponents: serializedChildren,
           ancestors: ancestorsForChildren,
-          applyAdapters, shadow,
+          shadow,
           namespaceForUnamed,
         });
 
@@ -1219,7 +1323,7 @@ export default class Core {
           let attrResult = await this.createIsolatedComponentsSub({
             serializedComponents: [serializedComponent.attributes[attrName].component],
             ancestors: ancestorsForChildren,
-            applyAdapters, shadow,
+            shadow,
             namespaceForUnamed,
             createNameContext: `attribute|${attrName}`
           });
@@ -1288,7 +1392,8 @@ export default class Core {
           }
           Object.assign(shadowInfo, dep);
           delete shadowInfo.dependencyType;
-          newComponent.shadows = new Proxy(shadowInfo, readOnlyProxyHandler);
+          // newComponent.shadows = new Proxy(shadowInfo, readOnlyProxyHandler);
+          newComponent.shadows = shadowInfo;
 
           let shadowedComponent = this._components[name];
           if (!shadowedComponent.shadowedBy) {
@@ -5321,7 +5426,8 @@ export default class Core {
           }
           previousValues[varName] = component.state[varName]._previousValue;
         }
-        args.previousValues = new Proxy(previousValues, readOnlyProxyHandler);
+        // args.previousValues = new Proxy(previousValues, readOnlyProxyHandler);
+        args.previousValues = previousValues;
       }
       if (stateVarObj.provideEssentialValuesInDefinition) {
         let essentialValues = {};
@@ -5336,7 +5442,8 @@ export default class Core {
 
           essentialValues[varName] = component.essentialState[essentialVarName];
         }
-        args.essentialValues = new Proxy(essentialValues, readOnlyProxyHandler);
+        // args.essentialValues = new Proxy(essentialValues, readOnlyProxyHandler);
+        args.essentialValues = essentialValues;
       }
     }
 
@@ -5677,7 +5784,9 @@ export default class Core {
 
     // console.log(`mark state variable ${varName} of ${component.componentName} and updeps stale`)
 
-    this.updateInfo.componentsTouched.push(component.componentName);
+    if (varName in this.rendererStateVariables[component.componentType]) {
+      this.updateInfo.componentsToUpdateRenderers.push(component.componentName);
+    }
 
     let allStateVariablesAffectedObj = { [varName]: component.state[varName] };
     if (component.state[varName].additionalStateVariablesDefined) {
@@ -5827,7 +5936,8 @@ export default class Core {
       // have to use last calculated value of arrayKeys
       // because can't evaluate state variable in middle of marking stale
 
-      arrayKeys = new Proxy(stateVarObj._arrayKeys, readOnlyProxyHandler);
+      // arrayKeys = new Proxy(stateVarObj._arrayKeys, readOnlyProxyHandler);
+      arrayKeys = stateVarObj._arrayKeys;
 
     }
 
@@ -5843,7 +5953,7 @@ export default class Core {
       }
 
       if (Array.isArray(arraySize)) {
-        arraySize = new Proxy(arraySize, readOnlyProxyHandler);
+        // arraySize = new Proxy(arraySize, readOnlyProxyHandler);
       } else {
         arraySize = [];
       }
@@ -5945,7 +6055,8 @@ export default class Core {
       // have to use last calculated value of arrayKeys
       // because can't evaluate state variable in middle of marking stale
 
-      arrayKeys = new Proxy(stateVarObj._arrayKeys, readOnlyProxyHandler);
+      // arrayKeys = new Proxy(stateVarObj._arrayKeys, readOnlyProxyHandler);
+      arrayKeys = stateVarObj._arrayKeys;
 
     }
 
@@ -5961,7 +6072,7 @@ export default class Core {
       }
 
       if (Array.isArray(arraySize)) {
-        arraySize = new Proxy(arraySize, readOnlyProxyHandler);
+        // arraySize = new Proxy(arraySize, readOnlyProxyHandler);
       } else {
         arraySize = [];
       }
@@ -6081,7 +6192,8 @@ export default class Core {
             // add any additional information about the stalename of component/varName
             if (freshnessInfo) {
               upDep.valuesChanged[componentInd][varName].freshnessInfo
-                = new Proxy(freshnessInfo, readOnlyProxyHandler);
+                = freshnessInfo;
+              // = new Proxy(freshnessInfo, readOnlyProxyHandler);
             }
 
             foundVarChange = true;
@@ -6105,7 +6217,12 @@ export default class Core {
 
         if (foundVarChange) {
 
-          this.updateInfo.componentsTouched.push(upDep.upstreamComponentName);
+          for (let varName of upDep.upstreamVariableNames) {
+            if (varName in this.rendererStateVariables[this.components[upDep.upstreamComponentName].componentType]) {
+              this.updateInfo.componentsToUpdateRenderers.push(upDep.upstreamComponentName);
+              break;
+            }
+          }
 
           let upVarName = upDep.upstreamVariableNames[0];
           let upDepComponent = this._components[upDep.upstreamComponentName];
@@ -6627,7 +6744,7 @@ export default class Core {
 
 
     // remove deleted components from this.updateInfo arrays
-    this.updateInfo.componentsTouched = [... new Set(this.updateInfo.componentsTouched)].filter(x => !(x in componentsToDelete))
+    this.updateInfo.componentsToUpdateRenderers = [... new Set(this.updateInfo.componentsToUpdateRenderers)].filter(x => !(x in componentsToDelete))
     this.updateInfo.compositesToUpdateReplacements = [... new Set(this.updateInfo.compositesToUpdateReplacements)].filter(x => !(x in componentsToDelete))
 
     return {
@@ -6897,7 +7014,8 @@ export default class Core {
 
             await this.processNewDefiningChildren({ parent, expandComposites: false });
 
-            this.updateInfo.componentsTouched.push(...await this.componentAndRenderedDescendants(parent));
+            let componentsAffected = await this.componentAndRenderedDescendants(parent);
+            this.updateInfo.componentsToUpdateRenderers.push(...componentsAffected);
 
           } else {
             // if not top level replacements
@@ -6916,7 +7034,8 @@ export default class Core {
               }
             }
 
-            this.updateInfo.componentsTouched.push(...await this.componentAndRenderedDescendants(parent));
+            let componentsAffected = await this.componentAndRenderedDescendants(parent);
+            this.updateInfo.componentsToUpdateRenderers.push(...componentsAffected);
 
             let newChange = {
               changeType: "addedReplacements",
@@ -6959,8 +7078,6 @@ export default class Core {
 
 
         // TODO: check if component is appropriate dependency of composite
-
-        this.updateInfo.componentsTouched.push(change.component.componentName);
 
         let workspace = {};
         let newStateVariableValues = {};
@@ -7104,7 +7221,8 @@ export default class Core {
       }
       for (let parent of deleteResults.parentsOfDeleted) {
         parentsOfDeleted.add(parent.componentName);
-        this.updateInfo.componentsTouched.push(...await this.componentAndRenderedDescendants(parent));
+        let componentsAffected = await this.componentAndRenderedDescendants(parent);
+        this.updateInfo.componentsToUpdateRenderers.push(...componentsAffected);
       }
       let deletedNamesByParent = {};
       for (let compName in deleteResults.deletedComponents) {
@@ -7127,7 +7245,8 @@ export default class Core {
       componentChanges.push(newChange);
       Object.assign(deletedComponents, deleteResults.deletedComponents);
       let parent = this._components[composite.parentName];
-      this.updateInfo.componentsTouched.push(...await this.componentAndRenderedDescendants(parent));
+      let componentsAffected = await this.componentAndRenderedDescendants(parent);
+      this.updateInfo.componentsToUpdateRenderers.push(...componentsAffected);
     }
     else {
       // if not change top level replacements
@@ -7144,7 +7263,8 @@ export default class Core {
       }
       for (let parent of deleteResults.parentsOfDeleted) {
         parentsOfDeleted.add(parent.componentName);
-        this.updateInfo.componentsTouched.push(...await this.componentAndRenderedDescendants(parent));
+        let componentsAffected = await this.componentAndRenderedDescendants(parent);
+        this.updateInfo.componentsToUpdateRenderers.push(...componentsAffected);
       }
       let deletedNamesByParent = {};
       for (let compName in deleteResults.deletedComponents) {
@@ -7174,7 +7294,8 @@ export default class Core {
   async processChildChangesAndRecurseToShadows(component) {
     let parent = this._components[component.parentName];
     await this.processNewDefiningChildren({ parent, expandComposites: false });
-    this.updateInfo.componentsTouched.push(...await this.componentAndRenderedDescendants(parent));
+    let componentsAffected = await this.componentAndRenderedDescendants(parent);
+    this.updateInfo.componentsToUpdateRenderers.push(...componentsAffected);
 
     if (component.shadowedBy) {
       for (let shadowingComponent of component.shadowedBy) {
@@ -7458,7 +7579,8 @@ export default class Core {
   }
 
   get standardComponentClasses() {
-    return new Proxy(this._standardComponentClasses, readOnlyProxyHandler);
+    // return new Proxy(this._standardComponentClasses, readOnlyProxyHandler);
+    return this._standardComponentClasses;
   }
 
   set standardComponentClasses(value) {
@@ -7466,7 +7588,8 @@ export default class Core {
   }
 
   get allComponentClasses() {
-    return new Proxy(this._allComponentClasses, readOnlyProxyHandler);
+    // return new Proxy(this._allComponentClasses, readOnlyProxyHandler);
+    return this._allComponentClasses;
   }
 
   set allComponentClasses(value) {
@@ -7509,10 +7632,11 @@ export default class Core {
 
   get rendererTypesInDocument() {
     return this.document.allPotentialRendererTypes;
-  }  
+  }
 
   get componentTypesCreatingVariants() {
-    return new Proxy(this._componentTypesCreatingVariants, readOnlyProxyHandler);
+    // return new Proxy(this._componentTypesCreatingVariants, readOnlyProxyHandler);
+    return this._componentTypesCreatingVariants;
   }
 
   set componentTypesCreatingVariants(value) {
@@ -7520,7 +7644,8 @@ export default class Core {
   }
 
   get componentTypeWithPotentialVariants() {
-    return new Proxy(this._componentTypeWithPotentialVariants, readOnlyProxyHandler);
+    // return new Proxy(this._componentTypeWithPotentialVariants, readOnlyProxyHandler);
+    return this._componentTypeWithPotentialVariants;
   }
 
   set componentTypeWithPotentialVariants(value) {
@@ -7528,7 +7653,8 @@ export default class Core {
   }
 
   get components() {
-    return new Proxy(this._components, readOnlyProxyHandler);
+    // return new Proxy(this._components, readOnlyProxyHandler);
+    return this._components;
   }
 
   set components(value) {
@@ -7544,12 +7670,19 @@ export default class Core {
         if (!nextUpdateInfo.skippable || this.processQueue.length < 2) {
           result = await this.performUpdate(nextUpdateInfo);
         }
+
+        // TODO: if skip an update, presumably we should call reject???
+
+
         // } else if (nextUpdateInfo.type === "getStateVariableValues") {
         //   result = await this.performGetStateVariableValues(nextUpdateInfo);
       } else if (nextUpdateInfo.type === "action") {
         if (!nextUpdateInfo.skippable || this.processQueue.length < 2) {
           result = await this.performAction(nextUpdateInfo);
         }
+
+        // TODO: if skip an update, presumably we should call reject???
+
       } else if (nextUpdateInfo.type === "recordEvent") {
         result = await this.performRecordEvent(nextUpdateInfo);
       } else {
@@ -7616,7 +7749,7 @@ export default class Core {
 
     return new Promise((resolve, reject) => {
 
-      let skippable = args && args.skippable;
+      let skippable = args?.skippable;
 
       this.processQueue.push({
         type: "action", componentName, actionName, args, skippable, event, resolve, reject
@@ -7711,7 +7844,7 @@ export default class Core {
       }
 
       await this.updateRendererInstructions({
-        componentNames: updateInstructions.map(x => x.componentName),
+        componentNamesToUpdate: updateInstructions.map(x => x.componentName),
         sourceOfUpdate: { sourceInformation }
       });
 
@@ -7869,13 +8002,26 @@ export default class Core {
 
 
     //TODO: Inside for loop?
-    if (this.externalFunctions.localStateChanged) {
+    if (!transient) {
 
       let newVals = {};
 
       // start with any essential values saved when calculating definitions
       if (Object.keys(this.essentialValuesSavedInDefinition).length > 0) {
-        Object.assign(newVals, this.essentialValuesSavedInDefinition);
+        for (let componentName in this.essentialValuesSavedInDefinition) {
+          let essentialState = this._components[componentName]?.essentialState;
+          if (essentialState) {
+            newVals[componentName] = {};
+            for (let varName in this.essentialValuesSavedInDefinition[componentName]) {
+              if (essentialState[varName] !== undefined) {
+                // console.log(`saving ${varName} of ${componentName}`, essentialState[varName])
+                // console.log('not using', this.essentialValuesSavedInDefinition[componentName][varName])
+                newVals[componentName][varName] = essentialState[varName];
+              }
+            }
+          }
+
+        }
         this.essentialValuesSavedInDefinition = {};
       }
 
@@ -7900,16 +8046,17 @@ export default class Core {
       }
 
       let currentVariant = await this.document.state.generatedVariantInfo.value
-      setTimeout(() => this.externalFunctions.localStateChanged({
-        newStateVariableValues: newVals,
-        contentId: this.contentId,
-        sourceOfUpdate: {
-          sourceInformation
+
+      postMessage({
+        messageType: "saveState",
+        args: {
+          newStateVariableValues: preprocessForPostMessage(newVals),
+          contentId: this.contentId,
+          itemsWithCreditAchieved,
+          currentVariant
         },
-        transient,
-        itemsWithCreditAchieved,
-        currentVariant
-      }), 0)
+      })
+
     }
 
 
@@ -8022,20 +8169,23 @@ export default class Core {
 
   async finishUpdate(sourceOfUpdate) {
 
-    // get unique list of components touched
-
-    this.updateInfo.componentsTouched = [...new Set(this.updateInfo.componentsTouched)];
+    // use set to create deduplicated list of components to update renderers
+    let componentNamesToUpdate = [...new Set(this.updateInfo.componentsToUpdateRenderers)];
+    this.updateInfo.componentsToUpdateRenderers = [];
 
     await this.updateRendererInstructions({
-      componentNames: this.updateInfo.componentsTouched,
+      componentNamesToUpdate,
       sourceOfUpdate,
       recreatedComponents: this.updateInfo.recreatedComponents
     });
 
     await this.processStateVariableTriggers();
 
-    this.updateInfo.componentsTouched = [];
-
+    // it is possible that components were added back to componentNamesToUpdateRenderers
+    // while processing the renderer instructions
+    // so delete any names that were just addressed
+    this.updateInfo.componentsToUpdateRenderers
+      = this.updateInfo.componentsToUpdateRenderers.filter(x => !componentNamesToUpdate.includes(x));
 
     if (Object.keys(this.unmatchedChildren).length > 0) {
       let childLogicMessage = "";
@@ -8206,6 +8356,9 @@ export default class Core {
           essentialVarName = comp.state[vName].essentialVarName;
         }
 
+        if (vName in this.rendererStateVariables[comp.componentType]) {
+          this.updateInfo.componentsToUpdateRenderers.push(comp.componentName);
+        }
 
         if (compStateObj.isArray) {
 
@@ -8233,16 +8386,19 @@ export default class Core {
           // to tell external functions new attributes of the object
           // should be merged into the old object
 
-          // TODO: what about a .set function here?
           for (let arrayKey in newComponentStateVariables[vName]) {
 
             if (arrayKey === "mergeObject") {
               continue;
             }
 
+            let set = x => x;
+            if (compStateObj.set) {
+              set = compStateObj.set;
+            }
 
             let setResult = compStateObj.setArrayValue({
-              value: newComponentStateVariables[vName][arrayKey],
+              value: set(newComponentStateVariables[vName][arrayKey]),
               arrayKey,
               arraySize,
               arrayValues: essentialArray
@@ -8451,8 +8607,6 @@ export default class Core {
       }
     }
 
-
-    this.updateInfo.componentsTouched.push(component.componentName);
 
     if (!stateVarObj.inverseDefinition) {
       console.warn(`Cannot change state variable ${stateVariable} of ${component.componentName} as it doesn't have an inverse definition`);
@@ -9106,6 +9260,15 @@ export default class Core {
     return { scoredItemNumber, scoredComponent };
   }
 
+  recordSolutionView({ itemNumber, scoredComponent }) {
+    let messageId = nanoid();
+
+    postMessage({ messageType: "recordSolutionView", args: { itemNumber, scoredComponent, messageId } })
+
+    return new Promise((resolve, reject) => {
+      this.resolveRecordSolutionView[messageId] = resolve;
+    })
+  }
 
   get doenetState() {
     return this._renderComponents;
@@ -9124,44 +9287,44 @@ export default class Core {
   requestAnimationFrame(animationFunction, delay) {
     if (!this.preventMoreAnimations) {
 
-      // create new animationID
-      let animationID = ++this.lastAnimationID;
+      // // create new animationID
+      // let animationID = ++this.lastAnimationID;
 
-      if (delay) {
-        // set a time out to call actual request animation frame after a delay
-        let timeoutID = window.setTimeout(
-          x => this._requestAnimationFrame(animationFunction, animationID),
-          delay);
-        this.animationIDs[animationID] = { timeoutID: timeoutID };
-        return animationID;
-      } else {
-        // call actual request animation frame right away
-        this.animationIDs[animationID] = {};
-        return this._requestAnimationFrame(animationFunction, animationID);
-      }
+      // if (delay) {
+      //   // set a time out to call actual request animation frame after a delay
+      //   let timeoutID = window.setTimeout(
+      //     x => this._requestAnimationFrame(animationFunction, animationID),
+      //     delay);
+      //   this.animationIDs[animationID] = { timeoutID: timeoutID };
+      //   return animationID;
+      // } else {
+      //   // call actual request animation frame right away
+      //   this.animationIDs[animationID] = {};
+      //   return this._requestAnimationFrame(animationFunction, animationID);
+      // }
     }
   }
 
   _requestAnimationFrame(animationFunction, animationID) {
-    let animationFrameID = window.requestAnimationFrame(animationFunction);
-    let animationIDObj = this.animationIDs[animationID];
-    delete animationIDObj.timeoutID;
-    animationIDObj.animationFrameID = animationFrameID;
-    return animationID;
+    // let animationFrameID = window.requestAnimationFrame(animationFunction);
+    // let animationIDObj = this.animationIDs[animationID];
+    // delete animationIDObj.timeoutID;
+    // animationIDObj.animationFrameID = animationFrameID;
+    // return animationID;
   }
 
 
   async cancelAnimationFrame(animationID) {
-    let animationIDObj = this.animationIDs[animationID];
-    let timeoutID = animationIDObj.timeoutID;
-    if (timeoutID !== undefined) {
-      window.clearTimeout(timeoutID);
-    }
-    let animationFrameID = animationIDObj.animationFrameID;
-    if (animationFrameID !== undefined) {
-      window.cancelAnimationFrame(animationFrameID);
-    }
-    delete this.animationIDs[animationID];
+    // let animationIDObj = this.animationIDs[animationID];
+    // let timeoutID = animationIDObj.timeoutID;
+    // if (timeoutID !== undefined) {
+    //   window.clearTimeout(timeoutID);
+    // }
+    // let animationFrameID = animationIDObj.animationFrameID;
+    // if (animationFrameID !== undefined) {
+    //   window.cancelAnimationFrame(animationFrameID);
+    // }
+    // delete this.animationIDs[animationID];
 
   }
 
