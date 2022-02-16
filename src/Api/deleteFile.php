@@ -27,43 +27,67 @@ if ($doenetId == ""){
   $message = 'Internal Error: missing contentId';
 }
 
-//TODO: Check if they have permission to delete files
+//Test if user has permission to delete files
 
-//Is anyone using this contentId file?
-//AKA can we delete the file?
 $sql = "
-SELECT contentId
-FROM support_files
-WHERE contentId = '$contentId'
-AND doenetId != '$doenetId'
+SELECT du.canUpload as canUpload
+FROM drive_user AS du
+LEFT JOIN drive_content AS dc
+ON dc.driveId = du.driveId
+WHERE du.userId = '$userId'
+AND dc.doenetId = '$doenetId'
+AND du.canEditContent = '1'
 ";
 $result = $conn->query($sql);
+$row = $result->fetch_assoc();
+if ($row['canUpload'] == '0'){
+  $success = false;
+  $msg = "You don't have permission to delete files.";
+}
 
-if ($result->num_rows == 0){
-  //Delete from media folder
+if ($success){
+
+  //Is anyone using this contentId file?
+  //AKA can we delete the file?
   $sql = "
-  SELECT contentId,fileType
+  SELECT contentId
   FROM support_files
   WHERE contentId = '$contentId'
+  AND doenetId != '$doenetId'
+  ";
+  $result = $conn->query($sql);
+
+  if ($result->num_rows == 0){
+    //Delete from media folder
+    $sql = "
+    SELECT contentId,fileType
+    FROM support_files
+    WHERE contentId = '$contentId'
+    AND doenetId = '$doenetId'
+    ";
+    $result = $conn->query($sql);
+    $row = $result->fetch_assoc();
+    $fileLocation = $uploads_dir . getFileName($row['contentId'],$row['fileType']);
+    unlink($fileLocation);
+  }
+
+  //Delete row of doenetId and contentId for this user
+  $sql = "
+  DELETE FROM support_files
+  WHERE userId = '$userId'
+  AND contentId = '$contentId'
   AND doenetId = '$doenetId'
   ";
   $result = $conn->query($sql);
-  $row = $result->fetch_assoc();
-  $fileLocation = $uploads_dir . getFileName($row['contentId'],$row['fileType']);
-  unlink($fileLocation);
+
+
+  list($userQuotaBytesAvailable,$quotaBytes) = getBytesAvailable($conn,$userId);
+
+
+
 }
 
-//Delete row of doenetId and contentId for this user
-$sql = "
-DELETE FROM support_files
-WHERE userId = '$userId'
-AND contentId = '$contentId'
-AND doenetId = '$doenetId'
-";
-$result = $conn->query($sql);
 
-
-list($userQuotaBytesAvailable,$quotaBytes) = getBytesAvailable($conn,$userId);
 
 
 $response_arr = array(

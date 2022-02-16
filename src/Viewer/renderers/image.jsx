@@ -15,7 +15,6 @@ if (SVs.cid){
   if (SVs.asFileName){
     src = src + `/?filename=${SVs.asFileName}`;
   }
-  console.log('src',src)
 
   return <React.Fragment>
       <a name={name} />

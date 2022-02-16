@@ -23,8 +23,6 @@ $success = true;
 $msg = "";
 
 
-//TODO: Test if user has permission and space to upload files
-
 $uploads_dir = '../media/';
 
 $type = $_FILES['file']['type'];
@@ -36,55 +34,73 @@ $description = substr($original_file_name, 0, strrpos($original_file_name, "."))
 
 $tmp_dest = $uploads_dir . getFileName('tmp_' . $random_id,$type);
 
-move_uploaded_file($tmp_name, $tmp_dest);
+//Test if user has permission to upload files
 
+$sql = "
+SELECT du.canUpload as canUpload
+FROM drive_user AS du
+LEFT JOIN drive_content AS dc
+ON dc.driveId = du.driveId
+WHERE du.userId = '$userId'
+AND dc.doenetId = '$doenetId'
+AND du.canEditContent = '1'
+";
+$result = $conn->query($sql);
+$row = $result->fetch_assoc();
+if ($row['canUpload'] == '0'){
+  $success = false;
+  $msg = "You don't have permission to upload files.";
+}
 
-$thefileHandle = fopen($tmp_dest, 'r');
-$thefile = fread($thefileHandle,filesize($tmp_dest));
-// echo "fs" . $tmp_name . filesize($tmp_dest) ."\n";
-fclose($thefileHandle);
+//Test if user has space to upload files
+if ($success){
+  list($userQuotaBytesAvailable,$quotaBytes) = getBytesAvailable($conn,$userId);
 
+  if ($userQuotaBytesAvailable - $size <= 0){
+    $success = false;
+    // $msg = "You don't have enough space in your quota to upload files.";
+  }
+}
 
-$token = $ini_array['ipfstoken'];
+if ($success){
+  move_uploaded_file($tmp_name, $tmp_dest);
 
-$url = "https://api.web3.storage/upload";
+  $thefileHandle = fopen($tmp_dest, 'r');
+  $thefile = fread($thefileHandle,filesize($tmp_dest));
+  fclose($thefileHandle);
 
+  $token = $ini_array['ipfstoken'];
+  $url = "https://api.web3.storage/upload";
+  $postField = array();
+  $tmpfile = $_FILES['file']['tmp_name'];
+  $filename = basename($_FILES['file']['name']);
 
-$postField = array();
-$tmpfile = $_FILES['file']['tmp_name'];
-$filename = basename($_FILES['file']['name']);
+  $headers = array(
+          "Authorization: Bearer $token",
+          // "Content-Type: multipart/form-data"
+  );
 
-// $postField['files'] =  curl_file_create($tmpfile, $_FILES['file']['type'], $filename);
-// $postField['files'] =  curl_file_create($filename, $_FILES['file']['type'], $tmpfile);
-$headers = array(
-        "Authorization: Bearer $token",
-        // "Content-Type: multipart/form-data"
-);
+  $curl_handle = curl_init();
+  curl_setopt($curl_handle, CURLOPT_URL, $url);
+  curl_setopt($curl_handle, CURLOPT_HTTPHEADER, $headers);
+  curl_setopt($curl_handle, CURLOPT_POST, TRUE);
+  curl_setopt($curl_handle, CURLOPT_POSTFIELDS, $thefile);
 
-$curl_handle = curl_init();
-curl_setopt($curl_handle, CURLOPT_URL, $url);
-curl_setopt($curl_handle, CURLOPT_HTTPHEADER, $headers);
-curl_setopt($curl_handle, CURLOPT_POST, TRUE);
-// curl_setopt($curl_handle, CURLOPT_POSTFIELDS, $postField);
-curl_setopt($curl_handle, CURLOPT_POSTFIELDS, $thefile);
+  curl_setopt($curl_handle, CURLOPT_RETURNTRANSFER, TRUE);
+  $cid_info_raw = curl_exec($curl_handle);
+  curl_close($curl_handle);
 
-curl_setopt($curl_handle, CURLOPT_RETURNTRANSFER, TRUE);
-$cid_info_raw = curl_exec($curl_handle);
-curl_close($curl_handle);
+  $cid_info = json_decode($cid_info_raw,true);
+}
 
-$cid_info = json_decode($cid_info_raw,true);
-// var_dump($cid_info);
-
-// if ($cid_info['code']){
-if (array_key_exists("code",$cid_info)){
-//We have an error
-//TODO: make user friendly messages
+if ($success && array_key_exists("code",$cid_info)){
+  //We have an error
+  //TODO: make user friendly messages
   $success = false;
   $msg = $cid_info['message'];
   
 }
 
-// if (!$cid_info['cid']){
 if ($success && !array_key_exists("cid",$cid_info)){
   //We have an error
     $success = false;

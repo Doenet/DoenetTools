@@ -207,7 +207,7 @@ export default function SupportingFilesMenu(props){
         // console.log(">>data",data)
         // console.log("FILE UPLOAD COMPLETE: Update UI",file,data)
         if (msg){
-          addToast(msg, toastType.INFO)
+          addToast(msg, toastType.ERROR)
         }
         if (success){
           setSupportFileInfo((was)=>{
