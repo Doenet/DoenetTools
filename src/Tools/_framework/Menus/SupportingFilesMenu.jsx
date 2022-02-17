@@ -189,9 +189,10 @@ export default function SupportingFilesMenu(props){
       success = false;
     }
 
+    //Only upload if less than 1MB
     files.map(file=>{
-      if (file.size >= 2000000){
-        addToast(`File '${file.name}' is larger than 2MB. No files uploaded.`, toastType.ERROR);
+      if (file.size >= 1000000){
+        addToast(`File '${file.name}' is larger than 1MB. No files uploaded.`, toastType.ERROR);
         success = false;
       }
     })

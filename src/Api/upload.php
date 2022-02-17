@@ -62,6 +62,14 @@ if ($success){
   }
 }
 
+if ($success){
+  if ($size > 1000000){
+    $success = false;
+    $msg = "File is larger than 1MB limit.";
+  }
+}
+
+
 $already_have_file = false;
 
 if ($success){
