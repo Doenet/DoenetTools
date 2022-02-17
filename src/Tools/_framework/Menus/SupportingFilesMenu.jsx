@@ -62,19 +62,42 @@ function EditableText({text,submit}){
 
   //Don't wait for parent's prop to display editted text
   let displayText = text;
-  if (!editingMode && editText !== displayText){
+  if (!editingMode){
     displayText = editText;
+  }
+  
+
+  let textSpanStyle = {width:'110px',display: "inline-block",textOverflow:"ellipsis",whiteSpace:"nowrap"}
+  if (displayText === ''){
+    displayText = ' *Required';
+    textSpanStyle['border'] = "solid 2px #C1292E";
   }
 
   if (!editingMode){
-    return <span onClick={()=>setEditingMode(true)}>{displayText}</span>
+    return <span 
+            style={textSpanStyle} 
+            onClick={()=>setEditingMode(true)}
+           >{displayText}</span>
   }
-  return <input type='text' width='100px' value={editText} onChange={(e)=>setText(e.target.value)} onKeyDown={(e)=>{
-    if (e.key === 'Enter'){
-      setEditingMode(false);
-      submit(editText);
-    }
-  }}/>
+
+
+  return <input 
+          autoFocus
+          type='text' 
+          style={{width:'116px'}} 
+          value={editText} 
+          onChange={(e)=>setText(e.target.value)} 
+          onBlur={(e)=>{
+            setEditingMode(false);
+            submit(editText);
+          }}
+          onKeyDown={(e)=>{
+            if (e.key === 'Enter'){
+              setEditingMode(false);
+              submit(editText);
+            }
+          }}
+  />
 
 }
 
@@ -103,6 +126,25 @@ export default function SupportingFilesMenu(props){
         if (file.contentId === contentId){
           newSupportingFiles[index] = {...newSupportingFiles[index]}
           newSupportingFiles[index].description = description;
+        }
+      })
+      newObj.supportingFiles = newSupportingFiles;
+      return newObj;
+    })
+  },[doenetId]);
+
+  const updateAsFileName = useRecoilCallback(({set})=> async (asFileName,contentId)=>{
+    // console.log("updateasFileName",asFileName,contentId,doenetId);
+    let { data } = await axios.get('/api/updateFileAsFileName.php',{params:{doenetId,contentId,asFileName}});
+    // console.log("updateasFileName data",data)
+    // let { userQuotaBytesAvailable } = data;
+    set(supportingFilesAndPermissionByDoenetIdSelector(doenetId),(was)=>{
+      let newObj = {...was};
+      let newSupportingFiles = [...was.supportingFiles];
+      newSupportingFiles.map((file,index)=>{
+        if (file.contentId === contentId){
+          newSupportingFiles[index] = {...newSupportingFiles[index]}
+          newSupportingFiles[index].asFileName = asFileName;
         }
       })
       newObj.supportingFiles = newSupportingFiles;
@@ -203,11 +245,15 @@ export default function SupportingFilesMenu(props){
         //test if all uploads are finished then clear it out
         numberOfFilesUploading.current = numberOfFilesUploading.current - 1;
         if (numberOfFilesUploading.current < 1){setUploadProgress([])}
-        let {success, fileName, contentId, description, asFileName, msg, userQuotaBytesAvailable} = data;
+        let {success, fileName, contentId, asFileName, msg, userQuotaBytesAvailable} = data;
         // console.log(">>data",data)
         // console.log("FILE UPLOAD COMPLETE: Update UI",file,data)
         if (msg){
-          addToast(msg, toastType.ERROR)
+          if (success){
+            addToast(msg, toastType.INFO)
+          }else{
+            addToast(msg, toastType.ERROR)
+          }
         }
         if (success){
           setSupportFileInfo((was)=>{
@@ -217,7 +263,7 @@ export default function SupportingFilesMenu(props){
               contentId,
               fileName,
               fileType:file.type,
-              description,
+              description:"",
               asFileName
             })
             newObj.supportingFiles = newSupportingFiles;
@@ -278,17 +324,33 @@ export default function SupportingFilesMenu(props){
     }else if (fileType === 'text/csv'){
       doenetMLCode = `<dataset source='${source}' />`
     }
+
+    let description_required_css = {};
+    // if (description === ''){
+    //   description_required_css = {border:"solid 2px #C1292E"}
+    // }
     
     supportFilesJSX.push(
-    <div><EditableText text={description} submit={(text)=>{updateDescription(text,contentId)}}/>
-    <button onClick={()=>{
-      deleteFile(contentId);
-    }}>delete</button>
-    <CopyToClipboard onCopy={()=>addToast('Code copied to clipboard!', toastType.SUCCESS)} text={doenetMLCode}>
-      <button onClick={()=>{
-        
-      }}>Code <FontAwesomeIcon icon={faClipboard}/></button> 
-      </CopyToClipboard>
+    <div>
+      <div>
+        <span style={{width:'116px'}}>asFileName:</span>
+        <EditableText text={asFileName} submit={(text)=>{updateAsFileName(text,contentId)}}/>
+      </div>
+      <div style={description_required_css}>
+        <span style={{width:'116px'}}>description:</span>
+        <EditableText text={description} submit={(text)=>{updateDescription(text,contentId)}}/>
+      </div>
+      <div>
+        <button onClick={()=>{
+          deleteFile(contentId);
+        }}>delete</button>
+        <CopyToClipboard onCopy={()=>addToast('Code copied to clipboard!', toastType.SUCCESS)} text={doenetMLCode}>
+          <button onClick={()=>{
+            
+          }}>Code <FontAwesomeIcon icon={faClipboard}/></button> 
+          </CopyToClipboard>
+      </div>
+      <hr />
     </div>)
    
   })
