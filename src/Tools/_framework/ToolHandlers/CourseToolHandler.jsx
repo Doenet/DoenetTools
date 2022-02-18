@@ -7,8 +7,6 @@ import {
   useRecoilCallback
  } from 'recoil'
 import axios from "axios";
-import sha256 from 'crypto-js/sha256';
-import CryptoJS from 'crypto-js';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
 import { useToast, toastType } from '@Toast';
 
@@ -164,16 +162,6 @@ export function buildTimestamp(){
     dt.getHours().toString().padStart(2, '0')}:${
     dt.getMinutes().toString().padStart(2, '0')}:${
     dt.getSeconds().toString().padStart(2, '0')}`
-}
-
-export const getSHAofContent = (doenetML)=>{
-  if (doenetML === undefined){
-    return;
-  }
-  //NOTICE: JSON.stringify CHANGES THE CONTENT SO IT DOESN'T MATCH
-  // let contentId = sha256(JSON.stringify(doenetML)).toString(CryptoJS.enc.Hex);
-  let contentId = sha256(doenetML).toString(CryptoJS.enc.Hex);
-  return contentId;
 }
 
 export function ClipboardLinkButtons(props){

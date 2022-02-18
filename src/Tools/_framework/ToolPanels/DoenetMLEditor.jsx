@@ -13,10 +13,9 @@ import { currentDraftSelectedAtom } from '../Menus/VersionHistory'
 
 import CodeMirror from '../CodeMirror';
 import { itemHistoryAtom, fileByContentId } from '../ToolHandlers/CourseToolHandler';
-import sha256 from 'crypto-js/sha256';
-import CryptoJS from 'crypto-js';
 import axios from "axios";
 import { nanoid } from 'nanoid';
+import { CIDFromDoenetML } from '../../../Core/utils/cid';
 
 export const editorSaveTimestamp = atom({
   key:"",
@@ -24,15 +23,6 @@ export const editorSaveTimestamp = atom({
 })
 
 
-const getSHAofContent = (doenetML)=>{
-  if (doenetML === undefined){
-    return;
-  }
-  //NOTICE: JSON.stringify CHANGES THE CONTENT SO IT DOESN'T MATCH
-  // let contentId = sha256(JSON.stringify(doenetML)).toString(CryptoJS.enc.Hex);
-  let contentId = sha256(doenetML).toString(CryptoJS.enc.Hex);
-  return contentId;
-}
 
 function buildTimestamp(){
   const dt = new Date();
@@ -67,7 +57,7 @@ export default function DoenetMLEditor(props){
       const oldVersions = await snapshot.getPromise(itemHistoryAtom(doenetId));
       let newDraft = {...oldVersions.draft};
   
-      const contentId = getSHAofContent(doenetML);
+      const contentId = await CIDFromDoenetML(doenetML);
   
       newDraft.contentId = contentId;
       newDraft.timestamp = buildTimestamp();
@@ -105,7 +95,7 @@ export default function DoenetMLEditor(props){
 
   const autoSave = useRecoilCallback(({snapshot,set})=> async (doenetId)=>{
     const doenetML = await snapshot.getPromise(textEditorDoenetMLAtom);
-    const contentId = getSHAofContent(doenetML);
+    const contentId = await CIDFromDoenetML(doenetML);
     const timestamp = buildTimestamp();
     const versionId = nanoid();
 
