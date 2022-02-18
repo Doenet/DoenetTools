@@ -1,6 +1,6 @@
 import { CIDFromArrayBuffer } from "./cid";
 
-export async function retrieveMediaForCID(CID, mimeType) {
+export async function retrieveMediaForCID(CID) {
 
   try {
     return await retrieveMediaFromIPFS(CID);
@@ -12,6 +12,9 @@ export async function retrieveMediaForCID(CID, mimeType) {
       throw e;
     }
   };
+
+  //TODO: ask database for mimeType
+  let mimeType = 'image/jpeg';
 
 
   return retrieveMediaFromServer(CID, mimeType);
