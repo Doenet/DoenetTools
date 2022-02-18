@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import styled from "styled-components";
 // import "./ProgressBar.css"
 
@@ -16,6 +16,7 @@ const Rect = styled.rect`
   stroke-width: 0;
   /* width: 1000px; */
   height: ${props => props.height};
+  width: ${props => (props.width).toString() + "px"};
 `;
 const DonutG = styled.g``;
 const Circle = styled.circle`
@@ -39,12 +40,13 @@ const Label = styled.p`
 export default function ProgressBar(props) {
   const [fillWidth, setFillWidth] = useState("0px");
   const [donutPosition, setDonutPosition] = useState("12.5px");
-  const barWidth = props.width ? props.width : "235px";
+  const barWidth = props.width ? props.width : 235;
   const height = props.donutIcon ? "25px" : "10px";
   const radius = props.donutIcon ? "12.5px" : "5px";
   const ariaLabel = props.ariaLabel ? props.ariaLabel : null;
   const labelVisible = props.label ? 'static' : 'none';
 
+  console.log(radius);
   var donut = 
   <DonutG>
     <Circle
@@ -117,17 +119,17 @@ export default function ProgressBar(props) {
       }
     };
 
-    var percent = '';
-    if (props.progress) {
+    useEffect(() => {
+      var percent = '';
       percent = props.progress;
-      load(percent);
-    };
 
-    function load(percent) {
       percent *= barWidth;
-      setFillWidth(percent.toString() + "px");    
-      setDonutPosition((percent+12.5).toString() + "px");       
-    };
+      // console.log(percent.toString());
+      setFillWidth(percent);    
+      setDonutPosition(percent+12.5); 
+    });
+          
+
     // let percent = props.progress ? props.progress : 0;
     // percent *= barWidth;
     // setFillWidth((40).toString() + "px");    
@@ -154,7 +156,7 @@ export default function ProgressBar(props) {
         <Label labelVisible={labelVisible} align={align}>{label}</Label>
         <Svg width={barWidth} height={height}>
           <Rect id="main" fill="#E2E2E2" width={barWidth} height={height} radius={radius} aria-label={ariaLabel}/>
-          <Rect id="moving" fill="#1A5A99" width={fillWidth} height={height}/>
+          <Rect id="moving" fill="#1A5A99" width={fillWidth} height={height} radius={radius}/>
           {props.donutIcon ? donut : ''}
         </Svg>
       </Container>

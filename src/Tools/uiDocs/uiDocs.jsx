@@ -690,7 +690,7 @@ export default function attempt() {
         {
           name: 'Donut Icon',
           propPreview: '<ProgressBar donutIcon />',
-          propCode: { donutIcon },
+          propCode: { donutIcon, progress: 0.4 },
           description: 'Progress bar with a donut icon',
         },
         {
@@ -701,26 +701,26 @@ export default function attempt() {
         },
         {
           name: 'Width',
-          propPreview: '<ProgressBar width="400px" />',
-          propCode: { width: "400px" },
-          description: 'Changes the width of the component',
+          propPreview: '<ProgressBar width=400 />',
+          propCode: { width: 400, progress: 0.4 },
+          description: 'Changes the width of the component. Pass in the number without any units',
         },
         {
           name: 'Label',
           propPreview: '<ProgressBar label="What: "/>',
-          propCode: { label: 'What: ' },
+          propCode: { label: 'What: ', progress: 0.4 },
           description: 'Adds label to componenet',
         },
         {
           name: 'Vertical Label',
           propPreview: '<ProgressBar label="What: " vertical/>',
-          propCode: { label: 'What: ', vertical },
+          propCode: { label: 'What: ', vertical, progress: 0.4 },
           description: 'Adds label to component on top',
         },
         {
           name: 'Aria Label',
             propPreview: '<ProgressBar ariaLabel="Progress Bar"/>',
-            propCode: {ariaLabel: 'Progress Bar'},
+            propCode: { ariaLabel: 'Progress Bar', progress: 0.4 },
             description: 'Adds aria label to component'
         }
       ],
