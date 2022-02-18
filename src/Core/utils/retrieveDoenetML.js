@@ -1,36 +1,95 @@
 import { CIDFromDoenetML } from "./cid";
 
-export async function retrieveDoenetMLForCID(CID) {
+export function retrieveDoenetMLForCID(CID) {
 
-  try {
-    return await retrieveDoenetMLFromIPFS(CID);
-  } catch (e) {
-    // if there is an error other than CID not found,
-    // then there is no need to try to get CID from media
-    // as it indicates something wrong with the CID
-    if (e.message.substring(0, 15) !== "CID not found: ") {
-      throw e;
-    }
-  };
+  return new Promise((resolve, reject) => {
+
+    // immediately start trying to retrieve from IPFS
+    let resultIPFS = retrieveDoenetMLFromIPFS(CID);
+
+    let promiseIPFS = resultIPFS.promise;
+    let requestIPFS = resultIPFS.request;
+
+    let requestServer;
+
+    let rejectedIPFS = false;
+    let rejectedServer = false;
+
+    let timerId;
+
+    promiseIPFS
+      .then(res => {
+        // if successfully retrieve from IPFS
+        // then cancel timer (for either starting the server request or waiting 5 seconds at end)
+        // and abort the server request if it is in progress
+        clearTimeout(timerId);
+        if (requestServer && !rejectedServer) {
+          requestServer.abort();
+        }
+        resolve(res);
+      })
+      .catch(e => {
+        rejectedIPFS = true;
+        if(rejectedServer) {
+          // rejected from both server and IPFS
+          // so cancel the 5 second wait at the end and reject
+          clearTimeout(timerId);
+          reject(e);
+        }
+      })
 
 
-  return retrieveDoenetMLFromServer(CID);
+    timerId = setTimeout(() => {
+
+      // if the timer wasn't cleared then IPFS has not yet retrieved
+      // so start retrieving from the server
+      let resultServer = retrieveDoenetMLFromServer(CID);
+
+      let promiseServer = resultServer.promise;
+      requestServer = resultServer.request;
+
+      promiseServer
+      .then(res => {
+        if (!rejectedIPFS) {
+          requestIPFS.abort();
+        }
+        resolve(res);
+      })
+      .catch(e => {
+        rejectedServer = true;
+
+        if(rejectedIPFS) {
+          reject(e);
+        } else {
+          // give IPFS server 5 more seconds to retrieve
+          timerId = setTimeout(() => {
+            requestIPFS.abort();
+            reject(e)
+          }, 5000)
+
+        }
+
+      })
+  
+
+    }, 100);
+
+
+  })
 
 }
 
 
 function retrieveDoenetMLFromIPFS(CID) {
 
-  return new Promise((resolve, reject) => {
+  let request;
 
-    let timeoutId;
+  let promise = new Promise((resolve, reject) => {
 
-    let request = new XMLHttpRequest();
+    request = new XMLHttpRequest();
     request.open("GET", `https://${CID}.ipfs.dweb.link/`, true);
 
     request.onload = async function () {
-
-      clearTimeout(timeoutId);
 
       if (request.status === 200) {
         if (request.getResponseHeader('content-type').substring(0, 10) === "text/plain") {
@@ -46,31 +105,26 @@ function retrieveDoenetMLFromIPFS(CID) {
             reject(new Error("CID mismatch"));
           }
         } else {
-          reject(new Error(`CID does not return text: ${CID}`));
+            reject(new Error(`CID does not return text: ${CID}`));
         }
 
         return;
       }
 
       // got a response other than success
-
       reject(new Error(`CID not found: ${CID}`));
 
     }
 
+    request.onabort = () => reject(new Error("Request aborted"));
+
+    request.error = () => reject(new Error(`Error in retrieving CID ${CID}`));
+
     request.send();
 
-    // If the IPFS gateway cannot find the CID,
-    // it hangs for a long time before timing out.
-    // To avoid the long wait, stop the request and send failure after 1 second.
-    timeoutId = setTimeout(() => {
-      if (request.status === 0) {
-        request.abort();
-        reject(new Error(`CID not found: ${CID}`));
-      }
-    }, 1000)
-
   })
+
+  return { promise, request };
 
 
 }
@@ -78,7 +132,9 @@ function retrieveDoenetMLFromIPFS(CID) {
 
 function retrieveDoenetMLFromServer(CID) {
 
-  return new Promise((resolve, reject) => {
+  let request;
+
+  let promise = new Promise((resolve, reject) => {
 
     let request = new XMLHttpRequest();
     request.open("GET", `/media/${CID}.doenet`, true);
@@ -101,14 +157,18 @@ function retrieveDoenetMLFromServer(CID) {
       }
 
       // got a response other than success
-
       reject(new Error(`CID not found: ${CID}`));
 
     }
+
+    request.onabort = () => reject(new Error("Request aborted"));
+
+    request.error = () => reject(new Error(`Error in retrieving CID ${CID}`))
 
     request.send();
 
   })
 
+  return { promise, request };
 
 }
