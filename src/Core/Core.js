@@ -7915,7 +7915,7 @@ export default class Core {
         version: "0.1.0",
       }
 
-      axios.post('/api/recordEvent.php', payload)
+      // axios.post('/api/recordEvent.php', payload) //TODO: need to record the event
       // .then(resp => {
       //   console.log(">>>>resp",resp.data)
       // });
