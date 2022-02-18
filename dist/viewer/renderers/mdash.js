@@ -1,10 +1,9 @@
 import React from "../../_snowpack/pkg/react.js";
-import DoenetRenderer from "./DoenetRenderer.js";
-export default class Nbsp extends DoenetRenderer {
-  render() {
-    if (this.doenetSvData.hidden) {
-      return null;
-    }
-    return /* @__PURE__ */ React.createElement(React.Fragment, null, "—");
+import useDoenetRender from "./useDoenetRenderer.js";
+export default function Ndash(props) {
+  let {SVs} = useDoenetRender(props, false);
+  if (SVs.hidden) {
+    return null;
   }
+  return /* @__PURE__ */ React.createElement(React.Fragment, null, "—");
 }

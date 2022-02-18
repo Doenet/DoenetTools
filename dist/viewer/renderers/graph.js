@@ -4,7 +4,7 @@ import {sizeToCSS} from "./utils/css.js";
 import useDoenetRender from "./useDoenetRenderer.js";
 export const BoardContext = createContext();
 export default function Graph(props) {
-  let {name, SVs, children, actions} = useDoenetRender(props);
+  let {name, SVs, children, actions: actions2, callAction: callAction2} = useDoenetRender(props);
   const [board, setBoard] = useState({});
   const [previousDimensions, setPreviousDimensions] = useState({});
   const [previousBoundingbox, setPreviousBoundingbox] = useState({});
@@ -33,11 +33,9 @@ export default function Graph(props) {
         let newPreviousBoundingbox = board2.getBoundingBox();
         let [xmin, ymax, xmax, ymin] = newPreviousBoundingbox;
         setPreviousBoundingbox(newPreviousBoundingbox);
-        actions.changeAxisLimits({
-          xmin,
-          xmax,
-          ymin,
-          ymax
+        callAction2({
+          action: actions2.changeAxisLimits,
+          args: {xmin, xmax, ymin, ymax}
         });
       }
     });
@@ -277,11 +275,9 @@ export class Graph2 extends DoenetRenderer {
       if (!(this.settingBoundingBox || this.resizingBoard)) {
         this.previousBoundingbox = this.board.getBoundingBox();
         let [xmin, ymax, xmax, ymin] = this.previousBoundingbox;
-        this.actions.changeAxisLimits({
-          xmin,
-          xmax,
-          ymin,
-          ymax
+        callAction({
+          action: actions.changeAxisLimits,
+          args: {xmin, xmax, ymin, ymax}
         });
       }
     });

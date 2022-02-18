@@ -38,18 +38,6 @@ position: relative;
 cursor: pointer;
 
 `;
-const SettingsButton = styled.button`
-background-color: white;
-height: 50px;
-width: 50px;
-color: black;
-border: none;
-position: absolute;
-bottom: 0;
-right: 0;
-cursor: pointer;
-font-size: 20px;
-`;
 export default function MainPanel({headerControls, children, setMenusOpen, openMenuButton, displaySettings}) {
   console.log(">>>===main panel");
   const setPageToolView = useSetRecoilState(pageToolViewAtom);
@@ -77,11 +65,6 @@ export default function MainPanel({headerControls, children, setMenusOpen, openM
   }
   const contents = [];
   if (displaySettings) {
-    contents.push(/* @__PURE__ */ React.createElement(SettingsButton, {
-      onClick: () => setPageToolView({page: "settings", tool: "", view: ""})
-    }, /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
-      icon: faCog
-    })));
   }
   if (children) {
     contents.push(children);

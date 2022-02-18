@@ -1,11 +1,24 @@
 import CompositeComponent from './abstract/CompositeComponent.js';
 import { postProcessCopy } from '../utils/copy.js';
 import me from '../../_snowpack/pkg/math-expressions.js';
+import { processAssignNames } from '../utils/serializedStateProcessing.js';
 
 export default class Intersection extends CompositeComponent {
   static componentType = "intersection";
 
+  static assignNamesToReplacements = true;
+
   static stateVariableToEvaluateAfterReplacements = "readyToExpandWhenResolved";
+
+  static createAttributesObject(args) {
+    let attributes = super.createAttributesObject(args);
+
+    attributes.assignNamesSkip = {
+      createPrimitiveOfType: "number"
+    }
+
+    return attributes;
+  }
 
   static returnChildGroups() {
 
@@ -58,7 +71,7 @@ export default class Intersection extends CompositeComponent {
   }
 
 
-  static async createSerializedReplacements({ component, components }) {
+  static async createSerializedReplacements({ component, components, componentInfoObjects }) {
 
     let lineChildren = await component.stateValues.lineChildren;
     let numberLineChildren = lineChildren.length;
@@ -77,7 +90,21 @@ export default class Intersection extends CompositeComponent {
       serializedChild.state.draggable = false;
       serializedChild.state.fixed = true;
 
-      return { replacements: postProcessCopy({ serializedComponents: [serializedChild], componentName: component.componentName }) };
+      let serializedReplacements = postProcessCopy({ serializedComponents: [serializedChild], componentName: component.componentName });
+
+      let newNamespace = component.attributes.newNamespace?.primitive;
+
+      let processResult = processAssignNames({
+        assignNames: component.doenetAttributes.assignNames,
+        serializedComponents: serializedReplacements,
+        parentName: component.componentName,
+        parentCreatesNewNamespace: newNamespace,
+        componentInfoObjects,
+      });
+
+      serializedReplacements = processResult.serializedComponents;
+
+      return { replacements: serializedReplacements };
 
     }
 
@@ -131,8 +158,21 @@ export default class Intersection extends CompositeComponent {
         serializedChild.state.draggable = false;
         serializedChild.state.fixed = true;
 
-        return { replacements: postProcessCopy({ serializedComponents: [serializedChild], componentName: component.componentName }) };
+        let serializedReplacements = postProcessCopy({ serializedComponents: [serializedChild], componentName: component.componentName });
 
+        let newNamespace = component.attributes.newNamespace?.primitive;
+
+        let processResult = processAssignNames({
+          assignNames: component.doenetAttributes.assignNames,
+          serializedComponents: serializedReplacements,
+          parentName: component.componentName,
+          parentCreatesNewNamespace: newNamespace,
+          componentInfoObjects,
+        });
+
+        serializedReplacements = processResult.serializedComponents;
+
+        return { replacements: serializedReplacements };
       }
     }
 
@@ -141,12 +181,24 @@ export default class Intersection extends CompositeComponent {
     let y = (c1 * a2 - c2 * a1) / d;
     let coords = me.fromAst(["vector", x, y]);
 
-    return {
-      replacements: [{
-        componentType: "point",
-        state: { coords, draggable: false, fixed: true },
-      }]
-    };
+    let serializedReplacements = [{
+      componentType: "point",
+      state: { coords, draggable: false, fixed: true },
+    }]
+
+    let newNamespace = component.attributes.newNamespace?.primitive;
+
+    let processResult = processAssignNames({
+      assignNames: component.doenetAttributes.assignNames,
+      serializedComponents: serializedReplacements,
+      parentName: component.componentName,
+      parentCreatesNewNamespace: newNamespace,
+      componentInfoObjects,
+    });
+
+    serializedReplacements = processResult.serializedComponents;
+
+    return { replacements: serializedReplacements };
 
     // TODO: would it be preferable to send an xs attribute
     // rather than a coords state variable?
@@ -175,11 +227,11 @@ export default class Intersection extends CompositeComponent {
 
   }
 
-  static async calculateReplacementChanges({ component, components }) {
+  static async calculateReplacementChanges({ component, components, componentInfoObjects }) {
 
     let replacementChanges = [];
 
-    let serializedIntersections = (await this.createSerializedReplacements({ component, components })).replacements;
+    let serializedIntersections = (await this.createSerializedReplacements({ component, components, componentInfoObjects })).replacements;
 
     let nNewIntersections = serializedIntersections.length;
 

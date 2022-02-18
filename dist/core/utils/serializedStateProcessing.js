@@ -2,10 +2,10 @@ import me from '../../_snowpack/pkg/math-expressions.js';
 import { createUniqueName } from './naming.js';
 import { flattenDeep } from './array.js';
 import { deepClone } from './deepFunctions.js';
-import readOnlyProxyHandler from '../ReadOnlyProxyHandler.js';
 import { breakEmbeddedStringByCommas } from '../components/commonsugar/breakstrings.js';
 import sha256 from '../../_snowpack/pkg/crypto-js/sha256.js';
 import Hex from '../../_snowpack/pkg/crypto-js/enc-hex.js'
+import { parseAndCompile } from '../../parser/parser.js';
 import subsets from './subset-of-reals.js';
 
 export function scrapeOffAllDoumentRelated(serializedComponents) {
@@ -142,7 +142,7 @@ export async function expandDoenetMLsToFullSerializedComponents({
 
   for (let doenetML of doenetMLs) {
 
-    let serializedComponents = doenetMLToSerializedComponents(doenetML);
+    let serializedComponents = parseAndCompile(doenetML);
 
     substituteDeprecations(serializedComponents);
 
@@ -174,7 +174,7 @@ export async function expandDoenetMLsToFullSerializedComponents({
 
   let contentIdList = Object.keys(contentIdComponents);
   if (contentIdList.length > 0) {
-    // found copies with contentIds 
+    // found copies with contentIds
     // so look up those contentIds
     // convert to doenetMLs, and recurse on those doenetMLs
 
@@ -472,6 +472,8 @@ function substituteDeprecations(serializedComponents) {
 
 export function correctComponentTypeCapitalization(serializedComponents, componentTypeLowerCaseMapping) {
 
+  //special case for macros before application
+  // componentTypeLowerCaseMapping["macro"] = "macro";
   for (let component of serializedComponents) {
     if (typeof component !== "object") {
       continue;
@@ -852,14 +854,14 @@ function substituteMacros(serializedComponents, componentInfoObjects, flags) {
 
         if (firstIndMatched > 0) {
           // increment componentInd because we now have to skip
-          // over two components 
-          // (the component made from the beginning of the string 
+          // over two components
+          // (the component made from the beginning of the string
           // as well as the component made from the macro)
           componentInd++;
         }
 
         // break out of loop processing string,
-        // as finished current one 
+        // as finished current one
         // (possibly breaking it into pieces, so will address remainder as other component)
 
         break;
@@ -1255,8 +1257,6 @@ export function applySugar({ serializedComponents, parentParametersFromSugar = {
         componentAttributes[attrName] = attribute.primitive;
       }
     }
-
-    componentAttributes = new Proxy(componentAttributes, readOnlyProxyHandler);
 
     if (component.children) {
 
@@ -2000,7 +2000,7 @@ export function serializedComponentsReviver(key, value) {
 export function gatherVariantComponents({ serializedComponents, componentInfoObjects }) {
 
   // a list of lists of variantComponents
-  // where each component is a list of variantComponents 
+  // where each component is a list of variantComponents
   // of corresponding serializedComponent
   let variantComponents = [];
 

@@ -1,4 +1,4 @@
-import React, {useState} from "../../_snowpack/pkg/react.js";
+import React, {useState, useEffect} from "../../_snowpack/pkg/react.js";
 import {doenetMainBlue} from "./theme.js";
 import styled, {ThemeProvider} from "../../_snowpack/pkg/styled-components.js";
 const Button = styled.button`
@@ -8,12 +8,12 @@ const Button = styled.button`
   border-color: ${doenetMainBlue};
   border-width: 2px;
   color: ${doenetMainBlue};
-  background-color: #FFF;
+  background-color: #fff;
   border-radius: ${(props) => props.theme.borderRadius};
   padding: ${(props) => props.theme.padding};
   cursor: pointer;
   font-size: 12px;
-  textAlign: center;
+  textalign: center;
 `;
 Button.defaultProps = {
   theme: {
@@ -26,15 +26,16 @@ export default function ToggleButton(props) {
   const [isSelected, setSelected] = useState(props.isSelected ? props.isSelected : false);
   const [labelVisible, setLabelVisible] = useState(props.label ? "static" : "none");
   const [align, setAlign] = useState(props.vertical ? "static" : "flex");
-  if (props.disabled) {
-    toggleButton.color = "#e2e2e2";
-    toggleButton.border = "2px solid #e2e2e2";
-  }
+  useEffect(() => {
+    setSelected(props.isSelected);
+  }, [props.isSelected]);
   var toggleButton = {
     value: "Toggle Button"
   };
   if (props.disabled) {
+    toggleButton.color = "#e2e2e2";
     toggleButton.cursor = "not-allowed";
+    toggleButton.border = "2px solid #e2e2e2";
   }
   if (props.alert) {
     toggleButton.border = "2px solid #C1292E";
@@ -72,20 +73,13 @@ export default function ToggleButton(props) {
         toggleButton.backgroundColor = "#C1292E";
       }
       toggleButton.color = "#FFF";
-      toggleButton.border = "2px solid #FFF";
       if (props.switch_value)
         toggleButton.value = props.switch_value;
     }
   }
   function handleClick() {
-    if (isSelected === false) {
-      setSelected(true);
-    }
-    if (isSelected === true) {
-      setSelected(false);
-    }
     if (props.onClick)
-      props.onClick(isSelected);
+      props.onClick(props.index !== null && props.index !== void 0 ? props.index : null);
   }
   if (props.label) {
     label.value = props.label;

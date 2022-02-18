@@ -12,8 +12,8 @@ date_default_timezone_set('UTC');
 
 $jwtArray = include "jwtArray.php";
 $userId = $jwtArray['userId'];
-$examUserId = $jwtArray['examineeUserId'];
-$examDoenetId = $jwtArray['doenetId'];
+$examUserId = array_key_exists("examineeUserId",$jwtArray) ? $jwtArray['examineeUserId'] : "";
+$examDoenetId = array_key_exists("doenetId",$jwtArray) ? $jwtArray['doenetId'] : "";
 
 $_POST = json_decode(file_get_contents("php://input"),true);
 $doenetId = mysqli_real_escape_string($conn,$_POST["doenetId"]);

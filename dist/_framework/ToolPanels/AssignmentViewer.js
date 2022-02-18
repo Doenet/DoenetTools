@@ -8,7 +8,11 @@ import {
   useRecoilCallback,
   useSetRecoilState
 } from "../../_snowpack/pkg/recoil.js";
-import {searchParamAtomFamily, pageToolViewAtom, footerAtom} from "../NewToolRoot.js";
+import {
+  searchParamAtomFamily,
+  pageToolViewAtom,
+  footerAtom
+} from "../NewToolRoot.js";
 import {
   itemHistoryAtom,
   fileByContentId
@@ -160,9 +164,8 @@ export default function AssignmentViewer() {
     }
     doenetML2 = response;
     returnAllPossibleVariants({
-      doenetML: doenetML2,
-      callback: isCollection ? setCollectionVariant : setVariantsFromDoenetML
-    });
+      doenetML: doenetML2
+    }).then(isCollection ? setCollectionVariant : setVariantsFromDoenetML);
     async function setVariantsFromDoenetML({allPossibleVariants}) {
       storedAllPossibleVariants.current = allPossibleVariants;
       const {data} = await axios.get("/api/loadTakenVariants.php", {
@@ -273,8 +276,18 @@ export default function AssignmentViewer() {
       return newObj;
     });
   }, []);
-  const updateCreditAchieved = useRecoilCallback(({set}) => async ({creditByItem, creditForAssignment, creditForAttempt, totalPointsOrPercent}) => {
-    set(creditAchievedAtom, {creditByItem, creditForAssignment, creditForAttempt, totalPointsOrPercent});
+  const updateCreditAchieved = useRecoilCallback(({set}) => async ({
+    creditByItem,
+    creditForAssignment,
+    creditForAttempt,
+    totalPointsOrPercent
+  }) => {
+    set(creditAchievedAtom, {
+      creditByItem,
+      creditForAssignment,
+      creditForAttempt,
+      totalPointsOrPercent
+    });
   });
   if (recoilDoenetId === "") {
     return null;
@@ -288,7 +301,21 @@ export default function AssignmentViewer() {
     updateAttemptNumberAndRequestedVariant(recoilAttemptNumber);
     return null;
   }
-  return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(DoenetViewer, {
+  return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("button", {
+    onClick: () => {
+      setFooter((was) => {
+        let newObj = null;
+        if (!was) {
+          newObj = {
+            height: 220,
+            open: true,
+            component: "MathInputKeyboard"
+          };
+        }
+        return newObj;
+      });
+    }
+  }, "Toggle Keyboard"), /* @__PURE__ */ React.createElement(DoenetViewer, {
     key: `doenetviewer${doenetId}`,
     doenetML,
     doenetId,

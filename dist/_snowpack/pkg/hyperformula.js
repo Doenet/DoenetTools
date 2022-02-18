@@ -1,5 +1,17 @@
-import { g as global_1, _ as _export, F as objectToArray, G as toAbsoluteIndex, H as stringRepeat, d as fails } from './common/es.string.ends-with-79fbac7d.js';
-import { c as createCommonjsModule, a as commonjsGlobal } from './common/_commonjsHelpers-b3efd043.js';
+import { d as fails, _ as _export, J as objectGetOwnPropertyNamesExternal, g as global_1, K as objectToArray, L as toAbsoluteIndex, G as stringRepeat } from './common/es.string.starts-with-d5b5fac4.js';
+import { c as createCommonjsModule, a as commonjsGlobal } from './common/_commonjsHelpers-f5d70792.js';
+import './common/es.string.ends-with-e8fa5a41.js';
+
+var getOwnPropertyNames = objectGetOwnPropertyNamesExternal.f;
+
+// eslint-disable-next-line es/no-object-getownpropertynames -- required for testing
+var FAILS_ON_PRIMITIVES = fails(function () { return !Object.getOwnPropertyNames(1); });
+
+// `Object.getOwnPropertyNames` method
+// https://tc39.es/ecma262/#sec-object.getownpropertynames
+_export({ target: 'Object', stat: true, forced: FAILS_ON_PRIMITIVES }, {
+  getOwnPropertyNames: getOwnPropertyNames
+});
 
 var runtime_1 = createCommonjsModule(function (module) {
 /**
@@ -764,15 +776,15 @@ var numberIsFinite = Number.isFinite || function isFinite(it) {
 // https://tc39.es/ecma262/#sec-number.isfinite
 _export({ target: 'Number', stat: true }, { isFinite: numberIsFinite });
 
+function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
+
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
-function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
-
-function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf(subClass, superClass); }
 
 function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
 
@@ -811,7 +823,7 @@ var NoSheetWithIdError = /*#__PURE__*/function (_Error) {
     return _super.call(this, "There's no sheet with id = ".concat(sheetId));
   }
 
-  return NoSheetWithIdError;
+  return _createClass(NoSheetWithIdError);
 }( /*#__PURE__*/_wrapNativeSuper(Error));
 /**
  * Error thrown when the sheet of a given name does not exist.
@@ -828,7 +840,7 @@ var NoSheetWithNameError = /*#__PURE__*/function (_Error2) {
     return _super2.call(this, "There's no sheet with name '".concat(sheetName, "'"));
   }
 
-  return NoSheetWithNameError;
+  return _createClass(NoSheetWithNameError);
 }( /*#__PURE__*/_wrapNativeSuper(Error));
 /**
  * Error thrown when the sheet of a given name already exists.
@@ -845,7 +857,7 @@ var SheetNameAlreadyTakenError = /*#__PURE__*/function (_Error3) {
     return _super3.call(this, "Sheet with name ".concat(sheetName, " already exists"));
   }
 
-  return SheetNameAlreadyTakenError;
+  return _createClass(SheetNameAlreadyTakenError);
 }( /*#__PURE__*/_wrapNativeSuper(Error));
 /**
  * Error thrown when loaded sheet size exceeds configured limits.
@@ -862,7 +874,7 @@ var SheetSizeLimitExceededError = /*#__PURE__*/function (_Error4) {
     return _super4.call(this, 'Sheet size limit exceeded');
   }
 
-  return SheetSizeLimitExceededError;
+  return _createClass(SheetSizeLimitExceededError);
 }( /*#__PURE__*/_wrapNativeSuper(Error));
 /**
  * Error thrown when the the provided string is not a valid formula, i.e does not start with "="
@@ -879,7 +891,7 @@ var NotAFormulaError = /*#__PURE__*/function (_Error5) {
     return _super5.call(this, 'This is not a formula');
   }
 
-  return NotAFormulaError;
+  return _createClass(NotAFormulaError);
 }( /*#__PURE__*/_wrapNativeSuper(Error));
 /**
  * Error thrown when the given address is invalid.
@@ -896,7 +908,7 @@ var InvalidAddressError = /*#__PURE__*/function (_Error6) {
     return _super6.call(this, "Address (row = ".concat(address.row, ", col = ").concat(address.col, ") is invalid"));
   }
 
-  return InvalidAddressError;
+  return _createClass(InvalidAddressError);
 }( /*#__PURE__*/_wrapNativeSuper(Error));
 /**
  * Error thrown when the given arguments are invalid
@@ -913,7 +925,7 @@ var InvalidArgumentsError = /*#__PURE__*/function (_Error7) {
     return _super7.call(this, "Invalid arguments, expected ".concat(expectedArguments));
   }
 
-  return InvalidArgumentsError;
+  return _createClass(InvalidArgumentsError);
 }( /*#__PURE__*/_wrapNativeSuper(Error));
 /**
  * Error thrown when the given sheets are not equal.
@@ -930,7 +942,7 @@ var SheetsNotEqual = /*#__PURE__*/function (_Error8) {
     return _super8.call(this, "Sheets ".concat(sheet1, " and ").concat(sheet2, " are not equal."));
   }
 
-  return SheetsNotEqual;
+  return _createClass(SheetsNotEqual);
 }( /*#__PURE__*/_wrapNativeSuper(Error));
 /**
  * Error thrown when the given named expression already exists in the workbook and therefore it cannot be added.
@@ -947,7 +959,7 @@ var NamedExpressionNameIsAlreadyTakenError = /*#__PURE__*/function (_Error9) {
     return _super9.call(this, "Name of Named Expression '".concat(expressionName, "' is already present"));
   }
 
-  return NamedExpressionNameIsAlreadyTakenError;
+  return _createClass(NamedExpressionNameIsAlreadyTakenError);
 }( /*#__PURE__*/_wrapNativeSuper(Error));
 /**
  * Error thrown when the name given for the named expression is invalid.
@@ -964,7 +976,7 @@ var NamedExpressionNameIsInvalidError = /*#__PURE__*/function (_Error10) {
     return _super10.call(this, "Name of Named Expression '".concat(expressionName, "' is invalid"));
   }
 
-  return NamedExpressionNameIsInvalidError;
+  return _createClass(NamedExpressionNameIsInvalidError);
 }( /*#__PURE__*/_wrapNativeSuper(Error));
 /**
  * Error thrown when the given named expression does not exist.
@@ -981,7 +993,7 @@ var NamedExpressionDoesNotExistError = /*#__PURE__*/function (_Error11) {
     return _super11.call(this, "Named Expression '".concat(expressionName, "' does not exist"));
   }
 
-  return NamedExpressionDoesNotExistError;
+  return _createClass(NamedExpressionDoesNotExistError);
 }( /*#__PURE__*/_wrapNativeSuper(Error));
 /**
  * Error thrown when there are no operations to be undone by the [[undo]] method.
@@ -998,7 +1010,7 @@ var NoOperationToUndoError = /*#__PURE__*/function (_Error12) {
     return _super12.call(this, 'There is no operation to undo');
   }
 
-  return NoOperationToUndoError;
+  return _createClass(NoOperationToUndoError);
 }( /*#__PURE__*/_wrapNativeSuper(Error));
 /**
  * Error thrown when there are no operations to redo by the [[redo]] method.
@@ -1015,7 +1027,7 @@ var NoOperationToRedoError = /*#__PURE__*/function (_Error13) {
     return _super13.call(this, 'There is no operation to redo');
   }
 
-  return NoOperationToRedoError;
+  return _createClass(NoOperationToRedoError);
 }( /*#__PURE__*/_wrapNativeSuper(Error));
 /**
  * Error thrown when there is nothing to paste by the [[paste]] method.
@@ -1032,7 +1044,7 @@ var NothingToPasteError = /*#__PURE__*/function (_Error14) {
     return _super14.call(this, 'There is nothing to paste');
   }
 
-  return NothingToPasteError;
+  return _createClass(NothingToPasteError);
 }( /*#__PURE__*/_wrapNativeSuper(Error));
 
 function replacer(key, val) {
@@ -1076,7 +1088,7 @@ var UnableToParseError = /*#__PURE__*/function (_Error15) {
     return _super15.call(this, "Unable to parse value: ".concat(JSON.stringify(value, replacer, 4)));
   }
 
-  return UnableToParseError;
+  return _createClass(UnableToParseError);
 }( /*#__PURE__*/_wrapNativeSuper(Error));
 /**
  * Error thrown when the expected value type differs from the given value type.
@@ -1101,7 +1113,7 @@ var ExpectedValueOfTypeError = /*#__PURE__*/function (_Error16) {
     return _super16.call(this, "Expected value of type: ".concat(expectedType, " for config parameter: ").concat(paramName));
   }
 
-  return ExpectedValueOfTypeError;
+  return _createClass(ExpectedValueOfTypeError);
 }( /*#__PURE__*/_wrapNativeSuper(Error));
 /**
  * Error thrown when supplied config parameter value is an empty string.
@@ -1125,7 +1137,7 @@ var ConfigValueEmpty = /*#__PURE__*/function (_Error17) {
     return _super17.call(this, "Config parameter ".concat(paramName, " cannot be empty."));
   }
 
-  return ConfigValueEmpty;
+  return _createClass(ConfigValueEmpty);
 }( /*#__PURE__*/_wrapNativeSuper(Error));
 /**
  * Error thrown when supplied config parameter value is too small.
@@ -1149,7 +1161,7 @@ var ConfigValueTooSmallError = /*#__PURE__*/function (_Error18) {
     return _super18.call(this, "Config parameter ".concat(paramName, " should be at least ").concat(minimum));
   }
 
-  return ConfigValueTooSmallError;
+  return _createClass(ConfigValueTooSmallError);
 }( /*#__PURE__*/_wrapNativeSuper(Error));
 /**
  * Error thrown when supplied config parameter value is too big.
@@ -1173,7 +1185,7 @@ var ConfigValueTooBigError = /*#__PURE__*/function (_Error19) {
     return _super19.call(this, "Config parameter ".concat(paramName, " should be at most ").concat(maximum));
   }
 
-  return ConfigValueTooBigError;
+  return _createClass(ConfigValueTooBigError);
 }( /*#__PURE__*/_wrapNativeSuper(Error));
 /**
  * Error thrown when the value was expected to be set for a config parameter.
@@ -1198,7 +1210,7 @@ var ExpectedOneOfValuesError = /*#__PURE__*/function (_Error20) {
     return _super20.call(this, "Expected one of ".concat(values, " for config parameter: ").concat(paramName));
   }
 
-  return ExpectedOneOfValuesError;
+  return _createClass(ExpectedOneOfValuesError);
 }( /*#__PURE__*/_wrapNativeSuper(Error));
 /**
  * Error thrown when computations become suspended.
@@ -1221,7 +1233,7 @@ var EvaluationSuspendedError = /*#__PURE__*/function (_Error21) {
     return _super21.call(this, 'Computations are suspended');
   }
 
-  return EvaluationSuspendedError;
+  return _createClass(EvaluationSuspendedError);
 }( /*#__PURE__*/_wrapNativeSuper(Error));
 /**
  * Error thrown when translation is missing in translation package.
@@ -1240,7 +1252,7 @@ var MissingTranslationError = /*#__PURE__*/function (_Error22) {
     return _super22.call(this, "Translation for ".concat(key, " is missing in the translation package you're using."));
   }
 
-  return MissingTranslationError;
+  return _createClass(MissingTranslationError);
 }( /*#__PURE__*/_wrapNativeSuper(Error));
 /**
  * Error thrown when trying to override protected translation.
@@ -1261,7 +1273,7 @@ var ProtectedFunctionTranslationError = /*#__PURE__*/function (_Error23) {
     return _super23.call(this, "Cannot register translation for function with id: ".concat(key));
   }
 
-  return ProtectedFunctionTranslationError;
+  return _createClass(ProtectedFunctionTranslationError);
 }( /*#__PURE__*/_wrapNativeSuper(Error));
 /**
  * Error thrown when trying to retrieve not registered language
@@ -1281,7 +1293,7 @@ var LanguageNotRegisteredError = /*#__PURE__*/function (_Error24) {
     return _super24.call(this, 'Language not registered.');
   }
 
-  return LanguageNotRegisteredError;
+  return _createClass(LanguageNotRegisteredError);
 }( /*#__PURE__*/_wrapNativeSuper(Error));
 /**
  * Error thrown when trying to register already registered language
@@ -1300,7 +1312,7 @@ var LanguageAlreadyRegisteredError = /*#__PURE__*/function (_Error25) {
     return _super25.call(this, 'Language already registered.');
   }
 
-  return LanguageAlreadyRegisteredError;
+  return _createClass(LanguageAlreadyRegisteredError);
 }( /*#__PURE__*/_wrapNativeSuper(Error));
 /**
  * Error thrown when function plugin is invalid.
@@ -1389,7 +1401,7 @@ var SourceLocationHasArrayError = /*#__PURE__*/function (_Error28) {
     return _super28.call(this, 'Cannot perform this operation, source location has an array inside.');
   }
 
-  return SourceLocationHasArrayError;
+  return _createClass(SourceLocationHasArrayError);
 }( /*#__PURE__*/_wrapNativeSuper(Error));
 /**
  * Error thrown when selected target location has an array.
@@ -1413,7 +1425,7 @@ var TargetLocationHasArrayError = /*#__PURE__*/function (_Error29) {
     return _super29.call(this, 'Cannot perform this operation, target location has an array inside.');
   }
 
-  return TargetLocationHasArrayError;
+  return _createClass(TargetLocationHasArrayError);
 }( /*#__PURE__*/_wrapNativeSuper(Error));
 /**
  * Error thrown when named expression contains relative addresses.
@@ -1433,7 +1445,7 @@ var NoRelativeAddressesAllowedError = /*#__PURE__*/function (_Error30) {
     return _super30.call(this, 'Relative addresses not allowed in named expressions.');
   }
 
-  return NoRelativeAddressesAllowedError;
+  return _createClass(NoRelativeAddressesAllowedError);
 }( /*#__PURE__*/_wrapNativeSuper(Error));
 /**
  * Error thrown when alias to a function is already defined.
@@ -1453,14 +1465,14 @@ var AliasAlreadyExisting = /*#__PURE__*/function (_Error31) {
     return _super31.call(this, "Alias id ".concat(name, " in plugin ").concat(pluginName, " already defined as a function or alias."));
   }
 
-  return AliasAlreadyExisting;
+  return _createClass(AliasAlreadyExisting);
 }( /*#__PURE__*/_wrapNativeSuper(Error));
 
 function _classCallCheck$1(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _defineProperties$1(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
-function _createClass$1(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$1(Constructor.prototype, protoProps); if (staticProps) _defineProperties$1(Constructor, staticProps); return Constructor; }
+function _createClass$1(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$1(Constructor.prototype, protoProps); if (staticProps) _defineProperties$1(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
 /** Possible kinds of cell references */
 
 var CellReferenceType;
@@ -1674,7 +1686,7 @@ function _classCallCheck$2(instance, Constructor) { if (!(instance instanceof Co
 
 function _defineProperties$2(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
-function _createClass$2(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$2(Constructor.prototype, protoProps); if (staticProps) _defineProperties$2(Constructor, staticProps); return Constructor; }
+function _createClass$2(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$2(Constructor.prototype, protoProps); if (staticProps) _defineProperties$2(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
 var ReferenceType;
 
 (function (ReferenceType) {
@@ -10699,7 +10711,7 @@ function _classCallCheck$3(instance, Constructor) { if (!(instance instanceof Co
 
 function _defineProperties$3(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
-function _createClass$3(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$3(Constructor.prototype, protoProps); if (staticProps) _defineProperties$3(Constructor, staticProps); return Constructor; }
+function _createClass$3(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$3(Constructor.prototype, protoProps); if (staticProps) _defineProperties$3(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
 var RowAddress = /*#__PURE__*/function () {
   function RowAddress(type, row, sheet) {
     _classCallCheck$3(this, RowAddress);
@@ -10997,11 +11009,11 @@ var simpleCellRangeToString = function simpleCellRangeToString(sheetIndexMapping
   }
 };
 /**
-* Convert column label to index
-*
-* @param columnStringRepresentation - column label (e.g. 'AAB')
-* @returns column index
-* */
+ * Convert column label to index
+ *
+ * @param columnStringRepresentation - column label (e.g. 'AAB')
+ * @returns column index
+ * */
 
 function columnLabelToIndex(columnStringRepresentation) {
   if (columnStringRepresentation.length === 1) {
@@ -11368,7 +11380,7 @@ function _classCallCheck$4(instance, Constructor) { if (!(instance instanceof Co
 
 function _defineProperties$4(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
-function _createClass$4(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$4(Constructor.prototype, protoProps); if (staticProps) _defineProperties$4(Constructor, staticProps); return Constructor; }
+function _createClass$4(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$4(Constructor.prototype, protoProps); if (staticProps) _defineProperties$4(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
 
 var buildCacheEntry = function buildCacheEntry(ast, relativeDependencies, hasVolatileFunction, hasStructuralChangeFunction) {
   return {
@@ -11476,6 +11488,10 @@ var doesContainFunctions = function doesContainFunctions(ast, functionCriterion)
   }
 };
 
+function _defineProperties$5(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass$5(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$5(Constructor.prototype, protoProps); if (staticProps) _defineProperties$5(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
+
 function _classCallCheck$5(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 /**
@@ -11484,11 +11500,11 @@ function _classCallCheck$5(instance, Constructor) { if (!(instance instanceof Co
  */
 
 /**
-* This is a class for detailed error messages across HyperFormula.
-*/
-var ErrorMessage = function ErrorMessage() {
+ * This is a class for detailed error messages across HyperFormula.
+ */
+var ErrorMessage = /*#__PURE__*/_createClass$5(function ErrorMessage() {
   _classCallCheck$5(this, ErrorMessage);
-};
+});
 ErrorMessage.DistinctSigns = 'Distinct signs.';
 ErrorMessage.WrongArgNumber = 'Wrong number of arguments.';
 ErrorMessage.EmptyArg = 'Empty function argument.';
@@ -11567,7 +11583,7 @@ ErrorMessage.LicenseKey = function (arg) {
   return "License key is ".concat(arg, ".");
 };
 
-function _typeof$1(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof$1 = function _typeof(obj) { return typeof obj; }; } else { _typeof$1 = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof$1(obj); }
+function _typeof$1(obj) { "@babel/helpers - typeof"; return _typeof$1 = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof$1(obj); }
 
 function _slicedToArray$1(arr, i) { return _arrayWithHoles$1(arr) || _iterableToArrayLimit$1(arr, i) || _unsupportedIterableToArray$2(arr, i) || _nonIterableRest$1(); }
 
@@ -11583,15 +11599,15 @@ function _arrayWithHoles$1(arr) { if (Array.isArray(arr)) return arr; }
 
 function _classCallCheck$6(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-function _defineProperties$5(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _defineProperties$6(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
-function _createClass$5(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$5(Constructor.prototype, protoProps); if (staticProps) _defineProperties$5(Constructor, staticProps); return Constructor; }
+function _createClass$6(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$6(Constructor.prototype, protoProps); if (staticProps) _defineProperties$6(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
 
-function _get(target, property, receiver) { if (typeof Reflect !== "undefined" && Reflect.get) { _get = Reflect.get; } else { _get = function _get(target, property, receiver) { var base = _superPropBase(target, property); if (!base) return; var desc = Object.getOwnPropertyDescriptor(base, property); if (desc.get) { return desc.get.call(receiver); } return desc.value; }; } return _get(target, property, receiver || target); }
+function _get() { if (typeof Reflect !== "undefined" && Reflect.get) { _get = Reflect.get; } else { _get = function _get(target, property, receiver) { var base = _superPropBase(target, property); if (!base) return; var desc = Object.getOwnPropertyDescriptor(base, property); if (desc.get) { return desc.get.call(arguments.length < 3 ? target : receiver); } return desc.value; }; } return _get.apply(this, arguments); }
 
 function _superPropBase(object, property) { while (!Object.prototype.hasOwnProperty.call(object, property)) { object = _getPrototypeOf$1(object); if (object === null) break; } return object; }
 
-function _inherits$1(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf$1(subClass, superClass); }
+function _inherits$1(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf$1(subClass, superClass); }
 
 function _setPrototypeOf$1(o, p) { _setPrototypeOf$1 = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf$1(o, p); }
 
@@ -11637,48 +11653,6 @@ var FormulaParser = /*#__PURE__*/function (_EmbeddedActionsParse) {
       outputCst: false,
       maxLookahead: 7
     });
-    /**
-     * Entry rule
-     */
-
-    _this.formula = _this.RULE('formula', function () {
-      _this.CONSUME(EqualsOp);
-
-      return _this.SUBRULE(_this.booleanExpression);
-    });
-    /**
-     * Rule for boolean expression (e.g. 1 <= A1)
-     */
-
-    _this.booleanExpression = _this.RULE('booleanExpression', function () {
-      var lhs = _this.SUBRULE(_this.concatenateExpression);
-
-      _this.MANY(function () {
-        var op = _this.CONSUME(BooleanOp);
-
-        var rhs = _this.SUBRULE2(_this.concatenateExpression);
-
-        if (tokenMatcher(op, EqualsOp)) {
-          lhs = buildEqualsOpAst(lhs, rhs, op.leadingWhitespace);
-        } else if (tokenMatcher(op, NotEqualOp)) {
-          lhs = buildNotEqualOpAst(lhs, rhs, op.leadingWhitespace);
-        } else if (tokenMatcher(op, GreaterThanOp)) {
-          lhs = buildGreaterThanOpAst(lhs, rhs, op.leadingWhitespace);
-        } else if (tokenMatcher(op, LessThanOp)) {
-          lhs = buildLessThanOpAst(lhs, rhs, op.leadingWhitespace);
-        } else if (tokenMatcher(op, GreaterThanOrEqualOp)) {
-          lhs = buildGreaterThanOrEqualOpAst(lhs, rhs, op.leadingWhitespace);
-        } else if (tokenMatcher(op, LessThanOrEqualOp)) {
-          lhs = buildLessThanOrEqualOpAst(lhs, rhs, op.leadingWhitespace);
-        } else {
-          _this.ACTION(function () {
-            throw Error('Operator not supported');
-          });
-        }
-      });
-
-      return lhs;
-    });
     _this.booleanExpressionOrEmpty = _this.RULE('booleanExpressionOrEmpty', function () {
       return _this.OR([{
         ALT: function ALT() {
@@ -11686,201 +11660,6 @@ var FormulaParser = /*#__PURE__*/function (_EmbeddedActionsParse) {
         }
       }, {
         ALT: EMPTY_ALT(buildEmptyArgAst())
-      }]);
-    });
-    /**
-     * Rule for concatenation operator expression (e.g. "=" & A1)
-     */
-
-    _this.concatenateExpression = _this.RULE('concatenateExpression', function () {
-      var lhs = _this.SUBRULE(_this.additionExpression);
-
-      _this.MANY(function () {
-        var op = _this.CONSUME(ConcatenateOp);
-
-        var rhs = _this.SUBRULE2(_this.additionExpression);
-
-        lhs = buildConcatenateOpAst(lhs, rhs, op.leadingWhitespace);
-      });
-
-      return lhs;
-    });
-    /**
-     * Rule for addition category operators (e.g. 1 + A1, 1 - A1)
-     */
-
-    _this.additionExpression = _this.RULE('additionExpression', function () {
-      var lhs = _this.SUBRULE(_this.multiplicationExpression);
-
-      _this.MANY(function () {
-        var op = _this.CONSUME(AdditionOp);
-
-        var rhs = _this.SUBRULE2(_this.multiplicationExpression);
-
-        if (tokenMatcher(op, PlusOp)) {
-          lhs = buildPlusOpAst(lhs, rhs, op.leadingWhitespace);
-        } else if (tokenMatcher(op, MinusOp)) {
-          lhs = buildMinusOpAst(lhs, rhs, op.leadingWhitespace);
-        } else {
-          _this.ACTION(function () {
-            throw Error('Operator not supported');
-          });
-        }
-      });
-
-      return lhs;
-    });
-    /**
-     * Rule for multiplication category operators (e.g. 1 * A1, 1 / A1)
-     */
-
-    _this.multiplicationExpression = _this.RULE('multiplicationExpression', function () {
-      var lhs = _this.SUBRULE(_this.powerExpression);
-
-      _this.MANY(function () {
-        var op = _this.CONSUME(MultiplicationOp);
-
-        var rhs = _this.SUBRULE2(_this.powerExpression);
-
-        if (tokenMatcher(op, TimesOp)) {
-          lhs = buildTimesOpAst(lhs, rhs, op.leadingWhitespace);
-        } else if (tokenMatcher(op, DivOp)) {
-          lhs = buildDivOpAst(lhs, rhs, op.leadingWhitespace);
-        } else {
-          _this.ACTION(function () {
-            throw Error('Operator not supported');
-          });
-        }
-      });
-
-      return lhs;
-    });
-    /**
-     * Rule for power expression
-     */
-
-    _this.powerExpression = _this.RULE('powerExpression', function () {
-      var lhs = _this.SUBRULE(_this.atomicExpression);
-
-      _this.MANY(function () {
-        var op = _this.CONSUME(PowerOp);
-
-        var rhs = _this.SUBRULE2(_this.atomicExpression);
-
-        if (tokenMatcher(op, PowerOp)) {
-          lhs = buildPowerOpAst(lhs, rhs, op.leadingWhitespace);
-        } else {
-          _this.ACTION(function () {
-            throw Error('Operator not supported');
-          });
-        }
-      });
-
-      return lhs;
-    });
-    /**
-     * Rule for atomic expressions, which is positive atomic expression or negation of it
-     */
-
-    _this.atomicExpression = _this.RULE('atomicExpression', function () {
-      return _this.OR([{
-        ALT: function ALT() {
-          var op = _this.CONSUME(AdditionOp);
-
-          var value = _this.SUBRULE(_this.atomicExpression);
-
-          if (tokenMatcher(op, PlusOp)) {
-            return buildPlusUnaryOpAst(value, op.leadingWhitespace);
-          } else if (tokenMatcher(op, MinusOp)) {
-            return buildMinusUnaryOpAst(value, op.leadingWhitespace);
-          } else {
-            _this.customParsingError = parsingError(ParsingErrorType.ParserError, 'Mismatched token type');
-            return _this.customParsingError;
-          }
-        }
-      }, {
-        ALT: function ALT() {
-          return _this.SUBRULE2(_this.rightUnaryOpAtomicExpression);
-        }
-      }]);
-    });
-    _this.rightUnaryOpAtomicExpression = _this.RULE('rightUnaryOpAtomicExpression', function () {
-      var positiveAtomicExpression = _this.SUBRULE(_this.positiveAtomicExpression);
-
-      var percentage = _this.OPTION(function () {
-        return _this.CONSUME(PercentOp);
-      });
-
-      if (percentage) {
-        return buildPercentOpAst(positiveAtomicExpression, percentage.leadingWhitespace);
-      }
-
-      return positiveAtomicExpression;
-    });
-    /**
-     * Rule for positive atomic expressions
-     */
-
-    _this.positiveAtomicExpression = _this.RULE('positiveAtomicExpression', function () {
-      var _a;
-
-      return _this.OR((_a = _this.atomicExpCache) !== null && _a !== void 0 ? _a : _this.atomicExpCache = [{
-        ALT: function ALT() {
-          return _this.SUBRULE(_this.arrayExpression);
-        }
-      }, {
-        ALT: function ALT() {
-          return _this.SUBRULE(_this.cellRangeExpression);
-        }
-      }, {
-        ALT: function ALT() {
-          return _this.SUBRULE(_this.columnRangeExpression);
-        }
-      }, {
-        ALT: function ALT() {
-          return _this.SUBRULE(_this.rowRangeExpression);
-        }
-      }, {
-        ALT: function ALT() {
-          return _this.SUBRULE(_this.offsetExpression);
-        }
-      }, {
-        ALT: function ALT() {
-          return _this.SUBRULE(_this.cellReference);
-        }
-      }, {
-        ALT: function ALT() {
-          return _this.SUBRULE(_this.procedureExpression);
-        }
-      }, {
-        ALT: function ALT() {
-          return _this.SUBRULE(_this.namedExpressionExpression);
-        }
-      }, {
-        ALT: function ALT() {
-          var number = _this.CONSUME(_this.lexerConfig.NumberLiteral);
-
-          return buildNumberAst(_this.numericStringToNumber(number.image), number.leadingWhitespace);
-        }
-      }, {
-        ALT: function ALT() {
-          var str = _this.CONSUME(StringLiteral);
-
-          return buildStringAst(str);
-        }
-      }, {
-        ALT: function ALT() {
-          var token = _this.CONSUME(ErrorLiteral);
-
-          var errString = token.image.toUpperCase();
-          var errorType = _this.lexerConfig.errorMapping[errString];
-
-          if (errorType) {
-            return buildCellErrorAst(new CellError(errorType), token.leadingWhitespace);
-          } else {
-            return _this.parsingError(ParsingErrorType.ParserError, 'Unknown error literal');
-          }
-        }
       }]);
     });
     /**
@@ -11927,38 +11706,6 @@ var FormulaParser = /*#__PURE__*/function (_EmbeddedActionsParse) {
       return buildNamedExpressionAst(name.image, name.leadingWhitespace);
     });
     /**
-     * Rule for expressions that start with OFFSET() function
-     *
-     * OFFSET() function can occur as cell reference or part of cell range.
-     * In order to preserve LL(k) properties, expressions that starts with OFFSET() functions needs to have separate rule.
-     *
-     * Proper {@link Ast} node type is built depending on the presence of {@link RangeSeparator}
-     */
-
-    _this.offsetExpression = _this.RULE('offsetExpression', function () {
-      var offsetProcedure = _this.SUBRULE(_this.offsetProcedureExpression);
-
-      var end;
-
-      _this.OPTION(function () {
-        _this.CONSUME(RangeSeparator);
-
-        if (offsetProcedure.type === AstNodeType.CELL_RANGE) {
-          end = _this.parsingError(ParsingErrorType.RangeOffsetNotAllowed, 'Range offset not allowed here');
-        } else {
-          end = _this.SUBRULE(_this.endOfRangeWithOffsetStartExpression, {
-            ARGS: [offsetProcedure]
-          });
-        }
-      });
-
-      if (end !== undefined) {
-        return end;
-      }
-
-      return offsetProcedure;
-    });
-    /**
      * Rule for OFFSET() function expression
      */
 
@@ -11979,19 +11726,6 @@ var FormulaParser = /*#__PURE__*/function (_EmbeddedActionsParse) {
       _this.CONSUME(RParen);
 
       return _this.handleOffsetHeuristic(args);
-    });
-    /**
-     * Rule for cell ranges (e.g. A1:B$3, A1:OFFSET())
-     */
-
-    _this.cellRangeExpression = _this.RULE('cellRangeExpression', function () {
-      var start = _this.CONSUME(CellReference);
-
-      _this.CONSUME2(RangeSeparator);
-
-      return _this.SUBRULE(_this.endOfRangeExpression, {
-        ARGS: [start]
-      });
     });
     /**
      * Rule for column range, e.g. A:B, Sheet1!A:B, Sheet1!A:Sheet1!B
@@ -12093,6 +11827,35 @@ var FormulaParser = /*#__PURE__*/function (_EmbeddedActionsParse) {
       }
     });
     /**
+     * Rule for end range reference expression with additional checks considering range start
+     */
+
+    _this.endRangeReference = _this.RULE('endRangeReference', function (start) {
+      var _a;
+
+      var end = _this.CONSUME(CellReference);
+
+      var startAddress = _this.ACTION(function () {
+        return cellAddressFromString(_this.sheetMapping, start.image, _this.formulaAddress);
+      });
+
+      var endAddress = _this.ACTION(function () {
+        return cellAddressFromString(_this.sheetMapping, end.image, _this.formulaAddress);
+      });
+
+      if (startAddress === undefined || endAddress === undefined) {
+        return _this.ACTION(function () {
+          return buildErrorWithRawInputAst("".concat(start.image, ":").concat(end.image), new CellError(ErrorType.REF), start.leadingWhitespace);
+        });
+      } else if (startAddress.exceedsSheetSizeLimits(_this.lexerConfig.maxColumns, _this.lexerConfig.maxRows) || endAddress.exceedsSheetSizeLimits(_this.lexerConfig.maxColumns, _this.lexerConfig.maxRows)) {
+        return _this.ACTION(function () {
+          return buildErrorWithRawInputAst("".concat(start.image, ":").concat(end.image), new CellError(ErrorType.NAME), start.leadingWhitespace);
+        });
+      }
+
+      return _this.buildCellRange(startAddress, endAddress, (_a = start.leadingWhitespace) === null || _a === void 0 ? void 0 : _a.image);
+    });
+    /**
      * Rule for end of range expression
      *
      * End of range may be a cell reference or OFFSET() function call
@@ -12136,6 +11899,38 @@ var FormulaParser = /*#__PURE__*/function (_EmbeddedActionsParse) {
       }]);
     });
     /**
+     * Rule for cell ranges (e.g. A1:B$3, A1:OFFSET())
+     */
+
+    _this.cellRangeExpression = _this.RULE('cellRangeExpression', function () {
+      var start = _this.CONSUME(CellReference);
+
+      _this.CONSUME2(RangeSeparator);
+
+      return _this.SUBRULE(_this.endOfRangeExpression, {
+        ARGS: [start]
+      });
+    });
+    /**
+     * Rule for end range reference expression starting with offset procedure with additional checks considering range start
+     */
+
+    _this.endRangeWithOffsetStartReference = _this.RULE('endRangeWithOffsetStartReference', function (start) {
+      var end = _this.CONSUME(CellReference);
+
+      var endAddress = _this.ACTION(function () {
+        return cellAddressFromString(_this.sheetMapping, end.image, _this.formulaAddress);
+      });
+
+      if (endAddress === undefined) {
+        return _this.ACTION(function () {
+          return buildCellErrorAst(new CellError(ErrorType.REF));
+        });
+      }
+
+      return _this.buildCellRange(start.reference, endAddress, start.leadingWhitespace);
+    });
+    /**
      * Rule for end of range expression
      *
      * End of range may be a cell reference or OFFSET() function call
@@ -12169,69 +11964,36 @@ var FormulaParser = /*#__PURE__*/function (_EmbeddedActionsParse) {
       }]);
     });
     /**
-     * Rule for end range reference expression with additional checks considering range start
+     * Rule for expressions that start with OFFSET() function
+     *
+     * OFFSET() function can occur as cell reference or part of cell range.
+     * In order to preserve LL(k) properties, expressions that starts with OFFSET() functions needs to have separate rule.
+     *
+     * Proper {@link Ast} node type is built depending on the presence of {@link RangeSeparator}
      */
 
-    _this.endRangeReference = _this.RULE('endRangeReference', function (start) {
-      var _a;
+    _this.offsetExpression = _this.RULE('offsetExpression', function () {
+      var offsetProcedure = _this.SUBRULE(_this.offsetProcedureExpression);
 
-      var end = _this.CONSUME(CellReference);
+      var end;
 
-      var startAddress = _this.ACTION(function () {
-        return cellAddressFromString(_this.sheetMapping, start.image, _this.formulaAddress);
+      _this.OPTION(function () {
+        _this.CONSUME(RangeSeparator);
+
+        if (offsetProcedure.type === AstNodeType.CELL_RANGE) {
+          end = _this.parsingError(ParsingErrorType.RangeOffsetNotAllowed, 'Range offset not allowed here');
+        } else {
+          end = _this.SUBRULE(_this.endOfRangeWithOffsetStartExpression, {
+            ARGS: [offsetProcedure]
+          });
+        }
       });
 
-      var endAddress = _this.ACTION(function () {
-        return cellAddressFromString(_this.sheetMapping, end.image, _this.formulaAddress);
-      });
-
-      if (startAddress === undefined || endAddress === undefined) {
-        return _this.ACTION(function () {
-          return buildErrorWithRawInputAst("".concat(start.image, ":").concat(end.image), new CellError(ErrorType.REF), start.leadingWhitespace);
-        });
-      } else if (startAddress.exceedsSheetSizeLimits(_this.lexerConfig.maxColumns, _this.lexerConfig.maxRows) || endAddress.exceedsSheetSizeLimits(_this.lexerConfig.maxColumns, _this.lexerConfig.maxRows)) {
-        return _this.ACTION(function () {
-          return buildErrorWithRawInputAst("".concat(start.image, ":").concat(end.image), new CellError(ErrorType.NAME), start.leadingWhitespace);
-        });
+      if (end !== undefined) {
+        return end;
       }
 
-      return _this.buildCellRange(startAddress, endAddress, (_a = start.leadingWhitespace) === null || _a === void 0 ? void 0 : _a.image);
-    });
-    /**
-     * Rule for end range reference expression starting with offset procedure with additional checks considering range start
-     */
-
-    _this.endRangeWithOffsetStartReference = _this.RULE('endRangeWithOffsetStartReference', function (start) {
-      var end = _this.CONSUME(CellReference);
-
-      var endAddress = _this.ACTION(function () {
-        return cellAddressFromString(_this.sheetMapping, end.image, _this.formulaAddress);
-      });
-
-      if (endAddress === undefined) {
-        return _this.ACTION(function () {
-          return buildCellErrorAst(new CellError(ErrorType.REF));
-        });
-      }
-
-      return _this.buildCellRange(start.reference, endAddress, start.leadingWhitespace);
-    });
-    _this.arrayExpression = _this.RULE('arrayExpression', function () {
-      return _this.OR([{
-        ALT: function ALT() {
-          var ltoken = _this.CONSUME(ArrayLParen);
-
-          var ret = _this.SUBRULE(_this.insideArrayExpression);
-
-          var rtoken = _this.CONSUME(ArrayRParen);
-
-          return buildArrayAst(ret.args, ltoken.leadingWhitespace, rtoken.leadingWhitespace);
-        }
-      }, {
-        ALT: function ALT() {
-          return _this.SUBRULE(_this.parenthesisExpression);
-        }
-      }]);
+      return offsetProcedure;
     });
     _this.insideArrayExpression = _this.RULE('insideArrayExpression', function () {
       var ret = [[]];
@@ -12269,12 +12031,266 @@ var FormulaParser = /*#__PURE__*/function (_EmbeddedActionsParse) {
 
       return buildParenthesisAst(expression, lParenToken.leadingWhitespace, rParenToken.leadingWhitespace);
     });
+    _this.arrayExpression = _this.RULE('arrayExpression', function () {
+      return _this.OR([{
+        ALT: function ALT() {
+          var ltoken = _this.CONSUME(ArrayLParen);
+
+          var ret = _this.SUBRULE(_this.insideArrayExpression);
+
+          var rtoken = _this.CONSUME(ArrayRParen);
+
+          return buildArrayAst(ret.args, ltoken.leadingWhitespace, rtoken.leadingWhitespace);
+        }
+      }, {
+        ALT: function ALT() {
+          return _this.SUBRULE(_this.parenthesisExpression);
+        }
+      }]);
+    });
 
     _this.numericStringToNumber = function (input) {
       var normalized = input.replace(_this.lexerConfig.decimalSeparator, '.');
       return Number(normalized);
     };
+    /**
+     * Rule for positive atomic expressions
+     */
 
+
+    _this.positiveAtomicExpression = _this.RULE('positiveAtomicExpression', function () {
+      var _a;
+
+      return _this.OR((_a = _this.atomicExpCache) !== null && _a !== void 0 ? _a : _this.atomicExpCache = [{
+        ALT: function ALT() {
+          return _this.SUBRULE(_this.arrayExpression);
+        }
+      }, {
+        ALT: function ALT() {
+          return _this.SUBRULE(_this.cellRangeExpression);
+        }
+      }, {
+        ALT: function ALT() {
+          return _this.SUBRULE(_this.columnRangeExpression);
+        }
+      }, {
+        ALT: function ALT() {
+          return _this.SUBRULE(_this.rowRangeExpression);
+        }
+      }, {
+        ALT: function ALT() {
+          return _this.SUBRULE(_this.offsetExpression);
+        }
+      }, {
+        ALT: function ALT() {
+          return _this.SUBRULE(_this.cellReference);
+        }
+      }, {
+        ALT: function ALT() {
+          return _this.SUBRULE(_this.procedureExpression);
+        }
+      }, {
+        ALT: function ALT() {
+          return _this.SUBRULE(_this.namedExpressionExpression);
+        }
+      }, {
+        ALT: function ALT() {
+          var number = _this.CONSUME(_this.lexerConfig.NumberLiteral);
+
+          return buildNumberAst(_this.numericStringToNumber(number.image), number.leadingWhitespace);
+        }
+      }, {
+        ALT: function ALT() {
+          var str = _this.CONSUME(StringLiteral);
+
+          return buildStringAst(str);
+        }
+      }, {
+        ALT: function ALT() {
+          var token = _this.CONSUME(ErrorLiteral);
+
+          var errString = token.image.toUpperCase();
+          var errorType = _this.lexerConfig.errorMapping[errString];
+
+          if (errorType) {
+            return buildCellErrorAst(new CellError(errorType), token.leadingWhitespace);
+          } else {
+            return _this.parsingError(ParsingErrorType.ParserError, 'Unknown error literal');
+          }
+        }
+      }]);
+    });
+    _this.rightUnaryOpAtomicExpression = _this.RULE('rightUnaryOpAtomicExpression', function () {
+      var positiveAtomicExpression = _this.SUBRULE(_this.positiveAtomicExpression);
+
+      var percentage = _this.OPTION(function () {
+        return _this.CONSUME(PercentOp);
+      });
+
+      if (percentage) {
+        return buildPercentOpAst(positiveAtomicExpression, percentage.leadingWhitespace);
+      }
+
+      return positiveAtomicExpression;
+    });
+    /**
+     * Rule for atomic expressions, which is positive atomic expression or negation of it
+     */
+
+    _this.atomicExpression = _this.RULE('atomicExpression', function () {
+      return _this.OR([{
+        ALT: function ALT() {
+          var op = _this.CONSUME(AdditionOp);
+
+          var value = _this.SUBRULE(_this.atomicExpression);
+
+          if (tokenMatcher(op, PlusOp)) {
+            return buildPlusUnaryOpAst(value, op.leadingWhitespace);
+          } else if (tokenMatcher(op, MinusOp)) {
+            return buildMinusUnaryOpAst(value, op.leadingWhitespace);
+          } else {
+            _this.customParsingError = parsingError(ParsingErrorType.ParserError, 'Mismatched token type');
+            return _this.customParsingError;
+          }
+        }
+      }, {
+        ALT: function ALT() {
+          return _this.SUBRULE2(_this.rightUnaryOpAtomicExpression);
+        }
+      }]);
+    });
+    /**
+     * Rule for power expression
+     */
+
+    _this.powerExpression = _this.RULE('powerExpression', function () {
+      var lhs = _this.SUBRULE(_this.atomicExpression);
+
+      _this.MANY(function () {
+        var op = _this.CONSUME(PowerOp);
+
+        var rhs = _this.SUBRULE2(_this.atomicExpression);
+
+        if (tokenMatcher(op, PowerOp)) {
+          lhs = buildPowerOpAst(lhs, rhs, op.leadingWhitespace);
+        } else {
+          _this.ACTION(function () {
+            throw Error('Operator not supported');
+          });
+        }
+      });
+
+      return lhs;
+    });
+    /**
+     * Rule for multiplication category operators (e.g. 1 * A1, 1 / A1)
+     */
+
+    _this.multiplicationExpression = _this.RULE('multiplicationExpression', function () {
+      var lhs = _this.SUBRULE(_this.powerExpression);
+
+      _this.MANY(function () {
+        var op = _this.CONSUME(MultiplicationOp);
+
+        var rhs = _this.SUBRULE2(_this.powerExpression);
+
+        if (tokenMatcher(op, TimesOp)) {
+          lhs = buildTimesOpAst(lhs, rhs, op.leadingWhitespace);
+        } else if (tokenMatcher(op, DivOp)) {
+          lhs = buildDivOpAst(lhs, rhs, op.leadingWhitespace);
+        } else {
+          _this.ACTION(function () {
+            throw Error('Operator not supported');
+          });
+        }
+      });
+
+      return lhs;
+    });
+    /**
+     * Rule for addition category operators (e.g. 1 + A1, 1 - A1)
+     */
+
+    _this.additionExpression = _this.RULE('additionExpression', function () {
+      var lhs = _this.SUBRULE(_this.multiplicationExpression);
+
+      _this.MANY(function () {
+        var op = _this.CONSUME(AdditionOp);
+
+        var rhs = _this.SUBRULE2(_this.multiplicationExpression);
+
+        if (tokenMatcher(op, PlusOp)) {
+          lhs = buildPlusOpAst(lhs, rhs, op.leadingWhitespace);
+        } else if (tokenMatcher(op, MinusOp)) {
+          lhs = buildMinusOpAst(lhs, rhs, op.leadingWhitespace);
+        } else {
+          _this.ACTION(function () {
+            throw Error('Operator not supported');
+          });
+        }
+      });
+
+      return lhs;
+    });
+    /**
+     * Rule for concatenation operator expression (e.g. "=" & A1)
+     */
+
+    _this.concatenateExpression = _this.RULE('concatenateExpression', function () {
+      var lhs = _this.SUBRULE(_this.additionExpression);
+
+      _this.MANY(function () {
+        var op = _this.CONSUME(ConcatenateOp);
+
+        var rhs = _this.SUBRULE2(_this.additionExpression);
+
+        lhs = buildConcatenateOpAst(lhs, rhs, op.leadingWhitespace);
+      });
+
+      return lhs;
+    });
+    /**
+     * Rule for boolean expression (e.g. 1 <= A1)
+     */
+
+    _this.booleanExpression = _this.RULE('booleanExpression', function () {
+      var lhs = _this.SUBRULE(_this.concatenateExpression);
+
+      _this.MANY(function () {
+        var op = _this.CONSUME(BooleanOp);
+
+        var rhs = _this.SUBRULE2(_this.concatenateExpression);
+
+        if (tokenMatcher(op, EqualsOp)) {
+          lhs = buildEqualsOpAst(lhs, rhs, op.leadingWhitespace);
+        } else if (tokenMatcher(op, NotEqualOp)) {
+          lhs = buildNotEqualOpAst(lhs, rhs, op.leadingWhitespace);
+        } else if (tokenMatcher(op, GreaterThanOp)) {
+          lhs = buildGreaterThanOpAst(lhs, rhs, op.leadingWhitespace);
+        } else if (tokenMatcher(op, LessThanOp)) {
+          lhs = buildLessThanOpAst(lhs, rhs, op.leadingWhitespace);
+        } else if (tokenMatcher(op, GreaterThanOrEqualOp)) {
+          lhs = buildGreaterThanOrEqualOpAst(lhs, rhs, op.leadingWhitespace);
+        } else if (tokenMatcher(op, LessThanOrEqualOp)) {
+          lhs = buildLessThanOrEqualOpAst(lhs, rhs, op.leadingWhitespace);
+        } else {
+          _this.ACTION(function () {
+            throw Error('Operator not supported');
+          });
+        }
+      });
+
+      return lhs;
+    });
+    /**
+     * Entry rule
+     */
+
+    _this.formula = _this.RULE('formula', function () {
+      _this.CONSUME(EqualsOp);
+
+      return _this.SUBRULE(_this.booleanExpression);
+    });
     _this.lexerConfig = lexerConfig;
     _this.sheetMapping = sheetMapping;
     _this.formulaAddress = simpleCellAddress(0, 0, 0);
@@ -12291,7 +12307,7 @@ var FormulaParser = /*#__PURE__*/function (_EmbeddedActionsParse) {
    */
 
 
-  _createClass$5(FormulaParser, [{
+  _createClass$6(FormulaParser, [{
     key: "parseFromTokens",
     value: function parseFromTokens(tokens, formulaAddress) {
       this.input = tokens;
@@ -12318,6 +12334,13 @@ var FormulaParser = /*#__PURE__*/function (_EmbeddedActionsParse) {
         errors: errors
       };
     }
+  }, {
+    key: "reset",
+    value: function reset() {
+      _get(_getPrototypeOf$1(FormulaParser.prototype), "reset", this).call(this);
+
+      this.customParsingError = undefined;
+    }
     /**
      * Entry rule wrapper that sets formula address
      *
@@ -12329,13 +12352,6 @@ var FormulaParser = /*#__PURE__*/function (_EmbeddedActionsParse) {
     value: function formulaWithContext(address) {
       this.formulaAddress = address;
       return this.formula();
-    }
-  }, {
-    key: "reset",
-    value: function reset() {
-      _get(_getPrototypeOf$1(FormulaParser.prototype), "reset", this).call(this);
-
-      this.customParsingError = undefined;
     }
   }, {
     key: "buildCellRange",
@@ -12488,7 +12504,7 @@ var FormulaLexer = /*#__PURE__*/function () {
    */
 
 
-  _createClass$5(FormulaLexer, [{
+  _createClass$6(FormulaLexer, [{
     key: "tokenizeFormula",
     value: function tokenizeFormula(text) {
       var lexingResult = this.lexer.tokenize(text);
@@ -12552,9 +12568,9 @@ var FormulaLexer = /*#__PURE__*/function () {
 
 function _classCallCheck$7(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-function _defineProperties$6(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _defineProperties$7(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
-function _createClass$6(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$6(Constructor.prototype, protoProps); if (staticProps) _defineProperties$6(Constructor, staticProps); return Constructor; }
+function _createClass$7(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$7(Constructor.prototype, protoProps); if (staticProps) _defineProperties$7(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
 var Unparser = /*#__PURE__*/function () {
   function Unparser(config, lexerConfig, sheetMappingFn, namedExpressions) {
     _classCallCheck$7(this, Unparser);
@@ -12565,7 +12581,7 @@ var Unparser = /*#__PURE__*/function () {
     this.namedExpressions = namedExpressions;
   }
 
-  _createClass$6(Unparser, [{
+  _createClass$7(Unparser, [{
     key: "unparse",
     value: function unparse(ast, address) {
       return '=' + this.unparseAst(ast, address);
@@ -12744,9 +12760,9 @@ function _arrayWithHoles$2(arr) { if (Array.isArray(arr)) return arr; }
 
 function _classCallCheck$8(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-function _defineProperties$7(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _defineProperties$8(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
-function _createClass$7(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$7(Constructor.prototype, protoProps); if (staticProps) _defineProperties$7(Constructor, staticProps); return Constructor; }
+function _createClass$8(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$8(Constructor.prototype, protoProps); if (staticProps) _defineProperties$8(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
 /**
  * Parses formula using caching if feasible.
  */
@@ -12772,7 +12788,7 @@ var ParserWithCaching = /*#__PURE__*/function () {
    */
 
 
-  _createClass$7(ParserWithCaching, [{
+  _createClass$8(ParserWithCaching, [{
     key: "parse",
     value: function parse(text, formulaAddress) {
       var lexerResult = this.lexer.tokenizeFormula(text);
@@ -13157,9 +13173,9 @@ var collectDependencies = function collectDependencies(ast, functionRegistry) {
 
 function _classCallCheck$9(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-function _defineProperties$8(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _defineProperties$9(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
-function _createClass$8(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$8(Constructor.prototype, protoProps); if (staticProps) _defineProperties$8(Constructor, staticProps); return Constructor; }
+function _createClass$9(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$9(Constructor.prototype, protoProps); if (staticProps) _defineProperties$9(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
 var AddressDependency = /*#__PURE__*/function () {
   function AddressDependency(dependency) {
     _classCallCheck$9(this, AddressDependency);
@@ -13167,7 +13183,7 @@ var AddressDependency = /*#__PURE__*/function () {
     this.dependency = dependency;
   }
 
-  _createClass$8(AddressDependency, [{
+  _createClass$9(AddressDependency, [{
     key: "absolutize",
     value: function absolutize(baseAddress) {
       return this.dependency.toSimpleCellAddress(baseAddress);
@@ -13184,7 +13200,7 @@ var CellRangeDependency = /*#__PURE__*/function () {
     this.end = end;
   }
 
-  _createClass$8(CellRangeDependency, [{
+  _createClass$9(CellRangeDependency, [{
     key: "absolutize",
     value: function absolutize(baseAddress) {
       return new AbsoluteCellRange(this.start.toSimpleCellAddress(baseAddress), this.end.toSimpleCellAddress(baseAddress));
@@ -13201,7 +13217,7 @@ var ColumnRangeDependency = /*#__PURE__*/function () {
     this.end = end;
   }
 
-  _createClass$8(ColumnRangeDependency, [{
+  _createClass$9(ColumnRangeDependency, [{
     key: "absolutize",
     value: function absolutize(baseAddress) {
       var start = this.start.toSimpleColumnAddress(baseAddress);
@@ -13220,7 +13236,7 @@ var RowRangeDependency = /*#__PURE__*/function () {
     this.end = end;
   }
 
-  _createClass$8(RowRangeDependency, [{
+  _createClass$9(RowRangeDependency, [{
     key: "absolutize",
     value: function absolutize(baseAddress) {
       var start = this.start.toSimpleRowAddress(baseAddress);
@@ -13238,7 +13254,7 @@ var NamedExpressionDependency = /*#__PURE__*/function () {
     this.name = name;
   }
 
-  _createClass$8(NamedExpressionDependency, [{
+  _createClass$9(NamedExpressionDependency, [{
     key: "absolutize",
     value: function absolutize(_baseAddress) {
       return this;
@@ -13250,9 +13266,9 @@ var NamedExpressionDependency = /*#__PURE__*/function () {
 
 function _classCallCheck$a(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-function _defineProperties$9(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _defineProperties$a(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
-function _createClass$9(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$9(Constructor.prototype, protoProps); if (staticProps) _defineProperties$9(Constructor, staticProps); return Constructor; }
+function _createClass$a(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$a(Constructor.prototype, protoProps); if (staticProps) _defineProperties$a(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
 
 /**
  * @license
@@ -13279,10 +13295,20 @@ var RowsSpan = /*#__PURE__*/function () {
     }
   }
 
-  _createClass$9(RowsSpan, [{
+  _createClass$a(RowsSpan, [{
     key: "numberOfRows",
     get: function get() {
       return this.rowEnd - this.rowStart + 1;
+    }
+  }, {
+    key: "start",
+    get: function get() {
+      return this.rowStart;
+    }
+  }, {
+    key: "end",
+    get: function get() {
+      return this.rowEnd;
     }
   }, {
     key: "rows",
@@ -13336,16 +13362,6 @@ var RowsSpan = /*#__PURE__*/function () {
     value: function firstRow() {
       return new RowsSpan(this.sheet, this.rowStart, this.rowStart);
     }
-  }, {
-    key: "start",
-    get: function get() {
-      return this.rowStart;
-    }
-  }, {
-    key: "end",
-    get: function get() {
-      return this.rowEnd;
-    }
   }], [{
     key: "fromNumberOfRows",
     value: function fromNumberOfRows(sheet, rowStart, numberOfRows) {
@@ -13381,10 +13397,20 @@ var ColumnsSpan = /*#__PURE__*/function () {
     }
   }
 
-  _createClass$9(ColumnsSpan, [{
+  _createClass$a(ColumnsSpan, [{
     key: "numberOfColumns",
     get: function get() {
       return this.columnEnd - this.columnStart + 1;
+    }
+  }, {
+    key: "start",
+    get: function get() {
+      return this.columnStart;
+    }
+  }, {
+    key: "end",
+    get: function get() {
+      return this.columnEnd;
     }
   }, {
     key: "columns",
@@ -13438,16 +13464,6 @@ var ColumnsSpan = /*#__PURE__*/function () {
     value: function firstColumn() {
       return new ColumnsSpan(this.sheet, this.columnStart, this.columnStart);
     }
-  }, {
-    key: "start",
-    get: function get() {
-      return this.columnStart;
-    }
-  }, {
-    key: "end",
-    get: function get() {
-      return this.columnEnd;
-    }
   }], [{
     key: "fromNumberOfColumns",
     value: function fromNumberOfColumns(sheet, columnStart, numberOfColumns) {
@@ -13463,7 +13479,7 @@ var ColumnsSpan = /*#__PURE__*/function () {
   return ColumnsSpan;
 }();
 
-function _inherits$2(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf$2(subClass, superClass); }
+function _inherits$2(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf$2(subClass, superClass); }
 
 function _setPrototypeOf$2(o, p) { _setPrototypeOf$2 = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf$2(o, p); }
 
@@ -13479,11 +13495,11 @@ function _getPrototypeOf$2(o) { _getPrototypeOf$2 = Object.setPrototypeOf ? Obje
 
 function _classCallCheck$b(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-function _defineProperties$a(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _defineProperties$b(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
-function _createClass$a(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$a(Constructor.prototype, protoProps); if (staticProps) _defineProperties$a(Constructor, staticProps); return Constructor; }
+function _createClass$b(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$b(Constructor.prototype, protoProps); if (staticProps) _defineProperties$b(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
 
-function _typeof$2(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof$2 = function _typeof(obj) { return typeof obj; }; } else { _typeof$2 = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof$2(obj); }
+function _typeof$2(obj) { "@babel/helpers - typeof"; return _typeof$2 = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof$2(obj); }
 var WRONG_RANGE_SIZE = 'AbsoluteCellRange: Wrong range size';
 function isSimpleCellRange(obj) {
   if (obj && (_typeof$2(obj) === 'object' || typeof obj === 'function')) {
@@ -13510,7 +13526,7 @@ var AbsoluteCellRange = /*#__PURE__*/function () {
     this.end = simpleCellAddress(end.sheet, end.col, end.row);
   }
 
-  _createClass$a(AbsoluteCellRange, [{
+  _createClass$b(AbsoluteCellRange, [{
     key: "sheet",
     get: function get() {
       return this.start.sheet;
@@ -13638,42 +13654,6 @@ var AbsoluteCellRange = /*#__PURE__*/function () {
       } else {
         this.removeColumns(span.start, span.end);
       }
-    }
-  }, {
-    key: "removeRows",
-    value: function removeRows(rowStart, rowEnd) {
-      if (rowStart > this.end.row) {
-        return;
-      }
-
-      if (rowEnd < this.start.row) {
-        var numberOfRows = rowEnd - rowStart + 1;
-        return this.shiftByRows(-numberOfRows);
-      }
-
-      if (rowStart <= this.start.row) {
-        this.start.row = rowStart;
-      }
-
-      this.end.row -= Math.min(rowEnd, this.end.row) - rowStart + 1;
-    }
-  }, {
-    key: "removeColumns",
-    value: function removeColumns(columnStart, columnEnd) {
-      if (columnStart > this.end.col) {
-        return;
-      }
-
-      if (columnEnd < this.start.col) {
-        var numberOfColumns = columnEnd - columnStart + 1;
-        return this.shiftByColumns(-numberOfColumns);
-      }
-
-      if (columnStart <= this.start.col) {
-        this.start.col = columnStart;
-      }
-
-      this.end.col -= Math.min(columnEnd, this.end.col) - columnStart + 1;
     }
   }, {
     key: "shouldBeRemoved",
@@ -13969,6 +13949,52 @@ var AbsoluteCellRange = /*#__PURE__*/function () {
     value: function effectiveEndRow(_dependencyGraph) {
       return this.end.row;
     }
+  }, {
+    key: "effectiveWidth",
+    value: function effectiveWidth(_dependencyGraph) {
+      return this.width();
+    }
+  }, {
+    key: "effectiveHeight",
+    value: function effectiveHeight(_dependencyGraph) {
+      return this.height();
+    }
+  }, {
+    key: "removeRows",
+    value: function removeRows(rowStart, rowEnd) {
+      if (rowStart > this.end.row) {
+        return;
+      }
+
+      if (rowEnd < this.start.row) {
+        var numberOfRows = rowEnd - rowStart + 1;
+        return this.shiftByRows(-numberOfRows);
+      }
+
+      if (rowStart <= this.start.row) {
+        this.start.row = rowStart;
+      }
+
+      this.end.row -= Math.min(rowEnd, this.end.row) - rowStart + 1;
+    }
+  }, {
+    key: "removeColumns",
+    value: function removeColumns(columnStart, columnEnd) {
+      if (columnStart > this.end.col) {
+        return;
+      }
+
+      if (columnEnd < this.start.col) {
+        var numberOfColumns = columnEnd - columnStart + 1;
+        return this.shiftByColumns(-numberOfColumns);
+      }
+
+      if (columnStart <= this.start.col) {
+        this.start.col = columnStart;
+      }
+
+      this.end.col -= Math.min(columnEnd, this.end.col) - columnStart + 1;
+    }
   }], [{
     key: "fromAst",
     value: function fromAst(ast, baseAddress) {
@@ -13981,31 +14007,42 @@ var AbsoluteCellRange = /*#__PURE__*/function () {
       }
     }
   }, {
+    key: "fromAstOrUndef",
+    value: function fromAstOrUndef(ast, baseAddress) {
+      try {
+        return AbsoluteCellRange.fromAst(ast, baseAddress);
+      } catch (_e) {
+        return undefined;
+      }
+    }
+  }, {
     key: "fromCellRange",
     value: function fromCellRange(x, baseAddress) {
       return new AbsoluteCellRange(x.start.toSimpleCellAddress(baseAddress), x.end.toSimpleCellAddress(baseAddress));
     }
   }, {
-    key: "fromCellRangeOrUndef",
-    value: function fromCellRangeOrUndef(x, baseAddress) {
-      try {
-        return new AbsoluteCellRange(x.start.toSimpleCellAddress(baseAddress), x.end.toSimpleCellAddress(baseAddress));
-      } catch (e) {
-        return undefined;
-      }
-    }
-  }, {
     key: "spanFrom",
     value: function spanFrom(topLeftCorner, width, height) {
+      var ret = AbsoluteCellRange.spanFromOrUndef(topLeftCorner, width, height);
+
+      if (ret === undefined) {
+        throw new Error(WRONG_RANGE_SIZE);
+      }
+
+      return ret;
+    }
+  }, {
+    key: "spanFromOrUndef",
+    value: function spanFromOrUndef(topLeftCorner, width, height) {
       if (!Number.isFinite(width) && Number.isFinite(height)) {
         if (topLeftCorner.col !== 0) {
-          throw new Error(WRONG_RANGE_SIZE);
+          return undefined;
         }
 
         return new AbsoluteRowRange(topLeftCorner.sheet, topLeftCorner.row, topLeftCorner.row + height - 1);
       } else if (!Number.isFinite(height) && Number.isFinite(width)) {
         if (topLeftCorner.row !== 0) {
-          throw new Error(WRONG_RANGE_SIZE);
+          return undefined;
         }
 
         return new AbsoluteColumnRange(topLeftCorner.sheet, topLeftCorner.col, topLeftCorner.col + width - 1);
@@ -14013,7 +14050,7 @@ var AbsoluteCellRange = /*#__PURE__*/function () {
         return new AbsoluteCellRange(topLeftCorner, simpleCellAddress(topLeftCorner.sheet, topLeftCorner.col + width - 1, topLeftCorner.row + height - 1));
       }
 
-      throw new Error(WRONG_RANGE_SIZE);
+      return undefined;
     }
   }, {
     key: "fromCoordinates",
@@ -14035,7 +14072,7 @@ var AbsoluteColumnRange = /*#__PURE__*/function (_AbsoluteCellRange) {
     return _super.call(this, simpleCellAddress(sheet, columnStart, 0), simpleCellAddress(sheet, columnEnd, Number.POSITIVE_INFINITY));
   }
 
-  _createClass$a(AbsoluteColumnRange, [{
+  _createClass$b(AbsoluteColumnRange, [{
     key: "shouldBeRemoved",
     value: function shouldBeRemoved() {
       return this.width() <= 0;
@@ -14056,11 +14093,6 @@ var AbsoluteColumnRange = /*#__PURE__*/function (_AbsoluteCellRange) {
       return new AbsoluteColumnRange(this.sheet, this.start.col + byCols, this.end.col + byCols);
     }
   }, {
-    key: "removeRows",
-    value: function removeRows(_rowStart, _rowEnd) {
-      return;
-    }
-  }, {
     key: "rangeWithSameHeight",
     value: function rangeWithSameHeight(startColumn, numberOfColumns) {
       return new AbsoluteColumnRange(this.sheet, startColumn, startColumn + numberOfColumns - 1);
@@ -14073,7 +14105,17 @@ var AbsoluteColumnRange = /*#__PURE__*/function (_AbsoluteCellRange) {
   }, {
     key: "effectiveEndRow",
     value: function effectiveEndRow(dependencyGraph) {
-      return dependencyGraph.getSheetHeight(this.sheet) - 1;
+      return this.effectiveHeight(dependencyGraph) - 1;
+    }
+  }, {
+    key: "effectiveHeight",
+    value: function effectiveHeight(dependencyGraph) {
+      return dependencyGraph.getSheetHeight(this.sheet);
+    }
+  }, {
+    key: "removeRows",
+    value: function removeRows(_rowStart, _rowEnd) {
+      return;
     }
   }], [{
     key: "fromColumnRange",
@@ -14102,7 +14144,7 @@ var AbsoluteRowRange = /*#__PURE__*/function (_AbsoluteCellRange2) {
     return _super2.call(this, simpleCellAddress(sheet, 0, rowStart), simpleCellAddress(sheet, Number.POSITIVE_INFINITY, rowEnd));
   }
 
-  _createClass$a(AbsoluteRowRange, [{
+  _createClass$b(AbsoluteRowRange, [{
     key: "shouldBeRemoved",
     value: function shouldBeRemoved() {
       return this.height() <= 0;
@@ -14123,11 +14165,6 @@ var AbsoluteRowRange = /*#__PURE__*/function (_AbsoluteCellRange2) {
       return new AbsoluteRowRange(this.sheet, this.start.row + byRows, this.end.row + byRows);
     }
   }, {
-    key: "removeColumns",
-    value: function removeColumns(_columnStart, _columnEnd) {
-      return;
-    }
-  }, {
     key: "rangeWithSameWidth",
     value: function rangeWithSameWidth(startRow, numberOfRows) {
       return new AbsoluteRowRange(this.sheet, startRow, startRow + numberOfRows - 1);
@@ -14140,7 +14177,17 @@ var AbsoluteRowRange = /*#__PURE__*/function (_AbsoluteCellRange2) {
   }, {
     key: "effectiveEndColumn",
     value: function effectiveEndColumn(dependencyGraph) {
-      return dependencyGraph.getSheetWidth(this.sheet) - 1;
+      return this.effectiveWidth(dependencyGraph) - 1;
+    }
+  }, {
+    key: "effectiveWidth",
+    value: function effectiveWidth(dependencyGraph) {
+      return dependencyGraph.getSheetWidth(this.sheet);
+    }
+  }, {
+    key: "removeColumns",
+    value: function removeColumns(_columnStart, _columnEnd) {
+      return;
     }
   }], [{
     key: "fromRowRangeAst",
@@ -14185,19 +14232,23 @@ var filterDependenciesOutOfScope = function filterDependenciesOutOfScope(deps) {
   });
 };
 
+function _defineProperties$c(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass$c(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$c(Constructor.prototype, protoProps); if (staticProps) _defineProperties$c(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
+
 function _classCallCheck$c(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 /**
  * @license
  * Copyright (c) 2021 Handsoncode. All rights reserved.
  */
-var InterpreterState = function InterpreterState(formulaAddress, arraysFlag, formulaVertex) {
+var InterpreterState = /*#__PURE__*/_createClass$c(function InterpreterState(formulaAddress, arraysFlag, formulaVertex) {
   _classCallCheck$c(this, InterpreterState);
 
   this.formulaAddress = formulaAddress;
   this.arraysFlag = arraysFlag;
   this.formulaVertex = formulaVertex;
-};
+});
 
 var unorm = createCommonjsModule(function (module) {
 (function (root) {
@@ -14660,9 +14711,9 @@ function collatorFromConfig(config) {
   });
 }
 
-function _typeof$3(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof$3 = function _typeof(obj) { return typeof obj; }; } else { _typeof$3 = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof$3(obj); }
+function _typeof$3(obj) { "@babel/helpers - typeof"; return _typeof$3 = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof$3(obj); }
 
-function _inherits$3(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf$3(subClass, superClass); }
+function _inherits$3(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf$3(subClass, superClass); }
 
 function _setPrototypeOf$3(o, p) { _setPrototypeOf$3 = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf$3(o, p); }
 
@@ -14678,9 +14729,9 @@ function _getPrototypeOf$3(o) { _getPrototypeOf$3 = Object.setPrototypeOf ? Obje
 
 function _classCallCheck$d(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-function _defineProperties$b(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _defineProperties$d(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
-function _createClass$b(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$b(Constructor.prototype, protoProps); if (staticProps) _defineProperties$b(Constructor, staticProps); return Constructor; }
+function _createClass$d(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$d(Constructor.prototype, protoProps); if (staticProps) _defineProperties$d(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
 
 /**
  * @license
@@ -14702,7 +14753,7 @@ var RichNumber = /*#__PURE__*/function () {
     this.format = format;
   }
 
-  _createClass$b(RichNumber, [{
+  _createClass$d(RichNumber, [{
     key: "fromNumber",
     value: function fromNumber(val) {
       return new this.constructor(val);
@@ -14731,7 +14782,7 @@ var DateNumber = /*#__PURE__*/function (_RichNumber) {
     return _super.apply(this, arguments);
   }
 
-  _createClass$b(DateNumber, [{
+  _createClass$d(DateNumber, [{
     key: "getDetailedType",
     value: function getDetailedType() {
       return NumberType.NUMBER_DATE;
@@ -14751,7 +14802,7 @@ var CurrencyNumber = /*#__PURE__*/function (_RichNumber2) {
     return _super2.apply(this, arguments);
   }
 
-  _createClass$b(CurrencyNumber, [{
+  _createClass$d(CurrencyNumber, [{
     key: "getDetailedType",
     value: function getDetailedType() {
       return NumberType.NUMBER_CURRENCY;
@@ -14771,7 +14822,7 @@ var TimeNumber = /*#__PURE__*/function (_RichNumber3) {
     return _super3.apply(this, arguments);
   }
 
-  _createClass$b(TimeNumber, [{
+  _createClass$d(TimeNumber, [{
     key: "getDetailedType",
     value: function getDetailedType() {
       return NumberType.NUMBER_TIME;
@@ -14791,7 +14842,7 @@ var DateTimeNumber = /*#__PURE__*/function (_RichNumber4) {
     return _super4.apply(this, arguments);
   }
 
-  _createClass$b(DateTimeNumber, [{
+  _createClass$d(DateTimeNumber, [{
     key: "getDetailedType",
     value: function getDetailedType() {
       return NumberType.NUMBER_DATETIME;
@@ -14811,7 +14862,7 @@ var PercentNumber = /*#__PURE__*/function (_RichNumber5) {
     return _super5.apply(this, arguments);
   }
 
-  _createClass$b(PercentNumber, [{
+  _createClass$d(PercentNumber, [{
     key: "getDetailedType",
     value: function getDetailedType() {
       return NumberType.NUMBER_PERCENT;
@@ -14885,9 +14936,9 @@ function _arrayLikeToArray$4(arr, len) { if (len == null || len > arr.length) le
 
 function _classCallCheck$e(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-function _defineProperties$c(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _defineProperties$e(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
-function _createClass$c(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$c(Constructor.prototype, protoProps); if (staticProps) _defineProperties$c(Constructor, staticProps); return Constructor; }
+function _createClass$e(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$e(Constructor.prototype, protoProps); if (staticProps) _defineProperties$e(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
 var COMPLEX_NUMBER_SYMBOL = 'i';
 var complexParsingRegexp = /^\s*([+-]?)\s*(([\d\.,]+(e[+-]?\d+)?)\s*([ij]?)|([ij]))\s*(([+-])\s*([+-]?)\s*(([\d\.,]+(e[+-]?\d+)?)\s*([ij]?)|([ij])))?$/;
 var ArithmeticHelper = /*#__PURE__*/function () {
@@ -15091,11 +15142,9 @@ var ArithmeticHelper = /*#__PURE__*/function () {
 
           if (arg instanceof CellError) {
             return arg;
-          } else if (arg === EmptyValue) {
-            continue;
           } else if (isExtendedNumber(arg)) {
             ret.push(getRawValue(arg));
-          } else {
+          } else if (arg !== EmptyValue) {
             return new CellError(ErrorType.VALUE, ErrorMessage.NumberExpected);
           }
         }
@@ -15145,7 +15194,7 @@ var ArithmeticHelper = /*#__PURE__*/function () {
     this.actualEps = config.smartRounding ? config.precisionEpsilon : 0;
   }
 
-  _createClass$c(ArithmeticHelper, [{
+  _createClass$e(ArithmeticHelper, [{
     key: "eqMatcherFunction",
     value: function eqMatcherFunction(pattern) {
       var _this2 = this;
@@ -15192,81 +15241,6 @@ var ArithmeticHelper = /*#__PURE__*/function () {
       return false;
     }
   }, {
-    key: "buildRegex",
-    value: function buildRegex(pattern) {
-      var matchWholeCell = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
-      pattern = this.normalizeString(pattern);
-      var regexpStr;
-      var useWildcards = this.config.useWildcards;
-      var useRegularExpressions = this.config.useRegularExpressions;
-
-      if (useRegularExpressions) {
-        try {
-          RegExp(pattern);
-        } catch (e) {
-          useRegularExpressions = false;
-          useWildcards = false;
-        }
-      }
-
-      if (useRegularExpressions) {
-        regexpStr = escapeNoCharacters(pattern, this.config.caseSensitive);
-      } else if (useWildcards) {
-        regexpStr = escapeNonWildcards(pattern, this.config.caseSensitive);
-      } else {
-        regexpStr = escapeAllCharacters(pattern, this.config.caseSensitive);
-      }
-
-      if (this.config.matchWholeCell && matchWholeCell) {
-        return RegExp('^(' + regexpStr + ')$');
-      } else {
-        return RegExp(regexpStr);
-      }
-    }
-  }, {
-    key: "normalizeString",
-    value: function normalizeString(str) {
-      if (!this.config.caseSensitive) {
-        str = str.toLowerCase();
-      }
-
-      if (!this.config.accentSensitive) {
-        str = _normalizeString(str, 'nfd').replace(/[\u0300-\u036f]/g, '');
-      }
-
-      return str;
-    }
-  }, {
-    key: "compare",
-    value: function compare(left, right) {
-      if (typeof left === 'string' || typeof right === 'string') {
-        var leftTmp = typeof left === 'string' ? this.dateTimeHelper.dateStringToDateNumber(left) : left;
-        var rightTmp = typeof right === 'string' ? this.dateTimeHelper.dateStringToDateNumber(right) : right;
-
-        if (isExtendedNumber(leftTmp) && isExtendedNumber(rightTmp)) {
-          return this.floatCmp(leftTmp, rightTmp);
-        }
-      }
-
-      if (left === EmptyValue) {
-        left = coerceEmptyToValue(right);
-      } else if (right === EmptyValue) {
-        right = coerceEmptyToValue(left);
-      }
-
-      if (typeof left === 'string' && typeof right === 'string') {
-        return this.stringCmp(left, right);
-      } else if (typeof left === 'boolean' && typeof right === 'boolean') {
-        return numberCmp(coerceBooleanToNumber(left), coerceBooleanToNumber(right));
-      } else if (isExtendedNumber(left) && isExtendedNumber(right)) {
-        return this.floatCmp(left, right);
-      } else if (left === EmptyValue && right === EmptyValue) {
-        return 0;
-      } else {
-        return numberCmp(CellValueTypeOrd(getCellValueType(left)), CellValueTypeOrd(getCellValueType(right)));
-      }
-    }
-  }, {
     key: "floatCmp",
     value: function floatCmp(leftArg, rightArg) {
       var left = getRawValue(leftArg);
@@ -15282,11 +15256,6 @@ var ArithmeticHelper = /*#__PURE__*/function () {
       } else {
         return -1;
       }
-    }
-  }, {
-    key: "stringCmp",
-    value: function stringCmp(left, right) {
-      return this.collator.compare(left, right);
     }
   }, {
     key: "coerceScalarToNumberOrError",
@@ -15376,6 +15345,129 @@ var ArithmeticHelper = /*#__PURE__*/function () {
       return expandedVals;
     }
   }, {
+    key: "coerceScalarToComplex",
+    value: function coerceScalarToComplex(arg) {
+      if (arg instanceof CellError) {
+        return arg;
+      } else if (arg === EmptyValue) {
+        return [0, 0];
+      } else if (isExtendedNumber(arg)) {
+        return [getRawValue(arg), 0];
+      } else if (typeof arg === 'string') {
+        return this.coerceStringToComplex(arg);
+      } else {
+        return new CellError(ErrorType.NUM, ErrorMessage.ComplexNumberExpected);
+      }
+    }
+  }, {
+    key: "ExtendedNumberFactory",
+    value: function ExtendedNumberFactory(value, typeFormat) {
+      var type = typeFormat.type,
+          format = typeFormat.format;
+
+      switch (type) {
+        case NumberType.NUMBER_RAW:
+          return value;
+
+        case NumberType.NUMBER_CURRENCY:
+          {
+            return new CurrencyNumber(value, format !== null && format !== void 0 ? format : this.config.currencySymbol[0]);
+          }
+
+        case NumberType.NUMBER_DATE:
+          return new DateNumber(value, format);
+
+        case NumberType.NUMBER_DATETIME:
+          return new DateTimeNumber(value, format);
+
+        case NumberType.NUMBER_TIME:
+          return new TimeNumber(value, format);
+
+        case NumberType.NUMBER_PERCENT:
+          return new PercentNumber(value, format);
+      }
+    }
+  }, {
+    key: "buildRegex",
+    value: function buildRegex(pattern) {
+      var matchWholeCell = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
+      pattern = this.normalizeString(pattern);
+      var regexpStr;
+      var useWildcards = this.config.useWildcards;
+      var useRegularExpressions = this.config.useRegularExpressions;
+
+      if (useRegularExpressions) {
+        try {
+          RegExp(pattern);
+        } catch (e) {
+          useRegularExpressions = false;
+          useWildcards = false;
+        }
+      }
+
+      if (useRegularExpressions) {
+        regexpStr = escapeNoCharacters(pattern, this.config.caseSensitive);
+      } else if (useWildcards) {
+        regexpStr = escapeNonWildcards(pattern, this.config.caseSensitive);
+      } else {
+        regexpStr = escapeAllCharacters(pattern, this.config.caseSensitive);
+      }
+
+      if (this.config.matchWholeCell && matchWholeCell) {
+        return RegExp('^(' + regexpStr + ')$');
+      } else {
+        return RegExp(regexpStr);
+      }
+    }
+  }, {
+    key: "normalizeString",
+    value: function normalizeString(str) {
+      if (!this.config.caseSensitive) {
+        str = str.toLowerCase();
+      }
+
+      if (!this.config.accentSensitive) {
+        str = _normalizeString(str, 'nfd').replace(/[\u0300-\u036f]/g, '');
+      }
+
+      return str;
+    }
+  }, {
+    key: "compare",
+    value: function compare(left, right) {
+      if (typeof left === 'string' || typeof right === 'string') {
+        var leftTmp = typeof left === 'string' ? this.dateTimeHelper.dateStringToDateNumber(left) : left;
+        var rightTmp = typeof right === 'string' ? this.dateTimeHelper.dateStringToDateNumber(right) : right;
+
+        if (isExtendedNumber(leftTmp) && isExtendedNumber(rightTmp)) {
+          return this.floatCmp(leftTmp, rightTmp);
+        }
+      }
+
+      if (left === EmptyValue) {
+        left = coerceEmptyToValue(right);
+      } else if (right === EmptyValue) {
+        right = coerceEmptyToValue(left);
+      }
+
+      if (typeof left === 'string' && typeof right === 'string') {
+        return this.stringCmp(left, right);
+      } else if (typeof left === 'boolean' && typeof right === 'boolean') {
+        return numberCmp(coerceBooleanToNumber(left), coerceBooleanToNumber(right));
+      } else if (isExtendedNumber(left) && isExtendedNumber(right)) {
+        return this.floatCmp(left, right);
+      } else if (left === EmptyValue && right === EmptyValue) {
+        return 0;
+      } else {
+        return numberCmp(CellValueTypeOrd(getCellValueType(left)), CellValueTypeOrd(getCellValueType(right)));
+      }
+    }
+  }, {
+    key: "stringCmp",
+    value: function stringCmp(left, right) {
+      return this.collator.compare(left, right);
+    }
+  }, {
     key: "manyToNumbers",
     value: function manyToNumbers(args, rangeFn) {
       var vals = [];
@@ -15424,21 +15516,6 @@ var ArithmeticHelper = /*#__PURE__*/function () {
       }
 
       return expandedVals;
-    }
-  }, {
-    key: "coerceScalarToComplex",
-    value: function coerceScalarToComplex(arg) {
-      if (arg instanceof CellError) {
-        return arg;
-      } else if (arg === EmptyValue) {
-        return [0, 0];
-      } else if (isExtendedNumber(arg)) {
-        return [getRawValue(arg), 0];
-      } else if (typeof arg === 'string') {
-        return this.coerceStringToComplex(arg);
-      } else {
-        return new CellError(ErrorType.NUM, ErrorMessage.ComplexNumberExpected);
-      }
     }
   }, {
     key: "coerceStringToComplex",
@@ -15500,34 +15577,6 @@ var ArithmeticHelper = /*#__PURE__*/function () {
         return [val, 0];
       } else {
         return [0, val];
-      }
-    }
-  }, {
-    key: "ExtendedNumberFactory",
-    value: function ExtendedNumberFactory(value, typeFormat) {
-      var type = typeFormat.type,
-          format = typeFormat.format;
-
-      switch (type) {
-        case NumberType.NUMBER_RAW:
-          return value;
-
-        case NumberType.NUMBER_CURRENCY:
-          {
-            return new CurrencyNumber(value, format !== null && format !== void 0 ? format : this.config.currencySymbol[0]);
-          }
-
-        case NumberType.NUMBER_DATE:
-          return new DateNumber(value, format);
-
-        case NumberType.NUMBER_DATETIME:
-          return new DateTimeNumber(value, format);
-
-        case NumberType.NUMBER_TIME:
-          return new TimeNumber(value, format);
-
-        case NumberType.NUMBER_PERCENT:
-          return new PercentNumber(value, format);
       }
     }
   }]);
@@ -15887,9 +15936,9 @@ function _arrayLikeToArray$5(arr, len) { if (len == null || len > arr.length) le
 
 function _classCallCheck$f(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-function _defineProperties$d(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _defineProperties$f(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
-function _createClass$d(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$d(Constructor.prototype, protoProps); if (staticProps) _defineProperties$d(Constructor, staticProps); return Constructor; }
+function _createClass$f(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$f(Constructor.prototype, protoProps); if (staticProps) _defineProperties$f(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
 var ArgumentTypes;
 
 (function (ArgumentTypes) {
@@ -16118,7 +16167,7 @@ var FunctionPlugin = /*#__PURE__*/function () {
     this.arithmeticHelper = interpreter.arithmeticHelper;
   }
 
-  _createClass$d(FunctionPlugin, [{
+  _createClass$f(FunctionPlugin, [{
     key: "evaluateAst",
     value: function evaluateAst(ast, state) {
       return this.interpreter.evaluateAst(ast, state);
@@ -16291,25 +16340,25 @@ var FunctionPlugin = /*#__PURE__*/function () {
   return FunctionPlugin;
 }();
 
-function _createForOfIteratorHelper$2(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray$6(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it.return != null) it.return(); } finally { if (didErr) throw err; } } }; }
-
 function _toConsumableArray$3(arr) { return _arrayWithoutHoles$3(arr) || _iterableToArray$3(arr) || _unsupportedIterableToArray$6(arr) || _nonIterableSpread$3(); }
 
 function _nonIterableSpread$3() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
-
-function _unsupportedIterableToArray$6(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray$6(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray$6(o, minLen); }
 
 function _iterableToArray$3(iter) { if (typeof Symbol !== "undefined" && iter[Symbol.iterator] != null || iter["@@iterator"] != null) return Array.from(iter); }
 
 function _arrayWithoutHoles$3(arr) { if (Array.isArray(arr)) return _arrayLikeToArray$6(arr); }
 
+function _createForOfIteratorHelper$2(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray$6(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it.return != null) it.return(); } finally { if (didErr) throw err; } } }; }
+
+function _unsupportedIterableToArray$6(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray$6(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray$6(o, minLen); }
+
 function _arrayLikeToArray$6(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
 
 function _classCallCheck$g(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-function _defineProperties$e(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _defineProperties$g(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
-function _createClass$e(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$e(Constructor.prototype, protoProps); if (staticProps) _defineProperties$e(Constructor, staticProps); return Constructor; }
+function _createClass$g(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$g(Constructor.prototype, protoProps); if (staticProps) _defineProperties$g(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
 var ArraySize = /*#__PURE__*/function () {
   function ArraySize(width, height) {
     var isRef = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
@@ -16325,7 +16374,7 @@ var ArraySize = /*#__PURE__*/function () {
     }
   }
 
-  _createClass$e(ArraySize, [{
+  _createClass$g(ArraySize, [{
     key: "isScalar",
     value: function isScalar() {
       return this.width <= 1 && this.height <= 1 || this.isRef;
@@ -16366,7 +16415,7 @@ var ArraySizePredictor = /*#__PURE__*/function () {
     this.functionRegistry = functionRegistry;
   }
 
-  _createClass$e(ArraySizePredictor, [{
+  _createClass$g(ArraySizePredictor, [{
     key: "checkArraySize",
     value: function checkArraySize(ast, formulaAddress) {
       return this.checkArraySizeForAst(ast, {
@@ -16375,57 +16424,9 @@ var ArraySizePredictor = /*#__PURE__*/function () {
       });
     }
   }, {
-    key: "checkArraySizeForFunction",
-    value: function checkArraySizeForFunction(ast, state) {
-      var _this = this;
-
-      var metadata = this.functionRegistry.getMetadata(ast.procedureName);
-      var pluginArraySizeFunction = this.functionRegistry.getArraySizeFunction(ast.procedureName);
-
-      if (pluginArraySizeFunction !== undefined) {
-        return pluginArraySizeFunction(ast, state);
-      }
-
-      var subChecks = ast.args.map(function (arg) {
-        var _a;
-
-        return _this.checkArraySizeForAst(arg, new InterpreterState(state.formulaAddress, state.arraysFlag || ((_a = metadata === null || metadata === void 0 ? void 0 : metadata.arrayFunction) !== null && _a !== void 0 ? _a : false)));
-      });
-
-      if (metadata === undefined || metadata.expandRanges || !state.arraysFlag || metadata.vectorizationForbidden || metadata.parameters === undefined) {
-        return new ArraySize(1, 1);
-      }
-
-      var argumentDefinitions = _toConsumableArray$3(metadata.parameters);
-
-      if (metadata.repeatLastArgs === undefined && argumentDefinitions.length < subChecks.length) {
-        return ArraySize.error();
-      }
-
-      if (metadata.repeatLastArgs !== undefined && argumentDefinitions.length < subChecks.length && (subChecks.length - argumentDefinitions.length) % metadata.repeatLastArgs !== 0) {
-        return ArraySize.error();
-      }
-
-      while (argumentDefinitions.length < subChecks.length) {
-        argumentDefinitions.push.apply(argumentDefinitions, _toConsumableArray$3(argumentDefinitions.slice(argumentDefinitions.length - metadata.repeatLastArgs)));
-      }
-
-      var maxWidth = 1;
-      var maxHeight = 1;
-
-      for (var i = 0; i < subChecks.length; i++) {
-        if (argumentDefinitions[i].argumentType !== ArgumentTypes.RANGE && argumentDefinitions[i].argumentType !== ArgumentTypes.ANY) {
-          maxHeight = Math.max(maxHeight, subChecks[i].height);
-          maxWidth = Math.max(maxWidth, subChecks[i].width);
-        }
-      }
-
-      return new ArraySize(maxWidth, maxHeight);
-    }
-  }, {
     key: "checkArraySizeForAst",
     value: function checkArraySizeForAst(ast, state) {
-      var _this2 = this;
+      var _this = this;
 
       switch (ast.type) {
         case AstNodeType.FUNCTION_CALL:
@@ -16433,9 +16434,11 @@ var ArraySizePredictor = /*#__PURE__*/function () {
             return this.checkArraySizeForFunction(ast, state);
           }
 
+        case AstNodeType.COLUMN_RANGE:
+        case AstNodeType.ROW_RANGE:
         case AstNodeType.CELL_RANGE:
           {
-            var range = AbsoluteCellRange.fromCellRangeOrUndef(ast, state.formulaAddress);
+            var range = AbsoluteCellRange.fromAstOrUndef(ast, state.formulaAddress);
 
             if (range === undefined) {
               return ArraySize.error();
@@ -16456,7 +16459,7 @@ var ArraySizePredictor = /*#__PURE__*/function () {
               for (_iterator.s(); !(_step = _iterator.n()).done;) {
                 var row = _step.value;
                 var sizes = row.map(function (ast) {
-                  return _this2.checkArraySizeForAst(ast, state);
+                  return _this.checkArraySizeForAst(ast, state);
                 });
                 var h = Math.min.apply(Math, _toConsumableArray$3(sizes.map(function (size) {
                   return size.height;
@@ -16523,12 +16526,65 @@ var ArraySizePredictor = /*#__PURE__*/function () {
             return arraySizeForUnaryOp(val);
           }
 
+        case AstNodeType.PARENTHESIS:
+          {
+            return this.checkArraySizeForAst(ast.expression, state);
+          }
+
         case AstNodeType.EMPTY:
           return ArraySize.error();
 
         default:
           return ArraySize.error();
       }
+    }
+  }, {
+    key: "checkArraySizeForFunction",
+    value: function checkArraySizeForFunction(ast, state) {
+      var _this2 = this;
+
+      var metadata = this.functionRegistry.getMetadata(ast.procedureName);
+      var pluginArraySizeFunction = this.functionRegistry.getArraySizeFunction(ast.procedureName);
+
+      if (pluginArraySizeFunction !== undefined) {
+        return pluginArraySizeFunction(ast, state);
+      }
+
+      var subChecks = ast.args.map(function (arg) {
+        var _a;
+
+        return _this2.checkArraySizeForAst(arg, new InterpreterState(state.formulaAddress, state.arraysFlag || ((_a = metadata === null || metadata === void 0 ? void 0 : metadata.arrayFunction) !== null && _a !== void 0 ? _a : false)));
+      });
+
+      if (metadata === undefined || metadata.expandRanges || !state.arraysFlag || metadata.vectorizationForbidden || metadata.parameters === undefined) {
+        return new ArraySize(1, 1);
+      }
+
+      var argumentDefinitions = _toConsumableArray$3(metadata.parameters);
+
+      if (metadata.repeatLastArgs === undefined && argumentDefinitions.length < subChecks.length) {
+        return ArraySize.error();
+      }
+
+      if (metadata.repeatLastArgs !== undefined && argumentDefinitions.length < subChecks.length && (subChecks.length - argumentDefinitions.length) % metadata.repeatLastArgs !== 0) {
+        return ArraySize.error();
+      }
+
+      while (argumentDefinitions.length < subChecks.length) {
+        argumentDefinitions.push.apply(argumentDefinitions, _toConsumableArray$3(argumentDefinitions.slice(argumentDefinitions.length - metadata.repeatLastArgs)));
+      }
+
+      var maxWidth = 1;
+      var maxHeight = 1;
+
+      for (var i = 0; i < subChecks.length; i++) {
+        if (argumentDefinitions[i].argumentType !== ArgumentTypes.RANGE && argumentDefinitions[i].argumentType !== ArgumentTypes.ANY) {
+          maxHeight = Math.max(maxHeight, subChecks[i].height);
+          maxWidth = Math.max(maxWidth, subChecks[i].width);
+        }
+      }
+
+      return new ArraySize(maxWidth, maxHeight);
     }
   }]);
 
@@ -16543,9 +16599,9 @@ function _arrayLikeToArray$7(arr, len) { if (len == null || len > arr.length) le
 
 function _classCallCheck$h(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-function _defineProperties$f(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _defineProperties$h(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
-function _createClass$f(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$f(Constructor.prototype, protoProps); if (staticProps) _defineProperties$f(Constructor, staticProps); return Constructor; }
+function _createClass$h(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$h(Constructor.prototype, protoProps); if (staticProps) _defineProperties$h(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
 var SimpleRangeValue = /*#__PURE__*/function () {
   function SimpleRangeValue(_data, range, dependencyGraph, _hasOnlyNumbers) {
     _classCallCheck$h(this, SimpleRangeValue);
@@ -16556,13 +16612,19 @@ var SimpleRangeValue = /*#__PURE__*/function () {
     this._hasOnlyNumbers = _hasOnlyNumbers;
 
     if (_data === undefined) {
-      this.size = new ArraySize(range.width(), range.height());
+      this.size = new ArraySize(range.effectiveWidth(dependencyGraph), range.effectiveHeight(dependencyGraph));
     } else {
       this.size = new ArraySize(_data[0].length, _data.length);
     }
   }
 
-  _createClass$f(SimpleRangeValue, [{
+  _createClass$h(SimpleRangeValue, [{
+    key: "data",
+    get: function get() {
+      this.ensureThatComputed();
+      return this._data;
+    }
+  }, {
     key: "isAdHoc",
     value: function isAdHoc() {
       return this.range === undefined;
@@ -16576,36 +16638,6 @@ var SimpleRangeValue = /*#__PURE__*/function () {
     key: "height",
     value: function height() {
       return this.size.height; //should be equal to this.data.length
-    }
-  }, {
-    key: "data",
-    get: function get() {
-      this.ensureThatComputed();
-      return this._data;
-    }
-  }, {
-    key: "ensureThatComputed",
-    value: function ensureThatComputed() {
-      var _this = this;
-
-      if (this._data !== undefined) {
-        return;
-      }
-
-      this._hasOnlyNumbers = true;
-      this._data = this.range.addressesArrayMap(this.dependencyGraph, function (cellFromRange) {
-        var value = _this.dependencyGraph.getCellValue(cellFromRange);
-
-        if (value instanceof SimpleRangeValue) {
-          _this._hasOnlyNumbers = false;
-          return new CellError(ErrorType.VALUE, ErrorMessage.ScalarExpected);
-        } else if (isExtendedNumber(value)) {
-          return value;
-        } else {
-          _this._hasOnlyNumbers = false;
-          return value;
-        }
-      });
     }
   }, {
     key: "valuesFromTopLeftCorner",
@@ -16791,6 +16823,30 @@ var SimpleRangeValue = /*#__PURE__*/function () {
     value: function sameDimensionsAs(other) {
       return this.width() === other.width() && this.height() === other.height();
     }
+  }, {
+    key: "ensureThatComputed",
+    value: function ensureThatComputed() {
+      var _this = this;
+
+      if (this._data !== undefined) {
+        return;
+      }
+
+      this._hasOnlyNumbers = true;
+      this._data = this.range.addressesArrayMap(this.dependencyGraph, function (cellFromRange) {
+        var value = _this.dependencyGraph.getCellValue(cellFromRange);
+
+        if (value instanceof SimpleRangeValue) {
+          _this._hasOnlyNumbers = false;
+          return new CellError(ErrorType.VALUE, ErrorMessage.ScalarExpected);
+        } else if (isExtendedNumber(value)) {
+          return value;
+        } else {
+          _this._hasOnlyNumbers = false;
+          return value;
+        }
+      });
+    }
   }], [{
     key: "fromRange",
     value: function fromRange(data, range, dependencyGraph) {
@@ -16829,9 +16885,9 @@ function _arrayLikeToArray$8(arr, len) { if (len == null || len > arr.length) le
 
 function _classCallCheck$i(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-function _defineProperties$g(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _defineProperties$i(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
-function _createClass$g(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$g(Constructor.prototype, protoProps); if (staticProps) _defineProperties$g(Constructor, staticProps); return Constructor; }
+function _createClass$i(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$i(Constructor.prototype, protoProps); if (staticProps) _defineProperties$i(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
 var ContentChanges = /*#__PURE__*/function () {
   function ContentChanges() {
     _classCallCheck$i(this, ContentChanges);
@@ -16839,7 +16895,7 @@ var ContentChanges = /*#__PURE__*/function () {
     this.changes = new Map();
   }
 
-  _createClass$g(ContentChanges, [{
+  _createClass$i(ContentChanges, [{
     key: "addAll",
     value: function addAll(other) {
       var _iterator = _createForOfIteratorHelper$4(other.changes.values()),
@@ -16963,9 +17019,9 @@ var StatType;
 
 function _classCallCheck$j(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-function _defineProperties$h(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _defineProperties$j(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
-function _createClass$h(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$h(Constructor.prototype, protoProps); if (staticProps) _defineProperties$h(Constructor, staticProps); return Constructor; }
+function _createClass$j(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$j(Constructor.prototype, protoProps); if (staticProps) _defineProperties$j(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
 /**
  * Provides tracking performance statistics to the engine
  */
@@ -16978,7 +17034,7 @@ var Statistics = /*#__PURE__*/function () {
     this.startTimes = new Map();
   }
 
-  _createClass$h(Statistics, [{
+  _createClass$j(Statistics, [{
     key: "incrementCriterionFunctionFullCacheUsed",
     value: function incrementCriterionFunctionFullCacheUsed() {
       var _a;
@@ -17075,15 +17131,15 @@ var Statistics = /*#__PURE__*/function () {
   return Statistics;
 }();
 
-function _typeof$4(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof$4 = function _typeof(obj) { return typeof obj; }; } else { _typeof$4 = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof$4(obj); }
+function _typeof$4(obj) { "@babel/helpers - typeof"; return _typeof$4 = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof$4(obj); }
 
 function _classCallCheck$k(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-function _defineProperties$i(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _defineProperties$k(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
-function _createClass$i(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$i(Constructor.prototype, protoProps); if (staticProps) _defineProperties$i(Constructor, staticProps); return Constructor; }
+function _createClass$k(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$k(Constructor.prototype, protoProps); if (staticProps) _defineProperties$k(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
 
-function _inherits$4(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf$4(subClass, superClass); }
+function _inherits$4(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf$4(subClass, superClass); }
 
 function _setPrototypeOf$4(o, p) { _setPrototypeOf$4 = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf$4(o, p); }
 
@@ -17109,7 +17165,7 @@ var EmptyStatistics = /*#__PURE__*/function (_Statistics) {
     return _super.apply(this, arguments);
   }
 
-  _createClass$i(EmptyStatistics, [{
+  _createClass$k(EmptyStatistics, [{
     key: "incrementCriterionFunctionFullCacheUsed",
     value:
     /** @inheritDoc */
@@ -17154,9 +17210,9 @@ function _arrayLikeToArray$9(arr, len) { if (len == null || len > arr.length) le
 
 function _classCallCheck$l(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-function _defineProperties$j(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _defineProperties$l(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
-function _createClass$j(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$j(Constructor.prototype, protoProps); if (staticProps) _defineProperties$j(Constructor, staticProps); return Constructor; }
+function _createClass$l(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$l(Constructor.prototype, protoProps); if (staticProps) _defineProperties$l(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
 var AddressMapping = /*#__PURE__*/function () {
   function AddressMapping(policy) {
     _classCallCheck$l(this, AddressMapping);
@@ -17167,7 +17223,7 @@ var AddressMapping = /*#__PURE__*/function () {
   /** @inheritDoc */
 
 
-  _createClass$j(AddressMapping, [{
+  _createClass$l(AddressMapping, [{
     key: "getCell",
     value: function getCell(address) {
       var sheetMapping = this.mapping.get(address.sheet);
@@ -17555,9 +17611,9 @@ function _arrayLikeToArray$a(arr, len) { if (len == null || len > arr.length) le
 
 function _classCallCheck$m(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-function _defineProperties$k(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _defineProperties$m(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
-function _createClass$k(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$k(Constructor.prototype, protoProps); if (staticProps) _defineProperties$k(Constructor, staticProps); return Constructor; }
+function _createClass$m(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$m(Constructor.prototype, protoProps); if (staticProps) _defineProperties$m(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
 var ArrayMapping = /*#__PURE__*/function () {
   function ArrayMapping() {
     _classCallCheck$m(this, ArrayMapping);
@@ -17565,7 +17621,7 @@ var ArrayMapping = /*#__PURE__*/function () {
     this.arrayMapping = new Map();
   }
 
-  _createClass$k(ArrayMapping, [{
+  _createClass$m(ArrayMapping, [{
     key: "getArray",
     value: function getArray(range) {
       var array = this.getArrayByCorner(range.start);
@@ -17930,9 +17986,9 @@ function _arrayLikeToArray$b(arr, len) { if (len == null || len > arr.length) le
 
 function _classCallCheck$n(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-function _defineProperties$l(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _defineProperties$n(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
-function _createClass$l(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$l(Constructor.prototype, protoProps); if (staticProps) _defineProperties$l(Constructor, staticProps); return Constructor; }
+function _createClass$n(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$n(Constructor.prototype, protoProps); if (staticProps) _defineProperties$n(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
 var NotComputedArray = /*#__PURE__*/function () {
   function NotComputedArray(size) {
     _classCallCheck$n(this, NotComputedArray);
@@ -17940,7 +17996,7 @@ var NotComputedArray = /*#__PURE__*/function () {
     this.size = size;
   }
 
-  _createClass$l(NotComputedArray, [{
+  _createClass$n(NotComputedArray, [{
     key: "width",
     value: function width() {
       return this.size.width;
@@ -17973,7 +18029,7 @@ var ArrayValue = /*#__PURE__*/function () {
     this.array = array;
   }
 
-  _createClass$l(ArrayValue, [{
+  _createClass$n(ArrayValue, [{
     key: "simpleRangeValue",
     value: function simpleRangeValue() {
       return SimpleRangeValue.onlyValues(this.array);
@@ -18081,7 +18137,7 @@ var ArrayValue = /*#__PURE__*/function () {
   }, {
     key: "resize",
     value: function resize(newSize) {
-      if (this.height() < newSize.height) {
+      if (this.height() < newSize.height && isFinite(newSize.height)) {
         this.addRows(this.height(), newSize.height - this.height());
       }
 
@@ -18089,7 +18145,7 @@ var ArrayValue = /*#__PURE__*/function () {
         throw 'Resizing to smaller array';
       }
 
-      if (this.width() < newSize.width) {
+      if (this.width() < newSize.width && isFinite(newSize.width)) {
         this.addColumns(this.width(), newSize.width - this.width());
       }
 
@@ -18124,7 +18180,7 @@ var ErroredArray = /*#__PURE__*/function () {
   } // eslint-disable-next-line @typescript-eslint/no-unused-vars
 
 
-  _createClass$l(ErroredArray, [{
+  _createClass$n(ErroredArray, [{
     key: "get",
     value: function get(col, row) {
       return this.error;
@@ -18149,9 +18205,9 @@ var ErroredArray = /*#__PURE__*/function () {
   return ErroredArray;
 }();
 
-function _typeof$5(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof$5 = function _typeof(obj) { return typeof obj; }; } else { _typeof$5 = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof$5(obj); }
+function _typeof$5(obj) { "@babel/helpers - typeof"; return _typeof$5 = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof$5(obj); }
 
-function _inherits$5(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf$5(subClass, superClass); }
+function _inherits$5(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf$5(subClass, superClass); }
 
 function _setPrototypeOf$5(o, p) { _setPrototypeOf$5 = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf$5(o, p); }
 
@@ -18179,9 +18235,9 @@ function _arrayWithHoles$7(arr) { if (Array.isArray(arr)) return arr; }
 
 function _classCallCheck$o(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-function _defineProperties$m(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _defineProperties$o(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
-function _createClass$m(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$m(Constructor.prototype, protoProps); if (staticProps) _defineProperties$m(Constructor, staticProps); return Constructor; }
+function _createClass$o(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$o(Constructor.prototype, protoProps); if (staticProps) _defineProperties$o(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
 var FormulaVertex = /*#__PURE__*/function () {
   function FormulaVertex(formula, cellAddress, version) {
     _classCallCheck$o(this, FormulaVertex);
@@ -18191,7 +18247,7 @@ var FormulaVertex = /*#__PURE__*/function () {
     this.version = version;
   }
 
-  _createClass$m(FormulaVertex, [{
+  _createClass$o(FormulaVertex, [{
     key: "width",
     get: function get() {
       return 1;
@@ -18201,13 +18257,13 @@ var FormulaVertex = /*#__PURE__*/function () {
     get: function get() {
       return 1;
     }
+  }, {
+    key: "getFormula",
+    value:
     /**
      * Returns formula stored in this vertex
      */
-
-  }, {
-    key: "getFormula",
-    value: function getFormula(updatingService) {
+    function getFormula(updatingService) {
       this.ensureRecentData(updatingService);
       return this.formula;
     }
@@ -18272,7 +18328,7 @@ var ArrayVertex = /*#__PURE__*/function (_FormulaVertex) {
     return _this;
   }
 
-  _createClass$m(ArrayVertex, [{
+  _createClass$o(ArrayVertex, [{
     key: "width",
     get: function get() {
       return this.array.width();
@@ -18368,6 +18424,11 @@ var ArrayVertex = /*#__PURE__*/function (_FormulaVertex) {
       return AbsoluteCellRange.spanFrom(this.cellAddress, this.width, this.height);
     }
   }, {
+    key: "getRangeOrUndef",
+    value: function getRangeOrUndef() {
+      return AbsoluteCellRange.spanFromOrUndef(this.cellAddress, this.width, this.height);
+    }
+  }, {
     key: "setAddress",
     value: function setAddress(address) {
       this.cellAddress = address;
@@ -18444,7 +18505,7 @@ var FormulaCellVertex = /*#__PURE__*/function (_FormulaVertex2) {
     return _super2.call(this, formula, address, version);
   }
 
-  _createClass$m(FormulaCellVertex, [{
+  _createClass$o(FormulaCellVertex, [{
     key: "valueOrUndef",
     value: function valueOrUndef() {
       return this.cachedCellValue;
@@ -18484,9 +18545,9 @@ var FormulaCellVertex = /*#__PURE__*/function (_FormulaVertex2) {
 
 function _classCallCheck$p(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-function _defineProperties$n(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _defineProperties$p(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
-function _createClass$n(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$n(Constructor.prototype, protoProps); if (staticProps) _defineProperties$n(Constructor, staticProps); return Constructor; }
+function _createClass$p(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$p(Constructor.prototype, protoProps); if (staticProps) _defineProperties$p(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
 
 /**
  * @license
@@ -18507,7 +18568,7 @@ var RangeVertex = /*#__PURE__*/function () {
     this.bruteForce = false;
   }
 
-  _createClass$n(RangeVertex, [{
+  _createClass$p(RangeVertex, [{
     key: "start",
     get: function get() {
       return this.range.start;
@@ -18666,9 +18727,9 @@ function _arrayLikeToArray$d(arr, len) { if (len == null || len > arr.length) le
 
 function _classCallCheck$q(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-function _defineProperties$o(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _defineProperties$q(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
-function _createClass$o(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$o(Constructor.prototype, protoProps); if (staticProps) _defineProperties$o(Constructor, staticProps); return Constructor; }
+function _createClass$q(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$q(Constructor.prototype, protoProps); if (staticProps) _defineProperties$q(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
 
 /**
  * @license
@@ -18714,7 +18775,7 @@ var Graph = /*#__PURE__*/function () {
    */
 
 
-  _createClass$o(Graph, [{
+  _createClass$q(Graph, [{
     key: "addNode",
     value: function addNode(node) {
       this.nodes.add(node);
@@ -19095,9 +19156,9 @@ function _arrayLikeToArray$e(arr, len) { if (len == null || len > arr.length) le
 
 function _classCallCheck$r(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-function _defineProperties$p(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _defineProperties$r(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
-function _createClass$p(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$p(Constructor.prototype, protoProps); if (staticProps) _defineProperties$p(Constructor, staticProps); return Constructor; }
+function _createClass$r(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$r(Constructor.prototype, protoProps); if (staticProps) _defineProperties$r(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
 /**
  * Mapping from address ranges to range vertices
  */
@@ -19110,7 +19171,7 @@ var RangeMapping = /*#__PURE__*/function () {
     this.rangeMapping = new Map();
   }
 
-  _createClass$p(RangeMapping, [{
+  _createClass$r(RangeMapping, [{
     key: "getMappingSize",
     value: function getMappingSize(sheet) {
       var _a, _b;
@@ -19542,9 +19603,9 @@ function _arrayLikeToArray$f(arr, len) { if (len == null || len > arr.length) le
 
 function _classCallCheck$s(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-function _defineProperties$q(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _defineProperties$s(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
-function _createClass$q(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$q(Constructor.prototype, protoProps); if (staticProps) _defineProperties$q(Constructor, staticProps); return Constructor; }
+function _createClass$s(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$s(Constructor.prototype, protoProps); if (staticProps) _defineProperties$s(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
 var TranslationPackage = /*#__PURE__*/function () {
   function TranslationPackage(functions, errors, ui) {
     _classCallCheck$s(this, TranslationPackage);
@@ -19561,7 +19622,7 @@ var TranslationPackage = /*#__PURE__*/function () {
     Object.assign(this.functions, this._protectedTranslations);
   }
 
-  _createClass$q(TranslationPackage, [{
+  _createClass$s(TranslationPackage, [{
     key: "extendFunctions",
     value: function extendFunctions(additionalFunctionTranslations) {
       this.checkFunctionTranslations(additionalFunctionTranslations);
@@ -19728,9 +19789,9 @@ function _arrayLikeToArray$g(arr, len) { if (len == null || len > arr.length) le
 
 function _classCallCheck$t(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-function _defineProperties$r(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _defineProperties$t(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
-function _createClass$r(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$r(Constructor.prototype, protoProps); if (staticProps) _defineProperties$r(Constructor, staticProps); return Constructor; }
+function _createClass$t(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$t(Constructor.prototype, protoProps); if (staticProps) _defineProperties$t(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
 
 function canonicalize(sheetDisplayName) {
   return sheetDisplayName.toLowerCase();
@@ -19744,7 +19805,7 @@ var Sheet = /*#__PURE__*/function () {
     this.displayName = displayName;
   }
 
-  _createClass$r(Sheet, [{
+  _createClass$t(Sheet, [{
     key: "canonicalName",
     get: function get() {
       return canonicalize(this.displayName);
@@ -19788,7 +19849,7 @@ var SheetMapping = /*#__PURE__*/function () {
     this.sheetNamePrefix = languages.getUITranslation(UIElement.NEW_SHEET_PREFIX);
   }
 
-  _createClass$r(SheetMapping, [{
+  _createClass$t(SheetMapping, [{
     key: "addSheet",
     value: function addSheet() {
       var newSheetDisplayName = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : "".concat(this.sheetNamePrefix).concat(this.lastSheetId + 2);
@@ -19970,9 +20031,9 @@ function _arrayWithHoles$9(arr) { if (Array.isArray(arr)) return arr; }
 
 function _classCallCheck$u(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-function _defineProperties$s(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _defineProperties$u(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
-function _createClass$s(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$s(Constructor.prototype, protoProps); if (staticProps) _defineProperties$s(Constructor, staticProps); return Constructor; }
+function _createClass$u(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$u(Constructor.prototype, protoProps); if (staticProps) _defineProperties$u(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
 var DependencyGraph = /*#__PURE__*/function () {
   function DependencyGraph(addressMapping, rangeMapping, sheetMapping, arrayMapping, stats, lazilyTransformingAstService, functionRegistry, namedExpressions) {
     var _this = this;
@@ -20122,7 +20183,7 @@ var DependencyGraph = /*#__PURE__*/function () {
    */
 
 
-  _createClass$s(DependencyGraph, [{
+  _createClass$u(DependencyGraph, [{
     key: "setFormulaToCell",
     value: function setFormulaToCell(address, ast, dependencies, size, hasVolatileFunction, hasStructuralChangeFunction) {
       var newVertex = FormulaVertex.fromAst(ast, address, size, this.lazilyTransformingAstService.version());
@@ -20712,7 +20773,13 @@ var DependencyGraph = /*#__PURE__*/function () {
   }, {
     key: "isThereSpaceForArray",
     value: function isThereSpaceForArray(arrayVertex) {
-      var _iterator17 = _createForOfIteratorHelper$c(arrayVertex.getRange().addresses(this)),
+      var range = arrayVertex.getRangeOrUndef();
+
+      if (range === undefined) {
+        return false;
+      }
+
+      var _iterator17 = _createForOfIteratorHelper$c(range.addresses(this)),
           _step17;
 
       try {
@@ -21832,7 +21899,12 @@ var DependencyGraph = /*#__PURE__*/function () {
         return;
       }
 
-      var range = AbsoluteCellRange.spanFrom(formulaAddress, vertex.width, vertex.height);
+      var range = AbsoluteCellRange.spanFromOrUndef(formulaAddress, vertex.width, vertex.height);
+
+      if (range === undefined) {
+        return;
+      }
+
       this.setArray(range, vertex);
 
       if (!this.isThereSpaceForArray(vertex)) {
@@ -22125,9 +22197,9 @@ var DependencyGraph = /*#__PURE__*/function () {
 
 function _classCallCheck$v(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-function _defineProperties$t(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _defineProperties$v(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
-function _createClass$t(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$t(Constructor.prototype, protoProps); if (staticProps) _defineProperties$t(Constructor, staticProps); return Constructor; }
+function _createClass$v(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$v(Constructor.prototype, protoProps); if (staticProps) _defineProperties$v(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
 /**
  * Represents singleton vertex bound to all empty cells
  */
@@ -22144,7 +22216,7 @@ var EmptyCellVertex = /*#__PURE__*/function () {
    */
 
 
-  _createClass$t(EmptyCellVertex, [{
+  _createClass$v(EmptyCellVertex, [{
     key: "getCellValue",
     value: function getCellValue() {
       return EmptyValue;
@@ -22156,9 +22228,9 @@ var EmptyCellVertex = /*#__PURE__*/function () {
 
 function _classCallCheck$w(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-function _defineProperties$u(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _defineProperties$w(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
-function _createClass$u(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$u(Constructor.prototype, protoProps); if (staticProps) _defineProperties$u(Constructor, staticProps); return Constructor; }
+function _createClass$w(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$w(Constructor.prototype, protoProps); if (staticProps) _defineProperties$w(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
 
 /**
  * @license
@@ -22177,7 +22249,7 @@ var ValueCellVertex = /*#__PURE__*/function () {
     this.rawValue = rawValue;
   }
 
-  _createClass$u(ValueCellVertex, [{
+  _createClass$w(ValueCellVertex, [{
     key: "getValues",
     value: function getValues() {
       return {
@@ -22212,9 +22284,9 @@ var ValueCellVertex = /*#__PURE__*/function () {
 
 function _classCallCheck$x(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-function _defineProperties$v(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _defineProperties$x(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
-function _createClass$v(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$v(Constructor.prototype, protoProps); if (staticProps) _defineProperties$v(Constructor, staticProps); return Constructor; }
+function _createClass$x(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$x(Constructor.prototype, protoProps); if (staticProps) _defineProperties$x(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
 var ParsingErrorVertex = /*#__PURE__*/function () {
   function ParsingErrorVertex(errors, rawInput) {
     _classCallCheck$x(this, ParsingErrorVertex);
@@ -22223,7 +22295,7 @@ var ParsingErrorVertex = /*#__PURE__*/function () {
     this.rawInput = rawInput;
   }
 
-  _createClass$v(ParsingErrorVertex, [{
+  _createClass$x(ParsingErrorVertex, [{
     key: "getCellValue",
     value: function getCellValue() {
       return CellError.parsingError();
@@ -22254,9 +22326,9 @@ function _arrayLikeToArray$i(arr, len) { if (len == null || len > arr.length) le
 
 function _classCallCheck$y(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-function _defineProperties$w(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _defineProperties$y(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
-function _createClass$w(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$w(Constructor.prototype, protoProps); if (staticProps) _defineProperties$w(Constructor, staticProps); return Constructor; }
+function _createClass$y(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$y(Constructor.prototype, protoProps); if (staticProps) _defineProperties$y(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
 /**
  * Mapping from cell addresses to vertices
  *
@@ -22281,7 +22353,7 @@ var SparseStrategy = /*#__PURE__*/function () {
   /** @inheritDoc */
 
 
-  _createClass$w(SparseStrategy, [{
+  _createClass$y(SparseStrategy, [{
     key: "getCell",
     value: function getCell(address) {
       var _a;
@@ -23100,9 +23172,9 @@ function _arrayLikeToArray$j(arr, len) { if (len == null || len > arr.length) le
 
 function _classCallCheck$z(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-function _defineProperties$x(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _defineProperties$z(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
-function _createClass$x(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$x(Constructor.prototype, protoProps); if (staticProps) _defineProperties$x(Constructor, staticProps); return Constructor; }
+function _createClass$z(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$z(Constructor.prototype, protoProps); if (staticProps) _defineProperties$z(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
 /**
  * Mapping from cell addresses to vertices
  *
@@ -23128,7 +23200,7 @@ var DenseStrategy = /*#__PURE__*/function () {
   /** @inheritDoc */
 
 
-  _createClass$x(DenseStrategy, [{
+  _createClass$z(DenseStrategy, [{
     key: "getCell",
     value: function getCell(address) {
       return this.getCellVertex(address.col, address.row);
@@ -23621,13 +23693,13 @@ var DenseStrategy = /*#__PURE__*/function () {
   return DenseStrategy;
 }();
 
-function _typeof$6(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof$6 = function _typeof(obj) { return typeof obj; }; } else { _typeof$6 = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof$6(obj); }
+function _typeof$6(obj) { "@babel/helpers - typeof"; return _typeof$6 = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof$6(obj); }
 
 function _classCallCheck$A(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-function _defineProperties$y(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _defineProperties$A(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
-function _createClass$y(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$y(Constructor.prototype, protoProps); if (staticProps) _defineProperties$y(Constructor, staticProps); return Constructor; }
+function _createClass$A(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$A(Constructor.prototype, protoProps); if (staticProps) _defineProperties$A(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
 /**
  * Possible errors returned by our interpreter.
  */
@@ -23769,7 +23841,7 @@ var CellError = /*#__PURE__*/function () {
     this.root = root;
   }
 
-  _createClass$y(CellError, [{
+  _createClass$A(CellError, [{
     key: "attachRootVertex",
     value: function attachRootVertex(vertex) {
       if (this.root === undefined) {
@@ -23839,9 +23911,9 @@ var equalSimpleCellAddress = function equalSimpleCellAddress(left, right) {
 
 function _classCallCheck$B(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-function _defineProperties$z(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _defineProperties$B(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
-function _createClass$z(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$z(Constructor.prototype, protoProps); if (staticProps) _defineProperties$z(Constructor, staticProps); return Constructor; }
+function _createClass$B(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$B(Constructor.prototype, protoProps); if (staticProps) _defineProperties$B(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
 
 /**
  * @license
@@ -23859,7 +23931,7 @@ var DetailedCellError = /*#__PURE__*/function () {
     this.message = (_a = error.message) !== null && _a !== void 0 ? _a : '';
   }
 
-  _createClass$z(DetailedCellError, [{
+  _createClass$B(DetailedCellError, [{
     key: "toString",
     value: function toString() {
       return this.value;
@@ -23880,7 +23952,7 @@ function _unsupportedIterableToArray$k(o, minLen) { if (!o) return; if (typeof o
 
 function _arrayLikeToArray$k(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
 
-function _typeof$7(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof$7 = function _typeof(obj) { return typeof obj; }; } else { _typeof$7 = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof$7(obj); }
+function _typeof$7(obj) { "@babel/helpers - typeof"; return _typeof$7 = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof$7(obj); }
 function configValueFromParam(inputValue, expectedType, paramName) {
   if (typeof inputValue === 'undefined') {
     return Config.defaultConfig[paramName];
@@ -24182,11 +24254,11 @@ function _arrayLikeToArray$l(arr, len) { if (len == null || len > arr.length) le
 
 function _classCallCheck$C(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-function _defineProperties$A(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _defineProperties$C(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
-function _createClass$A(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$A(Constructor.prototype, protoProps); if (staticProps) _defineProperties$A(Constructor, staticProps); return Constructor; }
+function _createClass$C(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$C(Constructor.prototype, protoProps); if (staticProps) _defineProperties$C(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
 
-function _typeof$8(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof$8 = function _typeof(obj) { return typeof obj; }; } else { _typeof$8 = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof$8(obj); }
+function _typeof$8(obj) { "@babel/helpers - typeof"; return _typeof$8 = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof$8(obj); }
 var numDays = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
 var prefSumDays = [0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334];
 function instanceOfSimpleDate(obj) {
@@ -24233,7 +24305,7 @@ var DateTimeHelper = /*#__PURE__*/function () {
     this.parseDateTime = config.parseDateTime;
   }
 
-  _createClass$A(DateTimeHelper, [{
+  _createClass$C(DateTimeHelper, [{
     key: "getWithinBounds",
     value: function getWithinBounds(dayNumber) {
       return dayNumber <= this.maxDateValue && dayNumber >= 0 ? dayNumber : undefined;
@@ -24267,73 +24339,9 @@ var DateTimeHelper = /*#__PURE__*/function () {
       }
     }
   }, {
-    key: "parseSingleFormat",
-    value: function parseSingleFormat(dateString, dateFormat, timeFormat) {
-      var dateTime = this.parseDateTime(dateString, dateFormat, timeFormat);
-
-      if (instanceOfSimpleDate(dateTime)) {
-        if (dateTime.year >= 0 && dateTime.year < 100) {
-          if (dateTime.year < this.getNullYear()) {
-            dateTime.year += 2000;
-          } else {
-            dateTime.year += 1900;
-          }
-        }
-
-        if (!this.isValidDate(dateTime)) {
-          return undefined;
-        }
-      }
-
-      return dateTime;
-    }
-  }, {
     key: "parseDateTimeFromConfigFormats",
     value: function parseDateTimeFromConfigFormats(dateTimeString) {
       return this.parseDateTimeFromFormats(dateTimeString, this.config.dateFormats, this.config.timeFormats);
-    }
-  }, {
-    key: "parseDateTimeFromFormats",
-    value: function parseDateTimeFromFormats(dateTimeString, dateFormats, timeFormats) {
-      var dateFormatsIterate = dateFormats.length === 0 ? [undefined] : dateFormats;
-      var timeFormatsIterate = timeFormats.length === 0 ? [undefined] : timeFormats;
-
-      var _iterator = _createForOfIteratorHelper$f(dateFormatsIterate),
-          _step;
-
-      try {
-        for (_iterator.s(); !(_step = _iterator.n()).done;) {
-          var dateFormat = _step.value;
-
-          var _iterator2 = _createForOfIteratorHelper$f(timeFormatsIterate),
-              _step2;
-
-          try {
-            for (_iterator2.s(); !(_step2 = _iterator2.n()).done;) {
-              var timeFormat = _step2.value;
-              var dateTime = this.parseSingleFormat(dateTimeString, dateFormat, timeFormat);
-
-              if (dateTime !== undefined) {
-                return {
-                  dateTime: dateTime,
-                  timeFormat: timeFormat,
-                  dateFormat: dateFormat
-                };
-              }
-            }
-          } catch (err) {
-            _iterator2.e(err);
-          } finally {
-            _iterator2.f();
-          }
-        }
-      } catch (err) {
-        _iterator.e(err);
-      } finally {
-        _iterator.f();
-      }
-
-      return {};
     }
   }, {
     key: "getNullYear",
@@ -24419,33 +24427,6 @@ var DateTimeHelper = /*#__PURE__*/function () {
       return Math.floor(year / 4) - Math.floor(year / 100) + Math.floor(year / 400) + (this.config.leapYear1900 && year >= 1900 ? 1 : 0);
     }
   }, {
-    key: "countLeapDays",
-    value: function countLeapDays(date) {
-      if (date.month > 2 || date.month === 2 && date.day >= 29) {
-        return this.leapYearsCount(date.year);
-      } else {
-        return this.leapYearsCount(date.year - 1);
-      }
-    }
-  }, {
-    key: "dateToNumberFromZero",
-    value: function dateToNumberFromZero(date) {
-      return 365 * date.year + prefSumDays[date.month - 1] + date.day - 1 + (date.month <= 2 ? this.leapYearsCount(date.year - 1) : this.leapYearsCount(date.year));
-    }
-  }, {
-    key: "isLeapYear",
-    value: function isLeapYear(year) {
-      if (year % 4) {
-        return false;
-      } else if (year % 100) {
-        return true;
-      } else if (year % 400) {
-        return year === 1900 && this.config.leapYear1900;
-      } else {
-        return true;
-      }
-    }
-  }, {
     key: "daysInMonth",
     value: function daysInMonth(year, month) {
       if (this.isLeapYear(year) && month === 2) {
@@ -24508,6 +24489,97 @@ var DateTimeHelper = /*#__PURE__*/function () {
         return 366;
       } else {
         return 365;
+      }
+    }
+  }, {
+    key: "parseSingleFormat",
+    value: function parseSingleFormat(dateString, dateFormat, timeFormat) {
+      var dateTime = this.parseDateTime(dateString, dateFormat, timeFormat);
+
+      if (instanceOfSimpleDate(dateTime)) {
+        if (dateTime.year >= 0 && dateTime.year < 100) {
+          if (dateTime.year < this.getNullYear()) {
+            dateTime.year += 2000;
+          } else {
+            dateTime.year += 1900;
+          }
+        }
+
+        if (!this.isValidDate(dateTime)) {
+          return undefined;
+        }
+      }
+
+      return dateTime;
+    }
+  }, {
+    key: "parseDateTimeFromFormats",
+    value: function parseDateTimeFromFormats(dateTimeString, dateFormats, timeFormats) {
+      var dateFormatsIterate = dateFormats.length === 0 ? [undefined] : dateFormats;
+      var timeFormatsIterate = timeFormats.length === 0 ? [undefined] : timeFormats;
+
+      var _iterator = _createForOfIteratorHelper$f(dateFormatsIterate),
+          _step;
+
+      try {
+        for (_iterator.s(); !(_step = _iterator.n()).done;) {
+          var dateFormat = _step.value;
+
+          var _iterator2 = _createForOfIteratorHelper$f(timeFormatsIterate),
+              _step2;
+
+          try {
+            for (_iterator2.s(); !(_step2 = _iterator2.n()).done;) {
+              var timeFormat = _step2.value;
+              var dateTime = this.parseSingleFormat(dateTimeString, dateFormat, timeFormat);
+
+              if (dateTime !== undefined) {
+                return {
+                  dateTime: dateTime,
+                  timeFormat: timeFormat,
+                  dateFormat: dateFormat
+                };
+              }
+            }
+          } catch (err) {
+            _iterator2.e(err);
+          } finally {
+            _iterator2.f();
+          }
+        }
+      } catch (err) {
+        _iterator.e(err);
+      } finally {
+        _iterator.f();
+      }
+
+      return {};
+    }
+  }, {
+    key: "countLeapDays",
+    value: function countLeapDays(date) {
+      if (date.month > 2 || date.month === 2 && date.day >= 29) {
+        return this.leapYearsCount(date.year);
+      } else {
+        return this.leapYearsCount(date.year - 1);
+      }
+    }
+  }, {
+    key: "dateToNumberFromZero",
+    value: function dateToNumberFromZero(date) {
+      return 365 * date.year + prefSumDays[date.month - 1] + date.day - 1 + (date.month <= 2 ? this.leapYearsCount(date.year - 1) : this.leapYearsCount(date.year));
+    }
+  }, {
+    key: "isLeapYear",
+    value: function isLeapYear(year) {
+      if (year % 4) {
+        return false;
+      } else if (year % 100) {
+        return true;
+      } else if (year % 400) {
+        return year === 1900 && this.config.leapYear1900;
+      } else {
+        return true;
       }
     }
   }]);
@@ -24582,15 +24654,15 @@ function toBasisEU(date) {
 
 function _classCallCheck$D(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-function _defineProperties$B(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _defineProperties$D(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
-function _createClass$B(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$B(Constructor.prototype, protoProps); if (staticProps) _defineProperties$B(Constructor, staticProps); return Constructor; }
+function _createClass$D(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$D(Constructor.prototype, protoProps); if (staticProps) _defineProperties$D(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
 var AlwaysDense = /*#__PURE__*/function () {
   function AlwaysDense() {
     _classCallCheck$D(this, AlwaysDense);
   }
 
-  _createClass$B(AlwaysDense, [{
+  _createClass$D(AlwaysDense, [{
     key: "call",
     value: function call() {
       return DenseStrategy;
@@ -25116,7 +25188,7 @@ function checkLicenseKeyValidity(licenseKey) {
     /* VALID */
     ;
   } else if (typeof licenseKey === 'string' && checkKeySchema(licenseKey)) {
-    var _split = ("23/09/2021" ).split('/'),
+    var _split = ("11/01/2022" ).split('/'),
         _split2 = _slicedToArray$d(_split, 3),
         day = _split2[0],
         month = _split2[1],
@@ -25165,50 +25237,50 @@ function formatDate(date) {
   return "".concat(month, " ").concat(day, ", ").concat(year);
 }
 
+function _createForOfIteratorHelper$h(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray$p(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e2) { throw _e2; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e3) { didErr = true; err = _e3; }, f: function f() { try { if (!normalCompletion && it.return != null) it.return(); } finally { if (didErr) throw err; } } }; }
+
 function _slicedToArray$e(arr, i) { return _arrayWithHoles$e(arr) || _iterableToArrayLimit$e(arr, i) || _unsupportedIterableToArray$p(arr, i) || _nonIterableRest$e(); }
 
 function _nonIterableRest$e() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
-
-function _iterableToArrayLimit$e(arr, i) { var _i = arr == null ? null : typeof Symbol !== "undefined" && arr[Symbol.iterator] || arr["@@iterator"]; if (_i == null) return; var _arr = []; var _n = true; var _d = false; var _s, _e; try { for (_i = _i.call(arr); !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"] != null) _i["return"](); } finally { if (_d) throw _e; } } return _arr; }
-
-function _arrayWithHoles$e(arr) { if (Array.isArray(arr)) return arr; }
-
-function _createForOfIteratorHelper$h(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray$p(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e2) { throw _e2; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e3) { didErr = true; err = _e3; }, f: function f() { try { if (!normalCompletion && it.return != null) it.return(); } finally { if (didErr) throw err; } } }; }
 
 function _unsupportedIterableToArray$p(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray$p(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray$p(o, minLen); }
 
 function _arrayLikeToArray$p(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
 
-function _defineProperties$C(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _iterableToArrayLimit$e(arr, i) { var _i = arr == null ? null : typeof Symbol !== "undefined" && arr[Symbol.iterator] || arr["@@iterator"]; if (_i == null) return; var _arr = []; var _n = true; var _d = false; var _s, _e; try { for (_i = _i.call(arr); !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"] != null) _i["return"](); } finally { if (_d) throw _e; } } return _arr; }
 
-function _createClass$C(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$C(Constructor.prototype, protoProps); if (staticProps) _defineProperties$C(Constructor, staticProps); return Constructor; }
+function _arrayWithHoles$e(arr) { if (Array.isArray(arr)) return arr; }
+
+function _defineProperties$E(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass$E(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$E(Constructor.prototype, protoProps); if (staticProps) _defineProperties$E(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
 
 function _classCallCheck$E(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 var CellContent;
 
 (function (CellContent) {
-  var Number = function Number(value) {
+  var Number = /*#__PURE__*/_createClass$E(function Number(value) {
     _classCallCheck$E(this, Number);
 
     this.value = value;
     this.value = cloneNumber(this.value, fixNegativeZero(getRawValue(this.value)));
-  };
+  });
 
   CellContent.Number = Number;
 
-  var String = function String(value) {
+  var String = /*#__PURE__*/_createClass$E(function String(value) {
     _classCallCheck$E(this, String);
 
     this.value = value;
-  };
+  });
 
   CellContent.String = String;
 
-  var Boolean = function Boolean(value) {
+  var Boolean = /*#__PURE__*/_createClass$E(function Boolean(value) {
     _classCallCheck$E(this, Boolean);
 
     this.value = value;
-  };
+  });
 
   CellContent.Boolean = Boolean;
 
@@ -25217,7 +25289,7 @@ var CellContent;
       _classCallCheck$E(this, Empty);
     }
 
-    _createClass$C(Empty, null, [{
+    _createClass$E(Empty, null, [{
       key: "getSingletonInstance",
       value: function getSingletonInstance() {
         if (!Empty.instance) {
@@ -25233,19 +25305,19 @@ var CellContent;
 
   CellContent.Empty = Empty;
 
-  var Formula = function Formula(formula) {
+  var Formula = /*#__PURE__*/_createClass$E(function Formula(formula) {
     _classCallCheck$E(this, Formula);
 
     this.formula = formula;
-  };
+  });
 
   CellContent.Formula = Formula;
 
-  var Error = function Error(errorType, message) {
+  var Error = /*#__PURE__*/_createClass$E(function Error(errorType, message) {
     _classCallCheck$E(this, Error);
 
     this.value = new CellError(errorType, message);
-  };
+  });
 
   CellContent.Error = Error;
 })(CellContent || (CellContent = {}));
@@ -25277,33 +25349,7 @@ var CellContentParser = /*#__PURE__*/function () {
     this.numberLiteralsHelper = numberLiteralsHelper;
   }
 
-  _createClass$C(CellContentParser, [{
-    key: "currencyMatcher",
-    value: function currencyMatcher(token) {
-      var _iterator = _createForOfIteratorHelper$h(this.config.currencySymbol),
-          _step;
-
-      try {
-        for (_iterator.s(); !(_step = _iterator.n()).done;) {
-          var currency = _step.value;
-
-          if (token.startsWith(currency)) {
-            return [currency, token.slice(currency.length)];
-          }
-
-          if (token.endsWith(currency)) {
-            return [currency, token.slice(0, token.length - currency.length)];
-          }
-        }
-      } catch (err) {
-        _iterator.e(err);
-      } finally {
-        _iterator.f();
-      }
-
-      return undefined;
-    }
-  }, {
+  _createClass$E(CellContentParser, [{
     key: "parse",
     value: function parse(content) {
       if (content === undefined || content === null) {
@@ -25396,6 +25442,32 @@ var CellContentParser = /*#__PURE__*/function () {
         throw new UnableToParseError(content);
       }
     }
+  }, {
+    key: "currencyMatcher",
+    value: function currencyMatcher(token) {
+      var _iterator = _createForOfIteratorHelper$h(this.config.currencySymbol),
+          _step;
+
+      try {
+        for (_iterator.s(); !(_step = _iterator.n()).done;) {
+          var currency = _step.value;
+
+          if (token.startsWith(currency)) {
+            return [currency, token.slice(currency.length)];
+          }
+
+          if (token.endsWith(currency)) {
+            return [currency, token.slice(0, token.length - currency.length)];
+          }
+        }
+      } catch (err) {
+        _iterator.e(err);
+      } finally {
+        _iterator.f();
+      }
+
+      return undefined;
+    }
   }]);
 
   return CellContentParser;
@@ -25403,9 +25475,9 @@ var CellContentParser = /*#__PURE__*/function () {
 
 function _classCallCheck$F(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-function _defineProperties$D(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _defineProperties$F(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
-function _createClass$D(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$D(Constructor.prototype, protoProps); if (staticProps) _defineProperties$D(Constructor, staticProps); return Constructor; }
+function _createClass$F(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$F(Constructor.prototype, protoProps); if (staticProps) _defineProperties$F(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
 var ClipboardOperationType;
 
 (function (ClipboardOperationType) {
@@ -25433,7 +25505,7 @@ var Clipboard = /*#__PURE__*/function () {
     this.content = content;
   }
 
-  _createClass$D(Clipboard, [{
+  _createClass$F(Clipboard, [{
     key: "getContent",
     value: /*#__PURE__*/regeneratorRuntime.mark(function getContent(leftCorner) {
       var y, x;
@@ -25500,7 +25572,7 @@ var ClipboardOperations = /*#__PURE__*/function () {
     this.maxColumns = config.maxColumns;
   }
 
-  _createClass$D(ClipboardOperations, [{
+  _createClass$F(ClipboardOperations, [{
     key: "cut",
     value: function cut(leftCorner, width, height) {
       this.clipboard = new Clipboard(leftCorner, width, height, ClipboardOperationType.CUT);
@@ -25571,9 +25643,9 @@ var ClipboardOperations = /*#__PURE__*/function () {
 
 function _classCallCheck$G(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-function _defineProperties$E(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _defineProperties$G(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
-function _createClass$E(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$E(Constructor.prototype, protoProps); if (staticProps) _defineProperties$E(Constructor, staticProps); return Constructor; }
+function _createClass$G(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$G(Constructor.prototype, protoProps); if (staticProps) _defineProperties$G(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
 var InternalNamedExpression = /*#__PURE__*/function () {
   function InternalNamedExpression(displayName, address, added, options) {
     _classCallCheck$G(this, InternalNamedExpression);
@@ -25584,7 +25656,7 @@ var InternalNamedExpression = /*#__PURE__*/function () {
     this.options = options;
   }
 
-  _createClass$E(InternalNamedExpression, [{
+  _createClass$G(InternalNamedExpression, [{
     key: "normalizeExpressionName",
     value: function normalizeExpressionName() {
       return this.displayName.toLowerCase();
@@ -25606,7 +25678,7 @@ var WorkbookStore = /*#__PURE__*/function () {
     this.mapping = new Map();
   }
 
-  _createClass$E(WorkbookStore, [{
+  _createClass$G(WorkbookStore, [{
     key: "has",
     value: function has(expressionName) {
       return this.mapping.has(this.normalizeExpressionName(expressionName));
@@ -25673,7 +25745,7 @@ var WorksheetStore = /*#__PURE__*/function () {
     this.mapping = new Map();
   }
 
-  _createClass$E(WorksheetStore, [{
+  _createClass$G(WorksheetStore, [{
     key: "add",
     value: function add(namedExpression) {
       this.mapping.set(this.normalizeExpressionName(namedExpression.displayName), namedExpression);
@@ -25696,11 +25768,6 @@ var WorksheetStore = /*#__PURE__*/function () {
       });
     }
   }, {
-    key: "normalizeExpressionName",
-    value: function normalizeExpressionName(expressionName) {
-      return expressionName.toLowerCase();
-    }
-  }, {
     key: "isNameAvailable",
     value: function isNameAvailable(expressionName) {
       var normalizedExpressionName = this.normalizeExpressionName(expressionName);
@@ -25715,6 +25782,11 @@ var WorksheetStore = /*#__PURE__*/function () {
       if (namedExpression) {
         this.mapping.delete(normalizedExpressionName);
       }
+    }
+  }, {
+    key: "normalizeExpressionName",
+    value: function normalizeExpressionName(expressionName) {
+      return expressionName.toLowerCase();
     }
   }]);
 
@@ -25731,7 +25803,7 @@ var NamedExpressions = /*#__PURE__*/function () {
     this.addressCache = new Map();
   }
 
-  _createClass$E(NamedExpressions, [{
+  _createClass$G(NamedExpressions, [{
     key: "isNameAvailable",
     value: function isNameAvailable(expressionName, sheetId) {
       var _a, _b;
@@ -25813,23 +25885,6 @@ var NamedExpressions = /*#__PURE__*/function () {
       store.add(namedExpression);
       this.addressCache.set(namedExpression.address.row, namedExpression);
       return namedExpression;
-    }
-  }, {
-    key: "worksheetStoreOrCreate",
-    value: function worksheetStoreOrCreate(sheetId) {
-      var store = this.worksheetStores.get(sheetId);
-
-      if (!store) {
-        store = new WorksheetStore();
-        this.worksheetStores.set(sheetId, store);
-      }
-
-      return store;
-    }
-  }, {
-    key: "worksheetStore",
-    value: function worksheetStore(sheetId) {
-      return this.worksheetStores.get(sheetId);
     }
   }, {
     key: "namedExpressionOrPlaceholder",
@@ -25924,6 +25979,23 @@ var NamedExpressions = /*#__PURE__*/function () {
       }
     }
   }, {
+    key: "worksheetStoreOrCreate",
+    value: function worksheetStoreOrCreate(sheetId) {
+      var store = this.worksheetStores.get(sheetId);
+
+      if (!store) {
+        store = new WorksheetStore();
+        this.worksheetStores.set(sheetId, store);
+      }
+
+      return store;
+    }
+  }, {
+    key: "worksheetStore",
+    value: function worksheetStore(sheetId) {
+      return this.worksheetStores.get(sheetId);
+    }
+  }, {
     key: "nextAddress",
     value: function nextAddress() {
       return simpleCellAddress(NamedExpressions.SHEET_FOR_WORKBOOK_EXPRESSIONS, 0, this.nextNamedExpressionRow++);
@@ -26011,15 +26083,15 @@ function _arrayLikeToArray$q(arr, len) { if (len == null || len > arr.length) le
 
 function _classCallCheck$H(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-function _defineProperties$F(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _defineProperties$H(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
-function _createClass$F(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$F(Constructor.prototype, protoProps); if (staticProps) _defineProperties$F(Constructor, staticProps); return Constructor; }
+function _createClass$H(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$H(Constructor.prototype, protoProps); if (staticProps) _defineProperties$H(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
 var Transformer = /*#__PURE__*/function () {
   function Transformer() {
     _classCallCheck$H(this, Transformer);
   }
 
-  _createClass$F(Transformer, [{
+  _createClass$H(Transformer, [{
     key: "performEagerTransformations",
     value: function performEagerTransformations(graph, parser) {
       var _iterator = _createForOfIteratorHelper$i(graph.arrayFormulaNodes()),
@@ -26201,15 +26273,15 @@ var Transformer = /*#__PURE__*/function () {
   return Transformer;
 }();
 
-function _typeof$9(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof$9 = function _typeof(obj) { return typeof obj; }; } else { _typeof$9 = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof$9(obj); }
+function _typeof$9(obj) { "@babel/helpers - typeof"; return _typeof$9 = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof$9(obj); }
 
 function _classCallCheck$I(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-function _defineProperties$G(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _defineProperties$I(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
-function _createClass$G(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$G(Constructor.prototype, protoProps); if (staticProps) _defineProperties$G(Constructor, staticProps); return Constructor; }
+function _createClass$I(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$I(Constructor.prototype, protoProps); if (staticProps) _defineProperties$I(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
 
-function _inherits$6(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf$7(subClass, superClass); }
+function _inherits$6(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf$7(subClass, superClass); }
 
 function _setPrototypeOf$7(o, p) { _setPrototypeOf$7 = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf$7(o, p); }
 
@@ -26237,7 +26309,7 @@ var AddColumnsTransformer = /*#__PURE__*/function (_Transformer) {
     return _this;
   }
 
-  _createClass$G(AddColumnsTransformer, [{
+  _createClass$I(AddColumnsTransformer, [{
     key: "sheet",
     get: function get() {
       return this.columnsSpan.sheet;
@@ -26360,15 +26432,15 @@ var AddColumnsTransformer = /*#__PURE__*/function (_Transformer) {
   return AddColumnsTransformer;
 }(Transformer);
 
-function _typeof$a(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof$a = function _typeof(obj) { return typeof obj; }; } else { _typeof$a = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof$a(obj); }
+function _typeof$a(obj) { "@babel/helpers - typeof"; return _typeof$a = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof$a(obj); }
 
 function _classCallCheck$J(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-function _defineProperties$H(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _defineProperties$J(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
-function _createClass$H(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$H(Constructor.prototype, protoProps); if (staticProps) _defineProperties$H(Constructor, staticProps); return Constructor; }
+function _createClass$J(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$J(Constructor.prototype, protoProps); if (staticProps) _defineProperties$J(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
 
-function _inherits$7(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf$8(subClass, superClass); }
+function _inherits$7(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf$8(subClass, superClass); }
 
 function _setPrototypeOf$8(o, p) { _setPrototypeOf$8 = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf$8(o, p); }
 
@@ -26396,7 +26468,7 @@ var AddRowsTransformer = /*#__PURE__*/function (_Transformer) {
     return _this;
   }
 
-  _createClass$H(AddRowsTransformer, [{
+  _createClass$J(AddRowsTransformer, [{
     key: "sheet",
     get: function get() {
       return this.rowsSpan.sheet;
@@ -26517,15 +26589,15 @@ var AddRowsTransformer = /*#__PURE__*/function (_Transformer) {
   return AddRowsTransformer;
 }(Transformer);
 
-function _typeof$b(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof$b = function _typeof(obj) { return typeof obj; }; } else { _typeof$b = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof$b(obj); }
+function _typeof$b(obj) { "@babel/helpers - typeof"; return _typeof$b = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof$b(obj); }
 
 function _classCallCheck$K(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-function _defineProperties$I(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _defineProperties$K(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
-function _createClass$I(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$I(Constructor.prototype, protoProps); if (staticProps) _defineProperties$I(Constructor, staticProps); return Constructor; }
+function _createClass$K(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$K(Constructor.prototype, protoProps); if (staticProps) _defineProperties$K(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
 
-function _inherits$8(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf$9(subClass, superClass); }
+function _inherits$8(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf$9(subClass, superClass); }
 
 function _setPrototypeOf$9(o, p) { _setPrototypeOf$9 = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf$9(o, p); }
 
@@ -26553,7 +26625,7 @@ var CleanOutOfScopeDependenciesTransformer = /*#__PURE__*/function (_Transformer
     return _this;
   }
 
-  _createClass$I(CleanOutOfScopeDependenciesTransformer, [{
+  _createClass$K(CleanOutOfScopeDependenciesTransformer, [{
     key: "isIrreversible",
     value: function isIrreversible() {
       return true;
@@ -26588,15 +26660,15 @@ var CleanOutOfScopeDependenciesTransformer = /*#__PURE__*/function (_Transformer
   return CleanOutOfScopeDependenciesTransformer;
 }(Transformer);
 
-function _typeof$c(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof$c = function _typeof(obj) { return typeof obj; }; } else { _typeof$c = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof$c(obj); }
+function _typeof$c(obj) { "@babel/helpers - typeof"; return _typeof$c = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof$c(obj); }
 
 function _classCallCheck$L(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-function _defineProperties$J(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _defineProperties$L(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
-function _createClass$J(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$J(Constructor.prototype, protoProps); if (staticProps) _defineProperties$J(Constructor, staticProps); return Constructor; }
+function _createClass$L(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$L(Constructor.prototype, protoProps); if (staticProps) _defineProperties$L(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
 
-function _inherits$9(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf$a(subClass, superClass); }
+function _inherits$9(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf$a(subClass, superClass); }
 
 function _setPrototypeOf$a(o, p) { _setPrototypeOf$a = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf$a(o, p); }
 
@@ -26628,15 +26700,15 @@ var MoveCellsTransformer = /*#__PURE__*/function (_Transformer) {
     return _this;
   }
 
-  _createClass$J(MoveCellsTransformer, [{
-    key: "isIrreversible",
-    value: function isIrreversible() {
-      return true;
-    }
-  }, {
+  _createClass$L(MoveCellsTransformer, [{
     key: "sheet",
     get: function get() {
       return this.sourceRange.sheet;
+    }
+  }, {
+    key: "isIrreversible",
+    value: function isIrreversible() {
+      return true;
     }
   }, {
     key: "transformSingleAst",
@@ -26728,7 +26800,7 @@ var DependentFormulaTransformer = /*#__PURE__*/function (_Transformer2) {
     return _this2;
   }
 
-  _createClass$J(DependentFormulaTransformer, [{
+  _createClass$L(DependentFormulaTransformer, [{
     key: "sheet",
     get: function get() {
       return this.sourceRange.sheet;
@@ -26753,17 +26825,6 @@ var DependentFormulaTransformer = /*#__PURE__*/function (_Transformer2) {
       return false;
     }
   }, {
-    key: "shouldMove",
-    value: function shouldMove(dependencyAddress, formulaAddress) {
-      if (dependencyAddress instanceof CellAddress) {
-        return this.sourceRange.addressInRange(dependencyAddress.toSimpleCellAddress(formulaAddress));
-      } else if (dependencyAddress instanceof RowAddress) {
-        return this.sourceRange.rowInRange(dependencyAddress.toSimpleRowAddress(formulaAddress)) && !this.sourceRange.isFinite();
-      } else {
-        return this.sourceRange.columnInRange(dependencyAddress.toSimpleColumnAddress(formulaAddress)) && !this.sourceRange.isFinite();
-      }
-    }
-  }, {
     key: "transformCellRange",
     value: function transformCellRange(start, end, formulaAddress) {
       return this.transformRange(start, end, formulaAddress);
@@ -26777,6 +26838,17 @@ var DependentFormulaTransformer = /*#__PURE__*/function (_Transformer2) {
     key: "transformRowRange",
     value: function transformRowRange(start, end, formulaAddress) {
       return this.transformRange(start, end, formulaAddress);
+    }
+  }, {
+    key: "shouldMove",
+    value: function shouldMove(dependencyAddress, formulaAddress) {
+      if (dependencyAddress instanceof CellAddress) {
+        return this.sourceRange.addressInRange(dependencyAddress.toSimpleCellAddress(formulaAddress));
+      } else if (dependencyAddress instanceof RowAddress) {
+        return this.sourceRange.rowInRange(dependencyAddress.toSimpleRowAddress(formulaAddress)) && !this.sourceRange.isFinite();
+      } else {
+        return this.sourceRange.columnInRange(dependencyAddress.toSimpleColumnAddress(formulaAddress)) && !this.sourceRange.isFinite();
+      }
     }
   }, {
     key: "transformRange",
@@ -26795,15 +26867,15 @@ var DependentFormulaTransformer = /*#__PURE__*/function (_Transformer2) {
   return DependentFormulaTransformer;
 }(Transformer);
 
-function _typeof$d(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof$d = function _typeof(obj) { return typeof obj; }; } else { _typeof$d = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof$d(obj); }
+function _typeof$d(obj) { "@babel/helpers - typeof"; return _typeof$d = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof$d(obj); }
 
 function _classCallCheck$M(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-function _defineProperties$K(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _defineProperties$M(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
-function _createClass$K(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$K(Constructor.prototype, protoProps); if (staticProps) _defineProperties$K(Constructor, staticProps); return Constructor; }
+function _createClass$M(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$M(Constructor.prototype, protoProps); if (staticProps) _defineProperties$M(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
 
-function _inherits$a(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf$b(subClass, superClass); }
+function _inherits$a(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf$b(subClass, superClass); }
 
 function _setPrototypeOf$b(o, p) { _setPrototypeOf$b = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf$b(o, p); }
 
@@ -26831,15 +26903,15 @@ var RemoveColumnsTransformer = /*#__PURE__*/function (_Transformer) {
     return _this;
   }
 
-  _createClass$K(RemoveColumnsTransformer, [{
-    key: "isIrreversible",
-    value: function isIrreversible() {
-      return true;
-    }
-  }, {
+  _createClass$M(RemoveColumnsTransformer, [{
     key: "sheet",
     get: function get() {
       return this.columnsSpan.sheet;
+    }
+  }, {
+    key: "isIrreversible",
+    value: function isIrreversible() {
+      return true;
     }
   }, {
     key: "transformRowRangeAst",
@@ -26986,15 +27058,15 @@ var RemoveColumnsTransformer = /*#__PURE__*/function (_Transformer) {
   return RemoveColumnsTransformer;
 }(Transformer);
 
-function _typeof$e(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof$e = function _typeof(obj) { return typeof obj; }; } else { _typeof$e = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof$e(obj); }
+function _typeof$e(obj) { "@babel/helpers - typeof"; return _typeof$e = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof$e(obj); }
 
 function _classCallCheck$N(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-function _defineProperties$L(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _defineProperties$N(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
-function _createClass$L(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$L(Constructor.prototype, protoProps); if (staticProps) _defineProperties$L(Constructor, staticProps); return Constructor; }
+function _createClass$N(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$N(Constructor.prototype, protoProps); if (staticProps) _defineProperties$N(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
 
-function _inherits$b(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf$c(subClass, superClass); }
+function _inherits$b(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf$c(subClass, superClass); }
 
 function _setPrototypeOf$c(o, p) { _setPrototypeOf$c = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf$c(o, p); }
 
@@ -27022,7 +27094,7 @@ var RemoveRowsTransformer = /*#__PURE__*/function (_Transformer) {
     return _this;
   }
 
-  _createClass$L(RemoveRowsTransformer, [{
+  _createClass$N(RemoveRowsTransformer, [{
     key: "sheet",
     get: function get() {
       return this.rowsSpan.sheet;
@@ -27177,7 +27249,7 @@ var RemoveRowsTransformer = /*#__PURE__*/function (_Transformer) {
   return RemoveRowsTransformer;
 }(Transformer);
 
-function _typeof$f(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof$f = function _typeof(obj) { return typeof obj; }; } else { _typeof$f = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof$f(obj); }
+function _typeof$f(obj) { "@babel/helpers - typeof"; return _typeof$f = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof$f(obj); }
 
 function _slicedToArray$g(arr, i) { return _arrayWithHoles$g(arr) || _iterableToArrayLimit$g(arr, i) || _unsupportedIterableToArray$r(arr, i) || _nonIterableRest$g(); }
 
@@ -27195,11 +27267,11 @@ function _arrayLikeToArray$r(arr, len) { if (len == null || len > arr.length) le
 
 function _classCallCheck$O(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-function _defineProperties$M(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _defineProperties$O(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
-function _createClass$M(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$M(Constructor.prototype, protoProps); if (staticProps) _defineProperties$M(Constructor, staticProps); return Constructor; }
+function _createClass$O(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$O(Constructor.prototype, protoProps); if (staticProps) _defineProperties$O(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
 
-function _inherits$c(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf$d(subClass, superClass); }
+function _inherits$c(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf$d(subClass, superClass); }
 
 function _setPrototypeOf$d(o, p) { _setPrototypeOf$d = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf$d(o, p); }
 
@@ -27227,7 +27299,7 @@ var RemoveSheetTransformer = /*#__PURE__*/function (_Transformer) {
     return _this;
   }
 
-  _createClass$M(RemoveSheetTransformer, [{
+  _createClass$O(RemoveSheetTransformer, [{
     key: "isIrreversible",
     value: function isIrreversible() {
       return true;
@@ -27372,9 +27444,9 @@ function _arrayLikeToArray$s(arr, len) { if (len == null || len > arr.length) le
 
 function _classCallCheck$P(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-function _defineProperties$N(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _defineProperties$P(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
-function _createClass$N(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$N(Constructor.prototype, protoProps); if (staticProps) _defineProperties$N(Constructor, staticProps); return Constructor; }
+function _createClass$P(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$P(Constructor.prototype, protoProps); if (staticProps) _defineProperties$P(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
 var RemoveRowsCommand = /*#__PURE__*/function () {
   function RemoveRowsCommand(sheet, indexes) {
     _classCallCheck$P(this, RemoveRowsCommand);
@@ -27383,7 +27455,7 @@ var RemoveRowsCommand = /*#__PURE__*/function () {
     this.indexes = indexes;
   }
 
-  _createClass$N(RemoveRowsCommand, [{
+  _createClass$P(RemoveRowsCommand, [{
     key: "normalizedIndexes",
     value: function normalizedIndexes() {
       return normalizeRemovedIndexes(this.indexes);
@@ -27409,7 +27481,7 @@ var AddRowsCommand = /*#__PURE__*/function () {
     this.indexes = indexes;
   }
 
-  _createClass$N(AddRowsCommand, [{
+  _createClass$P(AddRowsCommand, [{
     key: "normalizedIndexes",
     value: function normalizedIndexes() {
       return normalizeAddedIndexes(this.indexes);
@@ -27435,7 +27507,7 @@ var AddColumnsCommand = /*#__PURE__*/function () {
     this.indexes = indexes;
   }
 
-  _createClass$N(AddColumnsCommand, [{
+  _createClass$P(AddColumnsCommand, [{
     key: "normalizedIndexes",
     value: function normalizedIndexes() {
       return normalizeAddedIndexes(this.indexes);
@@ -27461,7 +27533,7 @@ var RemoveColumnsCommand = /*#__PURE__*/function () {
     this.indexes = indexes;
   }
 
-  _createClass$N(RemoveColumnsCommand, [{
+  _createClass$P(RemoveColumnsCommand, [{
     key: "normalizedIndexes",
     value: function normalizedIndexes() {
       return normalizeRemovedIndexes(this.indexes);
@@ -27497,7 +27569,17 @@ var Operations = /*#__PURE__*/function () {
     this.maxRows = config.maxRows;
   }
 
-  _createClass$N(Operations, [{
+  _createClass$P(Operations, [{
+    key: "sheetMapping",
+    get: function get() {
+      return this.dependencyGraph.sheetMapping;
+    }
+  }, {
+    key: "addressMapping",
+    get: function get() {
+      return this.dependencyGraph.addressMapping;
+    }
+  }, {
     key: "removeRows",
     value: function removeRows(cmd) {
       var rowsRemovals = [];
@@ -27782,7 +27864,7 @@ var Operations = /*#__PURE__*/function () {
               var _ref4 = _slicedToArray$h(_ref3, 2),
                   _ref4$ = _ref4[0],
                   sheet = _ref4$.sheet,
-                  col = _ref4$.col,
+                  _col = _ref4$.col,
                   row = _ref4$.row,
                   cell = _ref4[1];
 
@@ -27942,209 +28024,6 @@ var Operations = /*#__PURE__*/function () {
           }
       }
     }
-    /**
-     * Removes multiple rows from sheet. </br>
-     * Does nothing if rows are outside of effective sheet size.
-     *
-     * @param sheet - sheet id from which rows will be removed
-     * @param rowStart - number of the first row to be deleted
-     * @param rowEnd - number of the last row to be deleted
-     * */
-
-  }, {
-    key: "doRemoveRows",
-    value: function doRemoveRows(rowsToRemove) {
-      var _this9 = this;
-
-      if (this.rowEffectivelyNotInSheet(rowsToRemove.rowStart, rowsToRemove.sheet)) {
-        return;
-      }
-
-      var removedCells = [];
-
-      var _iterator8 = _createForOfIteratorHelper$k(this.dependencyGraph.entriesFromRowsSpan(rowsToRemove)),
-          _step8;
-
-      try {
-        for (_iterator8.s(); !(_step8 = _iterator8.n()).done;) {
-          var _step8$value = _slicedToArray$h(_step8.value, 1),
-              address = _step8$value[0];
-
-          removedCells.push({
-            address: address,
-            cellType: this.getClipboardCell(address)
-          });
-        }
-      } catch (err) {
-        _iterator8.e(err);
-      } finally {
-        _iterator8.f();
-      }
-
-      var _this$dependencyGraph = this.dependencyGraph.removeRows(rowsToRemove),
-          affectedArrays = _this$dependencyGraph.affectedArrays,
-          contentChanges = _this$dependencyGraph.contentChanges;
-
-      this.columnSearch.applyChanges(contentChanges.getChanges());
-      var version;
-      this.stats.measure(StatType.TRANSFORM_ASTS, function () {
-        var transformation = new RemoveRowsTransformer(rowsToRemove);
-        transformation.performEagerTransformations(_this9.dependencyGraph, _this9.parser);
-        version = _this9.lazilyTransformingAstService.addTransformation(transformation);
-      });
-      this.rewriteAffectedArrays(affectedArrays);
-      return {
-        version: version,
-        removedCells: removedCells,
-        rowFrom: rowsToRemove.rowStart,
-        rowCount: rowsToRemove.numberOfRows
-      };
-    }
-    /**
-     * Removes multiple columns from sheet. </br>
-     * Does nothing if columns are outside of effective sheet size.
-     *
-     * @param sheet - sheet id from which columns will be removed
-     * @param columnStart - number of the first column to be deleted
-     * @param columnEnd - number of the last row to be deleted
-     */
-
-  }, {
-    key: "doRemoveColumns",
-    value: function doRemoveColumns(columnsToRemove) {
-      var _this10 = this;
-
-      if (this.columnEffectivelyNotInSheet(columnsToRemove.columnStart, columnsToRemove.sheet)) {
-        return;
-      }
-
-      var removedCells = [];
-
-      var _iterator9 = _createForOfIteratorHelper$k(this.dependencyGraph.entriesFromColumnsSpan(columnsToRemove)),
-          _step9;
-
-      try {
-        for (_iterator9.s(); !(_step9 = _iterator9.n()).done;) {
-          var _step9$value = _slicedToArray$h(_step9.value, 1),
-              address = _step9$value[0];
-
-          removedCells.push({
-            address: address,
-            cellType: this.getClipboardCell(address)
-          });
-        }
-      } catch (err) {
-        _iterator9.e(err);
-      } finally {
-        _iterator9.f();
-      }
-
-      var _this$dependencyGraph2 = this.dependencyGraph.removeColumns(columnsToRemove),
-          affectedArrays = _this$dependencyGraph2.affectedArrays,
-          contentChanges = _this$dependencyGraph2.contentChanges;
-
-      this.columnSearch.applyChanges(contentChanges.getChanges());
-      this.columnSearch.removeColumns(columnsToRemove);
-      var version;
-      this.stats.measure(StatType.TRANSFORM_ASTS, function () {
-        var transformation = new RemoveColumnsTransformer(columnsToRemove);
-        transformation.performEagerTransformations(_this10.dependencyGraph, _this10.parser);
-        version = _this10.lazilyTransformingAstService.addTransformation(transformation);
-      });
-      this.rewriteAffectedArrays(affectedArrays);
-      return {
-        version: version,
-        removedCells: removedCells,
-        columnFrom: columnsToRemove.columnStart,
-        columnCount: columnsToRemove.numberOfColumns
-      };
-    }
-    /**
-     * Add multiple rows to sheet. </br>
-     * Does nothing if rows are outside of effective sheet size.
-     *
-     * @param sheet - sheet id in which rows will be added
-     * @param row - row number above which the rows will be added
-     * @param numberOfRowsToAdd - number of rows to add
-     */
-
-  }, {
-    key: "doAddRows",
-    value: function doAddRows(addedRows) {
-      var _this11 = this;
-
-      if (this.rowEffectivelyNotInSheet(addedRows.rowStart, addedRows.sheet)) {
-        return;
-      }
-
-      var _this$dependencyGraph3 = this.dependencyGraph.addRows(addedRows),
-          affectedArrays = _this$dependencyGraph3.affectedArrays;
-
-      this.stats.measure(StatType.TRANSFORM_ASTS, function () {
-        var transformation = new AddRowsTransformer(addedRows);
-        transformation.performEagerTransformations(_this11.dependencyGraph, _this11.parser);
-
-        _this11.lazilyTransformingAstService.addTransformation(transformation);
-      });
-      this.rewriteAffectedArrays(affectedArrays);
-    }
-  }, {
-    key: "rewriteAffectedArrays",
-    value: function rewriteAffectedArrays(affectedArrays) {
-      var _iterator10 = _createForOfIteratorHelper$k(affectedArrays.values()),
-          _step10;
-
-      try {
-        for (_iterator10.s(); !(_step10 = _iterator10.n()).done;) {
-          var arrayVertex = _step10.value;
-
-          if (arrayVertex.array.size.isRef) {
-            continue;
-          }
-
-          var ast = arrayVertex.getFormula(this.lazilyTransformingAstService);
-          var address = arrayVertex.getAddress(this.lazilyTransformingAstService);
-          var hash = this.parser.computeHashFromAst(ast);
-          this.setFormulaToCellFromCache(hash, address);
-        }
-      } catch (err) {
-        _iterator10.e(err);
-      } finally {
-        _iterator10.f();
-      }
-    }
-    /**
-     * Add multiple columns to sheet </br>
-     * Does nothing if columns are outside of effective sheet size
-     *
-     * @param sheet - sheet id in which columns will be added
-     * @param column - column number above which the columns will be added
-     * @param numberOfColumns - number of columns to add
-     */
-
-  }, {
-    key: "doAddColumns",
-    value: function doAddColumns(addedColumns) {
-      var _this12 = this;
-
-      if (this.columnEffectivelyNotInSheet(addedColumns.columnStart, addedColumns.sheet)) {
-        return;
-      }
-
-      var _this$dependencyGraph4 = this.dependencyGraph.addColumns(addedColumns),
-          affectedArrays = _this$dependencyGraph4.affectedArrays,
-          contentChanges = _this$dependencyGraph4.contentChanges;
-
-      this.columnSearch.addColumns(addedColumns);
-      this.columnSearch.applyChanges(contentChanges.getChanges());
-      this.stats.measure(StatType.TRANSFORM_ASTS, function () {
-        var transformation = new AddColumnsTransformer(addedColumns);
-        transformation.performEagerTransformations(_this12.dependencyGraph, _this12.parser);
-
-        _this12.lazilyTransformingAstService.addTransformation(transformation);
-      });
-      this.rewriteAffectedArrays(affectedArrays);
-    }
   }, {
     key: "getOldContent",
     value: function getOldContent(address) {
@@ -28238,18 +28117,18 @@ var Operations = /*#__PURE__*/function () {
     value: function getRangeClipboardCells(range) {
       var result = [];
 
-      var _iterator11 = _createForOfIteratorHelper$k(range.addresses(this.dependencyGraph)),
-          _step11;
+      var _iterator8 = _createForOfIteratorHelper$k(range.addresses(this.dependencyGraph)),
+          _step8;
 
       try {
-        for (_iterator11.s(); !(_step11 = _iterator11.n()).done;) {
-          var address = _step11.value;
+        for (_iterator8.s(); !(_step8 = _iterator8.n()).done;) {
+          var address = _step8.value;
           result.push([address, this.getClipboardCell(address)]);
         }
       } catch (err) {
-        _iterator11.e(err);
+        _iterator8.e(err);
       } finally {
-        _iterator11.f();
+        _iterator8.f();
       }
 
       return result;
@@ -28389,10 +28268,208 @@ var Operations = /*#__PURE__*/function () {
     value: function forceApplyPostponedTransformations() {
       this.dependencyGraph.forceApplyPostponedTransformations();
     }
+    /**
+     * Removes multiple rows from sheet. </br>
+     * Does nothing if rows are outside of effective sheet size.
+     *
+     * @param sheet - sheet id from which rows will be removed
+     * @param rowStart - number of the first row to be deleted
+     * @param rowEnd - number of the last row to be deleted
+     * */
+
   }, {
-    key: "sheetMapping",
-    get: function get() {
-      return this.dependencyGraph.sheetMapping;
+    key: "doRemoveRows",
+    value: function doRemoveRows(rowsToRemove) {
+      var _this9 = this;
+
+      if (this.rowEffectivelyNotInSheet(rowsToRemove.rowStart, rowsToRemove.sheet)) {
+        return;
+      }
+
+      var removedCells = [];
+
+      var _iterator9 = _createForOfIteratorHelper$k(this.dependencyGraph.entriesFromRowsSpan(rowsToRemove)),
+          _step9;
+
+      try {
+        for (_iterator9.s(); !(_step9 = _iterator9.n()).done;) {
+          var _step9$value = _slicedToArray$h(_step9.value, 1),
+              address = _step9$value[0];
+
+          removedCells.push({
+            address: address,
+            cellType: this.getClipboardCell(address)
+          });
+        }
+      } catch (err) {
+        _iterator9.e(err);
+      } finally {
+        _iterator9.f();
+      }
+
+      var _this$dependencyGraph = this.dependencyGraph.removeRows(rowsToRemove),
+          affectedArrays = _this$dependencyGraph.affectedArrays,
+          contentChanges = _this$dependencyGraph.contentChanges;
+
+      this.columnSearch.applyChanges(contentChanges.getChanges());
+      var version;
+      this.stats.measure(StatType.TRANSFORM_ASTS, function () {
+        var transformation = new RemoveRowsTransformer(rowsToRemove);
+        transformation.performEagerTransformations(_this9.dependencyGraph, _this9.parser);
+        version = _this9.lazilyTransformingAstService.addTransformation(transformation);
+      });
+      this.rewriteAffectedArrays(affectedArrays);
+      return {
+        version: version,
+        removedCells: removedCells,
+        rowFrom: rowsToRemove.rowStart,
+        rowCount: rowsToRemove.numberOfRows
+      };
+    }
+    /**
+     * Removes multiple columns from sheet. </br>
+     * Does nothing if columns are outside of effective sheet size.
+     *
+     * @param sheet - sheet id from which columns will be removed
+     * @param columnStart - number of the first column to be deleted
+     * @param columnEnd - number of the last row to be deleted
+     */
+
+  }, {
+    key: "doRemoveColumns",
+    value: function doRemoveColumns(columnsToRemove) {
+      var _this10 = this;
+
+      if (this.columnEffectivelyNotInSheet(columnsToRemove.columnStart, columnsToRemove.sheet)) {
+        return;
+      }
+
+      var removedCells = [];
+
+      var _iterator10 = _createForOfIteratorHelper$k(this.dependencyGraph.entriesFromColumnsSpan(columnsToRemove)),
+          _step10;
+
+      try {
+        for (_iterator10.s(); !(_step10 = _iterator10.n()).done;) {
+          var _step10$value = _slicedToArray$h(_step10.value, 1),
+              address = _step10$value[0];
+
+          removedCells.push({
+            address: address,
+            cellType: this.getClipboardCell(address)
+          });
+        }
+      } catch (err) {
+        _iterator10.e(err);
+      } finally {
+        _iterator10.f();
+      }
+
+      var _this$dependencyGraph2 = this.dependencyGraph.removeColumns(columnsToRemove),
+          affectedArrays = _this$dependencyGraph2.affectedArrays,
+          contentChanges = _this$dependencyGraph2.contentChanges;
+
+      this.columnSearch.applyChanges(contentChanges.getChanges());
+      this.columnSearch.removeColumns(columnsToRemove);
+      var version;
+      this.stats.measure(StatType.TRANSFORM_ASTS, function () {
+        var transformation = new RemoveColumnsTransformer(columnsToRemove);
+        transformation.performEagerTransformations(_this10.dependencyGraph, _this10.parser);
+        version = _this10.lazilyTransformingAstService.addTransformation(transformation);
+      });
+      this.rewriteAffectedArrays(affectedArrays);
+      return {
+        version: version,
+        removedCells: removedCells,
+        columnFrom: columnsToRemove.columnStart,
+        columnCount: columnsToRemove.numberOfColumns
+      };
+    }
+    /**
+     * Add multiple rows to sheet. </br>
+     * Does nothing if rows are outside of effective sheet size.
+     *
+     * @param sheet - sheet id in which rows will be added
+     * @param row - row number above which the rows will be added
+     * @param numberOfRowsToAdd - number of rows to add
+     */
+
+  }, {
+    key: "doAddRows",
+    value: function doAddRows(addedRows) {
+      var _this11 = this;
+
+      if (this.rowEffectivelyNotInSheet(addedRows.rowStart, addedRows.sheet)) {
+        return;
+      }
+
+      var _this$dependencyGraph3 = this.dependencyGraph.addRows(addedRows),
+          affectedArrays = _this$dependencyGraph3.affectedArrays;
+
+      this.stats.measure(StatType.TRANSFORM_ASTS, function () {
+        var transformation = new AddRowsTransformer(addedRows);
+        transformation.performEagerTransformations(_this11.dependencyGraph, _this11.parser);
+
+        _this11.lazilyTransformingAstService.addTransformation(transformation);
+      });
+      this.rewriteAffectedArrays(affectedArrays);
+    }
+  }, {
+    key: "rewriteAffectedArrays",
+    value: function rewriteAffectedArrays(affectedArrays) {
+      var _iterator11 = _createForOfIteratorHelper$k(affectedArrays.values()),
+          _step11;
+
+      try {
+        for (_iterator11.s(); !(_step11 = _iterator11.n()).done;) {
+          var arrayVertex = _step11.value;
+
+          if (arrayVertex.array.size.isRef) {
+            continue;
+          }
+
+          var ast = arrayVertex.getFormula(this.lazilyTransformingAstService);
+          var address = arrayVertex.getAddress(this.lazilyTransformingAstService);
+          var hash = this.parser.computeHashFromAst(ast);
+          this.setFormulaToCellFromCache(hash, address);
+        }
+      } catch (err) {
+        _iterator11.e(err);
+      } finally {
+        _iterator11.f();
+      }
+    }
+    /**
+     * Add multiple columns to sheet </br>
+     * Does nothing if columns are outside of effective sheet size
+     *
+     * @param sheet - sheet id in which columns will be added
+     * @param column - column number above which the columns will be added
+     * @param numberOfColumns - number of columns to add
+     */
+
+  }, {
+    key: "doAddColumns",
+    value: function doAddColumns(addedColumns) {
+      var _this12 = this;
+
+      if (this.columnEffectivelyNotInSheet(addedColumns.columnStart, addedColumns.sheet)) {
+        return;
+      }
+
+      var _this$dependencyGraph4 = this.dependencyGraph.addColumns(addedColumns),
+          affectedArrays = _this$dependencyGraph4.affectedArrays,
+          contentChanges = _this$dependencyGraph4.contentChanges;
+
+      this.columnSearch.addColumns(addedColumns);
+      this.columnSearch.applyChanges(contentChanges.getChanges());
+      this.stats.measure(StatType.TRANSFORM_ASTS, function () {
+        var transformation = new AddColumnsTransformer(addedColumns);
+        transformation.performEagerTransformations(_this12.dependencyGraph, _this12.parser);
+
+        _this12.lazilyTransformingAstService.addTransformation(transformation);
+      });
+      this.rewriteAffectedArrays(affectedArrays);
     }
     /**
      * Returns true if row number is outside of given sheet.
@@ -28587,11 +28664,6 @@ var Operations = /*#__PURE__*/function () {
 
       return this.dependencyGraph.fetchCellOrCreateEmpty(expression.address);
     }
-  }, {
-    key: "addressMapping",
-    get: function get() {
-      return this.dependencyGraph.addressMapping;
-    }
   }]);
 
   return Operations;
@@ -28692,7 +28764,7 @@ function isRowOrColumnRange(leftCorner, width, height) {
   return leftCorner.row === 0 && isPositiveInteger(width) && height === Number.POSITIVE_INFINITY || leftCorner.col === 0 && isPositiveInteger(height) && width === Number.POSITIVE_INFINITY;
 }
 
-function _typeof$g(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof$g = function _typeof(obj) { return typeof obj; }; } else { _typeof$g = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof$g(obj); }
+function _typeof$g(obj) { "@babel/helpers - typeof"; return _typeof$g = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof$g(obj); }
 
 function _slicedToArray$i(arr, i) { return _arrayWithHoles$i(arr) || _iterableToArrayLimit$i(arr, i) || _unsupportedIterableToArray$t(arr, i) || _nonIterableRest$i(); }
 
@@ -28708,11 +28780,7 @@ function _unsupportedIterableToArray$t(o, minLen) { if (!o) return; if (typeof o
 
 function _arrayLikeToArray$t(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
 
-function _defineProperties$O(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
-
-function _createClass$O(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$O(Constructor.prototype, protoProps); if (staticProps) _defineProperties$O(Constructor, staticProps); return Constructor; }
-
-function _inherits$d(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf$e(subClass, superClass); }
+function _inherits$d(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf$e(subClass, superClass); }
 
 function _setPrototypeOf$e(o, p) { _setPrototypeOf$e = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf$e(o, p); }
 
@@ -28726,10 +28794,14 @@ function _isNativeReflectConstruct$e() { if (typeof Reflect === "undefined" || !
 
 function _getPrototypeOf$d(o) { _getPrototypeOf$d = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf$d(o); }
 
+function _defineProperties$Q(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass$Q(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$Q(Constructor.prototype, protoProps); if (staticProps) _defineProperties$Q(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
+
 function _classCallCheck$Q(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-var BaseUndoEntry = function BaseUndoEntry() {
+var BaseUndoEntry = /*#__PURE__*/_createClass$Q(function BaseUndoEntry() {
   _classCallCheck$Q(this, BaseUndoEntry);
-};
+});
 var RemoveRowsUndoEntry = /*#__PURE__*/function (_BaseUndoEntry) {
   _inherits$d(RemoveRowsUndoEntry, _BaseUndoEntry);
 
@@ -28746,7 +28818,7 @@ var RemoveRowsUndoEntry = /*#__PURE__*/function (_BaseUndoEntry) {
     return _this;
   }
 
-  _createClass$O(RemoveRowsUndoEntry, [{
+  _createClass$Q(RemoveRowsUndoEntry, [{
     key: "doUndo",
     value: function doUndo(undoRedo) {
       undoRedo.undoRemoveRows(this);
@@ -28781,7 +28853,7 @@ var MoveCellsUndoEntry = /*#__PURE__*/function (_BaseUndoEntry2) {
     return _this2;
   }
 
-  _createClass$O(MoveCellsUndoEntry, [{
+  _createClass$Q(MoveCellsUndoEntry, [{
     key: "doUndo",
     value: function doUndo(undoRedo) {
       undoRedo.undoMoveCells(this);
@@ -28810,7 +28882,7 @@ var AddRowsUndoEntry = /*#__PURE__*/function (_BaseUndoEntry3) {
     return _this3;
   }
 
-  _createClass$O(AddRowsUndoEntry, [{
+  _createClass$Q(AddRowsUndoEntry, [{
     key: "doUndo",
     value: function doUndo(undoRedo) {
       undoRedo.undoAddRows(this);
@@ -28841,7 +28913,7 @@ var SetRowOrderUndoEntry = /*#__PURE__*/function (_BaseUndoEntry4) {
     return _this4;
   }
 
-  _createClass$O(SetRowOrderUndoEntry, [{
+  _createClass$Q(SetRowOrderUndoEntry, [{
     key: "doUndo",
     value: function doUndo(undoRedo) {
       undoRedo.undoSetRowOrder(this);
@@ -28872,7 +28944,7 @@ var SetColumnOrderUndoEntry = /*#__PURE__*/function (_BaseUndoEntry5) {
     return _this5;
   }
 
-  _createClass$O(SetColumnOrderUndoEntry, [{
+  _createClass$Q(SetColumnOrderUndoEntry, [{
     key: "doUndo",
     value: function doUndo(undoRedo) {
       undoRedo.undoSetColumnOrder(this);
@@ -28903,7 +28975,7 @@ var SetSheetContentUndoEntry = /*#__PURE__*/function (_BaseUndoEntry6) {
     return _this6;
   }
 
-  _createClass$O(SetSheetContentUndoEntry, [{
+  _createClass$Q(SetSheetContentUndoEntry, [{
     key: "doUndo",
     value: function doUndo(undoRedo) {
       undoRedo.undoSetSheetContent(this);
@@ -28938,7 +29010,7 @@ var MoveRowsUndoEntry = /*#__PURE__*/function (_BaseUndoEntry7) {
     return _this7;
   }
 
-  _createClass$O(MoveRowsUndoEntry, [{
+  _createClass$Q(MoveRowsUndoEntry, [{
     key: "doUndo",
     value: function doUndo(undoRedo) {
       undoRedo.undoMoveRows(this);
@@ -28973,7 +29045,7 @@ var MoveColumnsUndoEntry = /*#__PURE__*/function (_BaseUndoEntry8) {
     return _this8;
   }
 
-  _createClass$O(MoveColumnsUndoEntry, [{
+  _createClass$Q(MoveColumnsUndoEntry, [{
     key: "doUndo",
     value: function doUndo(undoRedo) {
       undoRedo.undoMoveColumns(this);
@@ -29002,7 +29074,7 @@ var AddColumnsUndoEntry = /*#__PURE__*/function (_BaseUndoEntry9) {
     return _this9;
   }
 
-  _createClass$O(AddColumnsUndoEntry, [{
+  _createClass$Q(AddColumnsUndoEntry, [{
     key: "doUndo",
     value: function doUndo(undoRedo) {
       undoRedo.undoAddColumns(this);
@@ -29032,7 +29104,7 @@ var RemoveColumnsUndoEntry = /*#__PURE__*/function (_BaseUndoEntry10) {
     return _this10;
   }
 
-  _createClass$O(RemoveColumnsUndoEntry, [{
+  _createClass$Q(RemoveColumnsUndoEntry, [{
     key: "doUndo",
     value: function doUndo(undoRedo) {
       undoRedo.undoRemoveColumns(this);
@@ -29061,7 +29133,7 @@ var AddSheetUndoEntry = /*#__PURE__*/function (_BaseUndoEntry11) {
     return _this11;
   }
 
-  _createClass$O(AddSheetUndoEntry, [{
+  _createClass$Q(AddSheetUndoEntry, [{
     key: "doUndo",
     value: function doUndo(undoRedo) {
       undoRedo.undoAddSheet(this);
@@ -29094,7 +29166,7 @@ var RemoveSheetUndoEntry = /*#__PURE__*/function (_BaseUndoEntry12) {
     return _this12;
   }
 
-  _createClass$O(RemoveSheetUndoEntry, [{
+  _createClass$Q(RemoveSheetUndoEntry, [{
     key: "doUndo",
     value: function doUndo(undoRedo) {
       undoRedo.undoRemoveSheet(this);
@@ -29125,7 +29197,7 @@ var RenameSheetUndoEntry = /*#__PURE__*/function (_BaseUndoEntry13) {
     return _this13;
   }
 
-  _createClass$O(RenameSheetUndoEntry, [{
+  _createClass$Q(RenameSheetUndoEntry, [{
     key: "doUndo",
     value: function doUndo(undoRedo) {
       undoRedo.undoRenameSheet(this);
@@ -29155,7 +29227,7 @@ var ClearSheetUndoEntry = /*#__PURE__*/function (_BaseUndoEntry14) {
     return _this14;
   }
 
-  _createClass$O(ClearSheetUndoEntry, [{
+  _createClass$Q(ClearSheetUndoEntry, [{
     key: "doUndo",
     value: function doUndo(undoRedo) {
       undoRedo.undoClearSheet(this);
@@ -29184,7 +29256,7 @@ var SetCellContentsUndoEntry = /*#__PURE__*/function (_BaseUndoEntry15) {
     return _this15;
   }
 
-  _createClass$O(SetCellContentsUndoEntry, [{
+  _createClass$Q(SetCellContentsUndoEntry, [{
     key: "doUndo",
     value: function doUndo(undoRedo) {
       undoRedo.undoSetCellContents(this);
@@ -29216,7 +29288,7 @@ var PasteUndoEntry = /*#__PURE__*/function (_BaseUndoEntry16) {
     return _this16;
   }
 
-  _createClass$O(PasteUndoEntry, [{
+  _createClass$Q(PasteUndoEntry, [{
     key: "doUndo",
     value: function doUndo(undoRedo) {
       undoRedo.undoPaste(this);
@@ -29248,7 +29320,7 @@ var AddNamedExpressionUndoEntry = /*#__PURE__*/function (_BaseUndoEntry17) {
     return _this17;
   }
 
-  _createClass$O(AddNamedExpressionUndoEntry, [{
+  _createClass$Q(AddNamedExpressionUndoEntry, [{
     key: "doUndo",
     value: function doUndo(undoRedo) {
       undoRedo.undoAddNamedExpression(this);
@@ -29279,7 +29351,7 @@ var RemoveNamedExpressionUndoEntry = /*#__PURE__*/function (_BaseUndoEntry18) {
     return _this18;
   }
 
-  _createClass$O(RemoveNamedExpressionUndoEntry, [{
+  _createClass$Q(RemoveNamedExpressionUndoEntry, [{
     key: "doUndo",
     value: function doUndo(undoRedo) {
       undoRedo.undoRemoveNamedExpression(this);
@@ -29312,7 +29384,7 @@ var ChangeNamedExpressionUndoEntry = /*#__PURE__*/function (_BaseUndoEntry19) {
     return _this19;
   }
 
-  _createClass$O(ChangeNamedExpressionUndoEntry, [{
+  _createClass$Q(ChangeNamedExpressionUndoEntry, [{
     key: "doUndo",
     value: function doUndo(undoRedo) {
       undoRedo.undoChangeNamedExpression(this);
@@ -29341,7 +29413,7 @@ var BatchUndoEntry = /*#__PURE__*/function (_BaseUndoEntry20) {
     return _this20;
   }
 
-  _createClass$O(BatchUndoEntry, [{
+  _createClass$Q(BatchUndoEntry, [{
     key: "add",
     value: function add(operation) {
       this.operations.push(operation);
@@ -29396,13 +29468,13 @@ var UndoRedo = /*#__PURE__*/function () {
     _classCallCheck$Q(this, UndoRedo);
 
     this.operations = operations;
+    this.oldData = new Map();
     this.undoStack = [];
     this.redoStack = [];
-    this.oldData = new Map();
     this.undoLimit = config.undoLimit;
   }
 
-  _createClass$O(UndoRedo, [{
+  _createClass$Q(UndoRedo, [{
     key: "saveOperation",
     value: function saveOperation(operation) {
       if (this.batchUndoEntry !== undefined) {
@@ -29415,12 +29487,6 @@ var UndoRedo = /*#__PURE__*/function () {
     key: "beginBatchMode",
     value: function beginBatchMode() {
       this.batchUndoEntry = new BatchUndoEntry();
-    }
-  }, {
-    key: "addUndoEntry",
-    value: function addUndoEntry(operation) {
-      this.undoStack.push(operation);
-      this.undoStack.splice(0, Math.max(0, this.undoStack.length - this.undoLimit));
     }
   }, {
     key: "commitBatchMode",
@@ -29473,11 +29539,6 @@ var UndoRedo = /*#__PURE__*/function () {
 
       this.undoEntry(operation);
       this.redoStack.push(operation);
-    }
-  }, {
-    key: "undoEntry",
-    value: function undoEntry(operation) {
-      operation.doUndo(this);
     }
   }, {
     key: "undoBatch",
@@ -29765,26 +29826,6 @@ var UndoRedo = /*#__PURE__*/function () {
       this.restoreOperationOldContent(operation.oldContent);
     }
   }, {
-    key: "restoreOperationOldContent",
-    value: function restoreOperationOldContent(oldContent) {
-      var _iterator8 = _createForOfIteratorHelper$l(oldContent),
-          _step8;
-
-      try {
-        for (_iterator8.s(); !(_step8 = _iterator8.n()).done;) {
-          var _step8$value = _slicedToArray$i(_step8.value, 2),
-              address = _step8$value[0],
-              clipboardCell = _step8$value[1];
-
-          this.operations.restoreCell(address, clipboardCell);
-        }
-      } catch (err) {
-        _iterator8.e(err);
-      } finally {
-        _iterator8.f();
-      }
-    }
-  }, {
     key: "redo",
     value: function redo() {
       var operation = this.redoStack.pop();
@@ -29797,25 +29838,20 @@ var UndoRedo = /*#__PURE__*/function () {
       this.undoStack.push(operation);
     }
   }, {
-    key: "redoEntry",
-    value: function redoEntry(operation) {
-      operation.doRedo(this);
-    }
-  }, {
     key: "redoBatch",
     value: function redoBatch(batchOperation) {
-      var _iterator9 = _createForOfIteratorHelper$l(batchOperation.operations),
-          _step9;
+      var _iterator8 = _createForOfIteratorHelper$l(batchOperation.operations),
+          _step8;
 
       try {
-        for (_iterator9.s(); !(_step9 = _iterator9.n()).done;) {
-          var operation = _step9.value;
+        for (_iterator8.s(); !(_step8 = _iterator8.n()).done;) {
+          var operation = _step8.value;
           this.redoEntry(operation);
         }
       } catch (err) {
-        _iterator9.e(err);
+        _iterator8.e(err);
       } finally {
-        _iterator9.f();
+        _iterator8.f();
       }
     }
   }, {
@@ -29851,18 +29887,18 @@ var UndoRedo = /*#__PURE__*/function () {
   }, {
     key: "redoSetCellContents",
     value: function redoSetCellContents(operation) {
-      var _iterator10 = _createForOfIteratorHelper$l(operation.cellContents),
-          _step10;
+      var _iterator9 = _createForOfIteratorHelper$l(operation.cellContents),
+          _step9;
 
       try {
-        for (_iterator10.s(); !(_step10 = _iterator10.n()).done;) {
-          var cellContentData = _step10.value;
+        for (_iterator9.s(); !(_step9 = _iterator9.n()).done;) {
+          var cellContentData = _step9.value;
           this.operations.setCellContent(cellContentData.address, cellContentData.newContent);
         }
       } catch (err) {
-        _iterator10.e(err);
+        _iterator9.e(err);
       } finally {
-        _iterator10.f();
+        _iterator9.f();
       }
     }
   }, {
@@ -29938,6 +29974,42 @@ var UndoRedo = /*#__PURE__*/function () {
       this.operations.setColumnOrder(operation.sheetId, operation.columnMapping);
     }
   }, {
+    key: "addUndoEntry",
+    value: function addUndoEntry(operation) {
+      this.undoStack.push(operation);
+      this.undoStack.splice(0, Math.max(0, this.undoStack.length - this.undoLimit));
+    }
+  }, {
+    key: "undoEntry",
+    value: function undoEntry(operation) {
+      operation.doUndo(this);
+    }
+  }, {
+    key: "restoreOperationOldContent",
+    value: function restoreOperationOldContent(oldContent) {
+      var _iterator10 = _createForOfIteratorHelper$l(oldContent),
+          _step10;
+
+      try {
+        for (_iterator10.s(); !(_step10 = _iterator10.n()).done;) {
+          var _step10$value = _slicedToArray$i(_step10.value, 2),
+              address = _step10$value[0],
+              clipboardCell = _step10$value[1];
+
+          this.operations.restoreCell(address, clipboardCell);
+        }
+      } catch (err) {
+        _iterator10.e(err);
+      } finally {
+        _iterator10.f();
+      }
+    }
+  }, {
+    key: "redoEntry",
+    value: function redoEntry(operation) {
+      operation.doRedo(this);
+    }
+  }, {
     key: "restoreOldDataFromVersion",
     value: function restoreOldDataFromVersion(version) {
       var oldDataToRestore = this.oldData.get(version) || [];
@@ -29982,9 +30054,9 @@ function _arrayLikeToArray$u(arr, len) { if (len == null || len > arr.length) le
 
 function _classCallCheck$R(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-function _defineProperties$P(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _defineProperties$R(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
-function _createClass$P(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$P(Constructor.prototype, protoProps); if (staticProps) _defineProperties$P(Constructor, staticProps); return Constructor; }
+function _createClass$R(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$R(Constructor.prototype, protoProps); if (staticProps) _defineProperties$R(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
 var CrudOperations = /*#__PURE__*/function () {
   function CrudOperations(config, operations, undoRedo, clipboardOperations, dependencyGraph, columnSearch, parser, cellContentParser, lazilyTransformingAstService, namedExpressions) {
     _classCallCheck$R(this, CrudOperations);
@@ -30002,7 +30074,12 @@ var CrudOperations = /*#__PURE__*/function () {
     this.maxColumns = config.maxColumns;
   }
 
-  _createClass$P(CrudOperations, [{
+  _createClass$R(CrudOperations, [{
+    key: "sheetMapping",
+    get: function get() {
+      return this.dependencyGraph.sheetMapping;
+    }
+  }, {
     key: "addRows",
     value: function addRows(sheet) {
       for (var _len = arguments.length, indexes = new Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
@@ -30369,43 +30446,6 @@ var CrudOperations = /*#__PURE__*/function () {
       return ret;
     }
   }, {
-    key: "validateRowOrColumnMapping",
-    value: function validateRowOrColumnMapping(sheetId, rowMapping, rowOrColumn) {
-      var limit = rowOrColumn === 'row' ? this.dependencyGraph.getSheetHeight(sheetId) : this.dependencyGraph.getSheetWidth(sheetId);
-      var sources = rowMapping.map(function (_ref) {
-        var _ref2 = _slicedToArray$j(_ref, 2),
-            a = _ref2[0],
-            _ = _ref2[1];
-
-        return a;
-      }).sort(function (a, b) {
-        return a - b;
-      });
-      var targets = rowMapping.map(function (_ref3) {
-        var _ref4 = _slicedToArray$j(_ref3, 2),
-            _ = _ref4[0],
-            b = _ref4[1];
-
-        return b;
-      }).sort(function (a, b) {
-        return a - b;
-      });
-
-      for (var i = 0; i < sources.length; i++) {
-        if (!isNonnegativeInteger(sources[i]) || sources[i] >= limit) {
-          throw new InvalidArgumentsError("".concat(rowOrColumn, " numbers to be nonnegative integers and less than sheet ").concat(rowOrColumn === 'row' ? 'height' : 'width', "."));
-        }
-
-        if (sources[i] === sources[i + 1]) {
-          throw new InvalidArgumentsError("source ".concat(rowOrColumn, " numbers to be unique."));
-        }
-
-        if (sources[i] !== targets[i]) {
-          throw new InvalidArgumentsError("target ".concat(rowOrColumn, " numbers to be permutation of source ").concat(rowOrColumn, " numbers."));
-        }
-      }
-    }
-  }, {
     key: "undo",
     value: function undo() {
       if (this.undoRedo.isUndoStackEmpty()) {
@@ -30743,9 +30783,41 @@ var CrudOperations = /*#__PURE__*/function () {
       }
     }
   }, {
-    key: "sheetMapping",
-    get: function get() {
-      return this.dependencyGraph.sheetMapping;
+    key: "validateRowOrColumnMapping",
+    value: function validateRowOrColumnMapping(sheetId, rowMapping, rowOrColumn) {
+      var limit = rowOrColumn === 'row' ? this.dependencyGraph.getSheetHeight(sheetId) : this.dependencyGraph.getSheetWidth(sheetId);
+      var sources = rowMapping.map(function (_ref) {
+        var _ref2 = _slicedToArray$j(_ref, 2),
+            a = _ref2[0],
+            _ = _ref2[1];
+
+        return a;
+      }).sort(function (a, b) {
+        return a - b;
+      });
+      var targets = rowMapping.map(function (_ref3) {
+        var _ref4 = _slicedToArray$j(_ref3, 2),
+            _ = _ref4[0],
+            b = _ref4[1];
+
+        return b;
+      }).sort(function (a, b) {
+        return a - b;
+      });
+
+      for (var i = 0; i < sources.length; i++) {
+        if (!isNonnegativeInteger(sources[i]) || sources[i] >= limit) {
+          throw new InvalidArgumentsError("".concat(rowOrColumn, " numbers to be nonnegative integers and less than sheet ").concat(rowOrColumn === 'row' ? 'height' : 'width', "."));
+        }
+
+        if (sources[i] === sources[i + 1]) {
+          throw new InvalidArgumentsError("source ".concat(rowOrColumn, " numbers to be unique."));
+        }
+
+        if (sources[i] !== targets[i]) {
+          throw new InvalidArgumentsError("target ".concat(rowOrColumn, " numbers to be permutation of source ").concat(rowOrColumn, " numbers."));
+        }
+      }
     }
   }, {
     key: "ensureNamedExpressionNameIsValid",
@@ -30792,9 +30864,9 @@ function _arrayLikeToArray$v(arr, len) { if (len == null || len > arr.length) le
 
 function _classCallCheck$S(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-function _defineProperties$Q(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _defineProperties$S(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
-function _createClass$Q(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$Q(Constructor.prototype, protoProps); if (staticProps) _defineProperties$Q(Constructor, staticProps); return Constructor; }
+function _createClass$S(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$S(Constructor.prototype, protoProps); if (staticProps) _defineProperties$S(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
 var Evaluator = /*#__PURE__*/function () {
   function Evaluator(config, stats, interpreter, lazilyTransformingAstService, dependencyGraph, columnSearch) {
     _classCallCheck$S(this, Evaluator);
@@ -30807,7 +30879,7 @@ var Evaluator = /*#__PURE__*/function () {
     this.columnSearch = columnSearch;
   }
 
-  _createClass$Q(Evaluator, [{
+  _createClass$S(Evaluator, [{
     key: "run",
     value: function run() {
       var _this = this;
@@ -30988,9 +31060,9 @@ function _arrayLikeToArray$w(arr, len) { if (len == null || len > arr.length) le
 
 function _classCallCheck$T(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-function _defineProperties$R(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _defineProperties$T(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
-function _createClass$R(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$R(Constructor.prototype, protoProps); if (staticProps) _defineProperties$R(Constructor, staticProps); return Constructor; }
+function _createClass$T(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$T(Constructor.prototype, protoProps); if (staticProps) _defineProperties$T(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
 /**
  * A list of cells which values changed after the operation, their absolute addresses and new values.
  */
@@ -31003,7 +31075,7 @@ var ExportedCellChange = /*#__PURE__*/function () {
     this.newValue = newValue;
   }
 
-  _createClass$R(ExportedCellChange, [{
+  _createClass$T(ExportedCellChange, [{
     key: "col",
     get: function get() {
       return this.address.col;
@@ -31027,12 +31099,12 @@ var ExportedCellChange = /*#__PURE__*/function () {
 
   return ExportedCellChange;
 }();
-var ExportedNamedExpressionChange = function ExportedNamedExpressionChange(name, newValue) {
+var ExportedNamedExpressionChange = /*#__PURE__*/_createClass$T(function ExportedNamedExpressionChange(name, newValue) {
   _classCallCheck$T(this, ExportedNamedExpressionChange);
 
   this.name = name;
   this.newValue = newValue;
-};
+});
 var Exporter = /*#__PURE__*/function () {
   function Exporter(config, namedExpressions, sheetIndexMapping, lazilyTransformingService) {
     _classCallCheck$T(this, Exporter);
@@ -31043,7 +31115,7 @@ var Exporter = /*#__PURE__*/function () {
     this.lazilyTransformingService = lazilyTransformingService;
   }
 
-  _createClass$R(Exporter, [{
+  _createClass$T(Exporter, [{
     key: "exportChange",
     value: function exportChange(change) {
       var value = change.value;
@@ -31153,9 +31225,9 @@ var Exporter = /*#__PURE__*/function () {
 
 function _classCallCheck$U(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-function _defineProperties$S(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _defineProperties$U(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
-function _createClass$S(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$S(Constructor.prototype, protoProps); if (staticProps) _defineProperties$S(Constructor, staticProps); return Constructor; }
+function _createClass$U(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$U(Constructor.prototype, protoProps); if (staticProps) _defineProperties$U(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
 /**
  * Service building the graph and mappings.
  */
@@ -31180,7 +31252,7 @@ var GraphBuilder = /*#__PURE__*/function () {
    */
 
 
-  _createClass$S(GraphBuilder, [{
+  _createClass$U(GraphBuilder, [{
     key: "buildGraph",
     value: function buildGraph(sheets, stats) {
       var _this = this;
@@ -31218,7 +31290,7 @@ var SimpleStrategy = /*#__PURE__*/function () {
     this.arraySizePredictor = arraySizePredictor;
   }
 
-  _createClass$S(SimpleStrategy, [{
+  _createClass$U(SimpleStrategy, [{
     key: "run",
     value: function run(sheets) {
       var _this3 = this;
@@ -31309,15 +31381,15 @@ var SimpleStrategy = /*#__PURE__*/function () {
   return SimpleStrategy;
 }();
 
-function _typeof$h(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof$h = function _typeof(obj) { return typeof obj; }; } else { _typeof$h = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof$h(obj); }
+function _typeof$h(obj) { "@babel/helpers - typeof"; return _typeof$h = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof$h(obj); }
 
 function _classCallCheck$V(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-function _defineProperties$T(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _defineProperties$V(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
-function _createClass$T(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$T(Constructor.prototype, protoProps); if (staticProps) _defineProperties$T(Constructor, staticProps); return Constructor; }
+function _createClass$V(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$V(Constructor.prototype, protoProps); if (staticProps) _defineProperties$V(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
 
-function _inherits$e(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf$f(subClass, superClass); }
+function _inherits$e(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf$f(subClass, superClass); }
 
 function _setPrototypeOf$f(o, p) { _setPrototypeOf$f = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf$f(o, p); }
 
@@ -31348,7 +31420,7 @@ var VersionPlugin = /*#__PURE__*/function (_FunctionPlugin) {
     return _super.apply(this, arguments);
   }
 
-  _createClass$T(VersionPlugin, [{
+  _createClass$V(VersionPlugin, [{
     key: "version",
     value: function version(ast, state) {
       var _this = this;
@@ -31407,9 +31479,9 @@ function _arrayLikeToArray$x(arr, len) { if (len == null || len > arr.length) le
 
 function _classCallCheck$W(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-function _defineProperties$U(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _defineProperties$W(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
-function _createClass$U(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$U(Constructor.prototype, protoProps); if (staticProps) _defineProperties$U(Constructor, staticProps); return Constructor; }
+function _createClass$W(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$W(Constructor.prototype, protoProps); if (staticProps) _defineProperties$W(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
 
 function validateAndReturnMetadataFromName(functionId, plugin) {
   var _a;
@@ -31518,7 +31590,7 @@ var FunctionRegistry = /*#__PURE__*/function () {
     }
   }
 
-  _createClass$U(FunctionRegistry, [{
+  _createClass$W(FunctionRegistry, [{
     key: "initializePlugins",
     value: function initializePlugins(interpreter) {
       var _this2 = this;
@@ -31756,6 +31828,11 @@ var FunctionRegistry = /*#__PURE__*/function () {
       }
     }
   }, {
+    key: "functionIsProtected",
+    value: function functionIsProtected(functionId) {
+      return this._protectedPlugins.has(functionId);
+    }
+  }, {
     key: "loadTranslations",
     value: function loadTranslations(translations) {
       var registeredLanguages = new Set(HyperFormula.getRegisteredLanguagesCodes());
@@ -31799,11 +31876,6 @@ var FunctionRegistry = /*#__PURE__*/function () {
       } else {
         throw FunctionPluginValidationError.functionMethodNotFound(methodName, plugin.name);
       }
-    }
-  }, {
-    key: "functionIsProtected",
-    value: function functionIsProtected(functionId) {
-      return this._protectedPlugins.has(functionId);
     }
   }, {
     key: "protectedFunctions",
@@ -31930,9 +32002,9 @@ FunctionRegistry._protectedPlugins = new Map([['VERSION', VersionPlugin], ['OFFS
 
 function _classCallCheck$X(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-function _defineProperties$V(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _defineProperties$X(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
-function _createClass$V(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$V(Constructor.prototype, protoProps); if (staticProps) _defineProperties$V(Constructor, staticProps); return Constructor; }
+function _createClass$X(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$X(Constructor.prototype, protoProps); if (staticProps) _defineProperties$X(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
 var CriterionType;
 
 (function (CriterionType) {
@@ -31960,7 +32032,7 @@ var CriterionBuilder = /*#__PURE__*/function () {
     this.falseString = (_d = (_c = config.translationPackage.getMaybeFunctionTranslation('FALSE')) === null || _c === void 0 ? void 0 : _c.toLowerCase()) !== null && _d !== void 0 ? _d : 'false';
   }
 
-  _createClass$V(CriterionBuilder, [{
+  _createClass$X(CriterionBuilder, [{
     key: "fromCellValue",
     value: function fromCellValue(raw, arithmeticHelper) {
       if (typeof raw !== 'string' && typeof raw !== 'boolean' && typeof raw !== 'number') {
@@ -32197,9 +32269,9 @@ function _arrayWithHoles$m(arr) { if (Array.isArray(arr)) return arr; }
 
 function _classCallCheck$Y(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-function _defineProperties$W(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _defineProperties$Y(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
-function _createClass$W(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$W(Constructor.prototype, protoProps); if (staticProps) _defineProperties$W(Constructor, staticProps); return Constructor; }
+function _createClass$Y(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$Y(Constructor.prototype, protoProps); if (staticProps) _defineProperties$Y(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
 var Interpreter = /*#__PURE__*/function () {
   function Interpreter(config, dependencyGraph, columnSearch, stats, arithmeticHelper, functionRegistry, namedExpressions, serialization, arraySizePredictor, dateTimeHelper) {
     var _this = this;
@@ -32281,7 +32353,7 @@ var Interpreter = /*#__PURE__*/function () {
     this.criterionBuilder = new CriterionBuilder(config);
   }
 
-  _createClass$W(Interpreter, [{
+  _createClass$Y(Interpreter, [{
     key: "evaluateAst",
     value: function evaluateAst(ast, state) {
       var val = this.evaluateAstWithoutPostprocessing(ast, state);
@@ -32303,6 +32375,31 @@ var Interpreter = /*#__PURE__*/function () {
       }
 
       return wrapperForRootVertex(val, state.formulaVertex);
+    }
+  }, {
+    key: "getGpuInstance",
+    value: function getGpuInstance() {
+      var mode = this.config.gpuMode;
+      var gpujs = this.config.gpujs;
+
+      if (gpujs === undefined) {
+        throw Error('Cannot instantiate GPU.js. Constructor not provided.');
+      }
+
+      if (!this.gpu) {
+        this.gpu = new gpujs({
+          mode: mode
+        });
+      }
+
+      return this.gpu;
+    }
+  }, {
+    key: "destroyGpu",
+    value: function destroyGpu() {
+      var _a;
+
+      (_a = this.gpu) === null || _a === void 0 ? void 0 : _a.destroy();
     }
     /**
      * Calculates cell value from formula abstract syntax tree
@@ -32614,31 +32711,6 @@ var Interpreter = /*#__PURE__*/function () {
       }
     }
   }, {
-    key: "getGpuInstance",
-    value: function getGpuInstance() {
-      var mode = this.config.gpuMode;
-      var gpujs = this.config.gpujs;
-
-      if (gpujs === undefined) {
-        throw Error('Cannot instantiate GPU.js. Constructor not provided.');
-      }
-
-      if (!this.gpu) {
-        this.gpu = new gpujs({
-          mode: mode
-        });
-      }
-
-      return this.gpu;
-    }
-  }, {
-    key: "destroyGpu",
-    value: function destroyGpu() {
-      var _a;
-
-      (_a = this.gpu) === null || _a === void 0 ? void 0 : _a.destroy();
-    }
-  }, {
     key: "rangeSpansOneSheet",
     value: function rangeSpansOneSheet(ast) {
       return ast.start.sheet === ast.end.sheet;
@@ -32821,9 +32893,9 @@ function _arrayWithHoles$n(arr) { if (Array.isArray(arr)) return arr; }
 
 function _classCallCheck$Z(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-function _defineProperties$X(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _defineProperties$Z(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
-function _createClass$X(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$X(Constructor.prototype, protoProps); if (staticProps) _defineProperties$X(Constructor, staticProps); return Constructor; }
+function _createClass$Z(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$Z(Constructor.prototype, protoProps); if (staticProps) _defineProperties$Z(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
 
 /**
  * @license
@@ -32837,7 +32909,7 @@ var CombinedTransformer = /*#__PURE__*/function () {
     this.transformations = [];
   }
 
-  _createClass$X(CombinedTransformer, [{
+  _createClass$Z(CombinedTransformer, [{
     key: "add",
     value: function add(transformation) {
       this.transformations.push(transformation);
@@ -32888,9 +32960,9 @@ function _arrayWithHoles$o(arr) { if (Array.isArray(arr)) return arr; }
 
 function _classCallCheck$_(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-function _defineProperties$Y(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _defineProperties$_(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
-function _createClass$Y(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$Y(Constructor.prototype, protoProps); if (staticProps) _defineProperties$Y(Constructor, staticProps); return Constructor; }
+function _createClass$_(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$_(Constructor.prototype, protoProps); if (staticProps) _defineProperties$_(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
 var LazilyTransformingAstService = /*#__PURE__*/function () {
   function LazilyTransformingAstService(stats) {
     _classCallCheck$_(this, LazilyTransformingAstService);
@@ -32899,7 +32971,7 @@ var LazilyTransformingAstService = /*#__PURE__*/function () {
     this.transformations = [];
   }
 
-  _createClass$Y(LazilyTransformingAstService, [{
+  _createClass$_(LazilyTransformingAstService, [{
     key: "version",
     value: function version() {
       return this.transformations.length;
@@ -33000,7 +33072,7 @@ var LazilyTransformingAstService = /*#__PURE__*/function () {
   return LazilyTransformingAstService;
 }();
 
-function _typeof$i(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof$i = function _typeof(obj) { return typeof obj; }; } else { _typeof$i = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof$i(obj); }
+function _typeof$i(obj) { "@babel/helpers - typeof"; return _typeof$i = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof$i(obj); }
 /*
 * If key exists returns first index of key element in range of sorted values
 * Otherwise returns first index of greatest element smaller than key
@@ -33108,9 +33180,9 @@ function compare(left, right) {
 
 function _classCallCheck$$(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-function _defineProperties$Z(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _defineProperties$$(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
-function _createClass$Z(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$Z(Constructor.prototype, protoProps); if (staticProps) _defineProperties$Z(Constructor, staticProps); return Constructor; }
+function _createClass$$(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$$(Constructor.prototype, protoProps); if (staticProps) _defineProperties$$(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
 var AdvancedFind = /*#__PURE__*/function () {
   function AdvancedFind(dependencyGraph) {
     _classCallCheck$$(this, AdvancedFind);
@@ -33118,7 +33190,7 @@ var AdvancedFind = /*#__PURE__*/function () {
     this.dependencyGraph = dependencyGraph;
   }
 
-  _createClass$Z(AdvancedFind, [{
+  _createClass$$(AdvancedFind, [{
     key: "advancedFind",
     value: function advancedFind(keyMatcher, rangeValue) {
       var values;
@@ -33143,15 +33215,15 @@ var AdvancedFind = /*#__PURE__*/function () {
   return AdvancedFind;
 }();
 
-function _typeof$j(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof$j = function _typeof(obj) { return typeof obj; }; } else { _typeof$j = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof$j(obj); }
+function _typeof$j(obj) { "@babel/helpers - typeof"; return _typeof$j = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof$j(obj); }
 
 function _classCallCheck$10(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-function _defineProperties$_(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _defineProperties$10(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
-function _createClass$_(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$_(Constructor.prototype, protoProps); if (staticProps) _defineProperties$_(Constructor, staticProps); return Constructor; }
+function _createClass$10(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$10(Constructor.prototype, protoProps); if (staticProps) _defineProperties$10(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
 
-function _inherits$f(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf$g(subClass, superClass); }
+function _inherits$f(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf$g(subClass, superClass); }
 
 function _setPrototypeOf$g(o, p) { _setPrototypeOf$g = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf$g(o, p); }
 
@@ -33181,7 +33253,7 @@ var ColumnBinarySearch = /*#__PURE__*/function (_AdvancedFind) {
   } // eslint-disable-next-line @typescript-eslint/no-unused-vars 
 
 
-  _createClass$_(ColumnBinarySearch, [{
+  _createClass$10(ColumnBinarySearch, [{
     key: "add",
     value: function add(value, address) {} // eslint-disable-next-line @typescript-eslint/no-unused-vars
 
@@ -33268,9 +33340,9 @@ function _arrayLikeToArray$B(arr, len) { if (len == null || len > arr.length) le
 
 function _classCallCheck$11(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-function _defineProperties$$(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _defineProperties$11(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
-function _createClass$$(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$$(Constructor.prototype, protoProps); if (staticProps) _defineProperties$$(Constructor, staticProps); return Constructor; }
+function _createClass$11(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$11(Constructor.prototype, protoProps); if (staticProps) _defineProperties$11(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
 var ColumnIndex = /*#__PURE__*/function () {
   function ColumnIndex(dependencyGraph, config, stats) {
     _classCallCheck$11(this, ColumnIndex);
@@ -33283,7 +33355,7 @@ var ColumnIndex = /*#__PURE__*/function () {
     this.binarySearchStrategy = new ColumnBinarySearch(dependencyGraph, config);
   }
 
-  _createClass$$(ColumnIndex, [{
+  _createClass$11(ColumnIndex, [{
     key: "add",
     value: function add(value, address) {
       if (value === EmptyValue || value instanceof CellError) {
@@ -33705,9 +33777,9 @@ function buildColumnSearchStrategy(dependencyGraph, config, statistics) {
 
 function _classCallCheck$12(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-function _defineProperties$10(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _defineProperties$12(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
-function _createClass$10(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$10(Constructor.prototype, protoProps); if (staticProps) _defineProperties$10(Constructor, staticProps); return Constructor; }
+function _createClass$12(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$12(Constructor.prototype, protoProps); if (staticProps) _defineProperties$12(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
 
 /**
  * @license
@@ -33724,7 +33796,7 @@ var NumberLiteralHelper = /*#__PURE__*/function () {
     this.allThousandSeparatorsRegex = new RegExp("".concat(thousandSeparator), 'g');
   }
 
-  _createClass$10(NumberLiteralHelper, [{
+  _createClass$12(NumberLiteralHelper, [{
     key: "numericStringToMaybeNumber",
     value: function numericStringToMaybeNumber(input) {
       if (this.numberPattern.test(input)) {
@@ -33758,9 +33830,9 @@ function _arrayLikeToArray$C(arr, len) { if (len == null || len > arr.length) le
 
 function _classCallCheck$13(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-function _defineProperties$11(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _defineProperties$13(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
-function _createClass$11(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$11(Constructor.prototype, protoProps); if (staticProps) _defineProperties$11(Constructor, staticProps); return Constructor; }
+function _createClass$13(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$13(Constructor.prototype, protoProps); if (staticProps) _defineProperties$13(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
 var Serialization = /*#__PURE__*/function () {
   function Serialization(dependencyGraph, unparser, exporter) {
     _classCallCheck$13(this, Serialization);
@@ -33770,7 +33842,7 @@ var Serialization = /*#__PURE__*/function () {
     this.exporter = exporter;
   }
 
-  _createClass$11(Serialization, [{
+  _createClass$13(Serialization, [{
     key: "getCellFormula",
     value: function getCellFormula(address, targetAddress) {
       var formulaVertex = this.dependencyGraph.getCell(address);
@@ -33974,15 +34046,44 @@ function _defineProperty$1(obj, key, value) { if (key in obj) { Object.definePro
 
 function _classCallCheck$14(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-function _defineProperties$12(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _defineProperties$14(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
-function _createClass$12(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$12(Constructor.prototype, protoProps); if (staticProps) _defineProperties$12(Constructor, staticProps); return Constructor; }
+function _createClass$14(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$14(Constructor.prototype, protoProps); if (staticProps) _defineProperties$14(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
 var BuildEngineFactory = /*#__PURE__*/function () {
   function BuildEngineFactory() {
     _classCallCheck$14(this, BuildEngineFactory);
   }
 
-  _createClass$12(BuildEngineFactory, null, [{
+  _createClass$14(BuildEngineFactory, null, [{
+    key: "buildFromSheets",
+    value: function buildFromSheets(sheets) {
+      var configInput = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+      var namedExpressions = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : [];
+      var config = new Config(configInput);
+      return this.buildEngine(config, sheets, namedExpressions);
+    }
+  }, {
+    key: "buildFromSheet",
+    value: function buildFromSheet(sheet) {
+      var configInput = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+      var namedExpressions = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : [];
+      var config = new Config(configInput);
+      var newsheetprefix = config.translationPackage.getUITranslation(UIElement.NEW_SHEET_PREFIX) + '1';
+      return this.buildEngine(config, _defineProperty$1({}, newsheetprefix, sheet), namedExpressions);
+    }
+  }, {
+    key: "buildEmpty",
+    value: function buildEmpty() {
+      var configInput = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+      var namedExpressions = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : [];
+      return this.buildEngine(new Config(configInput), {}, namedExpressions);
+    }
+  }, {
+    key: "rebuildWithConfig",
+    value: function rebuildWithConfig(config, sheets, namedExpressions, stats) {
+      return this.buildEngine(config, sheets, namedExpressions, stats);
+    }
+  }, {
     key: "buildEngine",
     value: function buildEngine(config) {
       var sheets = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
@@ -34055,35 +34156,6 @@ var BuildEngineFactory = /*#__PURE__*/function () {
         serialization: serialization,
         functionRegistry: functionRegistry
       };
-    }
-  }, {
-    key: "buildFromSheets",
-    value: function buildFromSheets(sheets) {
-      var configInput = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-      var namedExpressions = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : [];
-      var config = new Config(configInput);
-      return this.buildEngine(config, sheets, namedExpressions);
-    }
-  }, {
-    key: "buildFromSheet",
-    value: function buildFromSheet(sheet) {
-      var configInput = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-      var namedExpressions = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : [];
-      var config = new Config(configInput);
-      var newsheetprefix = config.translationPackage.getUITranslation(UIElement.NEW_SHEET_PREFIX) + '1';
-      return this.buildEngine(config, _defineProperty$1({}, newsheetprefix, sheet), namedExpressions);
-    }
-  }, {
-    key: "buildEmpty",
-    value: function buildEmpty() {
-      var configInput = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-      var namedExpressions = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : [];
-      return this.buildEngine(new Config(configInput), {}, namedExpressions);
-    }
-  }, {
-    key: "rebuildWithConfig",
-    value: function rebuildWithConfig(config, sheets, namedExpressions, stats) {
-      return this.buildEngine(config, sheets, namedExpressions, stats);
     }
   }]);
 
@@ -34204,19 +34276,19 @@ var tinyEmitter = E;
 var TinyEmitter = E;
 tinyEmitter.TinyEmitter = TinyEmitter;
 
-function _typeof$k(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof$k = function _typeof(obj) { return typeof obj; }; } else { _typeof$k = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof$k(obj); }
+function _typeof$k(obj) { "@babel/helpers - typeof"; return _typeof$k = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof$k(obj); }
 
 function _classCallCheck$15(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-function _defineProperties$13(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _defineProperties$15(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
-function _createClass$13(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$13(Constructor.prototype, protoProps); if (staticProps) _defineProperties$13(Constructor, staticProps); return Constructor; }
+function _createClass$15(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$15(Constructor.prototype, protoProps); if (staticProps) _defineProperties$15(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
 
-function _get$1(target, property, receiver) { if (typeof Reflect !== "undefined" && Reflect.get) { _get$1 = Reflect.get; } else { _get$1 = function _get(target, property, receiver) { var base = _superPropBase$1(target, property); if (!base) return; var desc = Object.getOwnPropertyDescriptor(base, property); if (desc.get) { return desc.get.call(receiver); } return desc.value; }; } return _get$1(target, property, receiver || target); }
+function _get$1() { if (typeof Reflect !== "undefined" && Reflect.get) { _get$1 = Reflect.get; } else { _get$1 = function _get(target, property, receiver) { var base = _superPropBase$1(target, property); if (!base) return; var desc = Object.getOwnPropertyDescriptor(base, property); if (desc.get) { return desc.get.call(arguments.length < 3 ? target : receiver); } return desc.value; }; } return _get$1.apply(this, arguments); }
 
 function _superPropBase$1(object, property) { while (!Object.prototype.hasOwnProperty.call(object, property)) { object = _getPrototypeOf$g(object); if (object === null) break; } return object; }
 
-function _inherits$g(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf$h(subClass, superClass); }
+function _inherits$g(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf$h(subClass, superClass); }
 
 function _setPrototypeOf$h(o, p) { _setPrototypeOf$h = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf$h(o, p); }
 
@@ -34253,7 +34325,7 @@ var Emitter = /*#__PURE__*/function (_TinyEmitter) {
     return _super.apply(this, arguments);
   }
 
-  _createClass$13(Emitter, [{
+  _createClass$15(Emitter, [{
     key: "emit",
     value: function emit(event) {
       var _get2;
@@ -34287,9 +34359,9 @@ function _arrayLikeToArray$E(arr, len) { if (len == null || len > arr.length) le
 
 function _classCallCheck$16(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-function _defineProperties$14(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _defineProperties$16(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
-function _createClass$14(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$14(Constructor.prototype, protoProps); if (staticProps) _defineProperties$14(Constructor, staticProps); return Constructor; }
+function _createClass$16(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$16(Constructor.prototype, protoProps); if (staticProps) _defineProperties$16(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
 /**
  * This is a class for creating HyperFormula instance, all the following public methods
  * ale related to this class.
@@ -34330,16 +34402,28 @@ var HyperFormula = /*#__PURE__*/function () {
     this._evaluationSuspended = false;
   }
   /**
-   * Calls the `graph` method on the dependency graph.
-   * Allows to execute `graph` directly without a need to refer to `dependencyGraph`.
+   * Returns all of HyperFormula's default [configuration options](../../guide/configuration-options.md).
    *
-   * @internal
+   * @example
+   * ```js
+   * // returns all default configuration options
+   * const defaultConfig = HyperFormula.defaultConfig;
+   * ```
+   *
+   * @category Static Properties
    */
 
 
-  _createClass$14(HyperFormula, [{
+  _createClass$16(HyperFormula, [{
     key: "graph",
-    get: function get() {
+    get:
+    /**
+     * Calls the `graph` method on the dependency graph.
+     * Allows to execute `graph` directly without a need to refer to `dependencyGraph`.
+     *
+     * @internal
+     */
+    function get() {
       return this.dependencyGraph.graph;
     }
     /**
@@ -34429,6 +34513,36 @@ var HyperFormula = /*#__PURE__*/function () {
     get: function get() {
       return this._config.licenseKeyValidityState;
     }
+    /**
+     * Builds the engine for a sheet from a two-dimensional array representation.
+     * The engine is created with a single sheet.
+     * Can be configured with the optional second parameter that represents a [[ConfigParams]].
+     * If not specified, the engine will be built with the default configuration.
+     *
+     * @param {Sheet} sheet - two-dimensional array representation of sheet
+     * @param {Partial<ConfigParams>} configInput - engine configuration
+     * @param {SerializedNamedExpression[]} namedExpressions - starting named expressions
+     *
+     * @throws [[SheetSizeLimitExceededError]] when sheet size exceeds the limits
+     * @throws [[InvalidArgumentsError]] when sheet is not an array of arrays
+     * @throws [[FunctionPluginValidationError]] when plugin class definition is not consistent with metadata
+     *
+     * @example
+     * ```js
+     * // data represented as an array
+     * const sheetData = [
+     *  ['0', '=SUM(1,2,3)', '52'],
+     *  ['=SUM(A1:C1)', '', '=A1'],
+     *  ['2', '=SUM(A1:C1)', '91'],
+     * ];
+     *
+     * // method with optional config parameter maxColumns
+     * const hfInstance = HyperFormula.buildFromArray(sheetData, { maxColumns: 1000 });
+     * ```
+     *
+     * @category Factories
+     */
+
   }, {
     key: "getCellValue",
     value:
@@ -34464,13 +34578,6 @@ var HyperFormula = /*#__PURE__*/function () {
 
       this.ensureEvaluationIsNotSuspended();
       return this._serialization.getCellValue(cellAddress);
-    }
-  }, {
-    key: "ensureEvaluationIsNotSuspended",
-    value: function ensureEvaluationIsNotSuspended() {
-      if (this._evaluationSuspended) {
-        throw new EvaluationSuspendedError();
-      }
     }
     /**
      * Returns a normalized formula string from the cell of a given address or `undefined` for an address that does not exist and empty values.
@@ -36490,7 +36597,6 @@ var HyperFormula = /*#__PURE__*/function () {
      * @param {SimpleCellRange} target range where data is intended to be put
      * @param {boolean} offsetsFromTarget if true, offsets are computed from target corner, otherwise from source corner
      *
-     * @throws [[SheetsNotEqual]] if both ranges are not from the same sheet
      * @throws [[EvaluationSuspendedError]] when the evaluation is suspended
      * @throws [[ExpectedValueOfTypeError]] if source or target are of wrong type
      * @throws [[SheetsNotEqual]] if range provided has distinct sheet numbers for start and end
@@ -36524,11 +36630,6 @@ var HyperFormula = /*#__PURE__*/function () {
 
       var sourceRange = new AbsoluteCellRange(source.start, source.end);
       var targetRange = new AbsoluteCellRange(target.start, target.end);
-
-      if (sourceRange.sheet !== targetRange.sheet) {
-        throw new SheetsNotEqual(sourceRange.sheet, targetRange.sheet);
-      }
-
       this.ensureEvaluationIsNotSuspended();
       return targetRange.arrayOfAddressesInRange().map(function (subarray) {
         return subarray.map(function (address) {
@@ -36537,7 +36638,7 @@ var HyperFormula = /*#__PURE__*/function () {
           return _this5._serialization.getCellSerialized({
             row: row,
             col: col,
-            sheet: targetRange.sheet
+            sheet: sourceRange.sheet
           }, address);
         });
       });
@@ -37391,10 +37492,10 @@ var HyperFormula = /*#__PURE__*/function () {
      * ]);
      *
      * // should return 'NUMBER_PERCENT', cell value type of provided coordinates is a number with a format inference percent.
-     * const cellType = hfInstance.getCellValueType({ sheet: 0, col: 0, row: 0 });
+     * const cellType = hfInstance.getCellValueDetailedType({ sheet: 0, col: 0, row: 0 });
      *
      * // should return 'NUMBER_CURRENCY', cell value type of provided coordinates is a number with a format inference currency.
-     * const cellType = hfInstance.getCellValueType({ sheet: 0, col: 1, row: 0 });
+     * const cellType = hfInstance.getCellValueDetailedType({ sheet: 0, col: 1, row: 0 });
      * ```
      *
      * @category Cells
@@ -38485,44 +38586,6 @@ var HyperFormula = /*#__PURE__*/function () {
       validateArgToType(inputNumber, 'number', 'val');
       return numberToSimpleTime(inputNumber);
     }
-  }, {
-    key: "extractTemporaryFormula",
-    value: function extractTemporaryFormula(formulaString) {
-      var sheetId = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 1;
-
-      var parsedCellContent = this._cellContentParser.parse(formulaString);
-
-      var address = {
-        sheet: sheetId,
-        col: 0,
-        row: 0
-      };
-
-      if (!(parsedCellContent instanceof CellContent.Formula)) {
-        return {
-          address: address,
-          dependencies: []
-        };
-      }
-
-      var _this$_parser$parse = this._parser.parse(parsedCellContent.formula, address),
-          ast = _this$_parser$parse.ast,
-          errors = _this$_parser$parse.errors,
-          dependencies = _this$_parser$parse.dependencies;
-
-      if (errors.length > 0) {
-        return {
-          address: address,
-          dependencies: []
-        };
-      }
-
-      return {
-        ast: ast,
-        address: address,
-        dependencies: dependencies
-      };
-    }
     /**
      * Subscribes to an event.
      * For the list of all available events, see [[Listeners]].
@@ -38633,6 +38696,51 @@ var HyperFormula = /*#__PURE__*/function () {
 
       objectDestroy(this);
     }
+  }, {
+    key: "ensureEvaluationIsNotSuspended",
+    value: function ensureEvaluationIsNotSuspended() {
+      if (this._evaluationSuspended) {
+        throw new EvaluationSuspendedError();
+      }
+    }
+  }, {
+    key: "extractTemporaryFormula",
+    value: function extractTemporaryFormula(formulaString) {
+      var sheetId = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 1;
+
+      var parsedCellContent = this._cellContentParser.parse(formulaString);
+
+      var address = {
+        sheet: sheetId,
+        col: 0,
+        row: 0
+      };
+
+      if (!(parsedCellContent instanceof CellContent.Formula)) {
+        return {
+          address: address,
+          dependencies: []
+        };
+      }
+
+      var _this$_parser$parse = this._parser.parse(parsedCellContent.formula, address),
+          ast = _this$_parser$parse.ast,
+          errors = _this$_parser$parse.errors,
+          dependencies = _this$_parser$parse.dependencies;
+
+      if (errors.length > 0) {
+        return {
+          address: address,
+          dependencies: []
+        };
+      }
+
+      return {
+        ast: ast,
+        address: address,
+        dependencies: dependencies
+      };
+    }
     /**
      * Runs a recomputation starting from recently changed vertices.
      *
@@ -38666,40 +38774,10 @@ var HyperFormula = /*#__PURE__*/function () {
       }
     }
   }], [{
-    key: "buildFromEngineState",
-    value: function buildFromEngineState(engine) {
-      return new HyperFormula(engine.config, engine.stats, engine.dependencyGraph, engine.columnSearch, engine.parser, engine.unparser, engine.cellContentParser, engine.evaluator, engine.lazilyTransformingAstService, engine.crudOperations, engine.exporter, engine.namedExpressions, engine.serialization, engine.functionRegistry);
+    key: "defaultConfig",
+    get: function get() {
+      return getDefaultConfig();
     }
-    /**
-     * Builds the engine for a sheet from a two-dimensional array representation.
-     * The engine is created with a single sheet.
-     * Can be configured with the optional second parameter that represents a [[ConfigParams]].
-     * If not specified, the engine will be built with the default configuration.
-     *
-     * @param {Sheet} sheet - two-dimensional array representation of sheet
-     * @param {Partial<ConfigParams>} configInput - engine configuration
-     * @param {SerializedNamedExpression[]} namedExpressions - starting named expressions
-     *
-     * @throws [[SheetSizeLimitExceededError]] when sheet size exceeds the limits
-     * @throws [[InvalidArgumentsError]] when sheet is not an array of arrays
-     * @throws [[FunctionPluginValidationError]] when plugin class definition is not consistent with metadata
-     *
-     * @example
-     * ```js
-     * // data represented as an array
-     * const sheetData = [
-     *  ['0', '=SUM(1,2,3)', '52'],
-     *  ['=SUM(A1:C1)', '', '=A1'],
-     *  ['2', '=SUM(A1:C1)', '91'],
-     * ];
-     *
-     * // method with optional config parameter maxColumns
-     * const hfInstance = HyperFormula.buildFromArray(sheetData, { maxColumns: 1000 });
-     * ```
-     *
-     * @category Factories
-     */
-
   }, {
     key: "buildFromArray",
     value: function buildFromArray(sheet) {
@@ -39072,6 +39150,11 @@ var HyperFormula = /*#__PURE__*/function () {
     value: function getAllFunctionPlugins() {
       return FunctionRegistry.getPlugins();
     }
+  }, {
+    key: "buildFromEngineState",
+    value: function buildFromEngineState(engine) {
+      return new HyperFormula(engine.config, engine.stats, engine.dependencyGraph, engine.columnSearch, engine.parser, engine.unparser, engine.cellContentParser, engine.evaluator, engine.lazilyTransformingAstService, engine.crudOperations, engine.exporter, engine.namedExpressions, engine.serialization, engine.functionRegistry);
+    }
   }]);
 
   return HyperFormula;
@@ -39082,21 +39165,21 @@ var HyperFormula = /*#__PURE__*/function () {
  * @category Static Properties
  */
 
-HyperFormula.version = "1.2.0";
+HyperFormula.version = "1.3.1";
 /**
  * Latest build date.
  *
  * @category Static Properties
  */
 
-HyperFormula.buildDate = "23/09/2021 13:29:51";
+HyperFormula.buildDate = "11/01/2022 10:43:03";
 /**
  * A release date.
  *
  * @category Static Properties
  */
 
-HyperFormula.releaseDate = "23/09/2021";
+HyperFormula.releaseDate = "11/01/2022";
 /**
  * Contains all available languages to use in registerLanguage.
  *
@@ -39120,55 +39203,61 @@ function _arrayLikeToArray$F(arr, len) { if (len == null || len > arr.length) le
 
 function _classCallCheck$17(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-function _defineProperties$15(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _defineProperties$17(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
-function _createClass$15(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$15(Constructor.prototype, protoProps); if (staticProps) _defineProperties$15(Constructor, staticProps); return Constructor; }
+function _createClass$17(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$17(Constructor.prototype, protoProps); if (staticProps) _defineProperties$17(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
 var PossibleGPUModeString = ['gpu', 'cpu', 'dev'];
 var privatePool = new WeakMap();
 var Config = /*#__PURE__*/function () {
   function Config() {
-    var _ref = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
-        accentSensitive = _ref.accentSensitive,
-        binarySearchThreshold = _ref.binarySearchThreshold,
-        caseSensitive = _ref.caseSensitive,
-        caseFirst = _ref.caseFirst,
-        chooseAddressMappingPolicy = _ref.chooseAddressMappingPolicy,
-        currencySymbol = _ref.currencySymbol,
-        dateFormats = _ref.dateFormats,
-        decimalSeparator = _ref.decimalSeparator,
-        evaluateNullToZero = _ref.evaluateNullToZero,
-        functionArgSeparator = _ref.functionArgSeparator,
-        functionPlugins = _ref.functionPlugins,
-        gpujs = _ref.gpujs,
-        gpuMode = _ref.gpuMode,
-        ignorePunctuation = _ref.ignorePunctuation,
-        leapYear1900 = _ref.leapYear1900,
-        localeLang = _ref.localeLang,
-        language = _ref.language,
-        licenseKey = _ref.licenseKey,
-        matchWholeCell = _ref.matchWholeCell,
-        arrayColumnSeparator = _ref.arrayColumnSeparator,
-        arrayRowSeparator = _ref.arrayRowSeparator,
-        maxRows = _ref.maxRows,
-        maxColumns = _ref.maxColumns,
-        nullYear = _ref.nullYear,
-        nullDate = _ref.nullDate,
-        parseDateTime = _ref.parseDateTime,
-        precisionEpsilon = _ref.precisionEpsilon,
-        precisionRounding = _ref.precisionRounding,
-        stringifyDateTime = _ref.stringifyDateTime,
-        stringifyDuration = _ref.stringifyDuration,
-        smartRounding = _ref.smartRounding,
-        timeFormats = _ref.timeFormats,
-        thousandSeparator = _ref.thousandSeparator,
-        useArrayArithmetic = _ref.useArrayArithmetic,
-        useStats = _ref.useStats,
-        undoLimit = _ref.undoLimit,
-        useColumnIndex = _ref.useColumnIndex,
-        useRegularExpressions = _ref.useRegularExpressions,
-        useWildcards = _ref.useWildcards;
+    var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+    var showDeprecatedWarns = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
 
     _classCallCheck$17(this, Config);
+
+    var accentSensitive = options.accentSensitive,
+        binarySearchThreshold = options.binarySearchThreshold,
+        caseSensitive = options.caseSensitive,
+        caseFirst = options.caseFirst,
+        chooseAddressMappingPolicy = options.chooseAddressMappingPolicy,
+        currencySymbol = options.currencySymbol,
+        dateFormats = options.dateFormats,
+        decimalSeparator = options.decimalSeparator,
+        evaluateNullToZero = options.evaluateNullToZero,
+        functionArgSeparator = options.functionArgSeparator,
+        functionPlugins = options.functionPlugins,
+        gpujs = options.gpujs,
+        gpuMode = options.gpuMode,
+        ignorePunctuation = options.ignorePunctuation,
+        leapYear1900 = options.leapYear1900,
+        localeLang = options.localeLang,
+        language = options.language,
+        licenseKey = options.licenseKey,
+        matchWholeCell = options.matchWholeCell,
+        arrayColumnSeparator = options.arrayColumnSeparator,
+        arrayRowSeparator = options.arrayRowSeparator,
+        maxRows = options.maxRows,
+        maxColumns = options.maxColumns,
+        nullYear = options.nullYear,
+        nullDate = options.nullDate,
+        parseDateTime = options.parseDateTime,
+        precisionEpsilon = options.precisionEpsilon,
+        precisionRounding = options.precisionRounding,
+        stringifyDateTime = options.stringifyDateTime,
+        stringifyDuration = options.stringifyDuration,
+        smartRounding = options.smartRounding,
+        timeFormats = options.timeFormats,
+        thousandSeparator = options.thousandSeparator,
+        useArrayArithmetic = options.useArrayArithmetic,
+        useStats = options.useStats,
+        undoLimit = options.undoLimit,
+        useColumnIndex = options.useColumnIndex,
+        useRegularExpressions = options.useRegularExpressions,
+        useWildcards = options.useWildcards;
+
+    if (showDeprecatedWarns) {
+      this.warnDeprecatedOptions(options);
+    }
 
     this.useArrayArithmetic = configValueFromParam(useArrayArithmetic, 'boolean', 'useArrayArithmetic');
     this.accentSensitive = configValueFromParam(accentSensitive, 'boolean', 'accentSensitive');
@@ -39200,8 +39289,7 @@ var Config = /*#__PURE__*/function () {
     validateNumberToBeAtLeast(this.precisionEpsilon, 'precisionEpsilon', 0);
     this.useColumnIndex = configValueFromParam(useColumnIndex, 'boolean', 'useColumnIndex');
     this.useStats = configValueFromParam(useStats, 'boolean', 'useStats');
-    this.binarySearchThreshold = configValueFromParam(binarySearchThreshold, 'number', 'binarySearchThreshold');
-    validateNumberToBeAtLeast(this.binarySearchThreshold, 'binarySearchThreshold', 1);
+    this.binarySearchThreshold = binarySearchThreshold !== null && binarySearchThreshold !== void 0 ? binarySearchThreshold : Config.defaultConfig.binarySearchThreshold;
     this.parseDateTime = configValueFromParam(parseDateTime, 'function', 'parseDateTime');
     this.stringifyDateTime = configValueFromParam(stringifyDateTime, 'function', 'stringifyDateTime');
     this.stringifyDuration = configValueFromParam(stringifyDuration, 'function', 'stringifyDuration');
@@ -39228,13 +39316,6 @@ var Config = /*#__PURE__*/function () {
       }
     });
     validateNumberToBeAtLeast(this.maxColumns, 'maxColumns', 1);
-    this.warnDeprecatedIfUsed(binarySearchThreshold, 'binarySearchThreshold', '1.1');
-    this.warnDeprecatedIfUsed(gpujs, 'gpujs', '1.2');
-
-    if (gpuMode !== Config.defaultConfig.gpuMode) {
-      this.warnDeprecatedIfUsed(gpuMode, 'gpuMode', '1.2');
-    }
-
     privatePool.set(this, {
       licenseKeyValidityState: checkLicenseKeyValidity(this.licenseKey)
     });
@@ -39264,7 +39345,7 @@ var Config = /*#__PURE__*/function () {
    */
 
 
-  _createClass$15(Config, [{
+  _createClass$17(Config, [{
     key: "licenseKeyValidityState",
     get: function get() {
       return privatePool.get(this).licenseKeyValidityState;
@@ -39272,25 +39353,24 @@ var Config = /*#__PURE__*/function () {
   }, {
     key: "getConfig",
     value: function getConfig() {
-      var ret = {};
-
-      for (var key in Config.defaultConfig) {
-        var val = this[key];
-
-        if (Array.isArray(val)) {
-          ret[key] = _toConsumableArray$c(val);
-        } else {
-          ret[key] = val;
-        }
-      }
-
-      return ret;
+      return getFullConfigFromPartial(this);
     }
   }, {
     key: "mergeConfig",
     value: function mergeConfig(init) {
       var mergedConfig = Object.assign({}, this.getConfig(), init);
-      return new Config(mergedConfig);
+      this.warnDeprecatedOptions(init);
+      return new Config(mergedConfig, false);
+    }
+  }, {
+    key: "warnDeprecatedOptions",
+    value: function warnDeprecatedOptions(options) {
+      this.warnDeprecatedIfUsed(options.binarySearchThreshold, 'binarySearchThreshold', '1.1');
+      this.warnDeprecatedIfUsed(options.gpujs, 'gpujs', '1.2');
+
+      if (options.gpuMode !== Config.defaultConfig.gpuMode) {
+        this.warnDeprecatedIfUsed(options.gpuMode, 'gpuMode', '1.2');
+      }
     }
   }, {
     key: "warnDeprecatedIfUsed",
@@ -39352,6 +39432,28 @@ Config.defaultConfig = {
   useStats: false,
   useArrayArithmetic: false
 };
+
+function getFullConfigFromPartial(partialConfig) {
+  var _a;
+
+  var ret = {};
+
+  for (var key in Config.defaultConfig) {
+    var val = (_a = partialConfig[key]) !== null && _a !== void 0 ? _a : Config.defaultConfig[key];
+
+    if (Array.isArray(val)) {
+      ret[key] = _toConsumableArray$c(val);
+    } else {
+      ret[key] = val;
+    }
+  }
+
+  return ret;
+}
+
+function getDefaultConfig() {
+  return getFullConfigFromPartial({});
+}
 
 /**
  * @license
@@ -39766,7 +39868,7 @@ var dictionary = {
   }
 };
 
-function _typeof$l(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof$l = function _typeof(obj) { return typeof obj; }; } else { _typeof$l = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof$l(obj); }
+function _typeof$l(obj) { "@babel/helpers - typeof"; return _typeof$l = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof$l(obj); }
 
 function _toConsumableArray$d(arr) { return _arrayWithoutHoles$d(arr) || _iterableToArray$d(arr) || _unsupportedIterableToArray$G(arr) || _nonIterableSpread$d(); }
 
@@ -39784,11 +39886,11 @@ function _arrayLikeToArray$G(arr, len) { if (len == null || len > arr.length) le
 
 function _classCallCheck$18(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-function _defineProperties$16(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _defineProperties$18(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
-function _createClass$16(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$16(Constructor.prototype, protoProps); if (staticProps) _defineProperties$16(Constructor, staticProps); return Constructor; }
+function _createClass$18(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$18(Constructor.prototype, protoProps); if (staticProps) _defineProperties$18(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
 
-function _inherits$h(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf$i(subClass, superClass); }
+function _inherits$h(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf$i(subClass, superClass); }
 
 function _setPrototypeOf$i(o, p) { _setPrototypeOf$i = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf$i(o, p); }
 
@@ -39812,7 +39914,7 @@ var ArrayPlugin = /*#__PURE__*/function (_FunctionPlugin) {
     return _super.apply(this, arguments);
   }
 
-  _createClass$16(ArrayPlugin, [{
+  _createClass$18(ArrayPlugin, [{
     key: "arrayformula",
     value: function arrayformula(ast, state) {
       return this.runFunction(ast.args, state, this.metadata('ARRAYFORMULA'), function (value) {
@@ -40013,15 +40115,15 @@ ArrayPlugin.implementedFunctions = {
   }
 };
 
-function _typeof$m(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof$m = function _typeof(obj) { return typeof obj; }; } else { _typeof$m = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof$m(obj); }
+function _typeof$m(obj) { "@babel/helpers - typeof"; return _typeof$m = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof$m(obj); }
 
 function _classCallCheck$19(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-function _defineProperties$17(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _defineProperties$19(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
-function _createClass$17(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$17(Constructor.prototype, protoProps); if (staticProps) _defineProperties$17(Constructor, staticProps); return Constructor; }
+function _createClass$19(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$19(Constructor.prototype, protoProps); if (staticProps) _defineProperties$19(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
 
-function _inherits$i(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf$j(subClass, superClass); }
+function _inherits$i(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf$j(subClass, superClass); }
 
 function _setPrototypeOf$j(o, p) { _setPrototypeOf$j = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf$j(o, p); }
 
@@ -40045,7 +40147,7 @@ var AbsPlugin = /*#__PURE__*/function (_FunctionPlugin) {
     return _super.apply(this, arguments);
   }
 
-  _createClass$17(AbsPlugin, [{
+  _createClass$19(AbsPlugin, [{
     key: "abs",
     value: function abs(ast, state) {
       return this.runFunction(ast.args, state, this.metadata('ABS'), Math.abs);
@@ -40063,15 +40165,15 @@ AbsPlugin.implementedFunctions = {
   }
 };
 
-function _typeof$n(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof$n = function _typeof(obj) { return typeof obj; }; } else { _typeof$n = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof$n(obj); }
+function _typeof$n(obj) { "@babel/helpers - typeof"; return _typeof$n = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof$n(obj); }
 
 function _classCallCheck$1a(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-function _defineProperties$18(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _defineProperties$1a(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
-function _createClass$18(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$18(Constructor.prototype, protoProps); if (staticProps) _defineProperties$18(Constructor, staticProps); return Constructor; }
+function _createClass$1a(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$1a(Constructor.prototype, protoProps); if (staticProps) _defineProperties$1a(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
 
-function _inherits$j(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf$k(subClass, superClass); }
+function _inherits$j(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf$k(subClass, superClass); }
 
 function _setPrototypeOf$k(o, p) { _setPrototypeOf$k = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf$k(o, p); }
 
@@ -40098,7 +40200,7 @@ var BitShiftPlugin = /*#__PURE__*/function (_FunctionPlugin) {
     return _super.apply(this, arguments);
   }
 
-  _createClass$18(BitShiftPlugin, [{
+  _createClass$1a(BitShiftPlugin, [{
     key: "bitlshift",
     value: function bitlshift(ast, state) {
       return this.runFunction(ast.args, state, this.metadata('BITLSHIFT'), shiftLeft);
@@ -40161,15 +40263,15 @@ function validate(result) {
   }
 }
 
-function _typeof$o(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof$o = function _typeof(obj) { return typeof obj; }; } else { _typeof$o = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof$o(obj); }
+function _typeof$o(obj) { "@babel/helpers - typeof"; return _typeof$o = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof$o(obj); }
 
 function _classCallCheck$1b(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-function _defineProperties$19(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _defineProperties$1b(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
-function _createClass$19(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$19(Constructor.prototype, protoProps); if (staticProps) _defineProperties$19(Constructor, staticProps); return Constructor; }
+function _createClass$1b(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$1b(Constructor.prototype, protoProps); if (staticProps) _defineProperties$1b(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
 
-function _inherits$k(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf$l(subClass, superClass); }
+function _inherits$k(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf$l(subClass, superClass); }
 
 function _setPrototypeOf$l(o, p) { _setPrototypeOf$l = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf$l(o, p); }
 
@@ -40193,7 +40295,7 @@ var BitwiseLogicOperationsPlugin = /*#__PURE__*/function (_FunctionPlugin) {
     return _super.apply(this, arguments);
   }
 
-  _createClass$19(BitwiseLogicOperationsPlugin, [{
+  _createClass$1b(BitwiseLogicOperationsPlugin, [{
     key: "bitand",
     value: function bitand(ast, state) {
       return this.runFunction(ast.args, state, this.metadata('BITAND'), function (left, right) {
@@ -40251,15 +40353,15 @@ BitwiseLogicOperationsPlugin.implementedFunctions = {
   }
 };
 
-function _typeof$p(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof$p = function _typeof(obj) { return typeof obj; }; } else { _typeof$p = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof$p(obj); }
+function _typeof$p(obj) { "@babel/helpers - typeof"; return _typeof$p = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof$p(obj); }
 
 function _classCallCheck$1c(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-function _defineProperties$1a(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _defineProperties$1c(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
-function _createClass$1a(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$1a(Constructor.prototype, protoProps); if (staticProps) _defineProperties$1a(Constructor, staticProps); return Constructor; }
+function _createClass$1c(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$1c(Constructor.prototype, protoProps); if (staticProps) _defineProperties$1c(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
 
-function _inherits$l(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf$m(subClass, superClass); }
+function _inherits$l(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf$m(subClass, superClass); }
 
 function _setPrototypeOf$m(o, p) { _setPrototypeOf$m = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf$m(o, p); }
 
@@ -40287,7 +40389,7 @@ var BooleanPlugin = /*#__PURE__*/function (_FunctionPlugin) {
     return _super.apply(this, arguments);
   }
 
-  _createClass$1a(BooleanPlugin, [{
+  _createClass$1c(BooleanPlugin, [{
     key: "literalTrue",
     value:
     /**
@@ -40607,15 +40709,15 @@ _export({ target: 'String', stat: true, forced: INCORRECT_LENGTH }, {
   }
 });
 
-function _typeof$q(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof$q = function _typeof(obj) { return typeof obj; }; } else { _typeof$q = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof$q(obj); }
+function _typeof$q(obj) { "@babel/helpers - typeof"; return _typeof$q = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof$q(obj); }
 
 function _classCallCheck$1d(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-function _defineProperties$1b(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _defineProperties$1d(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
-function _createClass$1b(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$1b(Constructor.prototype, protoProps); if (staticProps) _defineProperties$1b(Constructor, staticProps); return Constructor; }
+function _createClass$1d(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$1d(Constructor.prototype, protoProps); if (staticProps) _defineProperties$1d(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
 
-function _inherits$m(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf$n(subClass, superClass); }
+function _inherits$m(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf$n(subClass, superClass); }
 
 function _setPrototypeOf$n(o, p) { _setPrototypeOf$n = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf$n(o, p); }
 
@@ -40639,7 +40741,7 @@ var CharPlugin = /*#__PURE__*/function (_FunctionPlugin) {
     return _super.apply(this, arguments);
   }
 
-  _createClass$1b(CharPlugin, [{
+  _createClass$1d(CharPlugin, [{
     key: "char",
     value: function char(ast, state) {
       return this.runFunction(ast.args, state, this.metadata('CHAR'), function (value) {
@@ -40680,15 +40782,15 @@ CharPlugin.implementedFunctions = {
   }
 };
 
-function _typeof$r(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof$r = function _typeof(obj) { return typeof obj; }; } else { _typeof$r = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof$r(obj); }
+function _typeof$r(obj) { "@babel/helpers - typeof"; return _typeof$r = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof$r(obj); }
 
 function _classCallCheck$1e(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-function _defineProperties$1c(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _defineProperties$1e(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
-function _createClass$1c(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$1c(Constructor.prototype, protoProps); if (staticProps) _defineProperties$1c(Constructor, staticProps); return Constructor; }
+function _createClass$1e(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$1e(Constructor.prototype, protoProps); if (staticProps) _defineProperties$1e(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
 
-function _inherits$n(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf$o(subClass, superClass); }
+function _inherits$n(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf$o(subClass, superClass); }
 
 function _setPrototypeOf$o(o, p) { _setPrototypeOf$o = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf$o(o, p); }
 
@@ -40712,7 +40814,7 @@ var CodePlugin = /*#__PURE__*/function (_FunctionPlugin) {
     return _super.apply(this, arguments);
   }
 
-  _createClass$1c(CodePlugin, [{
+  _createClass$1e(CodePlugin, [{
     key: "code",
     value: function code(ast, state) {
       return this.runFunction(ast.args, state, this.metadata('CODE'), function (value) {
@@ -40751,15 +40853,15 @@ CodePlugin.implementedFunctions = {
   }
 };
 
-function _typeof$s(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof$s = function _typeof(obj) { return typeof obj; }; } else { _typeof$s = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof$s(obj); }
+function _typeof$s(obj) { "@babel/helpers - typeof"; return _typeof$s = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof$s(obj); }
 
 function _classCallCheck$1f(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-function _defineProperties$1d(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _defineProperties$1f(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
-function _createClass$1d(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$1d(Constructor.prototype, protoProps); if (staticProps) _defineProperties$1d(Constructor, staticProps); return Constructor; }
+function _createClass$1f(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$1f(Constructor.prototype, protoProps); if (staticProps) _defineProperties$1f(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
 
-function _inherits$o(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf$p(subClass, superClass); }
+function _inherits$o(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf$p(subClass, superClass); }
 
 function _setPrototypeOf$p(o, p) { _setPrototypeOf$p = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf$p(o, p); }
 
@@ -40787,7 +40889,7 @@ var CountBlankPlugin = /*#__PURE__*/function (_FunctionPlugin) {
     return _super.apply(this, arguments);
   }
 
-  _createClass$1d(CountBlankPlugin, [{
+  _createClass$1f(CountBlankPlugin, [{
     key: "countblank",
     value: function countblank(ast, state) {
       return this.runFunction(ast.args, state, this.metadata('COUNTBLANK'), function () {
@@ -40820,15 +40922,15 @@ CountBlankPlugin.implementedFunctions = {
   }
 };
 
-function _typeof$t(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof$t = function _typeof(obj) { return typeof obj; }; } else { _typeof$t = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof$t(obj); }
+function _typeof$t(obj) { "@babel/helpers - typeof"; return _typeof$t = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof$t(obj); }
 
 function _classCallCheck$1g(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-function _defineProperties$1e(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _defineProperties$1g(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
-function _createClass$1e(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$1e(Constructor.prototype, protoProps); if (staticProps) _defineProperties$1e(Constructor, staticProps); return Constructor; }
+function _createClass$1g(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$1g(Constructor.prototype, protoProps); if (staticProps) _defineProperties$1g(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
 
-function _inherits$p(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf$q(subClass, superClass); }
+function _inherits$p(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf$q(subClass, superClass); }
 
 function _setPrototypeOf$q(o, p) { _setPrototypeOf$q = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf$q(o, p); }
 
@@ -40856,7 +40958,7 @@ var CountUniquePlugin = /*#__PURE__*/function (_FunctionPlugin) {
     return _super.apply(this, arguments);
   }
 
-  _createClass$1e(CountUniquePlugin, [{
+  _createClass$1g(CountUniquePlugin, [{
     key: "countunique",
     value:
     /**
@@ -40904,7 +41006,7 @@ CountUniquePlugin.implementedFunctions = {
   }
 };
 
-function _typeof$u(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof$u = function _typeof(obj) { return typeof obj; }; } else { _typeof$u = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof$u(obj); }
+function _typeof$u(obj) { "@babel/helpers - typeof"; return _typeof$u = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof$u(obj); }
 
 function _toConsumableArray$e(arr) { return _arrayWithoutHoles$e(arr) || _iterableToArray$e(arr) || _unsupportedIterableToArray$H(arr) || _nonIterableSpread$e(); }
 
@@ -40930,11 +41032,11 @@ function _arrayWithHoles$r(arr) { if (Array.isArray(arr)) return arr; }
 
 function _classCallCheck$1h(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-function _defineProperties$1f(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _defineProperties$1h(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
-function _createClass$1f(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$1f(Constructor.prototype, protoProps); if (staticProps) _defineProperties$1f(Constructor, staticProps); return Constructor; }
+function _createClass$1h(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$1h(Constructor.prototype, protoProps); if (staticProps) _defineProperties$1h(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
 
-function _inherits$q(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf$r(subClass, superClass); }
+function _inherits$q(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf$r(subClass, superClass); }
 
 function _setPrototypeOf$r(o, p) { _setPrototypeOf$r = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf$r(o, p); }
 
@@ -41020,7 +41122,7 @@ var DateTimePlugin = /*#__PURE__*/function (_FunctionPlugin) {
    */
 
 
-  _createClass$1f(DateTimePlugin, [{
+  _createClass$1h(DateTimePlugin, [{
     key: "date",
     value: function date(ast, state) {
       var _this2 = this;
@@ -41968,15 +42070,15 @@ function computeWeekendPattern(weekend) {
 var weekdayOffsets = new Map([[1, 0], [2, 1], [11, 1], [12, 2], [13, 3], [14, 4], [15, 5], [16, 6], [17, 0]]);
 var workdayPatterns = new Map([[1, '0000011'], [2, '1000001'], [3, '1100000'], [4, '0110000'], [5, '0011000'], [6, '0001100'], [7, '0000110'], [11, '0000001'], [12, '1000000'], [13, '0100000'], [14, '0010000'], [15, '0001000'], [16, '0000100'], [17, '0000010']]);
 
-function _typeof$v(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof$v = function _typeof(obj) { return typeof obj; }; } else { _typeof$v = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof$v(obj); }
+function _typeof$v(obj) { "@babel/helpers - typeof"; return _typeof$v = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof$v(obj); }
 
 function _classCallCheck$1i(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-function _defineProperties$1g(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _defineProperties$1i(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
-function _createClass$1g(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$1g(Constructor.prototype, protoProps); if (staticProps) _defineProperties$1g(Constructor, staticProps); return Constructor; }
+function _createClass$1i(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$1i(Constructor.prototype, protoProps); if (staticProps) _defineProperties$1i(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
 
-function _inherits$r(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf$s(subClass, superClass); }
+function _inherits$r(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf$s(subClass, superClass); }
 
 function _setPrototypeOf$s(o, p) { _setPrototypeOf$s = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf$s(o, p); }
 
@@ -42000,7 +42102,7 @@ var DegreesPlugin = /*#__PURE__*/function (_FunctionPlugin) {
     return _super.apply(this, arguments);
   }
 
-  _createClass$1g(DegreesPlugin, [{
+  _createClass$1i(DegreesPlugin, [{
     key: "degrees",
     value: function degrees(ast, state) {
       return this.runFunction(ast.args, state, this.metadata('DEGREES'), function (arg) {
@@ -42020,15 +42122,15 @@ DegreesPlugin.implementedFunctions = {
   }
 };
 
-function _typeof$w(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof$w = function _typeof(obj) { return typeof obj; }; } else { _typeof$w = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof$w(obj); }
+function _typeof$w(obj) { "@babel/helpers - typeof"; return _typeof$w = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof$w(obj); }
 
 function _classCallCheck$1j(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-function _defineProperties$1h(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _defineProperties$1j(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
-function _createClass$1h(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$1h(Constructor.prototype, protoProps); if (staticProps) _defineProperties$1h(Constructor, staticProps); return Constructor; }
+function _createClass$1j(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$1j(Constructor.prototype, protoProps); if (staticProps) _defineProperties$1j(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
 
-function _inherits$s(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf$t(subClass, superClass); }
+function _inherits$s(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf$t(subClass, superClass); }
 
 function _setPrototypeOf$t(o, p) { _setPrototypeOf$t = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf$t(o, p); }
 
@@ -42052,7 +42154,7 @@ var DeltaPlugin = /*#__PURE__*/function (_FunctionPlugin) {
     return _super.apply(this, arguments);
   }
 
-  _createClass$1h(DeltaPlugin, [{
+  _createClass$1j(DeltaPlugin, [{
     key: "delta",
     value: function delta(ast, state) {
       return this.runFunction(ast.args, state, this.metadata('DELTA'), function (left, right) {
@@ -42075,15 +42177,15 @@ DeltaPlugin.implementedFunctions = {
   }
 };
 
-function _typeof$x(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof$x = function _typeof(obj) { return typeof obj; }; } else { _typeof$x = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof$x(obj); }
+function _typeof$x(obj) { "@babel/helpers - typeof"; return _typeof$x = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof$x(obj); }
 
 function _classCallCheck$1k(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-function _defineProperties$1i(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _defineProperties$1k(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
-function _createClass$1i(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$1i(Constructor.prototype, protoProps); if (staticProps) _defineProperties$1i(Constructor, staticProps); return Constructor; }
+function _createClass$1k(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$1k(Constructor.prototype, protoProps); if (staticProps) _defineProperties$1k(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
 
-function _inherits$t(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf$u(subClass, superClass); }
+function _inherits$t(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf$u(subClass, superClass); }
 
 function _setPrototypeOf$u(o, p) { _setPrototypeOf$u = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf$u(o, p); }
 
@@ -42107,7 +42209,7 @@ var ExpPlugin = /*#__PURE__*/function (_FunctionPlugin) {
     return _super.apply(this, arguments);
   }
 
-  _createClass$1i(ExpPlugin, [{
+  _createClass$1k(ExpPlugin, [{
     key: "exp",
     value:
     /**
@@ -42134,7 +42236,7 @@ ExpPlugin.implementedFunctions = {
   }
 };
 
-function _typeof$y(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof$y = function _typeof(obj) { return typeof obj; }; } else { _typeof$y = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof$y(obj); }
+function _typeof$y(obj) { "@babel/helpers - typeof"; return _typeof$y = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof$y(obj); }
 
 function _createForOfIteratorHelper$w(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray$I(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it.return != null) it.return(); } finally { if (didErr) throw err; } } }; }
 
@@ -42144,11 +42246,11 @@ function _arrayLikeToArray$I(arr, len) { if (len == null || len > arr.length) le
 
 function _classCallCheck$1l(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-function _defineProperties$1j(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _defineProperties$1l(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
-function _createClass$1j(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$1j(Constructor.prototype, protoProps); if (staticProps) _defineProperties$1j(Constructor, staticProps); return Constructor; }
+function _createClass$1l(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$1l(Constructor.prototype, protoProps); if (staticProps) _defineProperties$1l(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
 
-function _inherits$u(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf$v(subClass, superClass); }
+function _inherits$u(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf$v(subClass, superClass); }
 
 function _setPrototypeOf$v(o, p) { _setPrototypeOf$v = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf$v(o, p); }
 
@@ -42172,7 +42274,7 @@ var FinancialPlugin = /*#__PURE__*/function (_FunctionPlugin) {
     return _super.apply(this, arguments);
   }
 
-  _createClass$1j(FinancialPlugin, [{
+  _createClass$1l(FinancialPlugin, [{
     key: "pmt",
     value: function pmt(ast, state) {
       return this.runFunction(ast.args, state, this.metadata('PMT'), pmtCore);
@@ -43224,15 +43326,15 @@ function npvCore(rate, args) {
   return acc;
 }
 
-function _typeof$z(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof$z = function _typeof(obj) { return typeof obj; }; } else { _typeof$z = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof$z(obj); }
+function _typeof$z(obj) { "@babel/helpers - typeof"; return _typeof$z = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof$z(obj); }
 
 function _classCallCheck$1m(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-function _defineProperties$1k(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _defineProperties$1m(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
-function _createClass$1k(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$1k(Constructor.prototype, protoProps); if (staticProps) _defineProperties$1k(Constructor, staticProps); return Constructor; }
+function _createClass$1m(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$1m(Constructor.prototype, protoProps); if (staticProps) _defineProperties$1m(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
 
-function _inherits$v(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf$w(subClass, superClass); }
+function _inherits$v(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf$w(subClass, superClass); }
 
 function _setPrototypeOf$w(o, p) { _setPrototypeOf$w = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf$w(o, p); }
 
@@ -43256,7 +43358,7 @@ var FormulaTextPlugin = /*#__PURE__*/function (_FunctionPlugin) {
     return _super.apply(this, arguments);
   }
 
-  _createClass$1k(FormulaTextPlugin, [{
+  _createClass$1m(FormulaTextPlugin, [{
     key: "formulatext",
     value:
     /**
@@ -43294,15 +43396,15 @@ FormulaTextPlugin.implementedFunctions = {
   }
 };
 
-function _typeof$A(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof$A = function _typeof(obj) { return typeof obj; }; } else { _typeof$A = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof$A(obj); }
+function _typeof$A(obj) { "@babel/helpers - typeof"; return _typeof$A = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof$A(obj); }
 
 function _classCallCheck$1n(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-function _defineProperties$1l(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _defineProperties$1n(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
-function _createClass$1l(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$1l(Constructor.prototype, protoProps); if (staticProps) _defineProperties$1l(Constructor, staticProps); return Constructor; }
+function _createClass$1n(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$1n(Constructor.prototype, protoProps); if (staticProps) _defineProperties$1n(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
 
-function _inherits$w(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf$x(subClass, superClass); }
+function _inherits$w(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf$x(subClass, superClass); }
 
 function _setPrototypeOf$x(o, p) { _setPrototypeOf$x = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf$x(o, p); }
 
@@ -43330,7 +43432,7 @@ var InformationPlugin = /*#__PURE__*/function (_FunctionPlugin) {
     return _super.apply(this, arguments);
   }
 
-  _createClass$1l(InformationPlugin, [{
+  _createClass$1n(InformationPlugin, [{
     key: "isbinary",
     value:
     /**
@@ -43650,7 +43752,6 @@ var InformationPlugin = /*#__PURE__*/function (_FunctionPlugin) {
   }, {
     key: "index",
     value: function index(ast, state) {
-
       return this.runFunction(ast.args, state, this.metadata('INDEX'), function (rangeValue, row, col) {
         var _a, _b, _c, _d, _e, _f;
 
@@ -43691,14 +43792,14 @@ var InformationPlugin = /*#__PURE__*/function (_FunctionPlugin) {
   }, {
     key: "sheet",
     value: function sheet(ast, state) {
-      var _this3 = this;
+      var _this2 = this;
 
       return this.runFunctionWithReferenceArgument(ast.args, state, this.metadata('SHEET'), function () {
         return state.formulaAddress.sheet + 1;
       }, function (reference) {
         return reference.sheet + 1;
       }, function (value) {
-        var sheetNumber = _this3.dependencyGraph.sheetMapping.get(value);
+        var sheetNumber = _this2.dependencyGraph.sheetMapping.get(value);
 
         if (sheetNumber !== undefined) {
           return sheetNumber + 1;
@@ -43720,10 +43821,10 @@ var InformationPlugin = /*#__PURE__*/function (_FunctionPlugin) {
   }, {
     key: "sheets",
     value: function sheets(ast, state) {
-      var _this4 = this;
+      var _this3 = this;
 
       return this.runFunctionWithReferenceArgument(ast.args, state, this.metadata('SHEETS'), function () {
-        return _this4.dependencyGraph.sheetMapping.numberOfSheets();
+        return _this3.dependencyGraph.sheetMapping.numberOfSheets();
       }, // return number of sheets if no argument
       function () {
         return 1;
@@ -43878,15 +43979,15 @@ InformationPlugin.implementedFunctions = {
   }
 };
 
-function _typeof$B(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof$B = function _typeof(obj) { return typeof obj; }; } else { _typeof$B = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof$B(obj); }
+function _typeof$B(obj) { "@babel/helpers - typeof"; return _typeof$B = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof$B(obj); }
 
 function _classCallCheck$1o(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-function _defineProperties$1m(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _defineProperties$1o(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
-function _createClass$1m(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$1m(Constructor.prototype, protoProps); if (staticProps) _defineProperties$1m(Constructor, staticProps); return Constructor; }
+function _createClass$1o(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$1o(Constructor.prototype, protoProps); if (staticProps) _defineProperties$1o(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
 
-function _inherits$x(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf$y(subClass, superClass); }
+function _inherits$x(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf$y(subClass, superClass); }
 
 function _setPrototypeOf$y(o, p) { _setPrototypeOf$y = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf$y(o, p); }
 
@@ -43910,7 +44011,7 @@ var IsEvenPlugin = /*#__PURE__*/function (_FunctionPlugin) {
     return _super.apply(this, arguments);
   }
 
-  _createClass$1m(IsEvenPlugin, [{
+  _createClass$1o(IsEvenPlugin, [{
     key: "iseven",
     value: function iseven(ast, state) {
       return this.runFunction(ast.args, state, this.metadata('ISEVEN'), function (val) {
@@ -43930,15 +44031,15 @@ IsEvenPlugin.implementedFunctions = {
   }
 };
 
-function _typeof$C(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof$C = function _typeof(obj) { return typeof obj; }; } else { _typeof$C = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof$C(obj); }
+function _typeof$C(obj) { "@babel/helpers - typeof"; return _typeof$C = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof$C(obj); }
 
 function _classCallCheck$1p(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-function _defineProperties$1n(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _defineProperties$1p(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
-function _createClass$1n(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$1n(Constructor.prototype, protoProps); if (staticProps) _defineProperties$1n(Constructor, staticProps); return Constructor; }
+function _createClass$1p(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$1p(Constructor.prototype, protoProps); if (staticProps) _defineProperties$1p(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
 
-function _inherits$y(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf$z(subClass, superClass); }
+function _inherits$y(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf$z(subClass, superClass); }
 
 function _setPrototypeOf$z(o, p) { _setPrototypeOf$z = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf$z(o, p); }
 
@@ -43962,7 +44063,7 @@ var IsOddPlugin = /*#__PURE__*/function (_FunctionPlugin) {
     return _super.apply(this, arguments);
   }
 
-  _createClass$1n(IsOddPlugin, [{
+  _createClass$1p(IsOddPlugin, [{
     key: "isodd",
     value: function isodd(ast, state) {
       return this.runFunction(ast.args, state, this.metadata('ISODD'), function (val) {
@@ -43982,15 +44083,15 @@ IsOddPlugin.implementedFunctions = {
   }
 };
 
-function _typeof$D(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof$D = function _typeof(obj) { return typeof obj; }; } else { _typeof$D = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof$D(obj); }
+function _typeof$D(obj) { "@babel/helpers - typeof"; return _typeof$D = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof$D(obj); }
 
 function _classCallCheck$1q(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-function _defineProperties$1o(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _defineProperties$1q(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
-function _createClass$1o(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$1o(Constructor.prototype, protoProps); if (staticProps) _defineProperties$1o(Constructor, staticProps); return Constructor; }
+function _createClass$1q(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$1q(Constructor.prototype, protoProps); if (staticProps) _defineProperties$1q(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
 
-function _inherits$z(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf$A(subClass, superClass); }
+function _inherits$z(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf$A(subClass, superClass); }
 
 function _setPrototypeOf$A(o, p) { _setPrototypeOf$A = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf$A(o, p); }
 
@@ -44014,7 +44115,7 @@ var LogarithmPlugin = /*#__PURE__*/function (_FunctionPlugin) {
     return _super.apply(this, arguments);
   }
 
-  _createClass$1o(LogarithmPlugin, [{
+  _createClass$1q(LogarithmPlugin, [{
     key: "log10",
     value: function log10(ast, state) {
       return this.runFunction(ast.args, state, this.metadata('LOG10'), Math.log10);
@@ -44061,15 +44162,15 @@ LogarithmPlugin.implementedFunctions = {
   }
 };
 
-function _typeof$E(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof$E = function _typeof(obj) { return typeof obj; }; } else { _typeof$E = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof$E(obj); }
+function _typeof$E(obj) { "@babel/helpers - typeof"; return _typeof$E = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof$E(obj); }
 
 function _classCallCheck$1r(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-function _defineProperties$1p(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _defineProperties$1r(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
-function _createClass$1p(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$1p(Constructor.prototype, protoProps); if (staticProps) _defineProperties$1p(Constructor, staticProps); return Constructor; }
+function _createClass$1r(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$1r(Constructor.prototype, protoProps); if (staticProps) _defineProperties$1r(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
 
-function _inherits$A(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf$B(subClass, superClass); }
+function _inherits$A(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf$B(subClass, superClass); }
 
 function _setPrototypeOf$B(o, p) { _setPrototypeOf$B = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf$B(o, p); }
 
@@ -44094,7 +44195,7 @@ var MathConstantsPlugin = /*#__PURE__*/function (_FunctionPlugin) {
     return _super.apply(this, arguments);
   }
 
-  _createClass$1p(MathConstantsPlugin, [{
+  _createClass$1r(MathConstantsPlugin, [{
     key: "pi",
     value: function pi(ast, state) {
       return this.runFunction(ast.args, state, this.metadata('PI'), function () {
@@ -44126,7 +44227,7 @@ MathConstantsPlugin.implementedFunctions = {
   }
 };
 
-function _typeof$F(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof$F = function _typeof(obj) { return typeof obj; }; } else { _typeof$F = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof$F(obj); }
+function _typeof$F(obj) { "@babel/helpers - typeof"; return _typeof$F = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof$F(obj); }
 
 function _slicedToArray$s(arr, i) { return _arrayWithHoles$s(arr) || _iterableToArrayLimit$s(arr, i) || _unsupportedIterableToArray$J(arr, i) || _nonIterableRest$s(); }
 
@@ -44142,11 +44243,11 @@ function _arrayWithHoles$s(arr) { if (Array.isArray(arr)) return arr; }
 
 function _classCallCheck$1s(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-function _defineProperties$1q(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _defineProperties$1s(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
-function _createClass$1q(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$1q(Constructor.prototype, protoProps); if (staticProps) _defineProperties$1q(Constructor, staticProps); return Constructor; }
+function _createClass$1s(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$1s(Constructor.prototype, protoProps); if (staticProps) _defineProperties$1s(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
 
-function _inherits$B(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf$C(subClass, superClass); }
+function _inherits$B(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf$C(subClass, superClass); }
 
 function _setPrototypeOf$C(o, p) { _setPrototypeOf$C = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf$C(o, p); }
 
@@ -44218,7 +44319,7 @@ var MatrixPlugin = /*#__PURE__*/function (_FunctionPlugin) {
     return _this;
   }
 
-  _createClass$1q(MatrixPlugin, [{
+  _createClass$1s(MatrixPlugin, [{
     key: "mmult",
     value: function mmult(ast, state) {
       var _this2 = this;
@@ -44516,15 +44617,15 @@ MatrixPlugin.implementedFunctions = {
   }
 };
 
-function _typeof$G(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof$G = function _typeof(obj) { return typeof obj; }; } else { _typeof$G = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof$G(obj); }
+function _typeof$G(obj) { "@babel/helpers - typeof"; return _typeof$G = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof$G(obj); }
 
 function _classCallCheck$1t(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-function _defineProperties$1r(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _defineProperties$1t(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
-function _createClass$1r(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$1r(Constructor.prototype, protoProps); if (staticProps) _defineProperties$1r(Constructor, staticProps); return Constructor; }
+function _createClass$1t(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$1t(Constructor.prototype, protoProps); if (staticProps) _defineProperties$1t(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
 
-function _inherits$C(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf$D(subClass, superClass); }
+function _inherits$C(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf$D(subClass, superClass); }
 
 function _setPrototypeOf$D(o, p) { _setPrototypeOf$D = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf$D(o, p); }
 
@@ -44552,7 +44653,7 @@ var MedianPlugin = /*#__PURE__*/function (_FunctionPlugin) {
     return _super.apply(this, arguments);
   }
 
-  _createClass$1r(MedianPlugin, [{
+  _createClass$1t(MedianPlugin, [{
     key: "median",
     value:
     /**
@@ -44672,15 +44773,15 @@ MedianPlugin.implementedFunctions = {
   }
 };
 
-function _typeof$H(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof$H = function _typeof(obj) { return typeof obj; }; } else { _typeof$H = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof$H(obj); }
+function _typeof$H(obj) { "@babel/helpers - typeof"; return _typeof$H = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof$H(obj); }
 
 function _classCallCheck$1u(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-function _defineProperties$1s(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _defineProperties$1u(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
-function _createClass$1s(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$1s(Constructor.prototype, protoProps); if (staticProps) _defineProperties$1s(Constructor, staticProps); return Constructor; }
+function _createClass$1u(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$1u(Constructor.prototype, protoProps); if (staticProps) _defineProperties$1u(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
 
-function _inherits$D(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf$E(subClass, superClass); }
+function _inherits$D(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf$E(subClass, superClass); }
 
 function _setPrototypeOf$E(o, p) { _setPrototypeOf$E = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf$E(o, p); }
 
@@ -44704,7 +44805,7 @@ var ModuloPlugin = /*#__PURE__*/function (_FunctionPlugin) {
     return _super.apply(this, arguments);
   }
 
-  _createClass$1s(ModuloPlugin, [{
+  _createClass$1u(ModuloPlugin, [{
     key: "mod",
     value: function mod(ast, state) {
       return this.runFunction(ast.args, state, this.metadata('MOD'), function (dividend, divisor) {
@@ -44730,7 +44831,7 @@ ModuloPlugin.implementedFunctions = {
   }
 };
 
-function _typeof$I(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof$I = function _typeof(obj) { return typeof obj; }; } else { _typeof$I = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof$I(obj); }
+function _typeof$I(obj) { "@babel/helpers - typeof"; return _typeof$I = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof$I(obj); }
 
 function _createForOfIteratorHelper$x(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray$K(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it.return != null) it.return(); } finally { if (didErr) throw err; } } }; }
 
@@ -44738,7 +44839,7 @@ function _unsupportedIterableToArray$K(o, minLen) { if (!o) return; if (typeof o
 
 function _arrayLikeToArray$K(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
 
-function _inherits$E(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf$F(subClass, superClass); }
+function _inherits$E(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf$F(subClass, superClass); }
 
 function _setPrototypeOf$F(o, p) { _setPrototypeOf$F = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf$F(o, p); }
 
@@ -44754,9 +44855,9 @@ function _getPrototypeOf$E(o) { _getPrototypeOf$E = Object.setPrototypeOf ? Obje
 
 function _classCallCheck$1v(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-function _defineProperties$1t(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _defineProperties$1v(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
-function _createClass$1t(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$1t(Constructor.prototype, protoProps); if (staticProps) _defineProperties$1t(Constructor, staticProps); return Constructor; }
+function _createClass$1v(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$1v(Constructor.prototype, protoProps); if (staticProps) _defineProperties$1v(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
 
 function zeroForInfinite(value) {
   if (isExtendedNumber(value) && !Number.isFinite(getRawValue(value))) {
@@ -44775,7 +44876,7 @@ var MomentsAggregate = /*#__PURE__*/function () {
     this.count = count;
   }
 
-  _createClass$1t(MomentsAggregate, [{
+  _createClass$1v(MomentsAggregate, [{
     key: "compose",
     value: function compose(other) {
       return new MomentsAggregate(this.sumsq + other.sumsq, this.sum + other.sum, this.count + other.count);
@@ -44846,7 +44947,7 @@ var NumericAggregationPlugin = /*#__PURE__*/function (_FunctionPlugin) {
    */
 
 
-  _createClass$1t(NumericAggregationPlugin, [{
+  _createClass$1v(NumericAggregationPlugin, [{
     key: "sum",
     value: function sum(ast, state) {
       return this.doSum(ast.args, state);
@@ -45586,15 +45687,15 @@ function numbersBooleans(arg) {
   }
 }
 
-function _typeof$J(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof$J = function _typeof(obj) { return typeof obj; }; } else { _typeof$J = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof$J(obj); }
+function _typeof$J(obj) { "@babel/helpers - typeof"; return _typeof$J = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof$J(obj); }
 
 function _classCallCheck$1w(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-function _defineProperties$1u(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _defineProperties$1w(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
-function _createClass$1u(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$1u(Constructor.prototype, protoProps); if (staticProps) _defineProperties$1u(Constructor, staticProps); return Constructor; }
+function _createClass$1w(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$1w(Constructor.prototype, protoProps); if (staticProps) _defineProperties$1w(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
 
-function _inherits$F(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf$G(subClass, superClass); }
+function _inherits$F(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf$G(subClass, superClass); }
 
 function _setPrototypeOf$G(o, p) { _setPrototypeOf$G = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf$G(o, p); }
 
@@ -45618,7 +45719,7 @@ var PowerPlugin = /*#__PURE__*/function (_FunctionPlugin) {
     return _super.apply(this, arguments);
   }
 
-  _createClass$1u(PowerPlugin, [{
+  _createClass$1w(PowerPlugin, [{
     key: "power",
     value: function power(ast, state) {
       return this.runFunction(ast.args, state, this.metadata('POWER'), Math.pow);
@@ -45638,15 +45739,15 @@ PowerPlugin.implementedFunctions = {
   }
 };
 
-function _typeof$K(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof$K = function _typeof(obj) { return typeof obj; }; } else { _typeof$K = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof$K(obj); }
+function _typeof$K(obj) { "@babel/helpers - typeof"; return _typeof$K = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof$K(obj); }
 
 function _classCallCheck$1x(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-function _defineProperties$1v(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _defineProperties$1x(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
-function _createClass$1v(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$1v(Constructor.prototype, protoProps); if (staticProps) _defineProperties$1v(Constructor, staticProps); return Constructor; }
+function _createClass$1x(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$1x(Constructor.prototype, protoProps); if (staticProps) _defineProperties$1x(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
 
-function _inherits$G(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf$H(subClass, superClass); }
+function _inherits$G(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf$H(subClass, superClass); }
 
 function _setPrototypeOf$H(o, p) { _setPrototypeOf$H = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf$H(o, p); }
 
@@ -45670,7 +45771,7 @@ var RadiansPlugin = /*#__PURE__*/function (_FunctionPlugin) {
     return _super.apply(this, arguments);
   }
 
-  _createClass$1v(RadiansPlugin, [{
+  _createClass$1x(RadiansPlugin, [{
     key: "radians",
     value: function radians(ast, state) {
       return this.runFunction(ast.args, state, this.metadata('RADIANS'), function (arg) {
@@ -45690,15 +45791,15 @@ RadiansPlugin.implementedFunctions = {
   }
 };
 
-function _typeof$L(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof$L = function _typeof(obj) { return typeof obj; }; } else { _typeof$L = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof$L(obj); }
+function _typeof$L(obj) { "@babel/helpers - typeof"; return _typeof$L = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof$L(obj); }
 
 function _classCallCheck$1y(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-function _defineProperties$1w(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _defineProperties$1y(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
-function _createClass$1w(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$1w(Constructor.prototype, protoProps); if (staticProps) _defineProperties$1w(Constructor, staticProps); return Constructor; }
+function _createClass$1y(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$1y(Constructor.prototype, protoProps); if (staticProps) _defineProperties$1y(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
 
-function _inherits$H(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf$I(subClass, superClass); }
+function _inherits$H(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf$I(subClass, superClass); }
 
 function _setPrototypeOf$I(o, p) { _setPrototypeOf$I = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf$I(o, p); }
 
@@ -45727,7 +45828,7 @@ var RadixConversionPlugin = /*#__PURE__*/function (_FunctionPlugin) {
     return _super.apply(this, arguments);
   }
 
-  _createClass$1w(RadixConversionPlugin, [{
+  _createClass$1y(RadixConversionPlugin, [{
     key: "dec2bin",
     value: function dec2bin(ast, state) {
       return this.runFunction(ast.args, state, this.metadata('DEC2BIN'), function (value, places) {
@@ -46093,15 +46194,15 @@ function twoComplementToDecimal(value, base) {
   return parsed >= offset / 2 ? parsed - offset : parsed;
 }
 
-function _typeof$M(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof$M = function _typeof(obj) { return typeof obj; }; } else { _typeof$M = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof$M(obj); }
+function _typeof$M(obj) { "@babel/helpers - typeof"; return _typeof$M = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof$M(obj); }
 
 function _classCallCheck$1z(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-function _defineProperties$1x(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _defineProperties$1z(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
-function _createClass$1x(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$1x(Constructor.prototype, protoProps); if (staticProps) _defineProperties$1x(Constructor, staticProps); return Constructor; }
+function _createClass$1z(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$1z(Constructor.prototype, protoProps); if (staticProps) _defineProperties$1z(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
 
-function _inherits$I(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf$J(subClass, superClass); }
+function _inherits$I(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf$J(subClass, superClass); }
 
 function _setPrototypeOf$J(o, p) { _setPrototypeOf$J = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf$J(o, p); }
 
@@ -46125,7 +46226,7 @@ var RandomPlugin = /*#__PURE__*/function (_FunctionPlugin) {
     return _super.apply(this, arguments);
   }
 
-  _createClass$1x(RandomPlugin, [{
+  _createClass$1z(RandomPlugin, [{
     key: "rand",
     value:
     /**
@@ -46179,15 +46280,15 @@ RandomPlugin.implementedFunctions = {
   }
 };
 
-function _typeof$N(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof$N = function _typeof(obj) { return typeof obj; }; } else { _typeof$N = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof$N(obj); }
+function _typeof$N(obj) { "@babel/helpers - typeof"; return _typeof$N = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof$N(obj); }
 
 function _classCallCheck$1A(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-function _defineProperties$1y(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _defineProperties$1A(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
-function _createClass$1y(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$1y(Constructor.prototype, protoProps); if (staticProps) _defineProperties$1y(Constructor, staticProps); return Constructor; }
+function _createClass$1A(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$1A(Constructor.prototype, protoProps); if (staticProps) _defineProperties$1A(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
 
-function _inherits$J(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf$K(subClass, superClass); }
+function _inherits$J(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf$K(subClass, superClass); }
 
 function _setPrototypeOf$K(o, p) { _setPrototypeOf$K = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf$K(o, p); }
 
@@ -46219,7 +46320,7 @@ var RoundingPlugin = /*#__PURE__*/function (_FunctionPlugin) {
     return _super.apply(this, arguments);
   }
 
-  _createClass$1y(RoundingPlugin, [{
+  _createClass$1A(RoundingPlugin, [{
     key: "roundup",
     value: function roundup(ast, state) {
       return this.runFunction(ast.args, state, this.metadata('ROUNDDOWN'), function (numberToRound, places) {
@@ -46501,15 +46602,15 @@ RoundingPlugin.aliases = {
   'TRUNC': 'ROUNDDOWN'
 };
 
-function _typeof$O(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof$O = function _typeof(obj) { return typeof obj; }; } else { _typeof$O = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof$O(obj); }
+function _typeof$O(obj) { "@babel/helpers - typeof"; return _typeof$O = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof$O(obj); }
 
 function _classCallCheck$1B(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-function _defineProperties$1z(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _defineProperties$1B(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
-function _createClass$1z(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$1z(Constructor.prototype, protoProps); if (staticProps) _defineProperties$1z(Constructor, staticProps); return Constructor; }
+function _createClass$1B(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$1B(Constructor.prototype, protoProps); if (staticProps) _defineProperties$1B(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
 
-function _inherits$K(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf$L(subClass, superClass); }
+function _inherits$K(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf$L(subClass, superClass); }
 
 function _setPrototypeOf$L(o, p) { _setPrototypeOf$L = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf$L(o, p); }
 
@@ -46533,7 +46634,7 @@ var SqrtPlugin = /*#__PURE__*/function (_FunctionPlugin) {
     return _super.apply(this, arguments);
   }
 
-  _createClass$1z(SqrtPlugin, [{
+  _createClass$1B(SqrtPlugin, [{
     key: "sqrt",
     value: function sqrt(ast, state) {
       return this.runFunction(ast.args, state, this.metadata('SQRT'), Math.sqrt);
@@ -46606,9 +46707,9 @@ function _arrayLikeToArray$L(arr, len) { if (len == null || len > arr.length) le
 
 function _classCallCheck$1C(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-function _defineProperties$1A(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _defineProperties$1C(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
-function _createClass$1A(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$1A(Constructor.prototype, protoProps); if (staticProps) _defineProperties$1A(Constructor, staticProps); return Constructor; }
+function _createClass$1C(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$1C(Constructor.prototype, protoProps); if (staticProps) _defineProperties$1C(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
 
 var findSmallerRangeForMany = function findSmallerRangeForMany(dependencyGraph, conditionRanges, valuesRange) {
   if (valuesRange.end.row > valuesRange.start.row) {
@@ -46644,7 +46745,7 @@ var CriterionFunctionCompute = /*#__PURE__*/function () {
     this.dependencyGraph = this.interpreter.dependencyGraph;
   }
 
-  _createClass$1A(CriterionFunctionCompute, [{
+  _createClass$1C(CriterionFunctionCompute, [{
     key: "compute",
     value: function compute(simpleValuesRange, conditions) {
       var _this = this;
@@ -46797,12 +46898,12 @@ var CriterionFunctionCompute = /*#__PURE__*/function () {
 
   return CriterionFunctionCompute;
 }();
-var Condition = function Condition(conditionRange, criterionPackage) {
+var Condition = /*#__PURE__*/_createClass$1C(function Condition(conditionRange, criterionPackage) {
   _classCallCheck$1C(this, Condition);
 
   this.conditionRange = conditionRange;
   this.criterionPackage = criterionPackage;
-};
+});
 
 function getRangeValues(dependencyGraph, cellRange) {
   var _iterator3, _step3, cellFromRange;
@@ -46950,9 +47051,9 @@ function zip(arr1, arr2) {
   return result;
 }
 
-function _typeof$P(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof$P = function _typeof(obj) { return typeof obj; }; } else { _typeof$P = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof$P(obj); }
+function _typeof$P(obj) { "@babel/helpers - typeof"; return _typeof$P = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof$P(obj); }
 
-function _inherits$L(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf$M(subClass, superClass); }
+function _inherits$L(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf$M(subClass, superClass); }
 
 function _setPrototypeOf$M(o, p) { _setPrototypeOf$M = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf$M(o, p); }
 
@@ -46980,9 +47081,9 @@ function _arrayLikeToArray$M(arr, len) { if (len == null || len > arr.length) le
 
 function _classCallCheck$1D(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-function _defineProperties$1B(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _defineProperties$1D(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
-function _createClass$1B(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$1B(Constructor.prototype, protoProps); if (staticProps) _defineProperties$1B(Constructor, staticProps); return Constructor; }
+function _createClass$1D(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$1D(Constructor.prototype, protoProps); if (staticProps) _defineProperties$1D(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
 
 var AverageResult = /*#__PURE__*/function () {
   function AverageResult(sum, count) {
@@ -46992,7 +47093,7 @@ var AverageResult = /*#__PURE__*/function () {
     this.count = count;
   }
 
-  _createClass$1B(AverageResult, [{
+  _createClass$1D(AverageResult, [{
     key: "compose",
     value: function compose(other) {
       return new AverageResult(this.sum + other.sum, this.count + other.count);
@@ -47054,7 +47155,7 @@ var SumifPlugin = /*#__PURE__*/function (_FunctionPlugin) {
     return _super.apply(this, arguments);
   }
 
-  _createClass$1B(SumifPlugin, [{
+  _createClass$1D(SumifPlugin, [{
     key: "sumif",
     value:
     /**
@@ -47259,15 +47360,21 @@ SumifPlugin.implementedFunctions = {
   }
 };
 
-function _typeof$Q(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof$Q = function _typeof(obj) { return typeof obj; }; } else { _typeof$Q = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof$Q(obj); }
+function _typeof$Q(obj) { "@babel/helpers - typeof"; return _typeof$Q = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof$Q(obj); }
+
+function _createForOfIteratorHelper$z(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray$N(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it.return != null) it.return(); } finally { if (didErr) throw err; } } }; }
+
+function _unsupportedIterableToArray$N(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray$N(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray$N(o, minLen); }
+
+function _arrayLikeToArray$N(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
 
 function _classCallCheck$1E(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-function _defineProperties$1C(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _defineProperties$1E(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
-function _createClass$1C(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$1C(Constructor.prototype, protoProps); if (staticProps) _defineProperties$1C(Constructor, staticProps); return Constructor; }
+function _createClass$1E(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$1E(Constructor.prototype, protoProps); if (staticProps) _defineProperties$1E(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
 
-function _inherits$M(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf$N(subClass, superClass); }
+function _inherits$M(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf$N(subClass, superClass); }
 
 function _setPrototypeOf$N(o, p) { _setPrototypeOf$N = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf$N(o, p); }
 
@@ -47291,38 +47398,65 @@ var SumprodPlugin = /*#__PURE__*/function (_FunctionPlugin) {
     return _super.apply(this, arguments);
   }
 
-  _createClass$1C(SumprodPlugin, [{
+  _createClass$1E(SumprodPlugin, [{
     key: "sumproduct",
     value: function sumproduct(ast, state) {
       var _this = this;
 
-      return this.runFunction(ast.args, state, this.metadata('SUMPRODUCT'), function (left, right) {
-        if (left.numberOfElements() !== right.numberOfElements()) {
-          return new CellError(ErrorType.VALUE, ErrorMessage.EqualLength);
+      return this.runFunction(ast.args, state, this.metadata('SUMPRODUCT'), function () {
+        for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+          args[_key] = arguments[_key];
         }
 
-        var result = 0;
-        var lit = left.iterateValuesFromTopLeftCorner();
-        var rit = right.iterateValuesFromTopLeftCorner();
-        var l, r;
+        var width = args[0].width();
+        var height = args[0].height();
 
-        while (l = lit.next(), r = rit.next(), !l.done && !r.done) {
-          if (l.value instanceof CellError) {
-            return l.value;
-          } else if (r.value instanceof CellError) {
-            return r.value;
-          } else {
-            var lval = _this.coerceScalarToNumberOrError(l.value);
+        for (var _i = 0, _args = args; _i < _args.length; _i++) {
+          var arg = _args[_i];
 
-            var rval = _this.coerceScalarToNumberOrError(r.value);
-
-            if (isExtendedNumber(lval) && isExtendedNumber(rval)) {
-              result += getRawValue(lval) * getRawValue(rval);
-            }
+          if (arg.width() !== width || arg.height() !== height) {
+            return new CellError(ErrorType.VALUE, ErrorMessage.EqualLength);
           }
         }
 
-        return result;
+        var ret = 0;
+        var iterators = args.map(function (arg) {
+          return arg.iterateValuesFromTopLeftCorner();
+        });
+
+        for (var i = 0; i < width * height; i++) {
+          var acc = 1;
+
+          var _iterator = _createForOfIteratorHelper$z(iterators),
+              _step;
+
+          try {
+            for (_iterator.s(); !(_step = _iterator.n()).done;) {
+              var it = _step.value;
+              var val = it.next().value;
+
+              if (val instanceof CellError) {
+                return val;
+              }
+
+              var coercedVal = _this.coerceScalarToNumberOrError(val);
+
+              if (isExtendedNumber(coercedVal)) {
+                acc *= getRawValue(coercedVal);
+              } else {
+                acc = 0;
+              }
+            }
+          } catch (err) {
+            _iterator.e(err);
+          } finally {
+            _iterator.f();
+          }
+
+          ret += acc;
+        }
+
+        return ret;
       });
     }
   }]);
@@ -47334,9 +47468,8 @@ SumprodPlugin.implementedFunctions = {
     method: 'sumproduct',
     parameters: [{
       argumentType: ArgumentTypes.RANGE
-    }, {
-      argumentType: ArgumentTypes.RANGE
-    }]
+    }],
+    repeatLastArgs: 1
   }
 };
 
@@ -47346,15 +47479,15 @@ _export({ target: 'String', proto: true }, {
   repeat: stringRepeat
 });
 
-function _typeof$R(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof$R = function _typeof(obj) { return typeof obj; }; } else { _typeof$R = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof$R(obj); }
+function _typeof$R(obj) { "@babel/helpers - typeof"; return _typeof$R = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof$R(obj); }
 
 function _classCallCheck$1F(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-function _defineProperties$1D(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _defineProperties$1F(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
-function _createClass$1D(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$1D(Constructor.prototype, protoProps); if (staticProps) _defineProperties$1D(Constructor, staticProps); return Constructor; }
+function _createClass$1F(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$1F(Constructor.prototype, protoProps); if (staticProps) _defineProperties$1F(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
 
-function _inherits$N(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf$O(subClass, superClass); }
+function _inherits$N(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf$O(subClass, superClass); }
 
 function _setPrototypeOf$O(o, p) { _setPrototypeOf$O = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf$O(o, p); }
 
@@ -47382,7 +47515,7 @@ var TextPlugin = /*#__PURE__*/function (_FunctionPlugin) {
     return _super.apply(this, arguments);
   }
 
-  _createClass$1D(TextPlugin, [{
+  _createClass$1F(TextPlugin, [{
     key: "concatenate",
     value:
     /**
@@ -47447,7 +47580,7 @@ var TextPlugin = /*#__PURE__*/function (_FunctionPlugin) {
     key: "proper",
     value: function proper(ast, state) {
       return this.runFunction(ast.args, state, this.metadata('PROPER'), function (arg) {
-        return arg.replace(/\w\S*/g, function (word) {
+        return arg.replace(/(?:[A-Za-z\xAA\xB5\xBA\xC0-\xD6\xD8-\xF6\xF8-\u02C1\u02C6-\u02D1\u02E0-\u02E4\u02EC\u02EE\u0370-\u0374\u0376\u0377\u037A-\u037D\u037F\u0386\u0388-\u038A\u038C\u038E-\u03A1\u03A3-\u03F5\u03F7-\u0481\u048A-\u052F\u0531-\u0556\u0559\u0560-\u0588\u05D0-\u05EA\u05EF-\u05F2\u0620-\u064A\u066E\u066F\u0671-\u06D3\u06D5\u06E5\u06E6\u06EE\u06EF\u06FA-\u06FC\u06FF\u0710\u0712-\u072F\u074D-\u07A5\u07B1\u07CA-\u07EA\u07F4\u07F5\u07FA\u0800-\u0815\u081A\u0824\u0828\u0840-\u0858\u0860-\u086A\u0870-\u0887\u0889-\u088E\u08A0-\u08C9\u0904-\u0939\u093D\u0950\u0958-\u0961\u0971-\u0980\u0985-\u098C\u098F\u0990\u0993-\u09A8\u09AA-\u09B0\u09B2\u09B6-\u09B9\u09BD\u09CE\u09DC\u09DD\u09DF-\u09E1\u09F0\u09F1\u09FC\u0A05-\u0A0A\u0A0F\u0A10\u0A13-\u0A28\u0A2A-\u0A30\u0A32\u0A33\u0A35\u0A36\u0A38\u0A39\u0A59-\u0A5C\u0A5E\u0A72-\u0A74\u0A85-\u0A8D\u0A8F-\u0A91\u0A93-\u0AA8\u0AAA-\u0AB0\u0AB2\u0AB3\u0AB5-\u0AB9\u0ABD\u0AD0\u0AE0\u0AE1\u0AF9\u0B05-\u0B0C\u0B0F\u0B10\u0B13-\u0B28\u0B2A-\u0B30\u0B32\u0B33\u0B35-\u0B39\u0B3D\u0B5C\u0B5D\u0B5F-\u0B61\u0B71\u0B83\u0B85-\u0B8A\u0B8E-\u0B90\u0B92-\u0B95\u0B99\u0B9A\u0B9C\u0B9E\u0B9F\u0BA3\u0BA4\u0BA8-\u0BAA\u0BAE-\u0BB9\u0BD0\u0C05-\u0C0C\u0C0E-\u0C10\u0C12-\u0C28\u0C2A-\u0C39\u0C3D\u0C58-\u0C5A\u0C5D\u0C60\u0C61\u0C80\u0C85-\u0C8C\u0C8E-\u0C90\u0C92-\u0CA8\u0CAA-\u0CB3\u0CB5-\u0CB9\u0CBD\u0CDD\u0CDE\u0CE0\u0CE1\u0CF1\u0CF2\u0D04-\u0D0C\u0D0E-\u0D10\u0D12-\u0D3A\u0D3D\u0D4E\u0D54-\u0D56\u0D5F-\u0D61\u0D7A-\u0D7F\u0D85-\u0D96\u0D9A-\u0DB1\u0DB3-\u0DBB\u0DBD\u0DC0-\u0DC6\u0E01-\u0E30\u0E32\u0E33\u0E40-\u0E46\u0E81\u0E82\u0E84\u0E86-\u0E8A\u0E8C-\u0EA3\u0EA5\u0EA7-\u0EB0\u0EB2\u0EB3\u0EBD\u0EC0-\u0EC4\u0EC6\u0EDC-\u0EDF\u0F00\u0F40-\u0F47\u0F49-\u0F6C\u0F88-\u0F8C\u1000-\u102A\u103F\u1050-\u1055\u105A-\u105D\u1061\u1065\u1066\u106E-\u1070\u1075-\u1081\u108E\u10A0-\u10C5\u10C7\u10CD\u10D0-\u10FA\u10FC-\u1248\u124A-\u124D\u1250-\u1256\u1258\u125A-\u125D\u1260-\u1288\u128A-\u128D\u1290-\u12B0\u12B2-\u12B5\u12B8-\u12BE\u12C0\u12C2-\u12C5\u12C8-\u12D6\u12D8-\u1310\u1312-\u1315\u1318-\u135A\u1380-\u138F\u13A0-\u13F5\u13F8-\u13FD\u1401-\u166C\u166F-\u167F\u1681-\u169A\u16A0-\u16EA\u16F1-\u16F8\u1700-\u1711\u171F-\u1731\u1740-\u1751\u1760-\u176C\u176E-\u1770\u1780-\u17B3\u17D7\u17DC\u1820-\u1878\u1880-\u1884\u1887-\u18A8\u18AA\u18B0-\u18F5\u1900-\u191E\u1950-\u196D\u1970-\u1974\u1980-\u19AB\u19B0-\u19C9\u1A00-\u1A16\u1A20-\u1A54\u1AA7\u1B05-\u1B33\u1B45-\u1B4C\u1B83-\u1BA0\u1BAE\u1BAF\u1BBA-\u1BE5\u1C00-\u1C23\u1C4D-\u1C4F\u1C5A-\u1C7D\u1C80-\u1C88\u1C90-\u1CBA\u1CBD-\u1CBF\u1CE9-\u1CEC\u1CEE-\u1CF3\u1CF5\u1CF6\u1CFA\u1D00-\u1DBF\u1E00-\u1F15\u1F18-\u1F1D\u1F20-\u1F45\u1F48-\u1F4D\u1F50-\u1F57\u1F59\u1F5B\u1F5D\u1F5F-\u1F7D\u1F80-\u1FB4\u1FB6-\u1FBC\u1FBE\u1FC2-\u1FC4\u1FC6-\u1FCC\u1FD0-\u1FD3\u1FD6-\u1FDB\u1FE0-\u1FEC\u1FF2-\u1FF4\u1FF6-\u1FFC\u2071\u207F\u2090-\u209C\u2102\u2107\u210A-\u2113\u2115\u2119-\u211D\u2124\u2126\u2128\u212A-\u212D\u212F-\u2139\u213C-\u213F\u2145-\u2149\u214E\u2183\u2184\u2C00-\u2CE4\u2CEB-\u2CEE\u2CF2\u2CF3\u2D00-\u2D25\u2D27\u2D2D\u2D30-\u2D67\u2D6F\u2D80-\u2D96\u2DA0-\u2DA6\u2DA8-\u2DAE\u2DB0-\u2DB6\u2DB8-\u2DBE\u2DC0-\u2DC6\u2DC8-\u2DCE\u2DD0-\u2DD6\u2DD8-\u2DDE\u2E2F\u3005\u3006\u3031-\u3035\u303B\u303C\u3041-\u3096\u309D-\u309F\u30A1-\u30FA\u30FC-\u30FF\u3105-\u312F\u3131-\u318E\u31A0-\u31BF\u31F0-\u31FF\u3400-\u4DBF\u4E00-\uA48C\uA4D0-\uA4FD\uA500-\uA60C\uA610-\uA61F\uA62A\uA62B\uA640-\uA66E\uA67F-\uA69D\uA6A0-\uA6E5\uA717-\uA71F\uA722-\uA788\uA78B-\uA7CA\uA7D0\uA7D1\uA7D3\uA7D5-\uA7D9\uA7F2-\uA801\uA803-\uA805\uA807-\uA80A\uA80C-\uA822\uA840-\uA873\uA882-\uA8B3\uA8F2-\uA8F7\uA8FB\uA8FD\uA8FE\uA90A-\uA925\uA930-\uA946\uA960-\uA97C\uA984-\uA9B2\uA9CF\uA9E0-\uA9E4\uA9E6-\uA9EF\uA9FA-\uA9FE\uAA00-\uAA28\uAA40-\uAA42\uAA44-\uAA4B\uAA60-\uAA76\uAA7A\uAA7E-\uAAAF\uAAB1\uAAB5\uAAB6\uAAB9-\uAABD\uAAC0\uAAC2\uAADB-\uAADD\uAAE0-\uAAEA\uAAF2-\uAAF4\uAB01-\uAB06\uAB09-\uAB0E\uAB11-\uAB16\uAB20-\uAB26\uAB28-\uAB2E\uAB30-\uAB5A\uAB5C-\uAB69\uAB70-\uABE2\uAC00-\uD7A3\uD7B0-\uD7C6\uD7CB-\uD7FB\uF900-\uFA6D\uFA70-\uFAD9\uFB00-\uFB06\uFB13-\uFB17\uFB1D\uFB1F-\uFB28\uFB2A-\uFB36\uFB38-\uFB3C\uFB3E\uFB40\uFB41\uFB43\uFB44\uFB46-\uFBB1\uFBD3-\uFD3D\uFD50-\uFD8F\uFD92-\uFDC7\uFDF0-\uFDFB\uFE70-\uFE74\uFE76-\uFEFC\uFF21-\uFF3A\uFF41-\uFF5A\uFF66-\uFFBE\uFFC2-\uFFC7\uFFCA-\uFFCF\uFFD2-\uFFD7\uFFDA-\uFFDC]|\uD800[\uDC00-\uDC0B\uDC0D-\uDC26\uDC28-\uDC3A\uDC3C\uDC3D\uDC3F-\uDC4D\uDC50-\uDC5D\uDC80-\uDCFA\uDE80-\uDE9C\uDEA0-\uDED0\uDF00-\uDF1F\uDF2D-\uDF40\uDF42-\uDF49\uDF50-\uDF75\uDF80-\uDF9D\uDFA0-\uDFC3\uDFC8-\uDFCF]|\uD801[\uDC00-\uDC9D\uDCB0-\uDCD3\uDCD8-\uDCFB\uDD00-\uDD27\uDD30-\uDD63\uDD70-\uDD7A\uDD7C-\uDD8A\uDD8C-\uDD92\uDD94\uDD95\uDD97-\uDDA1\uDDA3-\uDDB1\uDDB3-\uDDB9\uDDBB\uDDBC\uDE00-\uDF36\uDF40-\uDF55\uDF60-\uDF67\uDF80-\uDF85\uDF87-\uDFB0\uDFB2-\uDFBA]|\uD802[\uDC00-\uDC05\uDC08\uDC0A-\uDC35\uDC37\uDC38\uDC3C\uDC3F-\uDC55\uDC60-\uDC76\uDC80-\uDC9E\uDCE0-\uDCF2\uDCF4\uDCF5\uDD00-\uDD15\uDD20-\uDD39\uDD80-\uDDB7\uDDBE\uDDBF\uDE00\uDE10-\uDE13\uDE15-\uDE17\uDE19-\uDE35\uDE60-\uDE7C\uDE80-\uDE9C\uDEC0-\uDEC7\uDEC9-\uDEE4\uDF00-\uDF35\uDF40-\uDF55\uDF60-\uDF72\uDF80-\uDF91]|\uD803[\uDC00-\uDC48\uDC80-\uDCB2\uDCC0-\uDCF2\uDD00-\uDD23\uDE80-\uDEA9\uDEB0\uDEB1\uDF00-\uDF1C\uDF27\uDF30-\uDF45\uDF70-\uDF81\uDFB0-\uDFC4\uDFE0-\uDFF6]|\uD804[\uDC03-\uDC37\uDC71\uDC72\uDC75\uDC83-\uDCAF\uDCD0-\uDCE8\uDD03-\uDD26\uDD44\uDD47\uDD50-\uDD72\uDD76\uDD83-\uDDB2\uDDC1-\uDDC4\uDDDA\uDDDC\uDE00-\uDE11\uDE13-\uDE2B\uDE80-\uDE86\uDE88\uDE8A-\uDE8D\uDE8F-\uDE9D\uDE9F-\uDEA8\uDEB0-\uDEDE\uDF05-\uDF0C\uDF0F\uDF10\uDF13-\uDF28\uDF2A-\uDF30\uDF32\uDF33\uDF35-\uDF39\uDF3D\uDF50\uDF5D-\uDF61]|\uD805[\uDC00-\uDC34\uDC47-\uDC4A\uDC5F-\uDC61\uDC80-\uDCAF\uDCC4\uDCC5\uDCC7\uDD80-\uDDAE\uDDD8-\uDDDB\uDE00-\uDE2F\uDE44\uDE80-\uDEAA\uDEB8\uDF00-\uDF1A\uDF40-\uDF46]|\uD806[\uDC00-\uDC2B\uDCA0-\uDCDF\uDCFF-\uDD06\uDD09\uDD0C-\uDD13\uDD15\uDD16\uDD18-\uDD2F\uDD3F\uDD41\uDDA0-\uDDA7\uDDAA-\uDDD0\uDDE1\uDDE3\uDE00\uDE0B-\uDE32\uDE3A\uDE50\uDE5C-\uDE89\uDE9D\uDEB0-\uDEF8]|\uD807[\uDC00-\uDC08\uDC0A-\uDC2E\uDC40\uDC72-\uDC8F\uDD00-\uDD06\uDD08\uDD09\uDD0B-\uDD30\uDD46\uDD60-\uDD65\uDD67\uDD68\uDD6A-\uDD89\uDD98\uDEE0-\uDEF2\uDFB0]|\uD808[\uDC00-\uDF99]|\uD809[\uDC80-\uDD43]|\uD80B[\uDF90-\uDFF0]|[\uD80C\uD81C-\uD820\uD822\uD840-\uD868\uD86A-\uD86C\uD86F-\uD872\uD874-\uD879\uD880-\uD883][\uDC00-\uDFFF]|\uD80D[\uDC00-\uDC2E]|\uD811[\uDC00-\uDE46]|\uD81A[\uDC00-\uDE38\uDE40-\uDE5E\uDE70-\uDEBE\uDED0-\uDEED\uDF00-\uDF2F\uDF40-\uDF43\uDF63-\uDF77\uDF7D-\uDF8F]|\uD81B[\uDE40-\uDE7F\uDF00-\uDF4A\uDF50\uDF93-\uDF9F\uDFE0\uDFE1\uDFE3]|\uD821[\uDC00-\uDFF7]|\uD823[\uDC00-\uDCD5\uDD00-\uDD08]|\uD82B[\uDFF0-\uDFF3\uDFF5-\uDFFB\uDFFD\uDFFE]|\uD82C[\uDC00-\uDD22\uDD50-\uDD52\uDD64-\uDD67\uDD70-\uDEFB]|\uD82F[\uDC00-\uDC6A\uDC70-\uDC7C\uDC80-\uDC88\uDC90-\uDC99]|\uD835[\uDC00-\uDC54\uDC56-\uDC9C\uDC9E\uDC9F\uDCA2\uDCA5\uDCA6\uDCA9-\uDCAC\uDCAE-\uDCB9\uDCBB\uDCBD-\uDCC3\uDCC5-\uDD05\uDD07-\uDD0A\uDD0D-\uDD14\uDD16-\uDD1C\uDD1E-\uDD39\uDD3B-\uDD3E\uDD40-\uDD44\uDD46\uDD4A-\uDD50\uDD52-\uDEA5\uDEA8-\uDEC0\uDEC2-\uDEDA\uDEDC-\uDEFA\uDEFC-\uDF14\uDF16-\uDF34\uDF36-\uDF4E\uDF50-\uDF6E\uDF70-\uDF88\uDF8A-\uDFA8\uDFAA-\uDFC2\uDFC4-\uDFCB]|\uD837[\uDF00-\uDF1E]|\uD838[\uDD00-\uDD2C\uDD37-\uDD3D\uDD4E\uDE90-\uDEAD\uDEC0-\uDEEB]|\uD839[\uDFE0-\uDFE6\uDFE8-\uDFEB\uDFED\uDFEE\uDFF0-\uDFFE]|\uD83A[\uDC00-\uDCC4\uDD00-\uDD43\uDD4B]|\uD83B[\uDE00-\uDE03\uDE05-\uDE1F\uDE21\uDE22\uDE24\uDE27\uDE29-\uDE32\uDE34-\uDE37\uDE39\uDE3B\uDE42\uDE47\uDE49\uDE4B\uDE4D-\uDE4F\uDE51\uDE52\uDE54\uDE57\uDE59\uDE5B\uDE5D\uDE5F\uDE61\uDE62\uDE64\uDE67-\uDE6A\uDE6C-\uDE72\uDE74-\uDE77\uDE79-\uDE7C\uDE7E\uDE80-\uDE89\uDE8B-\uDE9B\uDEA1-\uDEA3\uDEA5-\uDEA9\uDEAB-\uDEBB]|\uD869[\uDC00-\uDEDF\uDF00-\uDFFF]|\uD86D[\uDC00-\uDF38\uDF40-\uDFFF]|\uD86E[\uDC00-\uDC1D\uDC20-\uDFFF]|\uD873[\uDC00-\uDEA1\uDEB0-\uDFFF]|\uD87A[\uDC00-\uDFE0]|\uD87E[\uDC00-\uDE1D]|\uD884[\uDC00-\uDF4A])+/g, function (word) {
           return word.charAt(0).toUpperCase() + word.substring(1).toLowerCase();
         });
       });
@@ -47887,15 +48020,15 @@ _export({ target: 'Math', stat: true, forced: !($atanh && 1 / $atanh(-0) < 0) },
   }
 });
 
-function _typeof$S(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof$S = function _typeof(obj) { return typeof obj; }; } else { _typeof$S = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof$S(obj); }
+function _typeof$S(obj) { "@babel/helpers - typeof"; return _typeof$S = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof$S(obj); }
 
 function _classCallCheck$1G(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-function _defineProperties$1E(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _defineProperties$1G(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
-function _createClass$1E(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$1E(Constructor.prototype, protoProps); if (staticProps) _defineProperties$1E(Constructor, staticProps); return Constructor; }
+function _createClass$1G(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$1G(Constructor.prototype, protoProps); if (staticProps) _defineProperties$1G(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
 
-function _inherits$O(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf$P(subClass, superClass); }
+function _inherits$O(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf$P(subClass, superClass); }
 
 function _setPrototypeOf$P(o, p) { _setPrototypeOf$P = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf$P(o, p); }
 
@@ -47923,7 +48056,7 @@ var TrigonometryPlugin = /*#__PURE__*/function (_FunctionPlugin) {
     return _super.apply(this, arguments);
   }
 
-  _createClass$1E(TrigonometryPlugin, [{
+  _createClass$1G(TrigonometryPlugin, [{
     key: "acos",
     value:
     /**
@@ -48194,15 +48327,15 @@ TrigonometryPlugin.implementedFunctions = {
   }
 };
 
-function _typeof$T(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof$T = function _typeof(obj) { return typeof obj; }; } else { _typeof$T = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof$T(obj); }
+function _typeof$T(obj) { "@babel/helpers - typeof"; return _typeof$T = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof$T(obj); }
 
 function _classCallCheck$1H(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-function _defineProperties$1F(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _defineProperties$1H(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
-function _createClass$1F(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$1F(Constructor.prototype, protoProps); if (staticProps) _defineProperties$1F(Constructor, staticProps); return Constructor; }
+function _createClass$1H(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$1H(Constructor.prototype, protoProps); if (staticProps) _defineProperties$1H(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
 
-function _inherits$P(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf$Q(subClass, superClass); }
+function _inherits$P(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf$Q(subClass, superClass); }
 
 function _setPrototypeOf$Q(o, p) { _setPrototypeOf$Q = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf$Q(o, p); }
 
@@ -48231,7 +48364,7 @@ var RowSearchStrategy = /*#__PURE__*/function (_AdvancedFind) {
     return _this;
   }
 
-  _createClass$1F(RowSearchStrategy, [{
+  _createClass$1H(RowSearchStrategy, [{
     key: "find",
     value: function find(key, rangeValue, sorted) {
       if (typeof key === 'string') {
@@ -48257,15 +48390,15 @@ var RowSearchStrategy = /*#__PURE__*/function (_AdvancedFind) {
   return RowSearchStrategy;
 }(AdvancedFind);
 
-function _typeof$U(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof$U = function _typeof(obj) { return typeof obj; }; } else { _typeof$U = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof$U(obj); }
+function _typeof$U(obj) { "@babel/helpers - typeof"; return _typeof$U = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof$U(obj); }
 
 function _classCallCheck$1I(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-function _defineProperties$1G(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _defineProperties$1I(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
-function _createClass$1G(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$1G(Constructor.prototype, protoProps); if (staticProps) _defineProperties$1G(Constructor, staticProps); return Constructor; }
+function _createClass$1I(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$1I(Constructor.prototype, protoProps); if (staticProps) _defineProperties$1I(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
 
-function _inherits$Q(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf$R(subClass, superClass); }
+function _inherits$Q(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf$R(subClass, superClass); }
 
 function _setPrototypeOf$R(o, p) { _setPrototypeOf$R = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf$R(o, p); }
 
@@ -48300,7 +48433,7 @@ var LookupPlugin = /*#__PURE__*/function (_FunctionPlugin) {
    */
 
 
-  _createClass$1G(LookupPlugin, [{
+  _createClass$1I(LookupPlugin, [{
     key: "vlookup",
     value: function vlookup(ast, state) {
       var _this2 = this;
@@ -48361,6 +48494,15 @@ var LookupPlugin = /*#__PURE__*/function (_FunctionPlugin) {
       return this.runFunction(ast.args, state, this.metadata('MATCH'), function (key, rangeValue, sorted) {
         return _this4.doMatch(zeroIfEmpty(key), rangeValue, sorted);
       });
+    }
+  }, {
+    key: "searchInRange",
+    value: function searchInRange(key, range, sorted, searchStrategy) {
+      if (!sorted && typeof key === 'string' && this.arithmeticHelper.requiresRegex(key)) {
+        return searchStrategy.advancedFind(this.arithmeticHelper.eqMatcherFunction(key), range);
+      } else {
+        return searchStrategy.find(key, range, sorted);
+      }
     }
   }, {
     key: "doVlookup",
@@ -48457,15 +48599,6 @@ var LookupPlugin = /*#__PURE__*/function (_FunctionPlugin) {
         return _index + 1;
       }
     }
-  }, {
-    key: "searchInRange",
-    value: function searchInRange(key, range, sorted, searchStrategy) {
-      if (!sorted && typeof key === 'string' && this.arithmeticHelper.requiresRegex(key)) {
-        return searchStrategy.advancedFind(this.arithmeticHelper.eqMatcherFunction(key), range);
-      } else {
-        return searchStrategy.find(key, range, sorted);
-      }
-    }
   }]);
 
   return LookupPlugin;
@@ -48510,15 +48643,15 @@ LookupPlugin.implementedFunctions = {
   }
 };
 
-function _typeof$V(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof$V = function _typeof(obj) { return typeof obj; }; } else { _typeof$V = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof$V(obj); }
+function _typeof$V(obj) { "@babel/helpers - typeof"; return _typeof$V = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof$V(obj); }
 
 function _classCallCheck$1J(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-function _defineProperties$1H(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _defineProperties$1J(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
-function _createClass$1H(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$1H(Constructor.prototype, protoProps); if (staticProps) _defineProperties$1H(Constructor, staticProps); return Constructor; }
+function _createClass$1J(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$1J(Constructor.prototype, protoProps); if (staticProps) _defineProperties$1J(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
 
-function _inherits$R(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf$S(subClass, superClass); }
+function _inherits$R(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf$S(subClass, superClass); }
 
 function _setPrototypeOf$S(o, p) { _setPrototypeOf$S = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf$S(o, p); }
 
@@ -48542,7 +48675,7 @@ var RomanPlugin = /*#__PURE__*/function (_FunctionPlugin) {
     return _super.apply(this, arguments);
   }
 
-  _createClass$1H(RomanPlugin, [{
+  _createClass$1J(RomanPlugin, [{
     key: "roman",
     value: function roman(ast, state) {
       var _this = this;
@@ -48814,15 +48947,15 @@ function absorb(valAcc, token, lower, upper) {
   }
 }
 
-function _typeof$W(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof$W = function _typeof(obj) { return typeof obj; }; } else { _typeof$W = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof$W(obj); }
+function _typeof$W(obj) { "@babel/helpers - typeof"; return _typeof$W = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof$W(obj); }
 
 function _classCallCheck$1K(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-function _defineProperties$1I(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _defineProperties$1K(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
-function _createClass$1I(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$1I(Constructor.prototype, protoProps); if (staticProps) _defineProperties$1I(Constructor, staticProps); return Constructor; }
+function _createClass$1K(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$1K(Constructor.prototype, protoProps); if (staticProps) _defineProperties$1K(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
 
-function _inherits$S(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf$T(subClass, superClass); }
+function _inherits$S(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf$T(subClass, superClass); }
 
 function _setPrototypeOf$T(o, p) { _setPrototypeOf$T = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf$T(o, p); }
 
@@ -48846,7 +48979,7 @@ var SimpleArithmerticPlugin = /*#__PURE__*/function (_FunctionPlugin) {
     return _super.apply(this, arguments);
   }
 
-  _createClass$1I(SimpleArithmerticPlugin, [{
+  _createClass$1K(SimpleArithmerticPlugin, [{
     key: "add",
     value: function add(ast, state) {
       return this.runFunction(ast.args, state, this.metadata('HF.ADD'), this.arithmeticHelper.addWithEpsilon);
@@ -49072,10 +49205,10 @@ SimpleArithmerticPlugin.implementedFunctions = {
 /**
  * @license
  bessel.js (C) 2013-present SheetJS -- http://sheetjs.com
- 
-                                 Apache License
-                           Version 2.0, January 2004
-                        http://www.apache.org/licenses/
+
+ Apache License
+ Version 2.0, January 2004
+ http://www.apache.org/licenses/
 
  TERMS AND CONDITIONS FOR USE, REPRODUCTION, AND DISTRIBUTION
 
@@ -49288,8 +49421,14 @@ function _horner(arr, v) {
 
 
 function _bessel_iter(x, n, f0, f1, sign) {
-  if (n === 0) return f0;
-  if (n === 1) return f1;
+  if (n === 0) {
+    return f0;
+  }
+
+  if (n === 1) {
+    return f1;
+  }
+
   var tdx = 2 / x,
       f2 = f1;
 
@@ -49307,12 +49446,25 @@ function _bessel_wrap(bessel0, bessel1, name, nonzero, sign) {
   // @ts-ignore
   return function bessel(x, n) {
     if (nonzero) {
-      if (x === 0) return nonzero == 1 ? -Infinity : Infinity;else if (x < 0) return NaN;
+      if (x === 0) {
+        return nonzero == 1 ? -Infinity : Infinity;
+      } else if (x < 0) {
+        return NaN;
+      }
     }
 
-    if (n === 0) return bessel0(x);
-    if (n === 1) return bessel1(x);
-    if (n < 0) return NaN;
+    if (n === 0) {
+      return bessel0(x);
+    }
+
+    if (n === 1) {
+      return bessel1(x);
+    }
+
+    if (n < 0) {
+      return NaN;
+    }
+
     n |= 0;
     var b0 = bessel0(x),
         b1 = bessel1(x);
@@ -49370,7 +49522,10 @@ var besselj = function () {
       a1 = _horner(b1_a1b, y);
       a2 = _horner(b1_a2b, y);
       a = M.sqrt(W / M.abs(x)) * (M.cos(xx) * a1 - M.sin(xx) * a2 * 8 / M.abs(x));
-      if (x < 0) a = -a;
+
+      if (x < 0) {
+        a = -a;
+      }
     }
 
     return a;
@@ -49379,12 +49534,31 @@ var besselj = function () {
 
   return function besselj(x, n) {
     n = Math.round(n);
-    if (!isFinite(x)) return isNaN(x) ? x : 0;
-    if (n < 0) return (n % 2 ? -1 : 1) * besselj(x, -n);
-    if (x < 0) return (n % 2 ? -1 : 1) * besselj(-x, n);
-    if (n === 0) return bessel0(x);
-    if (n === 1) return bessel1(x);
-    if (x === 0) return 0;
+
+    if (!isFinite(x)) {
+      return isNaN(x) ? x : 0;
+    }
+
+    if (n < 0) {
+      return (n % 2 ? -1 : 1) * besselj(x, -n);
+    }
+
+    if (x < 0) {
+      return (n % 2 ? -1 : 1) * besselj(-x, n);
+    }
+
+    if (n === 0) {
+      return bessel0(x);
+    }
+
+    if (n === 1) {
+      return bessel1(x);
+    }
+
+    if (x === 0) {
+      return 0;
+    }
+
     var ret = 0.0;
 
     if (x > n) {
@@ -49410,9 +49584,15 @@ var besselj = function () {
           sum *= 1E-10;
         }
 
-        if (jsum) sum += bj;
+        if (jsum) {
+          sum += bj;
+        }
+
         jsum = !jsum;
-        if (j == n) ret = bjp;
+
+        if (j == n) {
+          ret = bjp;
+        }
       }
 
       sum = 2.0 * sum - bj;
@@ -49483,7 +49663,10 @@ var besseli = function () {
   var b0_b = [0.39894228, 0.1328592e-1, 0.225319e-2, -0.157565e-2, 0.916281e-2, -0.2057706e-1, 0.2635537e-1, -0.1647633e-1, 0.392377e-2].reverse(); // @ts-ignore
 
   function bessel0(x) {
-    if (x <= 3.75) return _horner(b0_a, x * x / (3.75 * 3.75));
+    if (x <= 3.75) {
+      return _horner(b0_a, x * x / (3.75 * 3.75));
+    }
+
     return M.exp(M.abs(x)) / M.sqrt(M.abs(x)) * _horner(b0_b, 3.75 / M.abs(x));
   }
 
@@ -49491,18 +49674,37 @@ var besseli = function () {
   var b1_b = [0.39894228, -0.3988024e-1, -0.362018e-2, 0.163801e-2, -0.1031555e-1, 0.2282967e-1, -0.2895312e-1, 0.1787654e-1, -0.420059e-2].reverse(); // @ts-ignore
 
   function bessel1(x) {
-    if (x < 3.75) return x * _horner(b1_a, x * x / (3.75 * 3.75));
+    if (x < 3.75) {
+      return x * _horner(b1_a, x * x / (3.75 * 3.75));
+    }
+
     return (x < 0 ? -1 : 1) * M.exp(M.abs(x)) / M.sqrt(M.abs(x)) * _horner(b1_b, 3.75 / M.abs(x));
   } // @ts-ignore
 
 
   return function besseli(x, n) {
     n = Math.round(n);
-    if (n === 0) return bessel0(x);
-    if (n === 1) return bessel1(x);
-    if (n < 0) return NaN;
-    if (M.abs(x) === 0) return 0;
-    if (x == Infinity) return Infinity;
+
+    if (n === 0) {
+      return bessel0(x);
+    }
+
+    if (n === 1) {
+      return bessel1(x);
+    }
+
+    if (n < 0) {
+      return NaN;
+    }
+
+    if (M.abs(x) === 0) {
+      return 0;
+    }
+
+    if (x == Infinity) {
+      return Infinity;
+    }
+
     var ret = 0.0,
         j,
         tox = 2 / M.abs(x),
@@ -49522,7 +49724,9 @@ var besseli = function () {
         ret *= 1E-10;
       }
 
-      if (j == n) ret = bip;
+      if (j == n) {
+        ret = bip;
+      }
     }
 
     ret *= besseli(x, 0) / bi;
@@ -49534,7 +49738,10 @@ var besselk = function () {
   var b0_b = [1.25331414, -0.7832358e-1, 0.2189568e-1, -0.1062446e-1, 0.587872e-2, -0.251540e-2, 0.53208e-3].reverse(); // @ts-ignore
 
   function bessel0(x) {
-    if (x <= 2) return -M.log(x / 2) * besseli(x, 0) + _horner(b0_a, x * x / 4);
+    if (x <= 2) {
+      return -M.log(x / 2) * besseli(x, 0) + _horner(b0_a, x * x / 4);
+    }
+
     return M.exp(-x) / M.sqrt(x) * _horner(b0_b, 2 / x);
   }
 
@@ -49542,7 +49749,10 @@ var besselk = function () {
   var b1_b = [1.25331414, 0.23498619, -0.3655620e-1, 0.1504268e-1, -0.780353e-2, 0.325614e-2, -0.68245e-3].reverse(); // @ts-ignore
 
   function bessel1(x) {
-    if (x <= 2) return M.log(x / 2) * besseli(x, 1) + 1 / x * _horner(b1_a, x * x / 4);
+    if (x <= 2) {
+      return M.log(x / 2) * besseli(x, 1) + 1 / x * _horner(b1_a, x * x / 4);
+    }
+
     return M.exp(-x) / M.sqrt(x) * _horner(b1_b, 2 / x);
   }
 
@@ -49607,8 +49817,15 @@ function erfc(x) {
 function erfcinv(p) {
   var j = 0;
   var x, err, t, pp;
-  if (p >= 2) return -100;
-  if (p <= 0) return 100;
+
+  if (p >= 2) {
+    return -100;
+  }
+
+  if (p <= 0) {
+    return 100;
+  }
+
   pp = p < 1 ? p : 2 - p;
   t = Math.sqrt(-2 * Math.log(pp / 2));
   x = -0.70711 * ((2.30753 + t * 0.27061) / (1 + t * (0.99229 + t * 0.04481)) - t);
@@ -49686,11 +49903,17 @@ function gammafn(x) {
 }
 var gamma = {
   pdf: function pdf(x, shape, scale) {
-    if (x < 0) return 0;
+    if (x < 0) {
+      return 0;
+    }
+
     return x === 0 && shape === 1 ? 1 / scale : Math.exp((shape - 1) * Math.log(x) - x / scale - gammaln(shape) - shape * Math.log(scale));
   },
   cdf: function cdf(x, shape, scale) {
-    if (x < 0) return 0;
+    if (x < 0) {
+      return 0;
+    }
+
     return lowRegGamma(shape, x / scale);
   },
   inv: function inv(p, shape, scale) {
@@ -49756,8 +49979,14 @@ function gammapinv(p, a) {
   var x, err, t, u, pp;
   var lna1;
   var afac;
-  if (p >= 1) return Math.max(100, a + 100 * Math.sqrt(a));
-  if (p <= 0) return 0;
+
+  if (p >= 1) {
+    return Math.max(100, a + 100 * Math.sqrt(a));
+  }
+
+  if (p <= 0) {
+    return 0;
+  }
 
   if (a > 1) {
     lna1 = Math.log(a1);
@@ -49765,21 +49994,45 @@ function gammapinv(p, a) {
     pp = p < 0.5 ? p : 1 - p;
     t = Math.sqrt(-2 * Math.log(pp));
     x = (2.30753 + t * 0.27061) / (1 + t * (0.99229 + t * 0.04481)) - t;
-    if (p < 0.5) x = -x;
+
+    if (p < 0.5) {
+      x = -x;
+    }
+
     x = Math.max(1e-3, a * Math.pow(1 - 1 / (9 * a) - x / (3 * Math.sqrt(a)), 3));
   } else {
     t = 1 - a * (0.253 + a * 0.12);
-    if (p < t) x = Math.pow(p / t, 1 / a);else x = 1 - Math.log(1 - (p - t) / (1 - t));
+
+    if (p < t) {
+      x = Math.pow(p / t, 1 / a);
+    } else {
+      x = 1 - Math.log(1 - (p - t) / (1 - t));
+    }
   }
 
   for (; j < 12; j++) {
-    if (x <= 0) return 0;
+    if (x <= 0) {
+      return 0;
+    }
+
     err = lowRegGamma(a, x) - p;
-    if (a > 1) t = afac * Math.exp(-(x - a1) + a1 * (Math.log(x) - lna1));else t = Math.exp(-x + a1 * Math.log(x) - gln);
+
+    if (a > 1) {
+      t = afac * Math.exp(-(x - a1) + a1 * (Math.log(x) - lna1));
+    } else {
+      t = Math.exp(-x + a1 * Math.log(x) - gln);
+    }
+
     u = err / t;
     x -= t = u / (1 - 0.5 * Math.min(1, u * ((a - 1) / x - 1)));
-    if (x <= 0) x = 0.5 * (x + t);
-    if (Math.abs(t) < EPS * x) break;
+
+    if (x <= 0) {
+      x = 0.5 * (x + t);
+    }
+
+    if (Math.abs(t) < EPS * x) {
+      break;
+    }
   }
 
   return x;
@@ -49799,9 +50052,14 @@ var normal = {
 var beta = {
   pdf: function pdf(x, alpha, beta) {
     // PDF is zero outside the support
-    if (x > 1 || x < 0) return 0; // PDF is one for the uniform case
+    if (x > 1 || x < 0) {
+      return 0;
+    } // PDF is one for the uniform case
 
-    if (alpha == 1 && beta == 1) return 1;
+
+    if (alpha == 1 && beta == 1) {
+      return 1;
+    }
 
     if (alpha < 512 && beta < 512) {
       return Math.pow(x, alpha - 1) * Math.pow(1 - x, beta - 1) / betafn(alpha, beta);
@@ -49819,7 +50077,10 @@ var beta = {
 
 function betafn(x, y) {
   // ensure arguments are positive
-  if (x <= 0 || y <= 0) return undefined; // make sure x + y doesn't exceed the upper limit of usable values
+  if (x <= 0 || y <= 0) {
+    return undefined;
+  } // make sure x + y doesn't exceed the upper limit of usable values
+
 
   return x + y > 170 ? Math.exp(betaln(x, y)) : gammafn(x) * gammafn(y) / gammafn(x + y);
 }
@@ -49834,14 +50095,24 @@ function ibetainv(p, a, b) {
   var b1 = b - 1;
   var j = 0;
   var lna, lnb, pp, t, u, err, x, al, h, w, afac;
-  if (p <= 0) return 0;
-  if (p >= 1) return 1;
+
+  if (p <= 0) {
+    return 0;
+  }
+
+  if (p >= 1) {
+    return 1;
+  }
 
   if (a >= 1 && b >= 1) {
     pp = p < 0.5 ? p : 1 - p;
     t = Math.sqrt(-2 * Math.log(pp));
     x = (2.30753 + t * 0.27061) / (1 + t * (0.99229 + t * 0.04481)) - t;
-    if (p < 0.5) x = -x;
+
+    if (p < 0.5) {
+      x = -x;
+    }
+
     al = (x * x - 3) / 6;
     h = 2 / (1 / (2 * a - 1) + 1 / (2 * b - 1));
     w = x * Math.sqrt(al + h) / h - (1 / (2 * b - 1) - 1 / (2 * a - 1)) * (al + 5 / 6 - 2 / (3 * h));
@@ -49852,21 +50123,38 @@ function ibetainv(p, a, b) {
     t = Math.exp(a * lna) / a;
     u = Math.exp(b * lnb) / b;
     w = t + u;
-    if (p < t / w) x = Math.pow(a * w * p, 1 / a);else x = 1 - Math.pow(b * w * (1 - p), 1 / b);
+
+    if (p < t / w) {
+      x = Math.pow(a * w * p, 1 / a);
+    } else {
+      x = 1 - Math.pow(b * w * (1 - p), 1 / b);
+    }
   }
 
   afac = -gammaln(a) - gammaln(b) + gammaln(a + b);
 
   for (; j < 10; j++) {
-    if (x === 0 || x === 1) return x; // @ts-ignore
+    if (x === 0 || x === 1) {
+      return x;
+    } // @ts-ignore
+
 
     err = ibeta(x, a, b) - p;
     t = Math.exp(a1 * Math.log(x) + b1 * Math.log(1 - x) + afac);
     u = err / t;
     x -= t = u / (1 - 0.5 * Math.min(1, u * (a1 / x - b1 / (1 - x))));
-    if (x <= 0) x = 0.5 * (x + t);
-    if (x >= 1) x = 0.5 * (x + t + 1);
-    if (Math.abs(t) < EPS * x && j > 0) break;
+
+    if (x <= 0) {
+      x = 0.5 * (x + t);
+    }
+
+    if (x >= 1) {
+      x = 0.5 * (x + t + 1);
+    }
+
+    if (Math.abs(t) < EPS * x && j > 0) {
+      break;
+    }
   }
 
   return x;
@@ -49875,9 +50163,16 @@ function ibetainv(p, a, b) {
 function ibeta(x, a, b) {
   // Factors in front of the continued fraction.
   var bt = x === 0 || x === 1 ? 0 : Math.exp(gammaln(a + b) - gammaln(a) - gammaln(b) + a * Math.log(x) + b * Math.log(1 - x));
-  if (x < 0 || x > 1) return false;
+
+  if (x < 0 || x > 1) {
+    return false;
+  }
+
   if (x < (a + 1) / (a + b + 2)) // Use continued fraction directly.
-    return bt * betacf(x, a, b) / a; // else use continued fraction after making the symmetry transformation.
+    {
+      return bt * betacf(x, a, b) / a;
+    } // else use continued fraction after making the symmetry transformation.
+
 
   return 1 - bt * betacf(1 - x, b, a) / b;
 }
@@ -49892,7 +50187,10 @@ function betacf(x, a, b) {
   var d = 1 - qab * x / qap;
   var m2, aa, del, h; // These q's will be used in factors that occur in the coefficients
 
-  if (Math.abs(d) < fpmin) d = fpmin;
+  if (Math.abs(d) < fpmin) {
+    d = fpmin;
+  }
+
   d = 1 / d;
   h = d;
 
@@ -49901,25 +50199,45 @@ function betacf(x, a, b) {
     aa = m * (b - m) * x / ((qam + m2) * (a + m2)); // One step (the even one) of the recurrence
 
     d = 1 + aa * d;
-    if (Math.abs(d) < fpmin) d = fpmin;
+
+    if (Math.abs(d) < fpmin) {
+      d = fpmin;
+    }
+
     c = 1 + aa / c;
-    if (Math.abs(c) < fpmin) c = fpmin;
+
+    if (Math.abs(c) < fpmin) {
+      c = fpmin;
+    }
+
     d = 1 / d;
     h *= d * c;
     aa = -(a + m) * (qab + m) * x / ((a + m2) * (qap + m2)); // Next step of the recurrence (the odd one)
 
     d = 1 + aa * d;
-    if (Math.abs(d) < fpmin) d = fpmin;
+
+    if (Math.abs(d) < fpmin) {
+      d = fpmin;
+    }
+
     c = 1 + aa / c;
-    if (Math.abs(c) < fpmin) c = fpmin;
+
+    if (Math.abs(c) < fpmin) {
+      c = fpmin;
+    }
+
     d = 1 / d;
     del = d * c;
     h *= del;
-    if (Math.abs(del - 1.0) < 3e-7) break;
+
+    if (Math.abs(del - 1.0) < 3e-7) {
+      break;
+    }
   }
 
   return h;
 }
+
 var binomial = {
   pdf: function pdf(k, n, p) {
     return p === 0 || p === 1 ? n * p === k ? 1 : 0 : combination(n, k) * Math.pow(p, k) * Math.pow(1 - p, n - k);
@@ -49927,16 +50245,32 @@ var binomial = {
   cdf: function cdf(x, n, p) {
     var betacdf;
     var eps = 1e-10;
-    if (x < 0) return 0;
-    if (x >= n) return 1;
-    if (p < 0 || p > 1 || n <= 0) return NaN;
+
+    if (x < 0) {
+      return 0;
+    }
+
+    if (x >= n) {
+      return 1;
+    }
+
+    if (p < 0 || p > 1 || n <= 0) {
+      return NaN;
+    }
+
     x = Math.floor(x);
     var z = p;
     var a = x + 1;
     var b = n - x;
     var s = a + b;
     var bt = Math.exp(gammaln(s) - gammaln(b) - gammaln(a) + a * Math.log(z) + b * Math.log(1 - z));
-    if (z < (a + 1) / (s + 2)) betacdf = bt * betinc(z, a, b, eps);else betacdf = 1 - bt * betinc(1 - z, b, a, eps);
+
+    if (z < (a + 1) / (s + 2)) {
+      betacdf = bt * betinc(z, a, b, eps);
+    } else {
+      betacdf = 1 - bt * betinc(1 - z, b, a, eps);
+    }
+
     return Math.round((1 - betacdf) * (1 / eps)) / (1 / eps);
   }
 };
@@ -49975,22 +50309,29 @@ function combination(n, m) {
 
 function combinationln(n, m) {
   return factorialln(n) - factorialln(m) - factorialln(n - m);
-}
+} // natural log factorial of n
+
 
 function factorialln(n) {
   return n < 0 ? NaN : gammaln(n + 1);
-}
+} // factorial of n
 
 function factorial(n) {
   return n < 0 ? NaN : gammafn(n + 1);
 }
 var chisquare = {
   pdf: function pdf(x, dof) {
-    if (x < 0) return 0;
+    if (x < 0) {
+      return 0;
+    }
+
     return x === 0 && dof === 2 ? 0.5 : Math.exp((dof / 2 - 1) * Math.log(x) - x / 2 - dof / 2 * Math.log(2) - gammaln(dof / 2));
   },
   cdf: function cdf(x, dof) {
-    if (x < 0) return 0;
+    if (x < 0) {
+      return 0;
+    }
+
     return lowRegGamma(dof / 2, x / 2);
   },
   inv: function inv(p, dof) {
@@ -50003,7 +50344,10 @@ var centralF = {
   // https://svn.r-project.org/R/trunk/src/nmath/df.c
   pdf: function pdf(x, df1, df2) {
     var p, q, f;
-    if (x < 0) return 0;
+
+    if (x < 0) {
+      return 0;
+    }
 
     if (df1 <= 2) {
       if (x === 0 && df1 < 2) {
@@ -50023,7 +50367,10 @@ var centralF = {
     return f * binomial.pdf((df1 - 2) / 2, (df1 + df2 - 2) / 2, p);
   },
   cdf: function cdf(x, df1, df2) {
-    if (x < 0) return 0;
+    if (x < 0) {
+      return 0;
+    }
+
     return ibeta(df1 * x / (df1 * x + df2), df1 / 2, df2 / 2);
   },
   inv: function inv(x, df1, df2) {
@@ -50032,7 +50379,10 @@ var centralF = {
 };
 var weibull = {
   pdf: function pdf(x, scale, shape) {
-    if (x < 0 || scale < 0 || shape < 0) return 0;
+    if (x < 0 || scale < 0 || shape < 0) {
+      return 0;
+    }
+
     return shape / scale * Math.pow(x / scale, shape - 1) * Math.exp(-Math.pow(x / scale, shape));
   },
   cdf: function cdf(x, scale, shape) {
@@ -50049,7 +50399,11 @@ var poisson = {
   },
   cdf: function cdf(x, l) {
     var k = 0;
-    if (x < 0) return 0;
+
+    if (x < 0) {
+      return 0;
+    }
+
     var sum = 0;
 
     for (; k <= x; k++) {
@@ -50223,11 +50577,17 @@ var studentt = {
 };
 var lognormal = {
   pdf: function pdf(x, mu, sigma) {
-    if (x <= 0) return 0;
+    if (x <= 0) {
+      return 0;
+    }
+
     return Math.exp(-Math.log(x) - 0.5 * Math.log(2 * Math.PI) - Math.log(sigma) - Math.pow(Math.log(x) - mu, 2) / (2 * sigma * sigma));
   },
   cdf: function cdf(x, mu, sigma) {
-    if (x < 0) return 0;
+    if (x < 0) {
+      return 0;
+    }
+
     return 0.5 + 0.5 * erf((Math.log(x) - mu) / Math.sqrt(2 * sigma * sigma));
   },
   inv: function inv(p, mu, sigma) {
@@ -50236,14 +50596,23 @@ var lognormal = {
 };
 var negbin = {
   pdf: function pdf(k, r, p) {
-    if (k !== k >>> 0) return false;
-    if (k < 0) return 0;
+    if (k !== k >>> 0) {
+      return false;
+    }
+
+    if (k < 0) {
+      return 0;
+    }
+
     return combination(k + r - 1, r - 1) * Math.pow(1 - p, k) * Math.pow(p, r);
   },
   cdf: function cdf(x, r, p) {
     var sum = 0,
         k = 0;
-    if (x < 0) return 0;
+
+    if (x < 0) {
+      return 0;
+    }
 
     for (; k <= x; k++) {
       sum += negbin.pdf(k, r, p);
@@ -50263,6 +50632,7 @@ function sum(arr) {
 
   return sum;
 }
+
 function mean(arr) {
   return sum(arr) / arr.length;
 }
@@ -50352,15 +50722,15 @@ function corrcoeff(arr1, arr2) {
   return covariance(arr1, arr2) / stdev(arr1, 1) / stdev(arr2, 1);
 }
 
-function _typeof$X(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof$X = function _typeof(obj) { return typeof obj; }; } else { _typeof$X = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof$X(obj); }
+function _typeof$X(obj) { "@babel/helpers - typeof"; return _typeof$X = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof$X(obj); }
 
 function _classCallCheck$1L(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-function _defineProperties$1J(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _defineProperties$1L(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
-function _createClass$1J(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$1J(Constructor.prototype, protoProps); if (staticProps) _defineProperties$1J(Constructor, staticProps); return Constructor; }
+function _createClass$1L(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$1L(Constructor.prototype, protoProps); if (staticProps) _defineProperties$1L(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
 
-function _inherits$T(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf$U(subClass, superClass); }
+function _inherits$T(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf$U(subClass, superClass); }
 
 function _setPrototypeOf$U(o, p) { _setPrototypeOf$U = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf$U(o, p); }
 
@@ -50384,7 +50754,7 @@ var StatisticalPlugin = /*#__PURE__*/function (_FunctionPlugin) {
     return _super.apply(this, arguments);
   }
 
-  _createClass$1J(StatisticalPlugin, [{
+  _createClass$1L(StatisticalPlugin, [{
     key: "erf",
     value: function erf$1(ast, state) {
       return this.runFunction(ast.args, state, this.metadata('ERF'), function (lowerBound, upperBound) {
@@ -51413,21 +51783,21 @@ _export({ target: 'Number', stat: true }, {
   MAX_SAFE_INTEGER: 0x1FFFFFFFFFFFFF
 });
 
-function _typeof$Y(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof$Y = function _typeof(obj) { return typeof obj; }; } else { _typeof$Y = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof$Y(obj); }
+function _typeof$Y(obj) { "@babel/helpers - typeof"; return _typeof$Y = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof$Y(obj); }
 
-function _createForOfIteratorHelper$z(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray$N(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it.return != null) it.return(); } finally { if (didErr) throw err; } } }; }
+function _createForOfIteratorHelper$A(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray$O(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it.return != null) it.return(); } finally { if (didErr) throw err; } } }; }
 
-function _unsupportedIterableToArray$N(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray$N(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray$N(o, minLen); }
+function _unsupportedIterableToArray$O(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray$O(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray$O(o, minLen); }
 
-function _arrayLikeToArray$N(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
+function _arrayLikeToArray$O(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
 
 function _classCallCheck$1M(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-function _defineProperties$1K(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _defineProperties$1M(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
-function _createClass$1K(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$1K(Constructor.prototype, protoProps); if (staticProps) _defineProperties$1K(Constructor, staticProps); return Constructor; }
+function _createClass$1M(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$1M(Constructor.prototype, protoProps); if (staticProps) _defineProperties$1M(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
 
-function _inherits$U(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf$V(subClass, superClass); }
+function _inherits$U(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf$V(subClass, superClass); }
 
 function _setPrototypeOf$V(o, p) { _setPrototypeOf$V = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf$V(o, p); }
 
@@ -51451,7 +51821,7 @@ var MathPlugin = /*#__PURE__*/function (_FunctionPlugin) {
     return _super.apply(this, arguments);
   }
 
-  _createClass$1K(MathPlugin, [{
+  _createClass$1M(MathPlugin, [{
     key: "fact",
     value: function fact(ast, state) {
       return this.runFunction(ast.args, state, this.metadata('FACT'), function (arg) {
@@ -51529,7 +51899,7 @@ var MathPlugin = /*#__PURE__*/function (_FunctionPlugin) {
 
         var ret = 0;
 
-        var _iterator = _createForOfIteratorHelper$z(processedArgs),
+        var _iterator = _createForOfIteratorHelper$A(processedArgs),
             _step;
 
         try {
@@ -51574,7 +51944,7 @@ var MathPlugin = /*#__PURE__*/function (_FunctionPlugin) {
 
         var ret = 1;
 
-        var _iterator2 = _createForOfIteratorHelper$z(processedArgs),
+        var _iterator2 = _createForOfIteratorHelper$A(processedArgs),
             _step2;
 
         try {
@@ -51672,7 +52042,7 @@ var MathPlugin = /*#__PURE__*/function (_FunctionPlugin) {
         var ret = 0;
         coefs.reverse();
 
-        var _iterator3 = _createForOfIteratorHelper$z(coefs),
+        var _iterator3 = _createForOfIteratorHelper$A(coefs),
             _step3;
 
         try {
@@ -51967,17 +52337,17 @@ function binaryLCM(a, b) {
   return a * (b / binaryGCD(a, b));
 }
 
-function _typeof$Z(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof$Z = function _typeof(obj) { return typeof obj; }; } else { _typeof$Z = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof$Z(obj); }
+function _typeof$Z(obj) { "@babel/helpers - typeof"; return _typeof$Z = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof$Z(obj); }
 
-function _createForOfIteratorHelper$A(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray$O(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e2) { throw _e2; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e3) { didErr = true; err = _e3; }, f: function f() { try { if (!normalCompletion && it.return != null) it.return(); } finally { if (didErr) throw err; } } }; }
+function _createForOfIteratorHelper$B(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray$P(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e2) { throw _e2; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e3) { didErr = true; err = _e3; }, f: function f() { try { if (!normalCompletion && it.return != null) it.return(); } finally { if (didErr) throw err; } } }; }
 
-function _slicedToArray$u(arr, i) { return _arrayWithHoles$u(arr) || _iterableToArrayLimit$u(arr, i) || _unsupportedIterableToArray$O(arr, i) || _nonIterableRest$u(); }
+function _slicedToArray$u(arr, i) { return _arrayWithHoles$u(arr) || _iterableToArrayLimit$u(arr, i) || _unsupportedIterableToArray$P(arr, i) || _nonIterableRest$u(); }
 
 function _nonIterableRest$u() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
 
-function _unsupportedIterableToArray$O(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray$O(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray$O(o, minLen); }
+function _unsupportedIterableToArray$P(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray$P(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray$P(o, minLen); }
 
-function _arrayLikeToArray$O(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
+function _arrayLikeToArray$P(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
 
 function _iterableToArrayLimit$u(arr, i) { var _i = arr == null ? null : typeof Symbol !== "undefined" && arr[Symbol.iterator] || arr["@@iterator"]; if (_i == null) return; var _arr = []; var _n = true; var _d = false; var _s, _e; try { for (_i = _i.call(arr); !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"] != null) _i["return"](); } finally { if (_d) throw _e; } } return _arr; }
 
@@ -51985,11 +52355,11 @@ function _arrayWithHoles$u(arr) { if (Array.isArray(arr)) return arr; }
 
 function _classCallCheck$1N(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-function _defineProperties$1L(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _defineProperties$1N(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
-function _createClass$1L(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$1L(Constructor.prototype, protoProps); if (staticProps) _defineProperties$1L(Constructor, staticProps); return Constructor; }
+function _createClass$1N(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$1N(Constructor.prototype, protoProps); if (staticProps) _defineProperties$1N(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
 
-function _inherits$V(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf$W(subClass, superClass); }
+function _inherits$V(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf$W(subClass, superClass); }
 
 function _setPrototypeOf$W(o, p) { _setPrototypeOf$W = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf$W(o, p); }
 
@@ -52013,7 +52383,7 @@ var ComplexPlugin = /*#__PURE__*/function (_FunctionPlugin) {
     return _super.apply(this, arguments);
   }
 
-  _createClass$1L(ComplexPlugin, [{
+  _createClass$1N(ComplexPlugin, [{
     key: "complex",
     value: function complex(ast, state) {
       return this.runFunction(ast.args, state, this.metadata('COMPLEX'), function (re, im, unit) {
@@ -52034,7 +52404,7 @@ var ComplexPlugin = /*#__PURE__*/function (_FunctionPlugin) {
     value: function imaginary(ast, state) {
       return this.runFunction(ast.args, state, this.metadata('IMAGINARY'), function (_ref) {
         var _ref2 = _slicedToArray$u(_ref, 2),
-            re = _ref2[0],
+            _re = _ref2[0],
             im = _ref2[1];
 
         return im;
@@ -52046,7 +52416,7 @@ var ComplexPlugin = /*#__PURE__*/function (_FunctionPlugin) {
       return this.runFunction(ast.args, state, this.metadata('IMREAL'), function (_ref3) {
         var _ref4 = _slicedToArray$u(_ref3, 2),
             re = _ref4[0],
-            im = _ref4[1];
+            _im = _ref4[1];
 
         return re;
       });
@@ -52172,7 +52542,7 @@ var ComplexPlugin = /*#__PURE__*/function (_FunctionPlugin) {
 
         var prod = [1, 0];
 
-        var _iterator = _createForOfIteratorHelper$A(coerced),
+        var _iterator = _createForOfIteratorHelper$B(coerced),
             _step;
 
         try {
@@ -52207,7 +52577,7 @@ var ComplexPlugin = /*#__PURE__*/function (_FunctionPlugin) {
 
         var sum = [0, 0];
 
-        var _iterator2 = _createForOfIteratorHelper$A(coerced),
+        var _iterator2 = _createForOfIteratorHelper$B(coerced),
             _step2;
 
         try {
@@ -52581,21 +52951,21 @@ function power(arg, n) {
   return exp$3([n * re, n * im]);
 }
 
-function _typeof$_(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof$_ = function _typeof(obj) { return typeof obj; }; } else { _typeof$_ = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof$_(obj); }
+function _typeof$_(obj) { "@babel/helpers - typeof"; return _typeof$_ = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof$_(obj); }
 
-function _createForOfIteratorHelper$B(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray$P(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it.return != null) it.return(); } finally { if (didErr) throw err; } } }; }
+function _createForOfIteratorHelper$C(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray$Q(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it.return != null) it.return(); } finally { if (didErr) throw err; } } }; }
 
-function _unsupportedIterableToArray$P(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray$P(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray$P(o, minLen); }
+function _unsupportedIterableToArray$Q(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray$Q(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray$Q(o, minLen); }
 
-function _arrayLikeToArray$P(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
+function _arrayLikeToArray$Q(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
 
 function _classCallCheck$1O(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-function _defineProperties$1M(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _defineProperties$1O(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
-function _createClass$1M(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$1M(Constructor.prototype, protoProps); if (staticProps) _defineProperties$1M(Constructor, staticProps); return Constructor; }
+function _createClass$1O(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$1O(Constructor.prototype, protoProps); if (staticProps) _defineProperties$1O(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
 
-function _inherits$W(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf$X(subClass, superClass); }
+function _inherits$W(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf$X(subClass, superClass); }
 
 function _setPrototypeOf$X(o, p) { _setPrototypeOf$X = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf$X(o, p); }
 
@@ -52619,7 +52989,7 @@ var StatisticalAggregationPlugin = /*#__PURE__*/function (_FunctionPlugin) {
     return _super.apply(this, arguments);
   }
 
-  _createClass$1M(StatisticalAggregationPlugin, [{
+  _createClass$1O(StatisticalAggregationPlugin, [{
     key: "avedev",
     value: function avedev(ast, state) {
       var _this = this;
@@ -52688,7 +53058,7 @@ var StatisticalAggregationPlugin = /*#__PURE__*/function (_FunctionPlugin) {
           return new CellError(ErrorType.NUM, ErrorMessage.OneValue);
         }
 
-        var _iterator = _createForOfIteratorHelper$B(coerced),
+        var _iterator = _createForOfIteratorHelper$C(coerced),
             _step;
 
         try {
@@ -52728,7 +53098,7 @@ var StatisticalAggregationPlugin = /*#__PURE__*/function (_FunctionPlugin) {
           return new CellError(ErrorType.NUM, ErrorMessage.OneValue);
         }
 
-        var _iterator2 = _createForOfIteratorHelper$B(coerced),
+        var _iterator2 = _createForOfIteratorHelper$C(coerced),
             _step2;
 
         try {
@@ -53368,16 +53738,90 @@ var plugins = /*#__PURE__*/Object.freeze({
   StatisticalAggregationPlugin: StatisticalAggregationPlugin
 });
 
-function _createForOfIteratorHelper$C(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray$Q(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it.return != null) it.return(); } finally { if (didErr) throw err; } } }; }
+function _typeof$$(obj) { "@babel/helpers - typeof"; return _typeof$$ = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof$$(obj); }
 
-function _unsupportedIterableToArray$Q(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray$Q(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray$Q(o, minLen); }
+function _createForOfIteratorHelper$D(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray$R(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it.return != null) it.return(); } finally { if (didErr) throw err; } } }; }
 
-function _arrayLikeToArray$Q(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
+function _unsupportedIterableToArray$R(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray$R(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray$R(o, minLen); }
+
+function _arrayLikeToArray$R(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
+
+function _defineProperties$1P(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass$1P(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$1P(Constructor.prototype, protoProps); if (staticProps) _defineProperties$1P(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
+
+function _classCallCheck$1P(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _inherits$X(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf$Y(subClass, superClass); }
+
+function _setPrototypeOf$Y(o, p) { _setPrototypeOf$Y = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf$Y(o, p); }
+
+function _createSuper$X(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct$Y(); return function _createSuperInternal() { var Super = _getPrototypeOf$X(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf$X(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn$X(this, result); }; }
+
+function _possibleConstructorReturn$X(self, call) { if (call && (_typeof$$(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized$X(self); }
+
+function _assertThisInitialized$X(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _isNativeReflectConstruct$Y() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
+
+function _getPrototypeOf$X(o) { _getPrototypeOf$X = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf$X(o); }
+/** @internal */
+
+var HyperFormulaNS = /*#__PURE__*/function (_HyperFormula) {
+  _inherits$X(HyperFormulaNS, _HyperFormula);
+
+  var _super = _createSuper$X(HyperFormulaNS);
+
+  function HyperFormulaNS() {
+    _classCallCheck$1P(this, HyperFormulaNS);
+
+    return _super.apply(this, arguments);
+  }
+
+  return _createClass$1P(HyperFormulaNS);
+}(HyperFormula);
+
+HyperFormulaNS.HyperFormula = HyperFormula;
+HyperFormulaNS.ErrorType = ErrorType;
+HyperFormulaNS.CellType = CellType;
+HyperFormulaNS.CellValueType = CellValueType;
+HyperFormulaNS.CellValueDetailedType = CellValueDetailedType;
+HyperFormulaNS.DetailedCellError = DetailedCellError;
+HyperFormulaNS.ExportedCellChange = ExportedCellChange;
+HyperFormulaNS.ExportedNamedExpressionChange = ExportedNamedExpressionChange;
+HyperFormulaNS.ConfigValueTooBigError = ConfigValueTooBigError;
+HyperFormulaNS.ConfigValueTooSmallError = ConfigValueTooSmallError;
+HyperFormulaNS.EvaluationSuspendedError = EvaluationSuspendedError;
+HyperFormulaNS.ExpectedOneOfValuesError = ExpectedOneOfValuesError;
+HyperFormulaNS.ExpectedValueOfTypeError = ExpectedValueOfTypeError;
+HyperFormulaNS.FunctionPlugin = FunctionPlugin;
+HyperFormulaNS.FunctionPluginValidationError = FunctionPluginValidationError;
+HyperFormulaNS.InvalidAddressError = InvalidAddressError;
+HyperFormulaNS.InvalidArgumentsError = InvalidArgumentsError;
+HyperFormulaNS.LanguageNotRegisteredError = LanguageNotRegisteredError;
+HyperFormulaNS.LanguageAlreadyRegisteredError = LanguageAlreadyRegisteredError;
+HyperFormulaNS.MissingTranslationError = MissingTranslationError;
+HyperFormulaNS.NamedExpressionDoesNotExistError = NamedExpressionDoesNotExistError;
+HyperFormulaNS.NamedExpressionNameIsAlreadyTakenError = NamedExpressionNameIsAlreadyTakenError;
+HyperFormulaNS.NamedExpressionNameIsInvalidError = NamedExpressionNameIsInvalidError;
+HyperFormulaNS.NoOperationToRedoError = NoOperationToRedoError;
+HyperFormulaNS.NoOperationToUndoError = NoOperationToUndoError;
+HyperFormulaNS.NoRelativeAddressesAllowedError = NoRelativeAddressesAllowedError;
+HyperFormulaNS.NoSheetWithIdError = NoSheetWithIdError;
+HyperFormulaNS.NoSheetWithNameError = NoSheetWithNameError;
+HyperFormulaNS.NotAFormulaError = NotAFormulaError;
+HyperFormulaNS.NothingToPasteError = NothingToPasteError;
+HyperFormulaNS.ProtectedFunctionTranslationError = ProtectedFunctionTranslationError;
+HyperFormulaNS.SheetNameAlreadyTakenError = SheetNameAlreadyTakenError;
+HyperFormulaNS.SheetSizeLimitExceededError = SheetSizeLimitExceededError;
+HyperFormulaNS.SourceLocationHasArrayError = SourceLocationHasArrayError;
+HyperFormulaNS.TargetLocationHasArrayError = TargetLocationHasArrayError;
+HyperFormulaNS.UnableToParseError = UnableToParseError;
 var defaultLanguage = Config.defaultConfig.language;
 HyperFormula.registerLanguage(defaultLanguage, dictionary);
 HyperFormula.languages[dictionary.langCode] = dictionary;
 
-var _iterator = _createForOfIteratorHelper$C(Object.getOwnPropertyNames(plugins)),
+var _iterator = _createForOfIteratorHelper$D(Object.getOwnPropertyNames(plugins)),
     _step;
 
 try {
