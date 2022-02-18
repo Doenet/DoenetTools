@@ -14,7 +14,6 @@ import ButtonGroup from '../../../_reactComponents/PanelHeaderComponents/ButtonG
 import CollapseSection from '../../../_reactComponents/PanelHeaderComponents/CollapseSection';
 import { useToast, toastType }  from '../Toast';
 import axios from 'axios';
-import { getSHAofContent } from '../ToolHandlers/CourseToolHandler';
 import { searchParamAtomFamily } from '../NewToolRoot';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -220,8 +219,6 @@ export default function SupportingFilesMenu(props){
       reader.onabort = () => {};
       reader.onerror = () => {};
       reader.onload = () => {
-        // let contentId = getSHAofContent(reader.result);
-        // console.log("contentId",contentId);
 
         const uploadData = new FormData();
         uploadData.append('file',file);

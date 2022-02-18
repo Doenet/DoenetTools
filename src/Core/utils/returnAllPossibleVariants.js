@@ -9,7 +9,7 @@ export async function returnAllPossibleVariants({
 
   let doenetML = await retrieveDoenetMLForCID(CID);
 
-  let fullSerializedComponents = await serializeFunctions.expandDoenetMLsToFullSerializedComponents({
+  let { fullSerializedComponents } = await serializeFunctions.expandDoenetMLsToFullSerializedComponents({
     contentIds: [CID],
     doenetMLs: [doenetML],
     componentInfoObjects: createComponentInfoObjects(flags),
