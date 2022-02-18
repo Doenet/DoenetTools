@@ -242,13 +242,13 @@ function Test() {
           solutionDisplayMode,
           showFeedback,
           showHints,
+          allowLoadPageState,
+          allowSavePageState,
+          allowLocalPageState,
+          allowSaveSubmissions,
+          allowSaveEvents,
         }}
         attemptNumber={attemptNumber}
-        allowLoadPageState={allowLoadPageState}
-        allowSavePageState={allowSavePageState}
-        allowLocalPageState={allowLocalPageState}
-        allowSaveSubmissions={allowSaveSubmissions}
-        allowSaveEvents={allowSaveEvents}
         requestedVariant={requestedVariant.current}
         core={coreProp}
         doenetId="doenetId"

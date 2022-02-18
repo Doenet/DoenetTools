@@ -85,7 +85,7 @@ export default function AssignmentViewer() {
       showCorrectness,
       showFeedback,
       showHints,
-      doenetML,
+      CID,
       doenetId,
       solutionDisplayMode,
     },
@@ -206,7 +206,7 @@ export default function AssignmentViewer() {
             }
           }
         }
-        let doenetML = null;
+
         // console.log('>>>>initializeValues contentId', contentId);
         if (!isAssigned) {
           setStage('Problem');
@@ -233,16 +233,10 @@ export default function AssignmentViewer() {
         //   return;
         // }
 
-        //Set doenetML
-        let response = await snapshot.getPromise(fileByContentId(contentId));
-        if (typeof response === 'object') {
-          response = response.data;
-        }
-        doenetML = response;
 
         //Find allPossibleVariants
         returnAllPossibleVariants({
-          doenetML,
+          CID: contentId,
         }).then(isCollection
           ? setCollectionVariant
           : setVariantsFromDoenetML);
@@ -293,7 +287,7 @@ export default function AssignmentViewer() {
             showCorrectness,
             showFeedback,
             showHints,
-            doenetML,
+            CID: contentId,
             doenetId,
             solutionDisplayMode,
           });
@@ -316,7 +310,7 @@ export default function AssignmentViewer() {
             showCorrectness,
             showFeedback,
             showHints,
-            doenetML,
+            CID: contentId,
             doenetId,
             solutionDisplayMode,
           });
@@ -363,13 +357,6 @@ export default function AssignmentViewer() {
         //TESTING set contentId to null
         // console.log(">>>>updateAttemptNumberAndRequestedVariant contentId",contentId)
 
-        let doenetML = null;
-
-        let response = await snapshot.getPromise(fileByContentId(contentId));
-        if (typeof response === 'object') {
-          response = response.data;
-        }
-        doenetML = response;
 
         const { data } = await axios.get('/api/loadTakenVariants.php', {
           params: { doenetId },
@@ -399,7 +386,7 @@ export default function AssignmentViewer() {
           let newObj = { ...was };
           newObj.attemptNumber = newAttemptNumber;
           newObj.requestedVariant = newRequestedVariant;
-          newObj.doenetML = doenetML;
+          newObj.CID = contentId;
           return newObj;
         });
       },
@@ -468,25 +455,25 @@ export default function AssignmentViewer() {
       </button>
       <DoenetViewer
         key={`doenetviewer${doenetId}`}
-        doenetML={doenetML}
+        CID={CID}
         doenetId={doenetId}
         flags={{
-          showCorrectness: showCorrectness,
+          showCorrectness,
           readOnly: false,
-          solutionDisplayMode: solutionDisplayMode,
-          showFeedback: showFeedback,
-          showHints: showHints,
+          solutionDisplayMode,
+          showFeedback,
+          showHints,
           isAssignment: true,
+          allowLoadPageState: true,
+          allowSavePageState: true,
+          allowLocalPageState: false, //Still working out localStorage kinks
+          allowSaveSubmissions: true,
+          allowSaveEvents: true
         }}
         attemptNumber={attemptNumber}
-        allowLoadPageState={true}
-        allowSavePageState={true}
-        allowLocalPageState={false} //Still working out localStorage kinks
-        allowSaveSubmissions={true}
-        allowSaveEvents={true}
         requestedVariant={requestedVariant}
         updateCreditAchievedCallback={updateCreditAchieved}
-        // generatedVariantCallback={variantCallback}
+      // generatedVariantCallback={variantCallback}
       />
     </>
   );
