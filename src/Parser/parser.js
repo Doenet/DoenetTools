@@ -8,7 +8,6 @@ import {parser} from './doenet.js'
 export function parse(inText) {
     return parser.parse(inText).cursor();
 }
-
 /**
  * parse string and output a convinent to use object.
  * ignores macros.
@@ -20,7 +19,6 @@ export function parseAndCompile(inText){
             throw Error("compileElement() called on a non-Element");
         }
         cursor.firstChild();
-
         if (cursor.name === "OpenTag"){
             //skip the start tag node
             cursor.firstChild();
@@ -33,10 +31,11 @@ export function parseAndCompile(inText){
                 //All of the siblings must b.name Attributes, but we're checking just in case the grammar changes
                 if(cursor.name !== "Attribute"){
                     console.error(cursor);
+                    console.error(showCursor(cursor));
                     console.error(cursor.name);
                     // eslint-disable-next-line no-empty
                     while(cursor.parent()){}
-                    throw Error("Expected an Attribute in OpenTag, got ", cursor);
+                    throw Error("Expected an Attribute in OpenTag, got ", showCursor(cursor));
                 }
 
                 //Attributes always have exactly two children, an AttributeName and an Attribute Value
@@ -109,7 +108,7 @@ export function parseAndCompile(inText){
                 //We scrape the content of both from the in string and add them to the attribute array here
                 cursor.firstChild();
                 let attrName = inText.substring(cursor.from,cursor.to);
-                
+
                 if(cursor.nextSibling() === false){
                     attrs[attrName] = true;
                 } else {
@@ -138,6 +137,7 @@ export function parseAndCompile(inText){
         if(tc.node.name === "Element"){
             return compileElement(tc.node.cursor);
         } else if (tc.node.name === "Comment") {
+            //I miss result types
             return null;
         } else if (tc.node.name === "Macro") {
             return inText.substring(tc.from,tc.to)
@@ -159,10 +159,13 @@ export function parseAndCompile(inText){
     console.log("intext",inText)
     console.log("showCursor",showCursor(tc));
 
-    out.push(compileTopLevel(tc));
+    let first = compileTopLevel(tc)
+    if(first !== null && first !== undefined){
+        out.push(first);
+    }
     while(tc.nextSibling()){
         let next = compileTopLevel(tc);
-        if(next !== null || next !== undefined){
+        if(next !== null && next !== undefined){
             out.push(next);
         }
     }
