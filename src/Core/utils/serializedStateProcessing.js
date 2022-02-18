@@ -3,8 +3,6 @@ import { createUniqueName } from './naming';
 import { flattenDeep } from './array';
 import { deepClone } from './deepFunctions';
 import { breakEmbeddedStringByCommas } from '../components/commonsugar/breakstrings';
-import sha256 from 'crypto-js/sha256';
-import Hex from 'crypto-js/enc-hex'
 import { parseAndCompile } from '../../Parser/parser';
 import subsets from './subset-of-reals';
 import axios from 'axios';
