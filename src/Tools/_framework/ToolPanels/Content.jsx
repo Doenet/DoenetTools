@@ -94,14 +94,14 @@ export default function Content(props){
           solutionDisplayMode: solutionDisplayMode,
           showFeedback: true,
           showHints: true,
+          allowLoadPageState: true,
+          allowSavePageState: true,
+          allowLocalPageState: false, //Still working out localStorage kinks
+          allowSaveSubmissions: true,
+          allowSaveEvents: true
         }}
         attemptNumber={attemptNumber}
         doenetId={doenetId}
-        allowLoadPageState={true}
-        allowSavePageState={true}
-        allowLocalPageState={true}
-        allowSaveSubmissions={true}
-        allowSaveEvents={true}
         requestedVariant={requestedVariant}
       />
   </div>

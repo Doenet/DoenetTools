@@ -259,14 +259,14 @@ export default function GradebookStudentAssignmentView(){
           showFeedback: true,
           showHints: true,
           isAssignment: true,
+          allowLoadPageState: true,
+          allowSavePageState: false,
+          allowLocalPageState: false, //Still working out localStorage kinks
+          allowSaveSubmissions: false,
+          allowSaveEvents: false,
+          pageStateSource: "submissions",
         }}
         attemptNumber={attemptNumber}
-        allowLoadPageState={true}
-        allowSavePageState={false}
-        allowLocalPageState={false} //Still working out localStorage kinks
-        allowSaveSubmissions={false}
-        allowSaveEvents={false}
-        pageStateSource="submissions"
       //   requestedVariant={requestedVariant}
         requestedVariant={variant}
       //   updateCreditAchievedCallback={updateCreditAchieved}
