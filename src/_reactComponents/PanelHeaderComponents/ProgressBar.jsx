@@ -4,7 +4,7 @@ import styled from "styled-components";
 
 const Container = styled.div`
   display: ${props => props.align};
-  justify-content: "center";
+  align-items: ${props => props.alignItems};
 `;
 const Svg = styled.svg``;
 const Rect = styled.rect`
@@ -39,9 +39,11 @@ const Label = styled.p`
 export default function ProgressBar(props) {
   const [fillWidth, setFillWidth] = useState("0px");
   const [donutPosition, setDonutPosition] = useState("12.5px");
-  const [progress, setProgress] = useState(props.value ? props.value : "");
+  const barWidth = props.width ? props.width : "235px";
   const height = props.donutIcon ? "25px" : "10px";
   const radius = props.donutIcon ? "12.5px" : "5px";
+  const ariaLabel = props.ariaLabel ? props.ariaLabel : null;
+  const labelVisible = props.label ? 'static' : 'none';
 
   var donut = 
   <DonutG>
@@ -104,48 +106,54 @@ export default function ProgressBar(props) {
     // };
     
     var align = 'flex';
-    const [labelVisible, setLabelVisible] = useState(props.label ? 'static' : 'none');
+    var alignItems = 'none';
+
     var label = '';
     if (props.label) {
       label = props.label;
+      alignItems = 'center';
       if (props.vertical) {
         align = 'static';
       }
     };
 
-    function load(percent) {
-      var length = fillWidth;
-      if (length == 1000) {
-        length = 0;
-      } else {
-        length = percent * 1000;
-      }
-
-      setFillWidth(length);
-      setDonutPosition(length+25);
-      return(length);
-    };
-
-    function handleClick() {
-      // if (props.onClick) props.onClick(e);
-      var percent;
-      if (progress === "") {
-        percent = 0;
-      } else {
-        percent = progress/100;
-      }
+    var percent = '';
+    if (props.progress) {
+      percent = props.progress;
       load(percent);
     };
 
-    function handleChange(e) {
-      setProgress(e.target.value);
+    function load(percent) {
+      percent *= barWidth;
+      setFillWidth(percent.toString() + "px");    
+      setDonutPosition((percent+12.5).toString() + "px");       
     };
+    // let percent = props.progress ? props.progress : 0;
+    // percent *= barWidth;
+    // setFillWidth((40).toString() + "px");    
+    // setDonutPosition((40+12.5).toString() + "px");       
+    
+
+    // function handleClick() {
+    //   // if (props.onClick) props.onClick(e);
+    //   var percent;
+    //   if (progress === "") {
+    //     percent = 0;
+    //   } else {
+    //     percent = progress/100;
+    //   }
+    //   load(percent);
+    // };
+
+    // function handleChange(e) {
+    //   setProgress(e.target.value);
+    // };
 
     return (
-      <Container align={align}>
+      <Container align={align} alignItems={alignItems}>
         <Label labelVisible={labelVisible} align={align}>{label}</Label>
-        <Svg width="235" height={height}>
-          <Rect id="main" fill="#E2E2E2" width="235px" height={height} radius={radius}/>
+        <Svg width={barWidth} height={height}>
+          <Rect id="main" fill="#E2E2E2" width={barWidth} height={height} radius={radius} aria-label={ariaLabel}/>
           <Rect id="moving" fill="#1A5A99" width={fillWidth} height={height}/>
           {props.donutIcon ? donut : ''}
         </Svg>

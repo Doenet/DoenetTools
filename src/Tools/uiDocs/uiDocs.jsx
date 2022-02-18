@@ -685,13 +685,25 @@ export default function attempt() {
       codePreview: '<ProgressBar/>',
       req_props: null,
       req_children: null,
-      use: 'Used for finding things.',
+      use: 'Currently used to track the progress of uploads.',
       props: [
         {
           name: 'Donut Icon',
           propPreview: '<ProgressBar donutIcon />',
           propCode: { donutIcon },
           description: 'Progress bar with a donut icon',
+        },
+        {
+          name: 'Progress',
+          propPreview: '<ProgressBar progress="0.4"/>',
+          propCode: { progress: 0.4 },
+          description: 'Sets the progress of the bar',
+        },
+        {
+          name: 'Width',
+          propPreview: '<ProgressBar width="400px" />',
+          propCode: { width: "400px" },
+          description: 'Changes the width of the component',
         },
         {
           name: 'Label',
@@ -707,8 +719,8 @@ export default function attempt() {
         },
         {
           name: 'Aria Label',
-            propPreview: '<SearchBar ariaLabel="Text"/>',
-            propCode: {ariaLabel: 'Text'},
+            propPreview: '<ProgressBar ariaLabel="Progress Bar"/>',
+            propCode: {ariaLabel: 'Progress Bar'},
             description: 'Adds aria label to component'
         }
       ],
