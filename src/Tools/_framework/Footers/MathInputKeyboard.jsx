@@ -89,7 +89,7 @@ const Button = styled.button`
   color: ${doenetMainBlue};
   border: 2px solid ${doenetMainBlue};
   background: white;
-  border-radius: 3px;
+  border-radius: 5px;
 `;
 
 const Button33 = styled.button`
@@ -97,7 +97,7 @@ const Button33 = styled.button`
   height: 30px;
   color: ${doenetMainBlue};
   border: 2px solid ${doenetMainBlue};
-  border-radius: 3px;
+  border-radius: 5px;
   background: white;
 `;
 
@@ -155,7 +155,7 @@ const LetterButton = styled.button`
   color: ${doenetMainBlue};
   border: 2px solid ${doenetMainBlue};
   background: white;
-  border-radius: 3px;
+  border-radius: 5px;
 `;
 
 export default function VirtualKeyboard() {
@@ -673,9 +673,7 @@ export default function VirtualKeyboard() {
           <FontAwesomeIcon icon={faBackspace} />
         </DeleteButton>
         <EnterButton onClick={() => returncallback()}>Enter</EnterButton>
-        <EnterButton onClick={handleToggleLetters}>
-          <MathJax.Node inline formula={'ABC'} />
-        </EnterButton>
+        <EnterButton onClick={handleToggleLetters}>ABC</EnterButton>
       </Section>
     );
 
