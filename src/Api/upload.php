@@ -30,7 +30,8 @@ $tmp_name = $_FILES['file']['tmp_name'];
 $error = $_FILES['file']['error'];
 $size = $_FILES['file']['size'];
 $original_file_name = $_FILES['file']['name'];
-$description = substr($original_file_name, 0, strrpos($original_file_name, "."));
+$description = ""; //Don't automatically fill with file name
+// $description = substr($original_file_name, 0, strrpos($original_file_name, "."));
 
 $tmp_dest = $uploads_dir . getFileName('tmp_' . $random_id,$type);
 
@@ -82,6 +83,13 @@ if ($success){
 
   rename($tmp_dest,$destination);
 
+  $mime_type = mime_content_type($destination);
+
+  $width = 0;
+  $height = 0;
+  if ($mime_type == 'image/jpeg' || $mime_type == 'image/png'){
+    [$width,$height] = getimagesize($destination);
+  }
 
   //Test if user already has this file in this activity
   $sql = "
@@ -132,9 +140,9 @@ if ($success && !$already_have_file){
 if ($success){
         $sql = "
         INSERT INTO support_files 
-        (userId,contentId,doenetId,fileType,description,asFileName,sizeInBytes,timestamp)
+        (userId,contentId,doenetId,fileType,description,asFileName,sizeInBytes,widthPixels,heightPixels,timestamp)
         VALUES
-        ('$userId','$cid','$doenetId','$type','$description','$original_file_name','$size',NOW())
+        ('$userId','$cid','$doenetId','$type','$description','$original_file_name','$size','$width','$height',NOW())
         ";
         $result = $conn->query($sql);
 }
@@ -151,10 +159,12 @@ $response_arr = array("success" => $success,
                         "fileName" => $newFileName,
                         "description" => $description,
                         "asFileName" => $original_file_name,
+                        "width" => $width,
+                        "height" => $height,
                         "msg" => $msg,
                         "userQuotaBytesAvailable" => $userQuotaBytesAvailable);
 
-// // make it json format
+// make it json format
 echo json_encode($response_arr);
 
 $conn->close();
