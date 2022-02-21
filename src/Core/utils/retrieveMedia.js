@@ -1,25 +1,20 @@
 import axios from "axios";
 import { CIDFromArrayBuffer } from "./cid";
 
-export async function retrieveMediaForCID(CID,mimeType) {
+export async function retrieveMediaForCID(CID, mimeType) {
 
   try {
     return await retrieveMediaFromIPFS(CID);
   } catch (e) {
-    // if there is an error other than CID not found,
-    // then there is no need to try to get CID from media
-    // as it indicates something wrong with the CID
-    if (e.message.substring(0, 15) !== "CID not found: ") {
-      throw e;
-    }
+    // if have error from IPFS, fallback to retrieving from server
   };
 
   //Only if doenetML tag is not providing mimeType and not on IPFS
   //look up in database
-  if (!mimeType){
-    let {data} = await axios.get('/api/getMimeType.php',{
-      params:{cid:CID}
-      });
+  if (!mimeType) {
+    let { data } = await axios.get('/api/getMimeType.php', {
+      params: { cid: CID }
+    });
     mimeType = data['mime-type'];
   }
 
