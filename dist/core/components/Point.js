@@ -56,6 +56,15 @@ export default class Point extends GraphicalComponent {
       public: true,
     };
 
+    attributes.displaySmallAsZero = {
+      createComponentOfType: "number",
+      createStateVariable: "displaySmallAsZero",
+      valueForTrue: 1E-14,
+      valueForFalse: 0,
+      defaultValue: 0,
+      public: true,
+    };
+
     attributes.labelPosition = {
       createComponentOfType: "text",
       createStateVariable: "labelPosition",
@@ -859,10 +868,14 @@ export default class Point extends GraphicalComponent {
           dependencyType: "stateVariable",
           variableName: "displayDecimals"
         },
+        displaySmallAsZero: {
+          dependencyType: "stateVariable",
+          variableName: "displaySmallAsZero"
+        },
       }),
       definition: function ({ dependencyValues, usedDefault }) {
         // for display via latex and text, round any decimal numbers to the significant digits
-        // determined by displaydigits or displaydecimals
+        // determined by displaydigits, displaydecimals, and/or displaySmallAsZero
         let coordsForDisplay = roundForDisplay({
           value: dependencyValues.coords,
           dependencyValues, usedDefault
@@ -1070,34 +1083,13 @@ export default class Point extends GraphicalComponent {
 
   }
 
-  async finalizePointPosition() {
-    // trigger a movePointe 
-    // to send the final values with transient=false
-    // so that the final position will be recorded
-
-    let numericalXs = await this.stateValues.numericalXs;
-
-    return await this.actions.movePoint({
-      x: numericalXs[0],
-      y: numericalXs[1],
-      z: numericalXs[2],
-      transient: false,
-    })
-  }
 
   switchPoint() {
   }
 
   actions = {
-    movePoint: this.movePoint.bind(
-      new Proxy(this, this.readOnlyProxyHandler)
-    ),
-    finalizePointPosition: this.finalizePointPosition.bind(
-      new Proxy(this, this.readOnlyProxyHandler)
-    ),
-    switchPoint: this.switchPoint.bind(
-      new Proxy(this, this.readOnlyProxyHandler)
-    )
+    movePoint: this.movePoint.bind(this),
+    switchPoint: this.switchPoint.bind(this)
   };
 
 }

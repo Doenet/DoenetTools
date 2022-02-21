@@ -3,11 +3,16 @@ import useDoenetRenderer from "./useDoenetRenderer.js";
 import {sizeToCSS} from "./utils/css.js";
 import CodeMirror from "../../_framework/CodeMirror.js";
 export default function CodeEditor(props) {
-  let {name, SVs, actions, children} = useDoenetRenderer(props, false);
+  let {name, SVs, children, actions, callAction} = useDoenetRenderer(props);
   let currentValue = useRef(SVs.immediateValue);
   let timer = useRef(null);
   let editorRef = useRef(null);
   let updateInternalValue = useRef(SVs.immediateValue);
+  let componentHeight = {...SVs.height};
+  let editorHeight = {...SVs.height};
+  if (SVs.showResults) {
+    editorHeight.size *= 1 - SVs.viewerRatio;
+  }
   if (SVs.hidden) {
     return null;
   }
@@ -22,23 +27,15 @@ export default function CodeEditor(props) {
   let componentWidth = SVs.width;
   let editorStyle = {
     width: sizeToCSS(editorWidth),
-    minHeight: sizeToCSS(SVs.minHeight),
-    maxHeight: sizeToCSS(SVs.maxHeight),
-    padding: "2px",
-    border: "1px solid black",
+    height: sizeToCSS(editorHeight),
+    padding: "0px",
+    overflowX: "hidden",
     overflowY: "scroll"
   };
   if (SVs.showResults) {
-    editorWidth = {size: 300, isAbsolute: true};
-    editorStyle = {
-      width: sizeToCSS(editorWidth),
-      minHeight: sizeToCSS(SVs.minHeight),
-      maxHeight: sizeToCSS(SVs.maxHeight),
-      padding: "0px",
-      overflowY: "scroll",
-      overflowX: "hidden"
-    };
-    viewer = /* @__PURE__ */ React.createElement("div", null, children);
+    viewer = /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("hr", {
+      style: {width: sizeToCSS(componentWidth)}
+    }), /* @__PURE__ */ React.createElement("div", null, children));
   }
   let editor = /* @__PURE__ */ React.createElement("div", {
     key: editorKey,
@@ -48,38 +45,30 @@ export default function CodeEditor(props) {
     editorRef,
     setInternalValue: updateInternalValue.current,
     readOnly: SVs.disabled,
-    onBlur: (e) => {
-      actions.updateValue();
-    },
+    onBlur: () => callAction({action: actions.updateValue}),
     onFocus: () => {
     },
     onBeforeChange: (value) => {
       currentValue.current = value;
-      actions.updateImmediateValue({
-        text: value
-      });
+      callAction({action: actions.updateImmediateValue, args: {text: value}});
       if (timer.current === null) {
         timer.current = setTimeout(function() {
-          actions.updateValue();
+          () => callAction({action: actions.updateValue});
           timer.current = null;
         }, 3e3);
       }
     }
   }));
-  console.log("sizeToCSS(editorWidth)", sizeToCSS(editorWidth), editorWidth);
   return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("a", {
     name
   }), /* @__PURE__ */ React.createElement("div", {
     style: {
       padding: "0px",
       border: "1px solid black",
+      height: sizeToCSS(componentHeight),
       width: sizeToCSS(componentWidth),
-      display: "flex"
+      display: "flex",
+      flexDirection: "column"
     }
-  }, /* @__PURE__ */ React.createElement("div", {
-    style: {
-      width: sizeToCSS(editorWidth),
-      padding: "0px"
-    }
-  }, editor), viewer));
+  }, editor, viewer));
 }

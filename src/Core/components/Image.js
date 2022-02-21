@@ -33,8 +33,60 @@ export default class Image extends BlockComponent {
       public: true,
       forRenderer: true,
     };
+    attributes.asFileName = {
+      createComponentOfType: "text",
+      createStateVariable: "asFileName",
+      defaultValue: null,
+      public: true,
+      forRenderer: true,
+    };
+    attributes.mimeType = {
+      createComponentOfType: "text",
+      createStateVariable: "mimeType",
+      defaultValue: null,
+      public: true,
+      forRenderer: true,
+    };
 
-    return attributes;
+     return attributes;
+    }
+
+    static returnStateVariableDefinitions() {
+
+      let stateVariableDefinitions = super.returnStateVariableDefinitions();
+
+      stateVariableDefinitions.cid = {
+        forRenderer: true,
+        
+        returnDependencies: () => ({
+          source: {
+            dependencyType: "stateVariable",
+            variableName: "source",
+          },
+        }),
+        definition: function ({ dependencyValues }) {
+          if (!dependencyValues.source ||
+            dependencyValues.source.substring(0, 7).toLowerCase() !== "doenet:"
+          ) {
+            return {
+              setValue: { cid: null}
+            }
+          }
+  
+          let cid = null;
+  
+          let result = dependencyValues.source.match(/[:&]cid=([^&]+)/i);
+          if (result) {
+            cid = result[1];
+          }
+  
+          return { setValue: { cid } };
+        },
+      };
+   
+
+    return stateVariableDefinitions;
+    
   }
 
 }

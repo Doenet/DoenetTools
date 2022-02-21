@@ -2334,7 +2334,8 @@ export class DependencyHandler {
   }
 
   get components() {
-    return new Proxy(this._components, readOnlyProxyHandler);
+    return this._components;
+    // return new Proxy(this._components, readOnlyProxyHandler);
   }
 
   set components(value) {
@@ -2994,11 +2995,11 @@ class Dependency {
       }
     }
 
-    if (!this.doNotProxy && !skipProxy &&
-      value !== null && typeof value === 'object'
-    ) {
-      value = new Proxy(value, readOnlyProxyHandler)
-    }
+    // if (!this.doNotProxy && !skipProxy &&
+    //   value !== null && typeof value === 'object'
+    // ) {
+    //   value = new Proxy(value, readOnlyProxyHandler)
+    // }
 
     return { value, changes, usedDefault }
   }
@@ -3393,9 +3394,9 @@ class StateVariableComponentTypeDependency extends StateVariableDependency {
       }
     }
 
-    if (!this.doNotProxy && value !== null && typeof value === 'object') {
-      value = new Proxy(value, readOnlyProxyHandler)
-    }
+    // if (!this.doNotProxy && value !== null && typeof value === 'object') {
+    //   value = new Proxy(value, readOnlyProxyHandler)
+    // }
 
 
     return { value, changes, usedDefault: false }
@@ -4345,9 +4346,9 @@ class ChildDependency extends Dependency {
       this.previousDownstreamPrimitives = [...this.downstreamPrimitives];
     }
 
-    if (!this.doNotProxy) {
-      result.value = new Proxy(result.value, readOnlyProxyHandler)
-    }
+    // if (!this.doNotProxy) {
+    //   result.value = new Proxy(result.value, readOnlyProxyHandler)
+    // }
 
     return result;
 
@@ -5613,9 +5614,9 @@ class ReplacementDependency extends Dependency {
       this.previousReplacementPrimitives = [...this.replacementPrimitives];
     }
 
-    if (!this.doNotProxy) {
-      result.value = new Proxy(result.value, readOnlyProxyHandler)
-    }
+    // if (!this.doNotProxy) {
+    //   result.value = new Proxy(result.value, readOnlyProxyHandler)
+    // }
 
     return result;
 
@@ -6458,9 +6459,9 @@ class DoenetAttributeDependency extends StateVariableDependency {
 
     }
 
-    if (!this.doNotProxy && value !== null && typeof value === 'object') {
-      value = new Proxy(value, readOnlyProxyHandler)
-    }
+    // if (!this.doNotProxy && value !== null && typeof value === 'object') {
+    //   value = new Proxy(value, readOnlyProxyHandler)
+    // }
 
     return { value, changes }
   }
@@ -6508,9 +6509,9 @@ class AttributePrimitiveDependency extends StateVariableDependency {
 
     }
 
-    if (!this.doNotProxy && value !== null && typeof value === 'object') {
-      value = new Proxy(value, readOnlyProxyHandler)
-    }
+    // if (!this.doNotProxy && value !== null && typeof value === 'object') {
+    //   value = new Proxy(value, readOnlyProxyHandler)
+    // }
 
     return { value, changes }
   }

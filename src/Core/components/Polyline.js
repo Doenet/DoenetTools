@@ -374,15 +374,15 @@ export default class Polyline extends GraphicalComponent {
 
         let vals = [];
         let prPtx, prPty;
-        let nxPtx = numericalVertices[0][0];
-        let nxPty = numericalVertices[0][1];
+        let nxPtx = numericalVertices[0]?.[0];
+        let nxPty = numericalVertices[0]?.[1];
 
         for (let i = 1; i < nVertices; i++) {
           prPtx = nxPtx;
           prPty = nxPty;
 
-          nxPtx = numericalVertices[i][0];
-          nxPty = numericalVertices[i][1];
+          nxPtx = numericalVertices[i]?.[0];
+          nxPty = numericalVertices[i]?.[1];
 
           // only implement for constants
           if (!(Number.isFinite(prPtx) && Number.isFinite(prPty) &&

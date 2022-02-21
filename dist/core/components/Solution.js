@@ -241,7 +241,7 @@ export default class Solution extends BlockComponent {
       }
     }
 
-    return await this.coreFunctions.requestUpdate({
+    return await this.coreFunctions.performUpdate({
       updateInstructions,
       event,
       overrideReadOnly: true,
@@ -253,12 +253,12 @@ export default class Solution extends BlockComponent {
   async revealSolution() {
     let { scoredItemNumber, scoredComponent } = await this.coreFunctions.calculateScoredItemNumberOfContainer(this.componentName);
 
-    await this.coreFunctions.recordSolutionView({
+    let result = await this.coreFunctions.recordSolutionView({
       itemNumber: scoredItemNumber,
       scoredComponent: scoredComponent,
     });
 
-    return await this.finishRevealSolution()
+    return await this.finishRevealSolution(result)
 
   }
 

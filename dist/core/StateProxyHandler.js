@@ -13,9 +13,9 @@ export default function createStateProxyHandler() {
           }));
         } else {
           result = result.value;
-          if (result !== null && typeof result === 'object' && result.__isReadOnlyProxy !== true) {
-            result = new Proxy(result, readOnlyProxyHandler);
-          }
+          // if (result !== null && typeof result === 'object' && result.__isReadOnlyProxy !== true) {
+          //   result = new Proxy(result, readOnlyProxyHandler);
+          // }
         }
       }
       return result;
