@@ -12,7 +12,7 @@ entity {
 }
 
 Element {
-  OpenTag entity* CloseTag |
+  OpenTag entity* (CloseTag | MissingCloseTag) |
   SelfClosingTag
 }
 
@@ -23,7 +23,7 @@ topLevel {
   Element
 }
 
-OpenTag[closedBy=CloseTag] {
+OpenTag[closedBy="CloseTag MissingCloseTag"] {
   StartTag TagName Attribute* endTag
 }
 
@@ -44,7 +44,7 @@ Attribute {
   AttributeName Is AttributeValue
 }
 
-AttributeValue { "\"" (attributeContent | EntityReference | CharacterReference | Macro)* "\"" }
+AttributeValue {singleQuoteAttributeValue | doubleQuoteAttributeValue}
 
 Comment { "<!--" commentContent* "-->" }
 
@@ -53,11 +53,15 @@ Comment { "<!--" commentContent* "-->" }
 @external tokens startTag from "./tokens.js" {
   StartTag[closedBy="SelfCloseEndTag EndTag"]
   StartCloseTag
+  MissingCloseTag
   mismatchedStartCloseTag[@name=StartCloseTag]
   incompleteStartCloseTag[@name=StartCloseTag]
 }
 
 @external tokens commentContent from "./tokens.js" { commentContent }
+
+singleQuoteAttributeValue { "'" (attributeContentSingleQuote | EntityReference | CharacterReference | Macro)* "'" }
+doubleQuoteAttributeValue { "\"" (attributeContentDoubleQuote | EntityReference | CharacterReference | Macro)* "\"" }
 
 @tokens {
   endTag { ">" }
@@ -72,11 +76,13 @@ Comment { "<!--" commentContent* "-->" }
 
   TagName { identifier }
 
-  Macro { "$" identifier}
+  Macro { "$" "$"? identifier | "$" "$"? "(" identifier ")" }
 
   AttributeName { identifier }
 
-  attributeContent { "$" |  !["&$ \t\r\n]  !["&$]* }
+  attributeContentSingleQuote { "$" |  !['&$ \t\r\n]  !['&$]* }
+
+  attributeContentDoubleQuote { "$" |  !["&$ \t\r\n]  !["&$]* }
 
   EntityReference { "&" ![#; ]+ ";" }
 
@@ -88,14 +94,14 @@ Comment { "<!--" commentContent* "-->" }
 
   space { std.whitespace+ }
 
-  @precedence {Macro, attributeContent}
+  @precedence {Macro, attributeContentSingleQuote}
+  @precedence {Macro, attributeContentDoubleQuote}
 
-  @precedence {attributeContent, space}
+  @precedence {attributeContentSingleQuote, space}
+  @precedence {attributeContentDoubleQuote, space}
 
-  @precedence {space, Text}
+  @precedence {Text, space}
 
 }
-
 @skip { space }
-
 @detectDelim

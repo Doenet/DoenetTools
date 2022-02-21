@@ -11,7 +11,7 @@ import {selectedMenuPanelAtom} from "../Panels/NewMenuPanel.js";
 import {drivecardSelectedNodesAtom} from "../ToolHandlers/CourseToolHandler.js";
 import {pageToolViewAtom} from "../NewToolRoot.js";
 import DriveCard from "../../_reactComponents/Drive/DoenetDriveCard.js";
-import {fetchDrivesQuery} from "../../_reactComponents/Drive/NewDrive.js";
+import {clearDriveAndItemSelections, fetchDrivesQuery} from "../../_reactComponents/Drive/NewDrive.js";
 import {mainPanelClickAtom} from "../Panels/NewMainPanel.js";
 import useMedia from "./useMedia.js";
 import "./driveCardsStyle.css.proxy.js";
@@ -26,7 +26,8 @@ export default function DriveCardsNew(props) {
   useEffect(() => {
     setMainPanelClear((was) => [
       ...was,
-      {atom: selectedMenuPanelAtom, value: null}
+      {atom: selectedMenuPanelAtom, value: null},
+      {atom: drivecardSelectedNodesAtom, value: []}
     ]);
     return setMainPanelClear((was) => [
       ...was,
@@ -56,14 +57,14 @@ const DriveCardWrapper = (props) => {
     let heights2 = new Array(columns).fill(0);
     let driveCardItems2 = showCards.map((child, i) => {
       const column = heights2.indexOf(Math.min(...heights2));
-      const x = width / columns * column;
+      const x = width / columns * column + 20;
       const y = (heights2[column] += 270) - 270;
       return {
         ...child,
         x,
         y,
-        width: width / columns,
-        height: 250,
+        width: width / columns - 40,
+        height: 230,
         drivePathSyncKey
       };
     });
@@ -72,8 +73,8 @@ const DriveCardWrapper = (props) => {
   console.log(">>> driveInfo", driveInfo);
   const transitions = useTransition(driveCardItems, {
     key: (item) => item.driveId,
-    from: ({x, y, width: width2, height}) => ({x, y, width: width2, height, opacity: 0}),
-    enter: ({x, y, width: width2, height}) => ({x, y, width: width2, height, opacity: 1}),
+    from: {opacity: 0},
+    enter: {opacity: 1},
     update: ({x, y, width: width2, height}) => ({x, y, width: width2, height}),
     leave: {height: 0, opacity: 0},
     config: {mass: 5, tension: 500, friction: 100},
@@ -91,6 +92,8 @@ const DriveCardWrapper = (props) => {
         }
       });
     }
+  };
+  const handleOnBlur = () => {
   };
   const handleKeyUp = (e, item) => {
     if (e.key === "Tab") {
@@ -163,7 +166,8 @@ const DriveCardWrapper = (props) => {
     return availableCard.length > 0 ? true : false;
   };
   return /* @__PURE__ */ React.createElement("div", {
-    className: "drivecardContainer"
+    className: "drivecardContainer",
+    id: "test"
   }, /* @__PURE__ */ React.createElement("div", {
     ref,
     className: "driveCardList",
@@ -175,13 +179,14 @@ const DriveCardWrapper = (props) => {
       style
     }, /* @__PURE__ */ React.createElement("div", {
       role: "button",
-      style: {height: "100%", outline: "none", padding: "10px"},
+      style: {height: "100%", outline: "none"},
       tabIndex: index + 1,
       onClick: (e) => {
         e.preventDefault();
         e.stopPropagation();
         drivecardselection(e, item, props);
       },
+      onBlur: () => handleOnBlur(),
       onKeyDown: (e) => handleKeyDown(e, item),
       onKeyUp: (e) => handleKeyUp(e, item),
       onDoubleClick: (e) => {

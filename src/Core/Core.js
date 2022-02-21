@@ -1,4 +1,3 @@
-import * as ComponentTypes from './ComponentTypes'
 import readOnlyProxyHandler from './ReadOnlyProxyHandler';
 import ParameterStack from './ParameterStack';
 import Numerics from './Numerics';
@@ -11,126 +10,32 @@ import createStateProxyHandler from './StateProxyHandler';
 import { convertAttributesForComponentType, postProcessCopy } from './utils/copy';
 import { flattenDeep, mapDeep } from './utils/array';
 import { DependencyHandler } from './Dependencies';
-import sha256 from 'crypto-js/sha256';
-import Hex from 'crypto-js/enc-hex'
 import { preprocessMathInverseDefinition } from './utils/math';
 import { returnDefaultGetArrayKeysFromVarName } from './utils/stateVariables';
 import { nanoid } from 'nanoid';
+import { CIDFromDoenetML } from './utils/cid';
+import { preprocessForPostMessage } from './CoreWorker';
+import createComponentInfoObjects from './utils/componentInfoObjects';
 
-// string to componentClass: this.allComponentClasses["string"]
+// string to componentClass: this.componentInfoObjects.allComponentClasses["string"]
 // componentClass to string: componentClass.componentType
-// validTags: Object.keys(this.standardComponentClasses);
-
-let core;
-
-let queuedRequestActions = [];
-
-onmessage = function (e) {
-
-  if (e.data.messageType === "createCore") {
-
-    // if (core) {
-    //   // console.log('already have a core.  Refusing to create another one');
-    //   // return;
-    //   //TODO: Investigate for memory leaks
-    // }
-
-    // this.setTimeout(() => {
-    //   core = new Core(e.data.args)
-    //   core.getInitializedPromise().then(() => {
-    //     console.log('actions to process', queuedRequestActions)
-    //     for (let action of queuedRequestActions) {
-    //       core.requestAction(action);
-    //     }
-    //   })
-    // }, 10000)
-    core = new Core(e.data.args)
-    core.getInitializedPromise().then(() => {
-      // console.log('actions to process', queuedRequestActions)
-      for (let action of queuedRequestActions) {
-        core.requestAction(action);
-      }
-      queuedRequestActions = [];
-    })
-  } else if (e.data.messageType === "requestAction") {
-    if (core?.initialized) {
-      // setTimeout(() => core.requestAction(e.data.args), 1000)
-      core.requestAction(e.data.args)
-    } else {
-      queuedRequestActions.push(e.data.args);
-    }
-  } else if (e.data.messageType === "returnAllStateVariables") {
-    console.log('all components')
-    console.log(core._components)
-    returnAllStateVariables(core).then(componentsObj => {
-      postMessage({
-        messageType: "returnAllStateVariables",
-        args: componentsObj
-      })
-    });
-  } else if (e.data.messageType === "allowSolutionView") {
-    let messageId = e.data.args.messageId;
-    let resolveRecordSolutionView = core.resolveRecordSolutionView[messageId];
-    if (resolveRecordSolutionView) {
-      resolveRecordSolutionView(e.data.args)
-      delete core.resolveRecordSolutionView[messageId];
-    }
-  }
-}
-
-async function returnAllStateVariables(core) {
-  let componentsObj = {};
-  for (let componentName in core.components) {
-    let component = core.components[componentName];
-    let compObj = componentsObj[componentName] = {
-      componentName,
-      componentType: component.componentType,
-      stateValues: {}
-    }
-    for (let vName in component.state) {
-      compObj.stateValues[vName] = preprocessForPostMessage(await component.state[vName].value);
-    }
-    compObj.activeChildren = component.activeChildren.map(x => x.componentName ? x.componentName : x)
-  }
-  return componentsObj;
-}
-
-function preprocessForPostMessage(value) {
-  if (value instanceof me.class) {
-    value = value.tree;
-  } else if (typeof value === "function") {
-    value = undefined;
-  } else if (Array.isArray(value)) {
-    value = value.map(x => preprocessForPostMessage(x))
-  } else if (typeof value === "object" && value !== null) {
-    let valueCopy = {}
-    for (let key in value) {
-      valueCopy[key] = preprocessForPostMessage(value[key]);
-    }
-    value = valueCopy;
-  }
-  return value;
-}
-
 
 export default class Core {
-  constructor({ doenetML, parameters, requestedVariant,
-    externalFunctions, flags = {},
+  constructor({ doenetML, doenetId, attemptNumber,
+    requestedVariant,
+    flags = {},
     stateVariableChanges = {},
     coreId }) {
     // console.time('core');
 
 
     this.coreId = coreId;
+    this.doenetId = doenetId;
+    this.attemptNumber = attemptNumber;
 
     this.numerics = new Numerics();
     // this.flags = new Proxy(flags, readOnlyProxyHandler); //components shouldn't modify flags
     this.flags = flags;
-
-    this.externalFunctions = externalFunctions;
-    if (externalFunctions === undefined) {
-      this.externalFunctions = {};
-    }
 
     this.executeProcesses = this.executeProcesses.bind(this);
     this.requestUpdate = this.requestUpdate.bind(this);
@@ -185,47 +90,13 @@ export default class Core {
     }.bind(this);
 
 
-    this._standardComponentClasses = ComponentTypes.standardComponentClasses();
-    this._allComponentClasses = ComponentTypes.allComponentClasses();
-    this._componentTypesCreatingVariants = ComponentTypes.componentTypesCreatingVariants();
-    this._componentTypeWithPotentialVariants = ComponentTypes.componentTypeWithPotentialVariants();
-
-    this.componentTypeLowerCaseMapping = {};
-    for (let componentType in this._allComponentClasses) {
-      this.componentTypeLowerCaseMapping[componentType.toLowerCase()] = componentType;
-    }
-
-    this.stateVariableInfo = {};
-    for (let componentType in this.allComponentClasses) {
-      Object.defineProperty(this.stateVariableInfo, componentType, {
-        get: function () {
-          let info = this.allComponentClasses[componentType].returnStateVariableInfo({ flags: this.flags });
-          delete this.stateVariableInfo[componentType];
-          return this.stateVariableInfo[componentType] = info;
-        }.bind(this),
-        configurable: true
-      })
-    }
-
-    this.publicStateVariableInfo = {};
-    for (let componentType in this.allComponentClasses) {
-      Object.defineProperty(this.publicStateVariableInfo, componentType, {
-        get: function () {
-          let info = this.allComponentClasses[componentType].returnStateVariableInfo({
-            onlyPublic: true, flags: this.flags
-          });
-          delete this.publicStateVariableInfo[componentType];
-          return this.publicStateVariableInfo[componentType] = info;
-        }.bind(this),
-        configurable: true
-      })
-    }
+    this.componentInfoObjects = createComponentInfoObjects(flags);
 
     this.rendererStateVariables = {};
-    for (let componentType in this.allComponentClasses) {
+    for (let componentType in this.componentInfoObjects.allComponentClasses) {
       Object.defineProperty(this.rendererStateVariables, componentType, {
         get: function () {
-          let varDescriptions = this.allComponentClasses[componentType].returnStateVariableInfo({
+          let varDescriptions = this.componentInfoObjects.allComponentClasses[componentType].returnStateVariableInfo({
             onlyForRenderer: true, flags: this.flags
           }).stateVariableDescriptions;
           delete this.rendererStateVariables[componentType];
@@ -235,17 +106,8 @@ export default class Core {
       })
     }
 
-    this.componentInfoObjects = {
-      standardComponentClasses: this.standardComponentClasses,
-      allComponentClasses: this.allComponentClasses,
-      componentTypesCreatingVariants: this.componentTypesCreatingVariants,
-      componentTypeWithPotentialVariants: this.componentTypeWithPotentialVariants,
-      componentTypeLowerCaseMapping: this.componentTypeLowerCaseMapping,
-      isInheritedComponentType: this.isInheritedComponentType,
-      isCompositeComponent: this.isCompositeComponent,
-      stateVariableInfo: this.stateVariableInfo,
-      publicStateVariableInfo: this.publicStateVariableInfo,
-    };
+
+
 
     this.coreFunctions = {
       requestUpdate: this.requestUpdate,
@@ -284,7 +146,7 @@ export default class Core {
 
     // console.time('serialize doenetML');
 
-    this.parameterStack = new ParameterStack(parameters);
+    this.parameterStack = new ParameterStack();
 
     this.parameterStack.parameters.rngClass = prng_alea;
 
@@ -304,22 +166,24 @@ export default class Core {
       }
     }
 
-    let contentId = Hex.stringify(sha256(doenetML));
-    serializeFunctions.expandDoenetMLsToFullSerializedComponents({
-      contentIds: [contentId],
-      doenetMLs: [doenetML],
-      componentInfoObjects: this.componentInfoObjects,
-      flags: this.flags,
-    }).then(this.finishCoreConstruction)
+    CIDFromDoenetML(doenetML)
+      .then(CID =>
+        serializeFunctions.expandDoenetMLsToFullSerializedComponents({
+          CIDs: [CID],
+          doenetMLs: [doenetML],
+          componentInfoObjects: this.componentInfoObjects,
+          flags: this.flags,
+        }))
+      .then(this.finishCoreConstruction)
   }
 
 
   async finishCoreConstruction({
-    contentIds,
+    CIDs,
     fullSerializedComponents,
   }) {
 
-    this.contentId = contentIds[0];
+    this.CID = CIDs[0];
 
     let serializedComponents = fullSerializedComponents[0];
 
@@ -335,7 +199,7 @@ export default class Core {
 
 
     this.documentName = serializedComponents[0].componentName;
-    serializedComponents[0].doenetAttributes.contentId = this.contentId;
+    serializedComponents[0].doenetAttributes.CID = this.CID;
 
     this._components = {};
     this.componentsToRender = {};
@@ -1017,7 +881,7 @@ export default class Core {
         continue;
       }
 
-      let componentClass = this.allComponentClasses[serializedComponent.componentType];
+      let componentClass = this.componentInfoObjects.allComponentClasses[serializedComponent.componentType];
       if (componentClass === undefined) {
         throw Error("Cannot create component of type " + serializedComponent.componentType);
       }
@@ -1208,7 +1072,7 @@ export default class Core {
           serializedComponent,
           sharedParameters,
           definingChildrenSoFar: definingChildren,
-          allComponentClasses: this.allComponentClasses,
+          allComponentClasses: this.componentInfoObjects.allComponentClasses,
           descendantVariantComponents
         });
 
@@ -1546,7 +1410,7 @@ export default class Core {
     for (let childInd = 0; childInd < children.length; childInd++) {
       let child = children[childInd];
 
-      if (child instanceof this._allComponentClasses._composite) {
+      if (child instanceof this.componentInfoObjects.allComponentClasses._composite) {
 
         // if composite itself is in the child logic
         // then don't replace it with its replacements
@@ -1665,14 +1529,14 @@ export default class Core {
     }
 
     // check if can match with adapters
-    let childClass = this.allComponentClasses[childType];
+    let childClass = this.componentInfoObjects.allComponentClasses[childType];
 
     // if didn't match child, attempt to match with child's adapters
     let nAdapters = childClass.nAdapters;
 
     for (let n = 0; n < nAdapters; n++) {
       let adapterComponentType = childClass
-        .getAdapterComponentType(n, this.publicStateVariableInfo)
+        .getAdapterComponentType(n, this.componentInfoObjects.publicStateVariableInfo)
 
       result = this.findChildGroupNoAdapters(
         adapterComponentType, parentClass
@@ -1781,8 +1645,8 @@ export default class Core {
       // Create an object that is just the componentType of the adapter
       newSerializedChild = {
         componentType:
-          this.allComponentClasses[originalChild.componentType]
-            .getAdapterComponentType(adapterIndUsed, this.publicStateVariableInfo),
+          this.componentInfoObjects.allComponentClasses[originalChild.componentType]
+            .getAdapterComponentType(adapterIndUsed, this.componentInfoObjects.publicStateVariableInfo),
         placeholderInd: originalChild.placeholderInd + "adapt"
       }
     }
@@ -2128,7 +1992,7 @@ export default class Core {
     for (let childInd = 0; childInd < parent.activeChildren.length; childInd++) {
       let child = parent.activeChildren[childInd];
 
-      if (child instanceof this._allComponentClasses._composite) {
+      if (child instanceof this.componentInfoObjects.allComponentClasses._composite) {
 
         // if composite itself is in the child logic
         // then don't replace it with its replacements
@@ -2453,7 +2317,7 @@ export default class Core {
 
       if (!attributeFromPrimitive) {
 
-        let attributeClass = this.allComponentClasses[attributeSpecification.createComponentOfType];
+        let attributeClass = this.componentInfoObjects.allComponentClasses[attributeSpecification.createComponentOfType];
         if (!attributeClass) {
           throw Error(`Component type ${attributeSpecification.createComponentOfType} does not exist so cannot create state variable for attribute ${attrName} of componentType ${componentClass.componentType}.`)
         }
@@ -2797,7 +2661,7 @@ export default class Core {
 
       if (!attributeFromPrimitive) {
 
-        let attributeClass = this.allComponentClasses[attributeSpecification.createComponentOfType];
+        let attributeClass = this.componentInfoObjects.allComponentClasses[attributeSpecification.createComponentOfType];
         if (!attributeClass) {
           throw Error(`Component type ${attributeSpecification.createComponentOfType} does not exist so cannot create state variable for attribute ${attrName} of componentType ${componentClass.componentType}.`)
         }
@@ -4686,7 +4550,7 @@ export default class Core {
     let unexpandedCompositesNotReady = [];
 
     for (let replacement of replacements) {
-      if (this.isCompositeComponent({
+      if (this.componentInfoObjects.isCompositeComponent({
         componentType: replacement.componentType,
         includeNonStandard: recurseNonStandardComposites
       })) {
@@ -4780,7 +4644,7 @@ export default class Core {
     // (If have multiple state variables defined, they must be of same size)
     let arraySize = definitionArgs.arraySize;
 
-    // if (component instanceof this.allComponentClasses._composite) {
+    // if (component instanceof this.componentInfoObjects.allComponentClasses._composite) {
     //   definitionArgs.replacementsWorkspace = new Proxy(component.replacementsWorkspace, readOnlyProxyHandler);
     // }
 
@@ -5865,7 +5729,7 @@ export default class Core {
       if (result.updateParentRenderedChildren) {
         // find ancestor that isn't a composite and mark it to update children to render
         for (let ancestorObj of component.ancestors) {
-          if (!this.allComponentClasses._composite.isPrototypeOf(
+          if (!this.componentInfoObjects.allComponentClasses._composite.isPrototypeOf(
             ancestorObj.componentCase
           )) {
             // found non-composite ancestor
@@ -6311,7 +6175,7 @@ export default class Core {
             if (result.updateParentRenderedChildren) {
               // find ancestor that isn't a composite and mark it to update children to render
               for (let ancestorObj of upDepComponent.ancestors) {
-                if (!this.allComponentClasses._composite.isPrototypeOf(
+                if (!this.componentInfoObjects.allComponentClasses._composite.isPrototypeOf(
                   ancestorObj.componentCase
                 )) {
                   // found non-composite ancestor
@@ -7584,78 +7448,9 @@ export default class Core {
 
   }
 
-  get standardComponentClasses() {
-    // return new Proxy(this._standardComponentClasses, readOnlyProxyHandler);
-    return this._standardComponentClasses;
-  }
-
-  set standardComponentClasses(value) {
-    return null;
-  }
-
-  get allComponentClasses() {
-    // return new Proxy(this._allComponentClasses, readOnlyProxyHandler);
-    return this._allComponentClasses;
-  }
-
-  set allComponentClasses(value) {
-    return null;
-  }
-
-  isInheritedComponentType({ inheritedComponentType, baseComponentType }) {
-    if (inheritedComponentType === baseComponentType) {
-      return true;
-    }
-    if (inheritedComponentType === "string") {
-      return baseComponentType === "_base" || baseComponentType === "_inline";
-    } else if (baseComponentType === "string") {
-      return false;
-    }
-
-    let baseClass = this.allComponentClasses[baseComponentType];
-    if (!baseClass) {
-      return false;
-    }
-    return baseClass.isPrototypeOf(
-      this.allComponentClasses[inheritedComponentType]
-    );
-  }
-
-  isCompositeComponent({ componentType, includeNonStandard = true }) {
-    let componentClass = this.allComponentClasses[componentType];
-    if (!componentClass) {
-      return false;
-    }
-
-    let isComposite = this.isInheritedComponentType({
-      inheritedComponentType: componentType,
-      baseComponentType: "_composite"
-    })
-
-    return isComposite &&
-      (includeNonStandard || !componentClass.treatAsComponentForRecursiveReplacements)
-  }
 
   get rendererTypesInDocument() {
     return this.document.allPotentialRendererTypes;
-  }
-
-  get componentTypesCreatingVariants() {
-    // return new Proxy(this._componentTypesCreatingVariants, readOnlyProxyHandler);
-    return this._componentTypesCreatingVariants;
-  }
-
-  set componentTypesCreatingVariants(value) {
-    return null;
-  }
-
-  get componentTypeWithPotentialVariants() {
-    // return new Proxy(this._componentTypeWithPotentialVariants, readOnlyProxyHandler);
-    return this._componentTypeWithPotentialVariants;
-  }
-
-  set componentTypeWithPotentialVariants(value) {
-    return null;
   }
 
   get components() {
@@ -8057,7 +7852,7 @@ export default class Core {
         messageType: "saveState",
         args: {
           newStateVariableValues: preprocessForPostMessage(newVals),
-          contentId: this.contentId,
+          CID: this.CID,
           itemsWithCreditAchieved,
           currentVariant
         },
@@ -8078,41 +7873,54 @@ export default class Core {
   }
 
   requestRecordEvent(event) {
-    if (this.externalFunctions.recordEvent) {
-      return new Promise((resolve, reject) => {
+    return new Promise((resolve, reject) => {
 
-        this.processQueue.push({
-          type: "recordEvent", event, resolve, reject
-        })
-
-        if (!this.processing) {
-          this.processing = true;
-          this.executeProcesses();
-
-        }
+      this.processQueue.push({
+        type: "recordEvent", event, resolve, reject
       })
-    } else {
-      return Promise.resolve();
-    }
+
+      if (!this.processing) {
+        this.processing = true;
+        this.executeProcesses();
+
+      }
+    })
   }
 
   performRecordEvent({ event }) {
 
-    if (this.externalFunctions.recordEvent) {
-
-      // event.object.documentTitle = this.document.stateValues.title;
-      event.timestamp = new Date().toISOString().slice(0, 19).replace('T', ' ');
-
-      if (!event.result) {
-        event.result = {};
-      }
-      if (!event.context) {
-        event.context = {};
-      }
-
-      setTimeout(() => this.externalFunctions.recordEvent(event), 0);
-
+    if (!this.flags.allowSaveEvents) {
+      return;
     }
+
+    event.timestamp = new Date().toISOString().slice(0, 19).replace('T', ' ');
+
+    if (!event.result) {
+      event.result = {};
+    }
+    if (!event.context) {
+      event.context = {};
+    }
+
+    setTimeout(() => {
+
+      const payload = {
+        doenetId: this.doenetId,
+        attemptNumber: this.attemptNumber,
+        verb: event.verb,
+        object: JSON.stringify(event.object, serializeFunctions.serializedComponentsReplacer),
+        result: JSON.stringify(event.result, serializeFunctions.serializedComponentsReplacer),
+        context: JSON.stringify(event.context, serializeFunctions.serializedComponentsReplacer),
+        timestamp: event.timestamp,
+        version: "0.1.0",
+      }
+
+      // axios.post('/api/recordEvent.php', payload) //TODO: need to record the event
+      // .then(resp => {
+      //   console.log(">>>>resp",resp.data)
+      // });
+
+    }, 0);
 
     return Promise.resolve();
   }
@@ -8221,7 +8029,7 @@ export default class Core {
     while (compositesToUpdateReplacements.length > 0) {
       for (let cName of compositesToUpdateReplacements) {
         let composite = this._components[cName];
-        if (composite instanceof this.allComponentClasses._composite
+        if (composite instanceof this.componentInfoObjects.allComponentClasses._composite
           && composite.isExpanded
         ) {
 

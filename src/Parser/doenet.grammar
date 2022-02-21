@@ -22,15 +22,15 @@ topLevel {
 }
 
 OpenTag[closedBy="CloseTag MissingCloseTag"] {
-  StartTag TagName Attribute* endTag
+  StartTag TagName ws* (Attribute ws*)* endTag
 }
 
 SelfClosingTag {
-  StartTag TagName Attribute* selfCloseEndTag
+  StartTag TagName ws* (Attribute ws*)* selfCloseEndTag
 }
 
 CloseTag[openedBy=OpenTag] {
-  StartCloseTag TagName  endTag
+  StartCloseTag ws* TagName ws* endTag
 }
 
 MismatchedCloseTag {
@@ -38,8 +38,8 @@ MismatchedCloseTag {
 }
 
 Attribute {
-  AttributeName |
-  AttributeName Is AttributeValue
+  AttributeName  |
+   AttributeName Is AttributeValue
 }
 
 AttributeValue {singleQuoteAttributeValue | doubleQuoteAttributeValue}
@@ -86,12 +86,12 @@ doubleQuoteAttributeValue { "\"" (attributeContentDoubleQuote | Macro)* "\"" }
 
   Is { "=" }
 
-  Text { ![<$]+  }
+  Text { ("< " | ![<$])+  }
 
+  ws { std.whitespace+ }
 
   @precedence {Macro, attributeContentSingleQuote}
   @precedence {Macro, attributeContentDoubleQuote}
-  @precedence {Text}
 
 }
 @detectDelim

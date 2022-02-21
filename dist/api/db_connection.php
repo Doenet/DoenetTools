@@ -35,8 +35,8 @@ if ($_SERVER['HTTP_HOST'] == 'localhost:3000') {
     $dbhost = '127.0.0.1';
     $password = 'root';
 }
-
-$conn = mysqli_connect($dbhost, $username, $password, $database);
+$conn = new mysqli($dbhost, $username, $password, $database);
+// $conn = mysqli_connect($dbhost, $username, $password, $database);
 // Check connection
 if (!$conn) {
     die('Database Connection failed: ' . mysqli_connect_error());

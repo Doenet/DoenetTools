@@ -1,42 +1,38 @@
-import React from "../../_snowpack/pkg/react.js";
-import DoenetRenderer from "./DoenetRenderer.js";
-export default class MathList extends DoenetRenderer {
-  componentDidMount() {
+import React, {useEffect} from "../../_snowpack/pkg/react.js";
+import useDoenetRender from "./useDoenetRenderer.js";
+export default function MathList(props) {
+  let {name, SVs, children} = useDoenetRender(props);
+  useEffect(() => {
     if (window.MathJax) {
       window.MathJax.Hub.Config({showProcessingMessages: false, "fast-preview": {disabled: true}});
       window.MathJax.Hub.processSectionDelay = 0;
-      window.MathJax.Hub.Queue(["Typeset", window.MathJax.Hub, "#" + this.componentName]);
+      window.MathJax.Hub.Queue(["Typeset", window.MathJax.Hub, "#" + name]);
     }
+  }, []);
+  if (window.MathJax) {
+    window.MathJax.Hub.Queue(["Typeset", window.MathJax.Hub, "#" + name]);
   }
-  componentDidUpdate() {
-    if (window.MathJax) {
-      window.MathJax.Hub.Queue(["Typeset", window.MathJax.Hub, "#" + this.componentName]);
-    }
+  if (SVs.hidden) {
+    return null;
   }
-  render() {
-    if (this.doenetSvData.hidden) {
-      return null;
-    }
-    let children = this.children;
-    if (children.length === 0 && this.doenetSvData.latex) {
-      return /* @__PURE__ */ React.createElement(React.Fragment, {
-        key: this.componentName
-      }, /* @__PURE__ */ React.createElement("a", {
-        name: this.componentName
-      }), /* @__PURE__ */ React.createElement("span", {
-        id: this.componentName
-      }, "\\(" + this.doenetSvData.latex + "\\)"));
-    }
-    if (children.length === 0) {
-      return /* @__PURE__ */ React.createElement(React.Fragment, {
-        key: this.componentName
-      });
-    }
-    let withCommas = children.slice(1).reduce((a, b) => [...a, ", ", b], [children[0]]);
+  if (children.length === 0 && SVs.latex) {
     return /* @__PURE__ */ React.createElement(React.Fragment, {
-      key: this.componentName
+      key: name
     }, /* @__PURE__ */ React.createElement("a", {
-      name: this.componentName
-    }), withCommas);
+      name
+    }), /* @__PURE__ */ React.createElement("span", {
+      id: name
+    }, "\\(" + SVs.latex + "\\)"));
   }
+  if (children.length === 0) {
+    return /* @__PURE__ */ React.createElement(React.Fragment, {
+      key: name
+    });
+  }
+  let withCommas = children.slice(1).reduce((a, b) => [...a, ", ", b], [children[0]]);
+  return /* @__PURE__ */ React.createElement(React.Fragment, {
+    key: name
+  }, /* @__PURE__ */ React.createElement("a", {
+    name
+  }), withCommas);
 }

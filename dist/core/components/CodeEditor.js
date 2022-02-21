@@ -33,15 +33,16 @@ export default class CodeEditor extends BlockComponent {
     attributes.height = {
       createComponentOfType: "_componentSize",
       createStateVariable: "height",
-      // defaultValue: { size: 120, isAbsolute: true },
-      defaultValue: null,  //fall back to minheight and maxheight
+      defaultValue: { size: 400, isAbsolute: true },
+      forRenderer: true,
       public: true,
     };
-    attributes.minHeight = {
-      createComponentOfType: "_componentSize",
-    };
-    attributes.maxHeight = {
-      createComponentOfType: "_componentSize",
+    attributes.viewerRatio = {
+      createComponentOfType: "number",
+      createStateVariable: "viewerRatio",
+      defaultValue: 0.5,
+      forRenderer: true,
+      public: true,
     };
 
     attributes.showResults = {
@@ -52,13 +53,13 @@ export default class CodeEditor extends BlockComponent {
       public: true,
     };
 
-    attributes.viewerWidth = {
-      createComponentOfType: "_componentSize",
-      createStateVariable: "viewerWidth",
-      defaultValue: { size: 300, isAbsolute: true },
-      forRenderer: true,
-      public: true,
-    };
+    attributes.renderedName = {
+      createPrimitiveOfType: "string",
+    }
+
+    attributes.staticName = {
+      createPrimitiveOfType: "string",
+    }
 
     return attributes;
   }
@@ -76,10 +77,35 @@ export default class CodeEditor extends BlockComponent {
         componentType: "codeViewer",
         children:[{componentType: "renderDoenetML"}]
       };
+      
+      //Update depends on this being the 1st index position
+      let newChildren = [codeViewer];
+
+      if (componentAttributes.renderedName){
+        codeViewer.attributes = {
+          renderedName: {primitive:componentAttributes.renderedName}
+        }
+        codeViewer.children[0].props = {name:componentAttributes.renderedName}
+      }
+
+      if (componentAttributes.staticName){
+        let hiddenRenderDoenetML ={
+          componentType: "codeViewer",
+          attributes:{hide:{component:{componentType:"boolean",state:{value:true}}}},
+          children:[{
+            componentType: "renderDoenetML",
+            props: {name:componentAttributes.staticName},
+          }]
+        };
+        //Update code depends on this being the 2nd index position
+        newChildren.push(hiddenRenderDoenetML)
+      }
+
+
 
       return {
         success: true,
-        newChildren: [codeViewer],
+        newChildren,
       }
 
     }
@@ -89,69 +115,37 @@ export default class CodeEditor extends BlockComponent {
     return sugarInstructions;
   }
 
+  static returnChildGroups() {
+
+    return [{
+      group: "codeViewers",
+      componentTypes: ["codeViewer"]
+    }]
+
+  }
+
   static returnStateVariableDefinitions() {
 
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
-    stateVariableDefinitions.minHeight = {
-      public: true,
-      componentType: "_componentSize",
-      hasEssential: true,
-      forRenderer: true,
-      defaultValue: { size: 26, isAbsolute: true },
+    stateVariableDefinitions.viewerHeight = {
       returnDependencies: () => ({
-        minHeightAttr: {
-          dependencyType: "attributeComponent",
-          attributeName: "minHeight",
-          variableNames: ["componentSize"],
-        },
         height: {
           dependencyType: "stateVariable",
           variableName: "height"
         },
-      }),
-      definition: function ({ dependencyValues, usedDefault }) {
-        if (!usedDefault.height){
-          //Author specified height
-          return { setValue: { minHeight: dependencyValues.height } };
-        }else if (dependencyValues.minHeightAttr){
-          //Author specified minHeight
-          return { setValue: { minHeight: dependencyValues.minHeightAttr.stateValues.componentSize } };
-        }else{
-          //Default
-          return { useEssentialOrDefaultValue: {minHeight: {}} };
-        }
-      },
-    }
-
-    stateVariableDefinitions.maxHeight = {
-      public: true,
-      componentType: "_componentSize",
-      hasEssential: true,
-      forRenderer: true,
-      defaultValue: { size: 120, isAbsolute: true },
-      returnDependencies: () => ({
-        maxHeightAttr: {
-          dependencyType: "attributeComponent",
-          attributeName: "maxHeight",
-          variableNames: ["componentSize"],
-        },
-        height: {
+        viewerRatio: {
           dependencyType: "stateVariable",
-          variableName: "height"
+          variableName: "viewerRatio"
         },
       }),
-      definition: function ({ dependencyValues, usedDefault }) {
-        if (!usedDefault.height){
-          //Author specified height
-          return { setValue: { maxHeight: dependencyValues.height } };
-        }else if (dependencyValues.maxHeightAttr){
-          //Author specified maxHeight
-          return { setValue: { maxHeight: dependencyValues.maxHeightAttr.stateValues.componentSize } };
-        }else{
-          //Default
-          return { useEssentialOrDefaultValue: {maxHeight: {}} };
+      definition: function ({ dependencyValues }) {
+        if (!dependencyValues.height.isAbsolute){
+          throw Error("Codeeditor relative height not implemented")
         }
+        let size = dependencyValues.height.size*dependencyValues.viewerRatio;
+        let viewerHeight = {size,isAbsolute:true}
+        return { setValue: { viewerHeight } };
       },
     }
 
@@ -354,9 +348,19 @@ export default class CodeEditor extends BlockComponent {
       return this.coreFunctions.performUpdate({
         updateInstructions,
         event
-      }).then(() => this.coreFunctions.triggerChainedActions({
-        componentName: this.componentName,
-      }));
+      }).then(() => {
+        this.coreFunctions.triggerChainedActions({
+          componentName: this.componentName,
+        }) 
+        if (this.attributes.staticName &&
+            this.definingChildren.length === 2 &&
+            this.definingChildren[1].componentType === 'codeViewer'){
+          this.coreFunctions.performAction({
+            componentName: this.definingChildren[1].componentName,
+            actionName: "updateComponents",
+          });
+        }
+      });
 
     }
   }
@@ -380,15 +384,9 @@ export default class CodeEditor extends BlockComponent {
   }
 
   actions = {
-    updateImmediateValue: this.updateImmediateValue.bind(
-      new Proxy(this, this.readOnlyProxyHandler)
-    ),
-    updateValue: this.updateValue.bind(
-      new Proxy(this, this.readOnlyProxyHandler)
-    ),
-    updateComponents: this.updateComponents.bind(
-      new Proxy(this, this.readOnlyProxyHandler)
-    )
+    updateImmediateValue: this.updateImmediateValue.bind(this),
+    updateValue: this.updateValue.bind(this),
+    updateComponents: this.updateComponents.bind(this),
   };
 
 }

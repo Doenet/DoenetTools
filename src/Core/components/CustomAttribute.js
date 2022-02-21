@@ -79,13 +79,7 @@ export default class CustomAttribute extends CompositeComponent {
 
     let newNamespace = component.attributes.newNamespace && component.attributes.newNamespace.primitive;
 
-    let componentTypeLowerCaseMapping = {};
-
-    for (let cType in componentInfoObjects.allComponentClasses) {
-      componentTypeLowerCaseMapping[cType.toLowerCase()] = cType;
-    }
-
-    let componentType = componentTypeLowerCaseMapping[component.attributes.componentType.primitive.toLowerCase()];
+    let componentType = componentInfoObjects.componentTypeLowerCaseMapping[component.attributes.componentType.primitive.toLowerCase()];
     let componentClass = componentInfoObjects.allComponentClasses[componentType];
 
     if (!componentClass) {

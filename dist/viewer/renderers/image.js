@@ -1,22 +1,38 @@
 import React from "../../_snowpack/pkg/react.js";
-import DoenetRenderer from "./DoenetRenderer.js";
+import useDoenetRender from "./useDoenetRenderer.js";
 import {sizeToCSS} from "./utils/css.js";
-export default class Image extends DoenetRenderer {
-  render() {
-    if (this.doenetSvData.hidden) {
-      return null;
-    }
-    if (this.doenetSvData.source) {
-      return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("a", {
-        name: this.componentName
-      }), /* @__PURE__ */ React.createElement("img", {
-        id: this.componentName,
-        src: this.doenetSvData.source,
-        width: sizeToCSS(this.doenetSvData.width),
-        height: sizeToCSS(this.doenetSvData.height),
-        alt: this.doenetSvData.description
-      }));
-    }
+export default function Image(props) {
+  let {name, SVs} = useDoenetRender(props, false);
+  if (SVs.hidden) {
     return null;
   }
+  if (SVs.cid) {
+    let src = `https://${SVs.cid}.ipfs.dweb.link`;
+    if (SVs.asFileName) {
+      src = src + `/?filename=${SVs.asFileName}`;
+    }
+    return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("a", {
+      name
+    }), /* @__PURE__ */ React.createElement("img", {
+      id: name,
+      src,
+      style: {maxWidth: "850px"},
+      width: sizeToCSS(SVs.width),
+      height: sizeToCSS(SVs.height),
+      alt: SVs.description
+    }));
+  } else if (SVs.source) {
+    let src = SVs.source;
+    return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("a", {
+      name
+    }), /* @__PURE__ */ React.createElement("img", {
+      id: name,
+      src,
+      style: {maxWidth: "850px"},
+      width: sizeToCSS(SVs.width),
+      height: sizeToCSS(SVs.height),
+      alt: SVs.description
+    }));
+  }
+  return null;
 }

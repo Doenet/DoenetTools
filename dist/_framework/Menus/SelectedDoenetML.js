@@ -373,8 +373,22 @@ export function AssignmentSettings({role, doenetId}) {
         valueDescription
       });
     }
-  }), assignedDate !== null && assignedDate !== void 0 ? /* @__PURE__ */ React.createElement(DateTime, {
+  }), /* @__PURE__ */ React.createElement(DateTime, {
+    disabled: assignedDate === null || assignedDate === void 0,
     value: assignedDate ? new Date(assignedDate) : null,
+    disabledText: "No Assigned Day",
+    disabledOnClick: (e) => {
+      let valueDescription = "Now";
+      let value = DateToDateString(new Date());
+      setAssignedDate(value);
+      updateAssignment({
+        doenetId,
+        keyToUpdate: "assignedDate",
+        value,
+        description: "Assigned Date",
+        valueDescription
+      });
+    },
     onBlur: ({valid, value}) => {
       if (valid) {
         try {
@@ -393,32 +407,6 @@ export function AssignmentSettings({role, doenetId}) {
       } else {
         addToast("Invalid Assigned Date");
       }
-    }
-  }) : /* @__PURE__ */ React.createElement("input", {
-    value: "No Assigned Date",
-    onClick: (e) => {
-      let valueDescription = "None";
-      let value = null;
-      if (assignedDate === null || assignedDate === void 0) {
-        valueDescription = "Now";
-        value = DateToDateString(new Date());
-      }
-      setAssignedDate(value);
-      updateAssignment({
-        doenetId,
-        keyToUpdate: "assignedDate",
-        value,
-        description: "Assigned Date",
-        valueDescription
-      });
-    },
-    style: {
-      cursor: "not-allowed",
-      color: "#545454",
-      height: "18px",
-      width: "177px",
-      border: "2px solid #e2e2e2",
-      borderRadius: "5px"
     }
   })))), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("label", null, "Due Date", /* @__PURE__ */ React.createElement("div", {
     style: {display: "flex"},
@@ -445,7 +433,8 @@ export function AssignmentSettings({role, doenetId}) {
         valueDescription
       });
     }
-  }), dueDate !== null && dueDate !== void 0 ? /* @__PURE__ */ React.createElement(DateTime, {
+  }), /* @__PURE__ */ React.createElement(DateTime, {
+    disabled: dueDate === null || dueDate === void 0,
     value: dueDate ? new Date(dueDate) : null,
     onBlur: ({valid, value}) => {
       if (valid) {
@@ -465,17 +454,13 @@ export function AssignmentSettings({role, doenetId}) {
       } else {
         addToast("Invalid Due Date");
       }
-    }
-  }) : /* @__PURE__ */ React.createElement("input", {
-    onClick: (e) => {
-      let valueDescription = "None";
-      let value = null;
-      if (aInfo.dueDate === null || aInfo.dueDate === void 0) {
-        valueDescription = "Next Week";
-        let nextWeek = new Date();
-        nextWeek.setDate(nextWeek.getDate() + 7);
-        value = DateToDateString(nextWeek);
-      }
+    },
+    disabledText: "No Due Date",
+    disabledOnClick: (e) => {
+      let valueDescription = "Next Week";
+      let nextWeek = new Date();
+      nextWeek.setDate(nextWeek.getDate() + 7);
+      let value = DateToDateString(nextWeek);
       setDueDate(value);
       updateAssignment({
         doenetId,
@@ -484,15 +469,6 @@ export function AssignmentSettings({role, doenetId}) {
         description: "Due Date",
         valueDescription
       });
-    },
-    value: "No Due Date",
-    style: {
-      cursor: "not-allowed",
-      color: "#545454",
-      height: "18px",
-      width: "177px",
-      border: "2px solid #e2e2e2",
-      borderRadius: "5px"
     }
   })))), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("label", null, "Time Limit", /* @__PURE__ */ React.createElement(Switch, {
     onChange: (e) => {

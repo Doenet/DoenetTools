@@ -10,9 +10,9 @@ include "db_connection.php";
 $jwtArray = include "jwtArray.php";
 $userId = $jwtArray['userId'];
 
-$parentId = mysqli_real_escape_string($conn,$_REQUEST["parentId"]);
-$driveId = mysqli_real_escape_string($conn,$_REQUEST["driveId"]);
-$init = mysqli_real_escape_string($conn,$_REQUEST["init"]);
+$parentId = array_key_exists("parentId",$_REQUEST) ? mysqli_real_escape_string($conn,$_REQUEST["parentId"]) : "";
+$driveId = array_key_exists("driveId",$_REQUEST) ? mysqli_real_escape_string($conn,$_REQUEST["driveId"]) : "";
+$init = array_key_exists("init",$_REQUEST) ? mysqli_real_escape_string($conn,$_REQUEST["init"]) : "";
 
 $success = TRUE;
 $message = "";
