@@ -1,6 +1,7 @@
+import axios from "axios";
 import { CIDFromArrayBuffer } from "./cid";
 
-export async function retrieveMediaForCID(CID) {
+export async function retrieveMediaForCID(CID,mimeType) {
 
   try {
     return await retrieveMediaFromIPFS(CID);
@@ -13,9 +14,14 @@ export async function retrieveMediaForCID(CID) {
     }
   };
 
-  //TODO: ask database for mimeType
-  let mimeType = 'image/jpeg';
-
+  //Only if doenetML tag is not providing mimeType and not on IPFS
+  //look up in database
+  if (!mimeType){
+    let {data} = await axios.get('/api/getMimeType.php',{
+      params:{cid:CID}
+      });
+    mimeType = data['mime-type'];
+  }
 
   return retrieveMediaFromServer(CID, mimeType);
 

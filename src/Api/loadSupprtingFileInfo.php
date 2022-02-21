@@ -17,12 +17,12 @@ $doenetId = mysqli_real_escape_string($conn,$_REQUEST["doenetId"]);
 
 $success = true;
 $supportingFiles = [];
-$canUpload = FALSE;
 
 //TODO: Test if user has permission and space to see file info
 
 list($userQuotaBytesAvailable,$quotaBytes) = getBytesAvailable($conn,$userId);
 
+$canUpload = FALSE;
 $sql = "
 SELECT du.canUpload 
 FROM drive_user AS du
@@ -36,7 +36,7 @@ $row = $result->fetch_assoc();
 if ($row['canUpload'] == '1'){$canUpload = TRUE;}
 
 $sql = "
-SELECT contentId, fileType, description, asFileName
+SELECT contentId, fileType, description, asFileName, widthPixels, heightPixels
 FROM support_files
 WHERE doenetId='$doenetId'
 ORDER BY timestamp
@@ -50,6 +50,8 @@ $result = $conn->query($sql);
             "contentId" => $row['contentId'],
             "fileName" => getFileName($row['contentId'],$row['fileType']),
             "fileType" => $row['fileType'],
+            "width" => $row['widthPixels'],
+            "height" => $row['heightPixels'],
             "asFileName" => $row['asFileName'],
             "description" => $row['description'],
         )
