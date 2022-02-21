@@ -9,10 +9,13 @@ export default function Image(props) {
 
   useEffect(()=>{
     if (SVs.cid){
-        retrieveMediaForCID(SVs.cid).then(result => {
+        retrieveMediaForCID(SVs.cid,SVs.mimeType).then(result => {
         // console.log('retrieved media')
         // console.log(result)
         setUrl(result.mediaURL);
+      })
+      .catch((e)=>{
+        //Ignore errors for now
       })
     }
   },[])
@@ -55,6 +58,22 @@ if (url){
       alt={SVs.description} />
     </React.Fragment>
 
+  }else if(SVs.height && SVs.width){
+    <a name={name} />
+    //Show preview
+    return <React.Fragment>
+    <a name={name} />
+    <div 
+    id={name} 
+    style={{
+      display:"inline-block",
+      maxWidth:'850px',
+      width:sizeToCSS(SVs.width),
+      height:sizeToCSS(SVs.height),
+      border: "solid black 1px",
+    }}
+     >{SVs.description}</div>
+  </React.Fragment>
   }
 
   return null;

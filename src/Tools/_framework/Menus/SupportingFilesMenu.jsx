@@ -243,7 +243,7 @@ export default function SupportingFilesMenu(props){
         //test if all uploads are finished then clear it out
         numberOfFilesUploading.current = numberOfFilesUploading.current - 1;
         if (numberOfFilesUploading.current < 1){setUploadProgress([])}
-        let {success, fileName, contentId, asFileName, msg, userQuotaBytesAvailable} = data;
+        let {success, fileName, contentId, asFileName, width, height, msg, userQuotaBytesAvailable} = data;
         // console.log(">>data",data)
         // console.log("FILE UPLOAD COMPLETE: Update UI",file,data)
         if (msg){
@@ -261,6 +261,8 @@ export default function SupportingFilesMenu(props){
               contentId,
               fileName,
               fileType:file.type,
+              width,
+              height,
               description:"",
               asFileName
             })
@@ -312,13 +314,15 @@ export default function SupportingFilesMenu(props){
     contentId,
     fileName,
     fileType,
+    width,
+    height,
     description,
     asFileName
   })=>{
     let doenetMLCode = 'Error';
     let source = `doenet:cid=${contentId}`;
     if (fileType === 'image/jpeg' || fileType === 'image/png'){
-      doenetMLCode = `<image source='${source}' description='${description}' asfilename='${asFileName}'/>`
+      doenetMLCode = `<image source='${source}' description='${description}' asfilename='${asFileName}' width='${width}' height='${height}' mimeType='${fileType}' />`
     }else if (fileType === 'text/csv'){
       doenetMLCode = `<dataset source='${source}' />`
     }
