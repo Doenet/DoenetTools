@@ -20,6 +20,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Increment from '../../_reactComponents/PanelHeaderComponents/IncrementMenu.jsx';
 import DropdownMenu from '../../_reactComponents/PanelHeaderComponents/DropdownMenu.jsx';
 import DateTime from '../../_reactComponents/PanelHeaderComponents/DateTime.jsx';
+import ColorImagePicker from '../../_reactComponents/PanelHeaderComponents/ColorImagePicker.jsx';
 import Card from '../../_reactComponents/PanelHeaderComponents/Card.jsx';
 
 // === HOW TO ADD TO UI DOCS ===

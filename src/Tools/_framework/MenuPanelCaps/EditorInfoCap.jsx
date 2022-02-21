@@ -18,20 +18,28 @@ export default function EditorInfoCap(){
   // let listed = "";
   // if (docInfo.isPublic === "1"){ listed = "Listed"}
   let image;
+  let color;
   let course_label = "";
  for (let info of driveInfo.driveIdsAndLabels){
    if (info.driveId === driveId){
+     color = info.color;
      image = info.image;
      course_label = info.label;
      break;
    }
  }
 
- let imageURL = `/media/drive_pictures/${image}`
+//  let imageURL = `/media/drive_pictures/${image}`
+ if (image != 'none'){
+  image = 'url(/media/drive_pictures/' + image + ')';
+ }
+ if (color != 'none'){
+  color = '#' + color;
+ }
 
   return <>
     <div style={{position: 'relative', paddingBottom: '135px'}}>
-    <img style={{position: "absolute", height: "135px", objectFit: 'cover'}} src={imageURL} alt={`${course_label} course`} width='240px' />
+    <img style={{position: "absolute", height: "135px", objectFit: 'cover', backgroundImage: image, backgroundColor: color}} width='240px' />
     </div>
     <div style={{padding:"8px"}}>
     <div>{course_label}</div>
