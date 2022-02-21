@@ -30,7 +30,6 @@ const ToggleButtonGroup = (props) => {
   const [selectedIndex, setSelectedIndex] = useState(0);
 
   const handleClick = (index) => {
-    console.log('handle click called by index', index);
     setSelectedIndex(index);
     if (props.onClick) {
       props.onClick(index);
@@ -43,7 +42,6 @@ const ToggleButtonGroup = (props) => {
   let elem = React.Children.toArray(props.children);
 
   let modElem = elem.map((element, index) => {
-    console.log('index: ', index, ' selectedIndex: ', selectedIndex);
     let props = {
       index,
       isSelected: index === selectedIndex,

@@ -62,7 +62,8 @@ const CreateCourse = (props) =>{
         let newDriveId = nanoid();
         let label = "Untitled";
         let image = driveImages[Math.floor(Math.random() * driveImages.length)];
-        let color = driveColors[Math.floor(Math.random() * driveColors.length)];
+        // let color = driveColors[Math.floor(Math.random() * driveColors.length)];
+        let color = "none";
         const result = createNewDrive({label,driveId,newDriveId,image,color});
         result.then((resp)=>{
           if (resp.data.success){
