@@ -69,6 +69,7 @@ export default function attempt() {
   const left = () => {};
   const noSearchButton = () => {};
   const donutIcon = () => {};
+  const showProgress = () => {};
 
   //=== DATA STRUCTURE SECTION ===
   let dataStructure = [
@@ -685,7 +686,7 @@ export default function attempt() {
       codePreview: '<ProgressBar/>',
       req_props: null,
       req_children: null,
-      use: 'Currently used to track the progress of uploads.',
+      use: 'Currently used to track the progress of uploads. The progress prop must ALWAYS be defined.',
       props: [
         {
           name: 'Donut Icon',
@@ -703,7 +704,13 @@ export default function attempt() {
           name: 'Width',
           propPreview: '<ProgressBar width=400 />',
           propCode: { width: 400, progress: 0.4 },
-          description: 'Changes the width of the component. Pass in the number without any units',
+          description: 'Changes the width of the component in px; pass in the number without any units',
+        },
+        {
+          name: 'Progress Label',
+          propPreview: '<ProgressBar showProgress"/>',
+          propCode: { showProgress, progress: 0.4 },
+          description: 'Adds progress label to componenet',
         },
         {
           name: 'Label',

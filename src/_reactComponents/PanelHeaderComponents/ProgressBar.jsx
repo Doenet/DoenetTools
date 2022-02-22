@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, { useRef, useEffect, useState } from "react";
 import styled from "styled-components";
 // import "./ProgressBar.css"
 
@@ -37,6 +37,12 @@ const Label = styled.p`
   margin-bottom: ${props => props.align == 'flex' ? 'none' : '2px'};
 `;
 
+const Progress = styled.p`
+    font-size: 12px;
+    display: ${props => props.showProgress};
+    margin-left: 5px;
+`;
+
 export default function ProgressBar(props) {
   const [fillWidth, setFillWidth] = useState("0px");
   const [donutPosition, setDonutPosition] = useState("12.5px");
@@ -68,6 +74,13 @@ export default function ProgressBar(props) {
       fill="#E2E2E2"
     />
   </DonutG>
+
+  // var progress = 
+  // <Progress
+  //     fontSize="14px"
+  //     display={props => props.showProgress}
+  //     margin-right="400px"
+  // />
 
     //Takes percentage without symbol and updates length of loaded bar
     //Any number from 0-100 inclusive
@@ -119,15 +132,18 @@ export default function ProgressBar(props) {
       }
     };
 
-    useEffect(() => {
-      var percent = '';
-      percent = props.progress;
+    var percent = '';
+    if (props.showProgress) {
+      percent = (props.progress * 100).toString() + "%"
+      alignItems = 'center';
+    }
 
-      percent *= barWidth;
-      // console.log(percent.toString());
-      setFillWidth(percent);    
-      setDonutPosition(percent+12.5); 
-    });
+    useEffect(() => {
+      let progress = props.progress ? props.progress : "0px";
+      progress *= barWidth;
+      setFillWidth(progress);    
+      setDonutPosition(progress-12.5); 
+    }, [props.progress, barWidth]);
           
 
     // let percent = props.progress ? props.progress : 0;
@@ -159,6 +175,7 @@ export default function ProgressBar(props) {
           <Rect id="moving" fill="#1A5A99" width={fillWidth} height={height} radius={radius}/>
           {props.donutIcon ? donut : ''}
         </Svg>
+        {props.showProgress ? <Progress>{percent}</Progress> : ''}
       </Container>
     );
   }
