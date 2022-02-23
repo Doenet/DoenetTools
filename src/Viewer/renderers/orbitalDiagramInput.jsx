@@ -65,7 +65,20 @@ export default function orbitalDiagramInput(props){
         return newObj;
       })
     }}>Add Box</button>
-    <button>Remove Box</button>
+    <button id={`orbitalremovebox`}
+    onClick={()=>{
+      let activeRowNumber = rows.length - selectedRow -1;
+      if (selectedRow === -1){
+        activeRowNumber = 0;
+      }
+      setRows((was)=>{
+        let newObj = [...was];
+        newObj[activeRowNumber] = {...was[activeRowNumber]}
+        newObj[activeRowNumber]['boxes'] = [...was[activeRowNumber]['boxes']];
+        newObj[activeRowNumber]['boxes'].splice(selectedBox, 1); //-1 removes last box
+        return newObj;
+      })
+    }}>Remove Box</button>
     <button>Add Up Arrow</button>
     <button>Add Down Arrow</button>
     <button>Remove Arrow</button>
@@ -101,7 +114,9 @@ function OrbitalRow({rowNumber,selectedRow,setSelectedRow,orbitalText,boxes,setR
       if (e.relatedTarget?.id !== `OrbitalText${rowNumber}` &&
       e.relatedTarget?.id !== `OrbitalRow${rowNumber}` &&
       e.relatedTarget?.id !== 'orbitalremoverow' &&
-      e.relatedTarget?.id !== 'orbitaladdbox'
+      e.relatedTarget?.id !== 'orbitaladdbox' &&
+      e.relatedTarget?.id !== 'orbitalremovebox'
+      
       ){
         setSelectedRow(-1);
       }
