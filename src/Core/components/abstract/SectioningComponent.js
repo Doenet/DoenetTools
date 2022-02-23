@@ -439,9 +439,6 @@ export default class SectioningComponent extends BlockComponent {
           includeNonActiveChildren: true,
           ignoreReplacementsOfMatchedComposites: true,
         },
-        variants: {
-          dependencyType: "variants",
-        },
         suppressAutomaticVariants: {
           dependencyType: "stateVariable",
           variableName: "suppressAutomaticVariants"
@@ -722,15 +719,15 @@ export default class SectioningComponent extends BlockComponent {
       if (variantIndex === undefined) {
         // if variant index wasn't specifed
 
-        // if selectRng exists
+        // if variantRng exists
         // randomly pick variant index
-        if (sharedParameters.selectRng) {
+        if (sharedParameters.variantRng) {
           // random number in [0, 1)
-          let rand = sharedParameters.selectRng();
+          let rand = sharedParameters.variantRng();
           // random integer from 1 to nVariants
           variantIndex = Math.floor(rand * nVariants) + 1;
         } else {
-          // if selectRng does not exist, we are in document
+          // if variantRng does not exist, we are in document
           // Just choose the first variant
           variantIndex = 1;
         }
@@ -738,20 +735,16 @@ export default class SectioningComponent extends BlockComponent {
       sharedParameters.variantSeed = variantIndex.toString();
       sharedParameters.variantIndex = variantIndex;
       sharedParameters.variantName = indexToLowercaseLetters(variantIndex);
-      sharedParameters.selectRng = new sharedParameters.rngClass(sharedParameters.variantSeed);
+      sharedParameters.variantRng = new sharedParameters.rngClass(sharedParameters.variantSeed);
 
 
     } else {
       sharedParameters.variantSeed = await variantControlChild.state.selectedSeed.value;
       sharedParameters.variantName = await variantControlChild.state.selectedVariantName.value;
       sharedParameters.variantIndex = await variantControlChild.state.selectedVariantIndex.value;
-      sharedParameters.selectRng = await variantControlChild.state.selectRng.value;
+      sharedParameters.variantRng = await variantControlChild.state.variantRng.value;
       sharedParameters.allPossibleVariants = await variantControlChild.state.variantNames.value;
     }
-
-    // seed rng for random numbers predictably from variant using selectRng
-    let seedForRandomNumbers = Math.floor(sharedParameters.selectRng() * 1000000).toString()
-    sharedParameters.rng = new sharedParameters.rngClass(seedForRandomNumbers);
 
     // console.log("****Variant for sectioning component****")
     // console.log("Selected seed: " + variantControlChild.state.selectedSeed);

@@ -226,9 +226,9 @@ export default class VariantControl extends BaseComponent {
           dependencyType: "stateVariable",
           variableName: "nVariantsSpecified"
         },
-        selectRng: {
+        variantRng: {
           dependencyType: "value",
-          value: sharedParameters.selectRng,
+          value: sharedParameters.variantRng,
           doNotProxy: true,
         }
       }),
@@ -297,15 +297,15 @@ export default class VariantControl extends BaseComponent {
 
         let selectedVariantIndex;
 
-        // if selectRng exists
+        // if variantRng exists
         // randomly pick variant index
-        if (dependencyValues.selectRng) {
+        if (dependencyValues.variantRng) {
           // random number in [0, 1)
-          let rand = dependencyValues.selectRng();
+          let rand = dependencyValues.variantRng();
           // random integer from 1 to nVariants
           selectedVariantIndex = Math.floor(rand * dependencyValues.nVariantsSpecified) + 1;
         } else {
-          // if selectRng does not exist, we are in document
+          // if variantRng does not exist, we are in document
           // Just choose the first variant
           selectedVariantIndex = 1;
         }
@@ -378,7 +378,7 @@ export default class VariantControl extends BaseComponent {
       }
     }
 
-    stateVariableDefinitions.selectRng = {
+    stateVariableDefinitions.variantRng = {
       returnDependencies: ({ sharedParameters }) => ({
         selectedSeed: {
           dependencyType: "stateVariable",
@@ -392,7 +392,7 @@ export default class VariantControl extends BaseComponent {
       }),
       definition: ({ dependencyValues }) => ({
         setValue: {
-          selectRng: new dependencyValues.rngClass(dependencyValues.selectedSeed)
+          variantRng: new dependencyValues.rngClass(dependencyValues.selectedSeed)
         }
       })
     }

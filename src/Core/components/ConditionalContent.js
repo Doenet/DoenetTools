@@ -232,9 +232,6 @@ export default class ConditionalContent extends CompositeComponent {
           includeNonActiveChildren: true,
           ignoreReplacementsOfMatchedComposites: true,
         },
-        variants: {
-          dependencyType: "variants",
-        },
 
       }),
       definition({ dependencyValues, componentName }) {
@@ -433,7 +430,7 @@ export default class ConditionalContent extends CompositeComponent {
     descendantVariantComponents,
   }) {
 
-    return setUpVariantSeedAndRng({
+    setUpVariantSeedAndRng({
       serializedComponent, sharedParameters,
       descendantVariantComponents
     });

@@ -63,20 +63,14 @@ export function setUpVariantSeedAndRng({
     variantSeed = desiredVariant.seed.toString();
   } else {
 
-    // if variant index wasn't specifed
+    // if variant seed wasn't specifed
 
     // randomly pick variant seed
-    // random number in [0, 1000000)
-    variantSeed = Math.floor(sharedParameters.selectRng() * 1000000).toString()
+    variantSeed = sharedParameters.variantRng().toString().slice(2);
   }
 
   sharedParameters.variantSeed = variantSeed;
-  sharedParameters.selectRng = new sharedParameters.rngClass(sharedParameters.variantSeed);
-
-
-  // seed rng for random numbers predictably from variant using selectRng
-  let seedForRandomNumbers = Math.floor(sharedParameters.selectRng() * 1000000).toString()
-  sharedParameters.rng = new sharedParameters.rngClass(seedForRandomNumbers);
+  sharedParameters.variantRng = new sharedParameters.rngClass(sharedParameters.variantSeed);
 
   // if subvariants were specified, add those the corresponding descendants
 

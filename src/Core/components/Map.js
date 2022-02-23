@@ -206,9 +206,6 @@ export default class Map extends CompositeComponent {
           includeNonActiveChildren: true,
           ignoreReplacementsOfMatchedComposites: true,
         },
-        variants: {
-          dependencyType: "variants",
-        },
 
       }),
       definition({ dependencyValues, componentName }) {
@@ -711,7 +708,7 @@ export default class Map extends CompositeComponent {
     descendantVariantComponents,
   }) {
 
-    return setUpVariantSeedAndRng({
+    setUpVariantSeedAndRng({
       serializedComponent, sharedParameters,
       descendantVariantComponents
     });
