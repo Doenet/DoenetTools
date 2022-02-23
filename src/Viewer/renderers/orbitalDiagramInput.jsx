@@ -1,22 +1,115 @@
-import React from 'react';
+import React, {useState} from 'react';
 import useDoenetRenderer from './useDoenetRenderer';
 
 export default function orbitalDiagramInput(props){
   let {name, SVs, children} = useDoenetRenderer(props);
-
+  // console.log("name",name)
+  let [selectedRow,setSelectedRow] = useState(-1);
+  let [rows,setRows] = useState([{orbitalText:"",boxes:[]}])
   if (SVs.hidden) {
     return null;
   }
 
-  return <OrbitalRow />
+  let rowsJSX = [];
+  for (let [index,row] of Object.entries(rows)){
+    let rowNumber = rows.length - index - 1;
+    rowsJSX.push(<OrbitalRow 
+      key={`OrbitalRow${rowNumber}`}
+      rowNumber={rowNumber} 
+      selectedRow={selectedRow} 
+      setSelectedRow={setSelectedRow} 
+      orbitalText={row.orbitalText}
+      boxes={row.boxes}
+      setRows={setRows}
+      />)
+  }
+
+  return <>
+  <div>
+    <button id={`orbitaladdrow`} onClick={()=>{
+      setRows((was)=>{
+        return [{orbitalText:"",boxes:[]},...was]
+      })
+    }}>Add Row</button>
+    <button id={`orbitalremoverow`} onClick={()=>{
+      if (rows.length > 1){ //Don't delete the last one
+        let removeRowNumber = selectedRow;
+        if (removeRowNumber === -1){
+          removeRowNumber = rows.length - 1;
+        }
+        setSelectedRow(-1);
+        setRows((was)=>{
+          let newObj = [];
+          for(let [index,obj] of Object.entries(was)){
+            if (index != removeRowNumber){
+              newObj.push(obj)
+            }
+          }
+          return newObj;
+        })
+      }
+      
+    }} >Remove Row</button>
+    <button>Add Box</button>
+    <button>Remove Box</button>
+    <button>Add Up Arrow</button>
+    <button>Add Down Arrow</button>
+    <button>Remove Arrow</button>
+    </div>
+  {rowsJSX}
+  </>
+}
+//disabled={selectedRow === -1}
+
+
+function OrbitalRow({rowNumber,selectedRow,setSelectedRow,orbitalText,boxes,setRows}){
+  let rowStyle = {width:"800px",height:"40px",display:"flex"};
+  if (selectedRow === rowNumber){ 
+    rowStyle['border'] = '#1A5A99 solid 2px';
+    // rowStyle['backgroundColor'] = '#1A5A99';
+  }
+  return <div 
+  id={`OrbitalRow${rowNumber}`}
+  tabIndex="-1"
+  onClick={()=>{
+    if (selectedRow !== rowNumber){
+      setSelectedRow(rowNumber)}
+    }}
+    onBlur={(e)=>{
+      // console.log("onBlur!!! e.relatedTarget",e.relatedTarget?.id)
+      if (e.relatedTarget?.id !== `OrbitalText${rowNumber}` &&
+      e.relatedTarget?.id !== `OrbitalRow${rowNumber}` &&
+      e.relatedTarget?.id !== 'orbitalremoverow'
+      ){
+        setSelectedRow(-1);
+      }
+    }}
+   style={rowStyle}>
+     <span style={{marginRight:"2px"}}>row {rowNumber + 1}</span>
+     <OrbitalText orbitalText={orbitalText} setRows={setRows} rowNumber={rowNumber} selectedRow={selectedRow} setSelectedRow={setSelectedRow}/> 
+     </div>
 }
 
-function OrbitalSpin(props){
-  return <input type='text' size='2' />
-}
+//<OrbitalBox boxNum='1' arrows='UUU' /><OrbitalBox boxNum='2' arrows='DDD' /><OrbitalBox boxNum='3' arrows='UD' />
 
-function OrbitalRow(props){
-  return <div style={{display:"flex"}}><OrbitalSpin /><OrbitalBox boxNum='1' arrows='UUU' /><OrbitalBox boxNum='2' arrows='DDD' /><OrbitalBox boxNum='3' arrows='UD' /></div>
+function OrbitalText({rowNumber,selectedRow,setSelectedRow,orbitalText,setRows}){
+  return <input 
+  id={`OrbitalText${rowNumber}`} 
+  style={{marginRight:"4px"}} 
+  type='text' 
+  size='2' 
+  value={orbitalText}
+  onChange={(e)=>{
+    let newValue = e.target.value;
+    setRows((was)=>{
+      let index = was.length - rowNumber - 1;
+    let newObj = [...was];
+      newObj[index] = {...was[index]}
+      newObj[index]['orbitalText'] = newValue;
+      return newObj;
+    })
+  }}
+  />
 }
 
 function OrbitalBox({boxNum,arrows=''}){
@@ -30,7 +123,7 @@ function OrbitalBox({boxNum,arrows=''}){
 
   let arrowsJSX = [];
   let [first,second,third] = arrows.split('');
-  console.log(first,second,third)
+  // console.log(first,second,third)
   if (first == 'U'){
     arrowsJSX.push(firstUp);
   }
