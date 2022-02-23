@@ -36,7 +36,7 @@ import ProgressBar from '../../_reactComponents/PanelHeaderComponents/ProgressBa
 
 
 ReactDOM.render(
-  <ProgressBar donutIcon progress=".4"></ProgressBar>,
+  <ProgressBar donutIcon progress={1} showProgress></ProgressBar>,
   document.getElementById('root'),
 );
 

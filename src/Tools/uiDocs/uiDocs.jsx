@@ -696,7 +696,7 @@ export default function attempt() {
         },
         {
           name: 'Progress',
-          propPreview: '<ProgressBar progress="0.4"/>',
+          propPreview: '<ProgressBar progress={0.4}/>',
           propCode: { progress: 0.4 },
           description: 'Sets the progress of the bar',
         },
