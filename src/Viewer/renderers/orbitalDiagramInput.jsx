@@ -6,7 +6,7 @@ export default function orbitalDiagramInput(props){
   // console.log("name",name)
   let [selectedRow,setSelectedRow] = useState(-1);
   let [selectedBox,setSelectedBox] = useState(-1);
-  let [rows,setRows] = useState([{orbitalText:"",boxes:['U','D','']}])
+  let [rows,setRows] = useState([{orbitalText:"",boxes:[]}])
   if (SVs.hidden) {
     return null;
   }
@@ -79,9 +79,64 @@ export default function orbitalDiagramInput(props){
         return newObj;
       })
     }}>Remove Box</button>
-    <button>Add Up Arrow</button>
-    <button>Add Down Arrow</button>
-    <button>Remove Arrow</button>
+    <button id={`orbitaladduparrow`}
+    onClick={()=>{
+      let activeRowNumber = rows.length - selectedRow -1;
+      if (selectedRow === -1){
+        activeRowNumber = 0;
+      }
+      setRows((was)=>{
+        let newObj = [...was];
+        newObj[activeRowNumber] = {...was[activeRowNumber]}
+        newObj[activeRowNumber]['boxes'] = [...was[activeRowNumber]['boxes']];
+        if (newObj[activeRowNumber]['boxes'].length == 0){
+          return was;
+        }
+        if (newObj[activeRowNumber]['boxes'][selectedBox].length < 3){
+          newObj[activeRowNumber]['boxes'][selectedBox] = newObj[activeRowNumber]['boxes'][selectedBox] + 'U';
+        }
+        return newObj;
+      })
+    }}>Add Up Arrow</button>
+    <button id={`orbitaladddownarrow`}
+    onClick={()=>{
+      let activeRowNumber = rows.length - selectedRow -1;
+      if (selectedRow === -1){
+        activeRowNumber = 0;
+      }
+      setRows((was)=>{
+        let newObj = [...was];
+        newObj[activeRowNumber] = {...was[activeRowNumber]}
+        newObj[activeRowNumber]['boxes'] = [...was[activeRowNumber]['boxes']];
+        if (newObj[activeRowNumber]['boxes'].length == 0){
+          return was;
+        }
+        if (newObj[activeRowNumber]['boxes'][selectedBox].length < 3){
+          newObj[activeRowNumber]['boxes'][selectedBox] = newObj[activeRowNumber]['boxes'][selectedBox] + 'D';
+        }
+        return newObj;
+      })
+    }}>Add Down Arrow</button>
+    
+    <button id={`orbitalremovearrow`}
+    onClick={()=>{
+      let activeRowNumber = rows.length - selectedRow -1;
+      if (selectedRow === -1){
+        activeRowNumber = 0;
+      }
+      setRows((was)=>{
+        let newObj = [...was];
+        newObj[activeRowNumber] = {...was[activeRowNumber]}
+        newObj[activeRowNumber]['boxes'] = [...was[activeRowNumber]['boxes']];
+        if (newObj[activeRowNumber]['boxes'].length == 0){
+          return was;
+        }
+        if (newObj[activeRowNumber]['boxes'][selectedBox].length > 0){
+          newObj[activeRowNumber]['boxes'][selectedBox] = newObj[activeRowNumber]['boxes'][selectedBox].slice(0, -1)
+        }
+        return newObj;
+      })
+    }}>Remove Arrow</button>
     </div>
   {rowsJSX}
   </>
@@ -115,8 +170,10 @@ function OrbitalRow({rowNumber,selectedRow,setSelectedRow,orbitalText,boxes,setR
       e.relatedTarget?.id !== `OrbitalRow${rowNumber}` &&
       e.relatedTarget?.id !== 'orbitalremoverow' &&
       e.relatedTarget?.id !== 'orbitaladdbox' &&
+      e.relatedTarget?.id !== 'orbitaladduparrow' &&
+      e.relatedTarget?.id !== 'orbitaladddownarrow' &&
+      e.relatedTarget?.id !== 'orbitalremovearrow' &&
       e.relatedTarget?.id !== 'orbitalremovebox'
-      
       ){
         setSelectedRow(-1);
       }
