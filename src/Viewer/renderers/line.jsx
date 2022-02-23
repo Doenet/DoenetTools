@@ -63,12 +63,9 @@ export default function Line(props) {
       strokeColor: SVs.selectedStyle.lineColor,
       highlightStrokeColor: SVs.selectedStyle.lineColor,
       strokeWidth: SVs.selectedStyle.lineWidth,
+      highlightStrokeWidth: SVs.selectedStyle.lineWidth,
       dash: styleToDash(SVs.selectedStyle.lineStyle, SVs.dashed),
     };
-
-    if (!SVs.draggable || SVs.fixed) {
-      jsxLineAttributes.highlightStrokeWidth = SVs.selectedStyle.lineWidth;
-    }
 
 
     let through = [
