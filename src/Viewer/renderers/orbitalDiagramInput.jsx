@@ -5,7 +5,8 @@ export default function orbitalDiagramInput(props){
   let {name, SVs, children} = useDoenetRenderer(props);
   // console.log("name",name)
   let [selectedRow,setSelectedRow] = useState(-1);
-  let [rows,setRows] = useState([{orbitalText:"",boxes:[]}])
+  let [selectedBox,setSelectedBox] = useState(-1);
+  let [rows,setRows] = useState([{orbitalText:"",boxes:['U','D','']}])
   if (SVs.hidden) {
     return null;
   }
@@ -21,6 +22,7 @@ export default function orbitalDiagramInput(props){
       orbitalText={row.orbitalText}
       boxes={row.boxes}
       setRows={setRows}
+      setSelectedBox={setSelectedBox}
       />)
   }
 
@@ -50,7 +52,19 @@ export default function orbitalDiagramInput(props){
       }
       
     }} >Remove Row</button>
-    <button>Add Box</button>
+    <button id={`orbitaladdbox`}
+    onClick={()=>{
+      let activeRowNumber = rows.length - selectedRow -1;
+      if (selectedRow === -1){
+        activeRowNumber = 0;
+      }
+      setRows((was)=>{
+        let newObj = [...was];
+        newObj[activeRowNumber] = {...was[activeRowNumber]}
+        newObj[activeRowNumber]['boxes'] = [...was[activeRowNumber]['boxes'],""];
+        return newObj;
+      })
+    }}>Add Box</button>
     <button>Remove Box</button>
     <button>Add Up Arrow</button>
     <button>Add Down Arrow</button>
@@ -62,12 +76,19 @@ export default function orbitalDiagramInput(props){
 //disabled={selectedRow === -1}
 
 
-function OrbitalRow({rowNumber,selectedRow,setSelectedRow,orbitalText,boxes,setRows}){
+function OrbitalRow({rowNumber,selectedRow,setSelectedRow,orbitalText,boxes,setRows,setSelectedBox}){
   let rowStyle = {width:"800px",height:"40px",display:"flex"};
   if (selectedRow === rowNumber){ 
     rowStyle['border'] = '#1A5A99 solid 2px';
     // rowStyle['backgroundColor'] = '#1A5A99';
   }
+
+  //Make boxes
+  let boxesJSX = [];
+  for (let [index,code] of Object.entries(boxes)){
+    boxesJSX.push(<OrbitalBox key={`OrbitalBox${rowNumber}-${index}`} boxNum={index} arrows={code} setSelectedBox={setSelectedBox}/>)
+  }
+
   return <div 
   id={`OrbitalRow${rowNumber}`}
   tabIndex="-1"
@@ -79,7 +100,8 @@ function OrbitalRow({rowNumber,selectedRow,setSelectedRow,orbitalText,boxes,setR
       // console.log("onBlur!!! e.relatedTarget",e.relatedTarget?.id)
       if (e.relatedTarget?.id !== `OrbitalText${rowNumber}` &&
       e.relatedTarget?.id !== `OrbitalRow${rowNumber}` &&
-      e.relatedTarget?.id !== 'orbitalremoverow'
+      e.relatedTarget?.id !== 'orbitalremoverow' &&
+      e.relatedTarget?.id !== 'orbitaladdbox'
       ){
         setSelectedRow(-1);
       }
@@ -87,6 +109,7 @@ function OrbitalRow({rowNumber,selectedRow,setSelectedRow,orbitalText,boxes,setR
    style={rowStyle}>
      <span style={{marginRight:"2px"}}>row {rowNumber + 1}</span>
      <OrbitalText orbitalText={orbitalText} setRows={setRows} rowNumber={rowNumber} selectedRow={selectedRow} setSelectedRow={setSelectedRow}/> 
+     {boxesJSX}
      </div>
 }
 
@@ -112,7 +135,7 @@ function OrbitalText({rowNumber,selectedRow,setSelectedRow,orbitalText,setRows})
   />
 }
 
-function OrbitalBox({boxNum,arrows=''}){
+function OrbitalBox({boxNum,arrows='',setSelectedBox}){
 
   const firstUp = <polyline id={`firstUp${boxNum}`} points="6,14 12,6 18,14 12,6 12,35" style={{fill:"none",stroke:"black",strokeWidth:"2"}} />
   const firstDown = <polyline id={`firstDown${boxNum}`} points="6,26 12,34 18,26 12,34 12,5" style={{fill:"none",stroke:"black",strokeWidth:"2"}} />
@@ -148,7 +171,15 @@ function OrbitalBox({boxNum,arrows=''}){
     boxWidth = 56;
   }
 
-  return <svg style={{margin:'2px'}} width={boxWidth} height='40'>
+  return <svg 
+  tabIndex="-1" 
+  onClick={()=>{
+    setSelectedBox(boxNum);
+  }}
+  style={{margin:'2px'}} 
+  width={boxWidth} 
+  height='40'
+  >
     <rect x="0" y="0" rx="4" ry="4" width={boxWidth} height="40"
   style={{fill:"white",stroke:"black",strokeWidth:"2",fillOpacity:"1",strokeOpacity:"1"}} />
   {arrowsJSX}
@@ -563,3 +594,4 @@ function OrbitalBox({boxNum,arrows=''}){
 //   );
 
 // }
+
