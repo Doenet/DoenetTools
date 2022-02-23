@@ -149,6 +149,7 @@ import RegionHalfPlane from './components/RegionHalfPlane';
 import CodeEditor from './components/CodeEditor';
 import CodeViewer from './components/CodeViewer';
 import RenderDoenetML from './components/RenderDoenetML';
+import OrbitalDiagramInput from './components/OrbitalDiagramInput';
 
 
 //Extended
@@ -296,6 +297,8 @@ const componentTypeArray = [
   CodeEditor,
   CodeViewer,
   RenderDoenetML,
+  OrbitalDiagramInput,
+
 
   BaseComponent,
   InlineComponent,

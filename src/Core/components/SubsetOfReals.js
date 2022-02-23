@@ -2,8 +2,6 @@ import MathComponent from './Math';
 import subsets, { buildSubsetFromMathExpression } from '../utils/subset-of-reals';
 import { renameStateVariable } from '../utils/stateVariables';
 import me from 'math-expressions';
-import { deepCompare } from '../utils/deepFunctions';
-
 export default class SubsetOfReals extends MathComponent {
 
   static componentType = "subsetOfReals";
