@@ -240,7 +240,7 @@ export default class VariantControl extends BaseComponent {
         //    then use that for variantIndex
         // 2. if variants.desiredVariantName is defined and is a valid variantName
         //    then use the variantIndex corresponding to that name
-        // 3. else, randomly generate variantIndex (except use 0 for document)
+        // 3. else, randomly generate variantIndex (except use 1 for document)
 
 
         // no essential state variable, so try to find desiredVariant
