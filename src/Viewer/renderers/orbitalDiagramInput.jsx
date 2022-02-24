@@ -58,7 +58,7 @@ export default function orbitalDiagramInput(props){
 
     <button id={`orbitalremoverow`} onClick={()=>{
       if (rows.length > 1){ //Don't delete the last one
-        let removeRowNumber = selectedRow;
+        let removeRowNumber = rows.length - 1 - selectedRow;
         if (removeRowNumber === -1){
           removeRowNumber = rows.length - 1;
         }
@@ -214,8 +214,6 @@ export default function orbitalDiagramInput(props){
   {rowsJSX}
   </>
 }
-//disabled={selectedRow === -1}
-
 
 function OrbitalRow({rowNumber,selectedRow,setSelectedRow,orbitalText,boxes,setRows,setSelectedBox,deselect}){
   let rowStyle = {width:"800px",height:"40px",display:"flex"};
