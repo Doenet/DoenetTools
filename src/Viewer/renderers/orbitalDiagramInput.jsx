@@ -21,19 +21,22 @@ export default function orbitalDiagramInput(props){
   }
 
   function deselect(e){
-    if (e.relatedTarget?.id !== `OrbitalText${selectedRow}` &&
-    e.relatedTarget?.id !== `OrbitalRow${selectedRow}` &&
-    e.relatedTarget?.id !== 'orbitaladdrow' &&
+    if (e.relatedTarget?.id !== 'orbitaladdrow' &&
     e.relatedTarget?.id !== 'orbitalremoverow' &&
     e.relatedTarget?.id !== 'orbitaladdbox' &&
     e.relatedTarget?.id !== 'orbitaladduparrow' &&
     e.relatedTarget?.id !== 'orbitaladddownarrow' &&
     e.relatedTarget?.id !== 'orbitalremovearrow' &&
-    e.relatedTarget?.id !== 'orbitalremovebox'
-    ){
-      setSelectedRow(-1);
+    e.relatedTarget?.id !== 'orbitalremovebox'){
+      if (e.relatedTarget?.id !== `OrbitalText${selectedRow}` &&
+      e.relatedTarget?.id !== `OrbitalRow${selectedRow}` &&
+      e.relatedTarget?.id.substring(0,10) !== `orbitalbox` 
+      ){
+        setSelectedRow(-1);
+      }
       setSelectedBox(-1);
     }
+    
   }
 
   let rowsJSX = [];
@@ -77,8 +80,8 @@ export default function orbitalDiagramInput(props){
     <button id={`orbitalremoverow`} onClick={()=>{
       if (rows.length > 1){ //Don't delete the last one
         let removeRowNumber = rows.length - 1 - selectedRow;
-        if (removeRowNumber === -1){
-          removeRowNumber = rows.length - 1;
+        if (selectedRow === -1){
+          removeRowNumber = 0;
         }
         setSelectedRow(-1);
         setSelectedBox(-1);
@@ -234,7 +237,16 @@ export default function orbitalDiagramInput(props){
 }
 
 function OrbitalRow({rowNumber,selectedRow,setSelectedRow,orbitalText,boxes,setRows,selectedBox,setSelectedBox,deselect}){
-  let rowStyle = {width:"800px",height:"40px",display:"flex"};
+  let rowStyle = {
+    width:"800px",
+    height:"44px",
+    display:"flex",
+    backgroundColor:"#E2E2E2",
+    marginTop:"2px",
+    marginBottom:"2px",
+    padding:"2px",
+    border:"white solid 2px",
+  };
   if (selectedRow === rowNumber){ 
     rowStyle['border'] = '#1A5A99 solid 2px';
     // rowStyle['backgroundColor'] = '#1A5A99';
@@ -247,7 +259,7 @@ function OrbitalRow({rowNumber,selectedRow,setSelectedRow,orbitalText,boxes,setR
     if (selectedRow === rowNumber && selectedBox === index){
       isSelected = true;
     }
-    boxesJSX.push(<OrbitalBox key={`OrbitalBox${rowNumber}-${index}`} boxNum={index} arrows={code} isSelected={isSelected} setSelectedBox={setSelectedBox}/>)
+    boxesJSX.push(<OrbitalBox key={`OrbitalBox${rowNumber}-${index}`} boxNum={index} rowNumber={rowNumber} arrows={code} isSelected={isSelected} setSelectedBox={setSelectedBox}/>)
   }
 
   return <div 
@@ -262,7 +274,7 @@ function OrbitalRow({rowNumber,selectedRow,setSelectedRow,orbitalText,boxes,setR
       deselect(e);
     }}
    style={rowStyle}>
-     <span style={{marginRight:"2px"}}>row {rowNumber + 1}</span>
+     {/* <span style={{marginRight:"2px"}}>row {rowNumber + 1}</span> */}
      <OrbitalText orbitalText={orbitalText} setRows={setRows} rowNumber={rowNumber} selectedRow={selectedRow} setSelectedRow={setSelectedRow}/> 
      {boxesJSX}
      </div>
@@ -271,9 +283,9 @@ function OrbitalRow({rowNumber,selectedRow,setSelectedRow,orbitalText,boxes,setR
 function OrbitalText({rowNumber,selectedRow,setSelectedRow,orbitalText,setRows}){
   return <input 
   id={`OrbitalText${rowNumber}`} 
-  style={{marginRight:"4px"}} 
+  style={{marginRight:"4px",height:'14px'}} 
   type='text' 
-  size='2' 
+  size='4' 
   value={orbitalText}
   onChange={(e)=>{
     let newValue = e.target.value;
@@ -288,7 +300,7 @@ function OrbitalText({rowNumber,selectedRow,setSelectedRow,orbitalText,setRows})
   />
 }
 
-function OrbitalBox({boxNum,arrows='',setSelectedBox,isSelected}){
+function OrbitalBox({boxNum,arrows='',setSelectedBox,isSelected,rowNumber}){
 
   const firstUp = <polyline key={`orbitalboxfirstUp${boxNum}`} id={`firstUp${boxNum}`} points="6,14 12,6 18,14 12,6 12,35" style={{fill:"none",stroke:"black",strokeWidth:"2"}} />
   const firstDown = <polyline key={`orbitalboxfirstDown${boxNum}`} id={`firstDown${boxNum}`} points="6,26 12,34 18,26 12,34 12,5" style={{fill:"none",stroke:"black",strokeWidth:"2"}} />
@@ -325,12 +337,15 @@ function OrbitalBox({boxNum,arrows='',setSelectedBox,isSelected}){
   }
 
   let boxColor = 'black';
+  let strokeWidth = '2px';
   if (isSelected){
     boxColor = '#1A5A99';
+    strokeWidth = '6px';
   }
 
   return <Box 
   key={`orbitalbox${boxNum}`}
+  id={`orbitalbox${rowNumber}-${boxNum}`}
   tabIndex="-1" 
   onClick={()=>{
     setSelectedBox(boxNum);
@@ -339,417 +354,7 @@ function OrbitalBox({boxNum,arrows='',setSelectedBox,isSelected}){
   height='40'
   >
     <rect x="0" y="0" rx="4" ry="4" width={boxWidth} height="40"
-  style={{fill:"white",stroke:boxColor,strokeWidth:"2",fillOpacity:"1",strokeOpacity:"1"}} />
+  style={{fill:"white",stroke:boxColor,strokeWidth:strokeWidth,fillOpacity:"1",strokeOpacity:"1"}} />
   {arrowsJSX}
   </Box>
 }
-
-
-// import React, { useRef, useState } from 'react';
-// import styled from "styled-components";
-// import useDoenetRender from './useDoenetRenderer';
-
-
-// const TextNoSelect = styled.text`
-//   -webkit-user-select: none;
-//   -moz-user-select: none;
-//   -ms-user-select: none;
-//   user-select: none;
-//   -webkit-tap-highlight-color: rgba(255, 255, 255, 0);
-// `;
-// const ModeButton = styled.button`
-//   &:focus {
-//     outline: 0;
-//   }
-//   width: 120px;
-//   -webkit-user-select: none;
-//   -moz-user-select: none;
-//   -ms-user-select: none;
-//   user-select: none;
-//   -webkit-tap-highlight-color: rgba(255, 255, 255, 0);
-//   margin-left: 1px;
-//   margin-top: 1px;
-// `;
-
-
-
-// export default function orbitalDiagramInput(props) {
-//   let { name, SVs, actions, callAction } = useDoenetRender(props,false);
-//   console.log("ODI renderer!!!!")
-//   // let [mode,setMode] = useState("add remove points");
-//   // let bounds = useRef(null);
-//   // let pointGrabbed = useRef(null);
-
-//   if (SVs.hidden) {
-//     return null;
-//   }
-
-//   return <p>orbitalDiagramInput</p>;
-// }
-//   //Build control buttons
-//   const activeButtonColor = "lightblue";
-//   const inactiveButtonColor = "lightgrey";
-//   let primaryColor = "red";
-
-
-//   let addRemovePointsStyle = { backgroundColor: inactiveButtonColor };
-//   if (mode === "add remove points") {
-//     addRemovePointsStyle = { backgroundColor: activeButtonColor };
-//   }
-
-//   let toggleStyle = { backgroundColor: inactiveButtonColor };
-//   if (mode === "toggle") {
-//     toggleStyle = { backgroundColor: activeButtonColor };
-//   }
-
-//   let movePointsStyle = { backgroundColor: inactiveButtonColor };
-//   if (mode === "move points") {
-//     movePointsStyle = { backgroundColor: activeButtonColor };
-//   }
-
-//   let controlButtons = null;
-//   if(!SVs.fixed) {
-//     controlButtons = <>
-//       <span>
-//         <ModeButton
-//           style={addRemovePointsStyle}
-//           onClick={() => setMode("add remove points")}
-//         >
-//           Add/Remove points
-//         </ModeButton>
-//       </span>
-//       <span>
-//         <ModeButton
-//           style={toggleStyle}
-//           onClick={() => setMode("toggle")}
-//         >
-//           Toggle points and intervals
-//         </ModeButton>
-//       </span>
-//       <span>
-//         <ModeButton
-//           style={movePointsStyle}
-//           onClick={() => setMode("move points")}
-//         >
-//           Move Points
-//         </ModeButton>
-//       </span>
-//       <span>
-//         <button
-//           onClick={()=> callAction({
-//             action: actions.clear,
-//           })}
-//         >
-//           Clear
-//         </button>
-//       </span>
-//       <span>
-//         <button
-//           onClick={()=> callAction({
-//             action: actions.setToR,
-//           })}
-//         >
-//           R
-//         </button>
-//       </span>
-//     </>
-//   }
-
-//   //Build axis
-//   let firstHashXPosition = 40;
-//   let xBetweenHashes = 36;
-//   let hashLines = [];
-//   let numbers = [];
-
-//   for (let number = -10; number <= 10; number++) {
-//     numbers.push(number);
-//   }
-
-//   let labels = [];
-
-//   for (let x = firstHashXPosition; x < 780; x = x + xBetweenHashes) {
-//     hashLines.push(
-//       <line
-//         key={"hash" + x}
-//         x1={x}
-//         y1="35"
-//         x2={x}
-//         y2="45"
-//         style={{ stroke: "black", strokeWidth: "1" }}
-//         shapeRendering="geometricPrecision"
-//       />
-//     );
-//     let number = numbers.shift();
-
-//     labels.push(
-//       <TextNoSelect key={"label" + x} x={x} y="66" textAnchor="middle">
-//         {number}
-//       </TextNoSelect>
-//     );
-//   }
-
-//   //Build points
-//   let storedPoints = [];
-
-//   for (let pt of SVs.points) {
-//     let closed = pt.inSubset;
-
-//     let xPosition = xValueToXPosition(pt.value);
-
-//     let currentFillColor = primaryColor;
-//     if (!closed) {
-//       currentFillColor = "white";
-//     }
-
-//     let key = `point-${xPosition}`;
-
-//     storedPoints.push(
-//       <circle
-//         key={key}
-//         cx={xPosition}
-//         cy="40"
-//         r="6"
-//         stroke="black"
-//         strokeWidth="1"
-//         fill={currentFillColor}
-//       />
-//     );
-
-//   }
-
-//   //Build lines
-//   let storedLines = [];
-//   for (let intervalObj of SVs.intervals) {
-//     if (intervalObj.right < intervalObj.left || !intervalObj.inSubset) { continue; } // Ignore imposible Intervals
-//     let lowerXPosition = xValueToXPosition(intervalObj.left);
-//     let higherXPosition = xValueToXPosition(intervalObj.right);
-//     const lowerPointKey = `lowerIntervalPoint${lowerXPosition}`;
-//     const higherPointKey = `higherIntervalPoint${higherXPosition}`;
-//     const lineKey = `line${lowerXPosition}-${higherXPosition}`;
-
-//     let currentFillColor = primaryColor;
-
-//     let lowerLine = lowerXPosition;
-//     let higherLine = higherXPosition;
-
-//     if (lowerXPosition < 38) {
-//       lowerLine = 20;
-//       storedPoints.push(
-//         <polygon
-//           key={lowerPointKey}
-//           points="5,40 20,46 20,34"
-//           style={{
-//             fill: currentFillColor,
-//             stroke: currentFillColor,
-//             strokeWidth: "1"
-//           }}
-//         />
-//       );
-//     }
-
-//     if (higherXPosition > 778) {
-//       higherLine = 782;
-//       storedPoints.push(
-//         <polygon
-//           key={higherPointKey}
-//           points="795,40 780,46 780,34"
-//           style={{
-//             fill: currentFillColor,
-//             stroke: currentFillColor,
-//             strokeWidth: "1"
-//           }}
-//         />
-//       );
-//     }
-//     storedLines.push(
-//       <line
-//         key={lineKey}
-//         x1={lowerLine}
-//         y1="40"
-//         x2={higherLine}
-//         y2="40"
-//         style={{ stroke: currentFillColor, strokeWidth: "8" }}
-//       />
-//     );
-//   }
-
-//   function xValueToXPosition(xValue) {
-//     // let minValue = -10;
-//     // let maxValue = 10;
-//     //Shift to positive numbers
-//     //TODO: Calculate shiftAmount and intervalValueWidth
-//     let shiftAmount = 10;
-//     let intervalValueWidth = 1;
-//     let shiftedXValue = xValue + shiftAmount;
-
-
-//     let position = firstHashXPosition + (shiftedXValue / intervalValueWidth * xBetweenHashes);
-
-//     return position;
-//   }
-
-//   function xPositionToXValue(xPosition) {
-
-//     let relativeX = xPosition - firstHashXPosition;
-//     let shiftAmount = 10;
-//     let intervalValueWidth = 1;
-//     let value = relativeX / xBetweenHashes * intervalValueWidth;
-//     value = value - shiftAmount;
-
-//     return value;
-//   }
-
-//   async function handleInput(e, inputState) {
-
-//     let mouseLeft = e.clientX - bounds.current.offsetLeft
-//     let xPosition = xPositionToXValue(mouseLeft);
-//     let pointHitTolerance = 0.2;
-
-//     if (inputState === "up") {
-
-//       if (mode === "move points") {
-//         if (pointGrabbed.current !== null) {
- 
-//         callAction({
-//           action: actions.movePoint,
-//           args: {
-//             pointInd: pointGrabbed.current,
-//             value: xPosition,
-//             transient: false
-//           }
-//         })
-//         pointGrabbed.current = null;
-
-//         }
-
-//       } 
-
-//         if (mode === "add remove points") {
-//           if (pointGrabbed.current !== null) {
-//             callAction({
-//               action: actions.deletePoint,
-//               args: pointGrabbed.current
-//             })
-//           } else if (!SVs.points.map(x => x.value).includes(xPosition)) {
-//             callAction({
-//               action: actions.addPoint,
-//               args: xPosition
-//             })
-//           }
-//         } else if (mode === "toggle") {
-//           if (pointGrabbed.current !== null) {
-//             callAction({
-//               action: actions.togglePoint,
-//               args: pointGrabbed.current
-//             })
-//           } else {
-//             let intervalInd = 0;
-//             for (let pt of SVs.points) {
-//               if (pt.value < xPosition) {
-//                 intervalInd++;
-//               }
-//             }
-//             callAction({
-//               action: actions.toggleInterval,
-//               args: intervalInd
-//             })
-//           }
-//         }
-
-//     } else if (inputState === "down") {
-
-//         let pointInd = null;
-//         for (let [ind, pt] of SVs.points.entries()) {
-//           if (Math.abs(pt.value - xPosition) < pointHitTolerance) {
-//             pointInd = ind;
-//             break;
-//           }
-//         }
-
-//         if (pointInd !== null) {
-//           pointGrabbed.current = pointInd;
-//         }else{
-//           pointGrabbed.current = null;
-//         }
-//     } else if (inputState === "move") {
-//       if (mode === "move points" && pointGrabbed.current !== null) {
-    
-//         callAction({
-//           action: actions.movePoint,
-//           args: {
-//             pointInd: pointGrabbed.current,
-//             value: xPosition,
-//             transient: true
-//           }
-//         })
-
-//       }
-//     } else if (inputState == "leave") {
-//       if (mode === "move points") {
-//         if (pointGrabbed.current !== null) {
-//           callAction({
-//             action: actions.movePoint,
-//             args: {
-//               pointInd: pointGrabbed.current,
-//               value: xPosition,
-//               transient: false
-//             }
-//           })
-
-//           pointGrabbed.current = null;
-//         }
-//       }
-//     }
-
-
-
-//   }
-
-//  return  (
-//   <>
-//     <a name={name} />
-//     <div ref={bounds}>
-//       {controlButtons}
-//     </div>
-//     <svg
-//       width="808"
-//       height="80"
-//       style={{ backgroundColor: "white" }}
-//       onMouseDown={e => {
-//         handleInput(e, "down");
-//       }}
-//       onMouseUp={e => {
-//         handleInput(e, "up");
-//       }}
-//       onMouseMove={e => {
-//         handleInput(e, "move");
-//       }}
-//       onMouseLeave={e => {
-//         handleInput(e, "leave");
-//       }}
-//     >
-//       <polygon
-//         points="5,40 20,50 20,30"
-//         style={{ fill: "black", stroke: "black", strokeWidth: "1" }}
-//       />
-//       <polygon
-//         points="795,40 780,50 780,30"
-//         style={{ fill: "black", stroke: "black", strokeWidth: "1" }}
-//       />
-//       {storedLines}
-//       {hashLines}
-//       <line
-//         x1="20"
-//         y1="40"
-//         x2="780"
-//         y2="40"
-//         style={{ stroke: "black", strokeWidth: "2" }}
-//       />
-//       {storedPoints}
-//       {labels}
-//     </svg>
-//   </>
-//   );
-
-// }
-
